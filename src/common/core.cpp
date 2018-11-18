@@ -278,8 +278,10 @@ const char *get_git_hash (void) {
  *  ASCII By CalciumKid 1/12/2011
  *--------------------------------------*/
 static void display_title(void) {
+#ifndef rAthenaCN_Show_Version
 	const char* svn = get_svn_revision();
 	const char* git = get_git_hash();
+#endif // rAthenaCN_Show_Version
 
 #ifndef rAthenaCN_Show_Logo
 	ShowMessage("\n");
