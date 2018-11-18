@@ -1,4 +1,4 @@
-﻿// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
+// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
 #include "core.hpp"
@@ -281,6 +281,7 @@ static void display_title(void) {
 	const char* svn = get_svn_revision();
 	const char* git = get_git_hash();
 
+#ifndef rAthenaCN_Show_Logo
 	ShowMessage("\n");
 	ShowMessage("" CL_PASS "     " CL_BOLD "                                                                 " CL_PASS"" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_PASS "       " CL_BT_WHITE "            rAthena Development Team presents                  " CL_PASS "" CL_CLL "" CL_NORMAL "\n");
@@ -292,11 +293,39 @@ static void display_title(void) {
 	ShowMessage("" CL_PASS "     " CL_BOLD "                                                                 " CL_PASS "" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_PASS "       " CL_GREEN "              http://rathena.org/board/                        " CL_PASS "" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_PASS "     " CL_BOLD "                                                                 " CL_PASS "" CL_CLL "" CL_NORMAL "\n");
+#else
+	ShowMessage("\n");
+	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                 " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                       rAthenaCN Dev Team presents                  " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                 _   _   _                       ____ _   _     " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "           _ __ / \\ | |_| |__   ___ _ __   __ _ / ___| \\ | |    " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "          | '__/ _ \\| __| '_ \\ / _ \\ '_ \\ / _` | |   |  \\| |    " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "          | | / ___ \\ |_| | | |  __/ | | | (_| | |___| |\\  |    " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "          |_|/_/   \\_\\__|_| |_|\\___|_| |_|\\__,_|\\____|_| \\_|    " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                                                                " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_GREEN "                          https://rathena.cn/                        " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                 " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+#ifdef rAthenaCN_Disclaimer
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "         rAthenaCN is only for learning and research purposes.     " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "             Please don't use it for commercial purposes.  " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                 " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+#endif // rAthenaCN_Disclaimer
+	ShowMessage("\n");
+#endif // rAthenaCN_Show_Logo
 
+#ifndef rAthenaCN_Show_Version
 	if( svn[0] != UNKNOWN_VERSION )
 		ShowInfo("SVN Revision: '" CL_WHITE "%s" CL_RESET "'\n", svn);
 	else if( git[0] != UNKNOWN_VERSION )
 		ShowInfo("Git Hash: '" CL_WHITE "%s" CL_RESET "'\n", git);
+#else
+	// 显示 rAthenaCN 的版本号 [Sola丶小克]
+	ShowInfo("rAthenaCN Version: " CL_WHITE "%s" CL_RESET "\n", rAthenaCN_Version);
+#endif // rAthenaCN_Show_Version
+
+#ifdef rAthenaCN_Disclaimer
+	ShowInfo("This program is completely free! You don't need to pay for it.\n");
+#endif // rAthenaCN_Disclaimer
 }
 
 // Warning if executed as superuser (root)
