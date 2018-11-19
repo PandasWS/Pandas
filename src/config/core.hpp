@@ -75,6 +75,7 @@
 #include "./renewal.hpp"
 #include "./secure.hpp"
 #include "./classes/general.hpp"
+#include "./rathena.hpp"	// 引入 rAthenaCN 的配置文件 [Sola丶小克]
 
 /**
  * Constants come last; so they process anything that could've been modified in early includes

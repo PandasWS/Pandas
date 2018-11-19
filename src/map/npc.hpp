@@ -1151,6 +1151,15 @@ enum npce_event : uint8 {
 	NPCE_KILLPC,
 	NPCE_KILLNPC,
 	NPCE_STATCALC,
+
+#ifdef rAthenaCN_NpcEvent
+	/************************************************************************/
+	/* Event 类型的标准事件，这些事件不能被 processhalt 打断                     */
+	/************************************************************************/
+
+	NPCE_KILLMVP,						// OnPCKillMvpEvent			// 杀死 MVP 魔物时触发事件
+#endif // rAthenaCN_NpcEvent
+
 	NPCE_MAX
 };
 struct view_data* npc_get_viewdata(int class_);

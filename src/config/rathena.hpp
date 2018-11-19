@@ -9,6 +9,7 @@
 #ifdef rAthenaCN
 	#define rAthenaCN_Basic
 	#define rAthenaCN_Creative_Work
+	#define rAthenaCN_NpcEvent
 #endif // rAthenaCN
 
 #ifdef rAthenaCN_Basic
@@ -31,5 +32,14 @@
 		#define rAthenaCN_Crash_Report
 	#endif // _WIN32
 #endif // rAthenaCN_Creative_Work
+
+#ifdef rAthenaCN_NpcEvent
+	/************************************************************************/
+	/* Event 类型的标准事件，这些事件不能被 processhalt 打断                     */
+	/************************************************************************/
+
+	// 杀死 MVP 魔物时触发事件 - OnPCKillMvpEvent
+	#define rAthenaCN_NpcEvent_KILLMVP
+#endif // rAthenaCN_NpcEvent
 
 #endif // _RATHENA_CN_CONFIG_HPP_

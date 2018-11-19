@@ -260,6 +260,15 @@ struct Script_Config script_config = {
 	"OnPCBaseLvUpEvent", //baselvup_event_name
 	"OnPCJobLvUpEvent", //joblvup_event_name
 	"OnPCStatCalcEvent", //stat_calc_event_name
+
+#ifdef rAthenaCN_NpcEvent
+	/************************************************************************/
+	/* Event 类型的标准事件，这些事件不能被 processhalt 打断                     */
+	/************************************************************************/
+
+	"OnPCKillMvpEvent",			// kill_mvp_mob_event_name				// 杀死 MVP 魔物时触发事件
+#endif // rAthenaCN_NpcEvent
+
 	// NPC related
 	"OnTouch_",	//ontouch_event_name (runs on first visible char to enter area, picks another char if the first char leaves)
 	"OnTouch",	//ontouch2_event_name (run whenever a char walks into the OnTouch area)
