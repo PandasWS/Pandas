@@ -2732,6 +2732,10 @@ void char_set_defaults(){
 	charserv_config.char_new = true;
 	charserv_config.char_new_display = 0;
 
+#ifdef rAthenaCN_Crash_Report
+	charserv_config.create_fulldump = true;
+#endif // rAthenaCN_Crash_Report
+
 	charserv_config.char_config.name_ignoring_case = false; // Allow or not identical name for characters but with a different case by [Yor]
 	charserv_config.char_config.char_name_option = 0; // Option to know which letters/symbols are authorised in the name of a character (0: all, 1: only those in char_name_letters, 2: all EXCEPT those in char_name_letters) by [Yor]
 	safestrncpy(charserv_config.char_config.unknown_char_name,"Unknown",sizeof(charserv_config.char_config.unknown_char_name)); // Name to use when the requested name cannot be determined
@@ -2934,6 +2938,11 @@ bool char_config_read(const char* cfgName, bool normal){
 			} else if (strcmpi(w1, "console") == 0) {
 				charserv_config.console = config_switch(w2);
 			}
+#ifdef rAthenaCN_Crash_Report
+			else if (strcmpi(w1, "create_fulldump") == 0) {
+				charserv_config.create_fulldump = (bool)config_switch(w2);
+			}
+#endif // rAthenaCN_Crash_Report
 		}
 
 		if(strcmpi(w1,"timestamp_format") == 0) {
@@ -3193,6 +3202,10 @@ int do_init(int argc, char **argv)
 	char_set_default_sql();
 	char_sql_config_read(SQL_CONF_NAME);
 	msg_config_read(MSG_CONF_NAME_EN);
+
+#ifdef rAthenaCN_Crash_Report
+	create_fulldump = charserv_config.create_fulldump;
+#endif // rAthenaCN_Crash_Report
 
 	// Skip this check if the server is run with run-once flag
 	if (runflag!=CORE_ST_STOP && strcmp(charserv_config.userid, "s1")==0 && strcmp(charserv_config.passwd, "p1")==0) {

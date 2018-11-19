@@ -28,6 +28,7 @@
     <ClInclude Include="malloc.hpp" />
     <ClInclude Include="mapindex.hpp" />
     <ClInclude Include="md5calc.hpp" />
+    <ClInclude Include="minidump.hpp" />
     <ClInclude Include="mmo.hpp" />
     <ClInclude Include="msg_conf.hpp" />
     <ClInclude Include="nullpo.hpp" />
@@ -46,6 +47,7 @@
     <ClCompile Include="malloc.cpp" />
     <ClCompile Include="mapindex.cpp" />
     <ClCompile Include="md5calc.cpp" />
+    <ClCompile Include="minidump.cpp" />
     <ClCompile Include="msg_conf.cpp" />
     <ClCompile Include="nullpo.cpp" />
     <ClCompile Include="random.cpp" />

@@ -97,6 +97,10 @@ struct Login_Config {
 	char msgconf_name[256];							/// name of msg_conf config file
 	char lanconf_name[256];							/// name of lan config file
 
+#ifdef rAthenaCN_Crash_Report
+	bool create_fulldump;                           /// 是否生成完整的崩溃转储文件 [Sola丶小克]
+#endif // rAthenaCN_Crash_Report
+
 	bool usercount_disable;							/// Disable colorization and description in general?
 	int usercount_low;								/// Amount of users that will display in green
 	int usercount_medium;							/// Amount of users that will display in yellow

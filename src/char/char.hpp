@@ -166,6 +166,10 @@ struct CharServ_Config {
 	struct Pincode_Config pincode_config;
 #endif
 
+#ifdef rAthenaCN_Crash_Report
+	bool create_fulldump;	// 是否生成完整的崩溃转储文件 [Sola丶小克]
+#endif // rAthenaCN_Crash_Report
+
 	int save_log; // show loading/saving messages
 	int log_char;	// loggin char or not [devil]
 	int log_inter;	// loggin inter or not [devil]

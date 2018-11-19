@@ -676,6 +676,10 @@ bool login_config_read(const char* cfgName, bool normal) {
 				login_config.char_per_account = MIN_CHARS;
 			}
 		}
+#ifdef rAthenaCN_Crash_Report
+		else if (!strcmpi(w1, "create_fulldump"))
+			login_config.create_fulldump = (bool)config_switch(w2);
+#endif // rAthenaCN_Crash_Report
 #ifdef VIP_ENABLE
 		else if(strcmpi(w1,"vip_group")==0)
 			login_config.vip_sys.group = cap_value(atoi(w2),0,99);
@@ -742,6 +746,9 @@ void login_set_defaults() {
 	login_config.usercount_medium = 500;
 	login_config.usercount_high = 1000;
 	login_config.char_per_account = MAX_CHARS - MAX_CHAR_VIP - MAX_CHAR_BILLING;
+#ifdef rAthenaCN_Crash_Report
+	login_config.create_fulldump = true;
+#endif // rAthenaCN_Crash_Report
 #ifdef VIP_ENABLE
 	login_config.vip_sys.char_increase = MAX_CHAR_VIP;
 	login_config.vip_sys.group = 5;
@@ -857,6 +864,10 @@ int do_init(int argc, char** argv) {
 	msg_config_read(login_config.msgconf_name);
 	login_lan_config_read(login_config.lanconf_name);
 	//end config
+
+#ifdef rAthenaCN_Crash_Report
+	create_fulldump = login_config.create_fulldump;
+#endif // rAthenaCN_Crash_Report
 
 	rnd_init();
 
