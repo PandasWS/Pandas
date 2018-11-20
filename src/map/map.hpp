@@ -38,6 +38,11 @@ const char* map_msg_txt(struct map_session_data *sd,int msg_number);
 void map_do_final_msg(void);
 void map_msg_reload(void);
 
+#ifdef rAthenaCN_Message_Conf
+#define msg_txt_cn(sd,msg_number) map_msg_txt_cn(sd,msg_number)
+const char* map_msg_txt_cn(struct map_session_data *sd, int msg_number);
+#endif // rAthenaCN_Message_Conf
+
 #define MAX_NPC_PER_MAP 512
 #define AREA_SIZE battle_config.area_size
 #define DAMAGELOG_SIZE 30
