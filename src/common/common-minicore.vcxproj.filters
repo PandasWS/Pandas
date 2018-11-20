@@ -65,6 +65,9 @@
     <ClInclude Include="minidump.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="assistant.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cli.cpp">
@@ -113,6 +116,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="minidump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="assistant.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

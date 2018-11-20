@@ -1,4 +1,7 @@
-﻿#ifndef _MINIDUMP_HPP_
+﻿// Copyright (c) rAthenaCN Dev Teams - Licensed under GNU GPL
+// For more information, see LICENCE in the main folder
+
+#ifndef _MINIDUMP_HPP_
 #define _MINIDUMP_HPP_
 
 #include "winapi.hpp"

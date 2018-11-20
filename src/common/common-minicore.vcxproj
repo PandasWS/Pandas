@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="assistant.hpp" />
     <ClInclude Include="cbasetypes.hpp" />
     <ClInclude Include="cli.hpp" />
     <ClInclude Include="conf.hpp" />
@@ -39,6 +40,7 @@
     <ClInclude Include="winapi.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="assistant.cpp" />
     <ClCompile Include="cli.cpp" />
     <ClCompile Include="conf.cpp" />
     <ClCompile Include="core.cpp" />

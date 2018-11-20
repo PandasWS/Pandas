@@ -1,4 +1,7 @@
-﻿#ifndef _RATHENA_CN_CONFIG_HPP_
+﻿// Copyright (c) rAthenaCN Dev Teams - Licensed under GNU GPL
+// For more information, see LICENCE in the main folder
+
+#ifndef _RATHENA_CN_CONFIG_HPP_
 #define _RATHENA_CN_CONFIG_HPP_
 
 #include "renewal.hpp"
@@ -11,6 +14,10 @@
 	#define rAthenaCN_Creative_Work
 	#define rAthenaCN_NpcEvent
 #endif // rAthenaCN
+
+// ============================================================================
+// 基础组 - rAthenaCN_Basic
+// ============================================================================
 
 #ifdef rAthenaCN_Basic
 	// 定义 rAthenaCN 的版本号
@@ -25,6 +32,10 @@
 	// 在启动时显示 rAthenaCN 的版本号
 	#define rAthenaCN_Show_Version
 #endif // rAthenaCN_Basic
+
+// ============================================================================
+// 原创功能组 - rAthenaCN_Creative_Work
+// ============================================================================
 
 #ifdef rAthenaCN_Creative_Work
 	// 是否启用崩溃转储文件生成机制 [Sola丶小克]
@@ -41,6 +52,10 @@
 		#define rAthenaCN_Support_Specify_PacketKeys
 	#endif // PACKET_OBFUSCATION
 #endif // rAthenaCN_Creative_Work
+
+// ============================================================================
+// NPC事件组 - rAthenaCN_NpcEvent
+// ============================================================================
 
 #ifdef rAthenaCN_NpcEvent
 	/************************************************************************/
