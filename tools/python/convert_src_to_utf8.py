@@ -9,10 +9,14 @@ source_dir = '../../src'
 def main():
 	
 	ignore_files = ['makefile', 'makefile.in', 'cmakelists.txt']
+	allow_extensions = ['.hpp', '.cpp']
 	
 	for dirpath, _dirnames, filenames in os.walk(source_dir):
 		for filename in filenames:
 			if filename.lower() in ignore_files:
+				continue
+			_base_name, extension_name = os.path.splitext(filename.lower())
+			if extension_name not in allow_extensions:
 				continue
 			fullpath = os.path.normpath('%s/%s' % (dirpath, filename))
 			origin_charset = get_charset(fullpath)
