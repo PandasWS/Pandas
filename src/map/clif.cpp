@@ -20722,6 +20722,11 @@ void packetdb_readdb(){
 #include "clif_packetdb.hpp"
 #include "clif_shuffle.hpp"
 
+#ifdef rAthenaCN_Support_Specify_PacketKeys
+	if (clif_cryptKey_custom[0] > 0 && clif_cryptKey_custom[1] > 0 && clif_cryptKey_custom[2] > 0)
+		memcpy(&clif_cryptKey, &clif_cryptKey_custom, sizeof(clif_cryptKey_custom));
+#endif // rAthenaCN_Support_Specify_PacketKeys
+
 	ShowStatus("Using packet version: " CL_WHITE "%d" CL_RESET ".\n", PACKETVER);
 
 #ifdef PACKET_OBFUSCATION

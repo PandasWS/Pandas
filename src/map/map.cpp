@@ -192,6 +192,11 @@ int enable_grf = 0;	//To enable/disable reading maps from GRF files, bypassing m
 bool cfg_create_fulldump = true;	// 是否生成完整的崩溃转储文件 [Sola丶小克]
 #endif // rAthenaCN_Crash_Report
 
+#ifdef rAthenaCN_Support_Specify_PacketKeys
+// 用来保存 map_athena.conf 中设定封包混淆密钥 [Sola丶小克]
+unsigned int clif_cryptKey_custom[3] = { 0 };
+#endif // rAthenaCN_Support_Specify_PacketKeys
+
 /**
  * Get the map data
  * @param mapid: Map ID to lookup
@@ -4034,6 +4039,25 @@ int map_config_read(const char *cfgName)
 			console_msg_log = atoi(w2);//[Ind]
 		else if (strcmpi(w1, "console_log_filepath") == 0)
 			safestrncpy(console_log_filepath, w2, sizeof(console_log_filepath));
+#ifdef rAthenaCN_Support_Specify_PacketKeys
+		else if (strcmpi(w1, "packet_keys") == 0) {
+			char key1[12] = { 0 }, key2[12] = { 0 }, key3[12] = { 0 };
+			trim(w2);
+			memset(clif_cryptKey_custom, 0, sizeof(clif_cryptKey_custom));
+
+			if (strcmpi(w2, "default") == 0) {
+				continue;
+			}
+			else if (sscanf(w2, "%11[^,],%11[^,],%11[^ \r\n/]", key1, key2, key3) == 3) {
+				clif_cryptKey_custom[0] = strtol(key1, NULL, 0);
+				clif_cryptKey_custom[1] = strtol(key2, NULL, 0);
+				clif_cryptKey_custom[2] = strtol(key3, NULL, 0);
+				continue;
+			}
+			else
+				ShowWarning("Invalid 'packet_keys' in configure file %s, use default packet_keys...\n", cfgName);
+		}
+#endif // rAthenaCN_Support_Specify_PacketKeys
 		else if (strcmpi(w1, "import") == 0)
 			map_config_read(w2);
 		else

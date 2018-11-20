@@ -27,14 +27,19 @@
 #endif // rAthenaCN_Basic
 
 #ifdef rAthenaCN_Creative_Work
-	// 是否启用崩溃转储文件生成机制
+	// 是否启用崩溃转储文件生成机制 [Sola丶小克]
 	#ifdef _WIN32
 		#define rAthenaCN_Crash_Report
 	#endif // _WIN32
 
 	// 扩展信息配置文件 (Msg_conf) 的 ID 最大上限,
-	// 同时提供 msg_txt_cn 宏定义函数, 方便在工程中使用自定义信息
+	// 同时提供 msg_txt_cn 宏定义函数, 方便在工程中使用自定义信息 [Sola丶小克]
 	#define rAthenaCN_Message_Conf
+
+	// 是否支持在 map_athena.conf 中设定封包混淆密钥 [Sola丶小克]
+	#ifdef PACKET_OBFUSCATION
+		#define rAthenaCN_Support_Specify_PacketKeys
+	#endif // PACKET_OBFUSCATION
 #endif // rAthenaCN_Creative_Work
 
 #ifdef rAthenaCN_NpcEvent

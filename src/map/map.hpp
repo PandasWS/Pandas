@@ -1193,6 +1193,12 @@ extern char market_table[32];
 extern char roulette_table[32];
 extern char guild_storage_log_table[32];
 
+#ifdef rAthenaCN_Support_Specify_PacketKeys
+// 用来保存 map_athena.conf 中设定封包混淆密钥 [Sola丶小克]
+// 备注: 该变量真正的声明定义, 位于 map.cpp 中
+extern unsigned int clif_cryptKey_custom[3];
+#endif // rAthenaCN_Support_Specify_PacketKeys
+
 void do_shutdown(void);
 
 #endif /* MAP_HPP */
