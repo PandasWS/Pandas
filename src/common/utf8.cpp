@@ -84,11 +84,12 @@ std::string Utf8ToGbk(const std::string& strUtf8) {
 
 	if (iconv(c_pt, (char **)&p_str_input, &str_input_len, (char **)&p_str_output, &str_output_len) == (size_t)-1) {
 		ShowFatalError("Utf8ToGbk: %s return false. From %s to %s\n", "iconv", "GBK", "UTF-8");
-		return strResult;
+	}
+	else {
+		strResult = str_output;
 	}
 
 	iconv_close(c_pt);
-	strResult = str_output;
 	aFree(str_output);
 	aFree(str_input);
 
@@ -112,13 +113,14 @@ bool isUTF8withBOM(FILE *_Stream) {
 	// 记录目前指针所在的位置
 	curpos = ftell(_Stream);
 	
-	// 指针移动到开头, 读取前3个字节, 然后指针归位
+	// 指针移动到开头, 读取前3个字节
 	fseek(_Stream, 0, SEEK_SET);
-	fread(buf, sizeof(unsigned char), 3, _Stream);
+	if (fread(buf, sizeof(unsigned char), 3, _Stream) == 3) {
+		fseek(_Stream, curpos, SEEK_SET);
+		return (buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF);
+	}
 	fseek(_Stream, curpos, SEEK_SET);
-	
-	// 判断是否为 UTF8-BOM
-	return (buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF);
+	return false;
 }
 
 // 能够兼容读取 UTF8-BOM 编码文件的 fgets 函数
