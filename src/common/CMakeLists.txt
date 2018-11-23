@@ -63,6 +63,7 @@ set( COMMON_MINI_HEADERS
 	"${COMMON_SOURCE_DIR}/malloc.hpp"
 	"${COMMON_SOURCE_DIR}/showmsg.hpp"
 	"${COMMON_SOURCE_DIR}/strlib.hpp"
+	"${COMMON_SOURCE_DIR}/utf8.hpp"
 	${LIBCONFIG_HEADERS} # needed by showmsg.hpp
 	${COMMON_ADDITIONALL_HPP} # needed by Windows
 	CACHE INTERNAL "" )
@@ -71,6 +72,7 @@ set( COMMON_MINI_SOURCES
 	"${COMMON_SOURCE_DIR}/malloc.cpp"
 	"${COMMON_SOURCE_DIR}/showmsg.cpp"
 	"${COMMON_SOURCE_DIR}/strlib.cpp"
+	"${COMMON_SOURCE_DIR}/utf8.cpp"
 	${LIBCONFIG_SOURCES} # needed by showmsg.cpp
 	${COMMON_ADDITIONALL_CPP} # needed by Windows
 	CACHE INTERNAL "" )
