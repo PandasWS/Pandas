@@ -7,6 +7,7 @@
 #include <windows.h>
 #else
 #include <iconv.h>
+#include <errno.h>
 #endif
 
 #ifdef _WIN32
@@ -66,29 +67,29 @@ std::string Utf8ToGbk(const std::string& strUtf8) {
 	iconv_t c_pt;
 	char *str_input, *p_str_input, *str_output, *p_str_output;
 	size_t str_input_len, str_output_len;
-	std::string strResult("Utf8ToGbk Failed");
+	std::string strResult;
 
 	if ((c_pt = iconv_open("GBK", "UTF-8")) == (iconv_t)-1) {
-		ShowFatalError("Utf8ToGbk: %s return false. From %s to %s\n", "iconv_open", "GBK", "UTF-8");
-		return strResult;
+		ShowFatalError("Utf8ToGbk: %s was failed: %s\n", "iconv_open", strerror(errno));
+		exit(EXIT_FAILURE);
 	}
 
 	str_input_len = strUtf8.size();
 	str_input = aStrdup(strUtf8.c_str());
 	p_str_input = str_input;	// 必须这样赋值一下, 不然在 Linux 下会提示段错误(Segmentation fault)
 
-	str_output_len = str_input_len * 2 + 1;
+	str_output_len = str_input_len + 1;
 	str_output = (char *)aMalloc(sizeof(char) * str_output_len);
 	memset(str_output, 0, str_output_len);
 	p_str_output = str_output;	// 必须这样赋值一下, 不然在 Linux 下会提示段错误(Segmentation fault)
 
 	if (iconv(c_pt, (char **)&p_str_input, &str_input_len, (char **)&p_str_output, &str_output_len) == (size_t)-1) {
-		ShowFatalError("Utf8ToGbk: %s return false. From %s to %s\n", "iconv", "GBK", "UTF-8");
-	}
-	else {
-		strResult = str_output;
+		ShowFatalError("Utf8ToGbk: %s was failed: %s\n", "iconv", strerror(errno));
+		ShowFatalError("Utf8ToGbk: the strUtf8 param value: %s", str_input);
+		exit(EXIT_FAILURE);
 	}
 
+	strResult = str_output;
 	iconv_close(c_pt);
 	aFree(str_output);
 	aFree(str_input);
