@@ -7113,7 +7113,11 @@ ACMD_FUNC(gmotd)
 		char buf[CHAT_SIZE_MAX];
 		size_t len;
 
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 		while( fgets(buf, sizeof(buf), fp) )
+#else
+		while( fgets_ex(buf, sizeof(buf), fp) )
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 		{
 			if( buf[0] == '/' && buf[1] == '/' )
 			{

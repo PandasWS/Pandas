@@ -1017,7 +1017,11 @@ void Sql_inter_server_read(const char* cfgName, bool first) {
 		return;
 	}
 
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 	while(fgets(line, sizeof(line), fp)) {
+#else
+	while(fgets_ex(line, sizeof(line), fp)) {
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 		int i = sscanf(line, "%1023[^:]: %1023[^\r\n]", w1, w2);
 		if(i != 2)
 			continue;

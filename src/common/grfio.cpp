@@ -779,7 +779,11 @@ void grfio_init(const char* fname)
 	if( data_conf != NULL )
 	{
 		char line[1024];
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 		while( fgets(line, sizeof(line), data_conf) )
+#else
+		while( fgets_ex(line, sizeof(line), data_conf) )
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 		{
 			char w1[1024], w2[1024];
 

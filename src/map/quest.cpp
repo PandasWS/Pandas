@@ -442,7 +442,11 @@ void quest_read_txtdb(void)
 			return;
 		}
 
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 		while(fgets(line, sizeof(line), fp)) {
+#else
+		while(fgets_ex(line, sizeof(line), fp)) {
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 			struct quest_db *quest = NULL;
 			char *str[19], *p;
 			int quest_id = 0;

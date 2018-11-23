@@ -36,6 +36,7 @@
     <ClInclude Include="random.hpp" />
     <ClInclude Include="showmsg.hpp" />
     <ClInclude Include="strlib.hpp" />
+    <ClInclude Include="utf8.hpp" />
     <ClInclude Include="utils.hpp" />
     <ClInclude Include="winapi.hpp" />
   </ItemGroup>
@@ -55,6 +56,7 @@
     <ClCompile Include="random.cpp" />
     <ClCompile Include="showmsg.cpp" />
     <ClCompile Include="strlib.cpp" />
+    <ClCompile Include="utf8.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="winapi.cpp" />
   </ItemGroup>

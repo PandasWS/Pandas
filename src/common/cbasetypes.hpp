@@ -4,6 +4,8 @@
 #ifndef CBASETYPES_HPP
 #define CBASETYPES_HPP
 
+#include "../custom/defines_pre.hpp"	// 引入 rAthenaCN 的配置文件 [Sola丶小克] 
+
 /*              +--------+-----------+--------+---------+
  *              | ILP32  |   LP64    |  ILP64 | (LL)P64 |
  * +------------+--------+-----------+--------+---------+

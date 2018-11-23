@@ -249,7 +249,11 @@ int do_init(int argc, char** argv)
 		// Read and process the map list
 		char line[1024];
 
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 		while (fgets(line, sizeof(line), list))
+#else
+		while (fgets_ex(line, sizeof(line), list))
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 		{
 			if (line[0] == '/' && line[1] == '/')
 				continue;

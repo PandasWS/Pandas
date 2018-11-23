@@ -1603,7 +1603,11 @@ void read_homunculus_expdb(void)
 			ShowError("Can't read %s\n",line);
 			return;
 		}
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 		while (fgets(line, sizeof(line), fp) && j < MAX_LEVEL) {
+#else
+		while (fgets_ex(line, sizeof(line), fp) && j < MAX_LEVEL) {
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 			if (line[0] == '/' && line[1] == '/')
 				continue;
 

@@ -4207,7 +4207,11 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 	len = ftell(fp);
 	buffer = (char*)aMalloc(len+1);
 	fseek(fp, 0, SEEK_SET);
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 	len = fread(buffer, 1, len, fp);
+#else
+	len = fread_ex(buffer, 1, len, fp);
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 	buffer[len] = '\0';
 	if( ferror(fp) )
 	{

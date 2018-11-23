@@ -8699,7 +8699,11 @@ int battle_config_read(const char* cfgName)
 	else {
 		char line[1024], w1[1024], w2[1024];
 
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 		while(fgets(line, sizeof(line), fp)) {
+#else
+		while(fgets_ex(line, sizeof(line), fp)) {
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 			if (line[0] == '/' && line[1] == '/')
 				continue;
 			if (sscanf(line, "%1023[^:]:%1023s", w1, w2) != 2)

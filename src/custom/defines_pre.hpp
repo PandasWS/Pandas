@@ -9,6 +9,11 @@
  * For detailed guidance on these check http://rathena.org/wiki/SRC/config/
  **/
 
+#include "../config/rathena.hpp"	// 引入 rAthenaCN 的配置文件 [Sola丶小克]
 
+#ifdef rAthenaCN
+#include "../common/assistant.hpp"	// 引入通用辅助函数库的 Header 文件 [Sola丶小克]
+#include "../common/utf8.hpp"		// 引入 UTF8 函数库的 Header 文件 [Sola丶小克]
+#endif // rAthenaCN
 
 #endif /* CONFIG_CUSTOM_DEFINES_PRE_HPP */

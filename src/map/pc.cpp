@@ -11426,7 +11426,11 @@ static int pc_read_statsdb(const char *basedir, int last_s, bool silent){
 		return max(last_s,i);
 	} else {
 		int entries=0;
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 		while(fgets(line, sizeof(line), fp))
+#else
+		while(fgets_ex(line, sizeof(line), fp))
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 		{
 			int stat;
 			trim(line);
@@ -11572,7 +11576,11 @@ int pc_read_motd(void)
 		unsigned int entries = 0;
 		char buf[CHAT_SIZE_MAX];
 
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 		while( entries < MOTD_LINE_SIZE && fgets(buf, CHAT_SIZE_MAX, fp) )
+#else
+		while( entries < MOTD_LINE_SIZE && fgets_ex(buf, CHAT_SIZE_MAX, fp) )
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 		{
 			unsigned int lines = 0;
 			size_t len;

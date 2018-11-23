@@ -42,7 +42,11 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 	if ((--called) == 0)
 		memset(msg_table, 0, sizeof (msg_table[0]) * size);
 
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 	while (fgets(line, sizeof (line), fp)) {
+#else
+	while (fgets_ex(line, sizeof (line), fp)) {
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 		line_num++;
 		if (line[0] == '/' && line[1] == '/')
 			continue;

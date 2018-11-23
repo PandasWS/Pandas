@@ -1006,7 +1006,11 @@ bool sv_readdb(const char* directory, const char* filename, char delim, int minc
 	line = (char*)aMalloc(nb_cols*colsize);
 
 	// process rows one by one
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 	while( fgets(line, maxcols*colsize, fp) )
+#else
+	while( fgets_ex(line, maxcols*colsize, fp) )
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 	{
 		char *match;
 		lines++;

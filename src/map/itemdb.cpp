@@ -977,7 +977,11 @@ static void itemdb_read_combos(const char* basedir, bool silent) {
 	}
 
 	// process rows one by one
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 	while(fgets(line, sizeof(line), fp)) {
+#else
+	while(fgets_ex(line, sizeof(line), fp)) {
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 		char *str[2], *p;
 
 		lines++;
@@ -1415,7 +1419,11 @@ static int itemdb_readdb(void){
 		}
 
 		// process rows one by one
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 		while(fgets(line, sizeof(line), fp))
+#else
+		while(fgets_ex(line, sizeof(line), fp))
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 		{
 			char *str[32], *p;
 			int i;
@@ -1632,7 +1640,11 @@ static bool itemdb_read_randomopt(const char* basedir, bool silent) {
 		return false;
 	}
 
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 	while (fgets(line, sizeof(line), fp)) {
+#else
+	while (fgets_ex(line, sizeof(line), fp)) {
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 		char *str[2], *p;
 
 		lines++;

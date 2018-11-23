@@ -524,7 +524,11 @@ int login_lan_config_read(const char *lancfgName) {
 		return 1;
 	}
 
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 	while(fgets(line, sizeof(line), fp))
+#else
+	while(fgets_ex(line, sizeof(line), fp))
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 	{
 		line_num++;
 		if ((line[0] == '/' && line[1] == '/') || line[0] == '\n' || line[1] == '\n')
@@ -575,7 +579,11 @@ bool login_config_read(const char* cfgName, bool normal) {
 		ShowError("Configuration file (%s) not found.\n", cfgName);
 		return false;
 	}
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 	while(fgets(line, sizeof(line), fp)) {
+#else
+	while(fgets_ex(line, sizeof(line), fp)) {
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 		if (line[0] == '/' && line[1] == '/')
 			continue;
 

@@ -1582,7 +1582,11 @@ void read_petdb()
 
 		lines = entries = 0;
 
+#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
 		while( fgets(line, sizeof(line), fp) ) {
+#else
+		while( fgets_ex(line, sizeof(line), fp) ) {
+#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
 			char *str[22], *p;
 			unsigned k;
 			lines++;

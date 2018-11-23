@@ -51,6 +51,9 @@
 	#ifdef PACKET_OBFUSCATION
 		#define rAthenaCN_Support_Specify_PacketKeys
 	#endif // PACKET_OBFUSCATION
+
+	// 是否支持读取 UTF8-BOM 编码的配置文件 [Sola丶小克]
+	#define rAthenaCN_Support_Read_UTF8BOM_Configure
 #endif // rAthenaCN_Creative_Work
 
 // ============================================================================

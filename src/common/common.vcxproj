@@ -41,6 +41,7 @@
     <ClInclude Include="sql.hpp" />
     <ClInclude Include="strlib.hpp" />
     <ClInclude Include="timer.hpp" />
+    <ClInclude Include="utf8.hpp" />
     <ClInclude Include="utils.hpp" />
     <ClInclude Include="winapi.hpp" />
     <ClInclude Include="utilities.hpp" />
@@ -66,6 +67,7 @@
     <ClCompile Include="sql.cpp" />
     <ClCompile Include="strlib.cpp" />
     <ClCompile Include="timer.cpp" />
+    <ClCompile Include="utf8.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="winapi.cpp" />
     <ClCompile Include="utilities.cpp" />
