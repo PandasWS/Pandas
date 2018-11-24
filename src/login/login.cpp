@@ -483,6 +483,14 @@ bool login_check_password(const char* md5key, int passwdenc, const char* passwd,
 }
 
 int login_get_usercount( int users ){
+#ifdef rAthenaCN_Support_Hide_Online_Players_Count
+#if PACKETVER >= 20170726
+	if (login_config.hide_online_players_count) return 4;
+#else
+	if (login_config.hide_online_players_count) return 0;
+#endif
+#endif // rAthenaCN_Support_Hide_Online_Players_Count
+
 #if PACKETVER >= 20170726
 	if( login_config.usercount_disable ){
 		return 4; // Removes count and colorization completely
@@ -729,6 +737,11 @@ bool login_config_read(const char* cfgName, bool normal) {
 		else if (!strcmpi(w1, "strict_new_account_userid"))
 			login_config.strict_new_account_userid = (bool)config_switch(w2);
 #endif // rAthenaCN_Strict_Userid_Verification
+
+#ifdef rAthenaCN_Support_Hide_Online_Players_Count
+		else if (!strcmpi(w1, "hide_online_players_count"))
+			login_config.hide_online_players_count = (bool)config_switch(w2);
+#endif // rAthenaCN_Support_Hide_Online_Players_Count
 
 #ifdef VIP_ENABLE
 		else if(strcmpi(w1,"vip_group")==0)

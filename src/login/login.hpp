@@ -105,6 +105,10 @@ struct Login_Config {
 	bool strict_new_account_userid;					/// 是否禁止使用中文等字符作为游戏账号 [Sola丶小克]
 #endif // rAthenaCN_Strict_Userid_Verification
 
+#ifdef rAthenaCN_Support_Hide_Online_Players_Count
+	bool hide_online_players_count;					/// 是否隐藏角色服务器的在线人数 [Sola丶小克]
+#endif // rAthenaCN_Support_Hide_Online_Players_Count
+
 	bool usercount_disable;							/// Disable colorization and description in general?
 	int usercount_low;								/// Amount of users that will display in green
 	int usercount_medium;							/// Amount of users that will display in yellow

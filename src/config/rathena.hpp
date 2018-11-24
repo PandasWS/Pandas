@@ -63,6 +63,9 @@
 	#ifdef PCRE_SUPPORT
 		#define rAthenaCN_Strict_Userid_Verification
 	#endif // PCRE_SUPPORT
+
+	// 是否支持隐藏角色服务器的在线人数 [Sola丶小克]
+	#define rAthenaCN_Support_Hide_Online_Players_Count
 #endif // rAthenaCN_Creative_Work
 
 // ============================================================================
