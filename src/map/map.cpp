@@ -4065,7 +4065,22 @@ int map_config_read(const char *cfgName)
 		else if (strcmpi(w1, "import") == 0)
 			map_config_read(w2);
 		else
+#ifndef rAthenaCN
 			ShowWarning("Unknown setting '%s' in file %s\n", w1, cfgName);
+#else
+		{
+			// 部分选项可能由于宏定义被关闭等原因而被错过处理
+			// 不代表配置文件中的选项是无效的位置选项, 为此这里进行一次白名单过滤 [Sola丶小克]
+			size_t i = 0;
+			const char* know_settings[] = {
+				"create_fulldump", "packet_keys"
+			};
+			ARR_FIND(0, ARRAYLENGTH(know_settings), i, strcmpi(w1, know_settings[i]) == 0);
+			if (i == ARRAYLENGTH(know_settings)) {
+				ShowWarning("Unknown setting '%s' in file %s\n", w1, cfgName);
+			}
+		}
+#endif // rAthenaCN
 	}
 
 	fclose(fp);
