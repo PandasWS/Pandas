@@ -54,6 +54,9 @@
 
 	// 是否支持读取 UTF8-BOM 编码的配置文件 [Sola丶小克]
 	#define rAthenaCN_Support_Read_UTF8BOM_Configure
+
+	// 是否启用数据库编码自动判定机制 [Sola丶小克]
+	#define rAthenaCN_Smart_Codepage
 #endif // rAthenaCN_Creative_Work
 
 // ============================================================================

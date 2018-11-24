@@ -35,6 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Custom", "Custom", "{6513C8
 		src\custom\atcommand_def.inc = src\custom\atcommand_def.inc
 		src\custom\battle_config_init.inc = src\custom\battle_config_init.inc
 		src\custom\battle_config_struct.inc = src\custom\battle_config_struct.inc
+		src\custom\defines_core.hpp = src\custom\defines_core.hpp
 		src\custom\defines_post.hpp = src\custom\defines_post.hpp
 		src\custom\defines_pre.hpp = src\custom\defines_pre.hpp
 		src\custom\script.inc = src\custom\script.inc

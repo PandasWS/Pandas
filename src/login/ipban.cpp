@@ -214,9 +214,13 @@ void ipban_init(void) {
 		exit(EXIT_FAILURE);
 	}
         ShowInfo("Ipban connection made.\n");
-        
+
+#ifndef rAthenaCN_Smart_Codepage
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
 		Sql_ShowDebug(sql_handle);
+#else
+		smart_codepage(sql_handle, "Ipban", codepage);
+#endif // rAthenaCN_Smart_Codepage
 
 	if( login_config.ipban_cleanup_interval > 0 )
 	{ // set up periodic cleanup of connection history and active bans

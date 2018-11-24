@@ -13,6 +13,8 @@
 #include "strlib.hpp"
 #include "utils.hpp"
 
+#include "../custom/defines_core.hpp"
+
 //----------------------------
 //	file entry table struct
 //----------------------------

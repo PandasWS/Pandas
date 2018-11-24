@@ -4269,12 +4269,17 @@ int map_sql_init(void)
 	}
 	ShowStatus("Connect success! (Map Server Connection)\n");
 
+#ifndef rAthenaCN_Smart_Codepage
 	if( strlen(default_codepage) > 0 ) {
 		if ( SQL_ERROR == Sql_SetEncoding(mmysql_handle, default_codepage) )
 			Sql_ShowDebug(mmysql_handle);
 		if ( SQL_ERROR == Sql_SetEncoding(qsmysql_handle, default_codepage) )
 			Sql_ShowDebug(qsmysql_handle);
 	}
+#else
+	smart_codepage(mmysql_handle, "Map-Server", default_codepage);
+	smart_codepage(qsmysql_handle, NULL, default_codepage);
+#endif // rAthenaCN_Smart_Codepage
 	return 0;
 }
 
@@ -4311,9 +4316,13 @@ int log_sql_init(void)
 	}
 	ShowStatus("" CL_WHITE "[SQL]" CL_RESET ": Successfully '" CL_GREEN "connected" CL_RESET "' to Database '" CL_WHITE "%s" CL_RESET "'.\n", log_db_db);
 
+#ifndef rAthenaCN_Smart_Codepage
 	if( strlen(default_codepage) > 0 )
 		if ( SQL_ERROR == Sql_SetEncoding(logmysql_handle, default_codepage) )
 			Sql_ShowDebug(logmysql_handle);
+#else
+	smart_codepage(logmysql_handle, "Log", default_codepage);
+#endif // rAthenaCN_Smart_Codepage
 
 	return 0;
 }

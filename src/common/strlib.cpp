@@ -9,6 +9,8 @@
 #include "malloc.hpp"
 #include "showmsg.hpp"
 
+#include "../custom/defines_core.hpp"
+
 #define J_MAX_MALLOC_SIZE 65535
 
 // escapes a string in-place (' -> \' , \ -> \\ , % -> _)

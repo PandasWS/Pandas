@@ -16,6 +16,8 @@
 #include "strlib.hpp"
 #include "timer.hpp"
 
+#include "../custom/defines_core.hpp"
+
 // MySQL 8.0 or later removed my_bool typedef.
 // Reintroduce it as a bandaid fix.
 // See https://bugs.mysql.com/?id=87337
