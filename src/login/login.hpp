@@ -101,6 +101,10 @@ struct Login_Config {
 	bool create_fulldump;                           /// 是否生成完整的崩溃转储文件 [Sola丶小克]
 #endif // rAthenaCN_Crash_Report
 
+#ifdef rAthenaCN_Strict_Userid_Verification
+	bool strict_new_account_userid;					/// 是否禁止使用中文等字符作为游戏账号 [Sola丶小克]
+#endif // rAthenaCN_Strict_Userid_Verification
+
 	bool usercount_disable;							/// Disable colorization and description in general?
 	int usercount_low;								/// Amount of users that will display in green
 	int usercount_medium;							/// Amount of users that will display in yellow

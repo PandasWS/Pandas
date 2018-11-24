@@ -19,6 +19,19 @@ else
 endif
 ALL_DEPENDS=server
 
+#####################################################################
+# BEGIN - need support pcre in rAthenaCN by CairoLee
+#####################################################################
+HAVE_PCRE=@HAVE_PCRE@
+ifeq ($(HAVE_PCRE),yes)
+	PCRE_CFLAGS=-DPCRE_SUPPORT @PCRE_CFLAGS@
+else
+	PCRE_CFLAGS=
+endif
+#####################################################################
+# END - need support pcre in rAthenaCN by CairoLee
+#####################################################################
+
 @SET_MAKE@
 
 #####################################################################
@@ -61,7 +74,11 @@ login-server: obj $(LOGIN_DIR_OBJ) $(COMMON_AR)
 
 obj/%.o: %.cpp $(LOGIN_H) $(COMMON_H) $(LIBCONFIG_H)
 	@echo "	CXX	$<"
-	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) -DWITH_SQL @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
+# The next line is the original code of rAthena (commented)
+#	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) -DWITH_SQL @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
+# BEGIN - add $(PCRE_CFLAGS) for pcre support By CairoLee
+	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(PCRE_CFLAGS) -DWITH_SQL @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
+# END - add $(PCRE_CFLAGS) for pcre support By CairoLee
 
 # missing object files
 $(COMMON_AR):

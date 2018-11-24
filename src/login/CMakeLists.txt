@@ -15,6 +15,20 @@ set( DEPENDENCIES common )
 set( LIBRARIES ${GLOBAL_LIBRARIES} )
 set( INCLUDE_DIRS ${GLOBAL_INCLUDE_DIRS} ${COMMON_BASE_INCLUDE_DIRS} )
 set( DEFINITIONS "${GLOBAL_DEFINITIONS} ${COMMON_BASE_DEFINITIONS} -DWITH_SQL" )
+# =========================================================
+# BEGIN - need support pcre in rAthenaCN by CairoLee
+# =========================================================
+if( WITH_PCRE )
+	message( STATUS "Enabled PCRE code" )
+	set( LIBRARIES ${LIBRARIES} ${PCRE_LIBRARIES} )
+	set( INCLUDE_DIRS ${INCLUDE_DIRS} ${PCRE_INCLUDE_DIRS} )
+	set( DEFINITIONS "${DEFINITIONS} -DPCRE_SUPPORT" )
+else()
+	message( STATUS "Disabled PCRE code" )
+endif()
+# =========================================================
+# END - need support pcre in rAthenaCN by CairoLee
+# =========================================================
 set( SOURCE_FILES ${COMMON_BASE_HEADERS} ${COMMON_HEADERS} ${LOGIN_HEADERS} ${LOGIN_SOURCES} )
 source_group( common FILES ${COMMON_BASE_HEADERS} ${COMMON_HEADERS} )
 source_group( login FILES ${LOGIN_HEADERS} ${LOGIN_SOURCES} )
