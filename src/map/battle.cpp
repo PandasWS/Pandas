@@ -8453,7 +8453,10 @@ static const struct _battle_data {
 	{ "revive_onwarp",                      &battle_config.revive_onwarp,                   1,      0,      1,              },
 	{ "fame_taekwon_mission",               &battle_config.fame_taekwon_mission,            1,      0,      INT_MAX,        },
 	{ "fame_refine_lv1",                    &battle_config.fame_refine_lv1,                 1,      0,      INT_MAX,        },
+#ifndef rAthenaCN_Battle_Config_Verification
+	// 出现了重复定义, 这里先简单注释掉, 如果 rAthena 官方很久不改的话, 找个时间再提交个 PullRequest 修正下 [Sola丶小克]
 	{ "fame_refine_lv1",                    &battle_config.fame_refine_lv1,                 1,      0,      INT_MAX,        },
+#endif // rAthenaCN_Battle_Config_Verification
 	{ "fame_refine_lv2",                    &battle_config.fame_refine_lv2,                 25,     0,      INT_MAX,        },
 	{ "fame_refine_lv3",                    &battle_config.fame_refine_lv3,                 1000,   0,      INT_MAX,        },
 	{ "fame_forge",                         &battle_config.fame_forge,                      10,     0,      INT_MAX,        },
@@ -8527,6 +8530,10 @@ static const struct _battle_data {
 #include "../custom/battle_config_init.inc"
 };
 
+#ifdef rAthenaCN_Battle_Config_Verification
+bool battle_data_isset[ARRAYLENGTH(battle_data)];
+#endif // rAthenaCN_Battle_Config_Verification
+
 /*==========================
  * Set battle settings
  *--------------------------*/
@@ -8536,14 +8543,24 @@ int battle_set_value(const char* w1, const char* w2)
 
 	int i;
 	ARR_FIND(0, ARRAYLENGTH(battle_data), i, strcmpi(w1, battle_data[i].str) == 0);
+#ifndef rAthenaCN_Battle_Config_Verification
 	if (i == ARRAYLENGTH(battle_data))
 		return 0; // not found
+#else
+	if (i == ARRAYLENGTH(battle_data)) {
+		ShowWarning("battle_set_value: Could not find the option name '%s' in Battle Configuration Files.\n", w1);
+		return 0; // not found
+	}
+#endif // rAthenaCN_Battle_Config_Verification
 
 	if (val < battle_data[i].min || val > battle_data[i].max) {
 		ShowWarning("Value for setting '%s': %s is invalid (min:%i max:%i)! Defaulting to %i...\n", w1, w2, battle_data[i].min, battle_data[i].max, battle_data[i].defval);
 		val = battle_data[i].defval;
 	}
 
+#ifdef rAthenaCN_Battle_Config_Verification
+	battle_data_isset[i] = true;
+#endif // rAthenaCN_Battle_Config_Verification
 	*battle_data[i].val = val;
 	return 1;
 }
@@ -8567,8 +8584,15 @@ int battle_get_value(const char* w1)
 void battle_set_defaults()
 {
 	int i;
+#ifndef rAthenaCN_Battle_Config_Verification
 	for (i = 0; i < ARRAYLENGTH(battle_data); i++)
 		*battle_data[i].val = battle_data[i].defval;
+#else
+	for (i = 0; i < ARRAYLENGTH(battle_data); i++) {
+		*battle_data[i].val = battle_data[i].defval;
+		battle_data_isset[i] = false;
+	}
+#endif // rAthenaCN_Battle_Config_Verification
 }
 
 /*==================================
@@ -8719,6 +8743,26 @@ int battle_config_read(const char* cfgName)
 	}
 
 	count--;
+
+#ifdef rAthenaCN_Battle_Config_Verification
+	if (count == 0) {
+		int i = 0;
+
+		static const struct _battle_config_check_whitelist {
+			const char* name;
+		} bc_whitelist[] = {
+			{ "traps_setting" }
+		};
+
+		for (i = 0; i < ARRAYLENGTH(battle_data); i++) {
+			int whiteidx = 0;
+			ARR_FIND(0, ARRAYLENGTH(bc_whitelist), whiteidx, strcmpi(bc_whitelist[whiteidx].name, battle_data[i].str) == 0);
+			if (!battle_data_isset[i] && whiteidx == ARRAYLENGTH(bc_whitelist)) {
+				ShowWarning("battle_config_read: Could not find option name '%s' in Battle Configuration Files, defaulting to %d.\n", battle_data[i].str, battle_data[i].defval);
+			}
+		}
+	}
+#endif // rAthenaCN_Battle_Config_Verification
 
 	if (count == 0)
 		battle_adjust_conf();
