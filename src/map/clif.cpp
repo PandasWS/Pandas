@@ -9576,6 +9576,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 			}
 			else if( battle_config.show_mob_info )
 			{
+#ifndef rAthenaCN_MobInfomation_Extend
 				char mobhp[50], *str_p = mobhp;
 #if PACKETVER >= 20150513
 				WBUFW(buf, 0) = cmd = 0xa30;
@@ -9597,6 +9598,73 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 					WBUFB(buf,54) = 0;
 					WBUFB(buf,78) = 0;
 				}
+#else
+				char mobinfo_first[100] = { 0 }, *p_mobinfo_f = mobinfo_first;
+				char mobinfo_second[100] = { 0 }, *p_mobinfo_s = mobinfo_second;
+				char mobinfo_third[100] = { 0 }, *p_mobinfo_t = mobinfo_third;
+
+				if (battle_config.show_mob_info & 4)
+					p_mobinfo_f += sprintf(p_mobinfo_f, "Lv.%d | ", md->level);
+				if (battle_config.show_mob_info & 1)
+					p_mobinfo_f += sprintf(p_mobinfo_f, "HP:%u/%u | ", md->status.hp, md->status.max_hp);
+				if (battle_config.show_mob_info & 2)
+					p_mobinfo_f += sprintf(p_mobinfo_f, "HP:%u%% | ", get_percentage(md->status.hp, md->status.max_hp));
+				if (battle_config.show_mob_info & 8)
+					p_mobinfo_f += sprintf(p_mobinfo_f, "NO.%d | ", md->mob_id);
+
+				if (p_mobinfo_f != mobinfo_first)
+					*(p_mobinfo_f - 3) = '\0'; // 移除末尾的 strlen(" | ") 共三个字节
+
+				if (strlen(mobinfo_first) >= NAME_LENGTH - 1) {
+					memset(mobinfo_first, 0, 255);
+					p_mobinfo_f = &mobinfo_first[0];
+
+					if (battle_config.show_mob_info & 4)
+						p_mobinfo_f += sprintf(p_mobinfo_f, "Lv.%d ", 100);
+					if (battle_config.show_mob_info & 1)
+						p_mobinfo_f += sprintf(p_mobinfo_f, "HP:%u%% ", get_percentage(md->status.hp, md->status.max_hp));
+					if (battle_config.show_mob_info & 8)
+						p_mobinfo_f += sprintf(p_mobinfo_f, "NO.%d ", 10000);
+
+					*(p_mobinfo_f - 1) = '\0'; // 移除末尾的 strlen(" ") 共一个字节
+				}
+
+				if (battle_config.show_mob_info & 16) {
+					char mobsize[50] = { 0 };
+					sprintf(mobsize, msg_txt_cn(NULL, 23 + md->status.size));
+					p_mobinfo_s += sprintf(p_mobinfo_s, msg_txt_cn(NULL, 22), mobsize);	// [体型:%s%]
+				}
+
+				if (battle_config.show_mob_info & 32) {
+					char mobrace[50] = { 0 };
+					sprintf(mobrace, msg_txt_cn(NULL, 27 + md->status.race));
+
+					if (battle_config.show_mob_info & 16) {
+						p_mobinfo_s += sprintf(p_mobinfo_s, "%s ", p_mobinfo_s);
+					}
+					p_mobinfo_s += sprintf(p_mobinfo_s, msg_txt_cn(NULL, 26), mobrace);	// [种族:%s%]
+				}
+
+				if (battle_config.show_mob_info & 64) {
+					char mobele[50] = { 0 };
+					sprintf(mobele, msg_txt_cn(NULL, 52 + md->status.def_ele));
+					p_mobinfo_t += sprintf(p_mobinfo_t, msg_txt_cn(NULL, 51), mobele, md->status.ele_lv);	// 属性:%s%(Lv.%d%)
+				}
+
+#if PACKETVER >= 20150513
+				WBUFW(buf, 0) = cmd = 0xa30;
+#else
+				WBUFW(buf, 0) = cmd = 0x195;
+#endif
+
+				safestrncpy(WBUFCP(buf, 30), mobinfo_first, NAME_LENGTH);
+				safestrncpy(WBUFCP(buf, 54), mobinfo_second, NAME_LENGTH);
+				safestrncpy(WBUFCP(buf, 78), mobinfo_third, NAME_LENGTH);
+
+				if (p_mobinfo_f == mobinfo_first) WBUFB(buf, 30) = 0;
+				if (p_mobinfo_s == mobinfo_second) WBUFB(buf, 54) = 0;
+				if (p_mobinfo_t == mobinfo_third) WBUFB(buf, 78) = 0;
+#endif // rAthenaCN_MobInfomation_Extend
 			}
 #if PACKETVER >= 20150513
 			WBUFL(buf, 102) = 0; // Title ID

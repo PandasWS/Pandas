@@ -74,6 +74,9 @@
 
 	// 是否支持对战斗配置选项进行完整性检查 [╰づ记忆•斑驳〤 实现] [Sola丶小克 改进]
 	#define rAthenaCN_Battle_Config_Verification
+
+	// 是否扩展魔物名称能展现的信息, 比如体型、种族、属性 [Sola丶小克 改进]
+	#define rAthenaCN_MobInfomation_Extend
 #endif // rAthenaCN_Creative_Work
 
 // ============================================================================
