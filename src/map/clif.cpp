@@ -9616,7 +9616,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 					*(p_mobinfo_f - 3) = '\0'; // 移除末尾的 strlen(" | ") 共三个字节
 
 				if (strlen(mobinfo_first) >= NAME_LENGTH - 1) {
-					memset(mobinfo_first, 0, 255);
+					memset(mobinfo_first, 0, sizeof(mobinfo_first));
 					p_mobinfo_f = &mobinfo_first[0];
 
 					if (battle_config.show_mob_info & 4)
@@ -9630,25 +9630,29 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 				}
 
 				if (battle_config.show_mob_info & 16) {
-					char mobsize[50] = { 0 };
-					sprintf(mobsize, msg_txt_cn(NULL, 23 + md->status.size));
-					p_mobinfo_s += sprintf(p_mobinfo_s, msg_txt_cn(NULL, 22), mobsize);	// [体型:%s%]
+					char mobsize_fmt[100] = { 0 }, mobsize[50] = { 0 };
+					sprintf(mobsize_fmt, "%s", msg_txt_cn(NULL, 22));	// [体型:%s%]
+					sprintf(mobsize, "%s", msg_txt_cn(NULL, 23 + md->status.size));
+					p_mobinfo_s += sprintf(p_mobinfo_s, mobsize_fmt, mobsize);
 				}
 
 				if (battle_config.show_mob_info & 32) {
-					char mobrace[50] = { 0 };
-					sprintf(mobrace, msg_txt_cn(NULL, 27 + md->status.race));
-
+					char mobrace_fmt[100] = { 0 }, mobrace[50] = { 0 };
+					sprintf(mobrace_fmt, "%s", msg_txt_cn(NULL, 26));	// [种族:%s%]
+					sprintf(mobrace, "%s", msg_txt_cn(NULL, 27 + md->status.race));
+					
 					if (battle_config.show_mob_info & 16) {
 						p_mobinfo_s += sprintf(p_mobinfo_s, "%s ", p_mobinfo_s);
 					}
-					p_mobinfo_s += sprintf(p_mobinfo_s, msg_txt_cn(NULL, 26), mobrace);	// [种族:%s%]
+					
+					p_mobinfo_s += sprintf(p_mobinfo_s, mobrace_fmt, mobrace);
 				}
 
 				if (battle_config.show_mob_info & 64) {
-					char mobele[50] = { 0 };
-					sprintf(mobele, msg_txt_cn(NULL, 52 + md->status.def_ele));
-					p_mobinfo_t += sprintf(p_mobinfo_t, msg_txt_cn(NULL, 51), mobele, md->status.ele_lv);	// 属性:%s%(Lv.%d%)
+					char mobele_fmt[100] = { 0 }, mobele[50] = { 0 };
+					sprintf(mobele_fmt, "%s", msg_txt_cn(NULL, 51));	// 属性:%s%(Lv.%d%)
+					sprintf(mobele, "%s", msg_txt_cn(NULL, 52 + md->status.def_ele));
+					p_mobinfo_t += sprintf(p_mobinfo_t, msg_txt_cn(NULL, 51), mobele, md->status.ele_lv);
 				}
 
 #if PACKETVER >= 20150513
