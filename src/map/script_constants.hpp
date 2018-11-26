@@ -457,6 +457,10 @@
 	export_constant(MF_PRIVATEAIRSHIP_DESTINATION);
 	export_constant(MF_SKILL_DURATION);
 
+#ifdef rAthenaCN_MapFlag_Mobinfo
+	export_constant(MF_MOBINFO);
+#endif // rAthenaCN_MapFlag_Mobinfo
+
 	/* setcell types */
 	export_constant(CELL_WALKABLE);
 	export_constant(CELL_SHOOTABLE);

@@ -9578,17 +9578,33 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 			{
 #ifndef rAthenaCN_MobInfomation_Extend
 				char mobhp[50], *str_p = mobhp;
+#ifdef rAthenaCN_MapFlag_Mobinfo
+				int show_mob_info = battle_config.show_mob_info;
+
+				if (md->bl.m > 0 && map_getmapflag(md->bl.m, MF_MOBINFO)) {
+					show_mob_info = map[md->bl.m].show_mob_info;
+				}
+#endif // rAthenaCN_MapFlag_Mobinfo
 #if PACKETVER >= 20150513
 				WBUFW(buf, 0) = cmd = 0xa30;
 #else
 				WBUFW(buf, 0) = cmd = 0x195;
 #endif
+#ifndef rAthenaCN_MapFlag_Mobinfo
 				if( battle_config.show_mob_info&4 )
 					str_p += sprintf(str_p, "Lv. %d | ", md->level);
 				if( battle_config.show_mob_info&1 )
 					str_p += sprintf(str_p, "HP: %u/%u | ", md->status.hp, md->status.max_hp);
 				if( battle_config.show_mob_info&2 )
 					str_p += sprintf(str_p, "HP: %u%% | ", get_percentage(md->status.hp, md->status.max_hp));
+#else
+				if( show_mob_info&4 )
+					str_p += sprintf(str_p, "Lv. %d | ", md->level);
+				if( show_mob_info&1 )
+					str_p += sprintf(str_p, "HP: %u/%u | ", md->status.hp, md->status.max_hp);
+				if( show_mob_info&2 )
+					str_p += sprintf(str_p, "HP: %u%% | ", get_percentage(md->status.hp, md->status.max_hp));
+#endif // rAthenaCN_MapFlag_Mobinfo
 				//Even thought mobhp ain't a name, we send it as one so the client
 				//can parse it. [Skotlex]
 				if( str_p != mobhp )
@@ -9602,14 +9618,21 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 				char mobinfo_first[100] = { 0 }, *p_mobinfo_f = mobinfo_first;
 				char mobinfo_second[100] = { 0 }, *p_mobinfo_s = mobinfo_second;
 				char mobinfo_third[100] = { 0 }, *p_mobinfo_t = mobinfo_third;
+				int show_mob_info = battle_config.show_mob_info;
 
-				if (battle_config.show_mob_info & 4)
+#ifdef rAthenaCN_MapFlag_Mobinfo
+				if (md->bl.m > 0 && map_getmapflag(md->bl.m, MF_MOBINFO)) {
+					show_mob_info = map[md->bl.m].show_mob_info;
+				}
+#endif // rAthenaCN_MapFlag_Mobinfo
+
+				if (show_mob_info & 4)
 					p_mobinfo_f += sprintf(p_mobinfo_f, "Lv.%d | ", md->level);
-				if (battle_config.show_mob_info & 1)
+				if (show_mob_info & 1)
 					p_mobinfo_f += sprintf(p_mobinfo_f, "HP:%u/%u | ", md->status.hp, md->status.max_hp);
-				if (battle_config.show_mob_info & 2)
+				if (show_mob_info & 2)
 					p_mobinfo_f += sprintf(p_mobinfo_f, "HP:%u%% | ", get_percentage(md->status.hp, md->status.max_hp));
-				if (battle_config.show_mob_info & 8)
+				if (show_mob_info & 8)
 					p_mobinfo_f += sprintf(p_mobinfo_f, "NO.%d | ", md->mob_id);
 
 				if (p_mobinfo_f != mobinfo_first)
@@ -9619,36 +9642,36 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 					memset(mobinfo_first, 0, sizeof(mobinfo_first));
 					p_mobinfo_f = &mobinfo_first[0];
 
-					if (battle_config.show_mob_info & 4)
+					if (show_mob_info & 4)
 						p_mobinfo_f += sprintf(p_mobinfo_f, "Lv.%d ", 100);
-					if (battle_config.show_mob_info & 1)
+					if (show_mob_info & 1)
 						p_mobinfo_f += sprintf(p_mobinfo_f, "HP:%u%% ", get_percentage(md->status.hp, md->status.max_hp));
-					if (battle_config.show_mob_info & 8)
+					if (show_mob_info & 8)
 						p_mobinfo_f += sprintf(p_mobinfo_f, "NO.%d ", 10000);
 
 					*(p_mobinfo_f - 1) = '\0'; // 移除末尾的 strlen(" ") 共一个字节
 				}
 
-				if (battle_config.show_mob_info & 16) {
+				if (show_mob_info & 16) {
 					char mobsize_fmt[100] = { 0 }, mobsize[50] = { 0 };
 					sprintf(mobsize_fmt, "%s", msg_txt_cn(NULL, 22));	// [体型:%s%]
 					sprintf(mobsize, "%s", msg_txt_cn(NULL, 23 + md->status.size));
 					p_mobinfo_s += sprintf(p_mobinfo_s, mobsize_fmt, mobsize);
 				}
 
-				if (battle_config.show_mob_info & 32) {
+				if (show_mob_info & 32) {
 					char mobrace_fmt[100] = { 0 }, mobrace[50] = { 0 };
 					sprintf(mobrace_fmt, "%s", msg_txt_cn(NULL, 26));	// [种族:%s%]
 					sprintf(mobrace, "%s", msg_txt_cn(NULL, 27 + md->status.race));
 					
-					if (battle_config.show_mob_info & 16) {
+					if (show_mob_info & 16) {
 						p_mobinfo_s += sprintf(p_mobinfo_s, "%s ", p_mobinfo_s);
 					}
 					
 					p_mobinfo_s += sprintf(p_mobinfo_s, mobrace_fmt, mobrace);
 				}
 
-				if (battle_config.show_mob_info & 64) {
+				if (show_mob_info & 64) {
 					char mobele_fmt[100] = { 0 }, mobele[50] = { 0 };
 					sprintf(mobele_fmt, "%s", msg_txt_cn(NULL, 51));	// 属性:%s%(Lv.%d%)
 					sprintf(mobele, "%s", msg_txt_cn(NULL, 52 + md->status.def_ele));

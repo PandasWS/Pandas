@@ -13,6 +13,7 @@
 	#define rAthenaCN_Basic
 	#define rAthenaCN_Creative_Work
 	#define rAthenaCN_NpcEvent
+	#define rAthenaCN_Mapflags
 #endif // rAthenaCN
 
 // ============================================================================
@@ -91,5 +92,15 @@
 	// 杀死 MVP 魔物时触发事件 - OnPCKillMvpEvent
 	#define rAthenaCN_NpcEvent_KILLMVP
 #endif // rAthenaCN_NpcEvent
+
+// ============================================================================
+// 地图标记组 - rAthenaCN_Mapflags
+// ============================================================================
+
+#ifdef rAthenaCN_Mapflags
+	// 是否启用 mobinfo 地图标记 [Sola丶小克]
+	// 该标记用于指定某地图的 show_mob_info 值, 以此控制该地图魔物名称的展现信息
+	#define rAthenaCN_MapFlag_Mobinfo
+#endif // rAthenaCN_Mapflags
 
 #endif // _RATHENA_CN_CONFIG_HPP_

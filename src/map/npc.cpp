@@ -4167,6 +4167,22 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 			break;
 		}
 
+#ifdef rAthenaCN_MapFlag_Mobinfo
+		case MF_MOBINFO: {
+			if (state) {
+				union u_mapflag_args args = {};
+
+				if (sscanf(w4, "%11d", &args.flag_val) < 1 || !args.flag_val)
+					map_setmapflag(m, mapflag, false);
+				else
+					map_setmapflag_sub(m, mapflag, true, &args);
+			}
+			else
+				map_setmapflag(m, mapflag, false);
+			break;
+		}
+#endif // rAthenaCN_MapFlag_Mobinfo
+
 		// All others do not need special treatment
 		default:
 			map_setmapflag(m, mapflag, state);

@@ -8180,6 +8180,10 @@ ACMD_FUNC(mapflag) {
 												MF_SKILL_DAMAGE,
 												MF_SKILL_DURATION };
 
+#ifdef rAthenaCN_MapFlag_Mobinfo
+			disabled_mf.insert(disabled_mf.begin(), MF_MOBINFO);
+#endif // rAthenaCN_MapFlag_Mobinfo
+
 			if (flag && std::find(disabled_mf.begin(), disabled_mf.end(), mapflag) != disabled_mf.end()) {
 				sprintf(atcmd_output,"[ @mapflag ] %s flag cannot be enabled as it requires unique values.", flag_name);
 				clif_displaymessage(sd->fd,atcmd_output);

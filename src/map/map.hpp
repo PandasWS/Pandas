@@ -584,6 +584,9 @@ enum e_mapflag : int16 {
 	MF_PRIVATEAIRSHIP_SOURCE,
 	MF_PRIVATEAIRSHIP_DESTINATION,
 	MF_SKILL_DURATION,
+#ifdef rAthenaCN_MapFlag_Mobinfo
+	MF_MOBINFO,
+#endif // rAthenaCN_MapFlag_Mobinfo
 	MF_MAX
 };
 
@@ -758,7 +761,11 @@ struct map_data {
 	/* ShowEvent Data Cache */
 	struct questinfo *qi_data;
 	unsigned short qi_count;
-	
+
+#ifdef rAthenaCN_MapFlag_Mobinfo
+	int show_mob_info;
+#endif // rAthenaCN_MapFlag_Mobinfo
+
 	/* speeds up clif_updatestatus processing by causing hpmeter to run only when someone with the permission can view it */
 	unsigned short hpmeter_visible;
 };
