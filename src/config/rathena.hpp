@@ -101,6 +101,7 @@
 	// 是否启用 mobinfo 地图标记 [Sola丶小克]
 	// 该标记用于指定某地图的 show_mob_info 值, 以此控制该地图魔物名称的展现信息
 	#define rAthenaCN_MapFlag_Mobinfo
+	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // rAthenaCN_Mapflags
 
 #endif // _RATHENA_CN_CONFIG_HPP_

@@ -587,6 +587,7 @@ enum e_mapflag : int16 {
 #ifdef rAthenaCN_MapFlag_Mobinfo
 	MF_MOBINFO,
 #endif // rAthenaCN_MapFlag_Mobinfo
+	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };
 
@@ -765,6 +766,8 @@ struct map_data {
 #ifdef rAthenaCN_MapFlag_Mobinfo
 	int show_mob_info;
 #endif // rAthenaCN_MapFlag_Mobinfo
+
+	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 
 	/* speeds up clif_updatestatus processing by causing hpmeter to run only when someone with the permission can view it */
 	unsigned short hpmeter_visible;

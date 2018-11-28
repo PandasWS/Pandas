@@ -461,6 +461,8 @@
 	export_constant(MF_MOBINFO);
 #endif // rAthenaCN_MapFlag_Mobinfo
 
+	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
+
 	/* setcell types */
 	export_constant(CELL_WALKABLE);
 	export_constant(CELL_SHOOTABLE);

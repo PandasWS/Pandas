@@ -4158,6 +4158,12 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, "  Displays Night |");
 	clif_displaymessage(fd, atcmd_output);
 
+#ifdef rAthenaCN_Mapflags
+	strcpy(atcmd_output,msg_txt_cn(sd,100)); // rAthenaCN 专属标记:
+	// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
+	clif_displaymessage(fd, atcmd_output);
+#endif // rAthenaCN_Mapflags
+
 	strcpy(atcmd_output,msg_txt(sd,1050)); // Other Flags:
 	if (map_getmapflag(m_id, MF_NOBRANCH))
 		strcat(atcmd_output, " NoBranch |");
@@ -8183,6 +8189,8 @@ ACMD_FUNC(mapflag) {
 #ifdef rAthenaCN_MapFlag_Mobinfo
 			disabled_mf.insert(disabled_mf.begin(), MF_MOBINFO);
 #endif // rAthenaCN_MapFlag_Mobinfo
+
+			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
 
 			if (flag && std::find(disabled_mf.begin(), disabled_mf.end(), mapflag) != disabled_mf.end()) {
 				sprintf(atcmd_output,"[ @mapflag ] %s flag cannot be enabled as it requires unique values.", flag_name);
