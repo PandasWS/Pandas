@@ -14948,6 +14948,13 @@ void clif_parse_AutoRevive(int fd, struct map_session_data *sd)
 	short item_position = pc_search_inventory(sd, ITEMID_TOKEN_OF_SIEGFRIED);
 	uint8 hp = 100, sp = 100;
 
+#ifdef rAthenaCN_MapFlag_NoToken
+	if (sd && sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOTOKEN)) {
+		clif_displaymessage(fd, msg_txt_cn(sd, 17));	// 此地图禁止原地复活!
+		return;
+	}
+#endif // rAthenaCN_MapFlag_NoToken
+
 	if (item_position < 0) {
 		if (sd->sc.data[SC_LIGHT_OF_REGENE]) {
 			// HP restored

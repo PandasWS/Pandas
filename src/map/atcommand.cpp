@@ -4164,6 +4164,10 @@ ACMD_FUNC(mapinfo) {
 	if (map_getmapflag(m_id, MF_NOAUTOLOOT))
 		strcat(atcmd_output, " NoAutoLoot |");
 #endif // rAthenaCN_MapFlag_NoAutoLoot
+#ifdef rAthenaCN_MapFlag_NoToken
+	if (map_getmapflag(m_id, MF_NOTOKEN))
+		strcat(atcmd_output, " NoToken |");
+#endif // rAthenaCN_MapFlag_NoToken
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
 	clif_displaymessage(fd, atcmd_output);
 #endif // rAthenaCN_Mapflags

@@ -105,6 +105,10 @@
 	// 是否启用 noautoloot 地图标记 [Sola丶小克]
 	// 该标记用于在给定此标记的地图上禁止玩家使用自动拾取功能, 或使已激活的自动拾取功能失效
 	#define rAthenaCN_MapFlag_NoAutoLoot
+
+	// 是否启用 notoken 地图标记 [Sola丶小克]
+	// 该标记用于禁止玩家在指定的地图上使用“原地复活之证”道具
+	#define rAthenaCN_MapFlag_NoToken
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // rAthenaCN_Mapflags
 

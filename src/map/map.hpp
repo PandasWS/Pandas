@@ -590,6 +590,9 @@ enum e_mapflag : int16 {
 #ifdef rAthenaCN_MapFlag_NoAutoLoot
 	MF_NOAUTOLOOT,
 #endif // rAthenaCN_MapFlag_NoAutoLoot
+#ifdef rAthenaCN_MapFlag_NoToken
+	MF_NOTOKEN,
+#endif // rAthenaCN_MapFlag_NoToken
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };
