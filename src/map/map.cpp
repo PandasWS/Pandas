@@ -4678,10 +4678,6 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 				default:
 					return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
 			}
-#ifdef rAthenaCN_MapFlag_Mobinfo
-		case MF_MOBINFO:
-			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0) ? mapdata->show_mob_info : 0;
-#endif // rAthenaCN_MapFlag_Mobinfo
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 5>
 		default:
 			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
@@ -4943,7 +4939,6 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			else {
 				nullpo_retr(false, args);
 				mapdata->show_mob_info = args->flag_val;
-				if (!args->flag_val) status = false;
 			}
 			mapdata->flag[mapflag] = status;
 			break;

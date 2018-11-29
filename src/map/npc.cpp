@@ -4169,16 +4169,14 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 #ifdef rAthenaCN_MapFlag_Mobinfo
 		case MF_MOBINFO: {
-			if (state) {
-				union u_mapflag_args args = {};
+			// 若脚本中 mapflag 指定的第一个数值参数无效,
+			// 那么将此参数的值设为 0, 但不会阻断此地图标记的开启或关闭操作
+			union u_mapflag_args args = {};
 
-				if (sscanf(w4, "%11d", &args.flag_val) < 1 || !args.flag_val)
-					map_setmapflag(m, mapflag, false);
-				else
-					map_setmapflag_sub(m, mapflag, true, &args);
-			}
-			else
-				map_setmapflag(m, mapflag, false);
+			if (sscanf(w4, "%%11d", &args.flag_val) < 1)
+				args.flag_val = 0;
+
+			map_setmapflag_sub(m, mapflag, state, &args);
 			break;
 		}
 #endif // rAthenaCN_MapFlag_Mobinfo
