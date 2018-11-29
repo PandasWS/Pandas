@@ -4173,7 +4173,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 			// 那么将此参数的值设为 0, 但不会阻断此地图标记的开启或关闭操作
 			union u_mapflag_args args = {};
 
-			if (sscanf(w4, "%%11d", &args.flag_val) < 1)
+			if (sscanf(w4, "%11d", &args.flag_val) < 1)
 				args.flag_val = 0;
 
 			map_setmapflag_sub(m, mapflag, state, &args);

@@ -9581,7 +9581,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 #ifdef rAthenaCN_MapFlag_Mobinfo
 				int show_mob_info = battle_config.show_mob_info;
 
-				if (md->bl.m > 0 && map_getmapflag(md->bl.m, MF_MOBINFO)) {
+				if (md->bl.m >= 0 && map_getmapflag(md->bl.m, MF_MOBINFO)) {
 					show_mob_info = map[md->bl.m].show_mob_info;
 				}
 #endif // rAthenaCN_MapFlag_Mobinfo
@@ -9621,7 +9621,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 				int show_mob_info = battle_config.show_mob_info;
 
 #ifdef rAthenaCN_MapFlag_Mobinfo
-				if (md->bl.m > 0 && map_getmapflag(md->bl.m, MF_MOBINFO)) {
+				if (md->bl.m >= 0 && map_getmapflag(md->bl.m, MF_MOBINFO)) {
 					show_mob_info = map[md->bl.m].show_mob_info;
 				}
 #endif // rAthenaCN_MapFlag_Mobinfo
