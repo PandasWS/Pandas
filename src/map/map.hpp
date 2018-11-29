@@ -587,6 +587,9 @@ enum e_mapflag : int16 {
 #ifdef rAthenaCN_MapFlag_Mobinfo
 	MF_MOBINFO,
 #endif // rAthenaCN_MapFlag_Mobinfo
+#ifdef rAthenaCN_MapFlag_NoAutoLoot
+	MF_NOAUTOLOOT,
+#endif // rAthenaCN_MapFlag_NoAutoLoot
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };

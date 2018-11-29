@@ -4160,6 +4160,10 @@ ACMD_FUNC(mapinfo) {
 
 #ifdef rAthenaCN_Mapflags
 	strcpy(atcmd_output,msg_txt_cn(sd,100)); // rAthenaCN 专属标记:
+#ifdef rAthenaCN_MapFlag_NoAutoLoot
+	if (map_getmapflag(m_id, MF_NOAUTOLOOT))
+		strcat(atcmd_output, " NoAutoLoot |");
+#endif // rAthenaCN_MapFlag_NoAutoLoot
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
 	clif_displaymessage(fd, atcmd_output);
 #endif // rAthenaCN_Mapflags

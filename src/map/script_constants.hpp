@@ -461,6 +461,10 @@
 	export_constant(MF_MOBINFO);
 #endif // rAthenaCN_MapFlag_Mobinfo
 
+#ifdef rAthenaCN_MapFlag_NoAutoLoot
+	export_constant(MF_NOAUTOLOOT);
+#endif // rAthenaCN_MapFlag_NoAutoLoot
+
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
 	/* setcell types */

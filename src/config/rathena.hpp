@@ -101,6 +101,10 @@
 	// 是否启用 mobinfo 地图标记 [Sola丶小克]
 	// 该标记用于指定某地图的 show_mob_info 值, 以此控制该地图魔物名称的展现信息
 	#define rAthenaCN_MapFlag_Mobinfo
+
+	// 是否启用 noautoloot 地图标记 [Sola丶小克]
+	// 该标记用于在给定此标记的地图上禁止玩家使用自动拾取功能, 或使已激活的自动拾取功能失效
+	#define rAthenaCN_MapFlag_NoAutoLoot
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // rAthenaCN_Mapflags
 
