@@ -187,8 +187,13 @@ int Sql_GetColumnNames(Sql* self, const char* table, char* out_buf, size_t buf_l
 /// Changes the encoding of the connection.
 int Sql_SetEncoding(Sql* self, const char* encoding)
 {
+#ifndef rAthenaCN_Fix_Mysql_SetEncoding
 	if( self && Sql_Query(self, "SET NAMES %s", encoding) == 0 )
 		return SQL_SUCCESS;
+#else
+	if( self && mysql_set_character_set(&self->handle, encoding) == 0 )
+		return SQL_SUCCESS;
+#endif // rAthenaCN_Fix_Mysql_SetEncoding
 	return SQL_ERROR;
 }
 

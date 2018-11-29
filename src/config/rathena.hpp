@@ -12,6 +12,7 @@
 #ifdef rAthenaCN
 	#define rAthenaCN_Basic
 	#define rAthenaCN_Creative_Work
+	#define rAthenaCN_Bugfix
 	#define rAthenaCN_NpcEvent
 	#define rAthenaCN_Mapflags
 #endif // rAthenaCN
@@ -79,6 +80,15 @@
 	// 是否扩展魔物名称能展现的信息, 比如体型、种族、属性 [Sola丶小克 改进]
 	#define rAthenaCN_MobInfomation_Extend
 #endif // rAthenaCN_Creative_Work
+
+// ============================================================================
+// 官方BUG修正组 - rAthenaCN_Bugfix
+// ============================================================================
+
+#ifdef rAthenaCN_Bugfix
+	// 用 mysql_set_character_set 来设置 MySQL 的编码字符集 [Sola丶小克]
+	#define rAthenaCN_Fix_Mysql_SetEncoding
+#endif // rAthenaCN_Bugfix
 
 // ============================================================================
 // NPC事件组 - rAthenaCN_NpcEvent
