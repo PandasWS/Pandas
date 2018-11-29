@@ -138,7 +138,7 @@ def insert_for_normal_mapflag(inject, options, special = True):
     # rathena.hpp @ 宏定义
     inject.insert(1, [
         '',
-        '\t// 是否启用 %s 地图标记 [维护者昵称]' % constant.lower().replace('mf_'),
+        '\t// 是否启用 %s 地图标记 [维护者昵称]' % constant.lower().replace('mf_', ''),
         '\t// TODO: 请在此填写此地图标记的说明',
         '\t#define %s' % define
     ])
