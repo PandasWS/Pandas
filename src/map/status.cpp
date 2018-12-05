@@ -8996,7 +8996,6 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			case SC__UNLUCKY:
 			case SC__WEAKNESS:
 			case SC_BITE:
-			case SC_ELECTRICSHOCKER:
 			case SC_MAGNETICFIELD:
 			case SC_NETHERWORLD:
 			case SC_CRESCENTELBOW:
@@ -9394,6 +9393,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			case SC_OBLIVIONCURSE:
 			case SC_LEECHESEND:
 			case SC_CURSEDCIRCLE_TARGET:
+			case SC_ELECTRICSHOCKER:
 			case SC_BANDING_DEFENCE:
 			case SC__ENERVATION:
 			case SC__GROOMY:
@@ -10377,15 +10377,10 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			val2 = 500 + 100 * val1;
 			break;
 		case SC_STONEHARDSKIN:
-			{
-				int hp = status->hp / 5; // 20% of HP
-
-				if (sd)
-					val1 = sd->status.job_level * pc_checkskill(sd, RK_RUNEMASTERY) / 4; // DEF/MDEF Increase
-				if (!status_charge(bl, hp, 0))
-					return 0;
-				val2 = hp;
-			}
+			if (!status_charge(bl, status->hp / 5, 0)) // 20% of HP
+				return 0;
+			if (sd)
+				val1 = sd->status.job_level * pc_checkskill(sd, RK_RUNEMASTERY) / 4; // DEF/MDEF Increase
 			break;
 		case SC_REFRESH:
 			status_heal(bl, status_get_max_hp(bl) * 25 / 100, 0, 1);
@@ -13907,7 +13902,6 @@ void status_change_clear_buffs(struct block_list* bl, uint8 type)
 			case SC_EXPBOOST:
 			case SC_JEXPBOOST:
 			case SC_ITEMBOOST:
-			case SC_ELECTRICSHOCKER:
 			case SC__MANHOLE:
 			case SC_GIANTGROWTH:
 			case SC_MILLENNIUMSHIELD:
