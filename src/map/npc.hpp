@@ -1172,10 +1172,17 @@ enum npce_event : uint8 {
 
 #ifdef rAthenaCN_NpcEvent
 	/************************************************************************/
-	/* Event 类型的标准事件，这些事件不能被 processhalt 打断                     */
+	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
+	/************************************************************************/
+
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
+
+	/************************************************************************/
+	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
 
 	NPCE_KILLMVP,						// OnPCKillMvpEvent			// 杀死 MVP 魔物时触发事件
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 #endif // rAthenaCN_NpcEvent
 
 	NPCE_MAX

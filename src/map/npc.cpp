@@ -4430,10 +4430,17 @@ const char *npc_get_script_event_name(int npce_index)
 
 #ifdef rAthenaCN_NpcEvent
 	/************************************************************************/
-	/* Event 类型的标准事件，这些事件不能被 processhalt 打断                     */
+	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
+	/************************************************************************/
+
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
+
+	/************************************************************************/
+	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
 
 	case NPCE_KILLMVP:						return script_config.kill_mvp_mob_event_name;			// 杀死 MVP 魔物时触发事件
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 #endif // rAthenaCN_NpcEvent
 
 	default:
