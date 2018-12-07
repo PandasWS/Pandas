@@ -38,98 +38,9 @@ script.cpp @ getmapflag 可选的脚本读取标记参数处理代码 - no use n
 # -*- coding: utf-8 -*-
 
 import os
-import platform
 
-import chardet
+from libs import CommonFunc, InjectMarkController, InputController
 
-
-class InjectMarkController:
-    def __init__(self, options):
-        self.__options__ = options
-
-    def __detectCharset(self, filepath):
-        '''
-        给定一个文件路径, 获取该文本文件的编码
-        '''
-        with open(filepath, 'rb') as hfile:
-            return chardet.detect(hfile.read())['encoding']
-
-    def __search_mark(self, filename):
-        line_num = 0
-        charset = self.__detectCharset(filename)
-        if self.__detectCharset(filename).upper() != 'UTF-8-SIG':
-            print('No UTF-8-SIG: %s' % (filename))
-            return
-        try:
-            textfile = open(filename, encoding=charset)
-            for line in textfile:
-                line_num = line_num + 1
-                if '//' not in line:
-                    continue
-
-                for mark in self.__options__['mark_list']:
-                    if self.__options__['mark_format'] % mark['index'] in line:
-                        mark['filepath'] = filename
-                        mark['line'] = line_num
-            textfile.close()
-        except Exception as err:
-            print('Error filename : %s | Message : %s' % (filename, err))
-
-    def detect(self, src_dir):
-        for dirpath, _dirnames, filenames in os.walk(src_dir):
-            for filename in filenames:
-                _base_name, extension_name = os.path.splitext(filename.lower())
-
-                if extension_name not in self.__options__['process_exts']:
-                    continue
-
-                fullpath = os.path.normpath('%s/%s' % (dirpath, filename))
-                self.__search_mark(fullpath)
-
-        bMarkPassed = True
-        for mark in self.__options__['mark_list']:
-            if mark['filepath'] is None or mark['line'] is None:
-                bMarkPassed = False
-
-        return bMarkPassed
-
-    def print(self):
-        for mark in self.__options__['mark_list']:
-            print('Insert Point {insertID} in File {fullPath} at Line {lineNumber}'.format(
-                insertID = mark['index'],
-                fullPath = mark['filepath'],
-                lineNumber = mark['line']
-            ))
-
-    def insert(self, index, content):
-        index = index - 1
-        insert_content = '\n'.join(content)
-        insert_content = insert_content + '\n'
-        mark_list = self.__options__['mark_list']
-
-        charset = self.__detectCharset(mark_list[index]['filepath'])
-        rfile = open(mark_list[index]['filepath'], encoding=charset)
-        filecontent = rfile.readlines()
-        rfile.close()
-
-        filecontent.insert(mark_list[index]['line'] - 1, insert_content)
-
-        wfile = open(mark_list[index]['filepath'], mode = 'w', encoding=charset)
-        wfile.writelines(filecontent)
-        wfile.close()
-
-        # 此处需要更新其他 mark 的行数
-        # 避免本次插入导致他们原来记录的 line 错误
-
-        for mark in mark_list:
-            if mark['index'] == index:
-                continue
-
-            if mark['filepath'].lower() != mark_list[index]['filepath'].lower():
-                continue
-
-            if mark_list[index]['line'] < mark['line']:
-                mark['line'] = mark['line'] + len(content)
 
 def insert_for_normal_mapflag(inject, options, special = True):
     define = options['define']
@@ -190,7 +101,7 @@ def insert_for_one_param_mapflag(inject, options):
     # map.hpp @ 可选的变量添加
     inject.insert(8, [
         '#ifdef %s' % define,
-        '\tint %s,' % var_name_1,
+        '\tint %s;' % var_name_1,
         '#endif // %s' % define,
         ''
     ])
@@ -288,63 +199,62 @@ def welecome():
     print('[信息] 这样添加结果如果不符合预期, 可以轻松的利用 git 进行重置操作.')
 
 def guide(inject):
-    print('[选择] 请输入该地图标记的宏定义开关名称 (rAthenaCN_MapFlag_的末尾部分):')
-    define = input('rAthenaCN_MapFlag_')
-    define = 'rAthenaCN_MapFlag_' + define
-    print('[提示] 您输入的是: ' + define)
-    print('')
+
+    define = InputController().requireText({
+        'tips' : '[选择] 请输入该地图标记的宏定义开关名称 (rAthenaCN_MapFlag_的末尾部分)',
+        'prefix' : 'rAthenaCN_MapFlag_',
+        'upper' : False
+    })
 
     # --------
 
-    print('[选择] 请输入该地图标记的 MF 常量名称 (自动大写, MF_的末尾部分):')
-    constant = input('MF_')
-    constant = 'MF_' + constant.upper()
-    print('[提示] 您输入的是: %s' % constant)
-    print('')
+    constant = InputController().requireText({
+        'tips' : '[选择] 请输入该地图标记的 MF 常量名称 (自动大写, MF_的末尾部分)',
+        'prefix' : 'MF_',
+        'upper' : True
+    })
 
     # --------
 
-    flagtype = 0  # 0 为普通开关 | 1 为数值开关
     flaglist = [
-        { 'name' : '普通开关式的地图标记', 'desc' : '0 - 普通的地图标记开关, 只有两个状态(开/关)' },
-        { 'name' : '携带单个数值参数的地图标记', 'desc' : '1 - 携带单个数值参数的地图标记, 可以记录数值变量 (例如 bexp 标记)' },
-        { 'name' : '复杂赋值标记', 'desc' : '2 - 复杂的赋值标记, 只单纯添加宏定义和 MF 常量, 其他的手动添加' }
+        {
+            'name' : '普通开关式的地图标记',
+            'desc' : '0 - 普通的地图标记开关, 只有两个状态(开/关)'
+        },
+        {
+            'name' : '携带单个数值参数的地图标记',
+            'desc' : '1 - 携带单个数值参数的地图标记, 可以记录数值变量 (例如 bexp 标记)'
+        },
+        {
+            'name' : '复杂赋值标记',
+            'desc' : '2 - 复杂的赋值标记, 只单纯添加宏定义和 MF 常量, 其他的手动添加'
+        }
     ]
 
-    print('[提示] 请选择地图标记的类型, 可选值为 [0~2], 分别代表:')
-    for flag in flaglist:
-        print('[提示]     %s' % flag['desc'])
-    user_sel = int(input('[选择] 请选择想创建的地图标记类型 [0~2]:'))
-
-    if user_sel < 0 or user_sel > len(flaglist):
-        print('[提示] 您输入了无效的地图标记类型, 程序终止')
-        exit(-1)
-    flagtype = user_sel
-    print('[提示] 您选择的是: %s' % flaglist[flagtype]['name'])
-    print('')
+    # flagtype = 0  # 0 为普通开关 | 1 为数值开关
+    flagtype = InputController().requireSelect({
+        'name' : '想创建的地图标记类型',
+        'data' : flaglist
+    })
 
     # --------
 
     var_name_1 = None
     if flagtype == 1:
-        print('[选择] 请输入用于记录"第一个数值参数"的 map_data 结构成员变量名:')
-        var_name_1 = input('')
-        print('[提示] 您输入的是: %s' % var_name_1)
-        print('')
+        var_name_1 = InputController().requireText({
+            'tips' : '[选择] 请输入用于记录"第一个数值参数"的 map_data 结构成员变量名',
+            'prefix' : '',
+            'upper' : False
+        })
 
     # --------
 
     zero_disable = False
     if flagtype == 1:
-        user_sel = input('[选择] 当"第一个数值参数"的值为 0 时, 是否表示移除此地图标记? [Y/N]:')
-        if user_sel.lower() in ['y', 'yes']:
-            zero_disable = True
-        elif user_sel.lower() in ['n', 'no']:
-            zero_disable = False
-        else:
-            print('[提示] 您输入了无效的选项, 程序终止')
-            exit(-1)
-    print('')
+        zero_disable = InputController().requireBool({
+            'tips' : '[选择] 当"第一个数值参数"的值为 0 时, 是否表示移除此地图标记?',
+            'default' : False
+        })
 
     # --------
 
@@ -358,21 +268,20 @@ def guide(inject):
     print('[信息] 第一个数值参数名称 : %s' % var_name_1)
     print('[信息] 第一个数值参数的值为 0 时, 是否禁用此标记 : %s' % zero_disable)
     print('-' * 70)
+    print('\n')
 
-    user_sel = input('[选择] 确认要开始写入操作么? [Y/N]:')
-    if user_sel.lower() in ['y', 'yes']:
-        pass
-    elif user_sel.lower() in ['n', 'no']:
+    nextstep = InputController().requireBool({
+        'tips' : '[选择] 请仔细阅读上述信息, 确认要开始写入操作么?',
+        'default' : False
+    })
+
+    if not nextstep:
         print('[信息] 终止写入操作, 程序终止')
-        exit(-1)
-    else:
-        print('[信息] 您输入了无效的选项, 程序终止')
-        exit(-1)
-    print('')
+    CommonFunc().friendly_exit(-1)
 
     # --------
 
-    print('[信息] 开始写入操作...')
+    print('[信息] 开始将地图标记信息写入到源代码...')
 
     options = {
         'define' : define,
@@ -386,7 +295,11 @@ def guide(inject):
     elif flagtype == 1:
         insert_for_one_param_mapflag(inject, options)
 
-    print('[信息] 写入完成, 请检查代码并补充注释.')
+    print('[信息] 已经成功写入到源代码, 请检查并完善必要的注释.')
+    print('')
+    print('=' * 70)
+    print('感谢您的使用, 地图标记添加助手已经执行完毕')
+    print('=' * 70)
 
 def main():
     os.chdir(os.path.split(os.path.realpath(__file__))[0])
@@ -394,34 +307,14 @@ def main():
     welecome()
 
     options = {
+        'source_dirs' : '../../src',
         'process_exts' : ['.hpp', '.cpp'],
-        'mark_format' : '// PYHELP - MAPFLAG - INSERT POINT - <Section %d>',
-        'mark_list' : [
-            { 'index' : 1,  'filepath' : None, 'line' : None },
-            { 'index' : 2,  'filepath' : None, 'line' : None },
-            { 'index' : 3,  'filepath' : None, 'line' : None },
-            { 'index' : 4,  'filepath' : None, 'line' : None },
-            { 'index' : 5,  'filepath' : None, 'line' : None },
-            { 'index' : 6,  'filepath' : None, 'line' : None },
-            { 'index' : 7,  'filepath' : None, 'line' : None },
-            { 'index' : 8,  'filepath' : None, 'line' : None },
-            { 'index' : 9,  'filepath' : None, 'line' : None },
-            { 'index' : 10, 'filepath' : None, 'line' : None },
-            { 'index' : 11, 'filepath' : None, 'line' : None }
-        ]
+        'mark_format' : r'// PYHELP - MAPFLAG - INSERT POINT - <Section (\d{1,2})>',
+        'mark_counts' : 11
     }
 
-    imc = InjectMarkController(options)
-    if not imc.detect('../../src'):
-        print('[状态] 无法成功定位所有需要的代码注入点, 程序终止!')
-        exit(-1)
-    else:
-        print('[状态] 已成功定位所有代码注入点.\n')
-
-    guide(imc)
-
-    if platform.system() == 'Windows':
-        os.system('pause')
+    guide(InjectMarkController(options))
+    CommonFunc().friendly_exit()
 
 if __name__ == '__main__':
     main()

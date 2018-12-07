@@ -122,3 +122,6 @@ Thumbs.db
 /libmysql.dll
 /pcre8.dll
 /zlib.dll
+
+# rAthenaCN
+__pycache__
