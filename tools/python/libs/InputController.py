@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from libs import CommonFunc
+from libs import Common
 
 
 class InputController:
@@ -11,7 +11,7 @@ class InputController:
         if not result:
             print('[提示] 错误, 请至少输入一个字符. 程序终止')
             print('-' * 70)
-            CommonFunc().friendly_exit(-1)
+            Common.exitWithPause(-1)
         result = options['prefix'] + result
         if options['upper']:
             result = result.upper()
@@ -34,14 +34,14 @@ class InputController:
         if not user_select or not user_select.isnumeric():
             print('[提示] 您输入了无效的地图标记类型, 程序终止')
             print('-' * 70)
-            CommonFunc().friendly_exit(-1)
+            Common.exitWithPause(-1)
 
         user_select = int(user_select)
 
         if user_select < 0 or user_select >= len(select_data):
             print('[提示] 您输入了无效的地图标记类型, 程序终止')
             print('-' * 70)
-            CommonFunc().friendly_exit(-1)
+            Common.exitWithPause(-1)
 
         print('')
         print('[提示] 您选择的是: %s' % select_data[user_select]['name'])

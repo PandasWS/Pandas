@@ -39,8 +39,8 @@ script.cpp @ getmapflag 可选的脚本读取标记参数处理代码 - no use n
 
 import os
 
-from libs import CommonFunc, InjectMarkController, InputController
-
+from libs import InjectMarkController, InputController
+from libs import Common, Message
 
 def insert_for_normal_mapflag(inject, options, special = True):
     define = options['define']
@@ -195,8 +195,8 @@ def welecome():
     print('地图标记添加助手')
     print('=' * 70)
 
-    print('[信息] 在使用此脚本之前, 建议确保 src 目录的工作区是干净的.')
-    print('[信息] 这样添加结果如果不符合预期, 可以轻松的利用 git 进行重置操作.')
+    Message.ShowInfo('在使用此脚本之前, 建议确保 src 目录的工作区是干净的.')
+    Message.ShowInfo('这样添加结果如果不符合预期, 可以轻松的利用 git 进行重置操作.')
 
 def guide(inject):
 
@@ -277,7 +277,7 @@ def guide(inject):
 
     if not nextstep:
         print('[信息] 终止写入操作, 程序终止')
-    CommonFunc().friendly_exit(-1)
+    Common.exitWithPause(-1)
 
     # --------
 
@@ -314,7 +314,7 @@ def main():
     }
 
     guide(InjectMarkController(options))
-    CommonFunc().friendly_exit()
+    Common.exitWithPause()
 
 if __name__ == '__main__':
     main()

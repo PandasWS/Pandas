@@ -5,7 +5,7 @@ import re
 
 import chardet
 
-from libs import CommonFunc
+from libs import Common
 
 
 class InjectMarkController:
@@ -15,7 +15,7 @@ class InjectMarkController:
 
         if not self.detect(self.__options__['source_dirs']):
             print('[状态] 无法成功定位所有需要的代码注入点, 程序终止!')
-            CommonFunc().friendly_exit(-1)
+            Common.exitWithPause(-1)
         else:
             print('[状态] 已成功定位所有代码注入点.\n')
 
@@ -48,7 +48,7 @@ class InjectMarkController:
 
                 if str(re_match.group(1)) in self.mark_dict:
                     print('发现重复的代码注入标记: ' + re_match.group(0))
-                    CommonFunc().friendly_exit(-1)
+                    Common.exitWithPause(-1)
 
                 self.mark_dict[re_match.group(1)] = {
                     'index' : int(re_match.group(1)),
