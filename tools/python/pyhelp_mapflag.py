@@ -192,8 +192,11 @@ def insert_for_one_param_mapflag(inject, options):
 
 def welecome():
     print('=' * 70)
-    print('地图标记添加助手')
+    print('')
+    print('地图标记添加助手'.center(62))
+    print('')
     print('=' * 70)
+    print('')
 
     Message.ShowInfo('在使用此脚本之前, 建议确保 src 目录的工作区是干净的.')
     Message.ShowInfo('这样添加结果如果不符合预期, 可以轻松的利用 git 进行重置操作.')
@@ -201,7 +204,7 @@ def welecome():
 def guide(inject):
 
     define = InputController().requireText({
-        'tips' : '[选择] 请输入该地图标记的宏定义开关名称 (rAthenaCN_MapFlag_的末尾部分)',
+        'tips' : '请输入该地图标记的宏定义开关名称 (rAthenaCN_MapFlag_的末尾部分)',
         'prefix' : 'rAthenaCN_MapFlag_',
         'upper' : False
     })
@@ -209,7 +212,7 @@ def guide(inject):
     # --------
 
     constant = InputController().requireText({
-        'tips' : '[选择] 请输入该地图标记的 MF 常量名称 (自动大写, MF_的末尾部分)',
+        'tips' : '请输入该地图标记的 MF 常量名称 (自动大写, MF_的末尾部分)',
         'prefix' : 'MF_',
         'upper' : True
     })
@@ -242,7 +245,7 @@ def guide(inject):
     var_name_1 = None
     if flagtype == 1:
         var_name_1 = InputController().requireText({
-            'tips' : '[选择] 请输入用于记录"第一个数值参数"的 map_data 结构成员变量名',
+            'tips' : '请输入用于记录"第一个数值参数"的 map_data 结构成员变量名',
             'prefix' : '',
             'upper' : False
         })
@@ -252,36 +255,36 @@ def guide(inject):
     zero_disable = False
     if flagtype == 1:
         zero_disable = InputController().requireBool({
-            'tips' : '[选择] 当"第一个数值参数"的值为 0 时, 是否表示移除此地图标记?',
+            'tips' : '当"第一个数值参数"的值为 0 时, 是否表示移除此地图标记?',
             'default' : False
         })
 
     # --------
 
     print('-' * 70)
-    print('[信息] 请确认建立的信息, 确认后将开始修改代码.')
+    Message.ShowInfo('请确认建立的信息, 确认后将开始修改代码.')
     print('-' * 70)
-    print('[信息] 开关名称 : %s' % define)
-    print('[信息] 常量名称 : %s' % constant)
-    print('[信息] 标记类型 : %s' % flaglist[flagtype]['name'])
+    Message.ShowInfo('开关名称 : %s' % define)
+    Message.ShowInfo('常量名称 : %s' % constant)
+    Message.ShowInfo('标记类型 : %s' % flaglist[flagtype]['name'])
     print('')
-    print('[信息] 第一个数值参数名称 : %s' % var_name_1)
-    print('[信息] 第一个数值参数的值为 0 时, 是否禁用此标记 : %s' % zero_disable)
+    Message.ShowInfo('第一个数值参数名称 : %s' % var_name_1)
+    Message.ShowInfo('第一个数值参数的值为 0 时, 是否禁用此标记 : %s' % zero_disable)
     print('-' * 70)
     print('\n')
 
     nextstep = InputController().requireBool({
-        'tips' : '[选择] 请仔细阅读上述信息, 确认要开始写入操作么?',
+        'tips' : '请仔细阅读上述信息, 确认要开始写入操作么?',
         'default' : False
     })
 
     if not nextstep:
-        print('[信息] 终止写入操作, 程序终止')
-    Common.exitWithPause(-1)
+        Message.ShowStatus('终止写入操作, 程序终止')
+        Common.exitWithPause(-1)
 
     # --------
 
-    print('[信息] 开始将地图标记信息写入到源代码...')
+    Message.ShowStatus('开始将地图标记信息写入到源代码...')
 
     options = {
         'define' : define,
@@ -295,10 +298,12 @@ def guide(inject):
     elif flagtype == 1:
         insert_for_one_param_mapflag(inject, options)
 
-    print('[信息] 已经成功写入到源代码, 请检查并完善必要的注释.')
+    Message.ShowStatus('已经成功写入到源代码, 请检查并完善必要的注释.')
     print('')
     print('=' * 70)
-    print('感谢您的使用, 地图标记添加助手已经执行完毕')
+    print('')
+    print('感谢您的使用, 地图标记添加助手已经执行完毕'.center(48))
+    print('')
     print('=' * 70)
 
 def main():
