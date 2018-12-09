@@ -161,20 +161,19 @@ struct Script_Config {
 	const char *joblvup_event_name;
 	const char *stat_calc_event_name;
 
-#ifdef rAthenaCN_NpcEvent
 	/************************************************************************/
 	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
 	/************************************************************************/
-
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
 
-	const char* kill_mvp_mob_event_name;			// 杀死 MVP 魔物时触发事件
+#ifdef rAthenaCN_NpcEvent_KILLMVP
+	const char* killmvp_event_name;	// NPCE_KILLMVP		// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物时触发事件
+#endif // rAthenaCN_NpcEvent_KILLMVP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
-#endif // rAthenaCN_NpcEvent
 
 	// NPC related
 	const char* ontouch_event_name;

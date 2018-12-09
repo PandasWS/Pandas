@@ -4456,20 +4456,20 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCE_STATCALC:
 		return script_config.stat_calc_event_name;
 
-#ifdef rAthenaCN_NpcEvent
 	/************************************************************************/
 	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
 	/************************************************************************/
-
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
 
-	case NPCE_KILLMVP:						return script_config.kill_mvp_mob_event_name;			// 杀死 MVP 魔物时触发事件
+#ifdef rAthenaCN_NpcEvent_KILLMVP
+	case NPCE_KILLMVP:
+		return script_config.killmvp_event_name;	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物时触发事件
+#endif // rAthenaCN_NpcEvent_KILLMVP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
-#endif // rAthenaCN_NpcEvent
 
 	default:
 		ShowError("npc_get_script_event_name: npce_index is outside the array limits: %d (max: %d).\n", npce_index, NPCE_MAX);

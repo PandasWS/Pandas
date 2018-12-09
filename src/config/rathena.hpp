@@ -98,14 +98,14 @@
 	/************************************************************************/
 	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
 	/************************************************************************/
-
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
 
-	// 杀死 MVP 魔物时触发事件 - OnPCKillMvpEvent
+	// 当玩家杀死 MVP 魔物时触发事件 - OnPCKillMvpEvent [Sola丶小克]
+	// 类型: Event 类型 / 常量名称: NPCE_KILLMVP / 变量名称: killmvp_event_name
 	#define rAthenaCN_NpcEvent_KILLMVP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 #endif // rAthenaCN_NpcEvent
