@@ -4181,6 +4181,34 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 		}
 #endif // rAthenaCN_MapFlag_Mobinfo
 
+#ifdef rAthenaCN_MapFlag_MobDroprate
+		case MF_MOBDROPRATE: {
+			// 若脚本中 mapflag 指定的第一个数值参数无效,
+			// 那么将此参数的值设为 0, 但不会阻断此地图标记的开启或关闭操作
+			union u_mapflag_args args = {};
+
+			if (sscanf(w4, "%11d", &args.flag_val) < 1)
+				args.flag_val = 0;
+
+			map_setmapflag_sub(m, mapflag, state, &args);
+			break;
+		}
+#endif // rAthenaCN_MapFlag_MobDroprate
+
+#ifdef rAthenaCN_MapFlag_MvpDroprate
+		case MF_MVPDROPRATE: {
+			// 若脚本中 mapflag 指定的第一个数值参数无效,
+			// 那么将此参数的值设为 0, 但不会阻断此地图标记的开启或关闭操作
+			union u_mapflag_args args = {};
+
+			if (sscanf(w4, "%11d", &args.flag_val) < 1)
+				args.flag_val = 0;
+
+			map_setmapflag_sub(m, mapflag, state, &args);
+			break;
+		}
+#endif // rAthenaCN_MapFlag_MvpDroprate
+
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 7>
 
 		// All others do not need special treatment

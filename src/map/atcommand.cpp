@@ -4168,6 +4168,34 @@ ACMD_FUNC(mapinfo) {
 	if (map_getmapflag(m_id, MF_NOTOKEN))
 		strcat(atcmd_output, " NoToken |");
 #endif // rAthenaCN_MapFlag_NoToken
+#ifdef rAthenaCN_MapFlag_NoCapture
+	if (map_getmapflag(m_id, MF_NOCAPTURE))
+		strcat(atcmd_output, " NoCapture |");
+#endif // rAthenaCN_MapFlag_NoCapture
+#ifdef rAthenaCN_MapFlag_HideGuildInfo
+	if (map_getmapflag(m_id, MF_HIDEGUILDINFO))
+		strcat(atcmd_output, " HideGuildInfo |");
+#endif // rAthenaCN_MapFlag_HideGuildInfo
+#ifdef rAthenaCN_MapFlag_HidePartyInfo
+	if (map_getmapflag(m_id, MF_HIDEPARTYINFO))
+		strcat(atcmd_output, " HidePartyInfo |");
+#endif // rAthenaCN_MapFlag_HidePartyInfo
+#ifdef rAthenaCN_MapFlag_NoMail
+	if (map_getmapflag(m_id, MF_NOMAIL))
+		strcat(atcmd_output, " NoMail |");
+#endif // rAthenaCN_MapFlag_NoMail
+#ifdef rAthenaCN_MapFlag_NoPet
+	if (map_getmapflag(m_id, MF_NOPET))
+		strcat(atcmd_output, " NoPet |");
+#endif // rAthenaCN_MapFlag_NoPet
+#ifdef rAthenaCN_MapFlag_NoHomun
+	if (map_getmapflag(m_id, MF_NOHOMUN))
+		strcat(atcmd_output, " NoHomun |");
+#endif // rAthenaCN_MapFlag_NoHomun
+#ifdef rAthenaCN_MapFlag_NoMerc
+	if (map_getmapflag(m_id, MF_NOMERC))
+		strcat(atcmd_output, " NoMerc |");
+#endif // rAthenaCN_MapFlag_NoMerc
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
 	clif_displaymessage(fd, atcmd_output);
 #endif // rAthenaCN_Mapflags
@@ -8197,6 +8225,14 @@ ACMD_FUNC(mapflag) {
 #ifdef rAthenaCN_MapFlag_Mobinfo
 			disabled_mf.insert(disabled_mf.begin(), MF_MOBINFO);
 #endif // rAthenaCN_MapFlag_Mobinfo
+
+#ifdef rAthenaCN_MapFlag_MobDroprate
+			disabled_mf.insert(disabled_mf.begin(), MF_MOBDROPRATE);
+#endif // rAthenaCN_MapFlag_MobDroprate
+
+#ifdef rAthenaCN_MapFlag_MvpDroprate
+			disabled_mf.insert(disabled_mf.begin(), MF_MVPDROPRATE);
+#endif // rAthenaCN_MapFlag_MvpDroprate
 
 			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
 

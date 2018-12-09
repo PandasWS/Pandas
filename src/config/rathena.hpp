@@ -126,6 +126,42 @@
 	// 是否启用 notoken 地图标记 [Sola丶小克]
 	// 该标记用于禁止玩家在指定的地图上使用“原地复活之证”道具
 	#define rAthenaCN_MapFlag_NoToken
+
+	// 是否启用 nocapture 地图标记 [维护者昵称]
+	// TODO: 请在此填写此地图标记的说明
+	#define rAthenaCN_MapFlag_NoCapture
+
+	// 是否启用 hideguildinfo 地图标记 [维护者昵称]
+	// TODO: 请在此填写此地图标记的说明
+	#define rAthenaCN_MapFlag_HideGuildInfo
+
+	// 是否启用 hidepartyinfo 地图标记 [维护者昵称]
+	// TODO: 请在此填写此地图标记的说明
+	#define rAthenaCN_MapFlag_HidePartyInfo
+
+	// 是否启用 nomail 地图标记 [维护者昵称]
+	// TODO: 请在此填写此地图标记的说明
+	#define rAthenaCN_MapFlag_NoMail
+
+	// 是否启用 nopet 地图标记 [维护者昵称]
+	// TODO: 请在此填写此地图标记的说明
+	#define rAthenaCN_MapFlag_NoPet
+
+	// 是否启用 nohomun 地图标记 [维护者昵称]
+	// TODO: 请在此填写此地图标记的说明
+	#define rAthenaCN_MapFlag_NoHomun
+
+	// 是否启用 nomerc 地图标记 [维护者昵称]
+	// TODO: 请在此填写此地图标记的说明
+	#define rAthenaCN_MapFlag_NoMerc
+
+	// 是否启用 mobdroprate 地图标记 [维护者昵称]
+	// TODO: 请在此填写此地图标记的说明
+	#define rAthenaCN_MapFlag_MobDroprate
+
+	// 是否启用 mvpdroprate 地图标记 [维护者昵称]
+	// TODO: 请在此填写此地图标记的说明
+	#define rAthenaCN_MapFlag_MvpDroprate
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // rAthenaCN_Mapflags
 

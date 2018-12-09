@@ -593,6 +593,33 @@ enum e_mapflag : int16 {
 #ifdef rAthenaCN_MapFlag_NoToken
 	MF_NOTOKEN,
 #endif // rAthenaCN_MapFlag_NoToken
+#ifdef rAthenaCN_MapFlag_NoCapture
+	MF_NOCAPTURE,
+#endif // rAthenaCN_MapFlag_NoCapture
+#ifdef rAthenaCN_MapFlag_HideGuildInfo
+	MF_HIDEGUILDINFO,
+#endif // rAthenaCN_MapFlag_HideGuildInfo
+#ifdef rAthenaCN_MapFlag_HidePartyInfo
+	MF_HIDEPARTYINFO,
+#endif // rAthenaCN_MapFlag_HidePartyInfo
+#ifdef rAthenaCN_MapFlag_NoMail
+	MF_NOMAIL,
+#endif // rAthenaCN_MapFlag_NoMail
+#ifdef rAthenaCN_MapFlag_NoPet
+	MF_NOPET,
+#endif // rAthenaCN_MapFlag_NoPet
+#ifdef rAthenaCN_MapFlag_NoHomun
+	MF_NOHOMUN,
+#endif // rAthenaCN_MapFlag_NoHomun
+#ifdef rAthenaCN_MapFlag_NoMerc
+	MF_NOMERC,
+#endif // rAthenaCN_MapFlag_NoMerc
+#ifdef rAthenaCN_MapFlag_MobDroprate
+	MF_MOBDROPRATE,
+#endif // rAthenaCN_MapFlag_MobDroprate
+#ifdef rAthenaCN_MapFlag_MvpDroprate
+	MF_MVPDROPRATE,
+#endif // rAthenaCN_MapFlag_MvpDroprate
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };
@@ -772,6 +799,14 @@ struct map_data {
 #ifdef rAthenaCN_MapFlag_Mobinfo
 	int show_mob_info;
 #endif // rAthenaCN_MapFlag_Mobinfo
+
+#ifdef rAthenaCN_MapFlag_MobDroprate
+	int mob_droprate;
+#endif // rAthenaCN_MapFlag_MobDroprate
+
+#ifdef rAthenaCN_MapFlag_MvpDroprate
+	int mvp_droprate;
+#endif // rAthenaCN_MapFlag_MvpDroprate
 
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 

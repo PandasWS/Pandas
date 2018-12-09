@@ -469,6 +469,42 @@
 	export_constant(MF_NOTOKEN);
 #endif // rAthenaCN_MapFlag_NoToken
 
+#ifdef rAthenaCN_MapFlag_NoCapture
+	export_constant(MF_NOCAPTURE);
+#endif // rAthenaCN_MapFlag_NoCapture
+
+#ifdef rAthenaCN_MapFlag_HideGuildInfo
+	export_constant(MF_HIDEGUILDINFO);
+#endif // rAthenaCN_MapFlag_HideGuildInfo
+
+#ifdef rAthenaCN_MapFlag_HidePartyInfo
+	export_constant(MF_HIDEPARTYINFO);
+#endif // rAthenaCN_MapFlag_HidePartyInfo
+
+#ifdef rAthenaCN_MapFlag_NoMail
+	export_constant(MF_NOMAIL);
+#endif // rAthenaCN_MapFlag_NoMail
+
+#ifdef rAthenaCN_MapFlag_NoPet
+	export_constant(MF_NOPET);
+#endif // rAthenaCN_MapFlag_NoPet
+
+#ifdef rAthenaCN_MapFlag_NoHomun
+	export_constant(MF_NOHOMUN);
+#endif // rAthenaCN_MapFlag_NoHomun
+
+#ifdef rAthenaCN_MapFlag_NoMerc
+	export_constant(MF_NOMERC);
+#endif // rAthenaCN_MapFlag_NoMerc
+
+#ifdef rAthenaCN_MapFlag_MobDroprate
+	export_constant(MF_MOBDROPRATE);
+#endif // rAthenaCN_MapFlag_MobDroprate
+
+#ifdef rAthenaCN_MapFlag_MvpDroprate
+	export_constant(MF_MVPDROPRATE);
+#endif // rAthenaCN_MapFlag_MvpDroprate
+
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
 	/* setcell types */

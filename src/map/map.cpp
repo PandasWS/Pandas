@@ -4943,6 +4943,28 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			mapdata->flag[mapflag] = status;
 			break;
 #endif // rAthenaCN_MapFlag_Mobinfo
+#ifdef rAthenaCN_MapFlag_MobDroprate
+		case MF_MOBDROPRATE:
+			if (!status)
+				mapdata->mob_droprate = 0;
+			else {
+				nullpo_retr(false, args);
+				mapdata->mob_droprate = args->flag_val;
+			}
+			mapdata->flag[mapflag] = status;
+			break;
+#endif // rAthenaCN_MapFlag_MobDroprate
+#ifdef rAthenaCN_MapFlag_MvpDroprate
+		case MF_MVPDROPRATE:
+			if (!status)
+				mapdata->mvp_droprate = 0;
+			else {
+				nullpo_retr(false, args);
+				mapdata->mvp_droprate = args->flag_val;
+			}
+			mapdata->flag[mapflag] = status;
+			break;
+#endif // rAthenaCN_MapFlag_MvpDroprate
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 6>
 		default:
 			mapdata->flag[mapflag] = status;
