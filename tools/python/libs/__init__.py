@@ -4,4 +4,4 @@ from .Common import *
 from .Message import *
 
 from .InputController import InputController
-from .InjectMarkController import InjectMarkController
+from .InjectController import InjectController

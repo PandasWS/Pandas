@@ -39,7 +39,7 @@ script.cpp @ getmapflag 可选的脚本读取标记参数处理代码 - no use n
 
 import os
 
-from libs import InjectMarkController, InputController
+from libs import InjectController, InputController
 from libs import Common, Message
 
 def insert_for_normal_mapflag(inject, options, special = True):
@@ -318,7 +318,7 @@ def main():
         'mark_counts' : 11
     }
 
-    guide(InjectMarkController(options))
+    guide(InjectController(options))
     Common.exitWithPause()
 
 if __name__ == '__main__':

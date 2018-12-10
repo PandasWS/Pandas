@@ -8,7 +8,7 @@ import chardet
 from libs import Common
 
 
-class InjectMarkController:
+class InjectController:
     def __init__(self, options):
         self.__options__ = options
         self.mark_dict = {}
@@ -86,24 +86,23 @@ class InjectMarkController:
 
     def insert(self, index, content):
         mark = self.mark_dict[str(index)]
+        filepath = mark['filepath']
         insert_content = ('\n'.join(content)) + '\n'
 
-        charset = self.__detectCharset(mark['filepath'])
-        rfile = open(mark['filepath'], encoding=charset)
-        filecontent = rfile.readlines()
-        rfile.close()
+        charset = self.__detectCharset(filepath)
+        with open(filepath, encoding = charset) as rfile:
+            filecontent = rfile.readlines()
 
         filecontent.insert(mark['line'] - 1, insert_content)
 
-        wfile = open(mark['filepath'], mode = 'w', encoding=charset)
-        wfile.writelines(filecontent)
-        wfile.close()
+        with open(filepath, mode = 'w', encoding = charset) as wfile:
+            wfile.writelines(filecontent)
 
         for mark_index, mark_value in self.mark_dict.items():
             if mark_index == index:
                 continue
 
-            if mark_value['filepath'].lower() != mark['filepath'].lower():
+            if mark_value['filepath'].lower() != filepath.lower():
                 continue
 
             if mark['line'] < mark_value['line']:
