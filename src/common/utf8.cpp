@@ -8,6 +8,7 @@
 #else
 #include <iconv.h>
 #include <errno.h>
+#include <string.h>
 #endif
 
 #include "malloc.hpp"
