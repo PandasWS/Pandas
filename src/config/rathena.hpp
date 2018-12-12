@@ -128,7 +128,7 @@
 	#define rAthenaCN_MapFlag_NoToken
 
 	// 是否启用 nocapture 地图标记 [维护者昵称]
-	// TODO: 请在此填写此地图标记的说明
+	// 该标记用于禁止玩家在地图上使用宠物捕捉道具或贤者的"随机技能"来捕捉宠物
 	#define rAthenaCN_MapFlag_NoCapture
 
 	// 是否启用 hideguildinfo 地图标记 [维护者昵称]

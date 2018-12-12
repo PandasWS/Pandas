@@ -4997,6 +4997,17 @@ int pc_useitem(struct map_session_data *sd,int n)
 	if( id->delay > 0 && !pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && pc_itemcd_check(sd, id, tick, n))
 		return 0;
 
+#ifdef rAthenaCN_MapFlag_NoCapture
+	// 如果玩家所在地图设置了 nocapture 标记的话
+	// 那么在扣除道具之前，就给予玩家禁止玩家捕捉宠物的提示 [Sola丶小克]
+	if (sd && map_getmapflag(sd->bl.m, MF_NOCAPTURE)) {
+		if (id->taming_mobid != 0) {
+			clif_displaymessage(sd->fd, msg_txt_cn(sd, 18));	// 此地图禁止捕捉宠物.
+			return 0;
+		}
+	}
+#endif // rAthenaCN_MapFlag_NoCapture
+
 	/* on restricted maps the item is consumed but the effect is not used */
 	if (!pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && itemdb_isNoEquip(id,sd->bl.m)) {
 		clif_msg(sd,ITEM_CANT_USE_AREA); // This item cannot be used within this area

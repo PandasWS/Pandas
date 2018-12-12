@@ -189,6 +189,7 @@
     <ClInclude Include="mail.hpp" />
     <ClInclude Include="map.hpp" />
     <ClInclude Include="mapreg.hpp" />
+    <ClInclude Include="map_artisan.hpp" />
     <ClInclude Include="mercenary.hpp" />
     <ClInclude Include="mob.hpp" />
     <ClInclude Include="npc.hpp" />
@@ -232,6 +233,7 @@
     <ClCompile Include="mail.cpp" />
     <ClCompile Include="map.cpp" />
     <ClCompile Include="mapreg.cpp" />
+    <ClCompile Include="map_artisan.cpp" />
     <ClCompile Include="mercenary.cpp" />
     <ClCompile Include="mob.cpp">
       <Optimization Condition="'$(Configuration)'=='Release'">Disabled</Optimization>

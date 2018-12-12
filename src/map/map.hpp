@@ -18,6 +18,10 @@
 #include "../common/timer.hpp"
 #include "../config/core.hpp"
 
+#ifdef rAthenaCN
+#include "map_artisan.hpp"
+#endif // rAthenaCN
+
 struct npc_data;
 struct item_data;
 struct Channel;

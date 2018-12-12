@@ -143,6 +143,9 @@
     <ClInclude Include="vending.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="map_artisan.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="achievement.cpp">
@@ -266,6 +269,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="vending.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="map_artisan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -855,6 +855,12 @@ struct item_data
 	struct item_combo **combos;
 	unsigned char combos_count;
 	short delay_sc; ///< Use delay group if any instead using player's item_delay data [Cydh]
+
+#ifdef rAthenaCN_MapFlag_NoCapture
+	// 此物品是否为宠物捕捉道具，为 0 则不是
+	// 若是, 那么 taming_mobid 为支持捕捉的魔物编号 [Sola丶小克]
+	unsigned int taming_mobid;
+#endif // rAthenaCN_MapFlag_NoCapture
 };
 
 // Struct for item random option [Secret]
