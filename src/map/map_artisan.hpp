@@ -4,6 +4,9 @@
 #ifndef _RATHENA_CN_MAP_ARTISAN_HPP_
 #define _RATHENA_CN_MAP_ARTISAN_HPP_
 
-bool hasPet(const char* script, unsigned int* pet_mobid);
+#include <string>	// std::string
+
+bool regexGroupVal(std::string patterns, std::string content, int groupid, std::string & val);
+bool hasPet(const char* script, unsigned int & pet_mobid);
 
 #endif // _RATHENA_CN_MAP_ARTISAN_HPP_

@@ -5,11 +5,9 @@
 #define _RATHENA_CN_UTF8_HPP_
 
 #include "showmsg.hpp"
-#include "malloc.hpp"
 
 #include <stdio.h>
-#include <string.h>
-#include <string>
+#include <string>	// std::string
 
 std::string Utf8ToGbk(const std::string& strUtf8);
 std::string GbkToUtf8(const std::string& strGbk);

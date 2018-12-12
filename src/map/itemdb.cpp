@@ -1409,7 +1409,7 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 	// 这是一个捕捉宠物的道具，并记录下它能捕捉的宠物的魔物编号 [Sola丶小克]
 	if (id->script != NULL) {
 		unsigned int pet_mobid = 0;
-		if (hasPet(str[19], &pet_mobid)) {
+		if (hasPet(str[19], pet_mobid)) {
 			id->taming_mobid = pet_mobid;
 		}
 	}

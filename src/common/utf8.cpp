@@ -10,6 +10,8 @@
 #include <errno.h>
 #endif
 
+#include "malloc.hpp"
+
 #ifdef _WIN32
 
 // 将 UTF8 字符串转换为 ANSI 字符串
