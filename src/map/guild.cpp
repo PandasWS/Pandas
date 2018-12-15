@@ -754,6 +754,12 @@ int guild_member_added(int guild_id,uint32 account_id,uint32 char_id,int flag) {
 	sd->guild = g;
 	//Packets which were sent in the previous 'guild_sent' implementation.
 	clif_guild_belonginfo(sd);
+#ifdef rAthenaCN_Fix_GuildEmblem_Update
+	// 当玩家加入一个有图标的公会时,
+	// 能立刻让周围的人可以看见自己的公会图标 [Sola丶小克]
+	clif_guild_emblem(sd, g);
+	clif_guild_emblem_area(&sd->bl);
+#endif // rAthenaCN_Fix_GuildEmblem_Update
 	clif_guild_notice(sd);
 
 	//TODO: send new emblem info to others
@@ -900,6 +906,10 @@ int guild_member_withdraw(int guild_id, uint32 account_id, uint32 char_id, int f
 		status_change_end(&sd->bl,SC_SOULCOLD,INVALID_TIMER);
 		status_change_end(&sd->bl,SC_HAWKEYES,INVALID_TIMER);
 		//@TODO: Send emblem update to self and people around
+#ifdef rAthenaCN_Fix_GuildEmblem_Update
+		// @TODO: 这里需要向周围的角色广播移除该角色的公会图标 [Sola丶小克]
+		// 不过我们进行了一系列尝试, 暂未发现可靠且体验较佳的方法
+#endif // rAthenaCN_Fix_GuildEmblem_Update
 	}
 	return 0;
 }

@@ -88,6 +88,9 @@
 #ifdef rAthenaCN_Bugfix
 	// 用 mysql_set_character_set 来设置 MySQL 的编码字符集 [Sola丶小克]
 	#define rAthenaCN_Fix_Mysql_SetEncoding
+
+	// 修正在部分情况下角色公会图标刷新不及时的问题 [Sola丶小克]
+	#define rAthenaCN_Fix_GuildEmblem_Update
 #endif // rAthenaCN_Bugfix
 
 // ============================================================================
