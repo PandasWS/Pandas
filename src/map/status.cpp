@@ -7679,6 +7679,14 @@ int status_get_guild_id(struct block_list *bl)
 int status_get_emblem_id(struct block_list *bl)
 {
 	nullpo_ret(bl);
+
+#ifdef rAthenaCN_MapFlag_HideGuildInfo
+	// 若当前地图有 hideguildinfo 标记, 那么不返回角色公会的图标编号
+	// 这样在 GVG 时处于 GVG 地图玩家(以及其他可显示图标的单位)头上的公会图标才能够被隐藏 [Sola丶小克]
+	if (map_getmapflag(bl->m, MF_HIDEGUILDINFO))
+		return 0;
+#endif // rAthenaCN_MapFlag_HideGuildInfo
+
 	switch (bl->type) {
 		case BL_PC:
 			return ((TBL_PC*)bl)->guild_emblem_id;

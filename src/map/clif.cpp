@@ -9551,6 +9551,15 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 
 				safestrncpy(WBUFCP(buf,54), sd->guild->name,NAME_LENGTH);
 				safestrncpy(WBUFCP(buf,78), sd->guild->position[position].name, NAME_LENGTH);
+
+#ifdef rAthenaCN_MapFlag_HideGuildInfo
+				// 若当前地图启用了 hideguildinfo 标记
+				// 那么不返回角色的公会名称, 以及角色在公会中的职位名称 [Sola丶小克]
+				if (map_getmapflag(sd->bl.m, MF_HIDEGUILDINFO)) {
+					WBUFB(buf,54) = 0;
+					WBUFB(buf,78) = 0;
+				}
+#endif // rAthenaCN_MapFlag_HideGuildInfo
 			}else if( sd->clan ){
 				WBUFB(buf,54) = 0;
 				safestrncpy(WBUFCP(buf,78), sd->clan->name,NAME_LENGTH);
