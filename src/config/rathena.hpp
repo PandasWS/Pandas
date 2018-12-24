@@ -79,6 +79,9 @@
 
 	// 是否扩展魔物名称能展现的信息, 比如体型、种族、属性 [Sola丶小克 改进]
 	#define rAthenaCN_MobInfomation_Extend
+
+	// 是否加强 2013-12-23 以及 2013-08-07 客户端的混淆密钥 [Sola丶小克]
+	#define rAthenaCN_Packet_Obfuscation_Keys
 #endif // rAthenaCN_Creative_Work
 
 // ============================================================================
