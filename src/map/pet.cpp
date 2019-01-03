@@ -911,7 +911,7 @@ int pet_equipitem(struct map_session_data *sd,int index)
 	clif_pet_equip_area(pd);
 
 	if (battle_config.pet_equip_required) { // Skotlex: start support timers if need
-		unsigned int tick = gettick();
+		t_tick tick = gettick();
 
 		if (pd->s_skill && pd->s_skill->timer == INVALID_TIMER) {
 			if (pd->s_skill->id)
@@ -1048,7 +1048,7 @@ static int pet_food(struct map_session_data *sd, struct pet_data *pd)
  * @param tick : last walk time
  * @return 1:success, 0:failure
  */
-static int pet_randomwalk(struct pet_data *pd,unsigned int tick)
+static int pet_randomwalk(struct pet_data *pd,t_tick tick)
 {
 	nullpo_ret(pd);
 
@@ -1107,7 +1107,7 @@ static int pet_randomwalk(struct pet_data *pd,unsigned int tick)
  * @param tick : last support time
  * @return 0
  */
-static int pet_ai_sub_hard(struct pet_data *pd, struct map_session_data *sd, unsigned int tick)
+static int pet_ai_sub_hard(struct pet_data *pd, struct map_session_data *sd, t_tick tick)
 {
 	struct block_list *target = NULL;
 
@@ -1239,7 +1239,7 @@ static int pet_ai_sub_hard(struct pet_data *pd, struct map_session_data *sd, uns
  */
 static int pet_ai_sub_foreachclient(struct map_session_data *sd,va_list ap)
 {
-	unsigned int tick = va_arg(ap,unsigned int);
+	t_tick tick = va_arg(ap,t_tick);
 
 	if(sd->status.pet_id && sd->pd)
 		pet_ai_sub_hard(sd->pd,sd,tick);
