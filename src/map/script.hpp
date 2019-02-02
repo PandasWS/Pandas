@@ -431,16 +431,6 @@ enum questinfo_types {
 	#define FW_HEAVY            900
 #endif
 
-enum getmapxy_types {
-	UNITTYPE_PC = 0,
-	UNITTYPE_NPC,
-	UNITTYPE_PET,
-	UNITTYPE_MOB,
-	UNITTYPE_HOM,
-	UNITTYPE_MER,
-	UNITTYPE_ELEM,
-};
-
 enum unitdata_mobtypes {
 	UMOB_SIZE = 0,
 	UMOB_LEVEL,
@@ -1949,6 +1939,7 @@ TIMER_FUNC(run_script_timer);
 void script_stop_sleeptimers(int id);
 struct linkdb_node *script_erase_sleepdb(struct linkdb_node *n);
 void script_attach_state(struct script_state* st);
+void script_detach_rid(struct script_state* st);
 void run_script_main(struct script_state *st);
 
 void script_stop_scriptinstances(struct script_code *code);

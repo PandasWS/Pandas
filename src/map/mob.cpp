@@ -52,7 +52,7 @@ using namespace rathena;
 // Move probability for mobs away from players (rate of 1000 minute)
 // in Aegis, this is 100% for mobs that have been activated by players and none otherwise.
 #define MOB_LAZYMOVEPERC(md) (mob_is_spotted(md)?1000:0)
-#define MOB_MAX_DELAY (24*3600*1000)
+const t_tick MOB_MAX_DELAY = 24 * 3600 * 1000;
 #define MAX_MINCHASE 30	//Max minimum chase value to use for mobs.
 #define RUDE_ATTACKED_COUNT 1	//After how many rude-attacks should the skill be used?
 
@@ -1002,7 +1002,7 @@ int mob_linksearch(struct block_list *bl,va_list ap)
 	md=(struct mob_data *)bl;
 	mob_id = va_arg(ap, int);
 	target = va_arg(ap, struct block_list *);
-	tick=va_arg(ap, unsigned int);
+	tick=va_arg(ap, t_tick);
 
 	if (md->mob_id == mob_id && DIFF_TICK(md->last_linktime, tick) < MIN_MOBLINKTIME
 		&& !md->target_id)
