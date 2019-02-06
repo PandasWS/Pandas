@@ -30,9 +30,9 @@
 // 当程序崩溃时生成的转储文件类型
 // 这里的设置会被 login_athena.conf、char-athena.conf、map-athena.conf 中的选项调整
 //
-// 设置为 true  则表示生成 FullDump, 虽然保存信息完整, 但体积较大 (默认值)
-// 设置为 false 则表示生成 MiniDump, 虽然体积较小, 但是保存的信息也比较少
-bool create_fulldump = true;
+// 设置为 1 则表示生成 FullDump, 虽然保存信息完整, 但体积较大 (默认值)
+// 设置为 0 则表示生成 MiniDump, 虽然体积较小, 但是保存的信息也比较少
+int create_fulldump = 0;
 #endif // rAthenaCN_Crash_Report
 
 /// Called when a terminate signal is received.

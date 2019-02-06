@@ -189,7 +189,7 @@ int enable_spy = 0; //To enable/disable @spy commands, which consume too much cp
 int enable_grf = 0;	//To enable/disable reading maps from GRF files, bypassing mapcache [blackhole89]
 
 #ifdef rAthenaCN_Crash_Report
-bool cfg_create_fulldump = true;	// 是否生成完整的崩溃转储文件 [Sola丶小克]
+int cfg_create_fulldump = 0;	// 是否生成完整的崩溃转储文件 [Sola丶小克]
 #endif // rAthenaCN_Crash_Report
 
 #ifdef rAthenaCN_Support_Specify_PacketKeys
@@ -4080,7 +4080,7 @@ int map_config_read(const char *cfgName)
 			enable_grf = config_switch(w2);
 #ifdef rAthenaCN_Crash_Report
 		else if (strcmpi(w1, "create_fulldump") == 0)
-			cfg_create_fulldump = (bool)config_switch(w2);
+			cfg_create_fulldump = config_switch(w2);
 #endif // rAthenaCN_Crash_Report
 		else if (strcmpi(w1, "console_msg_log") == 0)
 			console_msg_log = atoi(w2);//[Ind]
