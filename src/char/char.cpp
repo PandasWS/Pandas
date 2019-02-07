@@ -2249,16 +2249,12 @@ int char_lan_config_read(const char *lancfgName) {
 	int line_num = 0, s_subnet=ARRAYLENGTH(subnet);
 	char line[1024], w1[64], w2[64], w3[64], w4[64];
 
-	if((fp = fopen(lancfgName, "r")) == NULL) {
+	if((fp = UTF8FOPEN(lancfgName, "r")) == NULL) {
 		ShowWarning("LAN Support configuration file is not found: %s\n", lancfgName);
 		return 1;
 	}
 
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-	while(fgets(line, sizeof(line), fp)) {
-#else
-	while(fgets_ex(line, sizeof(line), fp)) {
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+	while(UTF8FGETS(line, sizeof(line), fp)) {
 		line_num++;
 		if ((line[0] == '/' && line[1] == '/') || line[0] == '\n' || line[1] == '\n')
 			continue;
@@ -2575,16 +2571,12 @@ void char_sql_config_read(const char* cfgName) {
 	char line[1024], w1[1024], w2[1024];
 	FILE* fp;
 
-	if ((fp = fopen(cfgName, "r")) == NULL) {
+	if ((fp = UTF8FOPEN(cfgName, "r")) == NULL) {
 		ShowError("File not found: %s\n", cfgName);
 		return;
 	}
 
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-	while(fgets(line, sizeof(line), fp)) {
-#else
-	while(fgets_ex(line, sizeof(line), fp)) {
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+	while(UTF8FGETS(line, sizeof(line), fp)) {
 		if(line[0] == '/' && line[1] == '/')
 			continue;
 
@@ -2913,18 +2905,14 @@ void char_config_split_startitem(char *w1_value, char *w2_value, struct startite
 
 bool char_config_read(const char* cfgName, bool normal){
 	char line[1024], w1[1024], w2[1024];
-	FILE* fp = fopen(cfgName, "r");
+	FILE* fp = UTF8FOPEN(cfgName, "r");
 
 	if (fp == NULL) {
 		ShowError("Configuration file not found: %s.\n", cfgName);
 		return false;
 	}
 
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-	while(fgets(line, sizeof(line), fp)) {
-#else
-	while(fgets_ex(line, sizeof(line), fp)) {
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+	while(UTF8FGETS(line, sizeof(line), fp)) {
 		if (line[0] == '/' && line[1] == '/')
 			continue;
 

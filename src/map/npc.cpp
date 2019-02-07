@@ -4281,7 +4281,7 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 	} 
             
 	// read whole file to buffer
-	fp = fopen(filepath, "rb");
+	fp = UTF8FOPEN(filepath, "rb");
 	if( fp == NULL )
 	{
 		ShowError("npc_parsesrcfile: File not found '%s'.\n", filepath);
@@ -4291,11 +4291,7 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 	len = ftell(fp);
 	buffer = (char*)aMalloc(len+1);
 	fseek(fp, 0, SEEK_SET);
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-	len = fread(buffer, 1, len, fp);
-#else
-	len = fread_ex(buffer, 1, len, fp);
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+	len = UTF8FREAD(buffer, 1, len, fp);
 	buffer[len] = '\0';
 	if( ferror(fp) )
 	{

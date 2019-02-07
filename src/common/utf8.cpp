@@ -15,8 +15,12 @@
 
 #ifdef _WIN32
 
-// 将 UTF8 字符串转换为 ANSI 字符串
-// 此处传入的 strUtf8 参数, 须为 UTF-8 编码的字符串
+//************************************
+// Method:		Utf8ToGbk
+// Description:	将 UTF8 字符串转换为 ANSI 字符串
+// Parameter:	const std::string & strUtf8	须为 UTF-8 编码的字符串
+// Returns:		std::string
+//************************************
 std::string Utf8ToGbk(const std::string& strUtf8)
 {
 	// UTF-8 转 Unicode
@@ -39,8 +43,12 @@ std::string Utf8ToGbk(const std::string& strUtf8)
 	return strTemp;
 }
 
-// 将 ANSI 字符串转换为 UTF8 字符串
-// 此处传入的 strGbk 参数, 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
+//************************************
+// Method:		GbkToUtf8
+// Description:	将 ANSI 字符串转换为 UTF8 字符串
+// Parameter:	const std::string & strGbk 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
+// Returns:		std::string
+//************************************
 std::string GbkToUtf8(const std::string& strGbk)
 {
 	// GBK 转 Unicode
@@ -64,8 +72,12 @@ std::string GbkToUtf8(const std::string& strGbk)
 
 #else
 
-// 将 UTF8 字符串转换为 ANSI 字符串
-// 此处传入的 strUtf8 参数, 须为 UTF-8 编码的字符串
+//************************************
+// Method:		Utf8ToGbk
+// Description:	将 UTF8 字符串转换为 ANSI 字符串
+// Parameter:	const std::string & strUtf8 须为 UTF-8 编码的字符串
+// Returns:		std::string
+//************************************
 std::string Utf8ToGbk(const std::string& strUtf8) {
 	iconv_t c_pt;
 	char *str_input, *p_str_input, *str_output, *p_str_output;
@@ -100,8 +112,12 @@ std::string Utf8ToGbk(const std::string& strUtf8) {
 	return strResult;
 }
 
-// 将 ANSI 字符串转换为 UTF8 字符串
-// 此处传入的 strGbk 参数, 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
+//************************************
+// Method:		GbkToUtf8
+// Description:	将 ANSI 字符串转换为 UTF8 字符串
+// Parameter:	const std::string & strGbk 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
+// Returns:		std::string
+//************************************
 std::string GbkToUtf8(const std::string& strGbk) {
 	ShowFatalError("GbkToUtf8: is not implement yet.\n");
 	return std::string("");
@@ -109,7 +125,12 @@ std::string GbkToUtf8(const std::string& strGbk) {
 
 #endif // _WIN32
 
-// 判断 FILE 对应的文件是否为 UTF8-BOM 编码
+//************************************
+// Method:		isUTF8withBOM
+// Description:	判断 FILE 对应的文件是否为 UTF8-BOM 编码
+// Parameter:	FILE * _Stream
+// Returns:		bool
+//************************************
 bool isUTF8withBOM(FILE *_Stream) {
 	long curpos = 0;
 	unsigned char buf[3] = { 0 };
@@ -127,7 +148,31 @@ bool isUTF8withBOM(FILE *_Stream) {
 	return false;
 }
 
-// 能够兼容读取 UTF8-BOM 编码文件的 fgets 函数
+//************************************
+// Method:		fopen_ex
+// Description:	能够在原有的 mode 中加入 "b" 的 fopen 函数
+//              此文件的 isUTF8withBOM 只有在 "b" 模式下, 才能进行正确的 fseek 操作
+// Parameter:	const char * _FileName
+// Parameter:	const char * _Mode
+// Returns:		FILE*
+//************************************
+FILE* fopen_ex(const char* _FileName, const char* _Mode) {
+	std::string szMode(_Mode);
+	std::string::size_type i = szMode.find("b", 0);
+	if (i == std::string::npos) {
+		szMode += "b";
+	}
+	return fopen(_FileName, szMode.c_str());
+}
+
+//************************************
+// Method:		fgets_ex
+// Description:	能够兼容读取 UTF8-BOM 编码文件的 fgets 函数
+// Parameter:	char * _Buffer
+// Parameter:	int _MaxCount
+// Parameter:	FILE * _Stream
+// Returns:		char*
+//************************************
 char* fgets_ex(char *_Buffer, int _MaxCount, FILE *_Stream) {
 	if (isUTF8withBOM(_Stream) == false) {
 		// 若不是 UTF8-BOM, 那么直接透传 fgets 调用
@@ -175,7 +220,15 @@ char* fgets_ex(char *_Buffer, int _MaxCount, FILE *_Stream) {
 	}
 }
 
-// 能够兼容读取 UTF8-BOM 编码文件的 fread 函数
+//************************************
+// Method:		fread_ex
+// Description:	能够兼容读取 UTF8-BOM 编码文件的 fread 函数
+// Parameter:	void * _Buffer
+// Parameter:	size_t _ElementSize
+// Parameter:	size_t _ElementCount
+// Parameter:	FILE * _Stream
+// Returns:		size_t
+//************************************
 size_t fread_ex(void *_Buffer, size_t _ElementSize, size_t _ElementCount, FILE *_Stream) {
 	if (isUTF8withBOM(_Stream) == false || _ElementSize != 1) {
 		// 若不是 UTF8-BOM 或者 _ElementSize 不等于 1, 那么直接透传 fread 调用

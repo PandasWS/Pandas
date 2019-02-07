@@ -14681,17 +14681,13 @@ static bool status_readdb_attrfix(const char *basedir,bool silent)
 
 
 	sprintf(path, "%s/attr_fix.txt", basedir);
-	fp = fopen(path,"r");
+	fp = UTF8FOPEN(path,"r");
 	if (fp == NULL) {
 		if (silent==0)
 			ShowError("Can't read %s\n", path);
 		return 1;
 	}
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-	while (fgets(line, sizeof(line), fp)) {
-#else
-	while (fgets_ex(line, sizeof(line), fp)) {
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+	while (UTF8FGETS(line, sizeof(line), fp)) {
 		int lv, i, j;
 		if (line[0] == '/' && line[1] == '/')
 			continue;
@@ -14702,11 +14698,7 @@ static bool status_readdb_attrfix(const char *basedir,bool silent)
 
 		for (i = 0; i < ELE_ALL;) {
 			char *p;
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-			if (!fgets(line, sizeof(line), fp))
-#else
-			if (!fgets_ex(line, sizeof(line), fp))
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+			if (!UTF8FGETS(line, sizeof(line), fp))
 				break;
 			if (line[0]=='/' && line[1]=='/')
 				continue;

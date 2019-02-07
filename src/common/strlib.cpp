@@ -995,7 +995,7 @@ bool sv_readdb(const char* directory, const char* filename, char delim, int minc
 	snprintf(path, sizeof(path), "%s/%s", directory, filename);
 
 	// open file
-	fp = fopen(path, "r");
+	fp = UTF8FOPEN(path, "r");
 	if( fp == NULL )
 	{
 		if(silent == 0) ShowError("sv_readdb: can't read %s\n", path);
@@ -1008,11 +1008,7 @@ bool sv_readdb(const char* directory, const char* filename, char delim, int minc
 	line = (char*)aMalloc(nb_cols*colsize);
 
 	// process rows one by one
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-	while( fgets(line, maxcols*colsize, fp) )
-#else
-	while( fgets_ex(line, maxcols*colsize, fp) )
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+	while( UTF8FGETS(line, maxcols*colsize, fp) )
 	{
 		char *match;
 		lines++;

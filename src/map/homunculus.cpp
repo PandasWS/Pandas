@@ -1600,18 +1600,14 @@ void read_homunculus_expdb(void)
 		int j=0;
 		
 		sprintf(path, "%s/%s", db_path, filename[i]);
-		fp = fopen(path,"r");
+		fp = UTF8FOPEN(path,"r");
 		if (fp == NULL) {
 			if (i != 0)
 				continue;
 			ShowError("Can't read %s\n",line);
 			return;
 		}
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-		while (fgets(line, sizeof(line), fp) && j < MAX_LEVEL) {
-#else
-		while (fgets_ex(line, sizeof(line), fp) && j < MAX_LEVEL) {
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+		while (UTF8FGETS(line, sizeof(line), fp) && j < MAX_LEVEL) {
 			if (line[0] == '/' && line[1] == '/')
 				continue;
 

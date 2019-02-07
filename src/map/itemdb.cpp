@@ -990,17 +990,13 @@ static void itemdb_read_combos(const char* basedir, bool silent) {
 
 	sprintf(path, "%s/%s", basedir, "item_combo_db.txt");
 
-	if ((fp = fopen(path, "r")) == NULL) {
+	if ((fp = UTF8FOPEN(path, "r")) == NULL) {
 		if(silent==0) ShowError("itemdb_read_combos: File not found \"%s\".\n", path);
 		return;
 	}
 
 	// process rows one by one
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-	while(fgets(line, sizeof(line), fp)) {
-#else
-	while(fgets_ex(line, sizeof(line), fp)) {
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+	while(UTF8FGETS(line, sizeof(line), fp)) {
 		char *str[2], *p;
 
 		lines++;
@@ -1442,18 +1438,14 @@ static int itemdb_readdb(void){
 		FILE* fp;
 
 		sprintf(path, "%s/%s", db_path, filename[fi]);
-		fp = fopen(path, "r");
+		fp = UTF8FOPEN(path, "r");
 		if( fp == NULL ) {
 			ShowWarning("itemdb_readdb: File not found \"%s\", skipping.\n", path);
 			continue;
 		}
 
 		// process rows one by one
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-		while(fgets(line, sizeof(line), fp))
-#else
-		while(fgets_ex(line, sizeof(line), fp))
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+		while(UTF8FGETS(line, sizeof(line), fp))
 		{
 			char *str[32], *p;
 			int i;
@@ -1665,16 +1657,12 @@ static bool itemdb_read_randomopt(const char* basedir, bool silent) {
 
 	sprintf(path, "%s/%s", basedir, "item_randomopt_db.txt");
 
-	if ((fp = fopen(path, "r")) == NULL) {
+	if ((fp = UTF8FOPEN(path, "r")) == NULL) {
 		if (silent == 0) ShowError("itemdb_read_randomopt: File not found \"%s\".\n", path);
 		return false;
 	}
 
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-	while (fgets(line, sizeof(line), fp)) {
-#else
-	while (fgets_ex(line, sizeof(line), fp)) {
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+	while (UTF8FGETS(line, sizeof(line), fp)) {
 		char *str[2], *p;
 
 		lines++;

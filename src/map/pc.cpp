@@ -11582,17 +11582,13 @@ static int pc_read_statsdb(const char *basedir, int last_s, bool silent){
 	FILE *fp;
 	
 	sprintf(line, "%s/statpoint.txt", basedir);
-	fp=fopen(line,"r");
+	fp=UTF8FOPEN(line,"r");
 	if(fp == NULL){
 		if(silent==0) ShowWarning("Can't read '" CL_WHITE "%s" CL_RESET "'... Generating DB.\n",line);
 		return max(last_s,i);
 	} else {
 		int entries=0;
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-		while(fgets(line, sizeof(line), fp))
-#else
-		while(fgets_ex(line, sizeof(line), fp))
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+		while(UTF8FGETS(line, sizeof(line), fp))
 		{
 			int stat;
 			trim(line);
@@ -11733,16 +11729,12 @@ int pc_read_motd(void)
 	memset(motd_text, 0, sizeof(motd_text));
 
 	// read current MOTD
-	if( ( fp = fopen(motd_txt, "r") ) != NULL )
+	if( ( fp = UTF8FOPEN(motd_txt, "r") ) != NULL )
 	{
 		unsigned int entries = 0;
 		char buf[CHAT_SIZE_MAX];
 
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-		while( entries < MOTD_LINE_SIZE && fgets(buf, CHAT_SIZE_MAX, fp) )
-#else
-		while( entries < MOTD_LINE_SIZE && fgets_ex(buf, CHAT_SIZE_MAX, fp) )
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+		while( entries < MOTD_LINE_SIZE && UTF8FGETS(buf, CHAT_SIZE_MAX, fp) )
 		{
 			unsigned int lines = 0;
 			size_t len;

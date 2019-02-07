@@ -1014,7 +1014,7 @@ void Sql_inter_server_read(const char* cfgName, bool first) {
 	char line[1024], w1[1024], w2[1024];
 	FILE* fp;
 
-	fp = fopen(cfgName, "r");
+	fp = UTF8FOPEN(cfgName, "r");
 	if(fp == NULL) {
 		if( first ) {
 			ShowFatalError("File not found: %s\n", cfgName);
@@ -1024,11 +1024,7 @@ void Sql_inter_server_read(const char* cfgName, bool first) {
 		return;
 	}
 
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-	while(fgets(line, sizeof(line), fp)) {
-#else
-	while(fgets_ex(line, sizeof(line), fp)) {
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+	while(UTF8FGETS(line, sizeof(line), fp)) {
 		int i = sscanf(line, "%1023[^:]: %1023[^\r\n]", w1, w2);
 		if(i != 2)
 			continue;

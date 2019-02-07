@@ -230,7 +230,7 @@ int do_init(int argc, char** argv)
 		std::string filename = directory + map_list_file;
 
 		ShowStatus("Opening map list: %s\n", filename.c_str());
-		list = fopen(filename.c_str(), "r");
+		list = UTF8FOPEN(filename.c_str(), "r");
 		if (list == NULL) {
 			ShowError("Failure when opening maps list file %s\n", filename.c_str());
 			exit(EXIT_FAILURE);
@@ -249,11 +249,7 @@ int do_init(int argc, char** argv)
 		// Read and process the map list
 		char line[1024];
 
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-		while (fgets(line, sizeof(line), list))
-#else
-		while (fgets_ex(line, sizeof(line), list))
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+		while (UTF8FGETS(line, sizeof(line), list))
 		{
 			if (line[0] == '/' && line[1] == '/')
 				continue;

@@ -1292,17 +1292,13 @@ int socket_config_read(const char* cfgName)
 	char line[1024],w1[1024],w2[1024];
 	FILE *fp;
 
-	fp = fopen(cfgName, "r");
+	fp = UTF8FOPEN(cfgName, "r");
 	if(fp == NULL) {
 		ShowError("File not found: %s\n", cfgName);
 		return 1;
 	}
 
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-	while(fgets(line, sizeof(line), fp))
-#else
-	while(fgets_ex(line, sizeof(line), fp))
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+	while(UTF8FGETS(line, sizeof(line), fp))
 	{
 		if(line[0] == '/' && line[1] == '/')
 			continue;

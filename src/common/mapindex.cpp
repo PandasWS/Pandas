@@ -145,7 +145,7 @@ void mapindex_init(void) {
 	for( size_t i = 0; i < ARRAYLENGTH(mapindex_cfgfile); i++ ){
 		sprintf( path, "%s/%s", db_path, mapindex_cfgfile[i] );
 
-		if( ( fp = fopen( path, "r" ) ) == NULL ){
+		if( ( fp = UTF8FOPEN( path, "r" ) ) == NULL ){
 			// It is only fatal if it is the main file
 			if( i == 0 ){
 				ShowFatalError("Unable to read mapindex config file %s!\n", path );
@@ -156,11 +156,7 @@ void mapindex_init(void) {
 			}
 		}
 
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-		while(fgets(line, sizeof(line), fp)) {
-#else
-		while(fgets_ex(line, sizeof(line), fp)) {
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+		while(UTF8FGETS(line, sizeof(line), fp)) {
 			if(line[0] == '/' && line[1] == '/')
 				continue;
 

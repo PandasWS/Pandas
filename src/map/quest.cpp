@@ -436,17 +436,13 @@ void quest_read_txtdb(void)
 		char filename[256];
 
 		sprintf(filename, "%s/%s%s", db_path, dbsubpath[f], "quest_db.txt");
-		if ((fp = fopen(filename, "r")) == NULL) {
+		if ((fp = UTF8FOPEN(filename, "r")) == NULL) {
 			if (f == 0)
 				ShowError("Can't read %s\n", filename);
 			return;
 		}
 
-#ifndef rAthenaCN_Support_Read_UTF8BOM_Configure
-		while(fgets(line, sizeof(line), fp)) {
-#else
-		while(fgets_ex(line, sizeof(line), fp)) {
-#endif // rAthenaCN_Support_Read_UTF8BOM_Configure
+		while(UTF8FGETS(line, sizeof(line), fp)) {
 			struct quest_db *quest = NULL;
 			char *str[19], *p;
 			int quest_id = 0;
