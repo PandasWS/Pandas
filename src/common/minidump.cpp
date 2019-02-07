@@ -9,7 +9,11 @@
 #define LEN_TIMESTAMP 15
 
 // 此处设计一个全局变量 create_fulldump
-// 该变量已经在 core.hpp 中 extern, 实际的定义在 core.cpp 中 [Sola丶小克] 
+// 该变量已经在 core.hpp 中 extern, 实际的定义在 core.cpp 中 [Sola丶小克]
+
+#if !defined(rAthenaCN_Version)
+	#define rAthenaCN_Version "v0.0.0"
+#endif // !defined(rAthenaCN_Version)
 
 inline BOOL IsDataSectionNeeded(const WCHAR* pModuleName)
 {
@@ -52,6 +56,7 @@ inline BOOL CALLBACK MiniDumpCallback(
 
 inline void CreateMiniDump(PEXCEPTION_POINTERS pep, LPCTSTR strFileName)
 {
+#ifdef rAthenaCN_Crash_Report
 	HANDLE hFile = CreateFile(strFileName, GENERIC_READ | GENERIC_WRITE,
 		FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
@@ -77,10 +82,12 @@ inline void CreateMiniDump(PEXCEPTION_POINTERS pep, LPCTSTR strFileName)
 
 		CloseHandle(hFile);
 	}
+#endif // rAthenaCN_Crash_Report
 }
 
 LONG __stdcall rAthenaCN_UnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionInfo)
 {
+#ifdef rAthenaCN_Crash_Report
 	char szFileName[_MAX_FNAME] = "";
 	char szDriverName[_MAX_FNAME] = "";
 	char szDirName[_MAX_FNAME] = "";
@@ -108,4 +115,7 @@ LONG __stdcall rAthenaCN_UnhandledExceptionFilter(PEXCEPTION_POINTERS pException
 
 	CreateMiniDump(pExceptionInfo, szDumpFileName);
 	return EXCEPTION_EXECUTE_HANDLER;
+#else
+	return EXCEPTION_CONTINUE_SEARCH;
+#endif // rAthenaCN_Crash_Report
 }
