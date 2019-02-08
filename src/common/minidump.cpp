@@ -3,6 +3,7 @@
 
 #include "minidump.hpp"
 #include "core.hpp"
+
 #include <time.h>
 #include <stdlib.h>
 
@@ -109,7 +110,7 @@ LONG __stdcall rAthenaCN_UnhandledExceptionFilter(PEXCEPTION_POINTERS pException
 	ShowError("A minidump file were saved to disk, you can find them here:\n");
 	ShowError("%s\n", szDumpFileName);
 	ShowError("Please report the crash in our website:\n");
-	ShowError("https://rathena.cn/\n");
+	ShowError("https://github.com/CairoLee/rAthenaCN_Server\n");
 	ShowError("We will solve this problem as soon as possible.\n");
 	ShowError("============================================================\n");
 

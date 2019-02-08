@@ -6,6 +6,7 @@
 
 #include "winapi.hpp"
 #include "showmsg.hpp"
+
 #include "../config/rathena.hpp"
 #include "../../3rdparty/dbghelp/include/dbghelp.h"
 
