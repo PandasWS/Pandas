@@ -12518,10 +12518,12 @@ BUILDIN_FUNC(pvpon)
 
 	m = map_mapname2mapid(str);
 
-	if (m < 0 || map_getmapflag(m, MF_PVP))
+	if (m < 0) {
+		ShowWarning("buildin_pvpon: Unknown map '%s'.\n", str);
 		return SCRIPT_CMD_FAILURE;
-
-	map_setmapflag(m, MF_PVP, true);
+	}
+	if (!map_getmapflag(m, MF_PVP))
+		map_setmapflag(m, MF_PVP, true);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -12533,10 +12535,12 @@ BUILDIN_FUNC(pvpoff)
 
 	m = map_mapname2mapid(str);
 
-	if(m < 0 || !map_getmapflag(m, MF_PVP))
+	if (m < 0) {
+		ShowWarning("buildin_pvpoff: Unknown map '%s'.\n", str);
 		return SCRIPT_CMD_FAILURE;
-
-	map_setmapflag(m, MF_PVP, false);
+	}
+	if (map_getmapflag(m, MF_PVP))
+		map_setmapflag(m, MF_PVP, false);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -12548,10 +12552,12 @@ BUILDIN_FUNC(gvgon)
 
 	m = map_mapname2mapid(str);
 
-	if (m < 0 || map_getmapflag(m, MF_GVG))
+	if (m < 0) {
+		ShowWarning("buildin_gvgon: Unknown map '%s'.\n", str);
 		return SCRIPT_CMD_FAILURE;
-
-	map_setmapflag(m, MF_GVG, true);
+	}
+	if (!map_getmapflag(m, MF_GVG))
+		map_setmapflag(m, MF_GVG, true);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -12563,8 +12569,11 @@ BUILDIN_FUNC(gvgoff)
 
 	m = map_mapname2mapid(str);
 
-	if (m < 0 || !map_getmapflag(m, MF_GVG))
+	if (m < 0) {
+		ShowWarning("buildin_gvgoff: Unknown map '%s'.\n", str);
 		return SCRIPT_CMD_FAILURE;
+	}
+	if (map_getmapflag(m, MF_GVG))
 		map_setmapflag(m, MF_GVG, false);
 
 	return SCRIPT_CMD_SUCCESS;
@@ -12577,10 +12586,12 @@ BUILDIN_FUNC(gvgon3)
 
 	m = map_mapname2mapid(str);
 
-	if (m < 0 || map_getmapflag(m, MF_GVG_TE))
+	if (m < 0) {
+		ShowWarning("buildin_gvgon3: Unknown map '%s'.\n", str);
 		return SCRIPT_CMD_FAILURE;
-
-	map_setmapflag(m, MF_GVG_TE, true);
+	}
+	if (!map_getmapflag(m, MF_GVG_TE))
+		map_setmapflag(m, MF_GVG_TE, true);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -12592,10 +12603,12 @@ BUILDIN_FUNC(gvgoff3)
 
 	m = map_mapname2mapid(str);
 
-	if (m < 0 || !map_getmapflag(m, MF_GVG_TE))
+	if (m < 0) {
+		ShowWarning("buildin_gvgoff3: Unknown map '%s'.\n", str);
 		return SCRIPT_CMD_FAILURE;
-
-	map_setmapflag(m, MF_GVG_TE, false);
+	}
+	if (map_getmapflag(m, MF_GVG_TE))
+		map_setmapflag(m, MF_GVG_TE, false);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -15037,7 +15050,10 @@ BUILDIN_FUNC(getmapxy)
 
 	x= bl->x;
 	y= bl->y;
-	safestrncpy(mapname, map_getmapdata(bl->m)->name, MAP_NAME_LENGTH);
+	if (bl->m >= 0)
+		safestrncpy(mapname, map_getmapdata(bl->m)->name, MAP_NAME_LENGTH);
+	else
+		memset(mapname, '\0', sizeof(mapname));
 
 	//Set MapName$
 	num=st->stack->stack_data[st->start+2].u.num;
@@ -19638,28 +19654,29 @@ BUILDIN_FUNC(bg_updatescore)
 
 BUILDIN_FUNC(bg_get_data)
 {
-	struct battleground_data *bg;
-	int bg_id = script_getnum(st,2),
-		type = script_getnum(st,3), i;
+	struct battleground_data *bg = bg_team_search( script_getnum(st, 2) );
 
-	if( (bg = bg_team_search(bg_id)) == NULL )
-	{
-		script_pushint(st,0);
+	if (bg == NULL) {
+		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
+	int i, j, type = script_getnum(st, 3);
 
-	switch( type )
-	{
-		case 0: script_pushint(st, bg->count); break;
-		case 1:
-			for (i = 0; bg->members[i].sd != NULL; i++)
-				mapreg_setreg(reference_uid(add_str("$@arenamembers"), i), bg->members[i].sd->bl.id);
-			mapreg_setreg(add_str("$@arenamemberscount"), i);
-			script_pushint(st, i);
-			break;
-		default:
-			ShowError("script:bg_get_data: unknown data identifier %d\n", type);
-			break;
+	switch( type ) {
+	case 0:
+		script_pushint(st, bg->count);
+		break;
+	case 1:
+		for (i = 0, j = 0; i < ARRAYLENGTH(bg->members); i++) {
+			if (bg->members[i].sd != NULL)
+				mapreg_setreg(reference_uid(add_str("$@arenamembers"), j++), bg->members[i].sd->bl.id);
+		}
+		mapreg_setreg(add_str("$@arenamemberscount"), j);
+		script_pushint(st, j);
+		break;
+	default:
+		ShowError("script:bg_get_data: unknown data identifier %d\n", type);
+		break;
 	}
 
 	return SCRIPT_CMD_SUCCESS;
