@@ -9549,6 +9549,20 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 				WBUFB(buf,30) = 0;
 			}
 
+#ifdef rAthenaCN_MapFlag_HidePartyInfo
+			// 若当前地图启用了 hidepartyinfo 标记
+			// 那么除了自己之外, 不再返回当前角色的所在队伍名称 [Sola丶小克]
+			// 
+			// 注意事项:
+			// ---------------------------------------------------------
+			// 在单独执行 clif_name_self 或 clif_name_area 时,
+			// 由于 src 和 bl 会完全一致, 所以此处代码将会失效, 目前测试看已经
+			// 能够覆盖主要场景, 未来如果出现问题的话需要再进行优化调整
+			// ---------------------------------------------------------
+			if (map_getmapflag(sd->bl.m, MF_HIDEPARTYINFO) && src->id != bl->id)
+				WBUFB(buf, 30) = 0;
+#endif // rAthenaCN_MapFlag_HidePartyInfo
+
 			if( sd->guild ){
 				int position;
 
@@ -9561,6 +9575,13 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 #ifdef rAthenaCN_MapFlag_HideGuildInfo
 				// 若当前地图启用了 hideguildinfo 标记
 				// 那么除了自己之外, 不返回角色的公会名称, 以及角色在公会中的职位名称 [Sola丶小克]
+				// 
+				// 注意事项:
+				// ---------------------------------------------------------
+				// 在单独执行 clif_name_self 或 clif_name_area 时,
+				// 由于 src 和 bl 会完全一致, 所以此处代码将会失效, 目前测试看已经
+				// 能够覆盖主要场景, 未来如果出现问题的话需要再进行优化调整
+				// ---------------------------------------------------------
 				if (map_getmapflag(sd->bl.m, MF_HIDEGUILDINFO) && src->id != bl->id) {
 					WBUFB(buf,54) = 0;
 					WBUFB(buf,78) = 0;

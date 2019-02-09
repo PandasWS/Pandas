@@ -139,11 +139,11 @@
 	#define rAthenaCN_MapFlag_NoCapture
 
 	// 是否启用 hideguildinfo 地图标记 [维护者昵称]
-	// TODO: 请在此填写此地图标记的说明
+	// 使当前地图上的玩家无法见到其他人的公会图标、公会名称、职位等信息 (自己依然可见)
 	#define rAthenaCN_MapFlag_HideGuildInfo
 
 	// 是否启用 hidepartyinfo 地图标记 [维护者昵称]
-	// TODO: 请在此填写此地图标记的说明
+	// 使当前地图上的玩家无法见到其他人的队伍名称 (自己依然可见)
 	#define rAthenaCN_MapFlag_HidePartyInfo
 
 	// 是否启用 nomail 地图标记 [维护者昵称]

@@ -5003,8 +5003,8 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 	}
 
 #ifdef rAthenaCN_Mapflags
-	// 某些地图标记在被赋值后, 如果还需要进行一些额外操作的话
-	// 可以在这里进行处理 [Sola丶小克]
+	// 某些地图标记在被赋值后, 可以再此进行一些额外操作
+	// 这里的代码可以允许冗余, 以便提取单个地图标记代码时候更加便利 [Sola丶小克]
 	switch (mapflag) {
 #ifdef rAthenaCN_MapFlag_HideGuildInfo
 	case MF_HIDEGUILDINFO:
@@ -5020,6 +5020,20 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		break;
 	}
 #endif // rAthenaCN_MapFlag_HideGuildInfo
+#ifdef rAthenaCN_MapFlag_HidePartyInfo
+	case MF_HIDEPARTYINFO:
+	{
+		struct s_mapiterator* iter = mapit_getallusers();
+		struct map_session_data* pl_sd = nullptr;
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->bl.m != m)
+				continue;
+			clif_refresh(pl_sd);
+		}
+		mapit_free(iter);
+		break;
+	}
+#endif // rAthenaCN_MapFlag_HidePartyInfo
 	}
 #endif // rAthenaCN_Mapflags
 
