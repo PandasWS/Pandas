@@ -5010,7 +5010,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 	case MF_HIDEGUILDINFO:
 	{
 		struct s_mapiterator* iter = mapit_getallusers();
-		struct map_session_data* pl_sd = NULL;
+		struct map_session_data* pl_sd = nullptr;
 		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
 			if (!pl_sd || pl_sd->bl.m != m)
 				continue;
