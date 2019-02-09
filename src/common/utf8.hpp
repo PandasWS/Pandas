@@ -10,10 +10,6 @@
 #include <stdio.h>
 #include <string>	// std::string
 
-/************************************************************************/
-/* 以下为可外导出的函数定义, 需要的话可直接调用
-/************************************************************************/
-
 std::string Utf8ToGbk(const std::string& strUtf8);
 std::string GbkToUtf8(const std::string& strGbk);
 
