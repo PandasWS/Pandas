@@ -21,7 +21,7 @@
 #endif // rAthenaCN
 
 
-#ifdef rAthenaCN_Support_Read_UTF8BOM_Configur
+#ifdef rAthenaCN_Support_Read_UTF8BOM_Configure
 
 	#define UTF8FOPEN(FILENAME, MODE) fopen_ex(FILENAME, MODE)
 	#define UTF8FGETS(BUFFER, MAXCOUNT, STREAM) fgets_ex(BUFFER, MAXCOUNT, STREAM)

@@ -15,6 +15,7 @@
 	#define rAthenaCN_Bugfix
 	#define rAthenaCN_NpcEvent
 	#define rAthenaCN_Mapflags
+	#define rAthenaCN_AtCommand
 #endif // rAthenaCN
 
 // ============================================================================
@@ -170,5 +171,14 @@
 	#define rAthenaCN_MapFlag_MvpDroprate
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // rAthenaCN_Mapflags
+
+// ============================================================================
+// 管理员指令组 - rAthenaCN_AtCommand
+// ============================================================================
+
+#ifdef rAthenaCN_AtCommand
+	// 召唤当前(或指定)地图的玩家来到身边 - @recallmap [Sola丶小克]
+	#define rAthenaCN_AtCommand_RecallMap
+#endif // rAthenaCN_AtCommand
 
 #endif // _RATHENA_CN_CONFIG_HPP_
