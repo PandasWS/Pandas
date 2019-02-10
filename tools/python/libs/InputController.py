@@ -2,6 +2,9 @@
 
 from libs import Common, Message
 
+__all__ = [
+	'InputController'
+]
 
 class InputController:
     def requireText(self, options):

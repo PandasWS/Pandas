@@ -2,6 +2,5 @@
 
 from .Common import *
 from .Message import *
-
-from .InputController import InputController
-from .InjectController import InjectController
+from .InputController import *
+from .InjectController import *

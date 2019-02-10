@@ -7,6 +7,9 @@ import chardet
 
 from libs import Common
 
+__all__ = [
+	'InjectController'
+]
 
 class InjectController:
     def __init__(self, options):
