@@ -16,13 +16,12 @@
 #ifdef _WIN32
 
 //************************************
-// Method:		Utf8ToGbk
+// Method:		utf8_u2g
 // Description:	将 UTF8 字符串转换为 ANSI 字符串
 // Parameter:	const std::string & strUtf8	须为 UTF-8 编码的字符串
 // Returns:		std::string
 //************************************
-std::string Utf8ToGbk(const std::string& strUtf8)
-{
+std::string utf8_u2g(const std::string& strUtf8) {
 	// UTF-8 转 Unicode
 	int len = MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, NULL, 0);
 	wchar_t * strUnicode = new wchar_t[len];
@@ -44,13 +43,12 @@ std::string Utf8ToGbk(const std::string& strUtf8)
 }
 
 //************************************
-// Method:		GbkToUtf8
+// Method:		utf8_g2u
 // Description:	将 ANSI 字符串转换为 UTF8 字符串
 // Parameter:	const std::string & strGbk 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
 // Returns:		std::string
 //************************************
-std::string GbkToUtf8(const std::string& strGbk)
-{
+std::string utf8_g2u(const std::string& strGbk) {
 	// GBK 转 Unicode
 	int len = MultiByteToWideChar(CP_ACP, 0, strGbk.c_str(), -1, NULL, 0);
 	wchar_t *strUnicode = new wchar_t[len];
@@ -73,19 +71,19 @@ std::string GbkToUtf8(const std::string& strGbk)
 #else
 
 //************************************
-// Method:		Utf8ToGbk
+// Method:		utf8_u2g
 // Description:	将 UTF8 字符串转换为 ANSI 字符串
 // Parameter:	const std::string & strUtf8 须为 UTF-8 编码的字符串
 // Returns:		std::string
 //************************************
-std::string Utf8ToGbk(const std::string& strUtf8) {
+std::string utf8_u2g(const std::string& strUtf8) {
 	iconv_t c_pt;
 	char *str_input, *p_str_input, *str_output, *p_str_output;
 	size_t str_input_len, str_output_len;
 	std::string strResult;
 
 	if ((c_pt = iconv_open("GBK", "UTF-8")) == (iconv_t)-1) {
-		ShowFatalError("Utf8ToGbk: %s was failed: %s\n", "iconv_open", strerror(errno));
+		ShowFatalError("utf8_u2g: %s was failed: %s\n", "iconv_open", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
@@ -99,8 +97,8 @@ std::string Utf8ToGbk(const std::string& strUtf8) {
 	p_str_output = str_output;	// 必须这样赋值一下, 不然在 Linux 下会提示段错误(Segmentation fault)
 
 	if (iconv(c_pt, (char **)&p_str_input, &str_input_len, (char **)&p_str_output, &str_output_len) == (size_t)-1) {
-		ShowFatalError("Utf8ToGbk: %s was failed: %s\n", "iconv", strerror(errno));
-		ShowFatalError("Utf8ToGbk: the strUtf8 param value: %s", str_input);
+		ShowFatalError("utf8_u2g: %s was failed: %s\n", "iconv", strerror(errno));
+		ShowFatalError("utf8_u2g: the strUtf8 param value: %s", str_input);
 		exit(EXIT_FAILURE);
 	}
 
@@ -113,25 +111,25 @@ std::string Utf8ToGbk(const std::string& strUtf8) {
 }
 
 //************************************
-// Method:		GbkToUtf8
+// Method:		utf8_g2u
 // Description:	将 ANSI 字符串转换为 UTF8 字符串
 // Parameter:	const std::string & strGbk 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
 // Returns:		std::string
 //************************************
-std::string GbkToUtf8(const std::string& strGbk) {
-	ShowFatalError("GbkToUtf8: is not implement yet.\n");
+std::string utf8_g2u(const std::string& strGbk) {
+	ShowFatalError("utf8_g2u: is not implement yet.\n");
 	return std::string("");
 }
 
 #endif // _WIN32
 
 //************************************
-// Method:		isUTF8withBOM
+// Method:		utf8_isbom
 // Description:	判断 FILE 对应的文件是否为 UTF8-BOM 编码
 // Parameter:	FILE * _Stream
 // Returns:		bool
 //************************************
-bool isUTF8withBOM(FILE *_Stream) {
+bool utf8_isbom(FILE *_Stream) {
 	long curpos = 0;
 	unsigned char buf[3] = { 0 };
 	
@@ -149,14 +147,14 @@ bool isUTF8withBOM(FILE *_Stream) {
 }
 
 //************************************
-// Method:		fopen_ex
+// Method:		utf8_fopen
 // Description:	能够在原有的 mode 中加入 "b" 的 fopen 函数
-//              此文件的 isUTF8withBOM 只有在 "b" 模式下, 才能进行正确的 fseek 操作
+//              此文件的 utf8_isbom 只有在 "b" 模式下, 才能进行正确的 fseek 操作
 // Parameter:	const char * _FileName
 // Parameter:	const char * _Mode
 // Returns:		FILE*
 //************************************
-FILE* fopen_ex(const char* _FileName, const char* _Mode) {
+FILE* utf8_fopen(const char* _FileName, const char* _Mode) {
 	std::string szMode(_Mode);
 	std::string::size_type i = szMode.find("b", 0);
 	if (i == std::string::npos) {
@@ -166,15 +164,15 @@ FILE* fopen_ex(const char* _FileName, const char* _Mode) {
 }
 
 //************************************
-// Method:		fgets_ex
+// Method:		utf8_fgets
 // Description:	能够兼容读取 UTF8-BOM 编码文件的 fgets 函数
 // Parameter:	char * _Buffer
 // Parameter:	int _MaxCount
 // Parameter:	FILE * _Stream
 // Returns:		char*
 //************************************
-char* fgets_ex(char *_Buffer, int _MaxCount, FILE *_Stream) {
-	if (isUTF8withBOM(_Stream) == false) {
+char* utf8_fgets(char *_Buffer, int _MaxCount, FILE *_Stream) {
+	if (utf8_isbom(_Stream) == false) {
 		// 若不是 UTF8-BOM, 那么直接透传 fgets 调用
 		return fgets(_Buffer, _MaxCount, _Stream);
 	}
@@ -195,7 +193,7 @@ char* fgets_ex(char *_Buffer, int _MaxCount, FILE *_Stream) {
 		result = fgets(buf, _MaxCount, _Stream);
 		if (result) {
 			// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-			ansi_str = Utf8ToGbk(std::string(buf));
+			ansi_str = utf8_u2g(std::string(buf));
 			memset(_Buffer, 0, _MaxCount);
 			delete[] buf;
 			buf = NULL;
@@ -210,7 +208,7 @@ char* fgets_ex(char *_Buffer, int _MaxCount, FILE *_Stream) {
 
 				// 不过退一万步, 目前的实现方法由于 _Buffer 是静态数组
 				// 所以这里就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
-				ShowWarning("fgets_ex: _Buffer size only %d but we need %d, Could not realloc...\n", sizeof(_Buffer), ansi_str.size());
+				ShowWarning("utf8_fgets: _Buffer size only %d but we need %d, Could not realloc...\n", sizeof(_Buffer), ansi_str.size());
 				fseek(_Stream, curpos, SEEK_SET);
 				return fgets(_Buffer, _MaxCount, _Stream);
 			}
@@ -221,7 +219,7 @@ char* fgets_ex(char *_Buffer, int _MaxCount, FILE *_Stream) {
 }
 
 //************************************
-// Method:		fread_ex
+// Method:		utf8_fread
 // Description:	能够兼容读取 UTF8-BOM 编码文件的 fread 函数
 // Parameter:	void * _Buffer
 // Parameter:	size_t _ElementSize
@@ -229,8 +227,8 @@ char* fgets_ex(char *_Buffer, int _MaxCount, FILE *_Stream) {
 // Parameter:	FILE * _Stream
 // Returns:		size_t
 //************************************
-size_t fread_ex(void *_Buffer, size_t _ElementSize, size_t _ElementCount, FILE *_Stream) {
-	if (isUTF8withBOM(_Stream) == false || _ElementSize != 1) {
+size_t utf8_fread(void *_Buffer, size_t _ElementSize, size_t _ElementCount, FILE *_Stream) {
+	if (utf8_isbom(_Stream) == false || _ElementSize != 1) {
 		// 若不是 UTF8-BOM 或者 _ElementSize 不等于 1, 那么直接透传 fread 调用
 		return fread(_Buffer, _ElementSize, _ElementCount, _Stream);
 	}
@@ -259,7 +257,7 @@ size_t fread_ex(void *_Buffer, size_t _ElementSize, size_t _ElementCount, FILE *
 		result = fread(buf, _ElementSize, _ElementCount, _Stream);
 		if (result) {
 			// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-			ansi_str = Utf8ToGbk(std::string(buf));
+			ansi_str = utf8_u2g(std::string(buf));
 			memset(_Buffer, 0, len);
 			delete[] buf;
 			buf = NULL;
@@ -274,7 +272,7 @@ size_t fread_ex(void *_Buffer, size_t _ElementSize, size_t _ElementCount, FILE *
 
 				// 不过退一万步, 目前的实现方法由于 _Buffer 是静态数组
 				// 所以这里就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
-				ShowWarning("fread_ex: _Buffer size only %d but we need %d, Could not realloc...\n", sizeof(_Buffer), ansi_str.size());
+				ShowWarning("utf8_fread: _Buffer size only %d but we need %d, Could not realloc...\n", sizeof(_Buffer), ansi_str.size());
 
 				fseek(_Stream, curpos, SEEK_SET);
 				if (curpos <= 3) _ElementCount += 3;	// 之前修正过 _ElementCount 的大小, 现在这里需要改回去
