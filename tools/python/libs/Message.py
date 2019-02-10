@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import sys
-
 from colorama import init
-from colorama import Fore, Back, Style
+from colorama import Fore
+
+__all__ = [
+	'ShowInfo',
+	'ShowStatus',
+	'ShowNotice',
+	'ShowWarning',
+	'ShowError',
+	'ShowSelect',
+	'ShowMenu'
+]
 
 init()
 
