@@ -38,6 +38,8 @@ struct map_data *map_getmapdata(int16 m);
 #define msg_txt(sd,msg_number) map_msg_txt(sd,msg_number)
 #ifdef rAthenaCN_Message_Conf
 #define msg_txt_cn(sd,msg_number) map_msg_txt(sd,msg_number + ALL_EXTEND_FIRST_MSG)
+#else
+#define msg_txt_cn(sd,msg_number) disabled_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
 #endif // rAthenaCN_Message_Conf
 #define do_final_msg() map_do_final_msg()
 int map_msg_config_read(const char *cfgName,int lang);
