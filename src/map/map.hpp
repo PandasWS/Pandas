@@ -36,16 +36,14 @@ enum E_MAPSERVER_ST {
 struct map_data *map_getmapdata(int16 m);
 #define msg_config_read(cfgName,isnew) map_msg_config_read(cfgName,isnew)
 #define msg_txt(sd,msg_number) map_msg_txt(sd,msg_number)
+#ifdef rAthenaCN_Message_Conf
+#define msg_txt_cn(sd,msg_number) map_msg_txt(sd,msg_number + ALL_EXTEND_FIRST_MSG)
+#endif // rAthenaCN_Message_Conf
 #define do_final_msg() map_do_final_msg()
 int map_msg_config_read(const char *cfgName,int lang);
 const char* map_msg_txt(struct map_session_data *sd,int msg_number);
 void map_do_final_msg(void);
 void map_msg_reload(void);
-
-#ifdef rAthenaCN_Message_Conf
-#define msg_txt_cn(sd,msg_number) map_msg_txt_cn(sd,msg_number)
-const char* map_msg_txt_cn(struct map_session_data *sd, int msg_number);
-#endif // rAthenaCN_Message_Conf
 
 #define MAX_NPC_PER_MAP 512
 #define AREA_SIZE battle_config.area_size

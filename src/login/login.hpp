@@ -129,17 +129,14 @@ extern struct Login_Config login_config;
 
 #define msg_config_read(cfgName) login_msg_config_read(cfgName)
 #define msg_txt(msg_number) login_msg_txt(msg_number)
+#ifdef rAthenaCN_Message_Conf
+#define msg_txt_cn(msg_number) login_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
+#endif // rAthenaCN_Message_Conf
 #define do_final_msg() login_do_final_msg()
 int login_msg_config_read(char *cfgName);
 const char* login_msg_txt(int msg_number);
 void login_do_final_msg(void);
 bool login_config_read(const char* cfgName, bool normal);
-
-#ifdef rAthenaCN_Message_Conf
-#define msg_txt_cn(msg_number) login_msg_txt_cn(msg_number)
-const char* login_msg_txt_cn(int msg_number);
-#endif // rAthenaCN_Message_Conf
-
 /// Online User Database [Wizputer]
 struct online_login_data {
 	uint32 account_id;
