@@ -533,12 +533,6 @@ void login_do_final_msg(void){
 	_do_final_msg(LOGIN_MAX_MSG,msg_table);
 }
 
-#ifdef rAthenaCN_Message_Conf
-const char* login_msg_txt_cn(int msg_number) {
-	return _msg_txt(msg_number + ALL_EXTEND_FIRST_MSG, LOGIN_MAX_MSG, msg_table);
-}
-#endif // rAthenaCN_Message_Conf
-
 
 /// Set and read Configurations
 

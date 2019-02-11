@@ -26,7 +26,7 @@ enum lang_types {
 	#define LANG_ENABLE 0x000
 #endif
 
-#ifdef rAthenaCN_Message_Conf
+// =================================================================================
 // 追加一部分消息区间给 rAthenaCN 扩展使用 [Sola丶小克]
 //
 // 截止 2018年11月20日 rAthena 默认的宏定义默认值如下:
@@ -40,9 +40,14 @@ enum lang_types {
 // 启用此机制后, 会在 login.hpp \ char.hpp \ map.hpp 提供一个 msg_txt_cn 的宏定义函数
 // 通过 msg_txt_cn 传入的 msg_number 会自动加 ALL_EXTEND_FIRST_MSG 作为最终的 msg_number
 // 并从 conf/msg_conf 中读取对应的消息, 作为返回值.
+// =================================================================================
 #define ALL_EXTEND_MSG 3000
 #define ALL_EXTEND_FIRST_MSG 2000
+
+#ifndef rAthenaCN_Message_Conf
+const char* disabled_msg_txt(int msg_number);
 #endif // rAthenaCN_Message_Conf
+// =================================================================================
 
 //read msg in table
 const char* _msg_txt(int msg_number,int size, char ** msg_table);

@@ -3144,12 +3144,6 @@ void char_do_final_msg(void){
 	_do_final_msg(CHAR_MAX_MSG,msg_table);
 }
 
-#ifdef rAthenaCN_Message_Conf
-const char* char_msg_txt_cn(int msg_number) {
-	return _msg_txt(msg_number + ALL_EXTEND_FIRST_MSG, CHAR_MAX_MSG, msg_table);
-}
-#endif // rAthenaCN_Message_Conf
-
 
 void do_final(void)
 {
