@@ -24095,9 +24095,37 @@ BUILDIN_FUNC(preg_match) {
 #endif
 }
 
+#ifdef rAthenaCN_ScriptCommand_SetHeadDir
+/* ===========================================================
+ * 指令: setheaddir
+ * 描述: 调整角色纸娃娃脑袋的朝向
+ * 用法: setheaddir <朝向编号>{,<角色编号>};
+ * 朝向: 0为看正前方, 1为向右看, 2为向左看
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(setheaddir) {
+	TBL_PC* sd = nullptr;
+	int head_dir = script_getnum(st, 2);
+	head_dir = cap_value(head_dir, 0, 2);
+
+	if (!script_charid2sd(3, sd))
+		return SCRIPT_CMD_SUCCESS;
+
+	pc_setdir(sd, sd->ud.dir, head_dir);
+	clif_changed_dir(&sd->bl, AREA_WOS);
+	clif_changed_dir(&sd->bl, SELF);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_SetHeadDir
+
 /// script command definitions
 /// for an explanation on args, see add_buildin_func
 struct script_function buildin_func[] = {
+#ifdef rAthenaCN_ScriptCommand_SetHeadDir
+	BUILDIN_DEF(setheaddir,"i?"),						// 调整角色纸娃娃脑袋的朝向 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_SetHeadDir
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
 	BUILDIN_DEF(next,""),

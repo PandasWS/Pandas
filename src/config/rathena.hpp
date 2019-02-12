@@ -15,7 +15,8 @@
 	#define rAthenaCN_Bugfix
 	#define rAthenaCN_NpcEvent
 	#define rAthenaCN_Mapflags
-	#define rAthenaCN_AtCommand
+	#define rAthenaCN_AtCommands
+	#define rAthenaCN_ScriptCommands
 #endif // rAthenaCN
 
 // ============================================================================
@@ -173,12 +174,23 @@
 #endif // rAthenaCN_Mapflags
 
 // ============================================================================
-// 管理员指令组 - rAthenaCN_AtCommand
+// 管理员指令组 - rAthenaCN_AtCommands
 // ============================================================================
 
-#ifdef rAthenaCN_AtCommand
-	// 召唤当前(或指定)地图的玩家来到身边 - @recallmap [Sola丶小克]
+#ifdef rAthenaCN_AtCommands
+	// 是否启用 recallmap 管理员指令 [Sola丶小克]
+	// 召唤当前(或指定)地图的玩家来到身边 (处于离线挂店模式的角色不会被召唤)
 	#define rAthenaCN_AtCommand_RecallMap
-#endif // rAthenaCN_AtCommand
+#endif // rAthenaCN_AtCommands
+
+// ============================================================================
+// 脚本引擎指令组 - rAthenaCN_ScriptCommands
+// ============================================================================
+
+#ifdef rAthenaCN_ScriptCommands
+	// 是否启用 setheaddir 脚本指令 [Sola丶小克]
+	// 用于调整角色纸娃娃脑袋的朝向 (0 - 正前方; 1 - 向右看; 2 - 向左看)
+	#define rAthenaCN_ScriptCommand_SetHeadDir
+#endif // rAthenaCN_ScriptCommands
 
 #endif // _RATHENA_CN_CONFIG_HPP_

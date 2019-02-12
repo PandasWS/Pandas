@@ -130,9 +130,9 @@ extern struct Login_Config login_config;
 #define msg_config_read(cfgName) login_msg_config_read(cfgName)
 #define msg_txt(msg_number) login_msg_txt(msg_number)
 #ifdef rAthenaCN_Message_Conf
-#define msg_txt_cn(msg_number) login_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
+	#define msg_txt_cn(msg_number) login_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
 #else
-#define msg_txt_cn(msg_number) disabled_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
+	#define msg_txt_cn(msg_number) disabled_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
 #endif // rAthenaCN_Message_Conf
 #define do_final_msg() login_do_final_msg()
 int login_msg_config_read(char *cfgName);

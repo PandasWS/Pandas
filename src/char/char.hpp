@@ -333,9 +333,9 @@ void char_set_session_flag_(int account_id, int val, bool set);
 #define msg_config_read(cfgName) char_msg_config_read(cfgName)
 #define msg_txt(msg_number) char_msg_txt(msg_number)
 #ifdef rAthenaCN_Message_Conf
-#define msg_txt_cn(msg_number) char_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
+	#define msg_txt_cn(msg_number) char_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
 #else
-#define msg_txt_cn(msg_number) disabled_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
+	#define msg_txt_cn(msg_number) disabled_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
 #endif // rAthenaCN_Message_Conf
 #define do_final_msg() char_do_final_msg()
 int char_msg_config_read(const char *cfgName);
