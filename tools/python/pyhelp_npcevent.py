@@ -224,8 +224,7 @@ def guide(inject):
 
     eventname = InputController().requireText({
         'tips' : '请输入该 NPC 事件的名称 (以 On 开头, 末尾应为 Event 或 Filter)',
-        'prefix' : '',
-        'upper' : False
+        'prefix' : ''
     })
 
     if not eventname.startswith('On'):
@@ -246,8 +245,7 @@ def guide(inject):
 
     eventdesc = InputController().requireText({
         'tips' : '请输入该 NPC 事件的简短说明 (如: 当玩家杀死 MVP 魔物时触发事件)',
-        'prefix' : '',
-        'upper' : False
+        'prefix' : ''
     })
 
     # --------
