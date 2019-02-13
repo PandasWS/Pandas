@@ -24120,12 +24120,15 @@ BUILDIN_FUNC(setheaddir) {
 }
 #endif // rAthenaCN_ScriptCommand_SetHeadDir
 
+// PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
+
 /// script command definitions
 /// for an explanation on args, see add_buildin_func
 struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_SetHeadDir
 	BUILDIN_DEF(setheaddir,"i?"),						// 调整角色纸娃娃脑袋的朝向 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_SetHeadDir
+	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
 	BUILDIN_DEF(next,""),

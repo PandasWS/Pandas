@@ -215,8 +215,7 @@ def guide(inject):
 
     define = InputController().requireText({
         'tips' : '请输入该地图标记的宏定义开关名称 (rAthenaCN_MapFlag_的末尾部分)',
-        'prefix' : 'rAthenaCN_MapFlag_',
-        'upper' : False
+        'prefix' : 'rAthenaCN_MapFlag_'
     })
 
     # --------
@@ -256,8 +255,7 @@ def guide(inject):
     if flagtype == 1:
         var_name_1 = InputController().requireText({
             'tips' : '请输入用于记录"第一个数值参数"的 map_data 结构成员变量名',
-            'prefix' : '',
-            'upper' : False
+            'prefix' : ''
         })
 
     # --------

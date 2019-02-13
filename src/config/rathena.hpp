@@ -191,6 +191,7 @@
 	// 是否启用 setheaddir 脚本指令 [Sola丶小克]
 	// 用于调整角色纸娃娃脑袋的朝向 (0 - 正前方; 1 - 向右看; 2 - 向左看)
 	#define rAthenaCN_ScriptCommand_SetHeadDir
+	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
 #endif // _RATHENA_CN_CONFIG_HPP_

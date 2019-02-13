@@ -3,7 +3,7 @@
 from libs import Common, Message
 
 __all__ = [
-	'InputController'
+    'InputController'
 ]
 
 class InputController:
@@ -12,12 +12,15 @@ class InputController:
         Message.ShowSelect(options['tips'] + ':')
         result = input(options['prefix'])
         if not result:
-            Message.ShowError('请至少输入一个字符. 程序终止')
-            print('-' * 70)
-            Common.exitWithPause(-1)
+            if not ('allow_empty' in options and options['allow_empty']):
+                Message.ShowError('请至少输入一个字符. 程序终止')
+                print('-' * 70)
+                Common.exitWithPause(-1)
         result = options['prefix'] + result
-        if options['upper']:
+        if 'upper' in options and options['upper']:
             result = result.upper()
+        if 'lower' in options and options['lower']:
+            result = result.lower()
         Message.ShowInfo('您输入的是: ' + result)
         print('-' * 70)
         print('\n')
