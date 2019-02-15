@@ -199,6 +199,10 @@
 	// 是否启用 openbank 脚本指令 [Sola丶小克]
 	// 让指定的角色立刻打开银行界面 (只对拥有随身银行的客户端版本有效)
 	#define rAthenaCN_ScriptCommand_OpenBank
+
+	// 是否启用 instance_users 脚本指令 [Sola丶小克]
+	// 获取指定的副本实例中已经进入副本地图的人数
+	#define rAthenaCN_ScriptCommand_InstanceUsers
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
