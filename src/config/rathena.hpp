@@ -203,6 +203,10 @@
 	// 是否启用 instance_users 脚本指令 [Sola丶小克]
 	// 获取指定的副本实例中已经进入副本地图的人数
 	#define rAthenaCN_ScriptCommand_InstanceUsers
+
+	// 是否启用 mobremove 脚本指令 [Sola丶小克]
+	// 根据 GID 移除一个魔物单位 (只是移除, 不会让魔物死亡)
+	#define rAthenaCN_ScriptCommand_MobRemove
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 

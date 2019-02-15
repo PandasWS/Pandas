@@ -24236,6 +24236,25 @@ BUILDIN_FUNC(instance_users) {
 }
 #endif // rAthenaCN_ScriptCommand_InstanceUsers
 
+#ifdef rAthenaCN_ScriptCommand_MobRemove
+/* ===========================================================
+ * 指令: mobremove
+ * 描述: 根据 GID 移除一个魔物单位 (只是移除, 不会让魔物死亡)
+ * 用法: mobremove <魔物的GID>;
+ * 返回: 该指令无论成功失败, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(mobremove) {
+	struct block_list *bl = nullptr;
+	bl = map_id2bl(script_getnum(st, 2));
+
+	if (bl && bl->type == BL_MOB)
+		unit_free(bl, CLR_OUTSIGHT);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_MobRemove
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24253,6 +24272,9 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_InstanceUsers
 	BUILDIN_DEF(instance_users,"i"),					// 获取指定的副本实例中, 已经进入副本地图的人数 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_InstanceUsers
+#ifdef rAthenaCN_ScriptCommand_MobRemove
+	BUILDIN_DEF(mobremove,"i"),							// 根据 GID 移除一个魔物单位 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_MobRemove
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
