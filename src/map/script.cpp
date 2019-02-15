@@ -24160,6 +24160,36 @@ BUILDIN_FUNC(setheaddir) {
 }
 #endif // rAthenaCN_ScriptCommand_SetHeadDir
 
+#ifdef rAthenaCN_ScriptCommand_InstanceUsers
+/* ===========================================================
+ * 指令: instance_users
+ * 描述: 获取指定的副本实例中已经进入副本地图的人数
+ * 用法: instance_users <副本实例编号>;
+ * 返回: 成功直接返回副本中的人数, 副本不存在或副本中无人存在则返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(instance_users) {
+	struct instance_data *im = nullptr;
+	int i = 0, users = 0, instance_id = 0;
+
+	instance_id = script_getnum(st, 2);
+
+	if (instance_id && instance_id <= MAX_INSTANCE_DATA) {
+		im = &instance_data[instance_id];
+		if (im && im->state != INSTANCE_FREE) {
+			for (i = 0; i < im->cnt_map; i++) {
+				if (map_getmapdata(im->map[i]->m) != nullptr) {
+					users += max(map_getmapdata(im->map[i]->m)->users, 0);
+				}
+			}
+		}
+	}
+
+	script_pushint(st, users);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_InstanceUsers
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24168,6 +24198,9 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_SetHeadDir
 	BUILDIN_DEF(setheaddir,"i?"),						// 调整角色纸娃娃脑袋的朝向 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_SetHeadDir
+#ifdef rAthenaCN_ScriptCommand_InstanceUsers
+	BUILDIN_DEF(instance_users,"i"),					// 获取指定的副本实例中, 已经进入副本地图的人数 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_InstanceUsers
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
