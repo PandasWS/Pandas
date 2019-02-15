@@ -135,15 +135,15 @@
 	// 该标记用于禁止玩家在指定的地图上使用“原地复活之证”道具
 	#define rAthenaCN_MapFlag_NoToken
 
-	// 是否启用 nocapture 地图标记 [维护者昵称]
+	// 是否启用 nocapture 地图标记 [Sola丶小克]
 	// 该标记用于禁止玩家在地图上使用宠物捕捉道具或贤者的"随机技能"来捕捉宠物
 	#define rAthenaCN_MapFlag_NoCapture
 
-	// 是否启用 hideguildinfo 地图标记 [维护者昵称]
+	// 是否启用 hideguildinfo 地图标记 [Sola丶小克]
 	// 使当前地图上的玩家无法见到其他人的公会图标、公会名称、职位等信息 (自己依然可见)
 	#define rAthenaCN_MapFlag_HideGuildInfo
 
-	// 是否启用 hidepartyinfo 地图标记 [维护者昵称]
+	// 是否启用 hidepartyinfo 地图标记 [Sola丶小克]
 	// 使当前地图上的玩家无法见到其他人的队伍名称 (自己依然可见)
 	#define rAthenaCN_MapFlag_HidePartyInfo
 
@@ -191,6 +191,10 @@
 	// 是否启用 setheaddir 脚本指令 [Sola丶小克]
 	// 用于调整角色纸娃娃脑袋的朝向 (0 - 正前方; 1 - 向右看; 2 - 向左看)
 	#define rAthenaCN_ScriptCommand_SetHeadDir
+
+	// 是否启用 setbodydir 脚本指令 [Sola丶小克]
+	// 用于调整角色纸娃娃身体的朝向 (与 NPC 一致, 从 0 到 7 共 8 个方位可选择)
+	#define rAthenaCN_ScriptCommand_SetBodyDir
 
 	// 是否启用 openbank 脚本指令 [Sola丶小克]
 	// 让指定的角色立刻打开银行界面 (只对拥有随身银行的客户端版本有效)
