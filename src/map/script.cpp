@@ -24236,6 +24236,24 @@ BUILDIN_FUNC(instance_users) {
 }
 #endif // rAthenaCN_ScriptCommand_InstanceUsers
 
+#ifdef rAthenaCN_ScriptCommand_CapValue
+/* ===========================================================
+ * 指令: cap
+ * 描述: 确保数值不低于给定的最小值, 不超过给定的最大值
+ * 用法: cap <要判断的数值>,<最小值>,<最大值>;
+ * 返回: 低于最小值则直接返回最小值, 超过最大值则直接返回最大值, 如果在两者之间则原样返回数值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(cap) {
+	int val = script_getnum(st, 2);
+	int min = script_getnum(st, 3);
+	int max = script_getnum(st, 4);
+
+	script_pushint(st, cap_value(val, min, max));
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_CapValue
+
 #ifdef rAthenaCN_ScriptCommand_MobRemove
 /* ===========================================================
  * 指令: mobremove
@@ -24272,6 +24290,10 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_InstanceUsers
 	BUILDIN_DEF(instance_users,"i"),					// 获取指定的副本实例中, 已经进入副本地图的人数 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_InstanceUsers
+#ifdef rAthenaCN_ScriptCommand_CapValue
+	BUILDIN_DEF(cap,"iii"),								// 确保数值不低于给定的最小值, 不超过给定的最大值 [Sola丶小克]
+	BUILDIN_DEF2(cap,"cap_value","iii"),				// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_CapValue
 #ifdef rAthenaCN_ScriptCommand_MobRemove
 	BUILDIN_DEF(mobremove,"i"),							// 根据 GID 移除一个魔物单位 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_MobRemove
