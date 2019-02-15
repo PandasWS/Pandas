@@ -42,12 +42,17 @@ def insert_scriptcmd(inject, options):
         '\t#define %s' % define
     ])
     
+    usage = ' * 用法: %s;' % cmdname
+    if argsmode != '':
+        usage = ' * 用法: %s <请补充完整参数说明>;' % cmdname
+    
     # script.cpp @ BUILDIN_FUNC 脚本指令实际代码
     inject.insert(2, [
         '#ifdef %s' % define,
         '/* ===========================================================',
         ' * 指令: %s' % cmdname,
         ' * 描述: 请在此补充该脚本指令的说明',
+        usage,
         ' * 返回: 请说明返回值',
         ' * 作者: 维护者昵称',
         ' * -----------------------------------------------------------*/',
@@ -121,7 +126,7 @@ def guide(inject):
         'tips' : '请输入该脚本指令的参数模式 (如一个或多个的: i\s\? 为空则直接回车)',
         'prefix' : '',
         'lower' : True,
-		'allow_empty' : True
+        'allow_empty' : True
     })
     
     # --------
