@@ -195,6 +195,10 @@
 	// 是否启用 setbodydir 脚本指令 [Sola丶小克]
 	// 用于调整角色纸娃娃身体的朝向 (与 NPC 一致, 从 0 到 7 共 8 个方位可选择)
 	#define rAthenaCN_ScriptCommand_SetBodyDir
+
+	// 是否启用 openbank 脚本指令 [Sola丶小克]
+	// 让指定的角色立刻打开银行界面 (只对拥有随身银行的客户端版本有效)
+	#define rAthenaCN_ScriptCommand_OpenBank
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
