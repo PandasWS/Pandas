@@ -24160,6 +24160,28 @@ BUILDIN_FUNC(setheaddir) {
 }
 #endif // rAthenaCN_ScriptCommand_SetHeadDir
 
+#ifdef rAthenaCN_ScriptCommand_OpenBank
+/* ===========================================================
+ * 指令: openbank
+ * 描述: 让指定的角色立刻打开银行界面
+ * 用法: openbank {<角色编号>};
+ * 返回: 若指定角色不在线则返回 0, 成功则返回 1
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(openbank) {
+	TBL_PC* sd = nullptr;
+
+	if (!script_charid2sd(2, sd) || !sd) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	clif_parse_BankOpen(sd->fd, sd);
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_OpenBank
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24168,6 +24190,9 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_SetHeadDir
 	BUILDIN_DEF(setheaddir,"i?"),						// 调整角色纸娃娃脑袋的朝向 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_SetHeadDir
+#ifdef rAthenaCN_ScriptCommand_OpenBank
+	BUILDIN_DEF(openbank,"?"),							// 让指定的角色立刻打开银行界面 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_OpenBank
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

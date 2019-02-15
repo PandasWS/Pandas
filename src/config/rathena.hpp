@@ -191,6 +191,10 @@
 	// 是否启用 setheaddir 脚本指令 [Sola丶小克]
 	// 用于调整角色纸娃娃脑袋的朝向 (0 - 正前方; 1 - 向右看; 2 - 向左看)
 	#define rAthenaCN_ScriptCommand_SetHeadDir
+
+	// 是否启用 openbank 脚本指令 [Sola丶小克]
+	// 让指定的角色立刻打开银行界面 (只对拥有随身银行的客户端版本有效)
+	#define rAthenaCN_ScriptCommand_OpenBank
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
