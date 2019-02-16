@@ -207,6 +207,10 @@
 	// 是否启用 cap 脚本指令 [Sola丶小克]
 	// 确保数值不低于给定的最小值, 不超过给定的最大值
 	#define rAthenaCN_ScriptCommand_CapValue
+
+	// 是否启用 mobremove 脚本指令 [Sola丶小克]
+	// 根据 GID 移除一个魔物单位 (只是移除, 不会让魔物死亡)
+	#define rAthenaCN_ScriptCommand_MobRemove
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 

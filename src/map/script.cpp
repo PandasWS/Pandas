@@ -24254,6 +24254,25 @@ BUILDIN_FUNC(cap) {
 }
 #endif // rAthenaCN_ScriptCommand_CapValue
 
+#ifdef rAthenaCN_ScriptCommand_MobRemove
+/* ===========================================================
+ * 指令: mobremove
+ * 描述: 根据 GID 移除一个魔物单位 (只是移除, 不会让魔物死亡)
+ * 用法: mobremove <魔物的GID>;
+ * 返回: 该指令无论成功失败, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(mobremove) {
+	struct block_list *bl = nullptr;
+	bl = map_id2bl(script_getnum(st, 2));
+
+	if (bl && bl->type == BL_MOB)
+		unit_free(bl, CLR_OUTSIGHT);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_MobRemove
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24275,6 +24294,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(cap,"iii"),								// 确保数值不低于给定的最小值, 不超过给定的最大值 [Sola丶小克]
 	BUILDIN_DEF2(cap,"cap_value","iii"),				// 指定一个别名, 以便兼容 rAthenaCN 的老版本
 #endif // rAthenaCN_ScriptCommand_CapValue
+#ifdef rAthenaCN_ScriptCommand_MobRemove
+	BUILDIN_DEF(mobremove,"i"),							// 根据 GID 移除一个魔物单位 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_MobRemove
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
