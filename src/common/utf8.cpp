@@ -24,7 +24,7 @@
 std::string utf8_u2g(const std::string& strUtf8) {
 	// UTF-8 转 Unicode
 	int len = MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, NULL, 0);
-	wchar_t * strUnicode = new wchar_t[len];
+	wchar_t *strUnicode = new wchar_t[len];
 	wmemset(strUnicode, 0, len);
 	MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, strUnicode, len);
 
@@ -37,8 +37,8 @@ std::string utf8_u2g(const std::string& strUtf8) {
 	std::string strTemp(strGbk);
 	delete[] strUnicode;
 	delete[] strGbk;
-	strUnicode = NULL;
-	strGbk = NULL;
+	strUnicode = nullptr;
+	strGbk = nullptr;
 	return strTemp;
 }
 
@@ -57,14 +57,14 @@ std::string utf8_g2u(const std::string& strGbk) {
 
 	// Unicode 转 UTF-8
 	len = WideCharToMultiByte(CP_UTF8, 0, strUnicode, -1, NULL, 0, NULL, NULL);
-	char * strUtf8 = new char[len];
+	char *strUtf8 = new char[len];
 	WideCharToMultiByte(CP_UTF8, 0, strUnicode, -1, strUtf8, len, NULL, NULL);
 
 	std::string strTemp(strUtf8);
 	delete[] strUnicode;
 	delete[] strUtf8;
-	strUnicode = NULL;
-	strUtf8 = NULL;
+	strUnicode = nullptr;
+	strUtf8 = nullptr;
 	return strTemp;
 }
 
@@ -77,9 +77,10 @@ std::string utf8_g2u(const std::string& strGbk) {
 // Returns:		std::string
 //************************************
 std::string utf8_u2g(const std::string& strUtf8) {
-	iconv_t c_pt;
-	char *str_input, *p_str_input, *str_output, *p_str_output;
-	size_t str_input_len, str_output_len;
+	iconv_t c_pt = nullptr;
+	char *str_input = nullptr, *p_str_input = nullptr;
+	char *str_output = nullptr, *p_str_output = nullptr;
+	size_t str_input_len = 0, str_output_len = 0;
 	std::string strResult;
 
 	if ((c_pt = iconv_open("GBK", "UTF-8")) == (iconv_t)-1) {
@@ -178,9 +179,9 @@ char* utf8_fgets(char *_Buffer, int _MaxCount, FILE *_Stream) {
 	}
 	else {
 		long curpos = 0;
-		char* result = NULL;
-		char* buf = new char[_MaxCount];
-		std::string ansi_str;
+		char *result = nullptr;
+		char *buffer = new char[_MaxCount];
+		std::string ansi_str, origin_str;
 
 		// 若指针在文件的前3个字节, 那么将指针移动到前3个字节后面,
 		// 避免后续进行 fgets 的时候读取到前3个字节
@@ -190,13 +191,22 @@ char* utf8_fgets(char *_Buffer, int _MaxCount, FILE *_Stream) {
 		}
 
 		// 读取 _MaxCount 长度的内容并保存到 buf 中
-		result = fgets(buf, _MaxCount, _Stream);
+		result = fgets(buffer, _MaxCount, _Stream);
 		if (result) {
+			origin_str = std::string(buffer);
+			delete[] buffer;
+			buffer = nullptr;
+
+			// 若为注释行则直接返回空即可, fgets 每次调用读取一行文本
+			// 所以在这里若发现是 // 开头的行则直接返回空, 应该不影响现有程序逻辑
+			if (origin_str.rfind("//", 0) == 0) {
+				memset(_Buffer, 0, _MaxCount);
+				return result;
+			}
+
 			// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-			ansi_str = utf8_u2g(std::string(buf));
+			ansi_str = utf8_u2g(origin_str);
 			memset(_Buffer, 0, _MaxCount);
-			delete[] buf;
-			buf = NULL;
 
 			if (ansi_str.size() <= (size_t)_MaxCount) {
 				// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
@@ -213,6 +223,9 @@ char* utf8_fgets(char *_Buffer, int _MaxCount, FILE *_Stream) {
 				return fgets(_Buffer, _MaxCount, _Stream);
 			}
 		}
+
+		delete[] buffer;
+		buffer = nullptr;
 
 		return result;
 	}
@@ -236,7 +249,7 @@ size_t utf8_fread(void *_Buffer, size_t _ElementSize, size_t _ElementCount, FILE
 		long curpos = ftell(_Stream);
 		size_t len = (_ElementSize * _ElementCount) + 1;
 		size_t result = 0;
-		char* buf = new char[len];
+		char *buffer = new char[len];
 		std::string ansi_str;
 
 		// 若指针在文件的前3个字节, 那么将指针移动到前3个字节后面,
@@ -245,22 +258,22 @@ size_t utf8_fread(void *_Buffer, size_t _ElementSize, size_t _ElementCount, FILE
 			fseek(_Stream, 3, SEEK_SET);
 
 			// 重新分配缓冲区大小, 以及调整 _ElementCount 的大小
-			delete[] buf;
+			delete[] buffer;
 			if (_ElementCount >= 3) _ElementCount -= 3;
 			if (len >= 3) len -=3;
-			buf = new char[len];
+			buffer = new char[len];
 		}
 
-		memset(buf, 0, len);
+		memset(buffer, 0, len);
 
 		// 读取特定长度的内容并保存到 buf 中
-		result = fread(buf, _ElementSize, _ElementCount, _Stream);
+		result = fread(buffer, _ElementSize, _ElementCount, _Stream);
 		if (result) {
 			// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-			ansi_str = utf8_u2g(std::string(buf));
+			ansi_str = utf8_u2g(std::string(buffer));
 			memset(_Buffer, 0, len);
-			delete[] buf;
-			buf = NULL;
+			delete[] buffer;
+			buffer = nullptr;
 
 			if (ansi_str.size() <= len) {
 				// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
@@ -279,6 +292,9 @@ size_t utf8_fread(void *_Buffer, size_t _ElementSize, size_t _ElementCount, FILE
 				return fread(_Buffer, _ElementSize, _ElementCount, _Stream);
 			}
 		}
+
+		delete[] buffer;
+		buffer = nullptr;
 
 		return result;
 	}
