@@ -215,6 +215,10 @@
 	// 根据 GID 移除一个魔物单位 (只是移除, 不会让魔物死亡)
 	#define rAthenaCN_ScriptCommand_MobRemove
 
+	// 是否启用 mesclear 脚本指令 [Sola丶小克]
+	// 由于 rAthena 已经实现 clear 指令, 这里兼容老版本 mesclear 指令
+	#define rAthenaCN_ScriptCommand_MesClear
+
 	// 是否启用 battleignore 脚本指令 [Sola丶小克]
 	// 将角色设置为魔物免战状态, 避免被魔物攻击 (与 GM 指令的 monsterignore 效果一致)
 	#define rAthenaCN_ScriptCommand_BattleIgnore
