@@ -25,12 +25,12 @@ std::string & std_string_format(std::string & _str, const char * _Format, ...) {
 	va_list marker;
 
 	va_start(marker, _Format);
-	size_t count = _vsnprintf(NULL, 0, _Format, marker);
+	size_t count = vsnprintf(NULL, 0, _Format, marker) + 1;
 	va_end(marker);
 
 	va_start(marker, _Format);
 	char* buf = (char*)aMalloc(count * sizeof(char));
-	_vsnprintf(buf, count, _Format, marker);
+	vsnprintf(buf, count, _Format, marker);
 	_str = std::string(buf, count);
 	aFree(buf);
 	va_end(marker);
