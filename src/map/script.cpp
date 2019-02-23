@@ -13799,7 +13799,7 @@ BUILDIN_FUNC(getinventorylist)
 			}
 #ifdef rAthenaCN_ScriptResults_GetInventoryList
 			// 数值型数组 - @inventorylist_idx 用于保存道具在 items_inventory 的索引
-			pc_setreg(sd,reference_uid(add_str("@inventorylist_idx"), j), i);
+			pc_setreg(sd, reference_uid(add_str("@inventorylist_idx"), j), i);
 
 			// 字符串数组 - @inventorylist_uid$ 用于保存道具的唯一编号
 			{
