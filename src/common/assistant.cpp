@@ -20,9 +20,9 @@
 // Parameter:	...
 // Returns:		std::string &
 //************************************
-std::string & std_format(std::string & _str, const char * _Format, ...) {
+std::string & std_string_format(std::string & _str, const char * _Format, ...) {
 	std::string tmp, result;
-	va_list marker = nullptr;
+	va_list marker;
 
 	va_start(marker, _Format);
 	size_t count = _vsnprintf(NULL, 0, _Format, marker);
