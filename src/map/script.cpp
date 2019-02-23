@@ -24273,6 +24273,26 @@ BUILDIN_FUNC(mobremove) {
 }
 #endif // rAthenaCN_ScriptCommand_MobRemove
 
+#ifdef rAthenaCN_ScriptCommand_BattleIgnore
+/* ===========================================================
+ * 指令: battleignore
+ * 描述: 将角色设置为魔物免战状态, 避免被魔物攻击
+ * 用法: battleignore <开关状态>{,<角色编号>};
+ * 返回: 该指令无论成功失败, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(battleignore) {
+	TBL_PC* sd = nullptr;
+	int immune = script_getnum(st, 2);
+
+	if (!script_charid2sd(2, sd) || !sd)
+		return SCRIPT_CMD_SUCCESS;
+
+	sd->state.monster_ignore = cap_value(immune, 0, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_BattleIgnore
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24297,6 +24317,9 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_MobRemove
 	BUILDIN_DEF(mobremove,"i"),							// 根据 GID 移除一个魔物单位 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_MobRemove
+#ifdef rAthenaCN_ScriptCommand_BattleIgnore
+	BUILDIN_DEF(battleignore,"i?"),						// 将角色设置为魔物免战状态, 避免被魔物攻击 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_BattleIgnore
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
