@@ -24297,6 +24297,9 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_MobRemove
 	BUILDIN_DEF(mobremove,"i"),							// 根据 GID 移除一个魔物单位 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_MobRemove
+#ifdef rAthenaCN_ScriptCommand_MesClear
+	BUILDIN_DEF2(clear,"mesclear",""),					// 由于 rAthena 已经实现 clear 指令, 这里兼容老版本 mesclear 指令 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_MesClear
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
