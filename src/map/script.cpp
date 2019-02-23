@@ -13797,6 +13797,17 @@ BUILDIN_FUNC(getinventorylist)
 				sprintf(randopt_var, "@inventorylist_option_parameter%d",k+1);
 				pc_setreg(sd,reference_uid(add_str(randopt_var), j),sd->inventory.u.items_inventory[i].option[k].param);
 			}
+#ifdef rAthenaCN_ScriptResults_GetInventoryList
+			// 数值型数组 - @inventorylist_idx 用于保存道具在 items_inventory 的索引
+			pc_setreg(sd,reference_uid(add_str("@inventorylist_idx"), j), i);
+
+			// 字符串数组 - @inventorylist_uid$ 用于保存道具的唯一编号
+			{
+				std::string str_unique_id;
+				std_format(str_unique_id, "%llu", (unsigned long long)sd->inventory.u.items_inventory[i].unique_id);
+				pc_setregstr(sd, reference_uid(add_str("@inventorylist_uid$"), j), str_unique_id.c_str());
+			}
+#endif // rAthenaCN_ScriptResults_GetInventoryList
 			j++;
 		}
 	}

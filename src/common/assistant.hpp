@@ -5,6 +5,9 @@
 #define _RATHENA_CN_ASSISTANT_HPP_
 
 #include "sql.hpp"
+#include "string"
+
+std::string & std_format(std::string & _str, const char * _Format, ...);
 void smart_codepage(Sql* sql_handle, const char* connect_name, const char* codepage);
 
 #endif // _RATHENA_CN_ASSISTANT_HPP_

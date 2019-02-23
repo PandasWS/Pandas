@@ -17,6 +17,7 @@
 	#define rAthenaCN_Mapflags
 	#define rAthenaCN_AtCommands
 	#define rAthenaCN_ScriptCommands
+	#define rAthenaCN_ScriptResults
 #endif // rAthenaCN
 
 // ============================================================================
@@ -187,7 +188,7 @@
 #endif // rAthenaCN_AtCommands
 
 // ============================================================================
-// 脚本引擎指令组 - rAthenaCN_ScriptCommands
+// 脚本指令组 - rAthenaCN_ScriptCommands
 // ============================================================================
 
 #ifdef rAthenaCN_ScriptCommands
@@ -224,5 +225,14 @@
 	#define rAthenaCN_ScriptCommand_BattleIgnore
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
+
+// ============================================================================
+// 脚本返回值拓展组 - rAthenaCN_ScriptResults
+// ============================================================================
+
+#ifdef rAthenaCN_ScriptResults
+	// 是否拓展 getinventorylist 脚本指令的返回数组 [Sola丶小克]
+	#define rAthenaCN_ScriptResults_GetInventoryList
+#endif // rAthenaCN_ScriptResults
 
 #endif // _RATHENA_CN_CONFIG_HPP_
