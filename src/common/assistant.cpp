@@ -21,7 +21,6 @@
 // Returns:		std::string &
 //************************************
 std::string & std_string_format(std::string & _str, const char * _Format, ...) {
-	std::string tmp, result;
 	va_list marker;
 
 	va_start(marker, _Format);
