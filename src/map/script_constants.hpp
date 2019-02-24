@@ -784,6 +784,15 @@
 	export_constant2("bSkillDelay",SP_SKILL_DELAY);
 	export_constant2("bNoWalkDelay",SP_NO_WALK_DELAY);
 
+#ifdef rAthenaCN_ScriptParams_ReadParam
+	export_constant2("bAllStr", SP_STR_ALL);
+	export_constant2("bAllAgi", SP_AGI_ALL);
+	export_constant2("bAllVit", SP_VIT_ALL);
+	export_constant2("bAllInt", SP_INT_ALL);
+	export_constant2("bAllDex", SP_DEX_ALL);
+	export_constant2("bAllLuk", SP_LUK_ALL);
+#endif // rAthenaCN_ScriptParams_ReadParam
+
 	/* equip indices */
 	export_constant(EQI_COMPOUND_ON);
 	export_constant(EQI_HEAD_TOP);
