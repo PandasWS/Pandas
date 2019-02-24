@@ -24304,6 +24304,130 @@ BUILDIN_FUNC(battleignore) {
 }
 #endif // rAthenaCN_ScriptCommand_BattleIgnore
 
+#ifdef rAthenaCN_ScriptCommand_GetHotkey
+/* ===========================================================
+ * 指令: gethotkey
+ * 描述: 获取指定快捷键位置当前的信息
+ * 用法: gethotkey <快捷键位置编号>{,<要获取的数据类型>};
+ * 返回: 若携带 <要获取的数据类型> 参数时, 发生错误将返回 -1, 成功则返回查询的值;
+		不携带 <要获取的数据类型> 参数时, 发生错误将返回 -1, 成功则将信息保存到变量并返回 1
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(gethotkey) {
+	int hotkey_idx = -1, request_data = -1;
+	TBL_PC *sd = nullptr;
+
+	if (!script_rid2sd(sd)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	hotkey_idx = script_getnum(st, 2);
+	if (hotkey_idx < 0 || hotkey_idx > MAX_HOTKEYS) {
+		ShowError("buildin_gethotkey: hotkey index %d is out of range (0..%d).\n", hotkey_idx, MAX_HOTKEYS);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (script_hasdata(st, 3)) {
+		if (!script_isint(st, 3)) {
+			ShowError("buildin_gethotkey: request date type must be a integer value.\n");
+			script_pushint(st, -1);
+			return SCRIPT_CMD_SUCCESS;
+		}
+		else {
+			request_data = script_getnum(st, 3);
+		}
+
+		switch (request_data)
+		{
+		case 0:
+			script_pushint(st, sd->status.hotkeys[hotkey_idx].type); break;
+		case 1:
+			script_pushint(st, sd->status.hotkeys[hotkey_idx].id); break;
+		case 2:
+			script_pushint(st, sd->status.hotkeys[hotkey_idx].lv); break;
+		default:
+			ShowError("buildin_gethotkey: request date type %d is out of range (0..2).\n", request_data);
+			script_pushint(st, -1);
+		}
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	pc_setreg(sd, add_str("@hotkey_type"), (int)sd->status.hotkeys[hotkey_idx].type);
+	pc_setreg(sd, add_str("@hotkey_id"), (int)sd->status.hotkeys[hotkey_idx].id);
+	pc_setreg(sd, add_str("@hotkey_lv"), (int)sd->status.hotkeys[hotkey_idx].lv);
+
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_GetHotkey
+
+#ifdef rAthenaCN_ScriptCommand_SetHotkey
+/* ===========================================================
+ * 指令: sethotkey
+ * 描述: 设置指定快捷键位置的信息
+ * 用法: sethotkey <快捷键位置编号>,<快捷键的类型>,<物品/技能的ID>,<技能等级>;
+ * 返回: 设置成功则返回 1, 设置失败则返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(sethotkey) {
+	int hotkey_idx = -1, hotkey_id = -1;
+	int hotkey_lv = -1, hotkey_type = -1;
+	TBL_PC *sd = nullptr;
+
+	if (!script_rid2sd(sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	hotkey_idx = script_getnum(st, 2);
+	if (hotkey_idx < 0 || hotkey_idx > MAX_HOTKEYS) {
+		ShowError("buildin_sethotkey: hotkey index %d is out of range (0..%d).\n", hotkey_idx, MAX_HOTKEYS);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	hotkey_type = script_getnum(st, 3);
+	if (hotkey_type < 0 || hotkey_type > 1) {
+		ShowError("buildin_sethotkey: hotkey type %d is out of range (0..1).\n", hotkey_type);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	hotkey_id = script_getnum(st, 4);
+	if (hotkey_type == 0) {	// 物品
+		if (!itemdb_exists(hotkey_id)) {
+			ShowError("buildin_sethotkey: Nonexistant item %d requested.\n", hotkey_id);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_SUCCESS;
+		}
+	}
+	else {	// 技能
+		if (!skill_get_index(hotkey_id)) {
+			ShowError("buildin_sethotkey: Invalid skill ID %d , please review.\n", hotkey_id);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_SUCCESS;
+		}
+	}
+
+	hotkey_lv = script_getnum(st, 5);
+	if (hotkey_type == 0) {	// 物品
+		hotkey_lv = 0;
+	}
+
+	sd->status.hotkeys[hotkey_idx].type = hotkey_type;
+	sd->status.hotkeys[hotkey_idx].id = hotkey_id;
+	sd->status.hotkeys[hotkey_idx].lv = hotkey_lv;
+
+	clif_hotkeys_send(sd);
+	clif_inventorylist(sd);
+
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_SetHotkey
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24334,6 +24458,14 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_BattleIgnore
 	BUILDIN_DEF(battleignore,"i?"),						// 将角色设置为魔物免战状态, 避免被魔物攻击 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_BattleIgnore
+#ifdef rAthenaCN_ScriptCommand_GetHotkey
+	BUILDIN_DEF(gethotkey,"i?"),						// 获取指定快捷键位置当前的信息 [Sola丶小克]
+	BUILDIN_DEF2(gethotkey,"get_hotkey","i?"),			// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_GetHotkey
+#ifdef rAthenaCN_ScriptCommand_SetHotkey
+	BUILDIN_DEF(sethotkey,"iiii"),						// 设置指定快捷键位置的信息 [Sola丶小克]
+	BUILDIN_DEF2(sethotkey,"set_hotkey","iiii"),		// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_SetHotkey
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
