@@ -12,6 +12,32 @@
 #include "db.hpp"
 #include "showmsg.hpp"
 
+//************************************
+// Method:		std_string_format
+// Description:	用于进行 std::string 的格式化
+// Parameter:	std::string & _str
+// Parameter:	const char * _Format
+// Parameter:	...
+// Returns:		std::string &
+//************************************
+std::string & std_string_format(std::string & _str, const char * _Format, ...) {
+	std::string tmp, result;
+	va_list marker;
+
+	va_start(marker, _Format);
+	size_t count = vsnprintf(NULL, 0, _Format, marker) + 1;
+	va_end(marker);
+
+	va_start(marker, _Format);
+	char* buf = (char*)aMalloc(count * sizeof(char));
+	vsnprintf(buf, count, _Format, marker);
+	_str = std::string(buf, count);
+	aFree(buf);
+	va_end(marker);
+
+	return _str;
+}
+
 // 为指定的 sql_handle 设定合适的编码
 void smart_codepage(Sql* sql_handle, const char* connect_name, const char* codepage) {
 	char* buf = NULL;
