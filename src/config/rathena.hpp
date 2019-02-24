@@ -18,6 +18,7 @@
 	#define rAthenaCN_AtCommands
 	#define rAthenaCN_ScriptCommands
 	#define rAthenaCN_ScriptResults
+	#define rAthenaCN_ScriptParams
 #endif // rAthenaCN
 
 // ============================================================================
@@ -234,5 +235,14 @@
 	// 是否拓展 getinventorylist 脚本指令的返回数组 [Sola丶小克]
 	#define rAthenaCN_ScriptResults_GetInventoryList
 #endif // rAthenaCN_ScriptResults
+
+// ============================================================================
+// 脚本参数拓展组 - rAthenaCN_ScriptParams
+// ============================================================================
+
+#ifdef rAthenaCN_ScriptParams
+	// 是否拓展 readparam 脚本指令的可用参数 [Sola丶小克]
+	#define rAthenaCN_ScriptParams_ReadParam
+#endif // rAthenaCN_ScriptParams
 
 #endif // _RATHENA_CN_CONFIG_HPP_
