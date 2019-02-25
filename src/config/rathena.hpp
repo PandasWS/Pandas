@@ -224,6 +224,14 @@
 	// 是否启用 battleignore 脚本指令 [Sola丶小克]
 	// 将角色设置为魔物免战状态, 避免被魔物攻击 (与 GM 指令的 monsterignore 效果一致)
 	#define rAthenaCN_ScriptCommand_BattleIgnore
+
+	// 是否启用 gethotkey 脚本指令 [Sola丶小克]
+	// 获取指定快捷键位置当前的信息 (该指令有一个用于兼容的别名: get_hotkey)
+	#define rAthenaCN_ScriptCommand_GetHotkey
+
+	// 是否启用 sethotkey 脚本指令 [Sola丶小克]
+	// 设置指定快捷键位置的信息 (该指令有一个用于兼容的别名: set_hotkey)
+	#define rAthenaCN_ScriptCommand_SetHotkey
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
