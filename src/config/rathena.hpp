@@ -237,7 +237,7 @@
 	#define rAthenaCN_ScriptCommand_SetHotkey
 
 	// 是否启用 showvend 脚本指令 [Jian916]
-	// 使指定<NPC名称>头上显示露天商店的招牌, 点击招牌可触发与 NPC 的对话
+	// 使指定的 NPC 头上可以显示露天商店的招牌, 点击招牌可触发与 NPC 的对话
 	#define rAthenaCN_ScriptCommand_ShowVend
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands

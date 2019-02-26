@@ -24431,7 +24431,7 @@ BUILDIN_FUNC(sethotkey) {
 #ifdef rAthenaCN_ScriptCommand_ShowVend
 /* ===========================================================
  * 指令: showvend
- * 描述: 使指定<NPC名称>头上显示露天商店的招牌
+ * 描述: 使指定的 NPC 头上可以显示露天商店的招牌
  * 用法: showvend "<NPC名称>",<是否显示>{,"<招牌名称>"};
  * 返回: 操作成功则返回 1, 操作失败则返回 0
  * 作者: Jian916, Rewrite By Sola丶小克
@@ -24525,7 +24525,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(sethotkey,"set_hotkey","iiii"),		// 指定一个别名, 以便兼容 rAthenaCN 的老版本
 #endif // rAthenaCN_ScriptCommand_SetHotkey
 #ifdef rAthenaCN_ScriptCommand_ShowVend
-	BUILDIN_DEF(showvend,"si?"),						// 使指定<NPC名称>头上显示露天商店的招牌 [Jian916]
+	BUILDIN_DEF(showvend,"si?"),						// 使指定的 NPC 头上可以显示露天商店的招牌 [Jian916]
 #endif // rAthenaCN_ScriptCommand_ShowVend
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
