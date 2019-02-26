@@ -82,6 +82,14 @@ void vending_vendinglistreq(struct map_session_data* sd, int id)
 	struct map_session_data* vsd;
 	nullpo_retv(sd);
 
+#ifdef rAthenaCN_ScriptCommand_ShowVend
+	struct npc_data *nd_sd = map_id2nd(id);
+	if (nd_sd && nd_sd->vendingboard.show) {
+		npc_click(sd, nd_sd);
+		return;
+	}
+#endif // rAthenaCN_ScriptCommand_ShowVend
+
 	if( (vsd = map_id2sd(id)) == NULL )
 		return;
 	if( !vsd->state.vending )
