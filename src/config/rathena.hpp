@@ -235,6 +235,10 @@
 	// 是否启用 sethotkey 脚本指令 [Sola丶小克]
 	// 设置指定快捷键位置的信息 (该指令有一个用于兼容的别名: set_hotkey)
 	#define rAthenaCN_ScriptCommand_SetHotkey
+
+	// 是否启用 showvend 脚本指令 [Jian916]
+	// 使指定<NPC名称>头上显示露天商店的招牌, 点击招牌可触发与 NPC 的对话
+	#define rAthenaCN_ScriptCommand_ShowVend
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 

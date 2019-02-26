@@ -24428,6 +24428,64 @@ BUILDIN_FUNC(sethotkey) {
 }
 #endif // rAthenaCN_ScriptCommand_SetHotkey
 
+#ifdef rAthenaCN_ScriptCommand_ShowVend
+/* ===========================================================
+ * 指令: showvend
+ * 描述: 使指定<NPC名称>头上显示露天商店的招牌
+ * 用法: showvend "<NPC名称>",<是否显示>{,"<招牌名称>"};
+ * 返回: 操作成功则返回 1, 操作失败则返回 0
+ * 作者: Jian916, Rewrite By Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(showvend) {
+	struct npc_data *nd = nullptr;
+	const char *npcname = nullptr, *message = nullptr;
+	char buf[NAME_LENGTH + 1] = { 0 };
+	int showit = 0;
+
+	npcname = script_getstr(st, 2);
+	showit = script_getnum(st, 3);
+
+	if (showit && !script_hasdata(st, 4)) {
+		ShowError("buildin_showvend: Can't create vendingboard without any message.\n");
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+	else if (showit && !script_isstring(st, 4)) {
+		ShowError("buildin_showvend: The 'message' param must be a string.\n");
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+	else if (showit) {
+		message = script_getstr(st, 4);
+	}
+
+	nd = npc_name2id(npcname);
+	if (nd == nullptr) {
+		ShowError("buildin_showvend: No such NPC '%s'.\n", npcname);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	switch (showit)
+	{
+	case 0:
+		clif_closevendingboard(&nd->bl, 0);
+		memset(nd->vendingboard.message, 0, NAME_LENGTH + 1);
+		nd->vendingboard.show = false;
+		break;
+	default:
+		memcpy(buf, message, NAME_LENGTH);
+		clif_showvendingboard(&nd->bl, (const char*)buf, 0);
+		nd->vendingboard.show = true;
+		memcpy(nd->vendingboard.message, buf, NAME_LENGTH + 1);
+		break;
+	}
+
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_ShowVend
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24466,6 +24524,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(sethotkey,"iiii"),						// 设置指定快捷键位置的信息 [Sola丶小克]
 	BUILDIN_DEF2(sethotkey,"set_hotkey","iiii"),		// 指定一个别名, 以便兼容 rAthenaCN 的老版本
 #endif // rAthenaCN_ScriptCommand_SetHotkey
+#ifdef rAthenaCN_ScriptCommand_ShowVend
+	BUILDIN_DEF(showvend,"si?"),						// 使指定<NPC名称>头上显示露天商店的招牌 [Jian916]
+#endif // rAthenaCN_ScriptCommand_ShowVend
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

@@ -4692,6 +4692,10 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_specialeffect_single(bl,EF_BABYBODY2,sd->fd);
 			clif_efst_status_change_sub(&sd->bl, bl, SELF);
 			clif_progressbar_npc(nd, sd);
+#ifdef rAthenaCN_ScriptCommand_ShowVend
+			if (sd && nd && nd->vendingboard.show)
+				clif_showvendingboard(&nd->bl, nd->vendingboard.message, sd->fd);
+#endif // rAthenaCN_ScriptCommand_ShowVend
 		}
 		break;
 	case BL_MOB:
