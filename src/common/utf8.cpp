@@ -218,7 +218,7 @@ char* utf8_fgets(char *_Buffer, int _MaxCount, FILE *_Stream) {
 
 				// 不过退一万步, 目前的实现方法由于 _Buffer 是静态数组
 				// 所以这里就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
-				ShowWarning("utf8_fgets: _Buffer size only %d but we need %d, Could not realloc...\n", sizeof(_Buffer), ansi_str.size());
+				ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", "utf8_fgets", sizeof(_Buffer), ansi_str.size());
 				fseek(_Stream, curpos, SEEK_SET);
 				return fgets(_Buffer, _MaxCount, _Stream);
 			}
@@ -285,7 +285,7 @@ size_t utf8_fread(void *_Buffer, size_t _ElementSize, size_t _ElementCount, FILE
 
 				// 不过退一万步, 目前的实现方法由于 _Buffer 是静态数组
 				// 所以这里就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
-				ShowWarning("utf8_fread: _Buffer size only %d but we need %d, Could not realloc...\n", sizeof(_Buffer), ansi_str.size());
+				ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", "utf8_fread", sizeof(_Buffer), ansi_str.size());
 
 				fseek(_Stream, curpos, SEEK_SET);
 				if (curpos <= 3) _ElementCount += 3;	// 之前修正过 _ElementCount 的大小, 现在这里需要改回去

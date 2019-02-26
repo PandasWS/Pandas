@@ -103,6 +103,13 @@ struct npc_data {
 		t_tick timeout;
 		unsigned long color;
 	} progressbar;
+
+#ifdef rAthenaCN_ScriptCommand_ShowVend
+	struct {
+		char message[NAME_LENGTH + 1];
+		bool show;
+	} vendingboard;
+#endif // rAthenaCN_ScriptCommand_ShowVend
 };
 
 struct eri;

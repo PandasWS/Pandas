@@ -2540,6 +2540,11 @@ struct npc_data *npc_create_npc(int16 m, int16 x, int16 y){
 	nd->sc_display_count = 0;
 	nd->progressbar.timeout = 0;
 
+#ifdef rAthenaCN_ScriptCommand_ShowVend
+	nd->vendingboard.show = false;
+	memset(nd->vendingboard.message, 0, NAME_LENGTH + 1);
+#endif // rAthenaCN_ScriptCommand_ShowVend
+
 	return nd;
 }
 
