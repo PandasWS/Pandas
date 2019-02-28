@@ -1620,13 +1620,7 @@ void read_homunculus_expdb(void)
 			hexptbl[MAX_LEVEL - 1] = 0;
 		}
 		fclose(fp);
-#ifndef rAthenaCN_Fix_DBLoad_Exp_Homun
-		ShowStatus("Done reading '" CL_WHITE "%d" CL_RESET "' levels in '" CL_WHITE "%s/%s" CL_RESET "'.\n", j, db_path, path);
-#else
-		// 由于上面已经用 sprintf(path, "%s/%s", db_path, filename[i]); 把 db_path 组合进去了
-		// 所以下面在 ShowStatus 的时候没必要再次拼接 db_path 变量 [Luffy]
 		ShowStatus("Done reading '" CL_WHITE "%d" CL_RESET "' levels in '" CL_WHITE "%s" CL_RESET "'.\n", j, path);
-#endif // rAthenaCN_Fix_DBLoad_Exp_Homun
 	}
 }
 

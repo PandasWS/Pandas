@@ -101,9 +101,6 @@
 
 	// 修正在部分情况下角色公会图标刷新不及时的问题 [Sola丶小克]
 	#define rAthenaCN_Fix_GuildEmblem_Update
-
-	// 修正读取 exp_homun.txt 的提示信息不正确的问题 [Luffy]
-	#define rAthenaCN_Fix_DBLoad_Exp_Homun
 #endif // rAthenaCN_Bugfix
 
 // ============================================================================
