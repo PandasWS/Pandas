@@ -236,6 +236,10 @@
 	// 是否启用 showvend 脚本指令 [Jian916]
 	// 使指定的 NPC 头上可以显示露天商店的招牌, 点击招牌可触发与 NPC 的对话
 	#define rAthenaCN_ScriptCommand_ShowVend
+
+	// 是否启用 viewequip 脚本指令 [Sola丶小克]
+	// 使用该指令可以查看指定在线角色的装备面板信息 (注意: v2.0.0 以前是通过账号编号)
+	#define rAthenaCN_ScriptCommand_ViewEquip
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 

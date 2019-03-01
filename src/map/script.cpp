@@ -24486,6 +24486,46 @@ BUILDIN_FUNC(showvend) {
 }
 #endif // rAthenaCN_ScriptCommand_ShowVend
 
+#ifdef rAthenaCN_ScriptCommand_ViewEquip
+/* ===========================================================
+ * 指令: viewequip
+ * 描述: 查看指定在线角色的装备面板信息
+ * 用法: viewequip <目标的角色编号>{,<是否强制查看>};
+ * 返回: 操作成功则返回 1, 操作失败则返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(viewequip) {
+    TBL_PC *sd = nullptr;
+    int aid = script_getnum(st, 2), force = 0;
+	struct map_session_data *tsd = map_charid2sd(aid);
+
+	if (!tsd || !script_rid2sd(sd)){
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (script_hasdata(st, 3)) {
+        if (!script_isint(st, 3)) {
+		    ShowError("buildin_showvend: The 'force' param must be a integer.\n");
+            script_pushint(st, 0);
+            return SCRIPT_CMD_SUCCESS;
+        }
+		force = cap_value(script_getnum(st, 3), 0, 1);
+    }
+
+	if(tsd->status.show_equip || pc_has_permission(sd, PC_PERM_VIEW_EQUIPMENT) || force == 1){
+		clif_viewequip_ack(sd, tsd);
+		script_pushint(st, 1);
+	}
+	else{
+		clif_msg(sd, VIEW_EQUIP_FAIL);
+		script_pushint(st, 0);
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_ViewEquip
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24527,6 +24567,9 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_ShowVend
 	BUILDIN_DEF(showvend,"si?"),						// 使指定的 NPC 头上可以显示露天商店的招牌 [Jian916]
 #endif // rAthenaCN_ScriptCommand_ShowVend
+#ifdef rAthenaCN_ScriptCommand_ViewEquip
+	BUILDIN_DEF(viewequip,"i?"),						// 查看指定在线角色的装备面板信息 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_ViewEquip
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
