@@ -24505,13 +24505,13 @@ BUILDIN_FUNC(viewequip) {
 	}
 
 	if (script_hasdata(st, 3)) {
-        if (!script_isint(st, 3)) {
-		    ShowError("buildin_showvend: The 'force' param must be a integer.\n");
-            script_pushint(st, 0);
-            return SCRIPT_CMD_SUCCESS;
-        }
+		if (!script_isint(st, 3)) {
+			ShowError("buildin_showvend: The 'force' param must be a integer.\n");
+			script_pushint(st, 0);
+			return SCRIPT_CMD_SUCCESS;
+		}
 		force = cap_value(script_getnum(st, 3), 0, 1);
-    }
+	}
 
 	if(tsd->status.show_equip || pc_has_permission(sd, PC_PERM_VIEW_EQUIPMENT) || force == 1){
 		clif_viewequip_ack(sd, tsd);
