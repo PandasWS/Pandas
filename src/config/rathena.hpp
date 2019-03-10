@@ -240,6 +240,10 @@
 	// 是否启用 viewequip 脚本指令 [Sola丶小克]
 	// 使用该指令可以查看指定在线角色的装备面板信息 (注意: v2.0.0 以前是通过账号编号)
 	#define rAthenaCN_ScriptCommand_ViewEquip
+
+	// 是否启用 delitemidx 脚本指令 [Sola丶小克]
+	// 移除指定背包序号的道具, 其中数量参数可不填, 若不填则表示删除指定道具的全部
+	#define rAthenaCN_ScriptCommand_DelItemIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
