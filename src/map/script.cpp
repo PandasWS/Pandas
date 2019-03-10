@@ -24565,6 +24565,11 @@ BUILDIN_FUNC(equipidx) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
+	if (!itemdb_isequip2(id)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
 	if (sd->inventory.u.items_inventory[idx].equip != 0) {
 		script_pushint(st, 1);
 		return SCRIPT_CMD_SUCCESS;
