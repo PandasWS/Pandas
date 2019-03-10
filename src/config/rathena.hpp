@@ -241,7 +241,7 @@
 	// 使用该指令可以查看指定在线角色的装备面板信息 (注意: v2.0.0 以前是通过账号编号)
 	#define rAthenaCN_ScriptCommand_ViewEquip
 
-	// 是否启用 unequipidx 脚本指令 [维护者昵称]
+	// 是否启用 unequipidx 脚本指令 [Sola丶小克]
 	// 脱下指定背包序号的道具 (该指令有一个用于兼容的别名: unequipinventory)
 	#define rAthenaCN_ScriptCommand_UnEquipIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
