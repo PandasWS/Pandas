@@ -24526,6 +24526,60 @@ BUILDIN_FUNC(viewequip) {
 }
 #endif // rAthenaCN_ScriptCommand_ViewEquip
 
+#ifdef rAthenaCN_ScriptCommand_UnEquipIdx
+/* ===========================================================
+ * 指令: unequipidx
+ * 描述: 脱下指定背包序号的道具
+ * 用法: unequipidx <背包序号>{,<角色编号>};
+ * 返回: 操作成功则返回 1, 操作失败则返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(unequipidx) {
+	struct map_session_data *sd = nullptr;
+	struct item_data *id = nullptr;
+	int idx = -1;
+
+	if (script_hasdata(st, 3)) {
+		if (!script_charid2sd(3, sd)) {
+			script_pushint(st, 0);
+			return SCRIPT_CMD_SUCCESS;
+		}
+	}
+	else {
+		if (!script_rid2sd(sd)) {
+			script_pushint(st, 0);
+			return SCRIPT_CMD_SUCCESS;
+		}
+	}
+
+	idx = script_getnum(st, 2);
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		ShowWarning("buildin_unequipidx: Index (%d) should be from 0-%d.\n", idx, sd->inventory.max_amount - 1);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
+		ShowWarning("buildin_unequipidx: Invalid Item ID (%d).\n", sd->inventory.u.items_inventory[idx].nameid);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!itemdb_isequip2(id)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd->inventory.u.items_inventory[idx].equip == 0) {
+		script_pushint(st, 1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushint(st, pc_unequipitem(sd, idx, id->equip) ? 1 : 0);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_UnEquipIdx
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24570,6 +24624,10 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_ViewEquip
 	BUILDIN_DEF(viewequip,"i?"),						// 查看指定在线角色的装备面板信息 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_ViewEquip
+#ifdef rAthenaCN_ScriptCommand_UnEquipIdx
+	BUILDIN_DEF(unequipidx,"i?"),						// 脱下指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(unequipidx,"unequipinventory","i?"),	// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_UnEquipIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
