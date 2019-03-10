@@ -240,6 +240,10 @@
 	// 是否启用 viewequip 脚本指令 [Sola丶小克]
 	// 使用该指令可以查看指定在线角色的装备面板信息 (注意: v2.0.0 以前是通过账号编号)
 	#define rAthenaCN_ScriptCommand_ViewEquip
+
+	// 是否启用 equipidx 脚本指令 [Sola丶小克]
+	// 穿戴指定背包序号的道具 (该指令有一个用于兼容的别名: equipinventory)
+	#define rAthenaCN_ScriptCommand_EquipIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
