@@ -17,7 +17,6 @@
 
 import codecs
 import os
-import platform
 
 import chardet
 from libs import InputController
