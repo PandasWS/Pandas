@@ -23,7 +23,7 @@ class InputController:
             result = result.lower()
         Message.ShowInfo('您输入的是: ' + result)
         print('-' * 70)
-        print('\n')
+        print('')
         return result
 
     def requireSelect(self, options):
@@ -53,7 +53,7 @@ class InputController:
         print('')
         Message.ShowInfo('您选择的是: %s' % select_data[user_select]['name'])
         print('-' * 70)
-        print('\n')
+        print('')
         return user_select
 
     def requireBool(self, options):
@@ -68,5 +68,5 @@ class InputController:
             result = options['default']
         Message.ShowInfo('您输入的是: ' + ('Yes 是的' if result else 'No 不是'))
         print('-' * 70)
-        print('\n')
+        print('')
         return result
