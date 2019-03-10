@@ -24526,6 +24526,39 @@ BUILDIN_FUNC(viewequip) {
 }
 #endif // rAthenaCN_ScriptCommand_ViewEquip
 
+#ifdef rAthenaCN_ScriptCommand_ItemExists
+/* ===========================================================
+ * 指令: itemexists
+ * 描述: 确认物品数据库中是否存在指定物品
+ * 用法: itemexists <物品编号/"物品名称">;
+ * 返回: 若物品指定的道具编号不存在于物品数据库中则返回 0,
+ *      若物品存在且可堆叠则返回正数物品编号, 不可堆叠则返回负数物品编号
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(itemexists) {
+	struct item_data *id = nullptr;
+
+	if (script_isint(st, 2)) {
+		id = itemdb_exists(script_getnum(st, 2));
+	}
+	else if (script_isstring(st, 2)) {
+		id = itemdb_searchname(script_getstr(st, 2));
+	}
+	else {
+		ShowError("buildin_itemexists: The first param must be a integer or string.\n");
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (id == nullptr)
+		script_pushint(st, 0);
+	else
+		script_pushint(st, (itemdb_isstackable2(id) ? id->nameid : -id->nameid));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_ItemExists
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24570,6 +24603,10 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_ViewEquip
 	BUILDIN_DEF(viewequip,"i?"),						// 查看指定在线角色的装备面板信息 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_ViewEquip
+#ifdef rAthenaCN_ScriptCommand_ItemExists
+	BUILDIN_DEF(itemexists,"?"),						// 确认物品数据库中是否存在指定物品 [Sola丶小克]
+	BUILDIN_DEF2(itemexists,"existitem","?"),			// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_ItemExists
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
