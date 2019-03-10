@@ -17,9 +17,10 @@
 
 import codecs
 import os
-import platform
 
 import chardet
+from libs import InputController
+from libs import Common, Message
 
 
 class CharsetConverter():
@@ -77,7 +78,7 @@ class CharsetConverter():
         try:
             absolutely_path = os.path.abspath(filepath)
 
-            print('Convert {filename} ... From {origin_charset} to {to_charset}'.format(
+            Message.ShowInfo('将 {filename} 的编码从 {origin_charset} 转换为 {to_charset}'.format(
                 filename=os.path.relpath(absolutely_path, directory),
                 origin_charset=origin_charset,
                 to_charset=to_charset
@@ -96,32 +97,43 @@ class CharsetConverter():
             print("I/O error: {0}".format(err))
             return False
 
+def welecome():
+    print('=' * 70)
+    print('')
+    print('源代码文件编码转换脚本'.center(62))
+    print('')
+    print('=' * 70)
+    print('')
+
+    Message.ShowInfo('在使用此脚本之前, 建议确保 src 目录的工作区是干净的.')
+    Message.ShowInfo('这样处理结果如果不符合预期, 可以轻松的利用 git 进行重置操作.')
+
 def main():
-    '''
-    此脚本的主函数
-    '''
     os.chdir(os.path.split(os.path.realpath(__file__))[0])
 
-    print('=' * 70)
-    print('Convert source code to UTF-8-SIG codepage.')
-    print('=' * 70)
-
+    welecome()
     print('')
-    # ------------------------------------------------------------------
+	
+    confirm = InputController().requireBool({
+        'tips' : '是否立刻进行文件编码转换?',
+        'default' : False
+    })
+	
+    if not confirm:
+        Message.ShowInfo('您取消了操作, 程序终止...\n')
+        Common.exitWithPause()
+
     count = CharsetConverter({
         'ignore_files' : ['Makefile', 'Makefile.in', 'CMakeLists.txt'],
         'process_exts' : ['.hpp', '.cpp']
     }).convertDirectory('../../src', 'UTF-8-SIG')
 
     if count <= 0:
-        print('Great! All source code are using UTF-8-SIG.')
-    # ------------------------------------------------------------------
+        Message.ShowInfo('很好! 源代码文件都已转换为 UTF-8-SIG 编码.')
+
     print('')
 
-    print('=' * 70)
-
-    if platform.system() == 'Windows':
-        os.system('pause')
+    Common.exitWithPause()
 
 if __name__ == "__main__":
     main()
