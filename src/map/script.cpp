@@ -24539,17 +24539,9 @@ BUILDIN_FUNC(identifyidx) {
 	struct item_data *id = nullptr;
 	int idx = -1;
 
-	if (script_hasdata(st, 3)) {
-		if (!script_charid2sd(3, sd)) {
-			script_pushint(st, 0);
-			return SCRIPT_CMD_SUCCESS;
-		}
-	}
-	else {
-		if (!script_rid2sd(sd)) {
-			script_pushint(st, 0);
-			return SCRIPT_CMD_SUCCESS;
-		}
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
 	}
 
 	idx = script_getnum(st, 2);
