@@ -240,6 +240,10 @@
 	// 是否启用 viewequip 脚本指令 [Sola丶小克]
 	// 使用该指令可以查看指定在线角色的装备面板信息 (注意: v2.0.0 以前是通过账号编号)
 	#define rAthenaCN_ScriptCommand_ViewEquip
+
+	// 是否启用 statuscalc 脚本指令 [Sola丶小克]
+	// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 statuscalc 指令
+	#define rAthenaCN_ScriptCommand_StatusCalc
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 

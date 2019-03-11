@@ -24570,6 +24570,10 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_ViewEquip
 	BUILDIN_DEF(viewequip,"i?"),						// 查看指定在线角色的装备面板信息 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_ViewEquip
+#ifdef rAthenaCN_ScriptCommand_StatusCalc
+	BUILDIN_DEF2(recalculatestat,"statuscalc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 statuscalc 指令 [Sola丶小克]
+	BUILDIN_DEF2(recalculatestat,"status_calc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 status_calc 指令 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_StatusCalc
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
