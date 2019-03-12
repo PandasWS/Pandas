@@ -24526,6 +24526,45 @@ BUILDIN_FUNC(viewequip) {
 }
 #endif // rAthenaCN_ScriptCommand_ViewEquip
 
+#ifdef rAthenaCN_ScriptCommand_GetEquipExpireTick
+/* ===========================================================
+ * 指令: getequipexpiretick
+ * 描述: 获取指定位置装备的租赁到期剩余秒数
+ * 用法: getequipexpiretick <EQI装备位置>{,<角色编号>};
+ * 返回: 获取失败返回各种负数, 返回 0 表示目标装备非租赁, 其他非 0 正整数则代表剩余秒数
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getequipexpiretick) {
+	struct map_session_data *sd = nullptr;
+	int equip_num = script_getnum(st, 2), idx = -1;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, -3);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!equip_index_check(equip_num)) {
+		script_pushint(st, -2);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	idx = pc_checkequip(sd, equip_bitmask[equip_num]);
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+	if (!sd->inventory.u.items_inventory[idx].expire_time) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushint(st, (unsigned int)(
+		sd->inventory.u.items_inventory[idx].expire_time - time(NULL)
+	));
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_GetEquipExpireTick
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24570,6 +24609,10 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_ViewEquip
 	BUILDIN_DEF(viewequip,"i?"),						// 查看指定在线角色的装备面板信息 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_ViewEquip
+#ifdef rAthenaCN_ScriptCommand_GetEquipExpireTick
+	BUILDIN_DEF(getequipexpiretick,"i?"),				// 获取指定位置装备的租赁到期剩余秒数 [Sola丶小克]
+	BUILDIN_DEF2(getequipexpiretick,"isrental","i?"),	// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_GetEquipExpireTick
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
