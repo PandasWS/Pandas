@@ -24558,9 +24558,7 @@ BUILDIN_FUNC(getequipexpiretick) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	script_pushint(st, (unsigned int)(
-		sd->inventory.u.items_inventory[idx].expire_time - time(NULL)
-	));
+	script_pushint(st, sd->inventory.u.items_inventory[idx].expire_time - (unsigned int)time(NULL));
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // rAthenaCN_ScriptCommand_GetEquipExpireTick
