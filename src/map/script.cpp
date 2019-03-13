@@ -24773,6 +24773,76 @@ BUILDIN_FUNC(itemexists) {
 }
 #endif // rAthenaCN_ScriptCommand_ItemExists
 
+#ifdef rAthenaCN_ScriptCommand_RentTime
+/* ===========================================================
+ * 指令: renttime
+ * 描述: 增加/减少指定位置装备的租赁时间
+ * 用法: renttime <EQI装备位置>,<增减的时间秒数>{,<角色编号>};
+ * 返回: 操作失败返回 0, 非 0 的正数表示成功增减后新的剩余时间秒数
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(renttime) {
+	struct map_session_data *sd = nullptr;
+	int equip_num = script_getnum(st, 2);
+	int second = script_getnum(st, 3);
+	int idx = -1, expire_tick = 0;
+
+	if (!script_charid2sd(4, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!equip_index_check(equip_num)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	idx = pc_checkequip(sd, equip_bitmask[equip_num]);
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd->inventory.u.items_inventory[idx].expire_time == 0) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+ 	sd->inventory.u.items_inventory[idx].expire_time += second;
+	expire_tick = (unsigned int)(sd->inventory.u.items_inventory[idx].expire_time - time(NULL));
+ 	script_pushint(st, expire_tick);
+
+	if (expire_tick > 0) {
+		clif_rental_time(sd->fd, sd->inventory.u.items_inventory[idx].nameid, expire_tick);
+		pc_inventory_rental_add(sd, expire_tick);
+		clif_inventorylist(sd);
+	}
+	else {
+		int i = 0, c = 0;
+		for (i = 0; i < MAX_INVENTORY; i++) {
+			if (sd->inventory.u.items_inventory[i].nameid == 0)
+				continue;
+			if (sd->inventory.u.items_inventory[i].expire_time == 0)
+				continue;
+			if (sd->inventory.u.items_inventory[i].expire_time <= time(NULL)) {
+				if (sd->inventory_data[i]->unequip_script)
+					run_script(sd->inventory_data[i]->unequip_script, 0, sd->bl.id, fake_nd->bl.id);
+				clif_rental_expired(sd->fd, i, sd->inventory.u.items_inventory[i].nameid);
+				pc_delitem(sd, i, sd->inventory.u.items_inventory[i].amount, 0, 0, LOG_TYPE_OTHER);
+			}
+			else {
+				c++;
+			}
+		}
+
+		if (c <= 0) {
+			pc_inventory_rental_clear(sd);
+		}
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_RentTime
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24841,6 +24911,11 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(itemexists,"?"),						// 确认物品数据库中是否存在指定物品 [Sola丶小克]
 	BUILDIN_DEF2(itemexists,"existitem","?"),			// 指定一个别名, 以便兼容 rAthenaCN 的老版本
 #endif // rAthenaCN_ScriptCommand_ItemExists
+#ifdef rAthenaCN_ScriptCommand_RentTime
+	BUILDIN_DEF(renttime,"ii?"),						// 增加/减少指定位置装备的租赁时间 [Sola丶小克]
+	BUILDIN_DEF2(renttime,"setrenttime","ii?"),			// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+	BUILDIN_DEF2(renttime,"resume","ii?"),				// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_RentTime
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

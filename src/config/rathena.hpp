@@ -264,6 +264,10 @@
 	// 是否启用 itemexists 脚本指令 [Sola丶小克]
 	// 确认物品数据库中是否存在指定物品 (该指令有一个用于兼容的别名: existitem)
 	#define rAthenaCN_ScriptCommand_ItemExist
+
+	// 是否启用 renttime 脚本指令 [Sola丶小克]
+	// 增加/减少指定位置装备的租赁时间 (该指令有一个用于兼容的别名: resume)
+	#define rAthenaCN_ScriptCommand_RentTime
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
