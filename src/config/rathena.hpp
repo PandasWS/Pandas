@@ -272,6 +272,10 @@
 	// 是否启用 getequipidx 脚本指令 [Sola丶小克]
 	// 获取指定位置装备的背包序号
 	#define rAthenaCN_ScriptCommand_GetEquipIdx
+
+	// 是否启用 statuscalc 脚本指令 [Sola丶小克]
+	// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 statuscalc 指令
+	#define rAthenaCN_ScriptCommand_StatusCalc
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
