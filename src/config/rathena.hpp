@@ -268,6 +268,10 @@
 	// 是否启用 renttime 脚本指令 [Sola丶小克]
 	// 增加/减少指定位置装备的租赁时间 (该指令有一个用于兼容的别名: resume)
 	#define rAthenaCN_ScriptCommand_RentTime
+
+	// 是否启用 getequipidx 脚本指令 [Sola丶小克]
+	// 获取指定位置装备的背包序号
+	#define rAthenaCN_ScriptCommand_GetEquipIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 

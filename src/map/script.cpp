@@ -24843,6 +24843,39 @@ BUILDIN_FUNC(renttime) {
 }
 #endif // rAthenaCN_ScriptCommand_RentTime
 
+#ifdef rAthenaCN_ScriptCommand_GetEquipIdx
+/* ===========================================================
+ * 指令: getequipidx
+ * 描述: 获取指定位置装备的背包序号
+ * 用法: getequipidx <EQI装备位置>{,<角色编号>};
+ * 返回: 获取失败返回各种负数, 非 0 的正数表示获取到的背包序号
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getequipidx) {
+	struct map_session_data *sd = nullptr;
+	int equip_num = script_getnum(st, 2), idx = -1;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, -3);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!equip_index_check(equip_num)) {
+		script_pushint(st, -2);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	idx = pc_checkequip(sd, equip_bitmask[equip_num]);
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushint(st, idx);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_GetEquipIdx
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24916,6 +24949,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(renttime,"setrenttime","ii?"),			// 指定一个别名, 以便兼容 rAthenaCN 的老版本
 	BUILDIN_DEF2(renttime,"resume","ii?"),				// 指定一个别名, 以便兼容 rAthenaCN 的老版本
 #endif // rAthenaCN_ScriptCommand_RentTime
+#ifdef rAthenaCN_ScriptCommand_GetEquipIdx
+	BUILDIN_DEF(getequipidx,"i?"),						// 获取指定位置装备的背包序号 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_GetEquipIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
