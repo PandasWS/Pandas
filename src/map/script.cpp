@@ -24607,6 +24607,7 @@ BUILDIN_FUNC(delitemidx) {
 }
 #endif // rAthenaCN_ScriptCommand_DelItemIdx
 
+#ifdef rAthenaCN_ScriptCommand_IdentifyIdx
 /* ===========================================================
  * 指令: identifyidx
  * 描述: 鉴定指定背包序号的道具
