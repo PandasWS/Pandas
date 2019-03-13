@@ -256,6 +256,10 @@
 	// 是否启用 unequipidx 脚本指令 [Sola丶小克]
 	// 脱下指定背包序号的道具 (该指令有一个用于兼容的别名: unequipinventory)
 	#define rAthenaCN_ScriptCommand_UnEquipIdx
+
+	// 是否启用 equipidx 脚本指令 [Sola丶小克]
+	// 穿戴指定背包序号的道具 (该指令有一个用于兼容的别名: equipinventory)
+	#define rAthenaCN_ScriptCommand_EquipIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
