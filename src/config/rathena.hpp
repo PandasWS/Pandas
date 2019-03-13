@@ -248,6 +248,10 @@
 	// 是否启用 delitemidx 脚本指令 [Sola丶小克]
 	// 移除指定背包序号的道具, 其中数量参数可不填, 若不填则表示删除指定道具的全部
 	#define rAthenaCN_ScriptCommand_DelItemIdx
+
+	// 是否启用 identifyidx 脚本指令 [Sola丶小克]
+	// 鉴定指定背包序号的道具 (该指令有一个用于兼容的别名: identifybyidx)
+	#define rAthenaCN_ScriptCommand_IdentifyIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
