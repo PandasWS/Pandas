@@ -241,6 +241,30 @@
 	// 使用该指令可以查看指定在线角色的装备面板信息 (注意: v2.0.0 以前是通过账号编号)
 	#define rAthenaCN_ScriptCommand_ViewEquip
 
+	// 是否启用 countitemidx 脚本指令 [Sola丶小克]
+	// 获取指定背包序号的道具在背包中的数量 (该指令有一个用于兼容的别名: countinventory)
+	#define rAthenaCN_ScriptCommand_CountItemIdx
+
+	// 是否启用 delitemidx 脚本指令 [Sola丶小克]
+	// 移除指定背包序号的道具, 其中数量参数可不填, 若不填则表示删除指定道具的全部
+	#define rAthenaCN_ScriptCommand_DelItemIdx
+
+	// 是否启用 identifyidx 脚本指令 [Sola丶小克]
+	// 鉴定指定背包序号的道具 (该指令有一个用于兼容的别名: identifybyidx)
+	#define rAthenaCN_ScriptCommand_IdentifyIdx
+
+	// 是否启用 unequipidx 脚本指令 [Sola丶小克]
+	// 脱下指定背包序号的道具 (该指令有一个用于兼容的别名: unequipinventory)
+	#define rAthenaCN_ScriptCommand_UnEquipIdx
+
+	// 是否启用 equipidx 脚本指令 [Sola丶小克]
+	// 穿戴指定背包序号的道具 (该指令有一个用于兼容的别名: equipinventory)
+	#define rAthenaCN_ScriptCommand_EquipIdx
+
+	// 是否启用 itemexists 脚本指令 [Sola丶小克]
+	// 确认物品数据库中是否存在指定物品 (该指令有一个用于兼容的别名: existitem)
+	#define rAthenaCN_ScriptCommand_ItemExist
+
 	// 是否启用 renttime 脚本指令 [Sola丶小克]
 	// 增加/减少指定位置装备的租赁时间 (该指令有一个用于兼容的别名: resume)
 	#define rAthenaCN_ScriptCommand_RentTime
