@@ -457,53 +457,53 @@
 	export_constant(MF_PRIVATEAIRSHIP_DESTINATION);
 	export_constant(MF_SKILL_DURATION);
 
-#ifdef rAthenaCN_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_Mobinfo
 	export_constant(MF_MOBINFO);
-#endif // rAthenaCN_MapFlag_Mobinfo
+#endif // Pandas_MapFlag_Mobinfo
 
-#ifdef rAthenaCN_MapFlag_NoAutoLoot
+#ifdef Pandas_MapFlag_NoAutoLoot
 	export_constant(MF_NOAUTOLOOT);
-#endif // rAthenaCN_MapFlag_NoAutoLoot
+#endif // Pandas_MapFlag_NoAutoLoot
 
-#ifdef rAthenaCN_MapFlag_NoToken
+#ifdef Pandas_MapFlag_NoToken
 	export_constant(MF_NOTOKEN);
-#endif // rAthenaCN_MapFlag_NoToken
+#endif // Pandas_MapFlag_NoToken
 
-#ifdef rAthenaCN_MapFlag_NoCapture
+#ifdef Pandas_MapFlag_NoCapture
 	export_constant(MF_NOCAPTURE);
-#endif // rAthenaCN_MapFlag_NoCapture
+#endif // Pandas_MapFlag_NoCapture
 
-#ifdef rAthenaCN_MapFlag_HideGuildInfo
+#ifdef Pandas_MapFlag_HideGuildInfo
 	export_constant(MF_HIDEGUILDINFO);
-#endif // rAthenaCN_MapFlag_HideGuildInfo
+#endif // Pandas_MapFlag_HideGuildInfo
 
-#ifdef rAthenaCN_MapFlag_HidePartyInfo
+#ifdef Pandas_MapFlag_HidePartyInfo
 	export_constant(MF_HIDEPARTYINFO);
-#endif // rAthenaCN_MapFlag_HidePartyInfo
+#endif // Pandas_MapFlag_HidePartyInfo
 
-#ifdef rAthenaCN_MapFlag_NoMail
+#ifdef Pandas_MapFlag_NoMail
 	export_constant(MF_NOMAIL);
-#endif // rAthenaCN_MapFlag_NoMail
+#endif // Pandas_MapFlag_NoMail
 
-#ifdef rAthenaCN_MapFlag_NoPet
+#ifdef Pandas_MapFlag_NoPet
 	export_constant(MF_NOPET);
-#endif // rAthenaCN_MapFlag_NoPet
+#endif // Pandas_MapFlag_NoPet
 
-#ifdef rAthenaCN_MapFlag_NoHomun
+#ifdef Pandas_MapFlag_NoHomun
 	export_constant(MF_NOHOMUN);
-#endif // rAthenaCN_MapFlag_NoHomun
+#endif // Pandas_MapFlag_NoHomun
 
-#ifdef rAthenaCN_MapFlag_NoMerc
+#ifdef Pandas_MapFlag_NoMerc
 	export_constant(MF_NOMERC);
-#endif // rAthenaCN_MapFlag_NoMerc
+#endif // Pandas_MapFlag_NoMerc
 
-#ifdef rAthenaCN_MapFlag_MobDroprate
+#ifdef Pandas_MapFlag_MobDroprate
 	export_constant(MF_MOBDROPRATE);
-#endif // rAthenaCN_MapFlag_MobDroprate
+#endif // Pandas_MapFlag_MobDroprate
 
-#ifdef rAthenaCN_MapFlag_MvpDroprate
+#ifdef Pandas_MapFlag_MvpDroprate
 	export_constant(MF_MVPDROPRATE);
-#endif // rAthenaCN_MapFlag_MvpDroprate
+#endif // Pandas_MapFlag_MvpDroprate
 
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
@@ -784,14 +784,14 @@
 	export_constant2("bSkillDelay",SP_SKILL_DELAY);
 	export_constant2("bNoWalkDelay",SP_NO_WALK_DELAY);
 
-#ifdef rAthenaCN_ScriptParams_ReadParam
+#ifdef Pandas_ScriptParams_ReadParam
 	export_constant2("bAllStr", SP_STR_ALL);
 	export_constant2("bAllAgi", SP_AGI_ALL);
 	export_constant2("bAllVit", SP_VIT_ALL);
 	export_constant2("bAllInt", SP_INT_ALL);
 	export_constant2("bAllDex", SP_DEX_ALL);
 	export_constant2("bAllLuk", SP_LUK_ALL);
-#endif // rAthenaCN_ScriptParams_ReadParam
+#endif // Pandas_ScriptParams_ReadParam
 
 	/* equip indices */
 	export_constant(EQI_COMPOUND_ON);

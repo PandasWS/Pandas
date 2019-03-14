@@ -51,12 +51,12 @@ struct fame_list smith_fame_list[MAX_FAME_LIST];
 struct fame_list chemist_fame_list[MAX_FAME_LIST];
 struct fame_list taekwon_fame_list[MAX_FAME_LIST];
 
-#ifndef rAthenaCN_Message_Conf
+#ifndef Pandas_Message_Conf
 #define CHAR_MAX_MSG 300	//max number of msg_conf
 #else
 // 此处根据 ALL_EXTEND_MSG 的定义重新修改 CHAR_MAX_MSG
 #define CHAR_MAX_MSG ALL_EXTEND_MSG  //max number of msg_conf
-#endif // rAthenaCN_Message_Conf
+#endif // Pandas_Message_Conf
 
 static char* msg_table[CHAR_MAX_MSG]; // Login Server messages_conf
 
@@ -1409,12 +1409,12 @@ int char_make_new_char_sql(struct char_session_data* sd, char* name_, int str, i
 	normalize_name(name,TRIM_CHARS);
 	Sql_EscapeStringLen(sql_handle, esc_name, name, strnlen(name, NAME_LENGTH));
 
-#ifdef rAthenaCN_Reject_Create_Doram_Character
+#ifdef Pandas_Reject_Create_Doram_Character
 	if (charserv_config.reject_create_doram_character && start_job == JOB_SUMMONER) {
 		ShowInfo("Player want to create a doram character '%s', Reject..\n", name);
 		return -2;
 	}
-#endif // rAthenaCN_Reject_Create_Doram_Character
+#endif // Pandas_Reject_Create_Doram_Character
 
 	memset(tmp_start_point, 0, MAX_STARTPOINT * sizeof(struct point));
 	memset(tmp_start_items, 0, MAX_STARTITEM * sizeof(struct startitem));
@@ -2752,13 +2752,13 @@ void char_set_defaults(){
 	charserv_config.char_new = true;
 	charserv_config.char_new_display = 0;
 
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 	charserv_config.create_fulldump = true;
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 
-#ifdef rAthenaCN_Reject_Create_Doram_Character
+#ifdef Pandas_Reject_Create_Doram_Character
 	charserv_config.reject_create_doram_character = false;
-#endif // rAthenaCN_Reject_Create_Doram_Character
+#endif // Pandas_Reject_Create_Doram_Character
 
 	charserv_config.char_config.name_ignoring_case = false; // Allow or not identical name for characters but with a different case by [Yor]
 	charserv_config.char_config.char_name_option = 0; // Option to know which letters/symbols are authorised in the name of a character (0: all, 1: only those in char_name_letters, 2: all EXCEPT those in char_name_letters) by [Yor]
@@ -2962,11 +2962,11 @@ bool char_config_read(const char* cfgName, bool normal){
 			} else if (strcmpi(w1, "console") == 0) {
 				charserv_config.console = config_switch(w2);
 			}
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 			else if (strcmpi(w1, "create_fulldump") == 0) {
 				charserv_config.create_fulldump = (bool)config_switch(w2);
 			}
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 		}
 
 		if(strcmpi(w1,"timestamp_format") == 0) {
@@ -3107,11 +3107,11 @@ bool char_config_read(const char* cfgName, bool normal){
 		} else if (strcmpi(w1, "import") == 0) {
 			char_config_read(w2, normal);
 		}
-#ifdef rAthenaCN_Reject_Create_Doram_Character
+#ifdef Pandas_Reject_Create_Doram_Character
 		else if (strcmpi(w1, "reject_create_doram_character") == 0) {
 			charserv_config.reject_create_doram_character = (bool)config_switch(w2);
 		}
-#endif // rAthenaCN_Reject_Create_Doram_Character
+#endif // Pandas_Reject_Create_Doram_Character
 	}
 	fclose(fp);
 
@@ -3232,9 +3232,9 @@ int do_init(int argc, char **argv)
 	char_sql_config_read(SQL_CONF_NAME);
 	msg_config_read(MSG_CONF_NAME_EN);
 
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 	create_fulldump = charserv_config.create_fulldump;
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 
 	// Skip this check if the server is run with run-once flag
 	if (runflag!=CORE_ST_STOP && strcmp(charserv_config.userid, "s1")==0 && strcmp(charserv_config.passwd, "p1")==0) {

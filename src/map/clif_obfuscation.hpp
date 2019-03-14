@@ -118,21 +118,21 @@
 	#elif PACKETVER == 20130717 // 2013-07-17Ragexe
 		packet_keys(0x2BED4F91,0x5F9E00CF,0x5EE5520C);
 	#elif PACKETVER == 20130807 // 2013-08-07Ragexe
-#ifndef rAthenaCN_Packet_Obfuscation_Keys
+#ifndef Pandas_Packet_Obfuscation_Keys
 		packet_keys(0x7E241DE0,0x5E805580,0x3D807D80);
 #else
-		packet_keys(0x00dd7a90,0x37ea4427,0x28b79a45);	// rAthenaCN 高强度混淆密钥
-#endif // rAthenaCN_Packet_Obfuscation_Keys
+		packet_keys(0x00dd7a90,0x37ea4427,0x28b79a45);	// Pandas 高强度混淆密钥
+#endif // Pandas_Packet_Obfuscation_Keys
 	#elif PACKETVER == 20130814
 		packet_keys(0x23A23148,0x0C41420E,0x53785AD7);
 	#elif PACKETVER == 20131218
 		packet_keys(0x6A596301,0x76866D0E,0x32294A45);
 	#elif PACKETVER == 20131223 // 2013-12-23Ragexe
-#ifndef rAthenaCN_Packet_Obfuscation_Keys
+#ifndef Pandas_Packet_Obfuscation_Keys
 		packet_keys(0x631C511C,0x111C111C,0x111C111C);
 #else
-		packet_keys(0x099bf56f,0x1b6a6b3b,0x1b6a6b3b);	// rAthenaCN 高强度混淆密钥
-#endif // rAthenaCN_Packet_Obfuscation_Keys
+		packet_keys(0x099bf56f,0x1b6a6b3b,0x1b6a6b3b);	// Pandas 高强度混淆密钥
+#endif // Pandas_Packet_Obfuscation_Keys
 	#elif PACKETVER == 20131230
 		packet_keys(0x611B7097,0x01F957A1,0x768A0FCB);
 	#elif PACKETVER == 20140115

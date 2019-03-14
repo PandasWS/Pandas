@@ -131,12 +131,12 @@ static bool account_db_sql_init(AccountDB* self) {
 		return false;
 	}
 
-#ifndef rAthenaCN_Smart_Codepage
+#ifndef Pandas_Smart_Codepage
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
 		Sql_ShowDebug(sql_handle);
 #else
 	smart_codepage(sql_handle, "Login-Server", codepage);
-#endif // rAthenaCN_Smart_Codepage
+#endif // Pandas_Smart_Codepage
 
 	return true;
 }

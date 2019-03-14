@@ -1,4 +1,4 @@
-﻿// Copyright (c) rAthenaCN Dev Teams - Licensed under GNU GPL
+﻿// Copyright (c) Pandas Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
 #include "minidump.hpp"
@@ -12,9 +12,9 @@
 // 此处设计一个全局变量 create_fulldump
 // 该变量已经在 core.hpp 中 extern, 实际的定义在 core.cpp 中 [Sola丶小克]
 
-#if !defined(rAthenaCN_Version)
-	#define rAthenaCN_Version "v0.0.0"
-#endif // !defined(rAthenaCN_Version)
+#if !defined(Pandas_Version)
+	#define Pandas_Version "v0.0.0"
+#endif // !defined(Pandas_Version)
 
 inline BOOL IsDataSectionNeeded(const WCHAR* pModuleName)
 {
@@ -57,7 +57,7 @@ inline BOOL CALLBACK MiniDumpCallback(
 
 inline void CreateMiniDump(PEXCEPTION_POINTERS pep, LPCTSTR strFileName)
 {
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 	HANDLE hFile = CreateFile(strFileName, GENERIC_READ | GENERIC_WRITE,
 		FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
@@ -83,12 +83,12 @@ inline void CreateMiniDump(PEXCEPTION_POINTERS pep, LPCTSTR strFileName)
 
 		CloseHandle(hFile);
 	}
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 }
 
-LONG __stdcall rAthenaCN_UnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionInfo)
+LONG __stdcall Pandas_UnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionInfo)
 {
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 	char szFileName[_MAX_FNAME] = "";
 	char szDriverName[_MAX_FNAME] = "";
 	char szDirName[_MAX_FNAME] = "";
@@ -102,7 +102,7 @@ LONG __stdcall rAthenaCN_UnhandledExceptionFilter(PEXCEPTION_POINTERS pException
 
 	if (GetModuleFileName(NULL, szFileName, _MAX_FNAME)) {
 		_splitpath(szFileName, szDriverName, szDirName, szFileName, NULL);
-		sprintf(szDumpFileName, "%s%s%s-%s-%s.dmp", szDriverName, szDirName, szFileName, rAthenaCN_Version, timestamp);
+		sprintf(szDumpFileName, "%s%s%s-%s-%s.dmp", szDriverName, szDirName, szFileName, Pandas_Version, timestamp);
 	}
 
 	ShowError("============================================================\n");
@@ -118,5 +118,5 @@ LONG __stdcall rAthenaCN_UnhandledExceptionFilter(PEXCEPTION_POINTERS pException
 	return EXCEPTION_EXECUTE_HANDLER;
 #else
 	return EXCEPTION_CONTINUE_SEARCH;
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 }

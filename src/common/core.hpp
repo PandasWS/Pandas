@@ -44,9 +44,9 @@ extern void set_server_type(void);
 extern void do_abort(void);
 extern void do_final(void);
 
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 extern int create_fulldump;	// 引用 core.cpp 中定义的 create_fulldump [Sola丶小克]
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 
 /// The main loop continues until runflag is CORE_ST_STOP
 enum E_CORE_ST

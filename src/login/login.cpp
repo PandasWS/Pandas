@@ -31,18 +31,18 @@
 #include "logincnslif.hpp"
 #include "loginlog.hpp"
 
-#ifdef rAthenaCN_Strict_Userid_Verification
+#ifdef Pandas_Strict_Userid_Verification
 #include "../../3rdparty/pcre/include/pcre.h"
-#endif // rAthenaCN_Strict_Userid_Verification
+#endif // Pandas_Strict_Userid_Verification
 
 using namespace rathena;
 
-#ifndef rAthenaCN_Message_Conf
+#ifndef Pandas_Message_Conf
 #define LOGIN_MAX_MSG 30				/// Max number predefined in msg_conf
 #else
 // 此处根据 ALL_EXTEND_MSG 的定义重新修改 LOGIN_MAX_MSG
 #define LOGIN_MAX_MSG ALL_EXTEND_MSG	/// Max number predefined in msg_conf
-#endif // rAthenaCN_Message_Conf
+#endif // Pandas_Message_Conf
 
 static char* msg_table[LOGIN_MAX_MSG];	/// Login Server messages_conf
 
@@ -334,7 +334,7 @@ int login_mmo_auth(struct login_session_data* sd, bool isServer) {
 			len -= 2;
 			sd->userid[len] = '\0';
 
-#ifdef rAthenaCN_Strict_Userid_Verification
+#ifdef Pandas_Strict_Userid_Verification
 			if (login_config.strict_new_account_userid) {
 				pcre *re;
 				pcre_extra *extra;
@@ -353,7 +353,7 @@ int login_mmo_auth(struct login_session_data* sd, bool isServer) {
 					return 3;
 				}
 			}
-#endif // rAthenaCN_Strict_Userid_Verification
+#endif // Pandas_Strict_Userid_Verification
 
 			result = login_mmo_auth_new(sd->userid, sd->passwd, TOUPPER(sd->userid[len+1]), ip);
 			if( result != -1 )
@@ -483,13 +483,13 @@ bool login_check_password(const char* md5key, int passwdenc, const char* passwd,
 }
 
 int login_get_usercount( int users ){
-#ifdef rAthenaCN_Support_Hide_Online_Players_Count
+#ifdef Pandas_Support_Hide_Online_Players_Count
 #if PACKETVER >= 20170726
 	if (login_config.hide_online_players_count) return 4;
 #else
 	if (login_config.hide_online_players_count) return 0;
 #endif
-#endif // rAthenaCN_Support_Hide_Online_Players_Count
+#endif // Pandas_Support_Hide_Online_Players_Count
 
 #if PACKETVER >= 20170726
 	if( login_config.usercount_disable ){
@@ -714,20 +714,20 @@ bool login_config_read(const char* cfgName, bool normal) {
 			}
 		}
 
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 		else if (!strcmpi(w1, "create_fulldump"))
 			login_config.create_fulldump = (bool)config_switch(w2);
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 
-#ifdef rAthenaCN_Strict_Userid_Verification
+#ifdef Pandas_Strict_Userid_Verification
 		else if (!strcmpi(w1, "strict_new_account_userid"))
 			login_config.strict_new_account_userid = (bool)config_switch(w2);
-#endif // rAthenaCN_Strict_Userid_Verification
+#endif // Pandas_Strict_Userid_Verification
 
-#ifdef rAthenaCN_Support_Hide_Online_Players_Count
+#ifdef Pandas_Support_Hide_Online_Players_Count
 		else if (!strcmpi(w1, "hide_online_players_count"))
 			login_config.hide_online_players_count = (bool)config_switch(w2);
-#endif // rAthenaCN_Support_Hide_Online_Players_Count
+#endif // Pandas_Support_Hide_Online_Players_Count
 
 #ifdef VIP_ENABLE
 		else if(strcmpi(w1,"vip_group")==0)
@@ -796,13 +796,13 @@ void login_set_defaults() {
 	login_config.usercount_high = 1000;
 	login_config.char_per_account = MAX_CHARS - MAX_CHAR_VIP - MAX_CHAR_BILLING;
 
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 	login_config.create_fulldump = true;
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 
-#ifdef rAthenaCN_Strict_Userid_Verification
+#ifdef Pandas_Strict_Userid_Verification
 	login_config.strict_new_account_userid = true;
-#endif // rAthenaCN_Strict_Userid_Verification
+#endif // Pandas_Strict_Userid_Verification
 
 #ifdef VIP_ENABLE
 	login_config.vip_sys.char_increase = MAX_CHAR_VIP;
@@ -920,9 +920,9 @@ int do_init(int argc, char** argv) {
 	login_lan_config_read(login_config.lanconf_name);
 	//end config
 
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 	create_fulldump = login_config.create_fulldump;
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 
 	rnd_init();
 

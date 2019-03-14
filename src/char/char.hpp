@@ -166,13 +166,13 @@ struct CharServ_Config {
 	struct Pincode_Config pincode_config;
 #endif
 
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 	bool create_fulldump;	// 是否生成完整的崩溃转储文件 [Sola丶小克]
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 
-#ifdef rAthenaCN_Reject_Create_Doram_Character
+#ifdef Pandas_Reject_Create_Doram_Character
 	bool reject_create_doram_character;	// 是否禁止创建杜兰族角色 [Sola丶小克]
-#endif // rAthenaCN_Reject_Create_Doram_Character
+#endif // Pandas_Reject_Create_Doram_Character
 
 	int save_log; // show loading/saving messages
 	int log_char;	// loggin char or not [devil]
@@ -332,11 +332,11 @@ void char_set_session_flag_(int account_id, int val, bool set);
 
 #define msg_config_read(cfgName) char_msg_config_read(cfgName)
 #define msg_txt(msg_number) char_msg_txt(msg_number)
-#ifdef rAthenaCN_Message_Conf
+#ifdef Pandas_Message_Conf
 	#define msg_txt_cn(msg_number) char_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
 #else
 	#define msg_txt_cn(msg_number) disabled_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
-#endif // rAthenaCN_Message_Conf
+#endif // Pandas_Message_Conf
 #define do_final_msg() char_do_final_msg()
 int char_msg_config_read(const char *cfgName);
 const char* char_msg_txt(int msg_number);

@@ -18,9 +18,9 @@
 #include "../common/timer.hpp"
 #include "../config/core.hpp"
 
-#ifdef rAthenaCN
+#ifdef Pandas
 #include "map_artisan.hpp"
-#endif // rAthenaCN
+#endif // Pandas
 
 struct npc_data;
 struct item_data;
@@ -36,11 +36,11 @@ enum E_MAPSERVER_ST {
 struct map_data *map_getmapdata(int16 m);
 #define msg_config_read(cfgName,isnew) map_msg_config_read(cfgName,isnew)
 #define msg_txt(sd,msg_number) map_msg_txt(sd,msg_number)
-#ifdef rAthenaCN_Message_Conf
+#ifdef Pandas_Message_Conf
 	#define msg_txt_cn(sd,msg_number) map_msg_txt(sd,msg_number + ALL_EXTEND_FIRST_MSG)
 #else
 	#define msg_txt_cn(sd,msg_number) disabled_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
-#endif // rAthenaCN_Message_Conf
+#endif // Pandas_Message_Conf
 #define do_final_msg() map_do_final_msg()
 int map_msg_config_read(const char *cfgName,int lang);
 const char* map_msg_txt(struct map_session_data *sd,int msg_number);
@@ -496,11 +496,11 @@ enum _sp {
 	SP_WEAPON_ATK_RATE, SP_WEAPON_MATK_RATE, SP_DROP_ADDRACE, SP_DROP_ADDCLASS, SP_NO_MADO_FUEL, // 2083-2087
 	SP_IGNORE_DEF_CLASS_RATE, SP_REGEN_PERCENT_HP, SP_REGEN_PERCENT_SP, SP_SKILL_DELAY, SP_NO_WALK_DELAY //2088-2093
 
-#ifdef rAthenaCN_ScriptParams_ReadParam
+#ifdef Pandas_ScriptParams_ReadParam
 	,
 	SP_EXTEND_UNUSED = 3100,
 	SP_STR_ALL, SP_AGI_ALL, SP_VIT_ALL, SP_INT_ALL, SP_DEX_ALL, SP_LUK_ALL,	// 3101-3106
-#endif // rAthenaCN_ScriptParams_ReadParam
+#endif // Pandas_ScriptParams_ReadParam
 };
 
 enum _look {
@@ -594,42 +594,42 @@ enum e_mapflag : int16 {
 	MF_PRIVATEAIRSHIP_SOURCE,
 	MF_PRIVATEAIRSHIP_DESTINATION,
 	MF_SKILL_DURATION,
-#ifdef rAthenaCN_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_Mobinfo
 	MF_MOBINFO,
-#endif // rAthenaCN_MapFlag_Mobinfo
-#ifdef rAthenaCN_MapFlag_NoAutoLoot
+#endif // Pandas_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_NoAutoLoot
 	MF_NOAUTOLOOT,
-#endif // rAthenaCN_MapFlag_NoAutoLoot
-#ifdef rAthenaCN_MapFlag_NoToken
+#endif // Pandas_MapFlag_NoAutoLoot
+#ifdef Pandas_MapFlag_NoToken
 	MF_NOTOKEN,
-#endif // rAthenaCN_MapFlag_NoToken
-#ifdef rAthenaCN_MapFlag_NoCapture
+#endif // Pandas_MapFlag_NoToken
+#ifdef Pandas_MapFlag_NoCapture
 	MF_NOCAPTURE,
-#endif // rAthenaCN_MapFlag_NoCapture
-#ifdef rAthenaCN_MapFlag_HideGuildInfo
+#endif // Pandas_MapFlag_NoCapture
+#ifdef Pandas_MapFlag_HideGuildInfo
 	MF_HIDEGUILDINFO,
-#endif // rAthenaCN_MapFlag_HideGuildInfo
-#ifdef rAthenaCN_MapFlag_HidePartyInfo
+#endif // Pandas_MapFlag_HideGuildInfo
+#ifdef Pandas_MapFlag_HidePartyInfo
 	MF_HIDEPARTYINFO,
-#endif // rAthenaCN_MapFlag_HidePartyInfo
-#ifdef rAthenaCN_MapFlag_NoMail
+#endif // Pandas_MapFlag_HidePartyInfo
+#ifdef Pandas_MapFlag_NoMail
 	MF_NOMAIL,
-#endif // rAthenaCN_MapFlag_NoMail
-#ifdef rAthenaCN_MapFlag_NoPet
+#endif // Pandas_MapFlag_NoMail
+#ifdef Pandas_MapFlag_NoPet
 	MF_NOPET,
-#endif // rAthenaCN_MapFlag_NoPet
-#ifdef rAthenaCN_MapFlag_NoHomun
+#endif // Pandas_MapFlag_NoPet
+#ifdef Pandas_MapFlag_NoHomun
 	MF_NOHOMUN,
-#endif // rAthenaCN_MapFlag_NoHomun
-#ifdef rAthenaCN_MapFlag_NoMerc
+#endif // Pandas_MapFlag_NoHomun
+#ifdef Pandas_MapFlag_NoMerc
 	MF_NOMERC,
-#endif // rAthenaCN_MapFlag_NoMerc
-#ifdef rAthenaCN_MapFlag_MobDroprate
+#endif // Pandas_MapFlag_NoMerc
+#ifdef Pandas_MapFlag_MobDroprate
 	MF_MOBDROPRATE,
-#endif // rAthenaCN_MapFlag_MobDroprate
-#ifdef rAthenaCN_MapFlag_MvpDroprate
+#endif // Pandas_MapFlag_MobDroprate
+#ifdef Pandas_MapFlag_MvpDroprate
 	MF_MVPDROPRATE,
-#endif // rAthenaCN_MapFlag_MvpDroprate
+#endif // Pandas_MapFlag_MvpDroprate
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };
@@ -806,17 +806,17 @@ struct map_data {
 	struct questinfo *qi_data;
 	unsigned short qi_count;
 
-#ifdef rAthenaCN_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_Mobinfo
 	int show_mob_info;
-#endif // rAthenaCN_MapFlag_Mobinfo
+#endif // Pandas_MapFlag_Mobinfo
 
-#ifdef rAthenaCN_MapFlag_MobDroprate
+#ifdef Pandas_MapFlag_MobDroprate
 	int mob_droprate;
-#endif // rAthenaCN_MapFlag_MobDroprate
+#endif // Pandas_MapFlag_MobDroprate
 
-#ifdef rAthenaCN_MapFlag_MvpDroprate
+#ifdef Pandas_MapFlag_MvpDroprate
 	int mvp_droprate;
-#endif // rAthenaCN_MapFlag_MvpDroprate
+#endif // Pandas_MapFlag_MvpDroprate
 
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 
@@ -1254,11 +1254,11 @@ extern char market_table[32];
 extern char roulette_table[32];
 extern char guild_storage_log_table[32];
 
-#ifdef rAthenaCN_Support_Specify_PacketKeys
+#ifdef Pandas_Support_Specify_PacketKeys
 // 用来保存 map_athena.conf 中设定封包混淆密钥 [Sola丶小克]
 // 备注: 该变量真正的声明定义, 位于 map.cpp 中
 extern unsigned int clif_cryptKey_custom[3];
-#endif // rAthenaCN_Support_Specify_PacketKeys
+#endif // Pandas_Support_Specify_PacketKeys
 
 void do_shutdown(void);
 

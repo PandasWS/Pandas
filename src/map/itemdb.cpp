@@ -430,9 +430,9 @@ static struct item_data *itemdb_create_item(unsigned short nameid) {
 	id->nameid = nameid;
 	id->type = IT_ETC; //Etc item
 
-#ifdef rAthenaCN_MapFlag_NoCapture
+#ifdef Pandas_MapFlag_NoCapture
 	id->taming_mobid = 0;	// 给变量赋予初值, 默认它不是宠物捕捉道具 [Sola丶小克]
-#endif // rAthenaCN_MapFlag_NoCapture
+#endif // Pandas_MapFlag_NoCapture
 
 	uidb_put(itemdb, nameid, id);
 	return id;
@@ -1400,7 +1400,7 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 	if (*str[21])
 		id->unequip_script = parse_script(str[21], source, line, scriptopt);
 
-#ifdef rAthenaCN_MapFlag_NoCapture
+#ifdef Pandas_MapFlag_NoCapture
 	// 看看这个道具的脚本是不是有 pet xxxx; 若有则记录一下
 	// 这是一个捕捉宠物的道具，并记录下它能捕捉的宠物的魔物编号 [Sola丶小克]
 	if (id->script != NULL) {
@@ -1409,7 +1409,7 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 			id->taming_mobid = pet_mobid;
 		}
 	}
-#endif // rAthenaCN_MapFlag_NoCapture
+#endif // Pandas_MapFlag_NoCapture
 
 	if (!id->nameid) {
 		id->nameid = nameid;

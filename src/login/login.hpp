@@ -97,17 +97,17 @@ struct Login_Config {
 	char msgconf_name[256];							/// name of msg_conf config file
 	char lanconf_name[256];							/// name of lan config file
 
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 	bool create_fulldump;                           /// 是否生成完整的崩溃转储文件 [Sola丶小克]
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 
-#ifdef rAthenaCN_Strict_Userid_Verification
+#ifdef Pandas_Strict_Userid_Verification
 	bool strict_new_account_userid;					/// 是否禁止使用中文等字符作为游戏账号 [Sola丶小克]
-#endif // rAthenaCN_Strict_Userid_Verification
+#endif // Pandas_Strict_Userid_Verification
 
-#ifdef rAthenaCN_Support_Hide_Online_Players_Count
+#ifdef Pandas_Support_Hide_Online_Players_Count
 	bool hide_online_players_count;					/// 是否隐藏角色服务器的在线人数 [Sola丶小克]
-#endif // rAthenaCN_Support_Hide_Online_Players_Count
+#endif // Pandas_Support_Hide_Online_Players_Count
 
 	bool usercount_disable;							/// Disable colorization and description in general?
 	int usercount_low;								/// Amount of users that will display in green
@@ -129,11 +129,11 @@ extern struct Login_Config login_config;
 
 #define msg_config_read(cfgName) login_msg_config_read(cfgName)
 #define msg_txt(msg_number) login_msg_txt(msg_number)
-#ifdef rAthenaCN_Message_Conf
+#ifdef Pandas_Message_Conf
 	#define msg_txt_cn(msg_number) login_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
 #else
 	#define msg_txt_cn(msg_number) disabled_msg_txt(msg_number + ALL_EXTEND_FIRST_MSG)
-#endif // rAthenaCN_Message_Conf
+#endif // Pandas_Message_Conf
 #define do_final_msg() login_do_final_msg()
 int login_msg_config_read(char *cfgName);
 const char* login_msg_txt(int msg_number);

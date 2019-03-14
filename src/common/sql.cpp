@@ -187,13 +187,13 @@ int Sql_GetColumnNames(Sql* self, const char* table, char* out_buf, size_t buf_l
 /// Changes the encoding of the connection.
 int Sql_SetEncoding(Sql* self, const char* encoding)
 {
-#ifndef rAthenaCN_Fix_Mysql_SetEncoding
+#ifndef Pandas_Fix_Mysql_SetEncoding
 	if( self && Sql_Query(self, "SET NAMES %s", encoding) == 0 )
 		return SQL_SUCCESS;
 #else
 	if( self && mysql_set_character_set(&self->handle, encoding) == 0 )
 		return SQL_SUCCESS;
-#endif // rAthenaCN_Fix_Mysql_SetEncoding
+#endif // Pandas_Fix_Mysql_SetEncoding
 	return SQL_ERROR;
 }
 
@@ -571,11 +571,11 @@ static void Sql_P_ShowDebugMysqlFieldInfo(const char* prefix, enum enum_field_ty
 	switch( type )
 	{
 	default:
-#ifndef rAthenaCN_Fix_LGTM_Warning
+#ifndef Pandas_Fix_LGTM_Warning
 		ShowDebug("%stype=%s%u, length=%d\n", prefix, sign, type, length);
 #else
 		ShowDebug("%stype=%s%u, length=%lu\n", prefix, sign, type, length);
-#endif // rAthenaCN_Fix_LGTM_Warning
+#endif // Pandas_Fix_LGTM_Warning
 		return;
 #define SHOW_DEBUG_OF(x) case x: type_string = #x; break
 	SHOW_DEBUG_OF(MYSQL_TYPE_TINY);
@@ -599,11 +599,11 @@ static void Sql_P_ShowDebugMysqlFieldInfo(const char* prefix, enum enum_field_ty
 	SHOW_DEBUG_OF(MYSQL_TYPE_NULL);
 #undef SHOW_DEBUG_TYPE_OF
 	}
-#ifndef rAthenaCN_Fix_LGTM_Warning
+#ifndef Pandas_Fix_LGTM_Warning
 	ShowDebug("%stype=%s%s, length=%d%s\n", prefix, sign, type_string, length, length_postfix);
 #else
 	ShowDebug("%stype=%s%s, length=%lu%s\n", prefix, sign, type_string, length, length_postfix);
-#endif // rAthenaCN_Fix_LGTM_Warning
+#endif // Pandas_Fix_LGTM_Warning
 }
 
 
