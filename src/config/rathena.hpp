@@ -276,6 +276,10 @@
 	// 是否启用 statuscalc 脚本指令 [Sola丶小克]
 	// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 statuscalc 指令
 	#define rAthenaCN_ScriptCommand_StatusCalc
+
+	// 是否启用 getequipexpiretick 脚本指令 [Sola丶小克]
+	// 获取指定位置装备的租赁到期剩余秒数 (该指令有一个用于兼容的别名: isrental)
+	#define rAthenaCN_ScriptCommand_GetEquipExpireTick
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
