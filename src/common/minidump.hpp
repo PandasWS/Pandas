@@ -7,7 +7,7 @@
 #include "winapi.hpp"
 #include "showmsg.hpp"
 
-#include "../config/rathena.hpp"
+#include "../config/pandas.hpp"
 #include "../../3rdparty/dbghelp/include/dbghelp.h"
 
 LONG __stdcall rAthenaCN_UnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionInfo);

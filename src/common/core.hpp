@@ -4,7 +4,7 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
-#include "../config/rathena.hpp"
+#include "../config/pandas.hpp"
 
 /* so that developers with --enable-debug can raise signals from any section of the code they'd like */
 #ifdef DEBUG

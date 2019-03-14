@@ -9,7 +9,7 @@
  * For detailed guidance on these check http://rathena.org/wiki/SRC/config/
  **/
 
-#include "../config/rathena.hpp"	// 引入 rAthenaCN 的宏定义文件 [Sola丶小克]
+#include "../config/pandas.hpp"	// 引入 rAthenaCN 的宏定义文件 [Sola丶小克]
 
 #ifdef rAthenaCN
 

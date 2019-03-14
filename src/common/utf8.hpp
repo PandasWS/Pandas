@@ -5,7 +5,7 @@
 #define _RATHENA_CN_UTF8_HPP_
 
 #include "showmsg.hpp"
-#include "../config/rathena.hpp"
+#include "../config/pandas.hpp"
 
 #include <stdio.h>
 #include <string>	// std::string
