@@ -4162,47 +4162,47 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, "  Displays Night |");
 	clif_displaymessage(fd, atcmd_output);
 
-#ifdef rAthenaCN_Mapflags
-	strcpy(atcmd_output,msg_txt_cn(sd,100)); // rAthenaCN 专属标记:
-#ifdef rAthenaCN_MapFlag_NoAutoLoot
+#ifdef Pandas_Mapflags
+	strcpy(atcmd_output,msg_txt_cn(sd,100)); // Pandas 专属标记:
+#ifdef Pandas_MapFlag_NoAutoLoot
 	if (map_getmapflag(m_id, MF_NOAUTOLOOT))
 		strcat(atcmd_output, " NoAutoLoot |");
-#endif // rAthenaCN_MapFlag_NoAutoLoot
-#ifdef rAthenaCN_MapFlag_NoToken
+#endif // Pandas_MapFlag_NoAutoLoot
+#ifdef Pandas_MapFlag_NoToken
 	if (map_getmapflag(m_id, MF_NOTOKEN))
 		strcat(atcmd_output, " NoToken |");
-#endif // rAthenaCN_MapFlag_NoToken
-#ifdef rAthenaCN_MapFlag_NoCapture
+#endif // Pandas_MapFlag_NoToken
+#ifdef Pandas_MapFlag_NoCapture
 	if (map_getmapflag(m_id, MF_NOCAPTURE))
 		strcat(atcmd_output, " NoCapture |");
-#endif // rAthenaCN_MapFlag_NoCapture
-#ifdef rAthenaCN_MapFlag_HideGuildInfo
+#endif // Pandas_MapFlag_NoCapture
+#ifdef Pandas_MapFlag_HideGuildInfo
 	if (map_getmapflag(m_id, MF_HIDEGUILDINFO))
 		strcat(atcmd_output, " HideGuildInfo |");
-#endif // rAthenaCN_MapFlag_HideGuildInfo
-#ifdef rAthenaCN_MapFlag_HidePartyInfo
+#endif // Pandas_MapFlag_HideGuildInfo
+#ifdef Pandas_MapFlag_HidePartyInfo
 	if (map_getmapflag(m_id, MF_HIDEPARTYINFO))
 		strcat(atcmd_output, " HidePartyInfo |");
-#endif // rAthenaCN_MapFlag_HidePartyInfo
-#ifdef rAthenaCN_MapFlag_NoMail
+#endif // Pandas_MapFlag_HidePartyInfo
+#ifdef Pandas_MapFlag_NoMail
 	if (map_getmapflag(m_id, MF_NOMAIL))
 		strcat(atcmd_output, " NoMail |");
-#endif // rAthenaCN_MapFlag_NoMail
-#ifdef rAthenaCN_MapFlag_NoPet
+#endif // Pandas_MapFlag_NoMail
+#ifdef Pandas_MapFlag_NoPet
 	if (map_getmapflag(m_id, MF_NOPET))
 		strcat(atcmd_output, " NoPet |");
-#endif // rAthenaCN_MapFlag_NoPet
-#ifdef rAthenaCN_MapFlag_NoHomun
+#endif // Pandas_MapFlag_NoPet
+#ifdef Pandas_MapFlag_NoHomun
 	if (map_getmapflag(m_id, MF_NOHOMUN))
 		strcat(atcmd_output, " NoHomun |");
-#endif // rAthenaCN_MapFlag_NoHomun
-#ifdef rAthenaCN_MapFlag_NoMerc
+#endif // Pandas_MapFlag_NoHomun
+#ifdef Pandas_MapFlag_NoMerc
 	if (map_getmapflag(m_id, MF_NOMERC))
 		strcat(atcmd_output, " NoMerc |");
-#endif // rAthenaCN_MapFlag_NoMerc
+#endif // Pandas_MapFlag_NoMerc
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
 	clif_displaymessage(fd, atcmd_output);
-#endif // rAthenaCN_Mapflags
+#endif // Pandas_Mapflags
 
 	strcpy(atcmd_output,msg_txt(sd,1050)); // Other Flags:
 	if (map_getmapflag(m_id, MF_NOBRANCH))
@@ -8227,17 +8227,17 @@ ACMD_FUNC(mapflag) {
 												MF_SKILL_DAMAGE,
 												MF_SKILL_DURATION };
 
-#ifdef rAthenaCN_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_Mobinfo
 			disabled_mf.insert(disabled_mf.begin(), MF_MOBINFO);
-#endif // rAthenaCN_MapFlag_Mobinfo
+#endif // Pandas_MapFlag_Mobinfo
 
-#ifdef rAthenaCN_MapFlag_MobDroprate
+#ifdef Pandas_MapFlag_MobDroprate
 			disabled_mf.insert(disabled_mf.begin(), MF_MOBDROPRATE);
-#endif // rAthenaCN_MapFlag_MobDroprate
+#endif // Pandas_MapFlag_MobDroprate
 
-#ifdef rAthenaCN_MapFlag_MvpDroprate
+#ifdef Pandas_MapFlag_MvpDroprate
 			disabled_mf.insert(disabled_mf.begin(), MF_MVPDROPRATE);
-#endif // rAthenaCN_MapFlag_MvpDroprate
+#endif // Pandas_MapFlag_MvpDroprate
 
 			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
 
@@ -10095,7 +10095,7 @@ ACMD_FUNC(camerainfo){
 	return 0;
 }
 
-#ifdef rAthenaCN_AtCommand_RecallMap
+#ifdef Pandas_AtCommand_RecallMap
 /**
  * 召唤当前(或指定)地图的玩家来到身边 [Sola丶小克]
  * 使用方法: @recallmap {mapname}
@@ -10158,7 +10158,7 @@ ACMD_FUNC(recallmap) {
 
 	return 0;
 }
-#endif // rAthenaCN_AtCommand_RecallMap
+#endif // Pandas_AtCommand_RecallMap
 
 #include "../custom/atcommand.inc"
 
@@ -10176,9 +10176,9 @@ void atcommand_basecommands(void) {
 	 * TODO: List all commands that causing crash
 	 **/
 	AtCommandInfo atcommand_base[] = {
-#ifdef rAthenaCN_AtCommand_RecallMap
+#ifdef Pandas_AtCommand_RecallMap
 		ACMD_DEF(recallmap),
-#endif // rAthenaCN_AtCommand_RecallMap
+#endif // Pandas_AtCommand_RecallMap
 
 #include "../custom/atcommand_def.inc"
 		ACMD_DEF2R("warp", mapmove, ATCMD_NOCONSOLE),

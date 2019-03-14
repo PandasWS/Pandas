@@ -5203,7 +5203,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 	if( id->delay > 0 && !pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && pc_itemcd_check(sd, id, tick, n))
 		return 0;
 
-#ifdef rAthenaCN_MapFlag_NoCapture
+#ifdef Pandas_MapFlag_NoCapture
 	// 如果玩家所在地图设置了 nocapture 标记的话
 	// 那么在扣除道具之前，就给予玩家禁止玩家捕捉宠物的提示 [Sola丶小克]
 	if (sd && map_getmapflag(sd->bl.m, MF_NOCAPTURE)) {
@@ -5212,7 +5212,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 			return 0;
 		}
 	}
-#endif // rAthenaCN_MapFlag_NoCapture
+#endif // Pandas_MapFlag_NoCapture
 
 	/* on restricted maps the item is consumed but the effect is not used */
 	if (!pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && itemdb_isNoEquip(id,sd->bl.m)) {
@@ -8388,14 +8388,14 @@ int pc_readparam(struct map_session_data* sd,int type)
 #else
 			val = sd->castrate; break;
 #endif
-#ifdef rAthenaCN_ScriptParams_ReadParam
+#ifdef Pandas_ScriptParams_ReadParam
 		case SP_STR_ALL:	val = sd->battle_status.str; break;
 		case SP_AGI_ALL:	val = sd->battle_status.agi; break;
 		case SP_VIT_ALL:	val = sd->battle_status.vit; break;
 		case SP_INT_ALL:	val = sd->battle_status.int_; break;
 		case SP_DEX_ALL:	val = sd->battle_status.dex; break;
 		case SP_LUK_ALL:	val = sd->battle_status.luk; break;
-#endif // rAthenaCN_ScriptParams_ReadParam
+#endif // Pandas_ScriptParams_ReadParam
 		default:
 			ShowError("pc_readparam: Attempt to read unknown parameter '%d'.\n", type);
 			return -1;

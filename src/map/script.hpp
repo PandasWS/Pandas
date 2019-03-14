@@ -170,9 +170,9 @@ struct Script_Config {
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
 
-#ifdef rAthenaCN_NpcEvent_KILLMVP
+#ifdef Pandas_NpcEvent_KILLMVP
 	const char* killmvp_event_name;	// NPCE_KILLMVP		// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物时触发事件
-#endif // rAthenaCN_NpcEvent_KILLMVP
+#endif // Pandas_NpcEvent_KILLMVP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	// NPC related

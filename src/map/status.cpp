@@ -7698,12 +7698,12 @@ int status_get_emblem_id(struct block_list *bl)
 {
 	nullpo_ret(bl);
 
-#ifdef rAthenaCN_MapFlag_HideGuildInfo
+#ifdef Pandas_MapFlag_HideGuildInfo
 	// 若当前地图有 hideguildinfo 标记, 那么不返回角色公会的图标编号
 	// 这样在 GVG 时, 处于 GVG 地图玩家 (以及类似单位) 头上的公会图标才能够被隐藏 [Sola丶小克]
 	if (map_getmapflag(bl->m, MF_HIDEGUILDINFO))
 		return 0;
-#endif // rAthenaCN_MapFlag_HideGuildInfo
+#endif // Pandas_MapFlag_HideGuildInfo
 
 	switch (bl->type) {
 		case BL_PC:
@@ -12869,32 +12869,32 @@ TIMER_FUNC(status_change_timer){
 
 	bl = map_id2bl(id);
 	if(!bl) {
-#ifndef rAthenaCN_Fix_LGTM_Warning
+#ifndef Pandas_Fix_LGTM_Warning
 		ShowDebug("status_change_timer: Null pointer id: %d data: %d\n", id, data);
 #else
 		ShowDebug("status_change_timer: Null pointer id: %d data: %ld\n", id, data);
-#endif // rAthenaCN_Fix_LGTM_Warning
+#endif // Pandas_Fix_LGTM_Warning
 		return 0;
 	}
 
 	struct status_change * const sc = status_get_sc(bl);
 	struct status_data * const status = status_get_status_data(bl);
 	if(!sc) {
-#ifndef rAthenaCN_Fix_LGTM_Warning
+#ifndef Pandas_Fix_LGTM_Warning
 		ShowDebug("status_change_timer: Null pointer id: %d data: %d bl-type: %d\n", id, data, bl->type);
 #else
 		ShowDebug("status_change_timer: Null pointer id: %d data: %ld bl-type: %d\n", id, data, bl->type);
-#endif // rAthenaCN_Fix_LGTM_Warning
+#endif // Pandas_Fix_LGTM_Warning
 		return 0;
 	}
 	
 	struct status_change_entry * const sce = sc->data[type];
 	if(!sce) {
-#ifndef rAthenaCN_Fix_LGTM_Warning
+#ifndef Pandas_Fix_LGTM_Warning
 		ShowDebug("status_change_timer: Null pointer id: %d data: %d bl-type: %d\n", id, data, bl->type);
 #else
 		ShowDebug("status_change_timer: Null pointer id: %d data: %ld bl-type: %d\n", id, data, bl->type);
-#endif // rAthenaCN_Fix_LGTM_Warning
+#endif // Pandas_Fix_LGTM_Warning
 		return 0;
 	}
 	if( sce->timer != tid ) {

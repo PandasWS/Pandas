@@ -630,7 +630,7 @@ int pet_catch_process1(struct map_session_data *sd,int target_class)
 {
 	nullpo_ret(sd);
 
-#ifdef rAthenaCN_MapFlag_NoCapture
+#ifdef Pandas_MapFlag_NoCapture
 	// 如果玩家所在地图设置了 nocapture 标记的话,
 	// 虽然在 pc_useitem 中已经加了限制, 但是这里也得再加一次判断,
 	// 可以防止贤者的随机捕捉宠物技能捕捉魔物 [Sola丶小克]
@@ -638,7 +638,7 @@ int pet_catch_process1(struct map_session_data *sd,int target_class)
 		clif_displaymessage(sd->fd, msg_txt_cn(sd, 18));	// 此地图禁止捕捉宠物.
 		return 0;
 	}
-#endif // rAthenaCN_MapFlag_NoCapture
+#endif // Pandas_MapFlag_NoCapture
 
 	sd->catch_target_class = target_class;
 	clif_catch_process(sd);

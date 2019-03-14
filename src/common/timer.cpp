@@ -268,11 +268,11 @@ int add_timer_interval(t_tick tick, TimerFunc func, int id, intptr_t data, int i
 
 	if( interval < 1 )
 	{
-#ifndef rAthenaCN_Fix_LGTM_Warning
+#ifndef Pandas_Fix_LGTM_Warning
 		ShowError("add_timer_interval: invalid interval (tick=%" PRtf " %p[%s] id=%d data=%d diff_tick=%d)\n", tick, func, search_timer_func_list(func), id, data, DIFF_TICK(tick, gettick()));
 #else
 		ShowError("add_timer_interval: invalid interval (tick=%" PRtf " %p[%s] id=%d data=%ld diff_tick=%d)\n", tick, func, search_timer_func_list(func), id, data, DIFF_TICK(tick, gettick()));
-#endif // rAthenaCN_Fix_LGTM_Warning
+#endif // Pandas_Fix_LGTM_Warning
 		return INVALID_TIMER;
 	}
 

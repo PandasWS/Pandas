@@ -4692,10 +4692,10 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_specialeffect_single(bl,EF_BABYBODY2,sd->fd);
 			clif_efst_status_change_sub(&sd->bl, bl, SELF);
 			clif_progressbar_npc(nd, sd);
-#ifdef rAthenaCN_ScriptCommand_ShowVend
+#ifdef Pandas_ScriptCommand_ShowVend
 			if (sd && nd && nd->vendingboard.show)
 				clif_showvendingboard(&nd->bl, nd->vendingboard.message, sd->fd);
-#endif // rAthenaCN_ScriptCommand_ShowVend
+#endif // Pandas_ScriptCommand_ShowVend
 		}
 		break;
 	case BL_MOB:
@@ -9555,7 +9555,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 				WBUFB(buf,30) = 0;
 			}
 
-#ifdef rAthenaCN_MapFlag_HidePartyInfo
+#ifdef Pandas_MapFlag_HidePartyInfo
 			// 若当前地图启用了 hidepartyinfo 标记
 			// 那么除了自己之外, 不再返回当前角色的所在队伍名称 [Sola丶小克]
 			// 
@@ -9567,7 +9567,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 			// ---------------------------------------------------------
 			if (map_getmapflag(sd->bl.m, MF_HIDEPARTYINFO) && src->id != bl->id)
 				WBUFB(buf, 30) = 0;
-#endif // rAthenaCN_MapFlag_HidePartyInfo
+#endif // Pandas_MapFlag_HidePartyInfo
 
 			if( sd->guild ){
 				int position;
@@ -9578,7 +9578,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 				safestrncpy(WBUFCP(buf,54), sd->guild->name,NAME_LENGTH);
 				safestrncpy(WBUFCP(buf,78), sd->guild->position[position].name, NAME_LENGTH);
 
-#ifdef rAthenaCN_MapFlag_HideGuildInfo
+#ifdef Pandas_MapFlag_HideGuildInfo
 				// 若当前地图启用了 hideguildinfo 标记
 				// 那么除了自己之外, 不返回角色的公会名称, 以及角色在公会中的职位名称 [Sola丶小克]
 				// 
@@ -9592,7 +9592,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 					WBUFB(buf,54) = 0;
 					WBUFB(buf,78) = 0;
 				}
-#endif // rAthenaCN_MapFlag_HideGuildInfo
+#endif // Pandas_MapFlag_HideGuildInfo
 			}else if( sd->clan ){
 				WBUFB(buf,54) = 0;
 				safestrncpy(WBUFCP(buf,78), sd->clan->name,NAME_LENGTH);
@@ -9638,21 +9638,21 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 			}
 			else if( battle_config.show_mob_info )
 			{
-#ifndef rAthenaCN_MobInfomation_Extend
+#ifndef Pandas_MobInfomation_Extend
 				char mobhp[50], *str_p = mobhp;
-#ifdef rAthenaCN_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_Mobinfo
 				int show_mob_info = battle_config.show_mob_info;
 
 				if (md->bl.m >= 0 && map_getmapflag(md->bl.m, MF_MOBINFO)) {
 					show_mob_info = map[md->bl.m].show_mob_info;
 				}
-#endif // rAthenaCN_MapFlag_Mobinfo
+#endif // Pandas_MapFlag_Mobinfo
 #if PACKETVER >= 20150513
 				WBUFW(buf, 0) = cmd = 0xa30;
 #else
 				WBUFW(buf, 0) = cmd = 0x195;
 #endif
-#ifndef rAthenaCN_MapFlag_Mobinfo
+#ifndef Pandas_MapFlag_Mobinfo
 				if( battle_config.show_mob_info&4 )
 					str_p += sprintf(str_p, "Lv. %d | ", md->level);
 				if( battle_config.show_mob_info&1 )
@@ -9666,7 +9666,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 					str_p += sprintf(str_p, "HP: %u/%u | ", md->status.hp, md->status.max_hp);
 				if( show_mob_info&2 )
 					str_p += sprintf(str_p, "HP: %u%% | ", get_percentage(md->status.hp, md->status.max_hp));
-#endif // rAthenaCN_MapFlag_Mobinfo
+#endif // Pandas_MapFlag_Mobinfo
 				//Even thought mobhp ain't a name, we send it as one so the client
 				//can parse it. [Skotlex]
 				if( str_p != mobhp )
@@ -9682,11 +9682,11 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 				char mobinfo_third[100] = { 0 }, *p_mobinfo_t = mobinfo_third;
 				int show_mob_info = battle_config.show_mob_info;
 
-#ifdef rAthenaCN_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_Mobinfo
 				if (md->bl.m >= 0 && map_getmapflag(md->bl.m, MF_MOBINFO)) {
 					show_mob_info = map[md->bl.m].show_mob_info;
 				}
-#endif // rAthenaCN_MapFlag_Mobinfo
+#endif // Pandas_MapFlag_Mobinfo
 
 				if (show_mob_info & 4)
 					p_mobinfo_f += sprintf(p_mobinfo_f, "Lv.%d | ", md->level);
@@ -9753,7 +9753,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 				if (p_mobinfo_f == mobinfo_first) WBUFB(buf, 30) = 0;
 				if (p_mobinfo_s == mobinfo_second) WBUFB(buf, 54) = 0;
 				if (p_mobinfo_t == mobinfo_third) WBUFB(buf, 78) = 0;
-#endif // rAthenaCN_MobInfomation_Extend
+#endif // Pandas_MobInfomation_Extend
 			}
 #if PACKETVER >= 20150513
 			WBUFL(buf, 102) = 0; // Title ID
@@ -15037,12 +15037,12 @@ void clif_parse_AutoRevive(int fd, struct map_session_data *sd)
 	short item_position = pc_search_inventory(sd, ITEMID_TOKEN_OF_SIEGFRIED);
 	uint8 hp = 100, sp = 100;
 
-#ifdef rAthenaCN_MapFlag_NoToken
+#ifdef Pandas_MapFlag_NoToken
 	if (sd && sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOTOKEN)) {
 		clif_displaymessage(fd, msg_txt_cn(sd, 17));	// 此地图禁止原地复活!
 		return;
 	}
-#endif // rAthenaCN_MapFlag_NoToken
+#endif // Pandas_MapFlag_NoToken
 
 	if (item_position < 0) {
 		if (sd->sc.data[SC_LIGHT_OF_REGENE]) {
@@ -21142,10 +21142,10 @@ void packetdb_readdb(){
 #include "clif_packetdb.hpp"
 #include "clif_shuffle.hpp"
 
-#ifdef rAthenaCN_Support_Specify_PacketKeys
+#ifdef Pandas_Support_Specify_PacketKeys
 	if (clif_cryptKey_custom[0] > 0 && clif_cryptKey_custom[1] > 0 && clif_cryptKey_custom[2] > 0)
 		memcpy(&clif_cryptKey, &clif_cryptKey_custom, sizeof(clif_cryptKey_custom));
-#endif // rAthenaCN_Support_Specify_PacketKeys
+#endif // Pandas_Support_Specify_PacketKeys
 
 	ShowStatus("Using packet version: " CL_WHITE "%d" CL_RESET ".\n", PACKETVER);
 

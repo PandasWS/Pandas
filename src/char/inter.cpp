@@ -944,14 +944,14 @@ int inter_init_sql(const char *file)
 		exit(EXIT_FAILURE);
 	}
 
-#ifndef rAthenaCN_Smart_Codepage
+#ifndef Pandas_Smart_Codepage
 	if( *default_codepage ) {
 		if( SQL_ERROR == Sql_SetEncoding(sql_handle, default_codepage) )
 			Sql_ShowDebug(sql_handle);
 	}
 #else
 	smart_codepage(sql_handle, "Char-Server", default_codepage);
-#endif // rAthenaCN_Smart_Codepage
+#endif // Pandas_Smart_Codepage
 
 	wis_db = idb_alloc(DB_OPT_RELEASE_DATA);
 	interServerDb.load();

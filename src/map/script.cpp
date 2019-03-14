@@ -270,9 +270,9 @@ struct Script_Config script_config = {
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
 
-#ifdef rAthenaCN_NpcEvent_KILLMVP
+#ifdef Pandas_NpcEvent_KILLMVP
 	"OnPCKillMvpEvent",	// NPCE_KILLMVP		// killmvp_event_name	// 当玩家杀死 MVP 魔物时触发事件
-#endif // rAthenaCN_NpcEvent_KILLMVP
+#endif // Pandas_NpcEvent_KILLMVP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 
 	// NPC related
@@ -13797,7 +13797,7 @@ BUILDIN_FUNC(getinventorylist)
 				sprintf(randopt_var, "@inventorylist_option_parameter%d",k+1);
 				pc_setreg(sd,reference_uid(add_str(randopt_var), j),sd->inventory.u.items_inventory[i].option[k].param);
 			}
-#ifdef rAthenaCN_ScriptResults_GetInventoryList
+#ifdef Pandas_ScriptResults_GetInventoryList
 			// 数值型数组 - @inventorylist_idx 用于保存道具在 items_inventory 的索引
 			pc_setreg(sd, reference_uid(add_str("@inventorylist_idx"), j), i);
 
@@ -13807,7 +13807,7 @@ BUILDIN_FUNC(getinventorylist)
 				std_string_format(str_unique_id, "%llu", (unsigned long long)sd->inventory.u.items_inventory[i].unique_id);
 				pc_setregstr(sd, reference_uid(add_str("@inventorylist_uid$"), j), str_unique_id.c_str());
 			}
-#endif // rAthenaCN_ScriptResults_GetInventoryList
+#endif // Pandas_ScriptResults_GetInventoryList
 			j++;
 		}
 	}
@@ -24146,7 +24146,7 @@ BUILDIN_FUNC(preg_match) {
 #endif
 }
 
-#ifdef rAthenaCN_ScriptCommand_SetHeadDir
+#ifdef Pandas_ScriptCommand_SetHeadDir
 /* ===========================================================
  * 指令: setheaddir
  * 描述: 调整角色纸娃娃脑袋的朝向
@@ -24169,9 +24169,9 @@ BUILDIN_FUNC(setheaddir) {
 
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_SetHeadDir
+#endif // Pandas_ScriptCommand_SetHeadDir
 
-#ifdef rAthenaCN_ScriptCommand_SetBodyDir
+#ifdef Pandas_ScriptCommand_SetBodyDir
 /* ===========================================================
  * 指令: setbodydir
  * 描述: 用于调整角色纸娃娃身体的朝向
@@ -24193,9 +24193,9 @@ BUILDIN_FUNC(setbodydir) {
 
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_SetBodyDir
+#endif // Pandas_ScriptCommand_SetBodyDir
 
-#ifdef rAthenaCN_ScriptCommand_OpenBank
+#ifdef Pandas_ScriptCommand_OpenBank
 /* ===========================================================
  * 指令: openbank
  * 描述: 让指定的角色立刻打开银行界面
@@ -24215,9 +24215,9 @@ BUILDIN_FUNC(openbank) {
 	script_pushint(st, 1);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_OpenBank
+#endif // Pandas_ScriptCommand_OpenBank
 
-#ifdef rAthenaCN_ScriptCommand_InstanceUsers
+#ifdef Pandas_ScriptCommand_InstanceUsers
 /* ===========================================================
  * 指令: instance_users
  * 描述: 获取指定的副本实例中已经进入副本地图的人数
@@ -24245,9 +24245,9 @@ BUILDIN_FUNC(instance_users) {
 	script_pushint(st, users);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_InstanceUsers
+#endif // Pandas_ScriptCommand_InstanceUsers
 
-#ifdef rAthenaCN_ScriptCommand_CapValue
+#ifdef Pandas_ScriptCommand_CapValue
 /* ===========================================================
  * 指令: cap
  * 描述: 确保数值不低于给定的最小值, 不超过给定的最大值
@@ -24263,9 +24263,9 @@ BUILDIN_FUNC(cap) {
 	script_pushint(st, cap_value(val, min, max));
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_CapValue
+#endif // Pandas_ScriptCommand_CapValue
 
-#ifdef rAthenaCN_ScriptCommand_MobRemove
+#ifdef Pandas_ScriptCommand_MobRemove
 /* ===========================================================
  * 指令: mobremove
  * 描述: 根据 GID 移除一个魔物单位 (只是移除, 不会让魔物死亡)
@@ -24282,9 +24282,9 @@ BUILDIN_FUNC(mobremove) {
 
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_MobRemove
+#endif // Pandas_ScriptCommand_MobRemove
 
-#ifdef rAthenaCN_ScriptCommand_BattleIgnore
+#ifdef Pandas_ScriptCommand_BattleIgnore
 /* ===========================================================
  * 指令: battleignore
  * 描述: 将角色设置为魔物免战状态, 避免被魔物攻击
@@ -24302,9 +24302,9 @@ BUILDIN_FUNC(battleignore) {
 	sd->state.monster_ignore = cap_value(immune, 0, 1);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_BattleIgnore
+#endif // Pandas_ScriptCommand_BattleIgnore
 
-#ifdef rAthenaCN_ScriptCommand_GetHotkey
+#ifdef Pandas_ScriptCommand_GetHotkey
 /* ===========================================================
  * 指令: gethotkey
  * 描述: 获取指定快捷键位置当前的信息
@@ -24361,9 +24361,9 @@ BUILDIN_FUNC(gethotkey) {
 	script_pushint(st, 1);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_GetHotkey
+#endif // Pandas_ScriptCommand_GetHotkey
 
-#ifdef rAthenaCN_ScriptCommand_SetHotkey
+#ifdef Pandas_ScriptCommand_SetHotkey
 /* ===========================================================
  * 指令: sethotkey
  * 描述: 设置指定快捷键位置的信息
@@ -24426,9 +24426,9 @@ BUILDIN_FUNC(sethotkey) {
 	script_pushint(st, 1);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_SetHotkey
+#endif // Pandas_ScriptCommand_SetHotkey
 
-#ifdef rAthenaCN_ScriptCommand_ShowVend
+#ifdef Pandas_ScriptCommand_ShowVend
 /* ===========================================================
  * 指令: showvend
  * 描述: 使指定的 NPC 头上可以显示露天商店的招牌
@@ -24484,9 +24484,9 @@ BUILDIN_FUNC(showvend) {
 	script_pushint(st, 1);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_ShowVend
+#endif // Pandas_ScriptCommand_ShowVend
 
-#ifdef rAthenaCN_ScriptCommand_ViewEquip
+#ifdef Pandas_ScriptCommand_ViewEquip
 /* ===========================================================
  * 指令: viewequip
  * 描述: 查看指定在线角色的装备面板信息
@@ -24524,9 +24524,9 @@ BUILDIN_FUNC(viewequip) {
 
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_ViewEquip
+#endif // Pandas_ScriptCommand_ViewEquip
 
-#ifdef rAthenaCN_ScriptCommand_CountItemIdx
+#ifdef Pandas_ScriptCommand_CountItemIdx
 /* ===========================================================
  * 指令: countitemidx
  * 描述: 获取指定背包序号的道具在背包中的数量
@@ -24560,9 +24560,9 @@ BUILDIN_FUNC(countitemidx) {
 	script_pushint(st, sd->inventory.u.items_inventory[idx].amount);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_CountItemIdx
+#endif // Pandas_ScriptCommand_CountItemIdx
 
-#ifdef rAthenaCN_ScriptCommand_DelItemIdx
+#ifdef Pandas_ScriptCommand_DelItemIdx
 /* ===========================================================
  * 指令: delitemidx
  * 描述: 移除指定背包序号的道具
@@ -24605,9 +24605,9 @@ BUILDIN_FUNC(delitemidx) {
 
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_DelItemIdx
+#endif // Pandas_ScriptCommand_DelItemIdx
 
-#ifdef rAthenaCN_ScriptCommand_IdentifyIdx
+#ifdef Pandas_ScriptCommand_IdentifyIdx
 /* ===========================================================
  * 指令: identifyidx
  * 描述: 鉴定指定背包序号的道具
@@ -24646,9 +24646,9 @@ BUILDIN_FUNC(identifyidx) {
 	script_pushint(st, 1);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_IdentifyIdx
+#endif // Pandas_ScriptCommand_IdentifyIdx
 
-#ifdef rAthenaCN_ScriptCommand_UnEquipIdx
+#ifdef Pandas_ScriptCommand_UnEquipIdx
 /* ===========================================================
  * 指令: unequipidx
  * 描述: 脱下指定背包序号的道具
@@ -24692,9 +24692,9 @@ BUILDIN_FUNC(unequipidx) {
 	script_pushint(st, pc_unequipitem(sd, idx, id->equip) ? 1 : 0);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_UnEquipIdx
+#endif // Pandas_ScriptCommand_UnEquipIdx
 
-#ifdef rAthenaCN_ScriptCommand_EquipIdx
+#ifdef Pandas_ScriptCommand_EquipIdx
 /* ===========================================================
  * 指令: equipidx
  * 描述: 穿戴指定背包序号的道具
@@ -24738,9 +24738,9 @@ BUILDIN_FUNC(equipidx) {
 	script_pushint(st, pc_equipitem(sd, idx, id->equip) ? 1 : 0);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_EquipIdx
+#endif // Pandas_ScriptCommand_EquipIdx
 
-#ifdef rAthenaCN_ScriptCommand_ItemExists
+#ifdef Pandas_ScriptCommand_ItemExists
 /* ===========================================================
  * 指令: itemexists
  * 描述: 确认物品数据库中是否存在指定物品
@@ -24771,9 +24771,9 @@ BUILDIN_FUNC(itemexists) {
 
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_ItemExists
+#endif // Pandas_ScriptCommand_ItemExists
 
-#ifdef rAthenaCN_ScriptCommand_RentTime
+#ifdef Pandas_ScriptCommand_RentTime
 /* ===========================================================
  * 指令: renttime
  * 描述: 增加/减少指定位置装备的租赁时间
@@ -24841,9 +24841,9 @@ BUILDIN_FUNC(renttime) {
 	}
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_RentTime
+#endif // Pandas_ScriptCommand_RentTime
 
-#ifdef rAthenaCN_ScriptCommand_GetEquipIdx
+#ifdef Pandas_ScriptCommand_GetEquipIdx
 /* ===========================================================
  * 指令: getequipidx
  * 描述: 获取指定位置装备的背包序号
@@ -24874,9 +24874,9 @@ BUILDIN_FUNC(getequipidx) {
 	script_pushint(st, idx);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_GetEquipIdx
+#endif // Pandas_ScriptCommand_GetEquipIdx
 
-#ifdef rAthenaCN_ScriptCommand_GetEquipExpireTick
+#ifdef Pandas_ScriptCommand_GetEquipExpireTick
 /* ===========================================================
  * 指令: getequipexpiretick
  * 描述: 获取指定位置装备的租赁到期剩余秒数
@@ -24911,9 +24911,9 @@ BUILDIN_FUNC(getequipexpiretick) {
 	script_pushint(st, sd->inventory.u.items_inventory[idx].expire_time - (unsigned int)time(NULL));
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_GetEquipExpireTick
+#endif // Pandas_ScriptCommand_GetEquipExpireTick
 
-#ifdef rAthenaCN_ScriptCommand_GetInventoryInfo
+#ifdef Pandas_ScriptCommand_GetInventoryInfo
 /* ===========================================================
  * 指令: getinventoryinfo
  * 描述: 查询指定背包序号的道具的详细信息
@@ -24976,95 +24976,95 @@ BUILDIN_FUNC(getinventoryinfo) {
 	script_pushint(st, retval);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // rAthenaCN_ScriptCommand_GetInventoryInfo
+#endif // Pandas_ScriptCommand_GetInventoryInfo
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
 /// for an explanation on args, see add_buildin_func
 struct script_function buildin_func[] = {
-#ifdef rAthenaCN_ScriptCommand_SetHeadDir
+#ifdef Pandas_ScriptCommand_SetHeadDir
 	BUILDIN_DEF(setheaddir,"i?"),						// 调整角色纸娃娃脑袋的朝向 [Sola丶小克]
-#endif // rAthenaCN_ScriptCommand_SetHeadDir
-#ifdef rAthenaCN_ScriptCommand_SetBodyDir
+#endif // Pandas_ScriptCommand_SetHeadDir
+#ifdef Pandas_ScriptCommand_SetBodyDir
 	BUILDIN_DEF(setbodydir,"i?"),						// 用于调整角色纸娃娃身体的朝向 [Sola丶小克]
-#endif // rAthenaCN_ScriptCommand_SetBodyDir
-#ifdef rAthenaCN_ScriptCommand_OpenBank
+#endif // Pandas_ScriptCommand_SetBodyDir
+#ifdef Pandas_ScriptCommand_OpenBank
 	BUILDIN_DEF(openbank,"?"),							// 让指定的角色立刻打开银行界面 [Sola丶小克]
-#endif // rAthenaCN_ScriptCommand_OpenBank
-#ifdef rAthenaCN_ScriptCommand_InstanceUsers
+#endif // Pandas_ScriptCommand_OpenBank
+#ifdef Pandas_ScriptCommand_InstanceUsers
 	BUILDIN_DEF(instance_users,"i"),					// 获取指定的副本实例中, 已经进入副本地图的人数 [Sola丶小克]
-#endif // rAthenaCN_ScriptCommand_InstanceUsers
-#ifdef rAthenaCN_ScriptCommand_CapValue
+#endif // Pandas_ScriptCommand_InstanceUsers
+#ifdef Pandas_ScriptCommand_CapValue
 	BUILDIN_DEF(cap,"iii"),								// 确保数值不低于给定的最小值, 不超过给定的最大值 [Sola丶小克]
-	BUILDIN_DEF2(cap,"cap_value","iii"),				// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-#endif // rAthenaCN_ScriptCommand_CapValue
-#ifdef rAthenaCN_ScriptCommand_MobRemove
+	BUILDIN_DEF2(cap,"cap_value","iii"),				// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_CapValue
+#ifdef Pandas_ScriptCommand_MobRemove
 	BUILDIN_DEF(mobremove,"i"),							// 根据 GID 移除一个魔物单位 [Sola丶小克]
-#endif // rAthenaCN_ScriptCommand_MobRemove
-#ifdef rAthenaCN_ScriptCommand_MesClear
+#endif // Pandas_ScriptCommand_MobRemove
+#ifdef Pandas_ScriptCommand_MesClear
 	BUILDIN_DEF2(clear,"mesclear",""),					// 由于 rAthena 已经实现 clear 指令, 这里兼容老版本 mesclear 指令 [Sola丶小克]
-#endif // rAthenaCN_ScriptCommand_MesClear
-#ifdef rAthenaCN_ScriptCommand_BattleIgnore
+#endif // Pandas_ScriptCommand_MesClear
+#ifdef Pandas_ScriptCommand_BattleIgnore
 	BUILDIN_DEF(battleignore,"i?"),						// 将角色设置为魔物免战状态, 避免被魔物攻击 [Sola丶小克]
-#endif // rAthenaCN_ScriptCommand_BattleIgnore
-#ifdef rAthenaCN_ScriptCommand_GetHotkey
+#endif // Pandas_ScriptCommand_BattleIgnore
+#ifdef Pandas_ScriptCommand_GetHotkey
 	BUILDIN_DEF(gethotkey,"i?"),						// 获取指定快捷键位置当前的信息 [Sola丶小克]
-	BUILDIN_DEF2(gethotkey,"get_hotkey","i?"),			// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-#endif // rAthenaCN_ScriptCommand_GetHotkey
-#ifdef rAthenaCN_ScriptCommand_SetHotkey
+	BUILDIN_DEF2(gethotkey,"get_hotkey","i?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_GetHotkey
+#ifdef Pandas_ScriptCommand_SetHotkey
 	BUILDIN_DEF(sethotkey,"iiii"),						// 设置指定快捷键位置的信息 [Sola丶小克]
-	BUILDIN_DEF2(sethotkey,"set_hotkey","iiii"),		// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-#endif // rAthenaCN_ScriptCommand_SetHotkey
-#ifdef rAthenaCN_ScriptCommand_ShowVend
+	BUILDIN_DEF2(sethotkey,"set_hotkey","iiii"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_SetHotkey
+#ifdef Pandas_ScriptCommand_ShowVend
 	BUILDIN_DEF(showvend,"si?"),						// 使指定的 NPC 头上可以显示露天商店的招牌 [Jian916]
-#endif // rAthenaCN_ScriptCommand_ShowVend
-#ifdef rAthenaCN_ScriptCommand_ViewEquip
+#endif // Pandas_ScriptCommand_ShowVend
+#ifdef Pandas_ScriptCommand_ViewEquip
 	BUILDIN_DEF(viewequip,"i?"),						// 查看指定在线角色的装备面板信息 [Sola丶小克]
-#endif // rAthenaCN_ScriptCommand_ViewEquip
-#ifdef rAthenaCN_ScriptCommand_CountItemIdx
+#endif // Pandas_ScriptCommand_ViewEquip
+#ifdef Pandas_ScriptCommand_CountItemIdx
 	BUILDIN_DEF(countitemidx,"i?"),						// 获取指定背包序号的道具在背包中的数量 [Sola丶小克]
-	BUILDIN_DEF2(countitemidx,"countinventory","i?"),	// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-#endif // rAthenaCN_ScriptCommand_CountItemIdx
-#ifdef rAthenaCN_ScriptCommand_DelItemIdx
+	BUILDIN_DEF2(countitemidx,"countinventory","i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_CountItemIdx
+#ifdef Pandas_ScriptCommand_DelItemIdx
 	BUILDIN_DEF(delitemidx,"i??"),						// 移除指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(delitemidx,"delinventory","i??"),		// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-#endif // rAthenaCN_ScriptCommand_DelItemIdx
-#ifdef rAthenaCN_ScriptCommand_IdentifyIdx
+	BUILDIN_DEF2(delitemidx,"delinventory","i??"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_DelItemIdx
+#ifdef Pandas_ScriptCommand_IdentifyIdx
 	BUILDIN_DEF(identifyidx,"i?"),						// 鉴定指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(identifyidx,"identifybyidx","i?"),		// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-#endif // rAthenaCN_ScriptCommand_IdentifyIdx
-#ifdef rAthenaCN_ScriptCommand_UnEquipIdx
+	BUILDIN_DEF2(identifyidx,"identifybyidx","i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_IdentifyIdx
+#ifdef Pandas_ScriptCommand_UnEquipIdx
 	BUILDIN_DEF(unequipidx,"i?"),						// 脱下指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(unequipidx,"unequipinventory","i?"),	// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-#endif // rAthenaCN_ScriptCommand_UnEquipIdx
-#ifdef rAthenaCN_ScriptCommand_EquipIdx
+	BUILDIN_DEF2(unequipidx,"unequipinventory","i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_UnEquipIdx
+#ifdef Pandas_ScriptCommand_EquipIdx
 	BUILDIN_DEF(equipidx,"i?"),							// 穿戴指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(equipidx,"equipinventory","i?"),		// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-#endif // rAthenaCN_ScriptCommand_EquipIdx
-#ifdef rAthenaCN_ScriptCommand_ItemExists
+	BUILDIN_DEF2(equipidx,"equipinventory","i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_EquipIdx
+#ifdef Pandas_ScriptCommand_ItemExists
 	BUILDIN_DEF(itemexists,"?"),						// 确认物品数据库中是否存在指定物品 [Sola丶小克]
-	BUILDIN_DEF2(itemexists,"existitem","?"),			// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-#endif // rAthenaCN_ScriptCommand_ItemExists
-#ifdef rAthenaCN_ScriptCommand_RentTime
+	BUILDIN_DEF2(itemexists,"existitem","?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_ItemExists
+#ifdef Pandas_ScriptCommand_RentTime
 	BUILDIN_DEF(renttime,"ii?"),						// 增加/减少指定位置装备的租赁时间 [Sola丶小克]
-	BUILDIN_DEF2(renttime,"setrenttime","ii?"),			// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-	BUILDIN_DEF2(renttime,"resume","ii?"),				// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-#endif // rAthenaCN_ScriptCommand_RentTime
-#ifdef rAthenaCN_ScriptCommand_GetEquipIdx
+	BUILDIN_DEF2(renttime,"setrenttime","ii?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
+	BUILDIN_DEF2(renttime,"resume","ii?"),				// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_RentTime
+#ifdef Pandas_ScriptCommand_GetEquipIdx
 	BUILDIN_DEF(getequipidx,"i?"),						// 获取指定位置装备的背包序号 [Sola丶小克]
-#endif // rAthenaCN_ScriptCommand_GetEquipIdx
-#ifdef rAthenaCN_ScriptCommand_StatusCalc
+#endif // Pandas_ScriptCommand_GetEquipIdx
+#ifdef Pandas_ScriptCommand_StatusCalc
 	BUILDIN_DEF2(recalculatestat,"statuscalc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 statuscalc 指令 [Sola丶小克]
 	BUILDIN_DEF2(recalculatestat,"status_calc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 status_calc 指令 [Sola丶小克]
-#endif // rAthenaCN_ScriptCommand_StatusCalc
-#ifdef rAthenaCN_ScriptCommand_GetEquipExpireTick
+#endif // Pandas_ScriptCommand_StatusCalc
+#ifdef Pandas_ScriptCommand_GetEquipExpireTick
 	BUILDIN_DEF(getequipexpiretick,"i?"),				// 获取指定位置装备的租赁到期剩余秒数 [Sola丶小克]
-	BUILDIN_DEF2(getequipexpiretick,"isrental","i?"),	// 指定一个别名, 以便兼容 rAthenaCN 的老版本
-#endif // rAthenaCN_ScriptCommand_GetEquipExpireTick
-#ifdef rAthenaCN_ScriptCommand_GetInventoryInfo
+	BUILDIN_DEF2(getequipexpiretick,"isrental","i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_GetEquipExpireTick
+#ifdef Pandas_ScriptCommand_GetInventoryInfo
 	BUILDIN_DEF(getinventoryinfo,"ii?"),				// 查询指定背包序号的道具的详细信息 [Sola丶小克]
-#endif // rAthenaCN_ScriptCommand_GetInventoryInfo
+#endif // Pandas_ScriptCommand_GetInventoryInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

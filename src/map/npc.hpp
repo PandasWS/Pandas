@@ -104,12 +104,12 @@ struct npc_data {
 		unsigned long color;
 	} progressbar;
 
-#ifdef rAthenaCN_ScriptCommand_ShowVend
+#ifdef Pandas_ScriptCommand_ShowVend
 	struct {
 		char message[NAME_LENGTH + 1];
 		bool show;
 	} vendingboard;
-#endif // rAthenaCN_ScriptCommand_ShowVend
+#endif // Pandas_ScriptCommand_ShowVend
 };
 
 struct eri;
@@ -1193,9 +1193,9 @@ enum npce_event : uint8 {
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
 
-#ifdef rAthenaCN_NpcEvent_KILLMVP
+#ifdef Pandas_NpcEvent_KILLMVP
 	NPCE_KILLMVP,	// killmvp_event_name	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物时触发事件
-#endif // rAthenaCN_NpcEvent_KILLMVP
+#endif // Pandas_NpcEvent_KILLMVP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	NPCE_MAX

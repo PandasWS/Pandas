@@ -20,7 +20,7 @@ endif
 ALL_DEPENDS=server
 
 #####################################################################
-# BEGIN - need support pcre in rAthenaCN by CairoLee
+# BEGIN - need support pcre in Pandas by CairoLee
 #####################################################################
 HAVE_PCRE=@HAVE_PCRE@
 ifeq ($(HAVE_PCRE),yes)
@@ -29,7 +29,7 @@ else
 	PCRE_CFLAGS=
 endif
 #####################################################################
-# END - need support pcre in rAthenaCN by CairoLee
+# END - need support pcre in Pandas by CairoLee
 #####################################################################
 
 @SET_MAKE@

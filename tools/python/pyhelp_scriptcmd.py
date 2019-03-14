@@ -1,5 +1,5 @@
 '''
-//===== rAthenaCN Python Script ============================== 
+//===== Pandas Python Script ============================== 
 //= 脚本指令添加助手
 //===== By: ================================================== 
 //= Sola丶小克
@@ -91,8 +91,8 @@ def welecome():
 def guide(inject):
 
     define = InputController().requireText({
-        'tips' : '请输入该脚本指令的宏定义开关名称 (rAthenaCN_ScriptCommand_的末尾部分)',
-        'prefix' : 'rAthenaCN_ScriptCommand_'
+        'tips' : '请输入该脚本指令的宏定义开关名称 (Pandas_ScriptCommand_的末尾部分)',
+        'prefix' : 'Pandas_ScriptCommand_'
     })
     
     # --------

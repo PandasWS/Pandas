@@ -9,6 +9,6 @@
  * For detailed guidance on these check http://rathena.org/wiki/SRC/config/
  **/
 
-#include "defines_core.hpp"		// 引入 rAthenaCN 自定义的 Header 文件 [Sola丶小克] 
+#include "defines_core.hpp"		// 引入 Pandas 自定义的 Header 文件 [Sola丶小克] 
 
 #endif /* CONFIG_CUSTOM_DEFINES_PRE_HPP */

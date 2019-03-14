@@ -120,12 +120,12 @@ static struct block_list *bl_list[BL_LIST_MAX];
 static int bl_list_count = 0;
 
 #ifndef MAP_MAX_MSG
-#ifndef rAthenaCN_Message_Conf
+#ifndef Pandas_Message_Conf
 	#define MAP_MAX_MSG 1550
 #else
 	// 此处根据 ALL_EXTEND_MSG 的定义重新修改 MAP_MAX_MSG
 	#define MAP_MAX_MSG ALL_EXTEND_MSG
-#endif // rAthenaCN_Message_Conf
+#endif // Pandas_Message_Conf
 #endif
 
 struct map_data map[MAX_MAP_PER_SERVER];
@@ -188,14 +188,14 @@ int console = 0;
 int enable_spy = 0; //To enable/disable @spy commands, which consume too much cpu time when sending packets. [Skotlex]
 int enable_grf = 0;	//To enable/disable reading maps from GRF files, bypassing mapcache [blackhole89]
 
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 int cfg_create_fulldump = 0;	// 是否生成完整的崩溃转储文件 [Sola丶小克]
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 
-#ifdef rAthenaCN_Support_Specify_PacketKeys
+#ifdef Pandas_Support_Specify_PacketKeys
 // 用来保存 map_athena.conf 中设定封包混淆密钥 [Sola丶小克]
 unsigned int clif_cryptKey_custom[3] = { 0 };
-#endif // rAthenaCN_Support_Specify_PacketKeys
+#endif // Pandas_Support_Specify_PacketKeys
 
 /**
  * Get the map data
@@ -4074,15 +4074,15 @@ int map_config_read(const char *cfgName)
 			enable_spy = config_switch(w2);
 		else if (strcmpi(w1, "use_grf") == 0)
 			enable_grf = config_switch(w2);
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 		else if (strcmpi(w1, "create_fulldump") == 0)
 			cfg_create_fulldump = config_switch(w2);
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 		else if (strcmpi(w1, "console_msg_log") == 0)
 			console_msg_log = atoi(w2);//[Ind]
 		else if (strcmpi(w1, "console_log_filepath") == 0)
 			safestrncpy(console_log_filepath, w2, sizeof(console_log_filepath));
-#ifdef rAthenaCN_Support_Specify_PacketKeys
+#ifdef Pandas_Support_Specify_PacketKeys
 		else if (strcmpi(w1, "packet_keys") == 0) {
 			char key1[12] = { 0 }, key2[12] = { 0 }, key3[12] = { 0 };
 			trim(w2);
@@ -4100,11 +4100,11 @@ int map_config_read(const char *cfgName)
 			else
 				ShowWarning("Invalid 'packet_keys' in configure file %s, use default packet_keys...\n", cfgName);
 		}
-#endif // rAthenaCN_Support_Specify_PacketKeys
+#endif // Pandas_Support_Specify_PacketKeys
 		else if (strcmpi(w1, "import") == 0)
 			map_config_read(w2);
 		else
-#ifndef rAthenaCN
+#ifndef Pandas
 			ShowWarning("Unknown setting '%s' in file %s\n", w1, cfgName);
 #else
 		{
@@ -4119,7 +4119,7 @@ int map_config_read(const char *cfgName)
 				ShowWarning("Unknown setting '%s' in file %s\n", w1, cfgName);
 			}
 		}
-#endif // rAthenaCN
+#endif // Pandas
 	}
 
 	fclose(fp);
@@ -4315,7 +4315,7 @@ int map_sql_init(void)
 	}
 	ShowStatus("Connect success! (Map Server Connection)\n");
 
-#ifndef rAthenaCN_Smart_Codepage
+#ifndef Pandas_Smart_Codepage
 	if( strlen(default_codepage) > 0 ) {
 		if ( SQL_ERROR == Sql_SetEncoding(mmysql_handle, default_codepage) )
 			Sql_ShowDebug(mmysql_handle);
@@ -4325,7 +4325,7 @@ int map_sql_init(void)
 #else
 	smart_codepage(mmysql_handle, "Map-Server", default_codepage);
 	smart_codepage(qsmysql_handle, NULL, default_codepage);
-#endif // rAthenaCN_Smart_Codepage
+#endif // Pandas_Smart_Codepage
 	return 0;
 }
 
@@ -4362,13 +4362,13 @@ int log_sql_init(void)
 	}
 	ShowStatus("" CL_WHITE "[SQL]" CL_RESET ": Successfully '" CL_GREEN "connected" CL_RESET "' to Database '" CL_WHITE "%s" CL_RESET "'.\n", log_db_db);
 
-#ifndef rAthenaCN_Smart_Codepage
+#ifndef Pandas_Smart_Codepage
 	if( strlen(default_codepage) > 0 )
 		if ( SQL_ERROR == Sql_SetEncoding(logmysql_handle, default_codepage) )
 			Sql_ShowDebug(logmysql_handle);
 #else
 	smart_codepage(logmysql_handle, "Log", default_codepage);
-#endif // rAthenaCN_Smart_Codepage
+#endif // Pandas_Smart_Codepage
 
 	return 0;
 }
@@ -4963,7 +4963,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			}
 			mapdata->flag[mapflag] = status;
 			break;
-#ifdef rAthenaCN_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_Mobinfo
 		case MF_MOBINFO:
 			if (!status)
 				mapdata->show_mob_info = 0;
@@ -4973,8 +4973,8 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			}
 			mapdata->flag[mapflag] = status;
 			break;
-#endif // rAthenaCN_MapFlag_Mobinfo
-#ifdef rAthenaCN_MapFlag_MobDroprate
+#endif // Pandas_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_MobDroprate
 		case MF_MOBDROPRATE:
 			if (!status)
 				mapdata->mob_droprate = 0;
@@ -4984,8 +4984,8 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			}
 			mapdata->flag[mapflag] = status;
 			break;
-#endif // rAthenaCN_MapFlag_MobDroprate
-#ifdef rAthenaCN_MapFlag_MvpDroprate
+#endif // Pandas_MapFlag_MobDroprate
+#ifdef Pandas_MapFlag_MvpDroprate
 		case MF_MVPDROPRATE:
 			if (!status)
 				mapdata->mvp_droprate = 0;
@@ -4995,18 +4995,18 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			}
 			mapdata->flag[mapflag] = status;
 			break;
-#endif // rAthenaCN_MapFlag_MvpDroprate
+#endif // Pandas_MapFlag_MvpDroprate
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 6>
 		default:
 			mapdata->flag[mapflag] = status;
 			break;
 	}
 
-#ifdef rAthenaCN_Mapflags
+#ifdef Pandas_Mapflags
 	// 某些地图标记在被赋值后, 可以再此进行一些额外操作
 	// 这里的代码可以允许冗余, 以便提取单个地图标记代码时候更加便利 [Sola丶小克]
 	switch (mapflag) {
-#ifdef rAthenaCN_MapFlag_HideGuildInfo
+#ifdef Pandas_MapFlag_HideGuildInfo
 	case MF_HIDEGUILDINFO:
 	{
 		struct s_mapiterator* iter = mapit_getallusers();
@@ -5019,8 +5019,8 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		mapit_free(iter);
 		break;
 	}
-#endif // rAthenaCN_MapFlag_HideGuildInfo
-#ifdef rAthenaCN_MapFlag_HidePartyInfo
+#endif // Pandas_MapFlag_HideGuildInfo
+#ifdef Pandas_MapFlag_HidePartyInfo
 	case MF_HIDEPARTYINFO:
 	{
 		struct s_mapiterator* iter = mapit_getallusers();
@@ -5033,9 +5033,9 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		mapit_free(iter);
 		break;
 	}
-#endif // rAthenaCN_MapFlag_HidePartyInfo
+#endif // Pandas_MapFlag_HidePartyInfo
 	}
-#endif // rAthenaCN_Mapflags
+#endif // Pandas_Mapflags
 
 	return true;
 }
@@ -5346,9 +5346,9 @@ int do_init(int argc, char *argv[])
 	rnd_init();
 	map_config_read(MAP_CONF_NAME);
 
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 	create_fulldump = cfg_create_fulldump;
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 
 	if (save_settings == CHARSAVE_NONE)
 		ShowWarning("Value of 'save_settings' is not set, player's data only will be saved every 'autosave_time' (%d seconds).\n", autosave_interval/1000);

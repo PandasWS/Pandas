@@ -2540,10 +2540,10 @@ struct npc_data *npc_create_npc(int16 m, int16 x, int16 y){
 	nd->sc_display_count = 0;
 	nd->progressbar.timeout = 0;
 
-#ifdef rAthenaCN_ScriptCommand_ShowVend
+#ifdef Pandas_ScriptCommand_ShowVend
 	nd->vendingboard.show = false;
 	memset(nd->vendingboard.message, 0, NAME_LENGTH + 1);
-#endif // rAthenaCN_ScriptCommand_ShowVend
+#endif // Pandas_ScriptCommand_ShowVend
 
 	return nd;
 }
@@ -4212,7 +4212,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 			break;
 		}
 
-#ifdef rAthenaCN_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_Mobinfo
 		case MF_MOBINFO: {
 			// 若脚本中 mapflag 指定的第一个数值参数无效,
 			// 那么将此参数的值设为 0, 但不会阻断此地图标记的开启或关闭操作
@@ -4224,9 +4224,9 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 			map_setmapflag_sub(m, mapflag, state, &args);
 			break;
 		}
-#endif // rAthenaCN_MapFlag_Mobinfo
+#endif // Pandas_MapFlag_Mobinfo
 
-#ifdef rAthenaCN_MapFlag_MobDroprate
+#ifdef Pandas_MapFlag_MobDroprate
 		case MF_MOBDROPRATE: {
 			// 若脚本中 mapflag 指定的第一个数值参数无效,
 			// 那么将此参数的值设为 0, 但不会阻断此地图标记的开启或关闭操作
@@ -4238,9 +4238,9 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 			map_setmapflag_sub(m, mapflag, state, &args);
 			break;
 		}
-#endif // rAthenaCN_MapFlag_MobDroprate
+#endif // Pandas_MapFlag_MobDroprate
 
-#ifdef rAthenaCN_MapFlag_MvpDroprate
+#ifdef Pandas_MapFlag_MvpDroprate
 		case MF_MVPDROPRATE: {
 			// 若脚本中 mapflag 指定的第一个数值参数无效,
 			// 那么将此参数的值设为 0, 但不会阻断此地图标记的开启或关闭操作
@@ -4252,7 +4252,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 			map_setmapflag_sub(m, mapflag, state, &args);
 			break;
 		}
-#endif // rAthenaCN_MapFlag_MvpDroprate
+#endif // Pandas_MapFlag_MvpDroprate
 
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 7>
 
@@ -4506,10 +4506,10 @@ const char *npc_get_script_event_name(int npce_index)
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
 
-#ifdef rAthenaCN_NpcEvent_KILLMVP
+#ifdef Pandas_NpcEvent_KILLMVP
 	case NPCE_KILLMVP:
 		return script_config.killmvp_event_name;	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物时触发事件
-#endif // rAthenaCN_NpcEvent_KILLMVP
+#endif // Pandas_NpcEvent_KILLMVP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	default:

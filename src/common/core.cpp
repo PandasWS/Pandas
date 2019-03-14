@@ -24,7 +24,7 @@
 #include "showmsg.hpp"
 #include "strlib.hpp"
 
-#ifdef rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
 #include "minidump.hpp"
 
 // 当程序崩溃时生成的转储文件类型
@@ -33,7 +33,7 @@
 // 设置为 1 则表示生成 FullDump, 虽然保存信息完整, 但体积较大 (默认值)
 // 设置为 0 则表示生成 MiniDump, 虽然体积较小, 但是保存的信息也比较少
 int create_fulldump = 0;
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 
 /// Called when a terminate signal is received.
 void (*shutdown_callback)(void) = NULL;
@@ -127,11 +127,11 @@ static void sig_proc(int sn) {
 		do_abort();
 		// Pass the signal to the system's default handler
 		compat_signal(sn, SIG_DFL);
-#ifndef rAthenaCN_Crash_Report
+#ifndef Pandas_Crash_Report
 		// 启用崩溃转储文件生成机制的时候
 		// 这里就不再需要 rAthena 自己进行错误处理了, 否则会捕获不到异常 [Sola丶小克]
 		raise(sn);
-#endif // rAthenaCN_Crash_Report
+#endif // Pandas_Crash_Report
 		break;
 #ifndef _WIN32
 	case SIGXFSZ:
@@ -294,12 +294,12 @@ const char *get_git_hash (void) {
  *  ASCII By CalciumKid 1/12/2011
  *--------------------------------------*/
 static void display_title(void) {
-#ifndef rAthenaCN_Show_Version
+#ifndef Pandas_Show_Version
 	const char* svn = get_svn_revision();
 	const char* git = get_git_hash();
-#endif // rAthenaCN_Show_Version
+#endif // Pandas_Show_Version
 
-#ifndef rAthenaCN_Show_Logo
+#ifndef Pandas_Show_Logo
 	ShowMessage("\n");
 	ShowMessage("" CL_PASS "     " CL_BOLD "                                                                 " CL_PASS"" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_PASS "       " CL_BT_WHITE "            rAthena Development Team presents                  " CL_PASS "" CL_CLL "" CL_NORMAL "\n");
@@ -313,37 +313,37 @@ static void display_title(void) {
 	ShowMessage("" CL_PASS "     " CL_BOLD "                                                                 " CL_PASS "" CL_CLL "" CL_NORMAL "\n");
 #else
 	ShowMessage("\n");
-	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                 " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                       rAthenaCN Dev Team presents                  " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                 _   _   _                       ____ _   _     " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "           _ __ / \\ | |_| |__   ___ _ __   __ _ / ___| \\ | |    " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "          | '__/ _ \\| __| '_ \\ / _ \\ '_ \\ / _` | |   |  \\| |    " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "          | | / ___ \\ |_| | | |  __/ | | | (_| | |___| |\\  |    " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "          |_|/_/   \\_\\__|_| |_|\\___|_| |_|\\__,_|\\____|_| \\_|    " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                                                                " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_GREEN "                          https://rathena.cn/                        " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                 " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-#ifdef rAthenaCN_Disclaimer
-	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "         rAthenaCN is only for learning and research purposes.     " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "             Please don't use it for commercial purposes.  " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                 " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-#endif // rAthenaCN_Disclaimer
+	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                      " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                       Pandas Dev Team presents                   " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                ____                    _                         " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "               |  _ \\  __ _  _ __    __| |  __ _  ___            " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "               | |_) |/ _` || '_ \\  / _` | / _` |/ __|           " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "               |  __/| (_| || | | || (_| || (_| |\\__ \\          " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "               |_|    \\__,_||_| |_| \\__,_| \\__,_||___/         " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                                                                  " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_GREEN "                          https://pandas.ws/                         " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                      " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+#ifdef Pandas_Disclaimer
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "          Pandas is only for learning and research purposes.      " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "             Please don't use it for commercial purposes.         " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                      " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+#endif // Pandas_Disclaimer
 	ShowMessage("\n");
-#endif // rAthenaCN_Show_Logo
+#endif // Pandas_Show_Logo
 
-#ifndef rAthenaCN_Show_Version
+#ifndef Pandas_Show_Version
 	if( svn[0] != UNKNOWN_VERSION )
 		ShowInfo("SVN Revision: '" CL_WHITE "%s" CL_RESET "'\n", svn);
 	else if( git[0] != UNKNOWN_VERSION )
 		ShowInfo("Git Hash: '" CL_WHITE "%s" CL_RESET "'\n", git);
 #else
-	// 显示 rAthenaCN 的版本号 [Sola丶小克]
-	ShowInfo("rAthenaCN Version: " CL_WHITE "%s" CL_RESET "\n", rAthenaCN_Version);
-#endif // rAthenaCN_Show_Version
+	// 显示 Pandas 的版本号 [Sola丶小克]
+	ShowInfo("Pandas Version: " CL_WHITE "%s" CL_RESET "\n", Pandas_Version);
+#endif // Pandas_Show_Version
 
-#ifdef rAthenaCN_Disclaimer
+#ifdef Pandas_Disclaimer
 	ShowInfo("This program is completely free! You don't need to pay for it.\n");
-#endif // rAthenaCN_Disclaimer
+#endif // Pandas_Disclaimer
 }
 
 // Warning if executed as superuser (root)
@@ -367,9 +367,9 @@ void usercheck(void)
  *--------------------------------------*/
 int main (int argc, char **argv)
 {
-#ifdef rAthenaCN_Crash_Report
-	SetUnhandledExceptionFilter(rAthenaCN_UnhandledExceptionFilter);
-#endif // rAthenaCN_Crash_Report
+#ifdef Pandas_Crash_Report
+	SetUnhandledExceptionFilter(Pandas_UnhandledExceptionFilter);
+#endif // Pandas_Crash_Report
 
 	{// initialize program arguments
 		char *p1;

@@ -1,11 +1,11 @@
-﻿// Copyright (c) rAthenaCN Dev Teams - Licensed under GNU GPL
+﻿// Copyright (c) Pandas Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
 #ifndef _RATHENA_CN_UTF8_HPP_
 #define _RATHENA_CN_UTF8_HPP_
 
 #include "showmsg.hpp"
-#include "../config/rathena.hpp"
+#include "../config/pandas.hpp"
 
 #include <stdio.h>
 #include <string>	// std::string

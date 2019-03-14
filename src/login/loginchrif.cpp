@@ -376,11 +376,11 @@ int logchrif_parse_reqbanacc(int fd, int id, char* ip){
 				uint8 buf[11];
 				char tmpstr[24];
 				timestamp2string(tmpstr, sizeof(tmpstr), timestamp, login_config.date_format);
-#ifndef rAthenaCN_Fix_LGTM_Warning
+#ifndef Pandas_Fix_LGTM_Warning
 				ShowNotice("Char-server '%s': Ban request (account: %d, new final date of banishment: %d (%s), ip: %s).\n", ch_server[id].name, account_id, timestamp, tmpstr, ip);
 #else
 				ShowNotice("Char-server '%s': Ban request (account: %d, new final date of banishment: %ld (%s), ip: %s).\n", ch_server[id].name, account_id, timestamp, tmpstr, ip);
-#endif // rAthenaCN_Fix_LGTM_Warning
+#endif // Pandas_Fix_LGTM_Warning
 
 				acc.unban_time = timestamp;
 
