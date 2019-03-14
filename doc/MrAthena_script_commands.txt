@@ -3,3 +3,12 @@ OnPCUseSkillEvent:
 	announce "你使用了 "+@skillused_lv+" 级 "+getskillname(@skillused_id)+")，技能ID："+@skillused_id,bc_self;
 	end;
 }
+
+-	script	OnPCAttackMobEvent	-1,{
+OnPCAttackMobEvent:
+	announce "你刚刚攻击了 "+@attackmob_id,bc_self;
+	announce "名字： "+getmonsterinfo(@attackmob_id,MOB_NAME),bc_self;
+	announce "等级： "+getmonsterinfo(@attackmob_id,MOB_LV),bc_self;
+	announce "属性： "+getmonsterinfo(@attackmob_id,MOB_ELEMENT),bc_self;
+	end;
+}

@@ -1183,6 +1183,7 @@ enum npce_event : uint8 {
 	NPCE_KILLPC,
 	NPCE_KILLNPC,
 	NPCE_SKILLUSE,
+	NPCE_ATTACKMOB,
 	NPCE_STATCALC,
 
 	/************************************************************************/

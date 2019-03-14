@@ -260,6 +260,7 @@ struct Script_Config script_config = {
 	"OnPCBaseLvUpEvent", //baselvup_event_name
 	"OnPCJobLvUpEvent", //joblvup_event_name
 	"OnPCUseSkillEvent", //useskill_event_name
+	"OnPCAttackMobEvent", //attackmob_event_name
 	"OnPCStatCalcEvent", //stat_calc_event_name
 
 	/************************************************************************/
