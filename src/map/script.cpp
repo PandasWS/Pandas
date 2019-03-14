@@ -24496,8 +24496,8 @@ BUILDIN_FUNC(showvend) {
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(viewequip) {
     TBL_PC *sd = nullptr;
-    int aid = script_getnum(st, 2), force = 0;
-	struct map_session_data *tsd = map_charid2sd(aid);
+    int cid = script_getnum(st, 2), force = 0;
+	struct map_session_data *tsd = map_charid2sd(cid);
 
 	if (!tsd || !script_rid2sd(sd)){
 		script_pushint(st, 0);
@@ -24525,6 +24525,356 @@ BUILDIN_FUNC(viewequip) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // rAthenaCN_ScriptCommand_ViewEquip
+
+#ifdef rAthenaCN_ScriptCommand_CountItemIdx
+/* ===========================================================
+ * 指令: countitemidx
+ * 描述: 获取指定背包序号的道具在背包中的数量
+ * 用法: countitemidx <背包序号>{,<角色编号>};
+ * 返回: 操作成功则返回道具的数量, 操作失败则返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(countitemidx) {
+	struct map_session_data *sd = nullptr;
+	struct item_data *id = nullptr;
+	int idx = -1;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	idx = script_getnum(st, 2);
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		ShowWarning("buildin_countitemidx: Index (%d) should be from 0-%d.\n", idx, sd->inventory.max_amount - 1);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
+		ShowWarning("buildin_countitemidx: Invalid Item ID (%d).\n", sd->inventory.u.items_inventory[idx].nameid);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushint(st, sd->inventory.u.items_inventory[idx].amount);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_CountItemIdx
+
+#ifdef rAthenaCN_ScriptCommand_DelItemIdx
+/* ===========================================================
+ * 指令: delitemidx
+ * 描述: 移除指定背包序号的道具
+ * 用法: delitemidx <背包序号>{,<移除数量>{,<角色编号>}};
+ * 返回: 操作成功则返回 1, 操作失败则返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(delitemidx) {
+	struct map_session_data *sd = nullptr;
+	struct item_data *id = nullptr;
+	int idx = -1, amount = 0;
+
+	if (!script_charid2sd(4, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	idx = script_getnum(st, 2);
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		ShowWarning("buildin_delitemidx: Index (%d) should be from 0-%d.\n", idx, sd->inventory.max_amount - 1);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
+		ShowWarning("buildin_delitemidx: Deleting invalid Item ID (%d).\n", sd->inventory.u.items_inventory[idx].nameid);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (script_hasdata(st, 3))
+		amount = min(script_getnum(st, 3), sd->inventory.u.items_inventory[idx].amount);
+	else
+		amount = sd->inventory.u.items_inventory[idx].amount;
+
+	if (amount > 0)
+		script_pushint(st, (pc_delitem(sd, idx, amount, 0, 0, LOG_TYPE_SCRIPT) == 0 ? 1 : 0));
+	else
+		script_pushint(st, 0);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_DelItemIdx
+
+#ifdef rAthenaCN_ScriptCommand_IdentifyIdx
+/* ===========================================================
+ * 指令: identifyidx
+ * 描述: 鉴定指定背包序号的道具
+ * 用法: identifyidx <背包序号>{,<角色编号>};
+ * 返回: 操作成功则返回 1, 操作失败则返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(identifyidx) {
+	struct map_session_data *sd = nullptr;
+	struct item_data *id = nullptr;
+	int idx = -1;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	idx = script_getnum(st, 2);
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		ShowWarning("buildin_identifyidx: Index (%d) should be from 0-%d.\n", idx, sd->inventory.max_amount - 1);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
+		ShowWarning("buildin_identifyidx: Invalid Item ID (%d).\n", sd->inventory.u.items_inventory[idx].nameid);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd->inventory.u.items_inventory[idx].nameid > 0 && sd->inventory.u.items_inventory[idx].identify != 1) {
+		sd->inventory.u.items_inventory[idx].identify = 1;
+		clif_item_identified(sd, idx, 0);
+	}
+
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_IdentifyIdx
+
+#ifdef rAthenaCN_ScriptCommand_UnEquipIdx
+/* ===========================================================
+ * 指令: unequipidx
+ * 描述: 脱下指定背包序号的道具
+ * 用法: unequipidx <背包序号>{,<角色编号>};
+ * 返回: 操作成功则返回 1, 操作失败则返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(unequipidx) {
+	struct map_session_data *sd = nullptr;
+	struct item_data *id = nullptr;
+	int idx = -1;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	idx = script_getnum(st, 2);
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		ShowWarning("buildin_unequipidx: Index (%d) should be from 0-%d.\n", idx, sd->inventory.max_amount - 1);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
+		ShowWarning("buildin_unequipidx: Invalid Item ID (%d).\n", sd->inventory.u.items_inventory[idx].nameid);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!itemdb_isequip2(id)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd->inventory.u.items_inventory[idx].equip == 0) {
+		script_pushint(st, 1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushint(st, pc_unequipitem(sd, idx, id->equip) ? 1 : 0);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_UnEquipIdx
+
+#ifdef rAthenaCN_ScriptCommand_EquipIdx
+/* ===========================================================
+ * 指令: equipidx
+ * 描述: 穿戴指定背包序号的道具
+ * 用法: equipidx <背包序号>{,<角色编号>};
+ * 返回: 操作成功则返回 1, 操作失败则返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(equipidx) {
+	struct map_session_data *sd = nullptr;
+	struct item_data *id = nullptr;
+	int idx = -1;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	idx = script_getnum(st, 2);
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		ShowWarning("buildin_equipidx: Index (%d) should be from 0-%d.\n", idx, sd->inventory.max_amount - 1);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
+		ShowWarning("buildin_equipidx: Invalid Item ID (%d).\n", sd->inventory.u.items_inventory[idx].nameid);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!itemdb_isequip2(id)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd->inventory.u.items_inventory[idx].equip != 0) {
+		script_pushint(st, 1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushint(st, pc_equipitem(sd, idx, id->equip) ? 1 : 0);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_EquipIdx
+
+#ifdef rAthenaCN_ScriptCommand_ItemExists
+/* ===========================================================
+ * 指令: itemexists
+ * 描述: 确认物品数据库中是否存在指定物品
+ * 用法: itemexists <物品编号/"物品名称">;
+ * 返回: 若物品指定的道具编号不存在于物品数据库中则返回 0,
+ *      若物品存在且可堆叠则返回正数物品编号, 不可堆叠则返回负数物品编号
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(itemexists) {
+	struct item_data *id = nullptr;
+
+	if (script_isint(st, 2)) {
+		id = itemdb_exists(script_getnum(st, 2));
+	}
+	else if (script_isstring(st, 2)) {
+		id = itemdb_searchname(script_getstr(st, 2));
+	}
+	else {
+		ShowError("buildin_itemexists: The first param must be a integer or string.\n");
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (id == nullptr)
+		script_pushint(st, 0);
+	else
+		script_pushint(st, (itemdb_isstackable2(id) ? id->nameid : -id->nameid));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_ItemExists
+
+#ifdef rAthenaCN_ScriptCommand_RentTime
+/* ===========================================================
+ * 指令: renttime
+ * 描述: 增加/减少指定位置装备的租赁时间
+ * 用法: renttime <EQI装备位置>,<增减的时间秒数>{,<角色编号>};
+ * 返回: 操作失败返回 0, 非 0 的正数表示成功增减后新的剩余时间秒数
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(renttime) {
+	struct map_session_data *sd = nullptr;
+	int equip_num = script_getnum(st, 2);
+	int second = script_getnum(st, 3);
+	int idx = -1, expire_tick = 0;
+
+	if (!script_charid2sd(4, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!equip_index_check(equip_num)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	idx = pc_checkequip(sd, equip_bitmask[equip_num]);
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd->inventory.u.items_inventory[idx].expire_time == 0) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+ 	sd->inventory.u.items_inventory[idx].expire_time += second;
+	expire_tick = (unsigned int)(sd->inventory.u.items_inventory[idx].expire_time - time(NULL));
+ 	script_pushint(st, expire_tick);
+
+	if (expire_tick > 0) {
+		clif_rental_time(sd->fd, sd->inventory.u.items_inventory[idx].nameid, expire_tick);
+		pc_inventory_rental_add(sd, expire_tick);
+		clif_inventorylist(sd);
+	}
+	else {
+		int i = 0, c = 0;
+		for (i = 0; i < MAX_INVENTORY; i++) {
+			if (sd->inventory.u.items_inventory[i].nameid == 0)
+				continue;
+			if (sd->inventory.u.items_inventory[i].expire_time == 0)
+				continue;
+			if (sd->inventory.u.items_inventory[i].expire_time <= time(NULL)) {
+				if (sd->inventory_data[i]->unequip_script)
+					run_script(sd->inventory_data[i]->unequip_script, 0, sd->bl.id, fake_nd->bl.id);
+				clif_rental_expired(sd->fd, i, sd->inventory.u.items_inventory[i].nameid);
+				pc_delitem(sd, i, sd->inventory.u.items_inventory[i].amount, 0, 0, LOG_TYPE_OTHER);
+			}
+			else {
+				c++;
+			}
+		}
+
+		if (c <= 0) {
+			pc_inventory_rental_clear(sd);
+		}
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_RentTime
+
+#ifdef rAthenaCN_ScriptCommand_GetEquipIdx
+/* ===========================================================
+ * 指令: getequipidx
+ * 描述: 获取指定位置装备的背包序号
+ * 用法: getequipidx <EQI装备位置>{,<角色编号>};
+ * 返回: 获取失败返回各种负数, 非 0 的正数表示获取到的背包序号
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getequipidx) {
+	struct map_session_data *sd = nullptr;
+	int equip_num = script_getnum(st, 2), idx = -1;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, -3);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!equip_index_check(equip_num)) {
+		script_pushint(st, -2);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	idx = pc_checkequip(sd, equip_bitmask[equip_num]);
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushint(st, idx);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_GetEquipIdx
 
 #ifdef rAthenaCN_ScriptCommand_GetEquipExpireTick
 /* ===========================================================
@@ -24607,6 +24957,42 @@ struct script_function buildin_func[] = {
 #ifdef rAthenaCN_ScriptCommand_ViewEquip
 	BUILDIN_DEF(viewequip,"i?"),						// 查看指定在线角色的装备面板信息 [Sola丶小克]
 #endif // rAthenaCN_ScriptCommand_ViewEquip
+#ifdef rAthenaCN_ScriptCommand_CountItemIdx
+	BUILDIN_DEF(countitemidx,"i?"),						// 获取指定背包序号的道具在背包中的数量 [Sola丶小克]
+	BUILDIN_DEF2(countitemidx,"countinventory","i?"),	// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_CountItemIdx
+#ifdef rAthenaCN_ScriptCommand_DelItemIdx
+	BUILDIN_DEF(delitemidx,"i??"),						// 移除指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(delitemidx,"delinventory","i??"),		// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_DelItemIdx
+#ifdef rAthenaCN_ScriptCommand_IdentifyIdx
+	BUILDIN_DEF(identifyidx,"i?"),						// 鉴定指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(identifyidx,"identifybyidx","i?"),		// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_IdentifyIdx
+#ifdef rAthenaCN_ScriptCommand_UnEquipIdx
+	BUILDIN_DEF(unequipidx,"i?"),						// 脱下指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(unequipidx,"unequipinventory","i?"),	// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_UnEquipIdx
+#ifdef rAthenaCN_ScriptCommand_EquipIdx
+	BUILDIN_DEF(equipidx,"i?"),							// 穿戴指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(equipidx,"equipinventory","i?"),		// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_EquipIdx
+#ifdef rAthenaCN_ScriptCommand_ItemExists
+	BUILDIN_DEF(itemexists,"?"),						// 确认物品数据库中是否存在指定物品 [Sola丶小克]
+	BUILDIN_DEF2(itemexists,"existitem","?"),			// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_ItemExists
+#ifdef rAthenaCN_ScriptCommand_RentTime
+	BUILDIN_DEF(renttime,"ii?"),						// 增加/减少指定位置装备的租赁时间 [Sola丶小克]
+	BUILDIN_DEF2(renttime,"setrenttime","ii?"),			// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+	BUILDIN_DEF2(renttime,"resume","ii?"),				// 指定一个别名, 以便兼容 rAthenaCN 的老版本
+#endif // rAthenaCN_ScriptCommand_RentTime
+#ifdef rAthenaCN_ScriptCommand_GetEquipIdx
+	BUILDIN_DEF(getequipidx,"i?"),						// 获取指定位置装备的背包序号 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_GetEquipIdx
+#ifdef rAthenaCN_ScriptCommand_StatusCalc
+	BUILDIN_DEF2(recalculatestat,"statuscalc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 statuscalc 指令 [Sola丶小克]
+	BUILDIN_DEF2(recalculatestat,"status_calc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 status_calc 指令 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_StatusCalc
 #ifdef rAthenaCN_ScriptCommand_GetEquipExpireTick
 	BUILDIN_DEF(getequipexpiretick,"i?"),				// 获取指定位置装备的租赁到期剩余秒数 [Sola丶小克]
 	BUILDIN_DEF2(getequipexpiretick,"isrental","i?"),	// 指定一个别名, 以便兼容 rAthenaCN 的老版本
