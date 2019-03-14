@@ -24156,7 +24156,7 @@ BUILDIN_FUNC(preg_match) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(setheaddir) {
-	TBL_PC* sd = nullptr;
+	struct map_session_data *sd = nullptr;
 	int head_dir = script_getnum(st, 2);
 	head_dir = cap_value(head_dir, 0, 2);
 
@@ -24180,7 +24180,7 @@ BUILDIN_FUNC(setheaddir) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(setbodydir) {
-	TBL_PC* sd = nullptr;
+	struct map_session_data *sd = nullptr;
 	int body_dir = script_getnum(st, 2);
 	body_dir = cap_value(body_dir, 0, 7);
 
@@ -24204,7 +24204,7 @@ BUILDIN_FUNC(setbodydir) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(openbank) {
-	TBL_PC* sd = nullptr;
+	struct map_session_data *sd = nullptr;
 
 	if (!script_charid2sd(2, sd) || !sd) {
 		script_pushint(st, 0);
@@ -24293,7 +24293,7 @@ BUILDIN_FUNC(mobremove) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(battleignore) {
-	TBL_PC* sd = nullptr;
+	struct map_session_data *sd = nullptr;
 	int immune = script_getnum(st, 2);
 
 	if (!script_charid2sd(2, sd) || !sd)
@@ -24315,7 +24315,7 @@ BUILDIN_FUNC(battleignore) {
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(gethotkey) {
 	int hotkey_idx = -1, request_data = -1;
-	TBL_PC *sd = nullptr;
+	struct map_session_data *sd = nullptr;
 
 	if (!script_rid2sd(sd)) {
 		script_pushint(st, -1);
@@ -24374,7 +24374,7 @@ BUILDIN_FUNC(gethotkey) {
 BUILDIN_FUNC(sethotkey) {
 	int hotkey_idx = -1, hotkey_id = -1;
 	int hotkey_lv = -1, hotkey_type = -1;
-	TBL_PC *sd = nullptr;
+	struct map_session_data *sd = nullptr;
 
 	if (!script_rid2sd(sd)) {
 		script_pushint(st, 0);
@@ -24495,8 +24495,8 @@ BUILDIN_FUNC(showvend) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(viewequip) {
-    TBL_PC *sd = nullptr;
-    int cid = script_getnum(st, 2), force = 0;
+	struct map_session_data *sd = nullptr;
+	int cid = script_getnum(st, 2), force = 0;
 	struct map_session_data *tsd = map_charid2sd(cid);
 
 	if (!tsd || !script_rid2sd(sd)){
@@ -24913,6 +24913,71 @@ BUILDIN_FUNC(getequipexpiretick) {
 }
 #endif // rAthenaCN_ScriptCommand_GetEquipExpireTick
 
+#ifdef rAthenaCN_ScriptCommand_GetInventoryInfo
+/* ===========================================================
+ * 指令: getinventoryinfo
+ * 描述: 查询指定背包序号的道具的详细信息
+ * 用法: getinventoryinfo <背包序号>,<要查看的信息类型>{,<角色编号>};
+ * 返回: 查询失败返回 -1, 若查询成功除了类型为 11 的返回值是个字符串, 其他的皆为数值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getinventoryinfo) {
+    struct map_session_data *sd = nullptr;
+	struct item_data *id = nullptr;
+	int idx = script_getnum(st, 2), retval = 0;
+	int query_type = script_getnum(st, 3);
+
+	if (!script_charid2sd(4, sd)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!itemdb_exists(sd->inventory.u.items_inventory[idx].nameid)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd->inventory.u.items_inventory[idx].amount <= 0) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	switch (query_type)
+	{
+	case 0: retval = sd->inventory.u.items_inventory[idx].nameid; break;
+	case 1: retval = sd->inventory.u.items_inventory[idx].amount; break;
+	case 2: retval = sd->inventory.u.items_inventory[idx].equip; break;
+	case 3: retval = sd->inventory.u.items_inventory[idx].refine; break;
+	case 4: retval = sd->inventory.u.items_inventory[idx].identify; break;
+	case 5: retval = sd->inventory.u.items_inventory[idx].attribute; break;
+	case 6: retval = sd->inventory.u.items_inventory[idx].card[0]; break;
+	case 7: retval = sd->inventory.u.items_inventory[idx].card[1]; break;
+	case 8: retval = sd->inventory.u.items_inventory[idx].card[2]; break;
+	case 9: retval = sd->inventory.u.items_inventory[idx].card[3]; break;
+	case 10: retval = sd->inventory.u.items_inventory[idx].expire_time; break;
+	case 11:
+	{
+		std::string str_unique_id;
+		std_string_format(str_unique_id, "%llu", (unsigned long long)sd->inventory.u.items_inventory[idx].unique_id);
+		script_pushstr(st, (char*)str_unique_id.c_str());
+		break;
+	}
+	default:
+		ShowWarning("buildin_getinventoryinfo: Query Type (%d) should be from 0-%d.\n", query_type, 11);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushint(st, retval);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // rAthenaCN_ScriptCommand_GetInventoryInfo
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -24997,6 +25062,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getequipexpiretick,"i?"),				// 获取指定位置装备的租赁到期剩余秒数 [Sola丶小克]
 	BUILDIN_DEF2(getequipexpiretick,"isrental","i?"),	// 指定一个别名, 以便兼容 rAthenaCN 的老版本
 #endif // rAthenaCN_ScriptCommand_GetEquipExpireTick
+#ifdef rAthenaCN_ScriptCommand_GetInventoryInfo
+	BUILDIN_DEF(getinventoryinfo,"ii?"),				// 查询指定背包序号的道具的详细信息 [Sola丶小克]
+#endif // rAthenaCN_ScriptCommand_GetInventoryInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

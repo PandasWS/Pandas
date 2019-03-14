@@ -280,6 +280,10 @@
 	// 是否启用 getequipexpiretick 脚本指令 [Sola丶小克]
 	// 获取指定位置装备的租赁到期剩余秒数 (该指令有一个用于兼容的别名: isrental)
 	#define rAthenaCN_ScriptCommand_GetEquipExpireTick
+
+	// 是否启用 getinventoryinfo 脚本指令 [Sola丶小克]
+	// 查询指定背包序号的道具的详细信息
+	#define rAthenaCN_ScriptCommand_GetInventoryInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // rAthenaCN_ScriptCommands
 
