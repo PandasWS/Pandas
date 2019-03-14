@@ -9,7 +9,7 @@
 
 #define LEN_TIMESTAMP 15
 
-// 此处设计一个全局变量 create_fulldump
+// 此处涉及一个全局变量 create_fulldump
 // 该变量已经在 core.hpp 中 extern, 实际的定义在 core.cpp 中 [Sola丶小克]
 
 #if !defined(Pandas_Version)
@@ -110,7 +110,7 @@ LONG __stdcall Pandas_UnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionInf
 	ShowError("A minidump file were saved to disk, you can find them here:\n");
 	ShowError("%s\n", szDumpFileName);
 	ShowError("Please report the crash in our website:\n");
-	ShowError("https://github.com/CairoLee/rAthenaCN_Server\n");
+	ShowError("https://github.com/PandasWS/Pandas\n");
 	ShowError("We will solve this problem as soon as possible.\n");
 	ShowError("============================================================\n");
 
