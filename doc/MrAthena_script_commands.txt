@@ -1,0 +1,5 @@
+﻿-	script	OnPCUseSkillEvent	-1,{
+OnPCUseSkillEvent:
+	announce "你使用了 "+@skillused_lv+" 级 "+getskillname(@skillused_id)+")，技能ID："+@skillused_id,bc_self;
+	end;
+}

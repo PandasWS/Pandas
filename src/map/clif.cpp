@@ -12431,6 +12431,11 @@ void clif_parse_skill_toid( struct map_session_data* sd, uint16 skill_id, uint16
 
 	if( skill_lv )
 		unit_skilluse_id(&sd->bl, target_id, skill_id, skill_lv);
+		//OnPCSkillUseEvent	[聽風]	(原rA论坛Jezznar写的C，整理修复为C++)
+		pc_setreg(sd, (uint64)(add_str("@skillused_id")), skill_id);
+		pc_setreg(sd, (uint64)(add_str("@skillused_lv")), skill_lv);
+		npc_script_event(sd, NPCE_SKILLUSE);
+		//OnPCSkillUseEvent
 }
 
 
@@ -12524,6 +12529,11 @@ static void clif_parse_UseSkillToPosSub(int fd, struct map_session_data *sd, uin
 			unit_skilluse_pos(&sd->bl, x, y, skill_id,skill_lv);
 		}
 	}
+	//OnPCSkillUseEvent	[聽風]	(原rA论坛Jezznar写的C，整理修复为C++)
+	pc_setreg(sd, (uint64)(add_str("@skillused_id")), skill_id);
+	pc_setreg(sd, (uint64)(add_str("@skillused_lv")), skill_lv);
+	npc_script_event(sd, NPCE_SKILLUSE);
+	//OnPCSkillUseEvent
 }
 
 
