@@ -1,5 +1,5 @@
 '''
-//===== rAthenaCN Python Script ============================== 
+//===== Pandas Python Script ============================== 
 //= 地图标记添加助手
 //===== By: ================================================== 
 //= Sola丶小克
@@ -86,7 +86,7 @@ def insert_for_normal_mapflag(inject, options, special = True):
         inject.insert(9, [
             '#ifdef %s' % define,
             '\tif (map_getmapflag(m_id, %s))' % constant,
-            '\t\tstrcat(atcmd_output, " %s |");' % define.replace('rAthenaCN_MapFlag_', ''),
+            '\t\tstrcat(atcmd_output, " %s |");' % define.replace('Pandas_MapFlag_', ''),
             '#endif // %s' % define
         ])
 
@@ -214,8 +214,8 @@ def welecome():
 def guide(inject):
 
     define = InputController().requireText({
-        'tips' : '请输入该地图标记的宏定义开关名称 (rAthenaCN_MapFlag_的末尾部分)',
-        'prefix' : 'rAthenaCN_MapFlag_'
+        'tips' : '请输入该地图标记的宏定义开关名称 (Pandas_MapFlag_的末尾部分)',
+        'prefix' : 'Pandas_MapFlag_'
     })
 
     # --------

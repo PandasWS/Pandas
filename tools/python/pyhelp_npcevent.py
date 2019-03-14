@@ -1,5 +1,5 @@
 '''
-//===== rAthenaCN Python Script ============================== 
+//===== Pandas Python Script ============================== 
 //= NPC事件添加助手
 //===== By: ================================================== 
 //= Sola丶小克
@@ -211,10 +211,10 @@ def guide(inject):
     })
 
     if eventtype == 0:
-        define = 'rAthenaCN_NpcEvent_' + constant.replace(constant_prefix, '')
+        define = 'Pandas_NpcEvent_' + constant.replace(constant_prefix, '')
         eventvar = constant.replace(constant_prefix, '').lower() + '_event_name'
     elif eventtype == 1:
-        define = 'rAthenaCN_NpcFilter_' + constant.replace(constant_prefix, '')
+        define = 'Pandas_NpcFilter_' + constant.replace(constant_prefix, '')
         eventvar = constant.replace(constant_prefix, '').lower() + '_filter_name'
     else:
         Message.ShowError('发现无效的事件类型, 请确认..')
