@@ -25022,6 +25022,70 @@ BUILDIN_FUNC(statuscheck) {
 }
 #endif // Pandas_ScriptCommand_StatusCheck
 
+#ifdef Pandas_ScriptCommand_RentTimeIdx
+/* ===========================================================
+ * 指令: renttimeidx
+ * 描述: 增加/减少指定背包序号道具的租赁时间
+ * 用法: renttimeidx <背包序号>,<增减的时间秒数>{,<角色编号>};
+ * 返回: 操作失败返回 0, 非 0 的正数表示成功增减后新的剩余时间秒数
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(renttimeidx) {
+	struct map_session_data *sd = nullptr;
+	int idx = script_getnum(st, 2);
+	int second = script_getnum(st, 3);
+	int expire_tick = 0;
+
+	if (!script_charid2sd(4, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (idx < 0 || idx >= sd->inventory.max_amount) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd->inventory.u.items_inventory[idx].expire_time == 0) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	sd->inventory.u.items_inventory[idx].expire_time += second;
+	expire_tick = (unsigned int)(sd->inventory.u.items_inventory[idx].expire_time - time(NULL));
+	script_pushint(st, expire_tick);
+
+	if (expire_tick > 0) {
+		clif_rental_time(sd->fd, sd->inventory.u.items_inventory[idx].nameid, expire_tick);
+		pc_inventory_rental_add(sd, expire_tick);
+		clif_inventorylist(sd);
+	}
+	else {
+		int i = 0, c = 0;
+		for (i = 0; i < MAX_INVENTORY; i++) {
+			if (sd->inventory.u.items_inventory[i].nameid == 0)
+				continue;
+			if (sd->inventory.u.items_inventory[i].expire_time == 0)
+				continue;
+			if (sd->inventory.u.items_inventory[i].expire_time <= time(NULL)) {
+				if (sd->inventory_data[i]->unequip_script)
+					run_script(sd->inventory_data[i]->unequip_script, 0, sd->bl.id, fake_nd->bl.id);
+				clif_rental_expired(sd->fd, i, sd->inventory.u.items_inventory[i].nameid);
+				pc_delitem(sd, i, sd->inventory.u.items_inventory[i].amount, 0, 0, LOG_TYPE_OTHER);
+			}
+			else {
+				c++;
+			}
+		}
+
+		if (c <= 0) {
+			pc_inventory_rental_clear(sd);
+		}
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_RentTimeIdx
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -25113,6 +25177,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(statuscheck,"i?"),						// 判断状态是否存在, 并取得相关的状态参数 [Sola丶小克]
 	BUILDIN_DEF2(statuscheck,"sc_check","i?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
 #endif // Pandas_ScriptCommand_StatusCheck
+#ifdef Pandas_ScriptCommand_RentTimeIdx
+	BUILDIN_DEF(renttimeidx,"ii?"),						// 增加/减少指定背包序号道具的租赁时间 [Sola丶小克]
+#endif // Pandas_ScriptCommand_RentTimeIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

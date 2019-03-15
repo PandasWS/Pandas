@@ -292,6 +292,10 @@
 	// 是否启用 statuscheck 脚本指令 [Sola丶小克]
 	// 判断状态是否存在, 并取得相关的状态参数 (该指令有一个用于兼容的别名: sc_check)
 	#define Pandas_ScriptCommand_StatusCheck
+
+	// 是否启用 renttimeidx 脚本指令 [Sola丶小克]
+	// 增加/减少指定背包序号道具的租赁时间
+	#define Pandas_ScriptCommand_RentTimeIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
