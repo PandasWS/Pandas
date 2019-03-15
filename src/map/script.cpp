@@ -25015,7 +25015,7 @@ BUILDIN_FUNC(statuscheck) {
 	// 之所以实现 statuscheck / sc_check 完全出于兼容目的考虑
 	struct TimerData* timer = (struct TimerData*)get_timer(sd->sc.data[id]->timer);
 	t_tick tickleft = (timer ? DIFF_TICK(timer->tick, gettick()) : -1);
-	pc_setreg(sd, add_str("@sc_tickleft"), cap_value((int)tickleft, MININT, MAXINT));
+	pc_setreg(sd, add_str("@sc_tickleft"), (int)tickleft);
 
 	script_pushint(st, 1);
 	return SCRIPT_CMD_SUCCESS;
