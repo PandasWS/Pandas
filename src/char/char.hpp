@@ -142,7 +142,20 @@ struct Char_Config {
 	bool char_rename_guild;	// Character renaming in a guild
 };
 
+#ifndef Pandas_Fix_Chinese_Character_Trimmed
 #define TRIM_CHARS "\255\xA0\032\t\x0A\x0D " //The following characters are trimmed regardless because they cause confusion and problems on the servers. [Skotlex]
+#else
+// 此处代码产生于 2014 年, 当时的作者认为部分特殊的字符会导致服务端出问题
+// 那时候他们没有考虑其他语言的支持情况, 直接把一些特殊的字节通过 normalize_name 方法从字符串中过滤掉
+// 在支持简体, 繁体中文的时候. 由于部分汉字刚好包含被过滤的字节, 所以被 normalize_name 清洗后字符就被破坏了
+// 直接变成了一个问号... 例如: "聽風" 的 "聽" 在 GBK 编码下由两个字节组成, 它的十六进制编码是 C2 A0
+// 而 TRIM_CHARS 默认定义中就把 \xA0 (十六进制的A0) 设为需要过滤的字节, 过滤最后只剩下一个 C2 字节,
+// 导致后续的程序已经无法正确的构建出 "聽" 字.
+// 
+// 根据经验, 在中文环境里面不过滤上述特殊字节, 好像没引起其他奇怪的问题.
+// 这里的解决方案是清空 TRIM_CHARS 定义的黑名单字节列表. 未来如果引起其他问题, 再另行调整. [Sola丶小克]
+#define TRIM_CHARS ""
+#endif // Pandas_Fix_Chinese_Character_Trimmed
 struct CharServ_Config {
 	char userid[24];
 	char passwd[24];
