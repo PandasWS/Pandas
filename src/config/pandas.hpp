@@ -101,6 +101,10 @@
 
 	// 修正在部分情况下角色公会图标刷新不及时的问题 [Sola丶小克]
 	#define Pandas_Fix_GuildEmblem_Update
+
+	// 修正部分简体、繁体中文字符作为角色名时, 会被变成问号的问题 [Sola丶小克]
+	// 例如: "凯撒"中的"凯"字, "聽風"中的"聽"字等
+	#define Pandas_Fix_Chinese_Character_Trimmed
 #endif // Pandas_Bugfix
 
 // ============================================================================
