@@ -1,7 +1,7 @@
 rAthena
 =======
 
-Build Status: [![Build Status](https://travis-ci.org/CairoLee/rAthenaCN_Server.svg?branch=master)](https://travis-ci.org/CairoLee/rAthenaCN_Server) [![Build status](https://ci.appveyor.com/api/projects/status/github/CairoLee/rAthenaCN_Server?branch=master&svg=true)](https://ci.appveyor.com/project/CairoLee/rathenacn-server/branch/master) [![Total alerts](https://img.shields.io/lgtm/alerts/g/CairoLee/rAthenaCN_Server.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/CairoLee/rAthenaCN_Server/alerts/) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/CairoLee/rAthenaCN_Server.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/CairoLee/rAthenaCN_Server/context:cpp) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/CairoLee/rAthenaCN_Server.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/CairoLee/rAthenaCN_Server/context:python)
+Build Status: [![Build Status](https://travis-ci.org/PandasWS/Pandas.svg?branch=master)](https://travis-ci.org/PandasWS/Pandas) [![Build status](https://ci.appveyor.com/api/projects/status/github/PandasWS/Pandas?branch=master&svg=true)](https://ci.appveyor.com/project/CairoLee/Pandas/branch/master) [![Total alerts](https://img.shields.io/lgtm/alerts/g/PandasWS/Pandas.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/PandasWS/Pandas/alerts/) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/PandasWS/Pandas.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/PandasWS/Pandas/context:cpp) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/PandasWS/Pandas.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/PandasWS/Pandas/context:python)
 
 Table of Contents
 ---------
