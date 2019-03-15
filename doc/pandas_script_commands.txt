@@ -490,7 +490,7 @@ EQI装备位置:
 如果要减少租赁时间的话, 第二个参数请使用负数.
 
 该指令与 renttime 近似, 只是 renttime 操作的是某个已穿戴的装备,
-本指令可以通过背包序号来指定要调整的物品.
+而 renttimeidx 指令可以通过背包序号来指定要调整的物品.
 
 背包序号:
 	可以通过 getinventorylist 脚本指令的 @inventorylist_idx[] 数组来获得.
