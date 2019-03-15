@@ -284,6 +284,10 @@
 	// 是否启用 getinventoryinfo 脚本指令 [Sola丶小克]
 	// 查询指定背包序号的道具的详细信息
 	#define Pandas_ScriptCommand_GetInventoryInfo
+
+	// 是否启用 statuscheck 脚本指令 [Sola丶小克]
+	// 判断状态是否存在, 并取得相关的状态参数 (该指令有一个用于兼容的别名: sc_check)
+	#define Pandas_ScriptCommand_StatusCheck
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
