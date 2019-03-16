@@ -302,6 +302,10 @@
 	// 是否启用 renttimeidx 脚本指令 [Sola丶小克]
 	// 增加/减少指定背包序号道具的租赁时间
 	#define Pandas_ScriptCommand_RentTimeIdx
+
+	// 是否启用 party_leave 脚本指令 [Sola丶小克]
+	// 使当前角色或指定角色退出队伍 (主要出于兼容目的而实现该指令)
+	#define Pandas_ScriptCommand_PartyLeave
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
