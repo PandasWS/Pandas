@@ -105,6 +105,9 @@
 	// 修正部分简体、繁体中文字符作为角色名时, 会被变成问号的问题 [Sola丶小克]
 	// 例如: "凯撒"中的"凯"字, "聽風"中的"聽"字等
 	#define Pandas_Fix_Chinese_Character_Trimmed
+
+	// 修复 item_trade 中限制物品掉落后, 权限足够的 GM 也无法绕过限制的问题 [Sola丶小克]
+	#define Pandas_Fix_Item_Trade_FloorDropable
 #endif // Pandas_Bugfix
 
 // ============================================================================
