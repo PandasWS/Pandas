@@ -24752,23 +24752,17 @@ BUILDIN_FUNC(equipidx) {
 BUILDIN_FUNC(itemexists) {
 	struct item_data *id = nullptr;
 
-	if (script_isint(st, 2)) {
-		id = itemdb_exists(script_getnum(st, 2));
-	}
-	else if (script_isstring(st, 2)) {
+	if (script_isstring(st, 2))
 		id = itemdb_searchname(script_getstr(st, 2));
-	}
-	else {
-		ShowError("buildin_itemexists: The first param must be a integer or string.\n");
+	else
+		id = itemdb_exists(script_getnum(st, 2));
+
+	if (id == nullptr) {
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (id == nullptr)
-		script_pushint(st, 0);
-	else
-		script_pushint(st, (itemdb_isstackable2(id) ? id->nameid : -id->nameid));
-
+	script_pushint(st, (itemdb_isstackable2(id) ? id->nameid : -id->nameid));
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_ItemExists
@@ -25151,8 +25145,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(equipidx,"equipinventory","i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
 #endif // Pandas_ScriptCommand_EquipIdx
 #ifdef Pandas_ScriptCommand_ItemExists
-	BUILDIN_DEF(itemexists,"?"),						// 确认物品数据库中是否存在指定物品 [Sola丶小克]
-	BUILDIN_DEF2(itemexists,"existitem","?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
+	BUILDIN_DEF(itemexists,"v"),						// 确认物品数据库中是否存在指定物品 [Sola丶小克]
+	BUILDIN_DEF2(itemexists,"existitem","v"),			// 指定一个别名, 以便兼容的老版本或其他服务端
 #endif // Pandas_ScriptCommand_ItemExists
 #ifdef Pandas_ScriptCommand_RentTime
 	BUILDIN_DEF(renttime,"ii?"),						// 增加/减少指定位置装备的租赁时间 [Sola丶小克]
