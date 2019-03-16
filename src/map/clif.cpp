@@ -15037,6 +15037,15 @@ void clif_parse_AutoRevive(int fd, struct map_session_data *sd)
 	short item_position = pc_search_inventory(sd, ITEMID_TOKEN_OF_SIEGFRIED);
 	uint8 hp = 100, sp = 100;
 
+#ifdef Pandas_Fix_E_Token_Of_Siegfried
+	// 若背包中同时持有 ITEMID_E_TOKEN_OF_SIEGFRIED 和 ITEMID_TOKEN_OF_SIEGFRIED 两种道具的话
+	// 程序会优先使用 ITEMID_TOKEN_OF_SIEGFRIED 然后再使用 ITEMID_E_TOKEN_OF_SIEGFRIED
+	// 备注: 目前不清楚官方的消耗顺序, 若以后证明是反过来的话, 再另行调整 [Sola丶小克]
+	if (item_position < 0) {
+		item_position = pc_search_inventory(sd, ITEMID_E_TOKEN_OF_SIEGFRIED);
+	}
+#endif // Pandas_Fix_E_Token_Of_Siegfried
+
 #ifdef Pandas_MapFlag_NoToken
 	if (sd && sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOTOKEN)) {
 		clif_displaymessage(fd, msg_txt_cn(sd, 17));	// 此地图禁止原地复活!
