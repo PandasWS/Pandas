@@ -25101,6 +25101,174 @@ BUILDIN_FUNC(party_leave) {
 }
 #endif // Pandas_ScriptCommand_PartyLeave
 
+#ifdef Pandas_ScriptCommand_Script4Each
+/* ===========================================================
+ * 指令: buildin_script4each_sub
+ * 描述: 配合 script4each 指令使用的一个内部处理函数
+ * -----------------------------------------------------------*/
+static int buildin_script4each_sub(struct block_list *bl, va_list ap) {
+	char *execute_script = va_arg(ap, char*);
+	if (!bl || !execute_script) return 0;
+
+	struct script_code *script = parse_script(execute_script, "script4each", 0, 0);
+	if (script) {
+		run_script(script, 0, bl->id, 0);
+		script_free_code(script);
+	}
+	return 1;
+}
+
+/* ===========================================================
+ * 指令: script4each
+ * 描述: 对指定范围的玩家执行相同的一段脚本
+ * 用法: script4each <"{脚本}">,<脚本的执行范围>{,<动态参数>...};
+ * 返回: 该指令无论成功失败, 都不会有返回值
+ * 作者: Sola丶小克 (最早借鉴自 Sense 的代码进行改进)
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(script4each) {
+	const char *execute_script = script_getstr(st, 2);
+	int execute_range = script_getnum(st, 3);
+
+	struct script_code *script = nullptr;
+	script = parse_script(execute_script, "script4each", 0, 0);
+
+	struct s_mapiterator *iter = mapit_getallusers();
+	struct map_session_data *pl_sd = nullptr;
+
+	switch (execute_range)
+	{
+	case 0: {
+		// 全服玩家 - script4each "{<脚本>}",0;
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd) continue;
+			run_script(script, 0, pl_sd->bl.id, 0);
+		}
+		break;
+	}
+	case 1: {
+		// 指定地图上的全部玩家 - script4each "{<脚本>}",1,<"地图名称">;
+		int map_id = -1;
+
+		if (!script_hasdata(st, 4) || !script_isstring(st, 4)) break;
+		if ((map_id = map_mapname2mapid(script_getstr(st, 4))) < 0) break;
+
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->bl.m != map_id) continue;
+			run_script(script, 0, pl_sd->bl.id, 0);
+		}
+		break;
+	}
+	case 2: {
+		// 以地图某个点为中心半径距离内的玩家 - script4each "{<脚本>}",2,<"地图名称">,<中心坐标x>,<中心坐标y>,<范围>;
+		int map_id = -1, map_x = 0, map_y = 0, range = 0;
+
+		if (!script_hasdata(st, 4) || !script_isstring(st, 4)) break;
+		if (!script_hasdata(st, 5) || !script_isint(st, 5)) break;
+		if (!script_hasdata(st, 6) || !script_isint(st, 6)) break;
+		if (!script_hasdata(st, 7) || !script_isint(st, 7)) break;
+
+		if ((map_id = map_mapname2mapid(script_getstr(st, 4))) < 0) break;
+		map_x = script_getnum(st, 5);
+		map_y = script_getnum(st, 6);
+		range = script_getnum(st, 7);
+
+		struct block_list center_bl = { 0 };
+		center_bl.m = map_id;
+		center_bl.x = map_x;
+		center_bl.y = map_y;
+
+		map_foreachinrange(buildin_script4each_sub, &center_bl, range, BL_PC, execute_script);
+		break;
+	}
+	case 3: {
+		// 指定玩家所在的队伍中的全部队伍成员 - script4each "{<脚本>}",3,<角色编号>;
+		int party_id = 0;
+		struct map_session_data *target_sd = nullptr;
+
+		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
+		target_sd = map_charid2sd(script_getnum(st, 4));
+		if (!target_sd) break;
+		if ((party_id = target_sd->status.party_id) <= 0) break;
+
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->status.party_id != party_id) continue;
+			run_script(script, 0, pl_sd->bl.id, 0);
+		}
+		break;
+	}
+	case 4: {
+		// 指定玩家所在的公会中的全部公会成员 - script4each "{<脚本>}",4,<角色编号>;
+		int guild_id = 0;
+		struct map_session_data *target_sd = nullptr;
+
+		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
+		target_sd = map_charid2sd(script_getnum(st, 4));
+		if (!target_sd) break;
+		if ((guild_id = target_sd->status.guild_id) <= 0) break;
+
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->status.guild_id != guild_id) continue;
+			run_script(script, 0, pl_sd->bl.id, 0);
+		}
+		break;
+	}
+	case 5: {
+		// 指定区域 - script4each "{<脚本>}",5,<"地图名称">,<坐标x0>,<坐标y0>,<坐标x1>,<坐标y1>;
+		int map_id = -1, map_x0 = 0, map_y0 = 0, map_x1 = 0, map_y1 = 0;
+
+		if (!script_hasdata(st, 4) || !script_isstring(st, 4)) break;
+		if (!script_hasdata(st, 5) || !script_isint(st, 5)) break;
+		if (!script_hasdata(st, 6) || !script_isint(st, 6)) break;
+		if (!script_hasdata(st, 7) || !script_isint(st, 7)) break;
+		if (!script_hasdata(st, 8) || !script_isint(st, 8)) break;
+
+		if ((map_id = map_mapname2mapid(script_getstr(st, 4))) < 0) break;
+		map_x0 = script_getnum(st, 5);
+		map_y0 = script_getnum(st, 6);
+		map_x1 = script_getnum(st, 7);
+		map_y1 = script_getnum(st, 8);
+
+		map_foreachinarea(buildin_script4each_sub, map_id, map_x0, map_y0, map_x1, map_y1, BL_PC, execute_script);
+		break;
+	}
+	case 6: {
+		// 指定队伍中的全部队伍成员 - script4each "{<脚本>}",6,<队伍编号>;
+		int party_id = 0;
+
+		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
+		if ((party_id = script_getnum(st, 4)) <= 0) break;;
+
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->status.party_id != party_id) continue;
+			run_script(script, 0, pl_sd->bl.id, 0);
+		}
+		break;
+	}
+	case 7: {
+		// 指定公会中的全部公会成员 - script4each "{<脚本>}",7,<公会编号>;
+		int guild_id = 0;
+
+		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
+		if ((guild_id = script_getnum(st, 4)) <= 0) break;
+
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->status.guild_id != guild_id) continue;
+			run_script(script, 0, pl_sd->bl.id, 0);
+		}
+		break;
+	}
+	default:
+		ShowWarning("buildin_script4each: Invalid execute range '%d'.\n", execute_range);
+		break;
+	}
+
+	if (script) script_free_code(script);
+	if (iter) mapit_free(iter);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Script4Each
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -25198,6 +25366,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_PartyLeave
 	BUILDIN_DEF(party_leave,"?"),						// 使当前角色或指定角色退出队伍 [Sola丶小克]
 #endif // Pandas_ScriptCommand_PartyLeave
+#ifdef Pandas_ScriptCommand_Script4Each
+	BUILDIN_DEF(script4each,"si?????"),					// 对指定范围的玩家执行相同的一段脚本 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Script4Each
 #ifdef Pandas_ScriptCommand_SearchArray
 	BUILDIN_DEF2(inarray,"searcharray","rv"),			// 由于 rAthena 已经实现 inarray 指令, 这里兼容老版本 searcharray 指令 [Sola丶小克]
 #endif // Pandas_ScriptCommand_SearchArray
