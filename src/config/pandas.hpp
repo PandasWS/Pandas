@@ -306,6 +306,10 @@
 	// 是否启用 party_leave 脚本指令 [Sola丶小克]
 	// 使当前角色或指定角色退出队伍 (主要出于兼容目的而实现该指令)
 	#define Pandas_ScriptCommand_PartyLeave
+
+	// 是否启用 script4each 脚本指令 [Sola丶小克]
+	// 对指定范围的玩家执行相同的一段脚本
+	#define Pandas_ScriptCommand_Script4Each
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
