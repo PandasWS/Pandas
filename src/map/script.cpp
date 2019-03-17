@@ -25369,6 +25369,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_Script4Each
 	BUILDIN_DEF(script4each,"si?????"),					// 对指定范围的玩家执行相同的一段脚本 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Script4Each
+#ifdef Pandas_ScriptCommand_SearchArray
+	BUILDIN_DEF2(inarray,"searcharray","rv"),			// 由于 rAthena 已经实现 inarray 指令, 这里兼容老版本 searcharray 指令 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SearchArray
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
