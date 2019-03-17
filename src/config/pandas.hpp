@@ -306,6 +306,10 @@
 	// 是否启用 party_leave 脚本指令 [Sola丶小克]
 	// 使当前角色或指定角色退出队伍 (主要出于兼容目的而实现该指令)
 	#define Pandas_ScriptCommand_PartyLeave
+
+	// 是否启用 searcharray 脚本指令 [Sola丶小克]
+	// 由于 rAthena 已经实现 inarray 指令, 这里兼容老版本 searcharray 指令
+	#define Pandas_ScriptCommand_SearchArray
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
