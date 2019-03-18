@@ -15188,6 +15188,13 @@ BUILDIN_FUNC(summon)
 		check_event(st, event);
 	}
 
+#ifdef Pandas_Fix_ScriptCommand_Summon_Crash
+	if (_class < 0 || !mobdb_checkid(_class)) {
+		ShowWarning("buildin_summon: Attempted to summon non-existing monster class %d\n", _class);
+		return SCRIPT_CMD_FAILURE;
+	}
+#endif // Pandas_Fix_ScriptCommand_Summon_Crash
+
 	clif_skill_poseffect(&sd->bl,AM_CALLHOMUN,1,sd->bl.x,sd->bl.y,tick);
 
 	md = mob_once_spawn_sub(&sd->bl, sd->bl.m, sd->bl.x, sd->bl.y, str, _class, event, SZ_SMALL, AI_NONE);
