@@ -25338,6 +25338,48 @@ BUILDIN_FUNC(getsameipinfo) {
 }
 #endif // Pandas_ScriptCommand_GetSameIpInfo
 
+#ifdef Pandas_ScriptCommand_Logout
+/* ===========================================================
+ * 指令: logout
+ * 描述: 使指定的角色立刻登出游戏
+ * 用法: logout <登出理由>{,"<角色名称>"|<账号编号>|<角色编号>};
+ * 返回: 该指令无论成功失败, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(logout) {
+	struct map_session_data *sd = nullptr;
+	int reason = script_getnum(st, 2);
+
+	if (script_hasdata(st, 3))
+	{
+		if (script_isstring(st, 3))
+			sd = map_nick2sd(script_getstr(st, 3), false);
+		else
+		{
+			int id = script_getnum(st, 3);
+
+			sd = (map_id2sd(id) ? map_id2sd(id) : map_charid2sd(id));
+		}
+	}
+	else
+		script_rid2sd(sd);
+
+	if (!sd)
+		return SCRIPT_CMD_SUCCESS;
+
+	if (!((reason >= 0 && reason <= 18) || (reason >= 100 && reason <= 110) || reason == 111)) {
+		ShowWarning("buildin_logout: unknown logout reason %d\n", reason);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd->fd)
+		clif_authfail_fd(sd->fd, reason);
+	else
+		map_quit(sd);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Logout
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -25444,6 +25486,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetSameIpInfo
 	BUILDIN_DEF(getsameipinfo,"?"),						// 获得某个指定 IP 在线的玩家信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetSameIpInfo
+#ifdef Pandas_ScriptCommand_Logout
+	BUILDIN_DEF(logout,"i?"),							// 使指定的角色立刻登出游戏 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Logout
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
