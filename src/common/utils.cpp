@@ -70,22 +70,14 @@ void ShowDump(const void* buffer, size_t length)
 
 		if( (i%16) == 15 )
 		{
-#ifndef Pandas_Fix_LGTM_Warning
 			ShowDebug("%03X %s  %s\n", i/16, hex, ascii);
-#else
-			ShowDebug("%03lu %s  %s\n", i/16, hex, ascii);
-#endif // Pandas_Fix_LGTM_Warning
 		}
 	}
 
 	if( (i%16) != 0 )
 	{
 		ascii[i%16] = 0;
-#ifndef Pandas_Fix_LGTM_Warning
 		ShowDebug("%03X %-48s  %-16s\n", i/16, hex, ascii);
-#else
-		ShowDebug("%03lu %-48s  %-16s\n", i/16, hex, ascii);
-#endif // Pandas_Fix_LGTM_Warning
 	}
 }
 
