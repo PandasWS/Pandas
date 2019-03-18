@@ -626,3 +626,6 @@ IP地址:
 	109 = BAN_INVALID_PWD_CNT
 	110 = BAN_NOT_ALLOWED_JOBCLASS
 	111 = 与服务器断开连接 -> MsgStringTable[3]
+
+返回值:
+	该指令无论成功失败, 都不会有返回值
