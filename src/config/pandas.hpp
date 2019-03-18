@@ -111,6 +111,9 @@
 
 	// 修复 "活动用原地复活之证" 的效果 (道具编号为 6316) [Sola丶小克]
 	#define Pandas_Fix_E_Token_Of_Siegfried
+
+	// 修复使用 sommon 脚本指令召唤不存在的魔物, 会导致地图服务器崩溃的问题 [Sola丶小克]
+	#define Pandas_Fix_ScriptCommand_Summon_Crash
 #endif // Pandas_Bugfix
 
 // ============================================================================
