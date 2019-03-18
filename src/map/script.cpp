@@ -15189,7 +15189,7 @@ BUILDIN_FUNC(summon)
 	}
 
 #ifdef Pandas_Fix_ScriptCommand_Summon_Crash
-	if (_class >= 0 && !mobdb_checkid(_class)) {
+	if (_class < 0 || !mobdb_checkid(_class)) {
 		ShowWarning("buildin_summon: Attempted to summon non-existing monster class %d\n", _class);
 		return SCRIPT_CMD_FAILURE;
 	}
