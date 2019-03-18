@@ -5643,8 +5643,14 @@ BUILDIN_FUNC(warpparty)
 		if( str2 && strcmp(str2, map_getmapdata(pl_sd->bl.m)->name) != 0 )
 			continue;
 
+#ifndef Pandas_ScriptCommand_WarpPartyRevive
 		if( pc_isdead(pl_sd) )
 			continue;
+#else
+		// 若使用的为 warppartyrevive 指令名, 那么死亡的队员也不会被忽略
+		if (pc_isdead(pl_sd) && strcmpi(script_getfuncname(st), "warppartyrevive") != 0 && strcmpi(script_getfuncname(st), "warpparty2") != 0)
+			continue;
+#endif // Pandas_ScriptCommand_WarpPartyRevive
 
 		switch( type )
 		{
@@ -25444,6 +25450,10 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetSameIpInfo
 	BUILDIN_DEF(getsameipinfo,"?"),						// 获得某个指定 IP 在线的玩家信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetSameIpInfo
+#ifdef Pandas_ScriptCommand_WarpPartyRevive
+	BUILDIN_DEF2(warpparty,"warppartyrevive","siii???"),// 与 warpparty 类似, 但可以复活死亡的队友并传送 [Sola丶小克]
+	BUILDIN_DEF2(warpparty,"warpparty2","siii???"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_WarpPartyRevive
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
