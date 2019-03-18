@@ -25269,6 +25269,68 @@ BUILDIN_FUNC(script4each) {
 }
 #endif // Pandas_ScriptCommand_Script4Each
 
+#ifdef Pandas_ScriptCommand_GetSameIpInfo
+/* ===========================================================
+ * 指令: buildin_getsameipinfo_sub
+ * 描述: 配合 getsameipinfo 指令使用的一个内部处理函数
+ * -----------------------------------------------------------*/
+static int buildin_getsameipinfo_sub(struct map_session_data* pl_sd, va_list ap)
+{
+	struct map_session_data *sd = va_arg(ap, struct map_session_data*);
+	uint32 ipaddr = va_arg(ap, uint32);
+	uint32 *count = va_arg(ap, uint32*);
+
+	if (!ipaddr || !sd | !count) return 0;
+	if (!pl_sd || pl_sd->state.autotrade) return 0;
+
+	if (sd && pl_sd && ipaddr == session[pl_sd->fd]->client_addr) {
+		pc_setreg(sd, reference_uid(add_str("@sameip_aid"), (*count)), pl_sd->status.account_id);
+		pc_setreg(sd, reference_uid(add_str("@sameip_cid"), (*count)), pl_sd->status.char_id);
+		pc_setregstr(sd, reference_uid(add_str("@sameip_name$"), (*count)), pl_sd->status.name);
+		(*count)++;
+		return 1;
+	}
+
+	return 0;
+}
+
+/* ===========================================================
+ * 指令: getsameipinfo
+ * 描述: 获得某个指定 IP 在线的玩家信息
+ * 用法: getsameipinfo {<"IP地址">};
+ * 返回: 出错返回 -1, 其他含 0 正整数表示查到的此 IP 的在线玩家数
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getsameipinfo) {
+	struct map_session_data *sd = nullptr;
+	uint32 ipaddr = 0, match_count = 0;
+
+	if (!script_rid2sd(sd)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (script_hasdata(st, 2) && !script_isstring(st, 2)) {
+		ShowError("buildin_getsameipinfo: ip address must be string variable\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (script_hasdata(st, 2)) {
+		ipaddr = str2ip(script_getstr(st, 2));
+	}
+	else {
+		ipaddr = session[sd->fd]->client_addr;
+	}
+
+	map_foreachpc(buildin_getsameipinfo_sub, sd, ipaddr, &match_count);
+	pc_setreg(sd, add_str("@sameip_amount"), match_count);
+
+	script_pushint(st, match_count);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetSameIpInfo
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -25372,6 +25434,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_SearchArray
 	BUILDIN_DEF2(inarray,"searcharray","rv"),			// 由于 rAthena 已经实现 inarray 指令, 这里兼容老版本 searcharray 指令 [Sola丶小克]
 #endif // Pandas_ScriptCommand_SearchArray
+#ifdef Pandas_ScriptCommand_GetSameIpInfo
+	BUILDIN_DEF(getsameipinfo,"?"),						// 获得某个指定 IP 在线的玩家信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetSameIpInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
