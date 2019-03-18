@@ -86,6 +86,9 @@
 
 	// 是否加强 2013-12-23 以及 2013-08-07 客户端的混淆密钥 [Sola丶小克]
 	#define Pandas_Packet_Obfuscation_Keys
+
+	// 使影子装备可以支持插卡, 而不会被强制转换成普通道具 [Sola丶小克]
+	#define Pandas_Shadowgear_Support_Card
 #endif // Pandas_Creative_Work
 
 // ============================================================================
