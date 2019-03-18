@@ -6598,8 +6598,14 @@ void clif_use_card(struct map_session_data *sd,int idx)
 
 		if(sd->inventory_data[i] == NULL)
 			continue;
+#ifndef Pandas_Shadowgear_Support_Card
 		if(sd->inventory_data[i]->type!=IT_WEAPON && sd->inventory_data[i]->type!=IT_ARMOR)
 			continue;
+#else
+		// 玩家双击卡片时, 出现的道具列表中允许影子装备出现
+		if(sd->inventory_data[i]->type!=IT_WEAPON && sd->inventory_data[i]->type!=IT_ARMOR && sd->inventory_data[i]->type!=IT_SHADOWGEAR)
+			continue;
+#endif // Pandas_Shadowgear_Support_Card
 		if(itemdb_isspecial(sd->inventory.u.items_inventory[i].card[0])) //Can't slot it
 			continue;
 
