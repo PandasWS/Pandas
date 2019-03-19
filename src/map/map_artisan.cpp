@@ -3,6 +3,9 @@
 
 #include "map_artisan.hpp"
 
+#include <cctype>	// toupper, tolower
+#include <algorithm>	// transform
+
 #include "../common/strlib.hpp"
 #include "../../3rdparty/pcre/include/pcre.h"
 
@@ -80,7 +83,10 @@ bool hasPet(const char* _script, unsigned int & pet_mobid) {
 	std::string val = std::string();
 
 	// 将脚本内容全部转换成小写
-	std::transform(script.begin(), script.end(), script.begin(), std::tolower);
+	std::transform(
+		script.begin(), script.end(), script.begin(),
+		static_cast<int(*)(int)>(std::tolower)
+	);
 
 	// 先看看有没有包含 pet 字符串, 如果没有那么就不进行正则匹配
 	// 以此来提高一点点速度和降低一些资源开销
@@ -106,7 +112,10 @@ bool hasCallfunc(const char* _script) {
 	std::string val = std::string();
 
 	// 将脚本内容全部转换成小写
-	std::transform(script.begin(), script.end(), script.begin(), std::tolower);
+	std::transform(
+		script.begin(), script.end(), script.begin(),
+		static_cast<int(*)(int)>(std::tolower)
+	);
 
 	// 先看看有没有包含 callfunc 字符串, 如果没有那么就不进行正则匹配
 	// 以此来提高一点点速度和降低一些资源开销

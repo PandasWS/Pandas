@@ -5,8 +5,6 @@
 #define _RATHENA_CN_MAP_ARTISAN_HPP_
 
 #include <string>	// std::string
-#include <cctype>	// toupper, tolower
-#include <algorithm>	// transform
 
 bool regexGroupVal(std::string patterns, std::string content, int groupid, std::string & val);
 bool regexMatch(std::string patterns, std::string content);
