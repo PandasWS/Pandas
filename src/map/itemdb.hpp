@@ -870,6 +870,12 @@ struct item_data
 	// 取值: 值为 0 则不是, 否则为该道具支持捕捉的魔物编号
 	unsigned int taming_mobid;
 #endif // Pandas_Struct_Item_Data_Taming_Mobid
+
+#ifdef Pandas_Struct_Item_Data_Has_CallFunc
+	// 此物品的使用脚本是否包含 callfunc 指令 [Sola丶小克]
+	// 取值: 值为 0 表示不包含, 否则表示包含
+	unsigned int has_callfunc;
+#endif // Pandas_Struct_Item_Data_Has_CallFunc
 };
 
 // Struct for item random option [Secret]

@@ -46,24 +46,72 @@ bool regexGroupVal(std::string patterns, std::string content, int groupid, std::
 }
 
 //************************************
+// Method:		regexMatch
+// Description:	使用正则表达式进行匹配, 看是否可以匹配成功
+// Parameter:	std::string patterns	匹配表达式
+// Parameter:	std::string content		需要被匹配的来源字符内容
+// Returns:		bool					成功与否
+//************************************
+bool regexMatch(std::string patterns, std::string content) {
+	pcre *re = NULL;
+	pcre_extra *extra = NULL;
+	const char *error = NULL;
+	int erroffset = -1, r = -1, ovector_len = 30, ovector[30] = { 0 };
+
+	re = pcre_compile(patterns.c_str(), 0, &error, &erroffset, NULL);
+	extra = pcre_study(re, 0, &error);
+	r = pcre_exec(re, extra, content.c_str(), content.length(), 0, 0, ovector, ovector_len);
+
+	if (!re) pcre_free(re);
+	if (!extra) pcre_free(extra);
+	return (r != PCRE_ERROR_NOMATCH);
+}
+
+//************************************
 // Method:		hasPet
 // Description:	判断道具使用脚本中是否存在 pet 指令, 若有则提取该道具可捕捉的魔物编号
-// Parameter:	const char * script			道具使用脚本的指令
+// Parameter:	const char * script			道具的使用脚本
 // Parameter:	unsigned int & pet_mobid	提取到的魔物编号
 // Returns:		bool						是否成功提取
 //************************************
-bool hasPet(const char* script, unsigned int & pet_mobid) {
-	std::string patterns = std::string("(?i).*?pet (\\d{0,5}?);.*?");
+bool hasPet(const char* _script, unsigned int & pet_mobid) {
+	std::string patterns = std::string("(?i).*?pet(\\s*?|\\()(\\d{0,5}?)(\\)|\\s*?);.*?");	// Group 2 为可捕捉的魔物编号
+	std::string script = std::string(_script);
 	std::string val = std::string();
+
+	// 将脚本内容全部转换成小写
+	std::transform(script.begin(), script.end(), script.begin(), std::tolower);
 
 	// 先看看有没有包含 pet 字符串, 如果没有那么就不进行正则匹配
 	// 以此来提高一点点速度和降低一些资源开销
-	if (std::string(script).find("pet") == std::string::npos)
+	if (script.find("pet") == std::string::npos)
 		return false;
 
-	if (regexGroupVal(patterns, std::string(script), 1, val)) {
+	if (regexGroupVal(patterns, script, 2, val)) {
 		pet_mobid = atoi(val.c_str());
 		return true;
 	}
 	return false;
+}
+
+//************************************
+// Method:		hasCallfunc
+// Description:	判断道具使用脚本中是否存在 callfunc 指令
+// Parameter:	const char * _script		道具的使用脚本
+// Returns:		bool						是否存在
+//************************************
+bool hasCallfunc(const char* _script) {
+	std::string patterns = std::string("(?i).*?callfunc(\\s.*|\\(\\s*)\"(.*?)\".*?");	// Group 2 为 callfunc 的目标函数名
+	std::string script = std::string(_script);
+	std::string val = std::string();
+
+	// 将脚本内容全部转换成小写
+	std::transform(script.begin(), script.end(), script.begin(), std::tolower);
+
+	// 先看看有没有包含 callfunc 字符串, 如果没有那么就不进行正则匹配
+	// 以此来提高一点点速度和降低一些资源开销
+	if (script.find("callfunc") == std::string::npos)
+		return false;
+
+	return regexMatch(patterns, script);
 }
