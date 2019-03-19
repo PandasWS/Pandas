@@ -865,11 +865,11 @@ struct item_data
 	unsigned char combos_count;
 	short delay_sc; ///< Use delay group if any instead using player's item_delay data [Cydh]
 
-#ifdef Pandas_MapFlag_NoCapture
-	// 此物品是否为宠物捕捉道具，为 0 则不是
-	// 若是, 那么 taming_mobid 为支持捕捉的魔物编号 [Sola丶小克]
+#ifdef Pandas_Struct_Item_Data_Taming_Mobid
+	// 此物品是否为宠物捕捉道具 [Sola丶小克]
+	// 取值: 值为 0 则不是, 否则为该道具支持捕捉的魔物编号
 	unsigned int taming_mobid;
-#endif // Pandas_MapFlag_NoCapture
+#endif // Pandas_Struct_Item_Data_Taming_Mobid
 };
 
 // Struct for item random option [Secret]

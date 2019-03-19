@@ -11,6 +11,7 @@
 
 #ifdef Pandas
 	#define Pandas_Basic
+	#define Pandas_StructIncrease
 	#define Pandas_Creative_Work
 	#define Pandas_Bugfix
 	#define Pandas_NpcEvent
@@ -38,6 +39,16 @@
 	// 在启动时显示 Pandas 的版本号
 	#define Pandas_Show_Version
 #endif // Pandas_Basic
+
+// ============================================================================
+// 数据结构增强组 - Pandas_StructIncrease
+// ============================================================================
+
+#ifdef Pandas_StructIncrease
+	// 使 item_data 可记录此物品是否为宠物捕捉道具 [Sola丶小克]
+	// 结构体修改定位 itemdb.hpp -> item_data.taming_mobid
+	#define Pandas_Struct_Item_Data_Taming_Mobid
+#endif // Pandas_StructIncrease
 
 // ============================================================================
 // 原创功能组 - Pandas_Creative_Work
@@ -155,7 +166,10 @@
 
 	// 是否启用 nocapture 地图标记 [Sola丶小克]
 	// 该标记用于禁止玩家在地图上使用宠物捕捉道具或贤者的"随机技能"来捕捉宠物
-	#define Pandas_MapFlag_NoCapture
+	// 此地图标记依赖 Pandas_Struct_Item_Data_Taming_Mobid 的拓展
+	#ifdef Pandas_Struct_Item_Data_Taming_Mobid
+		#define Pandas_MapFlag_NoCapture
+	#endif // Pandas_Struct_Item_Data_Taming_Mobid
 
 	// 是否启用 hideguildinfo 地图标记 [Sola丶小克]
 	// 使当前地图上的玩家无法见到其他人的公会图标、公会名称、职位等信息 (自己依然可见)
