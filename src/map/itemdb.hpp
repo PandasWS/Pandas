@@ -876,6 +876,15 @@ struct item_data
 	// 取值: 值为 0 表示不包含, 否则表示包含
 	unsigned int has_callfunc;
 #endif // Pandas_Struct_Item_Data_Has_CallFunc
+
+#ifdef Pandas_Struct_Item_Data_Properties
+	// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
+	// 效果与 item_data.flag 类似, 只是数据源为 item_properties.yml 
+	struct {
+		unsigned no_consume_of_player : 1;
+		unsigned no_consume_of_skills : 1;
+	} properties;
+#endif // Pandas_Struct_Item_Data_Properties
 };
 
 // Struct for item random option [Secret]
