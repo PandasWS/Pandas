@@ -12869,32 +12869,20 @@ TIMER_FUNC(status_change_timer){
 
 	bl = map_id2bl(id);
 	if(!bl) {
-#ifndef Pandas_Fix_LGTM_Warning
-		ShowDebug("status_change_timer: Null pointer id: %d data: %d\n", id, data);
-#else
-		ShowDebug("status_change_timer: Null pointer id: %d data: %ld\n", id, data);
-#endif // Pandas_Fix_LGTM_Warning
+		ShowDebug("status_change_timer: Null pointer id: %d data: %" PRIdPTR "\n", id, data);
 		return 0;
 	}
 
 	struct status_change * const sc = status_get_sc(bl);
 	struct status_data * const status = status_get_status_data(bl);
 	if(!sc) {
-#ifndef Pandas_Fix_LGTM_Warning
-		ShowDebug("status_change_timer: Null pointer id: %d data: %d bl-type: %d\n", id, data, bl->type);
-#else
-		ShowDebug("status_change_timer: Null pointer id: %d data: %ld bl-type: %d\n", id, data, bl->type);
-#endif // Pandas_Fix_LGTM_Warning
+		ShowDebug("status_change_timer: Null pointer id: %d data: %" PRIdPTR " bl-type: %d\n", id, data, bl->type);
 		return 0;
 	}
 	
 	struct status_change_entry * const sce = sc->data[type];
 	if(!sce) {
-#ifndef Pandas_Fix_LGTM_Warning
-		ShowDebug("status_change_timer: Null pointer id: %d data: %d bl-type: %d\n", id, data, bl->type);
-#else
-		ShowDebug("status_change_timer: Null pointer id: %d data: %ld bl-type: %d\n", id, data, bl->type);
-#endif // Pandas_Fix_LGTM_Warning
+		ShowDebug("status_change_timer: Null pointer id: %d data: %" PRIdPTR " bl-type: %d\n", id, data, bl->type);
 		return 0;
 	}
 	if( sce->timer != tid ) {
