@@ -432,15 +432,6 @@ static struct item_data *itemdb_create_item(unsigned short nameid) {
 	memset(id, 0, sizeof(struct item_data));
 	id->nameid = nameid;
 	id->type = IT_ETC; //Etc item
-
-#ifdef Pandas_Struct_Item_Data_Taming_Mobid
-	id->taming_mobid = 0;	// 给变量赋予初值, 默认它不是宠物捕捉道具 [Sola丶小克]
-#endif // Pandas_Struct_Item_Data_Taming_Mobid
-
-#ifdef Pandas_Struct_Item_Data_Has_CallFunc
-	id->has_callfunc = 0;	// 给变量赋予初值, 默认它的使用脚本不含 callfunc 指令 [Sola丶小克]
-#endif // Pandas_Struct_Item_Data_Has_CallFunc
-
 	uidb_put(itemdb, nameid, id);
 	return id;
 }
