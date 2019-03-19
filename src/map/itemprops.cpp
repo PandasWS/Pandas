@@ -3,6 +3,8 @@
 
 #include "itemprops.hpp"
 
+#include "itemdb.hpp"
+
 ItemProperties item_properties_db;
 
 const std::string ItemProperties::getDefaultLocation() {
@@ -13,6 +15,11 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 	uint32 nameid = 0;
 
 	if (!this->asUInt32(node, "ItemID", nameid)) {
+		return 0;
+	}
+
+	if (nameid == 0 || !itemdb_exists(nameid)) {
+		this->invalidWarning(node, "Unknown item ID %hu.\n", nameid);
 		return 0;
 	}
 
