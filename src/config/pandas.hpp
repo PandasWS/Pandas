@@ -339,6 +339,10 @@
 	// 是否启用 logout 脚本指令 [Sola丶小克]
 	// 使指定的角色立刻登出游戏
 	#define Pandas_ScriptCommand_Logout
+
+	// 是否启用 warppartyrevive 脚本指令 [Sola丶小克]
+	// 与 warpparty 类似, 但可以复活死亡的队友并传送 (该指令有一个用于兼容的别名: warpparty2)
+	#define Pandas_ScriptCommand_WarpPartyRevive
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

@@ -629,3 +629,17 @@ IP地址:
 
 返回值:
 	该指令无论成功失败, 都不会有返回值
+
+---------------------------------------
+
+*warppartyrevive "<to_mapname>",<x>,<y>,<party_id>,{"<from_mapname>",<range x>,<range y>};
+*warpparty2 "<to_mapname>",<x>,<y>,<party_id>,{"<from_mapname>",<range x>,<range y>};
+
+该指令的用法与 warpparty 完全一样, 都是将指定队伍全员传送到指定目的地.
+
+区别在于: 
+	warpparty 对已经死亡的队友则无效 (死亡的队友会被留在原地),
+	warppartyrevive 对已经死亡的队友有效 (队友会被立刻复活, 并一起被传送走).
+
+返回值:
+	该指令无论成功失败, 都不会有返回值
