@@ -20,6 +20,9 @@
 #include "mob.hpp"
 #include "pc.hpp"
 #include "status.hpp"
+#ifdef Pandas_Database_ItemProperties
+#include "itemprops.hpp"
+#endif // Pandas_Database_ItemProperties
 
 static DBMap *itemdb; /// Item DB
 static DBMap *itemdb_combo; /// Item Combo DB
@@ -1987,11 +1990,17 @@ void itemdb_reload(void) {
 	itemdb_randomopt_group->clear(itemdb_randomopt_group, itemdb_randomopt_group_free);
 	itemdb->clear(itemdb, itemdb_final_sub);
 	db_clear(itemdb_combo);
+#ifdef Pandas_Database_ItemProperties
+	item_properties_db.clear();
+#endif // Pandas_Database_ItemProperties
 	if (battle_config.feature_roulette)
 		itemdb_roulette_free();
 
 	// read new data
 	itemdb_read();
+#ifdef Pandas_Database_ItemProperties
+	item_properties_db.load();
+#endif // Pandas_Database_ItemProperties
 	cashshop_reloaddb();
 
 	if (battle_config.feature_roulette)
@@ -2032,6 +2041,9 @@ void do_final_itemdb(void) {
 	itemdb_randomopt_group->destroy(itemdb_randomopt_group, itemdb_randomopt_group_free);
 	itemdb->destroy(itemdb, itemdb_final_sub);
 	destroy_item_data(dummy_item);
+#ifdef Pandas_Database_ItemProperties
+	item_properties_db.clear();
+#endif // Pandas_Database_ItemProperties
 	if (battle_config.feature_roulette)
 		itemdb_roulette_free();
 }
@@ -2047,6 +2059,11 @@ void do_init_itemdb(void) {
 	itemdb_randomopt_group = uidb_alloc(DB_OPT_BASE);
 	itemdb_create_dummy();
 	itemdb_read();
+#ifdef Pandas_Database_ItemProperties
+	// 在加载过程中会验证物品编号的有效性,
+	// 因此必须放在 itemdb_read 之后再读取, 否则全部物品编号都会被判无效
+	item_properties_db.load();
+#endif // Pandas_Database_ItemProperties
 
 	if (battle_config.feature_roulette)
 		itemdb_parse_roulette_db();

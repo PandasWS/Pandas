@@ -185,6 +185,7 @@
     <ClInclude Include="instance.hpp" />
     <ClInclude Include="intif.hpp" />
     <ClInclude Include="itemdb.hpp" />
+    <ClInclude Include="itemprops.hpp" />
     <ClInclude Include="log.hpp" />
     <ClInclude Include="mail.hpp" />
     <ClInclude Include="map.hpp" />
@@ -229,6 +230,7 @@
     <ClCompile Include="instance.cpp" />
     <ClCompile Include="intif.cpp" />
     <ClCompile Include="itemdb.cpp" />
+    <ClCompile Include="itemprops.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="mail.cpp" />
     <ClCompile Include="map.cpp" />

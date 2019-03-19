@@ -146,6 +146,9 @@
     <ClInclude Include="map_artisan.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="itemprops.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="achievement.cpp">
@@ -272,6 +275,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="map_artisan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="itemprops.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

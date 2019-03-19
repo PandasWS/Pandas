@@ -104,6 +104,11 @@
 
 	// 使影子装备可以支持插卡, 而不会被强制转换成普通道具 [Sola丶小克]
 	#define Pandas_Shadowgear_Support_Card
+
+	// 是否启用 Pandas 的道具属性数据库 [Sola丶小克]
+	// 类似 item_flag 数据库, 不过 rAthena 自己会不断扩充 flag 的定义
+	// 为了避免未来可能存在的冲突, 直接创建一个新的数据库来存放对物品属性的自定义扩充
+	#define Pandas_Database_ItemProperties
 #endif // Pandas_Creative_Work
 
 // ============================================================================
