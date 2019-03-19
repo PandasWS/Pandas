@@ -434,6 +434,10 @@ static struct item_data *itemdb_create_item(unsigned short nameid) {
 	id->taming_mobid = 0;	// 给变量赋予初值, 默认它不是宠物捕捉道具 [Sola丶小克]
 #endif // Pandas_Struct_Item_Data_Taming_Mobid
 
+#ifdef Pandas_Struct_Item_Data_Has_CallFunc
+	id->has_callfunc = 0;	// 给变量赋予初值, 默认它的使用脚本不含 callfunc 指令 [Sola丶小克]
+#endif // Pandas_Struct_Item_Data_Has_CallFunc
+
 	uidb_put(itemdb, nameid, id);
 	return id;
 }
@@ -1403,8 +1407,8 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 		id->unequip_script = parse_script(str[21], source, line, scriptopt);
 
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
-	// 看看这个道具的脚本是不是有 pet xxxx; 若有则记录一下
-	// 这是一个捕捉宠物的道具，并记录下它能捕捉的宠物的魔物编号 [Sola丶小克]
+	// 判断该道具的脚本是不是有 pet xxxx; 若有则记录一下 [Sola丶小克]
+	// 这是一个捕捉宠物的道具，并记录下它能捕捉的宠物的魔物编号
 	if (id->script != NULL) {
 		unsigned int pet_mobid = 0;
 		if (hasPet(str[19], pet_mobid)) {
@@ -1412,6 +1416,13 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 		}
 	}
 #endif // Pandas_Struct_Item_Data_Taming_Mobid
+
+#ifdef Pandas_Struct_Item_Data_Has_CallFunc
+	// 判断该道具的脚本是不是有 callfunc "xxxx"; 若有则记录一下 [Sola丶小克]
+	if (id->script != NULL) {
+		id->has_callfunc = (hasCallfunc(str[19]) ? 1 : 0);
+	}
+#endif // Pandas_Struct_Item_Data_Has_CallFunc
 
 	if (!id->nameid) {
 		id->nameid = nameid;

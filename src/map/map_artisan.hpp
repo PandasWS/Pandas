@@ -7,6 +7,9 @@
 #include <string>	// std::string
 
 bool regexGroupVal(std::string patterns, std::string content, int groupid, std::string & val);
-bool hasPet(const char* script, unsigned int & pet_mobid);
+bool regexMatch(std::string patterns, std::string content);
+
+bool hasPet(const char* _script, unsigned int & pet_mobid);
+bool hasCallfunc(const char* _script);
 
 #endif // _RATHENA_CN_MAP_ARTISAN_HPP_
