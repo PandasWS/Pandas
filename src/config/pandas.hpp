@@ -107,9 +107,6 @@
 // ============================================================================
 
 #ifdef Pandas_Bugfix
-	// 修正 rAthena 在 LGTM 上产生的部分警告 [Sola丶小克]
-	#define Pandas_Fix_LGTM_Warning
-
 	// 用 mysql_set_character_set 来设置 MySQL 的编码字符集 [Sola丶小克]
 	#define Pandas_Fix_Mysql_SetEncoding
 
