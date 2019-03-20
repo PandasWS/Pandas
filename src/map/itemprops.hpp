@@ -26,4 +26,4 @@ public:
 
 extern ItemProperties item_properties_db;
 
-uint32 itemdb_property(uint16 nameid);
+uint32 itemdb_get_property(uint16 nameid);

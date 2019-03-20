@@ -18,11 +18,6 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 		return 0;
 	}
 
-	if (nameid == 0 || !itemdb_exists(nameid)) {
-		this->invalidWarning(node, "Unknown item ID %hu.\n", nameid);
-		return 0;
-	}
-
 	auto item_properties_table = this->find(nameid);
 	bool exists = item_properties_table != nullptr;
 
@@ -54,7 +49,7 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 	return 1;
 }
 
-uint32 itemdb_property(uint16 nameid) {
+uint32 itemdb_get_property(uint16 nameid) {
 	std::shared_ptr<s_item_properties_table> data = item_properties_db.find(nameid);
 
 	if (data != nullptr) {

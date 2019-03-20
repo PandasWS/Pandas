@@ -1823,6 +1823,19 @@ static bool itemdb_read_randomopt_group(char* str[], int columns, int current) {
 	return true;
 }
 
+#ifdef Pandas_Struct_Item_Data_Properties
+static int itemdb_property_parse(DBKey key, DBData *data, va_list ap) {
+	struct item_data *item = (struct item_data *)db_data2ptr(data);
+	if (item == nullptr) return 0;
+
+	uint32 properties = itemdb_get_property(item->nameid);
+
+	item->properties.no_consume_of_player = ((properties & 1) ? 1 : 0);
+	item->properties.no_consume_of_skills = ((properties & 2) ? 1 : 0);
+	return 0;
+}
+#endif // Pandas_Struct_Item_Data_Properties
+
 /**
 * Read all item-related databases
 */
@@ -1878,6 +1891,10 @@ static void itemdb_read(void) {
 		aFree(dbsubpath1);
 		aFree(dbsubpath2);
 	}
+
+#ifdef Pandas_Struct_Item_Data_Properties
+	itemdb->foreach(itemdb, itemdb_property_parse);
+#endif // Pandas_Struct_Item_Data_Properties
 }
 
 /*==========================================
@@ -1988,10 +2005,12 @@ void itemdb_reload(void) {
 		itemdb_roulette_free();
 
 	// read new data
-	itemdb_read();
 #ifdef Pandas_Database_ItemProperties
+	// 在 itemdb_read 读取完成之后需要给 item_data 附加特殊属性
+	// 因此这里加载 item_properties.yml 必须在 itemdb_read 之前完成
 	item_properties_db.load();
 #endif // Pandas_Database_ItemProperties
+	itemdb_read();
 	cashshop_reloaddb();
 
 	if (battle_config.feature_roulette)
@@ -2049,12 +2068,12 @@ void do_init_itemdb(void) {
 	itemdb_randomopt = uidb_alloc(DB_OPT_BASE);
 	itemdb_randomopt_group = uidb_alloc(DB_OPT_BASE);
 	itemdb_create_dummy();
-	itemdb_read();
 #ifdef Pandas_Database_ItemProperties
-	// 在加载过程中会验证物品编号的有效性,
-	// 因此必须放在 itemdb_read 之后再读取, 否则全部物品编号都会被判无效
+	// 在 itemdb_read 读取完成之后需要给 item_data 附加特殊属性
+	// 因此这里加载 item_properties.yml 必须在 itemdb_read 之前完成
 	item_properties_db.load();
 #endif // Pandas_Database_ItemProperties
+	itemdb_read();
 
 	if (battle_config.feature_roulette)
 		itemdb_parse_roulette_db();
