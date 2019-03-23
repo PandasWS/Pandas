@@ -11,6 +11,7 @@
 
 #ifdef Pandas
 	#define Pandas_Basic
+	#define Pandas_DatabaseIncrease
 	#define Pandas_StructIncrease
 	#define Pandas_Creative_Work
 	#define Pandas_Bugfix
@@ -41,6 +42,17 @@
 #endif // Pandas_Basic
 
 // ============================================================================
+// 数据库增强组 - Pandas_DatabaseIncrease
+// ============================================================================
+
+#ifdef Pandas_DatabaseIncrease
+	// 是否启用 Pandas 的道具属性数据库 [Sola丶小克]
+	// 类似 item_flag 数据库, 不过 rAthena 自己会不断扩充 flag 的定义
+	// 为了避免未来可能存在的冲突, 直接创建一个新的数据库来存放对物品属性的自定义扩充
+	#define Pandas_Database_ItemProperties
+#endif // Pandas_DatabaseIncrease
+
+// ============================================================================
 // 数据结构增强组 - Pandas_StructIncrease
 // ============================================================================
 
@@ -49,9 +61,17 @@
 	// 结构体修改定位 itemdb.hpp -> item_data.taming_mobid
 	#define Pandas_Struct_Item_Data_Taming_Mobid
 
-	// 使 item_data 可记录此物品的使用脚本是否执行了 callfunc 指令 [Sola丶小克]
+	// 使 item_data 可记录此物品是否执行了 callfunc 指令 [Sola丶小克]
 	// 结构体修改定位 itemdb.hpp -> item_data.has_callfunc
 	#define Pandas_Struct_Item_Data_Has_CallFunc
+
+	// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
+	// 效果与 item_data.flag 类似, 只是数据源为 item_properties.yml 
+	// 结构体修改定位 itemdb.hpp -> item_data.properties
+	// 此选项开关需要依赖 Pandas_Database_ItemProperties 的拓展
+	#ifdef Pandas_Database_ItemProperties
+		#define Pandas_Struct_Item_Data_Properties
+	#endif // Pandas_Database_ItemProperties
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -104,6 +124,12 @@
 
 	// 使影子装备可以支持插卡, 而不会被强制转换成普通道具 [Sola丶小克]
 	#define Pandas_Shadowgear_Support_Card
+
+	// 实现道具特殊属性数据库的实际作用 [Sola丶小克]
+	// 截止目前, 该数据库 (item_properties.yml) 支持两个特殊的属性标记, 分别是:
+	// & 1 = 避免物品被玩家主动使用而消耗
+	// & 2 = 避免物品被作为发动技能的必要道具而消耗
+	#define Pandas_Implement_Function_Of_Item_Properties
 #endif // Pandas_Creative_Work
 
 // ============================================================================

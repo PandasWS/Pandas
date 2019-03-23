@@ -185,6 +185,7 @@
     <ClInclude Include="instance.hpp" />
     <ClInclude Include="intif.hpp" />
     <ClInclude Include="itemdb.hpp" />
+    <ClInclude Include="itemprops.hpp" />
     <ClInclude Include="log.hpp" />
     <ClInclude Include="mail.hpp" />
     <ClInclude Include="map.hpp" />
@@ -229,6 +230,7 @@
     <ClCompile Include="instance.cpp" />
     <ClCompile Include="intif.cpp" />
     <ClCompile Include="itemdb.cpp" />
+    <ClCompile Include="itemprops.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="mail.cpp" />
     <ClCompile Include="map.cpp" />
@@ -373,5 +375,6 @@
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\spellbook_db.txt" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\spellbook_db.txt')" />
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\statpoint.txt" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\statpoint.txt')" />
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\status_disabled.txt" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\status_disabled.txt')" />
+    <Copy SourceFiles="$(SolutionDir)db\import-tmpl\item_properties.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\item_properties.yml')" />
   </Target>
 </Project>
