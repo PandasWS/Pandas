@@ -373,6 +373,10 @@
 	// 是否启用 warppartyrevive 脚本指令 [Sola丶小克]
 	// 与 warpparty 类似, 但可以复活死亡的队友并传送 (该指令有一个用于兼容的别名: warpparty2)
 	#define Pandas_ScriptCommand_WarpPartyRevive
+
+	// 是否启用 getareagid 脚本指令 [Sola丶小克]
+	// 获取指定范围内特定类型单位的全部 GID (注意: 该指令不再兼容以前 rAthenaCN 的同名指令)
+	#define Pandas_ScriptCommand_GetAreaGid
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

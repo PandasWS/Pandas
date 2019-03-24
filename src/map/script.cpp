@@ -4605,6 +4605,76 @@ void script_generic_ui_array_expand (unsigned int plus)
 	RECREATE(generic_ui_array, unsigned int, generic_ui_array_size);
 }
 
+#ifdef Pandas_ScriptCommands
+bool script_getdynnum(struct script_state *st, int pos, const char* desc, int &ret) {
+	if (!st) return false;
+
+	if (!script_hasdata(st, pos)) {
+		script_reportfunc(st);
+		if (!desc)
+			ShowError("The No.%d parameter can not be found.\n", pos - 1);
+		else
+			ShowError("The No.%d parameter (%s) can not be found.\n", pos - 1, desc);
+		script_reportsrc(st);
+		return false;
+	}
+
+	if (!script_isint(st, pos)) {
+		script_reportfunc(st);
+		if (!desc)
+			ShowError("The No.%d parameter is not string type.\n", pos - 1);
+		else
+			ShowError("The No.%d parameter (%s) is not integer type.\n", pos - 1, desc);
+		script_reportsrc(st);
+		return false;
+	}
+
+	ret = script_getnum(st, pos);
+	return true;
+}
+
+bool script_getdynstr(struct script_state *st, int pos, const char* desc, std::string &ret) {
+	if (!st) return false;
+
+	if (!script_hasdata(st, pos)) {
+		script_reportfunc(st);
+		if (!desc)
+			ShowError("The No.%d parameter can not be found.\n", pos - 1);
+		else
+			ShowError("The No.%d parameter (%s) can not be found.\n", pos - 1, desc);
+		script_reportsrc(st);
+		return false;
+	}
+
+	if (!script_isstring(st, pos)) {
+		script_reportfunc(st);
+		if (!desc)
+			ShowError("The No.%d parameter is not string type.\n", pos - 1);
+		else
+			ShowError("The No.%d parameter (%s) is not string type.\n", pos - 1, desc);
+		script_reportsrc(st);
+		return false;
+	}
+
+	ret = script_getstr(st, pos);
+	return true;
+}
+
+bool script_getmapidx(struct script_state *st, const char* mapname, int &map_id) {
+	if (strcmp(mapname, "this") == 0) {
+		struct map_session_data *sd = nullptr;
+		if (!script_rid2sd(sd)) {
+			ShowError("buildin_%s: mapname is 'this', please attach to a player.\n", script_getfuncname(st));
+			return false;
+		}
+		map_id = sd->bl.m;
+	}
+	else
+		map_id = map_mapname2mapid(mapname);
+	return (map_id >= 0);
+}
+#endif // Pandas_ScriptCommands
+
 /*==========================================
  * Destructor
  *------------------------------------------*/
@@ -25388,6 +25458,154 @@ BUILDIN_FUNC(logout) {
 }
 #endif // Pandas_ScriptCommand_Logout
 
+#ifdef Pandas_ScriptCommand_GetAreaGid
+/* ===========================================================
+ * 指令: buildin_getareagid_sub
+ * 描述: 配合 getareagid 指令使用的一个内部处理函数
+ * -----------------------------------------------------------*/
+static int buildin_getareagid_sub(struct block_list *bl, va_list ap) {
+	struct map_session_data *sd = nullptr;
+	struct script_state *st = va_arg(ap, struct script_state *);
+	struct script_data *retdata = va_arg(ap, struct script_data *);
+	uint32 *found_count = va_arg(ap, uint32*);
+
+	if (!st || !retdata || !found_count) {
+		return 0;
+	}
+
+	const char *retname = reference_getname(retdata);
+	sd = map_id2sd(st->rid);
+
+	set_reg(st, sd, reference_uid(reference_getid(retdata), (*found_count)), retname, (void*)__64BPRTSIZE(bl->id), reference_getref(retdata));
+
+	(*found_count)++;
+	return 1;
+}
+
+/* ===========================================================
+ * 指令: getareagid
+ * 描述: 获取指定范围内特定类型单位的全部 GID
+ * 用法: getareagid <返回数组>,<搜索范围>{,<动态参数>...};
+ * 返回: 操作失败返回 -1, 其他含 0 正整数表示搜索到的 GID 数量
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getareagid) {
+	struct map_session_data *sd = nullptr;
+	struct script_data *retdata = script_getdata(st, 2);
+	struct reg_db *src_reg_db = nullptr;
+	int search_range = script_getnum(st, 3);
+	uint32 found_count = 0;
+
+	if (!data_isreference(retdata)) {
+		ShowError("buildin_getareagid: error argument! please give a array variable for save gameid.\n");
+		script_reportdata(retdata);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;// not a variable
+	}
+
+	int retid = reference_getid(retdata);
+	const char *retname = reference_getname(retdata);
+
+	if (not_server_variable(*retname)) {
+		if (!script_rid2sd(sd)) {
+			ShowError("buildin_getareagid: '%s' is not server variable, please attach to a player.\n", retname);
+			script_reportdata(retdata);
+			script_pushint(st, -1);
+			return SCRIPT_CMD_SUCCESS;
+		}
+	}
+
+	if (!(src_reg_db = script_array_src(st, sd, retname, reference_getref(retdata)))) {
+		ShowError("buildin_getareagid: variable '%s' is not a array.\n", retname);
+		script_reportdata(retdata);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (is_string_variable(retname)) {
+		ShowError("buildin_getareagid: the array variable '%s' must be integer type.\n", retname);
+		script_reportdata(retdata);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	// 以下用于清空存放返回数据的数值型数组 (参考 deletearray 的实现)
+	script_array_ensure_zero(st, NULL, retdata->u.num, reference_getref(retdata));
+
+	struct script_array *sa = static_cast<script_array *>(idb_get(src_reg_db->arrays, retid));
+	unsigned int array_len = script_array_highest_key(st, sd, retname, reference_getref(retdata));
+
+	if (sa) {
+		unsigned int *list = script_array_cpy_list(sa);
+		unsigned int size = sa->size;
+
+		for (unsigned int i = 0; i < size; i++) {
+			set_reg(st, sd, reference_uid(retid, list[i]), retname, (void*)0, reference_getref(retdata));
+		}
+	}
+
+	switch (search_range)
+	{
+	case 0: {
+		// getareagid <返回数组>,0,<想搜索的单位类型>,<"地图名称">;
+		int map_id = -1, unitfilter = BL_ALL;
+		std::string mapname;
+
+		if (!script_getdynnum(st, 4, "Unit Type", unitfilter)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getdynstr(st, 5, "Map Name", mapname)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getmapidx(st, mapname.c_str(), map_id)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+
+		map_foreachinmap(buildin_getareagid_sub, map_id, unitfilter, st, retdata, &found_count);
+		break;
+	}
+	case 1: {
+		// getareagid <返回数组>,1,<想搜索的单位类型>,<"地图名称">,<中心坐标x>,<中心坐标y>,<范围>;
+		int map_id = -1, unitfilter = BL_ALL;
+		int map_x = 0, map_y = 0, range = 0;
+		std::string mapname;
+
+		if (!script_getdynnum(st, 4, "Unit Type", unitfilter)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getdynstr(st, 5, "Map Name", mapname)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getdynnum(st, 6, "Center X", map_x)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getdynnum(st, 7, "Center Y", map_y)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getdynnum(st, 8, "Range", range)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getmapidx(st, mapname.c_str(), map_id)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+
+		struct block_list center_bl = { 0 };
+		center_bl.m = map_id;
+		center_bl.x = map_x;
+		center_bl.y = map_y;
+
+		map_foreachinrange(buildin_getareagid_sub, &center_bl, range, unitfilter, st, retdata, &found_count);
+		break;
+	}
+	case 2: {
+		// getareagid <返回数组>,2,<想搜索的单位类型>,<"地图名称">,<坐标x0>,<坐标y0>,<坐标x1>,<坐标y1>;
+		int map_id = -1, unitfilter = BL_ALL;
+		int map_x0 = 0, map_y0 = 0, map_x1 = 0, map_y1 = 0;
+		std::string mapname;
+
+		if (!script_getdynnum(st, 4, "Unit Type", unitfilter)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getdynstr(st, 5, "Map Name", mapname)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getdynnum(st, 6, "x0 coordinate", map_x0)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getdynnum(st, 7, "y0 coordinate", map_y0)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getdynnum(st, 8, "x1 coordinate", map_x1)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getdynnum(st, 9, "y1 coordinate", map_y1)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_getmapidx(st, mapname.c_str(), map_id)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+
+		map_foreachinarea(buildin_getareagid_sub, map_id, map_x0, map_y0, map_x1, map_y1, unitfilter, st, retdata, &found_count);
+		break;
+	}
+	default:
+		ShowWarning("buildin_getareagid: Invalid search range '%d'.\n", search_range);
+		break;
+	}
+
+	script_pushint(st, found_count);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetAreaGid
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -25501,6 +25719,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(warpparty,"warppartyrevive","siii???"),// 与 warpparty 类似, 但可以复活死亡的队友并传送 [Sola丶小克]
 	BUILDIN_DEF2(warpparty,"warpparty2","siii???"),		// 指定一个别名, 以便兼容的老版本或其他服务端
 #endif // Pandas_ScriptCommand_WarpPartyRevive
+#ifdef Pandas_ScriptCommand_GetAreaGid
+	BUILDIN_DEF(getareagid,"ri??????"),					// 获取指定范围内特定类型单位的全部 GID [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetAreaGid
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
