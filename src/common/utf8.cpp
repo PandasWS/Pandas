@@ -11,8 +11,6 @@
 #include <string.h>
 #endif
 
-#include "malloc.hpp"
-
 #ifdef _WIN32
 
 //************************************
@@ -89,11 +87,12 @@ std::string utf8_u2g(const std::string& strUtf8) {
 	}
 
 	str_input_len = strUtf8.size();
-	str_input = aStrdup(strUtf8.c_str());
+	str_input = new char[str_input_len + 1];
+	memcpy(str_input, strUtf8.c_str(), str_input_len);
 	p_str_input = str_input;	// 必须这样赋值一下, 不然在 Linux 下会提示段错误(Segmentation fault)
 
 	str_output_len = str_input_len + 1;
-	str_output = (char *)aMalloc(sizeof(char) * str_output_len);
+	str_output = new char[str_output_len];
 	memset(str_output, 0, str_output_len);
 	p_str_output = str_output;	// 必须这样赋值一下, 不然在 Linux 下会提示段错误(Segmentation fault)
 
@@ -105,8 +104,8 @@ std::string utf8_u2g(const std::string& strUtf8) {
 
 	strResult = str_output;
 	iconv_close(c_pt);
-	aFree(str_output);
-	aFree(str_input);
+	delete[] str_output;
+	delete[] str_input;
 
 	return strResult;
 }
