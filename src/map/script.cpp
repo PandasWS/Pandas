@@ -13677,6 +13677,31 @@ BUILDIN_FUNC(getiteminfo)
 	n	= script_getnum(st,3);
 	i_data = itemdb_exists(item_id);
 
+#ifdef Pandas_ScriptParams_GetItemInfo
+	int16 nx = script_getnum(st, 3);
+	if (i_data && 0 > nx && nx >= -6) {
+		switch (nx)
+		{
+		case -1:	script_pushint(st, i_data->flag.no_refine ? 0 : 1);				return SCRIPT_CMD_SUCCESS;
+		case -2:	script_pushint(st, i_data->flag.trade_restriction);				return SCRIPT_CMD_SUCCESS;
+		case -3:	script_pushint(st, i_data->properties.no_consume_of_player);	return SCRIPT_CMD_SUCCESS;
+		case -4:	script_pushint(st, i_data->properties.no_consume_of_skills);	return SCRIPT_CMD_SUCCESS;
+
+#ifdef Pandas_Struct_Item_Data_Taming_Mobid
+		case -5:	script_pushint(st, i_data->taming_mobid);						return SCRIPT_CMD_SUCCESS;
+#else
+		case -5:	script_pushint(st, -2);											return SCRIPT_CMD_SUCCESS;
+#endif // Pandas_Struct_Item_Data_Taming_Mobid
+
+#ifdef Pandas_Struct_Item_Data_Has_CallFunc
+		case -6:	script_pushint(st, i_data->has_callfunc);						return SCRIPT_CMD_SUCCESS;
+#else
+		case -6:	script_pushint(st, -2);											return SCRIPT_CMD_SUCCESS;
+#endif // Pandas_Struct_Item_Data_Has_CallFunc
+		}
+	}
+#endif // Pandas_ScriptParams_GetItemInfo
+
 	if (i_data && n <= 16) {
 		int *item_arr = (int*)&i_data->value_buy;
 #ifndef RENEWAL
