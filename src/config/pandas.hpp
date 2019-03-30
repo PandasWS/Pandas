@@ -396,6 +396,9 @@
 #ifdef Pandas_ScriptParams
 	// 是否拓展 readparam 脚本指令的可用参数 [Sola丶小克]
 	#define Pandas_ScriptParams_ReadParam
+
+	// 是否拓展 getiteminfo 脚本指令的可用参数 [Sola丶小克]
+	#define Pandas_ScriptParams_GetItemInfo
 #endif // Pandas_ScriptParams
 
 #endif // _RATHENA_CN_CONFIG_HPP_
