@@ -20,6 +20,9 @@
 #include "status.hpp" // unit_data
 #include "unit.hpp" // unit_data
 #include "vending.hpp" // struct s_vending
+#ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
+#include "npc.hpp" // enum npce_event
+#endif // Pandas_Struct_Map_Session_Data_WorkInEvent
 
 enum AtCommandType : uint8;
 //enum e_log_chat_type : uint8;
