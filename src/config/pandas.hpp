@@ -72,6 +72,17 @@
 	#ifdef Pandas_Database_ItemProperties
 		#define Pandas_Struct_Item_Data_Properties
 	#endif // Pandas_Database_ItemProperties
+
+	// 使 map_session_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
+	// 结构体修改定位 pc.hpp -> map_session_data.pandas
+	#define Pandas_Struct_Map_Session_Data_Pandas
+
+	// 使 map_session_data 可记录当前玩家正在处理哪一个脚本事件 [Sola丶小克]
+	// 结构体修改定位 pc.hpp -> map_session_data.pandas.workinevent
+	// 此选项开关需要依赖 Pandas_Struct_Map_Session_Data_Pandas 的拓展
+	#ifdef Pandas_Struct_Map_Session_Data_Pandas
+		#define Pandas_Struct_Map_Session_Data_WorkInEvent
+	#endif // Pandas_Struct_Map_Session_Data_Pandas
 #endif // Pandas_StructIncrease
 
 // ============================================================================

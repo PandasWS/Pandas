@@ -20,6 +20,9 @@
 #include "status.hpp" // unit_data
 #include "unit.hpp" // unit_data
 #include "vending.hpp" // struct s_vending
+#ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
+#include "npc.hpp" // enum npce_event
+#endif // Pandas_Struct_Map_Session_Data_WorkInEvent
 
 enum AtCommandType : uint8;
 //enum e_log_chat_type : uint8;
@@ -731,6 +734,14 @@ struct map_session_data {
 	uint32* hatEffectIDs;
 	uint8 hatEffectCount;
 #endif
+
+#ifdef Pandas_Struct_Map_Session_Data_Pandas
+	struct {
+#ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
+		enum npce_event workinevent; // 角色当前正在执行的事件 [Sola丶小克]
+#endif // Pandas_Struct_Map_Session_Data_WorkInEvent
+	} pandas;
+#endif // Pandas_Struct_Map_Session_Data_Pandas
 };
 
 extern struct eri *pc_sc_display_ers; /// Player's SC display table
