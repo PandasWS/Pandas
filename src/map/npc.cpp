@@ -887,7 +887,7 @@ int npc_event_sub(struct map_session_data* sd, struct event_data* ev, const char
 
 		int32 search_i = 0;
 		ARR_FIND(0, NPCE_MAX, search_i, lable == npc_get_script_event_name(search_i));
-		if (search_i >= 0 && search_i != NPCE_MAX)
+		if (search_i != NPCE_MAX)
 			current_npce = (enum npce_event)search_i;
 	}
 
