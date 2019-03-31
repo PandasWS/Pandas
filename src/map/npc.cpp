@@ -882,7 +882,7 @@ int npc_event_sub(struct map_session_data* sd, struct event_data* ev, const char
 #else
 	enum npce_event current_npce = NPCE_MAX;
 	std::string ename = std::string(eventname), lable;
-	if (ename.find(':') >= 0) {
+	if (ename.find(':')) {
 		lable = ename.substr(ename.rfind(':') + 1);
 
 		int32 search_i = 0;
