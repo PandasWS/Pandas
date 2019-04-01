@@ -7,6 +7,9 @@
 #include <map>
 #include <stdlib.h>
 #include <vector>
+#ifdef Pandas_Struct_Map_Session_Data_EventHalt
+#include <exception>
+#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
 #include "../common/cbasetypes.hpp"
 #include "../common/db.hpp"
@@ -4856,3 +4859,49 @@ void do_init_npc(void){
 	map_addiddb(&fake_nd->bl);
 	// End of initialization
 }
+
+#ifdef Pandas_Struct_Map_Session_Data_EventHalt
+//************************************
+// Method:		setProcessHalt
+// Description:	
+// Parameter:	struct map_session_data * sd
+// Parameter:	enum npce_event event
+// Parameter:	bool halt
+// Returns:		bool
+//************************************
+bool setProcessHalt(struct map_session_data *sd, enum npce_event event, bool halt) {
+	nullpo_retr(false, sd);
+	try
+	{
+		sd->pandas.eventhalt[event] = halt;
+		return true;
+	}
+	catch (const std::exception&)
+	{
+		return false;
+	}
+}
+
+//************************************
+// Method:		isProcessHalt
+// Description:	
+// Parameter:	struct map_session_data * sd
+// Parameter:	enum npce_event event
+// Parameter:	bool autoreset
+// Returns:		bool
+//************************************
+bool isProcessHalt(struct map_session_data *sd, enum npce_event event, bool autoreset) {
+	nullpo_retr(false, sd);
+	try
+	{
+		bool current_val = sd->pandas.eventhalt[event];
+		if (autoreset)
+			sd->pandas.eventhalt[event] = false;
+		return current_val;
+	}
+	catch (const std::exception&)
+	{
+		return false;
+	}
+}
+#endif // Pandas_Struct_Map_Session_Data_EventHalt

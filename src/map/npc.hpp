@@ -1286,4 +1286,9 @@ int npc_do_atcmd_event(struct map_session_data* sd, const char* command, const c
 
 bool npc_unloadfile( const char* path );
 
+#ifdef Pandas_Struct_Map_Session_Data_EventHalt
+bool setProcessHalt(struct map_session_data *sd, enum npce_event event, bool halt = true);
+bool isProcessHalt(struct map_session_data *sd, enum npce_event event, bool autoreset = true);
+#endif // Pandas_Struct_Map_Session_Data_EventHalt
+
 #endif /* NPC_HPP */

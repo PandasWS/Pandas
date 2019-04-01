@@ -4,7 +4,7 @@
 #ifndef _RATHENA_CN_MAP_ARTISAN_HPP_
 #define _RATHENA_CN_MAP_ARTISAN_HPP_
 
-#include <string>	// std::string
+#include <string> // std::string
 
 bool regexGroupVal(std::string patterns, std::string content, int groupid, std::string & val);
 bool regexMatch(std::string patterns, std::string content);
