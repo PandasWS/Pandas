@@ -4863,11 +4863,11 @@ void do_init_npc(void){
 #ifdef Pandas_Struct_Map_Session_Data_EventHalt
 //************************************
 // Method:		setProcessHalt
-// Description:	
+// Description:	设置一个事件的中断状态
 // Parameter:	struct map_session_data * sd
 // Parameter:	enum npce_event event
-// Parameter:	bool halt
-// Returns:		bool
+// Parameter:	bool halt 该事件是否需要中断
+// Returns:		bool 设置成功与否
 //************************************
 bool setProcessHalt(struct map_session_data *sd, enum npce_event event, bool halt) {
 	nullpo_retr(false, sd);
@@ -4883,14 +4883,14 @@ bool setProcessHalt(struct map_session_data *sd, enum npce_event event, bool hal
 }
 
 //************************************
-// Method:		isProcessHalt
-// Description:	
+// Method:		getProcessHalt
+// Description:	获取一个事件的中断状态
 // Parameter:	struct map_session_data * sd
 // Parameter:	enum npce_event event
-// Parameter:	bool autoreset
-// Returns:		bool
+// Parameter:	bool autoreset 获取后是否重置中断状态
+// Returns:		bool 该事件是否需要中断
 //************************************
-bool isProcessHalt(struct map_session_data *sd, enum npce_event event, bool autoreset) {
+bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool autoreset) {
 	nullpo_retr(false, sd);
 	try
 	{

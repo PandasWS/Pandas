@@ -739,10 +739,10 @@ struct map_session_data {
 #ifdef Pandas_Struct_Map_Session_Data_Pandas
 	struct s_pandas {
 #ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
-		enum npce_event workinevent = NPCE_MAX; // 角色当前正在执行的事件 [Sola丶小克]
+		enum npce_event workinevent; // 角色当前正在执行的事件 [Sola丶小克]
 #endif // Pandas_Struct_Map_Session_Data_WorkInEvent
 #ifdef Pandas_Struct_Map_Session_Data_EventHalt
-		bool eventhalt[NPCE_MAX] = { 0 }; // 用于记录事件中断请求 [Sola丶小克]
+		bool eventhalt[NPCE_MAX]; // 用于记录事件中断请求 [Sola丶小克]
 #endif // Pandas_Struct_Map_Session_Data_EventHalt
 	} pandas;
 #endif // Pandas_Struct_Map_Session_Data_Pandas
