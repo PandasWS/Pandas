@@ -7,6 +7,9 @@
 #include <map>
 #include <stdlib.h>
 #include <vector>
+#ifdef Pandas_Struct_Map_Session_Data_EventHalt
+#include <exception>
+#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
 #include "../common/cbasetypes.hpp"
 #include "../common/db.hpp"
@@ -4856,3 +4859,49 @@ void do_init_npc(void){
 	map_addiddb(&fake_nd->bl);
 	// End of initialization
 }
+
+#ifdef Pandas_Struct_Map_Session_Data_EventHalt
+//************************************
+// Method:		setProcessHalt
+// Description:	设置一个事件的中断状态
+// Parameter:	struct map_session_data * sd
+// Parameter:	enum npce_event event
+// Parameter:	bool halt 该事件是否需要中断
+// Returns:		bool 设置成功与否
+//************************************
+bool setProcessHalt(struct map_session_data *sd, enum npce_event event, bool halt) {
+	nullpo_retr(false, sd);
+	try
+	{
+		sd->pandas.eventhalt[event] = halt;
+		return true;
+	}
+	catch (const std::exception&)
+	{
+		return false;
+	}
+}
+
+//************************************
+// Method:		getProcessHalt
+// Description:	获取一个事件的中断状态
+// Parameter:	struct map_session_data * sd
+// Parameter:	enum npce_event event
+// Parameter:	bool autoreset 获取后是否重置中断状态
+// Returns:		bool 该事件是否需要中断
+//************************************
+bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool autoreset) {
+	nullpo_retr(false, sd);
+	try
+	{
+		bool current_val = sd->pandas.eventhalt[event];
+		if (autoreset)
+			sd->pandas.eventhalt[event] = false;
+		return current_val;
+	}
+	catch (const std::exception&)
+	{
+		return false;
+	}
+}
+#endif // Pandas_Struct_Map_Session_Data_EventHalt
