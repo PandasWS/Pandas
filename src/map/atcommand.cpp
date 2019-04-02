@@ -3923,6 +3923,22 @@ ACMD_FUNC(reload) {
 			pc_close_npc(pl_sd,1);
 			clif_cutin(pl_sd, "", 255);
 			pl_sd->state.block_action = 0;
+
+#ifdef Pandas_Fix_Autotrade_Immune_Reset_Logic
+			// rAthena 在这里直接清空 block_action 很不科学
+			// 会破坏离线挂店角色的免疫攻击状态, 这里进行一些临时性的修复
+			// 等观察 rAthena 下一个阶段准备怎么调整, 再进行调整 [Sola丶小克]
+			if (pl_sd->state.autotrade && battle_config.autotrade_monsterignore)
+				pl_sd->state.block_action |= PCBLOCK_IMMUNE;
+#endif // Pandas_Fix_Autotrade_Immune_Reset_Logic
+
+#ifdef Pandas_Struct_Map_Session_Data_MonsterIgnore
+			// 下面这个是针对 battleignore 脚本指令的一个临时解决方案
+			// 等于是让 battleignore 的设置优先级永远比 setpcblock 指令的优先级要高
+			// 通过 battleignore 设置的魔物无视状态不会被 @reloadscript 重置 [Sola丶小克]
+			if (pl_sd->pandas.monster_ignore)
+				pl_sd->state.block_action |= PCBLOCK_IMMUNE;
+#endif // Pandas_Struct_Map_Session_Data_MonsterIgnore
 		}
 		mapit_free(iter);
 

@@ -77,18 +77,19 @@
 	// 结构体修改定位 pc.hpp -> map_session_data.pandas
 	#define Pandas_Struct_Map_Session_Data_Pandas
 
-	// 使 map_session_data 可记录当前玩家正在处理哪一个脚本事件 [Sola丶小克]
-	// 结构体修改定位 pc.hpp -> map_session_data.pandas.workinevent
-	// 此选项开关需要依赖 Pandas_Struct_Map_Session_Data_Pandas 的拓展
+	// 以下选项开关需要依赖 Pandas_Struct_Map_Session_Data_Pandas 的拓展
 	#ifdef Pandas_Struct_Map_Session_Data_Pandas
+		// 使 map_session_data 可记录当前玩家正在处理哪一个脚本事件 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.workinevent
 		#define Pandas_Struct_Map_Session_Data_WorkInEvent
-	#endif // Pandas_Struct_Map_Session_Data_Pandas
 
-	// 使 map_session_data 可记录事件中断请求 [Sola丶小克]
-	// 结构体修改定位 pc.hpp -> map_session_data.pandas.eventhalt
-	// 此选项开关需要依赖 Pandas_Struct_Map_Session_Data_Pandas 的拓展
-	#ifdef Pandas_Struct_Map_Session_Data_Pandas
+		// 使 map_session_data 可记录事件中断请求 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.eventhalt
 		#define Pandas_Struct_Map_Session_Data_EventHalt
+
+		// 使 map_session_data 可记录当前是否处于魔物无视状态 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.monster_ignore
+		#define Pandas_Struct_Map_Session_Data_MonsterIgnore
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
 #endif // Pandas_StructIncrease
 
@@ -173,6 +174,9 @@
 
 	// 修复使用 sommon 脚本指令召唤不存在的魔物, 会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Fix_ScriptCommand_Summon_Crash
+
+	// 修复使用 @reloadscript 会导致离线挂店角色解除“魔物无视”免战状态的问题 [Sola丶小克]
+	#define Pandas_Fix_Autotrade_Immune_Reset_Logic
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -298,7 +302,10 @@
 
 	// 是否启用 battleignore 脚本指令 [Sola丶小克]
 	// 将角色设置为魔物免战状态, 避免被魔物攻击 (与 GM 指令的 monsterignore 效果一致)
-	#define Pandas_ScriptCommand_BattleIgnore
+	// 以下选项开关需要依赖 Pandas_Struct_Map_Session_Data_MonsterIgnore 的拓展
+	#ifdef Pandas_Struct_Map_Session_Data_MonsterIgnore
+		#define Pandas_ScriptCommand_BattleIgnore
+	#endif // Pandas_Struct_Map_Session_Data_MonsterIgnore
 
 	// 是否启用 gethotkey 脚本指令 [Sola丶小克]
 	// 获取指定快捷键位置当前的信息 (该指令有一个用于兼容的别名: get_hotkey)

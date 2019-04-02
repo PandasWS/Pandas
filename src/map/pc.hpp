@@ -748,6 +748,9 @@ struct map_session_data {
 #ifdef Pandas_Struct_Map_Session_Data_EventHalt
 		bool eventhalt[NPCE_MAX]; // 用于记录事件中断请求 [Sola丶小克]
 #endif // Pandas_Struct_Map_Session_Data_EventHalt
+#ifdef Pandas_Struct_Map_Session_Data_MonsterIgnore
+		uint8 monster_ignore;	// 当前是否处于魔物无视状态 [Sola丶小克]
+#endif // Pandas_Struct_Map_Session_Data_MonsterIgnore
 	} pandas;
 #endif // Pandas_Struct_Map_Session_Data_Pandas
 };
