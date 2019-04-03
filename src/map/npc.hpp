@@ -1295,4 +1295,8 @@ bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool aut
 enum npce_event npc_get_script_event_type(const char* eventname);
 #endif // Pandas_Struct_Map_Session_Data_WorkInEvent
 
+#ifdef Pandas_ScriptEngine_Express
+bool npc_event_is_express_type(enum npce_event eventtype);
+#endif // Pandas_ScriptEngine_Express
+
 #endif /* NPC_HPP */

@@ -4479,7 +4479,7 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 #ifdef Pandas_ScriptEngine_Express
 bool npc_event_is_express_type(enum npce_event eventtype) {
 	static std::vector<enum npce_event> express_npce = {
-		// 在这里填写支持穿越执行的 NPCE_ 事件常量
+		NPCE_STATCALC
 	};
 
 	std::vector<enum npce_event>::iterator iter;
