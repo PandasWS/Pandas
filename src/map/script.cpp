@@ -25747,7 +25747,7 @@ BUILDIN_FUNC(processhalt) {
 
 	bool makehalt = true;
 	if (script_hasdata(st, 2) && script_isint(st, 2)) {
-		makehalt = (bool)cap_value(script_getnum(st, 2), 0, 1);
+		makehalt = (cap_value(script_getnum(st, 2), 0, 1) == 1);
 	}
 
 	if (!setProcessHalt(sd, sd->pandas.workinevent, makehalt)) {
