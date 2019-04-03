@@ -17392,14 +17392,6 @@ BUILDIN_FUNC(setpcblock)
 			sd->state.block_action |= type;
 		else
 			sd->state.block_action &= ~type;
-
-#ifdef Pandas_Struct_Map_Session_Data_MonsterIgnore
-		// 下面这个是针对 battleignore 脚本指令的一个临时解决方案
-		// 等于是让 battleignore 的设置优先级永远比 setpcblock 指令的优先级要高
-		// 通过 battleignore 设置的魔物无视状态不会被 @reloadscript 重置 [Sola丶小克]
-		if (sd->pandas.monster_ignore)
-			sd->state.block_action |= PCBLOCK_IMMUNE;
-#endif // Pandas_Struct_Map_Session_Data_MonsterIgnore
 	}
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -24452,9 +24444,7 @@ BUILDIN_FUNC(battleignore) {
 	if (!script_charid2sd(2, sd) || !sd)
 		return SCRIPT_CMD_SUCCESS;
 
-	sd->pandas.monster_ignore = cap_value(immune, 0, 1);
-
-	if (sd->pandas.monster_ignore)
+	if (cap_value(immune, 0, 1))
 		sd->state.block_action |= PCBLOCK_IMMUNE;
 	else
 		sd->state.block_action &= ~PCBLOCK_IMMUNE;
