@@ -18,6 +18,7 @@
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
 	#define Pandas_AtCommands
+	#define Pandas_ScriptEngine
 	#define Pandas_ScriptCommands
 	#define Pandas_ScriptResults
 	#define Pandas_ScriptParams
@@ -262,6 +263,15 @@
 	// 召唤当前(或指定)地图的玩家来到身边 (处于离线挂店模式的角色不会被召唤)
 	#define Pandas_AtCommand_RecallMap
 #endif // Pandas_AtCommands
+
+// ============================================================================
+// 脚本引擎修改组 - Pandas_ScriptEngine
+// ============================================================================
+
+#ifdef Pandas_ScriptEngine
+	// 使脚本引擎能够支持穿越事件队列机制, 直接执行某些事件 [Sola丶小克]
+	#define Pandas_ScriptEngine_Express
+#endif // Pandas_ScriptEngine
 
 // ============================================================================
 // 脚本指令组 - Pandas_ScriptCommands
