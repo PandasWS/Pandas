@@ -883,19 +883,8 @@ int npc_event_sub(struct map_session_data* sd, struct event_data* ev, const char
 #ifndef Pandas_Struct_Map_Session_Data_WorkInEvent
 	run_script(ev->nd->u.scr.script,ev->pos,sd->bl.id,ev->nd->bl.id);
 #else
-	enum npce_event current_npce = NPCE_MAX;
-	std::string ename = std::string(eventname), lable;
-	if (ename.find(':') != std::string::npos) {
-		lable = ename.substr(ename.rfind(':') + 1);
-
-		int32 search_i = 0;
-		ARR_FIND(0, NPCE_MAX, search_i, lable == npc_get_script_event_name(search_i));
-		if (search_i != NPCE_MAX)
-			current_npce = (enum npce_event)search_i;
-	}
-
 	enum npce_event workinevent_backup = sd->pandas.workinevent;
-	sd->pandas.workinevent = current_npce;
+	sd->pandas.workinevent = npc_get_script_event_type(eventname);
 	run_script(ev->nd->u.scr.script,ev->pos,sd->bl.id,ev->nd->bl.id);
 	sd->pandas.workinevent = workinevent_backup;
 #endif // Pandas_Struct_Map_Session_Data_WorkInEvent
@@ -4913,3 +4902,24 @@ bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool aut
 	}
 }
 #endif // Pandas_Struct_Map_Session_Data_EventHalt
+
+#ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
+//************************************
+// Method:		npc_get_script_event_type
+// Description:	根据事件名称获取对应的 npce_event 枚举值
+// Parameter:	const char * eventname 包含 :: 的事件名称
+// Returns:		enum npce_event 查询到的枚举值, 无结果返回 NPCE_MAX
+//************************************
+enum npce_event npc_get_script_event_type(const char* eventname) {
+	std::string ename = std::string(eventname), lable;
+	if (ename.find(':') != std::string::npos) {
+		lable = ename.substr(ename.rfind(':') + 1);
+
+		int32 search_i = 0;
+		ARR_FIND(0, NPCE_MAX, search_i, lable == npc_get_script_event_name(search_i));
+		if (search_i != NPCE_MAX)
+			return (enum npce_event)search_i;
+	}
+	return NPCE_MAX;
+}
+#endif // Pandas_Struct_Map_Session_Data_WorkInEvent

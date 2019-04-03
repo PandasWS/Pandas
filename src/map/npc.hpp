@@ -1291,4 +1291,8 @@ bool setProcessHalt(struct map_session_data *sd, enum npce_event event, bool hal
 bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool autoreset = true);
 #endif // Pandas_Struct_Map_Session_Data_EventHalt
 
+#ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
+enum npce_event npc_get_script_event_type(const char* eventname);
+#endif // Pandas_Struct_Map_Session_Data_WorkInEvent
+
 #endif /* NPC_HPP */
