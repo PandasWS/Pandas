@@ -24444,9 +24444,7 @@ BUILDIN_FUNC(battleignore) {
 	if (!script_charid2sd(2, sd) || !sd)
 		return SCRIPT_CMD_SUCCESS;
 
-	sd->pandas.monster_ignore = cap_value(immune, 0, 1);
-
-	if (sd->pandas.monster_ignore)
+	if (cap_value(immune, 0, 1))
 		sd->state.block_action |= PCBLOCK_IMMUNE;
 	else
 		sd->state.block_action &= ~PCBLOCK_IMMUNE;
