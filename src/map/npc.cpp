@@ -4476,6 +4476,33 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 	return 1;
 }
 
+#ifdef Pandas_ScriptEngine_Express
+bool npc_event_is_express_type(enum npce_event eventtype) {
+	static std::vector<enum npce_event> express_npce = {
+		// 在这里填写支持穿越执行的 NPCE_ 事件常量
+	};
+
+	std::vector<enum npce_event>::iterator iter;
+	iter = find(express_npce.begin(), express_npce.end(), eventtype);
+	return (iter != express_npce.end());
+}
+
+bool npc_event_express(struct map_session_data* sd, struct event_data* ev, const char* eventname) {
+	nullpo_retr(false, sd);
+	nullpo_retr(false, ev);
+
+	enum npce_event eventtype = npc_get_script_event_type(eventname);
+	if (eventtype == NPCE_MAX || !npc_event_is_express_type(eventtype))
+		return false;
+
+	enum npce_event workinevent_backup = sd->pandas.workinevent;
+	sd->pandas.workinevent = eventtype;
+	run_script(ev->nd->u.scr.script, ev->pos, sd->bl.id, ev->nd->bl.id);
+	sd->pandas.workinevent = workinevent_backup;
+	return true;
+}
+#endif // Pandas_ScriptEngine_Express
+
 int npc_script_event(struct map_session_data* sd, enum npce_event type){
 	if (type == NPCE_MAX)
 		return 0;
@@ -4487,6 +4514,10 @@ int npc_script_event(struct map_session_data* sd, enum npce_event type){
 	std::vector<struct script_event_s>& vector = script_event[type];
 
 	for( struct script_event_s& evt : vector ){
+#ifdef Pandas_ScriptEngine_Express
+		if (npc_event_express(sd, evt.event, evt.event_name))
+			continue;
+#endif // Pandas_ScriptEngine_Express
 		npc_event_sub( sd, evt.event, evt.event_name );
 	}
 
