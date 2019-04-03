@@ -13,6 +13,10 @@
 #include <math.h>
 #include <setjmp.h>
 #include <stdlib.h> // atoi, strtol, strtoll, exit
+#ifdef Pandas_ScriptEngine_Express
+#include <cctype>	// toupper, tolower
+#include <algorithm>	// transform
+#endif // Pandas_ScriptEngine_Express
 
 #ifdef PCRE_SUPPORT
 #include "../../3rdparty/pcre/include/pcre.h" // preg_match
@@ -4027,6 +4031,36 @@ int run_func(struct script_state *st)
 			script_reportsrc(st);
 		}
 #endif
+
+#ifdef Pandas_ScriptEngine_Express
+		if (st && st->rid) {
+			struct map_session_data *sd = map_id2sd(st->rid);
+			if (sd && npc_event_is_express_type(sd->pandas.workinevent)) {
+				// 以下为穿越事件中禁止使用的脚本指令, 需要定期更新 [Sola丶小克]
+				static std::vector<std::string> blockcmd = {
+					"mes", "next", "close", "close2", "menu", "select", "prompt", "input",
+					"openstorage", "guildopenstorage", "produce", "cooking", "birthpet",
+					"callshop", "sleep", "sleep2", "openmail", "openauction", "progressbar",
+					"buyingstore", "makerune", "opendressroom", "openstorage2"
+				};
+
+				std::vector<std::string>::iterator iter;
+				std::string funcname = std::string(get_str(func));
+				std::transform(
+					funcname.begin(), funcname.end(), funcname.begin(),
+					static_cast<int(*)(int)>(std::tolower)
+				);
+				iter = std::find(blockcmd.begin(), blockcmd.end(), funcname);
+
+				if (iter != blockcmd.end()) {
+					ShowWarning("Please don't use '%s' command in '%s' event.\n", funcname.c_str(), npc_get_script_event_name(sd->pandas.workinevent));
+					script_reportsrc(st);
+					st->state = END;
+					return 1;
+				}
+			}
+		}
+#endif // Pandas_ScriptEngine_Express
 
 		if (str_data[func].func(st) == SCRIPT_CMD_FAILURE) //Report error
 			script_reportsrc(st);

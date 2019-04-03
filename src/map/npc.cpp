@@ -4483,7 +4483,7 @@ bool npc_event_is_express_type(enum npce_event eventtype) {
 	};
 
 	std::vector<enum npce_event>::iterator iter;
-	iter = find(express_npce.begin(), express_npce.end(), eventtype);
+	iter = std::find(express_npce.begin(), express_npce.end(), eventtype);
 	return (iter != express_npce.end());
 }
 
