@@ -9600,6 +9600,13 @@ BUILDIN_FUNC(end)
 
 	st->state = END;
 
+#ifdef Pandas_ScriptEngine_Express
+	// 防止在穿透事件的脚本代码中使用 end 指令, 会导致角色正在执行的脚本或对话被强制中断,
+	// 或与 NPC 进行中的对话框直接显示出 [关闭] 按钮的问题 [Sola丶小克]
+	if (sd && npc_event_is_express_type(sd->pandas.workinevent))
+		return SCRIPT_CMD_SUCCESS;
+#endif // Pandas_ScriptEngine_Express
+
 	if (st->stack->defsp >= 1 && st->stack->stack_data[st->stack->defsp-1].type == C_RETINFO) {
 		int i;
 
