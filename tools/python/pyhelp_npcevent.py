@@ -12,10 +12,10 @@
 //============================================================
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 1>
-rathena.hpp @ Filter 类型的宏定义
+pandas.hpp @ Filter 类型的宏定义
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 2>
-rathena.hpp @ Event  类型的宏定义
+pandas.hpp @ Event  类型的宏定义
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 npc.hpp @ npce_event 中 Filter 类型的 NPCE_XXX 常量定义
@@ -57,7 +57,7 @@ def insert_for_normal_npcevent(inject, options):
     eventvar = options['eventvar']
     eventdesc = options['eventdesc']
 
-    # rathena.hpp @ Event  类型的宏定义
+    # pandas.hpp @ Event  类型的宏定义
     inject.insert(2, [
         '',
         '\t// {desc} - {name} [维护者昵称]'.format(
@@ -117,16 +117,16 @@ def insert_for_filter_npcevent(inject, options):
     eventvar = options['eventvar']
     eventdesc = options['eventdesc']
 
-    # rathena.hpp @ Filter 类型的宏定义
+    # pandas.hpp @ Filter 类型的宏定义
     inject.insert(1, [
         '',
-        '\t// {desc} - {name} [维护者昵称]'.format(
+        '\t\t// {desc} - {name} [维护者昵称]'.format(
             desc = eventdesc, name = eventname
         ),
-        '\t// 类型: Event 类型 / 常量名称: {const} / 变量名称: {var}'.format(
+        '\t\t// 类型: Filter 类型 / 常量名称: {const} / 变量名称: {var}'.format(
             const = constant, var = eventvar
         ),
-        '\t#define {define}'.format(define = define)
+        '\t\t#define {define}'.format(define = define)
     ])
 
     # npc.hpp @ npce_event 中 Filter 类型的 NPCE_XXX 常量定义
