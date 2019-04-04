@@ -1189,6 +1189,10 @@ enum npce_event : uint8 {
 	/************************************************************************/
 	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
 	/************************************************************************/
+
+#ifdef Pandas_NpcFilter_IDENTIFY
+	NPCF_IDENTIFY,	// identify_filter_name	// OnPCIdentifyFilter		// 当玩家在装备鉴定列表中选择好装备, 并点击“确定”按钮时触发过滤器
+#endif // Pandas_NpcFilter_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -1289,6 +1293,7 @@ bool npc_unloadfile( const char* path );
 #ifdef Pandas_Struct_Map_Session_Data_EventHalt
 bool setProcessHalt(struct map_session_data *sd, enum npce_event event, bool halt = true);
 bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool autoreset = true);
+bool npc_script_filter(struct map_session_data* sd, enum npce_event type);
 #endif // Pandas_Struct_Map_Session_Data_EventHalt
 
 #ifdef Pandas_Struct_Map_Session_Data_WorkInEvent

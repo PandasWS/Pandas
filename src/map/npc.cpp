@@ -4580,6 +4580,11 @@ const char *npc_get_script_event_name(int npce_index)
 	/************************************************************************/
 	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
 	/************************************************************************/
+
+#ifdef Pandas_NpcFilter_IDENTIFY
+	case NPCF_IDENTIFY:
+		return script_config.identify_filter_name;	// OnPCIdentifyFilter		// 当玩家在装备鉴定列表中选择好装备, 并点击“确定”按钮时触发过滤器
+#endif // Pandas_NpcFilter_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
@@ -4962,6 +4967,19 @@ bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool aut
 	{
 		return false;
 	}
+}
+
+//************************************
+// Method:		npc_script_filter
+// Description:	执行一个 filter 事件, 并返回是否需要中断
+// Parameter:	struct map_session_data * sd
+// Parameter:	enum npce_event type
+// Returns:		bool 需要中断则返回 true, 无需中断返回 false
+//************************************
+bool npc_script_filter(struct map_session_data* sd, enum npce_event type) {
+	nullpo_retr(false, sd);
+	npc_script_event(sd, type);
+	return getProcessHalt(sd, type);
 }
 #endif // Pandas_Struct_Map_Session_Data_EventHalt
 
