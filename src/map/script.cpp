@@ -268,6 +268,10 @@ struct Script_Config script_config = {
 	/************************************************************************/
 	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
 	/************************************************************************/
+
+#ifdef Pandas_NpcFilter_IDENTIFY
+	"OnPCIdentifyFilter",	// NPCF_IDENTIFY		// identify_filter_name	// 当玩家在装备鉴定列表中选择好装备, 并点击“确定”按钮时触发过滤器
+#endif // Pandas_NpcFilter_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
 
 	/************************************************************************/

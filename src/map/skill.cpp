@@ -16903,6 +16903,12 @@ void skill_identify(struct map_session_data *sd, int idx)
 
 	sd->state.workinprogress = WIP_DISABLE_NONE;
 
+#ifdef Pandas_NpcFilter_IDENTIFY
+	pc_setreg(sd, add_str("@identify_idx"), idx);
+	if (npc_script_filter(sd, NPCF_IDENTIFY))
+		return;
+#endif // Pandas_NpcFilter_IDENTIFY
+
 	if(idx >= 0 && idx < MAX_INVENTORY) {
 		if(sd->inventory.u.items_inventory[idx].nameid > 0 && sd->inventory.u.items_inventory[idx].identify == 0 ){
 			flag=0;
