@@ -6046,28 +6046,6 @@ ACMD_FUNC(autotrade) {
 }
 
 /*==========================================
- * @offline by 聽風
- * 离线挂机功能实现 【参考上面的@autotrade】
- *------------------------------------------*/
-ACMD_FUNC(offline) {
-	nullpo_retr(-1, sd);
-
-	if (pc_isdead(sd)) {
-		clif_displaymessage(fd, msg_txt(sd, 13)); // 死亡之后不允许离线挂机
-		return -1;
-	}
-
-	sd->state.autotrade = 1;
-
-	channel_pcquit(sd, 0xF); //开始离线
-	clif_authfail_fd(sd->fd, 15);
-
-	chrif_save(sd, CSAVE_AUTOTRADE);
-
-	return 0;
-}
-
-/*==========================================
  * @changegm by durf (changed by Lupus)
  * Changes Master of your Guild to a specified guild member
  *------------------------------------------*/
@@ -10492,9 +10470,6 @@ void atcommand_basecommands(void) {
 		ACMD_DEFR(limitedsale, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEFR(changedress, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEFR(camerainfo, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
-
-		//聽風
-		ACMD_DEF(offline),
 	};
 	AtCommandInfo* atcommand;
 	int i;

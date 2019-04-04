@@ -1152,7 +1152,7 @@ enum e_job_types
 
 	JT_4_JP_16TH = 10343,
 
-	JT_NEW_NPC_3RD_END = 32000,
+	JT_NEW_NPC_3RD_END = 19999,
 	NPC_RANGE3_END, // Official: JT_NEW_NPC_3RD_END=19999
 
 	// Unofficial
