@@ -2391,6 +2391,7 @@ void mob_log_damage(struct mob_data *md, struct block_list *src, int damage)
 //Call when a mob has received damage.
 void mob_damage(struct mob_data *md, struct block_list *src, int damage)
 {
+	struct map_session_data *sd = NULL;//OnPCAttackMobEvent	[聽風]
 	if (src && damage > 0) { //Store total damage...
 		if (UINT_MAX - (unsigned int)damage > md->tdmg)
 			md->tdmg += damage;
@@ -2428,6 +2429,17 @@ void mob_damage(struct mob_data *md, struct block_list *src, int damage)
 		md->state.alchemist = 1;
 		mobskill_use(md, gettick(), MSC_ALCHEMIST);
 	}
+	//OnPCAttackMobEvent	[聽風]
+		sd = BL_CAST(BL_PC, battle_get_master(src));
+	if (sd) {
+		struct mob_db *mission_mdb = mob_db(sd->mission_mobid);
+		pc_setreg(sd, (uint64)(add_str("@attackmob_id")), md->mob_id);
+		pc_setreg(sd, add_str("@attackmob_type"), src->type);
+		pc_setreg(sd, add_str("@attackmob_gid"), md->bl.id);
+		npc_script_event(sd, NPCE_ATTACKMOB);
+		
+	}
+	//OnPCAttackMobEvent
 }
 
 /*==========================================

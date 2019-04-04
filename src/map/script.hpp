@@ -159,6 +159,8 @@ struct Script_Config {
 	const char *loadmap_event_name;
 	const char *baselvup_event_name;
 	const char *joblvup_event_name;
+	const char *attackmob_event_name;
+	const char *useskill_event_name;
 	const char *stat_calc_event_name;
 
 	/************************************************************************/

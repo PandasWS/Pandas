@@ -263,6 +263,8 @@ struct Script_Config script_config = {
 	"OnPCLoadMapEvent", //loadmap_event_name
 	"OnPCBaseLvUpEvent", //baselvup_event_name
 	"OnPCJobLvUpEvent", //joblvup_event_name
+	"OnPCAttackMobEvent", //attackmob_event_name
+	"OnPCUseSkillEvent", //useskill_event_name
 	"OnPCStatCalcEvent", //stat_calc_event_name
 
 	/************************************************************************/
@@ -24332,6 +24334,36 @@ BUILDIN_FUNC(preg_match) {
 #endif
 }
 
+/* ===========================================================
+ * 指令: getskillname
+ * 描述: 通过技能ID取技能名称
+ * 用法: getskillname (技能ID);
+ * 返回: 技能名
+ * 作者: 聽風
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getskillname)
+{
+	int skill_id;
+	char *skill_name;
+	//get input skill_id
+	if (!script_hasdata(st, 2)) {
+		script_pushconststr(st, "null");
+		return SCRIPT_CMD_SUCCESS;
+	}
+	skill_id = script_getnum(st, 2);
+
+	if (!skill_get_index(skill_id)) {
+		ShowError("script:conv_str: Unknown skill_id supplied.\"\n");
+		script_pushconststr(st, "null");
+		return SCRIPT_CMD_SUCCESS;
+	}
+	skill_name = (char *)aMalloc(SKILL_NAME_LENGTH * sizeof(char));
+	memcpy(skill_name, skill_db[skill_get_index(skill_id)]->desc, SKILL_DESC_LENGTH);
+	script_pushstr(st, skill_name);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 #ifdef Pandas_ScriptCommand_SetHeadDir
 /* ===========================================================
  * 指令: setheaddir
@@ -26494,6 +26526,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(camerainfo,"iii?"),
 
 	BUILDIN_DEF(achievement_condition,"i"),
+
+	//聽風
+	BUILDIN_DEF(getskillname, "v"),	//[聽風](原rA论坛Jezznar写的C，整理修复为C++)
 #include "../custom/script_def.inc"
 
 	{NULL,NULL,NULL},

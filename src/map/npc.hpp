@@ -1152,7 +1152,7 @@ enum e_job_types
 
 	JT_4_JP_16TH = 10343,
 
-	JT_NEW_NPC_3RD_END = 19999,
+	JT_NEW_NPC_3RD_END = 32000,
 	NPC_RANGE3_END, // Official: JT_NEW_NPC_3RD_END=19999
 
 	// Unofficial
@@ -1184,6 +1184,8 @@ enum npce_event : uint8 {
 	NPCE_DIE,
 	NPCE_KILLPC,
 	NPCE_KILLNPC,
+	NPCE_ATTACKMOB,
+	NPCE_SKILLUSE,
 	NPCE_STATCALC,
 
 	/************************************************************************/
