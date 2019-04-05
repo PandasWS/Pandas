@@ -168,6 +168,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_IDENTIFY
 	const char* identify_filter_name;	// NPCF_IDENTIFY	// OnPCIdentifyFilter	// 当玩家在装备鉴定列表中选择好装备, 并点击“确定”按钮时触发过滤器
 #endif // Pandas_NpcFilter_IDENTIFY
+
+#ifdef Pandas_NpcFilter_ENTERCHAT
+	const char* enterchat_filter_name;	// NPCF_ENTERCHAT	// OnPCInChatroomFilter	// 当玩家进入 NPC 开启的聊天室时触发过滤器
+#endif // Pandas_NpcFilter_ENTERCHAT
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/

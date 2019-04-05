@@ -121,6 +121,34 @@ struct script_event_s{
 // Holds pointers to the commonly executed scripts for speedup. [Skotlex]
 std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
 
+#ifdef Pandas_NpcHelper_CommonFunc
+//************************************
+// Method:		npc_event_exists
+// Description:	判断一个<NPC名称::事件名称>格式的事件是否存在
+// Parameter:	const char * eventname
+// Returns:		bool 存在则返回 true, 不存在返回 false
+//************************************
+bool npc_event_exists(const char* eventname) {
+	struct event_data* ev = (struct event_data*)strdb_get(ev_db, eventname);
+	return !(ev == NULL);
+}
+
+//************************************
+// Method:		npc_event_exists
+// Description:	给定一个 npc_data 查询它是否拥有指定名称的事件
+// Parameter:	struct npc_data * nd
+// Parameter:	const char * eventname
+// Returns:		bool 存在则返回 true, 不存在返回 false
+//************************************
+bool npc_event_exists(struct npc_data *nd, const char* eventname) {
+	nullpo_retr(false, nd);
+	char name[EVENT_NAME_LENGTH] = { 0 };
+	snprintf(name, ARRAYLENGTH(name), "%s::%s", nd->exname, eventname);
+	struct event_data* ev = (struct event_data*)strdb_get(ev_db, name);
+	return !(ev == NULL);
+}
+#endif // Pandas_NpcHelper_CommonFunc
+
 struct view_data* npc_get_viewdata(int class_)
 {	//Returns the viewdata for normal npc classes.
 	if( class_ == JT_INVISIBLE )
@@ -4585,6 +4613,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_IDENTIFY:
 		return script_config.identify_filter_name;	// OnPCIdentifyFilter		// 当玩家在装备鉴定列表中选择好装备, 并点击“确定”按钮时触发过滤器
 #endif // Pandas_NpcFilter_IDENTIFY
+
+#ifdef Pandas_NpcFilter_ENTERCHAT
+	case NPCF_ENTERCHAT:
+		return script_config.enterchat_filter_name;	// OnPCInChatroomFilter		// 当玩家进入 NPC 开启的聊天室时触发过滤器
+#endif // Pandas_NpcFilter_ENTERCHAT
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/

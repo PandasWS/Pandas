@@ -1193,6 +1193,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_IDENTIFY
 	NPCF_IDENTIFY,	// identify_filter_name	// OnPCIdentifyFilter		// 当玩家在装备鉴定列表中选择好装备, 并点击“确定”按钮时触发过滤器
 #endif // Pandas_NpcFilter_IDENTIFY
+
+#ifdef Pandas_NpcFilter_ENTERCHAT
+	NPCF_ENTERCHAT,	// enterchat_filter_name	// OnPCInChatroomFilter		// 当玩家进入 NPC 开启的聊天室时触发过滤器
+#endif // Pandas_NpcFilter_ENTERCHAT
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -1210,6 +1214,12 @@ enum npce_event : uint8 {
 
 	NPCE_MAX
 };
+
+#ifdef Pandas_NpcHelper_CommonFunc
+bool npc_event_exists(const char* eventname);
+bool npc_event_exists(struct npc_data *nd, const char* eventname);
+#endif // Pandas_NpcHelper_CommonFunc
+
 struct view_data* npc_get_viewdata(int class_);
 int npc_chat_sub(struct block_list* bl, va_list ap);
 int npc_event_dequeue(struct map_session_data* sd,bool free_script_stack=true);
