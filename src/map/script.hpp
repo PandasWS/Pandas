@@ -177,6 +177,10 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_KILLMVP
 	const char* killmvp_event_name;	// NPCE_KILLMVP		// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物时触发事件
 #endif // Pandas_NpcEvent_KILLMVP
+
+#ifdef Pandas_NpcEvent_IDENTIFY
+	const char* identify_event_name;	// NPCE_IDENTIFY	// OnPCIdentifyEvent	// 当玩家成功鉴定了装备时触发事件
+#endif // Pandas_NpcEvent_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	// NPC related
