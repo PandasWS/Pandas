@@ -12,7 +12,7 @@
 //============================================================
 
 // PYHELP - MAPFLAG - INSERT POINT - <Section 1>
-rathena.hpp @ 宏定义
+pandas.hpp @ 宏定义
 
 // PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 map.hpp @ MF_XXX 常量定义
@@ -56,7 +56,7 @@ def insert_for_normal_mapflag(inject, options, special = True):
     define = options['define']
     constant = options['constant']
 
-    # rathena.hpp @ 宏定义
+    # pandas.hpp @ 宏定义
     inject.insert(1, [
         '',
         '\t// 是否启用 %s 地图标记 [维护者昵称]' % constant.lower().replace('mf_', ''),

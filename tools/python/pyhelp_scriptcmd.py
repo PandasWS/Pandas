@@ -12,7 +12,7 @@
 //============================================================
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
-rathena.hpp @ 宏定义
+pandas.hpp @ 宏定义
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 script.cpp @ BUILDIN_FUNC 脚本指令实际代码
@@ -34,7 +34,7 @@ def insert_scriptcmd(inject, options):
     cmdname = options['cmdname']
     argsmode = options['argsmode']
     
-    # rathena.hpp @ 宏定义
+    # pandas.hpp @ 宏定义
     inject.insert(1, [
         '',
         '\t// 是否启用 %s 脚本指令 [维护者昵称]' % cmdname,
