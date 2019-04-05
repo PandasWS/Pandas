@@ -40,6 +40,9 @@
 
 	// 在启动时显示 Pandas 的版本号
 	#define Pandas_Show_Version
+
+	// 是否启用 npc.cpp 中的自定义辅助函数
+	#define Pandas_NpcHelper_CommonFunc
 #endif // Pandas_Basic
 
 // ============================================================================
@@ -187,6 +190,11 @@
 		// 事件类型: Filter / 事件名称: OnPCIdentifyFilter
 		// 常量名称: NPCF_IDENTIFY / 变量名称: identify_filter_name
 		#define Pandas_NpcFilter_IDENTIFY
+
+		// 当玩家进入 NPC 开启的聊天室时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCInChatroomFilter
+		// 常量名称: NPCF_ENTERCHAT / 变量名称: enterchat_filter_name
+		#define Pandas_NpcFilter_ENTERCHAT
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
