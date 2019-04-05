@@ -1202,6 +1202,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_KILLMVP
 	NPCE_KILLMVP,	// killmvp_event_name	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物时触发事件
 #endif // Pandas_NpcEvent_KILLMVP
+
+#ifdef Pandas_NpcEvent_IDENTIFY
+	NPCE_IDENTIFY,	// identify_event_name	// OnPCIdentifyEvent		// 当玩家成功鉴定了装备时触发事件
+#endif // Pandas_NpcEvent_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	NPCE_MAX

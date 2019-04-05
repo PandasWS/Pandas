@@ -16916,6 +16916,11 @@ void skill_identify(struct map_session_data *sd, int idx)
 		}
 	}
 	clif_item_identified(sd,idx,flag);
+
+#ifdef Pandas_NpcEvent_IDENTIFY
+	pc_setreg(sd, add_str("@identify_idx"), idx);
+	npc_script_event(sd, NPCE_IDENTIFY);
+#endif // Pandas_NpcEvent_IDENTIFY
 }
 
 /*==========================================
