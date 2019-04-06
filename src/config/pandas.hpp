@@ -195,6 +195,11 @@
 		// 事件类型: Filter / 事件名称: OnPCInChatroomFilter
 		// 常量名称: NPCF_ENTERCHAT / 变量名称: enterchat_filter_name
 		#define Pandas_NpcFilter_ENTERCHAT
+
+		// 当玩家准备穿戴装备时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCEquipFilter
+		// 常量名称: NPCF_EQUIP / 变量名称: equip_filter_name
+		#define Pandas_NpcFilter_EQUIP
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 

@@ -4618,6 +4618,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_ENTERCHAT:
 		return script_config.enterchat_filter_name;	// OnPCInChatroomFilter		// 当玩家进入 NPC 开启的聊天室时触发过滤器
 #endif // Pandas_NpcFilter_ENTERCHAT
+
+#ifdef Pandas_NpcFilter_EQUIP
+	case NPCF_EQUIP:
+		return script_config.equip_filter_name;	// OnPCEquipFilter		// 当玩家准备穿戴装备时触发过滤器
+#endif // Pandas_NpcFilter_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/

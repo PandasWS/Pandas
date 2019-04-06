@@ -276,6 +276,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_ENTERCHAT
 	"OnPCInChatroomFilter",	// NPCF_ENTERCHAT		// enterchat_filter_name	// 当玩家进入 NPC 开启的聊天室时触发过滤器
 #endif // Pandas_NpcFilter_ENTERCHAT
+
+#ifdef Pandas_NpcFilter_EQUIP
+	"OnPCEquipFilter",	// NPCF_EQUIP		// equip_filter_name	// 当玩家准备穿戴装备时触发过滤器
+#endif // Pandas_NpcFilter_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
 
 	/************************************************************************/

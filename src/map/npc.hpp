@@ -1197,6 +1197,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_ENTERCHAT
 	NPCF_ENTERCHAT,	// enterchat_filter_name	// OnPCInChatroomFilter		// 当玩家进入 NPC 开启的聊天室时触发过滤器
 #endif // Pandas_NpcFilter_ENTERCHAT
+
+#ifdef Pandas_NpcFilter_EQUIP
+	NPCF_EQUIP,	// equip_filter_name	// OnPCEquipFilter		// 当玩家准备穿戴装备时触发过滤器
+#endif // Pandas_NpcFilter_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/

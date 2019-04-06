@@ -10181,6 +10181,17 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 			flag = id->range != sd->inventory_data[i]->range;
 	}
 
+#ifdef Pandas_NpcFilter_EQUIP
+	if (!equipswitch) {
+		pc_setreg(sd, add_str("@equip_idx"), (int)n);
+		pc_setreg(sd, add_str("@equip_pos"), (int)n);	// 为兼容脚本而添加
+		if (npc_script_filter(sd, NPCF_EQUIP))
+			return true;
+		if (sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == NULL)
+			return true;
+	}
+#endif // Pandas_NpcFilter_EQUIP
+
 	if( equipswitch ){
 		for( i = 0; i < EQI_MAX; i++ ){
 			if( pos&equip_bitmask[i] ){
