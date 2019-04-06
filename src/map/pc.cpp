@@ -10194,9 +10194,9 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 		pc_setreg(sd, add_str("@equip_swapping"), (swapping ? 1 : 0));
 
 		if (npc_script_filter(sd, NPCF_EQUIP) && !swapping)
-			return true;
+			return false;
 		if (sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == NULL)
-			return true;
+			return false;
 	}
 #endif // Pandas_NpcFilter_EQUIP
 
@@ -10481,9 +10481,9 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
 	pc_setreg(sd, add_str("@c"), (flag & 16 ? 1 : 0));
 
 	if (npc_script_filter(sd, NPCF_UNEQUIP) && !(flag & 16))
-		return true;
+		return false;
 	if (sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == NULL)
-		return true;
+		return false;
 #endif // Pandas_NpcFilter_UNEQUIP
 
 	for(i = 0; i < EQI_MAX; i++) {
