@@ -1214,6 +1214,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_IDENTIFY
 	NPCE_IDENTIFY,	// identify_event_name	// OnPCIdentifyEvent		// 当玩家成功鉴定了装备时触发事件
 #endif // Pandas_NpcEvent_IDENTIFY
+
+#ifdef Pandas_NpcEvent_EQUIP
+	NPCE_EQUIP,	// equip_event_name	// OnPCEquipEvent		// 当玩家成功穿戴一件装备时触发事件
+#endif // Pandas_NpcEvent_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	NPCE_MAX

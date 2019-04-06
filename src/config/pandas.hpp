@@ -13,7 +13,8 @@
 	#define Pandas_Basic
 	#define Pandas_DatabaseIncrease
 	#define Pandas_StructIncrease
-	#define Pandas_Creative_Work
+	#define Pandas_FuncIncrease
+	#define Pandas_CreativeWork
 	#define Pandas_Bugfix
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
@@ -94,10 +95,23 @@
 #endif // Pandas_StructIncrease
 
 // ============================================================================
-// 原创功能组 - Pandas_Creative_Work
+// 函数修改组 - Pandas_FuncIncrease
 // ============================================================================
 
-#ifdef Pandas_Creative_Work
+#ifdef Pandas_FuncIncrease
+	// 在 pc.cpp 中的 pc_equipitem 增加 switching 参数 [Sola丶小克]
+	// 新增的 switching 用于判断当前的装备穿戴调用是否由装备切换机制引发, 默认为 false
+	#define Pandas_FuncParams_PC_EQUIPITEM
+
+	// 调整 pc.cpp 中 pc_equipitem 执行道具绑定的时机 [Sola丶小克]
+	#define Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
+#endif // Pandas_FuncIncrease
+
+// ============================================================================
+// 原创功能组 - Pandas_CreativeWork
+// ============================================================================
+
+#ifdef Pandas_CreativeWork
 	// 是否启用崩溃转储文件生成机制 [Sola丶小克]
 	#ifdef _WIN32
 		#define Pandas_Crash_Report
@@ -149,7 +163,7 @@
 	// & 1 = 避免物品被玩家主动使用而消耗
 	// & 2 = 避免物品被作为发动技能的必要道具而消耗
 	#define Pandas_Implement_Function_Of_Item_Properties
-#endif // Pandas_Creative_Work
+#endif // Pandas_CreativeWork
 
 // ============================================================================
 // 官方BUG修正组 - Pandas_Bugfix
@@ -216,6 +230,11 @@
 	// 事件类型: Event / 事件名称: OnPCIdentifyEvent
 	// 常量名称: NPCE_IDENTIFY / 变量名称: identify_event_name
 	#define Pandas_NpcEvent_IDENTIFY
+
+	// 当玩家成功穿戴一件装备时触发事件 [Sola丶小克]
+	// 事件类型: Event / 事件名称: OnPCEquipEvent
+	// 常量名称: NPCE_EQUIP / 变量名称: equip_event_name
+	#define Pandas_NpcEvent_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 #endif // Pandas_NpcEvent
 

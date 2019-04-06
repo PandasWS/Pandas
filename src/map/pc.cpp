@@ -10066,7 +10066,11 @@ int pc_load_combo(struct map_session_data *sd) {
  * Equip item on player sd at req_pos from inventory index n
  * return: false - fail; true - success
  *------------------------------------------*/
+#ifndef Pandas_FuncParams_PC_EQUIPITEM
 bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswitch)
+#else
+bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswitch, bool switching)
+#endif // Pandas_FuncParams_PC_EQUIPITEM
 {
 	int i, pos, flag = 0, iflag;
 	struct item_data *id;
@@ -10133,10 +10137,12 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 
 	equip_index = equipswitch ? sd->equip_switch_index : sd->equip_index;
 
+#ifndef Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
 	if ( !equipswitch && id->flag.bindOnEquip && !sd->inventory.u.items_inventory[n].bound) {
 		sd->inventory.u.items_inventory[n].bound = (char)battle_config.default_bind_on_equip;
 		clif_notify_bindOnEquip(sd,n);
 	}
+#endif // Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
 
 	if(pos == EQP_ACC) { //Accessories should only go in one of the two.
 		pos = req_pos&EQP_ACC;
@@ -10182,7 +10188,7 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 	}
 
 #ifdef Pandas_NpcFilter_EQUIP
-	if (!equipswitch) {
+	if (!equipswitch && !switching) {
 		pc_setreg(sd, add_str("@equip_idx"), (int)n);
 		pc_setreg(sd, add_str("@equip_pos"), (int)n);	// 为兼容脚本而添加
 		if (npc_script_filter(sd, NPCF_EQUIP))
@@ -10191,6 +10197,13 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 			return true;
 	}
 #endif // Pandas_NpcFilter_EQUIP
+
+#ifdef Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
+	if ( !equipswitch && id->flag.bindOnEquip && !sd->inventory.u.items_inventory[n].bound) {
+		sd->inventory.u.items_inventory[n].bound = (char)battle_config.default_bind_on_equip;
+		clif_notify_bindOnEquip(sd,n);
+	}
+#endif // Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
 
 	if( equipswitch ){
 		for( i = 0; i < EQI_MAX; i++ ){
@@ -10332,6 +10345,14 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 		}
 	}
 	sd->npc_item_flag = iflag;
+
+#ifdef Pandas_NpcEvent_EQUIP
+	if (!equipswitch && !switching) {
+		pc_setreg(sd, add_str("@equip_idx"), (int)n);
+		pc_setreg(sd, add_str("@equip_pos"), (int)n);	// 为兼容脚本而添加
+		npc_script_event(sd, NPCE_EQUIP);
+	}
+#endif // Pandas_NpcEvent_EQUIP
 
 	return true;
 }
@@ -10544,7 +10565,11 @@ int pc_equipswitch( struct map_session_data* sd, int index ){
 		// Remove it from the equip switch
 		pc_equipswitch_remove( sd, index );
 
+#ifndef Pandas_FuncParams_PC_EQUIPITEM
 		pc_equipitem( sd, index, position );
+#else
+		pc_equipitem( sd, index, position, false, true);
+#endif // Pandas_FuncParams_PC_EQUIPITEM
 
 		return position;
 	}else{
@@ -10585,7 +10610,11 @@ int pc_equipswitch( struct map_session_data* sd, int index ){
 				pc_equipswitch_remove( sd, exchange_index );
 
 				// Equip the item at the destinated position
+#ifndef Pandas_FuncParams_PC_EQUIPITEM
 				pc_equipitem( sd, exchange_index, exchange_position );
+#else
+				pc_equipitem( sd, exchange_index, exchange_position, false, true);
+#endif // Pandas_FuncParams_PC_EQUIPITEM
 			}
 		}
 

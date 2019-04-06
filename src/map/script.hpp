@@ -189,6 +189,10 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_IDENTIFY
 	const char* identify_event_name;	// NPCE_IDENTIFY	// OnPCIdentifyEvent	// 当玩家成功鉴定了装备时触发事件
 #endif // Pandas_NpcEvent_IDENTIFY
+
+#ifdef Pandas_NpcEvent_EQUIP
+	const char* equip_event_name;	// NPCE_EQUIP	// OnPCEquipEvent	// 当玩家成功穿戴一件装备时触发事件
+#endif // Pandas_NpcEvent_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	// NPC related
