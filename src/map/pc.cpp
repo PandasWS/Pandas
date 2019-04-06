@@ -10559,6 +10559,12 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
 
 	pc_unequipitem_sub(sd, n, flag);
 
+#ifdef Pandas_NpcEvent_UNEQUIP
+	pc_setreg(sd, add_str("@unequip_idx"), (int)n);
+	pc_setreg(sd, add_str("@unequip_pos"), (int)n);	// 为兼容脚本而添加
+	npc_script_event(sd, NPCE_UNEQUIP);
+#endif // Pandas_NpcEvent_UNEQUIP
+
 	return true;
 }
 
