@@ -10069,7 +10069,7 @@ int pc_load_combo(struct map_session_data *sd) {
 #ifndef Pandas_FuncParams_PC_EQUIPITEM
 bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswitch)
 #else
-bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswitch, bool switching)
+bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswitch, bool swapping)
 #endif // Pandas_FuncParams_PC_EQUIPITEM
 {
 	int i, pos, flag = 0, iflag;
@@ -10188,10 +10188,12 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 	}
 
 #ifdef Pandas_NpcFilter_EQUIP
-	if (!equipswitch && !switching) {
+	if (!equipswitch) {
 		pc_setreg(sd, add_str("@equip_idx"), (int)n);
 		pc_setreg(sd, add_str("@equip_pos"), (int)n);	// 为兼容脚本而添加
-		if (npc_script_filter(sd, NPCF_EQUIP))
+		pc_setreg(sd, add_str("@equip_swapping"), (swapping ? 1 : 0));
+
+		if (npc_script_filter(sd, NPCF_EQUIP) && !swapping)
 			return true;
 		if (sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == NULL)
 			return true;
@@ -10347,9 +10349,11 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 	sd->npc_item_flag = iflag;
 
 #ifdef Pandas_NpcEvent_EQUIP
-	if (!equipswitch && !switching) {
+	if (!equipswitch) {
 		pc_setreg(sd, add_str("@equip_idx"), (int)n);
 		pc_setreg(sd, add_str("@equip_pos"), (int)n);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@equip_swapping"), (swapping ? 1 : 0));
+
 		npc_script_event(sd, NPCE_EQUIP);
 	}
 #endif // Pandas_NpcEvent_EQUIP
@@ -10474,7 +10478,9 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
 #ifdef Pandas_NpcFilter_UNEQUIP
 	pc_setreg(sd, add_str("@unequip_idx"), (int)n);
 	pc_setreg(sd, add_str("@unequip_pos"), (int)n);	// 为兼容脚本而添加
-	if (npc_script_filter(sd, NPCF_UNEQUIP))
+	pc_setreg(sd, add_str("@c"), (flag & 16 ? 1 : 0));
+
+	if (npc_script_filter(sd, NPCF_UNEQUIP) && !(flag & 16))
 		return true;
 	if (sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == NULL)
 		return true;
@@ -10562,6 +10568,8 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
 #ifdef Pandas_NpcEvent_UNEQUIP
 	pc_setreg(sd, add_str("@unequip_idx"), (int)n);
 	pc_setreg(sd, add_str("@unequip_pos"), (int)n);	// 为兼容脚本而添加
+	pc_setreg(sd, add_str("@unequip_swapping"), (flag & 16 ? 1 : 0));
+
 	npc_script_event(sd, NPCE_UNEQUIP);
 #endif // Pandas_NpcEvent_UNEQUIP
 
@@ -10605,7 +10613,11 @@ int pc_equipswitch( struct map_session_data* sd, int index ){
 				unequipped_position |= unequip_item->equip;
 
 				// Unequip the item
+#ifndef Pandas_NpcFilter_UNEQUIP
 				pc_unequipitem( sd, unequip_index, 0 );
+#else
+				pc_unequipitem( sd, unequip_index, 16);
+#endif // Pandas_NpcFilter_UNEQUIP
 			}
 		}
 
