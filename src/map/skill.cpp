@@ -16907,6 +16907,8 @@ void skill_identify(struct map_session_data *sd, int idx)
 	pc_setreg(sd, add_str("@identify_idx"), idx);
 	if (npc_script_filter(sd, NPCF_IDENTIFY))
 		return;
+	if (sd->inventory.u.items_inventory[idx].nameid == 0 || sd->inventory_data[idx] == NULL)
+		return;
 #endif // Pandas_NpcFilter_IDENTIFY
 
 	if(idx >= 0 && idx < MAX_INVENTORY) {
