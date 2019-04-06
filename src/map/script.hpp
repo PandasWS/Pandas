@@ -176,6 +176,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_EQUIP
 	const char* equip_filter_name;	// NPCF_EQUIP	// OnPCEquipFilter	// 当玩家准备穿戴装备时触发过滤器
 #endif // Pandas_NpcFilter_EQUIP
+
+#ifdef Pandas_NpcFilter_UNEQUIP
+	const char* unequip_filter_name;	// NPCF_UNEQUIP	// OnPCUnequipFilter	// 当玩家准备脱下装备时触发过滤器
+#endif // Pandas_NpcFilter_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/

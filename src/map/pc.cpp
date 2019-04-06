@@ -10471,6 +10471,15 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
 	if (battle_config.battle_log)
 		ShowInfo("unequip %d %x:%x\n",n,pc_equippoint(sd,n),pos);
 
+#ifdef Pandas_NpcFilter_UNEQUIP
+	pc_setreg(sd, add_str("@unequip_idx"), (int)n);
+	pc_setreg(sd, add_str("@unequip_pos"), (int)n);	// 为兼容脚本而添加
+	if (npc_script_filter(sd, NPCF_UNEQUIP))
+		return true;
+	if (sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == NULL)
+		return true;
+#endif // Pandas_NpcFilter_UNEQUIP
+
 	for(i = 0; i < EQI_MAX; i++) {
 		if (pos & equip_bitmask[i])
 			sd->equip_index[i] = -1;
