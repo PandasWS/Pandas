@@ -10066,7 +10066,11 @@ int pc_load_combo(struct map_session_data *sd) {
  * Equip item on player sd at req_pos from inventory index n
  * return: false - fail; true - success
  *------------------------------------------*/
+#ifndef Pandas_FuncParams_PC_EQUIPITEM
 bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswitch)
+#else
+bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswitch, bool swapping)
+#endif // Pandas_FuncParams_PC_EQUIPITEM
 {
 	int i, pos, flag = 0, iflag;
 	struct item_data *id;
@@ -10133,10 +10137,12 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 
 	equip_index = equipswitch ? sd->equip_switch_index : sd->equip_index;
 
+#ifndef Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
 	if ( !equipswitch && id->flag.bindOnEquip && !sd->inventory.u.items_inventory[n].bound) {
 		sd->inventory.u.items_inventory[n].bound = (char)battle_config.default_bind_on_equip;
 		clif_notify_bindOnEquip(sd,n);
 	}
+#endif // Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
 
 	if(pos == EQP_ACC) { //Accessories should only go in one of the two.
 		pos = req_pos&EQP_ACC;
@@ -10180,6 +10186,26 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 		else
 			flag = id->range != sd->inventory_data[i]->range;
 	}
+
+#ifdef Pandas_NpcFilter_EQUIP
+	if (!equipswitch) {
+		pc_setreg(sd, add_str("@equip_idx"), (int)n);
+		pc_setreg(sd, add_str("@equip_pos"), (int)n);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@equip_swapping"), (swapping ? 1 : 0));
+
+		if (npc_script_filter(sd, NPCF_EQUIP) && !swapping)
+			return false;
+		if (sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == NULL)
+			return false;
+	}
+#endif // Pandas_NpcFilter_EQUIP
+
+#ifdef Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
+	if ( !equipswitch && id->flag.bindOnEquip && !sd->inventory.u.items_inventory[n].bound) {
+		sd->inventory.u.items_inventory[n].bound = (char)battle_config.default_bind_on_equip;
+		clif_notify_bindOnEquip(sd,n);
+	}
+#endif // Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
 
 	if( equipswitch ){
 		for( i = 0; i < EQI_MAX; i++ ){
@@ -10322,6 +10348,16 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 	}
 	sd->npc_item_flag = iflag;
 
+#ifdef Pandas_NpcEvent_EQUIP
+	if (!equipswitch) {
+		pc_setreg(sd, add_str("@equip_idx"), (int)n);
+		pc_setreg(sd, add_str("@equip_pos"), (int)n);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@equip_swapping"), (swapping ? 1 : 0));
+
+		npc_script_event(sd, NPCE_EQUIP);
+	}
+#endif // Pandas_NpcEvent_EQUIP
+
 	return true;
 }
 
@@ -10439,6 +10475,18 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
 	if (battle_config.battle_log)
 		ShowInfo("unequip %d %x:%x\n",n,pc_equippoint(sd,n),pos);
 
+#ifdef Pandas_NpcFilter_UNEQUIP
+	pc_setreg(sd, add_str("@unequip_idx"), (int)n);
+	pc_setreg(sd, add_str("@unequip_pos"), (int)n);	// 为兼容脚本而添加
+	pc_setreg(sd, add_str("@unequip_swapping"), (flag & 16 ? 1 : 0));	// flag & 16 是一个自定义标记, 表示本次脱下装备是由装备切换机制引发的
+	pc_setreg(sd, add_str("@unequip_force"), (flag & 2 ? 1 : 0));
+
+	if (npc_script_filter(sd, NPCF_UNEQUIP) && !(flag & 16))
+		return false;
+	if (sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == NULL)
+		return false;
+#endif // Pandas_NpcFilter_UNEQUIP
+
 	for(i = 0; i < EQI_MAX; i++) {
 		if (pos & equip_bitmask[i])
 			sd->equip_index[i] = -1;
@@ -10518,6 +10566,15 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
 
 	pc_unequipitem_sub(sd, n, flag);
 
+#ifdef Pandas_NpcEvent_UNEQUIP
+	pc_setreg(sd, add_str("@unequip_idx"), (int)n);
+	pc_setreg(sd, add_str("@unequip_pos"), (int)n);	// 为兼容脚本而添加
+	pc_setreg(sd, add_str("@unequip_swapping"), (flag & 16 ? 1 : 0));	// flag & 16 是一个自定义标记, 表示本次脱下装备是由装备切换机制引发的
+	pc_setreg(sd, add_str("@unequip_force"), (flag & 2 ? 1 : 0));
+
+	npc_script_event(sd, NPCE_UNEQUIP);
+#endif // Pandas_NpcEvent_UNEQUIP
+
 	return true;
 }
 
@@ -10533,7 +10590,11 @@ int pc_equipswitch( struct map_session_data* sd, int index ){
 		// Remove it from the equip switch
 		pc_equipswitch_remove( sd, index );
 
+#ifndef Pandas_FuncParams_PC_EQUIPITEM
 		pc_equipitem( sd, index, position );
+#else
+		pc_equipitem( sd, index, position, false, true);
+#endif // Pandas_FuncParams_PC_EQUIPITEM
 
 		return position;
 	}else{
@@ -10554,7 +10615,12 @@ int pc_equipswitch( struct map_session_data* sd, int index ){
 				unequipped_position |= unequip_item->equip;
 
 				// Unequip the item
+#ifndef Pandas_NpcFilter_UNEQUIP
 				pc_unequipitem( sd, unequip_index, 0 );
+#else
+				// flag & 16 是一个自定义标记, 表示本次脱下装备是由装备切换机制引发的
+				pc_unequipitem( sd, unequip_index, 16);
+#endif // Pandas_NpcFilter_UNEQUIP
 			}
 		}
 
@@ -10574,7 +10640,11 @@ int pc_equipswitch( struct map_session_data* sd, int index ){
 				pc_equipswitch_remove( sd, exchange_index );
 
 				// Equip the item at the destinated position
+#ifndef Pandas_FuncParams_PC_EQUIPITEM
 				pc_equipitem( sd, exchange_index, exchange_position );
+#else
+				pc_equipitem( sd, exchange_index, exchange_position, false, true);
+#endif // Pandas_FuncParams_PC_EQUIPITEM
 			}
 		}
 
