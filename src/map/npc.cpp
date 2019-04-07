@@ -4618,6 +4618,16 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_ENTERCHAT:
 		return script_config.enterchat_filter_name;	// OnPCInChatroomFilter		// 当玩家进入 NPC 开启的聊天室时触发过滤器
 #endif // Pandas_NpcFilter_ENTERCHAT
+
+#ifdef Pandas_NpcFilter_EQUIP
+	case NPCF_EQUIP:
+		return script_config.equip_filter_name;	// OnPCEquipFilter		// 当玩家准备穿戴装备时触发过滤器
+#endif // Pandas_NpcFilter_EQUIP
+
+#ifdef Pandas_NpcFilter_UNEQUIP
+	case NPCF_UNEQUIP:
+		return script_config.unequip_filter_name;	// OnPCUnequipFilter		// 当玩家准备脱下装备时触发过滤器
+#endif // Pandas_NpcFilter_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
@@ -4633,6 +4643,16 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCE_IDENTIFY:
 		return script_config.identify_event_name;	// OnPCIdentifyEvent		// 当玩家成功鉴定了装备时触发事件
 #endif // Pandas_NpcEvent_IDENTIFY
+
+#ifdef Pandas_NpcEvent_EQUIP
+	case NPCE_EQUIP:
+		return script_config.equip_event_name;	// OnPCEquipEvent		// 当玩家成功穿戴一件装备时触发事件
+#endif // Pandas_NpcEvent_EQUIP
+
+#ifdef Pandas_NpcEvent_UNEQUIP
+	case NPCE_UNEQUIP:
+		return script_config.unequip_event_name;	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
+#endif // Pandas_NpcEvent_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	default:

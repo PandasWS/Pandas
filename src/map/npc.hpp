@@ -1197,6 +1197,14 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_ENTERCHAT
 	NPCF_ENTERCHAT,	// enterchat_filter_name	// OnPCInChatroomFilter		// 当玩家进入 NPC 开启的聊天室时触发过滤器
 #endif // Pandas_NpcFilter_ENTERCHAT
+
+#ifdef Pandas_NpcFilter_EQUIP
+	NPCF_EQUIP,	// equip_filter_name	// OnPCEquipFilter		// 当玩家准备穿戴装备时触发过滤器
+#endif // Pandas_NpcFilter_EQUIP
+
+#ifdef Pandas_NpcFilter_UNEQUIP
+	NPCF_UNEQUIP,	// unequip_filter_name	// OnPCUnequipFilter		// 当玩家准备脱下装备时触发过滤器
+#endif // Pandas_NpcFilter_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -1210,6 +1218,14 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_IDENTIFY
 	NPCE_IDENTIFY,	// identify_event_name	// OnPCIdentifyEvent		// 当玩家成功鉴定了装备时触发事件
 #endif // Pandas_NpcEvent_IDENTIFY
+
+#ifdef Pandas_NpcEvent_EQUIP
+	NPCE_EQUIP,	// equip_event_name	// OnPCEquipEvent		// 当玩家成功穿戴一件装备时触发事件
+#endif // Pandas_NpcEvent_EQUIP
+
+#ifdef Pandas_NpcEvent_UNEQUIP
+	NPCE_UNEQUIP,	// unequip_event_name	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
+#endif // Pandas_NpcEvent_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	NPCE_MAX
