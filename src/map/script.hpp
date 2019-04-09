@@ -180,6 +180,18 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_UNEQUIP
 	const char* unequip_filter_name;	// NPCF_UNEQUIP	// OnPCUnequipFilter	// 当玩家准备脱下装备时触发过滤器
 #endif // Pandas_NpcFilter_UNEQUIP
+
+#ifdef Pandas_NpcFilter_CREATE_PARTY
+	const char* create_party_filter_name;	// NPCF_CREATE_PARTY	// OnPCPartyCreateFilter	// 当玩家准备创建队伍时触发过滤器
+#endif // Pandas_NpcFilter_CREATE_PARTY
+
+#ifdef Pandas_NpcFilter_JOIN_PARTY
+	const char* join_party_filter_name;	// NPCF_JOIN_PARTY	// OnPCPartyJoinFilter	// 当玩家准备加入队伍时触发过滤器
+#endif // Pandas_NpcFilter_JOIN_PARTY
+
+#ifdef Pandas_NpcFilter_LEAVE_PARTY
+	const char* leave_party_filter_name;	// NPCF_LEAVE_PARTY	// OnPCPartyLeaveFilter	// 当玩家准备离开队伍时触发过滤器
+#endif // Pandas_NpcFilter_LEAVE_PARTY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/
@@ -201,6 +213,18 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_UNEQUIP
 	const char* unequip_event_name;	// NPCE_UNEQUIP	// OnPCUnequipEvent	// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_CREATE_PARTY
+	const char* create_party_event_name;	// NPCE_CREATE_PARTY	// OnPCPartyCreateEvent	// 当玩家成功创建队伍后触发事件
+#endif // Pandas_NpcEvent_CREATE_PARTY
+
+#ifdef Pandas_NpcEvent_JOIN_PARTY
+	const char* join_party_event_name;	// NPCE_JOIN_PARTY	// OnPCPartyJoinEvent	// 当玩家成功加入队伍后触发事件
+#endif // Pandas_NpcEvent_JOIN_PARTY
+
+#ifdef Pandas_NpcEvent_LEAVE_PARTY
+	const char* leave_party_event_name;	// NPCE_LEAVE_PARTY	// OnPCPartyLeaveEvent	// 当玩家成功离开队伍后触发事件
+#endif // Pandas_NpcEvent_LEAVE_PARTY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	// NPC related
