@@ -4628,6 +4628,21 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_UNEQUIP:
 		return script_config.unequip_filter_name;	// OnPCUnequipFilter		// 当玩家准备脱下装备时触发过滤器
 #endif // Pandas_NpcFilter_UNEQUIP
+
+#ifdef Pandas_NpcFilter_CREATE_PARTY
+	case NPCF_CREATE_PARTY:
+		return script_config.create_party_filter_name;	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器
+#endif // Pandas_NpcFilter_CREATE_PARTY
+
+#ifdef Pandas_NpcFilter_JOIN_PARTY
+	case NPCF_JOIN_PARTY:
+		return script_config.join_party_filter_name;	// OnPCPartyJoinFilter		// 当玩家准备加入队伍时触发过滤器
+#endif // Pandas_NpcFilter_JOIN_PARTY
+
+#ifdef Pandas_NpcFilter_LEAVE_PARTY
+	case NPCF_LEAVE_PARTY:
+		return script_config.leave_party_filter_name;	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器
+#endif // Pandas_NpcFilter_LEAVE_PARTY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
@@ -4653,6 +4668,21 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCE_UNEQUIP:
 		return script_config.unequip_event_name;	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_CREATE_PARTY
+	case NPCE_CREATE_PARTY:
+		return script_config.create_party_event_name;	// OnPCPartyCreateEvent		// 当玩家成功创建队伍后触发事件
+#endif // Pandas_NpcEvent_CREATE_PARTY
+
+#ifdef Pandas_NpcEvent_JOIN_PARTY
+	case NPCE_JOIN_PARTY:
+		return script_config.join_party_event_name;	// OnPCPartyJoinEvent		// 当玩家成功加入队伍后触发事件
+#endif // Pandas_NpcEvent_JOIN_PARTY
+
+#ifdef Pandas_NpcEvent_LEAVE_PARTY
+	case NPCE_LEAVE_PARTY:
+		return script_config.leave_party_event_name;	// OnPCPartyLeaveEvent		// 当玩家成功离开队伍后触发事件
+#endif // Pandas_NpcEvent_LEAVE_PARTY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	default:
