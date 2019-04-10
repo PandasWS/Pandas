@@ -1250,6 +1250,26 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_LEAVE_PARTY
 	NPCE_LEAVE_PARTY,	// leave_party_event_name	// OnPCPartyLeaveEvent		// 当玩家成功离开队伍后触发事件
 #endif // Pandas_NpcEvent_LEAVE_PARTY
+
+#ifdef Pandas_NpcEvent_HOM_LEVELUP
+	NPCE_HOM_LEVELUP,	// hom_levelup_event_name	// OnPCHomLvUpEvent		// 当人工生命体升级时触发事件
+#endif // Pandas_NpcEvent_HOM_LEVELUP
+
+#ifdef Pandas_NpcEvent_HOM_CALL
+	NPCE_HOM_CALL,	// hom_call_event_name	// OnPCHomCallEvent		// 当召唤人工生命体时触发事件
+#endif // Pandas_NpcEvent_HOM_CALL
+
+#ifdef Pandas_NpcEvent_HOM_REST
+	NPCE_HOM_REST,	// hom_rest_event_name	// OnPCHomRestEvent		// 当人工生命体安息时触发事件
+#endif // Pandas_NpcEvent_HOM_REST
+
+#ifdef Pandas_NpcEvent_HOM_DEAD
+	NPCE_HOM_DEAD,	// hom_dead_event_name	// OnPCHomDeadEvent		// 当人工生命体死亡时触发事件
+#endif // Pandas_NpcEvent_HOM_DEAD
+
+#ifdef Pandas_NpcEvent_HOM_WAKE
+	NPCE_HOM_WAKE,	// hom_wake_event_name	// OnPCHomAliveEvent		// 当人工生命体复活时触发事件
+#endif // Pandas_NpcEvent_HOM_WAKE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	NPCE_MAX

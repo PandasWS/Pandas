@@ -329,6 +329,26 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcEvent_LEAVE_PARTY
 	"OnPCPartyLeaveEvent",	// NPCE_LEAVE_PARTY		// leave_party_event_name	// 当玩家成功离开队伍后触发事件
 #endif // Pandas_NpcEvent_LEAVE_PARTY
+
+#ifdef Pandas_NpcEvent_HOM_LEVELUP
+	"OnPCHomLvUpEvent",	// NPCE_HOM_LEVELUP		// hom_levelup_event_name	// 当人工生命体升级时触发事件
+#endif // Pandas_NpcEvent_HOM_LEVELUP
+
+#ifdef Pandas_NpcEvent_HOM_CALL
+	"OnPCHomCallEvent",	// NPCE_HOM_CALL		// hom_call_event_name	// 当召唤人工生命体时触发事件
+#endif // Pandas_NpcEvent_HOM_CALL
+
+#ifdef Pandas_NpcEvent_HOM_REST
+	"OnPCHomRestEvent",	// NPCE_HOM_REST		// hom_rest_event_name	// 当人工生命体安息时触发事件
+#endif // Pandas_NpcEvent_HOM_REST
+
+#ifdef Pandas_NpcEvent_HOM_DEAD
+	"OnPCHomDeadEvent",	// NPCE_HOM_DEAD		// hom_dead_event_name	// 当人工生命体死亡时触发事件
+#endif // Pandas_NpcEvent_HOM_DEAD
+
+#ifdef Pandas_NpcEvent_HOM_WAKE
+	"OnPCHomAliveEvent",	// NPCE_HOM_WAKE		// hom_wake_event_name	// 当人工生命体复活时触发事件
+#endif // Pandas_NpcEvent_HOM_WAKE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 
 	// NPC related
