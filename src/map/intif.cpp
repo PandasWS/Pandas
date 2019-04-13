@@ -671,9 +671,12 @@ int intif_party_leave(int party_id, uint32 account_id, uint32 char_id, const cha
 		struct party_data *p = nullptr;
 		if ((p = party_search(party_id)) != nullptr) {
 			pc_setreg(sd, add_str("@leave_party_id"), p->party.party_id);
-			pc_setreg(sd, add_str("@leave_party_type"), (type == PARTY_MEMBER_WITHDRAW_LEAVE ? 0 : 1));
+			pc_setreg(sd, add_str("@leave_party_reason"), (type == PARTY_MEMBER_WITHDRAW_LEAVE ? 0 : 1));
+			pc_setregstr(sd, add_str("@leave_party_name$"), (p ? p->party.name : "null"));
+
 			pc_setreg(sd, add_str("@left_party_id"), p->party.party_id);
 			pc_setreg(sd, add_str("@left_party_type"), (type == PARTY_MEMBER_WITHDRAW_LEAVE ? 0 : 1));
+			pc_setregstr(sd, add_str("@left_party_name$"), (p ? p->party.name : "null"));
 
 			if (npc_script_filter(sd, NPCF_LEAVE_PARTY))
 				return 1;

@@ -230,7 +230,8 @@
 
 携带参数:
 	@leave_party_id		想要离开的队伍编号
-	@leave_party_type	离开的原因是 0 - 自愿退出; 1 - 被驱逐
+	@leave_party_name$	想要离开的队伍名称
+	@leave_party_reason	离开的原因是 0 - 自愿退出; 1 - 被驱逐
 
 ---------------------------------------
 
@@ -243,7 +244,8 @@
 
 携带参数:
 	@leave_party_id		刚刚离开的队伍编号
-	@leave_party_type	离开的原因是 0 - 自愿退出; 1 - 被驱逐
+	@leave_party_name$	刚刚离开的队伍名称
+	@leave_party_reason	离开的原因是 0 - 自愿退出; 1 - 被驱逐
 
 ---------------------------------------
 
@@ -352,8 +354,8 @@
 	若 @leave_guild_reason 为 2 时, 使用 processhalt 会无视本次解散公会的操作
 
 携带参数:
-	@leave_guild_id		即将离开的公会编号
-	@leave_guild_name$	即将离开的公会名称
+	@leave_guild_id		想要离开的公会编号
+	@leave_guild_name$	想要离开的公会名称
 	@leave_guild_reason	离开公会的原因是 0 - 自愿退出; 1 - 被驱逐; 2 - 公会解散
 
 ---------------------------------------

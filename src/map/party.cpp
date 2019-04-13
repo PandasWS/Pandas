@@ -714,7 +714,8 @@ int party_member_withdraw(int party_id, uint32 account_id, uint32 char_id, char 
 #ifdef Pandas_NpcEvent_LEAVE_PARTY
 	if (sd && (type == PARTY_MEMBER_WITHDRAW_LEAVE || type == PARTY_MEMBER_WITHDRAW_EXPEL)) {
 		pc_setreg(sd, add_str("@leave_party_id"), party_id);
-		pc_setreg(sd, add_str("@leave_party_type"), (type == PARTY_MEMBER_WITHDRAW_LEAVE ? 0 : 1));
+		pc_setreg(sd, add_str("@leave_party_reason"), (type == PARTY_MEMBER_WITHDRAW_LEAVE ? 0 : 1));
+		pc_setregstr(sd, add_str("@leave_party_name$"), (p ? p->party.name : "null"));
 		npc_script_event(sd, NPCE_LEAVE_PARTY);
 	}
 #endif // Pandas_NpcEvent_LEAVE_PARTY
