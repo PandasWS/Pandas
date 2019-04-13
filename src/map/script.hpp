@@ -192,6 +192,18 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_LEAVE_PARTY
 	const char* leave_party_filter_name;	// NPCF_LEAVE_PARTY	// OnPCPartyLeaveFilter	// 当玩家准备离开队伍时触发过滤器
 #endif // Pandas_NpcFilter_LEAVE_PARTY
+
+#ifdef Pandas_NpcFilter_CREATE_GUILD
+	const char* create_guild_filter_name;	// NPCF_CREATE_GUILD	// OnPCGuildCreateFilter	// 当玩家准备创建公会时触发过滤器
+#endif // Pandas_NpcFilter_CREATE_GUILD
+
+#ifdef Pandas_NpcFilter_JOIN_GUILD
+	const char* join_guild_filter_name;	// NPCF_JOIN_GUILD	// OnPCGuildJoinFilter	// 当玩家准备加入公会时触发过滤器
+#endif // Pandas_NpcFilter_JOIN_GUILD
+
+#ifdef Pandas_NpcFilter_LEAVE_GUILD
+	const char* leave_guild_filter_name;	// NPCF_LEAVE_GUILD	// OnPCGuildLeaveFilter	// 当玩家准备离开公会时触发过滤器
+#endif // Pandas_NpcFilter_LEAVE_GUILD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/
@@ -245,6 +257,18 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_HOM_WAKE
 	const char* hom_wake_event_name;	// NPCE_HOM_WAKE	// OnPCHomAliveEvent	// 当人工生命体复活时触发事件
 #endif // Pandas_NpcEvent_HOM_WAKE
+
+#ifdef Pandas_NpcEvent_CREATE_GUILD
+	const char* create_guild_event_name;	// NPCE_CREATE_GUILD	// OnPCGuildCreateEvent	// 当玩家成功创建公会后触发事件
+#endif // Pandas_NpcEvent_CREATE_GUILD
+
+#ifdef Pandas_NpcEvent_JOIN_GUILD
+	const char* join_guild_event_name;	// NPCE_JOIN_GUILD	// OnPCGuildJoinEvent	// 当玩家成功加入公会后触发事件
+#endif // Pandas_NpcEvent_JOIN_GUILD
+
+#ifdef Pandas_NpcEvent_LEAVE_GUILD
+	const char* leave_guild_event_name;	// NPCE_LEAVE_GUILD	// OnPCGuildLeaveEvent	// 当玩家成功离开公会后触发事件
+#endif // Pandas_NpcEvent_LEAVE_GUILD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	// NPC related

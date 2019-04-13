@@ -1217,6 +1217,18 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_LEAVE_PARTY
 	NPCF_LEAVE_PARTY,	// leave_party_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器
 #endif // Pandas_NpcFilter_LEAVE_PARTY
+
+#ifdef Pandas_NpcFilter_CREATE_GUILD
+	NPCF_CREATE_GUILD,	// create_guild_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器
+#endif // Pandas_NpcFilter_CREATE_GUILD
+
+#ifdef Pandas_NpcFilter_JOIN_GUILD
+	NPCF_JOIN_GUILD,	// join_guild_filter_name	// OnPCGuildJoinFilter		// 当玩家准备加入公会时触发过滤器
+#endif // Pandas_NpcFilter_JOIN_GUILD
+
+#ifdef Pandas_NpcFilter_LEAVE_GUILD
+	NPCF_LEAVE_GUILD,	// leave_guild_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器
+#endif // Pandas_NpcFilter_LEAVE_GUILD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -1270,6 +1282,18 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_HOM_WAKE
 	NPCE_HOM_WAKE,	// hom_wake_event_name	// OnPCHomAliveEvent		// 当人工生命体复活时触发事件
 #endif // Pandas_NpcEvent_HOM_WAKE
+
+#ifdef Pandas_NpcEvent_CREATE_GUILD
+	NPCE_CREATE_GUILD,	// create_guild_event_name	// OnPCGuildCreateEvent		// 当玩家成功创建公会后触发事件
+#endif // Pandas_NpcEvent_CREATE_GUILD
+
+#ifdef Pandas_NpcEvent_JOIN_GUILD
+	NPCE_JOIN_GUILD,	// join_guild_event_name	// OnPCGuildJoinEvent		// 当玩家成功加入公会后触发事件
+#endif // Pandas_NpcEvent_JOIN_GUILD
+
+#ifdef Pandas_NpcEvent_LEAVE_GUILD
+	NPCE_LEAVE_GUILD,	// leave_guild_event_name	// OnPCGuildLeaveEvent		// 当玩家成功离开公会后触发事件
+#endif // Pandas_NpcEvent_LEAVE_GUILD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	NPCE_MAX
