@@ -5245,6 +5245,19 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 	nullpo_ret(sd);
 
+#ifdef Pandas_NpcFilter_USE_ITEM
+	if (sd && sd->inventory_data[n]) {
+		item = sd->inventory.u.items_inventory[n];
+		if (item.nameid != 0 && item.amount > 0) {
+			pc_setreg(sd, add_str("@useitem_idx"), n);
+			pc_setreg(sd, add_str("@useitem_nameid"), item.nameid);
+			pc_setreg(sd, add_str("@useitem_pos"), n);
+			if (npc_script_filter(sd, NPCF_USE_ITEM))
+				return 0;
+		}
+	}
+#endif // Pandas_NpcFilter_USE_ITEM
+
 	if (sd->npc_id) {
 		if (sd->progressbar.npc_id) {
 			clif_progressbar_abort(sd);
@@ -5353,6 +5366,16 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 	run_script(script,0,sd->bl.id,fake_nd->bl.id);
 	potion_flag = 0;
+
+#ifdef Pandas_NpcEvent_USE_ITEM
+	if (sd && id) {
+		pc_setreg(sd, add_str("@useitem_idx"), n);
+		pc_setreg(sd, add_str("@useitem_nameid"), id->nameid);
+		pc_setreg(sd, add_str("@useitem_pos"), n);
+		npc_script_event(sd, NPCE_USE_ITEM);
+	}
+#endif // Pandas_NpcEvent_USE_ITEM
+
 	return 1;
 }
 

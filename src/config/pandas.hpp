@@ -254,6 +254,11 @@
 		// 事件类型: Filter / 事件名称: OnPCInsertCardFilter
 		// 常量名称: NPCF_INSERT_CARD / 变量名称: insert_card_filter_name
 		#define Pandas_NpcFilter_INSERT_CARD
+
+		// 当玩家准备使用非装备类道具时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCUseItemFilter
+		// 常量名称: NPCF_USE_ITEM / 变量名称: use_item_filter_name
+		#define Pandas_NpcFilter_USE_ITEM
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -340,6 +345,11 @@
 	// 事件类型: Event / 事件名称: OnPCInsertCardEvent
 	// 常量名称: NPCE_INSERT_CARD / 变量名称: insert_card_event_name
 	#define Pandas_NpcEvent_INSERT_CARD
+
+	// 当玩家成功使用非装备类道具后触发事件 [Sola丶小克]
+	// 事件类型: Event / 事件名称: OnPCUseItemEvent
+	// 常量名称: NPCE_USE_ITEM / 变量名称: use_item_event_name
+	#define Pandas_NpcEvent_USE_ITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 #endif // Pandas_NpcEvent
 
