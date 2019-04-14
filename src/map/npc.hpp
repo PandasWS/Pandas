@@ -1229,6 +1229,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_LEAVE_GUILD
 	NPCF_LEAVE_GUILD,	// leave_guild_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器
 #endif // Pandas_NpcFilter_LEAVE_GUILD
+
+#ifdef Pandas_NpcFilter_INSERT_CARD
+	NPCF_INSERT_CARD,	// insert_card_filter_name	// OnPCInsertCardFilter		// 当玩家准备插入卡片时触发过滤器
+#endif // Pandas_NpcFilter_INSERT_CARD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -1294,6 +1298,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_LEAVE_GUILD
 	NPCE_LEAVE_GUILD,	// leave_guild_event_name	// OnPCGuildLeaveEvent		// 当玩家成功离开公会后触发事件
 #endif // Pandas_NpcEvent_LEAVE_GUILD
+
+#ifdef Pandas_NpcEvent_INSERT_CARD
+	NPCE_INSERT_CARD,	// insert_card_event_name	// OnPCInsertCardEvent		// 当玩家成功插入卡片后触发事件
+#endif // Pandas_NpcEvent_INSERT_CARD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	NPCE_MAX

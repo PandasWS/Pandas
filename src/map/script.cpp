@@ -308,6 +308,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_LEAVE_GUILD
 	"OnPCGuildLeaveFilter",	// NPCF_LEAVE_GUILD		// leave_guild_filter_name	// 当玩家准备离开公会时触发过滤器
 #endif // Pandas_NpcFilter_LEAVE_GUILD
+
+#ifdef Pandas_NpcFilter_INSERT_CARD
+	"OnPCInsertCardFilter",	// NPCF_INSERT_CARD		// insert_card_filter_name	// 当玩家准备插入卡片时触发过滤器
+#endif // Pandas_NpcFilter_INSERT_CARD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
 
 	/************************************************************************/
@@ -373,6 +377,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcEvent_LEAVE_GUILD
 	"OnPCGuildLeaveEvent",	// NPCE_LEAVE_GUILD		// leave_guild_event_name	// 当玩家成功离开公会后触发事件
 #endif // Pandas_NpcEvent_LEAVE_GUILD
+
+#ifdef Pandas_NpcEvent_INSERT_CARD
+	"OnPCInsertCardEvent",	// NPCE_INSERT_CARD		// insert_card_event_name	// 当玩家成功插入卡片后触发事件
+#endif // Pandas_NpcEvent_INSERT_CARD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 
 	// NPC related

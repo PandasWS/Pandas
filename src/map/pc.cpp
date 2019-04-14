@@ -4434,6 +4434,15 @@ int pc_insert_card(struct map_session_data* sd, int idx_card, int idx_equip)
 	// remember the card id to insert
 	nameid = sd->inventory.u.items_inventory[idx_card].nameid;
 
+#ifdef Pandas_NpcFilter_INSERT_CARD
+	pc_setreg(sd, add_str("@insert_equip_idx"), idx_equip);
+	pc_setreg(sd, add_str("@insert_card_idx"), idx_card);
+	pc_setreg(sd, add_str("@insert_card_id"), nameid);
+	pc_setreg(sd, add_str("@insert_card_slot"), i);
+	if (npc_script_filter(sd, NPCF_INSERT_CARD))
+		return 0;
+#endif // Pandas_NpcFilter_INSERT_CARD
+
 	if( pc_delitem(sd,idx_card,1,1,0,LOG_TYPE_OTHER) == 1 )
 	{// failed
 		clif_insert_card(sd,idx_equip,idx_card,1);
@@ -4444,6 +4453,14 @@ int pc_insert_card(struct map_session_data* sd, int idx_card, int idx_equip)
 		sd->inventory.u.items_inventory[idx_equip].card[i] = nameid;
 		log_pick_pc(sd, LOG_TYPE_OTHER,  1, &sd->inventory.u.items_inventory[idx_equip]);
 		clif_insert_card(sd,idx_equip,idx_card,0);
+
+#ifdef Pandas_NpcEvent_INSERT_CARD
+		pc_setreg(sd, add_str("@insert_equip_idx"), idx_equip);
+		pc_setreg(sd, add_str("@insert_card_idx"), idx_card);
+		pc_setreg(sd, add_str("@insert_card_id"), nameid);
+		pc_setreg(sd, add_str("@insert_card_slot"), i);
+		npc_script_event(sd, NPCE_INSERT_CARD);
+#endif // Pandas_NpcEvent_INSERT_CARD
 	}
 
 	return 0;
