@@ -208,6 +208,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_INSERT_CARD
 	const char* insert_card_filter_name;	// NPCF_INSERT_CARD	// OnPCInsertCardFilter	// 当玩家准备插入卡片时触发过滤器
 #endif // Pandas_NpcFilter_INSERT_CARD
+
+#ifdef Pandas_NpcFilter_USE_ITEM
+	const char* use_item_filter_name;	// NPCF_USE_ITEM	// OnPCUseItemFilter	// 当玩家准备使用非装备类道具时触发过滤器
+#endif // Pandas_NpcFilter_USE_ITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/
@@ -277,6 +281,10 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_INSERT_CARD
 	const char* insert_card_event_name;	// NPCE_INSERT_CARD	// OnPCInsertCardEvent	// 当玩家成功插入卡片后触发事件
 #endif // Pandas_NpcEvent_INSERT_CARD
+
+#ifdef Pandas_NpcEvent_USE_ITEM
+	const char* use_item_event_name;	// NPCE_USE_ITEM	// OnPCUseItemEvent	// 当玩家成功使用非装备类道具后触发事件
+#endif // Pandas_NpcEvent_USE_ITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	// NPC related
