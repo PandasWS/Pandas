@@ -259,6 +259,11 @@
 		// 事件类型: Filter / 事件名称: OnPCUseItemFilter
 		// 常量名称: NPCF_USE_ITEM / 变量名称: use_item_filter_name
 		#define Pandas_NpcFilter_USE_ITEM
+
+		// 当玩家准备使用技能时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCUseSkillFilter
+		// 常量名称: NPCF_USE_SKILL / 变量名称: use_skill_filter_name
+		#define Pandas_NpcFilter_USE_SKILL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -350,6 +355,11 @@
 	// 事件类型: Event / 事件名称: OnPCUseItemEvent
 	// 常量名称: NPCE_USE_ITEM / 变量名称: use_item_event_name
 	#define Pandas_NpcEvent_USE_ITEM
+
+	// 当玩家成功使用技能后触发事件 [Sola丶小克]
+	// 事件类型: Event / 事件名称: OnPCUseSkillEvent
+	// 常量名称: NPCE_USE_SKILL / 变量名称: use_skill_event_name
+	#define Pandas_NpcEvent_USE_SKILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 #endif // Pandas_NpcEvent
 

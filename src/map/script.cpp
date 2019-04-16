@@ -316,6 +316,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_USE_ITEM
 	"OnPCUseItemFilter",	// NPCF_USE_ITEM		// use_item_filter_name	// 当玩家准备使用非装备类道具时触发过滤器
 #endif // Pandas_NpcFilter_USE_ITEM
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+	"OnPCUseSkillFilter",	// NPCF_USE_SKILL		// use_skill_filter_name	// 当玩家准备使用技能时触发过滤器
+#endif // Pandas_NpcFilter_USE_SKILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
 
 	/************************************************************************/
@@ -389,6 +393,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcEvent_USE_ITEM
 	"OnPCUseItemEvent",	// NPCE_USE_ITEM		// use_item_event_name	// 当玩家成功使用非装备类道具后触发事件
 #endif // Pandas_NpcEvent_USE_ITEM
+
+#ifdef Pandas_NpcEvent_USE_SKILL
+	"OnPCUseSkillEvent",	// NPCE_USE_SKILL		// use_skill_event_name	// 当玩家成功使用技能后触发事件
+#endif // Pandas_NpcEvent_USE_SKILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 
 	// NPC related
