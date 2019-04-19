@@ -2969,7 +2969,7 @@ void status_calc_pet_(struct pet_data *pd, enum e_status_calc_opt opt)
 		memcpy(&pd->status, &pd->db->status, sizeof(struct status_data));
 		pd->status.mode = MD_CANMOVE; // Pets discard all modes, except walking
 		pd->status.class_ = CLASS_NORMAL;
-		pd->status.speed = pd->db->status.speed;
+		pd->status.speed = pd->get_pet_walk_speed();
 
 		if(battle_config.pet_attack_support || battle_config.pet_damage_support) {
 			// Attack support requires the pet to be able to attack
@@ -7933,8 +7933,14 @@ void status_set_viewdata(struct block_list *bl, int class_)
 			TBL_NPC* nd = (TBL_NPC*)bl;
 			if (vd)
 				nd->vd = vd;
-			else
+			else {
 				ShowError("status_set_viewdata (NPC): No view data for class %d\n", class_);
+				if (bl->m >= 0)
+					ShowDebug("Source (NPC): %s at %s (%d,%d)\n", nd->name, map_mapid2mapname(bl->m), bl->x, bl->y);
+				else
+					ShowDebug("Source (NPC): %s (invisible/not on a map)\n", nd->name);
+				break;
+			}
 		}
 	break;
 	case BL_HOM:
@@ -10077,7 +10083,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 				while( i >= 0 ) {
 					enum sc_type type2 = types[i];
 					if( d_sc->data[type2] )
-						status_change_start(d_bl, bl, type2, 10000, d_sc->data[type2]->val1, 0, 0, (type2 == SC_REFLECTSHIELD ? 1 : 0), skill_get_time(status_sc2skill(type2),d_sc->data[type2]->val1), (type2 == SC_DEFENDER) ? 1 : SCSTART_NOAVOID|SCSTART_NOICON);
+						status_change_start(d_bl, bl, type2, 10000, d_sc->data[type2]->val1, 0, 0, (type2 == SC_REFLECTSHIELD ? 1 : 0), skill_get_time(status_sc2skill(type2),d_sc->data[type2]->val1), (type2 == SC_DEFENDER) ? SCSTART_NOAVOID : SCSTART_NOAVOID|SCSTART_NOICON);
 					i--;
 				}
 			}
