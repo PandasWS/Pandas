@@ -216,6 +216,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_USE_SKILL
 	const char* use_skill_filter_name;	// NPCF_USE_SKILL	// OnPCUseSkillFilter	// 当玩家准备使用技能时触发过滤器
 #endif // Pandas_NpcFilter_USE_SKILL
+
+#ifdef Pandas_NpcFilter_SC_START
+	const char* sc_start_filter_name;	// NPCF_SC_START	// OnPCBuffStartFilter	// 当玩家准备应用一个状态时触发过滤器
+#endif // Pandas_NpcFilter_SC_START
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/
@@ -293,6 +297,14 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_USE_SKILL
 	const char* use_skill_event_name;	// NPCE_USE_SKILL	// OnPCUseSkillEvent	// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
+
+#ifdef Pandas_NpcEvent_SC_START
+	const char* sc_start_event_name;	// NPCE_SC_START	// OnPCBuffStartEvent	// 当玩家已成功获得了一个状态后触发事件
+#endif // Pandas_NpcEvent_SC_START
+
+#ifdef Pandas_NpcEvent_SC_END
+	const char* sc_end_event_name;	// NPCE_SC_END	// OnPCBuffEndEvent	// 当玩家已成功解除了一个状态后触发事件
+#endif // Pandas_NpcEvent_SC_END
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	// NPC related

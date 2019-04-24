@@ -8624,6 +8624,20 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 	sd = BL_CAST(BL_PC, bl);
 	vd = status_get_viewdata(bl);
 
+#ifdef Pandas_NpcFilter_SC_START
+	if (sd && sd->bl.type == BL_PC) {
+		pc_setreg(sd, add_str("@buff_sc_id"), (int)type);
+		pc_setreg(sd, add_str("@buff_sc_rate"), rate);
+		pc_setreg(sd, add_str("@buff_sc_tick"), tick);
+		pc_setreg(sd, add_str("@buff_sc_val1"), val1);
+		pc_setreg(sd, add_str("@buff_sc_val2"), val2);
+		pc_setreg(sd, add_str("@buff_sc_val3"), val3);
+		pc_setreg(sd, add_str("@buff_sc_val4"), val4);
+		if (npc_script_filter(sd, NPCF_SC_START))
+			return 0;
+	}
+#endif // Pandas_NpcFilter_SC_START
+
 	undead_flag = battle_check_undead(status->race,status->def_ele);
 	// Check for immunities / sc fails
 	switch (type) {
@@ -11868,6 +11882,28 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 	if( opt_flag&2 && sd && !sd->npc_ontouch_.empty() )
 		npc_touchnext_areanpc(sd,false); // Run OnTouch_ on next char in range
 
+#ifdef Pandas_NpcEvent_SC_START
+	if (sd && sd->bl.type == BL_PC) {
+		pc_setreg(sd, add_str("@startedsc"), (int)type);		// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@started_sc_id"), (int)type);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@started_sc_rate"), rate);		// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@started_sc_tick"), tick);		// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@started_sc_val1"), val1);		// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@started_sc_val2"), val2);		// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@started_sc_val3"), val3);		// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@started_sc_val4"), val4);		// 为兼容脚本而添加
+
+		pc_setreg(sd, add_str("@buff_sc_id"), (int)type);
+		pc_setreg(sd, add_str("@buff_sc_rate"), rate);
+		pc_setreg(sd, add_str("@buff_sc_tick"), tick);
+		pc_setreg(sd, add_str("@buff_sc_val1"), val1);
+		pc_setreg(sd, add_str("@buff_sc_val2"), val2);
+		pc_setreg(sd, add_str("@buff_sc_val3"), val3);
+		pc_setreg(sd, add_str("@buff_sc_val4"), val4);
+		npc_script_event(sd, NPCE_SC_START);
+	}
+#endif // Pandas_NpcEvent_SC_START
+
 	return 1;
 }
 
@@ -12860,6 +12896,16 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 		npc_touch_areanpc(sd,bl->m,bl->x,bl->y); // Trigger on-touch event.
 
 	ers_free(sc_data_ers, sce);
+
+#ifdef Pandas_NpcEvent_SC_END
+	if (sd && sd->bl.type == BL_PC) {
+		pc_setreg(sd, add_str("@endedsc"), (int)type);			// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@ended_sc_id"), (int)type);		// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@buff_sc_id"), (int)type);
+		npc_script_event(sd, NPCE_SC_END);
+	}
+#endif // Pandas_NpcEvent_SC_END
+
 	return 1;
 }
 
