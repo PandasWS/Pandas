@@ -264,6 +264,11 @@
 		// 事件类型: Filter / 事件名称: OnPCUseSkillFilter
 		// 常量名称: NPCF_USE_SKILL / 变量名称: use_skill_filter_name
 		#define Pandas_NpcFilter_USE_SKILL
+
+		// 当玩家准备应用一个状态时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCBuffStartFilter
+		// 常量名称: NPCF_SC_START / 变量名称: sc_start_filter_name
+		#define Pandas_NpcFilter_SC_START
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -360,6 +365,16 @@
 	// 事件类型: Event / 事件名称: OnPCUseSkillEvent
 	// 常量名称: NPCE_USE_SKILL / 变量名称: use_skill_event_name
 	#define Pandas_NpcEvent_USE_SKILL
+
+	// 当玩家已成功获得了一个状态后触发事件 [Sola丶小克]
+	// 事件类型: Event / 事件名称: OnPCBuffStartEvent
+	// 常量名称: NPCE_SC_START / 变量名称: sc_start_event_name
+	#define Pandas_NpcEvent_SC_START
+
+	// 当玩家已成功解除了一个状态后触发事件 [Sola丶小克]
+	// 事件类型: Event / 事件名称: OnPCBuffEndEvent
+	// 常量名称: NPCE_SC_END / 变量名称: sc_end_event_name
+	#define Pandas_NpcEvent_SC_END
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 #endif // Pandas_NpcEvent
 
