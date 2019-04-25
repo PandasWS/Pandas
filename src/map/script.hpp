@@ -220,6 +220,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_SC_START
 	const char* sc_start_filter_name;	// NPCF_SC_START	// OnPCBuffStartFilter	// 当玩家准备应用一个状态时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_ROULETTE_OPEN
+	const char* roulette_open_filter_name;	// NPCF_ROULETTE_OPEN	// OnPCOpenRouletteFilter	// 当玩家准备打开乐透大转盘的时候触发过滤器
+#endif // Pandas_NpcFilter_ROULETTE_OPEN
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/
@@ -305,6 +309,10 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_SC_END
 	const char* sc_end_event_name;	// NPCE_SC_END	// OnPCBuffEndEvent	// 当玩家已成功解除了一个状态后触发事件
 #endif // Pandas_NpcEvent_SC_END
+
+#ifdef Pandas_NpcEvent_ROULETTE_CLOSE
+	const char* roulette_close_event_name;	// NPCE_ROULETTE_CLOSE	// OnPCCloseRouletteEvent	// 当成功关闭乐透大转盘后触发事件
+#endif // Pandas_NpcEvent_ROULETTE_CLOSE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	// NPC related

@@ -4678,6 +4678,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_SC_START:
 		return script_config.sc_start_filter_name;	// OnPCBuffStartFilter		// 当玩家准备应用一个状态时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_ROULETTE_OPEN
+	case NPCF_ROULETTE_OPEN:
+		return script_config.roulette_open_filter_name;	// OnPCOpenRouletteFilter		// 当玩家准备打开乐透大转盘的时候触发过滤器
+#endif // Pandas_NpcFilter_ROULETTE_OPEN
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
@@ -4783,6 +4788,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCE_SC_END:
 		return script_config.sc_end_event_name;	// OnPCBuffEndEvent		// 当玩家已成功解除了一个状态后触发事件
 #endif // Pandas_NpcEvent_SC_END
+
+#ifdef Pandas_NpcEvent_ROULETTE_CLOSE
+	case NPCE_ROULETTE_CLOSE:
+		return script_config.roulette_close_event_name;	// OnPCCloseRouletteEvent		// 当成功关闭乐透大转盘后触发事件
+#endif // Pandas_NpcEvent_ROULETTE_CLOSE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	default:

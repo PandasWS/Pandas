@@ -19637,6 +19637,22 @@ void clif_roulette_open( struct map_session_data* sd ){
 void clif_parse_roulette_open( int fd, struct map_session_data* sd ){
 	nullpo_retv(sd);
 
+#ifdef Pandas_NpcFilter_ROULETTE_OPEN
+	// 禁止在于 NPC 对话的时候使用乐透大转盘
+	if (sd->npc_id || pc_hasprogress(sd, WIP_DISABLE_NPC)) {
+		clif_msg(sd, WORK_IN_PROGRESS);
+		return;
+	}
+
+	// 只有当前没有和 NPC 对话的时候, 才能触发 NPCE_OPEN_ROULETTE_FILTER 事件
+	// 否则 NPCE_OPEN_ROULETTE_FILTER 事件如果运行了 mes 等指令, 那么在不关闭 NPC 对话框的情况下
+	// 再次点击大乐透按钮, 会导致大乐透面板绕过 processhalt 的中断, 被直接打开
+	if (sd && sd->bl.type == BL_PC && !sd->npc_id) {
+		if (npc_script_filter(sd, NPCF_ROULETTE_OPEN))
+			return;
+	}
+#endif // Pandas_NpcFilter_ROULETTE_OPEN
+
 	if (!battle_config.feature_roulette) {
 		clif_messagecolor(&sd->bl,color_table[COLOR_RED],msg_txt(sd,1497),false,SELF); //Roulette is disabled
 		return;
@@ -19708,6 +19724,11 @@ void clif_parse_roulette_close( int fd, struct map_session_data* sd ){
 		clif_messagecolor(&sd->bl,color_table[COLOR_RED],msg_txt(sd,1497),false,SELF); //Roulette is disabled
 		return;
 	}
+
+#ifdef Pandas_NpcEvent_ROULETTE_CLOSE
+	if (sd && sd->bl.type == BL_PC)
+		npc_script_event(sd, NPCE_ROULETTE_CLOSE);
+#endif // Pandas_NpcEvent_ROULETTE_CLOSE
 
 	// What do we need this for? (other than state tracking), game client closes the window without our response.
 }
