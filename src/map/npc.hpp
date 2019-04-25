@@ -1245,6 +1245,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_SC_START
 	NPCF_SC_START,	// sc_start_filter_name	// OnPCBuffStartFilter		// 当玩家准备应用一个状态时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_ROULETTE_OPEN
+	NPCF_ROULETTE_OPEN,	// roulette_open_filter_name	// OnPCOpenRouletteFilter		// 当玩家准备打开乐透大转盘的时候触发过滤器
+#endif // Pandas_NpcFilter_ROULETTE_OPEN
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -1330,6 +1334,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_SC_END
 	NPCE_SC_END,	// sc_end_event_name	// OnPCBuffEndEvent		// 当玩家已成功解除了一个状态后触发事件
 #endif // Pandas_NpcEvent_SC_END
+
+#ifdef Pandas_NpcEvent_ROULETTE_CLOSE
+	NPCE_ROULETTE_CLOSE,	// roulette_close_event_name	// OnPCCloseRouletteEvent		// 当成功关闭乐透大转盘后触发事件
+#endif // Pandas_NpcEvent_ROULETTE_CLOSE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	NPCE_MAX
