@@ -10009,6 +10009,23 @@ void clif_viewequip_ack(struct map_session_data* sd, struct map_session_data* ts
 #endif
 	nullpo_retv(sd);
 	nullpo_retv(tsd);
+
+#ifdef Pandas_NpcFilter_VIEW_EQUIP
+	if (sd && sd->bl.type == BL_PC && tsd && tsd->bl.type == BL_PC) {
+		pc_setregstr(sd, add_str("@vieweq_name$"), tsd->status.name);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@vieweq_cid"), tsd->status.char_id);		// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@vieweq_aid"), tsd->status.account_id);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@eqview_cid"), tsd->status.char_id);		// 为兼容脚本而添加
+
+		pc_setregstr(sd, add_str("@view_equip_target_name$"), tsd->status.name);
+		pc_setreg(sd, add_str("@view_equip_target_cid"), tsd->status.char_id);
+		pc_setreg(sd, add_str("@view_equip_target_aid"), tsd->status.account_id);
+
+		if (npc_script_filter(sd, NPCF_VIEW_EQUIP))
+			return;
+	}
+#endif // Pandas_NpcFilter_VIEW_EQUIPx
+
 	fd = sd->fd;
 
 	WFIFOHEAD(fd, MAX_INVENTORY * s + 43 + 2);

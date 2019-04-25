@@ -329,6 +329,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_ROULETTE_OPEN
 	"OnPCOpenRouletteFilter",	// NPCF_ROULETTE_OPEN		// roulette_open_filter_name	// 当玩家准备打开乐透大转盘的时候触发过滤器
 #endif // Pandas_NpcFilter_ROULETTE_OPEN
+
+#ifdef Pandas_NpcFilter_VIEW_EQUIP
+	"OnPCViewEquipFilter",	// NPCF_VIEW_EQUIP		// view_equip_filter_name	// 当玩家准备查看某个角色的装备时触发过滤器
+#endif // Pandas_NpcFilter_VIEW_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
 
 	/************************************************************************/
