@@ -4683,6 +4683,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_ROULETTE_OPEN:
 		return script_config.roulette_open_filter_name;	// OnPCOpenRouletteFilter		// 当玩家准备打开乐透大转盘的时候触发过滤器
 #endif // Pandas_NpcFilter_ROULETTE_OPEN
+
+#ifdef Pandas_NpcFilter_VIEW_EQUIP
+	case NPCF_VIEW_EQUIP:
+		return script_config.view_equip_filter_name;	// OnPCViewEquipFilter		// 当玩家准备查看某个角色的装备时触发过滤器
+#endif // Pandas_NpcFilter_VIEW_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
