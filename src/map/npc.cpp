@@ -4634,11 +4634,6 @@ const char *npc_get_script_event_name(int npce_index)
 		return script_config.use_skill_filter_name;	// OnPCUseSkillFilter		// 当玩家准备使用技能时触发过滤器
 #endif // Pandas_NpcFilter_USE_SKILL
 
-#ifdef Pandas_NpcFilter_SC_START
-	case NPCF_SC_START:
-		return script_config.sc_start_filter_name;	// OnPCBuffStartFilter		// 当玩家准备应用一个状态时触发过滤器
-#endif // Pandas_NpcFilter_SC_START
-
 #ifdef Pandas_NpcFilter_ROULETTE_OPEN
 	case NPCF_ROULETTE_OPEN:
 		return script_config.roulette_open_filter_name;	// OnPCOpenRouletteFilter		// 当玩家准备打开乐透大转盘的时候触发过滤器
@@ -4678,21 +4673,6 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCE_USE_SKILL:
 		return script_config.use_skill_event_name;	// OnPCUseSkillEvent		// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
-
-#ifdef Pandas_NpcEvent_SC_START
-	case NPCE_SC_START:
-		return script_config.sc_start_event_name;	// OnPCBuffStartEvent		// 当玩家已成功获得了一个状态后触发事件
-#endif // Pandas_NpcEvent_SC_START
-
-#ifdef Pandas_NpcEvent_SC_END
-	case NPCE_SC_END:
-		return script_config.sc_end_event_name;	// OnPCBuffEndEvent		// 当玩家已成功解除了一个状态后触发事件
-#endif // Pandas_NpcEvent_SC_END
-
-#ifdef Pandas_NpcEvent_ROULETTE_CLOSE
-	case NPCE_ROULETTE_CLOSE:
-		return script_config.roulette_close_event_name;	// OnPCCloseRouletteEvent		// 当成功关闭乐透大转盘后触发事件
-#endif // Pandas_NpcEvent_ROULETTE_CLOSE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	default:
