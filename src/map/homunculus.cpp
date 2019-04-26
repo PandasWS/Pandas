@@ -211,11 +211,6 @@ int hom_dead(struct homun_data *hd)
 
 	clif_emotion(&sd->bl, ET_CRY);
 
-#ifdef Pandas_NpcEvent_HOM_DEAD
-	if (sd && sd->bl.type == BL_PC)
-		npc_script_event(sd, NPCE_HOM_DEAD);
-#endif // Pandas_NpcEvent_HOM_DEAD
-
 	//Remove from map (if it has no intimacy, it is auto-removed from memory)
 	return 3;
 }
@@ -249,11 +244,6 @@ int hom_vaporize(struct map_session_data *sd, int flag)
 		memset(hd->blockskill, 0, sizeof(hd->blockskill));
 	clif_hominfo(sd, sd->hd, 0);
 	hom_save(hd);
-
-#ifdef Pandas_NpcEvent_HOM_REST
-	if (sd && sd->bl.type == BL_PC && flag == HOM_ST_REST)
-		npc_script_event(sd, NPCE_HOM_REST);
-#endif // Pandas_NpcEvent_HOM_REST
 
 	return unit_remove_map(&hd->bl, CLR_OUTSIGHT);
 }
@@ -542,11 +532,6 @@ int hom_levelup(struct homun_data *hd)
 			growth_int/10.0, growth_dex/10.0, growth_luk/10.0);
 		clif_messagecolor(&hd->master->bl, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
 	}
-
-#ifdef Pandas_NpcEvent_HOM_LEVELUP
-	if (hd && hd->master)
-		npc_script_event(hd->master, NPCE_HOM_LEVELUP);
-#endif // Pandas_NpcEvent_HOM_LEVELUP
 
 	return 1;
 }
@@ -1179,12 +1164,6 @@ int hom_recv_data(uint32 account_id, struct s_homunculus *sh, int flag)
 		hom_init_timers(hd);
 	}
 
-#ifdef Pandas_NpcEvent_HOM_CALL
-	if (sd && sd->bl.type == BL_PC) {
-		pc_setreg(sd, add_str("@hom_just_created"), (created ? 1 : 0));
-		npc_script_event(sd, NPCE_HOM_CALL);
-	}
-#endif // Pandas_NpcEvent_HOM_CALL
 	return 1;
 }
 
@@ -1269,11 +1248,6 @@ int hom_ressurect(struct map_session_data* sd, unsigned char per, short x, short
 			return 0;
 		clif_spawn(&hd->bl);
 	}
-
-#ifdef Pandas_NpcEvent_HOM_WAKE
-	if (sd && sd->bl.type == BL_PC)
-		npc_script_event(sd, NPCE_HOM_WAKE);
-#endif // Pandas_NpcEvent_HOM_WAKE
 
 	return status_revive(&hd->bl, per, 0);
 }
