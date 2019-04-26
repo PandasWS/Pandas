@@ -4684,31 +4684,6 @@ const char *npc_get_script_event_name(int npce_index)
 		return script_config.unequip_event_name;	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
 
-#ifdef Pandas_NpcEvent_HOM_LEVELUP
-	case NPCE_HOM_LEVELUP:
-		return script_config.hom_levelup_event_name;	// OnPCHomLvUpEvent		// 当人工生命体升级时触发事件
-#endif // Pandas_NpcEvent_HOM_LEVELUP
-
-#ifdef Pandas_NpcEvent_HOM_CALL
-	case NPCE_HOM_CALL:
-		return script_config.hom_call_event_name;	// OnPCHomCallEvent		// 当召唤人工生命体时触发事件
-#endif // Pandas_NpcEvent_HOM_CALL
-
-#ifdef Pandas_NpcEvent_HOM_REST
-	case NPCE_HOM_REST:
-		return script_config.hom_rest_event_name;	// OnPCHomRestEvent		// 当人工生命体安息时触发事件
-#endif // Pandas_NpcEvent_HOM_REST
-
-#ifdef Pandas_NpcEvent_HOM_DEAD
-	case NPCE_HOM_DEAD:
-		return script_config.hom_dead_event_name;	// OnPCHomDeadEvent		// 当人工生命体死亡时触发事件
-#endif // Pandas_NpcEvent_HOM_DEAD
-
-#ifdef Pandas_NpcEvent_HOM_WAKE
-	case NPCE_HOM_WAKE:
-		return script_config.hom_wake_event_name;	// OnPCHomAliveEvent		// 当人工生命体复活时触发事件
-#endif // Pandas_NpcEvent_HOM_WAKE
-
 #ifdef Pandas_NpcEvent_INSERT_CARD
 	case NPCE_INSERT_CARD:
 		return script_config.insert_card_event_name;	// OnPCInsertCardEvent		// 当玩家成功插入卡片后触发事件
