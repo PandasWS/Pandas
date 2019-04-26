@@ -1206,30 +1206,6 @@ enum npce_event : uint8 {
 	NPCF_UNEQUIP,	// unequip_filter_name	// OnPCUnequipFilter		// 当玩家准备脱下装备时触发过滤器
 #endif // Pandas_NpcFilter_UNEQUIP
 
-#ifdef Pandas_NpcFilter_CREATE_PARTY
-	NPCF_CREATE_PARTY,	// create_party_filter_name	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器
-#endif // Pandas_NpcFilter_CREATE_PARTY
-
-#ifdef Pandas_NpcFilter_JOIN_PARTY
-	NPCF_JOIN_PARTY,	// join_party_filter_name	// OnPCPartyJoinFilter		// 当玩家准备加入队伍时触发过滤器
-#endif // Pandas_NpcFilter_JOIN_PARTY
-
-#ifdef Pandas_NpcFilter_LEAVE_PARTY
-	NPCF_LEAVE_PARTY,	// leave_party_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器
-#endif // Pandas_NpcFilter_LEAVE_PARTY
-
-#ifdef Pandas_NpcFilter_CREATE_GUILD
-	NPCF_CREATE_GUILD,	// create_guild_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器
-#endif // Pandas_NpcFilter_CREATE_GUILD
-
-#ifdef Pandas_NpcFilter_JOIN_GUILD
-	NPCF_JOIN_GUILD,	// join_guild_filter_name	// OnPCGuildJoinFilter		// 当玩家准备加入公会时触发过滤器
-#endif // Pandas_NpcFilter_JOIN_GUILD
-
-#ifdef Pandas_NpcFilter_LEAVE_GUILD
-	NPCF_LEAVE_GUILD,	// leave_guild_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器
-#endif // Pandas_NpcFilter_LEAVE_GUILD
-
 #ifdef Pandas_NpcFilter_INSERT_CARD
 	NPCF_INSERT_CARD,	// insert_card_filter_name	// OnPCInsertCardFilter		// 当玩家准备插入卡片时触发过滤器
 #endif // Pandas_NpcFilter_INSERT_CARD
@@ -1275,18 +1251,6 @@ enum npce_event : uint8 {
 	NPCE_UNEQUIP,	// unequip_event_name	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
 
-#ifdef Pandas_NpcEvent_CREATE_PARTY
-	NPCE_CREATE_PARTY,	// create_party_event_name	// OnPCPartyCreateEvent		// 当玩家成功创建队伍后触发事件
-#endif // Pandas_NpcEvent_CREATE_PARTY
-
-#ifdef Pandas_NpcEvent_JOIN_PARTY
-	NPCE_JOIN_PARTY,	// join_party_event_name	// OnPCPartyJoinEvent		// 当玩家成功加入队伍后触发事件
-#endif // Pandas_NpcEvent_JOIN_PARTY
-
-#ifdef Pandas_NpcEvent_LEAVE_PARTY
-	NPCE_LEAVE_PARTY,	// leave_party_event_name	// OnPCPartyLeaveEvent		// 当玩家成功离开队伍后触发事件
-#endif // Pandas_NpcEvent_LEAVE_PARTY
-
 #ifdef Pandas_NpcEvent_HOM_LEVELUP
 	NPCE_HOM_LEVELUP,	// hom_levelup_event_name	// OnPCHomLvUpEvent		// 当人工生命体升级时触发事件
 #endif // Pandas_NpcEvent_HOM_LEVELUP
@@ -1306,18 +1270,6 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_HOM_WAKE
 	NPCE_HOM_WAKE,	// hom_wake_event_name	// OnPCHomAliveEvent		// 当人工生命体复活时触发事件
 #endif // Pandas_NpcEvent_HOM_WAKE
-
-#ifdef Pandas_NpcEvent_CREATE_GUILD
-	NPCE_CREATE_GUILD,	// create_guild_event_name	// OnPCGuildCreateEvent		// 当玩家成功创建公会后触发事件
-#endif // Pandas_NpcEvent_CREATE_GUILD
-
-#ifdef Pandas_NpcEvent_JOIN_GUILD
-	NPCE_JOIN_GUILD,	// join_guild_event_name	// OnPCGuildJoinEvent		// 当玩家成功加入公会后触发事件
-#endif // Pandas_NpcEvent_JOIN_GUILD
-
-#ifdef Pandas_NpcEvent_LEAVE_GUILD
-	NPCE_LEAVE_GUILD,	// leave_guild_event_name	// OnPCGuildLeaveEvent		// 当玩家成功离开公会后触发事件
-#endif // Pandas_NpcEvent_LEAVE_GUILD
 
 #ifdef Pandas_NpcEvent_INSERT_CARD
 	NPCE_INSERT_CARD,	// insert_card_event_name	// OnPCInsertCardEvent		// 当玩家成功插入卡片后触发事件

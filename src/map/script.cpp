@@ -286,30 +286,6 @@ struct Script_Config script_config = {
 	"OnPCUnequipFilter",	// NPCF_UNEQUIP		// unequip_filter_name	// 当玩家准备脱下装备时触发过滤器
 #endif // Pandas_NpcFilter_UNEQUIP
 
-#ifdef Pandas_NpcFilter_CREATE_PARTY
-	"OnPCPartyCreateFilter",	// NPCF_CREATE_PARTY		// create_party_filter_name	// 当玩家准备创建队伍时触发过滤器
-#endif // Pandas_NpcFilter_CREATE_PARTY
-
-#ifdef Pandas_NpcFilter_JOIN_PARTY
-	"OnPCPartyJoinFilter",	// NPCF_JOIN_PARTY		// join_party_filter_name	// 当玩家准备加入队伍时触发过滤器
-#endif // Pandas_NpcFilter_JOIN_PARTY
-
-#ifdef Pandas_NpcFilter_LEAVE_PARTY
-	"OnPCPartyLeaveFilter",	// NPCF_LEAVE_PARTY		// leave_party_filter_name	// 当玩家准备离开队伍时触发过滤器
-#endif // Pandas_NpcFilter_LEAVE_PARTY
-
-#ifdef Pandas_NpcFilter_CREATE_GUILD
-	"OnPCGuildCreateFilter",	// NPCF_CREATE_GUILD		// create_guild_filter_name	// 当玩家准备创建公会时触发过滤器
-#endif // Pandas_NpcFilter_CREATE_GUILD
-
-#ifdef Pandas_NpcFilter_JOIN_GUILD
-	"OnPCGuildJoinFilter",	// NPCF_JOIN_GUILD		// join_guild_filter_name	// 当玩家准备加入公会时触发过滤器
-#endif // Pandas_NpcFilter_JOIN_GUILD
-
-#ifdef Pandas_NpcFilter_LEAVE_GUILD
-	"OnPCGuildLeaveFilter",	// NPCF_LEAVE_GUILD		// leave_guild_filter_name	// 当玩家准备离开公会时触发过滤器
-#endif // Pandas_NpcFilter_LEAVE_GUILD
-
 #ifdef Pandas_NpcFilter_INSERT_CARD
 	"OnPCInsertCardFilter",	// NPCF_INSERT_CARD		// insert_card_filter_name	// 当玩家准备插入卡片时触发过滤器
 #endif // Pandas_NpcFilter_INSERT_CARD
@@ -355,18 +331,6 @@ struct Script_Config script_config = {
 	"OnPCUnequipEvent",	// NPCE_UNEQUIP		// unequip_event_name	// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
 
-#ifdef Pandas_NpcEvent_CREATE_PARTY
-	"OnPCPartyCreateEvent",	// NPCE_CREATE_PARTY		// create_party_event_name	// 当玩家成功创建队伍后触发事件
-#endif // Pandas_NpcEvent_CREATE_PARTY
-
-#ifdef Pandas_NpcEvent_JOIN_PARTY
-	"OnPCPartyJoinEvent",	// NPCE_JOIN_PARTY		// join_party_event_name	// 当玩家成功加入队伍后触发事件
-#endif // Pandas_NpcEvent_JOIN_PARTY
-
-#ifdef Pandas_NpcEvent_LEAVE_PARTY
-	"OnPCPartyLeaveEvent",	// NPCE_LEAVE_PARTY		// leave_party_event_name	// 当玩家成功离开队伍后触发事件
-#endif // Pandas_NpcEvent_LEAVE_PARTY
-
 #ifdef Pandas_NpcEvent_HOM_LEVELUP
 	"OnPCHomLvUpEvent",	// NPCE_HOM_LEVELUP		// hom_levelup_event_name	// 当人工生命体升级时触发事件
 #endif // Pandas_NpcEvent_HOM_LEVELUP
@@ -386,18 +350,6 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcEvent_HOM_WAKE
 	"OnPCHomAliveEvent",	// NPCE_HOM_WAKE		// hom_wake_event_name	// 当人工生命体复活时触发事件
 #endif // Pandas_NpcEvent_HOM_WAKE
-
-#ifdef Pandas_NpcEvent_CREATE_GUILD
-	"OnPCGuildCreateEvent",	// NPCE_CREATE_GUILD		// create_guild_event_name	// 当玩家成功创建公会后触发事件
-#endif // Pandas_NpcEvent_CREATE_GUILD
-
-#ifdef Pandas_NpcEvent_JOIN_GUILD
-	"OnPCGuildJoinEvent",	// NPCE_JOIN_GUILD		// join_guild_event_name	// 当玩家成功加入公会后触发事件
-#endif // Pandas_NpcEvent_JOIN_GUILD
-
-#ifdef Pandas_NpcEvent_LEAVE_GUILD
-	"OnPCGuildLeaveEvent",	// NPCE_LEAVE_GUILD		// leave_guild_event_name	// 当玩家成功离开公会后触发事件
-#endif // Pandas_NpcEvent_LEAVE_GUILD
 
 #ifdef Pandas_NpcEvent_INSERT_CARD
 	"OnPCInsertCardEvent",	// NPCE_INSERT_CARD		// insert_card_event_name	// 当玩家成功插入卡片后触发事件

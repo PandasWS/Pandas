@@ -157,13 +157,6 @@ int party_create(struct map_session_data *sd,char *name,int item,int item2)
 		return -2;
 	}
 
-#ifdef Pandas_NpcFilter_CREATE_PARTY
-	if (sd && sd->bl.type == BL_PC) {
-		if (npc_script_filter(sd, NPCF_CREATE_PARTY))
-			return 1;
-	}
-#endif // Pandas_NpcFilter_CREATE_PARTY
-
 	sd->party_creating = true;
 	party_fill_member(&leader, sd, 1);
 	intif_create_party(&leader,name,item,item2);
@@ -187,12 +180,6 @@ void party_created(uint32 account_id,uint32 char_id,int fail,int party_id,char *
 	if( !fail ) {
 		sd->status.party_id = party_id;
 		clif_party_created(sd,0); // Success message
-
-#ifdef Pandas_NpcEvent_CREATE_PARTY
-		if (sd) {
-			npc_script_event(sd, NPCE_CREATE_PARTY);
-		}
-#endif // Pandas_NpcEvent_CREATE_PARTY
 
 		achievement_update_objective(sd, AG_PARTY, 1, 1);
 
@@ -483,12 +470,6 @@ int party_reply_invite(struct map_session_data *sd,int party_id,int flag)
 	tsd = map_id2sd(sd->party_invite_account);
 
 	if( flag == 1 && !sd->party_creating && !sd->party_joining ) { // accepted and allowed
-#ifdef Pandas_NpcFilter_JOIN_PARTY
-		if (tsd && tsd->bl.type == BL_PC) {
-			if (npc_script_filter(tsd, NPCF_JOIN_PARTY))
-				return 0;
-		}
-#endif // Pandas_NpcFilter_JOIN_PARTY
 		sd->party_joining = true;
 		party_fill_member(&member, sd, 0);
 		intif_party_addmember(sd->party_invite, &member);
@@ -583,12 +564,6 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 
 	if( p->instance_id )
 		instance_reqinfo(sd,p->instance_id);
-
-#ifdef Pandas_NpcEvent_JOIN_PARTY
-	if (sd && sd->bl.type == BL_PC) {
-		npc_script_event(sd, NPCE_JOIN_PARTY);
-	}
-#endif // Pandas_NpcEvent_JOIN_PARTY
 
 	return 0;
 }
@@ -710,15 +685,6 @@ int party_member_withdraw(int party_id, uint32 account_id, uint32 char_id, char 
 			}
 		}
 	}
-
-#ifdef Pandas_NpcEvent_LEAVE_PARTY
-	if (sd && (type == PARTY_MEMBER_WITHDRAW_LEAVE || type == PARTY_MEMBER_WITHDRAW_EXPEL)) {
-		pc_setreg(sd, add_str("@leave_party_id"), party_id);
-		pc_setreg(sd, add_str("@leave_party_reason"), (type == PARTY_MEMBER_WITHDRAW_LEAVE ? 0 : 1));
-		pc_setregstr(sd, add_str("@leave_party_name$"), (p ? p->party.name : "null"));
-		npc_script_event(sd, NPCE_LEAVE_PARTY);
-	}
-#endif // Pandas_NpcEvent_LEAVE_PARTY
 
 	return 0;
 }
