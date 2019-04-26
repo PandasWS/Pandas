@@ -19742,11 +19742,6 @@ void clif_parse_roulette_close( int fd, struct map_session_data* sd ){
 		return;
 	}
 
-#ifdef Pandas_NpcEvent_ROULETTE_CLOSE
-	if (sd && sd->bl.type == BL_PC)
-		npc_script_event(sd, NPCE_ROULETTE_CLOSE);
-#endif // Pandas_NpcEvent_ROULETTE_CLOSE
-
 	// What do we need this for? (other than state tracking), game client closes the window without our response.
 }
 
