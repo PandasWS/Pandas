@@ -482,11 +482,6 @@ int guild_create(struct map_session_data *sd, const char *name) {
 		return 0;
 	}
 
-#ifdef Pandas_NpcFilter_CREATE_GUILD
-	if (npc_script_filter(sd, NPCF_CREATE_GUILD))
-		return 0;
-#endif // Pandas_NpcFilter_CREATE_GUILD
-
 	guild_makemember(&m,sd);
 	m.position=0;
 	intif_guild_create(name,&m);
@@ -512,10 +507,6 @@ int guild_created(uint32 account_id,int guild_id) {
 		if( index > 0 )
 			pc_delitem(sd,index,1,0,0,LOG_TYPE_CONSUME);	//emperium consumption
 	}
-
-#ifdef Pandas_NpcEvent_CREATE_GUILD
-	npc_script_event(sd, NPCE_CREATE_GUILD);
-#endif // Pandas_NpcEvent_CREATE_GUILD
 
 	return 0;
 }
@@ -796,12 +787,6 @@ int guild_reply_invite(struct map_session_data* sd, int guild_id, int flag) {
 			return 0;
 		}
 
-#ifdef Pandas_NpcFilter_JOIN_GUILD
-		pc_setreg(sd, add_str("@join_guild_id"), guild_id);
-		if (npc_script_filter(sd, NPCF_JOIN_GUILD))
-			return 0;
-#endif // Pandas_NpcFilter_JOIN_GUILD
-
 		guild_makemember(&m,sd);
 		intif_guild_addmember(guild_id, &m);
 		//TODO: send a minimap update to this player
@@ -898,11 +883,6 @@ int guild_member_added(int guild_id,uint32 account_id,uint32 char_id,int flag) {
 	if (g->instance_id != 0)
 		instance_reqinfo(sd, g->instance_id);
 
-#ifdef Pandas_NpcEvent_JOIN_GUILD
-	pc_setreg(sd, add_str("@join_guild_id"), guild_id);
-	npc_script_event(sd, NPCE_JOIN_GUILD);
-#endif // Pandas_NpcEvent_JOIN_GUILD
-
 	return 0;
 }
 
@@ -923,14 +903,6 @@ int guild_leave(struct map_session_data* sd, int guild_id, uint32 account_id, ui
 		sd->status.char_id!=char_id || sd->status.guild_id!=guild_id ||
 		map_flag_gvg2(sd->bl.m))
 		return 0;
-
-#ifdef Pandas_NpcFilter_LEAVE_GUILD
-	pc_setreg(sd, add_str("@leave_guild_id"), guild_id);
-	pc_setreg(sd, add_str("@leave_guild_reason"), 0);
-	pc_setregstr(sd, add_str("@leave_guild_name$"), g->name);
-	if (npc_script_filter(sd, NPCF_LEAVE_GUILD))
-		return 0;
-#endif // Pandas_NpcFilter_LEAVE_GUILD
 
 	guild_trade_bound_cancel(sd);
 	intif_guild_leave(sd->status.guild_id, sd->status.account_id, sd->status.char_id,0,mes);
@@ -967,15 +939,6 @@ int guild_expulsion(struct map_session_data* sd, int guild_id, uint32 account_id
 	// find the member and perform expulsion
 	i = guild_getindex(g, account_id, char_id);
 	if( i != -1 && strcmp(g->member[i].name,g->master) != 0 ) { //Can't expel the GL!
-
-#ifdef Pandas_NpcFilter_LEAVE_GUILD
-		pc_setreg(sd, add_str("@leave_guild_id"), guild_id);
-		pc_setreg(sd, add_str("@leave_guild_reason"), 1);
-		pc_setregstr(sd, add_str("@leave_guild_name$"), g->name);
-		if (npc_script_filter(tsd, NPCF_LEAVE_GUILD))
-			return 0;
-#endif // Pandas_NpcFilter_LEAVE_GUILD
-
 		if (tsd)
 			guild_trade_bound_cancel(tsd);
 		intif_guild_leave(g->guild_id,account_id,char_id,1,mes);
@@ -1058,13 +1021,6 @@ int guild_member_withdraw(int guild_id, uint32 account_id, uint32 char_id, int f
 		// @TODO: 这里需要向周围的角色广播移除该角色的公会图标 [Sola丶小克]
 		// 不过我们进行了一系列尝试, 暂未发现可靠且体验较佳的方法
 #endif // Pandas_Fix_GuildEmblem_Update
-
-#ifdef Pandas_NpcEvent_LEAVE_GUILD
-		pc_setreg(sd, add_str("@leave_guild_id"), guild_id);
-		pc_setreg(sd, add_str("@leave_guild_reason"), (!flag ? 0 : 1));
-		pc_setregstr(sd, add_str("@leave_guild_name$"), g->name);
-		npc_script_event(sd, NPCE_LEAVE_GUILD);
-#endif // Pandas_NpcEvent_LEAVE_GUILD
 	}
 	return 0;
 }
@@ -1922,14 +1878,6 @@ int guild_broken(int guild_id,int flag) {
 			status_change_end(&sd->bl,SC_GLORYWOUNDS,INVALID_TIMER);
 			status_change_end(&sd->bl,SC_SOULCOLD,INVALID_TIMER);
 			status_change_end(&sd->bl,SC_HAWKEYES,INVALID_TIMER);
-
-#ifdef Pandas_NpcEvent_LEAVE_GUILD
-			pc_setreg(sd, add_str("@leave_guild_id"), guild_id);
-			pc_setreg(sd, add_str("@leave_guild_reason"), 2);
-			pc_setregstr(sd, add_str("@leave_guild_name$"), g->name);
-			npc_script_event(sd, NPCE_LEAVE_GUILD);
-#endif // Pandas_NpcEvent_LEAVE_GUILD
-
 		}
 	}
 
@@ -2064,14 +2012,6 @@ int guild_break(struct map_session_data *sd,char *name) {
 		clif_guild_broken(sd,2);
 		return 0;
 	}
-
-#ifdef Pandas_NpcFilter_LEAVE_GUILD
-	pc_setreg(sd, add_str("@leave_guild_id"), g->guild_id);
-	pc_setreg(sd, add_str("@leave_guild_reason"), 2);
-	pc_setregstr(sd, add_str("@leave_guild_name$"), g->name);
-	if (npc_script_filter(sd, NPCF_LEAVE_GUILD))
-		return 0;
-#endif // Pandas_NpcFilter_LEAVE_GUILD
 
 	if (g->instance_id)
 		instance_destroy(g->instance_id);

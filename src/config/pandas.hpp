@@ -220,36 +220,6 @@
 		// 常量名称: NPCF_UNEQUIP / 变量名称: unequip_filter_name
 		#define Pandas_NpcFilter_UNEQUIP
 
-		// 当玩家准备创建队伍时触发过滤器 [Sola丶小克]
-		// 事件类型: Filter / 事件名称: OnPCPartyCreateFilter
-		// 常量名称: NPCF_CREATE_PARTY / 变量名称: create_party_filter_name
-		#define Pandas_NpcFilter_CREATE_PARTY
-
-		// 当玩家准备加入队伍时触发过滤器 [Sola丶小克]
-		// 事件类型: Filter / 事件名称: OnPCPartyJoinFilter
-		// 常量名称: NPCF_JOIN_PARTY / 变量名称: join_party_filter_name
-		#define Pandas_NpcFilter_JOIN_PARTY
-
-		// 当玩家准备离开队伍时触发过滤器 [Sola丶小克]
-		// 事件类型: Filter / 事件名称: OnPCPartyLeaveFilter
-		// 常量名称: NPCF_LEAVE_PARTY / 变量名称: leave_party_filter_name
-		#define Pandas_NpcFilter_LEAVE_PARTY
-
-		// 当玩家准备创建公会时触发过滤器 [Sola丶小克]
-		// 事件类型: Filter / 事件名称: OnPCGuildCreateFilter
-		// 常量名称: NPCF_CREATE_GUILD / 变量名称: create_guild_filter_name
-		#define Pandas_NpcFilter_CREATE_GUILD
-
-		// 当玩家准备加入公会时触发过滤器 [Sola丶小克]
-		// 事件类型: Filter / 事件名称: OnPCGuildJoinFilter
-		// 常量名称: NPCF_JOIN_GUILD / 变量名称: join_guild_filter_name
-		#define Pandas_NpcFilter_JOIN_GUILD
-
-		// 当玩家准备离开公会时触发过滤器 [Sola丶小克]
-		// 事件类型: Filter / 事件名称: OnPCGuildLeaveFilter
-		// 常量名称: NPCF_LEAVE_GUILD / 变量名称: leave_guild_filter_name
-		#define Pandas_NpcFilter_LEAVE_GUILD
-
 		// 当玩家准备插入卡片时触发过滤器 [Sola丶小克]
 		// 事件类型: Filter / 事件名称: OnPCInsertCardFilter
 		// 常量名称: NPCF_INSERT_CARD / 变量名称: insert_card_filter_name
@@ -306,21 +276,6 @@
 	// 常量名称: NPCE_UNEQUIP / 变量名称: unequip_event_name
 	#define Pandas_NpcEvent_UNEQUIP
 
-	// 当玩家成功创建队伍后触发事件 [Sola丶小克]
-	// 事件类型: Event / 事件名称: OnPCPartyCreateEvent
-	// 常量名称: NPCE_CREATE_PARTY / 变量名称: create_party_event_name
-	#define Pandas_NpcEvent_CREATE_PARTY
-
-	// 当玩家成功加入队伍后触发事件 [Sola丶小克]
-	// 事件类型: Event / 事件名称: OnPCPartyJoinEvent
-	// 常量名称: NPCE_JOIN_PARTY / 变量名称: join_party_event_name
-	#define Pandas_NpcEvent_JOIN_PARTY
-
-	// 当玩家成功离开队伍后触发事件 [Sola丶小克]
-	// 事件类型: Event / 事件名称: OnPCPartyLeaveEvent
-	// 常量名称: NPCE_LEAVE_PARTY / 变量名称: leave_party_event_name
-	#define Pandas_NpcEvent_LEAVE_PARTY
-
 	// 当人工生命体升级时触发事件 [Sola丶小克]
 	// 事件类型: Event / 事件名称: OnPCHomLvUpEvent
 	// 常量名称: NPCE_HOM_LEVELUP / 变量名称: hom_levelup_event_name
@@ -345,21 +300,6 @@
 	// 事件类型: Event / 事件名称: OnPCHomAliveEvent
 	// 常量名称: NPCE_HOM_WAKE / 变量名称: hom_wake_event_name
 	#define Pandas_NpcEvent_HOM_WAKE
-
-	// 当玩家成功创建公会后触发事件 [Sola丶小克]
-	// 事件类型: Event / 事件名称: OnPCGuildCreateEvent
-	// 常量名称: NPCE_CREATE_GUILD / 变量名称: create_guild_event_name
-	#define Pandas_NpcEvent_CREATE_GUILD
-
-	// 当玩家成功加入公会后触发事件 [Sola丶小克]
-	// 事件类型: Event / 事件名称: OnPCGuildJoinEvent
-	// 常量名称: NPCE_JOIN_GUILD / 变量名称: join_guild_event_name
-	#define Pandas_NpcEvent_JOIN_GUILD
-
-	// 当玩家成功离开公会后触发事件 [Sola丶小克]
-	// 事件类型: Event / 事件名称: OnPCGuildLeaveEvent
-	// 常量名称: NPCE_LEAVE_GUILD / 变量名称: leave_guild_event_name
-	#define Pandas_NpcEvent_LEAVE_GUILD
 
 	// 当玩家成功插入卡片后触发事件 [Sola丶小克]
 	// 事件类型: Event / 事件名称: OnPCInsertCardEvent
