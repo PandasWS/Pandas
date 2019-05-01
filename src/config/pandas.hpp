@@ -91,6 +91,10 @@
 		// 使 map_session_data 可记录事件中断请求 [Sola丶小克]
 		// 结构体修改定位 pc.hpp -> map_session_data.pandas.eventhalt
 		#define Pandas_Struct_Map_Session_Data_EventHalt
+
+		// 使 map_session_data 可记录事件触发请求 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.eventtrigger
+		#define Pandas_Struct_Map_Session_Data_EventTrigger
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
 #endif // Pandas_StructIncrease
 
@@ -241,7 +245,7 @@
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
 
-	// 当玩家杀死 MVP 魔物时触发事件 [Sola丶小克]
+	// 当玩家杀死 MVP 魔物后触发事件 [Sola丶小克]
 	// 事件类型: Event / 事件名称: OnPCKillMvpEvent
 	// 常量名称: NPCE_KILLMVP / 变量名称: killmvp_event_name
 	#define Pandas_NpcEvent_KILLMVP
@@ -265,6 +269,11 @@
 	// 事件类型: Event / 事件名称: OnPCUseSkillEvent
 	// 常量名称: NPCE_USE_SKILL / 变量名称: use_skill_event_name
 	#define Pandas_NpcEvent_USE_SKILL
+
+	// 当玩家的进度条被打断后触发事件 [Sola丶小克]
+	// 事件类型: Event / 事件名称: OnPCProgressAbortEvent
+	// 常量名称: NPCE_PROGRESS_ABORT / 变量名称: progressbar_abort_event_name
+	#define Pandas_NpcEvent_PROGRESS_ABORT
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 #endif // Pandas_NpcEvent
 
@@ -484,6 +493,13 @@
 	#ifdef Pandas_Struct_Map_Session_Data_EventHalt
 		#define Pandas_ScriptCommand_ProcessHalt
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
+
+	// 是否启用 settrigger 脚本指令 [Sola丶小克]
+	// 使用该指令可以设置接下来某个事件的触发行为 (是否触发、下次触发、永久触发)
+	// 此选项开关需要依赖 Pandas_Struct_Map_Session_Data_EventTrigger 的拓展
+	#ifdef Pandas_Struct_Map_Session_Data_EventTrigger
+		#define Pandas_ScriptCommand_SetEventTrigger
+	#endif // Pandas_Struct_Map_Session_Data_EventTrigger
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

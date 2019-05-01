@@ -199,7 +199,7 @@ struct Script_Config {
 	/************************************************************************/
 
 #ifdef Pandas_NpcEvent_KILLMVP
-	const char* killmvp_event_name;	// NPCE_KILLMVP		// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物时触发事件
+	const char* killmvp_event_name;	// NPCE_KILLMVP		// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物后触发事件
 #endif // Pandas_NpcEvent_KILLMVP
 
 #ifdef Pandas_NpcEvent_IDENTIFY
@@ -217,6 +217,10 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_USE_SKILL
 	const char* use_skill_event_name;	// NPCE_USE_SKILL	// OnPCUseSkillEvent	// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
+
+#ifdef Pandas_NpcEvent_PROGRESS_ABORT
+	const char* progressbar_abort_event_name;	// NPCE_PROGRESS_ABORT	// OnPCProgressAbortEvent	// 当玩家的进度条被打断后触发事件
+#endif // Pandas_NpcEvent_PROGRESS_ABORT
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	// NPC related

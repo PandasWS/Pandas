@@ -4570,6 +4570,11 @@ int npc_script_event(struct map_session_data* sd, enum npce_event type){
 		return 0;
 	}
 
+#ifdef Pandas_Struct_Map_Session_Data_EventTrigger
+	if ((getEventTrigger(sd, type) & EVENT_TRIGGER_DISABLED) == EVENT_TRIGGER_DISABLED)
+		return 0;
+#endif // Pandas_Struct_Map_Session_Data_EventTrigger
+
 	std::vector<struct script_event_s>& vector = script_event[type];
 
 	for( struct script_event_s& evt : vector ){
@@ -4651,7 +4656,7 @@ const char *npc_get_script_event_name(int npce_index)
 
 #ifdef Pandas_NpcEvent_KILLMVP
 	case NPCE_KILLMVP:
-		return script_config.killmvp_event_name;	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物时触发事件
+		return script_config.killmvp_event_name;	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物后触发事件
 #endif // Pandas_NpcEvent_KILLMVP
 
 #ifdef Pandas_NpcEvent_IDENTIFY
@@ -4673,6 +4678,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCE_USE_SKILL:
 		return script_config.use_skill_event_name;	// OnPCUseSkillEvent		// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
+
+#ifdef Pandas_NpcEvent_PROGRESS_ABORT
+	case NPCE_PROGRESS_ABORT:
+		return script_config.progressbar_abort_event_name;	// OnPCProgressAbortEvent		// 当玩家的进度条被打断后触发事件
+#endif // Pandas_NpcEvent_PROGRESS_ABORT
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	default:
@@ -5081,3 +5091,48 @@ enum npce_event npc_get_script_event_type(const char* eventname) {
 	return NPCE_MAX;
 }
 #endif // Pandas_Struct_Map_Session_Data_WorkInEvent
+
+#ifdef Pandas_Struct_Map_Session_Data_EventTrigger
+//************************************
+// Method:		setEventTrigger
+// Description:	设置一个事件的触发行为
+// Parameter:	struct map_session_data * sd
+// Parameter:	enum npce_event event
+// Parameter:	uint16 next_trigger_flag
+// Returns:		bool 设置成功与否
+//************************************
+bool setEventTrigger(struct map_session_data *sd, enum npce_event event, enum npce_trigger trigger_flag) {
+	nullpo_retr(false, sd);
+	try
+	{
+		sd->pandas.eventtrigger[event] = trigger_flag;
+		return true;
+	}
+	catch (const std::exception&)
+	{
+		return false;
+	}
+}
+
+//************************************
+// Method:		getEventTrigger
+// Description:	获取一个事件的触发行为
+// Parameter:	struct map_session_data * sd
+// Parameter:	enum npce_event event
+// Returns:		uint16 当前的触发行为
+//************************************
+npce_trigger getEventTrigger(struct map_session_data *sd, enum npce_event event) {
+	nullpo_retr(EVENT_TRIGGER_NONE, sd);
+	try
+	{
+		npce_trigger current_val = (npce_trigger)sd->pandas.eventtrigger[event];
+		if ((current_val & EVENT_TRIGGER_ONCE) == EVENT_TRIGGER_ONCE)
+			sd->pandas.eventtrigger[event] &= ~EVENT_TRIGGER_ONCE;
+		return current_val;
+	}
+	catch (const std::exception&)
+	{
+		return EVENT_TRIGGER_NONE;
+	}
+}
+#endif // Pandas_Struct_Map_Session_Data_EventTrigger

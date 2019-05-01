@@ -12,6 +12,93 @@
 	#define export_deprecated_constant2(a,b) script_set_constant(a,b,false,true)
 	#define export_deprecated_constant3(a,b,c) script_set_constant_(a,b,c,false,true)
 
+#ifdef Pandas_ScriptCommands
+	/* npce_event values */
+	export_constant(NPCE_LOGIN);
+	export_constant(NPCE_LOGOUT);
+	export_constant(NPCE_LOADMAP);
+	export_constant(NPCE_BASELVUP);
+	export_constant(NPCE_JOBLVUP);
+	export_constant(NPCE_DIE);
+	export_constant(NPCE_KILLPC);
+	export_constant(NPCE_KILLNPC);
+	export_constant(NPCE_STATCALC);
+	export_constant(NPCE_MAX);
+
+	/************************************************************************/
+	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
+	/************************************************************************/
+
+#ifdef Pandas_NpcFilter_IDENTIFY
+	export_constant(NPCF_IDENTIFY);	// identify_filter_name	// OnPCIdentifyFilter		// 当玩家在装备鉴定列表中选择好装备, 并点击“确定”按钮时触发过滤器
+#endif // Pandas_NpcFilter_IDENTIFY
+
+#ifdef Pandas_NpcFilter_ENTERCHAT
+	export_constant(NPCF_ENTERCHAT);	// enterchat_filter_name	// OnPCInChatroomFilter		// 当玩家进入 NPC 开启的聊天室时触发过滤器
+#endif // Pandas_NpcFilter_ENTERCHAT
+
+#ifdef Pandas_NpcFilter_INSERT_CARD
+	export_constant(NPCF_INSERT_CARD);	// insert_card_filter_name	// OnPCInsertCardFilter		// 当玩家准备插入卡片时触发过滤器
+#endif // Pandas_NpcFilter_INSERT_CARD
+
+#ifdef Pandas_NpcFilter_USE_ITEM
+	export_constant(NPCF_USE_ITEM);	// use_item_filter_name	// OnPCUseItemFilter		// 当玩家准备使用非装备类道具时触发过滤器
+#endif // Pandas_NpcFilter_USE_ITEM
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+	export_constant(NPCF_USE_SKILL);	// use_skill_filter_name	// OnPCUseSkillFilter		// 当玩家准备使用技能时触发过滤器
+#endif // Pandas_NpcFilter_USE_SKILL
+
+#ifdef Pandas_NpcFilter_ROULETTE_OPEN
+	export_constant(NPCF_ROULETTE_OPEN);	// roulette_open_filter_name	// OnPCOpenRouletteFilter		// 当玩家准备打开乐透大转盘的时候触发过滤器
+#endif // Pandas_NpcFilter_ROULETTE_OPEN
+
+#ifdef Pandas_NpcFilter_VIEW_EQUIP
+	export_constant(NPCF_VIEW_EQUIP);	// view_equip_filter_name	// OnPCViewEquipFilter		// 当玩家准备查看某个角色的装备时触发过滤器
+#endif // Pandas_NpcFilter_VIEW_EQUIP
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 11>
+
+	/************************************************************************/
+	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
+	/************************************************************************/
+
+#ifdef Pandas_NpcEvent_KILLMVP
+	export_constant(NPCE_KILLMVP);	// killmvp_event_name	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物后触发事件
+#endif // Pandas_NpcEvent_KILLMVP
+
+#ifdef Pandas_NpcEvent_IDENTIFY
+	export_constant(NPCE_IDENTIFY);	// identify_event_name	// OnPCIdentifyEvent		// 当玩家成功鉴定了装备时触发事件
+#endif // Pandas_NpcEvent_IDENTIFY
+
+#ifdef Pandas_NpcEvent_INSERT_CARD
+	export_constant(NPCE_INSERT_CARD);	// insert_card_event_name	// OnPCInsertCardEvent		// 当玩家成功插入卡片后触发事件
+#endif // Pandas_NpcEvent_INSERT_CARD
+
+#ifdef Pandas_NpcEvent_USE_ITEM
+	export_constant(NPCE_USE_ITEM);	// use_item_event_name	// OnPCUseItemEvent		// 当玩家成功使用非装备类道具后触发事件
+#endif // Pandas_NpcEvent_USE_ITEM
+
+#ifdef Pandas_NpcEvent_USE_SKILL
+	export_constant(NPCE_USE_SKILL);	// use_skill_event_name	// OnPCUseSkillEvent		// 当玩家成功使用技能后触发事件
+#endif // Pandas_NpcEvent_USE_SKILL
+
+#ifdef Pandas_NpcEvent_PROGRESS_ABORT
+	export_constant(NPCE_PROGRESS_ABORT);	// progressbar_abort_event_name	// OnPCProgressAbortEvent		// 当玩家的进度条被打断后触发事件
+#endif // Pandas_NpcEvent_PROGRESS_ABORT
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 12>
+
+#endif // Pandas_ScriptCommands
+
+#ifdef Pandas_Struct_Map_Session_Data_EventTrigger
+	/* npce_trigger values */
+	export_constant(EVENT_TRIGGER_NONE);
+	export_constant(EVENT_TRIGGER_DISABLED);
+	export_constant(EVENT_TRIGGER_ONCE);
+	export_constant(EVENT_TRIGGER_EVER);
+	export_constant(EVENT_TRIGGER_MAX);
+#endif // Pandas_Struct_Map_Session_Data_EventTrigger
+
+
 	/* min and maximum variable value */
 	export_constant(INT_MIN);
 	export_constant(INT_MAX);

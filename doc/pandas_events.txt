@@ -233,3 +233,33 @@
 注意事项:
 	- 使用 viewequip 脚本指令也会触发此过滤器
 	- 必须是对方角色公开装备且查看者也有权查看的情况下, 才会触发此过滤器
+
+---------------------------------------
+
+*OnPCProgressAbortEvent:
+
+当玩家的进度条被打断后触发事件
+
+事件关联:
+	关联到进度条被打断的玩家
+
+注意事项:
+	- 该事件默认不会触发, 您需要使用 settrigger 脚本指令设置一下
+	- 关于 settrigger 脚本指令的用法请查阅 doc/pandas_script_commands.txt
+
+---------------------------------------
+
+*OnPCKillMvpEvent:
+
+当玩家杀死 MVP 魔物后触发事件
+
+事件关联:
+	关联到给予 MVP 魔物最后一击的玩家
+
+携带参数:
+	@mob_dead_x			魔物死亡时所处的 X 坐标
+	@mob_dead_y			魔物死亡时所处的 Y 坐标
+	@mob_lasthit_rid	给予魔物最后一击的角色游戏编号 (即 GameID, 在此一般等同于 AccountID)
+	@mob_lasthit_cid	给予魔物最后一击的角色编号
+	@mob_mvp_rid		本次 MVP 角色的游戏编号 (即 GameID, 在此一般等同于 AccountID)
+	@mob_mvp_cid		本次 MVP 角色的角色编号

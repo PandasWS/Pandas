@@ -10945,6 +10945,11 @@ void clif_progressbar_abort(struct map_session_data * sd)
 	WFIFOHEAD(fd,packet_len(0x2f2));
 	WFIFOW(fd,0) = 0x2f2;
 	WFIFOSET(fd,packet_len(0x2f2));
+
+#ifdef Pandas_NpcEvent_PROGRESS_ABORT
+	if ((getEventTrigger(sd, NPCE_PROGRESS_ABORT) & EVENT_TRIGGER_ONCE) == EVENT_TRIGGER_ONCE)
+		npc_script_event(sd, NPCE_PROGRESS_ABORT);
+#endif // Pandas_NpcEvent_PROGRESS_ABORT
 }
 
 

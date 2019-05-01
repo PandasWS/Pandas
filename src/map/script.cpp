@@ -304,7 +304,7 @@ struct Script_Config script_config = {
 	/************************************************************************/
 
 #ifdef Pandas_NpcEvent_KILLMVP
-	"OnPCKillMvpEvent",	// NPCE_KILLMVP		// killmvp_event_name	// 当玩家杀死 MVP 魔物时触发事件
+	"OnPCKillMvpEvent",	// NPCE_KILLMVP		// killmvp_event_name	// 当玩家杀死 MVP 魔物后触发事件
 #endif // Pandas_NpcEvent_KILLMVP
 
 #ifdef Pandas_NpcEvent_IDENTIFY
@@ -322,6 +322,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcEvent_USE_SKILL
 	"OnPCUseSkillEvent",	// NPCE_USE_SKILL		// use_skill_event_name	// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
+
+#ifdef Pandas_NpcEvent_PROGRESS_ABORT
+	"OnPCProgressAbortEvent",	// NPCE_PROGRESS_ABORT		// progressbar_abort_event_name	// 当玩家的进度条被打断后触发事件
+#endif // Pandas_NpcEvent_PROGRESS_ABORT
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 
 	// NPC related
@@ -25937,7 +25941,7 @@ BUILDIN_FUNC(processhalt) {
 		return SCRIPT_CMD_SUCCESS;
 
 	if (sd->pandas.workinevent == NPCE_MAX) {
-		ShowError("buildin_processhalt: Require work in event script.\n", sd->pandas.workinevent);
+		ShowError("buildin_processhalt: Require work in event script.\n");
 		return SCRIPT_CMD_FAILURE;
 	}
 
@@ -25965,6 +25969,46 @@ BUILDIN_FUNC(processhalt) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_ProcessHalt
+
+#ifdef Pandas_ScriptCommand_SetEventTrigger
+/* ===========================================================
+ * 指令: settrigger
+ * 描述: 使用该指令可以设置某个事件或过滤器的触发行为 (禁止触发、下次触发、永久触发)
+ * 用法: settrigger <事件的常量名称>,<触发行为>;
+ * 返回: 请说明返回值
+ * 作者: 维护者昵称
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(settrigger) {
+	struct map_session_data *sd = nullptr;
+
+	if (!script_rid2sd(sd))
+		return SCRIPT_CMD_SUCCESS;
+
+	uint16 envtype = script_getnum(st, 2);
+	if (envtype >= NPCE_MAX) {
+		ShowError("buildin_settrigger: Invalid npc event type: %d\n", envtype);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	uint16 triggerflag = script_getnum(st, 3);
+	if (triggerflag >= EVENT_TRIGGER_MAX) {
+		ShowError("buildin_settrigger: Invalid npc event trigger type: %d\n", triggerflag);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	const char* name = npc_get_script_event_name(envtype);
+	if (name == nullptr) {
+		ShowError("buildin_settrigger: Can not get the event name for event type : %d\n", envtype);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (!setEventTrigger(sd, (npce_event)envtype, (npce_trigger)triggerflag)) {
+		ShowError("buildin_processhalt: An error occurred while setting the '%s' event trigger type to '%d'.\n", name, triggerflag);
+		return SCRIPT_CMD_FAILURE;
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_SetEventTrigger
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
@@ -26085,6 +26129,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_ProcessHalt
 	BUILDIN_DEF(processhalt,"?"),						// 用于中断源代码的后续处理逻辑 [Sola丶小克]
 #endif // Pandas_ScriptCommand_ProcessHalt
+#ifdef Pandas_ScriptCommand_SetEventTrigger
+	BUILDIN_DEF(settrigger,"ii"),						// 在此写上脚本指令说明 [维护者昵称]
+#endif // Pandas_ScriptCommand_SetEventTrigger
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

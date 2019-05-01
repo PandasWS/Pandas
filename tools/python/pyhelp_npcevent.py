@@ -18,7 +18,7 @@ pandas.hpp @ Filter 类型的宏定义
 pandas.hpp @ Event  类型的宏定义
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 3>
-npc.hpp @ npce_event 中 Filter 类型的 NPCE_XXX 常量定义
+npc.hpp @ npce_event 中 Filter 类型的 NPCF_XXX 常量定义
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 npc.hpp @ npce_event 中 Event  类型的 NPCE_XXX 常量定义
@@ -40,6 +40,12 @@ script.cpp @ Script_Config 中 Filter 类型的事件名称定义
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 script.cpp @ Script_Config 中 Event  类型的事件名称定义
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 11>
+script_constants.hpp 中 Filter 类型的 NPCF_XXX 常量导出定义
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 12>
+script_constants.hpp 中 Event  类型的 NPCE_XXX 常量导出定义
 '''
 
 # -*- coding: utf-8 -*-
@@ -113,6 +119,16 @@ def insert_for_normal_npcevent(inject, options):
         '#endif // {define}'.format(define = define)
     ])
 
+    # script_constants.hpp 中 Event  类型的 NPCE_XXX 常量导出定义
+    inject.insert(12, [
+        '',
+        '#ifdef {define}'.format(define = define),
+        '\texport_constant({const});\t// {var}\t// {name}\t\t// {desc}'.format(
+            const = constant, var = eventvar, name = eventname, desc = eventdesc
+        ),
+        '#endif // {define}'.format(define = define)
+    ])
+
 def insert_for_filter_npcevent(inject, options):
     define = options['define']
     constant = options['constant']
@@ -135,7 +151,7 @@ def insert_for_filter_npcevent(inject, options):
         '\t\t#define {define}'.format(define = define)
     ])
 
-    # npc.hpp @ npce_event 中 Filter 类型的 NPCE_XXX 常量定义
+    # npc.hpp @ npce_event 中 Filter 类型的 NPCF_XXX 常量定义
     inject.insert(3, [
         '',
         '#ifdef {define}'.format(define = define),
@@ -171,6 +187,16 @@ def insert_for_filter_npcevent(inject, options):
         '',
         '#ifdef {define}'.format(define = define),
         '\t"{name}",\t// {const}\t\t// {var}\t// {desc}'.format(
+            const = constant, var = eventvar, name = eventname, desc = eventdesc
+        ),
+        '#endif // {define}'.format(define = define)
+    ])
+	
+    # script_constants.hpp 中 Filter 类型的 NPCF_XXX 常量导出定义
+    inject.insert(11, [
+        '',
+        '#ifdef {define}'.format(define = define),
+        '\texport_constant({const});\t// {var}\t// {name}\t\t// {desc}'.format(
             const = constant, var = eventvar, name = eventname, desc = eventdesc
         ),
         '#endif // {define}'.format(define = define)
@@ -312,7 +338,7 @@ def main():
         'source_dirs' : '../../src',
         'process_exts' : ['.hpp', '.cpp'],
         'mark_format' : r'// PYHELP - NPCEVENT - INSERT POINT - <Section (\d{1,2})>',
-        'mark_counts' : 10
+        'mark_counts' : 12
     }
 
     guide(InjectController(options))

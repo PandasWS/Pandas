@@ -3018,8 +3018,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 
 #ifdef Pandas_NpcEvent_KILLMVP
 		// 除了执行标准的 OnNPCKillEvent 事件之外
-		// 如果杀死的是MVP魔物，那么触发一下 OnMvpKillEvent 事件
-		// 此事件由给予魔物最多伤害的玩家来执行(也就是所谓的MVP玩家) [Sola丶小克]
+		// 如果杀死的是 MVP 魔物，那么触发一下 OnPCKillMvpEvent 事件 [Sola丶小克]
 		if (sd && md && status && status_has_mode(status, MD_MVP)) {
 			pc_setparam(sd, SP_KILLEDRID, md->mob_id);
 			pc_setreg(sd, add_str("@mob_dead_x"), (int)md->bl.x);
