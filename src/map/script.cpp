@@ -26130,7 +26130,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(processhalt,"?"),						// 用于中断源代码的后续处理逻辑 [Sola丶小克]
 #endif // Pandas_ScriptCommand_ProcessHalt
 #ifdef Pandas_ScriptCommand_SetEventTrigger
-	BUILDIN_DEF(settrigger,"ii"),						// 在此写上脚本指令说明 [维护者昵称]
+	BUILDIN_DEF(settrigger,"ii"),						// 使用该指令可以设置某个事件或过滤器的触发行为 [Sola丶小克]
 #endif // Pandas_ScriptCommand_SetEventTrigger
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction

@@ -495,7 +495,7 @@
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
 	// 是否启用 settrigger 脚本指令 [Sola丶小克]
-	// 使用该指令可以设置接下来某个事件的触发行为 (是否触发、下次触发、永久触发)
+	// 使用该指令可以设置某个事件或过滤器的触发行为 (是否触发、下次触发、永久触发)
 	// 此选项开关需要依赖 Pandas_Struct_Map_Session_Data_EventTrigger 的拓展
 	#ifdef Pandas_Struct_Map_Session_Data_EventTrigger
 		#define Pandas_ScriptCommand_SetEventTrigger
