@@ -15,37 +15,62 @@
 pandas.hpp @ Filter 类型的宏定义
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 2>
-pandas.hpp @ Event  类型的宏定义
-
-// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 npc.hpp @ npce_event 中 Filter 类型的 NPCF_XXX 常量定义
 
-// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
-npc.hpp @ npce_event 中 Event  类型的 NPCE_XXX 常量定义
-
-// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
+// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 npc.cpp @ npc_get_script_event_name 中 Filter 类型的变量和常量关联
 
-// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
-npc.cpp @ npc_get_script_event_name 中 Event  类型的变量和常量关联
-
-// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
+// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 script.hpp @ Script_Config 中 Filter 类型的 xxx_event_name 变量定义
 
-// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
-script.hpp @ Script_Config 中 Event  类型的 xxx_event_name 变量定义
-
-// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
+// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 script.cpp @ Script_Config 中 Filter 类型的事件名称定义
 
+// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
+script_constants.hpp 中 Filter 类型的 NPCF_XXX 常量导出定义
+
+//============================================================
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
+pandas.hpp @ Event  类型的宏定义
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
+npc.hpp @ npce_event 中 Event  类型的 NPCE_XXX 常量定义
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
+npc.cpp @ npc_get_script_event_name 中 Event  类型的变量和常量关联
+
 // PYHELP - NPCEVENT - INSERT POINT - <Section 10>
-script.cpp @ Script_Config 中 Event  类型的事件名称定义
+script.hpp @ Script_Config 中 Event  类型的 xxx_filter_name 变量定义
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 11>
-script_constants.hpp 中 Filter 类型的 NPCF_XXX 常量导出定义
+script.cpp @ Script_Config 中 Event  类型的事件名称定义
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 12>
 script_constants.hpp 中 Event  类型的 NPCE_XXX 常量导出定义
+
+//============================================================
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
+pandas.hpp @ Express 类型的宏定义
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
+npc.hpp @ npce_event 中 Express 类型的 NPCX_XXX 常量定义
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
+npc.cpp @ npc_get_script_event_name 中 Express 类型的变量和常量关联
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
+script.hpp @ Script_Config 中 Express 类型的 xxx_express_name 变量定义
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
+script.cpp @ Script_Config 中 Express 类型的事件名称定义
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
+script_constants.hpp 中 Express 类型的 NPCX_XXX 常量导出定义
+
+// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
+npc.cpp 中 Express 类型的 NPCX_XXX 常量设置
 '''
 
 # -*- coding: utf-8 -*-
@@ -64,7 +89,7 @@ def insert_for_normal_npcevent(inject, options):
     eventdesc = options['eventdesc']
 
     # pandas.hpp @ Event  类型的宏定义
-    inject.insert(2, [
+    inject.insert(7, [
         '',
         '\t// {desc} [维护者昵称]'.format(
             desc = eventdesc
@@ -79,7 +104,7 @@ def insert_for_normal_npcevent(inject, options):
     ])
 
     # npc.hpp @ npce_event 中 Event  类型的 NPCE_XXX 常量定义
-    inject.insert(4, [
+    inject.insert(8, [
         '',
         '#ifdef {define}'.format(define = define),
         '\t{const},\t// {var}\t// {name}\t\t// {desc}'.format(
@@ -89,7 +114,7 @@ def insert_for_normal_npcevent(inject, options):
     ])
 
     # npc.cpp @ npc_get_script_event_name 中 Event  类型的变量和常量关联
-    inject.insert(6, [
+    inject.insert(9, [
         '',
         '#ifdef {define}'.format(define = define),
         '\tcase {const}:'.format(const = constant),
@@ -100,7 +125,7 @@ def insert_for_normal_npcevent(inject, options):
     ])
 
     # script.hpp @ Script_Config 中 Event  类型的 xxx_event_name 变量定义
-    inject.insert(8, [
+    inject.insert(10, [
         '',
         '#ifdef {define}'.format(define = define),
         '\tconst char* {var};\t// {const}\t// {name}\t// {desc}'.format(
@@ -110,7 +135,7 @@ def insert_for_normal_npcevent(inject, options):
     ])
 
     # script.cpp @ Script_Config 中 Event  类型的事件名称定义
-    inject.insert(10, [
+    inject.insert(11, [
         '',
         '#ifdef {define}'.format(define = define),
         '\t"{name}",\t// {const}\t\t// {var}\t// {desc}'.format(
@@ -152,7 +177,7 @@ def insert_for_filter_npcevent(inject, options):
     ])
 
     # npc.hpp @ npce_event 中 Filter 类型的 NPCF_XXX 常量定义
-    inject.insert(3, [
+    inject.insert(2, [
         '',
         '#ifdef {define}'.format(define = define),
         '\t{const},\t// {var}\t// {name}\t\t// {desc}'.format(
@@ -162,7 +187,7 @@ def insert_for_filter_npcevent(inject, options):
     ])
 
     # npc.cpp @ npc_get_script_event_name 中 Filter 类型的变量和常量关联
-    inject.insert(5, [
+    inject.insert(3, [
         '',
         '#ifdef {define}'.format(define = define),
         '\tcase {const}:'.format(const = constant),
@@ -172,8 +197,8 @@ def insert_for_filter_npcevent(inject, options):
         '#endif // {define}'.format(define = define)
     ])
 
-    # script.hpp @ Script_Config 中 Filter 类型的 xxx_event_name 变量定义
-    inject.insert(7, [
+    # script.hpp @ Script_Config 中 Filter 类型的 xxx_filter_name 变量定义
+    inject.insert(4, [
         '',
         '#ifdef {define}'.format(define = define),
         '\tconst char* {var};\t// {const}\t// {name}\t// {desc}'.format(
@@ -183,7 +208,7 @@ def insert_for_filter_npcevent(inject, options):
     ])
 
     # script.cpp @ Script_Config 中 Filter 类型的事件名称定义
-    inject.insert(9, [
+    inject.insert(5, [
         '',
         '#ifdef {define}'.format(define = define),
         '\t"{name}",\t// {const}\t\t// {var}\t// {desc}'.format(
@@ -191,12 +216,95 @@ def insert_for_filter_npcevent(inject, options):
         ),
         '#endif // {define}'.format(define = define)
     ])
-	
+    
     # script_constants.hpp 中 Filter 类型的 NPCF_XXX 常量导出定义
-    inject.insert(11, [
+    inject.insert(6, [
         '',
         '#ifdef {define}'.format(define = define),
         '\texport_constant({const});\t// {var}\t// {name}\t\t// {desc}'.format(
+            const = constant, var = eventvar, name = eventname, desc = eventdesc
+        ),
+        '#endif // {define}'.format(define = define)
+    ])
+
+def insert_for_express_npcevent(inject, options):
+    define = options['define']
+    constant = options['constant']
+    eventname = options['eventname']
+    eventvar = options['eventvar']
+    eventdesc = options['eventdesc']
+
+    # pandas.hpp @ Express 类型的宏定义
+    inject.insert(13, [
+        '',
+        '\t\t// {desc} [维护者昵称]'.format(
+            desc = eventdesc
+        ),
+        '\t\t// 事件类型: Express / 事件名称: {name}'.format(
+            name = eventname
+        ),
+        '\t\t// 常量名称: {const} / 变量名称: {var}'.format(
+            const = constant, var = eventvar
+        ),
+        '\t\t#define {define}'.format(define = define)
+    ])
+
+    # npc.hpp @ npce_event 中 Express 类型的 NPCX_XXX 常量定义
+    inject.insert(14, [
+        '',
+        '#ifdef {define}'.format(define = define),
+        '\t{const},\t// {var}\t// {name}\t\t// {desc}'.format(
+            const = constant, var = eventvar, name = eventname, desc = eventdesc
+        ),
+        '#endif // {define}'.format(define = define)
+    ])
+
+    # npc.cpp @ npc_get_script_event_name 中 Express 类型的变量和常量关联
+    inject.insert(15, [
+        '',
+        '#ifdef {define}'.format(define = define),
+        '\tcase {const}:'.format(const = constant),
+        '\t\treturn script_config.{var};\t// {name}\t\t// {desc}'.format(
+            var = eventvar, name = eventname, desc = eventdesc
+        ),
+        '#endif // {define}'.format(define = define)
+    ])
+
+    # script.hpp @ Script_Config 中 Express 类型的 xxx_express_name 变量定义
+    inject.insert(16, [
+        '',
+        '#ifdef {define}'.format(define = define),
+        '\tconst char* {var};\t// {const}\t// {name}\t// {desc}'.format(
+            const = constant, var = eventvar, name = eventname, desc = eventdesc
+        ),
+        '#endif // {define}'.format(define = define)
+    ])
+
+    # script.cpp @ Script_Config 中 Express 类型的事件名称定义
+    inject.insert(17, [
+        '',
+        '#ifdef {define}'.format(define = define),
+        '\t"{name}",\t// {const}\t\t// {var}\t// {desc}'.format(
+            const = constant, var = eventvar, name = eventname, desc = eventdesc
+        ),
+        '#endif // {define}'.format(define = define)
+    ])
+    
+    # script_constants.hpp 中 Express 类型的 NPCX_XXX 常量导出定义
+    inject.insert(18, [
+        '',
+        '#ifdef {define}'.format(define = define),
+        '\texport_constant({const});\t// {var}\t// {name}\t\t// {desc}'.format(
+            const = constant, var = eventvar, name = eventname, desc = eventdesc
+        ),
+        '#endif // {define}'.format(define = define)
+    ])
+    
+    # npc.cpp 中 Express 类型的 NPCX_XXX 常量设置
+    inject.insert(19, [
+        '',
+        '#ifdef {define}'.format(define = define),
+        '\t\t{const},\t// {var}\t// {name}\t\t// {desc}'.format(
             const = constant, var = eventvar, name = eventname, desc = eventdesc
         ),
         '#endif // {define}'.format(define = define)
@@ -217,15 +325,19 @@ def guide(inject):
     eventlist = [
         {
             'name' : 'Event 类型的标准事件',
-            'desc' : '0 - Event  类型的标准事件, 不能被 processhalt 指令打断'
+            'desc' : '0 - Event   类型的标准事件, 不能被 processhalt 指令打断'
         },
         {
             'name' : 'Filter 类型的过滤事件',
-            'desc' : '1 - Filter 类型的过滤事件, 可以被 processhalt 指令打断'
+            'desc' : '1 - Filter  类型的过滤事件, 可以被 processhalt 指令打断'
+        },
+        {
+            'name' : 'Express 类型的特殊事件',
+            'desc' : '2 - Express 类型的快速事件, 事件将会被立刻执行, 不进事件队列'
         }
     ]
 
-    # 0 为 Event 类型的事件 | 1 为 Filter 类型的事件
+    # 0 为 Event 类型的事件 | 1 为 Filter 类型的事件 | 2 为 Express 类型的事件
     eventtype = InputController().requireSelect({
         'name' : '想创建的 NPC 事件类型',
         'data' : eventlist
@@ -233,7 +345,12 @@ def guide(inject):
 
     # --------
 
-    constant_prefix = 'NPCE_' if eventtype == 0 else 'NPCF_'
+    constant_prefix = 'NPCE_'
+    if eventtype == 1:
+        constant_prefix = 'NPCF_'
+    elif eventtype == 2:
+        constant_prefix = 'NPCX_'
+
     constant = InputController().requireText({
         'tips' : '请输入该 NPC 事件的 {prefix} 常量名称 (自动大写, {prefix}的末尾部分)'.format(
             prefix = constant_prefix
@@ -248,6 +365,9 @@ def guide(inject):
     elif eventtype == 1:
         define = 'Pandas_NpcFilter_' + constant.replace(constant_prefix, '')
         eventvar = constant.replace(constant_prefix, '').lower() + '_filter_name'
+    elif eventtype == 2:
+        define = 'Pandas_NpcExpress_' + constant.replace(constant_prefix, '')
+        eventvar = constant.replace(constant_prefix, '').lower() + '_express_name'
     else:
         Message.ShowError('发现无效的事件类型, 请确认..')
         Common.exitWithPause(-1)
@@ -255,7 +375,7 @@ def guide(inject):
     # --------
 
     eventname = InputController().requireText({
-        'tips' : '请输入该 NPC 事件的名称 (以 On 开头, 末尾应为 Event 或 Filter)',
+        'tips' : '请输入该 NPC 事件的名称 (以 On 开头, 末尾应为 Event | Filter | Express)',
         'prefix' : ''
     })
 
@@ -271,6 +391,11 @@ def guide(inject):
     if eventtype == 1:
         if not eventname.endswith('Filter'):
             Message.ShowError('Filter 类型的事件, 事件名称必须以 Filter 结尾 (严格区分大小写)')
+            Common.exitWithPause(-1)
+
+    if eventtype == 2:
+        if not eventname.endswith('Express'):
+            Message.ShowError('Express 类型的事件, 事件名称必须以 Express 结尾 (严格区分大小写)')
             Common.exitWithPause(-1)
 
     # --------
@@ -320,6 +445,8 @@ def guide(inject):
         insert_for_normal_npcevent(inject, options)
     elif eventtype == 1:
         insert_for_filter_npcevent(inject, options)
+    elif eventtype == 2:
+        insert_for_express_npcevent(inject, options)
 
     Message.ShowStatus('已经成功写入到源代码, 请检查并完善必要的注释.')
     print('')
