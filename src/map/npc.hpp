@@ -1217,7 +1217,7 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_VIEW_EQUIP
 	NPCF_VIEW_EQUIP,	// view_equip_filter_name	// OnPCViewEquipFilter		// 当玩家准备查看某个角色的装备时触发过滤器
 #endif // Pandas_NpcFilter_VIEW_EQUIP
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
@@ -1246,7 +1246,13 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_PROGRESS_ABORT
 	NPCE_PROGRESS_ABORT,	// progressbar_abort_event_name	// OnPCProgressAbortEvent		// 当玩家的进度条被打断后触发事件
 #endif // Pandas_NpcEvent_PROGRESS_ABORT
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
+
+	/************************************************************************/
+	/* Express 类型的标准事件，这些事件将会被立刻执行, 不进事件队列                */
+	/************************************************************************/
+
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX
 };

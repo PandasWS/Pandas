@@ -16,10 +16,10 @@
 	#define Pandas_FuncIncrease
 	#define Pandas_CreativeWork
 	#define Pandas_Bugfix
+	#define Pandas_ScriptEngine
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
 	#define Pandas_AtCommands
-	#define Pandas_ScriptEngine
 	#define Pandas_ScriptCommands
 	#define Pandas_ScriptResults
 	#define Pandas_ScriptParams
@@ -195,6 +195,15 @@
 #endif // Pandas_Bugfix
 
 // ============================================================================
+// 脚本引擎修改组 - Pandas_ScriptEngine
+// ============================================================================
+
+#ifdef Pandas_ScriptEngine
+	// 使脚本引擎能够支持穿越事件队列机制, 直接执行某些事件 [Sola丶小克]
+	#define Pandas_ScriptEngine_Express
+#endif // Pandas_ScriptEngine
+
+// ============================================================================
 // NPC事件组 - Pandas_NpcEvent
 // ============================================================================
 
@@ -274,7 +283,16 @@
 	// 事件类型: Event / 事件名称: OnPCProgressAbortEvent
 	// 常量名称: NPCE_PROGRESS_ABORT / 变量名称: progressbar_abort_event_name
 	#define Pandas_NpcEvent_PROGRESS_ABORT
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
+
+	/************************************************************************/
+	/* Express 类型的标准事件，这些事件将会被立刻执行, 不进事件队列                */
+	/************************************************************************/
+
+	#ifdef Pandas_ScriptEngine_Express
+		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
+	#endif // Pandas_ScriptEngine_Express
+	
 #endif // Pandas_NpcEvent
 
 // ============================================================================
@@ -344,15 +362,6 @@
 	// 召唤当前(或指定)地图的玩家来到身边 (处于离线挂店模式的角色不会被召唤)
 	#define Pandas_AtCommand_RecallMap
 #endif // Pandas_AtCommands
-
-// ============================================================================
-// 脚本引擎修改组 - Pandas_ScriptEngine
-// ============================================================================
-
-#ifdef Pandas_ScriptEngine
-	// 使脚本引擎能够支持穿越事件队列机制, 直接执行某些事件 [Sola丶小克]
-	#define Pandas_ScriptEngine_Express
-#endif // Pandas_ScriptEngine
 
 // ============================================================================
 // 脚本指令组 - Pandas_ScriptCommands

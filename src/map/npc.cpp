@@ -4538,7 +4538,8 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 #ifdef Pandas_ScriptEngine_Express
 bool npc_event_is_express_type(enum npce_event eventtype) {
 	static std::vector<enum npce_event> express_npce = {
-		NPCE_STATCALC
+		NPCE_STATCALC,
+		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
 	std::vector<enum npce_event>::iterator iter;
@@ -4648,7 +4649,7 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_VIEW_EQUIP:
 		return script_config.view_equip_filter_name;	// OnPCViewEquipFilter		// 当玩家准备查看某个角色的装备时触发过滤器
 #endif // Pandas_NpcFilter_VIEW_EQUIP
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
@@ -4683,7 +4684,13 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCE_PROGRESS_ABORT:
 		return script_config.progressbar_abort_event_name;	// OnPCProgressAbortEvent		// 当玩家的进度条被打断后触发事件
 #endif // Pandas_NpcEvent_PROGRESS_ABORT
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
+
+	/************************************************************************/
+	/* Express 类型的标准事件，这些事件将会被立刻执行, 不进事件队列                */
+	/************************************************************************/
+
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:
 		ShowError("npc_get_script_event_name: npce_index is outside the array limits: %d (max: %d).\n", npce_index, NPCE_MAX);

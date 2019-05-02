@@ -192,7 +192,7 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_VIEW_EQUIP
 	const char* view_equip_filter_name;	// NPCF_VIEW_EQUIP	// OnPCViewEquipFilter	// 当玩家准备查看某个角色的装备时触发过滤器
 #endif // Pandas_NpcFilter_VIEW_EQUIP
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
@@ -221,7 +221,13 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_PROGRESS_ABORT
 	const char* progressbar_abort_event_name;	// NPCE_PROGRESS_ABORT	// OnPCProgressAbortEvent	// 当玩家的进度条被打断后触发事件
 #endif // Pandas_NpcEvent_PROGRESS_ABORT
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
+
+	/************************************************************************/
+	/* Express 类型的标准事件，这些事件将会被立刻执行, 不进事件队列                */
+	/************************************************************************/
+
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related
 	const char* ontouch_event_name;

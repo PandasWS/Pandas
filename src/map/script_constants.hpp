@@ -56,7 +56,7 @@
 #ifdef Pandas_NpcFilter_VIEW_EQUIP
 	export_constant(NPCF_VIEW_EQUIP);	// view_equip_filter_name	// OnPCViewEquipFilter		// 当玩家准备查看某个角色的装备时触发过滤器
 #endif // Pandas_NpcFilter_VIEW_EQUIP
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 11>
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
@@ -87,6 +87,11 @@
 #endif // Pandas_NpcEvent_PROGRESS_ABORT
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 12>
 
+	/************************************************************************/
+	/* Express 类型的标准事件，这些事件将会被立刻执行, 不进事件队列                */
+	/************************************************************************/
+
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
 #endif // Pandas_ScriptCommands
 
 #ifdef Pandas_Struct_Map_Session_Data_EventTrigger
