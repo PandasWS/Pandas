@@ -728,3 +728,42 @@ IP地址:
 
 返回值:
 	该指令无论成功失败, 都不会有返回值
+
+---------------------------------------
+
+*settrigger <事件的常量名称>,<触发行为>;
+
+使用该指令可以设置某个事件或过滤器的触发行为
+
+事件的常量名称:
+	每个事件或过滤器在代码中都有自己唯一的常量名称, 这些常量名称与事件名的关联如下:
+	
+	NPCE_LOGIN				-	OnPCLoginEvent
+	NPCE_LOGOUT				-	OnPCLogoutEvent
+	NPCE_LOADMAP			-	OnPCLoadMapEvent
+	NPCE_BASELVUP			-	OnPCBaseLvUpEvent
+	NPCE_JOBLVUP			-	OnPCJobLvUpEvent
+	NPCE_DIE				-	OnPCDieEvent
+	NPCE_KILLPC				-	OnPCKillEvent
+	NPCE_KILLNPC			-	OnNPCKillEvent
+	NPCE_STATCALC			-	OnPCStatCalcEvent
+	
+	NPCF_IDENTIFY			-	OnPCIdentifyFilter
+	NPCF_ENTERCHAT			-	OnPCInChatroomFilter
+	NPCF_INSERT_CARD		-	OnPCInsertCardFilter
+	NPCF_USE_ITEM			-	OnPCUseItemFilter
+	NPCF_USE_SKILL			-	OnPCUseSkillFilter
+	NPCF_ROULETTE_OPEN		-	OnPCOpenRouletteFilter
+	NPCF_VIEW_EQUIP			-	OnPCViewEquipFilter
+	
+	NPCE_KILLMVP			-	OnPCKillMvpEvent
+	NPCE_IDENTIFY			-	OnPCIdentifyEvent
+	NPCE_INSERT_CARD		-	OnPCInsertCardEvent
+	NPCE_USE_ITEM			-	OnPCUseItemEvent
+	NPCE_USE_SKILL			-	OnPCUseSkillEvent
+	NPCE_PROGRESS_ABORT		-	OnPCProgressAbortEvent
+
+触发行为:
+	EVENT_TRIGGER_DISABLED	- 禁止触发此事件或过滤器
+	EVENT_TRIGGER_ONCE		- 允许下次触发此事件或过滤器
+	EVENT_TRIGGER_EVER		- 允许永久触发此事件或过滤器

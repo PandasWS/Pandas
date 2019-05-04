@@ -233,3 +233,49 @@
 注意事项:
 	- 使用 viewequip 脚本指令也会触发此过滤器
 	- 必须是对方角色公开装备且查看者也有权查看的情况下, 才会触发此过滤器
+
+---------------------------------------
+
+*OnPCProgressAbortEvent:
+
+当玩家的进度条被打断后触发事件
+
+事件关联:
+	关联到进度条被打断的玩家
+
+注意事项:
+	- 该事件默认不会触发, 您需要使用 settrigger 脚本指令设置一下
+	- 关于 settrigger 脚本指令的用法请查阅 doc/pandas_script_commands.txt
+
+---------------------------------------
+
+*OnPCKillMvpEvent:
+
+当玩家杀死 MVP 魔物后触发事件
+
+事件关联:
+	关联到给予 MVP 魔物最后一击的玩家
+
+携带参数:
+	@mob_dead_x			魔物死亡时所处的 X 坐标
+	@mob_dead_y			魔物死亡时所处的 Y 坐标
+	@mob_lasthit_rid	给予魔物最后一击的角色游戏编号 (即 GameID, 在此一般等同于 AccountID)
+	@mob_lasthit_cid	给予魔物最后一击的角色编号
+	@mob_mvp_rid		本次 MVP 角色的游戏编号 (即 GameID, 在此一般等同于 AccountID)
+	@mob_mvp_cid		本次 MVP 角色的角色编号
+
+---------------------------------------
+
+*OnSellItem:
+
+当某个 NPC 使用 callshop 指令打开商店, 且玩家在商店里面出售自己的道具时, 
+此 NPC 的 OnSellItem 标签(存在时)将会被触发.
+
+携带参数:
+	除了 rAthena 自带的参数外, Pandas 拓展了以下数组:
+	@sold_idx[]		用于保存被出售的物品在玩家身上的背包序号
+
+注意事项:
+	- 此事件为 rAthena 官方事件, 具体用法请参考 doc/script_commands.txt
+
+---------------------------------------

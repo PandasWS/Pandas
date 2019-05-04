@@ -1217,14 +1217,14 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_VIEW_EQUIP
 	NPCF_VIEW_EQUIP,	// view_equip_filter_name	// OnPCViewEquipFilter		// 当玩家准备查看某个角色的装备时触发过滤器
 #endif // Pandas_NpcFilter_VIEW_EQUIP
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
 
 #ifdef Pandas_NpcEvent_KILLMVP
-	NPCE_KILLMVP,	// killmvp_event_name	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物时触发事件
+	NPCE_KILLMVP,	// killmvp_event_name	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物后触发事件
 #endif // Pandas_NpcEvent_KILLMVP
 
 #ifdef Pandas_NpcEvent_IDENTIFY
@@ -1242,7 +1242,16 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_USE_SKILL
 	NPCE_USE_SKILL,	// use_skill_event_name	// OnPCUseSkillEvent		// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
+
+#ifdef Pandas_NpcEvent_PROGRESS_ABORT
+	NPCE_PROGRESS_ABORT,	// progressbar_abort_event_name	// OnPCProgressAbortEvent		// 当玩家的进度条被打断后触发事件
+#endif // Pandas_NpcEvent_PROGRESS_ABORT
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
+
+	/************************************************************************/
+	/* Express 类型的快速事件，这些事件将会被立刻执行, 不进事件队列                */
+	/************************************************************************/
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX
 };
@@ -1345,6 +1354,19 @@ bool npc_script_filter(struct map_session_data* sd, enum npce_event type);
 #ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
 enum npce_event npc_get_script_event_type(const char* eventname);
 #endif // Pandas_Struct_Map_Session_Data_WorkInEvent
+
+#ifdef Pandas_Struct_Map_Session_Data_EventTrigger
+enum npce_trigger : uint16 {
+	EVENT_TRIGGER_NONE = 0x00,
+	EVENT_TRIGGER_DISABLED = 0x01,
+	EVENT_TRIGGER_ONCE = 0x02,
+	EVENT_TRIGGER_EVER = 0x04,
+	EVENT_TRIGGER_MAX
+};
+
+bool setEventTrigger(struct map_session_data *sd, enum npce_event event, enum npce_trigger trigger_flag);
+npce_trigger getEventTrigger(struct map_session_data *sd, enum npce_event event);
+#endif // Pandas_Struct_Map_Session_Data_EventTrigger
 
 #ifdef Pandas_ScriptEngine_Express
 bool npc_event_is_express_type(enum npce_event eventtype);

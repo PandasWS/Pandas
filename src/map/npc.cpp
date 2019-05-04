@@ -2019,6 +2019,9 @@ static int npc_selllist_sub(struct map_session_data* sd, int n, unsigned short* 
 	char card_slot[NAME_LENGTH];
 	char option_id[NAME_LENGTH], option_val[NAME_LENGTH], option_param[NAME_LENGTH];
 	int i, j;
+#ifdef Pandas_ScriptResults_OnSellItem
+	int key_idx = 0;
+#endif // Pandas_ScriptResults_OnSellItem
 	int key_nameid = 0;
 	int key_amount = 0;
 	int key_refine = 0;
@@ -2028,6 +2031,9 @@ static int npc_selllist_sub(struct map_session_data* sd, int n, unsigned short* 
 	int key_option_id[MAX_ITEM_RDM_OPT], key_option_val[MAX_ITEM_RDM_OPT], key_option_param[MAX_ITEM_RDM_OPT];
 
 	// discard old contents
+#ifdef Pandas_ScriptResults_OnSellItem
+	script_cleararray_pc(sd, "@sold_idx", (void*)0);
+#endif // Pandas_ScriptResults_OnSellItem
 	script_cleararray_pc(sd, "@sold_nameid", (void*)0);
 	script_cleararray_pc(sd, "@sold_quantity", (void*)0);
 	script_cleararray_pc(sd, "@sold_refine", (void*)0);
@@ -2057,6 +2063,9 @@ static int npc_selllist_sub(struct map_session_data* sd, int n, unsigned short* 
 	{
 		int idx = item_list[i * 2] - 2;
 
+#ifdef Pandas_ScriptResults_OnSellItem
+		script_setarray_pc(sd, "@sold_idx", i, (void*)(intptr_t)idx, &key_idx);
+#endif // Pandas_ScriptResults_OnSellItem
 		script_setarray_pc(sd, "@sold_nameid", i, (void*)(intptr_t)sd->inventory.u.items_inventory[idx].nameid, &key_nameid);
 		script_setarray_pc(sd, "@sold_quantity", i, (void*)(intptr_t)item_list[i*2+1], &key_amount);
 
@@ -4538,7 +4547,8 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 #ifdef Pandas_ScriptEngine_Express
 bool npc_event_is_express_type(enum npce_event eventtype) {
 	static std::vector<enum npce_event> express_npce = {
-		NPCE_STATCALC
+		NPCE_STATCALC,
+		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
 	std::vector<enum npce_event>::iterator iter;
@@ -4569,6 +4579,11 @@ int npc_script_event(struct map_session_data* sd, enum npce_event type){
 		ShowError("npc_script_event: NULL sd. Event Type %d\n", type);
 		return 0;
 	}
+
+#ifdef Pandas_Struct_Map_Session_Data_EventTrigger
+	if ((getEventTrigger(sd, type) & EVENT_TRIGGER_DISABLED) == EVENT_TRIGGER_DISABLED)
+		return 0;
+#endif // Pandas_Struct_Map_Session_Data_EventTrigger
 
 	std::vector<struct script_event_s>& vector = script_event[type];
 
@@ -4643,7 +4658,7 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_VIEW_EQUIP:
 		return script_config.view_equip_filter_name;	// OnPCViewEquipFilter		// 当玩家准备查看某个角色的装备时触发过滤器
 #endif // Pandas_NpcFilter_VIEW_EQUIP
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
@@ -4651,7 +4666,7 @@ const char *npc_get_script_event_name(int npce_index)
 
 #ifdef Pandas_NpcEvent_KILLMVP
 	case NPCE_KILLMVP:
-		return script_config.killmvp_event_name;	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物时触发事件
+		return script_config.killmvp_event_name;	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物后触发事件
 #endif // Pandas_NpcEvent_KILLMVP
 
 #ifdef Pandas_NpcEvent_IDENTIFY
@@ -4673,7 +4688,17 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCE_USE_SKILL:
 		return script_config.use_skill_event_name;	// OnPCUseSkillEvent		// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
+
+#ifdef Pandas_NpcEvent_PROGRESS_ABORT
+	case NPCE_PROGRESS_ABORT:
+		return script_config.progressbar_abort_event_name;	// OnPCProgressAbortEvent		// 当玩家的进度条被打断后触发事件
+#endif // Pandas_NpcEvent_PROGRESS_ABORT
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
+
+	/************************************************************************/
+	/* Express 类型的快速事件，这些事件将会被立刻执行, 不进事件队列                */
+	/************************************************************************/
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:
 		ShowError("npc_get_script_event_name: npce_index is outside the array limits: %d (max: %d).\n", npce_index, NPCE_MAX);
@@ -5081,3 +5106,48 @@ enum npce_event npc_get_script_event_type(const char* eventname) {
 	return NPCE_MAX;
 }
 #endif // Pandas_Struct_Map_Session_Data_WorkInEvent
+
+#ifdef Pandas_Struct_Map_Session_Data_EventTrigger
+//************************************
+// Method:		setEventTrigger
+// Description:	设置一个事件的触发行为
+// Parameter:	struct map_session_data * sd
+// Parameter:	enum npce_event event
+// Parameter:	uint16 next_trigger_flag
+// Returns:		bool 设置成功与否
+//************************************
+bool setEventTrigger(struct map_session_data *sd, enum npce_event event, enum npce_trigger trigger_flag) {
+	nullpo_retr(false, sd);
+	try
+	{
+		sd->pandas.eventtrigger[event] = trigger_flag;
+		return true;
+	}
+	catch (const std::exception&)
+	{
+		return false;
+	}
+}
+
+//************************************
+// Method:		getEventTrigger
+// Description:	获取一个事件的触发行为
+// Parameter:	struct map_session_data * sd
+// Parameter:	enum npce_event event
+// Returns:		uint16 当前的触发行为
+//************************************
+npce_trigger getEventTrigger(struct map_session_data *sd, enum npce_event event) {
+	nullpo_retr(EVENT_TRIGGER_NONE, sd);
+	try
+	{
+		npce_trigger current_val = (npce_trigger)sd->pandas.eventtrigger[event];
+		if ((current_val & EVENT_TRIGGER_ONCE) == EVENT_TRIGGER_ONCE)
+			sd->pandas.eventtrigger[event] &= ~EVENT_TRIGGER_ONCE;
+		return current_val;
+	}
+	catch (const std::exception&)
+	{
+		return EVENT_TRIGGER_NONE;
+	}
+}
+#endif // Pandas_Struct_Map_Session_Data_EventTrigger
