@@ -329,9 +329,8 @@ struct Script_Config script_config = {
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 11>
 
 	/************************************************************************/
-	/* Express 类型的标准事件，这些事件将会被立刻执行, 不进事件队列                */
+	/* Express 类型的快速事件，这些事件将会被立刻执行, 不进事件队列                */
 	/************************************************************************/
-
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 
 	// NPC related

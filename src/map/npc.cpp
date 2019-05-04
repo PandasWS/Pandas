@@ -4687,9 +4687,8 @@ const char *npc_get_script_event_name(int npce_index)
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
 
 	/************************************************************************/
-	/* Express 类型的标准事件，这些事件将会被立刻执行, 不进事件队列                */
+	/* Express 类型的快速事件，这些事件将会被立刻执行, 不进事件队列                */
 	/************************************************************************/
-
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:
