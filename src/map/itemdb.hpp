@@ -78,9 +78,6 @@ enum item_itemid
 	ITEMID_ANGRA_MANYU					= 1599,
 	ITEMID_PAINT_BRUSH					= 6122,
 	ITEMID_MAGIC_GEAR_FUEL				= 6146,
-#ifdef Pandas_Fix_E_Token_Of_Siegfried
-	ITEMID_E_TOKEN_OF_SIEGFRIED			= 6316,
-#endif // Pandas_Fix_E_Token_Of_Siegfried
 	ITEMID_STRANGE_EMBRYO				= 6415,
 	ITEMID_STONE						= 7049,
 	ITEMID_FIRE_BOTTLE					= 7135,
