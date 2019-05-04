@@ -263,3 +263,19 @@
 	@mob_lasthit_cid	给予魔物最后一击的角色编号
 	@mob_mvp_rid		本次 MVP 角色的游戏编号 (即 GameID, 在此一般等同于 AccountID)
 	@mob_mvp_cid		本次 MVP 角色的角色编号
+
+---------------------------------------
+
+*OnSellItem:
+
+当某个 NPC 使用 callshop 指令打开商店, 且玩家在商店里面出售自己的道具时, 
+此 NPC 的 OnSellItem 标签(存在时)将会被触发.
+
+携带参数:
+	除了 rAthena 自带的参数外, Pandas 拓展了以下数组:
+	@sold_idx[]		用于保存被出售的物品在玩家身上的背包序号
+
+注意事项:
+	- 此事件为 rAthena 官方事件, 具体用法请参考 doc/script_commands.txt
+
+---------------------------------------
