@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "status.hpp"
+
 #include "../common/cbasetypes.hpp"
 
 bool amulet_is(uint16 nameid);

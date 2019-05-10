@@ -5,7 +5,6 @@
 
 #include "pc.hpp"
 #include "itemdb.hpp"
-#include "status.hpp"
 
 #include "../common/nullpo.hpp"
 #include "../common/utils.hpp"
