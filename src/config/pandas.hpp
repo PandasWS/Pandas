@@ -95,6 +95,10 @@
 		// 使 map_session_data 可记录事件触发请求 [Sola丶小克]
 		// 结构体修改定位 pc.hpp -> map_session_data.pandas.eventtrigger
 		#define Pandas_Struct_Map_Session_Data_EventTrigger
+
+		// 使 map_session_data 可记录当前是否正在进行护身符能力计算 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.amulet_calculating
+		#define Pandas_Struct_Map_Session_Data_AmuletCalculating
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
 #endif // Pandas_StructIncrease
 
@@ -167,6 +171,17 @@
 	// & 1 = 避免物品被玩家主动使用而消耗
 	// & 2 = 避免物品被作为发动技能的必要道具而消耗
 	#define Pandas_Implement_Function_Of_Item_Properties
+
+	// 是否启用护身符系统 [Sola丶小克]
+	// 道具是否为护身符需要在 (item_properties.yml) 数据库中配置, 标记为：
+	// & 4 = 该道具为护身符道具
+	#ifdef Pandas_Struct_Item_Data_Properties
+		#define Pandas_Amulet
+
+		#ifndef Pandas_Struct_Map_Session_Data_AmuletCalculating
+			#undef Pandas_Amulet
+		#endif // Pandas_Struct_Map_Session_Data_AmuletCalculating
+	#endif // Pandas_Struct_Item_Data_Properties
 #endif // Pandas_CreativeWork
 
 // ============================================================================
