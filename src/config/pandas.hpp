@@ -176,10 +176,10 @@
 	// 道具是否为护身符需要在 (item_properties.yml) 数据库中配置, 标记为：
 	// & 4 = 该道具为护身符道具
 	#ifdef Pandas_Struct_Item_Data_Properties
-		#define Pandas_Amulet
+		#define Pandas_Implement_Function_Of_Item_Amulet
 
 		#ifndef Pandas_Struct_Map_Session_Data_AmuletCalculating
-			#undef Pandas_Amulet
+			#undef Pandas_Implement_Function_Of_Item_Amulet
 		#endif // Pandas_Struct_Map_Session_Data_AmuletCalculating
 	#endif // Pandas_Struct_Item_Data_Properties
 #endif // Pandas_CreativeWork

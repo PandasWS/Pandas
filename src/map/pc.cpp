@@ -59,9 +59,9 @@
 #include "unit.hpp" // unit_stop_attack(), unit_stop_walking()
 #include "vending.hpp" // struct s_vending
 
-#ifdef Pandas_Amulet
+#ifdef Pandas_Implement_Function_Of_Item_Amulet
 #include "itemamulet.hpp"
-#endif // Pandas_Amulets
+#endif // Pandas_Implement_Function_Of_Item_Amulets
 
 using namespace rathena;
 
@@ -4860,9 +4860,9 @@ char pc_additem(struct map_session_data *sd,struct item *item,int amount,e_log_p
 	if (id->flag.guid && !item->unique_id)
 		item->unique_id = pc_generate_unique_id(sd);
 
-#ifdef Pandas_Amulet
+#ifdef Pandas_Implement_Function_Of_Item_Amulet
 	bool is_first_amulet = amulet_is_firstone(sd, item, amount);
-#endif // Pandas_Amulet
+#endif // Pandas_Implement_Function_Of_Item_Amulet
 
 	// Stackable | Non Rental
 	if( itemdb_isstackable2(id) && item->expire_time == 0 ) {
@@ -4913,9 +4913,9 @@ char pc_additem(struct map_session_data *sd,struct item *item,int amount,e_log_p
 	if(id->flag.autoequip)
 		pc_equipitem(sd, i, id->equip);
 
-#ifdef Pandas_Amulet
+#ifdef Pandas_Implement_Function_Of_Item_Amulet
 	amulet_apply_additem(sd, i, is_first_amulet);
-#endif // Pandas_Amulet
+#endif // Pandas_Implement_Function_Of_Item_Amulet
 
 	/* rental item check */
 	if( item->expire_time ) {
@@ -4959,28 +4959,28 @@ char pc_delitem(struct map_session_data *sd,int n,int amount,int type, short rea
 
 	log_pick_pc(sd, log_type, -amount, &sd->inventory.u.items_inventory[n]);
 
-#ifdef Pandas_Amulet
+#ifdef Pandas_Implement_Function_Of_Item_Amulet
 	bool is_last_amulet = amulet_is_lastone(sd, n, amount);
-#endif // Pandas_Amulet
+#endif // Pandas_Implement_Function_Of_Item_Amulet
 
 	sd->inventory.u.items_inventory[n].amount -= amount;
 	sd->weight -= sd->inventory_data[n]->weight*amount ;
 	if( sd->inventory.u.items_inventory[n].amount <= 0 ){
 		if(sd->inventory.u.items_inventory[n].equip)
 			pc_unequipitem(sd,n,2|(!(type&4) ? 1 : 0));
-#ifdef Pandas_Amulet
+#ifdef Pandas_Implement_Function_Of_Item_Amulet
 		// 在这里必须触发一下"卸装脚本", 再往下的话物品数据会被清零
 		amulet_apply_delitem(sd, n, is_last_amulet);
-#endif // Pandas_Amulet
+#endif // Pandas_Implement_Function_Of_Item_Amulet
 		memset(&sd->inventory.u.items_inventory[n],0,sizeof(sd->inventory.u.items_inventory[0]));
 		sd->inventory_data[n] = NULL;
 	}
-#ifdef Pandas_Amulet
+#ifdef Pandas_Implement_Function_Of_Item_Amulet
 	else {
 		// 在这里同类护身符还没被全部清理干净, 需要触发一下"使用脚本"
 		amulet_apply_delitem(sd, n, is_last_amulet);
 	}
-#endif // Pandas_Amulet
+#endif // Pandas_Implement_Function_Of_Item_Amulet
 
 	if(!(type&1))
 		clif_delitem(sd,n,amount,reason);
