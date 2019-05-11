@@ -36,6 +36,10 @@
 #include "pet.hpp"
 #include "script.hpp"
 
+#ifdef Pandas_Implement_Function_Of_Item_Amulet
+#include "itemamulet.hpp"
+#endif // Pandas_Implement_Function_Of_Item_Amulet
+
 // Regen related flags.
 enum e_regen {
 	RGN_NONE = 0x00,
@@ -3857,6 +3861,10 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		sd->right_weapon.atkmods[SZ_MEDIUM] = sd->right_weapon.atkmods[SZ_BIG];
 		sd->left_weapon.atkmods[SZ_MEDIUM] = sd->left_weapon.atkmods[SZ_BIG];
 	}
+
+#ifdef Pandas_Implement_Function_Of_Item_Amulet
+	amulet_status_calc(sd, opt);
+#endif // Pandas_Implement_Function_Of_Item_Amulet
 
 // ----- STATS CALCULATION -----
 

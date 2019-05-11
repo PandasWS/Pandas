@@ -184,6 +184,7 @@
     <ClInclude Include="homunculus.hpp" />
     <ClInclude Include="instance.hpp" />
     <ClInclude Include="intif.hpp" />
+    <ClInclude Include="itemamulet.hpp" />
     <ClInclude Include="itemdb.hpp" />
     <ClInclude Include="itemprops.hpp" />
     <ClInclude Include="log.hpp" />
@@ -229,6 +230,7 @@
     <ClCompile Include="homunculus.cpp" />
     <ClCompile Include="instance.cpp" />
     <ClCompile Include="intif.cpp" />
+    <ClCompile Include="itemamulet.cpp" />
     <ClCompile Include="itemdb.cpp" />
     <ClCompile Include="itemprops.cpp" />
     <ClCompile Include="log.cpp" />
