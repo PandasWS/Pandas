@@ -44,6 +44,9 @@ bool amulet_is_firstone(struct map_session_data *sd, struct item *item, int amou
  	nullpo_retr(false, sd);
  	nullpo_retr(false, item);
 
+	if (!sd || !item)
+		return false;
+
 	amount = cap_value(amount, 0, MAX_AMOUNT);
 	if (item && item->nameid == 0 || amount <= 0)
 		return false;
@@ -167,10 +170,10 @@ void amulet_apply_delitem(struct map_session_data *sd, int n, bool is_lastone) {
 void amulet_status_calc(struct map_session_data *sd, enum e_status_calc_opt opt) {
 	nullpo_retv(sd);
 
-	if (!sd->pandas.amulet_calculating)
-		sd->pandas.amulet_calculating = true;
-	else
+	if (!sd || sd->pandas.amulet_calculating)
 		return;
+
+	sd->pandas.amulet_calculating = true;
 
 	short save_current_equip_item_index = current_equip_item_index;
 

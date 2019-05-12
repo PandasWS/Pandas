@@ -25,23 +25,30 @@ bool regexGroupVal(std::string patterns, std::string content, int groupid, std::
 	pcre *re = NULL;
 	pcre_extra *extra = NULL;
 	const char *error = NULL;
-	int erroffset = -1, r = -1, ovector_len = 30, ovector[30] = { 0 };
+	int erroffset = -1, r = PCRE_ERROR_NOMATCH, ovector_len = 30, ovector[30] = { 0 };
 
-	re = pcre_compile(patterns.c_str(), 0, &error, &erroffset, NULL);
-	extra = pcre_study(re, 0, &error);
-	r = pcre_exec(re, extra, content.c_str(), content.length(), 0, 0, ovector, ovector_len);
+	do 
+	{
+		re = pcre_compile(patterns.c_str(), 0, &error, &erroffset, NULL);
+		if (!re) break;
 
-	if (r != PCRE_ERROR_NOMATCH) {
-		const char *substring_start = content.c_str() + ovector[2 * groupid];
-		int substring_length = ovector[2 * groupid + 1] - ovector[2 * groupid];
-		char* matched = new char[substring_length + 1];
+		extra = pcre_study(re, 0, &error);
+		if (!extra) break;
 
-		memset(matched, 0, substring_length + 1);
-		strncpy(matched, substring_start, substring_length);
-		val = std::string(matched);
+		r = pcre_exec(re, extra, content.c_str(), content.length(), 0, 0, ovector, ovector_len);
 
-		delete[] matched;
-	}
+		if (r != PCRE_ERROR_NOMATCH) {
+			const char *substring_start = content.c_str() + ovector[2 * groupid];
+			int substring_length = ovector[2 * groupid + 1] - ovector[2 * groupid];
+			char* matched = new char[substring_length + 1];
+
+			memset(matched, 0, substring_length + 1);
+			strncpy(matched, substring_start, substring_length);
+			val = std::string(matched);
+
+			delete[] matched;
+		}
+	} while (false);
 
 	if (!re) pcre_free(re);
 	if (!extra) pcre_free(extra);
@@ -59,11 +66,18 @@ bool regexMatch(std::string patterns, std::string content) {
 	pcre *re = NULL;
 	pcre_extra *extra = NULL;
 	const char *error = NULL;
-	int erroffset = -1, r = -1, ovector_len = 30, ovector[30] = { 0 };
+	int erroffset = -1, r = PCRE_ERROR_NOMATCH, ovector_len = 30, ovector[30] = { 0 };
 
-	re = pcre_compile(patterns.c_str(), 0, &error, &erroffset, NULL);
-	extra = pcre_study(re, 0, &error);
-	r = pcre_exec(re, extra, content.c_str(), content.length(), 0, 0, ovector, ovector_len);
+	do 
+	{
+		re = pcre_compile(patterns.c_str(), 0, &error, &erroffset, NULL);
+		if (!re) break;
+
+		extra = pcre_study(re, 0, &error);
+		if (!extra) break;
+
+		r = pcre_exec(re, extra, content.c_str(), content.length(), 0, 0, ovector, ovector_len);
+	} while (false);
 
 	if (!re) pcre_free(re);
 	if (!extra) pcre_free(extra);
