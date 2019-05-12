@@ -189,6 +189,12 @@
 // ============================================================================
 
 #ifdef Pandas_Bugfix
+	// 修复 rAthena 部分空指针检测遗漏或者类似的崩溃错误 [Sola丶小克]
+	// 程序内部大量使用 nullpo.cpp 中的系列函数来判定空指针并采取一些措施,
+	// 但是这个方法只在 Debug 模式下可以成功拦截空指针并输出报错信息.
+	// 在 Release 模式下, 有一些检测不够严格的地方会导致程序直接崩溃, 这是我们不想见到的
+	#define Pandas_Fix_NullPtr_Protect
+
 	// 用 mysql_set_character_set 来设置 MySQL 的编码字符集 [Sola丶小克]
 	#define Pandas_Fix_Mysql_SetEncoding
 
