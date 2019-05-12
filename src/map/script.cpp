@@ -26100,8 +26100,8 @@ BUILDIN_FUNC(processhalt) {
  * 指令: settrigger
  * 描述: 使用该指令可以设置某个事件或过滤器的触发行为 (禁止触发、下次触发、永久触发)
  * 用法: settrigger <事件的常量名称>,<触发行为>;
- * 返回: 请说明返回值
- * 作者: 维护者昵称
+ * 返回: 该指令无论成功失败, 都不会有返回值
+ * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(settrigger) {
 	struct map_session_data *sd = nullptr;
@@ -26134,6 +26134,43 @@ BUILDIN_FUNC(settrigger) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_SetEventTrigger
+
+#ifdef Pandas_ScriptCommand_MessageColor
+/* ===========================================================
+ * 指令: messagecolor
+ * 描述: 发送指定颜色的消息文本到聊天窗口中
+ * 用法: messagecolor "<消息文本>"{,"<文本颜色代码>",<发送目标>,<游戏单位编号>};
+ * 返回: 该指令无论成功失败, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(messagecolor) {
+	const char* text = script_getstr(st, 2);
+
+	const char* color = "ffffff";
+	if (script_hasdata(st, 3)) {
+		color = script_getstr(st, 3);
+	}
+
+	struct map_session_data *sd = nullptr;
+	if (!script_mapid2sd(5, sd)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	send_target target = AREA;
+	if (script_hasdata(st, 4)) {
+		switch (script_getnum(st, 4)) {
+			case BC_ALL:	target = ALL_CLIENT;	break;
+			case BC_MAP:	target = ALL_SAMEMAP;	break;
+			case BC_SELF:	target = SELF;			break;
+			case BC_AREA:
+			default:		target = AREA;			break;
+		}
+	}
+
+	clif_messagecolor(&sd->bl, strtol(color, (char**)NULL, 16), text, true, target);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_MessageColor
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
@@ -26257,6 +26294,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_SetEventTrigger
 	BUILDIN_DEF(settrigger,"ii"),						// 使用该指令可以设置某个事件或过滤器的触发行为 [Sola丶小克]
 #endif // Pandas_ScriptCommand_SetEventTrigger
+#ifdef Pandas_ScriptCommand_MessageColor
+	BUILDIN_DEF(messagecolor,"s???"),					// 发送指定颜色的消息文本到聊天窗口中 [Sola丶小克]
+#endif // Pandas_ScriptCommand_MessageColor
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

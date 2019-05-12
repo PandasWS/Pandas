@@ -527,6 +527,10 @@
 	#ifdef Pandas_Struct_Map_Session_Data_EventTrigger
 		#define Pandas_ScriptCommand_SetEventTrigger
 	#endif // Pandas_Struct_Map_Session_Data_EventTrigger
+
+	// 是否启用 messagecolor 脚本指令 [Sola丶小克]
+	// 使用该指令可以发送指定颜色的消息文本到聊天窗口中
+	#define Pandas_ScriptCommand_MessageColor
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
