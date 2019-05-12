@@ -376,6 +376,16 @@ int instance_create(int owner_id, const char *name, enum instance_mode mode) {
 
 	nullpo_retr(-1, db);
 
+#ifdef Pandas_Fix_NullPtr_Protect
+	// 用于确定 db 指针的参数来自 name 变量, 这个 name 变量有可能来自于脚本引擎
+	// 调用此函数的时候若给 name 变量传递一个不存在的副本名称, 那么后续的操作中会导致程序出现崩溃
+	// 为此, 在这里进行一次 nullpo 之外的判断, 避免在 Release 模式下出现空指针崩溃
+	if (!db) {
+		ShowError("instance_create: Could not found '%s' from instance database.\n", name);
+		return -1;
+	}
+#endif // Pandas_Fix_NullPtr_Protect
+
 	switch(mode) {
 		case IM_NONE:
 			break;
