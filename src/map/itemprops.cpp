@@ -18,7 +18,7 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 		return 0;
 	}
 
-	if (nameid == 0 || !itemdb_exists(nameid)) {
+	if (!itemdb_exists(nameid)) {
 		this->invalidWarning(node, "Unknown item ID %hu in Item Properties Database.\n", nameid);
 		return 0;
 	}

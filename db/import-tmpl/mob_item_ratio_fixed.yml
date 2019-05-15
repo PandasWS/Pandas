@@ -1,0 +1,9 @@
+﻿Header:
+  Type: MOBITEM_FIXED_RATIO_DB
+  Version: 1
+
+Body:
+#  - ItemID: 501
+#    FixedRatio: 10
+#    ForMonster:
+#      - MobID: 1021

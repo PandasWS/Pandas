@@ -1,0 +1,14 @@
+﻿Header:
+  Type: MOBITEM_FIXED_RATIO_DB
+  Version: 1
+
+Body:
+#  - ItemID: 501
+#    FixedRatio: 10
+#    ForMonster:
+#      - MobID: 1021
+#      - MobID: 1022
+
+Footer:
+  Imports:
+  - Path: db/import/mob_item_ratio_fixed.yml

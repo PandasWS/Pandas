@@ -55,6 +55,8 @@
 	// 类似 item_flag 数据库, 不过 rAthena 自己会不断扩充 flag 的定义
 	// 为了避免未来可能存在的冲突, 直接创建一个新的数据库来存放对物品属性的自定义扩充
 	#define Pandas_Database_ItemProperties
+
+	#define Pandas_Database_MobItem_FixedRatio
 #endif // Pandas_DatabaseIncrease
 
 // ============================================================================

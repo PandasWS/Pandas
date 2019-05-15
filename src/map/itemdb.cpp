@@ -20,6 +20,7 @@
 #include "mob.hpp"
 #include "pc.hpp"
 #include "status.hpp"
+
 #ifdef Pandas_Database_ItemProperties
 #include "itemprops.hpp"
 #endif // Pandas_Database_ItemProperties

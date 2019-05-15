@@ -40,6 +40,10 @@
 #include "pet.hpp"
 #include "quest.hpp"
 
+#ifdef Pandas_Database_MobItem_FixedRatio
+#include "mobdrop.hpp"
+#endif // Pandas_Database_MobItem_FixedRatio
+
 using namespace rathena;
 
 #define ACTIVE_AI_RANGE 2	//Distance added on top of 'AREA_SIZE' at which mobs enter active AI mode.
@@ -5333,6 +5337,11 @@ void mob_db_load(bool is_reload){
 	mob_item_drop_ratio = idb_alloc(DB_OPT_BASE);
 	mob_skill_db = idb_alloc(DB_OPT_BASE);
 	mob_summon_db = idb_alloc(DB_OPT_BASE);
+
+#ifdef Pandas_Database_MobItem_FixedRatio
+	mobitem_fixedratio_db.load();
+#endif // Pandas_Database_MobItem_FixedRatio
+
 	mob_load();
 }
 
@@ -5469,6 +5478,11 @@ void do_final_mob(bool is_reload){
 	mob_item_drop_ratio->destroy(mob_item_drop_ratio,mob_item_drop_ratio_free);
 	mob_skill_db->destroy(mob_skill_db, mob_skill_db_free);
 	mob_summon_db->destroy(mob_summon_db, mob_summon_db_free);
+
+#ifdef Pandas_Database_MobItem_FixedRatio
+	mobitem_fixedratio_db.clear();
+#endif // Pandas_Database_MobItem_FixedRatio
+
 	if( !is_reload ) {
 		ers_destroy(item_drop_ers);
 		ers_destroy(item_drop_list_ers);
