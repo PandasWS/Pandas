@@ -352,9 +352,9 @@ const char* itemdb_typename(enum item_types type)
 		case IT_DELAYCONSUME:   return "Delay-Consume Usable";
 		case IT_SHADOWGEAR:     return "Shadow Equipment";
 		case IT_CASH:           return "Cash Usable";
-#ifdef Pandas_Implement_Function_Of_Item_Amulet
+#ifdef Pandas_ItemAmulet_System
 		case IT_AMULET:         return "Amulet";
-#endif // Pandas_Implement_Function_Of_Item_Amulet
+#endif // Pandas_ItemAmulet_System
 	}
 	return "Unknown Type";
 }
@@ -2013,11 +2013,11 @@ static int itemdb_property_parse(DBKey key, DBData *data, va_list ap) {
 	item->properties.no_consume_of_skills = ((properties & 2) ? 1 : 0);
 	item->properties.is_amulet = ((properties & 4) ? 1 : 0);
 
-#ifdef Pandas_Implement_Function_Of_Item_Amulet
+#ifdef Pandas_ItemAmulet_System
 	// 若为护身符道具, 则直接改写它的物品类型为 IT_AMULET
 	if (item->properties.is_amulet)
 		item->type = IT_AMULET;
-#endif // Pandas_Implement_Function_Of_Item_Amulet
+#endif // Pandas_ItemAmulet_System
 
 	return 0;
 }

@@ -172,9 +172,9 @@ enum item_types {
 	IT_DELAYCONSUME,//11
 	IT_SHADOWGEAR,  //12
 	IT_CASH = 18,
-#ifdef Pandas_Implement_Function_Of_Item_Amulet
+#ifdef Pandas_ItemAmulet_System
 	IT_AMULET,	//19
-#endif // Pandas_Implement_Function_Of_Item_Amulet
+#endif // Pandas_ItemAmulet_System
 	IT_MAX
 };
 
