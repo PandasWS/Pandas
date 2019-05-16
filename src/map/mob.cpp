@@ -5030,6 +5030,10 @@ static void mob_drop_ratio_adjust(void){
 			// Adjust rate with given algorithms
 			rate = mob_drop_adjust( rate, rate_adjust, battle_config.item_drop_mvp_min, battle_config.item_drop_mvp_max );
 
+#ifdef Pandas_Database_MobItem_FixedRatio
+			rate = mob_fixed_drop_adjust(nameid, mob_id, rate);
+#endif // Pandas_Database_MobItem_FixedRatio
+
 			// calculate and store Max available drop chance of the MVP item
 			if( rate ){
 				id = itemdb_search( nameid );
@@ -5124,6 +5128,10 @@ static void mob_drop_ratio_adjust(void){
 
 			item_dropratio_adjust( nameid, mob_id, &rate_adjust );
 			rate = mob_drop_adjust( rate, rate_adjust, ratemin, ratemax );
+
+#ifdef Pandas_Database_MobItem_FixedRatio
+			rate = mob_fixed_drop_adjust(nameid, mob_id, rate);
+#endif // Pandas_Database_MobItem_FixedRatio
 
 			// calculate and store Max available drop chance of the item
 			// but skip treasure chests.

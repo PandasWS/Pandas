@@ -4,7 +4,6 @@
 #include "mobdrop.hpp"
 
 #include "itemdb.hpp"
-#include "mob.hpp"
 
 MobItemFixedRatioDB mobitem_fixedratio_db;
 
@@ -53,11 +52,6 @@ uint64 MobItemFixedRatioDB::parseBodyNode(const YAML::Node &node) {
 			uint32 for_monster_id = 0;
 
 			if (!this->asUInt32(subNode, "MobID", for_monster_id)) {
-				return 0;
-			}
-
-			if (!mobdb_checkid(for_monster_id)) {
-				this->invalidWarning(node, "Invalid monster ID %hu in MobItem Fixed Ratio Database.\n", for_monster_id, nameid);
 				return 0;
 			}
 

@@ -3,11 +3,10 @@
   Version: 1
 
 Body:
-#  - ItemID: 501
-#    FixedRatio: 10
+#  - ItemID: 905
+#    FixedRatio: 1
 #    ForMonster:
-#      - MobID: 1021
-#      - MobID: 1022
+#      - MobID: 1020
 
 Footer:
   Imports:

@@ -178,7 +178,7 @@
 
 	// 是否启用护身符系统 [Sola丶小克]
 	// 道具是否为护身符需要在 (item_properties.yml) 数据库中配置
-	// 以下选项开关需要依赖 Pandas_Implement_Function_Of_Item_Properties 的拓展
+	// 此选项开关需要依赖 Pandas_Implement_Function_Of_Item_Properties 的拓展
 	#ifdef Pandas_Implement_Function_Of_Item_Properties
 		#define Pandas_ItemAmulet_System
 	#endif // Pandas_Implement_Function_Of_Item_Properties
