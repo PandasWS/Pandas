@@ -3,6 +3,8 @@
 
 #include "mobdrop.hpp"
 
+#include <algorithm>	// std::find
+
 #include "itemdb.hpp"
 
 MobItemFixedRatioDB mobitem_fixedratio_db;
