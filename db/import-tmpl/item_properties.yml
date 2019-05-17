@@ -2,15 +2,14 @@
 # Item Properties Database - 道具特殊属性数据库
 ###########################################################################
 #
-# ItemID
+# - ItemID
 # 想进行特殊设置的道具编号
 #
 # 若在本数据库的多个配置文件中, 重复出现针对某个道具编号的多个配置,
 # 那么最终只会以最高优先级的配置为准, 优先级依次如下:
 #
 # - 1. db/import/item_properties.yml (高优先)
-# - 2. db/{pre-}re/item_properties.yml
-# - 3. db/item_properties.yml (低优先)
+# - 2. db/item_properties.yml (低优先)
 #
 # 若同一个文件中出现相同的道具编号, 会以更靠近文件末尾的配置为准
 #
