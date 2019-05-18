@@ -40,6 +40,10 @@
 #include "pet.hpp"
 #include "quest.hpp"
 
+#ifdef Pandas_Database_MobItem_FixedRatio
+#include "mobdrop.hpp"
+#endif // Pandas_Database_MobItem_FixedRatio
+
 using namespace rathena;
 
 #define ACTIVE_AI_RANGE 2	//Distance added on top of 'AREA_SIZE' at which mobs enter active AI mode.
@@ -2743,14 +2747,22 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 				// Now rig the drop rate to never be over 90% unless it is originally >90%.
 				drop_rate = i32max(drop_rate, cap_value(drop_rate_bonus, 0, 9000));
 
+#ifndef Pandas_Database_MobItem_FixedRatio
 				if (pc_isvip(sd)) { // Increase item drop rate for VIP.
+#else
+				if (pc_isvip(sd) && mobdrop_allow_vip(it->nameid, md->status.class_)) { // Increase item drop rate for VIP.
+#endif // Pandas_Database_MobItem_FixedRatio
 					drop_rate += (int)(0.5 + drop_rate * battle_config.vip_drop_increase / 100.);
 					drop_rate = min(drop_rate,10000); //cap it to 100%
 				}
 			}
 
 #ifdef RENEWAL_DROP
+#ifndef Pandas_Database_MobItem_FixedRatio
 			if( drop_modifier != 100 ) {
+#else
+			if (drop_modifier != 100 && mobdrop_allow_lv(it->nameid, md->status.class_)) {
+#endif // Pandas_Database_MobItem_FixedRatio
 				drop_rate = apply_rate(drop_rate, drop_modifier);
 				if( drop_rate < 1 )
 					drop_rate = 1;
@@ -5026,6 +5038,10 @@ static void mob_drop_ratio_adjust(void){
 			// Adjust rate with given algorithms
 			rate = mob_drop_adjust( rate, rate_adjust, battle_config.item_drop_mvp_min, battle_config.item_drop_mvp_max );
 
+#ifdef Pandas_Database_MobItem_FixedRatio
+			rate = mobdrop_fixed_droprate_adjust(nameid, mob_id, rate);
+#endif // Pandas_Database_MobItem_FixedRatio
+
 			// calculate and store Max available drop chance of the MVP item
 			if( rate ){
 				id = itemdb_search( nameid );
@@ -5120,6 +5136,10 @@ static void mob_drop_ratio_adjust(void){
 
 			item_dropratio_adjust( nameid, mob_id, &rate_adjust );
 			rate = mob_drop_adjust( rate, rate_adjust, ratemin, ratemax );
+
+#ifdef Pandas_Database_MobItem_FixedRatio
+			rate = mobdrop_fixed_droprate_adjust(nameid, mob_id, rate);
+#endif // Pandas_Database_MobItem_FixedRatio
 
 			// calculate and store Max available drop chance of the item
 			// but skip treasure chests.
@@ -5333,6 +5353,11 @@ void mob_db_load(bool is_reload){
 	mob_item_drop_ratio = idb_alloc(DB_OPT_BASE);
 	mob_skill_db = idb_alloc(DB_OPT_BASE);
 	mob_summon_db = idb_alloc(DB_OPT_BASE);
+
+#ifdef Pandas_Database_MobItem_FixedRatio
+	mobitem_fixedratio_db.load();
+#endif // Pandas_Database_MobItem_FixedRatio
+
 	mob_load();
 }
 
@@ -5469,6 +5494,11 @@ void do_final_mob(bool is_reload){
 	mob_item_drop_ratio->destroy(mob_item_drop_ratio,mob_item_drop_ratio_free);
 	mob_skill_db->destroy(mob_skill_db, mob_skill_db_free);
 	mob_summon_db->destroy(mob_summon_db, mob_summon_db_free);
+
+#ifdef Pandas_Database_MobItem_FixedRatio
+	mobitem_fixedratio_db.clear();
+#endif // Pandas_Database_MobItem_FixedRatio
+
 	if( !is_reload ) {
 		ers_destroy(item_drop_ers);
 		ers_destroy(item_drop_list_ers);

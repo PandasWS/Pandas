@@ -9,12 +9,12 @@
 #include "../common/cbasetypes.hpp"
 #include "../common/database.hpp"
 
-struct s_item_properties_table {
+struct s_item_properties_item {
 	uint32 nameid;
 	uint32 property;
 };
 
-class ItemProperties : public TypesafeYamlDatabase<uint32, s_item_properties_table> {
+class ItemProperties : public TypesafeYamlDatabase<uint32, s_item_properties_item> {
 public:
 	ItemProperties() : TypesafeYamlDatabase("ITEM_PROPERTIES_DB", 1) {
 
@@ -26,4 +26,4 @@ public:
 
 extern ItemProperties item_properties_db;
 
-uint32 itemdb_get_property(uint16 nameid);
+uint32 itemdb_get_property(uint32 nameid);

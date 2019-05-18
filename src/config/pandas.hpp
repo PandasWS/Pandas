@@ -55,6 +55,10 @@
 	// 类似 item_flag 数据库, 不过 rAthena 自己会不断扩充 flag 的定义
 	// 为了避免未来可能存在的冲突, 直接创建一个新的数据库来存放对物品属性的自定义扩充
 	#define Pandas_Database_ItemProperties
+
+	// 是否启用魔物道具固定掉率数据库及其功能 [Sola丶小克]
+	// 通过这个数据库可以指定某个道具的全局固定掉落概率, 且能绕过等级惩罚和VIP掉率加成等机制
+	#define Pandas_Database_MobItem_FixedRatio
 #endif // Pandas_DatabaseIncrease
 
 // ============================================================================
@@ -167,21 +171,18 @@
 	#define Pandas_Shadowgear_Support_Card
 
 	// 实现道具特殊属性数据库的实际作用 [Sola丶小克]
-	// 截止目前, 该数据库 (item_properties.yml) 支持两个特殊的属性标记, 分别是:
+	// 截止目前, 该数据库 (item_properties.yml) 支持以下特殊的属性标记, 分别是:
 	// & 1 = 避免物品被玩家主动使用而消耗
 	// & 2 = 避免物品被作为发动技能的必要道具而消耗
+	// & 4 = 该道具为护身符道具
 	#define Pandas_Implement_Function_Of_Item_Properties
 
 	// 是否启用护身符系统 [Sola丶小克]
-	// 道具是否为护身符需要在 (item_properties.yml) 数据库中配置, 标记为：
-	// & 4 = 该道具为护身符道具
-	#ifdef Pandas_Struct_Item_Data_Properties
-		#define Pandas_Implement_Function_Of_Item_Amulet
-
-		#ifndef Pandas_Struct_Map_Session_Data_AmuletCalculating
-			#undef Pandas_Implement_Function_Of_Item_Amulet
-		#endif // Pandas_Struct_Map_Session_Data_AmuletCalculating
-	#endif // Pandas_Struct_Item_Data_Properties
+	// 道具是否为护身符需要在 (item_properties.yml) 数据库中配置
+	// 此选项开关需要依赖 Pandas_Implement_Function_Of_Item_Properties 的拓展
+	#ifdef Pandas_Implement_Function_Of_Item_Properties
+		#define Pandas_ItemAmulet_System
+	#endif // Pandas_Implement_Function_Of_Item_Properties
 #endif // Pandas_CreativeWork
 
 // ============================================================================
