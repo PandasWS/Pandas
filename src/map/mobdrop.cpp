@@ -109,9 +109,25 @@ uint32 mobdrop_fixed_droprate_adjust(uint32 nameid, uint32 mobid, uint32 rate) {
 	return data->fixed_ratio;
 }
 
+//************************************
+// Method:		mobdrop_allow_modifier_sub
+// Description:	内部函数, 判断是否允许"等级惩罚"和"VIP加成"机制给道具掉率带来影响
+// Parameter:	uint32 nameid
+// Parameter:	uint32 mobid
+// Parameter:	uint8 modifier	1 = 进行等级惩罚判断, 2 = 进行 VIP 掉率判断
+// Returns:		bool 返回 true 表示允许
+//************************************
 bool mobdrop_allow_modifier_sub(uint32 nameid, uint32 mobid, uint8 modifier) {
 	std::shared_ptr<s_mobitem_fixed_ratio_item> data = mobitem_fixedratio_db.find(nameid);
 	if (!data) return true;
+
+	// 若指定了只对某些魔物有效的话, 那么判断 mobid 是否在列表中
+	// 若不指定的魔物列表中, 那么默认允许掉率被"等级惩罚"或"VIP加成"机制带来的影响
+	if (!data->monsters.empty()) {
+		std::vector<uint32>::iterator iter;
+		iter = std::find(data->monsters.begin(), data->monsters.end(), mobid);
+		if (iter == data->monsters.end()) return true;
+	}
 
 	switch (modifier) {
 	case 1:	return !data->ignore_level_penalty;		// Level Penalty
@@ -121,10 +137,24 @@ bool mobdrop_allow_modifier_sub(uint32 nameid, uint32 mobid, uint8 modifier) {
 	return true;
 }
 
+//************************************
+// Method:		mobdrop_allow_lv
+// Description:	判断某个道具被某个魔物掉落时, 是否允许等级惩罚调整
+// Parameter:	uint32 nameid
+// Parameter:	uint32 mobid
+// Returns:		bool 返回 true 表示允许
+//************************************
 bool mobdrop_allow_lv(uint32 nameid, uint32 mobid) {
 	return mobdrop_allow_modifier_sub(nameid, mobid, 1);	// Level Penalty
 }
 
+//************************************
+// Method:		mobdrop_allow_vip
+// Description:	判断某个道具被某个魔物掉落时, 是否允许 VIP 掉率加成
+// Parameter:	uint32 nameid
+// Parameter:	uint32 mobid
+// Returns:		bool 返回 true 表示允许
+//************************************
 bool mobdrop_allow_vip(uint32 nameid, uint32 mobid) {
 	return mobdrop_allow_modifier_sub(nameid, mobid, 2);	// Vip Increase
 }
