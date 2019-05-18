@@ -49,6 +49,26 @@ uint64 MobItemFixedRatioDB::parseBodyNode(const YAML::Node &node) {
 		mobitem_fixed_ratio_item->fixed_ratio = fixed_ratio;
 	}
 
+	if (this->nodeExists(node, "IgnoreLevelPenalty")) {
+		bool ignore_level_penalty = false;
+
+		if (!this->asBool(node, "IgnoreLevelPenalty", ignore_level_penalty)) {
+			return 0;
+		}
+
+		mobitem_fixed_ratio_item->ignore_level_penalty = ignore_level_penalty;
+	}
+
+	if (this->nodeExists(node, "IgnoreVipIncrease")) {
+		bool ignore_vip_increase = false;
+
+		if (!this->asBool(node, "IgnoreVipIncrease", ignore_vip_increase)) {
+			return 0;
+		}
+
+		mobitem_fixed_ratio_item->ignore_vip_increase = ignore_vip_increase;
+	}
+
 	if (this->nodeExists(node, "ForMonster")) {
 		for (const YAML::Node& subNode : node["ForMonster"]) {
 			uint32 for_monster_id = 0;
@@ -69,14 +89,14 @@ uint64 MobItemFixedRatioDB::parseBodyNode(const YAML::Node &node) {
 }
 
 //************************************
-// Method:		mob_fixed_drop_adjust
-// Description:	
-// Parameter:	uint32 nameid
-// Parameter:	uint32 mobid
-// Parameter:	uint32 rate
-// Returns:		uint32
+// Method:		mobdrop_fixed_droprate_adjust
+// Description:	根据魔物编号和掉落的道具编号, 查询他们的固定基础掉率
+// Parameter:	uint32 nameid	掉落的道具编号
+// Parameter:	uint32 mobid	魔物编号
+// Parameter:	uint32 rate		当前原始概率
+// Returns:		uint32 有配置则返回配置的概率, 无配置则返回当前原始概率
 //************************************
-uint32 mob_fixed_drop_adjust(uint32 nameid, uint32 mobid, uint32 rate) {
+uint32 mobdrop_fixed_droprate_adjust(uint32 nameid, uint32 mobid, uint32 rate) {
 	std::shared_ptr<s_mobitem_fixed_ratio_item> data = mobitem_fixedratio_db.find(nameid);
 	if (!data) return rate;
 
@@ -87,4 +107,24 @@ uint32 mob_fixed_drop_adjust(uint32 nameid, uint32 mobid, uint32 rate) {
 	}
 
 	return data->fixed_ratio;
+}
+
+bool mobdrop_allow_modifier_sub(uint32 nameid, uint32 mobid, uint8 modifier) {
+	std::shared_ptr<s_mobitem_fixed_ratio_item> data = mobitem_fixedratio_db.find(nameid);
+	if (!data) return true;
+
+	switch (modifier) {
+	case 1:	return !data->ignore_level_penalty;		// Level Penalty
+	case 2:	return !data->ignore_vip_increase;		// Vip Increase
+	}
+
+	return true;
+}
+
+bool mobdrop_allow_lv(uint32 nameid, uint32 mobid) {
+	return mobdrop_allow_modifier_sub(nameid, mobid, 1);	// Level Penalty
+}
+
+bool mobdrop_allow_vip(uint32 nameid, uint32 mobid) {
+	return mobdrop_allow_modifier_sub(nameid, mobid, 2);	// Vip Increase
 }

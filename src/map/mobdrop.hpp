@@ -12,6 +12,8 @@
 struct s_mobitem_fixed_ratio_item {
 	uint32 nameid;
 	uint32 fixed_ratio;
+	bool ignore_level_penalty;
+	bool ignore_vip_increase;
 	std::vector<uint32> monsters;
 };
 
@@ -27,4 +29,7 @@ public:
 
 extern MobItemFixedRatioDB mobitem_fixedratio_db;
 
-uint32 mob_fixed_drop_adjust(uint32 nameid, uint32 mobid, uint32 rate);
+uint32 mobdrop_fixed_droprate_adjust(uint32 nameid, uint32 mobid, uint32 rate);
+
+bool mobdrop_allow_lv(uint32 nameid, uint32 mobid);
+bool mobdrop_allow_vip(uint32 nameid, uint32 mobid);
