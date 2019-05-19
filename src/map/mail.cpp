@@ -300,6 +300,8 @@ int mail_openmail(struct map_session_data *sd)
 	if( sd->state.storage_flag || sd->state.vending || sd->state.buyingstore || sd->state.trading )
 		return 0;
 
+	PANDAS_NOMAIL_ARTISAN_RETR(0);
+
 	clif_Mail_window(sd->fd, 0);
 
 	return 1;
