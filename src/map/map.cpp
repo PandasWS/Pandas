@@ -3689,6 +3689,14 @@ void map_flags_init(void){
 		mapdata->skill_duration.clear();
 		map_free_questinfo(mapdata);
 
+#ifdef Pandas_MapFlag_MobDroprate
+		mapdata->mob_droprate = 100;
+#endif // Pandas_MapFlag_MobDroprate
+
+#ifdef Pandas_MapFlag_MvpDroprate
+		mapdata->mvp_droprate = 100;
+#endif // Pandas_MapFlag_MvpDroprate
+
 		if (instance_start && i >= instance_start)
 			continue;
 
@@ -5037,7 +5045,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 #ifdef Pandas_MapFlag_MobDroprate
 		case MF_MOBDROPRATE:
 			if (!status)
-				mapdata->mob_droprate = 0;
+				mapdata->mob_droprate = 100;
 			else {
 				nullpo_retr(false, args);
 				mapdata->mob_droprate = args->flag_val;
@@ -5048,7 +5056,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 #ifdef Pandas_MapFlag_MvpDroprate
 		case MF_MVPDROPRATE:
 			if (!status)
-				mapdata->mvp_droprate = 0;
+				mapdata->mvp_droprate = 100;
 			else {
 				nullpo_retr(false, args);
 				mapdata->mvp_droprate = args->flag_val;

@@ -362,12 +362,12 @@
 	// TODO: 请在此填写此地图标记的说明
 	#define Pandas_MapFlag_NoMerc
 
-	// 是否启用 mobdroprate 地图标记 [维护者昵称]
-	// TODO: 请在此填写此地图标记的说明
+	// 是否启用 mobdroprate 地图标记 [Sola丶小克]
+	// 该标记用于额外调整此地图上普通魔物的物品掉落倍率
 	#define Pandas_MapFlag_MobDroprate
 
-	// 是否启用 mvpdroprate 地图标记 [维护者昵称]
-	// TODO: 请在此填写此地图标记的说明
+	// 是否启用 mvpdroprate 地图标记 [Sola丶小克]
+	// 该标记用于额外调整此地图上 MVP 魔物的物品掉落倍率
 	#define Pandas_MapFlag_MvpDroprate
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags

@@ -2757,6 +2757,22 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 				}
 			}
 
+#ifdef Pandas_MapFlag_MobDroprate
+			{
+				struct map_data *mapdata = map_getmapdata(m);
+				if (!status_has_mode(&md->status, MD_MVP))
+					drop_rate = apply_rate(drop_rate, mapdata->mob_droprate);
+			}
+#endif // Pandas_MapFlag_MobDroprate
+
+#ifdef Pandas_MapFlag_MvpDroprate
+			{
+				struct map_data *mapdata = map_getmapdata(m);
+				if (status_has_mode(&md->status, MD_MVP))
+					drop_rate = apply_rate(drop_rate, mapdata->mvp_droprate);
+			}
+#endif // Pandas_MapFlag_MvpDroprate
+
 #ifdef RENEWAL_DROP
 #ifndef Pandas_Database_MobItem_FixedRatio
 			if( drop_modifier != 100 ) {
