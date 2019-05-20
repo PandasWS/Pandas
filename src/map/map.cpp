@@ -4777,6 +4777,27 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 				default:
 					return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
 			}
+#ifdef Pandas_MapFlag_Mobinfo
+		case MF_MOBINFO: {
+			if (args && args->flag_val == 1)
+				return mapdata->show_mob_info;
+			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
+		}
+#endif // Pandas_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_MobDroprate
+		case MF_MOBDROPRATE: {
+			if (args && args->flag_val == 1)
+				return mapdata->mob_droprate;
+			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
+		}
+#endif // Pandas_MapFlag_MobDroprate
+#ifdef Pandas_MapFlag_MvpDroprate
+		case MF_MVPDROPRATE: {
+			if (args && args->flag_val == 1)
+				return mapdata->mvp_droprate;
+			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
+		}
+#endif // Pandas_MapFlag_MvpDroprate
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 5>
 		default:
 			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);

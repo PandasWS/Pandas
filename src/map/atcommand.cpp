@@ -4173,7 +4173,7 @@ ACMD_FUNC(mapinfo) {
 	clif_displaymessage(fd, atcmd_output);
 
 #ifdef Pandas_Mapflags
-	strcpy(atcmd_output,msg_txt_cn(sd,100)); // Pandas 专属标记:
+	strcpy(atcmd_output,msg_txt_cn(sd,100)); // Pandas地图标记:
 #ifdef Pandas_MapFlag_NoAutoLoot
 	if (map_getmapflag(m_id, MF_NOAUTOLOOT))
 		strcat(atcmd_output, " NoAutoLoot |");
@@ -4210,6 +4210,27 @@ ACMD_FUNC(mapinfo) {
 	if (map_getmapflag(m_id, MF_NOMERC))
 		strcat(atcmd_output, " NoMerc |");
 #endif // Pandas_MapFlag_NoMerc
+#ifdef Pandas_MapFlag_Mobinfo
+	if (map_getmapflag(m_id, MF_MOBINFO)) {
+		union u_mapflag_args args = {};
+		args.flag_val = 1;	// 将 flag_val 设置为 1 表示为了获取地图标记中具体设置的值
+		sprintf(atcmd_output, "%s Mobinfo: %d |", atcmd_output, map_getmapflag_sub(m_id, MF_MOBINFO, &args));
+	}
+#endif // Pandas_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_MobDroprate
+	if (map_getmapflag(m_id, MF_MOBDROPRATE)) {
+		union u_mapflag_args args = {};
+		args.flag_val = 1;	// 将 flag_val 设置为 1 表示为了获取地图标记中具体设置的值
+		sprintf(atcmd_output, "%s MobDroprate: %d%% |", atcmd_output, map_getmapflag_sub(m_id, MF_MOBDROPRATE, &args));
+	}
+#endif // Pandas_MapFlag_MobDroprate
+#ifdef Pandas_MapFlag_MvpDroprate
+	if (map_getmapflag(m_id, MF_MVPDROPRATE)) {
+		union u_mapflag_args args = {};
+		args.flag_val = 1;	// 将 flag_val 设置为 1 表示为了获取地图标记中具体设置的值
+		sprintf(atcmd_output, "%s MvpDroprate: %d%% |", atcmd_output, map_getmapflag_sub(m_id, MF_MVPDROPRATE, &args));
+	}
+#endif // Pandas_MapFlag_MvpDroprate
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
