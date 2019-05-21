@@ -4314,28 +4314,26 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 #ifdef Pandas_MapFlag_MobDroprate
 		case MF_MOBDROPRATE: {
-			// 若脚本中 mapflag 指定的第一个数值参数无效,
-			// 那么将此参数的值设为 0, 但不会阻断此地图标记的开启或关闭操作
+			// 若脚本中 mapflag 指定的数值无效或为默认值: 100, 则立刻关闭这个地图标记
 			union u_mapflag_args args = {};
 
-			if (sscanf(w4, "%11d", &args.flag_val) < 1)
-				args.flag_val = 0;
-
-			map_setmapflag_sub(m, mapflag, state, &args);
+			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 100 || !state)
+				map_setmapflag(m, mapflag, false);
+			else
+				map_setmapflag_sub(m, mapflag, true, &args);
 			break;
 		}
 #endif // Pandas_MapFlag_MobDroprate
 
 #ifdef Pandas_MapFlag_MvpDroprate
 		case MF_MVPDROPRATE: {
-			// 若脚本中 mapflag 指定的第一个数值参数无效,
-			// 那么将此参数的值设为 0, 但不会阻断此地图标记的开启或关闭操作
+			// 若脚本中 mapflag 指定的数值无效或为默认值: 100, 则立刻关闭这个地图标记
 			union u_mapflag_args args = {};
 
-			if (sscanf(w4, "%11d", &args.flag_val) < 1)
-				args.flag_val = 0;
-
-			map_setmapflag_sub(m, mapflag, state, &args);
+			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 100 || !state)
+				map_setmapflag(m, mapflag, false);
+			else
+				map_setmapflag_sub(m, mapflag, true, &args);
 			break;
 		}
 #endif // Pandas_MapFlag_MvpDroprate
