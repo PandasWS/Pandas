@@ -13,10 +13,5 @@ bool hasPet(const char* _script, unsigned int & pet_mobid);
 bool hasCallfunc(const char* _script);
 
 #ifdef Pandas_MapFlag_NoMail
-	bool nomail_artisan_sub(struct map_session_data *sd);
-	#define PANDAS_NOMAIL_ARTISAN_RETV() { if (nomail_artisan_sub(sd)) return; }
-	#define PANDAS_NOMAIL_ARTISAN_RETR(r) { if (nomail_artisan_sub(sd)) return r; }
-#else
-	#define PANDAS_NOMAIL_ARTISAN_RETV() { }
-	#define PANDAS_NOMAIL_ARTISAN_RETR(r) { }
+	bool mapflag_nomail_helper(struct map_session_data *sd);
 #endif // Pandas_MapFlag_NoMail

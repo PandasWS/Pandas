@@ -15870,8 +15870,6 @@ void clif_parse_Mail_read(int fd, struct map_session_data *sd){
 	if( mail_invalid_operation(sd) )
 		return;
 
-	PANDAS_NOMAIL_ARTISAN_RETV();
-
 	clif_Mail_read(sd, mail_id);
 }
 
@@ -15894,7 +15892,9 @@ void clif_parse_Mail_beginwrite( int fd, struct map_session_data *sd ){
 
 	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
 
-	PANDAS_NOMAIL_ARTISAN_RETV();
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_nomail_helper(sd)) return;
+#endif // Pandas_MapFlag_NoMail
 
 	if( sd->state.storage_flag || sd->state.mail_writing || sd->trade_partner ){
 		clif_send_Mail_beginwrite_ack(sd, name, false);
@@ -15942,7 +15942,9 @@ void clif_parse_Mail_Receiver_Check(int fd, struct map_session_data *sd) {
 
 	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
 
-	PANDAS_NOMAIL_ARTISAN_RETV();
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_nomail_helper(sd)) return;
+#endif // Pandas_MapFlag_NoMail
 
 	intif_mail_checkreceiver(sd, name);
 }
@@ -15970,8 +15972,6 @@ void clif_parse_Mail_getattach( int fd, struct map_session_data *sd ){
 		return;
 	if( mail_invalid_operation(sd) )
 		return;
-
-	PANDAS_NOMAIL_ARTISAN_RETV();
 
 	ARR_FIND(0, MAIL_MAX_INBOX, i, sd->mail.inbox.msg[i].id == mail_id);
 	if( i == MAIL_MAX_INBOX )
@@ -16068,8 +16068,6 @@ void clif_parse_Mail_delete(int fd, struct map_session_data *sd){
 	if( mail_invalid_operation(sd) )
 		return;
 
-	PANDAS_NOMAIL_ARTISAN_RETV();
-
 	ARR_FIND(0, MAIL_MAX_INBOX, i, sd->mail.inbox.msg[i].id == mail_id);
 	if (i < MAIL_MAX_INBOX) {
 		struct mail_message *msg = &sd->mail.inbox.msg[i];
@@ -16108,8 +16106,6 @@ void clif_parse_Mail_return(int fd, struct map_session_data *sd){
 	if( mail_invalid_operation(sd) )
 		return;
 
-	PANDAS_NOMAIL_ARTISAN_RETV();
-
 	ARR_FIND(0, MAIL_MAX_INBOX, i, sd->mail.inbox.msg[i].id == mail_id);
 	if( i < MAIL_MAX_INBOX && sd->mail.inbox.msg[i].send_id != 0 )
 		intif_Mail_return(sd->status.char_id, mail_id);
@@ -16136,7 +16132,9 @@ void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
 	if (idx < 0 || amount < 0 || idx >= MAX_INVENTORY)
 		return;
 
-	PANDAS_NOMAIL_ARTISAN_RETV();
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_nomail_helper(sd)) return;
+#endif // Pandas_MapFlag_NoMail
 
 	flag = mail_setitem(sd, idx, amount);
 
@@ -16201,13 +16199,17 @@ void clif_parse_Mail_send(int fd, struct map_session_data *sd){
 		return;
 	}
 
-	PANDAS_NOMAIL_ARTISAN_RETV();
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_nomail_helper(sd)) return;
+#endif // Pandas_MapFlag_NoMail
 
 	mail_send(sd, RFIFOCP(fd,info->pos[1]), RFIFOCP(fd,info->pos[2]), RFIFOCP(fd,info->pos[4]), RFIFOB(fd,info->pos[3]));
 #else
 	uint16 length = RFIFOW(fd, 2);
 
-	PANDAS_NOMAIL_ARTISAN_RETV();
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_nomail_helper(sd)) return;
+#endif // Pandas_MapFlag_NoMail
 
 	if( length < 0x3e ){
 		ShowWarning("Too short...\n");

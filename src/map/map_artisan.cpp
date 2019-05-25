@@ -145,12 +145,12 @@ bool hasCallfunc(const char* _script) {
 
 #ifdef Pandas_MapFlag_NoMail
 //************************************
-// Method:		nomail_artisan_sub
-// Description:	注入点过多, 封装一下以便进行 nomail 效果的实现
+// Method:		mapflag_nomail_helper
+// Description:	封装一下以便进行 nomail 效果的实现
 // Parameter:	struct map_session_data * sd
 // Returns:		bool 是否禁用邮件系统
 //************************************
-bool nomail_artisan_sub(struct map_session_data *sd) {
+bool mapflag_nomail_helper(struct map_session_data *sd) {
 	nullpo_retr(false, sd);
 
 	if (sd && map_getmapflag(sd->bl.m, MF_NOMAIL)) {
