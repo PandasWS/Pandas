@@ -15892,6 +15892,10 @@ void clif_parse_Mail_beginwrite( int fd, struct map_session_data *sd ){
 
 	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
 
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_nomail_helper(sd)) return;
+#endif // Pandas_MapFlag_NoMail
+
 	if( sd->state.storage_flag || sd->state.mail_writing || sd->trade_partner ){
 		clif_send_Mail_beginwrite_ack(sd, name, false);
 		return;
@@ -15937,6 +15941,10 @@ void clif_parse_Mail_Receiver_Check(int fd, struct map_session_data *sd) {
 	static char name[NAME_LENGTH];
 
 	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
+
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_nomail_helper(sd)) return;
+#endif // Pandas_MapFlag_NoMail
 
 	intif_mail_checkreceiver(sd, name);
 }
@@ -16124,6 +16132,10 @@ void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
 	if (idx < 0 || amount < 0 || idx >= MAX_INVENTORY)
 		return;
 
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_nomail_helper(sd)) return;
+#endif // Pandas_MapFlag_NoMail
+
 	flag = mail_setitem(sd, idx, amount);
 
 	if( flag == MAIL_ATTACH_EQUIPSWITCH ){
@@ -16187,9 +16199,17 @@ void clif_parse_Mail_send(int fd, struct map_session_data *sd){
 		return;
 	}
 
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_nomail_helper(sd)) return;
+#endif // Pandas_MapFlag_NoMail
+
 	mail_send(sd, RFIFOCP(fd,info->pos[1]), RFIFOCP(fd,info->pos[2]), RFIFOCP(fd,info->pos[4]), RFIFOB(fd,info->pos[3]));
 #else
 	uint16 length = RFIFOW(fd, 2);
+
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_nomail_helper(sd)) return;
+#endif // Pandas_MapFlag_NoMail
 
 	if( length < 0x3e ){
 		ShowWarning("Too short...\n");

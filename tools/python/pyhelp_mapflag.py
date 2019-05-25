@@ -52,7 +52,8 @@ import os
 from libs import InjectController, InputController
 from libs import Common, Message
 
-def insert_for_normal_mapflag(inject, options, special = True):
+def insert_for_normal_mapflag(inject, options):
+    flagtype = options['flagtype']
     define = options['define']
     constant = options['constant']
 
@@ -80,13 +81,23 @@ def insert_for_normal_mapflag(inject, options, special = True):
     ])
 
     # atcommand.cpp @ ACMD_FUNC(mapinfo) 可选的地图信息输出
-    # 注意: 这里只对普通地图标记进行处理
-    # 数值型和其他复杂赋值型的地图标记, 若有需要在 mapinfo 指令中展现得自己手动加代码
-    if special:
+    if flagtype == 0:
         inject.insert(9, [
             '#ifdef %s' % define,
             '\tif (map_getmapflag(m_id, %s))' % constant,
             '\t\tstrcat(atcmd_output, " %s |");' % define.replace('Pandas_MapFlag_', ''),
+            '#endif // %s' % define
+        ])
+    elif flagtype == 1:
+        inject.insert(9, [
+            '#ifdef %s' % define,
+            '\tif (map_getmapflag(m_id, %s)) {' % constant,
+            '\t\tunion u_mapflag_args args = {};',
+            '\t\targs.flag_val = 1;\t// 将 flag_val 设置为 1 表示为了获取地图标记中具体设置的值',
+            '\t\tsprintf(atcmd_output, "%s {shortname}: %d |", atcmd_output, map_getmapflag_sub(m_id, {constant}, &args));'.format(
+                shortname = define.replace('Pandas_MapFlag_', ''), constant = constant
+            ),
+            '\t}',
             '#endif // %s' % define
         ])
 
@@ -94,9 +105,10 @@ def insert_for_one_param_mapflag(inject, options):
     define = options['define']
     constant = options['constant']
     var_name_1 = options['var_name_1']
-    zero_disable = options['zero_disable']
+    default_val = options['default_val']
+    default_disable = options['default_disable']
 
-    insert_for_normal_mapflag(inject, options, False)
+    insert_for_normal_mapflag(inject, options)
 
     # atcommand.cpp @ mapflag GM指令的赋值屏蔽处理
     # 按照目前 rAthena 的代码理解, 只有普通的开关型地图标记, 才能被 @mapflag 赋值
@@ -117,30 +129,30 @@ def insert_for_one_param_mapflag(inject, options):
     ])
 
     # map.cpp @ map_getmapflag_sub 的读取标记处理
-    if zero_disable:
-        inject.insert(5, [
-            '#ifdef %s' % define,
-            '\t\tcase %s:' % constant,
-            '\t\t\treturn util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0) ? mapdata->%s : 0;' % var_name_1,
-            '#endif // %s' % define,
-            ''
-        ])
-    else:
-        # 当第一个数值参数为 0 的时候, 如果不当做 mapflag 被关闭的话
-        # 那么这里什么都不用做, rAthena 的默认代码会正确返回地图标记目前的开关状态
-        pass
+    inject.insert(5, [
+        '#ifdef %s' % define,
+        '\t\tcase %s: {' % constant,
+        '\t\t\tif (args && args->flag_val == 1)',
+        '\t\t\t\treturn mapdata->%s;' % var_name_1,
+        '\t\t\treturn util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);',
+        '\t\t}',
+        '#endif // %s' % define,
+        ''
+    ])
 
     # map.cpp @ map_setmapflag_sub 的设置标记处理
-    if zero_disable:
+    if default_disable:
         inject.insert(6, [
             '#ifdef %s' % define,
             '\t\tcase %s:' % constant,
             '\t\t\tif (!status)',
-            '\t\t\t\tmapdata->%s = 0;' % var_name_1,
+            '\t\t\t\tmapdata->%s = %d;' % (var_name_1, default_val),
             '\t\t\telse {',
             '\t\t\t\tnullpo_retr(false, args);',
-            '\t\t\t\tmapdata->%s = args->flag_val;' % var_name_1,
-            '\t\t\t\tif (!args->flag_val) status = false;',
+            '\t\t\t\tif (args) {',
+            '\t\t\t\t\tmapdata->%s = args->flag_val;' % var_name_1,
+            '\t\t\t\t\tstatus = !(args->flag_val == %d);' % default_val,
+            '\t\t\t\t}',
             '\t\t\t}',
             '\t\t\tmapdata->flag[mapflag] = status;',
             '\t\t\tbreak;',
@@ -151,10 +163,11 @@ def insert_for_one_param_mapflag(inject, options):
             '#ifdef %s' % define,
             '\t\tcase %s:' % constant,
             '\t\t\tif (!status)',
-            '\t\t\t\tmapdata->%s = 0;' % var_name_1,
+            '\t\t\t\tmapdata->%s = %d;' % (var_name_1, default_val),
             '\t\t\telse {',
             '\t\t\t\tnullpo_retr(false, args);',
-            '\t\t\t\tmapdata->%s = args->flag_val;' % var_name_1,
+            '\t\t\t\tif (args)' % var_name_1,
+            '\t\t\t\t\tmapdata->%s = args->flag_val;' % var_name_1,
             '\t\t\t}',
             '\t\t\tmapdata->flag[mapflag] = status;',
             '\t\t\tbreak;',
@@ -162,21 +175,17 @@ def insert_for_one_param_mapflag(inject, options):
         ])
 
     # npc.cpp @ npc_parse_mapflag 可选的标记处理
-    if zero_disable:
+    if default_disable:
         inject.insert(7, [
             '#ifdef %s' % define,
             '\t\tcase %s: {' % constant,
-            '\t\t\t// 若脚本中 mapflag 指定的数值无效或为 0, 则立刻关闭这个地图标记',
-            '\t\t\tif (state) {',
-            '\t\t\t\tunion u_mapflag_args args = {};',
+            '\t\t\t// 若脚本中 mapflag 指定的数值无效或为默认值: %d, 则立刻关闭这个地图标记' % default_val,
+            '\t\t\tunion u_mapflag_args args = {};',
             '',
-            '\t\t\t\tif (sscanf(w4, "%11d", &args.flag_val) < 1 || !args.flag_val)',
-            '\t\t\t\t\tmap_setmapflag(m, mapflag, false);',
-            '\t\t\t\telse',
-            '\t\t\t\t\tmap_setmapflag_sub(m, mapflag, true, &args);',
-            '\t\t\t}',
-            '\t\t\telse',
+            '\t\t\tif (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == {default_val} || !state)'.format(default_val = default_val),
             '\t\t\t\tmap_setmapflag(m, mapflag, false);',
+            '\t\t\telse',
+            '\t\t\t\tmap_setmapflag_sub(m, mapflag, true, &args);',
             '\t\t\tbreak;',
             '\t\t}',
             '#endif // %s' % define,
@@ -187,11 +196,11 @@ def insert_for_one_param_mapflag(inject, options):
             '#ifdef %s' % define,
             '\t\tcase %s: {' % constant,
             '\t\t\t// 若脚本中 mapflag 指定的第一个数值参数无效,',
-            '\t\t\t// 那么将此参数的值设为 0, 但不会阻断此地图标记的开启或关闭操作',
+            '\t\t\t// 那么将此参数的值设为 %d, 但不会阻断此地图标记的开启或关闭操作' % default_val,
             '\t\t\tunion u_mapflag_args args = {};',
             '',
             '\t\t\tif (sscanf(w4, "%11d", &args.flag_val) < 1)',
-            '\t\t\t\targs.flag_val = 0;',
+            '\t\t\t\targs.flag_val = %d;' % default_val,
             '',
             '\t\t\tmap_setmapflag_sub(m, mapflag, state, &args);',
             '\t\t\tbreak;',
@@ -236,10 +245,6 @@ def guide(inject):
         {
             'name' : '携带单个数值参数的地图标记',
             'desc' : '1 - 携带单个数值参数的地图标记, 可以记录数值变量 (例如 bexp 标记)'
-        },
-        {
-            'name' : '复杂赋值标记',
-            'desc' : '2 - 复杂的赋值标记, 只单纯添加宏定义和 MF 常量, 其他的手动添加'
         }
     ]
 
@@ -260,10 +265,19 @@ def guide(inject):
 
     # --------
 
-    zero_disable = False
+    default_val = 0
     if flagtype == 1:
-        zero_disable = InputController().requireBool({
-            'tips' : '当"第一个数值参数"的值为 0 时, 是否表示移除此地图标记?',
+        default_val = InputController().requireInt({
+            'tips' : '请输入"第一个数值参数"的默认值 (不填则默认为 0)',
+            'prefix' : ''
+        })
+
+    # --------
+
+    default_disable = False
+    if flagtype == 1:
+        default_disable = InputController().requireBool({
+            'tips' : '当"第一个数值参数"的值为 %d 时, 是否表示移除此地图标记?' % default_val,
             'default' : False
         })
 
@@ -276,8 +290,9 @@ def guide(inject):
     Message.ShowInfo('常量名称 : %s' % constant)
     Message.ShowInfo('标记类型 : %s' % flaglist[flagtype]['name'])
     print('')
-    Message.ShowInfo('第一个数值参数名称 : %s' % var_name_1)
-    Message.ShowInfo('第一个数值参数的值为 0 时, 是否禁用此标记 : %s' % zero_disable)
+    Message.ShowInfo('第一个数值参数的变量名称 : %s' % var_name_1)
+    Message.ShowInfo('第一个数值参数的默认值 : %d' % default_val)
+    Message.ShowInfo('第一个数值参数的值为 %d 时, 是否禁用此标记 : %s' % (default_val, default_disable))
     print('-' * 70)
     print('\n')
 
@@ -295,10 +310,12 @@ def guide(inject):
     Message.ShowStatus('开始将地图标记信息写入到源代码...')
 
     options = {
+        'flagtype' : flagtype,
         'define' : define,
         'constant' : constant,
         'var_name_1' : var_name_1,
-        'zero_disable' : zero_disable
+        'default_val' : default_val,
+        'default_disable' : default_disable
     }
 
     if flagtype == 0:

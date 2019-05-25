@@ -7,7 +7,11 @@
 #include <algorithm>	// transform
 
 #include "../common/strlib.hpp"
+#include "../common/nullpo.hpp"
 #include "../../3rdparty/pcre/include/pcre.h"
+
+#include "map.hpp"
+#include "pc.hpp"
 
 // 参考资料: 
 // https://www.cnblogs.com/LiuYanYGZ/p/5903946.html
@@ -138,3 +142,22 @@ bool hasCallfunc(const char* _script) {
 
 	return regexMatch(patterns, script);
 }
+
+#ifdef Pandas_MapFlag_NoMail
+//************************************
+// Method:		mapflag_nomail_helper
+// Description:	封装一下以便进行 nomail 效果的实现
+// Parameter:	struct map_session_data * sd
+// Returns:		bool 是否禁用邮件系统
+//************************************
+bool mapflag_nomail_helper(struct map_session_data *sd) {
+	nullpo_retr(false, sd);
+
+	if (sd && map_getmapflag(sd->bl.m, MF_NOMAIL)) {
+		clif_displaymessage(sd->fd, msg_txt_cn(sd, 95));
+		return true;
+	}
+
+	return false;
+}
+#endif // Pandas_MapFlag_NoMail

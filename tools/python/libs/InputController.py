@@ -26,6 +26,25 @@ class InputController:
         print('')
         return result
 
+    def requireInt(self, options):
+        print('-' * 70)
+        Message.ShowSelect(options['tips'] + ':')
+        result = input(options['prefix'])
+        if not result:
+            if not ('allow_empty' in options and options['allow_empty']):
+                Message.ShowError('请至少输入一个数字. 程序终止')
+                print('-' * 70)
+                Common.exitWithPause(-1)
+            result = '0'
+        if not result.isdigit():
+            Message.ShowError('请输入一个数字而不是字符串. 程序终止')
+            print('-' * 70)
+            Common.exitWithPause(-1)
+        Message.ShowInfo('您输入的是: ' + result)
+        print('-' * 70)
+        print('')
+        return int(result)
+
     def requireSelect(self, options):
         print('-' * 70)
         select_name = options['name']
