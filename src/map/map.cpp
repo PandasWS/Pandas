@@ -5058,7 +5058,8 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 				mapdata->show_mob_info = 0;
 			else {
 				nullpo_retr(false, args);
-				mapdata->show_mob_info = args->flag_val;
+				if (args)
+					mapdata->show_mob_info = args->flag_val;
 			}
 			mapdata->flag[mapflag] = status;
 			break;
@@ -5069,7 +5070,10 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 				mapdata->mob_droprate = 100;
 			else {
 				nullpo_retr(false, args);
-				mapdata->mob_droprate = args->flag_val;
+				if (args) {
+					mapdata->mob_droprate = args->flag_val;
+					status = !(args->flag_val == 100);
+				}
 			}
 			mapdata->flag[mapflag] = status;
 			break;
@@ -5080,7 +5084,10 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 				mapdata->mvp_droprate = 100;
 			else {
 				nullpo_retr(false, args);
-				mapdata->mvp_droprate = args->flag_val;
+				if (args) {
+					mapdata->mvp_droprate = args->flag_val;
+					status = !(args->flag_val == 100);
+				}
 			}
 			mapdata->flag[mapflag] = status;
 			break;
