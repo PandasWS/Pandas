@@ -2747,11 +2747,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 				// Now rig the drop rate to never be over 90% unless it is originally >90%.
 				drop_rate = i32max(drop_rate, cap_value(drop_rate_bonus, 0, 9000));
 
-#ifndef Pandas_Database_MobItem_FixedRatio
 				if (pc_isvip(sd)) { // Increase item drop rate for VIP.
-#else
-				if (pc_isvip(sd) && mobdrop_allow_vip(it->nameid, md->status.class_)) { // Increase item drop rate for VIP.
-#endif // Pandas_Database_MobItem_FixedRatio
 					drop_rate += (int)(0.5 + drop_rate * battle_config.vip_drop_increase / 100.);
 					drop_rate = min(drop_rate,10000); //cap it to 100%
 				}
@@ -2774,16 +2770,19 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 #endif // Pandas_MapFlag_MvpDroprate
 
 #ifdef RENEWAL_DROP
-#ifndef Pandas_Database_MobItem_FixedRatio
 			if( drop_modifier != 100 ) {
-#else
-			if (drop_modifier != 100 && mobdrop_allow_lv(it->nameid, md->status.class_)) {
-#endif // Pandas_Database_MobItem_FixedRatio
 				drop_rate = apply_rate(drop_rate, drop_modifier);
 				if( drop_rate < 1 )
 					drop_rate = 1;
 			}
 #endif
+
+#ifdef Pandas_Database_MobItem_FixedRatio
+			// 若严格固定掉率, 那么无视上面的等级惩罚、VIP掉率加成、地图标记掉率修正等计算
+			if (mobdrop_strict_droprate(md->db->dropitem[i].nameid, md->status.class_))
+				drop_rate = md->db->dropitem[i].p;
+#endif // Pandas_Database_MobItem_FixedRatio
+
 			// attempt to drop the item
 			if (rnd() % 10000 >= drop_rate)
 				continue;
