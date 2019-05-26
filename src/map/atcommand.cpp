@@ -7331,22 +7331,21 @@ ACMD_FUNC(mobinfo)
 			droprate = mob->dropitem[i].p;
 
 #ifdef RENEWAL_DROP
-#ifndef Pandas_Database_MobItem_FixedRatio
 			if( battle_config.atcommand_mobinfo_type ) {
-#else
-			if( battle_config.atcommand_mobinfo_type && mobdrop_allow_lv(mob->dropitem[i].nameid, mob->status.class_)) {
-#endif // Pandas_Database_MobItem_FixedRatio
 				droprate = droprate * pc_level_penalty_mod(mob->lv - sd->status.base_level, mob->status.class_, mob->status.mode, 2) / 100;
 				if (droprate <= 0 && !battle_config.drop_rate0item)
 					droprate = 1;
 			}
 #endif
-#ifndef Pandas_Database_MobItem_FixedRatio
 			if (pc_isvip(sd)) // Display drop rate increase for VIP
-#else
-			if (pc_isvip(sd) && mobdrop_allow_vip(mob->dropitem[i].nameid, mob->status.class_)) // Display drop rate increase for VIP
-#endif // Pandas_Database_MobItem_FixedRatio
 				droprate += (droprate * battle_config.vip_drop_increase) / 100;
+
+#ifdef Pandas_Database_MobItem_FixedRatio
+			// 若严格固定掉率, 那么无视上面的等级惩罚、VIP掉率加成等计算
+			if (mobdrop_strict_droprate(item_data->nameid, mob->status.class_))
+				droprate = mob->dropitem[i].p;
+#endif // Pandas_Database_MobItem_FixedRatio
+
 			if (item_data->slot)
 				sprintf(atcmd_output2, " - %s[%d]  %02.02f%%", item_data->jname, item_data->slot, (float)droprate / 100);
 			else
@@ -7878,19 +7877,18 @@ ACMD_FUNC(whodrops)
 				int dropchance = item_data->mob[j].chance;
 
 #ifdef RENEWAL_DROP
-#ifndef Pandas_Database_MobItem_FixedRatio
 				if( battle_config.atcommand_mobinfo_type )
-#else
-				if( battle_config.atcommand_mobinfo_type && mobdrop_allow_lv(item_data->nameid, mob_db(item_data->mob[j].id)->status.class_))
-#endif // Pandas_Database_MobItem_FixedRatio
 					dropchance = dropchance * pc_level_penalty_mod(mob_db(item_data->mob[j].id)->lv - sd->status.base_level, mob_db(item_data->mob[j].id)->status.class_, mob_db(item_data->mob[j].id)->status.mode, 2) / 100;
 #endif
-#ifndef Pandas_Database_MobItem_FixedRatio
 				if (pc_isvip(sd)) // Display item rate increase for VIP
-#else
-				if (pc_isvip(sd) && mobdrop_allow_vip(item_data->nameid, mob_db(item_data->mob[j].id)->status.class_)) // Display item rate increase for VIP
-#endif // Pandas_Database_MobItem_FixedRatio
 					dropchance += (dropchance * battle_config.vip_drop_increase) / 100;
+
+#ifdef Pandas_Database_MobItem_FixedRatio
+				// 若严格固定掉率, 那么无视上面的等级惩罚、VIP掉率加成等计算
+				if (mobdrop_strict_droprate(item_data->nameid, item_data->mob[j].id))
+					dropchance = item_data->mob[j].chance;
+#endif // Pandas_Database_MobItem_FixedRatio
+
 				sprintf(atcmd_output, "- %s (%d): %02.02f%%", mob_db(item_data->mob[j].id)->jname, item_data->mob[j].id, dropchance/100.);
 				clif_displaymessage(fd, atcmd_output);
 			}
