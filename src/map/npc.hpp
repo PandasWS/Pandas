@@ -81,6 +81,9 @@ struct npc_data {
 			uint16 count;
 			unsigned short itemshop_nameid; // Item Shop cost item ID
 			char pointshop_str[32]; // Point Shop cost variable name
+#ifdef Pandas_Support_Pointshop_Variable_DisplayName
+			char pointshop_str_nick[64]; // 用于保存变量的昵称, 以便呈现给玩家
+#endif // Pandas_Support_Pointshop_Variable_DisplayName
 			bool discount;
 		} shop;
 		struct {

@@ -183,6 +183,9 @@
 	#ifdef Pandas_Implement_Function_Of_Item_Properties
 		#define Pandas_ItemAmulet_System
 	#endif // Pandas_Implement_Function_Of_Item_Properties
+
+	// 使 pointshop 类型的商店能支持指定变量别名, 用于展现给玩家 [Sola丶小克]
+	#define Pandas_Support_Pointshop_Variable_DisplayName
 #endif // Pandas_CreativeWork
 
 // ============================================================================
