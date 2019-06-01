@@ -1,29 +1,45 @@
-<!-- NOTE: Anything within these brackets will be hidden on the preview of the Issue. -->
+<!-- 提示: 任何被尖括号包含起来的内容都是注释, 当你预览或者发布后注释是不会被显示出来的. -->
+<!-- 注意: 请确保您使用 `@atcommands` 这样的方式来括起一个 GM 指令, 避免圈定到 GitHub 中的其他用户! -->
 
-* **rAthena Hash**: 
+* **代码版本**:
 
-<!-- Please specify the rAthena [GitHub hash](https://help.github.com/articles/autolinked-references-and-urls/#commit-shas) on which you encountered this issue. 
-How to get your GitHub Hash:
-1. cd your/rAthena/directory/
+<!-- 请在下一行中填写您用于编译服务端的代码版本, 例如: ba729903c -->
+
+<!-- 
+如何获取代码版本:
+
+您出现问题的程序肯定是使用代码仓库中某个版本的代码编译出来的，开发人员为了确定问题，需要在和你编译时一样的代码上进行调试排查。
+为此提供正确的仓库代码是非常重要的。
+
+如何获取您本地正在使用的代码版本:
+1. 在终端(cmd)里使用 cd "你的/Pandas目录/"
 2. git rev-parse --short HEAD
-3. Copy the resulting hash.
+3. 复制终端里返回的代码版本号, 例如: ba729903c
 -->
 
-* **Client Date**: 
+* **客户端版本**: 
 
-<!-- Please specify the client date you used. -->
+<!-- 请在下一行中填写您所使用的客户端版本, 例如: 20130807 -->
 
-* **Server Mode**: 
+* **工作模式**: 
 
-<!-- Which mode does your server use: Pre-Renewal or Renewal? -->
+<!-- 请在下一行中填写服务端编译时使用的工作模式: 复兴前 或 复兴后? -->
 
-* **Description of Issue**: 
-  * Result: <!-- Describe the issue that you experienced in detail. -->
-  * Expected Result: <!-- Describe what you would expect to happen in detail. -->
-  * How to Reproduce: <!-- If you have not stated in the description of the result already, please give us a short guide how we can reproduce your issue. -->
-  * Official Information:<!-- If possible, provide information from official servers (kRO or other sources) which prove that the result is wrong. Please take into account that iRO (especially iRO Wiki) is not always the same as kRO. -->
-  <!-- * _NOTE: Make sure you quote ``` `@atcommands` ``` just like this so that you do not tag uninvolved GitHub users!_ -->
+* **问题描述**: 
 
-* **Modifications that may affect results**: 
-  <!-- * Please provide any information that could influence the expected result. -->
-  <!-- * This can be either configurations you changed, database values you changed, or even external source modifications. -->
+  * 当前结果:
+  <!-- 详细描述此问题您当前遇到的结果. -->
+  
+  * 预期结果:
+  <!-- 详细描述你预期的正确结果应该是什么样子的. -->
+  
+  * 重现步骤:
+  <!-- 请描述您从克隆此工程之后, 是如何一步一步操作, 最终使问题出现的? -->
+  
+  * 官方信息:
+  <!-- 如何可能, 请提供官方服务器与此问题相关的情报 (kRO 或其他官方来源) 来证明当前结果是错误的. 需要注意的是, 不同地区的官方程序他们的行为不一定和 kRO 一致, 有时候一个在您看来是错误的结果, 在 kRO 中确是正确的. -->
+
+* **可能会影响结果的一些修改**: 
+
+<!-- 请提供可能会影响到预期结果的一些本地改动. -->
+<!-- 可能是一些配置选项的修改, 数据库中的数值改变, 或者你自己追加的一些源代码修改. -->
