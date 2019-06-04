@@ -26202,15 +26202,6 @@ BUILDIN_FUNC(copynpc) {
 	w3 = script_getstr(st, 4);
 	w4 = script_getstr(st, 5);
 
-	// --------------------------------------------------------------------------------------
-	// 注意: 这里的 start 和 buffer 最终会在 npc_parsename 和 npc_parseview 中,
-	// 用于计算出报错代码的所在行数. 但是目前脚本引擎里面, 好像并没有办法知道当前的指令处于那一行,
-	// 所以也无法模拟出一个可以提示正确行数的 start 和 buffer 的值用于后面的展现.
-	// 
-	// 我们的原则是尽量少改动 rAthena 的代码, 这里不想大改 npc_parsename 和 npc_parseview 函数.
-	// 所以这里不予设置 start 和 buffer 的值, 此做法会让出错的时候无法告诉用户出问题的脚本行数
-	// --------------------------------------------------------------------------------------
-
 	short x, y, m, xs = -1, ys = -1;
 	int16 dir;
 	char srcname[128];
@@ -26231,6 +26222,7 @@ BUILDIN_FUNC(copynpc) {
 	{// does not match 'duplicate(%127s)', name is empty or too long
 		//ShowError("npc_parse_script: bad duplicate name in file '%s', line '%d' : %s\n", filepath, strline(buffer, start - buffer), w2);
 		//return end;// next line, try to continue
+		ShowError("buildin_copynpc: bad duplicate name in file '%s' : %s\n", filepath, w2);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
@@ -26240,6 +26232,7 @@ BUILDIN_FUNC(copynpc) {
 	if (dnd == NULL) {
 		//ShowError("npc_parse_script: original npc not found for duplicate in file '%s', line '%d' : %s\n", filepath, strline(buffer, start - buffer), srcname);
 		//return end;// next line, try to continue
+		ShowError("buildin_copynpc: original npc not found for duplicate in file '%s' : %s\n", filepath, srcname);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
@@ -26257,6 +26250,7 @@ BUILDIN_FUNC(copynpc) {
 		if (sscanf(w1, "%15[^,],%6hd,%6hd,%4hd", mapname, &x, &y, &dir) != 4) { // <map name>,<x>,<y>,<facing>
 			//ShowError("npc_parse_duplicate: Invalid placement format for duplicate in file '%s', line '%d'. Skipping line...\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n", filepath, strline(buffer, start - buffer), w1, w2, w3, w4);
 			//return end;// next line, try to continue
+			ShowError("buildin_copynpc: Invalid placement format for duplicate in file '%s'\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n", filepath, w1, w2, w3, w4);
 			script_pushint(st, 0);
 			return SCRIPT_CMD_FAILURE;
 		}
@@ -26267,6 +26261,7 @@ BUILDIN_FUNC(copynpc) {
 
 	if (m != -1 && (x < 0 || x >= mapdata->xs || y < 0 || y >= mapdata->ys)) {
 		//ShowError("npc_parse_duplicate: coordinates %d/%d are out of bounds in map %s(%dx%d), in file '%s', line '%d'\n", x, y, mapdata->name, mapdata->xs, mapdata->ys, filepath, strline(buffer, start - buffer));
+		ShowError("buildin_copynpc: coordinates %d/%d are out of bounds in map %s(%dx%d), in file '%s'\n", x, y, mapdata->name, mapdata->xs, mapdata->ys, filepath);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
@@ -26276,9 +26271,19 @@ BUILDIN_FUNC(copynpc) {
 	else if (type == NPCTYPE_WARP) {
 		//ShowError("npc_parse_duplicate: Invalid span format for duplicate warp in file '%s', line '%d'. Skipping line...\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n", filepath, strline(buffer, start - buffer), w1, w2, w3, w4);
 		//return end;// next line, try to continue
+		ShowError("buildin_copynpc: Invalid span format for duplicate warp in file '%s'\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n", filepath, w1, w2, w3, w4);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
+
+	// --------------------------------------------------------------------------------------
+	// 注意: 这里的 start 和 buffer 最终会在 npc_parsename 和 npc_parseview 中
+	// 用于计算出报错代码的所在行数. 但是目前脚本引擎里面, 好像并没有办法知道当前的指令处于那一行,
+	// 所以也无法模拟出一个可以提示正确行数的 start 和 buffer 的值用于后面的展现.
+	// 
+	// 我们的原则是尽量少改动 rAthena 的代码, 这里不想大改 npc_parsename 和 npc_parseview 函数.
+	// 所以这里不予设置 start 和 buffer 的值, 此做法会让出错的时候无法告诉用户出问题的脚本行数
+	// --------------------------------------------------------------------------------------
 
 	nd = npc_create_npc(m, x, y);
 	npc_parsename(nd, w3, start, buffer, filepath);
@@ -26373,8 +26378,9 @@ BUILDIN_FUNC(copynpc) {
 	// Loop through labels to export them as necessary
 	for (i = 0; i < nd->u.scr.label_list_num; i++) {
 		if (npc_event_export(nd, i)) {
-			ShowWarning("npc_parse_duplicate : duplicate event %s::%s (%s)\n",
-				nd->exname, nd->u.scr.label_list[i].name, filepath);
+// 			ShowWarning("npc_parse_duplicate : duplicate event %s::%s (%s)\n",
+// 				nd->exname, nd->u.scr.label_list[i].name, filepath);
+			ShowWarning("buildin_copynpc: duplicate event %s::%s (%s)\n", nd->exname, nd->u.scr.label_list[i].name, filepath);
 		}
 		npc_timerevent_export(nd, i);
 	}

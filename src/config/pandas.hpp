@@ -220,7 +220,7 @@
 	// 目前根据各位脚本大神的反馈, 更希望各个商店 NPC 的商品列表内容是各自独立的 [Sola丶小克]
 	#define Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 
-	// 修正复制商店类型的 npc 时, 打折设置及货币变量等参数没有一起复制的问题 [Sola丶小克]
+	// 修正复制商店类型的 NPC 时, 打折设置及货币变量等参数没有一起复制的问题 [Sola丶小克]
 	#define Pandas_Fix_Duplicate_Shop_Parameters_Missing
 #endif // Pandas_Bugfix
 
