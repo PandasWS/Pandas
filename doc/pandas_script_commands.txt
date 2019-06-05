@@ -830,6 +830,10 @@ IP地址:
 	然后以字符串形式传递给 copynpc 脚本指令, 如:
 	
 		copynpc "prontera,156,99,2","duplicate(PVPCOPYTEST)","PVP管理员#2","123";
+		
+		这里第二个参数支持简化 duplicate 关键字, 可以用以下语句实现同样的效果:
+		
+		copynpc "prontera,156,99,2","PVPCOPYTEST","PVP管理员#2","123";
 	
 	同时此函数支持返回复制出来的新 NPC 的 GID, 方便你使用 unit 系列指令对其进行操作, 如:
 	
@@ -847,4 +851,8 @@ IP地址:
 		copynpc .@w1, .@w2, .@w3, .@w4;
 
 注意事项:
-	如果复制的是商店类型的 NPC, 那么来源 NPC 和复制出来的 NPC 它们之间的道具列表是相互独立的.
+	复制商店类型的 NPC 时, 来源 NPC 和目标 NPC 它们之间的道具列表是相互独立的.
+	
+	若指定了一个无效的外观编号, 那么地图服务器虽然会报 status_set_viewdata 错误,
+	但是实际上 NPC 还是会复制成功 (只不过你看不见它).
+	此时可以用 setunitdata 调整这个 NPC 的 UNPC_DISPLAY 参数, 重新给他一个外观.

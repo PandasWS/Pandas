@@ -26217,16 +26217,21 @@ BUILDIN_FUNC(copynpc) {
 	//end = strchr(start, '\n');
 	length = strlen(w2);
 
-	// get the npc being duplicated
-	if (w2[length - 1] != ')' || length <= 11 || length - 11 >= sizeof(srcname))
-	{// does not match 'duplicate(%127s)', name is empty or too long
-		//ShowError("npc_parse_script: bad duplicate name in file '%s', line '%d' : %s\n", filepath, strline(buffer, start - buffer), w2);
-		//return end;// next line, try to continue
-		ShowError("buildin_copynpc: bad duplicate name in file '%s' : %s\n", filepath, w2);
-		script_pushint(st, 0);
-		return SCRIPT_CMD_FAILURE;
+	if (strncmpi(w2, "duplicate(", 10) == 0) {
+		// get the npc being duplicated
+		if (w2[length - 1] != ')' || length <= 11 || length - 11 >= sizeof(srcname))
+		{// does not match 'duplicate(%127s)', name is empty or too long
+			//ShowError("npc_parse_script: bad duplicate name in file '%s', line '%d' : %s\n", filepath, strline(buffer, start - buffer), w2);
+			//return end;// next line, try to continue
+			ShowError("buildin_copynpc: bad duplicate name in file '%s' : %s\n", filepath, w2);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_FAILURE;
+		}
+		safestrncpy(srcname, w2 + 10, length - 10);
 	}
-	safestrncpy(srcname, w2 + 10, length - 10);
+	else {
+		safestrncpy(srcname, w2, sizeof(srcname));
+	}
 
 	dnd = npc_name2id(srcname);
 	if (dnd == NULL) {
