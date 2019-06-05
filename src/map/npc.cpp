@@ -386,7 +386,12 @@ int npc_event_dequeue(struct map_session_data* sd,bool free_script_stack)
  * exports a npc event label
  * called from npc_parse_script
  *------------------------------------------*/
+#ifndef Pandas_ScriptCommand_Copynpc
 static int npc_event_export(struct npc_data *nd, int i)
+#else
+// 由于需要被其他非静态函数使用, 这里需要去掉静态声明. 目前仅 script.cpp 中的 copynpc 指令使用
+int npc_event_export(struct npc_data *nd, int i)
+#endif // Pandas_ScriptCommand_Copynpc
 {
 	char* lname = nd->u.scr.label_list[i].name;
 	int pos = nd->u.scr.label_list[i].pos;
@@ -2337,7 +2342,13 @@ int npc_unload(struct npc_data* nd, bool single) {
 	if( single && nd->bl.m != -1 )
 		map_remove_questinfo(nd->bl.m, nd);
 
+#ifndef Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 	if( (nd->subtype == NPCTYPE_SHOP || nd->subtype == NPCTYPE_CASHSHOP || nd->subtype == NPCTYPE_ITEMSHOP || nd->subtype == NPCTYPE_POINTSHOP || nd->subtype == NPCTYPE_MARKETSHOP) && nd->src_id == 0) //src check for duplicate shops [Orcao]
+#else
+	// 由于现在已经完整的克隆了商店的出售列表，所以只要是商店类型的 NPC, 无论是否是复制出来的商店 (nd->src_id 非 0 表示这是一个复制出来的商店)
+	// 都需要释放 nd->u.shop.shop_item 对象, 否则会导致内存泄露 [Sola丶小克]
+	if ((nd->subtype == NPCTYPE_SHOP || nd->subtype == NPCTYPE_CASHSHOP || nd->subtype == NPCTYPE_ITEMSHOP || nd->subtype == NPCTYPE_POINTSHOP || nd->subtype == NPCTYPE_MARKETSHOP))
+#endif // Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 		aFree(nd->u.shop.shop_item);
 	else if( nd->subtype == NPCTYPE_SCRIPT ) {
 		struct s_mapiterator* iter;
@@ -2496,7 +2507,12 @@ void npc_delsrcfile(const char* name)
 
 /// Parses and sets the name and exname of a npc.
 /// Assumes that m, x and y are already set in nd.
+#ifndef Pandas_ScriptCommand_Copynpc
 static void npc_parsename(struct npc_data* nd, const char* name, const char* start, const char* buffer, const char* filepath)
+#else
+// 由于需要被其他非静态函数使用, 这里需要去掉静态声明. 目前仅 script.cpp 中的 copynpc 指令使用
+void npc_parsename(struct npc_data* nd, const char* name, const char* start, const char* buffer, const char* filepath)
+#endif // Pandas_ScriptCommand_Copynpc
 {
 	const char* p;
 	struct npc_data* dnd;// duplicate npc
@@ -3402,8 +3418,25 @@ const char* npc_parse_duplicate(char* w1, char* w2, char* w3, char* w4, const ch
 		case NPCTYPE_POINTSHOP:
 		case NPCTYPE_MARKETSHOP:
 			++npc_shop;
+#ifndef Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 			nd->u.shop.shop_item = dnd->u.shop.shop_item;
+#else
+			// 为了避免被复制出来的[子商店]和[来源商店]使用相同的商品道具信息源,
+			// 而导致后面对[来源商店]或任意一个[子商店]的道具进行增删操作时影响到同一个[来源商店]的[子商店]
+			// 这里在复制商店 NPC 的时候, 将全部的商品列表完整的复制一份出来, 他们之间相互独立
+			CREATE(nd->u.shop.shop_item, struct npc_item_list, dnd->u.shop.count);
+			memcpy(nd->u.shop.shop_item, dnd->u.shop.shop_item, sizeof(struct npc_item_list) * dnd->u.shop.count);
+#endif // Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 			nd->u.shop.count = dnd->u.shop.count;
+
+#ifdef Pandas_Fix_Duplicate_Shop_Parameters_Missing
+			nd->u.shop.itemshop_nameid = dnd->u.shop.itemshop_nameid;
+			nd->u.shop.discount = dnd->u.shop.discount;
+			safestrncpy(nd->u.shop.pointshop_str, dnd->u.shop.pointshop_str, sizeof(dnd->u.shop.pointshop_str));
+			#ifdef Pandas_Support_Pointshop_Variable_DisplayName
+				safestrncpy(nd->u.shop.pointshop_str_nick, dnd->u.shop.pointshop_str_nick, sizeof(dnd->u.shop.pointshop_str_nick));
+			#endif // Pandas_Support_Pointshop_Variable_DisplayName
+#endif // Pandas_Fix_Duplicate_Shop_Parameters_Missing
 			break;
 
 		case NPCTYPE_WARP:
@@ -5186,3 +5219,41 @@ npce_trigger getEventTrigger(struct map_session_data *sd, enum npce_event event)
 	}
 }
 #endif // Pandas_Struct_Map_Session_Data_EventTrigger
+
+#ifdef Pandas_ScriptCommand_Copynpc
+//************************************
+// Method:		get_npcname_db_ptr
+// Description:	获取 npcname_db 的指针 (script.cpp 的 copynpc 指令使用)
+// Returns:		DBMap*
+//************************************
+DBMap* get_npcname_db_ptr() {
+	return npcname_db;
+}
+
+//************************************
+// Method:		get_npc_script_ptr
+// Description:	获取 npc_script 的指针 (script.cpp 的 copynpc 指令使用)
+// Returns:		int*
+//************************************
+int* get_npc_script_ptr() {
+	return &npc_script;
+}
+
+//************************************
+// Method:		get_npc_shop_ptr
+// Description:	获取 npc_shop 的指针 (script.cpp 的 copynpc 指令使用)
+// Returns:		int*
+//************************************
+int* get_npc_shop_ptr() {
+	return &npc_shop;
+}
+
+//************************************
+// Method:		get_npc_warp_ptr
+// Description:	获取 npc_warp 的指针 (script.cpp 的 copynpc 指令使用)
+// Returns:		int*
+//************************************
+int* get_npc_warp_ptr() {
+	return &npc_warp;
+}
+#endif // Pandas_ScriptCommand_Copynpc

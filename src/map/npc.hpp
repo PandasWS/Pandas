@@ -82,6 +82,10 @@ struct npc_data {
 			unsigned short itemshop_nameid; // Item Shop cost item ID
 			char pointshop_str[32]; // Point Shop cost variable name
 #ifdef Pandas_Support_Pointshop_Variable_DisplayName
+			// --------------------------------------------------------------------------
+			// 提醒: 针对 npc_data.u.shop 中添加的内容, 需要在复制 npc 的时候也同时进行复制
+			// 涉及到的函数有 npc.cpp 的 npc_parse_duplicate 和 copynpc 脚本指令 [Sola丶小克]
+			// --------------------------------------------------------------------------
 			char pointshop_str_nick[64]; // 用于保存变量的昵称, 以便呈现给玩家
 #endif // Pandas_Support_Pointshop_Variable_DisplayName
 			bool discount;
@@ -1374,5 +1378,20 @@ npce_trigger getEventTrigger(struct map_session_data *sd, enum npce_event event)
 #ifdef Pandas_ScriptEngine_Express
 bool npc_event_is_express_type(enum npce_event eventtype);
 #endif // Pandas_ScriptEngine_Express
+
+#ifdef Pandas_ScriptCommand_Copynpc
+// 以下几个函数主要是为了将 npc.cpp 中定义的几个全局变量导出
+DBMap* get_npcname_db_ptr();
+int* get_npc_script_ptr();
+int* get_npc_shop_ptr();
+int* get_npc_warp_ptr();
+
+// 以下几个函数是 rAthena 默认存在的, 这里导出给其他 cpp 使用
+struct npc_data *npc_create_npc(int16 m, int16 x, int16 y);
+int npc_event_export(struct npc_data *nd, int i);
+int npc_timerevent_export(struct npc_data *nd, int i);
+void npc_parsename(struct npc_data* nd, const char* name, const char* start, const char* buffer, const char* filepath);
+int npc_parseview(const char* w4, const char* start, const char* buffer, const char* filepath);
+#endif // Pandas_ScriptCommand_Copynpc
 
 #endif /* NPC_HPP */

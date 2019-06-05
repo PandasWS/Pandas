@@ -214,6 +214,14 @@
 
 	// 修复使用 sommon 脚本指令召唤不存在的魔物, 会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Fix_ScriptCommand_Summon_Crash
+
+	// 修正使用 duplicate 或 copynpc 复制商店类型的 NPC 时, 由于没有完整的复制出售的商品列表, 
+	// 导致使用 npcshop* 系列指令调整复制后的商店内容时, 原商店的内容也会同步受到影响的问题. 
+	// 目前根据各位脚本大神的反馈, 更希望各个商店 NPC 的商品列表内容是各自独立的 [Sola丶小克]
+	#define Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
+
+	// 修正复制商店类型的 NPC 时, 打折设置及货币变量等参数没有一起复制的问题 [Sola丶小克]
+	#define Pandas_Fix_Duplicate_Shop_Parameters_Missing
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -535,6 +543,10 @@
 	// 是否启用 messagecolor 脚本指令 [Sola丶小克]
 	// 使用该指令可以发送指定颜色的消息文本到聊天窗口中
 	#define Pandas_ScriptCommand_MessageColor
+
+	// 是否启用 copynpc 脚本指令 [Sola丶小克]
+	// 使用该指令可以复制指定的 NPC 到一个新的位置 (坐标等相对可以灵活设置)
+	#define Pandas_ScriptCommand_Copynpc
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
