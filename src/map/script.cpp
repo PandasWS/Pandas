@@ -26527,7 +26527,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(messagecolor,"s???"),					// 发送指定颜色的消息文本到聊天窗口中 [Sola丶小克]
 #endif // Pandas_ScriptCommand_MessageColor
 #ifdef Pandas_ScriptCommand_Copynpc
-	BUILDIN_DEF(copynpc,"ssss"),						// 在此写上脚本指令说明 [维护者昵称]
+	BUILDIN_DEF(copynpc,"ssss"),						// 复制指定的 NPC 到一个新的位置 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Copynpc
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
