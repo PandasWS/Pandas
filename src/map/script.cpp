@@ -26439,9 +26439,9 @@ BUILDIN_FUNC(gettimefmt) {
 
 	struct tm now_time = { 0 };
 	if (is_utc)
-		gmtime_s(&now_time, &time_tick);
+		safety_gmtime(&time_tick, &now_time);
 	else
-		localtime_s(&now_time, &time_tick);
+		safety_localtime(&time_tick, &now_time);
 
 	char* buf = (char *)aMalloc(default_len + 1);
 	result = strftime(buf, default_len, fmtstr, &now_time);

@@ -72,4 +72,9 @@ t_tick do_timer(t_tick tick);
 void timer_init(void);
 void timer_final(void);
 
+#ifdef Pandas
+struct tm *safety_localtime(const time_t *time, struct tm *result);
+struct tm *safety_gmtime(const time_t *time, struct tm *result);
+#endif // Pandas
+
 #endif /* TIMER_HPP */
