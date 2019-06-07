@@ -8,6 +8,10 @@
 
 #include "cbasetypes.hpp"
 
+#ifdef Pandas
+#include <memory> // std::shared_ptr
+#endif // Pandas
+
 typedef int64 t_tick;
 #define PRtf PRId64
 
@@ -47,6 +51,16 @@ struct TimerData {
 };
 
 // Function prototype declaration
+
+#ifdef Pandas
+struct tm *safety_localtime(const time_t *time, struct tm *result);
+struct tm *safety_gmtime(const time_t *time, struct tm *result);
+
+// 直接使用 localtime 会被 LGTM 给予安全警告, 这里进行一次封装
+// 实际上 localtime 最终会调用 localtime_r 或 localtime_s, 以此获得线程安全以及修正 LGTM 的警告
+std::shared_ptr<struct tm> safty_localtime_define(const time_t *time);
+#define localtime(_ttick) safty_localtime_define(_ttick).get()
+#endif // Pandas
 
 t_tick gettick(void);
 t_tick gettick_nocache(void);

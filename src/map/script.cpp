@@ -26406,6 +26406,63 @@ BUILDIN_FUNC(copynpc) {
 }
 #endif // Pandas_ScriptCommand_Copynpc
 
+#ifdef Pandas_ScriptCommand_GetTimeFmt
+/* ===========================================================
+ * 指令: gettimefmt
+ * 描述: 将当前时间格式化输出成字符串, 是 gettimestr 的改进版
+ * 用法: gettimefmt <"时间格式化标准">{,<要转换的秒数>{,<是否格式化成 UTC 时间>}};
+ * 返回: 成功则返回被格式化的时间, 失败则返回空字符串
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(gettimefmt) {
+	const char *fmtstr = script_getstr(st, 2);
+	int is_utc = 0, result = 0, default_len = 32;
+	time_t time_tick = time(NULL);
+
+	if (script_hasdata(st, 3)) {
+		if (!script_isint(st, 3)) {
+			ShowError("buildin_gettimefmt: The 'time_tick' param must be a integer.\n");
+			script_pushconststr(st, "");
+			return SCRIPT_CMD_FAILURE;
+		}
+		time_tick = (time_t)script_getnum(st, 3);
+	}
+
+	if (script_hasdata(st, 4)) {
+		if (!script_isint(st, 4)) {
+			ShowError("buildin_gettimefmt: The 'is_utc' param must be a integer.\n");
+			script_pushconststr(st, "");
+			return SCRIPT_CMD_FAILURE;
+		}
+		is_utc = cap_value(script_getnum(st, 4), 0, 1);
+	}
+
+	struct tm now_time = { 0 };
+	if (is_utc)
+		safety_gmtime(&time_tick, &now_time);
+	else
+		safety_localtime(&time_tick, &now_time);
+
+	char* buf = (char *)aMalloc(default_len + 1);
+	result = strftime(buf, default_len, fmtstr, &now_time);
+
+	if (!result) {
+		buf = (char *)aRealloc(buf, (default_len * 4) + 1);
+		result = strftime(buf, (default_len * 4), fmtstr, &now_time);
+	}
+
+	if (!result) {
+		if (buf) aFree(buf);
+		ShowError("buildin_gettimefmt: time format is too long : %s\n", fmtstr);
+		script_pushconststr(st, "");
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	script_pushstr(st, buf);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetTimeFmt
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -26534,6 +26591,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_Copynpc
 	BUILDIN_DEF(copynpc,"ssss"),						// 复制指定的 NPC 到一个新的位置 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Copynpc
+#ifdef Pandas_ScriptCommand_GetTimeFmt
+	BUILDIN_DEF(gettimefmt,"s??"),						// 将当前时间格式化输出成字符串, 是 gettimestr 的改进版 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetTimeFmt
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
