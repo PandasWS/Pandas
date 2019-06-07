@@ -5,3 +5,5 @@ extraction:
       requirements_files: 
         - tools/python/requirements.txt
       setup_py: false
+queries:
+  - exclude: cpp/fixme-comment
