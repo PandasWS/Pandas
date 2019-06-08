@@ -4798,6 +4798,14 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
 		}
 #endif // Pandas_MapFlag_MvpDroprate
+#ifdef Pandas_MapFlag_MaxHeal
+		case MF_MAXHEAL: {
+			if (args && args->flag_val == 1)
+				return mapdata->max_heal_val;
+			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
+		}
+#endif // Pandas_MapFlag_MaxHeal
+
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 5>
 		default:
 			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
@@ -5092,6 +5100,20 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			mapdata->flag[mapflag] = status;
 			break;
 #endif // Pandas_MapFlag_MvpDroprate
+#ifdef Pandas_MapFlag_MaxHeal
+		case MF_MAXHEAL:
+			if (!status)
+				mapdata->max_heal_val = 0;
+			else {
+				nullpo_retr(false, args);
+				if (args) {
+					mapdata->max_heal_val = args->flag_val;
+					status = !(args->flag_val == 0);
+				}
+			}
+			mapdata->flag[mapflag] = status;
+			break;
+#endif // Pandas_MapFlag_MaxHeal
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 6>
 		default:
 			mapdata->flag[mapflag] = status;

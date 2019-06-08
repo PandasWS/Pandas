@@ -388,6 +388,10 @@
 	// 是否启用 mvpdroprate 地图标记 [Sola丶小克]
 	// 该标记用于额外调整此地图上 MVP 魔物的物品掉落倍率
 	#define Pandas_MapFlag_MvpDroprate
+
+	// 是否启用 maxheal 地图标记 [Sola丶小克]
+	// 该标记用于限制此地图上单位的治愈系技能最大的 HP 治愈量
+	#define Pandas_MapFlag_MaxHeal
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 

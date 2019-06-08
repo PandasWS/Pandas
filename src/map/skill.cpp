@@ -652,6 +652,17 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 
 	hp = (int)(hp * global_bonus);
 
+#ifdef Pandas_MapFlag_MaxHeal
+	// 无论施法者是否为玩家单位, 只要限制了最大治愈量, 那么就有效...
+	if (src && map_getmapflag(src->m, MF_MAXHEAL)) {
+		int result = (heal) ? max(1, hp) : hp;
+		union u_mapflag_args args = { };
+		args.flag_val = 1;	// 将 flag_val 设置为 1 表示为了获取地图标记中具体设置的值
+		int val = map_getmapflag_sub(src->m, MF_MAXHEAL, &args);
+		return (val) ? cap_value(result, 0, val) : result;
+	}
+#endif // Pandas_MapFlag_MaxHeal
+
 	return (heal) ? max(1, hp) : hp;
 }
 
