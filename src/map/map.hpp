@@ -630,6 +630,9 @@ enum e_mapflag : int16 {
 #ifdef Pandas_MapFlag_MvpDroprate
 	MF_MVPDROPRATE,
 #endif // Pandas_MapFlag_MvpDroprate
+#ifdef Pandas_MapFlag_MaxHeal
+	MF_MAXHEAL,
+#endif // Pandas_MapFlag_MaxHeal
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };
@@ -819,6 +822,10 @@ struct map_data {
 #ifdef Pandas_MapFlag_MvpDroprate
 	int mvp_droprate;
 #endif // Pandas_MapFlag_MvpDroprate
+
+#ifdef Pandas_MapFlag_MaxHeal
+	int max_heal_val;
+#endif // Pandas_MapFlag_MaxHeal
 
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 
