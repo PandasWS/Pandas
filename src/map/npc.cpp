@@ -1590,6 +1590,18 @@ static enum e_CASHSHOP_ACK npc_cashshop_process_payment(struct npc_data *nd, int
 					return ERROR_TYPE_PURCHASE_FAIL;
 				}
 				pc_setreg2(sd, nd->u.shop.pointshop_str, cost[0] - (price - points));
+
+#ifdef Pandas_Fix_PointShop_Double_Spend_Attack
+				if (add_str(nd->u.shop.pointshop_str) == add_str(CASHPOINT_VAR)) {
+					sd->cashPoints = cost[0] - (price - points);
+					log_cash(sd, LOG_TYPE_NPC, LOG_CASH_TYPE_CASH, -(price - points));
+				}
+				if (add_str(nd->u.shop.pointshop_str) == add_str(KAFRAPOINT_VAR)) {
+					sd->kafraPoints = cost[0] - (price - points);
+					log_cash(sd, LOG_TYPE_NPC, LOG_CASH_TYPE_KAFRA, -(price - points));
+				}
+#endif // Pandas_Fix_PointShop_Double_Spend_Attack
+
 				sprintf(output, msg_txt(sd, 716), nd->u.shop.pointshop_str, cost[0] - (price - points)); // Your '%s' is now: %d
 #ifdef Pandas_Support_Pointshop_Variable_DisplayName
 				// 如果 pointshop 变量有别名的话，优先显示别名
