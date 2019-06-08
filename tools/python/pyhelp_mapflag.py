@@ -269,7 +269,7 @@ def guide(inject):
     if flagtype == 1:
         default_val = InputController().requireInt({
             'tips' : '请输入"第一个数值参数"的默认值 (不填则默认为 0)',
-            'prefix' : ''
+			'allow_empty' : True
         })
 
     # --------
