@@ -4806,6 +4806,14 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 		}
 #endif // Pandas_MapFlag_MaxHeal
 
+#ifdef Pandas_MapFlag_MaxDmg_Skill
+		case MF_MAXDMG_SKILL: {
+			if (args && args->flag_val == 1)
+				return mapdata->maxdmg_skill_val;
+			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
+		}
+#endif // Pandas_MapFlag_MaxDmg_Skill
+
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 		case MF_MAXDMG_NORMAL: {
 			if (args && args->flag_val == 1)
@@ -5122,6 +5130,20 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			mapdata->flag[mapflag] = status;
 			break;
 #endif // Pandas_MapFlag_MaxHeal
+#ifdef Pandas_MapFlag_MaxDmg_Skill
+		case MF_MAXDMG_SKILL:
+			if (!status)
+				mapdata->maxdmg_skill_val = 0;
+			else {
+				nullpo_retr(false, args);
+				if (args) {
+					mapdata->maxdmg_skill_val = args->flag_val;
+					status = !(args->flag_val == 0);
+				}
+			}
+			mapdata->flag[mapflag] = status;
+			break;
+#endif // Pandas_MapFlag_MaxDmg_Skill
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 		case MF_MAXDMG_NORMAL:
 			if (!status)

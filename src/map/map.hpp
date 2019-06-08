@@ -633,6 +633,9 @@ enum e_mapflag : int16 {
 #ifdef Pandas_MapFlag_MaxHeal
 	MF_MAXHEAL,
 #endif // Pandas_MapFlag_MaxHeal
+#ifdef Pandas_MapFlag_MaxDmg_Skill
+	MF_MAXDMG_SKILL,
+#endif // Pandas_MapFlag_MaxDmg_Skill
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 	MF_MAXDMG_NORMAL,
 #endif // Pandas_MapFlag_MaxDmg_Normal
@@ -829,6 +832,10 @@ struct map_data {
 #ifdef Pandas_MapFlag_MaxHeal
 	int max_heal_val;
 #endif // Pandas_MapFlag_MaxHeal
+
+#ifdef Pandas_MapFlag_MaxDmg_Skill
+	int maxdmg_skill_val;
+#endif // Pandas_MapFlag_MaxDmg_Skill
 
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 	int maxdmg_normal_val;
