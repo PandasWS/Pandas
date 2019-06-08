@@ -6859,12 +6859,13 @@ struct Damage battle_calc_attack(int attack_type,struct block_list *bl,struct bl
 		d.dmg_lv = ATK_DEF;
 
 	struct map_session_data *sd = BL_CAST(BL_PC, bl);
-  
+
 #ifdef Pandas_MapFlag_MaxDmg_Skill
 	if (skill_id && bl && map_getmapflag(bl->m, MF_MAXDMG_SKILL)) {
 		union u_mapflag_args args = { };
 		args.flag_val = 1;	// 将 flag_val 设置为 1 表示为了获取地图标记中具体设置的值
 		int val = map_getmapflag_sub(bl->m, MF_MAXDMG_SKILL, &args);
+
 		// 看看伤害是否超过给定的限制, 超过则处理一下
 		if (d.damage + d.damage2 > val) {
 			int64 overval = (d.damage + d.damage2) - val;	// 超了多少
@@ -6881,13 +6882,13 @@ struct Damage battle_calc_attack(int attack_type,struct block_list *bl,struct bl
 		}
 	}
 #endif // Pandas_MapFlag_MaxDmg_Skill
-  
+
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 	if (!skill_id && bl && map_getmapflag(bl->m, MF_MAXDMG_NORMAL)) {
 		union u_mapflag_args args = { };
 		args.flag_val = 1;	// 将 flag_val 设置为 1 表示为了获取地图标记中具体设置的值
 		int val = map_getmapflag_sub(bl->m, MF_MAXDMG_NORMAL, &args);
-  
+
 		// 看看伤害是否超过给定的限制, 超过则处理一下
 		if (d.damage + d.damage2 > val) {
 			int64 overval = (d.damage + d.damage2) - val;	// 超了多少
