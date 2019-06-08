@@ -222,6 +222,10 @@
 
 	// 修正复制商店类型的 NPC 时, 打折设置及货币变量等参数没有一起复制的问题 [Sola丶小克]
 	#define Pandas_Fix_Duplicate_Shop_Parameters_Missing
+
+	// 修正使用 pointshop 类型的商店操作 #CASHPOINTS 或 #KAFRAPOINTS 变量完成最终的货币结算后
+	// 小地图旁边的"道具商城"按钮中的金额不被更新, 最终导致双花的问题 [Sola丶小克]
+	#define Pandas_Fix_PointShop_Double_Spend_Attack
 #endif // Pandas_Bugfix
 
 // ============================================================================
