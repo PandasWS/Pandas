@@ -92,7 +92,7 @@ def insert_for_normal_mapflag(inject, options):
         inject.insert(9, [
             '#ifdef %s' % define,
             '\tif (map_getmapflag(m_id, %s)) {' % constant,
-            '\t\tunion u_mapflag_args args = {};',
+            '\t\tunion u_mapflag_args args = { };',
             '\t\targs.flag_val = 1;\t// 将 flag_val 设置为 1 表示为了获取地图标记中具体设置的值',
             '\t\tsprintf(atcmd_output, "%s {shortname}: %d |", atcmd_output, map_getmapflag_sub(m_id, {constant}, &args));'.format(
                 shortname = define.replace('Pandas_MapFlag_', ''), constant = constant
@@ -180,7 +180,7 @@ def insert_for_one_param_mapflag(inject, options):
             '#ifdef %s' % define,
             '\t\tcase %s: {' % constant,
             '\t\t\t// 若脚本中 mapflag 指定的数值无效或为默认值: %d, 则立刻关闭这个地图标记' % default_val,
-            '\t\t\tunion u_mapflag_args args = {};',
+            '\t\t\tunion u_mapflag_args args = { };',
             '',
             '\t\t\tif (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == {default_val} || !state)'.format(default_val = default_val),
             '\t\t\t\tmap_setmapflag(m, mapflag, false);',
@@ -197,7 +197,7 @@ def insert_for_one_param_mapflag(inject, options):
             '\t\tcase %s: {' % constant,
             '\t\t\t// 若脚本中 mapflag 指定的第一个数值参数无效,',
             '\t\t\t// 那么将此参数的值设为 %d, 但不会阻断此地图标记的开启或关闭操作' % default_val,
-            '\t\t\tunion u_mapflag_args args = {};',
+            '\t\t\tunion u_mapflag_args args = { };',
             '',
             '\t\t\tif (sscanf(w4, "%11d", &args.flag_val) < 1)',
             '\t\t\t\targs.flag_val = %d;' % default_val,
@@ -269,7 +269,7 @@ def guide(inject):
     if flagtype == 1:
         default_val = InputController().requireInt({
             'tips' : '请输入"第一个数值参数"的默认值 (不填则默认为 0)',
-            'prefix' : ''
+			'allow_empty' : True
         })
 
     # --------
