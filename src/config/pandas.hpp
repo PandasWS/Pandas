@@ -392,6 +392,10 @@
 	// 是否启用 maxheal 地图标记 [Sola丶小克]
 	// 该标记用于限制此地图上单位的治愈系技能最大的 HP 治愈量
 	#define Pandas_MapFlag_MaxHeal
+
+	// 是否启用 maxdmg_skill 地图标记 [Sola丶小克]
+	// 该标记用于限制此地图上单位的最大技能伤害 (不含治愈系技能)
+	#define Pandas_MapFlag_MaxDmg_Skill
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 

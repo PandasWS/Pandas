@@ -601,6 +601,10 @@
 	export_constant(MF_MAXHEAL);
 #endif // Pandas_MapFlag_MaxHeal
 
+#ifdef Pandas_MapFlag_MaxDmg_Skill
+	export_constant(MF_MAXDMG_SKILL);
+#endif // Pandas_MapFlag_MaxDmg_Skill
+
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
 	/* setcell types */
