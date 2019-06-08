@@ -4446,6 +4446,10 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 	char* buffer;
 	const char* p;
 
+#ifdef Pandas_Fix_NPC_Filepath_WhiteSpace_Effects
+	trim((char*)filepath);
+#endif // Pandas_Fix_NPC_Filepath_WhiteSpace_Effects
+
 	if(check_filepath(filepath)!=2) { //this is not a file 
 		ShowDebug("npc_parsesrcfile: Path doesn't seem to be a file skipping it : '%s'.\n", filepath);
 		return 0;
@@ -4953,6 +4957,10 @@ bool npc_unloadfile( const char* path ) {
 	DBIterator * iter = db_iterator(npcname_db);
 	struct npc_data* nd = NULL;
 	bool found = false;
+
+#ifdef Pandas_Fix_NPC_Filepath_WhiteSpace_Effects
+	trim((char*)path);
+#endif // Pandas_Fix_NPC_Filepath_WhiteSpace_Effects
 
 	for( nd = (struct npc_data*)dbi_first(iter); dbi_exists(iter); nd = (struct npc_data*)dbi_next(iter) ) {
 		if( nd->path && strcasecmp(nd->path,path) == 0 ) {
