@@ -4238,6 +4238,13 @@ ACMD_FUNC(mapinfo) {
 		sprintf(atcmd_output, "%s MaxHeal: %d |", atcmd_output, map_getmapflag_sub(m_id, MF_MAXHEAL, &args));
 	}
 #endif // Pandas_MapFlag_MaxHeal
+#ifdef Pandas_MapFlag_MaxDmg_Normal
+	if (map_getmapflag(m_id, MF_MAXDMG_NORMAL)) {
+		union u_mapflag_args args = { };
+		args.flag_val = 1;	// 将 flag_val 设置为 1 表示为了获取地图标记中具体设置的值
+		sprintf(atcmd_output, "%s MaxDmg_Normal: %d |", atcmd_output, map_getmapflag_sub(m_id, MF_MAXDMG_NORMAL, &args));
+	}
+#endif // Pandas_MapFlag_MaxDmg_Normal
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
@@ -8294,6 +8301,10 @@ ACMD_FUNC(mapflag) {
 #ifdef Pandas_MapFlag_MaxHeal
 			disabled_mf.insert(disabled_mf.begin(), MF_MAXHEAL);
 #endif // Pandas_MapFlag_MaxHeal
+
+#ifdef Pandas_MapFlag_MaxDmg_Normal
+			disabled_mf.insert(disabled_mf.begin(), MF_MAXDMG_NORMAL);
+#endif // Pandas_MapFlag_MaxDmg_Normal
 
 			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
 
