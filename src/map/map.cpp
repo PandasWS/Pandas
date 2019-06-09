@@ -4736,7 +4736,7 @@ bool map_getmapflag_name( enum e_mapflag mapflag, char* output ){
 #ifdef Pandas_Mapflags
 //************************************
 // Method:		map_getmapflag_param
-// Description:	
+// Description:	获取某个地图标记的附加参数 (通过 args 的 flag_val 控制要获取的参数是哪个)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
 // Parameter:	union u_mapflag_args * args
@@ -4775,7 +4775,7 @@ int map_getmapflag_param(int16 m, enum e_mapflag mapflag, union u_mapflag_args *
 
 //************************************
 // Method:		map_getmapflag_param
-// Description:	
+// Description:	获取某个地图标记的附加参数 (直接指定要获取的参数是哪个)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
 // Parameter:	enum e_mapflag_params param
@@ -4790,7 +4790,7 @@ int map_getmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params 
 
 //************************************
 // Method:		map_getmapflag_param
-// Description:	
+// Description:	获取某个地图标记的附加参数 (直接获取第一个参数的值)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
 // Parameter:	int default_val
@@ -4802,7 +4802,7 @@ int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int default_val) {
 
 //************************************
 // Method:		map_setmapflag_param
-// Description:	
+// Description:	设置某个地图标记的附加参数 (直接指定要设置的参数是哪个)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
 // Parameter:	enum e_mapflag_params param
@@ -4850,7 +4850,7 @@ void map_setmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params
 
 //************************************
 // Method:		map_setmapflag_param
-// Description:	
+// Description:	设置某个地图标记的附加参数 (直接设置第一个参数的值)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
 // Parameter:	int value
