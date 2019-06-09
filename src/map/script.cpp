@@ -12799,7 +12799,7 @@ BUILDIN_FUNC(getmapflag)
 
 	if (mf == MF_SKILL_DAMAGE && !script_hasdata(st, 4))
 		args.flag_val = SKILLDMG_MAX;
-	// PYHELP - MAPFLAG - INSERT POINT - <Section 11>
+	// PYHELP - MAPFLAG - INSERT POINT - <Section 10>
 	else
 		FETCH(4, args.flag_val);
 
@@ -12864,7 +12864,7 @@ BUILDIN_FUNC(setmapflag)
 			args.nightmaredrop.drop_per = 300;
 			args.nightmaredrop.drop_type = NMDT_EQUIP;
 			break;
-		// PYHELP - MAPFLAG - INSERT POINT - <Section 10>
+		// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
 		default:
 			FETCH(4, args.flag_val);
 			break;

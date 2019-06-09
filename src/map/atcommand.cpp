@@ -4240,7 +4240,7 @@ ACMD_FUNC(mapinfo) {
 		sprintf(atcmd_output, "%s MaxDmg_Normal: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXDMG_NORMAL, 0));
 	}
 #endif // Pandas_MapFlag_MaxDmg_Normal
-	// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
+	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
 
