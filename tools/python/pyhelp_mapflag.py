@@ -33,15 +33,12 @@ map.cpp @ map_setmapflag_sub 的设置标记处理
 npc.cpp @ npc_parse_mapflag 可选的标记处理
 
 // PYHELP - MAPFLAG - INSERT POINT - <Section 8>
-map.hpp @ 可选的变量添加
-
-// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
 atcommand.cpp @ ACMD_FUNC(mapinfo) 可选的地图信息输出
 
-// PYHELP - MAPFLAG - INSERT POINT - <Section 10>
+// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
 script.cpp @ setmapflag 可选的脚本设置标记参数处理代码 - no use now
 
-// PYHELP - MAPFLAG - INSERT POINT - <Section 11>
+// PYHELP - MAPFLAG - INSERT POINT - <Section 10>
 script.cpp @ getmapflag 可选的脚本读取标记参数处理代码 - no use now
 '''
 
@@ -56,6 +53,7 @@ def insert_for_normal_mapflag(inject, options):
     flagtype = options['flagtype']
     define = options['define']
     constant = options['constant']
+    default_val = options['default_val']
 
     # pandas.hpp @ 宏定义
     inject.insert(1, [
@@ -82,20 +80,18 @@ def insert_for_normal_mapflag(inject, options):
 
     # atcommand.cpp @ ACMD_FUNC(mapinfo) 可选的地图信息输出
     if flagtype == 0:
-        inject.insert(9, [
+        inject.insert(8, [
             '#ifdef %s' % define,
             '\tif (map_getmapflag(m_id, %s))' % constant,
             '\t\tstrcat(atcmd_output, " %s |");' % define.replace('Pandas_MapFlag_', ''),
             '#endif // %s' % define
         ])
     elif flagtype == 1:
-        inject.insert(9, [
+        inject.insert(8, [
             '#ifdef %s' % define,
             '\tif (map_getmapflag(m_id, %s)) {' % constant,
-            '\t\tunion u_mapflag_args args = { };',
-            '\t\targs.flag_val = 1;\t// 将 flag_val 设置为 1 表示为了获取地图标记中具体设置的值',
-            '\t\tsprintf(atcmd_output, "%s {shortname}: %d |", atcmd_output, map_getmapflag_sub(m_id, {constant}, &args));'.format(
-                shortname = define.replace('Pandas_MapFlag_', ''), constant = constant
+            '\t\tsprintf(atcmd_output, "%s {shortname}: %d |", atcmd_output, map_getmapflag_param(m_id, {constant}, {default_val}));'.format(
+                shortname = define.replace('Pandas_MapFlag_', ''), constant = constant, default_val = default_val
             ),
             '\t}',
             '#endif // %s' % define
@@ -104,7 +100,6 @@ def insert_for_normal_mapflag(inject, options):
 def insert_for_one_param_mapflag(inject, options):
     define = options['define']
     constant = options['constant']
-    var_name_1 = options['var_name_1']
     default_val = options['default_val']
     default_disable = options['default_disable']
 
@@ -120,22 +115,11 @@ def insert_for_one_param_mapflag(inject, options):
         ''
     ])
 
-    # map.hpp @ 可选的变量添加
-    inject.insert(8, [
-        '#ifdef %s' % define,
-        '\tint %s;' % var_name_1,
-        '#endif // %s' % define,
-        ''
-    ])
-
     # map.cpp @ map_getmapflag_sub 的读取标记处理
     inject.insert(5, [
         '#ifdef %s' % define,
-        '\t\tcase %s: {' % constant,
-        '\t\t\tif (args && args->flag_val == 1)',
-        '\t\t\t\treturn mapdata->%s;' % var_name_1,
-        '\t\t\treturn util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);',
-        '\t\t}',
+        '\t\tcase %s:' % constant,
+        '\t\t\treturn map_getmapflag_param(m, mapflag, args, 0);',
         '#endif // %s' % define,
         ''
     ])
@@ -146,11 +130,11 @@ def insert_for_one_param_mapflag(inject, options):
             '#ifdef %s' % define,
             '\t\tcase %s:' % constant,
             '\t\t\tif (!status)',
-            '\t\t\t\tmapdata->%s = %d;' % (var_name_1, default_val),
+            '\t\t\t\tmap_setmapflag_param(m, mapflag, %s);' % default_val,
             '\t\t\telse {',
             '\t\t\t\tnullpo_retr(false, args);',
             '\t\t\t\tif (args) {',
-            '\t\t\t\t\tmapdata->%s = args->flag_val;' % var_name_1,
+            '\t\t\t\t\tmap_setmapflag_param(m, mapflag, args->flag_val);',
             '\t\t\t\t\tstatus = !(args->flag_val == %d);' % default_val,
             '\t\t\t\t}',
             '\t\t\t}',
@@ -163,11 +147,11 @@ def insert_for_one_param_mapflag(inject, options):
             '#ifdef %s' % define,
             '\t\tcase %s:' % constant,
             '\t\t\tif (!status)',
-            '\t\t\t\tmapdata->%s = %d;' % (var_name_1, default_val),
+            '\t\t\t\tmap_setmapflag_param(m, mapflag, %s);' % default_val,
             '\t\t\telse {',
             '\t\t\t\tnullpo_retr(false, args);',
-            '\t\t\t\tif (args)' % var_name_1,
-            '\t\t\t\t\tmapdata->%s = args->flag_val;' % var_name_1,
+            '\t\t\t\tif (args)',
+            '\t\t\t\t\tmap_setmapflag_param(m, mapflag, args->flag_val);',
             '\t\t\t}',
             '\t\t\tmapdata->flag[mapflag] = status;',
             '\t\t\tbreak;',
@@ -180,7 +164,7 @@ def insert_for_one_param_mapflag(inject, options):
             '#ifdef %s' % define,
             '\t\tcase %s: {' % constant,
             '\t\t\t// 若脚本中 mapflag 指定的数值无效或为默认值: %d, 则立刻关闭这个地图标记' % default_val,
-            '\t\t\tunion u_mapflag_args args = { };',
+            '\t\t\tunion u_mapflag_args args = {};',
             '',
             '\t\t\tif (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == {default_val} || !state)'.format(default_val = default_val),
             '\t\t\t\tmap_setmapflag(m, mapflag, false);',
@@ -197,7 +181,7 @@ def insert_for_one_param_mapflag(inject, options):
             '\t\tcase %s: {' % constant,
             '\t\t\t// 若脚本中 mapflag 指定的第一个数值参数无效,',
             '\t\t\t// 那么将此参数的值设为 %d, 但不会阻断此地图标记的开启或关闭操作' % default_val,
-            '\t\t\tunion u_mapflag_args args = { };',
+            '\t\t\tunion u_mapflag_args args = {};',
             '',
             '\t\t\tif (sscanf(w4, "%11d", &args.flag_val) < 1)',
             '\t\t\t\targs.flag_val = %d;' % default_val,
@@ -256,15 +240,6 @@ def guide(inject):
 
     # --------
 
-    var_name_1 = None
-    if flagtype == 1:
-        var_name_1 = InputController().requireText({
-            'tips' : '请输入用于记录"第一个数值参数"的 map_data 结构成员变量名',
-            'prefix' : ''
-        })
-
-    # --------
-
     default_val = 0
     if flagtype == 1:
         default_val = InputController().requireInt({
@@ -290,7 +265,6 @@ def guide(inject):
     Message.ShowInfo('常量名称 : %s' % constant)
     Message.ShowInfo('标记类型 : %s' % flaglist[flagtype]['name'])
     print('')
-    Message.ShowInfo('第一个数值参数的变量名称 : %s' % var_name_1)
     Message.ShowInfo('第一个数值参数的默认值 : %d' % default_val)
     Message.ShowInfo('第一个数值参数的值为 %d 时, 是否禁用此标记 : %s' % (default_val, default_disable))
     print('-' * 70)
@@ -313,7 +287,6 @@ def guide(inject):
         'flagtype' : flagtype,
         'define' : define,
         'constant' : constant,
-        'var_name_1' : var_name_1,
         'default_val' : default_val,
         'default_disable' : default_disable
     }
@@ -340,7 +313,7 @@ def main():
         'source_dirs' : '../../src',
         'process_exts' : ['.hpp', '.cpp'],
         'mark_format' : r'// PYHELP - MAPFLAG - INSERT POINT - <Section (\d{1,2})>',
-        'mark_counts' : 11
+        'mark_counts' : 10
     }
 
     guide(InjectController(options))

@@ -9694,7 +9694,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 
 #ifdef Pandas_MapFlag_Mobinfo
 				if (md->bl.m >= 0 && map_getmapflag(md->bl.m, MF_MOBINFO)) {
-					show_mob_info = map[md->bl.m].show_mob_info;
+					show_mob_info = map_getmapflag_param(md->bl.m, MF_MOBINFO, 0);
 				}
 #endif // Pandas_MapFlag_Mobinfo
 
