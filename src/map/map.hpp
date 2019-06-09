@@ -1279,9 +1279,11 @@ extern unsigned int clif_cryptKey_custom[3];
 
 #ifdef Pandas_Mapflags
 int map_getmapflag_param(int16 m, enum e_mapflag mapflag, union u_mapflag_args *args, int default_val);
-
 int map_getmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params param, int default_val);
+int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int default_val);
+
 void map_setmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params param, int value);
+void map_setmapflag_param(int16 m, enum e_mapflag mapflag, int value);
 #endif // Pandas_Mapflags
 
 void do_shutdown(void);

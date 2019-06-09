@@ -3690,11 +3690,11 @@ void map_flags_init(void){
 		map_free_questinfo(mapdata);
 
 #ifdef Pandas_MapFlag_MobDroprate
-		map_setmapflag_param(i, MF_MOBDROPRATE, MP_PARAM_FIRST, 100);
+		map_setmapflag_param(i, MF_MOBDROPRATE, 100);
 #endif // Pandas_MapFlag_MobDroprate
 
 #ifdef Pandas_MapFlag_MvpDroprate
-		map_setmapflag_param(i, MF_MVPDROPRATE, MP_PARAM_FIRST, 100);
+		map_setmapflag_param(i, MF_MVPDROPRATE, 100);
 #endif // Pandas_MapFlag_MvpDroprate
 
 		if (instance_start && i >= instance_start)
@@ -4789,6 +4789,18 @@ int map_getmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params 
 }
 
 //************************************
+// Method:		map_getmapflag_param
+// Description:	
+// Parameter:	int16 m
+// Parameter:	enum e_mapflag mapflag
+// Parameter:	int default_val
+// Returns:		int
+//************************************
+int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int default_val) {
+	return map_getmapflag_param(m, mapflag, MP_PARAM_FIRST, default_val);
+}
+
+//************************************
 // Method:		map_setmapflag_param
 // Description:	
 // Parameter:	int16 m
@@ -4834,6 +4846,18 @@ void map_setmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params
 	if (!exists) {
 		mapdata->flag_params.insert({ static_cast<int16>(mapflag), *params });
 	}
+}
+
+//************************************
+// Method:		map_setmapflag_param
+// Description:	
+// Parameter:	int16 m
+// Parameter:	enum e_mapflag mapflag
+// Parameter:	int value
+// Returns:		void
+//************************************
+void map_setmapflag_param(int16 m, enum e_mapflag mapflag, int value) {
+	return map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, value);
 }
 #endif // Pandas_Mapflags
 
@@ -5163,11 +5187,11 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 #ifdef Pandas_MapFlag_Mobinfo
 		case MF_MOBINFO:
 			if (!status)
-				map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, 0);
+				map_setmapflag_param(m, mapflag, 0);
 			else {
 				nullpo_retr(false, args);
 				if (args)
-					map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, args->flag_val);
+					map_setmapflag_param(m, mapflag, args->flag_val);
 			}
 			mapdata->flag[mapflag] = status;
 			break;
@@ -5175,11 +5199,11 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 #ifdef Pandas_MapFlag_MobDroprate
 		case MF_MOBDROPRATE:
 			if (!status)
-				map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, 100);
+				map_setmapflag_param(m, mapflag, 100);
 			else {
 				nullpo_retr(false, args);
 				if (args) {
-					map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, args->flag_val);
+					map_setmapflag_param(m, mapflag, args->flag_val);
 					status = !(args->flag_val == 100);
 				}
 			}
@@ -5189,11 +5213,11 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 #ifdef Pandas_MapFlag_MvpDroprate
 		case MF_MVPDROPRATE:
 			if (!status)
-				map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, 100);
+				map_setmapflag_param(m, mapflag, 100);
 			else {
 				nullpo_retr(false, args);
 				if (args) {
-					map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, args->flag_val);
+					map_setmapflag_param(m, mapflag, args->flag_val);
 					status = !(args->flag_val == 100);
 				}
 			}
@@ -5203,11 +5227,11 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 #ifdef Pandas_MapFlag_MaxHeal
 		case MF_MAXHEAL:
 			if (!status)
-				map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, 0);
+				map_setmapflag_param(m, mapflag, 0);
 			else {
 				nullpo_retr(false, args);
 				if (args) {
-					map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, args->flag_val);
+					map_setmapflag_param(m, mapflag, args->flag_val);
 					status = !(args->flag_val == 0);
 				}
 			}
@@ -5217,11 +5241,11 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 #ifdef Pandas_MapFlag_MaxDmg_Skill
 		case MF_MAXDMG_SKILL:
 			if (!status)
-				map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, 0);
+				map_setmapflag_param(m, mapflag, 0);
 			else {
 				nullpo_retr(false, args);
 				if (args) {
-					map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, args->flag_val);
+					map_setmapflag_param(m, mapflag, args->flag_val);
 					status = !(args->flag_val == 0);
 				}
 			}
@@ -5231,11 +5255,11 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 		case MF_MAXDMG_NORMAL:
 			if (!status)
-				map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, 0);
+				map_setmapflag_param(m, mapflag, 0);
 			else {
 				nullpo_retr(false, args);
 				if (args) {
-					map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, args->flag_val);
+					map_setmapflag_param(m, mapflag, args->flag_val);
 					status = !(args->flag_val == 0);
 				}
 			}
