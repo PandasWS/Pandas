@@ -2757,7 +2757,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			{
 				struct map_data *mapdata = map_getmapdata(m);
 				if (!status_has_mode(&md->status, MD_MVP))
-					drop_rate = apply_rate(drop_rate, mapdata->mob_droprate);
+					drop_rate = apply_rate(drop_rate, map_getmapflag_param(m, MF_MOBDROPRATE, MP_PARAM_FIRST, 100));
 			}
 #endif // Pandas_MapFlag_MobDroprate
 
@@ -2765,7 +2765,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			{
 				struct map_data *mapdata = map_getmapdata(m);
 				if (status_has_mode(&md->status, MD_MVP))
-					drop_rate = apply_rate(drop_rate, mapdata->mvp_droprate);
+					drop_rate = apply_rate(drop_rate, map_getmapflag_param(m, MF_MVPDROPRATE, MP_PARAM_FIRST, 100));
 			}
 #endif // Pandas_MapFlag_MvpDroprate
 

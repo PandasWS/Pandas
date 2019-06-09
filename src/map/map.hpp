@@ -777,6 +777,18 @@ struct questinfo {
 	unsigned short *jobid;
 };
 
+#ifdef Pandas_Mapflags
+struct s_mapflag_params {
+	int param_first;
+	int param_second;
+};
+
+enum e_mapflag_params : int16 {
+	MP_PARAM_FIRST = 1,
+	MP_PARAM_SECOND
+};
+#endif // Pandas_Mapflags
+
 struct map_data {
 	char name[MAP_NAME_LENGTH];
 	uint16 index; // The map index used by the mapindex* functions.
@@ -817,31 +829,9 @@ struct map_data {
 	struct questinfo *qi_data;
 	unsigned short qi_count;
 
-#ifdef Pandas_MapFlag_Mobinfo
-	int show_mob_info;
-#endif // Pandas_MapFlag_Mobinfo
-
-#ifdef Pandas_MapFlag_MobDroprate
-	int mob_droprate;
-#endif // Pandas_MapFlag_MobDroprate
-
-#ifdef Pandas_MapFlag_MvpDroprate
-	int mvp_droprate;
-#endif // Pandas_MapFlag_MvpDroprate
-
-#ifdef Pandas_MapFlag_MaxHeal
-	int max_heal_val;
-#endif // Pandas_MapFlag_MaxHeal
-
-#ifdef Pandas_MapFlag_MaxDmg_Skill
-	int maxdmg_skill_val;
-#endif // Pandas_MapFlag_MaxDmg_Skill
-
-#ifdef Pandas_MapFlag_MaxDmg_Normal
-	int maxdmg_normal_val;
-#endif // Pandas_MapFlag_MaxDmg_Normal
-
-	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
+#ifdef Pandas_Mapflags
+	std::unordered_map<int16, s_mapflag_params> flag_params;
+#endif // Pandas_Mapflags
 
 	/* speeds up clif_updatestatus processing by causing hpmeter to run only when someone with the permission can view it */
 	unsigned short hpmeter_visible;
@@ -1286,6 +1276,13 @@ extern char guild_storage_log_table[32];
 // 备注: 该变量真正的声明定义, 位于 map.cpp 中
 extern unsigned int clif_cryptKey_custom[3];
 #endif // Pandas_Support_Specify_PacketKeys
+
+#ifdef Pandas_Mapflags
+int map_getmapflag_param(int16 m, enum e_mapflag mapflag, union u_mapflag_args *args, int default_val);
+
+int map_getmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params param, int default_val);
+void map_setmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params param, int value);
+#endif // Pandas_Mapflags
 
 void do_shutdown(void);
 
