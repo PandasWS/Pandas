@@ -5,6 +5,7 @@
 #define DATE_HPP
 
 #include "../common/cbasetypes.hpp"
+#include "../common/assistant.hpp" // 引入 Pandas 的辅助函数库
 
 enum e_month{
 	JANUARY = 1,
