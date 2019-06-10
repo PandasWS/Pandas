@@ -378,6 +378,12 @@ int main (int argc, char **argv)
 			int n=0;
 			SERVER_NAME = ++p1;
 			n = p1-argv[0]; //calc dir name len
+
+#ifdef Pandas_LGTM_Optimization
+			// 对通过参数传入的工作路径进行长度限制判断 (暂定为 1kb 的长度)
+			n = (n > 1024 ? 1024 : n);
+#endif // Pandas_LGTM_Optimization
+
 			pwd = safestrncpy((char*)malloc(n + 1), argv[0], n);
 			if(chdir(pwd) != 0)
 				ShowError("Couldn't change working directory to %s for %s, runtime will probably fail",pwd,SERVER_NAME);
