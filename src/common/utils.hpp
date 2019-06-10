@@ -7,7 +7,7 @@
 #include <stdio.h> // FILE*
 
 #include "cbasetypes.hpp"
-#include "assistant.hpp" // 引入 Pandas 的辅助函数库
+#include "assistant.hpp" // 引入 Pandas 的辅助函数库 - 重定向 localtime 函数
 
 // generate a hex dump of the first 'length' bytes of 'buffer'
 void WriteDump(FILE* fp, const void* buffer, size_t length);

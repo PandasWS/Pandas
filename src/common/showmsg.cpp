@@ -40,7 +40,7 @@
 #include "core.hpp" //[Ind] - For SERVER_TYPE
 #include "strlib.hpp" // StringBuf
 
-#include "assistant.hpp" // 重定向 localtime 函数
+#include "assistant.hpp" // 引入 Pandas 的辅助函数库 - 重定向 localtime 函数
 
 ///////////////////////////////////////////////////////////////////////////////
 /// behavioral parameter.
