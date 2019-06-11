@@ -2795,7 +2795,7 @@ int map_addinstancemap(const char *name, unsigned short instance_id)
 	size = dst_map->bxs * dst_map->bys * sizeof(struct block_list*);
 #else
 	// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
-	size = (size_t)(dst_map->bxs * dst_map->bys * sizeof(struct block_list*));
+	size = (size_t)dst_map->bxs * dst_map->bys * sizeof(struct block_list*);
 #endif // Pandas_LGTM_Optimization
 	dst_map->block = (struct block_list **)aCalloc(1,size);
 	dst_map->block_mob = (struct block_list **)aCalloc(1,size);
@@ -3959,7 +3959,7 @@ int map_readallmaps (void)
 		size = mapdata->bxs * mapdata->bys * sizeof(struct block_list*);
 #else
 		// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
-		size = (size_t)(mapdata->bxs * mapdata->bys * sizeof(struct block_list*));
+		size = (size_t)mapdata->bxs * mapdata->bys * sizeof(struct block_list*);
 #endif // Pandas_LGTM_Optimization
 		mapdata->block = (struct block_list**)aCalloc(size, 1);
 		mapdata->block_mob = (struct block_list**)aCalloc(size, 1);
