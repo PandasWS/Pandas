@@ -2782,11 +2782,21 @@ int map_addinstancemap(const char *name, unsigned short instance_id)
 	dst_map->npc_num_warp = 0;
 
 	// Reallocate cells
+#ifndef Pandas_LGTM_Optimization
 	num_cell = dst_map->xs * dst_map->ys;
+#else
+	// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
+	num_cell = (size_t)(dst_map->xs * dst_map->ys);
+#endif // Pandas_LGTM_Optimization
 	CREATE( dst_map->cell, struct mapcell, num_cell );
 	memcpy( dst_map->cell, src_map->cell, num_cell * sizeof(struct mapcell) );
 
+#ifndef Pandas_LGTM_Optimization
 	size = dst_map->bxs * dst_map->bys * sizeof(struct block_list*);
+#else
+	// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
+	size = (size_t)(dst_map->bxs * dst_map->bys * sizeof(struct block_list*));
+#endif // Pandas_LGTM_Optimization
 	dst_map->block = (struct block_list **)aCalloc(1,size);
 	dst_map->block_mob = (struct block_list **)aCalloc(1,size);
 
@@ -3798,7 +3808,12 @@ int map_readgat (struct map_data* m)
 
 	m->xs = *(int32*)(gat+6);
 	m->ys = *(int32*)(gat+10);
+#ifndef Pandas_LGTM_Optimization
 	num_cells = m->xs * m->ys;
+#else
+	// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
+	num_cells = (size_t)(m->xs * m->ys);
+#endif // Pandas_LGTM_Optimization
 	CREATE(m->cell, struct mapcell, num_cells);
 
 	water_height = map_waterheight(m->name);
@@ -3940,7 +3955,12 @@ int map_readallmaps (void)
 		mapdata->bxs = (mapdata->xs + BLOCK_SIZE - 1) / BLOCK_SIZE;
 		mapdata->bys = (mapdata->ys + BLOCK_SIZE - 1) / BLOCK_SIZE;
 
+#ifndef Pandas_LGTM_Optimization
 		size = mapdata->bxs * mapdata->bys * sizeof(struct block_list*);
+#else
+		// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
+		size = (size_t)(mapdata->bxs * mapdata->bys * sizeof(struct block_list*));
+#endif // Pandas_LGTM_Optimization
 		mapdata->block = (struct block_list**)aCalloc(size, 1);
 		mapdata->block_mob = (struct block_list**)aCalloc(size, 1);
 
