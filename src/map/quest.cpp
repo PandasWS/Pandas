@@ -625,7 +625,7 @@ static void questdb_free_sub(struct quest_db *quest, bool free)
 #else
 	// rAthena 官方使用的指针判断方式命中了 LGTM 的检测规则:
 	// https://lgtm.com/rules/2155960668/
-	if (quest && (&quest->name))
+	if (quest && &(quest->name))
 		StringBuf_Destroy(&quest->name);
 #endif // Pandas_LGTM_Optimization
 	if (free)
