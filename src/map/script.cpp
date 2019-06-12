@@ -16297,9 +16297,7 @@ BUILDIN_FUNC(implode)
 #ifndef Pandas_LGTM_Optimization
 			len += glue_len * (array_size);
 #else
-			// 这里两个 uint32 操作数直接相乘, 在极限情况下是会超过 unsigned int 导致溢出的.
-			// 此处强制声明一下, 最大到 max unsigned int 以避免溢出:
-			// https://lgtm.com/rules/2157860313/
+			// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
 			len += (size_t)glue_len * (array_size);
 #endif // Pandas_LGTM_Optimization
 		}
