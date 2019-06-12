@@ -2786,7 +2786,7 @@ int map_addinstancemap(const char *name, unsigned short instance_id)
 	num_cell = dst_map->xs * dst_map->ys;
 #else
 	// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
-	num_cell = (size_t)(dst_map->xs * dst_map->ys);
+	num_cell = (size_t)dst_map->xs * dst_map->ys;
 #endif // Pandas_LGTM_Optimization
 	CREATE( dst_map->cell, struct mapcell, num_cell );
 	memcpy( dst_map->cell, src_map->cell, num_cell * sizeof(struct mapcell) );
@@ -3812,7 +3812,7 @@ int map_readgat (struct map_data* m)
 	num_cells = m->xs * m->ys;
 #else
 	// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
-	num_cells = (size_t)(m->xs * m->ys);
+	num_cells = (size_t)m->xs * m->ys;
 #endif // Pandas_LGTM_Optimization
 	CREATE(m->cell, struct mapcell, num_cells);
 
