@@ -5810,7 +5810,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 				ad.damage = sstatus->rhw.atk * 20 * skill_lv;
 #else
 				// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
-				ad.damage = (int64)(sstatus->rhw.atk * 20 * skill_lv);
+				ad.damage = (int64)sstatus->rhw.atk * 20 * skill_lv;
 #endif // Pandas_LGTM_Optimization
 				break;
 			default: {
