@@ -619,8 +619,19 @@ static void questdb_free_sub(struct quest_db *quest, bool free)
 		quest->dropitem = NULL;
 		quest->dropitem_count = 0;
 	}
+#ifndef Pandas_LGTM_Optimization
 	if (&quest->name)
 		StringBuf_Destroy(&quest->name);
+#else
+	// rAthena 官方使用的指针判断方式命中了 LGTM 的检测规则: https://lgtm.com/rules/2155960668/
+	// 
+	// 使用 &quest->name 这样的检测方式是无意义的,
+	// 因为只有 quest 指针为负数的情况下, 才有可能 &quest->name 为空
+	// 在这里只需要判断 quest 指针是否为空,
+	// 当 quest 指针不为空, 那么这个结构体的"非指针成员变量" (比如我们的 name 成员) 的指针就肯定不会为空
+	if (quest)
+		StringBuf_Destroy(&quest->name);
+#endif // Pandas_LGTM_Optimization
 	if (free)
 		aFree(quest);
 }

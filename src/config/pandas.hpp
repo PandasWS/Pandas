@@ -44,6 +44,9 @@
 
 	// 是否启用 npc.cpp 中的自定义辅助函数
 	#define Pandas_NpcHelper_CommonFunc
+
+	// 是否启用 LGTM 建议的一些处理措施, 避免潜在风险
+	#define Pandas_LGTM_Optimization
 #endif // Pandas_Basic
 
 // ============================================================================

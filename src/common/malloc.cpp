@@ -10,6 +10,10 @@
 #include "core.hpp"
 #include "showmsg.hpp"
 
+#ifdef LOG_MEMMGR
+#include "assistant.hpp" // 引入 Pandas 的辅助函数库 - 重定向 localtime 函数
+#endif // LOG_MEMMGR
+
 #if defined(__64BIT__)
 	#define FREED_POINTER 0xdeadbeafL
 #else

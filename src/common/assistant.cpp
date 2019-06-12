@@ -37,14 +37,63 @@ std::string & std_string_format(std::string & _str, const char * _Format, ...) {
 	return _str;
 }
 
-// 为指定的 sql_handle 设定合适的编码
+//************************************
+// Method:		safety_localtime
+// Description:	能够兼容 Windows 和 Linux 的线程安全 localtime 函数
+// Parameter:	const time_t * time
+// Parameter:	struct tm * result
+// Returns:		struct tm *
+//************************************
+struct tm *safety_localtime(const time_t *time, struct tm *result) {
+#ifdef WIN32
+	return (localtime_s(result, time) == S_OK ? result : nullptr);
+#else
+	return localtime_r(time, result);
+#endif // WIN32
+}
+
+//************************************
+// Method:		safety_gmtime
+// Description:	能够兼容 Windows 和 Linux 的线程安全 gmtime 函数
+// Parameter:	const time_t * time
+// Parameter:	struct tm * result
+// Returns:		struct tm *
+//************************************
+struct tm *safety_gmtime(const time_t *time, struct tm *result) {
+#ifdef WIN32
+	return (gmtime_s(result, time) == S_OK ? result : nullptr);
+#else
+	return gmtime_r(time, result);
+#endif // WIN32
+}
+
+//************************************
+// Method:		safty_localtime_define
+// Description:	用于覆盖 localtime 的的替换函数, 用于修正 LGTM 警告
+// Parameter:	const time_t * time
+// Returns:		std::shared_ptr<struct tm>
+//************************************
+std::shared_ptr<struct tm> safty_localtime_define(const time_t *time) {
+	struct tm *_ttm_result = new struct tm();
+	return std::shared_ptr<struct tm>(safety_localtime(time, _ttm_result));
+}
+
+#ifndef MINICORE
+//************************************
+// Method:		smart_codepage
+// Description:	为指定的 sql_handle 设定合适的编码
+// Parameter:	Sql * sql_handle
+// Parameter:	const char * connect_name
+// Parameter:	const char * codepage
+// Returns:		void
+//************************************
 void smart_codepage(Sql* sql_handle, const char* connect_name, const char* codepage) {
 	char* buf = NULL;
 	char finally_codepage[32] = { 0 };
 	bool bShowInfomation = (connect_name != NULL);
 
 	if (!sql_handle || !codepage || strlen(codepage) <= 0) return;
-	
+
 	if (strcmpi(codepage, "auto") != 0) {
 		if (SQL_ERROR == Sql_SetEncoding(sql_handle, codepage))
 			Sql_ShowDebug(sql_handle);
@@ -121,3 +170,4 @@ void smart_codepage(Sql* sql_handle, const char* connect_name, const char* codep
 			Sql_ShowDebug(sql_handle);
 	}
 }
+#endif // MINICORE

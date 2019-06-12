@@ -157,6 +157,7 @@ ACMD_FUNC(send)
 {
 	int len=0,type;
 	// read message type as hex number (without the 0x)
+#ifndef Pandas_LGTM_Optimization
 	if(!message || !*message ||
 			!((sscanf(message, "len %8x", &type)==1 && (len=1))
 			|| sscanf(message, "%8x", &type)==1) )
@@ -166,6 +167,21 @@ ACMD_FUNC(send)
 			clif_displaymessage(fd, msg_txt(sd,i));
 		return -1;
 	}
+#else
+	if (!message || !*message ||
+		!(sscanf(message, "len %8x", &type) == 1 || sscanf(message, "%8x", &type) == 1))
+	{
+		int i;
+		for (i = 900; i <= 903; ++i)
+			clif_displaymessage(fd, msg_txt(sd, i));
+		return -1;
+	}
+
+	// 由于 rAthena 默认的写法在一个 if 语句里面使用了 = 赋值符号
+	// 这样的行为会被 LGTM 判定为有潜在错误风险, 为了修正此警告, 我们将 len 的赋值单独拆开
+	if (sscanf(message, "len %8x", &type) == 1)
+		len = 1;
+#endif // Pandas_LGTM_Optimization
 
 #define PARSE_ERROR(error,p) \
 	{\
