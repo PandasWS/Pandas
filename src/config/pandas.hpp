@@ -13,6 +13,7 @@
 	#define Pandas_Basic
 	#define Pandas_DatabaseIncrease
 	#define Pandas_StructIncrease
+	#define Pandas_BattleConfigure
 	#define Pandas_FuncIncrease
 	#define Pandas_CreativeWork
 	#define Pandas_Bugfix
@@ -110,6 +111,15 @@
 #endif // Pandas_StructIncrease
 
 // ============================================================================
+// 战斗配置组 - Pandas_BattleConfigure
+// ============================================================================
+
+#ifdef Pandas_BattleConfigure
+	// 是否支持对战斗配置选项进行完整性检查 [╰づ记忆•斑驳〤 实现] [Sola丶小克 改进]
+	#define Pandas_BattleConfig_Verification
+#endif // Pandas_BattleConfigure
+
+// ============================================================================
 // 函数修改组 - Pandas_FuncIncrease
 // ============================================================================
 
@@ -160,9 +170,6 @@
 	#if PACKETVER >= 20151001
 		#define Pandas_Reject_Create_Doram_Character
 	#endif // PACKETVER >= 20151001
-
-	// 是否支持对战斗配置选项进行完整性检查 [╰づ记忆•斑驳〤 实现] [Sola丶小克 改进]
-	#define Pandas_Battle_Config_Verification
 
 	// 是否扩展魔物名称能展现的信息, 比如体型、种族、属性 [Sola丶小克 改进]
 	#define Pandas_MobInfomation_Extend
