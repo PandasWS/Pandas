@@ -66,9 +66,8 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 #ifndef Pandas_LGTM_Optimization
 			if (msg_number >= 0 && msg_number < size) {
 #else
-			// 这里的 msg_number 是一个无符号类型的数值
-			// 所以它绝对不可能是一个负数, 这里只需要判断闭区间即可
-			// https://lgtm.com/rules/2165180573/
+			// 这里的 msg_number 是一个无符号类型的数值, 所以它绝对不可能是一个负数.
+			// 这里只需要判断闭区间即可: https://lgtm.com/rules/2165180573/
 			if (msg_number < size) {
 #endif // Pandas_LGTM_Optimization
 				if (msg_table[msg_number] != NULL)
