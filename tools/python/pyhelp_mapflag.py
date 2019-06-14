@@ -193,17 +193,6 @@ def insert_for_one_param_mapflag(inject, options):
             ''
         ])
 
-def welecome():
-    print('=' * 70)
-    print('')
-    print('地图标记添加助手'.center(62))
-    print('')
-    print('=' * 70)
-    print('')
-
-    Message.ShowInfo('在使用此脚本之前, 建议确保 src 目录的工作区是干净的.')
-    Message.ShowInfo('这样添加结果如果不符合预期, 可以轻松的利用 git 进行重置操作.')
-
 def guide(inject):
 
     define = InputController().requireText({
@@ -307,7 +296,7 @@ def guide(inject):
 def main():
     os.chdir(os.path.split(os.path.realpath(__file__))[0])
 
-    welecome()
+    Common.welcome('地图标记添加助手')
 
     options = {
         'source_dirs' : '../../src',

@@ -1,6 +1,6 @@
 '''
 //===== Pandas Python Script ============================== 
-//= 源代码文件编码转换脚本
+//= 源代码文件编码转换助手
 //===== By: ================================================== 
 //= Sola丶小克
 //===== Current Version: ===================================== 
@@ -97,21 +97,10 @@ class CharsetConverter():
             print("I/O error: {0}".format(err))
             return False
 
-def welecome():
-    print('=' * 70)
-    print('')
-    print('源代码文件编码转换脚本'.center(62))
-    print('')
-    print('=' * 70)
-    print('')
-
-    Message.ShowInfo('在使用此脚本之前, 建议确保 src 目录的工作区是干净的.')
-    Message.ShowInfo('这样处理结果如果不符合预期, 可以轻松的利用 git 进行重置操作.')
-
 def main():
     os.chdir(os.path.split(os.path.realpath(__file__))[0])
 
-    welecome()
+    Common.welcome('源代码文件编码转换助手')
     print('')
 	
     confirm = InputController().requireBool({
