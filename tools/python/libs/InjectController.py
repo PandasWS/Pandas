@@ -5,7 +5,7 @@ import re
 
 import chardet
 
-from libs import Common
+from libs import Common, Message
 
 __all__ = [
 	'InjectController'
@@ -17,10 +17,10 @@ class InjectController:
         self.mark_dict = {}
 
         if not self.detect(self.__options__['source_dirs']):
-            print('[状态] 无法成功定位所有需要的代码注入点, 程序终止!')
+            Message.ShowError('无法成功定位所有需要的代码注入点, 程序终止!')
             Common.exitWithPause(-1)
         else:
-            print('[状态] 已成功定位所有代码注入点.\n')
+            Message.ShowStatus('已成功定位所有代码注入点.\n')
 
     def __detectCharset(self, filepath):
         '''
@@ -34,8 +34,8 @@ class InjectController:
         charset = self.__detectCharset(filename)
         regex = r'\s*?' + self.__options__['mark_format'] + r'\s*?'
 
-        if self.__detectCharset(filename).upper() != 'UTF-8-SIG':
-            print('No UTF-8-SIG: %s' % (filename))
+        if charset.upper() != 'UTF-8-SIG':
+            Message.ShowWarning('期望文件 %s 的编码为 UTF-8-SIG 而实际上是 %s' % (filename, charset.upper()))
             return
 
         try:
@@ -50,7 +50,7 @@ class InjectController:
                     continue
 
                 if str(re_match.group(1)) in self.mark_dict:
-                    print('发现重复的代码注入标记: ' + re_match.group(0))
+                    Message.ShowError('发现重复的代码注入标记: ' + re_match.group(0))
                     Common.exitWithPause(-1)
 
                 self.mark_dict[re_match.group(1)] = {
@@ -60,7 +60,7 @@ class InjectController:
                 }
             textfile.close()
         except Exception as err:
-            print('Error filename : %s | Message : %s' % (filename, err))
+            Message.ShowError('文件 : %s | 错误信息 : %s' % (filename, err))
 
     def detect(self, src_dir):
         for dirpath, _dirnames, filenames in os.walk(src_dir):
@@ -74,15 +74,21 @@ class InjectController:
                 self.__searchMark(fullpath)
 
         bMarkPassed = True
-        for mark_index in range(1, self.__options__['mark_counts'] + 1):
-            if str(mark_index) not in self.mark_dict:
+        for configure in self.__options__['mark_configure']:
+            if str(int(configure['id'])) not in self.mark_dict:
+                Message.ShowError('无法定位代码注入点: {index} : {constant} : {desc}'.format(
+                    index = str(int(configure['id'])),
+                    constant = str(configure['id']),
+                    desc = configure['desc']
+                ))
                 bMarkPassed = False
         return bMarkPassed
 
     def print(self):
         for _mark_index, mark_value in self.mark_dict.items():
-            print('Insert Point {index} in File {filepath} at Line {line}'.format(
-                index = mark_value['index'],
+            Message.ShowDebug('代码注入点 {index} : {constant} 位于文件 {filepath} : {line} 行.'.format(
+                index = '%-2s' % mark_value['index'],
+                constant = '%-40s' % str(self.__options__['mark_enum'](mark_value['index'])),
                 filepath = mark_value['filepath'],
                 line = mark_value['line']
             ))

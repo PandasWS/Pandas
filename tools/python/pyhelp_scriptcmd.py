@@ -24,9 +24,14 @@ script.cpp @ BUILDIN_DEF 脚本指令导出
 # -*- coding: utf-8 -*-
 
 import os
+from enum import IntEnum
 
-from libs import InjectController, InputController
-from libs import Common, Message
+from libs import Common, InjectController, InputController, Message
+
+class InjectPoint(IntEnum):
+    PANDAS_SWITCH_DEFINE = 1
+    SCRIPT_BUILDIN_FUNC = 2
+    SCRIPT_BUILDIN_DEF = 3
 
 def insert_scriptcmd(inject, options):
     define = options['define']
@@ -35,7 +40,7 @@ def insert_scriptcmd(inject, options):
     argsmode = options['argsmode']
     
     # pandas.hpp @ 宏定义
-    inject.insert(1, [
+    inject.insert(InjectPoint.PANDAS_SWITCH_DEFINE, [
         '',
         '\t// 是否启用 %s 脚本指令 [维护者昵称]' % cmdname,
         '\t// TODO: 请在此填写此脚本指令的说明',
@@ -47,7 +52,7 @@ def insert_scriptcmd(inject, options):
         usage = ' * 用法: %s <请补充完整参数说明>;' % cmdname
     
     # script.cpp @ BUILDIN_FUNC 脚本指令实际代码
-    inject.insert(2, [
+    inject.insert(InjectPoint.SCRIPT_BUILDIN_FUNC, [
         '#ifdef %s' % define,
         '/* ===========================================================',
         ' * 指令: %s' % cmdname,
@@ -71,7 +76,7 @@ def insert_scriptcmd(inject, options):
     else:
         defcontent = '\tBUILDIN_DEF2(%s,"%s","%s"),\t\t\t\t\t\t// 在此写上脚本指令说明 [维护者昵称]' % (funcname, cmdname, argsmode)
     
-    inject.insert(3, [
+    inject.insert(InjectPoint.SCRIPT_BUILDIN_DEF, [
         '#ifdef %s' % define,
         defcontent,
         '#endif // %s' % define
@@ -169,7 +174,21 @@ def main():
         'source_dirs' : '../../src',
         'process_exts' : ['.hpp', '.cpp'],
         'mark_format' : r'// PYHELP - SCRIPTCMD - INSERT POINT - <Section (\d{1,2})>',
-        'mark_counts' : 3
+        'mark_enum': InjectPoint,
+        'mark_configure' : [
+            {
+                'id' : InjectPoint.PANDAS_SWITCH_DEFINE,
+                'desc' : 'pandas.hpp @ 宏定义'
+            },
+            {
+                'id' : InjectPoint.SCRIPT_BUILDIN_FUNC,
+                'desc' : 'script.cpp @ BUILDIN_FUNC 脚本指令实际代码'
+            },
+            {
+                'id' : InjectPoint.SCRIPT_BUILDIN_DEF,
+                'desc' : 'script.cpp @ BUILDIN_DEF 脚本指令导出'
+            }
+        ]
     }
 
     guide(InjectController(options))
