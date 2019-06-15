@@ -34,9 +34,9 @@ class InjectController:
         charset = self.__detectCharset(filename)
         regex = r'\s*?' + self.__options__['mark_format'] + r'\s*?'
 
-        if charset.upper() != 'UTF-8-SIG':
-            Message.ShowWarning('期望文件 %s 的编码为 UTF-8-SIG 而实际上是 %s' % (filename, charset.upper()))
-            return
+        #if charset.upper() != 'UTF-8-SIG':
+        #    Message.ShowWarning('期望文件 %s 的编码为 UTF-8-SIG 而实际上是 %s' % (filename, charset.upper()))
+        #    return
 
         try:
             textfile = open(filename, encoding=charset)

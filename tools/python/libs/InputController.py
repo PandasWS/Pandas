@@ -13,7 +13,9 @@ class InputController:
         prefix_val = options['prefix'] if 'prefix' in options else ''
         result = input(prefix_val)
         if not result:
-            if not ('allow_empty' in options and options['allow_empty']):
+            if 'default' in options and options['default']:
+                result = options['default']
+            if not result and not ('allow_empty' in options and options['allow_empty']):
                 Message.ShowError('请至少输入一个字符. 程序终止')
                 print('-' * 70)
                 Common.exitWithPause(-1)
