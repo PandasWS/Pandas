@@ -94,7 +94,7 @@ class InjectController:
             ))
 
     def insert(self, index, content):
-        mark = self.mark_dict[str(index)]
+        mark = self.mark_dict[str(int(index))]
         filepath = mark['filepath']
         insert_content = ('\n'.join(content)) + '\n'
 

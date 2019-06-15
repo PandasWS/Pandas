@@ -93,7 +93,6 @@ def guide(inject):
 
     funcname = InputController().requireText({
         'tips' : '请输入该脚本指令的处理函数名称 (BUILDIN_FUNC 部分的函数名)',
-        'prefix' : '',
         'lower': True
     })
     
@@ -110,7 +109,6 @@ def guide(inject):
     if not samefunc:
         cmdname = InputController().requireText({
             'tips' : '请输入该脚本指令的名称 (BUILDIN_DEF2 使用)',
-            'prefix' : '',
             'lower' : True
         })
     
@@ -118,7 +116,6 @@ def guide(inject):
     
     argsmode = InputController().requireText({
         'tips' : '请输入该脚本指令的参数模式 (如一个或多个的: i\s\? 为空则直接回车)',
-        'prefix' : '',
         'lower' : True,
         'allow_empty' : True
     })

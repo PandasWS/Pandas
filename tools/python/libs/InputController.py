@@ -10,13 +10,14 @@ class InputController:
     def requireText(self, options):
         print('-' * 70)
         Message.ShowSelect(options['tips'] + ':')
-        result = input(options['prefix'])
+        prefix_val = options['prefix'] if 'prefix' in options else ''
+        result = input(prefix_val)
         if not result:
             if not ('allow_empty' in options and options['allow_empty']):
                 Message.ShowError('请至少输入一个字符. 程序终止')
                 print('-' * 70)
                 Common.exitWithPause(-1)
-        result = options['prefix'] + result
+        result = prefix_val + result
         if 'upper' in options and options['upper']:
             result = result.upper()
         if 'lower' in options and options['lower']:
@@ -29,7 +30,7 @@ class InputController:
     def requireInt(self, options):
         print('-' * 70)
         Message.ShowSelect(options['tips'] + ':')
-        result = input(options['prefix'])
+        result = input(options['prefix']) if 'prefix' in options else input()
         if not result:
             if not ('allow_empty' in options and options['allow_empty']):
                 Message.ShowError('请至少输入一个数字. 程序终止')

@@ -19,8 +19,8 @@ import codecs
 import os
 
 import chardet
-from libs import InputController
-from libs import Common, Message
+
+from libs import Common, InputController, Message
 
 
 class CharsetConverter():
@@ -94,7 +94,7 @@ class CharsetConverter():
 
             return True
         except IOError as err:
-            print("I/O error: {0}".format(err))
+            Message.ShowError("I/O error: {0}".format(err))
             return False
 
 def main():
