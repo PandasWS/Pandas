@@ -117,6 +117,7 @@
 #ifdef Pandas_BattleConfigure
 	// 是否支持对战斗配置选项进行完整性检查 [╰づ记忆•斑驳〤 实现] [Sola丶小克 改进]
 	#define Pandas_BattleConfig_Verification
+	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
 // ============================================================================

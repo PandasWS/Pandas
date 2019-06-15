@@ -661,6 +661,9 @@ struct Battle_Config
 	int feature_equipswitch;
 	int pet_walk_speed;
 
+	// Pandas Configure
+	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
+
 #include "../custom/battle_config_struct.inc"
 };
 
