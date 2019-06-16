@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from colorama import init
-from colorama import Fore
+from colorama import Fore, init
 
 __all__ = [
 	'ShowInfo',

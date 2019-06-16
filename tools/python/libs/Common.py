@@ -10,6 +10,8 @@ __all__ = [
 	'welcome'
 ]
 
+init()
+
 def exitWithPause(exitcode = 0):
     if platform.system() == 'Windows':
         os.system('pause')
