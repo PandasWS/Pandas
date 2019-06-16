@@ -177,6 +177,7 @@
     <ClInclude Include="int_pet.hpp" />
     <ClInclude Include="int_quest.hpp" />
     <ClInclude Include="int_storage.hpp" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="char.cpp" />
@@ -197,6 +198,9 @@
     <ClCompile Include="int_pet.cpp" />
     <ClCompile Include="int_quest.cpp" />
     <ClCompile Include="int_storage.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="char-server.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

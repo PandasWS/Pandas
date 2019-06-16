@@ -162,6 +162,7 @@
     <ClInclude Include="loginclif.hpp" />
     <ClInclude Include="logincnslif.hpp" />
     <ClInclude Include="loginlog.hpp" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="account.cpp" />
@@ -171,6 +172,9 @@
     <ClCompile Include="loginclif.cpp" />
     <ClCompile Include="logincnslif.cpp" />
     <ClCompile Include="loginlog.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="login-server.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

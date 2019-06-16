@@ -157,6 +157,13 @@
   <ItemGroup>
     <ClCompile Include="mapcache.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="mapcache_resource.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="mapcache.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
