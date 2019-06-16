@@ -114,7 +114,7 @@ def main():
 
     count = CharsetConverter({
         'ignore_files' : ['Makefile', 'Makefile.in', 'CMakeLists.txt'],
-        'process_exts' : ['.hpp', '.cpp']
+        'process_exts' : ['.hpp', '.cpp', '.h', '.c']
     }).convertDirectory('../../src', 'UTF-8-SIG')
 
     if count <= 0:
