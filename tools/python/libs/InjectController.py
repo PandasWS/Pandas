@@ -34,9 +34,9 @@ class InjectController:
         charset = self.__detectCharset(filename)
         regex = r'\s*?' + self.__options__['mark_format'] + r'\s*?'
 
-        #if charset.upper() != 'UTF-8-SIG':
-        #    Message.ShowWarning('期望文件 %s 的编码为 UTF-8-SIG 而实际上是 %s' % (filename, charset.upper()))
-        #    return
+        if '../../src/'.replace('/', os.path.sep) in filename and charset.upper() != 'UTF-8-SIG':
+            Message.ShowWarning('期望文件 %s 的编码为 UTF-8-SIG 而实际上是 %s' % (filename, charset.upper()))
+            return
 
         try:
             textfile = open(filename, encoding=charset)
@@ -63,15 +63,19 @@ class InjectController:
             Message.ShowError('文件 : %s | 错误信息 : %s' % (filename, err))
 
     def detect(self, src_dir):
-        for dirpath, _dirnames, filenames in os.walk(src_dir):
-            for filename in filenames:
-                _base_name, extension_name = os.path.splitext(filename.lower())
+        if isinstance(src_dir, str):
+            src_dir = [src_dir]
 
-                if extension_name not in self.__options__['process_exts']:
-                    continue
+        for single_dir in src_dir:
+            for dirpath, _dirnames, filenames in os.walk(single_dir):
+                for filename in filenames:
+                    _base_name, extension_name = os.path.splitext(filename.lower())
 
-                fullpath = os.path.normpath('%s/%s' % (dirpath, filename))
-                self.__searchMark(fullpath)
+                    if extension_name not in self.__options__['process_exts']:
+                        continue
+
+                    fullpath = os.path.normpath('%s/%s' % (dirpath, filename))
+                    self.__searchMark(fullpath)
 
         bMarkPassed = True
         for configure in self.__options__['mark_configure']:

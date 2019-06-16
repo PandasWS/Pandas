@@ -181,7 +181,7 @@ def main():
     Common.welcome('战斗配置选项添加助手')
 
     options = {
-        'source_dirs' : '../../',
+        'source_dirs' : ['../../src', '../../conf/battle'],
         'process_exts' : ['.hpp', '.cpp', '.conf'],
         'mark_format' : r'// PYHELP - BATTLECONFIG - INSERT POINT - <Section (\d{1,2})>',
         'mark_enum': InjectPoint,
