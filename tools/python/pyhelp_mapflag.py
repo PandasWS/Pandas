@@ -45,9 +45,22 @@ script.cpp @ getmapflag 可选的脚本读取标记参数处理代码 - no use n
 # -*- coding: utf-8 -*-
 
 import os
+from enum import IntEnum
 
-from libs import InjectController, InputController
-from libs import Common, Message
+from libs import Common, InjectController, InputController, Message
+
+
+class InjectPoint(IntEnum):
+    PANDAS_SWITCH_DEFINE = 1
+    MAP_MAPFLAG_DEFINE = 2
+    SCRIPT_CONSTANTS_EXPORT = 3
+    ATCOMMAND_MAPFLAG_BLOCK = 4
+    MAP_GETMAPFLAG_SUB = 5
+    MAP_SETMAPFLAG_SUB = 6
+    NPC_PARSE_MAPFLAG = 7
+    ATCOMMAND_MAPINFO = 8
+    SCRIPT_SETMAPFLAG = 9
+    SCRIPT_GETMAPFLAG = 10
 
 def insert_for_normal_mapflag(inject, options):
     flagtype = options['flagtype']
@@ -56,7 +69,7 @@ def insert_for_normal_mapflag(inject, options):
     default_val = options['default_val']
 
     # pandas.hpp @ 宏定义
-    inject.insert(1, [
+    inject.insert(InjectPoint.PANDAS_SWITCH_DEFINE, [
         '',
         '\t// 是否启用 %s 地图标记 [维护者昵称]' % constant.lower().replace('mf_', ''),
         '\t// TODO: 请在此填写此地图标记的说明',
@@ -64,14 +77,14 @@ def insert_for_normal_mapflag(inject, options):
     ])
 
     # map.hpp @ MF_XXX 常量定义
-    inject.insert(2, [
+    inject.insert(InjectPoint.MAP_MAPFLAG_DEFINE, [
         '#ifdef %s' % define,
         '\t%s,' % constant,
         '#endif // %s' % define
     ])
 
     # script_constants.hpp @ MF_XXX 常量导出
-    inject.insert(3, [
+    inject.insert(InjectPoint.SCRIPT_CONSTANTS_EXPORT, [
         '#ifdef %s' % define,
         '\texport_constant(%s);' % constant,
         '#endif // %s' % define,
@@ -80,14 +93,14 @@ def insert_for_normal_mapflag(inject, options):
 
     # atcommand.cpp @ ACMD_FUNC(mapinfo) 可选的地图信息输出
     if flagtype == 0:
-        inject.insert(8, [
+        inject.insert(InjectPoint.ATCOMMAND_MAPINFO, [
             '#ifdef %s' % define,
             '\tif (map_getmapflag(m_id, %s))' % constant,
             '\t\tstrcat(atcmd_output, " %s |");' % define.replace('Pandas_MapFlag_', ''),
             '#endif // %s' % define
         ])
     elif flagtype == 1:
-        inject.insert(8, [
+        inject.insert(InjectPoint.ATCOMMAND_MAPINFO, [
             '#ifdef %s' % define,
             '\tif (map_getmapflag(m_id, %s)) {' % constant,
             '\t\tsprintf(atcmd_output, "%s {shortname}: %d |", atcmd_output, map_getmapflag_param(m_id, {constant}, {default_val}));'.format(
@@ -108,7 +121,7 @@ def insert_for_one_param_mapflag(inject, options):
     # atcommand.cpp @ mapflag GM指令的赋值屏蔽处理
     # 按照目前 rAthena 的代码理解, 只有普通的开关型地图标记, 才能被 @mapflag 赋值
     # 其他的地图标记都会禁止使用 @mapflag
-    inject.insert(4, [
+    inject.insert(InjectPoint.ATCOMMAND_MAPFLAG_BLOCK, [
         '#ifdef %s' % define,
         '\t\t\tdisabled_mf.insert(disabled_mf.begin(), %s);' % constant,
         '#endif // %s' % define,
@@ -116,7 +129,7 @@ def insert_for_one_param_mapflag(inject, options):
     ])
 
     # map.cpp @ map_getmapflag_sub 的读取标记处理
-    inject.insert(5, [
+    inject.insert(InjectPoint.MAP_GETMAPFLAG_SUB, [
         '#ifdef %s' % define,
         '\t\tcase %s:' % constant,
         '\t\t\treturn map_getmapflag_param(m, mapflag, args, 0);',
@@ -126,7 +139,7 @@ def insert_for_one_param_mapflag(inject, options):
 
     # map.cpp @ map_setmapflag_sub 的设置标记处理
     if default_disable:
-        inject.insert(6, [
+        inject.insert(InjectPoint.MAP_SETMAPFLAG_SUB, [
             '#ifdef %s' % define,
             '\t\tcase %s:' % constant,
             '\t\t\tif (!status)',
@@ -143,7 +156,7 @@ def insert_for_one_param_mapflag(inject, options):
             '#endif // %s' % define
         ])
     else:
-        inject.insert(6, [
+        inject.insert(InjectPoint.MAP_SETMAPFLAG_SUB, [
             '#ifdef %s' % define,
             '\t\tcase %s:' % constant,
             '\t\t\tif (!status)',
@@ -160,7 +173,7 @@ def insert_for_one_param_mapflag(inject, options):
 
     # npc.cpp @ npc_parse_mapflag 可选的标记处理
     if default_disable:
-        inject.insert(7, [
+        inject.insert(InjectPoint.NPC_PARSE_MAPFLAG, [
             '#ifdef %s' % define,
             '\t\tcase %s: {' % constant,
             '\t\t\t// 若脚本中 mapflag 指定的数值无效或为默认值: %d, 则立刻关闭这个地图标记' % default_val,
@@ -176,7 +189,7 @@ def insert_for_one_param_mapflag(inject, options):
             ''
         ])
     else:
-        inject.insert(7, [
+        inject.insert(InjectPoint.NPC_PARSE_MAPFLAG, [
             '#ifdef %s' % define,
             '\t\tcase %s: {' % constant,
             '\t\t\t// 若脚本中 mapflag 指定的第一个数值参数无效,',
@@ -192,17 +205,6 @@ def insert_for_one_param_mapflag(inject, options):
             '#endif // %s' % define,
             ''
         ])
-
-def welecome():
-    print('=' * 70)
-    print('')
-    print('地图标记添加助手'.center(62))
-    print('')
-    print('=' * 70)
-    print('')
-
-    Message.ShowInfo('在使用此脚本之前, 建议确保 src 目录的工作区是干净的.')
-    Message.ShowInfo('这样添加结果如果不符合预期, 可以轻松的利用 git 进行重置操作.')
 
 def guide(inject):
 
@@ -307,13 +309,55 @@ def guide(inject):
 def main():
     os.chdir(os.path.split(os.path.realpath(__file__))[0])
 
-    welecome()
+    Common.welcome('地图标记添加助手')
 
     options = {
         'source_dirs' : '../../src',
         'process_exts' : ['.hpp', '.cpp'],
         'mark_format' : r'// PYHELP - MAPFLAG - INSERT POINT - <Section (\d{1,2})>',
-        'mark_counts' : 10
+        'mark_enum': InjectPoint,
+        'mark_configure' : [
+            {
+                'id' : InjectPoint.PANDAS_SWITCH_DEFINE,
+                'desc' : 'pandas.hpp @ 宏定义'
+            },
+            {
+                'id' : InjectPoint.MAP_MAPFLAG_DEFINE,
+                'desc' : 'map.hpp @ MF_XXX 常量定义'
+            },
+            {
+                'id' : InjectPoint.SCRIPT_CONSTANTS_EXPORT,
+                'desc' : 'script_constants.hpp @ MF_XXX 常量导出'
+            },
+            {
+                'id' : InjectPoint.ATCOMMAND_MAPFLAG_BLOCK,
+                'desc' : 'atcommand.cpp @ mapflag GM指令的赋值屏蔽处理'
+            },
+            {
+                'id' : InjectPoint.MAP_GETMAPFLAG_SUB,
+                'desc' : 'map.cpp @ map_getmapflag_sub 的读取标记处理'
+            },
+            {
+                'id' : InjectPoint.MAP_SETMAPFLAG_SUB,
+                'desc' : 'map.cpp @ map_setmapflag_sub 的设置标记处理'
+            },
+            {
+                'id' : InjectPoint.NPC_PARSE_MAPFLAG,
+                'desc' : 'npc.cpp @ npc_parse_mapflag 可选的标记处理'
+            },
+            {
+                'id' : InjectPoint.ATCOMMAND_MAPINFO,
+                'desc' : 'atcommand.cpp @ ACMD_FUNC(mapinfo) 可选的地图信息输出'
+            },
+            {
+                'id' : InjectPoint.SCRIPT_SETMAPFLAG,
+                'desc' : 'script.cpp @ setmapflag 可选的脚本设置标记参数处理代码'
+            },
+            {
+                'id' : InjectPoint.SCRIPT_GETMAPFLAG,
+                'desc' : 'script.cpp @ getmapflag 可选的脚本读取标记参数处理代码'
+            }
+        ]
     }
 
     guide(InjectController(options))

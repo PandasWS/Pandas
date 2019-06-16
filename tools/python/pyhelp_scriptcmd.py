@@ -24,9 +24,14 @@ script.cpp @ BUILDIN_DEF 脚本指令导出
 # -*- coding: utf-8 -*-
 
 import os
+from enum import IntEnum
 
-from libs import InjectController, InputController
-from libs import Common, Message
+from libs import Common, InjectController, InputController, Message
+
+class InjectPoint(IntEnum):
+    PANDAS_SWITCH_DEFINE = 1
+    SCRIPT_BUILDIN_FUNC = 2
+    SCRIPT_BUILDIN_DEF = 3
 
 def insert_scriptcmd(inject, options):
     define = options['define']
@@ -35,7 +40,7 @@ def insert_scriptcmd(inject, options):
     argsmode = options['argsmode']
     
     # pandas.hpp @ 宏定义
-    inject.insert(1, [
+    inject.insert(InjectPoint.PANDAS_SWITCH_DEFINE, [
         '',
         '\t// 是否启用 %s 脚本指令 [维护者昵称]' % cmdname,
         '\t// TODO: 请在此填写此脚本指令的说明',
@@ -47,7 +52,7 @@ def insert_scriptcmd(inject, options):
         usage = ' * 用法: %s <请补充完整参数说明>;' % cmdname
     
     # script.cpp @ BUILDIN_FUNC 脚本指令实际代码
-    inject.insert(2, [
+    inject.insert(InjectPoint.SCRIPT_BUILDIN_FUNC, [
         '#ifdef %s' % define,
         '/* ===========================================================',
         ' * 指令: %s' % cmdname,
@@ -71,22 +76,11 @@ def insert_scriptcmd(inject, options):
     else:
         defcontent = '\tBUILDIN_DEF2(%s,"%s","%s"),\t\t\t\t\t\t// 在此写上脚本指令说明 [维护者昵称]' % (funcname, cmdname, argsmode)
     
-    inject.insert(3, [
+    inject.insert(InjectPoint.SCRIPT_BUILDIN_DEF, [
         '#ifdef %s' % define,
         defcontent,
         '#endif // %s' % define
     ])
-
-def welecome():
-    print('=' * 70)
-    print('')
-    print('脚本指令添加助手'.center(62))
-    print('')
-    print('=' * 70)
-    print('')
-
-    Message.ShowInfo('在使用此脚本之前, 建议确保 src 目录的工作区是干净的.')
-    Message.ShowInfo('这样添加结果如果不符合预期, 可以轻松的利用 git 进行重置操作.')
 
 def guide(inject):
 
@@ -99,7 +93,6 @@ def guide(inject):
 
     funcname = InputController().requireText({
         'tips' : '请输入该脚本指令的处理函数名称 (BUILDIN_FUNC 部分的函数名)',
-        'prefix' : '',
         'lower': True
     })
     
@@ -116,7 +109,6 @@ def guide(inject):
     if not samefunc:
         cmdname = InputController().requireText({
             'tips' : '请输入该脚本指令的名称 (BUILDIN_DEF2 使用)',
-            'prefix' : '',
             'lower' : True
         })
     
@@ -124,7 +116,6 @@ def guide(inject):
     
     argsmode = InputController().requireText({
         'tips' : '请输入该脚本指令的参数模式 (如一个或多个的: i\s\? 为空则直接回车)',
-        'prefix' : '',
         'lower' : True,
         'allow_empty' : True
     })
@@ -174,13 +165,27 @@ def guide(inject):
 def main():
     os.chdir(os.path.split(os.path.realpath(__file__))[0])
 
-    welecome()
+    Common.welcome('脚本指令添加助手')
 
     options = {
         'source_dirs' : '../../src',
         'process_exts' : ['.hpp', '.cpp'],
         'mark_format' : r'// PYHELP - SCRIPTCMD - INSERT POINT - <Section (\d{1,2})>',
-        'mark_counts' : 3
+        'mark_enum': InjectPoint,
+        'mark_configure' : [
+            {
+                'id' : InjectPoint.PANDAS_SWITCH_DEFINE,
+                'desc' : 'pandas.hpp @ 宏定义'
+            },
+            {
+                'id' : InjectPoint.SCRIPT_BUILDIN_FUNC,
+                'desc' : 'script.cpp @ BUILDIN_FUNC 脚本指令实际代码'
+            },
+            {
+                'id' : InjectPoint.SCRIPT_BUILDIN_DEF,
+                'desc' : 'script.cpp @ BUILDIN_DEF 脚本指令导出'
+            }
+        ]
     }
 
     guide(InjectController(options))

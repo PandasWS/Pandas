@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from colorama import init
-from colorama import Fore
+from colorama import Fore, init
 
 __all__ = [
 	'ShowInfo',
@@ -10,7 +9,8 @@ __all__ = [
 	'ShowWarning',
 	'ShowError',
 	'ShowSelect',
-	'ShowMenu'
+	'ShowMenu',
+    'ShowDebug'
 ]
 
 init()
@@ -35,3 +35,6 @@ def ShowSelect(text, **kwargs):
 
 def ShowMenu(text, **kwargs):
     print(Fore.WHITE + '[选项] ' + Fore.RESET + text, **kwargs)
+
+def ShowDebug(text, **kwargs):
+    print(Fore.CYAN + '[调试] ' + Fore.RESET + text, **kwargs)

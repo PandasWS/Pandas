@@ -8494,10 +8494,10 @@ static const struct _battle_data {
 	{ "revive_onwarp",                      &battle_config.revive_onwarp,                   1,      0,      1,              },
 	{ "fame_taekwon_mission",               &battle_config.fame_taekwon_mission,            1,      0,      INT_MAX,        },
 	{ "fame_refine_lv1",                    &battle_config.fame_refine_lv1,                 1,      0,      INT_MAX,        },
-#ifndef Pandas_Battle_Config_Verification
+#ifndef Pandas_BattleConfig_Verification
 	// 出现了重复定义, 这里先简单注释掉, 如果 rAthena 官方很久不改的话, 找个时间再提交个 PullRequest 修正下 [Sola丶小克]
 	{ "fame_refine_lv1",                    &battle_config.fame_refine_lv1,                 1,      0,      INT_MAX,        },
-#endif // Pandas_Battle_Config_Verification
+#endif // Pandas_BattleConfig_Verification
 	{ "fame_refine_lv2",                    &battle_config.fame_refine_lv2,                 25,     0,      INT_MAX,        },
 	{ "fame_refine_lv3",                    &battle_config.fame_refine_lv3,                 1000,   0,      INT_MAX,        },
 	{ "fame_forge",                         &battle_config.fame_forge,                      10,     0,      INT_MAX,        },
@@ -8544,7 +8544,7 @@ static const struct _battle_data {
 	{ "change_party_leader_samemap",        &battle_config.change_party_leader_samemap,     1,      0,      1,              },
 	{ "dispel_song",                        &battle_config.dispel_song,                     0,      0,      1,              },
 	{ "guild_maprespawn_clones",			&battle_config.guild_maprespawn_clones,			0,		0,		1,				},
-	{ "hide_fav_sell", 			&battle_config.hide_fav_sell,			0,      0,      1,              },
+	{ "hide_fav_sell", 						&battle_config.hide_fav_sell,					0,      0,      1,              },
 	{ "mail_daily_count",					&battle_config.mail_daily_count,				100,	0,		INT32_MAX,		},
 	{ "mail_zeny_fee",						&battle_config.mail_zeny_fee,					2,		0,		100,			},
 	{ "mail_attachment_price",				&battle_config.mail_attachment_price,			2500,	0,		INT32_MAX,		},
@@ -8552,7 +8552,7 @@ static const struct _battle_data {
 	{ "banana_bomb_duration",				&battle_config.banana_bomb_duration,			0,		0,		UINT16_MAX,		},
 	{ "guild_leaderchange_delay",			&battle_config.guild_leaderchange_delay,		1440,	0,		INT32_MAX,		},
 	{ "guild_leaderchange_woe",				&battle_config.guild_leaderchange_woe,			0,		0,		1,				},
-	{ "guild_alliance_onlygm",              &battle_config.guild_alliance_onlygm,           0,      0,      1, },
+	{ "guild_alliance_onlygm",              &battle_config.guild_alliance_onlygm,           0,      0,      1,				},
 	{ "feature.achievement",                &battle_config.feature_achievement,             1,      0,      1,              },
 	{ "allow_bound_sell",                   &battle_config.allow_bound_sell,                0,      0,      0xF,            },
 	{ "event_refine_chance",                &battle_config.event_refine_chance,             0,      0,      1,              },
@@ -8576,12 +8576,14 @@ static const struct _battle_data {
 	{ "feature.equipswitch",                &battle_config.feature_equipswitch,             1,      0,      1,              },
 	{ "pet_walk_speed",                     &battle_config.pet_walk_speed,                  1,      1,      3,              },
 
+	// Pandas Configure
+	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };
 
-#ifdef Pandas_Battle_Config_Verification
+#ifdef Pandas_BattleConfig_Verification
 bool battle_data_isset[ARRAYLENGTH(battle_data)];
-#endif // Pandas_Battle_Config_Verification
+#endif // Pandas_BattleConfig_Verification
 
 /*==========================
  * Set battle settings
@@ -8592,7 +8594,7 @@ int battle_set_value(const char* w1, const char* w2)
 
 	int i;
 	ARR_FIND(0, ARRAYLENGTH(battle_data), i, strcmpi(w1, battle_data[i].str) == 0);
-#ifndef Pandas_Battle_Config_Verification
+#ifndef Pandas_BattleConfig_Verification
 	if (i == ARRAYLENGTH(battle_data))
 		return 0; // not found
 #else
@@ -8600,16 +8602,16 @@ int battle_set_value(const char* w1, const char* w2)
 		ShowWarning("battle_set_value: Could not find the option name '%s' in Battle Configuration Files.\n", w1);
 		return 0; // not found
 	}
-#endif // Pandas_Battle_Config_Verification
+#endif // Pandas_BattleConfig_Verification
 
 	if (val < battle_data[i].min || val > battle_data[i].max) {
 		ShowWarning("Value for setting '%s': %s is invalid (min:%i max:%i)! Defaulting to %i...\n", w1, w2, battle_data[i].min, battle_data[i].max, battle_data[i].defval);
 		val = battle_data[i].defval;
 	}
 
-#ifdef Pandas_Battle_Config_Verification
+#ifdef Pandas_BattleConfig_Verification
 	battle_data_isset[i] = true;
-#endif // Pandas_Battle_Config_Verification
+#endif // Pandas_BattleConfig_Verification
 	*battle_data[i].val = val;
 	return 1;
 }
@@ -8633,7 +8635,7 @@ int battle_get_value(const char* w1)
 void battle_set_defaults()
 {
 	int i;
-#ifndef Pandas_Battle_Config_Verification
+#ifndef Pandas_BattleConfig_Verification
 	for (i = 0; i < ARRAYLENGTH(battle_data); i++)
 		*battle_data[i].val = battle_data[i].defval;
 #else
@@ -8641,7 +8643,7 @@ void battle_set_defaults()
 		*battle_data[i].val = battle_data[i].defval;
 		battle_data_isset[i] = false;
 	}
-#endif // Pandas_Battle_Config_Verification
+#endif // Pandas_BattleConfig_Verification
 }
 
 /*==================================
@@ -8807,7 +8809,7 @@ int battle_config_read(const char* cfgName)
 
 	count--;
 
-#ifdef Pandas_Battle_Config_Verification
+#ifdef Pandas_BattleConfig_Verification
 	if (count == 0) {
 		int i = 0;
 
@@ -8827,7 +8829,7 @@ int battle_config_read(const char* cfgName)
 			}
 		}
 	}
-#endif // Pandas_Battle_Config_Verification
+#endif // Pandas_BattleConfig_Verification
 
 	if (count == 0)
 		battle_adjust_conf();

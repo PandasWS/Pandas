@@ -314,7 +314,7 @@ static void display_title(void) {
 #else
 	ShowMessage("\n");
 	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                      " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                       Pandas Dev Team presents                   " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                       Pandas Dev Team Presents                   " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                ____                    _                         " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "               |  _ \\  __ _  _ __    __| |  __ _  ___            " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "               | |_) |/ _` || '_ \\  / _` | / _` |/ __|           " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
@@ -325,7 +325,7 @@ static void display_title(void) {
 	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                      " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 #ifdef Pandas_Disclaimer
 	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "          Pandas is only for learning and research purposes.      " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "             Please don't use it for commercial purposes.         " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                 Please don't use it for commercial.              " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                      " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 #endif // Pandas_Disclaimer
 	ShowMessage("\n");
