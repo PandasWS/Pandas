@@ -12,10 +12,6 @@
 // 此处涉及一个全局变量 create_fulldump
 // 该变量已经在 core.hpp 中 extern, 实际的定义在 core.cpp 中 [Sola丶小克]
 
-#if !defined(Pandas_Version)
-	#define Pandas_Version "v0.0.0"
-#endif // !defined(Pandas_Version)
-
 inline BOOL IsDataSectionNeeded(const WCHAR* pModuleName)
 {
 	WCHAR szFileName[_MAX_FNAME] = L"";
@@ -102,7 +98,7 @@ LONG __stdcall Pandas_UnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionInf
 
 	if (GetModuleFileName(NULL, szFileName, _MAX_FNAME)) {
 		_splitpath(szFileName, szDriverName, szDirName, szFileName, NULL);
-		sprintf(szDumpFileName, "%s%s%s-%s-%s.dmp", szDriverName, szDirName, szFileName, Pandas_Version, timestamp);
+		sprintf(szDumpFileName, "%s%s%s-%s-%s.dmp", szDriverName, szDirName, szFileName, GetPandasVersion().c_str(), timestamp);
 	}
 
 	ShowError("============================================================\n");

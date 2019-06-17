@@ -338,7 +338,7 @@ static void display_title(void) {
 		ShowInfo("Git Hash: '" CL_WHITE "%s" CL_RESET "'\n", git);
 #else
 	// 显示 Pandas 的版本号 [Sola丶小克]
-	ShowInfo("Pandas Version: " CL_WHITE "%s" CL_RESET "\n", Pandas_Version);
+	ShowInfo("Pandas Version: " CL_WHITE "%s" CL_RESET "\n", GetPandasVersion().c_str());
 #endif // Pandas_Show_Version
 
 #ifdef Pandas_Disclaimer

@@ -78,6 +78,20 @@ std::shared_ptr<struct tm> safty_localtime_define(const time_t *time) {
 	return std::shared_ptr<struct tm>(safety_localtime(time, _ttm_result));
 }
 
+//************************************
+// Method:		GetPandasVersion
+// Description:	获取 Pandas 的主程序版本号
+// Returns:		std::string
+//************************************
+std::string GetPandasVersion() {
+#ifdef _WIN32
+	std::string pandasVersion;
+	return std_string_format(pandasVersion, "v%s", GetFileVersion("", true).c_str());
+#else
+	return std::string(Pandas_Version);
+#endif // _WIN32
+}
+
 #ifndef MINICORE
 //************************************
 // Method:		smart_codepage
@@ -171,3 +185,59 @@ void smart_codepage(Sql* sql_handle, const char* connect_name, const char* codep
 	}
 }
 #endif // MINICORE
+
+#ifdef _WIN32
+//************************************
+// Method:		GetFileVersion
+// Description:	获取指定文件的文件版本号
+// Parameter:	std::string filename
+// Parameter:	bool bWithoutBuildNum
+// Returns:		std::string
+//************************************
+std::string GetFileVersion(std::string filename, bool bWithoutBuildNum) {
+	char szModulePath[MAX_PATH] = { 0 };
+
+	if (filename.empty()) {
+		if (GetModuleFileName(NULL, szModulePath, MAX_PATH) == 0) {
+			ShowWarning("GetProductVersion: Could not get module file name, defaulting to '%s'\n", Pandas_Version);
+			return std::string(Pandas_Version);
+		}
+		filename = std::string(szModulePath);
+	}
+
+	DWORD dwInfoSize = 0, dwHandle = 0;
+
+	dwInfoSize = GetFileVersionInfoSize(filename.c_str(), &dwHandle);
+	if (dwInfoSize == 0) {
+		ShowWarning("GetProductVersion: Could not get version info size, defaulting to '%s'\n", Pandas_Version);
+		return std::string(Pandas_Version);
+	}
+
+	void* pVersionInfo = new char[dwInfoSize];
+	if (GetFileVersionInfo(filename.c_str(), dwHandle, dwInfoSize, pVersionInfo)) {
+		void* lpBuffer = NULL;
+		UINT nItemLength = 0;
+		if (VerQueryValue(pVersionInfo, "\\", &lpBuffer, &nItemLength)) {
+			VS_FIXEDFILEINFO *pFileInfo = (VS_FIXEDFILEINFO*)lpBuffer;
+			std::string sFileVersion;
+			std_string_format(sFileVersion, "%d.%d.%d",
+				pFileInfo->dwFileVersionMS >> 16,
+				pFileInfo->dwProductVersionMS & 0xFFFF,
+				pFileInfo->dwProductVersionLS >> 16
+			);
+
+			if (!bWithoutBuildNum) {
+				std_string_format(sFileVersion, "%s.%d",
+					sFileVersion.c_str(), pFileInfo->dwProductVersionLS & 0xFFFF
+				);
+			}
+			delete[] pVersionInfo;
+			return sFileVersion;
+		}
+	}
+
+	delete[] pVersionInfo;
+	ShowWarning("GetProductVersion: Could not get file version, defaulting to '%s'\n", Pandas_Version);
+	return std::string(Pandas_Version);
+}
+#endif // _WIN32
