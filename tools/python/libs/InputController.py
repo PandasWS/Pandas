@@ -7,6 +7,9 @@ __all__ = [
 ]
 
 class InputController:
+    def __init__(self):
+        pass
+
     def requireText(self, options):
         print('-' * 70)
         Message.ShowSelect(options['tips'] + ':')
