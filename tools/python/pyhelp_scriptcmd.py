@@ -84,21 +84,21 @@ def insert_scriptcmd(inject, options):
 
 def guide(inject):
 
-    define = InputController().requireText({
+    define = InputController.requireText({
         'tips' : '请输入该脚本指令的宏定义开关名称 (Pandas_ScriptCommand_的末尾部分)',
         'prefix' : 'Pandas_ScriptCommand_'
     })
     
     # --------
 
-    funcname = InputController().requireText({
+    funcname = InputController.requireText({
         'tips' : '请输入该脚本指令的处理函数名称 (BUILDIN_FUNC 部分的函数名)',
         'lower': True
     })
     
     # --------
     
-    samefunc = InputController().requireBool({
+    samefunc = InputController.requireBool({
         'tips' : '脚本指令是否与处理函数名称一致 (%s)?' % funcname,
         'default' : True
     })
@@ -107,14 +107,14 @@ def guide(inject):
     
     cmdname = funcname
     if not samefunc:
-        cmdname = InputController().requireText({
+        cmdname = InputController.requireText({
             'tips' : '请输入该脚本指令的名称 (BUILDIN_DEF2 使用)',
             'lower' : True
         })
     
     # --------
     
-    argsmode = InputController().requireText({
+    argsmode = InputController.requireText({
         'tips' : '请输入该脚本指令的参数模式 (如一个或多个的: i\s\? 为空则直接回车)',
         'lower' : True,
         'allow_empty' : True
@@ -132,7 +132,7 @@ def guide(inject):
     print('-' * 70)
     print('\n')
 
-    nextstep = InputController().requireBool({
+    nextstep = InputController.requireBool({
         'tips' : '请仔细阅读上述信息, 确认要开始写入操作么?',
         'default' : False
     })
