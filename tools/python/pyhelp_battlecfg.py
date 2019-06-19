@@ -205,7 +205,8 @@ def main():
         ]
     }
 
-    guide(InjectController(options))
+    inject = InjectController(options)
+    guide(inject)
     Common.exitWithPause()
 
 if __name__ == '__main__':
