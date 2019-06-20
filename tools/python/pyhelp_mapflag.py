@@ -47,7 +47,7 @@ script.cpp @ getmapflag 可选的脚本读取标记参数处理代码 - no use n
 import os
 from enum import IntEnum
 
-from libs import Common, InjectController, InputController, Message
+from libs import Common, Injecter, Inputer, Message
 
 
 class InjectPoint(IntEnum):
@@ -208,14 +208,14 @@ def insert_for_one_param_mapflag(inject, options):
 
 def guide(inject):
 
-    define = InputController().requireText({
+    define = Inputer().requireText({
         'tips' : '请输入该地图标记的宏定义开关名称 (Pandas_MapFlag_的末尾部分)',
         'prefix' : 'Pandas_MapFlag_'
     })
 
     # --------
 
-    constant = InputController().requireText({
+    constant = Inputer().requireText({
         'tips' : '请输入该地图标记的 MF 常量名称 (自动大写, MF_的末尾部分)',
         'prefix' : 'MF_',
         'upper' : True
@@ -235,7 +235,7 @@ def guide(inject):
     ]
 
     # flagtype = 0  # 0 为普通开关 | 1 为数值开关
-    flagtype = InputController().requireSelect({
+    flagtype = Inputer().requireSelect({
         'name' : '想创建的地图标记类型',
         'data' : flaglist
     })
@@ -244,7 +244,7 @@ def guide(inject):
 
     default_val = 0
     if flagtype == 1:
-        default_val = InputController().requireInt({
+        default_val = Inputer().requireInt({
             'tips' : '请输入"第一个数值参数"的默认值 (不填则默认为 0)',
 			'allow_empty' : True
         })
@@ -253,7 +253,7 @@ def guide(inject):
 
     default_disable = False
     if flagtype == 1:
-        default_disable = InputController().requireBool({
+        default_disable = Inputer().requireBool({
             'tips' : '当"第一个数值参数"的值为 %d 时, 是否表示移除此地图标记?' % default_val,
             'default' : False
         })
@@ -272,7 +272,7 @@ def guide(inject):
     print('-' * 70)
     print('\n')
 
-    nextstep = InputController().requireBool({
+    nextstep = Inputer().requireBool({
         'tips' : '请仔细阅读上述信息, 确认要开始写入操作么?',
         'default' : False
     })
@@ -360,7 +360,7 @@ def main():
         ]
     }
 
-    guide(InjectController(options))
+    guide(Injecter(options))
     Common.exitWithPause()
 
 if __name__ == '__main__':

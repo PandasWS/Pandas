@@ -3,10 +3,10 @@
 from libs import Common, Message
 
 __all__ = [
-    'InputController'
+    'Inputer'
 ]
 
-class InputController:
+class Inputer:
     def requireText(self, options):
         print('-' * 70)
         Message.ShowSelect(options['tips'] + ':')

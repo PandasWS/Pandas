@@ -78,7 +78,7 @@ npc.cpp 中 Express 类型的 NPCX_XXX 常量设置
 import os
 from enum import IntEnum
 
-from libs import Common, InjectController, InputController, Message
+from libs import Common, Injecter, Inputer, Message
 
 class InjectPoint(IntEnum):
     F_PANDAS_SWITCH_DEFINE = 1
@@ -349,7 +349,7 @@ def guide(inject):
     ]
 
     # 0 为 Event 类型的事件 | 1 为 Filter 类型的事件 | 2 为 Express 类型的事件
-    eventtype = InputController().requireSelect({
+    eventtype = Inputer().requireSelect({
         'name' : '想创建的 NPC 事件类型',
         'data' : eventlist
     })
@@ -362,7 +362,7 @@ def guide(inject):
     elif eventtype == 2:
         constant_prefix = 'NPCX_'
 
-    constant = InputController().requireText({
+    constant = Inputer().requireText({
         'tips' : '请输入该 NPC 事件的 {prefix} 常量名称 (自动大写, {prefix}的末尾部分)'.format(
             prefix = constant_prefix
         ),
@@ -385,7 +385,7 @@ def guide(inject):
 
     # --------
 
-    eventname = InputController().requireText({
+    eventname = Inputer().requireText({
         'tips' : '请输入该 NPC 事件的名称 (以 On 开头, 末尾应为 Event | Filter | Express)'
     })
 
@@ -410,7 +410,7 @@ def guide(inject):
 
     # --------
 
-    eventdesc = InputController().requireText({
+    eventdesc = Inputer().requireText({
         'tips' : '请输入该 NPC 事件的简短说明 (如: 当玩家杀死 MVP 魔物时触发事件)'
     })
 
@@ -429,7 +429,7 @@ def guide(inject):
     print('-' * 70)
     print('\n')
 
-    nextstep = InputController().requireBool({
+    nextstep = Inputer().requireBool({
         'tips' : '请仔细阅读上述信息, 确认要开始写入操作么?',
         'default' : False
     })
@@ -557,7 +557,7 @@ def main():
         ]
     }
 
-    guide(InjectController(options))
+    guide(Injecter(options))
     Common.exitWithPause()
 
 if __name__ == '__main__':
