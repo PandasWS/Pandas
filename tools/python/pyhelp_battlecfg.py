@@ -29,7 +29,7 @@ pandas.conf @ 战斗配置选项的默认添加位置
 import os
 from enum import IntEnum
 
-from libs import Common, InjectController, InputController, Message
+from libs import Common, Injecter, InputController, Message
 
 
 class InjectPoint(IntEnum):
@@ -205,7 +205,7 @@ def main():
         ]
     }
 
-    guide(InjectController(options))
+    guide(Injecter(options))
     Common.exitWithPause()
 
 if __name__ == '__main__':

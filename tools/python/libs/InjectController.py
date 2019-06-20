@@ -8,10 +8,10 @@ import chardet
 from libs import Common, Message
 
 __all__ = [
-	'InjectController'
+	'Injecter'
 ]
 
-class InjectController:
+class Injecter:
     def __init__(self, options):
         self.__options__ = options
         self.mark_dict = {}

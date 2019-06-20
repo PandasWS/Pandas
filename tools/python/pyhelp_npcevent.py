@@ -78,7 +78,7 @@ npc.cpp 中 Express 类型的 NPCX_XXX 常量设置
 import os
 from enum import IntEnum
 
-from libs import Common, InjectController, InputController, Message
+from libs import Common, Injecter, InputController, Message
 
 class InjectPoint(IntEnum):
     F_PANDAS_SWITCH_DEFINE = 1
@@ -557,7 +557,7 @@ def main():
         ]
     }
 
-    guide(InjectController(options))
+    guide(Injecter(options))
     Common.exitWithPause()
 
 if __name__ == '__main__':

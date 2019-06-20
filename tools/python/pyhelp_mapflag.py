@@ -47,7 +47,7 @@ script.cpp @ getmapflag 可选的脚本读取标记参数处理代码 - no use n
 import os
 from enum import IntEnum
 
-from libs import Common, InjectController, InputController, Message
+from libs import Common, Injecter, InputController, Message
 
 
 class InjectPoint(IntEnum):
@@ -360,7 +360,7 @@ def main():
         ]
     }
 
-    guide(InjectController(options))
+    guide(Injecter(options))
     Common.exitWithPause()
 
 if __name__ == '__main__':

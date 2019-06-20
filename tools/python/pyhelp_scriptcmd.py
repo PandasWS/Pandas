@@ -26,7 +26,7 @@ script.cpp @ BUILDIN_DEF 脚本指令导出
 import os
 from enum import IntEnum
 
-from libs import Common, InjectController, InputController, Message
+from libs import Common, Injecter, InputController, Message
 
 class InjectPoint(IntEnum):
     PANDAS_SWITCH_DEFINE = 1
@@ -115,7 +115,7 @@ def guide(inject):
     # --------
     
     argsmode = InputController.requireText({
-        'tips' : '请输入该脚本指令的参数模式 (如一个或多个的: i\s\? 为空则直接回车)',
+        'tips' : r'请输入该脚本指令的参数模式 (如一个或多个的: i\s\? 为空则直接回车)',
         'lower' : True,
         'allow_empty' : True
     })
@@ -188,7 +188,7 @@ def main():
         ]
     }
 
-    guide(InjectController(options))
+    guide(Injecter(options))
     Common.exitWithPause()
 
 if __name__ == '__main__':
