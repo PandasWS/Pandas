@@ -20,7 +20,7 @@ import os
 
 import chardet
 
-from libs import Common, InputController, Message
+from libs import Common, Inputer, Message
 
 
 class CharsetConverter():
@@ -103,7 +103,7 @@ def main():
     Common.welcome('源代码文件编码转换助手')
     print('')
 	
-    confirm = InputController.requireBool({
+    confirm = Inputer().requireBool({
         'tips' : '是否立刻进行文件编码转换?',
         'default' : False
     })

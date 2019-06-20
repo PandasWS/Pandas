@@ -29,7 +29,7 @@ pandas.conf @ 战斗配置选项的默认添加位置
 import os
 from enum import IntEnum
 
-from libs import Common, Injecter, InputController, Message
+from libs import Common, Injecter, Inputer, Message
 
 
 class InjectPoint(IntEnum):
@@ -78,41 +78,41 @@ def insert_battle_config(inject, options):
 
 def guide(inject):
 
-    define = InputController.requireText({
+    define = Inputer().requireText({
         'tips' : '请输入该战斗配置选项的宏定义开关名称 (Pandas_BattleConfig_的末尾部分)',
         'prefix' : 'Pandas_BattleConfig_'
     })
     
     # --------
     
-    option_name = InputController.requireText({
+    option_name = Inputer().requireText({
         'tips' : '请输入该战斗配置选项的选项名称'
     })
     
     # --------
     
-    var_name = InputController.requireText({
+    var_name = Inputer().requireText({
         'tips' : '请输入该战斗配置选项的变量名称 (不填默认与选项名称一致)',
         'default' : option_name.replace('.', '_')
     })
     
     # --------
     
-    def_val = InputController.requireInt({
+    def_val = Inputer().requireInt({
         'tips' : '请输入默认值 (不填则默认为 0)',
 		'allow_empty' : True
     })
     
     # --------
     
-    min_val = InputController.requireInt({
+    min_val = Inputer().requireInt({
         'tips' : '请输入允许设置的最小值 (不填则默认为 0)',
 		'allow_empty' : True
     })
     
     # --------
     
-    max_val = InputController.requireInt({
+    max_val = Inputer().requireInt({
         'tips' : '请输入允许设置的最大值 (不填则默认为 INT_MAX)',
 		'allow_empty' : True
     })
@@ -143,7 +143,7 @@ def guide(inject):
     print('-' * 70)
     print('\n')
 
-    nextstep = InputController.requireBool({
+    nextstep = Inputer().requireBool({
         'tips' : '请仔细阅读上述信息, 确认要开始写入操作么?',
         'default' : False
     })
