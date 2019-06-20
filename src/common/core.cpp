@@ -24,17 +24,6 @@
 #include "showmsg.hpp"
 #include "strlib.hpp"
 
-#ifdef Pandas_Crash_Report
-#include "minidump.hpp"
-
-// 当程序崩溃时生成的转储文件类型
-// 这里的设置会被 login_athena.conf、char-athena.conf、map-athena.conf 中的选项调整
-//
-// 设置为 1 则表示生成 FullDump, 虽然保存信息完整, 但体积较大 (默认值)
-// 设置为 0 则表示生成 MiniDump, 虽然体积较小, 但是保存的信息也比较少
-int create_fulldump = 0;
-#endif // Pandas_Crash_Report
-
 /// Called when a terminate signal is received.
 void (*shutdown_callback)(void) = NULL;
 
@@ -127,11 +116,7 @@ static void sig_proc(int sn) {
 		do_abort();
 		// Pass the signal to the system's default handler
 		compat_signal(sn, SIG_DFL);
-#ifndef Pandas_Crash_Report
-		// 启用崩溃转储文件生成机制的时候
-		// 这里就不再需要 rAthena 自己进行错误处理了, 否则会捕获不到异常 [Sola丶小克]
 		raise(sn);
-#endif // Pandas_Crash_Report
 		break;
 #ifndef _WIN32
 	case SIGXFSZ:
@@ -367,10 +352,6 @@ void usercheck(void)
  *--------------------------------------*/
 int main (int argc, char **argv)
 {
-#ifdef Pandas_Crash_Report
-	SetUnhandledExceptionFilter(Pandas_UnhandledExceptionFilter);
-#endif // Pandas_Crash_Report
-
 	{// initialize program arguments
 		char *p1;
 		if((p1 = strrchr(argv[0], '/')) != NULL ||  (p1 = strrchr(argv[0], '\\')) != NULL ){

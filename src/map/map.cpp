@@ -188,10 +188,6 @@ int console = 0;
 int enable_spy = 0; //To enable/disable @spy commands, which consume too much cpu time when sending packets. [Skotlex]
 int enable_grf = 0;	//To enable/disable reading maps from GRF files, bypassing mapcache [blackhole89]
 
-#ifdef Pandas_Crash_Report
-int cfg_create_fulldump = 0;	// 是否生成完整的崩溃转储文件 [Sola丶小克]
-#endif // Pandas_Crash_Report
-
 #ifdef Pandas_Support_Specify_PacketKeys
 // 用来保存 map_athena.conf 中设定封包混淆密钥 [Sola丶小克]
 unsigned int clif_cryptKey_custom[3] = { 0 };
@@ -4162,10 +4158,6 @@ int map_config_read(const char *cfgName)
 			enable_spy = config_switch(w2);
 		else if (strcmpi(w1, "use_grf") == 0)
 			enable_grf = config_switch(w2);
-#ifdef Pandas_Crash_Report
-		else if (strcmpi(w1, "create_fulldump") == 0)
-			cfg_create_fulldump = config_switch(w2);
-#endif // Pandas_Crash_Report
 		else if (strcmpi(w1, "console_msg_log") == 0)
 			console_msg_log = atoi(w2);//[Ind]
 		else if (strcmpi(w1, "console_log_filepath") == 0)
@@ -5635,10 +5627,6 @@ int do_init(int argc, char *argv[])
 
 	rnd_init();
 	map_config_read(MAP_CONF_NAME);
-
-#ifdef Pandas_Crash_Report
-	create_fulldump = cfg_create_fulldump;
-#endif // Pandas_Crash_Report
 
 	if (save_settings == CHARSAVE_NONE)
 		ShowWarning("Value of 'save_settings' is not set, player's data only will be saved every 'autosave_time' (%d seconds).\n", autosave_interval/1000);

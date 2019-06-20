@@ -97,10 +97,6 @@ struct Login_Config {
 	char msgconf_name[256];							/// name of msg_conf config file
 	char lanconf_name[256];							/// name of lan config file
 
-#ifdef Pandas_Crash_Report
-	bool create_fulldump;                           /// 是否生成完整的崩溃转储文件 [Sola丶小克]
-#endif // Pandas_Crash_Report
-
 #ifdef Pandas_Strict_Userid_Verification
 	bool strict_new_account_userid;					/// 是否禁止使用中文等字符作为游戏账号 [Sola丶小克]
 #endif // Pandas_Strict_Userid_Verification

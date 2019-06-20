@@ -62,9 +62,6 @@
     <ClInclude Include="winapi.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="minidump.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="assistant.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -116,9 +113,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="winapi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="minidump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="assistant.cpp">
