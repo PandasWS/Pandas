@@ -1,4 +1,6 @@
-# Copyright 2014 Google Inc. All rights reserved.
+#!/usr/bin/env python
+#
+# Copyright 2015 Google Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -26,64 +28,36 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Ignore other VCSs.
-.repo/
-.svn/
+"""Verifies that Google Test warns the user when not initialized properly."""
 
-# Ignore common compiled artifacts.
-*~
-*.dwo
-*.o
-lib*.a
-/breakpad.pc
-/breakpad-client.pc
-/src/client/linux/linux_client_unittest_shlib
-/src/client/linux/linux_dumper_unittest_helper
-/src/processor/microdump_stackwalk
-/src/processor/minidump_dump
-/src/processor/minidump_stackwalk
-/src/tools/linux/core2md/core2md
-/src/tools/linux/dump_syms/dump_syms
-/src/tools/linux/md2core/minidump-2-core
-/src/tools/linux/symupload/minidump_upload
-/src/tools/linux/symupload/sym_upload
-/src/tools/mac/dump_syms/dump_syms
-/src/tools/mac/dump_syms/dump_syms_mac
+import gtest_test_utils
 
-# Ignore unit test artifacts.
-*_unittest
-*.log
-*.trs
+binary_name = 'googletest-param-test-invalid-name1-test_'
+COMMAND = gtest_test_utils.GetTestExecutablePath(binary_name)
 
-# Ignore autotools generated artifacts.
-.deps
-.dirstamp
-autom4te.cache/
-/config.cache
-config.h
-/config.log
-/config.status
-/Makefile
-stamp-h1
 
-# Ignore GYP generated Visual Studio artifacts.
-*.filters
-*.sdf
-*.sln
-*.suo
-*.vcproj
-*.vcxproj
+def Assert(condition):
+  if not condition:
+    raise AssertionError
 
-# Ignore GYP generated Makefiles
-src/Makefile
-*.Makefile
-*.target.mk
 
-# Ignore compiled Python files.
-*.pyc
+def TestExitCodeAndOutput(command):
+  """Runs the given command and verifies its exit code and output."""
 
-# Ignore directories gclient syncs.
-#src/testing
-src/third_party/lss
-src/third_party/protobuf
-src/tools/gyp
+  err = ('Parameterized test name \'"InvalidWithQuotes"\' is invalid')
+
+  p = gtest_test_utils.Subprocess(command)
+  Assert(p.terminated_by_signal)
+
+  # Verify the output message contains appropriate output
+  Assert(err in p.output)
+
+
+class GTestParamTestInvalidName1Test(gtest_test_utils.TestCase):
+
+  def testExitCodeAndOutput(self):
+    TestExitCodeAndOutput(COMMAND)
+
+
+if __name__ == '__main__':
+  gtest_test_utils.Main()

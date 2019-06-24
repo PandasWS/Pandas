@@ -1,4 +1,7 @@
-# Copyright 2014 Google Inc. All rights reserved.
+#!/usr/bin/env bash
+# Copyright 2017 Google Inc.
+# All Rights Reserved.
+#
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -26,64 +29,21 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Ignore other VCSs.
-.repo/
-.svn/
+set -eu
 
-# Ignore common compiled artifacts.
-*~
-*.dwo
-*.o
-lib*.a
-/breakpad.pc
-/breakpad-client.pc
-/src/client/linux/linux_client_unittest_shlib
-/src/client/linux/linux_dumper_unittest_helper
-/src/processor/microdump_stackwalk
-/src/processor/minidump_dump
-/src/processor/minidump_stackwalk
-/src/tools/linux/core2md/core2md
-/src/tools/linux/dump_syms/dump_syms
-/src/tools/linux/md2core/minidump-2-core
-/src/tools/linux/symupload/minidump_upload
-/src/tools/linux/symupload/sym_upload
-/src/tools/mac/dump_syms/dump_syms
-/src/tools/mac/dump_syms/dump_syms_mac
+if [ "${TRAVIS_OS_NAME}" != linux ]; then
+    echo "Not a Linux build; skipping installation"
+    exit 0
+fi
 
-# Ignore unit test artifacts.
-*_unittest
-*.log
-*.trs
 
-# Ignore autotools generated artifacts.
-.deps
-.dirstamp
-autom4te.cache/
-/config.cache
-config.h
-/config.log
-/config.status
-/Makefile
-stamp-h1
-
-# Ignore GYP generated Visual Studio artifacts.
-*.filters
-*.sdf
-*.sln
-*.suo
-*.vcproj
-*.vcxproj
-
-# Ignore GYP generated Makefiles
-src/Makefile
-*.Makefile
-*.target.mk
-
-# Ignore compiled Python files.
-*.pyc
-
-# Ignore directories gclient syncs.
-#src/testing
-src/third_party/lss
-src/third_party/protobuf
-src/tools/gyp
+if [ "${TRAVIS_SUDO}" = "true" ]; then
+    echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | \
+        sudo tee /etc/apt/sources.list.d/bazel.list
+    curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
+    sudo apt-get update && sudo apt-get install -y bazel gcc-4.9 g++-4.9 clang-3.9
+elif [ "${CXX}" = "clang++" ]; then
+    # Use ccache, assuming $HOME/bin is in the path, which is true in the Travis build environment.
+    ln -sf /usr/bin/ccache $HOME/bin/${CXX};
+    ln -sf /usr/bin/ccache $HOME/bin/${CC};
+fi

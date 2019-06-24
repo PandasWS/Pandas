@@ -1,4 +1,6 @@
-# Copyright 2014 Google Inc. All rights reserved.
+#!/usr/bin/env python
+#
+# Copyright 2018 Google LLC. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -25,65 +27,37 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""Verifies that Google Test uses filter provided via testbridge."""
 
-# Ignore other VCSs.
-.repo/
-.svn/
+import os
 
-# Ignore common compiled artifacts.
-*~
-*.dwo
-*.o
-lib*.a
-/breakpad.pc
-/breakpad-client.pc
-/src/client/linux/linux_client_unittest_shlib
-/src/client/linux/linux_dumper_unittest_helper
-/src/processor/microdump_stackwalk
-/src/processor/minidump_dump
-/src/processor/minidump_stackwalk
-/src/tools/linux/core2md/core2md
-/src/tools/linux/dump_syms/dump_syms
-/src/tools/linux/md2core/minidump-2-core
-/src/tools/linux/symupload/minidump_upload
-/src/tools/linux/symupload/sym_upload
-/src/tools/mac/dump_syms/dump_syms
-/src/tools/mac/dump_syms/dump_syms_mac
+import gtest_test_utils
 
-# Ignore unit test artifacts.
-*_unittest
-*.log
-*.trs
+binary_name = 'gtest_testbridge_test_'
+COMMAND = gtest_test_utils.GetTestExecutablePath(binary_name)
+TESTBRIDGE_NAME = 'TESTBRIDGE_TEST_ONLY'
 
-# Ignore autotools generated artifacts.
-.deps
-.dirstamp
-autom4te.cache/
-/config.cache
-config.h
-/config.log
-/config.status
-/Makefile
-stamp-h1
 
-# Ignore GYP generated Visual Studio artifacts.
-*.filters
-*.sdf
-*.sln
-*.suo
-*.vcproj
-*.vcxproj
+def Assert(condition):
+  if not condition:
+    raise AssertionError
 
-# Ignore GYP generated Makefiles
-src/Makefile
-*.Makefile
-*.target.mk
 
-# Ignore compiled Python files.
-*.pyc
+class GTestTestFilterTest(gtest_test_utils.TestCase):
 
-# Ignore directories gclient syncs.
-#src/testing
-src/third_party/lss
-src/third_party/protobuf
-src/tools/gyp
+  def testTestExecutionIsFiltered(self):
+    """Tests that the test filter is picked up from the testbridge env var."""
+    subprocess_env = os.environ.copy()
+
+    subprocess_env[TESTBRIDGE_NAME] = '*.TestThatSucceeds'
+    p = gtest_test_utils.Subprocess(COMMAND, env=subprocess_env)
+
+    self.assertEquals(0, p.exit_code)
+
+    Assert('filter = *.TestThatSucceeds' in p.output)
+    Assert('[       OK ] TestFilterTest.TestThatSucceeds' in p.output)
+    Assert('[  PASSED  ] 1 test.' in p.output)
+
+
+if __name__ == '__main__':
+  gtest_test_utils.Main()

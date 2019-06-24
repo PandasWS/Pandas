@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All rights reserved.
+# Copyright 2018, Google Inc.
+# All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -26,64 +27,34 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Ignore other VCSs.
-.repo/
-.svn/
+"""Unit test utilities for gtest_json_output."""
 
-# Ignore common compiled artifacts.
-*~
-*.dwo
-*.o
-lib*.a
-/breakpad.pc
-/breakpad-client.pc
-/src/client/linux/linux_client_unittest_shlib
-/src/client/linux/linux_dumper_unittest_helper
-/src/processor/microdump_stackwalk
-/src/processor/minidump_dump
-/src/processor/minidump_stackwalk
-/src/tools/linux/core2md/core2md
-/src/tools/linux/dump_syms/dump_syms
-/src/tools/linux/md2core/minidump-2-core
-/src/tools/linux/symupload/minidump_upload
-/src/tools/linux/symupload/sym_upload
-/src/tools/mac/dump_syms/dump_syms
-/src/tools/mac/dump_syms/dump_syms_mac
+import re
 
-# Ignore unit test artifacts.
-*_unittest
-*.log
-*.trs
 
-# Ignore autotools generated artifacts.
-.deps
-.dirstamp
-autom4te.cache/
-/config.cache
-config.h
-/config.log
-/config.status
-/Makefile
-stamp-h1
+def normalize(obj):
+  """Normalize output object.
 
-# Ignore GYP generated Visual Studio artifacts.
-*.filters
-*.sdf
-*.sln
-*.suo
-*.vcproj
-*.vcxproj
+  Args:
+     obj: Google Test's JSON output object to normalize.
 
-# Ignore GYP generated Makefiles
-src/Makefile
-*.Makefile
-*.target.mk
-
-# Ignore compiled Python files.
-*.pyc
-
-# Ignore directories gclient syncs.
-#src/testing
-src/third_party/lss
-src/third_party/protobuf
-src/tools/gyp
+  Returns:
+     Normalized output without any references to transient information that may
+     change from run to run.
+  """
+  def _normalize(key, value):
+    if key == 'time':
+      return re.sub(r'^\d+(\.\d+)?s$', '*', value)
+    elif key == 'timestamp':
+      return re.sub(r'^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$', '*', value)
+    elif key == 'failure':
+      value = re.sub(r'^.*[/\\](.*:)\d+\n', '\\1*\n', value)
+      return re.sub(r'Stack trace:\n(.|\n)*', 'Stack trace:\n*', value)
+    else:
+      return normalize(value)
+  if isinstance(obj, dict):
+    return {k: _normalize(k, v) for k, v in obj.items()}
+  if isinstance(obj, list):
+    return [normalize(x) for x in obj]
+  else:
+    return obj

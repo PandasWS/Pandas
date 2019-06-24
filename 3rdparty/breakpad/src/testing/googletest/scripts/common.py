@@ -1,4 +1,4 @@
-# Copyright 2014 Google Inc. All rights reserved.
+# Copyright 2013 Google Inc. All Rights Reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -26,64 +26,58 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Ignore other VCSs.
-.repo/
-.svn/
+"""Shared utilities for writing scripts for Google Test/Mock."""
 
-# Ignore common compiled artifacts.
-*~
-*.dwo
-*.o
-lib*.a
-/breakpad.pc
-/breakpad-client.pc
-/src/client/linux/linux_client_unittest_shlib
-/src/client/linux/linux_dumper_unittest_helper
-/src/processor/microdump_stackwalk
-/src/processor/minidump_dump
-/src/processor/minidump_stackwalk
-/src/tools/linux/core2md/core2md
-/src/tools/linux/dump_syms/dump_syms
-/src/tools/linux/md2core/minidump-2-core
-/src/tools/linux/symupload/minidump_upload
-/src/tools/linux/symupload/sym_upload
-/src/tools/mac/dump_syms/dump_syms
-/src/tools/mac/dump_syms/dump_syms_mac
+__author__ = 'wan@google.com (Zhanyong Wan)'
 
-# Ignore unit test artifacts.
-*_unittest
-*.log
-*.trs
 
-# Ignore autotools generated artifacts.
-.deps
-.dirstamp
-autom4te.cache/
-/config.cache
-config.h
-/config.log
-/config.status
-/Makefile
-stamp-h1
+import os
+import re
 
-# Ignore GYP generated Visual Studio artifacts.
-*.filters
-*.sdf
-*.sln
-*.suo
-*.vcproj
-*.vcxproj
 
-# Ignore GYP generated Makefiles
-src/Makefile
-*.Makefile
-*.target.mk
+# Matches the line from 'svn info .' output that describes what SVN
+# path the current local directory corresponds to.  For example, in
+# a googletest SVN workspace's trunk/test directory, the output will be:
+#
+# URL: https://googletest.googlecode.com/svn/trunk/test
+_SVN_INFO_URL_RE = re.compile(r'^URL: https://(\w+)\.googlecode\.com/svn(.*)')
 
-# Ignore compiled Python files.
-*.pyc
 
-# Ignore directories gclient syncs.
-#src/testing
-src/third_party/lss
-src/third_party/protobuf
-src/tools/gyp
+def GetCommandOutput(command):
+  """Runs the shell command and returns its stdout as a list of lines."""
+
+  f = os.popen(command, 'r')
+  lines = [line.strip() for line in f.readlines()]
+  f.close()
+  return lines
+
+
+def GetSvnInfo():
+  """Returns the project name and the current SVN workspace's root path."""
+
+  for line in GetCommandOutput('svn info .'):
+    m = _SVN_INFO_URL_RE.match(line)
+    if m:
+      project = m.group(1)  # googletest or googlemock
+      rel_path = m.group(2)
+      root = os.path.realpath(rel_path.count('/') * '../')
+      return project, root
+
+  return None, None
+
+
+def GetSvnTrunk():
+  """Returns the current SVN workspace's trunk root path."""
+
+  _, root = GetSvnInfo()
+  return root + '/trunk' if root else None
+
+
+def IsInGTestSvn():
+  project, _ = GetSvnInfo()
+  return project == 'googletest'
+
+
+def IsInGMockSvn():
+  project, _ = GetSvnInfo()
+  return project == 'googlemock'
