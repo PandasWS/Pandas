@@ -72,7 +72,7 @@ stamp-h1
 *.sln
 *.suo
 *.vcproj
-*.vcxproj
+#*.vcxproj
 
 # Ignore GYP generated Makefiles
 src/Makefile
