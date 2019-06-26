@@ -101,8 +101,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "crash_report_sender", "3rdp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exception_handler", "3rdparty\breakpad\projects\libraries\exception_handler.vcxproj", "{D2921270-F22B-9E45-D11B-A9A9F381909F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ms_symbol_server_converter", "3rdparty\breakpad\projects\libraries\ms_symbol_server_converter.vcxproj", "{1463C4CD-23FC-4DE9-BFDE-283338200157}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -247,14 +245,6 @@ Global
 		{D2921270-F22B-9E45-D11B-A9A9F381909F}.Release|Win32.Build.0 = Release|Win32
 		{D2921270-F22B-9E45-D11B-A9A9F381909F}.Release|x64.ActiveCfg = Release|x64
 		{D2921270-F22B-9E45-D11B-A9A9F381909F}.Release|x64.Build.0 = Release|x64
-		{1463C4CD-23FC-4DE9-BFDE-283338200157}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1463C4CD-23FC-4DE9-BFDE-283338200157}.Debug|Win32.Build.0 = Debug|Win32
-		{1463C4CD-23FC-4DE9-BFDE-283338200157}.Debug|x64.ActiveCfg = Debug|x64
-		{1463C4CD-23FC-4DE9-BFDE-283338200157}.Debug|x64.Build.0 = Debug|x64
-		{1463C4CD-23FC-4DE9-BFDE-283338200157}.Release|Win32.ActiveCfg = Release|Win32
-		{1463C4CD-23FC-4DE9-BFDE-283338200157}.Release|Win32.Build.0 = Release|Win32
-		{1463C4CD-23FC-4DE9-BFDE-283338200157}.Release|x64.ActiveCfg = Release|x64
-		{1463C4CD-23FC-4DE9-BFDE-283338200157}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -281,7 +271,6 @@ Global
 		{B984A5D6-73F4-EF0A-6117-F9116594EBB2} = {E144C443-EBDB-46A8-9CAB-4F387AA669E9}
 		{17E44D94-2795-5E37-E3A1-918C31A4DCF2} = {E144C443-EBDB-46A8-9CAB-4F387AA669E9}
 		{D2921270-F22B-9E45-D11B-A9A9F381909F} = {E144C443-EBDB-46A8-9CAB-4F387AA669E9}
-		{1463C4CD-23FC-4DE9-BFDE-283338200157} = {E144C443-EBDB-46A8-9CAB-4F387AA669E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {026DA20F-820C-40AA-983E-0E231EA90AD5}
