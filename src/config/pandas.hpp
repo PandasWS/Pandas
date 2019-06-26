@@ -36,6 +36,9 @@
 	// 在 Linux 环境下 Pandas 版本号将直接使用此处定义的默认版本号
 	#define Pandas_Version "v2.0.0"
 
+	// 是否启用 Google Breakpad 用于处理程序崩溃
+	#define Pandas_Google_Breakpad
+
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
 

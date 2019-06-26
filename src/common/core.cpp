@@ -24,6 +24,10 @@
 #include "showmsg.hpp"
 #include "strlib.hpp"
 
+#ifdef Pandas_Google_Breakpad
+#include "minidump.hpp"
+#endif // Pandas_Google_Breakpad
+
 /// Called when a terminate signal is received.
 void (*shutdown_callback)(void) = NULL;
 
@@ -114,9 +118,11 @@ static void sig_proc(int sn) {
 	case SIGSEGV:
 	case SIGFPE:
 		do_abort();
+#ifndef Pandas_Google_Breakpad
 		// Pass the signal to the system's default handler
 		compat_signal(sn, SIG_DFL);
 		raise(sn);
+#endif // Pandas_Google_Breakpad
 		break;
 #ifndef _WIN32
 	case SIGXFSZ:
@@ -352,6 +358,10 @@ void usercheck(void)
  *--------------------------------------*/
 int main (int argc, char **argv)
 {
+#ifdef Pandas_Google_Breakpad
+	breakpad_setup();
+#endif // Pandas_Google_Breakpad
+
 	{// initialize program arguments
 		char *p1;
 		if((p1 = strrchr(argv[0], '/')) != NULL ||  (p1 = strrchr(argv[0], '\\')) != NULL ){
