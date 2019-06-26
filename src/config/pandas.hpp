@@ -153,7 +153,7 @@
 	#define Pandas_Support_Read_UTF8BOM_Configure
 
 	// 是否启用数据库编码自动判定机制 [Sola丶小克]
-	#define Pandas_Smart_Codepage
+	#define Pandas_Detect_Codepage
 
 	// 在使用 _M/_F 注册的时候, 能够限制使用中文等字符作为游戏账号 [Sola丶小克]
 	// 这里的 PCRE_SUPPORT 在"项目属性 -> C/C++ -> 预处理器"中定义

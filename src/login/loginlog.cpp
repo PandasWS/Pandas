@@ -193,12 +193,12 @@ bool loginlog_init(void) {
 		exit(EXIT_FAILURE);
 	}
 
-#ifndef Pandas_Smart_Codepage
+#ifndef Pandas_Detect_Codepage
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
 		Sql_ShowDebug(sql_handle);
 #else
-	smart_codepage(sql_handle, "Login-Log", codepage);
-#endif // Pandas_Smart_Codepage
+	detectCodepage(sql_handle, "Login-Log", codepage);
+#endif // Pandas_Detect_Codepage
 
 	enabled = true;
 
