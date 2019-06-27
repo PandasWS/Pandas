@@ -15,6 +15,7 @@ std::wstring string2wstring(const std::string& s);
 std::string wstring2string(const std::wstring& ws);
 
 std::string & stdStringFormat(std::string & _str, const char * _Format, ...);
+std::wstring & stdStringFormat(std::wstring & _str, const wchar_t * _Format, ...);
 std::string getPandasVersion();
 
 #ifndef MINICORE

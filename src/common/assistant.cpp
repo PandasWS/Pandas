@@ -7,6 +7,7 @@
 #include <locale.h> // setlocale
 #include <sys/stat.h> // _stat
 #include <errno.h> // errno, ENOENT, EEXIST
+#include <wchar.h> // vswprintf
 
 #if (defined(WIN32) || defined(_WIN32))
 #include <Windows.h>
@@ -161,6 +162,31 @@ std::string & stdStringFormat(std::string & _str, const char * _Format, ...) {
 	char* buf = (char*)aMalloc(count * sizeof(char));
 	vsnprintf(buf, count, _Format, marker);
 	_str = std::string(buf, count);
+	aFree(buf);
+	va_end(marker);
+
+	return _str;
+}
+
+//************************************
+// Method:		stdStringFormat
+// Description:	用于进行 std::wstring 的格式化
+// Parameter:	std::wstring & _str
+// Parameter:	const wchar_t * _Format
+// Parameter:	...
+// Returns:		std::wstring &
+//************************************
+std::wstring & stdStringFormat(std::wstring & _str, const wchar_t * _Format, ...) {
+	va_list marker;
+
+	va_start(marker, _Format);
+	size_t count = vswprintf(NULL, 0, _Format, marker) + 1;
+	va_end(marker);
+
+	va_start(marker, _Format);
+	wchar_t* buf = (wchar_t*)aMalloc(count * sizeof(wchar_t));
+	vswprintf(buf, count, _Format, marker);
+	_str = std::wstring(buf, count);
 	aFree(buf);
 	va_end(marker);
 
