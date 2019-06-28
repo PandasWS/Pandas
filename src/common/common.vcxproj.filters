@@ -89,7 +89,7 @@
     <ClInclude Include="utf8.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="minidump.hpp">
+    <ClInclude Include="crashdump.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -166,7 +166,7 @@
     <ClCompile Include="utf8.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="minidump.cpp">
+    <ClCompile Include="crashdump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

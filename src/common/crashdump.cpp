@@ -1,18 +1,24 @@
 ﻿// Copyright (c) Pandas Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#include "minidump.hpp"
+#include "crashdump.hpp"
 
 #include <string> // std::string, std::wstring
 
 #include "assistant.hpp" // makePath, ws2s
 #include "showmsg.hpp"
 
+#if (defined(WIN32) || defined(_WIN32))
 #include "client/windows/handler/exception_handler.h"
 #include "client/windows/sender/crash_report_sender.h"
+#else
+#include "client/linux/handler/exception_handler.h"
+#endif // (defined(WIN32) || defined(_WIN32))
 
 // 当程序崩溃时, 将转储文件保存在什么位置
-std::wstring g_dumpSaveDirectory = L"log\\dumps";
+std::wstring g_dumpSaveDirectory = L"log/dumps";
+
+#if (defined(WIN32) || defined(_WIN32))
 
 //************************************
 // Method:		breakpad_callback
@@ -76,8 +82,35 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 //************************************
 void breakpad_setup() {
 	makeDirectories(wstring2string(g_dumpSaveDirectory));
-	google_breakpad::ExceptionHandler *pHandler = new google_breakpad::ExceptionHandler(
+
+	// 此处不能放弃对 pHandler 的赋值, 否则整个指针会在本函数结束的时候被释放掉
+	google_breakpad::ExceptionHandler *__pHandler = new google_breakpad::ExceptionHandler(
 		g_dumpSaveDirectory, 0, breakpad_callback, 0,
 		google_breakpad::ExceptionHandler::HANDLER_ALL, MiniDumpNormal, L"", 0
 	);
 }
+
+#else
+
+// 在 Linux 环境下 Breakpad 的使用方法与 Windows 有差异
+
+bool dumpCallback(const google_breakpad::MinidumpDescriptor& descriptor,
+	void* context, bool succeeded)
+{
+	printf("Dump path: %s\n", descriptor.path());
+	return succeeded;
+}
+
+//************************************
+// Method:		breakpad_setup
+// Description:	设置 Google Breakpad 并初始化
+// Returns:		void
+//************************************
+void breakpad_setup() {
+	ShowDebug("Linux breakpad_setup\n");
+	makeDirectories(wstring2string(g_dumpSaveDirectory));
+	google_breakpad::MinidumpDescriptor descriptor("log/dumps");
+	google_breakpad::ExceptionHandler eh(descriptor, NULL, dumpCallback, NULL, true, -1);
+}
+
+#endif // (defined(WIN32) || defined(_WIN32))

@@ -25,7 +25,7 @@
 #include "strlib.hpp"
 
 #ifdef Pandas_Google_Breakpad
-#include "minidump.hpp"
+#include "crashdump.hpp"
 #endif // Pandas_Google_Breakpad
 
 /// Called when a terminate signal is received.
