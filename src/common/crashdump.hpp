@@ -3,4 +3,4 @@
 
 #pragma once
 
-void breakpad_setup();
+void breakpad_initialize();

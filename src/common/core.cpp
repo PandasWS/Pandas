@@ -119,6 +119,11 @@ static void sig_proc(int sn) {
 	case SIGFPE:
 		do_abort();
 #ifndef Pandas_Google_Breakpad
+		// 在 Windows 环境下, 若启用了 Google Breakpad 模块
+		// 那么它将在初始化的时候调用 SetUnhandledExceptionFilter 设置了未处理的错误回调函数.
+		// 这里则不再需要对 SIGSEGV 等信号进行处理, 否则错误回调函数将永远不会被触发,
+		// 最终会导致 Breakpad 无法在程序崩溃的时候进行转储文件的生成工作.
+
 		// Pass the signal to the system's default handler
 		compat_signal(sn, SIG_DFL);
 		raise(sn);
@@ -359,7 +364,7 @@ void usercheck(void)
 int main (int argc, char **argv)
 {
 #ifdef Pandas_Google_Breakpad
-	breakpad_setup();
+	breakpad_initialize();
 #endif // Pandas_Google_Breakpad
 
 	{// initialize program arguments
@@ -399,7 +404,11 @@ int main (int argc, char **argv)
 
 	Sql_Init();
 	db_init();
+#if (defined(Pandas_Google_Breakpad) && !defined(_WIN32))
+	// 若在 Linux 环境下, Breakpad 会接管一部分信号以便进行错误处理
+	// 此处我们不需要再自己进行信号接管了, 否则当程序崩溃的时候 Breakpad 无法生成转储文件
 	signals_init();
+#endif // (defined(Pandas_Google_Breakpad) && !defined(_WIN32))
 
 #ifdef _WIN32
 	cevents_init();

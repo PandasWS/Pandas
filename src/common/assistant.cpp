@@ -9,13 +9,13 @@
 #include <errno.h> // errno, ENOENT, EEXIST
 #include <wchar.h> // vswprintf
 
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 #include <Windows.h>
 #include <direct.h>
 #else
 #include <sys/types.h>
 #include <sys/stat.h>
-#endif // (defined(WIN32) || defined(_WIN32))
+#endif // _WIN32
 
 #include "strlib.hpp"
 #include "db.hpp"
@@ -29,7 +29,7 @@
 // Returns:		bool
 //************************************
 bool isDirectoryExists(const std::string& path) {
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 	struct _stat info;
 	if (_stat(path.c_str(), &info) != 0)
 	{
@@ -43,7 +43,7 @@ bool isDirectoryExists(const std::string& path) {
 		return false;
 	}
 	return (info.st_mode & S_IFDIR) != 0;
-#endif
+#endif // _WIN32
 }
 
 //************************************
@@ -53,12 +53,12 @@ bool isDirectoryExists(const std::string& path) {
 // Returns:		bool
 //************************************
 bool makeDirectories(const std::string& path) {
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 	int ret = _mkdir(path.c_str());
 #else
 	mode_t mode = 0755;
 	int ret = mkdir(path.c_str(), mode);
-#endif
+#endif // _WIN32
 
 	if (ret == 0)
 		return true;
@@ -70,20 +70,20 @@ bool makeDirectories(const std::string& path) {
 	{
 		size_t pos = path.find_last_of('/');
 		if (pos == std::string::npos)
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 			pos = path.find_last_of('\\');
 		if (pos == std::string::npos)
-#endif
+#endif // _WIN32
 			return false;
 		if (!makeDirectories(path.substr(0, pos)))
 			return false;
 	}
 	// now, try to create again
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 	return 0 == _mkdir(path.c_str());
 #else 
 	return 0 == mkdir(path.c_str(), mode);
-#endif
+#endif // _WIN32
 
 	case EEXIST:
 		// done!
@@ -95,6 +95,76 @@ bool makeDirectories(const std::string& path) {
 }
 
 //************************************
+// Method:		stdStringReplaceAll
+// Description:	用于对 std::string 进行全部替换操作
+// Parameter:	std::string & str
+// Parameter:	const std::string & from
+// Parameter:	const std::string & to
+// Returns:		void
+//************************************
+void stdStringReplaceAll(std::string& str, const std::string& from, const std::string& to) {
+	if (from.empty())
+		return;
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+	}
+}
+
+//************************************
+// Method:		stdStringReplaceAll
+// Description:	用于对 std::wstring 进行全部替换操作
+// Parameter:	std::wstring & str
+// Parameter:	const std::wstring & from
+// Parameter:	const std::wstring & to
+// Returns:		void
+//************************************
+void stdStringReplaceAll(std::wstring& str, const std::wstring& from, const std::wstring& to) {
+	if (from.empty())
+		return;
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::wstring::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+	}
+}
+
+//************************************
+// Method:		ensurePathSep
+// Description:	将给带的路径中存在的 / 或 \ 转换成当前系统匹配的路径分隔符
+// Parameter:	std::string path
+// Returns:		std::string
+//************************************
+std::string ensurePathSep(std::string& path) {
+#ifdef _WIN32
+	char pathsep[] = "\\";
+#else
+	char pathsep[] = "/";
+#endif // _WIN32
+	stdStringReplaceAll(path, "/", pathsep);
+	stdStringReplaceAll(path, "\\", pathsep);
+	return path;
+}
+
+//************************************
+// Method:		ensurePathSep
+// Description:	将给带的路径中存在的 / 或 \ 转换成当前系统匹配的路径分隔符
+// Parameter:	std::wstring path
+// Returns:		std::wstring
+//************************************
+std::wstring ensurePathSep(std::wstring& path) {
+#ifdef _WIN32
+	wchar_t pathsep[] = L"\\";
+#else
+	wchar_t pathsep[] = L"/";
+#endif // _WIN32
+	stdStringReplaceAll(path, L"/", pathsep);
+	stdStringReplaceAll(path, L"\\", pathsep);
+	return path;
+}
+
+//************************************
 // Method:		string2wstring
 // Description:	将 std::string 转换成 std::wstring
 //              https://blog.csdn.net/CYYTU/article/details/78616132
@@ -102,11 +172,11 @@ bool makeDirectories(const std::string& path) {
 // Returns:		std::wstring
 //************************************
 std::wstring string2wstring(const std::string& s) {
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 	setlocale(LC_ALL, "chs");
 #else  
 	setlocale(LC_ALL, "zh_CN.gbk");
-#endif // (defined(WIN32) || defined(_WIN32))
+#endif // _WIN32
 	const char* _Source = s.c_str();
 	size_t _Dsize = s.size() + 1;
 	wchar_t *_Dest = new wchar_t[_Dsize];
@@ -127,11 +197,11 @@ std::wstring string2wstring(const std::string& s) {
 //************************************
 std::string wstring2string(const std::wstring& ws) {
 	std::string curLocale = setlocale(LC_ALL, NULL);
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 	setlocale(LC_ALL, "chs");
 #else  
 	setlocale(LC_ALL, "zh_CN.gbk");
-#endif // (defined(WIN32) || defined(_WIN32))
+#endif // _WIN32
 	const wchar_t* _Source = ws.c_str();
 	size_t _Dsize = 2 * ws.size() + 1;
 	char *_Dest = new char[_Dsize];
@@ -199,12 +269,12 @@ std::wstring & stdStringFormat(std::wstring & _str, const wchar_t * _Format, ...
 // Returns:		std::string
 //************************************
 std::string getPandasVersion() {
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 	std::string pandasVersion;
 	return stdStringFormat(pandasVersion, "v%s", getFileVersion("", true).c_str());
 #else
 	return std::string(Pandas_Version);
-#endif // (defined(WIN32) || defined(_WIN32))
+#endif // _WIN32
 }
 
 #ifndef MINICORE
@@ -249,7 +319,7 @@ void detectCodepage(Sql* sql_handle, const char* connect_name, const char* codep
 	// 以下的判断策略, 有待进一步研究和测试
 	// 目的是能够在 Linux 和 Windows 上都能尽可能合理的处理 GBK 和 BIG5 编码的服务器
 	if (stricmp(buf, "utf8") == 0 || stricmp(buf, "utf8mb4") == 0) {
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 		LCID lcid = GetSystemDefaultLCID();
 		if (lcid == 0x0804) {
 			// 若是简体中文系统，那么内码表设置为GBK
@@ -271,7 +341,7 @@ void detectCodepage(Sql* sql_handle, const char* connect_name, const char* codep
 				safestrncpy(finally_codepage, "gbk", sizeof(finally_codepage));
 			}
 		}
-#endif // (defined(WIN32) || defined(_WIN32))
+#endif // _WIN32
 	}
 	else {
 		size_t i = 0;
@@ -301,7 +371,7 @@ void detectCodepage(Sql* sql_handle, const char* connect_name, const char* codep
 }
 #endif // MINICORE
 
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 //************************************
 // Method:		getFileVersion
 // Description:	获取指定文件的文件版本号
@@ -355,7 +425,7 @@ std::string getFileVersion(std::string filename, bool bWithoutBuildNum) {
 	ShowWarning("getFileVersion: Could not get file version, defaulting to '%s'\n", Pandas_Version);
 	return std::string(Pandas_Version);
 }
-#endif // (defined(WIN32) || defined(_WIN32))
+#endif // _WIN32
 
 //************************************
 // Method:		safety_localtime
@@ -365,11 +435,11 @@ std::string getFileVersion(std::string filename, bool bWithoutBuildNum) {
 // Returns:		struct tm *
 //************************************
 struct tm *safety_localtime(const time_t *time, struct tm *result) {
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 	return (localtime_s(result, time) == S_OK ? result : nullptr);
 #else
 	return localtime_r(time, result);
-#endif // (defined(WIN32) || defined(_WIN32))
+#endif // _WIN32
 }
 
 //************************************
@@ -380,11 +450,11 @@ struct tm *safety_localtime(const time_t *time, struct tm *result) {
 // Returns:		struct tm *
 //************************************
 struct tm *safety_gmtime(const time_t *time, struct tm *result) {
-#if (defined(WIN32) || defined(_WIN32))
+#ifdef _WIN32
 	return (gmtime_s(result, time) == S_OK ? result : nullptr);
 #else
 	return gmtime_r(time, result);
-#endif // (defined(WIN32) || defined(_WIN32))
+#endif // _WIN32
 }
 
 //************************************

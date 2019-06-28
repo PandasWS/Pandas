@@ -11,6 +11,12 @@
 bool isDirectoryExists(const std::string& path);
 bool makeDirectories(const std::string& path);
 
+void stdStringReplaceAll(std::string& str, const std::string& from, const std::string& to);
+void stdStringReplaceAll(std::wstring& str, const std::wstring& from, const std::wstring& to);
+
+std::string ensurePathSep(std::string& path);
+std::wstring ensurePathSep(std::wstring& path);
+
 std::wstring string2wstring(const std::string& s);
 std::string wstring2string(const std::wstring& ws);
 
