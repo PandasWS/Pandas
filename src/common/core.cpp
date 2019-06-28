@@ -404,7 +404,7 @@ int main (int argc, char **argv)
 
 	Sql_Init();
 	db_init();
-#if (defined(Pandas_Google_Breakpad) && !defined(_WIN32))
+#if (!defined(Pandas_Google_Breakpad) || defined(_WIN32))
 	// 若在 Linux 环境下, Breakpad 会接管一部分信号以便进行错误处理
 	// 此处我们不需要再自己进行信号接管了, 否则当程序崩溃的时候 Breakpad 无法生成转储文件
 	signals_init();
