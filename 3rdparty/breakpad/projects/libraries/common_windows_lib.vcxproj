@@ -282,10 +282,14 @@
     <ClInclude Include="..\..\src\common\windows\dia_util.h" />
     <ClInclude Include="..\..\src\common\windows\guid_string.h" />
     <ClInclude Include="..\..\src\common\windows\http_upload.h" />
+    <ClInclude Include="..\..\src\common\windows\module_info.h" />
     <ClInclude Include="..\..\src\common\windows\omap.h" />
     <ClInclude Include="..\..\src\common\windows\omap_internal.h" />
     <ClInclude Include="..\..\src\common\windows\pdb_source_line_writer.h" />
+    <ClInclude Include="..\..\src\common\windows\pe_source_line_writer.h" />
+    <ClInclude Include="..\..\src\common\windows\pe_util.h" />
     <ClInclude Include="..\..\src\common\windows\string_utils-inl.h" />
+    <ClInclude Include="..\..\src\common\windows\symbol_collector_client.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\common\windows\dia_util.cc" />
@@ -293,7 +297,10 @@
     <ClCompile Include="..\..\src\common\windows\http_upload.cc" />
     <ClCompile Include="..\..\src\common\windows\omap.cc" />
     <ClCompile Include="..\..\src\common\windows\pdb_source_line_writer.cc" />
+    <ClCompile Include="..\..\src\common\windows\pe_source_line_writer.cc" />
+    <ClCompile Include="..\..\src\common\windows\pe_util.cc" />
     <ClCompile Include="..\..\src\common\windows\string_utils.cc" />
+    <ClCompile Include="..\..\src\common\windows\symbol_collector_client.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
