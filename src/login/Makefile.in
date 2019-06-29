@@ -11,6 +11,16 @@ LOGIN_OBJ = $(shell ls *.cpp | sed -e "s/\.cpp/\.o/g")
 LOGIN_DIR_OBJ = $(LOGIN_OBJ:%=obj/%)
 LOGIN_H = $(shell ls *.hpp)
 
+#####################################################################
+# BEGIN - 在 Pandas 中我们需要 GOOGLE BREAKPAD 来生成转储文件
+#####################################################################
+BREAKPAD_H = $(shell find ../../3rdparty/breakpad/ -type f -name "*.h")
+BREAKPAD_AR = ../../3rdparty/breakpad/src/client/linux/libbreakpad_client.a
+BREAKPAD_INCLUDE = -I../../3rdparty/breakpad/src
+#####################################################################
+# END - 在 Pandas 中我们需要 GOOGLE BREAKPAD 来生成转储文件
+#####################################################################
+
 HAVE_MYSQL=@HAVE_MYSQL@
 ifeq ($(HAVE_MYSQL),yes)
 	SERVER_DEPENDS=login-server
@@ -20,7 +30,7 @@ endif
 ALL_DEPENDS=server
 
 #####################################################################
-# BEGIN - need support pcre in Pandas by CairoLee
+# BEGIN - 在 Pandas 中 Login-server 也需要 PCRE 库的支持
 #####################################################################
 HAVE_PCRE=@HAVE_PCRE@
 ifeq ($(HAVE_PCRE),yes)
@@ -29,7 +39,7 @@ else
 	PCRE_CFLAGS=
 endif
 #####################################################################
-# END - need support pcre in Pandas by CairoLee
+# END - 在 Pandas 中 Login-server 也需要 PCRE 库的支持
 #####################################################################
 
 @SET_MAKE@
@@ -66,19 +76,25 @@ obj:
 
 #executables
 
-login-server: obj $(LOGIN_DIR_OBJ) $(COMMON_AR)
+login-server: obj $(LOGIN_DIR_OBJ) $(COMMON_AR) $(BREAKPAD_AR)
 	@echo "	LD	@OLOG@@EXEEXT@"
-	@@CXX@ @LDFLAGS@ -o ../../@OLOG@@EXEEXT@ $(LOGIN_DIR_OBJ) $(COMMON_AR) $(LIBCONFIG_AR) @LIBS@ @MYSQL_LIBS@
+	@@CXX@ @LDFLAGS@ -o ../../@OLOG@@EXEEXT@ $(LOGIN_DIR_OBJ) $(COMMON_AR) $(LIBCONFIG_AR) $(BREAKPAD_AR) @LIBS@ @MYSQL_LIBS@
 
 # login object files
 
-obj/%.o: %.cpp $(LOGIN_H) $(COMMON_H) $(LIBCONFIG_H)
+obj/%.o: %.cpp $(LOGIN_H) $(COMMON_H) $(LIBCONFIG_H) $(BREAKPAD_H)
 	@echo "	CXX	$<"
-# The next line is the original code of rAthena (commented)
+#####################################################################
+# 下面被注释的一行是 rAthena 的原始代码
+#####################################################################
 #	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) -DWITH_SQL @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
-# BEGIN - add $(PCRE_CFLAGS) for pcre support By CairoLee
-	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(PCRE_CFLAGS) -DWITH_SQL @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
-# END - add $(PCRE_CFLAGS) for pcre support By CairoLee
+#####################################################################
+# BEGIN - 添加 $(PCRE_CFLAGS) 和 $(BREAKPAD_INCLUDE)
+#####################################################################
+	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(BREAKPAD_INCLUDE) $(PCRE_CFLAGS) -DWITH_SQL @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
+#####################################################################
+# END - 添加 $(PCRE_CFLAGS) 和 $(BREAKPAD_INCLUDE)
+#####################################################################
 
 # missing object files
 $(COMMON_AR):
@@ -86,3 +102,6 @@ $(COMMON_AR):
 
 $(LIBCONFIG_AR):
 	@$(MAKE) -C ../../3rdparty/libconfig
+
+$(BREAKPAD_AR):
+	@$(MAKE) -C ../../3rdparty/breakpad

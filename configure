@@ -583,8 +583,9 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 PACKAGE_URL=
 
-ac_unique_file="rAthena"
+ac_unique_file="Pandas"
 ac_unique_file="src/common/cbasetypes.hpp"
+enable_option_checking=no
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -621,7 +622,8 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='LTLIBOBJS
+ac_subst_vars='subdirs_extra
+LTLIBOBJS
 LIBOBJS
 CXXFLAG_CLEARS
 CFLAGS_AR
@@ -1367,9 +1369,10 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-maxconn[=ARG]    optionally set the maximum connections the core can
-                          handle. By default the system header value will be used.
-                          This will only be the compile time limit, make sure
-                          you set the correct limit with ulimit on your OS.
+                          handle. By default the system header value will be
+                          used. This will only be the compile time limit, make
+                          sure you set the correct limit with ulimit on your
+                          OS.
   --with-outputlogin[=ARG]
                           Specify the login-serv output name (defaults to
                           login-server)
@@ -1718,44 +1721,6 @@ $as_echo "$ac_res" >&6; }
 
 } # ac_fn_cxx_check_header_compile
 
-# ac_fn_c_try_compile LINENO
-# --------------------------
-# Try to compile conftest.$ac_ext, and return whether this succeeded.
-ac_fn_c_try_compile ()
-{
-  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  rm -f conftest.$ac_objext
-  if { { ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
-$as_echo "$ac_try_echo"; } >&5
-  (eval "$ac_compile") 2>conftest.err
-  ac_status=$?
-  if test -s conftest.err; then
-    grep -v '^ *+' conftest.err >conftest.er1
-    cat conftest.er1 >&5
-    mv -f conftest.er1 conftest.err
-  fi
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest.$ac_objext; then :
-  ac_retval=0
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_retval=1
-fi
-  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
-  as_fn_set_status $ac_retval
-
-} # ac_fn_c_try_compile
-
 # ac_fn_cxx_try_link LINENO
 # -------------------------
 # Try to link conftest.$ac_ext, and return whether this succeeded.
@@ -1801,6 +1766,44 @@ fi
   as_fn_set_status $ac_retval
 
 } # ac_fn_cxx_try_link
+
+# ac_fn_c_try_compile LINENO
+# --------------------------
+# Try to compile conftest.$ac_ext, and return whether this succeeded.
+ac_fn_c_try_compile ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  rm -f conftest.$ac_objext
+  if { { ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_compile") 2>conftest.err
+  ac_status=$?
+  if test -s conftest.err; then
+    grep -v '^ *+' conftest.err >conftest.er1
+    cat conftest.er1 >&5
+    mv -f conftest.er1 conftest.err
+  fi
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then :
+  ac_retval=0
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_retval=1
+fi
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+  as_fn_set_status $ac_retval
+
+} # ac_fn_c_try_compile
 
 # ac_fn_cxx_check_func LINENO FUNC VAR
 # ------------------------------------
@@ -2747,6 +2750,304 @@ ac_config_files="$ac_config_files src/char/Makefile src/login/Makefile"
 ac_config_files="$ac_config_files src/map/Makefile src/tool/Makefile"
 
 
+# ===========================================================================
+#   https://www.gnu.org/software/autoconf-archive/ax_subdirs_configure.html
+# ===========================================================================
+#
+# SYNOPSIS
+#
+#   AX_SUBDIRS_CONFIGURE( [subdirs], [mandatory arguments], [possibly merged arguments], [replacement arguments], [forbidden arguments])
+#
+# DESCRIPTION
+#
+#   AX_SUBDIRS_CONFIGURE attempts to be the equivalent of AC_CONFIG_SUBDIRS
+#   with customizable options for configure scripts.
+#
+#   Run the configure script for each directory from the comma-separated m4
+#   list 'subdirs'. This macro can be used multiple times. All arguments of
+#   this macro must be comma-separated lists.
+#
+#   All command line arguments from the parent configure script will be
+#   given to the subdirectory configure script after the following
+#   modifications (in that order):
+#
+#   1. The arguments from the 'mandatory arguments' list shall always be
+#   appended to the argument list.
+#
+#   2. The arguments from the 'possibly merged arguments' list shall be
+#   added if not present in the arguments of the parent configure script or
+#   merged with the existing argument otherwise.
+#
+#   3. The arguments from the 'replacement arguments' list shall be added if
+#   not present in the arguments of the parent configure script or replace
+#   the existing argument otherwise.
+#
+#   4. The arguments from the 'forbidden arguments' list shall always be
+#   removed from the argument list.
+#
+#   The lists 'mandatory arguments' and 'forbidden arguments' can hold any
+#   kind of argument. The 'possibly merged arguments' and 'replacement
+#   arguments' expect their arguments to be of the form --option-name=value.
+#
+#   This macro aims to remain as close as possible to the AC_CONFIG_SUBDIRS
+#   macro. It corrects the paths for '--cache-file' and '--srcdir' and adds
+#   '--disable-option-checking' and '--silent' if necessary.
+#
+#   This macro also sets the output variable subdirs_extra to the list of
+#   directories recorded with AX_SUBDIRS_CONFIGURE. This variable can be
+#   used in Makefile rules or substituted in configured files.
+#
+#   This macro shall do nothing more than managing the arguments of the
+#   configure script. Just like when using AC_CONFIG_SUBDIRS, it is up to
+#   the user to check any requirements or define and substitute any required
+#   variable for the remainder of the project.
+#
+#   Configure scripts recorded with AX_SUBDIRS_CONFIGURE may be executed
+#   before configure scripts recorded with AC_CONFIG_SUBDIRS.
+#
+#   Without additional arguments, the behaviour of AX_SUBDIRS_CONFIGURE
+#   should be identical to the behaviour of AC_CONFIG_SUBDIRS, apart from
+#   the contents of the variables subdirs and subdirs_extra (except that
+#   AX_SUBDIRS_CONFIGURE expects a comma-separated m4 list):
+#
+#     AC_CONFIG_SUBDIRS([something])
+#     AX_SUBDIRS_CONFIGURE([something])
+#
+#   This macro may be called multiple times.
+#
+#   Usage example:
+#
+#   Let us assume our project has 4 dependencies, namely A, B, C and D. Here
+#   are some characteristics of our project and its dependencies:
+#
+#   - A does not require any special option.
+#
+#   - we want to build B with an optional feature which can be enabled with
+#   its configure script's option '--enable-special-feature'.
+#
+#   - B's configure script is strange and has an option '--with-B=build'.
+#   After close inspection of its documentation, we don't want B to receive
+#   this option.
+#
+#   - C and D both need B.
+#
+#   - Just like our project, C and D can build B themselves with the option
+#   '--with-B=build'.
+#
+#   - We want C and D to use the B we build instead of building it
+#   themselves.
+#
+#   Our top-level configure script will be called as follows:
+#
+#     $ <path/to/configure> --with-A=build --with-B=build --with-C=build \
+#       --with-D=build --some-option
+#
+#   Thus we have to make sure that:
+#
+#   - neither B, C or D receive the option '--with-B=build'
+#
+#   - C and D know where to find the headers and libraries of B.
+#
+#   Under those conditions, we can use the AC_CONFIG_SUBDIRS macro for A,
+#   but need to use AX_SUBDIRS_CONFIGURE for B, C and D:
+#
+#   - B must receive '--enable-special-feature' but cannot receive
+#   '--with-B=build'
+#
+#   - C and D cannot receive '--with-B=build' (or else it would be built
+#   thrice) and need to be told where to find B (since we are building it,
+#   it would probably not be available in standard paths).
+#
+#   Here is a configure.ac snippet that solves our problem:
+#
+#     AC_CONFIG_SUBDIRS([dependencies/A])
+#     AX_SUBDIRS_CONFIGURE(
+#         [dependencies/B], [--enable-special-feature], [], [],
+#         [--with-B=build])
+#     AX_SUBDIRS_CONFIGURE(
+#         [[dependencies/C],[dependencies/D]],
+#         [],
+#         [[CPPFLAGS=-I${ac_top_srcdir}/dependencies/B -I${ac_top_builddir}/dependencies/B],
+#          [LDFLAGS=-L${ac_abs_top_builddir}/dependencies/B/.libs]],
+#         [--with-B=system],
+#         [])
+#
+#   If using automake, the following can be added to the Makefile.am (we use
+#   both $(subdirs) and $(subdirs_extra) since our example above used both
+#   AC_CONFIG_SUBDIRS and AX_SUBDIRS_CONFIGURE):
+#
+#     SUBDIRS = $(subdirs) $(subdirs_extra)
+#
+# LICENSE
+#
+#   Copyright (c) 2017 Harenome Ranaivoarivony-Razanajato <ranaivoarivony-razanajato@hareno.me>
+#
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License as published by the
+#   Free Software Foundation; either version 3 of the License, or (at your
+#   option) any later version.
+#
+#   This program is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+#   Public License for more details.
+#
+#   Under Section 7 of GPL version 3, you are granted additional permissions
+#   described in the Autoconf Configure Script Exception, version 3.0, as
+#   published by the Free Software Foundation.
+#
+#   You should have received a copy of the GNU General Public License along
+#   with this program. If not, see <https://www.gnu.org/licenses/>.
+
+#serial 5
+
+
+
+
+
+ac_aux_dir=
+for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
+  if test -f "$ac_dir/install-sh"; then
+    ac_aux_dir=$ac_dir
+    ac_install_sh="$ac_aux_dir/install-sh -c"
+    break
+  elif test -f "$ac_dir/install.sh"; then
+    ac_aux_dir=$ac_dir
+    ac_install_sh="$ac_aux_dir/install.sh -c"
+    break
+  elif test -f "$ac_dir/shtool"; then
+    ac_aux_dir=$ac_dir
+    ac_install_sh="$ac_aux_dir/shtool install -c"
+    break
+  fi
+done
+if test -z "$ac_aux_dir"; then
+  as_fn_error $? "cannot find install-sh, install.sh, or shtool in \"$srcdir\" \"$srcdir/..\" \"$srcdir/../..\"" "$LINENO" 5
+fi
+
+# These three variables are undocumented and unsupported,
+# and are intended to be withdrawn in a future Autoconf release.
+# They can cause serious problems if a builder's source tree is in a directory
+# whose full name contains unusual characters.
+ac_config_guess="$SHELL $ac_aux_dir/config.guess"  # Please don't use this var.
+ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
+ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
+
+
+
+
+  # Various preliminary checks.
+
+
+
+
+
+    ax_dir="3rdparty/breakpad"
+
+                    # Do not complain, so a configure script can configure whichever parts of a
+    # large source tree are present.
+    if test -d "$srcdir/$ax_dir"; then
+      ac_builddir=.
+
+case "$ax_dir" in
+.) ac_dir_suffix= ac_top_builddir_sub=. ac_top_build_prefix= ;;
+*)
+  ac_dir_suffix=/`$as_echo "$ax_dir" | sed 's|^\.[\\/]||'`
+  # A ".." for each directory in $ac_dir_suffix.
+  ac_top_builddir_sub=`$as_echo "$ac_dir_suffix" | sed 's|/[^\\/]*|/..|g;s|/||'`
+  case $ac_top_builddir_sub in
+  "") ac_top_builddir_sub=. ac_top_build_prefix= ;;
+  *)  ac_top_build_prefix=$ac_top_builddir_sub/ ;;
+  esac ;;
+esac
+ac_abs_top_builddir=$ac_pwd
+ac_abs_builddir=$ac_pwd$ac_dir_suffix
+# for backward compatibility:
+ac_top_builddir=$ac_top_build_prefix
+
+case $srcdir in
+  .)  # We are building in place.
+    ac_srcdir=.
+    ac_top_srcdir=$ac_top_builddir_sub
+    ac_abs_top_srcdir=$ac_pwd ;;
+  [\\/]* | ?:[\\/]* )  # Absolute name.
+    ac_srcdir=$srcdir$ac_dir_suffix;
+    ac_top_srcdir=$srcdir
+    ac_abs_top_srcdir=$srcdir ;;
+  *) # Relative name.
+    ac_srcdir=$ac_top_build_prefix$srcdir$ac_dir_suffix
+    ac_top_srcdir=$ac_top_build_prefix$srcdir
+    ac_abs_top_srcdir=$ac_pwd/$srcdir ;;
+esac
+ac_abs_srcdir=$ac_abs_top_srcdir$ac_dir_suffix
+
+      # Remove --cache-file, --srcdir, and --disable-option-checking arguments
+      # so they do not pile up.
+      ax_args=
+      ax_prev=
+      eval "set x $ac_configure_args"
+      shift
+      for ax_arg; do
+        if test -n "$ax_prev"; then
+          ax_prev=
+          continue
+        fi
+        case $ax_arg in
+          -cache-file | --cache-file | --cache-fil | --cache-fi | --cache-f \
+          | --cache- | --cache | --cach | --cac | --ca | --c)
+            ax_prev=cache_file ;;
+          -cache-file=* | --cache-file=* | --cache-fil=* | --cache-fi=* \
+          | --cache-f=* | --cache-=* | --cache=* | --cach=* | --cac=* | --ca=* \
+          | --c=*)
+            ;;
+          --config-cache | -C)
+            ;;
+          -srcdir | --srcdir | --srcdi | --srcd | --src | --sr)
+            ax_prev=srcdir ;;
+          -srcdir=* | --srcdir=* | --srcdi=* | --srcd=* | --src=* | --sr=*)
+            ;;
+          -prefix | --prefix | --prefi | --pref | --pre | --pr | --p)
+            ax_prev=prefix ;;
+          -prefix=* | --prefix=* | --prefi=* | --pref=* | --pre=* | --pr=* \
+          | --p=*)
+            ;;
+          --disable-option-checking)
+            ;;
+          *) case $ax_arg in
+              *\'*) ax_arg=$($as_echo "$ax_arg" | sed "s/'/'\\\\\\\\''/g");;
+            esac
+            as_fn_append ax_args " '$ax_arg'" ;;
+        esac
+      done
+      # Always prepend --disable-option-checking to silence warnings, since
+      # different subdirs can have different --enable and --with options.
+      ax_args="--disable-option-checking $ax_args"
+      # Options that must be added as they are provided.
+      as_fn_append ax_args " '--disable-tools'"
+
+      # New options that may need to be merged with existing options.
+
+      # New options that must replace existing options.
+
+      # Options that must be removed.
+
+      as_fn_append ax_args " '--srcdir=$ac_srcdir'"
+
+      # Add the subdirectory to the list of target subdirectories.
+      ax_subconfigures="$ax_subconfigures $ax_dir"
+      # Save the argument list for this subdirectory.
+                              ax_var=$(printf "$ax_dir" | tr -c "0-9a-zA-Z_" "_")
+      eval "ax_sub_configure_args_$ax_var=\"$ax_args\""
+      eval "ax_sub_configure_$ax_var=\"yes\""
+    else
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: could not find source tree for $ax_dir" >&5
+$as_echo "$as_me: WARNING: could not find source tree for $ax_dir" >&2;}
+    fi
+
+
+
+
+
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -3284,9 +3585,8 @@ rm -f core conftest.err conftest.$ac_objext \
 $as_echo "$have_linux_epoll" >&6; }
 fi
 if test x$enable_epoll,$have_linux_epoll = xyes,no; then
-    as_fn_error $? "epoll support explicitly enabled but not available" "$LINENO" 5
+	as_fn_error $? "epoll support explicitly enabled but not available" "$LINENO" 5
 fi
-
 
 
 #
@@ -3471,11 +3771,17 @@ fi
 # Check whether --with-maxconn was given.
 if test "${with_maxconn+set}" = set; then :
   withval=$with_maxconn;
-	if ! test "$withval" -ge 0 -o "$withval" -lt 0 2>&- ; then
-		as_fn_error $? "Invalid argument --with-maxconn=$withval ... stopping" "$LINENO" 5
-	else
-		CPPFLAGS="$CPPFLAGS -DMAXCONN=$withval"
-	fi
+		if ! test "$withval" -ge 0 -o "$withval" -lt 0 2>&- ; then
+			as_fn_error $? "Invalid argument --with-maxconn=$withval ... stopping" "$LINENO" 5
+		else
+			CPPFLAGS="$CPPFLAGS -DMAXCONN=$withval"
+		fi
+
+else
+
+		CPPFLAGS="$CPPFLAGS"
+
+
 fi
 
 
@@ -7240,6 +7546,101 @@ LIBOBJS=$ac_libobjs
 
 LTLIBOBJS=$ac_ltlibobjs
 
+
+      ax_dir="3rdparty/breakpad"
+
+      # Convert the path to the subdirectory into a shell variable name.
+      ax_var=$(printf "$ax_dir" | tr -c "0-9a-zA-Z_" "_")
+      ax_configure_ax_var=$(eval "echo \"\$ax_sub_configure_$ax_var\"")
+      if test "$no_recursion" != "yes" -a "x$ax_configure_ax_var" = "xyes"; then
+        subdirs_extra="$subdirs_extra $ax_dir"
+
+        ax_msg="=== configuring in $ax_dir ($(pwd)/$ax_dir)"
+        $as_echo "$as_me:${as_lineno-$LINENO}: $ax_msg" >&5
+        $as_echo "$ax_msg" >&6
+        as_dir="$ax_dir"; as_fn_mkdir_p
+        ac_builddir=.
+
+case "$ax_dir" in
+.) ac_dir_suffix= ac_top_builddir_sub=. ac_top_build_prefix= ;;
+*)
+  ac_dir_suffix=/`$as_echo "$ax_dir" | sed 's|^\.[\\/]||'`
+  # A ".." for each directory in $ac_dir_suffix.
+  ac_top_builddir_sub=`$as_echo "$ac_dir_suffix" | sed 's|/[^\\/]*|/..|g;s|/||'`
+  case $ac_top_builddir_sub in
+  "") ac_top_builddir_sub=. ac_top_build_prefix= ;;
+  *)  ac_top_build_prefix=$ac_top_builddir_sub/ ;;
+  esac ;;
+esac
+ac_abs_top_builddir=$ac_pwd
+ac_abs_builddir=$ac_pwd$ac_dir_suffix
+# for backward compatibility:
+ac_top_builddir=$ac_top_build_prefix
+
+case $srcdir in
+  .)  # We are building in place.
+    ac_srcdir=.
+    ac_top_srcdir=$ac_top_builddir_sub
+    ac_abs_top_srcdir=$ac_pwd ;;
+  [\\/]* | ?:[\\/]* )  # Absolute name.
+    ac_srcdir=$srcdir$ac_dir_suffix;
+    ac_top_srcdir=$srcdir
+    ac_abs_top_srcdir=$srcdir ;;
+  *) # Relative name.
+    ac_srcdir=$ac_top_build_prefix$srcdir$ac_dir_suffix
+    ac_top_srcdir=$ac_top_build_prefix$srcdir
+    ac_abs_top_srcdir=$ac_pwd/$srcdir ;;
+esac
+ac_abs_srcdir=$ac_abs_top_srcdir$ac_dir_suffix
+
+
+        ax_popdir=$(pwd)
+        cd "$ax_dir"
+
+        # Check for guested configure; otherwise get Cygnus style configure.
+        if test -f "$ac_srcdir/configure.gnu"; then
+          ax_sub_configure=$ac_srcdir/configure.gnu
+        elif test -f "$ac_srcdir/configure"; then
+          ax_sub_configure=$ac_srcdir/configure
+        elif test -f "$ac_srcdir/configure.in"; then
+          # This should be Cygnus configure.
+          ax_sub_configure=$ac_aux_dir/configure
+        else
+          { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: no configuration information is in $ax_dir" >&5
+$as_echo "$as_me: WARNING: no configuration information is in $ax_dir" >&2;}
+          ax_sub_configure=
+        fi
+
+        if test -n "$ax_sub_configure"; then
+          # Get the configure arguments for the current configure.
+          eval "ax_sub_configure_args=\"\$ax_sub_configure_args_${ax_var}\""
+
+          # Always prepend --prefix to ensure using the same prefix
+          # in subdir configurations.
+          ax_arg="--prefix=$prefix"
+          case $ax_arg in
+            *\'*) ax_arg=$($as_echo "$ax_arg" | sed "s/'/'\\\\\\\\''/g");;
+          esac
+          ax_sub_configure_args="'$ax_arg' $ax_sub_configure_args"
+          if test "$silent" = yes; then
+            ax_sub_configure_args="--silent $ax_sub_configure_args"
+          fi
+          # Make the cache file name correct relative to the subdirectory.
+          case $cache_file in
+            [\\/]* | ?:[\\/]* )
+              ax_sub_cache_file=$cache_file ;;
+            *) # Relative name.
+              ax_sub_cache_file=$ac_top_build_prefix$cache_file ;;
+          esac
+
+          { $as_echo "$as_me:${as_lineno-$LINENO}: running $SHELL $ax_sub_configure $ax_sub_configure_args --cache-file=$ac_sub_cache_file" >&5
+$as_echo "$as_me: running $SHELL $ax_sub_configure $ax_sub_configure_args --cache-file=$ac_sub_cache_file" >&6;}
+          eval "\$SHELL \"$ax_sub_configure\" $ax_sub_configure_args --cache-file=\"$ax_sub_cache_file\"" \
+              || as_fn_error $? "$ax_sub_configure failed for $ax_dir" "$LINENO" 5
+        fi
+
+        cd "$ax_popdir"
+      fi
 
 
 

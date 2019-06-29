@@ -143,5 +143,8 @@ My Inspector Results*
 # Python
 __pycache__
 
+# IDE
+.vscode
+
 # Other
 /src/*/*.aps

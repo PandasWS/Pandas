@@ -3,7 +3,7 @@
 HAVE_MYSQL=@HAVE_MYSQL@
 OMAP=@OMAP@
 ifeq ($(HAVE_MYSQL),yes)
-	ALL_DEPENDS=server tools
+	ALL_DEPENDS=server tools breakpad
 	SERVER_DEPENDS=common login char map import
 	COMMON_DEPENDS=libconfig yaml-cpp
 	LOGIN_DEPENDS=libconfig common
@@ -58,6 +58,9 @@ tools:
 yaml-cpp:
 	@$(MAKE) -C 3rdparty/yaml-cpp
 
+breakpad:
+	@$(MAKE) -C 3rdparty/breakpad
+
 import:
 # 1) create conf/import folder
 # 2) add missing files
@@ -77,6 +80,7 @@ clean:
 	@$(MAKE) -C src/common $@
 	@$(MAKE) -C 3rdparty/libconfig $@
 	@$(MAKE) -C 3rdparty/yaml-cpp $@
+	@$(MAKE) -C 3rdparty/breakpad $@
 	@$(MAKE) -C src/login $@
 	@$(MAKE) -C src/char $@
 	@$(MAKE) -C src/map $@
@@ -88,6 +92,7 @@ help:
 	@echo "'common'      - builds object files used for the three servers"
 	@echo "'libconfig'   - builds object files of libconfig"
 	@echo "'yaml-cpp'    - builds object files of yaml-cpp"
+	@echo "'breakpad'    - builds object files of breakpad"
 	@echo "'login'       - builds login server"
 	@echo "'char'        - builds char server"
 	@echo "'map'         - builds map server"
