@@ -523,9 +523,6 @@ class MinidumpModuleList : public MinidumpStream,
   // down due to address range conflicts with other modules.
   virtual vector<linked_ptr<const CodeModule> > GetShrunkRangeModules() const;
 
-  // Returns true, if module address range shrink is enabled.
-  virtual bool IsModuleShrinkEnabled() const;
-
   // Print a human-readable representation of the object to stdout.
   void Print();
 
@@ -540,6 +537,12 @@ class MinidumpModuleList : public MinidumpStream,
   static const uint32_t kStreamType = MD_MODULE_LIST_STREAM;
 
   bool Read(uint32_t expected_size);
+
+  bool StoreRange(const MinidumpModule& module,
+                  uint64_t base_address,
+                  uint32_t module_index,
+                  uint32_t module_count,
+                  bool is_android);
 
   // The largest number of modules that will be read from a minidump.  The
   // default is 1024.
@@ -841,7 +844,6 @@ class MinidumpUnloadedModuleList : public MinidumpStream,
       GetModuleAtIndex(unsigned int index) const override;
   const CodeModules* Copy() const override;
   vector<linked_ptr<const CodeModule>> GetShrunkRangeModules() const override;
-  bool IsModuleShrinkEnabled() const override;
 
  protected:
   explicit MinidumpUnloadedModuleList(Minidump* minidump_);
@@ -1254,11 +1256,17 @@ class Minidump {
 
   bool swap() const { return valid_ ? swap_ : false; }
 
+  bool is_big_endian() const { return valid_ ? is_big_endian_ : false; }
+
   // Print a human-readable representation of the object to stdout.
   void Print();
 
   // Is the OS Android.
   bool IsAndroid();
+
+  // Determines the platform where the minidump was produced. |platform| is
+  // valid iff this method returns true.
+  bool GetPlatform(MDOSPlatform* platform);
 
   // Get current hexdump display settings.
   unsigned int HexdumpMode() const { return hexdump_ ? hexdump_width_ : 0; }
@@ -1318,6 +1326,9 @@ class Minidump {
   // processing the minidump, this will be true.  If the two CPUs are
   // same-endian, this will be false.
   bool                      swap_;
+
+  // true if the minidump was produced by a big-endian cpu.
+  bool                      is_big_endian_;
 
   // Validity of the Minidump structure, false immediately after
   // construction or after a failed Read(); true following a successful

@@ -52,6 +52,10 @@
 		3329D4ED0FA16D820007BBC5 /* Breakpad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3329D4EC0FA16D820007BBC5 /* Breakpad.xib */; };
 		33880C800F9E097100817F82 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 33880C7E0F9E097100817F82 /* InfoPlist.strings */; };
 		4084699D0F5D9CF900FDCA37 /* crash_report_sender.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4084699C0F5D9CF900FDCA37 /* crash_report_sender.icns */; };
+		421BC5BC21110C0300B8042E /* convert_old_arm64_context.cc in Sources */ = {isa = PBXBuildFile; fileRef = 421BC5AD21110C0300B8042E /* convert_old_arm64_context.cc */; };
+		421BC5BD21110C0300B8042E /* convert_old_arm64_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 421BC5BB21110C0300B8042E /* convert_old_arm64_context.h */; };
+		421BC5BE21110C1000B8042E /* convert_old_arm64_context.cc in Sources */ = {isa = PBXBuildFile; fileRef = 421BC5AD21110C0300B8042E /* convert_old_arm64_context.cc */; };
+		4247E6412110D7A300482558 /* memory_allocator_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = D244540A12439BA0009BBCE0 /* memory_allocator_unittest.cc */; };
 		4D61A25F14F43CFC002D5862 /* bootstrap_compat.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4D61A25D14F43CFC002D5862 /* bootstrap_compat.cc */; };
 		4D61A26B14F43D3C002D5862 /* bootstrap_compat.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4D61A25D14F43CFC002D5862 /* bootstrap_compat.cc */; };
 		4D61A26C14F43D42002D5862 /* bootstrap_compat.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4D61A25D14F43CFC002D5862 /* bootstrap_compat.cc */; };
@@ -85,7 +89,6 @@
 		D244536B12426F00009BBCE0 /* minidump.cc in Sources */ = {isa = PBXBuildFile; fileRef = D244535212426EBB009BBCE0 /* minidump.cc */; };
 		D244536C12426F00009BBCE0 /* pathname_stripper.cc in Sources */ = {isa = PBXBuildFile; fileRef = D244535312426EBB009BBCE0 /* pathname_stripper.cc */; };
 		D244536D12426F00009BBCE0 /* basic_code_modules.cc in Sources */ = {isa = PBXBuildFile; fileRef = D244534F12426E98009BBCE0 /* basic_code_modules.cc */; };
-		D244540B12439BA0009BBCE0 /* memory_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = D244540A12439BA0009BBCE0 /* memory_unittest.cc */; };
 		D246417012BAA40E005170D0 /* exception_handler.cc in Sources */ = {isa = PBXBuildFile; fileRef = F92C536D0ECCE3FD009BE4BA /* exception_handler.cc */; };
 		D246417112BAA41C005170D0 /* crash_generation_client.cc in Sources */ = {isa = PBXBuildFile; fileRef = D2F9A4C6121336C7002747C1 /* crash_generation_client.cc */; };
 		D246417512BAA438005170D0 /* minidump_generator.cc in Sources */ = {isa = PBXBuildFile; fileRef = F92C536F0ECCE3FD009BE4BA /* minidump_generator.cc */; };
@@ -577,6 +580,8 @@
 		3329D4EC0FA16D820007BBC5 /* Breakpad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Breakpad.xib; path = sender/Breakpad.xib; sourceTree = "<group>"; };
 		33880C7F0F9E097100817F82 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = sender/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4084699C0F5D9CF900FDCA37 /* crash_report_sender.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = crash_report_sender.icns; path = sender/crash_report_sender.icns; sourceTree = "<group>"; };
+		421BC5AD21110C0300B8042E /* convert_old_arm64_context.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = convert_old_arm64_context.cc; path = ../../processor/convert_old_arm64_context.cc; sourceTree = "<group>"; };
+		421BC5BB21110C0300B8042E /* convert_old_arm64_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = convert_old_arm64_context.h; path = ../../processor/convert_old_arm64_context.h; sourceTree = "<group>"; };
 		4D61A25D14F43CFC002D5862 /* bootstrap_compat.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bootstrap_compat.cc; path = ../../common/mac/bootstrap_compat.cc; sourceTree = SOURCE_ROOT; };
 		4D61A25E14F43CFC002D5862 /* bootstrap_compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bootstrap_compat.h; path = ../../common/mac/bootstrap_compat.h; sourceTree = SOURCE_ROOT; };
 		4D72CA0D13DFAD5C006CABE3 /* md5.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = md5.cc; path = ../../common/md5.cc; sourceTree = SOURCE_ROOT; };
@@ -594,12 +599,12 @@
 		D244535112426EBB009BBCE0 /* logging.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = logging.cc; path = ../../processor/logging.cc; sourceTree = SOURCE_ROOT; };
 		D244535212426EBB009BBCE0 /* minidump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = minidump.cc; path = ../../processor/minidump.cc; sourceTree = SOURCE_ROOT; };
 		D244535312426EBB009BBCE0 /* pathname_stripper.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pathname_stripper.cc; path = ../../processor/pathname_stripper.cc; sourceTree = SOURCE_ROOT; };
-		D244540A12439BA0009BBCE0 /* memory_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = memory_unittest.cc; path = ../../common/memory_unittest.cc; sourceTree = SOURCE_ROOT; };
+		D244540A12439BA0009BBCE0 /* memory_allocator_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = memory_allocator_unittest.cc; path = ../../common/memory_allocator_unittest.cc; sourceTree = SOURCE_ROOT; };
 		D2F9A3D41212F87C002747C1 /* exception_handler_test.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = exception_handler_test.cc; path = tests/exception_handler_test.cc; sourceTree = "<group>"; };
 		D2F9A41512131EF0002747C1 /* libgtest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgtest.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2F9A43C12131F55002747C1 /* gmock-all.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gmock-all.cc"; path = "../../testing/src/gmock-all.cc"; sourceTree = SOURCE_ROOT; };
-		D2F9A43E12131F65002747C1 /* gtest_main.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gtest_main.cc; path = ../../testing/gtest/src/gtest_main.cc; sourceTree = "<group>"; };
-		D2F9A43F12131F65002747C1 /* gtest-all.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gtest-all.cc"; path = "../../testing/gtest/src/gtest-all.cc"; sourceTree = "<group>"; };
+		D2F9A43C12131F55002747C1 /* gmock-all.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gmock-all.cc"; path = "../../testing/googlemock/src/gmock-all.cc"; sourceTree = SOURCE_ROOT; };
+		D2F9A43E12131F65002747C1 /* gtest_main.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gtest_main.cc; path = ../../testing/googletest/src/gtest_main.cc; sourceTree = "<group>"; };
+		D2F9A43F12131F65002747C1 /* gtest-all.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gtest-all.cc"; path = "../../testing/googletest/src/gtest-all.cc"; sourceTree = "<group>"; };
 		D2F9A4C4121336C7002747C1 /* client_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = client_info.h; path = crash_generation/client_info.h; sourceTree = "<group>"; };
 		D2F9A4C5121336C7002747C1 /* crash_generation_client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crash_generation_client.h; path = crash_generation/crash_generation_client.h; sourceTree = "<group>"; };
 		D2F9A4C6121336C7002747C1 /* crash_generation_client.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = crash_generation_client.cc; path = crash_generation/crash_generation_client.cc; sourceTree = "<group>"; };
@@ -896,6 +901,8 @@
 		D244536912426EE7009BBCE0 /* processor */ = {
 			isa = PBXGroup;
 			children = (
+				421BC5AD21110C0300B8042E /* convert_old_arm64_context.cc */,
+				421BC5BB21110C0300B8042E /* convert_old_arm64_context.h */,
 				D244535112426EBB009BBCE0 /* logging.cc */,
 				D244535212426EBB009BBCE0 /* minidump.cc */,
 				D244535312426EBB009BBCE0 /* pathname_stripper.cc */,
@@ -936,7 +943,7 @@
 		F92C53600ECCE3D6009BE4BA /* common */ = {
 			isa = PBXGroup;
 			children = (
-				D244540A12439BA0009BBCE0 /* memory_unittest.cc */,
+				D244540A12439BA0009BBCE0 /* memory_allocator_unittest.cc */,
 				F92C53870ECCE6C0009BE4BA /* convert_UTF.c */,
 				F92C53880ECCE6C0009BE4BA /* convert_UTF.h */,
 				4D72CA0D13DFAD5C006CABE3 /* md5.cc */,
@@ -1154,6 +1161,7 @@
 				D2F9A4CC121336C7002747C1 /* crash_generation_server.h in Headers */,
 				163201D61443019E00C4DBF5 /* ConfigFile.h in Headers */,
 				16C7C918147D45AE00776EAD /* BreakpadDefines.h in Headers */,
+				421BC5BD21110C0300B8042E /* convert_old_arm64_context.h in Headers */,
 				162F64F3161C577500CD68D5 /* arch_utilities.h in Headers */,
 				F4DAB1DE19F1027100A5A838 /* launch_reporter.h in Headers */,
 				1EEEB6241720829E00F7E689 /* simple_string_dictionary.h in Headers */,
@@ -1399,6 +1407,8 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "Breakpad" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -1684,6 +1694,7 @@
 				163201D71443019E00C4DBF5 /* ConfigFile.mm in Sources */,
 				162F64F2161C577500CD68D5 /* arch_utilities.cc in Sources */,
 				1EEEB6231720829E00F7E689 /* simple_string_dictionary.cc in Sources */,
+				421BC5BC21110C0300B8042E /* convert_old_arm64_context.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1842,6 +1853,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				421BC5BE21110C1000B8042E /* convert_old_arm64_context.cc in Sources */,
+				4247E6412110D7A300482558 /* memory_allocator_unittest.cc in Sources */,
 				D244536A12426F00009BBCE0 /* logging.cc in Sources */,
 				D244536B12426F00009BBCE0 /* minidump.cc in Sources */,
 				D244536C12426F00009BBCE0 /* pathname_stripper.cc in Sources */,
@@ -1862,7 +1875,6 @@
 				F93DE33E0F82C66B00608B94 /* macho_walker.cc in Sources */,
 				F93DE33F0F82C66B00608B94 /* string_utilities.cc in Sources */,
 				D2F9A3D51212F87C002747C1 /* exception_handler_test.cc in Sources */,
-				D244540B12439BA0009BBCE0 /* memory_unittest.cc in Sources */,
 				4D72CA3813DFAE91006CABE3 /* md5.cc in Sources */,
 				4D61A26E14F43D45002D5862 /* bootstrap_compat.cc in Sources */,
 				1EEEB6271720831E00F7E689 /* BreakpadFramework_Test.mm in Sources */,
@@ -2193,10 +2205,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googlemock,
+					../../testing/googlemock/include,
+					../../testing/googletest,
+					../../testing/googletest/include,
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = gtest;
@@ -2209,10 +2221,10 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googlemock,
+					../../testing/googlemock/include,
+					../../testing/googletest,
+					../../testing/googletest/include,
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = gtest;
@@ -2228,10 +2240,10 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googlemock,
+					../../testing/googlemock/include,
+					../../testing/googletest,
+					../../testing/googletest/include,
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = gtest;
@@ -2248,10 +2260,10 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					../..,
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googlemock,
+					../../testing/googlemock/include,
+					../../testing/googletest,
+					../../testing/googletest/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2266,10 +2278,10 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					../..,
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googlemock,
+					../../testing/googlemock/include,
+					../../testing/googletest,
+					../../testing/googletest/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2284,10 +2296,10 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					../..,
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googlemock,
+					../../testing/googlemock/include,
+					../../testing/googletest,
+					../../testing/googletest/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2368,10 +2380,8 @@
 				HEADER_SEARCH_PATHS = (
 					../..,
 					../../..,
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googlemock/include,
+					../../testing/googletest/include,
 				);
 				PRODUCT_NAME = generator_test;
 			};
@@ -2383,10 +2393,8 @@
 				HEADER_SEARCH_PATHS = (
 					../..,
 					../../..,
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googlemock/include,
+					../../testing/googletest/include,
 				);
 				PRODUCT_NAME = generator_test;
 			};
@@ -2418,10 +2426,10 @@
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../..,
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googletest,
+					../../testing/googletest/include,
+					../../testing/googlemock,
+					../../testing/googlemock/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2437,10 +2445,10 @@
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../..,
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googletest,
+					../../testing/googletest/include,
+					../../testing/googlemock,
+					../../testing/googlemock/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2543,10 +2551,8 @@
 				HEADER_SEARCH_PATHS = (
 					../..,
 					../../..,
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googlemock/include,
+					../../testing/googletest/include,
 				);
 				PRODUCT_NAME = generator_test;
 			};
@@ -2566,10 +2572,10 @@
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../..,
-					../../testing,
-					../../testing/include,
-					../../testing/gtest,
-					../../testing/gtest/include,
+					../../testing/googletest,
+					../../testing/googletest/include,
+					../../testing/googlemock,
+					../../testing/googlemock/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

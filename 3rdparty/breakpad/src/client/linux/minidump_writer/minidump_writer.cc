@@ -702,15 +702,24 @@ class MinidumpWriter {
     TypedMDRVA<MDRawExceptionStream> exc(&minidump_writer_);
     if (!exc.Allocate())
       return false;
-    my_memset(exc.get(), 0, sizeof(MDRawExceptionStream));
+
+    MDRawExceptionStream* stream = exc.get();
+    my_memset(stream, 0, sizeof(MDRawExceptionStream));
 
     dirent->stream_type = MD_EXCEPTION_STREAM;
     dirent->location = exc.location();
 
-    exc.get()->thread_id = GetCrashThread();
-    exc.get()->exception_record.exception_code = dumper_->crash_signal();
-    exc.get()->exception_record.exception_address = dumper_->crash_address();
-    exc.get()->thread_context = crashing_thread_context_;
+    stream->thread_id = GetCrashThread();
+    stream->exception_record.exception_code = dumper_->crash_signal();
+    stream->exception_record.exception_flags = dumper_->crash_signal_code();
+    stream->exception_record.exception_address = dumper_->crash_address();
+    const std::vector<uint64_t> crash_exception_info =
+        dumper_->crash_exception_info();
+    stream->exception_record.number_parameters = crash_exception_info.size();
+    memcpy(stream->exception_record.exception_information,
+           crash_exception_info.data(),
+           sizeof(uint64_t) * crash_exception_info.size());
+    stream->thread_context = crashing_thread_context_;
 
     return true;
   }
@@ -1039,7 +1048,7 @@ class MinidumpWriter {
     // processor_architecture should always be set, do this first
     sys_info->processor_architecture =
 #if defined(__aarch64__)
-        MD_CPU_ARCHITECTURE_ARM64;
+        MD_CPU_ARCHITECTURE_ARM64_OLD;
 #else
         MD_CPU_ARCHITECTURE_ARM;
 #endif
@@ -1366,9 +1375,7 @@ bool WriteMinidumpImpl(const char* minidump_path,
     if (blob_size != sizeof(ExceptionHandler::CrashContext))
       return false;
     context = reinterpret_cast<const ExceptionHandler::CrashContext*>(blob);
-    dumper.set_crash_address(
-        reinterpret_cast<uintptr_t>(context->siginfo.si_addr));
-    dumper.set_crash_signal(context->siginfo.si_signo);
+    dumper.SetCrashInfoFromSigInfo(context->siginfo);
     dumper.set_crash_thread(context->tid);
   }
   MinidumpWriter writer(minidump_path, minidump_fd, context, mappings,
@@ -1417,8 +1424,10 @@ bool WriteMinidump(const char* minidump_path, pid_t process,
   // MinidumpWriter will set crash address
   dumper.set_crash_signal(MD_EXCEPTION_CODE_LIN_DUMP_REQUESTED);
   dumper.set_crash_thread(process_blamed_thread);
-  MinidumpWriter writer(minidump_path, -1, NULL, MappingList(),
-                        AppMemoryList(), false, 0, false, &dumper);
+  MappingList mapping_list;
+  AppMemoryList app_memory_list;
+  MinidumpWriter writer(minidump_path, -1, NULL, mapping_list,
+                        app_memory_list, false, 0, false, &dumper);
   if (!writer.Init())
     return false;
   return writer.Dump();

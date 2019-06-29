@@ -187,19 +187,15 @@ AC_ARG_ENABLE(system-test-libs,
               [system_test_libs=false])
 AM_CONDITIONAL(SYSTEM_TEST_LIBS, test x$system_test_libs = xtrue)
 
-AC_ARG_VAR([GMOCK_CONFIG], [Path to gmock-config script])
 AC_ARG_VAR([GMOCK_CFLAGS], [Compiler flags for gmock])
 AC_ARG_VAR([GMOCK_LIBS], [Linker flags for gmock])
-AC_ARG_VAR([GTEST_CONFIG], [Path to gtest-config script])
 AC_ARG_VAR([GTEST_CFLAGS], [Compiler flags for gtest])
 AC_ARG_VAR([GTEST_LIBS], [Linker flags for gtest])
 if test x$system_test_libs = xtrue; then
-  AC_CHECK_TOOL([GMOCK_CONFIG], [gmock-config])
-  AC_CHECK_TOOL([GTEST_CONFIG], [gtest-config])
-  GMOCK_CFLAGS=`$GMOCK_CONFIG --cppflags --cxxflags`
-  GMOCK_LIBS=`$GMOCK_CONFIG --ldflags --libs`
-  GTEST_CFLAGS=`$GTEST_CONFIG --cppflags --cxxflags`
-  GTEST_LIBS=`$GTEST_CONFIG --ldflags --libs`
+  : "${GMOCK_CFLAGS:=-pthread}"
+  : "${GMOCK_LIBS:=-lgmock -lgtest -pthread -lpthread}"
+  : "${GTEST_CFLAGS:=-pthread}"
+  : "${GTEST_LIBS:=-lgtest -pthread -lpthread}"
 fi
 
 AC_ARG_ENABLE(selftest,
@@ -245,6 +241,25 @@ AC_ARG_WITH(rust-demangle,
             [rust_demangle=false])
 AC_ARG_VAR([RUST_DEMANGLE_CFLAGS], [Compiler flags for rust-demangle])
 AC_ARG_VAR([RUST_DEMANGLE_LIBS], [Linker flags for rust-demangle])
+
+AC_ARG_WITH(tests-as-root,
+            AS_HELP_STRING([--with-tests-as-root],
+                           [Run the tests as root. Use this on platforms]
+                           [like travis-ci.org that require root privileges]
+                           [to use ptrace (default is no)]),
+            [case "${withval}" in
+               yes)
+                 tests_as_root=true
+                 ;;
+               no)
+                 tests_as_root=false
+                 ;;
+               *)
+                 AC_MSG_ERROR(--with-tests-as-root can only be "yes" or "no")
+                 ;;
+             esac],
+            [tests_as_root=false])
+AM_CONDITIONAL(TESTS_AS_ROOT, test x$tests_as_root = xtrue)
 
 AC_CONFIG_FILES(m4_flatten([
   breakpad.pc

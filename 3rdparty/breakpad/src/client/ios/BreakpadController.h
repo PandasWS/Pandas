@@ -66,6 +66,9 @@
   // The dictionary that contains additional server parameters to send when
   // uploading crash reports.
   NSDictionary* uploadTimeParameters_;
+
+  // The callback to call on report upload completion.
+  BreakpadUploadCompletionCallback uploadCompleteCallback_;
 }
 
 // Singleton.
@@ -95,6 +98,10 @@
 // crash report is generated. See |BreakpadAddUploadParameter|.
 - (void)addUploadParameter:(NSString*)value forKey:(NSString*)key;
 
+// Sets the callback to be called after uploading a crash report to the server.
+// Only the latest callback registered will be called.
+- (void)setUploadCallback:(BreakpadUploadCompletionCallback)callback;
+
 // Remove a previously-added parameter from the upload parameter set. See
 // |BreakpadRemoveUploadParameter|.
 - (void)removeUploadParameterForKey:(NSString*)key;
@@ -111,6 +118,9 @@
 
 // Unregisters the crash handlers.
 - (void)stop;
+
+// Returns whether or not the controller is started.
+- (BOOL)isStarted;
 
 // Enables or disables uploading of crash reports, but does not stop the
 // BreakpadController.
@@ -130,6 +140,9 @@
 //   configuration being next report to upload, or nil if none is pending.
 - (void)getNextReportConfigurationOrSendDelay:
     (void(^)(NSDictionary*, int))callback;
+
+// Get the date of the most recent crash report.
+- (void)getDateOfMostRecentCrashReport:(void(^)(NSDate *))callback;
 
 // Sends synchronously the report specified by |configuration|. This method is
 // NOT thread safe and must be called from the breakpad thread.

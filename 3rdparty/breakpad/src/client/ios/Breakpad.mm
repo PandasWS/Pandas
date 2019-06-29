@@ -42,7 +42,6 @@
 
 #import "client/ios/handler/ios_exception_minidump_generator.h"
 #import "client/mac/crash_generation/ConfigFile.h"
-#import "client/mac/handler/exception_handler.h"
 #import "client/mac/handler/minidump_generator.h"
 #import "client/mac/handler/protected_memory_allocator.h"
 #import "client/mac/sender/uploader.h"
@@ -51,7 +50,7 @@
 #if !TARGET_OS_TV && !TARGET_OS_WATCH
 #import "client/mac/handler/exception_handler.h"
 #else
-#import "client/ios/handler/exception_handler_no_mach.h"
+#import "client/ios/exception_handler_no_mach.h"
 #endif  // !TARGET_OS_TV && !TARGET_OS_WATCH
 
 #if !defined(__EXCEPTIONS) || (__clang__ && !__has_feature(cxx_exceptions))
@@ -121,7 +120,7 @@ class ProtectedMemoryLocker {
     // Then unlock the mutex
     __attribute__((unused)) int rv = pthread_mutex_unlock(mutex_);
     assert(rv == 0);
-  };
+  }
 
  private:
   ProtectedMemoryLocker();
@@ -162,9 +161,12 @@ class Breakpad {
   NSArray *CrashReportsToUpload();
   NSString *NextCrashReportToUpload();
   NSDictionary *NextCrashReportConfiguration();
+  NSDictionary *FixedUpCrashReportConfiguration(NSDictionary *configuration);
+  NSDate *DateOfMostRecentCrashReport();
   void UploadNextReport(NSDictionary *server_parameters);
   void UploadReportWithConfiguration(NSDictionary *configuration,
-                                     NSDictionary *server_parameters);
+                                     NSDictionary *server_parameters,
+                                     BreakpadUploadCompletionCallback callback);
   void UploadData(NSData *data, NSString *name,
                   NSDictionary *server_parameters);
   void HandleNetworkResponse(NSDictionary *configuration,
@@ -465,7 +467,42 @@ NSString *Breakpad::NextCrashReportToUpload() {
 
 //=============================================================================
 NSDictionary *Breakpad::NextCrashReportConfiguration() {
-  return [Uploader readConfigurationDataFromFile:NextCrashReportToUpload()];
+  NSDictionary *configuration = [Uploader readConfigurationDataFromFile:NextCrashReportToUpload()];
+  return FixedUpCrashReportConfiguration(configuration);
+}
+
+//=============================================================================
+NSDictionary *Breakpad::FixedUpCrashReportConfiguration(NSDictionary *configuration) {
+  NSMutableDictionary *fixedConfiguration = [[configuration mutableCopy] autorelease];
+  // kReporterMinidumpDirectoryKey can become stale because the app's data container path includes
+  // an UUID that is not guaranteed to stay the same over time.
+  [fixedConfiguration setObject:KeyValue(@BREAKPAD_DUMP_DIRECTORY)
+                    forKey:@kReporterMinidumpDirectoryKey];
+  return fixedConfiguration;
+}
+
+//=============================================================================
+NSDate *Breakpad::DateOfMostRecentCrashReport() {
+  NSString *directory = KeyValue(@BREAKPAD_DUMP_DIRECTORY);
+  if (!directory) {
+    return nil;
+  }
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSArray *dirContents = [fileManager contentsOfDirectoryAtPath:directory error:nil];
+  NSArray *dumps = [dirContents filteredArrayUsingPredicate:[NSPredicate
+      predicateWithFormat:@"self ENDSWITH '.dmp'"]];
+  NSDate *mostRecentCrashReportDate = nil;
+  for (NSString *dump in dumps) {
+    NSString *filePath = [directory stringByAppendingPathComponent:dump];
+    NSDate *crashReportDate =
+        [[fileManager attributesOfItemAtPath:filePath error:nil] fileCreationDate];
+    if (!mostRecentCrashReportDate) {
+      mostRecentCrashReportDate = crashReportDate;
+    } else if (crashReportDate) {
+      mostRecentCrashReportDate = [mostRecentCrashReportDate laterDate:crashReportDate];
+    }
+  }
+  return mostRecentCrashReportDate;
 }
 
 //=============================================================================
@@ -478,8 +515,10 @@ void Breakpad::HandleNetworkResponse(NSDictionary *configuration,
 }
 
 //=============================================================================
-void Breakpad::UploadReportWithConfiguration(NSDictionary *configuration,
-                                             NSDictionary *server_parameters) {
+void Breakpad::UploadReportWithConfiguration(
+    NSDictionary *configuration,
+    NSDictionary *server_parameters,
+    BreakpadUploadCompletionCallback callback) {
   Uploader *uploader = [[[Uploader alloc]
       initWithConfig:configuration] autorelease];
   if (!uploader)
@@ -488,6 +527,13 @@ void Breakpad::UploadReportWithConfiguration(NSDictionary *configuration,
     [uploader addServerParameter:[server_parameters objectForKey:key]
                           forKey:key];
   }
+  if (callback) {
+    [uploader setUploadCompletionBlock:^(NSString *report_id, NSError *error) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        callback(report_id, error);
+      });
+    }];
+  }
   [uploader report];
 }
 
@@ -495,7 +541,8 @@ void Breakpad::UploadReportWithConfiguration(NSDictionary *configuration,
 void Breakpad::UploadNextReport(NSDictionary *server_parameters) {
   NSDictionary *configuration = NextCrashReportConfiguration();
   if (configuration) {
-    return UploadReportWithConfiguration(configuration, server_parameters);
+    return UploadReportWithConfiguration(configuration, server_parameters,
+                                         nullptr);
   }
 }
 
@@ -826,7 +873,7 @@ int BreakpadGetCrashReportCount(BreakpadRef ref) {
 
 //=============================================================================
 void BreakpadUploadNextReport(BreakpadRef ref) {
-  BreakpadUploadNextReportWithParameters(ref, nil);
+  BreakpadUploadNextReportWithParameters(ref, nil, nullptr);
 }
 
 //=============================================================================
@@ -842,25 +889,41 @@ NSDictionary *BreakpadGetNextReportConfiguration(BreakpadRef ref) {
 }
 
 //=============================================================================
+NSDate *BreakpadGetDateOfMostRecentCrashReport(BreakpadRef ref) {
+  try {
+    Breakpad *breakpad = (Breakpad *)ref;
+    if (breakpad) {
+      return breakpad->DateOfMostRecentCrashReport();
+    }
+  } catch (...) {    // don't let exceptions leave this C API
+    fprintf(stderr, "BreakpadGetDateOfMostRecentCrashReport() : error\n");
+  }
+  return nil;
+}
+
+//=============================================================================
 void BreakpadUploadReportWithParametersAndConfiguration(
     BreakpadRef ref,
     NSDictionary *server_parameters,
-    NSDictionary *configuration) {
+    NSDictionary *configuration,
+    BreakpadUploadCompletionCallback callback) {
   try {
     Breakpad *breakpad = (Breakpad *)ref;
     if (!breakpad || !configuration)
       return;
-    breakpad->UploadReportWithConfiguration(configuration, server_parameters);
+    breakpad->UploadReportWithConfiguration(configuration, server_parameters,
+                                            callback);
   } catch(...) {    // don't let exceptions leave this C API
     fprintf(stderr,
         "BreakpadUploadReportWithParametersAndConfiguration() : error\n");
   }
-
 }
 
 //=============================================================================
-void BreakpadUploadNextReportWithParameters(BreakpadRef ref,
-                                            NSDictionary *server_parameters) {
+void BreakpadUploadNextReportWithParameters(
+    BreakpadRef ref,
+    NSDictionary *server_parameters,
+    BreakpadUploadCompletionCallback callback) {
   try {
     Breakpad *breakpad = (Breakpad *)ref;
     if (!breakpad)
@@ -868,9 +931,8 @@ void BreakpadUploadNextReportWithParameters(BreakpadRef ref,
     NSDictionary *configuration = breakpad->NextCrashReportConfiguration();
     if (!configuration)
       return;
-    return BreakpadUploadReportWithParametersAndConfiguration(ref,
-                                                              server_parameters,
-                                                              configuration);
+    return BreakpadUploadReportWithParametersAndConfiguration(
+        ref, server_parameters, configuration, callback);
   } catch(...) {    // don't let exceptions leave this C API
     fprintf(stderr, "BreakpadUploadNextReportWithParameters() : error\n");
   }

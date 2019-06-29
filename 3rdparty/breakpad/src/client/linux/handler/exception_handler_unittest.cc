@@ -27,6 +27,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <pthread.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <signal.h>
@@ -257,6 +258,66 @@ TEST(ExceptionHandlerTest, ChildCrashWithFD) {
   ASSERT_NO_FATAL_FAILURE(ChildCrash(true));
 }
 
+#if !defined(__ANDROID_API__) || __ANDROID_API__ >= __ANDROID_API_N__
+static void* SleepFunction(void* unused) {
+  while (true) usleep(1000000);
+  return NULL;
+}
+
+static void* CrashFunction(void* b_ptr) {
+  pthread_barrier_t* b = reinterpret_cast<pthread_barrier_t*>(b_ptr);
+  pthread_barrier_wait(b);
+  DoNullPointerDereference();
+  return NULL;
+}
+
+// Tests that concurrent crashes do not enter a loop by alternately triggering
+// the signal handler.
+TEST(ExceptionHandlerTest, ParallelChildCrashesDontHang) {
+  AutoTempDir temp_dir;
+  const pid_t child = fork();
+  if (child == 0) {
+    google_breakpad::scoped_ptr<ExceptionHandler> handler(
+      new ExceptionHandler(MinidumpDescriptor(temp_dir.path()), NULL, NULL,
+                            NULL, true, -1));
+
+    // We start a number of threads to make sure handling the signal takes
+    // enough time for the second thread to enter the signal handler.
+    int num_sleep_threads = 100;
+    google_breakpad::scoped_array<pthread_t> sleep_threads(
+        new pthread_t[num_sleep_threads]);
+    for (int i = 0; i < num_sleep_threads; ++i) {
+      ASSERT_EQ(0, pthread_create(&sleep_threads[i], NULL, SleepFunction,
+                                  NULL));
+    }
+
+    int num_crash_threads = 2;
+    google_breakpad::scoped_array<pthread_t> crash_threads(
+        new pthread_t[num_crash_threads]);
+    // Barrier to synchronize crashing both threads at the same time.
+    pthread_barrier_t b;
+    ASSERT_EQ(0, pthread_barrier_init(&b, NULL, num_crash_threads + 1));
+    for (int i = 0; i < num_crash_threads; ++i) {
+      ASSERT_EQ(0, pthread_create(&crash_threads[i], NULL, CrashFunction, &b));
+    }
+    pthread_barrier_wait(&b);
+    for (int i = 0; i < num_crash_threads; ++i) {
+      ASSERT_EQ(0, pthread_join(crash_threads[i], NULL));
+    }
+  }
+
+  // Wait a while until the child should have crashed.
+  usleep(1000000);
+  // Kill the child if it is still running.
+  kill(child, SIGKILL);
+
+  // If the child process terminated by itself, it will have returned SIGSEGV.
+  // If however it got stuck in a loop, it will have been killed by the
+  // SIGKILL.
+  ASSERT_NO_FATAL_FAILURE(WaitForProcessToTerminate(child, SIGSEGV));
+}
+#endif  // !defined(__ANDROID_API__) || __ANDROID_API__ >= __ANDROID_API_N__
+
 static bool DoneCallbackReturnFalse(const MinidumpDescriptor& descriptor,
                                     void* context,
                                     bool succeeded) {
@@ -360,6 +421,10 @@ TEST(ExceptionHandlerTest, RedeliveryToDefaultHandler) {
 
   const pid_t child = fork();
   if (child == 0) {
+    // Custom signal handlers, which may have been installed by a test launcher,
+    // are undesirable in this child.
+    signal(SIGSEGV, SIG_DFL);
+
     CrashWithCallbacks(FilterCallbackReturnFalse, NULL, temp_dir.path());
   }
 
@@ -467,7 +532,7 @@ TEST(ExceptionHandlerTest, StackedHandlersUnhandledToBottom) {
 
 namespace {
 const int kSimpleFirstChanceReturnStatus = 42;
-bool SimpleFirstChanceHandler(int, void*, void*) {
+bool SimpleFirstChanceHandler(int, siginfo_t*, void*) {
   _exit(kSimpleFirstChanceReturnStatus);
 }
 }
@@ -808,17 +873,37 @@ TEST(ExceptionHandlerTest, InstructionPointerMemoryNullPointer) {
   ASSERT_GT(st.st_size, 0);
 
   // Read the minidump. Locate the exception record and the
-  // memory list, and then ensure that there is a memory region
+  // memory list, and then ensure that there is no memory region
   // in the memory list that covers the instruction pointer from
   // the exception record.
   Minidump minidump(minidump_path);
   ASSERT_TRUE(minidump.Read());
 
   MinidumpException* exception = minidump.GetException();
-  MinidumpMemoryList* memory_list = minidump.GetMemoryList();
   ASSERT_TRUE(exception);
+
+  MinidumpContext* exception_context = exception->GetContext();
+  ASSERT_TRUE(exception_context);
+
+  uint64_t instruction_pointer;
+  ASSERT_TRUE(exception_context->GetInstructionPointer(&instruction_pointer));
+  EXPECT_EQ(instruction_pointer, 0u);
+
+  MinidumpMemoryList* memory_list = minidump.GetMemoryList();
   ASSERT_TRUE(memory_list);
-  ASSERT_EQ(static_cast<unsigned int>(1), memory_list->region_count());
+
+  unsigned int region_count = memory_list->region_count();
+  ASSERT_GE(region_count, 1u);
+
+  for (unsigned int region_index = 0;
+       region_index < region_count;
+       ++region_index) {
+    MinidumpMemoryRegion* region =
+        memory_list->GetMemoryRegionAtIndex(region_index);
+    uint64_t region_base = region->GetBase();
+    EXPECT_FALSE(instruction_pointer >= region_base &&
+                 instruction_pointer < region_base + region->GetSize());
+  }
 
   unlink(minidump_path.c_str());
 }
