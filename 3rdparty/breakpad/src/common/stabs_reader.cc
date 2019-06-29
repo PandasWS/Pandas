@@ -95,7 +95,12 @@ bool StabsReader::Process() {
     if (iterator_->type == N_SO) {
       if (! ProcessCompilationUnit())
         return false;
-    } else if (iterator_->type == N_UNDF && unitized_) {
+    //} else if (iterator_->type == N_UNDF && unitized_) {
+    // 在 OSX 的 Docker 中使用 Centos 镜像编译有点问题, 有时 N_UNDF 无法被识别
+    // 查了一下 N_UNDF 等价于 0x0, 这里直接用数值形式表示 (暂时规避)
+	// 应该是某个地方的依赖库判断不成立, 导致 stabs_reader.h 没能引入 a.out.h 导致的
+	// 之前在 breakpad 的 master 版本测试时没发现类似的问题.
+    } else if (iterator_->type == 0x0 && unitized_) {
       // In unitized STABS (including Linux STABS, and pretty much anything
       // else that puts STABS data in sections), at the head of each
       // compilation unit's entries there is an N_UNDF stab giving the
