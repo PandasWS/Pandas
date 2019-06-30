@@ -4,3 +4,5 @@
 #pragma once
 
 void breakpad_initialize();
+void breakpad_status();
+

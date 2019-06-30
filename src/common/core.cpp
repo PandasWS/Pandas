@@ -365,6 +365,7 @@ int main (int argc, char **argv)
 {
 #ifdef Pandas_Google_Breakpad
 	breakpad_initialize();
+	breakpad_status();
 #endif // Pandas_Google_Breakpad
 
 	{// initialize program arguments
