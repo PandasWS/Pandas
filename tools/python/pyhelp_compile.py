@@ -14,12 +14,10 @@
 
 # -*- coding: utf-8 -*-
 
-import io
 import os
 import platform
 import re
 import shutil
-import sys
 import time
 import winreg
 
@@ -132,8 +130,8 @@ def get_compile_result():
         matchgroup = match_file_regex(filepath, pattern)
         if matchgroup is not None and len(matchgroup) == 3:
             return True, matchgroup[0], matchgroup[1], matchgroup[2]
-    else:
-        return False, -1, -1, -1
+
+    return False, -1, -1, -1
 
 def has_changelog(ver):
     '''
