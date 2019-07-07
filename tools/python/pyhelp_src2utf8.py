@@ -110,7 +110,7 @@ def main():
 	
     if not confirm:
         Message.ShowInfo('您取消了操作, 程序终止...\n')
-        Common.exitWithPause()
+        Common.exit_with_pause()
 
     count = CharsetConverter({
         'ignore_files' : ['Makefile', 'Makefile.in', 'CMakeLists.txt'],
@@ -122,7 +122,7 @@ def main():
 
     print('')
 
-    Common.exitWithPause()
+    Common.exit_with_pause()
 
 if __name__ == "__main__":
     main()

@@ -18,7 +18,7 @@ class Inputer:
             if not result and not ('allow_empty' in options and options['allow_empty']):
                 Message.ShowError('请至少输入一个字符. 程序终止')
                 print('-' * 70)
-                Common.exitWithPause(-1)
+                Common.exit_with_pause(-1)
         result = prefix_val + result
         if 'upper' in options and options['upper']:
             result = result.upper()
@@ -37,12 +37,12 @@ class Inputer:
             if not ('allow_empty' in options and options['allow_empty']):
                 Message.ShowError('请至少输入一个数字. 程序终止')
                 print('-' * 70)
-                Common.exitWithPause(-1)
+                Common.exit_with_pause(-1)
             result = '0'
         if not result.isdigit():
             Message.ShowError('请输入一个数字而不是字符串. 程序终止')
             print('-' * 70)
-            Common.exitWithPause(-1)
+            Common.exit_with_pause(-1)
         Message.ShowInfo('您输入的是: ' + result)
         print('-' * 70)
         print('')
@@ -63,14 +63,14 @@ class Inputer:
         if not user_select or not user_select.isnumeric():
             Message.ShowError('您输入了无效的地图标记类型, 程序终止')
             print('-' * 70)
-            Common.exitWithPause(-1)
+            Common.exit_with_pause(-1)
 
         user_select = int(user_select)
 
         if user_select < 0 or user_select >= len(select_data):
             Message.ShowError('您输入了无效的地图标记类型, 程序终止')
             print('-' * 70)
-            Common.exitWithPause(-1)
+            Common.exit_with_pause(-1)
 
         print('')
         Message.ShowInfo('您选择的是: %s' % select_data[user_select]['name'])
