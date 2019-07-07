@@ -18,7 +18,7 @@ class Injecter:
 
         if not self.detect(self.__options__['source_dirs']):
             Message.ShowError('无法成功定位所有需要的代码注入点, 程序终止!')
-            Common.exitWithPause(-1)
+            Common.exit_with_pause(-1)
         else:
             Message.ShowStatus('已成功定位所有代码注入点.\n')
 
@@ -51,7 +51,7 @@ class Injecter:
 
                 if str(re_match.group(1)) in self.mark_dict:
                     Message.ShowError('发现重复的代码注入标记: ' + re_match.group(0))
-                    Common.exitWithPause(-1)
+                    Common.exit_with_pause(-1)
 
                 self.mark_dict[re_match.group(1)] = {
                     'index' : int(re_match.group(1)),

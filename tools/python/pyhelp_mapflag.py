@@ -279,7 +279,7 @@ def guide(inject):
 
     if not nextstep:
         Message.ShowStatus('终止写入操作, 程序终止')
-        Common.exitWithPause(-1)
+        Common.exit_with_pause(-1)
 
     # --------
 
@@ -361,7 +361,7 @@ def main():
     }
 
     guide(Injecter(options))
-    Common.exitWithPause()
+    Common.exit_with_pause()
 
 if __name__ == '__main__':
     main()
