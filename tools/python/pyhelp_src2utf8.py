@@ -124,6 +124,8 @@ def main():
 
     Common.exit_with_pause()
 
-if __name__ == "__main__":
-    main()
-
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt as _err:
+        pass

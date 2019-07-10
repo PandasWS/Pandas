@@ -209,4 +209,7 @@ def main():
     Common.exit_with_pause()
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt as _err:
+        pass
