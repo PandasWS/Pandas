@@ -1,2 +1,5 @@
-chardet==3.0.4
+Flask_Limiter==1.0.1
+Flask==1.1.0
 colorama==0.4.1
+chardet==3.0.4
+GitPython==2.1.11

@@ -20,10 +20,14 @@ import re
 import shutil
 import time
 import winreg
+import re
 
 import git
 
 from libs import Common, Inputer, Message
+
+# 切换工作目录为脚本所在目录
+os.chdir(os.path.split(os.path.realpath(__file__))[0])
 
 # 工程文件的主目录相对此脚本文件的位置
 project_slndir = '../../'
@@ -46,6 +50,16 @@ compile_logfile = '%s/compile.log' % project_cachedir
 # 配置能支持的 Visual Studio 相关信息
 vs_configure = [
     {
+        'name' : 'Visual Studio 2019',
+        'reg_root' : winreg.HKEY_LOCAL_MACHINE,
+        'reg_subkey' : r'SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{tag}',
+        'reg_key' : 'InstallLocation',
+        'vcvarsall' : r'VC\Auxiliary\Build\vcvarsall.bat',
+        'tag_location' : os.path.expandvars(r'%appdata%/Microsoft/VisualStudio'),
+        'tag_pattern' : r'16.0_(.*)',
+        'tag_group_id' : 0
+    },
+    {
         'name' : 'Visual Studio 2017',
         'reg_root' : winreg.HKEY_LOCAL_MACHINE,
         'reg_subkey' : r'SOFTWARE\WOW6432Node\Microsoft\VisualStudio\SxS\VS7',
@@ -61,13 +75,28 @@ vs_configure = [
     }
 ]
 
+def get_reg_value(vs):
+    '''
+    根据 vs_configure 中的某个配置项, 获取 Visual Studio 的安装目录
+    '''
+    reg_subkey = vs['reg_subkey']
+    if '{tag}' in vs['reg_subkey']:
+        dirs = os.listdir(vs['tag_location'])
+        for dirname in dirs:
+            matches = re.findall(vs['tag_pattern'], dirname)
+            if matches is None or len(matches) != 1:
+                continue
+            reg_subkey = vs['reg_subkey'].format(tag = matches[vs['tag_group_id']])
+            break
+    return Common.read_regstr(vs['reg_root'], reg_subkey, vs['reg_key'])
+
 def detect_vs():
     '''
     检测是否安装了符合要求的 Visual Studio 版本
     若安装了任何一个则返回 True 以及版本名称, 若一个都没安装则返回 False 以及 None
     '''
     for vs in vs_configure:
-        path = Common.read_regstr(vs['reg_root'], vs['reg_subkey'], vs['reg_key'])
+        path = get_reg_value(vs)
         if path is not None:
             return True, vs['name']
     return False, None
@@ -78,7 +107,7 @@ def get_vcvarsall_path():
     如果检测不到则返回 None
     '''
     for vs in vs_configure:
-        path = Common.read_regstr(vs['reg_root'], vs['reg_subkey'], vs['reg_key'])
+        path = get_reg_value(vs)
         vcvarsall_path = None
         if Common.is_dir_exists(path):
             vcvarsall_path = os.path.join(path, vs['vcvarsall'])
@@ -148,7 +177,7 @@ def save_symbols(subdir, mode, symbol_ver):
     '''
     编译完成后进行符号文件的保存工作
     '''
-    symbols_cache_dir = '%s%s' % (slndir(project_cachedir), subdir)
+    symbols_cache_dir = os.path.join(slndir(project_cachedir), subdir)
     shutil.rmtree(symbols_cache_dir, ignore_errors=True)
     os.makedirs(symbols_cache_dir, exist_ok=True)
 
@@ -163,7 +192,7 @@ def save_symbols(subdir, mode, symbol_ver):
 
     for filepath in compiled_product:
         shutil.copyfile(slndir(filepath), '%s/%s' % (symbols_cache_dir, filepath))
-
+    
     # 调用 symstore.exe 将符号文件保存到本地某个目录
     command = '"{symstore}" add /r /f "{cachedir}" /s "{symbolsdir}/symbols" /t Pandas_{mode} /v {version}'.format(
         symstore = symbols_exec, cachedir = symbols_cache_dir, version = symbol_ver,
@@ -305,9 +334,6 @@ def main():
     '''
     主入口函数
     '''
-    # 切换工作目录为脚本所在目录
-    os.chdir(os.path.split(os.path.realpath(__file__))[0])
-
     # 显示欢迎信息
     Common.welcome('编译流程辅助脚本')
 
@@ -371,4 +397,4 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt as _err:
-        Message.ShowInfo('您使用 Ctrl + C 终止了该脚本, 欢迎您再次使用')
+        pass

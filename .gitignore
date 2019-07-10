@@ -142,11 +142,10 @@ My Inspector Results*
 
 # Python
 __pycache__
+tools/python/cache
 
 # IDE
 .vscode
 
 # Other
 /src/*/*.aps
-
-tools/python/cache
