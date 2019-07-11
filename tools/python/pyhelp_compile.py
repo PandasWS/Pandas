@@ -20,7 +20,6 @@ import re
 import shutil
 import time
 import winreg
-import re
 
 import git
 
