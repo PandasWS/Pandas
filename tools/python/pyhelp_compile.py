@@ -38,11 +38,11 @@ project_slndir = '../../'
 # 此脚本所需要的缓存目录 (缓存符号文件, 编译输出日志)
 project_cachedir = 'tools/python/cache/'
 
-# 符号文件仓库工程路径
-project_symstoredir = os.path.abspath(project_slndir + '../pandas_symbols')
+# 符号仓库工程路径
+project_symstoredir = os.path.abspath(project_slndir + '../symbols')
 
 # 符号文件的 Git 仓库路径
-symbols_giturl = 'https://github.com/PandasWS/Pandas_Symbols.git'
+symbols_giturl = 'https://github.com/PandasWS/Symbols.git'
 
 # 编译输出日志的路径
 compile_logfile = '%s/compile.log' % project_cachedir
@@ -100,7 +100,7 @@ def get_pdb_hash(pdbfilepath):
 def deploy_symbols(dir_path, symstore_path):
     '''
     扫描某个目录中的全部 exe 和 pdb 文件
-    将它们放到符号文件仓库中
+    将它们放到符号仓库中
     '''
     for dirpath, _dirnames, filenames in os.walk(dir_path):
         for filename in filenames:
@@ -114,7 +114,7 @@ def deploy_symbols(dir_path, symstore_path):
 
 def deploy_single_symbols(filepath, symstore_path):
     '''
-    将给定的 exe 和 pdb 等 PE 文件放到符号文件仓库中
+    将给定的 exe 和 pdb 等 PE 文件放到符号仓库中
     '''
     filename = os.path.basename(filepath)
     _base_name, extension_name = os.path.splitext(filename.lower())
@@ -255,7 +255,7 @@ def save_symbols(cache_subdir):
     # 将符号文件保存到本地某个目录
     deploy_symbols(symbols_cache_dir, "%s/symbols/win" % project_symstoredir)
 
-    # 使符号文件仓库将新增的文件设置为待提交
+    # 使符号仓库将新增的文件设置为待提交
     repo = git.Repo(project_symstoredir)
     repo.git.add('.')
 
@@ -292,8 +292,9 @@ def clean_environment():
 
 def update_symstore():
     if not Common.is_dir_exists(project_symstoredir):
+        print('')
         if not Inputer().requireBool({
-            'tips' : '您尚未克隆最新的符号文件工程, 是否立刻进行克隆?',
+            'tips' : '本机尚未克隆最新的符号仓库, 是否立刻进行克隆?',
             'default' : False
         }):
             Message.ShowStatus('您主动放弃了继续操作')
@@ -303,23 +304,25 @@ def update_symstore():
     else:
         repo = git.Repo(project_symstoredir)
         if not repo.is_dirty() and not repo.untracked_files:
-            Message.ShowInfo('符号文件仓库工作区干净, 正在尝试拉取最新数据...')
+            Message.ShowStatus('正在尝试拉取最新的符号数据...')
             try:
                 repo.remotes.origin.pull()
             except git.GitError as _err:
-                Message.ShowWarning('符号文件仓库拉取失败: %s' % _err)
+                Message.ShowWarning('符号数据更新失败: %s' % _err)
             else:
-                Message.ShowStatus('符号文件仓库拉取成功, 已经同步最新的符号数据.')
+                Message.ShowStatus('符号数据更新成功.')
         else:
+            print('')
             if Inputer().requireBool({
-                'tips' : '符号文件仓库工作区不干净, 或存在未跟踪文件, 是否重置工作区?',
+                'tips' : '本地符号仓库的工作区不干净, 是否重置工作区?',
                 'default' : False
             }):
                 repo.git.reset('--hard')
                 repo.git.clean('-xdf')
-                Message.ShowStatus('已成功重置符号文件仓库到干净状态.')
+                Message.ShowStatus('已成功重置本地符号仓库到干净状态.')
             else:
-                Message.ShowWarning('符号文件仓库工作区不干净, 放弃拉取最新数据..')
+                Message.ShowWarning('本地符号仓库工作区不干净, 放弃更新符号数据..')
+            print('')
 
 def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
     '''
@@ -328,13 +331,16 @@ def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
     # 获取第一个支持的 Visual Studio 对应的 vcvarsall 路径
     vcvarsall = get_vcvarsall_path()
 
+    # 根据名称确定一下标记
+    modetag = ('RE' if name == '复兴后' else 'PRE')
+
     # 执行编译
     Common.cmd_execute([
         '"%s" x86' % vcvarsall,
         'set CL=%s' % define_val,
         'Devenv rAthena.sln /clean',
         'Devenv rAthena.sln /Rebuild "%s"' % scheme
-    ], project_slndir, 'RE' if name == '复兴后' else 'PRE', slndir(compile_logfile))
+    ], project_slndir, modetag, slndir(compile_logfile))
 
     # 编译完成后, 判断编译是否成功
     result, succ, faild, _skip = get_compile_result()
@@ -344,13 +350,13 @@ def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
 
     # 若成功, 则进行符号文件的存储
     if result and int(succ) > 1 and int(faild) == 0:
-        print('')
-        Message.ShowStatus('编译成功, 正在存储符号文件...')
-        print('')
-        return save_symbols('RE' if name == '复兴后' else 'PRE')
+        Message.ShowStatus('%s: 全部编译成功.' % modetag)
+        Message.ShowStatus('%s: 正在存储符号文件到本地符号仓库...' % modetag)
+        if save_symbols(modetag):
+            Message.ShowStatus('%s: 符号文件存储完毕...' % modetag)
+        return True
     else:
-        print('')
-        Message.ShowWarning('编译 %s 时存在编译失败的工程, 暂不保存符号文件' % name)
+        Message.ShowWarning('%s: 存在编译失败的工程, 暂不保存符号文件...' % modetag)
         return False
 
 def compile_prere(version):
@@ -358,28 +364,20 @@ def compile_prere(version):
     编译复兴前版本
     '''
     time.sleep(3)
-    print('-' * 70)
-    Message.ShowStatus('开始编译复兴前版本')
-    print('-' * 70)
     print('')
     if not compile_sub('/DPRERE', '复兴前', version):
         Message.ShowError('编译复兴前版本且保存符号文件期间发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
-    print('')
 
 def compile_renewal(version):
     '''
     编译复兴后版本
     '''
     time.sleep(3)
-    print('-' * 70)
-    Message.ShowStatus('开始编译复兴后版本')
-    print('-' * 70)
     print('')
     if not compile_sub('', '复兴后', version):
         Message.ShowError('编译复兴前版本且保存符号文件期间发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
-    print('')
 
 def main():
     '''
@@ -401,26 +399,32 @@ def main():
     else:
         Message.ShowStatus('检测到已安装: %s 应可正常编译' % vs_name)
 
+    print('')
+
     # 读取当前的 Pandas 主程序版本号
     pandas_ver = get_pandas_ver()
-    Message.ShowInfo('当前 Pandas 的主版本是: %s' % pandas_ver)
+    Message.ShowInfo('当前模拟器的主版本是: %s' % pandas_ver)
 
     # 判断是否已经写入了对应的更新日志, 若没有则要给予提示再继续
     if (has_changelog(pandas_ver)):
-        Message.ShowStatus('已经在 Changelog.txt 中找到了 %s 版本的更新日志' % pandas_ver)
+        Message.ShowStatus('已经在更新日志中找到了 %s 的版本信息.' % pandas_ver)
     else:
-        Message.ShowWarning('没有在 Changelog.txt 中找到 %s 版本的更新日志, 注意完善' % pandas_ver)
+        Message.ShowWarning('没有在更新日志中找到 %s 版本的信息, 请注意完善!' % pandas_ver)
 
-    # 检查创建并尝试更新符号文件仓库
+    # 检查创建并尝试更新符号仓库
     update_symstore()
 
     # 判断当前 git 工作区是否干净, 若工作区不干净要给予提示
-    if git.Repo(project_slndir).is_dirty() and not Inputer().requireBool({
-        'tips' : '当前 Pandas 代码仓库的工作区并不干净, 确定要继续吗?',
-        'default' : False
-    }):
-        Message.ShowStatus('您主动放弃了继续操作')
-        Common.exit_with_pause(-1)
+    if git.Repo(project_slndir).is_dirty():
+        if not Inputer().requireBool({
+            'tips' : '当前模拟器代码仓库的工作区不干净, 要重新编译吗?',
+            'default' : False
+        }):
+            Message.ShowStatus('您主动放弃了继续操作')
+            Common.exit_with_pause(-1)
+    else:
+        Message.ShowStatus('当前模拟器代码仓库的工作区是干净的.')
+    Message.ShowStatus('即将开始编译, 编译速度取决于电脑性能, 请耐心...')
 
     # 清理目前的工作目录, 把一些可明确移除的删掉
     clean_environment()
@@ -437,9 +441,12 @@ def main():
     shutil.move(slndir('map-server.pdb'), slndir('map-server-pre.pdb'))
 
     # 编译 Pandas 的复兴后版本
+    print('')
     compile_renewal(pandas_ver)
 
-    Message.ShowStatus('全部编译工作已经完成, 符号文件已存储, 记得提交符号文件.\n')
+    print('')
+    Message.ShowStatus('编译工作已经全部结束.')
+    Message.ShowStatus('刚刚编译时产生的符号文件已存储, 记得提交符号文件.\n')
 
     # 友好退出, 主要是在 Windows 环境里给予暂停
     Common.exit_with_pause(0)
