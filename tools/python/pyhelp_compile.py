@@ -21,6 +21,10 @@ import shutil
 import time
 import winreg
 
+import pefile
+import pdbparse
+import binascii
+
 import git
 
 from libs import Common, Inputer, Message
@@ -39,9 +43,6 @@ project_symstoredir = os.path.abspath(project_slndir + '../pandas_symbols')
 
 # 符号文件的 Git 仓库路径
 symbols_giturl = 'https://github.com/PandasWS/Pandas_Symbols.git'
-
-# 微软符号服务器相关工具所在路径
-symbols_exec = os.path.abspath(project_slndir + 'tools/python/symstore/symstore.exe')
 
 # 编译输出日志的路径
 compile_logfile = '%s/compile.log' % project_cachedir
@@ -73,6 +74,65 @@ vs_configure = [
         'vcvarsall' : r'vcvarsall.bat'
     }
 ]
+
+def get_pe_hash(pefilepath):
+    '''
+    获取 PE 文件的哈希值
+    '''
+    if not Common.is_file_exists(pefilepath):
+        return None
+    pe = pefile.PE(pefilepath, fast_load=True)
+    return '%X%X' % (pe.FILE_HEADER.TimeDateStamp, pe.OPTIONAL_HEADER.SizeOfImage)
+
+def get_pdb_hash(pdbfilepath):
+    '''
+    获取 PDB 文件的哈希值
+    '''
+    if not Common.is_file_exists(pdbfilepath):
+        return None
+    p = pdbparse.parse(pdbfilepath, fast_load = True)
+    pdb = p.streams[pdbparse.PDB_STREAM_PDB]
+    pdb.load()
+    guidstr = (u'%08x%04x%04x%s%x' % (pdb.GUID.Data1, pdb.GUID.Data2, pdb.GUID.Data3, binascii.hexlify(
+        pdb.GUID.Data4).decode('ascii'), pdb.Age)).upper()
+    return guidstr
+
+def deploy_symbols(dir_path, symstore_path):
+    '''
+    扫描某个目录中的全部 exe 和 pdb 文件
+    将它们放到符号文件仓库中
+    '''
+    for dirpath, _dirnames, filenames in os.walk(dir_path):
+        for filename in filenames:
+            _base_name, extension_name = os.path.splitext(filename.lower())
+
+            if extension_name not in ['.exe', '.dll', '.pdb']:
+                continue
+
+            fullpath = os.path.normpath('%s/%s' % (dirpath, filename))
+            deploy_single_symbols(fullpath, symstore_path)
+
+def deploy_single_symbols(filepath, symstore_path):
+    '''
+    将给定的 exe 和 pdb 等 PE 文件放到符号文件仓库中
+    '''
+    filename = os.path.basename(filepath)
+    _base_name, extension_name = os.path.splitext(filename.lower())
+
+    if extension_name not in ['.exe', '.dll', '.pdb']:
+        return
+    
+    if extension_name == '.exe':
+        filehash = get_pe_hash(filepath)
+    else:
+        filehash = get_pdb_hash(filepath)
+    
+    target_filepath = "{symstore_path}/{filebasename}/{hash}/{filename}".format(
+        symstore_path = symstore_path,
+        filebasename = filename, hash = filehash, filename = filename
+    )
+    os.makedirs(os.path.dirname(target_filepath), exist_ok=True)
+    shutil.copyfile(filepath, target_filepath)
 
 def get_reg_value(vs):
     '''
@@ -172,11 +232,11 @@ def has_changelog(ver):
     matchgroup = match_file_regex(filepath, ver)
     return True if matchgroup is not None else False
 
-def save_symbols(subdir, mode, symbol_ver):
+def save_symbols(cache_subdir):
     '''
     编译完成后进行符号文件的保存工作
     '''
-    symbols_cache_dir = os.path.join(slndir(project_cachedir), subdir)
+    symbols_cache_dir = os.path.join(slndir(project_cachedir), cache_subdir)
     shutil.rmtree(symbols_cache_dir, ignore_errors=True)
     os.makedirs(symbols_cache_dir, exist_ok=True)
 
@@ -192,12 +252,8 @@ def save_symbols(subdir, mode, symbol_ver):
     for filepath in compiled_product:
         shutil.copyfile(slndir(filepath), '%s/%s' % (symbols_cache_dir, filepath))
     
-    # 调用 symstore.exe 将符号文件保存到本地某个目录
-    command = '"{symstore}" add /r /f "{cachedir}" /s "{symbolsdir}/symbols" /t Pandas_{mode} /v {version}'.format(
-        symstore = symbols_exec, cachedir = symbols_cache_dir, version = symbol_ver,
-        symbolsdir = project_symstoredir, mode = mode
-    )
-    Common.cmd_execute([command], os.path.dirname(symbols_exec))
+    # 将符号文件保存到本地某个目录
+    deploy_symbols(symbols_cache_dir, "%s/symbols/win" % project_symstoredir)
 
     # 使符号文件仓库将新增的文件设置为待提交
     repo = git.Repo(project_symstoredir)
@@ -291,11 +347,7 @@ def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
         print('')
         Message.ShowStatus('编译成功, 正在存储符号文件...')
         print('')
-        return save_symbols(
-            subdir = 'RE' if name == '复兴后' else 'PRE',
-            mode = 'Renewal' if name == '复兴后' else 'PreRenewal',
-            symbol_ver = version
-        )
+        return save_symbols('RE' if name == '复兴后' else 'PRE')
     else:
         print('')
         Message.ShowWarning('编译 %s 时存在编译失败的工程, 暂不保存符号文件' % name)
