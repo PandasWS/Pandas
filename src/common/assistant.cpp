@@ -214,14 +214,14 @@ std::string wstring2string(const std::wstring& ws) {
 }
 
 //************************************
-// Method:		stdStringFormat
+// Method:		strFormat
 // Description:	用于进行 std::string 的格式化
 // Parameter:	std::string & _str
 // Parameter:	const char * _Format
 // Parameter:	...
 // Returns:		std::string &
 //************************************
-std::string & stdStringFormat(std::string & _str, const char * _Format, ...) {
+std::string & strFormat(std::string & _str, const char * _Format, ...) {
 	va_list marker;
 
 	va_start(marker, _Format);
@@ -239,14 +239,38 @@ std::string & stdStringFormat(std::string & _str, const char * _Format, ...) {
 }
 
 //************************************
-// Method:		stdStringFormat
+// Method:		strFormat
+// Description:	用于进行 std::string 的格式化
+// Parameter:	const char * _Format
+// Parameter:	...
+// Returns:		std::string
+//************************************
+std::string strFormat(const char* _Format, ...) {
+	va_list marker;
+
+	va_start(marker, _Format);
+	size_t count = vsnprintf(NULL, 0, _Format, marker) + 1;
+	va_end(marker);
+
+	va_start(marker, _Format);
+	char* buf = (char*)aMalloc(count * sizeof(char));
+	vsnprintf(buf, count, _Format, marker);
+	std::string _str = std::string(buf, count);
+	aFree(buf);
+	va_end(marker);
+
+	return _str;
+}
+
+//************************************
+// Method:		strFormat
 // Description:	用于进行 std::wstring 的格式化
 // Parameter:	std::wstring & _str
 // Parameter:	const wchar_t * _Format
 // Parameter:	...
 // Returns:		std::wstring &
 //************************************
-std::wstring & stdStringFormat(std::wstring & _str, const wchar_t * _Format, ...) {
+std::wstring & strFormat(std::wstring & _str, const wchar_t * _Format, ...) {
 	va_list marker;
 
 	va_start(marker, _Format);
@@ -264,14 +288,40 @@ std::wstring & stdStringFormat(std::wstring & _str, const wchar_t * _Format, ...
 }
 
 //************************************
+// Method:		strFormat
+// Description:	用于进行 std::wstring 的格式化
+// Parameter:	const wchar_t * _Format
+// Parameter:	...
+// Returns:		std::wstring
+//************************************
+std::wstring strFormat(const wchar_t* _Format, ...) {
+	va_list marker;
+
+	va_start(marker, _Format);
+	size_t count = vswprintf(NULL, 0, _Format, marker) + 1;
+	va_end(marker);
+
+	va_start(marker, _Format);
+	wchar_t* buf = (wchar_t*)aMalloc(count * sizeof(wchar_t));
+	vswprintf(buf, count, _Format, marker);
+	std::wstring _str = std::wstring(buf, count);
+	aFree(buf);
+	va_end(marker);
+
+	return _str;
+}
+
+//************************************
 // Method:		getPandasVersion
 // Description:	用于获取 Pandas 的主程序版本号
 // Returns:		std::string
 //************************************
 std::string getPandasVersion() {
 #ifdef _WIN32
-	std::string pandasVersion;
-	return stdStringFormat(pandasVersion, "v%s", getFileVersion("", true).c_str());
+	std::string pandasVersion = strFormat(
+		"v%s", getFileVersion("", true).c_str()
+	);
+	return pandasVersion;
 #else
 	return std::string(Pandas_Version);
 #endif // _WIN32
@@ -405,14 +455,14 @@ std::string getFileVersion(std::string filename, bool bWithoutBuildNum) {
 		if (VerQueryValue(pVersionInfo, "\\", &lpBuffer, &nItemLength)) {
 			VS_FIXEDFILEINFO *pFileInfo = (VS_FIXEDFILEINFO*)lpBuffer;
 			std::string sFileVersion;
-			stdStringFormat(sFileVersion, "%d.%d.%d",
+			strFormat(sFileVersion, "%d.%d.%d",
 				pFileInfo->dwFileVersionMS >> 16,
 				pFileInfo->dwProductVersionMS & 0xFFFF,
 				pFileInfo->dwProductVersionLS >> 16
 			);
 
 			if (!bWithoutBuildNum) {
-				stdStringFormat(sFileVersion, "%s.%d",
+				strFormat(sFileVersion, "%s.%d",
 					sFileVersion.c_str(), pFileInfo->dwProductVersionLS & 0xFFFF
 				);
 			}

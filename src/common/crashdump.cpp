@@ -15,6 +15,10 @@
 #include "client/linux/handler/exception_handler.h"
 #endif // _WIN32
 
+#ifndef CRASHRPT_APPID
+	#define CRASHRPT_APPID L"35bfe7e4-b89c-4faf-98c9-bbfb0f664fe6"
+#endif // CRASHRPT_APPID
+
 // 当程序崩溃时, 将转储文件保存在什么位置
 std::wstring g_dumpSaveDirectory = L"log/dumps";
 
@@ -22,7 +26,7 @@ std::wstring g_dumpSaveDirectory = L"log/dumps";
 std::wstring g_crashCheckPointFilepath = g_dumpSaveDirectory + L"/crash.checkpoint";
 
 // 用于上报崩溃转储文件的数据接口地址
-std::wstring g_crashDumpUploadInterface = L"http://crashrpt.pandas.ws/upload";
+std::wstring g_crashDumpUploadInterface = strFormat(L"https://crashrpt.pandas.ws/upload?appid=%s", CRASHRPT_APPID);
 
 // 保存程序崩溃时负责转储工作的 ExceptionHandler 指针
 google_breakpad::ExceptionHandler* g_pExceptionHandler = NULL;
@@ -93,8 +97,7 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 	if (!succeeded) return succeeded;
 
 	// 崩溃转储文件的本地保存路径
-	std::wstring filepath;
-	filepath = stdStringFormat(filepath, L"%s/%s.dmp", dump_path, minidump_id);
+	std::wstring filepath = strFormat(L"%s/%s.dmp", dump_path, minidump_id);
 
 	// 将崩溃转储文件存入一个 std::map 中等待发送请求使用
 	std::map<std::wstring, std::wstring> files;
@@ -102,21 +105,18 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 
 	// 收集其他可能需要的信息, 用于服务端分析或归类使用
 	std::map<std::wstring, std::wstring> data;
-	data.insert(std::make_pair(L"platfrom", L"windows"));
-
-	display_crashtips(wstring2string(filepath), false);
-	ShowMessage("" CL_BG_RED CL_BT_WHITE " Sending the crash dump file, please wait a second...                          " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
+	data.insert(std::make_pair(L"platform", L"windows"));
 
 	// 创建 CrashReportSender 对象并利用其提交转储文件给服务器
 	google_breakpad::CrashReportSender sender(g_crashCheckPointFilepath);
 
-	// 根据发送的结果给与提示信息
+	display_crashtips(wstring2string(filepath), false);
+		ShowMessage("" CL_BG_RED CL_BT_WHITE " Sending the crash dump file, please wait a second...                          " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	if (sender.SendCrashReport(g_crashDumpUploadInterface, data, files, 0) ==
 		google_breakpad::ReportResult::RESULT_SUCCEEDED)
 		ShowMessage("" CL_BG_RED CL_BT_GREEN " SUCCESS : The crash dump file has been uploaded successfull.                  " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	else
 		ShowMessage("" CL_BG_RED CL_BT_CYAN  " FAILED: The crash dump file failed to upload, please report to developer.     " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-
 	display_crashtips(wstring2string(filepath), true);
 
 	return succeeded;
