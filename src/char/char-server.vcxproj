@@ -224,6 +224,8 @@
     <Delete Files="$(SolutionDir)serv.bat" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)charserv.bat" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)runserver.bat" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)char-server-pre.exe" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)char-server-pre.pdb" ContinueOnError="true" />
   </Target>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.dll" DestinationFolder="$(SolutionDir)" ContinueOnError="true" Condition="!Exists('$(SolutionDir)libmysql.dll')" />
