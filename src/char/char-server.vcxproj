@@ -215,6 +215,9 @@
     <ProjectReference Include="..\..\3rdparty\breakpad\projects\libraries\exception_handler.vcxproj">
       <Project>{d2921270-f22b-9e45-d11b-a9a9f381909f}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\3rdparty\cryptopp\cryptlib.vcxproj">
+      <Project>{c39f4b46-6e89-4074-902e-ca57073044d2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

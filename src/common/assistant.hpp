@@ -7,6 +7,7 @@
 #include <time.h> // struct tm
 #include <memory> // std::shared_ptr
 
+std::string strBase64Encode(std::string strplain);
 
 bool isDirectoryExists(const std::string& path);
 bool makeDirectories(const std::string& path);

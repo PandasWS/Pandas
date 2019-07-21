@@ -20,7 +20,41 @@
 #include "strlib.hpp"
 #include "db.hpp"
 #include "showmsg.hpp"
+#include "utf8.hpp"
 
+#include "../../3rdparty/cryptopp/base64.h"
+
+using CryptoPP::Base64Encoder;
+using CryptoPP::AlgorithmParameters;
+using CryptoPP::MakeParameters;
+using CryptoPP::Name::Pad;
+using CryptoPP::Name::InsertLineBreaks;
+
+//************************************
+// Method:      strBase64Encode
+// Description: 用于将一个字符串进行 Base64 编码 (内部已经进行 UTF8 转换)
+// Parameter:   std::string strplain
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2019/07/21 16:33
+//************************************
+std::string strBase64Encode(std::string strplain) {
+	std::string plainUtf8 = utf8_g2u(strplain);
+
+	Base64Encoder encoder(nullptr, false);
+	AlgorithmParameters params = MakeParameters(Pad(), true)(InsertLineBreaks(), false);
+	encoder.IsolatedInitialize(params);
+	encoder.Put((const byte*)plainUtf8.c_str(), plainUtf8.length());
+	encoder.MessageEnd();
+
+	std::string encoded;
+	size_t size = (size_t)encoder.MaxRetrievable();
+	if (size) {
+		encoded.resize(size);
+		encoder.Get((byte*)& encoded[0], encoded.size());
+		return encoded;
+	}
+	return "";
+}
 
 //************************************
 // Method:		isDirectoryExistss
