@@ -95,14 +95,14 @@ bool makeDirectories(const std::string& path) {
 }
 
 //************************************
-// Method:		stdStringReplaceAll
+// Method:		strReplace
 // Description:	用于对 std::string 进行全部替换操作
 // Parameter:	std::string & str
 // Parameter:	const std::string & from
 // Parameter:	const std::string & to
 // Returns:		void
 //************************************
-void stdStringReplaceAll(std::string& str, const std::string& from, const std::string& to) {
+void strReplace(std::string& str, const std::string& from, const std::string& to) {
 	if (from.empty())
 		return;
 	size_t start_pos = 0;
@@ -113,14 +113,14 @@ void stdStringReplaceAll(std::string& str, const std::string& from, const std::s
 }
 
 //************************************
-// Method:		stdStringReplaceAll
+// Method:		strReplace
 // Description:	用于对 std::wstring 进行全部替换操作
 // Parameter:	std::wstring & str
 // Parameter:	const std::wstring & from
 // Parameter:	const std::wstring & to
 // Returns:		void
 //************************************
-void stdStringReplaceAll(std::wstring& str, const std::wstring& from, const std::wstring& to) {
+void strReplace(std::wstring& str, const std::wstring& from, const std::wstring& to) {
 	if (from.empty())
 		return;
 	size_t start_pos = 0;
@@ -142,8 +142,8 @@ std::string ensurePathSep(std::string& path) {
 #else
 	char pathsep[] = "/";
 #endif // _WIN32
-	stdStringReplaceAll(path, "/", pathsep);
-	stdStringReplaceAll(path, "\\", pathsep);
+	strReplace(path, "/", pathsep);
+	strReplace(path, "\\", pathsep);
 	return path;
 }
 
@@ -159,8 +159,8 @@ std::wstring ensurePathSep(std::wstring& path) {
 #else
 	wchar_t pathsep[] = L"/";
 #endif // _WIN32
-	stdStringReplaceAll(path, L"/", pathsep);
-	stdStringReplaceAll(path, L"\\", pathsep);
+	strReplace(path, L"/", pathsep);
+	strReplace(path, L"\\", pathsep);
 	return path;
 }
 
