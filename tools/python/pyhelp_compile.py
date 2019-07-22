@@ -418,6 +418,10 @@ def main():
     # 加载 .env 中的配置信息
     load_dotenv(dotenv_path='pyhelp.conf')
     
+    # 若无配置信息则自动复制一份文件出来
+    if not Common.is_file_exists('pyhelp.conf'):
+        shutil.copyfile('pyhelp.conf.sample', 'pyhelp.conf')
+    
     # 显示欢迎信息
     Common.welcome('编译流程辅助脚本')
 
