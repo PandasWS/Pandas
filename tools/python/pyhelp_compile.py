@@ -27,6 +27,7 @@ import binascii
 
 import git
 
+from dotenv import load_dotenv
 from libs import Common, Inputer, Message
 
 # 切换工作目录为脚本所在目录
@@ -359,13 +360,34 @@ def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
         Message.ShowWarning('%s: 存在编译失败的工程, 暂不保存符号文件...' % modetag)
         return False
 
+def define_builder(options):
+    value = ''
+    for key in options:
+        value = value + '/D' + str(key)
+        if options[key]:
+            value = value + '#' + str(options[key])
+        value = value + ' '
+    return value
+
 def compile_prere(version):
     '''
     编译复兴前版本
     '''
     time.sleep(3)
     print('')
-    if not compile_sub('/DPRERE', '复兴前', version):
+    
+    define_options = {
+        "PRERE": ""
+    }
+    
+    if os.getenv("DEFINE_CRASHRPT_APPID"):
+        define_options["CRASHRPT_APPID"] = os.getenv("DEFINE_CRASHRPT_APPID")
+    if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
+        define_options["CRASHRPT_PUBLICKEY"] = os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
+
+    define_values = define_builder(define_options)
+    
+    if not compile_sub(define_values, '复兴前', version):
         Message.ShowError('编译复兴前版本且保存符号文件期间发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
 
@@ -375,7 +397,17 @@ def compile_renewal(version):
     '''
     time.sleep(3)
     print('')
-    if not compile_sub('', '复兴后', version):
+    
+    define_options = {}
+
+    if os.getenv("DEFINE_CRASHRPT_APPID"):
+        define_options["CRASHRPT_APPID"] = os.getenv("DEFINE_CRASHRPT_APPID")
+    if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
+        define_options["CRASHRPT_PUBLICKEY"] = os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
+
+    define_values = define_builder(define_options)
+    
+    if not compile_sub(define_values, '复兴后', version):
         Message.ShowError('编译复兴前版本且保存符号文件期间发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
 
@@ -383,6 +415,9 @@ def main():
     '''
     主入口函数
     '''
+    # 加载 .env 中的配置信息
+    load_dotenv(dotenv_path='pyhelp.conf')
+    
     # 显示欢迎信息
     Common.welcome('编译流程辅助脚本')
 
@@ -403,7 +438,7 @@ def main():
 
     # 读取当前的 Pandas 主程序版本号
     pandas_ver = get_pandas_ver()
-    Message.ShowInfo('当前模拟器的主版本是: %s' % pandas_ver)
+    Message.ShowInfo('当前模拟器的主版本是 %s' % pandas_ver)
 
     # 判断是否已经写入了对应的更新日志, 若没有则要给予提示再继续
     if (has_changelog(pandas_ver)):
@@ -446,7 +481,7 @@ def main():
 
     print('')
     Message.ShowStatus('编译工作已经全部结束.')
-    Message.ShowStatus('刚刚编译时产生的符号文件已存储, 记得提交符号文件.\n')
+    Message.ShowStatus('编译时产生的符号文件已存储, 记得提交符号文件.\n')
 
     # 友好退出, 主要是在 Windows 环境里给予暂停
     Common.exit_with_pause(0)

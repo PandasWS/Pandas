@@ -24,6 +24,7 @@
     <ClInclude Include="cli.hpp" />
     <ClInclude Include="conf.hpp" />
     <ClInclude Include="core.hpp" />
+    <ClInclude Include="cryptopp.hpp" />
     <ClInclude Include="des.hpp" />
     <ClInclude Include="grfio.hpp" />
     <ClInclude Include="malloc.hpp" />
@@ -45,6 +46,7 @@
     <ClCompile Include="cli.cpp" />
     <ClCompile Include="conf.cpp" />
     <ClCompile Include="core.cpp" />
+    <ClCompile Include="cryptopp.cpp" />
     <ClCompile Include="des.cpp" />
     <ClCompile Include="grfio.cpp" />
     <ClCompile Include="malloc.cpp" />

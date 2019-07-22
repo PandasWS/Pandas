@@ -142,7 +142,8 @@ My Inspector Results*
 
 # Python
 __pycache__
-tools/python/cache
+/tools/python/cache
+/tools/python/pyhelp.conf
 
 # IDE
 .vscode
