@@ -1420,31 +1420,31 @@ Optional Features:
   --enable-silent-rules   less verbose build output (undo: "make V=1")
   --disable-silent-rules  verbose build output (undo: "make V=0")
   --enable-maintainer-mode
-                          enable make rules and dependencies not useful (and
+                          enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
   --enable-dependency-tracking
                           do not reject slow dependency extractors
   --disable-dependency-tracking
                           speeds up one-time build
-  --enable-m32            Compile/build with -m32 (default is no)
+  --enable-m32            Compile/build with -m32 (default is no)
   --disable-largefile     omit support for large files
-  --disable-processor     Don't build processor library (default is no)
-  --disable-tools         Don't build tool binaries (default is no)
+  --disable-processor     Don't build processor library (default is no)
+  --disable-tools         Don't build tool binaries (default is no)
   --enable-system-test-libs
-                          Use gtest/gmock/etc... from the system instead  of
+                          Use gtest/gmock/etc... from the system instead of
                           the local copies (default is local)
-  --enable-selftest       Run extra tests with "make check"  (may conflict
-                          with optimizations)  (default is no)
+  --enable-selftest       Run extra tests with "make check" (may conflict with
+                          optimizations) (default is no)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-rust-demangle=/path/to/rust-demangle-capi
-                          Link against the rust-demangle library to demangle
-                          Rust language symbols during symbol dumping
-                          (default is no) Pass the path to the crate root.
-  --with-tests-as-root    Run the tests as root. Use this on platforms like
-                          travis-ci.org that require root privileges to use
+                          Link against the rust-demangle library to demangle
+                          Rust language symbols during symbol dumping (default
+                          is no) Pass the path to the crate root.
+  --with-tests-as-root    Run the tests as root. Use this on platforms like
+                          travis-ci.org that require root privileges to use
                           ptrace (default is no)
 
 Some influential environment variables:
@@ -7373,7 +7373,7 @@ fi
 
 
 
-for flag in    -Wmissing-braces   -Wnon-virtual-dtor   -Woverloaded-virtual   -Wreorder   -Wsign-compare   -Wunused-local-typedefs   -Wunused-variable   -Wvla ; do
+for flag in    -Wmissing-braces   -Wnon-virtual-dtor   -Woverloaded-virtual   -Wreorder   -Wsign-compare   -Wunused-local-typedefs   -Wunused-variable   -Wvla ; do
   as_CACHEVAR=`$as_echo "ax_cv_check_cxxflags_${ax_compiler_flags_test}_$flag" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C++ compiler accepts $flag" >&5
 $as_echo_n "checking whether C++ compiler accepts $flag... " >&6; }
@@ -7709,7 +7709,7 @@ else
 fi
 
 
-ac_config_files="$ac_config_files  breakpad.pc breakpad-client.pc Makefile"
+ac_config_files="$ac_config_files breakpad.pc breakpad-client.pc Makefile"
 
 
 cat >confcache <<\_ACEOF
@@ -8486,10 +8486,9 @@ do
   case $ac_config_target in
     "src/config.h") CONFIG_HEADERS="$CONFIG_HEADERS src/config.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-    "") CONFIG_FILES="$CONFIG_FILES " ;;
-    "breakpad.pc") CONFIG_FILES="$CONFIG_FILES breakpad.pc" ;;
-    "breakpad-client.pc") CONFIG_FILES="$CONFIG_FILES breakpad-client.pc" ;;
-    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "breakpad.pc") CONFIG_FILES="$CONFIG_FILES breakpad.pc" ;;
+    "breakpad-client.pc") CONFIG_FILES="$CONFIG_FILES breakpad-client.pc" ;;
+    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
