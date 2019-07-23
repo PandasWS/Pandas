@@ -23,7 +23,7 @@ BREAKPAD_INCLUDE = -I../../3rdparty/breakpad/src
 
 CRYPTOPP_H = $(shell find ../../3rdparty/cryptopp/ -type f -name "*.h")
 CRYPTOPP_AR = ../../3rdparty/cryptopp/libcryptopp.a
-CRYPTOPP_INCLUDE = -I../../3rdparty/
+CRYPTOPP_INCLUDE = -I../../3rdparty/cryptopp
 
 CFLAGS_AR_CLEARS = $(filter-out -Wshadow,@CFLAGS_AR@)
 # 以上内容添加自 PandasWS 开发团队

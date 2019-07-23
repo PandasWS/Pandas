@@ -19,7 +19,7 @@
 
 #include "ida.h"
 #include "gzip.h"
-#include "zlib.h"
+#include "crypto_zlib.h"
 
 #include <iostream>
 #include <iomanip>

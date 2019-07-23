@@ -65,6 +65,7 @@ set( COMMON_MINI_HEADERS
 	"${COMMON_SOURCE_DIR}/assistant.hpp"
 	"${COMMON_SOURCE_DIR}/utf8.hpp"
 	"${COMMON_SOURCE_DIR}/crashdump.hpp"
+	"${COMMON_SOURCE_DIR}/cryptopp.hpp"
 	${LIBCONFIG_HEADERS} # needed by showmsg.hpp
 	${COMMON_ADDITIONALL_HPP} # needed by Windows
 	CACHE INTERNAL "" )
@@ -76,6 +77,7 @@ set( COMMON_MINI_SOURCES
 	"${COMMON_SOURCE_DIR}/assistant.cpp"
 	"${COMMON_SOURCE_DIR}/utf8.cpp"
 	"${COMMON_SOURCE_DIR}/crashdump.cpp"
+	"${COMMON_SOURCE_DIR}/cryptopp.cpp"
 	${LIBCONFIG_SOURCES} # needed by showmsg.cpp
 	${COMMON_ADDITIONALL_CPP} # needed by Windows
 	CACHE INTERNAL "" )
@@ -113,6 +115,7 @@ set( COMMON_BASE_HEADERS
 	"${COMMON_SOURCE_DIR}/assistant.hpp"
 	"${COMMON_SOURCE_DIR}/utf8.hpp"
 	"${COMMON_SOURCE_DIR}/crashdump.hpp"
+	"${COMMON_SOURCE_DIR}/cryptopp.hpp"
 	${LIBCONFIG_HEADERS} # needed by conf.hpp/showmsg.hpp
 	${COMMON_ADDITIONALL_HPP} # needed by Windows
 	CACHE INTERNAL "common_base headers" )
@@ -140,6 +143,7 @@ set( COMMON_BASE_SOURCES
 	"${COMMON_SOURCE_DIR}/assistant.cpp"
 	"${COMMON_SOURCE_DIR}/utf8.cpp"
 	"${COMMON_SOURCE_DIR}/crashdump.cpp"
+	"${COMMON_SOURCE_DIR}/cryptopp.cpp"
 	${LIBCONFIG_SOURCES} # needed by conf.cpp/showmsg.cpp
 	${COMMON_ADDITIONALL_CPP} # needed by Windows
 	CACHE INTERNAL "common_base sources" )
@@ -150,7 +154,7 @@ set( COMMON_BASE_INCLUDE_DIRS
 set( COMMON_BASE_DEFINITIONS
 	${LIBCONFIG_DEFINITIONS}
 	CACHE INTERNAL "common_base definitions" )
-set( LIBRARIES ${GLOBAL_LIBRARIES} ${ZLIB_LIBRARIES} yaml-cpp breakpad )
+set( LIBRARIES ${GLOBAL_LIBRARIES} ${ZLIB_LIBRARIES} yaml-cpp breakpad cryptopp-static )
 set( INCLUDE_DIRS ${GLOBAL_INCLUDE_DIRS} ${YAML_INCLUDE_DIRS} ${BREAKPAD_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${COMMON_BASE_INCLUDE_DIRS}} )
 set( DEFINITIONS "${GLOBAL_DEFINITIONS} ${COMMON_BASE_DEFINITIONS}" )
 set( SOURCE_FILES ${COMMON_BASE_HEADERS} ${COMMON_BASE_SOURCES} )

@@ -84,7 +84,7 @@ LIB_SRCS = \
     square.cpp squaretb.cpp sse_simd.cpp strciphr.cpp tea.cpp tftables.cpp \
     threefish.cpp tiger.cpp tigertab.cpp ttmac.cpp tweetnacl.cpp twofish.cpp \
     vmac.cpp wake.cpp whrlpool.cpp xed25519.cpp xtr.cpp xtrcrypt.cpp \
-    zdeflate.cpp zinflate.cpp zlib.cpp
+    zdeflate.cpp zinflate.cpp crypto_zlib.cpp
 
 LIB_OBJS = \
     cryptlib.obj cpu.obj integer.obj 3way.obj adler32.obj algebra.obj \

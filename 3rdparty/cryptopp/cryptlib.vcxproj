@@ -314,7 +314,7 @@
     <ClCompile Include="xtrcrypt.cpp" />
     <ClCompile Include="zdeflate.cpp" />
     <ClCompile Include="zinflate.cpp" />
-    <ClCompile Include="zlib.cpp" />
+    <ClCompile Include="crypto_zlib.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="adhoc.cpp.proto">
@@ -514,7 +514,7 @@
     <ClInclude Include="xtrcrypt.h" />
     <ClInclude Include="zdeflate.h" />
     <ClInclude Include="zinflate.h" />
-    <ClInclude Include="zlib.h" />
+    <ClInclude Include="crypto_zlib.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

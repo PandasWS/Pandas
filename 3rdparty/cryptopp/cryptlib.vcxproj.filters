@@ -521,7 +521,7 @@
     <ClCompile Include="zinflate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="zlib.cpp">
+    <ClCompile Include="crypto_zlib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1020,7 +1020,7 @@
     <ClInclude Include="zinflate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="zlib.h">
+    <ClInclude Include="crypto_zlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="chacha.h">

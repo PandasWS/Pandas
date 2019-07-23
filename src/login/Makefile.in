@@ -18,7 +18,7 @@ BREAKPAD_INCLUDE = -I../../3rdparty/breakpad/src
 
 CRYPTOPP_H = $(shell find ../../3rdparty/cryptopp/ -type f -name "*.h")
 CRYPTOPP_AR = ../../3rdparty/cryptopp/libcryptopp.a
-CRYPTOPP_INCLUDE = -I../../3rdparty/
+CRYPTOPP_INCLUDE = -I../../3rdparty/cryptopp
 
 HAVE_PCRE=@HAVE_PCRE@
 ifeq ($(HAVE_PCRE),yes)

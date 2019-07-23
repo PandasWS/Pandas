@@ -12,7 +12,7 @@
 
 #include "secblock.h"
 #include "gzip.h"
-#include "zlib.h"
+#include "crypto_zlib.h"
 
 #if defined(CRYPTOPP_ALTIVEC_AVAILABLE)
 # include "ppc_simd.h"
