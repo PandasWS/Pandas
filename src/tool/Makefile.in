@@ -1,5 +1,5 @@
 
-COMMON_OBJ = minicore.o malloc.o showmsg.o strlib.o utils.o des.o grfio.o utf8.o miniassistant.o crashdump.o
+COMMON_OBJ = minicore.o malloc.o showmsg.o strlib.o utils.o des.o grfio.o utf8.o miniassistant.o crashdump.o cryptopp.o
 COMMON_DIR_OBJ = $(COMMON_OBJ:%=../common/obj/%)
 COMMON_H = $(shell ls ../common/*.hpp)
 COMMON_INCLUDE = -I../common/
@@ -14,15 +14,15 @@ YAML_CPP_AR = ../../3rdparty/yaml-cpp/obj/yaml-cpp.a
 YAML_CPP_H = $(shell find ../../3rdparty/yaml-cpp/ -type f -name "*.h")
 YAML_CPP_INCLUDE = -I../../3rdparty/yaml-cpp/include
 
-#####################################################################
-# BEGIN - 在 Pandas 中我们需要 GOOGLE BREAKPAD 来生成转储文件
-#####################################################################
+# 以下内容添加自 PandasWS 开发团队
 BREAKPAD_H = $(shell find ../../3rdparty/breakpad/ -type f -name "*.h")
 BREAKPAD_AR = ../../3rdparty/breakpad/src/client/linux/libbreakpad_client.a
 BREAKPAD_INCLUDE = -I../../3rdparty/breakpad/src
-#####################################################################
-# END - 在 Pandas 中我们需要 GOOGLE BREAKPAD 来生成转储文件
-#####################################################################
+
+CRYPTOPP_H = $(shell find ../../3rdparty/cryptopp/ -type f -name "*.h")
+CRYPTOPP_AR = ../../3rdparty/cryptopp/libcryptopp.a
+CRYPTOPP_INCLUDE = -I../../3rdparty/
+# 以上内容添加自 PandasWS 开发团队
 
 OTHER_H = ../config/renewal.hpp
 
@@ -37,13 +37,13 @@ CSV2YAML_OBJ = obj_all/csv2yaml.o
 
 all: mapcache csv2yaml
 
-mapcache: obj_all $(MAPCACHE_OBJ) $(COMMON_DIR_OBJ) $(LIBCONFIG_OBJ) $(BREAKPAD_AR)
+mapcache: obj_all $(MAPCACHE_OBJ) $(COMMON_DIR_OBJ) $(LIBCONFIG_OBJ) $(BREAKPAD_AR) $(CRYPTOPP_AR)
 	@echo "	LD	$@"
-	@@CXX@ @LDFLAGS@ -o ../../mapcache@EXEEXT@ $(MAPCACHE_OBJ) $(COMMON_DIR_OBJ) $(LIBCONFIG_AR) $(BREAKPAD_AR) @LIBS@
+	@@CXX@ @LDFLAGS@ -o ../../mapcache@EXEEXT@ $(MAPCACHE_OBJ) $(COMMON_DIR_OBJ) $(LIBCONFIG_AR) $(BREAKPAD_AR) $(CRYPTOPP_AR) @LIBS@
 
-csv2yaml: obj_all $(CSV2YAML_OBJ) $(COMMON_DIR_OBJ) $(YAML_CPP_AR) $(BREAKPAD_AR)
+csv2yaml: obj_all $(CSV2YAML_OBJ) $(COMMON_DIR_OBJ) $(YAML_CPP_AR) $(BREAKPAD_AR) $(CRYPTOPP_AR)
 	@echo "	LD	$@"
-	@@CXX@ @LDFLAGS@ -o ../../csv2yaml@EXEEXT@ $(CSV2YAML_OBJ) $(COMMON_DIR_OBJ) $(YAML_CPP_AR) $(BREAKPAD_AR) @LIBS@
+	@@CXX@ @LDFLAGS@ -o ../../csv2yaml@EXEEXT@ $(CSV2YAML_OBJ) $(COMMON_DIR_OBJ) $(YAML_CPP_AR) $(BREAKPAD_AR) $(CRYPTOPP_AR) @LIBS@
 
 clean:
 	@echo "	CLEAN	tool"
@@ -60,11 +60,11 @@ help:
 #####################################################################
 
 obj_all:
-	-mkdir obj_all
+	@-mkdir obj_all
 
-obj_all/%.o: %.cpp $(COMMON_H) $(OTHER_H) $(LIBCONFIG_H) $(YAML_CPP_H) $(BREAKPAD_H)
+obj_all/%.o: %.cpp $(COMMON_H) $(OTHER_H) $(LIBCONFIG_H) $(YAML_CPP_H) $(BREAKPAD_H) $(CRYPTOPP_H)
 	@echo "	CXX	$<"
-	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(YAML_CPP_INCLUDE) $(BREAKPAD_INCLUDE) @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
+	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(YAML_CPP_INCLUDE) $(BREAKPAD_INCLUDE) $(CRYPTOPP_INCLUDE) @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
 
 # missing common object files
 $(COMMON_DIR_OBJ):
@@ -76,5 +76,10 @@ $(LIBCONFIG_AR):
 $(YAML_CPP_AR):
 	@$(MAKE) -C ../../3rdparty/yaml-cpp
 
+# 以下内容添加自 PandasWS 开发团队
 $(BREAKPAD_AR):
 	@$(MAKE) -C ../../3rdparty/breakpad
+
+$(CRYPTOPP_AR):
+	@CXXFLAGS="-DNDEBUG @CXXFLAGS@" $(MAKE) -C ../../3rdparty/cryptopp libcryptopp.a
+# 以上内容添加自 PandasWS 开发团队

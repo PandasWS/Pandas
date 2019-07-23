@@ -13,6 +13,7 @@
 #include "client/windows/handler/exception_handler.h"
 #include "client/windows/sender/crash_report_sender.h"
 #else
+#include "common/linux/http_upload.h"
 #include "client/linux/handler/exception_handler.h"
 #endif // _WIN32
 
@@ -234,6 +235,20 @@ void breakpad_initialize() {
 	g_pExceptionHandler = new google_breakpad::ExceptionHandler(
 		descriptor, NULL, breakpad_callback, NULL, true, -1
 	);
+
+	// 提前创建用于上报转储文件时所使用的令牌
+	// 因为当程序崩溃的时候, 回调函数中的代码应该尽量少的进行任何多余操作
+	if (std::wstring(CRASHRPT_APPID).length() > 0 &&
+		std::wstring(CRASHRPT_PUBLICKEY).length() > 0) {
+		std::wstring tokeninfo = strFormat(
+			L"PANDASWS|%s|%d", CRASHRPT_APPID, time(NULL)
+		);
+		g_crashDumpUploadToken = string2wstring(crypto_RSAEncryptString(
+			wstring2string(std::wstring(CRASHRPT_PUBLICKEY)),
+			wstring2string(tokeninfo)
+		));
+		g_CrashDumpUploadAllowed = true;
+	}
 
 	g_BreakpadInitialized = true;
 }

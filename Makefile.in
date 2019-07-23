@@ -3,9 +3,9 @@
 HAVE_MYSQL=@HAVE_MYSQL@
 OMAP=@OMAP@
 ifeq ($(HAVE_MYSQL),yes)
-	ALL_DEPENDS=server tools breakpad
+	ALL_DEPENDS=server tools
 	SERVER_DEPENDS=common login char map import
-	COMMON_DEPENDS=libconfig yaml-cpp
+	COMMON_DEPENDS=libconfig yaml-cpp breakpad cryptopp
 	LOGIN_DEPENDS=libconfig common
 	CHAR_DEPENDS=libconfig common yaml-cpp
 	MAP_DEPENDS=libconfig common yaml-cpp
@@ -26,6 +26,8 @@ endif
 	char \
 	map \
 	tools \
+	breakpad \
+	cryptopp \
 	import \
 	clean help \
 	install uninstall bin-clean \
@@ -52,7 +54,7 @@ map: $(MAP_DEPENDS)
 libconfig:
 	@$(MAKE) -C 3rdparty/libconfig
 
-tools:
+tools: $(COMMON_DEPENDS)
 	@$(MAKE) -C src/tool
 
 yaml-cpp:
@@ -60,6 +62,9 @@ yaml-cpp:
 
 breakpad:
 	@$(MAKE) -C 3rdparty/breakpad
+
+cryptopp:
+	@CXXFLAGS="-DNDEBUG @CXXFLAGS@" $(MAKE) -C 3rdparty/cryptopp libcryptopp.a
 
 import:
 # 1) create conf/import folder
@@ -81,6 +86,7 @@ clean:
 	@$(MAKE) -C 3rdparty/libconfig $@
 	@$(MAKE) -C 3rdparty/yaml-cpp $@
 	@$(MAKE) -C 3rdparty/breakpad $@
+	@$(MAKE) -C 3rdparty/cryptopp $@
 	@$(MAKE) -C src/login $@
 	@$(MAKE) -C src/char $@
 	@$(MAKE) -C src/map $@
@@ -93,6 +99,7 @@ help:
 	@echo "'libconfig'   - builds object files of libconfig"
 	@echo "'yaml-cpp'    - builds object files of yaml-cpp"
 	@echo "'breakpad'    - builds object files of breakpad"
+	@echo "'cryptopp'    - builds object files of cryptopp"
 	@echo "'login'       - builds login server"
 	@echo "'char'        - builds char server"
 	@echo "'map'         - builds map server"
