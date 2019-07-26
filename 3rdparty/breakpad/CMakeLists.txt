@@ -188,6 +188,7 @@ set( BREAKPAD_SOURCES
     "${BREAKPAD_SOURCE_DIR}/common/linux/linux_libc_support.cc"
     "${BREAKPAD_SOURCE_DIR}/common/linux/memory_mapped_file.cc"
     "${BREAKPAD_SOURCE_DIR}/common/linux/safe_readlink.cc"
+    "${BREAKPAD_SOURCE_DIR}/common/linux/http_upload.cc"
     CACHE INTERNAL "breakpad client sources" )
 
 set( BREAKPAD_DEFINITIONS
