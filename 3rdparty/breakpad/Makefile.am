@@ -183,6 +183,8 @@ src_client_linux_libbreakpad_client_a_SOURCES = \
 	src/common/linux/file_id.h \
 	src/common/linux/guid_creator.cc \
 	src/common/linux/guid_creator.h \
+	src/common/linux/http_upload.cc \
+	src/common/linux/http_upload.h \
 	src/common/linux/linux_libc_support.cc \
 	src/common/linux/memory_mapped_file.cc \
 	src/common/linux/safe_readlink.cc

@@ -700,6 +700,8 @@ ac_user_opts='
 enable_option_checking
 enable_manager
 enable_packetver
+enable_crashappid
+enable_crashpubkey
 enable_epoll
 enable_debug
 enable_prere
@@ -1342,6 +1344,12 @@ Optional Features:
   --enable-manager=ARG    memory managers: no, builtin, memwatch, dmalloc,
                           gcollect, bcheck (defaults to builtin)
   --enable-packetver=ARG  Sets the PACKETVER define. (see src/common/mmo.hpp)
+  --enable-crashappid=[=ARG]
+                          Sets the CRASHRPT_APPID define. (see
+                          src/common/crashdump.cpp)
+  --enable-crashpubkey=[=ARG]
+                          Sets the CRASHRPT_PUBLICKEY define. (see
+                          src/common/crashdump.cpp)
   --enable-epoll          use epoll(4) on Linux
   --enable-debug[=ARG]    Compiles extra debug code. (disabled by default)
                           (available options: yes, no, gdb)
@@ -3539,6 +3547,29 @@ else
 
 fi
 
+
+#
+# crashappid
+#
+# Check whether --enable-crashappid was given.
+if test "${enable_crashappid+set}" = set; then :
+  enableval=$enable_crashappid; enable_crashappid="$enableval"
+else
+  enable_crashappid=""
+
+fi
+
+
+#
+# crashpubkey
+#
+# Check whether --enable-crashpubkey was given.
+if test "${enable_crashpubkey+set}" = set; then :
+  enableval=$enable_crashpubkey; enable_crashpubkey="$enableval"
+else
+  enable_crashpubkey=""
+
+fi
 
 
 #
@@ -6267,6 +6298,19 @@ if test -n "$enable_packetver" ; then
 	CPPFLAGS="$CPPFLAGS -DPACKETVER=$enable_packetver"
 fi
 
+#
+# crashappid
+#
+if test -n "$enable_crashappid" ; then
+	CPPFLAGS="$CPPFLAGS -DCRASHRPT_APPID=_CT\(\\\"$enable_crashappid\\\"\)"
+fi
+
+#
+# crashpubkey
+#
+if test -n "$enable_crashpubkey" ; then
+	CPPFLAGS="$CPPFLAGS -DCRASHRPT_PUBLICKEY=_CT\(\\\"$enable_crashpubkey\\\"\)"
+fi
 
 #
 # Epoll

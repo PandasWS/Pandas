@@ -55,6 +55,31 @@ AC_ARG_ENABLE(
 	[enable_packetver=""]
 )
 
+#
+# crashappid
+#
+AC_ARG_ENABLE(
+	[crashappid],
+	AC_HELP_STRING(
+		[--enable-crashappid=@<:@=ARG@:>@],
+		[Sets the CRASHRPT_APPID define. (see src/common/crashdump.cpp)]
+	),
+	[enable_crashappid="$enableval"],
+	[enable_crashappid=""]
+)
+
+#
+# crashpubkey
+#
+AC_ARG_ENABLE(
+	[crashpubkey],
+	AC_HELP_STRING(
+		[--enable-crashpubkey=@<:@=ARG@:>@],
+		[Sets the CRASHRPT_PUBLICKEY define. (see src/common/crashdump.cpp)]
+	),
+	[enable_crashpubkey="$enableval"],
+	[enable_crashpubkey=""]
+)
 
 #
 # Epoll
@@ -1021,6 +1046,19 @@ if test -n "$enable_packetver" ; then
 	CPPFLAGS="$CPPFLAGS -DPACKETVER=$enable_packetver"
 fi
 
+#
+# crashappid
+#
+if test -n "$enable_crashappid" ; then
+	CPPFLAGS="$CPPFLAGS -DCRASHRPT_APPID=_CT\(\\\"$enable_crashappid\\\"\)"
+fi
+
+#
+# crashpubkey
+#
+if test -n "$enable_crashpubkey" ; then
+	CPPFLAGS="$CPPFLAGS -DCRASHRPT_PUBLICKEY=_CT\(\\\"$enable_crashpubkey\\\"\)"
+fi
 
 #
 # Epoll
