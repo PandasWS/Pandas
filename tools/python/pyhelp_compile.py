@@ -354,7 +354,7 @@ def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
         Message.ShowStatus('%s: 全部编译成功.' % modetag)
         Message.ShowStatus('%s: 正在存储符号文件到本地符号仓库...' % modetag)
         if save_symbols(modetag):
-            Message.ShowStatus('%s: 符号文件存储完毕...' % modetag)
+            Message.ShowStatus('%s: 符号文件存储完毕.' % modetag)
         return True
     else:
         Message.ShowWarning('%s: 存在编译失败的工程, 暂不保存符号文件...' % modetag)
@@ -381,14 +381,14 @@ def compile_prere(version):
     }
     
     if os.getenv("DEFINE_CRASHRPT_APPID"):
-        define_options["CRASHRPT_APPID"] = os.getenv("DEFINE_CRASHRPT_APPID")
+        define_options["CRASHRPT_APPID"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_APPID")
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
-        define_options["CRASHRPT_PUBLICKEY"] = os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
+        define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
 
     define_values = define_builder(define_options)
     
     if not compile_sub(define_values, '复兴前', version):
-        Message.ShowError('编译复兴前版本且保存符号文件期间发生了一些错误, 请检查...')
+        Message.ShowError('编译复兴前版本时发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
 
 def compile_renewal(version):
@@ -401,14 +401,14 @@ def compile_renewal(version):
     define_options = {}
 
     if os.getenv("DEFINE_CRASHRPT_APPID"):
-        define_options["CRASHRPT_APPID"] = os.getenv("DEFINE_CRASHRPT_APPID")
+        define_options["CRASHRPT_APPID"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_APPID")
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
-        define_options["CRASHRPT_PUBLICKEY"] = os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
+        define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
 
     define_values = define_builder(define_options)
     
     if not compile_sub(define_values, '复兴后', version):
-        Message.ShowError('编译复兴前版本且保存符号文件期间发生了一些错误, 请检查...')
+        Message.ShowError('编译复兴前版本时发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
 
 def main():
@@ -416,7 +416,7 @@ def main():
     主入口函数
     '''
     # 加载 .env 中的配置信息
-    load_dotenv(dotenv_path='pyhelp.conf')
+    load_dotenv(dotenv_path='pyhelp.conf', encoding='UTF-8-SIG')
     
     # 若无配置信息则自动复制一份文件出来
     if not Common.is_file_exists('pyhelp.conf'):
