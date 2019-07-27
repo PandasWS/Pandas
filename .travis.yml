@@ -156,6 +156,10 @@ matrix:
          - cd cbuild
          - cmake -G "Unix Makefiles" ..
          - make || travis_terminate 1
+         - cd ..
+         - ./login-server --run-once
+         - ./char-server --run-once
+         - ./map-server --run-once
 # MariaDB
     - os: linux
       addons:
