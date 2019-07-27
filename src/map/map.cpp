@@ -188,10 +188,6 @@ int console = 0;
 int enable_spy = 0; //To enable/disable @spy commands, which consume too much cpu time when sending packets. [Skotlex]
 int enable_grf = 0;	//To enable/disable reading maps from GRF files, bypassing mapcache [blackhole89]
 
-#ifdef Pandas_Crash_Report
-int cfg_create_fulldump = 0;	// 是否生成完整的崩溃转储文件 [Sola丶小克]
-#endif // Pandas_Crash_Report
-
 #ifdef Pandas_Support_Specify_PacketKeys
 // 用来保存 map_athena.conf 中设定封包混淆密钥 [Sola丶小克]
 unsigned int clif_cryptKey_custom[3] = { 0 };
@@ -4162,10 +4158,6 @@ int map_config_read(const char *cfgName)
 			enable_spy = config_switch(w2);
 		else if (strcmpi(w1, "use_grf") == 0)
 			enable_grf = config_switch(w2);
-#ifdef Pandas_Crash_Report
-		else if (strcmpi(w1, "create_fulldump") == 0)
-			cfg_create_fulldump = config_switch(w2);
-#endif // Pandas_Crash_Report
 		else if (strcmpi(w1, "console_msg_log") == 0)
 			console_msg_log = atoi(w2);//[Ind]
 		else if (strcmpi(w1, "console_log_filepath") == 0)
@@ -4403,7 +4395,7 @@ int map_sql_init(void)
 	}
 	ShowStatus("Connect success! (Map Server Connection)\n");
 
-#ifndef Pandas_Smart_Codepage
+#ifndef Pandas_Detect_Codepage
 	if( strlen(default_codepage) > 0 ) {
 		if ( SQL_ERROR == Sql_SetEncoding(mmysql_handle, default_codepage) )
 			Sql_ShowDebug(mmysql_handle);
@@ -4411,9 +4403,9 @@ int map_sql_init(void)
 			Sql_ShowDebug(qsmysql_handle);
 	}
 #else
-	smart_codepage(mmysql_handle, "Map-Server", default_codepage);
-	smart_codepage(qsmysql_handle, NULL, default_codepage);
-#endif // Pandas_Smart_Codepage
+	detectCodepage(mmysql_handle, "Map-Server", default_codepage);
+	detectCodepage(qsmysql_handle, NULL, default_codepage);
+#endif // Pandas_Detect_Codepage
 	return 0;
 }
 
@@ -4450,13 +4442,13 @@ int log_sql_init(void)
 	}
 	ShowStatus("" CL_WHITE "[SQL]" CL_RESET ": Successfully '" CL_GREEN "connected" CL_RESET "' to Database '" CL_WHITE "%s" CL_RESET "'.\n", log_db_db);
 
-#ifndef Pandas_Smart_Codepage
+#ifndef Pandas_Detect_Codepage
 	if( strlen(default_codepage) > 0 )
 		if ( SQL_ERROR == Sql_SetEncoding(logmysql_handle, default_codepage) )
 			Sql_ShowDebug(logmysql_handle);
 #else
-	smart_codepage(logmysql_handle, "Log", default_codepage);
-#endif // Pandas_Smart_Codepage
+	detectCodepage(logmysql_handle, "Log", default_codepage);
+#endif // Pandas_Detect_Codepage
 
 	return 0;
 }
@@ -5635,10 +5627,6 @@ int do_init(int argc, char *argv[])
 
 	rnd_init();
 	map_config_read(MAP_CONF_NAME);
-
-#ifdef Pandas_Crash_Report
-	create_fulldump = cfg_create_fulldump;
-#endif // Pandas_Crash_Report
 
 	if (save_settings == CHARSAVE_NONE)
 		ShowWarning("Value of 'save_settings' is not set, player's data only will be saved every 'autosave_time' (%d seconds).\n", autosave_interval/1000);

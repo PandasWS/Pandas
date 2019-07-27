@@ -36,6 +36,9 @@
 	// 在 Linux 环境下 Pandas 版本号将直接使用此处定义的默认版本号
 	#define Pandas_Version "v2.0.0"
 
+	// 是否启用 Google Breakpad 用于处理程序崩溃
+	#define Pandas_Google_Breakpad
+
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
 
@@ -140,11 +143,6 @@
 // ============================================================================
 
 #ifdef Pandas_CreativeWork
-	// 是否启用崩溃转储文件生成机制 [Sola丶小克]
-	#ifdef _WIN32
-		#define Pandas_Crash_Report
-	#endif // _WIN32
-
 	// 扩展信息配置文件 (Msg_conf) 的 ID 最大上限,
 	// 同时提供 msg_txt_cn 宏定义函数, 方便在工程中使用自定义信息 [Sola丶小克]
 	#define Pandas_Message_Conf
@@ -158,7 +156,7 @@
 	#define Pandas_Support_Read_UTF8BOM_Configure
 
 	// 是否启用数据库编码自动判定机制 [Sola丶小克]
-	#define Pandas_Smart_Codepage
+	#define Pandas_Detect_Codepage
 
 	// 在使用 _M/_F 注册的时候, 能够限制使用中文等字符作为游戏账号 [Sola丶小克]
 	// 这里的 PCRE_SUPPORT 在"项目属性 -> C/C++ -> 预处理器"中定义

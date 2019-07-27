@@ -24,12 +24,13 @@
     <ClInclude Include="cli.hpp" />
     <ClInclude Include="conf.hpp" />
     <ClInclude Include="core.hpp" />
+    <ClInclude Include="cryptopp.hpp" />
     <ClInclude Include="des.hpp" />
     <ClInclude Include="grfio.hpp" />
     <ClInclude Include="malloc.hpp" />
     <ClInclude Include="mapindex.hpp" />
     <ClInclude Include="md5calc.hpp" />
-    <ClInclude Include="minidump.hpp" />
+    <ClInclude Include="crashdump.hpp" />
     <ClInclude Include="mmo.hpp" />
     <ClInclude Include="msg_conf.hpp" />
     <ClInclude Include="nullpo.hpp" />
@@ -45,12 +46,13 @@
     <ClCompile Include="cli.cpp" />
     <ClCompile Include="conf.cpp" />
     <ClCompile Include="core.cpp" />
+    <ClCompile Include="cryptopp.cpp" />
     <ClCompile Include="des.cpp" />
     <ClCompile Include="grfio.cpp" />
     <ClCompile Include="malloc.cpp" />
     <ClCompile Include="mapindex.cpp" />
     <ClCompile Include="md5calc.cpp" />
-    <ClCompile Include="minidump.cpp" />
+    <ClCompile Include="crashdump.cpp" />
     <ClCompile Include="msg_conf.cpp" />
     <ClCompile Include="nullpo.cpp" />
     <ClCompile Include="random.cpp" />
@@ -111,18 +113,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir).vs\build\</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir).vs\build\</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir).vs\build\</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir).vs\build\</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -381,7 +381,7 @@ def guide(inject):
         eventvar = constant.replace(constant_prefix, '').lower() + '_express_name'
     else:
         Message.ShowError('发现无效的事件类型, 请确认..')
-        Common.exitWithPause(-1)
+        Common.exit_with_pause(-1)
 
     # --------
 
@@ -391,22 +391,22 @@ def guide(inject):
 
     if not eventname.startswith('On'):
         Message.ShowError('无论是什么类型的事件, 事件名称必须以 On 开头 (严格区分大小写)')
-        Common.exitWithPause(-1)
+        Common.exit_with_pause(-1)
 
     if eventtype == 0:
         if not eventname.endswith('Event'):
             Message.ShowError('Event 类型的事件, 事件名称必须以 Event 结尾 (严格区分大小写)')
-            Common.exitWithPause(-1)
+            Common.exit_with_pause(-1)
 
     if eventtype == 1:
         if not eventname.endswith('Filter'):
             Message.ShowError('Filter 类型的事件, 事件名称必须以 Filter 结尾 (严格区分大小写)')
-            Common.exitWithPause(-1)
+            Common.exit_with_pause(-1)
 
     if eventtype == 2:
         if not eventname.endswith('Express'):
             Message.ShowError('Express 类型的事件, 事件名称必须以 Express 结尾 (严格区分大小写)')
-            Common.exitWithPause(-1)
+            Common.exit_with_pause(-1)
 
     # --------
 
@@ -436,7 +436,7 @@ def guide(inject):
 
     if not nextstep:
         Message.ShowStatus('终止写入操作, 程序终止')
-        Common.exitWithPause(-1)
+        Common.exit_with_pause(-1)
 
     # --------
 
@@ -558,7 +558,10 @@ def main():
     }
 
     guide(Injecter(options))
-    Common.exitWithPause()
+    Common.exit_with_pause()
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt as _err:
+        pass

@@ -125,9 +125,28 @@ Thumbs.db
 /pcre8.dll
 /zlib.dll
 
+# ====================================================
 # Pandas Project
-__pycache__
+# ====================================================
+
+# Dlls
+/dbghelp.dll
+
+# CrashDump
+/log/dumps/*.dmp
+
+# Intel Parallel Studio XE
 My Advisor Results*
 My Amplifier Results*
 My Inspector Results*
+
+# Python
+__pycache__
+/tools/python/cache
+/tools/python/pyhelp.conf
+
+# IDE
+.vscode
+
+# Other
 /src/*/*.aps

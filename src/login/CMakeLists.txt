@@ -16,7 +16,7 @@ set( LIBRARIES ${GLOBAL_LIBRARIES} )
 set( INCLUDE_DIRS ${GLOBAL_INCLUDE_DIRS} ${COMMON_BASE_INCLUDE_DIRS} )
 set( DEFINITIONS "${GLOBAL_DEFINITIONS} ${COMMON_BASE_DEFINITIONS} -DWITH_SQL" )
 # =========================================================
-# BEGIN - need support pcre in Pandas by CairoLee
+# BEGIN - 在 Pandas 中 Login-server 也需要 PCRE 库的支持
 # =========================================================
 if( WITH_PCRE )
 	message( STATUS "Enabled PCRE code" )
@@ -27,7 +27,7 @@ else()
 	message( STATUS "Disabled PCRE code" )
 endif()
 # =========================================================
-# END - need support pcre in Pandas by CairoLee
+# END - 在 Pandas 中 Login-server 也需要 PCRE 库的支持
 # =========================================================
 set( SOURCE_FILES ${COMMON_BASE_HEADERS} ${COMMON_HEADERS} ${LOGIN_HEADERS} ${LOGIN_SOURCES} )
 source_group( common FILES ${COMMON_BASE_HEADERS} ${COMMON_HEADERS} )

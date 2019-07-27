@@ -714,11 +714,6 @@ bool login_config_read(const char* cfgName, bool normal) {
 			}
 		}
 
-#ifdef Pandas_Crash_Report
-		else if (!strcmpi(w1, "create_fulldump"))
-			login_config.create_fulldump = (bool)config_switch(w2);
-#endif // Pandas_Crash_Report
-
 #ifdef Pandas_Strict_Userid_Verification
 		else if (!strcmpi(w1, "strict_new_account_userid"))
 			login_config.strict_new_account_userid = (bool)config_switch(w2);
@@ -795,10 +790,6 @@ void login_set_defaults() {
 	login_config.usercount_medium = 500;
 	login_config.usercount_high = 1000;
 	login_config.char_per_account = MAX_CHARS - MAX_CHAR_VIP - MAX_CHAR_BILLING;
-
-#ifdef Pandas_Crash_Report
-	login_config.create_fulldump = true;
-#endif // Pandas_Crash_Report
 
 #ifdef Pandas_Strict_Userid_Verification
 	login_config.strict_new_account_userid = true;
@@ -919,10 +910,6 @@ int do_init(int argc, char** argv) {
 	msg_config_read(login_config.msgconf_name);
 	login_lan_config_read(login_config.lanconf_name);
 	//end config
-
-#ifdef Pandas_Crash_Report
-	create_fulldump = login_config.create_fulldump;
-#endif // Pandas_Crash_Report
 
 	rnd_init();
 

@@ -122,7 +122,7 @@ def guide(inject):
     
     if max_val <= min_val:
         Message.ShowError('最大值比最小值还要小, 这不合理...')
-        Common.exitWithPause(-1)
+        Common.exit_with_pause(-1)
     
     def_val = str(def_val)
     min_val = str(min_val)
@@ -150,7 +150,7 @@ def guide(inject):
 
     if not nextstep:
         Message.ShowStatus('终止写入操作, 程序终止')
-        Common.exitWithPause(-1)
+        Common.exit_with_pause(-1)
     
     # --------
     
@@ -206,7 +206,10 @@ def main():
     }
 
     guide(Injecter(options))
-    Common.exitWithPause()
+    Common.exit_with_pause()
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt as _err:
+        pass

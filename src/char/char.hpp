@@ -179,10 +179,6 @@ struct CharServ_Config {
 	struct Pincode_Config pincode_config;
 #endif
 
-#ifdef Pandas_Crash_Report
-	bool create_fulldump;	// 是否生成完整的崩溃转储文件 [Sola丶小克]
-#endif // Pandas_Crash_Report
-
 #ifdef Pandas_Reject_Create_Doram_Character
 	bool reject_create_doram_character;	// 是否禁止创建杜兰族角色 [Sola丶小克]
 #endif // Pandas_Reject_Create_Doram_Character

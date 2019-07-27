@@ -19,6 +19,16 @@ MAP_DIR_OBJ = $(MAP_OBJ:%=obj/%)
 MAP_H = $(shell ls ../map/*.hpp) \
 	$(shell ls ../config/*.hpp) 
 
+# 以下内容添加自 PandasWS 开发团队
+BREAKPAD_H = $(shell find ../../3rdparty/breakpad/ -type f -name "*.h")
+BREAKPAD_AR = ../../3rdparty/breakpad/src/client/linux/libbreakpad_client.a
+BREAKPAD_INCLUDE = -I../../3rdparty/breakpad/src
+
+CRYPTOPP_H = $(shell find ../../3rdparty/cryptopp/ -type f -name "*.h")
+CRYPTOPP_AR = ../../3rdparty/cryptopp/libcryptopp.a
+CRYPTOPP_INCLUDE = -I../../3rdparty/cryptopp
+# 以上内容添加自 PandasWS 开发团队
+
 HAVE_MYSQL=@HAVE_MYSQL@
 ifeq ($(HAVE_MYSQL),yes)
 	SERVER_DEPENDS=map-server
@@ -68,20 +78,20 @@ obj:
 
 # executables
 
-map-server: obj $(MAP_DIR_OBJ) $(COMMON_AR) $(LIBCONFIG_AR) $(YAML_CPP_AR)
+map-server: obj $(MAP_DIR_OBJ) $(COMMON_AR) $(LIBCONFIG_AR) $(YAML_CPP_AR) $(BREAKPAD_AR) $(CRYPTOPP_AR)
 	@echo "	LD	@OMAP@@EXEEXT@"
-	@@CXX@ @LDFLAGS@ -o ../../@OMAP@@EXEEXT@ $(MAP_DIR_OBJ) $(COMMON_AR) $(LIBCONFIG_AR) $(YAML_CPP_AR) @LIBS@ @PCRE_LIBS@ @MYSQL_LIBS@
+	@@CXX@ @LDFLAGS@ -o ../../@OMAP@@EXEEXT@ $(MAP_DIR_OBJ) $(COMMON_AR) $(LIBCONFIG_AR) $(YAML_CPP_AR) $(BREAKPAD_AR) $(CRYPTOPP_AR) @LIBS@ @PCRE_LIBS@ @MYSQL_LIBS@
 
 
 # map object files
 #cause this one failling otherwise
-obj/npc.o: npc.cpp $(MAP_H) $(COMMON_H) $(LIBCONFIG_H) $(YAML_CPP_H)
+obj/npc.o: npc.cpp $(MAP_H) $(COMMON_H) $(LIBCONFIG_H) $(YAML_CPP_H) $(BREAKPAD_H) $(CRYPTOPP_H)
 	@echo "	CXX	$< (custom rule)"
-	@@CXX@ @CXXFLAG_CLEARS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(PCRE_CFLAGS) $(YAML_CPP_INCLUDE) @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
+	@@CXX@ @CXXFLAG_CLEARS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(PCRE_CFLAGS) $(YAML_CPP_INCLUDE) $(BREAKPAD_INCLUDE) $(CRYPTOPP_INCLUDE) @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
 	
-obj/%.o: %.cpp $(MAP_H) $(COMMON_H) $(LIBCONFIG_H) $(YAML_CPP_H)
+obj/%.o: %.cpp $(MAP_H) $(COMMON_H) $(LIBCONFIG_H) $(YAML_CPP_H) $(BREAKPAD_H) $(CRYPTOPP_H)
 	@echo "	CXX	$<"
-	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(PCRE_CFLAGS) $(YAML_CPP_INCLUDE) @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
+	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(PCRE_CFLAGS) $(YAML_CPP_INCLUDE) $(BREAKPAD_INCLUDE) $(CRYPTOPP_INCLUDE) @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
 
 # missing object files
 $(COMMON_AR):
@@ -92,3 +102,11 @@ $(LIBCONFIG_AR):
 
 $(YAML_CPP_AR):
 	@$(MAKE) -C ../../3rdparty/yaml-cpp
+
+# 以下内容添加自 PandasWS 开发团队
+$(BREAKPAD_AR):
+	@$(MAKE) -C ../../3rdparty/breakpad
+
+$(CRYPTOPP_AR):
+	@CXXFLAGS="-DNDEBUG @CXXFLAGS@" $(MAKE) -C ../../3rdparty/cryptopp libcryptopp.a
+# 以上内容添加自 PandasWS 开发团队

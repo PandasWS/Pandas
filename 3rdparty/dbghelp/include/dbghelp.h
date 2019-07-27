@@ -1540,9 +1540,11 @@ SymGetHomeDirectoryW(
     __in size_t size
     );
 
-//typedef enum {
+
 // 在迁移到 Visual Studio 2017 的时候为了解决 C4091 警告
 // 去掉了 typedef 关键字, 因为在 C++ 中这个关键字已经不需要了 [Sola丶小克]
+
+//typedef enum {
 enum {
     hdBase = 0, // root directory for dbghelp
     hdSym,      // where symbols are stored
@@ -3059,9 +3061,10 @@ SymSrvStoreFileW(
 
 // used by SymGetSymbolFile's "Type" parameter
 
-//typedef enum {
 // 在迁移到 Visual Studio 2017 的时候为了解决 C4091 警告
 // 去掉了 typedef 关键字, 因为在 C++ 中这个关键字已经不需要了 [Sola丶小克]
+
+//typedef enum {
 enum {
     sfImage = 0,
     sfDbg,

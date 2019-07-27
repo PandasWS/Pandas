@@ -2752,10 +2752,6 @@ void char_set_defaults(){
 	charserv_config.char_new = true;
 	charserv_config.char_new_display = 0;
 
-#ifdef Pandas_Crash_Report
-	charserv_config.create_fulldump = true;
-#endif // Pandas_Crash_Report
-
 #ifdef Pandas_Reject_Create_Doram_Character
 	charserv_config.reject_create_doram_character = false;
 #endif // Pandas_Reject_Create_Doram_Character
@@ -2962,11 +2958,6 @@ bool char_config_read(const char* cfgName, bool normal){
 			} else if (strcmpi(w1, "console") == 0) {
 				charserv_config.console = config_switch(w2);
 			}
-#ifdef Pandas_Crash_Report
-			else if (strcmpi(w1, "create_fulldump") == 0) {
-				charserv_config.create_fulldump = (bool)config_switch(w2);
-			}
-#endif // Pandas_Crash_Report
 		}
 
 		if(strcmpi(w1,"timestamp_format") == 0) {
@@ -3231,10 +3222,6 @@ int do_init(int argc, char **argv)
 	char_set_default_sql();
 	char_sql_config_read(SQL_CONF_NAME);
 	msg_config_read(MSG_CONF_NAME_EN);
-
-#ifdef Pandas_Crash_Report
-	create_fulldump = charserv_config.create_fulldump;
-#endif // Pandas_Crash_Report
 
 	// Skip this check if the server is run with run-once flag
 	if (runflag!=CORE_ST_STOP && strcmp(charserv_config.userid, "s1")==0 && strcmp(charserv_config.passwd, "p1")==0) {

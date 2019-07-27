@@ -215,12 +215,12 @@ void ipban_init(void) {
 	}
         ShowInfo("Ipban connection made.\n");
 
-#ifndef Pandas_Smart_Codepage
+#ifndef Pandas_Detect_Codepage
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
 		Sql_ShowDebug(sql_handle);
 #else
-		smart_codepage(sql_handle, "Ipban", codepage);
-#endif // Pandas_Smart_Codepage
+		detectCodepage(sql_handle, "Ipban", codepage);
+#endif // Pandas_Detect_Codepage
 
 	if( login_config.ipban_cleanup_interval > 0 )
 	{ // set up periodic cleanup of connection history and active bans

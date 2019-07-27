@@ -11,6 +11,23 @@ LOGIN_OBJ = $(shell ls *.cpp | sed -e "s/\.cpp/\.o/g")
 LOGIN_DIR_OBJ = $(LOGIN_OBJ:%=obj/%)
 LOGIN_H = $(shell ls *.hpp)
 
+# 以下内容添加自 PandasWS 开发团队
+BREAKPAD_H = $(shell find ../../3rdparty/breakpad/ -type f -name "*.h")
+BREAKPAD_AR = ../../3rdparty/breakpad/src/client/linux/libbreakpad_client.a
+BREAKPAD_INCLUDE = -I../../3rdparty/breakpad/src
+
+CRYPTOPP_H = $(shell find ../../3rdparty/cryptopp/ -type f -name "*.h")
+CRYPTOPP_AR = ../../3rdparty/cryptopp/libcryptopp.a
+CRYPTOPP_INCLUDE = -I../../3rdparty/cryptopp
+
+HAVE_PCRE=@HAVE_PCRE@
+ifeq ($(HAVE_PCRE),yes)
+	PCRE_CFLAGS=-DPCRE_SUPPORT @PCRE_CFLAGS@
+else
+	PCRE_CFLAGS=
+endif
+# 以上内容添加自 PandasWS 开发团队
+
 HAVE_MYSQL=@HAVE_MYSQL@
 ifeq ($(HAVE_MYSQL),yes)
 	SERVER_DEPENDS=login-server
@@ -18,19 +35,6 @@ else
 	SERVER_DEPENDS=needs_mysql
 endif
 ALL_DEPENDS=server
-
-#####################################################################
-# BEGIN - need support pcre in Pandas by CairoLee
-#####################################################################
-HAVE_PCRE=@HAVE_PCRE@
-ifeq ($(HAVE_PCRE),yes)
-	PCRE_CFLAGS=-DPCRE_SUPPORT @PCRE_CFLAGS@
-else
-	PCRE_CFLAGS=
-endif
-#####################################################################
-# END - need support pcre in Pandas by CairoLee
-#####################################################################
 
 @SET_MAKE@
 
@@ -66,19 +70,15 @@ obj:
 
 #executables
 
-login-server: obj $(LOGIN_DIR_OBJ) $(COMMON_AR)
+login-server: obj $(LOGIN_DIR_OBJ) $(COMMON_AR) $(BREAKPAD_AR) $(CRYPTOPP_AR)
 	@echo "	LD	@OLOG@@EXEEXT@"
-	@@CXX@ @LDFLAGS@ -o ../../@OLOG@@EXEEXT@ $(LOGIN_DIR_OBJ) $(COMMON_AR) $(LIBCONFIG_AR) @LIBS@ @MYSQL_LIBS@
+	@@CXX@ @LDFLAGS@ -o ../../@OLOG@@EXEEXT@ $(LOGIN_DIR_OBJ) $(COMMON_AR) $(LIBCONFIG_AR) $(BREAKPAD_AR) $(CRYPTOPP_AR) @LIBS@ @MYSQL_LIBS@
 
 # login object files
 
-obj/%.o: %.cpp $(LOGIN_H) $(COMMON_H) $(LIBCONFIG_H)
+obj/%.o: %.cpp $(LOGIN_H) $(COMMON_H) $(LIBCONFIG_H) $(BREAKPAD_H) $(CRYPTOPP_H)
 	@echo "	CXX	$<"
-# The next line is the original code of rAthena (commented)
-#	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) -DWITH_SQL @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
-# BEGIN - add $(PCRE_CFLAGS) for pcre support By CairoLee
-	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(PCRE_CFLAGS) -DWITH_SQL @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
-# END - add $(PCRE_CFLAGS) for pcre support By CairoLee
+	@@CXX@ @CXXFLAGS@ $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(BREAKPAD_INCLUDE) $(CRYPTOPP_INCLUDE) $(PCRE_CFLAGS) -DWITH_SQL @MYSQL_CFLAGS@ @CPPFLAGS@ -c $(OUTPUT_OPTION) $<
 
 # missing object files
 $(COMMON_AR):
@@ -86,3 +86,11 @@ $(COMMON_AR):
 
 $(LIBCONFIG_AR):
 	@$(MAKE) -C ../../3rdparty/libconfig
+
+# 以下内容添加自 PandasWS 开发团队
+$(BREAKPAD_AR):
+	@$(MAKE) -C ../../3rdparty/breakpad
+
+$(CRYPTOPP_AR):
+	@CXXFLAGS="-DNDEBUG @CXXFLAGS@" $(MAKE) -C ../../3rdparty/cryptopp libcryptopp.a
+# 以上内容添加自 PandasWS 开发团队

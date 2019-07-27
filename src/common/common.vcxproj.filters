@@ -83,13 +83,16 @@
     <ClInclude Include="utilities.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="minidump.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="assistant.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utf8.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="crashdump.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cryptopp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -160,13 +163,16 @@
     <ClCompile Include="winapi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="minidump.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="assistant.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utf8.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="crashdump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cryptopp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

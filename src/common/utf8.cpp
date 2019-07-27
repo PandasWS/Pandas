@@ -117,8 +117,39 @@ std::string utf8_u2g(const std::string& strUtf8) {
 // Returns:		std::string
 //************************************
 std::string utf8_g2u(const std::string& strGbk) {
-	ShowFatalError("utf8_g2u: is not implement yet.\n");
-	return std::string("");
+	iconv_t c_pt = nullptr;
+	char *str_input = nullptr, *p_str_input = nullptr;
+	char *str_output = nullptr, *p_str_output = nullptr;
+	size_t str_input_len = 0, str_output_len = 0;
+	std::string strResult;
+
+	if ((c_pt = iconv_open("UTF-8", "GBK")) == (iconv_t)-1) {
+		ShowFatalError("utf8_g2u: %s was failed: %s\n", "iconv_open", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
+	str_input_len = strGbk.size();
+	str_input = new char[str_input_len + 1];
+	memcpy(str_input, strGbk.c_str(), str_input_len);
+	p_str_input = str_input;	// 必须这样赋值一下, 不然在 Linux 下会提示段错误(Segmentation fault)
+
+	str_output_len = str_input_len + 1;
+	str_output = new char[str_output_len];
+	memset(str_output, 0, str_output_len);
+	p_str_output = str_output;	// 必须这样赋值一下, 不然在 Linux 下会提示段错误(Segmentation fault)
+
+	if (iconv(c_pt, (char **)&p_str_input, &str_input_len, (char **)&p_str_output, &str_output_len) == (size_t)-1) {
+		ShowFatalError("utf8_g2u: %s was failed: %s\n", "iconv", strerror(errno));
+		ShowFatalError("utf8_g2u: the strGbk param value: %s", str_input);
+		exit(EXIT_FAILURE);
+	}
+
+	strResult = str_output;
+	iconv_close(c_pt);
+	delete[] str_output;
+	delete[] str_input;
+
+	return strResult;
 }
 
 #endif // _WIN32

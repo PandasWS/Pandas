@@ -4,8 +4,17 @@
 #include "assistant.hpp"
 
 #include <stdlib.h>
+#include <locale.h> // setlocale
+#include <sys/stat.h> // _stat
+#include <errno.h> // errno, ENOENT, EEXIST
+#include <wchar.h> // vswprintf
+
 #ifdef _WIN32
 #include <Windows.h>
+#include <direct.h>
+#else
+#include <sys/types.h>
+#include <sys/stat.h>
 #endif // _WIN32
 
 #include "strlib.hpp"
@@ -13,14 +22,205 @@
 #include "showmsg.hpp"
 
 //************************************
-// Method:		std_string_format
+// Method:		isDirectoryExistss
+// Description:	判断目录是否存在 (跨平台支持)
+// Parameter:	const std::string & path
+// Returns:		bool
+//************************************
+bool isDirectoryExists(const std::string& path) {
+#ifdef _WIN32
+	struct _stat info;
+	if (_stat(path.c_str(), &info) != 0)
+	{
+		return false;
+	}
+	return (info.st_mode & _S_IFDIR) != 0;
+#else 
+	struct stat info;
+	if (stat(path.c_str(), &info) != 0)
+	{
+		return false;
+	}
+	return (info.st_mode & S_IFDIR) != 0;
+#endif // _WIN32
+}
+
+//************************************
+// Method:		makeDirectories
+// Description:	创建多层目录 (跨平台支持)
+// Parameter:	const std::string & path
+// Returns:		bool
+//************************************
+bool makeDirectories(const std::string& path) {
+#ifdef _WIN32
+	int ret = _mkdir(path.c_str());
+#else
+	mode_t mode = 0755;
+	int ret = mkdir(path.c_str(), mode);
+#endif // _WIN32
+
+	if (ret == 0)
+		return true;
+
+	switch (errno)
+	{
+	case ENOENT:
+		// parent didn't exist, try to create it
+	{
+		size_t pos = path.find_last_of('/');
+		if (pos == std::string::npos)
+#ifdef _WIN32
+			pos = path.find_last_of('\\');
+		if (pos == std::string::npos)
+#endif // _WIN32
+			return false;
+		if (!makeDirectories(path.substr(0, pos)))
+			return false;
+	}
+	// now, try to create again
+#ifdef _WIN32
+	return 0 == _mkdir(path.c_str());
+#else 
+	return 0 == mkdir(path.c_str(), mode);
+#endif // _WIN32
+
+	case EEXIST:
+		// done!
+		return isDirectoryExists(path);
+
+	default:
+		return false;
+	}
+}
+
+//************************************
+// Method:		strReplace
+// Description:	用于对 std::string 进行全部替换操作
+// Parameter:	std::string & str
+// Parameter:	const std::string & from
+// Parameter:	const std::string & to
+// Returns:		void
+//************************************
+void strReplace(std::string& str, const std::string& from, const std::string& to) {
+	if (from.empty())
+		return;
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+	}
+}
+
+//************************************
+// Method:		strReplace
+// Description:	用于对 std::wstring 进行全部替换操作
+// Parameter:	std::wstring & str
+// Parameter:	const std::wstring & from
+// Parameter:	const std::wstring & to
+// Returns:		void
+//************************************
+void strReplace(std::wstring& str, const std::wstring& from, const std::wstring& to) {
+	if (from.empty())
+		return;
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::wstring::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+	}
+}
+
+//************************************
+// Method:		ensurePathSep
+// Description:	将给带的路径中存在的 / 或 \ 转换成当前系统匹配的路径分隔符
+// Parameter:	std::string path
+// Returns:		std::string
+//************************************
+std::string ensurePathSep(std::string& path) {
+#ifdef _WIN32
+	char pathsep[] = "\\";
+#else
+	char pathsep[] = "/";
+#endif // _WIN32
+	strReplace(path, "/", pathsep);
+	strReplace(path, "\\", pathsep);
+	return path;
+}
+
+//************************************
+// Method:		ensurePathSep
+// Description:	将给带的路径中存在的 / 或 \ 转换成当前系统匹配的路径分隔符
+// Parameter:	std::wstring path
+// Returns:		std::wstring
+//************************************
+std::wstring ensurePathSep(std::wstring& path) {
+#ifdef _WIN32
+	wchar_t pathsep[] = L"\\";
+#else
+	wchar_t pathsep[] = L"/";
+#endif // _WIN32
+	strReplace(path, L"/", pathsep);
+	strReplace(path, L"\\", pathsep);
+	return path;
+}
+
+//************************************
+// Method:		string2wstring
+// Description:	将 std::string 转换成 std::wstring
+//              https://blog.csdn.net/CYYTU/article/details/78616132
+// Parameter:	const std::string & s
+// Returns:		std::wstring
+//************************************
+std::wstring string2wstring(const std::string& s) {
+#ifdef _WIN32
+	setlocale(LC_ALL, "chs");
+#else  
+	setlocale(LC_ALL, "zh_CN.gbk");
+#endif // _WIN32
+	const char* _Source = s.c_str();
+	size_t _Dsize = s.size() + 1;
+	wchar_t *_Dest = new wchar_t[_Dsize];
+	wmemset(_Dest, 0, _Dsize);
+	mbstowcs(_Dest, _Source, _Dsize);
+	std::wstring result = _Dest;
+	delete[]_Dest;
+	setlocale(LC_ALL, "C");
+	return result;
+}
+
+//************************************
+// Method:		wstring2string
+// Description:	将 std::wstring 转换成 std::string
+//              https://blog.csdn.net/CYYTU/article/details/78616132
+// Parameter:	const std::wstring & ws
+// Returns:		std::string
+//************************************
+std::string wstring2string(const std::wstring& ws) {
+	std::string curLocale = setlocale(LC_ALL, NULL);
+#ifdef _WIN32
+	setlocale(LC_ALL, "chs");
+#else  
+	setlocale(LC_ALL, "zh_CN.gbk");
+#endif // _WIN32
+	const wchar_t* _Source = ws.c_str();
+	size_t _Dsize = 2 * ws.size() + 1;
+	char *_Dest = new char[_Dsize];
+	memset(_Dest, 0, _Dsize);
+	wcstombs(_Dest, _Source, _Dsize);
+	std::string result = _Dest;
+	delete[]_Dest;
+	setlocale(LC_ALL, curLocale.c_str());
+	return result;
+}
+
+//************************************
+// Method:		strFormat
 // Description:	用于进行 std::string 的格式化
 // Parameter:	std::string & _str
 // Parameter:	const char * _Format
 // Parameter:	...
 // Returns:		std::string &
 //************************************
-std::string & std_string_format(std::string & _str, const char * _Format, ...) {
+std::string & strFormat(std::string & _str, const char * _Format, ...) {
 	va_list marker;
 
 	va_start(marker, _Format);
@@ -38,55 +238,89 @@ std::string & std_string_format(std::string & _str, const char * _Format, ...) {
 }
 
 //************************************
-// Method:		safety_localtime
-// Description:	能够兼容 Windows 和 Linux 的线程安全 localtime 函数
-// Parameter:	const time_t * time
-// Parameter:	struct tm * result
-// Returns:		struct tm *
-//************************************
-struct tm *safety_localtime(const time_t *time, struct tm *result) {
-#ifdef WIN32
-	return (localtime_s(result, time) == S_OK ? result : nullptr);
-#else
-	return localtime_r(time, result);
-#endif // WIN32
-}
-
-//************************************
-// Method:		safety_gmtime
-// Description:	能够兼容 Windows 和 Linux 的线程安全 gmtime 函数
-// Parameter:	const time_t * time
-// Parameter:	struct tm * result
-// Returns:		struct tm *
-//************************************
-struct tm *safety_gmtime(const time_t *time, struct tm *result) {
-#ifdef WIN32
-	return (gmtime_s(result, time) == S_OK ? result : nullptr);
-#else
-	return gmtime_r(time, result);
-#endif // WIN32
-}
-
-//************************************
-// Method:		safty_localtime_define
-// Description:	用于覆盖 localtime 的的替换函数, 用于修正 LGTM 警告
-// Parameter:	const time_t * time
-// Returns:		std::shared_ptr<struct tm>
-//************************************
-std::shared_ptr<struct tm> safty_localtime_define(const time_t *time) {
-	struct tm *_ttm_result = new struct tm();
-	return std::shared_ptr<struct tm>(safety_localtime(time, _ttm_result));
-}
-
-//************************************
-// Method:		GetPandasVersion
-// Description:	获取 Pandas 的主程序版本号
+// Method:		strFormat
+// Description:	用于进行 std::string 的格式化
+// Parameter:	const char * _Format
+// Parameter:	...
 // Returns:		std::string
 //************************************
-std::string GetPandasVersion() {
+std::string strFormat(const char* _Format, ...) {
+	va_list marker;
+
+	va_start(marker, _Format);
+	size_t count = vsnprintf(NULL, 0, _Format, marker) + 1;
+	va_end(marker);
+
+	va_start(marker, _Format);
+	char* buf = (char*)aMalloc(count * sizeof(char));
+	vsnprintf(buf, count, _Format, marker);
+	std::string _str = std::string(buf, count);
+	aFree(buf);
+	va_end(marker);
+
+	return _str;
+}
+
+//************************************
+// Method:		strFormat
+// Description:	用于进行 std::wstring 的格式化
+// Parameter:	std::wstring & _str
+// Parameter:	const wchar_t * _Format
+// Parameter:	...
+// Returns:		std::wstring &
+//************************************
+std::wstring & strFormat(std::wstring & _str, const wchar_t * _Format, ...) {
+	va_list marker;
+
+	va_start(marker, _Format);
+	size_t count = vswprintf(NULL, 0, _Format, marker) + 1;
+	va_end(marker);
+
+	va_start(marker, _Format);
+	wchar_t* buf = (wchar_t*)aMalloc(count * sizeof(wchar_t));
+	vswprintf(buf, count, _Format, marker);
+	_str = std::wstring(buf, count);
+	aFree(buf);
+	va_end(marker);
+
+	return _str;
+}
+
+//************************************
+// Method:		strFormat
+// Description:	用于进行 std::wstring 的格式化
+// Parameter:	const wchar_t * _Format
+// Parameter:	...
+// Returns:		std::wstring
+//************************************
+std::wstring strFormat(const wchar_t* _Format, ...) {
+	va_list marker;
+
+	va_start(marker, _Format);
+	size_t count = vswprintf(NULL, 0, _Format, marker) + 1;
+	va_end(marker);
+
+	va_start(marker, _Format);
+	wchar_t* buf = (wchar_t*)aMalloc(count * sizeof(wchar_t));
+	vswprintf(buf, count, _Format, marker);
+	std::wstring _str = std::wstring(buf, count);
+	aFree(buf);
+	va_end(marker);
+
+	return _str;
+}
+
+//************************************
+// Method:		getPandasVersion
+// Description:	用于获取 Pandas 的主程序版本号
+// Returns:		std::string
+//************************************
+std::string getPandasVersion() {
 #ifdef _WIN32
-	std::string pandasVersion;
-	return std_string_format(pandasVersion, "v%s", GetFileVersion("", true).c_str());
+	std::string pandasVersion = strFormat(
+		"v%s", getFileVersion("", true).c_str()
+	);
+	return pandasVersion;
 #else
 	return std::string(Pandas_Version);
 #endif // _WIN32
@@ -94,14 +328,14 @@ std::string GetPandasVersion() {
 
 #ifndef MINICORE
 //************************************
-// Method:		smart_codepage
+// Method:		detectCodepage
 // Description:	为指定的 sql_handle 设定合适的编码
 // Parameter:	Sql * sql_handle
 // Parameter:	const char * connect_name
 // Parameter:	const char * codepage
 // Returns:		void
 //************************************
-void smart_codepage(Sql* sql_handle, const char* connect_name, const char* codepage) {
+void detectCodepage(Sql* sql_handle, const char* connect_name, const char* codepage) {
 	char* buf = NULL;
 	char finally_codepage[32] = { 0 };
 	bool bShowInfomation = (connect_name != NULL);
@@ -188,18 +422,18 @@ void smart_codepage(Sql* sql_handle, const char* connect_name, const char* codep
 
 #ifdef _WIN32
 //************************************
-// Method:		GetFileVersion
+// Method:		getFileVersion
 // Description:	获取指定文件的文件版本号
 // Parameter:	std::string filename
 // Parameter:	bool bWithoutBuildNum
 // Returns:		std::string
 //************************************
-std::string GetFileVersion(std::string filename, bool bWithoutBuildNum) {
+std::string getFileVersion(std::string filename, bool bWithoutBuildNum) {
 	char szModulePath[MAX_PATH] = { 0 };
 
 	if (filename.empty()) {
 		if (GetModuleFileName(NULL, szModulePath, MAX_PATH) == 0) {
-			ShowWarning("GetProductVersion: Could not get module file name, defaulting to '%s'\n", Pandas_Version);
+			ShowWarning("getFileVersion: Could not get module file name, defaulting to '%s'\n", Pandas_Version);
 			return std::string(Pandas_Version);
 		}
 		filename = std::string(szModulePath);
@@ -209,7 +443,7 @@ std::string GetFileVersion(std::string filename, bool bWithoutBuildNum) {
 
 	dwInfoSize = GetFileVersionInfoSize(filename.c_str(), &dwHandle);
 	if (dwInfoSize == 0) {
-		ShowWarning("GetProductVersion: Could not get version info size, defaulting to '%s'\n", Pandas_Version);
+		ShowWarning("getFileVersion: Could not get version info size, defaulting to '%s'\n", Pandas_Version);
 		return std::string(Pandas_Version);
 	}
 
@@ -220,14 +454,14 @@ std::string GetFileVersion(std::string filename, bool bWithoutBuildNum) {
 		if (VerQueryValue(pVersionInfo, "\\", &lpBuffer, &nItemLength)) {
 			VS_FIXEDFILEINFO *pFileInfo = (VS_FIXEDFILEINFO*)lpBuffer;
 			std::string sFileVersion;
-			std_string_format(sFileVersion, "%d.%d.%d",
+			strFormat(sFileVersion, "%d.%d.%d",
 				pFileInfo->dwFileVersionMS >> 16,
 				pFileInfo->dwProductVersionMS & 0xFFFF,
 				pFileInfo->dwProductVersionLS >> 16
 			);
 
 			if (!bWithoutBuildNum) {
-				std_string_format(sFileVersion, "%s.%d",
+				strFormat(sFileVersion, "%s.%d",
 					sFileVersion.c_str(), pFileInfo->dwProductVersionLS & 0xFFFF
 				);
 			}
@@ -237,7 +471,48 @@ std::string GetFileVersion(std::string filename, bool bWithoutBuildNum) {
 	}
 
 	delete[] pVersionInfo;
-	ShowWarning("GetProductVersion: Could not get file version, defaulting to '%s'\n", Pandas_Version);
+	ShowWarning("getFileVersion: Could not get file version, defaulting to '%s'\n", Pandas_Version);
 	return std::string(Pandas_Version);
 }
 #endif // _WIN32
+
+//************************************
+// Method:		safety_localtime
+// Description:	能够兼容 Windows 和 Linux 的线程安全 localtime 函数
+// Parameter:	const time_t * time
+// Parameter:	struct tm * result
+// Returns:		struct tm *
+//************************************
+struct tm *safety_localtime(const time_t *time, struct tm *result) {
+#ifdef _WIN32
+	return (localtime_s(result, time) == S_OK ? result : nullptr);
+#else
+	return localtime_r(time, result);
+#endif // _WIN32
+}
+
+//************************************
+// Method:		safety_gmtime
+// Description:	能够兼容 Windows 和 Linux 的线程安全 gmtime 函数
+// Parameter:	const time_t * time
+// Parameter:	struct tm * result
+// Returns:		struct tm *
+//************************************
+struct tm *safety_gmtime(const time_t *time, struct tm *result) {
+#ifdef _WIN32
+	return (gmtime_s(result, time) == S_OK ? result : nullptr);
+#else
+	return gmtime_r(time, result);
+#endif // _WIN32
+}
+
+//************************************
+// Method:		safty_localtime_define
+// Description:	用于覆盖 localtime 的的替换函数, 用于修正 LGTM 警告
+// Parameter:	const time_t * time
+// Returns:		std::shared_ptr<struct tm>
+//************************************
+std::shared_ptr<struct tm> safty_localtime_define(const time_t *time) {
+	struct tm *_ttm_result = new struct tm();
+	return std::shared_ptr<struct tm>(safety_localtime(time, _ttm_result));
+}

@@ -1,0 +1,6 @@
+﻿
+# 崩溃上报服务器为应用程序所分配的APPID
+DEFINE_CRASHRPT_APPID=
+
+# 崩溃上报服务器为应用程序所分配的公钥
+DEFINE_CRASHRPT_PUBLICKEY=
