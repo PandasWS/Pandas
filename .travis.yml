@@ -4,120 +4,120 @@ sudo: false
 
 matrix:
   include:
-# # First check if all our options are good
-# #   Renewal without VIP
-#     - os: linux
-#       addons:
-#         apt:
-#           sources:
-#             - ubuntu-toolchain-r-test
-#           packages:
-#             - g++-5
-#       env:
-#          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-#          - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
-# #   Renewal with VIP
-#     - os: linux
-#       addons:
-#         apt:
-#           sources:
-#             - ubuntu-toolchain-r-test
-#           packages:
-#             - g++-5
-#       env:
-#          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-#          - CONFIGURE_FLAGS="--enable-prere=yes --enable-vip=no --enable-buildbot=yes"
-# #   Pre-Renewal without VIP
-#     - os: linux
-#       addons:
-#         apt:
-#           sources:
-#             - ubuntu-toolchain-r-test
-#           packages:
-#             - g++-5
-#       env:
-#          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-#          - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=yes --enable-buildbot=yes"
-# #   Pre-Renewal with VIP
-#     - os: linux
-#       addons:
-#         apt:
-#           sources:
-#             - ubuntu-toolchain-r-test
-#           packages:
-#             - g++-5
-#       env:
-#          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-#          - CONFIGURE_FLAGS="--enable-prere=yes --enable-vip=yes --enable-buildbot=yes"
-# # After that check all different compilers and compiler versions
-# # GCC
-# #   Version 6
-#     - os: linux
-#       addons:
-#         apt:
-#           sources:
-#             - ubuntu-toolchain-r-test
-#           packages:
-#             - g++-6
-#       env:
-#         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
-#         - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
-# #   Version 7
-#     - os: linux
-#       addons:
-#         apt:
-#           sources:
-#             - ubuntu-toolchain-r-test
-#           packages:
-#             - g++-7
-#       env:
-#         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-#         - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
-# #   Version 8
-#     - os: linux
-#       addons:
-#         apt:
-#           sources:
-#             - ubuntu-toolchain-r-test
-#           packages:
-#             - g++-8
-#       env:
-#         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
-#         - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
-# # Clang
-# #   Version 3.9
-#     - os: linux
-#       addons:
-#         apt:
-#           sources:
-#             - llvm-toolchain-trusty-3.9
-#           packages:
-#             - clang-3.9
-#       env:
-#         - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
-#         - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
-# #   Version 4
-#     - os: linux
-#       addons:
-#         apt:
-#           sources:
-#             - llvm-toolchain-trusty-4.0
-#           packages:
-#             - clang-4.0
-#       env:
-#         - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
-#         - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
-# #   Version 5
-#     - os: linux
-#       addons:
-#         apt:
-#           sources:
-#             - llvm-toolchain-trusty-5.0
-#           packages:
-#             - clang-5.0
-#       env:
-#         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
-#         - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
+# First check if all our options are good
+#   Renewal without VIP
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+         - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
+#   Renewal with VIP
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+         - CONFIGURE_FLAGS="--enable-prere=yes --enable-vip=no --enable-buildbot=yes"
+#   Pre-Renewal without VIP
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+         - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=yes --enable-buildbot=yes"
+#   Pre-Renewal with VIP
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+         - CONFIGURE_FLAGS="--enable-prere=yes --enable-vip=yes --enable-buildbot=yes"
+# After that check all different compilers and compiler versions
+# GCC
+#   Version 6
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+      env:
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+        - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
+#   Version 7
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+      env:
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+        - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
+#   Version 8
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+      env:
+        - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+        - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
+# Clang
+#   Version 3.9
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-3.9
+          packages:
+            - clang-3.9
+      env:
+        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+        - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
+#   Version 4
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-4.0
+          packages:
+            - clang-4.0
+      env:
+        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+        - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
+#   Version 5
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - clang-5.0
+      env:
+        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+        - CONFIGURE_FLAGS="--enable-prere=no --enable-vip=no --enable-buildbot=yes"
 #   LLVM on OSX
 #    - os: osx
 #      osx_image: xcode9.2
@@ -156,10 +156,6 @@ matrix:
          - cd cbuild
          - cmake -G "Unix Makefiles" ..
          - make || travis_terminate 1
-         - cd ..
-         - ./login-server --run-once
-         - ./char-server --run-once
-         - ./map-server --run-once
 # MariaDB
     - os: linux
       addons:
