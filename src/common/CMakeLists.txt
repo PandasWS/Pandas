@@ -117,6 +117,7 @@ set( COMMON_BASE_HEADERS
 	"${COMMON_SOURCE_DIR}/crashdump.hpp"
 	"${COMMON_SOURCE_DIR}/cryptopp.hpp"
 	${LIBCONFIG_HEADERS} # needed by conf.hpp/showmsg.hpp
+	${BREAKPAD_HEADERS}
 	${COMMON_ADDITIONALL_HPP} # needed by Windows
 	CACHE INTERNAL "common_base headers" )
 set( COMMON_BASE_SOURCES
@@ -145,14 +146,17 @@ set( COMMON_BASE_SOURCES
 	"${COMMON_SOURCE_DIR}/crashdump.cpp"
 	"${COMMON_SOURCE_DIR}/cryptopp.cpp"
 	${LIBCONFIG_SOURCES} # needed by conf.cpp/showmsg.cpp
+	${BREAKPAD_SOURCES}
 	${COMMON_ADDITIONALL_CPP} # needed by Windows
 	CACHE INTERNAL "common_base sources" )
 set( COMMON_BASE_INCLUDE_DIRS
 	${LIBCONFIG_INCLUDE_DIRS}
 	${YAML_INCLUDE_DIRS}
+	${BREAKPAD_INCLUDE_DIRS}
 	CACHE INTERNAL "common_base include dirs" )
 set( COMMON_BASE_DEFINITIONS
 	${LIBCONFIG_DEFINITIONS}
+	${BREAKPAD_DEFINITIONS}
 	CACHE INTERNAL "common_base definitions" )
 set( LIBRARIES ${GLOBAL_LIBRARIES} ${ZLIB_LIBRARIES} yaml-cpp breakpad cryptopp-static )
 set( INCLUDE_DIRS ${GLOBAL_INCLUDE_DIRS} ${YAML_INCLUDE_DIRS} ${BREAKPAD_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${COMMON_BASE_INCLUDE_DIRS}} )
