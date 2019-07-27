@@ -149,6 +149,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
+            - libmariadbclient-dev
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
       script:
