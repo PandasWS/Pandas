@@ -192,7 +192,7 @@ set( BREAKPAD_SOURCES
     CACHE INTERNAL "breakpad client sources" )
 
 set( BREAKPAD_DEFINITIONS
-	"-std=c++11"
+	"-std=c++11 -ldl"
     CACHE INTERNAL "breakpad definitions" )
 include_directories(${BREAKPAD_INCLUDE_DIRS} ${BREAKPAD_SOURCE_DIR})
 ADD_LIBRARY(${this_target} STATIC ${BREAKPAD_SOURCES} )
