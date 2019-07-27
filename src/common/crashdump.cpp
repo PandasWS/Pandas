@@ -254,7 +254,7 @@ void breakpad_initialize() {
 	if (crash_string(CRASHRPT_APPID).length() > 0 &&
 		crash_string(CRASHRPT_PUBLICKEY).length() > 0) {
 		crash_string tokeninfo = strFormat(
-			_CT("PANDASWS|%s|%d"), CRASHRPT_APPID, time(NULL)
+			_CT("PANDASWS|%s|%" PRIdPTR), CRASHRPT_APPID, time(NULL)
 		);
 		g_crashDumpUploadToken = crash_s2w(crypto_RSAEncryptString(
 			crash_w2s(crash_string(CRASHRPT_PUBLICKEY)),
