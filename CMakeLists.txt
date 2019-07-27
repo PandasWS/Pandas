@@ -196,6 +196,21 @@ endif()
 
 
 #
+# dynamic loading library - dlclose (Linux)
+#
+if( NOT WIN32 )
+message( STATUS "Detecting dlclose dynamic loading library (dl)" )
+set( CMAKE_REQUIRED_LIBRARIES ${GLOBAL_LIBRARIES} )
+find_function_library( dlclose FUNCTION_DLCLOSE_LIBRARIES dl )
+if( FUNCTION_DLCLOSE_LIBRARIES )
+	message( STATUS "Adding global library - dlclose: ${FUNCTION_DLCLOSE_LIBRARIES}" )
+	set_property( CACHE GLOBAL_LIBRARIES  PROPERTY VALUE ${GLOBAL_LIBRARIES} ${FUNCTION_DLCLOSE_LIBRARIES} )
+endif()
+message( STATUS "Detecting dlclose dynamic loading library (dl) - done" )
+endif()
+
+
+#
 # networking library (Solaris/MinGW)
 #
 if( NOT MSVC )
