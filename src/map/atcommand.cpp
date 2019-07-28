@@ -10177,6 +10177,17 @@ ACMD_FUNC(camerainfo){
 	return 0;
 }
 
+ACMD_FUNC(resurrect) {
+	nullpo_retr(-1, sd);
+
+	if (!pc_revive_item(sd))
+		return -1;
+
+	return 0;
+}
+
+#include "../custom/atcommand.inc"
+
 #ifdef Pandas_AtCommand_RecallMap
 /**
  * 召唤当前(或指定)地图的玩家来到身边 [Sola丶小克]
@@ -10241,8 +10252,6 @@ ACMD_FUNC(recallmap) {
 	return 0;
 }
 #endif // Pandas_AtCommand_RecallMap
-
-#include "../custom/atcommand.inc"
 
 /**
  * Fills the reference of available commands in atcommand DBMap
@@ -10546,6 +10555,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEFR(limitedsale, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEFR(changedress, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEFR(camerainfo, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
+		ACMD_DEFR(resurrect, ATCMD_NOCONSOLE),
 	};
 	AtCommandInfo* atcommand;
 	int i;
