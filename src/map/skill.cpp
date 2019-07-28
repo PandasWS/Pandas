@@ -490,8 +490,11 @@ bool skill_pos_maxcount_check(struct block_list *src, int16 x, int16 y, uint16 s
  * @return modified heal value
  */
 int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 skill_id, uint16 skill_lv, bool heal) {
-	int skill, hp = 0, hp_bonus = 0;
+	int skill, hp = 0;
+#ifdef RENEWAL
+	int hp_bonus = 0;
 	double global_bonus = 1;
+#endif
 	struct map_session_data *sd = BL_CAST(BL_PC, src);
 	struct map_session_data *tsd = BL_CAST(BL_PC, target);
 	struct status_change *sc, *tsc;
@@ -516,10 +519,15 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 			hp = (skill_lv > 6) ? 666 : skill_lv * 100;
 			break;
 		case AB_HIGHNESSHEAL:
+#ifdef RENEWAL
 			hp = ((status_get_int(src) + status_get_lv(src)) / 5) * 30;
 
 			if (sd && ((skill = pc_checkskill(sd, HP_MEDITATIO)) > 0))
 				hp_bonus += skill * 2;
+#else
+			hp = ((status_get_lv(src) + status_get_int(src)) / 8) * (4 + ((sd ? pc_checkskill(sd, AL_HEAL) : 1) * 8));
+			hp = (hp * (17 + 3 * skill_lv)) / 10;
+#endif
 			break;
 		case SU_FRESHSHRIMP:
 			hp = (status_get_lv(src) + status_get_int(src)) / 5 * 6;
@@ -539,11 +547,20 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 #else
 			hp = (status_get_lv(src) + status_get_int(src)) / 8 * (4 + (skill_lv * 8));
 #endif
-			if( sd && ((skill = pc_checkskill(sd, HP_MEDITATIO)) > 0) )
+
+			if (sd && ((skill = pc_checkskill(sd, HP_MEDITATIO)) > 0))
+#ifdef RENEWAL
 				hp_bonus += skill * 2;
+#else
+				hp += hp * skill * 2 / 100;
+#endif
 			else if (src->type == BL_HOM && (skill = hom_checkskill(((TBL_HOM*)src), HLIF_BRAIN)) > 0)
+#ifdef RENEWAL
 				hp_bonus += skill * 2;
-			if( sd && tsd && sd->status.partner_id == tsd->status.char_id && (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE && sd->status.sex == 0 )
+#else
+				hp += hp * skill * 2 / 100;
+#endif
+			if (sd && tsd && sd->status.partner_id == tsd->status.char_id && (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE && sd->status.sex == 0)
 				hp *= 2;
 			break;
 	}
@@ -552,40 +569,78 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 		hp >>= 1;
 
 	if (sd && ((skill = pc_checkskill(sd, SU_POWEROFSEA)) > 0)) {
+#ifdef RENEWAL
 		hp_bonus += 10;
+#else
+		hp += hp * 10 / 100;
+#endif
 
 		if (pc_checkskill(sd, SU_TUNABELLY) == 5 && pc_checkskill(sd, SU_TUNAPARTY) == 5 && pc_checkskill(sd, SU_BUNCHOFSHRIMP) == 5 && pc_checkskill(sd, SU_FRESHSHRIMP) == 5)
+#ifdef RENEWAL
 			hp_bonus += 20;
+#else
+			hp += hp * 20 / 100;
+#endif
 	}
 
-	if( sd && (skill = pc_skillheal_bonus(sd, skill_id)) )
+	if (sd && (skill = pc_skillheal_bonus(sd, skill_id)))
+#ifdef RENEWAL
 		hp_bonus += skill;
+#else
+		hp += hp * skill / 100;
+#endif
 
-	if( tsd && (skill = pc_skillheal2_bonus(tsd, skill_id)) )
+	if (tsd && (skill = pc_skillheal2_bonus(tsd, skill_id)))
+#ifdef RENEWAL
 		hp_bonus += skill;
+#else
+		hp += hp * skill / 100;
+#endif
 
 	if (sc && sc->count) {
 		if (sc->data[SC_OFFERTORIUM] && (skill_id == AB_HIGHNESSHEAL || skill_id == AB_CHEAL || skill_id == PR_SANCTUARY || skill_id == AL_HEAL))
+#ifdef RENEWAL
 			hp_bonus += sc->data[SC_OFFERTORIUM]->val2;
+#else
+			hp += hp * sc->data[SC_OFFERTORIUM]->val2 / 100;
+#endif
 		if (sc->data[SC_GLASTHEIM_HEAL] && skill_id != NPC_EVILLAND && skill_id != BA_APPLEIDUN)
+#ifdef RENEWAL
 			hp_bonus += sc->data[SC_GLASTHEIM_HEAL]->val1;
+#else
+			hp += hp * sc->data[SC_GLASTHEIM_HEAL]->val1 / 100;
+#endif
 	}
 
 	if (tsc && tsc->count) {
 		if (skill_id != NPC_EVILLAND && skill_id != BA_APPLEIDUN) {
 			if (tsc->data[SC_INCHEALRATE])
+#ifdef RENEWAL
 				hp_bonus += tsc->data[SC_INCHEALRATE]->val1; //Only affects Heal, Sanctuary and PotionPitcher.(like bHealPower) [Inkfish]
+#else
+				hp += hp * tsc->data[SC_INCHEALRATE]->val1 / 100;
+#endif
 			if (tsc->data[SC_GLASTHEIM_HEAL])
+#ifdef RENEWAL
 				hp_bonus += tsc->data[SC_GLASTHEIM_HEAL]->val2;
+#else
+				hp += hp * tsc->data[SC_GLASTHEIM_HEAL]->val2 / 100;
+#endif
 			if (tsc->data[SC_ANCILLA])
+#ifdef RENEWAL
 				hp_bonus += tsc->data[SC_ANCILLA]->val1;
+#else
+				hp += hp * tsc->data[SC_ANCILLA]->val1 / 100;
+			if (tsc->data[SC_WATER_INSIGNIA] && tsc->data[SC_WATER_INSIGNIA]->val1 == 2)
+				hp += hp / 10;
+#endif
 		}
 	}
 
+#ifdef RENEWAL
 	if (hp_bonus)
 		hp += hp * hp_bonus / 100;
 
-#ifdef RENEWAL
 	// MATK part of the RE heal formula [malufett]
 	// Note: in this part matk bonuses from items or skills are not applied
 	switch( skill_id ) {
@@ -622,7 +677,6 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 					hp += min;
 			}
 	}
-#endif
 
 	// Global multipliers are applied after the MATK is applied
 	if (tsc && tsc->count) {
@@ -634,6 +688,7 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 
 	if (skill_id == AB_HIGHNESSHEAL)
 		global_bonus *= 2 + 0.3f * (skill_lv - 1);
+#endif
 
 	if (heal && tsc && tsc->count) {
 		uint8 penalty = 0;
@@ -645,11 +700,16 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 		if (tsc->data[SC_NORECOVER_STATE])
 			penalty = 100;
 		if (penalty > 0) {
+#ifdef RENEWAL
 			penalty = cap_value(penalty, 1, 100);
 			global_bonus *= (100 - penalty) / 100.f;
+#else
+			hp -= hp * penalty / 100;
+#endif
 		}
 	}
 
+#ifdef RENEWAL
 	hp = (int)(hp * global_bonus);
 
 #ifdef Pandas_MapFlag_MaxHeal
@@ -662,6 +722,9 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 #endif // Pandas_MapFlag_MaxHeal
 
 	return (heal) ? max(1, hp) : hp;
+#else
+	return hp;
+#endif
 }
 
 /**
@@ -1520,13 +1583,6 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 			sc_start2(src,bl, SC_BLEEDING,50, skill_lv, src->id, skill_get_time2(skill_id,skill_lv));
 		break;
 
-	case LK_JOINTBEAT:
-		status = status_skill2sc(skill_id);
-		if (tsc->jb_flag) {
-			sc_start4(src,bl,status,(5*skill_lv+5),skill_lv,tsc->jb_flag&BREAK_FLAGS,src->id,0,skill_get_time2(skill_id,skill_lv));
-			tsc->jb_flag = 0;
-		}
-		break;
 	case ASC_METEORASSAULT:
 		//Any enemies hit by this skill will receive Stun, Darkness, or external bleeding status ailment with a 5%+5*skill_lv% chance.
 		switch(rnd()%3) {
@@ -2693,10 +2749,10 @@ bool skill_strip_equip(struct block_list *src, struct block_list *target, uint16
 				time = skill_get_time(skill_id, skill_lv);
 
 			if (target->type == BL_PC)
-				time += skill_lv + 500 * (sstatus->dex - tstatus->dex);
+				time += max(1, skill_lv + 500 * (sstatus->dex - tstatus->dex));
 			else {
 				time += 15000;
-				time += skill_lv + 500 * (sstatus->dex - tstatus->dex);
+				time += max(1, skill_lv + 500 * (sstatus->dex - tstatus->dex));
 			}
 			break;
 	}
@@ -4787,19 +4843,12 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
 		skill_attack(BF_WEAPON,src,src,bl,skill_id,skill_lv,tick,flag|SD_ANIMATION);
 		break;
 
-	case LK_JOINTBEAT: // decide the ailment first (affects attack damage and effect)
-		switch( rnd()%6 ){
-		case 0: flag |= BREAK_ANKLE; break;
-		case 1: flag |= BREAK_WRIST; break;
-		case 2: flag |= BREAK_KNEE; break;
-		case 3: flag |= BREAK_SHOULDER; break;
-		case 4: flag |= BREAK_WAIST; break;
-		case 5: flag |= BREAK_NECK; break;
-		}
-		//TODO: is there really no cleaner way to do this?
-		sc = status_get_sc(bl);
-		if (sc) sc->jb_flag = flag;
-		skill_attack(BF_WEAPON,src,src,bl,skill_id,skill_lv,tick,flag);
+	case LK_JOINTBEAT:
+		flag = 1 << rnd() % 6;
+		if (flag != BREAK_NECK && tsc && tsc->data[SC_JOINTBEAT] && tsc->data[SC_JOINTBEAT]->val2 & BREAK_NECK)
+			flag = BREAK_NECK; // Target should always receive double damage if neck is already broken
+		if (skill_attack(BF_WEAPON, src, src, bl, skill_id, skill_lv, tick, flag))
+			sc_start4(src, bl, SC_JOINTBEAT, 50 + (skill_lv + 1), skill_lv, flag&BREAK_FLAGS, src->id, 0, skill_get_time2(skill_id, skill_lv));
 		break;
 
 	case MO_COMBOFINISH:
@@ -6646,10 +6695,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 		clif_skill_nodamage (src,src,skill_id,skill_lv,1);
 		// Initiate 20% of your damage becomes fire element.
 		sc_start4(src,src,SC_WATK_ELEMENT,100,3,20,0,0,skill_get_time2(skill_id, skill_lv));
-		if( sd )
-			skill_blockpc_start(sd, skill_id, skill_get_time(skill_id, skill_lv));
-		else if( bl->type == BL_MER )
-			skill_blockmerc_start((TBL_MER*)bl, skill_id, skill_get_time(skill_id, skill_lv));
 		break;
 
 	case TK_JUMPKICK:
