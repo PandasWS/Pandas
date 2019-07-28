@@ -8442,8 +8442,8 @@ bool pc_revive_item(struct map_session_data *sd) {
 
 #ifdef Pandas_MapFlag_NoToken
 	if (sd && sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOTOKEN)) {
-		clif_displaymessage(fd, msg_txt_cn(sd, 17));	// 此地图禁止原地复活!
-		return;
+		clif_displaymessage(sd->fd, msg_txt_cn(sd, 17));	// 此地图禁止原地复活!
+		return false;
 	}
 #endif // Pandas_MapFlag_NoToken
 

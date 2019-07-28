@@ -723,6 +723,15 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 
 	return (heal) ? max(1, hp) : hp;
 #else
+
+#ifdef Pandas_MapFlag_MaxHeal
+	// 无论施法者是否为玩家单位, 只要限制了最大治愈量, 那么就有效...
+	if (src && map_getmapflag(src->m, MF_MAXHEAL)) {
+		int val = map_getmapflag_param(src->m, MF_MAXHEAL, 0);
+		return (val) ? cap_value(hp, 0, val) : hp;
+	}
+#endif // Pandas_MapFlag_MaxHeal
+
 	return hp;
 #endif
 }
@@ -1166,7 +1175,8 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 	struct mob_data *md, *dstmd;
 	struct status_data *sstatus, *tstatus;
 	struct status_change *sc, *tsc;
-	enum sc_type status;
+	// 在 2019年7月28日 rAthena 此处定义的 status 变量并未被使用, 暂时注释 [Sola丶小克]
+	//enum sc_type status;
 	int skill;
 	int rate;
 
