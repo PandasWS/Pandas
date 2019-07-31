@@ -1,5 +1,5 @@
 ---
-name: 程序缺陷上报 & 问题反馈
+name: 我想上报一个程序缺陷（Bug report）
 about: 报告缺陷或反馈问题，协助改进 Pandas 仙境传说模拟器
 title: ''
 labels: type:bug
