@@ -26551,18 +26551,13 @@ BUILDIN_FUNC(gettimefmt) {
 		is_utc = cap_value(script_getnum(st, 4), 0, 1);
 	}
 
-	struct tm now_time = { 0 };
-	if (is_utc)
-		safety_gmtime(&time_tick, &now_time);
-	else
-		safety_localtime(&time_tick, &now_time);
-
+	struct tm *now_time = (is_utc ? gmtime(&time_tick) : localtime(&time_tick));
 	char* buf = (char *)aMalloc(default_len + 1);
-	result = strftime(buf, default_len, fmtstr, &now_time);
+	result = strftime(buf, default_len, fmtstr, now_time);
 
 	if (!result) {
 		buf = (char *)aRealloc(buf, (default_len * 4) + 1);
-		result = strftime(buf, (default_len * 4), fmtstr, &now_time);
+		result = strftime(buf, (default_len * 4), fmtstr, now_time);
 	}
 
 	if (!result) {
