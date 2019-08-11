@@ -26,7 +26,7 @@ std::string strFormat(const char* _Format, ...);
 std::wstring & strFormat(std::wstring & _str, const wchar_t * _Format, ...);
 std::wstring strFormat(const wchar_t* _Format, ...);
 
-std::string getPandasVersion();
+std::string getPandasVersion(bool without_vmark = false);
 
 #ifndef MINICORE
 // 若 MINICORE 宏定义启用的话, 则表示目前链接这个 hpp 的工程是一个辅助工具 (csv2yaml)
