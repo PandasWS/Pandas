@@ -1,3 +1,5 @@
+queries:
+  - exclude: cpp/potentially-dangerous-function
 extraction:
   python:
     python_setup: 
