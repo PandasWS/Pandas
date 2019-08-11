@@ -313,12 +313,13 @@ std::wstring strFormat(const wchar_t* _Format, ...) {
 //************************************
 // Method:		getPandasVersion
 // Description:	用于获取 Pandas 的主程序版本号
+// Parameter:	bool without_vmark
 // Returns:		std::string
 //************************************
-std::string getPandasVersion() {
+std::string getPandasVersion(bool without_vmark) {
 #ifdef _WIN32
 	std::string pandasVersion = strFormat(
-		"v%s", getFileVersion("", true).c_str()
+		(without_vmark ? "%s" : "v%s"), getFileVersion("", true).c_str()
 	);
 	return pandasVersion;
 #else
