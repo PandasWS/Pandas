@@ -3673,8 +3673,10 @@ void script_free_state(struct script_state* st)
 	if (idb_exists(st_db, st->id)) {
 		struct map_session_data *sd = st->rid ? map_id2sd(st->rid) : NULL;
 
+#ifndef Pandas_ScriptEngine_MutliStackBackup
 		if (st->bk_st) // backup was not restored
 			ShowDebug("script_free_state: Previous script state lost (rid=%d, oid=%d, state=%d, bk_npcid=%d).\n", st->bk_st->rid, st->bk_st->oid, st->bk_st->state, st->bk_npcid);
+#endif // Pandas_ScriptEngine_MutliStackBackup
 
 		if (sd && sd->st == st) { // Current script is aborted.
 			if(sd->state.using_fake_npc) {
@@ -4315,6 +4317,8 @@ struct linkdb_node *script_erase_sleepdb(struct linkdb_node *n) {
 	return retnode;
 }
 
+#ifndef Pandas_ScriptEngine_MutliStackBackup
+
 /// Detaches script state from possibly attached character and restores it's previous script if any.
 ///
 /// @param st Script state to detach.
@@ -4355,6 +4359,40 @@ static void script_detach_state(struct script_state* st, bool dequeue_event)
 	}
 }
 
+#else // Pandas_ScriptEngine_MutliStackBackup
+
+void script_detach_state(struct script_state* st, bool dequeue_event)
+{
+	struct map_session_data* sd;
+
+	if (st->rid && (sd = map_id2sd(st->rid)) != NULL) {
+		sd->st = nullptr;
+		sd->npc_id = 0;
+		sd->state.disable_atcommand_on_npc = 0;
+
+		if (!sd->mbk_st.empty()) {
+			struct mutli_script_state val = sd->mbk_st.top();
+			sd->st = val.bk_st;
+			sd->npc_id = val.bk_npcid;
+			sd->mbk_st.pop();
+		}
+		else if (dequeue_event) {
+#ifdef SECURE_NPCTIMEOUT
+			/**
+			 * We're done with this NPC session, so we cancel the timer (if existent) and move on
+			 **/
+			if (sd->npc_idle_timer != INVALID_TIMER) {
+				delete_timer(sd->npc_idle_timer, npc_secure_timeout_timer);
+				sd->npc_idle_timer = INVALID_TIMER;
+			}
+#endif
+			npc_event_dequeue(sd);
+		}
+	}
+}
+
+#endif // Pandas_ScriptEngine_MutliStackBackup
+
 /// Attaches script state to possibly attached character and backups it's previous script, if any.
 ///
 /// @param st Script state to attach.
@@ -4365,12 +4403,19 @@ void script_attach_state(struct script_state* st){
 	{
 		if(st!=sd->st)
 		{
+#ifndef Pandas_ScriptEngine_MutliStackBackup
 			if(st->bk_st)
 			{// there is already a backup
 				ShowDebug("script_attach_state: Previous script state lost (rid=%d, oid=%d, state=%d, bk_npcid=%d).\n", st->bk_st->rid, st->bk_st->oid, st->bk_st->state, st->bk_npcid);
 			}
 			st->bk_st = sd->st;
 			st->bk_npcid = sd->npc_id;
+#else
+			struct mutli_script_state mbk_st = { 0 };
+			mbk_st.bk_st = sd->st;
+			mbk_st.bk_npcid = sd->npc_id;
+			sd->mbk_st.push(mbk_st);
+#endif // Pandas_ScriptEngine_MutliStackBackup
 		}
 		sd->st = st;
 		sd->npc_id = st->oid;
@@ -4498,6 +4543,7 @@ void run_script_main(struct script_state *st)
 		st->sleep.charid = sd?sd->status.char_id:0;
 		st->sleep.timer = add_timer(gettick() + st->sleep.tick, run_script_timer, st->sleep.charid, (intptr_t)st);
 		linkdb_insert(&sleep_db, (void *)__64BPRTSIZE(st->oid), st);
+#ifndef Pandas_ScriptEngine_MutliStackBackup
 	} else if(st->state != END && st->rid) {
 		//Resume later (st is already attached to player).
 		if(st->bk_st) {
@@ -4511,6 +4557,10 @@ void run_script_main(struct script_state *st)
 			script_free_state(st->bk_st);
 			st->bk_st = NULL;
 		}
+#else
+	} else if(st->state != END && st->rid) {
+		return;
+#endif // Pandas_ScriptEngine_MutliStackBackup
 	} else {
 		//Dispose of script.
 		if ((sd = map_id2sd(st->rid))!=NULL)
@@ -4940,6 +4990,20 @@ void script_reload(void) {
 		script_free_state(st);
 	dbi_destroy(iter);
 	db_clear(st_db);
+
+#ifdef Pandas_ScriptEngine_MutliStackBackup
+	{
+		struct s_mapiterator* iter = mapit_getallusers();
+		struct map_session_data* sd = nullptr;
+		for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter)) {
+			if (!sd) continue;
+			while (!sd->mbk_st.empty()) {
+				sd->mbk_st.pop();
+			}
+		}
+		if (iter) mapit_free(iter);
+	}
+#endif // Pandas_ScriptEngine_MutliStackBackup
 
 	mapreg_reload();
 }

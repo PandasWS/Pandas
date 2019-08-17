@@ -250,6 +250,14 @@
 #ifdef Pandas_ScriptEngine
 	// 使脚本引擎能够支持穿越事件队列机制, 直接执行某些事件 [Sola丶小克]
 	#define Pandas_ScriptEngine_Express
+
+	// 通过修改脚本引擎备份 st 的方法
+	// 避免嵌套调用超过两层的脚本会导致程序崩溃的问题 [Sola丶小克]
+	// --------------------------------------------
+	// 1. 在启用脚本系统的情况下
+	// 2. 构建一个 npc 通过 script4each 去调用 getitem 指令, 如: 获得红色药水
+	// 3. 此时应该会导致服务端崩溃
+	#define Pandas_ScriptEngine_MutliStackBackup
 #endif // Pandas_ScriptEngine
 
 // ============================================================================

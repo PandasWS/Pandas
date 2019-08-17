@@ -3241,6 +3241,16 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 				sd->npc_id = 0;
 			}
 
+#ifdef Pandas_ScriptEngine_MutliStackBackup
+			while (!sd->mbk_st.empty()) {
+				struct mutli_script_state val = sd->mbk_st.top();
+				if (val.bk_st != nullptr) {
+					script_free_state(sd->mbk_st.top().bk_st);
+				}
+				sd->mbk_st.pop();
+			}
+#endif // Pandas_ScriptEngine_MutliStackBackup
+
 			if( sd->combos.count ) {
 				aFree(sd->combos.bonus);
 				aFree(sd->combos.id);
