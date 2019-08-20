@@ -1175,8 +1175,6 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 	struct mob_data *md, *dstmd;
 	struct status_data *sstatus, *tstatus;
 	struct status_change *sc, *tsc;
-	// 在 2019年7月28日 rAthena 此处定义的 status 变量并未被使用, 暂时注释 [Sola丶小克]
-	//enum sc_type status;
 	int skill;
 	int rate;
 
