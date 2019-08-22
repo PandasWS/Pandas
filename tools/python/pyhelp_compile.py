@@ -191,6 +191,20 @@ def match_file_regex(filename, pattern, encoding = 'UTF-8-SIG'):
             return list(regexGroup[0]) if isinstance(regexGroup[0], tuple) else regexGroup
     return None
 
+def get_pandas_branch():
+    '''
+    获取当前代码仓库的分支名称
+    '''
+    repo = git.Repo(project_slndir)
+    return str(repo.active_branch)
+
+def get_pandas_hash():
+    '''
+    获取当前代码仓库的 HASH 版本号
+    '''
+    repo = git.Repo(project_slndir)
+    return repo.head.object.hexsha
+
 def get_pandas_ver():
     '''
     读取当前 Pandas 在 src/config/pandas.hpp 定义的版本号
@@ -384,6 +398,9 @@ def compile_prere(version):
         define_options["CRASHRPT_APPID"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_APPID")
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
         define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
+        
+    define_options["CRASHRPT_GIT_BRANCH"] = '_CT(\\"%s\\")' % get_pandas_branch()
+    define_options["CRASHRPT_GIT_HASH"] = '_CT(\\"%s\\")' % get_pandas_hash()
 
     define_values = define_builder(define_options)
     
@@ -404,6 +421,9 @@ def compile_renewal(version):
         define_options["CRASHRPT_APPID"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_APPID")
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
         define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
+        
+    define_options["CRASHRPT_GIT_BRANCH"] = '_CT(\\"%s\\")' % get_pandas_branch()
+    define_options["CRASHRPT_GIT_HASH"] = '_CT(\\"%s\\")' % get_pandas_hash()
 
     define_values = define_builder(define_options)
     
@@ -456,7 +476,7 @@ def main():
     # 判断当前 git 工作区是否干净, 若工作区不干净要给予提示
     if git.Repo(project_slndir).is_dirty():
         if not Inputer().requireBool({
-            'tips' : '当前模拟器代码仓库的工作区不干净, 要重新编译吗?',
+            'tips' : '当前模拟器代码仓库的工作区不干净, 要继续编译吗?',
             'default' : False
         }):
             Message.ShowStatus('您主动放弃了继续操作')
