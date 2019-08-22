@@ -26,6 +26,14 @@
 	#define Pandas_ScriptParams
 #endif // Pandas
 
+#ifndef GIT_BRANCH
+	#define GIT_BRANCH ""
+#endif // GIT_BRANCH
+
+#ifndef GIT_HASH
+	#define GIT_HASH ""
+#endif // GIT_HASH
+
 // ============================================================================
 // 基础组 - Pandas_Basic
 // ============================================================================

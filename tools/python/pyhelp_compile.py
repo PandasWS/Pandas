@@ -399,8 +399,8 @@ def compile_prere(version):
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
         define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
         
-    define_options["CRASHRPT_GIT_BRANCH"] = '_CT(\\"%s\\")' % get_pandas_branch()
-    define_options["CRASHRPT_GIT_HASH"] = '_CT(\\"%s\\")' % get_pandas_hash()
+    define_options["GIT_BRANCH"] = '\\"%s\\"' % get_pandas_branch()
+    define_options["GIT_HASH"] = '\\"%s\\"' % get_pandas_hash()
 
     define_values = define_builder(define_options)
     
@@ -422,8 +422,8 @@ def compile_renewal(version):
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
         define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
         
-    define_options["CRASHRPT_GIT_BRANCH"] = '_CT(\\"%s\\")' % get_pandas_branch()
-    define_options["CRASHRPT_GIT_HASH"] = '_CT(\\"%s\\")' % get_pandas_hash()
+    define_options["GIT_BRANCH"] = '\\"%s\\"' % get_pandas_branch()
+    define_options["GIT_HASH"] = '\\"%s\\"' % get_pandas_hash()
 
     define_values = define_builder(define_options)
     

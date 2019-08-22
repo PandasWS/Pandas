@@ -12,3 +12,5 @@ configure.in text eol=lf
 Makefile text eol=lf
 Makefile.in text eol=lf
 *.sh text eol=lf
+*.m4 text eol=lf
+**/autotools text eol=lf

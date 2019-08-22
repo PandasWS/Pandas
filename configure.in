@@ -18,6 +18,12 @@ AX_SUBDIRS_CONFIGURE([3rdparty/breakpad], [--disable-tools])
 AC_GNU_SOURCE
 
 #
+# Git branch and hash
+#
+AC_SUBST([git_branch],[$( git rev-parse --abbrev-ref HEAD )])
+AC_SUBST([git_hash],[$( git rev-parse HEAD )])
+
+#
 # Memory managers
 #
 AC_ARG_ENABLE(
@@ -56,7 +62,7 @@ AC_ARG_ENABLE(
 )
 
 #
-# crashappid
+# Crashrpt Appid
 #
 AC_ARG_ENABLE(
 	[crashappid],
@@ -69,7 +75,7 @@ AC_ARG_ENABLE(
 )
 
 #
-# crashpubkey
+# Crashrpt Public Key
 #
 AC_ARG_ENABLE(
 	[crashpubkey],
@@ -1047,18 +1053,23 @@ if test -n "$enable_packetver" ; then
 fi
 
 #
-# crashappid
+# Crashrpt Appid
 #
 if test -n "$enable_crashappid" ; then
 	CPPFLAGS="$CPPFLAGS -DCRASHRPT_APPID=_CT\(\\\"$enable_crashappid\\\"\)"
 fi
 
 #
-# crashpubkey
+# Crashrpt Public Key
 #
 if test -n "$enable_crashpubkey" ; then
 	CPPFLAGS="$CPPFLAGS -DCRASHRPT_PUBLICKEY=_CT\(\\\"$enable_crashpubkey\\\"\)"
 fi
+
+#
+# Git branch and hash
+#
+CPPFLAGS="$CPPFLAGS -DGIT_BRANCH=\\\"$git_branch\\\" -DGIT_HASH=\\\"$git_hash\\\""
 
 #
 # Epoll
