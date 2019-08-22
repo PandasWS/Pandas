@@ -3673,8 +3673,10 @@ void script_free_state(struct script_state* st)
 	if (idb_exists(st_db, st->id)) {
 		struct map_session_data *sd = st->rid ? map_id2sd(st->rid) : NULL;
 
+#ifndef Pandas_ScriptEngine_MutliStackBackup
 		if (st->bk_st) // backup was not restored
 			ShowDebug("script_free_state: Previous script state lost (rid=%d, oid=%d, state=%d, bk_npcid=%d).\n", st->bk_st->rid, st->bk_st->oid, st->bk_st->state, st->bk_npcid);
+#endif // Pandas_ScriptEngine_MutliStackBackup
 
 		if (sd && sd->st == st) { // Current script is aborted.
 			if(sd->state.using_fake_npc) {
@@ -4315,6 +4317,8 @@ struct linkdb_node *script_erase_sleepdb(struct linkdb_node *n) {
 	return retnode;
 }
 
+#ifndef Pandas_ScriptEngine_MutliStackBackup
+
 /// Detaches script state from possibly attached character and restores it's previous script if any.
 ///
 /// @param st Script state to detach.
@@ -4355,6 +4359,40 @@ static void script_detach_state(struct script_state* st, bool dequeue_event)
 	}
 }
 
+#else // Pandas_ScriptEngine_MutliStackBackup
+
+void script_detach_state(struct script_state* st, bool dequeue_event)
+{
+	struct map_session_data* sd;
+
+	if (st->rid && (sd = map_id2sd(st->rid)) != NULL) {
+		sd->st = nullptr;
+		sd->npc_id = 0;
+		sd->state.disable_atcommand_on_npc = 0;
+
+		if (!sd->mbk_st.empty()) {
+			struct mutli_script_state val = sd->mbk_st.top();
+			sd->st = val.bk_st;
+			sd->npc_id = val.bk_npcid;
+			sd->mbk_st.pop();
+		}
+		else if (dequeue_event) {
+#ifdef SECURE_NPCTIMEOUT
+			/**
+			 * We're done with this NPC session, so we cancel the timer (if existent) and move on
+			 **/
+			if (sd->npc_idle_timer != INVALID_TIMER) {
+				delete_timer(sd->npc_idle_timer, npc_secure_timeout_timer);
+				sd->npc_idle_timer = INVALID_TIMER;
+			}
+#endif
+			npc_event_dequeue(sd);
+		}
+	}
+}
+
+#endif // Pandas_ScriptEngine_MutliStackBackup
+
 /// Attaches script state to possibly attached character and backups it's previous script, if any.
 ///
 /// @param st Script state to attach.
@@ -4365,12 +4403,19 @@ void script_attach_state(struct script_state* st){
 	{
 		if(st!=sd->st)
 		{
+#ifndef Pandas_ScriptEngine_MutliStackBackup
 			if(st->bk_st)
 			{// there is already a backup
 				ShowDebug("script_attach_state: Previous script state lost (rid=%d, oid=%d, state=%d, bk_npcid=%d).\n", st->bk_st->rid, st->bk_st->oid, st->bk_st->state, st->bk_npcid);
 			}
 			st->bk_st = sd->st;
 			st->bk_npcid = sd->npc_id;
+#else
+			struct mutli_script_state mbk_st = { 0 };
+			mbk_st.bk_st = sd->st;
+			mbk_st.bk_npcid = sd->npc_id;
+			sd->mbk_st.push(mbk_st);
+#endif // Pandas_ScriptEngine_MutliStackBackup
 		}
 		sd->st = st;
 		sd->npc_id = st->oid;
@@ -4498,6 +4543,7 @@ void run_script_main(struct script_state *st)
 		st->sleep.charid = sd?sd->status.char_id:0;
 		st->sleep.timer = add_timer(gettick() + st->sleep.tick, run_script_timer, st->sleep.charid, (intptr_t)st);
 		linkdb_insert(&sleep_db, (void *)__64BPRTSIZE(st->oid), st);
+#ifndef Pandas_ScriptEngine_MutliStackBackup
 	} else if(st->state != END && st->rid) {
 		//Resume later (st is already attached to player).
 		if(st->bk_st) {
@@ -4511,7 +4557,20 @@ void run_script_main(struct script_state *st)
 			script_free_state(st->bk_st);
 			st->bk_st = NULL;
 		}
+#else
+	} else if(st->state != END && st->rid) {
+		return;
+#endif // Pandas_ScriptEngine_MutliStackBackup
 	} else {
+		if (st->stack && st->stack->defsp >= 1 && st->stack->stack_data[st->stack->defsp - 1].type == C_RETINFO) {
+			for (int i = 0; i < st->stack->sp; i++) {
+				if (st->stack->stack_data[i].type == C_RETINFO) { // Grab the first, aka the original
+					st->script = st->stack->stack_data[i].u.ri->script;
+					break;
+				}
+			}
+		}
+
 		//Dispose of script.
 		if ((sd = map_id2sd(st->rid))!=NULL)
 		{	//Restore previous stack and save char.
@@ -4940,6 +4999,20 @@ void script_reload(void) {
 		script_free_state(st);
 	dbi_destroy(iter);
 	db_clear(st_db);
+
+#ifdef Pandas_ScriptEngine_MutliStackBackup
+	{
+		struct s_mapiterator* iter = mapit_getallusers();
+		struct map_session_data* sd = nullptr;
+		for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter)) {
+			if (!sd) continue;
+			while (!sd->mbk_st.empty()) {
+				sd->mbk_st.pop();
+			}
+		}
+		if (iter) mapit_free(iter);
+	}
+#endif // Pandas_ScriptEngine_MutliStackBackup
 
 	mapreg_reload();
 }
@@ -6906,7 +6979,7 @@ static int script_getitem_randomoption(struct script_state *st, struct map_sessi
 		// If no player is attached
 		if( !script_rid2sd(sd) ){
 			ShowError( "buildin_%s: variable \"%s\" was not a server variable, but no player was attached.\n", funcname, opt_id_var );
-			return false;
+			return SCRIPT_CMD_FAILURE;
 		}
 	}
 
@@ -6925,7 +6998,7 @@ static int script_getitem_randomoption(struct script_state *st, struct map_sessi
 		// If no player is attached
 		if( !script_rid2sd(sd) ){
 			ShowError( "buildin_%s: variable \"%s\" was not a server variable, but no player was attached.\n", funcname, opt_val_var );
-			return false;
+			return SCRIPT_CMD_FAILURE;
 		}
 	}
 
@@ -6944,7 +7017,7 @@ static int script_getitem_randomoption(struct script_state *st, struct map_sessi
 		// If no player is attached
 		if( !script_rid2sd(sd) ){
 			ShowError( "buildin_%s: variable \"%s\" was not a server variable, but no player was attached.\n", funcname, opt_param_var );
-			return false;
+			return SCRIPT_CMD_FAILURE;
 		}
 	}
 
@@ -6960,11 +7033,6 @@ static int script_getitem_randomoption(struct script_state *st, struct map_sessi
 
 	opt_id_ref = reference_getref(opt_id);
 	opt_id_n = script_array_highest_key(st, sd, opt_id_var, opt_id_ref);
-
-	if (opt_id_n < 1) {
-		ShowError("buildin_%s: No option id listed.\n", funcname);
-		return SCRIPT_CMD_FAILURE;
-	}
 
 	opt_val_ref = reference_getref(opt_val);
 	opt_param_ref = reference_getref(opt_param);
@@ -7069,8 +7137,8 @@ int script_countitem_sub(struct item *items, struct item_data *id, int size, boo
  * Returns number of items in inventory
  * countitem(<nameID>{,<accountID>})
  * countitem2(<nameID>,<Identified>,<Refine>,<Attribute>,<Card0>,<Card1>,<Card2>,<Card3>{,<accountID>}) [Lupus]
- * countitem3(<item id>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>)
- * countitem3("<item name>",<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>)
+ * countitem3(<item id>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>{,<accountID>})
+ * countitem3("<item name>",<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>{,<accountID>})
  */
 BUILDIN_FUNC(countitem)
 {
@@ -7086,16 +7154,8 @@ BUILDIN_FUNC(countitem)
 		random_option = true;
 	}
 
-	if (script_hasdata(st, aid)) {
-		if (!(sd = map_id2sd(script_getnum(st, aid)))) {
-			ShowError("buildin_%s: player not found (AID=%d).\n", command, script_getnum(st, aid));
-			st->state = END;
-			return SCRIPT_CMD_FAILURE;
-		}
-	} else {
-		if (!script_rid2sd(sd))
-			return SCRIPT_CMD_FAILURE;
-	}
+	if (!script_accid2sd(aid, sd))
+		return SCRIPT_CMD_FAILURE;
 
 	struct item_data *id;
 
@@ -7133,16 +7193,8 @@ BUILDIN_FUNC(cartcountitem)
 	if (command[strlen(command) - 1] == '2')
 		aid = 10;
 
-	if (script_hasdata(st, aid)) {
-		if (!(sd = map_id2sd(script_getnum(st, aid)))) {
-			ShowError("buildin_%s: player not found (AID=%d).\n", command, script_getnum(st, aid));
-			st->state = END;
-			return SCRIPT_CMD_FAILURE;
-		}
-	} else {
-		if (!script_rid2sd(sd))
-			return SCRIPT_CMD_FAILURE;
-	}
+	if (!script_accid2sd(aid, sd))
+		return SCRIPT_CMD_FAILURE;
 
 	if (!pc_iscarton(sd)) {
 		ShowError("buildin_%s: Player doesn't have cart (CID:%d).\n", command, sd->status.char_id);
@@ -7186,16 +7238,8 @@ BUILDIN_FUNC(storagecountitem)
 	if (command[strlen(command) - 1] == '2')
 		aid = 10;
 
-	if (script_hasdata(st, aid)) {
-		if (!(sd = map_id2sd(script_getnum(st, aid)))) {
-			ShowError("buildin_%s: player not found (AID=%d).\n", command, script_getnum(st, aid));
-			st->state = END;
-			return SCRIPT_CMD_FAILURE;
-		}
-	} else {
-		if (!script_rid2sd(sd))
-			return SCRIPT_CMD_FAILURE;
-	}
+	if (!script_accid2sd(aid, sd))
+		return SCRIPT_CMD_FAILURE;
 
 	struct item_data *id;
 
@@ -7238,16 +7282,8 @@ BUILDIN_FUNC(guildstoragecountitem)
 	if (command[strlen(command) - 1] == '2')
 		aid = 10;
 
-	if (script_hasdata(st, aid)) {
-		if (!(sd = map_id2sd(script_getnum(st, aid)))) {
-			ShowError("buildin_%s: player not found (AID=%d).\n", command, script_getnum(st, aid));
-			st->state = END;
-			return SCRIPT_CMD_FAILURE;
-		}
-	} else {
-		if (!script_rid2sd(sd))
-			return SCRIPT_CMD_FAILURE;
-	}
+	if (!script_accid2sd(aid, sd))
+		return SCRIPT_CMD_FAILURE;
 
 	struct item_data *id;
 
@@ -9883,18 +9919,6 @@ BUILDIN_FUNC(end)
 	if (sd && npc_event_is_express_type(sd->pandas.workinevent))
 		return SCRIPT_CMD_SUCCESS;
 #endif // Pandas_ScriptEngine_Express
-
-	if (st->stack->defsp >= 1 && st->stack->stack_data[st->stack->defsp-1].type == C_RETINFO) {
-		int i;
-
-		for(i = 0; i < st->stack->sp; i++) {
-			if (st->stack->stack_data[i].type == C_RETINFO) { // Grab the first, aka the original
-				struct script_retinfo *ri = st->stack->stack_data[i].u.ri;
-				st->script = ri->script;
-				break;
-			}
-		}
-	}
 
 	if( st->mes_active )
 		st->mes_active = 0;
@@ -15641,38 +15665,41 @@ BUILDIN_FUNC(isday)
 BUILDIN_FUNC(isequippedcnt)
 {
 	TBL_PC *sd;
-	int i, id = 1;
-	int ret = 0;
 
-	if (!script_rid2sd(sd)) { //If the player is not attached it is a script error anyway... but better prevent the map server from crashing...
+	if (!script_rid2sd(sd)) {
 		script_pushint(st,0);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	for (i=0; id!=0; i++) {
-		short j;
-		FETCH (i+2, id) else id = 0;
+	int ret = 0;
+	int total = script_lastdata(st);
+	std::vector<int32> list(total);
+
+	for (int i = 2; i <= total; ++i) {
+		int id = script_getnum(st,i);
 		if (id <= 0)
 			continue;
+		if (std::find(list.begin(), list.end(), id) != list.end())
+			continue;
+		list.push_back(id);
 
-		for (j=0; j<EQI_MAX; j++) {
+		for (short j = 0; j < EQI_MAX; j++) {
 			short index = sd->equip_index[j];
-			if(index < 0)
+			if (index < 0)
 				continue;
 			if (pc_is_same_equip_index((enum equip_index)j, sd->equip_index, index))
 				continue;
 
-			if(!sd->inventory_data[index])
+			if (!sd->inventory_data[index])
 				continue;
 
 			if (itemdb_type(id) != IT_CARD) { //No card. Count amount in inventory.
 				if (sd->inventory_data[index]->nameid == id)
-					ret+= sd->inventory.u.items_inventory[index].amount;
+					ret += sd->inventory.u.items_inventory[index].amount;
 			} else { //Count cards.
-				short k;
 				if (itemdb_isspecial(sd->inventory.u.items_inventory[index].card[0]))
 					continue; //No cards
-				for(k=0; k<sd->inventory_data[index]->slot; k++) {
+				for (short k = 0; k < sd->inventory_data[index]->slot; k++) {
 					if (sd->inventory.u.items_inventory[index].card[k] == id)
 						ret++; //[Lupus]
 				}
@@ -26551,18 +26578,13 @@ BUILDIN_FUNC(gettimefmt) {
 		is_utc = cap_value(script_getnum(st, 4), 0, 1);
 	}
 
-	struct tm now_time = { 0 };
-	if (is_utc)
-		safety_gmtime(&time_tick, &now_time);
-	else
-		safety_localtime(&time_tick, &now_time);
-
+	struct tm *now_time = (is_utc ? gmtime(&time_tick) : localtime(&time_tick));
 	char* buf = (char *)aMalloc(default_len + 1);
-	result = strftime(buf, default_len, fmtstr, &now_time);
+	result = strftime(buf, default_len, fmtstr, now_time);
 
 	if (!result) {
 		buf = (char *)aRealloc(buf, (default_len * 4) + 1);
-		result = strftime(buf, (default_len * 4), fmtstr, &now_time);
+		result = strftime(buf, (default_len * 4), fmtstr, now_time);
 	}
 
 	if (!result) {

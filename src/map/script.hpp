@@ -379,9 +379,11 @@ struct script_state {
 	struct sleep_data {
 		int tick,timer,charid;
 	} sleep;
+#ifndef Pandas_ScriptEngine_MutliStackBackup
 	//For backing up purposes
 	struct script_state *bk_st;
 	int bk_npcid;
+#endif // Pandas_ScriptEngine_MutliStackBackup
 	unsigned freeloop : 1;// used by buildin_freeloop
 	unsigned op2ref : 1;// used by op_2
 	unsigned npc_item_flag : 1;
@@ -389,6 +391,13 @@ struct script_state {
 	char* funcname; // Stores the current running function name
 	unsigned int id;
 };
+
+#ifdef Pandas_ScriptEngine_MutliStackBackup
+struct mutli_script_state {
+	struct script_state* bk_st;
+	int bk_npcid;
+};
+#endif // Pandas_ScriptEngine_MutliStackBackup
 
 struct script_reg {
 	int64 index;
@@ -2060,6 +2069,9 @@ TIMER_FUNC(run_script_timer);
 void script_stop_sleeptimers(int id);
 struct linkdb_node *script_erase_sleepdb(struct linkdb_node *n);
 void script_attach_state(struct script_state* st);
+#ifdef Pandas_ScriptEngine_MutliStackBackup
+void script_detach_state(struct script_state* st, bool dequeue_event);
+#endif // Pandas_ScriptEngine_MutliStackBackup
 void script_detach_rid(struct script_state* st);
 void run_script_main(struct script_state *st);
 

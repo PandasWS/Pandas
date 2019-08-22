@@ -730,6 +730,7 @@ int *achievement_level(struct map_session_data *sd, bool flag)
 }
 
 static bool achievement_check_condition( struct script_code* condition, struct map_session_data* sd, const std::array<int, MAX_ACHIEVEMENT_OBJECTIVES> count ){
+#ifndef Pandas_ScriptEngine_MutliStackBackup
 	// Save the old script the player was attached to
 	struct script_state* previous_st = sd->st;
 
@@ -738,6 +739,7 @@ static bool achievement_check_condition( struct script_code* condition, struct m
 		// Detach the player from the current script
 		script_detach_rid(previous_st);
 	}
+#endif // Pandas_ScriptEngine_MutliStackBackup
 
 	run_script( condition, 0, sd->bl.id, fake_nd->bl.id );
 
@@ -748,9 +750,14 @@ static bool achievement_check_condition( struct script_code* condition, struct m
 	if( st != nullptr ){
 		value = script_getnum( st, 2 );
 
+#ifdef Pandas_ScriptEngine_MutliStackBackup
+		script_detach_state(st, false);
+#endif // Pandas_ScriptEngine_MutliStackBackup
+
 		script_free_state(st);
 	}
 
+#ifndef Pandas_ScriptEngine_MutliStackBackup
 	// If an old script is present
 	if( previous_st != nullptr ){
 		// Because of detach the RID will be removed, so we need to restore it
@@ -759,6 +766,7 @@ static bool achievement_check_condition( struct script_code* condition, struct m
 		// Reattach the player to it, so that the limitations of that script kick back in
 		script_attach_state( previous_st );
 	}
+#endif // Pandas_ScriptEngine_MutliStackBackup
 
 	return value != 0;
 }

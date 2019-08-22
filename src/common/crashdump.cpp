@@ -53,8 +53,8 @@ typedef std::string crash_string;
 // 当程序崩溃时, 将转储文件保存在什么位置
 crash_string g_dumpSaveDirectory = _CT("log/dumps");
 
-// 设置 crash.checkpoint 检查点记录文件保存在什么位置
-crash_string g_crashCheckPointFilepath = g_dumpSaveDirectory + _CT("/crash.checkpoint");
+// 设置检查点记录文件的保存位置
+crash_string g_crashCheckPointFilepath = g_dumpSaveDirectory + _CT("/crashdump.report");
 
 // 用于上报崩溃转储文件的数据接口地址
 crash_string g_crashDumpUploadInterface = strFormat(_CT("http://crashrpt.pandas.ws/upload?appid=%s"), CRASHRPT_APPID);
@@ -153,6 +153,7 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 	std::map<crash_string, crash_string> parameters;
 	parameters.insert(std::make_pair(_CT("token"), g_crashDumpUploadToken));
 	parameters.insert(std::make_pair(_CT("platform"), _CT("windows")));
+	parameters.insert(std::make_pair(_CT("version"), crash_s2w(getPandasVersion(true))));
 
 	// 创建 CrashReportSender 对象并利用其提交转储文件给服务器
 	google_breakpad::CrashReportSender sender(g_crashCheckPointFilepath);
@@ -201,6 +202,7 @@ bool breakpad_callback(const google_breakpad::MinidumpDescriptor& descriptor,
 	std::map<crash_string, crash_string> parameters;
 	parameters.insert(std::make_pair(_CT("token"), g_crashDumpUploadToken));
 	parameters.insert(std::make_pair(_CT("platform"), "linux"));
+	parameters.insert(std::make_pair(_CT("version"), getPandasVersion(true).c_str()));
 
 	std::string response, error;
 	bool success = google_breakpad::HTTPUpload::SendRequest(
@@ -235,8 +237,9 @@ void breakpad_initialize() {
 	// 此处不能放弃对 g_pExceptionHandler 的赋值,
 	// 否则整个 google_breakpad::ExceptionHandler 对象会在本函数结束的时候被释放掉
 	g_pExceptionHandler = new google_breakpad::ExceptionHandler(
-		g_dumpSaveDirectory, 0, breakpad_callback, 0,
-		google_breakpad::ExceptionHandler::HANDLER_ALL, MiniDumpNormal, _CT(""), 0
+		g_dumpSaveDirectory, nullptr, breakpad_callback, nullptr,
+		google_breakpad::ExceptionHandler::HANDLER_ALL,
+		MINIDUMP_TYPE(MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithDataSegs), _CT(""), 0
 	);
 #else
 	// 在 Linux 环境下需要先初始化一个 MinidumpDescriptor 对象用来描述转储文件的保存位置
@@ -245,7 +248,7 @@ void breakpad_initialize() {
 	// 此处不能放弃对 g_pExceptionHandler 的赋值,
 	// 否则整个 google_breakpad::ExceptionHandler 对象会在本函数结束的时候被释放掉
 	g_pExceptionHandler = new google_breakpad::ExceptionHandler(
-		descriptor, NULL, breakpad_callback, NULL, true, -1
+		descriptor, nullptr, breakpad_callback, nullptr, true, -1
 	);
 #endif // _WIN32
 

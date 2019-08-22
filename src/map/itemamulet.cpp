@@ -113,15 +113,13 @@ void amulet_apply_additem(struct map_session_data *sd, int n, bool is_firstone) 
 	if (!amulet_is(item->nameid))
 		return;
 
-	if (is_firstone) {
+	if (is_firstone && item->equip_script) {
 		// 如果这是背包中出现的第一个同种类护身符，那么触发"穿戴脚本"
-		if (item->equip_script) {
-			run_script(item->equip_script, 0, sd->bl.id, 0);
-			status_calc_pc(sd, SCO_NONE);
-		}
+		run_script(item->equip_script, 0, sd->bl.id, 0);
+		status_calc_pc(sd, SCO_NONE);
 	}
-	else {
-		// 如果不是背包中出现的第一个同种类护身符, 但它有"使用脚本"的话, 也需要重算一下角色能力
+	else if (item->script) {
+		// 否则如果有"使用脚本"的话, 也需要重算一下角色能力
 		status_calc_pc(sd, SCO_NONE);
 	}
 }
@@ -144,20 +142,17 @@ void amulet_apply_delitem(struct map_session_data *sd, int n, bool is_lastone) {
 	if (!amulet_is(item->nameid))
 		return;
 
-	if (is_lastone) {
+	if (is_lastone && item->unequip_script) {
 		// 如果移除的护身符是身上同种类护身符的最后一个，那么触发"卸装脚本"
-		if (item->unequip_script) {
-			short save_current_equip_item_index = current_equip_item_index;
-			current_equip_item_index = n;
-			run_script(item->unequip_script, 0, sd->bl.id, 0);
-			current_equip_item_index = save_current_equip_item_index;
-			status_calc_pc(sd, SCO_NONE);
-		}
+		short save_current_equip_item_index = current_equip_item_index;
+		current_equip_item_index = n;
+		run_script(item->unequip_script, 0, sd->bl.id, 0);
+		current_equip_item_index = save_current_equip_item_index;
+		status_calc_pc(sd, SCO_NONE);
 	}
-	else {
-		// 如果不是背包中出现的最后一个同种类护身符, 但它有"使用脚本"的话, 也需要重算一下角色能力
-		if (item->script)
-			status_calc_pc(sd, SCO_NONE);
+	else if (item->script){
+		// 否则如果有"使用脚本"的话, 也需要重算一下角色能力
+		status_calc_pc(sd, SCO_NONE);
 	}
 }
 
