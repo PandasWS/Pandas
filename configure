@@ -647,6 +647,8 @@ SET_MAKE
 OMAP
 OCHR
 OLOG
+git_hash
+git_branch
 EGREP
 GREP
 CXXCPP
@@ -3513,6 +3515,14 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
 
 
 #
+# Git branch and hash
+#
+git_branch=$( git rev-parse --abbrev-ref HEAD )
+
+git_hash=$( git rev-parse HEAD )
+
+
+#
 # Memory managers
 #
 # Check whether --enable-manager was given.
@@ -3549,7 +3559,7 @@ fi
 
 
 #
-# crashappid
+# Crashrpt Appid
 #
 # Check whether --enable-crashappid was given.
 if test "${enable_crashappid+set}" = set; then :
@@ -3561,7 +3571,7 @@ fi
 
 
 #
-# crashpubkey
+# Crashrpt Public Key
 #
 # Check whether --enable-crashpubkey was given.
 if test "${enable_crashpubkey+set}" = set; then :
@@ -6299,18 +6309,23 @@ if test -n "$enable_packetver" ; then
 fi
 
 #
-# crashappid
+# Crashrpt Appid
 #
 if test -n "$enable_crashappid" ; then
 	CPPFLAGS="$CPPFLAGS -DCRASHRPT_APPID=_CT\(\\\"$enable_crashappid\\\"\)"
 fi
 
 #
-# crashpubkey
+# Crashrpt Public Key
 #
 if test -n "$enable_crashpubkey" ; then
 	CPPFLAGS="$CPPFLAGS -DCRASHRPT_PUBLICKEY=_CT\(\\\"$enable_crashpubkey\\\"\)"
 fi
+
+#
+# Git branch and hash
+#
+CPPFLAGS="$CPPFLAGS -DGIT_BRANCH=\\\"$git_branch\\\" -DGIT_HASH=\\\"$git_hash\\\""
 
 #
 # Epoll

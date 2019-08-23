@@ -154,6 +154,8 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 	parameters.insert(std::make_pair(_CT("token"), g_crashDumpUploadToken));
 	parameters.insert(std::make_pair(_CT("platform"), _CT("windows")));
 	parameters.insert(std::make_pair(_CT("version"), crash_s2w(getPandasVersion(true))));
+	parameters.insert(std::make_pair(_CT("branch"), crash_s2w(std::string(GIT_BRANCH))));
+	parameters.insert(std::make_pair(_CT("hash"), crash_s2w(std::string(GIT_HASH))));
 
 	// 创建 CrashReportSender 对象并利用其提交转储文件给服务器
 	google_breakpad::CrashReportSender sender(g_crashCheckPointFilepath);
@@ -203,6 +205,8 @@ bool breakpad_callback(const google_breakpad::MinidumpDescriptor& descriptor,
 	parameters.insert(std::make_pair(_CT("token"), g_crashDumpUploadToken));
 	parameters.insert(std::make_pair(_CT("platform"), "linux"));
 	parameters.insert(std::make_pair(_CT("version"), getPandasVersion(true).c_str()));
+	parameters.insert(std::make_pair(_CT("branch"), std::string(GIT_BRANCH)));
+	parameters.insert(std::make_pair(_CT("hash"), string(GIT_HASH)));
 
 	std::string response, error;
 	bool success = google_breakpad::HTTPUpload::SendRequest(

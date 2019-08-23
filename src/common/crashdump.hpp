@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "../config/pandas.hpp"
+
 void breakpad_initialize();
 void breakpad_status();
-
