@@ -57,16 +57,13 @@ crash_string g_dumpSaveDirectory = _CT("log/dumps");
 crash_string g_crashCheckPointFilepath = g_dumpSaveDirectory + _CT("/crashdump.report");
 
 // 用于上报崩溃转储文件的数据接口地址
-crash_string g_crashDumpUploadInterface = strFormat(_CT("http://crashrpt.pandas.ws/upload?appid=%s"), CRASHRPT_APPID);
-
-// 保存用于上报转储文件时所使用的令牌
-crash_string g_crashDumpUploadToken = _CT("");
+crash_string g_crashDumpUploadInterface = _CT("http://crashrpt.pandas.ws/upload");
 
 // 保存程序崩溃时负责转储工作的 ExceptionHandler 指针
 google_breakpad::ExceptionHandler* g_pExceptionHandler = NULL;
 
 // 用于标记本程序的 Breakpad 是否已经完成了初始化
-bool g_BreakpadInitialized = false;
+bool g_breakpadInitialized = false;
 
 // 用于标记本程序是否具备上报崩溃转储文件的条件 (设置了 AppID 且已经成功构建 Token)
 bool g_crashDumpUploadAllowed = false;
@@ -111,15 +108,49 @@ void display_crashtips(std::string dumpfilepath, bool bottom) {
 }
 
 //************************************
-// Method:		breakpad_status
-// Description:	确认当前 Breakpad 的状态是否已初始化成功
-// Returns:		void
+// Method:      breakpad_status
+// Description: 显示当前 Breakpad 的初始化状态
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2019/08/24 18:55
 //************************************
 void breakpad_status() {
-	if (g_BreakpadInitialized)
+	if (g_breakpadInitialized)
 		ShowStatus("Google Breakpad initialised: " CL_WHITE "%s/" CL_RESET "\n", crash_w2s(g_dumpSaveDirectory).c_str());
 	else
 		ShowWarning("Google Breakpad initialization failed!\n");
+}
+
+//************************************
+// Method:      params_dosign
+// Description: 用于对即将发送的参数进行签名, 以便服务端验证身份
+// Parameter:   std::map<crash_string
+// Parameter:   crash_string> & params
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2019/08/24 18:54
+//************************************
+void params_dosign(std::map<crash_string, crash_string> & params)
+{
+	crash_string sign = _CT("");
+	crash_string token = _CT("");
+	crash_string timestamp = crash_s2w(strFormat("%ld", time(NULL)));
+
+	// 加入一个当前服务器的时间戳
+	params.insert(std::make_pair(_CT("timestamp"), timestamp));
+
+	// 根据当前的参数列表构造一个用于加密的字符串
+	std::map<crash_string, crash_string>::iterator iter;
+	for (iter = params.begin(); iter != params.end(); iter++) {
+		sign = sign + iter->first + _CT("|");
+		sign = sign + iter->second + _CT("|");
+	}
+
+	// 使用公钥对 sign 变量的值进行签名, 将密文放到 token 字段发送
+	if (crash_string(CRASHRPT_PUBLICKEY).length()) {
+		token = crash_s2w(crypto_RSAEncryptString(
+			crash_w2s(crash_string(CRASHRPT_PUBLICKEY)), crash_w2s(sign)
+		));
+		params.insert(std::make_pair(_CT("token"), token));
+	}
 }
 
 #ifdef _WIN32
@@ -150,12 +181,13 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 	files.insert(std::make_pair(_CT("dumpfile"), filepath));
 
 	// 收集其他可能需要的信息, 用于服务端分析或归类使用
-	std::map<crash_string, crash_string> parameters;
-	parameters.insert(std::make_pair(_CT("token"), g_crashDumpUploadToken));
-	parameters.insert(std::make_pair(_CT("platform"), _CT("windows")));
-	parameters.insert(std::make_pair(_CT("version"), crash_s2w(getPandasVersion(true))));
-	parameters.insert(std::make_pair(_CT("branch"), crash_s2w(std::string(GIT_BRANCH))));
-	parameters.insert(std::make_pair(_CT("hash"), crash_s2w(std::string(GIT_HASH))));
+	std::map<crash_string, crash_string> params;
+	params.insert(std::make_pair(_CT("appid"), crash_string(CRASHRPT_APPID)));
+	params.insert(std::make_pair(_CT("platform"), _CT("windows")));
+	params.insert(std::make_pair(_CT("version"), crash_s2w(getPandasVersion(true))));
+	params.insert(std::make_pair(_CT("branch"), crash_s2w(std::string(GIT_BRANCH))));
+	params.insert(std::make_pair(_CT("hash"), crash_s2w(std::string(GIT_HASH))));
+	params_dosign(params);
 
 	// 创建 CrashReportSender 对象并利用其提交转储文件给服务器
 	google_breakpad::CrashReportSender sender(g_crashCheckPointFilepath);
@@ -163,8 +195,7 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 	display_crashtips(wstring2string(filepath), false);
 	if (g_crashDumpUploadAllowed) {
 		ShowMessage("" CL_BG_RED CL_BT_WHITE " Sending the crash dump file, please wait a second...                          " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	if (sender.SendCrashReport(g_crashDumpUploadInterface, parameters, files, 0) ==
-		google_breakpad::ReportResult::RESULT_SUCCEEDED)
+	if (sender.SendCrashReport(g_crashDumpUploadInterface, params, files, 0) == google_breakpad::ReportResult::RESULT_SUCCEEDED)
 		ShowMessage("" CL_BG_RED CL_BT_GREEN " SUCCESS : The crash dump file has been uploaded successfull.                  " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	else
 		ShowMessage("" CL_BG_RED CL_BT_CYAN  " FAILED: The crash dump file failed to upload, please report to developer.     " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
@@ -201,17 +232,18 @@ bool breakpad_callback(const google_breakpad::MinidumpDescriptor& descriptor,
 	files.insert(std::make_pair(_CT("dumpfile"), filepath));
 
 	// 收集其他可能需要的信息, 用于服务端分析或归类使用
-	std::map<crash_string, crash_string> parameters;
-	parameters.insert(std::make_pair(_CT("token"), g_crashDumpUploadToken));
-	parameters.insert(std::make_pair(_CT("platform"), "linux"));
-	parameters.insert(std::make_pair(_CT("version"), getPandasVersion(true).c_str()));
-	parameters.insert(std::make_pair(_CT("branch"), std::string(GIT_BRANCH)));
-	parameters.insert(std::make_pair(_CT("hash"), string(GIT_HASH)));
+	std::map<crash_string, crash_string> params;
+	params.insert(std::make_pair(_CT("appid"), crash_string(CRASHRPT_APPID)));
+	params.insert(std::make_pair(_CT("platform"), "linux"));
+	params.insert(std::make_pair(_CT("version"), getPandasVersion(true).c_str()));
+	params.insert(std::make_pair(_CT("branch"), std::string(GIT_BRANCH)));
+	params.insert(std::make_pair(_CT("hash"), std::string(GIT_HASH)));
+	params_dosign(params);
 
 	std::string response, error;
 	bool success = google_breakpad::HTTPUpload::SendRequest(
 		g_crashDumpUploadInterface,
-		parameters, files, "", "", "", &response, NULL, &error
+		params, files, "", "", "", &response, NULL, &error
 	);
 
 	display_crashtips(filepath, false);
@@ -256,19 +288,6 @@ void breakpad_initialize() {
 	);
 #endif // _WIN32
 
-	// 提前创建用于上报转储文件时所使用的令牌
-	// 因为当程序崩溃的时候, 回调函数中的代码应该尽量少的进行任何多余操作
-	if (crash_string(CRASHRPT_APPID).length() > 0 &&
-		crash_string(CRASHRPT_PUBLICKEY).length() > 0) {
-		crash_string tokeninfo = strFormat(
-			_CT("PANDASWS|%s|%ld"), CRASHRPT_APPID, time(NULL)
-		);
-		g_crashDumpUploadToken = crash_s2w(crypto_RSAEncryptString(
-			crash_w2s(crash_string(CRASHRPT_PUBLICKEY)),
-			crash_w2s(tokeninfo)
-		));
-		g_crashDumpUploadAllowed = true;
-	}
-
-	g_BreakpadInitialized = true;
+	g_crashDumpUploadAllowed = true;
+	g_breakpadInitialized = true;
 }

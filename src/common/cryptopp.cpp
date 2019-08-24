@@ -76,8 +76,9 @@ std::string crypto_PemToOneline(std::string pemKey) {
 // Author:      Sola丶小克(CairoLee)  2019/07/21 19:57
 //************************************
 std::string crypto_RSAEncryptString(std::string pemPublicKey, std::string message) {
-	std::string plainUtf8 = utf8_g2u(message);
+	if (!pemPublicKey.length()) return "";
 
+	std::string plainUtf8 = utf8_g2u(message);
 	pemPublicKey = crypto_PemToOneline(pemPublicKey);
 	StringSource strSource(pemPublicKey, true, new Base64Decoder);
 	RSA::PublicKey publicKey;
@@ -101,6 +102,8 @@ std::string crypto_RSAEncryptString(std::string pemPublicKey, std::string messag
 // Author:      Sola丶小克(CairoLee)  2019/07/21 19:57
 //************************************
 std::string crypto_RSADecryptString(std::string pemPrivateKey, std::string ciphertext) {
+	if (!pemPrivateKey.length()) return "";
+
 	pemPrivateKey = crypto_PemToOneline(pemPrivateKey);
 	StringSource strSource(pemPrivateKey, true, new Base64Decoder);
 	RSA::PrivateKey privateKey;
