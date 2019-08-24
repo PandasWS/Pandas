@@ -318,12 +318,13 @@ std::wstring strFormat(const wchar_t* _Format, ...) {
 //************************************
 std::string getPandasVersion(bool without_vmark) {
 #ifdef _WIN32
-	std::string pandasVersion = strFormat(
+	return strFormat(
 		(without_vmark ? "%s" : "v%s"), getFileVersion("", true).c_str()
 	);
-	return pandasVersion;
 #else
-	return std::string(Pandas_Version);
+	return strFormat(
+		(without_vmark ? "%s" : "v%s"), std::string(Pandas_Version).c_str()
+	);
 #endif // _WIN32
 }
 
