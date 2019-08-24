@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../config/pandas.hpp"
+#include "../config/pandas.hpp"	// GIT_BRANCH, GIT_HASH
 
 void breakpad_initialize();
 void breakpad_status();
