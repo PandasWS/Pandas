@@ -3243,7 +3243,7 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 
 #ifdef Pandas_ScriptEngine_MutliStackBackup
 			while (!sd->mbk_st.empty()) {
-				struct mutli_script_state val = sd->mbk_st.top();
+				struct mutli_state val = sd->mbk_st.top();
 				if (val.bk_st != nullptr) {
 					script_free_state(sd->mbk_st.top().bk_st);
 				}
