@@ -4371,7 +4371,7 @@ void script_detach_state(struct script_state* st, bool dequeue_event)
 		sd->state.disable_atcommand_on_npc = 0;
 
 		if (!sd->mbk_st.empty()) {
-			struct mutli_script_state val = sd->mbk_st.top();
+			struct mutli_state val = sd->mbk_st.top();
 			sd->st = val.bk_st;
 			sd->npc_id = val.bk_npcid;
 			sd->mbk_st.pop();
@@ -4411,7 +4411,7 @@ void script_attach_state(struct script_state* st){
 			st->bk_st = sd->st;
 			st->bk_npcid = sd->npc_id;
 #else
-			struct mutli_script_state mbk_st = { 0 };
+			struct mutli_state mbk_st = { 0 };
 			mbk_st.bk_st = sd->st;
 			mbk_st.bk_npcid = sd->npc_id;
 			sd->mbk_st.push(mbk_st);

@@ -26,7 +26,7 @@
 #endif // Pandas_Struct_Map_Session_Data_WorkInEvent
 
 #ifdef Pandas_ScriptEngine_MutliStackBackup
-#include <stack>
+#include <stack> // std::stack
 #endif // Pandas_ScriptEngine_MutliStackBackup
 
 enum AtCommandType : uint8;
@@ -365,7 +365,7 @@ struct map_session_data {
 	int npc_amount;
 	struct script_state *st;
 #ifdef Pandas_ScriptEngine_MutliStackBackup
-	std::stack<mutli_script_state> mbk_st;
+	std::stack<mutli_state, std::vector<mutli_state>> mbk_st;
 #endif // Pandas_ScriptEngine_MutliStackBackup
 	char npc_str[CHATBOX_SIZE]; // for passing npc input box text to script engine
 	int npc_timer_id; //For player attached npc timers. [Skotlex]

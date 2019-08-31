@@ -393,7 +393,7 @@ struct script_state {
 };
 
 #ifdef Pandas_ScriptEngine_MutliStackBackup
-struct mutli_script_state {
+struct mutli_state {
 	struct script_state* bk_st;
 	int bk_npcid;
 };
