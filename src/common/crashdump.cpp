@@ -51,7 +51,7 @@ typedef std::string crash_string;
 #endif // CRASHRPT_PUBLICKEY
 
 // 当程序崩溃时, 将转储文件保存在什么位置
-crash_string g_dumpSaveDirectory = _CT("./dumps");
+crash_string g_dumpSaveDirectory = _CT("dumps");
 
 // 设置检查点记录文件的保存位置
 crash_string g_crashCheckPointFilepath = g_dumpSaveDirectory + _CT("/crashdump.report");
@@ -115,7 +115,7 @@ void display_crashtips(std::string dumpfilepath, bool bottom) {
 //************************************
 void breakpad_status() {
 	if (g_breakpadInitialized)
-		ShowStatus("Google Breakpad initialised: " CL_WHITE "%s/" CL_RESET "\n", crash_w2s(g_dumpSaveDirectory).c_str());
+		ShowInfo("Server crashdump file will be saved to: " CL_WHITE "'%s/'" CL_RESET "\n", crash_w2s(g_dumpSaveDirectory).c_str());
 	else
 		ShowWarning("Google Breakpad initialization failed!\n");
 }
