@@ -51,7 +51,7 @@ typedef std::string crash_string;
 #endif // CRASHRPT_PUBLICKEY
 
 // 当程序崩溃时, 将转储文件保存在什么位置
-crash_string g_dumpSaveDirectory = _CT("log/dumps");
+crash_string g_dumpSaveDirectory = _CT("dumps");
 
 // 设置检查点记录文件的保存位置
 crash_string g_crashCheckPointFilepath = g_dumpSaveDirectory + _CT("/crashdump.report");
@@ -115,7 +115,7 @@ void display_crashtips(std::string dumpfilepath, bool bottom) {
 //************************************
 void breakpad_status() {
 	if (g_breakpadInitialized)
-		ShowStatus("Google Breakpad initialised: " CL_WHITE "%s/" CL_RESET "\n", crash_w2s(g_dumpSaveDirectory).c_str());
+		ShowInfo("Server crashdump file will be saved to: " CL_WHITE "'%s/'" CL_RESET "\n", crash_w2s(g_dumpSaveDirectory).c_str());
 	else
 		ShowWarning("Google Breakpad initialization failed!\n");
 }
@@ -156,15 +156,31 @@ void params_dosign(std::map<crash_string, crash_string> & params)
 #ifdef _WIN32
 
 //************************************
-// Method:		breakpad_callback
-// Description:	当转储文件的生成过程结束后, 会触发此回调函数
-// Parameter:	const wchar_t * dump_path
-// Parameter:	const wchar_t * minidump_id
-// Parameter:	void * context
-// Parameter:	EXCEPTION_POINTERS * exinfo
-// Parameter:	MDRawAssertionInfo * assertion
-// Parameter:	bool succeeded
-// Returns:		bool
+// Method:      breakpad_filter
+// Description: 在转储文件生成之前, 会触发此回调函数
+// Parameter:   void * context
+// Parameter:   EXCEPTION_POINTERS * exinfo
+// Parameter:   MDRawAssertionInfo * assertion
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/08/31 20:22
+//************************************
+bool breakpad_filter(void* context, EXCEPTION_POINTERS* exinfo, MDRawAssertionInfo* assertion)
+{
+	// 在此时立刻创建用于保存转储文件的目录, 创建失败转储文件将不会被生成
+	return makeDirectories(crash_w2s(g_dumpSaveDirectory));
+}
+
+//************************************
+// Method:      breakpad_callback
+// Description: 当转储文件已经成功生成后, 会触发此回调函数
+// Parameter:   const wchar_t * dump_path
+// Parameter:   const wchar_t * minidump_id
+// Parameter:   void * context
+// Parameter:   EXCEPTION_POINTERS * exinfo
+// Parameter:   MDRawAssertionInfo * assertion
+// Parameter:   bool succeeded
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/08/31 20:21
 //************************************
 bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, void* context,
 	EXCEPTION_POINTERS* exinfo, MDRawAssertionInfo* assertion, bool succeeded)
@@ -210,12 +226,26 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 // 在 Linux 环境下 Breakpad 的使用方法与 Windows 有差异
 
 //************************************
-// Method:		breakpad_callback
-// Description:	当转储文件的生成过程结束后, 会触发此回调函数
-// Parameter:	const google_breakpad::MinidumpDescriptor & descriptor
-// Parameter:	void * context
-// Parameter:	bool succeeded
-// Returns:		bool
+// Method:      breakpad_filter
+// Description: 在转储文件生成之前, 会触发此回调函数
+// Parameter:   void * context
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/08/31 20:22
+//************************************
+bool breakpad_filter(void* context)
+{
+	// 在此时立刻创建用于保存转储文件的目录, 创建失败转储文件将不会被生成
+	return makeDirectories(crash_w2s(g_dumpSaveDirectory));
+}
+
+//************************************
+// Method:      breakpad_callback
+// Description: 当转储文件已经成功生成后, 会触发此回调函数
+// Parameter:   const google_breakpad::MinidumpDescriptor & descriptor
+// Parameter:   void * context
+// Parameter:   bool succeeded
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/08/31 20:22
 //************************************
 bool breakpad_callback(const google_breakpad::MinidumpDescriptor& descriptor,
 	void* context, bool succeeded)
@@ -267,13 +297,11 @@ bool breakpad_callback(const google_breakpad::MinidumpDescriptor& descriptor,
 // Returns:		void
 //************************************
 void breakpad_initialize() {
-	if (!makeDirectories(crash_w2s(g_dumpSaveDirectory))) return;
-
 #ifdef _WIN32
 	// 此处不能放弃对 g_pExceptionHandler 的赋值,
 	// 否则整个 google_breakpad::ExceptionHandler 对象会在本函数结束的时候被释放掉
 	g_pExceptionHandler = new google_breakpad::ExceptionHandler(
-		g_dumpSaveDirectory, nullptr, breakpad_callback, nullptr,
+		g_dumpSaveDirectory, breakpad_filter, breakpad_callback, nullptr,
 		google_breakpad::ExceptionHandler::HANDLER_ALL,
 		MINIDUMP_TYPE(MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithDataSegs), _CT(""), 0
 	);
@@ -284,7 +312,7 @@ void breakpad_initialize() {
 	// 此处不能放弃对 g_pExceptionHandler 的赋值,
 	// 否则整个 google_breakpad::ExceptionHandler 对象会在本函数结束的时候被释放掉
 	g_pExceptionHandler = new google_breakpad::ExceptionHandler(
-		descriptor, nullptr, breakpad_callback, nullptr, true, -1
+		descriptor, breakpad_filter, breakpad_callback, nullptr, true, -1
 	);
 #endif // _WIN32
 

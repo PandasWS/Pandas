@@ -365,7 +365,6 @@ int main (int argc, char **argv)
 {
 #ifdef Pandas_Google_Breakpad
 	breakpad_initialize();
-	breakpad_status();
 #endif // Pandas_Google_Breakpad
 
 	{// initialize program arguments
@@ -417,6 +416,10 @@ int main (int argc, char **argv)
 
 	timer_init();
 	socket_init();
+
+#ifdef Pandas_Google_Breakpad
+	breakpad_status();
+#endif // Pandas_Google_Breakpad
 
 	do_init(argc,argv);
 

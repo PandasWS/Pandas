@@ -133,7 +133,7 @@ Thumbs.db
 /dbghelp.dll
 
 # CrashDump
-/log/dumps/*.dmp
+/dumps/*
 
 # Intel Parallel Studio XE
 My Advisor Results*
