@@ -22,10 +22,6 @@ import shutil
 import time
 import winreg
 
-import pefile
-import pdbparse
-import binascii
-
 import git
 
 from dotenv import load_dotenv
@@ -39,12 +35,6 @@ project_slndir = '../../'
 
 # 此脚本所需要的缓存目录 (缓存符号文件, 编译输出日志)
 project_cachedir = 'tools/python/cache/'
-
-# 符号仓库工程路径
-project_symstoredir = os.path.abspath(project_slndir + '../symbols')
-
-# 符号文件的 Git 仓库路径
-symbols_giturl = 'https://github.com/PandasWS/Symbols.git'
 
 # 编译输出日志的路径
 compile_logfile = '%s/compile.log' % project_cachedir
@@ -76,65 +66,6 @@ vs_configure = [
         'vcvarsall' : r'vcvarsall.bat'
     }
 ]
-
-def get_pe_hash(pefilepath):
-    '''
-    获取 PE 文件的哈希值
-    '''
-    if not Common.is_file_exists(pefilepath):
-        return None
-    pe = pefile.PE(pefilepath, fast_load=True)
-    return '%X%X' % (pe.FILE_HEADER.TimeDateStamp, pe.OPTIONAL_HEADER.SizeOfImage)
-
-def get_pdb_hash(pdbfilepath):
-    '''
-    获取 PDB 文件的哈希值
-    '''
-    if not Common.is_file_exists(pdbfilepath):
-        return None
-    p = pdbparse.parse(pdbfilepath, fast_load = True)
-    pdb = p.streams[pdbparse.PDB_STREAM_PDB]
-    pdb.load()
-    guidstr = (u'%08x%04x%04x%s%x' % (pdb.GUID.Data1, pdb.GUID.Data2, pdb.GUID.Data3, binascii.hexlify(
-        pdb.GUID.Data4).decode('ascii'), pdb.Age)).upper()
-    return guidstr
-
-def deploy_symbols(dir_path, symstore_path):
-    '''
-    扫描某个目录中的全部 exe 和 pdb 文件
-    将它们放到符号仓库中
-    '''
-    for dirpath, _dirnames, filenames in os.walk(dir_path):
-        for filename in filenames:
-            _base_name, extension_name = os.path.splitext(filename.lower())
-
-            if extension_name not in ['.exe', '.dll', '.pdb']:
-                continue
-
-            fullpath = os.path.normpath('%s/%s' % (dirpath, filename))
-            deploy_single_symbols(fullpath, symstore_path)
-
-def deploy_single_symbols(filepath, symstore_path):
-    '''
-    将给定的 exe 和 pdb 等 PE 文件放到符号仓库中
-    '''
-    filename = os.path.basename(filepath)
-    _base_name, extension_name = os.path.splitext(filename.lower())
-
-    if extension_name not in ['.exe', '.dll', '.pdb']:
-        return
-    
-    if extension_name == '.exe':
-        filehash = get_pe_hash(filepath)
-    else:
-        filehash = get_pdb_hash(filepath)
-    
-    target_filepath = "{symstore_path}/{filebasename}/{hash}/{filename}".format(
-        symstore_path = symstore_path,
-        filebasename = filename, hash = filehash, filename = filename
-    )
-    os.makedirs(os.path.dirname(target_filepath), exist_ok=True)
-    shutil.copyfile(filepath, target_filepath)
 
 def get_reg_value(vs):
     '''
@@ -221,35 +152,6 @@ def has_changelog(ver):
     matchgroup = Common.match_file_regex(filepath, ver)
     return True if matchgroup is not None else False
 
-def save_symbols(cache_subdir):
-    '''
-    编译完成后进行符号文件的保存工作
-    '''
-    symbols_cache_dir = os.path.join(slndir(project_cachedir), cache_subdir)
-    shutil.rmtree(symbols_cache_dir, ignore_errors=True)
-    os.makedirs(symbols_cache_dir, exist_ok=True)
-
-    # 复制需要保存符号的相关文件到特定目录
-    compiled_product = [
-        'login-server.exe', 'login-server.pdb',
-        'char-server.exe', 'char-server.pdb',
-        'map-server.exe', 'map-server.pdb',
-        'csv2yaml.exe', 'csv2yaml.pdb',
-        'mapcache.exe', 'mapcache.pdb'
-    ]
-
-    for filepath in compiled_product:
-        shutil.copyfile(slndir(filepath), '%s/%s' % (symbols_cache_dir, filepath))
-    
-    # 将符号文件保存到本地某个目录
-    deploy_symbols(symbols_cache_dir, "%s/symbols/win" % project_symstoredir)
-
-    # 使符号仓库将新增的文件设置为待提交
-    repo = git.Repo(project_symstoredir)
-    repo.git.add('.')
-
-    return True
-
 def slndir(path):
     '''
     基于工程文件根目录进行相对路径的转换
@@ -279,40 +181,6 @@ def clean_environment():
 
     shutil.rmtree(slndir(project_cachedir), ignore_errors=True)
 
-def update_symstore():
-    if not Common.is_dir_exists(project_symstoredir):
-        print('')
-        if not Inputer().requireBool({
-            'tips' : '本机尚未克隆最新的符号仓库, 是否立刻进行克隆?',
-            'default' : False
-        }):
-            Message.ShowStatus('您主动放弃了继续操作')
-            Common.exit_with_pause(-1)
-
-        git.Repo.clone_from(symbols_giturl, project_symstoredir)
-    else:
-        repo = git.Repo(project_symstoredir)
-        if not repo.is_dirty() and not repo.untracked_files:
-            Message.ShowStatus('正在尝试拉取最新的符号数据...')
-            try:
-                repo.remotes.origin.pull()
-            except git.GitError as _err:
-                Message.ShowWarning('符号数据更新失败: %s' % _err)
-            else:
-                Message.ShowStatus('符号数据更新成功.')
-        else:
-            print('')
-            if Inputer().requireBool({
-                'tips' : '本地符号仓库的工作区不干净, 是否重置工作区?',
-                'default' : False
-            }):
-                repo.git.reset('--hard')
-                repo.git.clean('-xdf')
-                Message.ShowStatus('已成功重置本地符号仓库到干净状态.')
-            else:
-                Message.ShowWarning('本地符号仓库工作区不干净, 放弃更新符号数据..')
-            print('')
-
 def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
     '''
     用于执行编译
@@ -339,13 +207,9 @@ def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
 
     # 若成功, 则进行符号文件的存储
     if result and int(succ) > 1 and int(faild) == 0:
-        Message.ShowStatus('%s: 全部编译成功.' % modetag)
-        Message.ShowStatus('%s: 正在存储符号文件到本地符号仓库...' % modetag)
-        if save_symbols(modetag):
-            Message.ShowStatus('%s: 符号文件存储完毕.' % modetag)
         return True
     else:
-        Message.ShowWarning('%s: 存在编译失败的工程, 暂不保存符号文件...' % modetag)
+        Message.ShowWarning('%s: 存在编译失败的工程, 请进行检查...' % modetag)
         return False
 
 def define_builder(options):
@@ -444,9 +308,6 @@ def main():
     else:
         Message.ShowWarning('没有在更新日志中找到 %s 版本的信息, 请注意完善!' % pandas_ver)
 
-    # 检查创建并尝试更新符号仓库
-    update_symstore()
-
     # 判断当前 git 工作区是否干净, 若工作区不干净要给予提示
     if git.Repo(project_slndir).is_dirty():
         if not Inputer().requireBool({
@@ -478,8 +339,7 @@ def main():
     compile_renewal(pandas_ver)
 
     print('')
-    Message.ShowStatus('编译工作已经全部结束.')
-    Message.ShowStatus('编译时产生的符号文件已存储, 记得提交符号文件.\n')
+    Message.ShowStatus('编译工作已经全部结束, 请归档符号并执行打包流程.')
 
     # 友好退出, 主要是在 Windows 环境里给予暂停
     Common.exit_with_pause(0)
