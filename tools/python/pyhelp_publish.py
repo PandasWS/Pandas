@@ -241,6 +241,25 @@ def clean(export_file):
     if os.path.exists(export_file):
         os.remove(export_file)
 
+def is_compiled():
+    '''
+    检查一些编译产物是否存在
+    '''
+    checkfiles = [
+        'login-server.exe',
+        'char-server.exe',
+        'map-server.exe',
+        'login-server-pre.exe',
+        'char-server-pre.exe',
+        'map-server-pre.exe',
+        'csv2yaml.exe'
+    ]
+    for filename in checkfiles:
+        filepath = os.path.abspath(project_slndir + filename)
+        if not Common.is_file_exists(filepath):
+            return False
+    return True
+
 def main():
     '''
     主入口函数
@@ -251,6 +270,12 @@ def main():
 
     pandas_ver = Common.get_pandas_ver(os.path.abspath(project_slndir))
     Message.ShowInfo('当前模拟器的主版本是 %s' % pandas_ver)
+
+    # 检查是否已经完成了编译
+    if not is_compiled():
+        Message.ShowWarning('检测到打包需要的编译产物不完整, 请重新编译. 程序终止.')
+        print('')
+        Common.exit_with_pause(0)
 
     # 导出当前仓库, 变成一个归档压缩文件
     Message.ShowInfo('正在将 HEAD 内容导出成归档文件...')
