@@ -6,7 +6,8 @@
 //===== Current Version: ===================================== 
 //= 1.0
 //===== Description: ========================================= 
-//= 此脚本用于编译 Release 版本的 Pandas 并储存相关符号文件
+//= 此脚本用于编译复兴前和复兴后 Release 版本的 Pandas 模拟器
+//= 符号文件的储存和上传工作, 将由其他脚本来实现
 //===== Additional Comments: ================================= 
 //= 1.0 首个版本. [Sola丶小克]
 //============================================================
@@ -175,22 +176,6 @@ def get_vcvarsall_path():
             return vcvarsall_path
     return None
 
-def match_file_regex(filename, pattern, encoding = 'UTF-8-SIG'):
-    '''
-    在一个文件中找出符合正则表达式匹配的结果集合
-    该函数被设计成找到第一个结果就会返回, 且会将内容尽量转换成 list 而不是 tuple
-    若找不到匹配的结果则返回 None
-    '''
-    with open(filename, 'r', encoding = encoding) as f:
-        lines = f.readlines()
-        f.close()
-    
-    for line in lines:
-        regexGroup = re.findall(pattern, line)
-        if regexGroup:
-            return list(regexGroup[0]) if isinstance(regexGroup[0], tuple) else regexGroup
-    return None
-
 def get_pandas_branch():
     '''
     获取当前代码仓库的分支名称
@@ -204,17 +189,6 @@ def get_pandas_hash():
     '''
     repo = git.Repo(project_slndir)
     return repo.head.object.hexsha
-
-def get_pandas_ver():
-    '''
-    读取当前 Pandas 在 src/config/pandas.hpp 定义的版本号
-    若读取不到版本号则返回 None
-    '''
-    filepath = os.path.abspath(slndir('src/config/pandas.hpp'))
-    if not Common.is_file_exists(filepath):
-        return None
-    matchgroup = match_file_regex(filepath, r'#define Pandas_Version "(.*)"')
-    return matchgroup[0] if matchgroup is not None else None
 
 def get_compile_result():
     '''
@@ -230,7 +204,7 @@ def get_compile_result():
     ]
 
     for pattern in pattern_list:
-        matchgroup = match_file_regex(filepath, pattern)
+        matchgroup = Common.match_file_regex(filepath, pattern)
         if matchgroup is not None and len(matchgroup) == 3:
             return True, matchgroup[0], matchgroup[1], matchgroup[2]
 
@@ -244,7 +218,7 @@ def has_changelog(ver):
     filepath = os.path.abspath(slndir('Changelog.txt'))
     if not Common.is_file_exists(filepath):
         return None
-    matchgroup = match_file_regex(filepath, ver)
+    matchgroup = Common.match_file_regex(filepath, ver)
     return True if matchgroup is not None else False
 
 def save_symbols(cache_subdir):
@@ -461,7 +435,7 @@ def main():
     print('')
 
     # 读取当前的 Pandas 主程序版本号
-    pandas_ver = get_pandas_ver()
+    pandas_ver = Common.get_pandas_ver(os.path.abspath(project_slndir))
     Message.ShowInfo('当前模拟器的主版本是 %s' % pandas_ver)
 
     # 判断是否已经写入了对应的更新日志, 若没有则要给予提示再继续
