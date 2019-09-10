@@ -107,20 +107,6 @@ def get_vcvarsall_path():
             return vcvarsall_path
     return None
 
-def get_pandas_branch():
-    '''
-    获取当前代码仓库的分支名称
-    '''
-    repo = git.Repo(project_slndir)
-    return str(repo.active_branch)
-
-def get_pandas_hash():
-    '''
-    获取当前代码仓库的 HASH 版本号
-    '''
-    repo = git.Repo(project_slndir)
-    return repo.head.object.hexsha
-
 def get_compile_result():
     '''
     读取编译的结果, 返回四个值分别是:
@@ -213,6 +199,9 @@ def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
         return False
 
 def define_builder(options):
+    '''
+    提供给定的一组宏定义数组, 用于生成正确的命令行
+    '''
     value = ''
     for key in options:
         value = value + '/D' + str(key)
@@ -237,14 +226,24 @@ def compile_prere(version):
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
         define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
         
-    define_options["GIT_BRANCH"] = '\\"%s\\"' % get_pandas_branch()
-    define_options["GIT_HASH"] = '\\"%s\\"' % get_pandas_hash()
+    define_options["GIT_BRANCH"] = '\\"%s\\"' % Common.get_pandas_branch(project_slndir)
+    define_options["GIT_HASH"] = '\\"%s\\"' % Common.get_pandas_hash(project_slndir)
 
     define_values = define_builder(define_options)
     
     if not compile_sub(define_values, '复兴前', version):
         Message.ShowError('编译复兴前版本时发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
+
+    # 将复兴前版本的编译产物重命名一下, 避免编译复兴后版本时被覆盖
+    shutil.move(slndir('login-server.exe'), slndir('login-server-pre.exe'))
+    shutil.move(slndir('login-server.pdb'), slndir('login-server-pre.pdb'))
+    shutil.move(slndir('char-server.exe'), slndir('char-server-pre.exe'))
+    shutil.move(slndir('char-server.pdb'), slndir('char-server-pre.pdb'))
+    shutil.move(slndir('map-server.exe'), slndir('map-server-pre.exe'))
+    shutil.move(slndir('map-server.pdb'), slndir('map-server-pre.pdb'))
+    
+    print('')
 
 def compile_renewal(version):
     '''
@@ -259,15 +258,17 @@ def compile_renewal(version):
         define_options["CRASHRPT_APPID"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_APPID")
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
         define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
-        
-    define_options["GIT_BRANCH"] = '\\"%s\\"' % get_pandas_branch()
-    define_options["GIT_HASH"] = '\\"%s\\"' % get_pandas_hash()
+
+    define_options["GIT_BRANCH"] = '\\"%s\\"' % Common.get_pandas_branch(project_slndir)
+    define_options["GIT_HASH"] = '\\"%s\\"' % Common.get_pandas_hash(project_slndir)
 
     define_values = define_builder(define_options)
     
     if not compile_sub(define_values, '复兴后', version):
         Message.ShowError('编译复兴前版本时发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
+    
+    print('')
 
 def main():
     '''
@@ -326,23 +327,13 @@ def main():
     # 编译 Pandas 的复兴前版本
     compile_prere(pandas_ver)
 
-    # 将复兴前版本的编译产物重命名一下, 避免编译复兴后版本时被覆盖
-    shutil.move(slndir('login-server.exe'), slndir('login-server-pre.exe'))
-    shutil.move(slndir('login-server.pdb'), slndir('login-server-pre.pdb'))
-    shutil.move(slndir('char-server.exe'), slndir('char-server-pre.exe'))
-    shutil.move(slndir('char-server.pdb'), slndir('char-server-pre.pdb'))
-    shutil.move(slndir('map-server.exe'), slndir('map-server-pre.exe'))
-    shutil.move(slndir('map-server.pdb'), slndir('map-server-pre.pdb'))
-
     # 编译 Pandas 的复兴后版本
-    print('')
     compile_renewal(pandas_ver)
 
-    print('')
     Message.ShowStatus('编译工作已经全部结束, 请归档符号并执行打包流程.')
 
     # 友好退出, 主要是在 Windows 环境里给予暂停
-    Common.exit_with_pause(0)
+    Common.exit_with_pause()
 
 if __name__ == '__main__':
     try:

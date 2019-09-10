@@ -120,8 +120,6 @@ def main():
     if count <= 0:
         Message.ShowInfo('很好! 源代码文件都已转换为 UTF-8-SIG 编码.')
 
-    print('')
-
     Common.exit_with_pause()
 
 if __name__ == '__main__':

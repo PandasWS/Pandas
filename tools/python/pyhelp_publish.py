@@ -214,7 +214,7 @@ def process(export_file, renewal):
     if not zip_unpack(export_file, packagedir):
         clean(export_file)
         Message.ShowError('很抱歉, 解压归档文件失败, 程序终止.')
-        Common.exit_with_pause(0)
+        Common.exit_with_pause(-1)
     
     # 进行后期处理
     Message.ShowStatus('正在对打包源目录进行后期处理...')
@@ -228,7 +228,7 @@ def process(export_file, renewal):
     if not zip_pack(packagedir, zipfilename):
         clean(export_file)
         Message.ShowError('打包成 zip 文件时失败了, 请联系开发者协助定位问题, 程序终止.')
-        Common.exit_with_pause(0)
+        Common.exit_with_pause(-1)
     Message.ShowStatus('已成功构建 {model} 的 zip 文件.'.format(
         model = '复兴后(RE)' if renewal else '复兴前(PRE)'
     ))
@@ -237,28 +237,9 @@ def clean(export_file):
     '''
     执行一些清理工作
     '''
-    Message.ShowInfo('正在进行一些善后清理工作...')
+    Message.ShowStatus('正在进行一些善后清理工作...')
     if os.path.exists(export_file):
         os.remove(export_file)
-
-def is_compiled():
-    '''
-    检查一些编译产物是否存在
-    '''
-    checkfiles = [
-        'login-server.exe',
-        'char-server.exe',
-        'map-server.exe',
-        'login-server-pre.exe',
-        'char-server-pre.exe',
-        'map-server-pre.exe',
-        'csv2yaml.exe'
-    ]
-    for filename in checkfiles:
-        filepath = os.path.abspath(project_slndir + filename)
-        if not Common.is_file_exists(filepath):
-            return False
-    return True
 
 def main():
     '''
@@ -272,18 +253,18 @@ def main():
     Message.ShowInfo('当前模拟器的主版本是 %s' % pandas_ver)
 
     # 检查是否已经完成了编译
-    if not is_compiled():
+    if not Common.is_compiled(project_slndir):
         Message.ShowWarning('检测到打包需要的编译产物不完整, 请重新编译. 程序终止.')
         print('')
-        Common.exit_with_pause(0)
+        Common.exit_with_pause(-1)
 
     # 导出当前仓库, 变成一个归档压缩文件
     Message.ShowInfo('正在将 HEAD 内容导出成归档文件...')
     export_file = export()
     if not export_file:
         Message.ShowError('很抱歉, 导出归档文件失败, 程序终止.')
-        Common.exit_with_pause(0)
-    Message.ShowStatus('归档文件导出完成, 此文件将在程序结束时被删除.') 
+        Common.exit_with_pause(-1)
+    Message.ShowInfo('归档文件导出完成, 此文件将在程序结束时被删除.') 
 
     # 基于归档压缩文件, 进行打包处理
     process(export_file, renewal=True)
@@ -293,11 +274,10 @@ def main():
     clean(export_file)
 
     print('')
-    Message.ShowStatus('已经成功打包相关文件, 请进行人工核验.')
-    print('')
+    Message.ShowInfo('已经成功打包相关文件, 请进行人工核验.')
 
     # 友好退出, 主要是在 Windows 环境里给予暂停
-    Common.exit_with_pause(0)
+    Common.exit_with_pause()
 
 if __name__ == '__main__':
     try:
