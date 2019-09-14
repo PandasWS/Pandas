@@ -6,7 +6,8 @@
 //===== Current Version: ===================================== 
 //= 1.0
 //===== Description: ========================================= 
-//= 此脚本用于编译 Release 版本的 Pandas 并储存相关符号文件
+//= 此脚本用于编译复兴前和复兴后 Release 版本的 Pandas 模拟器
+//= 符号文件的储存和上传工作, 将由其他脚本来实现
 //===== Additional Comments: ================================= 
 //= 1.0 首个版本. [Sola丶小克]
 //============================================================
@@ -21,10 +22,6 @@ import shutil
 import time
 import winreg
 
-import pefile
-import pdbparse
-import binascii
-
 import git
 
 from dotenv import load_dotenv
@@ -38,12 +35,6 @@ project_slndir = '../../'
 
 # 此脚本所需要的缓存目录 (缓存符号文件, 编译输出日志)
 project_cachedir = 'tools/python/cache/'
-
-# 符号仓库工程路径
-project_symstoredir = os.path.abspath(project_slndir + '../symbols')
-
-# 符号文件的 Git 仓库路径
-symbols_giturl = 'https://github.com/PandasWS/Symbols.git'
 
 # 编译输出日志的路径
 compile_logfile = '%s/compile.log' % project_cachedir
@@ -75,65 +66,6 @@ vs_configure = [
         'vcvarsall' : r'vcvarsall.bat'
     }
 ]
-
-def get_pe_hash(pefilepath):
-    '''
-    获取 PE 文件的哈希值
-    '''
-    if not Common.is_file_exists(pefilepath):
-        return None
-    pe = pefile.PE(pefilepath, fast_load=True)
-    return '%X%X' % (pe.FILE_HEADER.TimeDateStamp, pe.OPTIONAL_HEADER.SizeOfImage)
-
-def get_pdb_hash(pdbfilepath):
-    '''
-    获取 PDB 文件的哈希值
-    '''
-    if not Common.is_file_exists(pdbfilepath):
-        return None
-    p = pdbparse.parse(pdbfilepath, fast_load = True)
-    pdb = p.streams[pdbparse.PDB_STREAM_PDB]
-    pdb.load()
-    guidstr = (u'%08x%04x%04x%s%x' % (pdb.GUID.Data1, pdb.GUID.Data2, pdb.GUID.Data3, binascii.hexlify(
-        pdb.GUID.Data4).decode('ascii'), pdb.Age)).upper()
-    return guidstr
-
-def deploy_symbols(dir_path, symstore_path):
-    '''
-    扫描某个目录中的全部 exe 和 pdb 文件
-    将它们放到符号仓库中
-    '''
-    for dirpath, _dirnames, filenames in os.walk(dir_path):
-        for filename in filenames:
-            _base_name, extension_name = os.path.splitext(filename.lower())
-
-            if extension_name not in ['.exe', '.dll', '.pdb']:
-                continue
-
-            fullpath = os.path.normpath('%s/%s' % (dirpath, filename))
-            deploy_single_symbols(fullpath, symstore_path)
-
-def deploy_single_symbols(filepath, symstore_path):
-    '''
-    将给定的 exe 和 pdb 等 PE 文件放到符号仓库中
-    '''
-    filename = os.path.basename(filepath)
-    _base_name, extension_name = os.path.splitext(filename.lower())
-
-    if extension_name not in ['.exe', '.dll', '.pdb']:
-        return
-    
-    if extension_name == '.exe':
-        filehash = get_pe_hash(filepath)
-    else:
-        filehash = get_pdb_hash(filepath)
-    
-    target_filepath = "{symstore_path}/{filebasename}/{hash}/{filename}".format(
-        symstore_path = symstore_path,
-        filebasename = filename, hash = filehash, filename = filename
-    )
-    os.makedirs(os.path.dirname(target_filepath), exist_ok=True)
-    shutil.copyfile(filepath, target_filepath)
 
 def get_reg_value(vs):
     '''
@@ -175,47 +107,6 @@ def get_vcvarsall_path():
             return vcvarsall_path
     return None
 
-def match_file_regex(filename, pattern, encoding = 'UTF-8-SIG'):
-    '''
-    在一个文件中找出符合正则表达式匹配的结果集合
-    该函数被设计成找到第一个结果就会返回, 且会将内容尽量转换成 list 而不是 tuple
-    若找不到匹配的结果则返回 None
-    '''
-    with open(filename, 'r', encoding = encoding) as f:
-        lines = f.readlines()
-        f.close()
-    
-    for line in lines:
-        regexGroup = re.findall(pattern, line)
-        if regexGroup:
-            return list(regexGroup[0]) if isinstance(regexGroup[0], tuple) else regexGroup
-    return None
-
-def get_pandas_branch():
-    '''
-    获取当前代码仓库的分支名称
-    '''
-    repo = git.Repo(project_slndir)
-    return str(repo.active_branch)
-
-def get_pandas_hash():
-    '''
-    获取当前代码仓库的 HASH 版本号
-    '''
-    repo = git.Repo(project_slndir)
-    return repo.head.object.hexsha
-
-def get_pandas_ver():
-    '''
-    读取当前 Pandas 在 src/config/pandas.hpp 定义的版本号
-    若读取不到版本号则返回 None
-    '''
-    filepath = os.path.abspath(slndir('src/config/pandas.hpp'))
-    if not Common.is_file_exists(filepath):
-        return None
-    matchgroup = match_file_regex(filepath, r'#define Pandas_Version "(.*)"')
-    return matchgroup[0] if matchgroup is not None else None
-
 def get_compile_result():
     '''
     读取编译的结果, 返回四个值分别是:
@@ -230,7 +121,7 @@ def get_compile_result():
     ]
 
     for pattern in pattern_list:
-        matchgroup = match_file_regex(filepath, pattern)
+        matchgroup = Common.match_file_regex(filepath, pattern)
         if matchgroup is not None and len(matchgroup) == 3:
             return True, matchgroup[0], matchgroup[1], matchgroup[2]
 
@@ -244,37 +135,8 @@ def has_changelog(ver):
     filepath = os.path.abspath(slndir('Changelog.txt'))
     if not Common.is_file_exists(filepath):
         return None
-    matchgroup = match_file_regex(filepath, ver)
+    matchgroup = Common.match_file_regex(filepath, ver)
     return True if matchgroup is not None else False
-
-def save_symbols(cache_subdir):
-    '''
-    编译完成后进行符号文件的保存工作
-    '''
-    symbols_cache_dir = os.path.join(slndir(project_cachedir), cache_subdir)
-    shutil.rmtree(symbols_cache_dir, ignore_errors=True)
-    os.makedirs(symbols_cache_dir, exist_ok=True)
-
-    # 复制需要保存符号的相关文件到特定目录
-    compiled_product = [
-        'login-server.exe', 'login-server.pdb',
-        'char-server.exe', 'char-server.pdb',
-        'map-server.exe', 'map-server.pdb',
-        'csv2yaml.exe', 'csv2yaml.pdb',
-        'mapcache.exe', 'mapcache.pdb'
-    ]
-
-    for filepath in compiled_product:
-        shutil.copyfile(slndir(filepath), '%s/%s' % (symbols_cache_dir, filepath))
-    
-    # 将符号文件保存到本地某个目录
-    deploy_symbols(symbols_cache_dir, "%s/symbols/win" % project_symstoredir)
-
-    # 使符号仓库将新增的文件设置为待提交
-    repo = git.Repo(project_symstoredir)
-    repo.git.add('.')
-
-    return True
 
 def slndir(path):
     '''
@@ -305,40 +167,6 @@ def clean_environment():
 
     shutil.rmtree(slndir(project_cachedir), ignore_errors=True)
 
-def update_symstore():
-    if not Common.is_dir_exists(project_symstoredir):
-        print('')
-        if not Inputer().requireBool({
-            'tips' : '本机尚未克隆最新的符号仓库, 是否立刻进行克隆?',
-            'default' : False
-        }):
-            Message.ShowStatus('您主动放弃了继续操作')
-            Common.exit_with_pause(-1)
-
-        git.Repo.clone_from(symbols_giturl, project_symstoredir)
-    else:
-        repo = git.Repo(project_symstoredir)
-        if not repo.is_dirty() and not repo.untracked_files:
-            Message.ShowStatus('正在尝试拉取最新的符号数据...')
-            try:
-                repo.remotes.origin.pull()
-            except git.GitError as _err:
-                Message.ShowWarning('符号数据更新失败: %s' % _err)
-            else:
-                Message.ShowStatus('符号数据更新成功.')
-        else:
-            print('')
-            if Inputer().requireBool({
-                'tips' : '本地符号仓库的工作区不干净, 是否重置工作区?',
-                'default' : False
-            }):
-                repo.git.reset('--hard')
-                repo.git.clean('-xdf')
-                Message.ShowStatus('已成功重置本地符号仓库到干净状态.')
-            else:
-                Message.ShowWarning('本地符号仓库工作区不干净, 放弃更新符号数据..')
-            print('')
-
 def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
     '''
     用于执行编译
@@ -365,16 +193,15 @@ def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
 
     # 若成功, 则进行符号文件的存储
     if result and int(succ) > 1 and int(faild) == 0:
-        Message.ShowStatus('%s: 全部编译成功.' % modetag)
-        Message.ShowStatus('%s: 正在存储符号文件到本地符号仓库...' % modetag)
-        if save_symbols(modetag):
-            Message.ShowStatus('%s: 符号文件存储完毕.' % modetag)
         return True
     else:
-        Message.ShowWarning('%s: 存在编译失败的工程, 暂不保存符号文件...' % modetag)
+        Message.ShowWarning('%s: 存在编译失败的工程, 请进行检查...' % modetag)
         return False
 
 def define_builder(options):
+    '''
+    提供给定的一组宏定义数组, 用于生成正确的命令行
+    '''
     value = ''
     for key in options:
         value = value + '/D' + str(key)
@@ -399,14 +226,24 @@ def compile_prere(version):
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
         define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
         
-    define_options["GIT_BRANCH"] = '\\"%s\\"' % get_pandas_branch()
-    define_options["GIT_HASH"] = '\\"%s\\"' % get_pandas_hash()
+    define_options["GIT_BRANCH"] = '\\"%s\\"' % Common.get_pandas_branch(project_slndir)
+    define_options["GIT_HASH"] = '\\"%s\\"' % Common.get_pandas_hash(project_slndir)
 
     define_values = define_builder(define_options)
     
     if not compile_sub(define_values, '复兴前', version):
         Message.ShowError('编译复兴前版本时发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
+
+    # 将复兴前版本的编译产物重命名一下, 避免编译复兴后版本时被覆盖
+    shutil.move(slndir('login-server.exe'), slndir('login-server-pre.exe'))
+    shutil.move(slndir('login-server.pdb'), slndir('login-server-pre.pdb'))
+    shutil.move(slndir('char-server.exe'), slndir('char-server-pre.exe'))
+    shutil.move(slndir('char-server.pdb'), slndir('char-server-pre.pdb'))
+    shutil.move(slndir('map-server.exe'), slndir('map-server-pre.exe'))
+    shutil.move(slndir('map-server.pdb'), slndir('map-server-pre.pdb'))
+    
+    print('')
 
 def compile_renewal(version):
     '''
@@ -421,15 +258,17 @@ def compile_renewal(version):
         define_options["CRASHRPT_APPID"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_APPID")
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
         define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
-        
-    define_options["GIT_BRANCH"] = '\\"%s\\"' % get_pandas_branch()
-    define_options["GIT_HASH"] = '\\"%s\\"' % get_pandas_hash()
+
+    define_options["GIT_BRANCH"] = '\\"%s\\"' % Common.get_pandas_branch(project_slndir)
+    define_options["GIT_HASH"] = '\\"%s\\"' % Common.get_pandas_hash(project_slndir)
 
     define_values = define_builder(define_options)
     
     if not compile_sub(define_values, '复兴后', version):
         Message.ShowError('编译复兴前版本时发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
+    
+    print('')
 
 def main():
     '''
@@ -461,7 +300,7 @@ def main():
     print('')
 
     # 读取当前的 Pandas 主程序版本号
-    pandas_ver = get_pandas_ver()
+    pandas_ver = Common.get_pandas_ver(os.path.abspath(project_slndir))
     Message.ShowInfo('当前模拟器的主版本是 %s' % pandas_ver)
 
     # 判断是否已经写入了对应的更新日志, 若没有则要给予提示再继续
@@ -469,9 +308,6 @@ def main():
         Message.ShowStatus('已经在更新日志中找到了 %s 的版本信息.' % pandas_ver)
     else:
         Message.ShowWarning('没有在更新日志中找到 %s 版本的信息, 请注意完善!' % pandas_ver)
-
-    # 检查创建并尝试更新符号仓库
-    update_symstore()
 
     # 判断当前 git 工作区是否干净, 若工作区不干净要给予提示
     if git.Repo(project_slndir).is_dirty():
@@ -491,24 +327,13 @@ def main():
     # 编译 Pandas 的复兴前版本
     compile_prere(pandas_ver)
 
-    # 将复兴前版本的编译产物重命名一下, 避免编译复兴后版本时被覆盖
-    shutil.move(slndir('login-server.exe'), slndir('login-server-pre.exe'))
-    shutil.move(slndir('login-server.pdb'), slndir('login-server-pre.pdb'))
-    shutil.move(slndir('char-server.exe'), slndir('char-server-pre.exe'))
-    shutil.move(slndir('char-server.pdb'), slndir('char-server-pre.pdb'))
-    shutil.move(slndir('map-server.exe'), slndir('map-server-pre.exe'))
-    shutil.move(slndir('map-server.pdb'), slndir('map-server-pre.pdb'))
-
     # 编译 Pandas 的复兴后版本
-    print('')
     compile_renewal(pandas_ver)
 
-    print('')
-    Message.ShowStatus('编译工作已经全部结束.')
-    Message.ShowStatus('编译时产生的符号文件已存储, 记得提交符号文件.\n')
+    Message.ShowStatus('编译工作已经全部结束, 请归档符号并执行打包流程.')
 
     # 友好退出, 主要是在 Windows 环境里给予暂停
-    Common.exit_with_pause(0)
+    Common.exit_with_pause()
 
 if __name__ == '__main__':
     try:
