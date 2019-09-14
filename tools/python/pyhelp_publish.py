@@ -20,7 +20,7 @@ import zipfile
 import glob
 import shutil
 
-from libs import Common, Inputer, Message
+from libs import Common, Message
 
 # 切换工作目录为脚本所在目录
 os.chdir(os.path.split(os.path.realpath(__file__))[0])
