@@ -9,17 +9,227 @@
 #include <errno.h> // errno, ENOENT, EEXIST
 #include <wchar.h> // vswprintf
 
+#include <iostream>
+#include <fstream>
+
 #ifdef _WIN32
 #include <Windows.h>
 #include <direct.h>
 #else
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h> // DIR remove
+#include <unistd.h> // rmdir
+#include <linux/limits.h> // PATH_MAX
 #endif // _WIN32
 
 #include "strlib.hpp"
 #include "db.hpp"
 #include "showmsg.hpp"
+#include "utils.hpp" // check_filepath
+
+#ifdef _WIN32
+	const std::string pathSep = "\\";
+#else
+	const std::string pathSep = "/";
+#endif // _WIN32
+
+//************************************
+// Method:      deployImportDirectory
+// Description: 将指定的 import-tmpl 部署到对应的 import 位置
+// Parameter:   std::string fromImportDir
+// Parameter:   std::string toImportDir
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/09/16 07:34
+//************************************
+bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
+
+	std::string workDirectory;
+	if (!getExecuteFileDirectory(workDirectory)) {
+		return false;
+	}
+	ensurePathEndwithSep(workDirectory, pathSep);
+
+	std::string fromDirectory = workDirectory + fromImportDir;
+	std::string toDirectory = workDirectory + toImportDir;
+
+	ensurePathEndwithSep(fromDirectory, pathSep);
+	ensurePathEndwithSep(toDirectory, pathSep);
+
+	if (!isDirectoryExists(toDirectory)) {
+		if (!copyDirectory(fromDirectory, toDirectory)) {
+			ShowWarning("Could not copy %s to %s.\n", fromImportDir.c_str(), toImportDir.c_str());
+			return false;
+		}
+	}
+	
+#ifdef _WIN32
+	WIN32_FIND_DATA fdFileData;
+	HANDLE hSearch = NULL;
+	std::string szPathWildcard = fromDirectory + "*.*";
+
+	hSearch = FindFirstFile(szPathWildcard.c_str(), &fdFileData);
+	if (hSearch == INVALID_HANDLE_VALUE) return false;
+
+	do {
+		if (!lstrcmp(fdFileData.cFileName, "..")) continue;
+		if (!lstrcmp(fdFileData.cFileName, ".")) continue;
+
+		std::string fromFullPath = fromDirectory + fdFileData.cFileName;
+		std::string toFullPath = toDirectory + fdFileData.cFileName;
+
+		if (check_filepath(fromFullPath.c_str()) != 2) continue;
+		if (check_filepath(toFullPath.c_str()) != 3) continue;
+
+		std::string displayTargetPath = toImportDir;
+		ensurePathEndwithSep(displayTargetPath, pathSep);
+		displayTargetPath = displayTargetPath + fdFileData.cFileName;
+		standardizePathSep(displayTargetPath);
+
+		if (!(fdFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+			if (!copyFile(fromFullPath.c_str(), toFullPath.c_str())) {
+				ShowWarning("Deploy %s is failed.\n", displayTargetPath.c_str());
+			}
+			else {
+				ShowInfo("Deploy %s is successful.\n", displayTargetPath.c_str());
+			}
+		}
+	} while (FindNextFile(hSearch, &fdFileData));
+
+	FindClose(hSearch);
+#else
+	DIR* dirHandle = opendir(fromDirectory.c_str());
+	if (!dirHandle) return false;
+
+	struct dirent* dt = NULL;
+	while ((dt = readdir(dirHandle))) {
+		if (strcmp(dt->d_name, "..") == 0) continue;
+		if (strcmp(dt->d_name, ".") == 0) continue;
+
+		std::string fromFullPath = fromDirectory + dt->d_name;
+		std::string toFullPath = toDirectory + dt->d_name;
+
+		// 注意: Linux 下 check_filepath 返回值和 Windows 含义不同
+		if (check_filepath(fromFullPath.c_str()) != 2) continue;
+		if (check_filepath(toFullPath.c_str()) != 0) continue;
+
+		std::string displayTargetPath = toImportDir;
+		ensurePathEndwithSep(displayTargetPath, pathSep);
+		displayTargetPath = displayTargetPath + dt->d_name;
+		standardizePathSep(displayTargetPath);
+
+		struct stat st = { 0 };
+		stat(fromFullPath.c_str(), &st);
+		if (!S_ISDIR(st.st_mode)) {
+			if (!copyFile(fromFullPath.c_str(), toFullPath.c_str())) {
+				ShowWarning("Deploy %s is failed.\n", displayTargetPath.c_str());
+			}
+			else {
+				ShowInfo("Deploy %s is successful.\n", displayTargetPath.c_str());
+			}
+		}
+	}
+	closedir(dirHandle);
+#endif // _WIN32
+
+	// 若不存在 src 目录 (用户的生产环境), 那么删除部署的来源目录 (import-tmpl)
+	if (!isDirectoryExists(std::string(workDirectory + "src"))) {
+		deleteDirectory(fromDirectory);
+	}
+
+	return true;
+}
+
+//************************************
+// Method:      deployImportDirectories
+// Description: 部署全部已知的 import 文件夹, 确保它们都存在
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2019/09/16 07:33
+//************************************
+void deployImportDirectories() {
+	const struct _import_data {
+		std::string import_from;
+		std::string import_to;
+	} import_data[] = {
+		{ "conf/import-tmpl", "conf/import" },
+		{ "conf/msg_conf/import-tmpl", "conf/msg_conf/import" },
+		{ "db/import-tmpl", "db/import" }
+	};
+
+	for (size_t i = 0; i < ARRAYLENGTH(import_data); i++) {
+		deployImportDirectory(import_data[i].import_from, import_data[i].import_to);
+	}
+}
+
+//************************************
+// Method:      getExecuteFilepath
+// Description: 获取当前进程的文件路径 (暂时不支持 Windows 以外的系统平台)
+// Parameter:   std::string & outFilepath
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/09/14 23:55
+//************************************
+bool getExecuteFilepath(std::string& outFilepath) {
+#ifdef _WIN32
+	DWORD dwError = 0;
+	DWORD dwResult = 0;
+	DWORD dwSize = MAX_PATH;
+
+	SetLastError(dwError);
+	while (dwSize <= 10240) {
+		outFilepath.resize(dwSize);
+
+		dwResult = GetModuleFileName(NULL, &outFilepath[0], dwSize);
+		dwError = GetLastError();
+
+		if (0 == dwResult) {
+			outFilepath = "";
+			return false;
+		}
+
+		if (ERROR_INSUFFICIENT_BUFFER == dwError) {
+			dwSize *= 2;
+			SetLastError(dwError);
+			continue;
+		}
+
+		outFilepath.resize(dwResult);
+		return true;
+	}
+
+	return false;
+#else
+	outFilepath.resize(PATH_MAX);
+	if (readlink("/proc/self/exe", &outFilepath[0], PATH_MAX) >= 0) {
+		return true;
+	}
+	
+	return false;
+#endif // _WIN32
+}
+
+//************************************
+// Method:      getExecuteFileDirectory
+// Description: 获取当前进程的所在目录
+// Parameter:   std::string & outFileDirectory
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/09/14 23:55
+//************************************
+bool getExecuteFileDirectory(std::string& outFileDirectory) {
+	std::string filePath;
+	if (!getExecuteFilepath(filePath)) {
+		outFileDirectory = "";
+		return false;
+	}
+
+	std::size_t dwPos = filePath.rfind(pathSep);
+	if (dwPos == std::string::npos) {
+		outFileDirectory = "";
+		return false;
+	}
+
+	outFileDirectory = filePath.substr(0, dwPos);
+	return true;
+}
 
 //************************************
 // Method:		isDirectoryExistss
@@ -29,16 +239,14 @@
 //************************************
 bool isDirectoryExists(const std::string& path) {
 #ifdef _WIN32
-	struct _stat info;
-	if (_stat(path.c_str(), &info) != 0)
-	{
+	struct _stat info = { 0 };
+	if (_stat(path.c_str(), &info) != 0) {
 		return false;
 	}
 	return (info.st_mode & _S_IFDIR) != 0;
 #else 
-	struct stat info;
-	if (stat(path.c_str(), &info) != 0)
-	{
+	struct stat info = { 0 };
+	if (stat(path.c_str(), &info) != 0) {
 		return false;
 	}
 	return (info.st_mode & S_IFDIR) != 0;
@@ -94,6 +302,182 @@ bool makeDirectories(const std::string& path) {
 }
 
 //************************************
+// Method:      deleteDirectory
+// Description: 删除指定的目录及其全部内容 (跨平台支持)
+// Parameter:   std::string path
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/09/15 21:54
+//************************************
+bool deleteDirectory(std::string path) {
+	ensurePathEndwithSep(path, pathSep);
+#ifdef _WIN32
+	WIN32_FIND_DATA fdFileData;
+	HANDLE hSearch = NULL;
+	std::string szPathWildcard, szFullPath;
+
+	szPathWildcard = path + "*.*";
+	hSearch = FindFirstFile(szPathWildcard.c_str(), &fdFileData);
+	if (hSearch == INVALID_HANDLE_VALUE) return true;
+
+	do {
+		if (!lstrcmp(fdFileData.cFileName, "..")) continue;
+		if (!lstrcmp(fdFileData.cFileName, ".")) continue;
+
+		szFullPath = path + fdFileData.cFileName;
+		if (fdFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+			deleteDirectory(szFullPath);
+		}
+		else {
+			DeleteFile(szFullPath.c_str());
+		}
+	} while (FindNextFile(hSearch, &fdFileData));
+	FindClose(hSearch);
+
+	return RemoveDirectory(path.c_str());
+#else
+	DIR* dirHandle = opendir(path.c_str());
+	if (!dirHandle) return false;
+
+	struct dirent* dt = NULL;
+	while ((dt = readdir(dirHandle))) {
+		if (strcmp(dt->d_name, "..") == 0) continue;
+		if (strcmp(dt->d_name, ".") == 0) continue;
+
+		struct stat st = { 0 };
+		std::string enum_path = path + dt->d_name;
+		stat(enum_path.c_str(), &st);
+		if (S_ISDIR(st.st_mode))
+			deleteDirectory(enum_path);
+		else
+			remove(enum_path.c_str());
+	}
+	closedir(dirHandle);
+	return (rmdir(path.c_str()) == 0 ? true : false);
+#endif // _WIN32
+}
+
+//************************************
+// Method:      copyDirectory
+// Description: 将指定的目录, 复制到另外一个位置 (跨平台支持)
+// Parameter:   std::string fromPath
+// Parameter:   std::string toPath
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/09/16 08:21
+//************************************
+bool copyDirectory(std::string fromPath, std::string toPath) {
+	ensurePathEndwithSep(fromPath, pathSep);
+	ensurePathEndwithSep(toPath, pathSep);
+
+	if (!isDirectoryExists(fromPath) || fromPath == toPath) {
+		return false;
+	}
+
+	if (!isDirectoryExists(toPath) && !makeDirectories(toPath)) {
+		return false;
+	}
+
+#ifdef _WIN32
+	WIN32_FIND_DATA fdFileData;
+	HANDLE hSearch = NULL;
+	std::string szPathWildcard, szFullPath, szDstPath;
+
+	szPathWildcard = fromPath + "*.*";
+	hSearch = FindFirstFile(szPathWildcard.c_str(), &fdFileData);
+	if (hSearch == INVALID_HANDLE_VALUE) return true;
+
+	do {
+		if (!lstrcmp(fdFileData.cFileName, "..")) continue;
+		if (!lstrcmp(fdFileData.cFileName, ".")) continue;
+
+		szFullPath = fromPath + fdFileData.cFileName;
+		szDstPath = toPath + fdFileData.cFileName;
+
+		if (fdFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+			if (!copyDirectory(szFullPath, szDstPath)) {
+				FindClose(hSearch);
+				return false;
+			}
+		}
+		else {
+			if (!CopyFile(szFullPath.c_str(), szDstPath.c_str(), FALSE)) {
+				FindClose(hSearch);
+				return false;
+			}
+		}
+	} while (FindNextFile(hSearch, &fdFileData));
+	FindClose(hSearch);
+#else
+	DIR* dirHandle = opendir(fromPath.c_str());
+	if (!dirHandle) {
+		return false;
+	}
+
+	struct dirent* dt = NULL;
+	while ((dt = readdir(dirHandle))) {
+		if (strcmp(dt->d_name, "..") == 0) continue;
+		if (strcmp(dt->d_name, ".") == 0) continue;
+
+		struct stat st = { 0 };
+		std::string enum_frompath = fromPath + dt->d_name;
+		std::string enum_topath = toPath + dt->d_name;
+
+		stat(enum_frompath.c_str(), &st);
+		if (S_ISDIR(st.st_mode)) {
+			if (!copyDirectory(enum_frompath, enum_topath)) {
+				closedir(dirHandle);
+				return false;
+			}
+		}
+		else {
+			if (!copyFile(enum_frompath, enum_topath)) {
+				closedir(dirHandle);
+				return false;
+			}
+		}
+	}
+	closedir(dirHandle);
+#endif // _WIN32
+
+	return true;
+}
+
+
+//************************************
+// Method:      copyFile
+// Description: 复制文件到另外一个位置 (跨平台支持)
+// Parameter:   std::string fromPath
+// Parameter:   std::string toPath
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/09/16 12:47
+//************************************
+bool copyFile(std::string fromPath, std::string toPath) {
+	if (check_filepath(fromPath.c_str()) != 2) {
+		return false;
+	}
+#ifdef _WIN32
+	return CopyFile(fromPath.c_str(), toPath.c_str(), FALSE);
+#else
+	try {
+		std::ifstream fromStream(fromPath.c_str(), std::ios::binary);
+		std::remove(toPath.c_str());
+		std::ofstream toStream(toPath.c_str(), std::ios::binary);
+		
+		if (!toStream) {
+			ShowWarning("Could not create output file: %s\n", toPath.c_str());
+			return false;
+		}
+		
+		toStream << fromStream.rdbuf();
+		return true;
+	}
+	catch (...) {
+		return false;
+	}
+#endif // _WIN32
+}
+
+
+//************************************
 // Method:		strReplace
 // Description:	用于对 std::string 进行全部替换操作
 // Parameter:	std::string & str
@@ -130,12 +514,49 @@ void strReplace(std::wstring& str, const std::wstring& from, const std::wstring&
 }
 
 //************************************
-// Method:		ensurePathSep
-// Description:	将给带的路径中存在的 / 或 \ 转换成当前系统匹配的路径分隔符
-// Parameter:	std::string path
-// Returns:		std::string
+// Method:      strEndWith
+// Description: 用于判断 std::string 是否以另外一个 std::string 结尾
+// Parameter:   std::string fullstring
+// Parameter:   std::string ending
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/09/15 21:55
 //************************************
-std::string ensurePathSep(std::string& path) {
+bool strEndWith(std::string fullstring, std::string ending) {
+	if (fullstring.length() >= ending.length()) {
+		return (0 == fullstring.compare(
+			fullstring.length() - ending.length(), ending.length(), ending
+		));
+	}
+	return false;
+}
+
+//************************************
+// Method:      strEndWith
+// Description: 用于判断 std::wstring 是否以另外一个 std::wstring 结尾
+// Parameter:   std::wstring fullstring
+// Parameter:   std::wstring ending
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/09/15 21:56
+//************************************
+bool strEndWith(std::wstring fullstring, std::wstring ending) {
+	if (fullstring.length() >= ending.length()) {
+		return (0 == fullstring.compare(
+			fullstring.length() - ending.length(), ending.length(), ending
+		));
+	}
+	return false;
+}
+
+//************************************
+// Method:      standardizePathSep
+// Description:	将给带的路径中存在的 / 或 \ 转换成当前系统匹配的路径分隔符
+//              只有涉及输出体验或代码在 WIN 平台上硬编码对 \ 的判断时, 才需要使用它
+//              无论是什么平台的 API 函数, 应该都认可使用 / 作为目录分隔符
+// Parameter:   std::string & path
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2019/09/16 08:24
+//************************************
+void standardizePathSep(std::string& path) {
 #ifdef _WIN32
 	char pathsep[] = "\\";
 #else
@@ -143,16 +564,18 @@ std::string ensurePathSep(std::string& path) {
 #endif // _WIN32
 	strReplace(path, "/", pathsep);
 	strReplace(path, "\\", pathsep);
-	return path;
 }
 
 //************************************
-// Method:		ensurePathSep
+// Method:      standardizePathSep
 // Description:	将给带的路径中存在的 / 或 \ 转换成当前系统匹配的路径分隔符
-// Parameter:	std::wstring path
-// Returns:		std::wstring
+//              只有涉及输出体验或代码在 WIN 平台上硬编码对 \ 的判断时, 才需要使用它
+//              无论是什么平台的 API 函数, 应该都认可使用 / 作为目录分隔符
+// Parameter:   std::wstring & path
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2019/09/16 08:24
 //************************************
-std::wstring ensurePathSep(std::wstring& path) {
+void standardizePathSep(std::wstring& path) {
 #ifdef _WIN32
 	wchar_t pathsep[] = L"\\";
 #else
@@ -160,7 +583,34 @@ std::wstring ensurePathSep(std::wstring& path) {
 #endif // _WIN32
 	strReplace(path, L"/", pathsep);
 	strReplace(path, L"\\", pathsep);
-	return path;
+}
+
+//************************************
+// Method:      ensurePathEndwithSep
+// Description: 确保指定的 std::string 路径使用 sep 结尾
+// Parameter:   std::string & path
+// Parameter:   std::string sep
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2019/09/16 07:34
+//************************************
+void ensurePathEndwithSep(std::string& path, std::string sep) {
+	if (!(strEndWith(path, "\\") || strEndWith(path, "/"))) {
+		path.append(sep);
+	}
+}
+
+//************************************
+// Method:      ensurePathEndwithSep
+// Description: 确保指定的 std::wstring 路径使用 sep 结尾
+// Parameter:   std::wstring & path
+// Parameter:   std::wstring sep
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2019/09/16 07:35
+//************************************
+void ensurePathEndwithSep(std::wstring& path, std::wstring sep) {
+	if (!(strEndWith(path, L"\\") || strEndWith(path, L"/"))) {
+		path.append(sep);
+	}
 }
 
 //************************************

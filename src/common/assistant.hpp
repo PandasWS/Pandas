@@ -7,15 +7,29 @@
 #include <time.h> // struct tm
 #include <memory> // std::shared_ptr
 
+void deployImportDirectories();
 
+bool getExecuteFilepath(std::string& outFilepath);
+bool getExecuteFileDirectory(std::string& outFileDirectory);
+
+bool deleteDirectory(std::string szDirPath);
 bool isDirectoryExists(const std::string& path);
 bool makeDirectories(const std::string& path);
+bool copyDirectory(std::string fromPath, std::string toPath);
+
+bool copyFile(std::string fromPath, std::string toPath);
+
+bool strEndWith(std::string fullstring, std::string ending);
+bool strEndWith(std::wstring fullstring, std::wstring ending);
 
 void strReplace(std::string& str, const std::string& from, const std::string& to);
 void strReplace(std::wstring& str, const std::wstring& from, const std::wstring& to);
 
-std::string ensurePathSep(std::string& path);
-std::wstring ensurePathSep(std::wstring& path);
+void standardizePathSep(std::string& path);
+void standardizePathSep(std::wstring& path);
+
+void ensurePathEndwithSep(std::string& path, std::string sep);
+void ensurePathEndwithSep(std::wstring& path, std::wstring sep);
 
 std::wstring string2wstring(const std::string& s);
 std::string wstring2string(const std::wstring& ws);
