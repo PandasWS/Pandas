@@ -46,9 +46,6 @@
 	// 在 Linux   环境下版本号将直接使用此处定义的默认版本号
 	#define Pandas_Version "1.0.0"
 
-	// 是否启用 Google Breakpad 用于处理程序崩溃
-	#define Pandas_Google_Breakpad
-
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
 
@@ -57,6 +54,9 @@
 
 	// 在启动时显示 Pandas 的版本号
 	#define Pandas_Show_Version
+
+	// 是否启用 Google Breakpad 用于处理程序崩溃
+	#define Pandas_Google_Breakpad
 
 	// 是否启用 npc.cpp 中的自定义辅助函数
 	#define Pandas_NpcHelper_CommonFunc
@@ -207,6 +207,9 @@
 
 	// 使 pointshop 类型的商店能支持指定变量别名, 用于展现给玩家 [Sola丶小克]
 	#define Pandas_Support_Pointshop_Variable_DisplayName
+
+	// 检测 import 目录是否存在, 若不存在能够从 import-tmpl 自动复制一份 [Sola丶小克]
+	#define Pandas_Deploy_Import_Directories
 #endif // Pandas_CreativeWork
 
 // ============================================================================
