@@ -49,9 +49,6 @@
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
 
-	// 在启动时显示免责声明
-	#define Pandas_Disclaimer
-
 	// 在启动时显示 Pandas 的版本号
 	#define Pandas_Show_Version
 

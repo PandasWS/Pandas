@@ -319,11 +319,9 @@ static void display_title(void) {
 	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                                                                  " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_BG_RED "     " CL_GREEN "                          https://pandas.ws/                         " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                      " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-#ifdef Pandas_Disclaimer
 	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "          Pandas is only for learning and research purposes.      " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_BG_RED "     " CL_BT_WHITE "                 Please don't use it for commercial.              " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_BG_RED "     " CL_BOLD "                                                                      " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-#endif // Pandas_Disclaimer
 	ShowMessage("\n");
 #endif // Pandas_Show_Logo
 
@@ -335,6 +333,14 @@ static void display_title(void) {
 #else
 	// 在程序启动时显示 Pandas 的版本号
 	ShowInfo("Pandas Version: " CL_WHITE "%s" CL_RESET "\n", getPandasVersion().c_str());
+
+	// 若宏定义开关指定了源码的版本号和分支, 那么也一起打印出来
+	std::string strGitBranch(GIT_BRANCH), strGitHash(GIT_HASH);
+	if (strGitBranch.length() > 0 && strGitHash.length() > 0) {
+		ShowInfo("Compiled from Git Hash: " CL_WHITE "'%s'" CL_RESET " at " CL_WHITE "'%s'" CL_RESET " branch.\n",
+			strGitHash.substr(0, 7).c_str(), strGitBranch.c_str()
+		);
+	}
 #endif // Pandas_Show_Version
 
 #ifdef Pandas_Disclaimer
