@@ -18,6 +18,7 @@
 	#define Pandas_CreativeWork
 	#define Pandas_Bugfix
 	#define Pandas_ScriptEngine
+	#define Pandas_Cleanup
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
 	#define Pandas_AtCommands
@@ -42,6 +43,7 @@
 	// --------------------------------------
 	// 定义 Pandas 的默认版本号
 	// --------------------------------------
+	// 
 	// 在 Windows 环境下版本号优先以资源文件中的文件版本号为准, 获取失败才会使用此处的版本号
 	// 在 Linux   环境下版本号将直接使用此处定义的默认版本号
 	#define Pandas_Version "1.0.0"
@@ -205,7 +207,7 @@
 	// 使 pointshop 类型的商店能支持指定变量别名, 用于展现给玩家 [Sola丶小克]
 	#define Pandas_Support_Pointshop_Variable_DisplayName
 
-	// 检测 import 目录是否存在, 若不存在能够从 import-tmpl 自动复制一份 [Sola丶小克]
+	// 检测 import 目录是否存在, 若不存在能够从 import-tmpl 复制一份 [Sola丶小克]
 	#define Pandas_Deploy_Import_Directories
 #endif // Pandas_CreativeWork
 
@@ -265,6 +267,22 @@
 	// 以此避免嵌套调用超过两层的脚本会导致程序崩溃的问题 (如: script4each -> getitem -> 成就系统)
 	#define Pandas_ScriptEngine_MutliStackBackup
 #endif // Pandas_ScriptEngine
+
+// ============================================================================
+// 无用代码清理组 - Pandas_Cleanup
+// ============================================================================
+
+#ifdef Pandas_Cleanup
+	// 清理读取 sql.db_hostname 选项的相关代码 [Sola丶小克]
+	// 
+	// 在 rAthena 官方的代码中原本预留了一个数据库默认连接的配置组, 
+	// 这些选项以 sql. 开头, 配置在 conf/inter_athena.conf 中的话就会被程序读取.
+	// 但是整个服务端只有 login-server 会尝试去读取这个配置, 所以非常鸡肋.
+	// 以至于目前 rAthena 在官方的 conf/inter_athena.conf 中都把相关配置删了.
+	//
+	// 所以熊猫表示, 我们也干脆删了吧!! Oh yeah!
+	#define Pandas_Cleanup_Useless_SQL_Global_Configure
+#endif // Pandas_Cleanup
 
 // ============================================================================
 // NPC事件组 - Pandas_NpcEvent
