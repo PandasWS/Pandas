@@ -215,6 +215,14 @@ void ipban_init(void) {
 	}
         ShowInfo("Ipban connection made.\n");
 
+#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+		// 若默认的 ipban_codepage 为空
+		// 那么使用 default_codepage 的值作为默认的 codepage
+		if (strlen(codepage) == 0) {
+			codepage = default_codepage;
+		}
+#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+
 #ifndef Pandas_Detect_Codepage
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
 		Sql_ShowDebug(sql_handle);

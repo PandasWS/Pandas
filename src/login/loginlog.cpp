@@ -13,6 +13,10 @@
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
 
+#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#include "login.hpp" // default_codepage
+#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+
 #ifndef Pandas_Cleanup_Useless_SQL_Global_Configure
 // global sql settings (in ipban_sql.cpp)
 static char   global_db_hostname[64] = "127.0.0.1"; // Doubled to reflect the change on commit #0f2dd7f
@@ -213,6 +217,14 @@ bool loginlog_init(void) {
 		Sql_Free(sql_handle);
 		exit(EXIT_FAILURE);
 	}
+
+#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+	// 若默认的 log_codepage 为空
+	// 那么使用 default_codepage 的值作为默认的 codepage
+	if (strlen(codepage) == 0) {
+		codepage = default_codepage;
+	}
+#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
 
 #ifndef Pandas_Detect_Codepage
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )

@@ -209,6 +209,24 @@
 
 	// 检测 import 目录是否存在, 若不存在能够从 import-tmpl 复制一份 [Sola丶小克]
 	#define Pandas_Deploy_Import_Directories
+
+	// --------------------------------------
+	// 是否重新整理 inter_athena.conf 中对各个 codepage 选项的定义 [Sola丶小克]
+	// --------------------------------------
+	// 
+	// 在 rAthena 原始的代码中:
+	// char_server_db 和 map_server_db 通过 default_codepage 选项控制编码
+	// 而其他的 login_server_db, ipban_db_db, log_db_db 则各自有自己的 codepage 设置项
+	// 且后面这几个数据库连接时, 并不尊重 default_codepage 选项.
+	//
+	// 这样其实对于无法查看代码的用户而言非常容易混淆, 因为 default_codepage 选项并不总是 default
+	// 为此我们进行了一些调整, 让它看起来更加合理.
+	//
+	// 调整之后各个选项的逻辑如下:
+	// 我们为 char_server_db 和 map_server_db 也分配自己的 codepage 设置项.
+	// 当各个连接的 codepage 设置项为空的时候, 则默认使用 default_codepage 选项的值作为默认编码.
+	#define Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+
 #endif // Pandas_CreativeWork
 
 // ============================================================================
