@@ -333,7 +333,7 @@ bool deleteDirectory(std::string path) {
 	} while (FindNextFile(hSearch, &fdFileData));
 	FindClose(hSearch);
 
-	return RemoveDirectory(path.c_str());
+	return (RemoveDirectory(path.c_str()) != 0);
 #else
 	DIR* dirHandle = opendir(path.c_str());
 	if (!dirHandle) return false;
@@ -455,7 +455,7 @@ bool copyFile(std::string fromPath, std::string toPath) {
 		return false;
 	}
 #ifdef _WIN32
-	return CopyFile(fromPath.c_str(), toPath.c_str(), FALSE);
+	return (CopyFile(fromPath.c_str(), toPath.c_str(), false) != 0);
 #else
 	try {
 		std::ifstream fromStream(fromPath.c_str(), std::ios::binary);
