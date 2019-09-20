@@ -14,9 +14,9 @@
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
 
-#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#ifdef Pandas_SQL_Configure_Optimization
 #include "login.hpp" // default_codepage
-#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#endif // Pandas_SQL_Configure_Optimization
 
 /// global defines
 
@@ -135,20 +135,13 @@ static bool account_db_sql_init(AccountDB* self) {
 		return false;
 	}
 
-#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-	// 若默认的 login_codepage 为空
-	// 那么使用 default_codepage 的值作为默认的 codepage
-	if (strlen(codepage) == 0) {
-		codepage = default_codepage;
-	}
-#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-
-#ifndef Pandas_Detect_Codepage
+#ifndef Pandas_SQL_Configure_Optimization
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
 		Sql_ShowDebug(sql_handle);
 #else
-	detectCodepage(sql_handle, "Login-Server", codepage);
-#endif // Pandas_Detect_Codepage
+	if (SQL_ERROR == Sql_SetEncoding(sql_handle, codepage, default_codepage, "Login-Server"))
+		Sql_ShowDebug(sql_handle);
+#endif // Pandas_SQL_Configure_Optimization
 
 	return true;
 }

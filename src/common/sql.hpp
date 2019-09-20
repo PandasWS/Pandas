@@ -95,8 +95,11 @@ int Sql_GetColumnNames(Sql* self, const char* table, char* out_buf, size_t buf_l
 /// Changes the encoding of the connection.
 ///
 /// @return SQL_SUCCESS or SQL_ERROR
+#ifndef Pandas_SQL_Configure_Optimization
 int Sql_SetEncoding(Sql* self, const char* encoding);
-
+#else
+int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encoding = NULL, const char* connect_name = NULL);
+#endif // Pandas_SQL_Configure_Optimization
 
 
 /// Pings the connection.

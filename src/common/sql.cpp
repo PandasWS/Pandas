@@ -16,6 +16,10 @@
 #include "strlib.hpp"
 #include "timer.hpp"
 
+#ifdef Pandas_SQL_Configure_Optimization
+#include "db.hpp" // ARR_FIND, ARRAYLENGTH
+#endif // Pandas_SQL_Configure_Optimization
+
 #include "../custom/defines_core.hpp"
 
 // MySQL 8.0 or later removed my_bool typedef.
@@ -182,20 +186,103 @@ int Sql_GetColumnNames(Sql* self, const char* table, char* out_buf, size_t buf_l
 	return SQL_SUCCESS;
 }
 
-
+#ifndef Pandas_SQL_Configure_Optimization
 
 /// Changes the encoding of the connection.
 int Sql_SetEncoding(Sql* self, const char* encoding)
 {
-#ifndef Pandas_Fix_Mysql_SetEncoding
 	if( self && Sql_Query(self, "SET NAMES %s", encoding) == 0 )
 		return SQL_SUCCESS;
-#else
-	if( self && mysql_set_character_set(&self->handle, encoding) == 0 )
-		return SQL_SUCCESS;
-#endif // Pandas_Fix_Mysql_SetEncoding
 	return SQL_ERROR;
 }
+
+#else
+
+/// Changes the encoding of the connection.
+int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encoding, const char* connect_name)
+{
+	bool bNoSetEncoding = false;
+
+	do 
+	{
+		if (!encoding || strlen(encoding) <= 0) {
+			if (default_encoding && strlen(default_encoding) > 0) {
+				// 如果默认编码的指针是有效的, 且默认编码的内容不为空, 那么使用默认编码
+				encoding = default_encoding;
+			}
+			else {
+				// 如果连默认编码都是无效的, 那么给与必要的提示并友好退出
+				bNoSetEncoding = true;
+				break;
+			}
+		}
+
+		// 先查询当前数据库使用的编码是哪个, 保存到 current_codepage 备用
+		char* current_codepage = nullptr;
+		if (SQL_ERROR == Sql_Query(self, "SHOW VARIABLES LIKE 'character_set_server';")) {
+			Sql_ShowDebug(self);
+			break;
+		}
+		if (SQL_ERROR == Sql_NextRow(self) ||
+			SQL_ERROR == Sql_GetData(self, 1, &current_codepage, NULL)) {
+			Sql_ShowDebug(self);
+			break;
+		}
+		Sql_FreeResult(self);
+		if (current_codepage == nullptr) break;
+
+		// 当 connect_name 非空时, 提示当前数据库的编码
+		if (connect_name != nullptr) {
+			ShowInfo("Detected the " CL_WHITE "%s" CL_RESET " database character set is " CL_WHITE "%s" CL_RESET ".\n", connect_name, current_codepage);
+		}
+
+		// 若使用的编码是 utf8 或 utf8mb4 中的任何一个, 则给予警告
+		size_t i = 0;
+		const char* non_ansi[] = { "utf8", "utf8mb4" };
+		ARR_FIND(0, ARRAYLENGTH(non_ansi), i, stricmp(current_codepage, non_ansi[i]) == 0);
+		if (ARRAYLENGTH(non_ansi) > i) {
+			ShowWarning("Server and client is not support Non-ANSI character set very well.\n");
+			ShowWarning("We suggest you use ANSI character set as database encoding.\n", current_codepage);
+
+			// 若目标数据库使用 utf8 或者 utf8mb4 编码, 为了兼容性考虑,
+			// 会根据操作系统语言来选择使用 gbk 或 big5 编码, 若不是简体中文也不是繁体中文, 则使用 latin1 编码
+			if (getSystemLanguage() == "zh-cn") encoding = "gbk";
+			else if (getSystemLanguage() == "zh-tw") encoding = "big5";
+			else encoding = "latin1";
+
+			break;
+		}
+		
+		// 若 encoding 不是空指针且不是空字符串, 但它的值不等于 auto 那么直接走原来的逻辑
+		if (encoding && strlen(encoding) > 0 && strcmpi(encoding, "auto") != 0) {
+			break;
+		}
+
+		// 将连接编码设置为与数据库的 server character set 完全一致
+		encoding = current_codepage;
+	} while (false);
+
+	// 将程序建立连接后, 最终选用的连接编码告知给用户
+	if (connect_name != nullptr) {
+		if (encoding && strlen(encoding) > 0 && stricmp(encoding, "auto") != 0) {
+			ShowInfo("Server will connect to " CL_WHITE "'%s'" CL_RESET " database using " CL_WHITE "'%s'" CL_RESET ".\n", connect_name, encoding);
+		}
+		else {
+			ShowInfo("Server will connect to " CL_WHITE "'%s'" CL_RESET " database without set codepage.\n", connect_name);
+		}
+	}
+
+	// 若不进行具体的编码设置, 那么直接友好退出
+	if (bNoSetEncoding) {
+		return SQL_SUCCESS;
+	}
+
+	if (self && mysql_set_character_set(&self->handle, encoding) == 0)
+		return SQL_SUCCESS;
+	return SQL_ERROR;
+}
+
+#endif // Pandas_SQL_Configure_Optimization
 
 
 

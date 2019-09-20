@@ -59,9 +59,9 @@ char map_server_ip[64] = "127.0.0.1";
 char map_server_id[32] = "ragnarok";
 char map_server_pw[32] = "";
 char map_server_db[32] = "ragnarok";
-#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#ifdef Pandas_SQL_Configure_Optimization
 char map_codepage[32] = "";
-#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#endif // Pandas_SQL_Configure_Optimization
 Sql* mmysql_handle;
 Sql* qsmysql_handle; /// For query_sql
 
@@ -98,9 +98,9 @@ int log_db_port = 3306;
 char log_db_id[32] = "ragnarok";
 char log_db_pw[32] = "ragnarok";
 char log_db_db[32] = "log";
-#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#ifdef Pandas_SQL_Configure_Optimization
 char log_codepage[32] = "";
-#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#endif // Pandas_SQL_Configure_Optimization
 Sql* logmysql_handle;
 
 // DBMap declaration
@@ -4366,14 +4366,14 @@ int inter_config_read(const char *cfgName)
 		if(strcmpi(w1,"log_db_db")==0)
 			safestrncpy(log_db_db, w2, sizeof(log_db_db));
 		else
-#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#ifdef Pandas_SQL_Configure_Optimization
 		if (strcmpi(w1, "map_codepage") == 0)
 			safestrncpy(map_codepage, w2, sizeof(map_codepage));
 		else
 		if (strcmpi(w1, "log_codepage") == 0)
 			safestrncpy(log_codepage, w2, sizeof(log_codepage));
 		else
-#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#endif // Pandas_SQL_Configure_Optimization
 		if( mapreg_config_read(w1,w2) )
 			continue;
 		//support the import command, just like any other config
@@ -4409,17 +4409,7 @@ int map_sql_init(void)
 	}
 	ShowStatus("Connect success! (Map Server Connection)\n");
 
-#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-	const char* codepage = map_codepage;
-
-	// 若默认的 map_codepage 为空
-	// 那么使用 default_codepage 的值作为默认的 codepage
-	if (strlen(codepage) == 0) {
-		codepage = default_codepage;
-	}
-#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-
-#ifndef Pandas_Detect_Codepage
+#ifndef Pandas_SQL_Configure_Optimization
 	if( strlen(default_codepage) > 0 ) {
 		if ( SQL_ERROR == Sql_SetEncoding(mmysql_handle, default_codepage) )
 			Sql_ShowDebug(mmysql_handle);
@@ -4427,14 +4417,12 @@ int map_sql_init(void)
 			Sql_ShowDebug(qsmysql_handle);
 	}
 #else
-	#ifndef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-		detectCodepage(mmysql_handle, "Map-Server", default_codepage);
-		detectCodepage(qsmysql_handle, NULL, default_codepage);
-	#else
-		detectCodepage(mmysql_handle, "Map-Server", codepage);
-		detectCodepage(qsmysql_handle, NULL, codepage);
-	#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-#endif // Pandas_Detect_Codepage
+	if (SQL_ERROR == Sql_SetEncoding(mmysql_handle, map_codepage, default_codepage, "Map-Server"))
+		Sql_ShowDebug(mmysql_handle);
+	if (SQL_ERROR == Sql_SetEncoding(qsmysql_handle, map_codepage, default_codepage, nullptr))
+		Sql_ShowDebug(qsmysql_handle);
+#endif // Pandas_SQL_Configure_Optimization
+
 	return 0;
 }
 
@@ -4471,27 +4459,14 @@ int log_sql_init(void)
 	}
 	ShowStatus("" CL_WHITE "[SQL]" CL_RESET ": Successfully '" CL_GREEN "connected" CL_RESET "' to Database '" CL_WHITE "%s" CL_RESET "'.\n", log_db_db);
 
-#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-	const char* codepage = log_codepage;
-
-	// 若默认的 log_codepage 为空
-	// 那么使用 default_codepage 的值作为默认的 codepage
-	if (strlen(codepage) == 0) {
-		codepage = default_codepage;
-	}
-#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-
-#ifndef Pandas_Detect_Codepage
+#ifndef Pandas_SQL_Configure_Optimization
 	if( strlen(default_codepage) > 0 )
 		if ( SQL_ERROR == Sql_SetEncoding(logmysql_handle, default_codepage) )
 			Sql_ShowDebug(logmysql_handle);
 #else
-	#ifndef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-		detectCodepage(logmysql_handle, "Log", default_codepage);
-	#else
-		detectCodepage(logmysql_handle, "Log", codepage);
-	#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-#endif // Pandas_Detect_Codepage
+	if (SQL_ERROR == Sql_SetEncoding(logmysql_handle, log_codepage, default_codepage, "Log"))
+		Sql_ShowDebug(logmysql_handle);
+#endif // Pandas_SQL_Configure_Optimization
 
 	return 0;
 }

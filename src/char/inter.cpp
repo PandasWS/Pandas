@@ -50,9 +50,9 @@ char char_server_id[32] = "ragnarok";
 char char_server_pw[32] = ""; // Allow user to send empty password (bugreport:7787)
 char char_server_db[32] = "ragnarok";
 char default_codepage[32] = ""; //Feature by irmin.
-#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#ifdef Pandas_SQL_Configure_Optimization
 char char_codepage[32] = "";
-#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#endif // Pandas_SQL_Configure_Optimization
 unsigned int party_share_level = 10;
 
 /// Received packet Lengths from map-server
@@ -820,10 +820,10 @@ int inter_config_read(const char* cfgName)
 			safestrncpy(char_server_db,w2,sizeof(char_server_db));
 		else if(!strcmpi(w1,"default_codepage"))
 			safestrncpy(default_codepage,w2,sizeof(default_codepage));
-#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#ifdef Pandas_SQL_Configure_Optimization
 		else if (!strcmpi(w1, "char_codepage"))
 			safestrncpy(char_codepage, w2, sizeof(char_codepage));
-#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
+#endif // Pandas_SQL_Configure_Optimization
 		else if(!strcmpi(w1,"party_share_level"))
 			party_share_level = (unsigned int)atof(w2);
 		else if(!strcmpi(w1,"log_inter"))
@@ -951,28 +951,15 @@ int inter_init_sql(const char *file)
 		exit(EXIT_FAILURE);
 	}
 
-#ifdef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-	const char* codepage = char_codepage;
-
-	// 若默认的 char_codepage 为空
-	// 那么使用 default_codepage 的值作为默认的 codepage
-	if (strlen(codepage) == 0) {
-		codepage = default_codepage;
-	}
-#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-
-#ifndef Pandas_Detect_Codepage
+#ifndef Pandas_SQL_Configure_Optimization
 	if( *default_codepage ) {
 		if( SQL_ERROR == Sql_SetEncoding(sql_handle, default_codepage) )
 			Sql_ShowDebug(sql_handle);
 	}
 #else
-	#ifndef Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-		detectCodepage(sql_handle, "Char-Server", default_codepage);
-	#else
-		detectCodepage(sql_handle, "Char-Server", codepage);
-	#endif // Pandas_Refactoring_Priority_Strategy_For_SQL_Codepage
-#endif // Pandas_Detect_Codepage
+	if (SQL_ERROR == Sql_SetEncoding(sql_handle, char_codepage, default_codepage, "Char-Server"))
+		Sql_ShowDebug(sql_handle);
+#endif // Pandas_SQL_Configure_Optimization
 
 	wis_db = idb_alloc(DB_OPT_RELEASE_DATA);
 	interServerDb.load();
