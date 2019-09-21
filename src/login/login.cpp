@@ -44,6 +44,14 @@ using namespace rathena;
 #define LOGIN_MAX_MSG ALL_EXTEND_MSG	/// Max number predefined in msg_conf
 #endif // Pandas_Message_Conf
 
+#ifdef Pandas_SQL_Configure_Optimization
+// 在 Login 项目中需要使用 default_codepage 的代码文件散落在好几个地方
+// 例如: account.cpp(login_server_db), loginlog.cpp(log_login_db), ipban.cpp(ipban_db_db)
+// 但是这些不同的模块它们读取配置都是在 login.cpp 中的 login_config_read 函数中
+// 因此干脆将 default_codepage 放到 login.cpp 中并将它定义为全局变量, 方便其他代码文件引用
+char default_codepage[32] = "";
+#endif // Pandas_SQL_Configure_Optimization
+
 static char* msg_table[LOGIN_MAX_MSG];	/// Login Server messages_conf
 
 //definition of exported var declared in header
@@ -723,6 +731,11 @@ bool login_config_read(const char* cfgName, bool normal) {
 		else if (!strcmpi(w1, "hide_online_players_count"))
 			login_config.hide_online_players_count = (bool)config_switch(w2);
 #endif // Pandas_Support_Hide_Online_Players_Count
+
+#ifdef Pandas_SQL_Configure_Optimization
+		else if (strcmpi(w1, "default_codepage") == 0)
+			safestrncpy(default_codepage, w2, sizeof(default_codepage));
+#endif // Pandas_SQL_Configure_Optimization
 
 #ifdef VIP_ENABLE
 		else if(strcmpi(w1,"vip_group")==0)

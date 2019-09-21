@@ -18,6 +18,7 @@
 	#define Pandas_CreativeWork
 	#define Pandas_Bugfix
 	#define Pandas_ScriptEngine
+	#define Pandas_Cleanup
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
 	#define Pandas_AtCommands
@@ -42,15 +43,13 @@
 	// --------------------------------------
 	// 定义 Pandas 的默认版本号
 	// --------------------------------------
+	// 
 	// 在 Windows 环境下版本号优先以资源文件中的文件版本号为准, 获取失败才会使用此处的版本号
 	// 在 Linux   环境下版本号将直接使用此处定义的默认版本号
 	#define Pandas_Version "1.0.0"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
-
-	// 在启动时显示免责声明
-	#define Pandas_Disclaimer
 
 	// 在启动时显示 Pandas 的版本号
 	#define Pandas_Show_Version
@@ -165,9 +164,6 @@
 	// 是否支持读取 UTF8-BOM 编码的配置文件 [Sola丶小克]
 	#define Pandas_Support_Read_UTF8BOM_Configure
 
-	// 是否启用数据库编码自动判定机制 [Sola丶小克]
-	#define Pandas_Detect_Codepage
-
 	// 在使用 _M/_F 注册的时候, 能够限制使用中文等字符作为游戏账号 [Sola丶小克]
 	// 这里的 PCRE_SUPPORT 在"项目属性 -> C/C++ -> 预处理器"中定义
 	#ifdef PCRE_SUPPORT
@@ -208,8 +204,50 @@
 	// 使 pointshop 类型的商店能支持指定变量别名, 用于展现给玩家 [Sola丶小克]
 	#define Pandas_Support_Pointshop_Variable_DisplayName
 
-	// 检测 import 目录是否存在, 若不存在能够从 import-tmpl 自动复制一份 [Sola丶小克]
+	// 检测 import 目录是否存在, 若不存在能够从 import-tmpl 复制一份 [Sola丶小克]
 	#define Pandas_Deploy_Import_Directories
+
+	// 是否对数据库配置相关的一系列逻辑进行优化 [Sola丶小克]
+	// 
+	// 目前主要包括以下几个改动:
+	// 
+	// --------------------------------------
+	// 改动一：重新整理 inter_athena.conf 中对各个 codepage 选项的定义
+	// --------------------------------------
+	// 
+	// 在 rAthena 原始的代码中:
+	// 
+	//     char_server_db 和 map_server_db 通过 default_codepage 选项控制编码
+	//     而其他的 login_server_db, ipban_db_db, log_db_db 则各自有自己的 codepage 设置项
+	//     且后面这几个数据库连接时, 并不尊重 default_codepage 选项.
+	//     
+	//     这样其实对于无法查看代码的用户而言非常容易混淆, 因为 default_codepage 选项并不总是 default
+	//     为此我们进行了一些调整, 让它看起来更加合理.
+	//
+	// 调整之后各个选项的逻辑如下:
+	// 
+	//     我们为 char_server_db 和 map_server_db 也分配自己的 codepage 设置项.
+	//     当各个连接的 codepage 设置项为空的时候, 则默认使用 default_codepage 选项的值作为默认编码.
+	// 
+	// --------------------------------------
+	// 改动二：使用数据库编码自动判定机制
+	// --------------------------------------
+	//
+	// 与数据库建立连接时, 如果配置的 codepage 等于 auto, 那么会根据特定规则自动选择编码
+	// 
+	// 调整的细节需求点如下所示:
+	// 
+	// - 能够输出目标数据库当前所使用的编码
+	// - 当在 inter_athena.conf 中指定了 codepage 时, 能提示最终使用的编码
+	// - 若目标数据库使用 utf8 或者 utf8mb4 编码则会给与提示
+	// - 若目标数据库使用 utf8 或者 utf8mb4 编码, 为了兼容性考虑,
+	//   会根据操作系统语言来选择使用 gbk 或 big5 编码, 若不是简体中文也不是繁体中文, 则使用 latin1 编码
+	//
+	// --------------------------------------
+	// 改动三：用 mysql_set_character_set 来设置 MySQL 的编码字符集
+	// --------------------------------------
+	#define Pandas_SQL_Configure_Optimization
+
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -222,9 +260,6 @@
 	// 但是这个方法只在 Debug 模式下可以成功拦截空指针并输出报错信息.
 	// 在 Release 模式下, 有一些检测不够严格的地方会导致程序直接崩溃, 这是我们不想见到的
 	#define Pandas_Fix_NullPtr_Protect
-
-	// 用 mysql_set_character_set 来设置 MySQL 的编码字符集 [Sola丶小克]
-	#define Pandas_Fix_Mysql_SetEncoding
 
 	// 修正在部分情况下角色公会图标刷新不及时的问题 [Sola丶小克]
 	#define Pandas_Fix_GuildEmblem_Update
@@ -268,6 +303,22 @@
 	// 以此避免嵌套调用超过两层的脚本会导致程序崩溃的问题 (如: script4each -> getitem -> 成就系统)
 	#define Pandas_ScriptEngine_MutliStackBackup
 #endif // Pandas_ScriptEngine
+
+// ============================================================================
+// 无用代码清理组 - Pandas_Cleanup
+// ============================================================================
+
+#ifdef Pandas_Cleanup
+	// 清理读取 sql.db_hostname 选项的相关代码 [Sola丶小克]
+	// 
+	// 在 rAthena 官方的代码中原本预留了一个数据库默认连接的配置组, 
+	// 这些选项以 sql. 开头, 配置在 conf/inter_athena.conf 中的话就会被程序读取.
+	// 但是整个服务端只有 login-server 会尝试去读取这个配置, 所以非常鸡肋.
+	// 以至于目前 rAthena 在官方的 conf/inter_athena.conf 中都把相关配置删了.
+	//
+	// 所以熊猫表示, 我们也干脆删了吧!! Oh yeah!
+	#define Pandas_Cleanup_Useless_SQL_Global_Configure
+#endif // Pandas_Cleanup
 
 // ============================================================================
 // NPC事件组 - Pandas_NpcEvent

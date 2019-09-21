@@ -13,6 +13,11 @@
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
 
+#ifdef Pandas_SQL_Configure_Optimization
+#include "login.hpp" // default_codepage
+#endif // Pandas_SQL_Configure_Optimization
+
+#ifndef Pandas_Cleanup_Useless_SQL_Global_Configure
 // global sql settings (in ipban_sql.cpp)
 static char   global_db_hostname[64] = "127.0.0.1"; // Doubled to reflect the change on commit #0f2dd7f
 static uint16 global_db_port = 3306;
@@ -28,6 +33,15 @@ static char   log_db_password[32] = "";
 static char   log_db_database[32] = "";
 static char   log_codepage[32] = "";
 static char   log_login_db[256] = "loginlog";
+#else
+static char   log_db_hostname[64] = "127.0.0.1";
+static uint16 log_db_port = 3306;
+static char   log_db_username[32] = "ragnarok";
+static char   log_db_password[32] = "";
+static char   log_db_database[32] = "ragnarok";
+static char   log_codepage[32] = "";
+static char   log_login_db[256] = "loginlog";
+#endif // Pandas_Cleanup_Useless_SQL_Global_Configure
 
 static Sql* sql_handle = NULL;
 static bool enabled = false;
@@ -93,6 +107,7 @@ void login_log(uint32 ip, const char* username, int rcode, const char* message) 
  * @return true if successful, false if config not complete or server already running
  */
 bool loginlog_config_read(const char* key, const char* value) {
+#ifndef Pandas_Cleanup_Useless_SQL_Global_Configure
 	const char* signature;
 
 	signature = "sql.";
@@ -120,6 +135,7 @@ bool loginlog_config_read(const char* key, const char* value) {
 			return false;// not found
 		return true;
 	}
+#endif // Pandas_Cleanup_Useless_SQL_Global_Configure
 
 	if( strcmpi(key, "log_db_ip") == 0 )
 		safestrncpy(log_db_hostname, value, sizeof(log_db_hostname));
@@ -163,6 +179,7 @@ bool loginlog_init(void) {
 	const char* database;
 	const char* codepage;
 
+#ifndef Pandas_Cleanup_Useless_SQL_Global_Configure
 	if( log_db_hostname[0] != '\0' )
 	{// local settings
 		username = log_db_username;
@@ -181,6 +198,14 @@ bool loginlog_init(void) {
 		database = global_db_database;
 		codepage = global_codepage;
 	}
+#else
+	username = log_db_username;
+	password = log_db_password;
+	hostname = log_db_hostname;
+	port = log_db_port;
+	database = log_db_database;
+	codepage = log_codepage;
+#endif // Pandas_Cleanup_Useless_SQL_Global_Configure
 
 	sql_handle = Sql_Malloc();
 
@@ -193,12 +218,13 @@ bool loginlog_init(void) {
 		exit(EXIT_FAILURE);
 	}
 
-#ifndef Pandas_Detect_Codepage
+#ifndef Pandas_SQL_Configure_Optimization
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
 		Sql_ShowDebug(sql_handle);
 #else
-	detectCodepage(sql_handle, "Login-Log", codepage);
-#endif // Pandas_Detect_Codepage
+	if (SQL_ERROR == Sql_SetEncoding(sql_handle, codepage, default_codepage, "Log"))
+		Sql_ShowDebug(sql_handle);
+#endif // Pandas_SQL_Configure_Optimization
 
 	enabled = true;
 

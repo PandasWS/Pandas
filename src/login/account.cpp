@@ -14,6 +14,10 @@
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
 
+#ifdef Pandas_SQL_Configure_Optimization
+#include "login.hpp" // default_codepage
+#endif // Pandas_SQL_Configure_Optimization
+
 /// global defines
 
 /// internal structure
@@ -131,12 +135,13 @@ static bool account_db_sql_init(AccountDB* self) {
 		return false;
 	}
 
-#ifndef Pandas_Detect_Codepage
+#ifndef Pandas_SQL_Configure_Optimization
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
 		Sql_ShowDebug(sql_handle);
 #else
-	detectCodepage(sql_handle, "Login-Server", codepage);
-#endif // Pandas_Detect_Codepage
+	if (SQL_ERROR == Sql_SetEncoding(sql_handle, codepage, default_codepage, "Login-Server"))
+		Sql_ShowDebug(sql_handle);
+#endif // Pandas_SQL_Configure_Optimization
 
 	return true;
 }

@@ -14,6 +14,14 @@
 
 #include "account.hpp"
 
+#ifdef Pandas_SQL_Configure_Optimization
+// 在 Login 项目中需要使用 default_codepage 的代码文件散落在好几个地方
+// 例如: account.cpp(login_server_db), loginlog.cpp(log_login_db), ipban.cpp(ipban_db_db)
+// 但是这些不同的模块它们读取配置都是在 login.cpp 中的 login_config_read 函数中
+// 因此干脆将 default_codepage 放到 login.cpp 中并将它定义为全局变量, 方便其他代码文件引用
+extern char default_codepage[32];
+#endif // Pandas_SQL_Configure_Optimization
+
 enum E_LOGINSERVER_ST {
 	LOGINSERVER_ST_RUNNING = CORE_ST_LAST,
 	LOGINSERVER_ST_STARTING,
