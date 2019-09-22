@@ -2346,18 +2346,20 @@ static bool is_attack_right_handed(struct block_list *src, int skill_id)
 static bool is_attack_left_handed(struct block_list *src, int skill_id)
 {
 	if(src != NULL) {
-		struct status_data *sstatus = status_get_status_data(src);
-		struct map_session_data *sd = BL_CAST(BL_PC, src);
-
 		//Skills ALWAYS use ONLY your right-hand weapon (tested on Aegis 10.2)
 		if(!skill_id) {
-			if (sd && sd->weapontype1 == 0 && sd->weapontype2 > 0)
-				return true;
+			struct map_session_data *sd = BL_CAST(BL_PC, src);
+
+			if (sd) {
+				if (sd->weapontype1 == 0 && sd->weapontype2 > 0)
+					return true;
+				if (sd->status.weapon == W_KATAR)
+					return true;
+			}
+
+			struct status_data *sstatus = status_get_status_data(src);
 
 			if (sstatus->lhw.atk)
-				return true;
-
-			if (sd && sd->status.weapon == W_KATAR)
 				return true;
 		}
 	}
@@ -2382,14 +2384,12 @@ static bool is_attack_critical(struct Damage* wd, struct block_list *src, struct
 	struct map_session_data *tsd = BL_CAST(BL_PC, target);
 
 	if (!first_call)
-		return (wd->type == DMG_CRITICAL);
+		return (wd->type == DMG_CRITICAL || wd->type == DMG_MULTI_HIT_CRITICAL);
 
 	if (skill_id == NPC_CRITICALSLASH || skill_id == LG_PINPOINTATTACK) //Always critical skills
 		return true;
 
-	if( !(wd->type&DMG_MULTI_HIT) && sstatus->cri && (!skill_id ||
-		skill_id == KN_AUTOCOUNTER || skill_id == SN_SHARPSHOOTING ||
-		skill_id == MA_SHARPSHOOTING || skill_id == NJ_KIRIKAGE))
+	if( sstatus->cri && ( !skill_id || skill_get_nk(skill_id)&NK_CRITICAL ) )
 	{
 		short cri = sstatus->cri;
 
@@ -3634,7 +3634,7 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 			skillratio += 40 * skill_lv;
 			break;
 		case LK_JOINTBEAT:
-			skillratio += -100 + 10 * skill_lv - 50;
+			skillratio += 10 * skill_lv - 50;
 			if (wd->miscflag & BREAK_NECK || (tsc && tsc->data[SC_JOINTBEAT] && tsc->data[SC_JOINTBEAT]->val2 & BREAK_NECK)) // The 2x damage is only for the BREAK_NECK ailment.
 				skillratio <<= 1;
 			break;
@@ -4867,7 +4867,6 @@ static void battle_calc_attack_post_defense(struct Damage* wd, struct block_list
  */
 static void battle_calc_attack_plant(struct Damage* wd, struct block_list *src,struct block_list *target, uint16 skill_id, uint16 skill_lv)
 {
-	struct map_session_data *sd = BL_CAST(BL_PC, src);
 	struct status_data *tstatus = status_get_status_data(target);
 	bool attack_hits = is_attack_hitting(wd, src, target, skill_id, skill_lv, false);
 	int right_element = battle_get_weapon_element(wd, src, target, skill_id, skill_lv, EQI_HAND_R, false);
@@ -4881,11 +4880,12 @@ static void battle_calc_attack_plant(struct Damage* wd, struct block_list *src,s
 	if( attack_hits || wd->damage > 0 )
 		wd->damage = 1; //In some cases, right hand no need to have a weapon to deal a damage
 	if( is_attack_left_handed(src, skill_id) && (attack_hits || wd->damage2 > 0) ) {
-		if(sd->status.weapon == W_KATAR)
+		struct map_session_data *sd = BL_CAST(BL_PC, src);
+
+		if (sd && sd->status.weapon == W_KATAR)
 			wd->damage2 = 0; //No backhand damage against plants
-		else {
+		else
 			wd->damage2 = 1; //Deal 1 HP damage as long as there is a weapon in the left hand
-		}
 	}
 
 	if (attack_hits && target->type == BL_MOB) {
@@ -5359,8 +5359,16 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 	battle_calc_multi_attack(&wd, src, target, skill_id, skill_lv);
 
 	// crit check is next since crits always hit on official [helvetica]
-	if (is_attack_critical(&wd, src, target, skill_id, skill_lv, true))
+	if (is_attack_critical(&wd, src, target, skill_id, skill_lv, true)) {
+#if PACKETVER >= 20161207
+		if (wd.type&DMG_MULTI_HIT)
+			wd.type = DMG_MULTI_HIT_CRITICAL;
+		else
+			wd.type = DMG_CRITICAL;
+#else
 		wd.type = DMG_CRITICAL;
+#endif
+	}
 
 	// check if we're landing a hit
 	if(!is_attack_hitting(&wd, src, target, skill_id, skill_lv, true))

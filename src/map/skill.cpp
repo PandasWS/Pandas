@@ -12356,7 +12356,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
 
 	case SC_ESCAPE:
 		skill_unitsetting(src, skill_id, skill_lv, x, y, 0);
-		skill_blown(src, src, skill_get_blewcount(skill_id, skill_lv), unit_getdir(src), BLOWN_NONE);
+		skill_blown(src, src, skill_get_blewcount(skill_id, skill_lv), unit_getdir(src), BLOWN_IGNORE_NO_KNOCKBACK); // Don't stop the caster from backsliding if special_state.no_knockback is active
 		clif_skill_nodamage(src,src,skill_id,skill_lv,1);
 		flag |= 1;
 		break;
@@ -21090,7 +21090,7 @@ static bool skill_parse_row_skilldb(char* split[], int columns, int current)
 	skill_db[idx]->hit = atoi(split[2]);
 	skill_db[idx]->inf = atoi(split[3]);
 	skill_split_atoi(split[4],skill_db[idx]->element);
-	skill_db[idx]->nk = (uint8)strtol(split[5], NULL, 0);
+	skill_db[idx]->nk = static_cast<uint16>(strtol(split[5], NULL, 0));
 	skill_split_atoi(split[6],skill_db[idx]->splash);
 	skill_db[idx]->max = atoi(split[7]);
 	skill_split_atoi(split[8],skill_db[idx]->num);
