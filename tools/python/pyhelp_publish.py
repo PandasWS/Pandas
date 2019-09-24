@@ -132,6 +132,7 @@ def arrange_common(packagedir):
     rmdir(packagedir + 'conf/import')
     rmdir(packagedir + 'doc/model')
     
+    remove_files(packagedir + 'doc', 'packet_*.txt')
     remove_files(packagedir, '*.sh')
     remove_files(packagedir, '*.in')
     remove_files(packagedir, '*.sln')
@@ -140,6 +141,7 @@ def arrange_common(packagedir):
     remove_files(packagedir, '*.yml')
     remove_files(packagedir, '*.md')
     
+    remove_file(packagedir + 'doc', 'source_doc.txt')
     remove_file(packagedir, 'AUTHORS')
     remove_file(packagedir, 'LICENSE')
     remove_file(packagedir, 'configure')
@@ -161,6 +163,8 @@ def arrange_renewal(packagedir):
     copyfile(project_slndir + 'char-server.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server.exe', packagedir + 'map-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
+    
+    copyfile(project_slndir + 'tools/batches/runserver.bat', packagedir + 'Renewal.bat')
 
 def arrange_pre_renewal(packagedir):
     '''
@@ -177,6 +181,8 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'char-server-pre.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server-pre.exe', packagedir + 'map-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
+    
+    copyfile(project_slndir + 'tools/batches/runserver.bat', packagedir + 'Pre-Renewal.bat')
 
 def process(export_file, renewal):
     '''

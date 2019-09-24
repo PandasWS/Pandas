@@ -5,7 +5,7 @@ IF NOT EXIST "%1" GOTO NOTFOUND
 
 IF "%3"=="" ( set "restart_mode=on"
 ) else set "restart_mode=%~3"
-echo "restart_mode=%restart_mode%"
+REM echo "restart_mode=%restart_mode%"
 GOTO START_RA
 
 REM == How RESTART_9X and RESTART_NT works =========================
