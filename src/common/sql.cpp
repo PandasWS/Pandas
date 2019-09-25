@@ -241,8 +241,10 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 		const char* non_ansi[] = { "utf8", "utf8mb4" };
 		ARR_FIND(0, ARRAYLENGTH(non_ansi), i, stricmp(current_codepage, non_ansi[i]) == 0);
 		if (ARRAYLENGTH(non_ansi) > i) {
+#ifndef BUILDBOT
 			ShowWarning("Server and client is not support Non-ANSI character set very well.\n");
 			ShowWarning("We suggest you use ANSI character set as database encoding.\n", current_codepage);
+#endif // BUILDBOT
 
 			// 若目标数据库使用 utf8 或者 utf8mb4 编码, 为了兼容性考虑,
 			// 会根据操作系统语言来选择使用 gbk 或 big5 编码, 若不是简体中文也不是繁体中文, 则使用 latin1 编码
