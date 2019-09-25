@@ -69,19 +69,33 @@ def zip_pack(sourcedir, zipfilename):
     else:
         return True
 
-def rmdir(dirpath):
+def rmdir(dirpath, dir_exclude = [], file_exclude = [], exclude_deep = True):
     '''
-    直接移除指定的目录
+    移除指定的目录, 包括子目录和子目录中的文件
+    可以通过设置 dir_exclude 排除要删除的目录名称 (小写)
+    可以通过设置 file_exclude 排除要删除的文件名称 (小写)
+    可以通过设置 exclude_deep 来决定排除名单是否影响子目录的删除策略
     '''
     dirpath = os.path.abspath(dirpath)
-    if os.path.exists(dirpath) and os.path.isdir(dirpath):
-        shutil.rmtree(dirpath)
+    if not os.path.exists(dirpath): return
+    if not os.path.isdir(dirpath): return
+
+    for i in glob.glob(os.path.join(dirpath, "*")) + glob.glob(os.path.join(dirpath, ".*")):
+        if os.path.isdir(i) and os.path.basename(i).lower() not in dir_exclude:
+            if exclude_deep:
+                rmdir(i, dir_exclude, file_exclude)
+            else:
+                rmdir(i)
+        elif os.path.isfile(i) and os.path.basename(i).lower() not in file_exclude:
+            os.remove(i)
+    if not os.listdir(dirpath): os.rmdir(dirpath)
 
 def enum_files(curr_dir = '.', ext = '*.md'):
     '''
     枚举指定目录中特定后缀的文件 (不枚举子目录)
     '''
     for i in glob.glob(os.path.join(curr_dir, ext)):
+        if os.path.isdir(i): continue
         yield i
 
 def remove_files(dirpath, ext):
@@ -131,7 +145,10 @@ def arrange_common(packagedir):
     rmdir(packagedir + 'db/import')
     rmdir(packagedir + 'conf/import')
     rmdir(packagedir + 'doc/model')
+    rmdir(packagedir + 'npc/test')
+    rmdir(packagedir + 'tools', ['batches'])
     
+    remove_files(packagedir + 'doc', 'packet_*.txt')
     remove_files(packagedir, '*.sh')
     remove_files(packagedir, '*.in')
     remove_files(packagedir, '*.sln')
@@ -140,6 +157,8 @@ def arrange_common(packagedir):
     remove_files(packagedir, '*.yml')
     remove_files(packagedir, '*.md')
     
+    remove_file(packagedir + 'doc', 'source_doc.txt')
+    remove_file(packagedir + 'npc', 'scripts_test.conf')
     remove_file(packagedir, 'AUTHORS')
     remove_file(packagedir, 'LICENSE')
     remove_file(packagedir, 'configure')
@@ -161,6 +180,9 @@ def arrange_renewal(packagedir):
     copyfile(project_slndir + 'char-server.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server.exe', packagedir + 'map-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
+    
+    copyfile(packagedir + 'tools/batches/runserver.bat', packagedir + 'Renewal.bat')
+    remove_file(packagedir + 'tools/batches', 'runserver.bat')
 
 def arrange_pre_renewal(packagedir):
     '''
@@ -177,6 +199,9 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'char-server-pre.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server-pre.exe', packagedir + 'map-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
+    
+    copyfile(project_slndir + 'tools/batches/runserver.bat', packagedir + 'Pre-Renewal.bat')
+    remove_file(packagedir + 'tools/batches', 'runserver.bat')
 
 def process(export_file, renewal):
     '''
