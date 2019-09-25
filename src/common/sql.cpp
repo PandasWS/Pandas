@@ -219,7 +219,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 
 		// 先查询当前数据库使用的编码是哪个, 保存到 current_codepage 备用
 		char* current_codepage = nullptr;
-		if (SQL_ERROR == Sql_Query(self, "SHOW VARIABLES LIKE 'character_set_server';")) {
+		if (SQL_ERROR == Sql_Query(self, "SHOW VARIABLES LIKE 'character_set_database';")) {
 			Sql_ShowDebug(self);
 			break;
 		}
