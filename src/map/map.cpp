@@ -3731,6 +3731,9 @@ void map_data_copy(struct map_data *dst_map, struct map_data *src_map) {
 	memcpy(&dst_map->damage_adjust, &src_map->damage_adjust, sizeof(struct s_skill_damage));
 
 	dst_map->flag.insert(src_map->flag.begin(), src_map->flag.end());
+#ifdef Pandas_Mapflags
+	dst_map->flag_params.insert(src_map->flag_params.begin(), src_map->flag_params.end());
+#endif // Pandas_Mapflags
 	dst_map->skill_damage.insert(src_map->skill_damage.begin(), src_map->skill_damage.end());
 	dst_map->skill_duration.insert(src_map->skill_duration.begin(), src_map->skill_duration.end());
 
