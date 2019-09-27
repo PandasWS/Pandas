@@ -164,6 +164,10 @@ def arrange_common(packagedir):
     remove_file(packagedir, 'configure')
     remove_file(packagedir, 'athena-start')
     remove_file(packagedir, 'CMakeLists.txt')
+    
+    copyfile(packagedir + 'sql-files/upgrades/premium_storage.sql', packagedir + 'sql-files/premium_storage.sql')
+    rmdir(packagedir + 'sql-files/tools')
+    rmdir(packagedir + 'sql-files/upgrades')
 
 def arrange_renewal(packagedir):
     '''
