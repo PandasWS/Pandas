@@ -184,6 +184,7 @@ def arrange_renewal(packagedir):
     copyfile(project_slndir + 'char-server.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server.exe', packagedir + 'map-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
+    copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
     
     copyfile(packagedir + 'tools/batches/runserver.bat', packagedir + 'Renewal.bat')
     remove_file(packagedir + 'tools/batches', 'runserver.bat')
@@ -203,6 +204,7 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'char-server-pre.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server-pre.exe', packagedir + 'map-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
+    copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
     
     copyfile(project_slndir + 'tools/batches/runserver.bat', packagedir + 'Pre-Renewal.bat')
     remove_file(packagedir + 'tools/batches', 'runserver.bat')
