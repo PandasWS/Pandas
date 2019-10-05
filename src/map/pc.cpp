@@ -4608,6 +4608,9 @@ char pc_checkadditem(struct map_session_data *sd, unsigned short nameid, int amo
 	if( data->stack.inventory && amount > data->stack.amount )
 		return CHKADDITEM_OVERAMOUNT;
 
+	if (data->flag.guid)
+		return CHKADDITEM_NEW;
+
 	for(i=0;i<MAX_INVENTORY;i++){
 		// FIXME: This does not consider the checked item's cards, thus could check a wrong slot for stackability.
 		if(sd->inventory.u.items_inventory[i].nameid == nameid){
@@ -10248,7 +10251,7 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 
 	if( n < 0 || n >= MAX_INVENTORY ) {
 		if( equipswitch ){
-			clif_equipswitch_add( sd, n, req_pos, true );
+			clif_equipswitch_add( sd, n, req_pos, ITEM_EQUIP_ACK_FAIL );
 		}else{
 			clif_equipitemack(sd,0,0,ITEM_EQUIP_ACK_FAIL);
 		}
@@ -10256,7 +10259,7 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 	}
 	if( DIFF_TICK(sd->canequip_tick,gettick()) > 0 ) {
 		if( equipswitch ){
-			clif_equipswitch_add( sd, n, req_pos, true );
+			clif_equipswitch_add( sd, n, req_pos, ITEM_EQUIP_ACK_FAIL );
 		}else{
 			clif_equipitemack(sd,n,0,ITEM_EQUIP_ACK_FAIL);
 		}
@@ -10272,7 +10275,7 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 
 	if((res = pc_isequip(sd,n))) {
 		if( equipswitch ){
-			clif_equipswitch_add( sd, n, req_pos, true );
+			clif_equipswitch_add( sd, n, req_pos, res );
 		}else{
 			clif_equipitemack(sd,n,0,res);	// fail
 		}
@@ -10280,13 +10283,13 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 	}
 
 	if( equipswitch && id->type == IT_AMMO ){
-		clif_equipswitch_add( sd, n, req_pos, true );
+		clif_equipswitch_add( sd, n, req_pos, ITEM_EQUIP_ACK_FAIL );
 		return false;
 	}
 
 	if (!(pos&req_pos) || sd->inventory.u.items_inventory[n].equip != 0 || sd->inventory.u.items_inventory[n].attribute==1 ) { // [Valaris]
 		if( equipswitch ){
-			clif_equipswitch_add( sd, n, req_pos, true );
+			clif_equipswitch_add( sd, n, req_pos, ITEM_EQUIP_ACK_FAIL );
 		}else{
 			clif_equipitemack(sd,n,0,ITEM_EQUIP_ACK_FAIL);	// fail
 		}
@@ -10295,7 +10298,7 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 	if( sd->sc.count && (sd->sc.data[SC_BERSERK] || sd->sc.data[SC_SATURDAYNIGHTFEVER] ||
 		sd->sc.data[SC_KYOUGAKU] || (sd->sc.data[SC_PYROCLASTIC] && sd->inventory_data[n]->type == IT_WEAPON)) ) {
 		if( equipswitch ){
-			clif_equipswitch_add( sd, n, req_pos, true );
+			clif_equipswitch_add( sd, n, req_pos, ITEM_EQUIP_ACK_FAIL );
 		}else{
 			clif_equipitemack(sd,n,0,ITEM_EQUIP_ACK_FAIL); //Fail
 		}
@@ -10375,7 +10378,7 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 		}
 
 		sd->inventory.u.items_inventory[n].equipSwitch = pos;
-		clif_equipswitch_add( sd, n, pos, false );
+		clif_equipswitch_add( sd, n, pos, ITEM_EQUIP_ACK_OK );
 		return true;
 	}else{
 		for(i=0;i<EQI_MAX;i++) {
@@ -10791,7 +10794,7 @@ int pc_equipswitch( struct map_session_data* sd, int index ){
 			sd->inventory.u.items_inventory[unequipped_index].equipSwitch = unequipped_position;
 
 			// Notify the client
-			clif_equipswitch_add( sd, unequipped_index, unequipped_position, false );
+			clif_equipswitch_add( sd, unequipped_index, unequipped_position, ITEM_EQUIP_ACK_OK );
 		}
 
 		return all_position;
