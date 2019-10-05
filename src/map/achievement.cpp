@@ -187,7 +187,14 @@ uint64 AchievementDatabase::parseBodyNode(const YAML::Node &node){
 			condition = "achievement_condition( " + condition + " );";
 		}
 
+		if( achievement->condition ){
+			aFree( achievement->condition );
+			achievement->condition = nullptr;
+		}
+
 		achievement->condition = parse_script( condition.c_str(), this->getCurrentFile().c_str(), node["Condition"].Mark().line + 1, SCRIPT_IGNORE_EXTERNAL_BRACKETS );
+	}else{
+		achievement->condition = nullptr;
 	}
 
 	if( this->nodeExists( node, "Map" ) ){
@@ -270,7 +277,14 @@ uint64 AchievementDatabase::parseBodyNode(const YAML::Node &node){
 				return 0;
 			}
 
+			if( achievement->rewards.script ){
+				aFree( achievement->rewards.script );
+				achievement->rewards.script = nullptr;
+			}
+
 			achievement->rewards.script = parse_script( script.c_str(), this->getCurrentFile().c_str(), achievement_id, SCRIPT_IGNORE_EXTERNAL_BRACKETS );
+		}else{
+			achievement->rewards.script = nullptr;
 		}
 
 		// TODO: not camel case
@@ -885,9 +899,28 @@ static bool achievement_update_objectives(struct map_session_data *sd, std::shar
 			break;
 	}
 
-	if (isNew) {
-		if (!(entry = achievement_add(sd, ad->achievement_id)))
-			return false; // Failed to add achievement
+	if( isNew ){
+		// Always add the achievement if it was completed
+		bool hasCounter = complete;
+
+		// If it was not completed
+		if( !hasCounter ){
+			// Check if it has a counter
+			for( int counter : current_count ){
+				if( counter != 0 ){
+					hasCounter = true;
+					break;
+				}
+			}
+		}
+
+		if( hasCounter ){
+			if( !( entry = achievement_add( sd, ad->achievement_id ) ) ){
+				return false; // Failed to add achievement
+			}
+		}else{
+			changed = false;
+		}
 	}
 
 	if (changed) {
