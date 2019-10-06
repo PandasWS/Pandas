@@ -1,4 +1,4 @@
-// Copyright 2005, Google Inc.
+// Copyright (c) 2019, Google Inc.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,15 +27,38 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// A sample program demonstrating using Google C++ testing framework.
+// string_conversion_unittest.cc: Unit tests for google_breakpad::UTF* helpers.
 
-#ifndef GTEST_SAMPLES_SAMPLE1_H_
-#define GTEST_SAMPLES_SAMPLE1_H_
+#include <string>
+#include <vector>
 
-// Returns n! (the factorial of n).  For negative n, n! is defined to be 1.
-int Factorial(int n);
+#include "breakpad_googletest_includes.h"
+#include "common/string_conversion.h"
 
-// Returns true if and only if n is a prime number.
-bool IsPrime(int n);
+using google_breakpad::UTF8ToUTF16;
+using google_breakpad::UTF8ToUTF16Char;
+using google_breakpad::UTF16ToUTF8;
+using std::vector;
 
-#endif  // GTEST_SAMPLES_SAMPLE1_H_
+TEST(StringConversionTest, UTF8ToUTF16) {
+  const char in[] = "aßc";
+  vector<uint16_t> out;
+  vector<uint16_t> exp{'a', 0xdf, 'c', 0};
+  UTF8ToUTF16(in, &out);
+  EXPECT_EQ(4u, out.size());
+  EXPECT_EQ(exp, out);
+}
+
+TEST(StringConversionTest, UTF8ToUTF16Char) {
+  const char in[] = "a";
+  uint16_t out[3] = {0xff, 0xff, 0xff};
+  EXPECT_EQ(1, UTF8ToUTF16Char(in, 1, out));
+  EXPECT_EQ('a', out[0]);
+  EXPECT_EQ(0, out[1]);
+  EXPECT_EQ(0xff, out[2]);
+}
+
+TEST(StringConversionTest, UTF16ToUTF8) {
+  vector<uint16_t> in{'a', 0xdf, 'c', 0};
+  EXPECT_EQ("aßc", UTF16ToUTF8(in, false));
+}

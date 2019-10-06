@@ -72,6 +72,7 @@ stamp-h1
 *.sln
 *.suo
 *.vcproj
+# CairoLee: 注释以下代码, 因为在 breakpad 工程里我们新增了 projects 目录保存一些工程文件
 #*.vcxproj
 
 # Ignore GYP generated Makefiles
@@ -83,6 +84,7 @@ src/Makefile
 *.pyc
 
 # Ignore directories gclient syncs.
+# CairoLee: 注释以下代码, 因为在 breakpad 工程中我们引入了这些项目, 希望它们可以被跟踪
 #src/testing
 #src/third_party/lss
 src/third_party/protobuf

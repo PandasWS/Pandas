@@ -170,7 +170,7 @@ src_client_linux_libbreakpad_client_a_SOURCES = \
 	src/client/minidump_file_writer-inl.h \
 	src/client/minidump_file_writer.cc \
 	src/client/minidump_file_writer.h \
-	src/common/convert_UTF.c \
+	src/common/convert_UTF.cc \
 	src/common/convert_UTF.h \
 	src/common/md5.cc \
 	src/common/md5.h \
@@ -183,8 +183,6 @@ src_client_linux_libbreakpad_client_a_SOURCES = \
 	src/common/linux/file_id.h \
 	src/common/linux/guid_creator.cc \
 	src/common/linux/guid_creator.h \
-	src/common/linux/http_upload.cc \
-	src/common/linux/http_upload.h \
 	src/common/linux/linux_libc_support.cc \
 	src/common/linux/memory_mapped_file.cc \
 	src/common/linux/safe_readlink.cc
@@ -660,6 +658,7 @@ src_tools_mac_dump_syms_dump_syms_mac_LDADD= \
 
 src_common_dumper_unittest_SOURCES = \
 	src/common/byte_cursor_unittest.cc \
+	src/common/convert_UTF.cc \
 	src/common/dwarf_cfi_to_module.cc \
 	src/common/dwarf_cfi_to_module_unittest.cc \
 	src/common/dwarf_cu_to_module.cc \
@@ -676,6 +675,8 @@ src_common_dumper_unittest_SOURCES = \
 	src/common/stabs_reader_unittest.cc \
 	src/common/stabs_to_module.cc \
 	src/common/stabs_to_module_unittest.cc \
+	src/common/string_conversion.cc \
+	src/common/string_conversion_unittest.cc \
 	src/common/test_assembler.cc \
 	src/common/dwarf/bytereader.cc \
 	src/common/dwarf/bytereader.h \
