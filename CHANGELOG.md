@@ -6,6 +6,10 @@
 
 本文档遵循 [维护更新日志](https://keepachangelog.com/zh-CN/1.0.0/) 提及的格式标准, 但并不遵循 [语义化版本](https://semver.org/lang/zh-CN/) 版本号制定标准.
 
+# 注意事项
+
+若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
+
 ## [v1.0.0] - `2019-10-07`
 
 ### 添加
@@ -14,10 +18,10 @@
 - 实现护身符类型的道具, 只要道具在身上就能持续发挥效果 (#112)
 - 实现魔物道具固定掉率数据库, 可用于设置道具的全局固定掉落概率 (#119)
 - 使 `pointshop` 类型的商店能支持指定变量别名, 改善玩家的游戏体验 (#126)
-- 使用 Google Breakpad 捕捉程序的崩溃转储文件 (#150)
+- 使用 `Google Breakpad` 捕捉程序的崩溃转储文件 (#150)
 - 能够检测 `import` 目录是否存在, 若不存在能自动复制一份出来 (#173)
 - 重新梳理数据库连接配置并重写编码自动判定策略 (#174)
-- 实现或拓展共计  2 个 GM 指令, 详见 `doc/pandas_atcommands.txt` 指令文档
+- 实现或拓展共计  1 个 GM 指令, 详见 `doc/pandas_atcommands.txt` 指令文档
 - 实现或拓展共计 40 个脚本指令, 详见 `doc/pandas_script_commands.txt` 指令文档
 - 实现或拓展共计 12 个地图标记, 详见 `doc/pandas_mapflags.txt` 说明文档
 - 实现或拓展共计 15 个脚本事件, 详见 `doc/pandas_events.txt` 说明文档
