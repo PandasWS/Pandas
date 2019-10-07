@@ -9,9 +9,9 @@ set SOURCE_DIR=%~dp0
 cd %SOURCE_DIR%
 
 REM Determine the working mode of the program based on the batch filename
-if "%~nx0" == "Pre-Renewal.bat" (
+if "%~nx0" == "pre-renewal.bat" (
     set "server_mode=prere"
-) else if "%~nx0" == "Renewal.bat" (
+) else if "%~nx0" == "renewal.bat" (
     set "server_mode=re"
 ) else (
     set "server_mode=unknow"

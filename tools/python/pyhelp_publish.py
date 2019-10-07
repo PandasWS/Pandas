@@ -155,7 +155,6 @@ def arrange_common(packagedir):
     remove_files(packagedir, '.*')
     remove_files(packagedir, '*.scpt')
     remove_files(packagedir, '*.yml')
-    remove_files(packagedir, '*.md')
     
     remove_file(packagedir + 'doc', 'source_doc.txt')
     remove_file(packagedir + 'npc', 'scripts_test.conf')
@@ -164,6 +163,14 @@ def arrange_common(packagedir):
     remove_file(packagedir, 'configure')
     remove_file(packagedir, 'athena-start')
     remove_file(packagedir, 'CMakeLists.txt')
+
+    remove_file(packagedir, 'DONATION.md')
+    remove_file(packagedir, 'README.md')
+    os.rename(packagedir + 'CHANGELOG.md', packagedir + 'changelog.md')
+    
+    copyfile(packagedir + 'sql-files/upgrades/premium_storage.sql', packagedir + 'sql-files/premium_storage.sql')
+    rmdir(packagedir + 'sql-files/tools')
+    rmdir(packagedir + 'sql-files/upgrades')
 
 def arrange_renewal(packagedir):
     '''
@@ -180,8 +187,9 @@ def arrange_renewal(packagedir):
     copyfile(project_slndir + 'char-server.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server.exe', packagedir + 'map-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
+    copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
     
-    copyfile(packagedir + 'tools/batches/runserver.bat', packagedir + 'Renewal.bat')
+    copyfile(packagedir + 'tools/batches/runserver.bat', packagedir + 'renewal.bat')
     remove_file(packagedir + 'tools/batches', 'runserver.bat')
 
 def arrange_pre_renewal(packagedir):
@@ -199,8 +207,9 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'char-server-pre.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server-pre.exe', packagedir + 'map-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
+    copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
     
-    copyfile(project_slndir + 'tools/batches/runserver.bat', packagedir + 'Pre-Renewal.bat')
+    copyfile(project_slndir + 'tools/batches/runserver.bat', packagedir + 'pre-renewal.bat')
     remove_file(packagedir + 'tools/batches', 'runserver.bat')
 
 def process(export_file, renewal):
