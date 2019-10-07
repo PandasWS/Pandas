@@ -163,8 +163,14 @@ def arrange_common(packagedir):
     remove_file(packagedir, 'configure')
     remove_file(packagedir, 'athena-start')
     remove_file(packagedir, 'CMakeLists.txt')
+
     remove_file(packagedir, 'DONATION.md')
     remove_file(packagedir, 'README.md')
+
+    copyfile(packagedir + 'CHANGELOG.md', packagedir + 'CHANGELOG.rename')
+    remove_file(packagedir, 'CHANGELOG.md')
+    copyfile(packagedir + 'CHANGELOG.rename', packagedir + 'Changelog.md')
+    remove_file(packagedir, 'CHANGELOG.rename')
     
     copyfile(packagedir + 'sql-files/upgrades/premium_storage.sql', packagedir + 'sql-files/premium_storage.sql')
     rmdir(packagedir + 'sql-files/tools')
