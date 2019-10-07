@@ -155,7 +155,6 @@ def arrange_common(packagedir):
     remove_files(packagedir, '.*')
     remove_files(packagedir, '*.scpt')
     remove_files(packagedir, '*.yml')
-    remove_files(packagedir, '*.md')
     
     remove_file(packagedir + 'doc', 'source_doc.txt')
     remove_file(packagedir + 'npc', 'scripts_test.conf')
@@ -164,6 +163,8 @@ def arrange_common(packagedir):
     remove_file(packagedir, 'configure')
     remove_file(packagedir, 'athena-start')
     remove_file(packagedir, 'CMakeLists.txt')
+    remove_file(packagedir, 'DONATION.md')
+    remove_file(packagedir, 'README.md')
     
     copyfile(packagedir + 'sql-files/upgrades/premium_storage.sql', packagedir + 'sql-files/premium_storage.sql')
     rmdir(packagedir + 'sql-files/tools')
