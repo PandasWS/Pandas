@@ -166,11 +166,7 @@ def arrange_common(packagedir):
 
     remove_file(packagedir, 'DONATION.md')
     remove_file(packagedir, 'README.md')
-
-    copyfile(packagedir + 'CHANGELOG.md', packagedir + 'CHANGELOG.rename')
-    remove_file(packagedir, 'CHANGELOG.md')
-    copyfile(packagedir + 'CHANGELOG.rename', packagedir + 'Changelog.md')
-    remove_file(packagedir, 'CHANGELOG.rename')
+    os.rename(packagedir + 'CHANGELOG.md', packagedir + 'changelog.md')
     
     copyfile(packagedir + 'sql-files/upgrades/premium_storage.sql', packagedir + 'sql-files/premium_storage.sql')
     rmdir(packagedir + 'sql-files/tools')
@@ -193,7 +189,7 @@ def arrange_renewal(packagedir):
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
     
-    copyfile(packagedir + 'tools/batches/runserver.bat', packagedir + 'Renewal.bat')
+    copyfile(packagedir + 'tools/batches/runserver.bat', packagedir + 'renewal.bat')
     remove_file(packagedir + 'tools/batches', 'runserver.bat')
 
 def arrange_pre_renewal(packagedir):
@@ -213,7 +209,7 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
     
-    copyfile(project_slndir + 'tools/batches/runserver.bat', packagedir + 'Pre-Renewal.bat')
+    copyfile(project_slndir + 'tools/batches/runserver.bat', packagedir + 'pre-renewal.bat')
     remove_file(packagedir + 'tools/batches', 'runserver.bat')
 
 def process(export_file, renewal):
