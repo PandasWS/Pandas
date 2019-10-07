@@ -172,7 +172,7 @@ set( BREAKPAD_SOURCES
     "${BREAKPAD_SOURCE_DIR}/client/minidump_file_writer.cc"
     "${BREAKPAD_SOURCE_DIR}/client/minidump_file_writer.h"
 
-    "${BREAKPAD_SOURCE_DIR}/common/convert_UTF.c"
+    "${BREAKPAD_SOURCE_DIR}/common/convert_UTF.cc"
     "${BREAKPAD_SOURCE_DIR}/common/convert_UTF.h"
     "${BREAKPAD_SOURCE_DIR}/common/md5.cc"
     "${BREAKPAD_SOURCE_DIR}/common/md5.h"

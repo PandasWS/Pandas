@@ -862,6 +862,9 @@ struct item_data
 	unsigned char combos_count;
 	short delay_sc; ///< Use delay group if any instead using player's item_delay data [Cydh]
 
+	bool isStackable();
+	int inventorySlotNeeded(int quantity);
+
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
 	// 此物品是否为宠物捕捉道具 [Sola丶小克]
 	// 取值: 值为 0 则不是, 否则为该道具支持捕捉的魔物编号
