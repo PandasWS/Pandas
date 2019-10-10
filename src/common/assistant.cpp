@@ -769,7 +769,7 @@ std::wstring strFormat(const wchar_t* _Format, ...) {
 std::string getPandasVersion(bool without_vmark) {
 #ifdef _WIN32
 	return strFormat(
-		(without_vmark ? "%s" : "v%s"), getFileVersion("", true).c_str()
+		(without_vmark ? "%s" : "v%s"), getFileVersion("").c_str()
 	);
 #else
 	return strFormat(
@@ -807,7 +807,7 @@ std::string getSystemLanguage() {
 // Parameter:	bool bWithoutBuildNum
 // Returns:		std::string
 //************************************
-std::string getFileVersion(std::string filename, bool bWithoutBuildNum) {
+std::string getFileVersion(std::string filename) {
 	char szModulePath[MAX_PATH] = { 0 };
 
 	if (filename.empty()) {
@@ -834,16 +834,17 @@ std::string getFileVersion(std::string filename, bool bWithoutBuildNum) {
 			VS_FIXEDFILEINFO *pFileInfo = (VS_FIXEDFILEINFO*)lpBuffer;
 			std::string sFileVersion;
 			strFormat(sFileVersion, "%d.%d.%d",
-				pFileInfo->dwFileVersionMS >> 16,
-				pFileInfo->dwProductVersionMS & 0xFFFF,
-				pFileInfo->dwProductVersionLS >> 16
+				HIWORD(pFileInfo->dwFileVersionMS),
+				LOWORD(pFileInfo->dwProductVersionMS),
+				HIWORD(pFileInfo->dwProductVersionLS)
 			);
 
-			if (!bWithoutBuildNum) {
-				strFormat(sFileVersion, "%s.%d",
-					sFileVersion.c_str(), pFileInfo->dwProductVersionLS & 0xFFFF
-				);
+			// 若从资源中读取版本号, 那么当第四段的版本号值为 1 时则代表这是一个开发者的版本
+			// 返回的版本号字符上会自动追加上 -dev 后缀, 以便区分.
+			if (LOWORD(pFileInfo->dwProductVersionLS) == 1) {
+				strFormat(sFileVersion, "%s-dev", sFileVersion.c_str());
 			}
+
 			delete[] pVersionInfo;
 			return sFileVersion;
 		}

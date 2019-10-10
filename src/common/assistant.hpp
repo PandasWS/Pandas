@@ -45,5 +45,5 @@ std::string getPandasVersion(bool without_vmark = false);
 std::string getSystemLanguage();
 
 #ifdef _WIN32
-std::string getFileVersion(std::string filename, bool bWithoutBuildNum);
+std::string getFileVersion(std::string filename);
 #endif // _WIN32
