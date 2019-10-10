@@ -87,7 +87,7 @@ def deploy_file(filepath):
     elif extname in ['.dll', '.exe']:
         filehash = Common.get_pe_hash(filepath)
 
-    target_filepath = '{symstore}/{filename}/{hash}/{filename}'.format(
+    target_filepath = '{symstore}/symbols/{filename}/{hash}/{filename}'.format(
         symstore = project_symstoredir, hash = filehash,
         filename = basename.replace('-pre', '')
     )
@@ -118,9 +118,8 @@ def make_commit():
             return False
 
         repo.git.add('.')
-        repo.git.commit('-m', '归档 Pandas {version} 的符号文件, 编译自 {branch} 分支的 {githash}'.format(
+        repo.git.commit('-m', '归档 Pandas {version} 版本的符号文件和编译产物, 代码源自 PandasWS/Pandas@{githash} 仓库'.format(
             version = Common.get_pandas_ver(project_slndir, 'v'),
-            branch = Common.get_pandas_branch(project_slndir),
             githash = Common.get_pandas_hash(project_slndir)
         ))
     except git.GitError as _err:
