@@ -14015,7 +14015,42 @@ BUILDIN_FUNC(getiteminfo)
 		case -4:	script_pushint(st, i_data->properties.no_consume_of_skills);	return SCRIPT_CMD_SUCCESS;
 
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
-		case -5:	script_pushint(st, i_data->taming_mobid);						return SCRIPT_CMD_SUCCESS;
+		case -5: {
+			if (script_hasdata(st, 4) && i_data->taming_mobid.size()) {
+				int idx = 0;
+				struct script_data* data = NULL;
+				char* varname = NULL;
+
+				data = script_getdata(st, 4);
+				if (!data_isreference(data)) {
+					ShowError("buildin_getiteminfo: Error in argument! Please give a variable to store values in.\n");
+					return SCRIPT_CMD_FAILURE;
+				}
+
+				varname = reference_getname(data);
+				if (varname[strlen(varname) - 1] == '$') {
+					ShowError("buildin_getiteminfo: The array %s is not integer type.\n", varname);
+					return SCRIPT_CMD_FAILURE;
+				}
+
+				if (not_server_variable(*varname)) {
+					struct map_session_data* sd;
+
+					if (!script_rid2sd(sd)) {
+						ShowError("buildin_getiteminfo: Cannot use a player variable '%s' if no player is attached.\n", varname);
+						return SCRIPT_CMD_FAILURE;
+					}
+				}
+
+				for (auto it : i_data->taming_mobid) {
+					setd_sub(st, NULL, varname, idx, (void*)__64BPRTSIZE(it), data->ref);
+					idx++;
+				}
+			}
+
+			script_pushint(st, i_data->taming_mobid.size() ? 1 : 0);
+			return SCRIPT_CMD_SUCCESS;
+		}
 #else
 		case -5:	script_pushint(st, -2);											return SCRIPT_CMD_SUCCESS;
 #endif // Pandas_Struct_Item_Data_Taming_Mobid
@@ -26607,6 +26642,54 @@ BUILDIN_FUNC(gettimefmt) {
 }
 #endif // Pandas_ScriptCommand_GetTimeFmt
 
+#ifdef Pandas_ScriptCommand_MultiCatchPet
+/* ===========================================================
+ * 指令: multicatchpet
+ * 描述: 与 catchpet 指令类似, 但可以指定更多支持捕捉的魔物编号
+ * 用法: multicatchpet <魔物编号>{,<魔物编号>...};
+ * 返回: 该指令无论成功失败, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(multicatchpet) {
+	TBL_PC* sd;
+	char* functionname = nullptr;
+	unsigned int i = 2;
+
+	if (!script_rid2sd(sd))
+		return SCRIPT_CMD_SUCCESS;
+
+	functionname = script_getfuncname(st);
+
+	if (!script_hasdata(st, i)) {
+		ShowError("buildin_%s: no arguments given!\n", functionname);
+		st->state = END;
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	while (script_hasdata(st, i)) {
+		struct script_data* data;
+
+		data = script_getdata(st, i);
+
+		if (data_isint(data)) {
+			sd->pandas.multi_catch_target_class.push_back(script_getnum(st, i));
+			ShowDebug("buildin_%s: insert %d, current size: %d\n", functionname, script_getnum(st, i), sd->pandas.multi_catch_target_class.size());
+		}
+		else {
+			ShowError("buildin_%s: not a supported data type!\n", functionname);
+			script_reportdata(data);
+			st->state = END;
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		i++;
+	}
+
+	pet_catch_process1(sd, PET_CATCH_MULTI_TARGET);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_MultiCatchPet
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -26738,6 +26821,10 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetTimeFmt
 	BUILDIN_DEF(gettimefmt,"s??"),						// 将当前时间格式化输出成字符串, 是 gettimestr 的改进版 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetTimeFmt
+#ifdef Pandas_ScriptCommand_MultiCatchPet
+	BUILDIN_DEF(multicatchpet,"*"),						// 与 catchpet 指令类似, 但可以指定更多支持捕捉的魔物编号 [Sola丶小克]
+	BUILDIN_DEF2(multicatchpet, "mpet", "*"),			// 指定一个别名, 以便简化编码工作量
+#endif // Pandas_ScriptCommand_MultiCatchPet
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
@@ -27067,7 +27154,11 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(setnpcdisplay,"sv??"),
 	BUILDIN_DEF(compare,"ss"), // Lordalfa - To bring strstr to scripting Engine.
 	BUILDIN_DEF(strcmp,"ss"),
+#ifndef Pandas_ScriptParams_GetItemInfo
 	BUILDIN_DEF(getiteminfo,"ii"), //[Lupus] returns Items Buy / sell Price, etc info
+#else
+	BUILDIN_DEF(getiteminfo, "ii?"), //[Lupus] returns Items Buy / sell Price, etc info
+#endif // Pandas_ScriptParams_GetItemInfo
 	BUILDIN_DEF(setiteminfo,"iii"), //[Lupus] set Items Buy / sell Price, etc info
 	BUILDIN_DEF(getequipcardid,"ii"), //[Lupus] returns CARD ID or other info from CARD slot N of equipped item
 	// [zBuffer] List of mathematics commands --->

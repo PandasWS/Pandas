@@ -1431,12 +1431,11 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 		id->unequip_script = parse_script(str[21], source, line, scriptopt);
 
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
-	// 判断该道具的脚本是不是有 pet xxxx; 若有则记录一下 [Sola丶小克]
-	// 这是一个捕捉宠物的道具，并记录下它能捕捉的宠物的魔物编号
+	// 判断该道具的脚本是否调用了 pet 或 mpet 指令 [Sola丶小克]
+	// 若确实有相关的调用, 则记录下此道具支持捕捉的魔物编号
 	if (id->script != NULL) {
-		unsigned int pet_mobid = 0;
-		if (hasPet(str[19], pet_mobid)) {
-			id->taming_mobid = pet_mobid;
+		if (!hasCatchPet(str[19], id->taming_mobid)) {
+			id->taming_mobid.clear();
 		}
 	}
 #endif // Pandas_Struct_Item_Data_Taming_Mobid

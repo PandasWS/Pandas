@@ -133,6 +133,9 @@
 		// 使 map_session_data 可记录当前是否正在进行护身符能力计算 [Sola丶小克]
 		// 结构体修改定位 pc.hpp -> map_session_data.pandas.amulet_calculating
 		#define Pandas_Struct_Map_Session_Data_AmuletCalculating
+
+		// 使 map_session_data 可记录即将支持捕捉的多个魔物编号 [Sola丶小克]
+		#define Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
 #endif // Pandas_StructIncrease
 
@@ -675,6 +678,13 @@
 	// 是否启用 gettimefmt 脚本指令 [Sola丶小克]
 	// 将当前时间格式化输出成字符串, 是 gettimestr 的改进版
 	#define Pandas_ScriptCommand_GetTimeFmt
+
+	// 是否启用 multicatchpet 脚本指令 [Sola丶小克]
+	// 与 catchpet 指令类似, 但可以指定更多支持捕捉的魔物编号
+	// 此选项开关需要依赖 Pandas_Struct_Map_Session_Data_MultiCatchTargetClass 的拓展
+	#ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
+		#define Pandas_ScriptCommand_MultiCatchPet
+	#endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

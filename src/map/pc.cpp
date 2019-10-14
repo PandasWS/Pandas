@@ -5387,7 +5387,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 	// 如果玩家所在地图设置了 nocapture 标记的话
 	// 那么在扣除道具之前，就给予玩家禁止玩家捕捉宠物的提示 [Sola丶小克]
 	if (sd && map_getmapflag(sd->bl.m, MF_NOCAPTURE)) {
-		if (id->taming_mobid != 0) {
+		if (id->taming_mobid.size()) {
 			clif_displaymessage(sd->fd, msg_txt_cn(sd, 18));	// 此地图禁止捕捉宠物.
 			return 0;
 		}

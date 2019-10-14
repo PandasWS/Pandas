@@ -1217,6 +1217,14 @@ int pet_catch_process2(struct map_session_data* sd, int target_id)
 		}else if (sd->catch_target_class == PET_CATCH_UNIVERSAL_ITEM && sd->itemid == pet->itemID){
 			sd->catch_target_class = md->mob_id;
 		}
+#ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
+		else if (sd->catch_target_class == PET_CATCH_MULTI_TARGET) {
+			for (auto it : sd->pandas.multi_catch_target_class) {
+				if (it != md->mob_id) continue;
+				sd->catch_target_class = md->mob_id;
+			}
+		}
+#endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	}
 
 	if(sd->catch_target_class != md->mob_id || !pet) {

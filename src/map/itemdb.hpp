@@ -7,6 +7,10 @@
 #include "../common/db.hpp"
 #include "../common/mmo.hpp" // ITEM_NAME_LENGTH
 
+#ifdef Pandas_Struct_Item_Data_Taming_Mobid
+#include <vector>
+#endif // Pandas_Struct_Item_Data_Taming_Mobid
+
 ///Maximum allowed Item ID (range: 1 ~ 65,534)
 #define MAX_ITEMID USHRT_MAX
 ///Use apple for unknown items.
@@ -867,8 +871,8 @@ struct item_data
 
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
 	// 此物品是否为宠物捕捉道具 [Sola丶小克]
-	// 取值: 值为 0 则不是, 否则为该道具支持捕捉的魔物编号
-	unsigned int taming_mobid;
+	// 若 vector 为空则表示这不是宠物捕捉道具, 若非空则记录此道具支持捕捉的魔物编号
+	std::vector<uint32> taming_mobid;
 #endif // Pandas_Struct_Item_Data_Taming_Mobid
 
 #ifdef Pandas_Struct_Item_Data_Has_CallFunc
