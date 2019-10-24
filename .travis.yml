@@ -13,14 +13,12 @@ matrix:
             - g++-5
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-      script:
-         - mkdir cbuild
-         - cd cbuild
-         - cmake -G "Unix Makefiles" ..
-         - make || travis_terminate 1
 
 before_install:
     - eval "${MATRIX_EVAL}"
+    - cd 3rdparty/boost
+    - ./bootstrap.sh && ./b2
+    - cd $TRAVIS_BUILD_DIR
 
 before_script:
   - uname -a
@@ -28,6 +26,11 @@ before_script:
 
 script:
   - ./tools/ci/npc.sh
+  - mkdir cbuild || travis_terminate 1
+  - cd cbuild || travis_terminate 1
+  - cmake -G "Unix Makefiles" .. || travis_terminate 1
+  - make || travis_terminate 1
+  - cd $TRAVIS_BUILD_DIR || travis_terminate 1
   - ./login-server --run-once
   - ./char-server --run-once
   - ./map-server --run-once

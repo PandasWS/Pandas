@@ -56,6 +56,12 @@ set(CMAKE_CXX_CREATE_SHARED_LIBRARY)
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_RELEASE_POSTFIX "r")
 
+# 在 CMake 的较新版本中, 明确指定一下 CMP0075 策略的处理方式
+# CMP0075 Include file check macros honor CMAKE_REQUIRED_LIBRARIES
+if(POLICY CMP0075)
+    cmake_policy(SET CMP0075 NEW)
+endif()
+
 #
 # Prevent building in the source directory by default
 #
@@ -194,6 +200,26 @@ endif()
 message( STATUS "Detecting dynamic loading library (dl) - done" )
 endif()
 
+#
+# Boost C++ libraries
+#
+set( Boost_NO_SYSTEM_PATHS ON ) # 不搜索系统自带的 Boost 库
+set( Boost_USE_STATIC_LIBS ON ) # 使用静态库
+set( Boost_USE_MULTITHREADED ON ) # 使用多线程(MT)
+set( Boost_USE_STATIC_RUNTIME OFF ) # 不使用 runtime 静态库
+set( BOOST_ROOT 3rdparty/boost ) # 从指定的位置搜索 Boost 库
+
+# 寻找名为 Boost 的库, 要求携带 regex 组件, 失败则报错
+find_package(Boost COMPONENTS regex REQUIRED)
+
+# 如果成功找到 Boost 库, 那么进行相关的设置操作
+if( Boost_FOUND )
+	# 将 ${Boost_INCLUDE_DIRS} 放到 ${GLOBAL_INCLUDE_DIRS} 中去
+	set_property( CACHE GLOBAL_INCLUDE_DIRS  PROPERTY VALUE ${GLOBAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} )
+
+	# 将 ${Boost_LIBRARIES} 放到 ${GLOBAL_LIBRARIES} 中去
+	set_property( CACHE GLOBAL_LIBRARIES  PROPERTY VALUE ${GLOBAL_LIBRARIES} ${Boost_LIBRARIES} )
+endif()
 
 #
 # networking library (Solaris/MinGW)

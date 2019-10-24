@@ -16,7 +16,10 @@ PREFIX=/usr/local
 EPREFIX=
 LIBDIR=
 INCLUDEDIR=
-LIBS=""
+# =================================================================
+# Pandas currently requires: regex and filesystem, so we build them only
+LIBS="--with-regex --with-filesystem"
+# =================================================================
 PYTHON=python
 PYTHON_VERSION=
 PYTHON_ROOT=
