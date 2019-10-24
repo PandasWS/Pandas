@@ -90,7 +90,7 @@ ECHO.
 REM ======== Auto use b2 to build libraries ========
 ECHO.
 ECHO Start Building Components...
-cmd /c b2 link=static runtime-link=static
+cmd /c b2 link=static runtime-link=static define="_ITERATOR_DEBUG_LEVEL=0"
 ECHO The requires components was building finish, please check it.
 ECHO.
 pause
