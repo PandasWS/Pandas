@@ -141,7 +141,7 @@ int do_init( int argc, char** argv ){
 	};
 
 	if( !process( "PET_DB", 1, pet_paths, "pet_db", []( const std::string& path, const std::string& name_ext ) -> bool {
-		return pet_read_db( ( path + name_ext ).c_str() );
+		return (pet_read_db( ( path + name_ext ).c_str() ) != 0 ? 1 : 0);
 	} ) ){
 		return 0;
 	}
