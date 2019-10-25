@@ -117,11 +117,11 @@ include( TestBigEndian )
 #
 # PACKETVER
 #
-set( PACKETVER CACHE STRING "Sets the PACKETVER define of the servers. (see src/common/mmo.h)" )
+set( PACKETVER CACHE STRING "Sets the PACKETVER define of the servers. (see src/config/packets.hpp)" )
 if( PACKETVER )
-	list( APPEND GLOBAL_DEFINITIONS  PACKETVER=${PACKETVER} )
+	list( APPEND GLOBAL_DEFINITIONS PACKETVER=${PACKETVER} )
+	message( STATUS	"Detecting PACKETVER define is actived with value : ${PACKETVER}")
 endif()
-
 
 #
 # Find git
@@ -421,10 +421,28 @@ endif()
 #
 # Enable extra buildbot code (default=OFF)
 #
-option( ENABLE_EXTRA_BUILDBOT_CODE "enable extra buildbot code (default=OFF)" OFF )
+option( ENABLE_EXTRA_BUILDBOT_CODE "Enable extra buildbot code (default=OFF)" OFF )
 if( ENABLE_EXTRA_BUILDBOT_CODE )
 	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -DBUILDBOT" )
 	message( STATUS "Enabled extra BUILDBOT code" )
+endif()
+
+# 
+# Enable Pre-Renweal mode (default=OFF)
+#
+option( ENABLE_PRERE_MODE "Enable Pre-Renweal mode (default=OFF)" OFF )
+if( ENABLE_PRERE_MODE )
+	list( APPEND GLOBAL_DEFINITIONS PRERE )
+	message( STATUS	"Enable Pre-Renweal mode (with PRERE define)")
+endif()
+
+# 
+# Enable VIP feature (default=OFF)
+#
+option( ENABLE_VIP_FEATURE "Enable VIP feature (default=OFF)" OFF)
+if( ENABLE_VIP_FEATURE )
+	list( APPEND GLOBAL_DEFINITIONS VIP_ENABLE )
+	message( STATUS	"Enable VIP feature (with VIP_ENABLE define)")
 endif()
 
 
