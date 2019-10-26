@@ -119,7 +119,7 @@ include( TestBigEndian )
 #
 set( PACKETVER CACHE STRING "Sets the PACKETVER define of the servers. (see src/config/packets.hpp)" )
 if( PACKETVER )
-	list( APPEND GLOBAL_DEFINITIONS PACKETVER=${PACKETVER} )
+	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -DPACKETVER=${PACKETVER}" )
 	message( STATUS	"Detecting PACKETVER define is actived with value : ${PACKETVER}")
 endif()
 
@@ -432,7 +432,7 @@ endif()
 #
 option( ENABLE_PRERE_MODE "Enable Pre-Renweal mode (default=OFF)" OFF )
 if( ENABLE_PRERE_MODE )
-	list( APPEND GLOBAL_DEFINITIONS PRERE )
+	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -DPRERE" )
 	message( STATUS	"Enable Pre-Renweal mode (with PRERE define)")
 endif()
 
@@ -441,10 +441,9 @@ endif()
 #
 option( ENABLE_VIP_FEATURE "Enable VIP feature (default=OFF)" OFF)
 if( ENABLE_VIP_FEATURE )
-	list( APPEND GLOBAL_DEFINITIONS VIP_ENABLE )
+	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -DVIP_ENABLE" )
 	message( STATUS	"Enable VIP feature (with VIP_ENABLE define)")
 endif()
-
 
 #####################################################################
 # package stuff

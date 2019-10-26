@@ -1,6 +1,9 @@
 queries:
   - exclude: cpp/potentially-dangerous-function
 extraction:
+  cpp:
+    after_prepare:
+      - cd 3rdparty/boost && ./bootstrap.sh && ./b2
   python:
     python_setup: 
       version: 3
