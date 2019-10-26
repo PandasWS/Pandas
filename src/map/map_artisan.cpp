@@ -5,7 +5,7 @@
 
 #include <cctype> // toupper, tolower
 #include <algorithm> // transform
-#include <regex>
+#include <boost/regex.hpp>
 
 #include "../common/strlib.hpp"
 #include "../common/nullpo.hpp"
@@ -27,14 +27,14 @@
 bool isRegexMatched(std::string patterns, std::string content) {
 	try
 	{
-		std::regex re(patterns, std::regex::icase);
-		std::smatch matched;
+		boost::regex re(patterns, boost::regex::icase);
+		boost::smatch match_result;
 
-		if (!std::regex_search(content, matched, re)) {
+		if (!boost::regex_search(content, match_result, re)) {
 			return false;
 		}
 	}
-	catch (const std::regex_error& e)
+	catch (const boost::regex_error& e)
 	{
 		ShowWarning("%s throw regex_error : %s\n", __func__, e.what());
 		return false;
@@ -54,29 +54,31 @@ bool hasCatchPet(const char* _script, std::vector<uint32>& pet_mobid) {
 	pet_mobid.clear();
 
 	std::string script = strLower(std::string(_script));
-	static std::vector<std::string> matched = { "multicatchpet", "catchpet", "mpet", "pet" };
-	if (!strContain(matched, script)) return false;
+	static const std::vector<std::string> valid_cmds = { "multicatchpet", "catchpet", "mpet", "pet" };
+	static const std::string patterns = R"(.*?((multicatchpet|catchpet|mpet|pet)(\s{1,}|\()(\(|)(.*?)(|\))(\s*|);))";
+	if (!strContain(valid_cmds, script)) return false;
 
 	try
 	{
-		static std::string patterns = R"(.*?((multicatchpet|catchpet|mpet|pet)(\s{1,}|\()(\(|)(.*?)(|\))(\s*|);))";
-		std::regex re(patterns, std::regex::icase);
-		std::smatch match_result;
-		if (!std::regex_search(script, match_result, re)) return false;
+		boost::regex re(patterns, boost::regex::icase);
+		boost::smatch match_result;
+
+		if (!boost::regex_search(script, match_result, re)) return false;
 		if (match_result.size() != 8) return false;
 
-		std::string cmdname = match_result[2].str();
-		std::string cmdparams = strTrim(match_result[5].str());
-		if (!cmdparams.length()) return false; // 读取不到参数的话, 就没必要继续了
-		std::vector<std::string> params = strExplode(cmdparams, ',');
+		std::string cmd = match_result[2].str();
+		std::string params = strTrim(match_result[5].str());
+		if (!params.length()) return false;
 
-		if (cmdname == "multicatchpet" || cmdname == "mpet") {
-			for (auto it : params) {
+		std::vector<std::string> explode = strExplode(params, ',');
+
+		if (cmd == "multicatchpet" || cmd == "mpet") {
+			for (auto it : explode) {
 				pet_mobid.push_back(std::stoi(strTrim(it)));
 			}
 		}
 		else {
-			for (auto it : params) {
+			for (auto it : explode) {
 				pet_mobid.push_back(std::stoi(strTrim(it)));
 				break; // 仅获取第一个魔物编号即可
 			}
@@ -84,9 +86,12 @@ bool hasCatchPet(const char* _script, std::vector<uint32>& pet_mobid) {
 
 		// 对 vector 的内容进行排序和消重 (unique 依赖 sort)
 		std::sort(pet_mobid.begin(), pet_mobid.end());
-		pet_mobid.erase(std::unique(pet_mobid.begin(), pet_mobid.end()), pet_mobid.end());
+		pet_mobid.erase(
+			std::unique(pet_mobid.begin(), pet_mobid.end()),
+			pet_mobid.end()
+		);
 	}
-	catch (const std::regex_error& e)
+	catch (const boost::regex_error& e)
 	{
 		ShowWarning("%s throw regex_error : %s\n", __func__, e.what());
 		return false;
