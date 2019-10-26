@@ -4,6 +4,7 @@ sudo: false
 
 matrix:
   include:
+# GCC Version 5
     - os: linux
       addons:
         apt:
@@ -14,6 +15,7 @@ matrix:
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON"
+# GCC Version 6
     - os: linux
       addons:
         apt:
@@ -24,6 +26,7 @@ matrix:
       env:
          - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON"
+# GCC Version 7
     - os: linux
       addons:
         apt:
@@ -34,6 +37,7 @@ matrix:
       env:
          - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON"
+# GCC Version 8
     - os: linux
       addons:
         apt:
@@ -44,6 +48,40 @@ matrix:
       env:
          - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON"
+# Clang Version 3.9
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-3.9
+          packages:
+            - clang-3.9
+      env:
+         - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+         - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON"
+# Clang Version 4.0
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-4.0
+          packages:
+            - clang-4.0
+      env:
+         - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+         - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON"
+# Clang Version 5.0
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - clang-5.0
+      env:
+         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+         - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON"
+# GCC Version 5 with PreRenewal
     - os: linux
       addons:
         apt:
@@ -54,6 +92,7 @@ matrix:
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON"
+# GCC Version 6 with PreRenewal
     - os: linux
       addons:
         apt:
@@ -64,6 +103,7 @@ matrix:
       env:
          - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON"
+# GCC Version 7 with PreRenewal
     - os: linux
       addons:
         apt:
@@ -74,6 +114,7 @@ matrix:
       env:
          - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON"
+# GCC Version 8 with PreRenewal
     - os: linux
       addons:
         apt:
@@ -83,6 +124,39 @@ matrix:
             - g++-8
       env:
          - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+         - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON"
+# Clang Version 3.9 with PreRenewal
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-3.9
+          packages:
+            - clang-3.9
+      env:
+         - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+         - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON"
+# Clang Version 4.0 with PreRenewal
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-4.0
+          packages:
+            - clang-4.0
+      env:
+         - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+         - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON"
+# Clang Version 5.0 with PreRenewal
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - clang-5.0
+      env:
+         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON"
 
 before_install:
