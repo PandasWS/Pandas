@@ -1,6 +1,6 @@
 image: Visual Studio 2015
 # This is the default location, but we put it here for safety reasons, since we use it in our test script
-clone_folder: c:\projects\rathena
+clone_folder: c:\projects\pandas
 # We do not need the git history for our integration tests
 clone_depth: 10
 version: '{branch}-{build}'
@@ -21,6 +21,13 @@ configuration:
 #  - Release
 matrix:
   fast_finish: true
+install:
+- cmd: >-
+    cd C:\projects\pandas\3rdparty\boost
+    
+    .\bootstrap.bat
+
+    cd C:\projects\pandas
 build_script:
 - cmd: msbuild rAthena.sln /p:DefineConstants=%Defines%
 services: mysql
@@ -46,7 +53,7 @@ test_script:
     
     set MYSQL="C:\Program Files\MySql\MySQL Server 5.7\bin\mysql.exe"
     
-    cd C:\projects\rathena
+    cd C:\projects\pandas
     
     rem ========================================================================
     

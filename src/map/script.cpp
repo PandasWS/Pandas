@@ -4411,10 +4411,12 @@ void script_attach_state(struct script_state* st){
 			st->bk_st = sd->st;
 			st->bk_npcid = sd->npc_id;
 #else
-			struct mutli_state mbk_st = { 0 };
-			mbk_st.bk_st = sd->st;
-			mbk_st.bk_npcid = sd->npc_id;
-			sd->mbk_st.push(mbk_st);
+			if (sd->st) {
+				struct mutli_state mbk_st = { 0 };
+				mbk_st.bk_st = sd->st;
+				mbk_st.bk_npcid = sd->npc_id;
+				sd->mbk_st.push(mbk_st);
+			}
 #endif // Pandas_ScriptEngine_MutliStackBackup
 		}
 		sd->st = st;
