@@ -1241,6 +1241,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_VIEW_EQUIP
 	NPCF_VIEW_EQUIP,	// view_equip_filter_name	// OnPCViewEquipFilter		// 当玩家准备查看某个角色的装备时触发过滤器
 #endif // Pandas_NpcFilter_VIEW_EQUIP
+
+#ifdef Pandas_NpcFilter_EQUIP
+	NPCF_EQUIP,	// equip_filter_name	// OnPCEquipFilter		// 当玩家准备穿戴装备时触发过滤器
+#endif // Pandas_NpcFilter_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/

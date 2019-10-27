@@ -192,6 +192,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_VIEW_EQUIP
 	const char* view_equip_filter_name;	// NPCF_VIEW_EQUIP	// OnPCViewEquipFilter	// 当玩家准备查看某个角色的装备时触发过滤器
 #endif // Pandas_NpcFilter_VIEW_EQUIP
+
+#ifdef Pandas_NpcFilter_EQUIP
+	const char* equip_filter_name;	// NPCF_EQUIP	// OnPCEquipFilter	// 当玩家准备穿戴装备时触发过滤器
+#endif // Pandas_NpcFilter_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/

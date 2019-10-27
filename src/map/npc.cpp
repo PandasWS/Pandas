@@ -4785,6 +4785,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_VIEW_EQUIP:
 		return script_config.view_equip_filter_name;	// OnPCViewEquipFilter		// 当玩家准备查看某个角色的装备时触发过滤器
 #endif // Pandas_NpcFilter_VIEW_EQUIP
+
+#ifdef Pandas_NpcFilter_EQUIP
+	case NPCF_EQUIP:
+		return script_config.equip_filter_name;	// OnPCEquipFilter		// 当玩家准备穿戴装备时触发过滤器
+#endif // Pandas_NpcFilter_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/

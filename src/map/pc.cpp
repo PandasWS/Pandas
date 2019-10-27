@@ -10357,6 +10357,21 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 			flag = id->range != sd->inventory_data[i]->range;
 	}
 
+#ifdef Pandas_NpcFilter_EQUIP
+	if (!equipswitch) {
+		pc_setreg(sd, add_str("@equip_idx"), (int)n);
+		pc_setreg(sd, add_str("@equip_pos"), (int)n);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@equip_swapping"), (swapping ? 1 : 0));
+
+		if (npc_script_filter(sd, NPCF_EQUIP) && !swapping)
+			return false;
+
+		// 如果道具在脚本进行 Filter 处理期间被删了, 那么也终止后续流程
+		if (sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == NULL)
+			return false;
+	}
+#endif // Pandas_NpcFilter_EQUIP
+
 #ifdef Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
 	if ( !equipswitch && id->flag.bindOnEquip && !sd->inventory.u.items_inventory[n].bound) {
 		sd->inventory.u.items_inventory[n].bound = (char)battle_config.default_bind_on_equip;
