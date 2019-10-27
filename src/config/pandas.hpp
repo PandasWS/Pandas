@@ -538,6 +538,7 @@
 	// 是否启用 recallmap 管理员指令 [Sola丶小克]
 	// 召唤当前(或指定)地图的玩家来到身边 (处于离线挂店模式的角色不会被召唤)
 	#define Pandas_AtCommand_RecallMap
+	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 
 // ============================================================================
