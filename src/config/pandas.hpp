@@ -518,6 +518,10 @@
 	// 是否启用 recallmap 管理员指令 [Sola丶小克]
 	// 召唤当前(或指定)地图的玩家来到身边 (处于离线挂店模式的角色不会被召唤)
 	#define Pandas_AtCommand_RecallMap
+
+	// 是否启用 crashtest 管理员指令 [Sola丶小克]
+	// 执行崩溃测试, 在比较严格的环境上故意触发地图服务器崩溃
+	#define Pandas_AtCommand_Crashtest
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 
