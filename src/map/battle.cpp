@@ -8583,6 +8583,9 @@ static const struct _battle_data {
 	{ "pet_walk_speed",                     &battle_config.pet_walk_speed,                  1,      1,      3,              },
 
 	// Pandas Configure
+#ifdef Pandas_BattleConfig_Force_LoadEvent
+	{ "force_loadevent",                    &battle_config.force_loadevent,                 0,      0,      1,              },
+#endif // Pandas_BattleConfig_Force_LoadEvent
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };

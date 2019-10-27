@@ -146,6 +146,10 @@
 #ifdef Pandas_BattleConfigure
 	// 是否支持对战斗配置选项进行完整性检查 [╰づ记忆•斑驳〤 实现] [Sola丶小克 改进]
 	#define Pandas_BattleConfig_Verification
+
+	// 是否启用 force_loadevent 配置选项及其功能 [Sola丶小克]
+	// 此选项可以强制没有 loadevent 标记的地图也能触发 OnPCLoadMapEvent 事件
+	#define Pandas_BattleConfig_Force_LoadEvent
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
