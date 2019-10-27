@@ -26383,6 +26383,14 @@ BUILDIN_FUNC(copynpc) {
 	const char* filepath = (local_nd ? local_nd->path : "Unable to confirm the file path where the NPC executes 'copynpc' command.");
 	const char *start = nullptr, *buffer = nullptr; // npc_parsename 和 npc_parseview 需要用到, 由于没有具体数据, 所以故意不赋值
 
+	// 如果在物品的使用脚本或类似的无 NPC 作为触发主体的地方使用了 copynpc,
+	// 那么 filepath 将会是空指针, 而不是某个 npc 脚本的具体路径.
+	// 这会导致 npc_parsename 函数中使用 strlen(filepath) 时导致空指针崩溃.
+	// 在这种情况下我们将此 npc 归属的路径, 设置为当前函数的名字: buildin_copynpc 以规避此问题
+	if (filepath == nullptr) {
+		filepath = __func__;
+	}
+
 	w1 = script_getstr(st, 2);
 	w2 = script_getstr(st, 3);
 	w3 = script_getstr(st, 4);
