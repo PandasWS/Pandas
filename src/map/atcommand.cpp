@@ -10191,10 +10191,12 @@ ACMD_FUNC(resurrect) {
 #include "../custom/atcommand.inc"
 
 #ifdef Pandas_AtCommand_RecallMap
-/**
- * 召唤当前(或指定)地图的玩家来到身边 [Sola丶小克]
- * 使用方法: @recallmap {mapname}
- */
+/* ===========================================================
+ * 指令: recallmap
+ * 描述: 召唤当前(或指定)地图的玩家来到身边
+ * 用法: @recallmap {mapname}
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
 ACMD_FUNC(recallmap) {
 	struct map_session_data* pl_sd = nullptr;
 	struct s_mapiterator* iter = nullptr;
@@ -10255,6 +10257,8 @@ ACMD_FUNC(recallmap) {
 }
 #endif // Pandas_AtCommand_RecallMap
 
+// PYHELP - ATCMD - INSERT POINT - <Section 2>
+
 /**
  * Fills the reference of available commands in atcommand DBMap
  **/
@@ -10269,9 +10273,11 @@ void atcommand_basecommands(void) {
 	 * TODO: List all commands that causing crash
 	 **/
 	AtCommandInfo atcommand_base[] = {
+
 #ifdef Pandas_AtCommand_RecallMap
-		ACMD_DEF(recallmap),
+		ACMD_DEF(recallmap),			// 召唤当前(或指定)地图的玩家来到身边 [Sola丶小克]
 #endif // Pandas_AtCommand_RecallMap
+		// PYHELP - ATCMD - INSERT POINT - <Section 3>
 
 #include "../custom/atcommand_def.inc"
 		ACMD_DEF2R("warp", mapmove, ATCMD_NOCONSOLE),
