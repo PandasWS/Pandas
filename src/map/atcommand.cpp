@@ -10257,6 +10257,36 @@ ACMD_FUNC(recallmap) {
 }
 #endif // Pandas_AtCommand_RecallMap
 
+#ifdef Pandas_AtCommand_Crashtest
+/* ===========================================================
+ * 指令: crashtest
+ * 描述: 执行崩溃测试, 在比较严格的环境上故意触发地图服务器崩溃
+ * 用法: @crashtest
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+ACMD_FUNC(crashtest) {
+	struct map_session_data* pl_sd = nullptr;
+	struct s_mapiterator* iter = nullptr;
+	int count = 0;
+
+	iter = mapit_getallusers();
+	for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+		count++;
+	}
+	mapit_free(iter);
+
+	// 若当前服务器只有一个人在线, 那么触发地图服务器崩溃
+	if (count == 1) {
+		ShowWarning("Map-Server will trigger an crash for testing the crashrpt system.\n");
+		
+		int* crashint = nullptr;
+		*crashint = 20150817; // rAthenaCN 第一个版本的发布日期
+	}
+
+	return 0;
+}
+#endif // Pandas_AtCommand_Crashtest
+
 // PYHELP - ATCMD - INSERT POINT - <Section 2>
 
 /**
@@ -10277,6 +10307,9 @@ void atcommand_basecommands(void) {
 #ifdef Pandas_AtCommand_RecallMap
 		ACMD_DEF(recallmap),			// 召唤当前(或指定)地图的玩家来到身边 [Sola丶小克]
 #endif // Pandas_AtCommand_RecallMap
+#ifdef Pandas_AtCommand_Crashtest
+		ACMD_DEF(crashtest),			// 执行崩溃测试, 在比较严格的环境上故意触发地图服务器崩溃 [Sola丶小克]
+#endif // Pandas_AtCommand_Crashtest
 		// PYHELP - ATCMD - INSERT POINT - <Section 3>
 
 #include "../custom/atcommand_def.inc"
