@@ -4825,6 +4825,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCE_EQUIP:
 		return script_config.equip_event_name;	// OnPCEquipEvent		// 当玩家成功穿戴一件装备时触发事件
 #endif // Pandas_NpcEvent_EQUIP
+
+#ifdef Pandas_NpcEvent_UNEQUIP
+	case NPCE_UNEQUIP:
+		return script_config.unequip_event_name;	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
+#endif // Pandas_NpcEvent_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
 
 	/************************************************************************/

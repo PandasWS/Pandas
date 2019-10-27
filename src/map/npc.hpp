@@ -1274,6 +1274,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_EQUIP
 	NPCE_EQUIP,	// equip_event_name	// OnPCEquipEvent		// 当玩家成功穿戴一件装备时触发事件
 #endif // Pandas_NpcEvent_EQUIP
+
+#ifdef Pandas_NpcEvent_UNEQUIP
+	NPCE_UNEQUIP,	// unequip_event_name	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
+#endif // Pandas_NpcEvent_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	/************************************************************************/

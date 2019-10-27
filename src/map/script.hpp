@@ -225,6 +225,10 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_EQUIP
 	const char* equip_event_name;	// NPCE_EQUIP	// OnPCEquipEvent	// 当玩家成功穿戴一件装备时触发事件
 #endif // Pandas_NpcEvent_EQUIP
+
+#ifdef Pandas_NpcEvent_UNEQUIP
+	const char* unequip_event_name;	// NPCE_UNEQUIP	// OnPCUnequipEvent	// 当玩家成功脱下一件装备时触发事件
+#endif // Pandas_NpcEvent_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 
 	/************************************************************************/
