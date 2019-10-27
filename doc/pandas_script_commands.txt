@@ -843,63 +843,122 @@ IP地址:
 ---------------------------------------
 
 *copynpc "<复制出来的新NPC所在地图名称>,<X坐标>,<Y坐标>,<朝向编号>","duplicate(<来源NPC名称>)","<复制出来的新NPC名称>","<图档外观编号>";
+*copynpc "<复制出来的新NPC所在地图名称>",<X坐标>,<Y坐标>,<朝向编号>,"<来源NPC名称>","<复制出来的新NPC名称>",<图档外观编号>;
 
 使用该指令可以复制指定的 NPC 到一个新的位置.
-参数看起来很多, 实际上是由 4 个字符串参数组成的,
-这 4 个字符串与使用 duplicate 进行静态复制时候的四个用 %TAB% 分隔的内容是一样的.
+该指令从 v1.0.1 版本开始, 拥有两个不同的参数版本可供随意选择, 程序将根据参数的个数进行自动识别.
 
-参数说明:
-	第一个参数: "<复制出来的新NPC所在地图名称>,<X坐标>,<Y坐标>,<朝向编号>"
-	第二个参数: "duplicate(<来源NPC名称>)"
-	第三个参数: "<复制出来的新NPC名称>"
-	第四个参数: "<图档外观编号>"
+============
+四参数版本
+============
 
-返回值:
-	复制成功则返回复制出来的新 NPC 的 GID, 失败则返回 0
+	需要携带 4 个字符串参数, 参数的内容需要脚本作者进行准确的拼接操作.
 
-举例说明:
-	假设有以下 NPC 我们想把它复制一个新的出来:
+	参数看起来很多, 实际上是由 4 个字符串参数组成的,
+	这 4 个字符串与使用 duplicate 进行静态复制时候的四个用 %TAB% 分隔的内容是一样的.
 
-		prontera,146,99,2    script    PVP管理员::PVPCOPYTEST    123,{
-			mes "[PVP管理员]";
-			mes "场地正在修理, 请稍后再来...";
-			close;
-		}
+	参数说明:
+		第一个参数: "<复制出来的新NPC所在地图名称>,<X坐标>,<Y坐标>,<朝向编号>"
+		第二个参数: "duplicate(<来源NPC名称>)"
+		第三个参数: "<复制出来的新NPC名称>"
+		第四个参数: "<图档外观编号>"
 
-	通常的做法是在脚本中, 使用 duplicate 指令进行静态复制, 如:
-	
-		prontera,156,99,2	duplicate(PVPCOPYTEST)	PVP管理员#1	123
-	
-	现在你可以使用 copynpc 脚本指令, 将上面这一行静态复制代码按 %TAB% 分割为4个字段,
-	然后以字符串形式传递给 copynpc 脚本指令, 如:
-	
-		copynpc "prontera,156,99,2","duplicate(PVPCOPYTEST)","PVP管理员#2","123";
+	举例说明:
+		假设有以下 NPC 我们想把它复制一个新的出来:
+
+			prontera,146,99,2    script    PVP管理员::PVPCOPYTEST    123,{
+				mes "[PVP管理员]";
+				mes "场地正在修理, 请稍后再来...";
+				close;
+			}
+
+		通常的做法是在脚本中, 使用 duplicate 指令进行静态复制, 如:
 		
-		这里第二个参数支持简化 duplicate 关键字, 可以用以下语句实现同样的效果:
+			prontera,156,99,2	duplicate(PVPCOPYTEST)	PVP管理员#1	123
 		
-		copynpc "prontera,156,99,2","PVPCOPYTEST","PVP管理员#2","123";
-	
-	同时此函数支持返回复制出来的新 NPC 的 GID, 方便你使用 unit 系列指令对其进行操作, 如:
-	
-		.@gid = copynpc("prontera,156,99,2","duplicate(PVPCOPYTEST)","PVP管理员#3","123");
-		unittalk .@gid, "我是新克隆出来的 NPC 我的 GID 是 : " + .@gid;
-	
-	如果想要复制一个副本中的 NPC, 那么需要在用到地图名称的地方使用 instance_mapname 进行转换,
-	原始 NPC 的名称也需要用 instance_npcname 进行转换, 如:
-	
-		.@w1 = instance_mapname("1@tower") + ",156,99,2";
-		.@w2 = "duplicate(" + instance_npcname("PVPCOPYTEST") + ")";
-		.@w3 = "PVP管理员#4";
-		.@w4 = "123";
+		现在你可以使用 copynpc 脚本指令, 将上面这一行静态复制代码按 %TAB% 分割为4个字段,
+		然后以字符串形式传递给 copynpc 脚本指令, 如:
 		
-		copynpc .@w1, .@w2, .@w3, .@w4;
+			copynpc "prontera,156,99,2","duplicate(PVPCOPYTEST)","PVP管理员#2","123";
+			
+			这里第二个参数支持简化 duplicate 关键字, 可以用以下语句实现同样的效果:
+			
+			copynpc "prontera,156,99,2","PVPCOPYTEST","PVP管理员#2","123";
+		
+		同时此函数支持返回复制出来的新 NPC 的 GID, 方便你使用 unit 系列指令对其进行操作, 如:
+		
+			.@gid = copynpc("prontera,156,99,2","duplicate(PVPCOPYTEST)","PVP管理员#3","123");
+			unittalk .@gid, "我是新克隆出来的 NPC 我的 GID 是 : " + .@gid;
+		
+		如果想要复制一个副本中的 NPC, 那么需要在用到地图名称的地方使用 instance_mapname 进行转换,
+		原始 NPC 的名称也需要用 instance_npcname 进行转换, 如:
+		
+			.@w1 = instance_mapname("1@tower") + ",156,99,2";
+			.@w2 = "duplicate(" + instance_npcname("PVPCOPYTEST") + ")";
+			.@w3 = "PVP管理员#4";
+			.@w4 = "123";
+			
+			copynpc .@w1, .@w2, .@w3, .@w4;
 
-注意事项:
-	复制商店类型的 NPC 时, 来源 NPC 和目标 NPC 它们之间的道具列表是相互独立的.
+============
+七参数版本
+============
+
+	需要携带 7 个参数, 参数的内容可以直接用对应类型的变量直接传递, 更方便理解.
 	
-	若指定了一个无效的外观编号, 那么地图服务器虽然会报 status_set_viewdata 错误,
-	但是实际上 NPC 还是会复制成功 (只不过你看不见它).
-	此时可以用 setunitdata 调整这个 NPC 的 UNPC_DISPLAY 参数, 重新给他一个外观.
+	参数说明:
+		第一个参数: 字符串类型	-	"<复制出来的新NPC所在地图名称>"
+		第二个参数: 数值类型	-	<X坐标>
+		第三个参数: 数值类型	-	<Y坐标>
+		第四个参数: 数值类型	-	<朝向编号>
+		第五个参数: 字符串类型	-	"<来源NPC名称>"
+		第六个参数: 字符串类型	-	"<复制出来的新NPC名称>"
+		第七个参数: 数值类型	-	<图档外观编号>
+
+	举例说明:
+		假设有以下 NPC 我们想把它复制一个新的出来:
+
+			prontera,146,99,2    script    PVP管理员::PVPCOPYTEST    123,{
+				mes "[PVP管理员]";
+				mes "场地正在修理, 请稍后再来...";
+				close;
+			}
+
+		通常的做法是在脚本中, 使用 duplicate 指令进行静态复制, 如:
+		
+			prontera,156,99,2	duplicate(PVPCOPYTEST)	PVP管理员#1	123
+		
+		现在你可以使用 copynpc 脚本指令直接复制:
+		
+			copynpc "prontera",156,99,2,"duplicate(PVPCOPYTEST)","PVP管理员#2",123;
+			
+			这里第二个参数支持简化 duplicate 关键字, 可以用以下语句实现同样的效果:
+			
+			copynpc "prontera",156,99,2,"PVPCOPYTEST","PVP管理员#2",123;
+		
+		同时此函数支持返回复制出来的新 NPC 的 GID, 方便你使用 unit 系列指令对其进行操作, 如:
+		
+			.@gid = copynpc("prontera",156,99,2,"PVPCOPYTEST","PVP管理员#3",123);
+			unittalk .@gid, "我是新克隆出来的 NPC 我的 GID 是 : " + .@gid;
+		
+		如果想要复制一个副本中的 NPC, 那么需要在用到地图名称的地方使用 instance_mapname 进行转换,
+		原始 NPC 的名称也需要用 instance_npcname 进行转换, 如:
+		
+			copynpc instance_mapname("1@tower"),156,99,2,instance_npcname("PVPCOPYTEST"),"PVP管理员#4",123;
+
+============
+公用说明
+============
+
+	返回值:
+		复制成功则返回复制出来的新 NPC 的 GID, 失败则返回 0
+
+	注意事项:
+		复制商店类型的 NPC 时, 来源 NPC 和目标 NPC 它们之间的道具列表是相互独立的.
+		
+		若指定了一个无效的外观编号, 那么地图服务器虽然会报 status_set_viewdata 错误,
+		但是实际上 NPC 还是会复制成功 (只不过你看不见它).
+		此时可以用 setunitdata 调整这个 NPC 的 UNPC_DISPLAY 参数, 重新给他一个外观.
 
 ---------------------------------------
 

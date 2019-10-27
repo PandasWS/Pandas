@@ -26365,6 +26365,7 @@ BUILDIN_FUNC(messagecolor) {
  * 指令: copynpc
  * 描述: 复制指定的 NPC 到一个新的位置
  * 用法: copynpc "<复制出来的新NPC所在地图名称>,<X坐标>,<Y坐标>,<朝向编号>","duplicate(<来源NPC名称>)","<复制出来的新NPC名称>","<图档外观编号>";
+ * 用法: copynpc "<复制出来的新NPC所在地图名称>",<X坐标>,<Y坐标>,<朝向编号>,"<来源NPC名称>","<复制出来的新NPC名称>",<图档外观编号>;
  * 返回: 复制成功则返回新 NPC 的 GID, 复制失败则返回 0
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
@@ -26375,6 +26376,7 @@ BUILDIN_FUNC(copynpc) {
 	// --------------------------------------------------------------------------------------
 
 	const char *w1 = nullptr, *w2 = nullptr, *w3 = nullptr, *w4 = nullptr;
+	char w1buf[256] = { 0 }, w2buf[256] = { 0 }, w3buf[256] = { 0 }, w4buf[256] = { 0 };
 	DBMap* npcname_db = get_npcname_db_ptr();
 	int* npc_script = get_npc_script_ptr();
 	int* npc_shop = get_npc_shop_ptr();
@@ -26391,10 +26393,43 @@ BUILDIN_FUNC(copynpc) {
 		filepath = __func__;
 	}
 
-	w1 = script_getstr(st, 2);
-	w2 = script_getstr(st, 3);
-	w3 = script_getstr(st, 4);
-	w4 = script_getstr(st, 5);
+	do
+	{
+		if (script_lastdata(st) == 5) {
+			// 若用四个参数的形式调用 copynpc, 那么四个参数必须全部都是字符串类型
+			// 第四个参数可以允许是数值变量, 因为数值变量可以直接被 script_getstr 强制转换成字符串
+			if (script_isstring(st, 2) && script_isstring(st, 3) &&
+				script_isstring(st, 4) && (script_isstring(st, 5) || script_isint(st, 5))) {
+				w1 = script_getstr(st, 2);
+				w2 = script_getstr(st, 3);
+				w3 = script_getstr(st, 4);
+				w4 = script_getstr(st, 5);
+				break; // 这里的 break 表示流程正常结束, 无需报错
+			}
+		}
+		else if (script_lastdata(st) == 8) {
+			// 若使用七个参数的形式调用 copynpc, 那么七个参数的类型分别需要是: siiissi
+			if (script_isstring(st, 2) && script_isint(st, 3) &&
+				script_isint(st, 4) && script_isint(st, 5) &&
+				script_isstring(st, 6) && script_isstring(st, 7) && script_isint(st, 8)) {
+
+				sprintf(w1buf, "%s,%d,%d,%d", script_getstr(st, 2), script_getnum(st, 3), script_getnum(st, 4), script_getnum(st, 5));
+				sprintf(w2buf, "%s", script_getstr(st, 6));
+				sprintf(w3buf, "%s", script_getstr(st, 7));
+				sprintf(w4buf, "%d", script_getnum(st, 8));
+
+				w1 = w1buf;
+				w2 = w2buf;
+				w3 = w3buf;
+				w4 = w4buf;
+				break; // 这里的 break 表示流程正常结束, 无需报错
+			}
+		}
+
+		ShowError("buildin_copynpc: Invalid parameters, please read the manual for copynpc.\n");
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	} while (false);
 
 	short x, y, m, xs = -1, ys = -1;
 	int16 dir;
@@ -26826,7 +26861,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(messagecolor,"s???"),					// 发送指定颜色的消息文本到聊天窗口中 [Sola丶小克]
 #endif // Pandas_ScriptCommand_MessageColor
 #ifdef Pandas_ScriptCommand_Copynpc
-	BUILDIN_DEF(copynpc,"ssss"),						// 复制指定的 NPC 到一个新的位置 [Sola丶小克]
+	BUILDIN_DEF(copynpc,"???????"),						// 复制指定的 NPC 到一个新的位置 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Copynpc
 #ifdef Pandas_ScriptCommand_GetTimeFmt
 	BUILDIN_DEF(gettimefmt,"s??"),						// 将当前时间格式化输出成字符串, 是 gettimestr 的改进版 [Sola丶小克]
