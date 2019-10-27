@@ -10505,6 +10505,16 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 	}
 	sd->npc_item_flag = iflag;
 
+#ifdef Pandas_NpcEvent_EQUIP
+	if (!equipswitch) {
+		pc_setreg(sd, add_str("@equip_idx"), (int)n);
+		pc_setreg(sd, add_str("@equip_pos"), (int)n);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@equip_swapping"), (swapping ? 1 : 0));
+
+		npc_script_event(sd, NPCE_EQUIP);
+	}
+#endif // Pandas_NpcEvent_EQUIP
+
 	return true;
 }
 
@@ -10700,15 +10710,6 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
 		status_change_end(&sd->bl, SC_P_ALTER, INVALID_TIMER);
 
 	pc_unequipitem_sub(sd, n, flag);
-
-#ifdef Pandas_NpcEvent_UNEQUIP
-	pc_setreg(sd, add_str("@unequip_idx"), (int)n);
-	pc_setreg(sd, add_str("@unequip_pos"), (int)n);	// 为兼容脚本而添加
-	pc_setreg(sd, add_str("@unequip_swapping"), (flag & 16 ? 1 : 0));	// flag & 16 是一个自定义标记, 表示本次脱下装备是由装备切换机制引发的
-	pc_setreg(sd, add_str("@unequip_force"), (flag & 2 ? 1 : 0));
-
-	npc_script_event(sd, NPCE_UNEQUIP);
-#endif // Pandas_NpcEvent_UNEQUIP
 
 	return true;
 }

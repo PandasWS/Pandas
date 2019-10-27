@@ -221,6 +221,10 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_PROGRESS_ABORT
 	const char* progressbar_abort_event_name;	// NPCE_PROGRESS_ABORT	// OnPCProgressAbortEvent	// 当玩家的进度条被打断后触发事件
 #endif // Pandas_NpcEvent_PROGRESS_ABORT
+
+#ifdef Pandas_NpcEvent_EQUIP
+	const char* equip_event_name;	// NPCE_EQUIP	// OnPCEquipEvent	// 当玩家成功穿戴一件装备时触发事件
+#endif // Pandas_NpcEvent_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 
 	/************************************************************************/

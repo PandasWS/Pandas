@@ -85,6 +85,10 @@
 #ifdef Pandas_NpcEvent_PROGRESS_ABORT
 	export_constant(NPCE_PROGRESS_ABORT);	// progressbar_abort_event_name	// OnPCProgressAbortEvent		// 当玩家的进度条被打断后触发事件
 #endif // Pandas_NpcEvent_PROGRESS_ABORT
+
+#ifdef Pandas_NpcEvent_EQUIP
+	export_constant(NPCE_EQUIP);	// equip_event_name	// OnPCEquipEvent		// 当玩家成功穿戴一件装备时触发事件
+#endif // Pandas_NpcEvent_EQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 12>
 
 	/************************************************************************/
