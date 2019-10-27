@@ -3,13 +3,13 @@
 #pragma once
 
 #include <string> // std::string
+#include <vector> // std::vector
 
 #include "../config/pandas.hpp"
+#include "../common/cbasetypes.hpp" // uint32
 
-bool regexGroupVal(std::string patterns, std::string content, int groupid, std::string & val);
-bool regexMatch(std::string patterns, std::string content);
-
-bool hasPet(const char* _script, unsigned int & pet_mobid);
+bool isRegexMatched(std::string patterns, std::string content);
+bool hasCatchPet(const char* _script, std::vector<uint32>& pet_mobid);
 bool hasCallfunc(const char* _script);
 
 #ifdef Pandas_MapFlag_NoMail

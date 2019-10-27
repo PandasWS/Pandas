@@ -6,6 +6,7 @@
 #include <string> // std::string
 #include <time.h> // struct tm
 #include <memory> // std::shared_ptr
+#include <vector> // std::vector
 
 void deployImportDirectories();
 
@@ -24,6 +25,18 @@ bool strEndWith(std::wstring fullstring, std::wstring ending);
 
 void strReplace(std::string& str, const std::string& from, const std::string& to);
 void strReplace(std::wstring& str, const std::wstring& from, const std::wstring& to);
+
+bool strContain(std::vector<std::string> contain, std::string str, bool bCaseSensitive = false);
+bool strContain(std::string contain, std::string str, bool bCaseSensitive = false);
+
+std::string strLeftTrim(const std::string& s);
+std::string strRightTrim(const std::string& s);
+std::string strTrim(const std::string& s);
+
+std::vector<std::string> strExplode(std::string const& s, char delim);
+
+std::string strLower(const std::string& s);
+std::string strUpper(const std::string& s);
 
 void standardizePathSep(std::string& path);
 void standardizePathSep(std::wstring& path);

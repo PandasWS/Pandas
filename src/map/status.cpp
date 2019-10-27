@@ -3563,6 +3563,10 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	sd->sp_vanish.clear();
 	sd->hp_vanish.clear();
 
+#ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
+	sd->pandas.multi_catch_target_class.clear();
+#endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
+
 	// Zero up structures...
 	memset(&sd->hp_loss, 0, sizeof(sd->hp_loss)
 		+ sizeof(sd->sp_loss)

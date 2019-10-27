@@ -69,6 +69,9 @@ enum e_pet_catch : uint16 {
 	PET_CATCH_FAIL = 0, ///< A catch attempt failed
 	PET_CATCH_UNIVERSAL = 1, ///< The catch attempt is universal (ignoring MD_STATUS_IMMUNE/Boss)
 	PET_CATCH_UNIVERSAL_ITEM = 2,
+#ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
+	PET_CATCH_MULTI_TARGET = 3,
+#endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 };
 
 enum e_pet_intimate_level : uint16 {

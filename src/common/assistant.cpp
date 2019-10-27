@@ -8,9 +8,12 @@
 #include <sys/stat.h> // _stat
 #include <errno.h> // errno, ENOENT, EEXIST
 #include <wchar.h> // vswprintf
-
+#include <algorithm> // std::find_if
+#include <sstream> // std::istringstream
+#include <functional> // std::not1 std::ptr_fun
 #include <iostream>
 #include <fstream>
+#include <cctype> // std::tolower std::toupper std::isspace
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -511,6 +514,123 @@ void strReplace(std::wstring& str, const std::wstring& from, const std::wstring&
 		str.replace(start_pos, from.length(), to);
 		start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
 	}
+}
+
+//************************************
+// Method:      strContain
+// Description: 判断 str 中是否包含 std::vector<std::string> contain 中的任何一个字符串 
+// Parameter:   std::vector<std::string> contain
+// Parameter:   std::string str
+// Parameter:   bool bCaseSensitive 是否大小写敏感, 在 hpp 中定义的默认值为 false (不敏感)
+// Returns:     bool 只要包含任何一个则返回 true, 都不包含则返回 false
+// Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
+//************************************
+bool strContain(std::vector<std::string> contain, std::string str, bool bCaseSensitive) {
+	if (!bCaseSensitive) str = strLower(str);
+	for (auto it : contain) {
+		if (str.find(it) != std::string::npos) return true;
+	}
+	return false;
+}
+
+//************************************
+// Method:      strContain
+// Description: 判断 str 中是否包含 contain 字符串
+// Parameter:   std::string contain
+// Parameter:   std::string str
+// Parameter:   bool bCaseSensitive 是否大小写敏感, 在 hpp 中定义的默认值为 false (不敏感)
+// Returns:     bool 包含则返回 true, 不包含则返回 false
+// Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
+//************************************
+bool strContain(std::string contain, std::string str, bool bCaseSensitive) {
+	if (!bCaseSensitive) str = strLower(str);
+	return (str.find(contain) != std::string::npos);
+}
+
+//************************************
+// Method:      strLeftTrim
+// Description: 移除给定 std::string 字符串左侧的空白字符
+// Parameter:   const std::string & s
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
+//************************************
+std::string strLeftTrim(const std::string& s) {
+	std::string s2 = s;
+	s2.erase(s2.begin(), std::find_if(s2.begin(), s2.end(),
+		std::not1(std::ptr_fun<int, int>(std::isspace))));
+	return std::move(s2);
+}
+
+//************************************
+// Method:      strRightTrim
+// Description: 移除给定 std::string 字符串右侧的空白字符
+// Parameter:   const std::string & s
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
+//************************************
+std::string strRightTrim(const std::string& s) {
+	std::string s2 = s;
+	s2.erase(std::find_if(s2.rbegin(), s2.rend(),
+		std::not1(std::ptr_fun<int, int>(::isspace))).base(), s2.end());
+	return std::move(s2);
+}
+
+//************************************
+// Method:      strTrim
+// Description: 移除给定 std::string 字符串左右两侧的空白字符
+// Parameter:   const std::string & s
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
+//************************************
+std::string strTrim(const std::string& s) {
+	return strLeftTrim(strRightTrim(s));
+}
+
+//************************************
+// Method:      strExplode
+// Description: 将给定的 s 字符串按 delim 字符进行切割
+// Parameter:   std::string const & s
+// Parameter:   char delim 注意这只是一个字符, 而不是一个字符串
+// Returns:     std::vector<std::string> 返回切割后的内容
+// Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
+//************************************
+std::vector<std::string> strExplode(std::string const& s, char delim) {
+	std::vector<std::string> result;
+	std::istringstream iss(s);
+	for (std::string token; std::getline(iss, token, delim); ) {
+		result.push_back(std::move(token));
+	}
+	return result;
+}
+
+//************************************
+// Method:      strLower
+// Description: 将给定的 std::string 字符串中的字母转换成小写
+// Parameter:   const std::string & s
+// Returns:     std::string&
+// Author:      Sola丶小克(CairoLee)  2019/10/14 17:14
+//************************************
+std::string strLower(const std::string& s) {
+	std::string s2 = s;
+	std::transform(s2.begin(), s2.end(), s2.begin(),
+		[](unsigned char c) { return std::tolower(c); }
+	);
+	return std::move(s2);
+}
+
+//************************************
+// Method:      strUpper
+// Description: 将给定的 std::string 字符串中的字母转换成大写
+// Parameter:   const std::string & s
+// Returns:     std::string&
+// Author:      Sola丶小克(CairoLee)  2019/10/14 17:14
+//************************************
+std::string strUpper(const std::string& s) {
+	std::string s2 = s;
+	std::transform(s2.begin(), s2.end(), s2.begin(),
+		[](unsigned char c) { return std::toupper(c); }
+	);
+	return std::move(s2);
 }
 
 //************************************
