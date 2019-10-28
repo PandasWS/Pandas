@@ -1470,10 +1470,6 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 	sd->qi_display = NULL;
 	sd->qi_count = 0;
 
-#ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
-	sd->pandas.workinevent = NPCE_MAX;
-#endif // Pandas_Struct_Map_Session_Data_WorkInEvent
-
 	//warp player
 	if ((i=pc_setpos(sd,sd->status.last_point.map, sd->status.last_point.x, sd->status.last_point.y, CLR_OUTSIGHT)) != SETPOS_OK) {
 		ShowError ("Last_point_map %s - id %d not found (error code %d)\n", mapindex_id2name(sd->status.last_point.map), sd->status.last_point.map, i);
