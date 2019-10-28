@@ -661,6 +661,9 @@ struct Battle_Config
 	int pet_walk_speed;
 
 	// Pandas Configure
+#ifdef Pandas_BattleConfig_Force_LoadEvent
+	int force_loadevent;
+#endif // Pandas_BattleConfig_Force_LoadEvent
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

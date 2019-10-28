@@ -10820,7 +10820,11 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 	}
 
 	// Don't trigger NPC event or opening vending/buyingstore will be failed
+#ifndef Pandas_BattleConfig_Force_LoadEvent
 	if(!sd->state.autotrade && mapdata->flag[MF_LOADEVENT]) // Lance
+#else
+	if(!sd->state.autotrade && (mapdata->flag[MF_LOADEVENT] || battle_config.force_loadevent))
+#endif // Pandas_BattleConfig_Force_LoadEvent
 		npc_script_event(sd, NPCE_LOADMAP);
 
 	if (pc_checkskill(sd, SG_DEVIL) && pc_is_maxjoblv(sd))
