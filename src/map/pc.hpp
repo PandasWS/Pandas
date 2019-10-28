@@ -768,16 +768,16 @@ struct map_session_data {
 #ifdef Pandas_Struct_Map_Session_Data_Pandas
 	struct s_pandas {
 #ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
-		enum npce_event workinevent; // 角色当前正在执行的事件
+		enum npce_event workinevent = NPCE_MAX; // 角色当前正在执行的事件
 #endif // Pandas_Struct_Map_Session_Data_WorkInEvent
 #ifdef Pandas_Struct_Map_Session_Data_EventHalt
-		bool eventhalt[NPCE_MAX]; // 用于记录事件中断请求
+		bool eventhalt[NPCE_MAX] = { false }; // 用于记录事件中断请求
 #endif // Pandas_Struct_Map_Session_Data_EventHalt
 #ifdef Pandas_Struct_Map_Session_Data_EventTrigger
-		uint16 eventtrigger[NPCE_MAX];	// 用于记录事件触发请求
+		uint16 eventtrigger[NPCE_MAX] = { 0 };	// 用于记录事件触发请求
 #endif // Pandas_Struct_Map_Session_Data_EventTrigger
 #ifdef Pandas_Struct_Map_Session_Data_AmuletCalculating
-		bool amulet_calculating;	// 当前角色是否正在进行护身符能力计算
+		bool amulet_calculating = false;	// 当前角色是否正在进行护身符能力计算
 #endif // Pandas_Struct_Map_Session_Data_AmuletCalculating
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 		std::vector<uint32> multi_catch_target_class;	// 用于记录即将支持捕捉的多个魔物编号

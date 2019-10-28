@@ -25841,7 +25841,8 @@ static int buildin_script4each_sub(struct block_list *bl, va_list ap) {
 	char *execute_script = va_arg(ap, char*);
 	if (!bl || !execute_script) return 0;
 
-	struct script_code *script = parse_script(execute_script, "script4each", 0, 0);
+	struct script_code* script = nullptr;
+	script = parse_script(execute_script, "script4each", 0, 0);
 	if (script) {
 		run_script(script, 0, bl->id, 0);
 		script_free_code(script);
