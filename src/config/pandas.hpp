@@ -150,6 +150,10 @@
 	// 是否启用 force_loadevent 配置选项及其功能 [Sola丶小克]
 	// 此选项可以强制没有 loadevent 标记的地图也能触发 OnPCLoadMapEvent 事件
 	#define Pandas_BattleConfig_Force_LoadEvent
+
+	// 是否启用 force_identified 配置选项及其功能 [Sola丶小克]
+	// 此选项可以强制特定渠道获得的装备自动变成已鉴定
+	#define Pandas_BattleConfig_Force_Identified
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 

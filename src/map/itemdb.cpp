@@ -245,6 +245,9 @@ static void itemdb_pc_get_itemgroup_sub(struct map_session_data *sd, bool identi
 	tmp.nameid = data->nameid;
 	tmp.bound = data->bound;
 	tmp.identify = identify ? identify : itemdb_isidentified(data->nameid);
+#ifdef Pandas_BattleConfig_Force_Identified
+	tmp.identify = (battle_config.force_identified & 1 ? 1 : tmp.identify);
+#endif // Pandas_BattleConfig_Force_Identified
 	tmp.expire_time = (data->duration) ? (unsigned int)(time(NULL) + data->duration*60) : 0;
 	if (data->isNamed) {
 		tmp.card[0] = itemdb_isequip(data->nameid) ? CARD0_FORGE : CARD0_CREATE;
