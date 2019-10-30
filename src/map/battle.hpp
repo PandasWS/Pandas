@@ -667,6 +667,9 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_Force_Identified
 	int force_identified;		// 强制特定渠道获得的装备自动变成已鉴定 [Sola丶小克]
 #endif // Pandas_BattleConfig_Force_Identified
+#ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
+	int cash_mounting_use_item_limit;	// 乘坐“商城坐骑”时禁止使用特定类型的物品 [Sola丶小克]
+#endif // Pandas_BattleConfig_CashMounting_UseitemLimit
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

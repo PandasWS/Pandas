@@ -5364,10 +5364,17 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 	/* Items with delayed consume are not meant to work while in mounts except reins of mount(12622) */
 	if( id->flag.delay_consume ) {
+#ifndef Pandas_BattleConfig_CashMounting_UseitemLimit
 		if( nameid != ITEMID_REINS_OF_MOUNT && sd->sc.data[SC_ALL_RIDING] )
 			return 0;
 		else if( pc_issit(sd) )
 			return 0;
+#else
+		// 若启用了自定义扩展的高级选项，那么这里只需要判断是否坐下就好.
+		// 至于是否坐骑时候禁止使用，在下面会有 cash_mounting_use_item_limit 选项负责判定 [Sola丶小克]
+		if (pc_issit(sd))
+			return 0;
+#endif // Pandas_BattleConfig_CashMounting_UseitemLimit
 	}
 	//Since most delay-consume items involve using a "skill-type" target cursor,
 	//perform a skill-use check before going through. [Skotlex]
@@ -5378,6 +5385,45 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 	if( id->delay > 0 && !pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && pc_itemcd_check(sd, id, tick, n))
 		return 0;
+
+#ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
+	// 使用道具时先判定是否乘坐了“商城坐骑”,
+	// 如果是那么再根据 cash_mounting_use_item_limit 设置决定是否拒绝 [Sola丶小克]
+	if (sd && sd->sc.count && sd->sc.data[SC_ALL_RIDING] &&
+		nameid != ITEMID_REINS_OF_MOUNT) {	// 若使用的是“坐骑用缰绳”的话, 那么无条件允许使用
+		bool isblocked = false;
+
+		switch (id->type) {
+			case IT_HEALING: {
+				isblocked = battle_config.cash_mounting_use_item_limit & 1;
+				break;
+			}
+			case IT_USABLE: {
+				isblocked = battle_config.cash_mounting_use_item_limit & 2;
+
+				// IT_DELAYCONSUME 实际上在载入时会被设置为 IT_USABLE,
+				// 所以这里要在 IT_USABLE 中进行对 IT_DELAYCONSUME 类型物品的判定
+				isblocked = battle_config.cash_mounting_use_item_limit & 64 && id->flag.delay_consume;
+				break;
+			}
+			case IT_CARD: {
+				isblocked = battle_config.cash_mounting_use_item_limit & 16;
+				break;
+			}
+			case IT_CASH: {
+				isblocked = battle_config.cash_mounting_use_item_limit & 256;
+				break;
+			}
+		}
+
+		if (isblocked) {
+			char message[128] = { 0 };
+			safesnprintf(message, sizeof(message), msg_txt_cn(sd, 3), id->jname);	// 很抱歉, 当您坐上“商城坐骑”时, 无法使用: %s
+			clif_displaymessage(sd->fd, message);
+			return 0;
+		}
+	}
+#endif // Pandas_BattleConfig_CashMounting_UseitemLimit
 
 #ifdef Pandas_MapFlag_NoCapture
 	// 如果玩家所在地图设置了 nocapture 标记的话
@@ -10305,6 +10351,40 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 	}
 
 	equip_index = equipswitch ? sd->equip_switch_index : sd->equip_index;
+
+#ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
+	// 使用道具时先判定是否乘坐了“商城坐骑”,
+	// 如果是那么再根据 cash_mounting_use_item_limit 设置决定是否拒绝 [Sola丶小克]
+	if (sd && sd->sc.count && sd->sc.data[SC_ALL_RIDING]) {
+		bool isblocked = false;
+
+		switch (id->type) {
+			case IT_ARMOR: {
+				isblocked = battle_config.cash_mounting_use_item_limit & 4;
+				break;
+			}
+			case IT_WEAPON: {
+				isblocked = battle_config.cash_mounting_use_item_limit & 8;
+				break;
+			}
+			case IT_AMMO: {
+				isblocked = battle_config.cash_mounting_use_item_limit & 32;
+				break;
+			}
+			case IT_SHADOWGEAR: {
+				isblocked = battle_config.cash_mounting_use_item_limit & 128;
+				break;
+			}
+		}
+
+		if (isblocked) {
+			char message[128] = { 0 };
+			safesnprintf(message, sizeof(message), msg_txt_cn(sd, 3), id->jname);	// 很抱歉, 当您坐上“商城坐骑”时, 无法使用: %s
+			clif_displaymessage(sd->fd, message);
+			return true;
+		}
+	}
+#endif // Pandas_BattleConfig_CashMounting_UseitemLimit
 
 #ifndef Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
 	if ( !equipswitch && id->flag.bindOnEquip && !sd->inventory.u.items_inventory[n].bound) {
