@@ -310,6 +310,9 @@ void quest_update_objective(TBL_PC *sd, int mob_id)
 			memset(&item,0,sizeof(item));
 			item.nameid = dropitem->nameid;
 			item.identify = itemdb_isidentified(dropitem->nameid);
+#ifdef Pandas_BattleConfig_Force_Identified
+			item.identify = (battle_config.force_identified & 16 ? 1 : item.identify);
+#endif // Pandas_BattleConfig_Force_Identified
 			item.amount = dropitem->count;
 //#ifdef BOUND_ITEMS
 //			item.bound = dropitem->bound;

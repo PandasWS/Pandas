@@ -8586,6 +8586,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_Force_LoadEvent
 	{ "force_loadevent",                    &battle_config.force_loadevent,                 0,      0,      1,              },
 #endif // Pandas_BattleConfig_Force_LoadEvent
+#ifdef Pandas_BattleConfig_Force_Identified
+	{ "force_identified",                   &battle_config.force_identified,                0,      0,      511,            },
+#endif // Pandas_BattleConfig_Force_Identified
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };

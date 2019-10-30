@@ -662,8 +662,11 @@ struct Battle_Config
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
-	int force_loadevent;
+	int force_loadevent;		// 强制触发 OnPCLoadMapEvent 事件 [Sola丶小克]
 #endif // Pandas_BattleConfig_Force_LoadEvent
+#ifdef Pandas_BattleConfig_Force_Identified
+	int force_identified;		// 强制特定渠道获得的装备自动变成已鉴定 [Sola丶小克]
+#endif // Pandas_BattleConfig_Force_Identified
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

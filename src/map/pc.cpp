@@ -5744,6 +5744,9 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 	tmp_item.nameid = itemid;
 	tmp_item.amount = 1;
 	tmp_item.identify = itemdb_isidentified(itemid);
+#ifdef Pandas_BattleConfig_Force_Identified
+	tmp_item.identify = (battle_config.force_identified & 8 ? 1 : tmp_item.identify);
+#endif // Pandas_BattleConfig_Force_Identified
 	mob_setdropitem_option(&tmp_item, &md->db->dropitem[i]);
 	flag = pc_additem(sd,&tmp_item,1,LOG_TYPE_PICKDROP_PLAYER);
 
