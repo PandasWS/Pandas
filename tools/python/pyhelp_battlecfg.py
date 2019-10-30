@@ -70,7 +70,6 @@ def insert_battle_config(inject, options):
     
     # pandas.conf @ 战斗配置选项的默认添加位置
     inject.insert(InjectPoint.PANDAS_CONF_INSERT, [
-        '',
         '// 请在此填写战斗配置选项的功能说明',
         '%s: %s' % (option_name, def_val),
         ''
