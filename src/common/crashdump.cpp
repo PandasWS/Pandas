@@ -65,7 +65,7 @@ google_breakpad::ExceptionHandler* g_pExceptionHandler = NULL;
 // 用于标记本程序的 Breakpad 是否已经完成了初始化
 bool g_breakpadInitialized = false;
 
-// 用于标记本程序是否具备上报崩溃转储文件的条件 (设置了 AppID 且已经成功构建 Token)
+// 用于标记本程序是否具备上报崩溃转储文件的条件 (设置了 AppID 和 PublicKey)
 bool g_crashDumpUploadAllowed = false;
 
 //************************************
@@ -316,6 +316,10 @@ void breakpad_initialize() {
 	);
 #endif // _WIN32
 
-	g_crashDumpUploadAllowed = true;
-	g_breakpadInitialized = true;
+	g_breakpadInitialized = (g_pExceptionHandler != nullptr);
+
+	g_crashDumpUploadAllowed = (
+		crash_string(CRASHRPT_APPID).length() &&
+		crash_string(CRASHRPT_PUBLICKEY).length()
+	);
 }
