@@ -68,6 +68,9 @@ bool g_breakpadInitialized = false;
 // 用于标记本程序是否具备上报崩溃转储文件的条件 (设置了 AppID 和 PublicKey)
 bool g_crashDumpUploadAllowed = false;
 
+// 表示本次崩溃是由 @crashtest 刻意引发的, 上报转储文件时携带相关标记
+bool g_crashByTestCommand = false;
+
 //************************************
 // Method:		display_crashtips
 // Description:	当程序崩溃时, 用于显示一些提示信息到终端里
@@ -203,6 +206,7 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 	params.insert(std::make_pair(_CT("version"), crash_s2w(getPandasVersion(true))));
 	params.insert(std::make_pair(_CT("branch"), crash_s2w(std::string(GIT_BRANCH))));
 	params.insert(std::make_pair(_CT("hash"), crash_s2w(std::string(GIT_HASH))));
+	params.insert(std::make_pair(_CT("testing"), g_crashByTestCommand ? _CT("1") : _CT("0")));
 	params_dosign(params);
 
 	// 创建 CrashReportSender 对象并利用其提交转储文件给服务器
@@ -264,10 +268,11 @@ bool breakpad_callback(const google_breakpad::MinidumpDescriptor& descriptor,
 	// 收集其他可能需要的信息, 用于服务端分析或归类使用
 	std::map<crash_string, crash_string> params;
 	params.insert(std::make_pair(_CT("appid"), crash_string(CRASHRPT_APPID)));
-	params.insert(std::make_pair(_CT("platform"), "linux"));
+	params.insert(std::make_pair(_CT("platform"), _CT("linux")));
 	params.insert(std::make_pair(_CT("version"), getPandasVersion(true).c_str()));
 	params.insert(std::make_pair(_CT("branch"), std::string(GIT_BRANCH)));
 	params.insert(std::make_pair(_CT("hash"), std::string(GIT_HASH)));
+	params.insert(std::make_pair(_CT("testing"), g_crashByTestCommand ? _CT("1") : _CT("0")));
 	params_dosign(params);
 
 	std::string response, error;
@@ -316,8 +321,10 @@ void breakpad_initialize() {
 	);
 #endif // _WIN32
 
+	// 若初始化 g_pExceptionHandler 失败, 那么标记整个 Breakpad 机制初始化失败
 	g_breakpadInitialized = (g_pExceptionHandler != nullptr);
 
+	// 必须配置了 APPID 和 PUBLICKEY 才能够上报转储文件到分析服务器
 	g_crashDumpUploadAllowed = (
 		crash_string(CRASHRPT_APPID).length() &&
 		crash_string(CRASHRPT_PUBLICKEY).length()
