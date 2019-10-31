@@ -18,6 +18,8 @@
 #include "../common/timer.hpp"
 #include "../config/core.hpp"
 
+#include "script.hpp"
+
 #ifdef Pandas
 #include "map_artisan.hpp"
 #endif // Pandas
@@ -445,6 +447,7 @@ enum _sp {
 	SP_ROULETTE_GOLD = 130,
 	SP_CASHPOINTS, SP_KAFRAPOINTS,
 	SP_PCDIECOUNTER, SP_COOKMASTERY,
+	SP_ACHIEVEMENT_LEVEL,
 
 	// Mercenaries
 	SP_MERCFLEE=165, SP_MERCKILLS=189, SP_MERCFAITH=190,
@@ -766,22 +769,11 @@ struct iwall_data {
 	bool shootable;
 };
 
-struct questinfo_req {
-	unsigned int quest_id;
-	unsigned state : 2; // 0: Doesn't have, 1: Inactive, 2: Active, 3: Complete //! TODO: CONFIRM ME!!
-};
-
-struct questinfo {
+struct s_questinfo {
 	struct npc_data *nd;
-	unsigned short icon;
-	unsigned char color;
-	int quest_id;
-	unsigned short min_level,
-		max_level;
-	uint8 req_count;
-	uint8 jobid_count;
-	struct questinfo_req *req;
-	unsigned short *jobid;
+	e_questinfo_types icon;
+	e_questinfo_markcolor color;
+	struct script_code* condition;
 };
 
 #ifdef Pandas_Mapflags
@@ -833,8 +825,7 @@ struct map_data {
 	struct Channel *channel;
 
 	/* ShowEvent Data Cache */
-	struct questinfo *qi_data;
-	unsigned short qi_count;
+	std::vector<s_questinfo> qi_data;
 
 #ifdef Pandas_Mapflags
 	std::unordered_map<int16, s_mapflag_params> flag_params;
@@ -1169,9 +1160,7 @@ struct mob_data * map_id2boss(int id);
 // reload config file looking only for npcs
 void map_reloadnpc(bool clear);
 
-struct questinfo *map_add_questinfo(int m, struct questinfo *qi);
-bool map_remove_questinfo(int m, struct npc_data *nd);
-struct questinfo *map_has_questinfo(int m, struct npc_data *nd, int quest_id);
+void map_remove_questinfo(int m, struct npc_data *nd);
 
 /// Bitfield of flags for the iterator.
 enum e_mapitflags
