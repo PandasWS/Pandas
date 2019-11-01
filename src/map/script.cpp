@@ -25772,7 +25772,7 @@ static int buildin_script4each_sub(struct block_list *bl, va_list ap) {
 	if (!bl || !execute_script) return 0;
 
 	struct script_code* script = nullptr;
-	script = parse_script(execute_script, "script4each", 0, 0);
+	script = parse_script(execute_script, "script4each", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 	if (script) {
 		run_script(script, 0, bl->id, 0);
 		script_free_code(script);
@@ -25792,7 +25792,7 @@ BUILDIN_FUNC(script4each) {
 	int execute_range = script_getnum(st, 3);
 
 	struct script_code *script = nullptr;
-	script = parse_script(execute_script, "script4each", 0, 0);
+	script = parse_script(execute_script, "script4each", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 
 	struct s_mapiterator *iter = mapit_getallusers();
 	struct map_session_data *pl_sd = nullptr;
