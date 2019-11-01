@@ -8620,7 +8620,7 @@ static const struct _battle_data {
 	{ "force_identified",                   &battle_config.force_identified,                0,      0,      511,            },
 #endif // Pandas_BattleConfig_Force_Identified
 #ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
-	{ "cash_mounting_use_item_limit",       &battle_config.cash_mounting_use_item_limit,    64,     0,      511,            },
+	{ "cashmount_useitem_limit",            &battle_config.cashmount_useitem_limit,         64,     0,      511,            },
 #endif // Pandas_BattleConfig_CashMounting_UseitemLimit
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"

@@ -5374,7 +5374,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 			return 0;
 #else
 		// 若启用了自定义扩展的高级选项，那么这里只需要判断是否坐下就好.
-		// 至于是否坐骑时候禁止使用，在下面会有 cash_mounting_use_item_limit 选项负责判定 [Sola丶小克]
+		// 至于是否坐骑时候禁止使用，在下面会有 cashmount_useitem_limit 选项负责判定 [Sola丶小克]
 		if (pc_issit(sd))
 			return 0;
 #endif // Pandas_BattleConfig_CashMounting_UseitemLimit
@@ -5391,30 +5391,30 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 #ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
 	// 使用道具时先判定是否乘坐了“商城坐骑”,
-	// 如果是那么再根据 cash_mounting_use_item_limit 设置决定是否拒绝 [Sola丶小克]
+	// 如果是那么再根据 cashmount_useitem_limit 设置决定是否拒绝 [Sola丶小克]
 	if (sd && sd->sc.count && sd->sc.data[SC_ALL_RIDING] &&
 		nameid != ITEMID_REINS_OF_MOUNT) {	// 若使用的是“坐骑用缰绳”的话, 那么无条件允许使用
 		bool isblocked = false;
 
 		switch (id->type) {
 			case IT_HEALING: {
-				isblocked = battle_config.cash_mounting_use_item_limit & 1;
+				isblocked = battle_config.cashmount_useitem_limit & 1;
 				break;
 			}
 			case IT_USABLE: {
-				isblocked = battle_config.cash_mounting_use_item_limit & 2;
+				isblocked = battle_config.cashmount_useitem_limit & 2;
 
 				// IT_DELAYCONSUME 实际上在载入时会被设置为 IT_USABLE,
 				// 所以这里要在 IT_USABLE 中进行对 IT_DELAYCONSUME 类型物品的判定
-				isblocked = battle_config.cash_mounting_use_item_limit & 64 && id->flag.delay_consume;
+				isblocked = battle_config.cashmount_useitem_limit & 64 && id->flag.delay_consume;
 				break;
 			}
 			case IT_CARD: {
-				isblocked = battle_config.cash_mounting_use_item_limit & 16;
+				isblocked = battle_config.cashmount_useitem_limit & 16;
 				break;
 			}
 			case IT_CASH: {
-				isblocked = battle_config.cash_mounting_use_item_limit & 256;
+				isblocked = battle_config.cashmount_useitem_limit & 256;
 				break;
 			}
 		}
@@ -10360,25 +10360,25 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 
 #ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
 	// 使用道具时先判定是否乘坐了“商城坐骑”,
-	// 如果是那么再根据 cash_mounting_use_item_limit 设置决定是否拒绝 [Sola丶小克]
+	// 如果是那么再根据 cashmount_useitem_limit 设置决定是否拒绝 [Sola丶小克]
 	if (sd && sd->sc.count && sd->sc.data[SC_ALL_RIDING]) {
 		bool isblocked = false;
 
 		switch (id->type) {
 			case IT_ARMOR: {
-				isblocked = battle_config.cash_mounting_use_item_limit & 4;
+				isblocked = battle_config.cashmount_useitem_limit & 4;
 				break;
 			}
 			case IT_WEAPON: {
-				isblocked = battle_config.cash_mounting_use_item_limit & 8;
+				isblocked = battle_config.cashmount_useitem_limit & 8;
 				break;
 			}
 			case IT_AMMO: {
-				isblocked = battle_config.cash_mounting_use_item_limit & 32;
+				isblocked = battle_config.cashmount_useitem_limit & 32;
 				break;
 			}
 			case IT_SHADOWGEAR: {
-				isblocked = battle_config.cash_mounting_use_item_limit & 128;
+				isblocked = battle_config.cashmount_useitem_limit & 128;
 				break;
 			}
 		}

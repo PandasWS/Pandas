@@ -6619,13 +6619,13 @@ void clif_use_card(struct map_session_data *sd,int idx)
 
 #ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
 	// 当玩家双击卡片时先判定是否乘坐了“商城坐骑”,
-	// 如果是那么再根据 cash_mounting_use_item_limit 设置决定是否拒绝 [Sola丶小克]
+	// 如果是那么再根据 cashmount_useitem_limit 设置决定是否拒绝 [Sola丶小克]
 	if (sd && sd->sc.count && sd->sc.data[SC_ALL_RIDING]) {
 		bool isblocked = false;
 
 		switch (sd->inventory_data[idx]->type) {
 			case IT_CARD: {
-				isblocked = battle_config.cash_mounting_use_item_limit & 16;
+				isblocked = battle_config.cashmount_useitem_limit & 16;
 				break;
 			}
 		}
