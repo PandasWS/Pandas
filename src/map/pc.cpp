@@ -5398,23 +5398,23 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 		switch (id->type) {
 			case IT_HEALING: {
-				isblocked = battle_config.cashmount_useitem_limit & 1;
+				isblocked = (battle_config.cashmount_useitem_limit & 1) == 1;
 				break;
 			}
 			case IT_USABLE: {
-				isblocked = battle_config.cashmount_useitem_limit & 2;
+				isblocked = (battle_config.cashmount_useitem_limit & 2) == 2;
 
 				// IT_DELAYCONSUME 实际上在载入时会被设置为 IT_USABLE,
 				// 所以这里要在 IT_USABLE 中进行对 IT_DELAYCONSUME 类型物品的判定
-				isblocked = battle_config.cashmount_useitem_limit & 64 && id->flag.delay_consume;
+				isblocked = id->flag.delay_consume && (battle_config.cashmount_useitem_limit & 64) == 64;
 				break;
 			}
 			case IT_CARD: {
-				isblocked = battle_config.cashmount_useitem_limit & 16;
+				isblocked = (battle_config.cashmount_useitem_limit & 16) == 16;
 				break;
 			}
 			case IT_CASH: {
-				isblocked = battle_config.cashmount_useitem_limit & 256;
+				isblocked = (battle_config.cashmount_useitem_limit & 256) == 256;
 				break;
 			}
 		}
@@ -10366,19 +10366,19 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 
 		switch (id->type) {
 			case IT_ARMOR: {
-				isblocked = battle_config.cashmount_useitem_limit & 4;
+				isblocked = (battle_config.cashmount_useitem_limit & 4) == 4;
 				break;
 			}
 			case IT_WEAPON: {
-				isblocked = battle_config.cashmount_useitem_limit & 8;
+				isblocked = (battle_config.cashmount_useitem_limit & 8) == 8;
 				break;
 			}
 			case IT_AMMO: {
-				isblocked = battle_config.cashmount_useitem_limit & 32;
+				isblocked = (battle_config.cashmount_useitem_limit & 32) == 32;
 				break;
 			}
 			case IT_SHADOWGEAR: {
-				isblocked = battle_config.cashmount_useitem_limit & 128;
+				isblocked = (battle_config.cashmount_useitem_limit & 128) == 128;
 				break;
 			}
 		}

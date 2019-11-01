@@ -6625,7 +6625,7 @@ void clif_use_card(struct map_session_data *sd,int idx)
 
 		switch (sd->inventory_data[idx]->type) {
 			case IT_CARD: {
-				isblocked = battle_config.cashmount_useitem_limit & 16;
+				isblocked = (battle_config.cashmount_useitem_limit & 16) == 16;
 				break;
 			}
 		}
