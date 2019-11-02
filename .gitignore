@@ -161,6 +161,7 @@ __pycache__
 
 # IDE
 .vscode
+/*.diagsession
 
 # Other
 /src/*/*.aps

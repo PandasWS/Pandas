@@ -54,6 +54,12 @@
 #include "mobdrop.hpp"
 #endif // Pandas_Database_MobItem_FixedRatio
 
+#ifdef Pandas_Google_Breakpad
+// 此全局变量定义在 crashdump.cpp 文件中
+// 表示本次崩溃是由 @crashtest 刻意引发的, 上报转储文件时携带相关标记
+extern bool g_crashByTestCommand;
+#endif // Pandas_Google_Breakpad
+
 #define ATCOMMAND_LENGTH 50
 #define ACMD_FUNC(x) static int atcommand_ ## x (const int fd, struct map_session_data* sd, const char* command, const char* message)
 
@@ -10278,7 +10284,11 @@ ACMD_FUNC(crashtest) {
 	// 若当前服务器只有一个人在线, 那么触发地图服务器崩溃
 	if (count == 1) {
 		ShowWarning("Map-Server will trigger an crash for testing the crashrpt system.\n");
-		
+
+#ifdef Pandas_Google_Breakpad
+		g_crashByTestCommand = true;
+#endif // Pandas_Google_Breakpad
+
 		int* crashint = nullptr;
 		*crashint = 20150817; // rAthenaCN 第一个版本的发布日期
 	}
