@@ -25769,11 +25769,14 @@ BUILDIN_FUNC(party_leave) {
  * -----------------------------------------------------------*/
 static int buildin_script4each_sub(struct block_list *bl, va_list ap) {
 	char *execute_script = va_arg(ap, char*);
-	if (!bl || !execute_script) return 0;
+	char *cmdname = va_arg(ap, char*);
+
+	if (!bl || !execute_script || !cmdname) return 0;
 
 	struct script_code* script = nullptr;
-	script = parse_script(execute_script, "script4each", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+	script = parse_script(execute_script, cmdname, 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 	if (script) {
+		mapreg_setreg(add_str("$@gid"), bl->id);
 		run_script(script, 0, bl->id, 0);
 		script_free_code(script);
 	}
@@ -25781,9 +25784,11 @@ static int buildin_script4each_sub(struct block_list *bl, va_list ap) {
 }
 
 /* ===========================================================
- * 指令: script4each
+ * 指令: script4each / script4eachmob / script4eachnpc
  * 描述: 对指定范围的玩家执行相同的一段脚本
  * 用法: script4each <"{脚本}">,<脚本的执行范围>{,<动态参数>...};
+ * 用法: script4eachmob <"{脚本}">,<脚本的执行范围>{,<动态参数>...};
+ * 用法: script4eachnpc <"{脚本}">,<脚本的执行范围>{,<动态参数>...};
  * 返回: 该指令无论成功失败, 都不会有返回值
  * 作者: Sola丶小克 (最早借鉴自 Sense 的代码进行改进)
  * -----------------------------------------------------------*/
@@ -25791,37 +25796,57 @@ BUILDIN_FUNC(script4each) {
 	const char *execute_script = script_getstr(st, 2);
 	int execute_range = script_getnum(st, 3);
 
-	struct script_code *script = nullptr;
-	script = parse_script(execute_script, "script4each", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+	char *cmdname = nullptr;
+	cmdname = script_getfuncname(st);
 
-	struct s_mapiterator *iter = mapit_getallusers();
-	struct map_session_data *pl_sd = nullptr;
+	struct script_code *script = nullptr;
+	script = parse_script(execute_script, cmdname, 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+
+	struct s_mapiterator *iter = nullptr;
+	struct block_list* bl = nullptr;
+	enum bl_type bltype = BL_PC;
+
+	// 根据使用的指令名称, 确定后续对什么类型的单位进行遍历
+	if (stricmp(cmdname, "script4each") == 0) {
+		bltype = BL_PC;
+		iter = mapit_geteachpc();
+	}
+	else if (stricmp(cmdname, "script4eachmob") == 0) {
+		bltype = BL_MOB;
+		iter = mapit_geteachmob();
+	}
+	else if (stricmp(cmdname, "script4eachnpc") == 0) {
+		bltype = BL_NPC;
+		iter = mapit_geteachnpc();
+	}
 
 	switch (execute_range)
 	{
 	case 0: {
-		// 全服玩家 - script4each "{<脚本>}",0;
-		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
-			if (!pl_sd) continue;
-			run_script(script, 0, pl_sd->bl.id, 0);
+		// 全服单位 - script4each "{<脚本>}",0;
+		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
+			if (!bl || bl->type != bltype) continue;
+			mapreg_setreg(add_str("$@gid"), bl->id);
+			run_script(script, 0, bl->id, 0);
 		}
 		break;
 	}
 	case 1: {
-		// 指定地图上的全部玩家 - script4each "{<脚本>}",1,<"地图名称">;
+		// 指定地图上的全部单位 - script4each "{<脚本>}",1,<"地图名称">;
 		int map_id = -1;
 
 		if (!script_hasdata(st, 4) || !script_isstring(st, 4)) break;
 		if ((map_id = map_mapname2mapid(script_getstr(st, 4))) < 0) break;
 
-		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
-			if (!pl_sd || pl_sd->bl.m != map_id) continue;
-			run_script(script, 0, pl_sd->bl.id, 0);
+		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
+			if (!bl || bl->type != bltype || bl->m != map_id) continue;
+			mapreg_setreg(add_str("$@gid"), bl->id);
+			run_script(script, 0, bl->id, 0);
 		}
 		break;
 	}
 	case 2: {
-		// 以地图某个点为中心半径距离内的玩家 - script4each "{<脚本>}",2,<"地图名称">,<中心坐标x>,<中心坐标y>,<范围>;
+		// 以地图某个点为中心半径距离内的单位 - script4each "{<脚本>}",2,<"地图名称">,<中心坐标x>,<中心坐标y>,<范围>;
 		int map_id = -1, map_x = 0, map_y = 0, range = 0;
 
 		if (!script_hasdata(st, 4) || !script_isstring(st, 4)) break;
@@ -25839,7 +25864,7 @@ BUILDIN_FUNC(script4each) {
 		center_bl.x = map_x;
 		center_bl.y = map_y;
 
-		map_foreachinrange(buildin_script4each_sub, &center_bl, range, BL_PC, execute_script);
+		map_foreachinrange(buildin_script4each_sub, &center_bl, range, bltype, execute_script, cmdname);
 		break;
 	}
 	case 3: {
@@ -25847,14 +25872,18 @@ BUILDIN_FUNC(script4each) {
 		int party_id = 0;
 		struct map_session_data *target_sd = nullptr;
 
+		// 该类型不支持 script4eachmob 和 script4eachnpc 指令
+		if (bltype != BL_PC) break;
+
 		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
 		target_sd = map_charid2sd(script_getnum(st, 4));
-		if (!target_sd) break;
-		if ((party_id = target_sd->status.party_id) <= 0) break;
+		if (!target_sd || (party_id = target_sd->status.party_id) <= 0) break;
 
-		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
-			if (!pl_sd || pl_sd->status.party_id != party_id) continue;
-			run_script(script, 0, pl_sd->bl.id, 0);
+		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
+			if (!bl || bl->type != bltype) continue;
+			if (((TBL_PC*)bl)->status.party_id != party_id) continue;
+			mapreg_setreg(add_str("$@gid"), bl->id);
+			run_script(script, 0, bl->id, 0);
 		}
 		break;
 	}
@@ -25863,14 +25892,18 @@ BUILDIN_FUNC(script4each) {
 		int guild_id = 0;
 		struct map_session_data *target_sd = nullptr;
 
+		// 该类型不支持 script4eachmob 和 script4eachnpc 指令
+		if (bltype != BL_PC) break;
+
 		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
 		target_sd = map_charid2sd(script_getnum(st, 4));
-		if (!target_sd) break;
-		if ((guild_id = target_sd->status.guild_id) <= 0) break;
+		if (!target_sd || (guild_id = target_sd->status.guild_id) <= 0) break;
 
-		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
-			if (!pl_sd || pl_sd->status.guild_id != guild_id) continue;
-			run_script(script, 0, pl_sd->bl.id, 0);
+		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
+			if (!bl || bl->type != bltype) continue;
+			if (((TBL_PC*)bl)->status.guild_id != guild_id) continue;
+			mapreg_setreg(add_str("$@gid"), bl->id);
+			run_script(script, 0, bl->id, 0);
 		}
 		break;
 	}
@@ -25890,19 +25923,24 @@ BUILDIN_FUNC(script4each) {
 		map_x1 = script_getnum(st, 7);
 		map_y1 = script_getnum(st, 8);
 
-		map_foreachinarea(buildin_script4each_sub, map_id, map_x0, map_y0, map_x1, map_y1, BL_PC, execute_script);
+		map_foreachinarea(buildin_script4each_sub, map_id, map_x0, map_y0, map_x1, map_y1, bltype, execute_script, cmdname);
 		break;
 	}
 	case 6: {
 		// 指定队伍中的全部队伍成员 - script4each "{<脚本>}",6,<队伍编号>;
 		int party_id = 0;
 
+		// 该类型不支持 script4eachmob 和 script4eachnpc 指令
+		if (bltype != BL_PC) break;
+
 		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
 		if ((party_id = script_getnum(st, 4)) <= 0) break;;
 
-		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
-			if (!pl_sd || pl_sd->status.party_id != party_id) continue;
-			run_script(script, 0, pl_sd->bl.id, 0);
+		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
+			if (!bl || bl->type != bltype) continue;
+			if (((TBL_PC*)bl)->status.party_id != party_id) continue;
+			mapreg_setreg(add_str("$@gid"), bl->id);
+			run_script(script, 0, bl->id, 0);
 		}
 		break;
 	}
@@ -25910,17 +25948,22 @@ BUILDIN_FUNC(script4each) {
 		// 指定公会中的全部公会成员 - script4each "{<脚本>}",7,<公会编号>;
 		int guild_id = 0;
 
+		// 该类型不支持 script4eachmob 和 script4eachnpc 指令
+		if (bltype != BL_PC) break;
+
 		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
 		if ((guild_id = script_getnum(st, 4)) <= 0) break;
 
-		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
-			if (!pl_sd || pl_sd->status.guild_id != guild_id) continue;
-			run_script(script, 0, pl_sd->bl.id, 0);
+		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
+			if (!bl || bl->type != bltype) continue;
+			if (((TBL_PC*)bl)->status.guild_id != guild_id) continue;
+			mapreg_setreg(add_str("$@gid"), bl->id);
+			run_script(script, 0, bl->id, 0);
 		}
 		break;
 	}
 	default:
-		ShowWarning("buildin_script4each: Invalid execute range '%d'.\n", execute_range);
+		ShowWarning("buildin_%s: Invalid execute range '%d'.\n", cmdname, execute_range);
 		break;
 	}
 
@@ -26780,7 +26823,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(party_leave,"?"),						// 使当前角色或指定角色退出队伍 [Sola丶小克]
 #endif // Pandas_ScriptCommand_PartyLeave
 #ifdef Pandas_ScriptCommand_Script4Each
-	BUILDIN_DEF(script4each,"si?????"),					// 对指定范围的玩家执行相同的一段脚本 [Sola丶小克]
+	BUILDIN_DEF(script4each,"si?????"),						// 对指定范围的玩家执行相同的一段脚本 [Sola丶小克]
+	BUILDIN_DEF2(script4each,"script4eachmob","si?????"),	// 对指定范围的魔物执行相同的一段脚本 [Sola丶小克]
+	BUILDIN_DEF2(script4each,"script4eachnpc","si?????"),	// 对指定范围的 NPC 执行相同的一段脚本 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Script4Each
 #ifdef Pandas_ScriptCommand_SearchArray
 	BUILDIN_DEF2(inarray,"searcharray","rv"),			// 由于 rAthena 已经实现 inarray 指令, 这里兼容老版本 searcharray 指令 [Sola丶小克]
