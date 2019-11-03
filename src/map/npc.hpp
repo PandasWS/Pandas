@@ -1399,12 +1399,13 @@ enum npce_trigger : uint16 {
 	EVENT_TRIGGER_NONE = 0x00,
 	EVENT_TRIGGER_DISABLED = 0x01,
 	EVENT_TRIGGER_ONCE = 0x02,
-	EVENT_TRIGGER_EVER = 0x04,
+	EVENT_TRIGGER_EVER = 0x03,
 	EVENT_TRIGGER_MAX
 };
 
 bool setEventTrigger(struct map_session_data *sd, enum npce_event event, enum npce_trigger trigger_flag);
 npce_trigger getEventTrigger(struct map_session_data *sd, enum npce_event event);
+bool isAllowTriggerEvent(struct map_session_data* sd, enum npce_event event);
 #endif // Pandas_Struct_Map_Session_Data_EventTrigger
 
 #ifdef Pandas_ScriptEngine_Express
