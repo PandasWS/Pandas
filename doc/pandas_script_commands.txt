@@ -820,6 +820,8 @@ IP地址:
 	NPCF_INSERT_CARD		-	OnPCInsertCardFilter
 	NPCF_USE_ITEM			-	OnPCUseItemFilter
 	NPCF_USE_SKILL			-	OnPCUseSkillFilter
+	NPCF_EQUIP				-	OnPCEquipFilter
+	NPCF_UNEQUIP			-	OnPCUnequipFilter
 	NPCF_ROULETTE_OPEN		-	OnPCOpenRouletteFilter
 	NPCF_VIEW_EQUIP			-	OnPCViewEquipFilter
 	
@@ -828,6 +830,8 @@ IP地址:
 	NPCE_INSERT_CARD		-	OnPCInsertCardEvent
 	NPCE_USE_ITEM			-	OnPCUseItemEvent
 	NPCE_USE_SKILL			-	OnPCUseSkillEvent
+	NPCE_EQUIP				-	OnPCEquipEvent
+	NPCE_UNEQUIP			-	OnPCUnequipEvent
 	NPCE_PROGRESS_ABORT		-	OnPCProgressAbortEvent
 
 触发行为:
