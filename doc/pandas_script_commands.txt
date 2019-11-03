@@ -569,6 +569,18 @@ EQI装备位置:
 
 		script4eachmob "{ unittalk $@gid, getunitname($@gid); }", 0;
 
+双引号转义: 
+	如果 <脚本> 参数中有使用到双引号的话, 需要在双引号的左侧使用 \ 来进行转义.
+	
+	假设我们希望让全服玩家执行这样一段脚本: 
+	
+		announce "角色名称: " + strcharinfo(0) + " | 角色编号: " + getcharid(0), 0;
+	
+	那么上述脚本在使用 script4each 系列指令来执行的时候, <脚本> 参数内的双引号都需要加 \ 来转义,
+	转义操作很简单, 直接将 " 替换成 \" 即可, 最后调用 script4each 时用法如下:
+	
+		script4each "{ announce \"角色名称: \" + strcharinfo(0) + \" | 角色编号: \" + getcharid(0), 0; }", 0;
+
 注意事项:
 	请注意给该系列指令指定 <脚本的执行范围> 使尽量合理.
 	例如服务端默认情况下加载的 NPC 脚本, 总共就包含 2 万个 NPC 单位,
