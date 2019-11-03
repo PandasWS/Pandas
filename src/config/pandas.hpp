@@ -342,6 +342,11 @@
 	// 使脚本引擎能够支持备份无数个脚本堆栈 [Sola丶小克]
 	// 以此避免嵌套调用超过两层的脚本会导致程序崩溃的问题 (如: script4each -> getitem -> 成就系统)
 	#define Pandas_ScriptEngine_MutliStackBackup
+
+	// 脚本语法验证时能够支持解析 \" 双引号转义 [Sola丶小克]
+	// rAthena 在大部分情况下可以正常工作, 除了中文紧挨着待转义的双引号这种情况:
+	// script4eachmob "{ unittalk $@gid, \"中文紧挨着待转义的双引号无法通过语法检测\"; }", 0;
+	#define Pandas_ScriptEngine_DoubleQuotes_UnEscape_Detection
 #endif // Pandas_ScriptEngine
 
 // ============================================================================
