@@ -4693,7 +4693,7 @@ int npc_script_event(struct map_session_data* sd, enum npce_event type){
 	}
 
 #ifdef Pandas_Struct_Map_Session_Data_EventTrigger
-	if ((getEventTrigger(sd, type) & EVENT_TRIGGER_DISABLED) == EVENT_TRIGGER_DISABLED)
+	if (getEventTrigger(sd, type) == EVENT_TRIGGER_DISABLED)
 		return 0;
 #endif // Pandas_Struct_Map_Session_Data_EventTrigger
 
@@ -5274,17 +5274,38 @@ bool setEventTrigger(struct map_session_data *sd, enum npce_event event, enum np
 //************************************
 npce_trigger getEventTrigger(struct map_session_data *sd, enum npce_event event) {
 	nullpo_retr(EVENT_TRIGGER_NONE, sd);
-	try
+	return (npce_trigger)sd->pandas.eventtrigger[event];
+}
+
+//************************************
+// Method:      isAllowTriggerEvent
+// Description: 判断是否允许执行一个指定的事件
+// Parameter:   struct map_session_data * sd
+// Parameter:   enum npce_event event
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/11/03 14:29
+//************************************
+bool isAllowTriggerEvent(struct map_session_data* sd, enum npce_event event) {
+	nullpo_retr(false, sd);
+	enum npce_trigger trigger = getEventTrigger(sd, event);
+
+	switch (trigger)
 	{
-		npce_trigger current_val = (npce_trigger)sd->pandas.eventtrigger[event];
-		if ((current_val & EVENT_TRIGGER_ONCE) == EVENT_TRIGGER_ONCE)
-			sd->pandas.eventtrigger[event] &= ~EVENT_TRIGGER_ONCE;
-		return current_val;
+	case EVENT_TRIGGER_NONE:
+	case EVENT_TRIGGER_DISABLED:
+	case EVENT_TRIGGER_MAX:
+		return false;
+		break;
+	case EVENT_TRIGGER_ONCE:
+		setEventTrigger(sd, event, EVENT_TRIGGER_NONE);
+		return true;
+		break;
+	case EVENT_TRIGGER_EVER:
+		return true;
+		break;
 	}
-	catch (const std::exception&)
-	{
-		return EVENT_TRIGGER_NONE;
-	}
+
+	return false;
 }
 #endif // Pandas_Struct_Map_Session_Data_EventTrigger
 
