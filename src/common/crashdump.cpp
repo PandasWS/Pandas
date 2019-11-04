@@ -57,7 +57,7 @@ crash_string g_dumpSaveDirectory = _CT("dumps");
 crash_string g_crashCheckPointFilepath = g_dumpSaveDirectory + _CT("/crashdump.report");
 
 // 用于上报崩溃转储文件的数据接口地址
-crash_string g_crashDumpUploadInterface = _CT("http://crashrpt.pandas.ws/upload");
+crash_string g_crashDumpUploadInterface = _CT("https://crashrpt.pandas.ws/upload");
 
 // 保存程序崩溃时负责转储工作的 ExceptionHandler 指针
 google_breakpad::ExceptionHandler* g_pExceptionHandler = NULL;
