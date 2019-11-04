@@ -53,7 +53,7 @@ std::string strFormat(const char* _Format, ...);
 std::wstring & strFormat(std::wstring & _str, const wchar_t * _Format, ...);
 std::wstring strFormat(const wchar_t* _Format, ...);
 
-std::string getPandasVersion(bool without_vmark = false);
+std::string getPandasVersion(bool bPrefix = true, bool bSuffix = true);
 
 std::string getSystemLanguage();
 

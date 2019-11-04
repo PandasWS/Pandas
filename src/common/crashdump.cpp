@@ -203,7 +203,7 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 	std::map<crash_string, crash_string> params;
 	params.insert(std::make_pair(_CT("appid"), crash_string(CRASHRPT_APPID)));
 	params.insert(std::make_pair(_CT("platform"), _CT("windows")));
-	params.insert(std::make_pair(_CT("version"), crash_s2w(getPandasVersion(true))));
+	params.insert(std::make_pair(_CT("version"), crash_s2w(getPandasVersion(false))));
 	params.insert(std::make_pair(_CT("branch"), crash_s2w(std::string(GIT_BRANCH))));
 	params.insert(std::make_pair(_CT("hash"), crash_s2w(std::string(GIT_HASH))));
 	params.insert(std::make_pair(_CT("testing"), g_crashByTestCommand ? _CT("1") : _CT("0")));
@@ -269,7 +269,7 @@ bool breakpad_callback(const google_breakpad::MinidumpDescriptor& descriptor,
 	std::map<crash_string, crash_string> params;
 	params.insert(std::make_pair(_CT("appid"), crash_string(CRASHRPT_APPID)));
 	params.insert(std::make_pair(_CT("platform"), _CT("linux")));
-	params.insert(std::make_pair(_CT("version"), getPandasVersion(true).c_str()));
+	params.insert(std::make_pair(_CT("version"), getPandasVersion(false).c_str()));
 	params.insert(std::make_pair(_CT("branch"), std::string(GIT_BRANCH)));
 	params.insert(std::make_pair(_CT("hash"), std::string(GIT_HASH)));
 	params.insert(std::make_pair(_CT("testing"), g_crashByTestCommand ? _CT("1") : _CT("0")));
