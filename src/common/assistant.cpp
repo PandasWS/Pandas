@@ -15,6 +15,9 @@
 #include <fstream>
 #include <cctype> // std::tolower std::toupper std::isspace
 
+#include <boost/format.hpp>
+#include <boost/algorithm/string.hpp>
+
 #ifdef _WIN32
 #include <Windows.h>
 #include <direct.h>
@@ -881,24 +884,6 @@ std::wstring strFormat(const wchar_t* _Format, ...) {
 }
 
 //************************************
-// Method:		getPandasVersion
-// Description:	用于获取 Pandas 的主程序版本号
-// Parameter:	bool without_vmark
-// Returns:		std::string
-//************************************
-std::string getPandasVersion(bool without_vmark) {
-#ifdef _WIN32
-	return strFormat(
-		(without_vmark ? "%s" : "v%s"), getFileVersion("").c_str()
-	);
-#else
-	return strFormat(
-		(without_vmark ? "%s" : "v%s"), std::string(Pandas_Version).c_str()
-	);
-#endif // _WIN32
-}
-
-//************************************
 // Method:      getSystemLanguage
 // Description: 获取当前系统的语言 (跨平台支持)
 // Returns:     std::string
@@ -919,59 +904,80 @@ std::string getSystemLanguage() {
 #endif // _WIN32
 }
 
-#ifdef _WIN32
 //************************************
-// Method:		getFileVersion
-// Description:	获取指定文件的文件版本号
-// Parameter:	std::string filename
-// Parameter:	bool bWithoutBuildNum
-// Returns:		std::string
+// Method:      formatVersion
+// Description: 对版本号进行格式化的处理函数
+// Parameter:   std::string ver 四段式版本号
+// Parameter:   bool bPrefix 是否携带 v 前缀
+// Parameter:   bool bSuffix 是否根据最后一段补充 -dev 后缀
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2019/11/04 23:20
 //************************************
-std::string getFileVersion(std::string filename) {
-	char szModulePath[MAX_PATH] = { 0 };
+std::string formatVersion(std::string ver, bool bPrefix, bool bSuffix) {
+	std::vector<std::string> split;
+	boost::split(split, ver, boost::is_any_of("."));
+	std::string suffix = split[split.size() - 1] == "1" ? "-dev" : "";
 
-	if (filename.empty()) {
-		if (GetModuleFileName(NULL, szModulePath, MAX_PATH) == 0) {
-			ShowWarning("getFileVersion: Could not get module file name, defaulting to '%s'\n", Pandas_Version);
-			return std::string(Pandas_Version);
-		}
-		filename = std::string(szModulePath);
+	return ver = boost::str(
+		boost::format("%1%%2%.%3%.%4%%5%") %
+		(bPrefix ? "v" : "") % split[0] % split[1] % split[2] % (bSuffix ? suffix : "")
+	);
+}
+
+//************************************
+// Method:      getPandasVersion
+// Description: 用于获取 Pandas 的主程序版本号
+// Parameter:   bool bPrefix
+// Parameter:   bool bSuffix
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2019/11/04 23:20
+//************************************
+std::string getPandasVersion(bool bPrefix, bool bSuffix) {
+#ifdef _WIN32
+	// 提前获取默认版本号
+	std::string szDefaultVersion = formatVersion(Pandas_Version, bPrefix, bSuffix);
+
+	// 获取当前程序的版本号
+	char szModulePath[MAX_PATH] = { 0 };
+	if (GetModuleFileName(NULL, szModulePath, MAX_PATH) == 0) {
+		ShowWarning("getFileVersion: Could not get module file name, defaulting to '%s'\n", szDefaultVersion.c_str());
+		return szDefaultVersion;
 	}
 
-	DWORD dwInfoSize = 0, dwHandle = 0;
+	// 获取当前的文件名
+	std::string filename = std::string(szModulePath);
 
+	// 获取文件版本信息的结构体大小
+	DWORD dwInfoSize = 0, dwHandle = 0;
 	dwInfoSize = GetFileVersionInfoSize(filename.c_str(), &dwHandle);
 	if (dwInfoSize == 0) {
-		ShowWarning("getFileVersion: Could not get version info size, defaulting to '%s'\n", Pandas_Version);
-		return std::string(Pandas_Version);
+		ShowWarning("getFileVersion: Could not get version info size, defaulting to '%s'\n", szDefaultVersion.c_str());
+		return szDefaultVersion;
 	}
 
+	// 获取文件的版本号, 预期格式为: x.x.x.x
 	void* pVersionInfo = new char[dwInfoSize];
+	dwHandle = 0; // 根据 GetFileVersionInfoA 标准, 这里的 dwHandle 应确保为 0
 	if (GetFileVersionInfo(filename.c_str(), dwHandle, dwInfoSize, pVersionInfo)) {
 		void* lpBuffer = NULL;
 		UINT nItemLength = 0;
 		if (VerQueryValue(pVersionInfo, "\\", &lpBuffer, &nItemLength)) {
 			VS_FIXEDFILEINFO *pFileInfo = (VS_FIXEDFILEINFO*)lpBuffer;
-			std::string sFileVersion;
-			strFormat(sFileVersion, "%d.%d.%d",
-				HIWORD(pFileInfo->dwFileVersionMS),
-				LOWORD(pFileInfo->dwProductVersionMS),
-				HIWORD(pFileInfo->dwProductVersionLS)
+
+			std::string sFileVersion = boost::str(boost::format("%1%.%2%.%3%.%4%") %
+				HIWORD(pFileInfo->dwFileVersionMS) % LOWORD(pFileInfo->dwProductVersionMS) % 
+				HIWORD(pFileInfo->dwProductVersionLS) % LOWORD(pFileInfo->dwProductVersionLS)
 			);
 
-			// 若从资源中读取版本号, 那么当第四段的版本号值为 1 时则代表这是一个开发者的版本
-			// 返回的版本号字符上会自动追加上 -dev 后缀, 以便区分.
-			if (LOWORD(pFileInfo->dwProductVersionLS) == 1) {
-				strFormat(sFileVersion, "%s-dev", sFileVersion.c_str());
-			}
-
 			delete[] pVersionInfo;
-			return sFileVersion;
+			return formatVersion(sFileVersion, bPrefix, bSuffix);
 		}
 	}
 
 	delete[] pVersionInfo;
-	ShowWarning("getFileVersion: Could not get file version, defaulting to '%s'\n", Pandas_Version);
-	return std::string(Pandas_Version);
-}
+	ShowWarning("getFileVersion: Could not get file version, defaulting to '%s'\n", szDefaultVersion.c_str());
+	return szDefaultVersion;
+#else
+	return formatVersion(Pandas_Version, bPrefix, bSuffix);
 #endif // _WIN32
+}
