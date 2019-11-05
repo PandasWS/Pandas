@@ -256,7 +256,7 @@ def get_pe_hash(pefilepath):
     if not is_file_exists(pefilepath):
         return None
     pe = pefile.PE(pefilepath, fast_load=True)
-    return '%X%X' % (pe.FILE_HEADER.TimeDateStamp, pe.OPTIONAL_HEADER.SizeOfImage)
+    return '%X%x' % (pe.FILE_HEADER.TimeDateStamp, pe.OPTIONAL_HEADER.SizeOfImage)
 
 def get_pdb_hash(pdbfilepath):
     '''
