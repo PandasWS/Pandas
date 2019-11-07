@@ -188,6 +188,15 @@ def get_pandas_ver(slndir, prefix = None):
         return None
     matchgroup = match_file_regex(filepath, r'#define Pandas_Version "(.*)"')
     version = matchgroup[0] if matchgroup is not None else None
+    
+    # 读取到的版本号应该是四段式的
+    # 将其加工成三段式, 并在末尾追加可能需要的 -dev 后缀
+    splitver = version.split('.')
+    if (len(splitver) == 4):
+        version = '%s.%s.%s' % (splitver[0], splitver[1], splitver[2])
+        if splitver[3] == "1":
+            version += '-dev'
+    
     return version if not prefix else prefix + version
 
 def get_pandas_branch(slndir):
