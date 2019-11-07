@@ -132,7 +132,7 @@ def has_changelog(ver):
     判断一个版本的信息是否存在于 Changelog.txt 中
     存在返回 True 不在则返回 False
     '''
-    filepath = os.path.abspath(slndir('Changelog.txt'))
+    filepath = os.path.abspath(slndir('CHANGELOG.md'))
     if not Common.is_file_exists(filepath):
         return None
     matchgroup = Common.match_file_regex(filepath, ver)
@@ -222,9 +222,9 @@ def compile_prere(version):
     }
     
     if os.getenv("DEFINE_CRASHRPT_APPID"):
-        define_options["CRASHRPT_APPID"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_APPID")
+        define_options["CRASHRPT_APPID"] = '\\"%s\\"' % os.getenv("DEFINE_CRASHRPT_APPID")
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
-        define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
+        define_options["CRASHRPT_PUBLICKEY"] = '\\"%s\\"' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
         
     define_options["GIT_BRANCH"] = '\\"%s\\"' % Common.get_pandas_branch(project_slndir)
     define_options["GIT_HASH"] = '\\"%s\\"' % Common.get_pandas_hash(project_slndir)
@@ -255,9 +255,9 @@ def compile_renewal(version):
     define_options = {}
 
     if os.getenv("DEFINE_CRASHRPT_APPID"):
-        define_options["CRASHRPT_APPID"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_APPID")
+        define_options["CRASHRPT_APPID"] = '\\"%s\\"' % os.getenv("DEFINE_CRASHRPT_APPID")
     if os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
-        define_options["CRASHRPT_PUBLICKEY"] = '_CT(\\"%s\\")' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
+        define_options["CRASHRPT_PUBLICKEY"] = '\\"%s\\"' % os.getenv("DEFINE_CRASHRPT_PUBLICKEY")
 
     define_options["GIT_BRANCH"] = '\\"%s\\"' % Common.get_pandas_branch(project_slndir)
     define_options["GIT_HASH"] = '\\"%s\\"' % Common.get_pandas_hash(project_slndir)

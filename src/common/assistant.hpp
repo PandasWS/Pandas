@@ -8,6 +8,16 @@
 #include <memory> // std::shared_ptr
 #include <vector> // std::vector
 
+// 使 Boost::locale 使用 unique_ptr 而不是已被声明废弃的 auto_ptr
+// 定义这个开关是 Boost 的推荐解决方案, 主要为了关闭在 GCC 编译器下的警告提示
+#define BOOST_LOCALE_HIDE_AUTO_PTR
+
+#include <boost/format.hpp>
+#include <boost/locale.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
+
 void deployImportDirectories();
 
 bool getExecuteFilepath(std::string& outFilepath);
@@ -16,7 +26,7 @@ bool getExecuteFileDirectory(std::string& outFileDirectory);
 bool deleteDirectory(std::string szDirPath);
 bool isDirectoryExists(const std::string& path);
 bool makeDirectories(const std::string& path);
-bool copyDirectory(std::string fromPath, std::string toPath);
+bool copyDirectory(const boost::filesystem::path& from, const boost::filesystem::path& to);
 
 bool copyFile(std::string fromPath, std::string toPath);
 
@@ -29,14 +39,9 @@ void strReplace(std::wstring& str, const std::wstring& from, const std::wstring&
 bool strContain(std::vector<std::string> contain, std::string str, bool bCaseSensitive = false);
 bool strContain(std::string contain, std::string str, bool bCaseSensitive = false);
 
-std::string strLeftTrim(const std::string& s);
-std::string strRightTrim(const std::string& s);
 std::string strTrim(const std::string& s);
 
 std::vector<std::string> strExplode(std::string const& s, char delim);
-
-std::string strLower(const std::string& s);
-std::string strUpper(const std::string& s);
 
 void standardizePathSep(std::string& path);
 void standardizePathSep(std::wstring& path);
@@ -44,19 +49,8 @@ void standardizePathSep(std::wstring& path);
 void ensurePathEndwithSep(std::string& path, std::string sep);
 void ensurePathEndwithSep(std::wstring& path, std::wstring sep);
 
-std::wstring string2wstring(const std::string& s);
-std::string wstring2string(const std::wstring& ws);
-
-std::string & strFormat(std::string & _str, const char * _Format, ...);
-std::string strFormat(const char* _Format, ...);
-
-std::wstring & strFormat(std::wstring & _str, const wchar_t * _Format, ...);
-std::wstring strFormat(const wchar_t* _Format, ...);
+std::wstring strToWideStr(const std::string& s);
+std::string wideStrToStr(const std::wstring& ws);
 
 std::string getPandasVersion(bool bPrefix = true, bool bSuffix = true);
-
 std::string getSystemLanguage();
-
-#ifdef _WIN32
-std::string getFileVersion(std::string filename);
-#endif // _WIN32

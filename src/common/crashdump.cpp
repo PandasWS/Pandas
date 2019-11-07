@@ -6,29 +6,15 @@
 #include <string> // std::string, std::wstring
 
 #include "cryptopp.hpp"
-#include "assistant.hpp" // makeDirectories, wstring2string
+#include "assistant.hpp" // boost, makeDirectories, wstring2string
 #include "showmsg.hpp"
 
 #ifdef _WIN32
-
 #include "client/windows/handler/exception_handler.h"
 #include "client/windows/sender/crash_report_sender.h"
-
-typedef std::wstring crash_string;
-#define _CT(x) L ## x
-#define crash_w2s(x) wstring2string(x)
-#define crash_s2w(x) string2wstring(x)
-
 #else
-
 #include "common/linux/http_upload.h"
 #include "client/linux/handler/exception_handler.h"
-
-typedef std::string crash_string;
-#define _CT(x) x
-#define crash_w2s(x) x
-#define crash_s2w(x) x
-
 #endif // _WIN32
 
 // 目前仅支持对 PandasWS 官方编译的 Release 版本进行崩溃转储文件分析.
@@ -43,21 +29,21 @@ typedef std::string crash_string;
 // 待未来整个崩溃分析机制成熟完善, 会考虑将分析能力开放给其他需要的合作伙伴.
 
 #ifndef CRASHRPT_APPID
-	#define CRASHRPT_APPID _CT("")
+	#define CRASHRPT_APPID ""
 #endif // CRASHRPT_APPID
 
 #ifndef CRASHRPT_PUBLICKEY
-	#define CRASHRPT_PUBLICKEY _CT("")
+	#define CRASHRPT_PUBLICKEY ""
 #endif // CRASHRPT_PUBLICKEY
 
 // 当程序崩溃时, 将转储文件保存在什么位置
-crash_string g_dumpSaveDirectory = _CT("dumps");
+std::string g_dumpSaveDirectory = "dumps";
 
 // 设置检查点记录文件的保存位置
-crash_string g_crashCheckPointFilepath = g_dumpSaveDirectory + _CT("/crashdump.report");
+std::string g_crashCheckPointFilepath = g_dumpSaveDirectory + "/crashdump.report";
 
 // 用于上报崩溃转储文件的数据接口地址
-crash_string g_crashDumpUploadInterface = _CT("https://crashrpt.pandas.ws/upload");
+std::string g_crashDumpUploadInterface = "https://crashrpt.pandas.ws/upload";
 
 // 保存程序崩溃时负责转储工作的 ExceptionHandler 指针
 google_breakpad::ExceptionHandler* g_pExceptionHandler = NULL;
@@ -118,7 +104,7 @@ void display_crashtips(std::string dumpfilepath, bool bottom) {
 //************************************
 void breakpad_status() {
 	if (g_breakpadInitialized)
-		ShowInfo("Server crashdump file will be saved to: " CL_WHITE "'%s/'" CL_RESET "\n", crash_w2s(g_dumpSaveDirectory).c_str());
+		ShowInfo("Server crashdump file will be saved to: " CL_WHITE "'%s/'" CL_RESET "\n", g_dumpSaveDirectory.c_str());
 	else
 		ShowWarning("Google Breakpad initialization failed!\n");
 }
@@ -126,33 +112,30 @@ void breakpad_status() {
 //************************************
 // Method:      params_dosign
 // Description: 用于对即将发送的参数进行签名, 以便服务端验证身份
-// Parameter:   std::map<crash_string
-// Parameter:   crash_string> & params
+// Parameter:   std::map<std::string
+// Parameter:   std::string> & params
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2019/08/24 18:54
 //************************************
-void params_dosign(std::map<crash_string, crash_string> & params)
+void params_dosign(std::map<std::string, std::string> & params)
 {
-	crash_string sign = _CT("");
-	crash_string token = _CT("");
-	crash_string timestamp = crash_s2w(strFormat("%ld", time(NULL)));
+	std::string sign, token;
+	std::string timestamp = boost::str(boost::format("%1%") % time(NULL));
 
 	// 加入一个当前服务器的时间戳
-	params.insert(std::make_pair(_CT("timestamp"), timestamp));
+	params.insert(std::make_pair("timestamp", timestamp));
 
 	// 根据当前的参数列表构造一个用于加密的字符串
-	std::map<crash_string, crash_string>::iterator iter;
+	std::map<std::string, std::string>::iterator iter;
 	for (iter = params.begin(); iter != params.end(); iter++) {
-		sign = sign + iter->first + _CT("|");
-		sign = sign + iter->second + _CT("|");
+		sign = sign + iter->first + "|";
+		sign = sign + iter->second + "|";
 	}
 
 	// 使用公钥对 sign 变量的值进行签名, 将密文放到 token 字段发送
-	if (crash_string(CRASHRPT_PUBLICKEY).length()) {
-		token = crash_s2w(crypto_RSAEncryptString(
-			crash_w2s(crash_string(CRASHRPT_PUBLICKEY)), crash_w2s(sign)
-		));
-		params.insert(std::make_pair(_CT("token"), token));
+	if (std::string(CRASHRPT_PUBLICKEY).length()) {
+		token = crypto_RSAEncryptString(std::string(CRASHRPT_PUBLICKEY), sign);
+		params.insert(std::make_pair("token", token));
 	}
 }
 
@@ -170,7 +153,23 @@ void params_dosign(std::map<crash_string, crash_string> & params)
 bool breakpad_filter(void* context, EXCEPTION_POINTERS* exinfo, MDRawAssertionInfo* assertion)
 {
 	// 在此时立刻创建用于保存转储文件的目录, 创建失败转储文件将不会被生成
-	return makeDirectories(crash_w2s(g_dumpSaveDirectory));
+	return makeDirectories(g_dumpSaveDirectory);
+}
+
+//************************************
+// Method:      breakpad_map2w
+// Description: 将 std::string 的 std::map 转换成 std::wstring 
+// Parameter:   std::map<std::string, std::string> strmap
+// Parameter:   std::map<std::wstring, std::wstring> & wstrmap
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2019/11/05 12:56
+//************************************
+inline void breakpad_map2w(std::map<std::string, std::string> strmap, std::map<std::wstring, std::wstring>& wstrmap) {
+	wstrmap.clear();
+	std::map<std::string, std::string>::iterator iter;
+	for (iter = strmap.begin(); iter != strmap.end(); iter++) {
+		wstrmap.insert(std::make_pair(strToWideStr(iter->first), strToWideStr(iter->second)));
+	}
 }
 
 //************************************
@@ -193,34 +192,44 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 	if (!succeeded) return succeeded;
 
 	// 崩溃转储文件的本地保存路径
-	crash_string filepath = strFormat(_CT("%s/%s.dmp"), dump_path, minidump_id);
+	std::string filepath = boost::str(boost::format("%1%/%2%.dmp") % dump_path % minidump_id);
 
 	// 将崩溃转储文件存入一个 std::map 中等待发送请求使用
-	std::map<crash_string, crash_string> files;
-	files.insert(std::make_pair(_CT("dumpfile"), filepath));
+	std::map<std::string, std::string> sfiles;
+	sfiles.insert(std::make_pair("dumpfile", filepath));
+
 
 	// 收集其他可能需要的信息, 用于服务端分析或归类使用
-	std::map<crash_string, crash_string> params;
-	params.insert(std::make_pair(_CT("appid"), crash_string(CRASHRPT_APPID)));
-	params.insert(std::make_pair(_CT("platform"), _CT("windows")));
-	params.insert(std::make_pair(_CT("version"), crash_s2w(getPandasVersion(false))));
-	params.insert(std::make_pair(_CT("branch"), crash_s2w(std::string(GIT_BRANCH))));
-	params.insert(std::make_pair(_CT("hash"), crash_s2w(std::string(GIT_HASH))));
-	params.insert(std::make_pair(_CT("testing"), g_crashByTestCommand ? _CT("1") : _CT("0")));
-	params_dosign(params);
+	std::map<std::string, std::string> sparams;
+	sparams.insert(std::make_pair("appid", CRASHRPT_APPID));
+	sparams.insert(std::make_pair("platform", "windows"));
+	sparams.insert(std::make_pair("version", getPandasVersion(false)));
+	sparams.insert(std::make_pair("branch", GIT_BRANCH));
+	sparams.insert(std::make_pair("hash", GIT_HASH));
+	sparams.insert(std::make_pair("testing", g_crashByTestCommand ? "1" : "0"));
+	params_dosign(sparams);
 
 	// 创建 CrashReportSender 对象并利用其提交转储文件给服务器
-	google_breakpad::CrashReportSender sender(g_crashCheckPointFilepath);
+	google_breakpad::CrashReportSender sender(strToWideStr(g_crashCheckPointFilepath));
 
-	display_crashtips(wstring2string(filepath), false);
+	// 由于 Windows 下的 SendCrashReport 仅支持 wstring
+	// 所以需要将上面基于 std::string 的 std::map 转换成基于 std::wstring 的 std::map
+	std::map<std::wstring, std::wstring> wparams;
+	breakpad_map2w(sparams, wparams);
+
+	std::map<std::wstring, std::wstring> wfiles;
+	breakpad_map2w(sfiles, wfiles);
+
+	// 开始上报转储文件
+	display_crashtips(filepath, false);
 	if (g_crashDumpUploadAllowed) {
 		ShowMessage("" CL_BG_RED CL_BT_WHITE " Sending the crash dump file, please wait a second...                          " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
-	if (sender.SendCrashReport(g_crashDumpUploadInterface, params, files, 0) == google_breakpad::ReportResult::RESULT_SUCCEEDED)
+	if (sender.SendCrashReport(strToWideStr(g_crashDumpUploadInterface), wparams, wfiles, 0) == google_breakpad::ReportResult::RESULT_SUCCEEDED)
 		ShowMessage("" CL_BG_RED CL_BT_GREEN " SUCCESS : The crash dump file has been uploaded successfull.                  " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	else
 		ShowMessage("" CL_BG_RED CL_BT_CYAN  " FAILED: The crash dump file failed to upload, please report to developer.     " CL_BT_WHITE "" CL_CLL "" CL_NORMAL "\n");
 	}
-	display_crashtips(wstring2string(filepath), true);
+	display_crashtips(filepath, true);
 
 	return succeeded;
 }
@@ -239,7 +248,7 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 bool breakpad_filter(void* context)
 {
 	// 在此时立刻创建用于保存转储文件的目录, 创建失败转储文件将不会被生成
-	return makeDirectories(crash_w2s(g_dumpSaveDirectory));
+	return makeDirectories(g_dumpSaveDirectory);
 }
 
 //************************************
@@ -259,20 +268,20 @@ bool breakpad_callback(const google_breakpad::MinidumpDescriptor& descriptor,
 	if (!succeeded) return succeeded;
 
 	// 崩溃转储文件的本地保存路径
-	crash_string filepath = descriptor.path();
+	std::string filepath = descriptor.path();
 
 	// 将崩溃转储文件存入一个 std::map 中等待发送请求使用
-	std::map<crash_string, crash_string> files;
-	files.insert(std::make_pair(_CT("dumpfile"), filepath));
+	std::map<std::string, std::string> files;
+	files.insert(std::make_pair("dumpfile", filepath));
 
 	// 收集其他可能需要的信息, 用于服务端分析或归类使用
-	std::map<crash_string, crash_string> params;
-	params.insert(std::make_pair(_CT("appid"), crash_string(CRASHRPT_APPID)));
-	params.insert(std::make_pair(_CT("platform"), _CT("linux")));
-	params.insert(std::make_pair(_CT("version"), getPandasVersion(false).c_str()));
-	params.insert(std::make_pair(_CT("branch"), std::string(GIT_BRANCH)));
-	params.insert(std::make_pair(_CT("hash"), std::string(GIT_HASH)));
-	params.insert(std::make_pair(_CT("testing"), g_crashByTestCommand ? _CT("1") : _CT("0")));
+	std::map<std::string, std::string> params;
+	params.insert(std::make_pair("appid", CRASHRPT_APPID));
+	params.insert(std::make_pair("platform", "linux"));
+	params.insert(std::make_pair("version", getPandasVersion(false)));
+	params.insert(std::make_pair("branch", GIT_BRANCH));
+	params.insert(std::make_pair("hash", GIT_HASH));
+	params.insert(std::make_pair("testing", g_crashByTestCommand ? "1" : "0"));
 	params_dosign(params);
 
 	std::string response, error;
@@ -306,9 +315,9 @@ void breakpad_initialize() {
 	// 此处不能放弃对 g_pExceptionHandler 的赋值,
 	// 否则整个 google_breakpad::ExceptionHandler 对象会在本函数结束的时候被释放掉
 	g_pExceptionHandler = new google_breakpad::ExceptionHandler(
-		g_dumpSaveDirectory, breakpad_filter, breakpad_callback, nullptr,
+		strToWideStr(g_dumpSaveDirectory), breakpad_filter, breakpad_callback, nullptr,
 		google_breakpad::ExceptionHandler::HANDLER_ALL,
-		MINIDUMP_TYPE(MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithDataSegs), _CT(""), 0
+		MINIDUMP_TYPE(MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithDataSegs), L"", 0
 	);
 #else
 	// 在 Linux 环境下需要先初始化一个 MinidumpDescriptor 对象用来描述转储文件的保存位置
@@ -326,7 +335,6 @@ void breakpad_initialize() {
 
 	// 必须配置了 APPID 和 PUBLICKEY 才能够上报转储文件到分析服务器
 	g_crashDumpUploadAllowed = (
-		crash_string(CRASHRPT_APPID).length() &&
-		crash_string(CRASHRPT_PUBLICKEY).length()
+		std::string(CRASHRPT_APPID).length() && std::string(CRASHRPT_PUBLICKEY).length()
 	);
 }

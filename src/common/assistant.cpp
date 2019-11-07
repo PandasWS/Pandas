@@ -15,9 +15,6 @@
 #include <fstream>
 #include <cctype> // std::tolower std::toupper std::isspace
 
-#include <boost/format.hpp>
-#include <boost/algorithm/string.hpp>
-
 #ifdef _WIN32
 #include <Windows.h>
 #include <direct.h>
@@ -244,19 +241,17 @@ bool getExecuteFileDirectory(std::string& outFileDirectory) {
 // Returns:		bool
 //************************************
 bool isDirectoryExists(const std::string& path) {
-#ifdef _WIN32
-	struct _stat info = { 0 };
-	if (_stat(path.c_str(), &info) != 0) {
+	try
+	{
+		boost::filesystem::path dirpath(path);
+		dirpath = dirpath.generic_path();
+		return boost::filesystem::is_directory(dirpath);
+	}
+	catch (const boost::filesystem::filesystem_error &e)
+	{
+		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
 	}
-	return (info.st_mode & _S_IFDIR) != 0;
-#else 
-	struct stat info = { 0 };
-	if (stat(path.c_str(), &info) != 0) {
-		return false;
-	}
-	return (info.st_mode & S_IFDIR) != 0;
-#endif // _WIN32
 }
 
 //************************************
@@ -266,43 +261,15 @@ bool isDirectoryExists(const std::string& path) {
 // Returns:		bool
 //************************************
 bool makeDirectories(const std::string& path) {
-#ifdef _WIN32
-	int ret = _mkdir(path.c_str());
-#else
-	mode_t mode = 0755;
-	int ret = mkdir(path.c_str(), mode);
-#endif // _WIN32
-
-	if (ret == 0)
-		return true;
-
-	switch (errno)
+	try
 	{
-	case ENOENT:
-		// parent didn't exist, try to create it
-	{
-		size_t pos = path.find_last_of('/');
-		if (pos == std::string::npos)
-#ifdef _WIN32
-			pos = path.find_last_of('\\');
-		if (pos == std::string::npos)
-#endif // _WIN32
-			return false;
-		if (!makeDirectories(path.substr(0, pos)))
-			return false;
+		boost::filesystem::path dirpath(path);
+		dirpath = dirpath.generic_path();
+		return boost::filesystem::create_directories(dirpath);
 	}
-	// now, try to create again
-#ifdef _WIN32
-	return 0 == _mkdir(path.c_str());
-#else 
-	return 0 == mkdir(path.c_str(), mode);
-#endif // _WIN32
-
-	case EEXIST:
-		// done!
-		return isDirectoryExists(path);
-
-	default:
+	catch (const boost::filesystem::filesystem_error &e)
+	{
+		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
 	}
 }
@@ -315,51 +282,18 @@ bool makeDirectories(const std::string& path) {
 // Author:      Sola丶小克(CairoLee)  2019/09/15 21:54
 //************************************
 bool deleteDirectory(std::string path) {
-	ensurePathEndwithSep(path, pathSep);
-#ifdef _WIN32
-	WIN32_FIND_DATA fdFileData;
-	HANDLE hSearch = NULL;
-	std::string szPathWildcard, szFullPath;
-
-	szPathWildcard = path + "*.*";
-	hSearch = FindFirstFile(szPathWildcard.c_str(), &fdFileData);
-	if (hSearch == INVALID_HANDLE_VALUE) return true;
-
-	do {
-		if (!lstrcmp(fdFileData.cFileName, "..")) continue;
-		if (!lstrcmp(fdFileData.cFileName, ".")) continue;
-
-		szFullPath = path + fdFileData.cFileName;
-		if (fdFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-			deleteDirectory(szFullPath);
-		}
-		else {
-			DeleteFile(szFullPath.c_str());
-		}
-	} while (FindNextFile(hSearch, &fdFileData));
-	FindClose(hSearch);
-
-	return (RemoveDirectory(path.c_str()) != 0);
-#else
-	DIR* dirHandle = opendir(path.c_str());
-	if (!dirHandle) return false;
-
-	struct dirent* dt = NULL;
-	while ((dt = readdir(dirHandle))) {
-		if (strcmp(dt->d_name, "..") == 0) continue;
-		if (strcmp(dt->d_name, ".") == 0) continue;
-
-		struct stat st = { 0 };
-		std::string enum_path = path + dt->d_name;
-		stat(enum_path.c_str(), &st);
-		if (S_ISDIR(st.st_mode))
-			deleteDirectory(enum_path);
-		else
-			remove(enum_path.c_str());
+	try
+	{
+		boost::filesystem::path dirpath(path);
+		dirpath = dirpath.generic_path();
+		boost::filesystem::remove_all(dirpath);
+		return true;
 	}
-	closedir(dirHandle);
-	return (rmdir(path.c_str()) == 0 ? true : false);
-#endif // _WIN32
+	catch (const boost::filesystem::filesystem_error &e)
+	{
+		ShowWarning("%s: %s\n", __func__, e.what());
+		return false;
+	}
 }
 
 //************************************
@@ -370,118 +304,62 @@ bool deleteDirectory(std::string path) {
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2019/09/16 08:21
 //************************************
-bool copyDirectory(std::string fromPath, std::string toPath) {
-	ensurePathEndwithSep(fromPath, pathSep);
-	ensurePathEndwithSep(toPath, pathSep);
+bool copyDirectory(const boost::filesystem::path &from, const boost::filesystem::path &to) {
+	try
+	{
+		if (boost::filesystem::exists(to)) {
+			throw std::runtime_error("The path "+ to.generic_string() + " is already exists.");
+		}
 
-	if (!isDirectoryExists(fromPath) || fromPath == toPath) {
-		return false;
-	}
-
-	if (!isDirectoryExists(toPath) && !makeDirectories(toPath)) {
-		return false;
-	}
-
-#ifdef _WIN32
-	WIN32_FIND_DATA fdFileData;
-	HANDLE hSearch = NULL;
-	std::string szPathWildcard, szFullPath, szDstPath;
-
-	szPathWildcard = fromPath + "*.*";
-	hSearch = FindFirstFile(szPathWildcard.c_str(), &fdFileData);
-	if (hSearch == INVALID_HANDLE_VALUE) return true;
-
-	do {
-		if (!lstrcmp(fdFileData.cFileName, "..")) continue;
-		if (!lstrcmp(fdFileData.cFileName, ".")) continue;
-
-		szFullPath = fromPath + fdFileData.cFileName;
-		szDstPath = toPath + fdFileData.cFileName;
-
-		if (fdFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-			if (!copyDirectory(szFullPath, szDstPath)) {
-				FindClose(hSearch);
-				return false;
+		if (boost::filesystem::is_directory(from)) {
+			boost::filesystem::create_directories(to);
+			for (boost::filesystem::directory_entry& item : boost::filesystem::directory_iterator(from)) {
+				copyDirectory(item.path(), to / item.path().filename());
 			}
+		}
+		else if (boost::filesystem::is_regular_file(from)) {
+			boost::filesystem::copy(from, to);
 		}
 		else {
-			if (!CopyFile(szFullPath.c_str(), szDstPath.c_str(), FALSE)) {
-				FindClose(hSearch);
-				return false;
-			}
+			throw std::runtime_error("The path " + to.generic_string() + " is not directory or file.");
 		}
-	} while (FindNextFile(hSearch, &fdFileData));
-	FindClose(hSearch);
-#else
-	DIR* dirHandle = opendir(fromPath.c_str());
-	if (!dirHandle) {
+		return true;
+	}
+	catch (const std::runtime_error &e)
+	{
+		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
 	}
-
-	struct dirent* dt = NULL;
-	while ((dt = readdir(dirHandle))) {
-		if (strcmp(dt->d_name, "..") == 0) continue;
-		if (strcmp(dt->d_name, ".") == 0) continue;
-
-		struct stat st = { 0 };
-		std::string enum_frompath = fromPath + dt->d_name;
-		std::string enum_topath = toPath + dt->d_name;
-
-		stat(enum_frompath.c_str(), &st);
-		if (S_ISDIR(st.st_mode)) {
-			if (!copyDirectory(enum_frompath, enum_topath)) {
-				closedir(dirHandle);
-				return false;
-			}
-		}
-		else {
-			if (!copyFile(enum_frompath, enum_topath)) {
-				closedir(dirHandle);
-				return false;
-			}
-		}
-	}
-	closedir(dirHandle);
-#endif // _WIN32
-
-	return true;
 }
-
 
 //************************************
 // Method:      copyFile
-// Description: 复制文件到另外一个位置 (跨平台支持)
-// Parameter:   std::string fromPath
-// Parameter:   std::string toPath
+// Description: 复制文件到另外一个位置, 若存在则覆盖 (跨平台支持)
+// Parameter:   std::string from
+// Parameter:   std::string to
 // Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2019/09/16 12:47
+// Author:      Sola丶小克(CairoLee)  2019/11/07 12:28
 //************************************
-bool copyFile(std::string fromPath, std::string toPath) {
-	if (check_filepath(fromPath.c_str()) != 2) {
-		return false;
-	}
-#ifdef _WIN32
-	return (CopyFile(fromPath.c_str(), toPath.c_str(), false) != 0);
-#else
-	try {
-		std::ifstream fromStream(fromPath.c_str(), std::ios::binary);
-		std::remove(toPath.c_str());
-		std::ofstream toStream(toPath.c_str(), std::ios::binary);
-		
-		if (!toStream) {
-			ShowWarning("Could not create output file: %s\n", toPath.c_str());
-			return false;
-		}
-		
-		toStream << fromStream.rdbuf();
+bool copyFile(std::string from, std::string to) {
+	try
+	{
+		boost::filesystem::path frompath(from);
+		frompath = frompath.generic_path();
+
+		boost::filesystem::path topath(to);
+		topath = topath.generic_path();
+
+		boost::filesystem::copy_file(
+			frompath, topath,
+			boost::filesystem::copy_option::overwrite_if_exists
+		);
 		return true;
 	}
-	catch (...) {
+	catch (const boost::filesystem::filesystem_error&)
+	{
 		return false;
 	}
-#endif // _WIN32
 }
-
 
 //************************************
 // Method:		strReplace
@@ -529,7 +407,7 @@ void strReplace(std::wstring& str, const std::wstring& from, const std::wstring&
 // Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
 //************************************
 bool strContain(std::vector<std::string> contain, std::string str, bool bCaseSensitive) {
-	if (!bCaseSensitive) str = strLower(str);
+	if (!bCaseSensitive) str = boost::to_lower_copy(str);
 	for (auto it : contain) {
 		if (str.find(it) != std::string::npos) return true;
 	}
@@ -546,36 +424,8 @@ bool strContain(std::vector<std::string> contain, std::string str, bool bCaseSen
 // Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
 //************************************
 bool strContain(std::string contain, std::string str, bool bCaseSensitive) {
-	if (!bCaseSensitive) str = strLower(str);
+	if (!bCaseSensitive) str = boost::to_lower_copy(str);
 	return (str.find(contain) != std::string::npos);
-}
-
-//************************************
-// Method:      strLeftTrim
-// Description: 移除给定 std::string 字符串左侧的空白字符
-// Parameter:   const std::string & s
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
-//************************************
-std::string strLeftTrim(const std::string& s) {
-	std::string s2 = s;
-	s2.erase(s2.begin(), std::find_if(s2.begin(), s2.end(),
-		std::not1(std::ptr_fun<int, int>(std::isspace))));
-	return std::move(s2);
-}
-
-//************************************
-// Method:      strRightTrim
-// Description: 移除给定 std::string 字符串右侧的空白字符
-// Parameter:   const std::string & s
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
-//************************************
-std::string strRightTrim(const std::string& s) {
-	std::string s2 = s;
-	s2.erase(std::find_if(s2.rbegin(), s2.rend(),
-		std::not1(std::ptr_fun<int, int>(::isspace))).base(), s2.end());
-	return std::move(s2);
 }
 
 //************************************
@@ -586,7 +436,7 @@ std::string strRightTrim(const std::string& s) {
 // Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
 //************************************
 std::string strTrim(const std::string& s) {
-	return strLeftTrim(strRightTrim(s));
+	return boost::trim_copy(s);
 }
 
 //************************************
@@ -604,36 +454,6 @@ std::vector<std::string> strExplode(std::string const& s, char delim) {
 		result.push_back(std::move(token));
 	}
 	return result;
-}
-
-//************************************
-// Method:      strLower
-// Description: 将给定的 std::string 字符串中的字母转换成小写
-// Parameter:   const std::string & s
-// Returns:     std::string&
-// Author:      Sola丶小克(CairoLee)  2019/10/14 17:14
-//************************************
-std::string strLower(const std::string& s) {
-	std::string s2 = s;
-	std::transform(s2.begin(), s2.end(), s2.begin(),
-		[](unsigned char c) { return std::tolower(c); }
-	);
-	return std::move(s2);
-}
-
-//************************************
-// Method:      strUpper
-// Description: 将给定的 std::string 字符串中的字母转换成大写
-// Parameter:   const std::string & s
-// Returns:     std::string&
-// Author:      Sola丶小克(CairoLee)  2019/10/14 17:14
-//************************************
-std::string strUpper(const std::string& s) {
-	std::string s2 = s;
-	std::transform(s2.begin(), s2.end(), s2.begin(),
-		[](unsigned char c) { return std::toupper(c); }
-	);
-	return std::move(s2);
 }
 
 //************************************
@@ -737,150 +557,25 @@ void ensurePathEndwithSep(std::wstring& path, std::wstring sep) {
 }
 
 //************************************
-// Method:		string2wstring
-// Description:	将 std::string 转换成 std::wstring
-//              https://blog.csdn.net/CYYTU/article/details/78616132
-// Parameter:	const std::string & s
-// Returns:		std::wstring
+// Method:      strToWideStr
+// Description: 将 std::string 转换成 std::wstring
+// Parameter:   const std::string & s
+// Returns:     std::wstring
+// Author:      Sola丶小克(CairoLee)  2019/11/05 15:32
 //************************************
-std::wstring string2wstring(const std::string& s) {
-#ifdef _WIN32
-	setlocale(LC_ALL, "chs");
-#else  
-	setlocale(LC_ALL, "zh_CN.gbk");
-#endif // _WIN32
-	const char* _Source = s.c_str();
-	size_t _Dsize = s.size() + 1;
-	wchar_t *_Dest = new wchar_t[_Dsize];
-	wmemset(_Dest, 0, _Dsize);
-	mbstowcs(_Dest, _Source, _Dsize);
-	std::wstring result = _Dest;
-	delete[]_Dest;
-	setlocale(LC_ALL, "C");
-	return result;
+std::wstring strToWideStr(const std::string& s) {
+	return boost::locale::conv::utf_to_utf<wchar_t>(s);
 }
 
 //************************************
-// Method:		wstring2string
-// Description:	将 std::wstring 转换成 std::string
-//              https://blog.csdn.net/CYYTU/article/details/78616132
-// Parameter:	const std::wstring & ws
-// Returns:		std::string
+// Method:      wideStrToStr
+// Description: 将 std::wstring 转换成 std::string
+// Parameter:   const std::wstring & ws
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2019/11/05 15:32
 //************************************
-std::string wstring2string(const std::wstring& ws) {
-	std::string curLocale = setlocale(LC_ALL, NULL);
-#ifdef _WIN32
-	setlocale(LC_ALL, "chs");
-#else  
-	setlocale(LC_ALL, "zh_CN.gbk");
-#endif // _WIN32
-	const wchar_t* _Source = ws.c_str();
-	size_t _Dsize = 2 * ws.size() + 1;
-	char *_Dest = new char[_Dsize];
-	memset(_Dest, 0, _Dsize);
-	wcstombs(_Dest, _Source, _Dsize);
-	std::string result = _Dest;
-	delete[]_Dest;
-	setlocale(LC_ALL, curLocale.c_str());
-	return result;
-}
-
-//************************************
-// Method:		strFormat
-// Description:	用于进行 std::string 的格式化
-// Parameter:	std::string & _str
-// Parameter:	const char * _Format
-// Parameter:	...
-// Returns:		std::string &
-//************************************
-std::string & strFormat(std::string & _str, const char * _Format, ...) {
-	va_list marker;
-
-	va_start(marker, _Format);
-	size_t count = vsnprintf(NULL, 0, _Format, marker) + 1;
-	va_end(marker);
-
-	va_start(marker, _Format);
-	char* buf = (char*)aMalloc(count * sizeof(char));
-	vsnprintf(buf, count, _Format, marker);
-	_str = std::string(buf, count);
-	aFree(buf);
-	va_end(marker);
-
-	return _str;
-}
-
-//************************************
-// Method:		strFormat
-// Description:	用于进行 std::string 的格式化
-// Parameter:	const char * _Format
-// Parameter:	...
-// Returns:		std::string
-//************************************
-std::string strFormat(const char* _Format, ...) {
-	va_list marker;
-
-	va_start(marker, _Format);
-	size_t count = vsnprintf(NULL, 0, _Format, marker) + 1;
-	va_end(marker);
-
-	va_start(marker, _Format);
-	char* buf = (char*)aMalloc(count * sizeof(char));
-	vsnprintf(buf, count, _Format, marker);
-	std::string _str = std::string(buf, count);
-	aFree(buf);
-	va_end(marker);
-
-	return _str;
-}
-
-//************************************
-// Method:		strFormat
-// Description:	用于进行 std::wstring 的格式化
-// Parameter:	std::wstring & _str
-// Parameter:	const wchar_t * _Format
-// Parameter:	...
-// Returns:		std::wstring &
-//************************************
-std::wstring & strFormat(std::wstring & _str, const wchar_t * _Format, ...) {
-	va_list marker;
-
-	va_start(marker, _Format);
-	size_t count = vswprintf(NULL, 0, _Format, marker) + 1;
-	va_end(marker);
-
-	va_start(marker, _Format);
-	wchar_t* buf = (wchar_t*)aMalloc(count * sizeof(wchar_t));
-	vswprintf(buf, count, _Format, marker);
-	_str = std::wstring(buf, count);
-	aFree(buf);
-	va_end(marker);
-
-	return _str;
-}
-
-//************************************
-// Method:		strFormat
-// Description:	用于进行 std::wstring 的格式化
-// Parameter:	const wchar_t * _Format
-// Parameter:	...
-// Returns:		std::wstring
-//************************************
-std::wstring strFormat(const wchar_t* _Format, ...) {
-	va_list marker;
-
-	va_start(marker, _Format);
-	size_t count = vswprintf(NULL, 0, _Format, marker) + 1;
-	va_end(marker);
-
-	va_start(marker, _Format);
-	wchar_t* buf = (wchar_t*)aMalloc(count * sizeof(wchar_t));
-	vswprintf(buf, count, _Format, marker);
-	std::wstring _str = std::wstring(buf, count);
-	aFree(buf);
-	va_end(marker);
-
-	return _str;
+std::string wideStrToStr(const std::wstring& ws) {
+	return boost::locale::conv::utf_to_utf<char>(ws);
 }
 
 //************************************
@@ -937,21 +632,19 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 	// 提前获取默认版本号
 	std::string szDefaultVersion = formatVersion(Pandas_Version, bPrefix, bSuffix);
 
-	// 获取当前程序的版本号
+	// 获取当前的文件名
 	char szModulePath[MAX_PATH] = { 0 };
 	if (GetModuleFileName(NULL, szModulePath, MAX_PATH) == 0) {
-		ShowWarning("getFileVersion: Could not get module file name, defaulting to '%s'\n", szDefaultVersion.c_str());
+		ShowWarning("%s: Could not get module file name, defaulting to '%s'\n", __func__, szDefaultVersion.c_str());
 		return szDefaultVersion;
 	}
-
-	// 获取当前的文件名
 	std::string filename = std::string(szModulePath);
 
 	// 获取文件版本信息的结构体大小
 	DWORD dwInfoSize = 0, dwHandle = 0;
 	dwInfoSize = GetFileVersionInfoSize(filename.c_str(), &dwHandle);
 	if (dwInfoSize == 0) {
-		ShowWarning("getFileVersion: Could not get version info size, defaulting to '%s'\n", szDefaultVersion.c_str());
+		ShowWarning("%s: Could not get version info size, defaulting to '%s'\n", __func__, szDefaultVersion.c_str());
 		return szDefaultVersion;
 	}
 
@@ -975,7 +668,7 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 	}
 
 	delete[] pVersionInfo;
-	ShowWarning("getFileVersion: Could not get file version, defaulting to '%s'\n", szDefaultVersion.c_str());
+	ShowWarning("%s: Could not get file version, defaulting to '%s'\n", __func__, szDefaultVersion.c_str());
 	return szDefaultVersion;
 #else
 	return formatVersion(Pandas_Version, bPrefix, bSuffix);
