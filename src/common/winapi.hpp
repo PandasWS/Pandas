@@ -26,7 +26,11 @@
 #include <sdkddkver.h>
 #endif
 
-#define STRICT
+// 此处加一个判断, 避免在 3rdparty\boost\boost\winapi\basic_types.hpp
+// 中定义了 STRICT 宏定义开关后, 这里进行重复定义 [Sola丶小克]
+#ifndef STRICT
+	#define STRICT
+#endif
 #define WIN32_LEAN_AND_MEAN
 #define NOCOMM 
 #define NOKANJI

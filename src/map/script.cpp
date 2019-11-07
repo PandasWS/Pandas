@@ -13,6 +13,7 @@
 #include <math.h>
 #include <setjmp.h>
 #include <stdlib.h> // atoi, strtol, strtoll, exit
+
 #ifdef Pandas_ScriptEngine_Express
 #include <cctype>	// toupper, tolower
 #include <algorithm>	// transform
@@ -14308,12 +14309,8 @@ BUILDIN_FUNC(getinventorylist)
 			pc_setreg(sd, reference_uid(add_str("@inventorylist_idx"), j), i);
 
 			// 字符串数组 - @inventorylist_uid$ 用于保存道具的唯一编号
-			{
-				std::string str_unique_id = strFormat(
-					"%llu", (unsigned long long)sd->inventory.u.items_inventory[i].unique_id
-				);
-				pc_setregstr(sd, reference_uid(add_str("@inventorylist_uid$"), j), str_unique_id.c_str());
-			}
+			std::string unique_id = boost::str(boost::format("%1%") % sd->inventory.u.items_inventory[i].unique_id);
+			pc_setregstr(sd, reference_uid(add_str("@inventorylist_uid$"), j), unique_id.c_str());
 #endif // Pandas_ScriptResults_GetInventoryList
 			j++;
 		}
@@ -25628,10 +25625,8 @@ BUILDIN_FUNC(getinventoryinfo) {
 	case 10: retval = sd->inventory.u.items_inventory[idx].expire_time; break;
 	case 11:
 	{
-		std::string str_unique_id = strFormat(
-			"%llu", (unsigned long long)sd->inventory.u.items_inventory[idx].unique_id
-		);
-		script_pushstr(st, (char*)str_unique_id.c_str());
+		std::string unique_id = boost::str(boost::format("%1%") % sd->inventory.u.items_inventory[idx].unique_id);
+		script_pushstr(st, (char*)unique_id.c_str());
 		break;
 	}
 	default:

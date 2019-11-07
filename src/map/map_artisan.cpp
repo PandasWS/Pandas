@@ -5,6 +5,7 @@
 
 #include <cctype> // toupper, tolower
 #include <algorithm> // transform
+
 #include <boost/regex.hpp>
 
 #include "../common/strlib.hpp"
@@ -53,7 +54,7 @@ bool isRegexMatched(std::string patterns, std::string content) {
 bool hasCatchPet(const char* _script, std::vector<uint32>& pet_mobid) {
 	pet_mobid.clear();
 
-	std::string script = strLower(std::string(_script));
+	std::string script = boost::to_lower_copy(std::string(_script));
 	static const std::vector<std::string> valid_cmds = { "multicatchpet", "catchpet", "mpet", "pet" };
 	static const std::string patterns = R"(.*?((multicatchpet|catchpet|mpet|pet)(\s{1,}|\()(\(|)(.*?)(|\))(\s*|);))";
 	if (!strContain(valid_cmds, script)) return false;
@@ -108,7 +109,7 @@ bool hasCatchPet(const char* _script, std::vector<uint32>& pet_mobid) {
 // Author:      Sola丶小克(CairoLee)  2019/10/13 15:59
 //************************************
 bool hasCallfunc(const char* _script) {
-	std::string script = strLower(std::string(_script));
+	std::string script = boost::to_lower_copy(std::string(_script));
 	if (!strContain("callfunc", script)) return false;
 	return isRegexMatched(R"(.*?callfunc(\s.*|\(\s*)\"(.*?)\".*?)", script);
 }
