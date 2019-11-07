@@ -158,6 +158,7 @@ def arrange_common(packagedir):
     
     remove_file(packagedir + 'doc', 'source_doc.txt')
     remove_file(packagedir + 'npc', 'scripts_test.conf')
+    remove_file(packagedir + 'conf', 'valkyrie_sample.cfg')
     remove_file(packagedir, 'AUTHORS')
     remove_file(packagedir, 'LICENSE')
     remove_file(packagedir, 'configure')
