@@ -91,10 +91,14 @@ int npc_get_new_npc_id(void) {
 static DBMap* ev_db; // const char* event_name -> struct event_data*
 static DBMap* npcname_db; // const char* npc_name -> struct npc_data*
 
+#ifndef Pandas_Redeclaration_Struct_Event_Data
+// 此处的结构体需要暴露给 script.cpp 使用, 因此转移到 npc.hpp 中声明
+// 未来若 rAthena 修改了此结构体的声明, 那么必须复制到 npc.hpp 中去才可以 [Sola丶小克]
 struct event_data {
 	struct npc_data *nd;
 	int pos;
 };
+#endif // Pandas_Redeclaration_Struct_Event_Data
 
 static struct eri *timer_event_ers; //For the npc timer data. [Skotlex]
 
@@ -122,6 +126,17 @@ struct script_event_s{
 std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
 
 #ifdef Pandas_NpcHelper_CommonFunc
+//************************************
+// Method:      npc_event_data
+// Description: 获取一个<NPC名称::事件名称>格式的事件的脚本数据
+// Parameter:   const char * eventname
+// Returns:     struct event_data*
+// Author:      Sola丶小克(CairoLee)  2019/11/09 21:39
+//************************************
+struct event_data* npc_event_data(const char* eventname) {
+	return (struct event_data*)strdb_get(ev_db, eventname);
+}
+
 //************************************
 // Method:		npc_event_exists
 // Description:	判断一个<NPC名称::事件名称>格式的事件是否存在

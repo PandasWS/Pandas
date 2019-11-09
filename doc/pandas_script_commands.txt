@@ -581,11 +581,40 @@ EQI装备位置:
 	
 		script4each "{ announce \"角色名称: \" + strcharinfo(0) + \" | 角色编号: \" + getcharid(0), 0; }", 0;
 
+支持调用事件标签:
+	从 Pandas v1.0.2 版本开始, {<脚本>} 参数支持直接调用指定的 NPCNAME::EVENT 事件标签.
+	
+	有时我们的 {<脚本>} 参数需要写入大量复杂的条件判断, 若只写成一行,
+	那么可读性会很差, 大量的转义操作都过于繁琐.
+	
+	现在开始你可以将复杂的脚本逻辑直接定义到某个 NPCNAME::EVENT 事件标签中,
+	并在 script4each 系列指令中通过 {<脚本>} 参数直接调用, 方法如下:
+	
+	-	script	elabel_demo	-1,{
+	end;
+	OnLoveTest:
+		unittalk $@gid, "我的名称是: " + getunitname($@gid);
+	end;
+	}
+	
+	prontera,150,150,4	script	elabel_test	123,{
+		// 使全服玩家执行 elabel_demo::OnLoveTest 事件标签对应的脚本
+		script4each "elabel_demo::OnLoveTest",0;
+	}
+
 注意事项:
 	请注意给该系列指令指定 <脚本的执行范围> 使尽量合理.
 	例如服务端默认情况下加载的 NPC 脚本, 总共就包含 2 万个 NPC 单位,
 	若频繁使用 script4eachnpc 且将 <脚本的执行范围> 设置为 0 的话, {<脚本>} 就会在 2 万个 NPC 上频繁执行.
 	使用不当的话, 会比较容易导致服务器出现卡顿的现象.
+	
+	若使用 NPCNAME::EVENT 方式调用 script4each 系列指令的话, 双引号内 NPCNAME::EVENT 的左右请不要加空格:
+
+		script4each "elabel_demo::OnLoveTest",0;	// 正确示例
+		script4each " elabel_demo::OnLoveTest",0;	// 错误示例: elabel_demo 左侧有个空格
+		script4each "elabel_demo::OnLoveTest ",0;	// 错误示例: OnLoveTest 右侧有个空格
+
+	否则可能会找不到对应的 NPCNAME::EVENT, 从而导致引擎将 {<脚本>} 的内容当做常规脚本进行语法解析, 最终报错.
 
 返回值:
 	该指令无论成功失败, 都不会有返回值
@@ -887,9 +916,7 @@ IP地址:
 使用该指令可以复制指定的 NPC 到一个新的位置.
 该指令从 v1.0.1 版本开始, 拥有两个不同的参数版本可供随意选择, 程序将根据参数的个数进行自动识别.
 
-============
-四参数版本
-============
+四参数版本:
 
 	需要携带 4 个字符串参数, 参数的内容需要脚本作者进行准确的拼接操作.
 
@@ -939,9 +966,7 @@ IP地址:
 			
 			copynpc .@w1, .@w2, .@w3, .@w4;
 
-============
-七参数版本
-============
+七参数版本:
 
 	需要携带 7 个参数, 参数的内容可以直接用对应类型的变量直接传递, 更方便理解.
 	
@@ -985,9 +1010,7 @@ IP地址:
 		
 			copynpc instance_mapname("1@tower"),156,99,2,instance_npcname("PVPCOPYTEST"),"PVP管理员#4",123;
 
-============
-公用说明
-============
+公用说明:
 
 	返回值:
 		复制成功则返回复制出来的新 NPC 的 GID, 失败则返回 0

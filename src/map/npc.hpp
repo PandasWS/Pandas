@@ -39,6 +39,13 @@ struct s_npc_buy_list {
 	unsigned short nameid;	///< ID of item will be bought
 };
 
+#ifdef Pandas_Redeclaration_Struct_Event_Data
+struct event_data {
+	struct npc_data* nd;
+	int pos;
+};
+#endif // Pandas_Redeclaration_Struct_Event_Data
+
 struct npc_data {
 	struct block_list bl;
 	struct unit_data  ud; //Because they need to be able to move....
@@ -1297,6 +1304,7 @@ enum npce_event : uint8 {
 };
 
 #ifdef Pandas_NpcHelper_CommonFunc
+struct event_data* npc_event_data(const char* eventname);
 bool npc_event_exists(const char* eventname);
 bool npc_event_exists(struct npc_data *nd, const char* eventname);
 #endif // Pandas_NpcHelper_CommonFunc
