@@ -19,6 +19,7 @@
 	#define Pandas_Bugfix
 	#define Pandas_Crashfix
 	#define Pandas_ScriptEngine
+	#define Pandas_Redeclaration
 	#define Pandas_Cleanup
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
@@ -348,6 +349,15 @@
 	// script4eachmob "{ unittalk $@gid, \"中文紧挨着待转义的双引号无法通过语法检测\"; }", 0;
 	#define Pandas_ScriptEngine_DoubleQuotes_UnEscape_Detection
 #endif // Pandas_ScriptEngine
+
+// ============================================================================
+// 重新声明组 - Pandas_Redeclaration
+// ============================================================================
+
+#ifdef Pandas_Redeclaration
+	// 将 struct event_data 的定义从 npc.cpp 移动到 npc.hpp [Sola丶小克]
+	#define Pandas_Redeclaration_Struct_Event_Data
+#endif // Pandas_Redeclaration
 
 // ============================================================================
 // 无用代码清理组 - Pandas_Cleanup

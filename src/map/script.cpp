@@ -25775,18 +25775,13 @@ BUILDIN_FUNC(party_leave) {
  * 描述: 配合 script4each 指令使用的一个内部处理函数
  * -----------------------------------------------------------*/
 static int buildin_script4each_sub(struct block_list *bl, va_list ap) {
-	char *execute_script = va_arg(ap, char*);
-	char *cmdname = va_arg(ap, char*);
+	struct script_code* script = va_arg(ap, struct script_code*);
+	int pos = va_arg(ap, int);
 
-	if (!bl || !execute_script || !cmdname) return 0;
+	if (!bl || !script) return 0;
 
-	struct script_code* script = nullptr;
-	script = parse_script(execute_script, cmdname, 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
-	if (script) {
-		mapreg_setreg(add_str("$@gid"), bl->id);
-		run_script(script, 0, bl->id, 0);
-		script_free_code(script);
-	}
+	mapreg_setreg(add_str("$@gid"), bl->id);
+	run_script(script, pos, bl->id, 0);
 	return 1;
 }
 
@@ -25806,8 +25801,23 @@ BUILDIN_FUNC(script4each) {
 	char *cmdname = nullptr;
 	cmdname = script_getfuncname(st);
 
-	struct script_code *script = nullptr;
-	script = parse_script(execute_script, cmdname, 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+	struct script_code* script = nullptr;
+	int pos = 0;
+	bool script_needfree = false;
+
+#if !defined(Pandas_NpcHelper_CommonFunc) || !defined(Pandas_Redeclaration_Struct_Event_Data)
+	ShowWarning("This version is not support 'NPCNAME::EVENT' script in '%s' command.\n", cmdname);
+#else
+	struct event_data* ev = npc_event_data(execute_script);
+	if (ev != nullptr) {
+		script = ev->nd->u.scr.script;
+		pos = ev->pos;
+	}
+	else {
+		script = parse_script(execute_script, cmdname, 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+		script_needfree = (script != nullptr);
+	}
+#endif // !defined(Pandas_NpcHelper_CommonFunc) || !defined(Pandas_Redeclaration_Struct_Event_Data)
 
 	struct s_mapiterator *iter = nullptr;
 	struct block_list* bl = nullptr;
@@ -25834,7 +25844,7 @@ BUILDIN_FUNC(script4each) {
 		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
 			if (!bl || bl->type != bltype) continue;
 			mapreg_setreg(add_str("$@gid"), bl->id);
-			run_script(script, 0, bl->id, 0);
+			run_script(script, pos, bl->id, 0);
 		}
 		break;
 	}
@@ -25848,7 +25858,7 @@ BUILDIN_FUNC(script4each) {
 		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
 			if (!bl || bl->type != bltype || bl->m != map_id) continue;
 			mapreg_setreg(add_str("$@gid"), bl->id);
-			run_script(script, 0, bl->id, 0);
+			run_script(script, pos, bl->id, 0);
 		}
 		break;
 	}
@@ -25871,7 +25881,7 @@ BUILDIN_FUNC(script4each) {
 		center_bl.x = map_x;
 		center_bl.y = map_y;
 
-		map_foreachinrange(buildin_script4each_sub, &center_bl, range, bltype, execute_script, cmdname);
+		map_foreachinrange(buildin_script4each_sub, &center_bl, range, bltype, script, pos);
 		break;
 	}
 	case 3: {
@@ -25890,7 +25900,7 @@ BUILDIN_FUNC(script4each) {
 			if (!bl || bl->type != bltype) continue;
 			if (((TBL_PC*)bl)->status.party_id != party_id) continue;
 			mapreg_setreg(add_str("$@gid"), bl->id);
-			run_script(script, 0, bl->id, 0);
+			run_script(script, pos, bl->id, 0);
 		}
 		break;
 	}
@@ -25910,7 +25920,7 @@ BUILDIN_FUNC(script4each) {
 			if (!bl || bl->type != bltype) continue;
 			if (((TBL_PC*)bl)->status.guild_id != guild_id) continue;
 			mapreg_setreg(add_str("$@gid"), bl->id);
-			run_script(script, 0, bl->id, 0);
+			run_script(script, pos, bl->id, 0);
 		}
 		break;
 	}
@@ -25930,7 +25940,7 @@ BUILDIN_FUNC(script4each) {
 		map_x1 = script_getnum(st, 7);
 		map_y1 = script_getnum(st, 8);
 
-		map_foreachinarea(buildin_script4each_sub, map_id, map_x0, map_y0, map_x1, map_y1, bltype, execute_script, cmdname);
+		map_foreachinarea(buildin_script4each_sub, map_id, map_x0, map_y0, map_x1, map_y1, bltype, script, pos);
 		break;
 	}
 	case 6: {
@@ -25947,7 +25957,7 @@ BUILDIN_FUNC(script4each) {
 			if (!bl || bl->type != bltype) continue;
 			if (((TBL_PC*)bl)->status.party_id != party_id) continue;
 			mapreg_setreg(add_str("$@gid"), bl->id);
-			run_script(script, 0, bl->id, 0);
+			run_script(script, pos, bl->id, 0);
 		}
 		break;
 	}
@@ -25965,7 +25975,7 @@ BUILDIN_FUNC(script4each) {
 			if (!bl || bl->type != bltype) continue;
 			if (((TBL_PC*)bl)->status.guild_id != guild_id) continue;
 			mapreg_setreg(add_str("$@gid"), bl->id);
-			run_script(script, 0, bl->id, 0);
+			run_script(script, pos, bl->id, 0);
 		}
 		break;
 	}
@@ -25974,7 +25984,7 @@ BUILDIN_FUNC(script4each) {
 		break;
 	}
 
-	if (script) script_free_code(script);
+	if (script && script_needfree) script_free_code(script);
 	if (iter) mapit_free(iter);
 
 	return SCRIPT_CMD_SUCCESS;
