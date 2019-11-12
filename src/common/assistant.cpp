@@ -265,6 +265,7 @@ bool makeDirectories(const std::string& path) {
 	{
 		boost::filesystem::path dirpath(path);
 		dirpath = dirpath.generic_path();
+		if (isDirectoryExists(path)) return true;
 		return boost::filesystem::create_directories(dirpath);
 	}
 	catch (const boost::filesystem::filesystem_error &e)
