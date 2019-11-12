@@ -192,7 +192,10 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 	if (!succeeded) return succeeded;
 
 	// 崩溃转储文件的本地保存路径
-	std::string filepath = boost::str(boost::format("%1%/%2%.dmp") % dump_path % minidump_id);
+	std::string filepath = boost::str(
+		boost::format("%1%/%2%.dmp") %
+		wideStrToStr(dump_path) % wideStrToStr(minidump_id)
+	);
 
 	// 将崩溃转储文件存入一个 std::map 中等待发送请求使用
 	std::map<std::string, std::string> sfiles;
