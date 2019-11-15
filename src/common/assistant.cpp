@@ -674,3 +674,89 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 	return formatVersion(Pandas_Version, bPrefix, bSuffix);
 #endif // _WIN32
 }
+
+//************************************
+// Method:      isIndependentBackslash
+// Description: 判断 p 指针所指定的反斜杠是否是独立字符 (而不是某个双字节字符的一部分)
+// Parameter:   const char * p
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/11/14 12:45
+//************************************
+bool isIndependentBackslash(const char* p) {
+	// 若给定的是空指针, 或指针指向的字符不是反斜杠
+	// 那么返回 false 表示不处理 (不是一个独立字符的反斜杠)
+	if (!p || *p != '\\') return false;
+
+	// ASCII码表: https://baike.baidu.com/item/ASCII
+	// 若一个字符对应的字节编码 <= 0x7e 那么说明它在 ASCII 编码范围
+	//
+	// rAthena 在最原始的判断中, 只判断了 p 不作为双字节字符的低位出现, 就可以跳过 p 指向的反斜杠
+	// 注意: 但部分 GBK 的中文的低位, 若紧挨着 \ 就会导致 rAthena 的方法出现误判.
+	// 
+	// 例如: [文] 这个字符在 GBK 的编码是 0xCDC4
+	// 若编写的时候出现这样的情况: "\"中文\"" 我们预期输出的就是 "中文"
+	// 但这里我们重点看下 [文\] 这两个字符挨在一起的时候, 它们的十六进制是: 0xCDC45C
+	//
+	// 此处的 0x5C 就是反斜杠的字符编码 (位于 ASCII 码表), rAthena 的代码走到 p == 0x5C 的时候,
+	// 判断一看 p[-1] 即 0xC4 <= 0x7E 不成立, 那么认为 p 是一个双字节字符的低位, 不跳过
+	if ((unsigned char)p[-1] <= 0x7e) {
+		return true;
+	}
+
+	// 为了解决这个问题, 使中文字符末尾紧挨着 \ 时候可以认为这此 \ 可跳过.
+	// 当判断了 p[-1] 的时候顺便看下 p[-2], 看看 p[-2] p[-1] 是否构成一个合法的双字节字符.
+	// 如果能构成, 那么说明 p 本身是一个独立的反斜杠, 可跳过
+	//
+	// ----------------------------------------------------------------
+	//
+	// 先判断基于 BIG5 编码的双字节字符规则
+	// https://www.qqxiuzi.cn/zh/hanzi-big5-bianma.php
+	// BIG5采用双字节编码, 使用两个字节来表示一个字符
+	// 高位字节使用了0x81-0xFE, 低位字节使用了0x40-0x7E, 及0xA1-0xFE
+	// 
+	// 这里判断 p[-1] 上一个字节是否在上述的低位区间,
+	// 若是则再进一步判断 p[-2] 是否在高位区间, 都成立, 那么说明当前的反斜杠是独立字符
+
+	// 先判断低位是否在 0x40-0x7E, 及 0xA1-0xFE 区间内
+	else if (p[-1] != 0 && (
+		((unsigned char)p[-1] >= 0x40 && (unsigned char)p[-1] <= 0x7e) ||
+		((unsigned char)p[-1] >= 0xa1 && (unsigned char)p[-1] <= 0xfe)
+		)) {
+		// 若低位成立, 再判断高位是否在 0x81-0xFE 区间内
+		if (p[-2] != 0 &&
+			(unsigned char)p[-2] >= 0x81 && (unsigned char)p[-2] <= 0xFE
+			) {
+			// 若都成立, 则表示在 BIG5 编码情况下, 当前 p 指向的反斜杠是一个独立字符
+			// 而不是某个 BIG5 编码中双字节汉字中的一部分
+			//
+			// 注意: 部分 GBK 字符的编码区间和 BIG5 是重叠的, 部分 GBK 的双字节字符可能因此从这里返回
+			// 暂时还没发现有判断脚本文件的编码来确认应该走哪个编码判断分支的必要
+			return true;
+		}
+	}
+
+	// 再判断基于 GBK 编码的双字节字符规则
+	// https://www.qqxiuzi.cn/zh/hanzi-gbk-bianma.php
+	// 由于 GBK 兼容 GB2312, 是 GB2312 的超集, 所以这里不再单独对 GB2312 区间做判断
+	// 
+	// GBK 亦采用双字节表示, 总体编码范围为 0x8140-0xFEFE.
+	// 高位字节在 0x81-0xFE 之间, 低位字节在 0x40-0xFE 之间, 剔除 xx7F 一条线
+
+	// 先判断低位是否不为 0x7f 且在 0x40-0xFE 区间内
+	else if (p[-1] != 0 &&
+		(unsigned char)p[-1] != 0x7f &&
+		(unsigned char)p[-1] >= 0x40 && (unsigned char)p[-1] <= 0xfe
+		) {
+		// 若低位成立, 再判断高位是否在 0x81-0xFE 区间内
+		if (p[-2] != 0 &&
+			(unsigned char)p[-2] >= 0x81 && (unsigned char)p[-2] <= 0xFE
+			) {
+			// 若都成立, 则表示在 GBK 编码情况下, 当前 p 指向的反斜杠是一个独立字符
+			// 而不是某个 GBK 编码中双字节汉字中的一部分
+			return true;
+		}
+	}
+
+	// 其他不认识的情况, 将其当做一个非独立字符的反斜杠处理, 返回 false
+	return false;
+}

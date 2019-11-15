@@ -52,5 +52,8 @@ void ensurePathEndwithSep(std::wstring& path, std::wstring sep);
 std::wstring strToWideStr(const std::string& s);
 std::string wideStrToStr(const std::wstring& ws);
 
-std::string getPandasVersion(bool bPrefix = true, bool bSuffix = true);
 std::string getSystemLanguage();
+
+std::string getPandasVersion(bool bPrefix = true, bool bSuffix = true);
+
+bool isIndependentBackslash(const char* p);

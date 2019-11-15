@@ -1409,7 +1409,11 @@ const char* parse_simpleexpr(const char *p)
 		add_scriptc(C_STR);
 		p++;
 		while( *p && *p != '"' ){
+#ifndef Pandas_ScriptEngine_DoubleQuotes_UnEscape_Detection
 			if( (unsigned char)p[-1] <= 0x7e && *p == '\\' )
+#else
+			if (*p == '\\' && isIndependentBackslash(p))
+#endif // Pandas_ScriptEngine_DoubleQuotes_UnEscape_Detection
 			{
 				char buf[8];
 				size_t len = skip_escaped_c(p) - p;
@@ -1420,18 +1424,6 @@ const char* parse_simpleexpr(const char *p)
 				add_scriptb(*buf);
 				continue;
 			}
-#ifdef Pandas_ScriptEngine_DoubleQuotes_UnEscape_Detection
-			else if (*p == '\\' && *(p + 1) == '"') {
-				char buf[8];
-				size_t len = skip_escaped_c(p) - p;
-				size_t n = sv_unescape_c(buf, p, len);
-				if (n != 1)
-					ShowDebug("parse_simpleexpr: unexpected length %d after unescape (\"%.*s\" -> %.*s)\n", (int)n, (int)len, p, (int)n, buf);
-				p += len;
-				add_scriptb(*buf);
-				continue;
-			}
-#endif // Pandas_ScriptEngine_DoubleQuotes_UnEscape_Detection
 			else if( *p == '\n' )
 				disp_error_message("parse_simpleexpr: unexpected newline @ string",p);
 			add_scriptb(*p++);
