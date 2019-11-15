@@ -3178,12 +3178,12 @@ static const char* npc_skip_script(const char* start, const char* buffer, const 
 		{// string
 			for( ++p; *p != '"' ; ++p )
 			{
+#ifndef Pandas_ScriptEngine_DoubleQuotes_UnEscape_Detection
 				if( *p == '\\' && (unsigned char)p[-1] <= 0x7e )
-					++p;// escape sequence (not part of a multibyte character)
-#ifdef Pandas_ScriptEngine_DoubleQuotes_UnEscape_Detection
-				else if (*p == '\\' && *(p + 1) == '"')
-					++p;
+#else
+				if (*p == '\\' && isIndependentBackslash(p))
 #endif // Pandas_ScriptEngine_DoubleQuotes_UnEscape_Detection
+					++p;// escape sequence (not part of a multibyte character)
 				else if( *p == '\0' )
 				{
 					script_error(buffer, filepath, 0, "Unexpected end of string.", p);
