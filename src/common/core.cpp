@@ -373,6 +373,10 @@ void usercheck(void)
  *--------------------------------------*/
 int main (int argc, char **argv)
 {
+#ifdef Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
+	correct_isa_available();
+#endif // Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
+
 #ifdef Pandas_Google_Breakpad
 	breakpad_initialize();
 #endif // Pandas_Google_Breakpad

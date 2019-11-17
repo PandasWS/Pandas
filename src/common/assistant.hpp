@@ -57,3 +57,5 @@ std::string getSystemLanguage();
 std::string getPandasVersion(bool bPrefix = true, bool bSuffix = true);
 
 bool isIndependentBackslash(const char* p);
+
+void correct_isa_available();

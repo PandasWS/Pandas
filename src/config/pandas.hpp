@@ -330,6 +330,18 @@
 	// 重现方法:
 	// 使 NPC 调用 .@result = inarray(getd(" $test"), 100); 即可触发崩溃
 	#define Pandas_Crashfix_ScriptCommand_Getd_And_Setd
+
+	// 修正 Visual Studio 2019 的 16.3 在支持 AVX512 指令集的设备上
+	// 使用 std::unordered_map::reserve 会提示 Illegal instruction 并导致地图服务器崩溃的问题.
+	// 
+	// 虽然根据微软的回复已经在 Visual Studio 2019 的 16.4 Preview 4 中解决了问题,
+	// 考虑部分用户可能会一直停留在存在问题的编译器上工作, 因此做一个热修复.
+	//
+	// 此修复只对 _MSC_VER == 1923 的 Visual Studio 编译器有效 (对应 Visual Studio 2019 16.3 版本)
+	// https://developercommunity.visualstudio.com/content/problem/787296/vs2019-163-seems-to-incorrectly-detect-avx512-on-w.html
+	//
+	// 感谢"李小狼"在阿里云服务器上暴露此问题, 并提供调试环境
+	#define Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
 #endif // Pandas_Crashfix
 
 // ============================================================================
