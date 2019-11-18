@@ -14,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include <cctype> // std::tolower std::toupper std::isspace
+#include <stdio.h> // __isa_available
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -36,6 +37,8 @@
 #else
 	const std::string pathSep = "/";
 #endif // _WIN32
+
+extern "C" int __isa_available;
 
 //************************************
 // Method:      deployImportDirectory
@@ -760,4 +763,19 @@ bool isIndependentBackslash(const char* p) {
 
 	// 其他不认识的情况, 将其当做一个非独立字符的反斜杠处理, 返回 false
 	return false;
+}
+
+//************************************
+// Method:      correct_isa_available
+// Description: 修正在支持 AVX512 指令的设备上
+//              使用 std::unordered_map::reserve 会提示 Illegal instruction 的问题
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2019/11/17 23:28
+//************************************
+void correct_isa_available() {
+#if (_MSC_VER == 1923)	// Visual Studio 2019 version 16.3
+	if (__isa_available > 5) {
+		__isa_available = 5;
+	}
+#endif // (_MSC_VER == 1923)
 }
