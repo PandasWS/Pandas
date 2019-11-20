@@ -4716,7 +4716,13 @@ int npc_script_event(struct map_session_data* sd, enum npce_event type){
 		return 0;
 #endif // Pandas_Struct_Map_Session_Data_EventTrigger
 
+#ifndef Pandas_Crashfix_Unloadnpc_In_Event
 	std::vector<struct script_event_s>& vector = script_event[type];
+#else
+	// 这里不能取引用, 因为执行脚本事件的时候若触发 unloadnpc 指令,
+	// 那么 unloadnpc 内部会重置 script_event 的值, 导致引用指向的内容变得不可信任
+	std::vector<struct script_event_s> vector = script_event[type];
+#endif // Pandas_Crashfix_Unloadnpc_In_Event
 
 	for( struct script_event_s& evt : vector ){
 #ifdef Pandas_ScriptEngine_Express

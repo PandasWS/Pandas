@@ -932,7 +932,7 @@ IP地址:
 	举例说明:
 		假设有以下 NPC 我们想把它复制一个新的出来:
 
-			prontera,146,99,2    script    PVP管理员::PVPCOPYTEST    123,{
+			prontera,146,99,2	script	PVP管理员::PVPCOPYTEST	123,{
 				mes "[PVP管理员]";
 				mes "场地正在修理, 请稍后再来...";
 				close;

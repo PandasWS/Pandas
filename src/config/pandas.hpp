@@ -342,6 +342,14 @@
 	//
 	// 感谢"李小狼"在阿里云服务器上暴露此问题, 并提供调试环境
 	#define Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
+
+	// 修正在 NPC 事件脚本代码中执行 unloadnpc 会导致地图服务器崩溃的问题 [Sola丶小克]
+	// unloadnpc 的时候会重新构造 script_event 这个 std::map 的内容
+	// 这会导致 npc_script_event 中提前获取的 vector 引用所指向的内容被清空,
+	// 以至于在执行下一轮循环的时候, 无法获取已经被清空的原 script_event 内容, 而触发崩溃
+	//
+	// 感谢"聽風"指出重现此问题的条件和环境
+	#define Pandas_Crashfix_Unloadnpc_In_Event
 #endif // Pandas_Crashfix
 
 // ============================================================================
