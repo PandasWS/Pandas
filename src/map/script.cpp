@@ -26812,24 +26812,24 @@ TIMER_FUNC(selfdeletion_timer) {
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(selfdeletion) {
 	TBL_PC* sd = nullptr;
-	int option = (script_hasdata(st, 2) ? script_getnum(st, 2) : 1);
+	int option = (script_hasdata(st, 2) ? script_getnum(st, 2) : SELFDEL_NOW);
 
-	// 1 = 立刻终止全部与此 NPC 相关的玩家对话, 并立刻自毁
-	// 2 = 与最后一个与玩家的交互结束后自毁
-	// 0 = 或其他值则表示: 取消与最后一个与玩家的交互结束后自毁
+	// SELFDEL_NOW = 立刻终止全部与此 NPC 相关的玩家对话, 并立刻自毁
+	// SELFDEL_WAITFREE = 与最后一个与玩家的交互结束后自毁
+	// SELFDEL_CANCEL = 取消与最后一个与玩家的交互结束后自毁
 
 	if (!script_rid2sd(sd))
 		return SCRIPT_CMD_SUCCESS;
 
 	TBL_NPC* nd = map_id2nd(st->oid);
-	bool immediately = (option == 1);
+	bool immediately = (option == SELFDEL_NOW);
 
 	if (sd->state.using_fake_npc || nd->bl.id == fake_nd->bl.id) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 	
 	if (!immediately) {
-		nd->pandas.destruction_strategy = (option == 2 ? 1 : 0);
+		nd->pandas.destruction_strategy = (option == SELFDEL_WAITFREE ? 1 : 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
 

@@ -118,6 +118,11 @@
 	export_constant(EVENT_TRIGGER_MAX);
 #endif // Pandas_Struct_Map_Session_Data_EventTrigger
 
+#ifdef Pandas_ScriptCommand_SelfDeletion
+	export_constant(SELFDEL_CANCEL);
+	export_constant(SELFDEL_NOW);
+	export_constant(SELFDEL_WAITFREE);
+#endif // Pandas_ScriptCommand_SelfDeletion
 
 	/* min and maximum variable value */
 	export_constant(INT_MIN);
