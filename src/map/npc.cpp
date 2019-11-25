@@ -2681,6 +2681,11 @@ struct npc_data *npc_create_npc(int16 m, int16 x, int16 y){
 	memset(nd->vendingboard.message, 0, NAME_LENGTH + 1);
 #endif // Pandas_ScriptCommand_ShowVend
 
+#ifdef Pandas_Struct_Npc_Data_DestructionStrategy
+	nd->pandas.destruction_strategy = 0;
+	nd->pandas.destruction_timer = INVALID_TIMER;
+#endif // Pandas_Struct_Npc_Data_DestructionStrategy
+
 	return nd;
 }
 

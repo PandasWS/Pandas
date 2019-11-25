@@ -4606,6 +4606,11 @@ void run_script_main(struct script_state *st)
 			if (sd->vars_dirty)
 				intif_saveregistry(sd);
 		}
+
+#ifdef Pandas_ScriptCommand_SelfDeletion
+		selfdeletion_exec_endtalk(st);
+#endif Pandas_ScriptCommand_SelfDeletion
+
 		script_free_state(st);
 	}
 }
@@ -26734,6 +26739,129 @@ BUILDIN_FUNC(multicatchpet) {
 }
 #endif // Pandas_ScriptCommand_MultiCatchPet
 
+#ifdef Pandas_ScriptCommand_SelfDeletion
+
+//************************************
+// Method:      selfdeletion_exec_endtalk
+// Description: 当一个玩家结束与某 NPC 的交互时, 检查是否需要自毁此 NPC
+// Parameter:   struct script_state * st
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2019/11/25 01:04
+//************************************
+void selfdeletion_exec_endtalk(struct script_state* st) {
+	if (!st->oid) return;
+
+	TBL_NPC* nd = map_id2nd(st->oid);
+	if (!nd || nd->pandas.destruction_strategy != 1) return;
+
+	// 执行结束对话后是否自毁的检测
+	// 若当前没有其他玩家正在与此 NPC 交互则自动卸载此 NPC
+	struct s_mapiterator* iter = nullptr;
+	struct block_list* bl = nullptr;
+	iter = mapit_geteachpc();
+	bool interacting = false;
+
+	for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
+		if (!bl || bl->m != nd->bl.m) continue;
+		if (bl->id == st->rid) continue; // 不结束当前对话
+
+		struct script_state* bl_st = ((TBL_PC*)bl)->st;
+		if (bl_st == nullptr) continue;
+
+		if (bl_st->oid == st->oid) {
+			interacting = true;
+			break;
+		}
+	}
+	if (iter) mapit_free(iter);
+
+	if (!interacting) {
+		npc_unload_duplicates(nd);
+		npc_unload(nd, true);
+		npc_read_event_script();
+	}
+}
+
+//************************************
+// Method:      selfdeletion_timer
+// Description: 配合 selfdeletion 指令使用的计时器
+// Author:      Sola丶小克(CairoLee)  2019/11/25 01:03
+//************************************
+TIMER_FUNC(selfdeletion_timer) {
+	TBL_NPC* nd = map_id2nd(id);
+	if (!nd) return 1;
+
+	if (nd->pandas.destruction_timer != INVALID_TIMER) {
+		delete_timer(nd->pandas.destruction_timer, selfdeletion_timer);
+		nd->pandas.destruction_timer = INVALID_TIMER;
+	}
+
+	npc_unload_duplicates(nd);
+	npc_unload(nd, true);
+	npc_read_event_script();
+
+	return 1;
+}
+
+/* ===========================================================
+ * 指令: selfdeletion
+ * 描述: 设置 NPC 的自毁策略
+ * 用法: selfdeletion <自毁策略>;
+ * 返回: 该指令无论成功失败, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(selfdeletion) {
+	TBL_PC* sd = nullptr;
+	int option = (script_hasdata(st, 2) ? script_getnum(st, 2) : SELFDEL_NOW);
+
+	// SELFDEL_NOW = 立刻终止全部与此 NPC 相关的玩家对话, 并立刻自毁
+	// SELFDEL_WAITFREE = 与最后一个与玩家的交互结束后自毁
+	// SELFDEL_CANCEL = 取消与最后一个与玩家的交互结束后自毁
+
+	if (!script_rid2sd(sd))
+		return SCRIPT_CMD_SUCCESS;
+
+	TBL_NPC* nd = map_id2nd(st->oid);
+	bool immediately = (option == SELFDEL_NOW);
+
+	if (sd->state.using_fake_npc || nd->bl.id == fake_nd->bl.id) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+	
+	if (!immediately) {
+		nd->pandas.destruction_strategy = (option == SELFDEL_WAITFREE ? 1 : 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	// 能执行到这里表示期望立刻销毁当前的 NPC
+	// 先看看当前地图有多少人正在和此 NPC 对话, 且其 st 状态的 mes_active 为 1 的
+	// 若发现了则先送此玩家一个关闭按钮, 并将他和此 NPC 的脚本流设置为 END
+	struct s_mapiterator* iter = nullptr;
+	struct block_list* bl = nullptr;
+	iter = mapit_geteachpc();
+
+	for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
+		if (!bl || bl->m != nd->bl.m) continue;
+		if (bl->id == st->rid) continue; // 不结束当前对话
+
+		struct script_state* bl_st = ((TBL_PC*)bl)->st;
+		if (bl_st == nullptr || bl_st->oid != st->oid) continue;
+
+		pc_close_npc(((TBL_PC*)bl), 1 | 4);
+	}
+	if (iter) mapit_free(iter);
+
+	// 其他正在与当前 NPC 发生对话的角色, 至此已经全部发送了关闭按钮并终止了后续脚本执行
+	// 接下来设置一个定时器, 时间到了把当前 NPC 直接 unload 掉
+	nd->pandas.destruction_timer = add_timer(gettick() + 1000, selfdeletion_timer, st->oid, 0);
+
+	// 关闭当前 NPC 和当前玩家的对话, 若存在对话框则送一个关闭按钮
+	pc_close_npc(sd, 1 | 4);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_SelfDeletion
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -26871,6 +26999,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(multicatchpet,"*"),						// 与 catchpet 指令类似, 但可以指定更多支持捕捉的魔物编号 [Sola丶小克]
 	BUILDIN_DEF2(multicatchpet, "mpet", "*"),			// 指定一个别名, 以便简化编码工作量
 #endif // Pandas_ScriptCommand_MultiCatchPet
+#ifdef Pandas_ScriptCommand_SelfDeletion
+	BUILDIN_DEF(selfdeletion,"*"),						// 设置 NPC 的自毁策略 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SelfDeletion
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

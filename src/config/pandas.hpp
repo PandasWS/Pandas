@@ -138,6 +138,17 @@
 		// 使 map_session_data 可记录即将支持捕捉的多个魔物编号 [Sola丶小克]
 		#define Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
+
+	// 使 npc_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
+	// 结构体修改定位 npc.hpp -> npc_data.pandas
+	#define Pandas_Struct_Npc_Data_Pandas
+
+	// 以下选项开关需要依赖 Pandas_Struct_Npc_Data_Pandas 的拓展
+	#ifdef Pandas_Struct_Npc_Data_Pandas
+		// 使 npc_data 结构体可记录此 npc 的自毁策略 [Sola丶小克]
+		// 结构体修改定位 npc.hpp -> npc_data.pandas.destruction_strategy
+		#define Pandas_Struct_Npc_Data_DestructionStrategy
+	#endif // Pandas_Struct_Npc_Data_Pandas
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -757,6 +768,10 @@
 	#ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 		#define Pandas_ScriptCommand_MultiCatchPet
 	#endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
+
+	// 是否启用 selfdeletion 脚本指令 [Sola丶小克]
+	// 设置 NPC 的自毁策略, 用于配合 copynpc 实现在开宝箱/挖矿时进行自毁等场景
+	#define Pandas_ScriptCommand_SelfDeletion
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
