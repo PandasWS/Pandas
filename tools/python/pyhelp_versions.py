@@ -15,9 +15,8 @@
 # -*- coding: utf-8 -*-
 
 import os, re
-from enum import IntEnum
 
-from libs import Common, Injecter, Inputer, Message
+from libs import Common, Inputer, Message
 
 # 切换工作目录为脚本所在目录
 os.chdir(os.path.split(os.path.realpath(__file__))[0])
