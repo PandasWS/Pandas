@@ -236,12 +236,13 @@ def compile_prere(version):
         Common.exit_with_pause(-1)
 
     # 将复兴前版本的编译产物重命名一下, 避免编译复兴后版本时被覆盖
-    shutil.move(slndir('login-server.exe'), slndir('login-server-pre.exe'))
-    shutil.move(slndir('login-server.pdb'), slndir('login-server-pre.pdb'))
-    shutil.move(slndir('char-server.exe'), slndir('char-server-pre.exe'))
-    shutil.move(slndir('char-server.pdb'), slndir('char-server-pre.pdb'))
-    shutil.move(slndir('map-server.exe'), slndir('map-server-pre.exe'))
-    shutil.move(slndir('map-server.pdb'), slndir('map-server-pre.pdb'))
+	# 因 ab7a827 的修改每次清理工程时, 也会同时清理复兴前的编译产物, 所以这里需要临时重命名
+    shutil.move(slndir('login-server.exe'), slndir('login-server-pre-t.exe'))
+    shutil.move(slndir('login-server.pdb'), slndir('login-server-pre-t.pdb'))
+    shutil.move(slndir('char-server.exe'), slndir('char-server-pre-t.exe'))
+    shutil.move(slndir('char-server.pdb'), slndir('char-server-pre-t.pdb'))
+    shutil.move(slndir('map-server.exe'), slndir('map-server-pre-t.exe'))
+    shutil.move(slndir('map-server.pdb'), slndir('map-server-pre-t.pdb'))
     
     print('')
 
@@ -267,6 +268,14 @@ def compile_renewal(version):
     if not compile_sub(define_values, '复兴后', version):
         Message.ShowError('编译复兴前版本时发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
+    
+    # 将之前 compile_prere 中临时重命名的复兴前产物全部改回正常的文件名
+    shutil.move(slndir('login-server-pre-t.exe'), slndir('login-server-pre.exe'))
+    shutil.move(slndir('login-server-pre-t.pdb'), slndir('login-server-pre.pdb'))
+    shutil.move(slndir('char-server-pre-t.exe'), slndir('char-server-pre.exe'))
+    shutil.move(slndir('char-server-pre-t.pdb'), slndir('char-server-pre.pdb'))
+    shutil.move(slndir('map-server-pre-t.exe'), slndir('map-server-pre.exe'))
+    shutil.move(slndir('map-server-pre-t.pdb'), slndir('map-server-pre.pdb'))
     
     print('')
 
