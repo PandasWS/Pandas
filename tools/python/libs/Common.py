@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import binascii
+import codecs
 import glob
 import os
 import platform
@@ -9,6 +10,7 @@ import shutil
 import subprocess
 import time
 
+import chardet
 import git
 import pdbparse
 import pefile
@@ -32,6 +34,8 @@ __all__ = [
     'get_pandas_branch',
     'get_pandas_hash',
     'match_file_regex',
+    'match_file_resub',
+    'get_encoding',
     'is_compiled',
     'get_pe_hash',
     'get_pdb_hash',
@@ -178,7 +182,42 @@ def match_file_regex(filename, pattern, encoding = 'UTF-8-SIG'):
             return list(regexGroup[0]) if isinstance(regexGroup[0], tuple) else regexGroup
     return None
 
-def get_pandas_ver(slndir, prefix = None):
+def match_file_resub(filename, pattern, repl, encoding = None):
+    '''
+    在一个文件中找出符合正则表达式匹配的结果集合, 并进行替换操作
+    '''
+    if encoding is None:
+        encoding = get_encoding(filename)
+
+    with open(filename, 'r', encoding = encoding) as f:
+        lines = f.readlines()
+        f.close()
+    
+    for idx, value in enumerate(lines):
+        lines[idx] = re.sub(pattern, repl, value)
+    
+    with open(filename, 'wt', encoding = encoding) as f:
+        f.writelines(lines)
+        f.close()
+
+def get_encoding(filename):
+    '''
+    获取打开此文件所需要的编码方式
+    '''
+    with open(filename, 'rb') as f:
+        data = f.read()
+        result = chardet.detect(data)
+        f.close()
+    
+    if str.lower(result['encoding']) == 'utf-16':
+        if data.startswith(codecs.BOM_LE):
+            return 'utf-16-le'
+        elif data.startswith(codecs.BOM_BE):
+            return 'utf-16-be'
+
+    return str.lower(result['encoding'])
+
+def get_pandas_ver(slndir, prefix = None, origin = False):
     '''
     读取当前 Pandas 在 src/config/pandas.hpp 定义的版本号
     若读取不到版本号则返回 None
@@ -189,13 +228,14 @@ def get_pandas_ver(slndir, prefix = None):
     matchgroup = match_file_regex(filepath, r'#define Pandas_Version "(.*)"')
     version = matchgroup[0] if matchgroup is not None else None
     
-    # 读取到的版本号应该是四段式的
-    # 将其加工成三段式, 并在末尾追加可能需要的 -dev 后缀
-    splitver = version.split('.')
-    if (len(splitver) == 4):
-        version = '%s.%s.%s' % (splitver[0], splitver[1], splitver[2])
-        if splitver[3] == "1":
-            version += '-dev'
+    if not origin:
+        # 读取到的版本号应该是四段式的
+        # 将其加工成三段式, 并在末尾追加可能需要的 -dev 后缀
+        splitver = version.split('.')
+        if (len(splitver) == 4):
+            version = '%s.%s.%s' % (splitver[0], splitver[1], splitver[2])
+            if splitver[3] == "1":
+                version += '-dev'
     
     return version if not prefix else prefix + version
 
