@@ -294,7 +294,7 @@ def main():
         Common.exit_with_pause(-1)
 
     # 导出当前仓库, 变成一个归档压缩文件
-    Message.ShowInfo('正在将 HEAD 内容导出成归档文件...')
+    Message.ShowInfo('正在将当前分支的 HEAD 内容导出成归档文件...')
     export_file = export()
     if not export_file:
         Message.ShowError('很抱歉, 导出归档文件失败, 程序终止.')
