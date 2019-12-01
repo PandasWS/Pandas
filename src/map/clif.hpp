@@ -1129,4 +1129,9 @@ void clif_equipswitch_reply( struct map_session_data* sd, bool failed );
 /// Pet evolution
 void clif_pet_evolution_result( struct map_session_data* sd, e_pet_evolution_result result );
 
+#ifdef Pandas_Character_Title_Controller
+// 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用
+void clif_change_title_ack(struct map_session_data* sd, unsigned char result, unsigned long title_id);
+#endif // Pandas_Character_Title_Controller
+
 #endif /* CLIF_HPP */

@@ -4810,6 +4810,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_UNEQUIP:
 		return script_config.unequip_filter_name;	// OnPCUnequipFilter		// 当玩家准备脱下装备时触发过滤器
 #endif // Pandas_NpcFilter_UNEQUIP
+
+#ifdef Pandas_NpcFilter_CHANGETITLE
+	case NPCF_CHANGETITLE:
+		return script_config.changetitle_filter_name;	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+#endif // Pandas_NpcFilter_CHANGETITLE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -5376,3 +5381,52 @@ int* get_npc_warp_ptr() {
 	return &npc_warp;
 }
 #endif // Pandas_ScriptCommand_Copynpc
+
+#ifdef Pandas_Character_Title_Controller
+//************************************
+// Method:      npc_change_title_event
+// Description: 触发修改称号的后续过程, 其中包括 NPCF_CHANGETITLE 过滤器的处理
+// Parameter:   struct map_session_data * sd
+// Parameter:   uint32 newtid	新的称号ID是多少
+// Parameter:   int mode	新称号的修改方式 (0 - 通过装备面板; 1 - 通过脚本指令; 2 - 通过 GM 指令)
+// Returns:     bool 返回 true 表示过程没有被打断, 成功完成称号ID的修改操作; 被中断或失败则返回 false
+// Author:      Sola丶小克(CairoLee)  2019/12/02 00:02
+//************************************
+bool npc_change_title_event(struct map_session_data* sd, uint32 newtid, int mode) {
+	nullpo_retr(false, sd);
+
+#ifdef Pandas_NpcFilter_CHANGETITLE
+	pc_setreg(sd, add_str("@trigger_mode"), mode);
+	pc_setreg(sd, add_str("@pre_title_id"), sd->status.title_id);
+	pc_setreg(sd, add_str("@now_title_id"), newtid);
+
+	if (npc_script_filter(sd, NPCF_CHANGETITLE)) {
+		return false;
+	}
+
+	if (newtid != pc_readreg(sd, add_str("@now_title_id"))) {
+		newtid = pc_readreg(sd, add_str("@now_title_id"));
+	}
+#endif // Pandas_NpcFilter_CHANGETITLE
+
+	// 修改方式若为 0 则 clif_parse_change_title 后续会执行类似代码, 此处不用再处理
+	// 这里仅处理 setchartitle 脚本指令和 @title 指令的修改请求
+	if (mode != 0) {
+		if (newtid == sd->status.title_id) {
+			return true;
+		}
+		else if (newtid <= 0) {
+			sd->status.title_id = 0;
+		}
+		else {
+			sd->status.title_id = newtid;
+		}
+
+		clif_name_area(&sd->bl);
+		clif_change_title_ack(sd, 0, newtid);
+	}
+
+	return true;
+}
+#endif // Pandas_Character_Title_Controller
+

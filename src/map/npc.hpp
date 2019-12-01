@@ -1267,6 +1267,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_UNEQUIP
 	NPCF_UNEQUIP,	// unequip_filter_name	// OnPCUnequipFilter		// 当玩家准备脱下装备时触发过滤器
 #endif // Pandas_NpcFilter_UNEQUIP
+
+#ifdef Pandas_NpcFilter_CHANGETITLE
+	NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+#endif // Pandas_NpcFilter_CHANGETITLE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
@@ -1445,5 +1449,9 @@ int npc_timerevent_export(struct npc_data *nd, int i);
 void npc_parsename(struct npc_data* nd, const char* name, const char* start, const char* buffer, const char* filepath);
 int npc_parseview(const char* w4, const char* start, const char* buffer, const char* filepath);
 #endif // Pandas_ScriptCommand_Copynpc
+
+#ifdef Pandas_Character_Title_Controller
+bool npc_change_title_event(struct map_session_data* sd, uint32 newtid, int mode);
+#endif // Pandas_Character_Title_Controller
 
 #endif /* NPC_HPP */

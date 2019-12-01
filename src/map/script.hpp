@@ -200,6 +200,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_UNEQUIP
 	const char* unequip_filter_name;	// NPCF_UNEQUIP	// OnPCUnequipFilter	// 当玩家准备脱下装备时触发过滤器
 #endif // Pandas_NpcFilter_UNEQUIP
+
+#ifdef Pandas_NpcFilter_CHANGETITLE
+	const char* changetitle_filter_name;	// NPCF_CHANGETITLE	// OnPCChangeTitleFilter	// 当玩家试图变更称号时将触发此过滤器
+#endif // Pandas_NpcFilter_CHANGETITLE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/
