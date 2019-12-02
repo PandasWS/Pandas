@@ -10318,7 +10318,7 @@ ACMD_FUNC(title) {
 
 	if (!message || !*message || sscanf(message, "%11d", &title_id) < 1) {
 		clif_displaymessage(fd, msg_txt_cn(sd, 12));	// 使用方法: @title <称号ID, 若设为 0 则取消称号>
-		clif_displaymessage(fd, msg_txt_cn(sd, 13));	// 若想了解称号ID对应的称号, 请查询于客户端的数据文件: data\luafiles514\lua files\datainfo\titletable.lub
+		clif_displaymessage(fd, msg_txt_cn(sd, 13));	// 称号ID与称号的对照表位于客户端: data\luafiles514\lua files\datainfo\titletable.lub
 		return -1;
 	}
 
@@ -10326,11 +10326,11 @@ ACMD_FUNC(title) {
 
 	if (!title_id) {
 		npc_change_title_event(sd, title_id, 2);
-		clif_displaymessage(fd, msg_txt_cn(sd, 14));	// 称号已更换完毕.
+		clif_displaymessage(fd, msg_txt_cn(sd, 15));	// 称号已取消.
 	}
 	else {
 		npc_change_title_event(sd, title_id, 2);
-		clif_displaymessage(fd, msg_txt_cn(sd, 15));	// 称号已取消.
+		clif_displaymessage(fd, msg_txt_cn(sd, 14));	// 称号已更换完毕.
 	}
 
 	return 0;
