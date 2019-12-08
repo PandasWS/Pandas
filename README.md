@@ -63,9 +63,7 @@ TortoiseGit | [TortoiseGit](https://tortoisegit.org/download/)
 熊猫模拟器是开源软件, 您可以随意基于它修改出自己的模拟器.
 但当您宣传自己的模拟器时, 请不要使用 `Pandas` 或 `熊猫模拟器` 作为产品名称.
 您可以写: 基于 `Pandas` 或 `熊猫模拟器` 构建.
-
-除了上面这一点希望大家遵守外, 我们没其他要求了.
-您能觉得熊猫模拟器值得作为您构建新模拟器的基础, 是我们的荣幸, 谢谢.
+您能使用熊猫模拟器作为您构建新模拟器的基础, 是我们的荣幸, 感谢您的配合.
 
 ## 6. 如何贡献
 有关如何为 Pandas 做出贡献的详细信息, 请参加 [CONTRIBUTING.md](https://github.com/PandasWS/Pandas/blob/master/.github/CONTRIBUTING.md)!
