@@ -10290,12 +10290,52 @@ ACMD_FUNC(crashtest) {
 #endif // Pandas_Google_Breakpad
 
 		int* crashint = nullptr;
-		*crashint = 20150817; // rAthenaCN 第一个版本的发布日期
+		// 2015年08月17日是 rAthenaCN 第一个版本的发布日期
+		// 在迭代到 v1.8.0 版本后开源, 并更名为 Pandas 熊猫模拟器并重写相关功能
+		*crashint = 20150817;
 	}
 
 	return 0;
 }
 #endif // Pandas_AtCommand_Crashtest
+
+#ifdef Pandas_AtCommand_Title
+/* ===========================================================
+ * 指令: title
+ * 描述: 给角色设置一个指定的称号ID
+ * 用法: @title <称号ID>
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+ACMD_FUNC(title) {
+	nullpo_retr(-1, sd);
+
+#if PACKETVER < 20150513
+	clif_displaymessage(fd, msg_txt_cn(sd, 16));	// 很抱歉, 您的客户端版本低于 20150513, 无法使用该指令.
+	return -1;
+#endif
+
+	uint32 title_id = 0;
+
+	if (!message || !*message || sscanf(message, "%11d", &title_id) < 1) {
+		clif_displaymessage(fd, msg_txt_cn(sd, 12));	// 使用方法: @title <称号ID, 若设为 0 则取消称号>
+		clif_displaymessage(fd, msg_txt_cn(sd, 13));	// 称号ID与称号的对照表位于客户端: data\luafiles514\lua files\datainfo\titletable.lub
+		return -1;
+	}
+
+	title_id = max(title_id, 0);
+
+	if (!title_id) {
+		npc_change_title_event(sd, title_id, 2);
+		clif_displaymessage(fd, msg_txt_cn(sd, 15));	// 称号已取消.
+	}
+	else {
+		npc_change_title_event(sd, title_id, 2);
+		clif_displaymessage(fd, msg_txt_cn(sd, 14));	// 称号已更换完毕.
+	}
+
+	return 0;
+}
+#endif // Pandas_AtCommand_Title
 
 // PYHELP - ATCMD - INSERT POINT - <Section 2>
 
@@ -10320,6 +10360,9 @@ void atcommand_basecommands(void) {
 #ifdef Pandas_AtCommand_Crashtest
 		ACMD_DEF(crashtest),			// 执行崩溃测试, 在比较严格的环境上故意触发地图服务器崩溃 [Sola丶小克]
 #endif // Pandas_AtCommand_Crashtest
+#ifdef Pandas_AtCommand_Title
+		ACMD_DEF(title),			// 在此写上管理员指令说明 [维护者昵称]
+#endif // Pandas_AtCommand_Title
 		// PYHELP - ATCMD - INSERT POINT - <Section 3>
 
 #include "../custom/atcommand_def.inc"

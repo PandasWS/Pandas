@@ -287,6 +287,8 @@
 	// --------------------------------------
 	#define Pandas_SQL_Configure_Optimization
 
+	// 是否启用一列用于控制角色称号的指令、事件等等 [Sola丶小克]
+	#define Pandas_Character_Title_Controller
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -460,6 +462,13 @@
 		// 事件类型: Filter / 事件名称: OnPCUnequipFilter
 		// 常量名称: NPCF_UNEQUIP / 变量名称: unequip_filter_name
 		#define Pandas_NpcFilter_UNEQUIP
+
+#ifdef Pandas_Character_Title_Controller
+		// 当玩家试图变更称号时将触发此过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCChangeTitleFilter
+		// 常量名称: NPCF_CHANGETITLE / 变量名称: changetitle_filter_name
+		#define Pandas_NpcFilter_CHANGETITLE
+#endif // Pandas_Character_Title_Controller
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -600,6 +609,12 @@
 	// 是否启用 crashtest 管理员指令 [Sola丶小克]
 	// 执行崩溃测试, 在比较严格的环境上故意触发地图服务器崩溃
 	#define Pandas_AtCommand_Crashtest
+
+	#ifdef Pandas_Character_Title_Controller
+		// 是否启用 title 管理员指令 [Sola丶小克]
+		// 给角色设置一个指定的称号ID, 客户端封包版本大于等于 20150513 才可用
+		#define Pandas_AtCommand_Title
+	#endif // Pandas_Character_Title_Controller
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 
@@ -772,6 +787,17 @@
 	// 是否启用 selfdeletion 脚本指令 [Sola丶小克]
 	// 设置 NPC 的自毁策略, 用于配合 copynpc 实现在开宝箱/挖矿时进行自毁等场景
 	#define Pandas_ScriptCommand_SelfDeletion
+
+	#ifdef Pandas_Character_Title_Controller
+		// 是否启用 setchartitle 脚本指令 [Sola丶小克]
+		// 设置指定玩家的称号ID, 客户端封包版本大于等于 20150513 才可用
+		#define Pandas_ScriptCommand_SetCharTitle
+
+		// 是否启用 getchartitle 脚本指令 [Sola丶小克]
+		// 获得指定玩家的称号ID, 客户端封包版本大于等于 20150513 才可用
+		#define Pandas_ScriptCommand_GetCharTitle
+	#endif // Pandas_Character_Title_Controller
+
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

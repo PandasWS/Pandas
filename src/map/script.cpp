@@ -306,6 +306,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_UNEQUIP
 	"OnPCUnequipFilter",	// NPCF_UNEQUIP		// unequip_filter_name	// 当玩家准备脱下装备时触发过滤器
 #endif // Pandas_NpcFilter_UNEQUIP
+
+#ifdef Pandas_NpcFilter_CHANGETITLE
+	"OnPCChangeTitleFilter",	// NPCF_CHANGETITLE		// changetitle_filter_name	// 当玩家试图变更称号时将触发此过滤器
+#endif // Pandas_NpcFilter_CHANGETITLE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
@@ -26862,6 +26866,61 @@ BUILDIN_FUNC(selfdeletion) {
 }
 #endif // Pandas_ScriptCommand_SelfDeletion
 
+#ifdef Pandas_ScriptCommand_SetCharTitle
+/* ===========================================================
+ * 指令: setchartitle
+ * 描述: 设置指定玩家的称号ID
+ * 用法: setchartitle <称号ID>{,<角色编号>};
+ * 返回: 设置成功则返回 1, 设置失败则返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(setchartitle) {
+#if PACKETVER < 20150513
+	ShowWarning("%s: Title System it requires PACKETVER 2015-05-13 or newer...\n", __func__);
+	script_pushint(st, 0);
+	return SCRIPT_CMD_FAILURE;
+#endif
+
+	TBL_PC* sd = nullptr;
+	uint32 title_id = max(script_getnum(st, 2), 0);
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushint(st, (npc_change_title_event(sd, title_id, 1) ? 1 : 0));
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_SetCharTitle
+
+#ifdef Pandas_ScriptCommand_GetCharTitle
+/* ===========================================================
+ * 指令: getchartitle
+ * 描述: 获得指定玩家的称号ID
+ * 用法: getchartitle {<角色编号>};
+ * 返回: 返回玩家的称号ID (若为 0 则表示此玩家没有称号), 获取失败则返回 -1
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getchartitle) {
+#if PACKETVER < 20150513
+	ShowWarning("%s: Title System it requires PACKETVER 2015-05-13 or newer...\n", __func__);
+	script_pushint(st, -1);
+	return SCRIPT_CMD_FAILURE;
+#endif
+
+	TBL_PC* sd = nullptr;
+
+	if (!script_charid2sd(2, sd)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushint(st, sd->status.title_id);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetCharTitle
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -27002,6 +27061,12 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_SelfDeletion
 	BUILDIN_DEF(selfdeletion,"*"),						// 设置 NPC 的自毁策略 [Sola丶小克]
 #endif // Pandas_ScriptCommand_SelfDeletion
+#ifdef Pandas_ScriptCommand_SetCharTitle
+	BUILDIN_DEF(setchartitle,"i?"),						// 在此写上脚本指令说明 [维护者昵称]
+#endif // Pandas_ScriptCommand_SetCharTitle
+#ifdef Pandas_ScriptCommand_GetCharTitle
+	BUILDIN_DEF(getchartitle,"?"),						// 在此写上脚本指令说明 [维护者昵称]
+#endif // Pandas_ScriptCommand_GetCharTitle
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

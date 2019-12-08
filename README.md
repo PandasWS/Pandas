@@ -8,8 +8,9 @@
 2. [安装说明](#2-安装说明)
 3. [故障排除](#3-故障排除)
 4. [更多文档](#4-更多文档)
-5. [如何贡献](#5-如何贡献)
-6. [许可协议](#6-许可协议)
+5. [修改声明](#5-修改声明)
+6. [如何贡献](#6-如何贡献)
+7. [许可协议](#7-许可协议)
 
 ## 1. 配置要求
 在使用 Pandas (熊猫模拟器) 之前, 您需要确保拥有符合要求的硬件配置, 并准备好某些工具或者应用程序. 根据操作系统的不同, 所需的工具也可能不同, 请看下文.
@@ -25,7 +26,9 @@
 操作系统 | 编译器
 :------|:------
 Linux  | [gcc-5 或更新版本](https://www.gnu.org/software/gcc/gcc-5/) / [CMake >= 3.14 ](https://cmake.org/download/)
-Windows | [MS Visual Studio 2013, 2015, 2017, 2019](https://www.visualstudio.com/downloads/)
+Windows | [MS Visual Studio 2015, 2017, 2019](https://www.visualstudio.com/downloads/)
+
+> 熊猫模拟器依赖 Boost C++ Libraries 1.71.0 版本, 而该版本的 Boost 并不支持 VS2013. 若使用 Visual Studio 作为编译器的话, 推荐大家直接上 VS2019 吧.
 
 ### 必备软件
 应用程序 | 名称
@@ -56,8 +59,14 @@ TortoiseGit | [TortoiseGit](https://tortoisegit.org/download/)
 其中包括 NPC 脚本指令, 管理员指令, 组别权限和封包结构等许多主题.
 我们建议所有所有用户花点时间浏览该目录, 若问题无法解决再寻求其他帮助.
 
-## 5. 如何贡献
+## 5. 修改声明
+熊猫模拟器是开源软件, 您可以随意基于它修改出自己的模拟器.
+但当您宣传自己的模拟器时, 请不要使用 `Pandas` 或 `熊猫模拟器` 作为产品名称.
+您可以写: 基于 `Pandas` 或 `熊猫模拟器` 构建.
+您能使用熊猫模拟器作为您构建新模拟器的基础, 是我们的荣幸, 感谢您的配合.
+
+## 6. 如何贡献
 有关如何为 Pandas 做出贡献的详细信息, 请参加 [CONTRIBUTING.md](https://github.com/PandasWS/Pandas/blob/master/.github/CONTRIBUTING.md)!
 
-## 6. 许可协议
+## 7. 许可协议
 版权所有 (c) 熊猫模拟器开发团队 - 根据许可协议 [GNU General Public License v3.0](https://github.com/PandasWS/Pandas/blob/master/LICENSE)
