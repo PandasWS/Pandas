@@ -56,6 +56,7 @@ std::string getSystemLanguage();
 
 std::string getPandasVersion(bool bPrefix = true, bool bSuffix = true);
 
-bool isIndependentBackslash(const char* p);
+bool isDoubleByteCharacter(unsigned char high, unsigned char low);
+bool isEscapeSequence(const char* start_p);
 
 void correct_isa_available();

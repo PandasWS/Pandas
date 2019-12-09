@@ -1413,11 +1413,16 @@ const char* parse_simpleexpr(const char *p)
 		add_scriptc(C_STR);
 		p++;
 		while( *p && *p != '"' ){
-#ifndef Pandas_ScriptEngine_DoubleQuotes_UnEscape_Detection
+#ifndef Pandas_ScriptEngine_DoubleByte_UnEscape_Detection
 			if( (unsigned char)p[-1] <= 0x7e && *p == '\\' )
 #else
-			if (*p == '\\' && isIndependentBackslash(p))
-#endif // Pandas_ScriptEngine_DoubleQuotes_UnEscape_Detection
+			if (isDoubleByteCharacter((unsigned char)p[0], (unsigned char)p[1])) {
+				add_scriptb(*p++);
+				add_scriptb(*p++);
+				continue;
+			}
+			else if (*p == '\\' && isEscapeSequence(p))
+#endif // Pandas_ScriptEngine_DoubleByte_UnEscape_Detection
 			{
 				char buf[8];
 				size_t len = skip_escaped_c(p) - p;
