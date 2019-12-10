@@ -680,39 +680,43 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 }
 
 //************************************
-// Method:      isIndependentBackslash
-// Description: 判断 p 指针所指定的反斜杠是否是独立字符 (而不是某个双字节字符的一部分)
-// Parameter:   const char * p
+// Method:      isGBKCharacter
+// Description: 判断一个给定的高低位组合是否在 GBK 的双字节汉字编码区间内
+// Parameter:   unsigned char high
+// Parameter:   unsigned char low
 // Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2019/11/14 12:45
+// Author:      Sola丶小克(CairoLee)  2019/12/02 23:17
 //************************************
-bool isIndependentBackslash(const char* p) {
-	// 若给定的是空指针, 或指针指向的字符不是反斜杠
-	// 那么返回 false 表示不处理 (不是一个独立字符的反斜杠)
-	if (!p || *p != '\\') return false;
-
-	// ASCII码表: https://baike.baidu.com/item/ASCII
-	// 若一个字符对应的字节编码 <= 0x7e 那么说明它在 ASCII 编码范围
-	//
-	// rAthena 在最原始的判断中, 只判断了 p 不作为双字节字符的低位出现, 就可以跳过 p 指向的反斜杠
-	// 注意: 但部分 GBK 的中文的低位, 若紧挨着 \ 就会导致 rAthena 的方法出现误判.
+bool isGBKCharacter(unsigned char high, unsigned char low) {
+	// 判断基于 GBK 编码的双字节字符规则
+	// https://www.qqxiuzi.cn/zh/hanzi-gbk-bianma.php
+	// 由于 GBK 兼容 GB2312, 是 GB2312 的超集, 所以这里不再单独对 GB2312 区间做判断
 	// 
-	// 例如: [文] 这个字符在 GBK 的编码是 0xCDC4
-	// 若编写的时候出现这样的情况: "\"中文\"" 我们预期输出的就是 "中文"
-	// 但这里我们重点看下 [文\] 这两个字符挨在一起的时候, 它们的十六进制是: 0xCDC45C
-	//
-	// 此处的 0x5C 就是反斜杠的字符编码 (位于 ASCII 码表), rAthena 的代码走到 p == 0x5C 的时候,
-	// 判断一看 p[-1] 即 0xC4 <= 0x7E 不成立, 那么认为 p 是一个双字节字符的低位, 不跳过
-	if ((unsigned char)p[-1] <= 0x7e) {
-		return true;
+	// GBK 亦采用双字节表示, 总体编码范围为 0x8140-0xFEFE.
+	// 高位字节在 0x81-0xFE 之间, 低位字节在 0x40-0xFE 之间, 剔除 xx7F 一条线
+
+	// 先判断低位是否不为 0x7f 且在 0x40-0xFE 区间内
+	if (low != 0 && low != 0x7f && low >= 0x40 && low <= 0xfe) {
+		// 若低位成立, 再判断高位是否在 0x81-0xFE 区间内
+		if (high != 0 && high >= 0x81 && high <= 0xFE) {
+			// 若都成立, 则表示在 GBK 编码情况下, 当前 p 指向的反斜杠是一个独立字符
+			// 而不是某个 GBK 编码中双字节汉字中的一部分
+			return true;
+		}
 	}
 
-	// 为了解决这个问题, 使中文字符末尾紧挨着 \ 时候可以认为这此 \ 可跳过.
-	// 当判断了 p[-1] 的时候顺便看下 p[-2], 看看 p[-2] p[-1] 是否构成一个合法的双字节字符.
-	// 如果能构成, 那么说明 p 本身是一个独立的反斜杠, 可跳过
-	//
-	// ----------------------------------------------------------------
-	//
+	return false;
+}
+
+//************************************
+// Method:      isBIG5Character
+// Description: 判断一个给定的高低位组合是否在 BIG5 的双字节汉字编码区间内
+// Parameter:   unsigned char high
+// Parameter:   unsigned char low
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/12/02 23:17
+//************************************
+bool isBIG5Character(unsigned char high, unsigned char low) {
 	// 先判断基于 BIG5 编码的双字节字符规则
 	// https://www.qqxiuzi.cn/zh/hanzi-big5-bianma.php
 	// BIG5采用双字节编码, 使用两个字节来表示一个字符
@@ -722,14 +726,9 @@ bool isIndependentBackslash(const char* p) {
 	// 若是则再进一步判断 p[-2] 是否在高位区间, 都成立, 那么说明当前的反斜杠是独立字符
 
 	// 先判断低位是否在 0x40-0x7E, 及 0xA1-0xFE 区间内
-	else if (p[-1] != 0 && (
-		((unsigned char)p[-1] >= 0x40 && (unsigned char)p[-1] <= 0x7e) ||
-		((unsigned char)p[-1] >= 0xa1 && (unsigned char)p[-1] <= 0xfe)
-		)) {
+	if (low != 0 && ((low >= 0x40 && low <= 0x7e) || (low >= 0xa1 && low <= 0xfe))) {
 		// 若低位成立, 再判断高位是否在 0x81-0xFE 区间内
-		if (p[-2] != 0 &&
-			(unsigned char)p[-2] >= 0x81 && (unsigned char)p[-2] <= 0xFE
-			) {
+		if (high != 0 && high >= 0x81 && high <= 0xFE) {
 			// 若都成立, 则表示在 BIG5 编码情况下, 当前 p 指向的反斜杠是一个独立字符
 			// 而不是某个 BIG5 编码中双字节汉字中的一部分
 			//
@@ -739,30 +738,34 @@ bool isIndependentBackslash(const char* p) {
 		}
 	}
 
-	// 再判断基于 GBK 编码的双字节字符规则
-	// https://www.qqxiuzi.cn/zh/hanzi-gbk-bianma.php
-	// 由于 GBK 兼容 GB2312, 是 GB2312 的超集, 所以这里不再单独对 GB2312 区间做判断
-	// 
-	// GBK 亦采用双字节表示, 总体编码范围为 0x8140-0xFEFE.
-	// 高位字节在 0x81-0xFE 之间, 低位字节在 0x40-0xFE 之间, 剔除 xx7F 一条线
-
-	// 先判断低位是否不为 0x7f 且在 0x40-0xFE 区间内
-	else if (p[-1] != 0 &&
-		(unsigned char)p[-1] != 0x7f &&
-		(unsigned char)p[-1] >= 0x40 && (unsigned char)p[-1] <= 0xfe
-		) {
-		// 若低位成立, 再判断高位是否在 0x81-0xFE 区间内
-		if (p[-2] != 0 &&
-			(unsigned char)p[-2] >= 0x81 && (unsigned char)p[-2] <= 0xFE
-			) {
-			// 若都成立, 则表示在 GBK 编码情况下, 当前 p 指向的反斜杠是一个独立字符
-			// 而不是某个 GBK 编码中双字节汉字中的一部分
-			return true;
-		}
-	}
-
-	// 其他不认识的情况, 将其当做一个非独立字符的反斜杠处理, 返回 false
 	return false;
+}
+
+//************************************
+// Method:      isDoubleByteCharacter
+// Description: 判断一个给定的高低位组合是否为一个合法的双字节字符
+// Parameter:   unsigned char high
+// Parameter:   unsigned char low
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/12/04 23:45
+//************************************
+bool isDoubleByteCharacter(unsigned char high, unsigned char low) {
+	return (isGBKCharacter(high, low) || isBIG5Character(high, low));
+}
+
+//************************************
+// Method:      isEscapeSequence
+// Description: 给定的 p 指针所指向的 p[0] 字节以及 p[1] 是否构成一个转义序列
+// Parameter:   const char * start_p
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/12/04 23:52
+//************************************
+bool isEscapeSequence(const char* start_p) {
+	char buf[8] = { 0 };
+	size_t len = skip_escaped_c(start_p) - start_p;
+	if (len != 2) return false;
+	size_t n = sv_unescape_c(buf, start_p, len);
+	return (n == 1);
 }
 
 //************************************
