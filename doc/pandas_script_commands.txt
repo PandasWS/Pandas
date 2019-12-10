@@ -1060,11 +1060,12 @@ IP地址:
 
 *selfdeletion {<自毁策略>}
 
-该指令与 unloadnpc 类似, 但可以控制自毁当前 NPC, 以及一些更细腻的自毁时机控制.
+该指令与 unloadnpc 类似, 但可以控制自毁当前 NPC,
+包括一些更细腻的自毁时机控制. 哪怕 NPC 没有关联到玩家, 也可以完成自毁.
 
 自毁策略:
 	SELFDEL_NOW       - 控制当前 NPC 终止全部正在与其交互的玩家对话, 并立刻自毁 (默认值)
-	SELFDEL_WAITFREE  - 当最后一个正在与其交互的玩家对话结束后, 再进行自毁
+	SELFDEL_WAITFREE  - 当最后一个正在与其交互的玩家对话结束后, 再进行自毁 (无论是否有工作中的定时器)
 	SELFDEL_CANCEL    - 取消 SELFDEL_WAITFREE 设置的自毁标记
 
 返回值:
