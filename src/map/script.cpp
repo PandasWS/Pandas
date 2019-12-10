@@ -26820,20 +26820,21 @@ TIMER_FUNC(selfdeletion_timer) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(selfdeletion) {
-	TBL_PC* sd = nullptr;
+	TBL_PC* sd = map_id2sd(st->rid);
 	int option = (script_hasdata(st, 2) ? script_getnum(st, 2) : SELFDEL_NOW);
 
 	// SELFDEL_NOW = 立刻终止全部与此 NPC 相关的玩家对话, 并立刻自毁
 	// SELFDEL_WAITFREE = 与最后一个与玩家的交互结束后自毁
 	// SELFDEL_CANCEL = 取消与最后一个与玩家的交互结束后自毁
 
-	if (!script_rid2sd(sd))
-		return SCRIPT_CMD_SUCCESS;
-
 	TBL_NPC* nd = map_id2nd(st->oid);
 	bool immediately = (option == SELFDEL_NOW);
 
-	if (sd->state.using_fake_npc || nd->bl.id == fake_nd->bl.id) {
+	if (sd && sd->state.using_fake_npc) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (nd->bl.id == fake_nd->bl.id) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 	
@@ -26864,8 +26865,10 @@ BUILDIN_FUNC(selfdeletion) {
 	// 接下来设置一个定时器, 时间到了把当前 NPC 直接 unload 掉
 	nd->pandas.destruction_timer = add_timer(gettick() + 1000, selfdeletion_timer, st->oid, 0);
 
-	// 关闭当前 NPC 和当前玩家的对话, 若存在对话框则送一个关闭按钮
-	pc_close_npc(sd, 1 | 4);
+	if (sd) {
+		// 关闭当前 NPC 和当前玩家的对话, 若存在对话框则送一个关闭按钮
+		pc_close_npc(sd, 1 | 4);
+	}
 
 	return SCRIPT_CMD_SUCCESS;
 }
