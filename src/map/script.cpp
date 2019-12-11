@@ -26929,6 +26929,66 @@ BUILDIN_FUNC(getchartitle) {
 }
 #endif // Pandas_ScriptCommand_GetCharTitle
 
+#ifdef Pandas_ScriptCommand_NpcExists
+/* ===========================================================
+ * 指令: npcexists
+ * 描述: 判断指定名称的 NPC 是否存在, 就算不存在控制台也不会报错
+ * 用法: npcexists "<NPC名称>"{,<用于保存 GameID 的变量>};
+ * 返回: 存在返回 1, 不存在返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(npcexists) {
+	struct script_data* vardata = nullptr;
+	TBL_PC* sd = nullptr;
+	int64 num = 0;
+	const char* name = nullptr;
+
+	if (script_hasdata(st, 3)) {
+		vardata = script_getdata(st, 3);
+
+		if (!data_isreference(vardata)) {
+			ShowWarning("%s: GameID value is not a variable.\n", __func__);
+			script_reportdata(vardata);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		if (is_string_variable(reference_getname(vardata))) {
+			ShowWarning("%s: %s is not a integer variable.\n", __func__, reference_getname(vardata));
+			script_reportdata(vardata);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		num = reference_getuid(vardata);
+		name = reference_getname(vardata);
+		char prefix = *name;
+
+		if (not_server_variable(prefix) && !script_rid2sd(sd)) {
+			ShowError("%s: variable '%s' for GameID is not a server variable, but no player is attached!\n", __func__, name);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		// 将用于保存 GameID 的变量内容设置为 0 
+		set_reg(st, sd, num, name, (void*)__64BPRTSIZE(0), script_getref(st, 3));
+	}
+
+	TBL_NPC* nd = nullptr;
+	if ((nd = npc_name2id(script_getstr(st, 2))) != nullptr) {
+		script_pushint(st, 1);
+		if (vardata != nullptr) {
+			set_reg(st, sd, num, name, (void*)__64BPRTSIZE(nd->bl.id), script_getref(st, 3));
+		}
+	}
+	else {
+		script_pushint(st, 0);
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_NpcExists
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -27070,11 +27130,14 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(selfdeletion,"*"),						// 设置 NPC 的自毁策略 [Sola丶小克]
 #endif // Pandas_ScriptCommand_SelfDeletion
 #ifdef Pandas_ScriptCommand_SetCharTitle
-	BUILDIN_DEF(setchartitle,"i?"),						// 在此写上脚本指令说明 [维护者昵称]
+	BUILDIN_DEF(setchartitle,"i?"),						// 设置指定玩家的称号ID [Sola丶小克]
 #endif // Pandas_ScriptCommand_SetCharTitle
 #ifdef Pandas_ScriptCommand_GetCharTitle
-	BUILDIN_DEF(getchartitle,"?"),						// 在此写上脚本指令说明 [维护者昵称]
+	BUILDIN_DEF(getchartitle,"?"),						// 获得指定玩家的称号ID [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetCharTitle
+#ifdef Pandas_ScriptCommand_NpcExists
+	BUILDIN_DEF(npcexists,"s?"),						// 判断指定名称的 NPC 是否存在 [Sola丶小克]
+#endif // Pandas_ScriptCommand_NpcExists
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

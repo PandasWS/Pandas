@@ -818,6 +818,9 @@
 		#define Pandas_ScriptCommand_GetCharTitle
 	#endif // Pandas_Character_Title_Controller
 
+	// 是否启用 npcexists 脚本指令 [Sola丶小克]
+	// 该指令用于判断指定名称的 NPC 是否存在, 就算不存在控制台也不会报错
+	#define Pandas_ScriptCommand_NpcExists
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
