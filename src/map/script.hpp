@@ -2168,6 +2168,7 @@ unsigned int *script_array_cpy_list(struct script_array *sa);
 bool script_check_RegistryVariableLength(int pType, const char *val, size_t* vlen);
 
 #ifdef Pandas_ScriptCommand_SelfDeletion
+TIMER_FUNC(selfdeletion_timer);
 void selfdeletion_exec_endtalk(struct script_state* st);
 #endif // Pandas_ScriptCommand_SelfDeletion
 

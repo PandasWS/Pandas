@@ -26762,33 +26762,9 @@ void selfdeletion_exec_endtalk(struct script_state* st) {
 
 	TBL_NPC* nd = map_id2nd(st->oid);
 	if (!nd || nd->pandas.destruction_strategy != 1) return;
-
-	// 执行结束对话后是否自毁的检测
-	// 若当前没有其他玩家正在与此 NPC 交互则自动卸载此 NPC
-	struct s_mapiterator* iter = nullptr;
-	struct block_list* bl = nullptr;
-	iter = mapit_geteachpc();
-	bool interacting = false;
-
-	for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
-		if (!bl || bl->m != nd->bl.m) continue;
-		if (bl->id == st->rid) continue; // 不结束当前对话
-
-		struct script_state* bl_st = ((TBL_PC*)bl)->st;
-		if (bl_st == nullptr) continue;
-
-		if (bl_st->oid == st->oid) {
-			interacting = true;
-			break;
-		}
-	}
-	if (iter) mapit_free(iter);
-
-	if (!interacting) {
-		npc_unload_duplicates(nd);
-		npc_unload(nd, true);
-		npc_read_event_script();
-	}
+	nd->pandas.destruction_timer = add_timer(
+		gettick() + 500, selfdeletion_timer, st->oid, st->rid
+	);
 }
 
 //************************************
@@ -26805,9 +26781,38 @@ TIMER_FUNC(selfdeletion_timer) {
 		nd->pandas.destruction_timer = INVALID_TIMER;
 	}
 
-	npc_unload_duplicates(nd);
-	npc_unload(nd, true);
-	npc_read_event_script();
+	if (nd->pandas.destruction_strategy == 1) {
+		// 执行结束对话后是否自毁的检测
+		// 若当前没有其他玩家正在与此 NPC 交互则自动卸载此 NPC
+		struct s_mapiterator* iter = nullptr;
+		struct block_list* bl = nullptr;
+		iter = mapit_geteachpc();
+		bool interacting = false;
+
+		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
+			if (!bl || bl->m != nd->bl.m) continue;
+
+			struct script_state* bl_st = ((TBL_PC*)bl)->st;
+			if (bl_st == nullptr) continue;
+
+			if (bl_st->oid == id) {
+				interacting = true;
+				break;
+			}
+		}
+		if (iter) mapit_free(iter);
+
+		if (!interacting) {
+			npc_unload_duplicates(nd);
+			npc_unload(nd, true);
+			npc_read_event_script();
+		}
+	}
+	else {
+		npc_unload_duplicates(nd);
+		npc_unload(nd, true);
+		npc_read_event_script();
+	}
 
 	return 1;
 }
@@ -26863,7 +26868,9 @@ BUILDIN_FUNC(selfdeletion) {
 
 	// 其他正在与当前 NPC 发生对话的角色, 至此已经全部发送了关闭按钮并终止了后续脚本执行
 	// 接下来设置一个定时器, 时间到了把当前 NPC 直接 unload 掉
-	nd->pandas.destruction_timer = add_timer(gettick() + 1000, selfdeletion_timer, st->oid, 0);
+	nd->pandas.destruction_timer = add_timer(
+		gettick() + 500, selfdeletion_timer, st->oid, st->rid
+	);
 
 	if (sd) {
 		// 关闭当前 NPC 和当前玩家的对话, 若存在对话框则送一个关闭按钮
