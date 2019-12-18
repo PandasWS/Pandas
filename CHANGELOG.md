@@ -10,6 +10,25 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+## [v1.0.2] - `2019-11-29`
+
+### 添加
+
+- 实现 `selfdeletion` 脚本指令, 用于控制 NPC 在特定时机进行自毁 (#212)
+- 实现 `npcexists` 脚本指令, 用于判断指定名称的 NPC 是否存在 (#220)
+- 实现 `script4each` 系列指令使之能够支持调用事件标签 (#206)
+
+### 调整
+
+- 生成项目时若发现未编译 Boost 则会终止生成并给出操作提示 (#207)
+
+### 修正
+
+- 修正在部分 CPU 上运行 `VS2019 16.3` 编译出来的程序会崩溃的问题 (#210)
+- 修正在 NPC 事件脚本代码中执行 `unloadnpc` 会导致地图服务器崩溃的问题 (#211)
+- 跟随 a64a77b 修正语法解析判断的准确性问题 (感谢"Jian916"指出) (#208)
+- 修正无法将转储文件发送到分析服务器的问题 (Part of #205)
+
 ## [v1.0.1] - `2019-11-03`
 
 ### 添加
@@ -69,5 +88,6 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.0.2]: https://github.com/PandasWS/Pandas/compare/v1.0.1...v1.0.2
 [v1.0.1]: https://github.com/PandasWS/Pandas/compare/v1.0.0...v1.0.1
 [v1.0.0]: https://github.com/PandasWS/Pandas/releases/tag/v1.0.0
