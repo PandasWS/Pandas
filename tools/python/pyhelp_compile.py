@@ -328,6 +328,19 @@ def main():
             Common.exit_with_pause(-1)
     else:
         Message.ShowStatus('当前模拟器代码仓库的工作区是干净的.')
+
+    # 检查 Crashrpt 使用的信息是否都设置好了, 若没有且企图编译正式版, 则给与提示
+    if Common.is_pandas_release(os.path.abspath(project_slndir)):
+        if not os.getenv("DEFINE_CRASHRPT_APPID"):
+            Message.ShowWarning('当前并未设置 AppID, 且企图编译正式版.')
+            Common.exit_with_pause(-1)
+        if Common.md5(os.getenv("DEFINE_CRASHRPT_APPID")) != '952648de2d8f063a07331ae3827bc406':
+            Message.ShowWarning('当前已设置了 AppID, 但并非正式版使用的 AppID.')
+            Common.exit_with_pause(-1)
+        if not os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
+            Message.ShowWarning('当前并未设置 PublicKey, 且企图编译正式版.')
+            Common.exit_with_pause(-1)
+    
     Message.ShowStatus('即将开始编译, 编译速度取决于电脑性能, 请耐心...')
 
     # 清理目前的工作目录, 把一些可明确移除的删掉

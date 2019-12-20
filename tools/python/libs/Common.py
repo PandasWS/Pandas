@@ -3,6 +3,7 @@
 import binascii
 import codecs
 import glob
+import hashlib
 import os
 import platform
 import re
@@ -22,6 +23,7 @@ if platform.system() == 'Windows':
     import winreg
 
 __all__ = [
+    'md5',
     'glob_delete',
     'cmd_execute',
     'read_regstr',
@@ -37,12 +39,19 @@ __all__ = [
     'match_file_resub',
     'get_encoding',
     'is_compiled',
+    'is_pandas_release',
     'get_pe_hash',
     'get_pdb_hash',
     'get_file_ext'
 ]
 
 init()
+
+def md5(value):
+    '''
+    获取字符串的 md5 哈希散列
+    '''
+    return hashlib.md5(value.encode(encoding='UTF-8')).hexdigest()
 
 def glob_delete(glob_pattern):
     '''
@@ -234,7 +243,7 @@ def get_pandas_ver(slndir, prefix = None, origin = False):
         splitver = version.split('.')
         if (len(splitver) == 4):
             version = '%s.%s.%s' % (splitver[0], splitver[1], splitver[2])
-            if splitver[3] == "1":
+            if splitver[3] == '1':
                 version += '-dev'
     
     return version if not prefix else prefix + version
@@ -297,6 +306,15 @@ def is_compiled(slndir, checkmodel = 'all', checksymbol = True):
         if not is_file_exists(filepath):
             return False
     return True
+
+def is_pandas_release(slndir):
+    '''
+    读取当前 Pandas 在 src/config/pandas.hpp 定义的版本号
+    并判断最后一段是否为 0 (表示正式版)
+    '''
+    version = get_pandas_ver(slndir, origin = True)
+    splitver = version.split('.')
+    return (len(splitver) == 4 and splitver[3] == '0')
 
 def get_pe_hash(pefilepath):
     '''
