@@ -4618,7 +4618,7 @@ void run_script_main(struct script_state *st)
 
 #ifdef Pandas_ScriptCommand_SelfDeletion
 		selfdeletion_exec_endtalk(st);
-#endif Pandas_ScriptCommand_SelfDeletion
+#endif // Pandas_ScriptCommand_SelfDeletion
 
 		script_free_state(st);
 	}
