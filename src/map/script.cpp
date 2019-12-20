@@ -26731,10 +26731,9 @@ BUILDIN_FUNC(multicatchpet) {
 
 		if (data_isint(data)) {
 			sd->pandas.multi_catch_target_class.push_back(script_getnum(st, i));
-			ShowDebug("buildin_%s: insert %d, current size: %d\n", functionname, script_getnum(st, i), sd->pandas.multi_catch_target_class.size());
 		}
 		else {
-			ShowError("buildin_%s: not a supported data type!\n", functionname);
+			ShowError("buildin_%s: The No.%d parameter is not integer type.\n", functionname, i - 1);
 			script_reportdata(data);
 			st->state = END;
 			return SCRIPT_CMD_FAILURE;
