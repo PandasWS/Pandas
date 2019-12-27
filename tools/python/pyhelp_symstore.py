@@ -87,7 +87,7 @@ def deploy_file(filepath):
     elif extname in ['.dll', '.exe']:
         filehash = Common.get_pe_hash(filepath)
 
-    target_filepath = '{symstore}/symbols/{filename}/{hash}/{filename}'.format(
+    target_filepath = '{symstore}/{filename}/{hash}/{filename}'.format(
         symstore = project_symstoredir, hash = filehash,
         filename = basename.replace('-pre', '')
     )
