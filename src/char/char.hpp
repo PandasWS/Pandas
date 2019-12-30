@@ -178,10 +178,6 @@ struct CharServ_Config {
 	struct Pincode_Config pincode_config;
 #endif
 
-#ifdef Pandas_Reject_Create_Doram_Character
-	bool reject_create_doram_character;	// 是否禁止创建杜兰族角色 [Sola丶小克]
-#endif // Pandas_Reject_Create_Doram_Character
-
 	int save_log; // show loading/saving messages
 	int log_char;	// loggin char or not [devil]
 	int log_inter;	// loggin inter or not [devil]
