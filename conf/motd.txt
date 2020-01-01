@@ -1,2 +1,8 @@
-// Internal default is limited to 128 lines.  If you need more, you will need to modify the MOTD_LINE_SIZE definition in pc.cpp
-Welcome to rAthena! Enjoy! Please report any bugs you find.
+﻿//--------------------------------------------------------------
+// 熊猫模拟器 - 聊天栏公告配置文件
+//--------------------------------------------------------------
+// 登录游戏后将在聊天窗口看到本文件中配置的公告信息
+// 默认只能显示 128 行文本 (包括空行).
+// 若想提高上限请修改 pc.cpp 的 MOTD_LINE_SIZE 定义, 并重新编译
+//--------------------------------------------------------------
+欢迎使用熊猫仙境传说模拟器, 若您发现任何问题, 请上报给开发团队, 谢谢.

@@ -212,11 +212,6 @@
 	// 是否支持隐藏角色服务器的在线人数 [Sola丶小克]
 	#define Pandas_Support_Hide_Online_Players_Count
 
-	// 是否支持禁止创建杜兰族角色 [Sola丶小克]
-	#if PACKETVER >= 20151001
-		#define Pandas_Reject_Create_Doram_Character
-	#endif // PACKETVER >= 20151001
-
 	// 是否扩展魔物名称能展现的信息, 比如体型、种族、属性 [Sola丶小克 改进]
 	#define Pandas_MobInfomation_Extend
 
