@@ -10,6 +10,7 @@
 #include "showmsg.hpp"
 
 #include "../custom/defines_core.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #define J_MAX_MALLOC_SIZE 65535
 
@@ -995,7 +996,7 @@ bool sv_readdb(const char* directory, const char* filename, char delim, int minc
 	snprintf(path, sizeof(path), "%s/%s", directory, filename);
 
 	// open file
-	fp = UTF8FOPEN(path, "r");
+	fp = fopen(path, "r");
 	if( fp == NULL )
 	{
 		if(silent == 0) ShowError("sv_readdb: can't read %s\n", path);
@@ -1008,7 +1009,7 @@ bool sv_readdb(const char* directory, const char* filename, char delim, int minc
 	line = (char*)aMalloc(nb_cols*colsize);
 
 	// process rows one by one
-	while( UTF8FGETS(line, maxcols*colsize, fp) )
+	while( fgets(line, maxcols*colsize, fp) )
 	{
 		char *match;
 		lines++;

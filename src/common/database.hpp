@@ -20,6 +20,9 @@ private:
 	uint16 version;
 	uint16 minimumVersion;
 	std::string currentFile;
+#ifdef Pandas_YamlDatabase_BeQuiet
+	uint16 quietLevel;	// 0 - 正常; 1 - 静默
+#endif // Pandas_YamlDatabase_BeQuiet
 
 	bool verifyCompatibility( const YAML::Node& rootNode );
 	bool load( const std::string& path );
@@ -67,6 +70,19 @@ public:
 	virtual void clear() = 0;
 	virtual const std::string getDefaultLocation() = 0;
 	virtual uint64 parseBodyNode( const YAML::Node& node ) = 0;
+
+#ifdef Pandas_YamlDatabase_BeQuiet
+	//************************************
+	// Method:      setQuietLevel
+	// Description: 设置提示信息的静默等级
+	// Parameter:   uint16 quietLevel_ ( 0 - 正常; 1 - 静默 )
+	// Returns:     void
+	// Author:      Sola丶小克(CairoLee)  2020/01/24 11:43
+	//************************************
+	void setQuietLevel(uint16 quietLevel_) {
+		this->quietLevel = quietLevel_;
+	}
+#endif // Pandas_YamlDatabase_BeQuiet
 };
 
 template <typename keytype, typename datatype> class TypesafeYamlDatabase : public YamlDatabase{

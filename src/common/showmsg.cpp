@@ -3,6 +3,11 @@
 
 #include "showmsg.hpp"
 
+#ifdef Pandas_Console_Translate
+#include "../common/translate.hpp"
+#define strcat(a, b) ::strcat(a, translate(b).c_str())
+#endif // Pandas_Console_Translate
+
 #include <stdlib.h> // atexit
 #include <time.h>
 
@@ -664,14 +669,23 @@ int	FPRINTF(FILE *file, const char *fmt, ...)
 
 char timestamp_format[20] = ""; //For displaying Timestamps
 
+#ifndef Pandas_Console_Translate
 int _vShowMessage(enum msg_type flag, const char *string, va_list ap)
+#else
+int _vShowMessage(enum msg_type flag, std::string instr, va_list ap)
+#endif // Pandas_Console_Translate
 {
 	va_list apcopy;
 	char prefix[100];
 #if defined(DEBUGLOGMAP) || defined(DEBUGLOGCHAR) || defined(DEBUGLOGLOGIN)
 	FILE *fp;
 #endif
-	
+
+#ifdef Pandas_Console_Translate
+	translate(instr);
+	const char* string = instr.c_str();
+#endif // Pandas_Console_Translate
+
 	if (!string || *string == '\0') {
 		ShowError("Empty string passed to _vShowMessage().\n");
 		return 1;

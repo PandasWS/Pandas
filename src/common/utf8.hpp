@@ -5,17 +5,48 @@
 #define _RATHENA_CN_UTF8_HPP_
 
 #include "showmsg.hpp"
+#include "cbasetypes.hpp"
+
 #include "../config/pandas.hpp"
 
 #include <stdio.h>
 #include <string>	// std::string
 
-std::string utf8_u2g(const std::string& strUtf8);
-std::string utf8_g2u(const std::string& strGbk);
-bool utf8_isbom(FILE *_Stream);
+enum e_file_charsetmode : uint8 {
+	FILE_CHARSETMODE_UNKNOW = 0,
+	FILE_CHARSETMODE_ANSI,
+	FILE_CHARSETMODE_UTF8_BOM,
+	FILE_CHARSETMODE_UCS2_LE,
+	FILE_CHARSETMODE_UCS2_BE
+};
 
-FILE* utf8_fopen(const char* _FileName, const char* _Mode);
-char* utf8_fgets(char *_Buffer, int _MaxCount, FILE *_Stream);
-size_t utf8_fread(void *_Buffer, size_t _ElementSize, size_t _ElementCount, FILE *_Stream);
+enum e_console_encoding : uint8 {
+	CONSOLE_ENCODING_UNKNOW = 0,
+	CONSOLE_ENCODING_LATIN1,
+	CONSOLE_ENCODING_UTF8,
+	CONSOLE_ENCODING_GB2312,
+	CONSOLE_ENCODING_BIG5
+};
+
+enum e_system_language : uint8 {
+	SYSTEM_LANGUAGE_ENG = 0,
+	SYSTEM_LANGUAGE_CHS,
+	SYSTEM_LANGUAGE_CHT
+};
+
+class PandasUtf8
+{
+public:
+	static enum e_file_charsetmode fmode(FILE* _Stream);
+	static FILE* fopen(const char* _FileName, const char* _Mode);
+	static char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream);
+	static size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream);
+
+	static std::string utf8ToAnsi(const std::string& strUtf8);
+	static std::string ansiToUtf8(const std::string& strAnsi);
+
+	static enum e_console_encoding getConsoleEncoding();
+	static enum e_system_language getSystemLanguage();
+};
 
 #endif // _RATHENA_CN_UTF8_HPP_

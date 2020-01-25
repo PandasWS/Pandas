@@ -20,6 +20,7 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "chat.hpp"
@@ -4513,7 +4514,7 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 	} 
             
 	// read whole file to buffer
-	fp = UTF8FOPEN(filepath, "rb");
+	fp = fopen(filepath, "rb");
 	if( fp == NULL )
 	{
 		ShowError("npc_parsesrcfile: File not found '%s'.\n", filepath);
@@ -4523,7 +4524,7 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 	len = ftell(fp);
 	buffer = (char*)aMalloc(len+1);
 	fseek(fp, 0, SEEK_SET);
-	len = UTF8FREAD(buffer, 1, len, fp);
+	len = fread(buffer, 1, len, fp);
 	buffer[len] = '\0';
 	if( ferror(fp) )
 	{

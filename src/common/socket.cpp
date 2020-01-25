@@ -47,6 +47,8 @@
 #include "strlib.hpp"
 #include "timer.hpp"
 
+#include "../common/utf8_defines.hpp"  // PandasWS
+
 /////////////////////////////////////////////////////////////////////
 #if defined(WIN32)
 /////////////////////////////////////////////////////////////////////
@@ -1292,13 +1294,13 @@ int socket_config_read(const char* cfgName)
 	char line[1024],w1[1024],w2[1024];
 	FILE *fp;
 
-	fp = UTF8FOPEN(cfgName, "r");
+	fp = fopen(cfgName, "r");
 	if(fp == NULL) {
 		ShowError("File not found: %s\n", cfgName);
 		return 1;
 	}
 
-	while(UTF8FGETS(line, sizeof(line), fp))
+	while(fgets(line, sizeof(line), fp))
 	{
 		if(line[0] == '/' && line[1] == '/')
 			continue;

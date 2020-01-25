@@ -74,6 +74,15 @@
     <ClInclude Include="cryptopp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="translate.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utf8_defines.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cli.cpp">
@@ -131,6 +140,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cryptopp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="translate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="database.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

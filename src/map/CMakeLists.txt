@@ -24,7 +24,7 @@ if( BUILD_SERVERS )
 	file(GLOB MAP_SOURCES ${MAP_SOURCE_DIR}/*.cpp)
 	# message( STATUS "LOGIN_SOURCES="${LOGIN_SOURCES})
 
-	# 设置依赖项目, 这里设置了依赖 common 和 yaml-cpp 两个项目
+	# 设置依赖项目, 这里设置了依赖 common 项目
 	set( DEPENDENCIES common )
 
 	# 设置依赖的库文件

@@ -25,6 +25,7 @@
     <ClInclude Include="conf.hpp" />
     <ClInclude Include="core.hpp" />
     <ClInclude Include="cryptopp.hpp" />
+    <ClInclude Include="database.hpp" />
     <ClInclude Include="des.hpp" />
     <ClInclude Include="grfio.hpp" />
     <ClInclude Include="malloc.hpp" />
@@ -37,7 +38,9 @@
     <ClInclude Include="random.hpp" />
     <ClInclude Include="showmsg.hpp" />
     <ClInclude Include="strlib.hpp" />
+    <ClInclude Include="translate.hpp" />
     <ClInclude Include="utf8.hpp" />
+    <ClInclude Include="utf8_defines.hpp" />
     <ClInclude Include="utils.hpp" />
     <ClInclude Include="winapi.hpp" />
   </ItemGroup>
@@ -47,6 +50,7 @@
     <ClCompile Include="conf.cpp" />
     <ClCompile Include="core.cpp" />
     <ClCompile Include="cryptopp.cpp" />
+    <ClCompile Include="database.cpp" />
     <ClCompile Include="des.cpp" />
     <ClCompile Include="grfio.cpp" />
     <ClCompile Include="malloc.cpp" />
@@ -58,6 +62,7 @@
     <ClCompile Include="random.cpp" />
     <ClCompile Include="showmsg.cpp" />
     <ClCompile Include="strlib.cpp" />
+    <ClCompile Include="translate.cpp" />
     <ClCompile Include="utf8.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="winapi.cpp" />
@@ -143,7 +148,7 @@
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;_DEBUG;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,7 +164,7 @@
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;_DEBUG;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -177,7 +182,7 @@
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -197,7 +202,7 @@
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -210,6 +215,6 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <Target Name="BoostLibraries" BeforeTargets="PrepareForBuild">
-    <Error Condition="(!Exists('$(SolutionDir)\3rdparty\boost\stage\lib') Or !Exists('$(SolutionDir)\3rdparty\boost\b2.exe'))" Text="Please run `3rdparty\boost\bootstrap.bat` to compile `Boost C++ Libraries` before build `$(ProjectName)` project." /> 
+    <Error Condition="(!Exists('$(SolutionDir)\3rdparty\boost\stage\lib') Or !Exists('$(SolutionDir)\3rdparty\boost\b2.exe'))" Text="Please run `3rdparty\boost\bootstrap.bat` to compile `Boost C++ Libraries` before build `$(ProjectName)` project." />
   </Target>
 </Project>

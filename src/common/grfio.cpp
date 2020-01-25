@@ -14,6 +14,7 @@
 #include "utils.hpp"
 
 #include "../custom/defines_core.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 //----------------------------
 //	file entry table struct
@@ -777,11 +778,11 @@ void grfio_init(const char* fname)
 
 	hashinit();	// hash table initialization
 
-	data_conf = UTF8FOPEN(fname, "r");
+	data_conf = fopen(fname, "r");
 	if( data_conf != NULL )
 	{
 		char line[1024];
-		while( UTF8FGETS(line, sizeof(line), data_conf) )
+		while( fgets(line, sizeof(line), data_conf) )
 		{
 			char w1[1024], w2[1024];
 

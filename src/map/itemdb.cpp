@@ -11,6 +11,7 @@
 #include "../common/showmsg.hpp"
 #include "../common/strlib.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp" // struct battle_config
 #include "cashshop.hpp"
@@ -1021,13 +1022,13 @@ static void itemdb_read_combos(const char* basedir, bool silent) {
 
 	sprintf(path, "%s/%s", basedir, "item_combo_db.txt");
 
-	if ((fp = UTF8FOPEN(path, "r")) == NULL) {
+	if ((fp = fopen(path, "r")) == NULL) {
 		if(silent==0) ShowError("itemdb_read_combos: File not found \"%s\".\n", path);
 		return;
 	}
 
 	// process rows one by one
-	while(UTF8FGETS(line, sizeof(line), fp)) {
+	while(fgets(line, sizeof(line), fp)) {
 		char *str[2], *p;
 
 		lines++;
@@ -1477,14 +1478,14 @@ static int itemdb_readdb(void){
 		FILE* fp;
 
 		sprintf(path, "%s/%s", db_path, filename[fi]);
-		fp = UTF8FOPEN(path, "r");
+		fp = fopen(path, "r");
 		if( fp == NULL ) {
 			ShowWarning("itemdb_readdb: File not found \"%s\", skipping.\n", path);
 			continue;
 		}
 
 		// process rows one by one
-		while(UTF8FGETS(line, sizeof(line), fp))
+		while(fgets(line, sizeof(line), fp))
 		{
 			char *str[32], *p;
 			int i;
@@ -1696,12 +1697,12 @@ static bool itemdb_read_randomopt(const char* basedir, bool silent) {
 
 	sprintf(path, "%s/%s", basedir, "item_randomopt_db.txt");
 
-	if ((fp = UTF8FOPEN(path, "r")) == NULL) {
+	if ((fp = fopen(path, "r")) == NULL) {
 		if (silent == 0) ShowError("itemdb_read_randomopt: File not found \"%s\".\n", path);
 		return false;
 	}
 
-	while (UTF8FGETS(line, sizeof(line), fp)) {
+	while (fgets(line, sizeof(line), fp)) {
 		char *str[2], *p;
 
 		lines++;

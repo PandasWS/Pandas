@@ -24,6 +24,7 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "achievement.hpp"
 #include "atcommand.hpp" // get_atcommand_level()
@@ -12202,13 +12203,13 @@ static int pc_read_statsdb(const char *basedir, int last_s, bool silent){
 	FILE *fp;
 	
 	sprintf(line, "%s/statpoint.txt", basedir);
-	fp=UTF8FOPEN(line,"r");
+	fp=fopen(line,"r");
 	if(fp == NULL){
 		if(silent==0) ShowWarning("Can't read '" CL_WHITE "%s" CL_RESET "'... Generating DB.\n",line);
 		return max(last_s,i);
 	} else {
 		int entries=0;
-		while(UTF8FGETS(line, sizeof(line), fp))
+		while(fgets(line, sizeof(line), fp))
 		{
 			int stat;
 			trim(line);
@@ -12349,12 +12350,12 @@ int pc_read_motd(void)
 	memset(motd_text, 0, sizeof(motd_text));
 
 	// read current MOTD
-	if( ( fp = UTF8FOPEN(motd_txt, "r") ) != NULL )
+	if( ( fp = fopen(motd_txt, "r") ) != NULL )
 	{
 		unsigned int entries = 0;
 		char buf[CHAT_SIZE_MAX];
 
-		while( entries < MOTD_LINE_SIZE && UTF8FGETS(buf, CHAT_SIZE_MAX, fp) )
+		while( entries < MOTD_LINE_SIZE && fgets(buf, CHAT_SIZE_MAX, fp) )
 		{
 			unsigned int lines = 0;
 			size_t len;

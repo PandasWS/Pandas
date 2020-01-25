@@ -14,6 +14,7 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "clif.hpp"
@@ -1605,14 +1606,14 @@ void read_homunculus_expdb(void)
 		int j=0;
 		
 		sprintf(path, "%s/%s", db_path, filename[i]);
-		fp = UTF8FOPEN(path,"r");
+		fp = fopen(path,"r");
 		if (fp == NULL) {
 			if (i != 0)
 				continue;
 			ShowError("Can't read %s\n",line);
 			return;
 		}
-		while (UTF8FGETS(line, sizeof(line), fp) && j < MAX_LEVEL) {
+		while (fgets(line, sizeof(line), fp) && j < MAX_LEVEL) {
 			if (line[0] == '/' && line[1] == '/')
 				continue;
 

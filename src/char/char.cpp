@@ -22,6 +22,7 @@
 #include "../common/socket.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "char_clif.hpp"
 #include "char_cnslif.hpp"
@@ -2242,12 +2243,12 @@ int char_lan_config_read(const char *lancfgName) {
 	int line_num = 0, s_subnet=ARRAYLENGTH(subnet);
 	char line[1024], w1[64], w2[64], w3[64], w4[64];
 
-	if((fp = UTF8FOPEN(lancfgName, "r")) == NULL) {
+	if((fp = fopen(lancfgName, "r")) == NULL) {
 		ShowWarning("LAN Support configuration file is not found: %s\n", lancfgName);
 		return 1;
 	}
 
-	while(UTF8FGETS(line, sizeof(line), fp)) {
+	while(fgets(line, sizeof(line), fp)) {
 		line_num++;
 		if ((line[0] == '/' && line[1] == '/') || line[0] == '\n' || line[1] == '\n')
 			continue;
@@ -2559,12 +2560,12 @@ void char_sql_config_read(const char* cfgName) {
 	char line[1024], w1[1024], w2[1024];
 	FILE* fp;
 
-	if ((fp = UTF8FOPEN(cfgName, "r")) == NULL) {
+	if ((fp = fopen(cfgName, "r")) == NULL) {
 		ShowError("File not found: %s\n", cfgName);
 		return;
 	}
 
-	while(UTF8FGETS(line, sizeof(line), fp)) {
+	while(fgets(line, sizeof(line), fp)) {
 		if(line[0] == '/' && line[1] == '/')
 			continue;
 
@@ -2884,14 +2885,14 @@ void char_config_split_startitem(char *w1_value, char *w2_value, struct startite
 
 bool char_config_read(const char* cfgName, bool normal){
 	char line[1024], w1[1024], w2[1024];
-	FILE* fp = UTF8FOPEN(cfgName, "r");
+	FILE* fp = fopen(cfgName, "r");
 
 	if (fp == NULL) {
 		ShowError("Configuration file not found: %s.\n", cfgName);
 		return false;
 	}
 
-	while(UTF8FGETS(line, sizeof(line), fp)) {
+	while(fgets(line, sizeof(line), fp)) {
 		if (line[0] == '/' && line[1] == '/')
 			continue;
 

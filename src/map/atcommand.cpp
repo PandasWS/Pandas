@@ -19,6 +19,7 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "achievement.hpp"
 #include "battle.hpp"
@@ -7223,12 +7224,12 @@ ACMD_FUNC(gmotd)
 {
 	FILE* fp;
 
-	if( ( fp = UTF8FOPEN(motd_txt, "r") ) != NULL )
+	if( ( fp = fopen(motd_txt, "r") ) != NULL )
 	{
 		char buf[CHAT_SIZE_MAX];
 		size_t len;
 
-		while( UTF8FGETS(buf, sizeof(buf), fp) )
+		while( fgets(buf, sizeof(buf), fp) )
 		{
 			if( buf[0] == '/' && buf[1] == '/' )
 			{

@@ -583,27 +583,6 @@ std::string wideStrToStr(const std::wstring& ws) {
 }
 
 //************************************
-// Method:      getSystemLanguage
-// Description: 获取当前系统的语言 (跨平台支持)
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2019/09/20 18:44
-//************************************
-std::string getSystemLanguage() {
-#ifdef _WIN32
-	LCID localeID = GetUserDefaultLCID();
-	if (0x0804 == localeID) return "zh-cn";	// 简体中文
-	if (0x0404 == localeID) return "zh-tw";	// 繁体中文
-	return "unknow";	// 其他语言都判定为未知
-#else
-	char* lang = getenv("LANG");
-	if (lang == nullptr) return "unknow";
-	if (stricmp(lang, "zh_cn") > 0) return "zh-cn";	// 简体中文
-	if (stricmp(lang, "zh_tw") > 0) return "zh-tw";	// 繁体中文
-	return "unknow";	// 其他语言都判定为未知
-#endif // _WIN32
-}
-
-//************************************
 // Method:      formatVersion
 // Description: 对版本号进行格式化的处理函数
 // Parameter:   std::string ver 四段式版本号

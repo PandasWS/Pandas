@@ -43,7 +43,9 @@
     <ClInclude Include="sql.hpp" />
     <ClInclude Include="strlib.hpp" />
     <ClInclude Include="timer.hpp" />
+    <ClInclude Include="translate.hpp" />
     <ClInclude Include="utf8.hpp" />
+    <ClInclude Include="utf8_defines.hpp" />
     <ClInclude Include="utils.hpp" />
     <ClInclude Include="winapi.hpp" />
     <ClInclude Include="utilities.hpp" />
@@ -71,6 +73,7 @@
     <ClCompile Include="sql.cpp" />
     <ClCompile Include="strlib.cpp" />
     <ClCompile Include="timer.cpp" />
+    <ClCompile Include="translate.cpp" />
     <ClCompile Include="utf8.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="winapi.cpp" />
@@ -232,6 +235,6 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <Target Name="BoostLibraries" BeforeTargets="PrepareForBuild">
-    <Error Condition="(!Exists('$(SolutionDir)\3rdparty\boost\stage\lib') Or !Exists('$(SolutionDir)\3rdparty\boost\b2.exe'))" Text="Please run `3rdparty\boost\bootstrap.bat` to compile `Boost C++ Libraries` before build `$(ProjectName)` project." /> 
+    <Error Condition="(!Exists('$(SolutionDir)\3rdparty\boost\stage\lib') Or !Exists('$(SolutionDir)\3rdparty\boost\b2.exe'))" Text="Please run `3rdparty\boost\bootstrap.bat` to compile `Boost C++ Libraries` before build `$(ProjectName)` project." />
   </Target>
 </Project>

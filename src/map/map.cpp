@@ -20,6 +20,7 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "achievement.hpp"
 #include "atcommand.hpp"
@@ -4073,14 +4074,14 @@ int map_config_read(const char *cfgName)
 	char line[1024], w1[32], w2[1024];
 	FILE *fp;
 
-	fp = UTF8FOPEN(cfgName,"r");
+	fp = fopen(cfgName,"r");
 	if( fp == NULL )
 	{
 		ShowError("Map configuration file not found at: %s\n", cfgName);
 		return 1;
 	}
 
-	while( UTF8FGETS(line, sizeof(line), fp) )
+	while( fgets(line, sizeof(line), fp) )
 	{
 		char* ptr;
 
@@ -4213,14 +4214,14 @@ void map_reloadnpc_sub(const char *cfgName)
 	char line[1024], w1[1024], w2[1024];
 	FILE *fp;
 
-	fp = UTF8FOPEN(cfgName,"r");
+	fp = fopen(cfgName,"r");
 	if( fp == NULL )
 	{
 		ShowError("Map configuration file not found at: %s\n", cfgName);
 		return;
 	}
 
-	while( UTF8FGETS(line, sizeof(line), fp) )
+	while( fgets(line, sizeof(line), fp) )
 	{
 		char* ptr;
 
@@ -4267,12 +4268,12 @@ int inter_config_read(const char *cfgName)
 	char line[1024],w1[1024],w2[1024];
 	FILE *fp;
 
-	fp=UTF8FOPEN(cfgName,"r");
+	fp=fopen(cfgName,"r");
 	if(fp==NULL){
 		ShowError("File not found: %s\n",cfgName);
 		return 1;
 	}
-	while(UTF8FGETS(line, sizeof(line), fp))
+	while(fgets(line, sizeof(line), fp))
 	{
 		if(line[0] == '/' && line[1] == '/')
 			continue;

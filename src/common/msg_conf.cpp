@@ -11,6 +11,8 @@
 #include "showmsg.hpp"
 #include "strlib.hpp"
 
+#include "../common/utf8_defines.hpp"  // PandasWS
+
 #ifndef Pandas_Message_Conf
 // 当禁用 Pandas_Message_Conf 的时候
 // 能够显示出对应的警告信息出来, 告诉用户原因同时避免编译错误 [Sola丶小克]
@@ -44,7 +46,7 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 	FILE *fp;
 	static int called = 1;
 
-	if ((fp = UTF8FOPEN(cfgName, "r")) == NULL) {
+	if ((fp = fopen(cfgName, "r")) == NULL) {
 		ShowError("Messages file not found: %s\n", cfgName);
 		return -1;
 	}
@@ -52,7 +54,7 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 	if ((--called) == 0)
 		memset(msg_table, 0, sizeof (msg_table[0]) * size);
 
-	while (UTF8FGETS(line, sizeof (line), fp)) {
+	while (fgets(line, sizeof (line), fp)) {
 		line_num++;
 		if (line[0] == '/' && line[1] == '/')
 			continue;

@@ -18,6 +18,7 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "battleground.hpp"
@@ -14701,13 +14702,13 @@ static bool status_readdb_attrfix(const char *basedir,bool silent)
 
 
 	sprintf(path, "%s/attr_fix.txt", basedir);
-	fp = UTF8FOPEN(path,"r");
+	fp = fopen(path,"r");
 	if (fp == NULL) {
 		if (silent==0)
 			ShowError("Can't read %s\n", path);
 		return 1;
 	}
-	while (UTF8FGETS(line, sizeof(line), fp)) {
+	while (fgets(line, sizeof(line), fp)) {
 		int lv, i, j;
 		if (line[0] == '/' && line[1] == '/')
 			continue;
@@ -14718,7 +14719,7 @@ static bool status_readdb_attrfix(const char *basedir,bool silent)
 
 		for (i = 0; i < ELE_ALL;) {
 			char *p;
-			if (!UTF8FGETS(line, sizeof(line), fp))
+			if (!fgets(line, sizeof(line), fp))
 				break;
 			if (line[0]=='/' && line[1]=='/')
 				continue;

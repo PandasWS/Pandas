@@ -28,6 +28,10 @@
 #include "crashdump.hpp"
 #endif // Pandas_Google_Breakpad
 
+#ifdef Pandas_Console_Translate
+#include "translate.hpp"
+#endif // Pandas_Console_Translate
+
 /// Called when a terminate signal is received.
 void (*shutdown_callback)(void) = NULL;
 
@@ -343,6 +347,10 @@ static void display_title(void) {
 	}
 #endif // Pandas_Show_Version
 
+#ifdef Pandas_Console_Translate
+	translate_status();
+#endif // Pandas_Console_Translate
+
 #ifdef Pandas_Disclaimer
 	ShowInfo("This program is completely free! You don't need to pay for it.\n");
 #endif // Pandas_Disclaimer
@@ -404,6 +412,10 @@ int main (int argc, char **argv)
 		}
 	}
 
+#ifdef Pandas_Console_Translate
+	do_init_translate();
+#endif // Pandas_Console_Translate
+
 	malloc_init();// needed for Show* in display_title() [FlavioJS]
 
 #ifdef MINICORE // minimalist Core
@@ -452,6 +464,10 @@ int main (int argc, char **argv)
 #endif
 
 	malloc_final();
+
+#ifdef Pandas_Console_Translate
+	do_final_translate();
+#endif // Pandas_Console_Translate
 
 #if defined(BUILDBOT)
 	if( buildbotflag ){

@@ -5,6 +5,12 @@
 
 #include "showmsg.hpp"
 
+#ifdef Pandas_YamlDatabase_BeQuiet
+	#define ShowError if (!this->quietLevel) ::ShowError
+	#define ShowWarning if (!this->quietLevel) ::ShowWarning
+	#define ShowStatus if (!this->quietLevel) ::ShowStatus
+#endif // Pandas_YamlDatabase_BeQuiet
+
 bool YamlDatabase::nodeExists( const YAML::Node& node, const std::string& name ){
 	try{
 		if( node[name] ){

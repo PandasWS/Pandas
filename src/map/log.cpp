@@ -10,6 +10,7 @@
 #include "../common/showmsg.hpp"
 #include "../common/sql.hpp" // SQL_INNODB
 #include "../common/strlib.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "homunculus.hpp"
@@ -600,13 +601,13 @@ int log_config_read(const char* cfgName)
 	if( count++ == 0 )
 		log_set_defaults();
 
-	if( ( fp = UTF8FOPEN(cfgName, "r") ) == NULL )
+	if( ( fp = fopen(cfgName, "r") ) == NULL )
 	{
 		ShowError("Log configuration file not found at: %s\n", cfgName);
 		return 1;
 	}
 
-	while( UTF8FGETS(line, sizeof(line), fp) )
+	while( fgets(line, sizeof(line), fp) )
 	{
 		if( line[0] == '/' && line[1] == '/' )
 			continue;

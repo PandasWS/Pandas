@@ -31,7 +31,7 @@ RandomPool& GlobalRNG() {
 // Author:      Sola丶小克(CairoLee)  2019/07/21 16:33
 //************************************
 std::string crypto_Base64Encode(std::string strplain) {
-	std::string plainUtf8 = utf8_g2u(strplain);
+	std::string plainUtf8 = PandasUtf8::ansiToUtf8(strplain);
 
 	Base64Encoder encoder(nullptr, false);
 	AlgorithmParameters params = MakeParameters(Name::Pad(), true)(Name::InsertLineBreaks(), false);
@@ -78,7 +78,7 @@ std::string crypto_PemToOneline(std::string pemKey) {
 std::string crypto_RSAEncryptString(std::string pemPublicKey, std::string message) {
 	if (!pemPublicKey.length()) return "";
 
-	std::string plainUtf8 = utf8_g2u(message);
+	std::string plainUtf8 = PandasUtf8::ansiToUtf8(message);
 	pemPublicKey = crypto_PemToOneline(pemPublicKey);
 	StringSource strSource(pemPublicKey, true, new Base64Decoder);
 	RSA::PublicKey publicKey;
@@ -115,6 +115,6 @@ std::string crypto_RSADecryptString(std::string pemPrivateKey, std::string ciphe
 	StringSource(ciphertext, true, new Base64Decoder(
 		new PK_DecryptorFilter(GlobalRNG(), priv, new StringSink(message))
 	));
-	message = utf8_u2g(message);
+	message = PandasUtf8::utf8ToAnsi(message);
 	return message;
 }

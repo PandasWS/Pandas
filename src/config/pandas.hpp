@@ -75,6 +75,15 @@
 
 	// 是否启用 LGTM 建议的一些处理措施, 避免潜在风险
 	#define Pandas_LGTM_Optimization
+
+	// 拓展 YamlDatabase 使之能抑制错误信息
+	#define Pandas_YamlDatabase_BeQuiet
+
+	// 以下选项开关需要依赖 Pandas_YamlDatabase_BeQuiet 的拓展
+	#ifdef Pandas_YamlDatabase_BeQuiet
+		// 是否对输出到控制台的信息进行翻译
+		#define Pandas_Console_Translate
+	#endif // Pandas_YamlDatabase_BeQuiet
 #endif // Pandas_Basic
 
 // ============================================================================

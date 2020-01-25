@@ -10,6 +10,7 @@
 
 #include "../common/strlib.hpp"
 #include "../common/nullpo.hpp"
+#include "../common/showmsg.hpp"
 
 #include "map.hpp"
 #include "pc.hpp"
