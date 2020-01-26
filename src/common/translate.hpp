@@ -14,7 +14,9 @@
 #include "../common/utf8.hpp"
 #include "../common/assistant.hpp"
 
+#define export_quote(x) #x
 #define export_message_tag(a) this->mTagsList.push_back({"[{"#a"}]", a});
+#define export_defined_tag(a) this->mTagsList.push_back({#a, export_quote(a)});
 
 struct s_translate_item {
 	std::string original;
@@ -92,6 +94,8 @@ public:
 		export_message_tag(PRIu64);
 		export_message_tag(PRId64);
 		export_message_tag(PRIXPTR);
+
+		export_defined_tag(PACKETVER);
 	}
 
 	const std::string getDefaultLocation();
