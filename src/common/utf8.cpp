@@ -39,8 +39,8 @@ enum e_console_encoding PandasUtf8::getConsoleEncoding() {
 	case 65001:	// UTF-8
 		return CONSOLE_ENCODING_UTF8;
 	default:
-		ShowWarning("%s: Unsupport default ANSI codepage: %d\n", __func__, nCodepage);
-		return CONSOLE_ENCODING_UNKNOW;
+		ShowWarning("%s: Unsupport default ANSI codepage: %d, defaulting to latin1\n", __func__, nCodepage);
+		return CONSOLE_ENCODING_LATIN1;
 	}
 #else
 	setlocale(LC_ALL, "");
@@ -245,7 +245,7 @@ enum e_file_charsetmode PandasUtf8::fmode(FILE* _Stream) {
 	// 记录目前指针所在的位置
 	long curpos = ftell(_Stream);
 
-	// 指针移动到开头, 读取前3个字节
+	// 指针移动到开头, 读取前 3 个字节
 	fseek(_Stream, 0, SEEK_SET);
 	extracted = ::fread(buf, sizeof(unsigned char), 3, _Stream);
 
@@ -269,6 +269,48 @@ enum e_file_charsetmode PandasUtf8::fmode(FILE* _Stream) {
 
 	// 将指针设置回原来的位置, 避免影响后续的读写流程
 	fseek(_Stream, curpos, SEEK_SET);
+	return charset_mode;
+}
+
+//************************************
+// Method:      fmode
+// Description: 尝试获取某个文件指针的文本编码
+// Parameter:   std::ifstream & ifs
+// Returns:     enum e_file_charsetmode
+// Author:      Sola丶小克(CairoLee)  2020/01/27 21:38
+//************************************
+enum e_file_charsetmode PandasUtf8::fmode(std::ifstream& ifs) {
+	unsigned char buf[3] = { 0 };
+	enum e_file_charsetmode charset_mode = FILE_CHARSETMODE_UNKNOW;
+
+	// 记录目前指针所在的位置
+	std::streampos curpos = ifs.tellg();
+
+	// 指针移动到开头, 读取前 3 个字节
+	ifs.seekg(0, std::ios::beg);
+	ifs.read((char*)buf, 3);
+	std::streampos extracted = ifs.gcount();
+
+	// 根据读取到的前几个字节来判断文本的编码类型
+	if (extracted == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) {
+		// UTF8-BOM
+		charset_mode = FILE_CHARSETMODE_UTF8_BOM;
+	}
+	else if (extracted >= 2 && buf[0] == 0xFF && buf[1] == 0xFE) {
+		// UCS-2 LE
+		charset_mode = FILE_CHARSETMODE_UCS2_LE;
+	}
+	else if (extracted >= 2 && buf[0] == 0xFE && buf[1] == 0xFF) {
+		// UCS-2 BE
+		charset_mode = FILE_CHARSETMODE_UCS2_BE;
+	}
+	else {
+		// 若无法根据上面的前几个字节判断出编码, 那么默认为 ANSI 编码 (GBK\BIG5)
+		charset_mode = FILE_CHARSETMODE_ANSI;
+	}
+
+	// 将指针设置回原来的位置, 避免影响后续的读写流程
+	ifs.seekg(curpos, std::ios::beg);
 	return charset_mode;
 }
 

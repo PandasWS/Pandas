@@ -1,4 +1,4 @@
-Header:
+ï»¿Header:
   Type: CONSOLE_TRANSLATE_DB
   Version: 1
 
@@ -524,7 +524,7 @@ Body:
 - Original: "Git Hash: '[{CL_WHITE}]%s[{CL_RESET}]'\n"
   Translation: ""
 - Original: "Pandas Version: [{CL_WHITE}]%s[{CL_RESET}]\n"
-  Translation: "ĞÜÃ¨Ä£ÄâÆ÷µ±Ç°°æ±¾ºÅ: [{CL_WHITE}]%s[{CL_RESET}]\n"
+  Translation: "ç†ŠçŒ«æ¨¡æ‹Ÿå™¨å½“å‰ç‰ˆæœ¬å·: [{CL_WHITE}]%s[{CL_RESET}]\n"
 - Original: "This program is completely free! You don't need to pay for it.\n"
   Translation: ""
 - Original: "You are running rAthena with admin privileges, it is not necessary.\n"
@@ -1054,7 +1054,7 @@ Body:
 - Original: "Console translation system was deactivated.\n"
   Translation: ""
 - Original: "Console translation initialized: [{CL_WHITE}]'%s'[{CL_RESET}].\n"
-  Translation: "ÖÕ¶Ë·­Òë»úÖÆ³õÊ¼»¯³É¹¦: [{CL_WHITE}]'%s'[{CL_RESET}].\n"
+  Translation: "ç»ˆç«¯ç¿»è¯‘æœºåˆ¶åˆå§‹åŒ–æˆåŠŸ: [{CL_WHITE}]'%s'[{CL_RESET}].\n"
 - Original: "Diagnostic information: Codepage = %d | UILanguage = 0x%04X\n"
   Translation: ""
 - Original: "Diagnostic information: Langinfo: %s | Locale: %s\n"

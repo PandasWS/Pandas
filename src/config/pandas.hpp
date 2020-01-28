@@ -75,15 +75,6 @@
 
 	// 是否启用 LGTM 建议的一些处理措施, 避免潜在风险
 	#define Pandas_LGTM_Optimization
-
-	// 拓展 YamlDatabase 使之能抑制错误信息
-	#define Pandas_YamlDatabase_BeQuiet
-
-	// 以下选项开关需要依赖 Pandas_YamlDatabase_BeQuiet 的拓展
-	#ifdef Pandas_YamlDatabase_BeQuiet
-		// 是否对输出到控制台的信息进行翻译
-		#define Pandas_Console_Translate
-	#endif // Pandas_YamlDatabase_BeQuiet
 #endif // Pandas_Basic
 
 // ============================================================================
@@ -99,6 +90,12 @@
 	// 是否启用魔物道具固定掉率数据库及其功能 [Sola丶小克]
 	// 通过这个数据库可以指定某个道具的全局固定掉落概率, 且能绕过等级惩罚和VIP掉率加成等机制
 	#define Pandas_Database_MobItem_FixedRatio
+
+	// 是否拓展 Yaml 的 Database 操作类使之能抑制错误信息 [Sola丶小克]
+	#define Pandas_Database_Yaml_BeQuiet
+
+	// 是否拓展 Yaml 的 Database 操作类使之能读取 UTF8-BOM 编码的文件 [Sola丶小克]
+	#define Pandas_Database_Yaml_Support_UTF8BOM
 #endif // Pandas_DatabaseIncrease
 
 // ============================================================================
@@ -200,6 +197,12 @@
 // ============================================================================
 
 #ifdef Pandas_CreativeWork
+	// 以下选项开关需要依赖 Pandas_Database_Yaml_BeQuiet 的拓展
+	#ifdef Pandas_Database_Yaml_BeQuiet
+		// 是否启用终端控制台的信息翻译机制 [Sola丶小克]
+		#define Pandas_Console_Translate
+	#endif // Pandas_Database_Yaml_BeQuiet
+
 	// 扩展信息配置文件 (Msg_conf) 的 ID 最大上限,
 	// 同时提供 msg_txt_cn 宏定义函数, 方便在工程中使用自定义信息 [Sola丶小克]
 	#define Pandas_Message_Conf
@@ -209,7 +212,7 @@
 		#define Pandas_Support_Specify_PacketKeys
 	#endif // PACKET_OBFUSCATION
 
-	// 是否支持读取 UTF8-BOM 编码的配置文件 [Sola丶小克]
+	// 是否支持读取 UTF8-BOM 编码的 libconfig 配置文件 [Sola丶小克]
 	#define Pandas_Support_Read_UTF8BOM_Configure
 
 	// 在使用 _M/_F 注册的时候, 能够限制使用中文等字符作为游戏账号 [Sola丶小克]

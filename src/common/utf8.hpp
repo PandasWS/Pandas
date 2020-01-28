@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <string>	// std::string
+#include <fstream>	// std::ifstream
 
 enum e_file_charsetmode : uint8 {
 	FILE_CHARSETMODE_UNKNOW = 0,
@@ -38,6 +39,8 @@ class PandasUtf8
 {
 public:
 	static enum e_file_charsetmode fmode(FILE* _Stream);
+	static enum e_file_charsetmode fmode(std::ifstream& ifs);
+
 	static FILE* fopen(const char* _FileName, const char* _Mode);
 	static char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream);
 	static size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream);

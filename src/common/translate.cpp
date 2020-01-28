@@ -63,7 +63,7 @@ void TranslateDB::showStatus() {
 #else
 	setlocale(LC_ALL, "");
 	ShowInfo("Diagnostic information: Langinfo: %s | Locale: %s\n", nl_langinfo(CODESET), setlocale(LC_CTYPE, NULL));
-#endif __WIN32
+#endif // _WIN32
 }
 
 //************************************

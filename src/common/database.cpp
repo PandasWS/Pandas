@@ -5,11 +5,49 @@
 
 #include "showmsg.hpp"
 
-#ifdef Pandas_YamlDatabase_BeQuiet
+#ifdef Pandas_Database_Yaml_Support_UTF8BOM
+#include "utf8.hpp"
+#endif // Pandas_Database_Yaml_Support_UTF8BOM
+
+#ifdef Pandas_Database_Yaml_BeQuiet
 	#define ShowError if (!this->quietLevel) ::ShowError
 	#define ShowWarning if (!this->quietLevel) ::ShowWarning
 	#define ShowStatus if (!this->quietLevel) ::ShowStatus
-#endif // Pandas_YamlDatabase_BeQuiet
+#endif // Pandas_Database_Yaml_BeQuiet
+
+#ifdef Pandas_Database_Yaml_Support_UTF8BOM
+//************************************
+// Method:      LoadFile
+// Description: 实现 YAML::LoadFile 的替代版本进行 UTF8-BOM 处理
+// Parameter:   const std::string & filename
+// Returns:     YAML::Node
+// Author:      Sola丶小克(CairoLee)  2020/01/28 12:11
+//************************************
+YAML::Node YamlDatabase::LoadFile(const std::string& filename) {
+	std::ifstream fin(filename.c_str());
+	if (!fin || fin.bad()) {
+		throw YAML::BadFile();
+	}
+
+	// 若不是 UTF8-BOM 编码则走原来的流程
+	if (PandasUtf8::fmode(fin) != FILE_CHARSETMODE_UTF8_BOM) {
+		return YAML::Load(fin);
+	}
+
+	// 先跳过最开始的标记位, UTF8-BOM 是三个字节
+	fin.seekg(3, std::ios::beg);
+
+	// 先读取来源文件的全部数据并保存到内存中
+	std::stringstream buffer;
+	buffer << fin.rdbuf();
+	std::string contents(buffer.str());
+	fin.close();
+
+	// 执行对应的编码转换, 并传递给 YAML::Load 进行加载
+	contents = PandasUtf8::utf8ToAnsi(contents);
+	return YAML::Load(contents);
+}
+#endif // Pandas_Database_Yaml_Support_UTF8BOM
 
 bool YamlDatabase::nodeExists( const YAML::Node& node, const std::string& name ){
 	try{
@@ -101,7 +139,11 @@ bool YamlDatabase::load(const std::string& path) {
 	YAML::Node rootNode;
 
 	try {
+#ifndef Pandas_Database_Yaml_Support_UTF8BOM
 		rootNode = YAML::LoadFile(path);
+#else
+		rootNode = this->LoadFile(path);
+#endif // Pandas_Database_Yaml_Support_UTF8BOM
 	}
 	catch(YAML::Exception &e) {
 		ShowError("Failed to read %s database file from '" CL_WHITE "%s" CL_RESET "'.\n", this->type.c_str(), path.c_str());
