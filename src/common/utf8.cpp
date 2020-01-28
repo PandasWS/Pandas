@@ -284,12 +284,12 @@ enum e_file_charsetmode PandasUtf8::fmode(std::ifstream& ifs) {
 	enum e_file_charsetmode charset_mode = FILE_CHARSETMODE_UNKNOW;
 
 	// 记录目前指针所在的位置
-	std::streampos curpos = ifs.tellg();
+	long curpos = ifs.tellg();
 
 	// 指针移动到开头, 读取前 3 个字节
 	ifs.seekg(0, std::ios::beg);
 	ifs.read((char*)buf, 3);
-	std::streampos extracted = ifs.gcount();
+	long extracted = ifs.gcount();
 
 	// 根据读取到的前几个字节来判断文本的编码类型
 	if (extracted == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) {

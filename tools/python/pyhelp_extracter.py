@@ -18,7 +18,7 @@ import re
 import yaml
 from io import StringIO
 
-from libs import Common, Message
+from libs import Common
 
 # 切换工作目录为脚本所在目录
 os.chdir(os.path.split(os.path.realpath(__file__))[0])
