@@ -80,122 +80,198 @@ def quoted_presenter(dumper, data):
     return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='"')
 yaml.add_representer(quoted, quoted_presenter)
 
-def step1_extract(filepath):
-    '''
-    第一阶段
-    用于从源代码中提取可能支持翻译处理的字符串
-    '''
-    match_content = []
-    encoding = Common.get_encoding(filepath)
-    with open(filepath, 'r', encoding=encoding) as f:
-        for line in f.readlines():
-            match_result = step1_pattern.findall(line)
-            if match_result and match_result[0][0] != r'\\':
-                match_content.append({
-                    'file' : filepath,
-                    'func' : match_result[0][1],
-                    'text' : match_result[0][2]
-                })
-        f.close()
-    return match_content
+class TranslationExtracter:
+    def __init__(self):
+        self.header_version = 1
+        self.header_type = 'CONSOLE_TRANSLATE_DB'
+        self.body = []
+    
+    def __step1_extract_single_file(self, filepath):
+        '''
+        从指定的源代码文件中, 提取可能支持翻译处理的字符串
+        '''
+        match_content = []
+        encoding = Common.get_encoding(filepath)
+        with open(filepath, 'r', encoding=encoding) as f:
+            for line in f.readlines():
+                match_result = step1_pattern.findall(line)
+                if match_result and match_result[0][0] != r'\\':
+                    match_content.append({
+                        'file' : filepath,
+                        'func' : match_result[0][1],
+                        'text' : match_result[0][2]
+                    })
+            f.close()
+        return match_content
 
-def step2_repl_constants(content):
-    '''
-    第二阶段
-    对 CL_WHITE 之类的常量进行替换处理, 变成 [{CL_WHITE}] 样式
-    '''
-    for item in content:
-        for rule in step2_rules:
-            item['text'] = rule['pattern'].sub(rule['subrepl'], item['text'])
-    return content
+    def __step2_replace_constants(self, step1_content):
+        '''
+        对 CL_WHITE 之类的常量进行替换处理, 变成 [{CL_WHITE}] 样式
+        '''
+        for item in step1_content:
+            for rule in step2_rules:
+                item['text'] = rule['pattern'].sub(rule['subrepl'], item['text'])
+        return step1_content
 
-def step3_except_nonstring(content):
-    '''
-    第三阶段
-    去掉提取到内容完全不包含字符串的内容
-    例如: ShowWarning(buff);
-    '''
-    for item in content[:]:
-        # 没有任何一个双引号且不以 [{ 开头的字符串则移除
-        if item['text'].count('"') == 0 and not str(item['text']).startswith('[{'):
-            content.remove(item)
-        # 拥有一个双引号且以 [{ 开头的字符串则在左侧补充一个双引号
-        if item['text'].count('"') == 1 and str(item['text']).startswith('[{'):
-            item['text'] = '"' + item['text']
-    return content
+    def __step3_except_nonstring(self, step2_content):
+        '''
+        去掉提取到内容完全不包含字符串的内容, 例如: ShowWarning(buff);
+        '''
+        for item in step2_content[:]:
+            # 没有任何一个双引号且不以 [{ 开头的字符串则移除
+            if item['text'].count('"') == 0 and not str(item['text']).startswith('[{'):
+                step2_content.remove(item)
 
-def step4_field_offset(content):
-    '''
-    第四阶段
-    部分特殊的函数需要取第二列的内容 (而不是第一列)
-    例如: ShowConfigWarning 的第一个参数并不是我们要的提示文本
-    '''
-    functions = ['ShowConfigWarning', 'strcat']
-    for item in content:
-        if item['func'] in functions:
+            # 拥有一个双引号且以 [{ 开头的字符串则在左侧补充一个双引号
+            if item['text'].count('"') == 1 and str(item['text']).startswith('[{'):
+                item['text'] = '"' + item['text']
+        return step2_content
+
+    def __step4_field_offset(self, step3_content):
+        '''
+        部分特殊的函数需要取第二列的内容 (而不是第一列)
+        例如: ShowConfigWarning 的第一个参数并不是我们要的提示文本
+        '''
+        functions = ['ShowConfigWarning', 'strcat']
+        for item in step3_content:
+            if item['func'] in functions:
+                text = str(item['text']).replace(r'\"', r'\""')
+                for row in csv.reader(StringIO(text), skipinitialspace=True):
+                    item['text'] = '"%s"' % str(row[1])
+                    break
+        return step3_content
+
+    def __step5_drop_params(self, step4_content):
+        '''
+        抛弃参数部分, 只保留第一列的文本内容
+        '''
+        for item in step4_content:
             text = str(item['text']).replace(r'\"', r'\""')
             for row in csv.reader(StringIO(text), skipinitialspace=True):
-                item['text'] = '"%s"' % str(row[1])
+                item['text'] = str(row[0])
                 break
-    return content
+        return step4_content
 
-def step5_drop_params(content):
-    '''
-    第五阶段
-    抛弃参数部分, 只保留第一列的文本内容
-    '''
-    for item in content:
-        text = str(item['text']).replace(r'\"', r'\""')
-        for row in csv.reader(StringIO(text), skipinitialspace=True):
-            item['text'] = str(row[0])
-            break
-    return content
+    def __step6_unescape(self, step5_content):
+        '''
+        对转义字符进行一些调整, 避免输出时候错位
+        '''
+        for item in step5_content:
+            item['text'] = item['text'].encode('latin1').decode('unicode-escape')
+        return step5_content
+    
+    def __make_distinct(self, step6_content):
+        '''
+        对提取到的内容进行消重处理
+        '''
+        distincted_keys = list(set([x['text'] for x in step6_content]))
+        distincted_keys.sort()
+        return [{'text' : k} for k in distincted_keys]
 
-def step6_unescape(content):
-    '''
-    第六阶段
-    对转义字符进行一些调整, 避免输出时候错位
-    '''
-    for item in content:
-        item['text'] = item['text'].encode('latin1').decode('unicode-escape')
-    return content
+    def __make_body_to_dict(self, body, filter_empty=False):
+        '''
+        将 body 类型的数据转换成字典类型
+        '''
+        content = {}
+        for x in body:
+            if filter_empty and not x['Translation']:
+                continue
+            content[x['Original']] = x['Translation']
+        return content
 
-def extract(filename):
-    content = step1_extract(filename)
-    content = step2_repl_constants(content)
-    content = step3_except_nonstring(content)
-    content = step4_field_offset(content)
-    content = step5_drop_params(content)
-    content = step6_unescape(content)
+    def __make_dict_to_body(self, data):
+        '''
+        将字典类型的数据转换成 body 类型
+        '''
+        body = []
+        for x in data:
+            body.append({
+                'Original': x,
+                'Translation': data[x]
+            })
+        return body
 
-    # for i in content:
-    #     print(i['text'])
+    def create(self, src_dir):
+        '''
+        根据指定的源代码目录, 构建新的数据保存到 self.body 列表
+        '''
+        extract_content = []
+        for dirpath, _dirnames, filenames in os.walk(src_dir):
+            for filename in filenames:
+                _base_name, extension_name = os.path.splitext(filename.lower())
+                if extension_name.lower() in process_exts:
+                    filepath = os.path.normpath('%s/%s' % (dirpath, filename))
+                    
+                    content = self.__step1_extract_single_file(filepath)
+                    content = self.__step2_replace_constants(content)
+                    content = self.__step3_except_nonstring(content)
+                    content = self.__step4_field_offset(content)
+                    content = self.__step5_drop_params(content)
+                    content = self.__step6_unescape(content)
+                    
+                    extract_content.extend(content)
+        
+        # 对提取到的内容进行进一步加工, 格式化处理
+        extract_content = self.__make_distinct(extract_content)
+        
+        self.body = []
+        for x in extract_content:
+            self.body.append({
+                'Original': x['text'],
+                'Translation': ''
+            })
 
-    return content
+    def dump(self, filename):
+        '''
+        将当前 self.body 列表中的内容转储到本地指定文件
+        '''
+        _body = []
+        for x in self.body:
+            _body.append({
+                'Original': quoted(x['Original']),
+                'Translation': quoted(x['Translation'])
+            })
+        
+        restruct = {
+            'Header': {
+                'Type': self.header_type,
+                'Version': self.header_version
+            },
+            'Body' : _body
+        }
 
-def formatting(content):
-    formated = []
-    for x in content:
-        formated.append({
-            'Original': quoted(x['text']),
-            'Translation': quoted('')
-        })
-    return {'Body' : formated}
+        with open(filename, 'w+', encoding='UTF-8-SIG') as f:
+            yaml.dump(
+                restruct, f, allow_unicode=True,
+                default_flow_style=False, width=2048, sort_keys=False
+            )
 
-def save(content, filename):
-    data = formatting(content)
-    with open(filename, 'w+') as f:
-        yaml.dump(data, f, allow_unicode=True, default_flow_style=False, width=2048)
+    def updatefrom(self, from_yml, increase_version=True):
+        '''
+        读取现有的翻译结果, 刷入 self.body 列表中
+        并提升数据的对应版本号
+        '''
+        with open(from_yml, encoding='UTF-8-SIG') as f:
+            content = yaml.load(f, Loader=yaml.FullLoader)
+        
+        header = content['Header']
+        body = content['Body']
+        
+        self.header_version = header['Version']
+        self.header_type = header['Type']
+
+        from_dict = self.__make_body_to_dict(body, True)
+        curr_dict = self.__make_body_to_dict(self.body, False)
+        curr_dict.update(from_dict)
+        self.body = self.__make_dict_to_body(curr_dict)
+        
+        if increase_version:
+            self.header_version = self.header_version + 1
 
 def main():
-    content = []
-    for dirpath, _dirnames, filenames in os.walk(project_slndir + 'src'):
-        for filename in filenames:
-            _base_name, extension_name = os.path.splitext(filename.lower())
-            if extension_name.lower() in process_exts:
-                extract_data = extract(os.path.normpath('%s/%s' % (dirpath, filename)))
-                content.extend(extract_data)
-    save(content, 'translation.yml')
+    extracter = TranslationExtracter()
+    extracter.create(project_slndir + 'src')
+    extracter.dump('translation.yml')
 
 if __name__ == '__main__':
     try:
