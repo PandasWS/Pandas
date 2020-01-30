@@ -1,6 +1,6 @@
 '''
 //===== Pandas Python Script ============================== 
-//= 终端翻译对照表提取脚本
+//= 终端翻译对照表提取助手
 //===== By: ================================================== 
 //= Sola丶小克
 //===== Current Version: ===================================== 
@@ -16,9 +16,10 @@ import csv
 import os
 import re
 import yaml
+import glob
 from io import StringIO
 
-from libs import Common
+from libs import Common, Message, Inputer
 
 # 切换工作目录为脚本所在目录
 os.chdir(os.path.split(os.path.realpath(__file__))[0])
@@ -191,10 +192,11 @@ class TranslationExtracter:
             })
         return body
 
-    def create(self, src_dir):
+    def build(self, src_dir):
         '''
         根据指定的源代码目录, 构建新的数据保存到 self.body 列表
         '''
+        Message.ShowStatus('正在扫描源代码目录, 提取可被翻译的字符串...')
         extract_content = []
         for dirpath, _dirnames, filenames in os.walk(src_dir):
             for filename in filenames:
@@ -211,7 +213,7 @@ class TranslationExtracter:
                     
                     extract_content.extend(content)
         
-        # 对提取到的内容进行进一步加工, 格式化处理
+        # 对提取到的内容进行消重处理
         extract_content = self.__make_distinct(extract_content)
         
         self.body = []
@@ -220,31 +222,41 @@ class TranslationExtracter:
                 'Original': x['text'],
                 'Translation': ''
             })
+        Message.ShowInfo('扫描完毕, 共有 %d 条可翻译的字符串' % len(self.body))
 
     def dump(self, filename):
         '''
         将当前 self.body 列表中的内容转储到本地指定文件
         '''
-        _body = []
-        for x in self.body:
-            _body.append({
-                'Original': quoted(x['Original']),
-                'Translation': quoted(x['Translation'])
-            })
-        
-        restruct = {
-            'Header': {
-                'Type': self.header_type,
-                'Version': self.header_version
-            },
-            'Body' : _body
-        }
+        try:
+            Message.ShowInfo('正在保存翻译对照表...')
+            _body = []
+            for x in self.body:
+                _body.append({
+                    'Original': quoted(x['Original']),
+                    'Translation': quoted(x['Translation'])
+                })
+            
+            restruct = {
+                'Header': {
+                    'Type': self.header_type,
+                    'Version': self.header_version
+                },
+                'Body' : _body
+            }
 
-        with open(filename, 'w+', encoding='UTF-8-SIG') as f:
-            yaml.dump(
-                restruct, f, allow_unicode=True,
-                default_flow_style=False, width=2048, sort_keys=False
-            )
+            with open(filename, 'w+', encoding='UTF-8-SIG') as f:
+                yaml.dump(
+                    restruct, f, allow_unicode=True,
+                    default_flow_style=False, width=2048, sort_keys=False
+                )
+                
+            Message.ShowInfo('保存到: %s' % os.path.relpath(os.path.abspath(filename), project_slndir))
+            return os.path.abspath(filename)
+        except Exception as _err:
+            print(_err)
+            Message.ShowError('保存翻译对照表期间发生错误, 请重试...')
+            return None
 
     def updatefrom(self, from_yml, increase_version=True):
         '''
@@ -267,11 +279,68 @@ class TranslationExtracter:
         
         if increase_version:
             self.header_version = self.header_version + 1
+    
+    def updateall(self, increase_version=True):
+        '''
+        更新全部翻译对照表文件, 并保留现有的翻译结果
+        '''
+        yamlfiles = glob.glob('../../conf/msg_conf/translation_*.yml')
+        
+        Message.ShowStatus('即将更新全部翻译对照表, 并保留现有的翻译结果...')
+        if increase_version:
+            Message.ShowInfo('对照表更新完成后会提升数据版本号.')
+        else:
+            Message.ShowWarning('本次对照表更新操作不会提升数据版本号.')
+        for relpath in yamlfiles:
+            fullpath = os.path.abspath(relpath)
+            Message.ShowInfo('正在升级: %s' % os.path.relpath(fullpath, project_slndir))
+            _backup_body = self.body[:]
+            self.updatefrom(fullpath, increase_version)
+            self.dump(fullpath)
+            self.body = _backup_body
+        Message.ShowStatus('感谢您的使用, 全部对照表翻译完毕.')
 
 def main():
+    Common.welcome('终端翻译对照表提取助手')
+    
+    options = [
+        {
+            'name' : '建立新的翻译对照表文件',
+            'desc' : '0 - 建立新的翻译对照表文件'
+        },
+        {
+            'name' : '更新现有的翻译对照表文件',
+            'desc' : '1 - 更新现有的翻译对照表文件'
+        },
+        {
+            'name' : '基于简体中文汉化结果更新繁体中文数据',
+            'desc' : '2 - 基于简体中文汉化结果更新繁体中文数据'
+        }
+    ]
+
+    userchoose = Inputer().requireSelect({
+        'name' : '想要执行的操作或任务',
+        'data' : options
+    })
+
+    if userchoose == 1:
+        updatever = Inputer().requireBool({
+            'tips' : '完成更新后是否提升数据版本号?',
+            'default' : False
+        })
+    
     extracter = TranslationExtracter()
-    extracter.create(project_slndir + 'src')
-    extracter.dump('translation.yml')
+
+    if userchoose == 0:
+        extracter.build(project_slndir + 'src')
+        extracter.dump('translation.yml')
+    elif userchoose == 1:
+        extracter.build(project_slndir + 'src')
+        extracter.updateall(updatever)
+    elif userchoose == 2:
+        Message.ShowWarning('此功能正在开发中...')
+    
+    Common.exit_with_pause()
 
 if __name__ == '__main__':
     try:
