@@ -17,6 +17,7 @@ import os
 import re
 import yaml
 import glob
+import zhconv
 from io import StringIO
 
 from libs import Common, Message, Inputer
@@ -86,6 +87,11 @@ class TranslationExtracter:
         self.header_version = 1
         self.header_type = 'CONSOLE_TRANSLATE_DB'
         self.body = []
+        self.s2t_wordmap = {
+            '信息': '訊息'
+        }
+        self.t2s_wordmap = {
+        }
     
     def __step1_extract_single_file(self, filepath):
         '''
@@ -100,7 +106,7 @@ class TranslationExtracter:
                     match_content.append({
                         'file' : filepath,
                         'func' : match_result[0][1],
-                        'text' : match_result[0][2]
+                        'text' : str(match_result[0][2]).strip()
                     })
             f.close()
         return match_content
@@ -223,6 +229,21 @@ class TranslationExtracter:
                 'Translation': ''
             })
         Message.ShowInfo('扫描完毕, 共有 %d 条可翻译的字符串' % len(self.body))
+    
+    def load(self, filename):
+        '''
+        '''
+        Message.ShowInfo('正在加载: %s' % filename)
+        
+        with open(filename, encoding='UTF-8-SIG') as f:
+            content = yaml.load(f, Loader=yaml.FullLoader)
+            
+            header = content['Header']
+            self.header_version = header['Version']
+            self.header_type = header['Type']
+            self.body = content['Body']
+        
+        Message.ShowInfo('已读取 %d 条记录, 数据版本号为: %d' % (len(self.body), self.header_version))
 
     def dump(self, filename):
         '''
@@ -300,6 +321,19 @@ class TranslationExtracter:
             self.body = _backup_body
         Message.ShowStatus('感谢您的使用, 全部对照表翻译完毕.')
 
+    def trans(self, locale):
+        '''
+        将当前 self.body 中的译文结果转换到目标结果
+        其中 locale 可选项有 zh-cn 和 zh-tw
+        '''
+        Message.ShowInfo('正在将译文转换成: %s' % locale)
+        for x in self.body:
+            x['Translation'] = zhconv.convert(
+                x['Translation'], locale, 
+                self.s2t_wordmap if locale == 'zh-tw' else self.t2s_wordmap
+            )
+        Message.ShowInfo('译文顺利转换完成')
+
 def main():
     Common.welcome('终端翻译对照表提取助手')
     
@@ -338,7 +372,9 @@ def main():
         extracter.build(project_slndir + 'src')
         extracter.updateall(updatever)
     elif userchoose == 2:
-        Message.ShowWarning('此功能正在开发中...')
+        extracter.load(project_slndir + 'conf/msg_conf/translation_cn.yml')
+        extracter.trans('zh-tw')
+        extracter.dump(project_slndir + 'conf/msg_conf/translation_tw.yml')
     
     Common.exit_with_pause()
 
