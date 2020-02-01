@@ -105,6 +105,38 @@ enum e_system_language PandasUtf8::getSystemLanguage() {
 }
 
 //************************************
+// Method:      UnicodeEncode
+// Description: 
+// Parameter:   const std::string & strANSI
+// Parameter:   unsigned int nCodepage
+// Returns:     std::wstring
+// Author:      Sola丶小克(CairoLee)  2020/01/31 14:00
+//************************************
+std::wstring PandasUtf8::UnicodeEncode(const std::string& strANSI, unsigned int nCodepage) {
+	int unicodeLen = MultiByteToWideChar(nCodepage, 0, strANSI.c_str(), -1, NULL, 0);
+	wchar_t* strUnicode = new wchar_t[unicodeLen];
+	wmemset(strUnicode, 0, unicodeLen);
+	MultiByteToWideChar(nCodepage, 0, strANSI.c_str(), -1, strUnicode, unicodeLen);
+	return std::wstring(strUnicode);
+}
+
+//************************************
+// Method:      UnicodeDecode
+// Description: 
+// Parameter:   const std::wstring & strUnicode
+// Parameter:   unsigned int nCodepage
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/01/31 14:00
+//************************************
+std::string PandasUtf8::UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage) {
+	int ansiLen = WideCharToMultiByte(nCodepage, 0, strUnicode.c_str(), -1, NULL, 0, NULL, NULL);
+	char* strAnsi = new char[ansiLen];
+	memset(strAnsi, 0, ansiLen);
+	WideCharToMultiByte(nCodepage, 0, strUnicode.c_str(), -1, strAnsi, ansiLen, NULL, NULL);
+	return std::string(strAnsi);
+}
+
+//************************************
 // Method:      utf8ToAnsi
 // Description: 将 UTF8 字符串转换为 ANSI 字符串
 // Parameter:   const std::string & strUtf8 须为 UTF-8 编码的字符串
@@ -113,23 +145,8 @@ enum e_system_language PandasUtf8::getSystemLanguage() {
 //************************************
 std::string PandasUtf8::utf8ToAnsi(const std::string& strUtf8) {
 #ifdef _WIN32
-	// UTF-8 转 Unicode
-	int len = MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, NULL, 0);
-	wchar_t* strUnicode = new wchar_t[len];
-	wmemset(strUnicode, 0, len);
-	MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, strUnicode, len);
-
-	// Unicode 转 Ansi
-	len = WideCharToMultiByte(CP_ACP, 0, strUnicode, -1, NULL, 0, NULL, NULL);
-	char* strAnsi = new char[len];
-	memset(strAnsi, 0, len);
-	WideCharToMultiByte(CP_ACP, 0, strUnicode, -1, strAnsi, len, NULL, NULL);
-
-	// 执行一些清理工作, 并返回结果
-	std::string strResult(strAnsi);
-	delete[] strUnicode;
-	delete[] strAnsi;
-	return strResult;
+	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strUtf8, CP_UTF8);
+	return PandasUtf8::UnicodeDecode(strUnicode, CP_ACP);
 #else
 	iconv_t c_pt = nullptr;
 	char* strInput = nullptr, * pStrInput = nullptr;
@@ -174,22 +191,8 @@ std::string PandasUtf8::utf8ToAnsi(const std::string& strUtf8) {
 //************************************
 std::string PandasUtf8::ansiToUtf8(const std::string& strAnsi) {
 #ifdef _WIN32
-	// Ansi 转 Unicode
-	int len = MultiByteToWideChar(CP_ACP, 0, strAnsi.c_str(), -1, NULL, 0);
-	wchar_t* strUnicode = new wchar_t[len];
-	wmemset(strUnicode, 0, len);
-	MultiByteToWideChar(CP_ACP, 0, strAnsi.c_str(), -1, strUnicode, len);
-
-	// Unicode 转 UTF-8
-	len = WideCharToMultiByte(CP_UTF8, 0, strUnicode, -1, NULL, 0, NULL, NULL);
-	char* strUtf8 = new char[len];
-	WideCharToMultiByte(CP_UTF8, 0, strUnicode, -1, strUtf8, len, NULL, NULL);
-
-	// 执行一些清理工作, 并返回结果
-	std::string strResult(strUtf8);
-	delete[] strUnicode;
-	delete[] strUtf8;
-	return strResult;
+	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strAnsi, CP_ACP);
+	return PandasUtf8::UnicodeDecode(strUnicode, CP_UTF8);
 #else
 	iconv_t c_pt = nullptr;
 	char* strInput = nullptr, * pStrInput = nullptr;
@@ -284,12 +287,12 @@ enum e_file_charsetmode PandasUtf8::fmode(std::ifstream& ifs) {
 	enum e_file_charsetmode charset_mode = FILE_CHARSETMODE_UNKNOW;
 
 	// 记录目前指针所在的位置
-	long curpos = ifs.tellg();
+	long curpos = (long)ifs.tellg();
 
 	// 指针移动到开头, 读取前 3 个字节
 	ifs.seekg(0, std::ios::beg);
 	ifs.read((char*)buf, 3);
-	long extracted = ifs.gcount();
+	long extracted = (long)ifs.gcount();
 
 	// 根据读取到的前几个字节来判断文本的编码类型
 	if (extracted == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) {

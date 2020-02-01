@@ -10,9 +10,9 @@
 #endif // Pandas_Database_Yaml_Support_UTF8BOM
 
 #ifdef Pandas_Database_Yaml_BeQuiet
-	#define ShowError if (!this->quietLevel) ::ShowError
-	#define ShowWarning if (!this->quietLevel) ::ShowWarning
-	#define ShowStatus if (!this->quietLevel) ::ShowStatus
+	#define ShowError if ((this->quietLevel & 4) != 4) ::ShowError
+	#define ShowWarning if ((this->quietLevel & 2) != 2) ::ShowWarning
+	#define ShowStatus if ((this->quietLevel & 1) != 1) ::ShowStatus
 #endif // Pandas_Database_Yaml_BeQuiet
 
 #ifdef Pandas_Database_Yaml_Support_UTF8BOM

@@ -17,8 +17,8 @@ import os
 import re
 import yaml
 import glob
-import zhconv
 from io import StringIO
+from opencc import OpenCC
 
 from libs import Common, Message, Inputer
 
@@ -80,6 +80,7 @@ class quoted(str):
 
 def quoted_presenter(dumper, data):
     return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='"')
+
 yaml.add_representer(quoted, quoted_presenter)
 
 class TranslationExtracter:
@@ -87,11 +88,7 @@ class TranslationExtracter:
         self.header_version = 1
         self.header_type = 'CONSOLE_TRANSLATE_DB'
         self.body = []
-        self.s2t_wordmap = {
-            '信息': '訊息'
-        }
-        self.t2s_wordmap = {
-        }
+        self.opencc = OpenCC('s2twp')
     
     def __step1_extract_single_file(self, filepath):
         '''
@@ -271,7 +268,20 @@ class TranslationExtracter:
                     restruct, f, allow_unicode=True,
                     default_flow_style=False, width=2048, sort_keys=False
                 )
-                
+                f.close()
+
+            content = ""
+            with open(filename, 'r', encoding='UTF-8-SIG') as f:
+                content = f.read()
+                f.close()
+            
+            pattern = re.compile(r'\[\[\[\\\\\]\]\]')
+            content = pattern.sub(r'\\', content)
+            
+            with open(filename, 'w', encoding='UTF-8-SIG') as f:
+                f.write(content)
+                f.close()
+
             Message.ShowInfo('保存到: %s' % os.path.relpath(os.path.abspath(filename), project_slndir))
             return os.path.abspath(filename)
         except Exception as _err:
@@ -328,10 +338,14 @@ class TranslationExtracter:
         '''
         Message.ShowInfo('正在将译文转换成: %s' % locale)
         for x in self.body:
-            x['Translation'] = zhconv.convert(
-                x['Translation'], locale, 
-                self.s2t_wordmap if locale == 'zh-tw' else self.t2s_wordmap
-            )
+            x['Translation'] = self.opencc.convert(x['Translation'])
+            restruct = ''
+            for i, element in enumerate(x['Translation']):
+                cb = element.encode('big5')
+                restruct = restruct + element
+                if len(cb) == 2 and cb[1] == 0x5C:
+                    restruct = restruct + '[[[\\]]]'
+            x['Translation'] = restruct
         Message.ShowInfo('译文顺利转换完成')
 
 def main():

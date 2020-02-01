@@ -21,7 +21,7 @@ private:
 	uint16 minimumVersion;
 	std::string currentFile;
 #ifdef Pandas_Database_Yaml_BeQuiet
-	uint16 quietLevel;	// 0 - 正常; 1 - 静默
+	uint16 quietLevel;	// 0 - 正常; &1 = 状态; &2 = 警告; &4 = 错误
 #endif // Pandas_Database_Yaml_BeQuiet
 
 	bool verifyCompatibility( const YAML::Node& rootNode );
@@ -79,7 +79,7 @@ public:
 	//************************************
 	// Method:      setQuietLevel
 	// Description: 设置提示信息的静默等级
-	// Parameter:   uint16 quietLevel_ ( 0 - 正常; 1 - 静默 )
+	// Parameter:   uint16 quietLevel_ ( 0 - 正常; &1 = 状态; &2 = 警告; &4 = 错误 )
 	// Returns:     void
 	// Author:      Sola丶小克(CairoLee)  2020/01/24 11:43
 	//************************************
