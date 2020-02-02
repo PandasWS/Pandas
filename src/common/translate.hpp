@@ -16,7 +16,7 @@
 
 #define export_quote(x) #x
 #define export_message_tag(a) this->mTagsList.push_back({"[{"#a"}]", a});
-#define export_defined_tag(a) this->mTagsList.push_back({#a, export_quote(a)});
+#define export_defined_tag(a) this->mQuoteList.push_back({#a, export_quote(a)});
 
 struct s_translate_item {
 	std::string original;
@@ -31,6 +31,7 @@ struct s_message_tag {
 class TranslateDB : public TypesafeYamlDatabase<std::string, s_translate_item> {
 private:
 	std::vector<s_message_tag> mTagsList;
+	std::vector<s_message_tag> mQuoteList;
 
 	void parseTags(std::string& message);
 public:

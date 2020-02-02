@@ -1,6 +1,8 @@
-pdbparse==1.4
-chardet==3.0.4
 pefile==2019.4.18
 colorama==0.4.1
-python-dotenv==0.10.3
-GitPython==3.0.2
+opencc_python_reimplemented==0.1.5
+pdbparse==1.4
+chardet==3.0.4
+python-dotenv==0.10.5
+GitPython==3.0.5
+PyYAML==5.3

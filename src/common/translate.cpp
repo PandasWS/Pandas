@@ -117,7 +117,7 @@ void TranslateDB::parseTags(std::string& message) {
 
 				// Step2. 获取常量对应的值
 				std::string constant_val;
-				for (auto it : this->mTagsList) {
+				for (auto it : this->mQuoteList) {
 					if (it.name == constant) {
 						constant_val = it.value;
 						break;

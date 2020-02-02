@@ -13,14 +13,15 @@
 '''
 
 import csv
+import glob
 import os
 import re
-import yaml
-import glob
 from io import StringIO
+
+import yaml
 from opencc import OpenCC
 
-from libs import Common, Message, Inputer
+from libs import Common, Inputer, Message
 
 # 切换工作目录为脚本所在目录
 os.chdir(os.path.split(os.path.realpath(__file__))[0])
@@ -32,7 +33,7 @@ project_slndir = '../../'
 process_exts = ['.cpp', '.hpp']
 
 # 第一阶段配置, 用于提取字符串的正则表达式
-step1_pattern = re.compile(r'^\s*(\/\/|)\s*(%s)\(\s*(.*)\);' % '|'.join([
+step1_pattern = re.compile(r'\s*(\/\/|)\s*(%s)\s*\(\s*(.*)\);' % '|'.join([
         'SqlStmt_ShowDebug',
         'Sql_ShowDebug',
         '_vShowMessage',
@@ -55,23 +56,33 @@ step1_pattern = re.compile(r'^\s*(\/\/|)\s*(%s)\(\s*(.*)\);' % '|'.join([
 
 # 第二阶段配置, CL_WHITE 等常量转换处理相关的正则表达式
 step2_rules = [
-    # 优先处理 " CL_WHITE " 
+    # 1. 优先处理 " CL_WHITE " 
     # 这种左侧和右侧都有双引号的情况
     {
         'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
         'subrepl' : r'[{\2}]'
     },
-    # 然后处理 CL_WHITE "
+    # 2. 然后处理 CL_WHITE "
     # 这种左侧没有双引号的情况
     {
         'pattern' : re.compile(r'(\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
         'subrepl' : r'"[{\2}]'
     },
-    # 最后处理 " CL_RESET
+    # 3. 在进行 2 处理后需要重新在执行一次 1 处理
+    {
+        'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
+        'subrepl' : r'[{\2}]'
+    },
+    # 4. 最后处理 " CL_RESET
     # 这种右侧没有双引号的情况
     {
         'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*)'),
         'subrepl' : r'[{\2}]"'
+    },
+    # 5. 在进行 4 处理后需要重新再执行一次 1 处理
+    {
+        'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
+        'subrepl' : r'[{\2}]'
     }
 ]
 
@@ -194,6 +205,50 @@ class TranslationExtracter:
                 'Translation': data[x]
             })
         return body
+    
+    def __restore_backslash(self, textcontent):
+        '''
+        针对 BIG5 的处理, 还原文本文件中的反斜杠转义
+        '''
+        text_processed = ''
+        bSkipBackslash = False
+        for i, element in enumerate(textcontent):
+            if bSkipBackslash and element == '\\':
+                bSkipBackslash = False
+                continue
+            cb = element.encode('big5')
+            text_processed = text_processed + element
+            if len(cb) == 2 and cb[1] == 0x5C:
+                bSkipBackslash = True
+        return text_processed
+    
+    def __convert_backslash_step1(self, textcontent):
+        '''
+        针对 BIG5 的处理, 在双字节低位等于 0x5C 的字符后面, 插入 [[[\\]]] 标记
+        '''
+        text_processed = ''
+        for i, element in enumerate(textcontent):
+            cb = element.encode('big5')
+            text_processed = text_processed + element
+            if len(cb) == 2 and cb[1] == 0x5C:
+                text_processed = text_processed + '[[[\\]]]'
+        return text_processed
+
+    def __convert_backslash_step2(self, filepath):
+        '''
+        针对 BIG5 的处理, 将指定文件中的 [[[\\]]] 替换成反斜杠
+        '''
+        content = ""
+        with open(filepath, 'r', encoding='UTF-8-SIG') as f:
+            content = f.read()
+            f.close()
+        
+        pattern = re.compile(r'\[\[\[\\\\\]\]\]')
+        content = pattern.sub(r'\\', content)
+        
+        with open(filepath, 'w', encoding='UTF-8-SIG') as f:
+            f.write(content)
+            f.close()
 
     def build(self, src_dir):
         '''
@@ -270,17 +325,7 @@ class TranslationExtracter:
                 )
                 f.close()
 
-            content = ""
-            with open(filename, 'r', encoding='UTF-8-SIG') as f:
-                content = f.read()
-                f.close()
-            
-            pattern = re.compile(r'\[\[\[\\\\\]\]\]')
-            content = pattern.sub(r'\\', content)
-            
-            with open(filename, 'w', encoding='UTF-8-SIG') as f:
-                f.write(content)
-                f.close()
+            self.__convert_backslash_step2(filename)
 
             Message.ShowInfo('保存到: %s' % os.path.relpath(os.path.abspath(filename), project_slndir))
             return os.path.abspath(filename)
@@ -294,8 +339,16 @@ class TranslationExtracter:
         读取现有的翻译结果, 刷入 self.body 列表中
         并提升数据的对应版本号
         '''
+        content = None
         with open(from_yml, encoding='UTF-8-SIG') as f:
-            content = yaml.load(f, Loader=yaml.FullLoader)
+            filecontent = f.read()
+            try:
+                content = yaml.load(filecontent, Loader=yaml.FullLoader)
+            except yaml.scanner.ScannerError as _err:
+                content = yaml.load(self.__restore_backslash(filecontent), Loader=yaml.FullLoader)
+        
+        if content is None:
+            return
         
         header = content['Header']
         body = content['Body']
@@ -327,26 +380,22 @@ class TranslationExtracter:
             Message.ShowInfo('正在升级: %s' % os.path.relpath(fullpath, project_slndir))
             _backup_body = self.body[:]
             self.updatefrom(fullpath, increase_version)
+            if '_tw.yml' in relpath:
+                for x in self.body:
+                    x['Translation'] = self.__convert_backslash_step1(x['Translation'])
             self.dump(fullpath)
             self.body = _backup_body
         Message.ShowStatus('感谢您的使用, 全部对照表翻译完毕.')
 
-    def trans(self, locale):
+    def toTraditional(self):
         '''
         将当前 self.body 中的译文结果转换到目标结果
-        其中 locale 可选项有 zh-cn 和 zh-tw
         '''
-        Message.ShowInfo('正在将译文转换成: %s' % locale)
+        Message.ShowInfo('正在将译文转换成繁体中文...')
         for x in self.body:
             x['Translation'] = self.opencc.convert(x['Translation'])
-            restruct = ''
-            for i, element in enumerate(x['Translation']):
-                cb = element.encode('big5')
-                restruct = restruct + element
-                if len(cb) == 2 and cb[1] == 0x5C:
-                    restruct = restruct + '[[[\\]]]'
-            x['Translation'] = restruct
-        Message.ShowInfo('译文顺利转换完成')
+            x['Translation'] = self.__convert_backslash_step1(x['Translation'])
+        Message.ShowInfo('译文已经顺利转换成繁体中文')
 
 def main():
     Common.welcome('终端翻译对照表提取助手')
@@ -387,7 +436,7 @@ def main():
         extracter.updateall(updatever)
     elif userchoose == 2:
         extracter.load(project_slndir + 'conf/msg_conf/translation_cn.yml')
-        extracter.trans('zh-tw')
+        extracter.toTraditional()
         extracter.dump(project_slndir + 'conf/msg_conf/translation_tw.yml')
     
     Common.exit_with_pause()
