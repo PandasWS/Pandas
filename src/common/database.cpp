@@ -138,6 +138,14 @@ bool YamlDatabase::reload(){
 bool YamlDatabase::load(const std::string& path) {
 	YAML::Node rootNode;
 
+#ifdef Pandas_Console_Translate
+	// 若启用了控制台信息翻译机制
+	// 那么允许指定一个空的 yaml 文件路径, 表示不加载任何数据
+	if (path.empty()) {
+		return true;
+	}
+#endif // Pandas_Console_Translate
+
 	try {
 #ifndef Pandas_Database_Yaml_Support_UTF8BOM
 		rootNode = YAML::LoadFile(path);
