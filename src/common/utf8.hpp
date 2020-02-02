@@ -51,8 +51,10 @@ public:
 	static enum e_console_encoding getConsoleEncoding();
 	static enum e_system_language getSystemLanguage();
 
+#ifdef _WIN32
 	static std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage);
 	static std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage);
+#endif // _WIN32
 };
 
 #endif // _RATHENA_CN_UTF8_HPP_

@@ -74,6 +74,8 @@ enum e_console_encoding PandasUtf8::getConsoleEncoding() {
 //************************************
 enum e_system_language PandasUtf8::getSystemLanguage() {
 #ifdef _WIN32
+	// GetUserDefaultUILanguage 获取到的编码对照表:
+	// https://www.voidtools.com/support/everything/language_ids/
 	switch (GetUserDefaultUILanguage()) {
 	case 0x0409:	// English (United States)
 		return SYSTEM_LANGUAGE_ENG;
@@ -103,6 +105,8 @@ enum e_system_language PandasUtf8::getSystemLanguage() {
 	return SYSTEM_LANGUAGE_ENG;
 #endif // _WIN32
 }
+
+#ifdef _WIN32
 
 //************************************
 // Method:      UnicodeEncode
@@ -135,6 +139,8 @@ std::string PandasUtf8::UnicodeDecode(const std::wstring& strUnicode, unsigned i
 	WideCharToMultiByte(nCodepage, 0, strUnicode.c_str(), -1, strAnsi, ansiLen, NULL, NULL);
 	return std::string(strAnsi);
 }
+
+#endif // _WIN32
 
 //************************************
 // Method:      utf8ToAnsi
