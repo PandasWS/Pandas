@@ -206,7 +206,7 @@ std::string PandasUtf8::utf8ToAnsi(const std::string& strUtf8) {
 	switch (PandasUtf8::getSystemLanguage()) {
 	case SYSTEM_LANGUAGE_CHS: toCharset = "GBK"; break;
 	case SYSTEM_LANGUAGE_CHT: toCharset = "BIG5"; break;
-	default: toCharset = "Latin1"; break;
+	default: toCharset = "GBK"; break;
 	}
 	return PandasUtf8::iconv_convert(strUtf8, "UTF-8", toCharset);
 #endif // _WIN32
@@ -228,7 +228,7 @@ std::string PandasUtf8::ansiToUtf8(const std::string& strAnsi) {
 	switch (PandasUtf8::getSystemLanguage()) {
 	case SYSTEM_LANGUAGE_CHS: fromCharset = "GBK"; break;
 	case SYSTEM_LANGUAGE_CHT: fromCharset = "BIG5"; break;
-	default: fromCharset = "Latin1"; break;
+	default: fromCharset = "GBK"; break;
 	}
 	return PandasUtf8::iconv_convert(strAnsi, fromCharset, "UTF-8");
 #endif // _WIN32
