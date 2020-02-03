@@ -254,6 +254,9 @@ int chmapif_parse_getmapname(int fd, int id){
 	mapbuf = RFIFOP(fd,4);
 	RFIFOSKIP(fd,RFIFOW(fd,2));
 
+	// 以下这行注释是为了方便 pyhelp_extracter.py 提取翻译文本使用的
+	// ShowStatus("Map-Server %d connected: %" PRIuPTR " maps, from IP %d.%d.%d.%d port %d.\n", id, map_server[id].map.size(), CONVIP(map_server[id].ip), map_server[id].port);
+
 	ShowStatus("Map-Server %d connected: %" PRIuPTR " maps, from IP %d.%d.%d.%d port %d.\n",
 				id, map_server[id].map.size(), CONVIP(map_server[id].ip), map_server[id].port);
 	ShowStatus("Map-server %d loading complete.\n", id);

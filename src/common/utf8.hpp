@@ -54,6 +54,8 @@ public:
 #ifdef _WIN32
 	static std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage);
 	static std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage);
+#else
+	static std::string iconv_convert(const std::string& val, const std::string& from_charset, const std::string& to_charset);
 #endif // _WIN32
 };
 

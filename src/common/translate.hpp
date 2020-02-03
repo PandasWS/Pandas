@@ -15,8 +15,8 @@
 #include "../common/assistant.hpp"
 
 #define export_quote(x) #x
-#define export_message_tag(a) this->mTagsList.push_back({"[{"#a"}]", a});
-#define export_defined_tag(a) this->mQuoteList.push_back({#a, export_quote(a)});
+#define export_message_tag(a) this->m_tagsList.push_back({"[{"#a"}]", a});
+#define export_defined_tag(a) this->m_quoteList.push_back({#a, export_quote(a)});
 
 struct s_translate_item {
 	std::string original;
@@ -30,12 +30,18 @@ struct s_message_tag {
 
 class TranslateDB : public TypesafeYamlDatabase<std::string, s_translate_item> {
 private:
-	std::vector<s_message_tag> mTagsList;
-	std::vector<s_message_tag> mQuoteList;
+	std::vector<s_message_tag> m_tagsList;
+	std::vector<s_message_tag> m_quoteList;
 
 	void parseTags(std::string& message);
 public:
+	enum e_system_language systemLanguage;
+	enum e_console_encoding consoleEncoding;
+
 	TranslateDB() : TypesafeYamlDatabase("CONSOLE_TRANSLATE_DB", 1) {
+		this->systemLanguage = PandasUtf8::getSystemLanguage();
+		this->consoleEncoding = PandasUtf8::getConsoleEncoding();
+
 		this->setQuietLevel(1);
 
 		export_message_tag(CL_RESET);

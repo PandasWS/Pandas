@@ -88,6 +88,7 @@ enum e_system_language PandasUtf8::getSystemLanguage() {
 		return SYSTEM_LANGUAGE_ENG;
 	}
 #else
+	setlocale(LC_ALL, "");
 	char* szLocale = setlocale(LC_CTYPE, NULL);
 
 	if (stricmp(szLocale, "zh_CN") >= 0)
@@ -140,6 +141,51 @@ std::string PandasUtf8::UnicodeDecode(const std::wstring& strUnicode, unsigned i
 	return std::string(strAnsi);
 }
 
+#else
+
+//************************************
+// Method:      iconv_convert
+// Description: 
+// Parameter:   const std::string & val
+// Parameter:   const std::string & from_charset
+// Parameter:   const std::string to_charset
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/02/02 23:42
+//************************************
+std::string PandasUtf8::iconv_convert(const std::string& val, const std::string& from_charset, const std::string& to_charset) {
+	iconv_t c_pt = nullptr;
+	char* strInput = nullptr, * pStrInput = nullptr;
+	char* strOutput = nullptr, * pStrOutput = nullptr;
+
+	if ((c_pt = iconv_open(to_charset.c_str(), from_charset.c_str())) == (iconv_t)-1) {
+		ShowFatalError("%s: %s was failed (%s -> %s): %s\n", __func__, "iconv_open", from_charset.c_str(), to_charset.c_str(),strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
+	size_t strInputLen = val.size();
+	strInput = new char[strInputLen + 1];
+	memcpy(strInput, val.c_str(), strInputLen);
+	pStrInput = strInput;
+
+	// 设置目标缓冲区的长度等于来源缓冲区长度的 3 倍
+	size_t strOutputLen = (strInputLen + 1) * 3;
+	strOutput = new char[strOutputLen];
+	memset(strOutput, 0, strOutputLen);
+	pStrOutput = strOutput;
+
+	if (iconv(c_pt, (char**)&pStrInput, &strInputLen, (char**)&pStrOutput, &strOutputLen) == (size_t)-1) {
+		ShowFatalError("%s: %s was failed (%s -> %s): %s\n", __func__, "iconv", from_charset.c_str(), to_charset.c_str(), strerror(errno));
+		ShowFatalError("%s: the param value: %s", __func__, strInput);
+		exit(EXIT_FAILURE);
+	}
+
+	std::string strResult(strOutput);
+	iconv_close(c_pt);
+	delete[] strOutput;
+	delete[] strInput;
+	return strResult;
+}
+
 #endif // _WIN32
 
 //************************************
@@ -154,37 +200,8 @@ std::string PandasUtf8::utf8ToAnsi(const std::string& strUtf8) {
 	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strUtf8, CP_UTF8);
 	return PandasUtf8::UnicodeDecode(strUnicode, CP_ACP);
 #else
-	iconv_t c_pt = nullptr;
-	char* strInput = nullptr, * pStrInput = nullptr;
-	char* strOutput = nullptr, * pStrOutput = nullptr;
-
 	// TODO: 此处的 GBK 根据需要, 应能自动换成 BIG5
-	if ((c_pt = iconv_open("GBK", "UTF-8")) == (iconv_t)-1) {
-		ShowFatalError("%s: %s was failed: %s\n", __func__, "iconv_open", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-
-	size_t strInputLen = strUtf8.size();
-	strInput = new char[strInputLen + 1];
-	memcpy(strInput, strUtf8.c_str(), strInputLen);
-	pStrInput = strInput;
-
-	size_t strOutputLen = strInputLen + 1;
-	strOutput = new char[strOutputLen];
-	memset(strOutput, 0, strOutputLen);
-	pStrOutput = strOutput;
-
-	if (iconv(c_pt, (char**)&pStrInput, &strInputLen, (char**)&pStrOutput, &strOutputLen) == (size_t)-1) {
-		ShowFatalError("%s: %s was failed: %s\n", __func__, "iconv", strerror(errno));
-		ShowFatalError("%s: the param value: %s", __func__, strInput);
-		exit(EXIT_FAILURE);
-	}
-
-	std::string strResult(strOutput);
-	iconv_close(c_pt);
-	delete[] strOutput;
-	delete[] strInput;
-	return strResult;
+	return PandasUtf8::iconv_convert(strUtf8, "UTF-8", "GBK");
 #endif // _WIN32
 }
 
@@ -200,37 +217,8 @@ std::string PandasUtf8::ansiToUtf8(const std::string& strAnsi) {
 	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strAnsi, CP_ACP);
 	return PandasUtf8::UnicodeDecode(strUnicode, CP_UTF8);
 #else
-	iconv_t c_pt = nullptr;
-	char* strInput = nullptr, * pStrInput = nullptr;
-	char* strOutput = nullptr, * pStrOutput = nullptr;
-
 	// TODO: 此处的 GBK 根据需要, 应能自动换成 BIG5
-	if ((c_pt = iconv_open("UTF-8", "GBK")) == (iconv_t)-1) {
-		ShowFatalError("%s: %s was failed: %s\n", __func__, "iconv_open", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-
-	size_t strInputLen = strAnsi.size();
-	strInput = new char[strInputLen + 1];
-	memcpy(strInput, strAnsi.c_str(), strInputLen);
-	pStrInput = strInput;
-
-	size_t strOutputLen = strInputLen + 1;
-	strOutput = new char[strOutputLen];
-	memset(strOutput, 0, strOutputLen);
-	pStrOutput = strOutput;
-
-	if (iconv(c_pt, (char**)&pStrInput, &strInputLen, (char**)&pStrOutput, &strOutputLen) == (size_t)-1) {
-		ShowFatalError("%s: %s was failed: %s\n", __func__, "iconv", strerror(errno));
-		ShowFatalError("%s: the param value: %s", __func__, strInput);
-		exit(EXIT_FAILURE);
-	}
-
-	std::string strResult(strOutput);
-	iconv_close(c_pt);
-	delete[] strOutput;
-	delete[] strInput;
-	return strResult;
+	return PandasUtf8::iconv_convert(strAnsi, "GBK", "UTF-8");
 #endif // _WIN32
 }
 
