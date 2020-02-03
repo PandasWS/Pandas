@@ -1488,6 +1488,9 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 	//Prevent S. Novices from getting the no-death bonus just yet. [Skotlex]
 	sd->die_counter=-1;
 
+	// 以下这行注释是为了方便 pyhelp_extracter.py 提取翻译文本使用的
+	// ShowInfo("'" CL_WHITE "%s" CL_RESET "' logged in. (AID/CID: '" CL_WHITE "%d/%d" CL_RESET "', IP: '" CL_WHITE "%d.%d.%d.%d" CL_RESET "', Group '" CL_WHITE "%d" CL_RESET "').\n", sd->status.name, sd->status.account_id, sd->status.char_id, CONVIP(ip), sd->group_id);
+
 	//display login notice
 	ShowInfo("'" CL_WHITE "%s" CL_RESET "' logged in."
 	         " (AID/CID: '" CL_WHITE "%d/%d" CL_RESET "',"
