@@ -5,6 +5,8 @@
 
 #include "utf8.hpp"
 
+#include <boost/algorithm/string/predicate.hpp>
+
 #ifdef _WIN32
 	#include <windows.h>
 #else
@@ -46,17 +48,17 @@ enum e_console_encoding PandasUtf8::getConsoleEncoding() {
 	setlocale(LC_ALL, "");
 	char* szLanginfo = nl_langinfo(CODESET);
 
-	if (stricmp(szLanginfo, "UTF-8") >= 0)
+	if (boost::icontains(szLanginfo, "UTF-8"))
 		return CONSOLE_ENCODING_UTF8;
-	else if (stricmp(szLanginfo, "GBK") >= 0)
+	else if (boost::icontains(szLanginfo, "GBK"))
 		return CONSOLE_ENCODING_GB2312;
-	else if (stricmp(szLanginfo, "GB18030") >= 0)
+	else if (boost::icontains(szLanginfo, "GB18030"))
 		return CONSOLE_ENCODING_GB2312;
-	else if (stricmp(szLanginfo, "Big5") >= 0)
+	else if (boost::icontains(szLanginfo, "Big5HKSCS"))
 		return CONSOLE_ENCODING_BIG5;
-	else if (stricmp(szLanginfo, "Big5HKSCS") >= 0)
+	else if (boost::icontains(szLanginfo, "Big5"))
 		return CONSOLE_ENCODING_BIG5;
-	else if (stricmp(szLanginfo, "ANSI_X3.4-1968") >= 0)
+	else if (boost::icontains(szLanginfo, "ANSI_X3.4-1968"))
 		return CONSOLE_ENCODING_LATIN1;
 	else {
 		ShowWarning("%s: Unsupport codeset: %s, defaulting to latin1\n", __func__, szLanginfo);
@@ -91,13 +93,13 @@ enum e_system_language PandasUtf8::getSystemLanguage() {
 	setlocale(LC_ALL, "");
 	char* szLocale = setlocale(LC_CTYPE, NULL);
 
-	if (stricmp(szLocale, "zh_CN") >= 0)
+	if (boost::istarts_with(szLocale, "zh_CN"))
 		return SYSTEM_LANGUAGE_CHS;
-	else if (stricmp(szLocale, "zh_TW") >= 0)
+	else if (boost::istarts_with(szLocale, "zh_TW"))
 		return SYSTEM_LANGUAGE_CHT;
-	else if (stricmp(szLocale, "en_US") >= 0)
+	else if (boost::istarts_with(szLocale, "en_US"))
 		return SYSTEM_LANGUAGE_ENG;
-	else if (stricmp(szLocale, "C") == 0)
+	else if (boost::iequals(szLocale, "C"))
 		return SYSTEM_LANGUAGE_ENG;
 	else {
 		ShowWarning("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale);
@@ -200,8 +202,13 @@ std::string PandasUtf8::utf8ToAnsi(const std::string& strUtf8) {
 	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strUtf8, CP_UTF8);
 	return PandasUtf8::UnicodeDecode(strUnicode, CP_ACP);
 #else
-	// TODO: 此处的 GBK 根据需要, 应能自动换成 BIG5
-	return PandasUtf8::iconv_convert(strUtf8, "UTF-8", "GBK");
+	std::string toCharset;
+	switch (PandasUtf8::getSystemLanguage()) {
+	case SYSTEM_LANGUAGE_CHS: toCharset = "GBK"; break;
+	case SYSTEM_LANGUAGE_CHT: toCharset = "BIG5"; break;
+	default: toCharset = "Latin1"; break;
+	}
+	return PandasUtf8::iconv_convert(strUtf8, "UTF-8", toCharset);
 #endif // _WIN32
 }
 
@@ -217,8 +224,13 @@ std::string PandasUtf8::ansiToUtf8(const std::string& strAnsi) {
 	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strAnsi, CP_ACP);
 	return PandasUtf8::UnicodeDecode(strUnicode, CP_UTF8);
 #else
-	// TODO: 此处的 GBK 根据需要, 应能自动换成 BIG5
-	return PandasUtf8::iconv_convert(strAnsi, "GBK", "UTF-8");
+	std::string fromCharset;
+	switch (PandasUtf8::getSystemLanguage()) {
+	case SYSTEM_LANGUAGE_CHS: fromCharset = "GBK"; break;
+	case SYSTEM_LANGUAGE_CHT: fromCharset = "BIG5"; break;
+	default: fromCharset = "Latin1"; break;
+	}
+	return PandasUtf8::iconv_convert(strAnsi, fromCharset, "UTF-8");
 #endif // _WIN32
 }
 
