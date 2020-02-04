@@ -21,6 +21,7 @@
 #endif // Pandas_SQL_Configure_Optimization
 
 #include "../custom/defines_core.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 // MySQL 8.0 or later removed my_bool typedef.
 // Reintroduce it as a bandaid fix.
@@ -246,11 +247,14 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 			ShowWarning("We suggest you use ANSI character set as database encoding.\n", current_codepage);
 #endif // BUILDBOT
 
-			// 若目标数据库使用 utf8 或者 utf8mb4 编码, 为了兼容性考虑,
-			// 会根据操作系统语言来选择使用 gbk 或 big5 编码, 若不是简体中文也不是繁体中文, 则使用 latin1 编码
-			if (getSystemLanguage() == "zh-cn") encoding = "gbk";
-			else if (getSystemLanguage() == "zh-tw") encoding = "big5";
-			else encoding = "latin1";
+			// 若目标数据库使用 utf8 或者 utf8mb4 编码, 
+			// 为了兼容性考虑, 会根据操作系统语言来选择使用 gbk 或 big5 编码,
+			// 若不是简体中文也不是繁体中文, 则使用 latin1 编码
+			switch (PandasUtf8::getSystemLanguage()) {
+			case SYSTEM_LANGUAGE_CHS: encoding = "gbk"; break;
+			case SYSTEM_LANGUAGE_CHT: encoding = "big5"; break;
+			default: encoding = "latin1"; break;
+			}
 
 			break;
 		}
@@ -1103,7 +1107,7 @@ void Sql_inter_server_read(const char* cfgName, bool first) {
 	char line[1024], w1[1024], w2[1024];
 	FILE* fp;
 
-	fp = UTF8FOPEN(cfgName, "r");
+	fp = fopen(cfgName, "r");
 	if(fp == NULL) {
 		if( first ) {
 			ShowFatalError("File not found: %s\n", cfgName);
@@ -1113,7 +1117,7 @@ void Sql_inter_server_read(const char* cfgName, bool first) {
 		return;
 	}
 
-	while(UTF8FGETS(line, sizeof(line), fp)) {
+	while(fgets(line, sizeof(line), fp)) {
 		int i = sscanf(line, "%1023[^:]: %1023[^\r\n]", w1, w2);
 		if(i != 2)
 			continue;

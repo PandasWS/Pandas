@@ -1,331 +1,447 @@
 ﻿// Copyright (c) Pandas Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
+#pragma warning(disable : 26812)
+
 #include "utf8.hpp"
 
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <iconv.h>
-#include <errno.h>
-#include <string.h>
-#endif
+#include <boost/algorithm/string/predicate.hpp>
 
 #ifdef _WIN32
+	#include <windows.h>
+#else
+	#include <iconv.h>
+	#include <errno.h>
+	#include <string.h>
+
+	#include <stdio.h>
+	#include <locale.h>
+	#include <langinfo.h>
+#endif // _WIN32
 
 //************************************
-// Method:		utf8_u2g
-// Description:	将 UTF8 字符串转换为 ANSI 字符串
-// Parameter:	const std::string & strUtf8	须为 UTF-8 编码的字符串
-// Returns:		std::string
+// Method:      getConsoleEncoding
+// Description: 获取当前操作系统终端控制台的默认编码
+// Returns:     enum e_console_encoding
+// Author:      Sola丶小克(CairoLee)  2020/01/24 15:51
 //************************************
-std::string utf8_u2g(const std::string& strUtf8) {
-	// UTF-8 转 Unicode
-	int len = MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, NULL, 0);
-	wchar_t *strUnicode = new wchar_t[len];
-	wmemset(strUnicode, 0, len);
-	MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, strUnicode, len);
+enum e_console_encoding PandasUtf8::getConsoleEncoding() {
+#ifdef _WIN32
+	// 关于 GetACP 的编码对应表可以在以下文档中查询:
+	// https://docs.microsoft.com/zh-cn/windows/win32/intl/code-page-identifiers
+	UINT nCodepage = GetACP();
 
-	// Unicode 转 GBK
-	len = WideCharToMultiByte(CP_ACP, 0, strUnicode, -1, NULL, 0, NULL, NULL);
-	char *strGbk = new char[len];
-	memset(strGbk, 0, len);
-	WideCharToMultiByte(CP_ACP, 0, strUnicode, -1, strGbk, len, NULL, NULL);
+	switch (nCodepage) {
+	case 936:	// GBK2312
+		return CONSOLE_ENCODING_GB2312;
+	case 950:	// BIG5
+		return CONSOLE_ENCODING_BIG5;
+	case 1252:	// LATIN1
+		return CONSOLE_ENCODING_LATIN1;
+	case 65001:	// UTF-8
+		return CONSOLE_ENCODING_UTF8;
+	default:
+		ShowWarning("%s: Unsupport default ANSI codepage: %d, defaulting to latin1\n", __func__, nCodepage);
+		return CONSOLE_ENCODING_LATIN1;
+	}
+#else
+	setlocale(LC_ALL, "");
+	char* szLanginfo = nl_langinfo(CODESET);
 
-	std::string strTemp(strGbk);
-	delete[] strUnicode;
-	delete[] strGbk;
-	strUnicode = nullptr;
-	strGbk = nullptr;
-	return strTemp;
+	if (boost::icontains(szLanginfo, "UTF-8"))
+		return CONSOLE_ENCODING_UTF8;
+	else if (boost::icontains(szLanginfo, "GBK"))
+		return CONSOLE_ENCODING_GB2312;
+	else if (boost::icontains(szLanginfo, "GB18030"))
+		return CONSOLE_ENCODING_GB2312;
+	else if (boost::icontains(szLanginfo, "Big5HKSCS"))
+		return CONSOLE_ENCODING_BIG5;
+	else if (boost::icontains(szLanginfo, "Big5"))
+		return CONSOLE_ENCODING_BIG5;
+	else if (boost::icontains(szLanginfo, "ANSI_X3.4-1968"))
+		return CONSOLE_ENCODING_LATIN1;
+	else {
+		ShowWarning("%s: Unsupport codeset: %s, defaulting to latin1\n", __func__, szLanginfo);
+	}
+
+	return CONSOLE_ENCODING_LATIN1;
+#endif // _WIN32
 }
 
 //************************************
-// Method:		utf8_g2u
-// Description:	将 ANSI 字符串转换为 UTF8 字符串
-// Parameter:	const std::string & strGbk 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
-// Returns:		std::string
+// Method:      getSystemLanguage
+// Description: 获取当前操作系统的默认展现语言
+// Returns:     enum e_system_language
+// Author:      Sola丶小克(CairoLee)  2020/01/24 21:59
 //************************************
-std::string utf8_g2u(const std::string& strGbk) {
-	// GBK 转 Unicode
-	int len = MultiByteToWideChar(CP_ACP, 0, strGbk.c_str(), -1, NULL, 0);
-	wchar_t *strUnicode = new wchar_t[len];
-	wmemset(strUnicode, 0, len);
-	MultiByteToWideChar(CP_ACP, 0, strGbk.c_str(), -1, strUnicode, len);
+enum e_system_language PandasUtf8::getSystemLanguage() {
+#ifdef _WIN32
+	// GetUserDefaultUILanguage 获取到的编码对照表:
+	// https://www.voidtools.com/support/everything/language_ids/
+	switch (GetUserDefaultUILanguage()) {
+	case 0x0409:	// English (United States)
+		return SYSTEM_LANGUAGE_ENG;
+	case 0x0804:	// Chinese (PRC) 
+		return SYSTEM_LANGUAGE_CHS;
+	case 0x0404:	// Chinese (Taiwan Region)
+	case 0x0c04:	// Chinese (Hong Kong SAR, PRC) 
+		return SYSTEM_LANGUAGE_CHT;
+	default:
+		return SYSTEM_LANGUAGE_ENG;
+	}
+#else
+	setlocale(LC_ALL, "");
+	char* szLocale = setlocale(LC_CTYPE, NULL);
 
-	// Unicode 转 UTF-8
-	len = WideCharToMultiByte(CP_UTF8, 0, strUnicode, -1, NULL, 0, NULL, NULL);
-	char *strUtf8 = new char[len];
-	WideCharToMultiByte(CP_UTF8, 0, strUnicode, -1, strUtf8, len, NULL, NULL);
+	if (boost::istarts_with(szLocale, "zh_CN"))
+		return SYSTEM_LANGUAGE_CHS;
+	else if (boost::istarts_with(szLocale, "zh_TW"))
+		return SYSTEM_LANGUAGE_CHT;
+	else if (boost::istarts_with(szLocale, "en_US"))
+		return SYSTEM_LANGUAGE_ENG;
+	else if (boost::iequals(szLocale, "C"))
+		return SYSTEM_LANGUAGE_ENG;
+	else {
+		ShowWarning("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale);
+	}
 
-	std::string strTemp(strUtf8);
-	delete[] strUnicode;
-	delete[] strUtf8;
-	strUnicode = nullptr;
-	strUtf8 = nullptr;
-	return strTemp;
+	return SYSTEM_LANGUAGE_ENG;
+#endif // _WIN32
+}
+
+#ifdef _WIN32
+
+//************************************
+// Method:      UnicodeEncode
+// Description: 
+// Parameter:   const std::string & strANSI
+// Parameter:   unsigned int nCodepage
+// Returns:     std::wstring
+// Author:      Sola丶小克(CairoLee)  2020/01/31 14:00
+//************************************
+std::wstring PandasUtf8::UnicodeEncode(const std::string& strANSI, unsigned int nCodepage) {
+	int unicodeLen = MultiByteToWideChar(nCodepage, 0, strANSI.c_str(), -1, NULL, 0);
+	wchar_t* strUnicode = new wchar_t[unicodeLen];
+	wmemset(strUnicode, 0, unicodeLen);
+	MultiByteToWideChar(nCodepage, 0, strANSI.c_str(), -1, strUnicode, unicodeLen);
+	return std::wstring(strUnicode);
+}
+
+//************************************
+// Method:      UnicodeDecode
+// Description: 
+// Parameter:   const std::wstring & strUnicode
+// Parameter:   unsigned int nCodepage
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/01/31 14:00
+//************************************
+std::string PandasUtf8::UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage) {
+	int ansiLen = WideCharToMultiByte(nCodepage, 0, strUnicode.c_str(), -1, NULL, 0, NULL, NULL);
+	char* strAnsi = new char[ansiLen];
+	memset(strAnsi, 0, ansiLen);
+	WideCharToMultiByte(nCodepage, 0, strUnicode.c_str(), -1, strAnsi, ansiLen, NULL, NULL);
+	return std::string(strAnsi);
 }
 
 #else
 
 //************************************
-// Method:		utf8_u2g
-// Description:	将 UTF8 字符串转换为 ANSI 字符串
-// Parameter:	const std::string & strUtf8 须为 UTF-8 编码的字符串
-// Returns:		std::string
+// Method:      iconv_convert
+// Description: 
+// Parameter:   const std::string & val
+// Parameter:   const std::string & from_charset
+// Parameter:   const std::string to_charset
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/02/02 23:42
 //************************************
-std::string utf8_u2g(const std::string& strUtf8) {
+std::string PandasUtf8::iconv_convert(const std::string& val, const std::string& from_charset, const std::string& to_charset) {
 	iconv_t c_pt = nullptr;
-	char *str_input = nullptr, *p_str_input = nullptr;
-	char *str_output = nullptr, *p_str_output = nullptr;
-	size_t str_input_len = 0, str_output_len = 0;
-	std::string strResult;
+	char* strInput = nullptr, * pStrInput = nullptr;
+	char* strOutput = nullptr, * pStrOutput = nullptr;
 
-	if ((c_pt = iconv_open("GBK", "UTF-8")) == (iconv_t)-1) {
-		ShowFatalError("utf8_u2g: %s was failed: %s\n", "iconv_open", strerror(errno));
+	if ((c_pt = iconv_open(to_charset.c_str(), from_charset.c_str())) == (iconv_t)-1) {
+		ShowFatalError("%s: %s was failed (%s -> %s): %s\n", __func__, "iconv_open", from_charset.c_str(), to_charset.c_str(),strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
-	str_input_len = strUtf8.size();
-	str_input = new char[str_input_len + 1];
-	memcpy(str_input, strUtf8.c_str(), str_input_len);
-	p_str_input = str_input;	// 必须这样赋值一下, 不然在 Linux 下会提示段错误(Segmentation fault)
+	size_t strInputLen = val.size();
+	strInput = new char[strInputLen + 1];
+	memcpy(strInput, val.c_str(), strInputLen);
+	pStrInput = strInput;
 
-	str_output_len = str_input_len + 1;
-	str_output = new char[str_output_len];
-	memset(str_output, 0, str_output_len);
-	p_str_output = str_output;	// 必须这样赋值一下, 不然在 Linux 下会提示段错误(Segmentation fault)
+	// 设置目标缓冲区的长度等于来源缓冲区长度的 3 倍
+	size_t strOutputLen = (strInputLen + 1) * 3;
+	strOutput = new char[strOutputLen];
+	memset(strOutput, 0, strOutputLen);
+	pStrOutput = strOutput;
 
-	if (iconv(c_pt, (char **)&p_str_input, &str_input_len, (char **)&p_str_output, &str_output_len) == (size_t)-1) {
-		ShowFatalError("utf8_u2g: %s was failed: %s\n", "iconv", strerror(errno));
-		ShowFatalError("utf8_u2g: the strUtf8 param value: %s", str_input);
+	if (iconv(c_pt, (char**)&pStrInput, &strInputLen, (char**)&pStrOutput, &strOutputLen) == (size_t)-1) {
+		ShowFatalError("%s: %s was failed (%s -> %s): %s\n", __func__, "iconv", from_charset.c_str(), to_charset.c_str(), strerror(errno));
+		ShowFatalError("%s: the param value: %s", __func__, strInput);
 		exit(EXIT_FAILURE);
 	}
 
-	strResult = str_output;
+	std::string strResult(strOutput);
 	iconv_close(c_pt);
-	delete[] str_output;
-	delete[] str_input;
-
-	return strResult;
-}
-
-//************************************
-// Method:		utf8_g2u
-// Description:	将 ANSI 字符串转换为 UTF8 字符串
-// Parameter:	const std::string & strGbk 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
-// Returns:		std::string
-//************************************
-std::string utf8_g2u(const std::string& strGbk) {
-	iconv_t c_pt = nullptr;
-	char *str_input = nullptr, *p_str_input = nullptr;
-	char *str_output = nullptr, *p_str_output = nullptr;
-	size_t str_input_len = 0, str_output_len = 0;
-	std::string strResult;
-
-	if ((c_pt = iconv_open("UTF-8", "GBK")) == (iconv_t)-1) {
-		ShowFatalError("utf8_g2u: %s was failed: %s\n", "iconv_open", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-
-	str_input_len = strGbk.size();
-	str_input = new char[str_input_len + 1];
-	memcpy(str_input, strGbk.c_str(), str_input_len);
-	p_str_input = str_input;	// 必须这样赋值一下, 不然在 Linux 下会提示段错误(Segmentation fault)
-
-	str_output_len = str_input_len + 1;
-	str_output = new char[str_output_len];
-	memset(str_output, 0, str_output_len);
-	p_str_output = str_output;	// 必须这样赋值一下, 不然在 Linux 下会提示段错误(Segmentation fault)
-
-	if (iconv(c_pt, (char **)&p_str_input, &str_input_len, (char **)&p_str_output, &str_output_len) == (size_t)-1) {
-		ShowFatalError("utf8_g2u: %s was failed: %s\n", "iconv", strerror(errno));
-		ShowFatalError("utf8_g2u: the strGbk param value: %s", str_input);
-		exit(EXIT_FAILURE);
-	}
-
-	strResult = str_output;
-	iconv_close(c_pt);
-	delete[] str_output;
-	delete[] str_input;
-
+	delete[] strOutput;
+	delete[] strInput;
 	return strResult;
 }
 
 #endif // _WIN32
 
 //************************************
-// Method:		utf8_isbom
-// Description:	判断 FILE 对应的文件是否为 UTF8-BOM 编码
-// Parameter:	FILE * _Stream
-// Returns:		bool
+// Method:      utf8ToAnsi
+// Description: 将 UTF8 字符串转换为 ANSI 字符串
+// Parameter:   const std::string & strUtf8 须为 UTF-8 编码的字符串
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/01/24 00:26
 //************************************
-bool utf8_isbom(FILE *_Stream) {
-	long curpos = 0;
+std::string PandasUtf8::utf8ToAnsi(const std::string& strUtf8) {
+#ifdef _WIN32
+	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strUtf8, CP_UTF8);
+	return PandasUtf8::UnicodeDecode(strUnicode, CP_ACP);
+#else
+	std::string toCharset;
+	switch (PandasUtf8::getSystemLanguage()) {
+	case SYSTEM_LANGUAGE_CHS: toCharset = "GBK"; break;
+	case SYSTEM_LANGUAGE_CHT: toCharset = "BIG5"; break;
+	default: toCharset = "GBK"; break;
+	}
+	return PandasUtf8::iconv_convert(strUtf8, "UTF-8", toCharset);
+#endif // _WIN32
+}
+
+//************************************
+// Method:      ansiToUtf8
+// Description: 将 ANSI 字符串转换为 UTF8 字符串
+// Parameter:   const std::string & strAnsi 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/01/24 00:26
+//************************************
+std::string PandasUtf8::ansiToUtf8(const std::string& strAnsi) {
+#ifdef _WIN32
+	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strAnsi, CP_ACP);
+	return PandasUtf8::UnicodeDecode(strUnicode, CP_UTF8);
+#else
+	std::string fromCharset;
+	switch (PandasUtf8::getSystemLanguage()) {
+	case SYSTEM_LANGUAGE_CHS: fromCharset = "GBK"; break;
+	case SYSTEM_LANGUAGE_CHT: fromCharset = "BIG5"; break;
+	default: fromCharset = "GBK"; break;
+	}
+	return PandasUtf8::iconv_convert(strAnsi, fromCharset, "UTF-8");
+#endif // _WIN32
+}
+
+//************************************
+// Method:      fmode
+// Description: 尝试获取某个文件指针的文本编码
+// Parameter:   _In_ FILE * _Stream
+// Returns:     enum e_file_charsetmode
+// Author:      Sola丶小克(CairoLee)  2020/01/21 09:37
+//************************************
+enum e_file_charsetmode PandasUtf8::fmode(FILE* _Stream) {
+	size_t extracted = 0;
 	unsigned char buf[3] = { 0 };
-	
+	enum e_file_charsetmode charset_mode = FILE_CHARSETMODE_UNKNOW;
+
+	// 若传递的 FILE 指针无效则直接返回编码不可知
+	if (_Stream == nullptr) {
+		return charset_mode;
+	}
+
 	// 记录目前指针所在的位置
-	curpos = ftell(_Stream);
-	
-	// 指针移动到开头, 读取前3个字节
+	long curpos = ftell(_Stream);
+
+	// 指针移动到开头, 读取前 3 个字节
 	fseek(_Stream, 0, SEEK_SET);
-	if (fread(buf, sizeof(unsigned char), 3, _Stream) == 3) {
-		fseek(_Stream, curpos, SEEK_SET);
-		return (buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF);
+	extracted = ::fread(buf, sizeof(unsigned char), 3, _Stream);
+
+	// 根据读取到的前几个字节来判断文本的编码类型
+	if (extracted == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) {
+		// UTF8-BOM
+		charset_mode = FILE_CHARSETMODE_UTF8_BOM;
 	}
+	else if (extracted >= 2 && buf[0] == 0xFF && buf[1] == 0xFE) {
+		// UCS-2 LE
+		charset_mode = FILE_CHARSETMODE_UCS2_LE;
+	}
+	else if (extracted >= 2 && buf[0] == 0xFE && buf[1] == 0xFF) {
+		// UCS-2 BE
+		charset_mode = FILE_CHARSETMODE_UCS2_BE;
+	}
+	else {
+		// 若无法根据上面的前几个字节判断出编码, 那么默认为 ANSI 编码 (GBK\BIG5)
+		charset_mode = FILE_CHARSETMODE_ANSI;
+	}
+
+	// 将指针设置回原来的位置, 避免影响后续的读写流程
 	fseek(_Stream, curpos, SEEK_SET);
-	return false;
+	return charset_mode;
 }
 
 //************************************
-// Method:		utf8_fopen
-// Description:	能够在原有的 mode 中加入 "b" 的 fopen 函数
-//              此文件的 utf8_isbom 只有在 "b" 模式下, 才能进行正确的 fseek 操作
-// Parameter:	const char * _FileName
-// Parameter:	const char * _Mode
-// Returns:		FILE*
+// Method:      fmode
+// Description: 尝试获取某个文件指针的文本编码
+// Parameter:   std::ifstream & ifs
+// Returns:     enum e_file_charsetmode
+// Author:      Sola丶小克(CairoLee)  2020/01/27 21:38
 //************************************
-FILE* utf8_fopen(const char* _FileName, const char* _Mode) {
-	std::string szMode(_Mode);
-	std::string::size_type i = szMode.find("b", 0);
-	if (i == std::string::npos) {
-		szMode += "b";
+enum e_file_charsetmode PandasUtf8::fmode(std::ifstream& ifs) {
+	unsigned char buf[3] = { 0 };
+	enum e_file_charsetmode charset_mode = FILE_CHARSETMODE_UNKNOW;
+
+	// 记录目前指针所在的位置
+	long curpos = (long)ifs.tellg();
+
+	// 指针移动到开头, 读取前 3 个字节
+	ifs.seekg(0, std::ios::beg);
+	ifs.read((char*)buf, 3);
+	long extracted = (long)ifs.gcount();
+
+	// 根据读取到的前几个字节来判断文本的编码类型
+	if (extracted == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) {
+		// UTF8-BOM
+		charset_mode = FILE_CHARSETMODE_UTF8_BOM;
 	}
-	return fopen(_FileName, szMode.c_str());
-}
-
-//************************************
-// Method:		utf8_fgets
-// Description:	能够兼容读取 UTF8-BOM 编码文件的 fgets 函数
-// Parameter:	char * _Buffer
-// Parameter:	int _MaxCount
-// Parameter:	FILE * _Stream
-// Returns:		char*
-//************************************
-char* utf8_fgets(char *_Buffer, int _MaxCount, FILE *_Stream) {
-	if (utf8_isbom(_Stream) == false) {
-		// 若不是 UTF8-BOM, 那么直接透传 fgets 调用
-		return fgets(_Buffer, _MaxCount, _Stream);
+	else if (extracted >= 2 && buf[0] == 0xFF && buf[1] == 0xFE) {
+		// UCS-2 LE
+		charset_mode = FILE_CHARSETMODE_UCS2_LE;
+	}
+	else if (extracted >= 2 && buf[0] == 0xFE && buf[1] == 0xFF) {
+		// UCS-2 BE
+		charset_mode = FILE_CHARSETMODE_UCS2_BE;
 	}
 	else {
-		long curpos = 0;
-		char *result = nullptr;
-		char *buffer = new char[_MaxCount];
-		std::string ansi_str, origin_str;
-
-		// 若指针在文件的前3个字节, 那么将指针移动到前3个字节后面,
-		// 避免后续进行 fgets 的时候读取到前3个字节
-		curpos = ftell(_Stream);
-		if (curpos <= 3) {
-			fseek(_Stream, 3, SEEK_SET);
-		}
-
-		// 读取 _MaxCount 长度的内容并保存到 buf 中
-		result = fgets(buffer, _MaxCount, _Stream);
-		if (result) {
-			origin_str = std::string(buffer);
-			delete[] buffer;
-			buffer = nullptr;
-
-			// 若为注释行则直接返回空即可, fgets 每次调用读取一行文本
-			// 所以在这里若发现是 // 开头的行则直接返回空, 应该不影响现有程序逻辑
-			if (origin_str.rfind("//", 0) == 0) {
-				memset(_Buffer, 0, _MaxCount);
-				return result;
-			}
-
-			// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-			ansi_str = utf8_u2g(origin_str);
-			memset(_Buffer, 0, _MaxCount);
-
-			if (ansi_str.size() <= (size_t)_MaxCount) {
-				// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
-				memcpy(_Buffer, ansi_str.c_str(), ansi_str.size());
-			}
-			else {
-				// 按道理来说, 此函数主要负责将 UTF8-BOM 编码的字符转成 ANSI
-				// 转换结束按道理来说需要的空间会更小, 无需拓展空间, 所以理论上基本无需分配额外内存
-
-				// 不过退一万步, 目前的实现方法由于 _Buffer 是静态数组
-				// 所以这里就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
-				ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", "utf8_fgets", sizeof(_Buffer), ansi_str.size());
-				fseek(_Stream, curpos, SEEK_SET);
-				return fgets(_Buffer, _MaxCount, _Stream);
-			}
-		}
-
-		delete[] buffer;
-		buffer = nullptr;
-
-		return result;
+		// 若无法根据上面的前几个字节判断出编码, 那么默认为 ANSI 编码 (GBK\BIG5)
+		charset_mode = FILE_CHARSETMODE_ANSI;
 	}
+
+	// 将指针设置回原来的位置, 避免影响后续的读写流程
+	ifs.seekg(curpos, std::ios::beg);
+	return charset_mode;
 }
 
 //************************************
-// Method:		utf8_fread
-// Description:	能够兼容读取 UTF8-BOM 编码文件的 fread 函数
-// Parameter:	void * _Buffer
-// Parameter:	size_t _ElementSize
-// Parameter:	size_t _ElementCount
-// Parameter:	FILE * _Stream
-// Returns:		size_t
+// Method:      fopen
+// Description: 能够在原有的打开模式中追加二进制模式的 fopen 函数
+// Parameter:   const char * _FileName
+// Parameter:   const char * _Mode
+// Returns:     FILE*
+// Author:      Sola丶小克(CairoLee)  2020/01/24 01:27
 //************************************
-size_t utf8_fread(void *_Buffer, size_t _ElementSize, size_t _ElementCount, FILE *_Stream) {
-	if (utf8_isbom(_Stream) == false || _ElementSize != 1) {
-		// 若不是 UTF8-BOM 或者 _ElementSize 不等于 1, 那么直接透传 fread 调用
-		return fread(_Buffer, _ElementSize, _ElementCount, _Stream);
+FILE* PandasUtf8::fopen(const char* _FileName, const char* _Mode) {
+	// 若当前打开文件的模式已经是二进制, 那么直接调用 fopen 并返回
+	if (strchr(_Mode, 'b')) {
+		return ::fopen(_FileName, _Mode);
 	}
-	else {
-		long curpos = ftell(_Stream);
-		size_t len = (_ElementSize * _ElementCount) + 1;
-		size_t result = 0;
-		char *buffer = new char[len];
-		std::string ansi_str;
 
-		// 若指针在文件的前3个字节, 那么将指针移动到前3个字节后面,
-		// 避免后续进行 fread 的时候读取到前3个字节
-		if (curpos <= 3) {
-			fseek(_Stream, 3, SEEK_SET);
+	// 若文件的打开模式不以二进制模式打开, 那么补充对应的 _Mode 标记
+	std::string sMode(_Mode);
+	sMode += "b";
+	return ::fopen(_FileName, sMode.c_str());
+}
 
-			// 重新分配缓冲区大小, 以及调整 _ElementCount 的大小
-			delete[] buffer;
-			if (_ElementCount >= 3) _ElementCount -= 3;
-			if (len >= 3) len -=3;
-			buffer = new char[len];
-		}
+char* PandasUtf8::fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
+	// 若不是 UTF8-BOM, 那么直接透传 fgets 调用
+	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM) {
+		return ::fgets(_Buffer, _MaxCount, _Stream);
+	}
 
-		memset(buffer, 0, len);
+	// 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节的后面,
+	// 避免后续进行 fgets 的时候读取到前 3 个字节, 同时将当前位置记录到 curpos
+	long curpos = ftell(_Stream);
+	if (curpos <= 3) fseek(_Stream, 3, SEEK_SET);
 
-		// 读取特定长度的内容并保存到 buf 中
-		result = fread(buffer, _ElementSize, _ElementCount, _Stream);
-		if (result) {
-			// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-			ansi_str = utf8_u2g(std::string(buffer));
-			memset(_Buffer, 0, len);
-			delete[] buffer;
-			buffer = nullptr;
+	// 读取 _MaxCount 长度的内容并保存到 buffer 中
+	char* buffer = new char[_MaxCount];
+	char* fgets_result = ::fgets(buffer, _MaxCount, _Stream);
 
-			if (ansi_str.size() <= len) {
-				// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
-				memcpy(_Buffer, ansi_str.c_str(), ansi_str.size());
-			}
-			else {
-				// 按道理来说, 此函数主要负责将 UTF8-BOM 编码的字符转成 ANSI
-				// 转换结束按道理来说需要的空间会更小, 无需拓展空间, 所以理论上基本无需分配额外内存
-
-				// 不过退一万步, 目前的实现方法由于 _Buffer 是静态数组
-				// 所以这里就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
-				ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", "utf8_fread", sizeof(_Buffer), ansi_str.size());
-
-				fseek(_Stream, curpos, SEEK_SET);
-				if (curpos <= 3) _ElementCount += 3;	// 之前修正过 _ElementCount 的大小, 现在这里需要改回去
-				return fread(_Buffer, _ElementSize, _ElementCount, _Stream);
-			}
-		}
-
+	if (!fgets_result) {
 		delete[] buffer;
-		buffer = nullptr;
-
-		return result;
+		return fgets_result;
 	}
+	
+	std::string line(buffer);
+	delete[] buffer;
+
+	// 若为注释行则直接返回空即可, fgets 每次调用读取一行文本
+	// 所以在这里若发现是 // 开头的行则直接返回空, 应该不影响现有程序逻辑
+	if (line.rfind("//", 0) == 0) {
+		memset(_Buffer, 0, _MaxCount);
+		return fgets_result;
+	}
+
+	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
+	std::string ansi = PandasUtf8::utf8ToAnsi(line);
+	memset(_Buffer, 0, _MaxCount);
+
+	// 按道理来说, 此函数主要负责将 UTF8-BOM 编码的字符转成 ANSI
+	// 转换结束按道理来说需要的空间会更小, 无需拓展空间, 所以理论上基本无需分配额外内存
+	// 不过就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
+	if (ansi.size() > (size_t)_MaxCount) {
+		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, sizeof(_Buffer), ansi.size());
+		fseek(_Stream, curpos, SEEK_SET);
+		return ::fgets(_Buffer, _MaxCount, _Stream);
+	}
+
+	// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
+	memcpy(_Buffer, ansi.c_str(), ansi.size());
+	return _Buffer;
+}
+
+size_t PandasUtf8::fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream) {
+	// 若不是 UTF8-BOM 或者 _ElementSize 不等于 1, 那么直接透传 fread 调用
+	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM || _ElementSize != 1) {
+		return ::fread(_Buffer, _ElementSize, _ElementCount, _Stream);
+	}
+
+	size_t extracted = 0;
+	long curpos = ftell(_Stream);
+	size_t elementlen = (_ElementSize * _ElementCount) + 1;
+	char* buffer = new char[elementlen];
+
+	// 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节后面,
+	// 避免后续进行 fread 的时候读取到前 3 个字节
+	if (curpos <= 3) {
+		fseek(_Stream, 3, SEEK_SET);
+
+		// 需要重新分配缓冲区大小, 以及调整 _ElementCount 的大小
+		delete[] buffer;
+		if (_ElementCount >= 3) _ElementCount -= 3;
+		if (elementlen >= 3) elementlen -= 3;
+		buffer = new char[elementlen];
+	}
+
+	// 将缓冲区的内容全部重置为 0x00
+	memset(buffer, 0, elementlen);
+
+	// 读取特定长度的内容并保存到 buffer 中
+	extracted = ::fread(buffer, _ElementSize, _ElementCount, _Stream);
+
+	if (!extracted) {
+		delete[] buffer;
+		return extracted;
+	}
+
+	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
+	std::string ansi = PandasUtf8::utf8ToAnsi(std::string(buffer));
+	memset(_Buffer, 0, _ElementSize * _ElementCount);
+	delete[] buffer;
+
+	// 按道理来说, 此函数主要负责将 UTF8-BOM 编码的字符转成 ANSI
+	// 转换结束按道理来说需要的空间会更小, 无需拓展空间, 所以理论上基本无需分配额外内存
+	// 不过就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
+	if (ansi.size() > elementlen) {
+		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, sizeof(_Buffer), ansi.size());
+		fseek(_Stream, curpos, SEEK_SET);
+		// 之前修正过 _ElementCount 的大小, 现在这里需要改回去
+		if (curpos <= 3) _ElementCount += 3;
+		return ::fread(_Buffer, _ElementSize, _ElementCount, _Stream);
+	}
+
+	// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
+	memcpy(_Buffer, ansi.c_str(), ansi.size());
+	return extracted;
 }

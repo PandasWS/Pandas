@@ -34,6 +34,7 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "achievement.hpp"
 #include "atcommand.hpp"
@@ -4631,12 +4632,12 @@ int script_config_read(const char *cfgName)
 	FILE *fp;
 
 
-	fp=UTF8FOPEN(cfgName,"r");
+	fp=fopen(cfgName,"r");
 	if(fp==NULL){
 		ShowError("File not found: %s\n", cfgName);
 		return 1;
 	}
-	while(UTF8FGETS(line, sizeof(line), fp))
+	while(fgets(line, sizeof(line), fp))
 	{
 		if(line[0] == '/' && line[1] == '/')
 			continue;

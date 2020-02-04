@@ -10,6 +10,8 @@
 #include "showmsg.hpp"
 #include "strlib.hpp"
 
+#include "../common/utf8_defines.hpp"  // PandasWS
+
 DBMap *mapindex_db;
 struct _indexes {
 	char name[MAP_NAME_LENGTH]; //Stores map name
@@ -146,7 +148,7 @@ void mapindex_init(void) {
 	for( size_t i = 0; i < ARRAYLENGTH(mapindex_cfgfile); i++ ){
 		sprintf( path, "%s/%s", db_path, mapindex_cfgfile[i] );
 
-		if( ( fp = UTF8FOPEN( path, "r" ) ) == NULL ){
+		if( ( fp = fopen( path, "r" ) ) == NULL ){
 			// It is only fatal if it is the main file
 			if( i == 0 ){
 				ShowFatalError("Unable to read mapindex config file %s!\n", path );
@@ -157,7 +159,7 @@ void mapindex_init(void) {
 			}
 		}
 
-		while(UTF8FGETS(line, sizeof(line), fp)) {
+		while(fgets(line, sizeof(line), fp)) {
 			if(line[0] == '/' && line[1] == '/')
 				continue;
 

@@ -134,6 +134,8 @@ set( COMMON_MINI_HEADERS
 	"${COMMON_SOURCE_DIR}/utf8.hpp"
 	"${COMMON_SOURCE_DIR}/crashdump.hpp"
 	"${COMMON_SOURCE_DIR}/cryptopp.hpp"
+	"${COMMON_SOURCE_DIR}/translate.hpp"
+	"${COMMON_SOURCE_DIR}/database.hpp"
 	${LIBCONFIG_HEADERS} # needed by showmsg.hpp
 	${BREAKPAD_HEADERS}
 	${COMMON_ADDITIONALL_HPP} # needed by Windows
@@ -149,6 +151,8 @@ set( COMMON_MINI_SOURCES
 	"${COMMON_SOURCE_DIR}/utf8.cpp"
 	"${COMMON_SOURCE_DIR}/crashdump.cpp"
 	"${COMMON_SOURCE_DIR}/cryptopp.cpp"
+	"${COMMON_SOURCE_DIR}/translate.cpp"
+	"${COMMON_SOURCE_DIR}/database.cpp"
 	${LIBCONFIG_SOURCES} # needed by showmsg.cpp
 	${BREAKPAD_SOURCES}
 	${COMMON_ADDITIONALL_CPP} # needed by Windows
@@ -158,6 +162,7 @@ set( COMMON_MINI_SOURCES
 set( COMMON_MINI_INCLUDE_DIRS
 	${LIBCONFIG_INCLUDE_DIRS}
 	${BREAKPAD_INCLUDE_DIRS}
+	${YAML_INCLUDE_DIRS}
 	CACHE INTERNAL ""
 )
 
@@ -203,6 +208,7 @@ if( WITH_ZLIB )
 		"${COMMON_SOURCE_DIR}/utf8.hpp"
 		"${COMMON_SOURCE_DIR}/crashdump.hpp"
 		"${COMMON_SOURCE_DIR}/cryptopp.hpp"
+		"${COMMON_SOURCE_DIR}/translate.hpp"
 		${LIBCONFIG_HEADERS} # needed by conf.hpp/showmsg.hpp
 		${BREAKPAD_HEADERS}
 		${COMMON_ADDITIONALL_HPP} # needed by Windows
@@ -234,6 +240,7 @@ if( WITH_ZLIB )
 		"${COMMON_SOURCE_DIR}/utf8.cpp"
 		"${COMMON_SOURCE_DIR}/crashdump.cpp"
 		"${COMMON_SOURCE_DIR}/cryptopp.cpp"
+		"${COMMON_SOURCE_DIR}/translate.cpp"
 		${LIBCONFIG_SOURCES} # needed by conf.cpp/showmsg.cpp
 		${BREAKPAD_SOURCES}
 		${COMMON_ADDITIONALL_CPP} # needed by Windows
@@ -260,10 +267,8 @@ if( WITH_ZLIB )
 	set( LIBRARIES ${GLOBAL_LIBRARIES} ${ZLIB_LIBRARIES} ${DEPENDENCIES} )
 
 	# 设置包含目录
-	# 此处的 ${YAML_INCLUDE_DIRS} 是 yaml-cpp 依赖项目的包含目录
 	# 此处的 ${ZLIB_INCLUDE_DIRS} 是 zlib 依赖项目的包含目录
-	# 此处的 ${BREAKPAD_INCLUDE_DIRS} 是 breakpad 依赖项目的包含目录
-	set( INCLUDE_DIRS ${GLOBAL_INCLUDE_DIRS} ${YAML_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${BREAKPAD_INCLUDE_DIRS} ${COMMON_BASE_INCLUDE_DIRS} )
+	set( INCLUDE_DIRS ${GLOBAL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${COMMON_BASE_INCLUDE_DIRS} )
 
 	# 设置宏定义
 	set( DEFINITIONS "${GLOBAL_DEFINITIONS} ${COMMON_BASE_DEFINITIONS}" )

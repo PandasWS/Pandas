@@ -165,7 +165,7 @@ def welcome(scriptname = None):
     if scriptname is not None:
         Message.ShowInfo('您现在启动的是: {scriptname}'.format(scriptname = scriptname))
     Message.ShowInfo('在使用此脚本之前, 建议确保 src 目录的工作区是干净的.')
-    Message.ShowInfo('这样添加结果如果不符合预期, 可以轻松的利用 git 进行重置操作.')
+    Message.ShowInfo('这样当处理结果不符合预期时, 可以轻松的利用 git 进行重置操作.')
 
 def timefmt(compact = False):
     '''

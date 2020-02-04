@@ -12,6 +12,7 @@
 #include "../common/showmsg.hpp"
 #include "../common/socket.hpp"
 #include "../common/strlib.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "chrif.hpp"
@@ -440,13 +441,13 @@ void quest_read_txtdb(void)
 		char filename[256];
 
 		sprintf(filename, "%s/%s%s", db_path, dbsubpath[f], "quest_db.txt");
-		if ((fp = UTF8FOPEN(filename, "r")) == NULL) {
+		if ((fp = fopen(filename, "r")) == NULL) {
 			if (f == 0)
 				ShowError("Can't read %s\n", filename);
 			return;
 		}
 
-		while(UTF8FGETS(line, sizeof(line), fp)) {
+		while(fgets(line, sizeof(line), fp)) {
 			struct quest_db *quest = NULL;
 			char *str[19], *p;
 			int quest_id = 0;

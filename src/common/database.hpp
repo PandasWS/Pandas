@@ -20,12 +20,19 @@ private:
 	uint16 version;
 	uint16 minimumVersion;
 	std::string currentFile;
+#ifdef Pandas_Database_Yaml_BeQuiet
+	uint16 quietLevel;	// 0 - 正常; &1 = 状态; &2 = 警告; &4 = 错误
+#endif // Pandas_Database_Yaml_BeQuiet
 
 	bool verifyCompatibility( const YAML::Node& rootNode );
 	bool load( const std::string& path );
 	void parse( const YAML::Node& rootNode );
 	void parseImports( const YAML::Node& rootNode );
 	template <typename R> bool asType( const YAML::Node& node, const std::string& name, R& out );
+
+#ifdef Pandas_Database_Yaml_Support_UTF8BOM
+	YAML::Node LoadFile(const std::string& filename);
+#endif // Pandas_Database_Yaml_Support_UTF8BOM
 
 // These should be visible/usable by the implementation provider
 protected:
@@ -67,6 +74,19 @@ public:
 	virtual void clear() = 0;
 	virtual const std::string getDefaultLocation() = 0;
 	virtual uint64 parseBodyNode( const YAML::Node& node ) = 0;
+
+#ifdef Pandas_Database_Yaml_BeQuiet
+	//************************************
+	// Method:      setQuietLevel
+	// Description: 设置提示信息的静默等级
+	// Parameter:   uint16 quietLevel_ ( 0 - 正常; &1 = 状态; &2 = 警告; &4 = 错误 )
+	// Returns:     void
+	// Author:      Sola丶小克(CairoLee)  2020/01/24 11:43
+	//************************************
+	void setQuietLevel(uint16 quietLevel_) {
+		this->quietLevel = quietLevel_;
+	}
+#endif // Pandas_Database_Yaml_BeQuiet
 };
 
 template <typename keytype, typename datatype> class TypesafeYamlDatabase : public YamlDatabase{

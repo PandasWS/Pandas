@@ -24,6 +24,7 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "achievement.hpp"
 #include "atcommand.hpp" // get_atcommand_level()
@@ -1486,6 +1487,9 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 
 	//Prevent S. Novices from getting the no-death bonus just yet. [Skotlex]
 	sd->die_counter=-1;
+
+	// 以下这行注释是为了方便 pyhelp_extracter.py 提取翻译文本使用的
+	// ShowInfo("'" CL_WHITE "%s" CL_RESET "' logged in. (AID/CID: '" CL_WHITE "%d/%d" CL_RESET "', IP: '" CL_WHITE "%d.%d.%d.%d" CL_RESET "', Group '" CL_WHITE "%d" CL_RESET "').\n", sd->status.name, sd->status.account_id, sd->status.char_id, CONVIP(ip), sd->group_id);
 
 	//display login notice
 	ShowInfo("'" CL_WHITE "%s" CL_RESET "' logged in."
@@ -12202,13 +12206,13 @@ static int pc_read_statsdb(const char *basedir, int last_s, bool silent){
 	FILE *fp;
 	
 	sprintf(line, "%s/statpoint.txt", basedir);
-	fp=UTF8FOPEN(line,"r");
+	fp=fopen(line,"r");
 	if(fp == NULL){
 		if(silent==0) ShowWarning("Can't read '" CL_WHITE "%s" CL_RESET "'... Generating DB.\n",line);
 		return max(last_s,i);
 	} else {
 		int entries=0;
-		while(UTF8FGETS(line, sizeof(line), fp))
+		while(fgets(line, sizeof(line), fp))
 		{
 			int stat;
 			trim(line);
@@ -12349,12 +12353,12 @@ int pc_read_motd(void)
 	memset(motd_text, 0, sizeof(motd_text));
 
 	// read current MOTD
-	if( ( fp = UTF8FOPEN(motd_txt, "r") ) != NULL )
+	if( ( fp = fopen(motd_txt, "r") ) != NULL )
 	{
 		unsigned int entries = 0;
 		char buf[CHAT_SIZE_MAX];
 
-		while( entries < MOTD_LINE_SIZE && UTF8FGETS(buf, CHAT_SIZE_MAX, fp) )
+		while( entries < MOTD_LINE_SIZE && fgets(buf, CHAT_SIZE_MAX, fp) )
 		{
 			unsigned int lines = 0;
 			size_t len;

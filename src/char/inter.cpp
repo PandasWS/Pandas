@@ -17,6 +17,7 @@
 #include "../common/socket.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "char.hpp"
 #include "char_logif.hpp"
@@ -793,13 +794,13 @@ int inter_config_read(const char* cfgName)
 	char line[1024];
 	FILE* fp;
 
-	fp = UTF8FOPEN(cfgName, "r");
+	fp = fopen(cfgName, "r");
 	if(fp == NULL) {
 		ShowError("File not found: %s\n", cfgName);
 		return 1;
 	}
 
-	while(UTF8FGETS(line, sizeof(line), fp)) {
+	while(fgets(line, sizeof(line), fp)) {
 		char w1[24], w2[1024];
 
 		if (line[0] == '/' && line[1] == '/')

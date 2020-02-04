@@ -20,6 +20,7 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "chat.hpp"
@@ -4513,7 +4514,7 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 	} 
             
 	// read whole file to buffer
-	fp = UTF8FOPEN(filepath, "rb");
+	fp = fopen(filepath, "rb");
 	if( fp == NULL )
 	{
 		ShowError("npc_parsesrcfile: File not found '%s'.\n", filepath);
@@ -4523,7 +4524,7 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 	len = ftell(fp);
 	buffer = (char*)aMalloc(len+1);
 	fseek(fp, 0, SEEK_SET);
-	len = UTF8FREAD(buffer, 1, len, fp);
+	len = fread(buffer, 1, len, fp);
 	buffer[len] = '\0';
 	if( ferror(fp) )
 	{
@@ -5006,6 +5007,10 @@ int npc_reload(void) {
 		ShowStatus("Loading NPC file: %s" CL_CLL "\r", nsl->name);
 		npc_parsesrcfile(nsl->name,false);
 	}
+
+	// 以下这行注释是为了方便 pyhelp_extracter.py 提取翻译文本使用的
+	// ShowInfo ("Done loading '" CL_WHITE "%d" CL_RESET "' NPCs:" CL_CLL "\n\t-'" CL_WHITE "%d" CL_RESET "' Warps\n\t-'" CL_WHITE "%d" CL_RESET "' Shops\n\t-'" CL_WHITE "%d" CL_RESET "' Scripts\n\t-'" CL_WHITE "%d" CL_RESET "' Spawn sets\n\t-'" CL_WHITE "%d" CL_RESET "' Mobs Cached\n\t-'" CL_WHITE "%d" CL_RESET "' Mobs Not Cached\n", npc_id - npc_new_min, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob);
+
 	ShowInfo ("Done loading '" CL_WHITE "%d" CL_RESET "' NPCs:" CL_CLL "\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Warps\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Shops\n"

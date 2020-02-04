@@ -16,6 +16,7 @@
 #include "../common/mmo.hpp"
 #include "../common/showmsg.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #define NO_WATER 1000000
 
@@ -230,7 +231,7 @@ int do_init(int argc, char** argv)
 		std::string filename = directory + map_list_file;
 
 		ShowStatus("Opening map list: %s\n", filename.c_str());
-		list = UTF8FOPEN(filename.c_str(), "r");
+		list = fopen(filename.c_str(), "r");
 		if (list == NULL) {
 			ShowError("Failure when opening maps list file %s\n", filename.c_str());
 			exit(EXIT_FAILURE);
@@ -249,7 +250,7 @@ int do_init(int argc, char** argv)
 		// Read and process the map list
 		char line[1024];
 
-		while (UTF8FGETS(line, sizeof(line), list))
+		while (fgets(line, sizeof(line), list))
 		{
 			if (line[0] == '/' && line[1] == '/')
 				continue;

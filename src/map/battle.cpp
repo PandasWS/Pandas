@@ -16,6 +16,7 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
+#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battleground.hpp"
 #include "chrif.hpp"
@@ -8831,13 +8832,13 @@ int battle_config_read(const char* cfgName)
 
 	count++;
 
-	fp = UTF8FOPEN(cfgName,"r");
+	fp = fopen(cfgName,"r");
 	if (fp == NULL)
 		ShowError("File not found: %s\n", cfgName);
 	else {
 		char line[1024], w1[1024], w2[1024];
 
-		while(UTF8FGETS(line, sizeof(line), fp)) {
+		while(fgets(line, sizeof(line), fp)) {
 			if (line[0] == '/' && line[1] == '/')
 				continue;
 			if (sscanf(line, "%1023[^:]:%1023s", w1, w2) != 2)
