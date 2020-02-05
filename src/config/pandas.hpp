@@ -296,6 +296,11 @@
 
 	// 是否启用一列用于控制角色称号的指令、事件等等 [Sola丶小克]
 	#define Pandas_Character_Title_Controller
+
+	#ifndef _WIN32
+		// 在 Linux 终端下输出信息时能转换成 UTF8 编码 [Sola丶小克]
+		#define Pandas_Console_Charset_SmartConvert
+	#endif // _WIN32
 #endif // Pandas_CreativeWork
 
 // ============================================================================

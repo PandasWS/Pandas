@@ -35,13 +35,7 @@ private:
 
 	void parseTags(std::string& message);
 public:
-	enum e_system_language systemLanguage;
-	enum e_console_encoding consoleEncoding;
-
 	TranslateDB() : TypesafeYamlDatabase("CONSOLE_TRANSLATE_DB", 1) {
-		this->systemLanguage = PandasUtf8::getSystemLanguage();
-		this->consoleEncoding = PandasUtf8::getConsoleEncoding();
-
 		this->setQuietLevel(1);
 
 		export_message_tag(CL_RESET);

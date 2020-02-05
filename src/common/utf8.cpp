@@ -19,6 +19,19 @@
 	#include <langinfo.h>
 #endif // _WIN32
 
+#ifndef va_copy
+	#ifdef __va_copy
+		#define va_copy __va_copy
+	#else
+		#define va_copy(a, b)  memcpy(&(a), &(b), sizeof(va_list))
+	#endif
+#endif
+
+enum e_console_encoding PandasUtf8::consoleEncoding =
+	PandasUtf8::getConsoleEncoding();
+enum e_system_language PandasUtf8::systemLanguage =
+	PandasUtf8::getSystemLanguage();
+
 //************************************
 // Method:      getConsoleEncoding
 // Description: 获取当前操作系统终端控制台的默认编码
@@ -146,15 +159,15 @@ std::string PandasUtf8::UnicodeDecode(const std::wstring& strUnicode, unsigned i
 #else
 
 //************************************
-// Method:      iconv_convert
-// Description: 
+// Method:      iconvConvert
+// Description: 在 Linux 平台上使用 iconv 库进行字符编码转换
 // Parameter:   const std::string & val
 // Parameter:   const std::string & from_charset
 // Parameter:   const std::string to_charset
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/02/02 23:42
 //************************************
-std::string PandasUtf8::iconv_convert(const std::string& val, const std::string& from_charset, const std::string& to_charset) {
+std::string PandasUtf8::iconvConvert(const std::string& val, const std::string& from_charset, const std::string& to_charset) {
 	iconv_t c_pt = nullptr;
 	char* strInput = nullptr, * pStrInput = nullptr;
 	char* strOutput = nullptr, * pStrOutput = nullptr;
@@ -188,6 +201,75 @@ std::string PandasUtf8::iconv_convert(const std::string& val, const std::string&
 	return strResult;
 }
 
+//************************************
+// Method:      consoleConvert
+// Description: 在 Linux 环境下对输出到控制台的文本进行编码转换
+// Parameter:   const std::string & val
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/02/05 16:42
+//************************************
+std::string PandasUtf8::consoleConvert(const std::string& val) {
+	std::string from_charset, to_charset;
+
+	switch (PandasUtf8::systemLanguage) {
+	case SYSTEM_LANGUAGE_CHT: from_charset = "BIG5"; break;
+	case SYSTEM_LANGUAGE_CHS: from_charset = "GBK"; break;
+	}
+
+	switch (PandasUtf8::consoleEncoding) {
+	case CONSOLE_ENCODING_UTF8: to_charset = "UTF-8"; break;
+	case CONSOLE_ENCODING_GB2312: to_charset = "GBK"; break;
+	case CONSOLE_ENCODING_BIG5: to_charset = "BIG5"; break;
+	}
+
+	if (from_charset.empty() || to_charset.empty()) {
+		return val;
+	}
+
+	return PandasUtf8::iconvConvert(val, from_charset, to_charset);
+}
+
+//************************************
+// Method:      vfprintf
+// Description: 用于对 vfprintf 函数进行劫持和编码转换处理
+// Parameter:   FILE * file
+// Parameter:   const char * fmt
+// Parameter:   va_list args
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2020/02/05 16:13
+//************************************
+int PandasUtf8::vfprintf(FILE* file, const char* fmt, va_list args) {
+	// va_list 的内容是一次性的, 使用过就无法被再次使用. 
+	// 由于我们需要通过 std::vsnprintf 函数来计算所需的 buffer 大小,
+	// 所以得先将 args 复制一份出来以便传入给 std::vsnprintf 调用
+	va_list argsCopy;
+	va_copy(argsCopy, args);
+	int size = std::vsnprintf(NULL, 0, fmt, argsCopy);
+	va_end(argsCopy);
+
+	// 若 std::vsnprintf 得到的返回值是负数的话, 那么说明操作失败了
+	// 我们直接透传原来的操作, 不再进行额外的转码加工处理
+	if (size < 0) {
+		return vfprintf(file, fmt, args);;
+	}
+
+	// 获取到的 size 不包括零结尾, 所以需要自己再添加一个字节 (用作零结尾)
+	char* buf = new char[size + 1];
+
+	// 接下来正式的使用掉 args 参数, 将文本先打印到 buf 中, 以便我们进行转码加工
+	std::vsnprintf(buf, size + 1, fmt, args);
+
+	// 将 buf 中的字符数据转换成一个 std::string 变量
+	std::string strBuf(buf);
+	delete[] buf;
+
+	// 进行字符串编码的转码加工处理
+	strBuf = PandasUtf8::consoleConvert(strBuf);
+
+	// 将处理完的字符串输出到指定的地方去 (显示到终端)
+	return fprintf(file, strBuf.c_str());
+}
+
 #endif // _WIN32
 
 //************************************
@@ -203,12 +285,12 @@ std::string PandasUtf8::utf8ToAnsi(const std::string& strUtf8) {
 	return PandasUtf8::UnicodeDecode(strUnicode, CP_ACP);
 #else
 	std::string toCharset;
-	switch (PandasUtf8::getSystemLanguage()) {
+	switch (PandasUtf8::systemLanguage) {
 	case SYSTEM_LANGUAGE_CHS: toCharset = "GBK"; break;
 	case SYSTEM_LANGUAGE_CHT: toCharset = "BIG5"; break;
 	default: toCharset = "GBK"; break;
 	}
-	return PandasUtf8::iconv_convert(strUtf8, "UTF-8", toCharset);
+	return PandasUtf8::iconvConvert(strUtf8, "UTF-8", toCharset);
 #endif // _WIN32
 }
 
@@ -225,12 +307,12 @@ std::string PandasUtf8::ansiToUtf8(const std::string& strAnsi) {
 	return PandasUtf8::UnicodeDecode(strUnicode, CP_UTF8);
 #else
 	std::string fromCharset;
-	switch (PandasUtf8::getSystemLanguage()) {
+	switch (PandasUtf8::systemLanguage) {
 	case SYSTEM_LANGUAGE_CHS: fromCharset = "GBK"; break;
 	case SYSTEM_LANGUAGE_CHT: fromCharset = "BIG5"; break;
 	default: fromCharset = "GBK"; break;
 	}
-	return PandasUtf8::iconv_convert(strAnsi, fromCharset, "UTF-8");
+	return PandasUtf8::iconvConvert(strAnsi, fromCharset, "UTF-8");
 #endif // _WIN32
 }
 
