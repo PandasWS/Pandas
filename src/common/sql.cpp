@@ -203,7 +203,6 @@ int Sql_SetEncoding(Sql* self, const char* encoding)
 int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encoding, const char* connect_name)
 {
 	bool bNoSetEncoding = false;
-	char* current_codepage = nullptr;
 
 	do 
 	{
@@ -220,6 +219,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 		}
 
 		// 先查询当前数据库使用的编码是哪个, 保存到 current_codepage 备用
+		char* current_codepage = nullptr;
 		if (SQL_ERROR == Sql_Query(self, "SHOW VARIABLES LIKE 'character_set_database';")) {
 			Sql_ShowDebug(self);
 			break;
@@ -283,14 +283,12 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 		return SQL_SUCCESS;
 	}
 
-	if (self && mysql_set_character_set(&self->handle, encoding) == 0) {
+	if (!self) return SQL_ERROR;
+	if (mysql_set_character_set(&self->handle, encoding) == 0)
 		return SQL_SUCCESS;
-	}
-	else {
-		if (self)
-			ShowSQL("DB error - %s\n", mysql_error(&self->handle));
-		return SQL_ERROR;
-	}
+
+	ShowSQL("DB error - %s\n", mysql_error(&self->handle));
+	return SQL_ERROR;
 }
 
 #endif // Pandas_SQL_Configure_Optimization

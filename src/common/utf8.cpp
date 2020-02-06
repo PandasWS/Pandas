@@ -5,6 +5,8 @@
 
 #include "utf8.hpp"
 
+#include "../common/strlib.hpp"
+
 #include <boost/algorithm/string/predicate.hpp>
 
 #ifdef _WIN32
@@ -18,14 +20,6 @@
 	#include <locale.h>
 	#include <langinfo.h>
 #endif // _WIN32
-
-#ifndef va_copy
-	#ifdef __va_copy
-		#define va_copy __va_copy
-	#else
-		#define va_copy(a, b)  memcpy(&(a), &(b), sizeof(va_list))
-	#endif
-#endif
 
 enum e_console_encoding PandasUtf8::consoleEncoding =
 	PandasUtf8::getConsoleEncoding();
@@ -236,32 +230,23 @@ std::string PandasUtf8::consoleConvert(const std::string& mes) {
 // Author:      Sola丶小克(CairoLee)  2020/02/05 16:13
 //************************************
 int PandasUtf8::vfprintf(FILE* file, const char* fmt, va_list args) {
-	// va_list 的内容是一次性的, 使用过就无法被再次使用. 
-	// 由于我们需要通过 std::vsnprintf 函数来计算所需的 buffer 大小,
-	// 所以得先将 args 复制一份出来以便传入给 std::vsnprintf 调用
-	va_list argsCopy;
-	va_copy(argsCopy, args);
-	int size = std::vsnprintf(NULL, 0, fmt, argsCopy);
-	va_end(argsCopy);
+	va_list apcopy;
+	va_copy(apcopy, args);
 
-	// 若 std::vsnprintf 得到的返回值是负数的话, 那么说明操作失败了
-	// 我们直接透传原来的操作, 不再进行额外的转码加工处理
-	if (size < 0) {
-		return vfprintf(file, fmt, args);;
-	}
+	// 将字符串直接构建到 StringBuf 里面
+	StringBuf* sbuf = StringBuf_Malloc();
+	StringBuf_Vprintf(sbuf, fmt, apcopy);
 
-	// 获取到的 size 不包括零结尾, 所以需要自己再添加一个字节 (用作零结尾)
-	char* buf = new char[size + 1];
-
-	// 接下来正式的使用掉 args 参数, 将文本先打印到 buf 中, 以便我们进行转码加工
-	std::vsnprintf(buf, size + 1, fmt, args);
+	va_end(apcopy);
 
 	// 将 buf 中的字符数据转换成一个 std::string 变量
-	std::string strBuf(buf);
-	delete[] buf;
+	std::string strBuf(StringBuf_Value(sbuf));
 
 	// 进行字符串编码的转码加工处理
 	strBuf = PandasUtf8::consoleConvert(strBuf);
+
+	// 释放 StringBuf 对象
+	StringBuf_Free(sbuf);
 
 	// 将处理完的字符串输出到指定的地方去 (显示到终端)
 	return fprintf(file, "%s", strBuf.c_str());
