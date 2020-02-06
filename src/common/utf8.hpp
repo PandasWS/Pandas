@@ -60,7 +60,7 @@ public:
 	static std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage);
 #else
 	static std::string iconvConvert(const std::string& val, const std::string& from_charset, const std::string& to_charset);
-	static std::string consoleConvert(const std::string& val);
+	static std::string consoleConvert(const std::string& mes);
 	static int vfprintf(FILE* file, const char* fmt, va_list args);
 #endif // _WIN32
 };

@@ -244,7 +244,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 		if (ARRAYLENGTH(non_ansi) > i) {
 #ifndef BUILDBOT
 			ShowWarning("Server and client is not support Non-ANSI character set very well.\n");
-			ShowWarning("We suggest you use ANSI character set as database encoding.\n", current_codepage);
+			ShowWarning("Please use ANSI character set as database encoding instead of " CL_WHITE "%s" CL_RESET " for " CL_WHITE "%s" CL_RESET " connection.\n", current_codepage, connect_name);
 #endif // BUILDBOT
 
 			// 若目标数据库使用 utf8 或者 utf8mb4 编码, 

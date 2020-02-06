@@ -298,7 +298,8 @@
 	#define Pandas_Character_Title_Controller
 
 	#ifndef _WIN32
-		// 在 Linux 终端下输出信息时能转换成 UTF8 编码 [Sola丶小克]
+		// 在 Linux 环境下输出信息时, 能转换成终端自适应编码 [Sola丶小克]
+		// 目前能够比较好的自适应 UTF-8, GBK, BIG5 编码
 		#define Pandas_Console_Charset_SmartConvert
 	#endif // _WIN32
 #endif // Pandas_CreativeWork

@@ -204,29 +204,26 @@ std::string PandasUtf8::iconvConvert(const std::string& val, const std::string& 
 //************************************
 // Method:      consoleConvert
 // Description: 在 Linux 环境下对输出到控制台的文本进行编码转换
-// Parameter:   const std::string & val
+// Parameter:   const std::string & mes
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/02/05 16:42
 //************************************
-std::string PandasUtf8::consoleConvert(const std::string& val) {
-	std::string from_charset, to_charset;
+std::string PandasUtf8::consoleConvert(const std::string& mes) {
+	std::string _from, _to;
 
 	switch (PandasUtf8::systemLanguage) {
-	case SYSTEM_LANGUAGE_CHT: from_charset = "BIG5"; break;
-	case SYSTEM_LANGUAGE_CHS: from_charset = "GBK"; break;
+	case SYSTEM_LANGUAGE_CHT: _from = "BIG5"; break;
+	case SYSTEM_LANGUAGE_CHS: _from = "GBK"; break;
 	}
 
 	switch (PandasUtf8::consoleEncoding) {
-	case CONSOLE_ENCODING_UTF8: to_charset = "UTF-8"; break;
-	case CONSOLE_ENCODING_GB2312: to_charset = "GBK"; break;
-	case CONSOLE_ENCODING_BIG5: to_charset = "BIG5"; break;
+	case CONSOLE_ENCODING_UTF8: _to = "UTF-8"; break;
+	case CONSOLE_ENCODING_GB2312: _to = "GBK"; break;
+	case CONSOLE_ENCODING_BIG5: _to = "BIG5"; break;
 	}
 
-	if (from_charset.empty() || to_charset.empty()) {
-		return val;
-	}
-
-	return PandasUtf8::iconvConvert(val, from_charset, to_charset);
+	if (_from.empty() || _to.empty()) return mes;
+	return PandasUtf8::iconvConvert(mes, _from, _to);
 }
 
 //************************************

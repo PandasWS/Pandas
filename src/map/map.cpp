@@ -4416,7 +4416,7 @@ int map_sql_init(void)
 #else
 	if (SQL_ERROR == Sql_SetEncoding(mmysql_handle, map_codepage, default_codepage, "Map-Server"))
 		Sql_ShowDebug(mmysql_handle);
-	if (SQL_ERROR == Sql_SetEncoding(qsmysql_handle, map_codepage, default_codepage, nullptr))
+	if (SQL_ERROR == Sql_SetEncoding(qsmysql_handle, map_codepage, default_codepage, "Map-Server (Script Engine)"))
 		Sql_ShowDebug(qsmysql_handle);
 #endif // Pandas_SQL_Configure_Optimization
 
