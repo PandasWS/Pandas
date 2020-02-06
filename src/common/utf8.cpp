@@ -264,7 +264,7 @@ int PandasUtf8::vfprintf(FILE* file, const char* fmt, va_list args) {
 	strBuf = PandasUtf8::consoleConvert(strBuf);
 
 	// 将处理完的字符串输出到指定的地方去 (显示到终端)
-	return fprintf(file, strBuf.c_str());
+	return fprintf(file, "%s", strBuf.c_str());
 }
 
 #endif // _WIN32
