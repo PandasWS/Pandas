@@ -237,6 +237,11 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 			ShowInfo("Detected the " CL_WHITE "%s" CL_RESET " database character set is " CL_WHITE "%s" CL_RESET ".\n", connect_name, current_codepage);
 		}
 
+		// 若 encoding 不是空指针且不是空字符串, 但它的值不等于 auto 那么直接走原来的逻辑
+		if (encoding && strlen(encoding) > 0 && strcmpi(encoding, "auto") != 0) {
+			break;
+		}
+
 		// 若使用的编码是 utf8 或 utf8mb4 中的任何一个, 则给予警告
 		size_t i = 0;
 		const char* non_ansi[] = { "utf8", "utf8mb4" };
@@ -256,11 +261,6 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 			default: encoding = "latin1"; break;
 			}
 
-			break;
-		}
-		
-		// 若 encoding 不是空指针且不是空字符串, 但它的值不等于 auto 那么直接走原来的逻辑
-		if (encoding && strlen(encoding) > 0 && strcmpi(encoding, "auto") != 0) {
 			break;
 		}
 
