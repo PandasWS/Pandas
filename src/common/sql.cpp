@@ -256,10 +256,11 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 
 			// 若目标数据库使用 utf8 或者 utf8mb4 编码, 
 			// 为了兼容性考虑, 会根据操作系统语言来选择使用 gbk 或 big5 编码,
-			// 若不是简体中文也不是繁体中文, 则不设置任何编码
+			// 若不是简体中文也不是繁体中文, 则直接使用当前数据库的 `character_set_database` 编码
 			switch (PandasUtf8::systemLanguage) {
 			case SYSTEM_LANGUAGE_CHS: encoding = "gbk"; break;
 			case SYSTEM_LANGUAGE_CHT: encoding = "big5"; break;
+			default: encoding = current_codepage; break;
 			}
 
 			break;
@@ -270,14 +271,9 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 	} while (false);
 
 	// 将程序建立连接后, 最终选用的连接编码告知给用户
-	if (connect_name != nullptr) {
-		if (encoding && strlen(encoding) > 0 && stricmp(encoding, "auto") != 0) {
+	if (encoding && strlen(encoding) > 0 && stricmp(encoding, "auto") != 0) {
+		if (connect_name != nullptr)
 			ShowInfo("Server will connect to " CL_WHITE "'%s'" CL_RESET " database using " CL_WHITE "'%s'" CL_RESET ".\n", connect_name, encoding);
-		}
-		else {
-			ShowInfo("Server will connect to " CL_WHITE "'%s'" CL_RESET " database without set codepage.\n", connect_name);
-			bNoSetEncoding = true;
-		}
 	}
 
 	// 若不进行具体的编码设置, 那么直接友好退出

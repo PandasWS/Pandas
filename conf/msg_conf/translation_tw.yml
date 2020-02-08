@@ -1262,8 +1262,6 @@ Body:
   Translation: "服務端程式使用 '[{CL_WHITE}]select[{CL_RESET}]' 事件分發器.\n"
 - Original: "Server will connect to [{CL_WHITE}]'%s'[{CL_RESET}] database using [{CL_WHITE}]'%s'[{CL_RESET}].\n"
   Translation: "服務端程式在建立 [{CL_WHITE}]'%s'[{CL_RESET}] 連線時將使用 [{CL_WHITE}]'%s'[{CL_RESET}] 編碼.\n"
-- Original: "Server will connect to [{CL_WHITE}]'%s'[{CL_RESET}] database without set codepage.\n"
-  Translation: ""
 - Original: "Session #%d timed out\n"
   Translation: "連線編號為 #%d 的會話已超時\n"
 - Original: "Set skills to '%d' monsters.\n"
