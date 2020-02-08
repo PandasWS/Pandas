@@ -1161,7 +1161,7 @@ Body:
 - Original: "Please use '%s' instead!\n"
   Translation: ""
 - Original: "Please use ANSI character set as database encoding instead of [{CL_WHITE}]%s[{CL_RESET}] for [{CL_WHITE}]%s[{CL_RESET}] connection.\n"
-  Translation: "建议使用 ANSI 编码 (latin1, gbk, big5 等) 作为数据库字符集, 而不是用 [{CL_WHITE}]%s[{CL_RESET}] 作为 [{CL_WHITE}]%s[{CL_RESET}] 连接所指向的数据库的字符集.\n"
+  Translation: "建议使用 ANSI 编码作为数据库字符集, 而不是用 [{CL_WHITE}]'%s'[{CL_RESET}] 作为 [{CL_WHITE}]'%s'[{CL_RESET}] 连接所指向的数据库的字符集 (ANSI 编码是指: latin1, gbk, big5 等).\n"
 - Original: "Prevented infinite warp loop for player (%d:%d). Please fix NPC: '%s', path: '%s'\n"
   Translation: ""
 - Original: "Previous script (lost):\n"
