@@ -217,7 +217,7 @@ std::string PandasUtf8::iconvConvert(const std::string& val, const std::string& 
 // Author:      Sola丶小克(CairoLee)  2020/02/05 16:42
 //************************************
 std::string PandasUtf8::consoleConvert(const std::string& mes) {
-#ifndef BUILDBOT
+#ifdef BUILDBOT
 	// 若当前程序编译运行在持续集成环境
 	// 那么不进行任何终端编码的转换操作, 让它持续处于英文状态
 	return mes;
