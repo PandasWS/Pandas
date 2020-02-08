@@ -116,6 +116,16 @@ enum e_system_language PandasUtf8::getSystemLanguage() {
 #endif // _WIN32
 }
 
+//************************************
+// Method:      getDefaultCodepage
+// Description: 获取无法根据系统语言获取到对应的编码时采用的默认编码
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/02/08 15:53
+//************************************
+std::string PandasUtf8::getDefaultCodepage() {
+	return std::string("GBK");
+}
+
 #ifdef _WIN32
 
 //************************************
@@ -208,6 +218,7 @@ std::string PandasUtf8::consoleConvert(const std::string& mes) {
 	switch (PandasUtf8::systemLanguage) {
 	case SYSTEM_LANGUAGE_CHT: _from = "BIG5"; break;
 	case SYSTEM_LANGUAGE_CHS: _from = "GBK"; break;
+	default: _from = PandasUtf8::getDefaultCodepage(); break;
 	}
 
 	switch (PandasUtf8::consoleEncoding) {
@@ -270,7 +281,7 @@ std::string PandasUtf8::utf8ToAnsi(const std::string& strUtf8) {
 	switch (PandasUtf8::systemLanguage) {
 	case SYSTEM_LANGUAGE_CHS: toCharset = "GBK"; break;
 	case SYSTEM_LANGUAGE_CHT: toCharset = "BIG5"; break;
-	default: toCharset = "GBK"; break;
+	default: toCharset = PandasUtf8::getDefaultCodepage(); break;
 	}
 	return PandasUtf8::iconvConvert(strUtf8, "UTF-8", toCharset);
 #endif // _WIN32
@@ -292,7 +303,7 @@ std::string PandasUtf8::ansiToUtf8(const std::string& strAnsi) {
 	switch (PandasUtf8::systemLanguage) {
 	case SYSTEM_LANGUAGE_CHS: fromCharset = "GBK"; break;
 	case SYSTEM_LANGUAGE_CHT: fromCharset = "BIG5"; break;
-	default: fromCharset = "GBK"; break;
+	default: fromCharset = PandasUtf8::getDefaultCodepage(); break;
 	}
 	return PandasUtf8::iconvConvert(strAnsi, fromCharset, "UTF-8");
 #endif // _WIN32

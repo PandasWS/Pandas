@@ -55,6 +55,8 @@ public:
 	static std::string utf8ToAnsi(const std::string& strUtf8);
 	static std::string ansiToUtf8(const std::string& strAnsi);
 
+	static std::string getDefaultCodepage();
+
 #ifdef _WIN32
 	static std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage);
 	static std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage);

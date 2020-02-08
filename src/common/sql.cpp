@@ -250,17 +250,16 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 #ifndef BUILDBOT
 			if (connect_name != nullptr) {
 				ShowWarning("Server and client is not support Non-ANSI character set very well.\n");
-				ShowWarning("Please use ANSI character set as database encoding instead of " CL_WHITE "%s" CL_RESET " for " CL_WHITE "%s" CL_RESET " connection.\n", current_codepage, connect_name);
+				ShowWarning("Please use ANSI character set as database encoding instead of " CL_WHITE "'%s'" CL_RESET " for " CL_WHITE "'%s'" CL_RESET " connection. The ANSI chracter set like: latin1, gbk, big5.\n", current_codepage, connect_name);
 			}
 #endif // BUILDBOT
 
 			// 若目标数据库使用 utf8 或者 utf8mb4 编码, 
 			// 为了兼容性考虑, 会根据操作系统语言来选择使用 gbk 或 big5 编码,
-			// 若不是简体中文也不是繁体中文, 则使用 latin1 编码
+			// 若不是简体中文也不是繁体中文, 则不设置任何编码
 			switch (PandasUtf8::systemLanguage) {
 			case SYSTEM_LANGUAGE_CHS: encoding = "gbk"; break;
 			case SYSTEM_LANGUAGE_CHT: encoding = "big5"; break;
-			default: encoding = "latin1"; break;
 			}
 
 			break;
@@ -277,6 +276,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 		}
 		else {
 			ShowInfo("Server will connect to " CL_WHITE "'%s'" CL_RESET " database without set codepage.\n", connect_name);
+			bNoSetEncoding = true;
 		}
 	}
 
