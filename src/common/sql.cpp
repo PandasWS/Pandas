@@ -250,7 +250,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 #ifndef BUILDBOT
 			if (connect_name != nullptr) {
 				ShowWarning("Server and client is not support Non-ANSI character set very well.\n");
-				ShowWarning("Please use ANSI character set as database encoding instead of " CL_WHITE "'%s'" CL_RESET " for " CL_WHITE "'%s'" CL_RESET " connection. The ANSI chracter set like: latin1, gbk, big5.\n", current_codepage, connect_name);
+				ShowWarning("Please use ANSI character set as database encoding instead of " CL_WHITE "'%s'" CL_RESET " for " CL_WHITE "'%s'" CL_RESET " connection. The ANSI character set like: latin1, gbk, big5.\n", current_codepage, connect_name);
 			}
 #endif // BUILDBOT
 

@@ -26,6 +26,10 @@ enum e_console_encoding PandasUtf8::consoleEncoding =
 enum e_system_language PandasUtf8::systemLanguage =
 	PandasUtf8::getSystemLanguage();
 
+// 此处定义的缓冲区大小可参考 showmsg.cpp 中 SBUF_SIZE 的定义
+// 按照 rAthena 的建议, 此处的 STRBUF_SIZE 不会设置低于 SBUF_SIZE 设定的值
+#define STRBUF_SIZE 2054
+
 //************************************
 // Method:      getConsoleEncoding
 // Description: 获取当前操作系统终端控制台的默认编码
@@ -213,6 +217,12 @@ std::string PandasUtf8::iconvConvert(const std::string& val, const std::string& 
 // Author:      Sola丶小克(CairoLee)  2020/02/05 16:42
 //************************************
 std::string PandasUtf8::consoleConvert(const std::string& mes) {
+#ifndef BUILDBOT
+	// 若当前程序编译运行在持续集成环境
+	// 那么不进行任何终端编码的转换操作, 让它持续处于英文状态
+	return mes;
+#endif // BUILDBOT
+
 	std::string _from, _to;
 
 	switch (PandasUtf8::systemLanguage) {
@@ -244,20 +254,25 @@ int PandasUtf8::vfprintf(FILE* file, const char* fmt, va_list args) {
 	va_list apcopy;
 	va_copy(apcopy, args);
 
-	// 将字符串直接构建到 StringBuf 里面
-	StringBuf* sbuf = StringBuf_Malloc();
-	StringBuf_Vprintf(sbuf, fmt, apcopy);
+	char sbuf[STRBUF_SIZE] = { 0 };
+	int len = vsnprintf(sbuf, STRBUF_SIZE, fmt, apcopy);
+	std::string strBuf;
+
+	if (len >= 0 && len < STRBUF_SIZE) {
+		strBuf = std::string(sbuf);
+	}
+	else {
+		StringBuf* sbuf = StringBuf_Malloc();
+		StringBuf_Vprintf(sbuf, fmt, args);
+		strBuf = std::string(StringBuf_Value(sbuf));
+		StringBuf_Free(sbuf);
+		ShowDebug("%s: dynamic buffer used, increase the static buffer size to %d or more.\n", __func__, len + 1);
+	}
 
 	va_end(apcopy);
 
-	// 将 buf 中的字符数据转换成一个 std::string 变量
-	std::string strBuf(StringBuf_Value(sbuf));
-
 	// 进行字符串编码的转码加工处理
 	strBuf = PandasUtf8::consoleConvert(strBuf);
-
-	// 释放 StringBuf 对象
-	StringBuf_Free(sbuf);
 
 	// 将处理完的字符串输出到指定的地方去 (显示到终端)
 	return fprintf(file, "%s", strBuf.c_str());
