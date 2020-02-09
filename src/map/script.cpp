@@ -26008,11 +26008,13 @@ static int buildin_getsameipinfo_sub(struct map_session_data* pl_sd, va_list ap)
 	struct map_session_data *sd = va_arg(ap, struct map_session_data*);
 	uint32 ipaddr = va_arg(ap, uint32);
 	uint32 *count = va_arg(ap, uint32*);
+	int16 m = va_arg(ap, int16);
 
 	if (!ipaddr || !sd | !count) return 0;
 	if (!pl_sd || pl_sd->state.autotrade) return 0;
+	if (m >= 0 && pl_sd->bl.m != m) return 0;
 
-	if (sd && pl_sd && ipaddr == session[pl_sd->fd]->client_addr) {
+	if (ipaddr == session[pl_sd->fd]->client_addr) {
 		pc_setreg(sd, reference_uid(add_str("@sameip_aid"), (*count)), pl_sd->status.account_id);
 		pc_setreg(sd, reference_uid(add_str("@sameip_cid"), (*count)), pl_sd->status.char_id);
 		pc_setregstr(sd, reference_uid(add_str("@sameip_name$"), (*count)), pl_sd->status.name);
@@ -26026,13 +26028,15 @@ static int buildin_getsameipinfo_sub(struct map_session_data* pl_sd, va_list ap)
 /* ===========================================================
  * 指令: getsameipinfo
  * 描述: 获得某个指定 IP 在线的玩家信息
- * 用法: getsameipinfo {<"IP地址">};
+ * 用法: getsameipinfo {<"IP地址">{<,"地图">}};
+ * 如果指定了地图, 请使用getcharip()获取关联角色的IP, 即: getsameipinfo(getcharip(), "地图")
  * 返回: 出错返回 -1, 其他含 0 正整数表示查到的此 IP 的在线玩家数
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(getsameipinfo) {
 	struct map_session_data *sd = nullptr;
 	uint32 ipaddr = 0, match_count = 0;
+	int16 m = -1;
 
 	if (!script_rid2sd(sd)) {
 		script_pushint(st, -1);
@@ -26052,7 +26056,16 @@ BUILDIN_FUNC(getsameipinfo) {
 		ipaddr = session[sd->fd]->client_addr;
 	}
 
-	map_foreachpc(buildin_getsameipinfo_sub, sd, ipaddr, &match_count);
+	if (script_hasdata(st, 3)) {
+		const char* map_name = script_getstr(st, 3);
+		if ((m = map_mapname2mapid(map_name)) < 0) {
+			ShowWarning("buildin_getsameipinfo: Invalid map name %s.\n", map_name);
+			script_pushint(st, -1);
+			return SCRIPT_CMD_SUCCESS;
+		}
+	}
+
+	map_foreachpc(buildin_getsameipinfo_sub, sd, ipaddr, &match_count, m);
 	pc_setreg(sd, add_str("@sameip_amount"), match_count);
 
 	script_pushint(st, match_count);
@@ -27102,7 +27115,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(inarray,"searcharray","rv"),			// 由于 rAthena 已经实现 inarray 指令, 这里兼容老版本 searcharray 指令 [Sola丶小克]
 #endif // Pandas_ScriptCommand_SearchArray
 #ifdef Pandas_ScriptCommand_GetSameIpInfo
-	BUILDIN_DEF(getsameipinfo,"?"),						// 获得某个指定 IP 在线的玩家信息 [Sola丶小克]
+	BUILDIN_DEF(getsameipinfo,"??"),					// 获得某个指定 IP 在线的玩家信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetSameIpInfo
 #ifdef Pandas_ScriptCommand_Logout
 	BUILDIN_DEF(logout,"i?"),							// 使指定的角色立刻登出游戏 [Sola丶小克]
