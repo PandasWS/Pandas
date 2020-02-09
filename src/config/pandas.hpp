@@ -286,8 +286,9 @@
 	// - 能够输出目标数据库当前所使用的编码
 	// - 当在 inter_athena.conf 中指定了 codepage 时, 能提示最终使用的编码
 	// - 若目标数据库使用 utf8 或者 utf8mb4 编码则会给与提示
-	// - 若目标数据库使用 utf8 或者 utf8mb4 编码, 为了兼容性考虑,
-	//   会根据操作系统语言来选择使用 gbk 或 big5 编码, 若不是简体中文也不是繁体中文, 则使用 latin1 编码
+	// - 若目标数据库使用 utf8 或者 utf8mb4 编码, 为了兼容性考虑会根据操作
+	//   系统语言来选择使用 gbk 或 big5 编码, 若不是简体中文也不是繁体中文则直接
+    //   使用当前数据库的 `character_set_database` 编码.
 	//
 	// --------------------------------------
 	// 改动三：用 mysql_set_character_set 来设置 MySQL 的编码字符集
@@ -296,6 +297,12 @@
 
 	// 是否启用一列用于控制角色称号的指令、事件等等 [Sola丶小克]
 	#define Pandas_Character_Title_Controller
+
+	#ifndef _WIN32
+		// 在 Linux 环境下输出信息时, 能转换成终端自适应编码 [Sola丶小克]
+		// 目前能够比较好的自适应 UTF-8, GBK, BIG5 编码
+		#define Pandas_Console_Charset_SmartConvert
+	#endif // _WIN32
 #endif // Pandas_CreativeWork
 
 // ============================================================================

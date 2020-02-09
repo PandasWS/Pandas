@@ -28,7 +28,7 @@ TranslateDB translate_db;
 const std::string TranslateDB::getDefaultLocation() {
 	std::string postfix;
 
-	switch (this->systemLanguage) {
+	switch (PandasUtf8::systemLanguage) {
 	case SYSTEM_LANGUAGE_CHS: postfix = "cn"; break;
 	case SYSTEM_LANGUAGE_CHT: postfix = "tw"; break;
 	}
@@ -179,25 +179,6 @@ void translate(std::string& original) {
 	auto it = translate_db.find(original);
 	if (it != nullptr && !it->translation.empty()) {
 		original = it->translation;
-#ifndef _WIN32
-		std::string from_charset, to_charset;
-		switch (translate_db.systemLanguage) {
-		case SYSTEM_LANGUAGE_CHT: from_charset = "BIG5"; break;
-		case SYSTEM_LANGUAGE_CHS: from_charset = "GBK"; break;
-		}
-
-		switch (translate_db.consoleEncoding) {
-		case CONSOLE_ENCODING_UTF8: to_charset = "UTF-8"; break;
-		case CONSOLE_ENCODING_GB2312: to_charset = "GBK"; break;
-		case CONSOLE_ENCODING_BIG5: to_charset = "BIG5"; break;
-		}
-
-		if (from_charset.empty() || to_charset.empty()) {
-			return;
-		}
-
-		original = PandasUtf8::iconv_convert(original, from_charset, to_charset);
-#endif // _WIN32
 	}
 }
 

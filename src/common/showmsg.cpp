@@ -1,4 +1,5 @@
-﻿// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
+﻿
+// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
 #include "showmsg.hpp"
@@ -214,6 +215,12 @@ int	VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 
 	// Print everything to the buffer
 	BUFVPRINTF(tempbuf,fmt,argptr);
+
+#ifdef Pandas_Console_Charset_SmartConvert
+	std::string strBuf(BUFVAL(tempbuf));
+	strBuf = PandasUtf8::consoleConvert(strBuf);
+	BUFVAL(tempbuf) = (char*)strBuf.c_str();
+#endif // Pandas_Console_Charset_SmartConvert
 
 	if( !is_console(handle) && stdout_with_ansisequence )
 	{
@@ -545,12 +552,22 @@ int	VFPRINTF(FILE *file, const char *fmt, va_list argptr)
 
 	if( is_console(file) || stdout_with_ansisequence )
 	{
+#ifndef Pandas_Console_Charset_SmartConvert
 		vfprintf(file, fmt, argptr);
+#else
+		PandasUtf8::vfprintf(file, fmt, argptr);
+#endif // Pandas_Console_Charset_SmartConvert
 		return 0;
 	}
 
 	// Print everything to the buffer
 	BUFVPRINTF(tempbuf,fmt,argptr);
+
+#ifdef Pandas_Console_Charset_SmartConvert
+	std::string strBuf(BUFVAL(tempbuf));
+	strBuf = PandasUtf8::consoleConvert(strBuf);
+	BUFVAL(tempbuf) = (char*)strBuf.c_str();
+#endif // Pandas_Console_Charset_SmartConvert
 
 	// start with processing
 	p = BUFVAL(tempbuf);

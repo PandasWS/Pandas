@@ -237,30 +237,32 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 			ShowInfo("Detected the " CL_WHITE "%s" CL_RESET " database character set is " CL_WHITE "%s" CL_RESET ".\n", connect_name, current_codepage);
 		}
 
+		// 若 encoding 不是空指针且不是空字符串, 但它的值不等于 auto 那么直接走原来的逻辑
+		if (encoding && strlen(encoding) > 0 && strcmpi(encoding, "auto") != 0) {
+			break;
+		}
+
 		// 若使用的编码是 utf8 或 utf8mb4 中的任何一个, 则给予警告
 		size_t i = 0;
 		const char* non_ansi[] = { "utf8", "utf8mb4" };
 		ARR_FIND(0, ARRAYLENGTH(non_ansi), i, stricmp(current_codepage, non_ansi[i]) == 0);
 		if (ARRAYLENGTH(non_ansi) > i) {
 #ifndef BUILDBOT
-			ShowWarning("Server and client is not support Non-ANSI character set very well.\n");
-			ShowWarning("We suggest you use ANSI character set as database encoding.\n", current_codepage);
+			if (connect_name != nullptr) {
+				ShowWarning("Server and client is not support Non-ANSI character set very well.\n");
+				ShowWarning("Please use ANSI character set as database encoding instead of " CL_WHITE "'%s'" CL_RESET " for " CL_WHITE "'%s'" CL_RESET " connection. The ANSI character set like: latin1, gbk, big5.\n", current_codepage, connect_name);
+			}
 #endif // BUILDBOT
 
 			// 若目标数据库使用 utf8 或者 utf8mb4 编码, 
 			// 为了兼容性考虑, 会根据操作系统语言来选择使用 gbk 或 big5 编码,
-			// 若不是简体中文也不是繁体中文, 则使用 latin1 编码
-			switch (PandasUtf8::getSystemLanguage()) {
+			// 若不是简体中文也不是繁体中文, 则直接使用当前数据库的 `character_set_database` 编码
+			switch (PandasUtf8::systemLanguage) {
 			case SYSTEM_LANGUAGE_CHS: encoding = "gbk"; break;
 			case SYSTEM_LANGUAGE_CHT: encoding = "big5"; break;
-			default: encoding = "latin1"; break;
+			default: encoding = current_codepage; break;
 			}
 
-			break;
-		}
-		
-		// 若 encoding 不是空指针且不是空字符串, 但它的值不等于 auto 那么直接走原来的逻辑
-		if (encoding && strlen(encoding) > 0 && strcmpi(encoding, "auto") != 0) {
 			break;
 		}
 
@@ -269,13 +271,9 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 	} while (false);
 
 	// 将程序建立连接后, 最终选用的连接编码告知给用户
-	if (connect_name != nullptr) {
-		if (encoding && strlen(encoding) > 0 && stricmp(encoding, "auto") != 0) {
+	if (encoding && strlen(encoding) > 0 && stricmp(encoding, "auto") != 0) {
+		if (connect_name != nullptr)
 			ShowInfo("Server will connect to " CL_WHITE "'%s'" CL_RESET " database using " CL_WHITE "'%s'" CL_RESET ".\n", connect_name, encoding);
-		}
-		else {
-			ShowInfo("Server will connect to " CL_WHITE "'%s'" CL_RESET " database without set codepage.\n", connect_name);
-		}
 	}
 
 	// 若不进行具体的编码设置, 那么直接友好退出
@@ -283,8 +281,11 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 		return SQL_SUCCESS;
 	}
 
-	if (self && mysql_set_character_set(&self->handle, encoding) == 0)
+	if (!self) return SQL_ERROR;
+	if (mysql_set_character_set(&self->handle, encoding) == 0)
 		return SQL_SUCCESS;
+
+	ShowSQL("DB error - %s\n", mysql_error(&self->handle));
 	return SQL_ERROR;
 }
 

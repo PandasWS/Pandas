@@ -30,7 +30,8 @@ enum e_console_encoding : uint8 {
 };
 
 enum e_system_language : uint8 {
-	SYSTEM_LANGUAGE_ENG = 0,
+	SYSTEM_LANGUAGE_UNKNOW = 0,
+	SYSTEM_LANGUAGE_ENG,
 	SYSTEM_LANGUAGE_CHS,
 	SYSTEM_LANGUAGE_CHT
 };
@@ -38,6 +39,12 @@ enum e_system_language : uint8 {
 class PandasUtf8
 {
 public:
+	static enum e_console_encoding consoleEncoding;
+	static enum e_system_language systemLanguage;
+
+	static enum e_console_encoding getConsoleEncoding();
+	static enum e_system_language getSystemLanguage();
+
 	static enum e_file_charsetmode fmode(FILE* _Stream);
 	static enum e_file_charsetmode fmode(std::ifstream& ifs);
 
@@ -48,14 +55,15 @@ public:
 	static std::string utf8ToAnsi(const std::string& strUtf8);
 	static std::string ansiToUtf8(const std::string& strAnsi);
 
-	static enum e_console_encoding getConsoleEncoding();
-	static enum e_system_language getSystemLanguage();
+	static std::string getDefaultCodepage();
 
 #ifdef _WIN32
 	static std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage);
 	static std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage);
 #else
-	static std::string iconv_convert(const std::string& val, const std::string& from_charset, const std::string& to_charset);
+	static std::string iconvConvert(const std::string& val, const std::string& from_charset, const std::string& to_charset);
+	static std::string consoleConvert(const std::string& mes);
+	static int vfprintf(FILE* file, const char* fmt, va_list args);
 #endif // _WIN32
 };
 
