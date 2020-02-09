@@ -26028,10 +26028,9 @@ static int buildin_getsameipinfo_sub(struct map_session_data* pl_sd, va_list ap)
 /* ===========================================================
  * 指令: getsameipinfo
  * 描述: 获得某个指定 IP 在线的玩家信息
- * 用法: getsameipinfo {<"IP地址">{<,"地图">}};
- * 如果指定了地图, 请使用getcharip()获取关联角色的IP, 即: getsameipinfo(getcharip(), "地图")
+ * 用法: getsameipinfo {<"IP地址">{<,"地图名">}};
  * 返回: 出错返回 -1, 其他含 0 正整数表示查到的此 IP 的在线玩家数
- * 作者: Sola丶小克
+ * 作者: Sola丶小克, 晓晓
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(getsameipinfo) {
 	struct map_session_data *sd = nullptr;
