@@ -5617,7 +5617,9 @@ int do_init(int argc, char *argv[])
 	if(enable_grf)
 		grfio_init(GRF_PATH_FILENAME);
 
+	performance_begin("read all maps");
 	map_readallmaps();
+	performance_end("read all maps");
 
 	add_timer_func_list(map_freeblock_timer, "map_freeblock_timer");
 	add_timer_func_list(map_clearflooritem_timer, "map_clearflooritem_timer");

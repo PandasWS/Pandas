@@ -98,7 +98,7 @@ void performance_stop(std::string name, const char* debug_file, const unsigned l
 void performance_report(std::string name, const char* debug_file, const unsigned long debug_line) {
 	auto it = __performance.find(name);
 	if (it != __performance.end()) {
-		ShowDebug("Performance: %s | Count = %" PRIuPTR " | Duration = %" PRIuPTR "ms\n", name.c_str(), it->second.total_cnt, it->second.duration_ms.count());
+		ShowInfo("Performance: %s | Trigger count = %" PRIuPTR " | Duration = %" PRIuPTR "ms\n", name.c_str(), it->second.total_cnt, it->second.duration_ms.count());
 		return;
 	}
 	ShowDebug("%s: The counter name '%s' is not exists, please initialize before using.\n", __func__, name.c_str());
