@@ -1,0 +1,134 @@
+﻿// Copyright (c) Pandas Dev Teams - Licensed under GNU GPL
+// For more information, see LICENCE in the main folder
+
+#include "performance.hpp"
+
+#include <chrono>
+#include <map>
+
+#include "../common/showmsg.hpp"
+#include "../common/cbasetypes.hpp"
+
+using std::chrono::milliseconds;
+using std::chrono::duration_cast;
+using std::chrono::high_resolution_clock;
+
+struct s_performance_item {
+	milliseconds duration_ms;
+	high_resolution_clock::time_point start_time;
+	uint32 total_cnt;
+};
+
+std::map<std::string, struct s_performance_item> __performance;
+
+//************************************
+// Method:      performance_init
+// Description: 创建并初始化一个性能计数器, 若计数器已存在则重置全部数据
+// Parameter:   std::string name
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/10 22:32
+//************************************
+void performance_init(std::string name) {
+	auto it = __performance.find(name);
+	if (it != __performance.end()) {
+		it->second.duration_ms = milliseconds::zero();
+		it->second.start_time = high_resolution_clock::time_point();
+		it->second.total_cnt = 0;
+	}
+	else {
+		s_performance_item sitem;
+		sitem.duration_ms = milliseconds::zero();
+		sitem.start_time = high_resolution_clock::time_point();
+		sitem.total_cnt = 0;
+		__performance[name] = sitem;
+	}
+}
+
+//************************************
+// Method:      performance_start
+// Description: 使指定的性能计数器开始计时 (可反复 start 和 stop, 耗时结果会累积)
+// Parameter:   std::string name
+// Parameter:   const char * debug_file
+// Parameter:   const unsigned long debug_line
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/10 22:32
+//************************************
+void performance_start(std::string name, const char* debug_file, const unsigned long debug_line) {
+	auto it = __performance.find(name);
+	if (it != __performance.end()) {
+		it->second.start_time = high_resolution_clock::now();
+		return;
+	}
+	ShowDebug("%s: The counter name '%s' is not exists, please initialize before using.\n", __func__, name.c_str());
+	ShowDebug("%s: Caller: %s Line: %" PRIuPTR "\n", __func__, debug_file, debug_line);
+}
+
+
+//************************************
+// Method:      performance_stop
+// Description: 停止指定的性能计数器, 并将时间记录起来 (可反复 start 和 stop, 耗时结果会累积)
+// Parameter:   std::string name
+// Parameter:   const char * debug_file
+// Parameter:   const unsigned long debug_line
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/10 22:32
+//************************************
+void performance_stop(std::string name, const char* debug_file, const unsigned long debug_line) {
+	high_resolution_clock::time_point stop_time = high_resolution_clock::now();
+	auto it = __performance.find(name);
+	if (it != __performance.end()) {
+		milliseconds duration_curr = duration_cast<milliseconds>(stop_time - it->second.start_time);
+		it->second.duration_ms += duration_curr;
+		it->second.total_cnt++;
+		return;
+	}
+	ShowDebug("%s: The counter name '%s' is not exists, please initialize before using.\n", __func__, name.c_str());
+	ShowDebug("%s: Caller: %s Line: %" PRIuPTR "\n", __func__, debug_file, debug_line);
+}
+
+//************************************
+// Method:      performance_report
+// Description: 输出距离上次调用 performance_init 至今的计数器信息
+// Parameter:   std::string name
+// Parameter:   const char * debug_file
+// Parameter:   const unsigned long debug_line
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2020/02/10 21:58
+//************************************
+void performance_report(std::string name, const char* debug_file, const unsigned long debug_line) {
+	auto it = __performance.find(name);
+	if (it != __performance.end()) {
+		ShowDebug("Performance: %s | Count = %" PRIuPTR " | Duration = %" PRIuPTR "ms\n", name.c_str(), it->second.total_cnt, it->second.duration_ms.count());
+		return;
+	}
+	ShowDebug("%s: The counter name '%s' is not exists, please initialize before using.\n", __func__, name.c_str());
+	ShowDebug("%s: Caller: %s Line: %" PRIuPTR "\n", __func__, debug_file, debug_line);
+}
+
+//************************************
+// Method:      performance_begin
+// Description: 创建一个性能计数器并立刻开始计时 (init + start)
+// Parameter:   std::string name
+// Parameter:   const char * debug_file
+// Parameter:   const unsigned long debug_line
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/11 13:52
+//************************************
+void performance_begin(std::string name, const char* debug_file, const unsigned long debug_line) {
+	performance_init(name);
+	performance_start(name, debug_file, debug_line);
+}
+
+//************************************
+// Method:      performance_end
+// Description: 停止一个性能计数器并输出结果 (stop + report)
+// Parameter:   std::string name
+// Parameter:   const char * debug_file
+// Parameter:   const unsigned long debug_line
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/11 13:52
+//************************************
+void performance_end(std::string name, const char* debug_file, const unsigned long debug_line) {
+	performance_stop(name, debug_file, debug_line);
+	performance_report(name, debug_file, debug_line);
+}

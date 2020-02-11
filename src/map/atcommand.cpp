@@ -10362,7 +10362,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(crashtest),			// 执行崩溃测试, 在比较严格的环境上故意触发地图服务器崩溃 [Sola丶小克]
 #endif // Pandas_AtCommand_Crashtest
 #ifdef Pandas_AtCommand_Title
-		ACMD_DEF(title),			// 在此写上管理员指令说明 [维护者昵称]
+		ACMD_DEF(title),				// 给角色设置一个指定的称号ID [Sola丶小克]
 #endif // Pandas_AtCommand_Title
 		// PYHELP - ATCMD - INSERT POINT - <Section 3>
 

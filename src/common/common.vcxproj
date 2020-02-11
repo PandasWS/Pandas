@@ -37,6 +37,7 @@
     <ClInclude Include="mmo.hpp" />
     <ClInclude Include="msg_conf.hpp" />
     <ClInclude Include="nullpo.hpp" />
+    <ClInclude Include="performance.hpp" />
     <ClInclude Include="random.hpp" />
     <ClInclude Include="showmsg.hpp" />
     <ClInclude Include="socket.hpp" />
@@ -67,6 +68,7 @@
     <ClCompile Include="crashdump.cpp" />
     <ClCompile Include="msg_conf.cpp" />
     <ClCompile Include="nullpo.cpp" />
+    <ClCompile Include="performance.cpp" />
     <ClCompile Include="random.cpp" />
     <ClCompile Include="showmsg.cpp" />
     <ClCompile Include="socket.cpp" />
