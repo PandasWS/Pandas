@@ -9,12 +9,13 @@
 #include "../common/showmsg.hpp"
 #include "../common/cbasetypes.hpp"
 
+using std::chrono::nanoseconds;
 using std::chrono::milliseconds;
 using std::chrono::duration_cast;
 using std::chrono::high_resolution_clock;
 
 struct s_performance_item {
-	milliseconds duration_ms;
+	nanoseconds duration_ns;
 	high_resolution_clock::time_point start_time;
 	uint32 total_cnt;
 };
@@ -31,13 +32,13 @@ std::map<std::string, struct s_performance_item> __performance;
 void performance_init(std::string name) {
 	auto it = __performance.find(name);
 	if (it != __performance.end()) {
-		it->second.duration_ms = milliseconds::zero();
+		it->second.duration_ns = nanoseconds::zero();
 		it->second.start_time = high_resolution_clock::time_point();
 		it->second.total_cnt = 0;
 	}
 	else {
 		s_performance_item sitem;
-		sitem.duration_ms = milliseconds::zero();
+		sitem.duration_ns = nanoseconds::zero();
 		sitem.start_time = high_resolution_clock::time_point();
 		sitem.total_cnt = 0;
 		__performance[name] = sitem;
@@ -77,8 +78,8 @@ void performance_stop(std::string name, const char* debug_file, const unsigned l
 	high_resolution_clock::time_point stop_time = high_resolution_clock::now();
 	auto it = __performance.find(name);
 	if (it != __performance.end()) {
-		milliseconds duration_curr = duration_cast<milliseconds>(stop_time - it->second.start_time);
-		it->second.duration_ms += duration_curr;
+		nanoseconds duration_curr = duration_cast<nanoseconds>(stop_time - it->second.start_time);
+		it->second.duration_ns += duration_curr;
 		it->second.total_cnt++;
 		return;
 	}
@@ -98,7 +99,12 @@ void performance_stop(std::string name, const char* debug_file, const unsigned l
 void performance_report(std::string name, const char* debug_file, const unsigned long debug_line) {
 	auto it = __performance.find(name);
 	if (it != __performance.end()) {
-		ShowInfo("Performance: %s | Trigger count = %" PRIuPTR " | Duration = %" PRIuPTR "ms\n", name.c_str(), it->second.total_cnt, it->second.duration_ms.count());
+		milliseconds ms = duration_cast<milliseconds>(it->second.duration_ns);
+#ifdef _DEBUG
+		ShowDebug("Performance counter " CL_WHITE "'%s'" CL_RESET " fired %" PRIuPTR " times, took " CL_WHITE "%" PRIuPTR CL_RESET " ms\n", name.c_str(), it->second.total_cnt, ms.count());
+#else
+		ShowStatus("Performance counter " CL_WHITE "'%s'" CL_RESET " fired %" PRIuPTR " times, took " CL_WHITE "%" PRIuPTR CL_RESET " ms\n", name.c_str(), it->second.total_cnt, ms.count());
+#endif // _DEBUG
 		return;
 	}
 	ShowDebug("%s: The counter name '%s' is not exists, please initialize before using.\n", __func__, name.c_str());
