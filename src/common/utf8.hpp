@@ -38,6 +38,10 @@ enum e_system_language : uint8 {
 
 class PandasUtf8
 {
+private:
+	static void setModeMapping(FILE* _fp, e_file_charsetmode _mode);
+	static e_file_charsetmode getModeMapping(FILE* _fp);
+	static void clearModeMapping(FILE* _fp);
 public:
 	static enum e_console_encoding consoleEncoding;
 	static enum e_system_language systemLanguage;
@@ -51,6 +55,7 @@ public:
 	static FILE* fopen(const char* _FileName, const char* _Mode);
 	static char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream);
 	static size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream);
+	static int fclose(FILE* _fp);
 
 	static std::string utf8ToAnsi(const std::string& strUtf8);
 	static std::string ansiToUtf8(const std::string& strAnsi);

@@ -6,8 +6,9 @@
 #include "utf8.hpp"
 
 #include "../common/strlib.hpp"
+#include "../common/performance.hpp"
 
-#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/predicate.hpp> // boost::icontains
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -21,14 +22,62 @@
 	#include <langinfo.h>
 #endif // _WIN32
 
+#include <unordered_map>
+
 enum e_console_encoding PandasUtf8::consoleEncoding =
 	PandasUtf8::getConsoleEncoding();
 enum e_system_language PandasUtf8::systemLanguage =
 	PandasUtf8::getSystemLanguage();
 
+// 用于保存 FILE 指针和文件编码模式的缓存
+std::unordered_map<FILE*, e_file_charsetmode> __fp_mode_map;
+
 // 此处定义的缓冲区大小可参考 showmsg.cpp 中 SBUF_SIZE 的定义
 // 按照 rAthena 的建议, 此处的 STRBUF_SIZE 不会设置低于 SBUF_SIZE 设定的值
 #define STRBUF_SIZE 2054
+
+//************************************
+// Method:      setModeMapping
+// Description: 保存 FILE 指针和文件编码模式的关联到缓存
+// Parameter:   FILE * _fp
+// Parameter:   e_file_charsetmode _mode
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/16 01:22
+//************************************
+void PandasUtf8::setModeMapping(FILE* _fp, e_file_charsetmode _mode) {
+	auto it = __fp_mode_map.find(_fp);
+	if (it != __fp_mode_map.end()) {
+		it->second = _mode;
+		return;
+	}
+	__fp_mode_map[_fp] = _mode;
+}
+
+//************************************
+// Method:      getModeMapping
+// Description: 根据 FILE 指针获取缓存中的文件编码模式
+// Parameter:   FILE * _fp
+// Returns:     e_file_charsetmode
+// Author:      Sola丶小克(CairoLee)  2020/02/16 01:23
+//************************************
+e_file_charsetmode PandasUtf8::getModeMapping(FILE* _fp) {
+	auto it = __fp_mode_map.find(_fp);
+	if (it != __fp_mode_map.end()) {
+		return it->second;
+	}
+	return FILE_CHARSETMODE_UNKNOW;
+}
+
+//************************************
+// Method:      clearModeMapping
+// Description: 清空指定 FILE 指针在缓存中的数据
+// Parameter:   FILE * _fp
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/16 01:23
+//************************************
+void PandasUtf8::clearModeMapping(FILE* _fp) {
+	__fp_mode_map.erase(_fp);
+}
 
 //************************************
 // Method:      getConsoleEncoding
@@ -332,6 +381,15 @@ std::string PandasUtf8::ansiToUtf8(const std::string& strAnsi) {
 // Author:      Sola丶小克(CairoLee)  2020/01/21 09:37
 //************************************
 enum e_file_charsetmode PandasUtf8::fmode(FILE* _Stream) {
+	performance_start("fmode");
+
+	// 优先从缓存中读取
+	e_file_charsetmode cached_charsetmode = PandasUtf8::getModeMapping(_Stream);
+	if (cached_charsetmode != FILE_CHARSETMODE_UNKNOW) {
+		performance_stop("fmode");
+		return cached_charsetmode;
+	}
+
 	size_t extracted = 0;
 	unsigned char buf[3] = { 0 };
 	enum e_file_charsetmode charset_mode = FILE_CHARSETMODE_UNKNOW;
@@ -368,6 +426,11 @@ enum e_file_charsetmode PandasUtf8::fmode(FILE* _Stream) {
 
 	// 将指针设置回原来的位置, 避免影响后续的读写流程
 	fseek(_Stream, curpos, SEEK_SET);
+
+	// 将当前分析到的 charset_mode 保存到缓存
+	PandasUtf8::setModeMapping(_Stream, charset_mode);
+
+	performance_stop("fmode");
 	return charset_mode;
 }
 
@@ -431,6 +494,18 @@ FILE* PandasUtf8::fopen(const char* _FileName, const char* _Mode) {
 	std::string sMode(_Mode);
 	sMode += "b";
 	return ::fopen(_FileName, sMode.c_str());
+}
+
+//************************************
+// Method:      fclose
+// Description: 进行了一些清理工作的 fclose 方法
+// Parameter:   FILE * _fp
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2020/02/16 01:05
+//************************************
+int PandasUtf8::fclose(FILE* _fp) {
+	PandasUtf8::clearModeMapping(_fp);
+	return ::fclose(_fp);
 }
 
 char* PandasUtf8::fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {

@@ -382,6 +382,7 @@ void usercheck(void)
 int main (int argc, char **argv)
 {
 	performance_begin("core do_init");
+	performance_begin("fmode");
 #ifdef Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
 	correct_isa_available();
 #endif // Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
@@ -452,6 +453,7 @@ int main (int argc, char **argv)
 
 	do_init(argc,argv);
 	performance_end("core do_init");
+	performance_end("fmode");
 
 	// Main runtime cycle
 	while (runflag != CORE_ST_STOP) { 
