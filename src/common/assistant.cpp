@@ -8,9 +8,7 @@
 #include <sys/stat.h> // _stat
 #include <errno.h> // errno, ENOENT, EEXIST
 #include <wchar.h> // vswprintf
-#include <algorithm> // std::find_if
 #include <sstream> // std::istringstream
-#include <functional> // std::not1 std::ptr_fun
 #include <iostream>
 #include <fstream>
 #include <cctype> // std::tolower std::toupper std::isspace
@@ -403,33 +401,36 @@ void strReplace(std::wstring& str, const std::wstring& from, const std::wstring&
 
 //************************************
 // Method:      strContain
-// Description: 判断 str 中是否包含 std::vector<std::string> contain 中的任何一个字符串 
-// Parameter:   std::vector<std::string> contain
-// Parameter:   std::string str
-// Parameter:   bool bCaseSensitive 是否大小写敏感, 在 hpp 中定义的默认值为 false (不敏感)
+// Description: 判断 str 中是否包含 needle 数组中的任何一个字符串 (不区分大小写)
+// Parameter:   std::vector<std::string> needle
+// Parameter:   std::string& str
 // Returns:     bool 只要包含任何一个则返回 true, 都不包含则返回 false
 // Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
 //************************************
-bool strContain(std::vector<std::string> contain, std::string str, bool bCaseSensitive) {
-	if (!bCaseSensitive) str = boost::to_lower_copy(str);
-	for (auto it : contain) {
-		if (str.find(it) != std::string::npos) return true;
+bool strContain(std::vector<std::string> needle, std::string& str) {
+	for (auto it : needle) {
+		if (strContain(it, str)) return true;
 	}
 	return false;
 }
 
 //************************************
 // Method:      strContain
-// Description: 判断 str 中是否包含 contain 字符串
-// Parameter:   std::string contain
-// Parameter:   std::string str
-// Parameter:   bool bCaseSensitive 是否大小写敏感, 在 hpp 中定义的默认值为 false (不敏感)
+// Description: 判断 str 中是否包含 needle 字符串 (不区分大小写)
+// Parameter:   std::string needle
+// Parameter:   std::string& str
 // Returns:     bool 包含则返回 true, 不包含则返回 false
 // Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
 //************************************
-bool strContain(std::string contain, std::string str, bool bCaseSensitive) {
-	if (!bCaseSensitive) str = boost::to_lower_copy(str);
-	return (str.find(contain) != std::string::npos);
+bool strContain(std::string needle, std::string& str) {
+	auto it = std::search(
+		str.begin(), str.end(),
+		needle.begin(), needle.end(),
+		[](char ch1, char ch2) {
+			return std::toupper(ch1) == std::toupper(ch2);
+		}
+	);
+	return (it != str.end());
 }
 
 //************************************

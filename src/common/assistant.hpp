@@ -4,7 +4,6 @@
 #pragma once
 
 #include <string> // std::string
-#include <time.h> // struct tm
 #include <memory> // std::shared_ptr
 #include <vector> // std::vector
 
@@ -16,7 +15,6 @@
 #include <boost/locale.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/case_conv.hpp>
 
 void deployImportDirectories();
 
@@ -36,8 +34,8 @@ bool strEndWith(std::wstring fullstring, std::wstring ending);
 void strReplace(std::string& str, const std::string& from, const std::string& to);
 void strReplace(std::wstring& str, const std::wstring& from, const std::wstring& to);
 
-bool strContain(std::vector<std::string> contain, std::string str, bool bCaseSensitive = false);
-bool strContain(std::string contain, std::string str, bool bCaseSensitive = false);
+bool strContain(std::vector<std::string> needle, std::string& str);
+bool strContain(std::string needle, std::string& str);
 
 std::string strTrim(const std::string& s);
 
