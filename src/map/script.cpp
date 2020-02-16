@@ -14198,7 +14198,7 @@ BUILDIN_FUNC(getiteminfo)
 				}
 
 				for (auto it : i_data->taming_mobid) {
-					setd_sub(st, NULL, varname, idx, (void*)__64BPRTSIZE(it), data->ref);
+					setd_sub_num(st, NULL, varname, idx, it, data->ref);
 					idx++;
 				}
 			}
@@ -26356,16 +26356,17 @@ static int buildin_getareagid_sub(struct block_list *bl, va_list ap) {
 	struct map_session_data *sd = nullptr;
 	struct script_state *st = va_arg(ap, struct script_state *);
 	struct script_data *retdata = va_arg(ap, struct script_data *);
-	uint32 *found_count = va_arg(ap, uint32*);
+	uint32* found_count = va_arg(ap, uint32*);
 
 	if (!st || !retdata || !found_count) {
 		return 0;
 	}
 
+	int64 uid = reference_uid(reference_getid(retdata), (*found_count));
 	const char *retname = reference_getname(retdata);
 	sd = map_id2sd(st->rid);
 
-	set_reg(st, sd, reference_uid(reference_getid(retdata), (*found_count)), retname, (void*)__64BPRTSIZE(bl->id), reference_getref(retdata));
+	set_reg_num(st, sd, uid, retname, bl->id, reference_getref(retdata));
 
 	(*found_count)++;
 	return 1;
@@ -26418,18 +26419,18 @@ BUILDIN_FUNC(getareagid) {
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	// 以下用于清空存放返回数据的数值型数组 (参考 deletearray 的实现)
+	// 以下用于清空存放返回数据的数值型数组 (参考 script_cleararray_pc 的实现)
 	script_array_ensure_zero(st, NULL, retdata->u.num, reference_getref(retdata));
-
-	struct script_array *sa = static_cast<script_array *>(idb_get(src_reg_db->arrays, retid));
+	struct script_array* sa = static_cast<script_array *>(idb_get(src_reg_db->arrays, retid));
 	unsigned int array_len = script_array_highest_key(st, sd, retname, reference_getref(retdata));
 
 	if (sa) {
-		unsigned int *list = script_array_cpy_list(sa);
+		// 若给定的数组是存在的, 那么需要清空一下
+		unsigned int* list = script_array_cpy_list(sa);
 		unsigned int size = sa->size;
 
 		for (unsigned int i = 0; i < size; i++) {
-			set_reg(st, sd, reference_uid(retid, list[i]), retname, (void*)0, reference_getref(retdata));
+			clear_reg(st, sd, reference_uid(retid, list[i]), retname, reference_getref(retdata));
 		}
 	}
 
@@ -27221,14 +27222,14 @@ BUILDIN_FUNC(npcexists) {
 		}
 
 		// 将用于保存 GameID 的变量内容设置为 0 
-		set_reg(st, sd, num, name, (void*)__64BPRTSIZE(0), script_getref(st, 3));
+		clear_reg(st, sd, num, name, script_getref(st, 3));
 	}
 
 	TBL_NPC* nd = nullptr;
 	if ((nd = npc_name2id(script_getstr(st, 2))) != nullptr) {
 		script_pushint(st, 1);
 		if (vardata != nullptr) {
-			set_reg(st, sd, num, name, (void*)__64BPRTSIZE(nd->bl.id), script_getref(st, 3));
+			set_reg_num(st, sd, num, name, nd->bl.id, script_getref(st, 3));
 		}
 	}
 	else {
