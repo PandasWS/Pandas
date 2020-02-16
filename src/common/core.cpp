@@ -381,8 +381,6 @@ void usercheck(void)
  *--------------------------------------*/
 int main (int argc, char **argv)
 {
-	performance_begin("core do_init");
-	performance_begin("fmode");
 #ifdef Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
 	correct_isa_available();
 #endif // Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
@@ -415,9 +413,7 @@ int main (int argc, char **argv)
 	}
 
 #ifdef Pandas_Console_Translate
-	performance_begin("do_init_translate");
 	do_init_translate();
-	performance_end("do_init_translate");
 #endif // Pandas_Console_Translate
 
 	malloc_init();// needed for Show* in display_title() [FlavioJS]
@@ -452,8 +448,6 @@ int main (int argc, char **argv)
 #endif // Pandas_Google_Breakpad
 
 	do_init(argc,argv);
-	performance_end("core do_init");
-	performance_end("fmode");
 
 	// Main runtime cycle
 	while (runflag != CORE_ST_STOP) { 

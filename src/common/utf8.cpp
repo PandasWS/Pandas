@@ -30,7 +30,7 @@ enum e_system_language PandasUtf8::systemLanguage =
 	PandasUtf8::getSystemLanguage();
 
 // 用于保存 FILE 指针和文件编码模式的缓存
-std::unordered_map<FILE*, e_file_charsetmode> __fp_mode_map;
+std::unordered_map<FILE*, e_file_charsetmode> __fpmodecache;
 
 // 此处定义的缓冲区大小可参考 showmsg.cpp 中 SBUF_SIZE 的定义
 // 按照 rAthena 的建议, 此处的 STRBUF_SIZE 不会设置低于 SBUF_SIZE 设定的值
@@ -45,12 +45,12 @@ std::unordered_map<FILE*, e_file_charsetmode> __fp_mode_map;
 // Author:      Sola丶小克(CairoLee)  2020/02/16 01:22
 //************************************
 void PandasUtf8::setModeMapping(FILE* _fp, e_file_charsetmode _mode) {
-	auto it = __fp_mode_map.find(_fp);
-	if (it != __fp_mode_map.end()) {
+	auto it = __fpmodecache.find(_fp);
+	if (it != __fpmodecache.end()) {
 		it->second = _mode;
 		return;
 	}
-	__fp_mode_map[_fp] = _mode;
+	__fpmodecache[_fp] = _mode;
 }
 
 //************************************
@@ -61,8 +61,8 @@ void PandasUtf8::setModeMapping(FILE* _fp, e_file_charsetmode _mode) {
 // Author:      Sola丶小克(CairoLee)  2020/02/16 01:23
 //************************************
 e_file_charsetmode PandasUtf8::getModeMapping(FILE* _fp) {
-	auto it = __fp_mode_map.find(_fp);
-	if (it != __fp_mode_map.end()) {
+	auto it = __fpmodecache.find(_fp);
+	if (it != __fpmodecache.end()) {
 		return it->second;
 	}
 	return FILE_CHARSETMODE_UNKNOW;
@@ -76,7 +76,7 @@ e_file_charsetmode PandasUtf8::getModeMapping(FILE* _fp) {
 // Author:      Sola丶小克(CairoLee)  2020/02/16 01:23
 //************************************
 void PandasUtf8::clearModeMapping(FILE* _fp) {
-	__fp_mode_map.erase(_fp);
+	__fpmodecache.erase(_fp);
 }
 
 //************************************
@@ -381,12 +381,9 @@ std::string PandasUtf8::ansiToUtf8(const std::string& strAnsi) {
 // Author:      Sola丶小克(CairoLee)  2020/01/21 09:37
 //************************************
 enum e_file_charsetmode PandasUtf8::fmode(FILE* _Stream) {
-	performance_start("fmode");
-
 	// 优先从缓存中读取
 	e_file_charsetmode cached_charsetmode = PandasUtf8::getModeMapping(_Stream);
 	if (cached_charsetmode != FILE_CHARSETMODE_UNKNOW) {
-		performance_stop("fmode");
 		return cached_charsetmode;
 	}
 
@@ -430,7 +427,6 @@ enum e_file_charsetmode PandasUtf8::fmode(FILE* _Stream) {
 	// 将当前分析到的 charset_mode 保存到缓存
 	PandasUtf8::setModeMapping(_Stream, charset_mode);
 
-	performance_stop("fmode");
 	return charset_mode;
 }
 

@@ -5160,8 +5160,6 @@ void do_init_npc(void){
 	timer_event_ers = ers_new(sizeof(struct timer_event_data),"npc.cpp::timer_event_ers",ERS_OPT_NONE);
 	npc_sc_display_ers = ers_new(sizeof(struct sc_display_entry), "npc.cpp:npc_sc_display_ers", ERS_OPT_NONE);
 
-	performance_begin("load npc");
-
 	// process all npc files
 	ShowStatus("Loading NPCs...\r");
 	for( file = npc_src_files; file != NULL; file = file->next ) {
@@ -5176,8 +5174,6 @@ void do_init_npc(void){
 		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Cached\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Not Cached\n",
 		npc_id - START_NPC_NUM, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob);
-
-	performance_end("load npc");
 
 	// set up the events cache
 	npc_read_event_script();

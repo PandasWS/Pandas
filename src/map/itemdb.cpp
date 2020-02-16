@@ -112,10 +112,8 @@ struct item_data* itemdb_speedup_search_name(speedup_cache_db& _map, std::string
 // Author:      Sola丶小克(CairoLee)  2020/02/14 00:46
 //************************************
 void itemdb_speedup_item(struct item_data* id) {
-	performance_start("itemdb_speedup");
 	itemdb_speedup_cache_name(itemdb_speedup_name, id->name, id);
 	itemdb_speedup_cache_name(itemdb_speedup_jname, id->jname, id);
-	performance_stop("itemdb_speedup");
 }
 
 #endif // Pandas_Speedup_Itemdb_SearchName
@@ -1412,11 +1410,9 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 
 	//ID,Name,Jname,Type,Price,Sell,Weight,ATK,DEF,Range,Slot,Job,Job Upper,Gender,Loc,wLV,eLV,refineable,View
 	if (!(id = itemdb_exists(nameid))) {
-		performance_start("search name");
 		// Checks if the Itemname is already taken by another id
 		if( itemdb_searchname1(str[1], true) != NULL )
 			ShowWarning("itemdb_parse_dbrow: Duplicate item name for \"%s\"\n", str[1]);
-		performance_stop("search name");
 
 		// Adds a new Item ID
 		id = itemdb_create_item(nameid);
@@ -1532,7 +1528,6 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 		id->unequip_script = parse_script(str[21], source, line, scriptopt);
 
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
-	performance_start("has pet");
 	// 判断该道具的脚本是否调用了 pet 或 mpet 指令 [Sola丶小克]
 	// 若确实有相关的调用, 则记录下此道具支持捕捉的魔物编号
 	if (id->script != NULL) {
@@ -1540,16 +1535,13 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 			id->taming_mobid.clear();
 		}
 	}
-	performance_stop("has pet");
 #endif // Pandas_Struct_Item_Data_Taming_Mobid
 
 #ifdef Pandas_Struct_Item_Data_Has_CallFunc
-	performance_start("callfunc");
 	// 判断该道具的脚本是不是有 callfunc "xxxx"; 若有则记录一下 [Sola丶小克]
 	if (id->script != NULL) {
 		id->has_callfunc = (hasCallfunc(str[19]) ? 1 : 0);
 	}
-	performance_stop("callfunc");
 #endif // Pandas_Struct_Item_Data_Has_CallFunc
 
 	if (!id->nameid) {
@@ -1967,22 +1959,10 @@ static void itemdb_read(void) {
 		"/" DBIMPORT,
 	};
 
-	performance_init("itemdb_speedup");
-	performance_init("search name");
-	performance_init("callfunc");
-	performance_init("has pet");
-
-	performance_begin("read itemdb");
 	if (db_use_sqldbs)
 		itemdb_read_sqldb();
 	else
 		itemdb_readdb();
-	performance_end("read itemdb");
-
-	performance_report("has pet");
-	performance_report("callfunc");
-	performance_report("search name");
-	performance_report("itemdb_speedup");
 	
 	for(i=0; i<ARRAYLENGTH(dbsubpath); i++){
 		uint8 n1 = (uint8)(strlen(db_path)+strlen(dbsubpath[i])+1);
