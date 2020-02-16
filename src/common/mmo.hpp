@@ -325,7 +325,7 @@ struct script_reg_state {
 
 struct script_reg_num {
 	struct script_reg_state flag;
-	int value;
+	int64 value;
 };
 
 struct script_reg_str {
@@ -630,7 +630,6 @@ struct guild_member {
 	uint32 account_id, char_id;
 	short hair,hair_color,gender,class_,lv;
 	uint64 exp;
-	int exp_payper;
 	short online,position;
 	char name[NAME_LENGTH];
 	struct map_session_data *sd;
@@ -914,22 +913,22 @@ enum e_job {
 	JOB_MECHANIC2,
 	JOB_MECHANIC_T2,
 
-	JOB_BABY_RUNE = 4096,
+	JOB_BABY_RUNE_KNIGHT = 4096,
 	JOB_BABY_WARLOCK,
 	JOB_BABY_RANGER,
-	JOB_BABY_BISHOP,
+	JOB_BABY_ARCH_BISHOP,
 	JOB_BABY_MECHANIC,
-	JOB_BABY_CROSS,
-	JOB_BABY_GUARD,
+	JOB_BABY_GUILLOTINE_CROSS,
+	JOB_BABY_ROYAL_GUARD,
 	JOB_BABY_SORCERER,
 	JOB_BABY_MINSTREL,
 	JOB_BABY_WANDERER,
 	JOB_BABY_SURA,
 	JOB_BABY_GENETIC,
-	JOB_BABY_CHASER,
+	JOB_BABY_SHADOW_CHASER,
 
-	JOB_BABY_RUNE2,
-	JOB_BABY_GUARD2,
+	JOB_BABY_RUNE_KNIGHT2,
+	JOB_BABY_ROYAL_GUARD2,
 	JOB_BABY_RANGER2,
 	JOB_BABY_MECHANIC2,
 
