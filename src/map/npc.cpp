@@ -5427,7 +5427,7 @@ int* get_npc_warp_ptr() {
 // Returns:     bool 返回 true 表示过程没有被打断, 成功完成称号ID的修改操作; 被中断或失败则返回 false
 // Author:      Sola丶小克(CairoLee)  2019/12/02 00:02
 //************************************
-bool npc_change_title_event(struct map_session_data* sd, uint32 target_title_id, int mode) {
+bool npc_change_title_event(struct map_session_data* sd, int64 target_title_id, int mode) {
 	nullpo_retr(false, sd);
 
 #ifdef Pandas_NpcFilter_CHANGETITLE

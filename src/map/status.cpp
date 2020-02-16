@@ -7739,7 +7739,7 @@ int status_get_emblem_id(struct block_list *bl)
 #ifdef Pandas_MapFlag_HideGuildInfo
 	// 若当前地图有 hideguildinfo 标记, 那么不返回角色公会的图标编号
 	// 这样在 GVG 时, 处于 GVG 地图玩家 (以及类似单位) 头上的公会图标才能够被隐藏 [Sola丶小克]
-	if (map_getmapflag(bl->m, MF_HIDEGUILDINFO))
+	if (bl->m != -1 && map_getmapflag(bl->m, MF_HIDEGUILDINFO))
 		return 0;
 #endif // Pandas_MapFlag_HideGuildInfo
 
