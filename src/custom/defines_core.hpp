@@ -16,6 +16,7 @@
 	#include <string>
 
 	#include "../common/assistant.hpp"
+	#include "../common/performance.hpp"
 
 #endif // Pandas
 

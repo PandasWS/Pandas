@@ -16,6 +16,7 @@
 	#define Pandas_BattleConfigure
 	#define Pandas_FuncIncrease
 	#define Pandas_CreativeWork
+	#define Pandas_Speedup
 	#define Pandas_Bugfix
 	#define Pandas_Crashfix
 	#define Pandas_ScriptEngine
@@ -304,6 +305,17 @@
 		#define Pandas_Console_Charset_SmartConvert
 	#endif // _WIN32
 #endif // Pandas_CreativeWork
+
+// ============================================================================
+// 优化加速组 - Pandas_Speedup
+// ============================================================================
+
+#ifdef Pandas_Speedup
+	// 是否优化 itemdb_searchname1 函数的实现方式 [Sola丶小克]
+	// 在默认情况下 rAthena 的 itemdb_searchname1 函数实现的非常低效
+	// 在 VS2019 编译环境下, 优化后的检索物品名称的性能提高大约 38 倍 (Release 模式)
+	#define Pandas_Speedup_Itemdb_SearchName
+#endif // Pandas_Speedup
 
 // ============================================================================
 // 官方BUG修正组 - Pandas_Bugfix

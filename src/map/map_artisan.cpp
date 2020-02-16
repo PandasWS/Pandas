@@ -22,11 +22,11 @@
 // Method:      isRegexMatched
 // Description: 
 // Parameter:   std::string patterns
-// Parameter:   std::string content
+// Parameter:   std::string& content
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2019/10/13 15:59
 //************************************
-bool isRegexMatched(std::string patterns, std::string content) {
+bool isRegexMatched(std::string patterns, std::string& content) {
 	try
 	{
 		boost::regex re(patterns, boost::regex::icase);
@@ -46,16 +46,15 @@ bool isRegexMatched(std::string patterns, std::string content) {
 
 //************************************
 // Method:      hasCatchPet
-// Description: 
-// Parameter:   const char * _script
+// Description: 判断脚本是否拥有宠物捕捉指令, 并提取它支持捕捉的宠物编号
+// Parameter:   std::string script
 // Parameter:   std::vector<uint32> & pet_mobid
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2019/10/13 15:59
 //************************************
-bool hasCatchPet(const char* _script, std::vector<uint32>& pet_mobid) {
+bool hasCatchPet(std::string script, std::vector<uint32>& pet_mobid) {
 	pet_mobid.clear();
 
-	std::string script = boost::to_lower_copy(std::string(_script));
 	static const std::vector<std::string> valid_cmds = { "multicatchpet", "catchpet", "mpet", "pet" };
 	static const std::string patterns = R"(.*?((multicatchpet|catchpet|mpet|pet)(\s{1,}|\()(\(|)(.*?)(|\))(\s*|);))";
 	if (!strContain(valid_cmds, script)) return false;
@@ -68,7 +67,7 @@ bool hasCatchPet(const char* _script, std::vector<uint32>& pet_mobid) {
 		if (!boost::regex_search(script, match_result, re)) return false;
 		if (match_result.size() != 8) return false;
 
-		std::string cmd = match_result[2].str();
+		std::string cmd = boost::to_lower_copy(match_result[2].str());
 		std::string params = strTrim(match_result[5].str());
 		if (!params.length()) return false;
 
@@ -104,13 +103,12 @@ bool hasCatchPet(const char* _script, std::vector<uint32>& pet_mobid) {
 
 //************************************
 // Method:      hasCallfunc
-// Description: 
-// Parameter:   const char * _script
+// Description: 判断一个脚本是否调用了 callfunc 指令
+// Parameter:   std::string script
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2019/10/13 15:59
 //************************************
-bool hasCallfunc(const char* _script) {
-	std::string script = boost::to_lower_copy(std::string(_script));
+bool hasCallfunc(std::string script) {
 	if (!strContain("callfunc", script)) return false;
 	return isRegexMatched(R"(.*?callfunc(\s.*|\(\s*)\"(.*?)\".*?)", script);
 }

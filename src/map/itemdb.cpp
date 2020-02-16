@@ -36,6 +36,88 @@ struct item_data *dummy_item; /// This is the default dummy item used for non-ex
 
 struct s_roulette_db rd;
 
+#ifdef Pandas_Speedup_Itemdb_SearchName
+
+typedef std::vector<struct item_data*> speedup_cache_item;
+typedef std::shared_ptr<speedup_cache_item> shared_speedup_cache_item;
+typedef std::map<std::string, shared_speedup_cache_item> speedup_cache_db;
+
+speedup_cache_db itemdb_speedup_name;
+speedup_cache_db itemdb_speedup_jname;
+
+//************************************
+// Method:      itemdb_speedup_clear
+// Description: 重置并清空用于加速 itemdb 操作的缓存数据
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:39
+//************************************
+void itemdb_speedup_clear() {
+	itemdb_speedup_name.clear();
+	itemdb_speedup_jname.clear();
+}
+
+//************************************
+// Method:      itemdb_speedup_cache_name
+// Description: 缓存某个道具的名称, 以便加速检索效率
+// Parameter:   speedup_cache_db & _map
+// Parameter:   std::string key
+// Parameter:   struct item_data * id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:39
+//************************************
+void itemdb_speedup_cache_name(speedup_cache_db& _map, std::string key, struct item_data* id) {
+	auto item = _map.find(key);
+	if (item == _map.end()) {
+		shared_speedup_cache_item vec = std::make_shared<speedup_cache_item>();
+		vec->push_back(id);
+		_map[key] = vec;
+	}
+	else {
+		shared_speedup_cache_item vec = item->second;
+		for (auto subitem = vec->begin(); subitem != vec->end(); subitem++) {
+			if ((*subitem)->nameid == id->nameid) {
+				ShowWarning("itemdb_speedup_sub: Duplicate \n");
+				(*subitem) = id;
+				return;
+			}
+		}
+		vec->push_back(id);
+	}
+}
+
+//************************************
+// Method:      itemdb_speedup_search_name
+// Description: 在某个数据库中搜索特定道具名称的对应物品
+// Parameter:   speedup_cache_db & _map
+// Parameter:   std::string name
+// Returns:     struct item_data*
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:45
+//************************************
+struct item_data* itemdb_speedup_search_name(speedup_cache_db& _map, std::string name) {
+	auto it = _map.find(name);
+	if (it != _map.end()) {
+		shared_speedup_cache_item sublist = it->second;
+		if (!sublist->empty()) {
+			return sublist->back();
+		}
+	}
+	return NULL;
+}
+
+//************************************
+// Method:      itemdb_speedup_item
+// Description: 建立该物品相关的缓存, 以便加速其他检索操作
+// Parameter:   struct item_data * id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:46
+//************************************
+void itemdb_speedup_item(struct item_data* id) {
+	itemdb_speedup_cache_name(itemdb_speedup_name, id->name, id);
+	itemdb_speedup_cache_name(itemdb_speedup_jname, id->jname, id);
+}
+
+#endif // Pandas_Speedup_Itemdb_SearchName
+
 /**
 * Check if combo exists
 * @param combo_id
@@ -133,10 +215,17 @@ static struct item_data* itemdb_searchname1(const char *str, bool aegis_only)
 {
 	struct item_data *item = NULL, * item2 = NULL;
 
+#ifndef Pandas_Speedup_Itemdb_SearchName
 	if( !aegis_only )
 		itemdb->foreach(itemdb, itemdb_searchname_sub, str, &item, &item2);
 	else
 		itemdb->foreach(itemdb, itemdb_searchname_sub, str, &item, NULL);
+#else
+	item = itemdb_speedup_search_name(itemdb_speedup_name, str);
+	if (!aegis_only) {
+		item2 = itemdb_speedup_search_name(itemdb_speedup_jname, str);
+	}
+#endif // Pandas_Speedup_Itemdb_SearchName
 
 	return ((item) ? item : item2);
 }
@@ -1332,6 +1421,10 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 	safestrncpy(id->name, str[1], sizeof(id->name));
 	safestrncpy(id->jname, str[2], sizeof(id->jname));
 
+#ifdef Pandas_Speedup_Itemdb_SearchName
+	itemdb_speedup_item(id);
+#endif // Pandas_Speedup_Itemdb_SearchName
+
 	id->type = atoi(str[3]);
 
 	if( id->type < 0 || id->type == IT_UNKNOWN || id->type == IT_UNKNOWN2 || ( id->type > IT_SHADOWGEAR && id->type < IT_CASH ) || id->type >= IT_MAX )
@@ -1865,7 +1958,7 @@ static void itemdb_read(void) {
 		"",
 		"/" DBIMPORT,
 	};
-	
+
 	if (db_use_sqldbs)
 		itemdb_read_sqldb();
 	else
@@ -2053,9 +2146,15 @@ void itemdb_reload(void) {
 	itemdb_randomopt_group->clear(itemdb_randomopt_group, itemdb_randomopt_group_free);
 	itemdb->clear(itemdb, itemdb_final_sub);
 	db_clear(itemdb_combo);
+
 #ifdef Pandas_Database_ItemProperties
 	item_properties_db.clear();
 #endif // Pandas_Database_ItemProperties
+
+#ifdef Pandas_Speedup_Itemdb_SearchName
+	itemdb_speedup_clear();
+#endif // Pandas_Speedup_Itemdb_SearchName
+
 	if (battle_config.feature_roulette)
 		itemdb_roulette_free();
 

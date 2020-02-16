@@ -136,6 +136,7 @@ set( COMMON_MINI_HEADERS
 	"${COMMON_SOURCE_DIR}/cryptopp.hpp"
 	"${COMMON_SOURCE_DIR}/translate.hpp"
 	"${COMMON_SOURCE_DIR}/database.hpp"
+	"${COMMON_SOURCE_DIR}/performance.hpp"
 	${LIBCONFIG_HEADERS} # needed by showmsg.hpp
 	${BREAKPAD_HEADERS}
 	${COMMON_ADDITIONALL_HPP} # needed by Windows
@@ -153,6 +154,7 @@ set( COMMON_MINI_SOURCES
 	"${COMMON_SOURCE_DIR}/cryptopp.cpp"
 	"${COMMON_SOURCE_DIR}/translate.cpp"
 	"${COMMON_SOURCE_DIR}/database.cpp"
+	"${COMMON_SOURCE_DIR}/performance.cpp"
 	${LIBCONFIG_SOURCES} # needed by showmsg.cpp
 	${BREAKPAD_SOURCES}
 	${COMMON_ADDITIONALL_CPP} # needed by Windows
@@ -209,6 +211,7 @@ if( WITH_ZLIB )
 		"${COMMON_SOURCE_DIR}/crashdump.hpp"
 		"${COMMON_SOURCE_DIR}/cryptopp.hpp"
 		"${COMMON_SOURCE_DIR}/translate.hpp"
+		"${COMMON_SOURCE_DIR}/performance.hpp"
 		${LIBCONFIG_HEADERS} # needed by conf.hpp/showmsg.hpp
 		${BREAKPAD_HEADERS}
 		${COMMON_ADDITIONALL_HPP} # needed by Windows
@@ -241,6 +244,7 @@ if( WITH_ZLIB )
 		"${COMMON_SOURCE_DIR}/crashdump.cpp"
 		"${COMMON_SOURCE_DIR}/cryptopp.cpp"
 		"${COMMON_SOURCE_DIR}/translate.cpp"
+		"${COMMON_SOURCE_DIR}/performance.cpp"
 		${LIBCONFIG_SOURCES} # needed by conf.cpp/showmsg.cpp
 		${BREAKPAD_SOURCES}
 		${COMMON_ADDITIONALL_CPP} # needed by Windows

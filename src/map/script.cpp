@@ -26008,7 +26008,7 @@ static int buildin_getsameipinfo_sub(struct map_session_data* pl_sd, va_list ap)
 	struct map_session_data *sd = va_arg(ap, struct map_session_data*);
 	uint32 ipaddr = va_arg(ap, uint32);
 	uint32 *count = va_arg(ap, uint32*);
-	int16 m = va_arg(ap, int16);
+	int32 m = va_arg(ap, int32);	// int16 通过可变参数方式传递, 会被提升为 int32
 
 	if (!ipaddr || !sd | !count) return 0;
 	if (!pl_sd || pl_sd->state.autotrade) return 0;
