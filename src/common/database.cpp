@@ -181,7 +181,13 @@ bool YamlDatabase::load(const std::string& path) {
 
 	this->parseImports( rootNode );
 
+	this->loadingFinished();
+
 	return true;
+}
+
+void YamlDatabase::loadingFinished(){
+	// Does nothing by default, just for hooking
 }
 
 void YamlDatabase::parse( const YAML::Node& rootNode ){
@@ -306,6 +312,10 @@ bool YamlDatabase::asUInt16Rate( const YAML::Node& node, const std::string& name
 			this->invalidWarning( node[name], "Node \"%s\" with value %" PRIu16 " exceeds maximum of %" PRIu16 ".\n", name.c_str(), out, maximum );
 
 			return false;
+		}else if( out == 0 ){
+			this->invalidWarning( node[name], "Node \"%s\" needs to be at least 1.\n", name.c_str() );
+
+			return false;
 		}else{
 			return true;
 		}
@@ -318,6 +328,10 @@ bool YamlDatabase::asUInt32Rate( const YAML::Node& node, const std::string& name
 	if( this->asUInt32( node, name, out ) ){
 		if( out > maximum ){
 			this->invalidWarning( node[name], "Node \"%s\" with value %" PRIu32 " exceeds maximum of %" PRIu32 ".\n", name.c_str(), out, maximum );
+
+			return false;
+		}else if( out == 0 ){
+			this->invalidWarning( node[name], "Node \"%s\" needs to be at least 1.\n", name.c_str() );
 
 			return false;
 		}else{
