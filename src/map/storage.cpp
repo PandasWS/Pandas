@@ -254,7 +254,11 @@ static enum e_storage_add storage_canGetItem(struct s_storage *stor, int idx, in
  * @param amount : quantity of items
  * @return 0:success, 1:failed, 2:failed because of room or stack checks
  */
+#ifndef Pandas_FuncDefine_STORAGE_ADDITEM
 static int storage_additem(struct map_session_data* sd, struct s_storage *stor, struct item *it, int amount)
+#else
+int storage_additem(struct map_session_data* sd, struct s_storage* stor, struct item* it, int amount)
+#endif // Pandas_FuncDefine_STORAGE_ADDITEM
 {
 	struct item_data *data;
 	int i;
@@ -819,7 +823,7 @@ bool storage_guild_additem(struct map_session_data* sd, struct s_storage* stor, 
 }
 
 /**
- * Attempt to add an item in guild storage, then refresh i
+ * Attempt to add an item in guild storage, then refresh it
  * @param stor : guild_storage
  * @param item : item to add
  * @param amount : number of item to add
