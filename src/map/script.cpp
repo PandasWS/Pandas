@@ -27334,24 +27334,17 @@ BUILDIN_FUNC(storagegetitem) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (id->flag.guid && !it.unique_id)
-		it.unique_id = pc_generate_unique_id(sd);
-
 	for (i = 0; i < amount; i += get_count)
 	{
-		if (storage_additem(sd, &sd->storage, &it, get_count)) {
+		if (storage_additem(sd, &sd->storage, &it, get_count, true)) {
 			if (pc_candrop(sd, &it))
 				map_addflooritem(&it, get_count, sd->bl.m, sd->bl.x, sd->bl.y, 0, 0, 0, 0, 0);
 			else
 				script_pushint(st, -9);
 		}
-		else {
-			log_pick_pc(sd, LOG_TYPE_SCRIPT, get_count, &it);
-		}
 	}
 
-	sd->state.storage_flag = 1;
-	storage_storageclose(sd);
+	clif_storageclose(sd);
 
 	script_pushint(st, 0);
 	return SCRIPT_CMD_SUCCESS;

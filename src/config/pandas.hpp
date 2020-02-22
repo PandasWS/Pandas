@@ -356,6 +356,11 @@
 	// 修正 npc_unloadfile 和 npc_parsesrcfile 的行为会被空格影响的问题 [Sola丶小克]
 	// 如果 @reloadnpc 时给定的路径带空格, 系统将无法正确的 unloadnpc, 导致 npc 重复出现
 	#define Pandas_Fix_NPC_Filepath_WhiteSpace_Effects
+
+	// 修正关闭个人仓库和付费仓库时, 进行保存操作后 dirty 标记未被重置的问题 [Sola丶小克]
+	// 会导致每次关闭仓库时哪怕没有增删改仓库里面的道具, 也会触发仓库内容全量保存.
+	// 不做修正的话, 当出现大量关闭仓库请求且仓库容量比较大时, 对服务器性能会有些影响.
+	#define Pandas_Fix_Storage_DirtyFlag_Miss_Reset
 #endif // Pandas_Bugfix
 
 // ============================================================================

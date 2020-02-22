@@ -52,7 +52,7 @@ const char *storage_getName(uint8 id);
 bool storage_exists(uint8 id);
 
 #ifdef Pandas_FuncDefine_STORAGE_ADDITEM
-int storage_additem(struct map_session_data* sd, struct s_storage* stor, struct item* it, int amount);
+int storage_additem(struct map_session_data* sd, struct s_storage* stor, struct item* it, int amount, bool direct_creater = false);
 #endif // Pandas_FuncDefine_STORAGE_ADDITEM
 int storage_delitem(struct map_session_data* sd, struct s_storage *stor, int index, int amount);
 int storage_storageopen(struct map_session_data *sd);
