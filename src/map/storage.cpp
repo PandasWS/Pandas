@@ -325,7 +325,7 @@ int storage_additem(struct map_session_data* sd, struct s_storage* stor, struct 
 	// 若是直接创建道具则无需发送后续通知给客户端, 此处直接返回
 	if (direct_creater) return 0;
 #endif // Pandas_FuncDefine_STORAGE_ADDITEM
-	clif_storageitemadded(sd, &stor->u.items_storage[i], i, amount);
+	clif_storageitemadded(sd,&stor->u.items_storage[i],i,amount);
 	clif_updatestorageamount(sd, stor->amount, stor->max_amount);
 
 	return 0;
