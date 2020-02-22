@@ -27240,6 +27240,117 @@ BUILDIN_FUNC(npcexists) {
 }
 #endif // Pandas_ScriptCommand_NpcExists
 
+#ifdef Pandas_ScriptCommand_StorageGetItem
+/* ===========================================================
+ * 指令: storagegetitem
+ * 描述: 往仓库直接创造一个指定的道具
+ * 用法: storagegetitem <物品编号>,<数量>{,<账号编号>};
+ * 用法: storagegetitem "<物品名称>",<数量>{,<账号编号>};
+ * 返回: 添加成功会返回 0, 返回小于 0 则表示有错误
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(storagegetitem) {
+	int get_count, i;
+	unsigned short nameid, amount;
+	struct item it;
+	TBL_PC* sd;
+	unsigned char flag = 0;
+	const char* command = script_getfuncname(st);
+	struct item_data* id = NULL;
+
+	if (script_isstring(st, 2)) {// "<item name>"
+		const char* name = script_getstr(st, 2);
+
+		id = itemdb_searchname(name);
+		if (id == NULL) {
+			ShowError("buildin_storagegetitem: Nonexistant item %s requested.\n", name);
+			script_pushint(st, -1);
+			return SCRIPT_CMD_SUCCESS; //No item created.
+		}
+		nameid = id->nameid;
+	}
+	else {// <item id>
+		nameid = script_getnum(st, 2);
+		if (!(id = itemdb_exists(nameid))) {
+			ShowError("buildin_storagegetitem: Nonexistant item %d requested.\n", nameid);
+			script_pushint(st, -1);
+			return SCRIPT_CMD_SUCCESS; //No item created.
+		}
+	}
+
+	// <amount>
+	if ((amount = script_getnum(st, 3)) <= 0) {
+		script_pushint(st, -2);
+		return SCRIPT_CMD_SUCCESS; //return if amount <=0, skip the useles iteration
+	}
+
+	memset(&it, 0, sizeof(it));
+	it.nameid = nameid;
+	it.identify = 1;
+	it.bound = BOUND_NONE;
+
+	if (!strcmp(command, "storagegetitembound")) {
+		char bound = script_getnum(st, 4);
+		if (bound < BOUND_NONE || bound >= BOUND_MAX) {
+			ShowError("script_storagegetitembound: Not a correct bound type! Type=%d\n", bound);
+			script_pushint(st, -3);
+			return SCRIPT_CMD_SUCCESS;
+		}
+		script_mapid2sd(5, sd);
+		it.bound = bound;
+	}
+	else {
+		script_mapid2sd(4, sd);
+	}
+
+	if (sd == NULL) {
+		script_pushint(st, -4);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd->state.storage_flag == 1) {
+		script_pushint(st, -5);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	//Check if it's stackable.
+	if (!itemdb_isstackable2(id))
+		get_count = 1;
+	else
+		get_count = amount;
+
+	if (!itemdb_canstore(&it, pc_get_group_level(sd))) {
+		script_pushint(st, -6);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (pet_db_search(nameid, PET_EGG)) {
+		script_pushint(st, -7);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!sd->storage.state.put) {
+		script_pushint(st, -8);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	for (i = 0; i < amount; i += get_count)
+	{
+		if (storage_additem(sd, &sd->storage, &it, get_count, true)) {
+			if (pc_candrop(sd, &it))
+				map_addflooritem(&it, get_count, sd->bl.m, sd->bl.x, sd->bl.y, 0, 0, 0, 0, 0);
+			else
+				script_pushint(st, -9);
+		}
+	}
+
+	clif_storageclose(sd);
+
+	script_pushint(st, 0);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_StorageGetItem
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -27318,7 +27429,7 @@ struct script_function buildin_func[] = {
 #endif // Pandas_ScriptCommand_GetEquipIdx
 #ifdef Pandas_ScriptCommand_StatusCalc
 	BUILDIN_DEF2(recalculatestat,"statuscalc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 statuscalc 指令 [Sola丶小克]
-	BUILDIN_DEF2(recalculatestat,"status_calc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 status_calc 指令 [Sola丶小克]
+	BUILDIN_DEF2(recalculatestat,"status_calc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 status_calc 指令
 #endif // Pandas_ScriptCommand_StatusCalc
 #ifdef Pandas_ScriptCommand_GetEquipExpireTick
 	BUILDIN_DEF(getequipexpiretick,"i?"),				// 获取指定位置装备的租赁到期剩余秒数 [Sola丶小克]
@@ -27339,8 +27450,8 @@ struct script_function buildin_func[] = {
 #endif // Pandas_ScriptCommand_PartyLeave
 #ifdef Pandas_ScriptCommand_Script4Each
 	BUILDIN_DEF(script4each,"si?????"),						// 对指定范围的玩家执行相同的一段脚本 [Sola丶小克]
-	BUILDIN_DEF2(script4each,"script4eachmob","si?????"),	// 对指定范围的魔物执行相同的一段脚本 [Sola丶小克]
-	BUILDIN_DEF2(script4each,"script4eachnpc","si?????"),	// 对指定范围的 NPC 执行相同的一段脚本 [Sola丶小克]
+	BUILDIN_DEF2(script4each,"script4eachmob","si?????"),	// 对指定范围的魔物执行相同的一段脚本
+	BUILDIN_DEF2(script4each,"script4eachnpc","si?????"),	// 对指定范围的 NPC 执行相同的一段脚本
 #endif // Pandas_ScriptCommand_Script4Each
 #ifdef Pandas_ScriptCommand_SearchArray
 	BUILDIN_DEF2(inarray,"searcharray","rv"),			// 由于 rAthena 已经实现 inarray 指令, 这里兼容老版本 searcharray 指令 [Sola丶小克]
@@ -27389,6 +27500,10 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_NpcExists
 	BUILDIN_DEF(npcexists,"s?"),						// 判断指定名称的 NPC 是否存在 [Sola丶小克]
 #endif // Pandas_ScriptCommand_NpcExists
+#ifdef Pandas_ScriptCommand_StorageGetItem
+	BUILDIN_DEF(storagegetitem,"vi?"),								// 往仓库直接创造一个指定的道具 [Sola丶小克]
+	BUILDIN_DEF2(storagegetitem, "storagegetitembound", "vii?"),	// 与 getitembound 类似, 只不过是将道具直接创建到仓库
+#endif // Pandas_ScriptCommand_StorageGetItem
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

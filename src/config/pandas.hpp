@@ -191,6 +191,9 @@
 
 	// 调整 pc.cpp 中 pc_equipitem 执行道具绑定的时机 [Sola丶小克]
 	#define Pandas_FuncLogic_PC_EQUIPITEM_BOUND_OPPORTUNITY
+
+	// 调整 storage.cpp 中 storage_additem 的函数定义, 移除 static 关键字 [Sola丶小克]
+	#define Pandas_FuncDefine_STORAGE_ADDITEM
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -353,6 +356,11 @@
 	// 修正 npc_unloadfile 和 npc_parsesrcfile 的行为会被空格影响的问题 [Sola丶小克]
 	// 如果 @reloadnpc 时给定的路径带空格, 系统将无法正确的 unloadnpc, 导致 npc 重复出现
 	#define Pandas_Fix_NPC_Filepath_WhiteSpace_Effects
+
+	// 修正关闭个人仓库和付费仓库时, 进行保存操作后 dirty 标记未被重置的问题 [Sola丶小克]
+	// 会导致每次关闭仓库时哪怕没有增删改仓库里面的道具, 也会触发仓库内容全量保存.
+	// 不做修正的话, 当出现大量关闭仓库请求且仓库容量比较大时, 对服务器性能会有些影响.
+	#define Pandas_Fix_Storage_DirtyFlag_Miss_Reset
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -847,6 +855,12 @@
 	// 是否启用 npcexists 脚本指令 [Sola丶小克]
 	// 该指令用于判断指定名称的 NPC 是否存在, 就算不存在控制台也不会报错
 	#define Pandas_ScriptCommand_NpcExists
+
+	#ifdef Pandas_FuncDefine_STORAGE_ADDITEM
+		// 是否启用 storagegetitem 脚本指令 [Sola丶小克]
+		// 往仓库直接创造一个指定的道具, 必须在仓库关闭的时候才能调用
+		#define Pandas_ScriptCommand_StorageGetItem
+	#endif // Pandas_FuncDefine_STORAGE_ADDITEM
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

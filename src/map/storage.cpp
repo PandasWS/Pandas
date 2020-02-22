@@ -254,7 +254,11 @@ static enum e_storage_add storage_canGetItem(struct s_storage *stor, int idx, in
  * @param amount : quantity of items
  * @return 0:success, 1:failed, 2:failed because of room or stack checks
  */
+#ifndef Pandas_FuncDefine_STORAGE_ADDITEM
 static int storage_additem(struct map_session_data* sd, struct s_storage *stor, struct item *it, int amount)
+#else
+int storage_additem(struct map_session_data* sd, struct s_storage* stor, struct item* it, int amount, bool direct_creater)
+#endif // Pandas_FuncDefine_STORAGE_ADDITEM
 {
 	struct item_data *data;
 	int i;
@@ -285,6 +289,10 @@ static int storage_additem(struct map_session_data* sd, struct s_storage *stor, 
 
 				stor->u.items_storage[i].amount += amount;
 				stor->dirty = true;
+#ifdef Pandas_FuncDefine_STORAGE_ADDITEM
+				// 若是直接创建道具则无需发送后续通知给客户端, 此处直接返回
+				if (direct_creater) return 0;
+#endif // Pandas_FuncDefine_STORAGE_ADDITEM
 				clif_storageitemadded(sd,&stor->u.items_storage[i],i,amount);
 
 				return 0;
@@ -300,11 +308,23 @@ static int storage_additem(struct map_session_data* sd, struct s_storage *stor, 
 	if( i >= stor->max_amount )
 		return 2;
 
+#ifdef Pandas_FuncDefine_STORAGE_ADDITEM
+	// 若是直接创建道具, 那么确认是否需要生成唯一编号, 若需要则生成
+	if (direct_creater && data->flag.guid && !it->unique_id)
+		it->unique_id = pc_generate_unique_id(sd);
+
+	log_pick_pc(sd, LOG_TYPE_SCRIPT, amount, it);
+#endif // Pandas_FuncDefine_STORAGE_ADDITEMs
+
 	// add item to slot
 	memcpy(&stor->u.items_storage[i],it,sizeof(stor->u.items_storage[0]));
 	stor->amount++;
 	stor->u.items_storage[i].amount = amount;
 	stor->dirty = true;
+#ifdef Pandas_FuncDefine_STORAGE_ADDITEM
+	// 若是直接创建道具则无需发送后续通知给客户端, 此处直接返回
+	if (direct_creater) return 0;
+#endif // Pandas_FuncDefine_STORAGE_ADDITEM
 	clif_storageitemadded(sd,&stor->u.items_storage[i],i,amount);
 	clif_updatestorageamount(sd, stor->amount, stor->max_amount);
 
@@ -504,6 +524,7 @@ void storage_storageclose(struct map_session_data *sd)
 {
 	nullpo_retv(sd);
 
+#ifndef Pandas_Fix_Storage_DirtyFlag_Miss_Reset
 	if (sd->storage.dirty) {
 		if (save_settings&CHARSAVE_STORAGE)
 			chrif_save(sd, CSAVE_INVENTORY|CSAVE_CART);
@@ -515,6 +536,15 @@ void storage_storageclose(struct map_session_data *sd)
 		}
 	} else
 		storage_storagesaved(sd);
+#else
+	if (sd->storage.dirty) {
+		if (save_settings & CHARSAVE_STORAGE)
+			chrif_save(sd, CSAVE_INVENTORY | CSAVE_CART);
+		else
+			storage_storagesave(sd);
+	}
+	storage_storagesaved(sd);
+#endif // Pandas_Fix_Storage_DirtyFlag_Miss_Reset
 }
 
 /**
@@ -819,7 +849,7 @@ bool storage_guild_additem(struct map_session_data* sd, struct s_storage* stor, 
 }
 
 /**
- * Attempt to add an item in guild storage, then refresh i
+ * Attempt to add an item in guild storage, then refresh it
  * @param stor : guild_storage
  * @param item : item to add
  * @param amount : number of item to add
@@ -1220,6 +1250,7 @@ void storage_premiumStorage_saved(struct map_session_data *sd) {
 void storage_premiumStorage_close(struct map_session_data *sd) {
 	nullpo_retv(sd);
 
+#ifndef Pandas_Fix_Storage_DirtyFlag_Miss_Reset
 	if (sd->premiumStorage.dirty) {
 		if (save_settings&CHARSAVE_STORAGE)
 			chrif_save(sd, CSAVE_INVENTORY|CSAVE_CART);
@@ -1232,6 +1263,15 @@ void storage_premiumStorage_close(struct map_session_data *sd) {
 	}
 	else 
 		storage_premiumStorage_saved(sd);
+#else
+	if (sd->premiumStorage.dirty) {
+		if (save_settings & CHARSAVE_STORAGE)
+			chrif_save(sd, CSAVE_INVENTORY | CSAVE_CART);
+		else
+			storage_premiumStorage_save(sd);
+	}
+	storage_premiumStorage_saved(sd);
+#endif // Pandas_Fix_Storage_DirtyFlag_Miss_Reset
 }
 
 /**
