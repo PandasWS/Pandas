@@ -1451,7 +1451,7 @@ int npc_parseview(const char* w4, const char* start, const char* buffer, const c
 #endif // Pandas_ScriptCommand_Copynpc
 
 #ifdef Pandas_Character_Title_Controller
-bool npc_change_title_event(struct map_session_data* sd, int64 target_title_id, int mode);
+bool npc_change_title_event(struct map_session_data* sd, uint32 title_id, int mode);
 #endif // Pandas_Character_Title_Controller
 
 #endif /* NPC_HPP */
