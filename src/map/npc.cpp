@@ -1932,7 +1932,11 @@ uint8 npc_buylist(struct map_session_data* sd, uint16 n, struct s_npc_buy_list *
 	struct npc_item_list *shop = NULL;
 	double z;
 	int i,j,k,w,skill,new_;
+#ifndef Pandas_FuncExtend_Increase_Inventory
 	uint8 market_index[MAX_INVENTORY];
+#else
+	int market_index[MAX_INVENTORY];
+#endif // Pandas_FuncExtend_Increase_Inventory
 
 	nullpo_retr(3, sd);
 	nullpo_retr(3, item_list);
