@@ -1102,7 +1102,11 @@ char pc_randomwarp(struct map_session_data *sd,clr_type type);
 bool pc_memo(struct map_session_data* sd, int pos);
 
 char pc_checkadditem(struct map_session_data *sd, unsigned short nameid, int amount);
+#ifndef Pandas_FuncExtend_Increase_Inventory
 uint8 pc_inventoryblank(struct map_session_data *sd);
+#else
+uint16 pc_inventoryblank(struct map_session_data *sd);
+#endif // Pandas_FuncExtend_Increase_Inventory
 short pc_search_inventory(struct map_session_data *sd, unsigned short nameid);
 char pc_payzeny(struct map_session_data *sd, int zeny, enum e_log_pick_type type, struct map_session_data *tsd);
 enum e_additem_result pc_additem(struct map_session_data *sd, struct item *item, int amount, e_log_pick_type log_type);

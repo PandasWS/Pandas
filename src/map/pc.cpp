@@ -906,7 +906,11 @@ int pc_equippoint(struct map_session_data *sd,int n){
  */
 void pc_setinventorydata(struct map_session_data *sd)
 {
+#ifndef Pandas_FuncExtend_Increase_Inventory
 	uint8 i;
+#else
+	uint16 i;
+#endif // Pandas_FuncExtend_Increase_Inventory
 	nullpo_retv(sd);
 
 	for(i = 0; i < MAX_INVENTORY; i++) {
@@ -4642,6 +4646,7 @@ char pc_checkadditem(struct map_session_data *sd, unsigned short nameid, int amo
  * @param sd
  * @return Number of empty slots
  *------------------------------------------*/
+#ifndef Pandas_FuncExtend_Increase_Inventory
 uint8 pc_inventoryblank(struct map_session_data *sd)
 {
 	uint8 i, b;
@@ -4655,6 +4660,21 @@ uint8 pc_inventoryblank(struct map_session_data *sd)
 
 	return b;
 }
+#else
+uint16 pc_inventoryblank(struct map_session_data *sd)
+{
+	uint16 i, b;
+
+	nullpo_ret(sd);
+
+	for(i = 0, b = 0; i < MAX_INVENTORY; i++){
+		if(sd->inventory.u.items_inventory[i].nameid == 0)
+			b++;
+	}
+
+	return b;
+}
+#endif // Pandas_FuncExtend_Increase_Inventory
 
 /**
  * Attempts to remove zeny from player

@@ -194,6 +194,13 @@
 
 	// 调整 storage.cpp 中 storage_additem 的函数定义, 移除 static 关键字 [Sola丶小克]
 	#define Pandas_FuncDefine_STORAGE_ADDITEM
+
+	// 调整用于计算 MAX_INVENTORY 相关的变量
+	// 以便能够支持将背包的最大上限设置成超过 128 的值 [Sola丶小克]
+	// 
+	// 提示: 根据目前的 struct item 和 struct s_storage 的体积情况,
+	// 应该可支持将 MAX_INVENTORY 调整到 800 左右, 但设置越大对性能影响会越大
+	#define Pandas_FuncExtend_Increase_Inventory
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
