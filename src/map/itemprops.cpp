@@ -36,12 +36,12 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 		return 0;
 	}
 
-	auto item_properties_item = this->find(nameid);
-	bool exists = item_properties_item != nullptr;
+	auto properties_item = this->find(nameid);
+	bool exists = properties_item != nullptr;
 
 	if (!exists) {
-		item_properties_item = std::make_shared<s_item_properties_item>();
-		item_properties_item->nameid = nameid;
+		properties_item = std::make_shared<s_item_properties>();
+		properties_item->nameid = nameid;
 	}
 
 	if (!this->nodeExists(node, "Property")) {
@@ -55,11 +55,33 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 			return 0;
 		}
 
-		item_properties_item->property = property;
+		properties_item->property = property;
+	}
+
+	if (this->nodeExists(node, "ControlViewID")) {
+		const YAML::Node& noviewNode = node["ControlViewID"];
+
+		#define GETYAML_NODE_BOOL(var, mask) {\
+			if (this->nodeExists(node, var)) {\
+				bool option = false;\
+				if (!this->asBool(node, var, option)) {\
+					return 0;\
+				}\
+				if (option)\
+					properties_item->noview |= mask;\
+				else\
+					properties_item->noview &= ~mask;\
+			}\
+		}
+
+		GETYAML_NODE_BOOL("InvisibleWhenISee", ITEM_NOVIEW_WHEN_I_SEE);
+		GETYAML_NODE_BOOL("InvisibleWhenTheySee", ITEM_NOVIEW_WHEN_T_SEE);
+
+		#undef GETYAML_NODE_BOOL
 	}
 
 	if (!exists) {
-		this->put(item_properties_item->nameid, item_properties_item);
+		this->put(properties_item->nameid, properties_item);
 	}
 
 	return 1;
@@ -67,11 +89,10 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 
 //************************************
 // Method:		itemdb_get_property
-// Description:	获取一个道具编号的特殊属性掩码
+// Description:	获取一个道具编号的特殊属性
 // Parameter:	uint32 nameid
-// Returns:		uint32
+// Returns:		std::shared_ptr<s_item_properties>
 //************************************
-uint32 itemdb_get_property(uint32 nameid) {
-	std::shared_ptr<s_item_properties_item> data = item_properties_db.find(nameid);
-	return (data ? data->property : 0);
+std::shared_ptr<s_item_properties> itemdb_get_property(uint32 nameid) {
+	return item_properties_db.find(nameid);
 }

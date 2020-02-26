@@ -9,12 +9,19 @@
 #include "../common/cbasetypes.hpp"
 #include "../common/database.hpp"
 
-struct s_item_properties_item {
-	uint32 nameid;
-	uint32 property;
+enum e_item_noview : uint32 {
+	ITEM_NOVIEW_UNKNOW		= 0x0000,
+	ITEM_NOVIEW_WHEN_I_SEE	= 0x0001,	// 当我看自己的装备时, 隐藏道具外观
+	ITEM_NOVIEW_WHEN_T_SEE	= 0x0002	// 当其他人看我的装备时, 隐藏道具外观
 };
 
-class ItemProperties : public TypesafeYamlDatabase<uint32, s_item_properties_item> {
+struct s_item_properties {
+	uint32 nameid;
+	uint32 property;
+	uint32 noview;
+};
+
+class ItemProperties : public TypesafeYamlDatabase<uint32, s_item_properties> {
 public:
 	ItemProperties() : TypesafeYamlDatabase("ITEM_PROPERTIES_DB", 1) {
 
@@ -26,4 +33,4 @@ public:
 
 extern ItemProperties item_properties_db;
 
-uint32 itemdb_get_property(uint32 nameid);
+std::shared_ptr<s_item_properties> itemdb_get_property(uint32 nameid);

@@ -62,6 +62,10 @@
 #include "itemamulet.hpp"	// amulet_is
 #endif // Pandas_ItemAmulet_System
 
+#ifdef Pandas_Database_ItemProperties
+#include "itemprops.hpp"
+#endif // Pandas_Database_ItemProperties
+
 using namespace rathena;
 
 static inline uint32 client_tick( t_tick tick ){
@@ -2792,6 +2796,25 @@ void clif_inventorylist(struct map_session_data *sd) {
 
 		if( !itemdb_isstackable2(sd->inventory_data[i]) )
 		{	//Non-stackable (Equippable)
+
+#ifdef Pandas_Implement_Function_Of_Item_Properties
+			// 龙王蛮蛮的部分时装图会导致其他玩家查看我装备的时候, 切换到"时装"选项卡时客户端崩溃
+			// 为了解决这个问题, 大坏建议增加一个配置选项, 用于控制在别人查看我装备时可以屏蔽道具的外观编号
+			// 这里处理的是: 当"玩家自己"看自己装备栏时候, 会根据开关决定是否隐藏外观 [Sola丶小克]
+			if (sd->inventory_data[i] && sd->inventory_data[i]->look != 0) {
+				if (sd->inventory_data[i]->properties.noview & ITEM_NOVIEW_WHEN_I_SEE) {
+					struct item_data id = { 0 };
+					memcpy(&id, sd->inventory_data[i], sizeof(struct item_data));
+
+					id.look = 0;
+
+					clif_item_sub(bufe, ne*se+4, i+2, &sd->inventory.u.items_inventory[i], &id, pc_equippoint(sd,i));
+					ne++;
+					continue;
+				}
+			}
+#endif // Pandas_Implement_Function_Of_Item_Properties
+
 			clif_item_sub(bufe, ne*se+4, i+2, &sd->inventory.u.items_inventory[i], sd->inventory_data[i], pc_equippoint(sd,i));
 			ne++;
 		}
@@ -3852,6 +3875,15 @@ void clif_equipitemack(struct map_session_data *sd,int n,int pos,uint8 flag)
 
 	if (flag == ITEM_EQUIP_ACK_OK && sd->inventory_data[n]->equip&EQP_VISIBLE)
 		look = sd->inventory_data[n]->look;
+
+#ifdef Pandas_Implement_Function_Of_Item_Properties
+	// 若装备刚穿戴成功的话, 也需要根据情况看看是否需要过滤掉外观 [Sola丶小克]
+	if (flag == ITEM_EQUIP_ACK_OK && sd->inventory_data[n]->look != 0) {
+		if (sd->inventory_data[n]->properties.noview & ITEM_NOVIEW_WHEN_I_SEE) {
+			look = 0;
+		}
+	}
+#endif // Pandas_Implement_Function_Of_Item_Properties
 
 	WFIFOHEAD(fd, info->len);
 	WFIFOW(fd, 0) = cmd;
@@ -10124,6 +10156,25 @@ void clif_viewequip_ack(struct map_session_data* sd, struct map_session_data* ts
 			continue;
 		if (!itemdb_isequip2(tsd->inventory_data[i])) // Is not equippable
 			continue;
+
+#ifdef Pandas_Implement_Function_Of_Item_Properties
+		// 龙王蛮蛮的部分时装图会导致其他玩家查看我装备的时候, 切换到"时装"选项卡时客户端崩溃
+		// 为了解决这个问题, 大坏建议增加一个配置选项, 用于控制在别人查看我装备时可以屏蔽道具的外观编号
+		// 这里处理的是: 当"其他玩家"看自己装备栏时候, 会根据开关决定是否隐藏外观 [Sola丶小克]
+		if (tsd->inventory_data[i] && tsd->inventory_data[i]->look != 0) {
+			if (tsd->inventory_data[i]->properties.noview & ITEM_NOVIEW_WHEN_T_SEE) {
+				struct item_data id = { 0 };
+				memcpy(&id, tsd->inventory_data[i], sizeof(struct item_data));
+
+				id.look = 0;
+
+				clif_item_sub(WBUFP(buf,0), n*s+43,i + 2, &tsd->inventory.u.items_inventory[i], &id, pc_equippoint(tsd, i));
+				n++;
+				continue;
+			}
+		}
+#endif // Pandas_Implement_Function_Of_Item_Properties
+
 		// Add item info : refine, identify flag, element, etc.
 		clif_item_sub(WBUFP(buf,0), n*s+43,i + 2, &tsd->inventory.u.items_inventory[i], tsd->inventory_data[i], pc_equippoint(tsd, i));
 		n++;
