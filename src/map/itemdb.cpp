@@ -2123,11 +2123,13 @@ static int itemdb_property_parse(DBKey key, DBData *data, va_list ap) {
 	struct item_data *item = (struct item_data *)db_data2ptr(data);
 	if (item == nullptr) return 0;
 
-	uint32 properties = itemdb_get_property(item->nameid);
-
-	item->properties.no_consume_of_player = ((properties & 1) ? 1 : 0);
-	item->properties.no_consume_of_skills = ((properties & 2) ? 1 : 0);
-	item->properties.is_amulet = ((properties & 4) ? 1 : 0);
+	auto it = itemdb_get_property(item->nameid);
+	if (it != nullptr) {
+		item->properties.no_consume_of_player = ((it->property & 1) ? 1 : 0);
+		item->properties.no_consume_of_skills = ((it->property & 2) ? 1 : 0);
+		item->properties.is_amulet = ((it->property & 4) ? 1 : 0);
+		item->properties.noview_mask = it->noview;
+	}
 
 #ifdef Pandas_ItemAmulet_System
 	// 若为护身符道具, 则直接改写它的物品类型为 IT_AMULET
@@ -2171,7 +2173,9 @@ void itemdb_reload(void) {
 	// 加载 item_properties.yml 必须在 itemdb_read 之后进行
 	// 因此加载过程中需要判断物品编号是否有效, 这需要依赖 itemdb_read 的执行结果
 	item_properties_db.load();
-	itemdb->foreach(itemdb, itemdb_property_parse);
+	#ifdef Pandas_Struct_Item_Data_Properties
+		itemdb->foreach(itemdb, itemdb_property_parse);
+	#endif // Pandas_Struct_Item_Data_Properties
 #endif // Pandas_Database_ItemProperties
 
 	if (battle_config.feature_roulette)
@@ -2197,6 +2201,13 @@ void itemdb_reload(void) {
 		pc_setinventorydata(sd);
 		pc_check_available_item(sd, ITMCHK_ALL); // Check for invalid(ated) items.
 		pc_load_combo(sd); // Check to see if new combos are available
+
+#ifdef Pandas_Database_ItemProperties
+		// 当启用了道具特殊属性数据库的话, 重载物品信息后
+		// 重新给每个玩家发放背包信息, 以便一些相关的设置能够直接生效
+		clif_inventorylist(sd);
+#endif // Pandas_Database_ItemProperties
+
 		status_calc_pc(sd, SCO_FORCE); // 
 	}
 	mapit_free(iter);
@@ -2212,9 +2223,11 @@ void do_final_itemdb(void) {
 	itemdb_randomopt_group->destroy(itemdb_randomopt_group, itemdb_randomopt_group_free);
 	itemdb->destroy(itemdb, itemdb_final_sub);
 	destroy_item_data(dummy_item);
+
 #ifdef Pandas_Database_ItemProperties
 	item_properties_db.clear();
 #endif // Pandas_Database_ItemProperties
+
 	if (battle_config.feature_roulette)
 		itemdb_roulette_free();
 }
@@ -2230,11 +2243,14 @@ void do_init_itemdb(void) {
 	itemdb_randomopt_group = uidb_alloc(DB_OPT_BASE);
 	itemdb_create_dummy();
 	itemdb_read();
+
 #ifdef Pandas_Database_ItemProperties
 	// 加载 item_properties.yml 必须在 itemdb_read 之后进行
 	// 因此加载过程中需要判断物品编号是否有效, 这需要依赖 itemdb_read 的执行结果
 	item_properties_db.load();
-	itemdb->foreach(itemdb, itemdb_property_parse);
+	#ifdef Pandas_Struct_Item_Data_Properties
+		itemdb->foreach(itemdb, itemdb_property_parse);
+	#endif // Pandas_Struct_Item_Data_Properties
 #endif // Pandas_Database_ItemProperties
 
 	if (battle_config.feature_roulette)
