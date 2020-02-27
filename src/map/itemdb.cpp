@@ -2201,6 +2201,13 @@ void itemdb_reload(void) {
 		pc_setinventorydata(sd);
 		pc_check_available_item(sd, ITMCHK_ALL); // Check for invalid(ated) items.
 		pc_load_combo(sd); // Check to see if new combos are available
+
+#ifdef Pandas_Database_ItemProperties
+		// 当启用了道具特殊属性数据库的话, 重载物品信息后
+		// 重新给每个玩家发放背包信息, 以便一些相关的设置能够直接生效
+		clif_inventorylist(sd);
+#endif // Pandas_Database_ItemProperties
+
 		status_calc_pc(sd, SCO_FORCE); // 
 	}
 	mapit_free(iter);
