@@ -177,6 +177,10 @@
 	// 是否启用 cashmount_useitem_limit 配置选项及其功能 [Sola丶小克]
 	// 此选项可以使乘坐“商城坐骑”时禁止使用特定类型的物品
 	#define Pandas_BattleConfig_CashMounting_UseitemLimit
+
+	// 是否启用 max_aspd_for_pvp 配置选项及其功能 [Sola丶小克]
+	// 此选项用于限制玩家在 PVP 地图上的最大攻击速度 (以 MF_PVP 地图标记为准)
+	#define Pandas_BattleConfig_MaxAspdForPVP
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
