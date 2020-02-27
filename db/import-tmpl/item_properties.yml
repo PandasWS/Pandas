@@ -16,7 +16,7 @@
 ###########################################################################
 #
 # Property
-# 特殊属性标记, 用来标出物品有什么特殊属性
+# 可选节点, 用来标出物品有什么特殊属性
 #
 # 1 - 表示避免物品被玩家主动使用而消耗
 # 2 - 避免物品被作为发动技能的必要道具而消耗
@@ -57,8 +57,8 @@ Header:
   Version: 1
 
 Body:
-#  - ItemID: 601
-#    Property: 1
+#  - ItemID: 2207
+#    Property: 0
 #    ControlViewID:
 #      InvisibleWhenISee: false
 #      InvisibleWhenTheySee: false

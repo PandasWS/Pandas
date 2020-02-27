@@ -44,11 +44,7 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 		properties_item->nameid = nameid;
 	}
 
-	if (!this->nodeExists(node, "Property")) {
-		this->invalidWarning(node, "Node \"Property\" is missing.\n");
-		return 0;
-	}
-	else {
+	if (this->nodeExists(node, "Property")) {
 		uint32 property = 0;
 
 		if (!this->asUInt32(node, "Property", property)) {
@@ -61,10 +57,10 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 	if (this->nodeExists(node, "ControlViewID")) {
 		const YAML::Node& noviewNode = node["ControlViewID"];
 
-		#define GETYAML_NODE_BOOL(var, mask) {\
-			if (this->nodeExists(node, var)) {\
+		#define GETYAML_NODE_BOOL(ynode, var, mask) {\
+			if (this->nodeExists(ynode, var)) {\
 				bool option = false;\
-				if (!this->asBool(node, var, option)) {\
+				if (!this->asBool(ynode, var, option)) {\
 					return 0;\
 				}\
 				if (option)\
@@ -74,8 +70,8 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 			}\
 		}
 
-		GETYAML_NODE_BOOL("InvisibleWhenISee", ITEM_NOVIEW_WHEN_I_SEE);
-		GETYAML_NODE_BOOL("InvisibleWhenTheySee", ITEM_NOVIEW_WHEN_T_SEE);
+		GETYAML_NODE_BOOL(noviewNode, "InvisibleWhenISee", ITEM_NOVIEW_WHEN_I_SEE);
+		GETYAML_NODE_BOOL(noviewNode, "InvisibleWhenTheySee", ITEM_NOVIEW_WHEN_T_SEE);
 
 		#undef GETYAML_NODE_BOOL
 	}

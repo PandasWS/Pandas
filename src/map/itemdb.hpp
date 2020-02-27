@@ -889,7 +889,7 @@ struct item_data
 		unsigned no_consume_of_player : 1;
 		unsigned no_consume_of_skills : 1;
 		unsigned is_amulet : 1;
-		uint32 noview : 4;
+		uint32 noview_mask;
 	} properties;
 #endif // Pandas_Struct_Item_Data_Properties
 };

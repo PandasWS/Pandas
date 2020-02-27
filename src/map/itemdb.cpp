@@ -2128,7 +2128,7 @@ static int itemdb_property_parse(DBKey key, DBData *data, va_list ap) {
 		item->properties.no_consume_of_player = ((it->property & 1) ? 1 : 0);
 		item->properties.no_consume_of_skills = ((it->property & 2) ? 1 : 0);
 		item->properties.is_amulet = ((it->property & 4) ? 1 : 0);
-		item->properties.noview = it->noview;
+		item->properties.noview_mask = it->noview;
 	}
 
 #ifdef Pandas_ItemAmulet_System
