@@ -18,7 +18,7 @@ LIBDIR=
 INCLUDEDIR=
 # =================================================================
 # Pandas currently requires: regex and filesystem, so we build them only
-LIBS="--with-regex --with-filesystem --with-locale"
+LIBS="--with-regex --with-filesystem --with-locale --with-date_time"
 # =================================================================
 PYTHON=python
 PYTHON_VERSION=
