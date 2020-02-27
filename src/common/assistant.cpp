@@ -30,6 +30,8 @@
 #include "showmsg.hpp"
 #include "utils.hpp" // check_filepath
 
+#include <boost/interprocess/sync/named_mutex.hpp>
+
 #ifdef _WIN32
 	const std::string pathSep = "\\";
 #else
@@ -66,75 +68,6 @@ bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
 			return false;
 		}
 	}
-	
-#ifdef _WIN32
-	WIN32_FIND_DATA fdFileData;
-	HANDLE hSearch = NULL;
-	std::string szPathWildcard = fromDirectory + "*.*";
-
-	hSearch = FindFirstFile(szPathWildcard.c_str(), &fdFileData);
-	if (hSearch == INVALID_HANDLE_VALUE) return false;
-
-	do {
-		if (!lstrcmp(fdFileData.cFileName, "..")) continue;
-		if (!lstrcmp(fdFileData.cFileName, ".")) continue;
-
-		std::string fromFullPath = fromDirectory + fdFileData.cFileName;
-		std::string toFullPath = toDirectory + fdFileData.cFileName;
-
-		if (check_filepath(fromFullPath.c_str()) != 2) continue;
-		if (check_filepath(toFullPath.c_str()) != 3) continue;
-
-		std::string displayTargetPath = toImportDir;
-		ensurePathEndwithSep(displayTargetPath, pathSep);
-		displayTargetPath = displayTargetPath + fdFileData.cFileName;
-		standardizePathSep(displayTargetPath);
-
-		if (!(fdFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-			if (!copyFile(fromFullPath.c_str(), toFullPath.c_str())) {
-				ShowWarning("Deploy %s is failed.\n", displayTargetPath.c_str());
-			}
-			else {
-				ShowInfo("Deploy %s is successful.\n", displayTargetPath.c_str());
-			}
-		}
-	} while (FindNextFile(hSearch, &fdFileData));
-
-	FindClose(hSearch);
-#else
-	DIR* dirHandle = opendir(fromDirectory.c_str());
-	if (!dirHandle) return false;
-
-	struct dirent* dt = NULL;
-	while ((dt = readdir(dirHandle))) {
-		if (strcmp(dt->d_name, "..") == 0) continue;
-		if (strcmp(dt->d_name, ".") == 0) continue;
-
-		std::string fromFullPath = fromDirectory + dt->d_name;
-		std::string toFullPath = toDirectory + dt->d_name;
-
-		// 注意: Linux 下 check_filepath 返回值和 Windows 含义不同
-		if (check_filepath(fromFullPath.c_str()) != 2) continue;
-		if (check_filepath(toFullPath.c_str()) != 0) continue;
-
-		std::string displayTargetPath = toImportDir;
-		ensurePathEndwithSep(displayTargetPath, pathSep);
-		displayTargetPath = displayTargetPath + dt->d_name;
-		standardizePathSep(displayTargetPath);
-
-		struct stat st = { 0 };
-		stat(fromFullPath.c_str(), &st);
-		if (!S_ISDIR(st.st_mode)) {
-			if (!copyFile(fromFullPath.c_str(), toFullPath.c_str())) {
-				ShowWarning("Deploy %s is failed.\n", displayTargetPath.c_str());
-			}
-			else {
-				ShowInfo("Deploy %s is successful.\n", displayTargetPath.c_str());
-			}
-		}
-	}
-	closedir(dirHandle);
-#endif // _WIN32
 
 	// 若不存在 src 目录 (用户的生产环境), 那么删除部署的来源目录 (import-tmpl)
 	if (!isDirectoryExists(std::string(workDirectory + "src"))) {
@@ -151,6 +84,12 @@ bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
 // Author:      Sola丶小克(CairoLee)  2019/09/16 07:33
 //************************************
 void deployImportDirectories() {
+	boost::interprocess::named_mutex deploy_mtx(
+		boost::interprocess::open_or_create, "deploy_import_dir"
+	);
+
+	deploy_mtx.lock();
+
 	const struct _import_data {
 		std::string import_from;
 		std::string import_to;
@@ -163,6 +102,8 @@ void deployImportDirectories() {
 	for (size_t i = 0; i < ARRAYLENGTH(import_data); i++) {
 		deployImportDirectory(import_data[i].import_from, import_data[i].import_to);
 	}
+
+	deploy_mtx.unlock();
 }
 
 //************************************
