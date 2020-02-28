@@ -4582,6 +4582,48 @@ void map_skill_duration_add(struct map_data *mapd, uint16 skill_id, uint16 per) 
 		mapd->skill_duration.insert({ skill_id, per });
 }
 
+#ifdef Pandas_BattleConfig_MaxAspdForGVG
+//************************************
+// Method:      map_mapflag_gvg_start_sub
+// Description: 当设置某张地图的 GVG 地图标记时, 对该地图上每个玩家都做一些工作
+// Parameter:   struct block_list * bl
+// Parameter:   va_list ap
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2020/02/28 11:47
+//************************************
+static int map_mapflag_gvg_start_sub(struct block_list* bl, va_list ap)
+{
+	struct map_session_data* sd = map_id2sd(bl->id);
+	nullpo_retr(0, sd);
+
+	// 由于扩展了 max_aspd_for_gvg 选项, 在开启了 GVG 之后
+	// 需要重算一下地图上所有玩家的攻速, 以便最新的攻速限制可以生效 [Sola丶小克]
+	if (sd) status_calc_pc(sd, SCO_NONE);
+
+	return 0;
+}
+
+//************************************
+// Method:      map_mapflag_gvg_stop_sub
+// Description: 当取消某张地图的 GVG 地图标记时, 对该地图上每个玩家都做一些工作
+// Parameter:   struct block_list * bl
+// Parameter:   va_list ap
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2020/02/28 11:47
+//************************************
+static int map_mapflag_gvg_stop_sub(struct block_list* bl, va_list ap)
+{
+	struct map_session_data* sd = map_id2sd(bl->id);
+	nullpo_retr(0, sd);
+
+	// 由于扩展了 max_aspd_for_gvg 选项, 在停止了 GVG 之后
+	// 需要重算一下地图上所有玩家的攻速, 以便最新的攻速限制可以生效 [Sola丶小克]
+	if (sd) status_calc_pc(sd, SCO_NONE);
+
+	return 0;
+}
+#endif // Pandas_BattleConfig_MaxAspdForGVG
+
 /**
  * PvP timer handling (starting)
  * @param bl: Player block object
@@ -4962,9 +5004,15 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			mapdata->flag[mapflag] = status; // Must come first to properly set map property
 			if (!status) {
 				clif_map_property_mapall(m, MAPPROPERTY_NOTHING);
+#ifdef Pandas_BattleConfig_MaxAspdForGVG
+				map_foreachinmap(map_mapflag_gvg_stop_sub, m, BL_PC);
+#endif // Pandas_BattleConfig_MaxAspdForGVG
 				map_foreachinmap(unit_stopattack, m, BL_CHAR, 0);
 			} else {
 				clif_map_property_mapall(m, MAPPROPERTY_AGITZONE);
+#ifdef Pandas_BattleConfig_MaxAspdForGVG
+				map_foreachinmap(map_mapflag_gvg_start_sub, m, BL_PC);
+#endif // Pandas_BattleConfig_MaxAspdForGVG
 				if (mapdata->flag[MF_PVP]) {
 					mapdata->flag[MF_PVP] = false;
 					if (!battle_config.pk_mode)

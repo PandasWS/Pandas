@@ -8688,6 +8688,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_MaxAspdForPVP
 	{ "max_aspd_for_pvp",                   &battle_config.max_aspd_for_pvp,                0,      0,      199,            },
 #endif // Pandas_BattleConfig_MaxAspdForPVP
+#ifdef Pandas_BattleConfig_MaxAspdForGVG
+	{ "max_aspd_for_gvg",                   &battle_config.max_aspd_for_gvg,                0,      0,      199,            },
+#endif // Pandas_BattleConfig_MaxAspdForGVG
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };
@@ -8771,10 +8774,27 @@ void battle_adjust_conf()
 
 #ifdef Pandas_BattleConfig_MaxAspdForPVP
 	// 根据 max_aspd_for_pvp 约束玩家的最大攻速 [Sola丶小克]
-	// 这里对配置的 ASPD 数值 (例如: 193, 197) 转换成程序判断用的攻速数值
+	// 这里对配置的 ASPD 数值 (例如: 193, 197) 转换成程序判断用的攻击间隔时间
+	// 
+	// 攻击间隔 = 2000 - 攻速的 Aspd 数值 * 10
+	// 攻击间隔 = 2000 - 193 * 10
+	// 攻击间隔 = 2000 - 1930
+	// 攻击间隔 = 70 毫秒
 	if (battle_config.max_aspd_for_pvp > 0)
 		battle_config.max_aspd_for_pvp = 2000 - battle_config.max_aspd_for_pvp * 10;
 #endif // Pandas_BattleConfig_MaxAspdForPVP
+
+#ifdef Pandas_BattleConfig_MaxAspdForGVG
+	// 根据 max_aspd_for_gvg 约束玩家的最大攻速 [Sola丶小克]
+	// 这里对配置的 ASPD 数值 (例如: 193, 197) 转换成程序判断用的攻击间隔时间
+	// 
+	// 攻击间隔 = 2000 - 攻速的 Aspd 数值 * 10
+	// 攻击间隔 = 2000 - 193 * 10
+	// 攻击间隔 = 2000 - 1930
+	// 攻击间隔 = 70 毫秒
+	if (battle_config.max_aspd_for_gvg > 0)
+		battle_config.max_aspd_for_gvg = 2000 - battle_config.max_aspd_for_gvg * 10;
+#endif // Pandas_BattleConfig_MaxAspdForGVG
 
 	if (battle_config.max_def > 100 && !battle_config.weapon_defense_type) // added by [Skotlex]
 		battle_config.max_def = 100;
