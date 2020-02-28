@@ -684,8 +684,11 @@ struct Battle_Config
 	int cashmount_useitem_limit; // 乘坐“商城坐骑”时禁止使用特定类型的物品 [Sola丶小克]
 #endif // Pandas_BattleConfig_CashMounting_UseitemLimit
 #ifdef Pandas_BattleConfig_MaxAspdForPVP
-	int max_aspd_for_pvp; // 限制玩家在 PVP 时的最大攻速 [Sola丶小克]
+	int max_aspd_for_pvp; // 限制玩家在 PVP 地图上的最大攻速 [Sola丶小克]
 #endif // Pandas_BattleConfig_MaxAspdForPVP
+#ifdef Pandas_BattleConfig_MaxAspdForGVG
+	int max_aspd_for_gvg; // 限制玩家在 GVG 地图上的最大攻速 [Sola丶小克]
+#endif // Pandas_BattleConfig_MaxAspdForGVG
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

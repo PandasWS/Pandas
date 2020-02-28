@@ -3910,6 +3910,25 @@ ACMD_FUNC(partyrecall)
 /*==========================================
  *
  *------------------------------------------*/
+#ifdef Pandas_FuncLogic_ATCOMMAND_RELOAD
+//************************************
+// Method:      atcommand_recalc_all
+// Description: 重新计算全服玩家的能力值属性 (用于 @reload 系列指令后的全服玩家能力值刷新使用)
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/28 12:08
+//************************************
+static void atcommand_recalc_all() {
+	struct s_mapiterator* iter;
+	struct map_session_data* sd;
+
+	iter = mapit_geteachpc();
+	for (sd = (struct map_session_data*)mapit_first(iter); mapit_exists(iter); sd = (struct map_session_data*)mapit_next(iter)) {
+		status_calc_pc(sd, SCO_FORCE);
+	}
+	mapit_free(iter);
+}
+#endif // Pandas_FuncLogic_ATCOMMAND_RELOAD
+
 void atcommand_doload();
 ACMD_FUNC(reload) {
 	nullpo_retr(-1, sd);
@@ -3998,6 +4017,12 @@ ACMD_FUNC(reload) {
 		{	// Exp or Drop rates changed.
 			mob_reload(); //Needed as well so rate changes take effect.
 		}
+
+#ifdef Pandas_FuncLogic_ATCOMMAND_RELOAD
+		// 当执行完成 @reloadbattleconf 之后, 重新计算全服玩家的能力值属性
+		atcommand_recalc_all();
+#endif // Pandas_FuncLogic_ATCOMMAND_RELOAD
+
 		clif_displaymessage(fd, msg_txt(sd,255)); // Battle configuration has been reloaded.
 	} else if (strstr(command, "statusdb") || strncmp(message, "statusdb", 3) == 0) {
 		status_readdb();
