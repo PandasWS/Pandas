@@ -8685,6 +8685,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
 	{ "cashmount_useitem_limit",            &battle_config.cashmount_useitem_limit,         64,     0,      511,            },
 #endif // Pandas_BattleConfig_CashMounting_UseitemLimit
+#ifdef Pandas_BattleConfig_MaxAspdForPVP
+	{ "max_aspd_for_pvp",                   &battle_config.max_aspd_for_pvp,                0,      0,      199,            },
+#endif // Pandas_BattleConfig_MaxAspdForPVP
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };
@@ -8765,6 +8768,13 @@ void battle_adjust_conf()
 	battle_config.max_extended_aspd = 2000 - battle_config.max_extended_aspd * 10;
 	battle_config.max_walk_speed = 100 * DEFAULT_WALK_SPEED / battle_config.max_walk_speed;
 	battle_config.max_cart_weight *= 10;
+
+#ifdef Pandas_BattleConfig_MaxAspdForPVP
+	// 根据 max_aspd_for_pvp 约束玩家的最大攻速 [Sola丶小克]
+	// 这里对配置的 ASPD 数值 (例如: 193, 197) 转换成程序判断用的攻速数值
+	if (battle_config.max_aspd_for_pvp > 0)
+		battle_config.max_aspd_for_pvp = 2000 - battle_config.max_aspd_for_pvp * 10;
+#endif // Pandas_BattleConfig_MaxAspdForPVP
 
 	if (battle_config.max_def > 100 && !battle_config.weapon_defense_type) // added by [Skotlex]
 		battle_config.max_def = 100;

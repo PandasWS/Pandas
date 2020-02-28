@@ -675,14 +675,17 @@ struct Battle_Config
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
-	int force_loadevent;		// 强制触发 OnPCLoadMapEvent 事件 [Sola丶小克]
+	int force_loadevent; // 强制触发 OnPCLoadMapEvent 事件 [Sola丶小克]
 #endif // Pandas_BattleConfig_Force_LoadEvent
 #ifdef Pandas_BattleConfig_Force_Identified
-	int force_identified;		// 强制特定渠道获得的装备自动变成已鉴定 [Sola丶小克]
+	int force_identified; // 强制特定渠道获得的装备自动变成已鉴定 [Sola丶小克]
 #endif // Pandas_BattleConfig_Force_Identified
 #ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
-	int cashmount_useitem_limit;	// 乘坐“商城坐骑”时禁止使用特定类型的物品 [Sola丶小克]
+	int cashmount_useitem_limit; // 乘坐“商城坐骑”时禁止使用特定类型的物品 [Sola丶小克]
 #endif // Pandas_BattleConfig_CashMounting_UseitemLimit
+#ifdef Pandas_BattleConfig_MaxAspdForPVP
+	int max_aspd_for_pvp; // 限制玩家在 PVP 时的最大攻速 [Sola丶小克]
+#endif // Pandas_BattleConfig_MaxAspdForPVP
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

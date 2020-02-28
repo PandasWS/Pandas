@@ -13095,6 +13095,23 @@ short pc_maxparameter(struct map_session_data *sd, enum e_params param) {
 short pc_maxaspd(struct map_session_data *sd) {
 	nullpo_ret(sd);
 
+#ifdef Pandas_BattleConfig_MaxAspdForPVP
+	// 根据 max_aspd_for_pvp 约束玩家的最大攻速 [Sola丶小克]
+	if (map_flag_vs(sd->bl.m) && battle_config.max_aspd_for_pvp > 0) {
+		// 先根据 rAthena 默认的攻速公式, 计算出即将返回的攻速数值
+		int aspd = ((sd->class_ & JOBL_THIRD) ? battle_config.max_third_aspd : (
+			((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd :
+			battle_config.max_aspd));
+
+		// 若 PVP 地图限制的攻速比原先 rAthena 计算的攻速更小 (限制更严格, 攻速更慢), 那么以最小的为准
+		// 需要注意: 这里返回的攻速值, 实际上是延迟的值 (值越大, 攻速越慢; 值越小, 攻速越快)
+		// 这也是为什么在 battle_adjust_conf 函数中, 需要对配置的攻速值进行加工的原因.
+		if (aspd < battle_config.max_aspd_for_pvp) {
+			return battle_config.max_aspd_for_pvp;
+		}
+	}
+#endif // Pandas_BattleConfig_MaxAspdForPVP
+
 	return (( sd->class_&JOBL_THIRD) ? battle_config.max_third_aspd : (
 			((sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd :
 			battle_config.max_aspd ));

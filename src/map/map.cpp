@@ -4604,6 +4604,13 @@ static int map_mapflag_pvp_start_sub(struct block_list *bl, va_list ap)
 	}
 
 	clif_map_property(&sd->bl, MAPPROPERTY_FREEPVPZONE, SELF);
+
+#ifdef Pandas_BattleConfig_MaxAspdForPVP
+	// 由于扩展了 max_aspd_for_pvp 选项, 在开启了 PVP 之后
+	// 需要重算一下地图上所有玩家的攻速, 以便最新的攻速限制可以生效 [Sola丶小克]
+	if (sd) status_calc_pc(sd, SCO_NONE);
+#endif // Pandas_BattleConfig_MaxAspdForPVP
+
 	return 0;
 }
 
@@ -4623,6 +4630,12 @@ static int map_mapflag_pvp_stop_sub(struct block_list *bl, va_list ap)
 		delete_timer(sd->pvp_timer, pc_calc_pvprank_timer);
 		sd->pvp_timer = INVALID_TIMER;
 	}
+
+#ifdef Pandas_BattleConfig_MaxAspdForPVP
+	// 由于扩展了 max_aspd_for_pvp 选项, 在停止了 PVP 之后
+	// 需要重算一下地图上所有玩家的攻速, 以便最新的攻速限制可以生效 [Sola丶小克]
+	if (sd) status_calc_pc(sd, SCO_NONE);
+#endif // Pandas_BattleConfig_MaxAspdForPVP
 
 	return 0;
 }
