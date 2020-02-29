@@ -172,6 +172,46 @@ def arrange_common(packagedir):
     copyfile(packagedir + 'sql-files/upgrades/premium_storage.sql', packagedir + 'sql-files/premium_storage.sql')
     rmdir(packagedir + 'sql-files/tools')
     rmdir(packagedir + 'sql-files/upgrades')
+    
+    # --------------------------------------------------------
+    # 对数据库的创建脚本进行分类归档
+    # --------------------------------------------------------
+    
+    # 主数据库
+    os.makedirs(packagedir + 'sql-files/main/creation')
+    shutil.move(packagedir + 'sql-files/main.sql', packagedir + 'sql-files/main/creation/01.main.sql')
+    shutil.move(packagedir + 'sql-files/roulette_default_data.sql', packagedir + 'sql-files/main/creation/02.roulette_default_data.sql')
+    
+    os.makedirs(packagedir + 'sql-files/main/creation/use_sql_db')
+    shutil.move(packagedir + 'sql-files/mob_db.sql', packagedir + 'sql-files/main/creation/use_sql_db/01.mob_db.sql')
+    shutil.move(packagedir + 'sql-files/mob_db_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/02.mob_db_re.sql')
+    shutil.move(packagedir + 'sql-files/mob_db2.sql', packagedir + 'sql-files/main/creation/use_sql_db/03.mob_db2.sql')
+    shutil.move(packagedir + 'sql-files/mob_db2_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/04.mob_db2_re.sql')
+    shutil.move(packagedir + 'sql-files/mob_skill_db.sql', packagedir + 'sql-files/main/creation/use_sql_db/05.mob_skill_db.sql')
+    shutil.move(packagedir + 'sql-files/mob_skill_db_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/06.mob_skill_db_re.sql')
+    shutil.move(packagedir + 'sql-files/mob_skill_db2.sql', packagedir + 'sql-files/main/creation/use_sql_db/07.mob_skill_db2.sql')
+    shutil.move(packagedir + 'sql-files/mob_skill_db2_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/08.mob_skill_db2_re.sql')
+    shutil.move(packagedir + 'sql-files/item_cash_db.sql', packagedir + 'sql-files/main/creation/use_sql_db/09.item_cash_db.sql')
+    shutil.move(packagedir + 'sql-files/item_cash_db2.sql', packagedir + 'sql-files/main/creation/use_sql_db/10.item_cash_db2.sql')
+    shutil.move(packagedir + 'sql-files/item_db.sql', packagedir + 'sql-files/main/creation/use_sql_db/11.item_db.sql')
+    shutil.move(packagedir + 'sql-files/item_db_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/12.item_db_re.sql')
+    shutil.move(packagedir + 'sql-files/item_db2.sql', packagedir + 'sql-files/main/creation/use_sql_db/13.item_db2.sql')
+    shutil.move(packagedir + 'sql-files/item_db2_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/14.item_db2_re.sql')
+    
+    os.makedirs(packagedir + 'sql-files/main/creation/optional')
+    shutil.move(packagedir + 'sql-files/premium_storage.sql', packagedir + 'sql-files/main/creation/optional/premium_storage.sql')
+    
+    if os.path.exists(packagedir + 'sql-files/composer/main'):
+        shutil.move(packagedir + 'sql-files/composer/main', packagedir + 'sql-files/main/upgrades')
+    
+    # 日志数据库
+    os.makedirs(packagedir + 'sql-files/logs/creation')
+    shutil.move(packagedir + 'sql-files/logs.sql', packagedir + 'sql-files/logs/creation/01.logs.sql')
+    
+    if os.path.exists(packagedir + 'sql-files/composer/logs'):
+        shutil.move(packagedir + 'sql-files/composer/logs', packagedir + 'sql-files/logs/upgrades')
+        
+    rmdir(packagedir + 'sql-files/composer')
 
 def arrange_renewal(packagedir):
     '''

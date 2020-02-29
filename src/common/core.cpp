@@ -339,11 +339,9 @@ static void display_title(void) {
 	ShowInfo("Pandas Version: " CL_WHITE "%s" CL_RESET "\n", getPandasVersion().c_str());
 
 	// 若宏定义开关指定了源码的版本号和分支, 那么也一起打印出来
-	std::string strGitBranch(GIT_BRANCH), strGitHash(GIT_HASH);
-	if (strGitBranch.length() > 0 && strGitHash.length() > 0) {
-		ShowInfo("Compiled from Git Hash: " CL_WHITE "'%s'" CL_RESET " at " CL_WHITE "'%s'" CL_RESET " branch.\n",
-			strGitHash.substr(0, 7).c_str(), strGitBranch.c_str()
-		);
+	std::string branch(GIT_BRANCH), hash(GIT_HASH);
+	if (branch.length() > 0 && hash.length() > 0) {
+		ShowInfo("Compiled from Git Hash: " CL_WHITE "'%s'" CL_RESET " at " CL_WHITE "'%s'" CL_RESET " branch.\n", hash.substr(0, 7).c_str(), branch.c_str());
 	}
 #endif // Pandas_Show_Version
 
