@@ -9824,7 +9824,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 					char mobele_fmt[100] = { 0 }, mobele[50] = { 0 };
 					sprintf(mobele_fmt, "%s", msg_txt_cn(NULL, 51));	// 属性:%s%(Lv.%d%)
 					sprintf(mobele, "%s", msg_txt_cn(NULL, 52 + md->status.def_ele));
-					p_mobinfo_t += sprintf(p_mobinfo_t, msg_txt_cn(NULL, 51), mobele, md->status.ele_lv);
+					p_mobinfo_t += sprintf(p_mobinfo_t, mobele_fmt, mobele, md->status.ele_lv);
 				}
 
 #if PACKETVER >= 20150513

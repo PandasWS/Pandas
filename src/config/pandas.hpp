@@ -234,6 +234,14 @@
 	// 同时提供 msg_txt_cn 宏定义函数, 方便在工程中使用自定义信息 [Sola丶小克]
 	#define Pandas_Message_Conf
 
+	// 对消息文件进行清理, 移除几乎用不到的其他国家语言
+	// 主要留下: 英文, 简体中文, 繁体中文 这三种. [Sola丶小克]
+	#define Pandas_Message_Reorganize
+
+	// 将部分硬编码的字符串提取到消息文件中 [Sola丶小克]
+	// 这么做的主要目的是在有需要的时候, 可以将内容进行汉化或者其他处理
+	#define Pandas_Message_Hardcode_Extract
+
 	// 是否支持在 map_athena.conf 中设定封包混淆密钥 [Sola丶小克]
 	#ifdef PACKET_OBFUSCATION
 		#define Pandas_Support_Specify_PacketKeys

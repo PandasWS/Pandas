@@ -1200,6 +1200,7 @@ int mapif_parse_CreateGuild(int fd,uint32 account_id,char *name,struct guild_mem
 	memcpy(&g->member[0],master,sizeof(struct guild_member));
 	g->member[0].modified = GS_MEMBER_MODIFIED;
 
+#ifndef Pandas_Message_Hardcode_Extract
 	// Set default positions
 	g->position[0].mode = GUILD_PERM_DEFAULT;
 	strcpy(g->position[0].name,"GuildMaster");
@@ -1209,6 +1210,17 @@ int mapif_parse_CreateGuild(int fd,uint32 account_id,char *name,struct guild_mem
 		sprintf(g->position[i].name,"Position %d",i+1);
 		g->position[i].modified = GS_POSITION_MODIFIED;
 	}
+#else
+	// Set default positions
+	g->position[0].mode = GUILD_PERM_DEFAULT;
+	strcpy(g->position[0].name,msg_txt_cn(0));	// GuildMaster
+	strcpy(g->position[MAX_GUILDPOSITION-1].name,msg_txt_cn(2));	// Newbie
+	g->position[0].modified = g->position[MAX_GUILDPOSITION-1].modified = GS_POSITION_MODIFIED;
+	for(i=1;i<MAX_GUILDPOSITION-1;i++) {
+		sprintf(g->position[i].name,msg_txt_cn(1),i+1);	// Position %d
+		g->position[i].modified = GS_POSITION_MODIFIED;
+	}
+#endif // Pandas_Message_Hardcode_Extract
 
 	// Initialize guild property
 	g->max_member=16;

@@ -175,6 +175,7 @@ char motd_txt[256] = "conf/motd.txt";
 char charhelp_txt[256] = "conf/charhelp.txt";
 char channel_conf[256] = "conf/channels.conf";
 
+#ifndef Pandas_Message_Reorganize
 const char *MSG_CONF_NAME_RUS;
 const char *MSG_CONF_NAME_SPN;
 const char *MSG_CONF_NAME_GRM;
@@ -184,6 +185,10 @@ const char *MSG_CONF_NAME_IDN;
 const char *MSG_CONF_NAME_FRN;
 const char *MSG_CONF_NAME_POR;
 const char *MSG_CONF_NAME_THA;
+#else
+const char* MSG_CONF_NAME_CHS;	// 简体中文
+const char* MSG_CONF_NAME_CHN;	// 繁体中文
+#endif // Pandas_Message_Reorganize
 
 char wisp_server_name[NAME_LENGTH] = "Server"; // can be modified in char-server configuration file
 
@@ -5489,6 +5494,7 @@ struct msg_data *map_lang2msgdb(uint8 lang){
 
 void map_do_init_msg(void){
 	int test=0, i=0, size;
+#ifndef Pandas_Message_Reorganize
 	const char * listelang[] = {
 		MSG_CONF_NAME_EN,	//default
 		MSG_CONF_NAME_RUS,
@@ -5501,6 +5507,13 @@ void map_do_init_msg(void){
 		MSG_CONF_NAME_POR,
 		MSG_CONF_NAME_THA
 	};
+#else
+	const char * listelang[] = {
+		MSG_CONF_NAME_EN,	// 英文
+		MSG_CONF_NAME_CHS,	// 简体中文
+		MSG_CONF_NAME_CHN	// 繁体中文
+	};
+#endif // Pandas_Message_Reorganize
 
 	map_msg_db = idb_alloc(DB_OPT_BASE);
 	size = ARRAYLENGTH(listelang); //avoid recalc
@@ -5591,6 +5604,7 @@ int do_init(int argc, char *argv[])
 	GRF_PATH_FILENAME = "conf/grf-files.txt";
 	safestrncpy(console_log_filepath, "./log/map-msg_log.log", sizeof(console_log_filepath));
 
+#ifndef Pandas_Message_Reorganize
 	/* Multilanguage */
 	MSG_CONF_NAME_EN = "conf/msg_conf/map_msg.conf"; // English (default)
 	MSG_CONF_NAME_RUS = "conf/msg_conf/map_msg_rus.conf";	// Russian
@@ -5603,6 +5617,13 @@ int do_init(int argc, char *argv[])
 	MSG_CONF_NAME_POR = "conf/msg_conf/map_msg_por.conf";	// Brazilian Portuguese
 	MSG_CONF_NAME_THA = "conf/msg_conf/map_msg_tha.conf";	// Thai
 	/* Multilanguage */
+#else
+	/* Multilanguage */
+	MSG_CONF_NAME_EN = "conf/msg_conf/map_msg.conf";		// English (default)
+	MSG_CONF_NAME_CHS = "conf/msg_conf/map_msg_chs.conf";	// Chinese Simplified
+	MSG_CONF_NAME_CHN = "conf/msg_conf/map_msg_chn.conf";	// Chinese Traditional
+	/* Multilanguage */
+#endif // Pandas_Message_Reorganize
 
 	// Default map
 	safestrncpy(map_default.mapname, "prontera", MAP_NAME_LENGTH);
