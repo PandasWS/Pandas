@@ -185,6 +185,10 @@
 	// 是否启用 max_aspd_for_gvg 配置选项及其功能 [Sola丶小克]
 	// 此选项用于限制玩家在 GVG 地图上的最大攻击速度 (以 MF_GVG/MF_GVG_TE 地图标记为准)
 	#define Pandas_BattleConfig_MaxAspdForGVG
+
+	// 是否启用 atcmd_no_permission 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定没有指令权限的玩家, 在执行了管理员指令时的处理策略
+	#define Pandas_BattleConfig_AtCmd_No_Permission
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 

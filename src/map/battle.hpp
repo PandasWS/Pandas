@@ -689,6 +689,9 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_MaxAspdForGVG
 	int max_aspd_for_gvg; // 限制玩家在 GVG 地图上的最大攻速 [Sola丶小克]
 #endif // Pandas_BattleConfig_MaxAspdForGVG
+#ifdef Pandas_BattleConfig_AtCmd_No_Permission
+	int atcmd_no_permission; // 当没有权限的玩家执行了 GM 指令时的处理策略 [Sola丶小克]
+#endif // Pandas_BattleConfig_AtCmd_No_Permission
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"
