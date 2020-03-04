@@ -10354,7 +10354,7 @@ ACMD_FUNC(recallmap) {
 	}
 	mapit_free(iter);
 
-	clif_displaymessage(fd, msg_txt_cn(sd, 16)); // 已召唤指定地图的全部玩家!
+	clif_displaymessage(fd, msg_txt_cn(sd, 1)); // 已召唤指定地图的全部玩家!
 	if (count) {
 		sprintf(atcmd_output, msg_txt(sd, 1033), count); // Because you are not authorized to warp from some maps, %d player(s) have not been recalled.
 		clif_displaymessage(fd, atcmd_output);

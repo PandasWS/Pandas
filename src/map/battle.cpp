@@ -8692,7 +8692,7 @@ static const struct _battle_data {
 	{ "max_aspd_for_gvg",                   &battle_config.max_aspd_for_gvg,                0,      0,      199,            },
 #endif // Pandas_BattleConfig_MaxAspdForGVG
 #ifdef Pandas_BattleConfig_AtCmd_No_Permission
-	{ "atcmd_no_permission",                &battle_config.atcmd_no_permission,             1,      0,      2,             },
+	{ "atcmd_no_permission",                &battle_config.atcmd_no_permission,             1,      0,      2,              },
 #endif // Pandas_BattleConfig_AtCmd_No_Permission
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
