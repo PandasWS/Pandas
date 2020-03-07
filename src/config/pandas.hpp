@@ -268,19 +268,36 @@
 	// 使影子装备可以支持插卡, 而不会被强制转换成普通道具 [Sola丶小克]
 	#define Pandas_Shadowgear_Support_Card
 
-	// 实现道具特殊属性数据库的实际作用 [Sola丶小克]
-	// 截止目前, 该数据库 (item_properties.yml) 支持以下特殊的属性标记, 分别是:
-	// & 1 = 避免物品被玩家主动使用而消耗
-	// & 2 = 避免物品被作为发动技能的必要道具而消耗
-	// & 4 = 该道具为护身符道具
-	#define Pandas_Implement_Function_Of_Item_Properties
+	// 以下选项依赖 Pandas_Struct_Item_Data_Properties 的拓展
+	#ifdef Pandas_Struct_Item_Data_Properties
+		// 启用道具特殊属性的部分生效代码 [Sola丶小克]
+		// 此选项开启后 (item_properties.yml) 数据库中以下选项才能发挥作用:
+		// 
+		// Property 节点的 &1 = 避免物品被玩家主动使用而消耗
+		// Property 节点的 &2 = 避免物品被作为发动技能的必要道具而消耗
+		//#define Pandas_Implement_Item_Properties
 
-	// 是否启用护身符系统 [Sola丶小克]
-	// 道具是否为护身符需要在 (item_properties.yml) 数据库中配置
-	// 此选项开关需要依赖 Pandas_Implement_Function_Of_Item_Properties 的拓展
-	#ifdef Pandas_Implement_Function_Of_Item_Properties
+		// 是否启用护身符系统 [Sola丶小克]
+		// 此选项开启后 (item_properties.yml) 数据库中以下选项才能发挥作用:
+		// 
+		// Property 节点的 &4 = 该道具为护身符道具
 		#define Pandas_ItemAmulet_System
-	#endif // Pandas_Implement_Function_Of_Item_Properties
+
+		// 是否启用道具外观控制机制 [Sola丶小克]
+		// 此选项开启后 (item_properties.yml) 数据库中以下选项才能发挥作用:
+		//
+		// ControlViewID 节点中的 InvisibleWhenISee 子节点
+		// ControlViewID 节点中的 InvisibleWhenTheySee 子节点
+		#define Pandas_Item_ControlViewID
+
+		// 是否启用特殊的道具掉落公告规则 [Sola丶小克]
+		// 此选项开启后 (item_properties.yml) 数据库中以下选项才能发挥作用:
+		// 
+		// AnnouceRules 节点的 &1 - 打死魔物, 魔物将道具掉落到地上时公告
+		// AnnouceRules 节点的 &2 - 打死魔物, 掉落 MVP 奖励到玩家的背包时公告
+		// AnnouceRules 节点的 &4 - 使用"偷窃"技能, 从魔物身上偷到物品时公告
+		#define Pandas_Item_Special_Annouce
+	#endif // Pandas_Struct_Item_Data_Properties
 
 	// 使 pointshop 类型的商店能支持指定变量别名, 用于展现给玩家 [Sola丶小克]
 	#define Pandas_Support_Pointshop_Variable_DisplayName

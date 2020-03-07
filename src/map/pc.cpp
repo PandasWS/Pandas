@@ -4982,11 +4982,11 @@ char pc_delitem(struct map_session_data *sd,int n,int amount,int type, short rea
 	if(n < 0 || sd->inventory.u.items_inventory[n].nameid == 0 || amount <= 0 || sd->inventory.u.items_inventory[n].amount<amount || sd->inventory_data[n] == NULL)
 		return 1;
 
-#ifdef Pandas_Implement_Function_Of_Item_Properties
+#ifdef Pandas_Implement_Item_Properties
 	// 避免物品被作为发动技能的必要道具而消耗
 	if (sd->inventory_data[n]->properties.no_consume_of_skills && reason == 1)
 		return 0;
-#endif // Pandas_Implement_Function_Of_Item_Properties
+#endif // Pandas_Implement_Item_Properties
 
 	log_pick_pc(sd, log_type, -amount, &sd->inventory.u.items_inventory[n]);
 
@@ -5479,7 +5479,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 	{
 		if( item.expire_time == 0 && nameid != ITEMID_REINS_OF_MOUNT )
 		{
-#ifndef Pandas_Implement_Function_Of_Item_Properties
+#ifndef Pandas_Implement_Item_Properties
 			clif_useitemack(sd, n, amount - 1, true);
 			pc_delitem(sd, n, 1, 1, 0, LOG_TYPE_CONSUME); // Rental Usable Items are not deleted until expiration
 #else
@@ -5492,7 +5492,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 				clif_useitemack(sd, n, amount - 1, true);
 				pc_delitem(sd, n, 1, 1, 0, LOG_TYPE_CONSUME); // Rental Usable Items are not deleted until expiration
 			}
-#endif // Pandas_Implement_Function_Of_Item_Properties
+#endif // Pandas_Implement_Item_Properties
 		}
 		else
 			clif_useitemack(sd, n, 0, false);
@@ -5828,6 +5828,23 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 
 	//Logs items, Stolen from mobs [Lupus]
 	log_pick_mob(md, LOG_TYPE_STEAL, -1, &tmp_item);
+
+#ifdef Pandas_Item_Special_Annouce
+	bool is_spceial_annouced = false;
+	
+	if (sd) {
+		struct item_data* dd = itemdb_search(itemid);
+		if (dd && dd->properties.annouce_mask & ITEM_ANNOUCE_STEAL_TO_INVENTORY) {
+			char message[128] = { 0 };
+			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, dd->jname, (float)md->db->dropitem[i].p/100);
+			intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);
+		}
+	}
+
+	// 若道具已经遵守 item_properties.yml 的配置被执行了公告
+	// 那么就无需再次执行 battle_config.rare_drop_announce 指定的根据掉率进行的公告策略
+	if (!is_spceial_annouced)
+#endif // Pandas_Item_Special_Annouce
 
 	//A Rare Steal Global Announce by Lupus
 	if(md->db->dropitem[i].p<=battle_config.rare_drop_announce) {

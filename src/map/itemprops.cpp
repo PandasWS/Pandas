@@ -76,6 +76,16 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 		#undef GETYAML_NODE_BOOL
 	}
 
+	if (this->nodeExists(node, "AnnouceRules")) {
+		uint32 annouceRules = 0;
+
+		if (!this->asUInt32(node, "AnnouceRules", annouceRules)) {
+			return 0;
+		}
+
+		properties_item->annouce = annouceRules;
+	}
+
 	if (!exists) {
 		this->put(properties_item->nameid, properties_item);
 	}
