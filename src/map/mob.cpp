@@ -2803,6 +2803,24 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 
 			ditem = mob_setdropitem(&md->db->dropitem[i], 1, md->mob_id);
 
+#ifdef Pandas_Item_Special_Annouce
+			bool is_spceial_annouced = false;
+
+			if (mvp_sd && ditem) {
+				struct item_data* dd = itemdb_search(ditem->item_data.nameid);
+				if (dd && dd->properties.annouce_mask & ITEM_ANNOUCE_DROP_TO_GROUND) {
+					char message[128] = { 0 };
+					sprintf(message, msg_txt(NULL,541), mvp_sd->status.name, md->name, it->jname, (float)drop_rate / 100);
+					intif_broadcast(message,strlen(message)+1,BC_DEFAULT);
+					is_spceial_annouced = true;
+				}
+			}
+
+			// 若道具已经遵守 item_properties.yml 的配置被执行了公告
+			// 那么就无需再次执行 battle_config.rare_drop_announce 指定的根据掉率进行的公告策略
+			if (!is_spceial_annouced)
+#endif // Pandas_Item_Special_Annouce
+
 			//A Rare Drop Global Announce by Lupus
 			if( mvp_sd && drop_rate <= battle_config.rare_drop_announce ) {
 				char message[128];
@@ -2958,6 +2976,23 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 #endif // Pandas_BattleConfig_Force_Identified
 				clif_mvp_item(mvp_sd,item.nameid);
 				log_mvp[0] = item.nameid;
+
+#ifdef Pandas_Item_Special_Annouce
+				bool is_spceial_annouced = false;
+
+				if (mvp_sd && i_data) {
+					if (i_data->properties.annouce_mask & ITEM_ANNOUCE_MVPITEM_DROP_TO_INVENTORY) {
+						char message[128] = { 0 };
+						sprintf(message, msg_txt(NULL,541), mvp_sd->status.name, md->name, i_data->jname, temp / 100.);
+						intif_broadcast(message,strlen(message)+1,BC_DEFAULT);
+						is_spceial_annouced = true;
+					}
+				}
+
+				// 若道具已经遵守 item_properties.yml 的配置被执行了公告
+				// 那么就无需再次执行 battle_config.rare_drop_announce 指定的根据掉率进行的公告策略
+				if (!is_spceial_annouced)
+#endif // Pandas_Item_Special_Annouce
 
 				//A Rare MVP Drop Global Announce by Lupus
 				if(temp<=battle_config.rare_drop_announce) {

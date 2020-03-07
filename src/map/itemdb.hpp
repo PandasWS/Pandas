@@ -11,6 +11,10 @@
 #include <vector>
 #endif // Pandas_Struct_Item_Data_Taming_Mobid
 
+#ifdef Pandas_Database_ItemProperties
+#include "itemprops.hpp"
+#endif // Pandas_Database_ItemProperties
+
 ///Maximum allowed Item ID (range: 1 ~ 65,534)
 #define MAX_ITEMID USHRT_MAX
 ///Use apple for unknown items.
@@ -890,6 +894,7 @@ struct item_data
 		unsigned no_consume_of_skills : 1;
 		unsigned is_amulet : 1;
 		uint32 noview_mask;
+		uint32 annouce_mask;
 	} properties;
 #endif // Pandas_Struct_Item_Data_Properties
 };

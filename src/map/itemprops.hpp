@@ -15,10 +15,18 @@ enum e_item_noview : uint32 {
 	ITEM_NOVIEW_WHEN_T_SEE	= 0x0002	// 当其他人看我的装备时, 隐藏道具外观
 };
 
+enum e_item_annouce : uint32 {
+	ITEM_ANNOUCE_NONE							= 0x0000,	// 没有指定的特殊公告策略
+	ITEM_ANNOUCE_DROP_TO_GROUND					= 0x0001,	// 掉落到地面时触发公告
+	ITEM_ANNOUCE_MVPITEM_DROP_TO_INVENTORY		= 0x0002,	// 作为 MVP 奖励道具直接放到背包时触发公告
+	ITEM_ANNOUCE_STEAL_TO_INVENTORY				= 0x0004	// 使用偷窃技能直接将道具偷到背包时触发公告
+};
+
 struct s_item_properties {
 	uint32 nameid;
 	uint32 property;
 	uint32 noview;
+	uint32 annouce;
 };
 
 class ItemProperties : public TypesafeYamlDatabase<uint32, s_item_properties> {

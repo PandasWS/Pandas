@@ -22,10 +22,6 @@
 #include "pc.hpp"
 #include "status.hpp"
 
-#ifdef Pandas_Database_ItemProperties
-#include "itemprops.hpp"
-#endif // Pandas_Database_ItemProperties
-
 static DBMap *itemdb; /// Item DB
 static DBMap *itemdb_combo; /// Item Combo DB
 static DBMap *itemdb_group; /// Item Group DB
@@ -2129,6 +2125,7 @@ static int itemdb_property_parse(DBKey key, DBData *data, va_list ap) {
 		item->properties.no_consume_of_skills = ((it->property & 2) ? 1 : 0);
 		item->properties.is_amulet = ((it->property & 4) ? 1 : 0);
 		item->properties.noview_mask = it->noview;
+		item->properties.annouce_mask = it->annouce;
 	}
 
 #ifdef Pandas_ItemAmulet_System
