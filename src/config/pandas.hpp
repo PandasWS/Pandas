@@ -409,6 +409,10 @@
 	// 会导致每次关闭仓库时哪怕没有增删改仓库里面的道具, 也会触发仓库内容全量保存.
 	// 不做修正的话, 当出现大量关闭仓库请求且仓库容量比较大时, 对服务器性能会有些影响.
 	#define Pandas_Fix_Storage_DirtyFlag_Miss_Reset
+
+	// 修正当 skill_db.yml 的 ItemCost 字段指定的 Item 道具不存在时
+	// 会导致地图服务器直接崩溃的问题. 看代码应该是 rAthena 的工程师手误了 [Sola丶小克]
+	#define Pandas_Fix_SkillDB_ItemCost_NoexistsItem_Crash
 #endif // Pandas_Bugfix
 
 // ============================================================================

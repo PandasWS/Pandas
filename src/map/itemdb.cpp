@@ -72,7 +72,6 @@ void itemdb_speedup_cache_name(speedup_cache_db& _map, std::string key, struct i
 		shared_speedup_cache_item vec = item->second;
 		for (auto subitem = vec->begin(); subitem != vec->end(); subitem++) {
 			if ((*subitem)->nameid == id->nameid) {
-				ShowWarning("itemdb_speedup_sub: Duplicate \n");
 				(*subitem) = id;
 				return;
 			}
