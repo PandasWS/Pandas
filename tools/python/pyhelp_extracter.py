@@ -32,27 +32,33 @@ project_slndir = '../../'
 # 需要处理的后缀列表, 除此之外的其他后缀不处理
 process_exts = ['.cpp', '.hpp']
 
-# 第一阶段配置, 用于提取字符串的正则表达式
-step1_pattern = re.compile(r'\s*(\/\/|)\s*(%s)\s*\(\s*(.*)\);' % '|'.join([
-        'SqlStmt_ShowDebug',
-        'Sql_ShowDebug',
-        '_vShowMessage',
+# 第一阶段配置, 用于提取字符串的函数列表
+step1_funclist = [
+    'SqlStmt_ShowDebug',
+    'Sql_ShowDebug',
+    '_vShowMessage',
 
-        'ShowConfigWarning',
+    'ShowConfigWarning',
 
-        'ShowError',
-        'ShowDebug',
-        'ShowFatalError',
-        'ShowWarning',
-        'ShowNotice',
-        'ShowInfo',
-        'ShowSQL',
-        'ShowStatus',
-        'ShowMessage',
-        
-        'strcat'
-    ])
-)
+    'ShowError',
+    'ShowDebug',
+    'ShowFatalError',
+    'ShowWarning',
+    'ShowNotice',
+    'ShowInfo',
+    'ShowSQL',
+    'ShowStatus',
+    'ShowMessage',
+    'askConfirmation',
+    
+    'strcat'
+]
+
+step1_pattern_definite = re.compile(r'\s*(\/\/|)\s*(%s)\s*\(\s*(.*)\);' % '|'.join(step1_funclist))
+step1_pattern_oneline = re.compile(r'\s*(\/\/|)\s*(%s)(\s+|)\((\s+|)(".*?(?<!\\)")(|\s*?)(\);|,)' % '|'.join(step1_funclist))
+step1_pattern_line_not_complete = re.compile(r'\s*(\/\/|)\s*(%s)(\s+|)\((\s+|)"(.*?)(?<!\\)"(\s+|)$' % '|'.join(step1_funclist))
+step1_pattern_line_endwith_comma = re.compile(r'"(.*?)((?<!\\)",|"\);)')
+step1_pattern_line_notwith_comma = re.compile(r'"(.*?)(?<!\\)"$')
 
 # 第二阶段配置, CL_WHITE 等常量转换处理相关的正则表达式
 step2_rules = [
@@ -106,16 +112,67 @@ class TranslationExtracter:
         从指定的源代码文件中, 提取可能支持翻译处理的字符串
         '''
         match_content = []
+        lastline_noending = False
+        lastline_func = ''
+        lastline_cache = ''
         encoding = Common.get_encoding(filepath)
+        
         with open(filepath, 'r', encoding=encoding) as f:
             for line in f.readlines():
-                match_result = step1_pattern.findall(line)
+                match_result = None
+                
+                # 先把绝对正确的内容提取出来
+                match_result = step1_pattern_definite.findall(line)
                 if match_result and match_result[0][0] != r'\\':
                     match_content.append({
                         'file' : filepath,
                         'func' : match_result[0][1],
                         'text' : str(match_result[0][2]).strip()
                     })
+                    continue
+                
+                # 若绝对正确的提取失败, 再试试看单独的一行能不能提取出完整内容来
+                # 如果能, 完成提取后也可以继续下一行了
+                match_result = step1_pattern_oneline.findall(line)
+                if match_result and match_result[0][0] != r'\\':
+                    match_content.append({
+                        'file' : filepath,
+                        'func' : match_result[0][1],
+                        'text' : str(match_result[0][4]).strip()
+                    })
+                    continue
+                
+                # 如果发现上一行是不完整的
+                if lastline_noending:
+                    # 那么看看这一行的末尾是否带逗号, 若是那么说明上一行补完了
+                    match_result = step1_pattern_line_endwith_comma.findall(line)
+                    if match_result:
+                        lastline_cache = lastline_cache + match_result[0][0]
+                        lastline_cache = '"%s"' % lastline_cache
+                        match_content.append({
+                            'file' : filepath,
+                            'func' : lastline_func,
+                            'text' : str(lastline_cache).strip()
+                        })
+                        lastline_func = ''
+                        lastline_cache = ''
+                        lastline_noending = False
+                        continue
+                    else:
+                        # 如果行的末尾不带逗号, 那么说明还没完, 后面还有其他
+                        match_result = step1_pattern_line_notwith_comma.findall(line)
+                        if match_result:
+                            lastline_cache = lastline_cache + match_result[0]
+                        continue
+                
+                # 如果这一行是个不完整的行
+                # 那么标记为后续读取到的行可能是这一行的一部分
+                match_result = step1_pattern_line_not_complete.findall(line)
+                if match_result and match_result[0][0] != r'\\':
+                    lastline_func = match_result[0][1]
+                    lastline_cache = match_result[0][4]
+                    lastline_noending = True
+                
             f.close()
         return match_content
 
