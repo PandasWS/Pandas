@@ -1,3 +1,6 @@
+path_classifiers:
+  3rdparty:
+    - exclude: 3rdparty
 queries:
   - exclude: cpp/potentially-dangerous-function
 extraction:
