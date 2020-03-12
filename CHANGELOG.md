@@ -10,6 +10,42 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+## [v1.0.3] - `2020-03-12`
+
+### 升级
+
+- 从 `1.0.2` 升级到 `1.0.3` 请在主数据库导入: `upgrade_1.0.2_to_1.0.3_main.sql`
+- 由于 `Boost` 依赖项目变化, 请使用源码的同学重新编译 `3rdparty\boost` 工程
+- 本次 `rAthena` 官方整合了多个技能数据文件到 `skill_db.yml` 单文件中
+- 使用 `csv2yaml.exe` 可以将 `txt` 数据文件升级为 `yml` 格式的数据文件
+- 你在 `conf\msg_conf\import\` 目录中用不到的 `map_msg_*_conf.txt` 可以删掉了
+
+### 添加
+
+- 实现终端信息翻译机制, 可跨平台自动适配英文、简体和繁体中文 (#226)
+- 使战斗配置选项可限制玩家在 PVP 地图上的最大攻速 (#238)
+- 使战斗配置选项可限制玩家在 GVG 地图上的最大攻速 (#239)
+- 使 `item_properties.yml` 数据库能够屏蔽特定场景下的道具外观 (#236)
+- 使 `item_properties.yml` 数据库能够设置高优先级的公告策略 (#244)
+- 使战斗配置选项可控制玩家无权使用管理员指令时的处理方式 (#241)
+- 使 `getsameipinfo` 指令能够支持指定地图 (#228)
+- 实现 `storagegetitem` 脚本指令, 能够往仓库直接创造指定道具 (#233)
+
+### 调整
+
+- 使 `MAX_INVENTORY` 能够支持超过 128 的值 (#234)
+- 归纳数据库升级脚本以便简化用户的升级操作, 请见 `sql-files` 目录 (#240)
+- 优化读取物品数据库等几个比较明显的性能问题 (#229)
+- 对消息文件的引入层级和关系进行梳理 (#243)
+- 翻译登录, 角色, 地图服务器的主要配置文件 (#225)
+
+### 修正
+
+- 修正公会旗帜获取图标时提示 `map_getmapflag` 错误的问题 (感谢"小紀"反馈) (#231)
+- 解决中文角色名在 Linux 终端上显示乱码的问题 (#227)
+- 避免在 Windows 上部署 `import-tmpl` 目录时的冲突警告 (#237)
+- 修正加载 `skill_db.yml` 潜在的一处崩溃问题 (#245)
+
 ## [v1.0.2] - `2019-11-29`
 
 ### 添加
@@ -88,6 +124,7 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.0.3]: https://github.com/PandasWS/Pandas/compare/v1.0.2...v1.0.3
 [v1.0.2]: https://github.com/PandasWS/Pandas/compare/v1.0.1...v1.0.2
 [v1.0.1]: https://github.com/PandasWS/Pandas/compare/v1.0.0...v1.0.1
 [v1.0.0]: https://github.com/PandasWS/Pandas/releases/tag/v1.0.0
