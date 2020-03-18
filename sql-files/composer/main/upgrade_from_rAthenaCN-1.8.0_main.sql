@@ -1,4 +1,4 @@
-
+﻿
 -- upgrade_20180623.sql
 
 ALTER TABLE `guild_position` MODIFY COLUMN `mode` smallint(11) unsigned NOT NULL default '0';
@@ -209,3 +209,12 @@ UPDATE `char_reg_num` SET `key` = 'ep14_3_newerabs' WHERE `key` = 'ep14_3_dimens
 UPDATE `char_reg_num` SET `key` = 'ep14_3_newerabs', `value` = 3 WHERE `key` = 'ep14_3_dimensional_travel' AND `index` = 0 AND `value` = 2;
 UPDATE `char_reg_num` SET `key` = 'ep14_3_newerabs', `value` = `value` + 2 WHERE `key` = 'ep14_3_dimensional_travel' AND `index` = 0 AND `value` < 8;
 UPDATE `char_reg_num` SET `key` = 'ep14_3_newerabs', `value` = `value` + 7 WHERE `key` = 'ep14_3_dimensional_travel' AND `index` = 0 AND `value` > 7;
+
+-- 熊猫模拟器的额外修正, 感谢 "张大坏" 反馈
+
+ALTER TABLE `bonus_script` MODIFY `tick` BIGINT(20) NOT NULL DEFAULT '0';
+ALTER TABLE `elemental` MODIFY `life_time` BIGINT(20) NOT NULL default '0';
+ALTER TABLE `mercenary` MODIFY `life_time` BIGINT(20) NOT NULL default '0';
+ALTER TABLE `ipbanlist` MODIFY `list` VARCHAR(15) NOT NULL default '';
+ALTER TABLE `sc_data` MODIFY `tick` BIGINT(20) NOT NULL;
+ALTER TABLE `skillcooldown` MODIFY `tick` BIGINT(20) NOT NULL;
