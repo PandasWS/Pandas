@@ -1067,7 +1067,7 @@ Body:
 - Original: "Memory manager initialised: [{CL_WHITE}]%s[{CL_RESET}]\n"
   Translation: "内存泄露时将会直接记录到: [{CL_WHITE}]%s[{CL_RESET}]\n"
 - Original: "Memory manager: Memory leaks found and fixed.\n"
-  Translation: ""
+  Translation: "内存管理机制: 发现内存泄露, 已自动释放被泄露的内存.\n"
 - Original: "Memory manager: No memory leaks found.\n"
   Translation: "内存管理机制: 没有发现内存泄露.\n"
 - Original: "Memory manager: args of aFree 0x%p is freed pointer %s:%d@%s\n"

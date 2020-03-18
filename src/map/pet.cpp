@@ -373,6 +373,12 @@ uint64 PetDatabase::parseBodyNode( const YAML::Node &node ){
 			return 0;
 		}
 
+#ifdef Pandas_Fix_PetDB_Script_Memory_Leaks
+		if (exists && pet->pet_bonus_script) {
+			script_free_code(pet->pet_bonus_script);
+			pet->pet_bonus_script = nullptr;
+		}
+#endif // Pandas_Fix_PetDB_Script_Memory_Leaks
 		pet->pet_bonus_script = parse_script( script.c_str(), this->getCurrentFile().c_str(), node["Script"].Mark().line + 1, SCRIPT_IGNORE_EXTERNAL_BRACKETS );
 	}else{
 		if( !exists ){
@@ -387,6 +393,12 @@ uint64 PetDatabase::parseBodyNode( const YAML::Node &node ){
 			return 0;
 		}
 
+#ifdef Pandas_Fix_PetDB_Script_Memory_Leaks
+		if (exists && pet->pet_support_script) {
+			script_free_code(pet->pet_support_script);
+			pet->pet_support_script = nullptr;
+		}
+#endif // Pandas_Fix_PetDB_Script_Memory_Leaks
 		pet->pet_support_script = parse_script( script.c_str(), this->getCurrentFile().c_str(), node["SupportScript"].Mark().line + 1, SCRIPT_IGNORE_EXTERNAL_BRACKETS );
 	}else{
 		if( !exists ){

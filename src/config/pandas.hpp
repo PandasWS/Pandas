@@ -410,9 +410,15 @@
 	// 不做修正的话, 当出现大量关闭仓库请求且仓库容量比较大时, 对服务器性能会有些影响.
 	#define Pandas_Fix_Storage_DirtyFlag_Miss_Reset
 
-	// 修正当 skill_db.yml 的 ItemCost 字段指定的 Item 道具不存在时
+	// 修正 skill_db.yml 的 ItemCost 字段指定的 Item 道具不存在时
 	// 会导致地图服务器直接崩溃的问题. 看代码应该是 rAthena 的工程师手误了 [Sola丶小克]
 	#define Pandas_Fix_SkillDB_ItemCost_NoexistsItem_Crash
+
+	// 修正 pet_db.yml 存在多个携带脚本的相同魔物记录时会触发内存泄露的问题 [Sola丶小克]
+	// 例如: 有两条 PORING 记录, 都同时指定了 SupportScript 或 Script 节点,
+	// 按照 import 逻辑定义在尾部的数据将覆盖前者, 但当后者覆盖前者的 SupportScript 或
+	// Script 时, 会忘记释放之前申请的内存. 导致退出地图服务器时提示内存泄露.
+	#define Pandas_Fix_PetDB_Script_Memory_Leaks
 #endif // Pandas_Bugfix
 
 // ============================================================================
