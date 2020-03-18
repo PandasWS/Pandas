@@ -38,9 +38,9 @@
 #include "pet.hpp"
 #include "script.hpp"
 
-#ifdef Pandas_ItemAmulet_System
+#ifdef Pandas_Item_Amulet_System
 #include "itemamulet.hpp"
-#endif // Pandas_ItemAmulet_System
+#endif // Pandas_Item_Amulet_System
 
 using namespace rathena;
 
@@ -4096,9 +4096,9 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		sd->left_weapon.atkmods[SZ_MEDIUM] = sd->left_weapon.atkmods[SZ_BIG];
 	}
 
-#ifdef Pandas_ItemAmulet_System
+#ifdef Pandas_Item_Amulet_System
 	amulet_status_calc(sd, opt);
-#endif // Pandas_ItemAmulet_System
+#endif // Pandas_Item_Amulet_System
 
 // ----- STATS CALCULATION -----
 
