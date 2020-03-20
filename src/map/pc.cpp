@@ -60,9 +60,9 @@
 #include "unit.hpp" // unit_stop_attack(), unit_stop_walking()
 #include "vending.hpp" // struct s_vending
 
-#ifdef Pandas_ItemAmulet_System
+#ifdef Pandas_Item_Amulet_System
 #include "itemamulet.hpp"
-#endif // Pandas_ItemAmulet_Systems
+#endif // Pandas_Item_Amulet_System
 
 using namespace rathena;
 
@@ -4890,9 +4890,9 @@ enum e_additem_result pc_additem(struct map_session_data *sd,struct item *item,i
 	if (id->flag.guid && !item->unique_id)
 		item->unique_id = pc_generate_unique_id(sd);
 
-#ifdef Pandas_ItemAmulet_System
+#ifdef Pandas_Item_Amulet_System
 	bool is_first_amulet = amulet_is_firstone(sd, item, amount);
-#endif // Pandas_ItemAmulet_System
+#endif // Pandas_Item_Amulet_System
 
 	// Stackable | Non Rental
 	if( itemdb_isstackable2(id) && item->expire_time == 0 ) {
@@ -4943,9 +4943,9 @@ enum e_additem_result pc_additem(struct map_session_data *sd,struct item *item,i
 	if(id->flag.autoequip)
 		pc_equipitem(sd, i, id->equip);
 
-#ifdef Pandas_ItemAmulet_System
+#ifdef Pandas_Item_Amulet_System
 	amulet_apply_additem(sd, i, is_first_amulet);
-#endif // Pandas_ItemAmulet_System
+#endif // Pandas_Item_Amulet_System
 
 	/* rental item check */
 	if( item->expire_time ) {
@@ -4982,36 +4982,36 @@ char pc_delitem(struct map_session_data *sd,int n,int amount,int type, short rea
 	if(n < 0 || sd->inventory.u.items_inventory[n].nameid == 0 || amount <= 0 || sd->inventory.u.items_inventory[n].amount<amount || sd->inventory_data[n] == NULL)
 		return 1;
 
-#ifdef Pandas_Implement_Item_Properties
+#ifdef Pandas_Item_Properties
 	// 避免物品被作为发动技能的必要道具而消耗
 	if (sd->inventory_data[n]->properties.no_consume_of_skills && reason == 1)
 		return 0;
-#endif // Pandas_Implement_Item_Properties
+#endif // Pandas_Item_Properties
 
 	log_pick_pc(sd, log_type, -amount, &sd->inventory.u.items_inventory[n]);
 
-#ifdef Pandas_ItemAmulet_System
+#ifdef Pandas_Item_Amulet_System
 	bool is_last_amulet = amulet_is_lastone(sd, n, amount);
-#endif // Pandas_ItemAmulet_System
+#endif // Pandas_Item_Amulet_System
 
 	sd->inventory.u.items_inventory[n].amount -= amount;
 	sd->weight -= sd->inventory_data[n]->weight*amount ;
 	if( sd->inventory.u.items_inventory[n].amount <= 0 ){
 		if(sd->inventory.u.items_inventory[n].equip)
 			pc_unequipitem(sd,n,2|(!(type&4) ? 1 : 0));
-#ifdef Pandas_ItemAmulet_System
+#ifdef Pandas_Item_Amulet_System
 		// 在这里必须触发一下"卸装脚本", 再往下的话物品数据会被清零
 		amulet_apply_delitem(sd, n, is_last_amulet);
-#endif // Pandas_ItemAmulet_System
+#endif // Pandas_Item_Amulet_System
 		memset(&sd->inventory.u.items_inventory[n],0,sizeof(sd->inventory.u.items_inventory[0]));
 		sd->inventory_data[n] = NULL;
 	}
-#ifdef Pandas_ItemAmulet_System
+#ifdef Pandas_Item_Amulet_System
 	else {
 		// 在这里同类护身符还没被全部清理干净, 需要触发一下"使用脚本"
 		amulet_apply_delitem(sd, n, is_last_amulet);
 	}
-#endif // Pandas_ItemAmulet_System
+#endif // Pandas_Item_Amulet_System
 
 	if(!(type&1))
 		clif_delitem(sd,n,amount,reason);
@@ -5479,7 +5479,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 	{
 		if( item.expire_time == 0 && nameid != ITEMID_REINS_OF_MOUNT )
 		{
-#ifndef Pandas_Implement_Item_Properties
+#ifndef Pandas_Item_Properties
 			clif_useitemack(sd, n, amount - 1, true);
 			pc_delitem(sd, n, 1, 1, 0, LOG_TYPE_CONSUME); // Rental Usable Items are not deleted until expiration
 #else
@@ -5492,7 +5492,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 				clif_useitemack(sd, n, amount - 1, true);
 				pc_delitem(sd, n, 1, 1, 0, LOG_TYPE_CONSUME); // Rental Usable Items are not deleted until expiration
 			}
-#endif // Pandas_Implement_Item_Properties
+#endif // Pandas_Item_Properties
 		}
 		else
 			clif_useitemack(sd, n, 0, false);

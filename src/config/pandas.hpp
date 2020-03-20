@@ -275,13 +275,13 @@
 		// 
 		// Property 节点的 &1 = 避免物品被玩家主动使用而消耗
 		// Property 节点的 &2 = 避免物品被作为发动技能的必要道具而消耗
-		//#define Pandas_Implement_Item_Properties
+		#define Pandas_Item_Properties
 
 		// 是否启用护身符系统 [Sola丶小克]
 		// 此选项开启后 (item_properties.yml) 数据库中以下选项才能发挥作用:
 		// 
 		// Property 节点的 &4 = 该道具为护身符道具
-		#define Pandas_ItemAmulet_System
+		#define Pandas_Item_Amulet_System
 
 		// 是否启用道具外观控制机制 [Sola丶小克]
 		// 此选项开启后 (item_properties.yml) 数据库中以下选项才能发挥作用:
