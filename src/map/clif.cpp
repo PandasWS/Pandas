@@ -58,9 +58,9 @@
 #include "unit.hpp"
 #include "vending.hpp"
 
-#ifdef Pandas_ItemAmulet_System
+#ifdef Pandas_Item_Amulet_System
 #include "itemamulet.hpp"	// amulet_is
-#endif // Pandas_ItemAmulet_System
+#endif // Pandas_Item_Amulet_System
 
 #ifdef Pandas_Database_ItemProperties
 #include "itemprops.hpp"
@@ -99,11 +99,11 @@ static inline int itemtype(unsigned short nameid) {
 	struct item_data* id = itemdb_search(nameid); //Use itemdb_search, so non-existance item will use dummy data and won't crash the server. bugreport:8468
 	int type = id->type;
 
-#ifdef Pandas_ItemAmulet_System
+#ifdef Pandas_Item_Amulet_System
 	// 若是护身符道具, 在这里全部把它当做 IT_ETC 类型返回
 	if (type == IT_AMULET || amulet_is(nameid))
 		return IT_ETC;
-#endif // Pandas_ItemAmulet_System
+#endif // Pandas_Item_Amulet_System
 
 	if( type == IT_SHADOWGEAR ) {
 		if( id->equip&EQP_SHADOW_WEAPON )
@@ -6965,11 +6965,11 @@ void clif_cart_additem(struct map_session_data *sd,int n,int amount,int fail)
 	WBUFB(buf,10)=itemdb_type(sd->cart.u.items_cart[n].nameid);
 	offset += 1;
 #endif
-#ifdef Pandas_ItemAmulet_System
+#ifdef Pandas_Item_Amulet_System
 	// 若是护身符道具, 那么最终发送给客户端的道具类型直接切换成 IT_ETC 而不是 IT_AMULET
 	if (amulet_is(sd->cart.u.items_cart[n].nameid))
 		WBUFB(buf,10)=amulet_pandas_type(sd->cart.u.items_cart[n].nameid);
-#endif // Pandas_ItemAmulet_System
+#endif // Pandas_Item_Amulet_System
 	WBUFB(buf,10+offset)=sd->cart.u.items_cart[n].identify;
 	WBUFB(buf,11+offset)=sd->cart.u.items_cart[n].attribute;
 	WBUFB(buf,12+offset)=sd->cart.u.items_cart[n].refine;

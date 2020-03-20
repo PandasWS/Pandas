@@ -1,4 +1,4 @@
--- upgrade_20191222.sql
+﻿-- upgrade_20191222.sql
 
 ALTER TABLE `bonus_script`
     ADD PRIMARY KEY (`char_id`, `type`);
