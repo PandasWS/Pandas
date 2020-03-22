@@ -25862,8 +25862,10 @@ BUILDIN_FUNC(getinventoryinfo) {
 	case 10: retval = sd->inventory.u.items_inventory[idx].expire_time; break;
 	case 11:
 	{
-		std::string unique_id = boost::str(boost::format("%1%") % sd->inventory.u.items_inventory[idx].unique_id);
-		script_pushstr(st, (char*)unique_id.c_str());
+		std::string unique_id = boost::str(
+			boost::format("%1%") % sd->inventory.u.items_inventory[idx].unique_id
+		);
+		script_pushstrcopy(st, (char*)unique_id.c_str());
 		break;
 	}
 	default:
