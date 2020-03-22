@@ -1114,7 +1114,11 @@
 	packet(0x02cc,4);
 	packet(0x02cd,26);
 	packet(0x02ce,10);
+#ifndef Pandas_Quick_Implement_Dungeon_Command
 	packet(0x02cf,6);
+#else
+	parseable_packet(0x02cf,6, clif_parse_dungeon_command,2);
+#endif //Pandas_Quick_Implement_Dungeon_Command
 	packet(0x02d0,-1);
 	packet(0x02d1,-1);
 	packet(0x02d2,-1);

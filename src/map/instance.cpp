@@ -728,6 +728,102 @@ int instance_destroy(unsigned short instance_id)
 	return 0;
 }
 
+#ifdef Pandas_Quick_Implement_Dungeon_Command
+//************************************
+// Method:      instance_refresh_status
+// Description: 在不触碰 keep_limit 和 idle_limit 的情况下刷新副本状态
+// Parameter:   unsigned short instance_id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/03/22 15:07
+//************************************
+void instance_refresh_status(unsigned short instance_id) {
+	struct instance_data* im = NULL;
+
+	if (instance_id == 0 || instance_id > MAX_INSTANCE_DATA)
+		return;
+
+	im = &instance_data[instance_id];
+
+	if (im->state == INSTANCE_FREE)
+		return;
+
+	switch (im->mode) {
+	case IM_NONE:
+		break;
+	case IM_CHAR:
+		if (map_charid2sd(im->owner_id) != NULL) // Inform player of the created instance
+			clif_instance_status(instance_id, im->keep_limit, im->idle_limit);
+		break;
+	case IM_PARTY:
+		if (party_search(im->owner_id) != NULL) // Inform party members of the created instance
+			clif_instance_status(instance_id, im->keep_limit, im->idle_limit);
+		break;
+	case IM_GUILD:
+		if (guild_search(im->owner_id) != NULL) // Inform guild members of the created instance
+			clif_instance_status(instance_id, im->keep_limit, im->idle_limit);
+		break;
+	case IM_CLAN:
+		if (clan_search(im->owner_id) != NULL) // Inform clan members of the created instance
+			clif_instance_status(instance_id, im->keep_limit, im->idle_limit);
+		break;
+	default:
+		return;
+	}
+}
+
+//************************************
+// Method:      instance_force_destroy
+// Description: 强制销毁当前玩家归属的副本 (前提时他有控制权)
+// Parameter:   struct map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/03/22 14:03
+//************************************
+void instance_force_destroy(struct map_session_data* sd) {
+	struct party_data* pd = NULL;
+	struct guild* gd = NULL;
+	struct instance_data* im = NULL;
+	int mi = 0;
+
+	nullpo_retv(sd);
+
+	for (int i = 0; i < MAX_INSTANCE_DATA; ++i) {
+		im = &instance_data[i];
+
+		if (im->owner_id == 0 || im->state == INSTANCE_FREE)
+			continue;
+
+		switch (im->mode) {
+		case IM_CHAR: {
+			if (im->owner_id != sd->status.char_id)
+				continue;
+			break;
+		}
+		case IM_PARTY: {
+			pd = party_search(im->owner_id);
+			if (!pd || pd->party.party_id != sd->status.party_id)
+				continue;
+
+			ARR_FIND(0, MAX_PARTY, mi, pd->party.member[mi].leader);
+			if (mi == MAX_PARTY || pd->party.member[mi].char_id != sd->status.char_id)
+				continue;
+			break;
+		}
+		case IM_GUILD: {
+			gd = guild_search(im->owner_id);
+			if (!gd || gd->guild_id != sd->status.guild_id || !sd->state.gmaster_flag)
+				continue;
+			break;
+		}
+		default:
+			continue;
+		}
+
+		instance_destroy(i);
+		return;
+	}
+}
+#endif // Pandas_Quick_Implement_Dungeon_Command
+
 /*==========================================
  * Warp a user into instance
  *------------------------------------------*/

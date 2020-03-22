@@ -82,6 +82,10 @@ void instance_getsd(unsigned short instance_id, struct map_session_data **sd, en
 
 int instance_create(int owner_id, const char *name, enum instance_mode mode);
 int instance_destroy(unsigned short instance_id);
+#ifdef Pandas_Quick_Implement_Dungeon_Command
+void instance_refresh_status(unsigned short instance_id);
+void instance_force_destroy(struct map_session_data* sd);
+#endif // Pandas_Quick_Implement_Dungeon_Command
 enum e_instance_enter instance_enter(struct map_session_data *sd, unsigned short instance_id, const char *name, short x, short y);
 int instance_reqinfo(struct map_session_data *sd, unsigned short instance_id);
 int instance_addusers(unsigned short instance_id);
