@@ -355,6 +355,10 @@
 		// 目前能够比较好的自适应 UTF-8, GBK, BIG5 编码
 		#define Pandas_Console_Charset_SmartConvert
 	#endif // _WIN32
+
+	// 是否简单实现队长用于销毁副本的"面板按钮"功能 [Sola丶小克]
+	// 目前仅在 2018-06-20 版本中测试过, 启用此开关将实现 0x02cf 封包的处理
+	#define Pandas_Quick_Implement_Dungeon_Command
 #endif // Pandas_CreativeWork
 
 // ============================================================================

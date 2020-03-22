@@ -161,6 +161,12 @@ enum e_wip_block : uint8_t {
 	WIP_DISABLE_ALL = 0x3,
 };
 
+#ifdef Pandas_Quick_Implement_Dungeon_Command
+enum e_dungeon_command : uint16 {
+	DUNGEON_DESTROY_FORCE = 0x3
+};
+#endif // Pandas_Quick_Implement_Dungeon_Command
+
 enum e_party_invite_reply {
 	PARTY_REPLY_JOIN_OTHER_PARTY = 0,   ///< result=0 : "The Character already joined another party." -> MsgStringTable[80]
 	PARTY_REPLY_REJECTED,			    ///< result=1 : "Request for party rejected." -> MsgStringTable[81]
