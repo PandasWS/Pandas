@@ -10,6 +10,19 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+## [v1.0.4] - `2020-03-23`
+
+### 添加
+
+- 添加 rAthenaCN 1.8.0 到熊猫模拟器的数据库升级脚本 (#251)
+- 实现队长副本信息窗口中"销毁副本"按钮的功能 (#255)
+
+### 修正
+
+- 修正 `item_properties.yml` 部分设置无效的问题 (#252)
+- 修正读取 `pet_db.yml` 可能导致的内存泄露 (#253)
+- 修正 `getinventoryinfo` 获取道具 `unique_id` 错误的问题 (#254)
+
 ## [v1.0.3] - `2020-03-12`
 
 ### 升级
@@ -124,6 +137,7 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.0.4]: https://github.com/PandasWS/Pandas/compare/v1.0.3...v1.0.4
 [v1.0.3]: https://github.com/PandasWS/Pandas/compare/v1.0.2...v1.0.3
 [v1.0.2]: https://github.com/PandasWS/Pandas/compare/v1.0.1...v1.0.2
 [v1.0.1]: https://github.com/PandasWS/Pandas/compare/v1.0.0...v1.0.1
