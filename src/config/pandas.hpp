@@ -364,7 +364,11 @@
 	// 在 MySQL 8.0 (或更早之前的某个版本) 开始, 由于 MySQL 默认启用了 SSL 连接模式.
 	// 这会导致在没有安全证书的情况下, 无法建立正常的数据库连接.
 	// 因此我们在与 MySQL 服务器建立连接的时候主动设置一下, 禁用掉 SSL 连接模式.
-	#define Pandas_MySQL_SSL_Mode_Disabled
+	//
+	// 备注: 目前仅在 Windows 环境下需要此操作, 在 Linux 环境下测试可直连 MySQL 8.0 暂时没问题
+	#ifdef _WIN32
+		#define Pandas_MySQL_SSL_Mode_Disabled
+	#endif // _WIN32
 #endif // Pandas_CreativeWork
 
 // ============================================================================
