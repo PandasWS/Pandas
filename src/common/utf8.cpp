@@ -7,8 +7,7 @@
 
 #include "../common/strlib.hpp"
 #include "../common/performance.hpp"
-
-#include <boost/algorithm/string/predicate.hpp> // boost::icontains
+#include "../common/assistant.hpp"
 
 #ifdef _WIN32
 	#include <windows.h>

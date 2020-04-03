@@ -96,6 +96,12 @@ Sql* Sql_Malloc(void)
 	self->keepalive = INVALID_TIMER;
 	my_bool reconnect = 1;
 	mysql_options(&self->handle, MYSQL_OPT_RECONNECT, &reconnect);
+
+#ifdef Pandas_MySQL_SSL_Mode_Disabled
+	int sslmode = SSL_MODE_DISABLED;
+	mysql_options(&self->handle, MYSQL_OPT_SSL_MODE, &sslmode);
+#endif // Pandas_MySQL_SSL_Mode_Disabled
+
 	return self;
 }
 
