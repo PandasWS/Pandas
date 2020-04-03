@@ -359,6 +359,16 @@
 	// 是否简单实现队长用于销毁副本的"面板按钮"功能 [Sola丶小克]
 	// 目前仅在 2018-06-20 版本中测试过, 启用此开关将实现 0x02cf 封包的处理
 	#define Pandas_Quick_Implement_Dungeon_Command
+
+	// 建立 MySQL 连接的时候主动禁止 SSL 模式 [Sola丶小克]
+	// 在 MySQL 8.0 (或更早之前的某个版本) 开始, 由于 MySQL 默认启用了 SSL 连接模式.
+	// 这会导致在没有安全证书的情况下, 无法建立正常的数据库连接.
+	// 因此我们在与 MySQL 服务器建立连接的时候主动设置一下, 禁用掉 SSL 连接模式.
+	//
+	// 备注: 目前仅在 Windows 环境下需要此操作, 在 Linux 环境下测试可直连 MySQL 8.0 暂时没问题
+	#ifdef _WIN32
+		#define Pandas_MySQL_SSL_Mode_Disabled
+	#endif // _WIN32
 #endif // Pandas_CreativeWork
 
 // ============================================================================
