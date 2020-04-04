@@ -115,12 +115,12 @@ bool hasCallfunc(std::string script) {
 
 #ifdef Pandas_MapFlag_NoMail
 //************************************
-// Method:		mapflag_nomail_helper
+// Method:		mapflag_helper_nomail
 // Description:	封装一下以便进行 nomail 效果的实现
 // Parameter:	struct map_session_data * sd
 // Returns:		bool 是否禁用邮件系统
 //************************************
-bool mapflag_nomail_helper(struct map_session_data *sd) {
+bool mapflag_helper_nomail(struct map_session_data *sd) {
 	nullpo_retr(false, sd);
 
 	if (sd && map_getmapflag(sd->bl.m, MF_NOMAIL)) {
