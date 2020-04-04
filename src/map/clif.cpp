@@ -15991,6 +15991,12 @@ void clif_Mail_read(struct map_session_data *sd, int mail_id)
 /// 0241 <mail id>.L (CZ_MAIL_OPEN)
 /// 09ea <mail tab>.B <mail id>.Q (CZ_REQ_READ_MAIL)
 void clif_parse_Mail_read(int fd, struct map_session_data *sd){
+
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_helper_nomail(sd))
+		return;
+#endif // Pandas_MapFlag_NoMail
+
 #if PACKETVER < 20150513
 	int mail_id = RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 #else
@@ -16020,14 +16026,16 @@ void clif_send_Mail_beginwrite_ack( struct map_session_data *sd, char* name, boo
 
 /// Request to start writing a mail
 /// 0a08 <receiver>.24B (CZ_REQ_OPEN_WRITE_MAIL)
-void clif_parse_Mail_beginwrite( int fd, struct map_session_data *sd ){
+void clif_parse_Mail_beginwrite(int fd, struct map_session_data* sd) {
+
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_helper_nomail(sd))
+		return;
+#endif // Pandas_MapFlag_NoMail
+
 	char name[NAME_LENGTH];
 
 	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
-
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_nomail_helper(sd)) return;
-#endif // Pandas_MapFlag_NoMail
 
 	if( sd->state.storage_flag || sd->state.mail_writing || sd->trade_partner ){
 		clif_send_Mail_beginwrite_ack(sd, name, false);
@@ -16071,13 +16079,15 @@ void clif_Mail_Receiver_Ack( struct map_session_data* sd, uint32 char_id, short 
 /// Request information about the recipient
 /// 0a13 <name>.24B (CZ_CHECK_RECEIVE_CHARACTER_NAME)
 void clif_parse_Mail_Receiver_Check(int fd, struct map_session_data *sd) {
+
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_helper_nomail(sd))
+		return;
+#endif // Pandas_MapFlag_NoMail
+
 	static char name[NAME_LENGTH];
 
 	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
-
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_nomail_helper(sd)) return;
-#endif // Pandas_MapFlag_NoMail
 
 	intif_mail_checkreceiver(sd, name);
 }
@@ -16087,6 +16097,12 @@ void clif_parse_Mail_Receiver_Check(int fd, struct map_session_data *sd) {
 /// 09f1 <mail id>.Q <mail tab>.B (CZ_REQ_ZENY_FROM_MAIL)
 /// 09f3 <mail id>.Q <mail tab>.B (CZ_REQ_ITEM_FROM_MAIL)
 void clif_parse_Mail_getattach( int fd, struct map_session_data *sd ){
+
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_helper_nomail(sd))
+		return;
+#endif // Pandas_MapFlag_NoMail
+
 	int i;
 	struct mail_message* msg;
 #if PACKETVER < 20150513
@@ -16186,6 +16202,12 @@ void clif_parse_Mail_getattach( int fd, struct map_session_data *sd ){
 /// 0243 <mail id>.L (CZ_MAIL_DELETE)
 /// 09f5 <mail tab>.B <mail id>.Q (CZ_REQ_DELETE_MAIL)
 void clif_parse_Mail_delete(int fd, struct map_session_data *sd){
+
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_helper_nomail(sd))
+		return;
+#endif // Pandas_MapFlag_NoMail
+
 #if PACKETVER < 20150513
 	int mail_id = RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 #else
@@ -16230,6 +16252,12 @@ void clif_parse_Mail_delete(int fd, struct map_session_data *sd){
 /// Request to return a mail (CZ_REQ_MAIL_RETURN).
 /// 0273 <mail id>.L <receive name>.24B
 void clif_parse_Mail_return(int fd, struct map_session_data *sd){
+
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_helper_nomail(sd))
+		return;
+#endif // Pandas_MapFlag_NoMail
+
 	int mail_id = RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 	//char *rec_name = RFIFOP(fd,packet_db[RFIFOW(fd,0)].pos[1]);
 	int i;
@@ -16250,7 +16278,13 @@ void clif_parse_Mail_return(int fd, struct map_session_data *sd){
 /// Request to add an item or Zeny to mail.
 /// 0247 <index>.W <amount>.L (CZ_MAIL_ADD_ITEM)
 /// 0a04 <index>.W <amount>.W (CZ_REQ_ADD_ITEM_TO_MAIL)
-void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
+void clif_parse_Mail_setattach(int fd, struct map_session_data* sd) {
+
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_helper_nomail(sd))
+		return;
+#endif // Pandas_MapFlag_NoMail
+
 	struct s_packet_db* info = &packet_db[RFIFOW(fd,0)];
 	int idx = RFIFOW(fd,info->pos[0]);
 #if PACKETVER < 20150513
@@ -16264,10 +16298,6 @@ void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
 		return;
 	if (idx < 0 || amount < 0 || idx >= MAX_INVENTORY)
 		return;
-
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_nomail_helper(sd)) return;
-#endif // Pandas_MapFlag_NoMail
 
 	flag = mail_setitem(sd, idx, amount);
 
@@ -16331,6 +16361,12 @@ void clif_parse_Mail_winopen(int fd, struct map_session_data *sd)
 /// 09ec <packet len>.W <recipient>.24B <sender>.24B <zeny>.Q <title length>.W <body length>.W <title>.?B <body>.?B (CZ_REQ_WRITE_MAIL)
 /// 0a6e <packet len>.W <recipient>.24B <sender>.24B <zeny>.Q <title length>.W <body length>.W <char id>.L <title>.?B <body>.?B (CZ_REQ_WRITE_MAIL2)
 void clif_parse_Mail_send(int fd, struct map_session_data *sd){
+
+#ifdef Pandas_MapFlag_NoMail
+	if (mapflag_helper_nomail(sd))
+		return;
+#endif // Pandas_MapFlag_NoMail
+
 #if PACKETVER < 20150513
 	struct s_packet_db* info = &packet_db[RFIFOW(fd,0)];
 
@@ -16342,17 +16378,9 @@ void clif_parse_Mail_send(int fd, struct map_session_data *sd){
 		return;
 	}
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_nomail_helper(sd)) return;
-#endif // Pandas_MapFlag_NoMail
-
 	mail_send(sd, RFIFOCP(fd,info->pos[1]), RFIFOCP(fd,info->pos[2]), RFIFOCP(fd,info->pos[4]), RFIFOB(fd,info->pos[3]));
 #else
 	uint16 length = RFIFOW(fd, 2);
-
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_nomail_helper(sd)) return;
-#endif // Pandas_MapFlag_NoMail
 
 	if( length < 0x3e ){
 		ShowWarning("Too short...\n");

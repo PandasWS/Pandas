@@ -13,5 +13,5 @@ bool hasCatchPet(std::string script, std::vector<uint32>& pet_mobid);
 bool hasCallfunc(std::string script);
 
 #ifdef Pandas_MapFlag_NoMail
-	bool mapflag_nomail_helper(struct map_session_data *sd);
+	bool mapflag_helper_nomail(struct map_session_data *sd);
 #endif // Pandas_MapFlag_NoMail

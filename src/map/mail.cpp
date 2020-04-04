@@ -329,7 +329,8 @@ int mail_openmail(struct map_session_data *sd)
 		return 0;
 
 #ifdef Pandas_MapFlag_NoMail
-	if (mapflag_nomail_helper(sd)) return 0;
+	if (mapflag_helper_nomail(sd))
+		return 0;
 #endif // Pandas_MapFlag_NoMail
 
 	clif_Mail_window(sd->fd, 0);
@@ -368,10 +369,6 @@ bool mail_invalid_operation(struct map_session_data *sd)
 		return true;
 	}
 #endif
-
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_nomail_helper(sd)) return false;
-#endif // Pandas_MapFlag_NoMail
 
 	return false;
 }
