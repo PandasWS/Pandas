@@ -255,6 +255,15 @@ struct s_regen {
 	int tick;
 };
 
+#ifdef Pandas_Struct_Autotrade_Extend
+enum e_autotrade_mode : uint32 {
+	AUTOTRADE_DISABLED    = 0x0000,
+	AUTOTRADE_ENABLED     = 0x0001,
+	AUTOTRADE_VENDING     = 0x0002,
+	AUTOTRADE_BUYINGSTORE = 0x0004
+};
+#endif // Pandas_Struct_Autotrade_Extend
+
 struct map_session_data {
 	struct block_list bl;
 	struct unit_data ud;
@@ -278,7 +287,11 @@ struct map_session_data {
 		unsigned int snovice_dead_flag : 1; //Explosion spirits on death: 0 off, 1 used.
 		unsigned int abra_flag : 2; // Abracadabra bugfix by Aru
 		unsigned int autocast : 1; // Autospell flag [Inkfish]
+#ifndef Pandas_Struct_Autotrade_Extend
 		unsigned int autotrade : 3;	//By Fantik. &2 Requested by vending autotrade; &4 Requested by buyingstore autotrade
+#else
+		unsigned int autotrade : 4;
+#endif // Pandas_Struct_Autotrade_Extend
 		unsigned int showdelay :1;
 		unsigned int showexp :1;
 		unsigned int showzeny :1;

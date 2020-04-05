@@ -156,6 +156,13 @@
 		// 结构体修改定位 npc.hpp -> npc_data.pandas.destruction_strategy
 		#define Pandas_Struct_Npc_Data_DestructionStrategy
 	#endif // Pandas_Struct_Npc_Data_Pandas
+
+	// 对离线挂店 autotrade 的定义进行拓展处理 [Sola丶小克]
+	// 进行拓展处理之后能够在代码改动较少的情况下, 更好的支持多种不同类型的 "离线挂店" 行为
+	//
+	// 在默认情况下 sd->state.autotrade 的值若为 0 则表示没有离线挂店
+	// 若非零的话则表示启用了离线挂店, 且 &2 表示开启的是离线摆摊挂店 &3 表示开启的是离线收购挂店
+	#define Pandas_Struct_Autotrade_Extend
 #endif // Pandas_StructIncrease
 
 // ============================================================================
