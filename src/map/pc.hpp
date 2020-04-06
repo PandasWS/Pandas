@@ -23,6 +23,10 @@
 #include "unit.hpp" // unit_data
 #include "vending.hpp" // struct s_vending
 
+#ifdef Pandas_Player_Suspend_System
+#include "suspend.hpp"
+#endif // Pandas_Player_Suspend_System
+
 #ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
 #include "npc.hpp" // enum npce_event
 #endif // Pandas_Struct_Map_Session_Data_WorkInEvent
@@ -260,7 +264,9 @@ enum e_autotrade_mode : uint32 {
 	AUTOTRADE_DISABLED    = 0x0000,
 	AUTOTRADE_ENABLED     = 0x0001,
 	AUTOTRADE_VENDING     = 0x0002,
-	AUTOTRADE_BUYINGSTORE = 0x0004
+	AUTOTRADE_BUYINGSTORE = 0x0004,
+	AUTOTRADE_OFFLINE     = 0x0008,		// 离线挂机
+	AUTOTRADE_AFK         = 0x0010		// 离开模式 (AFK)
 };
 #endif // Pandas_Struct_Autotrade_Extend
 
@@ -332,6 +338,9 @@ struct map_session_data {
 		unsigned int workinprogress : 2; // See clif.hpp::e_workinprogress
 		bool pc_loaded; // Ensure inventory data and status data is loaded before we calculate player stats
 		bool keepshop; // Whether shop data should be removed when the player disconnects
+#ifdef Pandas_Player_Suspend_System
+		bool keepsuspend; // 是否保持挂起状态, 若保持下次地图服务器重启还能自动上线 [Sola丶小克]
+#endif // Pandas_Player_Suspend_System
 		bool mail_writing; // Whether the player is currently writing a mail in RODEX or not
 		bool cashshop_open;
 		bool sale_open;

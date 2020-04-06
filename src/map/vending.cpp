@@ -14,7 +14,6 @@
 #include "achievement.hpp"
 #include "atcommand.hpp"
 #include "battle.hpp"
-#include "buyingstore.hpp"
 #include "buyingstore.hpp" // struct s_autotrade_entry, struct s_autotrader
 #include "chrif.hpp"
 #include "clif.hpp"

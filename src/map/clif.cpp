@@ -9289,6 +9289,12 @@ void clif_GM_kick(struct map_session_data *sd, struct map_session_data *tsd)
 	if (sd == NULL)
 		tsd->state.keepshop = true;
 
+#ifdef Pandas_Player_Suspend_System
+	// 若 sd 为 NULL 则表示是地图服务器在踢人 [Sola丶小克]
+	if (sd == NULL)
+		tsd->state.keepsuspend = true;
+#endif // Pandas_Player_Suspend_System
+
 	if (fd > 0)
 		clif_authfail_fd(fd, 15);
 	else
