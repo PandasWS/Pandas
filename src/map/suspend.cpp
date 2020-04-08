@@ -35,6 +35,8 @@ void suspend_recall_online() {
 		return;
 	}
 
+	int offline = 0, afk = 0;
+
 	if (Sql_NumRows(mmysql_handle) > 0) {
 		DBIterator* iter = NULL;
 		struct s_suspender* sp = NULL;
@@ -66,10 +68,14 @@ void suspend_recall_online() {
 
 			// 设置 autotrade 标记
 			sp->sd->state.autotrade |= AUTOTRADE_ENABLED;
-			if (sp->mode == SUSPEND_MODE_OFFLINE)
+			if (sp->mode == SUSPEND_MODE_OFFLINE) {
 				sp->sd->state.autotrade |= AUTOTRADE_OFFLINE;
-			else if (sp->mode == SUSPEND_MODE_AFK)
+				offline++;
+			}
+			else if (sp->mode == SUSPEND_MODE_AFK) {
 				sp->sd->state.autotrade |= AUTOTRADE_AFK;
+				afk++;
+			}
 
 			// 根据战斗配置选项来设置魔物免疫状态
 			if (sp->mode != SUSPEND_MODE_NONE && battle_config.suspend_monsterignore & sp->mode)
@@ -104,7 +110,7 @@ void suspend_recall_online() {
 		}
 		Sql_FreeResult(mmysql_handle);
 
-		ShowStatus("Done loading '" CL_WHITE "%d" CL_RESET "' suspend player.\n", db_size(suspender_db));
+		ShowStatus("Done loading '" CL_WHITE "%d" CL_RESET "' suspend player records (Offline: '%d', AFK: '%d').\n", db_size(suspender_db), offline, afk);
 	}
 }
 
@@ -126,6 +132,71 @@ void suspend_recall_postfix(struct map_session_data* sd) {
 			pc_setsit(sd);
 			skill_sit(sd, 1);
 			clif_sitting(&sd->bl);
+		}
+
+		switch (sp->mode)
+		{
+		case SUSPEND_MODE_AFK:
+			if (battle_config.suspend_afk_headtop_viewid) {
+				clif_changelook(&sd->bl, LOOK_HEAD_TOP, battle_config.suspend_afk_headtop_viewid);
+			}
+			break;
+		}
+	}
+}
+
+//************************************
+// Method:      suspend_set_unit_idle
+// Description: 在 clif_set_unit_idle 函数中对发送给客户端的封包进行修改
+// Parameter:   struct map_session_data * sd
+// Parameter:   unsigned char * buf
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/4/8 13:14
+//************************************
+void suspend_set_unit_idle(struct map_session_data* sd, unsigned char* buf) {
+	nullpo_retv(sd);
+	nullpo_retv(buf);
+
+	if (sd->bl.type != BL_PC)
+		return;
+
+	struct s_suspender* sp = NULL;
+	if (sp = (struct s_suspender*)uidb_get(suspender_db, sd->status.char_id)) {
+		switch (sp->mode)
+		{
+		case SUSPEND_MODE_AFK:
+			if (battle_config.suspend_afk_headtop_viewid) {
+				WBUFW(buf, 24) = battle_config.suspend_afk_headtop_viewid;
+			}
+			break;
+		}
+	}
+}
+
+//************************************
+// Method:      suspend_set_unit_walking
+// Description: 在 clif_set_unit_walking 函数中对发送给客户端的封包进行修改
+// Parameter:   struct map_session_data * sd
+// Parameter:   unsigned char * buf
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/4/8 13:16
+//************************************
+void suspend_set_unit_walking(struct map_session_data* sd, unsigned char* buf) {
+	nullpo_retv(sd);
+	nullpo_retv(buf);
+
+	if (sd->bl.type != BL_PC)
+		return;
+
+	struct s_suspender* sp = NULL;
+	if (sp = (struct s_suspender*)uidb_get(suspender_db, sd->status.char_id)) {
+		switch (sp->mode)
+		{
+		case SUSPEND_MODE_AFK:
+			if (battle_config.suspend_afk_headtop_viewid) {
+				WBUFW(buf, 28) = battle_config.suspend_afk_headtop_viewid;
+			}
+			break;
 		}
 	}
 }
@@ -164,8 +235,9 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 			skill_sit(sd, 1);
 			clif_sitting(&sd->bl);
 		}
-		clif_changelook(&sd->bl, LOOK_HEAD_TOP, 471);
-		clif_specialeffect(&sd->bl, 234, AREA);
+		if (battle_config.suspend_afk_headtop_viewid) {
+			clif_changelook(&sd->bl, LOOK_HEAD_TOP, battle_config.suspend_afk_headtop_viewid);
+		}
 		break;
 	}
 

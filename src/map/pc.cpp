@@ -1740,10 +1740,6 @@ void pc_reg_received(struct map_session_data *sd)
 	}
 
 	channel_autojoin(sd);
-
-#ifdef Pandas_Player_Suspend_System
-	suspend_recall_postfix(sd);
-#endif // Pandas_Player_Suspend_System
 }
 
 static int pc_calc_skillpoint(struct map_session_data* sd)

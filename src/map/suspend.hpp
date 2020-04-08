@@ -30,6 +30,8 @@ struct s_suspender {
 
 void suspend_recall_online();
 void suspend_recall_postfix(struct map_session_data* sd);
+void suspend_set_unit_idle(struct map_session_data* sd, unsigned char* buf);
+void suspend_set_unit_walking(struct map_session_data* sd, unsigned char* buf);
 void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode);
 void suspend_deactive(struct map_session_data* sd);
 

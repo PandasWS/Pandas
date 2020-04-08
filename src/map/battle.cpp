@@ -8862,6 +8862,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_Suspend_AFK_Sitdown
 	{ "suspend_afk_sitdown",                &battle_config.suspend_afk_sitdown,             -1,     -1,     1,              },
 #endif // Pandas_BattleConfig_Suspend_AFK_Sitdown
+#ifdef Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
+	{ "suspend_afk_headtop_viewid",         &battle_config.suspend_afk_headtop_viewid,      471,    0,      INT_MAX,        },
+#endif // Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };

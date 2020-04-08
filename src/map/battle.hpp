@@ -717,6 +717,9 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_Suspend_AFK_Sitdown
 	int suspend_afk_sitdown;				// 当玩家进入离开模式时, 地图服务器重启后处于站立还是坐下状态 [Sola丶小克]
 #endif // Pandas_BattleConfig_Suspend_AFK_Sitdown
+#ifdef Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
+	int suspend_afk_headtop_viewid;			// 当玩家进入离开模式时, 将头饰上的更换为哪一个指定的头饰外观编号 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"
