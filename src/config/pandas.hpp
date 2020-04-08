@@ -196,6 +196,38 @@
 	// 是否启用 atcmd_no_permission 配置选项及其功能 [Sola丶小克]
 	// 此选项用于指定没有指令权限的玩家, 在执行了管理员指令时的处理策略
 	#define Pandas_BattleConfig_AtCmd_No_Permission
+
+	// 是否启用 suspend_monsterignore 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家使用挂机系列指令时, 哪些模式不会被魔物攻击 (掩码选项)
+	#define Pandas_BattleConfig_Suspend_MonsterIgnore
+
+	// 是否启用 suspend_whisper_response 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家使用挂机系列指令时, 处于哪些模式会自动回复私聊讯息 (掩码选项)
+	#define Pandas_BattleConfig_Suspend_Whisper_Response
+
+	// 是否启用 suspend_offline_bodydirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离线挂机模式时, 地图服务器重启后的身体朝向哪里
+	#define Pandas_BattleConfig_Suspend_Offline_BodyDirection
+
+	// 是否启用 suspend_offline_headdirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离线挂机模式时, 地图服务器重启后的头部朝向哪里
+	#define Pandas_BattleConfig_Suspend_Offline_HeadDirection
+
+	// 是否启用 suspend_offline_sitdown 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离线挂机模式时, 地图服务器重启后处于站立还是坐下状态
+	#define Pandas_BattleConfig_Suspend_Offline_Sitdown
+
+	// 是否启用 suspend_afk_bodydirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离开模式时, 地图服务器重启后的身体朝向哪里
+	#define Pandas_BattleConfig_Suspend_AFK_BodyDirection
+
+	// 是否启用 suspend_afk_headdirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离开模式时, 地图服务器重启后的头部朝向哪里
+	#define Pandas_BattleConfig_Suspend_AFK_Headdirection
+
+	// 是否启用 suspend_afk_sitdown 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离开模式时, 地图服务器重启后处于站立还是坐下状态
+	#define Pandas_BattleConfig_Suspend_AFK_Sitdown
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 

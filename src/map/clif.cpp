@@ -11715,12 +11715,32 @@ void clif_parse_WisMessage(int fd, struct map_session_data* sd)
 		return;
 	}
 
+#ifndef Pandas_Struct_Autotrade_Extend
 	// if player is autotrading
 	if (dstsd->state.autotrade == 1){
 		safesnprintf(output,sizeof(output),"%s is in autotrade mode and cannot receive whispered messages.", dstsd->status.name);
 		clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
 		return;
 	}
+#else
+	if (dstsd->state.autotrade & AUTOTRADE_ENABLED) {
+		if (dstsd->state.autotrade & AUTOTRADE_VENDING || dstsd->state.autotrade & AUTOTRADE_BUYINGSTORE) {
+			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 19), dstsd->status.name);
+			clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
+			return;
+		}
+		else if (dstsd->state.autotrade & AUTOTRADE_OFFLINE && battle_config.suspend_whisper_response & SUSPEND_MODE_OFFLINE) {
+			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 20), dstsd->status.name);
+			clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
+			return;
+		}
+		else if (dstsd->state.autotrade & AUTOTRADE_AFK && battle_config.suspend_whisper_response & SUSPEND_MODE_AFK) {
+			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 21), dstsd->status.name);
+			clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
+			return;
+		}
+	}
+#endif // Pandas_Struct_Autotrade_Extend
 
 	if (pc_get_group_level(sd) <= pc_get_group_level(dstsd)) {
 		// if player ignores the source character

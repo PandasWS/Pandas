@@ -12,6 +12,7 @@
 #include "chrif.hpp"
 #include "pc.hpp"
 #include "channel.hpp"
+#include "battle.hpp"
 
 static DBMap* suspender_db;
 static void suspend_suspender_remove(struct s_suspender* sp, bool remove);
@@ -19,7 +20,7 @@ static int suspend_suspender_free(DBKey key, DBData* data, va_list ap);
 
 //************************************
 // Method:      suspend_recall_online
-// Description: 
+// Description: 将全部挂起的角色按照各自的模式召回上线
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/4/5 23:35
 //************************************
@@ -59,28 +60,45 @@ void suspend_recall_online() {
 			Sql_GetData(mmysql_handle,10, &data, NULL); sp->val3 = atoi(data);
 			Sql_GetData(mmysql_handle,11, &data, NULL); sp->val4 = atoi(data);
 
-// 			if (battle_config.feature_autotrade_direction >= 0)
-// 				at->dir = battle_config.feature_autotrade_direction;
-// 			if (battle_config.feature_autotrade_head_direction >= 0)
-// 				at->head_dir = battle_config.feature_autotrade_head_direction;
-// 			if (battle_config.feature_autotrade_sit >= 0)
-// 				at->sit = battle_config.feature_autotrade_sit;
-
-			// initialize player
+			// 初始化一个玩家对象
 			CREATE(sp->sd, struct map_session_data, 1);
 			pc_setnewpc(sp->sd, sp->account_id, sp->char_id, 0, gettick(), sp->sex, 0);
-			sp->sd->state.autotrade |= AUTOTRADE_ENABLED;
 
+			// 设置 autotrade 标记
+			sp->sd->state.autotrade |= AUTOTRADE_ENABLED;
 			if (sp->mode == SUSPEND_MODE_OFFLINE)
 				sp->sd->state.autotrade |= AUTOTRADE_OFFLINE;
 			else if (sp->mode == SUSPEND_MODE_AFK)
 				sp->sd->state.autotrade |= AUTOTRADE_AFK;
 
-// 			if (battle_config.autotrade_monsterignore)
-// 				sp->sd->state.block_action |= PCBLOCK_IMMUNE;
-// 			else
-// 				sp->sd->state.block_action &= ~PCBLOCK_IMMUNE;
+			// 根据战斗配置选项来设置魔物免疫状态
+			if (sp->mode != SUSPEND_MODE_NONE && battle_config.suspend_monsterignore & sp->mode)
+				sp->sd->state.block_action |= PCBLOCK_IMMUNE;
+			else
+				sp->sd->state.block_action &= ~PCBLOCK_IMMUNE;
 
+			// 根据战斗配置选项来设置朝向和角色站立状态
+			switch (sp->mode)
+			{
+			case SUSPEND_MODE_OFFLINE:
+				if (battle_config.suspend_offline_bodydirection >= 0)
+					sp->dir = battle_config.suspend_offline_bodydirection;
+				if (battle_config.suspend_offline_headdirection >= 0)
+					sp->head_dir = battle_config.suspend_offline_headdirection;
+				if (battle_config.suspend_offline_sitdown >= 0)
+					sp->sit = battle_config.suspend_offline_sitdown;
+				break;
+			case SUSPEND_MODE_AFK:
+				if (battle_config.suspend_afk_bodydirection >= 0)
+					sp->dir = battle_config.suspend_afk_bodydirection;
+				if (battle_config.suspend_afk_headdirection >= 0)
+					sp->head_dir = battle_config.suspend_afk_headdirection;
+				if (battle_config.suspend_afk_sitdown >= 0)
+					sp->sit = battle_config.suspend_afk_sitdown;
+				break;
+			}
+
+			// 向服务器请求上线该玩家
 			chrif_authreq(sp->sd, true);
 			uidb_put(suspender_db, sp->char_id, sp);
 		}
@@ -91,8 +109,30 @@ void suspend_recall_online() {
 }
 
 //************************************
+// Method:      suspend_recall_postfix
+// Description: 被召回的角色成功上线后需要做的后置处理
+// Parameter:   struct map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/4/8 10:14
+//************************************
+void suspend_recall_postfix(struct map_session_data* sd) {
+	nullpo_retv(sd);
+
+	struct s_suspender* sp = NULL;
+	if (sp = (struct s_suspender*)uidb_get(suspender_db, sd->status.char_id)) {
+		pc_setdir(sd, sp->dir, sp->head_dir);
+		clif_changed_dir(&sd->bl, AREA_WOS);
+		if (sp->sit) {
+			pc_setsit(sd);
+			skill_sit(sd, 1);
+			clif_sitting(&sd->bl);
+		}
+	}
+}
+
+//************************************
 // Method:      suspend_active
-// Description: 
+// Description: 激活某个角色的某种挂起模式, 并使其断开与客户端的连接
 // Parameter:   struct map_session_data * sd
 // Parameter:   enum e_suspend_mode smode
 // Returns:     void
@@ -102,11 +142,32 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 	nullpo_retv(sd);
 	long val[4] = { 0 };
 
+	// 设置 autotrade 标记
 	sd->state.autotrade |= AUTOTRADE_ENABLED;
 	if (smode == SUSPEND_MODE_OFFLINE)
 		sd->state.autotrade |= AUTOTRADE_OFFLINE;
 	else if (smode == SUSPEND_MODE_AFK)
 		sd->state.autotrade |= AUTOTRADE_AFK;
+
+	// 根据战斗配置选项来设置魔物免疫状态
+	if (smode != SUSPEND_MODE_NONE && battle_config.suspend_monsterignore & smode)
+		sd->state.block_action |= PCBLOCK_IMMUNE;
+	else
+		sd->state.block_action &= ~PCBLOCK_IMMUNE;
+
+	// 执行不同挂机模式的一些额外设置
+	switch (smode)
+	{
+	case SUSPEND_MODE_AFK:
+		if (!pc_issit(sd)) {
+			pc_setsit(sd);
+			skill_sit(sd, 1);
+			clif_sitting(&sd->bl);
+		}
+		clif_changelook(&sd->bl, LOOK_HEAD_TOP, 471);
+		clif_specialeffect(&sd->bl, 234, AREA);
+		break;
+	}
 
 	if (Sql_Query(mmysql_handle, "INSERT INTO `%s`(`account_id`, `char_id`, `sex`, `map`, `x`, `y`, `body_direction`, `head_direction`, `sit`, `mode`, `tick`, `val1`, `val2`, `val3`, `val4`) "
 		"VALUES( %d, %d, '%c', '%s', %d, %d, '%d', '%d', '%d', '%hu', '%" PRtf "', '%ld', '%ld', '%ld', '%ld' );",
@@ -123,7 +184,7 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 
 //************************************
 // Method:      suspend_deactive
-// Description: 
+// Description: 反激活某个角色的挂起模式, 下次地图服务器启动将不再自动上线
 // Parameter:   struct map_session_data * sd
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/4/6 18:15
@@ -146,7 +207,7 @@ void suspend_deactive(struct map_session_data* sd) {
 
 //************************************
 // Method:      suspend_suspender_remove
-// Description: 
+// Description: 是否某个具体的 struct s_suspender 结构体
 // Parameter:   struct s_suspender * sp
 // Parameter:   bool remove
 // Returns:     void
@@ -161,7 +222,7 @@ static void suspend_suspender_remove(struct s_suspender* sp, bool remove) {
 
 //************************************
 // Method:      suspend_suspender_free
-// Description: 
+// Description: 用于释放 suspender_db 数据的子函数
 // Parameter:   DBKey key
 // Parameter:   DBData * data
 // Parameter:   va_list ap
@@ -177,7 +238,7 @@ static int suspend_suspender_free(DBKey key, DBData* data, va_list ap) {
 
 //************************************
 // Method:      do_final_suspend
-// Description: 
+// Description: 释放玩家挂起子系统
 // Parameter:   void
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/4/5 22:57
@@ -188,7 +249,7 @@ void do_final_suspend(void) {
 
 //************************************
 // Method:      do_init_suspend
-// Description: 
+// Description: 初始化玩家挂起子系统
 // Parameter:   void
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/4/5 22:58

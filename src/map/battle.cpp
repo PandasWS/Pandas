@@ -8838,6 +8838,30 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_AtCmd_No_Permission
 	{ "atcmd_no_permission",                &battle_config.atcmd_no_permission,             1,      0,      2,              },
 #endif // Pandas_BattleConfig_AtCmd_No_Permission
+#ifdef Pandas_BattleConfig_Suspend_MonsterIgnore
+	{ "suspend_monsterignore",              &battle_config.suspend_monsterignore,           3,      0,      3,              },
+#endif // Pandas_BattleConfig_Suspend_MonsterIgnore
+#ifdef Pandas_BattleConfig_Suspend_Whisper_Response
+	{ "suspend_whisper_response",           &battle_config.suspend_whisper_response,        2,      0,      3,              },
+#endif // Pandas_BattleConfig_Suspend_Whisper_Response
+#ifdef Pandas_BattleConfig_Suspend_Offline_BodyDirection
+	{ "suspend_offline_bodydirection",      &battle_config.suspend_offline_bodydirection,   -1,     -1,     7,              },
+#endif // Pandas_BattleConfig_Suspend_Offline_BodyDirection
+#ifdef Pandas_BattleConfig_Suspend_Offline_HeadDirection
+	{ "suspend_offline_headdirection",      &battle_config.suspend_offline_headdirection,   -1,     -1,     2,              },
+#endif // Pandas_BattleConfig_Suspend_Offline_HeadDirection
+#ifdef Pandas_BattleConfig_Suspend_Offline_Sitdown
+	{ "suspend_offline_sitdown",            &battle_config.suspend_offline_sitdown,         -1,     -1,     1,              },
+#endif // Pandas_BattleConfig_Suspend_Offline_Sitdown
+#ifdef Pandas_BattleConfig_Suspend_AFK_BodyDirection
+	{ "suspend_afk_bodydirection",          &battle_config.suspend_afk_bodydirection,       -1,     -1,     7,              },
+#endif // Pandas_BattleConfig_Suspend_AFK_BodyDirection
+#ifdef Pandas_BattleConfig_Suspend_AFK_Headdirection
+	{ "suspend_afk_headdirection",          &battle_config.suspend_afk_headdirection,       -1,     -1,     2,              },
+#endif // Pandas_BattleConfig_Suspend_AFK_Headdirection
+#ifdef Pandas_BattleConfig_Suspend_AFK_Sitdown
+	{ "suspend_afk_sitdown",                &battle_config.suspend_afk_sitdown,             -1,     -1,     1,              },
+#endif // Pandas_BattleConfig_Suspend_AFK_Sitdown
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };

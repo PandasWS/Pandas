@@ -10471,7 +10471,7 @@ ACMD_FUNC(title) {
 	nullpo_retr(-1, sd);
 
 #if PACKETVER < 20150513
-	clif_displaymessage(fd, msg_txt_cn(sd, 16));	// 很抱歉, 您的客户端版本低于 20150513, 无法使用该指令.
+	clif_displaymessage(fd, msg_txt_cn(sd, 16));		// 很抱歉, 您的客户端版本低于 20150513, 无法使用该指令.
 	return -1;
 #endif
 
@@ -10531,7 +10531,19 @@ ACMD_FUNC(suspend) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 ACMD_FUNC(afk) {
-	// TODO: 请在此填写管理员指令的实现代码
+	nullpo_retr(-1, sd);
+
+	if (pc_isdead(sd)) {
+		// Todo: Message
+		return -1;
+	}
+
+	if (map_flag_vs2(sd->bl.m)) {
+		// todo: message
+		return -1;
+	}
+
+	suspend_active(sd, SUSPEND_MODE_AFK);
 	return 0;
 }
 #endif // Pandas_AtCommand_AFK

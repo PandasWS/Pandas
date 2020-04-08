@@ -296,7 +296,7 @@ struct map_session_data {
 #ifndef Pandas_Struct_Autotrade_Extend
 		unsigned int autotrade : 3;	//By Fantik. &2 Requested by vending autotrade; &4 Requested by buyingstore autotrade
 #else
-		unsigned int autotrade : 4;
+		unsigned int autotrade;
 #endif // Pandas_Struct_Autotrade_Extend
 		unsigned int showdelay :1;
 		unsigned int showexp :1;
