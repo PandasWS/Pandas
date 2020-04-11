@@ -3479,7 +3479,14 @@ static bool intif_parse_StorageReceived(int fd)
 			pc_check_available_item(sd, ITMCHK_CART);
 			if (sd->state.autotrade) {
 				clif_parse_LoadEndAck(sd->fd, sd);
+#ifndef Pandas_Player_Suspend_System
 				sd->autotrade_tid = add_timer(gettick() + battle_config.feature_autotrade_open_delay, pc_autotrade_timer, sd->bl.id, 0);
+#else
+				// 针对离线挂店类型才需要创建 pc_autotrade_timer 定时器
+				if (sd->state.autotrade & AUTOTRADE_VENDING || sd->state.autotrade & AUTOTRADE_BUYINGSTORE) {
+					sd->autotrade_tid = add_timer(gettick() + battle_config.feature_autotrade_open_delay, pc_autotrade_timer, sd->bl.id, 0);
+				}
+#endif // Pandas_Player_Suspend_System
 			}else if( sd->state.prevend ){
 				clif_clearcart(sd->fd);
 				clif_cartlist(sd);

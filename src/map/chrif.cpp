@@ -589,6 +589,10 @@ void chrif_on_ready(void) {
 	{
 		do_init_buyingstore_autotrade();
 		do_init_vending_autotrade();
+#ifdef Pandas_Player_Suspend_System
+		// 将处于离线挂机和离开模式的玩家召回自动上线
+		suspend_recall_online();
+#endif // Pandas_Player_Suspend_System
 		char_init_done = true;
 	}
 }

@@ -14,7 +14,6 @@
 #include "achievement.hpp"
 #include "atcommand.hpp"
 #include "battle.hpp"
-#include "buyingstore.hpp"
 #include "buyingstore.hpp" // struct s_autotrade_entry, struct s_autotrader
 #include "chrif.hpp"
 #include "clif.hpp"
@@ -520,6 +519,9 @@ void vending_reopen( struct map_session_data* sd )
 
 		sd->state.prevend = 1; // Set him into a hacked prevend state
 		sd->state.autotrade = 1;
+#ifdef Pandas_Struct_Autotrade_Extend
+		sd->state.autotrade |= AUTOTRADE_VENDING;
+#endif // Pandas_Struct_Autotrade_Extend
 
 		// Make sure abort all NPCs
 		npc_event_dequeue(sd);

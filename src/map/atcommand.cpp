@@ -6173,6 +6173,14 @@ ACMD_FUNC(autotrade) {
 	}
 
 	sd->state.autotrade = 1;
+
+#ifdef Pandas_Struct_Autotrade_Extend
+	if (sd->vender_id)
+		sd->state.autotrade |= AUTOTRADE_VENDING;
+	else if (sd->buyer_id)
+		sd->state.autotrade |= AUTOTRADE_BUYINGSTORE;
+#endif // Pandas_Struct_Autotrade_Extend
+
 	if (battle_config.autotrade_monsterignore)
 		sd->state.block_action |= PCBLOCK_IMMUNE;
 
@@ -10471,7 +10479,7 @@ ACMD_FUNC(title) {
 	nullpo_retr(-1, sd);
 
 #if PACKETVER < 20150513
-	clif_displaymessage(fd, msg_txt_cn(sd, 16));	// 很抱歉, 您的客户端版本低于 20150513, 无法使用该指令.
+	clif_displaymessage(fd, msg_txt_cn(sd, 16));		// 很抱歉, 您的客户端版本低于 20150513, 无法使用该指令.
 	return -1;
 #endif
 
@@ -10497,6 +10505,56 @@ ACMD_FUNC(title) {
 	return 0;
 }
 #endif // Pandas_AtCommand_Title
+
+#ifdef Pandas_AtCommand_Suspend
+/* ===========================================================
+ * 指令: suspend
+ * 描述: 使角色进入离线挂机模式, 维持当前的全部状态 (朝向, 站立与否)
+ * 用法: @suspend
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+ACMD_FUNC(suspend) {
+	nullpo_retr(-1, sd);
+
+	if (pc_isdead(sd)) {
+		clif_displaymessage(fd, msg_txt_cn(sd, 81)); // You cannot enter suspend mode when dead.
+		return -1;
+	}
+
+	if (map_flag_vs2(sd->bl.m)) {
+		clif_displaymessage(fd, msg_txt_cn(sd, 82)); // You cannot enter suspend mode on this map.
+		return -1;
+	}
+
+	suspend_active(sd, SUSPEND_MODE_OFFLINE);
+	return 0;
+}
+#endif // Pandas_AtCommand_Suspend
+
+#ifdef Pandas_AtCommand_AFK
+/* ===========================================================
+ * 指令: afk
+ * 描述: 使角色进入离开模式, 角色将会坐到地上并自动使用 AFK 头饰
+ * 用法: @afk
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+ACMD_FUNC(afk) {
+	nullpo_retr(-1, sd);
+
+	if (pc_isdead(sd)) {
+		clif_displaymessage(fd, msg_txt_cn(sd, 83)); // You cannot enter afk mode when dead.
+		return -1;
+	}
+
+	if (map_flag_vs2(sd->bl.m)) {
+		clif_displaymessage(fd, msg_txt_cn(sd, 84)); // You cannot enter afk mode on this map.
+		return -1;
+	}
+
+	suspend_active(sd, SUSPEND_MODE_AFK);
+	return 0;
+}
+#endif // Pandas_AtCommand_AFK
 
 // PYHELP - ATCMD - INSERT POINT - <Section 2>
 
@@ -10524,6 +10582,12 @@ void atcommand_basecommands(void) {
 #ifdef Pandas_AtCommand_Title
 		ACMD_DEF(title),				// 给角色设置一个指定的称号ID [Sola丶小克]
 #endif // Pandas_AtCommand_Title
+#ifdef Pandas_AtCommand_Suspend
+		ACMD_DEF(suspend),				// 使角色进入离线挂机模式 [Sola丶小克]
+#endif // Pandas_AtCommand_Suspend
+#ifdef Pandas_AtCommand_AFK
+		ACMD_DEF(afk),					// 使角色进入离开模式 [Sola丶小克]
+#endif // Pandas_AtCommand_AFK
 		// PYHELP - ATCMD - INSERT POINT - <Section 3>
 
 #include "../custom/atcommand_def.inc"

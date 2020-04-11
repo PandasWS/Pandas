@@ -161,6 +161,9 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="suspend.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="achievement.cpp">
@@ -296,6 +299,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mobdrop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="suspend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
