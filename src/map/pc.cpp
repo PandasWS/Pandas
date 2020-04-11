@@ -5915,6 +5915,14 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) ) // Player with autotrade just causes clif glitch! @ FIXME
 		return SETPOS_AUTOTRADE;
 
+#ifdef Pandas_Struct_Autotrade_Extend
+	// 简单处理一下, 防止角色被 recall 等指令召唤到其他位置.
+	// 由于这里暂时没有区分返回值, 客户端给予的提示信息可能会表示当前玩家是因为在离线挂店而无法被召唤
+	// 但这个角色可能并不处于离线挂店模式, 而可能是离线挂机或者离开模式.
+	if (!sd->state.connect_new && sd->state.autotrade)
+		return SETPOS_AUTOTRADE;
+#endif // Pandas_Struct_Autotrade_Extend
+
 	if( battle_config.revive_onwarp && pc_isdead(sd) ) { //Revive dead people before warping them
 		pc_setstand(sd, true);
 		pc_setrestartvalue(sd,1);
