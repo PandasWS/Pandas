@@ -611,6 +611,9 @@ void buyingstore_reopen( struct map_session_data* sd ){
 		}
 
 		sd->state.autotrade = 1;
+#ifdef Pandas_Struct_Autotrade_Extend
+		sd->state.autotrade |= AUTOTRADE_BUYINGSTORE;
+#endif // Pandas_Struct_Autotrade_Extend
 
 		// Make sure abort all NPCs
 		npc_event_dequeue(sd);

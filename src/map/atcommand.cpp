@@ -6173,6 +6173,14 @@ ACMD_FUNC(autotrade) {
 	}
 
 	sd->state.autotrade = 1;
+
+#ifdef Pandas_Struct_Autotrade_Extend
+	if (sd->vender_id)
+		sd->state.autotrade |= AUTOTRADE_VENDING;
+	else if (sd->buyer_id)
+		sd->state.autotrade |= AUTOTRADE_BUYINGSTORE;
+#endif // Pandas_Struct_Autotrade_Extend
+
 	if (battle_config.autotrade_monsterignore)
 		sd->state.block_action |= PCBLOCK_IMMUNE;
 
@@ -10509,12 +10517,12 @@ ACMD_FUNC(suspend) {
 	nullpo_retr(-1, sd);
 
 	if (pc_isdead(sd)) {
-		// Todo: Message
+		clif_displaymessage(fd, msg_txt_cn(sd, 81)); // You cannot enter suspend mode when dead.
 		return -1;
 	}
 
 	if (map_flag_vs2(sd->bl.m)) {
-		// todo: message
+		clif_displaymessage(fd, msg_txt_cn(sd, 82)); // You cannot enter suspend mode on this map.
 		return -1;
 	}
 
@@ -10526,7 +10534,7 @@ ACMD_FUNC(suspend) {
 #ifdef Pandas_AtCommand_AFK
 /* ===========================================================
  * 指令: afk
- * 描述: 使角色进入离开模式, 角色将会坐到地上并自动使用 AFK 头饰 (表示角色暂时离开)
+ * 描述: 使角色进入离开模式, 角色将会坐到地上并自动使用 AFK 头饰
  * 用法: @afk
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
@@ -10534,12 +10542,12 @@ ACMD_FUNC(afk) {
 	nullpo_retr(-1, sd);
 
 	if (pc_isdead(sd)) {
-		// Todo: Message
+		clif_displaymessage(fd, msg_txt_cn(sd, 83)); // You cannot enter afk mode when dead.
 		return -1;
 	}
 
 	if (map_flag_vs2(sd->bl.m)) {
-		// todo: message
+		clif_displaymessage(fd, msg_txt_cn(sd, 84)); // You cannot enter afk mode on this map.
 		return -1;
 	}
 
