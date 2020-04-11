@@ -676,23 +676,50 @@ struct Battle_Config
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
-	int force_loadevent; // 强制触发 OnPCLoadMapEvent 事件 [Sola丶小克]
+	int force_loadevent;					// 强制触发 OnPCLoadMapEvent 事件 [Sola丶小克]
 #endif // Pandas_BattleConfig_Force_LoadEvent
 #ifdef Pandas_BattleConfig_Force_Identified
-	int force_identified; // 强制特定渠道获得的装备自动变成已鉴定 [Sola丶小克]
+	int force_identified;					// 强制特定渠道获得的装备自动变成已鉴定 [Sola丶小克]
 #endif // Pandas_BattleConfig_Force_Identified
 #ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
-	int cashmount_useitem_limit; // 乘坐“商城坐骑”时禁止使用特定类型的物品 [Sola丶小克]
+	int cashmount_useitem_limit;			// 乘坐“商城坐骑”时禁止使用特定类型的物品 [Sola丶小克]
 #endif // Pandas_BattleConfig_CashMounting_UseitemLimit
 #ifdef Pandas_BattleConfig_MaxAspdForPVP
-	int max_aspd_for_pvp; // 限制玩家在 PVP 地图上的最大攻速 [Sola丶小克]
+	int max_aspd_for_pvp;					// 限制玩家在 PVP 地图上的最大攻速 [Sola丶小克]
 #endif // Pandas_BattleConfig_MaxAspdForPVP
 #ifdef Pandas_BattleConfig_MaxAspdForGVG
-	int max_aspd_for_gvg; // 限制玩家在 GVG 地图上的最大攻速 [Sola丶小克]
+	int max_aspd_for_gvg;					// 限制玩家在 GVG 地图上的最大攻速 [Sola丶小克]
 #endif // Pandas_BattleConfig_MaxAspdForGVG
 #ifdef Pandas_BattleConfig_AtCmd_No_Permission
-	int atcmd_no_permission; // 当没有权限的玩家执行了 GM 指令时的处理策略 [Sola丶小克]
+	int atcmd_no_permission;				// 当没有权限的玩家执行了 GM 指令时的处理策略 [Sola丶小克]
 #endif // Pandas_BattleConfig_AtCmd_No_Permission
+#ifdef Pandas_BattleConfig_Suspend_MonsterIgnore
+	int suspend_monsterignore;				// 当玩家使用挂机系列指令时, 处于哪些模式不会被魔物攻击 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_MonsterIgnore
+#ifdef Pandas_BattleConfig_Suspend_Whisper_Response
+	int suspend_whisper_response;			// 当玩家使用挂机系列指令时, 处于哪些模式会自动回复私聊讯息 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_Whisper_Response
+#ifdef Pandas_BattleConfig_Suspend_Offline_BodyDirection
+	int suspend_offline_bodydirection;		// 当玩家进入离线挂机模式时, 地图服务器重启后的身体朝向哪里 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_Offline_BodyDirection
+#ifdef Pandas_BattleConfig_Suspend_Offline_HeadDirection
+	int suspend_offline_headdirection;		// 当玩家进入离线挂机模式时, 地图服务器重启后的头部朝向哪里 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_Offline_HeadDirection
+#ifdef Pandas_BattleConfig_Suspend_Offline_Sitdown
+	int suspend_offline_sitdown;			// 当玩家进入离线挂机模式时, 地图服务器重启后处于站立还是坐下状态 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_Offline_Sitdown
+#ifdef Pandas_BattleConfig_Suspend_AFK_BodyDirection
+	int suspend_afk_bodydirection;			// 当玩家进入离开模式时, 地图服务器重启后的身体朝向哪里 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_AFK_BodyDirection
+#ifdef Pandas_BattleConfig_Suspend_AFK_Headdirection
+	int suspend_afk_headdirection;			// 当玩家进入离开模式时, 地图服务器重启后的头部朝向哪里 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_AFK_Headdirection
+#ifdef Pandas_BattleConfig_Suspend_AFK_Sitdown
+	int suspend_afk_sitdown;				// 当玩家进入离开模式时, 地图服务器重启后处于站立还是坐下状态 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_AFK_Sitdown
+#ifdef Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
+	int suspend_afk_headtop_viewid;			// 当玩家进入离开模式时, 将头饰上的更换为哪一个指定的头饰外观编号 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

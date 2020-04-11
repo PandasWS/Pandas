@@ -156,6 +156,13 @@
 		// 结构体修改定位 npc.hpp -> npc_data.pandas.destruction_strategy
 		#define Pandas_Struct_Npc_Data_DestructionStrategy
 	#endif // Pandas_Struct_Npc_Data_Pandas
+
+	// 对离线挂店 autotrade 的定义进行拓展处理 [Sola丶小克]
+	// 进行拓展处理之后能够在代码改动较少的情况下, 更好的支持多种不同类型的 "离线挂店" 行为
+	//
+	// 在默认情况下 sd->state.autotrade 的值若为 0 则表示没有离线挂店
+	// 若非零的话则表示启用了离线挂店, 且 &2 表示开启的是离线摆摊挂店 &3 表示开启的是离线收购挂店
+	#define Pandas_Struct_Autotrade_Extend
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -189,6 +196,42 @@
 	// 是否启用 atcmd_no_permission 配置选项及其功能 [Sola丶小克]
 	// 此选项用于指定没有指令权限的玩家, 在执行了管理员指令时的处理策略
 	#define Pandas_BattleConfig_AtCmd_No_Permission
+
+	// 是否启用 suspend_monsterignore 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家使用挂机系列指令时, 哪些模式不会被魔物攻击 (掩码选项)
+	#define Pandas_BattleConfig_Suspend_MonsterIgnore
+
+	// 是否启用 suspend_whisper_response 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家使用挂机系列指令时, 处于哪些模式会自动回复私聊讯息 (掩码选项)
+	#define Pandas_BattleConfig_Suspend_Whisper_Response
+
+	// 是否启用 suspend_offline_bodydirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离线挂机模式时, 地图服务器重启后的身体朝向哪里
+	#define Pandas_BattleConfig_Suspend_Offline_BodyDirection
+
+	// 是否启用 suspend_offline_headdirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离线挂机模式时, 地图服务器重启后的头部朝向哪里
+	#define Pandas_BattleConfig_Suspend_Offline_HeadDirection
+
+	// 是否启用 suspend_offline_sitdown 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离线挂机模式时, 地图服务器重启后处于站立还是坐下状态
+	#define Pandas_BattleConfig_Suspend_Offline_Sitdown
+
+	// 是否启用 suspend_afk_bodydirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离开模式时, 地图服务器重启后的身体朝向哪里
+	#define Pandas_BattleConfig_Suspend_AFK_BodyDirection
+
+	// 是否启用 suspend_afk_headdirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离开模式时, 地图服务器重启后的头部朝向哪里
+	#define Pandas_BattleConfig_Suspend_AFK_Headdirection
+
+	// 是否启用 suspend_afk_sitdown 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入离开模式时, 地图服务器重启后处于站立还是坐下状态
+	#define Pandas_BattleConfig_Suspend_AFK_Sitdown
+
+	// 是否启用 suspend_afk_headtop_viewid 配置选项及其功能 [Sola丶小克]
+	// 此选项用于当玩家进入离开模式时, 将头饰上的更换为哪一个指定的头饰外观编号
+	#define Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
@@ -369,6 +412,16 @@
 	#ifdef _WIN32
 		#define Pandas_MySQL_SSL_Mode_Disabled
 	#endif // _WIN32
+
+	// 以下选项开关需要依赖 Pandas_Struct_Autotrade_Extend 的拓展
+	#ifdef Pandas_Struct_Autotrade_Extend
+		// 是否启用玩家挂起子系统 (在原来离线挂店的基础上, 额外新增两种不同类型的挂起方式)
+		// 方式一: @suspend - 离线挂机, 角色在游戏内将永久在线
+		// 方式二: @afk - 离开模式, 角色头上会顶一个 AFK 帽子并坐到地上
+		// 上述这两种方式都是 autotrade 的拓展, 因此需要依赖 Pandas_Struct_Autotrade_Extend 的调整
+		#define Pandas_Player_Suspend_System
+	#endif // Pandas_Struct_Autotrade_Extend
+
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -741,6 +794,14 @@
 		// 给角色设置一个指定的称号ID, 客户端封包版本大于等于 20150513 才可用
 		#define Pandas_AtCommand_Title
 	#endif // Pandas_Character_Title_Controller
+
+	// 是否启用 suspend 管理员指令 [Sola丶小克]
+	// 使角色进入离线挂机模式, 维持当前的全部状态 (朝向, 站立与否)
+	#define Pandas_AtCommand_Suspend
+
+	// 是否启用 afk 管理员指令 [Sola丶小克]
+	// 使角色进入离开模式, 角色将会坐到地上并自动使用 AFK 头饰 (表示角色暂时离开)
+	#define Pandas_AtCommand_AFK
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 

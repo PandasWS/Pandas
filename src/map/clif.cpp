@@ -1129,6 +1129,12 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 		return packet_len(0x7c);
 	}
 #endif
+
+#ifdef Pandas_Player_Suspend_System
+	if (sd && bl->type == BL_PC)
+		suspend_set_unit_idle(sd, buf);
+#endif // Pandas_Player_Suspend_System
+
 #if PACKETVER >= 20110111
 	WBUFW(buf,34) = vd->robe;
 	offset+= 2;
@@ -1288,6 +1294,10 @@ static int clif_set_unit_walking(struct block_list* bl, struct unit_data* ud, un
 	WBUFW(buf,32) = vd->hair_color;
 	WBUFW(buf,34) = vd->cloth_color;
 	WBUFW(buf,36) = (sd)? sd->head_dir : 0;
+#ifdef Pandas_Player_Suspend_System
+	if (sd && bl->type == BL_PC)
+		suspend_set_unit_walking(sd, buf);
+#endif // Pandas_Player_Suspend_System
 #if PACKETVER >= 20110111
 	WBUFW(buf,38) = vd->robe;
 	offset+= 2;
@@ -9289,6 +9299,12 @@ void clif_GM_kick(struct map_session_data *sd, struct map_session_data *tsd)
 	if (sd == NULL)
 		tsd->state.keepshop = true;
 
+#ifdef Pandas_Player_Suspend_System
+	// 若 sd 为 NULL 则表示是地图服务器在踢人 [Sola丶小克]
+	if (sd == NULL)
+		tsd->state.keepsuspend = true;
+#endif // Pandas_Player_Suspend_System
+
 	if (fd > 0)
 		clif_authfail_fd(fd, 15);
 	else
@@ -10998,6 +11014,10 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 
 	sd->state.connect_new = 0;
 	sd->state.changemap = false;
+
+#ifdef Pandas_Player_Suspend_System
+	suspend_recall_postfix(sd);
+#endif // Pandas_Player_Suspend_System
 }
 
 
@@ -11709,12 +11729,32 @@ void clif_parse_WisMessage(int fd, struct map_session_data* sd)
 		return;
 	}
 
+#ifndef Pandas_Struct_Autotrade_Extend
 	// if player is autotrading
 	if (dstsd->state.autotrade == 1){
 		safesnprintf(output,sizeof(output),"%s is in autotrade mode and cannot receive whispered messages.", dstsd->status.name);
 		clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
 		return;
 	}
+#else
+	if (dstsd->state.autotrade & AUTOTRADE_ENABLED) {
+		if (dstsd->state.autotrade & AUTOTRADE_VENDING || dstsd->state.autotrade & AUTOTRADE_BUYINGSTORE) {
+			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 19), dstsd->status.name);
+			clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
+			return;
+		}
+		else if (dstsd->state.autotrade & AUTOTRADE_OFFLINE && battle_config.suspend_whisper_response & SUSPEND_MODE_OFFLINE) {
+			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 20), dstsd->status.name);
+			clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
+			return;
+		}
+		else if (dstsd->state.autotrade & AUTOTRADE_AFK && battle_config.suspend_whisper_response & SUSPEND_MODE_AFK) {
+			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 21), dstsd->status.name);
+			clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
+			return;
+		}
+	}
+#endif // Pandas_Struct_Autotrade_Extend
 
 	if (pc_get_group_level(sd) <= pc_get_group_level(dstsd)) {
 		// if player ignores the source character
@@ -21612,7 +21652,16 @@ static int clif_parse(int fd)
 				//Disassociate character from the socket connection.
 				session[fd]->session_data = NULL;
 				sd->fd = 0;
+#ifndef Pandas_Struct_Autotrade_Extend
 				ShowInfo("Character '" CL_WHITE "%s" CL_RESET "' logged off (using @autotrade).\n", sd->status.name);
+#else
+				if (sd->state.autotrade & AUTOTRADE_OFFLINE)
+					ShowInfo("Character '" CL_WHITE "%s" CL_RESET "' logged off (using @suspend).\n", sd->status.name);
+				else if (sd->state.autotrade & AUTOTRADE_AFK)
+					ShowInfo("Character '" CL_WHITE "%s" CL_RESET "' logged off (using @afk).\n", sd->status.name);
+				else
+					ShowInfo("Character '" CL_WHITE "%s" CL_RESET "' logged off (using @autotrade).\n", sd->status.name);
+#endif // Pandas_Struct_Autotrade_Extend
 			} else
 			if (sd->state.active) {
 				// Player logout display [Valaris]

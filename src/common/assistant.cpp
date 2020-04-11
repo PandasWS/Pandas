@@ -249,10 +249,11 @@ bool getExecuteFileDirectory(std::string& outFileDirectory) {
 }
 
 //************************************
-// Method:		isDirectoryExistss
-// Description:	判断目录是否存在 (跨平台支持)
-// Parameter:	const std::string & path
-// Returns:		bool
+// Method:      isDirectoryExists
+// Description: 判断目录是否存在 (跨平台支持)
+// Parameter:   const std::string & path
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2020/4/5 18:55
 //************************************
 bool isDirectoryExists(const std::string& path) {
 	try
@@ -269,10 +270,11 @@ bool isDirectoryExists(const std::string& path) {
 }
 
 //************************************
-// Method:		makeDirectories
-// Description:	创建多层目录 (跨平台支持)
-// Parameter:	const std::string & path
-// Returns:		bool
+// Method:      makeDirectories
+// Description: 创建多层目录 (跨平台支持)
+// Parameter:   const std::string & path
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2020/4/5 18:55
 //************************************
 bool makeDirectories(const std::string& path) {
 	try
@@ -377,12 +379,13 @@ bool copyFile(std::string from, std::string to) {
 }
 
 //************************************
-// Method:		strReplace
-// Description:	用于对 std::string 进行全部替换操作
-// Parameter:	std::string & str
-// Parameter:	const std::string & from
-// Parameter:	const std::string & to
-// Returns:		void
+// Method:      strReplace
+// Description: 用于对 std::string 进行全部替换操作
+// Parameter:   std::string & str
+// Parameter:   const std::string & from
+// Parameter:   const std::string & to
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/4/5 18:55
 //************************************
 void strReplace(std::string& str, const std::string& from, const std::string& to) {
 	if (from.empty())
@@ -395,12 +398,13 @@ void strReplace(std::string& str, const std::string& from, const std::string& to
 }
 
 //************************************
-// Method:		strReplace
-// Description:	用于对 std::wstring 进行全部替换操作
-// Parameter:	std::wstring & str
-// Parameter:	const std::wstring & from
-// Parameter:	const std::wstring & to
-// Returns:		void
+// Method:      strReplace
+// Description: 用于对 std::wstring 进行全部替换操作
+// Parameter:   std::wstring & str
+// Parameter:   const std::wstring & from
+// Parameter:   const std::wstring & to
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/4/5 18:55
 //************************************
 void strReplace(std::wstring& str, const std::wstring& from, const std::wstring& to) {
 	if (from.empty())
