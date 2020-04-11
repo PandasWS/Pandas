@@ -1,4 +1,4 @@
-﻿
+
 -- upgrade_20190628.sql
 
 ALTER TABLE `mob_db`

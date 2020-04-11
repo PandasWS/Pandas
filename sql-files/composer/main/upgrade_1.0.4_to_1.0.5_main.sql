@@ -1,4 +1,5 @@
-﻿--
+
+--
 -- Pandas Table structure for table `suspend`
 --
 
