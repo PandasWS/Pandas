@@ -422,6 +422,9 @@
 		#define Pandas_Player_Suspend_System
 	#endif // Pandas_Struct_Autotrade_Extend
 
+	// 使公会的初始化人数以及“扩充组合体制”(GD_EXTENSION)每级增加人数可被宏定义 [Sola丶小克]
+	// 拓展出来两个宏: GUILD_INITIAL_MEMBER(初始化人数) 和 GUILD_EXTENSION_PERLEVEL (扩充组合体制每级增加人数)
+	#define Pandas_Guild_Extension_Configure
 #endif // Pandas_CreativeWork
 
 // ============================================================================

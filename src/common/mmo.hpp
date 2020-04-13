@@ -61,7 +61,20 @@
 #define MAX_STORAGE 600 ///Max number of storage slots a player can have
 #define MAX_GUILD_STORAGE 600 ///Max number of storage slots a guild
 #define MAX_PARTY 12 ///Max party member
+
+#ifndef Pandas_Guild_Extension_Configure
 #define MAX_GUILD 16+10*6	///Increased max guild members +6 per 1 extension levels [Lupus]
+#else
+#ifndef GUILD_INITIAL_MEMBER
+	#define GUILD_INITIAL_MEMBER 16
+#endif // MAX_GUILD_INITIAL_MEMBER
+#ifndef GUILD_EXTENSION_PERLEVEL
+	#define GUILD_EXTENSION_PERLEVEL 6
+#endif // GUILD_EXTENSION_PERLEVEL
+// 使 MAX_GUILD 的值能够通过上述两个宏定义计算而来 [Sola丶小克]
+#define MAX_GUILD GUILD_INITIAL_MEMBER + 10 * GUILD_EXTENSION_PERLEVEL
+#endif // Pandas_Guild_Extension_Configure
+
 #define MAX_GUILDPOSITION 20	///Increased max guild positions to accomodate for all members [Valaris] (removed) [PoW]
 #define MAX_GUILDEXPULSION 32 ///Max Guild expulsion
 #define MAX_GUILDALLIANCE 16 ///Max Guild alliance
