@@ -8882,15 +8882,8 @@ int battle_set_value(const char* w1, const char* w2)
 
 	int i;
 	ARR_FIND(0, ARRAYLENGTH(battle_data), i, strcmpi(w1, battle_data[i].str) == 0);
-#ifndef Pandas_BattleConfig_Verification
 	if (i == ARRAYLENGTH(battle_data))
 		return 0; // not found
-#else
-	if (i == ARRAYLENGTH(battle_data)) {
-		ShowWarning("battle_set_value: Could not find the option name '%s' in Battle Configuration Files.\n", w1);
-		return 0; // not found
-	}
-#endif // Pandas_BattleConfig_Verification
 
 	if (val < battle_data[i].min || val > battle_data[i].max) {
 		ShowWarning("Value for setting '%s': %s is invalid (min:%i max:%i)! Defaulting to %i...\n", w1, w2, battle_data[i].min, battle_data[i].max, battle_data[i].defval);
@@ -9137,7 +9130,11 @@ int battle_config_read(const char* cfgName)
 					*symbol != atcommand_symbol)
 					charcommand_symbol = *symbol;
 			}else if( battle_set_value(w1, w2) == 0 )
+#ifndef Pandas_BattleConfig_Verification
 				ShowWarning("Unknown setting '%s' in file %s\n", w1, cfgName);
+#else
+				ShowWarning("Unknown battle configuration option '%s' in file %s\n", w1, cfgName);
+#endif // Pandas_BattleConfig_Verification
 		}
 
 		fclose(fp);
