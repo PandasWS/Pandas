@@ -10,6 +10,30 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+## [v1.0.5] - `2020-04-20`
+
+### 添加
+
+- 拓展离线挂机的不同种类, 延展出离线挂机模式和离开模式 (#260)
+
+### 修正
+
+- 修正 `nomail` 地图标记存在部分功能失效的问题 (#259)
+- 修正使用 `delchar` 脚本指令会导致地图服务器崩溃的问题 (#263)
+- 修正读取 UTF8-BOM 编码的文件时可能出现多余的空行 (#264)
+
+### 调整
+
+- 与 MySQL 数据库建立连接时主动禁用 SSL 模式 (#257)
+- 将第三方组件模块 `libmysql.dll` 升级到 6.1.11 版本 (#258)
+- 汉化部分行为明确的战斗配置选项描述和说明 (#261)
+- 使公会的初始人数和扩充组合体制每级增加人数可被宏定义 (#262)
+- 调整战斗配置选项与服务端不匹配时的一些错误提示 (#265)
+
+### 升级
+
+- 从 `1.0.4` 升级到 `1.0.5` 请在主数据库导入: `upgrade_1.0.4_to_1.0.5_main.sql`
+
 ## [v1.0.4] - `2020-03-23`
 
 ### 添加
@@ -137,6 +161,7 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.0.5]: https://github.com/PandasWS/Pandas/compare/v1.0.4...v1.0.5
 [v1.0.4]: https://github.com/PandasWS/Pandas/compare/v1.0.3...v1.0.4
 [v1.0.3]: https://github.com/PandasWS/Pandas/compare/v1.0.2...v1.0.3
 [v1.0.2]: https://github.com/PandasWS/Pandas/compare/v1.0.1...v1.0.2
