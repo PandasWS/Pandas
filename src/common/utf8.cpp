@@ -526,13 +526,6 @@ char* PandasUtf8::fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
 	std::string line(buffer);
 	delete[] buffer;
 
-	// 若为注释行则直接返回空即可, fgets 每次调用读取一行文本
-	// 所以在这里若发现是 // 开头的行则直接返回空, 应该不影响现有程序逻辑
-	if (line.rfind("//", 0) == 0) {
-		memset(_Buffer, 0, _MaxCount);
-		return fgets_result;
-	}
-
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
 	std::string ansi = PandasUtf8::utf8ToAnsi(line);
 	memset(_Buffer, 0, _MaxCount);
