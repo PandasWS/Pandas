@@ -116,7 +116,7 @@ bool hasCallfunc(std::string script) {
 #ifdef Pandas_MapFlag_NoMail
 //************************************
 // Method:		mapflag_helper_nomail
-// Description:	封装一下以便进行 nomail 效果的实现
+// Description:	玩家的所在的地图是否启用了 nomail 地图标记
 // Parameter:	struct map_session_data * sd
 // Returns:		bool 是否禁用邮件系统
 //************************************
