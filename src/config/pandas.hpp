@@ -525,6 +525,11 @@
 	//
 	// 感谢"聽風"指出重现此问题的条件和环境
 	#define Pandas_Crashfix_Unloadnpc_In_Event
+
+	// 修正 delchar 指令可能会导致地图服务器崩溃的问题 [Sola丶小克]
+    // 会导致崩溃的示例脚本:
+	// .@m$ = delchar("", 0);
+	#define Pandas_Crashfix_ScriptCommand_Delchar
 #endif // Pandas_Crashfix
 
 // ============================================================================
