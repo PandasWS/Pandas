@@ -16315,7 +16315,11 @@ BUILDIN_FUNC(delchar)
 	char *output;
 	size_t len = strlen(str);
 
+#ifndef Pandas_Crashfix_ScriptCommand_Delchar
 	if(index < 0 || index > len) {
+#else
+	if(index < 0 || index > len || !len) {
+#endif // Pandas_Crashfix_ScriptCommand_Delchar
 		//return original
 		output = aStrdup(str);
 		script_pushstr(st, output);
