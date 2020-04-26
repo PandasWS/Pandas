@@ -350,7 +350,8 @@ def guide(inject):
 
     # 0 为 Event 类型的事件 | 1 为 Filter 类型的事件 | 2 为 Express 类型的事件
     eventtype = Inputer().requireSelect({
-        'name' : '想创建的 NPC 事件类型',
+        'prompt' : '想创建的 NPC 事件类型',
+        'option_name' : '事件类型',
         'data' : eventlist
     })
 

@@ -50,25 +50,26 @@ class Inputer:
 
     def requireSelect(self, options):
         print('-' * 70)
-        select_name = options['name']
+        prompt = options['prompt']
+        option_name = options['option_name']
         select_data = options['data']
-        Message.ShowSelect('请选择%s, 可选值为 [0~%d], 分别代表:' % (select_name, len(select_data) - 1))
+        Message.ShowSelect('请选择%s, 可选值为 [0~%d], 分别代表:' % (prompt, len(select_data) - 1))
         print('')
         for select in select_data:
             Message.ShowMenu('%s' % select['desc'])
         print('')
-        Message.ShowSelect('请选择%s [0~%d]:' % (select_name, len(select_data) - 1), end = "")
+        Message.ShowSelect('请选择%s [0~%d]:' % (prompt, len(select_data) - 1), end = "")
         user_select = input()
 
         if not user_select or not user_select.isnumeric():
-            Message.ShowError('您输入了无效的地图标记类型, 程序终止')
+            Message.ShowError('您选择了无效的%s, 程序终止' % (option_name if option_name is not None else '选项'))
             print('-' * 70)
             Common.exit_with_pause(-1)
 
         user_select = int(user_select)
 
         if user_select < 0 or user_select >= len(select_data):
-            Message.ShowError('您输入了无效的地图标记类型, 程序终止')
+            Message.ShowError('您选择了无效的%s, 程序终止' % (option_name if option_name is not None else '选项'))
             print('-' * 70)
             Common.exit_with_pause(-1)
 
