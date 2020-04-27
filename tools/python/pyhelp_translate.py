@@ -292,11 +292,28 @@ class ReplaceController():
         if not savefile:
             savefile = filename
         
+        Message.ShowInfo('正在处理: %s (保存成 %s 编码)' % (filename, self.__save_encoding))
+
         contents = self.__load(filename)
         contents = self.__process(contents)
         return self.__save(contents, savefile)
 
+def process(lang = 'zh-cn'):
+    for v in configures:
+        operate_params = v['operate_params']
+        operate_params['lang'] = lang
+        operate = globals()[v['operate']](**operate_params)
 
+        if 'filepath' in v:
+            for path in v['filepath']:
+                fullpath = os.path.abspath(project_slndir + path)
+                operate.execute(fullpath)
+        
+        if 'globpath' in v:
+            for path in v['globpath']:
+                files = glob.glob(os.path.abspath(project_slndir + path), recursive=True)
+                for x in files:
+                    operate.execute(x)
 
 def main():
     '''
@@ -319,21 +336,7 @@ def main():
         ]
     })
 
-    for v in configures:
-        operate_params = v['operate_params']
-        operate_params['lang'] = 'zh-cn' if langtype == 0 else 'zh-tw'
-        operate = globals()[v['operate']](**operate_params)
-
-        if 'filepath' in v:
-            for path in v['filepath']:
-                fullpath = os.path.abspath(project_slndir + path)
-                operate.execute(fullpath)
-        
-        if 'globpath' in v:
-            for path in v['globpath']:
-                files = glob.glob(os.path.abspath(project_slndir + path), recursive=True)
-                for x in files:
-                    operate.execute(x)
+    process('zh-cn' if langtype == 0 else 'zh-tw')
 
     Common.exit_with_pause()
 
