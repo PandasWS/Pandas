@@ -14,9 +14,11 @@
 
 # -*- coding: utf-8 -*-
 
+import glob
 import os
 import re
-from libs import Common, Message, Inputer
+
+from libs import Common, Inputer, Message
 
 # 切换工作目录为脚本所在目录
 os.chdir(os.path.split(os.path.realpath(__file__))[0])
@@ -33,7 +35,9 @@ configures = [
             'pattern' : r'(//|)(\d+)(,.*?,)(.*?)(,.*?)$',
             'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>',
             'id_pos' : 2,
-            'replace_pos' : 4
+            'replace_pos' : 4,
+            'replace_escape' : False,
+            'save_encoding' : 'UTF-8-SIG'
         },
         'filepath' : [
             'db/re/item_db.txt',
@@ -47,7 +51,9 @@ configures = [
             'pattern' : r'(//|)(\d+)(,.*?,)(.*?)(,.*?)$',
             'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>',
             'id_pos' : 2,
-            'replace_pos' : 4
+            'replace_pos' : 4,
+            'replace_escape' : False,
+            'save_encoding' : 'UTF-8-SIG'
         },
         'filepath' : [
             'db/re/mob_db.txt',
@@ -61,7 +67,9 @@ configures = [
             'pattern' : r'(//|)(.*?,)(\d+)(,.*?)(.*?)(,.*)',
             'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>\g<6>',
             'id_pos' : 3,
-            'replace_pos' : 5
+            'replace_pos' : 5,
+            'replace_escape' : False,
+            'save_encoding' : 'UTF-8-SIG'
         },
         'filepath' : [
             'db/re/mob_boss.txt',
@@ -82,7 +90,9 @@ configures = [
             'pattern' : r'(//.*?|.*?)(\d+)(.*?//)(.*)',
             'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>',
             'id_pos' : 2,
-            'replace_pos' : 4
+            'replace_pos' : 4,
+            'replace_escape' : False,
+            'save_encoding' : 'UTF-8-SIG'
         },
         'filepath' : [
             'db/re/item_flag.txt',
@@ -108,7 +118,9 @@ configures = [
             'pattern' : r'(//.*?,|.*?,)(\d+)(.*?//)(.*)',
             'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>',
             'id_pos' : 2,
-            'replace_pos' : 4
+            'replace_pos' : 4,
+            'replace_escape' : False,
+            'save_encoding' : 'UTF-8-SIG'
         },
         'filepath' : [
             'db/re/item_bluebox.txt',
@@ -123,6 +135,36 @@ configures = [
             'db/pre-re/item_misc.txt',
             'db/re/item_package.txt',
             'db/item_findingore.txt'
+        ]
+    },
+    {
+        'operate' : 'ReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'itemname',
+            'pattern' : r"(.*?\()(\d+)(,.*?,')(.*?)(',.*)",
+            'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>',
+            'id_pos' : 2,
+            'replace_pos' : 4,
+            'replace_escape' : True,
+            'save_encoding' : 'UTF-8'
+        },
+        'globpath' : [
+            'sql-files/**/*item_db*.sql'
+        ]
+    },
+    {
+        'operate' : 'ReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'mobname',
+            'pattern' : r"(.*?\()(\d+)(,.*?,')(.*?)(',.*)",
+            'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>',
+            'id_pos' : 2,
+            'replace_pos' : 4,
+            'replace_escape' : True,
+            'save_encoding' : 'UTF-8'
+        },
+        'globpath' : [
+            'sql-files/**/*mob_db*.sql'
         ]
     }
 ]
@@ -178,11 +220,13 @@ class TranslateDatabase():
         return None
 
 class ReplaceController():
-    def __init__(self, transdb_name, pattern, replace_sub, id_pos, replace_pos, lang):
+    def __init__(self, transdb_name, pattern, replace_sub, id_pos, replace_pos, replace_escape, lang, save_encoding):
         self.__id_pos = id_pos
         self.__replace_pos = replace_pos
         self.__pattern = pattern
         self.__replace_sub = replace_sub
+        self.__save_encoding = save_encoding
+        self.__replace_escape = replace_escape
         self.__trans = TranslateDatabase(transdb_name, lang)
     
     def __load(self, filename):
@@ -196,6 +240,19 @@ class ReplaceController():
             contents = f.readlines()
         return contents
     
+    def __escape(self, value):
+        if value is None:
+            return None
+
+        escapelist = ['\'']
+        escape_val = ''
+        for c in value:
+            if c in escapelist:
+                escape_val += r'\\' +  c
+            else:
+                escape_val += c
+        return escape_val
+
     def __process(self, contents):
         for k,line in enumerate(contents):
             matches = re.match(self.__pattern, line)
@@ -210,6 +267,9 @@ class ReplaceController():
 
             if not transname:
                 continue
+            
+            if self.__replace_escape:
+                transname = self.__escape(transname)
 
             repl = self.__replace_sub
             repl = repl.replace('\\g<%d>' % self.__replace_pos, transname)
@@ -218,7 +278,7 @@ class ReplaceController():
 
     def __save(self, contents, filename):
         try:
-            with open(filename, 'w', encoding='UTF-8-SIG') as f:
+            with open(filename, 'w', encoding=self.__save_encoding) as f:
                 for x in contents:
                     f.write(x)
             return True
@@ -263,9 +323,17 @@ def main():
         operate_params = v['operate_params']
         operate_params['lang'] = 'zh-cn' if langtype == 0 else 'zh-tw'
         operate = globals()[v['operate']](**operate_params)
-        for path in v['filepath']:
-            fullpath = os.path.abspath(project_slndir + path)
-            operate.execute(fullpath)
+
+        if 'filepath' in v:
+            for path in v['filepath']:
+                fullpath = os.path.abspath(project_slndir + path)
+                operate.execute(fullpath)
+        
+        if 'globpath' in v:
+            for path in v['globpath']:
+                files = glob.glob(os.path.abspath(project_slndir + path), recursive=True)
+                for x in files:
+                    operate.execute(x)
 
     Common.exit_with_pause()
 
