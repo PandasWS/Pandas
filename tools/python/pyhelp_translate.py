@@ -188,7 +188,11 @@ class ReplaceController():
     def __load(self, filename):
         # 将文件中的内容读取成一个列表, 放在 contents 中
         contents = []
-        with open(filename, 'r', encoding='UTF-8-SIG') as f:
+
+        encoding = Common.get_file_encoding(filename)
+        encoding = 'latin1' if encoding is None else encoding
+
+        with open(filename, 'r', encoding=encoding) as f:
             contents = f.readlines()
         return contents
     
