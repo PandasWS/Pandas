@@ -12299,7 +12299,11 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			}
 			break;
 		case SC_BOSSMAPINFO:
+#ifndef Pandas_Crashfix_StatusChange_BossMapinfo
 			if (sd)
+#else
+			if (sd && map_id2boss(sce->val1))
+#endif // Pandas_Crashfix_StatusChange_BossMapinfo
 				clif_bossmapinfo(sd, map_id2boss(sce->val1), BOSS_INFO_ALIVE_WITHMSG); // First Message
 			break;
 		case SC_FULL_THROTTLE:

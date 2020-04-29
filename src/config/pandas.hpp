@@ -527,9 +527,11 @@
 	#define Pandas_Crashfix_Unloadnpc_In_Event
 
 	// 修正 delchar 指令可能会导致地图服务器崩溃的问题 [Sola丶小克]
-    // 会导致崩溃的示例脚本:
-	// .@m$ = delchar("", 0);
+    // 会导致崩溃的示例脚本: .@m$ = delchar("", 0);
 	#define Pandas_Crashfix_ScriptCommand_Delchar
+
+	// 修正 SC_BOSSMAPINFO 会导致地图服务器崩溃的问题 [Sola丶小克]
+	#define Pandas_Crashfix_StatusChange_BossMapinfo
 #endif // Pandas_Crashfix
 
 // ============================================================================
