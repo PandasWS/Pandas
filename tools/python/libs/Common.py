@@ -194,7 +194,7 @@ def get_file_encoding(filepath):
         try:
             encoding = encoding_maps(encoding)
             f = open(filepath, 'r', encoding = encoding)
-            _content = f.readlines()
+            f.readlines()
             f.close()
             return True
         except UnicodeDecodeError as _err:
