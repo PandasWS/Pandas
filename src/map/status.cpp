@@ -12302,7 +12302,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 #ifndef Pandas_Crashfix_StatusChange_BossMapinfo
 			if (sd)
 #else
-			if (sd && map_id2boss(sce->val1))
+			if (sd && sce && map_id2boss(sce->val1))
 #endif // Pandas_Crashfix_StatusChange_BossMapinfo
 				clif_bossmapinfo(sd, map_id2boss(sce->val1), BOSS_INFO_ALIVE_WITHMSG); // First Message
 			break;
