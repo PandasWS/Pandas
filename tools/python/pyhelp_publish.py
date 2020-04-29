@@ -19,6 +19,7 @@ import git
 import zipfile
 import glob
 import shutil
+import pyhelp_translate as trans
 
 from libs import Common, Message
 
@@ -138,6 +139,8 @@ def arrange_common(packagedir):
     复兴前和复兴后都能够通用的整理规则
     无论是对哪个版本进行整理, 都需要调用一下此函数
     '''
+    trans.process(packagedir, 'zh-cn')
+    
     rmdir(packagedir + '.github')
     rmdir(packagedir + 'src')
     rmdir(packagedir + '3rdparty')

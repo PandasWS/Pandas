@@ -176,11 +176,8 @@ class TranslateDatabase():
         self.__load(os.path.abspath('./database/%s/%s.txt' % (lang, name)))
     
     def __load(self, filename):
-        if not os.path.exists(filename):
-            return "文件不存在"
-        
-        if not os.path.isfile(filename):
-            return "大哥你给我个文件行不"
+        if not Common.is_file_exists(filename):
+            raise Exception('翻译对照表不存在: %s' % os.path.relpath(filename))
 
         # 将文件中的内容读取成一个列表, 放在 contents 中
         contents = []
@@ -212,7 +209,7 @@ class TranslateDatabase():
     
     def trans(self, id):
         if not self.__loaded:
-            raise Exception("大哥你还没初始化就调我干啥")
+            raise Exception('进行文本转译之前, 请先完成初始化...')
 
         if int(id) in self.__translateDict:
             return self.__translateDict[int(id)]
@@ -220,15 +217,23 @@ class TranslateDatabase():
         return None
 
 class ReplaceController():
-    def __init__(self, transdb_name, pattern, replace_sub, id_pos, replace_pos, replace_escape, lang, save_encoding):
-        self.__id_pos = id_pos
-        self.__replace_pos = replace_pos
-        self.__pattern = pattern
-        self.__replace_sub = replace_sub
-        self.__save_encoding = save_encoding
-        self.__replace_escape = replace_escape
-        self.__trans = TranslateDatabase(transdb_name, lang)
+    def __init__(self, **kwargs):
+        self.__id_pos = self.__getfromdict(kwargs, 'id_pos')
+        self.__replace_pos = self.__getfromdict(kwargs, 'replace_pos')
+        self.__pattern = self.__getfromdict(kwargs, 'pattern')
+        self.__replace_sub = self.__getfromdict(kwargs, 'replace_sub')
+        self.__save_encoding = self.__getfromdict(kwargs, 'save_encoding')
+        self.__replace_escape = self.__getfromdict(kwargs, 'replace_escape')
+        self.__project_dir = self.__getfromdict(kwargs, 'project_dir')
+        self.__lang = self.__getfromdict(kwargs, 'lang')
+        self.__transdb_name = self.__getfromdict(kwargs, 'transdb_name')
+        self.__trans = TranslateDatabase(self.__transdb_name, self.__lang)
     
+    def __getfromdict(self, dictmap, key, default = None):
+        if key not in dictmap:
+            return default
+        return dictmap[key]
+
     def __load(self, filename):
         # 将文件中的内容读取成一个列表, 放在 contents 中
         contents = []
@@ -292,28 +297,33 @@ class ReplaceController():
         if not savefile:
             savefile = filename
         
-        Message.ShowInfo('正在处理: %s (保存成 %s 编码)' % (filename, self.__save_encoding))
+        Message.ShowInfo('正在处理: %s (%s)' % (os.path.relpath(filename, self.__project_dir), self.__save_encoding))
 
         contents = self.__load(filename)
         contents = self.__process(contents)
         return self.__save(contents, savefile)
 
-def process(lang = 'zh-cn'):
-    for v in configures:
-        operate_params = v['operate_params']
-        operate_params['lang'] = lang
-        operate = globals()[v['operate']](**operate_params)
+def process(project_dir, lang = 'zh-cn'):
+    try:
+        for v in configures:
+            operate_params = v['operate_params']
+            operate_params['lang'] = lang
+            operate_params['project_dir'] = project_dir
+            operate = globals()[v['operate']](**operate_params)
 
-        if 'filepath' in v:
-            for path in v['filepath']:
-                fullpath = os.path.abspath(project_slndir + path)
-                operate.execute(fullpath)
-        
-        if 'globpath' in v:
-            for path in v['globpath']:
-                files = glob.glob(os.path.abspath(project_slndir + path), recursive=True)
-                for x in files:
-                    operate.execute(x)
+            if 'filepath' in v:
+                for path in v['filepath']:
+                    fullpath = os.path.abspath(project_dir + path)
+                    operate.execute(fullpath)
+            
+            if 'globpath' in v:
+                for path in v['globpath']:
+                    files = glob.glob(os.path.abspath(project_dir + path), recursive=True)
+                    for x in files:
+                        operate.execute(x)
+    except Exception as _err:
+        Message.ShowError(str(_err))
+        Common.exit_with_pause(-1)
 
 def main():
     '''
@@ -336,7 +346,7 @@ def main():
         ]
     })
 
-    process('zh-cn' if langtype == 0 else 'zh-tw')
+    process(project_slndir, 'zh-cn' if langtype == 0 else 'zh-tw')
 
     Common.exit_with_pause()
 
