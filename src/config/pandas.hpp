@@ -60,7 +60,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.0.5.1"
+	#define Pandas_Version "1.0.6.1"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -525,6 +525,11 @@
 	//
 	// 感谢"聽風"指出重现此问题的条件和环境
 	#define Pandas_Crashfix_Unloadnpc_In_Event
+
+	// 修正 delchar 指令可能会导致地图服务器崩溃的问题 [Sola丶小克]
+    // 会导致崩溃的示例脚本:
+	// .@m$ = delchar("", 0);
+	#define Pandas_Crashfix_ScriptCommand_Delchar
 #endif // Pandas_Crashfix
 
 // ============================================================================
