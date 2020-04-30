@@ -531,7 +531,7 @@
 	#define Pandas_Crashfix_ScriptCommand_Delchar
 
 	// 修正 SC_BOSSMAPINFO 会导致地图服务器崩溃的问题 [Sola丶小克]
-	#define Pandas_Crashfix_StatusChange_BossMapinfo
+	#define Pandas_Crashfix_BossMapinfo
 #endif // Pandas_Crashfix
 
 // ============================================================================
