@@ -473,7 +473,8 @@ def main():
     ]
 
     userchoose = Inputer().requireSelect({
-        'name' : '想要执行的操作或任务',
+        'prompt' : '想要执行的操作或任务',
+        'option_name' : '操作或任务',
         'data' : options
     })
 

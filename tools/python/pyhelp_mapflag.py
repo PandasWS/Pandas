@@ -236,7 +236,8 @@ def guide(inject):
 
     # flagtype = 0  # 0 为普通开关 | 1 为数值开关
     flagtype = Inputer().requireSelect({
-        'name' : '想创建的地图标记类型',
+        'prompt' : '想创建的地图标记类型',
+        'option_name' : '地图标记类型',
         'data' : flaglist
     })
 
