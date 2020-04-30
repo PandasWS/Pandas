@@ -19,6 +19,7 @@ import git
 import zipfile
 import glob
 import shutil
+import pyhelp_translate as trans
 
 from libs import Common, Message
 
@@ -138,6 +139,8 @@ def arrange_common(packagedir):
     复兴前和复兴后都能够通用的整理规则
     无论是对哪个版本进行整理, 都需要调用一下此函数
     '''
+    trans.process(packagedir, 'zh-cn')
+    
     rmdir(packagedir + '.github')
     rmdir(packagedir + 'src')
     rmdir(packagedir + '3rdparty')
@@ -172,6 +175,9 @@ def arrange_common(packagedir):
     copyfile(packagedir + 'sql-files/upgrades/premium_storage.sql', packagedir + 'sql-files/premium_storage.sql')
     rmdir(packagedir + 'sql-files/tools')
     rmdir(packagedir + 'sql-files/upgrades')
+    
+    copyfile(packagedir + 'tools/batches/runserver.bat', packagedir + 'renewal.bat')
+    remove_file(packagedir + 'tools/batches', 'runserver.bat')
     
     # --------------------------------------------------------
     # 对数据库的创建脚本进行分类归档
@@ -229,9 +235,6 @@ def arrange_renewal(packagedir):
     copyfile(project_slndir + 'map-server.exe', packagedir + 'map-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
-    
-    copyfile(packagedir + 'tools/batches/runserver.bat', packagedir + 'renewal.bat')
-    remove_file(packagedir + 'tools/batches', 'runserver.bat')
 
 def arrange_pre_renewal(packagedir):
     '''
@@ -249,9 +252,6 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'map-server-pre.exe', packagedir + 'map-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
-    
-    copyfile(project_slndir + 'tools/batches/runserver.bat', packagedir + 'pre-renewal.bat')
-    remove_file(packagedir + 'tools/batches', 'runserver.bat')
 
 def process(export_file, renewal):
     '''
