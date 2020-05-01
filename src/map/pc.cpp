@@ -12856,7 +12856,6 @@ void pc_show_version(struct map_session_data *sd) {
 	}
 	clif_displaymessage(sd->fd,buf);
 #else
-
 	std::string appid(CRASHRPT_APPID);
 	std::string branch(GIT_BRANCH);
 	std::string hash(GIT_HASH);
