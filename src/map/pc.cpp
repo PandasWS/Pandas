@@ -12841,6 +12841,7 @@ void pc_crimson_marker_clear(struct map_session_data *sd) {
 * @param sd: Player
 **/
 void pc_show_version(struct map_session_data *sd) {
+#ifndef Pandas_UserExperience_AtCommand_Version
 	const char* svn = get_svn_revision();
 	char buf[CHAT_SIZE_MAX];
 
@@ -12854,6 +12855,39 @@ void pc_show_version(struct map_session_data *sd) {
 			sprintf(buf,"%s",msg_txt(sd,1296)); //Cannot determine SVN/Git version.
 	}
 	clif_displaymessage(sd->fd,buf);
+#else
+	std::string appid(CRASHRPT_APPID);
+	std::string branch(GIT_BRANCH);
+	std::string hash(GIT_HASH);
+
+	char mes[CHAT_SIZE_MAX] = { 0 };
+	char compile[CHAT_SIZE_MAX] = { 0 };
+	char mode[CHAT_SIZE_MAX] = { 0 };
+
+#ifdef PRERE
+	strcpy(mode, msg_txt_cn(sd, 89));	// 复兴前
+#else
+	strcpy(mode, msg_txt_cn(sd, 90));	// 复兴后
+#endif // PRERE
+
+	if (appid.length())
+		strcpy(compile, msg_txt_cn(sd, 86));	// 官方编译
+	else
+		strcpy(compile, msg_txt_cn(sd, 87));	// 个人或非官方编译
+
+	if (branch.empty()) branch = msg_txt_cn(sd, 91);	// 暂无数据
+	if (hash.empty()) hash = msg_txt_cn(sd, 91);		// 暂无数据
+
+	// 构建并输出第一行版本信息
+	// 熊猫模拟器版本: v1.0.6-dev (官方编译)
+	sprintf(mes, msg_txt_cn(sd, 85), getPandasVersion().c_str(), compile);
+	clif_displaymessage(sd->fd, mes);
+
+	// 构建并输出第二行版本信息
+	// 运行模式: 复兴前 | 适配的客户端版本: 20180620 | 分支: master | 提交散列: 7760983
+	sprintf(mes, msg_txt_cn(sd, 88), mode, PACKETVER, branch.c_str(), hash.c_str());
+	clif_displaymessage(sd->fd, mes);
+#endif // Pandas_UserExperience_AtCommand_Version
 }
 
 /**

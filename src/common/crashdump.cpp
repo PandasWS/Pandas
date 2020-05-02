@@ -28,14 +28,6 @@
 // 
 // 待未来整个崩溃分析机制成熟完善, 会考虑将分析能力开放给其他需要的合作伙伴.
 
-#ifndef CRASHRPT_APPID
-	#define CRASHRPT_APPID ""
-#endif // CRASHRPT_APPID
-
-#ifndef CRASHRPT_PUBLICKEY
-	#define CRASHRPT_PUBLICKEY ""
-#endif // CRASHRPT_PUBLICKEY
-
 // 当程序崩溃时, 将转储文件保存在什么位置
 std::string g_dumpSaveDirectory = "dumps";
 

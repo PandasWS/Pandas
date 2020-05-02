@@ -17126,6 +17126,11 @@ void clif_bossmapinfo(struct map_session_data *sd, struct mob_data *md, enum e_b
 {
 	int fd = sd->fd;
 
+#ifdef Pandas_Crashfix_BossMapinfo
+	if (!sd || !md)
+		return;
+#endif // Pandas_Crashfix_BossMapinfo
+
 	WFIFOHEAD(fd,70);
 	memset(WFIFOP(fd,0),0,70);
 	WFIFOW(fd,0) = 0x293;

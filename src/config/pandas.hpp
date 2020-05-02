@@ -21,6 +21,7 @@
 	#define Pandas_Crashfix
 	#define Pandas_ScriptEngine
 	#define Pandas_Redeclaration
+	#define Pandas_UserExperience
 	#define Pandas_Cleanup
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
@@ -531,7 +532,7 @@
 	#define Pandas_Crashfix_ScriptCommand_Delchar
 
 	// 修正 SC_BOSSMAPINFO 会导致地图服务器崩溃的问题 [Sola丶小克]
-	#define Pandas_Crashfix_StatusChange_BossMapinfo
+	#define Pandas_Crashfix_BossMapinfo
 #endif // Pandas_Crashfix
 
 // ============================================================================
@@ -580,6 +581,15 @@
 	// 将 struct event_data 的定义从 npc.cpp 移动到 npc.hpp [Sola丶小克]
 	#define Pandas_Redeclaration_Struct_Event_Data
 #endif // Pandas_Redeclaration
+
+// ============================================================================
+// 用户体验组 - Pandas_UserExperience
+// ============================================================================
+
+#ifdef Pandas_UserExperience
+	// 优化使用 @version 指令的回显信息 [Sola丶小克]
+	#define Pandas_UserExperience_AtCommand_Version
+#endif // Pandas_UserExperience
 
 // ============================================================================
 // 无用代码清理组 - Pandas_Cleanup

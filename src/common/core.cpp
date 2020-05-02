@@ -24,10 +24,6 @@
 #include "showmsg.hpp"
 #include "strlib.hpp"
 
-#ifdef Pandas_Google_Breakpad
-#include "crashdump.hpp"
-#endif // Pandas_Google_Breakpad
-
 #ifdef Pandas_Console_Translate
 #include "translate.hpp"
 #endif // Pandas_Console_Translate
