@@ -218,8 +218,98 @@ configures = [
             'db/re/skill_db.yml',
             'db/pre-re/skill_db.yml'
         ]
+    },
+    {
+        'operate' : 'LineReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'skillname',
+            'pattern' : r'(//.*?|)(.*?,)(.*?)(,.*?,)(\d+)(,.*)',
+            'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>\g<6>',
+            'id_pos' : 5,
+            'replace_pos' : 3,
+            'replace_escape' : False,
+            'replace_decorate' : 'MobSkillForSkillName',
+            'save_encoding' : 'UTF-8-SIG'
+        },
+        'filepath' : [
+            'db/re/mob_skill_db.txt',
+            'db/pre-re/mob_skill_db.txt'
+        ]
+    },
+    {
+        'operate' : 'LineReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'mobname',
+            'pattern' : r'(//.*?|)(.*?)(,.*?)(,.*?,)(\d+)(,.*)',
+            'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>\g<6>',
+            'id_pos' : 2,
+            'replace_pos' : 3,
+            'replace_escape' : False,
+            'replace_decorate' : 'MobSkillForMobName',
+            'save_encoding' : 'UTF-8-SIG'
+        },
+        'filepath' : [
+            'db/re/mob_skill_db.txt',
+            'db/pre-re/mob_skill_db.txt'
+        ]
+    },
+    {
+        'operate' : 'LineReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'skillname',
+            'pattern' : r"(.*?\()(\d+)(,.*?)(,'.*?',)(\d+)(,.*)",
+            'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>\g<6>',
+            'id_pos' : 5,
+            'replace_pos' : 3,
+            'replace_escape' : True,
+            'replace_decorate' : 'MobSkillForSkillNameSQL',
+            'save_encoding' : 'UTF-8-SIG'
+        },
+        'globpath' : [
+            'sql-files/**/*mob_skill_db*.sql'
+        ]
+    },
+    {
+        'operate' : 'LineReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'mobname',
+            'pattern' : r"(.*?\()(\d+)(,.*?)(,'.*?',)(\d+)(,.*)",
+            'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>\g<6>',
+            'id_pos' : 2,
+            'replace_pos' : 3,
+            'replace_escape' : True,
+            'replace_decorate' : 'MobSkillForMobNameSQL',
+            'save_encoding' : 'UTF-8-SIG'
+        },
+        'globpath' : [
+            'sql-files/**/*mob_skill_db*.sql'
+        ]
     }
 ]
+
+def MobSkillForSkillName(origin, target):
+    fields = origin.split('@')
+    if len(fields) != 2:
+        return target
+    return '%s@%s' % (fields[0].strip(), target)
+
+def MobSkillForMobName(origin, target):
+    fields = origin.split('@')
+    if len(fields) != 2:
+        return target
+    return ',%s@%s' % (target, fields[1].strip())
+
+def MobSkillForSkillNameSQL(origin, target):
+    fields = origin.split('@')
+    if len(fields) != 2:
+        return target
+    return '%s@%s\'' % (fields[0].strip(), target)
+
+def MobSkillForMobNameSQL(origin, target):
+    fields = origin.split('@')
+    if len(fields) != 2:
+        return target
+    return ',\'%s@%s' % (target, fields[1].strip())
 
 def SkillTreeDescription(origin, target):
     fields = origin.split('#')
