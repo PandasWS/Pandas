@@ -29,7 +29,7 @@ project_slndir = '../../'
 # 配置需要进行自动汉化处理的相关信息
 configures = [
     {
-        'operate' : 'ReplaceController',
+        'operate' : 'LineReplaceController',
         'operate_params' : {
             'transdb_name' : 'itemname',
             'pattern' : r'(//|)(\d+)(,.*?,)(.*?)(,.*?)$',
@@ -45,7 +45,7 @@ configures = [
         ]
     },
     {
-        'operate' : 'ReplaceController',
+        'operate' : 'LineReplaceController',
         'operate_params' : {
             'transdb_name' : 'mobname',
             'pattern' : r'(//|)(\d+)(,.*?,)(.*?)(,.*?)$',
@@ -61,7 +61,7 @@ configures = [
         ]
     },
     {
-        'operate' : 'ReplaceController',
+        'operate' : 'LineReplaceController',
         'operate_params' : {
             'transdb_name' : 'mobname',
             'pattern' : r'(//|)(.*?,)(\d+)(,.*?)(.*?)(,.*)',
@@ -84,7 +84,7 @@ configures = [
         ]
     },
     {
-        'operate' : 'ReplaceController',
+        'operate' : 'LineReplaceController',
         'operate_params' : {
             'transdb_name' : 'itemname',
             'pattern' : r'(//.*?|.*?)(\d+)(.*?//)(.*)',
@@ -92,6 +92,7 @@ configures = [
             'id_pos' : 2,
             'replace_pos' : 4,
             'replace_escape' : False,
+            'replace_decorate' : 'CommentSpaceStandard',
             'save_encoding' : 'UTF-8-SIG'
         },
         'filepath' : [
@@ -112,7 +113,7 @@ configures = [
         ]
     },
     {
-        'operate' : 'ReplaceController',
+        'operate' : 'LineReplaceController',
         'operate_params' : {
             'transdb_name' : 'itemname',
             'pattern' : r'(//.*?,|.*?,)(\d+)(.*?//)(.*)',
@@ -120,6 +121,7 @@ configures = [
             'id_pos' : 2,
             'replace_pos' : 4,
             'replace_escape' : False,
+            'replace_decorate' : 'CommentSpaceStandard',
             'save_encoding' : 'UTF-8-SIG'
         },
         'filepath' : [
@@ -138,7 +140,7 @@ configures = [
         ]
     },
     {
-        'operate' : 'ReplaceController',
+        'operate' : 'LineReplaceController',
         'operate_params' : {
             'transdb_name' : 'itemname',
             'pattern' : r"(.*?\()(\d+)(,.*?,')(.*?)(',.*)",
@@ -153,7 +155,7 @@ configures = [
         ]
     },
     {
-        'operate' : 'ReplaceController',
+        'operate' : 'LineReplaceController',
         'operate_params' : {
             'transdb_name' : 'mobname',
             'pattern' : r"(.*?\()(\d+)(,.*?,')(.*?)(',.*)",
@@ -166,8 +168,67 @@ configures = [
         'globpath' : [
             'sql-files/**/*mob_db*.sql'
         ]
+    },
+    {
+        'operate' : 'LineReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'skillname',
+            'pattern' : r'(//.*?|)(\d+)(.*?//)(.*)',
+            'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>',
+            'id_pos' : 2,
+            'replace_pos' : 4,
+            'replace_escape' : False,
+            'replace_decorate' : 'CommentSpaceStandard',
+            'save_encoding' : 'UTF-8-SIG'
+        },
+        'filepath' : [
+            'db/re/skill_nocast_db.txt',
+            'db/pre-re/skill_nocast_db.txt'
+        ]
+    },
+    {
+        'operate' : 'LineReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'skillname',
+            'pattern' : r'(//.*?|)(\d+,)(\d+)(.*?//)(.*)',
+            'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>',
+            'id_pos' : 3,
+            'replace_pos' : 5,
+            'replace_escape' : False,
+            'replace_decorate' : 'SkillTreeDescription',
+            'save_encoding' : 'UTF-8-SIG'
+        },
+        'filepath' : [
+            'db/re/skill_tree.txt',
+            'db/pre-re/skill_tree.txt'
+        ]
+    },
+    {
+        'operate' : 'FulltextReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'skillname',
+            'pattern' : r'  - Id: (\d+)(.*?)Description: (.*?)$',
+            'replace_sub' : r'  - Id: \g<1>\g<2>Description: {trans}',
+            'id_pos' : 1,
+            'replace_escape' : False,
+            'regex_flags' : re.DOTALL | re.MULTILINE,
+            'save_encoding' : 'UTF-8-SIG'
+        },
+        'filepath' : [
+            'db/re/skill_db.yml',
+            'db/pre-re/skill_db.yml'
+        ]
     }
 ]
+
+def SkillTreeDescription(origin, target):
+    fields = origin.split('#')
+    if len(fields) != 3:
+        return target
+    return ' %s#%s#' % (fields[0].strip(), target)
+
+def CommentSpaceStandard(origin, target):
+    return ' %s' % target.strip()
 
 class TranslateDatabase():
     def __init__(self, name, lang = 'zh-cn'):
@@ -216,7 +277,7 @@ class TranslateDatabase():
 
         return None
 
-class ReplaceController():
+class LineReplaceController():
     def __init__(self, **kwargs):
         self.__id_pos = self.__getfromdict(kwargs, 'id_pos')
         self.__replace_pos = self.__getfromdict(kwargs, 'replace_pos')
@@ -227,7 +288,12 @@ class ReplaceController():
         self.__project_dir = self.__getfromdict(kwargs, 'project_dir')
         self.__lang = self.__getfromdict(kwargs, 'lang')
         self.__transdb_name = self.__getfromdict(kwargs, 'transdb_name')
+        self.__replace_decorate = self.__getfromdict(kwargs, 'replace_decorate')
+        self.__regex_flags = self.__getfromdict(kwargs, '__regex_flags')
         self.__trans = TranslateDatabase(self.__transdb_name, self.__lang)
+
+        if self.__regex_flags is None:
+            self.__regex_flags = 0
     
     def __getfromdict(self, dictmap, key, default = None):
         if key not in dictmap:
@@ -276,9 +342,14 @@ class ReplaceController():
             if self.__replace_escape:
                 transname = self.__escape(transname)
 
+            if self.__replace_decorate is not None:
+                transname = globals()[self.__replace_decorate](
+                    matches.groups()[self.__replace_pos - 1], transname
+                )
+
             repl = self.__replace_sub
             repl = repl.replace('\\g<%d>' % self.__replace_pos, transname)
-            contents[k] = re.sub(self.__pattern, repl, line)
+            contents[k] = re.sub(self.__pattern, repl, line, flags=self.__regex_flags)
         return contents
 
     def __save(self, contents, filename):
@@ -286,6 +357,106 @@ class ReplaceController():
             with open(filename, 'w', encoding=self.__save_encoding) as f:
                 for x in contents:
                     f.write(x)
+            return True
+        except Exception as _err:
+            return False
+
+    def execute(self, filename, savefile = None):
+        if not Common.is_file_exists(filename):
+            return False
+        
+        if not savefile:
+            savefile = filename
+        
+        Message.ShowInfo('正在处理: %s (%s)' % (os.path.relpath(filename, self.__project_dir), self.__save_encoding))
+
+        contents = self.__load(filename)
+        contents = self.__process(contents)
+        return self.__save(contents, savefile)
+
+class FulltextReplaceController():
+    def __init__(self, **kwargs):
+        self.__id_pos = self.__getfromdict(kwargs, 'id_pos')
+        self.__replace_pos = self.__getfromdict(kwargs, 'replace_pos')
+        self.__pattern = self.__getfromdict(kwargs, 'pattern')
+        self.__replace_sub = self.__getfromdict(kwargs, 'replace_sub')
+        self.__save_encoding = self.__getfromdict(kwargs, 'save_encoding')
+        self.__replace_escape = self.__getfromdict(kwargs, 'replace_escape')
+        self.__project_dir = self.__getfromdict(kwargs, 'project_dir')
+        self.__lang = self.__getfromdict(kwargs, 'lang')
+        self.__transdb_name = self.__getfromdict(kwargs, 'transdb_name')
+        self.__replace_decorate = self.__getfromdict(kwargs, 'replace_decorate')
+        self.__regex_flags = self.__getfromdict(kwargs, 'regex_flags')
+        self.__trans = TranslateDatabase(self.__transdb_name, self.__lang)
+
+        if self.__regex_flags is None:
+            self.__regex_flags = 0
+    
+    def __getfromdict(self, dictmap, key, default = None):
+        if key not in dictmap:
+            return default
+        return dictmap[key]
+    
+
+    def __load(self, filename):
+        # 将文件中的内容读取成一个完整的文本
+        contents = None
+
+        encoding = Common.get_file_encoding(filename)
+        encoding = 'latin1' if encoding is None else encoding
+
+        with open(filename, 'r', encoding=encoding) as f:
+            contents = f.read()
+        return contents
+    
+    def __escape(self, value):
+        if value is None:
+            return None
+
+        escapelist = ['\'']
+        escape_val = ''
+        for c in value:
+            if c in escapelist:
+                escape_val += r'\\' +  c
+            else:
+                escape_val += c
+        return escape_val
+
+    def __process_sub(self, matched):
+        if not matched.groups()[self.__id_pos - 1].isdigit():
+            return matched.group()
+
+        mapid = int(matched.groups()[self.__id_pos - 1])
+        transname = self.__trans.trans(mapid)
+
+        if not transname:
+            return matched.group()
+        
+        if self.__replace_escape:
+            transname = self.__escape(transname)
+
+        if self.__replace_decorate is not None:
+            transname = globals()[self.__replace_decorate](
+                matched.groups()[self.__replace_pos - 1], transname
+            )
+        
+        replaced = self.__replace_sub
+        replaced = replaced.format(trans = transname)
+
+        for x, v in enumerate(matched.groups()):
+            src = r'\g<{idx}>'.format(idx = x + 1)
+            replaced = replaced.replace(src, v)
+
+        return replaced
+
+    def __process(self, contents):
+        contents = re.sub(self.__pattern, self.__process_sub, contents, flags=self.__regex_flags)
+        return contents
+    
+    def __save(self, contents, filename):
+        try:
+            with open(filename, 'w', encoding=self.__save_encoding) as f:
+                f.write(contents)
             return True
         except Exception as _err:
             return False
@@ -322,6 +493,7 @@ def process(project_dir, lang = 'zh-cn'):
                     for x in files:
                         operate.execute(x)
     except Exception as _err:
+        raise _err
         Message.ShowError(str(_err))
         Common.exit_with_pause(-1)
 
