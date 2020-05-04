@@ -583,7 +583,6 @@ def process(project_dir, lang = 'zh-cn'):
                     for x in files:
                         operate.execute(x)
     except Exception as _err:
-        raise _err
         Message.ShowError(str(_err))
         Common.exit_with_pause(-1)
 
