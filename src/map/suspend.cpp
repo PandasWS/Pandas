@@ -13,6 +13,12 @@
 #include "pc.hpp"
 #include "channel.hpp"
 #include "battle.hpp"
+#include "chat.hpp"
+#include "trade.hpp"
+#include "storage.hpp"
+#include "party.hpp"
+#include "duel.hpp"
+#include "guild.hpp"
 
 static DBMap* suspender_db;
 static void suspend_suspender_remove(struct s_suspender* sp, bool remove);
@@ -248,9 +254,45 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 		Sql_ShowDebug(mmysql_handle);
 	}
 
-	channel_pcquit(sd, 0xF); //leave all chan
-	clif_authfail_fd(sd->fd, 15);
+	// 若正在聊天室内, 则离开聊天室
+	if (sd->chatID)
+		chat_leavechat(sd, 0);
 
+	// 若正在进行交易, 则立刻取消交易
+	if (sd->trade_partner)
+		trade_tradecancel(sd);
+
+	// 关闭正在访问的仓库, 防止卡住公会仓库 (感谢"喵了个咪"反馈)
+	if (sd->state.storage_flag == 1)
+		storage_storage_quit(sd, 0);
+	else if (sd->state.storage_flag == 2)
+		storage_guild_storage_quit(sd, 0);
+	else if (sd->state.storage_flag == 3)
+		storage_premiumStorage_quit(sd);
+
+	// 重置仓库访问标记位
+	sd->state.storage_flag = 0;
+
+	// 若正在被邀请加入队伍, 则立刻回绝
+	if (sd->party_invite > 0)
+		party_reply_invite(sd, sd->party_invite, 0);
+
+	// 若正在被邀请加入公会, 则立刻回绝
+	if (sd->guild_invite > 0)
+		guild_reply_invite(sd, sd->guild_invite, 0);
+
+	// 若正在被邀请创建公会同盟, 则立刻回绝
+	if (sd->guild_alliance > 0)
+		guild_reply_reqalliance(sd, sd->guild_alliance_account, 0);
+
+	// 若处于决斗状态, 则离开决斗
+	if (sd->duel_group > 0)
+		duel_leave(sd->duel_group, sd);
+
+	// 离开所有聊天频道
+	channel_pcquit(sd, 0xF);
+
+	clif_authfail_fd(sd->fd, 15);
 	chrif_save(sd, CSAVE_AUTOTRADE);
 }
 
