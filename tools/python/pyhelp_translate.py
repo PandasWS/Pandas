@@ -212,7 +212,8 @@ configures = [
             'id_pos' : 1,
             'replace_escape' : False,
             'regex_flags' : re.DOTALL | re.MULTILINE,
-            'save_encoding' : 'UTF-8-SIG'
+            'save_encoding' : 'UTF-8-SIG',
+            'big5_escape' : True
         },
         'filepath' : [
             'db/re/skill_db.yml',
@@ -320,12 +321,52 @@ def SkillTreeDescription(origin, target):
 def CommentSpaceStandard(origin, target):
     return ' %s' % target.strip()
 
+def convert_backslash_step1(textcontent):
+    '''
+    针对 BIG5 的处理, 在双字节低位等于 0x5C 的字符后面, 插入 [[[\\]]] 标记
+    '''
+    text_processed = ''
+    for i, element in enumerate(textcontent):
+        cb = element.encode('big5')
+        text_processed = text_processed + element
+        if len(cb) == 2 and cb[1] == 0x5C:
+            text_processed = text_processed + r'[[[\\]]]'
+    return text_processed
+
+def convert_backslash_step2(filepath):
+    '''
+    针对 BIG5 的处理, 将指定文件中的 [[[\\]]] 替换成反斜杠
+    '''
+    content = ""
+    with open(filepath, 'r', encoding='UTF-8-SIG') as f:
+        content = f.read()
+        f.close()
+    
+    pattern = re.compile(r'\[\[\[\\\\\]\]\]')
+    content = pattern.sub(r'\\', content)
+    
+    with open(filepath, 'w', encoding='UTF-8-SIG') as f:
+        f.write(content)
+        f.close()
+
 class TranslateDatabase():
     def __init__(self, name, lang = 'zh-cn'):
         self.__loaded = False
         self.__translateDict = {}
-        self.__load(os.path.abspath('./database/%s/%s.txt' % (lang, name)))
+        self.__lang = lang
+        self.__filename = os.path.abspath('./database/%s/%s.txt' % (lang, name))
+        self.__load(self.__filename)
     
+    def __encoding_check(self, text, encoding, line):
+        try:
+            for i, element in enumerate(text):
+                cb = element.encode(encoding)
+        except Exception as _err:
+            Message.ShowError('%s 第 %-5d 行中的 "%s" 字符不存在于 "%s" 编码中, 此错误必须被消除' % (
+                os.path.relpath(self.__filename), line, element, encoding
+            ))
+            pass
+
     def __load(self, filename):
         if not Common.is_file_exists(filename):
             raise Exception('翻译对照表不存在: %s' % os.path.relpath(filename))
@@ -334,6 +375,14 @@ class TranslateDatabase():
         contents = []
         with open(filename, 'r', encoding='UTF-8-SIG') as f:
             contents = f.readlines()
+
+        # 进行编码校验工作
+        if self.__lang == 'zh-tw':
+            for i, element in enumerate(contents):
+                self.__encoding_check(element, 'big5', i + 1)
+        elif self.__lang == 'zh-cn':
+            for i, element in enumerate(contents):
+                self.__encoding_check(element, 'gbk', i + 1)
 
         # 遍历处理列表中的全部内容, 让他们每一行都去掉左右的空格
         contents = [x.strip() for x in contents]
@@ -379,11 +428,9 @@ class LineReplaceController():
         self.__lang = self.__getfromdict(kwargs, 'lang')
         self.__transdb_name = self.__getfromdict(kwargs, 'transdb_name')
         self.__replace_decorate = self.__getfromdict(kwargs, 'replace_decorate')
-        self.__regex_flags = self.__getfromdict(kwargs, '__regex_flags')
+        self.__regex_flags = self.__getfromdict(kwargs, '__regex_flags', 0)
+        self.__big5_escape = self.__getfromdict(kwargs, 'big5_escape', False)
         self.__trans = TranslateDatabase(self.__transdb_name, self.__lang)
-
-        if self.__regex_flags is None:
-            self.__regex_flags = 0
     
     def __getfromdict(self, dictmap, key, default = None):
         if key not in dictmap:
@@ -444,11 +491,19 @@ class LineReplaceController():
 
     def __save(self, contents, filename):
         try:
+            if self.__lang == 'zh-tw' and self.__big5_escape:
+                contents = [convert_backslash_step1(x) for x in contents]
+        
             with open(filename, 'w', encoding=self.__save_encoding) as f:
                 for x in contents:
                     f.write(x)
+            
+            if self.__lang == 'zh-tw' and self.__big5_escape:
+                convert_backslash_step2(filename)
+            
             return True
         except Exception as _err:
+            raise _err
             return False
 
     def execute(self, filename, savefile = None):
@@ -476,17 +531,14 @@ class FulltextReplaceController():
         self.__lang = self.__getfromdict(kwargs, 'lang')
         self.__transdb_name = self.__getfromdict(kwargs, 'transdb_name')
         self.__replace_decorate = self.__getfromdict(kwargs, 'replace_decorate')
-        self.__regex_flags = self.__getfromdict(kwargs, 'regex_flags')
+        self.__regex_flags = self.__getfromdict(kwargs, 'regex_flags', 0)
+        self.__big5_escape = self.__getfromdict(kwargs, 'big5_escape', False)
         self.__trans = TranslateDatabase(self.__transdb_name, self.__lang)
-
-        if self.__regex_flags is None:
-            self.__regex_flags = 0
     
     def __getfromdict(self, dictmap, key, default = None):
         if key not in dictmap:
             return default
         return dictmap[key]
-    
 
     def __load(self, filename):
         # 将文件中的内容读取成一个完整的文本
@@ -545,10 +597,18 @@ class FulltextReplaceController():
     
     def __save(self, contents, filename):
         try:
+            if self.__lang == 'zh-tw' and self.__big5_escape:
+                contents = convert_backslash_step1(contents)
+        
             with open(filename, 'w', encoding=self.__save_encoding) as f:
                 f.write(contents)
+            
+            if self.__lang == 'zh-tw' and self.__big5_escape:
+                convert_backslash_step2(filename)
+
             return True
         except Exception as _err:
+            raise _err
             return False
 
     def execute(self, filename, savefile = None):
