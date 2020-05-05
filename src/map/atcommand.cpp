@@ -10451,7 +10451,7 @@ ACMD_FUNC(crashtest) {
 	mapit_free(iter);
 
 	// 若当前服务器只有一个人在线, 那么触发地图服务器崩溃
-	if (count == 1) {
+	if (count <= 1) {
 		ShowWarning("Map-Server will trigger an crash for testing the crashrpt system.\n");
 
 #ifdef Pandas_Google_Breakpad
@@ -10462,6 +10462,14 @@ ACMD_FUNC(crashtest) {
 		// 2015年08月17日是 rAthenaCN 第一个版本的发布日期
 		// 在迭代到 v1.8.0 版本后开源, 并更名为 Pandas 熊猫模拟器并重写相关功能
 		*crashint = 20150817;
+	}
+	else {
+		if (sd) {
+			// Currently we have %d online player. For safety reasons, we does not trigger a crash.
+			char mes[CHAT_SIZE_MAX] = { 0 };
+			sprintf(mes, msg_txt_cn(sd, 2), count);
+			clif_displaymessage(fd, mes);
+		}
 	}
 
 	return 0;
