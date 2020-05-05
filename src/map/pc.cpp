@@ -12857,8 +12857,8 @@ void pc_show_version(struct map_session_data *sd) {
 	clif_displaymessage(sd->fd,buf);
 #else
 	std::string appid(CRASHRPT_APPID);
-	std::string branch(GIT_BRANCH);
-	std::string hash(GIT_HASH);
+	std::string gitbranch(GIT_BRANCH);
+	std::string githash(GIT_HASH);
 
 	char mes[CHAT_SIZE_MAX] = { 0 };
 	char compile[CHAT_SIZE_MAX] = { 0 };
@@ -12875,8 +12875,10 @@ void pc_show_version(struct map_session_data *sd) {
 	else
 		strcpy(compile, msg_txt_cn(sd, 87));	// 个人或非官方编译
 
-	if (branch.empty()) branch = msg_txt_cn(sd, 91);	// 暂无数据
-	if (hash.empty()) hash = msg_txt_cn(sd, 91);		// 暂无数据
+	if (gitbranch.empty())
+		gitbranch = msg_txt_cn(sd, 91);			// 暂无数据
+	if (githash.empty())
+		githash = msg_txt_cn(sd, 91);			// 暂无数据
 
 	// 构建并输出第一行版本信息
 	// 熊猫模拟器版本: v1.0.6-dev (官方编译)
@@ -12885,7 +12887,7 @@ void pc_show_version(struct map_session_data *sd) {
 
 	// 构建并输出第二行版本信息
 	// 运行模式: 复兴前 | 适配的客户端版本: 20180620 | 分支: master | 提交散列: 7760983
-	sprintf(mes, msg_txt_cn(sd, 88), mode, PACKETVER, branch.c_str(), hash.c_str());
+	sprintf(mes, msg_txt_cn(sd, 88), mode, PACKETVER, gitbranch.c_str(), githash.c_str());
 	clif_displaymessage(sd->fd, mes);
 #endif // Pandas_UserExperience_AtCommand_Version
 }
