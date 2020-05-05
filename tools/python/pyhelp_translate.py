@@ -327,7 +327,7 @@ def convert_backslash_step1(textcontent):
     '''
     text_processed = ''
     for i, element in enumerate(textcontent):
-        cb = element.encode('big5')
+        element.encode('big5')
         text_processed = text_processed + element
         if len(cb) == 2 and cb[1] == 0x5C:
             text_processed = text_processed + r'[[[\\]]]'
@@ -365,7 +365,6 @@ class TranslateDatabase():
             Message.ShowError('%s 第 %-5d 行中的 "%s" 字符不存在于 "%s" 编码中, 此错误必须被消除' % (
                 os.path.relpath(self.__filename), line, element, encoding
             ))
-            pass
 
     def __load(self, filename):
         if not Common.is_file_exists(filename):
@@ -504,7 +503,6 @@ class LineReplaceController():
             return True
         except Exception as _err:
             raise _err
-            return False
 
     def execute(self, filename, savefile = None):
         if not Common.is_file_exists(filename):
@@ -609,7 +607,6 @@ class FulltextReplaceController():
             return True
         except Exception as _err:
             raise _err
-            return False
 
     def execute(self, filename, savefile = None):
         if not Common.is_file_exists(filename):
