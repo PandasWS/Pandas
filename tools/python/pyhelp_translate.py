@@ -327,7 +327,7 @@ def convert_backslash_step1(textcontent):
     '''
     text_processed = ''
     for i, element in enumerate(textcontent):
-        element.encode('big5')
+        cb = element.encode('big5')
         text_processed = text_processed + element
         if len(cb) == 2 and cb[1] == 0x5C:
             text_processed = text_processed + r'[[[\\]]]'
@@ -360,7 +360,7 @@ class TranslateDatabase():
     def __encoding_check(self, text, encoding, line):
         try:
             for i, element in enumerate(text):
-                cb = element.encode(encoding)
+                element.encode(encoding)
         except Exception as _err:
             Message.ShowError('%s 第 %-5d 行中的 "%s" 字符不存在于 "%s" 编码中, 此错误必须被消除' % (
                 os.path.relpath(self.__filename), line, element, encoding
