@@ -12673,6 +12673,29 @@ void pc_scdata_received(struct map_session_data *sd) {
 		sd->cart_weight_max = 0; // Force a client refesh
 		status_calc_cart_weight(sd, (e_status_calc_weight_opt)(CALCWT_ITEM|CALCWT_MAXBONUS|CALCWT_CARTSTATE));
 	}
+
+#ifdef Pandas_Player_Suspend_System
+	if (sd->state.pc_loaded && sd->state.autotrade) {
+		// 走到这里说明已经完成了背包、仓库、手推车的道具信息以及 sc_data 数据的加载
+		// 应该在这里触发被召回的角色成功上线后需要做的后置处理工作
+		if (sd->state.autotrade & AUTOTRADE_AFK || sd->state.autotrade & AUTOTRADE_OFFLINE) {
+			clif_parse_LoadEndAck(sd->fd, sd);
+			suspend_recall_postfix(sd);
+			return;
+		}
+	}
+#endif // Pandas_Player_Suspend_System
+
+#ifdef Pandas_Fix_Autotrade_HeadView_Missing
+	if (sd->state.pc_loaded && sd->state.autotrade) {
+		// 修正离线挂店的角色在服务器重启自动上线后, 头饰外观会暂时丢失的问题
+		// 将原先位于 intif.cpp -> intif_parse_StorageReceived 函数中自动开店的处理逻辑移动到这里来
+		if (sd->state.autotrade & AUTOTRADE_VENDING || sd->state.autotrade & AUTOTRADE_BUYINGSTORE) {
+			clif_parse_LoadEndAck(sd->fd, sd);
+			sd->autotrade_tid = add_timer(gettick() + battle_config.feature_autotrade_open_delay, pc_autotrade_timer, sd->bl.id, 0);
+		}
+	}
+#endif // Pandas_Fix_Autotrade_HeadView_Missing
 }
 
 /**
