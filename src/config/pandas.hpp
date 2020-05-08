@@ -490,6 +490,9 @@
 	// 按照 import 逻辑定义在尾部的数据将覆盖前者, 但当后者覆盖前者的 SupportScript 或
 	// Script 时, 会忘记释放之前申请的内存. 导致退出地图服务器时提示内存泄露.
 	#define Pandas_Fix_PetDB_Script_Memory_Leaks
+
+	// 修正离线挂店的角色在服务器重启自动上线后, 头饰外观会暂时丢失的问题 [Sola丶小克]
+	#define Pandas_Fix_Autotrade_HeadView_Missing
 #endif // Pandas_Bugfix
 
 // ============================================================================

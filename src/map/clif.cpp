@@ -11014,10 +11014,6 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 
 	sd->state.connect_new = 0;
 	sd->state.changemap = false;
-
-#ifdef Pandas_Player_Suspend_System
-	suspend_recall_postfix(sd);
-#endif // Pandas_Player_Suspend_System
 }
 
 

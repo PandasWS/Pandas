@@ -293,6 +293,7 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 	channel_pcquit(sd, 0xF);
 
 	clif_authfail_fd(sd->fd, 15);
+
 	chrif_save(sd, CSAVE_AUTOTRADE);
 }
 

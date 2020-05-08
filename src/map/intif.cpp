@@ -3477,21 +3477,37 @@ static bool intif_parse_StorageReceived(int fd)
 
 		case TABLE_CART:
 			pc_check_available_item(sd, ITMCHK_CART);
+#ifndef Pandas_Fix_Autotrade_HeadView_Missing
+			// 加载离线挂店的时机不应该在这里, 虽然此处加载的手推车信息足够开启离线挂店功能
+			//
+			// 这是因为:
+			// 角色上线后会根据装备去重新刷新头饰外观等编号, 此时背包信息却还没被加载完成,
+			// 无法确认什么装备穿戴在什么位置, 甚至连装备对应在背包的索引编号 (equip_index) 都不知道, 程序会误以为玩家没有装备,
+			// 最后上线的话会导致角色的头饰外观临时消失 (直到角色下一次通过客户端进入游戏)
+			//
+			// 正确的流程:
+			// 本函数 intif_parse_StorageReceived 设计用来处理角色服务器发送来的背包、手推车、仓库数据
+			// 当接收到 TABLE_INVENTORY 背包数据后, 程序会调用 pc_setequipindex 重新构建装备的背包索引编号
+			// 然后调用 chrif_scdata_request 函数, 向角色服务器请求获取 sc_data 数据, 当角色服务器送来 sc_data 后
+			// 会在 pc.cpp 的 pc_scdata_received 函数中进行最终接收.
+			//
+			// 在 pc_scdata_received 中, 程序会将玩家的 sd->state.pc_loaded 设置为 true
+			// 表示背包、手推车、仓库和 sc_data 数据加载完毕. 在那里开启离线挂店的角色, 才是比较合理的位置.
 			if (sd->state.autotrade) {
 				clif_parse_LoadEndAck(sd->fd, sd);
-#ifndef Pandas_Player_Suspend_System
 				sd->autotrade_tid = add_timer(gettick() + battle_config.feature_autotrade_open_delay, pc_autotrade_timer, sd->bl.id, 0);
-#else
-				// 针对离线挂店类型才需要创建 pc_autotrade_timer 定时器
-				if (sd->state.autotrade & AUTOTRADE_VENDING || sd->state.autotrade & AUTOTRADE_BUYINGSTORE) {
-					sd->autotrade_tid = add_timer(gettick() + battle_config.feature_autotrade_open_delay, pc_autotrade_timer, sd->bl.id, 0);
-				}
-#endif // Pandas_Player_Suspend_System
 			}else if( sd->state.prevend ){
 				clif_clearcart(sd->fd);
 				clif_cartlist(sd);
 				clif_openvendingreq(sd, sd->vend_skill_lv+2);
 			}
+#else
+			if (sd->state.prevend) {
+				clif_clearcart(sd->fd);
+				clif_cartlist(sd);
+				clif_openvendingreq(sd, sd->vend_skill_lv+2);
+			}
+#endif // Pandas_Fix_Autotrade_HeadView_Missing
 			break;
 
 		case TABLE_STORAGE:
