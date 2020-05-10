@@ -821,7 +821,7 @@ struct map_data {
 	int mob_delete_timer;	// Timer ID for map_removemobs_timer [Skotlex]
 
 	// Instance Variables
-	unsigned short instance_id;
+	int instance_id;
 	int instance_src_map;
 
 	/* rAthena Local Chat */
@@ -1116,7 +1116,7 @@ int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, i
 #endif // Pandas_Fix_Item_Trade_FloorDropable
 
 // instances
-int map_addinstancemap(const char *name, unsigned short instance_id);
+int map_addinstancemap(int src_m, int instance_id);
 int map_delinstancemap(int m);
 void map_data_copyall(void);
 void map_data_copy(struct map_data *dst_map, struct map_data *src_map);
