@@ -19,6 +19,7 @@
 #include "../common/showmsg.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
+#include "../common/utilities.hpp"
 #include "../common/utils.hpp"
 #include "../common/utf8_defines.hpp"  // PandasWS
 
@@ -36,6 +37,8 @@
 #include "pc.hpp"
 #include "pet.hpp"
 #include "script.hpp" // script_config
+
+using namespace rathena;
 
 struct npc_data* fake_nd;
 
@@ -204,9 +207,10 @@ int npc_isnear_sub(struct block_list* bl, va_list args) {
 			if (skill->unit_nonearnpc_type&SKILL_NONEAR_TOMB && nd->subtype == NPCTYPE_TOMB)
 				return 1;
 		}
+		return 0;
 	}
 
-    return 0;
+	return 1;
 }
 
 bool npc_isnear(struct block_list * bl) {
@@ -3574,6 +3578,8 @@ const char* npc_parse_duplicate(char* w1, char* w2, char* w3, char* w4, const ch
 		case NPCTYPE_POINTSHOP:
 		case NPCTYPE_MARKETSHOP:
 			++npc_shop;
+			safestrncpy( nd->u.shop.pointshop_str, dnd->u.shop.pointshop_str, strlen( dnd->u.shop.pointshop_str ) );
+			nd->u.shop.itemshop_nameid = dnd->u.shop.itemshop_nameid;
 #ifndef Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 			nd->u.shop.shop_item = dnd->u.shop.shop_item;
 #else
@@ -3584,15 +3590,10 @@ const char* npc_parse_duplicate(char* w1, char* w2, char* w3, char* w4, const ch
 			memcpy(nd->u.shop.shop_item, dnd->u.shop.shop_item, sizeof(struct npc_item_list) * dnd->u.shop.count);
 #endif // Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 			nd->u.shop.count = dnd->u.shop.count;
-
-#ifdef Pandas_Fix_Duplicate_Shop_Parameters_Missing
-			nd->u.shop.itemshop_nameid = dnd->u.shop.itemshop_nameid;
-			nd->u.shop.discount = dnd->u.shop.discount;
-			safestrncpy(nd->u.shop.pointshop_str, dnd->u.shop.pointshop_str, sizeof(dnd->u.shop.pointshop_str));
-			#ifdef Pandas_Support_Pointshop_Variable_DisplayName
-				safestrncpy(nd->u.shop.pointshop_str_nick, dnd->u.shop.pointshop_str_nick, sizeof(dnd->u.shop.pointshop_str_nick));
-			#endif // Pandas_Support_Pointshop_Variable_DisplayName
-#endif // Pandas_Fix_Duplicate_Shop_Parameters_Missing
+			nd->u.shop.discount =  dnd->u.shop.discount;
+#ifdef Pandas_Support_Pointshop_Variable_DisplayName
+			safestrncpy(nd->u.shop.pointshop_str_nick, dnd->u.shop.pointshop_str_nick, sizeof(dnd->u.shop.pointshop_str_nick));
+#endif // Pandas_Support_Pointshop_Variable_DisplayName
 			break;
 
 		case NPCTYPE_WARP:
@@ -3655,7 +3656,7 @@ int npc_duplicate4instance(struct npc_data *snd, int16 m) {
 	char newname[NPC_NAME_LENGTH+1];
 	struct map_data *mapdata = map_getmapdata(m);
 
-	if( mapdata->instance_id == 0 )
+	if( mapdata->instance_id <= 0 )
 		return 1;
 
 	snprintf(newname, ARRAYLENGTH(newname), "dup_%d_%d", mapdata->instance_id, snd->bl.id);
@@ -3666,15 +3667,17 @@ int npc_duplicate4instance(struct npc_data *snd, int16 m) {
 
 	if( snd->subtype == NPCTYPE_WARP ) { // Adjust destination, if instanced
 		struct npc_data *wnd = NULL; // New NPC
-		struct instance_data *im = &instance_data[mapdata->instance_id];
-		int dm = map_mapindex2mapid(snd->u.warp.mapindex), imap = 0, i;
+		std::shared_ptr<s_instance_data> idata = util::umap_find(instances, mapdata->instance_id);
+		int dm = map_mapindex2mapid(snd->u.warp.mapindex), imap = 0;
+
 		if( dm < 0 ) return 1;
 
-		for(i = 0; i < im->cnt_map; i++)
-			if(im->map[i]->m && map_mapname2mapid(map_getmapdata(im->map[i]->src_m)->name) == dm) {
-				imap = map_mapname2mapid(map_getmapdata(im->map[i]->m)->name);
+		for (const auto &it : idata->map) {
+			if (it.m && map_mapname2mapid(map_getmapdata(it.src_m)->name) == dm) {
+				imap = map_mapname2mapid(map_getmapdata(it.m)->name);
 				break; // Instance map matches destination, update to instance map
 			}
+		}
 
 		if(!imap)
 			imap = map_mapname2mapid(map_getmapdata(dm)->name);
@@ -4811,7 +4814,6 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 #ifdef Pandas_ScriptEngine_Express
 bool npc_event_is_express_type(enum npce_event eventtype) {
 	static std::vector<enum npce_event> express_npce = {
-		NPCE_STATCALC,
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -4887,8 +4889,6 @@ const char *npc_get_script_event_name(int npce_index)
 		return script_config.kill_pc_event_name;
 	case NPCE_KILLNPC:
 		return script_config.kill_mob_event_name;
-	case NPCE_STATCALC:
-		return script_config.stat_calc_event_name;
 
 	/************************************************************************/
 	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
