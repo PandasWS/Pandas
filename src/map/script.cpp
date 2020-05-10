@@ -26832,6 +26832,8 @@ BUILDIN_FUNC(copynpc) {
 	case NPCTYPE_POINTSHOP:
 	case NPCTYPE_MARKETSHOP:
 		++(*npc_shop); // 与 npc_parse_duplicate 不同, 这里是个指针, 需要先解引用后再递增
+		safestrncpy(nd->u.shop.pointshop_str, dnd->u.shop.pointshop_str, strlen(dnd->u.shop.pointshop_str));
+		nd->u.shop.itemshop_nameid = dnd->u.shop.itemshop_nameid;
 #ifndef Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 		nd->u.shop.shop_item = dnd->u.shop.shop_item;
 #else
@@ -26842,15 +26844,10 @@ BUILDIN_FUNC(copynpc) {
 		memcpy(nd->u.shop.shop_item, dnd->u.shop.shop_item, sizeof(struct npc_item_list) * dnd->u.shop.count);
 #endif // Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 		nd->u.shop.count = dnd->u.shop.count;
-
-#ifdef Pandas_Fix_Duplicate_Shop_Parameters_Missing
-		nd->u.shop.itemshop_nameid = dnd->u.shop.itemshop_nameid;
 		nd->u.shop.discount = dnd->u.shop.discount;
-		safestrncpy(nd->u.shop.pointshop_str, dnd->u.shop.pointshop_str, sizeof(dnd->u.shop.pointshop_str));
-		#ifdef Pandas_Support_Pointshop_Variable_DisplayName
-			safestrncpy(nd->u.shop.pointshop_str_nick, dnd->u.shop.pointshop_str_nick, sizeof(dnd->u.shop.pointshop_str_nick));
-		#endif // Pandas_Support_Pointshop_Variable_DisplayName
-#endif // Pandas_Fix_Duplicate_Shop_Parameters_Missing
+#ifdef Pandas_Support_Pointshop_Variable_DisplayName
+		safestrncpy(nd->u.shop.pointshop_str_nick, dnd->u.shop.pointshop_str_nick, sizeof(dnd->u.shop.pointshop_str_nick));
+#endif // Pandas_Support_Pointshop_Variable_DisplayName
 		break;
 
 	case NPCTYPE_WARP:

@@ -444,12 +444,6 @@
 // ============================================================================
 
 #ifdef Pandas_Bugfix
-	// 修复 rAthena 部分空指针检测遗漏或者类似的崩溃错误 [Sola丶小克]
-	// 程序内部大量使用 nullpo.cpp 中的系列函数来判定空指针并采取一些措施,
-	// 但是这个方法只在 Debug 模式下可以成功拦截空指针并输出报错信息.
-	// 在 Release 模式下, 有一些检测不够严格的地方会导致程序直接崩溃, 这是我们不想见到的
-	#define Pandas_Fix_NullPtr_Protect
-
 	// 修正在部分情况下角色公会图标刷新不及时的问题 [Sola丶小克]
 	#define Pandas_Fix_GuildEmblem_Update
 
@@ -464,9 +458,6 @@
 	// 导致使用 npcshop* 系列指令调整复制后的商店内容时, 原商店的内容也会同步受到影响的问题. 
 	// 目前根据各位脚本大神的反馈, 更希望各个商店 NPC 的商品列表内容是各自独立的 [Sola丶小克]
 	#define Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
-
-	// 修正复制商店类型的 NPC 时, 打折设置及货币变量等参数没有一起复制的问题 [Sola丶小克]
-	#define Pandas_Fix_Duplicate_Shop_Parameters_Missing
 
 	// 修正使用 pointshop 类型的商店操作 #CASHPOINTS 或 #KAFRAPOINTS 变量完成最终的货币结算后
 	// 小地图旁边的"道具商城"按钮中的金额不被更新, 最终导致双花的问题 [Sola丶小克]
