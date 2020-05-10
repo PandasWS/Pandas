@@ -246,6 +246,10 @@ struct Script_Config {
 	/************************************************************************/
 	/* Express 类型的快速事件，这些事件将会被立刻执行, 不进事件队列                */
 	/************************************************************************/
+
+#ifdef Pandas_NpcExpress_STATCALC
+	const char* statcalc_express_name;	// NPCE_STATCALC	// OnPCStatCalcEvent	// 当角色能力被重新计算时触发事件
+#endif // Pandas_NpcExpress_STATCALC
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related

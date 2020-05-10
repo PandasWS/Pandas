@@ -715,6 +715,13 @@
 	/************************************************************************/
 
 	#ifdef Pandas_ScriptEngine_Express
+		// 当角色能力被重新计算时触发事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnPCStatCalcEvent
+		// 常量名称: NPCE_STATCALC / 变量名称: statcalc_express_name
+		//
+		// 正常按照命名规范这个事件应该叫 NPCX_STATCALC 和 OnPCStatCalcExpress
+		// 但这个事件比较特殊, 之前 rAthena 官方出现过. 考虑到对老脚本的兼容, 继续沿用老的事件常量和名称
+		#define Pandas_NpcExpress_STATCALC
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	

@@ -2088,6 +2088,10 @@ extern unsigned int current_equip_combo_pos;
 extern int current_equip_card_id;
 extern short current_equip_opt_index;
 
+#ifdef Pandas_NpcExpress_STATCALC
+extern bool running_npc_stat_calc_event;
+#endif // Pandas_NpcExpress_STATCALC
+
 //Status change option definitions (options are what makes status changes visible to chars
 //who were not on your field of sight when it happened)
 
