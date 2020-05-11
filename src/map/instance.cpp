@@ -746,7 +746,11 @@ int16 instance_mapid(int16 m, int instance_id)
  * @param instance_id: Instance to remove
  * @return True on sucess or false on failure
  */
+#ifndef Pandas_FuncDefine_Instance_Destory
 bool instance_destroy(int instance_id)
+#else
+bool instance_destroy(int instance_id, bool skip_erase)
+#endif // Pandas_FuncDefine_Instance_Destory
 {
 	std::shared_ptr<s_instance_data> idata = util::umap_find(instances, instance_id);
 
@@ -849,6 +853,9 @@ bool instance_destroy(int instance_id)
 
 	ShowInfo("[Instance] Destroyed %d.\n", instance_id);
 
+#ifdef Pandas_FuncDefine_Instance_Destory
+	if (!skip_erase)
+#endif // Pandas_FuncDefine_Instance_Destory
 	instances.erase(instance_id);
 
 	return true;
@@ -907,8 +914,8 @@ void instance_force_destroy(struct map_session_data* sd) {
 
 	nullpo_retv(sd);
 
-	for (const auto& it : instances) {
-		std::shared_ptr<s_instance_data> idata = it.second;
+	for (auto it = instances.begin(); it != instances.end(); ) {
+		std::shared_ptr<s_instance_data> idata = it->second;
 
 		if (idata->owner_id == 0)
 			continue;
@@ -939,7 +946,12 @@ void instance_force_destroy(struct map_session_data* sd) {
 			continue;
 		}
 
-		instance_destroy(it.first);
+#ifndef Pandas_FuncDefine_Instance_Destory
+		instance_destroy(it->first);
+#else
+		if (instance_destroy(it->first, true))
+			it = instances.erase(it);
+#endif // Pandas_FuncDefine_Instance_Destory
 		return;
 	}
 }
@@ -1208,6 +1220,16 @@ void do_init_instance(void) {
  * Finalizes the instances and instance database
  */
 void do_final_instance(void) {
+#ifndef Pandas_Crashfix_UnorderedMap_Erase
 	for (const auto &it : instances)
 		instance_destroy(it.first);
+#else
+	for (auto it = instances.begin(); it != instances.end(); ) {
+		if (instance_destroy(it->first, true)) {
+			it = instances.erase(it);
+			continue;
+		}
+		++it;
+	}
+#endif // Pandas_Crashfix_UnorderedMap_Erase
 }
