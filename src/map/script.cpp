@@ -358,6 +358,10 @@ struct Script_Config script_config = {
 	/************************************************************************/
 	/* Express 类型的快速事件，这些事件将会被立刻执行, 不进事件队列                */
 	/************************************************************************/
+
+#ifdef Pandas_NpcExpress_STATCALC
+	"OnPCStatCalcEvent",	// NPCE_STATCALC		// statcalc_express_name	// 当角色能力被重新计算时触发事件
+#endif // Pandas_NpcExpress_STATCALC
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 
 	// NPC related
@@ -24178,8 +24182,18 @@ BUILDIN_FUNC(achievementadd) {
 	}
 
 	if( !sd->state.pc_loaded ){
+#ifndef Pandas_NpcExpress_STATCALC
 		// Simply ignore it on the first call, because the status will be recalculated after loading anyway
 		return SCRIPT_CMD_SUCCESS;
+#else
+		if( !running_npc_stat_calc_event ){
+			ShowError( "buildin_achievementadd: call was too early. Character %s(CID: '%u') was not loaded yet.\n", sd->status.name, sd->status.char_id );
+			return SCRIPT_CMD_FAILURE;
+		}else{
+			// Simply ignore it on the first call, because the status will be recalculated after loading anyway
+			return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcExpress_STATCALC
 	}
 
 	if (achievement_add(sd, achievement_id))
@@ -24210,8 +24224,18 @@ BUILDIN_FUNC(achievementremove) {
 	}
 
 	if( !sd->state.pc_loaded ){
+#ifndef Pandas_NpcExpress_STATCALC
 		// Simply ignore it on the first call, because the status will be recalculated after loading anyway
 		return SCRIPT_CMD_SUCCESS;
+#else
+		if( !running_npc_stat_calc_event ){
+			ShowError( "buildin_achievementremove: call was too early. Character %s(CID: '%u') was not loaded yet.\n", sd->status.name, sd->status.char_id );
+			return SCRIPT_CMD_FAILURE;
+		}else{
+			// Simply ignore it on the first call, because the status will be recalculated after loading anyway
+			return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcExpress_STATCALC
 	}
 
 	if (achievement_remove(sd, achievement_id))
@@ -24242,8 +24266,18 @@ BUILDIN_FUNC(achievementinfo) {
 
 	if( !sd->state.pc_loaded ){
 		script_pushint(st, false);
+#ifndef Pandas_NpcExpress_STATCALC
 		// Simply ignore it on the first call, because the status will be recalculated after loading anyway
 		return SCRIPT_CMD_SUCCESS;
+#else
+		if( !running_npc_stat_calc_event ){
+			ShowError( "buildin_achievementinfo: call was too early. Character %s(CID: '%u') was not loaded yet.\n", sd->status.name, sd->status.char_id );
+			return SCRIPT_CMD_FAILURE;
+		}else{
+			// Simply ignore it on the first call, because the status will be recalculated after loading anyway
+			return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcExpress_STATCALC
 	}
 
 	script_pushint(st, achievement_check_progress(sd, achievement_id, script_getnum(st, 3)));
@@ -24270,8 +24304,18 @@ BUILDIN_FUNC(achievementcomplete) {
 	}
 	
 	if( !sd->state.pc_loaded ){
+#ifndef Pandas_NpcExpress_STATCALC
 		// Simply ignore it on the first call, because the status will be recalculated after loading anyway
 		return SCRIPT_CMD_SUCCESS;
+#else
+		if( !running_npc_stat_calc_event ){
+			ShowError( "buildin_achievementcomplete: call was too early. Character %s(CID: '%u') was not loaded yet.\n", sd->status.name, sd->status.char_id );
+			return SCRIPT_CMD_FAILURE;
+		}else{
+			// Simply ignore it on the first call, because the status will be recalculated after loading anyway
+			return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcExpress_STATCALC
 	}
 
 	ARR_FIND(0, sd->achievement_data.count, i, sd->achievement_data.achievements[i].achievement_id == achievement_id);
@@ -24303,8 +24347,18 @@ BUILDIN_FUNC(achievementexists) {
 
 	if( !sd->state.pc_loaded ){
 		script_pushint(st, false);
+#ifndef Pandas_NpcExpress_STATCALC
 		// Simply ignore it on the first call, because the status will be recalculated after loading anyway
 		return SCRIPT_CMD_SUCCESS;
+#else
+		if( !running_npc_stat_calc_event ){
+			ShowError( "buildin_achievementexists: call was too early. Character %s(CID: '%u') was not loaded yet.\n", sd->status.name, sd->status.char_id );
+			return SCRIPT_CMD_FAILURE;
+		}else{
+			// Simply ignore it on the first call, because the status will be recalculated after loading anyway
+			return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcExpress_STATCALC
 	}
 
 	ARR_FIND(0, sd->achievement_data.count, i, sd->achievement_data.achievements[i].achievement_id == achievement_id && sd->achievement_data.achievements[i].completed > 0 );
@@ -24336,8 +24390,18 @@ BUILDIN_FUNC(achievementupdate) {
 	}
 
 	if( !sd->state.pc_loaded ){
+#ifndef Pandas_NpcExpress_STATCALC
 		// Simply ignore it on the first call, because the status will be recalculated after loading anyway
 		return SCRIPT_CMD_SUCCESS;
+#else
+		if( !running_npc_stat_calc_event ){
+			ShowError( "buildin_achievementupdate: call was too early. Character %s(CID: '%u') was not loaded yet.\n", sd->status.name, sd->status.char_id );
+			return SCRIPT_CMD_FAILURE;
+		}else{
+			// Simply ignore it on the first call, because the status will be recalculated after loading anyway
+			return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcExpress_STATCALC
 	}
 
 	ARR_FIND(0, sd->achievement_data.count, i, sd->achievement_data.achievements[i].achievement_id == achievement_id);
@@ -26832,6 +26896,8 @@ BUILDIN_FUNC(copynpc) {
 	case NPCTYPE_POINTSHOP:
 	case NPCTYPE_MARKETSHOP:
 		++(*npc_shop); // 与 npc_parse_duplicate 不同, 这里是个指针, 需要先解引用后再递增
+		safestrncpy(nd->u.shop.pointshop_str, dnd->u.shop.pointshop_str, strlen(dnd->u.shop.pointshop_str));
+		nd->u.shop.itemshop_nameid = dnd->u.shop.itemshop_nameid;
 #ifndef Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 		nd->u.shop.shop_item = dnd->u.shop.shop_item;
 #else
@@ -26842,15 +26908,10 @@ BUILDIN_FUNC(copynpc) {
 		memcpy(nd->u.shop.shop_item, dnd->u.shop.shop_item, sizeof(struct npc_item_list) * dnd->u.shop.count);
 #endif // Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 		nd->u.shop.count = dnd->u.shop.count;
-
-#ifdef Pandas_Fix_Duplicate_Shop_Parameters_Missing
-		nd->u.shop.itemshop_nameid = dnd->u.shop.itemshop_nameid;
 		nd->u.shop.discount = dnd->u.shop.discount;
-		safestrncpy(nd->u.shop.pointshop_str, dnd->u.shop.pointshop_str, sizeof(dnd->u.shop.pointshop_str));
-		#ifdef Pandas_Support_Pointshop_Variable_DisplayName
-			safestrncpy(nd->u.shop.pointshop_str_nick, dnd->u.shop.pointshop_str_nick, sizeof(dnd->u.shop.pointshop_str_nick));
-		#endif // Pandas_Support_Pointshop_Variable_DisplayName
-#endif // Pandas_Fix_Duplicate_Shop_Parameters_Missing
+#ifdef Pandas_Support_Pointshop_Variable_DisplayName
+		safestrncpy(nd->u.shop.pointshop_str_nick, dnd->u.shop.pointshop_str_nick, sizeof(dnd->u.shop.pointshop_str_nick));
+#endif // Pandas_Support_Pointshop_Variable_DisplayName
 		break;
 
 	case NPCTYPE_WARP:

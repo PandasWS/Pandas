@@ -70,6 +70,10 @@ int current_equip_card_id; /// To prevent card-stacking (from jA) [Skotlex]
 // We need it for new cards 15 Feb 2005, to check if the combo cards are insrerted into the CURRENT weapon only to avoid cards exploits
 short current_equip_opt_index; /// Contains random option index of an equipped item. [Secret]
 
+#ifdef Pandas_NpcExpress_STATCALC
+bool running_npc_stat_calc_event; /// Indicate if OnPCStatCalcEvent is running.
+#endif // Pandas_NpcExpress_STATCALC
+
 unsigned int SCDisabled[SC_MAX]; ///< List of disabled SC on map zones. [Cydh]
 
 sc_type SkillStatusChangeTable[MAX_SKILL];
@@ -3925,6 +3929,12 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	pc_delautobonus(sd, sd->autobonus, true);
 	pc_delautobonus(sd, sd->autobonus2, true);
 	pc_delautobonus(sd, sd->autobonus3, true);
+
+#ifdef Pandas_NpcExpress_STATCALC
+	running_npc_stat_calc_event = true;
+	npc_script_event(sd, NPCE_STATCALC);
+	running_npc_stat_calc_event = false;
+#endif // Pandas_NpcExpress_STATCALC
 
 	// Parse equipment
 	for (i = 0; i < EQI_MAX; i++) {

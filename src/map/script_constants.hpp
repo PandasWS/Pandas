@@ -109,6 +109,10 @@
 	/************************************************************************/
 	/* Express 类型的快速事件，这些事件将会被立刻执行, 不进事件队列                */
 	/************************************************************************/
+
+#ifdef Pandas_NpcExpress_STATCALC
+	export_constant(NPCE_STATCALC);	// statcalc_express_name	// OnPCStatCalcEvent		// 当角色能力被重新计算时触发事件
+#endif // Pandas_NpcExpress_STATCALC
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
 #endif // Pandas_ScriptCommands
 

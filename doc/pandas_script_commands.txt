@@ -61,7 +61,15 @@
 
 副本实例编号:
 	必填项, 这里填写的副本编号就是 instance_create 脚本指令返回的那个数值
-	也可以用 instance_id 脚本指令来获得当前队伍关联的副本实例编号
+
+举例说明:
+	可以用 instance_id 脚本指令来获得当前队伍关联的副本实例编号
+	
+	.@party_instance_id = instance_id(IM_PARTY);
+	if (.@party_instance_id == 0) {
+		dispbottom "你的队伍当前并没有创建副本.";
+	}
+	dispbottom "副本地图中当前人数: " + instance_users(.@party_instance_id) + " 人";
 
 返回值:
 	成功直接返回副本中的人数, 副本不存在或副本中无人存在则返回 0
