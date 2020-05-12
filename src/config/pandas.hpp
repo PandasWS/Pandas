@@ -251,6 +251,11 @@
 	// 调整 storage.cpp 中 storage_additem 的函数定义, 移除 static 关键字 [Sola丶小克]
 	#define Pandas_FuncDefine_STORAGE_ADDITEM
 
+	// 调整 instance.cpp 中 instance_destroy 的定义
+	// 增加 skip_erase 参数用于控制成功销毁副本后不 erase 掉 instance 对象
+	// 以便交由外部来进行 erase, 这样才能获取下一个指针的正确位置 (C++11) [Sola丶小克]
+	#define Pandas_FuncDefine_Instance_Destory
+
 	// 调整用于计算 MAX_INVENTORY 相关的变量
 	// 以便能够支持将背包的最大上限设置成超过 128 的值 [Sola丶小克]
 	// 
@@ -527,6 +532,12 @@
 
 	// 修正 SC_BOSSMAPINFO 会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_BossMapinfo
+
+	// 修正在 C++11 标准下使用不正确的 unordered_map::erase 方法会导致地图服务器崩溃的问题
+	// 此选项开关需要依赖 Pandas_FuncDefine_Instance_Destory 的拓展 [Sola丶小克]
+	#ifdef Pandas_FuncDefine_Instance_Destory
+		#define Pandas_Crashfix_UnorderedMap_Erase
+	#endif // Pandas_FuncDefine_Instance_Destory
 #endif // Pandas_Crashfix
 
 // ============================================================================

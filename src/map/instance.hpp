@@ -112,7 +112,11 @@ std::shared_ptr<s_instance_db> instance_search_db_name(const char* name);
 void instance_getsd(int instance_id, struct map_session_data *&sd, enum send_target *target);
 
 int instance_create(int owner_id, const char *name, e_instance_mode mode);
+#ifndef Pandas_FuncDefine_Instance_Destory
 bool instance_destroy(int instance_id);
+#else
+bool instance_destroy(int instance_id, bool skip_erase = false);
+#endif // Pandas_FuncDefine_Instance_Destory
 #ifdef Pandas_Quick_Implement_Dungeon_Command
 void instance_refresh_status(int instance_id);
 void instance_force_destroy(struct map_session_data* sd);
