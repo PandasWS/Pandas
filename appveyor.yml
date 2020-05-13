@@ -2,7 +2,7 @@ image: Visual Studio 2015
 # This is the default location, but we put it here for safety reasons, since we use it in our test script
 clone_folder: c:\projects\pandas
 # We do not need the git history for our integration tests
-clone_depth: 10
+clone_depth: 1
 version: '{branch}-{build}'
 pull_requests:
   do_not_increment_build_number: true
@@ -21,15 +21,19 @@ configuration:
 #  - Release
 matrix:
   fast_finish: true
+cache:
+  - 3rdparty\boost\bin.v2\ -> 3rdparty\boost\bootstrap.bat, 3rdparty\boost\index.html
+  - 3rdparty\boost\stage\ -> 3rdparty\boost\bootstrap.bat, 3rdparty\boost\index.html
+  - 3rdparty\boost\b2.exe -> 3rdparty\boost\bootstrap.bat, 3rdparty\boost\index.html
 install:
-- cmd: >-
-    cd C:\projects\pandas\3rdparty\boost
+- ps: >-
+    cd "$($env:APPVEYOR_BUILD_FOLDER)\3rdparty\boost"
     
-    .\bootstrap.bat
-
-    cd C:\projects\pandas
+    if (-not (Test-Path ".\stage\lib\libboost_*.lib") -or -not (Test-Path ".\b2.exe")){ .\bootstrap.bat }
+    
+    cd "$($env:APPVEYOR_BUILD_FOLDER)"
 build_script:
-- cmd: msbuild rAthena.sln /p:DefineConstants=%Defines%
+  - cmd: msbuild rAthena.sln /p:DefineConstants=%Defines%
 services: mysql
 test_script:
 - cmd: >-
