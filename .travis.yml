@@ -1,5 +1,6 @@
 language: cpp
 dist: trusty
+cache: ccache
 
 jobs:
   include:

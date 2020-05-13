@@ -81,6 +81,19 @@ elseif( "${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}" )
 		"To skip this check, set ALLOW_SAME_DIRECTORY to ON (-DALLOW_SAME_DIRECTORY=ON)" )
 endif()
 
+#
+# 若有可能则启用 ccache 以便加速编译
+#
+find_program(CCACHE_EXECUTABLE ccache)
+mark_as_advanced(CCACHE_EXECUTABLE)
+if(CCACHE_EXECUTABLE)
+  foreach(LANG C CXX)
+    if(NOT DEFINED CMAKE_${LANG}_COMPILER_LAUNCHER AND NOT CMAKE_${LANG}_COMPILER MATCHES ".*/ccache")
+      message(STATUS "Enabling ccache for ${LANG} : ${CCACHE_EXECUTABLE}")
+      set(CMAKE_${LANG}_COMPILER_LAUNCHER ${CCACHE_EXECUTABLE} CACHE STRING "")
+    endif()
+  endforeach()
+endif()
 
 #
 # Global stuff
@@ -210,7 +223,7 @@ set( Boost_USE_STATIC_RUNTIME OFF ) # 不使用 runtime 静态库
 set( BOOST_ROOT 3rdparty/boost ) # 从指定的位置搜索 Boost 库
 
 # 寻找名为 Boost 的库, 要求携带指定的多个组件, 失败则报错
-find_package(Boost COMPONENTS regex locale filesystem REQUIRED)
+find_package(Boost COMPONENTS regex locale filesystem date_time REQUIRED)
 
 # 如果成功找到 Boost 库, 那么进行相关的设置操作
 if( Boost_FOUND )
