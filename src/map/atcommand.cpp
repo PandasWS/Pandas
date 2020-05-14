@@ -3031,6 +3031,11 @@ ACMD_FUNC(recall) {
 	if (pl_sd->bl.m == sd->bl.m && pl_sd->bl.x == sd->bl.x && pl_sd->bl.y == sd->bl.y) {
 		return -1;
 	}
+#ifdef Pandas_Support_IndependentRecall_Autotrade_Player
+	// 标记为这是一次单体召唤，允许召唤离线挂店的玩家 [Sola丶小克]
+	if (pl_sd)
+		pl_sd->pandas.independent_recall = true;}
+#endif // Pandas_Support_IndependentRecall_Autotrade_Player
 	if( pc_setpos(pl_sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
 		clif_displaymessage(fd, msg_txt(sd,1025)); // The player is currently autotrading and cannot be recalled.
 		return -1;
@@ -6210,6 +6215,14 @@ ACMD_FUNC(autotrade) {
 	else if (sd->buyer_id)
 		sd->state.autotrade |= AUTOTRADE_BUYINGSTORE;
 #endif // Pandas_Struct_Autotrade_Extend
+
+#ifdef Pandas_Struct_Map_Session_Data_Autotrade_Configure
+	// 这里需要立刻填充相关的备份信息, 避免在完成指令下线后,
+	// 服务器没还重启的情况下, 角色就被 recall 导致朝向等数据无法恢复
+	sd->pandas.at_dir = sd->ud.dir;
+	sd->pandas.at_head_dir = sd->head_dir;
+	sd->pandas.at_sit = pc_issit(sd);
+#endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
 
 	if (battle_config.autotrade_monsterignore)
 		sd->state.block_action |= PCBLOCK_IMMUNE;

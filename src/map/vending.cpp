@@ -379,7 +379,11 @@ int8 vending_openvending(struct map_session_data* sd, const char* message, const
 
 	if( Sql_Query( mmysql_handle, "INSERT INTO `%s`(`id`, `account_id`, `char_id`, `sex`, `map`, `x`, `y`, `title`, `autotrade`, `body_direction`, `head_direction`, `sit`) "
 		"VALUES( %d, %d, %d, '%c', '%s', %d, %d, '%s', %d, '%d', '%d', '%d' );",
+#ifndef Pandas_Struct_Autotrade_Extend
 		vendings_table, sd->vender_id, sd->status.account_id, sd->status.char_id, sd->status.sex == SEX_FEMALE ? 'F' : 'M', map_getmapdata(sd->bl.m)->name, sd->bl.x, sd->bl.y, message_sql, sd->state.autotrade, at ? at->dir : sd->ud.dir, at ? at->head_dir : sd->head_dir, at ? at->sit : pc_issit(sd) ) != SQL_SUCCESS ) {
+#else
+		vendings_table, sd->vender_id, sd->status.account_id, sd->status.char_id, sd->status.sex == SEX_FEMALE ? 'F' : 'M', map_getmapdata(sd->bl.m)->name, sd->bl.x, sd->bl.y, message_sql, sd->state.autotrade &~ AUTOTRADE_VENDING, at ? at->dir : sd->ud.dir, at ? at->head_dir : sd->head_dir, at ? at->sit : pc_issit(sd) ) != SQL_SUCCESS ) {
+#endif // Pandas_Struct_Autotrade_Extend
 		Sql_ShowDebug(mmysql_handle);
 	}
 
@@ -618,6 +622,12 @@ void do_init_vending_autotrade(void)
 					at->sd->state.block_action &= ~PCBLOCK_IMMUNE;
 				chrif_authreq(at->sd, true);
 				uidb_put(vending_autotrader_db, at->char_id, at);
+
+#ifdef Pandas_Struct_Map_Session_Data_Autotrade_Configure
+				at->sd->pandas.at_dir = at->dir;
+				at->sd->pandas.at_head_dir = at->head_dir;
+				at->sd->pandas.at_sit = at->sit;
+#endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
 			}
 			Sql_FreeResult(mmysql_handle);
 

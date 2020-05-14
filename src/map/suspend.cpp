@@ -247,6 +247,14 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 		break;
 	}
 
+#ifdef Pandas_Struct_Map_Session_Data_Autotrade_Configure
+	// 这里需要立刻填充相关的备份信息, 避免在完成指令下线后,
+	// 服务器没还重启的情况下, 角色就被 recall 导致朝向等数据无法恢复
+	sd->pandas.at_dir = sd->ud.dir;
+	sd->pandas.at_head_dir = sd->head_dir;
+	sd->pandas.at_sit = pc_issit(sd);
+#endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
+
 	if (Sql_Query(mmysql_handle, "INSERT INTO `%s`(`account_id`, `char_id`, `sex`, `map`, `x`, `y`, `body_direction`, `head_direction`, `sit`, `mode`, `tick`, `val1`, `val2`, `val3`, `val4`) "
 		"VALUES( %d, %d, '%c', '%s', %d, %d, '%d', '%d', '%d', '%hu', '%" PRtf "', '%ld', '%ld', '%ld', '%ld' );",
 		suspend_table, sd->status.account_id, sd->status.char_id, sd->status.sex == SEX_FEMALE ? 'F' : 'M', map_getmapdata(sd->bl.m)->name,
