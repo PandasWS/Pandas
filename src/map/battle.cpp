@@ -9056,7 +9056,7 @@ static const struct _battle_data {
 	{ "suspend_afk_headdirection",          &battle_config.suspend_afk_headdirection,       -1,     -1,     2,              },
 #endif // Pandas_BattleConfig_Suspend_AFK_Headdirection
 #ifdef Pandas_BattleConfig_Suspend_AFK_Sitdown
-	{ "suspend_afk_sitdown",                &battle_config.suspend_afk_sitdown,             -1,     -1,     1,              },
+	{ "suspend_afk_sitdown",                &battle_config.suspend_afk_sitdown,             1,      -1,     1,              },
 #endif // Pandas_BattleConfig_Suspend_AFK_Sitdown
 #ifdef Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
 	{ "suspend_afk_headtop_viewid",         &battle_config.suspend_afk_headtop_viewid,      471,    0,      INT_MAX,        },
