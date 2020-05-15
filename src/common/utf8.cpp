@@ -114,9 +114,9 @@ enum e_console_encoding PandasUtf8::getConsoleEncoding() {
 	if (boost::icontains(szLanginfo, "UTF-8"))
 		return CONSOLE_ENCODING_UTF8;
 	else if (boost::icontains(szLanginfo, "GBK"))
-		return CONSOLE_ENCODING_GB2312;
+		return CONSOLE_ENCODING_GBK;
 	else if (boost::icontains(szLanginfo, "GB18030"))
-		return CONSOLE_ENCODING_GB2312;
+		return CONSOLE_ENCODING_GBK;
 	else if (boost::icontains(szLanginfo, "Big5HKSCS"))
 		return CONSOLE_ENCODING_BIG5;
 	else if (boost::icontains(szLanginfo, "Big5"))
@@ -285,7 +285,7 @@ std::string PandasUtf8::consoleConvert(const std::string& mes) {
 
 	switch (PandasUtf8::consoleEncoding) {
 	case CONSOLE_ENCODING_UTF8: _to = "UTF-8"; break;
-	case CONSOLE_ENCODING_GB2312: _to = "GBK"; break;
+	case CONSOLE_ENCODING_GBK: _to = "GBK"; break;
 	case CONSOLE_ENCODING_BIG5: _to = "BIG5"; break;
 	}
 
