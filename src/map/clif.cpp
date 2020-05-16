@@ -11028,6 +11028,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 	// 这里需要判断被召唤的玩家是否开启了采购商店, 若开启则需要
 	// 刷新附近玩家的客户端, 告诉他们在视野中有一个新的位置了采购摊位的牌牌
 	else if (sd->state.buyingstore) {
+		clif_buyingstore_open(sd);
 		clif_buyingstore_myitemlist(sd);
 		clif_buyingstore_entry(sd);
 	}
