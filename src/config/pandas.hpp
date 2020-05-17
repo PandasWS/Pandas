@@ -505,6 +505,10 @@
 
 	// 修正离线挂店的角色在服务器重启自动上线后, 头饰外观会暂时丢失的问题 [Sola丶小克]
 	#define Pandas_Fix_Autotrade_HeadView_Missing
+
+	// 修正角色服务器加载不存在的角色信息时, 由于返回值判断错误而导致流程继续执行的问题 [Sola丶小克]
+	// 例如: 当离线挂店/挂机角色由于各种意外不存在于 char 表里面时, 就会触发误判
+	#define Pandas_Fix_Char_FromSql_NextRow_Result_Logic
 #endif // Pandas_Bugfix
 
 // ============================================================================

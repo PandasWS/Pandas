@@ -575,7 +575,13 @@ void do_init_vending_autotrade(void)
 		if (Sql_Query(mmysql_handle,
 			"SELECT `id`, `account_id`, `char_id`, `sex`, `title`, `body_direction`, `head_direction`, `sit` "
 			"FROM `%s` "
+#ifndef Pandas_Struct_Autotrade_Extend
 			"WHERE `autotrade` = 1 AND (SELECT COUNT(`vending_id`) FROM `%s` WHERE `vending_id` = `id`) > 0 "
+#else
+			// 主要为了 1.0.5 版本的数据进行兼容处理
+			// 在 1.0.6 版本开始所有写入到 vendings_table 的 autotrade 字段都将为 1 (在 1.0.5 可能会是 3)
+			"WHERE `autotrade` in (1,3) AND (SELECT COUNT(`vending_id`) FROM `%s` WHERE `vending_id` = `id`) > 0 "
+#endif // Pandas_Struct_Autotrade_Extend
 			"ORDER BY `id`;",
 			vendings_table, vending_items_table ) != SQL_SUCCESS )
 		{

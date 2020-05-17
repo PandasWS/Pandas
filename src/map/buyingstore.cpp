@@ -665,7 +665,13 @@ void do_init_buyingstore_autotrade( void ) {
 		if (Sql_Query(mmysql_handle,
 			"SELECT `id`, `account_id`, `char_id`, `sex`, `title`, `limit`, `body_direction`, `head_direction`, `sit` "
 			"FROM `%s` "
+#ifndef Pandas_Struct_Autotrade_Extend
 			"WHERE `autotrade` = 1 AND `limit` > 0 AND (SELECT COUNT(`buyingstore_id`) FROM `%s` WHERE `buyingstore_id` = `id`) > 0 "
+#else
+			// 主要为了 1.0.5 版本的数据进行兼容处理
+			// 在 1.0.6 版本开始所有写入到 buyingstores_table 的 autotrade 字段都将为 1 (在 1.0.5 可能会是 5)
+			"WHERE `autotrade` in (1,5) AND `limit` > 0 AND (SELECT COUNT(`buyingstore_id`) FROM `%s` WHERE `buyingstore_id` = `id`) > 0 "
+#endif // Pandas_Struct_Autotrade_Extend
 			"ORDER BY `id`;",
 			buyingstores_table, buyingstore_items_table ) != SQL_SUCCESS )
 		{
