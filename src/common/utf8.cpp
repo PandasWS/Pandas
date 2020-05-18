@@ -23,6 +23,10 @@
 
 #include <unordered_map>
 
+// 当无法通过 PandasUtf8::systemLanguage 获得契合的字符编码时
+// 将会使用这里定义的默认编码 (主要是在 Linux 平台上使用的比较多一些)
+#define DEFAULT_ENCODING "GBK"
+
 enum e_console_encoding PandasUtf8::consoleEncoding =
 	PandasUtf8::getConsoleEncoding();
 enum e_system_language PandasUtf8::systemLanguage =
@@ -91,8 +95,8 @@ enum e_console_encoding PandasUtf8::getConsoleEncoding() {
 	UINT nCodepage = GetACP();
 
 	switch (nCodepage) {
-	case 936:	// GBK2312
-		return CONSOLE_ENCODING_GB2312;
+	case 936:	// GBK
+		return CONSOLE_ENCODING_GBK;
 	case 950:	// BIG5
 		return CONSOLE_ENCODING_BIG5;
 	case 1252:	// LATIN1
@@ -110,9 +114,9 @@ enum e_console_encoding PandasUtf8::getConsoleEncoding() {
 	if (boost::icontains(szLanginfo, "UTF-8"))
 		return CONSOLE_ENCODING_UTF8;
 	else if (boost::icontains(szLanginfo, "GBK"))
-		return CONSOLE_ENCODING_GB2312;
+		return CONSOLE_ENCODING_GBK;
 	else if (boost::icontains(szLanginfo, "GB18030"))
-		return CONSOLE_ENCODING_GB2312;
+		return CONSOLE_ENCODING_GBK;
 	else if (boost::icontains(szLanginfo, "Big5HKSCS"))
 		return CONSOLE_ENCODING_BIG5;
 	else if (boost::icontains(szLanginfo, "Big5"))
@@ -175,7 +179,7 @@ enum e_system_language PandasUtf8::getSystemLanguage() {
 // Author:      Sola丶小克(CairoLee)  2020/02/08 15:53
 //************************************
 std::string PandasUtf8::getDefaultCodepage() {
-	return std::string("GBK");
+	return std::string(DEFAULT_ENCODING);
 }
 
 #ifdef _WIN32
@@ -281,7 +285,7 @@ std::string PandasUtf8::consoleConvert(const std::string& mes) {
 
 	switch (PandasUtf8::consoleEncoding) {
 	case CONSOLE_ENCODING_UTF8: _to = "UTF-8"; break;
-	case CONSOLE_ENCODING_GB2312: _to = "GBK"; break;
+	case CONSOLE_ENCODING_GBK: _to = "GBK"; break;
 	case CONSOLE_ENCODING_BIG5: _to = "BIG5"; break;
 	}
 

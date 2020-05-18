@@ -232,7 +232,11 @@ int8 buyingstore_create(struct map_session_data* sd, int zenylimit, unsigned cha
 
 	if( Sql_Query( mmysql_handle, "INSERT INTO `%s`(`id`, `account_id`, `char_id`, `sex`, `map`, `x`, `y`, `title`, `limit`, `autotrade`, `body_direction`, `head_direction`, `sit`) "
 		"VALUES( %d, %d, %d, '%c', '%s', %d, %d, '%s', %d, %d, '%d', '%d', '%d' );",
+#ifndef Pandas_Struct_Autotrade_Extend
 		buyingstores_table, sd->buyer_id, sd->status.account_id, sd->status.char_id, sd->status.sex == 0 ? 'F' : 'M', map_getmapdata(sd->bl.m)->name, sd->bl.x, sd->bl.y, message_sql, sd->buyingstore.zenylimit, sd->state.autotrade, at ? at->dir : sd->ud.dir, at ? at->head_dir : sd->head_dir, at ? at->sit : pc_issit(sd) ) != SQL_SUCCESS ){
+#else
+		buyingstores_table, sd->buyer_id, sd->status.account_id, sd->status.char_id, sd->status.sex == 0 ? 'F' : 'M', map_getmapdata(sd->bl.m)->name, sd->bl.x, sd->bl.y, message_sql, sd->buyingstore.zenylimit, sd->state.autotrade &~ AUTOTRADE_BUYINGSTORE, at ? at->dir : sd->ud.dir, at ? at->head_dir : sd->head_dir, at ? at->sit : pc_issit(sd) ) != SQL_SUCCESS ){
+#endif // Pandas_Struct_Autotrade_Extend
 		Sql_ShowDebug(mmysql_handle);
 	}
 
@@ -661,7 +665,13 @@ void do_init_buyingstore_autotrade( void ) {
 		if (Sql_Query(mmysql_handle,
 			"SELECT `id`, `account_id`, `char_id`, `sex`, `title`, `limit`, `body_direction`, `head_direction`, `sit` "
 			"FROM `%s` "
+#ifndef Pandas_Struct_Autotrade_Extend
 			"WHERE `autotrade` = 1 AND `limit` > 0 AND (SELECT COUNT(`buyingstore_id`) FROM `%s` WHERE `buyingstore_id` = `id`) > 0 "
+#else
+			// 主要为了 1.0.5 版本的数据进行兼容处理
+			// 在 1.0.6 版本开始所有写入到 buyingstores_table 的 autotrade 字段都将为 1 (在 1.0.5 可能会是 5)
+			"WHERE `autotrade` in (1,5) AND `limit` > 0 AND (SELECT COUNT(`buyingstore_id`) FROM `%s` WHERE `buyingstore_id` = `id`) > 0 "
+#endif // Pandas_Struct_Autotrade_Extend
 			"ORDER BY `id`;",
 			buyingstores_table, buyingstore_items_table ) != SQL_SUCCESS )
 		{
@@ -709,6 +719,12 @@ void do_init_buyingstore_autotrade( void ) {
 					at->sd->state.block_action &= ~PCBLOCK_IMMUNE;
 				chrif_authreq(at->sd, true);
 				uidb_put(buyingstore_autotrader_db, at->char_id, at);
+
+#ifdef Pandas_Struct_Map_Session_Data_Autotrade_Configure
+				at->sd->pandas.at_dir = at->dir;
+				at->sd->pandas.at_head_dir = at->head_dir;
+				at->sd->pandas.at_sit = at->sit;
+#endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
 			}
 			Sql_FreeResult(mmysql_handle);
 			

@@ -6032,6 +6032,15 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *target)
  *------------------------------------------*/
 enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, clr_type clrtype)
 {
+#ifdef Pandas_Support_IndependentRecall_Autotrade_Player
+	bool independent_recall = false;
+	// 重置标记位, 避免影响其他判断流程 [Sola丶小克]
+	if (sd) {
+		independent_recall = sd->pandas.independent_recall;
+		sd->pandas.independent_recall = false;
+	}
+#endif // Pandas_Support_IndependentRecall_Autotrade_Player
+
 	nullpo_retr(SETPOS_OK,sd);
 
 	if( !mapindex || !mapindex_id2name(mapindex) ) {
@@ -6039,16 +6048,13 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		return SETPOS_MAPINDEX;
 	}
 
+#ifndef Pandas_Support_IndependentRecall_Autotrade_Player
 	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) ) // Player with autotrade just causes clif glitch! @ FIXME
 		return SETPOS_AUTOTRADE;
-
-#ifdef Pandas_Struct_Autotrade_Extend
-	// 简单处理一下, 防止角色被 recall 等指令召唤到其他位置.
-	// 由于这里暂时没有区分返回值, 客户端给予的提示信息可能会表示当前玩家是因为在离线挂店而无法被召唤
-	// 但这个角色可能并不处于离线挂店模式, 而可能是离线挂机或者离开模式.
-	if (!sd->state.connect_new && sd->state.autotrade)
+#else
+	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) && !independent_recall)
 		return SETPOS_AUTOTRADE;
-#endif // Pandas_Struct_Autotrade_Extend
+#endif // Pandas_Support_IndependentRecall_Autotrade_Player
 
 	if( battle_config.revive_onwarp && pc_isdead(sd) ) { //Revive dead people before warping them
 		pc_setstand(sd, true);
@@ -6239,6 +6245,29 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		sd->ed->bl.y = sd->ed->ud.to_y = y;
 		sd->ed->ud.dir = sd->ud.dir;
 	}
+
+#ifdef Pandas_Support_IndependentRecall_Autotrade_Player
+	if (!sd->state.connect_new && sd->state.autotrade && independent_recall) {
+		map_delblock(&sd->bl);
+		clif_parse_LoadEndAck(sd->fd, sd);
+
+		if (pc_autotrade_suspend(sd)) {
+			suspend_recall_postfix(sd);
+		}
+		else {
+			pc_setdir(sd, sd->pandas.at_dir, sd->pandas.at_head_dir);
+			clif_changed_dir(&sd->bl, AREA_WOS);
+			if (sd->pandas.at_sit) {
+				pc_setsit(sd);
+				skill_sit(sd, 1);
+				clif_sitting(&sd->bl);
+			}
+		}
+
+		// Immediate save
+		chrif_save(sd, CSAVE_AUTOTRADE);
+	}
+#endif // Pandas_Support_IndependentRecall_Autotrade_Player
 
 	pc_cell_basilica(sd);
 	
@@ -12891,6 +12920,21 @@ TIMER_FUNC(pc_expiration_timer){
 
 	return 0;
 }
+
+#ifdef Pandas_Struct_Autotrade_Extend
+//************************************
+// Method:      pc_autotrade_suspend
+// Description: 判断角色当前是否处于离线挂机相关的状态
+// Parameter:   struct map_session_data * sd
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2020/5/13 23:23
+//************************************
+bool pc_autotrade_suspend(struct map_session_data* sd) {
+	if (!sd || !sd->state.autotrade)
+		return false;
+	return (sd->state.autotrade & AUTOTRADE_OFFLINE || sd->state.autotrade & AUTOTRADE_AFK);
+}
+#endif // Pandas_Struct_Autotrade_Extend
 
 TIMER_FUNC(pc_autotrade_timer){
 	struct map_session_data *sd = map_id2sd(id);

@@ -218,6 +218,7 @@ void suspend_set_unit_walking(struct map_session_data* sd, unsigned char* buf) {
 void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 	nullpo_retv(sd);
 	long val[4] = { 0 };
+	int sitting = -1, headdirection = -1, bodydirection = -1;
 
 	// 设置 autotrade 标记
 	sd->state.autotrade |= AUTOTRADE_ENABLED;
@@ -232,20 +233,79 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 	else
 		sd->state.block_action &= ~PCBLOCK_IMMUNE;
 
-	// 执行不同挂机模式的一些额外设置
 	switch (smode)
 	{
 	case SUSPEND_MODE_AFK:
-		if (!pc_issit(sd)) {
-			pc_setsit(sd);
-			skill_sit(sd, 1);
-			clif_sitting(&sd->bl);
-		}
-		if (battle_config.suspend_afk_headtop_viewid) {
+		if (battle_config.suspend_afk_sitdown == 0)
+			sitting = 0;
+		else if (battle_config.suspend_afk_sitdown == 1)
+			sitting = 1;
+
+		if (battle_config.suspend_afk_bodydirection >= 0)
+			bodydirection = battle_config.suspend_afk_bodydirection;
+
+		if (battle_config.suspend_afk_headdirection >= 0)
+			headdirection = battle_config.suspend_afk_headdirection;
+
+		if (battle_config.suspend_afk_headtop_viewid)
 			clif_changelook(&sd->bl, LOOK_HEAD_TOP, battle_config.suspend_afk_headtop_viewid);
-		}
+		break;
+	case SUSPEND_MODE_OFFLINE:
+		if (battle_config.suspend_offline_sitdown == 0)
+			sitting = 0;
+		else if (battle_config.suspend_offline_sitdown == 1)
+			sitting = 1;
+
+		if (battle_config.suspend_offline_bodydirection >= 0)
+			bodydirection = battle_config.suspend_offline_bodydirection;
+
+		if (battle_config.suspend_offline_headdirection >= 0)
+			headdirection = battle_config.suspend_offline_headdirection;
 		break;
 	}
+
+	if (sitting == 0 && pc_issit(sd)) {
+		pc_setstand(sd, true);
+		skill_sit(sd, false);
+		clif_standing(&sd->bl);
+	}
+	else if (sitting == 1 && !pc_issit(sd)) {
+		pc_setsit(sd);
+		skill_sit(sd, true);
+		clif_sitting(&sd->bl);
+	}
+
+	if (bodydirection >= 0) {
+		pc_setdir(sd, bodydirection, sd->head_dir);
+		clif_changed_dir(&sd->bl, AREA_WOS);
+		clif_changed_dir(&sd->bl, SELF);
+	}
+
+	if (headdirection >= 0) {
+		pc_setdir(sd, sd->ud.dir, headdirection);
+		clif_changed_dir(&sd->bl, AREA_WOS);
+		clif_changed_dir(&sd->bl, SELF);
+	}
+
+	struct s_suspender* sp = NULL;
+	CREATE(sp, struct s_suspender, 1);
+	sp->account_id = sd->status.account_id;
+	sp->char_id = sd->status.char_id;
+	sp->sex = (sd->status.sex == SEX_FEMALE ? 'F' : 'M');
+	sp->dir = sd->ud.dir;
+	sp->head_dir = sd->head_dir;
+	sp->sit = pc_issit(sd);
+	sp->mode = smode;
+	sp->tick = (t_tick)time(NULL);
+	uidb_put(suspender_db, sp->char_id, sp);
+
+#ifdef Pandas_Struct_Map_Session_Data_Autotrade_Configure
+	// 这里需要立刻填充相关的备份信息, 避免在完成指令下线后,
+	// 服务器没还重启的情况下, 角色就被 recall 导致朝向等数据无法恢复
+	sd->pandas.at_dir = sd->ud.dir;
+	sd->pandas.at_head_dir = sd->head_dir;
+	sd->pandas.at_sit = pc_issit(sd);
+#endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
 
 	if (Sql_Query(mmysql_handle, "INSERT INTO `%s`(`account_id`, `char_id`, `sex`, `map`, `x`, `y`, `body_direction`, `head_direction`, `sit`, `mode`, `tick`, `val1`, `val2`, `val3`, `val4`) "
 		"VALUES( %d, %d, '%c', '%s', %d, %d, '%d', '%d', '%d', '%hu', '%" PRtf "', '%ld', '%ld', '%ld', '%ld' );",
