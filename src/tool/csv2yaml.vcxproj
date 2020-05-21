@@ -103,6 +103,7 @@
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;_DEBUG;_CONSOLE;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -196,7 +197,7 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <Target Name="BoostLibraries" BeforeTargets="PrepareForBuild">
-    <Error Condition="(!Exists('$(SolutionDir)\3rdparty\boost\stage\lib') Or !Exists('$(SolutionDir)\3rdparty\boost\b2.exe'))" Text="Please run `3rdparty\boost\bootstrap.bat` to compile `Boost C++ Libraries` before build `$(ProjectName)` project." /> 
+    <Error Condition="(!Exists('$(SolutionDir)\3rdparty\boost\stage\lib') Or !Exists('$(SolutionDir)\3rdparty\boost\b2.exe'))" Text="Please run `3rdparty\boost\bootstrap.bat` to compile `Boost C++ Libraries` before build `$(ProjectName)` project." />
   </Target>
   <Target Name="AfterClean">
     <Delete Files="$(SolutionDir)zlib.dll" ContinueOnError="true" />
