@@ -447,6 +447,9 @@
 	#if defined(Pandas_Struct_Map_Session_Data_IndependentRecall) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
 		#define Pandas_Support_IndependentRecall_Autotrade_Player
 	#endif // defined(Pandas_Struct_Map_Session_Data_IndependentRecall) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
+
+	// 是否支持根据系统语言读取对应的消息数据库文件 [Sola丶小克]
+	#define Pandas_Adaptive_Importing_Message_Database
 #endif // Pandas_CreativeWork
 
 // ============================================================================

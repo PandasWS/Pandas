@@ -42,7 +42,11 @@ const char* _msg_txt(int msg_number,int size, char ** msg_table)
 int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 {
 	uint16 msg_number, msg_count = 0, line_num = 0;
+#ifndef Pandas_Adaptive_Importing_Message_Database
 	char line[1024], w1[8], w2[512];
+#else
+	char line[1024] = { 0 }, w1[11] = { 0 }, w2[512] = { 0 };
+#endif // Pandas_Adaptive_Importing_Message_Database
 	FILE *fp;
 	static int called = 1;
 
@@ -58,11 +62,26 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 		line_num++;
 		if (line[0] == '/' && line[1] == '/')
 			continue;
+#ifndef Pandas_Adaptive_Importing_Message_Database
 		if (sscanf(line, "%7[^:]: %511[^\r\n]", w1, w2) != 2)
 			continue;
+#else
+		if (sscanf(line, "%10[^:]: %511[^\r\n]", w1, w2) != 2)
+			continue;
+#endif // Pandas_Adaptive_Importing_Message_Database
 
 		if (strcmpi(w1, "import") == 0)
 			_msg_config_read(w2,size,msg_table);
+#ifdef Pandas_Adaptive_Importing_Message_Database
+		else if (strcmpi(w1, "import_chs") == 0) {
+			if (PandasUtf8::systemLanguage == SYSTEM_LANGUAGE_CHS)
+				_msg_config_read(w2, size, msg_table);
+		}
+		else if (strcmpi(w1, "import_cht") == 0) {
+			if (PandasUtf8::systemLanguage == SYSTEM_LANGUAGE_CHT)
+				_msg_config_read(w2, size, msg_table);
+		}
+#endif // Pandas_Adaptive_Importing_Message_Database
 		else {
 			msg_number = atoi(w1);
 #ifndef Pandas_LGTM_Optimization
