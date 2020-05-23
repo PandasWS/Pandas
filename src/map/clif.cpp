@@ -8082,6 +8082,14 @@ void clif_sendegg(struct map_session_data *sd)
 		clif_displaymessage(fd, msg_txt(sd,666));
 		return;
 	}
+
+#ifdef Pandas_MapFlag_NoPet
+	if (sd && map_getmapflag(sd->bl.m, MF_NOPET)) {
+		clif_displaymessage(fd, msg_txt_cn(sd, 5));
+		return;
+	}
+#endif // Pandas_MapFlag_NoPet
+
 	WFIFOHEAD(fd, MAX_INVENTORY * 2 + 4);
 	WFIFOW(fd,0)=0x1a6;
 	for(i=0,n=0;i<MAX_INVENTORY;i++){
@@ -10784,9 +10792,29 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 
 	// pet
 	if( sd->pd ) {
+#ifdef Pandas_MapFlag_NoPet
+		if (sd && map_getmapflag(sd->bl.m, MF_NOPET)) {
+			// 当前地图禁止使用宠物, 已自动变回宠物蛋
+			clif_displaymessage(sd->fd, msg_txt_cn(sd, 4));
+			pet_return_egg(sd, sd->pd);
+#if PACKETVER >= 20180620 && PACKETVER < 20180704
+			// 目前测试只覆盖了 20180620 客户端
+			// 若客户端的封包版本大于等于 20180704 的话, pet_return_egg 内部有做处理
+			clif_inventorylist(sd);
+#endif // PACKETVER >= 20180620 && PACKETVER < 20180704
+		}
+		else
+#endif // Pandas_MapFlag_NoPet
 		if( battle_config.pet_no_gvg && mapdata_flag_gvg(mapdata) ) { //Return the pet to egg. [Skotlex]
 			clif_displaymessage(sd->fd, msg_txt(sd,666));
 			pet_return_egg( sd, sd->pd );
+#ifdef Pandas_Fix_LoadEndAck_Pet_Return_To_Egg_Missing
+#if PACKETVER >= 20180620 && PACKETVER < 20180704
+			// 目前测试只覆盖了 20180620 客户端
+			// 若客户端的封包版本大于等于 20180704 的话, pet_return_egg 内部有做处理
+			clif_inventorylist(sd);
+#endif // PACKETVER >= 20180620 && PACKETVER < 20180704
+#endif // Pandas_Fix_LoadEndAck_Pet_Return_To_Egg_Missing
 		} else {
 			if(map_addblock(&sd->pd->bl))
 				return;
