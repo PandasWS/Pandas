@@ -176,10 +176,10 @@ const char* msg_langtype2langstr(int langtype){
  */
 int msg_langstr2langtype(char* langtype) {
 	int lang = -1;
-	if (!strncmpi(langtype, "eng", 2)) lang = 0;		// 英文
-	else if (!strncmpi(langtype, "chs", 2)) lang = 1;	// 简体中文
-	else if (!strncmpi(langtype, "chn", 2)) lang = 2;	// 繁体中文
-	else if (!strncmpi(langtype, "cht", 2)) lang = 2;	// 繁体中文的别名
+	if (!strcmpi(langtype, "eng")) lang = 0;		// 英文
+	else if (!strcmpi(langtype, "chs")) lang = 1;	// 简体中文
+	else if (!strcmpi(langtype, "chn")) lang = 2;	// 繁体中文的别名
+	else if (!strcmpi(langtype, "cht")) lang = 2;	// 繁体中文
 
 	return lang;
 }
@@ -192,7 +192,7 @@ const char* msg_langtype2langstr(int langtype) {
 	switch (langtype) {
 	case 0: return "English (ENG)";						// 英文
 	case 1: return "Chinese Simplified (CHS)";			// 简体中文
-	case 2: return "Chinese Traditional (CHT / CHN)";	// 繁体中文
+	case 2: return "Chinese Traditional (CHT)";			// 繁体中文
 	default: return "??";
 	}
 }

@@ -9883,6 +9883,11 @@ ACMD_FUNC(fontcolor)
 	return 0;
 }
 
+#ifndef Pandas_Message_Reorganize
+// 使用 langtype 指令并不是非常完美的语言切换解决方案
+// 因为他只能替代一部分的服务端回显信息, 客户端部分要做到完美支持多语言也非常麻烦
+// 熊猫模拟器暂时将该指令移除掉, 避免使用该指令带来一些小白玩家的疑惑
+// 若您觉得该指令有用, 欢迎在 Github 中提交 Issue 进行讨论 [Sola丶小克]
 ACMD_FUNC(langtype)
 {
 	char langstr[8];
@@ -9917,6 +9922,7 @@ ACMD_FUNC(langtype)
 	}
 	return -1;
 }
+#endif // Pandas_Message_Reorganize
 
 #ifdef VIP_ENABLE
 ACMD_FUNC(vip) {
@@ -10915,7 +10921,9 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(join),
 		ACMD_DEFR(channel,ATCMD_NOSCRIPT),
 		ACMD_DEF(fontcolor),
+#ifndef Pandas_Message_Reorganize
 		ACMD_DEF(langtype),
+#endif // Pandas_Message_Reorganize
 #ifdef VIP_ENABLE
 		ACMD_DEF(vip),
 		ACMD_DEF(showrate),

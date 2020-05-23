@@ -293,6 +293,7 @@
 	#define Pandas_Message_Conf
 
 	// 对消息文件进行清理, 移除几乎用不到的其他国家语言
+	// 同时也暂时移除掉 langtype 管理员指令, 这个指令目前不太合适熊猫模拟器
 	// 主要留下: 英文, 简体中文, 繁体中文 这三种. [Sola丶小克]
 	#define Pandas_Message_Reorganize
 
