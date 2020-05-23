@@ -520,6 +520,10 @@
 // ============================================================================
 
 #ifdef Pandas_Crashfix
+	// 对部分比较关键的变量初始化时进行置空处理 [Sola丶小克]
+	// 特别针对那些单纯依赖目标是否为 Null 作为野指针判断的相关变量
+	#define Pandas_Crashfix_Variable_Init
+
 	// 修复使用 sommon 脚本指令召唤不存在的魔物, 会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_ScriptCommand_Summon
 

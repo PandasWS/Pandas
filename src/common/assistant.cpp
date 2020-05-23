@@ -38,6 +38,8 @@
 	const std::string pathSep = "/";
 #endif // _WIN32
 
+#define MUTEX_DEPLOY "MTX_" Pandas_Version "_DEPLOY"
+
 extern "C" int __isa_available;
 
 //************************************
@@ -157,7 +159,7 @@ bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
 //************************************
 void deployImportDirectories() {
 	boost::interprocess::named_mutex deploy_mtx(
-		boost::interprocess::open_or_create, "deploy_import_dir"
+		boost::interprocess::open_or_create, MUTEX_DEPLOY
 	);
 
 	deploy_mtx.lock();
