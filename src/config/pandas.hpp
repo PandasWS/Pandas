@@ -513,6 +513,10 @@
 	// 修正角色服务器加载不存在的角色信息时, 由于返回值判断错误而导致流程继续执行的问题 [Sola丶小克]
 	// 例如: 当离线挂店/挂机角色由于各种意外不存在于 char 表里面时, 就会触发误判
 	#define Pandas_Fix_Char_FromSql_NextRow_Result_Logic
+
+	// 修正在 20180620 客户端中, 如果在玩家过图时将宠物变回宠物蛋,
+	// 背包中对应的宠物蛋没有出现的问题 (pet_disable_in_gvg 战斗配置选项) [Sola丶小克]
+	#define Pandas_Fix_LoadEndAck_Pet_Return_To_Egg_Missing
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -802,8 +806,8 @@
 	// 该标记用于禁止玩家在地图上打开邮件界面或进行邮件系统的相关操作
 	#define Pandas_MapFlag_NoMail
 
-	// 是否启用 nopet 地图标记 [维护者昵称]
-	// TODO: 请在此填写此地图标记的说明
+	// 是否启用 nopet 地图标记 [Sola丶小克]
+	// 该标记用于禁止玩家在地图上召唤宠物, 宠物进入该地图会自动变回宠物蛋
 	#define Pandas_MapFlag_NoPet
 
 	// 是否启用 nohomun 地图标记 [维护者昵称]

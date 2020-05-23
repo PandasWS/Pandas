@@ -5320,6 +5320,29 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		break;
 	}
 #endif // Pandas_MapFlag_HidePartyInfo
+#ifdef Pandas_MapFlag_NoPet
+	case MF_NOPET:
+	{
+		struct s_mapiterator* iter = mapit_getallusers();
+		struct map_session_data* pl_sd = nullptr;
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->bl.m != m)
+				continue;
+			if (pl_sd->pd && status) {
+				// 当前地图禁止使用宠物, 已自动变回宠物蛋
+				clif_displaymessage(pl_sd->fd, msg_txt_cn(pl_sd, 4));
+				pet_return_egg(pl_sd, pl_sd->pd);
+#if PACKETVER >= 20180620 && PACKETVER < 20180704
+				// 目前测试只覆盖了 20180620 客户端
+				// 若客户端的封包版本大于等于 20180704 的话, pet_return_egg 内部有做处理
+				clif_inventorylist(pl_sd);
+#endif // PACKETVER >= 20180620 && PACKETVER < 20180704
+			}
+		}
+		mapit_free(iter);
+		break;
+	}
+#endif // Pandas_MapFlag_HidePartyInfo
 	}
 #endif // Pandas_Mapflags
 
