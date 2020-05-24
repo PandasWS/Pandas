@@ -191,7 +191,7 @@ const char *MSG_CONF_NAME_POR;
 const char *MSG_CONF_NAME_THA;
 #else
 const char* MSG_CONF_NAME_CHS;	// 简体中文
-const char* MSG_CONF_NAME_CHN;	// 繁体中文
+const char* MSG_CONF_NAME_CHT;	// 繁体中文
 #endif // Pandas_Message_Reorganize
 
 char wisp_server_name[NAME_LENGTH] = "Server"; // can be modified in char-server configuration file
@@ -5550,7 +5550,7 @@ void map_do_init_msg(void){
 	const char * listelang[] = {
 		MSG_CONF_NAME_EN,	// 英文
 		MSG_CONF_NAME_CHS,	// 简体中文
-		MSG_CONF_NAME_CHN	// 繁体中文
+		MSG_CONF_NAME_CHT	// 繁体中文
 	};
 #endif // Pandas_Message_Reorganize
 
@@ -5597,13 +5597,25 @@ const char* map_msg_txt(struct map_session_data *sd, int msg_number){
 	uint8 lang = 0; //default
 	if(sd && sd->langtype) lang = sd->langtype;
 
+#ifndef Pandas_Message_Reorganize
 	if( (mdb = map_lang2msgdb(lang)) != NULL){
 		const char *tmp = _msg_txt(msg_number,MAP_MAX_MSG,mdb->msg);
 		if(strcmp(tmp,"??")) //to verify result
 			return tmp;
 		ShowDebug("Message #%d not found for langtype %d.\n",msg_number,lang);
 	}
-	ShowDebug("Selected langtype %d not loaded, trying fallback...\n",lang);
+	ShowDebug("Selected langtype %d not loaded, trying fallback...\n", lang);
+#else
+	if( (mdb = map_lang2msgdb(lang)) != NULL){
+		const char *tmp = _msg_txt(msg_number,MAP_MAX_MSG,mdb->msg);
+		if(strcmp(tmp,"??")) //to verify result
+			return tmp;
+		ShowDebug("Message #%d not found for langtype %d [%s], trying fallback...\n", msg_number, lang, msg_langtype2langstr(lang));
+	}
+	else
+		ShowDebug("Selected langtype %d not loaded, trying fallback...\n", lang);
+#endif // Pandas_Message_Reorganize
+
 	if(lang != 0 && (mdb = map_lang2msgdb(0)) != NULL) //fallback
 		return _msg_txt(msg_number,MAP_MAX_MSG,mdb->msg);
 	return "??";
@@ -5660,7 +5672,7 @@ int do_init(int argc, char *argv[])
 	/* Multilanguage */
 	MSG_CONF_NAME_EN = "conf/msg_conf/map_msg.conf";		// English (default)
 	MSG_CONF_NAME_CHS = "conf/msg_conf/map_msg_chs.conf";	// Chinese Simplified
-	MSG_CONF_NAME_CHN = "conf/msg_conf/map_msg_chn.conf";	// Chinese Traditional
+	MSG_CONF_NAME_CHT = "conf/msg_conf/map_msg_cht.conf";	// Chinese Traditional
 	/* Multilanguage */
 #endif // Pandas_Message_Reorganize
 

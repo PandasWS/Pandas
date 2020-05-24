@@ -159,6 +159,10 @@ __pycache__
 3rdparty/boost/bootstrap.log
 3rdparty/boost/project-config.jam*
 
+# Visual Lint
+/.visuallint
+/*.sln.vlconfig
+
 # IDE
 .vscode
 /*.diagsession

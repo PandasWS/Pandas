@@ -260,7 +260,11 @@ static time_t socket_data_last_tick = 0;
 // The connection is closed if it goes over the limit.
 #define WFIFO_MAX (1*1024*1024)
 
+#ifndef Pandas_Crashfix_Variable_Init
 struct socket_data* session[MAXCONN];
+#else
+struct socket_data* session[MAXCONN] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 
 #ifdef SEND_SHORTLIST
 int send_shortlist_array[MAXCONN];// we only support MAXCONN sockets, limit the array to that

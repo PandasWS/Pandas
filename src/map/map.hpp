@@ -1220,6 +1220,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 #define CHK_RACE2(race2) ((race2) >= RC2_NONE && (race2) < RC2_MAX) /// Check valid Race2
 #define CHK_CLASS(class_) ((class_) > CLASS_NONE && (class_) < CLASS_MAX) /// Check valid Class
 
+#ifndef Pandas_Message_Reorganize
 //Other languages supported
 extern const char*MSG_CONF_NAME_RUS;
 extern const char*MSG_CONF_NAME_SPN;
@@ -1230,6 +1231,10 @@ extern const char*MSG_CONF_NAME_IDN;
 extern const char*MSG_CONF_NAME_FRN;
 extern const char*MSG_CONF_NAME_POR;
 extern const char*MSG_CONF_NAME_THA;
+#else
+extern const char* MSG_CONF_NAME_CHS;	// 简体中文
+extern const char* MSG_CONF_NAME_CHT;	// 繁体中文
+#endif // Pandas_Message_Reorganize
 
 //Useful typedefs from jA [Skotlex]
 typedef struct map_session_data TBL_PC;

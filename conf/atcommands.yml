@@ -907,10 +907,10 @@ Body:
       atcommand       battleconf     statusdb
       pcdb                    motd             script
       questdb              msgconf       packetdb
-  - Command: langtype
-    Help: |
-      Params: <language>
-      Changes your language setting.
+#  - Command: langtype
+#    Help: |
+#      Params: <language>
+#      Changes your language setting.
   - Command: limitedsale
     Help: |
       Opens the limited sale window.

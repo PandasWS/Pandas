@@ -293,6 +293,7 @@
 	#define Pandas_Message_Conf
 
 	// 对消息文件进行清理, 移除几乎用不到的其他国家语言
+	// 同时也暂时移除掉 langtype 管理员指令, 这个指令目前不太合适熊猫模拟器
 	// 主要留下: 英文, 简体中文, 繁体中文 这三种. [Sola丶小克]
 	#define Pandas_Message_Reorganize
 
@@ -447,6 +448,9 @@
 	#if defined(Pandas_Struct_Map_Session_Data_IndependentRecall) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
 		#define Pandas_Support_IndependentRecall_Autotrade_Player
 	#endif // defined(Pandas_Struct_Map_Session_Data_IndependentRecall) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
+
+	// 是否支持根据系统语言读取对应的消息数据库文件 [Sola丶小克]
+	#define Pandas_Adaptive_Importing_Message_Database
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -520,6 +524,10 @@
 // ============================================================================
 
 #ifdef Pandas_Crashfix
+	// 对部分比较关键的变量初始化时进行置空处理 [Sola丶小克]
+	// 特别针对那些单纯依赖目标是否为 Null 作为野指针判断的相关变量
+	#define Pandas_Crashfix_Variable_Init
+
 	// 修复使用 sommon 脚本指令召唤不存在的魔物, 会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_ScriptCommand_Summon
 
