@@ -25963,6 +25963,12 @@ BUILDIN_FUNC(getinventoryinfo) {
 		script_pushstrcopy(st, (char*)unique_id.c_str());
 		break;
 	}
+	case 12: case 13: case 14: case 15: case 16:
+		retval = sd->inventory.u.items_inventory[idx].option[query_type - 12].id; break;
+	case 17: case 18: case 19: case 20: case 21:
+		retval = sd->inventory.u.items_inventory[idx].option[query_type - 17].value; break;
+	case 22: case 23: case 24: case 25: case 26:
+		retval = sd->inventory.u.items_inventory[idx].option[query_type - 22].param; break;
 	default:
 		ShowWarning("buildin_getinventoryinfo: Query Type (%d) should be from 0-%d.\n", query_type, 11);
 		script_pushint(st, -1);
@@ -27444,6 +27450,20 @@ BUILDIN_FUNC(storagegetitem) {
 }
 #endif // Pandas_ScriptCommand_StorageGetItem
 
+#ifdef Pandas_ScriptCommand_SetInventoryInfo
+/* ===========================================================
+ * 指令: setinventoryinfo
+ * 描述: 请在此补充该脚本指令的说明
+ * 用法: setinventoryinfo <请补充完整参数说明>;
+ * 返回: 请说明返回值
+ * 作者: 维护者昵称
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(setinventoryinfo) {
+	// TODO: 请在此填写脚本指令的实现代码
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_SetInventoryInfo
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -27597,6 +27617,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(storagegetitem,"vi?"),								// 往仓库直接创造一个指定的道具 [Sola丶小克]
 	BUILDIN_DEF2(storagegetitem, "storagegetitembound", "vii?"),	// 与 getitembound 类似, 只不过是将道具直接创建到仓库
 #endif // Pandas_ScriptCommand_StorageGetItem
+#ifdef Pandas_ScriptCommand_SetInventoryInfo
+	BUILDIN_DEF(setinventoryinfo,"iii?"),						// 在此写上脚本指令说明 [维护者昵称]
+#endif // Pandas_ScriptCommand_SetInventoryInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

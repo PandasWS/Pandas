@@ -1058,6 +1058,10 @@
 		// 往仓库直接创造一个指定的道具, 必须在仓库关闭的时候才能调用
 		#define Pandas_ScriptCommand_StorageGetItem
 	#endif // Pandas_FuncDefine_STORAGE_ADDITEM
+
+	// 是否启用 setinventoryinfo 脚本指令 [Sola丶小克]
+	// TODO: 请在此填写此脚本指令的说明
+	#define Pandas_ScriptCommand_SetInventoryInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
