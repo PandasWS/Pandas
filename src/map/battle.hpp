@@ -675,7 +675,9 @@ struct Battle_Config
 	int idletime_hom_option;
 	int devotion_standup_fix;
 	int feature_bgqueue;
+	int bgqueue_nowarp_mapflag;
 	int homunculus_exp_gain;
+	int rental_item_novalue;
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent

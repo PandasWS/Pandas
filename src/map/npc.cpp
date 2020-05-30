@@ -1041,6 +1041,27 @@ int npc_event_sub(struct map_session_data* sd, struct event_data* ev, const char
 		npc_event_dequeue(sd);
 		return 2;
 	}
+
+	char ontouch_event_name[EVENT_NAME_LENGTH];
+	char ontouch2_event_name[EVENT_NAME_LENGTH];
+
+	safesnprintf(ontouch_event_name, ARRAYLENGTH(ontouch_event_name), "%s::%s", ev->nd->exname, script_config.ontouch_event_name);
+	safesnprintf(ontouch2_event_name, ARRAYLENGTH(ontouch2_event_name), "%s::%s", ev->nd->exname, script_config.ontouch2_event_name);
+
+	// recheck some conditions for OnTouch/OnTouch_
+	if (strcmp(eventname, ontouch_event_name) == 0 || strcmp(eventname, ontouch2_event_name) == 0) {
+		int xs = ev->nd->u.scr.xs;
+		int ys = ev->nd->u.scr.ys;
+		int x = ev->nd->bl.x;
+		int y = ev->nd->bl.y;
+
+		if (x > 0 && y > 0 && (xs > -1 && ys > -1) && ((sd->bl.x < x - xs) || (sd->bl.x > x + xs) || (sd->bl.y < y - ys) || (sd->bl.y > y + ys)) ||
+				(sd->state.block_action & PCBLOCK_NPCCLICK) || npc_is_cloaked(ev->nd, sd)) {
+			npc_event_dequeue(sd);
+			return 2;
+		}
+	}
+
 #ifndef Pandas_Struct_Map_Session_Data_WorkInEvent
 	run_script(ev->nd->u.scr.script,ev->pos,sd->bl.id,ev->nd->bl.id);
 #else
@@ -2313,7 +2334,10 @@ uint8 npc_selllist(struct map_session_data* sd, int n, unsigned short *item_list
 			return 1; // In official server, this illegal attempt the player will be disconnected
 		}
 
-		value = pc_modifysellvalue(sd, sd->inventory_data[idx]->value_sell);
+		if (battle_config.rental_item_novalue && sd->inventory.u.items_inventory[idx].expire_time)
+			value = 0;
+		else
+			value = pc_modifysellvalue(sd, sd->inventory_data[idx]->value_sell);
 
 		z+= (double)value*amount;
 	}
