@@ -381,7 +381,29 @@ EQI装备位置:
 获取指定位置装备的背包序号. 注意该函数返回 0 不代表失败.
 
 EQI装备位置:
-	是指 EQI_* 开头的位置常量, 可参考 doc/script_commands.txt
+	EQI_COMPOUND_ON (-1)      - Item slot that calls this script (In context of item script)
+	EQI_ACC_L (0)             - Accessory 1
+	EQI_ACC_R (1)             - Accessory 2
+	EQI_SHOES (2)             - Footgear (shoes, boots)
+	EQI_GARMENT (3)           - Garment (mufflers, hoods, manteaux)
+	EQI_HEAD_LOW (4)          - Lower Headgear (beards, some masks)
+	EQI_HEAD_MID (5)          - Middle Headgear (masks, glasses)
+	EQI_HEAD_TOP (6)          - Upper Headgear
+	EQI_ARMOR (7)             - Armor (jackets, robes)
+	EQI_HAND_L (8)            - Left hand (weapons, shields)
+	EQI_HAND_R (9)            - Right hand (weapons)
+	EQI_COSTUME_HEAD_TOP (10) - Upper Costume Headgear
+	EQI_COSTUME_HEAD_MID (11) - Middle Costume Headgear
+	EQI_COSTUME_HEAD_LOW (12) - Lower Costume Headgear
+	EQI_COSTUME_GARMENT (13)  - Costume Garment
+	EQI_AMMO (14)    		  - Arrow/Ammunition
+	EQI_SHADOW_ARMOR (15)     - Shadow Armor
+	EQI_SHADOW_WEAPON (16)    - Shadow Weapon
+	EQI_SHADOW_SHIELD (17)    - Shadow Shield
+	EQI_SHADOW_SHOES (18)     - Shadow Shoes
+	EQI_SHADOW_ACC_R (19)     - Shadow Accessory 2
+	EQI_SHADOW_ACC_L (20)     - Shadow Accessory 1
+
 
 返回值:
 	-1 - 在指定的EQI装备位置找不到装备
@@ -418,8 +440,16 @@ EQI装备位置:
 	-1 - 在指定的EQI装备位置找不到装备
 	-2 - 填写的EQI装备位置无效
 	-3 - 指定的角色编号无效, 或者目标玩家不在线
+	-4 - 剩余秒数不合法 (比如: 道具早应该过期消失了, 但居然还在背包里)
 	 0 - 此装备不是租赁装备, 永久有效
 	其他大于 0 的数值则代表租赁到期的剩余秒数
+
+---------------------------------------
+
+*updateinventory {<角色编号>};
+
+该指令用于重新下发关联玩家的背包数据给客户端.
+涵盖角色背包每一个道具的每一个信息, 请避免高频调用或者循环调用.
 
 ---------------------------------------
 
@@ -431,18 +461,18 @@ EQI装备位置:
 	可以通过 getinventorylist 脚本指令的 @inventorylist_idx[] 数组来获得.
 
 要查看的信息类型:
-	0 	- 物品编号
-	1 	- 堆叠数量
-	2 	- 装备的穿戴位置 (如果为 0 则表示还没穿戴在身上, 位置请参考 EQP_* 开头的常量)
-	3 	- 精炼值
-	4 	- 是否已鉴定 (1为已鉴定, 0为未鉴定)
-	5 	- 属性 (说是属性, 其实最常用是用来判断物品是否损坏, 若损坏则返回1, 没坏则返回 0)
-	6 	- 第一个卡槽的卡片编号
-	7 	- 第二个卡槽的卡片编号
-	8 	- 第三个卡槽的卡片编号
-	9 	- 第四个卡槽的卡片编号
-	10	- 过期时间 (Unix时间戳, 0 表示永不过期)
-	11	- 装备的唯一编号(unique_id) - 注意: 返回字符串类型的变量
+	0   - 物品编号
+	1   - 堆叠数量
+	2   - 装备的穿戴位置
+	3   - 精炼值
+	4   - 是否已鉴定 (若已鉴定则返回 1, 未鉴定则返回 0)
+	5   - 是否已损坏 (若已损坏则返回 1, 未损坏则返回 0)
+	6   - 第一个卡槽的卡片编号
+	7   - 第二个卡槽的卡片编号
+	8   - 第三个卡槽的卡片编号
+	9   - 第四个卡槽的卡片编号
+	10  - 过期时间 (Unix时间戳, 0 表示永不过期)
+	11  - 装备的唯一编号(unique_id)
 	
 	12  - 第一个随机属性的编号 (ROA_ID)
 	13  - 第二个随机属性的编号 (ROA_ID)
@@ -462,15 +492,94 @@ EQI装备位置:
 	25  - 第四个随机属性的参数 (ROA_PARAM)
 	26  - 第五个随机属性的参数 (ROA_PARAM)
 
-注意事项:
-	用来存放装备唯一编号的返回值必须是字符串类型的变量 (即: 变量结尾带 $ 符号).
-	如果用来存放返回值的变量是数值类型的话, 那么拿到的值不是装备的唯一编号, 且是不可预期的.
+装备的穿戴位置:
+	如果为 0 则表示还没穿戴在身上, 位置请参考 EQP_* 开头的常量
 
-	.@uid$ = getinventoryinfo(背包序号, 11);	// 正确, 接收变量带 $ 符号结尾
-	.@uid = getinventoryinfo(背包序号, 11);		// 错误
+注意事项:
+	从 v1.0.6 版本开始,
+	若查询的信息类型是 11 (装备的唯一编号)
+	那么返回值既可以存放在数值型变量, 也可以存放在字符串型变量.
 
 返回值:
 	获取失败则返回 -1, 获取成功则返回你所查询的信息
+
+---------------------------------------
+
+*setinventoryinfo <背包序号>,<要设置的信息类型>,<值>{{,<标记位>},<角色编号>};
+
+设置指定背包序号道具的详细信息.
+值得注意的是, 这里修改的主要是每个玩家各有不同的那些道具的属性信息,
+例如: 道具插入的卡片, 道具的精炼值等等
+
+背包序号:
+	可以通过 getinventorylist 脚本指令的 @inventorylist_idx[] 数组来获得.
+
+要设置的信息类型:
+	3   - 精炼值
+	4   - 是否已鉴定 (若已鉴定则返回 1, 未鉴定则返回 0)
+	5   - 是否已损坏 (若已损坏则返回 1, 未损坏则返回 0)
+	6   - 第一个卡槽的卡片编号
+	7   - 第二个卡槽的卡片编号
+	8   - 第三个卡槽的卡片编号
+	9   - 第四个卡槽的卡片编号
+	10  - 过期时间 (Unix时间戳, 0 表示永不过期)
+	11  - 装备的唯一编号(unique_id)
+	
+	12  - 第一个随机属性的编号 (ROA_ID)
+	13  - 第二个随机属性的编号 (ROA_ID)
+	14  - 第三个随机属性的编号 (ROA_ID)
+	15  - 第四个随机属性的编号 (ROA_ID)
+	16  - 第五个随机属性的编号 (ROA_ID)
+	
+	17  - 第一个随机属性的值 (ROA_VALUE)
+	18  - 第二个随机属性的值 (ROA_VALUE)
+	19  - 第三个随机属性的值 (ROA_VALUE)
+	20  - 第四个随机属性的值 (ROA_VALUE)
+	21  - 第五个随机属性的值 (ROA_VALUE)
+	
+	22  - 第一个随机属性的参数 (ROA_PARAM)
+	23  - 第二个随机属性的参数 (ROA_PARAM)
+	24  - 第三个随机属性的参数 (ROA_PARAM)
+	25  - 第四个随机属性的参数 (ROA_PARAM)
+	26  - 第五个随机属性的参数 (ROA_PARAM)
+
+过期时间:
+	当您要设置的类型是 10 (过期时间)时, 一定要注意这是个Unix时间戳.
+	
+	若将值设为 60 秒, 那么道具会因为已过期被立刻删掉:
+		setinventoryinfo(<背包序号>, 10, 60);	// 错误
+
+	延长道具 60 秒有效期的正确写法是:
+		setinventoryinfo(<背包序号>, 10, gettimetick(2) + 60);	// 正确
+
+标记位:
+	每次调用该指令时会调用按需重算角色属性, 且必定重新发送完整背包数据给客户端
+	但如果因为你需要循环处理背包中的全部道具, 那么你有 100 个道具, 
+	服务器就需要把 100 个道具信息下发 100 次给客户端, 这是非常低效且不合理的.
+	
+	原则上尽量避免大量循环调用 setinventoryinfo 指令,
+	但如果无法避免, 那么可以考虑通过传递特殊标记位, 来在循环过程中抑制能力重算
+	或者背包数据的刷新行为, 在循环结束后再触发一次相关行为.
+	
+		&1 : 跳过角色能力重算
+		&2 : 跳过全量刷新角色的背包数据
+		&4 : 忽略卡片插入合理性的校验 (插入的道具类型必须是卡片, 卡片位置和装备位置符合)
+		&8 : 插入卡片无需写入 picklog 记录 (凭空生成)
+	
+	若标记位设置为 0 则表示维持默认行为.
+	
+	--------
+	
+	提示: 
+	
+	- 使用 &1 标记位的循环结束后, 可以使用 recalculatestat(); 触发角色能力重算
+	- 使用 &2 标记位的循环结束后, 可以使用 updateinventory(); 重现发送最新背包数据给客户端
+	
+
+返回值:
+	-1 - 设置失败, 插入的卡片不合法
+	 0 - 设置失败
+	 1 - 设置成功
 
 ---------------------------------------
 

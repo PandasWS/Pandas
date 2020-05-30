@@ -25882,6 +25882,7 @@ BUILDIN_FUNC(getequipidx) {
 BUILDIN_FUNC(getequipexpiretick) {
 	struct map_session_data *sd = nullptr;
 	int equip_num = script_getnum(st, 2), idx = -1;
+	int64 left_seconds = 0;
 
 	if (!script_charid2sd(3, sd)) {
 		script_pushint(st, -3);
@@ -25903,7 +25904,13 @@ BUILDIN_FUNC(getequipexpiretick) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	script_pushint(st, sd->inventory.u.items_inventory[idx].expire_time - (unsigned int)time(NULL));
+	left_seconds = (unsigned int)sd->inventory.u.items_inventory[idx].expire_time - (unsigned int)time(NULL);
+	if (left_seconds < 0) {
+		script_pushint(st, -4);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushint(st, left_seconds);
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_GetEquipExpireTick
@@ -25919,8 +25926,9 @@ BUILDIN_FUNC(getequipexpiretick) {
 BUILDIN_FUNC(getinventoryinfo) {
     struct map_session_data *sd = nullptr;
 	struct item_data *id = nullptr;
-	int idx = script_getnum(st, 2), retval = 0;
-	int query_type = script_getnum(st, 3);
+	int idx = script_getnum(st, 2);
+	int64 retval = 0;
+	int type = script_getnum(st, 3);
 
 	if (!script_charid2sd(4, sd)) {
 		script_pushint(st, -1);
@@ -25942,7 +25950,7 @@ BUILDIN_FUNC(getinventoryinfo) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	switch (query_type)
+	switch (type)
 	{
 	case 0: retval = sd->inventory.u.items_inventory[idx].nameid; break;
 	case 1: retval = sd->inventory.u.items_inventory[idx].amount; break;
@@ -25955,22 +25963,15 @@ BUILDIN_FUNC(getinventoryinfo) {
 	case 8: retval = sd->inventory.u.items_inventory[idx].card[2]; break;
 	case 9: retval = sd->inventory.u.items_inventory[idx].card[3]; break;
 	case 10: retval = sd->inventory.u.items_inventory[idx].expire_time; break;
-	case 11:
-	{
-		std::string unique_id = boost::str(
-			boost::format("%1%") % sd->inventory.u.items_inventory[idx].unique_id
-		);
-		script_pushstrcopy(st, (char*)unique_id.c_str());
-		break;
-	}
+	case 11: retval = sd->inventory.u.items_inventory[idx].unique_id; break;
 	case 12: case 13: case 14: case 15: case 16:
-		retval = sd->inventory.u.items_inventory[idx].option[query_type - 12].id; break;
+		retval = sd->inventory.u.items_inventory[idx].option[type - 12].id; break;
 	case 17: case 18: case 19: case 20: case 21:
-		retval = sd->inventory.u.items_inventory[idx].option[query_type - 17].value; break;
+		retval = sd->inventory.u.items_inventory[idx].option[type - 17].value; break;
 	case 22: case 23: case 24: case 25: case 26:
-		retval = sd->inventory.u.items_inventory[idx].option[query_type - 22].param; break;
+		retval = sd->inventory.u.items_inventory[idx].option[type - 22].param; break;
 	default:
-		ShowWarning("buildin_getinventoryinfo: Query Type (%d) should be from 0-%d.\n", query_type, 11);
+		ShowWarning("buildin_getinventoryinfo: The type should be in range 0-%d, currently type is: %d.\n", 26, type);
 		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -26024,6 +26025,43 @@ BUILDIN_FUNC(statuscheck) {
 }
 #endif // Pandas_ScriptCommand_StatusCheck
 
+#if defined(Pandas_ScriptCommand_RentTimeIdx) || defined(Pandas_ScriptCommand_SetInventoryInfo)
+//************************************
+// Method:      inventory_rental_update
+// Description: 移除过期租赁道具; 最后如果连一件租赁道具都没有, 那么直接删掉计时器
+// Parameter:   struct map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/5/26 23:23
+//************************************
+void inventory_rental_update(struct map_session_data* sd) {
+	int i = 0, c = 0;
+
+	if (!sd) {
+		return;
+	}
+
+	for (i = 0; i < MAX_INVENTORY; i++) {
+		if (sd->inventory.u.items_inventory[i].nameid == 0)
+			continue;
+		if (sd->inventory.u.items_inventory[i].expire_time == 0)
+			continue;
+		if (sd->inventory.u.items_inventory[i].expire_time <= time(NULL)) {
+			if (sd->inventory_data[i]->unequip_script)
+				run_script(sd->inventory_data[i]->unequip_script, 0, sd->bl.id, fake_nd->bl.id);
+			clif_rental_expired(sd->fd, i, sd->inventory.u.items_inventory[i].nameid);
+			pc_delitem(sd, i, sd->inventory.u.items_inventory[i].amount, 0, 0, LOG_TYPE_OTHER);
+		}
+		else {
+			c++;
+		}
+	}
+
+	if (c <= 0) {
+		pc_inventory_rental_clear(sd);
+	}
+}
+#endif // defined(Pandas_ScriptCommand_RentTimeIdx) || defined(Pandas_ScriptCommand_SetInventoryInfo)
+
 #ifdef Pandas_ScriptCommand_RentTimeIdx
 /* ===========================================================
  * 指令: renttimeidx
@@ -26063,26 +26101,7 @@ BUILDIN_FUNC(renttimeidx) {
 		clif_inventorylist(sd);
 	}
 	else {
-		int i = 0, c = 0;
-		for (i = 0; i < MAX_INVENTORY; i++) {
-			if (sd->inventory.u.items_inventory[i].nameid == 0)
-				continue;
-			if (sd->inventory.u.items_inventory[i].expire_time == 0)
-				continue;
-			if (sd->inventory.u.items_inventory[i].expire_time <= time(NULL)) {
-				if (sd->inventory_data[i]->unequip_script)
-					run_script(sd->inventory_data[i]->unequip_script, 0, sd->bl.id, fake_nd->bl.id);
-				clif_rental_expired(sd->fd, i, sd->inventory.u.items_inventory[i].nameid);
-				pc_delitem(sd, i, sd->inventory.u.items_inventory[i].amount, 0, 0, LOG_TYPE_OTHER);
-			}
-			else {
-				c++;
-			}
-		}
-
-		if (c <= 0) {
-			pc_inventory_rental_clear(sd);
-		}
+		inventory_rental_update(sd);
 	}
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -27453,16 +27472,149 @@ BUILDIN_FUNC(storagegetitem) {
 #ifdef Pandas_ScriptCommand_SetInventoryInfo
 /* ===========================================================
  * 指令: setinventoryinfo
- * 描述: 请在此补充该脚本指令的说明
- * 用法: setinventoryinfo <请补充完整参数说明>;
- * 返回: 请说明返回值
- * 作者: 维护者昵称
+ * 描述: 设置指定背包序号道具的部分详细信息, 与 getinventoryinfo 对应
+ * 用法: setinventoryinfo <背包序号>,<要设置的信息类型>,<值>{{,<标记位>},<角色编号>};
+ * 返回: 设置成功则返回 1, 设置失败或角色不存在则返回 0, 返回负数也是失败 (值表示不同失败原因)
+ * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(setinventoryinfo) {
-	// TODO: 请在此填写脚本指令的实现代码
+	struct map_session_data* sd = nullptr;
+	int expire_tick = 0, flag = 0;
+	int idx = script_getnum(st, 2);
+	int type = script_getnum(st, 3);
+	uint64 value = script_getnum(st, 4);
+	bool need_recalc_status = false;
+
+	if (!script_charid2sd(6, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (idx < 0 || idx >= MAX_INVENTORY || !sd->inventory_data[idx]) {
+		ShowError("buildin_setinventoryinfo: Nonexistant item index.\n");
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (script_hasdata(st, 5) && script_isint(st, 5)) {
+		//   0 : 维持默认行为
+		// & 1 : 跳过角色能力重算
+		// & 2 : 跳过全量刷新角色的背包数据
+		// & 4 : 忽略卡片插入合理性的校验(必须是卡片, 卡片位置和装备位置符合)
+		// & 8 : 插入卡片无需写入 picklog 记录(凭空生成)
+		flag = script_getnum(st, 5);
+	}
+
+	switch (type)
+	{
+	case 3:
+		value = cap_value(value, 0, MAX_REFINE);
+		sd->inventory.u.items_inventory[idx].refine = (char)value;
+		need_recalc_status = true;
+		break;
+	case 4:
+		value = cap_value(value, 0, 1);
+		sd->inventory.u.items_inventory[idx].identify = (char)value;
+		if (sd->inventory.u.items_inventory[idx].equip && !value)
+			pc_unequipitem(sd, idx, 3);
+		break;
+	case 5:
+		value = cap_value(value, 0, 1);
+		sd->inventory.u.items_inventory[idx].attribute = (char)value;
+		if (sd->inventory.u.items_inventory[idx].equip && value)
+			pc_unequipitem(sd, idx, 3);
+		break;
+	case 6: case 7: case 8: case 9: {
+		struct item_data* card_itemdata = itemdb_exists((unsigned short)value);
+		if (!card_itemdata) {
+			ShowWarning("buildin_setinventoryinfo: Nonexistant item : %d.\n", value);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_SUCCESS;
+		}
+		if (!(flag & 4)) {
+			if (card_itemdata->type != IT_CARD || (sd->inventory_data[idx]->equip & card_itemdata->equip) == 0) {
+				script_pushint(st, -1);
+				return SCRIPT_CMD_SUCCESS;
+			}
+		}
+		sd->inventory.u.items_inventory[idx].card[type - 6] = card_itemdata->nameid;
+		if (!(flag & 8)) {
+			struct item item_tmp = { 0 };
+			item_tmp.nameid = card_itemdata->nameid;
+			item_tmp.identify = 1;
+			if (card_itemdata->flag.guid && !item_tmp.unique_id)
+				item_tmp.unique_id = pc_generate_unique_id(sd);
+			log_pick_pc(sd, LOG_TYPE_SCRIPT, 1, &item_tmp);
+		}
+		need_recalc_status = true;
+		break;
+	}
+	case 10:
+		value = cap_value(value, 0, MAXINT);
+		sd->inventory.u.items_inventory[idx].expire_time = (unsigned int)value; // Timestamp, not seconds
+		expire_tick = (unsigned int)(sd->inventory.u.items_inventory[idx].expire_time - time(NULL));
+		if (expire_tick > 0) {
+			unsigned int seconds = (unsigned int)(value - time(NULL));
+			clif_rental_time(sd->fd, sd->inventory.u.items_inventory[idx].nameid, seconds);
+			pc_inventory_rental_add(sd, seconds);
+		}
+		else {
+			inventory_rental_update(sd);
+		}
+		need_recalc_status = true;
+		break;
+	case 11:
+		sd->inventory.u.items_inventory[idx].unique_id = value;
+		break;
+	case 12: case 13: case 14: case 15: case 16:
+		sd->inventory.u.items_inventory[idx].option[type - 12].id = (short)value;
+		need_recalc_status = true;
+		break;
+	case 17: case 18: case 19: case 20: case 21:
+		sd->inventory.u.items_inventory[idx].option[type - 17].value = (short)value;
+		need_recalc_status = true;
+		break;
+	case 22: case 23: case 24: case 25: case 26:
+		sd->inventory.u.items_inventory[idx].option[type - 22].param = (char)value;
+		need_recalc_status = true;
+		break;
+	default:
+		ShowWarning("buildin_setinventoryinfo: The type should be in range 3-%d, currently type is: %d.\n", 26, type);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (need_recalc_status && !(flag & 1))
+		status_calc_pc(sd, SCO_NONE);
+
+	if (!(flag & 2))
+		clif_inventorylist(sd);
+
+	script_pushint(st, 1);
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_SetInventoryInfo
+
+#ifdef Pandas_ScriptCommand_UpdateInventory
+/* ===========================================================
+ * 指令: updateinventory
+ * 描述: 重新下发关联玩家的背包数据给客户端 (刷新客户端背包数据)
+ * 用法: updateinventory {<角色编号>};
+ * 返回: 返回 1 表示成功, 0 表示失败
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(updateinventory) {
+	struct map_session_data* sd = nullptr;
+	if (!script_charid2sd(2, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	clif_inventorylist(sd);
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_UpdateInventory
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
@@ -27618,8 +27770,11 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(storagegetitem, "storagegetitembound", "vii?"),	// 与 getitembound 类似, 只不过是将道具直接创建到仓库
 #endif // Pandas_ScriptCommand_StorageGetItem
 #ifdef Pandas_ScriptCommand_SetInventoryInfo
-	BUILDIN_DEF(setinventoryinfo,"iii?"),						// 在此写上脚本指令说明 [维护者昵称]
+	BUILDIN_DEF(setinventoryinfo,"iii??"),				// 设置指定背包序号的道具的详细信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_SetInventoryInfo
+#ifdef Pandas_ScriptCommand_UpdateInventory
+	BUILDIN_DEF(updateinventory,"?"),					// 重新下发关联玩家的背包数据给客户端 [Sola丶小克]
+#endif // Pandas_ScriptCommand_UpdateInventory
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
