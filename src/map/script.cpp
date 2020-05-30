@@ -27550,7 +27550,7 @@ BUILDIN_FUNC(setinventoryinfo) {
 		break;
 	}
 	case 10:
-		value = cap_value(value, 0, MAXINT);
+		value = cap_value(value, 0, INT_MAX);
 		sd->inventory.u.items_inventory[idx].expire_time = (unsigned int)value; // Timestamp, not seconds
 		expire_tick = (unsigned int)(sd->inventory.u.items_inventory[idx].expire_time - time(NULL));
 		if (expire_tick > 0) {
