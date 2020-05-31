@@ -1021,6 +1021,11 @@ int npc_settimerevent_tick(struct npc_data* nd, int newtimer)
 
 int npc_event_sub(struct map_session_data* sd, struct event_data* ev, const char* eventname)
 {
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd || !ev || !eventname || !ev->nd)
+		return 0;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	if ( sd->npc_id != 0 )
 	{
 		//Enqueue the event trigger.
@@ -2445,6 +2450,21 @@ static int npc_unload_ev(DBKey key, DBData *data, va_list ap)
 
 	if(strcmp(ev->nd->exname,npcname)==0){
 		db_remove(ev_db, key);
+
+#ifdef Pandas_Crashfix_EventDatabase_Clean_Synchronize
+		// 由于 script_event 中的内容是 ev_db 提供的
+		// 因此当移除 ev_db 中的内容时, 需要将 script_event 中的内容一起移除掉
+		for (auto& mapit : script_event) {
+			for (auto vecit = mapit.second.begin(); vecit != mapit.second.end(); ) {
+				if (strcmp(npcname, vecit->event->nd->exname) == 0) {
+					vecit = mapit.second.erase(vecit);
+					continue;
+				}
+				vecit++;
+			}
+		}
+#endif // Pandas_Crashfix_EventDatabase_Clean_Synchronize
+
 		return 1;
 	}
 	return 0;
@@ -5086,6 +5106,28 @@ void npc_clear_pathlist(void) {
 	dbi_destroy(path_list);
 }
 
+#ifdef Pandas_NpcExpress_STATCALC
+//************************************
+// Method:      npc_status_calc_sub
+// Description: 可以在 map_foreachpc 指令调用的子函数, 重新计算玩家单位的能力
+// Parameter:   struct map_session_data * sd
+// Parameter:   va_list va
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2020/5/31 19:13
+//************************************
+static int npc_status_calc_sub(struct map_session_data* sd, va_list va)
+{
+	enum e_status_calc_opt opt;
+	opt = va_arg(va, enum e_status_calc_opt);
+
+	if (sd) {
+		status_calc_pc(sd, opt);
+		return 1;
+	}
+	return 0;
+}
+#endif // Pandas_NpcExpress_STATCALC
+
 //Clear then reload npcs files
 int npc_reload(void) {
 	struct npc_src_list *nsl;
@@ -5099,6 +5141,12 @@ int npc_reload(void) {
 	npc_clear_pathlist();
 
 	db_clear(npc_path_db);
+
+#ifdef Pandas_Crashfix_EventDatabase_Clean_Synchronize
+	// 即将清空 ev_db, 同时也得把 script_event 清空掉 [Sola丶小克]
+	// 因为 ev_db 清空后 script_event 的值已经无效了, 被其他环节利用会导致崩溃
+	script_event.clear();
+#endif // Pandas_Crashfix_EventDatabase_Clean_Synchronize
 
 	db_clear(npcname_db);
 	db_clear(ev_db);
@@ -5196,6 +5244,28 @@ int npc_reload(void) {
 #if PACKETVER >= 20131223
 	npc_market_checkall();
 #endif
+
+#ifdef Pandas_NpcExpress_STATCALC
+	// 若重新加载全部 NPC 之后发现有使用到 OnPCStatCalcEvent 事件
+	// 那么触发全部在线玩家的能力重算过程, 以便使相关的事件代码能够立刻生效
+	//
+	// 为啥需要这么做?
+	// --------------------
+	// 在 reloadscript 期间会重置全部地图标记, 在给某个地图设置 pvp 和 gvg 标记的时候,
+	// 由于当前的脚本还没加载完毕, 因此在给地图设置标记的时候, 部分处理函数:
+	// - map_mapflag_pvp_start_sub / map_mapflag_pvp_stop_sub
+	// - map_mapflag_gvg_start_sub / map_mapflag_gvg_stop_sub
+	// 他们里面调用的重新计算角色能力值的工作, 实际上并不会触发 OnPCStatCalcEvent 事件
+	// 为了确保 reloadscript 后尽量别出现奇怪的事情, 需要在这里补充计算一下
+	//
+	// 更详细一点就是:
+	// --------------------
+	// 代码中有一个名为 script_event 的 std::map 维护着不同的事件有哪些 NPC 使用到
+	// 但在 reloadscript 期间这个数组是空的, 因此 reload 期间的全部事件其实都是无法被真正执行的
+	if (script_event[NPCE_STATCALC].size())
+		map_foreachpc(npc_status_calc_sub, SCO_NONE);
+#endif // Pandas_NpcExpress_STATCALC
+
 	return 0;
 }
 
@@ -5229,6 +5299,11 @@ bool npc_unloadfile( const char* path ) {
 
 void do_clear_npc(void) {
 	db_clear(npcname_db);
+#ifdef Pandas_Crashfix_EventDatabase_Clean_Synchronize
+	// 即将清空 ev_db, 同时也得把 script_event 清空掉 [Sola丶小克]
+	// 因为 ev_db 清空后 script_event 的值已经无效了, 被其他环节利用会导致崩溃
+	script_event.clear();
+#endif // Pandas_Crashfix_EventDatabase_Clean_Synchronize
 	db_clear(ev_db);
 }
 
