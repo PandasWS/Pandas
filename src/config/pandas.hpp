@@ -528,6 +528,9 @@
 	// 特别针对那些单纯依赖目标是否为 Null 作为野指针判断的相关变量
 	#define Pandas_Crashfix_Variable_Init
 
+	// 对函数的参数进行合法性校验 [Sola丶小克]
+	#define Pandas_Crashfix_FunctionParams_Verify
+
 	// 修复使用 sommon 脚本指令召唤不存在的魔物, 会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_ScriptCommand_Summon
 
@@ -570,6 +573,10 @@
 	#ifdef Pandas_FuncDefine_Instance_Destory
 		#define Pandas_Crashfix_UnorderedMap_Erase
 	#endif // Pandas_FuncDefine_Instance_Destory
+
+	// 修正释放或删除 ev_db 时, 对应的 script_event 节点没清空的问题 [Sola丶小克]
+	// 在 reloadscript 时可能会因为 ev_db 被清空, 其他环节直接使用 script_event 的值而崩溃
+	#define Pandas_Crashfix_EventDatabase_Clean_Synchronize
 #endif // Pandas_Crashfix
 
 // ============================================================================
