@@ -1,3 +1,16 @@
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- 此脚本仅用于将 rAthenaCN 1.8.0 版本升级到 Pandas 1.0.0 版本
+-- 导入此脚本之后, 若您在 rAthenaCN 的 inter_athena.conf 启用了 use_sql_db 选项,
+-- 那么还需额外导入 upgrade_from_rAthenaCN-1.8.0_main_use_sql_db.sql 文件
+-- 
+-- 完成上述操作后, 您的 rAthenaCN 的数据库将会被升级到 Pandas 1.0.0 版本.
+-- 随后, 你还需要按顺序导入 Pandas 历史各版本的数据库升级文件, 如: 
+-- 
+-- 1. 导入 upgrade_to_1.0.3_main.sql 可以将数据库升级到 Pandas 1.0.3 版本
+-- 2. 导入 upgrade_to_1.0.5_main.sql 可以将数据库升级到 Pandas 1.0.5 版本
+-- 
+-- 提示: 没有 upgrade_to_1.0.4_main.sql 是因为 1.0.3 和 1.0.4 的数据库结构一致, 无需升级
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 
 -- upgrade_20180623.sql
 
@@ -117,98 +130,6 @@ ALTER TABLE `ipbanlist`
 -- upgrade_20190815.sql
 
 DROP TABLE `ragsrvinfo`;
-
--- upgrade_20191222.sql
-
-ALTER TABLE `bonus_script`
-    ADD PRIMARY KEY (`char_id`, `type`);
-
-ALTER TABLE `buyingstore_items`
-    ADD PRIMARY KEY (`buyingstore_id`, `index`);
-
-ALTER TABLE `friends`
-    DROP INDEX `char_id`,
-    ADD PRIMARY KEY (`char_id`, `friend_id`);
-
-ALTER TABLE `interlog`
-    ADD COLUMN `id` INT NOT NULL AUTO_INCREMENT FIRST,
-    ADD PRIMARY KEY (`id`),
-    ADD INDEX `time` (`time`);
-
-ALTER TABLE `ipbanlist`
-    DROP INDEX `list`,
-    ADD PRIMARY KEY (`list`, `btime`);
-
-ALTER TABLE `sc_data`
-    DROP INDEX `account_id`,
-    DROP INDEX `char_id`,
-    ADD PRIMARY KEY (`char_id`, `type`);
-
-ALTER TABLE `skillcooldown`
-    DROP INDEX `account_id`,
-    DROP INDEX `char_id`,
-    ADD PRIMARY KEY (`char_id`, `skill`);
-
-ALTER TABLE `vending_items`
-    ADD PRIMARY KEY (`vending_id`, `index`);
-
-DROP TABLE `sstatus`;
-
--- upgrade_20200108.sql
-
-ALTER TABLE `charlog`
-    -- DROP PRIMARY KEY, -- comment if primary key has not been created yet
-    ADD COLUMN `id` bigint(20) unsigned NOT NULL auto_increment first,
-    ADD PRIMARY KEY (`id`),
-    ADD KEY `account_id` (`account_id`);
-
--- upgrade_20200109.sql
-
-ALTER TABLE `acc_reg_num`
-	MODIFY `value` bigint(11) NOT NULL default '0';
-
-ALTER TABLE `global_acc_reg_num`
-	MODIFY `value` bigint(11) NOT NULL default '0';
-
-ALTER TABLE `char_reg_num`
-	MODIFY `value` bigint(11) NOT NULL default '0';
-
--- upgrade_20200126.sql
-
-ALTER TABLE `achievement`
-	MODIFY `count1` int unsigned NOT NULL default '0',
-	MODIFY `count2` int unsigned NOT NULL default '0',
-	MODIFY `count3` int unsigned NOT NULL default '0',
-	MODIFY `count4` int unsigned NOT NULL default '0',
-	MODIFY `count5` int unsigned NOT NULL default '0',
-	MODIFY `count6` int unsigned NOT NULL default '0',
-	MODIFY `count7` int unsigned NOT NULL default '0',
-	MODIFY `count8` int unsigned NOT NULL default '0',
-	MODIFY `count9` int unsigned NOT NULL default '0',
-	MODIFY `count10` int unsigned NOT NULL default '0';
-
--- upgrade_20200204.sql
-
-ALTER TABLE `guild_member`
-	DROP COLUMN `account_id`,
-	DROP COLUMN `hair`,
-	DROP COLUMN `hair_color`,
-	DROP COLUMN `gender`,
-	DROP COLUMN `class`,
-	DROP COLUMN `lv`,
-	DROP COLUMN `exp_payper`,
-	DROP COLUMN `online`,
-	DROP COLUMN `name`;
-
-ALTER TABLE `friends`
-	DROP COLUMN `friend_account`;
-
--- upgrade_20200303.sql
-
-UPDATE `char_reg_num` SET `key` = 'ep14_3_newerabs' WHERE `key` = 'ep14_3_dimensional_travel' AND `index` = 0 AND `value` < 2;
-UPDATE `char_reg_num` SET `key` = 'ep14_3_newerabs', `value` = 3 WHERE `key` = 'ep14_3_dimensional_travel' AND `index` = 0 AND `value` = 2;
-UPDATE `char_reg_num` SET `key` = 'ep14_3_newerabs', `value` = `value` + 2 WHERE `key` = 'ep14_3_dimensional_travel' AND `index` = 0 AND `value` < 8;
-UPDATE `char_reg_num` SET `key` = 'ep14_3_newerabs', `value` = `value` + 7 WHERE `key` = 'ep14_3_dimensional_travel' AND `index` = 0 AND `value` > 7;
 
 -- 熊猫模拟器的额外修正, 感谢 "张大坏" 反馈
 
