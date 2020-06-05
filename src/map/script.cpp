@@ -27523,6 +27523,12 @@ BUILDIN_FUNC(setinventoryinfo) {
 			pc_unequipitem(sd, idx, 3);
 		break;
 	case 6: case 7: case 8: case 9: {
+		if (!value) {
+			sd->inventory.u.items_inventory[idx].card[type - 6] = 0;
+			need_recalc_status = true;
+			break;
+		}
+
 		struct item_data* card_itemdata = itemdb_exists((unsigned short)value);
 		if (!card_itemdata) {
 			ShowWarning("buildin_setinventoryinfo: Nonexistant item : %d.\n", value);
@@ -27565,7 +27571,14 @@ BUILDIN_FUNC(setinventoryinfo) {
 		sd->inventory.u.items_inventory[idx].unique_id = value;
 		break;
 	case 12: case 13: case 14: case 15: case 16:
-		sd->inventory.u.items_inventory[idx].option[type - 12].id = (short)value;
+		if (value) {
+			sd->inventory.u.items_inventory[idx].option[type - 12].id = (short)value;
+		}
+		else {
+			sd->inventory.u.items_inventory[idx].option[type - 12].id = 0;
+			sd->inventory.u.items_inventory[idx].option[type - 12].value = 0;
+			sd->inventory.u.items_inventory[idx].option[type - 12].param = 0;
+		}
 		need_recalc_status = true;
 		break;
 	case 17: case 18: case 19: case 20: case 21:
