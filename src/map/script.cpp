@@ -25968,6 +25968,8 @@ BUILDIN_FUNC(getinventoryinfo) {
 		retval = sd->inventory.u.items_inventory[idx].option[type - 17].value; break;
 	case 22: case 23: case 24: case 25: case 26:
 		retval = sd->inventory.u.items_inventory[idx].option[type - 22].param; break;
+	case 27:
+		retval = (int)sd->inventory.u.items_inventory[idx].bound; break;
 	default:
 		ShowWarning("buildin_getinventoryinfo: The type should be in range 0-%d, currently type is: %d.\n", 26, type);
 		script_pushint(st, -1);
@@ -27588,6 +27590,14 @@ BUILDIN_FUNC(setinventoryinfo) {
 	case 22: case 23: case 24: case 25: case 26:
 		sd->inventory.u.items_inventory[idx].option[type - 22].param = (char)value;
 		need_recalc_status = true;
+		break;
+	case 27:
+		if (value < BOUND_NONE || value >= BOUND_MAX) {
+			ShowWarning("buildin_setinventoryinfo: Invalid bound type\n");
+			script_pushint(st, 0);
+			return SCRIPT_CMD_SUCCESS;
+		}
+		sd->inventory.u.items_inventory[idx].bound = (char)value;
 		break;
 	default:
 		ShowWarning("buildin_setinventoryinfo: The type should be in range 3-%d, currently type is: %d.\n", 26, type);
