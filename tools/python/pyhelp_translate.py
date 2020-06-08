@@ -338,14 +338,14 @@ def convert_backslash_step2(filepath):
     针对 BIG5 的处理, 将指定文件中的 [[[\\]]] 替换成反斜杠
     '''
     content = ""
-    with open(filepath, 'r', encoding='UTF-8-SIG') as f:
+    with open(filepath, 'r', encoding='UTF-8') as f:
         content = f.read()
         f.close()
     
     pattern = re.compile(r'\[\[\[\\\\\]\]\]')
     content = pattern.sub(r'\\', content)
     
-    with open(filepath, 'w', encoding='UTF-8-SIG') as f:
+    with open(filepath, 'w', encoding='UTF-8') as f:
         f.write(content)
         f.close()
 
@@ -372,7 +372,7 @@ class TranslateDatabase():
 
         # 将文件中的内容读取成一个列表, 放在 contents 中
         contents = []
-        with open(filename, 'r', encoding='UTF-8-SIG') as f:
+        with open(filename, 'r', encoding='UTF-8') as f:
             contents = f.readlines()
 
         # 进行编码校验工作
