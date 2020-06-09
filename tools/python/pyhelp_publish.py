@@ -149,7 +149,19 @@ def arrange_common(packagedir):
     rmdir(packagedir + 'conf/import')
     rmdir(packagedir + 'doc/model')
     rmdir(packagedir + 'npc/test')
-    rmdir(packagedir + 'tools', ['batches'])
+    rmdir(packagedir + 'tools', ['batches', 'python'])
+    
+    rmdir(
+        packagedir + 'tools/python',
+        dir_exclude = [
+            'database',
+            'libs'
+        ],
+        file_exclude = [
+            'pyhelp_translate.py',
+            'requirements.txt'
+        ]
+    )
     
     remove_files(packagedir + 'doc', 'packet_*.txt')
     remove_files(packagedir, '*.sh')
@@ -308,6 +320,7 @@ def process(export_file, renewal):
         clean(export_file)
         Message.ShowError('打包成 zip 文件时失败了, 请联系开发者协助定位问题, 程序终止.')
         Common.exit_with_pause(-1)
+
     Message.ShowStatus('已成功构建 {model} 的 zip 文件.'.format(
         model = '复兴后(RE)' if renewal else '复兴前(PRE)'
     ))
