@@ -139,8 +139,6 @@ def arrange_common(packagedir):
     复兴前和复兴后都能够通用的整理规则
     无论是对哪个版本进行整理, 都需要调用一下此函数
     '''
-    trans.process(packagedir, 'zh-cn')
-    
     rmdir(packagedir + '.github')
     rmdir(packagedir + 'src')
     rmdir(packagedir + '3rdparty')
@@ -149,19 +147,7 @@ def arrange_common(packagedir):
     rmdir(packagedir + 'conf/import')
     rmdir(packagedir + 'doc/model')
     rmdir(packagedir + 'npc/test')
-    rmdir(packagedir + 'tools', ['batches', 'python'])
-    
-    rmdir(
-        packagedir + 'tools/python',
-        dir_exclude = [
-            'database',
-            'libs'
-        ],
-        file_exclude = [
-            'pyhelp_translate.py',
-            'requirements.txt'
-        ]
-    )
+    rmdir(packagedir + 'tools', ['batches'])
     
     remove_files(packagedir + 'doc', 'packet_*.txt')
     remove_files(packagedir, '*.sh')
@@ -269,22 +255,21 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
 
-def process(export_file, renewal):
-    '''
-    开始进行处理工作
-    '''
+def process_sub(export_file, renewal, langinfo):
     print('')
-
+    
     # 确认当前的版本号
     version = Common.get_pandas_ver(os.path.abspath(project_slndir), 'v')
 
-    Message.ShowStatus('正在准备生成 {model} 的打包目录...'.format(
-        model = '复兴后(RE)' if renewal else '复兴前(PRE)'
+    Message.ShowStatus('正在准备生成 {model} - {lang} 的打包目录...'.format(
+        model = '复兴后(RE)' if renewal else '复兴前(PRE)',
+        lang = langinfo['name']
     ))
 
     # 构建解压的打包目录
-    packagedir = '../Release/Pandas/{version}/Pandas_{version}_{timestamp}_{model}'.format(
-        version = version, model = 'RE' if renewal else 'PRE', timestamp = Common.timefmt(True)
+    packagedir = '../Release/Pandas/{version}/Pandas_{version}_{timestamp}_{model}_{lang}'.format(
+        version = version, model = 'RE' if renewal else 'PRE',
+        timestamp = Common.timefmt(True), lang = langinfo['dirname']
     )
 
     # 获取压缩文件的保存路径
@@ -301,11 +286,16 @@ def process(export_file, renewal):
         shutil.rmtree(packagedir)
     
     # 将 zip 文件解压到指定的目录中去
-    Message.ShowStatus('正在解压归档文件到: %s' % packagedir)
+    Message.ShowStatus('正在解压归档文件到: %s' % os.path.relpath(
+        packagedir, os.path.abspath(os.path.join(packagedir, r'../../'))
+    ))
     if not zip_unpack(export_file, packagedir):
         clean(export_file)
         Message.ShowError('很抱歉, 解压归档文件失败, 程序终止.')
         Common.exit_with_pause(-1)
+    
+    # 进行文本的翻译工作
+    trans.process(packagedir, langinfo['trans'], True)
     
     # 进行后期处理
     Message.ShowStatus('正在对打包源目录进行后期处理...')
@@ -313,7 +303,7 @@ def process(export_file, renewal):
         arrange_renewal(packagedir)
     else:
         arrange_pre_renewal(packagedir)
-    Message.ShowStatus('后期处理完毕, 即将把打包源压缩成 zip 文件...')
+    Message.ShowStatus('后期处理完毕, 即将把打包源压缩成 ZIP 文件...')
     
     # 执行打包操作
     if not zip_pack(packagedir, zipfilename):
@@ -321,9 +311,34 @@ def process(export_file, renewal):
         Message.ShowError('打包成 zip 文件时失败了, 请联系开发者协助定位问题, 程序终止.')
         Common.exit_with_pause(-1)
 
-    Message.ShowStatus('已成功构建 {model} 的 zip 文件.'.format(
-        model = '复兴后(RE)' if renewal else '复兴前(PRE)'
+    Message.ShowStatus('已成功构建 {model} - {lang} 的压缩文件.'.format(
+        model = '复兴后(RE)' if renewal else '复兴前(PRE)',
+        lang = langinfo['name']
     ))
+
+def process(export_file, renewal):
+    '''
+    开始进行处理工作
+    '''
+    process_sub(
+        export_file = export_file,
+        renewal = renewal,
+        langinfo = {
+            'trans' : 'zh-cn',
+            'dirname' : 'GBK',
+            'name' : '简体中文'
+        }
+    )
+    
+    process_sub(
+        export_file = export_file,
+        renewal = renewal,
+        langinfo = {
+            'trans' : 'zh-tw',
+            'dirname' : 'BIG5',
+            'name' : '繁体中文'
+        }
+    )
 
 def clean(export_file):
     '''
