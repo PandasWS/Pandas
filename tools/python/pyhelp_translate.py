@@ -425,6 +425,7 @@ class LineReplaceController():
         self.__replace_escape = self.__getfromdict(kwargs, 'replace_escape')
         self.__project_dir = self.__getfromdict(kwargs, 'project_dir')
         self.__lang = self.__getfromdict(kwargs, 'lang')
+        self.__silent = self.__getfromdict(kwargs, 'silent')
         self.__transdb_name = self.__getfromdict(kwargs, 'transdb_name')
         self.__replace_decorate = self.__getfromdict(kwargs, 'replace_decorate')
         self.__regex_flags = self.__getfromdict(kwargs, '__regex_flags', 0)
@@ -511,7 +512,8 @@ class LineReplaceController():
         if not savefile:
             savefile = filename
         
-        Message.ShowInfo('正在处理: %s (%s)' % (os.path.relpath(filename, self.__project_dir), self.__save_encoding))
+        if not self.__silent:
+            Message.ShowInfo('正在处理: %s (%s)' % (os.path.relpath(filename, self.__project_dir), self.__save_encoding))
 
         contents = self.__load(filename)
         contents = self.__process(contents)
@@ -527,6 +529,7 @@ class FulltextReplaceController():
         self.__replace_escape = self.__getfromdict(kwargs, 'replace_escape')
         self.__project_dir = self.__getfromdict(kwargs, 'project_dir')
         self.__lang = self.__getfromdict(kwargs, 'lang')
+        self.__silent = self.__getfromdict(kwargs, 'silent')
         self.__transdb_name = self.__getfromdict(kwargs, 'transdb_name')
         self.__replace_decorate = self.__getfromdict(kwargs, 'replace_decorate')
         self.__regex_flags = self.__getfromdict(kwargs, 'regex_flags', 0)
@@ -615,18 +618,20 @@ class FulltextReplaceController():
         if not savefile:
             savefile = filename
         
-        Message.ShowInfo('正在处理: %s (%s)' % (os.path.relpath(filename, self.__project_dir), self.__save_encoding))
+        if not self.__silent:
+            Message.ShowInfo('正在处理: %s (%s)' % (os.path.relpath(filename, self.__project_dir), self.__save_encoding))
 
         contents = self.__load(filename)
         contents = self.__process(contents)
         return self.__save(contents, savefile)
 
-def process(project_dir, lang = 'zh-cn'):
+def process(project_dir, lang = 'zh-cn', silent = False):
     try:
         for v in configures:
             operate_params = v['operate_params']
             operate_params['lang'] = lang
             operate_params['project_dir'] = project_dir
+            operate_params['silent'] = silent
             operate = globals()[v['operate']](**operate_params)
 
             if 'filepath' in v:
