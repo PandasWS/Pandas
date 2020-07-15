@@ -8,10 +8,8 @@ pull_requests:
   do_not_increment_build_number: true
 environment:
   matrix:
-  - VisualStudioVersion: 14.0
-    Defines: "\"BUILDBOT\""
-  - VisualStudioVersion: 14.0
-    Defines: "\"BUILDBOT;PRERE\""
+  - Defines: "\"BUILDBOT\""
+  - Defines: "\"BUILDBOT;PRERE\""
 platform:
   - Win32
   - x64

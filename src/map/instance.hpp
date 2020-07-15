@@ -89,7 +89,7 @@ struct s_instance_db {
 	std::string name; ///< Instance name
 	uint32 limit, ///< Duration limit
 		timeout; ///< Timeout limit
-	//bool destroyable; ///< Destroyable flag
+	bool destroyable; ///< Destroyable flag
 	struct point enter; ///< Instance entry point
 	std::vector<int16> maplist; ///< Maps in instance
 };
@@ -121,6 +121,7 @@ bool instance_destroy(int instance_id, bool skip_erase = false);
 void instance_refresh_status(int instance_id);
 void instance_force_destroy(struct map_session_data* sd);
 #endif // Pandas_Quick_Implement_Dungeon_Command
+void instance_destroy_command(map_session_data *sd);
 e_instance_enter instance_enter(struct map_session_data *sd, int instance_id, const char *name, short x, short y);
 bool instance_reqinfo(struct map_session_data *sd, int instance_id);
 bool instance_addusers(int instance_id);
