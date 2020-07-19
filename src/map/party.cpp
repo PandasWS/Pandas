@@ -840,11 +840,11 @@ int party_changeleader(struct map_session_data *sd, struct map_session_data *tsd
 	intif_party_leaderchange(p->party.party_id,p->party.member[tmi].account_id,p->party.member[tmi].char_id);
 	clif_party_info(p,NULL);
 
-#ifdef Pandas_Quick_Implement_Dungeon_Command
+#ifdef Pandas_Fix_Dungeon_Command_Status_Refresh
 	// 成功更换队长后, 需要刷新一下副本的状态信息
 	// 否则队长无法获取正确的, 携带 "销毁副本" 按钮的面板信息
 	instance_refresh_status(p->instance_id);
-#endif // Pandas_Quick_Implement_Dungeon_Command
+#endif // Pandas_Fix_Dungeon_Command_Status_Refresh
 
 	return 1;
 }

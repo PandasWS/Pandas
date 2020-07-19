@@ -17225,31 +17225,6 @@ void clif_bossmapinfo(struct map_session_data *sd, struct mob_data *md, enum e_b
 	WFIFOSET(fd,70);
 }
 
-#ifdef Pandas_Quick_Implement_Dungeon_Command
-//************************************
-// Method:      clif_parse_dungeon_command
-// Description: 用于处理 0x02cf 封包的函数
-// Parameter:   int fd
-// Parameter:   struct map_session_data * sd
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2020/03/22 16:21
-//************************************
-void clif_parse_dungeon_command(int fd, struct map_session_data* sd)
-{
-	if (sd->state.trading || pc_isdead(sd) || sd->state.vending) {
-		return;
-	}
-
-	int command = RFIFOL(fd, packet_db[RFIFOW(fd, 0)].pos[0]);
-	switch (command)
-	{
-	case DUNGEON_DESTROY_FORCE:
-		instance_force_destroy(sd);
-		break;
-	}
-}
-#endif // Pandas_Quick_Implement_Dungeon_Command
-
 /// Requesting equip of a player (CZ_EQUIPWIN_MICROSCOPE).
 /// 02d6 <account id>.L
 void clif_parse_ViewPlayerEquip(int fd, struct map_session_data* sd)

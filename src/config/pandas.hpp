@@ -275,6 +275,10 @@
 	// 调整 atcommand.cpp 中 atcommand_reload 配置重载指令的逻辑 [Sola丶小克]
 	// 我们希望在执行某些 reload 指令 (@reloadbattleconf) 时能重新计算全服玩家的属性和能力值
 	#define Pandas_FuncLogic_ATCOMMAND_RELOAD
+
+	// 重写 instance.cpp -> instance_destroy_command 函数
+	// 因为 rAthena 官方实现的该函数在切换队长后的处理并不友好 [Sola丶小克]
+	#define Pandas_FuncLogic_Instance_Destroy_Command
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -415,10 +419,6 @@
 		#define Pandas_Console_Charset_SmartConvert
 	#endif // _WIN32
 
-	// 是否简单实现队长用于销毁副本的"面板按钮"功能 [Sola丶小克]
-	// 目前仅在 2018-06-20 版本中测试过, 启用此开关将实现 0x02cf 封包的处理
-	#define Pandas_Quick_Implement_Dungeon_Command
-
 	// 建立 MySQL 连接的时候主动禁止 SSL 模式 [Sola丶小克]
 	// 在 MySQL 8.0 (或更早之前的某个版本) 开始, 由于 MySQL 默认启用了 SSL 连接模式.
 	// 这会导致在没有安全证书的情况下, 无法建立正常的数据库连接.
@@ -538,6 +538,12 @@
 	// 在 unit_walktoxy_sub 函数中, 如果发现当前坐标和目的地坐标一致, 那么放弃移动.
 	// 但问题更本质的原因是: 为什么会出现这样的情况...
 	#define Pandas_Fix_Same_Coordinate_Move_Logic
+
+	// 修正更换队长后, 新队长无法看到销毁副本按钮的问题
+	// 此选项开关需要依赖 Pandas_FuncLogic_Instance_Destroy_Command 的拓展 [Sola丶小克]
+	#ifdef Pandas_FuncLogic_Instance_Destroy_Command
+		#define Pandas_Fix_Dungeon_Command_Status_Refresh
+	#endif // Pandas_FuncLogic_Instance_Destroy_Command
 #endif // Pandas_Bugfix
 
 // ============================================================================

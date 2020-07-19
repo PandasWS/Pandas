@@ -749,6 +749,7 @@ int16 instance_mapid(int16 m, int instance_id)
 	return m;
 }
 
+#ifndef Pandas_FuncLogic_Instance_Destroy_Command
 /**
  * Removes an instance, all its maps, and NPCs invoked by the client button.
  * @param sd: Player data
@@ -831,6 +832,68 @@ void instance_destroy_command(map_session_data *sd) {
 		instance_reqinfo(sd, gd->instance_id);
 	}
 }
+#else
+//************************************
+// Method:      instance_destroy_command
+// Description: 重新实现副本销毁按钮的点击处理函数 (官方代码过于依赖 sd->instance_mode)
+// Parameter:   map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/7/19 13:57
+//************************************
+void instance_destroy_command(map_session_data* sd) {
+	struct party_data* pd = NULL;
+	struct guild* gd = NULL;
+	struct instance_data* im = NULL;
+	int mi = 0;
+
+	nullpo_retv(sd);
+
+	for (auto it = instances.begin(); it != instances.end(); ) {
+		std::shared_ptr<s_instance_data> idata = it->second;
+		e_instance_mode imode = idata->mode;
+
+		if (idata->owner_id == 0)
+			continue;
+
+		switch (idata->mode) {
+		case IM_CHAR: {
+			if (idata->owner_id != sd->status.char_id)
+				continue;
+			break;
+		}
+		case IM_PARTY: {
+			pd = party_search(idata->owner_id);
+			if (!pd || pd->party.party_id != sd->status.party_id)
+				continue;
+
+			ARR_FIND(0, MAX_PARTY, mi, pd->party.member[mi].leader);
+			if (mi == MAX_PARTY || pd->party.member[mi].char_id != sd->status.char_id)
+				continue;
+			break;
+		}
+		case IM_GUILD: {
+			gd = guild_search(idata->owner_id);
+			if (!gd || gd->guild_id != sd->status.guild_id || !sd->state.gmaster_flag)
+				continue;
+			break;
+		}
+		default:
+			continue;
+		}
+
+		if (!instance_db.find(idata->id)->destroyable) // Instance is flagged as non-destroyable
+			return;
+
+#ifndef Pandas_FuncDefine_Instance_Destory
+		instance_destroy(it->first);
+#else
+		if (instance_destroy(it->first, true))
+			it = instances.erase(it);
+#endif // Pandas_FuncDefine_Instance_Destory
+		return;
+	}
+}
+#endif // Pandas_FuncLogic_Instance_Destroy_Command
 
 /**
  * Removes an instance, all its maps, and NPCs.
@@ -952,7 +1015,7 @@ bool instance_destroy(int instance_id, bool skip_erase)
 	return true;
 }
 
-#ifdef Pandas_Quick_Implement_Dungeon_Command
+#ifdef Pandas_Fix_Dungeon_Command_Status_Refresh
 //************************************
 // Method:      instance_refresh_status
 // Description: 在不触碰 keep_limit 和 idle_limit 的情况下刷新副本状态
@@ -989,64 +1052,7 @@ void instance_refresh_status(int instance_id) {
 		return;
 	}
 }
-
-//************************************
-// Method:      instance_force_destroy
-// Description: 强制销毁当前玩家归属的副本 (前提时他有控制权)
-// Parameter:   struct map_session_data * sd
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2020/03/22 14:03
-//************************************
-void instance_force_destroy(struct map_session_data* sd) {
-	struct party_data* pd = NULL;
-	struct guild* gd = NULL;
-	struct instance_data* im = NULL;
-	int mi = 0;
-
-	nullpo_retv(sd);
-
-	for (auto it = instances.begin(); it != instances.end(); ) {
-		std::shared_ptr<s_instance_data> idata = it->second;
-
-		if (idata->owner_id == 0)
-			continue;
-
-		switch (idata->mode) {
-		case IM_CHAR: {
-			if (idata->owner_id != sd->status.char_id)
-				continue;
-			break;
-		}
-		case IM_PARTY: {
-			pd = party_search(idata->owner_id);
-			if (!pd || pd->party.party_id != sd->status.party_id)
-				continue;
-
-			ARR_FIND(0, MAX_PARTY, mi, pd->party.member[mi].leader);
-			if (mi == MAX_PARTY || pd->party.member[mi].char_id != sd->status.char_id)
-				continue;
-			break;
-		}
-		case IM_GUILD: {
-			gd = guild_search(idata->owner_id);
-			if (!gd || gd->guild_id != sd->status.guild_id || !sd->state.gmaster_flag)
-				continue;
-			break;
-		}
-		default:
-			continue;
-		}
-
-#ifndef Pandas_FuncDefine_Instance_Destory
-		instance_destroy(it->first);
-#else
-		if (instance_destroy(it->first, true))
-			it = instances.erase(it);
-#endif // Pandas_FuncDefine_Instance_Destory
-		return;
-	}
-}
-#endif // Pandas_Quick_Implement_Dungeon_Command
+#endif // Pandas_Fix_Dungeon_Command_Status_Refresh
 
 /**
  * Warp a user into an instance
