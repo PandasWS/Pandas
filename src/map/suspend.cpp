@@ -155,13 +155,13 @@ void suspend_recall_postfix(struct map_session_data* sd) {
 // Method:      suspend_set_unit_idle
 // Description: 在 clif_set_unit_idle 函数中对发送给客户端的封包进行修改
 // Parameter:   struct map_session_data * sd
-// Parameter:   unsigned char * buf
+// Parameter:   struct packet_idle_unit * p
 // Returns:     void
-// Author:      Sola丶小克(CairoLee)  2020/4/8 13:14
+// Author:      Sola丶小克(CairoLee)  2020/7/20 22:32
 //************************************
-void suspend_set_unit_idle(struct map_session_data* sd, unsigned char* buf) {
+void suspend_set_unit_idle(struct map_session_data* sd, struct packet_idle_unit* p) {
 	nullpo_retv(sd);
-	nullpo_retv(buf);
+	nullpo_retv(p);
 
 	if (sd->bl.type != BL_PC)
 		return;
@@ -172,7 +172,7 @@ void suspend_set_unit_idle(struct map_session_data* sd, unsigned char* buf) {
 		{
 		case SUSPEND_MODE_AFK:
 			if (battle_config.suspend_afk_headtop_viewid) {
-				WBUFW(buf, 24) = battle_config.suspend_afk_headtop_viewid;
+				p->accessory2 = battle_config.suspend_afk_headtop_viewid;
 			}
 			break;
 		}
@@ -183,13 +183,13 @@ void suspend_set_unit_idle(struct map_session_data* sd, unsigned char* buf) {
 // Method:      suspend_set_unit_walking
 // Description: 在 clif_set_unit_walking 函数中对发送给客户端的封包进行修改
 // Parameter:   struct map_session_data * sd
-// Parameter:   unsigned char * buf
+// Parameter:   struct packet_unit_walking * p
 // Returns:     void
-// Author:      Sola丶小克(CairoLee)  2020/4/8 13:16
+// Author:      Sola丶小克(CairoLee)  2020/7/20 22:34
 //************************************
-void suspend_set_unit_walking(struct map_session_data* sd, unsigned char* buf) {
+void suspend_set_unit_walking(struct map_session_data* sd, struct packet_unit_walking* p) {
 	nullpo_retv(sd);
-	nullpo_retv(buf);
+	nullpo_retv(p);
 
 	if (sd->bl.type != BL_PC)
 		return;
@@ -200,7 +200,7 @@ void suspend_set_unit_walking(struct map_session_data* sd, unsigned char* buf) {
 		{
 		case SUSPEND_MODE_AFK:
 			if (battle_config.suspend_afk_headtop_viewid) {
-				WBUFW(buf, 28) = battle_config.suspend_afk_headtop_viewid;
+				p->accessory2 = battle_config.suspend_afk_headtop_viewid;
 			}
 			break;
 		}

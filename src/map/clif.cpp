@@ -1188,6 +1188,12 @@ static void clif_set_unit_idle( struct block_list* bl, bool walking, send_target
 #endif
 	}
 
+#ifdef Pandas_Player_Suspend_System
+	if (sd && bl->type == BL_PC) {
+		suspend_set_unit_idle(sd, &p);
+	}
+#endif // Pandas_Player_Suspend_System
+
 	clif_send( &p, sizeof( p ), tbl, target );
 }
 
@@ -1410,6 +1416,12 @@ static void clif_set_unit_walking( struct block_list *bl, struct map_session_dat
 #if PACKETVER >= 20131223
 	safestrncpy(p.name, status_get_name(bl), NAME_LENGTH);
 #endif
+
+#ifdef Pandas_Player_Suspend_System
+	if (sd && bl->type == BL_PC) {
+		suspend_set_unit_walking(sd, &p);
+	}
+#endif // Pandas_Player_Suspend_System
 
 	clif_send( &p, sizeof(p), tsd ? &tsd->bl : bl, target );
 
