@@ -7067,6 +7067,13 @@ void clif_cart_additem( struct map_session_data *sd, int n, int amount ){
 #if PACKETVER >= 5
 	p.itemType = itemdb_type( sd->cart.u.items_cart[n].nameid );
 #endif
+
+#ifdef Pandas_Item_Amulet_System
+	// 若是护身符道具, 那么发送给客户端的道具类型直接从 IT_AMULET 换成 IT_ETC 
+	if (amulet_is(sd->cart.u.items_cart[n].nameid))
+		p.itemType = amulet_pandas_type(sd->cart.u.items_cart[n].nameid);
+#endif // Pandas_Item_Amulet_System
+
 	p.identified = sd->cart.u.items_cart[n].identify;
 	p.damaged  = sd->cart.u.items_cart[n].attribute;
 	p.refine = sd->cart.u.items_cart[n].refine;
@@ -10113,6 +10120,22 @@ void clif_equipcheckbox(struct map_session_data* sd)
 void clif_viewequip_ack( struct map_session_data* sd, struct map_session_data* tsd ){
 	nullpo_retv( sd );
 	nullpo_retv( tsd );
+
+#ifdef Pandas_NpcFilter_VIEW_EQUIP
+	if (sd && sd->bl.type == BL_PC && tsd && tsd->bl.type == BL_PC) {
+		pc_setregstr(sd, add_str("@vieweq_name$"), tsd->status.name);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@vieweq_cid"), tsd->status.char_id);		// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@vieweq_aid"), tsd->status.account_id);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@eqview_cid"), tsd->status.char_id);		// 为兼容脚本而添加
+
+		pc_setregstr(sd, add_str("@view_equip_target_name$"), tsd->status.name);
+		pc_setreg(sd, add_str("@view_equip_target_cid"), tsd->status.char_id);
+		pc_setreg(sd, add_str("@view_equip_target_aid"), tsd->status.account_id);
+
+		if (npc_script_filter(sd, NPCF_VIEW_EQUIP))
+			return;
+	}
+#endif // Pandas_NpcFilter_VIEW_EQUIP
 
 	struct packet_viewequip_ack packet;
 	int equip = 0;
