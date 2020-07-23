@@ -280,6 +280,7 @@ std::string PandasUtf8::consoleConvert(const std::string& mes) {
 	switch (PandasUtf8::systemLanguage) {
 	case SYSTEM_LANGUAGE_CHT: _from = "BIG5"; break;
 	case SYSTEM_LANGUAGE_CHS: _from = "GBK"; break;
+	case SYSTEM_LANGUAGE_ENG: _from = "UTF-8"; break;
 	default: _from = PandasUtf8::getDefaultCodepage(); break;
 	}
 
@@ -290,6 +291,7 @@ std::string PandasUtf8::consoleConvert(const std::string& mes) {
 	}
 
 	if (_from.empty() || _to.empty()) return mes;
+	if (_from == _to) return mes;
 	return PandasUtf8::iconvConvert(mes, _from, _to);
 }
 
