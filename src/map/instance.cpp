@@ -111,7 +111,6 @@ uint64 InstanceDatabase::parseBodyNode(const YAML::Node &node) {
 			instance->timeout = 300;
 	}
 
-	/*
 	if (this->nodeExists(node, "Destroyable")) {
 		bool destroy;
 
@@ -123,7 +122,6 @@ uint64 InstanceDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!exists)
 			instance->destroyable = true;
 	}
-	*/
 
 	if (this->nodeExists(node, "Enter")) {
 		const YAML::Node &enterNode = node["Enter"];
@@ -539,7 +537,7 @@ int instance_create(int owner_id, const char *name, e_instance_mode mode) {
 		return -1;
 	}
 
-	struct map_session_data *sd;
+	struct map_session_data *sd = nullptr;
 	struct party_data *pd;
 	struct guild *gd;
 	struct clan* cd;
@@ -603,14 +601,23 @@ int instance_create(int owner_id, const char *name, e_instance_mode mode) {
 			break;
 		case IM_PARTY:
 			pd->instance_id = instance_id;
+			int32 i;
+			ARR_FIND(0, MAX_PARTY, i, pd->party.member[i].leader);
+
+			if (i < MAX_PARTY)
+				sd = map_charid2sd(pd->party.member[i].char_id);
 			break;
 		case IM_GUILD:
 			gd->instance_id = instance_id;
+			sd = map_charid2sd(gd->member[0].char_id);
 			break;
 		case IM_CLAN:
 			cd->instance_id = instance_id;
 			break;
 	}
+
+	if (sd != nullptr)
+		sd->instance_mode = mode;
 
 	instance_wait.id.push_back(instance_id);
 	clif_instance_create(instance_id, instance_wait.id.size());
@@ -742,6 +749,152 @@ int16 instance_mapid(int16 m, int instance_id)
 	return m;
 }
 
+#ifndef Pandas_FuncLogic_Instance_Destroy_Command
+/**
+ * Removes an instance, all its maps, and NPCs invoked by the client button.
+ * @param sd: Player data
+ */
+void instance_destroy_command(map_session_data *sd) {
+	nullpo_retv(sd);
+
+	std::shared_ptr<s_instance_data> idata;
+	int instance_id = 0;
+
+	if (sd->instance_mode == IM_CHAR && sd->instance_id > 0) {
+		idata = util::umap_find(instances, sd->instance_id);
+
+		if (idata == nullptr)
+			return;
+
+		instance_id = sd->instance_id;
+	} else if (sd->instance_mode == IM_PARTY && sd->status.party_id > 0) {
+		party_data *pd = party_search(sd->status.party_id);
+
+		if (pd == nullptr)
+			return;
+
+		idata = util::umap_find(instances, pd->instance_id);
+
+		if (idata == nullptr)
+			return;
+
+		int32 i;
+
+		ARR_FIND(0, MAX_PARTY, i, pd->data[i].sd == sd && pd->party.member[i].leader);
+
+		if (i == MAX_PARTY) // Player is not party leader
+			return;
+
+		instance_id = pd->instance_id;
+	} else if (sd->instance_mode == IM_GUILD && sd->guild != nullptr && sd->guild->instance_id > 0) {
+		guild *gd = guild_search(sd->status.guild_id);
+
+		if (gd == nullptr)
+			return;
+
+		idata = util::umap_find(instances, gd->instance_id);
+
+		if (idata == nullptr)
+			return;
+
+		if (strcmp(sd->status.name, gd->master) != 0) // Player is not guild master
+			return;
+
+		instance_id = gd->instance_id;
+	}
+
+	if (instance_id == 0) // Checks above failed
+		return;
+
+	if (!instance_db.find(idata->id)->destroyable) // Instance is flagged as non-destroyable
+		return;
+
+	instance_destroy(instance_id);
+
+	// Check for any other active instances and display their info
+	if (sd->instance_id > 0)
+		instance_reqinfo(sd, sd->instance_id);
+	if (sd->status.party_id > 0) {
+		party_data *pd = party_search(sd->status.party_id);
+
+		if (pd == nullptr)
+			return;
+
+		if (pd->instance_id > 0)
+			instance_reqinfo(sd, pd->instance_id);
+	}
+	if (sd->guild != nullptr && sd->guild->instance_id > 0) {
+		guild *gd = guild_search(sd->status.guild_id);
+
+		if (gd == nullptr)
+			return;
+
+		instance_reqinfo(sd, gd->instance_id);
+	}
+}
+#else
+//************************************
+// Method:      instance_destroy_command
+// Description: 重新实现副本销毁按钮的点击处理函数 (官方代码过于依赖 sd->instance_mode)
+// Parameter:   map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/7/19 13:57
+//************************************
+void instance_destroy_command(map_session_data* sd) {
+	struct party_data* pd = NULL;
+	struct guild* gd = NULL;
+	struct instance_data* im = NULL;
+	int mi = 0;
+
+	nullpo_retv(sd);
+
+	for (auto it = instances.begin(); it != instances.end(); ) {
+		std::shared_ptr<s_instance_data> idata = it->second;
+		e_instance_mode imode = idata->mode;
+
+		if (idata->owner_id == 0)
+			continue;
+
+		switch (idata->mode) {
+		case IM_CHAR: {
+			if (idata->owner_id != sd->status.char_id)
+				continue;
+			break;
+		}
+		case IM_PARTY: {
+			pd = party_search(idata->owner_id);
+			if (!pd || pd->party.party_id != sd->status.party_id)
+				continue;
+
+			ARR_FIND(0, MAX_PARTY, mi, pd->party.member[mi].leader);
+			if (mi == MAX_PARTY || pd->party.member[mi].char_id != sd->status.char_id)
+				continue;
+			break;
+		}
+		case IM_GUILD: {
+			gd = guild_search(idata->owner_id);
+			if (!gd || gd->guild_id != sd->status.guild_id || !sd->state.gmaster_flag)
+				continue;
+			break;
+		}
+		default:
+			continue;
+		}
+
+		if (!instance_db.find(idata->id)->destroyable) // Instance is flagged as non-destroyable
+			return;
+
+#ifndef Pandas_FuncDefine_Instance_Destory
+		instance_destroy(it->first);
+#else
+		if (instance_destroy(it->first, true))
+			it = instances.erase(it);
+#endif // Pandas_FuncDefine_Instance_Destory
+		return;
+	}
+}
+#endif // Pandas_FuncLogic_Instance_Destroy_Command
+
 /**
  * Removes an instance, all its maps, and NPCs.
  * @param instance_id: Instance to remove
@@ -862,7 +1015,7 @@ bool instance_destroy(int instance_id, bool skip_erase)
 	return true;
 }
 
-#ifdef Pandas_Quick_Implement_Dungeon_Command
+#ifdef Pandas_Fix_Dungeon_Command_Status_Refresh
 //************************************
 // Method:      instance_refresh_status
 // Description: 在不触碰 keep_limit 和 idle_limit 的情况下刷新副本状态
@@ -899,64 +1052,7 @@ void instance_refresh_status(int instance_id) {
 		return;
 	}
 }
-
-//************************************
-// Method:      instance_force_destroy
-// Description: 强制销毁当前玩家归属的副本 (前提时他有控制权)
-// Parameter:   struct map_session_data * sd
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2020/03/22 14:03
-//************************************
-void instance_force_destroy(struct map_session_data* sd) {
-	struct party_data* pd = NULL;
-	struct guild* gd = NULL;
-	struct instance_data* im = NULL;
-	int mi = 0;
-
-	nullpo_retv(sd);
-
-	for (auto it = instances.begin(); it != instances.end(); ) {
-		std::shared_ptr<s_instance_data> idata = it->second;
-
-		if (idata->owner_id == 0)
-			continue;
-
-		switch (idata->mode) {
-		case IM_CHAR: {
-			if (idata->owner_id != sd->status.char_id)
-				continue;
-			break;
-		}
-		case IM_PARTY: {
-			pd = party_search(idata->owner_id);
-			if (!pd || pd->party.party_id != sd->status.party_id)
-				continue;
-
-			ARR_FIND(0, MAX_PARTY, mi, pd->party.member[mi].leader);
-			if (mi == MAX_PARTY || pd->party.member[mi].char_id != sd->status.char_id)
-				continue;
-			break;
-		}
-		case IM_GUILD: {
-			gd = guild_search(idata->owner_id);
-			if (!gd || gd->guild_id != sd->status.guild_id || !sd->state.gmaster_flag)
-				continue;
-			break;
-		}
-		default:
-			continue;
-		}
-
-#ifndef Pandas_FuncDefine_Instance_Destory
-		instance_destroy(it->first);
-#else
-		if (instance_destroy(it->first, true))
-			it = instances.erase(it);
-#endif // Pandas_FuncDefine_Instance_Destory
-		return;
-	}
-}
-#endif // Pandas_Quick_Implement_Dungeon_Command
+#endif // Pandas_Fix_Dungeon_Command_Status_Refresh
 
 /**
  * Warp a user into an instance
@@ -1075,11 +1171,17 @@ bool instance_reqinfo(struct map_session_data *sd, int instance_id)
 		for (int i = 0; i < instance_wait.id.size(); i++) {
 			if (instance_wait.id[i] == instance_id) {
 				clif_instance_create(instance_id, i + 1);
+				sd->instance_mode = idata->mode;
 				break;
 			}
 		}
-	} else if(idata->state == INSTANCE_BUSY) // Give info on the instance if busy
-		clif_instance_status(instance_id, idata->keep_limit, idata->idle_limit);
+	} else if (idata->state == INSTANCE_BUSY) { // Give info on the instance if busy
+		int map_instance_id = map_getmapdata(sd->bl.m)->instance_id;
+		if (map_instance_id == 0 || map_instance_id == instance_id) {
+			clif_instance_status(instance_id, idata->keep_limit, idata->idle_limit);
+			sd->instance_mode = idata->mode;
+		}
+	}
 
 	return true;
 }
