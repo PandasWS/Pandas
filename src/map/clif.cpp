@@ -2930,6 +2930,30 @@ void clif_inventorylist( struct map_session_data *sd ){
 
 		// Non-stackable (Equippable)
 		if( !itemdb_isstackable2( sd->inventory_data[i] ) ){
+			
+#ifdef Pandas_Item_ControlViewID
+			// 龙王蛮蛮的部分时装图会导致其他玩家查看我装备的时候, 
+			// 切换到"时装"选项卡时客户端崩溃.
+			// 
+			// 为了解决这个问题, 这里增加一个配置选项, 
+			// 用于控制在别人查看我装备时可以屏蔽道具的外观编号
+			// 
+			// 这里处理的是: 
+			// 当"玩家自己"看自己装备栏时, 根据开关决定是否隐藏外观 [Sola丶小克]
+			if (sd->inventory_data[i]->look != 0) {
+				if (sd->inventory_data[i]->properties.noview_mask & ITEM_NOVIEW_WHEN_I_SEE) {
+					// 构建一个 item_data 但将它的 look 设置为 0
+					struct item_data id = { 0 };
+					memcpy(&id, sd->inventory_data[i], sizeof(struct item_data));
+					id.look = 0;
+					
+					// 用刚构建的 item_data 传递给 clif_item_equip 函数
+					clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->inventory.u.items_inventory[i], &id, pc_equippoint( sd, i ) );
+				}
+			}
+			else
+#endif // Pandas_Item_ControlViewID
+			
 			clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->inventory.u.items_inventory[i], sd->inventory_data[i], pc_equippoint( sd, i ) );
 
 			if( equip == MAX_INVENTORY_ITEM_PACKET_NORMAL ){
@@ -9760,6 +9784,21 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 			if( p && ( sd->guild || battle_config.display_party_name ) ){
 				safestrncpy( packet.party_name, p->party.name, NAME_LENGTH );
 			}
+			
+#ifdef Pandas_MapFlag_HidePartyInfo
+			// 若当前地图启用了 hidepartyinfo 标记
+			// 那么除了自己之外, 不再返回当前角色的所在队伍名称 [Sola丶小克]
+			// 
+			// 注意事项:
+			// ---------------------------------------------------------
+			// 在单独执行 clif_name_self 或 clif_name_area 时,
+			// 由于 src 和 bl 会完全一致, 所以此处代码将会失效, 目前测试看已经
+			// 能够覆盖主要场景, 未来如果出现问题的话需要再进行优化调整
+			// ---------------------------------------------------------
+			if (p && map_getmapflag(sd->bl.m, MF_HIDEPARTYINFO) && src->id != bl->id) {
+				safestrncpy( packet.party_name, "", NAME_LENGTH );
+			}
+#endif // Pandas_MapFlag_HidePartyInfo
 
 			if( sd->guild ){
 				int position;
@@ -9772,6 +9811,22 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 			}else if( sd->clan ){
 				safestrncpy( packet.position_name, sd->clan->name, NAME_LENGTH );
 			}
+			
+#ifdef Pandas_MapFlag_HideGuildInfo
+			// 若当前地图启用了 hideguildinfo 标记
+			// 那么除了自己之外, 不再返回角色的公会名称以及职位名称 [Sola丶小克]
+			// 
+			// 注意事项:
+			// ---------------------------------------------------------
+			// 在单独执行 clif_name_self 或 clif_name_area 时,
+			// 由于 src 和 bl 会完全一致, 所以此处代码将会失效, 目前测试看已经
+			// 能够覆盖主要场景, 未来如果出现问题的话需要再进行优化调整
+			// ---------------------------------------------------------
+			if (sd->guild && map_getmapflag(sd->bl.m, MF_HIDEGUILDINFO) && src->id != bl->id) {
+				safestrncpy( packet.guild_name, "", NAME_LENGTH );
+				safestrncpy( packet.position_name, "", NAME_LENGTH );
+			}
+#endif // Pandas_MapFlag_HideGuildInfo
 
 #if PACKETVER_MAIN_NUM >= 20150225 || PACKETVER_RE_NUM >= 20141126 || defined( PACKETVER_ZERO )
 			packet.title_id = sd->status.title_id; // Title ID
@@ -9835,6 +9890,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 
 				clif_send(&packet, sizeof(packet), src, target);
 			}else if( battle_config.show_mob_info ){
+#ifndef Pandas_MobInfomation_Extend
 				PACKET_ZC_ACK_REQNAMEALL packet = { 0 };
 
 				packet.packet_id = HEADER_ZC_ACK_REQNAMEALL;
@@ -9860,7 +9916,142 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 					*(str_p-3) = '\0'; //Remove trailing space + pipe.
 					safestrncpy( packet.party_name, mobhp, NAME_LENGTH );
 				}
+#else
+				PACKET_ZC_ACK_REQNAMEALL packet = { 0 };
 
+				packet.packet_id = HEADER_ZC_ACK_REQNAMEALL;
+				packet.gid = bl->id;
+				safestrncpy(packet.name, md->name, NAME_LENGTH);
+
+				int option = battle_config.show_mob_info;
+
+#ifdef Pandas_MapFlag_Mobinfo
+				if (md->bl.m >= 0 && map_getmapflag(md->bl.m, MF_MOBINFO)) {
+					option = map_getmapflag_param(md->bl.m, MF_MOBINFO, 0);
+				}
+#endif // Pandas_MapFlag_Mobinfo
+
+				// ========================================================
+				// 开始处理第一个数据栏位的内容
+				// 这个栏位的内容最终会被放到 packet.party_name 发送出去
+				// ========================================================
+
+				char mobhp[50], *str_p = mobhp;
+
+				if (option & 4) {
+					str_p += sprintf(str_p, "Lv. %d | ", md->level);
+				}
+
+				if (option & 1) {
+					str_p += sprintf(str_p, "HP: %u/%u | ", md->status.hp, md->status.max_hp);
+				}
+
+				if (option & 2) {
+					str_p += sprintf(str_p, "HP: %u%% | ", get_percentage(md->status.hp, md->status.max_hp));
+				}
+
+				if (option & 8) {
+					str_p += sprintf(str_p, "NO.%d | ", md->mob_id);
+				}
+
+				if (str_p != mobhp) {
+					// 如果经过上述操作内容有改变,
+					// 那么需要移除末尾的 strlen(" | ") 共 3 个字节
+					*(str_p - 3) = '\0';
+				}
+
+				if (strlen(mobhp) >= NAME_LENGTH - 1) {
+					// 若经过上面的操作, 如果发现文本的长度超过了 NAME_LENGTH - 1
+					// 那么我们需要做一些缩短处理, 尽可能保留信息量的同时缩短文本的总长度
+
+					// 先重置一下相关的缓冲区和指针
+					memset(mobhp, 0, sizeof(mobhp));
+					str_p = &mobhp[0];
+
+					// 开始重新进行一次拼装流程, 不过这次我们搞的更短一些
+					// 主要就是缩短字段之间 " | " 的分隔符, 变成用简单的空格来分隔
+					if (option & 4) {
+						str_p += sprintf(str_p, "Lv.%d ", md->level);
+					}
+
+					// 将 &1 的处理方式改成 &2 的百分比方式, 并将两个选项视为同一个选项
+					if (option & 1 || option & 2) {
+						str_p += sprintf(str_p, "HP:%u%% ", get_percentage(md->status.hp, md->status.max_hp));
+					}
+
+					if (option & 8) {
+						str_p += sprintf(str_p, "NO.%d ", md->mob_id);
+					}
+
+					if (str_p != mobhp) {
+						// 如果经过上述操作内容有改变,
+						// 那么需要移除末尾的 strlen(" ") 共 3 个字节
+						*(str_p - 1) = '\0';
+					}
+				}
+
+				// ========================================================
+				// 开始处理第二个数据栏位的内容
+				// 这个栏位的内容最终会被放到 packet.guild_name 发送出去
+				// ========================================================
+
+				char mobhp2[50], *str_p2 = mobhp2;
+
+				if (option & 16) {
+					char mobsize_fmt[100] = { 0 };
+					sprintf(mobsize_fmt, "%s", msg_txt_cn(NULL, 22));	// [体型:%s%]
+
+					char mobsize[50] = { 0 };
+					sprintf(mobsize, "%s", msg_txt_cn(NULL, 23 + md->status.size));
+
+					str_p2 += sprintf(str_p2, mobsize_fmt, mobsize);
+				}
+
+				if (option & 32) {
+					char mobrace_fmt[100] = { 0 };
+					sprintf(mobrace_fmt, "%s", msg_txt_cn(NULL, 26));	// [种族:%s%]
+
+					char mobrace[50] = { 0 };
+					sprintf(mobrace, "%s", msg_txt_cn(NULL, 27 + md->status.race));
+
+					if (option & 16) {
+						str_p2 += sprintf(str_p2, "%s ", str_p2);
+					}
+
+					str_p2 += sprintf(str_p2, mobrace_fmt, mobrace);
+				}
+
+				// ========================================================
+				// 开始处理第三个数据栏位的内容
+				// 这个栏位的内容最终会被放到 packet.position_name 发送出去
+				// ========================================================
+
+				char mobhp3[50], *str_p3 = mobhp3;
+
+				if (option & 64) {
+					char mobele_fmt[100] = { 0 };
+					sprintf(mobele_fmt, "%s", msg_txt_cn(NULL, 51));	// 属性:%s%(Lv.%d%)
+
+					char mobele[50] = { 0 };
+					sprintf(mobele, "%s", msg_txt_cn(NULL, 52 + md->status.def_ele));
+
+					str_p3 += sprintf(str_p3, mobele_fmt, mobele, md->status.ele_lv);
+				}
+
+				// ========================================================
+				// 准备发送拼装完毕的 mobinfo 数据 (若没改动就不赋值了)
+				// ========================================================
+
+				if (str_p != mobhp)
+					safestrncpy(packet.party_name, mobhp, NAME_LENGTH);
+
+				if (str_p2 != mobhp2)
+					safestrncpy(packet.guild_name, mobhp2, NAME_LENGTH);
+
+				if (str_p3 != mobhp3)
+					safestrncpy(packet.position_name, mobhp3, NAME_LENGTH);
+
+#endif // Pandas_MobInfomation_Extend
 				clif_send(&packet, sizeof(packet), src, target);
 			} else {
 				PACKET_ZC_ACK_REQNAME_TITLE packet = { 0 };
@@ -10155,6 +10346,31 @@ void clif_viewequip_ack( struct map_session_data* sd, struct map_session_data* t
 			if( !itemdb_isequip2( tsd->inventory_data[k] ) ){ // Is not equippable
 				continue;
 			}
+
+#ifdef Pandas_Item_ControlViewID
+			// 龙王蛮蛮的部分时装图会导致其他玩家查看我装备的时候, 
+			// 切换到"时装"选项卡时客户端崩溃.
+			// 
+			// 为了解决这个问题, 这里增加一个配置选项, 
+			// 用于控制在别人查看我装备时可以屏蔽道具的外观编号
+			// 
+			// 这里处理的是: 
+			// 当"其他玩家"看自己装备栏时, 根据开关决定是否隐藏外观 [Sola丶小克]
+			if (tsd->inventory_data[k]->look != 0) {
+				if (tsd->inventory_data[k]->properties.noview_mask & ITEM_NOVIEW_WHEN_T_SEE) {
+					// 构建一个 item_data 但将它的 look 设置为 0
+					struct item_data id = { 0 };
+					memcpy(&id, tsd->inventory_data[k], sizeof(struct item_data));
+					id.look = 0;
+					
+					// 用刚构建的 item_data 传递给 clif_item_equip 函数
+					clif_item_equip( client_index( k ), &packet.list[equip++], &tsd->inventory.u.items_inventory[k], &id, pc_equippoint( tsd, k ) );
+					
+					// 搞定了就直接进入下一个循环了
+					continue;
+				}
+			}
+#endif // Pandas_Item_ControlViewID
 
 			clif_item_equip( client_index( k ), &packet.list[equip++], &tsd->inventory.u.items_inventory[k], tsd->inventory_data[k], pc_equippoint( tsd, k ) );
 		}

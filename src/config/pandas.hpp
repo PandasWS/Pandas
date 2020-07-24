@@ -811,7 +811,10 @@
 #ifdef Pandas_Mapflags
 	// 是否启用 mobinfo 地图标记 [Sola丶小克]
 	// 该标记用于指定某地图的 show_mob_info 值, 以此控制该地图魔物名称的展现信息
-	#define Pandas_MapFlag_Mobinfo
+	// 此地图标记依赖 Pandas_MobInfomation_Extend 的拓展
+	#ifdef Pandas_MobInfomation_Extend
+		#define Pandas_MapFlag_Mobinfo
+	#endif // Pandas_MobInfomation_Extend
 
 	// 是否启用 noautoloot 地图标记 [Sola丶小克]
 	// 该标记用于在给定此标记的地图上禁止玩家使用自动拾取功能, 或使已激活的自动拾取功能失效
