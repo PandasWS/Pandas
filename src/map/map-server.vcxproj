@@ -105,6 +105,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4018</DisableSpecificWarnings>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4018;4200</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -205,6 +207,8 @@
     <ClInclude Include="mob.hpp" />
     <ClInclude Include="mobdrop.hpp" />
     <ClInclude Include="npc.hpp" />
+    <ClInclude Include="packets.hpp" />
+    <ClInclude Include="packets_struct.hpp" />
     <ClInclude Include="party.hpp" />
     <ClInclude Include="path.hpp" />
     <ClInclude Include="pc.hpp" />

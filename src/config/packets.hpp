@@ -24,6 +24,23 @@
 	#endif
 #endif
 
+#ifndef PACKETVER_RE
+	#define PACKETVER_MAIN_NUM PACKETVER
+
+	// Undefine all sakray server definitions
+	#undef PACKETVER_RE
+	#undef PACKETVER_RE_NUM
+#else
+	// Undefine existing definition
+	#undef PACKETVER_RE
+
+	#define PACKETVER_RE PACKETVER
+	#define PACKETVER_RE_NUM PACKETVER
+
+	// Undefine all main server definitions
+	#undef PACKETVER_MAIN_NUM
+#endif
+
 #if PACKETVER >= 20110817
 	/// Comment to disable the official packet obfuscation support.
 	/// This requires PACKETVER 2011-08-17 or newer.

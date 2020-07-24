@@ -934,6 +934,9 @@
 	export_constant2("bNoWalkDelay",SP_NO_WALK_DELAY);
 	export_constant2("bLongSPGainValue",SP_LONG_SP_GAIN_VALUE);
 	export_constant2("bLongHPGainValue",SP_LONG_HP_GAIN_VALUE);
+	export_constant2("bMagicSubSize",SP_MAGIC_SUBSIZE);
+	export_constant2("bCritDefRate",SP_CRIT_DEF_RATE);
+
 
 #ifdef Pandas_ScriptParams_ReadParam
 	export_constant2("bAllStr", SP_STR_ALL);
@@ -1776,6 +1779,7 @@
 	export_constant(SC_SOUNDOFDESTRUCTION);
 	export_constant(SC_LUXANIMA);
 	export_constant(SC_REUSE_LIMIT_LUXANIMA);
+	export_constant(SC_ENSEMBLEFATIGUE);
 #ifdef RENEWAL
 	export_constant(SC_EXTREMITYFIST2);
 #endif
@@ -3759,7 +3763,9 @@
 	export_constant(RC_DEMIHUMAN);
 	export_constant(RC_ANGEL);
 	export_constant(RC_DRAGON);
-	export_constant(RC_PLAYER);
+	export_constant(RC_PLAYER_HUMAN);
+	export_constant(RC_PLAYER_DORAM);
+	export_deprecated_constant3("RC_PLAYER", RC_PLAYER_HUMAN, "RC_PLAYER_HUMAN");
 	export_constant(RC_ALL);
 
 	export_constant(RC2_NONE);
@@ -4331,6 +4337,7 @@
 	export_constant(UMOB_TARGETID);
 	export_constant(UMOB_ROBE);
 	export_constant(UMOB_BODY2);
+	export_constant(UMOB_GROUP_ID);
 
 	/* unit control - homunculus */
 	export_constant(UHOM_SIZE);
@@ -4373,6 +4380,7 @@
 	export_constant(UHOM_ADELAY);
 	export_constant(UHOM_DMOTION);
 	export_constant(UHOM_TARGETID);
+	export_constant(UHOM_GROUP_ID);
 
 	/* unit control - pet */
 	export_constant(UPET_SIZE);
@@ -4412,6 +4420,7 @@
 	export_constant(UPET_AMOTION);
 	export_constant(UPET_ADELAY);
 	export_constant(UPET_DMOTION);
+	export_constant(UPET_GROUP_ID);
 
 	/* unit control - mercenary */
 	export_constant(UMER_SIZE);
@@ -4451,6 +4460,7 @@
 	export_constant(UMER_ADELAY);
 	export_constant(UMER_DMOTION);
 	export_constant(UMER_TARGETID);
+	export_constant(UMER_GROUP_ID);
 
 	/* unit control - elemental */
 	export_constant(UELE_SIZE);
@@ -4492,6 +4502,7 @@
 	export_constant(UELE_ADELAY);
 	export_constant(UELE_DMOTION);
 	export_constant(UELE_TARGETID);
+	export_constant(UELE_GROUP_ID);
 
 	/* unit control - NPC */
 	export_deprecated_constant3("UNPC_DISPLAY", UNPC_CLASS, "UNPC_CLASS");
@@ -4540,6 +4551,7 @@
 	export_constant(UNPC_ROBE);
 	export_constant(UNPC_BODY2);
 	export_constant(UNPC_DEADSIT);
+	export_constant(UNPC_GROUP_ID);
 
 	export_constant(NAV_NONE);
 	export_constant(NAV_AIRSHIP_ONLY);
@@ -5171,6 +5183,17 @@
 	export_constant(IG_PRIZEOFHERO);
 	export_constant(IG_PRIVATE_AIRSHIP);
 	export_constant(IG_TOKEN_OF_SIEGFRIED);
+	export_constant(IG_ENCHANT_STONE_BOX5);
+	export_constant(IG_ENCHANT_STONE_BOX6);
+	export_constant(IG_ENCHANT_STONE_BOX7);
+	export_constant(IG_ENCHANT_STONE_BOX8);
+	export_constant(IG_ENCHANT_STONE_BOX9);
+	export_constant(IG_ENCHANT_STONE_BOX10);
+	export_constant(IG_ENCHANT_STONE_BOX11);
+	export_constant(IG_ENCHANT_STONE_BOX12);
+	export_constant(IG_ENCHANT_STONE_BOX13);
+	export_constant(IG_ENCHANT_STONE_BOX14);
+	export_constant(IG_ENCHANT_STONE_BOX15);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);
@@ -6285,6 +6308,17 @@
 	export_constant_npc(JT_4_EP17_MERMAID);
 	export_constant_npc(JT_4_JP_AB_NPC_009);
 	export_constant_npc(JT_4_JP_AB_NPC_010);
+	export_constant_npc(JT_4_4JOB_SILLA);
+	export_constant_npc(JT_4_4JOB_MAGGI);
+	export_constant_npc(JT_4_4JOB_ROBIN);
+	export_constant_npc(JT_4_4JOB_ROBIN_DRUNK);
+	export_constant_npc(JT_4_4JOB_LETICIA);
+	export_constant_npc(JT_4_4JOB_SERANG);
+	export_constant_npc(JT_4_4JOB_EINHAR);
+	export_constant_npc(JT_4_4JOB_SEALSTONE);
+	export_constant_npc(JT_4_4JOB_PHANTOMBOOK1);
+	export_constant_npc(JT_4_4JOB_PHANTOMBOOK2);
+	export_constant_npc(JT_4_4JOB_PHANTOMBOOK3);
 	export_constant_npc(JT_NEW_NPC_3RD_END);
 	#undef export_constant_npc
 
@@ -7717,6 +7751,7 @@
 	export_constant(INF2_IGNOREWUGBITE);
 	export_constant(INF2_IGNOREAUTOGUARD);
 	export_constant(INF2_IGNORECICADA);
+	export_constant(INF2_SHOWSCALE);
 
 	/* skill no near npc flags */
 	export_constant(SKILL_NONEAR_WARPPORTAL);

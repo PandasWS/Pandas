@@ -359,8 +359,8 @@ int party_recv_info(struct party* sp, uint32 char_id)
 		}
 		clif_party_info(p,NULL);
 
-		if( p->instance_id != 0 )
-			instance_reqinfo(sd,p->instance_id);
+		if (p->instance_id > 0)
+			instance_reqinfo(sd, p->instance_id);
 	}
 	
 	// If a player was renamed, make sure to resend the party information
@@ -504,8 +504,8 @@ void party_member_joined(struct map_session_data *sd)
 	if (i < MAX_PARTY) {
 		p->data[i].sd = sd;
 
-		if( p->instance_id )
-			instance_reqinfo(sd,p->instance_id);
+		if (p->instance_id > 0)
+			instance_reqinfo(sd, p->instance_id);
 	} else
 		sd->status.party_id = 0; //He does not belongs to the party really?
 }
@@ -562,8 +562,8 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 	clif_party_xy(sd);
 	clif_name_area(&sd->bl); //Update char name's display [Skotlex]
 
-	if( p->instance_id )
-		instance_reqinfo(sd,p->instance_id);
+	if (p->instance_id > 0)
+		instance_reqinfo(sd, p->instance_id);
 
 	return 0;
 }
@@ -840,11 +840,11 @@ int party_changeleader(struct map_session_data *sd, struct map_session_data *tsd
 	intif_party_leaderchange(p->party.party_id,p->party.member[tmi].account_id,p->party.member[tmi].char_id);
 	clif_party_info(p,NULL);
 
-#ifdef Pandas_Quick_Implement_Dungeon_Command
+#ifdef Pandas_Fix_Dungeon_Command_Status_Refresh
 	// 成功更换队长后, 需要刷新一下副本的状态信息
 	// 否则队长无法获取正确的, 携带 "销毁副本" 按钮的面板信息
 	instance_refresh_status(p->instance_id);
-#endif // Pandas_Quick_Implement_Dungeon_Command
+#endif // Pandas_Fix_Dungeon_Command_Status_Refresh
 
 	return 1;
 }
