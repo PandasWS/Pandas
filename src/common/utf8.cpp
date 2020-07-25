@@ -233,7 +233,7 @@ std::string PandasUtf8::iconvConvert(const std::string& val, const std::string& 
 	char* strOutput = nullptr, * pStrOutput = nullptr;
 
 	if ((c_pt = iconv_open(to_charset.c_str(), from_charset.c_str())) == (iconv_t)-1) {
-		ShowFatalError("%s: %s was failed (%s -> %s): %s\n", __func__, "iconv_open", from_charset.c_str(), to_charset.c_str(),strerror(errno));
+		printf("%s: %s was failed (%s -> %s): %s\n", __func__, "iconv_open", from_charset.c_str(), to_charset.c_str(),strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
@@ -249,8 +249,8 @@ std::string PandasUtf8::iconvConvert(const std::string& val, const std::string& 
 	pStrOutput = strOutput;
 
 	if (iconv(c_pt, (char**)&pStrInput, &strInputLen, (char**)&pStrOutput, &strOutputLen) == (size_t)-1) {
-		ShowFatalError("%s: %s was failed (%s -> %s): %s\n", __func__, "iconv", from_charset.c_str(), to_charset.c_str(), strerror(errno));
-		ShowFatalError("%s: the param value: %s", __func__, strInput);
+		printf("%s: %s was failed (%s -> %s): %s\n", __func__, "iconv", from_charset.c_str(), to_charset.c_str(), strerror(errno));
+		printf("%s: the param value: %s", __func__, strInput);
 		exit(EXIT_FAILURE);
 	}
 
@@ -318,7 +318,7 @@ int PandasUtf8::vfprintf(FILE* file, const char* fmt, va_list args) {
 		StringBuf_Vprintf(sbuf, fmt, args);
 		strBuf = std::string(StringBuf_Value(sbuf));
 		StringBuf_Free(sbuf);
-		ShowDebug("%s: dynamic buffer used, increase the static buffer size to %d or more.\n", __func__, len + 1);
+		printf("%s: dynamic buffer used, increase the static buffer size to %d or more.\n", __func__, len + 1);
 	}
 
 	va_end(apcopy);
