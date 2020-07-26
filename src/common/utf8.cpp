@@ -239,6 +239,7 @@ std::string PandasUtf8::iconvConvert(const std::string& val, const std::string& 
 
 	size_t strInputLen = val.size();
 	strInput = new char[strInputLen + 1];
+	memset(strInput, 0, strInputLen + 1);
 	memcpy(strInput, val.c_str(), strInputLen);
 	pStrInput = strInput;
 
