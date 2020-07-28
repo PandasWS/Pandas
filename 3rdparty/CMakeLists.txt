@@ -102,7 +102,7 @@ include(CPM)
 CPMAddPackage(
 	NAME opencc
 	OPTIONS		"BUILD_SHARED_LIBS OFF"
-	SOURCE_DIR	"${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/opencc"
+	SOURCE_DIR	"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/3rdparty/opencc"
 )
 
 # 若 opencc 引入成功, 则进行一系列的额外配置操作
