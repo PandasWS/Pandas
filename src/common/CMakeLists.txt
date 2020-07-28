@@ -255,6 +255,7 @@ if( WITH_ZLIB )
 		${LIBCONFIG_INCLUDE_DIRS}
 		${YAML_INCLUDE_DIRS}
 		${BREAKPAD_INCLUDE_DIRS}
+		${opencc_INCLUDE_DIRS}
 		CACHE INTERNAL "common_base include dirs"
 	)
 
@@ -263,8 +264,8 @@ if( WITH_ZLIB )
 		CACHE INTERNAL "common_base definitions"
 	)
 
-	# 设置依赖项目, 这里设置了依赖 yaml-cpp breakpad cryptopp-static 这三个项目
-	set( DEPENDENCIES breakpad yaml-cpp cryptopp-static )
+	# 设置依赖项目, 这里设置了依赖 yaml-cpp breakpad cryptopp-static libopencc 这几个项目
+	set( DEPENDENCIES breakpad yaml-cpp cryptopp-static libopencc )
 
 	# 设置依赖的库文件
 	# 包括 GLOBAL_LIBRARIES, ZLIB_LIBRARIES, 包括依赖项目的库文件
@@ -288,8 +289,8 @@ if( WITH_ZLIB )
 	# 以下进行真正的设置操作
 	# =========================================================
 
-	# 使用 SOURCE_FILES 的源代码文件, 生成一个名为 common_base 的 library 目标
-	add_library( common_base ${SOURCE_FILES} )
+	# 使用 SOURCE_FILES 的源代码文件, 生成一个名为 common_base 的静态库目标
+	add_library( common_base STATIC ${SOURCE_FILES} )
 	#message( STATUS "common_base LIBRARIES=${LIBRARIES}, DEFINITIONS=${DEFINITIONS}")
 
 	# 设置此项目依赖 DEPENDENCIES 变量中其他的顶级项目, 确保他们先被编译
@@ -374,8 +375,8 @@ if( HAVE_common_base AND WITH_MYSQL )
 	# 以下进行真正的设置操作
 	# =========================================================
 
-	# 使用 SOURCE_FILES 的源代码文件, 生成一个名为 common 的 library 目标
-	add_library( common ${SOURCE_FILES} )
+	# 使用 SOURCE_FILES 的源代码文件, 生成一个名为 common 的静态库目标
+	add_library( common STATIC ${SOURCE_FILES} )
 	#message( STATUS "common LIBRARIES=${LIBRARIES}, DEPENDENCIES=${DEPENDENCIES} DEFINITIONS=${DEFINITIONS}")
 
 	# 设置此项目依赖 DEPENDENCIES 变量中其他的顶级项目, 确保他们先被编译
