@@ -1,6 +1,26 @@
+# Setting the program language to C++
 language: cpp
-dist: trusty
+
+# Use the Ubuntu 18.04 - bionic
+# https://docs.travis-ci.com/user/reference/bionic/
+dist: bionic
+
+# Use ccache to speed ​​up the compilation process 
 cache: ccache
+
+# We need use the Mysql services (5.7.30), so make it available
+services:
+  - mysql
+
+# Specifying Python 3.6 for our scripts
+# Currently, our continuous inheritance does not involve python scripts, 
+# but we do not rule out that we will need them in the future. Set it up first.
+python:
+  - "3.6"
+
+# We don't need the repository history
+git:
+  depth: 1
 
 jobs:
   include:
@@ -48,6 +68,17 @@ jobs:
       env:
          - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON"
+# GCC Version 9
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-9
+      env:
+         - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
+         - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON"
 # Clang Version 3.9
     - os: linux
       addons:
@@ -74,12 +105,19 @@ jobs:
     - os: linux
       addons:
         apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
           packages:
             - clang-5.0
       env:
          - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+         - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON"
+# Clang Version 6.0
+    - os: linux
+      addons:
+        apt:
+          packages:
+            - clang-6.0
+      env:
+         - MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON"
 # GCC Version 5 with PreRenewal
     - os: linux
@@ -125,6 +163,17 @@ jobs:
       env:
          - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON"
+# GCC Version 9 with PreRenewal
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-9
+      env:
+         - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
+         - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON"
 # Clang Version 3.9 with PreRenewal
     - os: linux
       addons:
@@ -151,18 +200,45 @@ jobs:
     - os: linux
       addons:
         apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
           packages:
             - clang-5.0
       env:
          - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
          - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON"
+# Clang Version 6.0 with PreRenewal
+    - os: linux
+      addons:
+        apt:
+          packages:
+            - clang-6.0
+      env:
+         - MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
+         - CONFIGURE_FLAGS="-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON"
 
 before_install:
-    - eval "${MATRIX_EVAL}"
-    - cd 3rdparty/boost && ./bootstrap.sh && ./b2
-    - cd $TRAVIS_BUILD_DIR
+  - eval "${MATRIX_EVAL}"
+
+install:
+  ############################################################################
+  # All the dependencies are installed in ${HOME}/deps/
+  ############################################################################
+  - DEPS_DIR="${HOME}/deps"
+  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+
+  ############################################################################
+  # Install a recent CMake
+  ############################################################################
+  - CMAKE_URL="https://cmake.org/files/v3.18/cmake-3.18.0-Linux-x86_64.tar.gz"
+  - mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+  - export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+  - cmake --version
+
+  ############################################################################
+  # Build Boost C++ Libraries from 3rdparty
+  ############################################################################
+  - cd $TRAVIS_BUILD_DIR
+  - cd 3rdparty/boost && ./bootstrap.sh && ./b2
+  - cd $TRAVIS_BUILD_DIR
 
 before_script:
   - uname -a
