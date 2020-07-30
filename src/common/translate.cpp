@@ -29,8 +29,8 @@ const std::string TranslateDB::getDefaultLocation() {
 	std::string postfix;
 
 	switch (PandasUtf8::systemLanguage) {
-	case SYSTEM_LANGUAGE_CHS: postfix = "cn"; break;
-	case SYSTEM_LANGUAGE_CHT: postfix = "tw"; break;
+	case PandasUtf8::SYSTEM_LANGUAGE_CHS: postfix = "cn"; break;
+	case PandasUtf8::SYSTEM_LANGUAGE_CHT: postfix = "tw"; break;
 	}
 
 	if (postfix.empty()) return "";
