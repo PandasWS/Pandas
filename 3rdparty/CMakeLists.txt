@@ -135,3 +135,22 @@ if(opencc_ADDED)
 		COMMAND cp -f "${opencc_BINARY_DIR}/data/TS*.ocd2" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/dicts"
 	)
 endif()
+
+#
+# 使用 CPM 模块引入 uchardet 第三方库
+#
+
+CPMAddPackage(
+	NAME uchardet
+	OPTIONS		"BUILD_BINARY OFF"
+	SOURCE_DIR	"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/3rdparty/uchardet"
+)
+
+# 若 uchardet 引入成功, 则进行一系列的额外配置操作
+if(uchardet_ADDED)
+	# 确保 ${uchardet_SOURCE_DIR}/src 目录中存在 uchardet.h 文件, 
+	# 将目录的路径保存到 uchardet_INCLUDE_DIRS 变量中 (声明为 REQUIRED 如果失败则终止)
+	# 后面 common 等项目构建的时候需要将 uchardet_INCLUDE_DIRS 设为包含目录的一部分
+	find_path( uchardet_INCLUDE_DIRS "uchardet.h" PATHS "${uchardet_SOURCE_DIR}/src" NO_DEFAULT_PATH REQUIRED )
+	# message( STATUS "uchardet_INCLUDE_DIRS = ${uchardet_INCLUDE_DIRS}")
+endif()

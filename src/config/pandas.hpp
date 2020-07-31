@@ -415,8 +415,14 @@
 
 	#ifndef _WIN32
 		// 在 Linux 环境下输出信息时, 能转换成终端自适应编码 [Sola丶小克]
-		// 目前能够比较好的自适应 UTF-8, GBK, BIG5 编码
-		// #define Pandas_Console_Charset_SmartConvert
+		//
+		// 注意: 当前仅支持终端编码为 utf8 时的转化, 请确保 locale 指令返回的语言选项中符合
+		// 右侧的任何一种: POSIX 或 C.utf8 或 zh_CN.utf8 或 zh_TW.utf8
+		// 可以通过 export LANG="zh_TW.utf8" 这样的方式来临时切换编码进行测试
+		// 
+		// 使用 locale -a 可以观察本机可以启用的编码, 如若类似 zh_CN.utf8 等选项不在返回值中,
+		// 那么说明你的系统没有安装中文语言包, 不同的 Linux 发行版安装中文语言包的方法各有不同, 请上网查阅
+		#define Pandas_Console_Charset_SmartConvert
 	#endif // _WIN32
 
 	// 建立 MySQL 连接的时候主动禁止 SSL 模式 [Sola丶小克]

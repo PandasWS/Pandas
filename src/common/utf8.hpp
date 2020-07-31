@@ -67,7 +67,7 @@ std::string getDefaultCodepage();
 	std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage);
 	std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage);
 #else
-	std::string iconvConvert(const std::string& val, const std::string& from_charset, const std::string& to_charset);
+	std::string iconvConvert(const std::string& val, const std::string& in_enc, const std::string& out_enc);
 	std::string consoleConvert(const std::string& mes);
 	int vfprintf(FILE* file, const char* fmt, va_list args);
 #endif // _WIN32

@@ -12,13 +12,14 @@
 #ifdef _WIN32
 	#include <windows.h>
 #else
-	#include <iconv.h>
 	#include <errno.h>
 	#include <string.h>
 
 	#include <stdio.h>
 	#include <locale.h>
 	#include <langinfo.h>
+
+	#include "../common/iconv.hpp"
 #endif // _WIN32
 
 #include <unordered_map>
@@ -224,44 +225,17 @@ std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage
 // Method:      iconvConvert
 // Description: 在 Linux 平台上使用 iconv 库进行字符编码转换
 // Parameter:   const std::string & val
-// Parameter:   const std::string & from_charset
-// Parameter:   const std::string to_charset
+// Parameter:   const std::string & in_enc
+// Parameter:   const std::string out_enc
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/02/02 23:42
 //************************************
-std::string iconvConvert(const std::string& val, const std::string& from_charset, const std::string& to_charset) {
-	iconv_t c_pt = nullptr;
-	char* strInput = nullptr, * pStrInput = nullptr;
-	char* strOutput = nullptr, * pStrOutput = nullptr;
-
-	if ((c_pt = iconv_open(to_charset.c_str(), from_charset.c_str())) == (iconv_t)-1) {
-		printf("%s: %s was failed (%s -> %s): %s\n", __func__, "iconv_open", from_charset.c_str(), to_charset.c_str(),strerror(errno));
-		return val;
-	}
-
-	size_t strInputLen = val.size();
-	strInput = new char[strInputLen + 1];
-	memset(strInput, 0, strInputLen + 1);
-	memcpy(strInput, val.c_str(), strInputLen);
-	pStrInput = strInput;
-
-	// 设置目标缓冲区的长度等于来源缓冲区长度的 3 倍 (实现方式有点蠢, 但没找到更好的方法)
-	size_t strOutputLen = (strInputLen + 1) * 3;
-	strOutput = new char[strOutputLen];
-	memset(strOutput, 0, strOutputLen);
-	pStrOutput = strOutput;
-
-	if (iconv(c_pt, (char**)&pStrInput, &strInputLen, (char**)&pStrOutput, &strOutputLen) == (size_t)-1) {
-		printf("%s: %s failed (%s -> %s): %s\n", __func__, "iconv", from_charset.c_str(), to_charset.c_str(), strerror(errno));
-		printf("%s: input value: %s\n", __func__, strInput);
-		return val;
-	}
-
-	std::string strResult(strOutput);
-	iconv_close(c_pt);
-	delete[] strOutput;
-	delete[] strInput;
-	return strResult;
+std::string iconvConvert(const std::string& val, const std::string& in_enc, const std::string& out_enc) {
+	if (in_enc == out_enc) return val;
+	iconvpp::converter conv(out_enc, in_enc, true);
+	std::string result;
+	conv.convert(val, result);
+	return result;
 }
 
 //************************************
@@ -278,22 +252,21 @@ std::string consoleConvert(const std::string& mes) {
 	return mes;
 #endif // BUILDBOT
 
-	std::string _from, _to;
+	// 在 Linux 环境下我们目前只接受终端编码为 UTF8 的情况
+	// 如果当前的终端编码不为 UTF8 则停止进行任何转换的具体工作, 维持英文状态
+	if (PandasUtf8::consoleEncoding != CONSOLE_ENCODING_UTF8) {
+		return mes;
+	}
+
+	std::string _from;
 
 	switch (PandasUtf8::systemLanguage) {
-	case SYSTEM_LANGUAGE_CHT: _from = "BIG5"; break;
-	case SYSTEM_LANGUAGE_CHS: _from = "GBK"; break;
-	default: _from = PandasUtf8::getDefaultCodepage(); break;
+		case SYSTEM_LANGUAGE_CHT: _from = "BIG5"; break;
+		case SYSTEM_LANGUAGE_CHS: _from = "GBK"; break;
+		default: return mes; break;
 	}
 
-	switch (PandasUtf8::consoleEncoding) {
-	case CONSOLE_ENCODING_UTF8: _to = "UTF-8"; break;
-	case CONSOLE_ENCODING_GBK: _to = "GBK"; break;
-	case CONSOLE_ENCODING_BIG5: _to = "BIG5"; break;
-	}
-
-	if (_from.empty() || _to.empty()) return mes;
-	return PandasUtf8::iconvConvert(mes, _from, _to);
+	return PandasUtf8::iconvConvert(mes, _from, "UTF-8");
 }
 
 //************************************
