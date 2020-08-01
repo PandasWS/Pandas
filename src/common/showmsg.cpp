@@ -216,12 +216,6 @@ int	VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 	// Print everything to the buffer
 	BUFVPRINTF(tempbuf,fmt,argptr);
 
-#ifdef Pandas_Console_Charset_SmartConvert
-	std::string strBuf(BUFVAL(tempbuf));
-	strBuf = PandasUtf8::consoleConvert(strBuf);
-	BUFVAL(tempbuf) = (char*)strBuf.c_str();
-#endif // Pandas_Console_Charset_SmartConvert
-
 	if( !is_console(handle) && stdout_with_ansisequence )
 	{
 		WriteFile(handle, BUFVAL(tempbuf), BUFLEN(tempbuf), &written, 0);
@@ -562,12 +556,6 @@ int	VFPRINTF(FILE *file, const char *fmt, va_list argptr)
 
 	// Print everything to the buffer
 	BUFVPRINTF(tempbuf,fmt,argptr);
-
-#ifdef Pandas_Console_Charset_SmartConvert
-	std::string strBuf(BUFVAL(tempbuf));
-	strBuf = PandasUtf8::consoleConvert(strBuf);
-	BUFVAL(tempbuf) = (char*)strBuf.c_str();
-#endif // Pandas_Console_Charset_SmartConvert
 
 	// start with processing
 	p = BUFVAL(tempbuf);

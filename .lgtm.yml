@@ -3,6 +3,12 @@ queries:
 extraction:
   cpp:
     after_prepare:
+      - cd $LGTM_WORKSPACE
+      - mkdir cmake_builed
+      - CMAKE_URL="https://cmake.org/files/v3.18/cmake-3.18.0-Linux-x86_64.tar.gz"
+      - wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake_builed
+      - export PATH=$(pwd)/cmake_builed/bin:${PATH}
+      - cd $LGTM_SRC
       - cd 3rdparty/boost && ./bootstrap.sh && ./b2
   python:
     python_setup: 

@@ -30,7 +30,7 @@ YAML::Node YamlDatabase::LoadFile(const std::string& filename) {
 	}
 
 	// 若不是 UTF8-BOM 编码则走原来的流程
-	if (PandasUtf8::fmode(fin) != FILE_CHARSETMODE_UTF8_BOM) {
+	if (PandasUtf8::fmode(fin) != PandasUtf8::FILE_CHARSETMODE_UTF8_BOM) {
 		return YAML::Load(fin);
 	}
 

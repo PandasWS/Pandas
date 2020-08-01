@@ -272,8 +272,8 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 			// 为了兼容性考虑, 会根据操作系统语言来选择使用 gbk 或 big5 编码,
 			// 若不是简体中文也不是繁体中文, 则直接使用当前数据库的 `character_set_database` 编码
 			switch (PandasUtf8::systemLanguage) {
-			case SYSTEM_LANGUAGE_CHS: encoding = "gbk"; break;
-			case SYSTEM_LANGUAGE_CHT: encoding = "big5"; break;
+			case PandasUtf8::SYSTEM_LANGUAGE_CHS: encoding = "gbk"; break;
+			case PandasUtf8::SYSTEM_LANGUAGE_CHT: encoding = "big5"; break;
 			default: encoding = current_codepage; break;
 			}
 

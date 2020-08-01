@@ -12,25 +12,28 @@
 #ifdef _WIN32
 	#include <windows.h>
 #else
-	#include <iconv.h>
 	#include <errno.h>
 	#include <string.h>
 
 	#include <stdio.h>
 	#include <locale.h>
 	#include <langinfo.h>
+
+	#include "../common/iconv.hpp"
 #endif // _WIN32
 
 #include <unordered_map>
 
+namespace PandasUtf8 {
+
 // 当无法通过 PandasUtf8::systemLanguage 获得契合的字符编码时
-// 将会使用这里定义的默认编码 (主要是在 Linux 平台上使用的比较多一些)
+// 将会使用这里定义的默认编码 (主要是在 Linux 平台上使用)
 #define DEFAULT_ENCODING "GBK"
 
-enum e_console_encoding PandasUtf8::consoleEncoding =
-	PandasUtf8::getConsoleEncoding();
-enum e_system_language PandasUtf8::systemLanguage =
-	PandasUtf8::getSystemLanguage();
+// 设定两个全局变量用于保存系统的语言和控制台的编码
+// 这两个东西通常程序启动后就不会再发生任何变化, 为了避免频繁检测, 缓存起来比较值得
+enum e_console_encoding consoleEncoding = getConsoleEncoding();
+enum e_system_language systemLanguage = getSystemLanguage();
 
 // 用于保存 FILE 指针和文件编码模式的缓存
 std::unordered_map<FILE*, e_file_charsetmode> __fpmodecache;
@@ -47,7 +50,7 @@ std::unordered_map<FILE*, e_file_charsetmode> __fpmodecache;
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/02/16 01:22
 //************************************
-void PandasUtf8::setModeMapping(FILE* _fp, e_file_charsetmode _mode) {
+void setModeMapping(FILE* _fp, e_file_charsetmode _mode) {
 	auto it = __fpmodecache.find(_fp);
 	if (it != __fpmodecache.end()) {
 		it->second = _mode;
@@ -63,7 +66,7 @@ void PandasUtf8::setModeMapping(FILE* _fp, e_file_charsetmode _mode) {
 // Returns:     e_file_charsetmode
 // Author:      Sola丶小克(CairoLee)  2020/02/16 01:23
 //************************************
-e_file_charsetmode PandasUtf8::getModeMapping(FILE* _fp) {
+e_file_charsetmode getModeMapping(FILE* _fp) {
 	auto it = __fpmodecache.find(_fp);
 	if (it != __fpmodecache.end()) {
 		return it->second;
@@ -78,7 +81,7 @@ e_file_charsetmode PandasUtf8::getModeMapping(FILE* _fp) {
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/02/16 01:23
 //************************************
-void PandasUtf8::clearModeMapping(FILE* _fp) {
+void clearModeMapping(FILE* _fp) {
 	__fpmodecache.erase(_fp);
 }
 
@@ -88,7 +91,7 @@ void PandasUtf8::clearModeMapping(FILE* _fp) {
 // Returns:     enum e_console_encoding
 // Author:      Sola丶小克(CairoLee)  2020/01/24 15:51
 //************************************
-enum e_console_encoding PandasUtf8::getConsoleEncoding() {
+enum e_console_encoding getConsoleEncoding() {
 #ifdef _WIN32
 	// 关于 GetACP 的编码对应表可以在以下文档中查询:
 	// https://docs.microsoft.com/zh-cn/windows/win32/intl/code-page-identifiers
@@ -124,7 +127,7 @@ enum e_console_encoding PandasUtf8::getConsoleEncoding() {
 	else if (boost::icontains(szLanginfo, "ANSI_X3.4-1968"))
 		return CONSOLE_ENCODING_LATIN1;
 	else {
-		ShowWarning("%s: Unsupport codeset: %s, defaulting to latin1\n", __func__, szLanginfo);
+		printf("%s: Unsupport codeset: %s, defaulting to latin1\n", __func__, szLanginfo);
 	}
 
 	return CONSOLE_ENCODING_LATIN1;
@@ -137,7 +140,7 @@ enum e_console_encoding PandasUtf8::getConsoleEncoding() {
 // Returns:     enum e_system_language
 // Author:      Sola丶小克(CairoLee)  2020/01/24 21:59
 //************************************
-enum e_system_language PandasUtf8::getSystemLanguage() {
+enum e_system_language getSystemLanguage() {
 #ifdef _WIN32
 	// GetUserDefaultUILanguage 获取到的编码对照表:
 	// https://www.voidtools.com/support/everything/language_ids/
@@ -165,7 +168,7 @@ enum e_system_language PandasUtf8::getSystemLanguage() {
 	else if (boost::iequals(szLocale, "C"))
 		return SYSTEM_LANGUAGE_ENG;
 	else {
-		ShowWarning("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale);
+		printf("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale);
 	}
 
 	return SYSTEM_LANGUAGE_ENG;
@@ -178,7 +181,7 @@ enum e_system_language PandasUtf8::getSystemLanguage() {
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/02/08 15:53
 //************************************
-std::string PandasUtf8::getDefaultCodepage() {
+std::string getDefaultCodepage() {
 	return std::string(DEFAULT_ENCODING);
 }
 
@@ -192,7 +195,7 @@ std::string PandasUtf8::getDefaultCodepage() {
 // Returns:     std::wstring
 // Author:      Sola丶小克(CairoLee)  2020/01/31 14:00
 //************************************
-std::wstring PandasUtf8::UnicodeEncode(const std::string& strANSI, unsigned int nCodepage) {
+std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage) {
 	int unicodeLen = MultiByteToWideChar(nCodepage, 0, strANSI.c_str(), -1, NULL, 0);
 	wchar_t* strUnicode = new wchar_t[unicodeLen];
 	wmemset(strUnicode, 0, unicodeLen);
@@ -208,7 +211,7 @@ std::wstring PandasUtf8::UnicodeEncode(const std::string& strANSI, unsigned int 
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/01/31 14:00
 //************************************
-std::string PandasUtf8::UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage) {
+std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage) {
 	int ansiLen = WideCharToMultiByte(nCodepage, 0, strUnicode.c_str(), -1, NULL, 0, NULL, NULL);
 	char* strAnsi = new char[ansiLen];
 	memset(strAnsi, 0, ansiLen);
@@ -222,43 +225,17 @@ std::string PandasUtf8::UnicodeDecode(const std::wstring& strUnicode, unsigned i
 // Method:      iconvConvert
 // Description: 在 Linux 平台上使用 iconv 库进行字符编码转换
 // Parameter:   const std::string & val
-// Parameter:   const std::string & from_charset
-// Parameter:   const std::string to_charset
+// Parameter:   const std::string & in_enc
+// Parameter:   const std::string out_enc
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/02/02 23:42
 //************************************
-std::string PandasUtf8::iconvConvert(const std::string& val, const std::string& from_charset, const std::string& to_charset) {
-	iconv_t c_pt = nullptr;
-	char* strInput = nullptr, * pStrInput = nullptr;
-	char* strOutput = nullptr, * pStrOutput = nullptr;
-
-	if ((c_pt = iconv_open(to_charset.c_str(), from_charset.c_str())) == (iconv_t)-1) {
-		ShowFatalError("%s: %s was failed (%s -> %s): %s\n", __func__, "iconv_open", from_charset.c_str(), to_charset.c_str(),strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-
-	size_t strInputLen = val.size();
-	strInput = new char[strInputLen + 1];
-	memcpy(strInput, val.c_str(), strInputLen);
-	pStrInput = strInput;
-
-	// 设置目标缓冲区的长度等于来源缓冲区长度的 3 倍
-	size_t strOutputLen = (strInputLen + 1) * 3;
-	strOutput = new char[strOutputLen];
-	memset(strOutput, 0, strOutputLen);
-	pStrOutput = strOutput;
-
-	if (iconv(c_pt, (char**)&pStrInput, &strInputLen, (char**)&pStrOutput, &strOutputLen) == (size_t)-1) {
-		ShowFatalError("%s: %s was failed (%s -> %s): %s\n", __func__, "iconv", from_charset.c_str(), to_charset.c_str(), strerror(errno));
-		ShowFatalError("%s: the param value: %s", __func__, strInput);
-		exit(EXIT_FAILURE);
-	}
-
-	std::string strResult(strOutput);
-	iconv_close(c_pt);
-	delete[] strOutput;
-	delete[] strInput;
-	return strResult;
+std::string iconvConvert(const std::string& val, const std::string& in_enc, const std::string& out_enc) {
+	if (in_enc == out_enc) return val;
+	iconvpp::converter conv(out_enc, in_enc, true);
+	std::string result;
+	conv.convert(val, result);
+	return result;
 }
 
 //************************************
@@ -268,29 +245,28 @@ std::string PandasUtf8::iconvConvert(const std::string& val, const std::string& 
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/02/05 16:42
 //************************************
-std::string PandasUtf8::consoleConvert(const std::string& mes) {
+std::string consoleConvert(const std::string& mes) {
 #ifdef BUILDBOT
 	// 若当前程序编译运行在持续集成环境
 	// 那么不进行任何终端编码的转换操作, 让它持续处于英文状态
 	return mes;
 #endif // BUILDBOT
 
-	std::string _from, _to;
+	// 在 Linux 环境下我们目前只接受终端编码为 UTF8 的情况
+	// 如果当前的终端编码不为 UTF8 则停止进行任何转换的具体工作, 维持英文状态
+	if (PandasUtf8::consoleEncoding != CONSOLE_ENCODING_UTF8) {
+		return mes;
+	}
+
+	std::string _from;
 
 	switch (PandasUtf8::systemLanguage) {
-	case SYSTEM_LANGUAGE_CHT: _from = "BIG5"; break;
-	case SYSTEM_LANGUAGE_CHS: _from = "GBK"; break;
-	default: _from = PandasUtf8::getDefaultCodepage(); break;
+		case SYSTEM_LANGUAGE_CHT: _from = "BIG5"; break;
+		case SYSTEM_LANGUAGE_CHS: _from = "GBK"; break;
+		default: return mes; break;
 	}
 
-	switch (PandasUtf8::consoleEncoding) {
-	case CONSOLE_ENCODING_UTF8: _to = "UTF-8"; break;
-	case CONSOLE_ENCODING_GBK: _to = "GBK"; break;
-	case CONSOLE_ENCODING_BIG5: _to = "BIG5"; break;
-	}
-
-	if (_from.empty() || _to.empty()) return mes;
-	return PandasUtf8::iconvConvert(mes, _from, _to);
+	return PandasUtf8::iconvConvert(mes, _from, "UTF-8");
 }
 
 //************************************
@@ -302,7 +278,7 @@ std::string PandasUtf8::consoleConvert(const std::string& mes) {
 // Returns:     int
 // Author:      Sola丶小克(CairoLee)  2020/02/05 16:13
 //************************************
-int PandasUtf8::vfprintf(FILE* file, const char* fmt, va_list args) {
+int vfprintf(FILE* file, const char* fmt, va_list args) {
 	va_list apcopy;
 	va_copy(apcopy, args);
 
@@ -318,7 +294,7 @@ int PandasUtf8::vfprintf(FILE* file, const char* fmt, va_list args) {
 		StringBuf_Vprintf(sbuf, fmt, args);
 		strBuf = std::string(StringBuf_Value(sbuf));
 		StringBuf_Free(sbuf);
-		ShowDebug("%s: dynamic buffer used, increase the static buffer size to %d or more.\n", __func__, len + 1);
+		printf("%s: dynamic buffer used, increase the static buffer size to %d or more.\n", __func__, len + 1);
 	}
 
 	va_end(apcopy);
@@ -339,7 +315,7 @@ int PandasUtf8::vfprintf(FILE* file, const char* fmt, va_list args) {
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/01/24 00:26
 //************************************
-std::string PandasUtf8::utf8ToAnsi(const std::string& strUtf8) {
+std::string utf8ToAnsi(const std::string& strUtf8) {
 #ifdef _WIN32
 	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strUtf8, CP_UTF8);
 	return PandasUtf8::UnicodeDecode(strUnicode, CP_ACP);
@@ -361,7 +337,7 @@ std::string PandasUtf8::utf8ToAnsi(const std::string& strUtf8) {
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/01/24 00:26
 //************************************
-std::string PandasUtf8::ansiToUtf8(const std::string& strAnsi) {
+std::string ansiToUtf8(const std::string& strAnsi) {
 #ifdef _WIN32
 	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strAnsi, CP_ACP);
 	return PandasUtf8::UnicodeDecode(strUnicode, CP_UTF8);
@@ -383,7 +359,7 @@ std::string PandasUtf8::ansiToUtf8(const std::string& strAnsi) {
 // Returns:     enum e_file_charsetmode
 // Author:      Sola丶小克(CairoLee)  2020/01/21 09:37
 //************************************
-enum e_file_charsetmode PandasUtf8::fmode(FILE* _Stream) {
+enum e_file_charsetmode fmode(FILE* _Stream) {
 	// 优先从缓存中读取
 	e_file_charsetmode cached_charsetmode = PandasUtf8::getModeMapping(_Stream);
 	if (cached_charsetmode != FILE_CHARSETMODE_UNKNOW) {
@@ -440,7 +416,7 @@ enum e_file_charsetmode PandasUtf8::fmode(FILE* _Stream) {
 // Returns:     enum e_file_charsetmode
 // Author:      Sola丶小克(CairoLee)  2020/01/27 21:38
 //************************************
-enum e_file_charsetmode PandasUtf8::fmode(std::ifstream& ifs) {
+enum e_file_charsetmode fmode(std::ifstream& ifs) {
 	unsigned char buf[3] = { 0 };
 	enum e_file_charsetmode charset_mode = FILE_CHARSETMODE_UNKNOW;
 
@@ -483,7 +459,7 @@ enum e_file_charsetmode PandasUtf8::fmode(std::ifstream& ifs) {
 // Returns:     FILE*
 // Author:      Sola丶小克(CairoLee)  2020/01/24 01:27
 //************************************
-FILE* PandasUtf8::fopen(const char* _FileName, const char* _Mode) {
+FILE* fopen(const char* _FileName, const char* _Mode) {
 	// 若当前打开文件的模式已经是二进制, 那么直接调用 fopen 并返回
 	if (strchr(_Mode, 'b')) {
 		return ::fopen(_FileName, _Mode);
@@ -502,12 +478,12 @@ FILE* PandasUtf8::fopen(const char* _FileName, const char* _Mode) {
 // Returns:     int
 // Author:      Sola丶小克(CairoLee)  2020/02/16 01:05
 //************************************
-int PandasUtf8::fclose(FILE* _fp) {
+int fclose(FILE* _fp) {
 	PandasUtf8::clearModeMapping(_fp);
 	return ::fclose(_fp);
 }
 
-char* PandasUtf8::fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
+char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
 	// 若不是 UTF8-BOM, 那么直接透传 fgets 调用
 	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM) {
 		return ::fgets(_Buffer, _MaxCount, _Stream);
@@ -548,7 +524,7 @@ char* PandasUtf8::fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
 	return _Buffer;
 }
 
-size_t PandasUtf8::fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream) {
+size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream) {
 	// 若不是 UTF8-BOM 或者 _ElementSize 不等于 1, 那么直接透传 fread 调用
 	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM || _ElementSize != 1) {
 		return ::fread(_Buffer, _ElementSize, _ElementCount, _Stream);
@@ -602,3 +578,5 @@ size_t PandasUtf8::fread(void* _Buffer, size_t _ElementSize, size_t _ElementCoun
 	memcpy(_Buffer, ansi.c_str(), ansi.size());
 	return extracted;
 }
+
+} // namespace PandasUtf8

@@ -74,11 +74,11 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 			_msg_config_read(w2,size,msg_table);
 #ifdef Pandas_Adaptive_Importing_Message_Database
 		else if (strcmpi(w1, "import_chs") == 0) {
-			if (PandasUtf8::systemLanguage == SYSTEM_LANGUAGE_CHS)
+			if (PandasUtf8::systemLanguage == PandasUtf8::SYSTEM_LANGUAGE_CHS)
 				_msg_config_read(w2, size, msg_table);
 		}
 		else if (strcmpi(w1, "import_cht") == 0) {
-			if (PandasUtf8::systemLanguage == SYSTEM_LANGUAGE_CHT)
+			if (PandasUtf8::systemLanguage == PandasUtf8::SYSTEM_LANGUAGE_CHT)
 				_msg_config_read(w2, size, msg_table);
 		}
 #endif // Pandas_Adaptive_Importing_Message_Database

@@ -155,7 +155,10 @@ __pycache__
 3rdparty/boost/tools/build/src/engine/*.obj
 3rdparty/boost/tools/build/src/engine/*.pdb
 3rdparty/boost/tools/build/src/engine/*.exe
+3rdparty/boost/tools/build/src/engine/b2
+3rdparty/boost/tools/build/src/engine/bjam
 3rdparty/boost/b2.exe
+3rdparty/boost/b2
 3rdparty/boost/bootstrap.log
 3rdparty/boost/project-config.jam*
 

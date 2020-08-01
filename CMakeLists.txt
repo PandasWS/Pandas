@@ -30,8 +30,8 @@
 #   CMP0017: Prefer files from the CMake module directory when including from there.
 # Update to 3.1 for CMAKE_CXX_STANDARD cross support definition
 set( CMAKE_LEGACY_CYGWIN_WIN32 0 )
-cmake_minimum_required( VERSION 3.1 )
-project( rAthena )
+cmake_minimum_required( VERSION 3.14 FATAL_ERROR )
+project( Pandas )
 if( CYGWIN )
 	unset( WIN32 )
 endif()
@@ -51,8 +51,11 @@ endif()
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/${suffixInstallStr})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/${suffixInstallStr})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-set(CMAKE_C_CREATE_SHARED_LIBRARY)
-set(CMAKE_CXX_CREATE_SHARED_LIBRARY)
+# 引入的一些第三方组件库需要这两个变量的内容, 不能清空他.
+# 之前 rAthena 之所以写了这两个，是因为在 src/common/CMakeLists.txt 中
+# 执行 add_library 的时候没有指定 STATIC 关键字, 只要指定了 STATIC 关键字那么这里的两个变量不清空也没事
+# set(CMAKE_C_CREATE_SHARED_LIBRARY)
+# set(CMAKE_CXX_CREATE_SHARED_LIBRARY)
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_RELEASE_POSTFIX "r")
 

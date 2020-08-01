@@ -5108,7 +5108,7 @@ void npc_clear_pathlist(void) {
 static int npc_status_calc_sub(struct map_session_data* sd, va_list va)
 {
 	enum e_status_calc_opt opt;
-	opt = va_arg(va, enum e_status_calc_opt);
+	opt = (enum e_status_calc_opt)va_arg(va, int);
 
 	if (sd) {
 		status_calc_pc(sd, opt);

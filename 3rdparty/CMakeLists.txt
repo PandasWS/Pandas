@@ -92,3 +92,65 @@ add_subdirectory( zlib )
 add_subdirectory( yaml-cpp )
 add_subdirectory( breakpad )
 add_subdirectory( cryptopp )
+
+include(CPM)
+
+#
+# 使用 CPM 模块引入 opencc 第三方库
+#
+
+CPMAddPackage(
+	NAME opencc
+	OPTIONS		"BUILD_SHARED_LIBS OFF"
+	SOURCE_DIR	"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/3rdparty/opencc"
+)
+
+# 若 opencc 引入成功, 则进行一系列的额外配置操作
+if(opencc_ADDED)
+	# 确保 ${opencc_SOURCE_DIR}/src 目录中存在 opencc.h 文件, 
+	# 将目录的路径保存到 opencc_INCLUDE_DIRS 变量中 (声明为 REQUIRED 如果失败则终止)
+	# 后面 common 等项目构建的时候需要将 opencc_INCLUDE_DIRS 设为包含目录的一部分
+	find_path( opencc_INCLUDE_DIRS "opencc.h" PATHS "${opencc_SOURCE_DIR}/src" NO_DEFAULT_PATH REQUIRED )
+	# message( STATUS "opencc_INCLUDE_DIRS = ${opencc_INCLUDE_DIRS}")
+
+	# 调整三个辅助工具的保存目录, 都丢到 cbuild 某个不重要的地方 (若不设置则生成到根目录)
+	set_target_properties(opencc opencc_dict opencc_phrase_extract
+		PROPERTIES
+		RUNTIME_OUTPUT_DIRECTORY	"${opencc_BINARY_DIR}/build"
+	)
+
+	# 设置一个永远会被 BUILD 的自定义 TARGET 并让他依赖 Dictionaries 项目
+	# 这里的 Dictionaries 项目是 opencc 用来生成字典 ocd2 文件的相关项目, 设为依赖可以
+	# 确保 Dictionaries 永远在 DictionariesCopy 之前被构建
+	add_custom_target(DictionariesCopy ALL DEPENDS Dictionaries)
+
+	# 接下来设置一个针对 DictionariesCopy 完成编译后触发的自定义指令集合
+	# 主要干的就是一些文件复制的工作
+	add_custom_command(TARGET DictionariesCopy
+		POST_BUILD
+		COMMAND mkdir -p "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/dicts"
+		COMMAND cp -f "${opencc_SOURCE_DIR}/data/config/s2t.json" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/dicts"
+		COMMAND cp -f "${opencc_SOURCE_DIR}/data/config/t2s.json" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/dicts"
+		COMMAND cp -f "${opencc_BINARY_DIR}/data/ST*.ocd2" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/dicts"
+		COMMAND cp -f "${opencc_BINARY_DIR}/data/TS*.ocd2" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/dicts"
+	)
+endif()
+
+#
+# 使用 CPM 模块引入 uchardet 第三方库
+#
+
+CPMAddPackage(
+	NAME uchardet
+	OPTIONS		"BUILD_BINARY OFF"
+	SOURCE_DIR	"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/3rdparty/uchardet"
+)
+
+# 若 uchardet 引入成功, 则进行一系列的额外配置操作
+if(uchardet_ADDED)
+	# 确保 ${uchardet_SOURCE_DIR}/src 目录中存在 uchardet.h 文件, 
+	# 将目录的路径保存到 uchardet_INCLUDE_DIRS 变量中 (声明为 REQUIRED 如果失败则终止)
+	# 后面 common 等项目构建的时候需要将 uchardet_INCLUDE_DIRS 设为包含目录的一部分
+	find_path( uchardet_INCLUDE_DIRS "uchardet.h" PATHS "${uchardet_SOURCE_DIR}/src" NO_DEFAULT_PATH REQUIRED )
+	# message( STATUS "uchardet_INCLUDE_DIRS = ${uchardet_INCLUDE_DIRS}")
+endif()
