@@ -52,6 +52,9 @@ const std::string TranslateDB::getDefaultLocation() {
 void TranslateDB::showStatus() {
 	std::string szLocation = this->getCurrentFile();
 	if (szLocation.empty()) {
+		// 若系统语言是英文, 那么就不打印与终端翻译机制相关的信息
+		if (PandasUtf8::systemLanguage == PandasUtf8::SYSTEM_LANGUAGE_ENG) return;
+
 		ShowInfo("Console translation system was deactivated.\n");
 	}
 	else {
@@ -59,7 +62,7 @@ void TranslateDB::showStatus() {
 	}
 
 #ifdef _WIN32
-	ShowInfo("Diagnostic information: Codepage = %d | UILanguage = 0x%04X\n", GetACP(), GetUserDefaultUILanguage());
+	ShowInfo("Diagnostic information: System Codepage = %d | UILanguage = 0x%04X | Console Codepage = %d\n", GetACP(), GetUserDefaultUILanguage(), GetConsoleOutputCP());
 #else
 	setlocale(LC_ALL, "");
 	ShowInfo("Diagnostic information: Langinfo: %s | Locale: %s\n", nl_langinfo(CODESET), setlocale(LC_CTYPE, NULL));

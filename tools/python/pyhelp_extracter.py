@@ -278,34 +278,6 @@ class TranslationExtracter:
             if len(cb) == 2 and cb[1] == 0x5C:
                 bSkipBackslash = True
         return text_processed
-    
-    def __convert_backslash_step1(self, textcontent):
-        '''
-        针对 BIG5 的处理, 在双字节低位等于 0x5C 的字符后面, 插入 [[[\\]]] 标记
-        '''
-        text_processed = ''
-        for i, element in enumerate(textcontent):
-            cb = element.encode('big5')
-            text_processed = text_processed + element
-            if len(cb) == 2 and cb[1] == 0x5C:
-                text_processed = text_processed + '[[[\\]]]'
-        return text_processed
-
-    def __convert_backslash_step2(self, filepath):
-        '''
-        针对 BIG5 的处理, 将指定文件中的 [[[\\]]] 替换成反斜杠
-        '''
-        content = ""
-        with open(filepath, 'r', encoding='UTF-8-SIG') as f:
-            content = f.read()
-            f.close()
-        
-        pattern = re.compile(r'\[\[\[\\\\\]\]\]')
-        content = pattern.sub(r'\\', content)
-        
-        with open(filepath, 'w', encoding='UTF-8-SIG') as f:
-            f.write(content)
-            f.close()
 
     def build(self, src_dir):
         '''
@@ -382,8 +354,6 @@ class TranslationExtracter:
                 )
                 f.close()
 
-            self.__convert_backslash_step2(filename)
-
             Message.ShowInfo('保存到: %s' % os.path.relpath(os.path.abspath(filename), project_slndir))
             return os.path.abspath(filename)
         except Exception as _err:
@@ -437,9 +407,6 @@ class TranslationExtracter:
             Message.ShowInfo('正在升级: %s' % os.path.relpath(fullpath, project_slndir))
             _backup_body = self.body[:]
             self.updatefrom(fullpath, increase_version)
-            if '_tw.yml' in relpath:
-                for x in self.body:
-                    x['Translation'] = self.__convert_backslash_step1(x['Translation'])
             self.dump(fullpath)
             self.body = _backup_body
         Message.ShowStatus('感谢您的使用, 全部对照表翻译完毕.')
@@ -451,7 +418,6 @@ class TranslationExtracter:
         Message.ShowInfo('正在将译文转换成繁体中文...')
         for x in self.body:
             x['Translation'] = self.opencc.convert(x['Translation'])
-            x['Translation'] = self.__convert_backslash_step1(x['Translation'])
         Message.ShowInfo('译文已经顺利转换成繁体中文')
 
 def main():
