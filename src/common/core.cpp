@@ -391,6 +391,10 @@ int main (int argc, char **argv)
 	correct_isa_available();
 #endif // Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
 
+#ifdef Pandas_Setup_Console_Output_Codepage
+	PandasUtf8::setupConsoleOutputCP();
+#endif // Pandas_Setup_Console_Output_Codepage
+
 #ifdef Pandas_Google_Breakpad
 	breakpad_initialize();
 #endif // Pandas_Google_Breakpad

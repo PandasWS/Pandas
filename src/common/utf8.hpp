@@ -64,6 +64,7 @@ std::string ansiToUtf8(const std::string& strAnsi);
 std::string getDefaultCodepage();
 
 #ifdef _WIN32
+	bool setupConsoleOutputCP();
 	std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage);
 	std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage);
 #else
