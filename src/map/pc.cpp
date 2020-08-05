@@ -4257,6 +4257,10 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 		if (sd->state.lr_flag != 2)
 			sd->dropaddclass[type2] += val;
 		break;
+	case SP_MAGIC_SUBDEF_ELE: // bonus2 bMagicSubDefEle,e,x;
+		PC_BONUS_CHK_ELEMENT(type2, SP_MAGIC_SUBDEF_ELE);
+		sd->magic_subdefele[type2] += val;
+		break;
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
 		if (running_npc_stat_calc_event) {
@@ -8476,7 +8480,10 @@ void pc_close_npc(struct map_session_data *sd,int flag)
 		sd->npc_menu = 0;
 		sd->npc_shopid = 0;
 #ifdef SECURE_NPCTIMEOUT
-		sd->npc_idle_timer = INVALID_TIMER;
+		if( sd->npc_idle_timer != INVALID_TIMER ){
+			delete_timer( sd->npc_idle_timer, npc_secure_timeout_timer );
+			sd->npc_idle_timer = INVALID_TIMER;
+		}
 #endif
 		if (sd->st) {
 			if (sd->st->state == CLOSE) {
