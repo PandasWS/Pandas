@@ -473,7 +473,10 @@
 	// 是否支持处理 Windows 10 编码选项带来的中文乱码问题 [Sola丶小克]
 	// Beta: Use Unicode UTF-8 for worldwide language support
 	// 开启后将会根据当前操作系统的语言, 重新设定终端的输出编码为我们预期的编码
-	#define Pandas_Setup_Console_Output_Codepage
+	// 备注: 目前仅在 Windows 环境下需要此操作
+	#ifdef _WIN32
+		#define Pandas_Setup_Console_Output_Codepage
+	#endif // _WIN32
 #endif // Pandas_CreativeWork
 
 // ============================================================================

@@ -58,14 +58,13 @@ char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream);
 size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream);
 int fclose(FILE* _fp);
 
-bool setupConsoleOutputCP();
-
 std::string utf8ToAnsi(const std::string& strUtf8);
 std::string ansiToUtf8(const std::string& strAnsi);
 
 std::string getDefaultCodepage();
 
 #ifdef _WIN32
+	bool setupConsoleOutputCP();
 	std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage);
 	std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage);
 #else

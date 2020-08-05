@@ -219,6 +219,72 @@ std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage
 	return std::string(strAnsi);
 }
 
+//************************************
+// Method:      splashForBIG5
+// Description: 若目标编码需要转换成 BIG5 的话,
+//              额外需要将字符低位为 0x5C 的字符后面补一个反斜杠 
+// Parameter:   const std::wstring & strUnicode
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/8/2 21:32
+//************************************
+std::string splashForBIG5(const std::wstring& strUnicode) {
+	std::string strAnsi;
+
+	for (wchar_t uniChar : strUnicode) {
+		// 遍历每一个多字节字符串, 将他们转换成 std::wstring
+		std::wstring uniStr;
+		uniStr.push_back(uniChar);
+
+		// 将 uniStr 单独转换成 Ansi 字符
+		std::string ansiChar = PandasUtf8::UnicodeDecode(uniStr, 950);
+
+		// 如若 ansiChar 等于两个字节, 且字符的低位等于 0x5C,
+		// 那么输出时末尾多来个反斜杠
+		if (ansiChar.size() == 2 && ansiChar.c_str()[1] == 0x5C) {
+			strAnsi += ansiChar + "\\";
+			continue;
+		}
+
+		strAnsi += ansiChar;
+	}
+
+	return strAnsi;
+}
+
+//************************************
+// Method:      getSystemLanguageACP
+// Description: 获取基于当前系统的语言获取我们预期的 Codepage 编码
+// Returns:     unsigned int
+// Author:      Sola丶小克(CairoLee)  2020/8/3 22:27
+//************************************
+unsigned int getSystemLanguageACP() {
+	if (GetACP() != 65001) {
+		return GetACP();
+	}
+
+	switch (PandasUtf8::systemLanguage)
+	{
+	case SYSTEM_LANGUAGE_CHS:
+		return 936;
+	case SYSTEM_LANGUAGE_CHT:
+		return 950;
+	default:
+		return GetACP();
+	}
+}
+
+//************************************
+// Method:      setupConsoleOutputCP
+// Description: 根据系统语言设置我们预期的终端输出编码
+//              避免 Win10 将非 Unicode 文本编码调为 Beta:UTF8 的影响
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2020/8/4 22:52
+//************************************
+bool setupConsoleOutputCP() {
+	unsigned int uCodepage = getSystemLanguageACP();
+	return (!SetConsoleOutputCP(uCodepage) || !SetConsoleCP(uCodepage));
+}
+
 #else
 
 //************************************
@@ -307,72 +373,6 @@ int vfprintf(FILE* file, const char* fmt, va_list args) {
 }
 
 #endif // _WIN32
-
-//************************************
-// Method:      splashForBIG5
-// Description: 若目标编码需要转换成 BIG5 的话,
-//              额外需要将字符低位为 0x5C 的字符后面补一个反斜杠 
-// Parameter:   const std::wstring & strUnicode
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2020/8/2 21:32
-//************************************
-std::string splashForBIG5(const std::wstring& strUnicode) {
-	std::string strAnsi;
-
-	for (wchar_t uniChar : strUnicode) {
-		// 遍历每一个多字节字符串, 将他们转换成 std::wstring
-		std::wstring uniStr;
-		uniStr.push_back(uniChar);
-
-		// 将 uniStr 单独转换成 Ansi 字符
-		std::string ansiChar = PandasUtf8::UnicodeDecode(uniStr, 950);
-
-		// 如若 ansiChar 等于两个字节, 且字符的低位等于 0x5C,
-		// 那么输出时末尾多来个反斜杠
-		if (ansiChar.size() == 2 && ansiChar.c_str()[1] == 0x5C) {
-			strAnsi += ansiChar + "\\";
-			continue;
-		}
-
-		strAnsi += ansiChar;
-	}
-
-	return strAnsi;
-}
-
-//************************************
-// Method:      getSystemLanguageACP
-// Description: 获取基于当前系统的语言获取我们预期的 Codepage 编码
-// Returns:     unsigned int
-// Author:      Sola丶小克(CairoLee)  2020/8/3 22:27
-//************************************
-unsigned int getSystemLanguageACP() {
-	if (GetACP() != 65001) {
-		return GetACP();
-	}
-
-	switch (PandasUtf8::systemLanguage)
-	{
-	case SYSTEM_LANGUAGE_CHS:
-		return 936;
-	case SYSTEM_LANGUAGE_CHT:
-		return 950;
-	default:
-		return GetACP();
-	}
-}
-
-//************************************
-// Method:      setupConsoleOutputCP
-// Description: 根据系统语言设置我们预期的终端输出编码
-//              避免 Win10 将非 Unicode 文本编码调为 Beta:UTF8 的影响
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2020/8/4 22:52
-//************************************
-bool setupConsoleOutputCP() {
-	unsigned int uCodepage = getSystemLanguageACP();
-	return (!SetConsoleOutputCP(uCodepage) || !SetConsoleCP(uCodepage));
-}
 
 //************************************
 // Method:      utf8ToAnsi
