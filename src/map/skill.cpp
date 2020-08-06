@@ -12086,9 +12086,14 @@ TIMER_FUNC(skill_castend_id){
 	//You can't place a skill failed packet here because it would be
 	//sent in ALL cases, even cases where skill_check_condition fails
 	//which would lead to double 'skill failed' messages u.u [Skotlex]
-	if(sd)
-		sd->skillitem = sd->skillitemlv = sd->skillitem_keep_requirement = sd->skill_keep_using.skill_id = 0;
-	else if(md)
+	if (sd) {
+		sd->skillitem = sd->skillitemlv = sd->skillitem_keep_requirement = 0;
+		if (sd->skill_keep_using.skill_id > 0) {
+			sd->skill_keep_using.skill_id = 0;
+			delete_timer(sd->skill_keep_using.tid, skill_keep_using);
+			sd->skill_keep_using.tid = INVALID_TIMER;
+		}
+	} else if (md)
 		md->skill_idx = -1;
 	return 0;
 }
@@ -12409,6 +12414,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
 	case NPC_VENOMFOG:
 	case NPC_ICEMINE:
 	case NPC_FLAMECROSS:
+	case NPC_HELLBURNING:
 	case NPC_REVERBERATION:
 	case RA_ELECTRICSHOCKER:
 	case RA_CLUSTERBOMB:
@@ -14291,6 +14297,7 @@ int skill_unit_onplace_timer(struct skill_unit *unit, struct block_list *bl, t_t
 		case UNT_VENOMFOG:
 		case UNT_ICEMINE:
 		case UNT_FLAMECROSS:
+		case UNT_HELLBURNING:
 			skill_attack(skill_get_type(sg->skill_id),ss,&unit->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
 
