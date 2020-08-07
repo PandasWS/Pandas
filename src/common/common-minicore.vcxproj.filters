@@ -86,6 +86,9 @@
     <ClInclude Include="performance.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="processmutex.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cli.cpp">
@@ -152,6 +155,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="performance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="processmutex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
