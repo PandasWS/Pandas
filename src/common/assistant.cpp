@@ -30,15 +30,13 @@
 #include "showmsg.hpp"
 #include "utils.hpp" // check_filepath
 
-#include <boost/interprocess/sync/named_mutex.hpp>
+#include "processmutex.hpp"
 
 #ifdef _WIN32
 	const std::string pathSep = "\\";
 #else
 	const std::string pathSep = "/";
 #endif // _WIN32
-
-#define MUTEX_DEPLOY "MTX_" Pandas_Version "_DEPLOY"
 
 extern "C" int __isa_available;
 
@@ -158,11 +156,9 @@ bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
 // Author:      Sola丶小克(CairoLee)  2019/09/16 07:33
 //************************************
 void deployImportDirectories() {
-	boost::interprocess::named_mutex deploy_mtx(
-		boost::interprocess::open_or_create, MUTEX_DEPLOY
-	);
+	ProcessMutex mutex = ProcessMutex("PANDAS_IMPORT_DEPLOY_MUTEX");
 
-	deploy_mtx.lock();
+	mutex.Lock();
 
 	const struct _import_data {
 		std::string import_from;
@@ -177,7 +173,7 @@ void deployImportDirectories() {
 		deployImportDirectory(import_data[i].import_from, import_data[i].import_to);
 	}
 
-	deploy_mtx.unlock();
+	mutex.Unlock();
 }
 
 //************************************

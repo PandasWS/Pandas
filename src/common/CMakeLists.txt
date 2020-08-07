@@ -137,6 +137,7 @@ set( COMMON_MINI_HEADERS
 	"${COMMON_SOURCE_DIR}/translate.hpp"
 	"${COMMON_SOURCE_DIR}/database.hpp"
 	"${COMMON_SOURCE_DIR}/performance.hpp"
+	"${COMMON_SOURCE_DIR}/processmutex.hpp"
 	"${COMMON_SOURCE_DIR}/iconv.hpp"
 	${LIBCONFIG_HEADERS} # needed by showmsg.hpp
 	${BREAKPAD_HEADERS}
@@ -156,6 +157,7 @@ set( COMMON_MINI_SOURCES
 	"${COMMON_SOURCE_DIR}/translate.cpp"
 	"${COMMON_SOURCE_DIR}/database.cpp"
 	"${COMMON_SOURCE_DIR}/performance.cpp"
+	"${COMMON_SOURCE_DIR}/processmutex.cpp"
 	${LIBCONFIG_SOURCES} # needed by showmsg.cpp
 	${BREAKPAD_SOURCES}
 	${COMMON_ADDITIONALL_CPP} # needed by Windows
@@ -215,6 +217,7 @@ if( WITH_ZLIB )
 		"${COMMON_SOURCE_DIR}/cryptopp.hpp"
 		"${COMMON_SOURCE_DIR}/translate.hpp"
 		"${COMMON_SOURCE_DIR}/performance.hpp"
+		"${COMMON_SOURCE_DIR}/processmutex.hpp"
 		"${COMMON_SOURCE_DIR}/iconv.hpp"
 		${LIBCONFIG_HEADERS} # needed by conf.hpp/showmsg.hpp
 		${BREAKPAD_HEADERS}
@@ -249,6 +252,7 @@ if( WITH_ZLIB )
 		"${COMMON_SOURCE_DIR}/cryptopp.cpp"
 		"${COMMON_SOURCE_DIR}/translate.cpp"
 		"${COMMON_SOURCE_DIR}/performance.cpp"
+		"${COMMON_SOURCE_DIR}/processmutex.cpp"
 		${LIBCONFIG_SOURCES} # needed by conf.cpp/showmsg.cpp
 		${BREAKPAD_SOURCES}
 		${COMMON_ADDITIONALL_CPP} # needed by Windows
