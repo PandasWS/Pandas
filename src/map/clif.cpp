@@ -2994,6 +2994,9 @@ void clif_inventorylist( struct map_session_data *sd ){
 					// 用刚构建的 item_data 传递给 clif_item_equip 函数
 					clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->inventory.u.items_inventory[i], &id, pc_equippoint( sd, i ) );
 				}
+				else {
+					clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->inventory.u.items_inventory[i], sd->inventory_data[i], pc_equippoint( sd, i ) );
+				}
 			}
 			else
 #endif // Pandas_Item_ControlViewID
@@ -16631,7 +16634,7 @@ void clif_parse_Mail_return(int fd, struct map_session_data *sd){
 /// Request to add an item or Zeny to mail.
 /// 0247 <index>.W <amount>.L (CZ_MAIL_ADD_ITEM)
 /// 0a04 <index>.W <amount>.W (CZ_REQ_ADD_ITEM_TO_MAIL)
-void clif_parse_Mail_setattach(int fd, struct map_session_data* sd) {
+void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
 
 #ifdef Pandas_MapFlag_NoMail
 	if (mapflag_helper_nomail(sd))
@@ -17517,6 +17520,7 @@ void clif_bossmapinfo(struct map_session_data *sd, struct mob_data *md, enum e_b
 
 	WFIFOSET(fd,70);
 }
+
 
 /// Requesting equip of a player (CZ_EQUIPWIN_MICROSCOPE).
 /// 02d6 <account id>.L
