@@ -749,7 +749,7 @@ int16 instance_mapid(int16 m, int instance_id)
 	return m;
 }
 
-#ifndef Pandas_FuncLogic_Instance_Destroy_Command
+#if !defined(Pandas_FuncLogic_Instance_Destroy_Command) || !defined(Pandas_FuncDefine_Instance_Destory)
 /**
  * Removes an instance, all its maps, and NPCs invoked by the client button.
  * @param sd: Player data
@@ -848,7 +848,7 @@ void instance_destroy_command(map_session_data* sd) {
 
 	nullpo_retv(sd);
 
-	for (auto it = instances.begin(); it != instances.end(); ) {
+	for (auto it = instances.begin(); it != instances.end(); it++ ) {
 		std::shared_ptr<s_instance_data> idata = it->second;
 		e_instance_mode imode = idata->mode;
 
@@ -884,16 +884,13 @@ void instance_destroy_command(map_session_data* sd) {
 		if (!instance_db.find(idata->id)->destroyable) // Instance is flagged as non-destroyable
 			return;
 
-#ifndef Pandas_FuncDefine_Instance_Destory
-		instance_destroy(it->first);
-#else
-		if (instance_destroy(it->first, true))
+		if (instance_destroy(it->first, true)) {
 			it = instances.erase(it);
-#endif // Pandas_FuncDefine_Instance_Destory
-		return;
+			return;
+		}
 	}
 }
-#endif // Pandas_FuncLogic_Instance_Destroy_Command
+#endif // !defined(Pandas_FuncLogic_Instance_Destroy_Command) || !defined(Pandas_FuncDefine_Instance_Destory)
 
 /**
  * Removes an instance, all its maps, and NPCs.
