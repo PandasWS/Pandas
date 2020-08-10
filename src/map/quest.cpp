@@ -906,4 +906,5 @@ void do_init_quest(void)
  */
 void do_final_quest(void)
 {
+	quest_db.clear();
 }

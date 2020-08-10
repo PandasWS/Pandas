@@ -687,6 +687,7 @@ struct Battle_Config
 	int at_logout_event;
 	int homunculus_starving_rate;
 	int homunculus_starving_delay;
+	int drop_connection_on_quit;
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
