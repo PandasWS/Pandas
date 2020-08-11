@@ -7,8 +7,8 @@
 
 #include "../common/cbasetypes.hpp"
 
-bool amulet_is(uint16 nameid);
-int amulet_pandas_type(uint16 nameid);
+bool amulet_is(t_itemid nameid);
+int amulet_pandas_type(t_itemid nameid);
 
 bool amulet_is_firstone(struct map_session_data *sd, struct item *item, int amount);
 bool amulet_is_lastone(struct map_session_data *sd, int n, int amount);

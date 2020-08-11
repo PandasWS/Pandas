@@ -277,10 +277,18 @@ void battle_damage(struct block_list *src, struct block_list *target, int64 dama
 	if (dmg_lv > ATK_BLOCK && attack_type)
 		skill_counter_additional_effect(src, target, skill_id, skill_lv, attack_type, tick);
 	// This is the last place where we have access to the actual damage type, so any monster events depending on type must be placed here
-	if (target->type == BL_MOB && damage && (attack_type&BF_NORMAL)) {
-		// Monsters differentiate whether they have been attacked by a skill or a normal attack
+	if (target->type == BL_MOB) {
 		struct mob_data* md = BL_CAST(BL_MOB, target);
-		md->norm_attacked_id = md->attacked_id;
+
+		if (!status_isdead(target) && src != target) {
+			if (damage > 0 )
+				mobskill_event(md, src, tick, attack_type);
+			if (skill_id)
+				mobskill_event(md, src, tick, MSC_SKILLUSED|(skill_id<<16));
+		}
+
+		if (damage && (attack_type&BF_NORMAL)) // Monsters differentiate whether they have been attacked by a skill or a normal attack
+			md->norm_attacked_id = md->attacked_id;
 	}
 	map_freeblock_unlock();
 }
@@ -594,6 +602,13 @@ int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 d
 				}
 				break;
 		}
+
+		if (tsc->data[SC_MAGIC_POISON])
+#ifdef RENEWAL
+			ratio += 50;
+#else
+			damage += (int64)(damage * 50 / 100);
+#endif
 	}
 
 	if (battle_config.attr_recover == 0 && ratio < 0)
@@ -1276,7 +1291,7 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 		return false;
 	}
 
-	if (sc->data[SC_DODGE] && (flag&BF_LONG || sc->data[SC_SPURT]) && rnd() % 100 < 20) {
+	if (sc->data[SC_DODGE] && (flag&BF_LONG || sc->data[SC_SPURT]) && (skill_id != NPC_EARTHQUAKE || (skill_id == NPC_EARTHQUAKE && flag & NPC_EARTHQUAKE_FLAG)) && rnd() % 100 < 20) {
 		map_session_data *sd = map_id2sd(target->id);
 
 		if (sd && pc_issit(sd))
@@ -1286,7 +1301,7 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 		return false;
 	}
 
-	if ((sce = sc->data[SC_KAUPE]) && rnd() % 100 < sce->val2) { //Kaupe blocks damage (skill or otherwise) from players, mobs, homuns, mercenaries.
+	if ((sce = sc->data[SC_KAUPE]) && (skill_id != NPC_EARTHQUAKE || (skill_id == NPC_EARTHQUAKE && flag & NPC_EARTHQUAKE_FLAG)) && rnd() % 100 < sce->val2) { //Kaupe blocks damage (skill or otherwise) from players, mobs, homuns, mercenaries.
 		clif_specialeffect(target, EF_STORMKICK4, AREA);
 		//Shouldn't end until Breaker's non-weapon part connects.
 #ifndef RENEWAL
@@ -1709,12 +1724,6 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 			damage = div_;
 	}
 
-	if( bl->type == BL_MOB && !status_isdead(bl) && src != bl) {
-		if (damage > 0 )
-			mobskill_event((TBL_MOB*)bl,src,gettick(),flag);
-		if (skill_id)
-			mobskill_event((TBL_MOB*)bl,src,gettick(),MSC_SKILLUSED|(skill_id<<16));
-	}
 	if (sd && pc_ismadogear(sd)) {
 		short element = skill_get_ele(skill_id, skill_lv);
 
@@ -2781,6 +2790,7 @@ static bool is_attack_hitting(struct Damage* wd, struct block_list *src, struct 
 			case NPC_DARKNESSATTACK:
 			case NPC_UNDEADATTACK:
 			case NPC_TELEKINESISATTACK:
+			case NPC_EARTHQUAKE:
 			case NPC_BLEEDING:
 				hitrate += hitrate * 20 / 100;
 				break;
@@ -6102,13 +6112,18 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 		s_ele = rnd()%ELE_ALL;
 
 	switch(skill_id) {
+		case NPC_EARTHQUAKE:
+			s_ele = ELE_NEUTRAL;
+			break;
 		case LG_SHIELDSPELL:
 			if (skill_lv == 2)
 				s_ele = ELE_HOLY;
 			break;
 		case WL_HELLINFERNO:
-			if (mflag&ELE_DARK)
+			if (mflag == ELE_DARK) {
 				s_ele = ELE_DARK;
+				ad.div_ = 3;
+			}
 			break;
 		case WM_REVERBERATION:
 			if (sd)
@@ -6213,6 +6228,22 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 				break;
 			case AB_RENOVATIO:
 				ad.damage = status_get_lv(src) * 10 + sstatus->int_;
+				break;
+			case NPC_EARTHQUAKE:
+				if (mflag & NPC_EARTHQUAKE_FLAG) {
+					ad.flag |= NPC_EARTHQUAKE_FLAG; // Pass flag to battle_calc_damage
+					mflag &= ~NPC_EARTHQUAKE_FLAG; // Remove before NK_SPLASHSPLIT check
+				}
+
+				if (src->type == BL_PC)
+					ad.damage = sstatus->str * 2 + battle_calc_weapon_attack(src, target, skill_id, skill_lv, mflag).damage;
+				else
+					ad.damage = battle_calc_base_damage(src, sstatus, &sstatus->rhw, sc, tstatus->size, 0);
+
+				MATK_RATE(200 + 100 * skill_lv + 100 * (skill_lv / 2) + ((skill_lv > 4) ? 100 : 0));
+
+				if (nk[NK_SPLASHSPLIT] && mflag > 1)
+					ad.damage /= mflag;
 				break;
 			case NPC_ICEMINE:
 			case NPC_FLAMECROSS:
@@ -6326,8 +6357,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case SL_STIN: //Target size must be small (0) for full damage
 						skillratio += (tstatus->size != SZ_SMALL ? -99 : 10 * skill_lv);
 						break;
-					case SL_STUN: //Full damage is dealt on small/medium targets
-						skillratio += (tstatus->size != SZ_BIG ? 5 * skill_lv : -99);
+					case SL_STUN:
+						skillratio += 5 * skill_lv;
 						break;
 					case SL_SMA: //Base damage is 40% + lv%
 						skillratio += -60 + status_get_lv(src);
@@ -6385,9 +6416,6 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case NPC_ENERGYDRAIN:
 						skillratio += 100 * skill_lv;
 						break;
-					case NPC_EARTHQUAKE:
-						skillratio += 100 + 100 * skill_lv + 100 * (skill_lv / 2) + ((skill_lv > 4) ? 100 : 0);
-						break;
 #ifdef RENEWAL
 					case WZ_HEAVENDRIVE:
 						skillratio += 25;
@@ -6435,14 +6463,13 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 300 + 40 * skill_lv;
 						break;
 					case WL_SOULEXPANSION:
-						skillratio += -100 + (skill_lv + 4) * 100 + status_get_int(src);
+						skillratio += -100 + 750 + skill_lv * 150 + sstatus->int_;
 						RE_LVL_DMOD(100);
 						break;
 					case WL_FROSTMISTY:
-						skillratio += 100 + 100 * skill_lv;
+						skillratio += -100 + 200 + 100 * skill_lv;
 						RE_LVL_DMOD(100);
 						break;
-					case WL_JACKFROST:
 					case NPC_JACKFROST:
 						if (tsc && tsc->data[SC_FREEZING]) {
 							skillratio += 900 + 300 * skill_lv;
@@ -6452,50 +6479,30 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							RE_LVL_DMOD(150);
 						}
 						break;
+					case WL_JACKFROST:
+						if (tsc && tsc->data[SC_MISTY_FROST])
+							skillratio += -100 + 1200 + 600 * skill_lv;
+						else
+							skillratio += -100 + 1000 + 300 * skill_lv;
+						RE_LVL_DMOD(100);
+						break;
 					case WL_DRAINLIFE:
-						skillratio += -100 + 200 * skill_lv + status_get_int(src);
+						skillratio += -100 + 200 * skill_lv + sstatus->int_;
 						RE_LVL_DMOD(100);
 						break;
 					case WL_CRIMSONROCK:
-						skillratio += 1200 + 300 * skill_lv;
+						skillratio += -100 + 700 + 600 * skill_lv;
 						RE_LVL_DMOD(100);
 						break;
 					case WL_HELLINFERNO:
-						skillratio += -100 + 300 * skill_lv;
+						skillratio += -100 + 400 * skill_lv;
+						if (mflag == ELE_DARK)
+							skillratio += 200;
 						RE_LVL_DMOD(100);
-						// Shadow: MATK [{( Skill Level x 300 ) x ( Caster Base Level / 100 ) x 4/5 }] %
-						// Fire : MATK [{( Skill Level x 300 ) x ( Caster Base Level / 100 ) /5 }] %
-						if (mflag&ELE_DARK)
-							skillratio *= 4;
-						skillratio /= 5;
 						break;
 					case WL_COMET:
-						i = (sc ? distance_xy(target->x, target->y, sc->comet_x, sc->comet_y) : 8);
-						if (i <= 3)
-							skillratio += 2400 + 500 * skill_lv; // 7 x 7 cell
-						else if (i <= 5)
-							skillratio += 1900 + 500 * skill_lv; // 11 x 11 cell
-						else if (i <= 7)
-							skillratio += 1400 + 500 * skill_lv; // 15 x 15 cell
-						else
-							skillratio += 900 + 500 * skill_lv; // 19 x 19 cell
-
-						if (sd && sd->status.party_id) {
-							struct map_session_data* psd;
-							int p_sd[MAX_PARTY], c;
-
-							c = 0;
-							memset(p_sd, 0, sizeof(p_sd));
-							party_foreachsamemap(skill_check_condition_char_sub, sd, 3, &sd->bl, &c, &p_sd, skill_id);
-							c = (c > 1 ? rnd()%c : 0);
-
-							if( (psd = map_id2sd(p_sd[c])) && pc_checkskill(psd,WL_COMET) > 0 ){
-								skillratio = skill_lv * 400; //MATK [{( Skill Level x 400 ) x ( Caster's Base Level / 120 )} + 2500 ] %
-								RE_LVL_DMOD(120);
-								skillratio += 2500;
-								status_zap(&psd->bl, 0, skill_get_sp(skill_id, skill_lv) / 2);
-							}
-						}
+						skillratio += -100 + 2500 + 500 * skill_lv;
+						RE_LVL_DMOD(100);
 						break;
 					case WL_CHAINLIGHTNING_ATK:
 						skillratio += 400 + 100 * skill_lv;
@@ -6504,7 +6511,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += 100 * mflag;
 						break;
 					case WL_EARTHSTRAIN:
-						skillratio += 1900 + 100 * skill_lv;
+						skillratio += -100 + 1000 + 600 * skill_lv;
 						RE_LVL_DMOD(100);
 						break;
 					case WL_TETRAVORTEX_FIRE:
@@ -6521,7 +6528,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WL_SUMMON_ATK_WIND:
 					case WL_SUMMON_ATK_GROUND:
 						skillratio += -100 + (1 + skill_lv) / 2 * (status_get_lv(src) + (sd ? sd->status.job_level : 0));
-						RE_LVL_DMOD(100);
+						RE_LVL_DMOD(100); // ! TODO: Confirm new formula
 						break;
 					case LG_RAYOFGENESIS:
 						skillratio += -100 + 200 * skill_lv;
@@ -6752,16 +6759,6 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 				ad.damage = ad.damage * (100-mdef)/100 - mdef2;
 #endif
 		}
-#if 0 // Doesn't seem to be official
-		if (skill_id == NPC_EARTHQUAKE) {
-			//Adds atk2 to the damage, should be influenced by number of hits and skill-ratio, but not mdef reductions. [Skotlex]
-			//Also divide the extra bonuses from atk2 based on the number in range [Kevin]
-			if(mflag>0)
-				ad.damage+= (sstatus->rhw.atk2*skillratio/100)/mflag;
-			else
-				ShowError("Zero range by %d:%s, divide per 0 avoided!\n", skill_id, skill_get_name(skill_id));
-		}
-#endif
 		if(ad.damage<1)
 			ad.damage=1;
 		else if(sc) { //only applies when hit
@@ -8965,7 +8962,7 @@ static const struct _battle_data {
 	{ "fame_pharmacy_10",                   &battle_config.fame_pharmacy_10,                50,     0,      INT_MAX,        },
 	{ "mail_delay",                         &battle_config.mail_delay,                      1000,   1000,   INT_MAX,        },
 	{ "at_monsterignore",                   &battle_config.autotrade_monsterignore,         0,      0,      1,              },
-	{ "idletime_option",                    &battle_config.idletime_option,                 0x1F,   0x1,    0xFFF,          },
+	{ "idletime_option",                    &battle_config.idletime_option,                 0x7C1F, 1,      0xFFFF,         },
 	{ "spawn_direction",                    &battle_config.spawn_direction,                 0,      0,      1,              },
 	{ "arrow_shower_knockback",             &battle_config.arrow_shower_knockback,          1,      0,      1,              },
 	{ "devotion_rdamage_skill_only",        &battle_config.devotion_rdamage_skill_only,     1,      0,      1,              },
@@ -9054,6 +9051,7 @@ static const struct _battle_data {
 	{ "at_logout_event",                    &battle_config.at_logout_event,                 1,      0,      1,              },
 	{ "homunculus_starving_rate",           &battle_config.homunculus_starving_rate,        10,     0,      100,            },
 	{ "homunculus_starving_delay",          &battle_config.homunculus_starving_delay,       20000,  0,      INT_MAX,        },
+	{ "drop_connection_on_quit",            &battle_config.drop_connection_on_quit,         0,      0,      1,              },
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent

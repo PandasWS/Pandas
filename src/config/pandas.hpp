@@ -527,12 +527,6 @@
 	// 会导致地图服务器直接崩溃的问题. 看代码应该是 rAthena 的工程师手误了 [Sola丶小克]
 	#define Pandas_Fix_SkillDB_ItemCost_NoexistsItem_Crash
 
-	// 修正 pet_db.yml 存在多个携带脚本的相同魔物记录时会触发内存泄露的问题 [Sola丶小克]
-	// 例如: 有两条 PORING 记录, 都同时指定了 SupportScript 或 Script 节点,
-	// 按照 import 逻辑定义在尾部的数据将覆盖前者, 但当后者覆盖前者的 SupportScript 或
-	// Script 时, 会忘记释放之前申请的内存. 导致退出地图服务器时提示内存泄露.
-	#define Pandas_Fix_PetDB_Script_Memory_Leaks
-
 	// 修正离线挂店的角色在服务器重启自动上线后, 头饰外观会暂时丢失的问题 [Sola丶小克]
 	#define Pandas_Fix_Autotrade_HeadView_Missing
 
