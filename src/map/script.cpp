@@ -25498,7 +25498,7 @@ BUILDIN_FUNC(battleignore) {
 	struct map_session_data *sd = nullptr;
 	int immune = script_getnum(st, 2);
 
-	if (!script_charid2sd(2, sd) || !sd)
+	if (!script_charid2sd(2, sd))
 		return SCRIPT_CMD_SUCCESS;
 
 	if (cap_value(immune, 0, 1))
@@ -25520,7 +25520,6 @@ BUILDIN_FUNC(battleignore) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(gethotkey) {
-	int hotkey_idx = -1, request_data = -1;
 	struct map_session_data *sd = nullptr;
 
 	if (!script_rid2sd(sd)) {
@@ -25528,7 +25527,7 @@ BUILDIN_FUNC(gethotkey) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	hotkey_idx = script_getnum(st, 2);
+	int hotkey_idx = script_getnum(st, 2);
 	if (hotkey_idx < 0 || hotkey_idx > MAX_HOTKEYS) {
 		ShowError("buildin_gethotkey: hotkey index %d is out of range (0..%d).\n", hotkey_idx, MAX_HOTKEYS);
 		script_pushint(st, -1);
@@ -25541,11 +25540,8 @@ BUILDIN_FUNC(gethotkey) {
 			script_pushint(st, -1);
 			return SCRIPT_CMD_SUCCESS;
 		}
-		else {
-			request_data = script_getnum(st, 3);
-		}
 
-		switch (request_data)
+		switch (script_getnum(st, 3))
 		{
 		case 0:
 			script_pushint(st, sd->status.hotkeys[hotkey_idx].type); break;
@@ -25554,7 +25550,7 @@ BUILDIN_FUNC(gethotkey) {
 		case 2:
 			script_pushint(st, sd->status.hotkeys[hotkey_idx].lv); break;
 		default:
-			ShowError("buildin_gethotkey: request date type %d is out of range (0..2).\n", request_data);
+			ShowError("buildin_gethotkey: request date type %d is out of range (0..2).\n", script_getnum(st, 3));
 			script_pushint(st, -1);
 		}
 		return SCRIPT_CMD_SUCCESS;
@@ -25578,8 +25574,6 @@ BUILDIN_FUNC(gethotkey) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(sethotkey) {
-	int hotkey_idx = -1, hotkey_id = -1;
-	int hotkey_lv = -1, hotkey_type = -1;
 	struct map_session_data *sd = nullptr;
 
 	if (!script_rid2sd(sd)) {
@@ -25587,21 +25581,21 @@ BUILDIN_FUNC(sethotkey) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	hotkey_idx = script_getnum(st, 2);
+	int hotkey_idx = script_getnum(st, 2);
 	if (hotkey_idx < 0 || hotkey_idx > MAX_HOTKEYS) {
 		ShowError("buildin_sethotkey: hotkey index %d is out of range (0..%d).\n", hotkey_idx, MAX_HOTKEYS);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	hotkey_type = script_getnum(st, 3);
+	int hotkey_type = script_getnum(st, 3);
 	if (hotkey_type < 0 || hotkey_type > 1) {
 		ShowError("buildin_sethotkey: hotkey type %d is out of range (0..1).\n", hotkey_type);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	hotkey_id = script_getnum(st, 4);
+	int hotkey_id = script_getnum(st, 4);
 	if (hotkey_type == 0) {	// 物品
 		if (!itemdb_exists(hotkey_id)) {
 			ShowError("buildin_sethotkey: Nonexistant item %d requested.\n", hotkey_id);
@@ -25617,7 +25611,7 @@ BUILDIN_FUNC(sethotkey) {
 		}
 	}
 
-	hotkey_lv = script_getnum(st, 5);
+	int hotkey_lv = script_getnum(st, 5);
 	if (hotkey_type == 0) {	// 物品
 		hotkey_lv = 0;
 	}
@@ -25763,7 +25757,7 @@ BUILDIN_FUNC(countitemidx) {
 	}
 
 	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
-		ShowWarning("buildin_countitemidx: Invalid Item ID (%d).\n", sd->inventory.u.items_inventory[idx].nameid);
+		ShowWarning("buildin_countitemidx: Invalid Item ID (%u).\n", sd->inventory.u.items_inventory[idx].nameid);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -25799,7 +25793,7 @@ BUILDIN_FUNC(delitemidx) {
 	}
 
 	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
-		ShowWarning("buildin_delitemidx: Deleting invalid Item ID (%d).\n", sd->inventory.u.items_inventory[idx].nameid);
+		ShowWarning("buildin_delitemidx: Deleting invalid Item ID (%u).\n", sd->inventory.u.items_inventory[idx].nameid);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -25844,12 +25838,12 @@ BUILDIN_FUNC(identifyidx) {
 	}
 
 	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
-		ShowWarning("buildin_identifyidx: Invalid Item ID (%d).\n", sd->inventory.u.items_inventory[idx].nameid);
+		ShowWarning("buildin_identifyidx: Invalid Item ID (%u).\n", sd->inventory.u.items_inventory[idx].nameid);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (sd->inventory.u.items_inventory[idx].nameid > 0 && sd->inventory.u.items_inventory[idx].identify != 1) {
+	if (sd->inventory.u.items_inventory[idx].identify != 1) {
 		sd->inventory.u.items_inventory[idx].identify = 1;
 		clif_item_identified(sd, idx, 0);
 	}
@@ -25885,7 +25879,7 @@ BUILDIN_FUNC(unequipidx) {
 	}
 
 	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
-		ShowWarning("buildin_unequipidx: Invalid Item ID (%d).\n", sd->inventory.u.items_inventory[idx].nameid);
+		ShowWarning("buildin_unequipidx: Invalid Item ID (%u).\n", sd->inventory.u.items_inventory[idx].nameid);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -25931,7 +25925,7 @@ BUILDIN_FUNC(equipidx) {
 	}
 
 	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
-		ShowWarning("buildin_equipidx: Invalid Item ID (%d).\n", sd->inventory.u.items_inventory[idx].nameid);
+		ShowWarning("buildin_equipidx: Invalid Item ID (%u).\n", sd->inventory.u.items_inventory[idx].nameid);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -25973,7 +25967,7 @@ BUILDIN_FUNC(itemexists) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	script_pushint(st, (itemdb_isstackable2(id) ? id->nameid : -id->nameid));
+	script_pushint(st, (itemdb_isstackable2(id) ? id->nameid : -(int64)id->nameid));
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_ItemExists
@@ -26114,7 +26108,7 @@ BUILDIN_FUNC(getequipexpiretick) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	left_seconds = (unsigned int)sd->inventory.u.items_inventory[idx].expire_time - (unsigned int)time(NULL);
+	left_seconds = (int64)(sd->inventory.u.items_inventory[idx].expire_time - time(NULL));
 	if (left_seconds < 0) {
 		script_pushint(st, -4);
 		return SCRIPT_CMD_SUCCESS;
@@ -26622,7 +26616,7 @@ BUILDIN_FUNC(getsameipinfo) {
 	if (script_hasdata(st, 3)) {
 		const char* map_name = script_getstr(st, 3);
 		if ((m = map_mapname2mapid(map_name)) < 0) {
-			ShowWarning("buildin_getsameipinfo: Invalid map name %s.\n", map_name);
+			ShowWarning("buildin_getsameipinfo: Invalid map name '%s'.\n", map_name);
 			script_pushint(st, -1);
 			return SCRIPT_CMD_SUCCESS;
 		}
@@ -26902,7 +26896,7 @@ BUILDIN_FUNC(settrigger) {
 
 	const char* name = npc_get_script_event_name(envtype);
 	if (name == nullptr) {
-		ShowError("buildin_settrigger: Can not get the event name for event type : %d\n", envtype);
+		ShowError("buildin_settrigger: Can not get the event name for event type: %d\n", envtype);
 		return SCRIPT_CMD_FAILURE;
 	}
 
@@ -27336,6 +27330,7 @@ void selfdeletion_exec_endtalk(struct script_state* st) {
 
 	TBL_NPC* nd = map_id2nd(st->oid);
 	if (!nd || nd->pandas.destruction_strategy != 1) return;
+
 	nd->pandas.destruction_timer = add_timer(
 		gettick() + 500, selfdeletion_timer, st->oid, st->rid
 	);
@@ -27580,13 +27575,14 @@ BUILDIN_FUNC(npcexists) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(storagegetitem) {
-	int get_count, i;
-	unsigned short nameid, amount;
-	struct item it;
-	TBL_PC* sd;
+	int get_count = 0, i = 0;
+	t_itemid nameid = 0;
+	unsigned short amount = 0;
+	struct item it = { 0 };
+	TBL_PC* sd = nullptr;
 	unsigned char flag = 0;
 	const char* command = script_getfuncname(st);
-	struct item_data* id = NULL;
+	struct item_data* id = nullptr;
 
 	if (script_isstring(st, 2)) {// "<item name>"
 		const char* name = script_getstr(st, 2);
@@ -27602,7 +27598,7 @@ BUILDIN_FUNC(storagegetitem) {
 	else {// <item id>
 		nameid = script_getnum(st, 2);
 		if (!(id = itemdb_exists(nameid))) {
-			ShowError("buildin_storagegetitem: Nonexistant item %d requested.\n", nameid);
+			ShowError("buildin_storagegetitem: Nonexistant item %u requested.\n", nameid);
 			script_pushint(st, -1);
 			return SCRIPT_CMD_SUCCESS; //No item created.
 		}
@@ -27743,9 +27739,9 @@ BUILDIN_FUNC(setinventoryinfo) {
 			break;
 		}
 
-		struct item_data* card_itemdata = itemdb_exists((unsigned short)value);
+		struct item_data* card_itemdata = itemdb_exists((t_itemid)value);
 		if (!card_itemdata) {
-			ShowWarning("buildin_setinventoryinfo: Nonexistant item : %d.\n", value);
+			ShowWarning("buildin_setinventoryinfo: Nonexistant item : %u.\n", value);
 			script_pushint(st, 0);
 			return SCRIPT_CMD_SUCCESS;
 		}

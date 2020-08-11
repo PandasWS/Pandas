@@ -14,10 +14,10 @@ extern short current_equip_item_index;
 //************************************
 // Method:		amulet_is
 // Description:	给定一个道具编号确认它是否为一个护身符类型的道具
-// Parameter:	uint16 nameid
+// Parameter:	t_itemid nameid
 // Returns:		bool 返回 true 则表示该道具为护身符
 //************************************
-bool amulet_is(uint16 nameid) {
+bool amulet_is(t_itemid nameid) {
 	struct item_data *item = itemdb_search(nameid);
 	return (item && item->properties.is_amulet);
 }
@@ -25,10 +25,10 @@ bool amulet_is(uint16 nameid) {
 //************************************
 // Method:		amulet_pandas_type
 // Description:	给定一个道具编号返回它的道具类型, 此函数用于 clif 给客户端发数据前使用
-// Parameter:	uint16 nameid
+// Parameter:	t_itemid nameid
 // Returns:		int
 //************************************
-int amulet_pandas_type(uint16 nameid) {
+int amulet_pandas_type(t_itemid nameid) {
 	return (amulet_is(nameid) ? IT_ETC : itemdb_search(nameid)->type);
 }
 
