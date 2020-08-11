@@ -1,5 +1,5 @@
 '''
-//===== Pandas Python Script ============================== 
+//===== Pandas Python Script =================================
 //= 打包流程辅助脚本
 //===== By: ================================================== 
 //= Sola丶小克
@@ -156,6 +156,7 @@ def arrange_common(packagedir):
     remove_files(packagedir, '.*')
     remove_files(packagedir, '*.scpt')
     remove_files(packagedir, '*.yml')
+    remove_files(packagedir, '*.ruleset')
     
     remove_file(packagedir + 'doc', 'source_doc.txt')
     remove_file(packagedir + 'npc', 'scripts_test.conf')
