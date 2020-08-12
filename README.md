@@ -1,6 +1,6 @@
 
 # 熊猫模拟器
-[![Build Status](https://travis-ci.org/PandasWS/Pandas.svg?branch=master)](https://travis-ci.org/PandasWS/Pandas) [![Build status](https://ci.appveyor.com/api/projects/status/github/PandasWS/Pandas?branch=master&svg=true)](https://ci.appveyor.com/project/CairoLee/Pandas/branch/master) [![Total alerts](https://img.shields.io/lgtm/alerts/g/PandasWS/Pandas.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/PandasWS/Pandas/alerts/) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/PandasWS/Pandas.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/PandasWS/Pandas/context:cpp) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/PandasWS/Pandas.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/PandasWS/Pandas/context:python) ![GitHub](https://img.shields.io/github/license/PandasWS/Pandas.svg) ![GitHub repo size](https://img.shields.io/github/repo-size/PandasWS/Pandas.svg)
+[![Build Status](https://travis-ci.com/PandasWS/Pandas.svg?branch=master)](https://travis-ci.com/PandasWS/Pandas) [![Build status](https://ci.appveyor.com/api/projects/status/github/PandasWS/Pandas?branch=master&svg=true)](https://ci.appveyor.com/project/CairoLee/Pandas/branch/master) [![Total alerts](https://img.shields.io/lgtm/alerts/g/PandasWS/Pandas.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/PandasWS/Pandas/alerts/) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/PandasWS/Pandas.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/PandasWS/Pandas/context:cpp) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/PandasWS/Pandas.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/PandasWS/Pandas/context:python) ![GitHub](https://img.shields.io/github/license/PandasWS/Pandas.svg) ![GitHub repo size](https://img.shields.io/github/repo-size/PandasWS/Pandas.svg)
 > Pandas (熊猫模拟器) 是一个开源的多人协作的软件开发项目. 致力构建符合中文用户习惯的大型多人在线角色扮演游戏服务端. 该程序使用 C++ 编写, 遵循 C++11 标准. 程序的灵活性非常强大, 可以对 NPC, 传送点等一系列内容进行修改. 该项目由全球各地的志愿者小组, 以及提供质量检查和支持的庞大社区共同管理. Pandas 基于 rAthena 构建, 而 rAthena 是 eAthena 项目的延续.
 
 ### 目录
@@ -28,7 +28,7 @@
 Linux  | [gcc-5 或更新版本](https://www.gnu.org/software/gcc/gcc-5/) / [CMake >= 3.14 ](https://cmake.org/download/)
 Windows | [MS Visual Studio 2015, 2017, 2019](https://www.visualstudio.com/downloads/)
 
-> 熊猫模拟器依赖 Boost C++ Libraries 1.71.0 版本, 而该版本的 Boost 并不支持 VS2013. 若使用 Visual Studio 作为编译器的话, 推荐大家直接上 VS2019 吧.
+> 熊猫模拟器依赖 Boost C++ Libraries 1.71.0 版本, 若使用 Visual Studio 作为编译器的话, 推荐大家直接上 VS2019 吧.
 
 ### 必备软件
 应用程序 | 名称

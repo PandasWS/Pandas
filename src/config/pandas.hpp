@@ -575,6 +575,13 @@
 	// 特别针对那些单纯依赖目标是否为 Null 作为野指针判断的相关变量
 	#define Pandas_Crashfix_Variable_Init
 
+	// 是否在 Release 模式下也启用 nullpo_ret 等系列指令 [Sola丶小克]
+	// 在 rAthena 的设计中, nullpo_ret 等指令仅在 Debug 模式会拦截空指针的情况并记录下位置信息
+	// 为了健壮性考虑, 熊猫模拟器会试图在 Release 模式下也使这些指令可以拦截空指针的情况
+	// 因为有些空指针时在运行时产生的, 日常测试非常难以覆盖到这些异常情况
+	// 若未来在生产环境执行过程中也碰到了空指针错误, 可考虑尝试上报到服务端进行统计分析
+	#define Pandas_Crashfix_Use_NullptrCheck_In_ReleaseMode
+
 	// 对函数的参数进行合法性校验 [Sola丶小克]
 	#define Pandas_Crashfix_FunctionParams_Verify
 
