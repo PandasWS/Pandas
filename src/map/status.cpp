@@ -5001,6 +5001,11 @@ void status_calc_regen(struct block_list *bl, struct status_data *status, struct
 	sd = BL_CAST(BL_PC,bl);
 	sc = status_get_sc(bl);
 
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!bl || !status || (bl->type&BL_PC && !sd))
+		return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	val = 1 + (status->vit/5) + (status->max_hp/200);
 
 	if( sd && sd->hprecov_rate != 100 )
@@ -5027,6 +5032,10 @@ void status_calc_regen(struct block_list *bl, struct status_data *status, struct
 		}
 		// Only players have skill/sitting skill regen for now.
 		sregen = regen->sregen;
+
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+		if (sregen) {
+#endif // Pandas_Crashfix_Prevent_NullPointer
 
 		val = 0;
 		if( (skill=pc_checkskill(sd,SM_RECOVERY)) > 0 )
@@ -5058,8 +5067,16 @@ void status_calc_regen(struct block_list *bl, struct status_data *status, struct
 
 		sregen->sp = cap_value(val, 0, SHRT_MAX);
 
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+		}
+#endif // Pandas_Crashfix_Prevent_NullPointer
+
 		// Skill-related recovery (only when sit)
 		sregen = regen->ssregen;
+
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+		if (sregen) {
+#endif // Pandas_Crashfix_Prevent_NullPointer
 
 		val = 0;
 		if( (skill=pc_checkskill(sd,MO_SPIRITSRECOVERY)) > 0 )
@@ -5078,6 +5095,10 @@ void status_calc_regen(struct block_list *bl, struct status_data *status, struct
 		if( (skill=pc_checkskill(sd,MO_SPIRITSRECOVERY)) > 0 )
 			val += skill*2 + skill*status->max_sp/500;
 		sregen->sp = cap_value(val, 0, SHRT_MAX);
+
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+		}
+#endif // Pandas_Crashfix_Prevent_NullPointer
 	}
 
 	if( bl->type == BL_HOM ) {
@@ -11519,6 +11540,10 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			}
 			break;
 		case SC_GLOOMYDAY_SK:
+#ifdef Pandas_Crashfix_Divide_by_Zero
+			// 极端情况下可能会造成除数为零的情况, 曾经有人崩溃后上报过 [Sola丶小克]
+			if (((sd ? pc_checkskill(sd, WM_LESSON) * 5 : 0) + val1 * 10) == 0) break;
+#endif // Pandas_Crashfix_Divide_by_Zero
 			// Random number between [15 ~ (Voice Lesson Skill Level x 5) + (Skill Level x 10)] %.
 			val2 = 15 + rnd()%( (sd?pc_checkskill(sd, WM_LESSON)*5:0) + val1*10 );
 			break;

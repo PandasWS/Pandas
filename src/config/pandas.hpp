@@ -578,6 +578,12 @@
 	// 对函数的参数进行合法性校验 [Sola丶小克]
 	#define Pandas_Crashfix_FunctionParams_Verify
 
+	// 对潜在的空指针调用崩溃情况进行校验和判断 [Sola丶小克]
+	#define Pandas_Crashfix_Prevent_NullPointer
+
+	// 对除数可能为零的情况进行一些规避处理 [Sola丶小克]
+	#define Pandas_Crashfix_Divide_by_Zero
+
 	// 修复使用 sommon 脚本指令召唤不存在的魔物, 会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_ScriptCommand_Summon
 
@@ -624,6 +630,10 @@
 	// 修正释放或删除 ev_db 时, 对应的 script_event 节点没清空的问题 [Sola丶小克]
 	// 在 reloadscript 时可能会因为 ev_db 被清空, 其他环节直接使用 script_event 的值而崩溃
 	#define Pandas_Crashfix_EventDatabase_Clean_Synchronize
+
+	// 修正在未开启大乐透功能的情况下启动服务端, 再重新打开大乐透功能
+	// 并用 @reloadbattleconf 使之立刻生效之后, 点击大乐透按钮会导致地图服务器崩溃的问题 [Sola丶小克]
+	#define Pandas_Crashfix_RouletteData_UnInit
 #endif // Pandas_Crashfix
 
 // ============================================================================
