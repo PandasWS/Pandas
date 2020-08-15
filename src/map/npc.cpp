@@ -2447,22 +2447,22 @@ static int npc_unload_ev(DBKey key, DBData *data, va_list ap)
 	char* npcname = va_arg(ap, char *);
 
 	if(strcmp(ev->nd->exname,npcname)==0){
-		db_remove(ev_db, key);
-
 #ifdef Pandas_Crashfix_EventDatabase_Clean_Synchronize
 		// 由于 script_event 中的内容是 ev_db 提供的
 		// 因此当移除 ev_db 中的内容时, 需要将 script_event 中的内容一起移除掉
 		for (auto& mapit : script_event) {
 			for (auto vecit = mapit.second.begin(); vecit != mapit.second.end(); ) {
-				if (strcmp(npcname, vecit->event->nd->exname) == 0) {
-					vecit = mapit.second.erase(vecit);
-					continue;
+				if (vecit->event && vecit->event->nd) {
+					if (strcmp(npcname, vecit->event->nd->exname) == 0) {
+						vecit = mapit.second.erase(vecit);
+						continue;
+					}
 				}
 				vecit++;
 			}
 		}
 #endif // Pandas_Crashfix_EventDatabase_Clean_Synchronize
-
+		db_remove(ev_db, key);
 		return 1;
 	}
 	return 0;
