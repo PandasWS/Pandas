@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="PandasWS Static Analysis RuleSet" Description="This rule set has some adjustments based on the 'Microsoft Native Recommended Rules', such as turning off the warning of C26812 (the rAthena project cannot resolve the warning in a short time)." ToolsVersion="16.0">
+  <Include Path="nativerecommendedrules.ruleset" Action="Default" />
+  <Rules AnalyzerId="Microsoft.Analyzers.NativeCodeAnalysis" RuleNamespace="Microsoft.Rules.Native">
+    <Rule Id="C26812" Action="None" />
+  </Rules>
+</RuleSet>

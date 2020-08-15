@@ -3672,7 +3672,11 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 			if (current_equip_combo_pos > 0) {
 				ShowWarning("pc_bonus: unknown bonus type %d %d in a combo with item #%u\n", type, val, sd->inventory_data[pc_checkequip( sd, current_equip_combo_pos )]->nameid);
 			}
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 			else if (current_equip_card_id > 0 || current_equip_item_index > 0) {
+#else
+			else if (current_equip_card_id > 0 || (current_equip_item_index > 0 && sd->inventory_data[current_equip_item_index])) {
+#endif // Pandas_Crashfix_Prevent_NullPointer
 				ShowWarning("pc_bonus: unknown bonus type %d %d in item #%u\n", type, val, current_equip_card_id ? current_equip_card_id : sd->inventory_data[current_equip_item_index]->nameid);
 			}
 			else {
@@ -4270,8 +4274,12 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 #endif // Pandas_NpcExpress_STATCALC
 		if (current_equip_combo_pos > 0) {
 			ShowWarning("pc_bonus2: unknown bonus type %d %d %d in a combo with item #%u\n", type, type2, val, sd->inventory_data[pc_checkequip( sd, current_equip_combo_pos )]->nameid);
-		} 
+		}
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 		else if (current_equip_card_id > 0 || current_equip_item_index > 0) {
+#else
+		else if (current_equip_card_id > 0 || (current_equip_item_index > 0 && sd->inventory_data[current_equip_item_index])) {
+#endif // Pandas_Crashfix_Prevent_NullPointer
 			ShowWarning("pc_bonus2: unknown bonus type %d %d %d in item #%u\n", type, type2, val, current_equip_card_id ? current_equip_card_id : sd->inventory_data[current_equip_item_index]->nameid);
 		}
 		else {
@@ -4417,7 +4425,11 @@ void pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 		if (current_equip_combo_pos > 0) {
 			ShowWarning("pc_bonus3: unknown bonus type %d %d %d %d in a combo with item #%u\n", type, type2, type3, val, sd->inventory_data[pc_checkequip( sd, current_equip_combo_pos )]->nameid);
 		}
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 		else if (current_equip_card_id > 0 || current_equip_item_index > 0) {
+#else
+		else if (current_equip_card_id > 0 || (current_equip_item_index > 0 && sd->inventory_data[current_equip_item_index])) {
+#endif // Pandas_Crashfix_Prevent_NullPointer
 			ShowWarning("pc_bonus3: unknown bonus type %d %d %d %d in item #%u\n", type, type2, type3, val, current_equip_card_id ? current_equip_card_id : sd->inventory_data[current_equip_item_index]->nameid);
 		}
 		else {
@@ -4506,7 +4518,11 @@ void pc_bonus4(struct map_session_data *sd,int type,int type2,int type3,int type
 		if (current_equip_combo_pos > 0) {
 			ShowWarning("pc_bonus4: unknown bonus type %d %d %d %d %d in a combo with item #%u\n", type, type2, type3, type4, val, sd->inventory_data[pc_checkequip( sd, current_equip_combo_pos )]->nameid);
 		}
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 		else if (current_equip_card_id > 0 || current_equip_item_index > 0) {
+#else
+		else if (current_equip_card_id > 0 || (current_equip_item_index > 0 && sd->inventory_data[current_equip_item_index])) {
+#endif // Pandas_Crashfix_Prevent_NullPointer
 			ShowWarning("pc_bonus4: unknown bonus type %d %d %d %d %d in item #%u\n", type, type2, type3, type4, val, current_equip_card_id ? current_equip_card_id : sd->inventory_data[current_equip_item_index]->nameid);
 		}
 		else {
@@ -10099,6 +10115,10 @@ bool pc_setregstr(struct map_session_data* sd, int64 reg, const char* str)
 	DBData prev;
 
 	nullpo_retr(false, sd);
+
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd || !str) return false;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 
 	if( str[0] ) {
 		p = ers_alloc(str_reg_ers, struct script_reg_str);

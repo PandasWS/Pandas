@@ -882,7 +882,13 @@ int chclif_parse_charselect(int fd, struct char_session_data* sd,uint32 ipl){
 		if (i < 0 || !cd->last_point.map) {
 			unsigned short j;
 			//First check that there's actually a map server online.
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 			ARR_FIND( 0, ARRAYLENGTH(map_server), j, map_server[j].fd >= 0 && map_server[j].map[0] );
+#else
+			// 在一些极端情况下, 可能会出现地图服务器已经注册, 但地图列表还未送达的情况
+			// 此时若按照以前的写法去判断 map[0] 就会触发空指针崩溃, 此处改成更安全的方式来进行判断
+			ARR_FIND( 0, ARRAYLENGTH(map_server), j, map_server[j].fd >= 0 && !map_server[j].map.empty() );
+#endif // Pandas_Crashfix_Prevent_NullPointer
 			if (j == ARRAYLENGTH(map_server)) {
 				ShowInfo("Connection Closed. No map servers available.\n");
 				chclif_send_auth_result(fd,1); // 01 = Server closed

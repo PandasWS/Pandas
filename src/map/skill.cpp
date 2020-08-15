@@ -12493,6 +12493,12 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
 			int area = skill_get_splash(skill_id, skill_lv);
 			short tmpx = 0, tmpy = 0;
 
+#ifdef Pandas_Crashfix_Divide_by_Zero
+			// 若这里读取到的信息为 0 的话，那么直接 break
+			// 否则下面会导致除数不能为 0 的错误发生，进而导致地图服务器崩溃 [Sola丶小克]
+			if (skill_get_unit_interval(skill_id) == 0) break;
+#endif // Pandas_Crashfix_Divide_by_Zero
+
 			for (i = 1; i <= skill_get_time(skill_id, skill_lv)/skill_get_unit_interval(skill_id); i++) {
 				// Creates a random Cell in the Splash Area
 				tmpx = x - area + rnd()%(area * 2 + 1);
