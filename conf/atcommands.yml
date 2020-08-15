@@ -37,411 +37,411 @@ Body:
     Aliases:
       - h
     Help: |
-      Params: <command>
-      Shows help for specified command.
+      参数: <指令>
+      列出此指令帮助
   - Command: noask
     Help: |
-      Auto rejects deals/invites.
+      自动拒绝交易/邀请
   - Command: gmotd
     Help: |
-      Broadcasts the Message of The Day to all players.
+      向所有玩家发送当天的公告.
   - Command: me
     Help: |
-      Params: <message>
-      Displays normal text as a message in this format: *name message* (like /me in mIRC).
+      参数: <信息内容>
+      显示普通文本，例如 "/me 大家好" 显示为：* : 角色名 大家好 : *
   - Command: fakename
     Help: |
-      Params: <name>
-      Changes your name to your choice temporarily.
+      参数: <名称>
+      暂时修改您的名称
   - Command: npctalk
     Aliases:
       - npctalkc
     Help: |
-      Params: <NPC name> <message>
-      Forces a NPC to display a message in normal chat.
+      参数: <NPC名称> <内容>
+      让NPC说话.
   - Command: broadcast
     Help: |
-      Params: <message>
-      Broadcasts a message with your name (in yellow).
+      参数: <内容>
+      发送一条含有您名称的广播(黄颜色文字)
   - Command: kami
     Help: |
-      Params: <message>
-      Broadcasts a message without your name (in yellow).
+      参数: <内容>
+      发送一条不含您名称的广播(黄颜色文字)
   - Command: kamib
     Help: |
-      Params: <message>
-      Broadcasts a message without your name (in blue).
+      参数: <内容>
+      发送一条不含您名称的广播(蓝颜色文字)
   - Command: localbroadcast
     Help: |
-      Params: <message>
-      Broadcasts a message with your name (in yellow) only on your map.
+      参数: <内容>
+      在当前地图发送一条含有您名称的广播(黄颜色文字)
   - Command: commands
     Help: |
-      Displays a list of commands that you can use.
+      显示您可以使用的命令列表
   - Command: rates
     Help: |
-      Displays the server's current rates.
+      显示服务器当前倍率
   - Command: uptime
     Help: |
-      Displays how long the server has been online.
+      显示服务器启动时间
   - Command: showdelay
     Help: |
-      Shows/hides the "There is a delay after this skill" message.
+      显示/隐藏 "技能延迟使用后的延迟" 信息.
   - Command: exp
     Help: |
-      Displays current levels and % progress.
+      显示当前等级和经验值百分比。
   - Command: mobinfo
     Aliases:
       - monsterinfo
       - mi
     Help: |
-      Params: <monster name|ID>
-      Shows monster info (stats, exp, drops etc).
+      参数: <魔物名称|ID>
+      显示魔物信息（属性、经验、掉落物品等）。
   - Command: iteminfo
     Aliases:
       - ii
     Help: |
-      Params: <item name|ID>
-      Shows item info (type, price etc).
+      参数: <物品名称|ID>
+      显示物品信息 （类型、价格等）。
   - Command: whodrops
     Help: |
-      Params: <item name|ID>
-      Shows who drops an item (monster with highest drop rates).
+      参数: <物品名称|ID>
+      显示掉落此物品的魔物（最高掉率的魔物）。
   - Command: version
     Help: |
-      Displays SVN version of the server.
+      显示服务器（SVN）版本.
   - Command: email
     Help: |
-      Params: <current email> <new email>
-      Changes your account e-mail address.
+      参数: <当前邮箱地址> <新邮箱地址>
+      修改当前邮箱地址。
   - Command: where
     Help: |
-      Params: <char name>
-      Tells you the location of a character.
+      参数: <角色名称>
+      显示该角色所在位置。
   - Command: time
     Aliases:
       - date
       - serverdate
       - servertime
     Help: |
-      Shows the date and time of the server.
+      显示当前系统日期和时间
   - Command: showexp
     Help: |
-      Displays/hides experience gained.
+      显示/隐藏 获得的经验值
   - Command: showzeny
     Help: |
-      Displays/hides Zeny gained.
+      显示/隐藏 获得的Zeny
   - Command: mobsearch
     Help: |
-      Params: <monster name|ID>
-      Shows the location of a certain mob on the current map.
+      参数: <魔物名称|ID>
+      显示当前地图指定魔物的位置。
   - Command: who
     Aliases:
       - whois
     Help: |
-      Params: [<name>]
-      Shows a list of online players and their party and guild.
+      参数: [<角色名称>]
+      显示包含指定名称的在线角色列表和他们的队伍与工会（参数为空则显示全部在线角色）。
   - Command: who2
     Help: |
-      Params: [<name>]
-      Shows a list of online players and their job.
+      参数: [<角色名称>]
+      显示包含指定名称的在线角色列表和他们的职业（参数为空则显示全部在线角色）。
   - Command: who3
     Help: |
-      Params: [<name>]
-      Shows a list of online players and their location.
+      参数: [<角色名称>]
+      显示包含指定名称的在线角色列表和他们的位置（参数为空则显示全部在线角色）。
   - Command: whomap
     Help: |
-      @whomap/@whomap2/@whomap3 [map] - like @who/@who2/@who3 but only for specified map.
+      @whomap/@whomap2/@whomap3 [地图名称] - 与 @who/@who2/@who3 作用类似，但是只搜索指定地图（参数为空则搜索当前地图）。
   - Command: whogm
     Help: |
-      Params: [match_text] - Like @who+@who2+who3, but only for GM.
+      参数: [<角色名称>] - 与 @who+@who2+who3作用类似, 但是只显示拥有GM权限的角色。
   - Command: guildspy
     Help: |
-      Params: <guild name|id> - You will receive all messages of the guild channel (Chat logging must be enabled)
+      参数: <工会名称|id> - 监听指定公会的聊天(Chat logging must be enabled)
   - Command: partyspy
     Help: |
-      @partyspy <party name|id> - You will receive all messages of the party channel (Chat logging must be enabled)
+      @partyspy <队伍名称|id> - 监听指定队伍的聊天(Chat logging must be enabled)
   - Command: mapinfo
     Help: |
-      Params: [<0-3> [map]] - Give information about a map (general info +: 0: no more, 1: players, 2: NPC, 3: chatrooms).
+      参数: [<0-3> [地图名称]] - 显示指定地图的相关信息 (0: 一般资料统计, 1: 角色, 2: NPC, 3: 聊天室).
   - Command: go
     Help: |
-      Params: <city name|number>
-      Warps you to a city.
-      -3: (Memo point 2)  14: louyang         31: mora
-      -2: (Memo point 1)  15: start point     32: dewata
-      -1: (Memo point 0)  16: prison/jail     33: malangdo island
-       0: prontera              17: jawaii             34: malaya port
-       1: morocc                18: ayothaya       35: eclage
-       2: geffen                  19: einbroch       36: lasagna
-       3: payon                  20: lighthalzen
-       4: alberta                 21: einbech
-       5: izlude                   22: hugel
-       6: aldebaran           23: rachel
-       7: xmas (lutie)        24: veins
-       8: comodo               25: moscovia
-       9: yuno                     26: midgard camp
-      10: amatsu               27: manuk
-      11: gonryun              28: splendide
-      12: umbala               29: brasilis
-      13: niflheim              30: el dicastes
+      参数: <城市名称|城市序号>
+      传送到指定城市。
+      -3: (记录点 2)       14: 洛阳           31: 莫拉村
+      -2: (记录点 1)       15: 记录点         32: 德瓦塔岛
+      -1: (记录点 0)       16: 监狱/监牢      33: 喵喵岛
+       0: 普隆德拉         17: 蜜月岛         34: 马拉亚港口
+       1: 梦罗克           18: 哎哟泰雅       35: 艾卡拉奇
+       2: 吉芬             19: 钢铁之都       36: lasagna
+       3: 裴杨             20: 企业之都
+       4: 艾尔贝塔         21: 采矿村落
+       5: 伊斯鲁得岛       22: 田园都市毁葛
+       6: 艾尔帕兰         23: 阿鲁娜配滋教国首都拉赫
+       7: 圣诞村           24: 峡谷村子伯仁斯
+       8: 克魔岛           25: 莫斯科比亚
+       9: 朱诺             26: 米德加尔特联合驻地
+      10: 天津             27: 马努克
+      11: 昆仑             28: 辉煌领域中心
+      12: 汶巴拉           29: 巴西
+      13: 尼芙菲姆         30: 沙帕首都埃迪斯特斯
   - Command: jumpto
     Aliases:
       - goto
       - warpto
     Help: |
-      Params: <char name>
-      Warps you to selected character.
+      参数: <角色名称>
+      传送到指定角色身边。
   - Command: follow
     Help: |
-      Params: <char name>
-      Follow a player.
+      参数: <角色名称>
+      跟随指定角色（输入自己的名字可以解除跟随）
   - Command: mount
     Aliases:
       - mountpeco
     Help: |
-      Give/remove a job-based mount (class is required, but not the skill).
+      获得/移除 职业坐骑 (检查相关职业，不检查相关技能).
   - Command: mount2
     Help: |
-      Give/remove a cash mount.
+      获得/移除 一个Cash坐骑.
   - Command: disguise
     Help: |
-      Params: <monster name|ID>
-      Change your appearence to other players to a mob.
+      参数: <角色名称|ID>
+      将自己的外观变为指定魔物
   - Command: undisguise
     Help: |
-      Restore your normal appearance.
+      将外观恢复正常
   - Command: disguiseguild
     Help: |
-      Disguises all online characters of a guild.
+      伪装公会所有在线玩家的外观
   - Command: undisguiseguild
     Help: |
-      Restore the normal appearance of all characters of a guild.
+      恢复公会所有在线玩家的外观
   - Command: model
     Help: |
-      Params:  <hair ID: 0-17> <hair color: 0-8> <clothes color: 0-4> - Changes your characters appearence.
+      参数:  <发型 ID: 0-17> <发色: 0-8> <衣服颜色: 0-4> - 改变角色外观
   - Command: size
     Help: |
-      Params:  <0-2> Changes your size (0-Normal 1-Small 2-Large)
+      参数:  <0-2> 改变角色大小 (0-正常 1-变小 2-变大)
   - Command: sizeall
     Help: |
-      Changes the size of all players.
+      改变所有在线角色大小
   - Command: sizeguild
     Help: |
-      Changes the size of all online characters of a guild.
+      改变工会内所有在线角色大小
   - Command: hide
     Help: |
-      Makes you character invisible (GM invisibility). Type again to become visible.
+      角色进入隐身状态。再次执行指令则解除。
   - Command: save
     Help: |
-      Sets respawn point to current spot.
+      将当前位置设置为复活点
   - Command: load
     Aliases:
       - return
     Help: |
-      Warps you to your save point.
+      传送到复活点
   - Command: warp
     Aliases:
       - rura
       - mapmove
     Help: |
-      Params: <mapname> [<x> <y>]
-      Warps you to the selected map and position.
+      参数: <地图名称> [<x> <y>]
+      传送到指定地图坐标
   - Command: jump
     Help: |
-      Params: [<x> [<y>]]
-      Randomly warps you like a flywing.
+      参数: [<x> [<y>]]
+      传送到当前地图指定坐标，不输入坐标则随机移动。
   - Command: jobchange
     Aliases:
       - job
     Help: |
-      Params: <job name|ID>
-      Changes your job.
-      ----- Novice / 1st Class -----
-         0 Novice              1 Swordman            2 Magician            3 Archer
-         4 Acolyte              5 Merchant               6 Thief
-      ----- 2nd Class -----
-         7 Knight               8 Priest                     9 Wizard               10 Blacksmith
-        11 Hunter           12 Assassin            14 Crusader          15 Monk
-        16 Sage              17 Rogue                 18 Alchemist         19 Bard
-        20 Dancer
-      ----- High Novice / High 1st Class -----
-      4001 Novice High     4002 Swordman High    4003 Magician High    4004 Archer High
-      4005 Acolyte High     4006 Merchant High       4007 Thief High
-      ----- Transcendent 2nd Class -----
-      4008 Lord Knight      4009 High Priest             4010 High Wizard      4011 Whitesmith
-      4012 Sniper               4013 Assassin Cross   4015 Paladin              4016 Champion
-      4017 Professor         4018 Stalker                    4019 Creator               4020 Clown
-      4021 Gypsy
-      ----- 3rd Class (Regular) -----
-      4054 Rune Knight    4055 Warlock                 4056 Ranger            4057 Arch Bishop
-      4058 Mechanic         4059 Guillotine Cross  4066 Royal Guard   4067 Sorcerer
-      4068 Minstrel            4069 Wanderer              4070 Sura                 4071 Genetic
-      4072 Shadow Chaser
-      ----- 3rd Class (Transcendent) -----
-      4060 Rune Knight    4061 Warlock                 4062 Ranger             4063 Arch Bishop
-      4064 Mechanic         4065 Guillotine Cross  4073 Royal Guard    4074 Sorcerer
-      4075 Minstrel            4076 Wanderer              4077 Sura                  4078 Genetic
-      4079 Shadow Chaser
-      ----- Expanded Class -----
-           23 Super Novice      24 Gunslinger              25 Ninja                 4045 Super Baby
-      4046 Taekwon           4047 Star Gladiator     4049 Soul Linker            4050 Gangsi
-      4051 Death Knight    4052 Dark Collector    4190 Ex. Super Novice  4191 Ex. Super Baby
-      4211 Kagerou            4212 Oboro             4215 Rebellion        4218 Summoner
-      4239 Star Emperor   4240 Soul Reaper
-      ----- Baby Novice And Baby 1st Class -----
-      4023 Baby Novice      4024 Baby Swordman    4025 Baby Magician   4026 Baby Archer
-      4027 Baby Acolyte      4028 Baby Merchant       4029 Baby Thief
-      ---- Baby 2nd Class ----
-      4030 Baby Knight     4031 Baby Priest         4032 Baby Wizard         4033 Baby Blacksmith
-      4034 Baby Hunter    4035 Baby Assassin   4037 Baby Crusader    4038 Baby Monk
-      4039 Baby Sage       4040 Baby Rogue        4041 Baby Alchemist   4042 Baby Bard
-      4043 Baby Dancer
-      ---- Baby 3rd Class ----
-      4096 Baby Rune Knight  4097 Baby Warlock     4098 Baby Ranger           4099 Baby Arch Bishop
-      4100 Baby Mechanic       4101 Baby Glt. Cross  4102 Baby Royal Guard  4103 Baby Sorcerer
-      4104 Baby Minstrel          4105 Baby Wanderer   4106 Baby Sura             4107 Baby Genetic
-      4108 Baby Shadow Chaser
-      ---- Expanded Baby Class ----
-      4220 Baby Summoner        4222 Baby Ninja        4223 Baby Kagero         4224 Baby Oboro
-      4225 Baby Taekwon       4226 Baby Star Glad    4227 Baby Soul Linker    4228 Baby Gunslinger
-      4229 Baby Rebellion   4241 Baby Star Emperor    4242 Baby Soul Reaper
-      ---- Modes And Others ----
-       22 Wedding            26 Christmas          27 Summer           28 Hanbok
-       29 Oktoberfest       30 Summer 2
-       4048 Star Gladiator (Union)	    4238 Baby Star Glad (Union)
+      参数: <职业ID>
+      变更职业
+      ----- 初心者 / 1转 职业 -----
+         0 初心者              1 剑士            2 魔法师            3 弓箭手
+         4 服侍                5 商人            6 盗贼
+      ----- 2转 职业 -----
+         7 骑士              8 牧师              9 巫师              10 铁匠
+        11 猎人             12 刺客             14 十字军            15 武道家
+        16 贤者             17 流氓             18 炼金术士          19 诗人
+        20 舞蹈家
+      ----- 进阶初心者 / 进阶 1转 职业 -----
+      4001 进阶初心者     4002 进阶剑士        4003 进阶魔法师      4004 进阶弓箭手
+      4005 进阶服侍       4006 进阶商人        4007 进阶盗贼
+      ----- 进阶 2转 职业 -----
+      4008 骑士领主       4009 神官            4010 超魔导士        4011 神工匠
+      4012 神射手         4013 十字刺客        4015 圣殿十字军      4016 武术宗师
+      4017 智者           4018 神行太保        4019 创造者         4020 搞笑艺人
+      4021 冷艳舞姬
+      ----- 3转 职业 (未转生) -----
+      4054 符文骑士       4055 大法师          4056 游侠            4057 大主教
+      4058 机匠           4059 十字斩首者      4066 皇家卫士        4067 元素使
+      4068 宫廷乐师       4069 流浪舞者        4070 修罗            4071 基因学者
+      4072 暗影追迹者
+      ----- 3转 职业 (已转生) -----
+      4060 符文骑士      4061 大法师           4062 游侠            4063 大主教
+      4064 机匠         4065 十字斩首者        4073 皇家卫士        4074 元素使
+      4075 宫廷乐师      4076 流浪舞者         4077 修罗            4078 基因学者
+      4079 暗影追迹者
+      ----- 扩展 职业 -----
+        23 超级初心者      24 枪手              25 忍者             4045 超级宝宝
+      4046 跆拳道        4047 拳圣            4049 悟灵士           4050 反叛者
+      4051 死亡骑士      4052 暗影收集者       4190 扩展超级初心者    4191 扩展超级初心者宝宝
+      4211 影狼          4212 胧              4215 反叛者           4218 召唤师
+      4239 星星皇帝      4240 灵魂收割者
+      ----- 宝宝初心者 / 宝宝 1转 职业 -----
+      4023 宝宝初心者    4024 宝宝剑士         4025 宝宝魔法师       4026 宝宝弓箭手
+      4027 宝宝服侍      4028 宝宝商人         4029 宝宝盗贼
+      ---- 宝宝 2转 职业 ----
+      4030 宝宝骑士      4031 宝宝牧师         4032 宝宝巫师        4033 宝宝铁匠
+      4034 宝宝猎人      4035 宝宝刺客         4037 宝宝十字军      4038 宝宝武术宗师
+      4039 宝宝贤者      4040 宝宝流氓         4041 宝宝炼金术士    4042 宝宝诗人
+      4043 宝宝舞蹈家
+      ---- 宝宝 3转 职业 ----
+      4096 宝宝符文骑士  4097 宝宝大法师       4098 宝宝游侠         4099 宝宝大主教
+      4100 宝宝机匠      4101 宝宝十字斩首者   4102 宝宝皇家卫士     4103 宝宝元素使
+      4104 宝宝宫廷乐师  4105 宝宝流浪舞者     4106 宝宝修罗         4107 宝宝基因学者
+      4108 宝宝暗影追迹者
+      ---- 扩展 宝宝 职业 ----
+      4220 宝宝召唤师    4222 宝宝忍者        4223 宝宝影狼         4224 宝宝胧
+      4225 宝宝跆拳道    4226 宝宝拳圣        4227 宝宝悟灵士       4228 宝宝枪手
+      4229 宝宝反叛者    4241 宝宝星星皇帝    4242 宝宝灵魂收割者
+      ---- 模式 / 其他 ----
+       22 结婚            26 圣诞          27 夏装           28 韩服
+       29 啤酒节          30 夏装2
+       4048 明星斗士 (联盟)	 4238 宝宝明星斗士 (联盟)
   - Command: option
     Help: |
-      Params: <param1> <param2>(stackable) <param3>(stackable)
-      Adds different visual effects on or around your character.
-       <param1>       <param2>        <param3>
-      01: Stone      01: Sight       01: Sight          512: Cart Lv. 4
-      02: Frozen     02: Curse       02: Hiding        1024: Cart Lv. 5
-      03: Stun       04: Silence     04: Cloaking      2048: Orc Head
-      04: Sleep      08: Signum      08: Cart Lv. 1    4096: Wedding
-      06: Petrify    16: Blind       16: Falcon        8192: Ruwach
-      07: Burning    32: Angelus     32: Riding       16384: Chasewalk
-      08: Imprison   64: Bleeding    64: Invisible
-      16: (Nothing) 128: D. Poison  128: Cart Lv. 2
-      32: (Nothing) 256: Fear       256: Cart Lv. 3
+      参数: <参数1> <参数2>(可叠加) <参数3>(可叠加)
+      为角色添加指定效果
+       <参数1>       <参数2>        <参数3>               <参数3>
+      01: 石化      01: 幻觉       01: 视觉           512: 手推车 Lv. 4
+      02: 冰冻      02: 诅咒       02: 伪装          1024: 手推车 Lv. 5
+      03: 眩晕      04: 沉默       04: 隐匿          2048: 兽人头
+      04: 睡眠      08: Signum     08: 手推车 Lv. 1  4096: 礼服
+      06: 发呆      16: 黑暗       16: 鹰            8192: Ruwach
+      07: 燃烧      32: Angelus    32: 骑乘         16384: Chasewalk
+      08: 监禁      64: 出血       64: 隐形
+      16: (无)     128: 中毒       128: 手推车 Lv. 2
+      32: (无)     256: 恐惧       256: 手推车 Lv. 3
   - Command: heal
     Help: |
-      Params: [<HP> <SP>]
-      Heals the desired amount of HP and SP. No value specified will do a full heal.
+      参数: [<HP> <SP>]
+      恢复指定数量HP/SP（不输入数量则全部恢复）
   - Command: dye
     Aliases:
       - ccolor
     Help: |
-      Params: <clothes palette no.>
-      Changes your characters clothes color.
+      参数: <衣服颜色:0-4>
+      改变衣服颜色。
   - Command: hairstyle
     Aliases:
       - hstyle
     Help: |
-      Params: <hairstyle no.>
-      Changes your hair style.
+      参数: <发型:0-17>
+      改变发型。
   - Command: haircolor
     Aliases:
       - hcolor
     Help: |
-      Params <hair palette no.>
-      Changes your hair color.
+      参数: <发色:0-8>
+      改变头发颜色。
   - Command: speed
     Help: |
-      Params: <1-1000>
-      Changes you walking speed. 1 being the fastest and 1000 the slowest. Default is 150.
+      参数: <1-1000>
+      改编行走速度, 1 最快, 1000 最慢, 默认值为 150
   - Command: effect
     Help: |
-      Params: <effect id> [<flag>]
-      Give an effect to your character.
+      参数: <特效id> [<flag>]
+      为角色创建一个特效。
   - Command: dropall
     Help: |
-      Params: [<item type>]
-      Throws all your possession on the ground. No type specified will drop all items.
+      参数: [<物品类型>]
+      把身上指定类型物品扔到地上，没有指定类型则扔掉全部。
   - Command: storeall
     Help: |
-      Puts all your possessions in storage.
+      将身上全部物品存入仓库。
   - Command: killable
     Help: |
-      Make your character killable.
+      允许其他角色攻击您.
   - Command: memo
     Help: |
-      Params: [memo position]
-      Set/change a memo location (no position: display memo points).
+      参数: [记录点]
+      设置或修改传送之阵的记录点（没有输入，则列出现有记录点）。
   - Command: spiritball
     Help: |
-      Params: <1-100>
-      Gives you "spirit spheres" like from the skill "Call Spirits".
+      参数: <1-100>
+      获得气弹，类似"续气"技能。
   - Command: questskill
     Help: |
-      Params: <#>
-      Gives you the specified quest skill
-      Novice = 142: First Aid, 143: Act Dead
-      Archer = 147: Create Arrow, 148: Charge Arrow
-      Swordman = 144: Moving HP Recovery, 145: Attack Weak Point, 146: Auto Berserk
-      Acolyte = 156: Holy Light
-      Thief = 149: Throw Sand, 150: Back Sliding, 151: Take Stone, 152: Throw Stone
-      Merchant = 153: Cart Revolution, 154: Change Cart, 155: Crazy Uproar, 2535: Open Buying Store
-      Magician = 157: Energy Coat
-      Hunter = 1009: Phantasmic Arrow
-      Bard = 1010: Pang Voice
-      Dancer = 1011: Wink of Charm
-      Knight = 1001: Charge Attack
-      Crusader = 1002: Shrink
-      Priest = 1014: Redemptio
-      Monk = 1015: Ki Translation, 1016: Ki Explosio
-      Assassin = 1003: Sonic Acceleration, 1004: Throw Venom Knife
-      Rogue = 1005: Close Confine
-      Blacksmith = 1012: Unfair Trick, 1013: Greed
-      Alchemist = 238: Basis of Life
-      Wizard = 1006: Sight Blaster
-      Sage = 1007: Create Elemental Converter, 1008: Elemental Change (Water), 1017: Elemental Change (Earth), 1018: Elemental Change (Fire), 1019: Elemental Change (Wind)
+      参数: <技能编号>
+      学习特殊职业技能
+      初心者 = 142: 紧急治疗, 143: 装死
+      弓箭手 = 147: 制作箭, 148: 冲锋箭
+      剑士 = 144: 移动时恢复HP, 145: 弱点攻击, 146: 自动狂暴
+      服侍 = 156: 神圣之光
+      盗贼 = 149: 喷砂, 150: 后退回避, 151: 捡石头, 152: 扔石头
+      商人 = 153: 手推车攻击, 154: 改装手推车, 155: 大声呐喊, 2535: 采购商店
+      魔法师 = 157: 能量外套
+      猎人 = 1009: 幻箭
+      诗人 = 1010: 苦痛之音
+      舞娘 = 1011: 媚眼
+      骑士 = 1001: 冲锋攻击
+      十字军 = 1002: 退缩
+      牧师 = 1014: 救赎
+      武僧 = 1015: 注气, 1016: 气爆散
+      刺客 = 1003: 音速投掷加速, 1004: 剧毒短刀
+      流氓 = 1005: 擒拿
+      铁匠 = 1012: 不正当的手段, 1013: 贪婪
+      炼金术士 = 238: 生命伦理
+      巫师 = 1006: 火狩冲击
+      贤者 = 1007: 属性卷轴制作, 1008: 水属性转换, 1017: 地属性转换, 1018: 火属性转换, 1019: 风属性转换
   - Command: lostskill
     Help: |
-      Params: <#>
-      Takes away the specified quest skill from you
-      Novice = 142: First Aid, 143: Act Dead
-      Archer = 147: Create Arrow, 148: Charge Arrow
-      Swordman = 144: Moving HP Recovery, 145: Attack Weak Point, 146: Auto Berserk
-      Acolyte = 156: Holy Light
-      Thief = 149: Throw Sand, 150: Back Sliding, 151: Take Stone, 152: Throw Stone
-      Merchant = 153: Cart Revolution, 154: Change Cart, 155: Crazy Uproar, 2535: Open Buying Store
-      Magician = 157: Energy Coat
-      Hunter = 1009: Phantasmic Arrow
-      Bard = 1010: Pang Voice
-      Dancer = 1011: Wink of Charm
-      Knight = 1001: Charge Attack
-      Crusader = 1002: Shrink
-      Priest = 1014: Redemptio
-      Monk = 1015: Ki Translation, 1016: Ki Explosio
-      Assassin = 1003: Sonic Acceleration, 1004: Throw Venom Knife
-      Rogue = 1005: Close Confine
-      Blacksmith = 1012: Unfair Trick, 1013: Greed
-      Alchemist = 238: Basis of Life
-      Wizard = 1006: Sight Blaster
-      Sage = 1007: Create Elemental Converter, 1008: Elemental Change (Water), 1017: Elemental Change (Earth), 1018: Elemental Change (Fire), 1019: Elemental Change (Wind)
+      参数: <技能编号>
+      删除特殊职业技能
+            初心者 = 142: 紧急治疗, 143: 装死
+      弓箭手 = 147: 制作箭, 148: 冲锋箭
+      剑士 = 144: 移动时恢复HP, 145: 弱点攻击, 146: 自动狂暴
+      服侍 = 156: 神圣之光
+      盗贼 = 149: 喷砂, 150: 后退回避, 151: 捡石头, 152: 扔石头
+      商人 = 153: 手推车攻击, 154: 改装手推车, 155: 大声呐喊, 2535: 采购商店
+      魔法师 = 157: 能量外套
+      猎人 = 1009: 幻箭
+      诗人 = 1010: 苦痛之音
+      舞娘 = 1011: 媚眼
+      骑士 = 1001: 冲锋攻击
+      十字军 = 1002: 退缩
+      牧师 = 1014: 救赎
+      武僧 = 1015: 注气, 1016: 气爆散
+      刺客 = 1003: 音速投掷加速, 1004: 剧毒短刀
+      流氓 = 1005: 擒拿
+      铁匠 = 1012: 不正当的手段, 1013: 贪婪
+      炼金术士 = 238: 生命伦理
+      巫师 = 1006: 火狩冲击
+      贤者 = 1007: 属性卷轴制作, 1008: 水属性转换, 1017: 地属性转换, 1018: 火属性转换, 1019: 风属性转换
   - Command: skillid
     Help: |
-      Params: <name>
-      Look up a skill by name
+      参数: <技能名称>
+      查看指定技能
   - Command: useskill
     Help: |
-      Params: <skillid> <skillv> <target>
-      Use a skill on target
+      参数: <技能ID> <等级> <目标>
+      使用指定技能
   - Command: skilltree
     Help: |
-      Params: <skillnum> <charname>
-      Prints the skill tree needed to get a skill for the target player.
+      参数: <技能ID> <角色名称>
+      显示该玩家学习该技能所需的前置技能
   - Command: marry
     Help: |
-      Params: <player name>
-      Marry another player.
+      参数: <player name>
+      与该角色结婚
   - Command: divorce
     Help: |
-      Divorce player.
+      离婚
   - Command: alive
     Help: |
-      Revives yourself from death.
+      满状态原地复活
   - Command: blvl
     Aliases:
       - lvup
@@ -451,8 +451,8 @@ Body:
       - baselevel
       - baselvlup
     Help: |
-      Params: <number of levels>
-      Raises your base level the desired number of levels.
+      参数: <等级数>
+      提高基础等级
   - Command: jlvl
     Aliases:
       - jlevel
@@ -461,213 +461,214 @@ Body:
       - joblevel
       - joblvlup
     Help: |
-      Params: <number of levels>
-      Raises your job level the desired number of levels.
+      参数: <等级数>
+      提高职业等级
   - Command: allskill
     Aliases:
       - allskills
       - skillall
       - skillsall
     Help: |
-      Give you all skills.
+      学会所有技能。
   - Command: stpoint
     Help: |
-      Params: <number of points> - Gives you the desired number of stat points.
+      参数: <数量> - 获得指定数量的属性点
   - Command: skpoint
     Help: |
-      Params: <number of points> - Gives you the desired number of skill points.
+      参数: <数量> - 获得指定数量的技能点
   - Command: zeny
     Help: |
-      Params: <amount> - Gives you desired amount of Zeny.
+      参数: <数量> - 获得指定数量的Zeny
   - Command: cash
     Help: |
-      Params: <amount> - Gives you the specified amount of cash points.
+      参数: <数量> - 获得指定数量的 cash points.
   - Command: points
     Help: |
-      Params: <amount> - Gives you the specified amount of Kafra Points.
+      参数: <数量> - 获得指定数量的 Kafra Points.
   - Command: str
     Help: |
-      Params: <amount>
-      Raises STR by given amount.
+      参数: <数量>
+      提升指定数量的 STR
   - Command: agi
     Help: |
-      Params: <amount>
-      Raises AGI by given amount.
+      参数: <数量>
+      提升指定数量的 AGI
   - Command: dex
     Help: |
-      Params: <amount>
-      Raises DEX by given amount.
+      参数: <数量>
+      提升指定数量的 DEX
   - Command: vit
     Help: |
-      Params: <amount>
-      Raises VIT by given amount.
+      参数: <数量>
+      提升指定数量的 VIT
   - Command: int
     Help: |
-      Params: <amount>
-      Raises INT by given amount.
+      参数: <数量>
+      提升指定数量的 INT
   - Command: luk
     Help: |
-      Params: <amount>
-      Raises LUK by given amount.
+      参数: <数量>
+      提升指定数量的 LUK
   - Command: allstats
     Aliases:
       - allstat
       - statall
       - statsall
     Help: |
-      Params: <value>
-      Adds value in all stats (maximum if no value).
+      参数: <数值>
+      提升指定数量的全部属性（未指定数值则提升到最大）
   - Command: addwarp
     Help: |
-      Params: <map name> <x coord> <y coord> <NPC name>
+      参数: <地图名称> <x 坐标> <y 坐标> <传送点名称> 
+      在当前位置设置一个到指定地图的传送点 (服务器重启后消失)
   - Command: killmonster2
     Help: |
-      Kills all monsters of your map (without drops).
+      消灭当前地图所有魔物（无任何掉落）
   - Command: monster
     Aliases:
       - spawn
     Help: |
-      Params: <monster name|ID> [<number to spawn> [<desired_monster_name> [<x coord> [<y coord>]]]]
-      @monster2 <desired_monster_name> <monster name|ID> [<number to spawn> [<x coord> [<y coord>]]]
-      @spawn/@monster/@summon/@monster2 "desired monster name" <monster name|ID> [<number to spawn> [<x coord> [<y coord>]]]
-      @spawn/@monster/@summon/@monster2 <monster name|ID> "desired monster name" [<number to spawn> [<x coord> [<y coord>]]]
-      Spawns the desired monster with any desired name.
+      参数: <魔物名称|ID> [<数量> [<显示名称> [<x 坐标> [<y 坐标]]]]
+      @monster2 <显示名称> <魔物名称|ID> [<数量> [<x 坐标> [<y 坐标>]]]
+      @spawn/@monster/@summon/@monster2 "显示名称" <魔物名称|ID> [<数量> [<x 坐标> [<y 坐标>]]]
+      @spawn/@monster/@summon/@monster2 <魔物名称|ID> "显示名称" [<数量> [<x 坐标> [<y 坐标>]]]
+      召唤魔物并起名字。
   - Command: monstersmall
     Help: |
-      Params: <monster name|ID>
-      Spawns a smaller version of a monster.
+      参数: <魔物名称|ID>
+      召唤迷你魔物。
   - Command: monsterbig
     Help: |
-      Params: <monster name|ID>
-      Spawns a larger version of a monster.
+      参数: <魔物名称|ID>
+      召唤巨型魔物。
   - Command: killmonster
     Help: |
-      Params: <map>
-      Kill all monsters of the map (they drop)
+      参数: <地图名称>
+      杀死指定地图上所有魔物（掉落物品，无输入地图名称则为当前地图）
   - Command: autoloot
     Help: |
-      Params: <on|off|#>
-      Makes items go straight into your inventory.
+      参数: <on|off|#>
+      自动拾取物品。
   - Command: autotrade
     Aliases:
       - at
     Help: |
-      Allows you to vend while you are offline.
+      离线并保持商店开启。
   - Command: changegm
     Help: |
-      Params: <charname>
-      Changes the leader of your guild (You must be guild leader)
+      参数: <角色名称>
+      更改工会会长 (您必须是会长才能更改)
   - Command: changeleader
     Help: |
-      Params: <charname>
-      Changes the leader of your party (You must be party leader)
+      参数: <角色名称>
+      更改队伍队长（您必须是队长才能更改）
   - Command: request
     Help: |
-      Params: <message>
-      Sends a message to all connected GMs (via the gm whisper system)
+      参数: <内容>
+      给在线GM发私聊
   - Command: sound
     Help: |
-      Params: <path to file in data folder or GRF file>
-      Plays a sound from the data folder or GRF file located on the client.
+      参数: <文件夹或GRF文件的路径>
+      播放一个位于客户端上的数据文件夹或GRF的文件内的音乐
   - Command: clone
     Help: |
-      Params: <charname>
-      Spawns a supportive clone of the given player.
+      参数: <角色名称>
+      制造一个中立的克隆体
   - Command: slaveclone
     Help: |
-      Params: <charname>
-      Spawns a supportive clone of the given player that follows the creator around.
+      参数: <角色名称>
+      制造一个友方克隆体
   - Command: evilclone
     Help: |
-      Params: <charname>
-      Spawns an aggressive clone of the given player.
+      参数: <角色名称>
+      制造一个敌方克隆体
   - Command: changesex
     Help: |
-      Changes your gender.
+      更改您的性别。
   - Command: duel
     Help: |
-      Starts a duel.
+      启动决斗
   - Command: invite
     Help: |
-      Invites a player to a duel.
+      邀请玩家进入决斗
   - Command: accept
     Help: |
-      Accepts an invitation to a duel.
+      接受决斗邀请
   - Command: reject
     Help: |
-      Rejects an invitation to a duel.
+      拒绝决斗邀请
   - Command: leave
     Help: |
-      Leaves a duel.
+      离开决斗
   - Command: mail
     Help: |
-      Open mail box.
+      打开邮箱
   - Command: storage
     Help: |
-      Opens storage.
+      打开仓库
   - Command: itemreset
     Aliases:
       - clearinventory
     Help: |
-      Remove all your items.
+      清空道具栏
   - Command: guildstorage
     Aliases:
       - gstorage
     Help: |
-      Opens guild storage.
+      打开工会仓库
   - Command: idsearch
     Help: |
-      Params: <part_of_item_name>
-      Search all items that name have part_of_item_name
+      参数: <物品名称的一部分>
+      根据关键字搜索物品
   - Command: refine
     Help: |
-      Params: <equip position> <+/- amount>
+      参数: <装备位置> <+/- 数值>
   - Command: produce
     Help: |
-      Params: <equip name or equip ID> <element> <# of very's>
-      Element: 0=None 1=Ice 2=Earth 3=Fire 4=Wind
-      You can add up to 3 Star Crumbs and 1 element
+      参数: <装备名称 或 装备ID> <属性> <强悍等级(1-3)>
+      属性: 0=无属性 1=水属性 2=地属性 3=火属性 4=风属性
+      您可以制造三级强悍的属性武器
   - Command: repairall
     Help: |
-      Repair all items of your inventory
+      修复身上所有损坏的物品
   - Command: item
     Help: |
-      Params: <item name or ID> <quantity>
-      Gives you the desired item.
+      参数: <物品名称 或 ID> <数量>
+      生成指定物品
   - Command: item2
     Help: |
-      Params: <item name or ID> <quantity> <identified_flag> <refine> <broken_flag> <Card1> <Card2> <Card3> <Card4>
-      Gives you the desired item.
+      参数: <物品名称 或 ID> <数量> <是否鉴定> <精炼等级> <是否损坏> <卡片1> <卡片2> <卡片3> <卡片4>
+      生成指定物品
   - Command: pvpon
     Help: |
-      Turns pvp on on the current map
+      开启目前所在地图的 PvP 模式
   - Command: pvpoff
     Help: |
-      Turns pvp off on the current map
+      关闭目前所在地图的 PvP 模式
   - Command: gvgon
     Aliases:
       - gpvpon
     Help: |
-      Turns gvg on on the current map
+      开启目前所在地图的 GvG 模式
   - Command: gvgoff
     Aliases:
       - gpvpoff
     Help: |
-      Turns gvg off on the current map
+      关闭目前所在地图的 GvG 模式
   - Command: agitstart
     Help: |
-      Starts War of Emperium
+      开启攻城战
   - Command: agitend
     Help: |
-      End War of Emperium
+      结束攻城战
   - Command: party
     Help: |
-      Params: <party_name>
-      Create a party.
+      参数: <队伍名称>
+      创建一个队伍
   - Command: guild
     Help: |
-      Params: <guild_name>
-      Create a guild.
+      参数: <工会名称>
+      创建一个工会
   - Command: glvl
     Aliases:
       - glevel
@@ -676,255 +677,256 @@ Body:
       - guildlevel
       - guildlvlup
     Help: |
-      Params: <# of levels>
-      Raise Guild by desired number of levels
+      参数: <提升等级>
+      提升工会等级
   - Command: guildrecall
     Help: |
-      Params: <guild name|ID>
-      Warps all online characters of a guild to you.
+      参数: <工会名称|ID>
+      召唤指定工会在线成员到身边
   - Command: partyrecall
     Help: |
-      Params: <party name|ID>
-      Warps all online characters of a party to you.
+      参数: <队伍名称|ID>
+      召唤指定队伍在线成员到身边
   - Command: petrename
     Help: |
-      Re-enable pet rename
+      允许宠物重命名
   - Command: pettalk
     Help: |
-      Params: <message>
-      Makes your pet say a message.
+      参数: <内容>
+      让您的宠物说话
   - Command: petfriendly
     Help: |
-      Params: <#>
-      Set pet friendly amount (0-1000) 1000 = Max
+      参数: <亲密度>
+      设置宠物亲密度 (0-1000) 
   - Command: pethungry
     Help: |
-      Params: <#>
-      Set pet hungry amount (0-100) 100 = Max
+      参数: <饱腹度>
+      设置宠物饱腹度 (0-100) 
   - Command: hatch
     Help: |
-      Create a pet from your inventory eggs list.
+      孵化宠物蛋
   - Command: makeegg
     Help: |
-      Params: <pet_id>
-      Gives pet egg for monster number in pet DB
+      参数: <魔物ID>
+      制造宠物蛋（必须是允许认养的魔物）
   - Command: kick
     Help: |
-      Params: <char name>
-      Kicks specified character off the server
+      参数: <角色名称>
+      强制指定角色下线
   - Command: unjail
     Aliases:
       - discharge
     Help: |
-      Params: <char name>
-      Discharges specified character/prisoner
+      参数: <角色名称>
+      释放指定角色出监狱。
   - Command: kill
     Aliases:
       - die
     Help: |
-      Kills player.
+      参数: <角色名称>
+      杀死指定角色.
   - Command: recall
     Help: |
-      Params: <char name>
-      Warps target character to you.
+      参数: <角色名称>
+      传送指定角色到身边
   - Command: raise
     Aliases:
       - revive
     Help: |
-      Params: <char name>
-      Revives target character.
+      参数: <角色名称>
+      复活指定角色
   - Command: block
     Help: |
-      Params: <char name>
-      Permanently blocks an account.
+      参数: <角色名称>
+      冻结指定角色账号
   - Command: unblock
     Help: |
-      Params: <char name>
-      Unblocks an account.
+      参数: <角色名称>
+      解除冻结指定角色账号
   - Command: ban
     Aliases:
       - banish
     Help: |
-      Params: <time> <name>\n" "Temporarily ban an account.
-      time usage: adjustment (+/- value) and element (y/a, m, d/j, h, mn, s)
-      Example: @ban +1m-2mn1s-6y testplayer
+      参数: <时间> <角色名称>\n" "暂时冻结指定角色的账号
+      时间格式: 调整 (+/- 值) 和 单位 (y/a, m, d/j, h, mn, s)
+      例如: @ban +1m-2mn1s-6y testplayer
   - Command: unban
     Aliases:
       - unbanish
     Help: |
-      Params: <name> - Unban a account
+      参数: <角色名称> - 解除冻结指定角色的账号
   - Command: jail
     Help: |
-      Params: <char name> - Sends specified character in jails
+      参数: <角色名称> - 将指定角色送到监狱
   - Command: trade
     Help: |
-      Params: <char name> - Open a trade window with a another player
+      参数: <角色名称> - 与指定角色进行交易
   - Command: recallall
     Help: |
-      Warps every character online to you.
+      召唤全部在线角色到身边
   - Command: doom
     Help: |
-      Kills all NON GM chars on the server.
+      杀死所有角色（除GM）
   - Command: doommap
     Help: |
-      Kills all non GM characters on the map.
+      杀死当前地图上的所有角色（除GM）
   - Command: raisemap
     Help: |
-      Resurrects all characters on the map.
+      复活当前地图所有角色
   - Command: night
     Help: |
-      Enables night mode on all maps, all characters are affected.
+      开启黑夜模式
   - Command: day
     Help: |
-      Disables night mode and restores regular lighting, all characters are affected.
+      关闭黑夜模式
   - Command: skillon
     Help: |
-      Turn skills on for a map.
+      设置当前地图可以使用技能
   - Command: skilloff
     Help: |
-      Turn skills off for a map.
+      设置当前地图禁止使用技能
   - Command: snow
     Help: |
-      Makes all maps to have the snow weather effect.
+      使所有地图天气变为下雪
   - Command: clouds
     Help: |
-      Makes all maps to have the cloudy weather effect.
+      使所有地图天气变为多云
   - Command: clouds2
     Help: |
-      Makes all maps to have another cloudy weather effect.
+      使所有地图天气变为多云2
   - Command: fog
     Help: |
-      Makes all maps to have the fog weather effect.
+      使所有地图天气变为雾
   - Command: fireworks
     Help: |
-      Makes all maps to have the fireworks weather effect.
+      使所有地图天气变为烟花
   - Command: sakura
     Help: |
-      Makes all maps to have the sakura weather effect.
+      使所有地图天气变为樱花
   - Command: leaves
     Help: |
-      Makes all maps to have the leaves weather effect.
+      使所有地图天气变为落叶
   - Command: shownpc
     Help: |
-      Params: <NPC name>
-      Enable a NPC.
+      参数: <NPC 名称>
+      显示NPC
   - Command: hidenpc
     Help: |
-      Params: <NPC name>
-      Disable a NPC.
+      参数: <NPC 名称>
+      隐藏NPC
   - Command: npcmove
     Help: |
-      Params: <x coord> <y coord> <NPC name>
-      Move a NPC.
+      参数: <x 坐标> <y 坐标> <NPC 名称>
+      移动NPC
   - Command: loadnpc
     Help: |
-      Params: <path to script>
-      Load the specified script file path.
+      参数: <脚本文件路径>
+      读取脚本文件
   - Command: unloadnpc
     Help: |
-      Params: <NPC name>
-      Unload the specified NPC according to name.
+      参数: <NPC 名称>
+      卸载NPC
   - Command: unloadnpcfile
     Help: |
-      Params: <path>
-      Unload the specified script file path.
+      参数: <脚本文件路径>
+      卸载脚本文件
   - Command: adjgroup
     Help: |
-      Params: <level> <char name>
-      Do a temporary adjustment of the group level of a player.
+      参数: <等级> <角色名称>
+      临时给予指定玩家GM等级.
   - Command: addperm
     Help: |
-      Params: <permission_name>
-      Temporarily add a permission to a player.
+      参数: <权限名称>
+      临时获得权限
   - Command: rmvperm
     Help: |
-      Params: <permission_name>
-      Temporarily remove a permission from a player.
+      参数: <权限名称>
+      删除临时权限
   - Command: kickall
     Help: |
-      Kick all characters off the server
+      强制全部玩家下线
   - Command: mapexit
     Help: |
-      Kick all players and shut down map-server.
+      强制全部玩家下线并关闭地图服务器
   - Command: gat
     Help: |
-      For debugging (you inspect around gat)
+      调试模式(you inspect around gat)
   - Command: send
     Help: |
-      Params: <Hex Number> [<value>]
-      For debugging (packet variety)
+      参数: <Hex Number> [<value>]
+      调试模式 (封包类型)
   - Command: nuke
     Help: |
-      Params: <char name>
-      Blow somebody up, including those surrounding them.
+      参数: <角色名称>
+      弹飞指定角色和他周围的角色。
   - Command: reloadachievementdb
     Help: |
-      Reload achievement database.
+      重新加载 achievement 设置。
   - Command: reloadatcommand
     Help: |
-      Reload atcommand settings.
+      重新加载 atcommand 设置。
   - Command: reloadattendancedb
     Help: |
-      Reload attendance database.
+      重新加载 attendance 数据。
   - Command: reloadbattleconf
     Help: |
-      Reload battle settings.
+      重新加载 战斗设置。
   - Command: reloadinstancedb
     Help: |
-      Reload instance database.
+      重新加载 副本设置。
   - Command: reloaditemdb
     Help: |
-      Reload item database.
+      重新加载 物品数据。
   - Command: reloadmobdb
     Help: |
-      Reload monster database.
+      重新加载 魔物数据。
   - Command: reloadmotd
     Help: |
-      Reload Message of the Day.
+      重新加载 Message of the Day.
   - Command: reloadmsgconf
     Help: |
-      Reload message configuration.
+      重新加载 message configuration.
   - Command: reloadpcdb
     Help: |
-      Reload player settings.
+      重新加载 玩家设置。
   - Command: reloadquestdb
     Help: |
-      Reload quest database.
+      重新加载 任务数据。
   - Command: reloadscript
     Help: |
-      Reload all scripts.
+      重新加载 全部脚本。
   - Command: reloadskilldb
     Help: |
-      Reload skills definition database.
+      重新加载 技能数据。
   - Command: reloadstatusdb
     Help: |
-      Reload status settings.
+      重新加载 状态设置。
   - Command: reload
     Help: |
-      Params: <type>
-      Reload a database or configuration file.
+      参数: <type>
+      重新加载数据或配置文件
       itemdb                mobdb          skilldb
-      atcommand       battleconf     statusdb
-      pcdb                    motd             script
-      questdb              msgconf       packetdb
+      atcommand        battleconf         statusdb
+      pcdb                   motd           script
+      questdb             msgconf         packetdb
 #  - Command: langtype
 #    Help: |
-#      Params: <language>
-#      Changes your language setting.
+#      参数: <language>
+#      修改语言设置.
   - Command: limitedsale
     Help: |
-      Opens the limited sale window.
+      打开限量销售窗口
   - Command: changedress
     Aliases:
       - nocosplay
     Help: |
-      Removes all character costumes.
+      移除角色时装
   - Command: camerainfo
     Aliases:
       - viewpointvalue
       - setcamera
     Help: |
-      Shows or updates the client's camera settings.
+      显示摄像机信息
   - Command: resetstat
     Aliases:
       - streset
