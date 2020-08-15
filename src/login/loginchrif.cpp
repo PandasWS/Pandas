@@ -93,7 +93,12 @@ int logchrif_parse_reqauth(int fd, int id,char* ip){
 			//ShowStatus("Char-server '%s': authentication of the account %d accepted (ip: %s).\n", server[id].name, account_id, ip);
 
 			// send ack
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 			WFIFOHEAD(fd,21);
+#else
+			// 由于需要多发送两个额外字段, 因此这里的长度也需要适当加长
+			WFIFOHEAD(fd,21 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 			WFIFOW(fd,0) = 0x2713;
 			WFIFOL(fd,2) = account_id;
 			WFIFOL(fd,6) = login_id1;
@@ -102,13 +107,26 @@ int logchrif_parse_reqauth(int fd, int id,char* ip){
 			WFIFOB(fd,15) = 0;// ok
 			WFIFOL(fd,16) = request_id;
 			WFIFOB(fd,20) = node->clienttype;
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 			WFIFOSET(fd,21);
+#else
+			// 在 rAthena 官方发送的封包基础上, 多发送两个定长的字符串字段
+			// 此处将 login-server 记录的当前玩家的 mac 和 lan 地址发送给 char-server 中 0x2713 封包的处理函数
+			memcpy(WFIFOP(fd,21), node->mac_address, MACADDRESS_LENGTH);
+			memcpy(WFIFOP(fd,21 + MACADDRESS_LENGTH), node->lan_address, IP4ADDRESS_LENGTH);
+			WFIFOSET(fd,21 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 
 			// each auth entry can only be used once
 			login_remove_auth_node( account_id );
 		}else{// authentication not found
 			ShowStatus("Char-server '%s': authentication of the account %d REFUSED (ip: %s).\n", ch_server[id].name, account_id, ip);
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 			WFIFOHEAD(fd,21);
+#else
+			// 由于需要多发送两个额外字段, 因此这里的长度也需要适当加长
+			WFIFOHEAD(fd,21 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 			WFIFOW(fd,0) = 0x2713;
 			WFIFOL(fd,2) = account_id;
 			WFIFOL(fd,6) = login_id1;
@@ -117,7 +135,16 @@ int logchrif_parse_reqauth(int fd, int id,char* ip){
 			WFIFOB(fd,15) = 1;// auth failed
 			WFIFOL(fd,16) = request_id;
 			WFIFOB(fd,20) = 0;
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 			WFIFOSET(fd,21);
+#else
+			// 在 rAthena 官方发送的封包基础上, 多发送两个定长的字符串字段
+			// 这里发送的是验证被拒绝时的响应包, 此时没有办法读取到正确的 MAC 地址, 直接返回空
+			// 此处将 login-server 记录的当前玩家的 mac 和 lan 地址发送给 char-server 中 0x2713 封包的处理函数
+			memcpy(WFIFOP(fd,21), "", MACADDRESS_LENGTH);
+			memcpy(WFIFOP(fd,21 + MACADDRESS_LENGTH), "", IP4ADDRESS_LENGTH);
+			WFIFOSET(fd,21 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 		}
 	}
 	return 1;

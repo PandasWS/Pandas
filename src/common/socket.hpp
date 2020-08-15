@@ -19,6 +19,10 @@
 #include "cbasetypes.hpp"
 #include "timer.hpp" // t_tick
 
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+#include "mmo.hpp" // MACADDRESS_LENGTH, IP4ADDRESS_LENGTH
+#endif // Pandas_Extract_SSOPacket_MacAddress
+
 #ifndef MAXCONN
 	#define MAXCONN FD_SETSIZE
 #endif
@@ -92,6 +96,10 @@ struct socket_data
 	} flag;
 
 	uint32 client_addr; // remote client address
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+	char mac_address[MACADDRESS_LENGTH];	// 用户电脑实际联网的 MAC 地址, 格式: 00-00-00-00-00-00
+	char lan_address[IP4ADDRESS_LENGTH];	// 用户电脑第一个网络连接的内网 IP 地址, 格式: 000.000.000.000
+#endif // Pandas_Extract_SSOPacket_MacAddress
 
 	uint8 *rdata, *wdata;
 	size_t max_rdata, max_wdata;

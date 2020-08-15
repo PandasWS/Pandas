@@ -27849,6 +27849,44 @@ BUILDIN_FUNC(updateinventory) {
 }
 #endif // Pandas_ScriptCommand_UpdateInventory
 
+#ifdef Pandas_ScriptCommand_GetCharMacAddress
+/* ===========================================================
+ * 指令: getcharmac
+ * 描述: 获取指定角色登录时使用的 MAC 地址
+ * 用法: getcharmac(<账户编号>/<角色编号>/<"角色名称">);
+ * 返回: 成功则返回 MAC 地址, 失败则返回空字符串
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getcharmac) {
+	struct map_session_data* sd = nullptr;
+	if (script_hasdata(st,2)) {
+		if (script_isstring(st,2)) {
+			sd = map_nick2sd(script_getstr(st,2), false);
+		}
+		else {
+			int id = script_getnum(st,2);
+			sd = (map_id2sd(id) ? map_id2sd(id) : map_charid2sd(id));
+		}
+	}
+	else {
+		script_rid2sd(sd);
+	}
+
+	if (!sd || !strlen(session[sd->fd]->mac_address)) {
+		script_pushconststr(st, "");
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd && sd->fd && session[sd->fd]) {
+		script_pushstrcopy(st, session[sd->fd]->mac_address);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushconststr(st, "");
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetCharMacAddress
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -28008,6 +28046,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_UpdateInventory
 	BUILDIN_DEF(updateinventory,"?"),					// 重新下发关联玩家的背包数据给客户端 [Sola丶小克]
 #endif // Pandas_ScriptCommand_UpdateInventory
+#ifdef Pandas_ScriptCommand_GetCharMacAddress
+	BUILDIN_DEF(getcharmac,"?"),						// 获取指定角色登录时使用的 MAC 地址 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetCharMacAddress
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

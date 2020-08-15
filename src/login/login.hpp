@@ -162,6 +162,10 @@ struct auth_node {
 	uint32 ip;
 	char sex;
 	uint8 clienttype;
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+	char mac_address[MACADDRESS_LENGTH];	// 用户电脑实际联网的 MAC 地址, 格式: 00-00-00-00-00-00
+	char lan_address[IP4ADDRESS_LENGTH];	// 用户电脑第一个网络连接的内网 IP 地址, 格式: 000.000.000.000
+#endif // Pandas_Extract_SSOPacket_MacAddress
 };
 
 ///Accessors

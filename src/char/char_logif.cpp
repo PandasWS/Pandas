@@ -296,7 +296,12 @@ int chlogif_parse_ackconnect(int fd){
 }
 
 int chlogif_parse_ackaccreq(int fd){
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 	if (RFIFOREST(fd) < 21)
+#else
+	// 由于多接收两个字段, 因此这里的校验长度也需要被调整
+	if (RFIFOREST(fd) < 21 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH)
+#endif // Pandas_Extract_SSOPacket_MacAddress
 		return 0;
 	{
 		struct char_session_data* sd;
@@ -307,7 +312,16 @@ int chlogif_parse_ackaccreq(int fd){
 		uint8 result = RFIFOB(fd,15);
 		int request_id = RFIFOL(fd,16);
 		uint8 clienttype = RFIFOB(fd,20);
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 		RFIFOSKIP(fd,21);
+#else
+		// 将封包内容末尾追加的两个定长字段内容读取出来, 存入局部变量供后面使用
+		char macaddress[MACADDRESS_LENGTH] = { 0 };
+		char lanaddress[IP4ADDRESS_LENGTH] = { 0 };
+		safestrncpy(macaddress, RFIFOCP(fd, 21), MACADDRESS_LENGTH);
+		safestrncpy(lanaddress, RFIFOCP(fd, 21 + MACADDRESS_LENGTH), IP4ADDRESS_LENGTH);
+		RFIFOSKIP(fd,21 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 
 		if( session_isActive(request_id) && (sd=(struct char_session_data*)session[request_id]->session_data) &&
 			!sd->auth && sd->account_id == account_id && sd->login_id1 == login_id1 && sd->login_id2 == login_id2 && sd->sex == sex )
@@ -318,6 +332,11 @@ int chlogif_parse_ackaccreq(int fd){
 			switch( result )
 			{
 			case 0:// ok
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+				// 将上面读取到的两个字段内容存入对应的 session 中
+				safestrncpy(session[client_fd]->mac_address, macaddress, MACADDRESS_LENGTH);
+				safestrncpy(session[client_fd]->lan_address, lanaddress, IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 				char_auth_ok(client_fd, sd);
 				break;
 			case 1:// auth failed

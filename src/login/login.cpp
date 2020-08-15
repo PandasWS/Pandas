@@ -158,6 +158,19 @@ struct auth_node* login_add_auth_node( struct login_session_data* sd, uint32 ip 
 	node->ip = ip;
 	node->clienttype = sd->clienttype;
 
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+	// 建立一个新的 auth_node 结构体时
+	// 也将该连接中的 mac 和 lan 地址记录到其中 (同时起到初始化的作用)
+	if (sd && session[sd->fd]) {
+		safestrncpy(node->mac_address, session[sd->fd]->mac_address, MACADDRESS_LENGTH);
+		safestrncpy(node->lan_address, session[sd->fd]->lan_address, IP4ADDRESS_LENGTH);
+	}
+	else {
+		safestrncpy(node->mac_address, "", MACADDRESS_LENGTH);
+		safestrncpy(node->lan_address, "", IP4ADDRESS_LENGTH);
+	}
+#endif // Pandas_Extract_SSOPacket_MacAddress
+
 	return node;
 }
 
@@ -453,6 +466,13 @@ int login_mmo_auth(struct login_session_data* sd, bool isServer) {
 	safestrncpy(acc.last_ip, ip, sizeof(acc.last_ip));
 	acc.unban_time = 0;
 	acc.logincount++;
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+	// 将玩家连接中的 mac 和 lan 地址记录到对应的 mmo_account 结构体中
+	if (sd && session[sd->fd]) {
+		safestrncpy(acc.mac_address, session[sd->fd]->mac_address, MACADDRESS_LENGTH);
+		safestrncpy(acc.lan_address, session[sd->fd]->lan_address, IP4ADDRESS_LENGTH);
+	}
+#endif // Pandas_Extract_SSOPacket_MacAddress
 	accounts->save(accounts, &acc);
 
 	if( login_config.use_web_auth_token ){

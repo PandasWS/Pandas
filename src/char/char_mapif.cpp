@@ -452,14 +452,28 @@ void chmapif_charselres(int fd, uint32 aid, uint8 res){
  * @return : 0 not enough data received, 1 success
  */
 int chmapif_parse_authok(int fd){
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 	if( RFIFOREST(fd) < 18 )
+#else
+	// 由于多接收两个字段, 因此这里的校验长度也需要被调整
+	if( RFIFOREST(fd) < 18 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH)
+#endif // Pandas_Extract_SSOPacket_MacAddress
 		return 0;
 	else{
 		uint32 account_id = RFIFOL(fd,2);
 		uint32 login_id1 = RFIFOL(fd,6);
 		uint32 login_id2 = RFIFOL(fd,10);
 		uint32 ip = RFIFOL(fd,14);
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 		RFIFOSKIP(fd,18);
+#else
+		// 将封包内容末尾追加的两个定长字段内容读取出来, 存入局部变量供后面使用
+		char macaddress[MACADDRESS_LENGTH] = { 0 };
+		char lanaddress[IP4ADDRESS_LENGTH] = { 0 };
+		safestrncpy(macaddress, RFIFOCP(fd,18), MACADDRESS_LENGTH);
+		safestrncpy(lanaddress, RFIFOCP(fd,18 + MACADDRESS_LENGTH), IP4ADDRESS_LENGTH);
+		RFIFOSKIP(fd,18 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 
 		if( runflag != CHARSERVER_ST_RUNNING ){
 			chmapif_charselres(fd,account_id,0);
@@ -476,6 +490,13 @@ int chmapif_parse_authok(int fd){
 			node->login_id2 = login_id2;
 			//node->sex = 0;
 			node->ip = ntohl(ip);
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+			// 将上面读取到的两个字段内容存入对应的 auth_node 和 session 中
+			safestrncpy(node->mac_address, macaddress, MACADDRESS_LENGTH);
+			safestrncpy(session[fd]->mac_address, node->mac_address, MACADDRESS_LENGTH);
+			safestrncpy(node->lan_address, lanaddress, IP4ADDRESS_LENGTH);
+			safestrncpy(session[fd]->lan_address, node->lan_address, IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 			//node->expiration_time = 0; // unlimited/unknown time by default (not display in map-server)
 			//node->gmlevel = 0;
 			idb_put(auth_db, account_id, node);
@@ -595,7 +616,12 @@ void chmapif_changemapserv_ack(int fd, bool nok){
  * @return : 0 not enough data received, 1 success
  */
 int chmapif_parse_reqchangemapserv(int fd){
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 	if (RFIFOREST(fd) < 39)
+#else
+	// 由于多接收两个字段, 因此这里的校验长度也需要被调整
+	if (RFIFOREST(fd) < 39 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH)
+#endif // Pandas_Extract_SSOPacket_MacAddress
 		return 0;
 	else {
 		int map_id, map_fd = -1;
@@ -641,6 +667,11 @@ int chmapif_parse_reqchangemapserv(int fd){
 			node->ip = ntohl(RFIFOL(fd,31));
 			node->group_id = RFIFOL(fd,35);
 			node->changing_mapservers = 1;
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+			// 将封包内容末尾追加的两个定长字段读出来, 并存入 auth_node 的对应字段中
+			safestrncpy(node->mac_address, RFIFOCP(fd,39), MACADDRESS_LENGTH);
+			safestrncpy(node->lan_address, RFIFOCP(fd,39 + MACADDRESS_LENGTH), IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 			idb_put(auth_db, aid, node);
 
 			data = (struct online_char_data*)idb_ensure(online_char_db, aid, char_create_online_data);
@@ -652,7 +683,12 @@ int chmapif_parse_reqchangemapserv(int fd){
 		} else { //Reply with nak
 			chmapif_changemapserv_ack(fd,1);
 		}
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 		RFIFOSKIP(fd,39);
+#else
+		// 由于多接收了两个定长字段, 这里跳过的缓冲区长度也需要同时调整
+		RFIFOSKIP(fd,39 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 	}
 	return 1;
 }
@@ -1016,6 +1052,11 @@ int chmapif_parse_reqauth(int fd, int id){
 		}
 		if( runflag == CHARSERVER_ST_RUNNING && autotrade && cd ){
 			uint16 mmo_charstatus_len = sizeof(struct mmo_charstatus) + 25;
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+			// 需要发送的内容除了 struct mmo_charstatus 和原先 25 字节的头之外,
+			// 还需要额外追加两个定长的字段长度
+			mmo_charstatus_len += MACADDRESS_LENGTH + IP4ADDRESS_LENGTH;
+#endif // Pandas_Extract_SSOPacket_MacAddress
 
 			WFIFOHEAD(fd,mmo_charstatus_len);
 			WFIFOW(fd,0) = 0x2afd;
@@ -1026,7 +1067,18 @@ int chmapif_parse_reqauth(int fd, int id){
 			WFIFOL(fd,16) = 0;
 			WFIFOL(fd,20) = 0;
 			WFIFOB(fd,24) = 0;
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 			memcpy(WFIFOP(fd,25), cd, sizeof(struct mmo_charstatus));
+#else
+			// 在发送 struct mmo_charstatus 内容之前, 插入两个定长字段的值
+			// 此处将 char-server 记录的当前玩家的 mac 和 lan 地址发送给 map-server 中 0x2afd 封包的处理函数
+			// 
+			// 这里发送的是针对离线挂店角色的对应封包, 离线挂店角色没有 mac 和 lan 地址,
+			// 因此这里直接将两个字段填充为空值
+			memcpy(WFIFOP(fd,25), "", MACADDRESS_LENGTH);
+			memcpy(WFIFOP(fd,25 + MACADDRESS_LENGTH), "", IP4ADDRESS_LENGTH);
+			memcpy(WFIFOP(fd,25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH), cd, sizeof(struct mmo_charstatus));
+#endif // Pandas_Extract_SSOPacket_MacAddress
 			WFIFOSET(fd, WFIFOW(fd,2));
 
 			char_set_char_online(id, char_id, account_id);
@@ -1043,6 +1095,11 @@ int chmapif_parse_reqauth(int fd, int id){
 			)
 		{// auth ok
 			uint16 mmo_charstatus_len = sizeof(struct mmo_charstatus) + 25;
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+			// 需要发送的内容除了 struct mmo_charstatus 和原先 25 字节的头之外,
+			// 还需要额外追加两个定长的字段长度
+			mmo_charstatus_len += MACADDRESS_LENGTH + IP4ADDRESS_LENGTH;
+#endif // Pandas_Extract_SSOPacket_MacAddress
 
 			WFIFOHEAD(fd,mmo_charstatus_len);
 			WFIFOW(fd,0) = 0x2afd;
@@ -1053,7 +1110,15 @@ int chmapif_parse_reqauth(int fd, int id){
 			WFIFOL(fd,16) = (uint32)node->expiration_time; // FIXME: will wrap to negative after "19-Jan-2038, 03:14:07 AM GMT"
 			WFIFOL(fd,20) = node->group_id;
 			WFIFOB(fd,24) = node->changing_mapservers;
+#ifndef Pandas_Extract_SSOPacket_MacAddress
 			memcpy(WFIFOP(fd,25), cd, sizeof(struct mmo_charstatus));
+#else
+			// 在发送 struct mmo_charstatus 内容之前, 插入两个定长字段的值
+			// 此处将 char-server 记录的当前玩家的 mac 和 lan 地址发送给 map-server 中 0x2afd 封包的处理函数
+			memcpy(WFIFOP(fd,25), node->mac_address, MACADDRESS_LENGTH);
+			memcpy(WFIFOP(fd,25 + MACADDRESS_LENGTH), node->lan_address, IP4ADDRESS_LENGTH);
+			memcpy(WFIFOP(fd,25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH), cd, sizeof(struct mmo_charstatus));
+#endif // Pandas_Extract_SSOPacket_MacAddress
 			WFIFOSET(fd, WFIFOW(fd,2));
 
 			// only use the auth once and mark user online
