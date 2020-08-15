@@ -17511,12 +17511,11 @@ void clif_parse_Adopt_reply(int fd, struct map_session_data *sd){
 ///     BOSS_INFO_DEAD = Boss is dead.
 void clif_bossmapinfo(struct map_session_data *sd, struct mob_data *md, enum e_bossmap_info flag)
 {
-	int fd = sd->fd;
-
 #ifdef Pandas_Crashfix_BossMapinfo
-	if (!sd || !md)
-		return;
+	if (!sd || !md) return;
 #endif // Pandas_Crashfix_BossMapinfo
+
+	int fd = sd->fd;
 
 	WFIFOHEAD(fd,70);
 	memset(WFIFOP(fd,0),0,70);

@@ -3643,6 +3643,10 @@ struct script_data* push_copy(struct script_stack* stack, int pos)
 /// Adjusts all stack pointers.
 void pop_stack(struct script_state* st, int start, int end)
 {
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!st || !st->stack) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	struct script_stack* stack = st->stack;
 	struct script_data* data;
 	int i;

@@ -839,7 +839,13 @@ void chlogif_on_ready(void)
 	chlogif_send_acc_tologin(INVALID_TIMER, gettick(), 0, 0);
 
 	// if no map-server already connected, display a message...
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 	ARR_FIND( 0, ARRAYLENGTH(map_server), i, map_server[i].fd > 0 && map_server[i].map[0] );
+#else
+	// 在一些极端情况下, 可能会出现地图服务器已经注册, 但地图列表还未送达的情况
+	// 此时若按照以前的写法去判断 map[0] 就会触发空指针崩溃, 此处改成更安全的方式来进行判断
+	ARR_FIND( 0, ARRAYLENGTH(map_server), i, map_server[i].fd > 0 && !map_server[i].map.empty());
+#endif // Pandas_Crashfix_Prevent_NullPointer
 	if( i == ARRAYLENGTH(map_server) )
 		ShowStatus("Awaiting maps from map-server.\n");
 }

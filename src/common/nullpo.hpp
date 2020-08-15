@@ -13,7 +13,7 @@
 #define NULLPO_CHECK
 #endif
 
-#if defined(NULLPO_CHECK)
+#if defined(NULLPO_CHECK) || defined(Pandas_Crashfix_Use_NullptrCheck_In_ReleaseMode)
 
 /**
  * Macros used to check for NULL pointer and output that information.

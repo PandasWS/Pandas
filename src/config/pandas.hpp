@@ -575,8 +575,21 @@
 	// 特别针对那些单纯依赖目标是否为 Null 作为野指针判断的相关变量
 	#define Pandas_Crashfix_Variable_Init
 
+	// 是否在 Release 模式下也启用 nullpo_ret 等系列指令 [Sola丶小克]
+	// 在 rAthena 的设计中, nullpo_ret 等指令仅在 Debug 模式会拦截空指针的情况并记录下位置信息
+	// 为了健壮性考虑, 熊猫模拟器会试图在 Release 模式下也使这些指令可以拦截空指针的情况
+	// 因为有些空指针时在运行时产生的, 日常测试非常难以覆盖到这些异常情况
+	// 若未来在生产环境执行过程中也碰到了空指针错误, 可考虑尝试上报到服务端进行统计分析
+	#define Pandas_Crashfix_Use_NullptrCheck_In_ReleaseMode
+
 	// 对函数的参数进行合法性校验 [Sola丶小克]
 	#define Pandas_Crashfix_FunctionParams_Verify
+
+	// 对潜在的空指针调用崩溃情况进行校验和判断 [Sola丶小克]
+	#define Pandas_Crashfix_Prevent_NullPointer
+
+	// 对除数可能为零的情况进行一些规避处理 [Sola丶小克]
+	#define Pandas_Crashfix_Divide_by_Zero
 
 	// 修复使用 sommon 脚本指令召唤不存在的魔物, 会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_ScriptCommand_Summon
@@ -624,6 +637,10 @@
 	// 修正释放或删除 ev_db 时, 对应的 script_event 节点没清空的问题 [Sola丶小克]
 	// 在 reloadscript 时可能会因为 ev_db 被清空, 其他环节直接使用 script_event 的值而崩溃
 	#define Pandas_Crashfix_EventDatabase_Clean_Synchronize
+
+	// 修正在未开启大乐透功能的情况下启动服务端, 再重新打开大乐透功能
+	// 并用 @reloadbattleconf 使之立刻生效之后, 点击大乐透按钮会导致地图服务器崩溃的问题 [Sola丶小克]
+	#define Pandas_Crashfix_RouletteData_UnInit
 #endif // Pandas_Crashfix
 
 // ============================================================================
