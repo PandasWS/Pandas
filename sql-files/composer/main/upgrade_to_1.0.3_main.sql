@@ -1,5 +1,11 @@
+-- ------------------------------------------------------------------------------
+-- 此脚本用于将 Pandas 的主数据库升级到 1.0.3 版本
+-- 注意: 若存在更低版本且从未导入的升级脚本, 请按版本号从小到大依序导入
+-- ------------------------------------------------------------------------------
 
+-- -----------------------------------------------
 -- upgrade_20191222.sql
+-- -----------------------------------------------
 
 ALTER TABLE `bonus_script`
     ADD PRIMARY KEY (`char_id`, `type`);
@@ -35,7 +41,9 @@ ALTER TABLE `vending_items`
 
 DROP TABLE `sstatus`;
 
+-- -----------------------------------------------
 -- upgrade_20200108.sql
+-- -----------------------------------------------
 
 ALTER TABLE `charlog`
     -- DROP PRIMARY KEY, -- comment if primary key has not been created yet
@@ -43,7 +51,9 @@ ALTER TABLE `charlog`
     ADD PRIMARY KEY (`id`),
     ADD KEY `account_id` (`account_id`);
 
+-- -----------------------------------------------
 -- upgrade_20200109.sql
+-- -----------------------------------------------
 
 ALTER TABLE `acc_reg_num`
 	MODIFY `value` bigint(11) NOT NULL default '0';
@@ -54,7 +64,9 @@ ALTER TABLE `global_acc_reg_num`
 ALTER TABLE `char_reg_num`
 	MODIFY `value` bigint(11) NOT NULL default '0';
 
+-- -----------------------------------------------
 -- upgrade_20200126.sql
+-- -----------------------------------------------
 
 ALTER TABLE `achievement`
 	MODIFY `count1` int unsigned NOT NULL default '0',
@@ -68,7 +80,9 @@ ALTER TABLE `achievement`
 	MODIFY `count9` int unsigned NOT NULL default '0',
 	MODIFY `count10` int unsigned NOT NULL default '0';
 
+-- -----------------------------------------------
 -- upgrade_20200204.sql
+-- -----------------------------------------------
 
 ALTER TABLE `guild_member`
 	DROP COLUMN `account_id`,
@@ -84,7 +98,9 @@ ALTER TABLE `guild_member`
 ALTER TABLE `friends`
 	DROP COLUMN `friend_account`;
 
+-- -----------------------------------------------
 -- upgrade_20200303.sql
+-- -----------------------------------------------
 
 UPDATE `char_reg_num` SET `key` = 'ep14_3_newerabs' WHERE `key` = 'ep14_3_dimensional_travel' AND `index` = 0 AND `value` < 2;
 UPDATE `char_reg_num` SET `key` = 'ep14_3_newerabs', `value` = 3 WHERE `key` = 'ep14_3_dimensional_travel' AND `index` = 0 AND `value` = 2;
