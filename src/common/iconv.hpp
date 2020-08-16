@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2011, Yuya Unno
 All rights reserved.
 

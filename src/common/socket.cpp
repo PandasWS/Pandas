@@ -737,6 +737,11 @@ static int create_session(int fd, RecvFunc func_recv, SendFunc func_send, ParseF
 	session[fd]->func_parse = func_parse;
 	session[fd]->rdata_tick = last_tick;
 	session[fd]->wdata_tick = last_tick;
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+	// 创建新的 session 时, 将 mac_address 和 lan_address 清空
+	memset(session[fd]->mac_address, 0, MACADDRESS_LENGTH);
+	memset(session[fd]->lan_address, 0, IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 	return 0;
 }
 

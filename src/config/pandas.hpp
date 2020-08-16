@@ -477,6 +477,15 @@
 	#ifdef _WIN32
 		#define Pandas_Setup_Console_Output_Codepage
 	#endif // _WIN32
+
+	// 实验性读取 SSO 登录封包传递的 MAC 地址和客户端内网 IP 地址信息 [Sola丶小克]
+	// 参考: https://github.com/brAthena/brAthena20180924/commit/51dd5f2cc2fa9967cc65e681d71038ef34e6cd6c
+	// 
+	// 已知在 20180620 客户端中, 当本机有多个网络连接的时候, 只会读取第一个网络连接的 IP 地址
+	// 而第一个网络连接的 IP 不一定是真正联网通讯用的 IP 地址, 因此只能作为一个不完全可靠的特征来参考
+	// 经过简单测试, MAC 地址是可靠的, 但据 Jian916 提醒可能部分用户会无法读取到 MAC 地址
+	// 读取不到的情况暂时无法模拟出来, 等待进一步的情报
+	#define Pandas_Extract_SSOPacket_MacAddress
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -1140,6 +1149,13 @@
 	// 是否启用 updateinventory 脚本指令 [Sola丶小克]
 	// 该指令用于重新下发关联玩家的背包数据给客户端 (刷新客户端背包数据)
 	#define Pandas_ScriptCommand_UpdateInventory
+
+	// 是否启用 getcharmac 脚本指令 [Sola丶小克]
+	// 该指令用于获取指定角色登录时使用的 MAC 地址
+	// 此选项开关需要依赖 Pandas_Extract_SSOPacket_MacAddress 的拓展
+	#ifdef Pandas_Extract_SSOPacket_MacAddress
+		#define Pandas_ScriptCommand_GetCharMacAddress
+	#endif // Pandas_Extract_SSOPacket_MacAddress
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

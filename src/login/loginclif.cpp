@@ -311,6 +311,31 @@ static int logclif_parse_reqauth(int fd, struct login_session_data *sd, int comm
 			safestrncpy(username, accname, uAccLen + 1);
 			safestrncpy(password, token, uTokenLen + 1);
 			clienttype = RFIFOB(fd, 8);
+
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+			// 当使用 SSO 方式进行登录时 (封包为 0x0825)
+			// 客户端还会额外的发送一些信息出来, 其中有一个比较有用的信息是客户端的网卡 MAC 地址
+			// 在一些更新的客户端还会额外发送客户端本地第一个网络连接的局域网 IP 地址
+			char *pMacAddress = RFIFOCP(fd, 0x3C);
+			char *pLanAddress = RFIFOCP(fd, 0x4D);
+			
+			size_t uMacAddressLen = strlen(pMacAddress);
+			size_t uLanAddressLen = strlen(pLanAddress);
+
+			// 部分客户端版本在 MAC 地址末尾会自动补 00
+			// 但也有部分客户端在 MAC 后面紧接着 IP 地址, 需要我们自己拆解一下: 00-1C-42-37-D8-63172.17.191.177
+			if (uMacAddressLen != MACADDRESS_LENGTH - 1)
+				safestrncpy(session[fd]->mac_address, pMacAddress, MACADDRESS_LENGTH - 1);
+			else
+				safestrncpy(session[fd]->mac_address, pMacAddress, uMacAddressLen + 1);
+
+			if (uLanAddressLen > IP4ADDRESS_LENGTH - 1) {
+				logclif_auth_failed(sd, 3);
+				return 0;
+			}
+
+			safestrncpy(session[fd]->lan_address, pLanAddress, uLanAddressLen + 1);
+#endif // Pandas_Extract_SSOPacket_MacAddress
 		}
 		else
 		{

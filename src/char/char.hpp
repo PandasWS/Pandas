@@ -228,6 +228,10 @@ struct auth_node {
 	int group_id;
 	unsigned changing_mapservers : 1;
 	uint8 version;
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+	char mac_address[MACADDRESS_LENGTH];	// 用户电脑实际联网的 MAC 地址, 格式: 00-00-00-00-00-00
+	char lan_address[IP4ADDRESS_LENGTH];	// 用户电脑第一个网络连接的内网 IP 地址, 格式: 000.000.000.000
+#endif // Pandas_Extract_SSOPacket_MacAddress
 };
 DBMap* char_get_authdb(); // uint32 account_id -> struct auth_node*
 
