@@ -1,29 +1,43 @@
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
--- 此脚本仅用于将 rAthenaCN 1.8.0 版本升级到 Pandas 1.0.0 版本
+-- ------------------------------------------------------------------------------
+-- 此脚本仅用于将 rAthenaCN 1.8.0 的主数据库升级到 Pandas 1.0.0 版本
 -- 导入此脚本之后, 若您在 rAthenaCN 的 inter_athena.conf 启用了 use_sql_db 选项,
 -- 那么还需额外导入 upgrade_from_rAthenaCN-1.8.0_main_use_sql_db.sql 文件
 -- 
--- 完成上述操作后, 您的 rAthenaCN 的数据库将会被升级到 Pandas 1.0.0 版本.
--- 随后, 你还需要按顺序导入 Pandas 历史各版本的数据库升级文件, 如: 
+-- 完成上述操作后, 您的 rAthenaCN 主数据库将会被升级到 Pandas 1.0.0 版本.
+-- 随后, 你还需要按顺序导入 Pandas 历史各版本的主数据库升级文件, 如: 
 -- 
--- 1. 导入 upgrade_to_1.0.3_main.sql 可以将数据库升级到 Pandas 1.0.3 版本
--- 2. 导入 upgrade_to_1.0.5_main.sql 可以将数据库升级到 Pandas 1.0.5 版本
+-- 1. 导入 upgrade_to_1.0.3_main.sql 将主数据库升级到 Pandas 1.0.3 版本
+-- 2. 导入 upgrade_to_1.0.5_main.sql 将主数据库升级到 Pandas 1.0.5 版本
+-- 3. ....
 -- 
--- 提示: 之所以没有 upgrade_to_1.0.4_main.sql 是因为 1.0.3 和 1.0.4 这两个版本的
---       数据库结构一致, 因此无需升级
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- 提示: 之所以没有 upgrade_to_1.0.1_main.sql 是因为 1.0.0 和 1.0.1 这两个版本的
+--       数据库结构一致, 因此无需升级.
+--       以此类推, 之所以没有 upgrade_to_1.0.4_main.sql 是因为 1.0.3 和 1.0.4 这
+--       两个版本的数据库结构一致, 因此无需升级. 
+--
+-- 注意: 若发现存在命名规则如 upgrade_to_x.x.x_main_use_sql_db.sql 的文件
+--       那么只有你开启了 use_sql_db 选项才需要导入它们.
+--       导入的顺序为: 首先导入与版本对应的 upgrade_to_x.x.x_main.sql 文件,
+--       再导入对应的 upgrade_to_x.x.x_main_use_sql_db.sql 文件.
+-- ------------------------------------------------------------------------------
 
+-- -----------------------------------------------
 -- upgrade_20180623.sql
+-- -----------------------------------------------
 
 ALTER TABLE `guild_position` MODIFY COLUMN `mode` smallint(11) unsigned NOT NULL default '0';
 
+-- -----------------------------------------------
 -- upgrade_20180830.sql
+-- -----------------------------------------------
 
 UPDATE `char` ch, `skill` sk SET `ch`.`skill_point` = `ch`.`skill_point` + `sk`.`lv` WHERE `sk`.`id` = 2049 AND `ch`.`char_id` = `sk`.`char_id`;
 
 DELETE FROM `skill` WHERE `id` = 2049;
 
+-- -----------------------------------------------
 -- upgrade_20181010.sql
+-- -----------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `guild_storage_log` (
   `id` int(11) NOT NULL auto_increment,
@@ -62,7 +76,9 @@ CREATE TABLE IF NOT EXISTS `guild_storage_log` (
   INDEX (`guild_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1;
 
+-- -----------------------------------------------
 -- upgrade_20181220.sql
+-- -----------------------------------------------
 
 ALTER TABLE `bonus_script` MODIFY COLUMN `tick` bigint(20) NOT NULL default '0';
 
@@ -74,12 +90,16 @@ ALTER TABLE `sc_data` MODIFY COLUMN `tick` bigint(20) NOT NULL;
 
 ALTER TABLE `skillcooldown` MODIFY COLUMN `tick` bigint(20) NOT NULL;
 
+-- -----------------------------------------------
 -- upgrade_20181224.sql
+-- -----------------------------------------------
 
 alter table `inventory`
 	add column `equip_switch` int(11) unsigned NOT NULL default '0' after `unique_id`;
 
+-- -----------------------------------------------
 -- upgrade_20190309.sql
+-- -----------------------------------------------
 
 ALTER TABLE `pet`
 	ADD COLUMN `autofeed` tinyint(2) NOT NULL default '0' AFTER `incubate`;
@@ -123,16 +143,22 @@ AND
 	`i`.`id` IS NULL
 ;
 
+-- -----------------------------------------------
 -- upgrade_20190814.sql
+-- -----------------------------------------------
 
 ALTER TABLE `ipbanlist`
 	CHANGE COLUMN `list` `list` VARCHAR(15) NOT NULL DEFAULT '' FIRST;
 
+-- -----------------------------------------------
 -- upgrade_20190815.sql
+-- -----------------------------------------------
 
 DROP TABLE `ragsrvinfo`;
 
+-- -----------------------------------------------
 -- 熊猫模拟器的额外修正, 感谢 "张大坏" 反馈
+-- -----------------------------------------------
 
 ALTER TABLE `bonus_script` MODIFY `tick` BIGINT(20) NOT NULL DEFAULT '0';
 ALTER TABLE `elemental` MODIFY `life_time` BIGINT(20) NOT NULL default '0';

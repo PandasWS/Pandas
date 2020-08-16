@@ -1,9 +1,17 @@
+-- ------------------------------------------------------------------------------
+-- 此脚本用于将 Pandas 的主数据库升级到 1.0.6 版本
+-- 注意: 若存在更低版本且从未导入的升级脚本, 请按版本号从小到大依序导入
+-- ------------------------------------------------------------------------------
 
+-- -----------------------------------------------
 -- upgrade_20200327.sql
+-- -----------------------------------------------
 
 DROP TABLE `interreg`;
 
+-- -----------------------------------------------
 -- upgrade_20200402.sql
+-- -----------------------------------------------
 
 -- AB_EUCHARISTICA
 UPDATE `char` c, `skill` s SET `c`.skill_point = `c`.skill_point + `s`.lv WHERE `s`.id = 2049 AND `c`.char_id = `s`.char_id;
@@ -22,7 +30,9 @@ DELETE FROM `skill` WHERE `id` = 2496;
 UPDATE `char` c, `skill` s SET `c`.skill_point = `c`.skill_point + `s`.lv WHERE `s`.id = 491 AND `c`.char_id = `s`.char_id;
 DELETE FROM `skill` WHERE `id` = 491;
 
+-- -----------------------------------------------
 -- upgrade_20200506.sql
+-- -----------------------------------------------
 
 -- HT_SANDMAN
 UPDATE `char` c, `skill` s SET `c`.skill_point = `c`.skill_point + `s`.lv WHERE (`c`.class = 4190 OR `c`.class = 4191) AND `s`.id = 119 AND `c`.char_id = `s`.char_id;

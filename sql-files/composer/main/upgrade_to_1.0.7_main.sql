@@ -1,3 +1,10 @@
+-- ------------------------------------------------------------------------------
+-- 此脚本用于将 Pandas 的主数据库升级到 1.0.7 版本
+-- 注意: 若存在更低版本且从未导入的升级脚本, 请按版本号从小到大依序导入
+-- 
+-- 导入此脚本之后, 若您在 inter_athena.conf 启用了 use_sql_db 选项,
+-- 那么还需额外导入 upgrade_to_1.0.7_main_use_sql_db.sql 文件
+-- ------------------------------------------------------------------------------
 
 -- -----------------------------------------------
 -- upgrade_20200603.sql
@@ -169,7 +176,7 @@ UPDATE `char` c, `skill` s SET `c`.skill_point = `c`.skill_point + (`s`.lv - 2),
 UPDATE `char` c, `skill` s SET `c`.skill_point = `c`.skill_point + (`s`.lv - 2), `s`.lv = 2 WHERE `s`.id = 2229 AND `s`.lv > 2 AND `c`.char_id = `s`.char_id;
 
 -- -----------------------------------------------
--- upgrade_20200808.sql
+-- upgrade_20200808.sql - 未开启 use_sql_db 部分
 -- -----------------------------------------------
 
 ALTER TABLE `auction`
@@ -233,81 +240,3 @@ ALTER TABLE `storage`
 	MODIFY `card1` int(10) unsigned NOT NULL default '0',
 	MODIFY `card2` int(10) unsigned NOT NULL default '0',
 	MODIFY `card3` int(10) unsigned NOT NULL default '0';
-
-ALTER TABLE `item_cash_db`
-	MODIFY `item_id` int(10) unsigned NOT NULL default '0';
-
-ALTER TABLE `item_cash_db2`
-	MODIFY `item_id` int(10) unsigned NOT NULL default '0';
-
-ALTER TABLE `item_db`
-	MODIFY `id` int(10) unsigned NOT NULL default '0';
-
-ALTER TABLE `item_db_re`
-	MODIFY `id` int(10) unsigned NOT NULL default '0';
-
-ALTER TABLE `item_db2`
-	MODIFY `id` int(10) unsigned NOT NULL default '0';
-
-ALTER TABLE `item_db2_re`
-	MODIFY `id` int(10) unsigned NOT NULL default '0';
-
-ALTER TABLE `mob_db`
-	MODIFY `MVP1id` int(10) unsigned NOT NULL default '0',
-	MODIFY `MVP2id` int(10) unsigned NOT NULL default '0',
-	MODIFY `MVP3id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop1id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop2id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop3id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop4id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop5id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop6id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop7id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop8id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop9id` int(10) unsigned NOT NULL default '0',
-	MODIFY `DropCardid` int(10) unsigned NOT NULL default '0';
-
-ALTER TABLE `mob_db_re`
-	MODIFY `MVP1id` int(10) unsigned NOT NULL default '0',
-	MODIFY `MVP2id` int(10) unsigned NOT NULL default '0',
-	MODIFY `MVP3id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop1id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop2id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop3id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop4id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop5id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop6id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop7id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop8id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop9id` int(10) unsigned NOT NULL default '0',
-	MODIFY `DropCardid` int(10) unsigned NOT NULL default '0';
-
-ALTER TABLE `mob_db2`
-	MODIFY `MVP1id` int(10) unsigned NOT NULL default '0',
-	MODIFY `MVP2id` int(10) unsigned NOT NULL default '0',
-	MODIFY `MVP3id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop1id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop2id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop3id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop4id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop5id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop6id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop7id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop8id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop9id` int(10) unsigned NOT NULL default '0',
-	MODIFY `DropCardid` int(10) unsigned NOT NULL default '0';
-
-ALTER TABLE `mob_db2_re`
-	MODIFY `MVP1id` int(10) unsigned NOT NULL default '0',
-	MODIFY `MVP2id` int(10) unsigned NOT NULL default '0',
-	MODIFY `MVP3id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop1id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop2id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop3id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop4id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop5id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop6id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop7id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop8id` int(10) unsigned NOT NULL default '0',
-	MODIFY `Drop9id` int(10) unsigned NOT NULL default '0',
-	MODIFY `DropCardid` int(10) unsigned NOT NULL default '0';
