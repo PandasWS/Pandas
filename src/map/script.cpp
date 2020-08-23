@@ -4509,7 +4509,8 @@ void script_detach_state(struct script_state* st, bool dequeue_event)
 			sd->npc_id = val.bk_npcid;
 			sd->mbk_st.pop();
 		}
-		else if (dequeue_event) {
+
+		if (!sd->st && dequeue_event) {
 #ifdef SECURE_NPCTIMEOUT
 			/**
 			 * We're done with this NPC session, so we cancel the timer (if existent) and move on
@@ -4544,12 +4545,10 @@ void script_attach_state(struct script_state* st){
 			st->bk_st = sd->st;
 			st->bk_npcid = sd->npc_id;
 #else
-			if (sd->st) {
-				struct mutli_state mbk_st = { 0 };
-				mbk_st.bk_st = sd->st;
-				mbk_st.bk_npcid = sd->npc_id;
-				sd->mbk_st.push(mbk_st);
-			}
+			struct mutli_state mbk_st = { 0 };
+			mbk_st.bk_st = sd->st;
+			mbk_st.bk_npcid = sd->npc_id;
+			sd->mbk_st.push(mbk_st);
 #endif // Pandas_ScriptEngine_MutliStackBackup
 		}
 		sd->st = st;
