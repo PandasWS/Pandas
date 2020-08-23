@@ -573,6 +573,9 @@
 	#ifdef Pandas_FuncLogic_Instance_Destroy_Command
 		#define Pandas_Fix_Dungeon_Command_Status_Refresh
 	#endif // Pandas_FuncLogic_Instance_Destroy_Command
+
+	// 修正当 block_free 数组中存在重复指针时, 会导致的无效指针错误的问题 [Sola丶小克]
+	#define Pandas_Fix_DuplicateBlock_When_Freeblock_Unlock
 #endif // Pandas_Bugfix
 
 // ============================================================================
