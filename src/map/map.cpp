@@ -276,6 +276,21 @@ int map_freeblock_unlock (void)
 		int i;
 		for (i = 0; i < block_free_count; i++)
 		{
+#ifdef Pandas_Fix_DuplicateBlock_When_Freeblock_Unlock
+			// 我们这里进行查重操作而不是在 map_freeblock 函数中进行
+			// 因为 map_freeblock 被调用的次数频度更高, 在这里查重调整有助于提高效率
+			//
+			// 当即将释放的 block_free[i] 不是空指针时,
+			// 我们先找出全部和他指针一样的后续对象并将它们的指针直接置空, 避免重复对同一个指针调用 aFree
+			if (block_free[i]) {
+				for (int j = 0; j < block_free_count; j++) {
+					if (j == i) continue;
+					if (block_free[j] == block_free[i]) {
+						block_free[j] = NULL;
+					}
+				}
+			}
+#endif // Pandas_Fix_DuplicateBlock_When_Freeblock_Unlock
 			aFree(block_free[i]);
 			block_free[i] = NULL;
 		}
