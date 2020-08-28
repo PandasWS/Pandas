@@ -2854,10 +2854,9 @@ ACMD_FUNC(makeegg) {
 		return -1;
 	}
 
-	if ((item_data = itemdb_searchname(message)) != NULL) // for egg name
-		id = item_data->nameid;
-	else
-	if ((id = mobdb_searchname(message)) != 0) // for monster name
+
+	// for monster name
+	if ((id = mobdb_searchname(message)) != 0)
 		;
 	else
 		id = atoi(message);
@@ -2865,7 +2864,16 @@ ACMD_FUNC(makeegg) {
 	std::shared_ptr<s_pet_db> pet = pet_db.find(id);
 
 	if( pet == nullptr ){
-		pet = pet_db_search(id, PET_EGG);
+		t_itemid nameid;
+
+		// for egg name
+		if( ( item_data = itemdb_searchname( message ) ) != nullptr ){
+			nameid = item_data->nameid;
+		}else{
+			nameid = strtoul( message, nullptr, 10 );
+		}
+
+		pet = pet_db_search( nameid, PET_EGG );
 	}
 
 	if (pet != nullptr) {
@@ -3755,7 +3763,7 @@ ACMD_FUNC(idsearch)
 		clif_displaymessage(fd, atcmd_output);
 	}
 	for(i = 0; i < match; i++) {
-		sprintf(atcmd_output, msg_txt(sd,78), item_array[i]->jname, item_array[i]->nameid); // %s: %d
+		sprintf(atcmd_output, msg_txt(sd,78), item_array[i]->jname, item_array[i]->nameid); // %s: %u
 		clif_displaymessage(fd, atcmd_output);
 	}
 	sprintf(atcmd_output, msg_txt(sd,79), match); // It is %d affair above.
@@ -4070,8 +4078,17 @@ ACMD_FUNC(reload) {
 			pc_close_npc(pl_sd,1);
 			clif_cutin(pl_sd, "", 255);
 			pl_sd->state.block_action &= ~(PCBLOCK_ALL ^ PCBLOCK_IMMUNE);
+			bg_queue_leave(pl_sd);
 		}
 		mapit_free(iter);
+
+		for (auto &bg : bg_queues) {
+				for (auto &bg_sd : bg->teama_members)
+					bg_team_leave(bg_sd, false, false); // Kick Team A from battlegrounds
+				for (auto &bg_sd : bg->teamb_members)
+					bg_team_leave(bg_sd, false, false); // Kick Team B from battlegrounds
+				bg_queue_clear(bg, true);
+		}
 
 		flush_fifos();
 		map_reloadnpc(true); // reload config files seeking for npcs
@@ -6438,7 +6455,7 @@ ACMD_FUNC(autolootitem)
 
 	if (action < 3) // add or remove
 	{
-		if ((item_data = itemdb_exists(atoi(message))) == NULL)
+		if ((item_data = itemdb_exists(strtoul(message, nullptr, 10))) == nullptr)
 			item_data = itemdb_searchname(message);
 		if (!item_data) {
 			// No items founds in the DB with Id or Name
@@ -7536,7 +7553,7 @@ ACMD_FUNC(mobinfo)
 		j = 0;
 		for (i = 0; i < MAX_MOB_DROP_TOTAL; i++) {
 			int droprate;
-			if (mob->dropitem[i].nameid <= 0 || mob->dropitem[i].p < 1 || (item_data = itemdb_exists(mob->dropitem[i].nameid)) == NULL)
+			if (mob->dropitem[i].nameid == 0 || mob->dropitem[i].p < 1 || (item_data = itemdb_exists(mob->dropitem[i].nameid)) == NULL)
 				continue;
 			droprate = mob->dropitem[i].p;
 
@@ -7579,7 +7596,7 @@ ACMD_FUNC(mobinfo)
 			mvpremain = 100.0; //Remaining drop chance for official mvp drop mode
 			j = 0;
 			for (i = 0; i < MAX_MVP_DROP_TOTAL; i++) {
-				if (mob->mvpitem[i].nameid <= 0 || (item_data = itemdb_exists(mob->mvpitem[i].nameid)) == NULL)
+				if (mob->mvpitem[i].nameid == 0 || (item_data = itemdb_exists(mob->mvpitem[i].nameid)) == NULL)
 					continue;
 				//Because if there are 3 MVP drops at 50%, the first has a chance of 50%, the second 25% and the third 12.5%
 				mvppercent = (float)mob->mvpitem[i].p * mvpremain / 10000.0f;
@@ -8007,7 +8024,7 @@ ACMD_FUNC(iteminfo)
 		clif_displaymessage(fd, msg_txt(sd,1276)); // Please enter an item name/ID (usage: @ii/@iteminfo <item name/ID>).
 		return -1;
 	}
-	if ((item_array[0] = itemdb_exists(atoi(message))) == NULL)
+	if ((item_array[0] = itemdb_exists(strtoul(message, nullptr, 10))) == nullptr)
 		count = itemdb_searchname_array(item_array, MAX_SEARCH, message);
 
 	if (!count) {
@@ -8058,7 +8075,7 @@ ACMD_FUNC(whodrops)
 		clif_displaymessage(fd, msg_txt(sd,1284)); // Please enter item name/ID (usage: @whodrops <item name/ID>).
 		return -1;
 	}
-	if ((item_array[0] = itemdb_exists(atoi(message))) == NULL)
+	if ((item_array[0] = itemdb_exists(strtoul(message, nullptr, 10))) == nullptr)
 		count = itemdb_searchname_array(item_array, MAX_SEARCH, message);
 
 	if (!count) {
@@ -8921,12 +8938,33 @@ ACMD_FUNC(request)
 }
 
 /*==========================================
- * Feel (SG save map) Reset [HiddenDragon]
+ * Feel (SG designated maps) Reset [HiddenDragon]
  *------------------------------------------*/
 ACMD_FUNC(feelreset)
 {
+	if ((sd->class_&MAPID_UPPERMASK) != MAPID_STAR_GLADIATOR) {
+		clif_displaymessage(sd->fd,msg_txt(sd,35));	// You can't use this command with this class.
+		return -1;
+	}
+
 	pc_resetfeel(sd);
 	clif_displaymessage(fd, msg_txt(sd,1324)); // Reset 'Feeling' maps.
+
+	return 0;
+}
+
+/*==========================================
+ * Hate (SG designated monsters) Reset
+ *------------------------------------------*/
+ACMD_FUNC(hatereset)
+{
+	if ((sd->class_&MAPID_UPPERMASK) != MAPID_STAR_GLADIATOR) {
+		clif_displaymessage(sd->fd,msg_txt(sd,35));	// You can't use this command with this class.
+		return -1;
+	}
+
+	pc_resethate(sd);
+	clif_displaymessage(fd, msg_txt(sd,1515)); // Reset 'Hatred' monsters.
 
 	return 0;
 }
@@ -9071,9 +9109,9 @@ ACMD_FUNC(itemlist)
 		}
 
 		if( it->refine )
-			StringBuf_Printf(&buf, "%d %s %+d (%s, id: %d)", it->amount, itd->jname, it->refine, itd->name, it->nameid);
+			StringBuf_Printf(&buf, "%d %s %+d (%s, id: %u)", it->amount, itd->jname, it->refine, itd->name, it->nameid);
 		else
-			StringBuf_Printf(&buf, "%d %s (%s, id: %d)", it->amount, itd->jname, itd->name, it->nameid);
+			StringBuf_Printf(&buf, "%d %s (%s, id: %u)", it->amount, itd->jname, itd->name, it->nameid);
 
 		if( it->equip ) {
 			char equipstr[CHAT_SIZE_MAX];
@@ -9173,7 +9211,7 @@ ACMD_FUNC(itemlist)
 				if( counter2 != 1 )
 					StringBuf_AppendStr(&buf, ", ");
 
-				StringBuf_Printf(&buf, "#%d %s (id: %d)", counter2, card->jname, card->nameid);
+				StringBuf_Printf(&buf, "#%d %s (id: %u)", counter2, card->jname, card->nameid);
 			}
 
 			if( counter2 > 0 )
@@ -10916,6 +10954,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(homshuffle),
 		ACMD_DEF(showmobs),
 		ACMD_DEF(feelreset),
+		ACMD_DEF(hatereset),
 		ACMD_DEF(auction),
 		ACMD_DEF(mail),
 		ACMD_DEF2("noks", ksprotection),
