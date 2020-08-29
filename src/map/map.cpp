@@ -5356,7 +5356,25 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		mapit_free(iter);
 		break;
 	}
-#endif // Pandas_MapFlag_HidePartyInfo
+#endif // Pandas_MapFlag_NoPet
+#ifdef Pandas_MapFlag_NoHomun
+	case MF_NOHOMUN:
+	{
+		struct s_mapiterator* iter = mapit_getallusers();
+		struct map_session_data* pl_sd = nullptr;
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->bl.m != m)
+				continue;
+			if (hom_is_active(pl_sd->hd) && status) {
+				// 当前地图禁止使用人工生命体, 已自动将其安息
+				clif_displaymessage(pl_sd->fd, msg_txt_cn(pl_sd, 6));
+				hom_vaporize(pl_sd, HOM_ST_REST);
+			}
+		}
+		mapit_free(iter);
+		break;
+	}
+#endif // Pandas_MapFlag_NoHomun
 	}
 #endif // Pandas_Mapflags
 

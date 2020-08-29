@@ -896,8 +896,8 @@
 	// 该标记用于禁止玩家在地图上召唤宠物, 宠物进入该地图会自动变回宠物蛋
 	#define Pandas_MapFlag_NoPet
 
-	// 是否启用 nohomun 地图标记 [维护者昵称]
-	// TODO: 请在此填写此地图标记的说明
+	// 是否启用 nohomun 地图标记 [Sola丶小克]
+	// 该标记用于禁止玩家在地图上召唤人工生命体, 生命体进入该地图会自动安息
 	#define Pandas_MapFlag_NoHomun
 
 	// 是否启用 nomerc 地图标记 [维护者昵称]
