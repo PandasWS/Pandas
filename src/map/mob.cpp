@@ -2729,7 +2729,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		dlist->item = NULL;
 
 		for (i = 0; i < MAX_MOB_DROP_TOTAL; i++) {
-			if (md->db->dropitem[i].nameid <= 0)
+			if (md->db->dropitem[i].nameid == 0)
 				continue;
 			if ( !(it = itemdb_exists(md->db->dropitem[i].nameid)) )
 				continue;
@@ -2928,7 +2928,8 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 	}
 
 	if(mvp_sd && md->db->mexp > 0 && !md->special_state.ai) {
-		unsigned int log_mvp[2] = {0};
+		t_itemid log_mvp_nameid = 0;
+		t_exp log_mvp_exp = 0;
 		unsigned int mexp;
 		struct item item;
 		double exp;
@@ -2947,7 +2948,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		clif_mvp_effect(mvp_sd);
 		clif_mvp_exp(mvp_sd,mexp);
 		pc_gainexp(mvp_sd, &md->bl, mexp,0, 0);
-		log_mvp[1] = mexp;
+		log_mvp_exp = mexp;
 
 		if( !(map_getmapflag(m, MF_NOMVPLOOT) || type&1) ) {
 			//Order might be random depending on item_drop_mvp_mode config setting
@@ -2978,7 +2979,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			for(i = 0; i < MAX_MVP_DROP_TOTAL; i++) {
 				struct item_data *i_data;
 
-				if(mdrop[i].nameid <= 0 || !(i_data = itemdb_exists(mdrop[i].nameid)))
+				if(mdrop[i].nameid == 0 || !(i_data = itemdb_exists(mdrop[i].nameid)))
 					continue;
 
 				temp = mdrop[i].p;
@@ -2996,7 +2997,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 				item.identify = (battle_config.force_identified & 4 ? 1 : item.identify);
 #endif // Pandas_BattleConfig_Force_Identified
 				clif_mvp_item(mvp_sd,item.nameid);
-				log_mvp[0] = item.nameid;
+				log_mvp_nameid = item.nameid;
 
 #ifdef Pandas_Item_Special_Annouce
 				bool is_spceial_annouced = false;
@@ -3042,7 +3043,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			}
 		}
 
-		log_mvpdrop(mvp_sd, md->mob_id, log_mvp);
+		log_mvpdrop(mvp_sd, md->mob_id, log_mvp_nameid, log_mvp_exp);
 	}
 
 	if (type&2 && !sd && md->mob_id == MOBID_EMPERIUM)
@@ -4199,7 +4200,7 @@ static unsigned int mob_drop_adjust(int baserate, int rate_adjust, unsigned shor
  */
 static void item_dropratio_adjust(t_itemid nameid, int mob_id, int *rate_adjust)
 {
-	struct s_mob_item_drop_ratio *item_ratio = (struct s_mob_item_drop_ratio *)idb_get(mob_item_drop_ratio, nameid);
+	struct s_mob_item_drop_ratio *item_ratio = (struct s_mob_item_drop_ratio *)uidb_get(mob_item_drop_ratio, nameid);
 	if( item_ratio) {
 		if( item_ratio->mob_id[0] ) { // only for listed mobs
 			int i;
@@ -5250,7 +5251,7 @@ static bool mob_readdb_itemratio(char* str[], int columns, int current)
 
 	ratio = atoi(str[1]);
 
-	if (!(item_ratio = (struct s_mob_item_drop_ratio *)idb_get(mob_item_drop_ratio,nameid)))
+	if (!(item_ratio = (struct s_mob_item_drop_ratio *)uidb_get(mob_item_drop_ratio,nameid)))
 		CREATE(item_ratio, struct s_mob_item_drop_ratio, 1);
 
 	item_ratio->drop_ratio = ratio;
@@ -5265,7 +5266,7 @@ static bool mob_readdb_itemratio(char* str[], int columns, int current)
 
 	if (!item_ratio->nameid) {
 		item_ratio->nameid = nameid;
-		idb_put(mob_item_drop_ratio, nameid, item_ratio);
+		uidb_put(mob_item_drop_ratio, nameid, item_ratio);
 	}
 
 	return true;
@@ -5706,7 +5707,7 @@ void mob_db_load(bool is_reload){
 		item_drop_ers = ers_new(sizeof(struct item_drop),"mob.cpp::item_drop_ers",ERS_OPT_CLEAN);
 		item_drop_list_ers = ers_new(sizeof(struct item_drop_list),"mob.cpp::item_drop_list_ers",ERS_OPT_NONE);
 	}
-	mob_item_drop_ratio = idb_alloc(DB_OPT_BASE);
+	mob_item_drop_ratio = uidb_alloc(DB_OPT_BASE);
 	mob_skill_db = idb_alloc(DB_OPT_BASE);
 	mob_summon_db = idb_alloc(DB_OPT_BASE);
 
