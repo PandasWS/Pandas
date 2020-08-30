@@ -4403,6 +4403,11 @@ ACMD_FUNC(mapinfo) {
 		sprintf(atcmd_output, "%s MaxDmg_Normal: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXDMG_NORMAL, 0));
 	}
 #endif // Pandas_MapFlag_MaxDmg_Normal
+#ifdef Pandas_MapFlag_NoSkill2
+	if (map_getmapflag(m_id, MF_NOSKILL2)) {
+		sprintf(atcmd_output, "%s NoSkill2: %d |", atcmd_output, map_getmapflag_param(m_id, MF_NOSKILL2, 0));
+	}
+#endif // Pandas_MapFlag_NoSkill2
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
@@ -8522,6 +8527,10 @@ ACMD_FUNC(mapflag) {
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 			disabled_mf.insert(disabled_mf.begin(), MF_MAXDMG_NORMAL);
 #endif // Pandas_MapFlag_MaxDmg_Normal
+
+#ifdef Pandas_MapFlag_NoSkill2
+			disabled_mf.insert(disabled_mf.begin(), MF_NOSKILL2);
+#endif // Pandas_MapFlag_NoSkill2
 
 			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
 

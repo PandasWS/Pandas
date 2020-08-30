@@ -12908,6 +12908,10 @@ void clif_parse_skill_toid( struct map_session_data* sd, uint16 skill_id, uint16
 	if (inf&INF_GROUND_SKILL || !inf)
 		return; //Using a ground/passive skill on a target? WRONG.
 
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 #ifdef Pandas_NpcFilter_USE_SKILL
 	if (sd && sd->bl.type == BL_PC) {
 		pc_setreg(sd, add_str("@useskill_id"), skill_id);
@@ -17592,6 +17596,10 @@ void clif_parse_configuration( int fd, struct map_session_data* sd ){
 	int cmd = RFIFOW(fd,0);
 	int type = RFIFOL(fd,packet_db[cmd].pos[0]);
 	bool flag = RFIFOL(fd,packet_db[cmd].pos[1]) != 0;
+
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 
 	switch( type ){
 		case CONFIG_OPEN_EQUIPMENT_WINDOW:

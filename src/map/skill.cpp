@@ -872,6 +872,13 @@ bool skill_isNotOk(uint16 skill_id, struct map_session_data *sd)
 	if( sd->sc.data[SC_ALL_RIDING] )
 		return true; //You can't use skills while in the new mounts (The client doesn't let you, this is to make cheat-safe)
 
+#ifdef Pandas_MapFlag_NoSkill2
+	if (sd && map_getmapflag(sd->bl.m, MF_NOSKILL2)) {
+		if ((map_getmapflag_param(sd->bl.m, MF_NOSKILL2, 0) & BL_PC) == BL_PC)
+			return true;
+	}
+#endif // Pandas_MapFlag_NoSkill2
+
 	switch (skill_id) {
 		case AL_WARP:
 		case RETURN_TO_ELDICASTES:
@@ -975,6 +982,13 @@ bool skill_isNotOk_hom(struct homun_data *hd, uint16 skill_id, uint16 skill_lv)
 	int8 spiritball = 0;
 
 	nullpo_retr(true, hd);
+
+#ifdef Pandas_MapFlag_NoSkill2
+	if (hd && map_getmapflag(hd->bl.m, MF_NOSKILL2)) {
+		if ((map_getmapflag_param(hd->bl.m, MF_NOSKILL2, 0) & BL_HOM) == BL_HOM)
+			return false;
+	}
+#endif // Pandas_MapFlag_NoSkill2
 
 	spiritball = skill_get_spiritball(skill_id, skill_lv);
 	sd = hd->master;
@@ -1091,6 +1105,13 @@ bool skill_isNotOk_hom(struct homun_data *hd, uint16 skill_id, uint16 skill_lv)
 bool skill_isNotOk_mercenary(uint16 skill_id, struct mercenary_data *md)
 {
 	nullpo_retr(1, md);
+
+#ifdef Pandas_MapFlag_NoSkill2
+	if (md && map_getmapflag(md->bl.m, MF_NOSKILL2)) {
+		if ((map_getmapflag_param(md->bl.m, MF_NOSKILL2, 0) & BL_MER) == BL_MER)
+			return false;
+	}
+#endif // Pandas_MapFlag_NoSkill2
 
 	if (util::vector_exists(md->blockskill, skill_id))
 		return true;
