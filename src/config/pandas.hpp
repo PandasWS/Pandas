@@ -900,8 +900,8 @@
 	// 该标记用于禁止玩家在地图上召唤人工生命体, 生命体进入该地图会自动安息
 	#define Pandas_MapFlag_NoHomun
 
-	// 是否启用 nomerc 地图标记 [维护者昵称]
-	// TODO: 请在此填写此地图标记的说明
+	// 是否启用 nomerc 地图标记 [Sola丶小克]
+	// 该标记用于禁止玩家在地图上召唤佣兵, 佣兵进入该地图会自动隐藏
 	#define Pandas_MapFlag_NoMerc
 
 	// 是否启用 mobdroprate 地图标记 [Sola丶小克]
