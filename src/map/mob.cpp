@@ -3684,6 +3684,13 @@ int mobskill_use(struct mob_data *md, t_tick tick, int event)
 	nullpo_ret(md);
 	nullpo_ret(ms = md->db->skill);
 
+#ifdef Pandas_MapFlag_NoSkill2
+	if (md && map_getmapflag(md->bl.m, MF_NOSKILL2)) {
+		if ((map_getmapflag_param(md->bl.m, MF_NOSKILL2, 0) & BL_MOB) == BL_MOB)
+			return 0;
+	}
+#endif // Pandas_MapFlag_NoSkill2
+
 	if (!battle_config.mob_skill_rate || md->ud.skilltimer != INVALID_TIMER || !md->db->maxskill || status_has_mode(&md->status,MD_NOCAST_SKILL))
 		return 0;
 

@@ -652,6 +652,10 @@
 	export_constant(MF_MAXDMG_NORMAL);
 #endif // Pandas_MapFlag_MaxDmg_Normal
 
+#ifdef Pandas_MapFlag_NoSkill2
+	export_constant(MF_NOSKILL2);
+#endif // Pandas_MapFlag_NoSkill2
+
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
 	/* setcell types */

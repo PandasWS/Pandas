@@ -559,6 +559,14 @@ int elemental_unlocktarget(struct elemental_data *ed) {
 bool elemental_skillnotok(uint16 skill_id, struct elemental_data *ed) {
 	uint16 idx = skill_get_index(skill_id);
 	nullpo_retr(1,ed);
+
+#ifdef Pandas_MapFlag_NoSkill2
+	if (ed && map_getmapflag(ed->bl.m, MF_NOSKILL2)) {
+		if ((map_getmapflag_param(ed->bl.m, MF_NOSKILL2, 0) & BL_ELEM) == BL_ELEM)
+			return false;
+	}
+#endif // Pandas_MapFlag_NoSkill2
+
 	return idx == 0 ? false : skill_isNotOk(skill_id,ed->master); // return false or check if it,s ok for master as well
 }
 

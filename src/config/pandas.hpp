@@ -923,6 +923,10 @@
 	// 是否启用 maxdmg_normal 地图标记 [Sola丶小克]
 	// 该标记用于限制此地图上单位的最大平砍伤害 (包括二刀连击和刺客拳刃平砍)
 	#define Pandas_MapFlag_MaxDmg_Normal
+
+	// 是否启用 noskill2 地图标记 [Sola丶小克]
+	// 该标记用于禁止此地图上的指定单位使用技能 (支持掩码指定多种类型的单位)
+	#define Pandas_MapFlag_NoSkill2
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 
