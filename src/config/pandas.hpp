@@ -113,6 +113,12 @@
 	// 结构体修改定位 itemdb.hpp -> item_data.has_callfunc
 	#define Pandas_Struct_Item_Data_Has_CallFunc
 
+	// 使 item_data 可记录此物品的三个脚本对应的文本 [Sola丶小克]
+	// 结构体修改定位 itemdb.hpp -> item_data.str_script
+	// 结构体修改定位 itemdb.hpp -> item_data.str_equip_script
+	// 结构体修改定位 itemdb.hpp -> item_data.str_unequip_script
+	#define Pandas_Struct_Item_Data_Script_String
+
 	// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
 	// 效果与 item_data.flag 类似, 只是数据源为 item_properties.yml 
 	// 结构体修改定位 itemdb.hpp -> item_data.properties

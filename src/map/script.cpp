@@ -14280,7 +14280,7 @@ BUILDIN_FUNC(getiteminfo)
 
 #ifdef Pandas_ScriptParams_GetItemInfo
 	int16 nx = script_getnum(st, 3);
-	if (i_data && 0 > nx && nx >= -6) {
+	if (i_data && 0 > nx && nx >= -9) {
 		switch (nx)
 		{
 		case -1:	script_pushint(st, i_data->flag.no_refine ? 0 : 1);				return SCRIPT_CMD_SUCCESS;
@@ -14334,6 +14334,16 @@ BUILDIN_FUNC(getiteminfo)
 #else
 		case -6:	script_pushint(st, -2);											return SCRIPT_CMD_SUCCESS;
 #endif // Pandas_Struct_Item_Data_Has_CallFunc
+
+#ifdef Pandas_Struct_Item_Data_Script_String
+		case -7:	script_pushconststr(st, i_data->str_script.c_str());			return SCRIPT_CMD_SUCCESS;
+		case -8:	script_pushconststr(st, i_data->str_equip_script.c_str());		return SCRIPT_CMD_SUCCESS;
+		case -9:	script_pushconststr(st, i_data->str_unequip_script.c_str());	return SCRIPT_CMD_SUCCESS;
+#else
+		case -7:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
+		case -8:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
+		case -9:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
+#endif // Pandas_Struct_Item_Data_Script_String
 		}
 	}
 #endif // Pandas_ScriptParams_GetItemInfo

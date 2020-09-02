@@ -898,6 +898,12 @@ struct item_data
 	unsigned int has_callfunc;
 #endif // Pandas_Struct_Item_Data_Has_CallFunc
 
+#ifdef Pandas_Struct_Item_Data_Script_String
+	std::string str_script;
+	std::string str_equip_script;
+	std::string str_unequip_script;
+#endif // Pandas_Struct_Item_Data_Script_String
+
 #ifdef Pandas_Struct_Item_Data_Properties
 	// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
 	// 效果与 item_data.flag 类似, 只是数据源为 item_properties.yml 

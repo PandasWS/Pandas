@@ -1572,6 +1572,15 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 	if (*str[21])
 		id->unequip_script = parse_script(str[21], source, line, scriptopt);
 
+#ifdef Pandas_Struct_Item_Data_Script_String
+	if (*str[19])
+		id->str_script = strTrim(std::string(str[19]));
+	if (*str[20])
+		id->str_equip_script = strTrim(std::string(str[20]));
+	if (*str[21])
+		id->str_unequip_script = strTrim(std::string(str[21]));
+#endif // Pandas_Struct_Item_Data_Script_String
+
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
 	// 判断该道具的脚本是否调用了 pet 或 mpet 指令 [Sola丶小克]
 	// 若确实有相关的调用, 则记录下此道具支持捕捉的魔物编号
