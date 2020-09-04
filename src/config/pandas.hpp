@@ -113,12 +113,6 @@
 	// 结构体修改定位 itemdb.hpp -> item_data.has_callfunc
 	#define Pandas_Struct_Item_Data_Has_CallFunc
 
-	// 使 item_data 可记录此物品的三个脚本对应的文本 [Sola丶小克]
-	// 结构体修改定位 itemdb.hpp -> item_data.str_script
-	// 结构体修改定位 itemdb.hpp -> item_data.str_equip_script
-	// 结构体修改定位 itemdb.hpp -> item_data.str_unequip_script
-	#define Pandas_Struct_Item_Data_Script_String
-
 	// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
 	// 效果与 item_data.flag 类似, 只是数据源为 item_properties.yml 
 	// 结构体修改定位 itemdb.hpp -> item_data.properties
@@ -492,6 +486,9 @@
 	// 经过简单测试, MAC 地址是可靠的, 但据 Jian916 提醒可能部分用户会无法读取到 MAC 地址
 	// 读取不到的情况暂时无法模拟出来, 等待进一步的情报
 	#define Pandas_Extract_SSOPacket_MacAddress
+
+	// 使程序能够持久化保存每个道具的脚本字符串 [Sola丶小克]
+	#define Pandas_Persistence_Itemdb_Script
 #endif // Pandas_CreativeWork
 
 // ============================================================================

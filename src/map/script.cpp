@@ -14335,15 +14335,27 @@ BUILDIN_FUNC(getiteminfo)
 		case -6:	script_pushint(st, -2);											return SCRIPT_CMD_SUCCESS;
 #endif // Pandas_Struct_Item_Data_Has_CallFunc
 
-#ifdef Pandas_Struct_Item_Data_Script_String
-		case -7:	script_pushconststr(st, i_data->str_script.c_str());			return SCRIPT_CMD_SUCCESS;
-		case -8:	script_pushconststr(st, i_data->str_equip_script.c_str());		return SCRIPT_CMD_SUCCESS;
-		case -9:	script_pushconststr(st, i_data->str_unequip_script.c_str());	return SCRIPT_CMD_SUCCESS;
+#ifdef Pandas_Persistence_Itemdb_Script
+		case -7: {
+			std::string script = itemdb_get_script(item_id, STORE_SCRIPT_USED);
+			script_pushstrcopy(st, script.c_str());
+			return SCRIPT_CMD_SUCCESS;
+		}
+		case -8: {
+			std::string script = itemdb_get_script(item_id, STORE_SCRIPT_EQUIP);
+			script_pushstrcopy(st, script.c_str());
+			return SCRIPT_CMD_SUCCESS;
+		}
+		case -9: {
+			std::string script = itemdb_get_script(item_id, STORE_SCRIPT_UNEQUIP);
+			script_pushstrcopy(st, script.c_str());
+			return SCRIPT_CMD_SUCCESS;
+		}
 #else
 		case -7:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
 		case -8:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
 		case -9:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
-#endif // Pandas_Struct_Item_Data_Script_String
+#endif // Pandas_Persistence_Itemdb_Script
 		}
 	}
 #endif // Pandas_ScriptParams_GetItemInfo

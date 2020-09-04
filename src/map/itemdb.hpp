@@ -898,12 +898,6 @@ struct item_data
 	unsigned int has_callfunc;
 #endif // Pandas_Struct_Item_Data_Has_CallFunc
 
-#ifdef Pandas_Struct_Item_Data_Script_String
-	std::string str_script;
-	std::string str_equip_script;
-	std::string str_unequip_script;
-#endif // Pandas_Struct_Item_Data_Script_String
-
 #ifdef Pandas_Struct_Item_Data_Properties
 	// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
 	// 效果与 item_data.flag 类似, 只是数据源为 item_properties.yml 
@@ -941,6 +935,22 @@ struct s_random_opt_group {
 	struct s_random_opt_group_entry *entries;
 	uint16 total;
 };
+
+#ifdef Pandas_Persistence_Itemdb_Script
+struct s_item_script {
+	std::shared_ptr<std::string> script;
+	std::shared_ptr<std::string> equip_script;
+	std::shared_ptr<std::string> unequip_script;
+};
+
+enum e_store_script {
+	STORE_SCRIPT_USED,
+	STORE_SCRIPT_EQUIP,
+	STORE_SCRIPT_UNEQUIP
+};
+
+std::string itemdb_get_script(t_itemid nameid, enum e_store_script scr_type);
+#endif // Pandas_Persistence_Itemdb_Script
 
 struct item_data* itemdb_searchname(const char *name);
 struct item_data* itemdb_search_aegisname( const char *str );
