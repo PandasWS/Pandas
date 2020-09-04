@@ -128,11 +128,11 @@ if(opencc_ADDED)
 	# 主要干的就是一些文件复制的工作
 	add_custom_command(TARGET DictionariesCopy
 		POST_BUILD
-		COMMAND mkdir -p "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/dicts"
-		COMMAND cp -f "${opencc_SOURCE_DIR}/data/config/s2t.json" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/dicts"
-		COMMAND cp -f "${opencc_SOURCE_DIR}/data/config/t2s.json" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/dicts"
-		COMMAND cp -f "${opencc_BINARY_DIR}/data/ST*.ocd2" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/dicts"
-		COMMAND cp -f "${opencc_BINARY_DIR}/data/TS*.ocd2" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/conf/dicts"
+		COMMAND mkdir -p "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/db/dicts"
+		COMMAND cp -f "${opencc_SOURCE_DIR}/data/config/s2t.json" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/db/dicts"
+		COMMAND cp -f "${opencc_SOURCE_DIR}/data/config/t2s.json" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/db/dicts"
+		COMMAND cp -f "${opencc_BINARY_DIR}/data/ST*.ocd2" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/db/dicts"
+		COMMAND cp -f "${opencc_BINARY_DIR}/data/TS*.ocd2" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/db/dicts"
 	)
 endif()
 
