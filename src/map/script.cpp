@@ -27896,6 +27896,29 @@ BUILDIN_FUNC(getcharmac) {
 }
 #endif // Pandas_ScriptCommand_GetCharMacAddress
 
+#ifdef Pandas_ScriptCommand_GetConstant
+/* ===========================================================
+ * 指令: getconstant
+ * 描述: 查询一个常量字符串对应的数值
+ * 用法: getconstant <"常量字符串">;
+ * 返回: 成功则返回常量对应的数值, 查询失败则返回 -255
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getconstant) {
+	const char* name = script_getstr(st, 2);
+	int64 value = 0;
+
+	if (script_get_constant(name, &value)) {
+		script_pushint(st, value);
+	}
+	else {
+		script_pushint(st, -255);
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetConstant
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -28058,6 +28081,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetCharMacAddress
 	BUILDIN_DEF(getcharmac,"?"),						// 获取指定角色登录时使用的 MAC 地址 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetCharMacAddress
+#ifdef Pandas_ScriptCommand_GetConstant
+	BUILDIN_DEF(getconstant,"s"),						// 查询一个常量字符串对应的数值 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetConstant
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
