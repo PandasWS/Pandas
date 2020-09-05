@@ -32,6 +32,74 @@ struct item_data *dummy_item; /// This is the default dummy item used for non-ex
 
 struct s_roulette_db rd;
 
+#ifdef Pandas_Persistence_Itemdb_Script
+
+typedef std::shared_ptr<s_item_script> shared_itemdb_script;
+typedef std::map<t_itemid, shared_itemdb_script> itemdb_script_db;
+
+itemdb_script_db itemdb_scripts;
+
+//************************************
+// Method:      itemdb_store_script
+// Description: 记住指定道具的脚本字符串信息
+// Parameter:   t_itemid nameid
+// Parameter:   const char * script
+// Parameter:   const char * equip
+// Parameter:   const char * unequip
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/9/5 0:09
+//************************************
+void itemdb_store_script(t_itemid nameid, const char* script, const char* equip, const char* unequip) {
+	auto item = itemdb_scripts.find(nameid);
+	if (item == itemdb_scripts.end()) {
+		shared_itemdb_script scr = std::make_shared<s_item_script>();
+		scr->script = std::make_shared<std::string>(script);
+		scr->equip_script = std::make_shared<std::string>(equip);
+		scr->unequip_script = std::make_shared<std::string>(unequip);
+
+		scr->script = std::make_shared<std::string>(strTrim(*scr->script));
+		scr->equip_script = std::make_shared<std::string>(strTrim(*scr->equip_script));
+		scr->unequip_script = std::make_shared<std::string>(strTrim(*scr->unequip_script));
+		itemdb_scripts[nameid] = scr;
+	}
+	else {
+		auto scr = item->second;
+		scr->script = std::make_shared<std::string>(script);
+		scr->equip_script = std::make_shared<std::string>(equip);
+		scr->unequip_script = std::make_shared<std::string>(unequip);
+		
+		scr->script = std::make_shared<std::string>(strTrim(*scr->script));
+		scr->equip_script = std::make_shared<std::string>(strTrim(*scr->equip_script));
+		scr->unequip_script = std::make_shared<std::string>(strTrim(*scr->unequip_script));
+	}
+}
+
+//************************************
+// Method:      itemdb_get_script
+// Description: 读取指定道具的脚本字符串信息
+// Parameter:   t_itemid nameid
+// Parameter:   enum e_store_script scr_type
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/9/5 0:09
+//************************************
+std::string itemdb_get_script(t_itemid nameid, enum e_store_script scr_type) {
+	auto item = itemdb_scripts.find(nameid);
+	if (item != itemdb_scripts.end() && item->second) {
+		switch (scr_type)
+		{
+		case STORE_SCRIPT_USED:
+			return *item->second->script;
+		case STORE_SCRIPT_EQUIP:
+			return *item->second->equip_script;
+		case STORE_SCRIPT_UNEQUIP:
+			return *item->second->unequip_script;
+		}
+	}
+	return std::string();
+};
+
+#endif // Pandas_Persistence_Itemdb_Script
+
 #ifdef Pandas_Speedup_Itemdb_SearchName
 
 typedef std::vector<struct item_data*> speedup_cache_item;
@@ -1572,6 +1640,10 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 	if (*str[21])
 		id->unequip_script = parse_script(str[21], source, line, scriptopt);
 
+#ifdef Pandas_Persistence_Itemdb_Script
+	itemdb_store_script(nameid, str[19], str[20], str[21]);
+#endif // Pandas_Persistence_Itemdb_Script
+
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
 	// 判断该道具的脚本是否调用了 pet 或 mpet 指令 [Sola丶小克]
 	// 若确实有相关的调用, 则记录下此道具支持捕捉的魔物编号
@@ -2201,6 +2273,10 @@ void itemdb_reload(void) {
 #ifdef Pandas_Speedup_Itemdb_SearchName
 	itemdb_speedup_clear();
 #endif // Pandas_Speedup_Itemdb_SearchName
+
+#ifdef Pandas_Storage_Itemdb_Script
+	itemdb_scripts.clear();
+#endif // Pandas_Storage_Itemdb_Script
 
 	if (battle_config.feature_roulette)
 		itemdb_roulette_free();

@@ -486,6 +486,9 @@
 	// 经过简单测试, MAC 地址是可靠的, 但据 Jian916 提醒可能部分用户会无法读取到 MAC 地址
 	// 读取不到的情况暂时无法模拟出来, 等待进一步的情报
 	#define Pandas_Extract_SSOPacket_MacAddress
+
+	// 使程序能够持久化保存每个道具的脚本字符串 [Sola丶小克]
+	#define Pandas_Persistence_Itemdb_Script
 #endif // Pandas_CreativeWork
 
 // ============================================================================
