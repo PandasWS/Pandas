@@ -1170,6 +1170,10 @@
 	// 是否启用 getconstant 脚本指令 [Sola丶小克]
 	// 该指令用于查询一个常量字符串对应的数值
 	#define Pandas_ScriptCommand_GetConstant
+
+	// 是否启用 preg_search 脚本指令 [Sola丶小克]
+	// 该指令用于执行一个正则表达式搜索并返回匹配的分组内容
+	#define Pandas_ScriptCommand_Preg_Search
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

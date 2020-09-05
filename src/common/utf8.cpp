@@ -200,7 +200,9 @@ std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage) {
 	wchar_t* strUnicode = new wchar_t[unicodeLen];
 	wmemset(strUnicode, 0, unicodeLen);
 	MultiByteToWideChar(nCodepage, 0, strANSI.c_str(), -1, strUnicode, unicodeLen);
-	return std::wstring(strUnicode);
+	std::wstring encoded(strUnicode);
+	delete[] strUnicode;
+	return std::move(encoded);
 }
 
 //************************************
@@ -216,7 +218,9 @@ std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage
 	char* strAnsi = new char[ansiLen];
 	memset(strAnsi, 0, ansiLen);
 	WideCharToMultiByte(nCodepage, 0, strUnicode.c_str(), -1, strAnsi, ansiLen, NULL, NULL);
-	return std::string(strAnsi);
+	std::string decoded(strAnsi);
+	delete[] strAnsi;
+	return std::move(decoded);
 }
 
 //************************************
