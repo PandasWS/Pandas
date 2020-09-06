@@ -28023,7 +28023,7 @@ BUILDIN_FUNC(preg_search) {
 
 		if (!boost::regex_search(text, match_result, re)) {
 			script_pushint(st, -1);
-			return SCRIPT_CMD_FAILURE;
+			return SCRIPT_CMD_SUCCESS;
 		}
 
 		for (int i = 0; i < match_result.size(); i++) {
