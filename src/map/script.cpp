@@ -27948,7 +27948,7 @@ BUILDIN_FUNC(getconstant) {
 #ifdef Pandas_ScriptCommand_Preg_Search
 /* ===========================================================
  * 指令: preg_search
- * 描述: 正则表达式搜索并返回匹配的分组内容
+ * 描述: 使用正则表达式搜索并返回首个匹配的分组内容
  * 用法: preg_search <"字符串">,<"匹配表达式">,<拓展标记位>,<存放匹配结果的字符串数组>;
  * 返回: 返回负数表示错误, 其他正整数表示匹配到的分组个数
  * 作者: Sola丶小克
@@ -28210,7 +28210,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getconstant,"s"),						// 查询一个常量字符串对应的数值 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetConstant
 #ifdef Pandas_ScriptCommand_Preg_Search
-	BUILDIN_DEF(preg_search,"ssir"),					// 正则表达式搜索并返回匹配的分组内容 [Sola丶小克]
+	BUILDIN_DEF(preg_search,"ssir"),					// 使用正则表达式搜索并返回首个匹配的分组内容 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Preg_Search
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction

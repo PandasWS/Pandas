@@ -40,7 +40,7 @@ bool ProcessMutex::Lock() {
 // Author:      Sola丶小克(CairoLee)  2020/8/7 23:26
 //************************************
 bool ProcessMutex::Unlock() {
-	return ReleaseMutex(m_pMutex);
+	return (ReleaseMutex(m_pMutex) != 0);
 }
 
 //************************************
