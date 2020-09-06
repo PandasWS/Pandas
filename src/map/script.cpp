@@ -19,6 +19,10 @@
 #include <algorithm>	// transform
 #endif // Pandas_ScriptEngine_Express
 
+#ifdef Pandas_ScriptCommand_Preg_Search
+#include <boost/regex.hpp>
+#endif // Pandas_ScriptCommand_Preg_Search
+
 #ifdef PCRE_SUPPORT
 #include "../../3rdparty/pcre/include/pcre.h" // preg_match
 #endif
@@ -26763,7 +26767,7 @@ BUILDIN_FUNC(getareagid) {
 			ShowError("buildin_getareagid: '%s' is not server variable, please attach to a player.\n", retname);
 			script_reportdata(retdata);
 			script_pushint(st, -1);
-			return SCRIPT_CMD_SUCCESS;
+			return SCRIPT_CMD_FAILURE;
 		}
 	}
 
@@ -26771,7 +26775,7 @@ BUILDIN_FUNC(getareagid) {
 		ShowError("buildin_getareagid: variable '%s' is not a array.\n", retname);
 		script_reportdata(retdata);
 		script_pushint(st, -1);
-		return SCRIPT_CMD_SUCCESS;
+		return SCRIPT_CMD_FAILURE;
 	}
 
 	if (is_string_variable(retname)) {
@@ -27941,6 +27945,105 @@ BUILDIN_FUNC(getconstant) {
 }
 #endif // Pandas_ScriptCommand_GetConstant
 
+#ifdef Pandas_ScriptCommand_Preg_Search
+/* ===========================================================
+ * 指令: preg_search
+ * 描述: 使用正则表达式搜索并返回首个匹配的分组内容
+ * 用法: preg_search <"字符串">,<"匹配表达式">,<拓展标记位>,<存放匹配结果的字符串数组>;
+ * 返回: 返回负数表示错误, 其他正整数表示匹配到的分组个数
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(preg_search) {
+	struct map_session_data* sd = nullptr;
+	std::string text = std::string(script_getstr(st, 2));
+	std::string patterns = std::string(script_getstr(st, 3));
+	int flag = cap_value(script_getnum(st, 4), 0, 1);
+	struct script_data* retdata = script_getdata(st, 5);
+	struct reg_db* src_reg_db = nullptr;
+
+	if (!data_isreference(retdata)) {
+		ShowError("buildin_preg_search: error argument! please give a array variable for save gameid.\n");
+		script_reportdata(retdata);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;// not a variable
+	}
+
+	int retid = reference_getid(retdata);
+	const char* retname = reference_getname(retdata);
+
+	if (not_server_variable(*retname)) {
+		if (!script_rid2sd(sd)) {
+			ShowError("buildin_preg_search: '%s' is not server variable, please attach to a player.\n", retname);
+			script_reportdata(retdata);
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	if (!(src_reg_db = script_array_src(st, sd, retname, reference_getref(retdata)))) {
+		ShowError("buildin_preg_search: variable '%s' is not a array.\n", retname);
+		script_reportdata(retdata);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (!is_string_variable(retname)) {
+		ShowError("buildin_preg_search: the array variable '%s' must be string type.\n", retname);
+		script_reportdata(retdata);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	// 以下用于清空存放返回数据的字符串数组 (参考 script_cleararray_pc 的实现)
+	script_array_ensure_zero(st, NULL, retdata->u.num, reference_getref(retdata));
+	struct script_array* sa = static_cast<script_array*>(idb_get(src_reg_db->arrays, retid));
+	unsigned int array_len = script_array_highest_key(st, sd, retname, reference_getref(retdata));
+
+	if (sa) {
+		// 若给定的数组是存在的, 那么需要清空一下
+		unsigned int* list = script_array_cpy_list(sa);
+		unsigned int size = sa->size;
+
+		for (unsigned int i = 0; i < size; i++) {
+			clear_reg(st, sd, reference_uid(retid, list[i]), retname, reference_getref(retdata));
+		}
+	}
+
+	try
+	{
+		boost::regex re;
+		if (flag & 1) {
+			re = boost::regex(patterns, boost::regex::icase);
+		}
+		else {
+			re = boost::regex(patterns);
+		}
+
+		boost::smatch match_result;
+
+		if (!boost::regex_search(text, match_result, re)) {
+			script_pushint(st, -1);
+			return SCRIPT_CMD_SUCCESS;
+		}
+
+		for (int i = 0; i < match_result.size(); i++) {
+			int64 uid = reference_uid(retid, i);
+			set_reg_str(st, sd, uid, retname, match_result[i].str().c_str(), reference_getref(retdata));
+		}
+
+		script_pushint(st, match_result.size());
+	}
+	catch (const boost::regex_error& e)
+	{
+		ShowError("%s: throw regex_error : %s\n", __func__, e.what());
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Preg_Search
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -28106,6 +28209,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetConstant
 	BUILDIN_DEF(getconstant,"s"),						// 查询一个常量字符串对应的数值 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetConstant
+#ifdef Pandas_ScriptCommand_Preg_Search
+	BUILDIN_DEF(preg_search,"ssir"),					// 使用正则表达式搜索并返回首个匹配的分组内容 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Preg_Search
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
