@@ -10,7 +10,71 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+## [v1.0.7] - `2020-09-13`
+
+### 升级
+
+- 升级到 `1.0.7` 请在主数据库导入: `upgrade_to_1.0.7_main.sql`
+	- 若启用 `SQL` 版本的魔物/物品数据库, 那么还需导入: `upgrade_to_1.0.7_main_use_sql_db.sql`
+- 升级到 `1.0.7` 请在日志数据库导入: `upgrade_to_1.0.7_logs.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
+### 提示
+
+- 从该版本开始熊猫模拟器已支持 `20200401` 客户端, 但您需要自己修正 `PACKETVER` 并编译
+- 考虑到目前大多数人没有稳定的 2020 客户端, 继续使用 `20180620` 作为默认客户端版本
+- 该版本服务端侧已经支持 21 亿的物品编号, 但需要与客户端配套才能使用
+- 经测试 `201806020` 的客户端并不支持超过 32767 的物品编号
+- 基于 `RagexeRE` 制作的客户端版本 >= `20180704` 即可支持超过 32767 的物品编号
+- 基于 `Ragexe` 制作的客户端版本 >= `20181121` 即可支持超过 32767 的物品编号
+- 该版本中 rAthena 实装了 KRO 的职业调整, 会有大量技能效果变更, 附 KRO 更新日志:
+	- [基因学者 - 2019.12.04](https://ro.gnjoy.com/news/update/View.asp?seq=246&curpage=1)
+	- [人工生命体技能 - 2017.10.25](https://ro.gnjoy.com/news/event/View.asp?Seq=784&kind=A&curpage=1)
+	- [修罗 - 2019.04.15](https://ro.gnjoy.com/news/notice/View.asp?seq=7099)
+	- [日影忍者/月影忍者 - 2019.02.25](https://ro.gnjoy.com/news/notice/View.asp?BBSMode=10001&seq=7081)
+	- [反叛者 - 2019.02.25](https://ro.gnjoy.com/news/notice/View.asp?BBSMode=10001&seq=7081)
+	- [超级初学者 - 2019.02.25](https://ro.gnjoy.com/news/notice/View.asp?BBSMode=10001&seq=7081)
+	- [吟游诗人/流浪舞姬 - 第一部分 - 2019.04.15](https://ro.gnjoy.com/news/update/View.asp?seq=235&curpage=1)
+	- [吟游诗人/流浪舞姬 - 第二部分 - 2019.12.04](https://ro.gnjoy.com/news/update/View.asp?seq=246&curpage=1)
+	- [十字刺客 - 2019.10.15](http://ro.gnjoy.com/news/update/View.asp?seq=243&curpage=1)
+	- [大法师 - 2019.07.16](https://ro.gnjoy.com/news/update/View.asp?seq=239&curpage=1)
+	- [卢恩骑士 - 第二部分 - 2019.10.15](https://ro.gnjoy.com/news/update/View.asp?seq=243&curpage=1)
+	- [卢恩骑士 - 第一部分(早在2017年就已实装, 并非本次更新) - 2017.04.06](https://ro.gnjoy.com/news/devnote/View.asp?category=1&seq=3708477&curpage=1)
+	
+### 添加
+
+- 实现 `nohomun` 地图标记, 用于禁止在指定地图召唤人工生命体 (#315)
+- 实现 `nomerc` 地图标记, 用于禁止在指定地图召唤佣兵 (#316)
+- 实现 `noskill2` 地图标记, 用于限制指定类型的单位在地图上使用技能 (#317)
+- 实现 `getconstant` 脚本指令, 用于查询一个常量字符串对应的数值 (#318)
+- 使 `getiteminfo` 可获取物品使用脚本/装备脚本/卸装脚本的内容 (#319)
+- 实现 `preg_search` 脚本指令, 用于执行一个正则表达式搜索并返回匹配的分组内容 (#320)
+- 使服务端能够读取 SSO 方式登录的用户本地 MAC 地址 (#309)
+
+### 修正
+
+- 处理 `Windows 10` 的 `UTF8` 编码选项带来的中文乱码问题 (#301)
+- 修正部分情况下魔物会被随机传送或者卡住无法移动的问题 (感谢"张大坏"反馈) (#292)
+- 修正 Liunx 环境下因为编码自适应导致的崩溃问题 (#298)
+- 修正部分装备无法在背包和装备面板中显示的问题 (感谢"喵了个咪"反馈) (#303)
+- 修正点击副本销毁按钮可能会导致地图服务器无响应的问题 (感谢"喵了个咪"反馈)
+- 修正一些已知会导致崩溃的情况 (感谢"张大坏"反馈) (#308)
+- 修正多层脚本堆栈备份恢复时的一处错误 (#312)
+- 修正当 `block_free` 存在重复指针时的无效指针的问题 (感谢"喵了个咪"反馈) (#313)
+
+### 调整
+
+- 解除 `statuscheck` 脚本指令 `@sc_tickleft` 返回值的上限
+- 使用 `pipenv` 对辅助脚本的依赖库进行管理维护 (合理性和使用难度同时提高) (#311)
+- 汉化部分服务器消息文件和帮助文档 (#307)
+
 ## [v1.0.6] - `2020-06-11`
+
+### 升级
+
+- 升级到 `1.0.6` 请在主数据库导入: `upgrade_to_1.0.6_main.sql`
 
 ### 添加
 
@@ -37,11 +101,11 @@
 - 能够支持根据系统语言读取对应的消息文件 (#282)
 - 整理数据库创建脚本的目录结构, 使之更加合理 (#286)
 
+## [v1.0.5] - `2020-04-20`
+
 ### 升级
 
-- 升级到 `1.0.6` 请在主数据库导入: `upgrade_to_1.0.6_main.sql`
-
-## [v1.0.5] - `2020-04-20`
+- 升级到 `1.0.5` 请在主数据库导入: `upgrade_to_1.0.5_main.sql`
 
 ### 添加
 
@@ -60,10 +124,6 @@
 - 汉化部分行为明确的战斗配置选项描述和说明 (#261)
 - 使公会的初始人数和扩充组合体制每级增加人数可被宏定义 (#262)
 - 调整战斗配置选项与服务端不匹配时的一些错误提示 (#265)
-
-### 升级
-
-- 升级到 `1.0.5` 请在主数据库导入: `upgrade_to_1.0.5_main.sql`
 
 ## [v1.0.4] - `2020-03-23`
 
@@ -192,6 +252,7 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.0.7]: https://github.com/PandasWS/Pandas/compare/v1.0.6...v1.0.7
 [v1.0.6]: https://github.com/PandasWS/Pandas/compare/v1.0.5...v1.0.6
 [v1.0.5]: https://github.com/PandasWS/Pandas/compare/v1.0.4...v1.0.5
 [v1.0.4]: https://github.com/PandasWS/Pandas/compare/v1.0.3...v1.0.4
