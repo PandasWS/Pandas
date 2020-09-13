@@ -4,6 +4,8 @@
 #ifndef STATUS_HPP
 #define STATUS_HPP
 
+#include <vector>
+
 #include "../common/database.hpp"
 #include "../common/mmo.hpp"
 #include "../common/timer.hpp"
@@ -931,6 +933,11 @@ enum sc_type : int16 {
 	SC_ENSEMBLEFATIGUE,
 	SC_MISTY_FROST,
 	SC_MAGIC_POISON,
+
+	// ep16.2
+	SC_EP16_2_BUFF_SS,
+	SC_EP16_2_BUFF_SC,
+	SC_EP16_2_BUFF_AC,
 
 #ifdef RENEWAL
 	SC_EXTREMITYFIST2, //! NOTE: This SC should be right before SC_MAX, so it doesn't disturb if RENEWAL is disabled
@@ -2600,6 +2607,19 @@ struct status_change {
 #endif
 	unsigned char bs_counter; // Blood Sucker counter
 	struct status_change_entry *data[SC_MAX];
+};
+
+/// Statuses that are cancelled/disabled while on Madogear
+static const std::vector<sc_type> mado_statuses = {
+	SC_LOUD,
+	SC_CARTBOOST,
+	SC_MELTDOWN,
+	SC_ADRENALINE,
+	SC_ADRENALINE2,
+	SC_WEAPONPERFECTION,
+	SC_MAXIMIZEPOWER,
+	SC_OVERTHRUST,
+	SC_MAXOVERTHRUST
 };
 
 // for looking up associated data
