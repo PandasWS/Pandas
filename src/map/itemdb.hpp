@@ -936,11 +936,27 @@ struct s_random_opt_group {
 	uint16 total;
 };
 
+#ifdef Pandas_Persistence_Itemdb_Script
+struct s_item_script {
+	std::shared_ptr<std::string> script;
+	std::shared_ptr<std::string> equip_script;
+	std::shared_ptr<std::string> unequip_script;
+};
+
+enum e_store_script {
+	STORE_SCRIPT_USED,
+	STORE_SCRIPT_EQUIP,
+	STORE_SCRIPT_UNEQUIP
+};
+
+std::string itemdb_get_script(t_itemid nameid, enum e_store_script scr_type);
+#endif // Pandas_Persistence_Itemdb_Script
+
 struct item_data* itemdb_searchname(const char *name);
 struct item_data* itemdb_search_aegisname( const char *str );
 int itemdb_searchname_array(struct item_data** data, int size, const char *str);
-struct item_data* itemdb_search(uint32 nameid);
-struct item_data* itemdb_exists(uint32 nameid);
+struct item_data* itemdb_search(t_itemid nameid);
+struct item_data* itemdb_exists(t_itemid nameid);
 #define itemdb_name(n) itemdb_search(n)->name
 #define itemdb_jname(n) itemdb_search(n)->jname
 #define itemdb_type(n) itemdb_search(n)->type

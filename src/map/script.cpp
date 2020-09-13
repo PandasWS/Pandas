@@ -19,6 +19,10 @@
 #include <algorithm>	// transform
 #endif // Pandas_ScriptEngine_Express
 
+#ifdef Pandas_ScriptCommand_Preg_Search
+#include <boost/regex.hpp>
+#endif // Pandas_ScriptCommand_Preg_Search
+
 #ifdef PCRE_SUPPORT
 #include "../../3rdparty/pcre/include/pcre.h" // preg_match
 #endif
@@ -4509,7 +4513,8 @@ void script_detach_state(struct script_state* st, bool dequeue_event)
 			sd->npc_id = val.bk_npcid;
 			sd->mbk_st.pop();
 		}
-		else if (dequeue_event) {
+
+		if (!sd->st && dequeue_event) {
 #ifdef SECURE_NPCTIMEOUT
 			/**
 			 * We're done with this NPC session, so we cancel the timer (if existent) and move on
@@ -4544,12 +4549,10 @@ void script_attach_state(struct script_state* st){
 			st->bk_st = sd->st;
 			st->bk_npcid = sd->npc_id;
 #else
-			if (sd->st) {
-				struct mutli_state mbk_st = { 0 };
-				mbk_st.bk_st = sd->st;
-				mbk_st.bk_npcid = sd->npc_id;
-				sd->mbk_st.push(mbk_st);
-			}
+			struct mutli_state mbk_st = { 0 };
+			mbk_st.bk_st = sd->st;
+			mbk_st.bk_npcid = sd->npc_id;
+			sd->mbk_st.push(mbk_st);
 #endif // Pandas_ScriptEngine_MutliStackBackup
 		}
 		sd->st = st;
@@ -8230,7 +8233,7 @@ BUILDIN_FUNC(makeitem) {
  * makeitem3 "<item name>",<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>;
  */
 BUILDIN_FUNC(makeitem2) {
-	uint32 nameid;
+	t_itemid nameid;
 	uint16 amount, x, y;
 	const char *mapname;
 	int m;
@@ -10926,7 +10929,7 @@ BUILDIN_FUNC(getmobdrops)
 
 	for( i = 0; i < MAX_MOB_DROP_TOTAL; i++ )
 	{
-		if( mob->dropitem[i].nameid < 1 )
+		if( mob->dropitem[i].nameid == 0 )
 			continue;
 		if( itemdb_exists(mob->dropitem[i].nameid) == NULL )
 			continue;
@@ -12459,6 +12462,32 @@ BUILDIN_FUNC(resetskill)
 	if (!script_charid2sd(2,sd))
 		return SCRIPT_CMD_FAILURE;
 	pc_resetskill(sd,1);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/**
+ * Reset SG designated maps
+ * resetfeel({<char_id>});
+ **/
+BUILDIN_FUNC(resetfeel)
+{
+	TBL_PC *sd;
+	if (!script_charid2sd(2,sd) || (sd->class_&MAPID_UPPERMASK) != MAPID_STAR_GLADIATOR)
+		return SCRIPT_CMD_FAILURE;
+	pc_resetfeel(sd);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/**
+ * Reset SG designated monsters
+ * resethate({<char_id>});
+ **/
+BUILDIN_FUNC(resethate)
+{
+	TBL_PC *sd;
+	if (!script_charid2sd(2,sd) || (sd->class_&MAPID_UPPERMASK) != MAPID_STAR_GLADIATOR)
+		return SCRIPT_CMD_FAILURE;
+	pc_resethate(sd);
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -14255,7 +14284,7 @@ BUILDIN_FUNC(getiteminfo)
 
 #ifdef Pandas_ScriptParams_GetItemInfo
 	int16 nx = script_getnum(st, 3);
-	if (i_data && 0 > nx && nx >= -6) {
+	if (i_data && 0 > nx && nx >= -9) {
 		switch (nx)
 		{
 		case -1:	script_pushint(st, i_data->flag.no_refine ? 0 : 1);				return SCRIPT_CMD_SUCCESS;
@@ -14309,6 +14338,28 @@ BUILDIN_FUNC(getiteminfo)
 #else
 		case -6:	script_pushint(st, -2);											return SCRIPT_CMD_SUCCESS;
 #endif // Pandas_Struct_Item_Data_Has_CallFunc
+
+#ifdef Pandas_Persistence_Itemdb_Script
+		case -7: {
+			std::string script = itemdb_get_script(item_id, STORE_SCRIPT_USED);
+			script_pushstrcopy(st, script.c_str());
+			return SCRIPT_CMD_SUCCESS;
+		}
+		case -8: {
+			std::string script = itemdb_get_script(item_id, STORE_SCRIPT_EQUIP);
+			script_pushstrcopy(st, script.c_str());
+			return SCRIPT_CMD_SUCCESS;
+		}
+		case -9: {
+			std::string script = itemdb_get_script(item_id, STORE_SCRIPT_UNEQUIP);
+			script_pushstrcopy(st, script.c_str());
+			return SCRIPT_CMD_SUCCESS;
+		}
+#else
+		case -7:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
+		case -8:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
+		case -9:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
+#endif // Pandas_Persistence_Itemdb_Script
 		}
 	}
 #endif // Pandas_ScriptParams_GetItemInfo
@@ -14999,14 +15050,6 @@ BUILDIN_FUNC(skilleffect)
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	uint16 skill_lv_cap = cap_value(skill_lv, 1, skill_get_max(skill_id));
-
-	if (skill_lv != skill_lv_cap) {
-		ShowWarning("buildin_skilleffect: Invalid skill level %d, capping to %d.\n", skill_lv, skill_lv_cap);
-		skill_lv = skill_lv_cap;
-		script_reportsrc(st);
-	}
-
 	/* Ensure we're standing because the following packet causes the client to virtually set the char to stand,
 	 * which leaves the server thinking it still is sitting. */
 	if( pc_issit(sd) && pc_setstand(sd, false) ) {
@@ -15044,14 +15087,6 @@ BUILDIN_FUNC(npcskilleffect)
 	if (skill_db.find(skill_id) == nullptr) {
 		ShowError("buildin_npcskilleffect: Invalid skill defined (%s)!\n", script_getstr(st, 2));
 		return SCRIPT_CMD_FAILURE;
-	}
-
-	uint16 skill_lv_cap = cap_value(skill_lv, 1, skill_get_max(skill_id));
-
-	if (skill_lv != skill_lv_cap) {
-		ShowWarning("buildin_npcskilleffect: Invalid skill level %d, capping to %d.\n", skill_lv, skill_lv_cap);
-		skill_lv = skill_lv_cap;
-		script_reportsrc(st);
 	}
 
 	script_skill_effect(bl, skill_id, skill_lv, bl->x, bl->y);
@@ -26732,7 +26767,7 @@ BUILDIN_FUNC(getareagid) {
 			ShowError("buildin_getareagid: '%s' is not server variable, please attach to a player.\n", retname);
 			script_reportdata(retdata);
 			script_pushint(st, -1);
-			return SCRIPT_CMD_SUCCESS;
+			return SCRIPT_CMD_FAILURE;
 		}
 	}
 
@@ -26740,7 +26775,7 @@ BUILDIN_FUNC(getareagid) {
 		ShowError("buildin_getareagid: variable '%s' is not a array.\n", retname);
 		script_reportdata(retdata);
 		script_pushint(st, -1);
-		return SCRIPT_CMD_SUCCESS;
+		return SCRIPT_CMD_FAILURE;
 	}
 
 	if (is_string_variable(retname)) {
@@ -27887,6 +27922,128 @@ BUILDIN_FUNC(getcharmac) {
 }
 #endif // Pandas_ScriptCommand_GetCharMacAddress
 
+#ifdef Pandas_ScriptCommand_GetConstant
+/* ===========================================================
+ * 指令: getconstant
+ * 描述: 查询一个常量字符串对应的数值
+ * 用法: getconstant <"常量字符串">;
+ * 返回: 成功则返回常量对应的数值, 查询失败则返回 -255
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getconstant) {
+	const char* name = script_getstr(st, 2);
+	int64 value = 0;
+
+	if (script_get_constant(name, &value)) {
+		script_pushint(st, value);
+	}
+	else {
+		script_pushint(st, -255);
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetConstant
+
+#ifdef Pandas_ScriptCommand_Preg_Search
+/* ===========================================================
+ * 指令: preg_search
+ * 描述: 使用正则表达式搜索并返回首个匹配的分组内容
+ * 用法: preg_search <"字符串">,<"匹配表达式">,<拓展标记位>,<存放匹配结果的字符串数组>;
+ * 返回: 返回负数表示错误, 其他正整数表示匹配到的分组个数
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(preg_search) {
+	struct map_session_data* sd = nullptr;
+	std::string text = std::string(script_getstr(st, 2));
+	std::string patterns = std::string(script_getstr(st, 3));
+	int flag = cap_value(script_getnum(st, 4), 0, 1);
+	struct script_data* retdata = script_getdata(st, 5);
+	struct reg_db* src_reg_db = nullptr;
+
+	if (!data_isreference(retdata)) {
+		ShowError("buildin_preg_search: error argument! please give a array variable for save gameid.\n");
+		script_reportdata(retdata);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;// not a variable
+	}
+
+	int retid = reference_getid(retdata);
+	const char* retname = reference_getname(retdata);
+
+	if (not_server_variable(*retname)) {
+		if (!script_rid2sd(sd)) {
+			ShowError("buildin_preg_search: '%s' is not server variable, please attach to a player.\n", retname);
+			script_reportdata(retdata);
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	if (!(src_reg_db = script_array_src(st, sd, retname, reference_getref(retdata)))) {
+		ShowError("buildin_preg_search: variable '%s' is not a array.\n", retname);
+		script_reportdata(retdata);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (!is_string_variable(retname)) {
+		ShowError("buildin_preg_search: the array variable '%s' must be string type.\n", retname);
+		script_reportdata(retdata);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	// 以下用于清空存放返回数据的字符串数组 (参考 script_cleararray_pc 的实现)
+	script_array_ensure_zero(st, NULL, retdata->u.num, reference_getref(retdata));
+	struct script_array* sa = static_cast<script_array*>(idb_get(src_reg_db->arrays, retid));
+	unsigned int array_len = script_array_highest_key(st, sd, retname, reference_getref(retdata));
+
+	if (sa) {
+		// 若给定的数组是存在的, 那么需要清空一下
+		unsigned int* list = script_array_cpy_list(sa);
+		unsigned int size = sa->size;
+
+		for (unsigned int i = 0; i < size; i++) {
+			clear_reg(st, sd, reference_uid(retid, list[i]), retname, reference_getref(retdata));
+		}
+	}
+
+	try
+	{
+		boost::regex re;
+		if (flag & 1) {
+			re = boost::regex(patterns, boost::regex::icase);
+		}
+		else {
+			re = boost::regex(patterns);
+		}
+
+		boost::smatch match_result;
+
+		if (!boost::regex_search(text, match_result, re)) {
+			script_pushint(st, -1);
+			return SCRIPT_CMD_SUCCESS;
+		}
+
+		for (int i = 0; i < match_result.size(); i++) {
+			int64 uid = reference_uid(retid, i);
+			set_reg_str(st, sd, uid, retname, match_result[i].str().c_str(), reference_getref(retdata));
+		}
+
+		script_pushint(st, match_result.size());
+	}
+	catch (const boost::regex_error& e)
+	{
+		ShowError("%s: throw regex_error : %s\n", __func__, e.what());
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Preg_Search
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -28049,6 +28206,12 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetCharMacAddress
 	BUILDIN_DEF(getcharmac,"?"),						// 获取指定角色登录时使用的 MAC 地址 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetCharMacAddress
+#ifdef Pandas_ScriptCommand_GetConstant
+	BUILDIN_DEF(getconstant,"s"),						// 查询一个常量字符串对应的数值 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetConstant
+#ifdef Pandas_ScriptCommand_Preg_Search
+	BUILDIN_DEF(preg_search,"ssir"),					// 使用正则表达式搜索并返回首个匹配的分组内容 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Preg_Search
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
@@ -28236,6 +28399,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(resetlvl,"i?"),
 	BUILDIN_DEF(resetstatus,"?"),
 	BUILDIN_DEF(resetskill,"?"),
+	BUILDIN_DEF(resetfeel,"?"),
+	BUILDIN_DEF(resethate,"?"),
 	BUILDIN_DEF(skillpointcount,"?"),
 	BUILDIN_DEF(changebase,"i?"),
 	BUILDIN_DEF(changesex,"?"),

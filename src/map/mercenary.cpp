@@ -81,6 +81,13 @@ bool mercenary_create(struct map_session_data *sd, uint16 class_, unsigned int l
 	struct s_mercenary_db *db;
 	nullpo_retr(false,sd);
 
+#ifdef Pandas_MapFlag_NoMerc
+	if (sd && map_getmapflag(sd->bl.m, MF_NOMERC)) {
+		clif_displaymessage(sd->fd, msg_txt_cn(sd, 9));
+		return true;
+	}
+#endif // Pandas_MapFlag_NoMerc
+
 	db = mercenary_db(class_);
 
 	if( !db ){

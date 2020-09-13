@@ -1,8 +1,0 @@
-pefile
-colorama
-opencc_python_reimplemented
-pdbparse
-chardet
-python-dotenv
-GitPython
-PyYAML

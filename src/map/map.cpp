@@ -276,6 +276,21 @@ int map_freeblock_unlock (void)
 		int i;
 		for (i = 0; i < block_free_count; i++)
 		{
+#ifdef Pandas_Fix_DuplicateBlock_When_Freeblock_Unlock
+			// 我们这里进行查重操作而不是在 map_freeblock 函数中进行
+			// 因为 map_freeblock 被调用的次数频度更高, 在这里查重调整有助于提高效率
+			//
+			// 当即将释放的 block_free[i] 不是空指针时,
+			// 我们先找出全部和他指针一样的后续对象并将它们的指针直接置空, 避免重复对同一个指针调用 aFree
+			if (block_free[i]) {
+				for (int j = 0; j < block_free_count; j++) {
+					if (j == i) continue;
+					if (block_free[j] == block_free[i]) {
+						block_free[j] = NULL;
+					}
+				}
+			}
+#endif // Pandas_Fix_DuplicateBlock_When_Freeblock_Unlock
 			aFree(block_free[i]);
 			block_free[i] = NULL;
 		}
@@ -1446,7 +1461,7 @@ int map_foreachindir(int(*func)(struct block_list*, va_list), int16 m, int16 x0,
 						rx = (bl->x - x0);
 						ry = (bl->y - y0);
 						//Do not hit source cell
-						if (rx == 0 && ry == 0)
+						if (battle_config.skill_eightpath_same_cell == 0 && rx == 0 && ry == 0)
 							continue;
 						//This turns it so that the area that is hit is always with positive rx and ry
 						rx *= dx;
@@ -1482,7 +1497,7 @@ int map_foreachindir(int(*func)(struct block_list*, va_list), int16 m, int16 x0,
 						rx = (bl->x - x0);
 						ry = (bl->y - y0);
 						//Do not hit source cell
-						if (rx == 0 && ry == 0)
+						if (battle_config.skill_eightpath_same_cell == 0 && rx == 0 && ry == 0)
 							continue;
 						//This turns it so that the area that is hit is always with positive rx and ry
 						rx *= dx;
@@ -4939,6 +4954,11 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_MaxDmg_Normal
 
+#ifdef Pandas_MapFlag_NoSkill2
+		case MF_NOSKILL2:
+			return map_getmapflag_param(m, mapflag, args, 0);
+#endif // Pandas_MapFlag_NoSkill2
+
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 5>
 		default:
 			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
@@ -5281,6 +5301,20 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			mapdata->flag[mapflag] = status;
 			break;
 #endif // Pandas_MapFlag_MaxDmg_Normal
+#ifdef Pandas_MapFlag_NoSkill2
+		case MF_NOSKILL2:
+			if (!status)
+				map_setmapflag_param(m, mapflag, 0);
+			else {
+				nullpo_retr(false, args);
+				if (args) {
+					map_setmapflag_param(m, mapflag, args->flag_val);
+					status = !(args->flag_val == 0);
+				}
+			}
+			mapdata->flag[mapflag] = status;
+			break;
+#endif // Pandas_MapFlag_NoSkill2
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 6>
 		default:
 			mapdata->flag[mapflag] = status;
@@ -5341,7 +5375,43 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		mapit_free(iter);
 		break;
 	}
-#endif // Pandas_MapFlag_HidePartyInfo
+#endif // Pandas_MapFlag_NoPet
+#ifdef Pandas_MapFlag_NoHomun
+	case MF_NOHOMUN:
+	{
+		struct s_mapiterator* iter = mapit_getallusers();
+		struct map_session_data* pl_sd = nullptr;
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->bl.m != m)
+				continue;
+			if (hom_is_active(pl_sd->hd) && status) {
+				// 当前地图禁止使用人工生命体, 已自动将其安息
+				clif_displaymessage(pl_sd->fd, msg_txt_cn(pl_sd, 6));
+				hom_vaporize(pl_sd, HOM_ST_REST);
+			}
+		}
+		mapit_free(iter);
+		break;
+	}
+#endif // Pandas_MapFlag_NoHomun
+#ifdef Pandas_MapFlag_NoMerc
+	case MF_NOMERC:
+	{
+		struct s_mapiterator* iter = mapit_getallusers();
+		struct map_session_data* pl_sd = nullptr;
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->bl.m != m)
+				continue;
+			if (pl_sd->md && status) {
+				// 当前地图禁止使用佣兵, 已自动将其隐藏
+				clif_displaymessage(pl_sd->fd, msg_txt_cn(pl_sd, 8));
+				unit_remove_map(&pl_sd->md->bl, CLR_OUTSIGHT);
+			}
+		}
+		mapit_free(iter);
+		break;
+	}
+#endif // Pandas_MapFlag_NoMerc
 	}
 #endif // Pandas_Mapflags
 

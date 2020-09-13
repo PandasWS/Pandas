@@ -486,6 +486,9 @@
 	// 经过简单测试, MAC 地址是可靠的, 但据 Jian916 提醒可能部分用户会无法读取到 MAC 地址
 	// 读取不到的情况暂时无法模拟出来, 等待进一步的情报
 	#define Pandas_Extract_SSOPacket_MacAddress
+
+	// 使程序能够持久化保存每个道具的脚本字符串 [Sola丶小克]
+	#define Pandas_Persistence_Itemdb_Script
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -573,6 +576,9 @@
 	#ifdef Pandas_FuncLogic_Instance_Destroy_Command
 		#define Pandas_Fix_Dungeon_Command_Status_Refresh
 	#endif // Pandas_FuncLogic_Instance_Destroy_Command
+
+	// 修正当 block_free 数组中存在重复指针时, 会导致的无效指针错误的问题 [Sola丶小克]
+	#define Pandas_Fix_DuplicateBlock_When_Freeblock_Unlock
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -893,12 +899,12 @@
 	// 该标记用于禁止玩家在地图上召唤宠物, 宠物进入该地图会自动变回宠物蛋
 	#define Pandas_MapFlag_NoPet
 
-	// 是否启用 nohomun 地图标记 [维护者昵称]
-	// TODO: 请在此填写此地图标记的说明
+	// 是否启用 nohomun 地图标记 [Sola丶小克]
+	// 该标记用于禁止玩家在地图上召唤人工生命体, 生命体进入该地图会自动安息
 	#define Pandas_MapFlag_NoHomun
 
-	// 是否启用 nomerc 地图标记 [维护者昵称]
-	// TODO: 请在此填写此地图标记的说明
+	// 是否启用 nomerc 地图标记 [Sola丶小克]
+	// 该标记用于禁止玩家在地图上召唤佣兵, 佣兵进入该地图会自动隐藏
 	#define Pandas_MapFlag_NoMerc
 
 	// 是否启用 mobdroprate 地图标记 [Sola丶小克]
@@ -920,6 +926,10 @@
 	// 是否启用 maxdmg_normal 地图标记 [Sola丶小克]
 	// 该标记用于限制此地图上单位的最大平砍伤害 (包括二刀连击和刺客拳刃平砍)
 	#define Pandas_MapFlag_MaxDmg_Normal
+
+	// 是否启用 noskill2 地图标记 [Sola丶小克]
+	// 该标记用于禁止此地图上的指定单位使用技能 (支持掩码指定多种类型的单位)
+	#define Pandas_MapFlag_NoSkill2
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 
@@ -1156,6 +1166,14 @@
 	#ifdef Pandas_Extract_SSOPacket_MacAddress
 		#define Pandas_ScriptCommand_GetCharMacAddress
 	#endif // Pandas_Extract_SSOPacket_MacAddress
+
+	// 是否启用 getconstant 脚本指令 [Sola丶小克]
+	// 该指令用于查询一个常量字符串对应的数值
+	#define Pandas_ScriptCommand_GetConstant
+
+	// 是否启用 preg_search 脚本指令 [Sola丶小克]
+	// 该指令用于执行一个正则表达式搜索并返回首个匹配的分组内容
+	#define Pandas_ScriptCommand_Preg_Search
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

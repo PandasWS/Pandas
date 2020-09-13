@@ -872,6 +872,13 @@ bool skill_isNotOk(uint16 skill_id, struct map_session_data *sd)
 	if( sd->sc.data[SC_ALL_RIDING] )
 		return true; //You can't use skills while in the new mounts (The client doesn't let you, this is to make cheat-safe)
 
+#ifdef Pandas_MapFlag_NoSkill2
+	if (sd && map_getmapflag(sd->bl.m, MF_NOSKILL2)) {
+		if ((map_getmapflag_param(sd->bl.m, MF_NOSKILL2, 0) & BL_PC) == BL_PC)
+			return true;
+	}
+#endif // Pandas_MapFlag_NoSkill2
+
 	switch (skill_id) {
 		case AL_WARP:
 		case RETURN_TO_ELDICASTES:
@@ -975,6 +982,13 @@ bool skill_isNotOk_hom(struct homun_data *hd, uint16 skill_id, uint16 skill_lv)
 	int8 spiritball = 0;
 
 	nullpo_retr(true, hd);
+
+#ifdef Pandas_MapFlag_NoSkill2
+	if (hd && map_getmapflag(hd->bl.m, MF_NOSKILL2)) {
+		if ((map_getmapflag_param(hd->bl.m, MF_NOSKILL2, 0) & BL_HOM) == BL_HOM)
+			return false;
+	}
+#endif // Pandas_MapFlag_NoSkill2
 
 	spiritball = skill_get_spiritball(skill_id, skill_lv);
 	sd = hd->master;
@@ -1091,6 +1105,13 @@ bool skill_isNotOk_hom(struct homun_data *hd, uint16 skill_id, uint16 skill_lv)
 bool skill_isNotOk_mercenary(uint16 skill_id, struct mercenary_data *md)
 {
 	nullpo_retr(1, md);
+
+#ifdef Pandas_MapFlag_NoSkill2
+	if (md && map_getmapflag(md->bl.m, MF_NOSKILL2)) {
+		if ((map_getmapflag_param(md->bl.m, MF_NOSKILL2, 0) & BL_MER) == BL_MER)
+			return false;
+	}
+#endif // Pandas_MapFlag_NoSkill2
 
 	if (util::vector_exists(md->blockskill, skill_id))
 		return true;
@@ -5863,7 +5884,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
 	case WL_HELLINFERNO:
 		if (flag & 1) {
 			skill_attack(BF_MAGIC, src, src, bl, skill_id, skill_lv, tick, flag);
-			skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skill_id, skill_lv, BF_MAGIC, flag | ELE_DARK);
+			skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skill_id, skill_lv, BF_MAGIC, flag | 2);
 		} else {
 			clif_skill_nodamage(src, bl, skill_id, skill_lv, 1);
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skill_id, skill_lv), BL_CHAR, src, skill_id, skill_lv, tick, flag | BCT_ENEMY | SD_SPLASH | 1, skill_castend_damage_id);
@@ -11972,7 +11993,7 @@ TIMER_FUNC(skill_castend_id){
 		else
 			skill_castend_damage_id(src,target,ud->skill_id,ud->skill_lv,tick,flag);
 
-		if( sd && sd->skill_keep_using.skill_id == ud->skill_id ){
+		if( sd && sd->skill_keep_using.skill_id > 0 && sd->skill_keep_using.skill_id == ud->skill_id && !skill_isNotOk(ud->skill_id, sd) && skill_check_condition_castbegin(sd, ud->skill_id, ud->skill_lv) ){
 			sd->skill_keep_using.tid = add_timer( sd->ud.canact_tick + 100, skill_keep_using, sd->bl.id, 0 );
 		}
 
@@ -12054,8 +12075,10 @@ TIMER_FUNC(skill_castend_id){
 		sd->skillitem = sd->skillitemlv = sd->skillitem_keep_requirement = 0;
 		if (sd->skill_keep_using.skill_id > 0) {
 			sd->skill_keep_using.skill_id = 0;
-			delete_timer(sd->skill_keep_using.tid, skill_keep_using);
-			sd->skill_keep_using.tid = INVALID_TIMER;
+			if (sd->skill_keep_using.tid != INVALID_TIMER) {
+				delete_timer(sd->skill_keep_using.tid, skill_keep_using);
+				sd->skill_keep_using.tid = INVALID_TIMER;
+			}
 		}
 	} else if (md)
 		md->skill_idx = -1;
@@ -19885,7 +19908,8 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, t_itemid na
 	}
 
 	for (i = 0; i < MAX_PRODUCE_RESOURCE; i++) {
-		short id, x, j;
+		short x, j;
+		t_itemid id;
 
 		if (!(id = skill_produce_db[idx].mat_id[i]) || !itemdb_exists(id))
 			continue;
@@ -22732,7 +22756,7 @@ uint64 ReadingSpellbookDatabase::parseBodyNode(const YAML::Node &node) {
  * @return Spell data or nullptr otherwise
  */
 std::shared_ptr<s_skill_spellbook_db> ReadingSpellbookDatabase::findBook(t_itemid nameid) {
-	if (nameid < 1 || !itemdb_exists(nameid) || reading_spellbook_db.size() == 0)
+	if (nameid == 0 || !itemdb_exists(nameid) || reading_spellbook_db.size() == 0)
 		return nullptr;
 
 	for (const auto &spell : reading_spellbook_db) {

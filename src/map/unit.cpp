@@ -1612,6 +1612,13 @@ int unit_skilluse_id2(struct block_list *src, int target_id, uint16 skill_id, ui
 	if(status_isdead(src))
 		return 0; // Do not continue source is dead
 
+#ifdef Pandas_MapFlag_NoSkill2
+	if (src && src->type == BL_NPC && map_getmapflag(src->m, MF_NOSKILL2)) {
+		if ((map_getmapflag_param(src->m, MF_NOSKILL2, 0) & BL_NPC) == BL_NPC)
+			return 0;
+	}
+#endif // Pandas_MapFlag_NoSkill2
+
 	sd = BL_CAST(BL_PC, src);
 	ud = unit_bl2ud(src);
 
@@ -2091,6 +2098,13 @@ int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, ui
 
 	if(status_isdead(src))
 		return 0;
+
+#ifdef Pandas_MapFlag_NoSkill2
+	if (src && src->type == BL_NPC && map_getmapflag(src->m, MF_NOSKILL2)) {
+		if ((map_getmapflag_param(src->m, MF_NOSKILL2, 0) & BL_NPC) == BL_NPC)
+			return 0;
+	}
+#endif // Pandas_MapFlag_NoSkill2
 
 	sd = BL_CAST(BL_PC, src);
 	ud = unit_bl2ud(src);
