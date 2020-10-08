@@ -656,6 +656,10 @@
 	export_constant(MF_NOSKILL2);
 #endif // Pandas_MapFlag_NoSkill2
 
+#ifdef Pandas_MapFlag_NoAura
+	export_constant(MF_NOAURA);
+#endif // Pandas_MapFlag_NoAura
+
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
 	/* setcell types */

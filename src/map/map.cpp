@@ -51,6 +51,10 @@
 #include "storage.hpp"
 #include "trade.hpp"
 
+#ifdef Pandas_Aura_Mechanism
+#include "aura.hpp"
+#endif // Pandas_Aura_Mechanism
+
 using namespace rathena;
 
 char default_codepage[32] = "";
@@ -5466,6 +5470,9 @@ void do_final(void){
 	do_final_achievement();
 	do_final_script();
 	do_final_instance();
+#ifdef Pandas_Aura_Mechanism
+	do_final_aura();
+#endif // Pandas_Aura_Mechanism
 	do_final_itemdb();
 	do_final_storage();
 	do_final_guild();
@@ -5825,6 +5832,9 @@ int do_init(int argc, char *argv[])
 	do_init_clif();
 	do_init_script();
 	do_init_itemdb();
+#ifdef Pandas_Aura_Mechanism
+	do_init_aura();
+#endif // Pandas_Aura_Mechanism
 	do_init_channel();
 	do_init_cashshop();
 	do_init_skill();

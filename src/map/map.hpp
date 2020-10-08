@@ -662,6 +662,9 @@ enum e_mapflag : int16 {
 #ifdef Pandas_MapFlag_NoSkill2
 	MF_NOSKILL2,
 #endif // Pandas_MapFlag_NoSkill2
+#ifdef Pandas_MapFlag_NoAura
+	MF_NOAURA,
+#endif // Pandas_MapFlag_NoAura
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };

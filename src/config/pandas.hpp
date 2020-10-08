@@ -154,6 +154,9 @@
 		// rAthena 使用完成 autotrade 的朝向数据后就销毁掉了
 		// 为了能够支持离线挂店 / 挂机可以被 recall 召唤, 我们需要保留一部分数据
 		#define Pandas_Struct_Map_Session_Data_Autotrade_Configure
+
+		// 使 map_session_data 可记录当前角色的光环信息 [Sola丶小克]
+		#define Pandas_Struct_Map_Session_Data_AuraInfomation
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
 
 	// 使 npc_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
@@ -489,6 +492,19 @@
 
 	// 使程序能够持久化保存每个道具的脚本字符串 [Sola丶小克]
 	#define Pandas_Persistence_Itemdb_Script
+
+	// 是否启用角色光环机制 [Sola丶小克]
+	// 光环由于客户端刷新机制的问题, 总体实现并非特别完美 (哪位同学能修理的联系一下我, 感激不尽)
+	// 
+	// 问题: 使用 362/202 光环特效时, 拥有该光环的角色后上线并走动一步,
+	// 那么光环角色视野范围内其他早就在线的玩家, 会看到在光环角色走动一步之后 362/202 特效消失了.
+	// 但如果光环角色先上线, 视野范围内有其他玩家后上线,
+	// 那么光环角色不管如何移动, 362/202 特效在其他玩家看来都能正常的跟随着光环角色
+	// 
+	// 此选项依赖 Pandas_Struct_Map_Session_Data_AuraInfomation 的拓展
+	#ifdef Pandas_Struct_Map_Session_Data_AuraInfomation
+		#define Pandas_Aura_Mechanism
+	#endif // Pandas_Struct_Map_Session_Data_AuraInfomation
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -930,6 +946,13 @@
 	// 是否启用 noskill2 地图标记 [Sola丶小克]
 	// 该标记用于禁止此地图上的指定单位使用技能 (支持掩码指定多种类型的单位)
 	#define Pandas_MapFlag_NoSkill2
+
+	// 是否启用 noaura 地图标记 [Sola丶小克]
+	// 该标记用于在当前地图上禁用角色的光环效果
+	// 此地图标记依赖 Pandas_Aura_Mechanism 的拓展
+	#ifdef Pandas_Aura_Mechanism
+		#define Pandas_MapFlag_NoAura
+	#endif // Pandas_Aura_Mechanism
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 
@@ -959,6 +982,10 @@
 	// 是否启用 afk 管理员指令 [Sola丶小克]
 	// 使角色进入离开模式, 角色将会坐到地上并自动使用 AFK 头饰 (表示角色暂时离开)
 	#define Pandas_AtCommand_AFK
+
+	// 是否启用 aura 管理员指令 [Sola丶小克]
+	// 使角色可以激活特定组合的光环效果, 光环效果会一直跟随角色
+	#define Pandas_AtCommand_Aura
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 
@@ -1174,6 +1201,10 @@
 	// 是否启用 preg_search 脚本指令 [Sola丶小克]
 	// 该指令用于执行一个正则表达式搜索并返回首个匹配的分组内容
 	#define Pandas_ScriptCommand_Preg_Search
+
+	// 是否启用 aura 脚本指令 [Sola丶小克]
+	// 该指令用于为角色激活特定组合的光环效果, 光环效果会一直跟随角色
+	#define Pandas_ScriptCommand_Aura
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

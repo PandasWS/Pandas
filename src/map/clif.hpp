@@ -16,6 +16,10 @@
 #include "packets.hpp"
 #include "script.hpp"
 
+#ifdef Pandas_Aura_Mechanism
+#include "aura.hpp"
+#endif // Pandas_Aura_Mechanism
+
 struct Channel;
 struct clan;
 struct item;

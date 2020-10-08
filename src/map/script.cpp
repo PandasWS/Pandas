@@ -72,6 +72,10 @@
 #include "quest.hpp"
 #include "storage.hpp"
 
+#ifdef Pandas_Aura_Mechanism
+#include "aura.hpp"
+#endif // Pandas_Aura_Mechanism
+
 using namespace rathena;
 
 const int64 SCRIPT_INT_MIN = INT64_MIN;
@@ -28054,6 +28058,42 @@ BUILDIN_FUNC(preg_search) {
 }
 #endif // Pandas_ScriptCommand_Preg_Search
 
+#ifdef Pandas_ScriptCommand_Aura
+/* ===========================================================
+ * 指令: aura
+ * 描述: 激活指定的光环组合
+ * 用法: aura <光环编号>{,<角色编号>};
+ * 返回: 成功返回 1 失败返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(aura) {
+	uint32 aura_id = script_getnum(st, 2);
+	struct map_session_data* sd = nullptr;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	aura_id = max(aura_id, 0);
+
+	if (!aura_id || !aura_search(aura_id)) {
+		ShowError("buildin_aura: The specified aura id '%d' is invalid.\n", aura_id);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	sd->pandas.aura_id = aura_id;
+	pc_setglobalreg(sd, add_str(AURA_VARIABLE), aura_id);
+
+	// 触发使用者的客户端刷新
+	pc_setpos(sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_OUTSIGHT);
+
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Aura
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -28222,6 +28262,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_Preg_Search
 	BUILDIN_DEF(preg_search,"ssir"),					// 使用正则表达式搜索并返回首个匹配的分组内容 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Preg_Search
+#ifdef Pandas_ScriptCommand_Aura
+	BUILDIN_DEF(aura,"i?"),								// 激活指定的光环组合 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Aura
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

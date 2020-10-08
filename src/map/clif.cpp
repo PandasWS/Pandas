@@ -1629,6 +1629,67 @@ static inline bool clif_npc_mayapurple(block_list *bl) {
 	return false;
 }
 
+#ifdef Pandas_Aura_Mechanism
+//************************************
+// Method:      clif_send_auras_single
+// FullName:    clif_send_auras_single
+// Description: 将 sd 的光环效果信息发送给 dsd 的客户端
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct map_session_data * dsd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/09/26 16:38
+//************************************
+void clif_send_auras_single(struct map_session_data* sd, struct map_session_data* dsd) {
+	if (!sd || !dsd || sd->pandas.aura_hidden) return;
+
+#ifdef Pandas_MapFlag_NoAura
+	if (map_getmapflag(sd->bl.m, MF_NOAURA))
+		return;
+#endif // Pandas_MapFlag_NoAura
+
+	std::shared_ptr<s_aura> aura = aura_search(sd->pandas.aura_id);
+	if (!aura) return;
+
+	for (auto it : aura->effects) {
+		if (!it) continue;
+		clif_specialeffect_single(&sd->bl, it, dsd->fd);
+	}
+}
+
+//************************************
+// Method:      clif_send_auras
+// FullName:    clif_send_auras
+// Description: 将 sd 的光环信息发送给指定范围的其他客户端
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   enum send_target target
+// Parameter:   bool ignore_hidden 若角色处于隐藏状态则不发送光环信息
+// Parameter:   enum e_aura_special flag 指定仅发送某些特殊效果
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/10/08 11:13
+//************************************
+void clif_send_auras(struct map_session_data* sd, enum send_target target, bool ignore_hidden, enum e_aura_special flag) {
+	if (!sd) return;
+
+#ifdef Pandas_MapFlag_NoAura
+	if (map_getmapflag(sd->bl.m, MF_NOAURA))
+		return;
+#endif // Pandas_MapFlag_NoAura
+
+	if (pc_ishiding(sd) && ignore_hidden) return;
+
+	std::shared_ptr<s_aura> aura = aura_search(sd->pandas.aura_id);
+	if (!aura) return;
+
+	for (auto it : aura->effects) {
+		if (!it) continue;
+		if (flag != AURA_SPECIAL_NOTHING && (aura_special(it) & flag) != flag) continue;
+		clif_specialeffect(&sd->bl, it, target);
+	}
+}
+#endif // Pandas_Aura_Mechanism
+
 /**
  * Main function to spawn a unit on the client (player/mob/pet/etc)
  **/
@@ -1678,6 +1739,11 @@ int clif_spawn( struct block_list *bl, bool walking ){
 				clif_refreshlook(bl,bl->id,LOOK_ROBE,sd->status.robe,AREA);
 			clif_efst_status_change_sub(bl, bl, AREA);
 			clif_hat_effects(sd,bl,AREA);
+#ifdef Pandas_Aura_Mechanism
+			// 当 sd 单位生成的时候, 通知周围的全部单位(包括 sd 自己)加载 sd 的光环信息
+			// 第三个参数设置为 true 表示若 sd 当前处于隐藏状态则放弃绘制光环
+			clif_send_auras(sd, AREA, true, AURA_SPECIAL_NOTHING);
+#endif // Pandas_Aura_Mechanism
 		}
 		break;
 	case BL_MOB:
@@ -4158,6 +4224,31 @@ void clif_changeoption_target( struct block_list* bl, struct block_list* target 
 			clif_send( &p, sizeof( p ), target, SELF );
 		}
 	}
+
+#ifdef Pandas_Aura_Mechanism
+	if (sd && sc && bl && bl->type == BL_PC) {
+		if (!sd->pandas.aura_hidden && (pc_ishiding(sd) || sc->data[SC_CAMOUFLAGE])) {
+			// 由于角色当前处于隐蔽状态, 需要隐藏光环
+			sd->pandas.aura_hidden = true;
+
+			// 通知 bl 视野范围内的其他单位, bl 已经离开了视野范围 (迫使他们的客户端清除关于 bl 的缓存)
+			clif_clearunit_area(bl, CLR_OUTSIGHT);
+
+			// 通知 bl 视野范围内的其他 BL_PC 单位, bl 已经重新进入了他们的视野范围
+			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
+		}
+		else if (sd->pandas.aura_hidden && !(pc_ishiding(sd) || sc->data[SC_CAMOUFLAGE])) {
+			// 角色不处于隐蔽状态, 可以恢复光环
+			sd->pandas.aura_hidden = false;
+
+			// 将 sd 的光环信息发送给周围其他玩家的客户端
+			clif_send_auras(sd, AREA_WOS, false, AURA_SPECIAL_NOTHING);
+
+			// 将 sd 身上一些特殊的光环信息发送给 sd 自己 (猥琐的解决客户端缺陷)
+			clif_send_auras(sd, SELF, false, AURA_SPECIAL_HIDE_DISAPPEAR);
+		}
+	}
+#endif // Pandas_Aura_Mechanism
 }
 
 
@@ -4843,6 +4934,10 @@ void clif_getareachar_unit( struct map_session_data* sd,struct block_list *bl ){
 				clif_refreshlook(&sd->bl,bl->id,LOOK_ROBE,tsd->status.robe,SELF);
 			clif_efst_status_change_sub(&sd->bl, bl, SELF);
 			clif_hat_effects(sd,bl,SELF);
+#ifdef Pandas_Aura_Mechanism
+			// 将 tsd 的光环信息发送给 sd 的客户端, 使 sd 客户端能为 tsd 绘制光环
+			clif_send_auras_single(tsd, sd);
+#endif // Pandas_Aura_Mechanism
 		}
 		break;
 	case BL_MER: // Devotion Effects
@@ -9780,6 +9875,11 @@ void clif_refresh(struct map_session_data *sd)
 		pc_disguise(sd, disguise);
 	}
 	clif_refresh_storagewindow(sd);
+
+#ifdef Pandas_Aura_Mechanism
+	// 使用 @refresh 等指令进行刷新之后, 需要重新发送一次光环信息给客户端
+	clif_send_auras_single(sd, sd);
+#endif // Pandas_Aura_Mechanism
 }
 
 

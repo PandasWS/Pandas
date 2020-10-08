@@ -69,6 +69,10 @@ enum sc_type : int16;
 #define ATTENDANCE_COUNT_VAR "#AttendanceCounter"
 #define ACHIEVEMENTLEVEL "AchievementLevel"
 
+#ifdef Pandas_Struct_Map_Session_Data_AuraInfomation
+#define AURA_VARIABLE "PANDAS_AURASET"
+#endif // Pandas_Struct_Map_Session_Data_AuraInfomation
+
 //Update this max as necessary. 55 is the value needed for Super Baby currently
 //Raised to 105 since Expanded Super Baby needs it.
 #define MAX_SKILL_TREE 105
@@ -844,6 +848,10 @@ struct map_session_data {
 		unsigned char at_head_dir;			// 纸娃娃头部朝向
 		unsigned char at_sit;				// 是否坐下
 #endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
+#ifdef Pandas_Struct_Map_Session_Data_AuraInfomation
+		uint32 aura_id = 0;					// 当前角色启用的光环编号
+		bool aura_hidden = false;			// 根据当前角色的状态, 是否需要隐藏光环
+#endif // Pandas_Struct_Map_Session_Data_AuraInfomation
 	} pandas;
 #endif // Pandas_Struct_Map_Session_Data_Pandas
 
