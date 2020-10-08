@@ -5416,6 +5416,20 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		break;
 	}
 #endif // Pandas_MapFlag_NoMerc
+#ifdef Pandas_MapFlag_NoAura
+	case MF_NOAURA:
+	{
+		struct s_mapiterator* iter = mapit_getallusers();
+		struct map_session_data* pl_sd = nullptr;
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->bl.m != m)
+				continue;
+			clif_refresh(pl_sd);
+		}
+		mapit_free(iter);
+		break;
+	}
+#endif // Pandas_MapFlag_NoAura
 	}
 #endif // Pandas_Mapflags
 
