@@ -26423,7 +26423,7 @@ BUILDIN_FUNC(script4each) {
 	int pos = 0;
 	bool script_needfree = false;
 
-#if !defined(Pandas_NpcHelper_CommonFunc) || !defined(Pandas_Redeclaration_Struct_Event_Data)
+#if !defined(Pandas_Helper_Common_Function) || !defined(Pandas_Redeclaration_Struct_Event_Data)
 	ShowWarning("This version is not support 'NPCNAME::EVENT' script in '%s' command.\n", cmdname);
 #else
 	struct event_data* ev = npc_event_data(execute_script);
@@ -26435,7 +26435,7 @@ BUILDIN_FUNC(script4each) {
 		script = parse_script(execute_script, cmdname, 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 		script_needfree = (script != nullptr);
 	}
-#endif // !defined(Pandas_NpcHelper_CommonFunc) || !defined(Pandas_Redeclaration_Struct_Event_Data)
+#endif // !defined(Pandas_Helper_Common_Function) || !defined(Pandas_Redeclaration_Struct_Event_Data)
 
 	struct s_mapiterator *iter = nullptr;
 	struct block_list* bl = nullptr;
@@ -28077,13 +28077,13 @@ BUILDIN_FUNC(aura) {
 
 	aura_id = max(aura_id, 0);
 
-	if (!aura_id || !aura_search(aura_id)) {
+	if (aura_id && !aura_search(aura_id)) {
 		ShowError("buildin_aura: The specified aura id '%d' is invalid.\n", aura_id);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	sd->pandas.aura_id = aura_id;
+	sd->ucd.aura.id = aura_id;
 	pc_setglobalreg(sd, add_str(AURA_VARIABLE), aura_id);
 
 	// 触发使用者的客户端刷新
@@ -28093,6 +28093,65 @@ BUILDIN_FUNC(aura) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_Aura
+
+#ifdef Pandas_ScriptCommand_UnitAura
+/* ===========================================================
+ * 指令: unitaura
+ * 描述: 用于调整 BL_PC / BL_NPC / BL_MOB / BL_HOM / BL_ELEM / BL_PET 的光环组合 (但仅 BL_PC 会被持久化)
+ * 用法: unitaura <单位编号>,<光环编号>;
+ * 返回: 成功返回 1 失败返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(unitaura) {
+	uint32 aura_id = script_getnum(st, 3);
+	struct s_unit_common_data* ucd = nullptr;
+	struct block_list* bl = nullptr;
+
+	if (!script_rid2bl(2, bl)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	ucd = status_get_ucd(bl);
+	if (!ucd) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	aura_id = max(aura_id, 0);
+
+	if (aura_id && !aura_search(aura_id)) {
+		ShowError("buildin_unitaura: The specified aura id '%d' is invalid.\n", aura_id);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	ucd->aura.id = aura_id;
+
+	if (bl->type == BL_PC) {
+		struct map_session_data* sd = nullptr;
+		sd = BL_CAST(BL_PC, bl);
+		if (sd) {
+			pc_setglobalreg(sd, add_str(AURA_VARIABLE), aura_id);
+			pc_setpos(sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_OUTSIGHT);
+		}
+	}
+	else if (bl->type == BL_MOB) {
+		// 若是魔物的话, 可以用 clif_clearunit_area 直接发 CLR_TRICKDEAD 清理缓存
+		// 而不是和 else 分支一样广播 clif_outsight 封包
+		// 这样魔物移动过程中发生光环替换的时候, 才不会有明显的消失后再出现的效果
+		clif_clearunit_area(bl, CLR_TRICKDEAD);
+		map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
+	}
+	else {
+		map_foreachinallrange(clif_outsight, bl, AREA_SIZE, BL_PC, bl);
+		map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
+	}
+
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_UnitAura
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
@@ -28265,6 +28324,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_Aura
 	BUILDIN_DEF(aura,"i?"),								// 激活指定的光环组合 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Aura
+#ifdef Pandas_ScriptCommand_UnitAura
+	BUILDIN_DEF(unitaura,"ii"),							// 支持激活六种不同单位的光环组合 [Sola丶小克]
+#endif // Pandas_ScriptCommand_UnitAura
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

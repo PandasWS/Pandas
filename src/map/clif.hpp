@@ -1157,4 +1157,8 @@ void clif_parse_skill_toid( struct map_session_data* sd, uint16 skill_id, uint16
 void clif_change_title_ack(struct map_session_data* sd, unsigned char result, unsigned long title_id);
 #endif // Pandas_Character_Title_Controller
 
+#ifdef Pandas_Aura_Mechanism
+void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_hidden, enum e_aura_special flag);
+#endif // Pandas_Aura_Mechanism
+
 #endif /* CLIF_HPP */

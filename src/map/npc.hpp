@@ -146,6 +146,10 @@ struct npc_data {
 #endif // Pandas_Struct_Npc_Data_DestructionStrategy
 	} pandas;
 #endif // Pandas_Struct_Npc_Data_Pandas
+
+#ifdef Pandas_Struct_Unit_CommonData
+	struct s_unit_common_data ucd;
+#endif // Pandas_Struct_Unit_CommonData
 };
 
 struct eri;
@@ -1346,11 +1350,11 @@ enum npce_event : uint8 {
 	NPCE_MAX
 };
 
-#ifdef Pandas_NpcHelper_CommonFunc
+#ifdef Pandas_Helper_Common_Function
 struct event_data* npc_event_data(const char* eventname);
 bool npc_event_exists(const char* eventname);
 bool npc_event_exists(struct npc_data *nd, const char* eventname);
-#endif // Pandas_NpcHelper_CommonFunc
+#endif // Pandas_Helper_Common_Function
 
 struct view_data* npc_get_viewdata(int class_);
 int npc_chat_sub(struct block_list* bl, va_list ap);

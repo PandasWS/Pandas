@@ -1738,16 +1738,16 @@ void pc_reg_received(struct map_session_data *sd)
 	sd->cashPoints = static_cast<int>(pc_readaccountreg(sd, add_str(CASHPOINT_VAR)));
 	sd->kafraPoints = static_cast<int>(pc_readaccountreg(sd, add_str(KAFRAPOINT_VAR)));
 
-#ifdef Pandas_Struct_Map_Session_Data_AuraInfomation
+#ifdef Pandas_Struct_Unit_CommonData_Aura
 	// 从角色的变量中读取当前角色设置启用的光环编号
-	sd->pandas.aura_id = static_cast<int32>(pc_readglobalreg(sd, add_str(AURA_VARIABLE)));
+	sd->ucd.aura.id = static_cast<int32>(pc_readglobalreg(sd, add_str(AURA_VARIABLE)));
 
 	// 若不是一个有效的光环编号, 则将相关变量和值重置为 0
-	if (!aura_search(sd->pandas.aura_id)) {
-		sd->pandas.aura_id = 0;
+	if (!aura_search(sd->ucd.aura.id)) {
+		sd->ucd.aura.id = 0;
 		pc_setglobalreg(sd, add_str(AURA_VARIABLE), 0);
 	}
-#endif // Pandas_Struct_Map_Session_Data_AuraInfomation
+#endif // Pandas_Struct_Unit_CommonData_Aura
 
 	// Cooking Exp
 	sd->cook_mastery = static_cast<short>(pc_readglobalreg(sd, add_str(COOKMASTERY_VAR)));

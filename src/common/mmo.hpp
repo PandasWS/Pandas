@@ -240,6 +240,22 @@ enum e_mode {
 #define ATR_MASK 0x0FF0000
 #define CL_MASK 0xF000000
 
+#ifdef Pandas_Struct_Unit_CommonData
+// 多种单位的结构体都会嵌入的一个数据结构
+// 这里定义的内容在 map_session_data, npc_data, mob_data, homun_data,
+// mercenary_data, elemental_data 结构体中的 ucd 成员中都会同时拥有
+struct s_unit_common_data {
+
+	#ifdef Pandas_Struct_Unit_CommonData_Aura
+		struct s_ucd_aura {
+			uint32 id = 0;			// 该单位启用的光环编号
+			bool hidden = false;	// 是否需要隐藏光环
+		} aura;
+	#endif // Pandas_Struct_Unit_CommonData_Aura
+
+};
+#endif // Pandas_Struct_Unit_CommonData
+
 // Questlog states
 enum e_quest_state : uint8 {
 	Q_INACTIVE, ///< Inactive quest (the user can toggle between active and inactive quests)

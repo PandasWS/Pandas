@@ -2718,6 +2718,15 @@ void status_set_viewdata(struct block_list *bl, int class_);
 void status_change_init(struct block_list *bl);
 struct status_change *status_get_sc(struct block_list *bl);
 
+#ifdef Pandas_Struct_Unit_CommonData
+struct s_unit_common_data *status_get_ucd(struct block_list* bl);
+#endif // Pandas_Struct_Unit_CommonData
+
+#ifdef Pandas_Helper_Common_Function
+bool status_ishiding(struct block_list* bl);
+bool status_isinvisible(struct block_list* bl);
+#endif // Pandas_Helper_Common_Function
+
 int status_isdead(struct block_list *bl);
 int status_isimmune(struct block_list *bl);
 

@@ -72,8 +72,8 @@
 	// 是否启用 Google Breakpad 用于处理程序崩溃
 	#define Pandas_Google_Breakpad
 
-	// 是否启用 npc.cpp 中的自定义辅助函数
-	#define Pandas_NpcHelper_CommonFunc
+	// 是否启用一些杂乱的自定义辅助函数
+	#define Pandas_Helper_Common_Function
 
 	// 是否启用 LGTM 建议的一些处理措施, 避免潜在风险
 	#define Pandas_LGTM_Optimization
@@ -121,6 +121,17 @@
 		#define Pandas_Struct_Item_Data_Properties
 	#endif // Pandas_Database_ItemProperties
 
+	// 使 map_session_data, npc_data, mob_data, homun_data,
+	// mercenary_data, elemental_data 能够有一个独立的结构体用来
+	// 存放 Pandas 针对多单位通用的拓展 [Sola丶小克]
+	#define Pandas_Struct_Unit_CommonData
+
+	// 以下选项开关需要依赖 Pandas_Struct_Unit_CommonData 的拓展
+	#ifdef Pandas_Struct_Unit_CommonData
+		// 使 s_unit_common_data 可记录单位的光环信息 [Sola丶小克]
+		#define Pandas_Struct_Unit_CommonData_Aura
+	#endif // Pandas_Struct_Unit_CommonData
+
 	// 使 map_session_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
 	// 结构体修改定位 pc.hpp -> map_session_data.pandas
 	#define Pandas_Struct_Map_Session_Data_Pandas
@@ -154,9 +165,6 @@
 		// rAthena 使用完成 autotrade 的朝向数据后就销毁掉了
 		// 为了能够支持离线挂店 / 挂机可以被 recall 召唤, 我们需要保留一部分数据
 		#define Pandas_Struct_Map_Session_Data_Autotrade_Configure
-
-		// 使 map_session_data 可记录当前角色的光环信息 [Sola丶小克]
-		#define Pandas_Struct_Map_Session_Data_AuraInfomation
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
 
 	// 使 npc_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
@@ -494,17 +502,10 @@
 	#define Pandas_Persistence_Itemdb_Script
 
 	// 是否启用角色光环机制 [Sola丶小克]
-	// 光环由于客户端刷新机制的问题, 总体实现并非特别完美 (哪位同学能修理的联系一下我, 感激不尽)
-	// 
-	// 问题: 使用 362/202 光环特效时, 拥有该光环的角色后上线并走动一步,
-	// 那么光环角色视野范围内其他早就在线的玩家, 会看到在光环角色走动一步之后 362/202 特效消失了.
-	// 但如果光环角色先上线, 视野范围内有其他玩家后上线,
-	// 那么光环角色不管如何移动, 362/202 特效在其他玩家看来都能正常的跟随着光环角色
-	// 
-	// 此选项依赖 Pandas_Struct_Map_Session_Data_AuraInfomation 的拓展
-	#ifdef Pandas_Struct_Map_Session_Data_AuraInfomation
+	// 此选项依赖 Pandas_Struct_Unit_CommonData_Aura 的拓展
+	#ifdef Pandas_Struct_Unit_CommonData_Aura
 		#define Pandas_Aura_Mechanism
-	#endif // Pandas_Struct_Map_Session_Data_AuraInfomation
+	#endif // Pandas_Struct_Unit_CommonData_Aura
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -985,7 +986,10 @@
 
 	// 是否启用 aura 管理员指令 [Sola丶小克]
 	// 使角色可以激活特定组合的光环效果, 光环效果会一直跟随角色
-	#define Pandas_AtCommand_Aura
+	// 此选项开关需要依赖 Pandas_Aura_Mechanism 的拓展
+	#ifdef Pandas_Aura_Mechanism
+		#define Pandas_AtCommand_Aura
+	#endif // Pandas_Aura_Mechanism
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 
@@ -1204,7 +1208,17 @@
 
 	// 是否启用 aura 脚本指令 [Sola丶小克]
 	// 该指令用于为角色激活特定组合的光环效果, 光环效果会一直跟随角色
-	#define Pandas_ScriptCommand_Aura
+	// 此选项开关需要依赖 Pandas_Aura_Mechanism 的拓展
+	#ifdef Pandas_Aura_Mechanism
+		#define Pandas_ScriptCommand_Aura
+	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 unitaura 脚本指令 [Sola丶小克]
+	// 该指令用于调整 BL_PC / BL_NPC / BL_MOB / BL_HOM / BL_ELEM / BL_PET 的光环组合 (但仅 BL_PC 会被持久化)
+	// 此选项开关需要依赖 Pandas_Aura_Mechanism 的拓展
+	#ifdef Pandas_Aura_Mechanism
+		#define Pandas_ScriptCommand_UnitAura
+	#endif // Pandas_Aura_Mechanism
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

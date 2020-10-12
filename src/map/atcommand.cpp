@@ -10722,12 +10722,12 @@ ACMD_FUNC(aura) {
 
 	aura_id = max(aura_id, 0);
 
-	if (!aura_id || !aura_search(aura_id)) {
+	if (aura_id && !aura_search(aura_id)) {
 		clif_displaymessage(fd, msg_txt_cn(sd, 105));	// 很抱歉, 指定的光环编号无效, 请检查后重新输入.
 		return -1;
 	}
 
-	sd->pandas.aura_id = aura_id;
+	sd->ucd.aura.id = aura_id;
 	pc_setglobalreg(sd, add_str(AURA_VARIABLE), aura_id);
 
 	// 触发使用者的客户端刷新

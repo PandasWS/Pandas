@@ -8628,6 +8628,56 @@ struct status_change *status_get_sc(struct block_list *bl)
 	return NULL;
 }
 
+#ifdef Pandas_Struct_Unit_CommonData
+struct s_unit_common_data *status_get_ucd(struct block_list* bl)
+{
+	if (bl)
+		switch (bl->type) {
+		case BL_PC:  return &((TBL_PC*)bl)->ucd;
+		case BL_MOB: return &((TBL_MOB*)bl)->ucd;
+		case BL_NPC: return &((TBL_NPC*)bl)->ucd;
+		case BL_HOM: return &((TBL_HOM*)bl)->ucd;
+		case BL_MER: return &((TBL_MER*)bl)->ucd;
+		case BL_ELEM: return &((TBL_ELEM*)bl)->ucd;
+		}
+	return NULL;
+}
+#endif // Pandas_Struct_Unit_CommonData
+
+#ifdef Pandas_Helper_Common_Function
+//************************************
+// Method:      status_ishiding
+// FullName:    status_ishiding
+// Description: 请简要介绍该函数的作用
+// Access:      public 
+// Parameter:   struct block_list * bl
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2020/10/11 14:38
+//************************************
+bool status_ishiding(struct block_list* bl) {
+	if (!bl) return false;
+	struct status_change* sc = status_get_sc(bl);
+	if (!sc) return false;
+	return sc->option & (OPTION_HIDE | OPTION_CLOAK | OPTION_CHASEWALK);
+}
+
+//************************************
+// Method:      status_isinvisible
+// FullName:    status_isinvisible
+// Description: 请简要介绍该函数的作用
+// Access:      public 
+// Parameter:   struct block_list * bl
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2020/10/11 17:53
+//************************************
+bool status_isinvisible(struct block_list* bl) {
+	if (!bl) return false;
+	struct status_change* sc = status_get_sc(bl);
+	if (!sc) return false;
+	return sc->option & OPTION_INVISIBLE;
+}
+#endif // Pandas_Helper_Common_Function
+
 /**
  * Initiate (memset) the status change data of an object
  * @param bl: Object whose sc data to memset [PC|MOB|HOM|MER|ELEM|NPC]
@@ -12670,13 +12720,20 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 
 	// On Aegis, when turning on a status change, first goes the option packet, then the sc packet.
 	if(opt_flag) {
+#ifndef Pandas_Aura_Mechanism
 		clif_changeoption(bl);
+#endif // Pandas_Aura_Mechanism
 		if(sd && (opt_flag&0x4)) {
 			clif_changelook(bl,LOOK_BASE,vd->class_);
 			clif_changelook(bl,LOOK_WEAPON,0);
 			clif_changelook(bl,LOOK_SHIELD,0);
 			clif_changelook(bl,LOOK_CLOTHES_COLOR,vd->cloth_color);
 		}
+#ifdef Pandas_Aura_Mechanism
+		// 调整一下 clif_changeoption 和 clif_changelook(bl,LOOK_BASE,vd->class_); 的顺序
+		// 虽然在 status_change_start 中目前看起来好像并不需要, 还是一起改了吧
+		clif_changeoption(bl);
+#endif // Pandas_Aura_Mechanism
 	}
 	if (calc_flag&SCB_DYE) { // Reset DYE color
 		if (vd && vd->cloth_color) {
@@ -13870,7 +13927,9 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 	if( opt_flag&8 ) // bugreport:681
 		clif_changeoption2(bl);
 	else if(opt_flag) {
+#ifndef Pandas_Aura_Mechanism
 		clif_changeoption(bl);
+#endif // Pandas_Aura_Mechanism
 		if (sd && (opt_flag&0x4)) {
 			clif_changelook(bl,LOOK_BASE,sd->vd.class_);
 			clif_get_weapon_view(sd,&sd->vd.weapon,&sd->vd.shield);
@@ -13879,6 +13938,12 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 			clif_changelook(bl,LOOK_CLOTHES_COLOR,cap_value(sd->status.clothes_color,0,battle_config.max_cloth_color));
 			clif_changelook(bl,LOOK_BODY2,cap_value(sd->status.body,0,battle_config.max_body_style));
 		}
+#ifdef Pandas_Aura_Mechanism
+		// 将上面的 clif_changeoption 转移到下面来
+		// 否则在 clif_changeoption 中对自己发送特殊效果 (202 / 362) 信息后, 会被
+		// clif_changelook(bl,LOOK_BASE,sd->vd.class_); 清空掉, 导致恢复隐匿/伪装后自己无法看到特殊效果
+		clif_changeoption(bl);
+#endif // Pandas_Aura_Mechanism
 	}
 	if (calc_flag) {
 		switch (type) {
