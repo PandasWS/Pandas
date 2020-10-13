@@ -3,6 +3,10 @@
 
 #include "aura.hpp"
 
+#include "battle.hpp"
+#include "map.hpp"
+#include "pc.hpp"
+
 AuraDatabase aura_db;
 
 std::unordered_map<uint16, enum e_aura_special> special_effects{
@@ -101,6 +105,66 @@ enum e_aura_special aura_special(uint16 effect_id) {
 		return special_effects[effect_id];
 	}
 	return AURA_SPECIAL_NOTHING;
+}
+
+//************************************
+// Method:      aura_make_effective
+// FullName:    aura_make_effective
+// Description: 为 bl 设置光环并使其能够立刻刷新生效
+// Access:      public 
+// Parameter:   struct block_list * bl
+// Parameter:   uint32 aura_id
+// Parameter:   bool pc_saved 若是玩家单位, 那么是否保存此光环到数据库
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/10/13 00:21
+//************************************
+void aura_make_effective(struct block_list* bl, uint32 aura_id, bool pc_saved) {
+	if (!bl) return;
+	if (aura_id && !aura_search(aura_id)) return;
+
+	map_freeblock_lock();
+
+	struct map_data* mapdata = map_getmapdata(bl->m);
+	struct s_unit_common_data* ucd = status_get_ucd(bl);
+
+	if (ucd) {
+		ucd->aura.id = aura_id;
+	}
+
+	switch (bl->type)
+	{
+	case BL_PC: {
+		struct map_session_data* sd = BL_CAST(BL_PC, bl);
+		if (!sd) break;
+
+		if (pc_saved) {
+			pc_setglobalreg(sd, add_str(AURA_VARIABLE), aura_id);
+		}
+
+		if (ucd) {
+			ucd->aura.hidden = false;
+		}
+		pc_setpos(sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_OUTSIGHT);
+		break;
+	}
+	case BL_MOB:
+		// 若是魔物的话, 可以用 clif_clearunit_area 直接发 CLR_TRICKDEAD 清理缓存
+		// 而不是和 else 分支一样广播 clif_outsight 封包
+		// 这样魔物移动过程中发生光环替换的时候, 才不会有明显的消失后再出现的效果
+		if (mapdata && mapdata->users) {
+			clif_clearunit_area(bl, CLR_TRICKDEAD);
+			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
+		}
+		break;
+	default:
+		if (mapdata && mapdata->users) {
+			map_foreachinallrange(clif_outsight, bl, AREA_SIZE, BL_PC, bl);
+			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
+		}
+		break;
+	}
+
+	map_freeblock_unlock();
 }
 
 //************************************

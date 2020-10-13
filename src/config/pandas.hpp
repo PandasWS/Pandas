@@ -122,7 +122,7 @@
 	#endif // Pandas_Database_ItemProperties
 
 	// 使 map_session_data, npc_data, mob_data, homun_data,
-	// mercenary_data, elemental_data 能够有一个独立的结构体用来
+	// mercenary_data, elemental_data, pet_data 能够有一个独立的结构体用来
 	// 存放 Pandas 针对多单位通用的拓展 [Sola丶小克]
 	#define Pandas_Struct_Unit_CommonData
 
@@ -1214,7 +1214,8 @@
 	#endif // Pandas_Aura_Mechanism
 
 	// 是否启用 unitaura 脚本指令 [Sola丶小克]
-	// 该指令用于调整 BL_PC / BL_NPC / BL_MOB / BL_HOM / BL_ELEM / BL_PET 的光环组合 (但仅 BL_PC 会被持久化)
+	// 该指令用于调整七种单位的光环组合 (但仅 BL_PC 会被持久化)
+	// 七种单位分别是: 玩家/魔物/佣兵/宠物/NPC/精灵/人工生命体
 	// 此选项开关需要依赖 Pandas_Aura_Mechanism 的拓展
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_ScriptCommand_UnitAura

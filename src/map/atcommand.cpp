@@ -10727,11 +10727,7 @@ ACMD_FUNC(aura) {
 		return -1;
 	}
 
-	sd->ucd.aura.id = aura_id;
-	pc_setglobalreg(sd, add_str(AURA_VARIABLE), aura_id);
-
-	// 触发使用者的客户端刷新
-	pc_setpos(sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_OUTSIGHT);
+	aura_make_effective(&sd->bl, aura_id);
 
 	if (aura_id != 0) {
 		clif_displaymessage(fd, msg_txt_cn(sd, 103));	// 已激活指定的光环效果.

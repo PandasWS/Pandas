@@ -33,3 +33,5 @@ void do_init_aura(void);
 
 std::shared_ptr<s_aura> aura_search(uint32 aura_id);
 enum e_aura_special aura_special(uint16 effect_id);
+void aura_make_effective(struct block_list* bl, uint32 aura_id, bool pc_saved = true);
+

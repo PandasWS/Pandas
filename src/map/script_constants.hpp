@@ -4684,6 +4684,16 @@
 	export_constant(UNPC_DEADSIT);
 	export_constant(UNPC_GROUP_ID);
 
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+	export_constant(UMOB_AURA);
+	export_constant(UHOM_AURA);
+	export_constant(UPET_AURA);
+	export_constant(UMER_AURA);
+	export_constant(UELE_AURA);
+	export_constant(UNPC_AURA);
+#endif // Pandas_Struct_Unit_CommonData_Aura
+
+
 	export_constant(NAV_NONE);
 	export_constant(NAV_AIRSHIP_ONLY);
 	export_constant(NAV_SCROLL_ONLY);

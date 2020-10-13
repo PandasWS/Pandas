@@ -170,6 +170,10 @@ struct pet_data {
 	int masterteleport_timer;
 	struct map_session_data *master;
 
+#ifdef Pandas_Struct_Unit_CommonData
+	struct s_unit_common_data ucd;
+#endif // Pandas_Struct_Unit_CommonData
+
 	std::shared_ptr<s_pet_db> get_pet_db() {
 		return pet_db.find(this->pet.class_);
 	}

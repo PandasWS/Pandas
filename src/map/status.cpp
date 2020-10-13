@@ -8631,15 +8631,16 @@ struct status_change *status_get_sc(struct block_list *bl)
 #ifdef Pandas_Struct_Unit_CommonData
 struct s_unit_common_data *status_get_ucd(struct block_list* bl)
 {
-	if (bl)
-		switch (bl->type) {
+	if( bl )
+	switch (bl->type) {
 		case BL_PC:  return &((TBL_PC*)bl)->ucd;
 		case BL_MOB: return &((TBL_MOB*)bl)->ucd;
 		case BL_NPC: return &((TBL_NPC*)bl)->ucd;
 		case BL_HOM: return &((TBL_HOM*)bl)->ucd;
 		case BL_MER: return &((TBL_MER*)bl)->ucd;
+		case BL_PET: return &((TBL_PET*)bl)->ucd;
 		case BL_ELEM: return &((TBL_ELEM*)bl)->ucd;
-		}
+	}
 	return NULL;
 }
 #endif // Pandas_Struct_Unit_CommonData
@@ -8648,7 +8649,7 @@ struct s_unit_common_data *status_get_ucd(struct block_list* bl)
 //************************************
 // Method:      status_ishiding
 // FullName:    status_ishiding
-// Description: 请简要介绍该函数的作用
+// Description: 与 pc_ishiding 类似, 可以判断一个单位是否隐藏
 // Access:      public 
 // Parameter:   struct block_list * bl
 // Returns:     bool
@@ -8664,7 +8665,7 @@ bool status_ishiding(struct block_list* bl) {
 //************************************
 // Method:      status_isinvisible
 // FullName:    status_isinvisible
-// Description: 请简要介绍该函数的作用
+// Description: 与 pc_isinvisible 类似, 可以判断一个单位是否处于不可见状态
 // Access:      public 
 // Parameter:   struct block_list * bl
 // Returns:     bool
