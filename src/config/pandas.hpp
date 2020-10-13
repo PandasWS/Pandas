@@ -72,8 +72,8 @@
 	// 是否启用 Google Breakpad 用于处理程序崩溃
 	#define Pandas_Google_Breakpad
 
-	// 是否启用 npc.cpp 中的自定义辅助函数
-	#define Pandas_NpcHelper_CommonFunc
+	// 是否启用一些杂乱的自定义辅助函数
+	#define Pandas_Helper_Common_Function
 
 	// 是否启用 LGTM 建议的一些处理措施, 避免潜在风险
 	#define Pandas_LGTM_Optimization
@@ -120,6 +120,17 @@
 	#ifdef Pandas_Database_ItemProperties
 		#define Pandas_Struct_Item_Data_Properties
 	#endif // Pandas_Database_ItemProperties
+
+	// 使 map_session_data, npc_data, mob_data, homun_data,
+	// mercenary_data, elemental_data, pet_data 能够有一个独立的结构体用来
+	// 存放 Pandas 针对多单位通用的拓展 [Sola丶小克]
+	#define Pandas_Struct_Unit_CommonData
+
+	// 以下选项开关需要依赖 Pandas_Struct_Unit_CommonData 的拓展
+	#ifdef Pandas_Struct_Unit_CommonData
+		// 使 s_unit_common_data 可记录单位的光环信息 [Sola丶小克]
+		#define Pandas_Struct_Unit_CommonData_Aura
+	#endif // Pandas_Struct_Unit_CommonData
 
 	// 使 map_session_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
 	// 结构体修改定位 pc.hpp -> map_session_data.pandas
@@ -489,6 +500,12 @@
 
 	// 使程序能够持久化保存每个道具的脚本字符串 [Sola丶小克]
 	#define Pandas_Persistence_Itemdb_Script
+
+	// 是否启用角色光环机制 [Sola丶小克]
+	// 此选项依赖 Pandas_Struct_Unit_CommonData_Aura 的拓展
+	#ifdef Pandas_Struct_Unit_CommonData_Aura
+		#define Pandas_Aura_Mechanism
+	#endif // Pandas_Struct_Unit_CommonData_Aura
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -930,6 +947,13 @@
 	// 是否启用 noskill2 地图标记 [Sola丶小克]
 	// 该标记用于禁止此地图上的指定单位使用技能 (支持掩码指定多种类型的单位)
 	#define Pandas_MapFlag_NoSkill2
+
+	// 是否启用 noaura 地图标记 [Sola丶小克]
+	// 该标记用于在当前地图上禁用角色的光环效果
+	// 此地图标记依赖 Pandas_Aura_Mechanism 的拓展
+	#ifdef Pandas_Aura_Mechanism
+		#define Pandas_MapFlag_NoAura
+	#endif // Pandas_Aura_Mechanism
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 
@@ -959,6 +983,13 @@
 	// 是否启用 afk 管理员指令 [Sola丶小克]
 	// 使角色进入离开模式, 角色将会坐到地上并自动使用 AFK 头饰 (表示角色暂时离开)
 	#define Pandas_AtCommand_AFK
+
+	// 是否启用 aura 管理员指令 [Sola丶小克]
+	// 使角色可以激活特定组合的光环效果, 光环效果会一直跟随角色
+	// 此选项开关需要依赖 Pandas_Aura_Mechanism 的拓展
+	#ifdef Pandas_Aura_Mechanism
+		#define Pandas_AtCommand_Aura
+	#endif // Pandas_Aura_Mechanism
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 
@@ -1174,6 +1205,21 @@
 	// 是否启用 preg_search 脚本指令 [Sola丶小克]
 	// 该指令用于执行一个正则表达式搜索并返回首个匹配的分组内容
 	#define Pandas_ScriptCommand_Preg_Search
+
+	// 是否启用 aura 脚本指令 [Sola丶小克]
+	// 该指令用于为角色激活特定组合的光环效果, 光环效果会一直跟随角色
+	// 此选项开关需要依赖 Pandas_Aura_Mechanism 的拓展
+	#ifdef Pandas_Aura_Mechanism
+		#define Pandas_ScriptCommand_Aura
+	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 unitaura 脚本指令 [Sola丶小克]
+	// 该指令用于调整七种单位的光环组合 (但仅 BL_PC 会被持久化)
+	// 七种单位分别是: 玩家/魔物/佣兵/宠物/NPC/精灵/人工生命体
+	// 此选项开关需要依赖 Pandas_Aura_Mechanism 的拓展
+	#ifdef Pandas_Aura_Mechanism
+		#define Pandas_ScriptCommand_UnitAura
+	#endif // Pandas_Aura_Mechanism
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

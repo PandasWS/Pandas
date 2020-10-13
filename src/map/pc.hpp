@@ -69,6 +69,10 @@ enum sc_type : int16;
 #define ATTENDANCE_COUNT_VAR "#AttendanceCounter"
 #define ACHIEVEMENTLEVEL "AchievementLevel"
 
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+#define AURA_VARIABLE "PANDAS_AURASET"
+#endif // Pandas_Struct_Unit_CommonData_Aura
+
 //Update this max as necessary. 55 is the value needed for Super Baby currently
 //Raised to 105 since Expanded Super Baby needs it.
 #define MAX_SKILL_TREE 105
@@ -846,6 +850,10 @@ struct map_session_data {
 #endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
 	} pandas;
 #endif // Pandas_Struct_Map_Session_Data_Pandas
+
+#ifdef Pandas_Struct_Unit_CommonData
+	struct s_unit_common_data ucd;
+#endif // Pandas_Struct_Unit_CommonData
 
 	struct{
 		int tid;

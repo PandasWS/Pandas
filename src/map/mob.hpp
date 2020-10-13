@@ -242,6 +242,10 @@ struct mob_data {
 	 * MvP Tombstone NPC ID
 	 **/
 	int tomb_nid;
+
+#ifdef Pandas_Struct_Unit_CommonData
+	struct s_unit_common_data ucd;
+#endif // Pandas_Struct_Unit_CommonData
 };
 
 class MobAvailDatabase : public YamlDatabase {

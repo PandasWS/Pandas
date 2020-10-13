@@ -16,6 +16,10 @@
 #include "packets.hpp"
 #include "script.hpp"
 
+#ifdef Pandas_Aura_Mechanism
+#include "aura.hpp"
+#endif // Pandas_Aura_Mechanism
+
 struct Channel;
 struct clan;
 struct item;
@@ -1152,5 +1156,9 @@ void clif_parse_skill_toid( struct map_session_data* sd, uint16 skill_id, uint16
 // 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用
 void clif_change_title_ack(struct map_session_data* sd, unsigned char result, unsigned long title_id);
 #endif // Pandas_Character_Title_Controller
+
+#ifdef Pandas_Aura_Mechanism
+void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_hidden, enum e_aura_special flag);
+#endif // Pandas_Aura_Mechanism
 
 #endif /* CLIF_HPP */

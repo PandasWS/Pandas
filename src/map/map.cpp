@@ -51,6 +51,10 @@
 #include "storage.hpp"
 #include "trade.hpp"
 
+#ifdef Pandas_Aura_Mechanism
+#include "aura.hpp"
+#endif // Pandas_Aura_Mechanism
+
 using namespace rathena;
 
 char default_codepage[32] = "";
@@ -5412,6 +5416,20 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		break;
 	}
 #endif // Pandas_MapFlag_NoMerc
+#ifdef Pandas_MapFlag_NoAura
+	case MF_NOAURA:
+	{
+		struct s_mapiterator* iter = mapit_getallusers();
+		struct map_session_data* pl_sd = nullptr;
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			if (!pl_sd || pl_sd->bl.m != m)
+				continue;
+			clif_refresh(pl_sd);
+		}
+		mapit_free(iter);
+		break;
+	}
+#endif // Pandas_MapFlag_NoAura
 	}
 #endif // Pandas_Mapflags
 
@@ -5466,6 +5484,9 @@ void do_final(void){
 	do_final_achievement();
 	do_final_script();
 	do_final_instance();
+#ifdef Pandas_Aura_Mechanism
+	do_final_aura();
+#endif // Pandas_Aura_Mechanism
 	do_final_itemdb();
 	do_final_storage();
 	do_final_guild();
@@ -5825,6 +5846,9 @@ int do_init(int argc, char *argv[])
 	do_init_clif();
 	do_init_script();
 	do_init_itemdb();
+#ifdef Pandas_Aura_Mechanism
+	do_init_aura();
+#endif // Pandas_Aura_Mechanism
 	do_init_channel();
 	do_init_cashshop();
 	do_init_skill();

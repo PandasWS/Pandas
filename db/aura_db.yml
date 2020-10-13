@@ -1,0 +1,333 @@
+﻿###########################################################################
+# Aura Database - 光环组合数据库
+###########################################################################
+#
+# - AuraID
+# 光环编号, 熊猫预置的光环编号默认从 1000 开始.
+# 编号无需连续, 若你想自己添加自己的光环组合, 建议编号直接从 2000 开始.
+#
+# 若在本数据库的多个配置文件中, 重复出现相同光环编号的多个配置,
+# 那么最终只会以最高优先级的配置为准, 优先级依次如下:
+#
+# - 1. db/import/aura_db.yml (高优先)
+# - 2. db/aura_db.yml (低优先)
+#
+# 若同一个文件中出现相同的光环编号, 会以更靠近文件末尾的配置为准
+#
+###########################################################################
+#
+# EffectList
+# 必填节点, 该节点下列出此光环激活时会出现的特效列表
+#
+# 必填子节点: EffectID
+#   可以填写一个或多个, 但至少需要填写一个.
+#   此处的 EffectID 可以参考 doc/effect_list.txt 中的效果列表
+#
+###########################################################################
+#
+# 挑选 EffectID 的注意事项
+#
+# 默认情况下此数据库已经预制了几十个光环组合, 但他们都非常普通.
+# 若你想自己挑选 EffectID 来作为效果, 可以在游戏中使用 @effect 指令来挑选.
+#
+# 具体做法为:
+# 1. 使用 @effect 将 doc/effect_list.txt 中的效果试一下
+# 2. 观察效果是一直出现, 还是会自动消失
+# 3. 若效果在过图和小退之前会一直存在, 那么说明它合适作为光环的 EffectID
+#
+# 提示:
+# 自己添加的光环组合, 请定义到 db/import/aura_db.yml 文件中,
+# 这样未来服务端若有更新, 才不用再重复进行差异合并
+#
+###########################################################################
+
+Header:
+  Type: AURA_DB
+  Version: 1
+
+Body:
+  - AuraID: 1000
+    EffectList:
+      - EffectID: 586
+  - AuraID: 1001
+    EffectList:
+      - EffectID: 586
+      - EffectID: 362
+  - AuraID: 1002
+    EffectList:
+      - EffectID: 586
+      - EffectID: 362
+      - EffectID: 240
+  - AuraID: 1003
+    EffectList:
+      - EffectID: 418
+  - AuraID: 1004
+    EffectList:
+      - EffectID: 486
+  - AuraID: 1005
+    EffectList:
+      - EffectID: 485
+  - AuraID: 1006
+    EffectList:
+      - EffectID: 239
+  - AuraID: 1007
+    EffectList:
+      - EffectID: 240
+  - AuraID: 1008
+    EffectList:
+      - EffectID: 241
+  - AuraID: 1009
+    EffectList:
+      - EffectID: 620
+  - AuraID: 1010
+    EffectList:
+      - EffectID: 202
+  - AuraID: 1011
+    EffectList:
+      - EffectID: 362
+  - AuraID: 1012
+    EffectList:
+      - EffectID: 678
+  - AuraID: 1013
+    EffectList:
+      - EffectID: 679
+  - AuraID: 1014
+    EffectList:
+      - EffectID: 680
+  - AuraID: 1015
+    EffectList:
+      - EffectID: 239
+      - EffectID: 418
+  - AuraID: 1016
+    EffectList:
+      - EffectID: 239
+      - EffectID: 486
+  - AuraID: 1017
+    EffectList:
+      - EffectID: 239
+      - EffectID: 485
+  - AuraID: 1018
+    EffectList:
+      - EffectID: 240
+      - EffectID: 418
+  - AuraID: 1019
+    EffectList:
+      - EffectID: 240
+      - EffectID: 486
+  - AuraID: 1020
+    EffectList:
+      - EffectID: 240
+      - EffectID: 485
+  - AuraID: 1021
+    EffectList:
+      - EffectID: 241
+      - EffectID: 418
+  - AuraID: 1022
+    EffectList:
+      - EffectID: 241
+      - EffectID: 486
+  - AuraID: 1023
+    EffectList:
+      - EffectID: 241
+      - EffectID: 485
+  - AuraID: 1024
+    EffectList:
+      - EffectID: 620
+      - EffectID: 418
+  - AuraID: 1025
+    EffectList:
+      - EffectID: 620
+      - EffectID: 486
+  - AuraID: 1026
+    EffectList:
+      - EffectID: 620
+      - EffectID: 485
+  - AuraID: 1027
+    EffectList:
+      - EffectID: 239
+      - EffectID: 418
+      - EffectID: 202
+  - AuraID: 1028
+    EffectList:
+      - EffectID: 239
+      - EffectID: 486
+      - EffectID: 202
+  - AuraID: 1029
+    EffectList:
+      - EffectID: 239
+      - EffectID: 485
+      - EffectID: 202
+  - AuraID: 1030
+    EffectList:
+      - EffectID: 240
+      - EffectID: 418
+      - EffectID: 202
+  - AuraID: 1031
+    EffectList:
+      - EffectID: 240
+      - EffectID: 486
+      - EffectID: 202
+  - AuraID: 1032
+    EffectList:
+      - EffectID: 240
+      - EffectID: 485
+      - EffectID: 202
+  - AuraID: 1033
+    EffectList:
+      - EffectID: 241
+      - EffectID: 418
+      - EffectID: 202
+  - AuraID: 1034
+    EffectList:
+      - EffectID: 241
+      - EffectID: 486
+      - EffectID: 202
+  - AuraID: 1035
+    EffectList:
+      - EffectID: 241
+      - EffectID: 485
+      - EffectID: 202
+  - AuraID: 1036
+    EffectList:
+      - EffectID: 620
+      - EffectID: 418
+      - EffectID: 202
+  - AuraID: 1037
+    EffectList:
+      - EffectID: 620
+      - EffectID: 486
+      - EffectID: 202
+  - AuraID: 1038
+    EffectList:
+      - EffectID: 620
+      - EffectID: 485
+      - EffectID: 202
+  - AuraID: 1039
+    EffectList:
+      - EffectID: 239
+      - EffectID: 418
+      - EffectID: 362
+  - AuraID: 1040
+    EffectList:
+      - EffectID: 239
+      - EffectID: 486
+      - EffectID: 362
+  - AuraID: 1041
+    EffectList:
+      - EffectID: 239
+      - EffectID: 485
+      - EffectID: 362
+  - AuraID: 1042
+    EffectList:
+      - EffectID: 240
+      - EffectID: 418
+      - EffectID: 362
+  - AuraID: 1043
+    EffectList:
+      - EffectID: 240
+      - EffectID: 486
+      - EffectID: 362
+  - AuraID: 1044
+    EffectList:
+      - EffectID: 240
+      - EffectID: 485
+      - EffectID: 362
+  - AuraID: 1045
+    EffectList:
+      - EffectID: 241
+      - EffectID: 418
+      - EffectID: 362
+  - AuraID: 1046
+    EffectList:
+      - EffectID: 241
+      - EffectID: 486
+      - EffectID: 362
+  - AuraID: 1047
+    EffectList:
+      - EffectID: 241
+      - EffectID: 485
+      - EffectID: 362
+  - AuraID: 1048
+    EffectList:
+      - EffectID: 620
+      - EffectID: 418
+      - EffectID: 362
+  - AuraID: 1049
+    EffectList:
+      - EffectID: 620
+      - EffectID: 486
+      - EffectID: 362
+  - AuraID: 1050
+    EffectList:
+      - EffectID: 620
+      - EffectID: 485
+      - EffectID: 362
+  - AuraID: 1051
+    EffectList:
+      - EffectID: 239
+      - EffectID: 418
+      - EffectID: 678
+  - AuraID: 1052
+    EffectList:
+      - EffectID: 239
+      - EffectID: 486
+      - EffectID: 678
+  - AuraID: 1053
+    EffectList:
+      - EffectID: 239
+      - EffectID: 485
+      - EffectID: 678
+  - AuraID: 1054
+    EffectList:
+      - EffectID: 240
+      - EffectID: 418
+      - EffectID: 678
+  - AuraID: 1055
+    EffectList:
+      - EffectID: 240
+      - EffectID: 486
+      - EffectID: 678
+  - AuraID: 1056
+    EffectList:
+      - EffectID: 240
+      - EffectID: 485
+      - EffectID: 678
+  - AuraID: 1057
+    EffectList:
+      - EffectID: 241
+      - EffectID: 418
+      - EffectID: 678
+  - AuraID: 1058
+    EffectList:
+      - EffectID: 241
+      - EffectID: 486
+      - EffectID: 678
+  - AuraID: 1059
+    EffectList:
+      - EffectID: 241
+      - EffectID: 485
+      - EffectID: 678
+  - AuraID: 1060
+    EffectList:
+      - EffectID: 620
+      - EffectID: 418
+      - EffectID: 678
+  - AuraID: 1061
+    EffectList:
+      - EffectID: 620
+      - EffectID: 486
+      - EffectID: 678
+  - AuraID: 1062
+    EffectList:
+      - EffectID: 620
+      - EffectID: 485
+      - EffectID: 678
+  - AuraID: 1063
+    EffectList:
+      - EffectID: 680
+      - EffectID: 679
+      - EffectID: 678
+
+Footer:
+  Imports:
+  - Path: db/import/aura_db.yml

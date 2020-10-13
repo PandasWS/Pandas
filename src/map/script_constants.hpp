@@ -656,6 +656,10 @@
 	export_constant(MF_NOSKILL2);
 #endif // Pandas_MapFlag_NoSkill2
 
+#ifdef Pandas_MapFlag_NoAura
+	export_constant(MF_NOAURA);
+#endif // Pandas_MapFlag_NoAura
+
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
 	/* setcell types */
@@ -4679,6 +4683,16 @@
 	export_constant(UNPC_BODY2);
 	export_constant(UNPC_DEADSIT);
 	export_constant(UNPC_GROUP_ID);
+
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+	export_constant(UMOB_AURA);
+	export_constant(UHOM_AURA);
+	export_constant(UPET_AURA);
+	export_constant(UMER_AURA);
+	export_constant(UELE_AURA);
+	export_constant(UNPC_AURA);
+#endif // Pandas_Struct_Unit_CommonData_Aura
+
 
 	export_constant(NAV_NONE);
 	export_constant(NAV_AIRSHIP_ONLY);

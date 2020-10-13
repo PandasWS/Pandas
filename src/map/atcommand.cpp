@@ -59,6 +59,10 @@
 #include "mobdrop.hpp"
 #endif // Pandas_Database_MobItem_FixedRatio
 
+#ifdef Pandas_Aura_Mechanism
+#include "aura.hpp"
+#endif // Pandas_Aura_Mechanism
+
 #ifdef Pandas_Google_Breakpad
 // 此全局变量定义在 crashdump.cpp 文件中
 // 表示本次崩溃是由 @crashtest 刻意引发的, 上报转储文件时携带相关标记
@@ -4112,6 +4116,12 @@ ACMD_FUNC(reload) {
 		attendance_db.reload();
 		clif_displaymessage(fd, msg_txt(sd, 795)); // Attendance database has been reloaded.
 	}
+#ifdef Pandas_Aura_Mechanism
+	else if (strstr(command, "auradb") || strncmp(message, "auradb", 4) == 0) {
+		aura_reload();
+		clif_displaymessage(fd, msg_txt_cn(sd, 106)); // Aura database has been reloaded.
+	}
+#endif // Pandas_Aura_Mechanism
 
 	return 0;
 }
@@ -4408,6 +4418,10 @@ ACMD_FUNC(mapinfo) {
 		sprintf(atcmd_output, "%s NoSkill2: %d |", atcmd_output, map_getmapflag_param(m_id, MF_NOSKILL2, 0));
 	}
 #endif // Pandas_MapFlag_NoSkill2
+#ifdef Pandas_MapFlag_NoAura
+	if (map_getmapflag(m_id, MF_NOAURA))
+		strcat(atcmd_output, " NoAura |");
+#endif // Pandas_MapFlag_NoAura
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
@@ -10690,6 +10704,42 @@ ACMD_FUNC(afk) {
 }
 #endif // Pandas_AtCommand_AFK
 
+#ifdef Pandas_AtCommand_Aura
+/* ===========================================================
+ * 指令: aura
+ * 描述: 激活指定的光环组合
+ * 用法: @aura
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+ACMD_FUNC(aura) {
+	uint32 aura_id = 0;
+
+	if (!message || !*message || sscanf(message, "%11d", &aura_id) < 1) {
+		clif_displaymessage(fd, msg_txt_cn(sd, 101));	// 使用方法: @aura <光环编号, 若设为 0 则取消光环>
+		clif_displaymessage(fd, msg_txt_cn(sd, 102));	// 光环编号定义在 db/aura_db.yml 的光环组合数据库中, 更多信息请查看数据库顶部的注释.
+		return -1;
+	}
+
+	aura_id = max(aura_id, 0);
+
+	if (aura_id && !aura_search(aura_id)) {
+		clif_displaymessage(fd, msg_txt_cn(sd, 105));	// 很抱歉, 指定的光环编号无效, 请检查后重新输入.
+		return -1;
+	}
+
+	aura_make_effective(&sd->bl, aura_id);
+
+	if (aura_id != 0) {
+		clif_displaymessage(fd, msg_txt_cn(sd, 103));	// 已激活指定的光环效果.
+	}
+	else {
+		clif_displaymessage(fd, msg_txt_cn(sd, 104));	// 已关闭光环效果.
+	}
+
+	return 0;
+}
+#endif // Pandas_AtCommand_Aura
+
 // PYHELP - ATCMD - INSERT POINT - <Section 2>
 
 /**
@@ -10722,6 +10772,9 @@ void atcommand_basecommands(void) {
 #ifdef Pandas_AtCommand_AFK
 		ACMD_DEF(afk),					// 使角色进入离开模式 [Sola丶小克]
 #endif // Pandas_AtCommand_AFK
+#ifdef Pandas_AtCommand_Aura
+		ACMD_DEF(aura),					// 激活指定的光环组合 [Sola丶小克]
+#endif // Pandas_AtCommand_Aura
 		// PYHELP - ATCMD - INSERT POINT - <Section 3>
 
 #include "../custom/atcommand_def.inc"
@@ -10832,6 +10885,9 @@ void atcommand_basecommands(void) {
 		ACMD_DEF2("reloadinstancedb", reload),
 		ACMD_DEF2("reloadachievementdb",reload),
 		ACMD_DEF2("reloadattendancedb",reload),
+#ifdef Pandas_Aura_Mechanism
+		ACMD_DEF2("reloadauradb",reload),
+#endif // Pandas_Aura_Mechanism
 		ACMD_DEF(partysharelvl),
 		ACMD_DEF(mapinfo),
 		ACMD_DEF(dye),

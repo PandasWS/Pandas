@@ -72,6 +72,10 @@
 #include "quest.hpp"
 #include "storage.hpp"
 
+#ifdef Pandas_Aura_Mechanism
+#include "aura.hpp"
+#endif // Pandas_Aura_Mechanism
+
 using namespace rathena;
 
 const int64 SCRIPT_INT_MIN = INT64_MIN;
@@ -18306,6 +18310,9 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UMOB_ROBE, md->vd->robe);
 			getunitdata_sub(UMOB_BODY2, md->vd->body_style);
 			getunitdata_sub(UMOB_GROUP_ID, md->ud.group_id);
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			getunitdata_sub(UMOB_AURA, md->ucd.aura.id);
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			break;
 
 		case BL_HOM:
@@ -18354,6 +18361,9 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UHOM_DMOTION, hd->battle_status.dmotion);
 			getunitdata_sub(UHOM_TARGETID, hd->ud.target);
 			getunitdata_sub(UHOM_GROUP_ID, hd->ud.group_id);
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			getunitdata_sub(UHOM_AURA, hd->ucd.aura.id);
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			break;
 
 		case BL_PET:
@@ -18399,6 +18409,9 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UPET_ADELAY, pd->status.adelay);
 			getunitdata_sub(UPET_DMOTION, pd->status.dmotion);
 			getunitdata_sub(UPET_GROUP_ID, pd->ud.group_id);
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			getunitdata_sub(UPET_AURA, pd->ucd.aura.id);
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			break;
 
 		case BL_MER:
@@ -18444,6 +18457,9 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UMER_DMOTION, mc->base_status.dmotion);
 			getunitdata_sub(UMER_TARGETID, mc->ud.target);
 			getunitdata_sub(UMER_GROUP_ID, mc->ud.group_id);
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			getunitdata_sub(UMER_AURA, mc->ucd.aura.id);
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			break;
 
 		case BL_ELEM:
@@ -18491,6 +18507,9 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UELE_DMOTION, ed->base_status.dmotion);
 			getunitdata_sub(UELE_TARGETID, ed->ud.target);
 			getunitdata_sub(UELE_GROUP_ID, ed->ud.group_id);
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			getunitdata_sub(UELE_AURA, ed->ucd.aura.id);
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			break;
 
 		case BL_NPC:
@@ -18544,6 +18563,9 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UNPC_BODY2, nd->vd.body_style);
 			getunitdata_sub(UNPC_DEADSIT, nd->vd.dead_sit);
 			getunitdata_sub(UNPC_GROUP_ID, nd->ud.group_id);
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			getunitdata_sub(UNPC_AURA, nd->ucd.aura.id);
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			break;
 
 		default:
@@ -18706,6 +18728,9 @@ BUILDIN_FUNC(setunitdata)
 			case UMOB_ROBE: clif_changelook(bl, LOOK_ROBE, (unsigned short)value); break;
 			case UMOB_BODY2: clif_changelook(bl, LOOK_BODY2, (unsigned short)value); break;
 			case UMOB_GROUP_ID: md->ud.group_id = value; unit_refresh(bl); break;
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			case UMOB_AURA: aura_make_effective(bl, value); break;
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			default:
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_MOB.\n", type);
 				return SCRIPT_CMD_FAILURE;
@@ -18769,6 +18794,9 @@ BUILDIN_FUNC(setunitdata)
 				break;
 			}
 			case UHOM_GROUP_ID: hd->ud.group_id = value; unit_refresh(bl); break;
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			case UHOM_AURA: aura_make_effective(bl, value); break;
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			default:
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_HOM.\n", type);
 				return SCRIPT_CMD_FAILURE;
@@ -18821,6 +18849,9 @@ BUILDIN_FUNC(setunitdata)
 			case UPET_ADELAY: pd->status.adelay = (short)value; break;
 			case UPET_DMOTION: pd->status.dmotion = (short)value; break;
 			case UPET_GROUP_ID: pd->ud.group_id = value; unit_refresh(bl); break;
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			case UPET_AURA: aura_make_effective(bl, value); break;
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			default:
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_PET.\n", type);
 				return SCRIPT_CMD_FAILURE;
@@ -18879,6 +18910,9 @@ BUILDIN_FUNC(setunitdata)
 				break;
 			}
 			case UMER_GROUP_ID: mc->ud.group_id = value; unit_refresh(bl); break;
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			case UMER_AURA: aura_make_effective(bl, value); break;
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			default:
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_MER.\n", type);
 				return SCRIPT_CMD_FAILURE;
@@ -18942,6 +18976,9 @@ BUILDIN_FUNC(setunitdata)
 				break;
 			}
 			case UELE_GROUP_ID: ed->ud.group_id = value; unit_refresh(bl); break;
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			case UELE_AURA: aura_make_effective(bl, value); break;
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			default:
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_ELEM.\n", type);
 				return SCRIPT_CMD_FAILURE;
@@ -19001,6 +19038,9 @@ BUILDIN_FUNC(setunitdata)
 			case UNPC_BODY2: clif_changelook(bl, LOOK_BODY2, (unsigned short)value); break;
 			case UNPC_DEADSIT: nd->vd.dead_sit = (char)value; unit_refresh(bl); break;
 			case UNPC_GROUP_ID: nd->ud.group_id = value; unit_refresh(bl); break;
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+			case UNPC_AURA: aura_make_effective(bl, value); break;
+#endif // Pandas_Struct_Unit_CommonData_Aura
 			default:
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_NPC.\n", type);
 				return SCRIPT_CMD_FAILURE;
@@ -26419,7 +26459,7 @@ BUILDIN_FUNC(script4each) {
 	int pos = 0;
 	bool script_needfree = false;
 
-#if !defined(Pandas_NpcHelper_CommonFunc) || !defined(Pandas_Redeclaration_Struct_Event_Data)
+#if !defined(Pandas_Helper_Common_Function) || !defined(Pandas_Redeclaration_Struct_Event_Data)
 	ShowWarning("This version is not support 'NPCNAME::EVENT' script in '%s' command.\n", cmdname);
 #else
 	struct event_data* ev = npc_event_data(execute_script);
@@ -26431,7 +26471,7 @@ BUILDIN_FUNC(script4each) {
 		script = parse_script(execute_script, cmdname, 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 		script_needfree = (script != nullptr);
 	}
-#endif // !defined(Pandas_NpcHelper_CommonFunc) || !defined(Pandas_Redeclaration_Struct_Event_Data)
+#endif // !defined(Pandas_Helper_Common_Function) || !defined(Pandas_Redeclaration_Struct_Event_Data)
 
 	struct s_mapiterator *iter = nullptr;
 	struct block_list* bl = nullptr;
@@ -28054,6 +28094,77 @@ BUILDIN_FUNC(preg_search) {
 }
 #endif // Pandas_ScriptCommand_Preg_Search
 
+#ifdef Pandas_ScriptCommand_Aura
+/* ===========================================================
+ * 指令: aura
+ * 描述: 激活指定的光环组合
+ * 用法: aura <光环编号>{,<角色编号>};
+ * 返回: 成功返回 1 失败返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(aura) {
+	uint32 aura_id = script_getnum(st, 2);
+	struct map_session_data* sd = nullptr;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	aura_id = max(aura_id, 0);
+
+	if (aura_id && !aura_search(aura_id)) {
+		ShowError("buildin_aura: The specified aura id '%d' is invalid.\n", aura_id);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	aura_make_effective(&sd->bl, aura_id);
+
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Aura
+
+#ifdef Pandas_ScriptCommand_UnitAura
+/* ===========================================================
+ * 指令: unitaura
+ * 描述: 用于调整七种单位的光环组合 (但仅 BL_PC 会被持久化)
+ * 用法: unitaura <单位编号>,<光环编号>;
+ * 返回: 成功返回 1 失败返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(unitaura) {
+	uint32 aura_id = script_getnum(st, 3);
+	struct s_unit_common_data* ucd = nullptr;
+	struct block_list* bl = nullptr;
+
+	if (!script_rid2bl(2, bl)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	ucd = status_get_ucd(bl);
+	if (!ucd) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	aura_id = max(aura_id, 0);
+
+	if (aura_id && !aura_search(aura_id)) {
+		ShowError("buildin_unitaura: The specified aura id '%d' is invalid.\n", aura_id);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	aura_make_effective(bl, aura_id);
+
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_UnitAura
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -28222,6 +28333,12 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_Preg_Search
 	BUILDIN_DEF(preg_search,"ssir"),					// 使用正则表达式搜索并返回首个匹配的分组内容 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Preg_Search
+#ifdef Pandas_ScriptCommand_Aura
+	BUILDIN_DEF(aura,"i?"),								// 激活指定的光环组合 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Aura
+#ifdef Pandas_ScriptCommand_UnitAura
+	BUILDIN_DEF(unitaura,"ii"),							// 用于调整七种单位的光环组合 [Sola丶小克]
+#endif // Pandas_ScriptCommand_UnitAura
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

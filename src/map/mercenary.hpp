@@ -57,6 +57,10 @@ struct mercenary_data {
 	int contract_timer;
 
 	unsigned devotion_flag : 1;
+
+#ifdef Pandas_Struct_Unit_CommonData
+	struct s_unit_common_data ucd;
+#endif // Pandas_Struct_Unit_CommonData
 };
 
 struct s_mercenary_db *mercenary_db(uint16 class_);

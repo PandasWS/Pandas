@@ -129,7 +129,7 @@ struct script_event_s{
 // Holds pointers to the commonly executed scripts for speedup. [Skotlex]
 std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
 
-#ifdef Pandas_NpcHelper_CommonFunc
+#ifdef Pandas_Helper_Common_Function
 //************************************
 // Method:      npc_event_data
 // Description: 获取一个<NPC名称::事件名称>格式的事件的脚本数据
@@ -166,7 +166,7 @@ bool npc_event_exists(struct npc_data *nd, const char* eventname) {
 	struct event_data* ev = (struct event_data*)strdb_get(ev_db, name);
 	return !(ev == NULL);
 }
-#endif // Pandas_NpcHelper_CommonFunc
+#endif // Pandas_Helper_Common_Function
 
 /**
  * Returns the viewdata for normal NPC classes.

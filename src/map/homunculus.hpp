@@ -67,6 +67,10 @@ struct homun_data {
 	int hungry_timer;	//[orn]
 	unsigned int exp_next;
 	std::vector<uint16> blockskill;	// [orn]
+
+#ifdef Pandas_Struct_Unit_CommonData
+	struct s_unit_common_data ucd;
+#endif // Pandas_Struct_Unit_CommonData
 };
 
 #define MAX_HOM_SKILL_REQUIRE 5
