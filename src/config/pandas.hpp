@@ -77,6 +77,9 @@
 
 	// 是否启用 LGTM 建议的一些处理措施, 避免潜在风险
 	#define Pandas_LGTM_Optimization
+
+	// 将可能会导致计算时溢出的变量类型进行提升
+	#define Pandas_Variable_Type_Promotion
 #endif // Pandas_Basic
 
 // ============================================================================

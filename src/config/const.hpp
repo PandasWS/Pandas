@@ -6,6 +6,16 @@
 
 #include "../common/cbasetypes.hpp"
 
+#ifdef Pandas_Variable_Type_Promotion
+	// pvtp 前缀的全称是:
+	// Pandas Variable Type Promotion
+	typedef int pvtp_short;
+	typedef int pvtp_ushort;
+#else
+	typedef short pvtp_short;
+	typedef unsigned short pvtp_ushort;
+#endif // Pandas_Variable_Type_Promotion
+
 /**
  * rAthena configuration file (http://rathena.org)
  * For detailed guidance on these check http://rathena.org/wiki/SRC/config/
