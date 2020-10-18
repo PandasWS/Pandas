@@ -284,11 +284,11 @@ def main():
     主入口函数
     '''
     # 加载 .env 中的配置信息
-    load_dotenv(dotenv_path='pyhelp.conf', encoding='UTF-8-SIG')
+    load_dotenv(dotenv_path='.config.env', encoding='UTF-8')
     
     # 若无配置信息则自动复制一份文件出来
-    if not Common.is_file_exists('pyhelp.conf'):
-        shutil.copyfile('pyhelp.conf.sample', 'pyhelp.conf')
+    if not Common.is_file_exists('.config.env'):
+        shutil.copyfile('.config.env.sample', '.config.env')
     
     # 显示欢迎信息
     Common.welcome('编译流程辅助脚本')

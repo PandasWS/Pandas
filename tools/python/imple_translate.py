@@ -354,7 +354,7 @@ class TranslateDatabase():
         self.__loaded = False
         self.__translateDict = {}
         self.__lang = lang
-        self.__filename = os.path.abspath('./database/%s/%s.txt' % (lang, name))
+        self.__filename = os.path.abspath('./db/%s/%s.txt' % (lang, name))
         self.__load(self.__filename)
     
     def __encoding_check(self, text, encoding, line):

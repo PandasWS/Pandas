@@ -43,15 +43,15 @@
 
 下载完成安装程序后, 直接运行启动它, 在第一个界面中按以下说明进行安装:
 
-![第一步](./documentations/images/python_installer/1.png)
+![第一步](./doc/images/python_installer/1.png)
 
 若您是第一次安装, 那么安装完成到末尾会有一个选项, 需要您启用它:
 
-![第二步](./documentations/images/python_installer/2.png)
+![第二步](./doc/images/python_installer/2.png)
 
 最终如果你看到如下图的选项, 那么就说明安装过程已经成功结束了:
 
-![第三步](./documentations/images/python_installer/3.png)
+![第三步](./doc/images/python_installer/3.png)
 
 第三步: 确认 Python 能正常工作
 --------------------------------------------
