@@ -8,20 +8,20 @@
 脚本功能简介
 --------------------------------------------
 
-- 使用 `pyhelp_atcmd.py` 可以轻松的创建一个新的管理员指令
-- 使用 `pyhelp_scriptcmd.py` 可以轻松的创建一个新的脚本指令
-- 使用 `pyhelp_battlecfg.py` 可以轻松的创建一个新的战斗配置选项
-- 使用 `pyhelp_mapflag.py` 可以轻松的创建一个新的地图标记
-- 使用 `pyhelp_npcevent.py` 可以轻松的创建一个新的 NPC 事件
+- 使用 `create_atcmd.py` 可以轻松的创建一个新的管理员指令
+- 使用 `create_scriptcmd.py` 可以轻松的创建一个新的脚本指令
+- 使用 `create_battlecfg.py` 可以轻松的创建一个新的战斗配置选项
+- 使用 `create_mapflag.py` 可以轻松的创建一个新的地图标记
+- 使用 `create_npcevent.py` 可以轻松的创建一个新的 NPC 事件
 
-- 使用 `pyhelp_src2utf8.py` 可以将 src 中的代码全部转换成 UTF8 编码
-- 使用 `pyhelp_versions.py` 可以用来快速调整多个工程的版本号
-- 使用 `pyhelp_translate.py` 可以根据对照表快速翻译部分 DB 信息
-- 使用 `pyhelp_extracter.py` 可以提取源码中的字符来构建翻译数据库
+- 使用 `imple_src2utf8.py` 可以将 src 中的代码全部转换成 UTF8 编码
+- 使用 `imple_versions.py` 可以用来快速调整多个工程的版本号
+- 使用 `imple_translate.py` 可以根据对照表快速翻译部分 DB 信息
+- 使用 `imple_extracter.py` 可以提取源码中的字符来构建翻译数据库
 
-- 使用 `pyhelp_compile.py` 可以执行发布新版本之前的编译工作
-- 使用 `pyhelp_symstore.py` 可以将 `pyhelp_compile.py` 生成的符号文件归档
-- 使用 `pyhelp_publish.py` 可以构建发布新版本使用的压缩包 (包括自动汉化)
+- 使用 `dawn_compile.py` 可以执行发布新版本之前的编译工作
+- 使用 `dawn_symstore.py` 可以将 `dawn_compile.py` 生成的符号文件归档
+- 使用 `dawn_publish.py` 可以构建发布新版本使用的压缩包 (包括自动汉化)
 
 
 可预见的未来我们还会陆续的添加各种不同的半自动辅助脚本,
@@ -122,7 +122,7 @@ pipenv install
 然后使用以下指令来运行辅助脚本:
 
 ```
-pipenv run pyhelp_src2utf8.py
+pipenv run imple_src2utf8.py
 ```
 
 如果你可能需要运行一系列脚本, 且讨厌每次都加 `pipenv run` 前缀的话, 
@@ -132,10 +132,10 @@ pipenv run pyhelp_src2utf8.py
 ```
 pipenv shell
 
-pyhelp_src2utf8.py
-pyhelp_compile.py
-pyhelp_symstore.py
-pyhelp_publish.py
+imple_src2utf8.py
+dawn_compile.py
+dawn_symstore.py
+dawn_publish.py
 ...
 ```
 
