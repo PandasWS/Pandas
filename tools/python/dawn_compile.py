@@ -15,6 +15,8 @@
 
 # -*- coding: utf-8 -*-
 
+import environment
+
 import os
 import platform
 import re

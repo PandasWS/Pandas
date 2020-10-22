@@ -23,6 +23,8 @@ script.cpp @ BUILDIN_DEF 脚本指令导出
 
 # -*- coding: utf-8 -*-
 
+import environment
+
 import os
 from enum import IntEnum
 

@@ -14,6 +14,8 @@
 
 # -*- coding: utf-8 -*-
 
+import environment
+
 import glob
 import os
 import re

@@ -14,6 +14,8 @@
 
 # -*- coding: utf-8 -*-
 
+import environment
+
 import os
 import git
 import zipfile

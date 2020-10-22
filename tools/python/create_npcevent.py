@@ -75,6 +75,8 @@ npc.cpp 中 Express 类型的 NPCX_XXX 常量设置
 
 # -*- coding: utf-8 -*-
 
+import environment
+
 import os
 from enum import IntEnum
 

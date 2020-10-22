@@ -14,7 +14,10 @@
 
 # -*- coding: utf-8 -*-
 
-import os, re
+import environment
+
+import os
+import re
 
 from libs import Common, Inputer, Message
 

@@ -23,6 +23,8 @@ atcommand.cpp @ ACMD_DEF 指令导出
 
 # -*- coding: utf-8 -*-
 
+import environment
+
 import os
 from enum import IntEnum
 
