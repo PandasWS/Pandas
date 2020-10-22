@@ -22,7 +22,7 @@ def pipenv_ready():
     return True
 
 def pipenv_install():
-    call('pip install pipenv', cwd=__current_path__, shell=True)
+    call('pip install pipenv --index-url https://mirrors.aliyun.com/pypi/simple/', cwd=__current_path__, shell=True)
 
 def pipenv_cfg_exist():
     return os.path.exists(__current_path__ + 'Pipfile') and os.path.exists(__current_path__ + 'Pipfile.lock')
