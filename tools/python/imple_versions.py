@@ -14,7 +14,11 @@
 
 # -*- coding: utf-8 -*-
 
-import os, re
+import environment
+environment.initialize()
+
+import os
+import re
 
 from libs import Common, Inputer, Message
 

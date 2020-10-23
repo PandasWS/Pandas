@@ -12,6 +12,9 @@
 //============================================================
 '''
 
+import environment
+environment.initialize()
+
 import csv
 import glob
 import os

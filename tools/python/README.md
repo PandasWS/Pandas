@@ -8,20 +8,20 @@
 脚本功能简介
 --------------------------------------------
 
-- 使用 `pyhelp_atcmd.py` 可以轻松的创建一个新的管理员指令
-- 使用 `pyhelp_scriptcmd.py` 可以轻松的创建一个新的脚本指令
-- 使用 `pyhelp_battlecfg.py` 可以轻松的创建一个新的战斗配置选项
-- 使用 `pyhelp_mapflag.py` 可以轻松的创建一个新的地图标记
-- 使用 `pyhelp_npcevent.py` 可以轻松的创建一个新的 NPC 事件
+- 使用 `create_atcmd.py` 可以轻松的创建一个新的管理员指令
+- 使用 `create_scriptcmd.py` 可以轻松的创建一个新的脚本指令
+- 使用 `create_battlecfg.py` 可以轻松的创建一个新的战斗配置选项
+- 使用 `create_mapflag.py` 可以轻松的创建一个新的地图标记
+- 使用 `create_npcevent.py` 可以轻松的创建一个新的 NPC 事件
 
-- 使用 `pyhelp_src2utf8.py` 可以将 src 中的代码全部转换成 UTF8 编码
-- 使用 `pyhelp_versions.py` 可以用来快速调整多个工程的版本号
-- 使用 `pyhelp_translate.py` 可以根据对照表快速翻译部分 DB 信息
-- 使用 `pyhelp_extracter.py` 可以提取源码中的字符来构建翻译数据库
+- 使用 `imple_src2utf8.py` 可以将 src 中的代码全部转换成 UTF8 编码
+- 使用 `imple_versions.py` 可以用来快速调整多个工程的版本号
+- 使用 `imple_translate.py` 可以根据对照表快速翻译部分 DB 信息
+- 使用 `imple_extracter.py` 可以提取源码中的字符来构建翻译数据库
 
-- 使用 `pyhelp_compile.py` 可以执行发布新版本之前的编译工作
-- 使用 `pyhelp_symstore.py` 可以将 `pyhelp_compile.py` 生成的符号文件归档
-- 使用 `pyhelp_publish.py` 可以构建发布新版本使用的压缩包 (包括自动汉化)
+- 使用 `dawn_compile.py` 可以执行发布新版本之前的编译工作
+- 使用 `dawn_symstore.py` 可以将 `dawn_compile.py` 生成的符号文件归档
+- 使用 `dawn_publish.py` 可以构建发布新版本使用的压缩包 (包括自动汉化)
 
 
 可预见的未来我们还会陆续的添加各种不同的半自动辅助脚本,
@@ -43,15 +43,15 @@
 
 下载完成安装程序后, 直接运行启动它, 在第一个界面中按以下说明进行安装:
 
-![第一步](./documentations/images/python_installer/1.png)
+![第一步](./doc/images/python_installer/1.png)
 
 若您是第一次安装, 那么安装完成到末尾会有一个选项, 需要您启用它:
 
-![第二步](./documentations/images/python_installer/2.png)
+![第二步](./doc/images/python_installer/2.png)
 
 最终如果你看到如下图的选项, 那么就说明安装过程已经成功结束了:
 
-![第三步](./documentations/images/python_installer/3.png)
+![第三步](./doc/images/python_installer/3.png)
 
 第三步: 确认 Python 能正常工作
 --------------------------------------------
@@ -84,81 +84,33 @@ C:\Users\Sean>pip --version
 pip 19.1.1 from c:\users\sean\appdata\local\programs\python\python37\lib\site-packages\pip (python 3.7)
 ```
 
-第四步: 安装 pipenv 虚拟环境管理工具
---------------------------------------------
-
-请用在你的 `终端` 或者 `cmd` 中使用 cd 指令切换到 `tools\python` 目录中去,
-
-然后使用以下指令来安装 pipenv 虚拟环境管理工具:
-
-```
-pip install pipenv
-```
-
-> 在这一步中如果执行速度太慢的话, 可以把你的 pip 设置为从`阿里云`镜像来下载各种库文件, 这样速度会有大幅提升: https://www.jianshu.com/p/e2dd167d2892 (请参考其中的"永久修改"章节, 后面的 "命令行操作" 章节不用看)
-
-第五步: 创建 pipenv 虚拟环境
---------------------------------------------
-
-请用在你的 `终端` 或者 `cmd` 中使用 cd 指令切换到 `tools\python` 目录中去,
-
-然后使用以下指令来让 pipenv 自动根据 Pipfile 中的配置来创建虚拟环境:
-
-```
-pipenv install
-```
-
-执行的过程中, 程序会自己下载全部需要的依赖, 请保持网络畅通并耐心等待.
-
-第六步: 试试执行某个辅助脚本
+第四步: 试试执行某个脚本
 --------------------------------------------
 
 当上述步骤全部准备完毕之后, 就可以运行我们的辅助脚本了.
 
-遗憾的是, 在 Windows 操作系统中你并不能再直接双击 py 文件来启动对应的脚本了, 而是需要使用命令行来启动他们.
+### Windows
 
-请用在你的 `终端` 或者 `cmd` 中使用 cd 指令切换到 `tools\python` 目录中去, 
+直接双击 `tools\python` 目录中某一个你感兴趣的脚本文件 (例如: `imple_versions.py`), 第一次程序会自动安装必要的依赖, 它会自动检查并安装 `pipenv` 且会自动运行 `pipenv install` 来安装或更新虚拟环境:
 
-然后使用以下指令来运行辅助脚本:
+![自动安装依赖](./doc/images/python_screeshot/1.png)
 
-```
-pipenv run pyhelp_src2utf8.py
-```
+若有卡顿请稍作等待, 如果程序执行一切顺利, 你就会看到红色的 Pandas 脚本欢迎界面:
 
-如果你可能需要运行一系列脚本, 且讨厌每次都加 `pipenv run` 前缀的话, 
+![成功启动脚本](./doc/images/python_screeshot/2.png)
 
-可以使用 `pipenv shell` 进入虚拟环境的控制台中, 在里面执行的全部 python 脚本都是我们专属的虚拟环境:
+关于依赖更新: 程序已经处理好了一切, 现在你什么都不用管, 该更新的时候程序会自动更新.
 
-```
-pipenv shell
+### Linux
 
-pyhelp_src2utf8.py
-pyhelp_compile.py
-pyhelp_symstore.py
-pyhelp_publish.py
-...
-```
+如果您使用 Linux 系统, 那么我们相信您应该有非常丰富的计算机知识.
 
-关于未来更新
---------------------------------------------
+1. 请使用 `pip install pipenv` 安装 `pipenv`
+2. 使用 `cd` 指令切换到 `tools\python` 目录
+3. 执行 `pipenv install` 完成虚拟环境的初始化工作
 
-如果你某天执行一个辅助脚本时提示有模块没找到, 
+以后若需要运行辅助脚本, 则在 `tools\python` 目录下使用 `pipenv shell` 进入虚拟环境的 Shell 并使用 `python imple_versions.py` 这样的方式来运行脚本即可.
 
-请用在你的 `终端` 或者 `cmd` 中使用 cd 指令切换到 `tools\python` 目录中去, 
+如果您喜欢, 也可以直接使用 `pipenv run imple_versions.py` 来运行脚本. 更多关于 `pipenv` 的使用方法可以查阅官方文档.
 
-然后再次执行 `pipenv install` 即可.
-
-通常每当我们新开发一个辅助脚本, 就会在 Pipfile 中添加对应的依赖. 
-
-执行 `pipenv install` 就会根据 Pipfile 中的信息重新构建虚拟环境, 缺少的模块也会被自动安装.
-
-在 Windows 环境下的小技巧
---------------------------------------------
-
-如果你觉得每次打开 `cmd` 然后切换到 `tools\python` 目录非常麻烦, 
-
-那么可以试试直接在我的电脑中进入 `tools\python` 目录, 然后在地址栏中直接输入 `cmd` 直接回车. 
-
-系统会启动一个普通权限的 `cmd` 并自动切换到 `tools\python` 目录, 
-
-这样就不用每次手动使用 `cd` 指令来进行切换了.
+关于依赖更新: 若你发现缺少某些库文件或者看到 `Pipfile.lock` 文件有了更新, 可以在 `tools\python` 目录下使用 `pipenv sync` 或者 `pipenv install` 来更新依赖.

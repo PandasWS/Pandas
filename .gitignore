@@ -145,8 +145,8 @@ My Inspector Results*
 
 # Python
 __pycache__
+/tools/python/*.env
 /tools/python/cache
-/tools/python/pyhelp.conf
 
 # Boost C++ Libraries
 3rdparty/boost/bin.v2

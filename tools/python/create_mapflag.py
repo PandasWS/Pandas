@@ -44,6 +44,9 @@ script.cpp @ getmapflag 可选的脚本读取标记参数处理代码 - no use n
 
 # -*- coding: utf-8 -*-
 
+import environment
+environment.initialize()
+
 import os
 from enum import IntEnum
 
