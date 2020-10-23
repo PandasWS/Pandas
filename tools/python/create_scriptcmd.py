@@ -1,27 +1,30 @@
 '''
 //===== Pandas Python Script =================================
-//= 管理员指令添加助手
+//= 脚本指令添加助手
 //===== By: ================================================== 
 //= Sola丶小克
 //===== Current Version: ===================================== 
 //= 1.0
 //===== Description: ========================================= 
-//= 此脚本用于快速建立一个新的管理员指令 (At Command)
+//= 此脚本用于快速建立一个新的脚本指令(Script Command)
 //===== Additional Comments: ================================= 
 //= 1.0 首个版本. [Sola丶小克]
 //============================================================
 
-// PYHELP - ATCMD - INSERT POINT - <Section 1>
+// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 pandas.hpp @ 宏定义
 
-// PYHELP - ATCMD - INSERT POINT - <Section 2>
-atcommand.cpp @ ACMD_FUNC 指令实际代码
+// PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
+script.cpp @ BUILDIN_FUNC 脚本指令实际代码
 
-// PYHELP - ATCMD - INSERT POINT - <Section 3>
-atcommand.cpp @ ACMD_DEF 指令导出
+// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
+script.cpp @ BUILDIN_DEF 脚本指令导出
 '''
 
 # -*- coding: utf-8 -*-
+
+import environment
+environment.initialize()
 
 import os
 from enum import IntEnum
@@ -30,47 +33,53 @@ from libs import Common, Injecter, Inputer, Message
 
 class InjectPoint(IntEnum):
     PANDAS_SWITCH_DEFINE = 1
-    ATCMD_FUNC = 2
-    ATCMD_DEF = 3
+    SCRIPT_BUILDIN_FUNC = 2
+    SCRIPT_BUILDIN_DEF = 3
 
-def insert_atcmd(inject, options):
+def insert_scriptcmd(inject, options):
     define = options['define']
     funcname = options['funcname']
     cmdname = options['cmdname']
+    argsmode = options['argsmode']
     
     # pandas.hpp @ 宏定义
     inject.insert(InjectPoint.PANDAS_SWITCH_DEFINE, [
         '',
-        '\t// 是否启用 %s 管理员指令 [维护者昵称]' % cmdname,
-        '\t// TODO: 请在此填写此管理员指令的说明',
+        '\t// 是否启用 %s 脚本指令 [维护者昵称]' % cmdname,
+        '\t// TODO: 请在此填写此脚本指令的说明',
         '\t#define %s' % define
     ])
     
-    # atcommand.cpp @ ACMD_FUNC 指令实际代码
-    inject.insert(InjectPoint.ATCMD_FUNC, [
+    usage = ' * 用法: %s;' % cmdname
+    if argsmode != '':
+        usage = ' * 用法: %s <请补充完整参数说明>;' % cmdname
+    
+    # script.cpp @ BUILDIN_FUNC 脚本指令实际代码
+    inject.insert(InjectPoint.SCRIPT_BUILDIN_FUNC, [
         '#ifdef %s' % define,
         '/* ===========================================================',
         ' * 指令: %s' % cmdname,
         ' * 描述: 请在此补充该脚本指令的说明',
-        ' * 用法: @%s' % cmdname,
+        usage,
+        ' * 返回: 请说明返回值',
         ' * 作者: 维护者昵称',
         ' * -----------------------------------------------------------*/',
-        'ACMD_FUNC(%s) {' % funcname,
-        '\t// TODO: 请在此填写管理员指令的实现代码',
-        '\treturn 0;',
+        'BUILDIN_FUNC(%s) {' % funcname,
+        '\t// TODO: 请在此填写脚本指令的实现代码',
+        '\treturn SCRIPT_CMD_SUCCESS;',
         '}',
         '#endif // %s' % define,
         ''
     ])
     
-    # atcommand.cpp @ ACMD_DEF 指令导出
+    # script.cpp @ BUILDIN_DEF 脚本指令导出
     
     if funcname == cmdname:
-        defcontent = '\t\tACMD_DEF(%s),\t\t\t// 在此写上管理员指令说明 [维护者昵称]' % (funcname)
+        defcontent = '\tBUILDIN_DEF(%s,"%s"),\t\t\t\t\t\t// 在此写上脚本指令说明 [维护者昵称]' % (funcname, argsmode)
     else:
-        defcontent = '\t\tACMD_DEF2(%s,"%s"),\t\t\t// 在此写上管理员指令说明 [维护者昵称]' % (cmdname, funcname)
+        defcontent = '\tBUILDIN_DEF2(%s,"%s","%s"),\t\t\t\t\t\t// 在此写上脚本指令说明 [维护者昵称]' % (funcname, cmdname, argsmode)
     
-    inject.insert(InjectPoint.ATCMD_DEF, [
+    inject.insert(InjectPoint.SCRIPT_BUILDIN_DEF, [
         '#ifdef %s' % define,
         defcontent,
         '#endif // %s' % define
@@ -79,21 +88,21 @@ def insert_atcmd(inject, options):
 def guide(inject):
 
     define = Inputer().requireText({
-        'tips' : '请输入该管理员指令的宏定义开关名称 (Pandas_AtCommand_的末尾部分)',
-        'prefix' : 'Pandas_AtCommand_'
+        'tips' : '请输入该脚本指令的宏定义开关名称 (Pandas_ScriptCommand_的末尾部分)',
+        'prefix' : 'Pandas_ScriptCommand_'
     })
     
     # --------
 
     funcname = Inputer().requireText({
-        'tips' : '请输入该管理员指令的处理函数名称 (ACMD_FUNC 部分的函数名)',
+        'tips' : '请输入该脚本指令的处理函数名称 (BUILDIN_FUNC 部分的函数名)',
         'lower': True
     })
     
     # --------
     
     samefunc = Inputer().requireBool({
-        'tips' : '管理员指令是否与处理函数名称一致 (%s)?' % funcname,
+        'tips' : '脚本指令是否与处理函数名称一致 (%s)?' % funcname,
         'default' : True
     })
     
@@ -102,9 +111,17 @@ def guide(inject):
     cmdname = funcname
     if not samefunc:
         cmdname = Inputer().requireText({
-            'tips' : '请输入该管理员指令的名称 (ACMD_DEF2 使用)',
+            'tips' : '请输入该脚本指令的名称 (BUILDIN_DEF2 使用)',
             'lower' : True
         })
+    
+    # --------
+    
+    argsmode = Inputer().requireText({
+        'tips' : r'请输入该脚本指令的参数模式 (如一个或多个的: i\s\? 为空则直接回车)',
+        'lower' : True,
+        'allow_empty' : True
+    })
     
     # --------
     
@@ -112,8 +129,9 @@ def guide(inject):
     Message.ShowInfo('请确认建立的信息, 确认后将开始修改代码.')
     print('-' * 70)
     Message.ShowInfo('开关名称 : %s' % define)
-    Message.ShowInfo('管理员指令处理函数名称 : %s' % funcname)
-    Message.ShowInfo('管理员指令名称 : %s' % cmdname)
+    Message.ShowInfo('脚本处理函数名称 : %s' % funcname)
+    Message.ShowInfo('脚本指令名称 : %s' % cmdname)
+    Message.ShowInfo('脚本指令的参数模式 : %s' % argsmode)
     print('-' * 70)
     print('\n')
 
@@ -128,33 +146,34 @@ def guide(inject):
 
     # --------
 
-    Message.ShowStatus('开始将管理员指令信息写入到源代码...')
+    Message.ShowStatus('开始将脚本指令信息写入到源代码...')
     
     options = {
         'define' : define,
         'funcname' : funcname,
-        'cmdname' : cmdname
+        'cmdname' : cmdname,
+        'argsmode' : argsmode
     }
     
-    insert_atcmd(inject, options)
+    insert_scriptcmd(inject, options)
     
     Message.ShowStatus('已经成功写入到源代码, 请检查并完善必要的注释.')
     print('')
     print('=' * 70)
     print('')
-    print('感谢您的使用, 管理员指令添加助手已经执行完毕'.center(48))
+    print('感谢您的使用, 脚本指令添加助手已经执行完毕'.center(48))
     print('')
     print('=' * 70)
 
 def main():
     os.chdir(os.path.split(os.path.realpath(__file__))[0])
 
-    Common.welcome('管理员指令添加助手')
+    Common.welcome('脚本指令添加助手')
 
     options = {
         'source_dirs' : '../../src',
         'process_exts' : ['.hpp', '.cpp'],
-        'mark_format' : r'// PYHELP - ATCMD - INSERT POINT - <Section (\d{1,2})>',
+        'mark_format' : r'// PYHELP - SCRIPTCMD - INSERT POINT - <Section (\d{1,2})>',
         'mark_enum': InjectPoint,
         'mark_configure' : [
             {
@@ -162,12 +181,12 @@ def main():
                 'desc' : 'pandas.hpp @ 宏定义'
             },
             {
-                'id' : InjectPoint.ATCMD_FUNC,
-                'desc' : 'atcommand.cpp @ ACMD_FUNC 指令实际代码'
+                'id' : InjectPoint.SCRIPT_BUILDIN_FUNC,
+                'desc' : 'script.cpp @ BUILDIN_FUNC 脚本指令实际代码'
             },
             {
-                'id' : InjectPoint.ATCMD_DEF,
-                'desc' : 'atcommand.cpp @ ACMD_DEF 指令导出'
+                'id' : InjectPoint.SCRIPT_BUILDIN_DEF,
+                'desc' : 'script.cpp @ BUILDIN_DEF 脚本指令导出'
             }
         ]
     }

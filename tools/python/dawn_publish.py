@@ -14,12 +14,15 @@
 
 # -*- coding: utf-8 -*-
 
+import environment
+environment.initialize()
+
 import os
 import git
 import zipfile
 import glob
 import shutil
-import pyhelp_translate as trans
+import imple_translate as trans
 
 from libs import Common, Message
 

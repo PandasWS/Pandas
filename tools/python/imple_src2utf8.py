@@ -15,13 +15,15 @@
 
 # -*- coding: utf-8 -*-
 
+import environment
+environment.initialize()
+
 import codecs
 import os
 
 import chardet
 
 from libs import Common, Inputer, Message
-
 
 class CharsetConverter():
     '''
