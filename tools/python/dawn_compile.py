@@ -16,6 +16,7 @@
 # -*- coding: utf-8 -*-
 
 import environment
+environment.initialize()
 
 import os
 import platform

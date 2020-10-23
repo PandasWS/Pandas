@@ -27,6 +27,7 @@ pandas.conf @ 战斗配置选项的默认添加位置
 # -*- coding: utf-8 -*-
 
 import environment
+environment.initialize()
 
 import os
 from enum import IntEnum

@@ -24,6 +24,7 @@ script.cpp @ BUILDIN_DEF 脚本指令导出
 # -*- coding: utf-8 -*-
 
 import environment
+environment.initialize()
 
 import os
 from enum import IntEnum

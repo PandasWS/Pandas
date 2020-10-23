@@ -27,7 +27,7 @@ def pipenv_install():
 def pipenv_cfg_exist():
     return os.path.exists(__current_path__ + 'Pipfile') and os.path.exists(__current_path__ + 'Pipfile.lock')
 
-def start_babysitter():
+def initialize():
     # 若不是 Windows 系统则什么都不做
     # 使用非 Windows 操作系统的用户我们假定他什么都懂..
     if platform.system() != 'Windows':
@@ -83,5 +83,3 @@ if __name__ == '__main__':
         print('')
         os.system('pause')
     exit(0)
-else:
-    start_babysitter()

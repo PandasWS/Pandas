@@ -13,6 +13,7 @@
 '''
 
 import environment
+environment.initialize()
 
 import csv
 import glob

@@ -24,6 +24,7 @@ atcommand.cpp @ ACMD_DEF 指令导出
 # -*- coding: utf-8 -*-
 
 import environment
+environment.initialize()
 
 import os
 from enum import IntEnum
