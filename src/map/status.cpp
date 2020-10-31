@@ -93,10 +93,10 @@ static pec_ushort status_calc_luk(struct block_list *,struct status_change *,int
 static pec_ushort status_calc_batk(struct block_list *,struct status_change *,int);
 static pec_ushort status_calc_watk(struct block_list *,struct status_change *,int);
 static pec_ushort status_calc_matk(struct block_list *,struct status_change *,int);
-static pec_short status_calc_hit(struct block_list*, struct status_change*, int);
-static pec_short status_calc_critical(struct block_list*, struct status_change*, int);
-static pec_short status_calc_flee(struct block_list*, struct status_change*, int);
-static pec_short status_calc_flee2(struct block_list*, struct status_change*, int);
+static pec_short status_calc_hit(struct block_list *,struct status_change *,int);
+static pec_short status_calc_critical(struct block_list *,struct status_change *,int);
+static pec_short status_calc_flee(struct block_list *,struct status_change *,int);
+static pec_short status_calc_flee2(struct block_list *,struct status_change *,int);
 static pec_defType status_calc_def(struct block_list *bl, struct status_change *sc, int);
 static pec_short status_calc_def2(struct block_list *,struct status_change *,int);
 static pec_defType status_calc_mdef(struct block_list *bl, struct status_change *sc, int);

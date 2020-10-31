@@ -1065,12 +1065,12 @@ int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus* p, bool load_ev
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 14, SQLDT_SHORT,  &p->dex, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 15, SQLDT_SHORT,  &p->luk, 0, NULL, NULL)
 #else
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 10, SQLDT_UINT, &p->str, 0, NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_UINT, &p->agi, 0, NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 12, SQLDT_UINT, &p->vit, 0, NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 13, SQLDT_UINT, &p->int_, 0, NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 14, SQLDT_UINT, &p->dex, 0, NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 15, SQLDT_UINT, &p->luk, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 10, SQLDT_UINT,   &p->str, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_UINT,   &p->agi, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 12, SQLDT_UINT,   &p->vit, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 13, SQLDT_UINT,   &p->int_, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 14, SQLDT_UINT,   &p->dex, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 15, SQLDT_UINT,   &p->luk, 0, NULL, NULL)
 #endif // Pandas_Extreme_Computing
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 16, SQLDT_UINT,   &p->max_hp, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 17, SQLDT_UINT,   &p->hp, 0, NULL, NULL)
