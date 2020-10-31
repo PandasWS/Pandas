@@ -8694,7 +8694,7 @@ bool status_ishiding(struct block_list* bl) {
 	if (!bl) return false;
 	struct status_change* sc = status_get_sc(bl);
 	if (!sc) return false;
-	return sc->option & (OPTION_HIDE | OPTION_CLOAK | OPTION_CHASEWALK);
+	return (bool)(sc->option & (OPTION_HIDE | OPTION_CLOAK | OPTION_CHASEWALK));
 }
 
 //************************************
@@ -8710,7 +8710,7 @@ bool status_isinvisible(struct block_list* bl) {
 	if (!bl) return false;
 	struct status_change* sc = status_get_sc(bl);
 	if (!sc) return false;
-	return sc->option & OPTION_INVISIBLE;
+	return (bool)(sc->option & OPTION_INVISIBLE);
 }
 #endif // Pandas_Helper_Common_Function
 
