@@ -77,9 +77,6 @@
 
 	// 是否启用 LGTM 建议的一些处理措施, 避免潜在风险
 	#define Pandas_LGTM_Optimization
-
-	// 将可能会导致计算时溢出的变量类型进行提升
-	#define Pandas_Variable_Type_Promotion
 #endif // Pandas_Basic
 
 // ============================================================================
@@ -509,6 +506,17 @@
 	#ifdef Pandas_Struct_Unit_CommonData_Aura
 		#define Pandas_Aura_Mechanism
 	#endif // Pandas_Struct_Unit_CommonData_Aura
+
+	// 优化对极端计算的支持 (AKA: 变态服拓展包) [Sola丶小克]
+	// 主要用来解决因为 rAthena 主要定位于仿官服带来的各种数值计算的限制
+	//
+	// - 避免 MATK 和其他属性计算时带来的溢出异常
+	//   例如: MATK 若超过 65535 之后会直接归零, 导致魔法伤害为 0 的问题
+	// - 将可能会导致计算时溢出的变量类型进行提升
+	//   例如: 在进行 cardfix 等 bonus 计算时由于变量类型限制带来的溢出或瓶颈
+	// - 解除角色或其他拥有六维属性的单位的加点上限
+	//   默认的六维属性最大上限是 32767, 解除之后理论可达到 0x7FFFFFFF
+	#define Pandas_Extreme_Computing
 #endif // Pandas_CreativeWork
 
 // ============================================================================

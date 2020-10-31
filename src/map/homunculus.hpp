@@ -22,7 +22,7 @@
 
 struct h_stats {
 	unsigned int HP, SP;
-	unsigned short str, agi, vit, int_, dex, luk;
+	pec_ushort str, agi, vit, int_, dex, luk;
 };
 
 struct s_homunculus_db {

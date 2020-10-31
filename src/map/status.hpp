@@ -2472,11 +2472,11 @@ enum e_refine_chance_type {
 * Required because players have two of these, one in status_data
 * and another for their left hand weapon. */
 struct weapon_atk {
-	unsigned short atk, atk2;
+	pec_ushort atk, atk2;
 	unsigned short range;
 	unsigned char ele;
 #ifdef RENEWAL
-	unsigned short matk;
+	pec_ushort matk;
 	unsigned char wlv;
 #endif
 };
@@ -2494,10 +2494,10 @@ struct status_data {
 	unsigned int
 		hp, sp,  // see status_cpy before adding members before hp and sp
 		max_hp, max_sp;
-	short
+	pec_ushort
 		str, agi, vit, int_, dex, luk,
 		eatk;
-	unsigned short
+	pec_ushort
 		batk,
 #ifdef RENEWAL
 		watk,
@@ -2507,7 +2507,7 @@ struct status_data {
 		speed,
 		amotion, adelay, dmotion;
 	enum e_mode mode;
-	short
+	pec_short
 		hit, flee, cri, flee2,
 		def2, mdef2,
 #ifdef RENEWAL_ASPD
@@ -2517,7 +2517,7 @@ struct status_data {
 	/**
 	 * defType is RENEWAL dependent and defined in src/config/const.hpp
 	 **/
-	defType def,mdef;
+	pec_defType def,mdef;
 
 	unsigned char
 		def_ele, ele_lv,
@@ -2671,7 +2671,7 @@ int status_get_lv(struct block_list *bl);
 #define status_get_luk(bl) status_get_status_data(bl)->luk
 #define status_get_hit(bl) status_get_status_data(bl)->hit
 #define status_get_flee(bl) status_get_status_data(bl)->flee
-defType status_get_def(struct block_list *bl);
+pec_defType status_get_def(struct block_list *bl);
 #define status_get_mdef(bl) status_get_status_data(bl)->mdef
 #define status_get_flee2(bl) status_get_status_data(bl)->flee2
 #define status_get_def2(bl) status_get_status_data(bl)->def2
@@ -2777,17 +2777,17 @@ int status_check_visibility(struct block_list *src, struct block_list *target);
 int status_change_spread(struct block_list *src, struct block_list *bl, bool type);
 
 #ifndef RENEWAL
-unsigned short status_base_matk_min(const struct status_data* status);
-unsigned short status_base_matk_max(const struct status_data* status);
+pec_ushort status_base_matk_min(const struct status_data* status);
+pec_ushort status_base_matk_max(const struct status_data* status);
 #else
 unsigned int status_weapon_atk(struct weapon_atk wa, struct map_session_data *sd);
-unsigned short status_base_atk_min(struct block_list *bl, const struct status_data* status, int level);
-unsigned short status_base_atk_max(struct block_list *bl, const struct status_data* status, int level);
-unsigned short status_base_matk_min(struct block_list *bl, const struct status_data* status, int level);
-unsigned short status_base_matk_max(struct block_list *bl, const struct status_data* status, int level);
+pec_ushort status_base_atk_min(struct block_list *bl, const struct status_data* status, int level);
+pec_ushort status_base_atk_max(struct block_list *bl, const struct status_data* status, int level);
+pec_ushort status_base_matk_min(struct block_list *bl, const struct status_data* status, int level);
+pec_ushort status_base_matk_max(struct block_list *bl, const struct status_data* status, int level);
 #endif
 
-unsigned short status_base_atk(const struct block_list *bl, const struct status_data *status, int level);
+pec_ushort status_base_atk(const struct block_list *bl, const struct status_data *status, int level);
 
 void initChangeTables(void);
 int status_readdb(void);

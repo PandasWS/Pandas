@@ -266,7 +266,7 @@ struct block_list* battle_getenemyarea(struct block_list *src, int x, int y, int
 * @param isspdamage: If the damage is done to SP
 * @param tick: Current tick
 *------------------------------------------*/
-void battle_damage(struct block_list *src, struct block_list *target, int64 damage, t_tick delay, uint16 skill_lv, uint16 skill_id, enum damage_lv dmg_lv, pvtp_ushort attack_type, bool additional_effects, t_tick tick, bool isspdamage) {
+void battle_damage(struct block_list *src, struct block_list *target, int64 damage, t_tick delay, uint16 skill_lv, uint16 skill_id, enum damage_lv dmg_lv, pec_ushort attack_type, bool additional_effects, t_tick tick, bool isspdamage) {
 	map_freeblock_lock();
 	if (isspdamage)
 		status_fix_spdamage(src, target, damage, delay, skill_id);
@@ -303,7 +303,7 @@ struct delay_damage {
 	uint16 skill_lv;
 	uint16 skill_id;
 	enum damage_lv dmg_lv;
-	pvtp_ushort attack_type;
+	pec_ushort attack_type;
 	bool additional_effects;
 	enum bl_type src_type;
 	bool isspdamage;
@@ -644,7 +644,7 @@ int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 d
 int battle_calc_cardfix(int attack_type, struct block_list *src, struct block_list *target, std::bitset<NK_MAX> nk, int rh_ele, int lh_ele, int64 damage, int left, int flag){
 	struct map_session_data *sd, ///< Attacker session data if BL_PC
 		*tsd; ///< Target session data if BL_PC
-	pvtp_short cardfix = 1000;
+	pec_short cardfix = 1000;
 	int s_class, ///< Attacker class
 		t_class; ///< Target class
 	enum e_race2 s_race2, /// Attacker Race2
@@ -753,7 +753,7 @@ int battle_calc_cardfix(int attack_type, struct block_list *src, struct block_li
 		case BF_WEAPON:
 			// Affected by attacker ATK bonuses
 			if( sd && !nk[NK_IGNOREATKCARD] && (left&2) ) {
-				pvtp_short cardfix_ = 1000;
+				pec_short cardfix_ = 1000;
 
 				if( sd->state.arrow_atk ) { // Ranged attack
 					cardfix = cardfix * (100 + sd->right_weapon.addrace[tstatus->race] + sd->arrow_addrace[tstatus->race] +
@@ -1727,7 +1727,7 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 	}
 
 	if (sd && pc_ismadogear(sd)) {
-		pvtp_short element = skill_get_ele(skill_id, skill_lv);
+		pec_short element = skill_get_ele(skill_id, skill_lv);
 
 		if( !skill_id || element == ELE_WEAPON ) { //Take weapon's element
 			struct status_data *sstatus = NULL;
@@ -2142,7 +2142,7 @@ static int battle_calc_base_weapon_attack(struct block_list *src, struct status_
 static int64 battle_calc_base_damage(struct block_list *src, struct status_data *status, struct weapon_atk *wa, struct status_change *sc, unsigned short t_size, int flag)
 {
 	unsigned int atkmin = 0, atkmax = 0;
-	pvtp_short type = 0;
+	pec_short type = 0;
 	int64 damage = 0;
 	struct map_session_data *sd = NULL;
 
@@ -2585,7 +2585,7 @@ static bool is_attack_critical(struct Damage* wd, struct block_list *src, struct
 		struct status_change *sc = status_get_sc(src);
 		struct status_change *tsc = status_get_sc(target);
 		struct map_session_data *tsd = BL_CAST(BL_PC, target);
-		pvtp_short cri = sstatus->cri;
+		pec_short cri = sstatus->cri;
 
 		if (sd) {
 			cri += sd->critaddrace[tstatus->race] + sd->critaddrace[RC_ALL];
@@ -2723,7 +2723,7 @@ static bool is_attack_hitting(struct Damage* wd, struct block_list *src, struct 
 	struct status_change *tsc = status_get_sc(target);
 	struct map_session_data *sd = BL_CAST(BL_PC, src);
 	std::bitset<NK_MAX> nk = battle_skill_get_damage_properties(skill_id, wd->miscflag);
-	pvtp_short flee, hitrate;
+	pec_short flee, hitrate;
 
 	if (!first_call)
 		return (wd->dmg_lv != ATK_FLEE);
@@ -4872,7 +4872,7 @@ static void battle_attack_sc_bonus(struct Damage* wd, struct block_list *src, st
 		if (sc->data[SC_MADNESSCANCEL])
 			ATK_ADD(wd->equipAtk, wd->equipAtk2, 100);
 		if (sc->data[SC_MAGICALBULLET]) {
-			pvtp_short tmdef = tstatus->mdef + tstatus->mdef2;
+			pec_short tmdef = tstatus->mdef + tstatus->mdef2;
 
 			if (sstatus->matk_min > tmdef && sstatus->matk_max > sstatus->matk_min) {
 				ATK_ADD(wd->weaponAtk, wd->weaponAtk2, i64max((sstatus->matk_min + rnd() % (sstatus->matk_max - sstatus->matk_min)) - tmdef, 0));
@@ -5049,9 +5049,9 @@ static void battle_calc_defense_reduction(struct Damage* wd, struct block_list *
 	struct status_data *tstatus = status_get_status_data(target);
 
 	//Defense reduction
-	pvtp_short vit_def;
-	pvtp_short def1 = status_get_def(target); //Don't use tstatus->def1 due to skill timer reductions.
-	pvtp_short def2 = tstatus->def2;
+	pec_short vit_def;
+	pec_defType def1 = status_get_def(target); //Don't use tstatus->def1 due to skill timer reductions.
+	pec_short def2 = tstatus->def2;
 
 	if (sd) {
 		int i = sd->ignore_def_by_race[tstatus->race] + sd->ignore_def_by_race[RC_ALL];
@@ -5064,7 +5064,7 @@ static void battle_calc_defense_reduction(struct Damage* wd, struct block_list *
 
 		//Kagerou/Oboro Earth Charm effect +10% eDEF
 		if(sd->spiritcharm_type == CHARM_TYPE_LAND && sd->spiritcharm > 0) {
-			pvtp_short si = 10 * sd->spiritcharm;
+			pec_short si = 10 * sd->spiritcharm;
 			def1 = (def1 * (100 + si)) / 100;
 		}
 	}
@@ -5079,13 +5079,13 @@ static void battle_calc_defense_reduction(struct Damage* wd, struct block_list *
 
 	if (tsc) {
 		if (tsc->data[SC_FORCEOFVANGUARD]) {
-			pvtp_short i = 2 * tsc->data[SC_FORCEOFVANGUARD]->val1;
+			pec_short i = 2 * tsc->data[SC_FORCEOFVANGUARD]->val1;
 
 			def1 = (def1 * (100 + i)) / 100;
 		}
 
 		if( tsc->data[SC_CAMOUFLAGE] ){
-			pvtp_short i = 5 * tsc->data[SC_CAMOUFLAGE]->val3; //5% per second
+			pec_short i = 5 * tsc->data[SC_CAMOUFLAGE]->val3; //5% per second
 
 			i = min(i,100); //cap it to 100 for 0 def min
 			def1 = (def1*(100-i))/100;
@@ -6062,7 +6062,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list *target,uint16 skill_id,uint16 skill_lv,int mflag)
 {
 	int i, skill_damage = 0;
-	pvtp_short s_ele = 0;
+	pec_short s_ele = 0;
 
 	TBL_PC *sd;
 	TBL_PC *tsd;
@@ -6726,7 +6726,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 			ad.damage -= (int64)ad.damage*i/100;
 
 		if(!flag.imdef){
-			defType mdef = tstatus->mdef;
+			pec_defType mdef = tstatus->mdef;
 			int mdef2= tstatus->mdef2;
 
 			if (sc && sc->data[SC_EXPIATIO]) {
@@ -6852,7 +6852,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *target,uint16 skill_id,uint16 skill_lv,int mflag)
 {
 	int skill_damage = 0;
-	pvtp_short i, s_ele;
+	pec_short i, s_ele;
 
 	struct map_session_data *sd, *tsd;
 	struct Damage md; //DO NOT CONFUSE with md of mob_data!
@@ -7022,7 +7022,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 			// final damage = base damage + ((mirror image count + 1) / 5 * base damage) - (edef + sdef)
 			// modified def formula
 			{
-				pvtp_short totaldef;
+				pec_short totaldef;
 				struct Damage atk = battle_calc_weapon_attack(src, target, skill_id, skill_lv, 0);
 				struct status_change *sc = status_get_sc(src);
 

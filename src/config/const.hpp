@@ -6,16 +6,6 @@
 
 #include "../common/cbasetypes.hpp"
 
-#ifdef Pandas_Variable_Type_Promotion
-	// pvtp 前缀的全称是:
-	// Pandas Variable Type Promotion
-	typedef int pvtp_short;
-	typedef int pvtp_ushort;
-#else
-	typedef short pvtp_short;
-	typedef unsigned short pvtp_ushort;
-#endif // Pandas_Variable_Type_Promotion
-
 /**
  * rAthena configuration file (http://rathena.org)
  * For detailed guidance on these check http://rathena.org/wiki/SRC/config/
@@ -64,6 +54,40 @@
 	#define DEFTYPE_MIN CHAR_MIN
 	#define DEFTYPE_MAX CHAR_MAX
 #endif
+
+#ifdef Pandas_Extreme_Computing
+	typedef int32 pec_short;
+	typedef uint32 pec_ushort;
+	typedef double pec_float;
+
+	typedef int32 pec_defType;
+	#define PEC_DEFTYPE_MIN INT_MIN
+	#define PEC_DEFTYPE_MAX INT_MAX
+
+	#define PEC_SHRT_MIN INT_MIN
+	#define PEC_SHRT_MAX INT_MAX
+
+	#define PEC_USHRT_MAX UINT_MAX
+
+	// 最大负重的上限其实可以到 0x7FFFFFFF (INT_MAX)
+	// 但客户端的面板显示时, 整个负重信息最大只能显示 13 个字符 (包括斜杠)
+	// 也就是说极限是: 999999/999999 因此这里限制为体验最佳数值 999999
+	// 这里多加个 1 凑个整, 设置为 100万
+	#define PEC_MAX_WEIGHT 1000000
+#else
+	typedef short pecvtp_short;
+	typedef unsigned short pecvtp_ushort;
+	typedef float pec_float;
+
+	typedef defType pec_defType;
+	#define PEC_DEFTYPE_MIN DEFTYPE_MIN
+	#define PEC_DEFTYPE_MAX DEFTYPE_MAX
+
+	#define PEC_SHRT_MIN SHRT_MIN
+	#define PEC_SHRT_MAX SHRT_MAX
+
+	#define PEC_USHRT_MAX USHRT_MAX
+#endif // Pandas_Extreme_Computing
 
 /**
  * EXP definition type

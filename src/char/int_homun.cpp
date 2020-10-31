@@ -90,6 +90,14 @@ bool mapif_homunculus_save(struct s_homunculus* hd)
 
 	Sql_EscapeStringLen(sql_handle, esc_name, hd->name, strnlen(hd->name, NAME_LENGTH));
 
+#ifdef Pandas_Extreme_Computing
+	// 这里是刻意给下面代码的注释, 这个 define 中不存在任何一行有效代码
+	// 
+	// 这里的人工生命体六维能力值预留到了 int 目前看来应该足够了
+	// 所以这里没有必要再将 int 提升到 uint32
+	// 此处写入六维能力值使用了 %d 来替换 int 也是合适的, 暂时无需对它进行扩容
+#endif // Pandas_Extreme_Computing
+
 	if( hd->hom_id == 0 )
 	{// new homunculus
 		if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` "

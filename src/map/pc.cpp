@@ -3058,21 +3058,21 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 		case SP_ATK1:
 			if(!sd->state.lr_flag) {
 				bonus = status->rhw.atk + val;
-				status->rhw.atk = cap_value(bonus, 0, USHRT_MAX);
+				status->rhw.atk = cap_value(bonus, 0, PEC_USHRT_MAX);
 			}
 			else if(sd->state.lr_flag == 1) {
 				bonus = status->lhw.atk + val;
-				status->lhw.atk =  cap_value(bonus, 0, USHRT_MAX);
+				status->lhw.atk =  cap_value(bonus, 0, PEC_USHRT_MAX);
 			}
 			break;
 		case SP_ATK2:
 			if(!sd->state.lr_flag) {
 				bonus = status->rhw.atk2 + val;
-				status->rhw.atk2 = cap_value(bonus, 0, USHRT_MAX);
+				status->rhw.atk2 = cap_value(bonus, 0, PEC_USHRT_MAX);
 			}
 			else if(sd->state.lr_flag == 1) {
 				bonus = status->lhw.atk2 + val;
-				status->lhw.atk2 =  cap_value(bonus, 0, USHRT_MAX);
+				status->lhw.atk2 =  cap_value(bonus, 0, PEC_USHRT_MAX);
 			}
 			break;
 		case SP_BASE_ATK:
@@ -3090,25 +3090,25 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 			if(sd->state.lr_flag != 2) {
 				bonus = status->def + val;
 #ifdef RENEWAL
-				status->def = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->def = cap_value(bonus, PEC_DEFTYPE_MIN, PEC_DEFTYPE_MAX);
 #else
-				status->def = cap_value(bonus, CHAR_MIN, CHAR_MAX);
+				status->def = cap_value(bonus, PEC_DEFTYPE_MIN, PEC_DEFTYPE_MAX);
 #endif
 			}
 			break;
 		case SP_DEF2:
 			if(sd->state.lr_flag != 2) {
 				bonus = status->def2 + val;
-				status->def2 = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->def2 = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_MDEF1:
 			if(sd->state.lr_flag != 2) {
 				bonus = status->mdef + val;
 #ifdef RENEWAL
-				status->mdef = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->mdef = cap_value(bonus, PEC_DEFTYPE_MIN, PEC_DEFTYPE_MAX);
 #else
-				status->mdef = cap_value(bonus, CHAR_MIN, CHAR_MAX);
+				status->mdef = cap_value(bonus, PEC_DEFTYPE_MIN, PEC_DEFTYPE_MAX);
 #endif
 				if( sd->state.lr_flag == 3 ) {//Shield, used for royal guard
 					sd->bonus.shieldmdef += bonus;
@@ -3118,32 +3118,32 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 		case SP_MDEF2:
 			if(sd->state.lr_flag != 2) {
 				bonus = status->mdef2 + val;
-				status->mdef2 = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->mdef2 = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_HIT:
 			if(sd->state.lr_flag != 2) {
 				bonus = status->hit + val;
-				status->hit = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->hit = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			} else
 				sd->bonus.arrow_hit+=val;
 			break;
 		case SP_FLEE1:
 			if(sd->state.lr_flag != 2) {
 				bonus = status->flee + val;
-				status->flee = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->flee = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_FLEE2:
 			if(sd->state.lr_flag != 2) {
 				bonus = status->flee2 + val*10;
-				status->flee2 = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->flee2 = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_CRITICAL:
 			if(sd->state.lr_flag != 2) {
 				bonus = status->cri + val*10;
-				status->cri = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->cri = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			} else
 				sd->bonus.arrow_cri += val*10;
 			break;
@@ -12596,7 +12596,7 @@ static bool pc_readdb_job_param(char* fields[], int columns, int current)
 {
 	int64 class_tmp;
 	int idx, class_;
-	uint16 str, agi, vit, int_, dex, luk;
+	pec_ushort str, agi, vit, int_, dex, luk;
 
 	script_get_constant(trim(fields[0]),&class_tmp);
 	class_ = static_cast<int>(class_tmp);
@@ -13541,7 +13541,7 @@ void pc_cell_basilica(struct map_session_data *sd) {
  * @param flag: parameter will be checked
  * @return max_param
  */
-short pc_maxparameter(struct map_session_data *sd, enum e_params param) {
+pec_short pc_maxparameter(struct map_session_data *sd, enum e_params param) {
 	int idx = -1, class_ = sd->class_;
 
 	if ((idx = pc_class2idx(pc_mapid2jobid(class_,sd->status.sex))) >= 0) {

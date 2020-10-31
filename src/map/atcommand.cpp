@@ -2669,7 +2669,7 @@ ACMD_FUNC(param)
 	uint8 i;
 	int value = 0;
 	const char* param[] = { "str", "agi", "vit", "int", "dex", "luk" };
-	unsigned short new_value, *status[6], max_status[6];
+	pec_ushort new_value, *status[6], max_status[6];
  	//we don't use direct initialization because it isn't part of the c standard.
 	nullpo_retr(-1, sd);
 
@@ -2695,7 +2695,7 @@ ACMD_FUNC(param)
 	status[5] = &sd->status.luk;
 
 	if( pc_has_permission(sd, PC_PERM_BYPASS_MAX_STAT) )
-		max_status[0] = max_status[1] = max_status[2] = max_status[3] = max_status[4] = max_status[5] = SHRT_MAX;
+		max_status[0] = max_status[1] = max_status[2] = max_status[3] = max_status[4] = max_status[5] = PEC_SHRT_MAX;
 	else {
 		max_status[0] = pc_maxparameter(sd,PARAM_STR);
 		max_status[1] = pc_maxparameter(sd,PARAM_AGI);
@@ -2738,7 +2738,7 @@ ACMD_FUNC(stat_all)
 {
 	int value = 0;
 	uint8 count, i;
-	unsigned short *status[PARAM_MAX], max_status[PARAM_MAX];
+	pec_ushort *status[PARAM_MAX], max_status[PARAM_MAX];
  	//we don't use direct initialization because it isn't part of the c standard.
 	nullpo_retr(-1, sd);
 
@@ -2756,10 +2756,10 @@ ACMD_FUNC(stat_all)
 		max_status[3] = pc_maxparameter(sd,PARAM_INT);
 		max_status[4] = pc_maxparameter(sd,PARAM_DEX);
 		max_status[5] = pc_maxparameter(sd,PARAM_LUK);
-		value = SHRT_MAX;
+		value = PEC_SHRT_MAX;
 	} else {
 		if( pc_has_permission(sd, PC_PERM_BYPASS_MAX_STAT) )
-			max_status[0] = max_status[1] = max_status[2] = max_status[3] = max_status[4] = max_status[5] = SHRT_MAX;
+			max_status[0] = max_status[1] = max_status[2] = max_status[3] = max_status[4] = max_status[5] = PEC_SHRT_MAX;
 		else {
 			max_status[0] = pc_maxparameter(sd,PARAM_STR);
 			max_status[1] = pc_maxparameter(sd,PARAM_AGI);
@@ -2772,7 +2772,7 @@ ACMD_FUNC(stat_all)
 	
 	count = 0;
 	for (i = 0; i < ARRAYLENGTH(status); i++) {
-		short new_value;
+		pec_ushort new_value;
 		if (value > 0 && *status[i] + value >= max_status[i])
 			new_value = max_status[i];
 		else if (value < 0 && *status[i] <= -value)

@@ -3973,6 +3973,20 @@ void clif_initialstatus(struct map_session_data *sd) {
 
 	clif_updatestatus(sd, SP_ATTACKRANGE);
 	clif_updatestatus(sd, SP_ASPD);
+
+#ifdef Pandas_Extreme_Computing
+	// ZC_STATUS 封包发送的 MATK 等字段仅支持 WORD 类型且是有符号的, 最大也就 0x7FFF (32767)
+	// 因此发送了上述封包后我们需要再补充调用 clif_updatestatus 这个封包里 MATK 等字段时 INT 类型的 (有无符号没测试)
+	// 就算是有符号, 也应该能支持到 0x7FFFFFFF (2147483647) 总之.... 很好... 哈哈哈
+	clif_updatestatus(sd, SP_ATK1);
+	clif_updatestatus(sd, SP_ATK2);
+	clif_updatestatus(sd, SP_MATK1);
+	clif_updatestatus(sd, SP_MATK2);
+	clif_updatestatus(sd, SP_DEF1);
+	clif_updatestatus(sd, SP_DEF2);
+	clif_updatestatus(sd, SP_MDEF1);
+	clif_updatestatus(sd, SP_MDEF2);
+#endif // Pandas_Extreme_Computing
 }
 
 
