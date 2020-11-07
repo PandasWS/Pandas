@@ -975,7 +975,7 @@ struct s_job_info {
 	t_exp exp_table[2][MAX_LEVEL];
 	uint32 max_level[2];
 	struct s_params {
-		uint16 str, agi, vit, int_, dex, luk;
+		pec_ushort str, agi, vit, int_, dex, luk;
 	} max_param;
 	struct s_job_noenter_map {
 		uint32 zone;
@@ -1051,7 +1051,7 @@ enum e_params {
 	PARAM_LUK,
 	PARAM_MAX
 };
-short pc_maxparameter(struct map_session_data *sd, enum e_params param);
+pec_short pc_maxparameter(struct map_session_data *sd, enum e_params param);
 short pc_maxaspd(struct map_session_data *sd);
 
 /**

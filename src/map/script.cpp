@@ -18704,8 +18704,8 @@ BUILDIN_FUNC(setunitdata)
 			case UMOB_ATKMAX: md->base_status->rhw.atk2 = (unsigned short)value; calc_status = true; break;
 			case UMOB_MATKMIN: md->base_status->matk_min = (unsigned short)value; calc_status = true; break;
 			case UMOB_MATKMAX: md->base_status->matk_max = (unsigned short)value; calc_status = true; break;
-			case UMOB_DEF: md->base_status->def = (defType)value; calc_status = true; break;
-			case UMOB_MDEF: md->base_status->mdef = (defType)value; calc_status = true; break;
+			case UMOB_DEF: md->base_status->def = (pec_defType)value; calc_status = true; break;
+			case UMOB_MDEF: md->base_status->mdef = (pec_defType)value; calc_status = true; break;
 			case UMOB_HIT: md->base_status->hit = (short)value; calc_status = true; break;
 			case UMOB_FLEE: md->base_status->flee = (short)value; calc_status = true; break;
 			case UMOB_PDODGE: md->base_status->flee2 = (short)value; calc_status = true; break;
@@ -18772,8 +18772,8 @@ BUILDIN_FUNC(setunitdata)
 			case UHOM_ATKMAX: hd->base_status.rhw.atk2 = (unsigned short)value; calc_status = true; break;
 			case UHOM_MATKMIN: hd->base_status.matk_min = (unsigned short)value; calc_status = true; break;
 			case UHOM_MATKMAX: hd->base_status.matk_max = (unsigned short)value; calc_status = true; break;
-			case UHOM_DEF: hd->base_status.def = (defType)value; calc_status = true; break;
-			case UHOM_MDEF: hd->base_status.mdef = (defType)value; calc_status = true; break;
+			case UHOM_DEF: hd->base_status.def = (pec_defType)value; calc_status = true; break;
+			case UHOM_MDEF: hd->base_status.mdef = (pec_defType)value; calc_status = true; break;
 			case UHOM_HIT: hd->base_status.hit = (short)value; calc_status = true; break;
 			case UHOM_FLEE: hd->base_status.flee = (short)value; calc_status = true; break;
 			case UHOM_PDODGE: hd->base_status.flee2 = (short)value; calc_status = true; break;
@@ -18836,8 +18836,8 @@ BUILDIN_FUNC(setunitdata)
 			case UPET_ATKMAX: pd->status.rhw.atk2 = (unsigned short)value; break;
 			case UPET_MATKMIN: pd->status.matk_min = (unsigned short)value; break;
 			case UPET_MATKMAX: pd->status.matk_max = (unsigned short)value; break;
-			case UPET_DEF: pd->status.def = (defType)value; break;
-			case UPET_MDEF: pd->status.mdef = (defType)value; break;
+			case UPET_DEF: pd->status.def = (pec_defType)value; break;
+			case UPET_MDEF: pd->status.mdef = (pec_defType)value; break;
 			case UPET_HIT: pd->status.hit = (short)value; break;
 			case UPET_FLEE: pd->status.flee = (short)value; break;
 			case UPET_PDODGE: pd->status.flee2 = (short)value; break;
@@ -18888,8 +18888,8 @@ BUILDIN_FUNC(setunitdata)
 			case UMER_ATKMAX: mc->base_status.rhw.atk2 = (unsigned short)value; calc_status = true; break;
 			case UMER_MATKMIN: mc->base_status.matk_min = (unsigned short)value; calc_status = true; break;
 			case UMER_MATKMAX: mc->base_status.matk_max = (unsigned short)value; calc_status = true; break;
-			case UMER_DEF: mc->base_status.def = (defType)value; calc_status = true; break;
-			case UMER_MDEF: mc->base_status.mdef = (defType)value; calc_status = true; break;
+			case UMER_DEF: mc->base_status.def = (pec_defType)value; calc_status = true; break;
+			case UMER_MDEF: mc->base_status.mdef = (pec_defType)value; calc_status = true; break;
 			case UMER_HIT: mc->base_status.hit = (short)value; calc_status = true; break;
 			case UMER_FLEE: mc->base_status.flee = (short)value; calc_status = true; break;
 			case UMER_PDODGE: mc->base_status.flee2 = (short)value; calc_status = true; break;
@@ -18953,8 +18953,8 @@ BUILDIN_FUNC(setunitdata)
 			case UELE_ATKMAX: ed->base_status.rhw.atk2 = (unsigned short)value; calc_status = true; break;
 			case UELE_MATKMIN: ed->base_status.matk_min = (unsigned short)value; calc_status = true; break;
 			case UELE_MATKMAX: ed->base_status.matk_max = (unsigned short)value; calc_status = true; break;
-			case UELE_DEF: ed->base_status.def = (defType)value; calc_status = true; break;
-			case UELE_MDEF: ed->base_status.mdef = (defType)value; calc_status = true; break;
+			case UELE_DEF: ed->base_status.def = (pec_defType)value; calc_status = true; break;
+			case UELE_MDEF: ed->base_status.mdef = (pec_defType)value; calc_status = true; break;
 			case UELE_HIT: ed->base_status.hit = (short)value; calc_status = true; break;
 			case UELE_FLEE: ed->base_status.flee = (short)value; calc_status = true; break;
 			case UELE_PDODGE: ed->base_status.flee2 = (short)value; calc_status = true; break;
@@ -19012,8 +19012,8 @@ BUILDIN_FUNC(setunitdata)
 			case UNPC_ATKMAX: nd->status.rhw.atk2 = (unsigned short)value; break;
 			case UNPC_MATKMIN: nd->status.matk_min = (unsigned short)value; break;
 			case UNPC_MATKMAX: nd->status.matk_max = (unsigned short)value; break;
-			case UNPC_DEF: nd->status.def = (defType)value; break;
-			case UNPC_MDEF: nd->status.mdef = (defType)value; break;
+			case UNPC_DEF: nd->status.def = (pec_defType)value; break;
+			case UNPC_MDEF: nd->status.mdef = (pec_defType)value; break;
 			case UNPC_HIT: nd->status.hit = (short)value; break;
 			case UNPC_FLEE: nd->status.flee = (short)value; break;
 			case UNPC_PDODGE: nd->status.flee2 = (short)value; break;
