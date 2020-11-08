@@ -524,6 +524,9 @@
 // ============================================================================
 
 #ifdef Pandas_Speedup
+	// 是否在一些关键耗时节点打印出耗时情况 [Sola丶小克]
+	#define Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+
 	// 是否优化 itemdb_searchname1 函数的实现方式 [Sola丶小克]
 	// 在默认情况下 rAthena 的 itemdb_searchname1 函数实现的非常低效
 	// 在 VS2019 编译环境下, 优化后的检索物品名称的性能提高大约 38 倍 (Release 模式)

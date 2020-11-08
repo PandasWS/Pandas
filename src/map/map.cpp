@@ -3886,6 +3886,10 @@ void map_removemapdb(struct map_data *m)
  *--------------------------------------*/
 int map_readallmaps (void)
 {
+#ifdef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+	performance_create_and_start("map_readallmaps");
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+
 	FILE* fp=NULL;
 	// Has the uncompressed gat data of all maps, so just one allocation has to be made
 	char *map_cache_buffer[2] = {
@@ -4013,8 +4017,13 @@ int map_readallmaps (void)
 	if (maps_removed)
 		ShowNotice("Maps removed: '" CL_WHITE "%d" CL_RESET "'" CL_CLL ".\n", maps_removed);
 
+#ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	// finished map loading
 	ShowInfo("Successfully loaded '" CL_WHITE "%d" CL_RESET "' maps." CL_CLL "\n",map_num);
+#else
+	performance_stop("map_readallmaps");
+	ShowInfo("Successfully loaded '" CL_WHITE "%d" CL_RESET "' maps (took %" PRIu64 " milliseconds)." CL_CLL "\n", map_num, performance_get_milliseconds("map_readallmaps"));
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
 	return 0;
 }
