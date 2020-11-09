@@ -774,6 +774,8 @@ Body:
   Translation: ""
 - Original: "Error syntax of configuration file %s in line %d.\n"
   Translation: ""
+- Original: "Event '[{CL_WHITE}]%s[{CL_RESET}]' executed with '[{CL_WHITE}]%d[{CL_RESET}]' NPCs, took %[{PRIu64}] ms.\n"
+  Translation: "事件 '[{CL_WHITE}]%s[{CL_RESET}]' 已經在 '[{CL_WHITE}]%d[{CL_RESET}]' 個 NPC 上被執行 (耗時 %[{PRIu64}] 毫秒).\n"
 - Original: "Event '[{CL_WHITE}]%s[{CL_RESET}]' executed with '[{CL_WHITE}]%d[{CL_RESET}]' NPCs.\n"
   Translation: "事件 '[{CL_WHITE}]%s[{CL_RESET}]' 已經在 '[{CL_WHITE}]%d[{CL_RESET}]' 個 NPC 上被執行.\n"
 - Original: "Existing map cache not found, forcing rebuild mode\n"

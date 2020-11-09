@@ -602,7 +602,16 @@ int npc_event_doall(const char* name)
 
 // runs the specified event(global only) and reports call count
 void npc_event_runall( const char* eventname ){
+#ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	ShowStatus( "Event '" CL_WHITE "%s" CL_RESET "' executed with '" CL_WHITE "%d" CL_RESET "' NPCs.\n", eventname, npc_event_doall( eventname ) );
+#else
+	performance_create_and_start("npc_event_runall");
+	int count = npc_event_doall(eventname);
+	performance_stop("npc_event_runall");
+	ShowStatus("Event '" CL_WHITE "%s" CL_RESET "' executed with '" CL_WHITE "%d" CL_RESET "' NPCs, took %" PRIu64 " ms.\n",
+		eventname, count, performance_get_milliseconds("npc_event_runall")
+	);
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 }
 
 // runs the specified event, with a RID attached (global only)
