@@ -211,6 +211,12 @@ int enable_grf = 0;	//To enable/disable reading maps from GRF files, bypassing m
 unsigned int clif_cryptKey_custom[3] = { 0 };
 #endif // Pandas_Support_Specify_PacketKeys
 
+#ifdef Pandas_Speedup_Map_Read_From_Cache
+// 此处将 map_getcell 中存在的几种模式作为模板先行分配 [Sola丶小克]
+// 当前 map_getcell 内部只支持 0~6 共计 7 种类型, 因此预创建模板的长度为 7
+struct mapcell cell_template[7] = { 0 };
+#endif // Pandas_Speedup_Map_Read_From_Cache
+
 /**
  * Get the map data
  * @param mapid: Map ID to lookup
@@ -3662,9 +3668,16 @@ int map_readfromcache(struct map_data *m, char *buffer, char *decode_buffer)
 
 		CREATE(m->cell, struct mapcell, size);
 
-
+#ifndef Pandas_Speedup_Map_Read_From_Cache
 		for( xy = 0; xy < size; ++xy )
 			m->cell[xy] = map_gat2cell(decode_buffer[xy]);
+#else
+		for (xy = 0; xy < size; ++xy) {
+			if (decode_buffer[xy] < 0 || decode_buffer[xy] > 6)
+				continue;
+			memcpy(&m->cell[xy], &cell_template[decode_buffer[xy]], sizeof(struct mapcell));
+		}
+#endif // Pandas_Speedup_Map_Read_From_Cache
 
 		return 1;
 	}
@@ -3939,6 +3952,9 @@ int map_readallmaps (void)
 		unsigned short idx = 0;
 		struct map_data *mapdata = &map[i];
 
+#ifdef Pandas_Speedup_Loading_Map_Status_Restrictor
+		if (i % 10 == 0 || i == map_num)
+#endif // Pandas_Speedup_Loading_Map_Status_Restrictor
 		// show progress
 		ShowStatus("Loading maps [%i/%i]: %s" CL_CLL "\r", i, map_num, mapdata->name);
 
@@ -5837,6 +5853,13 @@ int do_init(int argc, char *argv[])
 	mapindex_init();
 	if(enable_grf)
 		grfio_init(GRF_PATH_FILENAME);
+
+#ifdef Pandas_Speedup_Map_Read_From_Cache
+	// 填充预置的 cell 模板, 大量降低 map_gat2cell 被调用的机会
+	for (int x = 0; x < (sizeof(cell_template) / sizeof(struct mapcell)); x++) {
+		cell_template[x] = map_gat2cell(x);
+	}
+#endif // Pandas_Speedup_Map_Read_From_Cache
 
 	map_readallmaps();
 

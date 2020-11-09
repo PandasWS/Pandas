@@ -529,8 +529,34 @@
 
 	// 是否优化 itemdb_searchname1 函数的实现方式 [Sola丶小克]
 	// 在默认情况下 rAthena 的 itemdb_searchname1 函数实现的非常低效
-	// 在 VS2019 编译环境下, 优化后的检索物品名称的性能提高大约 38 倍 (Release 模式)
+	// 
+	// 优化后性能表现参考信息 (VS2019 + Win32)
+	// --------------------------------------------------------------
+	// 在 Release 模式下检索物品名称的性能提高大约 38 倍
 	#define Pandas_Speedup_Itemdb_SearchName
+
+	// 优化 map_readfromcache 中对每个 cell 的分配方式 [Sola丶小克]
+	// 主要降低 map_gat2cell 的调用次数, 因为一张地图需要加载 40000 个 cell
+	// 虽然已经启用了 static 和 inline 但内部调用 struct 创建构体也是开销非常大的.
+	//
+	// 优化后性能表现参考信息 (VS2019 + Win32)
+	// --------------------------------------------------------------
+	// 在 Debug 模式下越提速约 1.79 倍 (3350ms -> 1200ms)
+	// 在 Release 模式下提速约 17.65% (1000ms -> 850ms)
+	#define Pandas_Speedup_Map_Read_From_Cache
+
+	// 在 Windows 环境下对加载地图时滚动输出的信息进行限流 [Sola丶小克]
+	// 好处在于极大的提升加载速度, 坏处在于类似 LeeStarter 等工具中打开地图服务器,
+	// 会发现加载地图时的信息是跳跃显示的, 但并不影响实际情况下的使用
+	// 
+	// 优化后性能表现参考信息
+	// VS2019 + Win32 启用 Pandas_Speedup_Map_Read_From_Cache 的情况下
+	// --------------------------------------------------------------
+	// 在 Debug 模式下提速约 64% (1250ms -> 760ms)
+	// 在 Release 模式下提速约 1 倍 (940ms -> 460ms)
+	#ifdef _WIN32
+		#define Pandas_Speedup_Loading_Map_Status_Restrictor
+	#endif // _WIN32
 #endif // Pandas_Speedup
 
 // ============================================================================
