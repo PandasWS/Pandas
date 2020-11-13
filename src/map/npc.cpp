@@ -602,7 +602,16 @@ int npc_event_doall(const char* name)
 
 // runs the specified event(global only) and reports call count
 void npc_event_runall( const char* eventname ){
+#ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	ShowStatus( "Event '" CL_WHITE "%s" CL_RESET "' executed with '" CL_WHITE "%d" CL_RESET "' NPCs.\n", eventname, npc_event_doall( eventname ) );
+#else
+	performance_create_and_start("npc_event_runall");
+	int count = npc_event_doall(eventname);
+	performance_stop("npc_event_runall");
+	ShowStatus("Event '" CL_WHITE "%s" CL_RESET "' executed with '" CL_WHITE "%d" CL_RESET "' NPCs, took %" PRIu64 " ms.\n",
+		eventname, count, performance_get_milliseconds("npc_event_runall")
+	);
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 }
 
 // runs the specified event, with a RID attached (global only)
@@ -5215,6 +5224,10 @@ int npc_reload(void) {
 	// reset mapflags
 	map_flags_init();
 
+#ifdef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+	performance_create_and_start("loadingnpc");
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+
 	//TODO: the following code is copy-pasted from do_init_npc(); clean it up
 	// Reloading npcs now
 	for (nsl = npc_src_files; nsl; nsl = nsl->next) {
@@ -5222,9 +5235,7 @@ int npc_reload(void) {
 		npc_parsesrcfile(nsl->name,false);
 	}
 
-	// 以下这行注释是为了方便 pyhelp_extracter.py 提取翻译文本使用的
-	// ShowInfo ("Done loading '" CL_WHITE "%d" CL_RESET "' NPCs:" CL_CLL "\n\t-'" CL_WHITE "%d" CL_RESET "' Warps\n\t-'" CL_WHITE "%d" CL_RESET "' Shops\n\t-'" CL_WHITE "%d" CL_RESET "' Scripts\n\t-'" CL_WHITE "%d" CL_RESET "' Spawn sets\n\t-'" CL_WHITE "%d" CL_RESET "' Mobs Cached\n\t-'" CL_WHITE "%d" CL_RESET "' Mobs Not Cached\n", npc_id - npc_new_min, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob);
-
+#ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	ShowInfo ("Done loading '" CL_WHITE "%d" CL_RESET "' NPCs:" CL_CLL "\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Warps\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Shops\n"
@@ -5233,6 +5244,21 @@ int npc_reload(void) {
 		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Cached\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Not Cached\n",
 		npc_id - npc_new_min, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob);
+#else
+	performance_stop("loadingnpc");
+
+	ShowInfo("Done loading '" CL_WHITE "%d" CL_RESET "' NPCs:" CL_CLL "\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Warps\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Shops\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Scripts\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Spawn sets\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Cached\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Not Cached\n"
+		"\tThis operation took %" PRIu64 " milliseconds in total\n",
+		npc_id - npc_new_min, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob,
+		performance_get_milliseconds("loadingnpc")
+	);
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
 	//Re-read the NPC Script Events cache.
 	npc_read_event_script();
@@ -5301,8 +5327,10 @@ bool npc_unloadfile( const char* path ) {
 
 	dbi_destroy(iter);
 
+#ifndef Pandas_Speedup_Unloadnpc_Without_Refactoring_ScriptEvent
 	if( found ) /* refresh event cache */
 		npc_read_event_script();
+#endif // Pandas_Speedup_Unloadnpc_Without_Refactoring_ScriptEvent
 
 	npc_delsrcfile(path);
 
@@ -5310,12 +5338,12 @@ bool npc_unloadfile( const char* path ) {
 }
 
 void do_clear_npc(void) {
-	db_clear(npcname_db);
 #ifdef Pandas_Crashfix_EventDatabase_Clean_Synchronize
 	// 即将清空 ev_db, 同时也得把 script_event 清空掉 [Sola丶小克]
 	// 因为 ev_db 清空后 script_event 的值已经无效了, 被其他环节利用会导致崩溃
 	script_event.clear();
 #endif // Pandas_Crashfix_EventDatabase_Clean_Synchronize
+	db_clear(npcname_db);
 	db_clear(ev_db);
 }
 
@@ -5401,12 +5429,18 @@ void do_init_npc(void){
 	timer_event_ers = ers_new(sizeof(struct timer_event_data),"npc.cpp::timer_event_ers",ERS_OPT_NONE);
 	npc_sc_display_ers = ers_new(sizeof(struct sc_display_entry), "npc.cpp:npc_sc_display_ers", ERS_OPT_NONE);
 
+#ifdef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+	performance_create_and_start("loadingnpc");
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+
 	// process all npc files
 	ShowStatus("Loading NPCs...\r");
 	for( file = npc_src_files; file != NULL; file = file->next ) {
 		ShowStatus("Loading NPC file: %s" CL_CLL "\r", file->name);
 		npc_parsesrcfile(file->name,false);
 	}
+
+#ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	ShowInfo ("Done loading '" CL_WHITE "%d" CL_RESET "' NPCs:" CL_CLL "\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Warps\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Shops\n"
@@ -5415,6 +5449,21 @@ void do_init_npc(void){
 		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Cached\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Not Cached\n",
 		npc_id - START_NPC_NUM, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob);
+#else
+	performance_stop("loadingnpc");
+
+	ShowInfo("Done loading '" CL_WHITE "%d" CL_RESET "' NPCs:" CL_CLL "\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Warps\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Shops\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Scripts\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Spawn sets\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Cached\n"
+		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Not Cached\n"
+		"\tThis operation took %" PRIu64 " milliseconds in total\n",
+		npc_id - START_NPC_NUM, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob,
+		performance_get_milliseconds("loadingnpc")
+	);
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
 	// set up the events cache
 	npc_read_event_script();

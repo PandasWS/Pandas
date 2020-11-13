@@ -17,19 +17,19 @@ using std::chrono::high_resolution_clock;
 struct s_performance_item {
 	nanoseconds duration_ns;
 	high_resolution_clock::time_point start_time;
-	uint32 total_cnt;
+	uint64 total_cnt;
 };
 
 std::map<std::string, struct s_performance_item> __performance;
 
 //************************************
-// Method:      performance_init
+// Method:      performance_create
 // Description: 创建并初始化一个性能计数器, 若计数器已存在则重置全部数据
 // Parameter:   std::string name
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/02/10 22:32
 //************************************
-void performance_init(std::string name) {
+void performance_create(std::string name) {
 	auto it = __performance.find(name);
 	if (it != __performance.end()) {
 		it->second.duration_ns = nanoseconds::zero();
@@ -88,8 +88,41 @@ void performance_stop(std::string name, const char* debug_file, const unsigned l
 }
 
 //************************************
+// Method:      performance_get_milliseconds
+// Description: 获取指定性能计数器距离上次调用 performance_create 至今的累积耗时
+// Access:      public 
+// Parameter:   std::string name
+// Returns:     int64
+// Author:      Sola丶小克(CairoLee)  2020/11/08 16:15
+//************************************
+int64 performance_get_milliseconds(std::string name) {
+	auto it = __performance.find(name);
+	if (it != __performance.end()) {
+		milliseconds ms = duration_cast<milliseconds>(it->second.duration_ns);
+		return ms.count();
+	}
+	return 0;
+}
+
+//************************************
+// Method:      performance_get_totalcount
+// Description: 获取指定性能计数器距离上次调用 performance_create 至今的累积调用次数
+// Access:      public 
+// Parameter:   std::string name
+// Returns:     uint64
+// Author:      Sola丶小克(CairoLee)  2020/11/08 16:16
+//************************************
+uint64 performance_get_totalcount(std::string name) {
+	auto it = __performance.find(name);
+	if (it != __performance.end()) {
+		return it->second.total_cnt;
+	}
+	return 0;
+}
+
+//************************************
 // Method:      performance_report
-// Description: 输出距离上次调用 performance_init 至今的计数器信息
+// Description: 输出距离上次调用 performance_create 至今的计数器信息
 // Parameter:   std::string name
 // Parameter:   const char * debug_file
 // Parameter:   const unsigned long debug_line
@@ -101,9 +134,9 @@ void performance_report(std::string name, const char* debug_file, const unsigned
 	if (it != __performance.end()) {
 		milliseconds ms = duration_cast<milliseconds>(it->second.duration_ns);
 #ifdef _DEBUG
-		ShowDebug("Performance counter " CL_WHITE "'%s'" CL_RESET " fired %" PRIuPTR " times, took " CL_WHITE "%" PRIuPTR CL_RESET " ms\n", name.c_str(), it->second.total_cnt, ms.count());
+		ShowDebug("Performance counter " CL_WHITE "'%s'" CL_RESET " fired %" PRIu64 " times, took " CL_WHITE "%" PRIu64 CL_RESET " ms\n", name.c_str(), it->second.total_cnt, ms.count());
 #else
-		ShowStatus("Performance counter " CL_WHITE "'%s'" CL_RESET " fired %" PRIuPTR " times, took " CL_WHITE "%" PRIuPTR CL_RESET " ms\n", name.c_str(), it->second.total_cnt, ms.count());
+		ShowStatus("Performance counter " CL_WHITE "'%s'" CL_RESET " fired %" PRIu64 " times, took " CL_WHITE "%" PRIu64 CL_RESET " ms\n", name.c_str(), it->second.total_cnt, ms.count());
 #endif // _DEBUG
 		return;
 	}
@@ -112,7 +145,22 @@ void performance_report(std::string name, const char* debug_file, const unsigned
 }
 
 //************************************
-// Method:      performance_begin
+// Method:      performance_destory
+// Description: 销毁性能计数器, 下次再使用需要重新调用 performance_create
+// Access:      public 
+// Parameter:   std::string name
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/11/08 15:46
+//************************************
+void performance_destory(std::string name) {
+	auto it = __performance.find(name);
+	if (it != __performance.end()) {
+		__performance.erase(it);
+	}
+}
+
+//************************************
+// Method:      performance_create_and_start
 // Description: 创建一个性能计数器并立刻开始计时 (init + start)
 // Parameter:   std::string name
 // Parameter:   const char * debug_file
@@ -120,13 +168,13 @@ void performance_report(std::string name, const char* debug_file, const unsigned
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/02/11 13:52
 //************************************
-void performance_begin(std::string name, const char* debug_file, const unsigned long debug_line) {
-	performance_init(name);
+void performance_create_and_start(std::string name, const char* debug_file, const unsigned long debug_line) {
+	performance_create(name);
 	performance_start(name, debug_file, debug_line);
 }
 
 //************************************
-// Method:      performance_end
+// Method:      performance_stop_and_report
 // Description: 停止一个性能计数器并输出结果 (stop + report)
 // Parameter:   std::string name
 // Parameter:   const char * debug_file
@@ -134,7 +182,7 @@ void performance_begin(std::string name, const char* debug_file, const unsigned 
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/02/11 13:52
 //************************************
-void performance_end(std::string name, const char* debug_file, const unsigned long debug_line) {
+void performance_stop_and_report(std::string name, const char* debug_file, const unsigned long debug_line) {
 	performance_stop(name, debug_file, debug_line);
 	performance_report(name, debug_file, debug_line);
 }

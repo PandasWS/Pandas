@@ -40,6 +40,10 @@
 #include "translate.hpp"
 #endif // Pandas_Console_Translate
 
+#ifdef Pandas_Setup_Console_Output_Codepage
+#include "utf8.hpp"
+#endif // Pandas_Setup_Console_Output_Codepage
+
 /// Called when a terminate signal is received.
 void (*shutdown_callback)(void) = NULL;
 

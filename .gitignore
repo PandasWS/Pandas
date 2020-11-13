@@ -168,6 +168,7 @@ __pycache__
 
 # IDE
 .vscode
+.idea
 /*.diagsession
 
 # Other

@@ -14993,7 +14993,9 @@ void clif_parse_GMKick(int fd, struct map_session_data *sd)
 			if( pc_can_use_command(sd, "unloadnpc", COMMAND_ATCOMMAND)) {
 				npc_unload_duplicates(nd);
 				npc_unload(nd,true);
+#ifndef Pandas_Speedup_Unloadnpc_Without_Refactoring_ScriptEvent
 				npc_read_event_script();
+#endif // Pandas_Speedup_Unloadnpc_Without_Refactoring_ScriptEvent
 			}
 		}
 		break;
