@@ -5327,8 +5327,10 @@ bool npc_unloadfile( const char* path ) {
 
 	dbi_destroy(iter);
 
+#ifndef Pandas_Speedup_Unloadnpc_Without_Refactoring_ScriptEvent
 	if( found ) /* refresh event cache */
 		npc_read_event_script();
+#endif // Pandas_Speedup_Unloadnpc_Without_Refactoring_ScriptEvent
 
 	npc_delsrcfile(path);
 
@@ -5336,12 +5338,12 @@ bool npc_unloadfile( const char* path ) {
 }
 
 void do_clear_npc(void) {
-	db_clear(npcname_db);
 #ifdef Pandas_Crashfix_EventDatabase_Clean_Synchronize
 	// 即将清空 ev_db, 同时也得把 script_event 清空掉 [Sola丶小克]
 	// 因为 ev_db 清空后 script_event 的值已经无效了, 被其他环节利用会导致崩溃
 	script_event.clear();
 #endif // Pandas_Crashfix_EventDatabase_Clean_Synchronize
+	db_clear(npcname_db);
 	db_clear(ev_db);
 }
 

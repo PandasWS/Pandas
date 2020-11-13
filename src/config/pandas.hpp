@@ -520,46 +520,6 @@
 #endif // Pandas_CreativeWork
 
 // ============================================================================
-// 优化加速组 - Pandas_Speedup
-// ============================================================================
-
-#ifdef Pandas_Speedup
-	// 是否在一些关键耗时节点打印出耗时情况 [Sola丶小克]
-	#define Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
-
-	// 是否优化 itemdb_searchname1 函数的实现方式 [Sola丶小克]
-	// 在默认情况下 rAthena 的 itemdb_searchname1 函数实现的非常低效
-	// 
-	// 优化后性能表现参考信息 (VS2019 + Win32)
-	// --------------------------------------------------------------
-	// 在 Release 模式下检索物品名称的性能提高大约 38 倍
-	#define Pandas_Speedup_Itemdb_SearchName
-
-	// 优化 map_readfromcache 中对每个 cell 的分配方式 [Sola丶小克]
-	// 主要降低 map_gat2cell 的调用次数, 因为一张地图需要加载 40000 个 cell
-	// 虽然已经启用了 static 和 inline 但内部调用 struct 创建构体也是开销非常大的.
-	//
-	// 优化后性能表现参考信息 (VS2019 + Win32)
-	// --------------------------------------------------------------
-	// 在 Debug 模式下越提速约 1.79 倍 (3350ms -> 1200ms)
-	// 在 Release 模式下提速约 17.65% (1000ms -> 850ms)
-	#define Pandas_Speedup_Map_Read_From_Cache
-
-	// 在 Windows 环境下对加载地图时滚动输出的信息进行限流 [Sola丶小克]
-	// 好处在于极大的提升加载速度, 坏处在于类似 LeeStarter 等工具中打开地图服务器,
-	// 会发现加载地图时的信息是跳跃显示的, 但并不影响实际情况下的使用
-	// 
-	// 优化后性能表现参考信息
-	// VS2019 + Win32 启用 Pandas_Speedup_Map_Read_From_Cache 的情况下
-	// --------------------------------------------------------------
-	// 在 Debug 模式下提速约 64% (1250ms -> 760ms)
-	// 在 Release 模式下提速约 1 倍 (940ms -> 460ms)
-	#ifdef _WIN32
-		#define Pandas_Speedup_Loading_Map_Status_Restrictor
-	#endif // _WIN32
-#endif // Pandas_Speedup
-
-// ============================================================================
 // 官方BUG修正组 - Pandas_Bugfix
 // ============================================================================
 
@@ -714,6 +674,58 @@
 	// 并用 @reloadbattleconf 使之立刻生效之后, 点击大乐透按钮会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_RouletteData_UnInit
 #endif // Pandas_Crashfix
+
+// ============================================================================
+// 优化加速组 - Pandas_Speedup
+// ============================================================================
+
+#ifdef Pandas_Speedup
+	// 是否在一些关键耗时节点打印出耗时情况 [Sola丶小克]
+	#define Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+
+	// 是否优化 itemdb_searchname1 函数的实现方式 [Sola丶小克]
+	// 在默认情况下 rAthena 的 itemdb_searchname1 函数实现的非常低效
+	// 
+	// 优化后性能表现参考信息 (VS2019 + Win32)
+	// --------------------------------------------------------------
+	// 在 Release 模式下检索物品名称的性能提高大约 38 倍
+	#define Pandas_Speedup_Itemdb_SearchName
+
+	// 优化 map_readfromcache 中对每个 cell 的分配方式 [Sola丶小克]
+	// 主要降低 map_gat2cell 的调用次数, 因为一张地图需要加载 40000 个 cell
+	// 虽然已经启用了 static 和 inline 但内部调用 struct 创建构体也是开销非常大的.
+	//
+	// 优化后性能表现参考信息 (VS2019 + Win32)
+	// --------------------------------------------------------------
+	// 在 Debug 模式下越提速约 1.79 倍 (3350ms -> 1200ms)
+	// 在 Release 模式下提速约 17.65% (1000ms -> 850ms)
+	#define Pandas_Speedup_Map_Read_From_Cache
+
+	// 在 Windows 环境下对加载地图时滚动输出的信息进行限流 [Sola丶小克]
+	// 好处在于极大的提升加载速度, 坏处在于类似 LeeStarter 等工具中打开地图服务器,
+	// 会发现加载地图时的信息是跳跃显示的, 但并不影响实际情况下的使用
+	// 
+	// 优化后性能表现参考信息
+	// VS2019 + Win32 启用 Pandas_Speedup_Map_Read_From_Cache 的情况下
+	// --------------------------------------------------------------
+	// 在 Debug 模式下提速约 64% (1250ms -> 760ms)
+	// 在 Release 模式下提速约 1 倍 (940ms -> 460ms)
+	#ifdef _WIN32
+		#define Pandas_Speedup_Loading_Map_Status_Restrictor
+	#endif // _WIN32
+
+	// 规避卸载 NPC 时的 npc_read_event_script 调用 [Sola丶小克]
+	// OnInit 调用了大量的 unloadnpc, 而每次调用都会触发 npc_read_event_script
+	// 
+	// 在 Pandas_Crashfix_EventDatabase_Clean_Synchronize 启用的情况下
+	// npc_unload_ev 每次卸载 NPC 时会将 script_event 中与 ev_db 相关的节点清理掉
+	// 因此没必要在卸载 NPC 的时候调用 npc_read_event_script
+	//
+	// 以下选项开关需要依赖 Pandas_Crashfix_EventDatabase_Clean_Synchronize 的拓展
+	#ifdef Pandas_Crashfix_EventDatabase_Clean_Synchronize
+		#define Pandas_Speedup_Unloadnpc_Without_Refactoring_ScriptEvent
+	#endif // Pandas_Crashfix_EventDatabase_Clean_Synchronize
+#endif // Pandas_Speedup
 
 // ============================================================================
 // 脚本引擎修改组 - Pandas_ScriptEngine
