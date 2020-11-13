@@ -721,6 +721,11 @@
 	// npc_unload_ev 每次卸载 NPC 时会将 script_event 中与 ev_db 相关的节点清理掉
 	// 因此没必要在卸载 NPC 的时候调用 npc_read_event_script
 	//
+	// 优化后性能表现参考信息 (VS2019 + Win32)
+	// --------------------------------------------------------------
+	// 在 Debug 模式下越提速约 2.72 倍 (5608ms -> 1506ms)
+	// 在 Release 模式下提速约 1.65 倍 (1985ms -> 750ms)
+	//
 	// 以下选项开关需要依赖 Pandas_Crashfix_EventDatabase_Clean_Synchronize 的拓展
 	#ifdef Pandas_Crashfix_EventDatabase_Clean_Synchronize
 		#define Pandas_Speedup_Unloadnpc_Without_Refactoring_ScriptEvent
