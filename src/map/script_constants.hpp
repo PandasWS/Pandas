@@ -67,6 +67,10 @@
 #ifdef Pandas_NpcFilter_CHANGETITLE
 	export_constant(NPCF_CHANGETITLE);	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
+
+#ifdef Pandas_NpcFilter_SC_START
+	export_constant(NPCF_SC_START);	// sc_start_filter_name	// OnPCBuffStartFilter		// 当玩家准备获得一个状态(Buff)时触发过滤器
+#endif // Pandas_NpcFilter_SC_START
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	/************************************************************************/
@@ -104,6 +108,10 @@
 #ifdef Pandas_NpcEvent_UNEQUIP
 	export_constant(NPCE_UNEQUIP);	// unequip_event_name	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_SC_START
+	export_constant(NPCE_SC_START);	// sc_start_event_name	// OnPCBuffStartEvent		// 当玩家成功获得一个状态(Buff)后触发事件
+#endif // Pandas_NpcEvent_SC_START
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 12>
 
 	/************************************************************************/

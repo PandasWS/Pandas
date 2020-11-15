@@ -318,6 +318,9 @@
 	当玩家穿戴一件未被绑定的装备, 并在客户端中确认执行绑定后,
 	在过滤器中用 processhalt 打断后续过程, 装备也将维持最初的未绑定状态.
 
+	执行该过滤器时, 装备实际上还未穿戴上, 因此在该事件的触发脚本中使用
+	getinventoryinfo(@equip_idx, 2) 尝试获取该装备的穿戴位置时获取的值永为 0
+
 ---------------------------------------
 
 *OnPCEquipEvent:
@@ -371,6 +374,9 @@
 	进行了交换, 并未直接脱下到背包中.
 
 	替换位置相同的"生效装备"时, 参数 @unequip_swapping 的值为 0.
+
+	执行该过滤器时, 装备实际上还未脱下, 因此在该事件的触发脚本中使用
+	getinventoryinfo(@equip_idx, 2) 尝试获取该装备的穿戴位置时获取的值通常不是 0
 
 千万注意:
 	当程序内部逻辑需要强制脱下某件装备时, @unequip_force 将为 1,
@@ -445,7 +451,7 @@
 		1 - 通过 setchartitle 脚本指令触发
 		2 - 通过 @title 管理员指令触发
 
-	@target_title_id	即将变更成的目标称号ID (该值可在事件中被修改)
+	@target_title_id	即将变更成的目标称号ID (该值可被修改)
 	@pre_title_id	之前的称号ID是多少
 
 注意事项:
@@ -458,5 +464,51 @@
 
 	- 取消了事件别名: OnPCChangeTitleEvent
 	- @new_title_id 改名为 @target_title_id (@new_title_id 将不再被赋值)
+
+---------------------------------------
+
+*OnPCBuffStartEvent:
+
+事件描述:
+	当玩家成功获得一个状态(Buff)后触发事件
+
+事件关联:
+	关联到获得状态的玩家
+
+携带参数:
+	@started_sc_id		该状态的编号
+	@started_sc_rate	该状态的触发概率(10000 = 100%)
+	@started_sc_tick	该状态的持续时长(单位为毫秒)
+						时长根据内部实现方式的不同, 有可能是指多长时间后剩余秒数减一
+	@started_sc_val1	该状态的第1个参数的值
+	@started_sc_val2	该状态的第2个参数的值
+	@started_sc_val3	该状态的第3个参数的值
+	@started_sc_val4	该状态的第4个参数的值
+
+---------------------------------------
+
+*OnPCBuffStartFilter:
+
+事件描述: 
+	当玩家即将获得一个状态(Buff)时触发此过滤器
+	
+事件关联:
+	关联到即将获得状态的玩家
+
+中断说明:
+	中断后服务端会无视玩家本次获得状态的请求
+
+携带参数:
+	@about2start_sc_id		该状态的编号
+	@about2start_sc_rate	该状态的触发概率(10000 = 100%, 该值可被修改)
+	@about2start_sc_tick	该状态的持续时长(单位为毫秒, 该值可被修改)
+							时长根据内部实现方式的不同, 有可能是指多长时间后剩余秒数减一
+	@about2start_sc_val1	该状态的第1个参数的值 (该值可被修改)
+	@about2start_sc_val2	该状态的第2个参数的值 (该值可被修改)
+	@about2start_sc_val3	该状态的第3个参数的值 (该值可被修改)
+	@about2start_sc_val4	该状态的第4个参数的值 (该值可被修改)
+
+注意事项:
+	若 @about2start_sc_rate 或 @about2start_sc_tick 被改写成 0 则视为执行中断
 
 ---------------------------------------
