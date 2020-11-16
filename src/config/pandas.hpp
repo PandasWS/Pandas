@@ -865,6 +865,11 @@
 		// 常量名称: NPCF_CHANGETITLE / 变量名称: changetitle_filter_name
 		#define Pandas_NpcFilter_CHANGETITLE
 #endif // Pandas_Character_Title_Controller
+
+		// 当玩家准备获得一个状态(Buff)时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCBuffStartFilter
+		// 常量名称: NPCF_SC_START / 变量名称: sc_start_filter_name
+		#define Pandas_NpcFilter_SC_START
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -911,6 +916,11 @@
 	// 事件类型: Event / 事件名称: OnPCUnequipEvent
 	// 常量名称: NPCE_UNEQUIP / 变量名称: unequip_event_name
 	#define Pandas_NpcEvent_UNEQUIP
+
+	// 当玩家成功获得一个状态(Buff)后触发事件 [Sola丶小克]
+	// 事件类型: Event / 事件名称: OnPCBuffStartEvent
+	// 常量名称: NPCE_SC_START / 变量名称: sc_start_event_name
+	#define Pandas_NpcEvent_SC_START
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/

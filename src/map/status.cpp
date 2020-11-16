@@ -9344,6 +9344,34 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 	sd = BL_CAST(BL_PC, bl);
 	vd = status_get_viewdata(bl);
 
+
+#ifdef Pandas_NpcFilter_SC_START
+	if (sd && sd->bl.type == BL_PC) {
+		pc_setreg(sd, add_str("@about2start_sc_id"), (int64)type);
+		pc_setreg(sd, add_str("@about2start_sc_rate"), rate);
+		pc_setreg(sd, add_str("@about2start_sc_tick"), tick);
+		pc_setreg(sd, add_str("@about2start_sc_val1"), val1);
+		pc_setreg(sd, add_str("@about2start_sc_val2"), val2);
+		pc_setreg(sd, add_str("@about2start_sc_val3"), val3);
+		pc_setreg(sd, add_str("@about2start_sc_val4"), val4);
+
+		if (npc_script_filter(sd, NPCF_SC_START)) {
+			return 0;
+		}
+
+		rate = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_rate")), 0, INT_MAX);
+		tick = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_tick")), 0, INT_MAX);
+		val1 = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_val1")), INT_MIN, INT_MAX);
+		val2 = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_val2")), INT_MIN, INT_MAX);
+		val3 = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_val3")), INT_MIN, INT_MAX);
+		val4 = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_val4")), INT_MIN, INT_MAX);
+
+		if (!rate || !tick) {
+			return 0;
+		}
+	}
+#endif // Pandas_NpcFilter_SC_START
+
 	undead_flag = battle_check_undead(status->race,status->def_ele);
 	// Check for immunities / sc fails
 	switch (type) {
@@ -12886,6 +12914,20 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 
 	if( opt_flag&2 && sd && !sd->npc_ontouch_.empty() )
 		npc_touchnext_areanpc(sd,false); // Run OnTouch_ on next char in range
+
+#ifdef Pandas_NpcEvent_SC_START
+	if (sd && sd->bl.type == BL_PC) {
+		pc_setreg(sd, add_str("@startedsc"), (int64)type);			// 为了兼容SEA和CSEA
+		pc_setreg(sd, add_str("@started_sc_id"), (int64)type);
+		pc_setreg(sd, add_str("@started_sc_rate"), rate);
+		pc_setreg(sd, add_str("@started_sc_tick"), tick);
+		pc_setreg(sd, add_str("@started_sc_val1"), val1);
+		pc_setreg(sd, add_str("@started_sc_val2"), val2);
+		pc_setreg(sd, add_str("@started_sc_val3"), val3);
+		pc_setreg(sd, add_str("@started_sc_val4"), val4);
+		npc_script_event(sd, NPCE_SC_START);
+	}
+#endif // Pandas_NpcEvent_SC_START
 
 	return 1;
 }

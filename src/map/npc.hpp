@@ -1302,6 +1302,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_CHANGETITLE
 	NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
+
+#ifdef Pandas_NpcFilter_SC_START
+	NPCF_SC_START,	// sc_start_filter_name	// OnPCBuffStartFilter		// 当玩家准备获得一个状态(Buff)时触发过滤器
+#endif // Pandas_NpcFilter_SC_START
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
@@ -1339,6 +1343,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_UNEQUIP
 	NPCE_UNEQUIP,	// unequip_event_name	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_SC_START
+	NPCE_SC_START,	// sc_start_event_name	// OnPCBuffStartEvent		// 当玩家成功获得一个状态(Buff)后触发事件
+#endif // Pandas_NpcEvent_SC_START
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	/************************************************************************/

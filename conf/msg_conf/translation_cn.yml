@@ -1316,6 +1316,8 @@ Body:
   Translation: "服务端程序在建立 [{CL_WHITE}]'%s'[{CL_RESET}] 连接时将使用 [{CL_WHITE}]'%s'[{CL_RESET}] 编码.\n"
 - Original: "Session #%d timed out\n"
   Translation: "连接编号为 #%d 的会话已超时\n"
+- Original: "Session was not found for character '%s' (CID: %d, AID: %d), defaulting gender to male...\n"
+  Translation: ""
 - Original: "Set map user: Character (%d:%d) marked on map server %d, but map server %d claims to have (%d:%d) online!\n"
   Translation: ""
 - Original: "Set skills to '%d' monsters.\n"
