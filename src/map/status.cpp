@@ -14000,6 +14000,15 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 		npc_touch_area_allnpc(sd,bl->m,bl->x,bl->y); // Trigger on-touch event.
 
 	ers_free(sc_data_ers, sce);
+
+#ifdef Pandas_NpcExpress_SC_END
+	if (sd && sd->bl.type == BL_PC) {
+		pc_setreg(sd, add_str("@endedsc"), (int64)type);			// 为了兼容SEA和CSEA
+		pc_setreg(sd, add_str("@ended_sc_id"), (int64)type);
+		npc_script_event(sd, NPCX_SC_END);
+	}
+#endif // Pandas_NpcExpress_SC_END
+
 	return 1;
 }
 

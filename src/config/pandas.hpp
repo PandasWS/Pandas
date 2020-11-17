@@ -935,6 +935,11 @@
 		// 正常按照命名规范这个事件应该叫 NPCX_STATCALC 和 OnPCStatCalcExpress
 		// 但这个事件比较特殊, 之前 rAthena 官方出现过. 考虑到对老脚本的兼容, 继续沿用老的事件常量和名称
 		#define Pandas_NpcExpress_STATCALC
+
+		// 当玩家成功解除一个状态(Buff)后触发事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnPCBuffEndExpress
+		// 常量名称: NPCX_SC_END / 变量名称: sc_end_express_name
+		#define Pandas_NpcExpress_SC_END
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	

@@ -378,6 +378,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcExpress_STATCALC
 	"OnPCStatCalcEvent",	// NPCE_STATCALC		// statcalc_express_name	// 当角色能力被重新计算时触发事件
 #endif // Pandas_NpcExpress_STATCALC
+
+#ifdef Pandas_NpcExpress_SC_END
+	"OnPCBuffEndExpress",	// NPCX_SC_END		// sc_end_express_name	// 当玩家成功解除一个状态(Buff)后触发事件
+#endif // Pandas_NpcExpress_SC_END
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 
 	// NPC related

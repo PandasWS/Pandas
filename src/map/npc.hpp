@@ -1356,6 +1356,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcExpress_STATCALC
 	NPCE_STATCALC,	// statcalc_express_name	// OnPCStatCalcEvent		// 当角色能力被重新计算时触发事件
 #endif // Pandas_NpcExpress_STATCALC
+
+#ifdef Pandas_NpcExpress_SC_END
+	NPCX_SC_END,	// sc_end_express_name	// OnPCBuffEndExpress		// 当玩家成功解除一个状态(Buff)后触发事件
+#endif // Pandas_NpcExpress_SC_END
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX
