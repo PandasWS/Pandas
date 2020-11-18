@@ -916,11 +916,6 @@
 	// 事件类型: Event / 事件名称: OnPCUnequipEvent
 	// 常量名称: NPCE_UNEQUIP / 变量名称: unequip_event_name
 	#define Pandas_NpcEvent_UNEQUIP
-
-	// 当玩家成功获得一个状态(Buff)后触发事件 [Sola丶小克]
-	// 事件类型: Event / 事件名称: OnPCBuffStartEvent
-	// 常量名称: NPCE_SC_START / 变量名称: sc_start_event_name
-	#define Pandas_NpcEvent_SC_START
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/
@@ -935,6 +930,16 @@
 		// 正常按照命名规范这个事件应该叫 NPCX_STATCALC 和 OnPCStatCalcExpress
 		// 但这个事件比较特殊, 之前 rAthena 官方出现过. 考虑到对老脚本的兼容, 继续沿用老的事件常量和名称
 		#define Pandas_NpcExpress_STATCALC
+
+		// 当玩家成功解除一个状态(Buff)后触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnPCBuffEndExpress
+		// 常量名称: NPCX_SC_END / 变量名称: sc_end_express_name
+		#define Pandas_NpcExpress_SC_END
+
+		// 当玩家成功获得一个状态(Buff)后触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnPCBuffStartExpress
+		// 常量名称: NPCX_SC_START / 变量名称: sc_start_express_name
+		#define Pandas_NpcExpress_SC_START
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	

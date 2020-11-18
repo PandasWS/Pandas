@@ -245,10 +245,6 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_UNEQUIP
 	const char* unequip_event_name;	// NPCE_UNEQUIP	// OnPCUnequipEvent	// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
-
-#ifdef Pandas_NpcEvent_SC_START
-	const char* sc_start_event_name;	// NPCE_SC_START	// OnPCBuffStartEvent	// 当玩家成功获得一个状态(Buff)后触发事件
-#endif // Pandas_NpcEvent_SC_START
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 
 	/************************************************************************/
@@ -258,6 +254,14 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_STATCALC
 	const char* statcalc_express_name;	// NPCE_STATCALC	// OnPCStatCalcEvent	// 当角色能力被重新计算时触发事件
 #endif // Pandas_NpcExpress_STATCALC
+
+#ifdef Pandas_NpcExpress_SC_END
+	const char* sc_end_express_name;	// NPCX_SC_END	// OnPCBuffEndExpress	// 当玩家成功解除一个状态(Buff)后触发实时事件
+#endif // Pandas_NpcExpress_SC_END
+
+#ifdef Pandas_NpcExpress_SC_START
+	const char* sc_start_express_name;	// NPCX_SC_START	// OnPCBuffStartExpress	// 当玩家成功获得一个状态(Buff)后触发实时事件
+#endif // Pandas_NpcExpress_SC_START
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related
