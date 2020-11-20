@@ -10,6 +10,25 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+## [v1.0.8] - `2020-11-20`
+
+### 升级
+
+- 升级到 `1.0.8` 请在主数据库导入: `upgrade_to_1.0.8_main.sql`
+
+### 添加
+
+- 实现支持多种单位的持久光环机制 (#324)
+- 优化对极端计算的支持 (AKA: 变态服拓展包) (#326)
+- 实现 OnPCBuffStartExpress 实时事件, 当玩家成功获得一个状态(Buff)后触发 (#329)
+- 实现 OnPCBuffStartFilter 过滤器, 当玩家即将获得一个状态(Buff)时触发 (#329)
+- 实现 OnPCBuffEndExpress 实时事件, 当玩家成功解除一个状态(Buff)后触发 (#330)
+
+### 调整
+
+- 使 Windows 环境下辅助脚本更容易被使用 (#325)
+- 优化地图服务器启动时的加载速度 (#327)
+
 ## [v1.0.7] - `2020-09-13`
 
 ### 升级
@@ -252,6 +271,7 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.0.8]: https://github.com/PandasWS/Pandas/compare/v1.0.7...v1.0.8
 [v1.0.7]: https://github.com/PandasWS/Pandas/compare/v1.0.6...v1.0.7
 [v1.0.6]: https://github.com/PandasWS/Pandas/compare/v1.0.5...v1.0.6
 [v1.0.5]: https://github.com/PandasWS/Pandas/compare/v1.0.4...v1.0.5
