@@ -598,7 +598,7 @@
 	#define Pandas_Fix_DuplicateBlock_When_Freeblock_Unlock
 
 	// 修正复兴后 "魔术子弹"(GS_MAGICALBULLET) 的伤害溢出问题 [Sola丶小克]
-	// 处于该状态下施展的普通攻击, 若攻击者的 matk_min 小于被攻击者的 mdef 则会导致
+	// 处于该状态下若攻击者的 matk_min 小于被攻击者的 mdef 则会导致
 	// 这一次普攻出现计算溢出的情况, 可以秒杀一切 BOSS
 	#define Pandas_Fix_MagicalBullet_Damage_Overflow
 #endif // Pandas_Bugfix
