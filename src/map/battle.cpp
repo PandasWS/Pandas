@@ -4875,7 +4875,11 @@ static void battle_attack_sc_bonus(struct Damage* wd, struct block_list *src, st
 
 			if (sstatus->matk_min > tmdef && sstatus->matk_max > sstatus->matk_min) {
 				ATK_ADD(wd->weaponAtk, wd->weaponAtk2, i64max((sstatus->matk_min + rnd() % (sstatus->matk_max - sstatus->matk_min)) - tmdef, 0));
+#ifndef Pandas_Fix_MagicalBullet_Damage_Overflow
 			} else {
+#else
+			} else if (sstatus->matk_min >= tmdef) {
+#endif // Pandas_Fix_MagicalBullet_Damage_Overflow
 				ATK_ADD(wd->weaponAtk, wd->weaponAtk2, i64max(sstatus->matk_min - tmdef, 0));
 			}
 		}
