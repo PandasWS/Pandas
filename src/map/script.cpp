@@ -17143,7 +17143,6 @@ static int buildin_query_sql_aysnc_sub(struct script_state* st, dbType type)
 					if (!script_rid2sd(sd)) { // no player attached
 						script_reportdata(data);
 						st->state = END;
-						query_sql_db.erase(st->id);
 						return SCRIPT_CMD_FAILURE;
 					}
 				}
@@ -17152,7 +17151,6 @@ static int buildin_query_sql_aysnc_sub(struct script_state* st, dbType type)
 				ShowError("script:query_sql_async: not a variable\n");
 				script_reportdata(data);
 				st->state = END;
-				query_sql_db.erase(st->id);
 				return SCRIPT_CMD_FAILURE;
 			}
 		}
@@ -17160,13 +17158,11 @@ static int buildin_query_sql_aysnc_sub(struct script_state* st, dbType type)
 
 		if (SQL_ERROR == result_data.sql_result_value) {
 			script_pushint(st, -1);
-			query_sql_db.erase(st->id);
 			return SCRIPT_CMD_FAILURE;
 		}
 
 		if (result_data.RowNum == 0) { // No data received
 			script_pushint(st, 0);
-			query_sql_db.erase(st->id);
 			return SCRIPT_CMD_SUCCESS;
 		}
 
@@ -17204,7 +17200,6 @@ static int buildin_query_sql_aysnc_sub(struct script_state* st, dbType type)
 		}
 
 		script_pushint(st, i);
-		query_sql_db.erase(st->id);
 	}
 
 	return SCRIPT_CMD_SUCCESS;
