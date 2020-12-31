@@ -17027,6 +17027,20 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 							else if( --req.amount[i] < 1 )
 								req.amount[i] = 1; // Hocus Pocus always use at least 1 gem
 						}
+
+#ifdef Pandas_Bonus_bNoFieldGemStone
+						if (sd->special_state.nofieldgemstone) {
+							switch (skill_id) {
+							case SA_LANDPROTECTOR:
+							case SA_DELUGE:
+							case SA_VOLCANO:
+							case SA_VIOLENTGALE:
+								req.itemid[i] = req.amount[i] = 0;
+								break;
+							}
+						}
+#endif // Pandas_Bonus_bNoFieldGemStone
+
 					}
 				}
 				// Check requirement for Magic Gear Fuel
