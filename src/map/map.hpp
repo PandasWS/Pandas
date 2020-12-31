@@ -521,6 +521,15 @@ enum _sp {
 	SP_EXTEND_UNUSED = 3100,
 	SP_STR_ALL, SP_AGI_ALL, SP_VIT_ALL, SP_INT_ALL, SP_DEX_ALL, SP_LUK_ALL,	// 3101-3106
 #endif // Pandas_ScriptParams_ReadParam
+
+#ifdef Pandas_Bonuses
+	SP_PANDAS_EXTEND_BONUS_START = 3500,
+	#ifdef Pandas_Bonus_bNoFieldGemStone
+		SP_PANDAS_NOFIELDGEMSTONE,	// 调整器名称: bNoFieldGemStone / 说明: 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+	#endif // Pandas_Bonus_bNoFieldGemStone
+	// PYHELP - BONUS - INSERT POINT - <Section 2>
+	SP_PANDAS_EXTEND_BONUS_END,
+#endif // Pandas_Bonuses
 };
 
 enum _look {

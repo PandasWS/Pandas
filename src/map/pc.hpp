@@ -376,6 +376,10 @@ struct map_session_data {
 		unsigned int bonus_coma : 1;
 		unsigned int no_mado_fuel : 1; // Disable Magic_Gear_Fuel consumption [Secret]
 		unsigned int no_walk_delay : 1;
+#ifdef Pandas_Bonus_bNoFieldGemStone
+		unsigned int nofieldgemstone : 1;
+#endif // Pandas_Bonus_bNoFieldGemStone
+		// PYHELP - BONUS - INSERT POINT - <Section 4>
 	} special_state;
 	uint32 login_id1, login_id2;
 	unsigned short class_;	//This is the internal job ID used by the map server to simplify comparisons/queries/etc. [Skotlex]
