@@ -53,6 +53,7 @@ step1_funclist = [
     'ShowStatus',
     'ShowMessage',
     'askConfirmation',
+    'invalidWarning',
     
     'strcat'
 ]
@@ -68,29 +69,29 @@ step2_rules = [
     # 1. 优先处理 " CL_WHITE " 
     # 这种左侧和右侧都有双引号的情况
     {
-        'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
+        'pattern' : re.compile(r'(\"\s*(CL_[0-9A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
         'subrepl' : r'[{\2}]'
     },
     # 2. 然后处理 CL_WHITE "
     # 这种左侧没有双引号的情况
     {
-        'pattern' : re.compile(r'(\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
+        'pattern' : re.compile(r'(\s*(CL_[0-9A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
         'subrepl' : r'"[{\2}]'
     },
     # 3. 在进行 2 处理后需要重新在执行一次 1 处理
     {
-        'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
+        'pattern' : re.compile(r'(\"\s*(CL_[0-9A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
         'subrepl' : r'[{\2}]'
     },
     # 4. 最后处理 " CL_RESET
     # 这种右侧没有双引号的情况
     {
-        'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*)'),
+        'pattern' : re.compile(r'(\"\s*(CL_[0-9A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*)'),
         'subrepl' : r'[{\2}]"'
     },
     # 5. 在进行 4 处理后需要重新再执行一次 1 处理
     {
-        'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
+        'pattern' : re.compile(r'(\"\s*(CL_[0-9A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
         'subrepl' : r'[{\2}]'
     }
 ]
@@ -207,7 +208,7 @@ class TranslationExtracter:
         部分特殊的函数需要取第二列的内容 (而不是第一列)
         例如: ShowConfigWarning 的第一个参数并不是我们要的提示文本
         '''
-        functions = ['ShowConfigWarning', 'strcat']
+        functions = ['ShowConfigWarning', 'strcat', 'invalidWarning']
         for item in step3_content:
             if item['func'] in functions:
                 text = str(item['text']).replace(r'\"', r'\""')

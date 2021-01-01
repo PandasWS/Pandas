@@ -42,6 +42,10 @@ public:
 		export_message_tag(CL_CLS);
 		export_message_tag(CL_CLL);
 
+#ifdef Pandas_Fix_ResidualInformation_When_EraseLine
+		export_message_tag(CL_CLL2);
+#endif // Pandas_Fix_ResidualInformation_When_EraseLine
+
 		export_message_tag(CL_BOLD);
 		export_message_tag(CL_NORM);
 		export_message_tag(CL_NORMAL);

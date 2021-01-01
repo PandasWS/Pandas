@@ -202,7 +202,11 @@ void YamlDatabase::parse( const YAML::Node& rootNode ){
 		for( const YAML::Node &node : bodyNode ){
 			count += this->parseBodyNode( node );
 
+#ifndef Pandas_Fix_ResidualInformation_When_EraseLine
 			ShowStatus( "Loading [%" PRIdPTR "/%" PRIdPTR "] entries from '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r", ++childNodesProgressed, childNodesCount, fileName );
+#else
+			ShowStatus( "Loading [%" PRIdPTR "/%" PRIdPTR "] entries from '" CL_WHITE "%s" CL_RESET "'" CL_CLL2 "\r", ++childNodesProgressed, childNodesCount, fileName );
+#endif // Pandas_Fix_ResidualInformation_When_EraseLine
 		}
 
 		ShowStatus( "Done reading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\n", count, fileName );
