@@ -3673,6 +3673,13 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 			if (sd->state.lr_flag != 2)
 				sd->special_state.no_walk_delay = 1;
 			break;
+#ifdef Pandas_Bonus_bNoFieldGemStone
+		case SP_PANDAS_NOFIELDGEMSTONE:
+			if (sd->state.lr_flag != 2)
+				sd->special_state.nofieldgemstone = 1;
+			break;
+#endif // Pandas_Bonus_bNoFieldGemStone
+		// PYHELP - BONUS - INSERT POINT - <Section 5>
 		default:
 #ifdef Pandas_NpcExpress_STATCALC
 			if (running_npc_stat_calc_event) {
@@ -9120,6 +9127,7 @@ int64 pc_readparam(struct map_session_data* sd,int64 type)
 			val = sd->castrate; break;
 #endif
 		case SP_CRIT_DEF_RATE: val = sd->bonus.crit_def_rate; break;
+
 #ifdef Pandas_ScriptParams_ReadParam
 		case SP_STR_ALL:	val = sd->battle_status.str; break;
 		case SP_AGI_ALL:	val = sd->battle_status.agi; break;
@@ -9128,6 +9136,10 @@ int64 pc_readparam(struct map_session_data* sd,int64 type)
 		case SP_DEX_ALL:	val = sd->battle_status.dex; break;
 		case SP_LUK_ALL:	val = sd->battle_status.luk; break;
 #endif // Pandas_ScriptParams_ReadParam
+
+#ifdef Pandas_Bonus_bNoFieldGemStone
+		case SP_PANDAS_NOFIELDGEMSTONE:	val = sd->special_state.nofieldgemstone; break;
+#endif // Pandas_Bonus_bNoFieldGemStone
 		default:
 			ShowError("pc_readparam: Attempt to read unknown parameter '%lld'.\n", type);
 			return -1;

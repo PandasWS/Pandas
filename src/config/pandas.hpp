@@ -26,6 +26,7 @@
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
 	#define Pandas_AtCommands
+	#define Pandas_Bonuses
 	#define Pandas_ScriptCommands
 	#define Pandas_ScriptResults
 	#define Pandas_ScriptParams
@@ -1080,6 +1081,20 @@
 	#endif // Pandas_Aura_Mechanism
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
+
+// ============================================================================
+// 效果调整组 - Pandas_Bonuses
+// ============================================================================
+
+#ifdef Pandas_Bonuses
+	// 是否启用 bNoFieldGemStone 效果调整器 [Sola丶小克]
+	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+	// 常量名称: SP_PANDAS_NOFIELDGEMSTONE / 调整器名称: bNoFieldGemStone
+	// 变量位置: special_state / 变量名称: nofieldgemstone
+	// 使用原型: bonus bNoFieldGemStone;
+	#define Pandas_Bonus_bNoFieldGemStone
+	// PYHELP - BONUS - INSERT POINT - <Section 1>
+#endif // Pandas_Bonuses
 
 // ============================================================================
 // 脚本指令组 - Pandas_ScriptCommands
