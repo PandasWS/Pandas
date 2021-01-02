@@ -1897,7 +1897,7 @@ int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, i
 	nullpo_ret(item);
 
 #ifndef Pandas_Fix_Item_Trade_FloorDropable
-	if (!(flags&4) && battle_config.item_onfloor && (itemdb_traderight(item->nameid)&1))
+	if (!(flags&4) && battle_config.item_onfloor && (itemdb_traderight(item->nameid).trade))
 		return 0; //can't be dropped
 #else
 	if (sd) {
@@ -1909,7 +1909,7 @@ int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, i
 	}
 	else {
 		// 若没有携带 sd 参数或 sd 参数为空指针, 那么走 rAthena 的默认检测流程
-		if (!(flags&4) && battle_config.item_onfloor && (itemdb_traderight(item->nameid)&1))
+		if (!(flags&4) && battle_config.item_onfloor && (itemdb_traderight(item->nameid).trade))
 			return 0; //can't be dropped
 	}
 #endif // Pandas_Fix_Item_Trade_FloorDropable
