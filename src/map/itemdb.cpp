@@ -23,6 +23,10 @@
 #include "pc.hpp"
 #include "status.hpp"
 
+#ifdef Pandas_Database_ItemProperties
+#include "itemprops.hpp"
+#endif // Pandas_Database_ItemProperties
+
 using namespace rathena;
 
 static std::map<uint32, std::shared_ptr<s_item_combo>> itemdb_combo; /// Item Combo DB
@@ -32,157 +36,96 @@ static DBMap *itemdb_randomopt_group; /// Random option group DB
 
 struct s_roulette_db rd;
 
-#ifdef Pandas_Persistence_Itemdb_Script
-
-typedef std::shared_ptr<s_item_script> shared_itemdb_script;
-typedef std::map<t_itemid, shared_itemdb_script> itemdb_script_db;
-
-itemdb_script_db itemdb_scripts;
-
-//************************************
-// Method:      itemdb_store_script
-// Description: 记住指定道具的脚本字符串信息
-// Parameter:   t_itemid nameid
-// Parameter:   const char * script
-// Parameter:   const char * equip
-// Parameter:   const char * unequip
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2020/9/5 0:09
-//************************************
-void itemdb_store_script(t_itemid nameid, const char* script, const char* equip, const char* unequip) {
-	auto item = itemdb_scripts.find(nameid);
-	if (item == itemdb_scripts.end()) {
-		shared_itemdb_script scr = std::make_shared<s_item_script>();
-		scr->script = std::make_shared<std::string>(script);
-		scr->equip_script = std::make_shared<std::string>(equip);
-		scr->unequip_script = std::make_shared<std::string>(unequip);
-
-		scr->script = std::make_shared<std::string>(strTrim(*scr->script));
-		scr->equip_script = std::make_shared<std::string>(strTrim(*scr->equip_script));
-		scr->unequip_script = std::make_shared<std::string>(strTrim(*scr->unequip_script));
-		itemdb_scripts[nameid] = scr;
-	}
-	else {
-		auto scr = item->second;
-		scr->script = std::make_shared<std::string>(script);
-		scr->equip_script = std::make_shared<std::string>(equip);
-		scr->unequip_script = std::make_shared<std::string>(unequip);
-		
-		scr->script = std::make_shared<std::string>(strTrim(*scr->script));
-		scr->equip_script = std::make_shared<std::string>(strTrim(*scr->equip_script));
-		scr->unequip_script = std::make_shared<std::string>(strTrim(*scr->unequip_script));
-	}
-}
-
-//************************************
-// Method:      itemdb_get_script
-// Description: 读取指定道具的脚本字符串信息
-// Parameter:   t_itemid nameid
-// Parameter:   enum e_store_script scr_type
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2020/9/5 0:09
-//************************************
-std::string itemdb_get_script(t_itemid nameid, enum e_store_script scr_type) {
-	auto item = itemdb_scripts.find(nameid);
-	if (item != itemdb_scripts.end() && item->second) {
-		switch (scr_type)
-		{
-		case STORE_SCRIPT_USED:
-			return *item->second->script;
-		case STORE_SCRIPT_EQUIP:
-			return *item->second->equip_script;
-		case STORE_SCRIPT_UNEQUIP:
-			return *item->second->unequip_script;
-		}
-	}
-	return std::string();
-};
-
-#endif // Pandas_Persistence_Itemdb_Script
-
-#ifdef Pandas_Speedup_Itemdb_SearchName
-
-typedef std::vector<struct item_data*> speedup_cache_item;
-typedef std::shared_ptr<speedup_cache_item> shared_speedup_cache_item;
-typedef std::map<std::string, shared_speedup_cache_item> speedup_cache_db;
-
-speedup_cache_db itemdb_speedup_name;
-speedup_cache_db itemdb_speedup_jname;
-
-//************************************
-// Method:      itemdb_speedup_clear
-// Description: 重置并清空用于加速 itemdb 操作的缓存数据
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2020/02/14 00:39
-//************************************
-void itemdb_speedup_clear() {
-	itemdb_speedup_name.clear();
-	itemdb_speedup_jname.clear();
-}
-
-//************************************
-// Method:      itemdb_speedup_cache_name
-// Description: 缓存某个道具的名称, 以便加速检索效率
-// Parameter:   speedup_cache_db & _map
-// Parameter:   std::string key
-// Parameter:   struct item_data * id
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2020/02/14 00:39
-//************************************
-void itemdb_speedup_cache_name(speedup_cache_db& _map, std::string key, struct item_data* id) {
-	auto item = _map.find(key);
-	if (item == _map.end()) {
-		shared_speedup_cache_item vec = std::make_shared<speedup_cache_item>();
-		vec->push_back(id);
-		_map[key] = vec;
-	}
-	else {
-		shared_speedup_cache_item vec = item->second;
-		for (auto subitem = vec->begin(); subitem != vec->end(); subitem++) {
-			if ((*subitem)->nameid == id->nameid) {
-				(*subitem) = id;
-				return;
-			}
-		}
-		vec->push_back(id);
-	}
-}
-
-//************************************
-// Method:      itemdb_speedup_search_name
-// Description: 在某个数据库中搜索特定道具名称的对应物品
-// Parameter:   speedup_cache_db & _map
-// Parameter:   std::string name
-// Returns:     struct item_data*
-// Author:      Sola丶小克(CairoLee)  2020/02/14 00:45
-//************************************
-struct item_data* itemdb_speedup_search_name(speedup_cache_db& _map, std::string name) {
-	auto it = _map.find(name);
-	if (it != _map.end()) {
-		shared_speedup_cache_item sublist = it->second;
-		if (!sublist->empty()) {
-			return sublist->back();
-		}
-	}
-	return NULL;
-}
-
-//************************************
-// Method:      itemdb_speedup_item
-// Description: 建立该物品相关的缓存, 以便加速其他检索操作
-// Parameter:   struct item_data * id
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2020/02/14 00:46
-//************************************
-void itemdb_speedup_item(struct item_data* id) {
-	itemdb_speedup_cache_name(itemdb_speedup_name, id->name, id);
-	itemdb_speedup_cache_name(itemdb_speedup_jname, id->jname, id);
-}
-
-#endif // Pandas_Speedup_Itemdb_SearchName
-
 static void itemdb_jobid2mapid(uint64 bclass[3], e_mapid jobmask, bool active);
 static char itemdb_gendercheck(struct item_data *id);
+
+#ifdef Pandas_Struct_Item_Data_Pandas
+enum e_script_type {
+	SCRIPT_TYPE_USED,
+	SCRIPT_TYPE_EQUIP,
+	SCRIPT_TYPE_UNEQUIP
+};
+
+//************************************
+// Method:      item_script_process
+// FullName:    item_script_process
+// Description: 当物品的脚本信息更新时, 执行自定义处理操作
+// Access:      public static 
+// Parameter:   std::shared_ptr<item_data> item
+// Parameter:   e_script_type script_type
+// Parameter:   std::string script
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/01/02 14:46
+//************************************
+inline static void item_script_process(std::shared_ptr<item_data> item, e_script_type script_type, std::string script) {
+	if (!item) return;
+
+#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+	switch (script_type)
+	{
+	case SCRIPT_TYPE_USED:
+		item->pandas.script_plaintext.script = std::make_shared<std::string>(strTrim(script));
+		break;
+	case SCRIPT_TYPE_EQUIP:
+		item->pandas.script_plaintext.equip_script = std::make_shared<std::string>(strTrim(script));
+		break;
+	case SCRIPT_TYPE_UNEQUIP:
+		item->pandas.script_plaintext.unequip_script = std::make_shared<std::string>(strTrim(script));
+		break;
+	default:
+		break;
+	}
+#endif // Pandas_Struct_Item_Data_Script_Plaintext
+
+#ifdef Pandas_Struct_Item_Data_Taming_Mobid
+	// 判断该道具的脚本是否调用了 pet 或 mpet 指令 [Sola丶小克]
+	// 若确实有相关的调用, 则记录下此道具支持捕捉的魔物编号
+	if (script_type == SCRIPT_TYPE_USED && !script.empty()) {
+		if (!hasCatchPet(script, item->pandas.taming_mobid)) {
+			item->pandas.taming_mobid.clear();
+		}
+	}
+#endif // Pandas_Struct_Item_Data_Taming_Mobid
+
+#ifdef Pandas_Struct_Item_Data_Has_CallFunc
+	// 判断该道具的脚本是不是有 callfunc "xxxx"; 若有则记录一下 [Sola丶小克]
+	if (script_type == SCRIPT_TYPE_USED && !script.empty()) {
+		item->pandas.has_callfunc = hasCallfunc(script);
+	}
+#endif // Pandas_Struct_Item_Data_Has_CallFunc
+};
+
+//************************************
+// Method:      item_script_reset
+// FullName:    item_script_reset
+// Description: 当物品的脚本信息被重置时, 执行自定义处理操作
+// Access:      public static 
+// Parameter:   std::shared_ptr<item_data> item
+// Parameter:   e_script_type script_type
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/01/02 14:46
+//************************************
+inline static void item_script_reset(std::shared_ptr<item_data> item, e_script_type script_type) {
+	if (!item) return;
+
+#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+	switch (script_type)
+	{
+	case SCRIPT_TYPE_USED:
+		item->pandas.script_plaintext.script = nullptr;
+		break;
+	case SCRIPT_TYPE_EQUIP:
+		item->pandas.script_plaintext.equip_script = nullptr;
+		break;
+	case SCRIPT_TYPE_UNEQUIP:
+		item->pandas.script_plaintext.unequip_script = nullptr;
+		break;
+	default:
+		break;
+	}
+#endif // Pandas_Struct_Item_Data_Script_Plaintext
+};
+#endif // Pandas_Struct_Item_Data_Pandas
 
 const std::string ItemDatabase::getDefaultLocation() {
 	return std::string(db_path) + "/item_db.yml";
@@ -558,7 +501,12 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 				return 0;
 
 			if (active) {
+#ifndef Pandas_Shadowgear_Support_Card
 				if (constant & EQP_SHADOW_GEAR && item->type != IT_SHADOWGEAR) {
+#else
+				// 准许卡片类型道具设置影子装备的穿戴位置, 而不会被系统判定为无效道具
+				if (constant & EQP_SHADOW_GEAR && item->type != IT_SHADOWGEAR && item->type != IT_CARD) {
+#endif // Pandas_Shadowgear_Support_Card
 					this->invalidWarning(node, "Invalid item equip location %s as it's not a Shadow Gear item type, defaulting to IT_ETC.\n", equipName.c_str());
 					item->type = IT_ETC;
 				}
@@ -1126,9 +1074,17 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		}
 
 		item->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), node["Script"].Mark().line + 1, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+
+#ifdef Pandas_Struct_Item_Data_Pandas
+		item_script_process(item, SCRIPT_TYPE_USED, script);
+#endif // Pandas_Struct_Item_Data_Pandas
 	} else {
 		if (!exists) 
 			item->script = nullptr;
+#ifdef Pandas_Struct_Item_Data_Pandas
+		if (!exists)
+			item_script_reset(item, SCRIPT_TYPE_USED);
+#endif // Pandas_Struct_Item_Data_Pandas
 	}
 
 	if (this->nodeExists(node, "EquipScript")) {
@@ -1143,9 +1099,17 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		}
 
 		item->equip_script = parse_script(script.c_str(), this->getCurrentFile().c_str(), node["EquipScript"].Mark().line + 1, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+
+#ifdef Pandas_Struct_Item_Data_Pandas
+		item_script_process(item, SCRIPT_TYPE_EQUIP, script);
+#endif // Pandas_Struct_Item_Data_Pandas
 	} else {
 		if (!exists)
 			item->equip_script = nullptr;
+#ifdef Pandas_Struct_Item_Data_Pandas
+		if (!exists)
+			item_script_reset(item, SCRIPT_TYPE_EQUIP);
+#endif // Pandas_Struct_Item_Data_Pandas
 	}
 
 	if (this->nodeExists(node, "UnEquipScript")) {
@@ -1160,9 +1124,17 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		}
 
 		item->unequip_script = parse_script(script.c_str(), this->getCurrentFile().c_str(), node["UnEquipScript"].Mark().line + 1, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+
+#ifdef Pandas_Struct_Item_Data_Pandas
+		item_script_process(item, SCRIPT_TYPE_UNEQUIP, script);
+#endif // Pandas_Struct_Item_Data_Pandas
 	} else {
 		if (!exists)
 			item->unequip_script = nullptr;
+#ifdef Pandas_Struct_Item_Data_Pandas
+		if (!exists)
+			item_script_reset(item, SCRIPT_TYPE_UNEQUIP);
+#endif // Pandas_Struct_Item_Data_Pandas
 	}
 
 	if (!exists)
@@ -2392,27 +2364,6 @@ static bool itemdb_read_sqldb_sub(char **str) {
 	if (*str[++index])
 		node["UnEquipScript"] = str[index];
 
-#ifdef Pandas_Persistence_Itemdb_Script
-	itemdb_store_script(nameid, str[19], str[20], str[21]);
-#endif // Pandas_Persistence_Itemdb_Script
-
-#ifdef Pandas_Struct_Item_Data_Taming_Mobid
-	// 判断该道具的脚本是否调用了 pet 或 mpet 指令 [Sola丶小克]
-	// 若确实有相关的调用, 则记录下此道具支持捕捉的魔物编号
-	if (id->script != NULL) {
-		if (!hasCatchPet(str[19], id->taming_mobid)) {
-			id->taming_mobid.clear();
-		}
-	}
-#endif // Pandas_Struct_Item_Data_Taming_Mobid
-
-#ifdef Pandas_Struct_Item_Data_Has_CallFunc
-	// 判断该道具的脚本是不是有 callfunc "xxxx"; 若有则记录一下 [Sola丶小克]
-	if (id->script != NULL) {
-		id->has_callfunc = (hasCallfunc(str[19]) ? 1 : 0);
-	}
-#endif // Pandas_Struct_Item_Data_Has_CallFunc
-
 	return item_db.parseBodyNode(node) > 0;
 }
 
@@ -2791,30 +2742,6 @@ int item_data::inventorySlotNeeded(int quantity)
 	return (this->flag.guid || !this->isStackable()) ? quantity : 1;
 }
 
-#ifdef Pandas_Struct_Item_Data_Properties
-static int itemdb_property_parse(DBKey key, DBData *data, va_list ap) {
-	struct item_data *item = (struct item_data *)db_data2ptr(data);
-	if (item == nullptr) return 0;
-
-	auto it = itemdb_get_property(item->nameid);
-	if (it != nullptr) {
-		item->properties.no_consume_of_player = ((it->property & 1) ? 1 : 0);
-		item->properties.no_consume_of_skills = ((it->property & 2) ? 1 : 0);
-		item->properties.is_amulet = ((it->property & 4) ? 1 : 0);
-		item->properties.noview_mask = it->noview;
-		item->properties.annouce_mask = it->annouce;
-	}
-
-#ifdef Pandas_Item_Amulet_System
-	// 若为护身符道具, 则直接改写它的物品类型为 IT_AMULET
-	if (item->properties.is_amulet)
-		item->type = IT_AMULET;
-#endif // Pandas_Item_Amulet_System
-
-	return 0;
-}
-#endif // Pandas_Struct_Item_Data_Properties
-
 /**
 * Reload Item DB
 */
@@ -2832,10 +2759,6 @@ void itemdb_reload(void) {
 	item_properties_db.clear();
 #endif // Pandas_Database_ItemProperties
 
-#ifdef Pandas_Speedup_Itemdb_SearchName
-	itemdb_speedup_clear();
-#endif // Pandas_Speedup_Itemdb_SearchName
-
 #ifdef Pandas_Storage_Itemdb_Script
 	itemdb_scripts.clear();
 #endif // Pandas_Storage_Itemdb_Script
@@ -2851,9 +2774,7 @@ void itemdb_reload(void) {
 	// 加载 item_properties.yml 必须在 itemdb_read 之后进行
 	// 因此加载过程中需要判断物品编号是否有效, 这需要依赖 itemdb_read 的执行结果
 	item_properties_db.load();
-	#ifdef Pandas_Struct_Item_Data_Properties
-		itemdb->foreach(itemdb, itemdb_property_parse);
-	#endif // Pandas_Struct_Item_Data_Properties
+	item_properties_db.parsePropertiesToItemDB(item_db);
 #endif // Pandas_Database_ItemProperties
 
 	if (battle_config.feature_roulette)
@@ -2919,9 +2840,7 @@ void do_init_itemdb(void) {
 	// 加载 item_properties.yml 必须在 itemdb_read 之后进行
 	// 因此加载过程中需要判断物品编号是否有效, 这需要依赖 itemdb_read 的执行结果
 	item_properties_db.load();
-	#ifdef Pandas_Struct_Item_Data_Properties
-		itemdb->foreach(itemdb, itemdb_property_parse);
-	#endif // Pandas_Struct_Item_Data_Properties
+	item_properties_db.parsePropertiesToItemDB(item_db);
 #endif // Pandas_Database_ItemProperties
 
 	if (battle_config.feature_roulette)

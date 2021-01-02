@@ -14300,13 +14300,41 @@ BUILDIN_FUNC(getiteminfo)
 		switch (nx)
 		{
 		case -1:	script_pushint(st, i_data->flag.no_refine ? 0 : 1);				return SCRIPT_CMD_SUCCESS;
-		case -2:	script_pushint(st, i_data->flag.trade_restriction);				return SCRIPT_CMD_SUCCESS;
-		case -3:	script_pushint(st, i_data->properties.no_consume_of_player);	return SCRIPT_CMD_SUCCESS;
-		case -4:	script_pushint(st, i_data->properties.no_consume_of_skills);	return SCRIPT_CMD_SUCCESS;
+		case -2: {
+			int64 trade_mask = 0;
+			if (i_data && i_data->flag.trade_restriction.drop)
+				trade_mask |= 1;
+			if (i_data && i_data->flag.trade_restriction.trade)
+				trade_mask |= 2;
+			if (i_data && i_data->flag.trade_restriction.trade_partner)
+				trade_mask |= 4;
+			if (i_data && i_data->flag.trade_restriction.sell)
+				trade_mask |= 8;
+			if (i_data && i_data->flag.trade_restriction.cart)
+				trade_mask |= 16;
+			if (i_data && i_data->flag.trade_restriction.storage)
+				trade_mask |= 32;
+			if (i_data && i_data->flag.trade_restriction.guild_storage)
+				trade_mask |= 64;
+			if (i_data && i_data->flag.trade_restriction.mail)
+				trade_mask |= 128;
+			if (i_data && i_data->flag.trade_restriction.auction)
+				trade_mask |= 256;
+			script_pushint(st, trade_mask);
+			break;
+		}
+
+#ifdef Pandas_Struct_Item_Data_Properties
+		case -3:	script_pushint(st, i_data->pandas.properties.avoid_use_consume);	return SCRIPT_CMD_SUCCESS;
+		case -4:	script_pushint(st, i_data->pandas.properties.avoid_skill_consume);	return SCRIPT_CMD_SUCCESS;
+#else
+		case -3:	script_pushint(st, 0);	return SCRIPT_CMD_SUCCESS;
+		case -4:	script_pushint(st, 0);	return SCRIPT_CMD_SUCCESS;
+#endif // Pandas_Struct_Item_Data_Properties
 
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
 		case -5: {
-			if (script_hasdata(st, 4) && i_data->taming_mobid.size()) {
+			if (script_hasdata(st, 4) && i_data->pandas.taming_mobid.size()) {
 				int idx = 0;
 				struct script_data* data = NULL;
 				char* varname = NULL;
@@ -14332,13 +14360,13 @@ BUILDIN_FUNC(getiteminfo)
 					}
 				}
 
-				for (auto it : i_data->taming_mobid) {
+				for (auto it : i_data->pandas.taming_mobid) {
 					setd_sub_num(st, NULL, varname, idx, it, data->ref);
 					idx++;
 				}
 			}
 
-			script_pushint(st, i_data->taming_mobid.size() ? 1 : 0);
+			script_pushint(st, i_data->pandas.taming_mobid.size() ? 1 : 0);
 			return SCRIPT_CMD_SUCCESS;
 		}
 #else
@@ -14346,25 +14374,31 @@ BUILDIN_FUNC(getiteminfo)
 #endif // Pandas_Struct_Item_Data_Taming_Mobid
 
 #ifdef Pandas_Struct_Item_Data_Has_CallFunc
-		case -6:	script_pushint(st, i_data->has_callfunc);						return SCRIPT_CMD_SUCCESS;
+		case -6:	script_pushint(st, i_data->pandas.has_callfunc);				return SCRIPT_CMD_SUCCESS;
 #else
 		case -6:	script_pushint(st, -2);											return SCRIPT_CMD_SUCCESS;
 #endif // Pandas_Struct_Item_Data_Has_CallFunc
 
 #ifdef Pandas_Persistence_Itemdb_Script
 		case -7: {
-			std::string script = itemdb_get_script(item_id, STORE_SCRIPT_USED);
-			script_pushstrcopy(st, script.c_str());
+			if (i_data->pandas.script_plaintext.script)
+				script_pushstrcopy(st, i_data->pandas.script_plaintext.script->c_str());
+			else
+				script_pushstrcopy(st, "");
 			return SCRIPT_CMD_SUCCESS;
 		}
 		case -8: {
-			std::string script = itemdb_get_script(item_id, STORE_SCRIPT_EQUIP);
-			script_pushstrcopy(st, script.c_str());
+			if (i_data->pandas.script_plaintext.equip_script)
+				script_pushstrcopy(st, i_data->pandas.script_plaintext.equip_script->c_str());
+			else
+				script_pushstrcopy(st, "");
 			return SCRIPT_CMD_SUCCESS;
 		}
 		case -9: {
-			std::string script = itemdb_get_script(item_id, STORE_SCRIPT_UNEQUIP);
-			script_pushstrcopy(st, script.c_str());
+			if (i_data->pandas.script_plaintext.unequip_script)
+				script_pushstrcopy(st, i_data->pandas.script_plaintext.unequip_script->c_str());
+			else
+				script_pushstrcopy(st, "");
 			return SCRIPT_CMD_SUCCESS;
 		}
 #else

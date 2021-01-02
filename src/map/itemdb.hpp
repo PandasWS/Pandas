@@ -15,10 +15,6 @@
 #include <vector>
 #endif // Pandas_Struct_Item_Data_Taming_Mobid
 
-#ifdef Pandas_Database_ItemProperties
-#include "itemprops.hpp"
-#endif // Pandas_Database_ItemProperties
-
 #include "script.hpp"
 #include "status.hpp"
 
@@ -901,6 +897,40 @@ struct item_data
 		sc_type sc; ///< Use delay group if any instead using player's item_delay data [Cydh]
 	} delay;
 
+#ifdef Pandas_Struct_Item_Data_Pandas
+	struct s_pandas {
+#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+		struct s_script_plaintext {
+			std::shared_ptr<std::string> script;
+			std::shared_ptr<std::string> equip_script;
+			std::shared_ptr<std::string> unequip_script;
+		} script_plaintext;
+#endif // Pandas_Struct_Item_Data_Script_Plaintext
+
+#ifdef Pandas_Struct_Item_Data_Taming_Mobid
+		// 使 item_data 可记录当前物品可捕捉的魔物编号 [Sola丶小克]
+		// 若 vector 为空则表示这不是宠物捕捉道具, 若非空则记录此道具支持捕捉的魔物编号
+		std::vector<uint32> taming_mobid;
+#endif // Pandas_Struct_Item_Data_Taming_Mobid
+
+#ifdef Pandas_Struct_Item_Data_Has_CallFunc
+		// 使 item_data 可记录此物品的使用脚本是否执行了 callfunc 指令 [Sola丶小克]
+		bool has_callfunc = false;
+#endif // Pandas_Struct_Item_Data_Has_CallFunc
+
+#ifdef Pandas_Struct_Item_Data_Properties
+		// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
+		struct {
+			bool avoid_use_consume = false;
+			bool avoid_skill_consume = false;
+			bool is_amulet = false;
+			uint32 noview_mask = 0;
+			uint32 annouce_mask = 0;
+		} properties;
+#endif // Pandas_Struct_Item_Data_Properties
+	} pandas;
+#endif // Pandas_Struct_Item_Data_Pandas
+
 	~item_data() {
 		if (this->script){
 			script_free_code(this->script);
@@ -917,35 +947,27 @@ struct item_data
 			this->unequip_script = nullptr;
 		}
 
+#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+		if (this->pandas.script_plaintext.script) {
+			this->pandas.script_plaintext.script = nullptr;
+		}
+		if (this->pandas.script_plaintext.equip_script) {
+			this->pandas.script_plaintext.equip_script = nullptr;
+		}
+		if (this->pandas.script_plaintext.unequip_script) {
+			this->pandas.script_plaintext.unequip_script = nullptr;
+		}
+#endif // Pandas_Struct_Item_Data_Script_Plaintext
+
+#ifdef Pandas_Struct_Item_Data_Taming_Mobid
+		this->pandas.taming_mobid.clear();
+#endif // Pandas_Struct_Item_Data_Taming_Mobid
+
 		this->combos.clear();
 	}
 
 	bool isStackable();
 	int inventorySlotNeeded(int quantity);
-
-#ifdef Pandas_Struct_Item_Data_Taming_Mobid
-	// 此物品是否为宠物捕捉道具 [Sola丶小克]
-	// 若 vector 为空则表示这不是宠物捕捉道具, 若非空则记录此道具支持捕捉的魔物编号
-	std::vector<uint32> taming_mobid;
-#endif // Pandas_Struct_Item_Data_Taming_Mobid
-
-#ifdef Pandas_Struct_Item_Data_Has_CallFunc
-	// 此物品的使用脚本是否包含 callfunc 指令 [Sola丶小克]
-	// 取值: 值为 0 表示不包含, 否则表示包含
-	unsigned int has_callfunc;
-#endif // Pandas_Struct_Item_Data_Has_CallFunc
-
-#ifdef Pandas_Struct_Item_Data_Properties
-	// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
-	// 效果与 item_data.flag 类似, 只是数据源为 item_properties.yml 
-	struct {
-		unsigned no_consume_of_player : 1;
-		unsigned no_consume_of_skills : 1;
-		unsigned is_amulet : 1;
-		uint32 noview_mask;
-		uint32 annouce_mask;
-	} properties;
-#endif // Pandas_Struct_Item_Data_Properties
 };
 
 // Struct for item random option [Secret]
@@ -972,22 +994,6 @@ struct s_random_opt_group {
 	struct s_random_opt_group_entry *entries;
 	uint16 total;
 };
-
-#ifdef Pandas_Persistence_Itemdb_Script
-struct s_item_script {
-	std::shared_ptr<std::string> script;
-	std::shared_ptr<std::string> equip_script;
-	std::shared_ptr<std::string> unequip_script;
-};
-
-enum e_store_script {
-	STORE_SCRIPT_USED,
-	STORE_SCRIPT_EQUIP,
-	STORE_SCRIPT_UNEQUIP
-};
-
-std::string itemdb_get_script(t_itemid nameid, enum e_store_script scr_type);
-#endif // Pandas_Persistence_Itemdb_Script
 
 class ItemDatabase : public TypesafeCachedYamlDatabase<t_itemid, item_data> {
 public:

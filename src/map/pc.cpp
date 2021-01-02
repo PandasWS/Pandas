@@ -64,6 +64,10 @@
 #include "itemamulet.hpp"
 #endif // Pandas_Item_Amulet_System
 
+#ifdef Pandas_Database_ItemProperties
+#include "itemprops.hpp"
+#endif // Pandas_Database_ItemProperties
+
 using namespace rathena;
 
 int pc_split_atoui(char* str, unsigned int* val, char sep, int max);
@@ -5265,7 +5269,7 @@ char pc_delitem(struct map_session_data *sd,int n,int amount,int type, short rea
 
 #ifdef Pandas_Item_Properties
 	// 避免物品被作为发动技能的必要道具而消耗
-	if (sd->inventory_data[n]->properties.no_consume_of_skills && reason == 1)
+	if (sd->inventory_data[n]->pandas.properties.avoid_skill_consume && reason == 1)
 		return 0;
 #endif // Pandas_Item_Properties
 
@@ -5718,7 +5722,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 		if (isblocked) {
 			char message[128] = { 0 };
-			safesnprintf(message, sizeof(message), msg_txt_cn(sd, 3), id->jname);	// 很抱歉, 当您坐上“商城坐骑”时, 无法使用: %s
+			safesnprintf(message, sizeof(message), msg_txt_cn(sd, 3), id->ename.c_str());	// 很抱歉, 当您坐上“商城坐骑”时, 无法使用: %s
 			clif_displaymessage(sd->fd, message);
 			return 0;
 		}
@@ -5729,7 +5733,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 	// 如果玩家所在地图设置了 nocapture 标记的话
 	// 那么在扣除道具之前，就给予玩家禁止玩家捕捉宠物的提示 [Sola丶小克]
 	if (sd && map_getmapflag(sd->bl.m, MF_NOCAPTURE)) {
-		if (id->taming_mobid.size()) {
+		if (id->pandas.taming_mobid.size()) {
 			clif_displaymessage(sd->fd, msg_txt_cn(sd, 18));	// 此地图禁止捕捉宠物.
 			return 0;
 		}
@@ -5766,7 +5770,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 #else
 			// 判断是否需要避免物品被玩家主动使用而消耗
 			// 若可以被玩家主动使用而消耗, 那么执行原有的道具删除流程
-			if (id && id->properties.no_consume_of_player) {
+			if (id && id->pandas.properties.avoid_use_consume) {
 				clif_useitemack(sd, n, amount, true);
 			}
 			else {
@@ -6116,9 +6120,9 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 	
 	if (sd) {
 		struct item_data* dd = itemdb_search(itemid);
-		if (dd && dd->properties.annouce_mask & ITEM_ANNOUCE_STEAL_TO_INVENTORY) {
+		if (dd && dd->pandas.properties.annouce_mask & ITEM_ANNOUCE_STEAL_TO_INVENTORY) {
 			char message[128] = { 0 };
-			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, dd->jname, (float)md->db->dropitem[i].p/100);
+			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, dd->ename.c_str(), (float)md->db->dropitem[i].p/100);
 			intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);
 		}
 	}
@@ -10867,7 +10871,7 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 
 		if (isblocked) {
 			char message[128] = { 0 };
-			safesnprintf(message, sizeof(message), msg_txt_cn(sd, 3), id->jname);	// 很抱歉, 当您坐上“商城坐骑”时, 无法使用: %s
+			safesnprintf(message, sizeof(message), msg_txt_cn(sd, 3), id->ename.c_str());	// 很抱歉, 当您坐上“商城坐骑”时, 无法使用: %s
 			clif_displaymessage(sd->fd, message);
 			return true;
 		}
