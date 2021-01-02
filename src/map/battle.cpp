@@ -2507,7 +2507,7 @@ static bool is_attack_right_handed(struct block_list *src, int skill_id)
 		struct map_session_data *sd = BL_CAST(BL_PC, src);
 
 		//Skills ALWAYS use ONLY your right-hand weapon (tested on Aegis 10.2)
-		if(!skill_id && sd && sd->weapontype1 == 0 && sd->weapontype2 > 0)
+		if(!skill_id && sd && sd->weapontype1 == W_FIST && sd->weapontype2 != W_FIST)
 			return false;
 	}
 	return true;
@@ -2529,7 +2529,7 @@ static bool is_attack_left_handed(struct block_list *src, int skill_id)
 			struct map_session_data *sd = BL_CAST(BL_PC, src);
 
 			if (sd) {
-				if (sd->weapontype1 == 0 && sd->weapontype2 > 0)
+				if (sd->weapontype1 == W_FIST && sd->weapontype2 != W_FIST)
 					return true;
 				if (sd->status.weapon == W_KATAR)
 					return true;
@@ -7635,7 +7635,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			if (sd->inventory_data[index]) {
 				switch (sd->status.weapon) {
 					case W_BOW:
-						if (sd->inventory_data[index]->look != AMMO_ARROW) {
+						if (sd->inventory_data[index]->subtype != AMMO_ARROW) {
 							clif_arrow_fail(sd,0);
 							return ATK_NONE;
 						}
@@ -7644,13 +7644,13 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 					case W_RIFLE:
 					case W_GATLING:
 					case W_SHOTGUN:
-						if (sd->inventory_data[index]->look != AMMO_BULLET) {
+						if (sd->inventory_data[index]->subtype != AMMO_BULLET) {
 							clif_skill_fail(sd,0,USESKILL_FAIL_NEED_MORE_BULLET,0);
 							return ATK_NONE;
 						}
 						break;
 					case W_GRENADE:
-						if (sd->inventory_data[index]->look !=
+						if (sd->inventory_data[index]->subtype !=
 #ifdef RENEWAL
 							AMMO_BULLET) {
 #else
@@ -8639,6 +8639,7 @@ static const struct _battle_data {
 	{ "ammo_check_weapon",                  &battle_config.ammo_check_weapon,               1,      0,      1,              },
 	{ "max_aspd",                           &battle_config.max_aspd,                        190,    100,    199,            },
 	{ "max_third_aspd",                     &battle_config.max_third_aspd,                  193,    100,    199,            },
+	{ "max_summoner_aspd",                  &battle_config.max_summoner_aspd,               193,    100,    199,            },
 	{ "max_walk_speed",                     &battle_config.max_walk_speed,                  300,    100,    100*DEFAULT_WALK_SPEED, },
 	{ "max_lv",                             &battle_config.max_lv,                          99,     0,      MAX_LEVEL,      },
 	{ "aura_lv",                            &battle_config.aura_lv,                         99,     0,      INT_MAX,        },
@@ -9183,6 +9184,7 @@ void battle_adjust_conf()
 	battle_config.monster_max_aspd = 2000 - battle_config.monster_max_aspd * 10;
 	battle_config.max_aspd = 2000 - battle_config.max_aspd * 10;
 	battle_config.max_third_aspd = 2000 - battle_config.max_third_aspd * 10;
+	battle_config.max_summoner_aspd = 2000 - battle_config.max_summoner_aspd * 10;
 	battle_config.max_extended_aspd = 2000 - battle_config.max_extended_aspd * 10;
 	battle_config.max_walk_speed = 100 * DEFAULT_WALK_SPEED / battle_config.max_walk_speed;
 	battle_config.max_cart_weight *= 10;

@@ -14287,19 +14287,47 @@ BUILDIN_FUNC(getitemslots)
  *------------------------------------------*/
 BUILDIN_FUNC(getiteminfo)
 {
-	unsigned short n;
-	struct item_data *i_data;
-
 	t_itemid item_id = script_getnum(st,2);
-	n	= script_getnum(st,3);
-	i_data = itemdb_exists(item_id);
+	item_data *i_data = itemdb_exists(item_id);
 
+	if (i_data == nullptr) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+	switch( script_getnum(st, 3) ) {
+		case 0: script_pushint(st, i_data->value_buy); break;
+		case 1: script_pushint(st, i_data->value_sell); break;
+		case 2: script_pushint(st, i_data->type); break;
+		case 3: script_pushint(st, i_data->maxchance); break;
+		case 4: script_pushint(st, i_data->sex); break;
+		case 5: script_pushint(st, i_data->equip); break;
+		case 6: script_pushint(st, i_data->weight); break;
+		case 7: script_pushint(st, i_data->atk); break;
+		case 8: script_pushint(st, i_data->def); break;
+		case 9: script_pushint(st, i_data->range); break;
+		case 10: script_pushint(st, i_data->slots); break;
+		case 11:
+			if (i_data->type == IT_WEAPON || i_data->type == IT_AMMO) {	// keep old compatibility
+				script_pushint(st, i_data->subtype);
+			} else {
+				script_pushint(st, i_data->look);
+			}
+			break;
+		case 12: script_pushint(st, i_data->elv); break;
+		case 13: script_pushint(st, i_data->wlv); break;
+		case 14: script_pushint(st, i_data->view_id); break;
+		case 15: script_pushint(st, i_data->elvmax); break;
+		case 16: {
+#ifdef RENEWAL
+			script_pushint(st, i_data->matk);
+#else
+			script_pushint(st, 0);
+#endif
+			break;
+		}
+		
 #ifdef Pandas_ScriptParams_GetItemInfo
-	int16 nx = script_getnum(st, 3);
-	if (i_data && 0 > nx && nx >= -9) {
-		switch (nx)
-		{
-		case -1:	script_pushint(st, i_data->flag.no_refine ? 0 : 1);				return SCRIPT_CMD_SUCCESS;
+		case -1: script_pushint(st, i_data->flag.no_refine ? 0 : 1); break;
 		case -2: {
 			int64 trade_mask = 0;
 			if (i_data && i_data->flag.trade_restriction.drop)
@@ -14325,11 +14353,11 @@ BUILDIN_FUNC(getiteminfo)
 		}
 
 #ifdef Pandas_Struct_Item_Data_Properties
-		case -3:	script_pushint(st, i_data->pandas.properties.avoid_use_consume);	return SCRIPT_CMD_SUCCESS;
-		case -4:	script_pushint(st, i_data->pandas.properties.avoid_skill_consume);	return SCRIPT_CMD_SUCCESS;
+		case -3: script_pushint(st, i_data->pandas.properties.avoid_use_consume ? 1 : 0); break;
+		case -4: script_pushint(st, i_data->pandas.properties.avoid_skill_consume ? 1 : 0);	break;
 #else
-		case -3:	script_pushint(st, 0);	return SCRIPT_CMD_SUCCESS;
-		case -4:	script_pushint(st, 0);	return SCRIPT_CMD_SUCCESS;
+		case -3: script_pushint(st, 0);	break;
+		case -4: script_pushint(st, 0);	break;
 #endif // Pandas_Struct_Item_Data_Properties
 
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
@@ -14367,16 +14395,16 @@ BUILDIN_FUNC(getiteminfo)
 			}
 
 			script_pushint(st, i_data->pandas.taming_mobid.size() ? 1 : 0);
-			return SCRIPT_CMD_SUCCESS;
+			break;
 		}
 #else
-		case -5:	script_pushint(st, -2);											return SCRIPT_CMD_SUCCESS;
+		case -5: script_pushint(st, -2); break;
 #endif // Pandas_Struct_Item_Data_Taming_Mobid
 
 #ifdef Pandas_Struct_Item_Data_Has_CallFunc
-		case -6:	script_pushint(st, i_data->pandas.has_callfunc);				return SCRIPT_CMD_SUCCESS;
+		case -6: script_pushint(st, i_data->pandas.has_callfunc); break;
 #else
-		case -6:	script_pushint(st, -2);											return SCRIPT_CMD_SUCCESS;
+		case -6: script_pushint(st, -2); break;
 #endif // Pandas_Struct_Item_Data_Has_CallFunc
 
 #ifdef Pandas_Persistence_Itemdb_Script
@@ -14385,41 +14413,33 @@ BUILDIN_FUNC(getiteminfo)
 				script_pushstrcopy(st, i_data->pandas.script_plaintext.script->c_str());
 			else
 				script_pushstrcopy(st, "");
-			return SCRIPT_CMD_SUCCESS;
+			break;
 		}
 		case -8: {
 			if (i_data->pandas.script_plaintext.equip_script)
 				script_pushstrcopy(st, i_data->pandas.script_plaintext.equip_script->c_str());
 			else
 				script_pushstrcopy(st, "");
-			return SCRIPT_CMD_SUCCESS;
+			break;
 		}
 		case -9: {
 			if (i_data->pandas.script_plaintext.unequip_script)
 				script_pushstrcopy(st, i_data->pandas.script_plaintext.unequip_script->c_str());
 			else
 				script_pushstrcopy(st, "");
-			return SCRIPT_CMD_SUCCESS;
+			break;
 		}
 #else
-		case -7:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
-		case -8:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
-		case -9:	script_pushconststr(st, "UnCompiled");							return SCRIPT_CMD_SUCCESS;
+		case -7: script_pushconststr(st, "UnCompiled"); break;
+		case -8: script_pushconststr(st, "UnCompiled"); break;
+		case -9: script_pushconststr(st, "UnCompiled"); break;
 #endif // Pandas_Persistence_Itemdb_Script
-		}
-	}
 #endif // Pandas_ScriptParams_GetItemInfo
-
-	if (i_data && n <= 16) {
-		int *item_arr = (int*)&i_data->value_buy;
-#ifndef RENEWAL
-		if (n == 16)
-			script_pushint(st,0);
-		else
-#endif
-		script_pushint(st,item_arr[n]);
-	} else
-		script_pushint(st,-1);
+		
+		default:
+			script_pushint(st, -1);
+			break;
+	}
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -14450,27 +14470,51 @@ BUILDIN_FUNC(getiteminfo)
  *------------------------------------------*/
 BUILDIN_FUNC(setiteminfo)
 {
-	int n,value;
-	struct item_data *i_data;
-
 	t_itemid item_id = script_getnum(st,2);
-	n	= script_getnum(st,3);
-	value	= script_getnum(st,4);
-	i_data = itemdb_exists(item_id);
+	item_data *i_data = itemdb_exists(item_id);
 
-#ifndef RENEWAL
-	if( n == 16 ){
-		script_pushint( st, -1 );
+	if (i_data == nullptr) {
+		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
-#endif
+	int value = script_getnum(st,4);
 
-	if (i_data && n>=0 && n<=16) {
-		int *item_arr = (int*)&i_data->value_buy;
-		item_arr[n] = value;
-		script_pushint(st,value);
-	} else
-		script_pushint(st,-1);
+	switch( script_getnum(st, 3) ) {
+		case 0: i_data->value_buy = static_cast<uint32>(value); break;
+		case 1: i_data->value_sell = static_cast<uint32>(value); break;
+		case 2: i_data->type = static_cast<item_types>(value); break;
+		case 3: i_data->maxchance = static_cast<int>(value); break;
+		case 4: i_data->sex = static_cast<uint8>(value); break;
+		case 5: i_data->equip = static_cast<uint32>(value); break;
+		case 6: i_data->weight = static_cast<uint32>(value); break;
+		case 7: i_data->atk = static_cast<uint32>(value); break;
+		case 8: i_data->def = static_cast<uint32>(value); break;
+		case 9: i_data->range = static_cast<uint16>(value); break;
+		case 10: i_data->slots = static_cast<uint16>(value); break;
+		case 11:
+			if (i_data->type == IT_WEAPON || i_data->type == IT_AMMO) {	// keep old compatibility
+				i_data->subtype = static_cast<uint8>(value);
+			} else {
+				i_data->look = static_cast<uint32>(value);
+			}
+			break;
+		case 12: i_data->elv = static_cast<uint16>(value); break;
+		case 13: i_data->wlv = static_cast<uint16>(value); break;
+		case 14: i_data->view_id = static_cast<t_itemid>(value); break;
+		case 15: i_data->elvmax = static_cast<uint16>(value); break;
+		case 16: {
+#ifdef RENEWAL
+			i_data->matk = static_cast<uint32>(value);
+#else
+			value = 0;
+#endif
+			break;
+		}
+		default:
+			script_pushint(st, -1);
+			break;
+	}
+	script_pushint(st, value);
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -23706,47 +23750,34 @@ BUILDIN_FUNC(recalculatestat) {
 }
 
 BUILDIN_FUNC(hateffect){
-#if PACKETVER >= 20150513
+#if PACKETVER_MAIN_NUM >= 20150507 || PACKETVER_RE_NUM >= 20150429 || defined(PACKETVER_ZERO)
 	struct map_session_data* sd;
-	bool enable;
-	int i, effectID;
 
 	if( !script_rid2sd(sd) )
 		return SCRIPT_CMD_FAILURE;
 
-	effectID = script_getnum(st,2);
-	enable = script_getnum(st,3) ? true : false;
+	int16 effectID = script_getnum(st,2);
+	bool enable = script_getnum(st,3) ? true : false;
 
 	if( effectID <= HAT_EF_MIN || effectID >= HAT_EF_MAX ){
 		ShowError( "buildin_hateffect: unsupported hat effect id %d\n", effectID );
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	ARR_FIND( 0, sd->hatEffectCount, i, sd->hatEffectIDs[i] == effectID );
+	auto it = util::vector_get( sd->hatEffects, effectID );
 
 	if( enable ){
-		if( i < sd->hatEffectCount ){
+		if( it != sd->hatEffects.end() ){
 			return SCRIPT_CMD_SUCCESS;
 		}
 
-		RECREATE(sd->hatEffectIDs,uint32,sd->hatEffectCount+1);
-		sd->hatEffectIDs[sd->hatEffectCount] = effectID;
-		sd->hatEffectCount++;
+		sd->hatEffects.push_back( effectID );
 	}else{
-		if( i == sd->hatEffectCount ){
+		if( it == sd->hatEffects.end() ){
 			return SCRIPT_CMD_SUCCESS;
 		}
 
-		for( ; i < sd->hatEffectCount - 1; i++ ){
-			sd->hatEffectIDs[i] = sd->hatEffectIDs[i+1];
-		}
-
-		sd->hatEffectCount--;
-
-		if( !sd->hatEffectCount ){
-			aFree(sd->hatEffectIDs);
-			sd->hatEffectIDs = NULL;
-		}
+		util::vector_erase_if_exists( sd->hatEffects, effectID );
 	}
 
 	if( !sd->state.connect_new ){

@@ -51,7 +51,9 @@ YAML::Node YamlDatabase::LoadFile(const std::string& filename) {
 
 bool YamlDatabase::nodeExists( const YAML::Node& node, const std::string& name ){
 	try{
-		if( node[name] ){
+		const YAML::Node &subNode = node[name];
+
+		if( subNode.IsDefined() && !subNode.IsNull() ){
 			return true;
 		}else{
 			return false;
@@ -147,6 +149,7 @@ bool YamlDatabase::load(const std::string& path) {
 #endif // Pandas_Console_Translate
 
 	try {
+		ShowStatus( "Loading '" CL_WHITE "%s" CL_RESET "'..." CL_CLL "\r", path.c_str() );
 #ifndef Pandas_Database_Yaml_Support_UTF8BOM
 		rootNode = YAML::LoadFile(path);
 #else

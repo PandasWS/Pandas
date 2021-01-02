@@ -884,6 +884,7 @@ bool skill_isNotOk(uint16 skill_id, struct map_session_data *sd)
 		case RETURN_TO_ELDICASTES:
 		case ALL_GUARDIAN_RECALL:
 		case ECLAGE_RECALL:
+		case ALL_PRONTERA_RECALL:
 			if(mapdata->flag[MF_NOWARP]) {
 				clif_skill_teleportmessage(sd,0);
 				return true;
@@ -1335,7 +1336,11 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 			//"While the damage can be blocked by Pneuma, the chance to break armor remains", irowiki. [Cydh]
 			if (dmg_lv == ATK_BLOCK && skill_id == AM_ACIDTERROR) {
 				sc_start2(src,bl,SC_BLEEDING,(skill_lv*3),skill_lv,src->id,skill_get_time2(skill_id,skill_lv));
+#ifdef RENEWAL
+				if (skill_break_equip(src,bl, EQP_ARMOR, (1000 * skill_lv + 500) - 1000, BCT_ENEMY))
+#else
 				if (skill_break_equip(src,bl, EQP_ARMOR, 100*skill_get_time(skill_id,skill_lv), BCT_ENEMY))
+#endif
 					clif_emotion(bl,ET_HUK);
 			}
 		}
@@ -10780,6 +10785,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 	case RETURN_TO_ELDICASTES:
 	case ALL_GUARDIAN_RECALL:
 	case ECLAGE_RECALL:
+	case ALL_PRONTERA_RECALL:
 		if( sd )
 		{
 			short x=0, y=0; // Destiny position.
@@ -10801,6 +10807,17 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 				x = 47;
 				y = 31;
 				mapindex  = mapindex_name2id(MAP_ECLAGE_IN);
+				break;
+			case ALL_PRONTERA_RECALL:
+				if(skill_lv == 1) {
+					x = 115;
+					y = 72;
+				}
+				else if(skill_lv == 2) {
+					x = 159;
+					y = 192;
+				}
+				mapindex  = mapindex_name2id(MAP_PRONTERA);
 				break;
 			}
 
@@ -16202,7 +16219,7 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
 			}
 			break;
 		case KO_JYUMONJIKIRI:
-			if (sd->weapontype1 && (sd->weapontype2 || sd->status.shield))
+			if (sd->weapontype1 != W_FIST && (sd->weapontype2 != W_FIST || sd->status.shield != W_FIST))
 				return true;
 			else {
 				clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
@@ -16676,7 +16693,7 @@ bool skill_check_condition_castend(struct map_session_data* sd, uint16 skill_id,
 			clif_messagecolor(&sd->bl,color_table[COLOR_RED],e_msg,false,SELF);
 			return false;
 		}
-		if (!(require.ammo&1<<sd->inventory_data[i]->look)) { //Ammo type check. Send the "wrong weapon type" message
+		if (!(require.ammo&1<<sd->inventory_data[i]->subtype)) { //Ammo type check. Send the "wrong weapon type" message
 			//which is the closest we have to wrong ammo type. [Skotlex]
 			clif_arrow_fail(sd,0); //Haplo suggested we just send the equip-arrows message instead. [Skotlex]
 			//clif_skill_fail(sd,skill_id,USESKILL_FAIL_THIS_WEAPON,0);
