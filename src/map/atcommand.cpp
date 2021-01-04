@@ -7606,7 +7606,7 @@ ACMD_FUNC(mobinfo)
 #ifdef Pandas_Database_MobItem_FixedRatio
 			// 若严格固定掉率, 那么无视上面的等级惩罚、VIP掉率加成等计算
 			if (mobdrop_strict_droprate(item_data->nameid, mob->vd.class_))
-				droprate = mob->dropitem[i].p;
+				droprate = mob->dropitem[i].rate;
 #endif // Pandas_Database_MobItem_FixedRatio
 
 			if (item_data->slots)

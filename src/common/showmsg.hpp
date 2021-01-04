@@ -23,10 +23,6 @@
 #define CL_CLS		"\033[2J"
 #define CL_CLL		"\033[K"
 
-#ifdef Pandas_Fix_ResidualInformation_When_EraseLine
-#define CL_CLL2		"\033[2K"
-#endif // Pandas_Fix_ResidualInformation_When_EraseLine
-
 // font settings
 #define CL_BOLD		"\033[1m"
 #define CL_NORM		CL_RESET

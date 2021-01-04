@@ -539,17 +539,6 @@
 // ============================================================================
 
 #ifdef Pandas_Bugfix
-	// 修正滚动载入数据在特定情况下没有完整的清空一行数据的问题 [Sola丶小克]
-	// 根据 https://en.wikipedia.org/wiki/ANSI_escape_code 中 Erase in Line 的描述
-	// 当 n = 2 的时候才能清空当前行, 若 n = 0 或丢失则只清空当前光标到行尾
-	//
-	// 例如: 在 database.cpp 中 YamlDatabase::parse 的滚动刷新中,
-	// 如若加载数据的过程中出现了错误, 且错误信息的长度比
-	// Loading [%" PRIdPTR "/%" PRIdPTR "] entries from '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r"
-	// 更短的话, 就会出现在错误信息的末尾, 出现上一行滚动残留的信息:
-	// [错误]: Map 1@cor is not a valid map, skipping.ce_db.yml'
-	#define Pandas_Fix_ResidualInformation_When_EraseLine
-
 	// 修正在部分情况下角色公会图标刷新不及时的问题 [Sola丶小克]
 	#define Pandas_Fix_GuildEmblem_Update
 
@@ -627,6 +616,9 @@
 	// 处于该状态下若攻击者的 matk_min 小于被攻击者的 mdef 则会导致
 	// 这一次普攻出现计算溢出的情况, 可以秒杀一切 BOSS
 	#define Pandas_Fix_MagicalBullet_Damage_Overflow
+
+	// 修正 csv2yaml 辅助工具可能存在的多余反斜杠问题 [Sola丶小克]
+	#define Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
 #endif // Pandas_Bugfix
 
 // ============================================================================

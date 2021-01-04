@@ -91021,7 +91021,7 @@ Body:
       bonus2 bSkillAtk,"RK_SONICWAVE",5; .@r = getrefine(); if (.@r >= 2) { bonus2 bSkillAtk,"RK_SONICWAVE",.@r/2*2; }
   - Id: 24441
     AegisName: S_Sonic_Shield
-    Name: "Sonic Shadow Shield\ufeff\ufeff"
+    Name: "Sonic Shadow Shield"
     Type: Shadowgear
     Jobs:
       Knight: true
@@ -91455,7 +91455,7 @@ Body:
       .@r = getrefine(); bonus bLongAtkRate,3+(.@r>=7?3:0)+(.@r>=9?4:0);
   - Id: 24472
     AegisName: S_Vulcan_Shoes
-    Name: "Vulcan Shadow Shoes\ufeff"
+    Name: "Vulcan Shadow Shoes"
     Type: Shadowgear
     Jobs:
       Blacksmith: true
@@ -91469,7 +91469,7 @@ Body:
       bonus2 bSkillUseSPrate,"NC_VULCANARM",2; .@r = getrefine(); if (.@r >= 2) { bonus2 bSkillUseSPrate,"NC_VULCANARM",.@r/2*2; }
   - Id: 24473
     AegisName: S_Arms_Weapon
-    Name: "Arm Shadow Weapon\ufeff"
+    Name: "Arm Shadow Weapon"
     Type: Shadowgear
     Jobs:
       Blacksmith: true

@@ -6221,7 +6221,7 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 		struct item_data* dd = itemdb_search(itemid);
 		if (dd && dd->pandas.properties.annouce_mask & ITEM_ANNOUCE_STEAL_TO_INVENTORY) {
 			char message[128] = { 0 };
-			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, dd->ename.c_str(), (float)md->db->dropitem[i].p/100);
+			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, dd->ename.c_str(), (float)md->db->dropitem[i].rate / 100);
 			intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);
 		}
 	}
