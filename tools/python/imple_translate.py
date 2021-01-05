@@ -155,6 +155,12 @@ configures = [
         },
         'globpath' : [
             'sql-files/**/*item_db*.sql'
+        ],
+        'globexclude' : [
+            'sql-files/item_db.sql',
+            'sql-files/item_db_re.sql',
+            'sql-files/compatibility',
+            'sql-files/tools'
         ]
     },
     {
@@ -646,7 +652,15 @@ def process(project_dir, lang = 'zh-cn', silent = False):
                 for path in v['globpath']:
                     files = glob.glob(os.path.abspath(project_dir + path), recursive=True)
                     for x in files:
-                        operate.execute(x)
+                        relpath = os.path.relpath(x, project_dir).replace('\\', '/')
+                        is_exclude = False
+                        if 'globexclude' in v:
+                            for e in v['globexclude']:
+                                if e in relpath:
+                                    is_exclude = True
+                                    break
+                        if not is_exclude:
+                            operate.execute(x)
     except Exception as _err:
         Message.ShowError(str(_err))
         Common.exit_with_pause(-1)

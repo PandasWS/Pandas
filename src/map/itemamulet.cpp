@@ -18,8 +18,12 @@ extern short current_equip_item_index;
 // Returns:		bool 返回 true 则表示该道具为护身符
 //************************************
 bool amulet_is(t_itemid nameid) {
-	struct item_data *item = itemdb_search(nameid);
-	return (item && item->properties.is_amulet);
+#ifdef Pandas_Item_Amulet_System
+	struct item_data* item = itemdb_search(nameid);
+	return (item && item->pandas.properties.is_amulet);
+#else
+	return false;
+#endif // Pandas_Item_Amulet_System
 }
 
 //************************************

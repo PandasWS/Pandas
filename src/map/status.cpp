@@ -811,6 +811,10 @@ void initChangeTables(void)
 	set_sc( GD_BATTLEORDER		, SC_BATTLEORDERS	, EFST_GDSKILL_BATTLEORDER	, SCB_STR|SCB_INT|SCB_DEX );
 	set_sc( GD_REGENERATION		, SC_REGENERATION	, EFST_GDSKILL_REGENERATION	, SCB_REGEN );
 
+#ifdef RENEWAL
+	set_sc( GD_EMERGENCY_MOVE	, SC_EMERGENCY_MOVE	, EFST_INC_AGI	, SCB_SPEED );
+#endif
+
 	/* Rune Knight */
 	set_sc( RK_ENCHANTBLADE		, SC_ENCHANTBLADE	, EFST_ENCHANTBLADE		, SCB_NONE );
 	set_sc( RK_DRAGONHOWLING	, SC_FEAR		, EFST_BLANK			, SCB_FLEE|SCB_HIT );
@@ -2666,7 +2670,7 @@ int status_base_amotion_pc(struct map_session_data* sd, struct status_data* stat
 	amotion = job_info[classidx].aspd_base[sd->weapontype1]; // Single weapon
 	if (sd->status.shield)
 		amotion += job_info[classidx].aspd_base[MAX_WEAPON_TYPE];
-	else if (sd->weapontype2 && sd->equip_index[EQI_HAND_R] != sd->equip_index[EQI_HAND_L])
+	else if (sd->weapontype2 != W_FIST && sd->equip_index[EQI_HAND_R] != sd->equip_index[EQI_HAND_L])
 		amotion += job_info[classidx].aspd_base[sd->weapontype2] / 4; // Dual-wield
 
 	switch(sd->status.weapon) {
@@ -2805,17 +2809,9 @@ pec_ushort status_base_atk(const struct block_list *bl, const struct status_data
  * @param status: Player status
  * @return weapon attack
  */
-unsigned int status_weapon_atk(struct weapon_atk wa, struct map_session_data *sd)
+unsigned int status_weapon_atk(weapon_atk &wa)
 {
-	pec_float str = sd->base_status.str;
-	int weapon_atk_bonus = 0;
-
-	if ((wa.range > 3 || sd->status.weapon == W_MUSICAL || sd->status.weapon == W_WHIP) && !pc_checkskill(sd, SU_SOULATTACK))
-		str = sd->base_status.dex;
-	if (sd->bonus.weapon_atk_rate)
-		weapon_atk_bonus = wa.atk * sd->bonus.weapon_atk_rate / 100;
-	// wa.atk2 = refinement, wa.atk = base equip atk, wa.atk*str/200 = bonus str
-	return wa.atk + wa.atk2 + (int)(wa.atk * (str/200) + weapon_atk_bonus);
+	return wa.atk + wa.atk2;
 }
 #endif
 
@@ -4010,6 +4006,8 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 			if(r)
 				wa->atk2 += refine_info[wlv].bonus[r-1] / 100;
 #ifdef RENEWAL
+			if (sd->bonus.weapon_atk_rate)
+				wa->atk = wa->atk * sd->bonus.weapon_atk_rate / 100;
 			wa->matk += sd->inventory_data[index]->matk;
 			wa->wlv = wlv;
 			if(r && sd->weapontype1 != W_BOW) // Renewal magic attack refine bonus
@@ -4076,31 +4074,38 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		}
 	}
 
-	// We've got combos to process and check
-	if( sd->combos.count ) {
-		for (i = 0; i < sd->combos.count; i++) {
-			uint8 j = 0;
-			bool no_run = false;
-			struct item_combo *combo = NULL;
+	// Process and check item combos
+	if (!sd->combos.empty()) {
+		for (const auto &combo : sd->combos) {
+			s_item_combo *item_combo;
 
 			current_equip_item_index = -1;
-			current_equip_combo_pos = sd->combos.pos[i];
+			current_equip_combo_pos = combo->pos;
 
-			if (!sd->combos.bonus[i] || !(combo = itemdb_combo_exists(sd->combos.id[i])))
+			if (combo->bonus == nullptr || !(item_combo = itemdb_combo_exists(combo->id)))
 				continue;
+
+			bool no_run = false;
+			size_t j = 0;
+
 			// Check combo items
-			while (j < combo->count) {
-				struct item_data *id = itemdb_exists(combo->nameid[j]);
+			while (j < item_combo->nameid.size()) {
+				item_data *id = itemdb_exists(item_combo->nameid[j]);
+
 				// Don't run the script if at least one of combo's pair has restriction
 				if (id && !pc_has_permission(sd, PC_PERM_USE_ALL_EQUIPMENT) && itemdb_isNoEquip(id, sd->bl.m)) {
 					no_run = true;
 					break;
 				}
+
 				j++;
 			}
+
 			if (no_run)
 				continue;
-			run_script(sd->combos.bonus[i],0,sd->bl.id,0);
+
+			run_script(combo->bonus, 0, sd->bl.id, 0);
+
 			if (!calculating) // Abort, run_script retriggered this
 				return 1;
 		}
@@ -4174,15 +4179,15 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 			continue;
 		
 		if (sd->inventory_data[index]) {
-			int j;
-			struct s_random_opt_data *data;
-			for (j = 0; j < MAX_ITEM_RDM_OPT; j++) {
+			for (uint8 j = 0; j < MAX_ITEM_RDM_OPT; j++) {
 				short opt_id = sd->inventory.u.items_inventory[index].option[j].id;
 
 				if (!opt_id)
 					continue;
 				current_equip_opt_index = j;
-				data = itemdb_randomopt_exists(opt_id);
+
+				std::shared_ptr<s_random_opt_data> data = random_option_db.find(opt_id);
+
 				if (!data || !data->script)
 					continue;
 				if (!pc_has_permission(sd, PC_PERM_USE_ALL_EQUIPMENT) && itemdb_isNoEquip(sd->inventory_data[index], sd->bl.m))
@@ -4326,8 +4331,8 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	if((skill=pc_checkskill(sd,BS_HILTBINDING))>0)
 		base_status->batk += 4;
 #else
-	base_status->watk = status_weapon_atk(base_status->rhw, sd);
-	base_status->watk2 = status_weapon_atk(base_status->lhw, sd);
+	base_status->watk = status_weapon_atk(base_status->rhw);
+	base_status->watk2 = status_weapon_atk(base_status->lhw);
 	base_status->eatk = sd->bonus.eatk;
 #endif
 
@@ -7501,6 +7506,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			val = max(val, sc->data[SC_DORAM_WALKSPEED]->val1);
 		if (sc->data[SC_RUSHWINDMILL])
 			val = max(val, 25); // !TODO: Confirm bonus movement speed
+		if (sc->data[SC_EMERGENCY_MOVE])
+			val = max(val, sc->data[SC_EMERGENCY_MOVE]->val2);
 
 		// !FIXME: official items use a single bonus for this [ultramage]
 		if( sc->data[SC_SPEEDUP0] ) // Temporary item-based speedup
@@ -9360,7 +9367,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 		}
 
 		rate = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_rate")), 0, INT_MAX);
-		tick = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_tick")), 0, INT_MAX);
+		tick = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_tick")), -1, INT_MAX);
 		val1 = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_val1")), INT_MIN, INT_MAX);
 		val2 = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_val2")), INT_MIN, INT_MAX);
 		val3 = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_val3")), INT_MIN, INT_MAX);
@@ -12234,6 +12241,9 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			tick_time = 1000;
 			val4 = tick / tick_time;
 			break;
+		case SC_EMERGENCY_MOVE:
+			val2 = 25; // Movement speed increase
+			break;
 
 		case SC_SUNSTANCE:
 			val2 = 2 + val1; // ATK Increase
@@ -12246,6 +12256,11 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 		case SC_STARSTANCE:
 			val2 = 4 + 2 * val1; // ASPD Increase
 			tick = INFINITE_TICK;
+			break;
+		case SC_DIMENSION1:
+		case SC_DIMENSION2:
+			if (sd)
+				pc_addspiritball(sd, skill_get_time2(SJ_BOOKOFDIMENSION, 1), 2);
 			break;
 		case SC_UNIVERSESTANCE:
 			val2 = 2 + val1; // All Stats Increase
@@ -13290,7 +13305,7 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 			}
 			if (begin_spurt && sce->val1 >= 7 &&
 				DIFF_TICK(gettick(), starttick) <= 1000 &&
-				(!sd || (sd->weapontype1 == 0 && sd->weapontype2 == 0))
+				(!sd || (sd->weapontype1 == W_FIST && sd->weapontype2 == W_FIST))
 			)
 				sc_start(bl,bl,SC_SPURT,100,sce->val1,skill_get_time2(status_sc2skill(type), sce->val1));
 		}
@@ -13750,6 +13765,11 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 		case SC_CROSSBOWCLAN:
 		case SC_JUMPINGCLAN:
 			status_change_end(bl,SC_CLAN_INFO,INVALID_TIMER);
+			break;
+		case SC_DIMENSION1:
+		case SC_DIMENSION2:
+			if (sd)
+				pc_delspiritball(sd, 1, 0);
 			break;
 		case SC_SOULENERGY:
 			if (sd)
@@ -15139,6 +15159,7 @@ void status_change_clear_buffs(struct block_list* bl, uint8 type)
 			case SC_GLORYWOUNDS:
 			case SC_SOULCOLD:
 			case SC_HAWKEYES:
+			case SC_EMERGENCY_MOVE:
 			case SC_SAFETYWALL:
 			case SC_PNEUMA:
 			case SC_NOCHAT:

@@ -51,7 +51,9 @@ YAML::Node YamlDatabase::LoadFile(const std::string& filename) {
 
 bool YamlDatabase::nodeExists( const YAML::Node& node, const std::string& name ){
 	try{
-		if( node[name] ){
+		const YAML::Node &subNode = node[name];
+
+		if( subNode.IsDefined() && !subNode.IsNull() ){
 			return true;
 		}else{
 			return false;
@@ -126,7 +128,11 @@ bool YamlDatabase::verifyCompatibility( const YAML::Node& rootNode ){
 }
 
 bool YamlDatabase::load(){
-	return this->load( this->getDefaultLocation() );
+	bool ret = this->load( this->getDefaultLocation() );
+
+	this->loadingFinished();
+
+	return ret;
 }
 
 bool YamlDatabase::reload(){
@@ -147,6 +153,7 @@ bool YamlDatabase::load(const std::string& path) {
 #endif // Pandas_Console_Translate
 
 	try {
+		ShowStatus( "Loading '" CL_WHITE "%s" CL_RESET "'..." CL_CLL "\r", path.c_str() );
 #ifndef Pandas_Database_Yaml_Support_UTF8BOM
 		rootNode = YAML::LoadFile(path);
 #else
@@ -181,8 +188,6 @@ bool YamlDatabase::load(const std::string& path) {
 
 	this->parseImports( rootNode );
 
-	this->loadingFinished();
-
 	return true;
 }
 
@@ -201,12 +206,7 @@ void YamlDatabase::parse( const YAML::Node& rootNode ){
 
 		for( const YAML::Node &node : bodyNode ){
 			count += this->parseBodyNode( node );
-
-#ifndef Pandas_Fix_ResidualInformation_When_EraseLine
 			ShowStatus( "Loading [%" PRIdPTR "/%" PRIdPTR "] entries from '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r", ++childNodesProgressed, childNodesCount, fileName );
-#else
-			ShowStatus( "Loading [%" PRIdPTR "/%" PRIdPTR "] entries from '" CL_WHITE "%s" CL_RESET "'" CL_CLL2 "\r", ++childNodesProgressed, childNodesCount, fileName );
-#endif // Pandas_Fix_ResidualInformation_When_EraseLine
 		}
 
 		ShowStatus( "Done reading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\n", count, fileName );
@@ -351,6 +351,9 @@ void YamlDatabase::invalidWarning( const YAML::Node &node, const char* fmt, ... 
 
 	va_start(ap, fmt);
 
+	// Remove any remaining garbage of a previous loading line
+	ShowMessage( CL_CLL );
+	// Print the actual error
 	_vShowMessage( MSG_ERROR, fmt, ap );
 
 	va_end(ap);

@@ -64,6 +64,10 @@
 #include "itemamulet.hpp"
 #endif // Pandas_Item_Amulet_System
 
+#ifdef Pandas_Database_ItemProperties
+#include "itemprops.hpp"
+#endif // Pandas_Database_ItemProperties
+
 using namespace rathena;
 
 int pc_split_atoui(char* str, unsigned int* val, char sep, int max);
@@ -72,9 +76,6 @@ static inline bool pc_attendance_rewarded_today( struct map_session_data* sd );
 #define PVP_CALCRANK_INTERVAL 1000	// PVP calculation interval
 
 static unsigned int statp[MAX_LEVEL+1];
-#if defined(RENEWAL_DROP) || defined(RENEWAL_EXP)
-static unsigned int level_penalty[3][CLASS_MAX][MAX_LEVEL*2+1];
-#endif
 
 // h-files are for declarations, not for implementations... [Shinomori]
 struct skill_tree_entry skill_tree[CLASS_COUNT][MAX_SKILL_TREE];
@@ -271,6 +272,105 @@ uint64 AttendanceDatabase::parseBodyNode(const YAML::Node &node){
 }
 
 AttendanceDatabase attendance_db;
+
+const std::string PenaltyDatabase::getDefaultLocation(){
+	return std::string( db_path ) + "/level_penalty.yml";
+}
+
+uint64 PenaltyDatabase::parseBodyNode( const YAML::Node& node ){
+	std::string type_constant;
+
+	if( !this->asString( node, "Type", type_constant ) ){
+		return 0;
+	}
+
+	int64 constant_value;
+
+	if( !script_get_constant( ( "PENALTY_" + type_constant ).c_str(), &constant_value ) ){
+		this->invalidWarning( node["Type"], "Unknown penalty type \"%s\".\n", type_constant.c_str() );
+		return 0;
+	}
+
+	if( constant_value < PENALTY_NONE || constant_value > PENALTY_MAX ){
+		this->invalidWarning( node["Type"], "Invalid penalty type \"%s\".\n", type_constant.c_str() );
+		return 0;
+	}
+
+	e_penalty_type type = static_cast<e_penalty_type>( constant_value );
+
+	std::shared_ptr<s_penalty> penalty = this->find( type );
+	bool exists = penalty != nullptr;
+
+	if( !exists ){
+		penalty = std::make_shared<s_penalty>();
+		penalty->type = type;
+
+		for( int i = 0, max = ARRAYLENGTH( penalty->rate ); i < max; i++ ){
+			penalty->rate[i] = UINT16_MAX;
+		}
+	}
+
+	if( this->nodeExists( node, "LevelDifferences" ) ){
+		for( const YAML::Node& levelNode : node["LevelDifferences"] ){
+			if( !this->nodesExist( levelNode, { "Difference", "Rate" } ) ){
+				return 0;
+			}
+
+			int32 difference;
+
+			if( !this->asInt32( levelNode, "Difference", difference ) ){
+				return 0;
+			}
+
+			if( std::abs( difference ) > MAX_LEVEL ){
+				this->invalidWarning( levelNode["Difference"], "Level difference %d is bigger than maximum level %d.\n", difference, MAX_LEVEL );
+				return 0;
+			}
+
+			uint16 rate;
+
+			if( !this->asUInt16Rate( levelNode, "Rate", rate ) ){
+				return 0;
+			}
+
+			penalty->rate[difference + MAX_LEVEL - 1] = rate;
+		}
+	}
+
+	if( !exists ){
+		this->put( type, penalty );
+	}
+
+	return 1;
+}
+
+void PenaltyDatabase::loadingFinished(){
+	for( const auto& pair : *this ){
+		for( int i = MAX_LEVEL - 1, max = ARRAYLENGTH( pair.second->rate ), last_rate = 100; i < max; i++ ){
+			uint16 rate = pair.second->rate[i];
+
+			// Check if it has been defined
+			if( rate == UINT16_MAX ){
+				pair.second->rate[i] = last_rate;
+			}else{
+				last_rate = rate;
+			}
+		}
+
+		for( int i = MAX_LEVEL - 1, last_rate = 100; i >= 0; i-- ){
+			uint16 rate = pair.second->rate[i];
+
+			// Check if it has been defined
+			if( rate == UINT16_MAX ){
+				pair.second->rate[i] = last_rate;
+			}else{
+				last_rate = rate;
+			}
+		}
+	}
+}
+
+PenaltyDatabase penalty_db;
 
 #define MOTD_LINE_SIZE 128
 static char motd_text[MOTD_LINE_SIZE][CHAT_SIZE_MAX]; // Message of the day buffer [Valaris]
@@ -841,7 +941,7 @@ bool pc_can_sell_item(struct map_session_data *sd, struct item *item, enum npc_s
 				return true;
 			else if (!item->bound) {
 				struct item_data *itd = itemdb_search(item->nameid);
-				if (itd && itd->flag.trade_restriction&8 && battle_config.allow_bound_sell&ISR_SELLABLE)
+				if (itd && itd->flag.trade_restriction.sell && battle_config.allow_bound_sell&ISR_SELLABLE)
 					return true;
 			}
 			break;
@@ -979,7 +1079,7 @@ int pc_equippoint_sub(struct map_session_data *sd,struct item_data* id){
 		return 0; //Not equippable by players.
 
 	ep = id->equip;
-	if(id->look == W_DAGGER	|| id->look == W_1HSWORD || id->look == W_1HAXE) {
+	if(id->subtype == W_DAGGER	|| id->subtype == W_1HSWORD || id->subtype == W_1HAXE) {
 		if(pc_checkskill(sd,AS_LEFT) > 0 || (sd->class_&MAPID_UPPERMASK) == MAPID_ASSASSIN || (sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO) { //Kagerou and Oboro can dual wield daggers. [Rytech]
 			if (ep == EQP_WEAPON)
 				return EQP_ARMS;
@@ -1039,7 +1139,7 @@ void pc_calcweapontype(struct map_session_data *sd)
 		return;
 	}
 	// dual-wield
-	sd->status.weapon = 0;
+	sd->status.weapon = W_FIST;
 	switch (sd->weapontype1){
 	case W_DAGGER:
 		switch (sd->weapontype2) {
@@ -1093,16 +1193,16 @@ void pc_setequipindex(struct map_session_data *sd)
 
 			if (sd->inventory.u.items_inventory[i].equip & EQP_HAND_R) {
 				if (sd->inventory_data[i])
-					sd->weapontype1 = sd->inventory_data[i]->look;
+					sd->weapontype1 = sd->inventory_data[i]->subtype;
 				else
-					sd->weapontype1 = 0;
+					sd->weapontype1 = W_FIST;
 			}
 
 			if( sd->inventory.u.items_inventory[i].equip & EQP_HAND_L ) {
 				if( sd->inventory_data[i] && sd->inventory_data[i]->type == IT_WEAPON )
-					sd->weapontype2 = sd->inventory_data[i]->look;
+					sd->weapontype2 = sd->inventory_data[i]->subtype;
 				else
-					sd->weapontype2 = 0;
+					sd->weapontype2 = W_FIST;
 			}
 		}
 		if (sd->inventory.u.items_inventory[i].equipSwitch) {
@@ -1157,7 +1257,7 @@ bool pc_isequipped(struct map_session_data *sd, t_itemid nameid)
 			continue;
 		if( sd->inventory_data[index]->nameid == nameid )
 			return true;
-		for( j = 0; j < sd->inventory_data[index]->slot; j++ ){
+		for( j = 0; j < sd->inventory_data[index]->slots; j++ ){
 			if( sd->inventory.u.items_inventory[index].card[j] == nameid )
 				return true;
 		}
@@ -1279,7 +1379,30 @@ bool pc_adoption(struct map_session_data *p1_sd, struct map_session_data *p2_sd,
 
 	return false; // Job Change Fail
 }
- 
+
+static bool pc_job_can_use_item( struct map_session_data* sd, struct item_data* item ){
+	nullpo_retr( false, sd );
+	nullpo_retr( false, item );
+
+	// Calculate the required bit to check
+	uint64 job = 1ULL << ( sd->class_ & MAPID_BASEMASK );
+
+	size_t index;
+
+	// 2-1
+	if( ( sd->class_ & JOBL_2_1 ) != 0 ){
+		index = 1;
+	// 2-2
+	}else if( ( sd->class_ & JOBL_2_2 ) != 0 ){
+		index = 2;
+	// Basejob
+	}else{
+		index = 0;
+	}
+
+	return ( item->class_base[index] & job ) != 0;
+}
+
 /*==========================================
  * Check if player can use/equip selected item. Used by pc_isUseitem and pc_isequip
    Returns:
@@ -1303,7 +1426,7 @@ static bool pc_isItemClass (struct map_session_data *sd, struct item_data* item)
 			break;
 		//don't need to decide specific rules for third-classes?
 		//items for third classes can be used for all third classes
-		if (item->class_upper&(ITEMJ_THIRD|ITEMJ_THIRD_TRANS|ITEMJ_THIRD_BABY) && sd->class_&JOBL_THIRD)
+		if (item->class_upper&(ITEMJ_THIRD|ITEMJ_THIRD_UPPER|ITEMJ_THIRD_BABY) && sd->class_&JOBL_THIRD)
 			break;
 #else
 		//trans. classes (exl. third-trans.)
@@ -1316,7 +1439,7 @@ static bool pc_isItemClass (struct map_session_data *sd, struct item_data* item)
 		if (item->class_upper&ITEMJ_THIRD && sd->class_&JOBL_THIRD && !(sd->class_&(JOBL_UPPER|JOBL_BABY)))
 			break;
 		//trans-third classes
-		if (item->class_upper&ITEMJ_THIRD_TRANS && sd->class_&JOBL_THIRD && sd->class_&JOBL_UPPER)
+		if (item->class_upper&ITEMJ_THIRD_UPPER && sd->class_&JOBL_THIRD && sd->class_&JOBL_UPPER)
 			break;
 		//third-baby classes
 		if (item->class_upper&ITEMJ_THIRD_BABY && sd->class_&JOBL_THIRD && sd->class_&JOBL_BABY)
@@ -1350,7 +1473,7 @@ uint8 pc_isequip(struct map_session_data *sd,int n)
 		return ITEM_EQUIP_ACK_FAILLEVEL;
 	if(item->elvmax && sd->status.base_level > (unsigned int)item->elvmax)
 		return ITEM_EQUIP_ACK_FAILLEVEL;
-	if(item->sex != 2 && sd->status.sex != item->sex)
+	if(item->sex != SEX_BOTH && sd->status.sex != item->sex)
 		return ITEM_EQUIP_ACK_FAIL;
 
 	//fail to equip if item is restricted
@@ -1358,14 +1481,14 @@ uint8 pc_isequip(struct map_session_data *sd,int n)
 		return ITEM_EQUIP_ACK_FAIL;
 
 	if (item->equip&EQP_AMMO) {
-		switch (item->look) {
+		switch (item->subtype) {
 			case AMMO_ARROW:
 				if (battle_config.ammo_check_weapon && sd->status.weapon != W_BOW && sd->status.weapon != W_MUSICAL && sd->status.weapon != W_WHIP) {
 					clif_msg(sd, ITEM_NEED_BOW);
 					return ITEM_EQUIP_ACK_FAIL;
 				}
 				break;
-			case AMMO_THROWABLE_DAGGER:
+			case AMMO_DAGGER:
 				if (!pc_checkskill(sd, AS_VENOMKNIFE))
 					return ITEM_EQUIP_ACK_FAIL;
 				break;
@@ -1424,7 +1547,7 @@ uint8 pc_isequip(struct map_session_data *sd,int n)
 				return ITEM_EQUIP_ACK_OK; //Can equip all helms
 
 			if (sd->status.base_level > 96 && item->equip & EQP_ARMS && item->type == IT_WEAPON && item->wlv == 4)
-				switch(item->look) { //In weapons, the look determines type of weapon.
+				switch(item->subtype) { //In weapons, the look determines type of weapon.
 					case W_DAGGER: //All level 4 - Daggers
 					case W_1HSWORD: //All level 4 - 1H Swords
 					case W_1HAXE: //All level 4 - 1H Axes
@@ -1437,7 +1560,7 @@ uint8 pc_isequip(struct map_session_data *sd,int n)
 	}
 
 	//Not equipable by class. [Skotlex]
-	if (!(1ULL << (sd->class_&MAPID_BASEMASK)&item->class_base[(sd->class_&JOBL_2_1) ? 1 : ((sd->class_&JOBL_2_2) ? 2 : 0)]))
+	if (!pc_job_can_use_item(sd,item))
 		return ITEM_EQUIP_ACK_FAIL;
 
 	if (!pc_isItemClass(sd, item))
@@ -1652,9 +1775,8 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 	// Initialize BG queue
 	sd->bg_queue_id = 0;
 
-#if PACKETVER >= 20150513
-	sd->hatEffectIDs = NULL;
-	sd->hatEffectCount = 0;
+#if PACKETVER_MAIN_NUM >= 20150507 || PACKETVER_RE_NUM >= 20150429 || defined(PACKETVER_ZERO)
+	sd->hatEffects = {};
 #endif
 
 	sd->catch_target_class = PET_CATCH_FAIL;
@@ -3446,6 +3568,10 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 			if(sd->state.lr_flag != 2)
 				sd->bonus.magic_damage_return += val;
 			break;
+		case SP_REDUCE_DAMAGE_RETURN:
+			if (sd->state.lr_flag != 2)
+				sd->bonus.reduce_damage_return += val;
+			break;
 		case SP_ALL_STATS:	// [Valaris]
 			if(sd->state.lr_flag!=2) {
 				sd->indexed_bonus.param_bonus[SP_STR-SP_STR]+=val;
@@ -4735,8 +4861,8 @@ int pc_insert_card(struct map_session_data* sd, int idx_card, int idx_equip)
 	if( sd->inventory.u.items_inventory[idx_equip].equip != 0 )
 		return 0; // item must be unequipped
 
-	ARR_FIND( 0, item_eq->slot, i, sd->inventory.u.items_inventory[idx_equip].card[i] == 0 );
-	if( i == item_eq->slot )
+	ARR_FIND( 0, item_eq->slots, i, sd->inventory.u.items_inventory[idx_equip].card[i] == 0 );
+	if( i == item_eq->slots )
 		return 0; // no free slots
 
 	// remember the card id to insert
@@ -5242,7 +5368,7 @@ char pc_delitem(struct map_session_data *sd,int n,int amount,int type, short rea
 
 #ifdef Pandas_Item_Properties
 	// 避免物品被作为发动技能的必要道具而消耗
-	if (sd->inventory_data[n]->properties.no_consume_of_skills && reason == 1)
+	if (sd->inventory_data[n]->pandas.properties.avoid_skill_consume && reason == 1)
 		return 0;
 #endif // Pandas_Item_Properties
 
@@ -5443,7 +5569,7 @@ bool pc_isUseitem(struct map_session_data *sd,int n)
 	)
 		return false;
 
-	if( (item->item_usage.flag&NOUSE_SITTING) && (pc_issit(sd) == 1) && (pc_get_group_level(sd) < item->item_usage.override) ) {
+	if( (item->item_usage.sitting) && (pc_issit(sd) == 1) && (pc_get_group_level(sd) < item->item_usage.override) ) {
 		clif_msg(sd,ITEM_NOUSE_SITTING);
 		return false; // You cannot use this item while sitting.
 	}
@@ -5540,7 +5666,7 @@ bool pc_isUseitem(struct map_session_data *sd,int n)
 	}
 
 	//Gender check
-	if(item->sex != 2 && sd->status.sex != item->sex)
+	if(item->sex != SEX_BOTH && sd->status.sex != item->sex)
 		return false;
 	//Required level check
 	if(item->elv && sd->status.base_level < (unsigned int)item->elv)
@@ -5549,10 +5675,7 @@ bool pc_isUseitem(struct map_session_data *sd,int n)
 		return false;
 
 	//Not equipable by class. [Skotlex]
-	if (!(
-		(1ULL<<(sd->class_&MAPID_BASEMASK)) &
-		(item->class_base[sd->class_&JOBL_2_1?1:(sd->class_&JOBL_2_2?2:0)])
-	))
+	if (!pc_job_can_use_item(sd,item))
 		return false;
 	
 	if (sd->sc.count && (
@@ -5643,7 +5766,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 		return 0;
 
 	/* Items with delayed consume are not meant to work while in mounts except reins of mount(12622) */
-	if( id->flag.delay_consume ) {
+	if( id->flag.delay_consume > 0 ) {
 #ifndef Pandas_BattleConfig_CashMounting_UseitemLimit
 		if( nameid != ITEMID_REINS_OF_MOUNT && sd->sc.data[SC_ALL_RIDING] )
 			return 0;
@@ -5660,10 +5783,10 @@ int pc_useitem(struct map_session_data *sd,int n)
 	//perform a skill-use check before going through. [Skotlex]
 	//resurrection was picked as testing skill, as a non-offensive, generic skill, it will do.
 	//FIXME: Is this really needed here? It'll be checked in unit.cpp after all and this prevents skill items using when silenced [Inkfish]
-	if( id->flag.delay_consume && ( sd->ud.skilltimer != INVALID_TIMER /*|| !status_check_skilluse(&sd->bl, &sd->bl, ALL_RESURRECTION, 0)*/ ) )
+	if( id->flag.delay_consume > 0 && ( sd->ud.skilltimer != INVALID_TIMER /*|| !status_check_skilluse(&sd->bl, &sd->bl, ALL_RESURRECTION, 0)*/ ) )
 		return 0;
 
-	if( id->delay > 0 && !pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && pc_itemcd_check(sd, id, tick, n))
+	if( id->delay.duration > 0 && !pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && pc_itemcd_check(sd, id, tick, n))
 		return 0;
 
 #ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
@@ -5698,7 +5821,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 		if (isblocked) {
 			char message[128] = { 0 };
-			safesnprintf(message, sizeof(message), msg_txt_cn(sd, 3), id->jname);	// 很抱歉, 当您坐上“商城坐骑”时, 无法使用: %s
+			safesnprintf(message, sizeof(message), msg_txt_cn(sd, 3), id->ename.c_str());	// 很抱歉, 当您坐上“商城坐骑”时, 无法使用: %s
 			clif_displaymessage(sd->fd, message);
 			return 0;
 		}
@@ -5709,7 +5832,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 	// 如果玩家所在地图设置了 nocapture 标记的话
 	// 那么在扣除道具之前，就给予玩家禁止玩家捕捉宠物的提示 [Sola丶小克]
 	if (sd && map_getmapflag(sd->bl.m, MF_NOCAPTURE)) {
-		if (id->taming_mobid.size()) {
+		if (id->pandas.taming_mobid.size()) {
 			clif_displaymessage(sd->fd, msg_txt_cn(sd, 18));	// 此地图禁止捕捉宠物.
 			return 0;
 		}
@@ -5719,7 +5842,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 	/* on restricted maps the item is consumed but the effect is not used */
 	if (!pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && itemdb_isNoEquip(id,sd->bl.m)) {
 		clif_msg(sd,ITEM_CANT_USE_AREA); // This item cannot be used within this area
-		if( battle_config.allow_consume_restricted_item && !id->flag.delay_consume ) { //need confirmation for delayed consumption items
+		if( battle_config.allow_consume_restricted_item && id->flag.delay_consume > 0 ) { //need confirmation for delayed consumption items
 			clif_useitemack(sd,n,item.amount-1,true);
 			pc_delitem(sd,n,1,1,0,LOG_TYPE_CONSUME);
 		}
@@ -5734,7 +5857,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 	amount = item.amount;
 	script = id->script;
 	//Check if the item is to be consumed immediately [Skotlex]
-	if (id->flag.delay_consume)
+	if (id->flag.delay_consume > 0)
 		clif_useitemack(sd, n, amount, true);
 	else
 	{
@@ -5746,7 +5869,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 #else
 			// 判断是否需要避免物品被玩家主动使用而消耗
 			// 若可以被玩家主动使用而消耗, 那么执行原有的道具删除流程
-			if (id && id->properties.no_consume_of_player) {
+			if (id && id->pandas.properties.avoid_use_consume) {
 				clif_useitemack(sd, n, amount, true);
 			}
 			else {
@@ -6000,7 +6123,7 @@ int pc_show_steal(struct block_list *bl,va_list ap)
 	if((item=itemdb_exists(itemid))==NULL)
 		sprintf(output,"%s stole an Unknown Item (id: %u).",sd->status.name, itemid);
 	else
-		sprintf(output,"%s stole %s.",sd->status.name,item->jname);
+		sprintf(output,"%s stole %s.",sd->status.name,item->ename.c_str());
 	clif_displaymessage( ((struct map_session_data *)bl)->fd, output);
 
 	return 0;
@@ -6057,7 +6180,7 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 	// Try dropping one item, in the order from first to last possible slot.
 	// Droprate is affected by the skill success rate.
 	for( i = 0; i < MAX_STEAL_DROP; i++ )
-		if( md->db->dropitem[i].nameid > 0 && !md->db->dropitem[i].steal_protected && itemdb_exists(md->db->dropitem[i].nameid) && rnd() % 10000 < md->db->dropitem[i].p
+		if( md->db->dropitem[i].nameid > 0 && !md->db->dropitem[i].steal_protected && itemdb_exists(md->db->dropitem[i].nameid) && rnd() % 10000 < md->db->dropitem[i].rate
 #ifndef RENEWAL
 		* rate/100.
 #endif
@@ -6096,9 +6219,9 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 	
 	if (sd) {
 		struct item_data* dd = itemdb_search(itemid);
-		if (dd && dd->properties.annouce_mask & ITEM_ANNOUCE_STEAL_TO_INVENTORY) {
+		if (dd && dd->pandas.properties.annouce_mask & ITEM_ANNOUCE_STEAL_TO_INVENTORY) {
 			char message[128] = { 0 };
-			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, dd->jname, (float)md->db->dropitem[i].p/100);
+			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, dd->ename.c_str(), (float)md->db->dropitem[i].rate / 100);
 			intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);
 		}
 	}
@@ -6109,11 +6232,11 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 #endif // Pandas_Item_Special_Annouce
 
 	//A Rare Steal Global Announce by Lupus
-	if(md->db->dropitem[i].p<=battle_config.rare_drop_announce) {
+	if(md->db->dropitem[i].rate <= battle_config.rare_drop_announce) {
 		struct item_data *i_data;
 		char message[128];
 		i_data = itemdb_search(itemid);
-		sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, i_data->jname, (float)md->db->dropitem[i].p/100);
+		sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, i_data->ename.c_str(), (float)md->db->dropitem[i].rate / 100);
 		//MSG: "'%s' stole %s's %s (chance: %0.02f%%)"
 		intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);
 	}
@@ -8155,7 +8278,7 @@ int pc_resetstate(struct map_session_data* sd)
 			return 0;
 		}
 
-		sd->status.status_point = statp[sd->status.base_level] + ( sd->class_&JOBL_UPPER ? 52 : 0 ); // extra 52+48=100 stat points
+		sd->status.status_point = statp[sd->status.base_level];
 	}
 	else
 	{
@@ -8168,6 +8291,10 @@ int pc_resetstate(struct map_session_data* sd)
 		add += pc_need_status_point(sd, SP_LUK, 1-pc_getstat(sd, SP_LUK));
 
 		sd->status.status_point+=add;
+	}
+
+	if( ( sd->class_&JOBL_UPPER ) != 0 ){
+		sd->status.status_point += battle_config.transcendent_status_points;
 	}
 
 	pc_setstat(sd, SP_STR, 1);
@@ -9083,6 +9210,7 @@ int64 pc_readparam(struct map_session_data* sd,int64 type)
 		case SP_SHORT_WEAPON_DAMAGE_RETURN: val = sd->bonus.short_weapon_damage_return; break;
 		case SP_LONG_WEAPON_DAMAGE_RETURN: val = sd->bonus.long_weapon_damage_return; break;
 		case SP_MAGIC_DAMAGE_RETURN: val = sd->bonus.magic_damage_return; break;
+		case SP_REDUCE_DAMAGE_RETURN: val = sd->bonus.reduce_damage_return; break;
 		case SP_PERFECT_HIDE:    val = sd->special_state.perfect_hiding?1:0; break;
 		case SP_UNBREAKABLE:     val = sd->bonus.unbreakable; break;
 		case SP_UNBREAKABLE_WEAPON: val = (sd->bonus.unbreakable_equip&EQP_WEAPON)?1:0; break;
@@ -9613,9 +9741,10 @@ bool pc_jobchange(struct map_session_data *sd,int job, char upper)
 		if( sd->status.status_point < battle_config.transcendent_status_points ){
 			// The player already used his bonus points, so we have to reset his status points
 			pc_resetstate(sd);
+		}else{
+			sd->status.status_point -= battle_config.transcendent_status_points;
+			clif_updatestatus(sd,SP_STATUSPOINT);
 		}
-		sd->status.status_point -= battle_config.transcendent_status_points;
-		clif_updatestatus(sd,SP_STATUSPOINT);
 	}
 
 	if ( (b_class&MAPID_UPPERMASK) != (sd->class_&MAPID_UPPERMASK) ) { //Things to remove when changing class tree.
@@ -10527,89 +10656,95 @@ void pc_cleareventtimer(struct map_session_data *sd)
 }
 
 /**
-* Called when an item with combo is worn
-* @param *sd
-* @param *data struct item_data
-* @return success numbers of succeed combo
-*/
-static int pc_checkcombo(struct map_session_data *sd, struct item_data *data) {
-	uint16 i;
+ * Called when an item with combo is worn
+ * @param sd: Player data
+ * @param data: Item data
+ * @return Number of succeeded combo(s)
+ */
+static int pc_checkcombo(struct map_session_data *sd, item_data *data) {
 	int success = 0;
-	for( i = 0; i < data->combos_count; i++ ) {
-		struct itemchk {
-			int idx;
-			t_itemid nameid;
-			t_itemid card[MAX_SLOTS];
-		} *combo_idx;
-		int idx, j;
-		int nb_itemCombo;
-		unsigned int pos = 0;
-		/* ensure this isn't a duplicate combo */
-		if( sd->combos.bonus != NULL ) {
-			int x;
-			ARR_FIND( 0, sd->combos.count, x, sd->combos.id[x] == data->combos[i]->id );
-			/* found a match, skip this combo */
-			if( x < sd->combos.count )
-				continue;
-		}
 
-		nb_itemCombo = data->combos[i]->count;
-		if(nb_itemCombo<2) //a combo with less then 2 item ?? how that possible
-			continue;
-		CREATE(combo_idx,struct itemchk,nb_itemCombo);
-		for(j=0; j < nb_itemCombo; j++){
-			combo_idx[j].idx=-1;
-			combo_idx[j].nameid=-1;
-			for( int k = 0; k < MAX_SLOTS; k++ ){
-				combo_idx[j].card[k] = -1;
+	for (const auto &item_combo : data->combos) {
+		bool do_continue = false;
+
+		// Ensure this isn't a duplicate combo
+		for (const auto player_combo : sd->combos) {
+			if (player_combo->id == item_combo->id) {
+				do_continue = true;
+				break;
 			}
 		}
-			
-		for( j = 0; j < nb_itemCombo; j++ ) {
-			t_itemid id = data->combos[i]->nameid[j];
-			uint16 k;
+
+		// Combo already equipped
+		if (do_continue)
+			continue;
+
+		size_t nb_itemCombo = item_combo->nameid.size();
+
+		if (nb_itemCombo < 2) // A combo with less then 2 item?
+			continue;
+
+		struct s_itemchk {
+			int idx;
+			t_itemid nameid, card[MAX_SLOTS];
+
+			s_itemchk() : idx(0), nameid(0), card() {};
+		};
+		std::vector<s_itemchk> combo_idx(nb_itemCombo);
+		size_t j;
+		unsigned int pos = 0;
+
+		for (j = 0; j < nb_itemCombo; j++) {
+			t_itemid id = item_combo->nameid[j];
 			bool found = false;
-			
-			for( k = 0; k < EQI_MAX; k++ ) {
+
+			for (int16 k = 0; k < EQI_MAX; k++) {
 				short index = sd->equip_index[k];
-				if( index < 0 )
+
+				if (index < 0)
 					continue;
-				if( pc_is_same_equip_index((enum equip_index)k, sd->equip_index, index) )
+				if (pc_is_same_equip_index((equip_index)k, sd->equip_index, index))
 					continue;
-				if (!sd->inventory_data[index] )
+				if (!sd->inventory_data[index])
 					continue;
-				
-				if ( itemdb_type(id) != IT_CARD ) {
-					if ( sd->inventory_data[index]->nameid != id )
+
+				if (itemdb_type(id) != IT_CARD) {
+					if (sd->inventory_data[index]->nameid != id)
 						continue;
-					if(j>0){ //check if this item not already used
-						bool do_continue = false; //used to continue that specific loop with some check that also use some loop
-						uint8 z;
-						for (z = 0; z < nb_itemCombo-1; z++)
-							if(combo_idx[z].idx == index && combo_idx[z].nameid == id) //we already have that index recorded
-								do_continue=true;
-						if(do_continue)
+
+					if (j > 0) { // Check if this item not already used
+						do_continue = false;
+
+						for (size_t z = 0; z < nb_itemCombo - 1; z++) {
+							if (combo_idx[z].idx == index && combo_idx[z].nameid == id) { // Index already recorded
+								do_continue = true;
+								break;
+							}
+						}
+
+						if (do_continue)
 							continue;
 					}
+
 					combo_idx[j].nameid = id;
 					combo_idx[j].idx = index;
 					pos |= sd->inventory.u.items_inventory[index].equip;
 					found = true;
 					break;
-				} else { //Cards and enchants
-					uint16 z;
-					if ( itemdb_isspecial(sd->inventory.u.items_inventory[index].card[0]) )
+				} else { // Cards and enchants
+					if (itemdb_isspecial(sd->inventory.u.items_inventory[index].card[0]))
 						continue;
-					for (z = 0; z < MAX_SLOTS; z++) {
-						bool do_continue=false;			
+					for (uint8 z = 0; z < MAX_SLOTS; z++) {
+						do_continue = false;
+
 						if (sd->inventory.u.items_inventory[index].card[z] != id)
 							continue;
-						if(j>0){
-							int c1, c2;
-							for (c1 = 0; c1 < nb_itemCombo-1; c1++){
-								if(combo_idx[c1].idx == index && combo_idx[c1].nameid == id){
-									for (c2 = 0; c2 < MAX_SLOTS; c2++){
-										if(combo_idx[c1].card[c2] == id){ //we already have that card recorded (at this same idx)
+
+						if (j > 0) {
+							for (size_t c1 = 0; c1 < nb_itemCombo - 1; c1++) {
+								if (combo_idx[c1].idx == index && combo_idx[c1].nameid == id) {
+									for (uint8 c2 = 0; c2 < MAX_SLOTS; c2++) {
+										if (combo_idx[c1].card[c2] == id) { // Card already recorded (at this same idx)
 											do_continue = true;
 											break;
 										}
@@ -10617,97 +10752,81 @@ static int pc_checkcombo(struct map_session_data *sd, struct item_data *data) {
 								}
 							}
 						}
-						if(do_continue)
+
+						if (do_continue)
 							continue;
+
 						combo_idx[j].nameid = id;
 						combo_idx[j].idx = index;
 						combo_idx[j].card[z] = id;
 						pos |= sd->inventory.u.items_inventory[index].equip;
 						found = true;
- 						break;
- 					}
+						break;
+					}
 				}
 			}
-			if( !found )
-				break;/* we haven't found all the ids for this combo, so we can return */
+
+			if (!found)
+				break; // Unable to found all the IDs for this combo, return
 		}
-		aFree(combo_idx);
-		/* means we broke out of the count loop w/o finding all ids, we can move to the next combo */
-		if( j < nb_itemCombo )
+
+		// Broke out of the count loop without finding all IDs, move to the next combo
+		if (j < nb_itemCombo)
 			continue;
-		/* we got here, means all items in the combo are matching */
-		idx = sd->combos.count;
-		if( sd->combos.bonus == NULL ) {
-			CREATE(sd->combos.bonus, struct script_code *, 1);
-			CREATE(sd->combos.id, unsigned short, 1);
-			CREATE(sd->combos.pos, unsigned int, 1);
-			sd->combos.count = 1;
-		} else {
-			RECREATE(sd->combos.bonus, struct script_code *, ++sd->combos.count);
-			RECREATE(sd->combos.id, unsigned short, sd->combos.count);
-			RECREATE(sd->combos.pos, unsigned int, sd->combos.count);
-		}
-		/* we simply copy the pointer */
-		sd->combos.bonus[idx] = data->combos[i]->script;
-		/* save this combo's id */
-		sd->combos.id[idx] = data->combos[i]->id;
-		/* save pos of combo*/
-		sd->combos.pos[idx] = pos;
+
+		// All items in the combo are matching
+		auto entry = std::make_shared<s_combos>();
+
+		entry->bonus = item_combo->script;
+		entry->id = item_combo->id;
+		entry->pos = pos;
+		sd->combos.push_back(entry);
+		combo_idx.clear();
 		success++;
 	}
+
 	return success;
 }
 
 /**
-* Called when an item with combo is removed
-* @param *sd
-* @param *data struct item_data
-* @return retval numbers of removed combo
-*/
-static int pc_removecombo(struct map_session_data *sd, struct item_data *data ) {
-	int i, retval = 0;
+ * Called when an item with combo is removed
+ * @param sd: Player data
+ * @param data: Item data
+ * @return Number of removed combo(s)
+ */
+static int pc_removecombo(struct map_session_data *sd, item_data *data ) {
 
-	if( sd->combos.bonus == NULL )
-		return 0;/* nothing to do here, player has no combos */
-	for( i = 0; i < data->combos_count; i++ ) {
-		/* check if this combo exists in this user */
-		int x = 0, cursor = 0, j;
-		ARR_FIND( 0, sd->combos.count, x, sd->combos.id[x] == data->combos[i]->id );
-		/* no match, skip this combo */
-		if(x >= sd->combos.count)
-			continue;
+	if (sd->combos.empty())
+		return 0; // Nothing to do here, player has no combos
 
-		sd->combos.bonus[x] = NULL;
-		sd->combos.id[x] = 0;
-		sd->combos.pos[x] = 0;
-		retval++;
+	int retval = 0;
 
-		/* check if combo requirements still fit */
-		if( pc_checkcombo( sd, data ) )
-			continue;
+	for (const auto &item_combo : data->combos) {
+		std::shared_ptr<s_combos> del_combo = nullptr;
 
-		/* move next value to empty slot */
-		for( j = 0, cursor = 0; j < sd->combos.count; j++ ) {
-			if( sd->combos.bonus[j] == NULL )
-				continue;
-
-			if( cursor != j ) {
-				sd->combos.bonus[cursor] = sd->combos.bonus[j];
-				sd->combos.id[cursor]    = sd->combos.id[j];
-				sd->combos.pos[cursor]   = sd->combos.pos[j];
+		// Check if this combo exists on this player
+		for (const auto &player_combo : sd->combos) {
+			if (player_combo->id == item_combo->id) {
+				del_combo = player_combo;
+				break;
 			}
-			cursor++;
 		}
 
-		/* it's empty, we can clear all the memory */
-		if( (sd->combos.count = cursor) == 0 ) {
-			aFree(sd->combos.bonus);
-			aFree(sd->combos.id);
-			aFree(sd->combos.pos);
-			sd->combos.bonus = NULL;
-			sd->combos.id = NULL;
-			sd->combos.pos = NULL;
-			return retval; /* we also can return at this point for we have no more combos to check */
+		// No match, skip this combo
+		if (del_combo == nullptr)
+			continue;
+
+		util::vector_erase_if_exists(sd->combos, del_combo);
+		retval++;
+
+		// Check if combo requirements still fit
+		if (pc_checkcombo(sd, data))
+			continue;
+
+		// It's empty, clear all the memory
+		if (sd->combos.empty()) {
+			sd->combos.clear();
+			return retval; // Return at this point as there are no more combos to check
 		}
 	}
 
@@ -10715,34 +10834,41 @@ static int pc_removecombo(struct map_session_data *sd, struct item_data *data ) 
 }
 
 /**
-* Load combo data(s) of player
-* @param *sd
-* @return ret numbers of succeed combo
-*/
+ * Load combo data(s) of player
+ * @param sd: Player data
+ * @return ret numbers of succeed combo
+ */
 int pc_load_combo(struct map_session_data *sd) {
-	int i, ret = 0;
-	for( i = 0; i < EQI_MAX; i++ ) {
-		struct item_data *id = NULL;
+	int ret = 0;
+
+	for (int16 i = 0; i < EQI_MAX; i++) {
+		item_data *id;
 		short idx = sd->equip_index[i];
-		if( idx < 0 || !(id = sd->inventory_data[idx] ) )
+
+		if (idx < 0 || !(id = sd->inventory_data[idx]))
 			continue;
-		if( id->combos_count )
-			ret += pc_checkcombo(sd,id);
-		if(!itemdb_isspecial(sd->inventory.u.items_inventory[idx].card[0])) {
-			struct item_data *data;
-			int j;
-			for( j = 0; j < MAX_SLOTS; j++ ) {
+
+		if (!id->combos.empty())
+			ret += pc_checkcombo(sd, id);
+
+		if (!itemdb_isspecial(sd->inventory.u.items_inventory[idx].card[0])) {
+			item_data *data;
+
+			for (uint8 j = 0; j < MAX_SLOTS; j++) {
 				if (!sd->inventory.u.items_inventory[idx].card[j])
 					continue;
-				if ( ( data = itemdb_exists(sd->inventory.u.items_inventory[idx].card[j]) ) != NULL ) {
-					if( data->combos_count )
-						ret += pc_checkcombo(sd,data);
+
+				if ((data = itemdb_exists(sd->inventory.u.items_inventory[idx].card[j])) != nullptr) {
+					if (!data->combos.empty())
+						ret += pc_checkcombo(sd, data);
 				}
 			}
 		}
 	}
+
 	return ret;
 }
+
 /*==========================================
  * Equip item on player sd at req_pos from inventory index n
  * return: false - fail; true - success
@@ -10845,7 +10971,7 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 
 		if (isblocked) {
 			char message[128] = { 0 };
-			safesnprintf(message, sizeof(message), msg_txt_cn(sd, 3), id->jname);	// 很抱歉, 当您坐上“商城坐骑”时, 无法使用: %s
+			safesnprintf(message, sizeof(message), msg_txt_cn(sd, 3), id->ename.c_str());	// 很抱歉, 当您坐上“商城坐骑”时, 无法使用: %s
 			clif_displaymessage(sd->fd, message);
 			return true;
 		}
@@ -10864,7 +10990,7 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 		if (pos == EQP_ACC) //User specified both slots.
 			pos = equip_index[EQI_ACC_R] >= 0 ? EQP_ACC_L : EQP_ACC_R;
 
-		for (i = 0; i < sd->inventory_data[n]->slot; i++) { // Accessories that have cards that force equip location
+		for (i = 0; i < sd->inventory_data[n]->slots; i++) { // Accessories that have cards that force equip location
 			if (!sd->inventory.u.items_inventory[n].card[i])
 				continue;
 
@@ -10964,26 +11090,26 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 
 	if(pos & EQP_HAND_R) {
 		if(id)
-			sd->weapontype1 = id->look;
+			sd->weapontype1 = id->subtype;
 		else
-			sd->weapontype1 = 0;
+			sd->weapontype1 = W_FIST;
 		pc_calcweapontype(sd);
 		clif_changelook(&sd->bl,LOOK_WEAPON,sd->status.weapon);
 	}
 	if(pos & EQP_HAND_L) {
 		if(id) {
 			if(id->type == IT_WEAPON) {
-				sd->status.shield = 0;
-				sd->weapontype2 = id->look;
+				sd->status.shield = W_FIST;
+				sd->weapontype2 = id->subtype;
 			}
 			else
 			if(id->type == IT_ARMOR) {
 				sd->status.shield = id->look;
-				sd->weapontype2 = 0;
+				sd->weapontype2 = W_FIST;
 			}
 		}
 		else
-			sd->status.shield = sd->weapontype2 = 0;
+			sd->status.shield = sd->weapontype2 = W_FIST;
 		pc_calcweapontype(sd);
 		clif_changelook(&sd->bl,LOOK_SHIELD,sd->status.shield);
 	}
@@ -10994,23 +11120,23 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 		short idx = sd->equip_index[EQI_AMMO];
 
 		if (idx >= 0) {
-			switch (sd->inventory_data[idx]->look) {
+			switch (sd->inventory_data[idx]->subtype) {
 				case AMMO_ARROW:
-					if (id->look != W_BOW && id->look != W_MUSICAL && id->look != W_WHIP)
+					if (id->subtype != W_BOW && id->subtype != W_MUSICAL && id->subtype != W_WHIP)
 						pc_unequipitem(sd, idx, 2 | 4);
 					break;
 				case AMMO_BULLET:
 				case AMMO_SHELL:
-					if (id->look != W_REVOLVER && id->look != W_RIFLE && id->look != W_GATLING && id->look != W_SHOTGUN
+					if (id->subtype != W_REVOLVER && id->subtype != W_RIFLE && id->subtype != W_GATLING && id->subtype != W_SHOTGUN
 #ifdef RENEWAL
-						&& id->look != W_GRENADE
+						&& id->subtype != W_GRENADE
 #endif
 						)
 						pc_unequipitem(sd, idx, 2 | 4);
 					break;
 #ifndef RENEWAL
 				case AMMO_GRENADE:
-					if (id->look != W_GRENADE)
+					if (id->subtype != W_GRENADE)
 						pc_unequipitem(sd, idx, 2 | 4);
 					break;
 #endif
@@ -11023,19 +11149,21 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 	pc_checkallowskill(sd); //Check if status changes should be halted.
 	iflag = sd->npc_item_flag;
 
-	/* check for combos (MUST be before status_calc_pc) */
-	if( id->combos_count )
-		pc_checkcombo(sd,id);
-	if(itemdb_isspecial(sd->inventory.u.items_inventory[n].card[0]))
-		; //No cards
+	// Check for combos (MUST be before status_calc_pc)
+	if (!id->combos.empty())
+		pc_checkcombo(sd, id);
+
+	if (itemdb_isspecial(sd->inventory.u.items_inventory[n].card[0]))
+		; // No cards
 	else {
-		for( i = 0; i < MAX_SLOTS; i++ ) {
-			struct item_data *data;
+		for (i = 0; i < MAX_SLOTS; i++) {
+			item_data *data;
+
 			if (!sd->inventory.u.items_inventory[n].card[i])
 				continue;
-			if ( ( data = itemdb_exists(sd->inventory.u.items_inventory[n].card[i]) ) != NULL ) {
-				if( data->combos_count )
-					pc_checkcombo(sd,data);
+			if ((data = itemdb_exists(sd->inventory.u.items_inventory[n].card[i])) != nullptr) {
+				if (!data->combos.empty())
+					pc_checkcombo(sd, data);
 			}
 		}
 	}
@@ -11097,22 +11225,23 @@ static void pc_unequipitem_sub(struct map_session_data *sd, int n, int flag) {
 		pc_checkallowskill(sd);
 	iflag = sd->npc_item_flag;
 
-	/* check for combos (MUST be before status_calc_pc) */
+	// Check for combos (MUST be before status_calc_pc)
 	if (sd->inventory_data[n]) {
-		if (sd->inventory_data[n]->combos_count) {
+		if (!sd->inventory_data[n]->combos.empty()) {
 			if (pc_removecombo(sd, sd->inventory_data[n]))
 				status_calc = true;
 		}
+
 		if (itemdb_isspecial(sd->inventory.u.items_inventory[n].card[0]))
-			; //No cards
+			; // No cards
 		else {
 			for (i = 0; i < MAX_SLOTS; i++) {
-				struct item_data *data;
+				item_data *data;
 
 				if (!sd->inventory.u.items_inventory[n].card[i])
 					continue;
-				if ((data = itemdb_exists(sd->inventory.u.items_inventory[n].card[i])) != NULL) {
-					if (data->combos_count) {
+				if ((data = itemdb_exists(sd->inventory.u.items_inventory[n].card[i])) != nullptr) {
+					if (!data->combos.empty()) {
 						if (pc_removecombo(sd, data))
 							status_calc = true;
 					}
@@ -11231,7 +11360,7 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
 		if (sd->status.shield && battle_getcurrentskill(&sd->bl) == LG_SHIELDSPELL)
 			unit_skillcastcancel(&sd->bl, 0); // Cancel Shield Spell if player swaps shields.
 
-		sd->status.shield = sd->weapontype2 = 0;
+		sd->status.shield = sd->weapontype2 = W_FIST;
 		pc_calcweapontype(sd);
 		clif_changelook(&sd->bl,LOOK_SHIELD,sd->status.shield);
 	}
@@ -11246,7 +11375,7 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
 	// On weapon change (right and left hand)
 	if ((pos & EQP_ARMS) && sd->inventory_data[n]->type == IT_WEAPON) {
 		if (battle_config.ammo_unequip && !(flag & 4)) {
-			switch (sd->inventory_data[n]->look) {
+			switch (sd->inventory_data[n]->subtype) {
 				case W_BOW:
 				case W_MUSICAL:
 				case W_WHIP:
@@ -12145,20 +12274,36 @@ void pc_delspiritcharm(struct map_session_data *sd, int count, int type)
  * @param type: 1 - EXP, 2 - Item Drop
  * @return Penalty rate
  */
-int pc_level_penalty_mod(int level_diff, uint32 mob_class, enum e_mode mode, int type)
-{
-	int rate = 100;
+uint16 pc_level_penalty_mod( struct map_session_data* sd, e_penalty_type type, struct mob_db* mob, mob_data* md ){
+	// No player was attached, we don't use any modifier (100 = rates are not touched)
+	if( sd == nullptr ){
+		return 100;
+	}
 
-	if (type == 2 && (mode&MD_FIXED_ITEMDROP))
-		return rate;
+	int monster_level;
 
-	if (level_diff < 0)
-		level_diff = MAX_LEVEL + (~level_diff + 1);
+	if( md != nullptr ){
+		monster_level = md->level;
+		mob = md->db;
+	}else if( mob != nullptr ){
+		monster_level = mob->lv;
+	}else{
+		return 100;
+	}
 
-	if ((rate = level_penalty[type][mob_class][level_diff]) > 0) // Monster class found, return rate
-		return rate;
+	if( ( type == PENALTY_DROP || type == PENALTY_MVP_DROP ) && status_has_mode( &mob->status, MD_FIXED_ITEMDROP )  ){
+		return 100;
+	}
 
-	return 100; // Penalty not found, return default
+	int level_difference = monster_level - sd->status.base_level;
+
+	std::shared_ptr<s_penalty> penalty = penalty_db.find( type );
+
+	if( penalty != nullptr ){
+		return penalty->rate[ level_difference + MAX_LEVEL - 1 ];
+	}else{
+		return 100;
+	}
 }
 #endif
 
@@ -12315,35 +12460,6 @@ static bool pc_readdb_skilltree(char* fields[], int columns, int current)
 	}
 	return true;
 }
-#if defined(RENEWAL_DROP) || defined(RENEWAL_EXP)
-static bool pc_readdb_levelpenalty(char* fields[], int columns, int current)
-{
-	int type, class_, diff;
-
-	type = atoi(fields[0]); //1=experience, 2=item drop
-	class_ = atoi(fields[1]);
-	diff = atoi(fields[2]);
-
-	if( type != 1 && type != 2 ){
-		ShowWarning("pc_readdb_levelpenalty: Invalid type %d specified.\n", type);
-		return false;
-	}
-
-	if( !CHK_CLASS(class_) ){
-		ShowWarning("pc_readdb_levelpenalty: Invalid class %d specified.\n", class_);
-		return false;
-	}
-
-	diff = min(diff, MAX_LEVEL);
-
-	if( diff < 0 )
-		diff = min(MAX_LEVEL + ( ~(diff) + 1 ), MAX_LEVEL*2);
-
-	level_penalty[type][class_][diff] = atoi(fields[3]);
-
-	return true;
-}
-#endif
 
 /** [Cydh]
 * Calculates base hp of player. Reference: http://irowiki.org/wiki/Max_HP
@@ -12721,22 +12837,7 @@ void pc_readdb(void) {
 	memset(job_info,0,sizeof(job_info)); // job_info table
 
 #if defined(RENEWAL_DROP) || defined(RENEWAL_EXP)
-	sv_readdb(db_path, DBPATH "level_penalty.txt", ',', 4, 4, -1, &pc_readdb_levelpenalty, 0);
-	sv_readdb(db_path, DBIMPORT"/level_penalty.txt", ',', 4, 4, -1, &pc_readdb_levelpenalty, 1);
-	for( k=1; k < 3; k++ ){ // fill in the blanks
-		int j;
-		for( j = 0; j < CLASS_ALL; j++ ){
-			int tmp = 0;
-			for( i = 0; i < MAX_LEVEL*2; i++ ){
-				if( i == MAX_LEVEL+1 )
-					tmp = level_penalty[k][j][0];// reset
-				if( level_penalty[k][j][i] > 0 )
-					tmp = level_penalty[k][j][i];
-				else
-					level_penalty[k][j][i] = tmp;
-			}
-		}
-	}
+	penalty_db.load();
 #endif
 
 	 // reset then read statspoint
@@ -12913,10 +13014,10 @@ uint8 pc_itemcd_add(struct map_session_data *sd, struct item_data *id, t_tick ti
 				char e_msg[CHAT_SIZE_MAX];
 				if( e_tick > 99 )
 					sprintf(e_msg,msg_txt(sd,379), // Item Failed. [%s] is cooling down. Wait %.1f minutes.
-									itemdb_jname(sd->item_delay[i].nameid), (double)e_tick / 60);
+									itemdb_ename(sd->item_delay[i].nameid), (double)e_tick / 60);
 				else
 					sprintf(e_msg,msg_txt(sd,380), // Item Failed. [%s] is cooling down. Wait %d seconds.
-									itemdb_jname(sd->item_delay[i].nameid), e_tick+1);
+									itemdb_ename(sd->item_delay[i].nameid), e_tick+1);
 				clif_messagecolor(&sd->bl,color_table[COLOR_YELLOW],e_msg,false,SELF);
 				return 1; // Delay has not expired yet
 			}
@@ -12924,7 +13025,7 @@ uint8 pc_itemcd_add(struct map_session_data *sd, struct item_data *id, t_tick ti
 			sd->item_delay[i].nameid = id->nameid;
 		}
 		if( !(id->nameid == ITEMID_REINS_OF_MOUNT && sd->sc.option&(OPTION_WUGRIDER|OPTION_RIDING|OPTION_DRAGON|OPTION_MADOGEAR)) )
-			sd->item_delay[i].tick = tick + sd->inventory_data[n]->delay;
+			sd->item_delay[i].tick = tick + sd->inventory_data[n]->delay.duration;
 	} else {// should not happen
 		ShowError("pc_itemcd_add: Exceeded item delay array capacity! (nameid=%u, char_id=%d)\n", id->nameid, sd->status.char_id);
 	}
@@ -12954,17 +13055,17 @@ uint8 pc_itemcd_check(struct map_session_data *sd, struct item_data *id, t_tick 
 	nullpo_retr(0, id);
 
 	// Do normal delay assignment
-	if (id->delay_sc <= SC_NONE || id->delay_sc >= SC_MAX || !(sc = &sd->sc))
+	if (id->delay.sc <= SC_NONE || id->delay.sc >= SC_MAX || !(sc = &sd->sc))
 		return pc_itemcd_add(sd, id, tick, n);
 
 	// Send reply of delay remains
-	if (sc->data[id->delay_sc]) {
-		const struct TimerData *timer = get_timer(sc->data[id->delay_sc]->timer);
+	if (sc->data[id->delay.sc]) {
+		const struct TimerData *timer = get_timer(sc->data[id->delay.sc]->timer);
 		clif_msg_value(sd, ITEM_REUSE_LIMIT, (int)(timer ? DIFF_TICK(timer->tick, tick) / 1000 : 99));
 		return 1;
 	}
 
-	sc_start(&sd->bl, &sd->bl, (sc_type)id->delay_sc, 100, id->nameid, id->delay);
+	sc_start(&sd->bl, &sd->bl, id->delay.sc, 100, id->nameid, id->delay.duration);
 	return 0;
 }
 
@@ -13655,7 +13756,8 @@ short pc_maxaspd(struct map_session_data *sd) {
 #endif // Pandas_BattleConfig_MaxAspdForPVP
 
 	return (( sd->class_&JOBL_THIRD) ? battle_config.max_third_aspd : (
-			((sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd :
+			((sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (
+			(sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER) ? battle_config.max_summoner_aspd : 
 			battle_config.max_aspd ));
 }
 
@@ -14099,6 +14201,7 @@ void do_final_pc(void) {
 	ers_destroy(str_reg_ers);
 
 	attendance_db.clear();
+	penalty_db.clear();
 }
 
 void do_init_pc(void) {
