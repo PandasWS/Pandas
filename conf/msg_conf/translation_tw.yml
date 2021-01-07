@@ -802,6 +802,8 @@ Body:
   Translation: "已讀取 [{CL_WHITE}]%d[{CL_RESET}] 位離線擺攤的玩家, 全服共計 [{CL_WHITE}]%d[{CL_RESET}] 個在售物品.\n"
 - Original: "Done reading %s.\n"
   Translation: "已讀取 %s.\n"
+- Original: "Done reading '[{CL_WHITE}]%[{PRIu64}][{CL_RESET}]' entries in '[{CL_WHITE}]%s[{CL_RESET}]' (took %[{PRIu64}] milliseconds)[{CL_CLL}]\n"
+  Translation: "已讀取 [{CL_WHITE}]%-5[{PRIu64}][{CL_RESET}] 組資料, 源於 '[{CL_WHITE}]%s[{CL_RESET}]' (耗時 %[{PRIu64}] 毫秒)[{CL_CLL}]\n"
 - Original: "Done reading '[{CL_WHITE}]%[{PRIu64}][{CL_RESET}]' entries in '[{CL_WHITE}]%s[{CL_RESET}]'.\n"
   Translation: "已讀取 [{CL_WHITE}]%-5[{PRIu64}][{CL_RESET}] 行資料, 源於 '[{CL_WHITE}]%s[{CL_RESET}]'.\n"
 - Original: "Done reading '[{CL_WHITE}]%[{PRIu64}][{CL_RESET}]' entries in '[{CL_WHITE}]%s[{CL_RESET}]'[{CL_CLL}]\n"

@@ -153,6 +153,10 @@ bool YamlDatabase::load(const std::string& path) {
 #endif // Pandas_Console_Translate
 
 	try {
+#ifdef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+		performance_create_and_start("yamldatabase_load");
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+
 		ShowStatus( "Loading '" CL_WHITE "%s" CL_RESET "'..." CL_CLL "\r", path.c_str() );
 #ifndef Pandas_Database_Yaml_Support_UTF8BOM
 		rootNode = YAML::LoadFile(path);
@@ -209,7 +213,12 @@ void YamlDatabase::parse( const YAML::Node& rootNode ){
 			ShowStatus( "Loading [%" PRIdPTR "/%" PRIdPTR "] entries from '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r", ++childNodesProgressed, childNodesCount, fileName );
 		}
 
+#ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 		ShowStatus( "Done reading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\n", count, fileName );
+#else
+		performance_stop("yamldatabase_load");
+		ShowStatus( "Done reading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "' (took %" PRIu64 " milliseconds)" CL_CLL "\n", count, fileName, performance_get_milliseconds("yamldatabase_load"));
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	}
 }
 
