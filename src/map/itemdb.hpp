@@ -12,10 +12,6 @@
 #include "../common/malloc.hpp"
 #include "../common/mmo.hpp" // ITEM_NAME_LENGTH
 
-#ifdef Pandas_Struct_Item_Data_Taming_Mobid
-#include <vector>
-#endif // Pandas_Struct_Item_Data_Taming_Mobid
-
 #include "script.hpp"
 #include "status.hpp"
 
@@ -925,9 +921,9 @@ struct item_data
 	struct s_pandas {
 #ifdef Pandas_Struct_Item_Data_Script_Plaintext
 		struct s_script_plaintext {
-			std::shared_ptr<std::string> script;
-			std::shared_ptr<std::string> equip_script;
-			std::shared_ptr<std::string> unequip_script;
+			std::string script;
+			std::string equip_script;
+			std::string unequip_script;
 		} script_plaintext;
 #endif // Pandas_Struct_Item_Data_Script_Plaintext
 
@@ -970,18 +966,6 @@ struct item_data
 			script_free_code(this->unequip_script);
 			this->unequip_script = nullptr;
 		}
-
-#ifdef Pandas_Struct_Item_Data_Script_Plaintext
-		if (this->pandas.script_plaintext.script) {
-			this->pandas.script_plaintext.script = nullptr;
-		}
-		if (this->pandas.script_plaintext.equip_script) {
-			this->pandas.script_plaintext.equip_script = nullptr;
-		}
-		if (this->pandas.script_plaintext.unequip_script) {
-			this->pandas.script_plaintext.unequip_script = nullptr;
-		}
-#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
 		this->pandas.taming_mobid.clear();

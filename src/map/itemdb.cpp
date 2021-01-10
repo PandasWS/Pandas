@@ -62,13 +62,13 @@ inline static void item_script_process(std::shared_ptr<item_data> item, e_script
 	switch (script_type)
 	{
 	case SCRIPT_TYPE_USED:
-		item->pandas.script_plaintext.script = std::make_shared<std::string>(strTrim(script));
+		item->pandas.script_plaintext.script = strTrim(script);
 		break;
 	case SCRIPT_TYPE_EQUIP:
-		item->pandas.script_plaintext.equip_script = std::make_shared<std::string>(strTrim(script));
+		item->pandas.script_plaintext.equip_script = strTrim(script);
 		break;
 	case SCRIPT_TYPE_UNEQUIP:
-		item->pandas.script_plaintext.unequip_script = std::make_shared<std::string>(strTrim(script));
+		item->pandas.script_plaintext.unequip_script = strTrim(script);
 		break;
 	default:
 		break;
@@ -110,13 +110,13 @@ inline static void item_script_reset(std::shared_ptr<item_data> item, e_script_t
 	switch (script_type)
 	{
 	case SCRIPT_TYPE_USED:
-		item->pandas.script_plaintext.script = nullptr;
+		item->pandas.script_plaintext.script.clear();
 		break;
 	case SCRIPT_TYPE_EQUIP:
-		item->pandas.script_plaintext.equip_script = nullptr;
+		item->pandas.script_plaintext.equip_script.clear();
 		break;
 	case SCRIPT_TYPE_UNEQUIP:
-		item->pandas.script_plaintext.unequip_script = nullptr;
+		item->pandas.script_plaintext.unequip_script.clear();
 		break;
 	default:
 		break;

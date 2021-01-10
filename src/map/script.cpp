@@ -14421,24 +14421,15 @@ BUILDIN_FUNC(getiteminfo)
 
 #ifdef Pandas_Persistence_Itemdb_Script
 		case -7: {
-			if (i_data->pandas.script_plaintext.script)
-				script_pushstrcopy(st, i_data->pandas.script_plaintext.script->c_str());
-			else
-				script_pushstrcopy(st, "");
+			script_pushstrcopy(st, i_data->pandas.script_plaintext.script.c_str());
 			break;
 		}
 		case -8: {
-			if (i_data->pandas.script_plaintext.equip_script)
-				script_pushstrcopy(st, i_data->pandas.script_plaintext.equip_script->c_str());
-			else
-				script_pushstrcopy(st, "");
+			script_pushstrcopy(st, i_data->pandas.script_plaintext.equip_script.c_str());
 			break;
 		}
 		case -9: {
-			if (i_data->pandas.script_plaintext.unequip_script)
-				script_pushstrcopy(st, i_data->pandas.script_plaintext.unequip_script->c_str());
-			else
-				script_pushstrcopy(st, "");
+			script_pushstrcopy(st, i_data->pandas.script_plaintext.unequip_script.c_str());
 			break;
 		}
 #else
