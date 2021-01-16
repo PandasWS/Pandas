@@ -21,11 +21,13 @@ void deployImportDirectories();
 bool getExecuteFilepath(std::string& outFilepath);
 bool getExecuteFileDirectory(std::string& outFileDirectory);
 
-bool deleteDirectory(std::string szDirPath);
 bool isDirectoryExists(const std::string& path);
 bool makeDirectories(const std::string& path);
+bool ensureDirectories(const std::string& filepath);
+bool deleteDirectory(std::string szDirPath);
 bool copyDirectory(const boost::filesystem::path& from, const boost::filesystem::path& to);
 
+bool isFileExists(const std::string& path);
 bool copyFile(std::string fromPath, std::string toPath);
 
 bool strEndWith(std::string fullstring, std::string ending);
@@ -55,4 +57,4 @@ std::string getPandasVersion(bool bPrefix = true, bool bSuffix = true);
 bool isDoubleByteCharacter(unsigned char high, unsigned char low);
 bool isEscapeSequence(const char* start_p);
 
-void correct_isa_available();
+void isaAvailableHotfix();

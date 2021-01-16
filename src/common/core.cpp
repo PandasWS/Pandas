@@ -392,7 +392,7 @@ void usercheck(void)
 int main (int argc, char **argv)
 {
 #ifdef Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
-	correct_isa_available();
+	isaAvailableHotfix();
 #endif // Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
 
 #ifdef Pandas_Setup_Console_Output_Codepage
