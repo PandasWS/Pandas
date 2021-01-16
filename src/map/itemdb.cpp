@@ -46,7 +46,6 @@ enum e_script_type {
 
 //************************************
 // Method:      item_script_process
-// FullName:    item_script_process
 // Description: 当物品的脚本信息更新时, 执行自定义处理操作
 // Access:      public static 
 // Parameter:   std::shared_ptr<item_data> item
@@ -95,7 +94,6 @@ inline static void item_script_process(std::shared_ptr<item_data> item, e_script
 
 //************************************
 // Method:      item_script_reset
-// FullName:    item_script_reset
 // Description: 当物品的脚本信息被重置时, 执行自定义处理操作
 // Access:      public static 
 // Parameter:   std::shared_ptr<item_data> item

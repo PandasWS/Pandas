@@ -8648,7 +8648,6 @@ struct s_unit_common_data *status_get_ucd(struct block_list* bl)
 #ifdef Pandas_Helper_Common_Function
 //************************************
 // Method:      status_ishiding
-// FullName:    status_ishiding
 // Description: 与 pc_ishiding 类似, 可以判断一个单位是否隐藏
 // Access:      public 
 // Parameter:   struct block_list * bl
@@ -8664,7 +8663,6 @@ bool status_ishiding(struct block_list* bl) {
 
 //************************************
 // Method:      status_isinvisible
-// FullName:    status_isinvisible
 // Description: 与 pc_isinvisible 类似, 可以判断一个单位是否处于不可见状态
 // Access:      public 
 // Parameter:   struct block_list * bl

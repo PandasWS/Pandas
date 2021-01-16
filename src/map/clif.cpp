@@ -1053,7 +1053,6 @@ static int clif_setlevel(struct block_list* bl) {
 #ifdef Pandas_Aura_Mechanism
 //************************************
 // Method:      clif_send_auras_single
-// FullName:    clif_send_auras_single
 // Description: 将 bl 的光环效果信息发送给 tsd 的客户端
 // Access:      public 
 // Parameter:   struct block_list * bl
@@ -1083,7 +1082,6 @@ void clif_send_auras_single(struct block_list* bl, struct map_session_data* tsd)
 
 //************************************
 // Method:      clif_send_auras
-// FullName:    clif_send_auras
 // Description: 将 sd 的光环信息发送给指定范围的其他客户端
 // Access:      public 
 // Parameter:   struct block_list * bl

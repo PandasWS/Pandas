@@ -1005,7 +1005,13 @@ int do_init(int argc, char** argv) {
 
 	do_init_logincnslif();
 
+#ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	ShowStatus("The login-server is " CL_GREEN "ready" CL_RESET " (Server is listening on the port %u).\n\n", login_config.login_port);
+#else
+	performance_stop("core_init");
+	ShowStatus("The login-server is " CL_GREEN "ready" CL_RESET " (Server is listening on the port %u, took %" PRIu64 " milliseconds).\n\n", login_config.login_port, performance_get_milliseconds("core_init"));
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+
 	login_log(0, "login server", 100, "login server started");
 
 	return 0;
