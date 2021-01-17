@@ -12,6 +12,10 @@
 
 #include "map.hpp"
 
+#ifdef Pandas_YamlBlastCache_Serialize
+#include "serialize.hpp"
+#endif // Pandas_YamlBlastCache_Serialize
+
 struct map_session_data;
 enum e_size : uint8;
 
@@ -52,14 +56,29 @@ enum e_quest_check_type : uint8 {
 };
 
 class QuestDatabase : public TypesafeYamlDatabase<uint32, s_quest_db> {
+#ifdef Pandas_YamlBlastCache_QuestDatabase
+private:
+	friend class boost::serialization::access;
+
+	template <typename Archive>
+	friend void boost::serialization::serialize(
+		Archive& ar, QuestDatabase& t, const unsigned int version
+	);
+#endif // Pandas_YamlBlastCache_QuestDatabase
 public:
 	QuestDatabase() : TypesafeYamlDatabase("QUEST_DB", 1) {
-
+#ifdef Pandas_YamlBlastCache_QuestDatabase
+		this->supportSerialize = true;
+#endif // Pandas_YamlBlastCache_QuestDatabase
 	}
 
 	const std::string getDefaultLocation();
 	uint64 parseBodyNode(const YAML::Node& node);
 	bool reload();
+
+#ifdef Pandas_YamlBlastCache_QuestDatabase
+	bool doSerialize(const std::string& type, void* archive);
+#endif // Pandas_YamlBlastCache_QuestDatabase
 };
 
 extern QuestDatabase quest_db;

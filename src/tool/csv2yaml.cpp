@@ -738,6 +738,16 @@ static bool parse_item_constants_txt( const char* path ){
 	return true;
 }
 
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
+	return TypesafeCachedYamlDatabase<t_itemid, item_data>::doSerialize(type, archive);
+}
+
+void ItemDatabase::afterSerialize() {
+	TypesafeCachedYamlDatabase<t_itemid, item_data>::afterSerialize();
+}
+#endif // Pandas_YamlBlastCache_ItemDatabase
+
 const std::string ItemDatabase::getDefaultLocation(){
 	return std::string( db_path ) + "/item_db.yml";
 }
@@ -842,6 +852,16 @@ uint64 SkillDatabase::parseBodyNode(const YAML::Node &node) {
 void SkillDatabase::clear() {
 	TypesafeCachedYamlDatabase::clear();
 }
+
+#ifdef Pandas_YamlBlastCache_SkillDatabase
+bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
+	return TypesafeCachedYamlDatabase<uint16, s_skill_db>::doSerialize(type, archive);
+}
+
+void SkillDatabase::afterSerialize() {
+	return TypesafeCachedYamlDatabase<uint16, s_skill_db>::afterSerialize();
+}
+#endif // Pandas_YamlBlastCache_SkillDatabase
 
 SkillDatabase skill_db;
 

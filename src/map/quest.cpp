@@ -891,6 +891,24 @@ bool QuestDatabase::reload() {
 	return true;
 }
 
+#ifdef Pandas_YamlBlastCache_QuestDatabase
+bool QuestDatabase::doSerialize(const std::string& type, void* archive) {
+	if (type == "class boost::archive::text_oarchive") {
+		boost::archive::text_oarchive* ar = (boost::archive::text_oarchive*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, QuestDatabase);
+		*ar & *this;
+		return true;
+	}
+	else if (type == "class boost::archive::text_iarchive") {
+		boost::archive::text_iarchive* ar = (boost::archive::text_iarchive*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, QuestDatabase);
+		*ar & *this;
+		return true;
+	}
+	return false;
+}
+#endif // Pandas_YamlBlastCache_QuestDatabase
+
 QuestDatabase quest_db;
 
 /**

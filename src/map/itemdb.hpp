@@ -15,6 +15,10 @@
 #include "script.hpp"
 #include "status.hpp"
 
+#ifdef Pandas_YamlBlastCache_Serialize
+#include "serialize.hpp"
+#endif // Pandas_YamlBlastCache_Serialize
+
 enum e_ammo_type : uint8;
 
 ///Use apple for unknown items.
@@ -886,9 +890,17 @@ struct item_data
 	struct script_code *equip_script;	//Script executed once when equipping.
 	struct script_code *unequip_script;//Script executed once when unequipping.
 	struct {
+#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned available : 1;
+#else
+		uint8 available = 0;
+#endif // Pandas_YamlBlastCache_ItemDatabase
 		uint32 no_equip;
+#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned no_refine : 1;	// [celest]
+#else
+		uint8 no_refine = 0;
+#endif // Pandas_YamlBlastCache_ItemDatabase
 		unsigned delay_consume;	// [Skotlex]
 		struct {
 			bool drop, trade, trade_partner, sell, cart, storage, guild_storage, mail, auction;
@@ -897,7 +909,11 @@ struct item_data
 		bool buyingstore;
 		bool dead_branch; // As dead branch item. Logged at `branchlog` table and cannot be used at 'nobranch' mapflag [Cydh]
 		bool group; // As item group container [Cydh]
+#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned guid : 1; // This item always be attached with GUID and make it as bound item! [Cydh]
+#else
+		uint8 guid = 0;
+#endif // Pandas_YamlBlastCache_ItemDatabase
 		bool broadcast; ///< Will be broadcasted if someone obtain the item [Cydh]
 		bool bindOnEquip; ///< Set item as bound when equipped
 		e_item_drop_effect dropEffect; ///< Drop Effect Mode
@@ -1043,14 +1059,30 @@ public:
 extern RandomOptionGroupDatabase random_option_group;
 
 class ItemDatabase : public TypesafeCachedYamlDatabase<t_itemid, item_data> {
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+private:
+	friend class boost::serialization::access;
+
+	template <typename Archive>
+	friend void boost::serialization::serialize(
+		Archive& ar, ItemDatabase& t, const unsigned int version
+	);
+#endif // Pandas_YamlBlastCache_ItemDatabase
 public:
 	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 1) {
-
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+		this->supportSerialize = true;
+#endif // Pandas_YamlBlastCache_ItemDatabase
 	}
 
 	const std::string getDefaultLocation();
 	uint64 parseBodyNode(const YAML::Node& node);
 	void loadingFinished();
+
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+	bool doSerialize(const std::string& type, void* archive);
+	void afterSerialize();
+#endif // Pandas_YamlBlastCache_ItemDatabase
 };
 
 extern ItemDatabase item_db;

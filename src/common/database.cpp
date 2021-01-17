@@ -5,6 +5,11 @@
 
 #include "showmsg.hpp"
 
+#ifdef Pandas_YamlBlastCache_Serialize
+#include "configparser.hpp"
+#include "cryptopp.hpp"
+#endif // Pandas_YamlBlastCache_Serialize
+
 #ifdef Pandas_Database_Yaml_Support_UTF8BOM
 #include "utf8.hpp"
 #endif // Pandas_Database_Yaml_Support_UTF8BOM
@@ -127,10 +132,149 @@ bool YamlDatabase::verifyCompatibility( const YAML::Node& rootNode ){
 	return true;
 }
 
+#ifdef Pandas_YamlBlastCache_Serialize
+//************************************
+// Method:      saveToSerialize
+// Description: 将当前对象保存到序列化缓存文件中去
+// Access:      private 
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/01/14 00:21
+//************************************ 
+bool YamlDatabase::saveToSerialize() {
+	if (!this->supportSerialize) {
+		return false;
+	}
+
+	try
+	{
+		uint32 i = 0;
+		IniParser rocketConfig("db/cache/rocket.ini");
+		for (auto f : this->includeFiles) {
+			std::string hash = crypto_GetFileMD5(f);
+			rocketConfig.Set(this->type + ".FILE_" + std::to_string(i), f.c_str());
+			rocketConfig.Set(this->type + ".HASH_" + std::to_string(i), hash.c_str());
+			i++;
+		}
+		rocketConfig.Set(this->type + ".COUNT", std::to_string(i));
+
+		std::string blashPath("db/cache/" + boost::algorithm::to_lower_copy(this->type) + ".blast");
+		bool fireResult = false;
+
+		{
+			std::ofstream file(blashPath);
+			boost::archive::text_oarchive oa(file);
+			fireResult = this->fireSerialize<boost::archive::text_oarchive>(oa);
+		}
+
+		if (fireResult) {
+			std::string blashHash = crypto_GetFileMD5(blashPath);
+			rocketConfig.Set(this->type + ".BLAST", blashHash);
+		}
+
+		return fireResult;
+	}
+	catch (const std::exception& e)
+	{
+		ShowError("%s: %s\n", __func__, e.what());
+		return false;
+	}
+};
+
+//************************************
+// Method:      isCacheEffective
+// Description: 当前序列化缓存是否还有效
+// Access:      private 
+// Returns:     bool 有效返回 true 否则返回 false
+// Author:      Sola丶小克(CairoLee)  2021/01/17 20:32
+//************************************ 
+bool YamlDatabase::isCacheEffective() {
+	IniParser rocketConfig("db/cache/rocket.ini");
+	std::string blashPath("db/cache/" + boost::algorithm::to_lower_copy(this->type) + ".blast");
+	std::string blashHash = crypto_GetFileMD5(blashPath);
+	uint32 count = rocketConfig.Get<uint32>(this->type + ".COUNT", 0);
+
+	if (blashHash.length() == 0 ||
+		rocketConfig.Get<std::string>(this->type + ".BLAST", "") != blashHash) {
+		return false;
+	}
+
+	for (uint32 cur = 0; cur < count; cur++) {
+		std::string cfg_path = rocketConfig.Get<std::string>(this->type + ".FILE_" + std::to_string(cur), "");
+		std::string cfg_hash = rocketConfig.Get<std::string>(this->type + ".HASH_" + std::to_string(cur), "");
+
+		if (!isFileExists(cfg_path) || cfg_hash.length() == 0) {
+			return false;
+		}
+
+		std::string current_hash = crypto_GetFileMD5(cfg_path);
+		if (current_hash != cfg_hash) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+//************************************
+// Method:      loadFromSerialize
+// Description: 从序列化缓存文件中恢复当前对象
+// Access:      private 
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/01/14 00:21
+//************************************ 
+bool YamlDatabase::loadFromSerialize() {
+	if (!this->supportSerialize) {
+		return false;
+	}
+
+	try
+	{
+		std::string blashPath("db/cache/" + boost::algorithm::to_lower_copy(this->type) + ".blast");
+		if (this->isCacheEffective()) {
+			performance_create_and_start("yaml_blastcache");
+			ShowStatus("Loading " CL_WHITE "%s" CL_RESET " from blast cache..." CL_CLL "\r", this->type.c_str());
+
+			std::ifstream file(blashPath);
+			boost::archive::text_iarchive ia(file);
+			if (this->fireSerialize<boost::archive::text_iarchive>(ia)) {
+				performance_stop("yaml_blastcache");
+				ShowStatus("Done reading " CL_WHITE "%s" CL_RESET " from blast cache, took %" PRIu64 " milliseconds...\n", this->type.c_str(), performance_get_milliseconds("yaml_blastcache"));
+				performance_destory("yaml_blastcache");
+
+				this->afterSerialize();
+				return true;
+			}
+			else {
+				performance_destory("yaml_blastcache");
+			}
+		}
+		return false;
+	}
+	catch (const std::exception& e)
+	{
+		ShowError("%s: %s\n", __func__, e.what());
+		return false;
+	}
+};
+#endif // Pandas_YamlBlastCache_Serialize
+
 bool YamlDatabase::load(){
+#ifndef Pandas_YamlBlastCache_Serialize
 	bool ret = this->load( this->getDefaultLocation() );
 
 	this->loadingFinished();
+#else
+	this->includeFiles.clear();
+
+	if (this->loadFromSerialize()) {
+		this->loadingFinished();
+		return true;
+	}
+
+	bool ret = this->load( this->getDefaultLocation() );
+	this->loadingFinished();
+	this->saveToSerialize();
+#endif // Pandas_YamlBlastCache_Serialize
 
 	return ret;
 }
@@ -151,6 +295,10 @@ bool YamlDatabase::load(const std::string& path) {
 		return true;
 	}
 #endif // Pandas_Console_Translate
+
+#ifdef Pandas_YamlBlastCache_Serialize
+	this->includeFiles.insert(path);
+#endif // Pandas_YamlBlastCache_Serialize
 
 	try {
 #ifdef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps

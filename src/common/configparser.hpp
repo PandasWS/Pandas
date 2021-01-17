@@ -46,8 +46,15 @@ public:
 	}
 
 	template <typename T>
-	T Get(const std::string& cfgpath) {
-		return m_data.get<T>(cfgpath);
+	T Get(const std::string& cfgpath, T defval) {
+		try
+		{
+			return m_data.get<T>(cfgpath);
+		}
+		catch (const std::exception&)
+		{
+			return defval;
+		}
 	}
 
 	template <typename T>

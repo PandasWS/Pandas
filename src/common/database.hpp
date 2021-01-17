@@ -15,9 +15,33 @@
 #include "core.hpp"
 #include "utilities.hpp"
 
+#ifdef Pandas_YamlBlastCache_Serialize
+#include <set>
+#include "serialize.hpp"
+#endif // Pandas_YamlBlastCache_Serialize
+
 class YamlDatabase{
 // Internal stuff
 private:
+#ifdef Pandas_YamlBlastCache_Serialize
+	friend class boost::serialization::access;
+
+	template <typename Archive>
+	friend void boost::serialization::serialize(
+		Archive& ar, YamlDatabase& t, const unsigned int version
+	);
+
+	std::set<std::string> includeFiles;
+
+	template <typename Archive> bool fireSerialize(Archive& ar) {
+		return this->doSerialize(typeid(ar).name(), static_cast<void*>(&ar));
+	};
+
+	bool saveToSerialize();
+	bool loadFromSerialize();
+	bool isCacheEffective();
+#endif // Pandas_YamlBlastCache_Serialize
+
 	std::string type;
 	uint16 version;
 	uint16 minimumVersion;
@@ -60,6 +84,10 @@ protected:
 
 	virtual void loadingFinished();
 
+#ifdef Pandas_YamlBlastCache_Serialize
+	bool supportSerialize = false;
+#endif // Pandas_YamlBlastCache_Serialize
+
 public:
 	YamlDatabase( const std::string type_, uint16 version_, uint16 minimumVersion_ ){
 		this->type = type_;
@@ -79,6 +107,16 @@ public:
 	virtual const std::string getDefaultLocation() = 0;
 	virtual uint64 parseBodyNode( const YAML::Node& node ) = 0;
 
+#ifdef Pandas_YamlBlastCache_Serialize
+	virtual bool doSerialize(const std::string& type, void* archive) {
+		return false;
+	};
+
+	virtual void afterSerialize() {
+
+	};
+#endif // Pandas_YamlBlastCache_Serialize
+
 #ifdef Pandas_Database_Yaml_BeQuiet
 	//************************************
 	// Method:      setQuietLevel
@@ -94,6 +132,17 @@ public:
 };
 
 template <typename keytype, typename datatype> class TypesafeYamlDatabase : public YamlDatabase{
+#ifdef Pandas_YamlBlastCache_Serialize
+private:
+	friend class boost::serialization::access;
+
+	template <typename Archive, typename keytype, typename datatype>
+	friend void boost::serialization::serialize(
+		Archive& ar, TypesafeYamlDatabase<keytype, datatype>& t,
+		const unsigned int version
+	);
+#endif // Pandas_YamlBlastCache_Serialize
+
 protected:
 	std::unordered_map<keytype, std::shared_ptr<datatype>> data;
 
@@ -153,6 +202,16 @@ public:
 
 template <typename keytype, typename datatype> class TypesafeCachedYamlDatabase : public TypesafeYamlDatabase<keytype, datatype>{
 private:
+#ifdef Pandas_YamlBlastCache_Serialize
+	friend class boost::serialization::access;
+
+	template <typename Archive, typename keytype, typename datatype>
+	friend void boost::serialization::serialize(
+		Archive& ar, TypesafeCachedYamlDatabase<keytype, datatype>& t,
+		const unsigned int version
+	);
+#endif // Pandas_YamlBlastCache_Serialize
+
 	std::vector<std::shared_ptr<datatype>> cache;
 
 public:

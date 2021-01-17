@@ -15,6 +15,10 @@
 
 #include "map.hpp" // struct block_list
 
+#ifdef Pandas_YamlBlastCache_Serialize
+#include "serialize.hpp"
+#endif // Pandas_YamlBlastCache_Serialize
+
 enum damage_lv : uint8;
 enum sc_type : int16;
 enum send_target : uint8;
@@ -301,15 +305,31 @@ struct s_skill_db {
 };
 
 class SkillDatabase : public TypesafeCachedYamlDatabase <uint16, s_skill_db> {
+#ifdef Pandas_YamlBlastCache_SkillDatabase
+private:
+	friend class boost::serialization::access;
+
+	template <typename Archive>
+	friend void boost::serialization::serialize(
+		Archive& ar, SkillDatabase& t, const unsigned int version
+	);
+#endif // Pandas_YamlBlastCache_SkillDatabase
 public:
 	SkillDatabase() : TypesafeCachedYamlDatabase("SKILL_DB", 1) {
-
+#ifdef Pandas_YamlBlastCache_SkillDatabase
+		this->supportSerialize = true;
+#endif // Pandas_YamlBlastCache_SkillDatabase
 	}
 
 	const std::string getDefaultLocation();
 	template<typename T, size_t S> bool parseNode(std::string nodeName, std::string subNodeName, YAML::Node node, T (&arr)[S]);
 	uint64 parseBodyNode(const YAML::Node &node);
 	void clear();
+
+#ifdef Pandas_YamlBlastCache_SkillDatabase
+	bool doSerialize(const std::string& type, void* archive);
+	void afterSerialize();
+#endif // Pandas_YamlBlastCache_SkillDatabase
 };
 
 extern SkillDatabase skill_db;

@@ -173,6 +173,9 @@
     <ClInclude Include="aura.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="serialize.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="achievement.cpp">

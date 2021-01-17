@@ -1156,6 +1156,45 @@ void ItemDatabase::loadingFinished(){
 	}
 }
 
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
+	if (type == "class boost::archive::text_oarchive") {
+		boost::archive::text_oarchive* ar = (boost::archive::text_oarchive*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, ItemDatabase);
+		*ar & *this;
+		return true;
+	}
+	else if (type == "class boost::archive::text_iarchive") {
+		boost::archive::text_iarchive* ar = (boost::archive::text_iarchive*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, ItemDatabase);
+		*ar & *this;
+		return true;
+	}
+	return false;
+}
+
+void ItemDatabase::afterSerialize() {
+	for (auto it : item_db) {
+		auto item = it.second;
+
+		item->script = parse_script(
+			item->pandas.script_plaintext.script.c_str(),
+			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
+		);
+
+		item->equip_script = parse_script(
+			item->pandas.script_plaintext.equip_script.c_str(),
+			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
+		);
+
+		item->unequip_script = parse_script(
+			item->pandas.script_plaintext.unequip_script.c_str(),
+			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
+		);
+	}
+}
+#endif // Pandas_YamlBlastCache_ItemDatabase
+
 ItemDatabase item_db;
 
 /**
