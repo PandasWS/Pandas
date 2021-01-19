@@ -157,9 +157,10 @@ bool YamlDatabase::saveToSerialize() {
 		}
 		rocketConfig.Set(this->type + ".COUNT", std::to_string(i));
 
-		std::string blashPath("db/cache/" + boost::algorithm::to_lower_copy(this->type) + ".blast");
-		bool fireResult = false;
+		std::string blashPath = this->getBlastCachePath();
+		rocketConfig.Set(this->type + ".CACHE", blashPath);
 
+		bool fireResult = false;
 		{
 			std::ofstream file(blashPath);
 			boost::archive::text_oarchive oa(file);
@@ -189,9 +190,13 @@ bool YamlDatabase::saveToSerialize() {
 //************************************ 
 bool YamlDatabase::isCacheEffective() {
 	IniParser rocketConfig("db/cache/rocket.ini");
-	std::string blashPath("db/cache/" + boost::algorithm::to_lower_copy(this->type) + ".blast");
+	std::string blashPath = this->getBlastCachePath();
 	std::string blashHash = crypto_GetFileMD5(blashPath);
 	uint32 count = rocketConfig.Get<uint32>(this->type + ".COUNT", 0);
+
+	if (rocketConfig.Get<std::string>(this->type + ".CACHE", "") != blashPath) {
+		return false;
+	}
 
 	if (blashHash.length() == 0 ||
 		rocketConfig.Get<std::string>(this->type + ".BLAST", "") != blashHash) {
@@ -216,6 +221,26 @@ bool YamlDatabase::isCacheEffective() {
 }
 
 //************************************
+// Method:      getBlastCachePath
+// Description: 获取当前数据库的缓存文件保存路径
+// Access:      private 
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/01/19 22:52
+//************************************ 
+std::string YamlDatabase::getBlastCachePath() {
+#ifdef PRERE
+	std::string mode("pre");
+#else
+	std::string mode("re");
+#endif // PRERE
+	return std::string(
+		"db/cache/" +
+		boost::algorithm::to_lower_copy(this->type) + "_" +
+		mode + ".blast"
+	);
+}
+
+//************************************
 // Method:      loadFromSerialize
 // Description: 从序列化缓存文件中恢复当前对象
 // Access:      private 
@@ -229,8 +254,8 @@ bool YamlDatabase::loadFromSerialize() {
 
 	try
 	{
-		std::string blashPath("db/cache/" + boost::algorithm::to_lower_copy(this->type) + ".blast");
-		if (this->isCacheEffective()) {
+		std::string blashPath = this->getBlastCachePath();
+		if (this->isCacheEffective() && isFileExists(blashPath)) {
 			performance_create_and_start("yaml_blastcache");
 			ShowStatus("Loading " CL_WHITE "%s" CL_RESET " from blast cache..." CL_CLL "\r", this->type.c_str());
 

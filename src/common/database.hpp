@@ -40,6 +40,7 @@ private:
 	bool saveToSerialize();
 	bool loadFromSerialize();
 	bool isCacheEffective();
+	std::string getBlastCachePath();
 #endif // Pandas_YamlBlastCache_Serialize
 
 	std::string type;
