@@ -14,6 +14,8 @@
 #define ARCHIVE_REGISTER_TYPE(x,type) x##.template register_type<type>()
 #define ARCHIVEPTR_REGISTER_TYPE(x,type) (*x##).template register_type<type>()
 
+#define SERIALIZE_SET_MEMORY_ZERO(x) memset(&x##, 0, sizeof(x##))
+
 class YamlDatabase;
 template <typename keytype, typename datatype> class TypesafeYamlDatabase;
 template <typename keytype, typename datatype> class TypesafeCachedYamlDatabase;

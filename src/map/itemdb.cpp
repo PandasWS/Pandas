@@ -1174,9 +1174,20 @@ bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
 }
 
 void ItemDatabase::afterSerialize() {
-	for (auto it : item_db) {
+	for (const auto& it : item_db) {
 		auto item = it.second;
 
+		// ==================================================================
+		// 反序列化后将未参与序列化的字段进行初始化, 避免内存中的脏数据对工作造成错误的影响
+		// ==================================================================
+		SERIALIZE_SET_MEMORY_ZERO(item->maxchance);
+		SERIALIZE_SET_MEMORY_ZERO(item->flag.no_equip);
+		SERIALIZE_SET_MEMORY_ZERO(item->flag.autoequip);
+		item->combos.clear();
+
+		// ==================================================================
+		// 根据脚本明文重新生成脚本指令序列
+		// ==================================================================
 		item->script = parse_script(
 			item->pandas.script_plaintext.script.c_str(),
 			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS

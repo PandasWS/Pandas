@@ -22776,8 +22776,18 @@ void SkillDatabase::afterSerialize() {
 	memset(skilldb_id2idx, 0, sizeof(skilldb_id2idx));
 	skill_num = 1;
 	for (const auto& it : skill_db) {
-		skilldb_id2idx[it.second->nameid] = it.second->nameid;
+		auto skill = it.second;
+		skilldb_id2idx[skill->nameid] = skill->nameid;
 		skill_num++;
+
+		// ==================================================================
+		// 反序列化后将未参与序列化的字段进行初始化, 避免内存中的脏数据对工作造成错误的影响
+		// ==================================================================
+		SERIALIZE_SET_MEMORY_ZERO(skill->nocast);
+		SERIALIZE_SET_MEMORY_ZERO(skill->damage);
+		SERIALIZE_SET_MEMORY_ZERO(skill->abra_probability);
+		SERIALIZE_SET_MEMORY_ZERO(skill->reading_spellbook);
+		SERIALIZE_SET_MEMORY_ZERO(skill->improvisedsong_rate);
 	}
 }
 

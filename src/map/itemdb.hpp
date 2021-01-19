@@ -905,7 +905,11 @@ struct item_data
 		struct {
 			bool drop, trade, trade_partner, sell, cart, storage, guild_storage, mail, auction;
 		} trade_restriction;	//Item restrictions mask [Skotlex]
+#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned autoequip: 1;
+#else
+		uint8 autoequip = 0;
+#endif // Pandas_YamlBlastCache_ItemDatabase
 		bool buyingstore;
 		bool dead_branch; // As dead branch item. Logged at `branchlog` table and cannot be used at 'nobranch' mapflag [Cydh]
 		bool group; // As item group container [Cydh]
