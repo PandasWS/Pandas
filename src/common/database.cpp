@@ -228,11 +228,11 @@ bool YamlDatabase::isCacheEffective() {
 // Author:      Sola丶小克(CairoLee)  2021/01/19 22:52
 //************************************ 
 std::string YamlDatabase::getBlastCachePath() {
-#ifdef PRERE
+#if defined(PRERE) || !defined(RENEWAL)
 	std::string mode("pre");
 #else
 	std::string mode("re");
-#endif // PRERE
+#endif // defined(PRERE) || !defined(RENEWAL)
 	return std::string(
 		"db/cache/" +
 		boost::algorithm::to_lower_copy(this->type) + "_" +

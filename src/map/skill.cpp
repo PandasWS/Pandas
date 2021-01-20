@@ -22777,7 +22777,7 @@ void SkillDatabase::afterSerialize() {
 	skill_num = 1;
 	for (const auto& it : skill_db) {
 		auto skill = it.second;
-		skilldb_id2idx[skill->nameid] = skill->nameid;
+		skilldb_id2idx[skill->nameid] = skill_num;
 		skill_num++;
 
 		// ==================================================================
