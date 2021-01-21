@@ -37,6 +37,87 @@ struct s_roulette_db rd;
 static void itemdb_jobid2mapid(uint64 bclass[3], e_mapid jobmask, bool active);
 static char itemdb_gendercheck(struct item_data *id);
 
+#ifdef Pandas_Speedup_Itemdb_SearchName
+
+typedef std::vector<struct item_data*> speedup_cache_item;
+typedef std::shared_ptr<speedup_cache_item> shared_speedup_cache_item;
+typedef std::map<std::string, shared_speedup_cache_item> speedup_cache_db;
+
+speedup_cache_db itemdb_speedup_name;
+speedup_cache_db itemdb_speedup_ename;
+
+//************************************
+// Method:      itemdb_speedup_clear
+// Description: 重置并清空用于加速 itemdb 操作的缓存数据
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:39
+//************************************
+void itemdb_speedup_clear() {
+	itemdb_speedup_name.clear();
+	itemdb_speedup_ename.clear();
+}
+
+//************************************
+// Method:      itemdb_speedup_cache_name
+// Description: 缓存某个道具的名称, 以便加速检索效率
+// Parameter:   speedup_cache_db & _map
+// Parameter:   std::string key
+// Parameter:   struct item_data * id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:39
+//************************************
+void itemdb_speedup_cache_name(speedup_cache_db& _map, std::string key, struct item_data* id) {
+	auto item = _map.find(key);
+	if (item == _map.end()) {
+		shared_speedup_cache_item vec = std::make_shared<speedup_cache_item>();
+		vec->push_back(id);
+		_map[key] = vec;
+	}
+	else {
+		shared_speedup_cache_item vec = item->second;
+		for (auto subitem = vec->begin(); subitem != vec->end(); subitem++) {
+			if ((*subitem)->nameid == id->nameid) {
+				(*subitem) = id;
+				return;
+			}
+		}
+		vec->push_back(id);
+	}
+}
+
+//************************************
+// Method:      itemdb_speedup_search_name
+// Description: 在某个数据库中搜索特定道具名称的对应物品
+// Parameter:   speedup_cache_db & _map
+// Parameter:   std::string name
+// Returns:     struct item_data*
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:45
+//************************************
+struct item_data* itemdb_speedup_search_name(speedup_cache_db& _map, std::string name) {
+	auto it = _map.find(name);
+	if (it != _map.end()) {
+		shared_speedup_cache_item sublist = it->second;
+		if (!sublist->empty()) {
+			return sublist->back();
+		}
+	}
+	return NULL;
+}
+
+//************************************
+// Method:      itemdb_speedup_item
+// Description: 建立该物品相关的缓存, 以便加速其他检索操作
+// Parameter:   struct item_data * id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:46
+//************************************
+void itemdb_speedup_item(struct item_data* id) {
+	itemdb_speedup_cache_name(itemdb_speedup_name, id->name, id);
+	itemdb_speedup_cache_name(itemdb_speedup_ename, id->ename, id);
+}
+
+#endif // Pandas_Speedup_Itemdb_SearchName
+
 #ifdef Pandas_Struct_Item_Data_Pandas
 enum e_script_type {
 	SCRIPT_TYPE_USED,
@@ -1154,6 +1235,12 @@ void ItemDatabase::loadingFinished(){
 
 		item_db.put( ITEMID_DUMMY, dummy_item );
 	}
+
+#ifdef Pandas_Speedup_Itemdb_SearchName
+	for (const auto& it : item_db) {
+		itemdb_speedup_item(it.second.get());
+	}
+#endif // Pandas_Speedup_Itemdb_SearchName
 }
 
 #ifdef Pandas_YamlBlastCache_ItemDatabase
@@ -1294,6 +1381,7 @@ int16 itemdb_group_item_exists_pc(struct map_session_data *sd, unsigned short gr
  *------------------------------------------*/
 static struct item_data* itemdb_searchname1(const char *str, bool aegis_only)
 {
+#ifndef Pandas_Speedup_Itemdb_SearchName
 	for (const auto &it : item_db) {
 		// Absolute priority to Aegis code name.
 		if (strcmpi(it.second->name.c_str(), str) == 0)
@@ -1309,6 +1397,15 @@ static struct item_data* itemdb_searchname1(const char *str, bool aegis_only)
 	}
 
 	return nullptr;
+#else
+	struct item_data* item = nullptr;
+	struct item_data* eitem = nullptr;
+	item = itemdb_speedup_search_name(itemdb_speedup_name, str);
+	if (!aegis_only) {
+		eitem = itemdb_speedup_search_name(itemdb_speedup_ename, str);
+	}
+	return (item ? item : eitem);
+#endif // Pandas_Speedup_Itemdb_SearchName
 }
 
 struct item_data* itemdb_searchname(const char *str)
@@ -2942,6 +3039,10 @@ void itemdb_reload(void) {
 	item_properties_db.clear();
 #endif // Pandas_Database_ItemProperties
 
+#ifdef Pandas_Speedup_Itemdb_SearchName
+	itemdb_speedup_clear();
+#endif // Pandas_Speedup_Itemdb_SearchName
+
 #ifdef Pandas_Storage_Itemdb_Script
 	itemdb_scripts.clear();
 #endif // Pandas_Storage_Itemdb_Script
@@ -3004,6 +3105,10 @@ void do_final_itemdb(void) {
 #ifdef Pandas_Database_ItemProperties
 	item_properties_db.clear();
 #endif // Pandas_Database_ItemProperties
+
+#ifdef Pandas_Speedup_Itemdb_SearchName
+	itemdb_speedup_clear();
+#endif // Pandas_Speedup_Itemdb_SearchName
 
 	if (battle_config.feature_roulette)
 		itemdb_roulette_free();
