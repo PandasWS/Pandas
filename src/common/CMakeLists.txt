@@ -140,6 +140,7 @@ set( COMMON_MINI_HEADERS
 	"${COMMON_SOURCE_DIR}/processmutex.hpp"
 	"${COMMON_SOURCE_DIR}/iconv.hpp"
 	"${COMMON_SOURCE_DIR}/configparser.hpp"
+	"${COMMON_SOURCE_DIR}/serialize.hpp"
 	${LIBCONFIG_HEADERS} # needed by showmsg.hpp
 	${BREAKPAD_HEADERS}
 	${COMMON_ADDITIONALL_HPP} # needed by Windows
@@ -221,6 +222,7 @@ if( WITH_ZLIB )
 		"${COMMON_SOURCE_DIR}/processmutex.hpp"
 		"${COMMON_SOURCE_DIR}/iconv.hpp"
 		"${COMMON_SOURCE_DIR}/configparser.hpp"
+		"${COMMON_SOURCE_DIR}/serialize.hpp"
 		${LIBCONFIG_HEADERS} # needed by conf.hpp/showmsg.hpp
 		${BREAKPAD_HEADERS}
 		${COMMON_ADDITIONALL_HPP} # needed by Windows

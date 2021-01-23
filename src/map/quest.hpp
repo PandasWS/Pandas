@@ -13,7 +13,7 @@
 #include "map.hpp"
 
 #ifdef Pandas_YamlBlastCache_Serialize
-#include "serialize.hpp"
+#include "../common/serialize.hpp"
 #endif // Pandas_YamlBlastCache_Serialize
 
 struct map_session_data;
@@ -61,9 +61,9 @@ private:
 	friend class boost::serialization::access;
 
 	template <typename Archive>
-	friend void boost::serialization::serialize(
-		Archive& ar, QuestDatabase& t, const unsigned int version
-	);
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint32, s_quest_db>>(*this);
+	}
 #endif // Pandas_YamlBlastCache_QuestDatabase
 public:
 	QuestDatabase() : TypesafeYamlDatabase("QUEST_DB", 1) {
@@ -97,5 +97,56 @@ std::shared_ptr<s_quest_db> quest_search(int quest_id);
 
 void do_init_quest(void);
 void do_final_quest(void);
+
+#ifdef Pandas_YamlBlastCache_QuestDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_quest_db
+		// ======================================================================
+
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_quest_db& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.time;
+			ar& t.time_at;
+			ar& t.objectives;
+			ar& t.dropitem;
+			ar& t.name;
+		}
+
+		// ======================================================================
+		// struct s_quest_objective
+		// ======================================================================
+
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_quest_objective& t, const unsigned int version)
+		{
+			ar& t.index;
+			ar& t.mob_id;
+			ar& t.count;
+			ar& t.min_level;
+			ar& t.max_level;
+			ar& t.race;
+			ar& t.size;
+			ar& t.element;
+		}
+
+		// ======================================================================
+		// struct s_quest_dropitem
+		// ======================================================================
+
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_quest_dropitem& t, const unsigned int version)
+		{
+			ar& t.nameid;
+			ar& t.count;
+			ar& t.rate;
+			ar& t.mob_id;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_QuestDatabase
 
 #endif /* QUEST_HPP */

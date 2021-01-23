@@ -233,7 +233,6 @@
     <ClInclude Include="script.hpp" />
     <ClInclude Include="script_constants.hpp" />
     <ClInclude Include="searchstore.hpp" />
-    <ClInclude Include="serialize.hpp" />
     <ClInclude Include="skill.hpp" />
     <ClInclude Include="status.hpp" />
     <ClInclude Include="storage.hpp" />

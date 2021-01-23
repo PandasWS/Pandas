@@ -134,54 +134,6 @@ bool YamlDatabase::verifyCompatibility( const YAML::Node& rootNode ){
 
 #ifdef Pandas_YamlBlastCache_Serialize
 //************************************
-// Method:      saveToSerialize
-// Description: 将当前对象保存到序列化缓存文件中去
-// Access:      private 
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/01/14 00:21
-//************************************ 
-bool YamlDatabase::saveToSerialize() {
-	if (!this->supportSerialize) {
-		return false;
-	}
-
-	try
-	{
-		uint32 i = 0;
-		IniParser rocketConfig("db/cache/rocket.ini");
-		for (auto f : this->includeFiles) {
-			std::string hash = crypto_GetFileMD5(f);
-			rocketConfig.Set(this->type + ".FILE_" + std::to_string(i), f.c_str());
-			rocketConfig.Set(this->type + ".HASH_" + std::to_string(i), hash.c_str());
-			i++;
-		}
-		rocketConfig.Set(this->type + ".COUNT", std::to_string(i));
-
-		std::string blashPath = this->getBlastCachePath();
-		rocketConfig.Set(this->type + ".CACHE", blashPath);
-
-		bool fireResult = false;
-		{
-			std::ofstream file(blashPath);
-			boost::archive::text_oarchive oa(file);
-			fireResult = this->fireSerialize<boost::archive::text_oarchive>(oa);
-		}
-
-		if (fireResult) {
-			std::string blashHash = crypto_GetFileMD5(blashPath);
-			rocketConfig.Set(this->type + ".BLAST", blashHash);
-		}
-
-		return fireResult;
-	}
-	catch (const std::exception& e)
-	{
-		ShowError("%s: %s\n", __func__, e.what());
-		return false;
-	}
-};
-
-//************************************
 // Method:      isCacheEffective
 // Description: 当前序列化缓存是否还有效
 // Access:      private 
@@ -259,9 +211,9 @@ bool YamlDatabase::loadFromSerialize() {
 			performance_create_and_start("yaml_blastcache");
 			ShowStatus("Loading " CL_WHITE "%s" CL_RESET " from blast cache..." CL_CLL "\r", this->type.c_str());
 
-			std::ifstream file(blashPath);
-			boost::archive::text_iarchive ia(file);
-			if (this->fireSerialize<boost::archive::text_iarchive>(ia)) {
+			std::ifstream file(blashPath, std::ifstream::binary);
+			SERIALIZE_LOAD_ARCHIVE loadArchive(file);
+			if (this->fireSerialize<SERIALIZE_LOAD_ARCHIVE>(loadArchive)) {
 				performance_stop("yaml_blastcache");
 				ShowStatus("Done reading " CL_WHITE "%s" CL_RESET " from blast cache, took %" PRIu64 " milliseconds...\n", this->type.c_str(), performance_get_milliseconds("yaml_blastcache"));
 				performance_destory("yaml_blastcache");
@@ -274,6 +226,54 @@ bool YamlDatabase::loadFromSerialize() {
 			}
 		}
 		return false;
+	}
+	catch (const std::exception& e)
+	{
+		ShowError("%s: %s\n", __func__, e.what());
+		return false;
+	}
+};
+
+//************************************
+// Method:      saveToSerialize
+// Description: 将当前对象保存到序列化缓存文件中去
+// Access:      private 
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/01/14 00:21
+//************************************ 
+bool YamlDatabase::saveToSerialize() {
+	if (!this->supportSerialize) {
+		return false;
+	}
+
+	try
+	{
+		uint32 i = 0;
+		IniParser rocketConfig("db/cache/rocket.ini");
+		for (auto f : this->includeFiles) {
+			std::string hash = crypto_GetFileMD5(f);
+			rocketConfig.Set(this->type + ".FILE_" + std::to_string(i), f.c_str());
+			rocketConfig.Set(this->type + ".HASH_" + std::to_string(i), hash.c_str());
+			i++;
+		}
+		rocketConfig.Set(this->type + ".COUNT", std::to_string(i));
+
+		std::string blashPath = this->getBlastCachePath();
+		rocketConfig.Set(this->type + ".CACHE", blashPath);
+
+		bool fireResult = false;
+		{
+			std::ofstream file(blashPath, std::ofstream::binary);
+			SERIALIZE_SAVE_ARCHIVE saveArchive(file);
+			fireResult = this->fireSerialize<SERIALIZE_SAVE_ARCHIVE>(saveArchive);
+		}
+
+		if (fireResult) {
+			std::string blashHash = crypto_GetFileMD5(blashPath);
+			rocketConfig.Set(this->type + ".BLAST", blashHash);
+		}
+
+		return fireResult;
 	}
 	catch (const std::exception& e)
 	{

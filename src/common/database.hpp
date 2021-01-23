@@ -27,20 +27,22 @@ private:
 	friend class boost::serialization::access;
 
 	template <typename Archive>
-	friend void boost::serialization::serialize(
-		Archive& ar, YamlDatabase& t, const unsigned int version
-	);
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& quietLevel;
+		ar& includeFiles;
+	}
 
-	std::set<std::string> includeFiles;
-
-	template <typename Archive> bool fireSerialize(Archive& ar) {
+	template <typename Archive>
+	inline bool fireSerialize(Archive& ar) {
 		return this->doSerialize(typeid(ar).name(), static_cast<void*>(&ar));
-	};
+	}
 
 	bool saveToSerialize();
 	bool loadFromSerialize();
 	bool isCacheEffective();
 	std::string getBlastCachePath();
+
+	std::set<std::string> includeFiles;
 #endif // Pandas_YamlBlastCache_Serialize
 
 	std::string type;
@@ -111,11 +113,11 @@ public:
 #ifdef Pandas_YamlBlastCache_Serialize
 	virtual bool doSerialize(const std::string& type, void* archive) {
 		return false;
-	};
+	}
 
 	virtual void afterSerialize() {
 
-	};
+	}
 #endif // Pandas_YamlBlastCache_Serialize
 
 #ifdef Pandas_Database_Yaml_BeQuiet
@@ -137,10 +139,20 @@ template <typename keytype, typename datatype> class TypesafeYamlDatabase : publ
 private:
 	friend class boost::serialization::access;
 
-	template <typename Archive, typename keytype, typename datatype>
-	friend void boost::serialization::serialize(
-		Archive& ar, TypesafeYamlDatabase<keytype, datatype>& t,
-		const unsigned int version
+	template <typename Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<YamlDatabase>(*this);
+		ar& data;
+	}
+
+	template<class Archive>
+	friend void save_construct_data(
+		Archive& ar, TypesafeYamlDatabase<keytype, datatype>* t, const unsigned int version
+	);
+
+	template<class Archive>
+	friend void load_construct_data(
+		Archive& ar, TypesafeYamlDatabase<keytype, datatype>* t, const unsigned int version
 	);
 #endif // Pandas_YamlBlastCache_Serialize
 
@@ -206,10 +218,20 @@ private:
 #ifdef Pandas_YamlBlastCache_Serialize
 	friend class boost::serialization::access;
 
-	template <typename Archive, typename keytype, typename datatype>
-	friend void boost::serialization::serialize(
-		Archive& ar, TypesafeCachedYamlDatabase<keytype, datatype>& t,
-		const unsigned int version
+	template <typename Archive>
+	inline void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<TypesafeYamlDatabase<keytype, datatype>>(*this);
+		ar& cache;
+	}
+
+	template<class Archive>
+	friend void save_construct_data(
+		Archive& ar, TypesafeCachedYamlDatabase<keytype, datatype>* t, const unsigned int version
+	);
+
+	template<class Archive>
+	friend void load_construct_data(
+		Archive& ar, TypesafeCachedYamlDatabase<keytype, datatype>* t, const unsigned int version
 	);
 #endif // Pandas_YamlBlastCache_Serialize
 
@@ -269,5 +291,71 @@ public:
 		this->cache.shrink_to_fit();
 	}
 };
+
+#ifdef Pandas_YamlBlastCache_Serialize
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// class TypesafeYamlDatabase<keytype, datatype>
+		// ======================================================================
+
+		template<class Archive, typename keytype, typename datatype>
+		inline void save_construct_data(
+			Archive& ar, const TypesafeYamlDatabase<keytype, datatype>* t, const unsigned int version
+		) {
+			// save data required to construct instance
+			ar << t->type;
+			ar << t->version;
+			ar << t->minimumVersion;
+		}
+
+		template<class Archive, typename keytype, typename datatype>
+		inline void load_construct_data(
+			Archive& ar, TypesafeYamlDatabase<keytype, datatype>* t, const unsigned int version
+		) {
+			// retrieve data from archive required to construct new instance
+			std::string type_;
+			uint16 version_ = 0, minimumVersion_ = 0;
+
+			ar >> type_;
+			ar >> version_;
+			ar >> minimumVersion_;
+
+			// invoke inplace constructor to initialize instance of my_class
+			::new(t)TypesafeYamlDatabase<keytype, datatype>(type_, version_, minimumVersion_);
+		}
+
+		// ======================================================================
+		// class TypesafeCachedYamlDatabase<keytype, datatype>
+		// ======================================================================
+
+		template<class Archive, typename keytype, typename datatype>
+		inline void save_construct_data(
+			Archive& ar, const TypesafeCachedYamlDatabase<keytype, datatype>* t, const unsigned int version
+		) {
+			// save data required to construct instance
+			ar << t->type;
+			ar << t->version;
+			ar << t->minimumVersion;
+		}
+
+		template<class Archive, typename keytype, typename datatype>
+		inline void load_construct_data(
+			Archive& ar, TypesafeCachedYamlDatabase<keytype, datatype>* t, const unsigned int version
+		) {
+			// retrieve data from archive required to construct new instance
+			std::string type_;
+			uint16 version_ = 0, minimumVersion_ = 0;
+
+			ar >> type_;
+			ar >> version_;
+			ar >> minimumVersion_;
+
+			// invoke inplace constructor to initialize instance of my_class
+			::new(t)TypesafeCachedYamlDatabase<keytype, datatype>(type_, version_, minimumVersion_);
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_Serialize
 
 #endif /* DATABASE_HPP */

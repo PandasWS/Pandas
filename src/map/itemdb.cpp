@@ -1245,14 +1245,14 @@ void ItemDatabase::loadingFinished(){
 
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == "class boost::archive::text_oarchive") {
-		boost::archive::text_oarchive* ar = (boost::archive::text_oarchive*)archive;
+	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
+		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
 		ARCHIVEPTR_REGISTER_TYPE(ar, ItemDatabase);
 		*ar & *this;
 		return true;
 	}
-	else if (type == "class boost::archive::text_iarchive") {
-		boost::archive::text_iarchive* ar = (boost::archive::text_iarchive*)archive;
+	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
+		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
 		ARCHIVEPTR_REGISTER_TYPE(ar, ItemDatabase);
 		*ar & *this;
 		return true;

@@ -16,7 +16,7 @@
 #include "status.hpp"
 
 #ifdef Pandas_YamlBlastCache_Serialize
-#include "serialize.hpp"
+#include "../common/serialize.hpp"
 #endif // Pandas_YamlBlastCache_Serialize
 
 enum e_ammo_type : uint8;
@@ -1068,9 +1068,9 @@ private:
 	friend class boost::serialization::access;
 
 	template <typename Archive>
-	friend void boost::serialization::serialize(
-		Archive& ar, ItemDatabase& t, const unsigned int version
-	);
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<t_itemid, item_data>>(*this);
+	}
 #endif // Pandas_YamlBlastCache_ItemDatabase
 public:
 	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 1) {
@@ -1166,5 +1166,112 @@ void itemdb_reload(void);
 
 void do_final_itemdb(void);
 void do_init_itemdb(void);
+
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct item_data
+		// ======================================================================
+
+		template <typename Archive>
+		void serialize(Archive& ar, struct item_data& t, const unsigned int version)
+		{
+			ar& t.nameid;
+			ar& t.name;
+			ar& t.ename;
+
+			ar& t.value_buy;
+			ar& t.value_sell;
+			ar& t.type;
+			ar& t.subtype;
+			//ar& t.maxchance;				// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.sex;
+			ar& t.equip;
+			ar& t.weight;
+			ar& t.atk;
+			ar& t.def;
+			ar& t.range;
+			ar& t.slots;
+			ar& t.look;
+			ar& t.elv;
+			ar& t.wlv;
+			ar& t.view_id;
+			ar& t.elvmax;
+#ifdef RENEWAL
+			ar& t.matk;
+#endif
+
+			ar& t.class_base;
+			ar& t.class_upper;
+
+			ar& t.flag.available;
+			//ar& t.flag.no_equip;			// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.flag.no_refine;
+			ar& t.flag.delay_consume;
+
+			ar& t.flag.trade_restriction.drop;
+			ar& t.flag.trade_restriction.trade;
+			ar& t.flag.trade_restriction.trade_partner;
+			ar& t.flag.trade_restriction.sell;
+			ar& t.flag.trade_restriction.cart;
+			ar& t.flag.trade_restriction.storage;
+			ar& t.flag.trade_restriction.guild_storage;
+			ar& t.flag.trade_restriction.mail;
+			ar& t.flag.trade_restriction.auction;
+
+			//ar& t.flag.autoequip;			// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.flag.buyingstore;
+			ar& t.flag.dead_branch;
+
+			ar& t.flag.group;
+			ar& t.flag.guid;
+			ar& t.flag.broadcast;
+			ar& t.flag.bindOnEquip;
+			ar& t.flag.dropEffect;
+
+			ar& t.stack.amount;
+			ar& t.stack.inventory;
+			ar& t.stack.cart;
+			ar& t.stack.storage;
+			ar& t.stack.guild_storage;
+
+			ar& t.item_usage.override;
+			ar& t.item_usage.sitting;
+
+			ar& t.gm_lv_trade_override;
+			//ar& t.combos;					// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.delay.duration;
+			ar& t.delay.sc;
+
+#ifdef Pandas_Struct_Item_Data_Pandas
+
+#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+			ar& t.pandas.script_plaintext.script;
+			ar& t.pandas.script_plaintext.equip_script;
+			ar& t.pandas.script_plaintext.unequip_script;
+#endif // Pandas_Struct_Item_Data_Script_Plaintext
+
+#ifdef Pandas_Struct_Item_Data_Taming_Mobid
+			ar& t.pandas.taming_mobid;
+#endif // Pandas_Struct_Item_Data_Taming_Mobid
+
+#ifdef Pandas_Struct_Item_Data_Has_CallFunc
+			ar& t.pandas.has_callfunc;
+#endif // Pandas_Struct_Item_Data_Has_CallFunc
+
+#ifdef Pandas_Struct_Item_Data_Properties
+			ar& t.pandas.properties.avoid_use_consume;
+			ar& t.pandas.properties.avoid_skill_consume;
+			ar& t.pandas.properties.is_amulet;
+			ar& t.pandas.properties.noview_mask;
+			ar& t.pandas.properties.annouce_mask;
+#endif // Pandas_Struct_Item_Data_Properties
+
+#endif // Pandas_Struct_Item_Data_Pandas
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_ItemDatabase
 
 #endif /* ITEMDB_HPP */
