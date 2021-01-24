@@ -797,13 +797,6 @@ struct iwall_data {
 	bool shootable;
 };
 
-struct s_questinfo {
-	struct npc_data *nd;
-	e_questinfo_types icon;
-	e_questinfo_markcolor color;
-	struct script_code* condition;
-};
-
 #ifdef Pandas_Mapflags
 struct s_mapflag_params {
 	int param_first;
@@ -853,7 +846,7 @@ struct map_data {
 	struct Channel *channel;
 
 	/* ShowEvent Data Cache */
-	std::vector<s_questinfo> qi_data;
+	std::vector<int> qi_npc;
 
 #ifdef Pandas_Mapflags
 	std::unordered_map<int16, s_mapflag_params> flag_params;

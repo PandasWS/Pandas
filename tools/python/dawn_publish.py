@@ -288,9 +288,9 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'login-server-pre.exe', packagedir + 'login-server.exe')
     copyfile(project_slndir + 'char-server-pre.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server-pre.exe', packagedir + 'map-server.exe')
-    copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
+    copyfile(project_slndir + 'csv2yaml-pre.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
-    copyfile(project_slndir + 'yaml2sql.exe', packagedir + 'yaml2sql.exe')
+    copyfile(project_slndir + 'yaml2sql-pre.exe', packagedir + 'yaml2sql.exe')
 
 def process_sub(export_file, renewal, langinfo):
     print('')

@@ -1,4 +1,4 @@
-// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
+﻿// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
 #include <fstream>
@@ -89,9 +89,20 @@ bool process( const std::string& type, uint32 version, const std::vector<std::st
 				continue;
 			}
 
+#ifdef Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
+			if (fileExists(to)) {
+				if (!askConfirmation("The file \"%s\" already exists.\nDo you want to replace it? (Y/N)\n", to.c_str())) {
+					continue;
+				}
+			}
+#endif // Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
+
 			inNode.reset();
 
 			try {
+#ifdef Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
+				ShowStatus("Loading '" CL_WHITE "%s" CL_RESET "'..." CL_CLL "\r", from.c_str());
+#endif // Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
 				inNode = YAML::LoadFile(from);
 			} catch (YAML::Exception &e) {
 				ShowError("%s (Line %d: Column %d)\n", e.msg.c_str(), e.mark.line, e.mark.column);
@@ -99,14 +110,18 @@ bool process( const std::string& type, uint32 version, const std::vector<std::st
 					continue;
 			}
 
+#ifndef Pandas_Fix_Yaml2Sql_NoBodyNode_Break
 			if (!inNode["Body"].IsDefined())
 				continue;
+#endif // Pandas_Fix_Yaml2Sql_NoBodyNode_Break
 
+#ifndef Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
 			if (fileExists(to)) {
 				if (!askConfirmation("The file \"%s\" already exists.\nDo you want to replace it? (Y/N)\n", to.c_str())) {
 					continue;
 				}
 			}
+#endif // Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
 
 			out.open(to);
 
@@ -116,6 +131,13 @@ bool process( const std::string& type, uint32 version, const std::vector<std::st
 			}
 
 			prepareHeader(out, table.compare(to_table) == 0 ? table : to_table);
+
+#ifdef Pandas_Fix_Yaml2Sql_NoBodyNode_Break
+			if (!inNode["Body"].IsDefined()) {
+				out.close();
+				return true;
+			}
+#endif // Pandas_Fix_Yaml2Sql_NoBodyNode_Break
 
 			if( !lambda( path, name_ext, table ) ){
 				out.close();
@@ -632,8 +654,15 @@ static bool item_db_yaml2sql(const std::string &file, const std::string &table) 
 
 		out << "REPLACE INTO `" + table + "` (" + column + ") VALUES (" + value + ");\n";
 		entries++;
+
+#ifdef Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
+		ShowStatus("Converting %" PRIdPTR " items in '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r", entries, file.c_str());
+#endif // Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
 	}
 
+#ifdef Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
+	ShowMessage(CL_CLL);
+#endif // Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
 	ShowStatus("Done converting '" CL_WHITE "%d" CL_RESET "' items in '" CL_WHITE "%s" CL_RESET "'.\n", entries, file.c_str());
 
 	return true;

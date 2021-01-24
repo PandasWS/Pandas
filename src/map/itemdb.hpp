@@ -1063,8 +1063,8 @@ public:
 extern RandomOptionGroupDatabase random_option_group;
 
 class ItemDatabase : public TypesafeCachedYamlDatabase<t_itemid, item_data> {
-#ifdef Pandas_YamlBlastCache_ItemDatabase
 private:
+#ifdef Pandas_YamlBlastCache_ItemDatabase
 	friend class boost::serialization::access;
 
 	template <typename Archive>
@@ -1072,6 +1072,9 @@ private:
 		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<t_itemid, item_data>>(*this);
 	}
 #endif // Pandas_YamlBlastCache_ItemDatabase
+
+	e_sex defaultGender( const YAML::Node &node, std::shared_ptr<item_data> id );
+
 public:
 	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 1) {
 #ifdef Pandas_YamlBlastCache_ItemDatabase
