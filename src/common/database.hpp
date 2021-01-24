@@ -40,6 +40,8 @@ private:
 	bool saveToSerialize();
 	bool loadFromSerialize();
 	bool isCacheEffective();
+
+	std::string getBlashCacheHash(const std::string& path);
 	std::string getBlastCachePath();
 
 	std::set<std::string> includeFiles;

@@ -143,7 +143,7 @@ bool YamlDatabase::verifyCompatibility( const YAML::Node& rootNode ){
 bool YamlDatabase::isCacheEffective() {
 	IniParser rocketConfig("db/cache/rocket.ini");
 	std::string blashPath = this->getBlastCachePath();
-	std::string blashHash = crypto_GetFileMD5(blashPath);
+	std::string blashHash = this->getBlashCacheHash(blashPath);
 	uint32 count = rocketConfig.Get<uint32>(this->type + ".COUNT", 0);
 
 	if (rocketConfig.Get<std::string>(this->type + ".CACHE", "") != blashPath) {
@@ -193,6 +193,33 @@ std::string YamlDatabase::getBlastCachePath() {
 }
 
 //************************************
+// Method:      getBlashCacheHash
+// Description: 获取缓存文件的散列特征
+// Access:      private 
+// Parameter:   const std::string & path
+// Returns:     std::string 失败则返回空字符串, 成功则返回 MD5 散列
+// Author:      Sola丶小克(CairoLee)  2021/01/24 13:54
+//************************************ 
+std::string YamlDatabase::getBlashCacheHash(const std::string& path) {
+	if (!isFileExists(path))
+		return "";
+
+	std::string filehash = crypto_GetFileMD5(path);
+	if (filehash.length() == 0)
+		return "";
+
+	std::string content = boost::str(
+		boost::format("%1%|%2%|%3%|%4%") %
+		BLASTCACHE_VERSION %
+		typeid(SERIALIZE_LOAD_ARCHIVE).name() %
+		typeid(SERIALIZE_SAVE_ARCHIVE).name() %
+		filehash
+	);
+
+	return crypto_GetStringMD5(content);
+}
+
+//************************************
 // Method:      loadFromSerialize
 // Description: 从序列化缓存文件中恢复当前对象
 // Access:      private 
@@ -211,7 +238,7 @@ bool YamlDatabase::loadFromSerialize() {
 			performance_create_and_start("yaml_blastcache");
 			ShowStatus("Loading " CL_WHITE "%s" CL_RESET " from blast cache..." CL_CLL "\r", this->type.c_str());
 
-			std::ifstream file(blashPath, std::ifstream::binary);
+			std::ifstream file(blashPath, SERIALIZE_LOAD_STREAM_FLAG);
 			SERIALIZE_LOAD_ARCHIVE loadArchive(file);
 			if (this->fireSerialize<SERIALIZE_LOAD_ARCHIVE>(loadArchive)) {
 				performance_stop("yaml_blastcache");
@@ -263,13 +290,13 @@ bool YamlDatabase::saveToSerialize() {
 
 		bool fireResult = false;
 		{
-			std::ofstream file(blashPath, std::ofstream::binary);
+			std::ofstream file(blashPath, SERIALIZE_SAVE_STREAM_FLAG);
 			SERIALIZE_SAVE_ARCHIVE saveArchive(file);
 			fireResult = this->fireSerialize<SERIALIZE_SAVE_ARCHIVE>(saveArchive);
 		}
 
 		if (fireResult) {
-			std::string blashHash = crypto_GetFileMD5(blashPath);
+			std::string blashHash = this->getBlashCacheHash(blashPath);
 			rocketConfig.Set(this->type + ".BLAST", blashHash);
 		}
 
