@@ -12,12 +12,12 @@
 #include "../common/malloc.hpp"
 #include "../common/mmo.hpp" // ITEM_NAME_LENGTH
 
-#ifdef Pandas_Struct_Item_Data_Taming_Mobid
-#include <vector>
-#endif // Pandas_Struct_Item_Data_Taming_Mobid
-
 #include "script.hpp"
 #include "status.hpp"
+
+#ifdef Pandas_YamlBlastCache_Serialize
+#include "../common/serialize.hpp"
+#endif // Pandas_YamlBlastCache_Serialize
 
 enum e_ammo_type : uint8;
 
@@ -890,18 +890,34 @@ struct item_data
 	struct script_code *equip_script;	//Script executed once when equipping.
 	struct script_code *unequip_script;//Script executed once when unequipping.
 	struct {
+#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned available : 1;
+#else
+		uint8 available = 0;
+#endif // Pandas_YamlBlastCache_ItemDatabase
 		uint32 no_equip;
+#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned no_refine : 1;	// [celest]
+#else
+		uint8 no_refine = 0;
+#endif // Pandas_YamlBlastCache_ItemDatabase
 		unsigned delay_consume;	// [Skotlex]
 		struct {
 			bool drop, trade, trade_partner, sell, cart, storage, guild_storage, mail, auction;
 		} trade_restriction;	//Item restrictions mask [Skotlex]
+#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned autoequip: 1;
+#else
+		uint8 autoequip = 0;
+#endif // Pandas_YamlBlastCache_ItemDatabase
 		bool buyingstore;
 		bool dead_branch; // As dead branch item. Logged at `branchlog` table and cannot be used at 'nobranch' mapflag [Cydh]
 		bool group; // As item group container [Cydh]
+#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned guid : 1; // This item always be attached with GUID and make it as bound item! [Cydh]
+#else
+		uint8 guid = 0;
+#endif // Pandas_YamlBlastCache_ItemDatabase
 		bool broadcast; ///< Will be broadcasted if someone obtain the item [Cydh]
 		bool bindOnEquip; ///< Set item as bound when equipped
 		e_item_drop_effect dropEffect; ///< Drop Effect Mode
@@ -925,9 +941,9 @@ struct item_data
 	struct s_pandas {
 #ifdef Pandas_Struct_Item_Data_Script_Plaintext
 		struct s_script_plaintext {
-			std::shared_ptr<std::string> script;
-			std::shared_ptr<std::string> equip_script;
-			std::shared_ptr<std::string> unequip_script;
+			std::string script;
+			std::string equip_script;
+			std::string unequip_script;
 		} script_plaintext;
 #endif // Pandas_Struct_Item_Data_Script_Plaintext
 
@@ -970,18 +986,6 @@ struct item_data
 			script_free_code(this->unequip_script);
 			this->unequip_script = nullptr;
 		}
-
-#ifdef Pandas_Struct_Item_Data_Script_Plaintext
-		if (this->pandas.script_plaintext.script) {
-			this->pandas.script_plaintext.script = nullptr;
-		}
-		if (this->pandas.script_plaintext.equip_script) {
-			this->pandas.script_plaintext.equip_script = nullptr;
-		}
-		if (this->pandas.script_plaintext.unequip_script) {
-			this->pandas.script_plaintext.unequip_script = nullptr;
-		}
-#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
 		this->pandas.taming_mobid.clear();
@@ -1059,14 +1063,30 @@ public:
 extern RandomOptionGroupDatabase random_option_group;
 
 class ItemDatabase : public TypesafeCachedYamlDatabase<t_itemid, item_data> {
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+private:
+	friend class boost::serialization::access;
+
+	template <typename Archive>
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<t_itemid, item_data>>(*this);
+	}
+#endif // Pandas_YamlBlastCache_ItemDatabase
 public:
 	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 1) {
-
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+		this->supportSerialize = true;
+#endif // Pandas_YamlBlastCache_ItemDatabase
 	}
 
 	const std::string getDefaultLocation();
 	uint64 parseBodyNode(const YAML::Node& node);
 	void loadingFinished();
+
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+	bool doSerialize(const std::string& type, void* archive);
+	void afterSerialize();
+#endif // Pandas_YamlBlastCache_ItemDatabase
 };
 
 extern ItemDatabase item_db;
@@ -1146,5 +1166,112 @@ void itemdb_reload(void);
 
 void do_final_itemdb(void);
 void do_init_itemdb(void);
+
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct item_data
+		// ======================================================================
+
+		template <typename Archive>
+		void serialize(Archive& ar, struct item_data& t, const unsigned int version)
+		{
+			ar& t.nameid;
+			ar& t.name;
+			ar& t.ename;
+
+			ar& t.value_buy;
+			ar& t.value_sell;
+			ar& t.type;
+			ar& t.subtype;
+			//ar& t.maxchance;				// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.sex;
+			ar& t.equip;
+			ar& t.weight;
+			ar& t.atk;
+			ar& t.def;
+			ar& t.range;
+			ar& t.slots;
+			ar& t.look;
+			ar& t.elv;
+			ar& t.wlv;
+			ar& t.view_id;
+			ar& t.elvmax;
+#ifdef RENEWAL
+			ar& t.matk;
+#endif
+
+			ar& t.class_base;
+			ar& t.class_upper;
+
+			ar& t.flag.available;
+			//ar& t.flag.no_equip;			// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.flag.no_refine;
+			ar& t.flag.delay_consume;
+
+			ar& t.flag.trade_restriction.drop;
+			ar& t.flag.trade_restriction.trade;
+			ar& t.flag.trade_restriction.trade_partner;
+			ar& t.flag.trade_restriction.sell;
+			ar& t.flag.trade_restriction.cart;
+			ar& t.flag.trade_restriction.storage;
+			ar& t.flag.trade_restriction.guild_storage;
+			ar& t.flag.trade_restriction.mail;
+			ar& t.flag.trade_restriction.auction;
+
+			//ar& t.flag.autoequip;			// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.flag.buyingstore;
+			ar& t.flag.dead_branch;
+
+			ar& t.flag.group;
+			ar& t.flag.guid;
+			ar& t.flag.broadcast;
+			ar& t.flag.bindOnEquip;
+			ar& t.flag.dropEffect;
+
+			ar& t.stack.amount;
+			ar& t.stack.inventory;
+			ar& t.stack.cart;
+			ar& t.stack.storage;
+			ar& t.stack.guild_storage;
+
+			ar& t.item_usage.override;
+			ar& t.item_usage.sitting;
+
+			ar& t.gm_lv_trade_override;
+			//ar& t.combos;					// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.delay.duration;
+			ar& t.delay.sc;
+
+#ifdef Pandas_Struct_Item_Data_Pandas
+
+#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+			ar& t.pandas.script_plaintext.script;
+			ar& t.pandas.script_plaintext.equip_script;
+			ar& t.pandas.script_plaintext.unequip_script;
+#endif // Pandas_Struct_Item_Data_Script_Plaintext
+
+#ifdef Pandas_Struct_Item_Data_Taming_Mobid
+			ar& t.pandas.taming_mobid;
+#endif // Pandas_Struct_Item_Data_Taming_Mobid
+
+#ifdef Pandas_Struct_Item_Data_Has_CallFunc
+			ar& t.pandas.has_callfunc;
+#endif // Pandas_Struct_Item_Data_Has_CallFunc
+
+#ifdef Pandas_Struct_Item_Data_Properties
+			ar& t.pandas.properties.avoid_use_consume;
+			ar& t.pandas.properties.avoid_skill_consume;
+			ar& t.pandas.properties.is_amulet;
+			ar& t.pandas.properties.noview_mask;
+			ar& t.pandas.properties.annouce_mask;
+#endif // Pandas_Struct_Item_Data_Properties
+
+#endif // Pandas_Struct_Item_Data_Pandas
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_ItemDatabase
 
 #endif /* ITEMDB_HPP */

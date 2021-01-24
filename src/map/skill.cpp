@@ -22755,6 +22755,44 @@ void SkillDatabase::clear() {
 	skill_num = 1;
 }
 
+#ifdef Pandas_YamlBlastCache_SkillDatabase
+bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
+	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
+		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, SkillDatabase);
+		*ar & *this;
+		return true;
+	}
+	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
+		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, SkillDatabase);
+		*ar & *this;
+		return true;
+	}
+	return false;
+}
+
+void SkillDatabase::afterSerialize() {
+	memset(skilldb_id2idx, 0, sizeof(skilldb_id2idx));
+	skill_num = 1;
+	for (const auto& it : skill_db) {
+		auto skill = it.second;
+		skilldb_id2idx[skill->nameid] = skill_num;
+		skill_num++;
+
+		// ==================================================================
+		// 反序列化后将未参与序列化的字段进行初始化, 避免内存中的脏数据对工作造成错误的影响
+		// ==================================================================
+		SERIALIZE_SET_MEMORY_ZERO(skill->nocast);
+		SERIALIZE_SET_MEMORY_ZERO(skill->damage);
+		SERIALIZE_SET_MEMORY_ZERO(skill->abra_probability);
+		SERIALIZE_SET_MEMORY_ZERO(skill->reading_spellbook);
+		SERIALIZE_SET_MEMORY_ZERO(skill->improvisedsong_rate);
+	}
+}
+
+#endif // Pandas_YamlBlastCache_SkillDatabase
+
 SkillDatabase skill_db;
 
 const std::string ReadingSpellbookDatabase::getDefaultLocation() {

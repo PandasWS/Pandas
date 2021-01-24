@@ -93,7 +93,6 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 
 //************************************
 // Method:      parsePropertiesToItemDB
-// FullName:    ItemProperties::parsePropertiesToItemDB
 // Description: 为 ItemDatabase 中的道具设置特殊属性
 // Access:      public 
 // Parameter:   ItemDatabase & item_db
@@ -124,7 +123,6 @@ void ItemProperties::parsePropertiesToItemDB(ItemDatabase& item_db) {
 
 //************************************
 // Method:      getProperty
-// FullName:    ItemProperties::getProperty
 // Description: 获取一个道具编号的特殊属性
 // Access:      public 
 // Parameter:   uint32 nameid

@@ -37,6 +37,87 @@ struct s_roulette_db rd;
 static void itemdb_jobid2mapid(uint64 bclass[3], e_mapid jobmask, bool active);
 static char itemdb_gendercheck(struct item_data *id);
 
+#ifdef Pandas_Speedup_Itemdb_SearchName
+
+typedef std::vector<struct item_data*> speedup_cache_item;
+typedef std::shared_ptr<speedup_cache_item> shared_speedup_cache_item;
+typedef std::map<std::string, shared_speedup_cache_item> speedup_cache_db;
+
+speedup_cache_db itemdb_speedup_name;
+speedup_cache_db itemdb_speedup_ename;
+
+//************************************
+// Method:      itemdb_speedup_clear
+// Description: 重置并清空用于加速 itemdb 操作的缓存数据
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:39
+//************************************
+void itemdb_speedup_clear() {
+	itemdb_speedup_name.clear();
+	itemdb_speedup_ename.clear();
+}
+
+//************************************
+// Method:      itemdb_speedup_cache_name
+// Description: 缓存某个道具的名称, 以便加速检索效率
+// Parameter:   speedup_cache_db & _map
+// Parameter:   std::string key
+// Parameter:   struct item_data * id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:39
+//************************************
+void itemdb_speedup_cache_name(speedup_cache_db& _map, std::string key, struct item_data* id) {
+	auto item = _map.find(key);
+	if (item == _map.end()) {
+		shared_speedup_cache_item vec = std::make_shared<speedup_cache_item>();
+		vec->push_back(id);
+		_map[key] = vec;
+	}
+	else {
+		shared_speedup_cache_item vec = item->second;
+		for (auto subitem = vec->begin(); subitem != vec->end(); subitem++) {
+			if ((*subitem)->nameid == id->nameid) {
+				(*subitem) = id;
+				return;
+			}
+		}
+		vec->push_back(id);
+	}
+}
+
+//************************************
+// Method:      itemdb_speedup_search_name
+// Description: 在某个数据库中搜索特定道具名称的对应物品
+// Parameter:   speedup_cache_db & _map
+// Parameter:   std::string name
+// Returns:     struct item_data*
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:45
+//************************************
+struct item_data* itemdb_speedup_search_name(speedup_cache_db& _map, std::string name) {
+	auto it = _map.find(name);
+	if (it != _map.end()) {
+		shared_speedup_cache_item sublist = it->second;
+		if (!sublist->empty()) {
+			return sublist->back();
+		}
+	}
+	return NULL;
+}
+
+//************************************
+// Method:      itemdb_speedup_item
+// Description: 建立该物品相关的缓存, 以便加速其他检索操作
+// Parameter:   struct item_data * id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/02/14 00:46
+//************************************
+void itemdb_speedup_item(struct item_data* id) {
+	itemdb_speedup_cache_name(itemdb_speedup_name, id->name, id);
+	itemdb_speedup_cache_name(itemdb_speedup_ename, id->ename, id);
+}
+
+#endif // Pandas_Speedup_Itemdb_SearchName
+
 #ifdef Pandas_Struct_Item_Data_Pandas
 enum e_script_type {
 	SCRIPT_TYPE_USED,
@@ -46,7 +127,6 @@ enum e_script_type {
 
 //************************************
 // Method:      item_script_process
-// FullName:    item_script_process
 // Description: 当物品的脚本信息更新时, 执行自定义处理操作
 // Access:      public static 
 // Parameter:   std::shared_ptr<item_data> item
@@ -62,13 +142,13 @@ inline static void item_script_process(std::shared_ptr<item_data> item, e_script
 	switch (script_type)
 	{
 	case SCRIPT_TYPE_USED:
-		item->pandas.script_plaintext.script = std::make_shared<std::string>(strTrim(script));
+		item->pandas.script_plaintext.script = strTrim(script);
 		break;
 	case SCRIPT_TYPE_EQUIP:
-		item->pandas.script_plaintext.equip_script = std::make_shared<std::string>(strTrim(script));
+		item->pandas.script_plaintext.equip_script = strTrim(script);
 		break;
 	case SCRIPT_TYPE_UNEQUIP:
-		item->pandas.script_plaintext.unequip_script = std::make_shared<std::string>(strTrim(script));
+		item->pandas.script_plaintext.unequip_script = strTrim(script);
 		break;
 	default:
 		break;
@@ -95,7 +175,6 @@ inline static void item_script_process(std::shared_ptr<item_data> item, e_script
 
 //************************************
 // Method:      item_script_reset
-// FullName:    item_script_reset
 // Description: 当物品的脚本信息被重置时, 执行自定义处理操作
 // Access:      public static 
 // Parameter:   std::shared_ptr<item_data> item
@@ -110,13 +189,13 @@ inline static void item_script_reset(std::shared_ptr<item_data> item, e_script_t
 	switch (script_type)
 	{
 	case SCRIPT_TYPE_USED:
-		item->pandas.script_plaintext.script = nullptr;
+		item->pandas.script_plaintext.script.clear();
 		break;
 	case SCRIPT_TYPE_EQUIP:
-		item->pandas.script_plaintext.equip_script = nullptr;
+		item->pandas.script_plaintext.equip_script.clear();
 		break;
 	case SCRIPT_TYPE_UNEQUIP:
-		item->pandas.script_plaintext.unequip_script = nullptr;
+		item->pandas.script_plaintext.unequip_script.clear();
 		break;
 	default:
 		break;
@@ -1156,7 +1235,71 @@ void ItemDatabase::loadingFinished(){
 
 		item_db.put( ITEMID_DUMMY, dummy_item );
 	}
+
+#ifdef Pandas_Speedup_Itemdb_SearchName
+	for (const auto& it : item_db) {
+		itemdb_speedup_item(it.second.get());
+	}
+#endif // Pandas_Speedup_Itemdb_SearchName
 }
+
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
+	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
+		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, ItemDatabase);
+		*ar & *this;
+		return true;
+	}
+	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
+		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, ItemDatabase);
+		*ar & *this;
+		return true;
+	}
+	return false;
+}
+
+void ItemDatabase::afterSerialize() {
+	for (const auto& it : item_db) {
+		auto item = it.second;
+
+		// ==================================================================
+		// 反序列化后 std::string 保留的内存空间可能会小于 ITEM_NAME_LENGTH, 
+		// 这会导致在内存分段的情况下 memcpy 可能会导致越界崩溃. 
+		// 在此处显式的让物品名称字段保留 ITEM_NAME_LENGTH 长度的空间以避免错误.
+		// ==================================================================
+		item->name.reserve(ITEM_NAME_LENGTH);
+		item->ename.reserve(ITEM_NAME_LENGTH);
+
+		// ==================================================================
+		// 反序列化后将未参与序列化的字段进行初始化, 避免内存中的脏数据对工作造成错误的影响
+		// ==================================================================
+		SERIALIZE_SET_MEMORY_ZERO(item->maxchance);
+		SERIALIZE_SET_MEMORY_ZERO(item->flag.no_equip);
+		SERIALIZE_SET_MEMORY_ZERO(item->flag.autoequip);
+		item->combos.clear();
+
+		// ==================================================================
+		// 根据脚本明文重新生成脚本指令序列
+		// ==================================================================
+		item->script = parse_script(
+			item->pandas.script_plaintext.script.c_str(),
+			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
+		);
+
+		item->equip_script = parse_script(
+			item->pandas.script_plaintext.equip_script.c_str(),
+			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
+		);
+
+		item->unequip_script = parse_script(
+			item->pandas.script_plaintext.unequip_script.c_str(),
+			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
+		);
+	}
+}
+#endif // Pandas_YamlBlastCache_ItemDatabase
 
 ItemDatabase item_db;
 
@@ -1238,6 +1381,7 @@ int16 itemdb_group_item_exists_pc(struct map_session_data *sd, unsigned short gr
  *------------------------------------------*/
 static struct item_data* itemdb_searchname1(const char *str, bool aegis_only)
 {
+#ifndef Pandas_Speedup_Itemdb_SearchName
 	for (const auto &it : item_db) {
 		// Absolute priority to Aegis code name.
 		if (strcmpi(it.second->name.c_str(), str) == 0)
@@ -1253,6 +1397,15 @@ static struct item_data* itemdb_searchname1(const char *str, bool aegis_only)
 	}
 
 	return nullptr;
+#else
+	struct item_data* item = nullptr;
+	struct item_data* eitem = nullptr;
+	item = itemdb_speedup_search_name(itemdb_speedup_name, str);
+	if (!aegis_only) {
+		eitem = itemdb_speedup_search_name(itemdb_speedup_ename, str);
+	}
+	return (item ? item : eitem);
+#endif // Pandas_Speedup_Itemdb_SearchName
 }
 
 struct item_data* itemdb_searchname(const char *str)
@@ -2886,6 +3039,10 @@ void itemdb_reload(void) {
 	item_properties_db.clear();
 #endif // Pandas_Database_ItemProperties
 
+#ifdef Pandas_Speedup_Itemdb_SearchName
+	itemdb_speedup_clear();
+#endif // Pandas_Speedup_Itemdb_SearchName
+
 #ifdef Pandas_Storage_Itemdb_Script
 	itemdb_scripts.clear();
 #endif // Pandas_Storage_Itemdb_Script
@@ -2948,6 +3105,10 @@ void do_final_itemdb(void) {
 #ifdef Pandas_Database_ItemProperties
 	item_properties_db.clear();
 #endif // Pandas_Database_ItemProperties
+
+#ifdef Pandas_Speedup_Itemdb_SearchName
+	itemdb_speedup_clear();
+#endif // Pandas_Speedup_Itemdb_SearchName
 
 	if (battle_config.feature_roulette)
 		itemdb_roulette_free();

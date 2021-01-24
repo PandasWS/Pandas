@@ -22,6 +22,7 @@
 	#define Pandas_ScriptEngine
 	#define Pandas_Redeclaration
 	#define Pandas_UserExperience
+	#define Pandas_YamlBlastCache
 	#define Pandas_Cleanup
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
@@ -706,6 +707,10 @@
 	// 是否在一些关键耗时节点打印出耗时情况 [Sola丶小克]
 	#define Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
+	// 是否优化 itemdb_searchname1 函数的实现方式 [Sola丶小克]
+	// 在默认情况下 rAthena 的 itemdb_searchname1 函数实现的非常低效
+	#define Pandas_Speedup_Itemdb_SearchName
+
 	// 优化 map_readfromcache 中对每个 cell 的分配方式 [Sola丶小克]
 	// 主要降低 map_gat2cell 的调用次数, 因为一张地图需要加载 40000 个 cell
 	// 虽然已经启用了 static 和 inline 但内部调用 struct 创建构体也是开销非常大的.
@@ -802,6 +807,28 @@
 	// 优化使用 @version 指令的回显信息 [Sola丶小克]
 	#define Pandas_UserExperience_AtCommand_Version
 #endif // Pandas_UserExperience
+
+// ============================================================================
+// YAML 缓存组 - Pandas_YamlBlastCache
+// ============================================================================
+
+#ifdef Pandas_YamlBlastCache
+	// 能够对 YAML 类型的数据库进行序列化缓存 [Sola丶小克]
+	#define Pandas_YamlBlastCache_Serialize
+
+	// 以下选项开关需要依赖 Pandas_YamlBlastCache_Serialize 的拓展
+	#ifdef Pandas_YamlBlastCache_Serialize
+		// 是否启用对 ItemDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_ItemDatabase
+
+		// 是否启用对 QuestDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_QuestDatabase
+
+		// 是否启用对 SkillDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_SkillDatabase
+	#endif // Pandas_YamlBlastCache_Serialize
+#endif // Pandas_YamlBlastCache
+
 
 // ============================================================================
 // 无用代码清理组 - Pandas_Cleanup

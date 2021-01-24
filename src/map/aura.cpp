@@ -16,7 +16,6 @@ std::unordered_map<uint16, enum e_aura_special> special_effects{
 
 //************************************
 // Method:      getDefaultLocation
-// FullName:    AuraDatabase::getDefaultLocation
 // Description: 获取 YAML 数据文件的具体路径
 // Access:      public 
 // Returns:     const std::string
@@ -28,7 +27,6 @@ const std::string AuraDatabase::getDefaultLocation() {
 
 //************************************
 // Method:      parseBodyNode
-// FullName:    AuraDatabase::parseBodyNode
 // Description: 解析 Body 节点的主要处理函数
 // Access:      public 
 // Parameter:   const YAML::Node & node
@@ -80,7 +78,6 @@ uint64 AuraDatabase::parseBodyNode(const YAML::Node& node) {
 
 //************************************
 // Method:      aura_search
-// FullName:    aura_search
 // Description: 根据光环编号获取 aura_db.yml 记录的信息
 // Access:      public 
 // Parameter:   uint32 aura_id
@@ -93,7 +90,6 @@ std::shared_ptr<s_aura> aura_search(uint32 aura_id) {
 
 //************************************
 // Method:      aura_special
-// FullName:    aura_special
 // Description: 给定一个效果编号, 查询它是否是一个特殊效果, 并返回它的标记位
 // Access:      public 
 // Parameter:   uint16 effect_id
@@ -109,7 +105,6 @@ enum e_aura_special aura_special(uint16 effect_id) {
 
 //************************************
 // Method:      aura_make_effective
-// FullName:    aura_make_effective
 // Description: 为 bl 设置光环并使其能够立刻刷新生效
 // Access:      public 
 // Parameter:   struct block_list * bl
@@ -169,7 +164,6 @@ void aura_make_effective(struct block_list* bl, uint32 aura_id, bool pc_saved) {
 
 //************************************
 // Method:      aura_reload
-// FullName:    aura_reload
 // Description: 重新载入 aura_db.yml 光环组合数据库
 // Access:      public 
 // Parameter:   void
@@ -183,7 +177,6 @@ void aura_reload(void) {
 
 //************************************
 // Method:      do_final_aura
-// FullName:    do_final_aura
 // Description: 释放 AuraDatabase 的实例对象 aura_db 所保存的内容
 // Access:      public 
 // Parameter:   void
@@ -196,7 +189,6 @@ void do_final_aura(void) {
 
 //************************************
 // Method:      do_init_aura
-// FullName:    do_init_aura
 // Description: 初始化光环机制, 从 aura_db.yml 光环组合数据库中载入数据
 // Access:      public 
 // Parameter:   void
