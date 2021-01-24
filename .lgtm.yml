@@ -13,6 +13,10 @@ extraction:
   python:
     python_setup: 
       version: 3
-      requirements_files: 
-        - tools/python/requirements.txt
+      requirements:
+        - pipenv
       setup_py: false
+    after_prepare:
+      - cd $LGTM_WORKSPACE
+      - cd tools/python
+      - pipenv install

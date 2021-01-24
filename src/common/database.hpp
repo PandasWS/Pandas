@@ -58,7 +58,11 @@ private:
 	bool verifyCompatibility( const YAML::Node& rootNode );
 	bool load( const std::string& path );
 	void parse( const YAML::Node& rootNode );
+#ifndef Pandas_YamlBlastCache_Serialize
 	void parseImports( const YAML::Node& rootNode );
+#else
+	bool parseImports( const YAML::Node& rootNode );
+#endif // Pandas_YamlBlastCache_Serialize
 	template <typename R> bool asType( const YAML::Node& node, const std::string& name, R& out );
 
 #ifdef Pandas_Database_Yaml_Support_UTF8BOM

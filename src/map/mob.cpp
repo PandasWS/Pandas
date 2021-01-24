@@ -2729,7 +2729,11 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			}
 #ifdef RENEWAL
 			if (base_exp && tmpsd[i] && tmpsd[i]->hd)
+#ifndef Pandas_LGTM_Optimization
 				hom_gainexp(tmpsd[i]->hd, base_exp * battle_config.homunculus_exp_gain / 100); // Homunculus only receive 10% of EXP
+#else
+				hom_gainexp(tmpsd[i]->hd, min((int)(base_exp * battle_config.homunculus_exp_gain / 100), INT_MAX)); // Homunculus only receive 10% of EXP
+#endif // Pandas_LGTM_Optimization
 #else
 			if (base_exp && md->dmglog[i].flag == MDLF_HOMUN) //tmpsd[i] is null if it has no homunc.
 				hom_gainexp(tmpsd[i]->hd, base_exp);

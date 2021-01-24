@@ -133,6 +133,8 @@ namespace boost {
 			ar& t.race;
 			ar& t.size;
 			ar& t.element;
+			ar& t.mapid;
+			ar& t.map_name;
 		}
 
 		// ======================================================================

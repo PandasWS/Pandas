@@ -209,10 +209,11 @@ std::string YamlDatabase::getBlashCacheHash(const std::string& path) {
 		return "";
 
 	std::string content = boost::str(
-		boost::format("%1%|%2%|%3%|%4%") %
+		boost::format("%1%|%2%|%3%|%4%|%5%") %
 		BLASTCACHE_VERSION %
 		typeid(SERIALIZE_LOAD_ARCHIVE).name() %
 		typeid(SERIALIZE_SAVE_ARCHIVE).name() %
+		this->version %
 		filehash
 	);
 
@@ -325,7 +326,10 @@ bool YamlDatabase::load(){
 
 	bool ret = this->load( this->getDefaultLocation() );
 	this->loadingFinished();
-	this->saveToSerialize();
+
+	if (ret) {
+		this->saveToSerialize();
+	}
 #endif // Pandas_YamlBlastCache_Serialize
 
 	return ret;
@@ -390,9 +394,13 @@ bool YamlDatabase::load(const std::string& path) {
 
 	this->parse( rootNode );
 
+#ifndef Pandas_YamlBlastCache_Serialize
 	this->parseImports( rootNode );
 
 	return true;
+#else
+	return this->parseImports( rootNode );
+#endif // Pandas_YamlBlastCache_Serialize
 }
 
 void YamlDatabase::loadingFinished(){
@@ -422,7 +430,12 @@ void YamlDatabase::parse( const YAML::Node& rootNode ){
 	}
 }
 
+#ifndef Pandas_YamlBlastCache_Serialize
 void YamlDatabase::parseImports( const YAML::Node& rootNode ){
+#else
+bool YamlDatabase::parseImports( const YAML::Node& rootNode ){
+	bool bSuccess = true;
+#endif // Pandas_YamlBlastCache_Serialize
 	if( this->nodeExists( rootNode, "Footer" ) ){
 		const YAML::Node& footerNode = rootNode["Footer"];
 
@@ -453,10 +466,17 @@ void YamlDatabase::parseImports( const YAML::Node& rootNode ){
 					}
 				}				
 
+#ifndef Pandas_YamlBlastCache_Serialize
 				this->load( importFile );
+#else
+				bSuccess = bSuccess && this->load( importFile );
+#endif // Pandas_YamlBlastCache_Serialize
 			}
 		}
 	}
+#ifdef Pandas_YamlBlastCache_Serialize
+	return bSuccess;
+#endif // Pandas_YamlBlastCache_Serialize
 }
 
 template <typename R> bool YamlDatabase::asType( const YAML::Node& node, const std::string& name, R& out ){
