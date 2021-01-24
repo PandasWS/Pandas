@@ -16,7 +16,3 @@ extraction:
       requirements:
         - pipenv
       setup_py: false
-    after_prepare:
-      - cd $LGTM_WORKSPACE
-      - cd tools/python
-      - pipenv install

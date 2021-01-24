@@ -156,6 +156,7 @@ def clean_environment():
     Common.glob_delete(slndir('map-server*'))
     Common.glob_delete(slndir('csv2yaml*'))
     Common.glob_delete(slndir('mapcache*'))
+    Common.glob_delete(slndir('yaml2sql*'))
 
     Common.glob_delete(slndir('logserv.bat'))
     Common.glob_delete(slndir('charserv.bat'))
@@ -246,6 +247,10 @@ def compile_prere(version):
     shutil.move(slndir('char-server.pdb'), slndir('char-server-pre-t.pdb'))
     shutil.move(slndir('map-server.exe'), slndir('map-server-pre-t.exe'))
     shutil.move(slndir('map-server.pdb'), slndir('map-server-pre-t.pdb'))
+    shutil.move(slndir('yaml2sql.exe'), slndir('yaml2sql-pre-t.exe'))
+    shutil.move(slndir('yaml2sql.pdb'), slndir('yaml2sql-pre-t.pdb'))
+    shutil.move(slndir('csv2yaml.exe'), slndir('csv2yaml-pre-t.exe'))
+    shutil.move(slndir('csv2yaml.pdb'), slndir('csv2yaml-pre-t.pdb'))
     
     print('')
 
@@ -279,6 +284,10 @@ def compile_renewal(version):
     shutil.move(slndir('char-server-pre-t.pdb'), slndir('char-server-pre.pdb'))
     shutil.move(slndir('map-server-pre-t.exe'), slndir('map-server-pre.exe'))
     shutil.move(slndir('map-server-pre-t.pdb'), slndir('map-server-pre.pdb'))
+    shutil.move(slndir('yaml2sql-pre-t.exe'), slndir('yaml2sql-pre.exe'))
+    shutil.move(slndir('yaml2sql-pre-t.pdb'), slndir('yaml2sql-pre.pdb'))
+    shutil.move(slndir('csv2yaml-pre-t.exe'), slndir('csv2yaml-pre.exe'))
+    shutil.move(slndir('csv2yaml-pre-t.pdb'), slndir('csv2yaml-pre.pdb'))
     
     print('')
 

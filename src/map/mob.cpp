@@ -2736,7 +2736,11 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 #endif // Pandas_LGTM_Optimization
 #else
 			if (base_exp && md->dmglog[i].flag == MDLF_HOMUN) //tmpsd[i] is null if it has no homunc.
+#ifndef Pandas_LGTM_Optimization
 				hom_gainexp(tmpsd[i]->hd, base_exp);
+#else
+				hom_gainexp(tmpsd[i]->hd, min((int)base_exp, INT_MAX));
+#endif // Pandas_LGTM_Optimization
 #endif
 			if(flag) {
 				if(base_exp || job_exp) {

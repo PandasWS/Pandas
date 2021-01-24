@@ -620,6 +620,10 @@
 
 	// 修正 csv2yaml 辅助工具可能存在的多余反斜杠问题 [Sola丶小克]
 	#define Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
+
+	// 修正 yaml2sql 辅助工具无法生成不含 Body 节点的空 sql 问题 [Sola丶小克]
+	// 当来源文件不存在 Body 节点时, 应认为数据为空而生成空 sql 文件, 而不是直接放弃生成
+	#define	Pandas_Fix_Yaml2Sql_NoBodyNode_Break
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -806,6 +810,14 @@
 #ifdef Pandas_UserExperience
 	// 优化使用 @version 指令的回显信息 [Sola丶小克]
 	#define Pandas_UserExperience_AtCommand_Version
+
+	// 使 yaml2sql 辅助工具在加载 YAML 文件时能给个提示
+	// 否则容易因加载时间过长, 给使用者造成程序已经卡死的错觉 [Sola丶小克]
+	#define Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
+
+	// 调整 yaml2sql 辅助工具的询问确认流程 [Sola丶小克]
+	// 先询问是否能覆盖目标文件, 再尝试去加载来源数据文件, 以便优化体验
+	#define Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
 #endif // Pandas_UserExperience
 
 // ============================================================================
