@@ -21,6 +21,7 @@ import glob
 import os
 import re
 
+from ruamel.yaml import YAML, scalarstring
 from libs import Common, Inputer, Message
 
 # 切换工作目录为脚本所在目录
@@ -294,6 +295,21 @@ configures = [
         'globpath' : [
             'sql-files/**/*mob_skill_db*.sql'
         ]
+    },
+    {
+        'operate' : 'YamlReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'itemname',
+            'id_field' : 'Id',
+            'target_field' : 'Name',
+            'replace_escape' : False,
+            'replace_decorate' : 'YamlDoubleQuotedHandling',
+            'save_encoding' : 'UTF-8-SIG'
+        },
+        'globpath' : [
+            'db/pre-re/item_db_*.yml',
+            'db/re/item_db_*.yml'
+        ]
     }
 ]
 
@@ -329,6 +345,18 @@ def SkillTreeDescription(origin, target):
 
 def CommentSpaceStandard(origin, target):
     return ' %s' % target.strip()
+
+def YamlDoubleQuotedHandling(origin, target):
+    special = ['[', ']']
+    isSpecial = False
+    for x in special:
+        if x in target:
+            isSpecial = True
+            break
+    if isSpecial:
+        return scalarstring.DoubleQuotedScalarString(target)
+    else:
+        return target
 
 def convert_backslash_step1(textcontent):
     '''
@@ -612,6 +640,99 @@ class FulltextReplaceController():
         
             with open(filename, 'w', encoding=self.__save_encoding) as f:
                 f.write(contents)
+            
+            if self.__lang == 'zh-tw' and self.__big5_escape:
+                convert_backslash_step2(filename)
+
+            return True
+        except Exception as _err:
+            raise _err
+
+    def execute(self, filename, savefile = None):
+        if not Common.is_file_exists(filename):
+            return False
+        
+        if not savefile:
+            savefile = filename
+        
+        if not self.__silent:
+            Message.ShowInfo('正在处理: %s (%s)' % (os.path.relpath(filename, self.__project_dir), self.__save_encoding))
+
+        contents = self.__load(filename)
+        contents = self.__process(contents)
+        return self.__save(contents, savefile)
+
+class YamlReplaceController():
+    def __init__(self, **kwargs):
+        self.__id_field = self.__getfromdict(kwargs, 'id_field')
+        self.__target_field = self.__getfromdict(kwargs, 'target_field')
+        self.__lang = self.__getfromdict(kwargs, 'lang')
+        self.__transdb_name = self.__getfromdict(kwargs, 'transdb_name')
+        self.__save_encoding = self.__getfromdict(kwargs, 'save_encoding')
+        self.__silent = self.__getfromdict(kwargs, 'silent')
+        self.__project_dir = self.__getfromdict(kwargs, 'project_dir')
+        self.__big5_escape = self.__getfromdict(kwargs, 'big5_escape', False)
+        self.__replace_escape = self.__getfromdict(kwargs, 'replace_escape')
+        self.__replace_decorate = self.__getfromdict(kwargs, 'replace_decorate')
+        self.__trans = TranslateDatabase(self.__transdb_name, self.__lang)
+
+        self.__yaml=YAML(typ="rt")
+        self.__yaml.default_flow_style = False
+        self.__yaml.preserve_quotes = True
+        self.__yaml.indent(mapping=2, sequence=4, offset=2)
+
+    def __getfromdict(self, dictmap, key, default = None):
+        if key not in dictmap:
+            return default
+        return dictmap[key]
+
+    def __load(self, filename):
+        contents = None
+
+        encoding = Common.get_file_encoding(filename)
+        encoding = 'latin1' if encoding is None else encoding
+
+        with open(filename, 'r', encoding=encoding) as f:
+            contents = self.__yaml.load(f.read())
+        return contents
+
+    def __escape(self, value):
+        if value is None:
+            return None
+
+        escapelist = ['\'']
+        escape_val = ''
+        for c in value:
+            if c in escapelist:
+                escape_val += r'\\' +  c
+            else:
+                escape_val += c
+        return escape_val
+
+    def __process(self, contents):
+        for item in contents['Body']:
+            nameid = int(item[self.__id_field])
+            transname = self.__trans.trans(nameid)
+
+            if not transname:
+                continue
+            
+            if self.__replace_escape:
+                transname = self.__escape(transname)
+
+            if self.__replace_decorate is not None:
+                transname = globals()[self.__replace_decorate](item, transname)
+
+            item[self.__target_field] = transname
+        return contents
+    
+    def __save(self, contents, filename):
+        try:
+            if self.__lang == 'zh-tw' and self.__big5_escape:
+                contents = convert_backslash_step1(contents)
+        
+            with open(filename, 'w', encoding=self.__save_encoding) as f:
+                self.__yaml.dump(contents, f)
             
             if self.__lang == 'zh-tw' and self.__big5_escape:
                 convert_backslash_step2(filename)
