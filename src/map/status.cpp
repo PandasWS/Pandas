@@ -9360,7 +9360,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 		}
 
 		rate = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_rate")), 0, INT_MAX);
-		tick = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_tick")), 0, INT_MAX);
+		tick = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_tick")), -1, INT_MAX);
 		val1 = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_val1")), INT_MIN, INT_MAX);
 		val2 = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_val2")), INT_MIN, INT_MAX);
 		val3 = (int)cap_value(pc_readreg(sd, add_str("@about2start_sc_val3")), INT_MIN, INT_MAX);
