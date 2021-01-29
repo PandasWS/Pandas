@@ -10,6 +10,16 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+## [v1.0.9] - `2021-01-29`
+
+### 提示
+
+- 建议所有使用 v1.0.8 的用户升级到 v1.0.9
+
+### 修正
+
+- 修正 v1.0.8 引入的手推车无法保存以及无法发送邮件的问题
+
 ## [v1.0.8] - `2020-11-20`
 
 ### 升级
@@ -271,6 +281,7 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.0.9]: https://github.com/PandasWS/Pandas/compare/v1.0.8...v1.0.9
 [v1.0.8]: https://github.com/PandasWS/Pandas/compare/v1.0.7...v1.0.8
 [v1.0.7]: https://github.com/PandasWS/Pandas/compare/v1.0.6...v1.0.7
 [v1.0.6]: https://github.com/PandasWS/Pandas/compare/v1.0.5...v1.0.6
