@@ -31,7 +31,7 @@ struct homun_skill_tree_entry hskill_tree[MAX_HOMUNCULUS_CLASS][MAX_HOM_SKILL_TR
 
 static TIMER_FUNC(hom_hungry);
 static uint16 homunculus_count;
-static unsigned int hexptbl[MAX_LEVEL];
+static t_exp hexptbl[MAX_LEVEL];
 
 //For holding the view data of npc classes. [Skotlex]
 static struct view_data hom_viewdb[MAX_HOMUNCULUS_CLASS];
@@ -673,7 +673,7 @@ int hom_mutate(struct homun_data *hd, int homun_id)
 * @param hd
 * @param exp Added EXP
 */
-void hom_gainexp(struct homun_data *hd,int exp)
+void hom_gainexp(struct homun_data *hd,t_exp exp)
 {
 	int m_class;
 
@@ -1324,7 +1324,6 @@ int hom_shuffle(struct homun_data *hd)
 {
 	struct map_session_data *sd;
 	int lv, i, skillpts;
-	unsigned int exp;
 	struct s_skill b_skill[MAX_HOMUNSKILL];
 
 	if (!hom_is_active(hd))
@@ -1332,7 +1331,7 @@ int hom_shuffle(struct homun_data *hd)
 
 	sd = hd->master;
 	lv = hd->homunculus.level;
-	exp = hd->homunculus.exp;
+	t_exp exp = hd->homunculus.exp;
 	memcpy(&b_skill, &hd->homunculus.hskill, sizeof(b_skill));
 	skillpts = hd->homunculus.skillpts;
 	//Reset values to level 1.
@@ -1632,7 +1631,7 @@ void read_homunculus_expdb(void)
 			if (line[0] == '/' && line[1] == '/')
 				continue;
 
-			hexptbl[j] = strtoul(line, NULL, 10);
+			hexptbl[j] = strtoull(line, NULL, 10);
 			if (!hexptbl[j++])
 				break;
 		}
