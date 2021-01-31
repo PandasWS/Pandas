@@ -3750,6 +3750,13 @@ void script_free_code(struct script_code* code)
 	if (code->local.arrays)
 		code->local.arrays->destroy(code->local.arrays, script_free_array_db);
 	aFree(code->script_buf);
+
+#ifdef Pandas_Crashfix_ScriptFreeCode_SetPointerNull
+	code->local.vars = NULL;
+	code->local.arrays = NULL;
+	code->script_buf = NULL;
+#endif // Pandas_Crashfix_ScriptFreeCode_SetPointerNull
+
 	aFree(code);
 }
 
