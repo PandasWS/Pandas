@@ -86,7 +86,7 @@ void map_msg_reload(void);
 //First Jobs
 //Note the oddity of the novice:
 //Super Novices are considered the 2-1 version of the novice! Novices are considered a first class type, too...
-enum e_mapid {
+enum e_mapid : uint64{
 //Novice And 1-1 Jobs
 	MAPID_NOVICE = 0x0,
 	MAPID_SWORDMAN,
@@ -228,6 +228,8 @@ enum e_mapid {
 	MAPID_BABY_GENETIC,
 	MAPID_BABY_SHADOW_CHASER,
 	MAPID_BABY_SOUL_REAPER,
+// Additional constants
+	MAPID_ALL = UINT64_MAX
 };
 
 //Max size for inputs to Graffiti, Talkie Box and Vending text prompts
@@ -336,6 +338,8 @@ enum e_race2 : uint8{
 	RC2_HEARTHUNTER,
 	RC2_ROCKRIDGE,
 	RC2_WERNER_LAB,
+	RC2_TEMPLE_DEMON,
+	RC2_ILLUSION_VAMPIRE,
 	RC2_MAX
 };
 
@@ -381,6 +385,7 @@ enum mob_ai {
 	AI_ZANZOU,
 	AI_LEGION,
 	AI_FAW,
+	AI_GUILD,
 	AI_MAX
 };
 
@@ -515,12 +520,21 @@ enum _sp {
 	SP_WEAPON_ATK_RATE, SP_WEAPON_MATK_RATE, SP_DROP_ADDRACE, SP_DROP_ADDCLASS, SP_NO_MADO_FUEL, // 2083-2087
 	SP_IGNORE_DEF_CLASS_RATE, SP_REGEN_PERCENT_HP, SP_REGEN_PERCENT_SP, SP_SKILL_DELAY, SP_NO_WALK_DELAY, //2088-2092
 	SP_LONG_SP_GAIN_VALUE, SP_LONG_HP_GAIN_VALUE, SP_SHORT_ATK_RATE, SP_MAGIC_SUBSIZE, SP_CRIT_DEF_RATE, // 2093-2097
-	SP_MAGIC_SUBDEF_ELE // 2098
+	SP_MAGIC_SUBDEF_ELE, SP_REDUCE_DAMAGE_RETURN // 2098-2099
 #ifdef Pandas_ScriptParams_ReadParam
 	,
 	SP_EXTEND_UNUSED = 3100,
 	SP_STR_ALL, SP_AGI_ALL, SP_VIT_ALL, SP_INT_ALL, SP_DEX_ALL, SP_LUK_ALL,	// 3101-3106
 #endif // Pandas_ScriptParams_ReadParam
+
+#ifdef Pandas_Bonuses
+	SP_PANDAS_EXTEND_BONUS_START = 3500,
+	#ifdef Pandas_Bonus_bNoFieldGemStone
+		SP_PANDAS_NOFIELDGEMSTONE,	// 调整器名称: bNoFieldGemStone / 说明: 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+	#endif // Pandas_Bonus_bNoFieldGemStone
+	// PYHELP - BONUS - INSERT POINT - <Section 2>
+	SP_PANDAS_EXTEND_BONUS_END,
+#endif // Pandas_Bonuses
 };
 
 enum _look {
@@ -785,13 +799,6 @@ struct iwall_data {
 	bool shootable;
 };
 
-struct s_questinfo {
-	struct npc_data *nd;
-	e_questinfo_types icon;
-	e_questinfo_markcolor color;
-	struct script_code* condition;
-};
-
 #ifdef Pandas_Mapflags
 struct s_mapflag_params {
 	int param_first;
@@ -841,7 +848,7 @@ struct map_data {
 	struct Channel *channel;
 
 	/* ShowEvent Data Cache */
-	std::vector<s_questinfo> qi_data;
+	std::vector<int> qi_npc;
 
 #ifdef Pandas_Mapflags
 	std::unordered_map<int16, s_mapflag_params> flag_params;

@@ -6,6 +6,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "itemdb.hpp"
+
 #include "../common/cbasetypes.hpp"
 #include "../common/database.hpp"
 
@@ -37,8 +39,9 @@ public:
 
 	const std::string getDefaultLocation();
 	uint64 parseBodyNode(const YAML::Node& node);
+
+	void parsePropertiesToItemDB(ItemDatabase& item_db);
+	std::shared_ptr<s_item_properties> getProperty(uint32 nameid);
 };
 
 extern ItemProperties item_properties_db;
-
-std::shared_ptr<s_item_properties> itemdb_get_property(uint32 nameid);

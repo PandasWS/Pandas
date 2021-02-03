@@ -38,7 +38,7 @@ def export():
     '''
     repo = git.Repo(project_slndir)
     export_path = os.path.abspath(project_slndir + 'pandas_export.zip')
-    repo.git.archive('HEAD', '--format=zip', '-o', export_path)
+    repo.git.archive('HEAD', ':(exclude)3rdparty', '--format=zip', '-o', export_path)
     return export_path if os.path.exists(export_path) else None
 
 def zip_unpack(zipfilename, targetdir):
@@ -137,6 +137,22 @@ def remove_file(dirpath, filename):
     if os.path.exists(filename):
         os.remove(filename)
 
+def recursive_overwrite(src, dest, ignore=None):
+    '''
+    将来源目录中的文件覆盖到目标目标上
+    '''
+    if os.path.isdir(src):
+        if not os.path.isdir(dest):
+            os.makedirs(dest)
+        files = os.listdir(src)
+        ignored = set() if ignore is None else ignore(src, files)
+
+        for f in files:
+            if f not in ignored:
+                recursive_overwrite(os.path.join(src, f), os.path.join(dest, f), ignore)
+    else:
+        shutil.copyfile(src, dest)
+
 def arrange_common(packagedir):
     '''
     复兴前和复兴后都能够通用的整理规则
@@ -150,6 +166,8 @@ def arrange_common(packagedir):
     rmdir(packagedir + 'conf/import')
     rmdir(packagedir + 'doc/model')
     rmdir(packagedir + 'npc/test')
+    
+    recursive_overwrite(packagedir + 'tools/python/dist/', packagedir)
     rmdir(packagedir + 'tools', ['batches'])
     
     remove_files(packagedir + 'doc', 'packet_*.txt')
@@ -197,18 +215,30 @@ def arrange_common(packagedir):
     os.makedirs(packagedir + 'sql-files/main/creation/use_sql_db/renewal')
     shutil.move(packagedir + 'sql-files/item_db_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/01.item_db_re.sql')
     shutil.move(packagedir + 'sql-files/item_db2_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/02.item_db2_re.sql')
-    shutil.move(packagedir + 'sql-files/mob_db_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/03.mob_db_re.sql')
-    shutil.move(packagedir + 'sql-files/mob_db2_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/04.mob_db2_re.sql')
-    shutil.move(packagedir + 'sql-files/mob_skill_db_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/05.mob_skill_db_re.sql')
-    shutil.move(packagedir + 'sql-files/mob_skill_db2_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/06.mob_skill_db2_re.sql')
+    shutil.move(packagedir + 'sql-files/item_db_re_equip.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/03.item_db_re_equip.sql')
+    shutil.move(packagedir + 'sql-files/item_db_re_etc.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/04.item_db_re_etc.sql')
+    shutil.move(packagedir + 'sql-files/item_db_re_usable.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/05.item_db_re_usable.sql')
+    shutil.move(packagedir + 'sql-files/mob_db_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/06.mob_db_re.sql')
+    shutil.move(packagedir + 'sql-files/mob_db2_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/07.mob_db2_re.sql')
+    shutil.move(packagedir + 'sql-files/mob_skill_db_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/08.mob_skill_db_re.sql')
+    shutil.move(packagedir + 'sql-files/mob_skill_db2_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/09.mob_skill_db2_re.sql')
+    os.makedirs(packagedir + 'sql-files/main/creation/use_sql_db/renewal/optional')
+    shutil.move(packagedir + 'sql-files/compatibility/item_db_re_compat.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/optional/01.item_db_re_compat.sql')
+    shutil.move(packagedir + 'sql-files/compatibility/item_db2_re_compat.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/optional/02.item_db2_re_compat.sql')
     
     os.makedirs(packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal')
     shutil.move(packagedir + 'sql-files/item_db.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/01.item_db.sql')
     shutil.move(packagedir + 'sql-files/item_db2.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/02.item_db2.sql')
-    shutil.move(packagedir + 'sql-files/mob_db.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/03.mob_db.sql')
-    shutil.move(packagedir + 'sql-files/mob_db2.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/04.mob_db2.sql')
-    shutil.move(packagedir + 'sql-files/mob_skill_db.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/05.mob_skill_db.sql')
-    shutil.move(packagedir + 'sql-files/mob_skill_db2.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/06.mob_skill_db2.sql')
+    shutil.move(packagedir + 'sql-files/item_db_equip.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/03.item_db_equip.sql')
+    shutil.move(packagedir + 'sql-files/item_db_etc.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/04.item_db_etc.sql')
+    shutil.move(packagedir + 'sql-files/item_db_usable.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/05.item_db_usable.sql')
+    shutil.move(packagedir + 'sql-files/mob_db.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/06.mob_db.sql')
+    shutil.move(packagedir + 'sql-files/mob_db2.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/07.mob_db2.sql')
+    shutil.move(packagedir + 'sql-files/mob_skill_db.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/08.mob_skill_db.sql')
+    shutil.move(packagedir + 'sql-files/mob_skill_db2.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/09.mob_skill_db2.sql')
+    os.makedirs(packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/optional')
+    shutil.move(packagedir + 'sql-files/compatibility/item_db_compat.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/optional/01.item_db_compat.sql')
+    shutil.move(packagedir + 'sql-files/compatibility/item_db2_compat.sql', packagedir + 'sql-files/main/creation/use_sql_db/pre-renewal/optional/02.item_db2_compat.sql')
     
     os.makedirs(packagedir + 'sql-files/main/creation/optional')
     shutil.move(packagedir + 'sql-files/premium_storage.sql', packagedir + 'sql-files/main/creation/optional/premium_storage.sql')
@@ -224,6 +254,7 @@ def arrange_common(packagedir):
         shutil.move(packagedir + 'sql-files/composer/logs', packagedir + 'sql-files/logs/upgrades')
         
     rmdir(packagedir + 'sql-files/composer')
+    rmdir(packagedir + 'sql-files/compatibility')
 
 def arrange_renewal(packagedir):
     '''
@@ -241,6 +272,7 @@ def arrange_renewal(packagedir):
     copyfile(project_slndir + 'map-server.exe', packagedir + 'map-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
+    copyfile(project_slndir + 'yaml2sql.exe', packagedir + 'yaml2sql.exe')
 
 def arrange_pre_renewal(packagedir):
     '''
@@ -256,8 +288,9 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'login-server-pre.exe', packagedir + 'login-server.exe')
     copyfile(project_slndir + 'char-server-pre.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server-pre.exe', packagedir + 'map-server.exe')
-    copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
+    copyfile(project_slndir + 'csv2yaml-pre.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
+    copyfile(project_slndir + 'yaml2sql-pre.exe', packagedir + 'yaml2sql.exe')
 
 def process_sub(export_file, renewal, langinfo):
     print('')

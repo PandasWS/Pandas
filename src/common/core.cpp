@@ -392,8 +392,12 @@ void usercheck(void)
 int main (int argc, char **argv)
 {
 #ifdef Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
-	correct_isa_available();
+	isaAvailableHotfix();
 #endif // Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
+
+#ifdef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+	performance_create_and_start("core_init");
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
 #ifdef Pandas_Setup_Console_Output_Codepage
 	PandasUtf8::setupConsoleOutputCP();
@@ -462,6 +466,10 @@ int main (int argc, char **argv)
 #endif // Pandas_Google_Breakpad
 
 	do_init(argc,argv);
+
+#ifdef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+	performance_destory("core_init");
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
 	// Main runtime cycle
 	while (runflag != CORE_ST_STOP) { 

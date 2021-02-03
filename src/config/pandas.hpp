@@ -22,10 +22,12 @@
 	#define Pandas_ScriptEngine
 	#define Pandas_Redeclaration
 	#define Pandas_UserExperience
+	#define Pandas_YamlBlastCache
 	#define Pandas_Cleanup
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
 	#define Pandas_AtCommands
+	#define Pandas_Bonuses
 	#define Pandas_ScriptCommands
 	#define Pandas_ScriptResults
 	#define Pandas_ScriptParams
@@ -61,7 +63,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.0.9.0"
+	#define Pandas_Version "1.1.0.1"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -80,47 +82,10 @@
 #endif // Pandas_Basic
 
 // ============================================================================
-// 数据库增强组 - Pandas_DatabaseIncrease
-// ============================================================================
-
-#ifdef Pandas_DatabaseIncrease
-	// 是否启用 Pandas 的道具属性数据库 [Sola丶小克]
-	// 类似 item_flag 数据库, 不过 rAthena 自己会不断扩充 flag 的定义
-	// 为了避免未来可能存在的冲突, 直接创建一个新的数据库来存放对物品属性的自定义扩充
-	#define Pandas_Database_ItemProperties
-
-	// 是否启用魔物道具固定掉率数据库及其功能 [Sola丶小克]
-	// 通过这个数据库可以指定某个道具的全局固定掉落概率, 且能绕过等级惩罚和VIP掉率加成等机制
-	#define Pandas_Database_MobItem_FixedRatio
-
-	// 是否拓展 Yaml 的 Database 操作类使之能抑制错误信息 [Sola丶小克]
-	#define Pandas_Database_Yaml_BeQuiet
-
-	// 是否拓展 Yaml 的 Database 操作类使之能读取 UTF8-BOM 编码的文件 [Sola丶小克]
-	#define Pandas_Database_Yaml_Support_UTF8BOM
-#endif // Pandas_DatabaseIncrease
-
-// ============================================================================
 // 数据结构增强组 - Pandas_StructIncrease
 // ============================================================================
 
 #ifdef Pandas_StructIncrease
-	// 使 item_data 可记录此物品是否为宠物捕捉道具 [Sola丶小克]
-	// 结构体修改定位 itemdb.hpp -> item_data.taming_mobid
-	#define Pandas_Struct_Item_Data_Taming_Mobid
-
-	// 使 item_data 可记录此物品是否执行了 callfunc 指令 [Sola丶小克]
-	// 结构体修改定位 itemdb.hpp -> item_data.has_callfunc
-	#define Pandas_Struct_Item_Data_Has_CallFunc
-
-	// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
-	// 效果与 item_data.flag 类似, 只是数据源为 item_properties.yml 
-	// 结构体修改定位 itemdb.hpp -> item_data.properties
-	// 此选项开关需要依赖 Pandas_Database_ItemProperties 的拓展
-	#ifdef Pandas_Database_ItemProperties
-		#define Pandas_Struct_Item_Data_Properties
-	#endif // Pandas_Database_ItemProperties
-
 	// 使 map_session_data, npc_data, mob_data, homun_data,
 	// mercenary_data, elemental_data, pet_data 能够有一个独立的结构体用来
 	// 存放 Pandas 针对多单位通用的拓展 [Sola丶小克]
@@ -167,6 +132,30 @@
 		#define Pandas_Struct_Map_Session_Data_Autotrade_Configure
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
 
+	// 使 item_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
+	// 结构体修改定位 itemdb.hpp -> item_data.pandas
+	#define Pandas_Struct_Item_Data_Pandas
+
+	// 以下选项开关需要依赖 Pandas_Struct_Item_Data_Pandas 的拓展
+	#ifdef Pandas_Struct_Item_Data_Pandas
+		// 使 item_data 可记录当前物品的使用、穿戴、卸装脚本的原文 [Sola丶小克]
+		// 结构体修改定位 itemdb.hpp -> item_data.pandas.script_plaintext
+		#define Pandas_Struct_Item_Data_Script_Plaintext
+
+		// 使 item_data 可记录当前物品可捕捉的魔物编号 [Sola丶小克]
+		// 结构体修改定位 itemdb.hpp -> item_data.pandas.taming_mobid
+		#define Pandas_Struct_Item_Data_Taming_Mobid
+
+		// 使 item_data 可记录此物品的使用脚本是否执行了 callfunc 指令 [Sola丶小克]
+		// 结构体修改定位 itemdb.hpp -> item_data.pandas.has_callfunc
+		#define Pandas_Struct_Item_Data_Has_CallFunc
+
+		// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
+		// 效果与 item_data.flag 类似, 只是数据源为 item_properties.yml 
+		// 结构体修改定位 itemdb.hpp -> item_data.pandas.properties
+		#define Pandas_Struct_Item_Data_Properties
+	#endif // Pandas_Struct_Item_Data_Pandas
+
 	// 使 npc_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
 	// 结构体修改定位 npc.hpp -> npc_data.pandas
 	#define Pandas_Struct_Npc_Data_Pandas
@@ -185,6 +174,29 @@
 	// 若非零的话则表示启用了离线挂店, 且 &2 表示开启的是离线摆摊挂店 &3 表示开启的是离线收购挂店
 	#define Pandas_Struct_Autotrade_Extend
 #endif // Pandas_StructIncrease
+
+// ============================================================================
+// 数据库增强组 - Pandas_DatabaseIncrease
+// ============================================================================
+
+#ifdef Pandas_DatabaseIncrease
+	// 是否启用道具特殊属性数据库 [Sola丶小克]
+	// 为了避免未来可能存在的冲突, 直接创建一个新的数据库来存放对物品属性的自定义扩充
+	// 此选项依赖 Pandas_Struct_Item_Data_Properties 的拓展
+	#ifdef Pandas_Struct_Item_Data_Properties
+		#define Pandas_Database_ItemProperties
+	#endif // Pandas_Struct_Item_Data_Properties
+
+	// 是否启用魔物道具固定掉率数据库及其功能 [Sola丶小克]
+	// 通过这个数据库可以指定某个道具的全局固定掉落概率, 且能绕过等级惩罚和VIP掉率加成等机制
+	#define Pandas_Database_MobItem_FixedRatio
+
+	// 是否拓展 Yaml 的 Database 操作类使之能抑制错误信息 [Sola丶小克]
+	#define Pandas_Database_Yaml_BeQuiet
+
+	// 是否拓展 Yaml 的 Database 操作类使之能读取 UTF8-BOM 编码的文件 [Sola丶小克]
+	#define Pandas_Database_Yaml_Support_UTF8BOM
+#endif // Pandas_DatabaseIncrease
 
 // ============================================================================
 // 战斗配置组 - Pandas_BattleConfigure
@@ -340,6 +352,7 @@
 	#define Pandas_Packet_Obfuscation_Keys
 
 	// 使影子装备可以支持插卡, 而不会被强制转换成普通道具 [Sola丶小克]
+	// 也使得卡片可以设置为可插入到影子装备, 而不会被系统判定为无效道具, 被变成杂货物品(IT_ETC)
 	#define Pandas_Shadowgear_Support_Card
 
 	// 以下选项依赖 Pandas_Struct_Item_Data_Properties 的拓展
@@ -499,7 +512,10 @@
 	#define Pandas_Extract_SSOPacket_MacAddress
 
 	// 使程序能够持久化保存每个道具的脚本字符串 [Sola丶小克]
-	#define Pandas_Persistence_Itemdb_Script
+	// 此选项依赖 Pandas_Struct_Item_Data_Script_Plaintext 的拓展
+	#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+		#define Pandas_Persistence_Itemdb_Script
+	#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 	// 是否启用角色光环机制 [Sola丶小克]
 	// 此选项依赖 Pandas_Struct_Unit_CommonData_Aura 的拓展
@@ -596,6 +612,18 @@
 
 	// 修正当 block_free 数组中存在重复指针时, 会导致的无效指针错误的问题 [Sola丶小克]
 	#define Pandas_Fix_DuplicateBlock_When_Freeblock_Unlock
+
+	// 修正复兴后 "魔术子弹"(GS_MAGICALBULLET) 的伤害溢出问题 [Sola丶小克]
+	// 处于该状态下若攻击者的 matk_min 小于被攻击者的 mdef 则会导致
+	// 这一次普攻出现计算溢出的情况, 可以秒杀一切 BOSS
+	#define Pandas_Fix_MagicalBullet_Damage_Overflow
+
+	// 修正 csv2yaml 辅助工具可能存在的多余反斜杠问题 [Sola丶小克]
+	#define Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
+
+	// 修正 yaml2sql 辅助工具无法生成不含 Body 节点的空 sql 问题 [Sola丶小克]
+	// 当来源文件不存在 Body 节点时, 应认为数据为空而生成空 sql 文件, 而不是直接放弃生成
+	#define	Pandas_Fix_Yaml2Sql_NoBodyNode_Break
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -685,10 +713,6 @@
 
 	// 是否优化 itemdb_searchname1 函数的实现方式 [Sola丶小克]
 	// 在默认情况下 rAthena 的 itemdb_searchname1 函数实现的非常低效
-	// 
-	// 优化后性能表现参考信息 (VS2019 + Win32)
-	// --------------------------------------------------------------
-	// 在 Release 模式下检索物品名称的性能提高大约 38 倍
 	#define Pandas_Speedup_Itemdb_SearchName
 
 	// 优化 map_readfromcache 中对每个 cell 的分配方式 [Sola丶小克]
@@ -786,7 +810,37 @@
 #ifdef Pandas_UserExperience
 	// 优化使用 @version 指令的回显信息 [Sola丶小克]
 	#define Pandas_UserExperience_AtCommand_Version
+
+	// 使 yaml2sql 辅助工具在加载 YAML 文件时能给个提示
+	// 否则容易因加载时间过长, 给使用者造成程序已经卡死的错觉 [Sola丶小克]
+	#define Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
+
+	// 调整 yaml2sql 辅助工具的询问确认流程 [Sola丶小克]
+	// 先询问是否能覆盖目标文件, 再尝试去加载来源数据文件, 以便优化体验
+	#define Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
 #endif // Pandas_UserExperience
+
+// ============================================================================
+// YAML 缓存组 - Pandas_YamlBlastCache
+// ============================================================================
+
+#ifdef Pandas_YamlBlastCache
+	// 能够对 YAML 类型的数据库进行序列化缓存 [Sola丶小克]
+	#define Pandas_YamlBlastCache_Serialize
+
+	// 以下选项开关需要依赖 Pandas_YamlBlastCache_Serialize 的拓展
+	#ifdef Pandas_YamlBlastCache_Serialize
+		// 是否启用对 ItemDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_ItemDatabase
+
+		// 是否启用对 QuestDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_QuestDatabase
+
+		// 是否启用对 SkillDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_SkillDatabase
+	#endif // Pandas_YamlBlastCache_Serialize
+#endif // Pandas_YamlBlastCache
+
 
 // ============================================================================
 // 无用代码清理组 - Pandas_Cleanup
@@ -1064,6 +1118,20 @@
 	#endif // Pandas_Aura_Mechanism
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
+
+// ============================================================================
+// 效果调整组 - Pandas_Bonuses
+// ============================================================================
+
+#ifdef Pandas_Bonuses
+	// 是否启用 bNoFieldGemStone 效果调整器 [Sola丶小克]
+	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+	// 常量名称: SP_PANDAS_NOFIELDGEMSTONE / 调整器名称: bNoFieldGemStone
+	// 变量位置: special_state / 变量名称: nofieldgemstone
+	// 使用原型: bonus bNoFieldGemStone;
+	#define Pandas_Bonus_bNoFieldGemStone
+	// PYHELP - BONUS - INSERT POINT - <Section 1>
+#endif // Pandas_Bonuses
 
 // ============================================================================
 // 脚本指令组 - Pandas_ScriptCommands

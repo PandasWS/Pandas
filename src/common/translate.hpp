@@ -94,6 +94,8 @@ public:
 		export_message_tag(PRIdPTR);
 		export_message_tag(PRIu64);
 		export_message_tag(PRId64);
+		export_message_tag(PRIu32);
+		export_message_tag(PRId32);
 		export_message_tag(PRIXPTR);
 
 		export_defined_tag(PACKETVER);
