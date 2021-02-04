@@ -16,16 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ##########################################################################
-# Storage Database
-##########################################################################
-#
-# Storage Settings
-#
-##########################################################################
-#	- ID                       Storage ID.
-#	  Name                     Storage name that will be sent to the client to display on the title bar.
-#	  Table                    Name of SQL table where storage is saved. The table structure is the same as the default storage table.
-#	  Max                      Maximum number of items. (Default: MAX_STORAGE)
+#	- ID                       (数值类型) 仓库的唯一编号, 用于 'openstorage2' 脚本指令, 这样地图服务器才知道应该打开哪个仓库.
+#	  Name                     (字符串类型) 仓库的名称, 这个名称会显示在客户端仓库窗口的标题栏中.
+#	  Table                    (字符串类型) 此仓库对应的数据库表名称. 附加数据表的格式与自带的 storage 表一样.
+#	  Type                     (字符串类型) 仓库对应 STORAGE_DB, 背包对应 INVENTORY_DB, 省略默认为 STORAGE_DB
+#	  Max                      (数值类型) *可选* 用来设置仓库能存放的物品种类上限. 若未设置的话, 则会采用源代码中 MAX_STORAGE 宏定
 ###########################################################################
 # To access the premium storage, use script command 'openstorage2'.
 # If more premium storages are added, copy the structure of the storage table and match the table name in this config.
@@ -38,7 +33,7 @@ Header:
 
 Body:
   - ID: 0
-    Name: "Storage"
+    Name: "个人仓库"
     Table: storage
 
 Footer:
