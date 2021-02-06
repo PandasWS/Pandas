@@ -310,6 +310,36 @@ configures = [
             'db/pre-re/item_db_*.yml',
             'db/re/item_db_*.yml'
         ]
+    },
+    {
+        'operate' : 'YamlReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'skillname',
+            'id_field' : 'Id',
+            'target_field' : 'Description',
+            'replace_escape' : False,
+            'replace_decorate' : 'YamlDoubleQuotedHandling',
+            'save_encoding' : 'UTF-8-SIG'
+        },
+        'globpath' : [
+            'db/pre-re/skill_db.yml',
+            'db/re/skill_db.yml'
+        ]
+    },
+    {
+        'operate' : 'YamlReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'questname',
+            'id_field' : 'Id',
+            'target_field' : 'Title',
+            'replace_escape' : False,
+            'replace_decorate' : 'YamlDoubleQuotedHandling',
+            'save_encoding' : 'UTF-8-SIG'
+        },
+        'globpath' : [
+            'db/pre-re/quest_db.yml',
+            'db/re/quest_db.yml'
+        ]
     }
 ]
 
