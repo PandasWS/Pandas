@@ -3,6 +3,8 @@
 
 #include "itemprops.hpp"
 
+#ifdef Pandas_Item_Properties
+
 ItemProperties item_properties_db;
 
 //************************************
@@ -132,3 +134,5 @@ void ItemProperties::parsePropertiesToItemDB(ItemDatabase& item_db) {
 std::shared_ptr<s_item_properties> ItemProperties::getProperty(uint32 nameid) {
 	return item_properties_db.find(nameid);
 }
+
+#endif // Pandas_Item_Properties

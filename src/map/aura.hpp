@@ -5,6 +5,8 @@
 
 #include "../common/database.hpp"
 
+#ifdef Pandas_Aura_Mechanism
+
 struct s_aura {
 	uint32 aura_id;
 	std::vector<uint16> effects;
@@ -35,3 +37,4 @@ std::shared_ptr<s_aura> aura_search(uint32 aura_id);
 enum e_aura_special aura_special(uint16 effect_id);
 void aura_make_effective(struct block_list* bl, uint32 aura_id, bool pc_saved = true);
 
+#endif // Pandas_Aura_Mechanism

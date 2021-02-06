@@ -46,6 +46,7 @@ int conf_read_file(config_t* config, const char* config_filename)
 	}
 
 	if (PandasUtf8::fmode(fin) != PandasUtf8::FILE_CHARSETMODE_UTF8_BOM) {
+		fin.close();
 		return conf_read_file_internal(config, config_filename);
 	}
 

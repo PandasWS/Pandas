@@ -42,6 +42,13 @@ struct Channel* channel_create(struct Channel *tmp_chan) {
 	if (!tmp_chan->name[0])
 		return NULL;
 
+#ifdef Pandas_Fix_Duplicate_Channel_Name_Make_MemoryLeak
+	if (strdb_exists(channel_db, tmp_chan->name)) {
+		ShowWarning("channel_create: Duplicate channel name '%s', skipping.\n", tmp_chan->name);
+		return NULL;
+	}
+#endif // Pandas_Fix_Duplicate_Channel_Name_Make_MemoryLeak
+
 	CREATE(channel, struct Channel, 1); //will exit on fail allocation
 	//channel->id = tmp_chan->id;
 	channel->users = idb_alloc(DB_OPT_BASE);

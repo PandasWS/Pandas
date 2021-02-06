@@ -7,6 +7,8 @@
 #include "../common/db.hpp"
 #include "../common/timer.hpp"
 
+#ifdef Pandas_Player_Suspend_System
+
 enum e_suspend_mode : uint8 {
 	SUSPEND_MODE_NONE     = 0x0000,
 	SUSPEND_MODE_OFFLINE  = 0x0001,		// 离线挂机
@@ -37,3 +39,5 @@ void suspend_deactive(struct map_session_data* sd);
 
 void do_final_suspend(void);
 void do_init_suspend(void);
+
+#endif // Pandas_Player_Suspend_System

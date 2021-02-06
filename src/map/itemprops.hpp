@@ -11,6 +11,8 @@
 #include "../common/cbasetypes.hpp"
 #include "../common/database.hpp"
 
+#ifdef Pandas_Item_Properties
+
 enum e_item_noview : uint32 {
 	ITEM_NOVIEW_UNKNOW		= 0x0000,
 	ITEM_NOVIEW_WHEN_I_SEE	= 0x0001,	// 当我看自己的装备时, 隐藏道具外观
@@ -45,3 +47,5 @@ public:
 };
 
 extern ItemProperties item_properties_db;
+
+#endif // Pandas_Item_Properties

@@ -319,6 +319,7 @@ static struct db_stats {
 	uint32 db_data2ptr;
 	uint32 db_init;
 	uint32 db_final;
+	uint32 db_data2i64;
 } stats = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
