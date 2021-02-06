@@ -1,4 +1,4 @@
-# This file is a part of rAthena.
+ï»¿# This file is a part of rAthena.
 #   Copyright(C) 2017 rAthena Development Team
 #   https://rathena.org - https://github.com/rathena
 #
@@ -16,11 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ##########################################################################
-#	- ID                       (ÊıÖµÀàĞÍ) ²Ö¿âµÄÎ¨Ò»±àºÅ, ÓÃÓÚ 'openstorage2' ½Å±¾Ö¸Áî, ÕâÑùµØÍ¼·şÎñÆ÷²ÅÖªµÀÓ¦¸Ã´ò¿ªÄÄ¸ö²Ö¿â.
-#	  Name                     (×Ö·û´®ÀàĞÍ) ²Ö¿âµÄÃû³Æ, Õâ¸öÃû³Æ»áÏÔÊ¾ÔÚ¿Í»§¶Ë²Ö¿â´°¿ÚµÄ±êÌâÀ¸ÖĞ.
-#	  Table                    (×Ö·û´®ÀàĞÍ) ´Ë²Ö¿â¶ÔÓ¦µÄÊı¾İ¿â±íÃû³Æ. ¸½¼ÓÊı¾İ±íµÄ¸ñÊ½Óë×Ô´øµÄ storage ±íÒ»Ñù.
-#	  Type                     (×Ö·û´®ÀàĞÍ) ²Ö¿â¶ÔÓ¦ STORAGE_DB, ±³°ü¶ÔÓ¦ INVENTORY_DB, Ê¡ÂÔÄ¬ÈÏÎª STORAGE_DB
-#	  Max                      (ÊıÖµÀàĞÍ) *¿ÉÑ¡* ÓÃÀ´ÉèÖÃ²Ö¿âÄÜ´æ·ÅµÄÎïÆ·ÖÖÀàÉÏÏŞ. ÈôÎ´ÉèÖÃµÄ»°, Ôò»á²ÉÓÃÔ´´úÂëÖĞ MAX_STORAGE ºê¶¨
+#	- ID                       (æ•°å€¼ç±»å‹) ä»“åº“çš„å”¯ä¸€ç¼–å·, ç”¨äº 'openstorage2' è„šæœ¬æŒ‡ä»¤, è¿™æ ·åœ°å›¾æœåŠ¡å™¨æ‰çŸ¥é“åº”è¯¥æ‰“å¼€å“ªä¸ªä»“åº“.
+#	  Name                     (å­—ç¬¦ä¸²ç±»å‹) ä»“åº“çš„åç§°, è¿™ä¸ªåç§°ä¼šæ˜¾ç¤ºåœ¨å®¢æˆ·ç«¯ä»“åº“çª—å£çš„æ ‡é¢˜æ ä¸­.
+#	  Table                    (å­—ç¬¦ä¸²ç±»å‹) æ­¤ä»“åº“å¯¹åº”çš„æ•°æ®åº“è¡¨åç§°. é™„åŠ æ•°æ®è¡¨çš„æ ¼å¼ä¸è‡ªå¸¦çš„ storage è¡¨ä¸€æ ·.
+#	  Type                     (å­—ç¬¦ä¸²ç±»å‹) ä»“åº“å¯¹åº” STORAGE_DB, èƒŒåŒ…å¯¹åº” INVENTORY_DB, çœç•¥é»˜è®¤ä¸º STORAGE_DB
+#	  Max                      (æ•°å€¼ç±»å‹) *å¯é€‰* ç”¨æ¥è®¾ç½®ä»“åº“èƒ½å­˜æ”¾çš„ç‰©å“ç§ç±»ä¸Šé™. è‹¥æœªè®¾ç½®çš„è¯, åˆ™ä¼šé‡‡ç”¨æºä»£ç ä¸­ MAX_STORAGE å®å®š
 ###########################################################################
 # To access the premium storage, use script command 'openstorage2'.
 # If more premium storages are added, copy the structure of the storage table and match the table name in this config.
@@ -33,7 +33,7 @@ Header:
 
 Body:
   - ID: 0
-    Name: "¸öÈË²Ö¿â"
+    Name: "ä¸ªäººä»“åº“"
     Table: storage
 
 Footer:

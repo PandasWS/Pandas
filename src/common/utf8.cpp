@@ -433,36 +433,16 @@ std::string ansiToUtf8(const std::string& strAnsi) {
 }
 
 //************************************
-// Method:      fmode
-// Description: 尝试获取某个文件指针的文本编码
-// Parameter:   _In_ FILE * _Stream
+// Method:      get_charsetmode
+// Description: 提供一个缓冲区, 尝试获取其编码模式
+// Access:      public 
+// Parameter:   unsigned char * buf
+// Parameter:   size_t extracted 缓冲区的长度
 // Returns:     enum e_file_charsetmode
-// Author:      Sola丶小克(CairoLee)  2020/01/21 09:37
-//************************************
-enum e_file_charsetmode fmode(FILE* _Stream) {
-	// 优先从缓存中读取
-	e_file_charsetmode cached_charsetmode = PandasUtf8::getModeMapping(_Stream);
-	if (cached_charsetmode != FILE_CHARSETMODE_UNKNOW) {
-		return cached_charsetmode;
-	}
-
-	size_t extracted = 0;
-	unsigned char buf[3] = { 0 };
+// Author:      Sola丶小克(CairoLee)  2021/02/06 11:29
+//************************************ 
+enum e_file_charsetmode get_charsetmode(unsigned char* buf, size_t extracted) {
 	enum e_file_charsetmode charset_mode = FILE_CHARSETMODE_UNKNOW;
-
-	// 若传递的 FILE 指针无效则直接返回编码不可知
-	if (_Stream == nullptr) {
-		return charset_mode;
-	}
-
-	// 记录目前指针所在的位置
-	long curpos = ftell(_Stream);
-
-	// 指针移动到开头, 读取前 3 个字节
-	fseek(_Stream, 0, SEEK_SET);
-	extracted = ::fread(buf, sizeof(unsigned char), 3, _Stream);
-
-	// 根据读取到的前几个字节来判断文本的编码类型
 	if (extracted == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) {
 		// UTF8-BOM
 		charset_mode = FILE_CHARSETMODE_UTF8_BOM;
@@ -479,6 +459,40 @@ enum e_file_charsetmode fmode(FILE* _Stream) {
 		// 若无法根据上面的前几个字节判断出编码, 那么默认为 ANSI 编码 (GBK\BIG5)
 		charset_mode = FILE_CHARSETMODE_ANSI;
 	}
+	return charset_mode;
+}
+
+//************************************
+// Method:      fmode
+// Description: 尝试获取某个文件指针的文本编码
+// Parameter:   _In_ FILE * _Stream
+// Returns:     enum e_file_charsetmode
+// Author:      Sola丶小克(CairoLee)  2020/01/21 09:37
+//************************************
+enum e_file_charsetmode fmode(FILE* _Stream) {
+	// 优先从缓存中读取
+	enum e_file_charsetmode cached_charsetmode = PandasUtf8::getModeMapping(_Stream);
+	if (cached_charsetmode != FILE_CHARSETMODE_UNKNOW) {
+		return cached_charsetmode;
+	}
+
+	size_t extracted = 0;
+	unsigned char buf[3] = { 0 };
+
+	// 若传递的 FILE 指针无效则直接返回编码不可知
+	if (_Stream == nullptr) {
+		return FILE_CHARSETMODE_UNKNOW;
+	}
+
+	// 记录目前指针所在的位置
+	long curpos = ftell(_Stream);
+
+	// 指针移动到开头, 读取前 3 个字节
+	fseek(_Stream, 0, SEEK_SET);
+	extracted = ::fread(buf, sizeof(unsigned char), 3, _Stream);
+
+	// 根据读取到的前几个字节来判断文本的编码类型
+	enum e_file_charsetmode charset_mode = get_charsetmode(buf, extracted);
 
 	// 将指针设置回原来的位置, 避免影响后续的读写流程
 	fseek(_Stream, curpos, SEEK_SET);
@@ -498,7 +512,6 @@ enum e_file_charsetmode fmode(FILE* _Stream) {
 //************************************
 enum e_file_charsetmode fmode(std::ifstream& ifs) {
 	unsigned char buf[3] = { 0 };
-	enum e_file_charsetmode charset_mode = FILE_CHARSETMODE_UNKNOW;
 
 	// 记录目前指针所在的位置
 	long curpos = (long)ifs.tellg();
@@ -509,22 +522,7 @@ enum e_file_charsetmode fmode(std::ifstream& ifs) {
 	long extracted = (long)ifs.gcount();
 
 	// 根据读取到的前几个字节来判断文本的编码类型
-	if (extracted == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) {
-		// UTF8-BOM
-		charset_mode = FILE_CHARSETMODE_UTF8_BOM;
-	}
-	else if (extracted >= 2 && buf[0] == 0xFF && buf[1] == 0xFE) {
-		// UCS-2 LE
-		charset_mode = FILE_CHARSETMODE_UCS2_LE;
-	}
-	else if (extracted >= 2 && buf[0] == 0xFE && buf[1] == 0xFF) {
-		// UCS-2 BE
-		charset_mode = FILE_CHARSETMODE_UCS2_BE;
-	}
-	else {
-		// 若无法根据上面的前几个字节判断出编码, 那么默认为 ANSI 编码 (GBK\BIG5)
-		charset_mode = FILE_CHARSETMODE_ANSI;
-	}
+	enum e_file_charsetmode charset_mode = get_charsetmode(buf, extracted);
 
 	// 将指针设置回原来的位置, 避免影响后续的读写流程
 	ifs.seekg(curpos, std::ios::beg);

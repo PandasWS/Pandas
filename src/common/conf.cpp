@@ -5,7 +5,17 @@
 
 #include "showmsg.hpp" // ShowError
 
+#include "utf8.hpp"
+#include <iostream>
+#include <sstream>
+
+#ifndef Pandas_Support_Read_UTF8BOM_Configure
 int conf_read_file(config_t *config, const char *config_filename)
+#else
+// 若启用了 Pandas_Support_Read_UTF8BOM_Configure 则重命名该函数
+// 以便重载一个签名完全一致的函数接管其处理逻辑
+int conf_read_file_internal(config_t* config, const char* config_filename)
+#endif // Pandas_Support_Read_UTF8BOM_Configure
 {
 	config_init(config);
 	if (!config_read_file(config, config_filename)) {
@@ -16,6 +26,51 @@ int conf_read_file(config_t *config, const char *config_filename)
 	}
 	return 0;
 }
+
+#ifdef Pandas_Support_Read_UTF8BOM_Configure
+//************************************
+// Method:      conf_read_file
+// Description: 能够对 UTF8-BOM 自动转码的 libconfig 读取函数
+// Access:      public 
+// Parameter:   config_t * config
+// Parameter:   const char * config_filename
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2021/02/06 11:55
+//************************************ 
+int conf_read_file(config_t* config, const char* config_filename)
+{
+	std::ifstream fin(config_filename, std::ios::binary);
+	if (!fin) {
+		ShowWarning("conf_read_file: file is not found: %s\n", config_filename);
+		return 1;
+	}
+
+	if (PandasUtf8::fmode(fin) != PandasUtf8::FILE_CHARSETMODE_UTF8_BOM) {
+		return conf_read_file_internal(config, config_filename);
+	}
+
+	// 先跳过最开始的标记位, UTF8-BOM 是三个字节
+	fin.seekg(3, std::ios::beg);
+
+	// 先读取来源文件的全部数据并保存到内存中
+	std::stringstream buffer;
+	buffer << fin.rdbuf();
+	std::string contents(buffer.str());
+	fin.close();
+
+	// 执行对应的编码转换
+	contents = PandasUtf8::utf8ToAnsi(contents);
+
+	config_init(config);
+	if (!config_read_string(config, contents.c_str())) {
+		ShowError("%s:%d - %s\n", config_error_file(config),
+			config_error_line(config), config_error_text(config));
+		config_destroy(config);
+		return 1;
+	}
+	return 0;
+}
+#endif // Pandas_Support_Read_UTF8BOM_Configure
 
 //
 // Functions to copy settings from libconfig/contrib
