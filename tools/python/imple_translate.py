@@ -339,6 +339,22 @@ configures = [
         'filepath' : [
             'conf/groups.conf'
         ]
+    },
+    {
+        'operate' : 'FulltextReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'channelname',
+            'pattern' : r'(name:\s+|alias:\s+)"(.*?)"',
+            'replace_sub' : r'\g<1>"{trans}"',
+            'id_pos' : 2,
+            'replace_escape' : False,
+            'regex_flags' : re.DOTALL | re.MULTILINE,
+            'save_encoding' : 'UTF-8-SIG',
+            'big5_escape' : False
+        },
+        'filepath' : [
+            'conf/channels.conf'
+        ]
     }
 ]
 
