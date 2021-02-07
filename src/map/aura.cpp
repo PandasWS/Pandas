@@ -7,6 +7,8 @@
 #include "map.hpp"
 #include "pc.hpp"
 
+#ifdef Pandas_Aura_Mechanism
+
 AuraDatabase aura_db;
 
 std::unordered_map<uint16, enum e_aura_special> special_effects{
@@ -198,3 +200,5 @@ void do_final_aura(void) {
 void do_init_aura(void) {
 	aura_db.load();
 }
+
+#endif // Pandas_Aura_Mechanism

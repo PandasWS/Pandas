@@ -9,6 +9,8 @@
 #include "../common/nullpo.hpp"
 #include "../common/utils.hpp"
 
+#ifdef Pandas_Item_Amulet_System
+
 extern short current_equip_item_index;
 
 //************************************
@@ -208,3 +210,5 @@ void amulet_status_calc(struct map_session_data *sd, enum e_status_calc_opt opt)
 	current_equip_item_index = save_current_equip_item_index;
 	sd->pandas.amulet_calculating = false;
 }
+
+#endif // Pandas_Item_Amulet_System

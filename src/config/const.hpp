@@ -75,8 +75,8 @@
 	// 这里多加个 1 凑个整, 设置为 100万
 	#define PEC_MAX_WEIGHT 1000000
 #else
-	typedef short pecvtp_short;
-	typedef unsigned short pecvtp_ushort;
+	typedef short pec_short;
+	typedef unsigned short pec_ushort;
 	typedef float pec_float;
 
 	typedef defType pec_defType;

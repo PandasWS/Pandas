@@ -20,6 +20,8 @@
 #include "duel.hpp"
 #include "guild.hpp"
 
+#ifdef Pandas_Player_Suspend_System
+
 static DBMap* suspender_db;
 static void suspend_suspender_remove(struct s_suspender* sp, bool remove);
 static int suspend_suspender_free(DBKey key, DBData* data, va_list ap);
@@ -432,3 +434,5 @@ void do_final_suspend(void) {
 void do_init_suspend(void) {
 	suspender_db = uidb_alloc(DB_OPT_BASE);
 }
+
+#endif // Pandas_Player_Suspend_System

@@ -7,6 +7,8 @@
 
 #include "../common/cbasetypes.hpp"
 
+#ifdef Pandas_Item_Amulet_System
+
 bool amulet_is(t_itemid nameid);
 int amulet_pandas_type(t_itemid nameid);
 
@@ -17,3 +19,5 @@ void amulet_apply_additem(struct map_session_data *sd, int n, bool is_firstone);
 void amulet_apply_delitem(struct map_session_data *sd, int n, bool is_lastone);
 
 void amulet_status_calc(struct map_session_data *sd, enum e_status_calc_opt opt);
+
+#endif // Pandas_Item_Amulet_System

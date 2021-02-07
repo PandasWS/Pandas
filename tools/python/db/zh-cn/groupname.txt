@@ -1,0 +1,8 @@
+Player,普通玩家
+Super Player,超级玩家
+Support,客服人员
+Script Manager,脚本管理员
+Event Manager,活动管理员
+VIP,VIP 玩家
+Law Enforcement,执法人员
+Admin,超级管理员

@@ -214,23 +214,6 @@ configures = [
         ]
     },
     {
-        'operate' : 'FulltextReplaceController',
-        'operate_params' : {
-            'transdb_name' : 'skillname',
-            'pattern' : r'  - Id: (\d+)(.*?)Description: (.*?)$',
-            'replace_sub' : r'  - Id: \g<1>\g<2>Description: {trans}',
-            'id_pos' : 1,
-            'replace_escape' : False,
-            'regex_flags' : re.DOTALL | re.MULTILINE,
-            'save_encoding' : 'UTF-8-SIG',
-            'big5_escape' : True
-        },
-        'filepath' : [
-            'db/re/skill_db.yml',
-            'db/pre-re/skill_db.yml'
-        ]
-    },
-    {
         'operate' : 'LineReplaceController',
         'operate_params' : {
             'transdb_name' : 'skillname',
@@ -339,6 +322,54 @@ configures = [
         'globpath' : [
             'db/pre-re/quest_db.yml',
             'db/re/quest_db.yml'
+        ]
+    },
+    {
+        'operate' : 'FulltextReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'groupname',
+            'pattern' : r'("|\[)(.*?)("|\])',
+            'replace_sub' : r'\g<1>{trans}\g<3>',
+            'id_pos' : 2,
+            'replace_escape' : False,
+            'regex_flags' : re.DOTALL | re.MULTILINE,
+            'save_encoding' : 'UTF-8-SIG',
+            'big5_escape' : False
+        },
+        'filepath' : [
+            'conf/groups.conf'
+        ]
+    },
+    {
+        'operate' : 'FulltextReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'channelname',
+            'pattern' : r'(name:\s+|alias:\s+)"(.*?)"',
+            'replace_sub' : r'\g<1>"{trans}"',
+            'id_pos' : 2,
+            'replace_escape' : False,
+            'regex_flags' : re.DOTALL | re.MULTILINE,
+            'save_encoding' : 'UTF-8-SIG',
+            'big5_escape' : False
+        },
+        'filepath' : [
+            'conf/channels.conf'
+        ]
+    },
+    {
+        'operate' : 'FulltextReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'storagename',
+            'pattern' : r'Name:(\s+)"(.*?)"',
+            'replace_sub' : r'Name:\g<1>"{trans}"',
+            'id_pos' : 2,
+            'replace_escape' : False,
+            'regex_flags' : re.DOTALL | re.MULTILINE,
+            'save_encoding' : 'UTF-8-SIG',
+            'big5_escape' : False
+        },
+        'filepath' : [
+            'conf/inter_server.yml'
         ]
     }
 ]
@@ -463,13 +494,13 @@ class TranslateDatabase():
             if len(fields) != 2:
                 continue
             
-            if not fields[0].isdigit():
+            if not fields[0]:
                 continue
 
             if not fields[1]:
                 continue
 
-            mapid = int(fields[0])
+            mapid = str(fields[0])
             self.__translateDict[mapid] = fields[1]
         self.__loaded = True
     
@@ -477,8 +508,8 @@ class TranslateDatabase():
         if not self.__loaded:
             raise Exception('进行文本转译之前, 请先完成初始化...')
 
-        if int(id) in self.__translateDict:
-            return self.__translateDict[int(id)]
+        if str(id) in self.__translateDict:
+            return self.__translateDict[str(id)]
 
         return None
 
@@ -633,10 +664,11 @@ class FulltextReplaceController():
         return escape_val
 
     def __process_sub(self, matched):
-        if not matched.groups()[self.__id_pos - 1].isdigit():
-            return matched.group()
+        mapid = matched.groups()[self.__id_pos - 1]
 
-        mapid = int(matched.groups()[self.__id_pos - 1])
+        if not mapid:
+            return matched.group()
+		
         transname = self.__trans.trans(mapid)
 
         if not transname:

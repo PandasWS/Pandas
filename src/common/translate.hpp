@@ -36,7 +36,9 @@ private:
 	void parseTags(std::string& message);
 public:
 	TranslateDB() : TypesafeYamlDatabase("CONSOLE_TRANSLATE_DB", 1) {
+#ifdef Pandas_Database_Yaml_BeQuiet
 		this->setQuietLevel(1);
+#endif // Pandas_Database_Yaml_BeQuiet
 
 		export_message_tag(CL_RESET);
 		export_message_tag(CL_CLS);

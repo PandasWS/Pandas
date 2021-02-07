@@ -624,6 +624,10 @@
 	// 修正 yaml2sql 辅助工具无法生成不含 Body 节点的空 sql 问题 [Sola丶小克]
 	// 当来源文件不存在 Body 节点时, 应认为数据为空而生成空 sql 文件, 而不是直接放弃生成
 	#define	Pandas_Fix_Yaml2Sql_NoBodyNode_Break
+
+	// 修正频道系统出现频道重名时, 没有进行严格校验,
+	// 导致地图服务器结束时会提示存在内存泄露的问题 [Sola丶小克]
+	#define Pandas_Fix_Duplicate_Channel_Name_Make_MemoryLeak
 #endif // Pandas_Bugfix
 
 // ============================================================================

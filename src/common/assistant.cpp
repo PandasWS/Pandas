@@ -661,6 +661,7 @@ std::string formatVersion(std::string ver, bool bPrefix, bool bSuffix) {
 	);
 }
 
+#ifdef Pandas_Version
 //************************************
 // Method:      getPandasVersion
 // Description: 用于获取 Pandas 的主程序版本号
@@ -716,6 +717,7 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 	return formatVersion(Pandas_Version, bPrefix, bSuffix);
 #endif // _WIN32
 }
+#endif // Pandas_Version
 
 //************************************
 // Method:      isGBKCharacter
