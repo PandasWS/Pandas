@@ -355,6 +355,22 @@ configures = [
         'filepath' : [
             'conf/channels.conf'
         ]
+    },
+    {
+        'operate' : 'FulltextReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'storagename',
+            'pattern' : r'Name:(\s+)"(.*?)"',
+            'replace_sub' : r'Name:\g<1>"{trans}"',
+            'id_pos' : 2,
+            'replace_escape' : False,
+            'regex_flags' : re.DOTALL | re.MULTILINE,
+            'save_encoding' : 'UTF-8-SIG',
+            'big5_escape' : False
+        },
+        'filepath' : [
+            'conf/inter_server.yml'
+        ]
     }
 ]
 

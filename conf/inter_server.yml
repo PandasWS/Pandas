@@ -33,7 +33,7 @@ Header:
 
 Body:
   - ID: 0
-    Name: "个人仓库"
+    Name: "Storage"
     Table: storage
 
 Footer:
