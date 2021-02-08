@@ -6463,6 +6463,30 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 	} else if(sd->state.active) //Tag player for rewarping after map-loading is done. [Skotlex]
 		sd->state.rewarp = 1;
 
+#ifdef Pandas_NpcExpress_ENTERMAP
+	if (sd && sd->state.changemap && !sd->state.connect_new) {
+		if (sd->bl.m != 0) {
+			pc_setreg(sd, add_str("@frommap_id"), sd->bl.m);
+			pc_setreg(sd, add_str("@frommap_x"), sd->bl.x);
+			pc_setreg(sd, add_str("@frommap_y"), sd->bl.y);
+			pc_setregstr(sd, add_str("@frommap_name$"), map[sd->bl.m].name);
+		}
+		else {
+			pc_setreg(sd, add_str("@frommap_id"), 0);
+			pc_setreg(sd, add_str("@frommap_x"), 0);
+			pc_setreg(sd, add_str("@frommap_y"), 0);
+			pc_setregstr(sd, add_str("@frommap_name$"), "");
+		}
+
+		pc_setreg(sd, add_str("@tomap_id"), m);
+		pc_setreg(sd, add_str("@tomap_x"), x);
+		pc_setreg(sd, add_str("@tomap_y"), y);
+		pc_setregstr(sd, add_str("@tomap_name$"), map[m].name);
+
+		npc_script_event(sd, NPCX_ENTERMAP);
+	}
+#endif // Pandas_NpcExpress_ENTERMAP
+
 	sd->mapindex = mapindex;
 	sd->bl.m = m;
 	sd->bl.x = sd->ud.to_x = x;

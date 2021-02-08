@@ -262,6 +262,10 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_SC_START
 	const char* sc_start_express_name;	// NPCX_SC_START	// OnPCBuffStartExpress	// 当玩家成功获得一个状态(Buff)后触发实时事件
 #endif // Pandas_NpcExpress_SC_START
+
+#ifdef Pandas_NpcExpress_ENTERMAP
+	const char* entermap_express_name;	// NPCX_ENTERMAP	// OnPCEnterMapExpress	// 当玩家进入或者改变地图时触发实时事件
+#endif // Pandas_NpcExpress_ENTERMAP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related

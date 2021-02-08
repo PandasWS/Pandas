@@ -548,3 +548,37 @@
 	buyingstore, makerune, opendressroom, openstorage2
 
 ---------------------------------------
+
+*OnPCEnterMapExpress:
+
+事件描述:
+	当玩家进入或者改变地图时触发实时事件
+
+事件关联:
+	关联到进入或者改变地图的玩家
+
+携带参数:
+	@frommap_id		来源地图编号, 为 0 则表示玩家刚登录
+	@frommap_name$	来源地图的名称
+	@frommap_x		来源地图的起飞 x 坐标
+	@frommap_y		来源地图的起飞 y 坐标
+	
+	@tomap_id		目标地图编号
+	@tomap_name$    目标地图的名称
+	@tomap_x		目标地图的落地 x 坐标
+	@tomap_y		目标地图的落地 y 坐标
+
+注意事项:
+	当 @frommap_id 为 0 时, @frommap_name$ 为空字符串
+
+实时事件:
+	事件名使用 Express 结尾表示这是一个"实时事件"
+	实时事件的执行不会被放入事件队列, 只要被触发都能被立刻执行.
+
+	部分特殊的脚本指令, 不能在实时事件的处理脚本中运行:
+	mes, next, close, close2, menu, select, prompt, input,
+	openstorage, guildopenstorage, produce, cooking, birthpet,
+	callshop, sleep, sleep2, openmail, openauction, progressbar,
+	buyingstore, makerune, opendressroom, openstorage2
+
+---------------------------------------

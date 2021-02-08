@@ -11249,6 +11249,22 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 			//Login Event
 			npc_script_event(sd, NPCE_LOGIN);
 		}
+
+#ifdef Pandas_NpcExpress_ENTERMAP
+		if (sd) {
+			pc_setreg(sd, add_str("@frommap_id"), 0);
+			pc_setreg(sd, add_str("@frommap_x"), 0);
+			pc_setreg(sd, add_str("@frommap_y"), 0);
+			pc_setregstr(sd, add_str("@frommap_name$"), "");
+
+			pc_setreg(sd, add_str("@tomap_id"), sd->bl.m);
+			pc_setreg(sd, add_str("@tomap_x"), sd->bl.x);
+			pc_setreg(sd, add_str("@tomap_y"), sd->bl.y);
+			pc_setregstr(sd, add_str("@tomap_name$"), map[sd->bl.m].name);
+
+			npc_script_event(sd, NPCX_ENTERMAP);
+		}
+#endif // Pandas_NpcExpress_ENTERMAP
 	} else {
 		//For some reason the client "loses" these on warp/map-change.
 		clif_updatestatus(sd,SP_STR);

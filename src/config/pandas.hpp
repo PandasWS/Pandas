@@ -1015,6 +1015,11 @@
 		// 事件类型: Express / 事件名称: OnPCBuffStartExpress
 		// 常量名称: NPCX_SC_START / 变量名称: sc_start_express_name
 		#define Pandas_NpcExpress_SC_START
+
+		// 当玩家进入或者改变地图时触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnPCEnterMapExpress
+		// 常量名称: NPCX_ENTERMAP / 变量名称: entermap_express_name
+		#define Pandas_NpcExpress_ENTERMAP
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	

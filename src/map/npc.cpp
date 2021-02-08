@@ -4907,6 +4907,10 @@ bool npc_event_is_express_type(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_SC_START
 		NPCX_SC_START,	// sc_start_express_name	// OnPCBuffStartExpress		// 当玩家成功获得一个状态(Buff)后触发实时事件
 #endif // Pandas_NpcExpress_SC_START
+
+#ifdef Pandas_NpcExpress_ENTERMAP
+		NPCX_ENTERMAP,	// entermap_express_name	// OnPCEnterMapExpress		// 当玩家进入或者改变地图时触发实时事件
+#endif // Pandas_NpcExpress_ENTERMAP
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -5106,6 +5110,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_SC_START:
 		return script_config.sc_start_express_name;	// OnPCBuffStartExpress		// 当玩家成功获得一个状态(Buff)后触发实时事件
 #endif // Pandas_NpcExpress_SC_START
+
+#ifdef Pandas_NpcExpress_ENTERMAP
+	case NPCX_ENTERMAP:
+		return script_config.entermap_express_name;	// OnPCEnterMapExpress		// 当玩家进入或者改变地图时触发实时事件
+#endif // Pandas_NpcExpress_ENTERMAP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:
