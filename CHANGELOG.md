@@ -10,6 +10,37 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+## [v1.1.0] - `2021-02-08`
+
+### 升级
+
+- 升级到 `1.1.0` 请在主数据库导入: `upgrade_to_1.1.0_main.sql`
+- 由于 `Boost` 依赖项目变化, 请使用源码的同学重新编译 `3rdparty\boost` 工程
+- 本次 `rAthena` 官方整合了多个物品数据文件到 `item_db.yml` 单文件中
+- 本次 `rAthena` 官方提升 `quest_db.yml` 的数据版本 (从 1 调整为 2)
+- 你在 `db\import\quest_db.yml` 中的 `Version` 应该从 1 调整为 2, 否则会有警告
+
+### 提示
+
+- rAthena 的调整同时也大幅改变了 SQL 版本物品数据库的字段结构
+- 使用 SQL 版物品数据库的用户阅读: `sql-files/README.md`
+
+### 添加
+
+- 实现疾风缓存机制, 大幅提高缓存后加载 YAML 数据库的速度 (#336)
+- 实现 bNoFieldGemStone 调整器, 可以让元素领域技能无需消耗魔力矿石 (#332)
+- 支持读取 UTF8-BOM 的 libconfig 配置文件 (#348)
+
+### 修正
+
+- 修正复兴后 "魔术子弹"(GS_MAGICALBULLET) 的伤害溢出问题 (#331)
+- 修正一处没有将指针置空导致的崩溃问题 (感谢 Renee / HongShin 协助) (#346)
+
+### 调整
+
+- 更新繁体中文的物品翻译对照表 (感谢 Renee 和 HongShin) (#340)
+- 汉化部分战斗配置文件的注释选项 (#343 | #345)
+
 ## [v1.0.9] - `2021-01-29`
 
 ### 提示
@@ -281,6 +312,7 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.1.0]: https://github.com/PandasWS/Pandas/compare/v1.0.9...v1.1.0
 [v1.0.9]: https://github.com/PandasWS/Pandas/compare/v1.0.8...v1.0.9
 [v1.0.8]: https://github.com/PandasWS/Pandas/compare/v1.0.7...v1.0.8
 [v1.0.7]: https://github.com/PandasWS/Pandas/compare/v1.0.6...v1.0.7
