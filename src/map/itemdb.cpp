@@ -1277,6 +1277,7 @@ void ItemDatabase::afterSerialize() {
 		SERIALIZE_SET_MEMORY_ZERO(item->maxchance);
 		SERIALIZE_SET_MEMORY_ZERO(item->flag.no_equip);
 		SERIALIZE_SET_MEMORY_ZERO(item->flag.autoequip);
+		SERIALIZE_SET_MEMORY_ZERO(item->mob);
 		item->combos.clear();
 
 		// ==================================================================

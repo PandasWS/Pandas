@@ -1207,6 +1207,7 @@ namespace boost {
 
 			ar& t.class_base;
 			ar& t.class_upper;
+			//ar& t.mob;					// ItemDatabase 默认不会为其赋值, 暂时无需处理
 
 			ar& t.flag.available;
 			//ar& t.flag.no_equip;			// ItemDatabase 默认不会为其赋值, 暂时无需处理
