@@ -1386,6 +1386,10 @@
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_ScriptCommand_UnitAura
 	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 getunittarget 脚本指令 [Sola丶小克]
+	// 该指令用于获取指定单位当前正在攻击的目标单位编号
+	#define Pandas_ScriptCommand_GetUnitTarget
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

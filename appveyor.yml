@@ -5,6 +5,7 @@ clone_folder: c:\projects\pandas
 clone_depth: 10
 shallow_clone: true
 version: '{branch}-{build}'
+skip_tags: true
 pull_requests:
   do_not_increment_build_number: true
 environment:

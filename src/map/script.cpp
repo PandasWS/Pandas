@@ -28311,6 +28311,37 @@ BUILDIN_FUNC(unitaura) {
 }
 #endif // Pandas_ScriptCommand_UnitAura
 
+#ifdef Pandas_ScriptCommand_GetUnitTarget
+/* ===========================================================
+ * 指令: getunittarget
+ * 描述: 该指令用于获取指定单位当前正在攻击的目标单位编号
+ * 用法: getunittarget <游戏单位编号>;
+ * 返回: 目标的 GameID, 返回 0 表示没有目标
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getunittarget) {
+	struct block_list* bl = nullptr;
+	bl = map_id2bl(script_getnum(st, 2));
+	script_pushint(st, 0);
+
+	if (!bl) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	switch (bl->type) {
+	case BL_PC:  script_pushint(st, ((TBL_PC*)bl)->ud.target); break;
+	case BL_MOB: script_pushint(st, ((TBL_MOB*)bl)->target_id); break;
+	case BL_NPC: script_pushint(st, ((TBL_NPC*)bl)->ud.target); break;
+	case BL_HOM: script_pushint(st, ((TBL_HOM*)bl)->ud.target); break;
+	case BL_MER: script_pushint(st, ((TBL_MER*)bl)->ud.target); break;
+	case BL_PET: script_pushint(st, ((TBL_PET*)bl)->target_id); break;
+	case BL_ELEM: script_pushint(st, ((TBL_ELEM*)bl)->ud.target); break;
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetUnitTarget
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -28485,6 +28516,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_UnitAura
 	BUILDIN_DEF(unitaura,"ii"),							// 用于调整七种单位的光环组合 [Sola丶小克]
 #endif // Pandas_ScriptCommand_UnitAura
+#ifdef Pandas_ScriptCommand_GetUnitTarget
+	BUILDIN_DEF(getunittarget,"i"),						// 获取指定单位当前正在攻击的目标单位编号 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetUnitTarget
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
