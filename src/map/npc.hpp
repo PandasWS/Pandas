@@ -1505,6 +1505,7 @@ bool npc_unloadfile( const char* path );
 bool setProcessHalt(struct map_session_data *sd, enum npce_event event, bool halt = true);
 bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool autoreset = true);
 bool npc_script_filter(struct map_session_data* sd, enum npce_event type);
+bool npc_script_filter(struct map_session_data* sd, const char* eventname);
 #endif // Pandas_Struct_Map_Session_Data_EventHalt
 
 #ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
@@ -1526,7 +1527,9 @@ bool isAllowTriggerEvent(struct map_session_data* sd, enum npce_event event);
 #endif // Pandas_Struct_Map_Session_Data_EventTrigger
 
 #ifdef Pandas_ScriptEngine_Express
-bool npc_event_is_express_type(enum npce_event eventtype);
+bool npc_event_is_express(enum npce_event eventtype);
+bool npc_event_is_filter(enum npce_event eventtype);
+bool npc_event_is_realtime(enum npce_event eventtype);
 #endif // Pandas_ScriptEngine_Express
 
 #ifdef Pandas_ScriptCommand_Copynpc

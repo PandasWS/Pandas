@@ -4894,7 +4894,15 @@ int npc_parsesrcfile(const char* filepath)
 }
 
 #ifdef Pandas_ScriptEngine_Express
-bool npc_event_is_express_type(enum npce_event eventtype) {
+//************************************
+// Method:      npc_event_is_express
+// Description: 判断给定的事件类型是不是实时事件
+// Access:      public 
+// Parameter:   enum npce_event eventtype
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/09 19:40
+//************************************ 
+bool npc_event_is_express(enum npce_event eventtype) {
 	static std::vector<enum npce_event> express_npce = {
 #ifdef Pandas_NpcExpress_STATCALC
 		NPCE_STATCALC,	// statcalc_express_name	// OnPCStatCalcEvent		// 当角色能力被重新计算时触发事件
@@ -4919,17 +4927,109 @@ bool npc_event_is_express_type(enum npce_event eventtype) {
 	return (iter != express_npce.end());
 }
 
-bool npc_event_express(struct map_session_data* sd, struct event_data* ev, const char* eventname) {
+//************************************
+// Method:      npc_event_is_filter
+// Description: 判断给定的事件类型是不是过滤器事件
+// Access:      public 
+// Parameter:   enum npce_event eventtype
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/09 19:43
+//************************************ 
+bool npc_event_is_filter(enum npce_event eventtype) {
+	static std::vector<enum npce_event> filter_npce = {
+#ifdef Pandas_NpcFilter_IDENTIFY
+		NPCF_IDENTIFY,	// identify_filter_name	// OnPCIdentifyFilter		// 当玩家在装备鉴定列表中选择好装备, 并点击“确定”按钮时触发过滤器
+#endif // Pandas_NpcFilter_IDENTIFY
+
+#ifdef Pandas_NpcFilter_ENTERCHAT
+		NPCF_ENTERCHAT,	// enterchat_filter_name	// OnPCInChatroomFilter		// 当玩家进入 NPC 开启的聊天室时触发过滤器
+#endif // Pandas_NpcFilter_ENTERCHAT
+
+#ifdef Pandas_NpcFilter_INSERT_CARD
+		NPCF_INSERT_CARD,	// insert_card_filter_name	// OnPCInsertCardFilter		// 当玩家准备插入卡片时触发过滤器
+#endif // Pandas_NpcFilter_INSERT_CARD
+
+#ifdef Pandas_NpcFilter_USE_ITEM
+		NPCF_USE_ITEM,	// use_item_filter_name	// OnPCUseItemFilter		// 当玩家准备使用非装备类道具时触发过滤器
+#endif // Pandas_NpcFilter_USE_ITEM
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+		NPCF_USE_SKILL,	// use_skill_filter_name	// OnPCUseSkillFilter		// 当玩家准备使用技能时触发过滤器
+#endif // Pandas_NpcFilter_USE_SKILL
+
+#ifdef Pandas_NpcFilter_ROULETTE_OPEN
+		NPCF_ROULETTE_OPEN,	// roulette_open_filter_name	// OnPCOpenRouletteFilter		// 当玩家准备打开乐透大转盘的时候触发过滤器
+#endif // Pandas_NpcFilter_ROULETTE_OPEN
+
+#ifdef Pandas_NpcFilter_VIEW_EQUIP
+		NPCF_VIEW_EQUIP,	// view_equip_filter_name	// OnPCViewEquipFilter		// 当玩家准备查看某个角色的装备时触发过滤器
+#endif // Pandas_NpcFilter_VIEW_EQUIP
+
+#ifdef Pandas_NpcFilter_EQUIP
+		NPCF_EQUIP,	// equip_filter_name	// OnPCEquipFilter		// 当玩家准备穿戴装备时触发过滤器
+#endif // Pandas_NpcFilter_EQUIP
+
+#ifdef Pandas_NpcFilter_UNEQUIP
+		NPCF_UNEQUIP,	// unequip_filter_name	// OnPCUnequipFilter		// 当玩家准备脱下装备时触发过滤器
+#endif // Pandas_NpcFilter_UNEQUIP
+
+#ifdef Pandas_NpcFilter_CHANGETITLE
+		NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+#endif // Pandas_NpcFilter_CHANGETITLE
+
+#ifdef Pandas_NpcFilter_SC_START
+		NPCF_SC_START,	// sc_start_filter_name	// OnPCBuffStartFilter		// 当玩家准备获得一个状态(Buff)时触发过滤器
+#endif // Pandas_NpcFilter_SC_START
+		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
+	};
+
+	std::vector<enum npce_event>::iterator iter;
+	iter = std::find(filter_npce.begin(), filter_npce.end(), eventtype);
+	return (iter != filter_npce.end());
+}
+
+//************************************
+// Method:      npc_event_is_realtime
+// Description: 判断给定的事件是不是实时或者过滤器事件
+// Access:      public 
+// Parameter:   enum npce_event eventtype
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/09 20:51
+//************************************ 
+bool npc_event_is_realtime(enum npce_event eventtype) {
+	return (
+		npc_event_is_express(eventtype) ||
+		npc_event_is_filter(eventtype)
+	);
+}
+
+//************************************
+// Method:      npc_event_rightnow
+// Description: 立刻执行给定的实时或者过滤器事件
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct event_data * ev
+// Parameter:   const char * eventname
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/09 19:52
+//************************************ 
+bool npc_event_rightnow(struct map_session_data* sd, struct event_data* ev, const char* eventname) {
 	nullpo_retr(false, sd);
 	nullpo_retr(false, ev);
 
 	enum npce_event eventtype = npc_get_script_event_type(eventname);
-	if (eventtype == NPCE_MAX || !npc_event_is_express_type(eventtype))
+
+	if (eventtype == NPCE_MAX || !npc_event_exists(eventname))
+		return false;
+
+	if (!npc_event_is_realtime(eventtype))
 		return false;
 
 	enum npce_event workinevent_backup = sd->pandas.workinevent;
 	sd->pandas.workinevent = eventtype;
+	pc_setreg(sd, add_str("@interrupt_npcid"), sd->npc_id);
 	run_script(ev->nd->u.scr.script, ev->pos, sd->bl.id, ev->nd->bl.id);
+	pc_setreg(sd, add_str("@interrupt_npcid"), 0);
 	sd->pandas.workinevent = workinevent_backup;
 	return true;
 }
@@ -4958,7 +5058,7 @@ int npc_script_event(struct map_session_data* sd, enum npce_event type){
 
 	for( struct script_event_s& evt : vector ){
 #ifdef Pandas_ScriptEngine_Express
-		if (npc_event_express(sd, evt.event, evt.event_name))
+		if (npc_event_rightnow(sd, evt.event, evt.event_name))
 			continue;
 #endif // Pandas_ScriptEngine_Express
 		npc_event_sub( sd, evt.event, evt.event_name );
@@ -5594,7 +5694,7 @@ bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool aut
 
 //************************************
 // Method:		npc_script_filter
-// Description:	执行一个 filter 事件, 并返回是否需要中断
+// Description:	执行指定类型的所有过滤器事件, 并返回是否需要中断
 // Parameter:	struct map_session_data * sd
 // Parameter:	enum npce_event type
 // Returns:		bool 需要中断则返回 true, 无需中断返回 false
@@ -5602,6 +5702,24 @@ bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool aut
 bool npc_script_filter(struct map_session_data* sd, enum npce_event type) {
 	nullpo_retr(false, sd);
 	npc_script_event(sd, type);
+	return getProcessHalt(sd, type);
+}
+
+//************************************
+// Method:      npc_script_filter
+// Description: 执行一个精确指定的过滤器事件, 并返回是否需要中断
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   const char * eventname
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/09 20:45
+//************************************ 
+bool npc_script_filter(struct map_session_data* sd, const char* eventname) {
+	nullpo_retr(false, sd);
+	enum npce_event type = npc_get_script_event_type(eventname);
+	struct event_data* ev = (struct event_data*)strdb_get(ev_db, eventname);
+	if (!npc_event_rightnow(sd, ev, eventname))
+		return false;
 	return getProcessHalt(sd, type);
 }
 #endif // Pandas_Struct_Map_Session_Data_EventHalt

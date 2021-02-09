@@ -29,6 +29,9 @@ script.cpp @ Script_Config 中 Filter 类型的事件名称定义
 // PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 script_constants.hpp 中 Filter 类型的 NPCF_XXX 常量导出定义
 
+// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
+npc.cpp 中 Filter 类型的 NPCF_XXX 常量设置
+
 //============================================================
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 7>
@@ -90,6 +93,7 @@ class InjectPoint(IntEnum):
     F_SCRIPT_EVENT_VAR_DEFINE = 4
     F_SCRIPT_EVNET_NAME_DEFINE = 5
     F_SCRIPT_CONSTANTS_EXPORT = 6
+    F_NPC_FILTER_SETTING = 20
 
     E_PANDAS_SWITCH_DEFINE = 7
     E_NPC_CONSTANT_DEFINE = 8
@@ -174,6 +178,16 @@ def insert_for_filter_npcevent(inject, options):
         '',
         '#ifdef {define}'.format(define = define),
         '\texport_constant({const});\t// {var}\t// {name}\t\t// {desc}'.format(
+            const = constant, var = eventvar, name = eventname, desc = eventdesc
+        ),
+        '#endif // {define}'.format(define = define)
+    ])
+	
+    # npc.cpp 中 Filter 类型的 NPCF_XXX 常量设置
+    inject.insert(InjectPoint.F_NPC_FILTER_SETTING, [
+        '',
+        '#ifdef {define}'.format(define = define),
+        '\t\t{const},\t// {var}\t// {name}\t\t// {desc}'.format(
             const = constant, var = eventvar, name = eventname, desc = eventdesc
         ),
         '#endif // {define}'.format(define = define)
@@ -343,11 +357,11 @@ def guide(inject):
         },
         {
             'name' : 'Filter 类型的过滤事件',
-            'desc' : '1 - Filter  类型的过滤事件, 可以被 processhalt 指令打断'
+            'desc' : '1 - Filter  类型的过滤事件, 事件将会被立刻执行, 可以被 processhalt 指令打断'
         },
         {
             'name' : 'Express 类型的特殊事件',
-            'desc' : '2 - Express 类型的快速事件, 事件将会被立刻执行, 不进事件队列'
+            'desc' : '2 - Express 类型的实时事件, 事件将会被立刻执行, 不能被 processhalt 指令打断'
         }
     ]
 
@@ -503,6 +517,10 @@ def main():
             {
                 'id' : InjectPoint.F_SCRIPT_CONSTANTS_EXPORT,
                 'desc' : 'script_constants.hpp 中 Filter 类型的 NPCF_XXX 常量导出定义'
+            },
+            {
+                'id' : InjectPoint.F_NPC_FILTER_SETTING,
+                'desc' : 'npc.cpp 中 Filter 类型的 NPCF_XXX 常量设置'
             },
 
             {

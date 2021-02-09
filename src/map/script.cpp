@@ -4285,8 +4285,13 @@ int run_func(struct script_state *st)
 #ifdef Pandas_ScriptEngine_Express
 		if (st && st->rid) {
 			struct map_session_data *sd = map_id2sd(st->rid);
-			if (sd && npc_event_is_express_type(sd->pandas.workinevent)) {
-				// 以下为穿越事件中禁止使用的脚本指令, 需要定期更新 [Sola丶小克]
+			if (sd && npc_event_is_express(sd->pandas.workinevent)) {
+				// 以下为实时事件中禁止使用的脚本指令, 需要定期更新 [Sola丶小克]
+				//
+				// 原本过滤器事件也需要禁止才能够更好的进行防呆,
+				// 但考虑到有部分场景是用过滤器打断原先工作来劫持到自定义脚本流程,
+				// 且自定义的脚本流程大多数也需要用到 mes 等对话指令, 因此暂时不做限制
+				// 需要脚本作者自己考虑防呆等异常情况.
 				static std::vector<std::string> blockcmd = {
 					"mes", "next", "close", "close2", "menu", "select", "prompt", "input",
 					"openstorage", "guildopenstorage", "produce", "cooking", "birthpet",
@@ -10177,7 +10182,7 @@ BUILDIN_FUNC(end)
 #ifdef Pandas_ScriptEngine_Express
 	// 防止在穿透事件的脚本代码中使用 end 指令, 会导致角色正在执行的脚本或对话被强制中断,
 	// 或与 NPC 进行中的对话框直接显示出 [关闭] 按钮的问题 [Sola丶小克]
-	if (sd && npc_event_is_express_type(sd->pandas.workinevent))
+	if (sd && npc_event_is_realtime(sd->pandas.workinevent))
 		return SCRIPT_CMD_SUCCESS;
 #endif // Pandas_ScriptEngine_Express
 
