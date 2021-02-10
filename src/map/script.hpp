@@ -425,6 +425,9 @@ struct script_state {
 	int bk_npcid;
 #endif // Pandas_ScriptEngine_MutliStackBackup
 	unsigned freeloop : 1;// used by buildin_freeloop
+#ifdef Pandas_ScriptCommand_UnlockCmd
+	unsigned unlockcmd : 1;
+#endif // Pandas_ScriptCommand_UnlockCmd
 	unsigned op2ref : 1;// used by op_2
 	unsigned npc_item_flag : 1;
 	unsigned mes_active : 1;  // Store if invoking character has a NPC dialog box open.

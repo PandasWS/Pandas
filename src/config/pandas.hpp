@@ -1390,6 +1390,10 @@
 	// 是否启用 getunittarget 脚本指令 [Sola丶小克]
 	// 该指令用于获取指定单位当前正在攻击的目标单位编号
 	#define Pandas_ScriptCommand_GetUnitTarget
+
+	// 是否启用 unlockcmd 脚本指令 [Sola丶小克]
+	// 该指令用于解锁实时事件和过滤器事件的指令限制, 只能用于实时或过滤器事件
+	#define Pandas_ScriptCommand_UnlockCmd
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

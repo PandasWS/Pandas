@@ -3790,7 +3790,12 @@ struct script_state* script_alloc_state(struct script_code* rootscript, int pos,
 	st->oid = oid;
 	st->sleep.timer = INVALID_TIMER;
 	st->npc_item_flag = battle_config.item_enabled_npc;
-	
+
+#ifdef Pandas_ScriptCommand_UnlockCmd
+	// 确保创建 script_state 的时候 unlockcmd 的值为 0
+	st->unlockcmd = 0;
+#endif // Pandas_ScriptCommand_UnlockCmd
+
 	if( st->script->instances != USHRT_MAX )
 		st->script->instances++;
 	else {
@@ -4283,15 +4288,10 @@ int run_func(struct script_state *st)
 #endif
 
 #ifdef Pandas_ScriptEngine_Express
-		if (st && st->rid) {
+		if (st && st->rid && !st->unlockcmd) {
 			struct map_session_data *sd = map_id2sd(st->rid);
-			if (sd && npc_event_is_express(sd->pandas.workinevent)) {
-				// 以下为实时事件中禁止使用的脚本指令, 需要定期更新 [Sola丶小克]
-				//
-				// 原本过滤器事件也需要禁止才能够更好的进行防呆,
-				// 但考虑到有部分场景是用过滤器打断原先工作来劫持到自定义脚本流程,
-				// 且自定义的脚本流程大多数也需要用到 mes 等对话指令, 因此暂时不做限制
-				// 需要脚本作者自己考虑防呆等异常情况.
+			if (sd && npc_event_is_realtime(sd->pandas.workinevent)) {
+				// 以下为实时事件和过滤器事件中禁止使用的脚本指令, 需要定期更新 [Sola丶小克]
 				static std::vector<std::string> blockcmd = {
 					"mes", "next", "close", "close2", "menu", "select", "prompt", "input",
 					"openstorage", "guildopenstorage", "produce", "cooking", "birthpet",
@@ -4309,6 +4309,7 @@ int run_func(struct script_state *st)
 
 				if (iter != blockcmd.end()) {
 					ShowWarning("Please don't use '%s' command in '%s' event.\n", funcname.c_str(), npc_get_script_event_name(sd->pandas.workinevent));
+					ShowWarning("If you insist and know what you are doing, you can use the 'unlockcmd' command to lift the restriction.\n");
 					script_reportsrc(st);
 					st->state = END;
 					return 1;
@@ -28347,6 +28348,32 @@ BUILDIN_FUNC(getunittarget) {
 }
 #endif // Pandas_ScriptCommand_GetUnitTarget
 
+#ifdef Pandas_ScriptCommand_UnlockCmd
+/* ===========================================================
+ * 指令: unlockcmd
+ * 描述: 解锁实时事件和过滤器事件的指令限制, 只能用于实时或过滤器事件
+ * 用法: unlockcmd;
+ * 返回: 该指令没有任何返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(unlockcmd) {
+	struct map_session_data* sd = nullptr;
+	sd = map_id2sd(st->rid);
+
+	if (!sd) {
+ 		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!npc_event_is_realtime(sd->pandas.workinevent)) {
+		ShowError("buildin_unlockcmd: This command can only be used for Filter or Express Event.\n");
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	st->unlockcmd = 1;
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_UnlockCmd
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -28524,6 +28551,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetUnitTarget
 	BUILDIN_DEF(getunittarget,"i"),						// 获取指定单位当前正在攻击的目标单位编号 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetUnitTarget
+#ifdef Pandas_ScriptCommand_UnlockCmd
+	BUILDIN_DEF(unlockcmd,""),							// 解锁实时事件和过滤器事件的指令限制 [Sola丶小克]
+#endif // Pandas_ScriptCommand_UnlockCmd
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

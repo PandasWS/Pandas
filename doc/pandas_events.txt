@@ -50,6 +50,9 @@
 	openstorage, guildopenstorage, produce, cooking, birthpet,
 	callshop, sleep, sleep2, openmail, openauction, progressbar,
 	buyingstore, makerune, opendressroom, openstorage2
+	
+	若您知道可能潜在的副作用且坚持需要使用上述任何一个指令,
+	可以使用 'unlockcmd' 脚本指令来解锁限制.
 
 ---------------------------------------
 
@@ -249,10 +252,17 @@
 // 过滤事件一旦触发会被立刻执行! 哪怕玩家正在和 NPC 对话,
 // 也不会被压入事件队列暂缓执行.
 // 
-// 当前过滤事件并没有禁止使用 mes 等指令, 脚本作者需要自行控制, 
-// 避免覆盖玩家和其他 NPC 正在进行中的对话.
+// 过滤事件默认禁止使用[需要等待玩家进行后续动作]的指令:
+// mes, next, close, close2, menu, select, prompt, input,
+// openstorage, guildopenstorage, produce, cooking, birthpet,
+// callshop, sleep, sleep2, openmail, openauction, progressbar,
+// buyingstore, makerune, opendressroom, openstorage2
+//
+// 若您知道可能潜在的副作用且坚持需要使用上述任何一个指令,
+// 可以使用 'unlockcmd' 脚本指令来解锁限制.
 // 
-// 作者可以通过 @interrupt_npcid 参数来获取过滤器事件触发时
+// 任何过滤事件触发时都将自动携带 @interrupt_npcid 参数,
+// 作者可以通过 @interrupt_npcid 参数来获取当前过滤事件触发时
 // 玩家正在与哪个 NPC 对话 (游戏单位编号).
 // 值为 0 表示没有打断玩家, 那你可以随意使用 mes 等指令.
 //============================================================
@@ -557,11 +567,19 @@
 // 实时事件一旦触发会被立刻执行! 哪怕玩家正在和 NPC 对话,
 // 也不会被压入事件队列暂缓执行.
 // 
-// 实时事件禁止使用[需要等待玩家进行后续动作]的指令:
+// 实时事件默认禁止使用[需要等待玩家进行后续动作]的指令:
 // mes, next, close, close2, menu, select, prompt, input,
 // openstorage, guildopenstorage, produce, cooking, birthpet,
 // callshop, sleep, sleep2, openmail, openauction, progressbar,
 // buyingstore, makerune, opendressroom, openstorage2
+//
+// 若您知道可能潜在的副作用且坚持需要使用上述任何一个指令,
+// 可以使用 'unlockcmd' 脚本指令来解锁限制.
+// 
+// 任何实时事件触发时都将自动携带 @interrupt_npcid 参数,
+// 作者可以通过 @interrupt_npcid 参数来获取当前实时事件触发时
+// 玩家正在与哪个 NPC 对话 (游戏单位编号).
+// 值为 0 表示没有打断玩家, 那你可以随意使用 mes 等指令.
 //============================================================
 
 *OnPCBuffStartExpress:
