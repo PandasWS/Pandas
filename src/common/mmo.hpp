@@ -248,11 +248,22 @@ enum e_mode {
 #define CL_MASK 0xF000000
 
 #ifdef Pandas_Struct_Unit_CommonData
+
+#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
+struct s_batrec_item {
+	uint32 interactive_block_id = 0;
+	uint16 interactive_block_type = 0;
+	uint32 interactive_master_id = 0;
+	int64 damage = 0;
+};
+typedef std::shared_ptr<s_batrec_item> s_batrec_item_ptr;
+typedef std::map<uint32, s_batrec_item_ptr> batrec_map;
+#endif // Pandas_Struct_Unit_CommonData_BattleRecord
+
 // 多种单位的结构体都会嵌入的一个数据结构
 // 这里定义的内容在 map_session_data, npc_data, mob_data, homun_data,
 // mercenary_data, elemental_data 结构体中的 ucd 成员中都会同时拥有
 struct s_unit_common_data {
-
 	#ifdef Pandas_Struct_Unit_CommonData_Aura
 		struct s_ucd_aura {
 			uint32 id = 0;			// 该单位启用的光环编号
@@ -260,6 +271,13 @@ struct s_unit_common_data {
 		} aura;
 	#endif // Pandas_Struct_Unit_CommonData_Aura
 
+	#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
+		struct s_ucd_batrec {
+			bool dorecord = false;					// 是否进行记录
+			batrec_map* dmg_receive = nullptr;		// 受到的伤害 <伤害来源GID, 伤害值>
+			batrec_map* dmg_cause = nullptr;		// 造成的伤害 <攻击目标GID, 伤害值>
+		} batrec;
+	#endif // Pandas_Struct_Unit_CommonData_BattleRecord
 };
 #endif // Pandas_Struct_Unit_CommonData
 

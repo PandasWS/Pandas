@@ -8263,6 +8263,15 @@
 	export_constant(PENALTY_MVP_EXP);
 	export_constant(PENALTY_MVP_DROP);
 
+#ifdef Pandas_BattleRecord
+	export_constant(BRT_DMG_RECEIVE);
+	export_constant(BRT_DMG_CAUSE);
+	export_constant(BRS_DESC);
+	export_constant(BRS_ASC);
+	export_constant(BRA_COMBINE);
+	export_constant(BRA_DISCRETE);
+#endif // Pandas_BattleRecord
+
 	#undef export_constant
 	#undef export_constant2
 	#undef export_parameter

@@ -1200,6 +1200,9 @@ int mob_spawn (struct mob_data *md)
 
 	memset(md->dmglog, 0, sizeof(md->dmglog));
 	md->tdmg = 0;
+#ifdef Pandas_BattleRecord
+	batrec_reset(&md->bl);
+#endif // Pandas_BattleRecord
 
 	if (md->lootitems)
 		memset(md->lootitems, 0, sizeof(*md->lootitems));
@@ -3262,6 +3265,9 @@ void mob_revive(struct mob_data *md, unsigned int hp)
 	md->last_pcneartime = 0;
 	memset(md->dmglog, 0, sizeof(md->dmglog));	// Reset the damage done on the rebirthed monster, otherwise will grant full exp + damage done. [Valaris]
 	md->tdmg = 0;
+#ifdef Pandas_BattleRecord
+	batrec_reset(&md->bl);
+#endif // Pandas_BattleRecord
 	if (!md->bl.prev){
 		if(map_addblock(&md->bl))
 			return;
@@ -3445,6 +3451,9 @@ int mob_class_change (struct mob_data *md, int mob_id)
 	if (battle_config.monster_class_change_recover) {
 		memset(md->dmglog, 0, sizeof(md->dmglog));
 		md->tdmg = 0;
+#ifdef Pandas_BattleRecord
+		batrec_reset(&md->bl);
+#endif // Pandas_BattleRecord
 	} else {
 		md->status.hp = md->status.max_hp*hp_rate/100;
 		if(md->status.hp < 1) md->status.hp = 1;
