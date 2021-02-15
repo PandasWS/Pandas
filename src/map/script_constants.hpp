@@ -129,6 +129,10 @@
 #ifdef Pandas_NpcExpress_ENTERMAP
 	export_constant(NPCX_ENTERMAP);	// entermap_express_name	// OnPCEnterMapExpress		// 当玩家进入或者改变地图时触发实时事件
 #endif // Pandas_NpcExpress_ENTERMAP
+
+#ifdef Pandas_NpcExpress_UNITFREE
+	export_constant(NPCX_UNITFREE);	// unitfree_express_name	// OnUnitFreeExpress		// 当游戏单位被销毁时触发实时事件
+#endif // Pandas_NpcExpress_UNITFREE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
 #endif // Pandas_ScriptCommands
 
@@ -8271,6 +8275,14 @@
 	export_constant(BRA_COMBINE);
 	export_constant(BRA_DISCRETE);
 #endif // Pandas_BattleRecord
+
+#ifdef Pandas_NpcEvent
+	export_constant(CLR_OUTSIGHT);
+	export_constant(CLR_DEAD);
+	export_constant(CLR_RESPAWN);
+	export_constant(CLR_TELEPORT);
+	export_constant(CLR_TRICKDEAD);
+#endif // Pandas_NpcEvent
 
 	#undef export_constant
 	#undef export_constant2

@@ -4919,6 +4919,10 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_ENTERMAP
 		NPCX_ENTERMAP,	// entermap_express_name	// OnPCEnterMapExpress		// 当玩家进入或者改变地图时触发实时事件
 #endif // Pandas_NpcExpress_ENTERMAP
+
+#ifdef Pandas_NpcExpress_UNITFREE
+		NPCX_UNITFREE,	// unitfree_express_name	// OnUnitFreeExpress		// 当游戏单位被销毁时触发实时事件
+#endif // Pandas_NpcExpress_UNITFREE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -5215,6 +5219,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_ENTERMAP:
 		return script_config.entermap_express_name;	// OnPCEnterMapExpress		// 当玩家进入或者改变地图时触发实时事件
 #endif // Pandas_NpcExpress_ENTERMAP
+
+#ifdef Pandas_NpcExpress_UNITFREE
+	case NPCX_UNITFREE:
+		return script_config.unitfree_express_name;	// OnUnitFreeExpress		// 当游戏单位被销毁时触发实时事件
+#endif // Pandas_NpcExpress_UNITFREE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:
