@@ -660,6 +660,7 @@
 携带参数:
 	$@unitfree_id		被销毁的游戏单位编号 (GameID)
 	$@unitfree_type		被销毁的单位类型
+
 		BL_PC    		= 0x001,	// 玩家单位
 		BL_MOB   		= 0x002,	// 魔物单位
 		BL_PET   		= 0x004,	// 宠物单位
@@ -668,6 +669,7 @@
 		BL_ELEM  		= 0x200,	// 元素精灵单位
 		
 	$@unitfree_clrtype	销毁方式
+
 		CLR_OUTSIGHT 	= 0,		// 淡出视野
 		CLR_DEAD		= 1,		// 死亡
 		CLR_RESPAWN		= 2,		// 重新生成
