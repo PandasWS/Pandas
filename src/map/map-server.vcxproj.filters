@@ -173,6 +173,9 @@
     <ClInclude Include="aura.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="battlerec.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="achievement.cpp">
@@ -314,6 +317,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="aura.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="battlerec.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

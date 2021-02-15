@@ -1200,6 +1200,9 @@ int mob_spawn (struct mob_data *md)
 
 	memset(md->dmglog, 0, sizeof(md->dmglog));
 	md->tdmg = 0;
+#ifdef Pandas_BattleRecord
+	batrec_reset(&md->bl);
+#endif // Pandas_BattleRecord
 
 	if (md->lootitems)
 		memset(md->lootitems, 0, sizeof(*md->lootitems));
@@ -3193,12 +3196,15 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		// 如果杀死的是 MVP 魔物，那么触发一下 OnPCKillMvpEvent 事件 [Sola丶小克]
 		if (sd && md && status && status_has_mode(status, MD_MVP)) {
 			pc_setparam(sd, SP_KILLEDRID, md->mob_id);
+			pc_setparam(sd, SP_KILLEDGID, md->bl.id);
 			pc_setreg(sd, add_str("@mob_dead_x"), (int)md->bl.x);
 			pc_setreg(sd, add_str("@mob_dead_y"), (int)md->bl.y);
+			pc_setreg(sd, add_str("@mob_rebirth"), (int)md->state.rebirth);
 			pc_setreg(sd, add_str("@mob_lasthit_rid"), (int)sd->bl.id);
 			pc_setreg(sd, add_str("@mob_lasthit_cid"), (int)sd->status.char_id);
 			pc_setreg(sd, add_str("@mob_mvp_rid"), (int)(mvp_sd ? mvp_sd->bl.id : 0));
 			pc_setreg(sd, add_str("@mob_mvp_cid"), (int)(mvp_sd ? mvp_sd->status.char_id : 0));
+			
 			npc_script_event(sd, NPCE_KILLMVP);
 		}
 #endif // Pandas_NpcEvent_KILLMVP
@@ -3262,6 +3268,9 @@ void mob_revive(struct mob_data *md, unsigned int hp)
 	md->last_pcneartime = 0;
 	memset(md->dmglog, 0, sizeof(md->dmglog));	// Reset the damage done on the rebirthed monster, otherwise will grant full exp + damage done. [Valaris]
 	md->tdmg = 0;
+#ifdef Pandas_BattleRecord
+	batrec_reset(&md->bl);
+#endif // Pandas_BattleRecord
 	if (!md->bl.prev){
 		if(map_addblock(&md->bl))
 			return;
@@ -3445,6 +3454,9 @@ int mob_class_change (struct mob_data *md, int mob_id)
 	if (battle_config.monster_class_change_recover) {
 		memset(md->dmglog, 0, sizeof(md->dmglog));
 		md->tdmg = 0;
+#ifdef Pandas_BattleRecord
+		batrec_reset(&md->bl);
+#endif // Pandas_BattleRecord
 	} else {
 		md->status.hp = md->status.max_hp*hp_rate/100;
 		if(md->status.hp < 1) md->status.hp = 1;

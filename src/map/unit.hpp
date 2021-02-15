@@ -10,6 +10,10 @@
 #include "path.hpp" // struct walkpath_data
 #include "skill.hpp" // struct skill_timerskill, struct skill_unit_group, struct skill_unit_group_tickset
 
+#ifdef Pandas_BattleRecord
+#include "battlerec.hpp"
+#endif // Pandas_BattleRecord
+
 enum sc_type : int16;
 struct block_list;
 struct unit_data;

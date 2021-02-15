@@ -37,6 +37,10 @@
 #include "storage.hpp"
 #include "trade.hpp"
 
+#ifdef Pandas_NpcExpress_UNITFREE
+#include "mapreg.hpp"
+#endif // Pandas_NpcExpress_UNITFREE
+
 // Directions values
 // 1 0 7
 // 2 . 6
@@ -2923,6 +2927,10 @@ void unit_dataset(struct block_list *bl)
 	ud->attackabletime =
 	ud->canact_tick    =
 	ud->canmove_tick   = gettick();
+
+#ifdef Pandas_BattleRecord
+	batrec_new(bl);
+#endif // Pandas_BattleRecord
 }
 
 /**
@@ -3361,6 +3369,19 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 	if( bl->prev )	// Players are supposed to logout with a "warp" effect.
 		unit_remove_map(bl, clrtype);
 
+#ifdef Pandas_NpcExpress_UNITFREE
+	mapreg_setreg(add_str("$@unitfree_id"), bl->id);
+	mapreg_setreg(add_str("$@unitfree_type"), bl->type);
+	mapreg_setreg(add_str("$@unitfree_clrtype"), (int)clrtype);
+
+	mapreg_setreg(add_str("$@unitfree_mapid"), bl->m);
+	mapreg_setregstr(add_str("$@unitfree_mapname$"), map[bl->m].name);
+	mapreg_setreg(add_str("$@unitfree_x"), bl->x);
+	mapreg_setreg(add_str("$@unitfree_y"), bl->y);
+
+	npc_event_doall(script_config.unitfree_express_name);
+#endif // Pandas_NpcExpress_UNITFREE
+
 	switch( bl->type ) {
 		case BL_PC: {
 			struct map_session_data *sd = (struct map_session_data*)bl;
@@ -3601,6 +3622,10 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			break;
 		}
 	}
+
+#ifdef Pandas_BattleRecord
+	batrec_free(bl);
+#endif // Pandas_BattleRecord
 
 	map_deliddb(bl);
 

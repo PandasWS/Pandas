@@ -6821,6 +6821,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 			{ // Reset Damage Logs
 				memset(dstmd->dmglog, 0, sizeof(dstmd->dmglog));
 				dstmd->tdmg = 0;
+#ifdef Pandas_BattleRecord
+				batrec_reset(&md->bl);
+#endif // Pandas_BattleRecord
 			}
 		}
 		break;
@@ -11694,6 +11697,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 		// perform skill requirement consumption
 		skill_consume_requirement(sd,skill_id,skill_lv,2);
 	}
+
+#ifdef Pandas_BattleRecord
+	if (src && bl) {
+		if (battle_check_target(src, bl, BCT_ENEMY) > 0) {
+			batrec_cause(src, bl, 0);
+			batrec_receive(bl, src, 0);
+		}
+	}
+#endif // Pandas_BattleRecord
 
 	map_freeblock_unlock();
 	return 0;

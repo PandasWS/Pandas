@@ -2044,6 +2044,13 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 		case BL_ELEM: elemental_heal((TBL_ELEM*)target,hp,sp); break;
 	}
 
+#ifdef Pandas_BattleRecord
+	if (src && target) {
+		batrec_cause(src, target, hp);
+		batrec_receive(target, src, hp);
+	}
+#endif // Pandas_BattleRecord
+
 	if( src && target->type == BL_PC && ((TBL_PC*)target)->disguise ) { // Stop walking when attacked in disguise to prevent walk-delay bug
 		unit_stop_walking( target, 1 );
 	}

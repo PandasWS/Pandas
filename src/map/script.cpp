@@ -386,6 +386,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcExpress_ENTERMAP
 	"OnPCEnterMapExpress",	// NPCX_ENTERMAP		// entermap_express_name	// 当玩家进入或者改变地图时触发实时事件
 #endif // Pandas_NpcExpress_ENTERMAP
+
+#ifdef Pandas_NpcExpress_UNITFREE
+	"OnUnitFreeExpress",	// NPCX_UNITFREE		// unitfree_express_name	// 当游戏单位被销毁时触发实时事件
+#endif // Pandas_NpcExpress_UNITFREE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 
 	// NPC related
@@ -4960,72 +4964,261 @@ void script_generic_ui_array_expand (unsigned int plus)
 }
 
 #ifdef Pandas_ScriptCommands
-bool script_getdynnum(struct script_state *st, int pos, const char* desc, int &ret) {
+//************************************
+// Method:      script_get_optnum
+// Description: 获取 st 中指定 loc 位置的可选数值参数
+// Access:      public 
+// Parameter:   struct script_state * st
+// Parameter:   int loc
+// Parameter:   const char * desc
+// Parameter:   int & ret
+// Parameter:   bool allow_notexists
+// Parameter:   int defval
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/12 12:06
+//************************************ 
+bool script_get_optnum(struct script_state *st, int loc, const char* desc, int &ret, bool allow_notexists = false, int defval = 0) {
 	if (!st) return false;
 
-	if (!script_hasdata(st, pos)) {
+	if (!script_hasdata(st, loc)) {
+		if (allow_notexists) {
+			ret = defval;
+			return true;
+		}
+		script_reportsrc(st);
 		script_reportfunc(st);
 		if (!desc)
-			ShowError("The No.%d parameter can not be found.\n", pos - 1);
+			ShowError("buildin_%s: the No.%d parameter can not be found.\n", script_getfuncname(st), loc - 1);
 		else
-			ShowError("The No.%d parameter (%s) can not be found.\n", pos - 1, desc);
-		script_reportsrc(st);
+			ShowError("buildin_%s: the No.%d parameter (%s) can not be found.\n", script_getfuncname(st), loc - 1, desc);
 		return false;
 	}
 
-	if (!script_isint(st, pos)) {
+	if (!script_isint(st, loc)) {
+		script_reportsrc(st);
 		script_reportfunc(st);
 		if (!desc)
-			ShowError("The No.%d parameter is not string type.\n", pos - 1);
+			ShowError("buildin_%s: the No.%d parameter must be integer type.\n", script_getfuncname(st), loc - 1);
 		else
-			ShowError("The No.%d parameter (%s) is not integer type.\n", pos - 1, desc);
-		script_reportsrc(st);
+			ShowError("buildin_%s: the No.%d parameter (%s) must be integer type.\n", script_getfuncname(st), loc - 1, desc);
 		return false;
 	}
 
-	ret = script_getnum(st, pos);
+	ret = script_getnum(st, loc);
 	return true;
 }
 
-bool script_getdynstr(struct script_state *st, int pos, const char* desc, std::string &ret) {
+//************************************
+// Method:      script_get_optstr
+// Description: 获取 st 中指定 loc 位置的可选字符串参数
+// Access:      public 
+// Parameter:   struct script_state * st
+// Parameter:   int loc
+// Parameter:   const char * desc
+// Parameter:   std::string & ret
+// Parameter:   bool allow_notexists
+// Parameter:   std::string defval
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/12 12:08
+//************************************ 
+bool script_get_optstr(struct script_state *st, int loc, const char* desc, std::string &ret, bool allow_notexists = false, std::string defval = "") {
 	if (!st) return false;
 
-	if (!script_hasdata(st, pos)) {
+	if (!script_hasdata(st, loc)) {
+		if (allow_notexists) {
+			ret = defval;
+			return true;
+		}
+		script_reportsrc(st);
 		script_reportfunc(st);
 		if (!desc)
-			ShowError("The No.%d parameter can not be found.\n", pos - 1);
+			ShowError("buildin_%s: the No.%d parameter can not be found.\n", script_getfuncname(st), loc - 1);
 		else
-			ShowError("The No.%d parameter (%s) can not be found.\n", pos - 1, desc);
-		script_reportsrc(st);
+			ShowError("buildin_%s: the No.%d parameter (%s) can not be found.\n", script_getfuncname(st), loc - 1, desc);
 		return false;
 	}
 
-	if (!script_isstring(st, pos)) {
+	if (!script_isstring(st, loc)) {
+		script_reportsrc(st);
 		script_reportfunc(st);
 		if (!desc)
-			ShowError("The No.%d parameter is not string type.\n", pos - 1);
+			ShowError("buildin_%s: the No.%d parameter must be string type.\n", script_getfuncname(st), loc - 1);
 		else
-			ShowError("The No.%d parameter (%s) is not string type.\n", pos - 1, desc);
-		script_reportsrc(st);
+			ShowError("buildin_%s: the No.%d parameter (%s) must be string type.\n", script_getfuncname(st), loc - 1, desc);
 		return false;
 	}
 
-	ret = script_getstr(st, pos);
+	ret = script_getstr(st, loc);
 	return true;
 }
 
-bool script_getmapidx(struct script_state *st, const char* mapname, int &map_id) {
+//************************************
+// Method:      script_cleararray_st
+// Description: 清理 st 中指定 loc 数组变量的内容
+// Access:      public 
+// Parameter:   struct script_state * st
+// Parameter:   int loc
+// Parameter:   bool bslient
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/12 11:42
+//************************************ 
+bool script_cleararray_st(struct script_state* st, int loc, bool bslient = true) {
+	struct map_session_data* sd = nullptr;
+	struct script_data* param_data = script_getdata(st, loc);
+	int varid = reference_getid(param_data);
+	const char* varname = reference_getname(param_data);
+
+	if (!data_isreference(param_data)) {
+		if (!bslient) {
+			script_reportsrc(st);
+			script_reportfunc(st);
+			script_reportdata(param_data);
+			ShowError("buildin_%s: variable '%s' is not a array.\n", script_getfuncname(st), varname);
+		}
+		return false;
+	}
+
+	if (not_server_variable(*varname)) {
+		if (!script_rid2sd(sd)) {
+			if (!bslient) {
+				ShowError("buildin_%s: '%s' is not server variable, please attach to a player.\n", script_getfuncname(st), varname);
+				script_reportsrc(st);
+				script_reportfunc(st);
+				script_reportdata(param_data);
+			}
+			return false;
+		}
+	}
+
+	struct reg_db* src = nullptr;
+	if (!(src = script_array_src(st, sd, varname, reference_getref(param_data))))
+		return false;
+
+	script_array_ensure_zero(st, sd, param_data->u.num, reference_getref(param_data));
+
+	struct script_array* sa = nullptr;
+	if (!(sa = static_cast<script_array*>(idb_get(src->arrays, varid))))
+		return false;
+
+	unsigned int len = 0;
+	len = script_array_highest_key(st, sd, varname, reference_getref(param_data));
+
+	unsigned int* list = script_array_cpy_list(sa);
+	unsigned int size = sa->size;
+	for (unsigned int i = 0; i < size; i++) {
+		clear_reg(st, sd, reference_uid(varid, list[i]), varname, reference_getref(param_data));
+	}
+	return true;
+}
+
+//************************************
+// Method:      script_get_array
+// Description: 获取 st 中指定 loc 位置的数组参数
+// Access:      public 
+// Parameter:   struct script_state * st
+// Parameter:   int loc
+// Parameter:   int & ret_varid
+// Parameter:   char * & ret_varname
+// Parameter:   struct script_data * ret_vardata
+// Parameter:   bool expected_str
+// Parameter:   const char * desc
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/12 16:26
+//************************************ 
+bool script_get_array(struct script_state* st, int loc, int& ret_varid, char*& ret_varname, struct script_data*& ret_vardata, bool expected_str = false, const char* desc = nullptr) {
+	if (!script_hasdata(st, loc)) {
+		script_reportsrc(st);
+		script_reportfunc(st);
+		if (!desc)
+			ShowError("buildin_%s: the No.%d parameter can not be found.\n", script_getfuncname(st), loc - 1);
+		else
+			ShowError("buildin_%s: the No.%d parameter (%s) can not be found.\n", script_getfuncname(st), loc - 1, desc);
+		return false;
+	}
+
+	struct map_session_data* sd = nullptr;
+	ret_vardata = script_getdata(st, loc);
+	ret_varid = reference_getid(ret_vardata);
+	ret_varname = reference_getname(ret_vardata);
+
+	if (!data_isreference(ret_vardata)) {
+		script_reportsrc(st);
+		script_reportfunc(st);
+		script_reportdata(ret_vardata);
+		ShowError("buildin_%s: variable '%s' is not a array.\n", script_getfuncname(st), ret_varname);
+		return false;
+	}
+
+	if (not_server_variable(*ret_varname)) {
+		if (!script_rid2sd(sd)) {
+			script_reportsrc(st);
+			script_reportfunc(st);
+			script_reportdata(ret_vardata);
+			ShowError("buildin_%s: '%s' is not server variable, please attach to a player.\n", script_getfuncname(st), ret_varname);
+			return false;
+		}
+	}
+
+	struct reg_db* src = nullptr;
+	if (!(src = script_array_src(st, sd, ret_varname, reference_getref(ret_vardata)))) {
+		script_reportsrc(st);
+		script_reportfunc(st);
+		script_reportdata(ret_vardata);
+		ShowError("buildin_%s: variable '%s' is not a array.\n", script_getfuncname(st), ret_varname);
+		return false;
+	}
+
+	if (expected_str && !is_string_variable(ret_varname)) {
+		script_reportsrc(st);
+		script_reportfunc(st);
+		script_reportdata(ret_vardata);
+		if (!desc)
+			ShowError("buildin_%s: the No.%d parameter '%s' must be string array type.\n", script_getfuncname(st), loc - 1, ret_varname);
+		else
+			ShowError("buildin_%s: the No.%d parameter '%s' (%s) must be string array type.\n", script_getfuncname(st), loc - 1, ret_varname, desc);
+		script_pushint(st, -1);
+		return false;
+	}
+
+	if (!expected_str && is_string_variable(ret_varname)) {
+		script_reportsrc(st);
+		script_reportfunc(st);
+		script_reportdata(ret_vardata);
+		if (!desc)
+			ShowError("buildin_%s: the No.%d parameter '%s' must be integer array type.\n", script_getfuncname(st), loc - 1, ret_varname);
+		else
+			ShowError("buildin_%s: the No.%d parameter '%s' (%s) must be integer array type.\n", script_getfuncname(st), loc - 1, ret_varname, desc);
+		script_pushint(st, -1);
+		return false;
+	}
+
+	return true;
+}
+
+//************************************
+// Method:      script_get_mapindex
+// Description: 获取地图名对应的地图索引值 (自动处理 this 特殊地图名)
+// Access:      public 
+// Parameter:   struct script_state * st
+// Parameter:   const char * mapname
+// Parameter:   int & map_id
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/12 00:12
+//************************************ 
+bool script_get_mapindex(struct script_state *st, const char* mapname, int &mapindex) {
 	if (strcmp(mapname, "this") == 0) {
 		struct map_session_data *sd = nullptr;
 		if (!script_rid2sd(sd)) {
+			script_reportsrc(st);
+			script_reportfunc(st);
 			ShowError("buildin_%s: mapname is 'this', please attach to a player.\n", script_getfuncname(st));
 			return false;
 		}
-		map_id = sd->bl.m;
+		mapindex = sd->bl.m;
 	}
 	else
-		map_id = map_mapname2mapid(mapname);
-	return (map_id >= 0);
+		mapindex = map_mapname2mapid(mapname);
+	return (mapindex >= 0);
 }
 #endif // Pandas_ScriptCommands
 
@@ -27005,9 +27198,9 @@ BUILDIN_FUNC(getareagid) {
 		int map_id = -1, unitfilter = BL_ALL;
 		std::string mapname;
 
-		if (!script_getdynnum(st, 4, "Unit Type", unitfilter)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getdynstr(st, 5, "Map Name", mapname)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getmapidx(st, mapname.c_str(), map_id)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optnum(st, 4, "Unit Type", unitfilter)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optstr(st, 5, "Map Name", mapname)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_mapindex(st, mapname.c_str(), map_id)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
 
 		map_foreachinmap(buildin_getareagid_sub, map_id, unitfilter, st, retdata, &found_count);
 		break;
@@ -27018,12 +27211,12 @@ BUILDIN_FUNC(getareagid) {
 		int map_x = 0, map_y = 0, range = 0;
 		std::string mapname;
 
-		if (!script_getdynnum(st, 4, "Unit Type", unitfilter)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getdynstr(st, 5, "Map Name", mapname)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getdynnum(st, 6, "Center X", map_x)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getdynnum(st, 7, "Center Y", map_y)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getdynnum(st, 8, "Range", range)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getmapidx(st, mapname.c_str(), map_id)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optnum(st, 4, "Unit Type", unitfilter)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optstr(st, 5, "Map Name", mapname)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optnum(st, 6, "Center X", map_x)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optnum(st, 7, "Center Y", map_y)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optnum(st, 8, "Range", range)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_mapindex(st, mapname.c_str(), map_id)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
 
 		struct block_list center_bl = { 0 };
 		center_bl.m = map_id;
@@ -27039,13 +27232,13 @@ BUILDIN_FUNC(getareagid) {
 		int map_x0 = 0, map_y0 = 0, map_x1 = 0, map_y1 = 0;
 		std::string mapname;
 
-		if (!script_getdynnum(st, 4, "Unit Type", unitfilter)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getdynstr(st, 5, "Map Name", mapname)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getdynnum(st, 6, "x0 coordinate", map_x0)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getdynnum(st, 7, "y0 coordinate", map_y0)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getdynnum(st, 8, "x1 coordinate", map_x1)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getdynnum(st, 9, "y1 coordinate", map_y1)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
-		if (!script_getmapidx(st, mapname.c_str(), map_id)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optnum(st, 4, "Unit Type", unitfilter)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optstr(st, 5, "Map Name", mapname)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optnum(st, 6, "x0 coordinate", map_x0)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optnum(st, 7, "y0 coordinate", map_y0)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optnum(st, 8, "x1 coordinate", map_x1)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_optnum(st, 9, "y1 coordinate", map_y1)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
+		if (!script_get_mapindex(st, mapname.c_str(), map_id)) { script_pushint(st, -1); return SCRIPT_CMD_SUCCESS; }
 
 		map_foreachinarea(buildin_getareagid_sub, map_id, map_x0, map_y0, map_x1, map_y1, unitfilter, st, retdata, &found_count);
 		break;
@@ -28353,7 +28546,7 @@ BUILDIN_FUNC(getunittarget) {
  * 指令: unlockcmd
  * 描述: 解锁实时事件和过滤器事件的指令限制, 只能用于实时或过滤器事件
  * 用法: unlockcmd;
- * 返回: 该指令没有任何返回值
+ * 返回: 该指令无论成功与否, 都不会有返回值
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(unlockcmd) {
@@ -28373,6 +28566,257 @@ BUILDIN_FUNC(unlockcmd) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_UnlockCmd
+
+#ifdef Pandas_ScriptCommand_BattleRecordQuery
+/* ===========================================================
+ * 指令: batrec_query
+ * 描述: 查询指定单位的战斗记录, 查看与交互目标单位产生的具体记录值
+ * 用法: batrec_query <记录宿主的单位编号>, <交互目标的单位编号>, <记录类型>{, <聚合规则>};
+ * 返回: 返回 -1 表示查无记录, 含 0 正整数表示伤害值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(batrec_query) {
+	struct block_list* bl = nullptr;
+	bl = map_id2bl(script_getnum(st, 2));
+	if (!bl) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	int rec_type = script_getnum(st, 4);
+	if (rec_type != BRT_DMG_RECEIVE && rec_type != BRT_DMG_CAUSE) {
+		ShowError("%s: The battle record type is not invalid.\n", __func__);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int aggregation = BRA_COMBINE;
+	if (!script_get_optnum(st, 5, "Aggregation strategy", aggregation, true, BRA_COMBINE)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int64 damage = batrec_query(
+		bl, script_getnum(st, 3), (e_batrec_type)rec_type, (e_batrec_agg)aggregation
+	);
+
+	script_pushint(st, damage);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_BattleRecordQuery
+
+#ifdef Pandas_ScriptCommand_BattleRecordRank
+/* ===========================================================
+ * 指令: batrec_rank
+ * 描述: 查询指定单位的战斗记录并对记录的值进行排序, 返回排行榜单
+ * 用法: batrec_rank <记录宿主的单位编号>, <返回交互目标的单位编号数组>, <返回记录值数组>, <记录类型>{, <聚合规则>{, <排序规则>}};
+ * 返回: 失败返回 -1, 含 0 正整数表示数组中返回的榜单记录数
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(batrec_rank) {
+	struct map_session_data* sd = nullptr;
+	script_rid2sd(sd);
+
+	struct block_list* bl = nullptr;
+	bl = map_id2bl(script_getnum(st, 2));
+	if (!bl) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	int gid_array_varid = 0;
+	char* gid_array_varname = nullptr;
+	struct script_data* gid_array_vardata = nullptr;
+	if (!script_get_array(st, 3, gid_array_varid, gid_array_varname, gid_array_vardata)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	script_cleararray_st(st, 3);
+
+	int dmg_array_varid = 0;
+	char* dmg_array_varname = nullptr;
+	struct script_data* dmg_array_vardata = nullptr;
+	if (!script_get_array(st, 4, dmg_array_varid, dmg_array_varname, dmg_array_vardata)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	script_cleararray_st(st, 4);
+
+	int rec_type = script_getnum(st, 5);
+	if (rec_type != BRT_DMG_RECEIVE && rec_type != BRT_DMG_CAUSE) {
+		ShowError("%s: The battle record type is not invalid.\n", __func__);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int aggregation = BRA_COMBINE;
+	if (!script_get_optnum(st, 6, "Aggregation strategy", aggregation, true, BRA_COMBINE)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int sort_type = BRS_DESC;
+	if (!script_get_optnum(st, 7, "Sort Type", sort_type, true, BRS_DESC)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	batrec_map* origin_rec = nullptr;
+	if (!(origin_rec = batrec_getmap(bl, (e_batrec_type)rec_type))) {
+		ShowError("%s: The battle record type is not invalid.\n", __func__);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	batrec_map rec;
+	batrec_aggregation(origin_rec, rec, (e_batrec_agg)aggregation);
+
+	std::vector<std::pair<uint32, s_batrec_item_ptr>> rec_sorted;
+	for (auto& it : rec) {
+		rec_sorted.push_back(it);
+	}
+
+	if (sort_type == BRS_DESC) {
+		std::sort(rec_sorted.begin(), rec_sorted.end(), batrec_cmp_desc);
+	}
+	else {
+		std::sort(rec_sorted.begin(), rec_sorted.end(), batrec_cmp_asc);
+	}
+
+	for (int i = 0; i < rec_sorted.size(); i++) {
+		int64 uid = reference_uid(gid_array_varid, i);
+		set_reg_num(st, sd, uid, gid_array_varname, rec_sorted[i].first, reference_getref(gid_array_vardata));
+
+		uid = reference_uid(dmg_array_varid, i);
+		set_reg_num(st, sd, uid, dmg_array_varname, rec_sorted[i].second->damage, reference_getref(dmg_array_vardata));
+	}
+
+	script_pushint(st, rec_sorted.size());
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_BattleRecordRank
+
+#ifdef Pandas_ScriptCommand_BattleRecordSortout
+/* ===========================================================
+ * 指令: batrec_sortout
+ * 描述: 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录
+ * 用法: batrec_sortout <记录宿主的单位编号>{, <记录类型>};
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(batrec_sortout) {
+	struct block_list* bl = nullptr;
+	bl = map_id2bl(script_getnum(st, 2));
+
+	if (!bl) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!script_hasdata(st, 3)) {
+		batrec_sortout(bl);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	int rec_type = script_getnum(st, 3);
+	if (rec_type != BRT_DMG_RECEIVE && rec_type != BRT_DMG_CAUSE) {
+		ShowError("%s: The battle record type is not invalid.\n", __func__);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	batrec_sortout(bl, (e_batrec_type)rec_type);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_BattleRecordSortout
+
+#ifdef Pandas_ScriptCommand_BattleRecordClear
+/* ===========================================================
+ * 指令: batrec_clear
+ * 描述: 清除指定单位的战斗记录
+ * 用法: batrec_clear <记录宿主的单位编号>{, <记录类型>};
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(batrec_clear) {
+	struct block_list* bl = nullptr;
+	bl = map_id2bl(script_getnum(st, 2));
+
+	if (!bl) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!script_hasdata(st, 3)) {
+		batrec_reset(bl);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	int rec_type = script_getnum(st, 3);
+	if (rec_type != BRT_DMG_RECEIVE && rec_type != BRT_DMG_CAUSE) {
+		ShowError("%s: The battle record type is not invalid.\n", __func__);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	batrec_reset(bl, (e_batrec_type)rec_type);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_BattleRecordClear
+
+#ifdef Pandas_ScriptCommand_EnableBattleRecord
+/* ===========================================================
+ * 指令: enable_batrec
+ * 描述: 启用指定单位的战斗记录
+ * 用法: enable_batrec {<游戏单位编号>};
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(enable_batrec) {
+	struct block_list* bl = nullptr;
+	script_rid2bl(2, bl);
+
+	if (script_hasdata(st, 2)) {
+		bl = map_id2bl(script_getnum(st, 2));
+	}
+
+	if (!bl) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	struct s_unit_common_data* ucd = nullptr;
+	if (!(ucd = status_get_ucd(bl))) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	ucd->batrec.dorecord = true;
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_EnableBattleRecord
+
+#ifdef Pandas_ScriptCommand_DisableBattleRecord
+/* ===========================================================
+ * 指令: disable_batrec
+ * 描述: 禁用指定单位的战斗记录
+ * 用法: disable_batrec {<游戏单位编号>};
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(disable_batrec) {
+	struct block_list* bl = nullptr;
+	script_rid2bl(2, bl);
+
+	if (script_hasdata(st, 2)) {
+		bl = map_id2bl(script_getnum(st, 2));
+	}
+
+	if (!bl) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	struct s_unit_common_data* ucd = nullptr;
+	if (!(ucd = status_get_ucd(bl))) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	ucd->batrec.dorecord = false;
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_DisableBattleRecord
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
@@ -28554,6 +28998,24 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_UnlockCmd
 	BUILDIN_DEF(unlockcmd,""),							// 解锁实时事件和过滤器事件的指令限制 [Sola丶小克]
 #endif // Pandas_ScriptCommand_UnlockCmd
+#ifdef Pandas_ScriptCommand_BattleRecordQuery
+	BUILDIN_DEF(batrec_query,"iii?"),					// 查询指定单位的战斗记录, 查看与交互目标单位产生的具体记录值 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordQuery
+#ifdef Pandas_ScriptCommand_BattleRecordRank
+	BUILDIN_DEF(batrec_rank,"irri??"),					// 查询指定单位的战斗记录并对记录的值进行排序, 返回排行榜单 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordRank
+#ifdef Pandas_ScriptCommand_BattleRecordSortout
+	BUILDIN_DEF(batrec_sortout, "i?"),					// 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordSortout
+#ifdef Pandas_ScriptCommand_BattleRecordClear
+	BUILDIN_DEF(batrec_clear,"i?"),						// 清除指定单位的战斗记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordClear
+#ifdef Pandas_ScriptCommand_EnableBattleRecord
+	BUILDIN_DEF(enable_batrec,"?"),						// 启用指定单位的战斗记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_EnableBattleRecord
+#ifdef Pandas_ScriptCommand_DisableBattleRecord
+	BUILDIN_DEF(disable_batrec,"?"),					// 禁用指定单位的战斗记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_DisableBattleRecord
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
