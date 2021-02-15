@@ -628,6 +628,9 @@
 	// 修正频道系统出现频道重名时, 没有进行严格校验,
 	// 导致地图服务器结束时会提示存在内存泄露的问题 [Sola丶小克]
 	#define Pandas_Fix_Duplicate_Channel_Name_Make_MemoryLeak
+
+	// 修正 FAW 魔法傀儡 (技能编号: 2282) 重复扣减原石碎片的问题 [Sola丶小克]
+	#define Pandas_Fix_MagicDecoy_Twice_Deduction_Of_Ore
 #endif // Pandas_Bugfix
 
 // ============================================================================
