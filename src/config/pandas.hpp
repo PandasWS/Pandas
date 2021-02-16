@@ -1439,6 +1439,13 @@
 		// 该指令用于禁用指定单位的战斗记录
 		#define Pandas_ScriptCommand_DisableBattleRecord
 	#endif // Pandas_BattleRecord
+
+	// 是否启用 login 脚本指令 [Sola丶小克]
+	// 该指令用于将指定的角色以特定的登录模式拉上线
+	// 此选项开关需要依赖 Pandas_Player_Suspend_System 的拓展
+	#ifdef Pandas_Player_Suspend_System
+		#define Pandas_ScriptCommand_Login
+	#endif // Pandas_Player_Suspend_System
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

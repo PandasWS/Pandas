@@ -30,7 +30,11 @@ struct s_suspender {
 	struct map_session_data* sd;
 };
 
-void suspend_recall_online();
+bool suspend_recall(uint32 charid,
+	e_suspend_mode mode = SUSPEND_MODE_OFFLINE, unsigned char body_dir = 4,
+	unsigned char head_dir = 0, unsigned char sit = 0);
+void suspend_recall_all();
+
 void suspend_recall_postfix(struct map_session_data* sd);
 void suspend_set_unit_idle(struct map_session_data* sd, struct packet_idle_unit* p);
 void suspend_set_unit_walking(struct map_session_data* sd, struct packet_unit_walking* p);

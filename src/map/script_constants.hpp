@@ -8284,6 +8284,11 @@
 	export_constant(CLR_TRICKDEAD);
 #endif // Pandas_NpcEvent
 
+#ifdef Pandas_Player_Suspend_System
+	export_constant(SUSPEND_MODE_OFFLINE);
+	export_constant(SUSPEND_MODE_AFK);
+#endif // Pandas_Player_Suspend_System
+
 	#undef export_constant
 	#undef export_constant2
 	#undef export_parameter

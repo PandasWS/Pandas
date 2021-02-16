@@ -28818,6 +28818,47 @@ BUILDIN_FUNC(disable_batrec) {
 }
 #endif // Pandas_ScriptCommand_DisableBattleRecord
 
+#ifdef Pandas_ScriptCommand_Login
+/* ===========================================================
+ * 指令: login
+ * 描述: 将指定的角色以特定的登录模式拉上线
+ * 用法: login <角色编号>{, <登录模式>{, <是否坐下>{, <身体朝向>{, <脑袋朝向>}}}};
+ * 返回: 成功返回 1, 失败返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(login) {
+	script_pushint(st, 0);
+
+	uint32 charid = 0;
+	charid = script_getnum(st, 2);
+
+	int mode = SUSPEND_MODE_NONE;
+	if (!script_get_optnum(st, 3, "Login Mode", mode, true, SUSPEND_MODE_OFFLINE)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int sit = 0;
+	if (!script_get_optnum(st, 4, "Sitdown or not", sit, true, 0)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int body_dir = DIR_SOUTH;
+	if (!script_get_optnum(st, 5, "Body Direction", body_dir, true, DIR_SOUTH)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int head_dir = 0;
+	if (!script_get_optnum(st, 6, "Head Direction", head_dir, true, 0)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (suspend_recall(charid, (e_suspend_mode)mode, body_dir, head_dir, sit))
+		script_pushint(st, 1);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Login
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -29016,6 +29057,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_DisableBattleRecord
 	BUILDIN_DEF(disable_batrec,"?"),					// 禁用指定单位的战斗记录 [Sola丶小克]
 #endif // Pandas_ScriptCommand_DisableBattleRecord
+#ifdef Pandas_ScriptCommand_Login
+	BUILDIN_DEF(login,"i????"),							// 将指定的角色以特定的登录模式拉上线 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Login
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
