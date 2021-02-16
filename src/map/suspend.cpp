@@ -121,6 +121,17 @@ bool suspend_recall(uint32 charid, e_suspend_mode mode,
 		Sql_GetData(mmysql_handle, 1, &data, NULL); sp->char_id = atoi(data);
 		Sql_GetData(mmysql_handle, 2, &data, NULL); sp->sex = (data[0] == 'F') ? SEX_FEMALE : SEX_MALE;
 
+		TBL_PC* sd = nullptr;
+		if ((sd = map_id2sd(sp->account_id)) != NULL) {
+			aFree(sp);
+			break;
+		}
+
+		if (chrif_search(sp->account_id) != NULL) {
+			aFree(sp);
+			break;
+		}
+
 		// 初始化一个玩家对象
 		CREATE(sp->sd, struct map_session_data, 1);
 		pc_setnewpc(sp->sd, sp->account_id, sp->char_id, 0, gettick(), sp->sex, 0);
@@ -187,6 +198,18 @@ void suspend_recall_all() {
 			Sql_GetData(mmysql_handle, 9, &data, NULL); sp->val2 = atoi(data);
 			Sql_GetData(mmysql_handle, 10, &data, NULL); sp->val3 = atoi(data);
 			Sql_GetData(mmysql_handle, 11, &data, NULL); sp->val4 = atoi(data);
+
+			TBL_PC* sd = nullptr;
+			if ((sd = map_id2sd(sp->account_id)) != NULL) {
+				aFree(sp);
+				continue;
+			}
+
+			struct auth_node* node = nullptr;
+			if (chrif_search(sp->account_id) != NULL) {
+				aFree(sp);
+				continue;
+			}
 
 			// 初始化一个玩家对象
 			CREATE(sp->sd, struct map_session_data, 1);
