@@ -28836,20 +28836,26 @@ BUILDIN_FUNC(login) {
 	if (!script_get_optnum(st, 3, "Sitdown or not", sit, true, 0)) {
 		return SCRIPT_CMD_FAILURE;
 	}
+	sit = cap_value(sit, 0, 1);
 
 	int body_dir = DIR_SOUTH;
 	if (!script_get_optnum(st, 4, "Body Direction", body_dir, true, DIR_SOUTH)) {
 		return SCRIPT_CMD_FAILURE;
 	}
+	body_dir = cap_value(body_dir, 0, 7);
 
 	int head_dir = 0;
 	if (!script_get_optnum(st, 5, "Head Direction", head_dir, true, 0)) {
 		return SCRIPT_CMD_FAILURE;
 	}
+	head_dir = cap_value(head_dir, 0, 2);
 
 	int mode = SUSPEND_MODE_NONE;
 	if (!script_get_optnum(st, 6, "Login Mode", mode, true, SUSPEND_MODE_NORMAL)) {
 		return SCRIPT_CMD_FAILURE;
+	}
+	if (!suspend_mode_valid(mode)) {
+		mode = SUSPEND_MODE_NORMAL;
 	}
 
 	if (suspend_recall(charid, (e_suspend_mode)mode, body_dir, head_dir, sit)) {

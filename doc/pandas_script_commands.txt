@@ -1654,7 +1654,8 @@ NPC名称:
 	0 表示站立, 1 表示坐下
 	可选值, 默认值为: 0
 
-	此选项会被 suspend_normal_sitdown 战斗配置选项覆盖
+	此选项会被 suspend_{afk|normal|offline}_sitdown 战斗配置选项覆盖
+	具体被哪个选项影响取决于 <登录模式> 的值
 
 默认身体朝向:
     1 = 西北      0 = 正北      7 = 东北
@@ -1664,7 +1665,8 @@ NPC名称:
     3 = 西南      4 = 正南      5 = 东南
 	可选值, 默认值为: 4 (正南)
 	
-	此选项会被 suspend_normal_bodydirection 战斗配置选项覆盖
+	此选项会被 suspend_{afk|normal|offline}_bodydirection 战斗配置选项覆盖
+	具体被哪个选项影响取决于 <登录模式> 的值
 
 默认脑袋朝向:
 	0 = 相对于身体朝向的正前方, 头部看向正前方
@@ -1672,7 +1674,8 @@ NPC名称:
 	2 = 相对于身体朝向的正前方, 头部看向左看
 	可选值, 默认值为: 0 (正前方)
 	
-	此选项会被 suspend_normal_headdirection 战斗配置选项覆盖
+	此选项会被 suspend_{afk|normal|offline}_headdirection 战斗配置选项覆盖
+	具体被哪个选项影响取决于 <登录模式> 的值
 
 登录模式:
 	SUSPEND_MODE_OFFLINE	- 挂机模式

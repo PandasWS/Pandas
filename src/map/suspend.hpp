@@ -31,6 +31,8 @@ struct s_suspender {
 	struct map_session_data* sd;
 };
 
+#define suspend_mode_valid(x) (x == SUSPEND_MODE_OFFLINE || x == SUSPEND_MODE_AFK || x == SUSPEND_MODE_NORMAL)
+
 bool suspend_recall(uint32 charid,
 	e_suspend_mode mode = SUSPEND_MODE_NORMAL, unsigned char body_dir = 4,
 	unsigned char head_dir = 0, unsigned char sit = 0);
