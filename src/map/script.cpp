@@ -6093,6 +6093,13 @@ BUILDIN_FUNC(warp)
 	x = script_getnum(st,3);
 	y = script_getnum(st,4);
 
+#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
+	// 这是一次单体召唤, 赋予特殊传送权限, 以便允许召唤离线挂店的玩家 [Sola丶小克]
+	if (sd && sd->bl.type == BL_PC) {
+		sd->pandas.special_transfer = true;
+	}
+#endif // Pandas_Support_IndependentRecall_Autotrade_Player
+
 	if(strcmp(str,"Random")==0)
 		ret = pc_randomwarp(sd,CLR_TELEPORT);
 	else if(strcmp(str,"SavePoint")==0 || strcmp(str,"Save")==0)
@@ -19628,6 +19635,17 @@ BUILDIN_FUNC(unitwarp)
 		map_idx = bl?bl->m:-1;
 	else
 		map_idx = map_mapname2mapid(mapname);
+
+#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
+	// 这是一次单体召唤, 赋予特殊传送权限, 以便允许召唤离线挂店的玩家 [Sola丶小克]
+	if (bl&& bl->type == BL_PC) {
+		TBL_PC* sd = nullptr;
+		sd = map_id2sd(bl->id);
+		if (sd) {
+			sd->pandas.special_transfer = true;
+		}
+	}
+#endif // Pandas_Support_IndependentRecall_Autotrade_Player
 
 	if (map_idx >= 0 && bl != NULL)
 		script_pushint(st, unit_warp(bl,map_idx,x,y,CLR_OUTSIGHT));

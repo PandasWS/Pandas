@@ -6287,14 +6287,14 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *target)
  *------------------------------------------*/
 enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, clr_type clrtype)
 {
-#ifdef Pandas_Support_IndependentRecall_Autotrade_Player
-	bool independent_recall = false;
+#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
+	bool special_transfer = false;
 	// 重置标记位, 避免影响其他判断流程 [Sola丶小克]
 	if (sd) {
-		independent_recall = sd->pandas.independent_recall;
-		sd->pandas.independent_recall = false;
+		special_transfer = sd->pandas.special_transfer;
+		sd->pandas.special_transfer = false;
 	}
-#endif // Pandas_Support_IndependentRecall_Autotrade_Player
+#endif // Pandas_Support_SpecialTransfer_Autotrade_Player
 
 	nullpo_retr(SETPOS_OK,sd);
 
@@ -6303,13 +6303,13 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		return SETPOS_MAPINDEX;
 	}
 
-#ifndef Pandas_Support_IndependentRecall_Autotrade_Player
+#ifndef Pandas_Support_SpecialTransfer_Autotrade_Player
 	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) ) // Player with autotrade just causes clif glitch! @ FIXME
 		return SETPOS_AUTOTRADE;
 #else
-	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) && !independent_recall)
+	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) && !special_transfer)
 		return SETPOS_AUTOTRADE;
-#endif // Pandas_Support_IndependentRecall_Autotrade_Player
+#endif // Pandas_Support_SpecialTransfer_Autotrade_Player
 
 	if( battle_config.revive_onwarp && pc_isdead(sd) ) { //Revive dead people before warping them
 		pc_setstand(sd, true);
@@ -6530,8 +6530,8 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		sd->ed->ud.dir = sd->ud.dir;
 	}
 
-#ifdef Pandas_Support_IndependentRecall_Autotrade_Player
-	if (!sd->state.connect_new && sd->state.autotrade && independent_recall) {
+#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
+	if (!sd->state.connect_new && sd->state.autotrade && special_transfer) {
 		map_delblock(&sd->bl);
 		clif_parse_LoadEndAck(sd->fd, sd);
 
@@ -6551,7 +6551,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		// Immediate save
 		chrif_save(sd, CSAVE_AUTOTRADE);
 	}
-#endif // Pandas_Support_IndependentRecall_Autotrade_Player
+#endif // Pandas_Support_SpecialTransfer_Autotrade_Player
 
 	pc_cell_basilica(sd);
 

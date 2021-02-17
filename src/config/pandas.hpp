@@ -125,9 +125,9 @@
 		// 使 map_session_data 可记录即将支持捕捉的多个魔物编号 [Sola丶小克]
 		#define Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 
-		// 使 map_session_data 可记录是否即将被 recall 指令独立召唤 [Sola丶小克]
-		// 结构体修改定位 pc.hpp -> map_session_data.pandas.independent_recall
-		#define Pandas_Struct_Map_Session_Data_IndependentRecall
+		// 使 map_session_data 可记录是否拥有特殊召唤权限 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.special_transfer
+		#define Pandas_Struct_Map_Session_Data_SpecialTransfer
 
 		// 使 map_session_data 可记录离线挂店 / 挂机角色的朝向等状态数据 [Sola丶小克]
 		// rAthena 使用完成 autotrade 的朝向数据后就销毁掉了
@@ -499,12 +499,12 @@
 	// 拓展出来两个宏: GUILD_INITIAL_MEMBER(初始化人数) 和 GUILD_EXTENSION_PERLEVEL (扩充组合体制每级增加人数)
 	#define Pandas_Guild_Extension_Configure
 
-	// 是否支持使用 @recall 指令单独召唤离线挂店 / 离线挂机的角色
+	// 是否支持使用 @recall 等指令单独召唤离线挂店 / 离线挂机的角色
 	// 主要用于管理员调整挂机单位的站位, 避免阻挡到其他的 NPC 或者传送点等 [Sola丶小克]
-	// 此选项依赖 Pandas_Struct_Map_Session_Data_IndependentRecall 和 Pandas_Struct_Map_Session_Data_Autotrade_Configure 的拓展
-	#if defined(Pandas_Struct_Map_Session_Data_IndependentRecall) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
-		#define Pandas_Support_IndependentRecall_Autotrade_Player
-	#endif // defined(Pandas_Struct_Map_Session_Data_IndependentRecall) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
+	// 此选项依赖 Pandas_Struct_Map_Session_Data_SpecialTransfer 和 Pandas_Struct_Map_Session_Data_Autotrade_Configure 的拓展
+	#if defined(Pandas_Struct_Map_Session_Data_SpecialTransfer) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
+		#define Pandas_Support_SpecialTransfer_Autotrade_Player
+	#endif // defined(Pandas_Struct_Map_Session_Data_SpecialTransfer) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
 
 	// 是否支持根据系统语言读取对应的消息数据库文件 [Sola丶小克]
 	#define Pandas_Adaptive_Importing_Message_Database

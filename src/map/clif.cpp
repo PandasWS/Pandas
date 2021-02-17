@@ -11406,7 +11406,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_showvendingboard(&sd->bl,sd->message,0);
 	}
 
-#ifdef Pandas_Support_IndependentRecall_Autotrade_Player
+#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
 	// 当支持使用 recall 挪动离线采购的玩家时,
 	// 这里需要判断被召唤的玩家是否开启了采购商店, 若开启则需要
 	// 刷新附近玩家的客户端, 告诉他们在视野中有一个新的位置了采购摊位的牌牌
@@ -11415,7 +11415,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_buyingstore_myitemlist(sd);
 		clif_buyingstore_entry(sd);
 	}
-#endif // Pandas_Support_IndependentRecall_Autotrade_Player
+#endif // Pandas_Support_SpecialTransfer_Autotrade_Player
 
 	// Don't trigger NPC event or opening vending/buyingstore will be failed
 #ifndef Pandas_BattleConfig_Force_LoadEvent

@@ -84,6 +84,12 @@ void suspend_set_status(struct s_suspender* sp) {
 			sp->sit = battle_config.suspend_normal_sitdown;
 		break;
 	}
+
+#ifdef Pandas_Struct_Map_Session_Data_Autotrade_Configure
+	sp->sd->pandas.at_dir = sp->dir;
+	sp->sd->pandas.at_head_dir = sp->head_dir;
+	sp->sd->pandas.at_sit = sp->sit;
+#endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
 }
 
 //************************************
