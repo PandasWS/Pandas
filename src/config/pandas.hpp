@@ -268,6 +268,18 @@
 	// 是否启用 suspend_afk_headtop_viewid 配置选项及其功能 [Sola丶小克]
 	// 此选项用于当玩家进入离开模式时, 将头饰上的更换为哪一个指定的头饰外观编号
 	#define Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
+
+	// 是否启用 suspend_normal_bodydirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入普通模式时, 被拉上线的角色身体朝向哪里
+	#define Pandas_BattleConfig_Suspend_Normal_BodyDirection
+
+	// 是否启用 suspend_normal_headdirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入普通模式时, 被拉上线的角色头部朝向哪里
+	#define Pandas_BattleConfig_Suspend_Normal_HeadDirection
+
+	// 是否启用 suspend_normal_sitdown 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入普通模式时, 被拉上线的角色处于站立还是坐下状态
+	#define Pandas_BattleConfig_Suspend_Normal_Sitdown
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 

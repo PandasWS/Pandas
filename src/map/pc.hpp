@@ -296,7 +296,8 @@ enum e_autotrade_mode : uint32 {
 	AUTOTRADE_VENDING     = 0x0002,
 	AUTOTRADE_BUYINGSTORE = 0x0004,
 	AUTOTRADE_OFFLINE     = 0x0008,		// 离线挂机
-	AUTOTRADE_AFK         = 0x0010		// 离开模式 (AFK)
+	AUTOTRADE_AFK         = 0x0010,		// 离开模式 (AFK)
+	AUTOTRADE_NORMAL      = 0x0011,		// 普通模式
 };
 
 bool pc_autotrade_suspend(struct map_session_data *sd);

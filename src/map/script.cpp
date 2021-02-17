@@ -28822,7 +28822,7 @@ BUILDIN_FUNC(disable_batrec) {
 /* ===========================================================
  * 指令: login
  * 描述: 将指定的角色以特定的登录模式拉上线
- * 用法: login <角色编号>{, <登录模式>{, <是否坐下>{, <身体朝向>{, <脑袋朝向>}}}};
+ * 用法: login <角色编号>{, <默认是否坐下>{, <默认身体朝向>{, <默认脑袋朝向>{, <登录模式>}}}};
  * 返回: 成功返回 1, 失败返回 0
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
@@ -28832,28 +28832,29 @@ BUILDIN_FUNC(login) {
 	uint32 charid = 0;
 	charid = script_getnum(st, 2);
 
-	int mode = SUSPEND_MODE_NONE;
-	if (!script_get_optnum(st, 3, "Login Mode", mode, true, SUSPEND_MODE_OFFLINE)) {
-		return SCRIPT_CMD_FAILURE;
-	}
-
 	int sit = 0;
-	if (!script_get_optnum(st, 4, "Sitdown or not", sit, true, 0)) {
+	if (!script_get_optnum(st, 3, "Sitdown or not", sit, true, 0)) {
 		return SCRIPT_CMD_FAILURE;
 	}
 
 	int body_dir = DIR_SOUTH;
-	if (!script_get_optnum(st, 5, "Body Direction", body_dir, true, DIR_SOUTH)) {
+	if (!script_get_optnum(st, 4, "Body Direction", body_dir, true, DIR_SOUTH)) {
 		return SCRIPT_CMD_FAILURE;
 	}
 
 	int head_dir = 0;
-	if (!script_get_optnum(st, 6, "Head Direction", head_dir, true, 0)) {
+	if (!script_get_optnum(st, 5, "Head Direction", head_dir, true, 0)) {
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	if (suspend_recall(charid, (e_suspend_mode)mode, body_dir, head_dir, sit))
+	int mode = SUSPEND_MODE_NONE;
+	if (!script_get_optnum(st, 6, "Login Mode", mode, true, SUSPEND_MODE_NORMAL)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (suspend_recall(charid, (e_suspend_mode)mode, body_dir, head_dir, sit)) {
 		script_pushint(st, 1);
+	}
 
 	return SCRIPT_CMD_SUCCESS;
 }

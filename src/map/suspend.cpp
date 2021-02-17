@@ -45,6 +45,9 @@ void suspend_set_status(struct s_suspender* sp) {
 	case SUSPEND_MODE_AFK:
 		sp->sd->state.autotrade |= AUTOTRADE_AFK;
 		break;
+	case SUSPEND_MODE_NORMAL:
+		sp->sd->state.autotrade |= AUTOTRADE_NORMAL;
+		break;
 	}
 
 	// 根据战斗配置选项来设置魔物免疫状态
@@ -71,6 +74,14 @@ void suspend_set_status(struct s_suspender* sp) {
 			sp->head_dir = battle_config.suspend_afk_headdirection;
 		if (battle_config.suspend_afk_sitdown >= 0)
 			sp->sit = battle_config.suspend_afk_sitdown;
+		break;
+	case SUSPEND_MODE_NORMAL:
+		if (battle_config.suspend_normal_bodydirection >= 0)
+			sp->dir = battle_config.suspend_normal_bodydirection;
+		if (battle_config.suspend_normal_headdirection >= 0)
+			sp->head_dir = battle_config.suspend_normal_headdirection;
+		if (battle_config.suspend_normal_sitdown >= 0)
+			sp->sit = battle_config.suspend_normal_sitdown;
 		break;
 	}
 }
@@ -330,10 +341,18 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 
 	// 设置 autotrade 标记
 	sd->state.autotrade |= AUTOTRADE_ENABLED;
-	if (smode == SUSPEND_MODE_OFFLINE)
+
+	switch (smode) {
+	case SUSPEND_MODE_OFFLINE:
 		sd->state.autotrade |= AUTOTRADE_OFFLINE;
-	else if (smode == SUSPEND_MODE_AFK)
+		break;
+	case SUSPEND_MODE_AFK:
 		sd->state.autotrade |= AUTOTRADE_AFK;
+		break;
+	case SUSPEND_MODE_NORMAL:
+		sd->state.autotrade |= AUTOTRADE_NORMAL;
+		break;
+	}
 
 	// 根据战斗配置选项来设置魔物免疫状态
 	if (smode != SUSPEND_MODE_NONE && battle_config.suspend_monsterignore & smode)
@@ -368,6 +387,18 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 
 		if (battle_config.suspend_offline_headdirection >= 0)
 			headdirection = battle_config.suspend_offline_headdirection;
+		break;
+	case SUSPEND_MODE_NORMAL:
+		if (battle_config.suspend_normal_sitdown == 0)
+			sitting = 0;
+		else if (battle_config.suspend_normal_sitdown == 1)
+			sitting = 1;
+
+		if (battle_config.suspend_normal_bodydirection >= 0)
+			bodydirection = battle_config.suspend_normal_bodydirection;
+
+		if (battle_config.suspend_normal_headdirection >= 0)
+			headdirection = battle_config.suspend_normal_headdirection;
 		break;
 	}
 

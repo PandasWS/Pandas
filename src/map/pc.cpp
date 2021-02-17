@@ -13196,7 +13196,7 @@ void pc_scdata_received(struct map_session_data *sd) {
 	if (sd->state.pc_loaded && sd->state.autotrade) {
 		// 走到这里说明已经完成了背包、仓库、手推车的道具信息以及 sc_data 数据的加载
 		// 应该在这里触发被召回的角色成功上线后需要做的后置处理工作
-		if (sd->state.autotrade & AUTOTRADE_AFK || sd->state.autotrade & AUTOTRADE_OFFLINE) {
+		if (pc_autotrade_suspend(sd)) {
 			clif_parse_LoadEndAck(sd->fd, sd);
 			suspend_recall_postfix(sd);
 			return;
@@ -13262,7 +13262,11 @@ TIMER_FUNC(pc_expiration_timer){
 bool pc_autotrade_suspend(struct map_session_data* sd) {
 	if (!sd || !sd->state.autotrade)
 		return false;
-	return (sd->state.autotrade & AUTOTRADE_OFFLINE || sd->state.autotrade & AUTOTRADE_AFK);
+	return (
+		sd->state.autotrade & AUTOTRADE_OFFLINE ||
+		sd->state.autotrade & AUTOTRADE_AFK ||
+		sd->state.autotrade & AUTOTRADE_NORMAL
+	);
 }
 #endif // Pandas_Struct_Autotrade_Extend
 
