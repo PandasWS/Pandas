@@ -2047,6 +2047,10 @@ void map_addiddb(struct block_list *bl)
 {
 	nullpo_retv(bl);
 
+#ifdef Pandas_BattleRecord
+	batrec_new(bl);
+#endif // Pandas_BattleRecord
+
 	if( bl->type == BL_PC )
 	{
 		TBL_PC* sd = (TBL_PC*)bl;
@@ -2074,6 +2078,10 @@ void map_addiddb(struct block_list *bl)
 void map_deliddb(struct block_list *bl)
 {
 	nullpo_retv(bl);
+
+#ifdef Pandas_BattleRecord
+	batrec_free(bl);
+#endif // Pandas_BattleRecord
 
 	if( bl->type == BL_PC )
 	{

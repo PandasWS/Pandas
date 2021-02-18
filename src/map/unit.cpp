@@ -2927,10 +2927,6 @@ void unit_dataset(struct block_list *bl)
 	ud->attackabletime =
 	ud->canact_tick    =
 	ud->canmove_tick   = gettick();
-
-#ifdef Pandas_BattleRecord
-	batrec_new(bl);
-#endif // Pandas_BattleRecord
 }
 
 /**
@@ -3622,10 +3618,6 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			break;
 		}
 	}
-
-#ifdef Pandas_BattleRecord
-	batrec_free(bl);
-#endif // Pandas_BattleRecord
 
 	map_deliddb(bl);
 
