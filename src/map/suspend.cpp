@@ -23,38 +23,184 @@
 #ifdef Pandas_Player_Suspend_System
 
 static DBMap* suspender_db;
-static void suspend_suspender_remove(struct s_suspender* sp, bool remove);
-static int suspend_suspender_free(DBKey key, DBData* data, va_list ap);
 
 //************************************
-// Method:      suspend_recall_online
+// Method:      suspend_set_status
+// Description: 建立 s_suspender 后对 sd 单位进行初始化设置
+// Access:      public 
+// Parameter:   struct s_suspender * sp
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/02/16 10:42
+//************************************ 
+void suspend_set_status(struct s_suspender* sp) {
+	if (!sp) return;
+
+	// 设置 autotrade 标记
+	sp->sd->state.autotrade |= AUTOTRADE_ENABLED;
+
+	switch (sp->mode) {
+	case SUSPEND_MODE_OFFLINE:
+		sp->sd->state.autotrade |= AUTOTRADE_OFFLINE;
+		break;
+	case SUSPEND_MODE_AFK:
+		sp->sd->state.autotrade |= AUTOTRADE_AFK;
+		break;
+	case SUSPEND_MODE_NORMAL:
+		sp->sd->state.autotrade |= AUTOTRADE_NORMAL;
+		break;
+	}
+
+	// 根据战斗配置选项来设置魔物免疫状态
+	if (sp->mode != SUSPEND_MODE_NONE &&
+		battle_config.suspend_monsterignore & sp->mode)
+		sp->sd->state.block_action |= PCBLOCK_IMMUNE;
+	else
+		sp->sd->state.block_action &= ~PCBLOCK_IMMUNE;
+
+	// 根据战斗配置选项来设置朝向和角色站立状态
+	switch (sp->mode) {
+	case SUSPEND_MODE_OFFLINE:
+		if (battle_config.suspend_offline_bodydirection >= 0)
+			sp->dir = battle_config.suspend_offline_bodydirection;
+		if (battle_config.suspend_offline_headdirection >= 0)
+			sp->head_dir = battle_config.suspend_offline_headdirection;
+		if (battle_config.suspend_offline_sitdown >= 0)
+			sp->sit = battle_config.suspend_offline_sitdown;
+		break;
+	case SUSPEND_MODE_AFK:
+		if (battle_config.suspend_afk_bodydirection >= 0)
+			sp->dir = battle_config.suspend_afk_bodydirection;
+		if (battle_config.suspend_afk_headdirection >= 0)
+			sp->head_dir = battle_config.suspend_afk_headdirection;
+		if (battle_config.suspend_afk_sitdown >= 0)
+			sp->sit = battle_config.suspend_afk_sitdown;
+		break;
+	case SUSPEND_MODE_NORMAL:
+		if (battle_config.suspend_normal_bodydirection >= 0)
+			sp->dir = battle_config.suspend_normal_bodydirection;
+		if (battle_config.suspend_normal_headdirection >= 0)
+			sp->head_dir = battle_config.suspend_normal_headdirection;
+		if (battle_config.suspend_normal_sitdown >= 0)
+			sp->sit = battle_config.suspend_normal_sitdown;
+		break;
+	}
+
+#ifdef Pandas_Struct_Map_Session_Data_Autotrade_Configure
+	sp->sd->pandas.at_dir = sp->dir;
+	sp->sd->pandas.at_head_dir = sp->head_dir;
+	sp->sd->pandas.at_sit = sp->sit;
+#endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
+}
+
+//************************************
+// Method:      suspend_recall
+// Description: 单独召唤指定角色编号的玩家上线
+// Access:      public 
+// Parameter:   uint32 charid
+// Parameter:   e_suspend_mode mode
+// Parameter:   unsigned char body_dir
+// Parameter:   unsigned char head_dir
+// Parameter:   unsigned char sit
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/16 10:44
+//************************************ 
+bool suspend_recall(uint32 charid, e_suspend_mode mode,
+	unsigned char body_dir, unsigned char head_dir, unsigned char sit) {
+
+	bool ret = false;
+
+	do 
+	{
+		if (Sql_Query(mmysql_handle,
+			"SELECT `account_id`, `char_id`, `sex` "
+			"FROM `%s` "
+			"WHERE `char_id` = %d;",
+			"char", charid) != SQL_SUCCESS)
+		{
+			Sql_ShowDebug(mmysql_handle);
+			break;
+		}
+
+		if (Sql_NumRows(mmysql_handle) != 1) {
+			break;
+		}
+
+		if (SQL_SUCCESS != Sql_NextRow(mmysql_handle)) {
+			break;
+		}
+
+		char* data = NULL;
+		struct s_suspender* sp = NULL;
+		CREATE(sp, struct s_suspender, 1);
+		memset(sp, 0, sizeof(struct s_suspender));
+
+		Sql_GetData(mmysql_handle, 0, &data, NULL); sp->account_id = atoi(data);
+		Sql_GetData(mmysql_handle, 1, &data, NULL); sp->char_id = atoi(data);
+		Sql_GetData(mmysql_handle, 2, &data, NULL); sp->sex = (data[0] == 'F') ? SEX_FEMALE : SEX_MALE;
+
+		TBL_PC* sd = nullptr;
+		if ((sd = map_id2sd(sp->account_id)) != NULL) {
+			aFree(sp);
+			break;
+		}
+
+		if (chrif_search(sp->account_id) != NULL) {
+			aFree(sp);
+			break;
+		}
+
+		// 初始化一个玩家对象
+		CREATE(sp->sd, struct map_session_data, 1);
+		pc_setnewpc(sp->sd, sp->account_id, sp->char_id, 0, gettick(), sp->sex, 0);
+
+		sp->mode = mode;
+		sp->dir = body_dir;
+		sp->head_dir = head_dir;
+		sp->sit = sit;
+
+		suspend_set_status(sp);
+
+		// 向服务器请求上线该玩家
+		chrif_authreq(sp->sd, true);
+		uidb_put(suspender_db, sp->char_id, sp);
+		ret = true;
+	} while (false);
+
+	Sql_FreeResult(mmysql_handle);
+	return ret;
+}
+
+//************************************
+// Method:      suspend_recall_all
 // Description: 将全部挂起的角色按照各自的模式召回上线
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/4/5 23:35
 //************************************
-void suspend_recall_online() {
-	if (Sql_Query(mmysql_handle,
-		"SELECT `account_id`, `char_id`, `sex`, `body_direction`, `head_direction`, `sit`, `mode`, `tick`, `val1`, `val2`, `val3`, `val4` "
-		"FROM `%s` "
-		"ORDER BY `account_id`;",
-		suspend_table) != SQL_SUCCESS)
-	{
-		Sql_ShowDebug(mmysql_handle);
-		return;
-	}
-
+void suspend_recall_all() {
 	int offline = 0, afk = 0;
 
-	if (Sql_NumRows(mmysql_handle) > 0) {
-		DBIterator* iter = NULL;
-		struct s_suspender* sp = NULL;
+	do 
+	{
+		if (Sql_Query(mmysql_handle,
+			"SELECT `account_id`, `char_id`, `sex`, `body_direction`, `head_direction`, `sit`, `mode`, `tick`, `val1`, `val2`, `val3`, `val4` "
+			"FROM `%s` "
+			"ORDER BY `account_id`;",
+			suspend_table) != SQL_SUCCESS)
+		{
+			Sql_ShowDebug(mmysql_handle);
+			break;
+		}
 
-		// Init each autotrader data
+		if (!Sql_NumRows(mmysql_handle))
+			break;
+
 		while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {
 			char* data = NULL;
 
-			sp = NULL;
+			struct s_suspender* sp = NULL;
 			CREATE(sp, struct s_suspender, 1);
+			memset(sp, 0, sizeof(struct s_suspender));
+
 			Sql_GetData(mmysql_handle, 0, &data, NULL); sp->account_id = atoi(data);
 			Sql_GetData(mmysql_handle, 1, &data, NULL); sp->char_id = atoi(data);
 			Sql_GetData(mmysql_handle, 2, &data, NULL); sp->sex = (data[0] == 'F') ? SEX_FEMALE : SEX_MALE;
@@ -67,59 +213,39 @@ void suspend_recall_online() {
 
 			Sql_GetData(mmysql_handle, 8, &data, NULL); sp->val1 = atoi(data);
 			Sql_GetData(mmysql_handle, 9, &data, NULL); sp->val2 = atoi(data);
-			Sql_GetData(mmysql_handle,10, &data, NULL); sp->val3 = atoi(data);
-			Sql_GetData(mmysql_handle,11, &data, NULL); sp->val4 = atoi(data);
+			Sql_GetData(mmysql_handle, 10, &data, NULL); sp->val3 = atoi(data);
+			Sql_GetData(mmysql_handle, 11, &data, NULL); sp->val4 = atoi(data);
+
+			TBL_PC* sd = nullptr;
+			if ((sd = map_id2sd(sp->account_id)) != NULL) {
+				aFree(sp);
+				continue;
+			}
+
+			struct auth_node* node = nullptr;
+			if (chrif_search(sp->account_id) != NULL) {
+				aFree(sp);
+				continue;
+			}
 
 			// 初始化一个玩家对象
 			CREATE(sp->sd, struct map_session_data, 1);
 			pc_setnewpc(sp->sd, sp->account_id, sp->char_id, 0, gettick(), sp->sex, 0);
+			suspend_set_status(sp);
 
-			// 设置 autotrade 标记
-			sp->sd->state.autotrade |= AUTOTRADE_ENABLED;
-			if (sp->mode == SUSPEND_MODE_OFFLINE) {
-				sp->sd->state.autotrade |= AUTOTRADE_OFFLINE;
-				offline++;
-			}
-			else if (sp->mode == SUSPEND_MODE_AFK) {
-				sp->sd->state.autotrade |= AUTOTRADE_AFK;
-				afk++;
-			}
-
-			// 根据战斗配置选项来设置魔物免疫状态
-			if (sp->mode != SUSPEND_MODE_NONE && battle_config.suspend_monsterignore & sp->mode)
-				sp->sd->state.block_action |= PCBLOCK_IMMUNE;
-			else
-				sp->sd->state.block_action &= ~PCBLOCK_IMMUNE;
-
-			// 根据战斗配置选项来设置朝向和角色站立状态
-			switch (sp->mode)
-			{
-			case SUSPEND_MODE_OFFLINE:
-				if (battle_config.suspend_offline_bodydirection >= 0)
-					sp->dir = battle_config.suspend_offline_bodydirection;
-				if (battle_config.suspend_offline_headdirection >= 0)
-					sp->head_dir = battle_config.suspend_offline_headdirection;
-				if (battle_config.suspend_offline_sitdown >= 0)
-					sp->sit = battle_config.suspend_offline_sitdown;
-				break;
-			case SUSPEND_MODE_AFK:
-				if (battle_config.suspend_afk_bodydirection >= 0)
-					sp->dir = battle_config.suspend_afk_bodydirection;
-				if (battle_config.suspend_afk_headdirection >= 0)
-					sp->head_dir = battle_config.suspend_afk_headdirection;
-				if (battle_config.suspend_afk_sitdown >= 0)
-					sp->sit = battle_config.suspend_afk_sitdown;
-				break;
+			switch (sp->mode) {
+			case SUSPEND_MODE_OFFLINE: offline++; break;
+			case SUSPEND_MODE_AFK: afk++; break;
 			}
 
 			// 向服务器请求上线该玩家
 			chrif_authreq(sp->sd, true);
 			uidb_put(suspender_db, sp->char_id, sp);
 		}
-		Sql_FreeResult(mmysql_handle);
+	} while (false);
 
-		ShowStatus("Done loading '" CL_WHITE "%d" CL_RESET "' suspend player records (Offline: '%d', AFK: '%d').\n", db_size(suspender_db), offline, afk);
-	}
+	Sql_FreeResult(mmysql_handle);
+	ShowStatus("Done loading '" CL_WHITE "%d" CL_RESET "' suspend player records (Offline: '%d', AFK: '%d').\n", db_size(suspender_db), offline, afk);
 }
 
 //************************************
@@ -142,8 +268,7 @@ void suspend_recall_postfix(struct map_session_data* sd) {
 			clif_sitting(&sd->bl);
 		}
 
-		switch (sp->mode)
-		{
+		switch (sp->mode) {
 		case SUSPEND_MODE_AFK:
 			if (battle_config.suspend_afk_headtop_viewid) {
 				clif_changelook(&sd->bl, LOOK_HEAD_TOP, battle_config.suspend_afk_headtop_viewid);
@@ -170,8 +295,7 @@ void suspend_set_unit_idle(struct map_session_data* sd, struct packet_idle_unit*
 
 	struct s_suspender* sp = NULL;
 	if (sp = (struct s_suspender*)uidb_get(suspender_db, sd->status.char_id)) {
-		switch (sp->mode)
-		{
+		switch (sp->mode) {
 		case SUSPEND_MODE_AFK:
 			if (battle_config.suspend_afk_headtop_viewid) {
 				p->accessory2 = battle_config.suspend_afk_headtop_viewid;
@@ -198,8 +322,7 @@ void suspend_set_unit_walking(struct map_session_data* sd, struct packet_unit_wa
 
 	struct s_suspender* sp = NULL;
 	if (sp = (struct s_suspender*)uidb_get(suspender_db, sd->status.char_id)) {
-		switch (sp->mode)
-		{
+		switch (sp->mode) {
 		case SUSPEND_MODE_AFK:
 			if (battle_config.suspend_afk_headtop_viewid) {
 				p->accessory2 = battle_config.suspend_afk_headtop_viewid;
@@ -224,10 +347,18 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 
 	// 设置 autotrade 标记
 	sd->state.autotrade |= AUTOTRADE_ENABLED;
-	if (smode == SUSPEND_MODE_OFFLINE)
+
+	switch (smode) {
+	case SUSPEND_MODE_OFFLINE:
 		sd->state.autotrade |= AUTOTRADE_OFFLINE;
-	else if (smode == SUSPEND_MODE_AFK)
+		break;
+	case SUSPEND_MODE_AFK:
 		sd->state.autotrade |= AUTOTRADE_AFK;
+		break;
+	case SUSPEND_MODE_NORMAL:
+		sd->state.autotrade |= AUTOTRADE_NORMAL;
+		break;
+	}
 
 	// 根据战斗配置选项来设置魔物免疫状态
 	if (smode != SUSPEND_MODE_NONE && battle_config.suspend_monsterignore & smode)
@@ -235,8 +366,7 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 	else
 		sd->state.block_action &= ~PCBLOCK_IMMUNE;
 
-	switch (smode)
-	{
+	switch (smode) {
 	case SUSPEND_MODE_AFK:
 		if (battle_config.suspend_afk_sitdown == 0)
 			sitting = 0;
@@ -263,6 +393,18 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 
 		if (battle_config.suspend_offline_headdirection >= 0)
 			headdirection = battle_config.suspend_offline_headdirection;
+		break;
+	case SUSPEND_MODE_NORMAL:
+		if (battle_config.suspend_normal_sitdown == 0)
+			sitting = 0;
+		else if (battle_config.suspend_normal_sitdown == 1)
+			sitting = 1;
+
+		if (battle_config.suspend_normal_bodydirection >= 0)
+			bodydirection = battle_config.suspend_normal_bodydirection;
+
+		if (battle_config.suspend_normal_headdirection >= 0)
+			headdirection = battle_config.suspend_normal_headdirection;
 		break;
 	}
 
@@ -291,6 +433,8 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 
 	struct s_suspender* sp = NULL;
 	CREATE(sp, struct s_suspender, 1);
+	memset(sp, 0, sizeof(struct s_suspender));
+
 	sp->account_id = sd->status.account_id;
 	sp->char_id = sd->status.char_id;
 	sp->sex = (sd->status.sex == SEX_FEMALE ? 'F' : 'M');
@@ -360,29 +504,6 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 }
 
 //************************************
-// Method:      suspend_deactive
-// Description: 反激活某个角色的挂起模式, 下次地图服务器启动将不再自动上线
-// Parameter:   struct map_session_data * sd
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2020/4/6 18:15
-//************************************
-void suspend_deactive(struct map_session_data* sd) {
-	nullpo_retv(sd);
-
-	if (Sql_Query(mmysql_handle, "DELETE FROM `%s` WHERE `account_id` = %d;", suspend_table, sd->status.account_id) != SQL_SUCCESS) {
-		Sql_ShowDebug(mmysql_handle);
-	}
-
-	struct s_suspender* sp = NULL;
-	if (sp = (struct s_suspender*)uidb_get(suspender_db, sd->status.char_id)) {
-		suspend_suspender_remove(sp, true);
-		if (db_size(suspender_db) == 0) {
-			suspender_db->clear(suspender_db, suspend_suspender_free);
-		}
-	}
-}
-
-//************************************
 // Method:      suspend_suspender_remove
 // Description: 是否某个具体的 struct s_suspender 结构体
 // Parameter:   struct s_suspender * sp
@@ -411,6 +532,29 @@ static int suspend_suspender_free(DBKey key, DBData* data, va_list ap) {
 	if (sp)
 		suspend_suspender_remove(sp, false);
 	return 0;
+}
+
+//************************************
+// Method:      suspend_deactive
+// Description: 反激活某个角色的挂起模式, 下次地图服务器启动将不再自动上线
+// Parameter:   struct map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2020/4/6 18:15
+//************************************
+void suspend_deactive(struct map_session_data* sd) {
+	nullpo_retv(sd);
+
+	if (Sql_Query(mmysql_handle, "DELETE FROM `%s` WHERE `account_id` = %d;", suspend_table, sd->status.account_id) != SQL_SUCCESS) {
+		Sql_ShowDebug(mmysql_handle);
+	}
+
+	struct s_suspender* sp = NULL;
+	if (sp = (struct s_suspender*)uidb_get(suspender_db, sd->status.char_id)) {
+		suspend_suspender_remove(sp, true);
+		if (db_size(suspender_db) == 0) {
+			suspender_db->clear(suspender_db, suspend_suspender_free);
+		}
+	}
 }
 
 //************************************

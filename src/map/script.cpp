@@ -6093,6 +6093,13 @@ BUILDIN_FUNC(warp)
 	x = script_getnum(st,3);
 	y = script_getnum(st,4);
 
+#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
+	// 这是一次单体召唤, 赋予特殊传送权限, 以便允许召唤离线挂店的玩家 [Sola丶小克]
+	if (sd && sd->bl.type == BL_PC) {
+		sd->pandas.special_transfer = true;
+	}
+#endif // Pandas_Support_IndependentRecall_Autotrade_Player
+
 	if(strcmp(str,"Random")==0)
 		ret = pc_randomwarp(sd,CLR_TELEPORT);
 	else if(strcmp(str,"SavePoint")==0 || strcmp(str,"Save")==0)
@@ -19629,6 +19636,17 @@ BUILDIN_FUNC(unitwarp)
 	else
 		map_idx = map_mapname2mapid(mapname);
 
+#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
+	// 这是一次单体召唤, 赋予特殊传送权限, 以便允许召唤离线挂店的玩家 [Sola丶小克]
+	if (bl&& bl->type == BL_PC) {
+		TBL_PC* sd = nullptr;
+		sd = map_id2sd(bl->id);
+		if (sd) {
+			sd->pandas.special_transfer = true;
+		}
+	}
+#endif // Pandas_Support_IndependentRecall_Autotrade_Player
+
 	if (map_idx >= 0 && bl != NULL)
 		script_pushint(st, unit_warp(bl,map_idx,x,y,CLR_OUTSIGHT));
 	else
@@ -28818,6 +28836,54 @@ BUILDIN_FUNC(disable_batrec) {
 }
 #endif // Pandas_ScriptCommand_DisableBattleRecord
 
+#ifdef Pandas_ScriptCommand_Login
+/* ===========================================================
+ * 指令: login
+ * 描述: 将指定的角色以特定的登录模式拉上线
+ * 用法: login <角色编号>{, <默认是否坐下>{, <默认身体朝向>{, <默认脑袋朝向>{, <登录模式>}}}};
+ * 返回: 成功返回 1, 失败返回 0
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(login) {
+	script_pushint(st, 0);
+
+	uint32 charid = 0;
+	charid = script_getnum(st, 2);
+
+	int sit = 0;
+	if (!script_get_optnum(st, 3, "Sitdown or not", sit, true, 0)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+	sit = cap_value(sit, 0, 1);
+
+	int body_dir = DIR_SOUTH;
+	if (!script_get_optnum(st, 4, "Body Direction", body_dir, true, DIR_SOUTH)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+	body_dir = cap_value(body_dir, 0, 7);
+
+	int head_dir = 0;
+	if (!script_get_optnum(st, 5, "Head Direction", head_dir, true, 0)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+	head_dir = cap_value(head_dir, 0, 2);
+
+	int mode = SUSPEND_MODE_NONE;
+	if (!script_get_optnum(st, 6, "Login Mode", mode, true, SUSPEND_MODE_NORMAL)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (!suspend_mode_valid(mode)) {
+		mode = SUSPEND_MODE_NORMAL;
+	}
+
+	if (suspend_recall(charid, (e_suspend_mode)mode, body_dir, head_dir, sit)) {
+		script_pushint(st, 1);
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Login
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -29016,6 +29082,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_DisableBattleRecord
 	BUILDIN_DEF(disable_batrec,"?"),					// 禁用指定单位的战斗记录 [Sola丶小克]
 #endif // Pandas_ScriptCommand_DisableBattleRecord
+#ifdef Pandas_ScriptCommand_Login
+	BUILDIN_DEF(login,"i????"),							// 将指定的角色以特定的登录模式拉上线 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Login
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

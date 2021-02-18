@@ -736,6 +736,15 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
 	int suspend_afk_headtop_viewid;			// 当玩家进入离开模式时, 将头饰上的更换为哪一个指定的头饰外观编号 [Sola丶小克]
 #endif // Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
+#ifdef Pandas_BattleConfig_Suspend_Normal_BodyDirection
+	int suspend_normal_bodydirection;		// 当玩家进入普通模式时, 被拉上线的角色身体朝向哪里 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_Normal_BodyDirection
+#ifdef Pandas_BattleConfig_Suspend_Normal_HeadDirection
+	int suspend_normal_headdirection;		// 当玩家进入普通模式时, 被拉上线的角色头部朝向哪里 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_Normal_HeadDirection
+#ifdef Pandas_BattleConfig_Suspend_Normal_Sitdown
+	int suspend_normal_sitdown;				// 当玩家进入普通模式时, 被拉上线的角色处于站立还是坐下状态 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_Normal_Sitdown
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

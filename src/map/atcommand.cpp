@@ -3046,10 +3046,11 @@ ACMD_FUNC(recall) {
 	if (pl_sd->bl.m == sd->bl.m && pl_sd->bl.x == sd->bl.x && pl_sd->bl.y == sd->bl.y) {
 		return -1;
 	}
-#ifdef Pandas_Support_IndependentRecall_Autotrade_Player
-	// 标记为这是一次单体召唤，允许召唤离线挂店的玩家 [Sola丶小克]
-	if (pl_sd)
-		pl_sd->pandas.independent_recall = true;
+#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
+	// 这是一次单体召唤, 赋予特殊传送权限, 以便允许召唤离线挂店的玩家 [Sola丶小克]
+	if (pl_sd) {
+		pl_sd->pandas.special_transfer = true;
+	}
 #endif // Pandas_Support_IndependentRecall_Autotrade_Player
 	if( pc_setpos(pl_sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
 		clif_displaymessage(fd, msg_txt(sd,1025)); // The player is currently autotrading and cannot be recalled.

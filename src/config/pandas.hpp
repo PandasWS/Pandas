@@ -125,9 +125,9 @@
 		// 使 map_session_data 可记录即将支持捕捉的多个魔物编号 [Sola丶小克]
 		#define Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 
-		// 使 map_session_data 可记录是否即将被 recall 指令独立召唤 [Sola丶小克]
-		// 结构体修改定位 pc.hpp -> map_session_data.pandas.independent_recall
-		#define Pandas_Struct_Map_Session_Data_IndependentRecall
+		// 使 map_session_data 可记录是否拥有特殊召唤权限 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.special_transfer
+		#define Pandas_Struct_Map_Session_Data_SpecialTransfer
 
 		// 使 map_session_data 可记录离线挂店 / 挂机角色的朝向等状态数据 [Sola丶小克]
 		// rAthena 使用完成 autotrade 的朝向数据后就销毁掉了
@@ -268,6 +268,18 @@
 	// 是否启用 suspend_afk_headtop_viewid 配置选项及其功能 [Sola丶小克]
 	// 此选项用于当玩家进入离开模式时, 将头饰上的更换为哪一个指定的头饰外观编号
 	#define Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
+
+	// 是否启用 suspend_normal_bodydirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入普通模式时, 被拉上线的角色身体朝向哪里
+	#define Pandas_BattleConfig_Suspend_Normal_BodyDirection
+
+	// 是否启用 suspend_normal_headdirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入普通模式时, 被拉上线的角色头部朝向哪里
+	#define Pandas_BattleConfig_Suspend_Normal_HeadDirection
+
+	// 是否启用 suspend_normal_sitdown 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入普通模式时, 被拉上线的角色处于站立还是坐下状态
+	#define Pandas_BattleConfig_Suspend_Normal_Sitdown
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
@@ -487,12 +499,12 @@
 	// 拓展出来两个宏: GUILD_INITIAL_MEMBER(初始化人数) 和 GUILD_EXTENSION_PERLEVEL (扩充组合体制每级增加人数)
 	#define Pandas_Guild_Extension_Configure
 
-	// 是否支持使用 @recall 指令单独召唤离线挂店 / 离线挂机的角色
+	// 是否支持使用 @recall 等指令单独召唤离线挂店 / 离线挂机的角色
 	// 主要用于管理员调整挂机单位的站位, 避免阻挡到其他的 NPC 或者传送点等 [Sola丶小克]
-	// 此选项依赖 Pandas_Struct_Map_Session_Data_IndependentRecall 和 Pandas_Struct_Map_Session_Data_Autotrade_Configure 的拓展
-	#if defined(Pandas_Struct_Map_Session_Data_IndependentRecall) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
-		#define Pandas_Support_IndependentRecall_Autotrade_Player
-	#endif // defined(Pandas_Struct_Map_Session_Data_IndependentRecall) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
+	// 此选项依赖 Pandas_Struct_Map_Session_Data_SpecialTransfer 和 Pandas_Struct_Map_Session_Data_Autotrade_Configure 的拓展
+	#if defined(Pandas_Struct_Map_Session_Data_SpecialTransfer) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
+		#define Pandas_Support_SpecialTransfer_Autotrade_Player
+	#endif // defined(Pandas_Struct_Map_Session_Data_SpecialTransfer) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
 
 	// 是否支持根据系统语言读取对应的消息数据库文件 [Sola丶小克]
 	#define Pandas_Adaptive_Importing_Message_Database
@@ -1439,6 +1451,13 @@
 		// 该指令用于禁用指定单位的战斗记录
 		#define Pandas_ScriptCommand_DisableBattleRecord
 	#endif // Pandas_BattleRecord
+
+	// 是否启用 login 脚本指令 [Sola丶小克]
+	// 该指令用于将指定的角色以特定的登录模式拉上线
+	// 此选项开关需要依赖 Pandas_Player_Suspend_System 的拓展
+	#ifdef Pandas_Player_Suspend_System
+		#define Pandas_ScriptCommand_Login
+	#endif // Pandas_Player_Suspend_System
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

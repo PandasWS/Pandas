@@ -296,7 +296,8 @@ enum e_autotrade_mode : uint32 {
 	AUTOTRADE_VENDING     = 0x0002,
 	AUTOTRADE_BUYINGSTORE = 0x0004,
 	AUTOTRADE_OFFLINE     = 0x0008,		// 离线挂机
-	AUTOTRADE_AFK         = 0x0010		// 离开模式 (AFK)
+	AUTOTRADE_AFK         = 0x0010,		// 离开模式 (AFK)
+	AUTOTRADE_NORMAL      = 0x0011,		// 普通模式
 };
 
 bool pc_autotrade_suspend(struct map_session_data *sd);
@@ -853,9 +854,9 @@ struct map_session_data {
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 		std::vector<uint32> multi_catch_target_class;	// 用于记录即将支持捕捉的多个魔物编号
 #endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
-#ifdef Pandas_Struct_Map_Session_Data_IndependentRecall
-		bool independent_recall = false;	// 用于标记是否即将被 recall 指令独立召唤
-#endif // Pandas_Struct_Map_Session_Data_IndependentRecall
+#ifdef Pandas_Struct_Map_Session_Data_SpecialTransfer
+		bool special_transfer = false;		// 用于标记是否拥有特殊传送许可 (用于传送挂机角色)
+#endif // Pandas_Struct_Map_Session_Data_SpecialTransfer
 #ifdef Pandas_Struct_Map_Session_Data_Autotrade_Configure
 		unsigned char at_sex;				// 性别 (M 表示男性, F 表示女性)
 		unsigned char at_dir;				// 纸娃娃身体朝向

@@ -11406,7 +11406,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_showvendingboard(&sd->bl,sd->message,0);
 	}
 
-#ifdef Pandas_Support_IndependentRecall_Autotrade_Player
+#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
 	// 当支持使用 recall 挪动离线采购的玩家时,
 	// 这里需要判断被召唤的玩家是否开启了采购商店, 若开启则需要
 	// 刷新附近玩家的客户端, 告诉他们在视野中有一个新的位置了采购摊位的牌牌
@@ -11415,7 +11415,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_buyingstore_myitemlist(sd);
 		clif_buyingstore_entry(sd);
 	}
-#endif // Pandas_Support_IndependentRecall_Autotrade_Player
+#endif // Pandas_Support_SpecialTransfer_Autotrade_Player
 
 	// Don't trigger NPC event or opening vending/buyingstore will be failed
 #ifndef Pandas_BattleConfig_Force_LoadEvent
@@ -12239,17 +12239,22 @@ void clif_parse_WisMessage(int fd, struct map_session_data* sd)
 #else
 	if (dstsd->state.autotrade & AUTOTRADE_ENABLED) {
 		if (dstsd->state.autotrade & AUTOTRADE_VENDING || dstsd->state.autotrade & AUTOTRADE_BUYINGSTORE) {
-			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 19), dstsd->status.name);
+			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 111), dstsd->status.name);
 			clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
 			return;
 		}
 		else if (dstsd->state.autotrade & AUTOTRADE_OFFLINE && battle_config.suspend_whisper_response & SUSPEND_MODE_OFFLINE) {
-			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 20), dstsd->status.name);
+			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 112), dstsd->status.name);
 			clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
 			return;
 		}
 		else if (dstsd->state.autotrade & AUTOTRADE_AFK && battle_config.suspend_whisper_response & SUSPEND_MODE_AFK) {
-			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 21), dstsd->status.name);
+			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 113), dstsd->status.name);
+			clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
+			return;
+		}
+		else if (dstsd->state.autotrade & AUTOTRADE_NORMAL && battle_config.suspend_whisper_response & SUSPEND_MODE_NORMAL) {
+			safesnprintf(output, sizeof(output), msg_txt_cn(sd, 114), dstsd->status.name);
 			clif_wis_message(sd, wisp_server_name, output, strlen(output) + 1, 0);
 			return;
 		}
