@@ -119,7 +119,6 @@ void batrec_new(struct block_list* bl) {
 		ucd->batrec.dorecord = false;
 		return;
 	}
-
 }
 
 //************************************

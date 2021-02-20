@@ -1044,11 +1044,6 @@
 		// 事件类型: Express / 事件名称: OnPCEnterMapExpress
 		// 常量名称: NPCX_ENTERMAP / 变量名称: entermap_express_name
 		#define Pandas_NpcExpress_ENTERMAP
-
-		// 当游戏单位被销毁时触发实时事件 [Sola丶小克]
-		// 事件类型: Express / 事件名称: OnUnitFreeExpress
-		// 常量名称: NPCX_UNITFREE / 变量名称: unitfree_express_name
-		#define Pandas_NpcExpress_UNITFREE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	

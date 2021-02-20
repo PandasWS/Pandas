@@ -37,10 +37,6 @@
 #include "storage.hpp"
 #include "trade.hpp"
 
-#ifdef Pandas_NpcExpress_UNITFREE
-#include "mapreg.hpp"
-#endif // Pandas_NpcExpress_UNITFREE
-
 // Directions values
 // 1 0 7
 // 2 . 6
