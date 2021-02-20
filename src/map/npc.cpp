@@ -1231,13 +1231,6 @@ int npc_touch_areanpc(struct map_session_data* sd, int16 m, int16 x, int16 y, st
 			break;
 		}
 
-#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
-		// 这是一次单体传送, 赋予特殊传送权限, 以便允许离线挂店的玩家过传送点 [Sola丶小克]
-		if (sd && sd->bl.type == BL_PC && sd->state.autotrade) {
-			sd->pandas.special_transfer = true;
-		}
-#endif // Pandas_Support_IndependentRecall_Autotrade_Player
-
 		pc_setpos(sd, nd->u.warp.mapindex, nd->u.warp.x, nd->u.warp.y, CLR_OUTSIGHT);
 		return 2;
 	case NPCTYPE_SCRIPT:

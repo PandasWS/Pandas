@@ -854,9 +854,9 @@ struct map_session_data {
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 		std::vector<uint32> multi_catch_target_class;	// 用于记录即将支持捕捉的多个魔物编号
 #endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
-#ifdef Pandas_Struct_Map_Session_Data_SpecialTransfer
-		bool special_transfer = false;		// 用于标记是否拥有特殊传送许可 (用于传送挂机角色)
-#endif // Pandas_Struct_Map_Session_Data_SpecialTransfer
+#ifdef Pandas_Struct_Map_Session_Data_Disallow_Autotrade_Transfer
+		bool disallow_autotrade_transfer = false;		// 用于标记挂机时是否允许传送
+#endif // Pandas_Struct_Map_Session_Data_Disallow_Autotrade_Transfer
 #ifdef Pandas_Struct_Map_Session_Data_Autotrade_Configure
 		unsigned char at_sex;				// 性别 (M 表示男性, F 表示女性)
 		unsigned char at_dir;				// 纸娃娃身体朝向
@@ -1244,6 +1244,11 @@ enum e_setpos{
 	SETPOS_NO_MAPSERVER = 2,
 	SETPOS_AUTOTRADE = 3
 };
+
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+void pc_disallow_autotrade_transfer(struct block_list* bl);
+void pc_disallow_autotrade_transfer(struct map_session_data* sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
 
 enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, clr_type clrtype);
 void pc_setsavepoint(struct map_session_data *sd, short mapindex,int x,int y);

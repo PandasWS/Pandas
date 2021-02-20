@@ -6273,6 +6273,36 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *target)
 	return 0;
 }
 
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+//************************************
+// Method:      pc_disallow_autotrade_transfer
+// Description: 禁止在离线挂机的情况下被 pc_setpos 传送
+// Access:      public 
+// Parameter:   struct block_list * bl
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/02/20 22:37
+//************************************ 
+void pc_disallow_autotrade_transfer(struct block_list* bl) {
+	if (!bl || bl->type != BL_PC) return;
+	TBL_PC* sd = nullptr;
+	sd = (TBL_PC*)bl;
+	pc_disallow_autotrade_transfer(sd);
+}
+
+//************************************
+// Method:      pc_disallow_autotrade_transfer
+// Description: 禁止在离线挂机的情况下被 pc_setpos 传送
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/02/20 22:37
+//************************************ 
+void pc_disallow_autotrade_transfer(struct map_session_data* sd) {
+	if (!sd || !sd->state.autotrade) return;
+	sd->pandas.disallow_autotrade_transfer = true;
+}
+#endif // Pandas_Support_Transfer_Autotrade_Player
+
 /*==========================================
  * Set's a player position.
  * @param sd
@@ -6287,14 +6317,13 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *target)
  *------------------------------------------*/
 enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, clr_type clrtype)
 {
-#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
-	bool special_transfer = false;
-	// 重置标记位, 避免影响其他判断流程 [Sola丶小克]
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+	bool disallow_transfer = false;
 	if (sd) {
-		special_transfer = sd->pandas.special_transfer;
-		sd->pandas.special_transfer = false;
+		disallow_transfer = sd->pandas.disallow_autotrade_transfer;
+		sd->pandas.disallow_autotrade_transfer = false;
 	}
-#endif // Pandas_Support_SpecialTransfer_Autotrade_Player
+#endif // Pandas_Support_Transfer_Autotrade_Player
 
 	nullpo_retr(SETPOS_OK,sd);
 
@@ -6303,13 +6332,13 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		return SETPOS_MAPINDEX;
 	}
 
-#ifndef Pandas_Support_SpecialTransfer_Autotrade_Player
+#ifndef Pandas_Support_Transfer_Autotrade_Player
 	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) ) // Player with autotrade just causes clif glitch! @ FIXME
 		return SETPOS_AUTOTRADE;
 #else
-	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) && !special_transfer)
+	if ( sd->state.autotrade && disallow_transfer)
 		return SETPOS_AUTOTRADE;
-#endif // Pandas_Support_SpecialTransfer_Autotrade_Player
+#endif // Pandas_Support_Transfer_Autotrade_Player
 
 	if( battle_config.revive_onwarp && pc_isdead(sd) ) { //Revive dead people before warping them
 		pc_setstand(sd, true);
@@ -6530,8 +6559,8 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		sd->ed->ud.dir = sd->ud.dir;
 	}
 
-#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
-	if (!sd->state.connect_new && sd->state.autotrade && special_transfer) {
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+	if (!sd->state.connect_new && sd->state.autotrade) {
 		map_delblock(&sd->bl);
 		clif_parse_LoadEndAck(sd->fd, sd);
 
@@ -6551,7 +6580,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		// Immediate save
 		chrif_save(sd, CSAVE_AUTOTRADE);
 	}
-#endif // Pandas_Support_SpecialTransfer_Autotrade_Player
+#endif // Pandas_Support_Transfer_Autotrade_Player
 
 	pc_cell_basilica(sd);
 

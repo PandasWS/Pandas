@@ -6089,13 +6089,6 @@ BUILDIN_FUNC(warp)
 	x = script_getnum(st,3);
 	y = script_getnum(st,4);
 
-#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
-	// 这是一次单体召唤, 赋予特殊传送权限, 以便允许召唤离线挂店的玩家 [Sola丶小克]
-	if (sd && sd->bl.type == BL_PC) {
-		sd->pandas.special_transfer = true;
-	}
-#endif // Pandas_Support_IndependentRecall_Autotrade_Player
-
 	if(strcmp(str,"Random")==0)
 		ret = pc_randomwarp(sd,CLR_TELEPORT);
 	else if(strcmp(str,"SavePoint")==0 || strcmp(str,"Save")==0)
@@ -6123,6 +6116,10 @@ static int buildin_areawarp_sub(struct block_list *bl,va_list ap)
 	y2 = va_arg(ap,int);
 	x3 = va_arg(ap,int);
 	y3 = va_arg(ap,int);
+
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+	pc_disallow_autotrade_transfer(bl);
+#endif // Pandas_Support_Transfer_Autotrade_Player
 
 	if(index == 0)
 		pc_randomwarp((TBL_PC *)bl,CLR_TELEPORT);
@@ -6299,6 +6296,10 @@ BUILDIN_FUNC(warpparty)
 			continue;
 #endif // Pandas_ScriptCommand_WarpPartyRevive
 
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+		pc_disallow_autotrade_transfer(pl_sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
+
 		switch( type )
 		{
 		case 0: // Random
@@ -6382,6 +6383,10 @@ BUILDIN_FUNC(warpguild)
 	{
 		if( pl_sd->status.guild_id != gid )
 			continue;
+
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+		pc_disallow_autotrade_transfer(pl_sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
 
 		switch( type )
 		{
@@ -13091,6 +13096,10 @@ BUILDIN_FUNC(warpwaitingpc)
 
 		mapreg_setreg(reference_uid(add_str("$@warpwaitingpc"), i), sd->bl.id);
 
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+		pc_disallow_autotrade_transfer(sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
+
 		if( strcmp(map_name,"Random") == 0 )
 			pc_randomwarp(sd,CLR_TELEPORT);
 		else if( strcmp(map_name,"SavePoint") == 0 )
@@ -14075,6 +14084,9 @@ BUILDIN_FUNC(mapwarp)	// Added by RoVeRT
 				for( i=0; i < g->max_member; i++)
 				{
 					if(g->member[i].sd && g->member[i].sd->bl.m==m){
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+						pc_disallow_autotrade_transfer(g->member[i].sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
 						pc_setpos(g->member[i].sd,index,x,y,CLR_TELEPORT);
 					}
 				}
@@ -14085,6 +14097,9 @@ BUILDIN_FUNC(mapwarp)	// Added by RoVeRT
 			if(p){
 				for(i=0;i<MAX_PARTY; i++){
 					if(p->data[i].sd && p->data[i].sd->bl.m == m){
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+						pc_disallow_autotrade_transfer(p->data[i].sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
 						pc_setpos(p->data[i].sd,index,x,y,CLR_TELEPORT);
 					}
 				}
@@ -19632,17 +19647,6 @@ BUILDIN_FUNC(unitwarp)
 	else
 		map_idx = map_mapname2mapid(mapname);
 
-#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
-	// 这是一次单体召唤, 赋予特殊传送权限, 以便允许召唤离线挂店的玩家 [Sola丶小克]
-	if (bl&& bl->type == BL_PC) {
-		TBL_PC* sd = nullptr;
-		sd = map_id2sd(bl->id);
-		if (sd) {
-			sd->pandas.special_transfer = true;
-		}
-	}
-#endif // Pandas_Support_IndependentRecall_Autotrade_Player
-
 	if (map_idx >= 0 && bl != NULL)
 		script_pushint(st, unit_warp(bl,map_idx,x,y,CLR_OUTSIGHT));
 	else
@@ -21427,6 +21431,9 @@ static int buildin_instance_warpall_sub(struct block_list *bl, va_list ap)
 				return 0;
 	}
 
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+	pc_disallow_autotrade_transfer(sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
 	pc_setpos(sd, m, x, y, CLR_TELEPORT);
 
 	return 1;
