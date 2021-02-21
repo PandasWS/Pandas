@@ -42,7 +42,7 @@ void suspend_recall_postfix(struct map_session_data* sd);
 void suspend_set_unit_idle(struct map_session_data* sd, struct packet_idle_unit* p);
 void suspend_set_unit_walking(struct map_session_data* sd, struct packet_unit_walking* p);
 void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode);
-void suspend_deactive(struct map_session_data* sd);
+void suspend_deactive(struct map_session_data* sd, bool keep_database);
 
 void do_final_suspend(void);
 void do_init_suspend(void);

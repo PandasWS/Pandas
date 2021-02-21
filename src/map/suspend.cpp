@@ -111,6 +111,9 @@ bool suspend_recall(uint32 charid, e_suspend_mode mode,
 
 	do 
 	{
+		if (map_charid2sd(charid) != nullptr)
+			break;
+
 		if (Sql_Query(mmysql_handle,
 			"SELECT `account_id`, `char_id`, `sex` "
 			"FROM `%s` "
@@ -345,6 +348,9 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 	long val[4] = { 0 };
 	int sitting = -1, headdirection = -1, bodydirection = -1;
 
+	// 先删除数据库中原先的数据记录, 以便接下来重新登记
+	suspend_deactive(sd, false);
+
 	// 设置 autotrade 标记
 	sd->state.autotrade |= AUTOTRADE_ENABLED;
 
@@ -503,9 +509,15 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 	chrif_save(sd, CSAVE_AUTOTRADE);
 }
 
+static int suspend_suspender_free(struct s_suspender* sp) {
+	// 暂时 s_suspender 中没有需要单独释放的字段
+	// 未来结构体中若存在需要单独释放的对象, 则需要在这里进行释放
+	return 0;
+}
+
 //************************************
 // Method:      suspend_suspender_remove
-// Description: 是否某个具体的 struct s_suspender 结构体
+// Description: 释放某个具体的 struct s_suspender 结构体
 // Parameter:   struct s_suspender * sp
 // Parameter:   bool remove
 // Returns:     void
@@ -513,8 +525,10 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 //************************************
 static void suspend_suspender_remove(struct s_suspender* sp, bool remove) {
 	nullpo_retv(sp);
-	if (remove)
+	if (remove) {
 		uidb_remove(suspender_db, sp->char_id);
+	}
+	suspend_suspender_free(sp);
 	aFree(sp);
 }
 
@@ -529,31 +543,34 @@ static void suspend_suspender_remove(struct s_suspender* sp, bool remove) {
 //************************************
 static int suspend_suspender_free(DBKey key, DBData* data, va_list ap) {
 	struct s_suspender* sp = (struct s_suspender*)db_data2ptr(data);
-	if (sp)
-		suspend_suspender_remove(sp, false);
+	if (!sp) return -1;
+	suspend_suspender_remove(sp, false);
 	return 0;
 }
 
 //************************************
 // Method:      suspend_deactive
 // Description: 反激活某个角色的挂起模式, 下次地图服务器启动将不再自动上线
+// Access:      public 
 // Parameter:   struct map_session_data * sd
+// Parameter:   bool keep_database
 // Returns:     void
-// Author:      Sola丶小克(CairoLee)  2020/4/6 18:15
-//************************************
-void suspend_deactive(struct map_session_data* sd) {
+// Author:      Sola丶小克(CairoLee)  2021/02/21 22:32
+//************************************ 
+void suspend_deactive(struct map_session_data* sd, bool keep_database) {
 	nullpo_retv(sd);
 
-	if (Sql_Query(mmysql_handle, "DELETE FROM `%s` WHERE `account_id` = %d;", suspend_table, sd->status.account_id) != SQL_SUCCESS) {
-		Sql_ShowDebug(mmysql_handle);
+	// 若希望保留下次地图服务器开启能自动上线的话, 那么不移除数据库中的记录
+	// 反之则需要移除对应的数据库记录
+	if (!keep_database) {
+		if (Sql_Query(mmysql_handle, "DELETE FROM `%s` WHERE `account_id` = %d;", suspend_table, sd->status.account_id) != SQL_SUCCESS) {
+			Sql_ShowDebug(mmysql_handle);
+		}
 	}
 
 	struct s_suspender* sp = NULL;
 	if (sp = (struct s_suspender*)uidb_get(suspender_db, sd->status.char_id)) {
 		suspend_suspender_remove(sp, true);
-		if (db_size(suspender_db) == 0) {
-			suspender_db->clear(suspender_db, suspend_suspender_free);
-		}
 	}
 }
 

@@ -2115,8 +2115,7 @@ int map_quit(struct map_session_data *sd) {
 	}
 
 #ifdef Pandas_Player_Suspend_System
-	if (sd->state.keepsuspend == false)
-		suspend_deactive(sd);
+	suspend_deactive(sd, sd->state.keepsuspend);
 #endif // Pandas_Player_Suspend_System
 
 	if(!sd->state.active) { //Removing a player that is not active.
