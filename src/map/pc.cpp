@@ -6336,7 +6336,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) ) // Player with autotrade just causes clif glitch! @ FIXME
 		return SETPOS_AUTOTRADE;
 #else
-	if ( sd->state.autotrade && disallow_transfer)
+	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) && disallow_transfer)
 		return SETPOS_AUTOTRADE;
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
