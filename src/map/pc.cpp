@@ -6340,6 +6340,13 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		return SETPOS_AUTOTRADE;
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
+#ifdef Pandas_BattleConfig_Multiplayer_Recall_Behavior
+	if (sd->vender_id && (battle_config.multiplayer_recall_behavior & 1) == 1)
+		return SETPOS_AUTOTRADE;
+	if (sd->buyer_id && (battle_config.multiplayer_recall_behavior & 2) == 2)
+		return SETPOS_AUTOTRADE;
+#endif // Pandas_BattleConfig_Multiplayer_Recall_Behavior
+
 	if( battle_config.revive_onwarp && pc_isdead(sd) ) { //Revive dead people before warping them
 		pc_setstand(sd, true);
 		pc_setrestartvalue(sd,1);

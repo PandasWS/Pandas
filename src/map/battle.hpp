@@ -745,6 +745,9 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_Suspend_Normal_Sitdown
 	int suspend_normal_sitdown;				// 当玩家进入普通模式时, 被拉上线的角色处于站立还是坐下状态 [Sola丶小克]
 #endif // Pandas_BattleConfig_Suspend_Normal_Sitdown
+#ifdef Pandas_BattleConfig_Multiplayer_Recall_Behavior
+	int multiplayer_recall_behavior;		// 控制多人召唤时是否避开在线摆摊玩家 [Sola丶小克]
+#endif // Pandas_BattleConfig_Multiplayer_Recall_Behavior
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

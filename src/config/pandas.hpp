@@ -280,6 +280,10 @@
 	// 是否启用 suspend_normal_sitdown 配置选项及其功能 [Sola丶小克]
 	// 此选项用于指定当玩家进入普通模式时, 被拉上线的角色处于站立还是坐下状态
 	#define Pandas_BattleConfig_Suspend_Normal_Sitdown
+
+	// 是否启用 multiplayer_recall_behavior 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制多人召唤时是否避开在线摆摊玩家
+	#define Pandas_BattleConfig_Multiplayer_Recall_Behavior
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
