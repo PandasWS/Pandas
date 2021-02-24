@@ -6284,6 +6284,10 @@ ACMD_FUNC(autotrade) {
 	sd->pandas.at_sit = pc_issit(sd);
 #endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
 
+#ifdef Pandas_Player_Suspend_System
+	suspend_deactive(sd, false);
+#endif // Pandas_Player_Suspend_System
+
 	if (battle_config.autotrade_monsterignore)
 		sd->state.block_action |= PCBLOCK_IMMUNE;
 
