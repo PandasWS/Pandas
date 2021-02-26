@@ -125,9 +125,13 @@
 		// 使 map_session_data 可记录即将支持捕捉的多个魔物编号 [Sola丶小克]
 		#define Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 
-		// 使 map_session_data 可记录是否禁止角色在挂机时被传送 [Sola丶小克]
-		// 结构体修改定位 pc.hpp -> map_session_data.pandas.disallow_autotrade_transfer
-		#define Pandas_Struct_Map_Session_Data_Disallow_Autotrade_Transfer
+		// 使 map_session_data 可记录接下来的 pc_setpos 调用是不是一次多人传送 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.multitransfer
+		#define Pandas_Struct_Map_Session_Data_MultiTransfer
+
+		// 使 map_session_data 可记录是否在 LoadEndAck 调用中不弹出队列中的事件 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.skip_loadendack_npc_event_dequeue
+		#define Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 
 		// 使 map_session_data 可记录离线挂店 / 挂机角色的朝向等状态数据 [Sola丶小克]
 		// rAthena 使用完成 autotrade 的朝向数据后就销毁掉了
@@ -505,10 +509,21 @@
 
 	// 是否支持使用 @recall 等指令单独召唤离线挂店 / 离线挂机的角色
 	// 主要用于管理员调整挂机单位的站位, 避免阻挡到其他的 NPC 或者传送点等 [Sola丶小克]
-	// 此选项依赖 Pandas_Struct_Map_Session_Data_Disallow_Autotrade_Transfer 和 Pandas_Struct_Map_Session_Data_Autotrade_Configure 的拓展
-	#if defined(Pandas_Struct_Map_Session_Data_Disallow_Autotrade_Transfer) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
-		#define Pandas_Support_Transfer_Autotrade_Player
-	#endif // defined(Pandas_Struct_Map_Session_Data_Disallow_Autotrade_Transfer) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
+	// 此选项依赖以下拓展, 任意一个不成立则将会 undef 此选项的定义
+	// - Pandas_Struct_Map_Session_Data_MultiTransfer
+	// - Pandas_Struct_Map_Session_Data_Autotrade_Configure
+	// - Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
+	#define Pandas_Support_Transfer_Autotrade_Player
+
+	#ifndef Pandas_Struct_Map_Session_Data_MultiTransfer
+		#undef Pandas_Support_Transfer_Autotrade_Player
+	#endif // Pandas_Struct_Map_Session_Data_MultiTransfer
+	#ifndef Pandas_Struct_Map_Session_Data_Autotrade_Configure
+		#undef Pandas_Support_Transfer_Autotrade_Player
+	#endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
+	#ifndef Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
+		#undef Pandas_Support_Transfer_Autotrade_Player
+	#endif // Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 
 	// 是否支持根据系统语言读取对应的消息数据库文件 [Sola丶小克]
 	#define Pandas_Adaptive_Importing_Message_Database

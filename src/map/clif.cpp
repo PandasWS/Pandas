@@ -11279,8 +11279,13 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		sd->state.menu_or_input = 0;
 		sd->npc_menu = 0;
 
+#ifndef Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 		if(sd->npc_id)
 			npc_event_dequeue(sd);
+#else
+		if (sd->npc_id && !sd->pandas.skip_loadendack_npc_event_dequeue)
+			npc_event_dequeue(sd);
+#endif // Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 	}
 
 	if( sd->state.changemap ) {// restore information that gets lost on map-change

@@ -6275,31 +6275,31 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *target)
 
 #ifdef Pandas_Support_Transfer_Autotrade_Player
 //************************************
-// Method:      pc_disallow_autotrade_transfer
-// Description: 禁止在离线挂机的情况下被 pc_setpos 传送
+// Method:      pc_mark_multitransfer
+// Description: 标记接下来的 pc_setpos 调用是一次多人传送
 // Access:      public 
 // Parameter:   struct block_list * bl
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/02/20 22:37
 //************************************ 
-void pc_disallow_autotrade_transfer(struct block_list* bl) {
+void pc_mark_multitransfer(struct block_list* bl) {
 	if (!bl || bl->type != BL_PC) return;
 	TBL_PC* sd = nullptr;
 	sd = (TBL_PC*)bl;
-	pc_disallow_autotrade_transfer(sd);
+	pc_mark_multitransfer(sd);
 }
 
 //************************************
-// Method:      pc_disallow_autotrade_transfer
-// Description: 禁止在离线挂机的情况下被 pc_setpos 传送
+// Method:      pc_mark_multitransfer
+// Description: 标记接下来的 pc_setpos 调用是一次多人传送
 // Access:      public 
 // Parameter:   struct map_session_data * sd
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/02/20 22:37
 //************************************ 
-void pc_disallow_autotrade_transfer(struct map_session_data* sd) {
-	if (!sd || !sd->state.autotrade) return;
-	sd->pandas.disallow_autotrade_transfer = true;
+void pc_mark_multitransfer(struct map_session_data* sd) {
+	if (!sd) return;
+	sd->pandas.multitransfer = true;
 }
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
@@ -6318,10 +6318,10 @@ void pc_disallow_autotrade_transfer(struct map_session_data* sd) {
 enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, clr_type clrtype)
 {
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-	bool disallow_transfer = false;
+	bool multitransfer = false;
 	if (sd) {
-		disallow_transfer = sd->pandas.disallow_autotrade_transfer;
-		sd->pandas.disallow_autotrade_transfer = false;
+		multitransfer = sd->pandas.multitransfer;
+		sd->pandas.multitransfer = false;
 	}
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
@@ -6336,14 +6336,17 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) ) // Player with autotrade just causes clif glitch! @ FIXME
 		return SETPOS_AUTOTRADE;
 #else
-	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) && disallow_transfer)
+	// 离线挂店 + 开设了出售或采购摊位 + 多人召唤 = 放弃被召唤
+	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) && multitransfer)
 		return SETPOS_AUTOTRADE;
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
 #ifdef Pandas_BattleConfig_Multiplayer_Recall_Behavior
-	if (sd->vender_id && (battle_config.multiplayer_recall_behavior & 1) == 1)
+	// 开设了出售摊位 + 设为不能被召唤 + 多人召唤 = 放弃被召唤
+	if (sd->vender_id && (battle_config.multiplayer_recall_behavior & 1) == 1 && multitransfer)
 		return SETPOS_AUTOTRADE;
-	if (sd->buyer_id && (battle_config.multiplayer_recall_behavior & 2) == 2)
+	// 开设了采购摊位 + 设为不能被召唤 + 多人召唤 = 放弃被召唤
+	if (sd->buyer_id && (battle_config.multiplayer_recall_behavior & 2) == 2 && multitransfer)
 		return SETPOS_AUTOTRADE;
 #endif // Pandas_BattleConfig_Multiplayer_Recall_Behavior
 
@@ -6568,8 +6571,9 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 
 #ifdef Pandas_Support_Transfer_Autotrade_Player
 	if (!sd->state.connect_new && sd->state.autotrade) {
-		map_delblock(&sd->bl);
+		sd->pandas.skip_loadendack_npc_event_dequeue = true;
 		clif_parse_LoadEndAck(sd->fd, sd);
+		sd->pandas.skip_loadendack_npc_event_dequeue = false;
 
 		if (pc_autotrade_suspend(sd)) {
 			suspend_recall_postfix(sd);

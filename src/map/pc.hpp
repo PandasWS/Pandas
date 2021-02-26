@@ -854,9 +854,12 @@ struct map_session_data {
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 		std::vector<uint32> multi_catch_target_class;	// 用于记录即将支持捕捉的多个魔物编号
 #endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
-#ifdef Pandas_Struct_Map_Session_Data_Disallow_Autotrade_Transfer
-		bool disallow_autotrade_transfer = false;		// 用于标记挂机时是否允许传送
-#endif // Pandas_Struct_Map_Session_Data_Disallow_Autotrade_Transfer
+#ifdef Pandas_Struct_Map_Session_Data_MultiTransfer
+		bool multitransfer = false;		// 用于标记接下来的 pc_setpos 调用是一次多人传送
+#endif // Pandas_Struct_Map_Session_Data_MultiTransfer
+#ifdef Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
+		bool skip_loadendack_npc_event_dequeue = false;
+#endif // Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 #ifdef Pandas_Struct_Map_Session_Data_Autotrade_Configure
 		unsigned char at_sex;				// 性别 (M 表示男性, F 表示女性)
 		unsigned char at_dir;				// 纸娃娃身体朝向
@@ -1246,8 +1249,8 @@ enum e_setpos{
 };
 
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-void pc_disallow_autotrade_transfer(struct block_list* bl);
-void pc_disallow_autotrade_transfer(struct map_session_data* sd);
+void pc_mark_multitransfer(struct block_list* bl);
+void pc_mark_multitransfer(struct map_session_data* sd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
 enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, clr_type clrtype);

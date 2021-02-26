@@ -3803,7 +3803,7 @@ ACMD_FUNC(recallall)
 				count++;
 			else {
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-				pc_disallow_autotrade_transfer(pl_sd);
+				pc_mark_multitransfer(pl_sd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 				if( pc_setpos(pl_sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
 					count++;
@@ -3867,7 +3867,7 @@ ACMD_FUNC(guildrecall)
 				count++;
 			else{
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-				pc_disallow_autotrade_transfer(pl_sd);
+				pc_mark_multitransfer(pl_sd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 				if( pc_setpos(pl_sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
 					count++;
@@ -3932,7 +3932,7 @@ ACMD_FUNC(partyrecall)
 				count++;
 			else{
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-				pc_disallow_autotrade_transfer(pl_sd);
+				pc_mark_multitransfer(pl_sd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 				if( pc_setpos(pl_sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
 					count++;
@@ -10579,7 +10579,7 @@ ACMD_FUNC(recallmap) {
 				count++;
 			else {
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-				pc_disallow_autotrade_transfer(pl_sd);
+				pc_mark_multitransfer(pl_sd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 				if (pc_setpos(pl_sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_RESPAWN) == SETPOS_AUTOTRADE) {
 					count++;

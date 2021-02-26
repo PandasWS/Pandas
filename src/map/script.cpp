@@ -6118,7 +6118,7 @@ static int buildin_areawarp_sub(struct block_list *bl,va_list ap)
 	y3 = va_arg(ap,int);
 
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-	pc_disallow_autotrade_transfer(bl);
+	pc_mark_multitransfer(bl);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
 	if(index == 0)
@@ -6297,7 +6297,7 @@ BUILDIN_FUNC(warpparty)
 #endif // Pandas_ScriptCommand_WarpPartyRevive
 
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-		pc_disallow_autotrade_transfer(pl_sd);
+		pc_mark_multitransfer(pl_sd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
 		switch( type )
@@ -6385,7 +6385,7 @@ BUILDIN_FUNC(warpguild)
 			continue;
 
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-		pc_disallow_autotrade_transfer(pl_sd);
+		pc_mark_multitransfer(pl_sd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
 		switch( type )
@@ -13097,7 +13097,7 @@ BUILDIN_FUNC(warpwaitingpc)
 		mapreg_setreg(reference_uid(add_str("$@warpwaitingpc"), i), sd->bl.id);
 
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-		pc_disallow_autotrade_transfer(sd);
+		pc_mark_multitransfer(sd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
 		if( strcmp(map_name,"Random") == 0 )
@@ -14085,7 +14085,7 @@ BUILDIN_FUNC(mapwarp)	// Added by RoVeRT
 				{
 					if(g->member[i].sd && g->member[i].sd->bl.m==m){
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-						pc_disallow_autotrade_transfer(g->member[i].sd);
+						pc_mark_multitransfer(g->member[i].sd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 						pc_setpos(g->member[i].sd,index,x,y,CLR_TELEPORT);
 					}
@@ -14098,7 +14098,7 @@ BUILDIN_FUNC(mapwarp)	// Added by RoVeRT
 				for(i=0;i<MAX_PARTY; i++){
 					if(p->data[i].sd && p->data[i].sd->bl.m == m){
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-						pc_disallow_autotrade_transfer(p->data[i].sd);
+						pc_mark_multitransfer(p->data[i].sd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 						pc_setpos(p->data[i].sd,index,x,y,CLR_TELEPORT);
 					}
@@ -21432,7 +21432,7 @@ static int buildin_instance_warpall_sub(struct block_list *bl, va_list ap)
 	}
 
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-	pc_disallow_autotrade_transfer(sd);
+	pc_mark_multitransfer(sd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 	pc_setpos(sd, m, x, y, CLR_TELEPORT);
 

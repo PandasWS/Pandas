@@ -9456,7 +9456,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 						dx[j] = dy[j] = 0;
 
 #ifdef Pandas_Support_Transfer_Autotrade_Player
-					pc_disallow_autotrade_transfer(dstsd);
+					pc_mark_multitransfer(dstsd);
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
 					if (!pc_setpos(dstsd, map_id2index(src->m), src->x+dx[j], src->y+dy[j], CLR_RESPAWN))
