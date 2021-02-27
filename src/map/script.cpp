@@ -18279,8 +18279,18 @@ BUILDIN_FUNC(checkvending) {
 		else if (sd->state.buyingstore)
 			ret = 4;
 
+#ifndef Pandas_Struct_Autotrade_Extend
 		if (sd->state.autotrade)
 			ret |= 2;
+#else
+		// 经由 Pandas_Struct_Autotrade_Extend 改造之后
+		// sd->state.autotrade 同时也包含了其他挂机模式的位值在其中
+		// 因此不能仅判断 sd->state.autotrade 是否非 0, 而应该进行明确指定的位运算判断
+		if ((sd->state.autotrade & AUTOTRADE_VENDING) == AUTOTRADE_VENDING ||
+			(sd->state.autotrade & AUTOTRADE_BUYINGSTORE) == AUTOTRADE_BUYINGSTORE) {
+			ret |= 2;
+		}
+#endif // Pandas_Struct_Autotrade_Extend
 		script_pushint(st, ret);
 	}
 	return SCRIPT_CMD_SUCCESS;
@@ -28789,13 +28799,13 @@ BUILDIN_FUNC(batrec_clear) {
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(enable_batrec) {
 	struct block_list* bl = nullptr;
-	script_rid2bl(2, bl);
+	int unit_id = st->rid;
 
 	if (script_hasdata(st, 2)) {
-		bl = map_id2bl(script_getnum(st, 2));
+		unit_id = script_getnum(st, 2);
 	}
 
-	if (!bl) {
+	if (!(bl = map_id2bl(unit_id))) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
@@ -28819,13 +28829,13 @@ BUILDIN_FUNC(enable_batrec) {
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(disable_batrec) {
 	struct block_list* bl = nullptr;
-	script_rid2bl(2, bl);
+	int unit_id = st->rid;
 
 	if (script_hasdata(st, 2)) {
-		bl = map_id2bl(script_getnum(st, 2));
+		unit_id = script_getnum(st, 2);
 	}
 
-	if (!bl) {
+	if (!(bl = map_id2bl(unit_id))) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
@@ -28886,6 +28896,52 @@ BUILDIN_FUNC(login) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_Login
+
+#ifdef Pandas_ScriptCommand_CheckSuspend
+/* ===========================================================
+ * 指令: checksuspend
+ * 描述: 获取指定角色或指定账号当前在线角色的挂机模式
+ * 用法: checksuspend {<角色编号|账号编号|"角色名称">};
+ * 返回: 角色不存在返回 -1, 否则返回当前的挂机状态
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(checksuspend) {
+	TBL_PC* sd = nullptr;
+
+	if (script_hasdata(st, 2)) {
+		if (script_isstring(st, 2))
+			sd = map_nick2sd(script_getstr(st, 2), false);
+		else {
+			int id = script_getnum(st, 2);
+			sd = map_id2sd(id);
+			if (!sd)
+				sd = map_charid2sd(id);
+		}
+	}
+	else {
+		if (!script_rid2sd(sd)) {
+			script_pushint(st, -1);
+			return SCRIPT_CMD_SUCCESS;
+		}
+	}
+
+	if (!sd) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if ((sd->state.autotrade & AUTOTRADE_OFFLINE) == AUTOTRADE_OFFLINE)
+		script_pushint(st, SUSPEND_MODE_OFFLINE);
+	else if ((sd->state.autotrade & AUTOTRADE_AFK) == AUTOTRADE_AFK)
+		script_pushint(st, SUSPEND_MODE_AFK);
+	else if ((sd->state.autotrade & AUTOTRADE_NORMAL) == AUTOTRADE_NORMAL)
+		script_pushint(st, SUSPEND_MODE_NORMAL);
+	else
+		script_pushint(st, SUSPEND_MODE_NONE);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_CheckSuspend
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
@@ -29088,6 +29144,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_Login
 	BUILDIN_DEF(login,"i????"),							// 将指定的角色以特定的登录模式拉上线 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Login
+#ifdef Pandas_ScriptCommand_CheckSuspend
+	BUILDIN_DEF(checksuspend,"?"),						// 获取指定角色或指定账号当前在线角色的挂机模式 [Sola丶小克]
+#endif // Pandas_ScriptCommand_CheckSuspend
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
