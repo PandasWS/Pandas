@@ -3833,6 +3833,22 @@ void script_free_state(struct script_state* st)
 				clif_clearunit_single(sd->npc_id, CLR_OUTSIGHT, sd->fd);
 				sd->state.using_fake_npc = 0;
 			}
+
+#ifdef Pandas_Fix_Progressbar_Abort_Stuck
+			// 若当前角色的 progressbar 信息里记录的来源 NPC 编号等于即将销毁的 st 的 NPC 编号,
+			// 那么进行对应的清理操作避免后续角色出现卡住无法移动的情况
+			if (sd->progressbar.npc_id == sd->st->oid && sd->status.account_id == sd->st->rid) {
+				clif_progressbar_abort(sd);
+
+				sd->progressbar.npc_id = 0;
+				sd->progressbar.timeout = 0;
+
+				if (battle_config.idletime_option & IDLE_NPC_PROGRESS) {
+					sd->idletime = last_tick;
+				}
+			}
+#endif // Pandas_Fix_Progressbar_Abort_Stuck
+
 			sd->st = NULL;
 			sd->npc_id = 0;
 		}
