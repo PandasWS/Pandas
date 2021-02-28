@@ -692,6 +692,21 @@ void do_init_buyingstore_autotrade( void ) {
 				Sql_GetData(mmysql_handle, 8, &data, NULL); at->sit = atoi(data);
 				at->count = 0;
 
+#ifdef Pandas_Player_Suspend_System
+				// 账号已在线则跳过
+				// 避免角色已经被 @afk 或 @suspend 拉上线导致的潜在冲突
+				TBL_PC* sd = nullptr;
+				if ((sd = map_id2sd(at->account_id)) != NULL) {
+					aFree(at);
+					continue;
+				}
+
+				if (chrif_search(at->account_id) != NULL) {
+					aFree(at);
+					continue;
+				}
+#endif // Pandas_Player_Suspend_System
+
 				if (battle_config.feature_autotrade_direction >= 0)
 					at->dir = battle_config.feature_autotrade_direction;
 				if (battle_config.feature_autotrade_head_direction >= 0)

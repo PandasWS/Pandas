@@ -9134,6 +9134,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_Suspend_Normal_Sitdown
 	{ "suspend_normal_sitdown",    &battle_config.suspend_normal_sitdown,                   -1,     -1,     1,              },
 #endif // Pandas_BattleConfig_Suspend_Normal_Sitdown
+#ifdef Pandas_BattleConfig_Multiplayer_Recall_Behavior
+	{ "multiplayer_recall_behavior",    &battle_config.multiplayer_recall_behavior,         3,      0,      3,              },
+#endif // Pandas_BattleConfig_Multiplayer_Recall_Behavior
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };

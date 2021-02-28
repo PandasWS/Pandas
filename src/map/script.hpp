@@ -266,10 +266,6 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_ENTERMAP
 	const char* entermap_express_name;	// NPCX_ENTERMAP	// OnPCEnterMapExpress	// 当玩家进入或者改变地图时触发实时事件
 #endif // Pandas_NpcExpress_ENTERMAP
-
-#ifdef Pandas_NpcExpress_UNITFREE
-	const char* unitfree_express_name;	// NPCX_UNITFREE	// OnUnitFreeExpress	// 当游戏单位被销毁时触发实时事件
-#endif // Pandas_NpcExpress_UNITFREE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related

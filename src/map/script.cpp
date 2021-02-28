@@ -386,10 +386,6 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcExpress_ENTERMAP
 	"OnPCEnterMapExpress",	// NPCX_ENTERMAP		// entermap_express_name	// 当玩家进入或者改变地图时触发实时事件
 #endif // Pandas_NpcExpress_ENTERMAP
-
-#ifdef Pandas_NpcExpress_UNITFREE
-	"OnUnitFreeExpress",	// NPCX_UNITFREE		// unitfree_express_name	// 当游戏单位被销毁时触发实时事件
-#endif // Pandas_NpcExpress_UNITFREE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 
 	// NPC related
@@ -6093,13 +6089,6 @@ BUILDIN_FUNC(warp)
 	x = script_getnum(st,3);
 	y = script_getnum(st,4);
 
-#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
-	// 这是一次单体召唤, 赋予特殊传送权限, 以便允许召唤离线挂店的玩家 [Sola丶小克]
-	if (sd && sd->bl.type == BL_PC) {
-		sd->pandas.special_transfer = true;
-	}
-#endif // Pandas_Support_IndependentRecall_Autotrade_Player
-
 	if(strcmp(str,"Random")==0)
 		ret = pc_randomwarp(sd,CLR_TELEPORT);
 	else if(strcmp(str,"SavePoint")==0 || strcmp(str,"Save")==0)
@@ -6127,6 +6116,10 @@ static int buildin_areawarp_sub(struct block_list *bl,va_list ap)
 	y2 = va_arg(ap,int);
 	x3 = va_arg(ap,int);
 	y3 = va_arg(ap,int);
+
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+	pc_mark_multitransfer(bl);
+#endif // Pandas_Support_Transfer_Autotrade_Player
 
 	if(index == 0)
 		pc_randomwarp((TBL_PC *)bl,CLR_TELEPORT);
@@ -6303,6 +6296,10 @@ BUILDIN_FUNC(warpparty)
 			continue;
 #endif // Pandas_ScriptCommand_WarpPartyRevive
 
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+		pc_mark_multitransfer(pl_sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
+
 		switch( type )
 		{
 		case 0: // Random
@@ -6386,6 +6383,10 @@ BUILDIN_FUNC(warpguild)
 	{
 		if( pl_sd->status.guild_id != gid )
 			continue;
+
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+		pc_mark_multitransfer(pl_sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
 
 		switch( type )
 		{
@@ -13095,6 +13096,10 @@ BUILDIN_FUNC(warpwaitingpc)
 
 		mapreg_setreg(reference_uid(add_str("$@warpwaitingpc"), i), sd->bl.id);
 
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+		pc_mark_multitransfer(sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
+
 		if( strcmp(map_name,"Random") == 0 )
 			pc_randomwarp(sd,CLR_TELEPORT);
 		else if( strcmp(map_name,"SavePoint") == 0 )
@@ -14079,6 +14084,9 @@ BUILDIN_FUNC(mapwarp)	// Added by RoVeRT
 				for( i=0; i < g->max_member; i++)
 				{
 					if(g->member[i].sd && g->member[i].sd->bl.m==m){
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+						pc_mark_multitransfer(g->member[i].sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
 						pc_setpos(g->member[i].sd,index,x,y,CLR_TELEPORT);
 					}
 				}
@@ -14089,6 +14097,9 @@ BUILDIN_FUNC(mapwarp)	// Added by RoVeRT
 			if(p){
 				for(i=0;i<MAX_PARTY; i++){
 					if(p->data[i].sd && p->data[i].sd->bl.m == m){
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+						pc_mark_multitransfer(p->data[i].sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
 						pc_setpos(p->data[i].sd,index,x,y,CLR_TELEPORT);
 					}
 				}
@@ -18268,8 +18279,18 @@ BUILDIN_FUNC(checkvending) {
 		else if (sd->state.buyingstore)
 			ret = 4;
 
+#ifndef Pandas_Struct_Autotrade_Extend
 		if (sd->state.autotrade)
 			ret |= 2;
+#else
+		// 经由 Pandas_Struct_Autotrade_Extend 改造之后
+		// sd->state.autotrade 同时也包含了其他挂机模式的位值在其中
+		// 因此不能仅判断 sd->state.autotrade 是否非 0, 而应该进行明确指定的位运算判断
+		if ((sd->state.autotrade & AUTOTRADE_VENDING) == AUTOTRADE_VENDING ||
+			(sd->state.autotrade & AUTOTRADE_BUYINGSTORE) == AUTOTRADE_BUYINGSTORE) {
+			ret |= 2;
+		}
+#endif // Pandas_Struct_Autotrade_Extend
 		script_pushint(st, ret);
 	}
 	return SCRIPT_CMD_SUCCESS;
@@ -19635,17 +19656,6 @@ BUILDIN_FUNC(unitwarp)
 		map_idx = bl?bl->m:-1;
 	else
 		map_idx = map_mapname2mapid(mapname);
-
-#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
-	// 这是一次单体召唤, 赋予特殊传送权限, 以便允许召唤离线挂店的玩家 [Sola丶小克]
-	if (bl&& bl->type == BL_PC) {
-		TBL_PC* sd = nullptr;
-		sd = map_id2sd(bl->id);
-		if (sd) {
-			sd->pandas.special_transfer = true;
-		}
-	}
-#endif // Pandas_Support_IndependentRecall_Autotrade_Player
 
 	if (map_idx >= 0 && bl != NULL)
 		script_pushint(st, unit_warp(bl,map_idx,x,y,CLR_OUTSIGHT));
@@ -21431,6 +21441,9 @@ static int buildin_instance_warpall_sub(struct block_list *bl, va_list ap)
 				return 0;
 	}
 
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+	pc_mark_multitransfer(sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
 	pc_setpos(sd, m, x, y, CLR_TELEPORT);
 
 	return 1;
@@ -28786,13 +28799,13 @@ BUILDIN_FUNC(batrec_clear) {
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(enable_batrec) {
 	struct block_list* bl = nullptr;
-	script_rid2bl(2, bl);
+	int unit_id = st->rid;
 
 	if (script_hasdata(st, 2)) {
-		bl = map_id2bl(script_getnum(st, 2));
+		unit_id = script_getnum(st, 2);
 	}
 
-	if (!bl) {
+	if (!(bl = map_id2bl(unit_id))) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
@@ -28816,13 +28829,13 @@ BUILDIN_FUNC(enable_batrec) {
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(disable_batrec) {
 	struct block_list* bl = nullptr;
-	script_rid2bl(2, bl);
+	int unit_id = st->rid;
 
 	if (script_hasdata(st, 2)) {
-		bl = map_id2bl(script_getnum(st, 2));
+		unit_id = script_getnum(st, 2);
 	}
 
-	if (!bl) {
+	if (!(bl = map_id2bl(unit_id))) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
@@ -28883,6 +28896,52 @@ BUILDIN_FUNC(login) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_Login
+
+#ifdef Pandas_ScriptCommand_CheckSuspend
+/* ===========================================================
+ * 指令: checksuspend
+ * 描述: 获取指定角色或指定账号当前在线角色的挂机模式
+ * 用法: checksuspend {<角色编号|账号编号|"角色名称">};
+ * 返回: 角色不存在返回 -1, 否则返回当前的挂机状态
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(checksuspend) {
+	TBL_PC* sd = nullptr;
+
+	if (script_hasdata(st, 2)) {
+		if (script_isstring(st, 2))
+			sd = map_nick2sd(script_getstr(st, 2), false);
+		else {
+			int id = script_getnum(st, 2);
+			sd = map_id2sd(id);
+			if (!sd)
+				sd = map_charid2sd(id);
+		}
+	}
+	else {
+		if (!script_rid2sd(sd)) {
+			script_pushint(st, -1);
+			return SCRIPT_CMD_SUCCESS;
+		}
+	}
+
+	if (!sd) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if ((sd->state.autotrade & AUTOTRADE_OFFLINE) == AUTOTRADE_OFFLINE)
+		script_pushint(st, SUSPEND_MODE_OFFLINE);
+	else if ((sd->state.autotrade & AUTOTRADE_AFK) == AUTOTRADE_AFK)
+		script_pushint(st, SUSPEND_MODE_AFK);
+	else if ((sd->state.autotrade & AUTOTRADE_NORMAL) == AUTOTRADE_NORMAL)
+		script_pushint(st, SUSPEND_MODE_NORMAL);
+	else
+		script_pushint(st, SUSPEND_MODE_NONE);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_CheckSuspend
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
@@ -29085,6 +29144,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_Login
 	BUILDIN_DEF(login,"i????"),							// 将指定的角色以特定的登录模式拉上线 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Login
+#ifdef Pandas_ScriptCommand_CheckSuspend
+	BUILDIN_DEF(checksuspend,"?"),						// 获取指定角色或指定账号当前在线角色的挂机模式 [Sola丶小克]
+#endif // Pandas_ScriptCommand_CheckSuspend
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

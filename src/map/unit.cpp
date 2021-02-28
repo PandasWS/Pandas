@@ -37,10 +37,6 @@
 #include "storage.hpp"
 #include "trade.hpp"
 
-#ifdef Pandas_NpcExpress_UNITFREE
-#include "mapreg.hpp"
-#endif // Pandas_NpcExpress_UNITFREE
-
 // Directions values
 // 1 0 7
 // 2 . 6
@@ -2927,10 +2923,6 @@ void unit_dataset(struct block_list *bl)
 	ud->attackabletime =
 	ud->canact_tick    =
 	ud->canmove_tick   = gettick();
-
-#ifdef Pandas_BattleRecord
-	batrec_new(bl);
-#endif // Pandas_BattleRecord
 }
 
 /**
@@ -3622,10 +3614,6 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			break;
 		}
 	}
-
-#ifdef Pandas_BattleRecord
-	batrec_free(bl);
-#endif // Pandas_BattleRecord
 
 	map_deliddb(bl);
 
