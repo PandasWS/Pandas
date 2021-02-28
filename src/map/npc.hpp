@@ -1370,10 +1370,6 @@ enum npce_event : uint8 {
 	NPCE_USE_SKILL,	// use_skill_event_name	// OnPCUseSkillEvent		// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
 
-#ifdef Pandas_NpcEvent_PROGRESS_ABORT
-	NPCE_PROGRESS_ABORT,	// progressbar_abort_event_name	// OnPCProgressAbortEvent		// 当玩家的进度条被打断后触发事件
-#endif // Pandas_NpcEvent_PROGRESS_ABORT
-
 #ifdef Pandas_NpcEvent_EQUIP
 	NPCE_EQUIP,	// equip_event_name	// OnPCEquipEvent		// 当玩家成功穿戴一件装备时触发事件
 #endif // Pandas_NpcEvent_EQUIP
@@ -1406,6 +1402,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcExpress_UNITFREE
 	NPCX_UNITFREE,	// unitfree_express_name	// OnUnitFreeExpress		// 当游戏单位被销毁时触发实时事件
 #endif // Pandas_NpcExpress_UNITFREE
+
+#ifdef Pandas_NpcExpress_PROGRESSABORT
+	NPCX_PROGRESSABORT,	// progressabort_express_name	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
+#endif // Pandas_NpcExpress_PROGRESSABORT
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX

@@ -11613,11 +11613,13 @@ void clif_progressbar_abort(struct map_session_data * sd)
 	WFIFOW(fd,0) = 0x2f2;
 	WFIFOSET(fd,packet_len(0x2f2));
 
-#ifdef Pandas_NpcEvent_PROGRESS_ABORT
-	if (isAllowTriggerEvent(sd, NPCE_PROGRESS_ABORT)) {
-		npc_script_event(sd, NPCE_PROGRESS_ABORT);
+#ifdef Pandas_NpcExpress_PROGRESSABORT
+	if (isAllowTriggerEvent(sd, NPCX_PROGRESSABORT)) {
+		pc_setreg(sd, add_str("@abort_npc_id"), sd->progressbar.npc_id);
+		pc_setreg(sd, add_str("@abort_timeout"), (int64)sd->progressbar.timeout);
+		npc_script_event(sd, NPCX_PROGRESSABORT);
 	}
-#endif // Pandas_NpcEvent_PROGRESS_ABORT
+#endif // Pandas_NpcExpress_PROGRESSABORT
 }
 
 

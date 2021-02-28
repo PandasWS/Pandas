@@ -354,10 +354,6 @@ struct Script_Config script_config = {
 	"OnPCUseSkillEvent",	// NPCE_USE_SKILL		// use_skill_event_name	// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
 
-#ifdef Pandas_NpcEvent_PROGRESS_ABORT
-	"OnPCProgressAbortEvent",	// NPCE_PROGRESS_ABORT		// progressbar_abort_event_name	// 当玩家的进度条被打断后触发事件
-#endif // Pandas_NpcEvent_PROGRESS_ABORT
-
 #ifdef Pandas_NpcEvent_EQUIP
 	"OnPCEquipEvent",	// NPCE_EQUIP		// equip_event_name	// 当玩家成功穿戴一件装备时触发事件
 #endif // Pandas_NpcEvent_EQUIP
@@ -386,6 +382,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcExpress_ENTERMAP
 	"OnPCEnterMapExpress",	// NPCX_ENTERMAP		// entermap_express_name	// 当玩家进入或者改变地图时触发实时事件
 #endif // Pandas_NpcExpress_ENTERMAP
+
+#ifdef Pandas_NpcExpress_PROGRESSABORT
+	"OnPCProgressAbortExpress",	// NPCX_PROGRESSABORT		// progressabort_express_name	// 当 progressbar 进度条被打断时触发实时事件
+#endif // Pandas_NpcExpress_PROGRESSABORT
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 
 	// NPC related

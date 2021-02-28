@@ -1023,11 +1023,6 @@
 	// 常量名称: NPCE_USE_SKILL / 变量名称: use_skill_event_name
 	#define Pandas_NpcEvent_USE_SKILL
 
-	// 当玩家的进度条被打断后触发事件 [Sola丶小克]
-	// 事件类型: Event / 事件名称: OnPCProgressAbortEvent
-	// 常量名称: NPCE_PROGRESS_ABORT / 变量名称: progressbar_abort_event_name
-	#define Pandas_NpcEvent_PROGRESS_ABORT
-
 	// 当玩家成功穿戴一件装备时触发事件 [Sola丶小克]
 	// 事件类型: Event / 事件名称: OnPCEquipEvent
 	// 常量名称: NPCE_EQUIP / 变量名称: equip_event_name
@@ -1066,6 +1061,11 @@
 		// 事件类型: Express / 事件名称: OnPCEnterMapExpress
 		// 常量名称: NPCX_ENTERMAP / 变量名称: entermap_express_name
 		#define Pandas_NpcExpress_ENTERMAP
+
+		// 当 progressbar 进度条被打断时触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnPCProgressAbortExpress
+		// 常量名称: NPCX_PROGRESSABORT / 变量名称: progressabort_express_name
+		#define Pandas_NpcExpress_PROGRESSABORT
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	
