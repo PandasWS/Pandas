@@ -509,12 +509,6 @@ void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
 	chrif_save(sd, CSAVE_AUTOTRADE);
 }
 
-static int suspend_suspender_free(struct s_suspender* sp) {
-	// 暂时 s_suspender 中没有需要单独释放的字段
-	// 未来结构体中若存在需要单独释放的对象, 则需要在这里进行释放
-	return 0;
-}
-
 //************************************
 // Method:      suspend_suspender_remove
 // Description: 释放某个具体的 struct s_suspender 结构体
@@ -525,10 +519,8 @@ static int suspend_suspender_free(struct s_suspender* sp) {
 //************************************
 static void suspend_suspender_remove(struct s_suspender* sp, bool remove) {
 	nullpo_retv(sp);
-	if (remove) {
+	if (remove)
 		uidb_remove(suspender_db, sp->char_id);
-	}
-	suspend_suspender_free(sp);
 	aFree(sp);
 }
 
