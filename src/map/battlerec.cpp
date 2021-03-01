@@ -95,11 +95,30 @@ void batrec_new(struct block_list* bl) {
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(bl))) return;
 
-	ucd->batrec.dmg_receive = new batrec_map;
-	ucd->batrec.dmg_cause = new batrec_map;
+	switch (bl->type) {
+	case BL_PC:
+	case BL_MOB:
+	case BL_PET:
+	case BL_HOM:
+	case BL_MER:
+	case BL_NPC:
+	case BL_ELEM:
+		if (!ucd->batrec.dmg_receive)
+			ucd->batrec.dmg_receive = new batrec_map;
+		if (!ucd->batrec.dmg_cause)
+			ucd->batrec.dmg_cause = new batrec_map;
 
-	// 玩家类型默认不启用记录, 否则在线一直打怪记录会一直堆积
-	ucd->batrec.dorecord = (bl->type != BL_PC);
+		ucd->batrec.dmg_receive->clear();
+		ucd->batrec.dmg_cause->clear();
+
+		// 玩家类型默认不启用记录, 否则在线一直打怪记录会一直堆积
+		ucd->batrec.dorecord = (bl->type != BL_PC);
+		break;
+	default:
+		batrec_free(bl);
+		ucd->batrec.dorecord = false;
+		return;
+	}
 }
 
 //************************************

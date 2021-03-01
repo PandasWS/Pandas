@@ -2047,6 +2047,10 @@ void map_addiddb(struct block_list *bl)
 {
 	nullpo_retv(bl);
 
+#ifdef Pandas_BattleRecord
+	batrec_new(bl);
+#endif // Pandas_BattleRecord
+
 	if( bl->type == BL_PC )
 	{
 		TBL_PC* sd = (TBL_PC*)bl;
@@ -2074,6 +2078,10 @@ void map_addiddb(struct block_list *bl)
 void map_deliddb(struct block_list *bl)
 {
 	nullpo_retv(bl);
+
+#ifdef Pandas_BattleRecord
+	batrec_free(bl);
+#endif // Pandas_BattleRecord
 
 	if( bl->type == BL_PC )
 	{
@@ -2107,8 +2115,7 @@ int map_quit(struct map_session_data *sd) {
 	}
 
 #ifdef Pandas_Player_Suspend_System
-	if (sd->state.keepsuspend == false)
-		suspend_deactive(sd);
+	suspend_deactive(sd, sd->state.keepsuspend);
 #endif // Pandas_Player_Suspend_System
 
 	if(!sd->state.active) { //Removing a player that is not active.

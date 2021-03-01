@@ -6273,6 +6273,36 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *target)
 	return 0;
 }
 
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+//************************************
+// Method:      pc_mark_multitransfer
+// Description: 标记接下来的 pc_setpos 调用是一次多人传送
+// Access:      public 
+// Parameter:   struct block_list * bl
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/02/20 22:37
+//************************************ 
+void pc_mark_multitransfer(struct block_list* bl) {
+	if (!bl || bl->type != BL_PC) return;
+	TBL_PC* sd = nullptr;
+	sd = (TBL_PC*)bl;
+	pc_mark_multitransfer(sd);
+}
+
+//************************************
+// Method:      pc_mark_multitransfer
+// Description: 标记接下来的 pc_setpos 调用是一次多人传送
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/02/20 22:37
+//************************************ 
+void pc_mark_multitransfer(struct map_session_data* sd) {
+	if (!sd) return;
+	sd->pandas.multitransfer = true;
+}
+#endif // Pandas_Support_Transfer_Autotrade_Player
+
 /*==========================================
  * Set's a player position.
  * @param sd
@@ -6287,14 +6317,13 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *target)
  *------------------------------------------*/
 enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, clr_type clrtype)
 {
-#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
-	bool special_transfer = false;
-	// 重置标记位, 避免影响其他判断流程 [Sola丶小克]
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+	bool multitransfer = false;
 	if (sd) {
-		special_transfer = sd->pandas.special_transfer;
-		sd->pandas.special_transfer = false;
+		multitransfer = sd->pandas.multitransfer;
+		sd->pandas.multitransfer = false;
 	}
-#endif // Pandas_Support_SpecialTransfer_Autotrade_Player
+#endif // Pandas_Support_Transfer_Autotrade_Player
 
 	nullpo_retr(SETPOS_OK,sd);
 
@@ -6303,13 +6332,23 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		return SETPOS_MAPINDEX;
 	}
 
-#ifndef Pandas_Support_SpecialTransfer_Autotrade_Player
+#ifndef Pandas_Support_Transfer_Autotrade_Player
 	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) ) // Player with autotrade just causes clif glitch! @ FIXME
 		return SETPOS_AUTOTRADE;
 #else
-	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) && !special_transfer)
+	// 离线挂店 + 开设了出售或采购摊位 + 多人召唤 = 放弃被召唤
+	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) && multitransfer)
 		return SETPOS_AUTOTRADE;
-#endif // Pandas_Support_SpecialTransfer_Autotrade_Player
+#endif // Pandas_Support_Transfer_Autotrade_Player
+
+#ifdef Pandas_BattleConfig_Multiplayer_Recall_Behavior
+	// 开设了出售摊位 + 设为不能被召唤 + 多人召唤 = 放弃被召唤
+	if (sd->vender_id && (battle_config.multiplayer_recall_behavior & 1) == 1 && multitransfer)
+		return SETPOS_AUTOTRADE;
+	// 开设了采购摊位 + 设为不能被召唤 + 多人召唤 = 放弃被召唤
+	if (sd->buyer_id && (battle_config.multiplayer_recall_behavior & 2) == 2 && multitransfer)
+		return SETPOS_AUTOTRADE;
+#endif // Pandas_BattleConfig_Multiplayer_Recall_Behavior
 
 	if( battle_config.revive_onwarp && pc_isdead(sd) ) { //Revive dead people before warping them
 		pc_setstand(sd, true);
@@ -6530,10 +6569,11 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		sd->ed->ud.dir = sd->ud.dir;
 	}
 
-#ifdef Pandas_Support_SpecialTransfer_Autotrade_Player
-	if (!sd->state.connect_new && sd->state.autotrade && special_transfer) {
-		map_delblock(&sd->bl);
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+	if (!sd->state.connect_new && sd->state.autotrade) {
+		sd->pandas.skip_loadendack_npc_event_dequeue = true;
 		clif_parse_LoadEndAck(sd->fd, sd);
+		sd->pandas.skip_loadendack_npc_event_dequeue = false;
 
 		if (pc_autotrade_suspend(sd)) {
 			suspend_recall_postfix(sd);
@@ -6551,7 +6591,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		// Immediate save
 		chrif_save(sd, CSAVE_AUTOTRADE);
 	}
-#endif // Pandas_Support_SpecialTransfer_Autotrade_Player
+#endif // Pandas_Support_Transfer_Autotrade_Player
 
 	pc_cell_basilica(sd);
 

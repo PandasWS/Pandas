@@ -125,9 +125,13 @@
 		// 使 map_session_data 可记录即将支持捕捉的多个魔物编号 [Sola丶小克]
 		#define Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 
-		// 使 map_session_data 可记录是否拥有特殊召唤权限 [Sola丶小克]
-		// 结构体修改定位 pc.hpp -> map_session_data.pandas.special_transfer
-		#define Pandas_Struct_Map_Session_Data_SpecialTransfer
+		// 使 map_session_data 可记录接下来的 pc_setpos 调用是不是一次多人传送 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.multitransfer
+		#define Pandas_Struct_Map_Session_Data_MultiTransfer
+
+		// 使 map_session_data 可记录是否在 LoadEndAck 调用中不弹出队列中的事件 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.skip_loadendack_npc_event_dequeue
+		#define Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 
 		// 使 map_session_data 可记录离线挂店 / 挂机角色的朝向等状态数据 [Sola丶小克]
 		// rAthena 使用完成 autotrade 的朝向数据后就销毁掉了
@@ -280,6 +284,10 @@
 	// 是否启用 suspend_normal_sitdown 配置选项及其功能 [Sola丶小克]
 	// 此选项用于指定当玩家进入普通模式时, 被拉上线的角色处于站立还是坐下状态
 	#define Pandas_BattleConfig_Suspend_Normal_Sitdown
+
+	// 是否启用 multiplayer_recall_behavior 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制多人召唤时是否避开在线摆摊玩家
+	#define Pandas_BattleConfig_Multiplayer_Recall_Behavior
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
@@ -501,10 +509,21 @@
 
 	// 是否支持使用 @recall 等指令单独召唤离线挂店 / 离线挂机的角色
 	// 主要用于管理员调整挂机单位的站位, 避免阻挡到其他的 NPC 或者传送点等 [Sola丶小克]
-	// 此选项依赖 Pandas_Struct_Map_Session_Data_SpecialTransfer 和 Pandas_Struct_Map_Session_Data_Autotrade_Configure 的拓展
-	#if defined(Pandas_Struct_Map_Session_Data_SpecialTransfer) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
-		#define Pandas_Support_SpecialTransfer_Autotrade_Player
-	#endif // defined(Pandas_Struct_Map_Session_Data_SpecialTransfer) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
+	// 此选项依赖以下拓展, 任意一个不成立则将会 undef 此选项的定义
+	// - Pandas_Struct_Map_Session_Data_MultiTransfer
+	// - Pandas_Struct_Map_Session_Data_Autotrade_Configure
+	// - Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
+	#define Pandas_Support_Transfer_Autotrade_Player
+
+	#ifndef Pandas_Struct_Map_Session_Data_MultiTransfer
+		#undef Pandas_Support_Transfer_Autotrade_Player
+	#endif // Pandas_Struct_Map_Session_Data_MultiTransfer
+	#ifndef Pandas_Struct_Map_Session_Data_Autotrade_Configure
+		#undef Pandas_Support_Transfer_Autotrade_Player
+	#endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
+	#ifndef Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
+		#undef Pandas_Support_Transfer_Autotrade_Player
+	#endif // Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 
 	// 是否支持根据系统语言读取对应的消息数据库文件 [Sola丶小克]
 	#define Pandas_Adaptive_Importing_Message_Database
@@ -1044,11 +1063,6 @@
 		// 事件类型: Express / 事件名称: OnPCEnterMapExpress
 		// 常量名称: NPCX_ENTERMAP / 变量名称: entermap_express_name
 		#define Pandas_NpcExpress_ENTERMAP
-
-		// 当游戏单位被销毁时触发实时事件 [Sola丶小克]
-		// 事件类型: Express / 事件名称: OnUnitFreeExpress
-		// 常量名称: NPCX_UNITFREE / 变量名称: unitfree_express_name
-		#define Pandas_NpcExpress_UNITFREE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	
@@ -1458,6 +1472,13 @@
 	#ifdef Pandas_Player_Suspend_System
 		#define Pandas_ScriptCommand_Login
 	#endif // Pandas_Player_Suspend_System
+
+	// 是否启用 checksuspend 脚本指令 [Sola丶小克]
+	// 该指令用于获取指定角色或指定账号当前在线角色的挂机模式
+	// 此选项开关需要依赖 Pandas_Struct_Autotrade_Extend 的拓展
+	#ifdef Pandas_Struct_Autotrade_Extend
+		#define Pandas_ScriptCommand_CheckSuspend
+	#endif // Pandas_Struct_Autotrade_Extend
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

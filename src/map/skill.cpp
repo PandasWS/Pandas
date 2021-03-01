@@ -9454,6 +9454,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 						continue;
 					if(map_getcell(src->m,src->x+dx[j],src->y+dy[j],CELL_CHKNOREACH))
 						dx[j] = dy[j] = 0;
+
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+					pc_mark_multitransfer(dstsd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
+
 					if (!pc_setpos(dstsd, map_id2index(src->m), src->x+dx[j], src->y+dy[j], CLR_RESPAWN))
 						called++;
 				}
