@@ -9965,6 +9965,14 @@ void clif_refresh(struct map_session_data *sd)
 	}
 	clif_refresh_storagewindow(sd);
 
+#ifdef Pandas_Fix_Progressbar_Refresh_Stuck
+	if (sd->progressbar.npc_id) {
+		int32 second = 0;
+		second = (int32)ceil((sd->progressbar.timeout - gettick()) / 1000.0);
+		clif_progressbar(sd, 0, max(second, 1));	// 至少显示 1 秒
+	}
+#endif // Pandas_Fix_Progressbar_Refresh_Stuck
+
 #ifdef Pandas_Aura_Mechanism
 	// 使用 @refresh 等指令进行刷新之后, 需要重新发送一次光环信息给客户端
 	clif_send_auras_single(&sd->bl, sd);

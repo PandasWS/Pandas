@@ -674,6 +674,9 @@
 
 	// 修正 progressbar 期间使用 @load 或 @jump 会导致角色传送后无法移动的问题 [Sola丶小克]
 	#define Pandas_Fix_Progressbar_Abort_Stuck
+
+	// 修正 progressbar 期间使用 @refresh 或 @refreshall 会导致角色无法移动的问题 [Sola丶小克]
+	#define Pandas_Fix_Progressbar_Refresh_Stuck
 #endif // Pandas_Bugfix
 
 // ============================================================================
