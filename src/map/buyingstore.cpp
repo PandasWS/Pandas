@@ -785,6 +785,29 @@ void do_init_buyingstore_autotrade( void ) {
 	}
 }
 
+#ifdef Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
+//************************************
+// Method:      buyingstore_autotrader_cleardb
+// Description: 移除指定角色在数据库中的采购商店挂机记录
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/03/02 21:13
+//************************************ 
+void buyingstore_autotrader_cleardb(struct map_session_data* sd) {
+	nullpo_retv(sd);
+
+	// 清理 buyingstores_table 表中账号编号与 sd 一致的记录
+	// 此处无需清理 buyingstore_items_table 因为只要 buyingstores_table 的记录被移除,
+	// 那么下次地图服务器启动的时候 buyingstore_items_table 中的数据并不会对加载过程造成任何影响
+	if (sd && Sql_Query(mmysql_handle,
+		"DELETE FROM `%s` WHERE `account_id` = %d;",
+		buyingstores_table, sd->status.account_id) != SQL_SUCCESS) {
+		Sql_ShowDebug(mmysql_handle);
+	}
+}
+#endif // Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
+
 /**
  * Remove an autotrader's data
  * @param at Autotrader

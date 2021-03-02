@@ -13254,6 +13254,13 @@ void pc_scdata_received(struct map_session_data *sd) {
 		}
 	}
 #endif // Pandas_Fix_Autotrade_HeadView_Missing
+
+#ifdef Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
+	if (sd->state.pc_loaded && !sd->state.autotrade) {
+		vending_autotrader_cleardb(sd);
+		buyingstore_autotrader_cleardb(sd);
+	}
+#endif // Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
 }
 
 /**
