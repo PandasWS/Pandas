@@ -9109,6 +9109,11 @@ void pc_revive(struct map_session_data *sd,unsigned int hp, unsigned int sp) {
 bool pc_revive_item(struct map_session_data *sd) {
 	nullpo_retr(false, sd);
 
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+	if (npc_script_filter(sd, NPCF_USE_REVIVE_TOKEN))
+		return false;
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
+
 	if (!pc_isdead(sd) || sd->respawn_tid != INVALID_TIMER)
 		return false;
 

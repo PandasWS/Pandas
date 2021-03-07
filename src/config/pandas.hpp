@@ -999,6 +999,11 @@
 		// 事件类型: Filter / 事件名称: OnPCBuffStartFilter
 		// 常量名称: NPCF_SC_START / 变量名称: sc_start_filter_name
 		#define Pandas_NpcFilter_SC_START
+
+		// 当玩家使用菜单中的原地复活之证时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCUseReviveTokenFilter
+		// 常量名称: NPCF_USE_REVIVE_TOKEN / 变量名称: use_revive_token_filter_name
+		#define Pandas_NpcFilter_USE_REVIVE_TOKEN
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 

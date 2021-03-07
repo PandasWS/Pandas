@@ -328,6 +328,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_SC_START
 	"OnPCBuffStartFilter",	// NPCF_SC_START		// sc_start_filter_name	// 当玩家准备获得一个状态(Buff)时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+	"OnPCUseReviveTokenFilter",	// NPCF_USE_REVIVE_TOKEN		// use_revive_token_filter_name	// 当玩家使用菜单中的原地复活之证时触发过滤器
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
