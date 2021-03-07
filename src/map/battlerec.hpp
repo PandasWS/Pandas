@@ -26,6 +26,12 @@ enum e_batrec_agg {
 	BRA_DISCRETE
 };
 
+#define batrec_support(bl) ( \
+	bl->type == BL_PC || bl->type == BL_MOB || \
+	bl->type == BL_PET || bl->type == BL_HOM || \
+	bl->type == BL_MER || bl->type == BL_NPC || \
+	bl->type == BL_ELEM)
+
 bool batrec_cmp_asc(std::pair<uint32, s_batrec_item_ptr>& l,
 	std::pair<uint32, s_batrec_item_ptr>& r);
 bool batrec_cmp_desc(std::pair<uint32, s_batrec_item_ptr>& l,

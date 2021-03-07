@@ -3208,6 +3208,10 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			npc_script_event(sd, NPCE_KILLMVP);
 		}
 #endif // Pandas_NpcEvent_KILLMVP
+
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+		npc_event_batrec_free(&md->bl);
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
 	}
 
 	if(md->deletetimer != INVALID_TIMER) {

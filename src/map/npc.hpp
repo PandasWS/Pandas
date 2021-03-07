@@ -1399,17 +1399,21 @@ enum npce_event : uint8 {
 	NPCX_ENTERMAP,	// entermap_express_name	// OnPCEnterMapExpress		// 当玩家进入或者改变地图时触发实时事件
 #endif // Pandas_NpcExpress_ENTERMAP
 
-#ifdef Pandas_NpcExpress_UNITFREE
-	NPCX_UNITFREE,	// unitfree_express_name	// OnUnitFreeExpress		// 当游戏单位被销毁时触发实时事件
-#endif // Pandas_NpcExpress_UNITFREE
-
 #ifdef Pandas_NpcExpress_PROGRESSABORT
 	NPCX_PROGRESSABORT,	// progressabort_express_name	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
+
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+	NPCX_BATTLERECORD_FREE,	// battlerecord_free_express_name	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX
 };
+
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+void npc_event_batrec_free(struct block_list* bl);
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
 
 #ifdef Pandas_Helper_Common_Function
 struct event_data* npc_event_data(const char* eventname);

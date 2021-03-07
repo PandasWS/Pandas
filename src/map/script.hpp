@@ -266,6 +266,10 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_PROGRESSABORT
 	const char* progressabort_express_name;	// NPCX_PROGRESSABORT	// OnPCProgressAbortExpress	// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
+
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+	const char* battlerecord_free_express_name;	// NPCX_BATTLERECORD_FREE	// OnBatrecFreeExpress	// 当战斗记录信息即将被清除时触发实时事件
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related

@@ -1074,6 +1074,11 @@
 		// 事件类型: Express / 事件名称: OnPCProgressAbortExpress
 		// 常量名称: NPCX_PROGRESSABORT / 变量名称: progressabort_express_name
 		#define Pandas_NpcExpress_PROGRESSABORT
+
+		// 当战斗记录信息即将被清除时触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnBatrecFreeExpress
+		// 常量名称: NPCX_BATTLERECORD_FREE / 变量名称: battlerecord_free_express_name
+		#define Pandas_NpcExpress_BATTLERECORD_FREE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	

@@ -3361,18 +3361,13 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 	if( bl->prev )	// Players are supposed to logout with a "warp" effect.
 		unit_remove_map(bl, clrtype);
 
-#ifdef Pandas_NpcExpress_UNITFREE
-	mapreg_setreg(add_str("$@unitfree_id"), bl->id);
-	mapreg_setreg(add_str("$@unitfree_type"), bl->type);
-	mapreg_setreg(add_str("$@unitfree_clrtype"), (int)clrtype);
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
 
-	mapreg_setreg(add_str("$@unitfree_mapid"), bl->m);
-	mapreg_setregstr(add_str("$@unitfree_mapname$"), map[bl->m].name);
-	mapreg_setreg(add_str("$@unitfree_x"), bl->x);
-	mapreg_setreg(add_str("$@unitfree_y"), bl->y);
-
-	npc_event_doall(script_config.unitfree_express_name);
-#endif // Pandas_NpcExpress_UNITFREE
+	// BL_NPC 在 npc_unload 中触发
+	// BL_MOB 由于需要处理 rebirth 逻辑因此在 mob_dead 中触发
+	if (bl->type != BL_MOB && bl->type != BL_NPC)
+		npc_event_batrec_free(bl);
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
 
 	switch( bl->type ) {
 		case BL_PC: {
