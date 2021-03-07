@@ -28678,7 +28678,7 @@ BUILDIN_FUNC(batrec_query) {
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(batrec_rank) {
 	struct map_session_data* sd = nullptr;
-	script_rid2sd(sd);
+	sd = map_id2sd(st->rid);
 
 	struct block_list* bl = nullptr;
 	bl = map_id2bl(script_getnum(st, 2));
