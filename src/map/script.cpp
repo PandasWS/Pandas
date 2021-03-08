@@ -354,10 +354,6 @@ struct Script_Config script_config = {
 	"OnPCUseSkillEvent",	// NPCE_USE_SKILL		// use_skill_event_name	// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
 
-#ifdef Pandas_NpcEvent_PROGRESS_ABORT
-	"OnPCProgressAbortEvent",	// NPCE_PROGRESS_ABORT		// progressbar_abort_event_name	// 当玩家的进度条被打断后触发事件
-#endif // Pandas_NpcEvent_PROGRESS_ABORT
-
 #ifdef Pandas_NpcEvent_EQUIP
 	"OnPCEquipEvent",	// NPCE_EQUIP		// equip_event_name	// 当玩家成功穿戴一件装备时触发事件
 #endif // Pandas_NpcEvent_EQUIP
@@ -386,6 +382,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcExpress_ENTERMAP
 	"OnPCEnterMapExpress",	// NPCX_ENTERMAP		// entermap_express_name	// 当玩家进入或者改变地图时触发实时事件
 #endif // Pandas_NpcExpress_ENTERMAP
+
+#ifdef Pandas_NpcExpress_PROGRESSABORT
+	"OnPCProgressAbortExpress",	// NPCX_PROGRESSABORT		// progressabort_express_name	// 当 progressbar 进度条被打断时触发实时事件
+#endif // Pandas_NpcExpress_PROGRESSABORT
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 
 	// NPC related
@@ -3833,6 +3833,22 @@ void script_free_state(struct script_state* st)
 				clif_clearunit_single(sd->npc_id, CLR_OUTSIGHT, sd->fd);
 				sd->state.using_fake_npc = 0;
 			}
+
+#ifdef Pandas_Fix_Progressbar_Abort_Stuck
+			// 若当前角色的 progressbar 信息里记录的来源 NPC 编号等于即将销毁的 st 的 NPC 编号,
+			// 那么进行对应的清理操作避免后续角色出现卡住无法移动的情况
+			if (sd->progressbar.npc_id == sd->st->oid && sd->status.account_id == sd->st->rid) {
+				clif_progressbar_abort(sd);
+
+				sd->progressbar.npc_id = 0;
+				sd->progressbar.timeout = 0;
+
+				if (battle_config.idletime_option & IDLE_NPC_PROGRESS) {
+					sd->idletime = last_tick;
+				}
+			}
+#endif // Pandas_Fix_Progressbar_Abort_Stuck
+
 			sd->st = NULL;
 			sd->npc_id = 0;
 		}

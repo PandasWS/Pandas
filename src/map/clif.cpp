@@ -9965,6 +9965,14 @@ void clif_refresh(struct map_session_data *sd)
 	}
 	clif_refresh_storagewindow(sd);
 
+#ifdef Pandas_Fix_Progressbar_Refresh_Stuck
+	if (sd->progressbar.npc_id) {
+		int32 second = 0;
+		second = (int32)ceil((sd->progressbar.timeout - gettick()) / 1000.0);
+		clif_progressbar(sd, 0, max(second, 1));	// 至少显示 1 秒
+	}
+#endif // Pandas_Fix_Progressbar_Refresh_Stuck
+
 #ifdef Pandas_Aura_Mechanism
 	// 使用 @refresh 等指令进行刷新之后, 需要重新发送一次光环信息给客户端
 	clif_send_auras_single(&sd->bl, sd);
@@ -11613,11 +11621,13 @@ void clif_progressbar_abort(struct map_session_data * sd)
 	WFIFOW(fd,0) = 0x2f2;
 	WFIFOSET(fd,packet_len(0x2f2));
 
-#ifdef Pandas_NpcEvent_PROGRESS_ABORT
-	if (isAllowTriggerEvent(sd, NPCE_PROGRESS_ABORT)) {
-		npc_script_event(sd, NPCE_PROGRESS_ABORT);
+#ifdef Pandas_NpcExpress_PROGRESSABORT
+	if (isAllowTriggerEvent(sd, NPCX_PROGRESSABORT)) {
+		pc_setreg(sd, add_str("@abort_npc_id"), sd->progressbar.npc_id);
+		pc_setreg(sd, add_str("@abort_timeout"), (int64)sd->progressbar.timeout);
+		npc_script_event(sd, NPCX_PROGRESSABORT);
 	}
-#endif // Pandas_NpcEvent_PROGRESS_ABORT
+#endif // Pandas_NpcExpress_PROGRESSABORT
 }
 
 

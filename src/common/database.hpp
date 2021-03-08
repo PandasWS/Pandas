@@ -102,6 +102,9 @@ public:
 		this->type = type_;
 		this->version = version_;
 		this->minimumVersion = minimumVersion_;
+#ifdef Pandas_Database_Yaml_BeQuiet
+		this->quietLevel = 0;
+#endif // Pandas_Database_Yaml_BeQuiet
 	}
 
 	YamlDatabase( const std::string& type_, uint16 version_ ) : YamlDatabase( type_, version_, version_ ){

@@ -55,6 +55,10 @@ struct s_autotrader {
 	struct map_session_data *sd;
 };
 
+#ifdef Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
+void buyingstore_autotrader_cleardb(struct map_session_data* sd);
+#endif // Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
+
 int8 buyingstore_setup(struct map_session_data* sd, unsigned char slots);
 int8 buyingstore_create(struct map_session_data* sd, int zenylimit, unsigned char result, const char* storename, const struct PACKET_CZ_REQ_OPEN_BUYING_STORE_sub* itemlist, unsigned int count, struct s_autotrader *at);
 void buyingstore_close(struct map_session_data* sd);

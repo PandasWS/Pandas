@@ -671,6 +671,17 @@
 
 	// 修正 FAW 魔法傀儡 (技能编号: 2282) 重复扣减原石碎片的问题 [Sola丶小克]
 	#define Pandas_Fix_MagicDecoy_Twice_Deduction_Of_Ore
+
+	// 修正 progressbar 期间使用 @load 或 @jump 会导致角色传送后无法移动的问题 [Sola丶小克]
+	#define Pandas_Fix_Progressbar_Abort_Stuck
+
+	// 修正 progressbar 期间使用 @refresh 或 @refreshall 会导致角色无法移动的问题 [Sola丶小克]
+	#define Pandas_Fix_Progressbar_Refresh_Stuck
+
+	// 修正挂店中的角色被临时踢下线后, 如果趁着地图服务器还未重启而直接进入游戏
+	// 并对手推车中原先离线摆摊的商品进行增删操作, 可能会导致下次地图服务器启动时出现 vending_reopen 错误 3 的情况,
+	// 更严重的甚至在下次重启地图服务器后出现离线挂店的商品与价格的错位 [Sola丶小克]
+	#define Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -1020,11 +1031,6 @@
 	// 常量名称: NPCE_USE_SKILL / 变量名称: use_skill_event_name
 	#define Pandas_NpcEvent_USE_SKILL
 
-	// 当玩家的进度条被打断后触发事件 [Sola丶小克]
-	// 事件类型: Event / 事件名称: OnPCProgressAbortEvent
-	// 常量名称: NPCE_PROGRESS_ABORT / 变量名称: progressbar_abort_event_name
-	#define Pandas_NpcEvent_PROGRESS_ABORT
-
 	// 当玩家成功穿戴一件装备时触发事件 [Sola丶小克]
 	// 事件类型: Event / 事件名称: OnPCEquipEvent
 	// 常量名称: NPCE_EQUIP / 变量名称: equip_event_name
@@ -1063,6 +1069,11 @@
 		// 事件类型: Express / 事件名称: OnPCEnterMapExpress
 		// 常量名称: NPCX_ENTERMAP / 变量名称: entermap_express_name
 		#define Pandas_NpcExpress_ENTERMAP
+
+		// 当 progressbar 进度条被打断时触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnPCProgressAbortExpress
+		// 常量名称: NPCX_PROGRESSABORT / 变量名称: progressabort_express_name
+		#define Pandas_NpcExpress_PROGRESSABORT
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	
