@@ -25974,8 +25974,18 @@ BUILDIN_FUNC(mobremove) {
 	struct block_list *bl = nullptr;
 	bl = map_id2bl(script_getnum(st, 2));
 
-	if (bl && bl->type == BL_MOB)
+	if (!bl || bl->type != BL_MOB)
+		return SCRIPT_CMD_SUCCESS;
+
+	TBL_MOB* md = (TBL_MOB*)bl;
+
+	if (!md->spawn)
 		unit_free(bl, CLR_OUTSIGHT);
+	else {
+		unit_remove_map(bl, CLR_OUTSIGHT);
+		if (!(md->sc.data[SC_KAIZEL] || (md->sc.data[SC_REBIRTH] && !md->state.rebirth)))
+			mob_setdelayspawn(md);
+	}
 
 	return SCRIPT_CMD_SUCCESS;
 }
