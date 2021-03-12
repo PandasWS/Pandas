@@ -1110,10 +1110,10 @@ IP地址:
 	这 4 个字符串与使用 duplicate 进行静态复制时候的四个用 %TAB% 分隔的内容是一样的.
 
 	参数说明:
-		第一个参数: "<复制出来的新NPC所在地图名称>,<X坐标>,<Y坐标>,<朝向编号>"
-		第二个参数: "duplicate(<来源NPC名称>)"
-		第三个参数: "<复制出来的新NPC名称>"
-		第四个参数: "<图档外观编号>"
+		第一个参数: 字符串类型	-	"<复制出来的新NPC所在地图名称>,<X坐标>,<Y坐标>,<朝向编号>"
+		第二个参数: 字符串类型	-	"duplicate(<来源NPC名称>)"
+		第三个参数: 字符串类型	-	"<复制出来的新NPC名称>"
+		第四个参数: 字符串类型	-	"<图档外观编号>"
 
 	举例说明:
 		假设有以下 NPC 我们想把它复制一个新的出来:
@@ -1145,12 +1145,12 @@ IP地址:
 		如果想要复制一个副本中的 NPC, 那么需要在用到地图名称的地方使用 instance_mapname 进行转换,
 		原始 NPC 的名称也需要用 instance_npcname 进行转换, 如:
 		
-			.@w1 = instance_mapname("1@tower") + ",156,99,2";
-			.@w2 = "duplicate(" + instance_npcname("PVPCOPYTEST") + ")";
-			.@w3 = "PVP管理员#4";
-			.@w4 = "123";
+			.@w1$ = instance_mapname("1@tower") + ",156,99,2";
+			.@w2$ = "duplicate(" + instance_npcname("PVPCOPYTEST") + ")";
+			.@w3$ = "PVP管理员#4";
+			.@w4$ = "123";
 			
-			copynpc .@w1, .@w2, .@w3, .@w4;
+			copynpc .@w1$, .@w2$, .@w3$, .@w4$;
 
 七参数版本:
 
