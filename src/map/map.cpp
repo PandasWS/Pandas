@@ -2081,20 +2081,20 @@ void map_addiddb(struct block_list *bl)
 void map_mobiddb(struct block_list* bl, int new_blockid) {
 	nullpo_retv(bl);
 
-	if (bl->type != BL_MOB)
+	if (!bl || bl->type != BL_MOB)
 		return;
 
 	int origin_blockid = bl->id;
 	bl->id = new_blockid;
 
-	// 移除当前相关数据库中的记录
+	idb_remove(id_db, origin_blockid);
+	idb_put(id_db, bl->id, bl);
+	
 	idb_remove(mobid_db, origin_blockid);
-	idb_remove(bossid_db, origin_blockid);
-
-	// 重新插入到相关的数据库
-	TBL_MOB* md = (TBL_MOB*)bl;
 	idb_put(mobid_db, bl->id, bl);
 
+	idb_remove(bossid_db, origin_blockid);
+	TBL_MOB* md = (TBL_MOB*)bl;
 	if (md->state.boss)
 		idb_put(bossid_db, bl->id, bl);
 }
