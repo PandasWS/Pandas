@@ -1062,6 +1062,10 @@ void pc_setnewpc(struct map_session_data *sd, uint32 account_id, uint32 char_id,
 		sd->canlog_tick = gettick();
 	//Required to prevent homunculus copuing a base speed of 0.
 	sd->battle_status.speed = sd->base_status.speed = DEFAULT_WALK_SPEED;
+
+#ifdef Pandas_BattleRecord
+	batrec_new(&sd->bl);
+#endif // Pandas_BattleRecord
 }
 
 /**

@@ -2047,10 +2047,6 @@ void map_addiddb(struct block_list *bl)
 {
 	nullpo_retv(bl);
 
-#ifdef Pandas_BattleRecord
-	batrec_new(bl);
-#endif // Pandas_BattleRecord
-
 	if( bl->type == BL_PC )
 	{
 		TBL_PC* sd = (TBL_PC*)bl;
@@ -2072,16 +2068,44 @@ void map_addiddb(struct block_list *bl)
 	idb_put(id_db,bl->id,bl);
 }
 
+#ifdef Pandas_BattleRecord
+//************************************
+// Method:      map_mobiddb
+// Description: 为指定的魔物单位更换他的 GameID
+// Access:      public 
+// Parameter:   struct block_list * bl
+// Parameter:   int new_blockid
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/03/12 19:18
+//************************************ 
+void map_mobiddb(struct block_list* bl, int new_blockid) {
+	nullpo_retv(bl);
+
+	if (bl->type != BL_MOB)
+		return;
+
+	int origin_blockid = bl->id;
+	bl->id = new_blockid;
+
+	// 移除当前相关数据库中的记录
+	idb_remove(mobid_db, origin_blockid);
+	idb_remove(bossid_db, origin_blockid);
+
+	// 重新插入到相关的数据库
+	TBL_MOB* md = (TBL_MOB*)bl;
+	idb_put(mobid_db, bl->id, bl);
+
+	if (md->state.boss)
+		idb_put(bossid_db, bl->id, bl);
+}
+#endif // Pandas_BattleRecord
+
 /*==========================================
  * remove bl from id_db
  *------------------------------------------*/
 void map_deliddb(struct block_list *bl)
 {
 	nullpo_retv(bl);
-
-#ifdef Pandas_BattleRecord
-	batrec_free(bl);
-#endif // Pandas_BattleRecord
 
 	if( bl->type == BL_PC )
 	{

@@ -2558,6 +2558,10 @@ int npc_unload(struct npc_data* nd, bool single) {
 		npc_event_batrec_free(&nd->bl);
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
 
+#ifdef Pandas_BattleRecord
+	batrec_free(&nd->bl);
+#endif // Pandas_BattleRecord
+
 	status_change_clear(&nd->bl, 1);
 	npc_remove_map(nd);
 	map_deliddb(&nd->bl);
@@ -2910,6 +2914,11 @@ struct npc_data *npc_create_npc(int16 m, int16 x, int16 y){
 	nd->pandas.destruction_strategy = 0;
 	nd->pandas.destruction_timer = INVALID_TIMER;
 #endif // Pandas_Struct_Npc_Data_DestructionStrategy
+
+#ifdef Pandas_BattleRecord
+	nd->bl.type = BL_NPC;
+	batrec_new(&nd->bl);
+#endif // Pandas_BattleRecord
 
 	return nd;
 }

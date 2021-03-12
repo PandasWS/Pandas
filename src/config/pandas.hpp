@@ -1478,9 +1478,9 @@
 		// 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录
 		#define Pandas_ScriptCommand_BattleRecordSortout
 
-		// 是否启用 batrec_clear 脚本指令 [Sola丶小克]
+		// 是否启用 batrec_reset 脚本指令 [Sola丶小克]
 		// 清除指定单位的战斗记录
-		#define Pandas_ScriptCommand_BattleRecordClear
+		#define Pandas_ScriptCommand_BattleRecordReset
 
 		// 是否启用 enable_batrec 脚本指令 [Sola丶小克]
 		// 该指令用于启用指定单位的战斗记录

@@ -396,6 +396,10 @@ bool mercenary_recv_data(struct s_mercenary *merc, bool flag)
 		md->bl.x = md->ud.to_x;
 		md->bl.y = md->ud.to_y;
 
+#ifdef Pandas_BattleRecord
+		batrec_new(&md->bl);
+#endif // Pandas_BattleRecord
+
 		map_addiddb(&md->bl);
 		status_calc_mercenary(md, SCO_FIRST);
 		md->contract_timer = INVALID_TIMER;

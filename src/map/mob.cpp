@@ -508,6 +508,10 @@ struct mob_data* mob_spawn_dataset(struct spawn_data *data)
 	status_change_init(&md->bl);
 	unit_dataset(&md->bl);
 
+#ifdef Pandas_BattleRecord
+	batrec_new(&md->bl);
+#endif // Pandas_BattleRecord
+
 	map_addiddb(&md->bl);
 	return md;
 }
@@ -1065,6 +1069,9 @@ TIMER_FUNC(mob_delayspawn){
 			return 0;
 		}
 		md->spawn_timer = INVALID_TIMER;
+#ifdef Pandas_BattleRecord
+		map_mobiddb(&md->bl, npc_get_new_npc_id());
+#endif // Pandas_BattleRecord
 		mob_spawn(md);
 	}
 	return 0;
@@ -1200,6 +1207,7 @@ int mob_spawn (struct mob_data *md)
 
 	memset(md->dmglog, 0, sizeof(md->dmglog));
 	md->tdmg = 0;
+
 #ifdef Pandas_BattleRecord
 	batrec_reset(&md->bl);
 #endif // Pandas_BattleRecord
@@ -3212,6 +3220,10 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 #ifdef Pandas_NpcExpress_BATTLERECORD_FREE
 		npc_event_batrec_free(&md->bl);
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_BattleRecord
+		batrec_free(&md->bl);
+#endif // Pandas_BattleRecord
 	}
 
 	if(md->deletetimer != INVALID_TIMER) {
@@ -3272,9 +3284,11 @@ void mob_revive(struct mob_data *md, unsigned int hp)
 	md->last_pcneartime = 0;
 	memset(md->dmglog, 0, sizeof(md->dmglog));	// Reset the damage done on the rebirthed monster, otherwise will grant full exp + damage done. [Valaris]
 	md->tdmg = 0;
+
 #ifdef Pandas_BattleRecord
 	batrec_reset(&md->bl);
 #endif // Pandas_BattleRecord
+
 	if (!md->bl.prev){
 		if(map_addblock(&md->bl))
 			return;

@@ -3362,12 +3362,16 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 		unit_remove_map(bl, clrtype);
 
 #ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-
 	// BL_NPC 在 npc_unload 中触发
 	// BL_MOB 由于需要处理 rebirth 逻辑因此在 mob_dead 中触发
+	// 此处不再重复对 BL_NPC 和 BL_MOB 触发该事件
 	if (bl->type != BL_MOB && bl->type != BL_NPC)
 		npc_event_batrec_free(bl);
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_BattleRecord
+	batrec_free(bl);
+#endif // Pandas_BattleRecord
 
 	switch( bl->type ) {
 		case BL_PC: {

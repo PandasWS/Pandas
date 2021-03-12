@@ -1051,6 +1051,10 @@ void hom_alloc(struct map_session_data *sd, struct s_homunculus *hom)
 	hd->bl.x = hd->ud.to_x;
 	hd->bl.y = hd->ud.to_y;
 
+#ifdef Pandas_BattleRecord
+	batrec_new(&hd->bl);
+#endif // Pandas_BattleRecord
+
 	map_addiddb(&hd->bl);
 	status_calc_homunculus(hd, SCO_FIRST);
 

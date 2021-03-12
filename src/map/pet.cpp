@@ -1046,6 +1046,10 @@ bool pet_data_init(struct map_session_data *sd, struct s_pet *pet)
 	pd->bl.x = pd->ud.to_x;
 	pd->bl.y = pd->ud.to_y;
 
+#ifdef Pandas_BattleRecord
+	batrec_new(&pd->bl);
+#endif // Pandas_BattleRecord
+
 	map_addiddb(&pd->bl);
 	status_calc_pet(pd,SCO_FIRST);
 

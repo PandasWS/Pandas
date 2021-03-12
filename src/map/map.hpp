@@ -1168,7 +1168,10 @@ int map_setipport(unsigned short map, uint32 ip, uint16 port);
 int map_eraseipport(unsigned short map, uint32 ip, uint16 port);
 int map_eraseallipport(void);
 void map_addiddb(struct block_list *);
-void map_deliddb(struct block_list *bl);
+#ifdef Pandas_BattleRecord
+void map_mobiddb(struct block_list* bl, int new_blockid);
+#endif // Pandas_BattleRecord
+void map_deliddb(struct block_list* bl);
 void map_foreachpc(int (*func)(struct map_session_data* sd, va_list args), ...);
 void map_foreachmob(int (*func)(struct mob_data* md, va_list args), ...);
 void map_foreachnpc(int (*func)(struct npc_data* nd, va_list args), ...);

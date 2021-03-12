@@ -98,12 +98,15 @@ void batrec_new(struct block_list* bl) {
 	if (!batrec_support(bl)) {
 		batrec_free(bl);
 		ucd->batrec.dorecord = false;
+		return;
 	}
 
-	if (!ucd->batrec.dmg_receive)
+	if (!ucd->batrec.dmg_receive) {
 		ucd->batrec.dmg_receive = new batrec_map;
-	if (!ucd->batrec.dmg_cause)
+	}
+	if (!ucd->batrec.dmg_cause) {
 		ucd->batrec.dmg_cause = new batrec_map;
+	}
 
 	ucd->batrec.dmg_receive->clear();
 	ucd->batrec.dmg_cause->clear();
@@ -220,6 +223,31 @@ inline int32 batrec_masterid(struct block_list* bl) {
 }
 
 //************************************
+// Method:      batrec_dorecord
+// Description: 判断指定单位是否需要记录战斗信息
+// Access:      public 
+// Parameter:   struct block_list * bl
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/03/09 23:46
+//************************************ 
+bool batrec_dorecord(struct block_list* bl) {
+	struct s_unit_common_data* ucd = nullptr;
+	if (!(ucd = status_get_ucd(bl))) return false;
+
+	// 如果该单位会进行战斗记录, 那么确保对应的字典是存在的
+	if (ucd->batrec.dorecord) {
+		if (!ucd->batrec.dmg_receive) {
+			ucd->batrec.dmg_receive = new batrec_map;
+		}
+		if (!ucd->batrec.dmg_cause) {
+			ucd->batrec.dmg_cause = new batrec_map;
+		}
+	}
+
+	return ucd->batrec.dorecord;
+}
+
+//************************************
 // Method:      batrec_getmap
 // Description: 获取指定单位特定类型的战斗记录字典
 // Access:      public 
@@ -231,15 +259,12 @@ inline int32 batrec_masterid(struct block_list* bl) {
 batrec_map* batrec_getmap(struct block_list* bl, e_batrec_type type) {
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(bl))) return nullptr;
-	if (!ucd->batrec.dorecord) return nullptr;
 
 	switch (type) {
 	case BRT_DMG_RECEIVE:
 		return ucd->batrec.dmg_receive;
-		break;
 	case BRT_DMG_CAUSE:
 		return ucd->batrec.dmg_cause;
-		break;
 	default:
 		return nullptr;
 	}
@@ -320,6 +345,9 @@ bool batrec_record(struct block_list* mbl, struct block_list* tbl, e_batrec_type
 	if (batrec_key(mbl) == batrec_key(tbl))
 		return false;
 
+	if (!batrec_dorecord(mbl))
+		return false;
+
 	batrec_map* rec = nullptr;
 	if (!(rec = batrec_getmap(mbl, type)))
 		return false;
@@ -383,8 +411,13 @@ void batrec_reset(struct block_list* mbl) {
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(mbl))) return;
 
-	ucd->batrec.dmg_cause->clear();
-	ucd->batrec.dmg_receive->clear();
+	if (ucd->batrec.dmg_receive) {
+		ucd->batrec.dmg_receive->clear();
+	}
+
+	if (ucd->batrec.dmg_cause) {
+		ucd->batrec.dmg_cause->clear();
+	}
 }
 
 //************************************
@@ -400,6 +433,5 @@ void batrec_reset(struct block_list* mbl, e_batrec_type type) {
 	batrec_map* rec = nullptr;
 	if (!(rec = batrec_getmap(mbl, type)))
 		return;
-
 	rec->clear();
 }

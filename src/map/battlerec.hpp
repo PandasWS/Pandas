@@ -12,8 +12,8 @@
 #include "map.hpp"
 
 enum e_batrec_type {
-	BRT_DMG_RECEIVE = 0,
-	BRT_DMG_CAUSE
+	BRT_DMG_RECEIVE = 0,	// 记录宿主所受到的伤害
+	BRT_DMG_CAUSE			// 记录宿主所造成的伤害
 };
 
 enum e_batrec_sort {
@@ -43,6 +43,7 @@ void batrec_free(struct block_list* bl);
 void batrec_sortout(struct block_list* bl);
 void batrec_sortout(struct block_list* bl, e_batrec_type type);
 void batrec_aggregation(batrec_map* origin_rec, batrec_map& ret_rec, e_batrec_agg agg);
+bool batrec_dorecord(struct block_list* bl);
 batrec_map* batrec_getmap(struct block_list* bl, e_batrec_type type);
 
 bool batrec_record(struct block_list* mbl, struct block_list* tbl, e_batrec_type type, int damage);

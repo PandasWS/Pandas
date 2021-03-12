@@ -252,6 +252,10 @@ int elemental_data_received(struct s_elemental *ele, bool flag) {
 		ed->bl.x = ed->ud.to_x;
 		ed->bl.y = ed->ud.to_y;
 
+#ifdef Pandas_BattleRecord
+		batrec_new(&ed->bl);
+#endif // Pandas_BattleRecord
+
 		map_addiddb(&ed->bl);
 		status_calc_elemental(ed,SCO_FIRST);
 		ed->last_spdrain_time = ed->last_thinktime = gettick();

@@ -28801,15 +28801,15 @@ BUILDIN_FUNC(batrec_sortout) {
 }
 #endif // Pandas_ScriptCommand_BattleRecordSortout
 
-#ifdef Pandas_ScriptCommand_BattleRecordClear
+#ifdef Pandas_ScriptCommand_BattleRecordReset
 /* ===========================================================
- * 指令: batrec_clear
+ * 指令: batrec_reset
  * 描述: 清除指定单位的战斗记录
- * 用法: batrec_clear <记录宿主的单位编号>{, <记录类型>};
+ * 用法: batrec_reset <记录宿主的单位编号>{, <记录类型>};
  * 返回: 该指令无论成功与否, 都不会有返回值
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
-BUILDIN_FUNC(batrec_clear) {
+BUILDIN_FUNC(batrec_reset) {
 	struct block_list* bl = nullptr;
 	bl = map_id2bl(script_getnum(st, 2));
 
@@ -28831,7 +28831,7 @@ BUILDIN_FUNC(batrec_clear) {
 	batrec_reset(bl, (e_batrec_type)rec_type);
 	return SCRIPT_CMD_SUCCESS;
 }
-#endif // Pandas_ScriptCommand_BattleRecordClear
+#endif // Pandas_ScriptCommand_BattleRecordReset
 
 #ifdef Pandas_ScriptCommand_EnableBattleRecord
 /* ===========================================================
@@ -29176,9 +29176,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_BattleRecordSortout
 	BUILDIN_DEF(batrec_sortout, "i?"),					// 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录 [Sola丶小克]
 #endif // Pandas_ScriptCommand_BattleRecordSortout
-#ifdef Pandas_ScriptCommand_BattleRecordClear
-	BUILDIN_DEF(batrec_clear,"i?"),						// 清除指定单位的战斗记录 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BattleRecordClear
+#ifdef Pandas_ScriptCommand_BattleRecordReset
+	BUILDIN_DEF(batrec_reset,"i?"),						// 清除指定单位的战斗记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordReset
 #ifdef Pandas_ScriptCommand_EnableBattleRecord
 	BUILDIN_DEF(enable_batrec,"?"),						// 启用指定单位的战斗记录 [Sola丶小克]
 #endif // Pandas_ScriptCommand_EnableBattleRecord
