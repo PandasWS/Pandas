@@ -1063,15 +1063,15 @@ TIMER_FUNC(mob_delayspawn){
 
 	if( md )
 	{
+#ifdef Pandas_BattleRecord
+		map_mobiddb(&md->bl, npc_get_new_npc_id());
+#endif // Pandas_BattleRecord
 		if( md->spawn_timer != tid )
 		{
 			ShowError("mob_delayspawn: Timer mismatch: %d != %d\n", tid, md->spawn_timer);
 			return 0;
 		}
 		md->spawn_timer = INVALID_TIMER;
-#ifdef Pandas_BattleRecord
-		map_mobiddb(&md->bl, npc_get_new_npc_id());
-#endif // Pandas_BattleRecord
 		mob_spawn(md);
 	}
 	return 0;
@@ -3222,7 +3222,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
 
 #ifdef Pandas_BattleRecord
-		batrec_free(&md->bl);
+		batrec_reset(&md->bl);
 #endif // Pandas_BattleRecord
 	}
 

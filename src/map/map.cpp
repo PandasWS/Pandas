@@ -2071,7 +2071,7 @@ void map_addiddb(struct block_list *bl)
 #ifdef Pandas_BattleRecord
 //************************************
 // Method:      map_mobiddb
-// Description: 为指定的魔物单位更换他的 GameID
+// Description: 为指定的魔物单位更换他的游戏单位编号
 // Access:      public 
 // Parameter:   struct block_list * bl
 // Parameter:   int new_blockid
@@ -2087,16 +2087,35 @@ void map_mobiddb(struct block_list* bl, int new_blockid) {
 	int origin_blockid = bl->id;
 	bl->id = new_blockid;
 
-	idb_remove(id_db, origin_blockid);
-	idb_put(id_db, bl->id, bl);
-	
-	idb_remove(mobid_db, origin_blockid);
-	idb_put(mobid_db, bl->id, bl);
+	if (idb_exists(id_db, origin_blockid)) {
+		idb_remove(id_db, origin_blockid);
+		idb_put(id_db, bl->id, bl);
+	}
 
-	idb_remove(bossid_db, origin_blockid);
+	if (idb_exists(mobid_db, origin_blockid)) {
+		idb_remove(mobid_db, origin_blockid);
+		idb_put(mobid_db, bl->id, bl);
+	}
+
 	TBL_MOB* md = (TBL_MOB*)bl;
-	if (md->state.boss)
-		idb_put(bossid_db, bl->id, bl);
+	if (idb_exists(bossid_db, origin_blockid)) {
+		idb_remove(bossid_db, origin_blockid);
+		if (md->state.boss)
+			idb_put(bossid_db, bl->id, bl);
+	}
+
+	set_timerid(md->spawn_timer, bl->id);
+	set_timerid(md->deletetimer, bl->id);
+
+	struct unit_data* ud = nullptr;
+	if ((ud = unit_bl2ud(bl)) != NULL) {
+		set_timerid(ud->attacktimer, bl->id);
+		set_timerid(ud->skilltimer, bl->id);
+		set_timerid(ud->steptimer, bl->id);
+		set_timerid(ud->walktimer, bl->id);
+	}
+
+	detect_invalid_timer(origin_blockid);
 }
 #endif // Pandas_BattleRecord
 
