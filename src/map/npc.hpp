@@ -1410,14 +1410,22 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcExpress_BATTLERECORD_FREE
 	NPCX_BATTLERECORD_FREE,	// battlerecord_free_express_name	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	NPCX_UNIT_KILL,	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX
 };
 
 #ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-void npc_event_batrec_free(struct block_list* bl);
+void npc_event_aide_batrecfree(struct block_list* bl);
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, uint16 skillid);
+#endif // Pandas_NpcExpress_UNIT_KILL
 
 #ifdef Pandas_Helper_Common_Function
 struct event_data* npc_event_data(const char* eventname);

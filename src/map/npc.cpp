@@ -135,14 +135,14 @@ std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
 
 #ifdef Pandas_NpcExpress_BATTLERECORD_FREE
 //************************************
-// Method:      npc_event_batrec_free
+// Method:      npc_event_batrecfree
 // Description: 用来触发 OnBatrecFreeExpress 实时事件的辅助函数
 // Access:      public 
 // Parameter:   struct block_list * bl
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/03/07 18:23
 //************************************ 
-void npc_event_batrec_free(struct block_list* bl) {
+void npc_event_aide_batrecfree(struct block_list* bl) {
 	nullpo_retv(bl);
 
 	if (!bl || !batrec_support(bl)) return;
@@ -158,6 +158,41 @@ void npc_event_batrec_free(struct block_list* bl) {
 	npc_event_doall(script_config.battlerecord_free_express_name);
 }
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+//************************************
+// Method:      npc_event_aide_unitkill
+// Description: 用来触发 OnUnitKillExpress 实时事件的辅助函数
+// Access:      public 
+// Parameter:   struct block_list * src
+// Parameter:   struct block_list * target
+// Parameter:   uint16 skill_id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/03/14 20:11
+//************************************ 
+void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, uint16 skill_id) {
+	nullpo_retv(target);
+
+	mapreg_setreg(add_str("$@killed_gid"), (target ? target->id : 0));						// 死亡单位的游戏单位编号
+	mapreg_setreg(add_str("$@killed_type"), (target ? target->type : 0));					// 死亡单位的类型
+	mapreg_setreg(add_str("$@killed_mapid"), (target ? target->m : -1));					// 死亡单位所在的地图编号
+	mapreg_setregstr(add_str("$@killed_mapname$"), (target ? map[target->m].name : ""));	// 死亡单位所在的地图名称
+	mapreg_setreg(add_str("$@killed_x"), (target ? target->x : 0));							// 死亡单位所在的 X 坐标
+	mapreg_setreg(add_str("$@killed_y"), (target ? target->y : 0));							// 死亡单位所在的 Y 坐标
+	mapreg_setreg(add_str("$@killed_classid"), (target ? status_get_class(target) : 0));	// 死亡单位的种类编号(魔物编号\生命体编号等等)
+
+	mapreg_setreg(add_str("$@killer_gid"), (src ? src->id : 0));							// 最后一击杀手单位的游戏单位编号(若为 0 则表示被系统击杀)
+	mapreg_setreg(add_str("$@killer_type"), (src ? src->type : 0));							// 最后一击杀手单位的类型(若为 0 则表示被系统击杀)
+	mapreg_setreg(add_str("$@killer_mapid"), (src ? src->m : -1));							// 最后一击杀手单位所在的地图编号
+	mapreg_setregstr(add_str("$@killer_mapname$"), (src ? map[src->m].name : ""));			// 最后一击杀手单位所在的地图名称
+	mapreg_setreg(add_str("$@killer_x"), (src ? src->x : 0));								// 最后一击杀手单位所在的 X 坐标
+	mapreg_setreg(add_str("$@killer_y"), (src ? src->y : 0));								// 最后一击杀手单位所在的 Y 坐标
+	mapreg_setreg(add_str("$@killer_classid"), (src ? status_get_class(src) : 0));			// 死亡单位的种类编号(魔物编号\生命体编号等等)
+	mapreg_setreg(add_str("$@killer_skillid"), skill_id);									// 最后一击使用的技能编号(若为 0 则表示普通攻击)
+
+	npc_event_doall(script_config.unit_kill_express_name);
+}
+#endif // Pandas_NpcExpress_UNIT_KILL
 
 #ifdef Pandas_Helper_Common_Function
 //************************************
@@ -2555,7 +2590,7 @@ int npc_unload(struct npc_data* nd, bool single) {
 
 #ifdef Pandas_NpcExpress_BATTLERECORD_FREE
 	if (nd && nd->bl.type == BL_NPC)
-		npc_event_batrec_free(&nd->bl);
+		npc_event_aide_batrecfree(&nd->bl);
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
 
 #ifdef Pandas_BattleRecord
@@ -4972,6 +5007,10 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_BATTLERECORD_FREE
 		NPCX_BATTLERECORD_FREE,	// battlerecord_free_express_name	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+		NPCX_UNIT_KILL,	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -5282,6 +5321,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_BATTLERECORD_FREE:
 		return script_config.battlerecord_free_express_name;	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	case NPCX_UNIT_KILL:
+		return script_config.unit_kill_express_name;	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:

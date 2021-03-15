@@ -274,6 +274,10 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_BATTLERECORD_FREE
 	const char* battlerecord_free_express_name;	// NPCX_BATTLERECORD_FREE	// OnBatrecFreeExpress	// 当战斗记录信息即将被清除时触发实时事件
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	const char* unit_kill_express_name;	// NPCX_UNIT_KILL	// OnUnitKillExpress	// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related

@@ -2083,6 +2083,10 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 	if(!flag) // Death cancelled.
 		return (int)(hp+sp);
 
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	npc_event_aide_unitkill(src, target, skill_id);
+#endif // Pandas_NpcExpress_UNIT_KILL
+
 	// Normal death
 	if (battle_config.clear_unit_ondeath &&
 		battle_config.clear_unit_ondeath&target->type)

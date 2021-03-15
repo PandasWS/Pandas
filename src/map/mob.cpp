@@ -3218,7 +3218,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 #endif // Pandas_NpcEvent_KILLMVP
 
 #ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-		npc_event_batrec_free(&md->bl);
+		npc_event_aide_batrecfree(&md->bl);
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
 
 #ifdef Pandas_BattleRecord
