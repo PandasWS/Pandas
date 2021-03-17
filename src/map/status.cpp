@@ -2080,11 +2080,19 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 			break;
 	}
 
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	if (target->type == BL_MER || target->type == BL_ELEM) {
+		npc_event_aide_unitkill(src, target, skill_id);
+	}
+#endif // Pandas_NpcExpress_UNIT_KILL
+
 	if(!flag) // Death cancelled.
 		return (int)(hp+sp);
 
 #ifdef Pandas_NpcExpress_UNIT_KILL
-	npc_event_aide_unitkill(src, target, skill_id);
+	if (target->type != BL_MER && target->type != BL_ELEM) {
+		npc_event_aide_unitkill(src, target, skill_id);
+	}
 #endif // Pandas_NpcExpress_UNIT_KILL
 
 	// Normal death
