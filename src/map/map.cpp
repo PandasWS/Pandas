@@ -2087,6 +2087,8 @@ void map_mobiddb(struct block_list* bl, int new_blockid) {
 	int origin_blockid = bl->id;
 	bl->id = new_blockid;
 
+	// 接下来处理与游戏单位编号相关的一些数据库
+
 	if (idb_exists(id_db, origin_blockid)) {
 		idb_remove(id_db, origin_blockid);
 		idb_put(id_db, bl->id, bl);
@@ -2104,6 +2106,8 @@ void map_mobiddb(struct block_list* bl, int new_blockid) {
 			idb_put(bossid_db, bl->id, bl);
 	}
 
+	// 接下来重设一些与游戏单位编号相关的定时器
+
 	set_timerid(md->spawn_timer, bl->id);
 	set_timerid(md->deletetimer, bl->id);
 
@@ -2116,6 +2120,17 @@ void map_mobiddb(struct block_list* bl, int new_blockid) {
 	}
 
 	detect_invalid_timer(origin_blockid);
+
+	// 接下来处理与游戏单位编号相关的 skill_unit_group
+
+	if (ud) {
+		for (int i = 0; i < MAX_SKILLUNITGROUP; i++) {
+			if (ud->skillunit[i] && ud->skillunit[i]->src_id == origin_blockid) {
+				ud->skillunit[i]->src_id = bl->id;
+			}
+		}
+	}
+
 }
 #endif // Pandas_BattleRecord
 
