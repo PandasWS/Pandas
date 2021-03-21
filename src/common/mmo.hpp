@@ -530,7 +530,7 @@ struct s_elemental {
 	short class_;
 	enum e_mode mode;
 	int hp, sp, max_hp, max_sp, matk, atk, atk2;
-	short hit, flee, amotion, def, mdef;
+	pec_short hit, flee, amotion, def, mdef;
 	t_tick life_time;
 };
 
