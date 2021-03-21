@@ -11,6 +11,7 @@
 #include "status.hpp"
 
 #include "../common/utilities.hpp"
+#include "../common/nullpo.hpp"
 
 //************************************
 // Method:      batrec_key
@@ -92,12 +93,15 @@ bool batrec_cmp_desc(std::pair<uint32, s_batrec_item_ptr>& l,
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:44
 //************************************ 
 void batrec_new(struct block_list* bl) {
+	nullpo_retv(bl);
+
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(bl))) return;
 
 	if (!batrec_support(bl)) {
-		batrec_free(bl);
+		batrec_free(bl, false);
 		ucd->batrec.dorecord = false;
+		ucd->batrec.recfree_triggered = false;
 		return;
 	}
 
@@ -113,6 +117,8 @@ void batrec_new(struct block_list* bl) {
 
 	// 玩家类型默认不启用记录, 否则在线一直打怪记录会一直堆积
 	ucd->batrec.dorecord = (bl->type != BL_PC);
+
+	ucd->batrec.recfree_triggered = false;
 }
 
 //************************************
@@ -120,12 +126,20 @@ void batrec_new(struct block_list* bl) {
 // Description: 释放指定单位的战斗记录字典
 // Access:      public 
 // Parameter:   struct block_list * bl
+// Parameter:   bool with_event
 // Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/02/14 13:44
+// Author:      Sola丶小克(CairoLee)  2021/03/21 17:39
 //************************************ 
-void batrec_free(struct block_list* bl) {
+void batrec_free(struct block_list* bl, bool with_event) {
+	nullpo_retv(bl);
+
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(bl))) return;
+
+	if (!ucd->batrec.recfree_triggered && with_event) {
+		npc_event_aide_batrecfree(bl);
+		ucd->batrec.recfree_triggered = true;
+	}
 
 	if (ucd->batrec.dmg_receive) {
 		delete ucd->batrec.dmg_receive;
@@ -148,6 +162,8 @@ void batrec_free(struct block_list* bl) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 void batrec_sortout(struct block_list* bl, e_batrec_type type) {
+	nullpo_retv(bl);
+
 	batrec_map* rec = nullptr;
 	if (!(rec = batrec_getmap(bl, type)))
 		return;
@@ -176,6 +192,8 @@ void batrec_sortout(struct block_list* bl, e_batrec_type type) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 19:20
 //************************************ 
 void batrec_sortout(struct block_list* bl) {
+	nullpo_retv(bl);
+
 	batrec_sortout(bl, BRT_DMG_RECEIVE);
 	batrec_sortout(bl, BRT_DMG_CAUSE);
 }
@@ -189,6 +207,8 @@ void batrec_sortout(struct block_list* bl) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 inline int32 batrec_masterid(struct block_list* bl) {
+	nullpo_retr(0, bl);
+
 	if (!bl) return 0;
 
 	TBL_PC* sd = nullptr;
@@ -231,6 +251,8 @@ inline int32 batrec_masterid(struct block_list* bl) {
 // Author:      Sola丶小克(CairoLee)  2021/03/09 23:46
 //************************************ 
 bool batrec_dorecord(struct block_list* bl) {
+	nullpo_retr(false, bl);
+
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(bl))) return false;
 
@@ -257,6 +279,8 @@ bool batrec_dorecord(struct block_list* bl) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 batrec_map* batrec_getmap(struct block_list* bl, e_batrec_type type) {
+	nullpo_retr(nullptr, bl);
+
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(bl))) return nullptr;
 
@@ -281,6 +305,8 @@ batrec_map* batrec_getmap(struct block_list* bl, e_batrec_type type) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 void batrec_aggregation(batrec_map* origin_rec, batrec_map& ret_rec, e_batrec_agg agg) {
+	nullpo_retv(origin_rec);
+
 	if (agg != BRA_COMBINE) {
 		ret_rec = *origin_rec;
 		return;
@@ -339,6 +365,9 @@ void batrec_aggregation(batrec_map* origin_rec, batrec_map& ret_rec, e_batrec_ag
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 bool batrec_record(struct block_list* mbl, struct block_list* tbl, e_batrec_type type, int damage) {
+	nullpo_retr(false, mbl);
+	nullpo_retr(false, tbl);
+
 	if (!mbl || !tbl)
 		return false;
 
@@ -384,6 +413,8 @@ bool batrec_record(struct block_list* mbl, struct block_list* tbl, e_batrec_type
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 int64 batrec_query(struct block_list* mbl, uint32 id, e_batrec_type type, e_batrec_agg agg) {
+	nullpo_retr(-1, mbl);
+
 	batrec_map* origin_rec = nullptr;
 	if (!(origin_rec = batrec_getmap(mbl, type)))
 		return -1;
@@ -404,12 +435,25 @@ int64 batrec_query(struct block_list* mbl, uint32 id, e_batrec_type type, e_batr
 // Description: 重置并清空指定单位的所有战斗记录字典
 // Access:      public 
 // Parameter:   struct block_list * mbl
+// Parameter:   bool with_event
+// Parameter:   bool allow_next_trigger
 // Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
+// Author:      Sola丶小克(CairoLee)  2021/03/21 15:27
 //************************************ 
-void batrec_reset(struct block_list* mbl) {
+void batrec_reset(struct block_list* mbl, bool with_event, bool allow_next_trigger) {
+	nullpo_retv(mbl);
+
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(mbl))) return;
+
+	if (!ucd->batrec.recfree_triggered && with_event) {
+		npc_event_aide_batrecfree(mbl);
+		ucd->batrec.recfree_triggered = true;
+	}
+
+	if (allow_next_trigger) {
+		ucd->batrec.recfree_triggered = false;
+	}
 
 	if (ucd->batrec.dmg_receive) {
 		ucd->batrec.dmg_receive->clear();
@@ -430,6 +474,8 @@ void batrec_reset(struct block_list* mbl) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 void batrec_reset(struct block_list* mbl, e_batrec_type type) {
+	nullpo_retv(mbl);
+
 	batrec_map* rec = nullptr;
 	if (!(rec = batrec_getmap(mbl, type)))
 		return;

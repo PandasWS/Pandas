@@ -2588,13 +2588,8 @@ void npc_unload_duplicates(struct npc_data* nd)
 int npc_unload(struct npc_data* nd, bool single) {
 	nullpo_ret(nd);
 
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-	if (nd && nd->bl.type == BL_NPC)
-		npc_event_aide_batrecfree(&nd->bl);
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
-
 #ifdef Pandas_BattleRecord
-	batrec_free(&nd->bl);
+	batrec_free(&nd->bl, true);
 #endif // Pandas_BattleRecord
 
 	status_change_clear(&nd->bl, 1);

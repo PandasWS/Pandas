@@ -6822,7 +6822,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 				memset(dstmd->dmglog, 0, sizeof(dstmd->dmglog));
 				dstmd->tdmg = 0;
 #ifdef Pandas_BattleRecord
-				batrec_reset(&md->bl);
+				// 此处的重置需要触发 OnBatrecFreeExpress 事件, 且会重置触发标记
+				// 以便未来某个时候可以触发 OnBatrecFreeExpress 事件.
+				batrec_reset(&md->bl, true, true);
 #endif // Pandas_BattleRecord
 			}
 		}

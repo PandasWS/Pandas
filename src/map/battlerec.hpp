@@ -38,7 +38,7 @@ bool batrec_cmp_desc(std::pair<uint32, s_batrec_item_ptr>& l,
 	std::pair<uint32, s_batrec_item_ptr>& r);
 
 void batrec_new(struct block_list* bl);
-void batrec_free(struct block_list* bl);
+void batrec_free(struct block_list* bl, bool with_event);
 
 void batrec_sortout(struct block_list* bl);
 void batrec_sortout(struct block_list* bl, e_batrec_type type);
@@ -48,7 +48,7 @@ batrec_map* batrec_getmap(struct block_list* bl, e_batrec_type type);
 
 bool batrec_record(struct block_list* mbl, struct block_list* tbl, e_batrec_type type, int damage);
 int64 batrec_query(struct block_list* mbl, uint32 id, e_batrec_type type, e_batrec_agg agg);
-void batrec_reset(struct block_list* mbl);
+void batrec_reset(struct block_list* mbl, bool with_event, bool allow_next_trigger);
 void batrec_reset(struct block_list* mbl, e_batrec_type type);
 
 #define batrec_receive(mbl, src, damage) batrec_record(mbl, src, BRT_DMG_RECEIVE, damage)

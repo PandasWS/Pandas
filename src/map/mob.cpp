@@ -1209,7 +1209,9 @@ int mob_spawn (struct mob_data *md)
 	md->tdmg = 0;
 
 #ifdef Pandas_BattleRecord
-	batrec_reset(&md->bl);
+	// 此处的重置不触发 OnBatrecFreeExpress 事件, 且会重置触发标记
+	// 以便未来某个时候可以触发 OnBatrecFreeExpress 事件.
+	batrec_reset(&md->bl, false, true);
 #endif // Pandas_BattleRecord
 
 	if (md->lootitems)
@@ -3217,12 +3219,10 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		}
 #endif // Pandas_NpcEvent_KILLMVP
 
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-		npc_event_aide_batrecfree(&md->bl);
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
-
 #ifdef Pandas_BattleRecord
-		batrec_reset(&md->bl);
+		// 此处的重置需要触发 OnBatrecFreeExpress 事件, 且不会重置触发标记
+		// 避免后续 batrec_free 时重复触发事件
+		batrec_reset(&md->bl, true, false);
 #endif // Pandas_BattleRecord
 	}
 
@@ -3286,7 +3286,9 @@ void mob_revive(struct mob_data *md, unsigned int hp)
 	md->tdmg = 0;
 
 #ifdef Pandas_BattleRecord
-	batrec_reset(&md->bl);
+	// 此处的重置需要触发 OnBatrecFreeExpress 事件, 且会重置触发标记
+	// 以便未来某个时候可以触发 OnBatrecFreeExpress 事件.
+	batrec_reset(&md->bl, true, true);
 #endif // Pandas_BattleRecord
 
 	if (!md->bl.prev){
@@ -3473,7 +3475,9 @@ int mob_class_change (struct mob_data *md, int mob_id)
 		memset(md->dmglog, 0, sizeof(md->dmglog));
 		md->tdmg = 0;
 #ifdef Pandas_BattleRecord
-		batrec_reset(&md->bl);
+		// 此处的重置需要触发 OnBatrecFreeExpress 事件, 且会重置触发标记
+		// 以便未来某个时候可以触发 OnBatrecFreeExpress 事件.
+		batrec_reset(&md->bl, true, true);
 #endif // Pandas_BattleRecord
 	} else {
 		md->status.hp = md->status.max_hp*hp_rate/100;

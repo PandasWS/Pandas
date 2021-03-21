@@ -28810,30 +28810,15 @@ BUILDIN_FUNC(batrec_sortout) {
 /* ===========================================================
  * 指令: batrec_reset
  * 描述: 清除指定单位的战斗记录
- * 用法: batrec_reset <记录宿主的单位编号>{, <记录类型>};
+ * 用法: batrec_reset <记录宿主的单位编号>;
  * 返回: 该指令无论成功与否, 都不会有返回值
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(batrec_reset) {
 	struct block_list* bl = nullptr;
 	bl = map_id2bl(script_getnum(st, 2));
-
-	if (!bl) {
-		return SCRIPT_CMD_SUCCESS;
-	}
-
-	if (!script_hasdata(st, 3)) {
-		batrec_reset(bl);
-		return SCRIPT_CMD_SUCCESS;
-	}
-
-	int rec_type = script_getnum(st, 3);
-	if (rec_type != BRT_DMG_RECEIVE && rec_type != BRT_DMG_CAUSE) {
-		ShowError("%s: The battle record type is not invalid.\n", __func__);
-		return SCRIPT_CMD_FAILURE;
-	}
-
-	batrec_reset(bl, (e_batrec_type)rec_type);
+	// 此处的重置不触发 OnBatrecFreeExpress 事件. 且不会重置触发标记
+	batrec_reset(bl, false, false);
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_BattleRecordReset
@@ -29182,7 +29167,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(batrec_sortout, "i?"),					// 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录 [Sola丶小克]
 #endif // Pandas_ScriptCommand_BattleRecordSortout
 #ifdef Pandas_ScriptCommand_BattleRecordReset
-	BUILDIN_DEF(batrec_reset,"i?"),						// 清除指定单位的战斗记录 [Sola丶小克]
+	BUILDIN_DEF(batrec_reset,"i"),						// 清除指定单位的战斗记录 [Sola丶小克]
 #endif // Pandas_ScriptCommand_BattleRecordReset
 #ifdef Pandas_ScriptCommand_EnableBattleRecord
 	BUILDIN_DEF(enable_batrec,"?"),						// 启用指定单位的战斗记录 [Sola丶小克]

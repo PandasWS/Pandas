@@ -4102,6 +4102,18 @@ ACMD_FUNC(reload) {
 		}
 
 		flush_fifos();
+
+#ifdef Pandas_BattleRecord
+		struct block_list* bl = nullptr;
+		iter = mapit_geteachiddb();
+		for (bl = (struct block_list*)mapit_first(iter); mapit_exists(iter); bl = (struct block_list*)mapit_next(iter)) {
+			if (bl->type == BL_NPC || bl->type == BL_MOB) {
+				batrec_free(bl, true);
+			}
+		}
+		mapit_free(iter);
+#endif // Pandas_BattleRecord
+
 		map_reloadnpc(true); // reload config files seeking for npcs
 		script_reload();
 		npc_reload();
