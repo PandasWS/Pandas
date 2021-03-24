@@ -1004,6 +1004,11 @@
 		// 事件类型: Filter / 事件名称: OnPCUseReviveTokenFilter
 		// 常量名称: NPCF_USE_REVIVE_TOKEN / 变量名称: use_revive_token_filter_name
 		#define Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+		// 当玩家使用一键鉴定道具时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCUseOCIdentifyFilter
+		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
+		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 

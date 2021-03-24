@@ -332,6 +332,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
 	"OnPCUseReviveTokenFilter",	// NPCF_USE_REVIVE_TOKEN		// use_revive_token_filter_name	// 当玩家使用菜单中的原地复活之证时触发过滤器
 #endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+#ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
+	"OnPCUseOCIdentifyFilter",	// NPCF_ONECLICK_IDENTIFY		// oneclick_identify_filter_name	// 当玩家使用一键鉴定道具时触发过滤器
+#endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
