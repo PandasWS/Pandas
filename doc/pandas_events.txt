@@ -169,14 +169,13 @@
 	
 	@mob_dead_x			魔物死亡时所处的 X 坐标
 	@mob_dead_y			魔物死亡时所处的 Y 坐标
-	@mob_rebirth		魔物是否已经重生过一次 (0 = 否; 1 = 是)
 	@mob_lasthit_rid	给予魔物最后一击的角色的游戏单位编号 (GameID)
 	@mob_lasthit_cid	给予魔物最后一击的角色编号
 	@mob_mvp_rid		本次 MVP 角色的游戏单位编号 (GameID)
 	@mob_mvp_cid		本次 MVP 角色的角色编号
 
 修订记录:
-	v1.1.1	- 增加 killedgid 和 @mob_rebirth 携带参数
+	v1.1.1	- 增加 killedgid 携带参数
 
 --------------------------------------------------------------
 

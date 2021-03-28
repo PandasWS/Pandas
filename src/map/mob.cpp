@@ -3213,7 +3213,6 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 			pc_setparam(sd, SP_KILLEDGID, md->bl.id);
 			pc_setreg(sd, add_str("@mob_dead_x"), (int)md->bl.x);
 			pc_setreg(sd, add_str("@mob_dead_y"), (int)md->bl.y);
-			pc_setreg(sd, add_str("@mob_rebirth"), (int)md->state.rebirth);
 			pc_setreg(sd, add_str("@mob_lasthit_rid"), (int)sd->bl.id);
 			pc_setreg(sd, add_str("@mob_lasthit_cid"), (int)sd->status.char_id);
 			pc_setreg(sd, add_str("@mob_mvp_rid"), (int)(mvp_sd ? mvp_sd->bl.id : 0));
