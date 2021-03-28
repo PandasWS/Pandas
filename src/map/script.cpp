@@ -18560,7 +18560,18 @@ BUILDIN_FUNC(unitexists)
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	script_pushint(st, (bool)((bl && require_alive) ? status_isdead(bl) == 0 : bl));
+	if (!require_alive) {
+		if (!bl)
+			script_pushint(st, false);
+		else
+			script_pushint(st, true);
+	}
+	else {
+		if (!bl || status_isdead(bl) == 1)
+			script_pushint(st, false);
+		else
+			script_pushint(st, true);
+	}
 #endif // Pandas_ScriptCommand_UnitExists
 
 	return SCRIPT_CMD_SUCCESS;

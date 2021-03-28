@@ -67,6 +67,10 @@
 #include "itemprops.hpp"
 #endif // Pandas_Database_ItemProperties
 
+#if defined(Pandas_Fix_Progressbar_Refresh_Stuck) && (!defined(_WIN32))
+#include <math.h>
+#endif // defined(Pandas_Fix_Progressbar_Refresh_Stuck) && (!defined(__WIN32))
+
 using namespace rathena;
 
 static inline uint32 client_tick( t_tick tick ){
