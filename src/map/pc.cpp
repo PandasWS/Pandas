@@ -8745,7 +8745,11 @@ void pc_close_npc(struct map_session_data *sd,int flag)
 /*==========================================
  * Invoked when a player has negative current hp
  *------------------------------------------*/
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int pc_dead(struct map_session_data *sd,struct block_list *src)
+#else
+int pc_dead(struct map_session_data *sd,struct block_list *src, uint16 skill_id)
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 {
 	int i=0,k=0;
 	t_tick tick = gettick();
@@ -8933,6 +8937,12 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 #endif
 		}
 	}
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	if (src && sd) {
+		npc_event_aide_unitkill(src, &sd->bl, skill_id);
+	}
+#endif // Pandas_NpcExpress_UNIT_KILL
 
 	if(battle_config.bone_drop==2
 		|| (battle_config.bone_drop==1 && mapdata->flag[MF_PVP]))

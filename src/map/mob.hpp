@@ -367,7 +367,11 @@ int mob_setdelayspawn(struct mob_data *md);
 int mob_parse_dataset(struct spawn_data *data);
 void mob_log_damage(struct mob_data *md, struct block_list *src, int damage);
 void mob_damage(struct mob_data *md, struct block_list *src, int damage);
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int mob_dead(struct mob_data *md, struct block_list *src, int type);
+#else
+int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill_id);
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 void mob_revive(struct mob_data *md, unsigned int hp);
 void mob_heal(struct mob_data *md,unsigned int heal);
 

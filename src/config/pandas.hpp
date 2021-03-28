@@ -311,6 +311,14 @@
 	// 以便交由外部来进行 erase, 这样才能获取下一个指针的正确位置 (C++11) [Sola丶小克]
 	#define Pandas_FuncDefine_Instance_Destory
 
+	// 调整各单位的死亡处理函数, 以便支持更多参数信息 [Sola丶小克]
+	// 玩家单位	: pc.cpp -> pc_dead
+	// 魔物单位	: mob.cpp -> mob_dead
+	// 生命体单位	: homunculus.cpp -> hom_dead
+	// 佣兵单位	: mercenary.cpp -> mercenary_dead
+	// 元素精灵	: elemental.cpp -> elemental_dead
+	#define Pandas_FuncDefine_UnitDead_With_ExtendInfo
+
 	// 调整用于计算 MAX_INVENTORY 相关的变量
 	// 以便能够支持将背包的最大上限设置成超过 128 的值 [Sola丶小克]
 	// 

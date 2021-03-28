@@ -2070,30 +2070,26 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 	* &4: Delete object from memory. (One time spawn mobs)
 	**/
 	switch (target->type) {
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 		case BL_PC:  flag = pc_dead((TBL_PC*)target,src); break;
 		case BL_MOB: flag = mob_dead((TBL_MOB*)target, src, flag&4?3:0); break;
 		case BL_HOM: flag = hom_dead((TBL_HOM*)target); break;
 		case BL_MER: flag = mercenary_dead((TBL_MER*)target); break;
 		case BL_ELEM: flag = elemental_dead((TBL_ELEM*)target); break;
+#else
+		case BL_PC:  flag = pc_dead((TBL_PC*)target,src,skill_id); break;
+		case BL_MOB: flag = mob_dead((TBL_MOB*)target, src, flag&4?3:0, skill_id); break;
+		case BL_HOM: flag = hom_dead((TBL_HOM*)target, src, skill_id); break;
+		case BL_MER: flag = mercenary_dead((TBL_MER*)target, src, skill_id); break;
+		case BL_ELEM: flag = elemental_dead((TBL_ELEM*)target, src, skill_id); break;
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 		default:	// Unhandled case, do nothing to object.
 			flag = 0;
 			break;
 	}
 
-#ifdef Pandas_NpcExpress_UNIT_KILL
-	if (target->type == BL_MER || target->type == BL_ELEM) {
-		npc_event_aide_unitkill(src, target, skill_id);
-	}
-#endif // Pandas_NpcExpress_UNIT_KILL
-
 	if(!flag) // Death cancelled.
 		return (int)(hp+sp);
-
-#ifdef Pandas_NpcExpress_UNIT_KILL
-	if (target->type != BL_MER && target->type != BL_ELEM) {
-		npc_event_aide_unitkill(src, target, skill_id);
-	}
-#endif // Pandas_NpcExpress_UNIT_KILL
 
 	// Normal death
 	if (battle_config.clear_unit_ondeath &&

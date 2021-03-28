@@ -94,7 +94,11 @@ int elemental_change_mode_ack(struct elemental_data *ed, enum elemental_skillmod
 int elemental_change_mode(struct elemental_data *ed, enum e_mode mode);
 
 void elemental_heal(struct elemental_data *ed, int hp, int sp);
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int elemental_dead(struct elemental_data *ed);
+#else
+int elemental_dead(struct elemental_data *ed, struct block_list *src, uint16 skill_id);
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 
 int elemental_delete(struct elemental_data *ed);
 void elemental_summon_stop(struct elemental_data *ed);

@@ -196,7 +196,11 @@ void hom_damage(struct homun_data *hd) {
 * @param hd
 * @return flag &1 - Standard dead, &2 - Remove object from map, &4 - Delete object from memory
 */
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int hom_dead(struct homun_data *hd)
+#else
+int hom_dead(struct homun_data *hd, struct block_list *src, uint16 skill_id)
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 {
 	//There's no intimacy penalties on death (from Tharis)
 	struct map_session_data *sd = hd->master;
@@ -206,6 +210,12 @@ int hom_dead(struct homun_data *hd)
 	//Delete timers when dead.
 	hom_hungry_timer_delete(hd);
 	hd->homunculus.hp = 0;
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	if (src && hd) {
+		npc_event_aide_unitkill(src, &hd->bl, skill_id);
+	}
+#endif // Pandas_NpcExpress_UNIT_KILL
 
 	if (!sd) //unit remove map will invoke unit free
 		return 3;

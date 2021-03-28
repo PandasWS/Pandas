@@ -152,7 +152,11 @@ struct view_data* hom_get_viewdata(int class_);
 int hom_class2mapid(int hom_class);
 enum homun_type hom_class2type(int class_);
 void hom_damage(struct homun_data *hd);
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int hom_dead(struct homun_data *hd);
+#else
+int hom_dead(struct homun_data *hd, struct block_list *src, uint16 skill_id);
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 void hom_skillup(struct homun_data *hd,uint16 skill_id);
 void hom_calc_skilltree(struct homun_data *hd, bool flag_evolve);
 short hom_checkskill(struct homun_data *hd,uint16 skill_id);

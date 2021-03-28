@@ -2529,7 +2529,11 @@ void mob_damage(struct mob_data *md, struct block_list *src, int damage)
  * Signals death of mob.
  * type&1 -> no drops, type&2 -> no exp
  *------------------------------------------*/
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int mob_dead(struct mob_data *md, struct block_list *src, int type)
+#else
+int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill_id)
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 {
 	struct status_data *status;
 	struct map_session_data *sd = NULL, *tmpsd[DAMAGELOG_SIZE];
@@ -3218,6 +3222,12 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			npc_script_event(sd, NPCE_KILLMVP);
 		}
 #endif // Pandas_NpcEvent_KILLMVP
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+		if (src && md) {
+			npc_event_aide_unitkill(src, &md->bl, skill_id);
+		}
+#endif // Pandas_NpcExpress_UNIT_KILL
 
 #ifdef Pandas_BattleRecord
 		// 此处的重置需要触发 OnBatrecFreeExpress 事件, 且不会重置触发标记
