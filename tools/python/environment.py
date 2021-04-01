@@ -4,12 +4,16 @@ import os
 import sys
 import inspect
 import platform
-
-from subprocess import call
+import subprocess
 
 
 __current_path__ = os.path.split(os.path.realpath(__file__))[0]
 __current_path__ = os.path.abspath(__current_path__) + os.path.sep
+
+def call(cmdlines, cwd=None):
+    process = subprocess.Popen(cmdlines, cwd=cwd, shell=True)
+    process.wait()
+    return process.returncode
 
 def in_virtualenvs():
     return sys.executable.lower().find('virtualenvs') >= 0
@@ -22,7 +26,7 @@ def pipenv_ready():
     return True
 
 def pipenv_install():
-    call('pip install pipenv --index-url https://mirrors.aliyun.com/pypi/simple/', cwd=__current_path__, shell=True)
+    call('pip install pipenv --index-url https://mirrors.aliyun.com/pypi/simple/', cwd=__current_path__)
 
 def pipenv_cfg_exist():
     return os.path.exists(__current_path__ + 'Pipfile') and os.path.exists(__current_path__ + 'Pipfile.lock')
@@ -49,14 +53,14 @@ def initialize():
 
     # 若不是, 则根据 Pipfile.lock 的配置去安装虚拟环境
     elif pipenv_cfg_exist():
-        call('pipenv install', cwd=__current_path__, shell=True)
-    
+        call('pipenv install', cwd=__current_path__)
+
     # 完成了 install 之后, 在新的 pipenv 会话中启动当前脚本
     call('start cmd /K "{cmdline}"'.format(
         cmdline = ' && '.join([
             'pipenv run %s' % inspect.stack()[-1][1]
         ])
-    ), cwd=__current_path__, shell=True)
+    ), cwd=__current_path__)
     
     # 老的脚本会话可以直接终止了
     exit(0)
