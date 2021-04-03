@@ -3205,22 +3205,26 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 			npc_script_event(mvp_sd, NPCE_KILLNPC); // PCKillNPC [Lance]
 		}
 
-#ifdef Pandas_NpcEvent_KILLMVP
-		// 除了执行标准的 OnNPCKillEvent 事件之外
-		// 如果杀死的是 MVP 魔物，那么触发一下 OnPCKillMvpEvent 事件 [Sola丶小克]
-		if (sd && md && status && status_has_mode(status, MD_MVP)) {
-			pc_setparam(sd, SP_KILLEDRID, md->mob_id);
-			pc_setparam(sd, SP_KILLEDGID, md->bl.id);
-			pc_setreg(sd, add_str("@mob_dead_x"), (int)md->bl.x);
-			pc_setreg(sd, add_str("@mob_dead_y"), (int)md->bl.y);
-			pc_setreg(sd, add_str("@mob_lasthit_rid"), (int)sd->bl.id);
-			pc_setreg(sd, add_str("@mob_lasthit_cid"), (int)sd->status.char_id);
-			pc_setreg(sd, add_str("@mob_mvp_rid"), (int)(mvp_sd ? mvp_sd->bl.id : 0));
-			pc_setreg(sd, add_str("@mob_mvp_cid"), (int)(mvp_sd ? mvp_sd->status.char_id : 0));
-			
-			npc_script_event(sd, NPCE_KILLMVP);
+#ifdef Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
+		// 若 always_trigger_npc_killevent 开关处于打开状态
+		// 那么就算上面已经触发了 md->npc_event 也需要触发一下 OnNPCKillEvent 事件
+		if (md->npc_event[0] && mvp_sd &&
+			!md->state.npc_killmonster && battle_config.always_trigger_npc_killevent) {
+			pc_setparam(mvp_sd, SP_KILLEDGID, md->bl.id);
+			pc_setparam(mvp_sd, SP_KILLEDRID, md->mob_id);
+			npc_script_event(mvp_sd, NPCE_KILLNPC);
 		}
-#endif // Pandas_NpcEvent_KILLMVP
+#endif // Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
+
+#if defined(Pandas_NpcEvent_KILLMVP) && defined(Pandas_BattleConfig_AlwaysTriggerMVPKillEvent)
+		// 除了执行 rAthena 默认的 OnNPCKillEvent 事件之外,
+		// 如果杀死的是 MVP 魔物，那么触发一下 OnPCKillMvpEvent 事件
+		if (!md->state.npc_killmonster) {
+			if (!md->npc_event[0] || battle_config.always_trigger_mvp_killevent) {
+				npc_event_aide_killmvp(sd, mvp_sd, md);
+			}
+		}
+#endif // defined(Pandas_NpcEvent_KILLMVP) && defined(Pandas_BattleConfig_AlwaysTriggerMVPKillEvent)
 
 #ifdef Pandas_NpcExpress_UNIT_KILL
 		if (src && md) {

@@ -133,6 +133,38 @@ struct script_event_s{
 // Holds pointers to the commonly executed scripts for speedup. [Skotlex]
 std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
 
+#ifdef Pandas_NpcEvent_KILLMVP
+//************************************
+// Method:      npc_event_aide_killmvp
+// Description: 用来触发 OnPCKillMvpEvent 事件的辅助函数
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct map_session_data * mvp_sd
+// Parameter:   struct mob_data * md
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/04/03 20:10
+//************************************ 
+void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md) {
+	if (!sd || !md) return;
+
+	struct status_data* status;
+	status = &md->status;
+
+	if (!status_has_mode(status, MD_MVP)) return;
+
+	pc_setparam(sd, SP_KILLEDRID, md->mob_id);
+	pc_setparam(sd, SP_KILLEDGID, md->bl.id);
+	pc_setreg(sd, add_str("@mob_dead_x"), (int)md->bl.x);
+	pc_setreg(sd, add_str("@mob_dead_y"), (int)md->bl.y);
+	pc_setreg(sd, add_str("@mob_lasthit_rid"), (int)sd->bl.id);
+	pc_setreg(sd, add_str("@mob_lasthit_cid"), (int)sd->status.char_id);
+	pc_setreg(sd, add_str("@mob_mvp_rid"), (int)(mvp_sd ? mvp_sd->bl.id : 0));
+	pc_setreg(sd, add_str("@mob_mvp_cid"), (int)(mvp_sd ? mvp_sd->status.char_id : 0));
+
+	npc_script_event(sd, NPCE_KILLMVP);
+}
+#endif // Pandas_NpcEvent_KILLMVP
+
 #ifdef Pandas_NpcExpress_BATTLERECORD_FREE
 //************************************
 // Method:      npc_event_batrecfree

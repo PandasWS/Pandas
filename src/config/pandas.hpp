@@ -288,6 +288,14 @@
 	// 是否启用 multiplayer_recall_behavior 配置选项及其功能 [Sola丶小克]
 	// 此选项用于控制多人召唤时是否避开在线摆摊玩家
 	#define Pandas_BattleConfig_Multiplayer_Recall_Behavior
+
+	// 是否启用 always_trigger_npc_killevent 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制当魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnNPCKillEvent 事件
+	#define Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
+
+	// 是否启用 always_trigger_mvp_killevent 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制当 MVP 魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnPCKillMvpEvent 事件
+	#define Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 

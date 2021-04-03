@@ -1423,6 +1423,10 @@ enum npce_event : uint8 {
 	NPCE_MAX
 };
 
+#ifdef Pandas_NpcEvent_KILLMVP
+void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md);
+#endif // Pandas_NpcEvent_KILLMVP
+
 #ifdef Pandas_NpcExpress_BATTLERECORD_FREE
 void npc_event_aide_batrecfree(struct block_list* bl);
 #endif // Pandas_NpcExpress_BATTLERECORD_FREE
