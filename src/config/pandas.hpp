@@ -137,6 +137,10 @@
 		// rAthena 使用完成 autotrade 的朝向数据后就销毁掉了
 		// 为了能够支持离线挂店 / 挂机可以被 recall 召唤, 我们需要保留一部分数据
 		#define Pandas_Struct_Map_Session_Data_Autotrade_Configure
+
+		// 使 map_session_data 可记录玩家已经生成的 bonus_script 记录数 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.bonus_script_counter
+		#define Pandas_Struct_Map_Session_Data_BonusScript_Counter
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
 
 	// 使 item_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
@@ -180,6 +184,11 @@
 	// 在默认情况下 sd->state.autotrade 的值若为 0 则表示没有离线挂店
 	// 若非零的话则表示启用了离线挂店, 且 &2 表示开启的是离线摆摊挂店 &3 表示开启的是离线收购挂店
 	#define Pandas_Struct_Autotrade_Extend
+
+	// 对 bonus_script_data 的定义进行拓展处理 [Sola丶小克]
+	// 默认的 rAthena 中 bonus_script 机制并没有唯一编号的概念, 为了提高对 bonus_script 的控制粒度
+	// 我们需要将唯一编号引入到我们需要拓展的相关数据结构体中
+	#define Pandas_Struct_BonusScriptData_Extend
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -589,6 +598,19 @@
 	#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
 		#define Pandas_BattleRecord
 	#endif // Pandas_Struct_Unit_CommonData_BattleRecord
+
+	// 是否启用 bonus_script 的唯一编号机制 [Sola丶小克]
+	// 此选项依赖以下拓展, 任意一个不成立则将会 undef 此选项的定义
+	// - Pandas_Struct_BonusScriptData_Extend
+	// - Pandas_Struct_Map_Session_Data_BonusScript_Counter
+	#define Pandas_BonusScript_Unique_ID
+
+	#ifndef Pandas_Struct_BonusScriptData_Extend
+		#undef Pandas_BonusScript_Unique_ID
+	#endif // Pandas_Struct_BonusScriptData_Extend
+	#ifndef Pandas_Struct_Map_Session_Data_BonusScript_Counter
+		#undef Pandas_BonusScript_Unique_ID
+	#endif // Pandas_Struct_Map_Session_Data_BonusScript_Counter
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -1530,6 +1552,26 @@
 	#ifdef Pandas_Struct_Autotrade_Extend
 		#define Pandas_ScriptCommand_CheckSuspend
 	#endif // Pandas_Struct_Autotrade_Extend
+
+	// 是否启用 bonus_script_remove 脚本指令 [Sola丶小克]
+	// 该指令用于移除指定的 bonus_script 效果脚本
+	#define Pandas_ScriptCommand_BonusScriptRemove
+
+	// 是否启用 bonus_script_list 脚本指令 [Sola丶小克]
+	// 该指令用于获取指定角色当前激活的全部 bonus_script 效果脚本编号
+	#define Pandas_ScriptCommand_BonusScriptList
+
+	// 是否启用 bonus_script_exists 脚本指令 [Sola丶小克]
+	// 该指令用于查询指定角色是否已经激活了特定的 bonus_script 效果脚本
+	#define Pandas_ScriptCommand_BonusScriptExists
+
+	// 是否启用 bonus_script_getid 脚本指令 [Sola丶小克]
+	// 该指令用于查询效果脚本代码对应的效果脚本编号
+	#define Pandas_ScriptCommand_BonusScriptGetId
+
+	// 是否启用 bonus_script_info 脚本指令 [Sola丶小克]
+	// 该指令用于查询指定效果脚本的相关信息
+	#define Pandas_ScriptCommand_BonusScriptInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

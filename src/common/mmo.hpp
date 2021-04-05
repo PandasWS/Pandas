@@ -417,6 +417,9 @@ struct bonus_script_data {
 	uint16 flag; ///< Flags @see enum e_bonus_script_flags
 	int16 icon; ///< Icon SI
 	uint8 type; ///< 0 - None, 1 - Buff, 2 - Debuff
+#ifdef Pandas_Struct_BonusScriptData_Extend
+	uint64 bonus_id;	// 此 bonus_script 的唯一编号
+#endif // Pandas_Struct_BonusScriptData_Extend
 };
 
 struct skill_cooldown_data {
