@@ -107,14 +107,28 @@ CREATE TABLE IF NOT EXISTS `db_roulette` (
 -- Table structure for table `bonus_script`
 --
 
+-- CREATE TABLE IF NOT EXISTS `bonus_script` (
+--   `char_id` INT(11) UNSIGNED NOT NULL,
+--   `script` TEXT NOT NULL,
+--   `tick` BIGINT(20) NOT NULL DEFAULT '0',
+--   `flag` SMALLINT(5) UNSIGNED NOT NULL DEFAULT '0',
+--   `type` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+--   `icon` SMALLINT(3) NOT NULL DEFAULT '-1',
+--   PRIMARY KEY (`char_id`, `type`)
+-- ) ENGINE=InnoDB;
+
+--
+-- Pandas - Extend `bonus_script` with id field.
+--
 CREATE TABLE IF NOT EXISTS `bonus_script` (
+  `id` bigint unsigned NOT NULL,
   `char_id` INT(11) UNSIGNED NOT NULL,
   `script` TEXT NOT NULL,
   `tick` BIGINT(20) NOT NULL DEFAULT '0',
   `flag` SMALLINT(5) UNSIGNED NOT NULL DEFAULT '0',
   `type` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
   `icon` SMALLINT(3) NOT NULL DEFAULT '-1',
-  PRIMARY KEY (`char_id`, `type`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
 --

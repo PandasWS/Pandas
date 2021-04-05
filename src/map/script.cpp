@@ -29194,7 +29194,7 @@ BUILDIN_FUNC(bonus_script_info) {
 
 	switch (query_type) {
 	case 0:		// 效果脚本代码
-		script_pushstr(st, StringBuf_Value(entry->script_buf)); break;
+		script_pushstrcopy(st, StringBuf_Value(entry->script_buf)); break;
 	case 1:		// 标记位
 		script_pushint(st, entry->flag); break;
 	case 2:		// 状态图标编号
