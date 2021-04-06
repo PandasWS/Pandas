@@ -108,13 +108,15 @@ CREATE TABLE IF NOT EXISTS `db_roulette` (
 --
 
 CREATE TABLE IF NOT EXISTS `bonus_script` (
+  `id` bigint unsigned NOT NULL,		-- Pandas add for make bonus_script has unique_id 
   `char_id` INT(11) UNSIGNED NOT NULL,
   `script` TEXT NOT NULL,
   `tick` BIGINT(20) NOT NULL DEFAULT '0',
   `flag` SMALLINT(5) UNSIGNED NOT NULL DEFAULT '0',
   `type` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
   `icon` SMALLINT(3) NOT NULL DEFAULT '-1',
-  PRIMARY KEY (`char_id`, `type`)
+--   PRIMARY KEY (`char_id`, `type`)	-- Pandas comment for allow duplicate bonus_script
+  PRIMARY KEY (`id`)					-- Pandas add for make sure this table has new PRIMARY KEY
 ) ENGINE=InnoDB;
 
 --
@@ -206,12 +208,12 @@ CREATE TABLE IF NOT EXISTS `char` (
   `base_exp` bigint(20) unsigned NOT NULL default '0',
   `job_exp` bigint(20) unsigned NOT NULL default '0',
   `zeny` int(11) unsigned NOT NULL default '0',
-  `str` int(11) unsigned NOT NULL default '0',
-  `agi` int(11) unsigned NOT NULL default '0',
-  `vit` int(11) unsigned NOT NULL default '0',
-  `int` int(11) unsigned NOT NULL default '0',
-  `dex` int(11) unsigned NOT NULL default '0',
-  `luk` int(11) unsigned NOT NULL default '0',
+  `str` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `agi` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `vit` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `int` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `dex` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `luk` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
   `max_hp` int(11) unsigned NOT NULL default '0',
   `hp` int(11) unsigned NOT NULL default '0',
   `max_sp` int(11) unsigned NOT NULL default '0',
@@ -382,11 +384,11 @@ CREATE TABLE IF NOT EXISTS `elemental` (
   `atk1` MEDIUMINT(6) unsigned NOT NULL default '0',
   `atk2` MEDIUMINT(6) unsigned NOT NULL default '0',
   `matk` MEDIUMINT(6) unsigned NOT NULL default '0',
-  `aspd` smallint(4) unsigned NOT NULL default '0',
-  `def` smallint(4) unsigned NOT NULL default '0',
-  `mdef` smallint(4) unsigned NOT NULL default '0',
-  `flee` smallint(4) unsigned NOT NULL default '0',
-  `hit` smallint(4) unsigned NOT NULL default '0',
+  `aspd` smallint(4) unsigned NOT NULL default '0',		
+  `def` int(11) unsigned NOT NULL default '0',			-- Pandas modify for unlimit status : origin type is smallint(4)
+  `mdef` int(11) unsigned NOT NULL default '0',			-- Pandas modify for unlimit status : origin type is smallint(4)
+  `flee` int(11) unsigned NOT NULL default '0',			-- Pandas modify for unlimit status : origin type is smallint(4)
+  `hit` int(11) unsigned NOT NULL default '0',			-- Pandas modify for unlimit status : origin type is smallint(4)
   `life_time` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`ele_id`)
 ) ENGINE=MyISAM;
@@ -639,12 +641,12 @@ CREATE TABLE IF NOT EXISTS `homunculus` (
   `exp` bigint(20) unsigned NOT NULL default '0',
   `intimacy` int(12) NOT NULL default '0',
   `hunger` smallint(4) NOT NULL default '0',
-  `str` int(11) unsigned NOT NULL default '0',
-  `agi` int(11) unsigned NOT NULL default '0',
-  `vit` int(11) unsigned NOT NULL default '0',
-  `int` int(11) unsigned NOT NULL default '0',
-  `dex` int(11) unsigned NOT NULL default '0',
-  `luk` int(11) unsigned NOT NULL default '0',
+  `str` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `agi` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `vit` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `int` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `dex` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `luk` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
   `hp` int(11) unsigned NOT NULL default '0',
   `max_hp` int(11) unsigned NOT NULL default '0',
   `sp` int(11) NOT NULL default '0',

@@ -23249,8 +23249,15 @@ BUILDIN_FUNC(bonus_script) {
 	const char *script_str = NULL;
 	struct s_bonus_script_entry *entry = NULL;
 
+#ifndef Pandas_BonusScript_Unique_ID
 	if ( !script_charid2sd(7,sd) )
 		return SCRIPT_CMD_FAILURE;
+#else
+	if ( !script_charid2sd(7,sd) ) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+#endif // Pandas_BonusScript_Unique_ID
 	
 	script_str = script_getstr(st,2);
 	dur = 1000 * abs(script_getnum(st,3));
@@ -23261,11 +23268,17 @@ BUILDIN_FUNC(bonus_script) {
 	// No Script string, No Duration!
 	if (script_str[0] == '\0' || !dur) {
 		ShowError("buildin_bonus_script: Invalid! Script: \"%s\". Duration: %d\n", script_str, dur);
+#ifdef Pandas_BonusScript_Unique_ID
+		script_pushint(st, 0);
+#endif // Pandas_BonusScript_Unique_ID
 		return SCRIPT_CMD_FAILURE;
 	}
 
 	if (strlen(script_str) >= MAX_BONUS_SCRIPT_LENGTH) {
 		ShowError("buildin_bonus_script: Script string to long: \"%s\".\n", script_str);
+#ifdef Pandas_BonusScript_Unique_ID
+		script_pushint(st, 0);
+#endif // Pandas_BonusScript_Unique_ID
 		return SCRIPT_CMD_FAILURE;
 	}
 
@@ -23275,6 +23288,10 @@ BUILDIN_FUNC(bonus_script) {
 	if ((entry = pc_bonus_script_add(sd, script_str, dur, (enum efst_types)icon, flag, type))) {
 		linkdb_insert(&sd->bonus_script.head, (void *)((intptr_t)entry), entry);
 		status_calc_pc(sd,SCO_NONE);
+
+#ifdef Pandas_BonusScript_Unique_ID
+		script_pushint(st, entry->bonus_id);
+#endif // Pandas_BonusScript_Unique_ID
 	}
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -28992,6 +29009,215 @@ BUILDIN_FUNC(checksuspend) {
 }
 #endif // Pandas_ScriptCommand_CheckSuspend
 
+#ifdef Pandas_ScriptCommand_BonusScriptRemove
+/* ===========================================================
+ * 指令: bonus_script_remove
+ * 描述: 移除指定的 bonus_script 效果脚本
+ * 用法: bonus_script_remove <效果脚本编号>{,<角色编号>};
+ * 返回: 成功移除则返回 true, 找不到脚本代码或移除失败则返回 false
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(bonus_script_remove) {
+	TBL_PC* sd = nullptr;
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, false);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	uint64 bonus_id = script_getnum64(st, 2);
+	if (pc_bonus_script_remove(sd, bonus_id))
+		script_pushint(st, true);
+	else
+		script_pushint(st, false);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_BonusScriptRemove
+
+#ifdef Pandas_ScriptCommand_BonusScriptList
+/* ===========================================================
+ * 指令: bonus_script_list
+ * 描述: 用于获取指定角色当前激活的全部 bonus_script 效果脚本编号
+ * 用法: bonus_script_list <返回效果脚本编号的数值型数组>{,<角色编号>};
+ * 返回: 获取到的脚本代码数量, 发生错误则返回 -1
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(bonus_script_list) {
+	TBL_PC* sd = nullptr;
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int script_array_varid = 0;
+	char* script_array_varname = nullptr;
+	struct script_data* script_array_vardata = nullptr;
+	if (!script_get_array(st, 2, script_array_varid, script_array_varname, script_array_vardata)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	script_cleararray_st(st, 2);
+
+	uint16 count = 0;
+	struct linkdb_node* node = NULL;
+	struct s_bonus_script_entry* entry = NULL;
+	if ((node = sd->bonus_script.head)) {
+		while (node) {
+			struct linkdb_node* next = node->next;
+			entry = (struct s_bonus_script_entry*)node->data;
+			if (!entry) continue;
+
+			int64 uid = reference_uid(script_array_varid, count);
+			set_reg_num(st, sd, uid, script_array_varname, entry->bonus_id, reference_getref(script_array_vardata));
+			count++;
+			node = next;
+		}
+	}
+
+	script_pushint(st, count);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_BonusScriptList
+
+#ifdef Pandas_ScriptCommand_BonusScriptExists
+/* ===========================================================
+ * 指令: bonus_script_exists
+ * 描述: 查询指定角色是否已经激活了特定的 bonus_script 效果脚本
+ * 用法: bonus_script_exists <效果脚本编号>{,<角色编号>};
+ * 返回: 效果已经存在则返回 true, 角色不在线或效果不存在否则返回 false
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(bonus_script_exists) {
+	TBL_PC* sd = nullptr;
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	uint64 bonus_id = script_getnum64(st, 2);
+	if (pc_bonus_script_exists(sd, bonus_id))
+		script_pushint(st, true);
+	else
+		script_pushint(st, false);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_BonusScriptExists
+
+#ifdef Pandas_ScriptCommand_BonusScriptGetId
+/* ===========================================================
+ * 指令: bonus_script_getid
+ * 描述: 用于查询效果脚本代码对应的效果脚本编号
+ * 用法: bonus_script_getid <"效果脚本代码">,<返回效果脚本编号数组>{,<角色编号>};
+ * 返回: 查询到的记录数
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(bonus_script_getid) {
+	TBL_PC* sd = nullptr;
+	if (!script_charid2sd(4, sd)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	const char* script_str = nullptr;
+	script_str = script_getstr(st, 2);
+
+	int ret_varid = 0;
+	char* ret_varname = nullptr;
+	struct script_data* ret_vardata = nullptr;
+	if (!script_get_array(st, 3, ret_varid, ret_varname, ret_vardata)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	script_cleararray_st(st, 3);
+
+	uint16 count = 0;
+	struct linkdb_node* node = NULL;
+	struct s_bonus_script_entry* entry = NULL;
+
+	if ((node = sd->bonus_script.head)) {
+		while (node) {
+			struct linkdb_node* next = node->next;
+			entry = (struct s_bonus_script_entry*)node->data;
+			if (strcmpi(script_str, StringBuf_Value(entry->script_buf)) == 0) {
+				int64 uid = reference_uid(ret_varid, count);
+				set_reg_num(st, sd, uid, ret_varname, entry->bonus_id, reference_getref(ret_vardata));
+				count++;
+			}
+			node = next;
+		}
+	}
+
+	script_pushint(st, count);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_BonusScriptGetId
+
+#ifdef Pandas_ScriptCommand_BonusScriptInfo
+/* ===========================================================
+ * 指令: bonus_script_info
+ * 描述: 查询指定效果脚本的相关信息
+ * 用法: bonus_script_info <效果脚本编号>,<查询类型>{,<角色编号>};
+ * 返回: 直接返回所查询的结果值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(bonus_script_info) {
+	TBL_PC* sd = nullptr;
+	if (!script_charid2sd(4, sd)) {
+		script_pushint(st, -2);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	uint64 bonus_id = script_getnum64(st, 2);
+	int32 query_type = script_getnum(st, 3);
+
+	bool found = false;
+	struct linkdb_node* node = NULL;
+	struct s_bonus_script_entry* entry = NULL;
+
+	if ((node = sd->bonus_script.head)) {
+		while (node) {
+			struct linkdb_node* next = node->next;
+			entry = (struct s_bonus_script_entry*)node->data;
+			if (bonus_id == entry->bonus_id) {
+				found = true;
+				break;
+			}
+			node = next;
+		}
+	}
+
+	if (!found) {
+		script_pushint(st, -3);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	switch (query_type) {
+	case 0:		// 效果脚本代码
+		script_pushstrcopy(st, StringBuf_Value(entry->script_buf)); break;
+	case 1:		// 标记位
+		script_pushint(st, entry->flag); break;
+	case 2:		// 状态图标编号
+		script_pushint(st, entry->icon); break;
+	case 3:		// 类型
+		script_pushint(st, entry->type); break;
+	case 4:		// 剩余时间 (毫秒)
+		if (entry->tid == INVALID_TIMER) {
+			script_pushint(st, -1);
+			break;
+		}
+		script_pushint(st, DIFF_TICK(get_timer(entry->tid)->tick, gettick()));
+		break;
+	default:
+		ShowWarning("buildin_bonus_script_info: The type should be in range 0-%d, currently type is: %d.\n", 4, query_type);
+		script_pushint(st, -4);
+		break;
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_BonusScriptInfo
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -29196,6 +29422,21 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_CheckSuspend
 	BUILDIN_DEF(checksuspend,"?"),						// 获取指定角色或指定账号当前在线角色的挂机模式 [Sola丶小克]
 #endif // Pandas_ScriptCommand_CheckSuspend
+#ifdef Pandas_ScriptCommand_BonusScriptRemove
+	BUILDIN_DEF(bonus_script_remove,"i?"),				// 移除指定的 bonus_script 效果脚本 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptRemove
+#ifdef Pandas_ScriptCommand_BonusScriptList
+	BUILDIN_DEF(bonus_script_list,"r?"),				// 获取指定角色当前激活的全部 bonus_script 效果脚本编号 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptList
+#ifdef Pandas_ScriptCommand_BonusScriptExists
+	BUILDIN_DEF(bonus_script_exists,"i?"),				// 查询指定角色是否已经激活了特定的 bonus_script 效果脚本 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptExists
+#ifdef Pandas_ScriptCommand_BonusScriptGetId
+	BUILDIN_DEF(bonus_script_getid,"sr?"),				// 查询效果脚本代码对应的效果脚本编号 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptGetId
+#ifdef Pandas_ScriptCommand_BonusScriptInfo
+	BUILDIN_DEF(bonus_script_info,"ii?"),				// 查询指定效果脚本的相关信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),

@@ -1724,6 +1724,10 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 	//Prevent S. Novices from getting the no-death bonus just yet. [Skotlex]
 	sd->die_counter=-1;
 
+#ifdef Pandas_BonusScript_Unique_ID
+	sd->pandas.bonus_script_counter = 0;
+#endif // Pandas_BonusScript_Unique_ID
+
 	// 以下这行注释是为了方便 pyhelp_extracter.py 提取翻译文本使用的
 	// ShowInfo("'" CL_WHITE "%s" CL_RESET "' logged in. (AID/CID: '" CL_WHITE "%d/%d" CL_RESET "', IP: '" CL_WHITE "%d.%d.%d.%d" CL_RESET "', Group '" CL_WHITE "%d" CL_RESET "').\n", sd->status.name, sd->status.account_id, sd->status.char_id, CONVIP(ip), sd->group_id);
 
@@ -1871,6 +1875,10 @@ void pc_reg_received(struct map_session_data *sd)
 		pc_setglobalreg(sd, add_str(AURA_VARIABLE), 0);
 	}
 #endif // Pandas_Struct_Unit_CommonData_Aura
+
+#ifdef Pandas_BonusScript_Unique_ID
+	sd->pandas.bonus_script_counter = static_cast<uint32>(pc_readglobalreg(sd, add_str(BONUS_SCRIPT_COUNTER_VAR)));
+#endif // Pandas_BonusScript_Unique_ID
 
 	// Cooking Exp
 	sd->cook_mastery = static_cast<short>(pc_readglobalreg(sd, add_str(COOKMASTERY_VAR)));
@@ -13565,7 +13573,11 @@ void pc_bonus_script(struct map_session_data *sd) {
  * @return New created entry pointer or NULL if failed or NULL if duplicate fail
  * @author [Cydh]
  **/
+#ifndef Pandas_BonusScript_Unique_ID
 struct s_bonus_script_entry *pc_bonus_script_add(struct map_session_data *sd, const char *script_str, t_tick dur, enum efst_types icon, uint16 flag, uint8 type) {
+#else
+struct s_bonus_script_entry *pc_bonus_script_add(struct map_session_data *sd, const char *script_str, t_tick dur, enum efst_types icon, uint16 flag, uint8 type, uint64 bonus_id) {
+#endif // Pandas_BonusScript_Unique_ID
 	struct script_code *script = NULL;
 	struct linkdb_node *node = NULL;
 	struct s_bonus_script_entry *entry = NULL;
@@ -13610,6 +13622,11 @@ struct s_bonus_script_entry *pc_bonus_script_add(struct map_session_data *sd, co
 	entry->tick = dur; // Use duration first, on run change to expire time
 	entry->type = type;
 	entry->script = script;
+#ifdef Pandas_BonusScript_Unique_ID
+	// 若参数中的 bonus_id 字段不为零, 则使用参数给出的值作为 bonus_id
+	// 否则使用 pc_bonus_script_generate_unique_id 重新生成一个新的 bonus_script 唯一编号
+	entry->bonus_id = (!bonus_id ? pc_bonus_script_generate_unique_id(sd) : bonus_id);
+#endif // Pandas_BonusScript_Unique_ID
 	sd->bonus_script.count++;
 	return entry;
 }
@@ -13723,6 +13740,96 @@ void pc_bonus_script_clear(struct map_session_data *sd, uint16 flag) {
 	if (count && !(flag&BSF_REM_ON_LOGOUT)) //Don't need to do this if log out
 		status_calc_pc(sd,SCO_NONE);
 }
+
+#ifdef Pandas_BonusScript_Unique_ID
+//************************************
+// Method:      pc_bonus_script_generate_unique_id
+// Description: 生成与当前角色相关的 bonus_script 唯一编号
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Returns:     uint64
+// Author:      Sola丶小克(CairoLee)  2021/04/05 16:33
+//************************************ 
+uint64 pc_bonus_script_generate_unique_id(struct map_session_data* sd) {
+	nullpo_ret(sd);
+	uint64 bonus_script_unique_id = ((uint64)sd->status.char_id << 32) | sd->pandas.bonus_script_counter++;
+	pc_setglobalreg(sd, add_str(BONUS_SCRIPT_COUNTER_VAR), sd->pandas.bonus_script_counter);
+	return bonus_script_unique_id;
+}
+#endif // Pandas_BonusScript_Unique_ID
+
+#ifdef Pandas_ScriptCommand_BonusScriptRemove
+//************************************
+// Method:      pc_bonus_script_remove
+// Description: 移除指定的 bonus_script 效果脚本
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   uint64 bonus_id
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/04/05 17:37
+//************************************ 
+bool pc_bonus_script_remove(struct map_session_data* sd, uint64 bonus_id) {
+	struct linkdb_node* node = NULL;
+	struct s_bonus_script_entry* entry = NULL;
+	uint16 count = 0;
+
+	if (!sd)
+		return false;
+
+	if ((node = sd->bonus_script.head)) {
+		while (node) {
+			struct linkdb_node* next = node->next;
+			entry = (struct s_bonus_script_entry*)node->data;
+			if (bonus_id == entry->bonus_id) {
+				linkdb_erase(&sd->bonus_script.head, (void*)((intptr_t)entry));
+				pc_bonus_script_free_entry(sd, entry);
+				count++;
+			}
+			node = next;
+		}
+	}
+
+	pc_bonus_script_check_final(sd);
+
+	if (count) {
+		status_calc_pc(sd, SCO_NONE);
+	}
+
+	return (count > 0);
+}
+#endif // Pandas_ScriptCommand_BonusScriptRemove
+
+#ifdef Pandas_ScriptCommand_BonusScriptExists
+//************************************
+// Method:      pc_bonus_script_exists
+// Description: 判断指定的 bonus_script 效果脚本是否已存在 (或者说: 已激活)
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   uint64 bonus_id
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/04/05 17:39
+//************************************ 
+bool pc_bonus_script_exists(struct map_session_data* sd, uint64 bonus_id) {
+	struct linkdb_node* node = NULL;
+	struct s_bonus_script_entry* entry = NULL;
+
+	if (!sd)
+		return false;
+
+	if ((node = sd->bonus_script.head)) {
+		while (node) {
+			struct linkdb_node* next = node->next;
+			entry = (struct s_bonus_script_entry*)node->data;
+			if (bonus_id == entry->bonus_id) {
+				return true;
+			}
+			node = next;
+		}
+	}
+
+	return false;
+}
+#endif // Pandas_ScriptCommand_BonusScriptExists
 
 /** [Cydh]
  * Gives/removes SC_BASILICA when player steps in/out the cell with 'cell_basilica'

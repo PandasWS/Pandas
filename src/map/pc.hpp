@@ -74,6 +74,9 @@ enum sc_type : int16;
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 #define AURA_VARIABLE "PANDAS_AURASET"
 #endif // Pandas_Struct_Unit_CommonData_Aura
+#ifdef Pandas_BonusScript_Unique_ID
+#define BONUS_SCRIPT_COUNTER_VAR "PANDAS_BONUSSCRIPT_COUNTER"
+#endif // Pandas_BonusScript_Unique_ID
 
 //Update this max as necessary. 55 is the value needed for Super Baby currently
 //Raised to 105 since Expanded Super Baby needs it.
@@ -267,6 +270,9 @@ struct s_bonus_script_entry {
 	enum efst_types icon;
 	uint8 type; //0 - Ignore; 1 - Buff; 2 - Debuff
 	int tid;
+#ifdef Pandas_Struct_BonusScriptData_Extend
+	uint64 bonus_id;		// 此 bonus_script 的唯一编号
+#endif // Pandas_Struct_BonusScriptData_Extend
 };
 
 /// HP/SP bonus struct
@@ -866,6 +872,9 @@ struct map_session_data {
 		unsigned char at_head_dir;			// 纸娃娃头部朝向
 		unsigned char at_sit;				// 是否坐下
 #endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
+#ifdef Pandas_Struct_Map_Session_Data_BonusScript_Counter
+		uint32 bonus_script_counter;		// 玩家已经生成的 bonus_script 记录数
+#endif // Pandas_Struct_Map_Session_Data_BonusScript_Counter
 	} pandas;
 #endif // Pandas_Struct_Map_Session_Data_Pandas
 
@@ -1527,8 +1536,22 @@ void pc_show_version(struct map_session_data *sd);
 
 TIMER_FUNC(pc_bonus_script_timer);
 void pc_bonus_script(struct map_session_data *sd);
+#ifndef Pandas_BonusScript_Unique_ID
 struct s_bonus_script_entry *pc_bonus_script_add(struct map_session_data *sd, const char *script_str, t_tick dur, enum efst_types icon, uint16 flag, uint8 type);
+#else
+struct s_bonus_script_entry *pc_bonus_script_add(struct map_session_data *sd, const char *script_str, t_tick dur, enum efst_types icon, uint16 flag, uint8 type, uint64 bonus_id = 0);
+#endif // Pandas_BonusScript_Unique_ID
 void pc_bonus_script_clear(struct map_session_data *sd, uint16 flag);
+
+#ifdef Pandas_BonusScript_Unique_ID
+uint64 pc_bonus_script_generate_unique_id(struct map_session_data* sd);
+#endif // Pandas_BonusScript_Unique_ID
+#ifdef Pandas_ScriptCommand_BonusScriptRemove
+bool pc_bonus_script_remove(struct map_session_data* sd, uint64 bonus_id);
+#endif // Pandas_ScriptCommand_BonusScriptRemove
+#ifdef Pandas_ScriptCommand_BonusScriptExists
+bool pc_bonus_script_exists(struct map_session_data* sd, uint64 bonus_id);
+#endif // Pandas_ScriptCommand_BonusScriptExists
 
 void pc_cell_basilica(struct map_session_data *sd);
 
