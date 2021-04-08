@@ -7,16 +7,18 @@
 -- 熊猫模拟器自定义修改, 拓展元素精灵的保存上限.
 -- -----------------------------------------------
 
-ALTER TABLE  `elemental` MODIFY `def` int(11) UNSIGNED NOT NULL DEFAULT '0';
-ALTER TABLE  `elemental` MODIFY `mdef` int(11) UNSIGNED NOT NULL DEFAULT '0';
-ALTER TABLE  `elemental` MODIFY `flee` int(11) UNSIGNED NOT NULL DEFAULT '0';
-ALTER TABLE  `elemental` MODIFY `hit` int(11) UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `elemental` MODIFY `aspd` int(11) UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `elemental` MODIFY `def` int(11) UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `elemental` MODIFY `mdef` int(11) UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `elemental` MODIFY `flee` int(11) UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `elemental` MODIFY `hit` int(11) UNSIGNED NOT NULL DEFAULT '0';
 
 -- -----------------------------------------------
 -- 熊猫模拟器自定义修改, 使 bonus_script 有唯一编号.
 -- -----------------------------------------------
 
+BEGIN;
 ALTER TABLE `bonus_script` DROP PRIMARY KEY;
 ALTER TABLE `bonus_script` ADD COLUMN `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY(`id`);
 ALTER TABLE `bonus_script` MODIFY `id` bigint UNSIGNED NOT NULL;
-
+COMMIT;
