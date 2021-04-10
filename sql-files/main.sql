@@ -384,7 +384,7 @@ CREATE TABLE IF NOT EXISTS `elemental` (
   `atk1` MEDIUMINT(6) unsigned NOT NULL default '0',
   `atk2` MEDIUMINT(6) unsigned NOT NULL default '0',
   `matk` MEDIUMINT(6) unsigned NOT NULL default '0',
-  `aspd` smallint(4) unsigned NOT NULL default '0',		
+  `aspd` int(11) unsigned NOT NULL default '0',			-- Pandas modify for unlimit status : origin type is smallint(4)
   `def` int(11) unsigned NOT NULL default '0',			-- Pandas modify for unlimit status : origin type is smallint(4)
   `mdef` int(11) unsigned NOT NULL default '0',			-- Pandas modify for unlimit status : origin type is smallint(4)
   `flee` int(11) unsigned NOT NULL default '0',			-- Pandas modify for unlimit status : origin type is smallint(4)

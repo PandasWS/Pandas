@@ -3680,6 +3680,26 @@ static unsigned int status_calc_maxhpsp_pc(struct map_session_data* sd, unsigned
 		dmax += (int64)(dmax * status_get_spbonus(&sd->bl,STATUS_BONUS_RATE) / 100); //Aegis accuracy
 	}
 
+#ifdef Pandas_Extreme_Computing
+	if (isHP) {
+		if (battle_config.hp_rate != 100)
+			dmax = (unsigned int)(battle_config.hp_rate * (dmax / 100.));
+
+		if (sd->status.base_level < 100)
+			dmax = cap_value(dmax, 1, (unsigned int)battle_config.max_hp_lv99);
+		else if (sd->status.base_level < 151)
+			dmax = cap_value(dmax, 1, (unsigned int)battle_config.max_hp_lv150);
+		else
+			dmax = cap_value(dmax, 1, (unsigned int)battle_config.max_hp);
+	}
+	else {
+		if (battle_config.sp_rate != 100)
+			dmax = (unsigned int)(battle_config.sp_rate * (dmax / 100.));
+
+		dmax = cap_value(dmax, 1, (unsigned int)battle_config.max_sp);
+	}
+#endif // Pandas_Extreme_Computing
+
 	//Make sure it's not negative before casting to unsigned int
 	if(dmax < 1) dmax = 1;
 
@@ -4354,6 +4374,8 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 // ----- HP MAX CALCULATION -----
 	base_status->max_hp = sd->status.max_hp = status_calc_maxhpsp_pc(sd,base_status->vit,true);
 
+#ifndef Pandas_Extreme_Computing
+	// 此处逻辑已经被转入到 status_calc_maxhpsp_pc 函数中实现, 此处无需重复进行
 	if(battle_config.hp_rate != 100)
 		base_status->max_hp = (unsigned int)(battle_config.hp_rate * (base_status->max_hp/100.));
 
@@ -4363,14 +4385,18 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		base_status->max_hp = cap_value(base_status->max_hp,1,(unsigned int)battle_config.max_hp_lv150);
 	else
 		base_status->max_hp = cap_value(base_status->max_hp,1,(unsigned int)battle_config.max_hp);
+#endif // Pandas_Extreme_Computing
 
 // ----- SP MAX CALCULATION -----
 	base_status->max_sp = sd->status.max_sp = status_calc_maxhpsp_pc(sd,base_status->int_,false);
 
+#ifndef Pandas_Extreme_Computing
+	// 此处逻辑已经被转入到 status_calc_maxhpsp_pc 函数中实现, 此处无需重复进行
 	if(battle_config.sp_rate != 100)
 		base_status->max_sp = (unsigned int)(battle_config.sp_rate * (base_status->max_sp/100.));
 
 	base_status->max_sp = cap_value(base_status->max_sp,1,(unsigned int)battle_config.max_sp);
+#endif // Pandas_Extreme_Computing
 
 // ----- RESPAWN HP/SP -----
 
@@ -5638,6 +5664,8 @@ void status_calc_bl_main(struct block_list *bl, /*enum scb_flag*/int flag)
 		if( bl->type&BL_PC ) {
 			status->max_hp = status_calc_maxhpsp_pc(sd,status->vit,true);
 
+#ifndef Pandas_Extreme_Computing
+			// 此处逻辑已经被转入到 status_calc_maxhpsp_pc 函数中实现, 此处无需重复进行
 			if(battle_config.hp_rate != 100)
 				status->max_hp = (unsigned int)(battle_config.hp_rate * (status->max_hp/100.));
 
@@ -5647,6 +5675,7 @@ void status_calc_bl_main(struct block_list *bl, /*enum scb_flag*/int flag)
 				status->max_hp = umin(status->max_hp,(unsigned int)battle_config.max_hp_lv150);
 			else
 				status->max_hp = umin(status->max_hp,(unsigned int)battle_config.max_hp);
+#endif // Pandas_Extreme_Computing
 		}
 		else
 			status->max_hp = status_calc_maxhp(bl, b_status->max_hp);
@@ -5661,10 +5690,13 @@ void status_calc_bl_main(struct block_list *bl, /*enum scb_flag*/int flag)
 		if( bl->type&BL_PC ) {
 			status->max_sp = status_calc_maxhpsp_pc(sd,status->int_,false);
 
+#ifndef Pandas_Extreme_Computing
+			// 此处逻辑已经被转入到 status_calc_maxhpsp_pc 函数中实现, 此处无需重复进行
 			if(battle_config.sp_rate != 100)
 				status->max_sp = (unsigned int)(battle_config.sp_rate * (status->max_sp/100.));
 
 			status->max_sp = umin(status->max_sp,(unsigned int)battle_config.max_sp);
+#endif // Pandas_Extreme_Computing
 		}
 		else
 			status->max_sp = status_calc_maxsp(bl, b_status->max_sp);
