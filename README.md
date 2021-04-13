@@ -125,11 +125,11 @@
 在 rAthena 原来的指令集和事件基础上我们拓展了更多的小玩意，使脚本作者们能够充分发挥自己
 的想象力，给玩家带来有趣和好玩的游戏体验。具体详情请见对应的说明文档：
 
--   [管理指令 ( Atcommands )](blob/master/doc/pandas_atcommands.txt)
--   [脚本指令 ( Script Commands )](blob/master/doc/pandas_script_commands.txt)
--   [事件标签 ( NPC Event Label )](blob/master/doc/pandas_events.txt)
--   [地图标记 ( Mapflags )](blob/master/doc/pandas_mapflags.txt)
--   [效果调整器 ( Bonus )](blob/master/doc/pandas_bonus.txt)
+-   [管理指令 ( Atcommands )](doc/pandas_atcommands.txt)
+-   [脚本指令 ( Script Commands )](doc/pandas_script_commands.txt)
+-   [事件标签 ( NPC Event Label )](doc/pandas_events.txt)
+-   [地图标记 ( Mapflags )](doc/pandas_mapflags.txt)
+-   [效果调整器 ( Bonus )](doc/pandas_bonus.txt)
 
 > 若您有拓展需求或者想法，劳驾请您 [建立新的反馈] 给我们，或者
  [加入爱好者社区](#加入爱好者社区) 给管理员进行反馈，我们将挑选优质且有远见的需求优先进行实现。
@@ -149,7 +149,7 @@
 
 ## 编译说明
 熊猫模拟器是一个开源项目，因此当您获取源码后需要手动进行编译才能获得可以运行的二进制文件；
-亦或者您可以前往 [下载页面](releases) 直接下载预编译好的版本，直接使用 ( 新手推荐 ) 。
+亦或者您可以前往 [下载页面] 直接下载预编译好的版本，直接使用 ( 新手推荐 ) 。
 
 > 注意：此处的编译说明仅提供最精简的指引信息，完成编译之后还需要搭建 MySQL 服务器并进行
 配置才能使模拟器成功运行起来。关于从编译到完成配置的全环节详细信息请见 [完整版说明文档] 。
@@ -162,7 +162,7 @@
 -   解压源代码后先双击 `3rdparty\boost\bootstrap.bat` 编译 Boost Libraries
 -   打开 `rAthena.sln` 选择对应的编译模式 ( 调试用 Debug，正常用 Release ) 并生成解决方案
 
-> 您可能会发现仓库中 `db` 目录里的各类信息并未汉化，而且与直接从 [下载页面](releases)
+> 您可能会发现仓库中 `db` 目录里的各类信息并未汉化，而且与直接从 [下载页面]
 获取到的压缩包目录结构并不一致 ( 有很多散乱的甚至不知所谓文件 ) 。这是为了与 rAthena 仓库
 保持最小改动而有意为之，您可以通过预置的辅助脚本来完成编译和发布打包操作，以此来获得一个
 对使用者友好的压缩包。
@@ -319,14 +319,15 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 [Renee]、[NIFL]、[人鱼姬的思念]、[♬喵了个咪]、[文威]
 
 ## 许可协议
-版权所有 © 熊猫模拟器开发团队 - 授权许可协议 [GNU General Public License v3.0](blob/master/LICENSE)
+版权所有 © 熊猫模拟器开发团队 - 授权许可协议 [GNU General Public License v3.0](LICENSE)
 
+[下载页面]: https://github.com/PandasWS/Pandas/releases
 [功能配置文件]: src/config/pandas.hpp
-[建立新的反馈]: issues/new/choose
+[建立新的反馈]: https://github.com/PandasWS/Pandas/issues/new/choose
 [完整说明文档]: https://www.wolai.com/pandasws/8vULeuLGhiVqDA3EbfnUum?theme=light
 [LeeClient]: https://github.com/PandasWS/LeeClient
 [腾讯 QQ]: https://im.qq.com
-[贡献说明]: blob/master/.github/CONTRIBUTING.md
+[贡献说明]: .github/CONTRIBUTING.md
 
 [rAthena]: https://github.com/rathena/rathena
 [Hercules]: https://github.com/HerculesWS/Hercules
