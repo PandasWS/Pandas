@@ -154,7 +154,7 @@
 亦或者您可以前往 [下载页面] 直接下载预编译好的版本，直接使用 ( 新手推荐 ) 。
 
 > 注意：此处的编译说明仅提供最精简的指引信息，完成编译之后还需要搭建 MySQL 服务器并进行
-配置才能使模拟器成功运行起来。关于从编译到完成配置的全环节详细信息请见 [完整版说明文档] 。
+配置才能使模拟器成功运行起来。关于从编译到完成配置的全环节详细信息请见 [完整说明文档] 。
 
 ### Windows 环境下编译
 
@@ -326,7 +326,7 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 [下载页面]: https://github.com/PandasWS/Pandas/releases
 [功能配置文件]: src/config/pandas.hpp
 [建立新的反馈]: https://github.com/PandasWS/Pandas/issues/new/choose
-[完整说明文档]: https://www.wolai.com/pandasws/8vULeuLGhiVqDA3EbfnUum?theme=light
+[完整说明文档]: https://www.craft.do/s/kR2d5bkV7pYBhE
 [LeeClient]: https://github.com/PandasWS/LeeClient
 [腾讯 QQ]: https://im.qq.com
 [贡献说明]: .github/CONTRIBUTING.md
