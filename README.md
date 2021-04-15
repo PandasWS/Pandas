@@ -1,7 +1,7 @@
 <h1 align="center">熊猫模拟器</h1>
 
 <div align="center">
-  基于 <code>rAthena</code> 构建的开源跨平台中文仙境传说模拟器
+  基于 <code>rAthena</code> 构建的开源跨平台中文仙境传说模拟器，帮助您自由的构建世界
 </div>
 
 <br />
@@ -44,10 +44,6 @@
       访问官网
     </a>
     <span> | </span>
-    <!-- <a href="https://github.com/choojs/choo-handbook">
-      Handbook
-    </a>
-    <span> | </span> -->
     <a href="https://github.com/PandasWS/Pandas/releases">
       下载
     </a>
@@ -55,14 +51,6 @@
     <a href="https://github.com/PandasWS/Pandas/graphs/contributors">
       贡献者
     </a>
-    <!-- <span> | </span>
-    <a href="https://www.reddit.com/r/choojs/">
-      Reddit
-    </a>
-    <span> | </span>
-    <a href="https://webchat.freenode.net/?channels=choo">
-      Chat
-    </a> -->
   </h3>
 </div>
 
@@ -144,7 +132,7 @@
 | :------------ | :-------------: | :--------: | :--------------: | :---------: |
 | CPU           | ≥4 Threads      | ≥2 Threads | ≥4 Threads       | ≥2 Threads  |
 | Memory        | ≥8 GB           | ≥4 GB      | ≥4 GB            | ≥4 GB       |
-| Free Space    | ≥6 GB           | ≥2 GB      | ≥6 GB            | ≥2 GB       |
+| Disk Space    | ≥6 GB           | ≥2 GB      | ≥6 GB            | ≥2 GB       |
 
 > 上表是各个场景下的最低配置，如果条件允许的话，可以在上表中的数值基础上直接乘以 2 得到
 推荐的配置信息。有条件的同学一定要换成 SSD 固态硬盘！
@@ -306,17 +294,17 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 -   [unityro] - 基于 Unity3D 实现的仙境传说客户端 ( 近期活跃，值得关注 )
 
 ## 维护者
--   [CairoLee] —— 项目主持人 (AKA: Sola 丶小克)
+-   [CairoLee] —— 项目主持人 ( AKA: Sola 丶小克 )
 
 ## 如何作出贡献
 有关如何为熊猫模拟器做出贡献的详细信息， 请参见 [贡献说明] 。
 
 ### 主要贡献者
-- [HongShin] —— 积极的发现了很多缺陷和故障，使得项目的稳定性、健壮性得以提升
-- [西瓜] 与 [小纪] —— 无条件捐献了熊猫模拟器若干个月的服务器租赁费用
+-   [HongShin] —— 积极的发现了很多缺陷和故障，使得项目的稳定性、健壮性得以提升
+-   [西瓜] 与 [小纪] —— 无条件捐献了熊猫模拟器若干个月的服务器租赁费用
 
 ### 活跃贡献者
-特别感谢近期活跃的贡献者，排名不分先后（通常后加入的写最前面）
+特别感谢近期活跃的贡献者，排名不分先后 ( 通常后加入的写最前面 )
 
 [Renee]、[NIFL]、[人鱼姬的思念]、[♬喵了个咪]、[文威]
 
