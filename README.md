@@ -110,6 +110,8 @@
 来了解我们做过的所有功能改动。甚至通过此文件，您也可以直接关闭熊猫模拟器对某些功能的更改，
 使之恢复到与 rAthena 行为一致。
 
+![启动截图](.github/SCREEN_SHOT.gif)
+
 ### 值得一提的功能
 -   __终端信息汉化__ —— 汉化绝大部分终端提示的文本信息，兼容简体和繁体中文
 -   __变态服拓展包__ —— 解锁角色的素质上限， 可以给角色几百万的 STR 等六维素质值
@@ -341,3 +343,7 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 [HongShin]: https://github.com/Hong-Shin
 [人鱼姬的思念]: mailto://327945477@qq.com
 [Renee]: mailto://rne0430@gmail.com
+[♬喵了个咪]: mailto://82558223@qq.com
+[文威]: mailto://gods.cwk@gmail.com
+[小纪]: mailto://a659347@gmail.com
+[西瓜]: mailto://x79515@gmail.com
