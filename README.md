@@ -68,7 +68,7 @@
 
 <div align="center">
   <sub>Craft with ❤︎ by
-  <a href="https://twitter.com/yoshuawuyts">CairoLee / Sola 丶小克</a> and
+  <a href="https://twitter.com/yoshuawuyts">CairoLee</a> and
   <a href="https://github.com/PandasWS/Pandas/graphs/contributors">
     Contributors
   </a>
@@ -110,7 +110,7 @@
 来了解我们做过的所有功能改动。甚至通过此文件，您也可以直接关闭熊猫模拟器对某些功能的更改，
 使之恢复到与 rAthena 行为一致。
 
-![启动截图](.github/SCREEN_SHOT.gif)
+![程序预览](.github/PREVIEW.gif)
 
 ### 值得一提的功能
 -   __终端信息汉化__ —— 汉化绝大部分终端提示的文本信息，兼容简体和繁体中文
@@ -306,7 +306,7 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 -   [unityro] - 基于 Unity3D 实现的仙境传说客户端 ( 近期活跃，值得关注 )
 
 ## 维护者
--   [CairoLee / Sola 丶小克] —— 项目主持人
+-   [CairoLee] —— 项目主持人 (AKA: Sola 丶小克)
 
 ## 如何作出贡献
 有关如何为熊猫模拟器做出贡献的详细信息， 请参见 [贡献说明] 。
@@ -339,11 +339,12 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 [roint]: https://github.com/open-ragnarok/roint
 [unityro]: https://github.com/guilhermelhr/unityro
 
-[CairoLee / Sola 丶小克]: https://github.com/CairoLee
+[CairoLee]: https://github.com/CairoLee
 [HongShin]: https://github.com/Hong-Shin
-[人鱼姬的思念]: mailto://327945477@qq.com
-[Renee]: mailto://rne0430@gmail.com
-[♬喵了个咪]: mailto://82558223@qq.com
-[文威]: mailto://gods.cwk@gmail.com
-[小纪]: mailto://a659347@gmail.com
-[西瓜]: mailto://x79515@gmail.com
+[人鱼姬的思念]: mailto:327945477@qq.com
+[Renee]: mailto:rne0430@gmail.com
+[♬喵了个咪]: mailto:82558223@qq.com
+[文威]: mailto:gods.cwk@gmail.com
+[小纪]: mailto:a659347@gmail.com
+[西瓜]: mailto:3463273181@qq.com
+[NIFL]: mailto:1640905483@qq.com
