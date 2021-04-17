@@ -395,17 +395,13 @@ class TranslationExtracter:
         if increase_version:
             self.header_version = self.header_version + 1
     
-    def updateall(self, increase_version=True):
+    def updateall(self, increase_version=False):
         '''
         更新全部翻译对照表文件, 并保留现有的翻译结果
         '''
         yamlfiles = glob.glob('../../conf/msg_conf/translation_*.yml')
         
         Message.ShowStatus('即将更新全部翻译对照表, 并保留现有的翻译结果...')
-        if increase_version:
-            Message.ShowInfo('对照表更新完成后会提升数据版本号.')
-        else:
-            Message.ShowWarning('本次对照表更新操作不会提升数据版本号.')
         for relpath in yamlfiles:
             fullpath = os.path.abspath(relpath)
             Message.ShowInfo('正在升级: %s' % os.path.relpath(fullpath, project_slndir))
@@ -447,12 +443,6 @@ def main():
         'option_name' : '操作或任务',
         'data' : options
     })
-
-    if userchoose == 1:
-        updatever = Inputer().requireBool({
-            'tips' : '完成更新后是否提升数据版本号?',
-            'default' : False
-        })
     
     extracter = TranslationExtracter()
 
@@ -461,7 +451,7 @@ def main():
         extracter.dump('translation.yml')
     elif userchoose == 1:
         extracter.build(project_slndir + 'src')
-        extracter.updateall(updatever)
+        extracter.updateall()
     elif userchoose == 2:
         extracter.load(project_slndir + 'conf/msg_conf/translation_cn.yml')
         extracter.toTraditional()
