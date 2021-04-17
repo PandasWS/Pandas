@@ -55,11 +55,15 @@
 </div>
 
 <div align="center">
-  <sub>Craft with ❤︎ by
+  <sub>
+  如果您觉得此项目能够给您带来帮助，请点击项目主页右上角的 ★Star 给它一颗星星
+  <br />
+  Craft with ❤︎ by
   <a href="https://twitter.com/yoshuawuyts">CairoLee</a> and
   <a href="https://github.com/PandasWS/Pandas/graphs/contributors">
     Contributors
   </a>
+  </sub>
 </div>
 
 ## 神奇的小目录
