@@ -5,6 +5,10 @@
 
 #include <math.h>
 
+#ifdef Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
+#include "../common/assistant.hpp"
+#endif // Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
+
 struct s_mob_drop_csv : s_mob_drop {
 	std::string group_string;
 	bool mvp;
@@ -298,16 +302,6 @@ int do_init( int argc, char** argv ){
 
 	return 0;
 }
-
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
-	return TypesafeCachedYamlDatabase<uint16, s_skill_db>::doSerialize(type, archive);
-}
-
-void SkillDatabase::afterSerialize() {
-	return TypesafeCachedYamlDatabase<uint16, s_skill_db>::afterSerialize();
-}
-#endif // Pandas_YamlBlastCache_SkillDatabase
 
 void do_final(void){
 }
