@@ -220,6 +220,10 @@ public:
 
 		return rathena::util::umap_random( this->data );
 	}
+
+	void erase(keytype key) {
+		this->data.erase(key);
+	}
 };
 
 template <typename keytype, typename datatype> class TypesafeCachedYamlDatabase : public TypesafeYamlDatabase<keytype, datatype>{
