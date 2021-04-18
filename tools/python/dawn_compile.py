@@ -157,6 +157,7 @@ def clean_environment():
     Common.glob_delete(slndir('csv2yaml*'))
     Common.glob_delete(slndir('mapcache*'))
     Common.glob_delete(slndir('yaml2sql*'))
+    Common.glob_delete(slndir('yamlupgrade*'))
 
     Common.glob_delete(slndir('logserv.bat'))
     Common.glob_delete(slndir('charserv.bat'))
@@ -251,6 +252,8 @@ def compile_prere(version):
     shutil.move(slndir('yaml2sql.pdb'), slndir('yaml2sql-pre-t.pdb'))
     shutil.move(slndir('csv2yaml.exe'), slndir('csv2yaml-pre-t.exe'))
     shutil.move(slndir('csv2yaml.pdb'), slndir('csv2yaml-pre-t.pdb'))
+    shutil.move(slndir('yamlupgrade.exe'), slndir('yamlupgrade-pre-t.exe'))
+    shutil.move(slndir('yamlupgrade.pdb'), slndir('yamlupgrade-pre-t.pdb'))
     
     print('')
 
@@ -288,6 +291,8 @@ def compile_renewal(version):
     shutil.move(slndir('yaml2sql-pre-t.pdb'), slndir('yaml2sql-pre.pdb'))
     shutil.move(slndir('csv2yaml-pre-t.exe'), slndir('csv2yaml-pre.exe'))
     shutil.move(slndir('csv2yaml-pre-t.pdb'), slndir('csv2yaml-pre.pdb'))
+    shutil.move(slndir('yamlupgrade-pre-t.exe'), slndir('yamlupgrade-pre.exe'))
+    shutil.move(slndir('yamlupgrade-pre-t.pdb'), slndir('yamlupgrade-pre.pdb'))
     
     print('')
 
