@@ -648,6 +648,17 @@ void SkillDatabase::clear() {
 
 SkillDatabase skill_db;
 
+
+#ifdef Pandas_YamlBlastCache_MobDatabase
+bool MobDatabase::doSerialize(const std::string& type, void* archive) {
+	return TypesafeCachedYamlDatabase<uint32, s_mob_db>::doSerialize(type, archive);
+}
+
+void MobDatabase::afterSerialize() {
+	return TypesafeCachedYamlDatabase<uint32, s_mob_db>::afterSerialize();
+}
+#endif // Pandas_YamlBlastCache_MobDatabase
+
 const std::string MobDatabase::getDefaultLocation(){
 	return std::string( db_path ) + "/mob_db.yml";
 }

@@ -4339,6 +4339,52 @@ static void item_dropratio_adjust(t_itemid nameid, int mob_id, int *rate_adjust)
 	}
 }
 
+#ifdef Pandas_YamlBlastCache_MobDatabase
+//************************************
+// Method:      doSerialize
+// Description: 对 MobDatabase 进行序列化和反序列化操作
+// Access:      public 
+// Parameter:   const std::string & type
+// Parameter:   void * archive
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/04/18 22:31
+//************************************ 
+bool MobDatabase::doSerialize(const std::string& type, void* archive) {
+	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
+		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, MobDatabase);
+		*ar & *this;
+		return true;
+	}
+	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
+		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, MobDatabase);
+		*ar & *this;
+		return true;
+	}
+	return false;
+}
+
+//************************************
+// Method:      afterSerialize
+// Description: 反序列化完成之后对 mob_db 中的对象进行加工处理
+// Access:      public 
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/04/18 22:31
+//************************************ 
+void MobDatabase::afterSerialize() {
+	for (const auto& it : mob_db) {
+		auto mob = it.second;
+
+		// ==================================================================
+		// 反序列化后将未参与序列化的字段进行初始化, 避免内存中的脏数据对工作造成错误的影响
+		// ==================================================================
+		mob->option = 0;
+		mob->skill.clear();
+	}
+}
+#endif // Pandas_YamlBlastCache_MobDatabase
+
 const std::string MobDatabase::getDefaultLocation() {
 	return std::string(db_path) + "/mob_db.yml";
 }

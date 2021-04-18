@@ -951,6 +951,9 @@
 
 		// 是否启用对 SkillDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_SkillDatabase
+
+		// 是否启用对 MobDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_MobDatabase
 	#endif // Pandas_YamlBlastCache_Serialize
 #endif // Pandas_YamlBlastCache
 

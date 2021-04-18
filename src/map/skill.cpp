@@ -22843,6 +22843,15 @@ void SkillDatabase::clear() {
 }
 
 #ifdef Pandas_YamlBlastCache_SkillDatabase
+//************************************
+// Method:      doSerialize
+// Description: 对 SkillDatabase 进行序列化和反序列化操作
+// Access:      public 
+// Parameter:   const std::string & type
+// Parameter:   void * archive
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/04/18 22:36
+//************************************ 
 bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
 	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
 		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
@@ -22859,6 +22868,13 @@ bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
 	return false;
 }
 
+//************************************
+// Method:      afterSerialize
+// Description: 反序列化完成之后对 skill_db 中的对象进行加工处理
+// Access:      public 
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/04/18 22:36
+//************************************ 
 void SkillDatabase::afterSerialize() {
 	memset(skilldb_id2idx, 0, sizeof(skilldb_id2idx));
 	skill_num = 1;
