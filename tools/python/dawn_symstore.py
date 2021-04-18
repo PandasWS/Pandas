@@ -21,6 +21,7 @@ import os
 import git
 import shutil
 
+from dotenv import load_dotenv
 from libs import Common, Inputer, Message
 
 # 切换工作目录为脚本所在目录
@@ -132,6 +133,13 @@ def make_commit():
         return True
 
 def main():
+    # 加载 .env 中的配置信息
+    load_dotenv(dotenv_path='.config.env', encoding='UTF-8')
+    
+    # 若无配置信息则自动复制一份文件出来
+    if not Common.is_file_exists('.config.env'):
+        shutil.copyfile('.config.env.sample', '.config.env')
+
     # 显示欢迎信息
     Common.welcome('符号归档辅助脚本')
     print('')
