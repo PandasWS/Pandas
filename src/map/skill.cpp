@@ -12120,6 +12120,22 @@ TIMER_FUNC(skill_castend_id){
 #endif
 		}
 
+#ifdef Pandas_NpcEvent_USE_SKILL
+		if (sd && sd->bl.type == BL_PC && ud && target && target->prev != NULL) {
+			pc_setreg(sd, add_str("@useskill_id"), ud->skill_id);
+			pc_setreg(sd, add_str("@useskill_lv"), ud->skill_lv);
+			pc_setreg(sd, add_str("@useskill_pos_x"), -1);
+			pc_setreg(sd, add_str("@useskill_pos_y"), -1);
+			pc_setreg(sd, add_str("@useskill_target_gid"), ud->skilltarget);
+
+			// 下面几个参数是为了兼容其他模拟器或老版本事件而刻意赋值的
+			pc_setreg(sd, add_str("@useskill_x"), -1);
+			pc_setreg(sd, add_str("@useskill_y"), -1);
+			pc_setreg(sd, add_str("@useskill_target"), ud->skilltarget);
+			npc_script_event(sd, NPCE_USE_SKILL);
+		}
+#endif // Pandas_NpcEvent_USE_SKILL
+
 		if (sd && ud->skill_id != SA_ABRACADABRA) // they just set the data so leave it as it is.[Inkfish]
 			sd->skillitem = sd->skillitemlv = sd->skillitem_keep_requirement = 0;
 
@@ -12291,6 +12307,22 @@ TIMER_FUNC(skill_castend_pos){
 
 		if (ud->skill_id != RA_CAMOUFLAGE)
 			status_change_end(src, SC_CAMOUFLAGE, INVALID_TIMER); // Applies to the first skill if active
+
+#ifdef Pandas_NpcEvent_USE_SKILL
+		if (sd && sd->bl.type == BL_PC && ud) {
+			pc_setreg(sd, add_str("@useskill_id"), ud->skill_id);
+			pc_setreg(sd, add_str("@useskill_lv"), ud->skill_lv);
+			pc_setreg(sd, add_str("@useskill_pos_x"), ud->skillx);
+			pc_setreg(sd, add_str("@useskill_pos_y"), ud->skilly);
+			pc_setreg(sd, add_str("@useskill_target_gid"), 0);
+
+			// 下面几个参数是为了兼容其他模拟器或老版本事件而刻意赋值的
+			pc_setreg(sd, add_str("@useskill_x"), ud->skillx);
+			pc_setreg(sd, add_str("@useskill_y"), ud->skilly);
+			pc_setreg(sd, add_str("@useskill_target"), 0);
+			npc_script_event(sd, NPCE_USE_SKILL);
+		}
+#endif // Pandas_NpcEvent_USE_SKILL
 
 		if( sd && sd->skillitem != AL_WARP ) // Warp-Portal thru items will clear data in skill_castend_map. [Inkfish]
 			sd->skillitem = sd->skillitemlv = sd->skillitem_keep_requirement = 0;
