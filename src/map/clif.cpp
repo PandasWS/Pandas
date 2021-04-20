@@ -1076,10 +1076,7 @@ void clif_send_auras_single(struct block_list* bl, struct map_session_data* tsd)
 		return;
 #endif // Pandas_MapFlag_NoAura
 
-	std::shared_ptr<s_aura> aura = aura_search(ucd->aura.id);
-	if (!aura) return;
-
-	for (auto it : aura->effects) {
+	for (auto it : ucd->aura.effects) {
 		if (!it) continue;
 		clif_specialeffect_single(bl, it, tsd->fd);
 	}
@@ -1109,10 +1106,7 @@ void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore
 	struct s_unit_common_data* ucd = status_get_ucd(bl);
 	if (!ucd) return;
 
-	std::shared_ptr<s_aura> aura = aura_search(ucd->aura.id);
-	if (!aura) return;
-
-	for (auto it : aura->effects) {
+	for (auto it : ucd->aura.effects) {
 		if (!it) continue;
 		if (flag != AURA_SPECIAL_NOTHING && (aura_special(it) & flag) != flag) continue;
 		clif_specialeffect(bl, it, target);
@@ -9835,6 +9829,40 @@ void clif_specialeffect_value(struct block_list* bl, int effect_id, int num, sen
 		clif_send(buf, packet_len(0x284), bl, SELF);
 	}
 }
+
+#ifdef Pandas_PacketFunction_RemoveSpecialEffect
+void clif_removespecialeffect(struct block_list* bl, int effect_id, send_target target) {
+#if PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
+	nullpo_retv(bl);
+
+	PACKET_ZC_REMOVE_EFFECT packet = { 0 };
+	packet.packetType = 0xb0d;
+	packet.aid = bl->id;
+	packet.effectId = effect_id;
+
+	clif_send(&packet, sizeof(packet), bl, target);
+
+	if (disguised(bl)) {
+		packet.aid = disguised_bl_id(bl->id);
+		clif_send(&packet, sizeof(packet), bl, SELF);
+	}
+#endif // PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
+}
+
+void clif_removespecialeffect_single(struct block_list* bl, int effect_id, struct block_list* to_target) {
+#if PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
+	nullpo_retv(bl);
+	nullpo_retv(to_target);
+
+	PACKET_ZC_REMOVE_EFFECT packet = { 0 };
+	packet.packetType = 0xb0d;
+	packet.aid = bl->id;
+	packet.effectId = effect_id;
+
+	clif_send(&packet, sizeof(packet), to_target, SELF);
+#endif // PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
+}
+#endif // Pandas_PacketFunction_RemoveSpecialEffect
 
 /// Monster/NPC color chat [SnakeDrak] (ZC_NPC_CHAT).
 /// 02c1 <packet len>.W <id>.L <color>.L <message>.?B

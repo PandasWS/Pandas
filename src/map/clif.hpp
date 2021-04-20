@@ -893,6 +893,11 @@ void clif_messagecolor_target(struct block_list *bl, unsigned long color, const 
 #define clif_messagecolor(bl, color, msg, rgb2bgr, type) clif_messagecolor_target(bl, color, msg, rgb2bgr, type, NULL) // Mob/Npc color talk [SnakeDrak]
 void clif_specialeffect_value(struct block_list* bl, int effect_id, int num, send_target target);
 
+#ifdef Pandas_PacketFunction_RemoveSpecialEffect
+void clif_removespecialeffect(struct block_list* bl, int effect_id, send_target target);
+void clif_removespecialeffect_single(struct block_list* bl, int effect_id, struct block_list* to_target);
+#endif // Pandas_PacketFunction_RemoveSpecialEffect
+
 void clif_GM_kickack(struct map_session_data *sd, int id);
 void clif_GM_kick(struct map_session_data *sd,struct map_session_data *tsd);
 void clif_manner_message(struct map_session_data* sd, uint32 type);

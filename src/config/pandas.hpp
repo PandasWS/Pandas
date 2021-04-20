@@ -15,6 +15,7 @@
 	#define Pandas_StructIncrease
 	#define Pandas_BattleConfigure
 	#define Pandas_FuncIncrease
+	#define Pandas_PacketFunction
 	#define Pandas_CreativeWork
 	#define Pandas_Speedup
 	#define Pandas_Bugfix
@@ -353,6 +354,19 @@
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
+// 封包修改组 - Pandas_PacketFunction
+// ============================================================================
+
+#ifdef Pandas_PacketFunction
+	// 实现 0xb0d 封包发送函数, 用于告诉客户端移除指定单位的特效
+	// 
+	// 涉及到的函数有:
+	// - clif_removespecialeffect
+	// - clif_removespecialeffect_single
+	#define Pandas_PacketFunction_RemoveSpecialEffect
+#endif // Pandas_PacketFunction
+
+// ============================================================================
 // 原创功能组 - Pandas_CreativeWork
 // ============================================================================
 
@@ -577,10 +591,19 @@
 	#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 	// 是否启用角色光环机制 [Sola丶小克]
-	// 此选项依赖 Pandas_Struct_Unit_CommonData_Aura 的拓展
-	#ifdef Pandas_Struct_Unit_CommonData_Aura
-		#define Pandas_Aura_Mechanism
+	// 此选项依赖以下拓展, 任意一个不成立则将会 undef 此选项的定义
+	// - Pandas_Struct_Unit_CommonData_Aura
+	// - Pandas_PacketFunction_RemoveSpecialEffect (特定客户端版本下依赖)
+	#define Pandas_Aura_Mechanism
+
+	#ifndef Pandas_Struct_Unit_CommonData_Aura
+		#undef Pandas_Aura_Mechanism
 	#endif // Pandas_Struct_Unit_CommonData_Aura
+	#if PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
+		#ifndef Pandas_PacketFunction_RemoveSpecialEffect
+			#undef Pandas_Aura_Mechanism
+		#endif // Pandas_PacketFunction_RemoveSpecialEffect
+	#endif // PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
 
 	// 优化对极端计算的支持 (AKA: 变态服拓展包) [Sola丶小克]
 	// 主要用来解决因为 rAthena 主要定位于仿官服带来的各种数值计算的限制

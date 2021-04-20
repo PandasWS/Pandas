@@ -1872,8 +1872,16 @@ void pc_reg_received(struct map_session_data *sd)
 	// 从角色的变量中读取当前角色设置启用的光环编号
 	sd->ucd.aura.id = static_cast<int32>(pc_readglobalreg(sd, add_str(AURA_VARIABLE)));
 
-	// 若不是一个有效的光环编号, 则将相关变量和值重置为 0
-	if (!aura_search(sd->ucd.aura.id)) {
+	std::shared_ptr<s_aura> aura = aura_search(sd->ucd.aura.id);
+	if (aura) {
+		// 若是一个有效的光环编号则将其特效组合放到生效列表
+		sd->ucd.aura.effects.clear();
+		for (auto it : aura->effects) {
+			sd->ucd.aura.effects.push_back(it);
+		}
+	}
+	else {
+		// 若不是一个有效的光环编号, 则将相关变量和值重置为 0
 		sd->ucd.aura.id = 0;
 		pc_setglobalreg(sd, add_str(AURA_VARIABLE), 0);
 	}
