@@ -91,7 +91,9 @@ enum item_itemid : t_itemid
 	ITEMID_ANGRA_MANYU					= 1599,
 	ITEMID_PAINT_BRUSH					= 6122,
 	ITEMID_MAGIC_GEAR_FUEL				= 6146,
+	ITEMID_NEW_INSURANCE				= 6413,
 	ITEMID_STRANGE_EMBRYO				= 6415,
+	ITEMID_BLACKSMITH_BLESSING			= 6635,
 	ITEMID_STONE						= 7049,
 	ITEMID_FIRE_BOTTLE					= 7135,
 	ITEMID_ACID_BOTTLE					= 7136,
@@ -856,7 +858,6 @@ struct item_data
 	t_itemid nameid;
 	std::string name, ename;
 
-	//Do not add stuff between value_buy and view_id (see how getiteminfo works)
 	uint32 value_buy;
 	uint32 value_sell;
 	item_types type;

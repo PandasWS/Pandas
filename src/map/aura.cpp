@@ -124,9 +124,12 @@ void aura_make_effective(struct block_list* bl, uint32 aura_id, bool pc_saved) {
 	struct map_data* mapdata = map_getmapdata(bl->m);
 	struct s_unit_common_data* ucd = status_get_ucd(bl);
 
-	if (ucd) {
-		ucd->aura.id = aura_id;
+	if (!ucd) {
+		map_freeblock_unlock();
+		return;
 	}
+
+	ucd->aura.id = aura_id;
 
 	switch (bl->type)
 	{
@@ -138,10 +141,28 @@ void aura_make_effective(struct block_list* bl, uint32 aura_id, bool pc_saved) {
 			pc_setglobalreg(sd, add_str(AURA_VARIABLE), aura_id);
 		}
 
-		if (ucd) {
-			ucd->aura.hidden = false;
+		ucd->aura.hidden = false;
+
+#if PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
+		// 关闭现有的光环效果
+		for (auto it : ucd->aura.effects) {
+			clif_removespecialeffect(bl, it, AREA);
 		}
+		ucd->aura.effects.clear();
+
+		// 效果已经清除, 若本次是为了取消光环的话, 那么任务已完成直接 break
+		if (!ucd->aura.id) break;
+
+		// 根据需要重新开启新的光环效果
+		std::shared_ptr<s_aura> aura = aura_search(ucd->aura.id);
+		if (!aura) break;
+		for (auto it : aura->effects) {
+			ucd->aura.effects.push_back(it);
+		}
+		clif_send_auras(bl, AREA, true, AURA_SPECIAL_NOTHING);
+#else
 		pc_setpos(sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_OUTSIGHT);
+#endif // PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
 		break;
 	}
 	case BL_MOB:

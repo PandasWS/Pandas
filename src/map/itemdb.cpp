@@ -607,7 +607,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asUInt16(node, "WeaponLevel", lv))
 			return 0;
 
-		if (lv >= REFINE_TYPE_SHADOW) {
+		if (lv > MAX_WEAPON_LEVEL) {
 			this->invalidWarning(node["WeaponLevel"], "Invalid weapon level %d, defaulting to 0.\n", lv);
 			lv = REFINE_TYPE_ARMOR;
 		}
@@ -1243,6 +1243,15 @@ void ItemDatabase::loadingFinished(){
 }
 
 #ifdef Pandas_YamlBlastCache_ItemDatabase
+//************************************
+// Method:      doSerialize
+// Description: 对 ItemDatabase 进行序列化和反序列化操作
+// Access:      public 
+// Parameter:   const std::string & type
+// Parameter:   void * archive
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/04/18 22:32
+//************************************ 
 bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
 	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
 		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
@@ -1259,6 +1268,13 @@ bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
 	return false;
 }
 
+//************************************
+// Method:      afterSerialize
+// Description: 反序列化完成之后对 item_db 中的对象进行加工处理
+// Access:      public 
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/04/18 22:33
+//************************************ 
 void ItemDatabase::afterSerialize() {
 	for (const auto& it : item_db) {
 		auto item = it.second;
@@ -1548,6 +1564,8 @@ static void itemdb_pc_get_itemgroup_sub(struct map_session_data *sd, bool identi
 		get_amt = 1;
 	else
 		get_amt = data->amount;
+
+	tmp.amount = get_amt;
 
 	// Do loop for non-stackable item
 	for (i = 0; i < data->amount; i += get_amt) {
