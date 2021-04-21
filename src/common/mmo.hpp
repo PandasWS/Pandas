@@ -87,7 +87,11 @@ typedef uint32 t_itemid;
 #define MAX_GUILDPOSITION 20	///Increased max guild positions to accomodate for all members [Valaris] (removed) [PoW]
 #define MAX_GUILDEXPULSION 32 ///Max Guild expulsion
 #define MAX_GUILDALLIANCE 16 ///Max Guild alliance
-#define MAX_GUILDSKILL	17 ///Max Guild skills
+#ifdef RENEWAL
+#define MAX_GUILDSKILL	20 ///Max Guild skills
+#else
+#define MAX_GUILDSKILL	15 ///Max Guild skills
+#endif
 #define MAX_GUILDLEVEL 50 ///Max Guild level
 #define MAX_GUARDIANS 8	///Local max per castle. If this value is increased, need to add more fields on MySQL `guild_castle` table [Skotlex]
 #define MAX_QUEST_OBJECTIVES 3 ///Max quest objectives for a quest
@@ -163,6 +167,9 @@ const t_itemid WEDDING_RING_F = 2635;
 #define MAIL_BODY_LENGTH 500
 #define MAIL_MAX_ITEM 5
 #define MAIL_PAGE_SIZE 7
+#endif
+#ifndef MAIL_ITERATION_SIZE
+	#define MAIL_ITERATION_SIZE 100
 #endif
 
 //Mercenary System
@@ -241,11 +248,22 @@ enum e_mode {
 #define CL_MASK 0xF000000
 
 #ifdef Pandas_Struct_Unit_CommonData
+
+#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
+struct s_batrec_item {
+	uint32 interactive_block_id = 0;
+	uint16 interactive_block_type = 0;
+	uint32 interactive_master_id = 0;
+	int64 damage = 0;
+};
+typedef std::shared_ptr<s_batrec_item> s_batrec_item_ptr;
+typedef std::map<uint32, s_batrec_item_ptr> batrec_map;
+#endif // Pandas_Struct_Unit_CommonData_BattleRecord
+
 // 多种单位的结构体都会嵌入的一个数据结构
 // 这里定义的内容在 map_session_data, npc_data, mob_data, homun_data,
 // mercenary_data, elemental_data 结构体中的 ucd 成员中都会同时拥有
 struct s_unit_common_data {
-
 	#ifdef Pandas_Struct_Unit_CommonData_Aura
 		struct s_ucd_aura {
 			uint32 id = 0;			// 该单位启用的光环编号
@@ -253,6 +271,14 @@ struct s_unit_common_data {
 		} aura;
 	#endif // Pandas_Struct_Unit_CommonData_Aura
 
+	#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
+		struct s_ucd_batrec {
+			bool dorecord = false;					// 是否进行记录
+			bool recfree_triggered = false;			// 是否已经触发过了 OnBatrecFreeExpress 事件
+			batrec_map* dmg_receive = nullptr;		// 受到的伤害 <伤害来源GID, 伤害值>
+			batrec_map* dmg_cause = nullptr;		// 造成的伤害 <攻击目标GID, 伤害值>
+		} batrec;
+	#endif // Pandas_Struct_Unit_CommonData_BattleRecord
 };
 #endif // Pandas_Struct_Unit_CommonData
 
@@ -300,10 +326,11 @@ struct item {
 	char favorite, bound;
 	uint64 unique_id;
 	unsigned int equipSwitch; // location(s) where item is equipped for equip switching (using enum equip_pos for bitmasking)
+	uint8 enchantgrade;
 };
 
 //Equip position constants
-enum equip_pos {
+enum equip_pos : uint32 {
 	EQP_HEAD_LOW         = 0x000001,
 	EQP_HEAD_MID         = 0x000200, // 512
 	EQP_HEAD_TOP         = 0x000100, // 256
@@ -390,6 +417,9 @@ struct bonus_script_data {
 	uint16 flag; ///< Flags @see enum e_bonus_script_flags
 	int16 icon; ///< Icon SI
 	uint8 type; ///< 0 - None, 1 - Buff, 2 - Debuff
+#ifdef Pandas_Struct_BonusScriptData_Extend
+	uint64 bonus_id;	// 此 bonus_script 的唯一编号
+#endif // Pandas_Struct_BonusScriptData_Extend
 };
 
 struct skill_cooldown_data {
@@ -467,7 +497,7 @@ struct s_homunculus {	//[orn]
 	struct s_skill hskill[MAX_HOMUNSKILL]; //albator
 	short skillpts;
 	short level;
-	unsigned int exp;
+	t_exp exp;
 	short rename_flag;
 	short vaporize; //albator
 	int str;
@@ -503,7 +533,7 @@ struct s_elemental {
 	short class_;
 	enum e_mode mode;
 	int hp, sp, max_hp, max_sp, matk, atk, atk2;
-	short hit, flee, amotion, def, mdef;
+	pec_short hit, flee, amotion, def, mdef;
 	t_tick life_time;
 };
 
@@ -726,6 +756,8 @@ struct guild {
 
 	/* Used by char-server to save events for guilds */
 	unsigned short save_flag;
+
+	int32 chargeshout_flag_id;
 };
 
 struct guild_castle {
@@ -804,24 +836,27 @@ enum e_guild_member_info { //Change Member Infos
 };
 
 enum e_guild_skill {
-	GD_SKILLBASE=10000,
-	GD_APPROVAL=10000,
-	GD_KAFRACONTRACT=10001,
-	GD_GUARDRESEARCH=10002,
-	GD_GUARDUP=10003,
-	GD_EXTENSION=10004,
-	GD_GLORYGUILD=10005,
-	GD_LEADERSHIP=10006,
-	GD_GLORYWOUNDS=10007,
-	GD_SOULCOLD=10008,
-	GD_HAWKEYES=10009,
-	GD_BATTLEORDER=10010,
-	GD_REGENERATION=10011,
-	GD_RESTORE=10012,
-	GD_EMERGENCYCALL=10013,
-	GD_DEVELOPMENT=10014,
-	GD_ITEMEMERGENCYCALL=10015,
-	GD_GUILD_STORAGE=10016,
+	GD_SKILLBASE = 10000,
+	GD_APPROVAL = 10000,
+	GD_KAFRACONTRACT,
+	GD_GUARDRESEARCH,
+	GD_GUARDUP,
+	GD_EXTENSION,
+	GD_GLORYGUILD,
+	GD_LEADERSHIP,
+	GD_GLORYWOUNDS,
+	GD_SOULCOLD,
+	GD_HAWKEYES,
+	GD_BATTLEORDER,
+	GD_REGENERATION,
+	GD_RESTORE,
+	GD_EMERGENCYCALL,
+	GD_DEVELOPMENT,
+	GD_ITEMEMERGENCYCALL,
+	GD_GUILD_STORAGE,
+	GD_CHARGESHOUT_FLAG,
+	GD_CHARGESHOUT_BEATING,
+	GD_EMERGENCY_MOVE,
 	GD_MAX,
 };
 
@@ -1009,9 +1044,10 @@ enum e_job {
 	JOB_MAX,
 };
 
-enum e_sex {
+enum e_sex : uint8 {
 	SEX_FEMALE = 0,
 	SEX_MALE,
+	SEX_BOTH,
 	SEX_SERVER
 };
 

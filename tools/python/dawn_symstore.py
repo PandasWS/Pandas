@@ -166,7 +166,16 @@ def main():
     deploy_symbols(project_slndir)
     
     # 自动进行 git 提交操作
-    Message.ShowStatus('归档完毕, 正在提交...')
+    # 只有编译的是正式版以及设置了正式版的 AppID 才会自动提交
+    if not Common.is_pandas_release(os.path.abspath(project_slndir)):
+        Message.ShowStatus('符号文件已经归档完毕...')
+        Common.exit_with_pause()
+
+    if Common.md5(os.getenv("DEFINE_CRASHRPT_APPID")) != '952648de2d8f063a07331ae3827bc406':
+        Message.ShowStatus('符号文件已经归档完毕...')
+        Common.exit_with_pause()
+        
+    Message.ShowStatus('符号文件已经归档完毕, 正在提交...')
     if not make_commit():
         Message.ShowWarning('很抱歉, 提交失败! 请确认失败的原因. 程序终止.')
         Common.exit_with_pause(-1)

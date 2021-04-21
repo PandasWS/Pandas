@@ -71,6 +71,14 @@
 #ifdef Pandas_NpcFilter_SC_START
 	export_constant(NPCF_SC_START);	// sc_start_filter_name	// OnPCBuffStartFilter		// 当玩家准备获得一个状态(Buff)时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+	export_constant(NPCF_USE_REVIVE_TOKEN);	// use_revive_token_filter_name	// OnPCUseReviveTokenFilter		// 当玩家使用菜单中的原地复活之证时触发过滤器
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+#ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
+	export_constant(NPCF_ONECLICK_IDENTIFY);	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
+#endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	/************************************************************************/
@@ -97,10 +105,6 @@
 	export_constant(NPCE_USE_SKILL);	// use_skill_event_name	// OnPCUseSkillEvent		// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
 
-#ifdef Pandas_NpcEvent_PROGRESS_ABORT
-	export_constant(NPCE_PROGRESS_ABORT);	// progressbar_abort_event_name	// OnPCProgressAbortEvent		// 当玩家的进度条被打断后触发事件
-#endif // Pandas_NpcEvent_PROGRESS_ABORT
-
 #ifdef Pandas_NpcEvent_EQUIP
 	export_constant(NPCE_EQUIP);	// equip_event_name	// OnPCEquipEvent		// 当玩家成功穿戴一件装备时触发事件
 #endif // Pandas_NpcEvent_EQUIP
@@ -125,6 +129,22 @@
 #ifdef Pandas_NpcExpress_SC_START
 	export_constant(NPCX_SC_START);	// sc_start_express_name	// OnPCBuffStartExpress		// 当玩家成功获得一个状态(Buff)后触发实时事件
 #endif // Pandas_NpcExpress_SC_START
+
+#ifdef Pandas_NpcExpress_ENTERMAP
+	export_constant(NPCX_ENTERMAP);	// entermap_express_name	// OnPCEnterMapExpress		// 当玩家进入或者改变地图时触发实时事件
+#endif // Pandas_NpcExpress_ENTERMAP
+
+#ifdef Pandas_NpcExpress_PROGRESSABORT
+	export_constant(NPCX_PROGRESSABORT);	// progressabort_express_name	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
+#endif // Pandas_NpcExpress_PROGRESSABORT
+
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+	export_constant(NPCX_BATTLERECORD_FREE);	// battlerecord_free_express_name	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	export_constant(NPCX_UNIT_KILL);	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
 #endif // Pandas_ScriptCommands
 
@@ -391,9 +411,11 @@
 	export_constant2("EAJ_BLACKSMITH",MAPID_BLACKSMITH);
 	export_constant2("EAJ_ASSASSIN",MAPID_ASSASSIN);
 	export_constant2("EAJ_STAR_GLADIATOR",MAPID_STAR_GLADIATOR);
+	export_constant2("EAJ_STARGLADIATOR",MAPID_STAR_GLADIATOR);
 	export_constant2("EAJ_REBELLION",MAPID_REBELLION);
 	export_constant2("EAJ_KAGEROUOBORO",MAPID_KAGEROUOBORO);
 	export_constant2("EAJ_DEATH_KNIGHT",MAPID_DEATH_KNIGHT);
+	export_constant2("EAJ_DEATHKNIGHT",MAPID_DEATH_KNIGHT);
 
 	export_constant2("EAJ_CRUSADER",MAPID_CRUSADER);
 	export_constant2("EAJ_SAGE",MAPID_SAGE);
@@ -402,7 +424,9 @@
 	export_constant2("EAJ_ALCHEMIST",MAPID_ALCHEMIST);
 	export_constant2("EAJ_ROGUE",MAPID_ROGUE);
 	export_constant2("EAJ_SOUL_LINKER",MAPID_SOUL_LINKER);
+	export_constant2("EAJ_SOULLINKER",MAPID_SOUL_LINKER);
 	export_constant2("EAJ_DARK_COLLECTOR",MAPID_DARK_COLLECTOR);
+	export_constant2("EAJ_DARKCOLLECTOR",MAPID_DARK_COLLECTOR);
 
 	export_constant2("EAJ_NOVICE_HIGH",MAPID_NOVICE_HIGH);
 	export_constant2("EAJ_SWORDMAN_HIGH",MAPID_SWORDMAN_HIGH);
@@ -509,6 +533,7 @@
 	export_constant2("EAJ_BABY_SOUL_REAPER",MAPID_BABY_SOUL_REAPER);
 
 	export_constant2("EAJ_SUPER_NOVICE",MAPID_SUPER_NOVICE);
+	export_constant2("EAJ_SUPERNOVICE",MAPID_SUPER_NOVICE);
 	export_constant2("EAJ_SUPER_BABY",MAPID_SUPER_BABY);
 	export_constant2("EAJ_SUPER_NOVICE_E",MAPID_SUPER_NOVICE_E);
 	export_constant2("EAJ_SUPER_BABY_E",MAPID_SUPER_BABY_E);
@@ -518,6 +543,7 @@
 	/* sex */
 	export_constant(SEX_FEMALE);
 	export_constant(SEX_MALE);
+	export_constant(SEX_BOTH);
 
 	/* broadcasts */
 	export_constant(BC_ALL);
@@ -957,6 +983,17 @@
 	export_constant2("bMagicSubSize",SP_MAGIC_SUBSIZE);
 	export_constant2("bCritDefRate",SP_CRIT_DEF_RATE);
 	export_constant2("bMagicSubDefEle", SP_MAGIC_SUBDEF_ELE);
+	export_constant2("bReduceDamageReturn",SP_REDUCE_DAMAGE_RETURN);
+
+#ifdef Pandas_Bonuses
+
+#ifdef Pandas_Bonus_bNoFieldGemStone
+	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+	export_constant2("bNoFieldGemStone", SP_PANDAS_NOFIELDGEMSTONE);
+#endif // Pandas_Bonus_bNoFieldGemStone
+	// PYHELP - BONUS - INSERT POINT - <Section 3>
+
+#endif // Pandas_Bonuses
 
 #ifdef Pandas_ScriptParams_ReadParam
 	export_constant2("bAllStr", SP_STR_ALL);
@@ -1016,6 +1053,15 @@
 	export_constant(EQP_SHADOW_ACC_L);
 	export_constant(EQP_ACC_RL);
 	export_constant(EQP_SHADOW_ACC_RL);
+
+	export_constant2("EQP_Both_Hand", EQP_ARMS);
+	export_constant2("EQP_Right_Hand", EQP_HAND_R);
+	export_constant2("EQP_Left_Hand", EQP_HAND_L);
+	export_constant2("EQP_Right_Accessory", EQP_ACC_R);
+	export_constant2("EQP_Left_Accessory", EQP_ACC_L);
+	export_constant2("EQP_Both_Accessory", EQP_ACC_RL);
+	export_constant2("EQP_Shadow_Right_Accessory", EQP_SHADOW_ACC_R);
+	export_constant2("EQP_Shadow_Left_Accessory", EQP_SHADOW_ACC_L);
 
 	/* looks */
 	export_constant(LOOK_BASE);
@@ -1803,6 +1849,7 @@
 	export_constant(SC_EP16_2_BUFF_SS);
 	export_constant(SC_EP16_2_BUFF_SC);
 	export_constant(SC_EP16_2_BUFF_AC);
+	export_constant(SC_EMERGENCY_MOVE);
 #ifdef RENEWAL
 	export_constant(SC_EXTREMITYFIST2);
 #endif
@@ -3680,7 +3727,6 @@
 	export_constant(EFST_ABYSS_006);
 	export_constant(EFST_ABYSS_007);
 	export_constant(EFST_ABYSS_008);
-	export_constant(EFST_KAUTE);
 	export_constant(EFST_REUSE_LIMIT_THM);
 	export_constant(EFST_REUSE_LIMIT_TLI);
 	export_constant(EFST_REUSE_LIMIT_TKC);
@@ -3725,6 +3771,7 @@
 	export_constant(EFST_FLOWER_LEAF4);
 	export_constant(EFST_MISTY_FROST);
 	export_constant(EFST_MAGIC_POISON);
+	export_constant(EFST_KAUTE);
 	export_constant(EFST_JPNONLY_TACTICS);
 	export_constant(EFST_MADOGEAR);
 	export_constant(EFST_DEADLY_DEFEASANCE);
@@ -3758,10 +3805,10 @@
 	export_constant(EFST_CLIMAX_EARTH);
 	export_constant(EFST_CLIMAX_BLOOM);
 	export_constant(EFST_CLIMAX_CRYIMP);
-	export_constant(EFST_MD_Me_Potion);
-	export_constant(EFST_MD_Ma_Potion);
-	export_constant(EFST_MD_Ta_Potion);
-	export_constant(EFST_MD_Ra_Potion);
+	export_constant(EFST_MD_ME_POTION);
+	export_constant(EFST_MD_MA_POTION);
+	export_constant(EFST_MD_TA_POTION);
+	export_constant(EFST_MD_RA_POTION);
 	export_constant(EFST_HOLY_OIL);
 	export_constant(EFST_CRYSTAL_IMPACT);
 	export_constant(EFST_SHADOW_EXCEED);
@@ -3884,6 +3931,16 @@
 	export_constant(EFST_SPORE_EXPLOSION_DEBUFF);
 	export_constant(EFST_DEFSCROLL);
 	export_constant(EFST_MASSIVE_F_BLASTER);
+	export_constant(EFST_NOEQUIPWEAPON2);
+	export_constant(EFST_NOEQUIPARMOR2);
+	export_constant(EFST_NOEQUIPSHIELD2);
+	export_constant(EFST_NOEQUIPSHOES2);
+	export_constant(EFST_NOEQUIPPENDANT2);
+	export_constant(EFST_NOEQUIPEARING2);
+	export_constant(EFST_NOEQUIPFULL2);
+	export_constant(EFST_CURSE_R_CUBE);
+	export_constant(EFST_CURSE_B_CUBE);
+	export_constant(EFST_KILLING_AURA);
 /// @APIHOOK_END
 /// Do not modify code above this, since it will be automatically generated by the API again
 	export_constant(EFST_MAX);
@@ -3946,6 +4003,8 @@
 	export_constant(RC2_HEARTHUNTER);
 	export_constant(RC2_ROCKRIDGE);
 	export_constant(RC2_WERNER_LAB);
+	export_constant(RC2_TEMPLE_DEMON);
+	export_constant(RC2_ILLUSION_VAMPIRE);
 	export_constant(RC2_MAX);
 
 	/* classes */
@@ -3969,6 +4028,7 @@
 	export_constant(AI_ZANZOU);
 	export_constant(AI_LEGION);
 	export_constant(AI_FAW);
+	export_constant(AI_GUILD);
 
 	/* battle flags */
 	export_constant(BF_NONE);
@@ -4259,15 +4319,27 @@
 	export_constant(MAX_WEAPON_TYPE_ALL);
 
 	/* ammunition types */
-	export_constant(A_ARROW);
-	export_constant(A_DAGGER);
-	export_constant(A_BULLET);
-	export_constant(A_SHELL);
-	export_constant(A_GRENADE);
-	export_constant(A_SHURIKEN);
-	export_constant(A_KUNAI);
-	export_constant(A_CANNONBALL);
-	export_constant(A_THROWWEAPON);
+	/* Send deprecation notice and temporarily replace with new constant value. */
+	export_deprecated_constant3("A_ARROW", AMMO_ARROW, "AMMO_ARROW");
+	export_deprecated_constant3("A_DAGGER", AMMO_DAGGER, "AMMO_DAGGER");
+	export_deprecated_constant3("A_BULLET", AMMO_BULLET, "AMMO_BULLET");
+	export_deprecated_constant3("A_SHELL", AMMO_SHELL, "AMMO_SHELL");
+	export_deprecated_constant3("A_GRENADE", AMMO_GRENADE, "AMMO_GRENADE");
+	export_deprecated_constant3("A_SHURIKEN", AMMO_SHURIKEN, "AMMO_SHURIKEN");
+	export_deprecated_constant3("A_KUNAI", AMMO_KUNAI, "AMMO_KUNAI");
+	export_deprecated_constant3("A_CANNONBALL", AMMO_CANNONBALL, "AMMO_CANNONBALL");
+	export_deprecated_constant3("A_THROWWEAPON", AMMO_THROWWEAPON, "AMMO_THROWWEAPON");
+
+	export_constant(AMMO_ARROW);
+	export_constant(AMMO_DAGGER);
+	export_constant(AMMO_BULLET);
+	export_constant(AMMO_SHELL);
+	export_constant(AMMO_GRENADE);
+	export_constant(AMMO_SHURIKEN);
+	export_constant(AMMO_KUNAI);
+	export_constant(AMMO_CANNONBALL);
+	export_constant(AMMO_THROWWEAPON);
+	export_constant(MAX_AMMO_TYPE);
 
 	/* monsterinfo types */
 	export_constant(MOB_NAME);
@@ -4758,10 +4830,6 @@
 	export_constant(MOBG_Red_Pouch_Of_Surprise);
 	export_constant(MOBG_ClassChange);
 	export_constant(MOBG_Taekwon_Mission);
-
-	/* Item Random Option Group */
-	export_constant(RDMOPTG_None);
-	export_constant(RDMOPTG_Crimson_Weapon);
 
 	/* random option attributes */
 	export_constant(ROA_ID);
@@ -6482,7 +6550,31 @@
 	export_constant_npc(JT_4_4JOB_PHANTOMBOOK2);
 	export_constant_npc(JT_4_4JOB_PHANTOMBOOK3);
 	export_constant_npc(JT_4_VENDING_MACHINE2);
+	export_constant_npc(JT_4_STAR_BOX_SCORE);
+	export_constant_npc(JT_4_STAR_BOX_POW1);
+	export_constant_npc(JT_4_STAR_BOX_POW2);
+	export_constant_npc(JT_4_STAR_BOX_STA1);
+	export_constant_npc(JT_4_STAR_BOX_STA2);
+	export_constant_npc(JT_4_STAR_BOX_SPL1);
+	export_constant_npc(JT_4_STAR_BOX_SPL2);
+	export_constant_npc(JT_4_STAR_BOX_CON1);
+	export_constant_npc(JT_4_STAR_BOX_CON2);
+	export_constant_npc(JT_4_STAR_BOX_WIS1);
+	export_constant_npc(JT_4_STAR_BOX_WIS2);
+	export_constant_npc(JT_4_STAR_BOX_CRT1);
+	export_constant_npc(JT_4_STAR_BOX_CRT2);
 	export_constant_npc(JT_4_4JOB_MAURA);
+	export_constant_npc(JT_4_STAR_BOX_N);
+	export_constant_npc(JT_4_STAR_BOX_H);
+	export_constant_npc(JT_4_STAR_BOX_HP1);
+	export_constant_npc(JT_4_STAR_BOX_HP2);
+	export_constant_npc(JT_4_STAR_BOX_ATK1);
+	export_constant_npc(JT_4_STAR_BOX_ATK2);
+	export_constant_npc(JT_4_STAR_BOX_BARRIER1);
+	export_constant_npc(JT_4_STAR_BOX_BARRIER2);
+	export_constant_npc(JT_4_STAR_BOX_TRAP1);
+	export_constant_npc(JT_4_STAR_BOX_TRAP2);
+	export_constant_npc(JT_4_STAR_BOX_MASTER);
 	export_constant_npc(JT_NEW_NPC_3RD_END);
 	#undef export_constant_npc
 
@@ -7735,6 +7827,7 @@
 	export_constant(HAT_EF_160LV_STAR_E_MBLUE);
 	export_constant(HAT_EF_99LV_SOUL_R_GRAY);
 	export_constant(HAT_EF_160LV_SOUL_R_GRAY);
+	export_constant(HAT_EF_GEARWHEEL);
 
 	/* pet catch */
 	export_constant(PET_CATCH_UNIVERSAL);
@@ -8156,6 +8249,59 @@
 	export_constant(BG_INFO_MAX_LEVEL);
 	export_constant(BG_INFO_MAPS);
 	export_constant(BG_INFO_DESERTER_TIME);
+
+	/* item job classes */
+	export_constant(ITEMJ_NORMAL);
+	export_constant(ITEMJ_UPPER);
+	export_constant(ITEMJ_BABY);
+	export_constant(ITEMJ_THIRD);
+	export_constant(ITEMJ_THIRD_UPPER);
+	export_constant(ITEMJ_THIRD_BABY);
+	export_constant(ITEMJ_ALL_UPPER);
+	export_constant(ITEMJ_ALL_BABY);
+	export_constant(ITEMJ_ALL_THIRD);
+
+	/* item drop effects */
+	export_constant(DROPEFFECT_NONE);
+	export_constant(DROPEFFECT_CLIENT);
+	export_constant(DROPEFFECT_WHITE_PILLAR);
+	export_constant(DROPEFFECT_BLUE_PILLAR);
+	export_constant(DROPEFFECT_YELLOW_PILLAR);
+	export_constant(DROPEFFECT_PURPLE_PILLAR);
+	export_constant(DROPEFFECT_ORANGE_PILLAR);
+	export_constant(DROPEFFECT_GREEN_PILLAR);
+	export_constant(DROPEFFECT_RED_PILLAR);
+	export_constant(DROPEFFECT_MAX);
+
+	/* penalty types */
+	export_constant(PENALTY_EXP);
+	export_constant(PENALTY_DROP);
+	export_constant(PENALTY_MVP_EXP);
+	export_constant(PENALTY_MVP_DROP);
+
+#ifdef Pandas_BattleRecord
+	export_constant(BRT_DMG_RECEIVE);
+	export_constant(BRT_DMG_CAUSE);
+	export_constant(BRS_DESC);
+	export_constant(BRS_ASC);
+	export_constant(BRA_COMBINE);
+	export_constant(BRA_DISCRETE);
+#endif // Pandas_BattleRecord
+
+#ifdef Pandas_NpcEvent
+	export_constant(CLR_OUTSIGHT);
+	export_constant(CLR_DEAD);
+	export_constant(CLR_RESPAWN);
+	export_constant(CLR_TELEPORT);
+	export_constant(CLR_TRICKDEAD);
+#endif // Pandas_NpcEvent
+
+#ifdef Pandas_Player_Suspend_System
+	export_constant(SUSPEND_MODE_NONE);
+	export_constant(SUSPEND_MODE_OFFLINE);
+	export_constant(SUSPEND_MODE_AFK);
+	export_constant(SUSPEND_MODE_NORMAL);
+#endif // Pandas_Player_Suspend_System
 
 	#undef export_constant
 	#undef export_constant2

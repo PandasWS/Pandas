@@ -427,8 +427,6 @@ struct Battle_Config
 	int display_hallucination;	// [Skotlex]
 	int use_statpoint_table;	// [Skotlex]
 
-	int ignore_items_gender; //[Lupus]
-
 	int berserk_cancels_buffs; // [Aru]
 	int debuff_on_logout; // Removes a few "official" negative Scs on logout. [Skotlex]
 	int mob_ai; //Configures various mob_ai settings to make them smarter or dumber(official). [Skotlex]
@@ -529,6 +527,7 @@ struct Battle_Config
 	int max_extended_parameter;
 	int max_summoner_parameter;
 	int max_third_aspd;
+	int max_summoner_aspd;
 	int vcast_stat_scale;
 
 	int mvp_tomb_enabled;
@@ -689,6 +688,7 @@ struct Battle_Config
 	int homunculus_starving_rate;
 	int homunculus_starving_delay;
 	int drop_connection_on_quit;
+	int mob_spawn_variance;
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
@@ -736,6 +736,24 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
 	int suspend_afk_headtop_viewid;			// 当玩家进入离开模式时, 将头饰上的更换为哪一个指定的头饰外观编号 [Sola丶小克]
 #endif // Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
+#ifdef Pandas_BattleConfig_Suspend_Normal_BodyDirection
+	int suspend_normal_bodydirection;		// 当玩家进入普通模式时, 被拉上线的角色身体朝向哪里 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_Normal_BodyDirection
+#ifdef Pandas_BattleConfig_Suspend_Normal_HeadDirection
+	int suspend_normal_headdirection;		// 当玩家进入普通模式时, 被拉上线的角色头部朝向哪里 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_Normal_HeadDirection
+#ifdef Pandas_BattleConfig_Suspend_Normal_Sitdown
+	int suspend_normal_sitdown;				// 当玩家进入普通模式时, 被拉上线的角色处于站立还是坐下状态 [Sola丶小克]
+#endif // Pandas_BattleConfig_Suspend_Normal_Sitdown
+#ifdef Pandas_BattleConfig_Multiplayer_Recall_Behavior
+	int multiplayer_recall_behavior;		// 控制多人召唤时是否避开在线摆摊玩家 [Sola丶小克]
+#endif // Pandas_BattleConfig_Multiplayer_Recall_Behavior
+#ifdef Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
+	int always_trigger_npc_killevent;		// 当魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnNPCKillEvent 事件 [Sola丶小克]
+#endif // Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
+#ifdef Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
+	int always_trigger_mvp_killevent;		// 当 MVP 魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnPCKillMvpEvent 事件 [Sola丶小克]
+#endif // Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

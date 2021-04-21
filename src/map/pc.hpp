@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "../common/cbasetypes.hpp"
+#include "../common/database.hpp"
 #include "../common/mmo.hpp" // JOB_*, MAX_FAME_LIST, struct fame_list, struct mmo_charstatus
 #include "../common/strlib.hpp"// StringBuf
 #include "../common/timer.hpp"
@@ -72,6 +74,9 @@ enum sc_type : int16;
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 #define AURA_VARIABLE "PANDAS_AURASET"
 #endif // Pandas_Struct_Unit_CommonData_Aura
+#ifdef Pandas_BonusScript_Unique_ID
+#define BONUS_SCRIPT_COUNTER_VAR "PANDAS_BONUSSCRIPT_COUNTER"
+#endif // Pandas_BonusScript_Unique_ID
 
 //Update this max as necessary. 55 is the value needed for Super Baby currently
 //Raised to 105 since Expanded Super Baby needs it.
@@ -265,6 +270,9 @@ struct s_bonus_script_entry {
 	enum efst_types icon;
 	uint8 type; //0 - Ignore; 1 - Buff; 2 - Debuff
 	int tid;
+#ifdef Pandas_Struct_BonusScriptData_Extend
+	uint64 bonus_id;		// 此 bonus_script 的唯一编号
+#endif // Pandas_Struct_BonusScriptData_Extend
 };
 
 /// HP/SP bonus struct
@@ -274,6 +282,19 @@ struct s_regen {
 	int tick;
 };
 
+/// Item combo struct
+struct s_combos {
+	script_code *bonus;
+	uint32 id;
+	uint32 pos;
+};
+
+struct s_qi_display {
+	bool is_active;
+	e_questinfo_types icon;
+	e_questinfo_markcolor color;
+};
+
 #ifdef Pandas_Struct_Autotrade_Extend
 enum e_autotrade_mode : uint32 {
 	AUTOTRADE_DISABLED    = 0x0000,
@@ -281,7 +302,8 @@ enum e_autotrade_mode : uint32 {
 	AUTOTRADE_VENDING     = 0x0002,
 	AUTOTRADE_BUYINGSTORE = 0x0004,
 	AUTOTRADE_OFFLINE     = 0x0008,		// 离线挂机
-	AUTOTRADE_AFK         = 0x0010		// 离开模式 (AFK)
+	AUTOTRADE_AFK         = 0x0010,		// 离开模式 (AFK)
+	AUTOTRADE_NORMAL      = 0x0020,		// 普通模式
 };
 
 bool pc_autotrade_suspend(struct map_session_data *sd);
@@ -376,6 +398,10 @@ struct map_session_data {
 		unsigned int bonus_coma : 1;
 		unsigned int no_mado_fuel : 1; // Disable Magic_Gear_Fuel consumption [Secret]
 		unsigned int no_walk_delay : 1;
+#ifdef Pandas_Bonus_bNoFieldGemStone
+		unsigned int nofieldgemstone : 1;
+#endif // Pandas_Bonus_bNoFieldGemStone
+		// PYHELP - BONUS - INSERT POINT - <Section 4>
 	} special_state;
 	uint32 login_id1, login_id2;
 	unsigned short class_;	//This is the internal job ID used by the map server to simplify comparisons/queries/etc. [Skotlex]
@@ -549,7 +575,7 @@ struct map_session_data {
 		int get_zeny_rate;
 		int get_zeny_num; //Added Get Zeny Rate [Skotlex]
 		int double_add_rate;
-		int short_weapon_damage_return,long_weapon_damage_return;
+		int short_weapon_damage_return,long_weapon_damage_return,reduce_damage_return;
 		int magic_damage_return; // AppleGirl Was Here
 		int break_weapon_rate,break_armor_rate;
 		int crit_atk_rate;
@@ -708,8 +734,7 @@ struct map_session_data {
 	std::vector<int> cloaked_npc;
 
 	/* ShowEvent Data Cache flags from map */
-	bool *qi_display;
-	int qi_count;
+	std::vector<s_qi_display> qi_display;
 
 	// temporary debug [flaviojs]
 	const char* debug_file;
@@ -738,12 +763,7 @@ struct map_session_data {
 	enum npc_timeout_type npc_idle_type;
 #endif
 
-	struct s_combos {
-		struct script_code **bonus;/* the script */
-		unsigned short *id;/* array of combo ids */
-		unsigned int *pos;/* array of positions*/
-		unsigned char count;
-	} combos;
+	std::vector<std::shared_ptr<s_combos>> combos;
 
 	/**
 	 * Guarantees your friend request is legit (for bugreport:4629)
@@ -819,9 +839,8 @@ struct map_session_data {
 
 	short setlook_head_top, setlook_head_mid, setlook_head_bottom, setlook_robe; ///< Stores 'setlook' script command values.
 
-#if PACKETVER >= 20150513
-	uint32* hatEffectIDs;
-	uint8 hatEffectCount;
+#if PACKETVER_MAIN_NUM >= 20150507 || PACKETVER_RE_NUM >= 20150429 || defined(PACKETVER_ZERO)
+	std::vector<int16> hatEffects;
 #endif
 
 #ifdef Pandas_Struct_Map_Session_Data_Pandas
@@ -841,15 +860,21 @@ struct map_session_data {
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 		std::vector<uint32> multi_catch_target_class;	// 用于记录即将支持捕捉的多个魔物编号
 #endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
-#ifdef Pandas_Struct_Map_Session_Data_IndependentRecall
-		bool independent_recall = false;	// 用于标记是否即将被 recall 指令独立召唤
-#endif // Pandas_Struct_Map_Session_Data_IndependentRecall
+#ifdef Pandas_Struct_Map_Session_Data_MultiTransfer
+		bool multitransfer = false;		// 用于标记接下来的 pc_setpos 调用是一次多人传送
+#endif // Pandas_Struct_Map_Session_Data_MultiTransfer
+#ifdef Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
+		bool skip_loadendack_npc_event_dequeue = false;
+#endif // Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 #ifdef Pandas_Struct_Map_Session_Data_Autotrade_Configure
 		unsigned char at_sex;				// 性别 (M 表示男性, F 表示女性)
 		unsigned char at_dir;				// 纸娃娃身体朝向
 		unsigned char at_head_dir;			// 纸娃娃头部朝向
 		unsigned char at_sit;				// 是否坐下
 #endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
+#ifdef Pandas_Struct_Map_Session_Data_BonusScript_Counter
+		uint32 bonus_script_counter;		// 玩家已经生成的 bonus_script 记录数
+#endif // Pandas_Struct_Map_Session_Data_BonusScript_Counter
 	} pandas;
 #endif // Pandas_Struct_Map_Session_Data_Pandas
 
@@ -876,7 +901,7 @@ extern struct eri *str_reg_ers;
 /* Global Expiration Timer ID */
 extern int pc_expiration_tid;
 
-enum weapon_type {
+enum weapon_type : uint8 {
 	W_FIST,	//Bare hands
 	W_DAGGER,	//1
 	W_1HSWORD,	//2
@@ -914,16 +939,18 @@ enum weapon_type {
 
 #define WEAPON_TYPE_ALL ((1<<MAX_WEAPON_TYPE)-1)
 
-enum ammo_type {
-	A_ARROW = 1,
-	A_DAGGER,   //2
-	A_BULLET,   //3
-	A_SHELL,    //4
-	A_GRENADE,  //5
-	A_SHURIKEN, //6
-	A_KUNAI,     //7
-	A_CANNONBALL,	//8
-	A_THROWWEAPON	//9
+enum e_ammo_type : uint8 {
+	AMMO_NONE = 0,
+	AMMO_ARROW,
+	AMMO_DAGGER,
+	AMMO_BULLET,
+	AMMO_SHELL,
+	AMMO_GRENADE,
+	AMMO_SHURIKEN,
+	AMMO_KUNAI,
+	AMMO_CANNONBALL,
+	AMMO_THROWWEAPON,
+	MAX_AMMO_TYPE
 };
 
 enum idletime_option {
@@ -962,6 +989,31 @@ enum item_check {
 	ITMCHK_CART      = 0x2,
 	ITMCHK_STORAGE   = 0x4,
 	ITMCHK_ALL       = ITMCHK_INVENTORY|ITMCHK_CART|ITMCHK_STORAGE,
+};
+
+enum e_penalty_type : uint16{
+	PENALTY_NONE,
+	PENALTY_EXP,
+	PENALTY_DROP,
+	PENALTY_MVP_EXP,
+	PENALTY_MVP_DROP,
+	PENALTY_MAX
+};
+
+struct s_penalty{
+	e_penalty_type type;
+	uint16 rate[MAX_LEVEL * 2 - 1];
+};
+
+class PenaltyDatabase : public TypesafeYamlDatabase<uint16, s_penalty> {
+public:
+	PenaltyDatabase() : TypesafeYamlDatabase( "PENALTY_DB", 1 ){
+
+	}
+
+	const std::string getDefaultLocation();
+	uint64 parseBodyNode(const YAML::Node& node);
+	void loadingFinished();
 };
 
 struct s_job_info {
@@ -1205,6 +1257,11 @@ enum e_setpos{
 	SETPOS_AUTOTRADE = 3
 };
 
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+void pc_mark_multitransfer(struct block_list* bl);
+void pc_mark_multitransfer(struct map_session_data* sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
+
 enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, clr_type clrtype);
 void pc_setsavepoint(struct map_session_data *sd, short mapindex,int x,int y);
 char pc_randomwarp(struct map_session_data *sd,clr_type type);
@@ -1320,7 +1377,11 @@ int pc_skillheal_bonus(struct map_session_data *sd, uint16 skill_id);
 int pc_skillheal2_bonus(struct map_session_data *sd, uint16 skill_id);
 
 void pc_damage(struct map_session_data *sd,struct block_list *src,unsigned int hp, unsigned int sp);
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int pc_dead(struct map_session_data *sd,struct block_list *src);
+#else
+int pc_dead(struct map_session_data *sd,struct block_list *src, uint16 skill_id);
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 void pc_revive(struct map_session_data *sd,unsigned int hp, unsigned int sp);
 bool pc_revive_item(struct map_session_data *sd);
 void pc_heal(struct map_session_data *sd,unsigned int hp,unsigned int sp, int type);
@@ -1475,8 +1536,22 @@ void pc_show_version(struct map_session_data *sd);
 
 TIMER_FUNC(pc_bonus_script_timer);
 void pc_bonus_script(struct map_session_data *sd);
+#ifndef Pandas_BonusScript_Unique_ID
 struct s_bonus_script_entry *pc_bonus_script_add(struct map_session_data *sd, const char *script_str, t_tick dur, enum efst_types icon, uint16 flag, uint8 type);
+#else
+struct s_bonus_script_entry *pc_bonus_script_add(struct map_session_data *sd, const char *script_str, t_tick dur, enum efst_types icon, uint16 flag, uint8 type, uint64 bonus_id = 0);
+#endif // Pandas_BonusScript_Unique_ID
 void pc_bonus_script_clear(struct map_session_data *sd, uint16 flag);
+
+#ifdef Pandas_BonusScript_Unique_ID
+uint64 pc_bonus_script_generate_unique_id(struct map_session_data* sd);
+#endif // Pandas_BonusScript_Unique_ID
+#ifdef Pandas_ScriptCommand_BonusScriptRemove
+bool pc_bonus_script_remove(struct map_session_data* sd, uint64 bonus_id);
+#endif // Pandas_ScriptCommand_BonusScriptRemove
+#ifdef Pandas_ScriptCommand_BonusScriptExists
+bool pc_bonus_script_exists(struct map_session_data* sd, uint64 bonus_id);
+#endif // Pandas_ScriptCommand_BonusScriptExists
 
 void pc_cell_basilica(struct map_session_data *sd);
 
@@ -1497,7 +1572,7 @@ void pc_show_questinfo_reinit(struct map_session_data *sd);
 bool pc_job_can_entermap(enum e_job jobid, int m, int group_lv);
 
 #if defined(RENEWAL_DROP) || defined(RENEWAL_EXP)
-int pc_level_penalty_mod(int level_diff, uint32 mob_class, enum e_mode mode, int type);
+uint16 pc_level_penalty_mod( struct map_session_data* sd, e_penalty_type type, struct mob_db* mob, mob_data* md = nullptr );
 #endif
 
 bool pc_attendance_enabled();

@@ -445,6 +445,11 @@ bool bg_team_warp(int bg_id, unsigned short mapindex, short x, short y)
 	std::shared_ptr<s_battleground_data> bgteam = util::umap_find(bg_team_db, bg_id);
 
 	if (bgteam) {
+#ifdef Pandas_Support_Transfer_Autotrade_Player
+		for (const auto& pl_sd : bgteam->members)
+			pc_mark_multitransfer(pl_sd.sd);
+#endif // Pandas_Support_Transfer_Autotrade_Player
+
 		for (const auto &pl_sd : bgteam->members)
 			pc_setpos(pl_sd.sd, mapindex, x, y, CLR_TELEPORT);
 
@@ -652,7 +657,7 @@ int bg_team_get_id(struct block_list *bl)
 			struct map_session_data *msd;
 			struct mob_data *md = (TBL_MOB*)bl;
 
-			if( md->special_state.ai && !(msd = map_id2sd(md->master_id)) )
+			if( md->special_state.ai && (msd = map_id2sd(md->master_id)) != nullptr )
 				return msd->bg_id;
 
 			return md->bg_id;

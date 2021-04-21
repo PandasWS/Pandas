@@ -6,9 +6,83 @@
 
 本文档遵循 [维护更新日志](https://keepachangelog.com/zh-CN/1.0.0/) 提及的格式标准, 但并不遵循 [语义化版本](https://semver.org/lang/zh-CN/) 版本号制定标准.
 
-# 注意事项
+## 注意事项
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
+
+## [v1.1.1] - `2021-04-18`
+
+### 升级
+
+- 升级到 `1.1.1` 请在主数据库导入: `upgrade_to_1.1.1_main.sql`
+
+### 添加
+
+- 实现 `OnPCEnterMapExpress` 实时事件, 当玩家进入或切换地图时触发
+- 实现 `OnPCUseReviveTokenFilter` 过滤器, 当玩家使用原地复活之证时触发
+- 实现 `OnUnitKillExpress` 实时事件, 当某个单位被击杀时触发
+- 实现 `OnPCUseOCIdentifyFilter` 过滤器, 当玩家使用一键鉴定时触发
+- 实现 `getunittarget` 脚本指令, 用于获取指定单位当前正在攻击的目标单位编号
+- 实现 `unlockcmd` 脚本指令, 用于解锁实时事件和过滤器事件中的指令限制
+- 实现 `login` 脚本指令, 用于将指定的角色以特定的登录模式拉上线 (#354)
+- 实现战斗记录机制并提供一系列脚本函数辅助构建输出 / 承伤排行榜 (#352)
+- 拓展与 `bonus_script` 相关的脚本指令集 (引入唯一编号, 以及 5 个脚本指令) (#358)
+- 拓展 `unitexists` 脚本指令, 增加可选参数用于要求目标单位必须存活才认为其存在
+- 实现 `always_trigger_npc_killevent` 选项, 就算魔物有自定义死亡事件也能触发 OnNPCKillEvent
+- 实现 `always_trigger_mvp_killevent` 选项, 就算 MVP 魔物有自定义死亡事件也能触发 OnPCKillMvpEvent
+
+### 修正
+
+- 修正 `maxdmg_skill` 和 `maxdmg_normal` 无法生效的问题 (感谢 "HongShin" 指出)
+- 修正 FAW 魔法傀儡 (技能编号: 2282) 重复扣减原石碎片的问题 (#353)
+- 修正 `progressbar` 期间使用 `@load` 或 `@jump` 会导致角色传送后无法移动的问题
+- 修正 `progressbar` 期间使用 `@refresh` 会导致角色卡住的问题 (感谢"HongShin"指出)
+- 修正 `mobremove` 指令会破坏魔物刷新点的问题 (感谢"喵了个咪"指出)
+- 修正角色素质过高会导致无法召唤元素精灵的问题 (感谢 "HongShin" 反馈)
+- 修正六维属性为负数时会导致角色面板数值溢出的问题 (感谢 "Renee" 反馈)
+- 修正被踢下线的挂店角色在特定操作下会导致挂店数据不可信的问题
+- 修正两处在 Ubuntu 下无法使用 GCC 编译通过的问题
+- 修正辅助脚本在构建环境时会有多余的终端窗口没有立刻退出的问题
+
+### 调整
+
+- 完成绝大部分消息文件对繁体中文的支持 (#355)
+- 将 `OnPCProgressAbortEvent` 改换成 `OnPCProgressAbortExpress` 实时事件
+- 将全部事件名称以 Filter 结尾的过滤器事件调整为立刻执行 (不会被排入事件队列)
+- 调整部分辅助脚本的工作逻辑, 减少流程阻碍
+- 调整 `viewequip` 脚本指令的文档说明
+- 调整 `copynpc` 指令的说明错误 (感谢"人鱼姬的思念"指出)
+
+## [v1.1.0] - `2021-02-08`
+
+### 升级
+
+- 升级到 `1.1.0` 请在主数据库导入: `upgrade_to_1.1.0_main.sql`
+- 由于 `Boost` 依赖项目变化, 请使用源码的同学重新编译 `3rdparty\boost` 工程
+- 本次 `rAthena` 官方整合了多个物品数据文件到 `item_db.yml` 单文件中
+- 本次 `rAthena` 官方提升 `quest_db.yml` 的数据版本 (从 1 调整为 2)
+- 你在 `db\import\quest_db.yml` 中的 `Version` 应该从 1 调整为 2, 否则会有警告
+
+### 提示
+
+- rAthena 的调整同时也大幅改变了 SQL 版本物品数据库的字段结构
+- 使用 SQL 版物品数据库的用户阅读: `sql-files/README.md`
+
+### 添加
+
+- 实现疾风缓存机制, 大幅提高缓存后加载 YAML 数据库的速度 (#336)
+- 实现 `bNoFieldGemStone` 调整器, 可以让元素领域技能无需消耗魔力矿石 (#332)
+- 支持读取 UTF8-BOM 的 libconfig 配置文件 (#348)
+
+### 修正
+
+- 修正复兴后 "魔术子弹"(GS_MAGICALBULLET) 的伤害溢出问题 (#331)
+- 修正一处没有将指针置空导致的崩溃问题 (感谢 Renee / HongShin 协助) (#346)
+
+### 调整
+
+- 更新繁体中文的物品翻译对照表 (感谢 Renee 和 HongShin) (#340)
+- 汉化部分战斗配置文件的注释选项 (#343 | #345)
 
 ## [v1.0.9] - `2021-01-29`
 
@@ -30,9 +104,9 @@
 
 - 实现支持多种单位的持久光环机制 (#324)
 - 优化对极端计算的支持 (AKA: 变态服拓展包) (#326)
-- 实现 OnPCBuffStartExpress 实时事件, 当玩家成功获得一个状态(Buff)后触发 (#329)
-- 实现 OnPCBuffStartFilter 过滤器, 当玩家即将获得一个状态(Buff)时触发 (#329)
-- 实现 OnPCBuffEndExpress 实时事件, 当玩家成功解除一个状态(Buff)后触发 (#330)
+- 实现 `OnPCBuffStartExpress` 实时事件, 当玩家成功获得一个状态(Buff)后触发 (#329)
+- 实现 `OnPCBuffStartFilter` 过滤器, 当玩家即将获得一个状态(Buff)时触发 (#329)
+- 实现 `OnPCBuffEndExpress` 实时事件, 当玩家成功解除一个状态(Buff)后触发 (#330)
 
 ### 调整
 
@@ -124,7 +198,7 @@
 
 ### 调整
 
-- 优化使用 `@Version` 指令的回显信息 (#268)
+- 优化使用 `@version` 指令的回显信息 (#268)
 - 打包时能够将物品和魔物名称转译成简体或繁体中文 (感谢"moonsun"提供译本) (#266)
 - 使非 Windows 10 操作系统可以正常生成转储文件 (#271)
 - 能够支持根据系统语言读取对应的消息文件 (#282)
@@ -281,6 +355,8 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.1.1]: https://github.com/PandasWS/Pandas/compare/v1.1.0...v1.1.1
+[v1.1.0]: https://github.com/PandasWS/Pandas/compare/v1.0.9...v1.1.0
 [v1.0.9]: https://github.com/PandasWS/Pandas/compare/v1.0.8...v1.0.9
 [v1.0.8]: https://github.com/PandasWS/Pandas/compare/v1.0.7...v1.0.8
 [v1.0.7]: https://github.com/PandasWS/Pandas/compare/v1.0.6...v1.0.7

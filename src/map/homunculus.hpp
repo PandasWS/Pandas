@@ -65,7 +65,7 @@ struct homun_data {
 	int masterteleport_timer;
 	struct map_session_data *master; //pointer back to its master
 	int hungry_timer;	//[orn]
-	unsigned int exp_next;
+	t_exp exp_next;
 	std::vector<uint16> blockskill;	// [orn]
 
 #ifdef Pandas_Struct_Unit_CommonData
@@ -152,12 +152,16 @@ struct view_data* hom_get_viewdata(int class_);
 int hom_class2mapid(int hom_class);
 enum homun_type hom_class2type(int class_);
 void hom_damage(struct homun_data *hd);
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int hom_dead(struct homun_data *hd);
+#else
+int hom_dead(struct homun_data *hd, struct block_list *src, uint16 skill_id);
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 void hom_skillup(struct homun_data *hd,uint16 skill_id);
 void hom_calc_skilltree(struct homun_data *hd, bool flag_evolve);
 short hom_checkskill(struct homun_data *hd,uint16 skill_id);
 uint8 hom_skill_get_min_level(int class_, uint16 skill_id);
-void hom_gainexp(struct homun_data *hd,int exp);
+void hom_gainexp(struct homun_data *hd,t_exp exp);
 int hom_levelup(struct homun_data *hd);
 int hom_evolution(struct homun_data *hd);
 int hom_mutate(struct homun_data *hd,int homun_id);

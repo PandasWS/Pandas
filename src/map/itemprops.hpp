@@ -6,8 +6,12 @@
 #include <string>
 #include <unordered_map>
 
+#include "itemdb.hpp"
+
 #include "../common/cbasetypes.hpp"
 #include "../common/database.hpp"
+
+#ifdef Pandas_Item_Properties
 
 enum e_item_noview : uint32 {
 	ITEM_NOVIEW_UNKNOW		= 0x0000,
@@ -37,8 +41,11 @@ public:
 
 	const std::string getDefaultLocation();
 	uint64 parseBodyNode(const YAML::Node& node);
+
+	void parsePropertiesToItemDB(ItemDatabase& item_db);
+	std::shared_ptr<s_item_properties> getProperty(uint32 nameid);
 };
 
 extern ItemProperties item_properties_db;
 
-std::shared_ptr<s_item_properties> itemdb_get_property(uint32 nameid);
+#endif // Pandas_Item_Properties

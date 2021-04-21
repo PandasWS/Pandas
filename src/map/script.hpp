@@ -208,6 +208,14 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_SC_START
 	const char* sc_start_filter_name;	// NPCF_SC_START	// OnPCBuffStartFilter	// 当玩家准备获得一个状态(Buff)时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+	const char* use_revive_token_filter_name;	// NPCF_USE_REVIVE_TOKEN	// OnPCUseReviveTokenFilter	// 当玩家使用菜单中的原地复活之证时触发过滤器
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+#ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
+	const char* oneclick_identify_filter_name;	// NPCF_ONECLICK_IDENTIFY	// OnPCUseOCIdentifyFilter	// 当玩家使用一键鉴定道具时触发过滤器
+#endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/
@@ -234,10 +242,6 @@ struct Script_Config {
 	const char* use_skill_event_name;	// NPCE_USE_SKILL	// OnPCUseSkillEvent	// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
 
-#ifdef Pandas_NpcEvent_PROGRESS_ABORT
-	const char* progressbar_abort_event_name;	// NPCE_PROGRESS_ABORT	// OnPCProgressAbortEvent	// 当玩家的进度条被打断后触发事件
-#endif // Pandas_NpcEvent_PROGRESS_ABORT
-
 #ifdef Pandas_NpcEvent_EQUIP
 	const char* equip_event_name;	// NPCE_EQUIP	// OnPCEquipEvent	// 当玩家成功穿戴一件装备时触发事件
 #endif // Pandas_NpcEvent_EQUIP
@@ -262,6 +266,22 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_SC_START
 	const char* sc_start_express_name;	// NPCX_SC_START	// OnPCBuffStartExpress	// 当玩家成功获得一个状态(Buff)后触发实时事件
 #endif // Pandas_NpcExpress_SC_START
+
+#ifdef Pandas_NpcExpress_ENTERMAP
+	const char* entermap_express_name;	// NPCX_ENTERMAP	// OnPCEnterMapExpress	// 当玩家进入或者改变地图时触发实时事件
+#endif // Pandas_NpcExpress_ENTERMAP
+
+#ifdef Pandas_NpcExpress_PROGRESSABORT
+	const char* progressabort_express_name;	// NPCX_PROGRESSABORT	// OnPCProgressAbortExpress	// 当 progressbar 进度条被打断时触发实时事件
+#endif // Pandas_NpcExpress_PROGRESSABORT
+
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+	const char* battlerecord_free_express_name;	// NPCX_BATTLERECORD_FREE	// OnBatrecFreeExpress	// 当战斗记录信息即将被清除时触发实时事件
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	const char* unit_kill_express_name;	// NPCX_UNIT_KILL	// OnUnitKillExpress	// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related
@@ -421,6 +441,9 @@ struct script_state {
 	int bk_npcid;
 #endif // Pandas_ScriptEngine_MutliStackBackup
 	unsigned freeloop : 1;// used by buildin_freeloop
+#ifdef Pandas_ScriptCommand_UnlockCmd
+	unsigned unlockcmd : 1;
+#endif // Pandas_ScriptCommand_UnlockCmd
 	unsigned op2ref : 1;// used by op_2
 	unsigned npc_item_flag : 1;
 	unsigned mes_active : 1;  // Store if invoking character has a NPC dialog box open.
@@ -1972,7 +1995,7 @@ enum e_special_effects {
 	EF_MAX
 };
 
-enum e_hat_effects {
+enum e_hat_effects : int16{
 	HAT_EF_MIN = 0,
 	HAT_EF_BLOSSOM_FLUTTERING,
 	HAT_EF_MERMAID_LONGING,
@@ -2121,6 +2144,7 @@ enum e_hat_effects {
 	HAT_EF_160LV_STAR_E_MBLUE,
 	HAT_EF_99LV_SOUL_R_GRAY,
 	HAT_EF_160LV_SOUL_R_GRAY,
+	HAT_EF_GEARWHEEL,
 	HAT_EF_MAX
 };
 

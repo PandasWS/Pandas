@@ -3,7 +3,7 @@
 
 #include "itemprops.hpp"
 
-#include "itemdb.hpp"
+#ifdef Pandas_Item_Properties
 
 ItemProperties item_properties_db;
 
@@ -94,11 +94,45 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 }
 
 //************************************
-// Method:		itemdb_get_property
-// Description:	获取一个道具编号的特殊属性
-// Parameter:	uint32 nameid
-// Returns:		std::shared_ptr<s_item_properties>
+// Method:      parsePropertiesToItemDB
+// Description: 为 ItemDatabase 中的道具设置特殊属性
+// Access:      public 
+// Parameter:   ItemDatabase & item_db
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/01/02 15:56
 //************************************
-std::shared_ptr<s_item_properties> itemdb_get_property(uint32 nameid) {
+void ItemProperties::parsePropertiesToItemDB(ItemDatabase& item_db) {
+	for (const auto& it : item_db) {
+		auto value = this->getProperty(it.first);
+		auto item = it.second;
+
+		if (value) {
+			item->pandas.properties.avoid_use_consume = ((value->property & 1) == 1);
+			item->pandas.properties.avoid_skill_consume = ((value->property & 2) == 2);
+			item->pandas.properties.is_amulet = ((value->property & 4) == 4);
+			item->pandas.properties.noview_mask = value->noview;
+			item->pandas.properties.annouce_mask = value->annouce;
+		}
+
+#ifdef Pandas_Item_Amulet_System
+		// 若为护身符道具, 则直接改写它的物品类型为 IT_AMULET
+		if (item->pandas.properties.is_amulet) {
+			item->type = IT_AMULET;
+		}
+#endif // Pandas_Item_Amulet_System
+	}
+}
+
+//************************************
+// Method:      getProperty
+// Description: 获取一个道具编号的特殊属性
+// Access:      public 
+// Parameter:   uint32 nameid
+// Returns:     std::shared_ptr<s_item_properties>
+// Author:      Sola丶小克(CairoLee)  2021/01/02 15:58
+//************************************
+std::shared_ptr<s_item_properties> ItemProperties::getProperty(uint32 nameid) {
 	return item_properties_db.find(nameid);
 }
+
+#endif // Pandas_Item_Properties

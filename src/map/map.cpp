@@ -1897,7 +1897,7 @@ int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, i
 	nullpo_ret(item);
 
 #ifndef Pandas_Fix_Item_Trade_FloorDropable
-	if (!(flags&4) && battle_config.item_onfloor && (itemdb_traderight(item->nameid)&1))
+	if (!(flags&4) && battle_config.item_onfloor && (itemdb_traderight(item->nameid).trade))
 		return 0; //can't be dropped
 #else
 	if (sd) {
@@ -1909,7 +1909,7 @@ int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, i
 	}
 	else {
 		// 若没有携带 sd 参数或 sd 参数为空指针, 那么走 rAthena 的默认检测流程
-		if (!(flags&4) && battle_config.item_onfloor && (itemdb_traderight(item->nameid)&1))
+		if (!(flags&4) && battle_config.item_onfloor && (itemdb_traderight(item->nameid).trade))
 			return 0; //can't be dropped
 	}
 #endif // Pandas_Fix_Item_Trade_FloorDropable
@@ -2068,6 +2068,72 @@ void map_addiddb(struct block_list *bl)
 	idb_put(id_db,bl->id,bl);
 }
 
+#ifdef Pandas_BattleRecord
+//************************************
+// Method:      map_mobiddb
+// Description: 为指定的魔物单位更换他的游戏单位编号
+// Access:      public 
+// Parameter:   struct block_list * bl
+// Parameter:   int new_blockid
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/03/12 19:18
+//************************************ 
+void map_mobiddb(struct block_list* bl, int new_blockid) {
+	nullpo_retv(bl);
+
+	if (!bl || bl->type != BL_MOB)
+		return;
+
+	int origin_blockid = bl->id;
+	bl->id = new_blockid;
+
+	// 接下来处理与游戏单位编号相关的一些数据库
+
+	if (idb_exists(id_db, origin_blockid)) {
+		idb_remove(id_db, origin_blockid);
+		idb_put(id_db, bl->id, bl);
+	}
+
+	if (idb_exists(mobid_db, origin_blockid)) {
+		idb_remove(mobid_db, origin_blockid);
+		idb_put(mobid_db, bl->id, bl);
+	}
+
+	TBL_MOB* md = (TBL_MOB*)bl;
+	if (idb_exists(bossid_db, origin_blockid)) {
+		idb_remove(bossid_db, origin_blockid);
+		if (md->state.boss)
+			idb_put(bossid_db, bl->id, bl);
+	}
+
+	// 接下来重设一些与游戏单位编号相关的定时器
+
+	set_timerid(md->spawn_timer, bl->id);
+	set_timerid(md->deletetimer, bl->id);
+
+	struct unit_data* ud = nullptr;
+	if ((ud = unit_bl2ud(bl)) != NULL) {
+		set_timerid(ud->attacktimer, bl->id);
+		set_timerid(ud->skilltimer, bl->id);
+		set_timerid(ud->steptimer, bl->id);
+		set_timerid(ud->walktimer, bl->id);
+	}
+
+	detect_invalid_timer(origin_blockid);
+
+	// 接下来处理与游戏单位编号相关的 skill_unit_group
+
+	if (ud) {
+		for (int i = 0; i < MAX_SKILLUNITGROUP; i++) {
+			if (ud->skillunit[i] && ud->skillunit[i]->src_id == origin_blockid) {
+				ud->skillunit[i]->src_id = bl->id;
+			}
+		}
+	}
+
+}
+#endif // Pandas_BattleRecord
+
 /*==========================================
  * remove bl from id_db
  *------------------------------------------*/
@@ -2107,8 +2173,7 @@ int map_quit(struct map_session_data *sd) {
 	}
 
 #ifdef Pandas_Player_Suspend_System
-	if (sd->state.keepsuspend == false)
-		suspend_deactive(sd);
+	suspend_deactive(sd, sd->state.keepsuspend);
 #endif // Pandas_Player_Suspend_System
 
 	if(!sd->state.active) { //Removing a player that is not active.
@@ -2161,6 +2226,7 @@ int map_quit(struct map_session_data *sd) {
 		status_change_end(&sd->bl, SC_GLORYWOUNDS, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_SOULCOLD, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_HAWKEYES, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_EMERGENCY_MOVE, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_CHASEWALK2, INVALID_TIMER);
 		if(sd->sc.data[SC_PROVOKE] && sd->sc.data[SC_PROVOKE]->timer == INVALID_TIMER)
 			status_change_end(&sd->bl, SC_PROVOKE, INVALID_TIMER); //Infinite provoke ends on logout
@@ -3009,7 +3075,7 @@ int map_removemobs_sub(struct block_list *bl, va_list ap)
 	if( !battle_config.mob_remove_damaged && md->status.hp < md->status.max_hp )
 		return 0;
 	// is a mvp
-	if( md->db->mexp > 0 )
+	if( md->get_bosstype() == BOSSTYPE_MVP )
 		return 0;
 
 	unit_free(&md->bl,CLR_OUTSIGHT);
@@ -3791,10 +3857,6 @@ void map_data_copy(struct map_data *dst_map, struct map_data *src_map) {
 	dst_map->skill_duration.insert(src_map->skill_duration.begin(), src_map->skill_duration.end());
 
 	dst_map->zone = src_map->zone;
-
-	// Mimic questinfo
-	if (!src_map->qi_data.empty())
-		src_map->qi_data = dst_map->qi_data;
 }
 
 /**
@@ -4524,29 +4586,27 @@ int log_sql_init(void)
 
 void map_remove_questinfo(int m, struct npc_data *nd) {
 	struct map_data *mapdata = map_getmapdata(m);
-	struct s_questinfo *qi;
 
 	nullpo_retv(nd);
 	nullpo_retv(mapdata);
 
-	for (int i = 0; i < mapdata->qi_data.size(); i++) {
-		qi = &mapdata->qi_data[i];
-		if (qi && qi->nd == nd) {
-			script_free_code(qi->condition);
-			mapdata->qi_data.erase(mapdata->qi_data.begin() + i);
-		}
-	}
+	util::vector_erase_if_exists(mapdata->qi_npc, nd->bl.id);
+	nd->qi_data.clear();
 }
 
 static void map_free_questinfo(struct map_data *mapdata) {
 	nullpo_retv(mapdata);
 
-	for (const auto &it : mapdata->qi_data) {
-		if (it.condition)
-			script_free_code(it.condition);
+	for (const auto &it : mapdata->qi_npc) {
+		struct npc_data *nd = map_id2nd(it);
+
+		if (!nd || nd->qi_data.empty())
+			continue;
+
+		nd->qi_data.clear();
 	}
 
-	mapdata->qi_data.clear();
+	mapdata->qi_npc.clear();
 }
 
 /**
@@ -5482,6 +5542,10 @@ void do_final(void){
 		map_quit(sd);
 	mapit_free(iter);
 
+	for (int i = 0; i < map_num; i++) {
+		map_free_questinfo(map_getmapdata(i));
+	}
+
 	/* prepares npcs for a faster shutdown process */
 	do_clear_npc();
 
@@ -5552,7 +5616,6 @@ void do_final(void){
 			for (int j=0; j<MAX_MOB_LIST_PER_MAP; j++)
 				if (mapdata->moblist[j]) aFree(mapdata->moblist[j]);
 		}
-		map_free_questinfo(mapdata);
 		mapdata->damage_adjust = {};
 	}
 
@@ -5912,7 +5975,12 @@ int do_init(int argc, char *argv[])
 	if (battle_config.pk_mode)
 		ShowNotice("Server is running on '" CL_WHITE "PK Mode" CL_RESET "'.\n");
 
+#ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	ShowStatus("Server is '" CL_GREEN "ready" CL_RESET "' and listening on port '" CL_WHITE "%d" CL_RESET "'.\n\n", map_port);
+#else
+	performance_stop("core_init");
+	ShowStatus("The Map-server is " CL_GREEN "ready" CL_RESET " (Server is listening on the port %u, took %" PRIu64 " milliseconds).\n\n", map_port, performance_get_milliseconds("core_init"));
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
 	if( runflag != CORE_ST_STOP )
 	{

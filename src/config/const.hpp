@@ -67,7 +67,8 @@
 	#define PEC_SHRT_MIN INT_MIN
 	#define PEC_SHRT_MAX INT_MAX
 
-	#define PEC_USHRT_MAX UINT_MAX
+	// 此处不能用 UINT_MAX 会导致 cap_value 判断出现溢出
+	#define PEC_USHRT_MAX INT_MAX
 
 	// 最大负重的上限其实可以到 0x7FFFFFFF (INT_MAX)
 	// 但客户端的面板显示时, 整个负重信息最大只能显示 13 个字符 (包括斜杠)
@@ -75,8 +76,8 @@
 	// 这里多加个 1 凑个整, 设置为 100万
 	#define PEC_MAX_WEIGHT 1000000
 #else
-	typedef short pecvtp_short;
-	typedef unsigned short pecvtp_ushort;
+	typedef short pec_short;
+	typedef unsigned short pec_ushort;
 	typedef float pec_float;
 
 	typedef defType pec_defType;

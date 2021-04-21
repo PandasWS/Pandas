@@ -36,7 +36,9 @@ private:
 	void parseTags(std::string& message);
 public:
 	TranslateDB() : TypesafeYamlDatabase("CONSOLE_TRANSLATE_DB", 1) {
+#ifdef Pandas_Database_Yaml_BeQuiet
 		this->setQuietLevel(1);
+#endif // Pandas_Database_Yaml_BeQuiet
 
 		export_message_tag(CL_RESET);
 		export_message_tag(CL_CLS);
@@ -94,6 +96,8 @@ public:
 		export_message_tag(PRIdPTR);
 		export_message_tag(PRIu64);
 		export_message_tag(PRId64);
+		export_message_tag(PRIu32);
+		export_message_tag(PRId32);
 		export_message_tag(PRIXPTR);
 
 		export_defined_tag(PACKETVER);

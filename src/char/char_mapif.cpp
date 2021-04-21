@@ -29,7 +29,7 @@ int chmapif_sendall(unsigned char *buf, unsigned int len){
 	c = 0;
 	for(i = 0; i < ARRAYLENGTH(map_server); i++) {
 		int fd;
-		if ((fd = map_server[i].fd) > 0) {
+		if (session_isValid(fd = map_server[i].fd)) {
 			WFIFOHEAD(fd,len);
 			memcpy(WFIFOP(fd,0), buf, len);
 			WFIFOSET(fd,len);
@@ -53,7 +53,7 @@ int chmapif_sendallwos(int sfd, unsigned char *buf, unsigned int len){
 	c = 0;
 	for(i = 0; i < ARRAYLENGTH(map_server); i++) {
 		int fd;
-		if ((fd = map_server[i].fd) > 0 && fd != sfd) {
+		if (session_isValid(fd = map_server[i].fd) && fd != sfd) {
 			WFIFOHEAD(fd,len);
 			memcpy(WFIFOP(fd,0), buf, len);
 			WFIFOSET(fd,len);
@@ -72,7 +72,7 @@ int chmapif_sendallwos(int sfd, unsigned char *buf, unsigned int len){
  * @return : the number of map-serv the packet was sent to (O|1)
  */
 int chmapif_send(int fd, unsigned char *buf, unsigned int len){
-	if (fd >= 0) {
+	if (session_isValid(fd)) {
 		int i;
 		ARR_FIND( 0, ARRAYLENGTH(map_server), i, fd == map_server[i].fd );
 		if( i < ARRAYLENGTH(map_server) )
@@ -122,7 +122,7 @@ int chmapif_send_fame_list(int fd){
 	// add total packet length
 	WBUFW(buf, 2) = len;
 
-	if (fd != -1)
+	if (session_isValid(fd))
 		chmapif_send(fd, buf, len);
 	else
 		chmapif_sendall(buf, len);
@@ -212,7 +212,7 @@ void chmapif_send_maps(int fd, int map_id, int count, unsigned char *mapbuf) {
 
 	// Transmitting the maps of the other map-servers to the new map-server
 	for (x = 0; x < ARRAYLENGTH(map_server); x++) {
-		if (map_server[x].fd > 0 && x != map_id) {
+		if (session_isValid(map_server[x].fd) && x != map_id) {
 			uint16 i, j;
 
 			WFIFOHEAD(fd,10 +4*map_server[x].map.size());
@@ -1335,6 +1335,7 @@ int chmapif_bonus_script_get(int fd) {
 
 		RFIFOSKIP(fd,6);
 
+#ifndef Pandas_BonusScript_Unique_ID
 		if (SQL_ERROR == SqlStmt_Prepare(stmt,
 			"SELECT `script`, `tick`, `flag`, `type`, `icon` FROM `%s` WHERE `char_id` = '%d' LIMIT %d",
 			schema_config.bonus_script_db, cid, MAX_PC_BONUS_SCRIPT) ||
@@ -1350,6 +1351,24 @@ int chmapif_bonus_script_get(int fd) {
 			SqlStmt_Free(stmt);
 			return 1;
 		}
+#else
+		if (SQL_ERROR == SqlStmt_Prepare(stmt,
+			"SELECT `script`, `tick`, `flag`, `type`, `icon`, `id` FROM `%s` WHERE `char_id` = '%d' LIMIT %d",	// 增加了一个 ID 字段
+			schema_config.bonus_script_db, cid, MAX_PC_BONUS_SCRIPT) ||
+			SQL_ERROR == SqlStmt_Execute(stmt) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &tmp_bsdata.script_str, sizeof(tmp_bsdata.script_str), NULL, NULL) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 1, SQLDT_INT64, &tmp_bsdata.tick, 0, NULL, NULL) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 2, SQLDT_UINT16, &tmp_bsdata.flag, 0, NULL, NULL) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 3, SQLDT_UINT8, &tmp_bsdata.type, 0, NULL, NULL) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 4, SQLDT_INT16, &tmp_bsdata.icon, 0, NULL, NULL) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 5, SQLDT_UINT64, &tmp_bsdata.bonus_id, 0, NULL, NULL)			// 绑定了一个 ID 字段
+			)
+		{
+			SqlStmt_ShowDebug(stmt);
+			SqlStmt_Free(stmt);
+			return 1;
+		}
+#endif // Pandas_BonusScript_Unique_ID
 
 		if ((num_rows = (uint8)SqlStmt_NumRows(stmt)) > 0) {
 			uint8 i;
@@ -1371,6 +1390,9 @@ int chmapif_bonus_script_get(int fd) {
 				bsdata.flag = tmp_bsdata.flag;
 				bsdata.type = tmp_bsdata.type;
 				bsdata.icon = tmp_bsdata.icon;
+#ifdef Pandas_BonusScript_Unique_ID
+				bsdata.bonus_id = tmp_bsdata.bonus_id;
+#endif // Pandas_BonusScript_Unique_ID
 				memcpy(WFIFOP(fd, 9 + i * sizeof(struct bonus_script_data)), &bsdata, sizeof(struct bonus_script_data));
 			}
 
@@ -1411,13 +1433,21 @@ int chmapif_bonus_script_save(int fd) {
 			uint8 i;
 
 			StringBuf_Init(&buf);
+#ifndef Pandas_BonusScript_Unique_ID
 			StringBuf_Printf(&buf, "INSERT INTO `%s` (`char_id`, `script`, `tick`, `flag`, `type`, `icon`) VALUES ", schema_config.bonus_script_db);
+#else
+			StringBuf_Printf(&buf, "INSERT INTO `%s` (`char_id`, `script`, `tick`, `flag`, `type`, `icon`, `id`) VALUES ", schema_config.bonus_script_db);	// 增加了一个 ID 字段
+#endif // Pandas_BonusScript_Unique_ID
 			for (i = 0; i < count; ++i) {
 				memcpy(&bsdata, RFIFOP(fd, 9 + i*sizeof(struct bonus_script_data)), sizeof(struct bonus_script_data));
 				Sql_EscapeString(sql_handle, esc_script, bsdata.script_str);
 				if (i > 0)
 					StringBuf_AppendStr(&buf,", ");
+#ifndef Pandas_BonusScript_Unique_ID
 				StringBuf_Printf(&buf, "('%d','%s','%" PRtf "','%d','%d','%d')", cid, esc_script, bsdata.tick, bsdata.flag, bsdata.type, bsdata.icon);
+#else
+				StringBuf_Printf(&buf, "('%d','%s','%" PRtf "','%d','%d','%d','%" PRIu64 "')", cid, esc_script, bsdata.tick, bsdata.flag, bsdata.type, bsdata.icon, bsdata.bonus_id);	// 增加了一个 ID 字段
+#endif // Pandas_BonusScript_Unique_ID
 			}
 			if (SQL_ERROR == Sql_QueryStr(sql_handle,StringBuf_Value(&buf)))
 				Sql_ShowDebug(sql_handle);

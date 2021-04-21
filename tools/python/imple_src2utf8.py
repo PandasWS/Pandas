@@ -37,7 +37,8 @@ class CharsetConverter():
         给定一个文件路径, 获取该文本文件的编码
         '''
         with open(filepath, 'rb') as hfile:
-            return chardet.detect(hfile.read())['encoding']
+            charset = chardet.detect(hfile.read())['encoding']
+            return 'ASCII' if charset is None else charset
 
     def convertDirectory(self, directory, to_charset):
         '''

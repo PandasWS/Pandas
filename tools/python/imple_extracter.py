@@ -53,6 +53,7 @@ step1_funclist = [
     'ShowStatus',
     'ShowMessage',
     'askConfirmation',
+    'invalidWarning',
     
     'strcat'
 ]
@@ -68,29 +69,29 @@ step2_rules = [
     # 1. 优先处理 " CL_WHITE " 
     # 这种左侧和右侧都有双引号的情况
     {
-        'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
+        'pattern' : re.compile(r'(\"\s*(CL_[0-9A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
         'subrepl' : r'[{\2}]'
     },
     # 2. 然后处理 CL_WHITE "
     # 这种左侧没有双引号的情况
     {
-        'pattern' : re.compile(r'(\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
+        'pattern' : re.compile(r'(\s*(CL_[0-9A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
         'subrepl' : r'"[{\2}]'
     },
     # 3. 在进行 2 处理后需要重新在执行一次 1 处理
     {
-        'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
+        'pattern' : re.compile(r'(\"\s*(CL_[0-9A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
         'subrepl' : r'[{\2}]'
     },
     # 4. 最后处理 " CL_RESET
     # 这种右侧没有双引号的情况
     {
-        'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*)'),
+        'pattern' : re.compile(r'(\"\s*(CL_[0-9A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*)'),
         'subrepl' : r'[{\2}]"'
     },
     # 5. 在进行 4 处理后需要重新再执行一次 1 处理
     {
-        'pattern' : re.compile(r'(\"\s*(CL_[A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
+        'pattern' : re.compile(r'(\"\s*(CL_[0-9A-Z_]+|PRI[A-Za-z0-9]+|PRtf|EXPAND_AND_QUOTE\((.*)\))\s*\")'),
         'subrepl' : r'[{\2}]'
     }
 ]
@@ -207,7 +208,7 @@ class TranslationExtracter:
         部分特殊的函数需要取第二列的内容 (而不是第一列)
         例如: ShowConfigWarning 的第一个参数并不是我们要的提示文本
         '''
-        functions = ['ShowConfigWarning', 'strcat']
+        functions = ['ShowConfigWarning', 'strcat', 'invalidWarning']
         for item in step3_content:
             if item['func'] in functions:
                 text = str(item['text']).replace(r'\"', r'\""')
@@ -394,17 +395,13 @@ class TranslationExtracter:
         if increase_version:
             self.header_version = self.header_version + 1
     
-    def updateall(self, increase_version=True):
+    def updateall(self, increase_version=False):
         '''
         更新全部翻译对照表文件, 并保留现有的翻译结果
         '''
         yamlfiles = glob.glob('../../conf/msg_conf/translation_*.yml')
         
         Message.ShowStatus('即将更新全部翻译对照表, 并保留现有的翻译结果...')
-        if increase_version:
-            Message.ShowInfo('对照表更新完成后会提升数据版本号.')
-        else:
-            Message.ShowWarning('本次对照表更新操作不会提升数据版本号.')
         for relpath in yamlfiles:
             fullpath = os.path.abspath(relpath)
             Message.ShowInfo('正在升级: %s' % os.path.relpath(fullpath, project_slndir))
@@ -446,12 +443,6 @@ def main():
         'option_name' : '操作或任务',
         'data' : options
     })
-
-    if userchoose == 1:
-        updatever = Inputer().requireBool({
-            'tips' : '完成更新后是否提升数据版本号?',
-            'default' : False
-        })
     
     extracter = TranslationExtracter()
 
@@ -460,7 +451,7 @@ def main():
         extracter.dump('translation.yml')
     elif userchoose == 1:
         extracter.build(project_slndir + 'src')
-        extracter.updateall(updatever)
+        extracter.updateall()
     elif userchoose == 2:
         extracter.load(project_slndir + 'conf/msg_conf/translation_cn.yml')
         extracter.toTraditional()

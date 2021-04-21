@@ -51,6 +51,18 @@ struct s_npc_buy_list {
 #pragma pack(pop)
 #endif // not NetBSD < 6 / Solaris
 
+struct s_questinfo {
+	e_questinfo_types icon;
+	e_questinfo_markcolor color;
+	struct script_code* condition;
+
+	~s_questinfo(){
+		if( this->condition != nullptr ){
+			script_free_code( this->condition );
+		}
+	}
+};
+
 #ifdef Pandas_Redeclaration_Struct_Event_Data
 struct event_data {
 	struct npc_data* nd;
@@ -125,6 +137,8 @@ struct npc_data {
 
 	struct sc_display_entry **sc_display;
 	unsigned char sc_display_count;
+
+	std::vector<std::shared_ptr<s_questinfo>> qi_data;
 
 	struct {
 		t_tick timeout;
@@ -1224,7 +1238,31 @@ enum e_job_types
 	JT_4_4JOB_PHANTOMBOOK3,
 	JT_4_VENDING_MACHINE2,
 
-	JT_4_4JOB_MAURA = 10416,
+	JT_4_STAR_BOX_SCORE = 10403,
+	JT_4_STAR_BOX_POW1,
+	JT_4_STAR_BOX_POW2,
+	JT_4_STAR_BOX_STA1,
+	JT_4_STAR_BOX_STA2,
+	JT_4_STAR_BOX_SPL1,
+	JT_4_STAR_BOX_SPL2,
+	JT_4_STAR_BOX_CON1,
+	JT_4_STAR_BOX_CON2,
+	JT_4_STAR_BOX_WIS1,
+	JT_4_STAR_BOX_WIS2,
+	JT_4_STAR_BOX_CRT1,
+	JT_4_STAR_BOX_CRT2,
+	JT_4_4JOB_MAURA,
+	JT_4_STAR_BOX_N,
+	JT_4_STAR_BOX_H,
+	JT_4_STAR_BOX_HP1,
+	JT_4_STAR_BOX_HP2,
+	JT_4_STAR_BOX_ATK1,
+	JT_4_STAR_BOX_ATK2,
+	JT_4_STAR_BOX_BARRIER1,
+	JT_4_STAR_BOX_BARRIER2,
+	JT_4_STAR_BOX_TRAP1,
+	JT_4_STAR_BOX_TRAP2,
+	JT_4_STAR_BOX_MASTER,
 
 	JT_NEW_NPC_3RD_END = 19999,
 	NPC_RANGE3_END, // Official: JT_NEW_NPC_3RD_END=19999
@@ -1306,6 +1344,14 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_SC_START
 	NPCF_SC_START,	// sc_start_filter_name	// OnPCBuffStartFilter		// 当玩家准备获得一个状态(Buff)时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+	NPCF_USE_REVIVE_TOKEN,	// use_revive_token_filter_name	// OnPCUseReviveTokenFilter		// 当玩家使用菜单中的原地复活之证时触发过滤器
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+#ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
+	NPCF_ONECLICK_IDENTIFY,	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
+#endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
@@ -1332,10 +1378,6 @@ enum npce_event : uint8 {
 	NPCE_USE_SKILL,	// use_skill_event_name	// OnPCUseSkillEvent		// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
 
-#ifdef Pandas_NpcEvent_PROGRESS_ABORT
-	NPCE_PROGRESS_ABORT,	// progressbar_abort_event_name	// OnPCProgressAbortEvent		// 当玩家的进度条被打断后触发事件
-#endif // Pandas_NpcEvent_PROGRESS_ABORT
-
 #ifdef Pandas_NpcEvent_EQUIP
 	NPCE_EQUIP,	// equip_event_name	// OnPCEquipEvent		// 当玩家成功穿戴一件装备时触发事件
 #endif // Pandas_NpcEvent_EQUIP
@@ -1360,10 +1402,38 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcExpress_SC_START
 	NPCX_SC_START,	// sc_start_express_name	// OnPCBuffStartExpress		// 当玩家成功获得一个状态(Buff)后触发实时事件
 #endif // Pandas_NpcExpress_SC_START
+
+#ifdef Pandas_NpcExpress_ENTERMAP
+	NPCX_ENTERMAP,	// entermap_express_name	// OnPCEnterMapExpress		// 当玩家进入或者改变地图时触发实时事件
+#endif // Pandas_NpcExpress_ENTERMAP
+
+#ifdef Pandas_NpcExpress_PROGRESSABORT
+	NPCX_PROGRESSABORT,	// progressabort_express_name	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
+#endif // Pandas_NpcExpress_PROGRESSABORT
+
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+	NPCX_BATTLERECORD_FREE,	// battlerecord_free_express_name	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	NPCX_UNIT_KILL,	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX
 };
+
+#ifdef Pandas_NpcEvent_KILLMVP
+void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md);
+#endif // Pandas_NpcEvent_KILLMVP
+
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+void npc_event_aide_batrecfree(struct block_list* bl);
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, uint16 skillid);
+#endif // Pandas_NpcExpress_UNIT_KILL
 
 #ifdef Pandas_Helper_Common_Function
 struct event_data* npc_event_data(const char* eventname);
@@ -1408,7 +1478,7 @@ int npc_get_new_npc_id(void);
 
 int npc_addsrcfile(const char* name, bool loadscript);
 void npc_delsrcfile(const char* name);
-int npc_parsesrcfile(const char* filepath, bool runOnInit);
+int npc_parsesrcfile(const char* filepath);
 void do_clear_npc(void);
 void do_final_npc(void);
 void do_init_npc(void);
@@ -1419,6 +1489,7 @@ int npc_event_do_id(const char* name, int rid);
 int npc_event_doall(const char* name);
 void npc_event_runall( const char* eventname );
 int npc_event_doall_id(const char* name, int rid);
+int npc_event_doall_path(const char* event_name, const char* path);
 
 int npc_timerevent_start(struct npc_data* nd, int rid);
 int npc_timerevent_stop(struct npc_data* nd);
@@ -1462,6 +1533,7 @@ bool npc_unloadfile( const char* path );
 bool setProcessHalt(struct map_session_data *sd, enum npce_event event, bool halt = true);
 bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool autoreset = true);
 bool npc_script_filter(struct map_session_data* sd, enum npce_event type);
+bool npc_script_filter(struct map_session_data* sd, const char* eventname);
 #endif // Pandas_Struct_Map_Session_Data_EventHalt
 
 #ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
@@ -1483,7 +1555,9 @@ bool isAllowTriggerEvent(struct map_session_data* sd, enum npce_event event);
 #endif // Pandas_Struct_Map_Session_Data_EventTrigger
 
 #ifdef Pandas_ScriptEngine_Express
-bool npc_event_is_express_type(enum npce_event eventtype);
+bool npc_event_is_express(enum npce_event eventtype);
+bool npc_event_is_filter(enum npce_event eventtype);
+bool npc_event_is_realtime(enum npce_event eventtype);
 #endif // Pandas_ScriptEngine_Express
 
 #ifdef Pandas_ScriptCommand_Copynpc

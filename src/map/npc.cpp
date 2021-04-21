@@ -38,6 +38,10 @@
 #include "pet.hpp"
 #include "script.hpp" // script_config
 
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+#include "mapreg.hpp"
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
 using namespace rathena;
 
 struct npc_data* fake_nd;
@@ -128,6 +132,99 @@ struct script_event_s{
 
 // Holds pointers to the commonly executed scripts for speedup. [Skotlex]
 std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
+
+#ifdef Pandas_NpcEvent_KILLMVP
+//************************************
+// Method:      npc_event_aide_killmvp
+// Description: 用来触发 OnPCKillMvpEvent 事件的辅助函数
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct map_session_data * mvp_sd
+// Parameter:   struct mob_data * md
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/04/03 20:10
+//************************************ 
+void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md) {
+	if (!sd || !md) return;
+
+	struct status_data* status;
+	status = &md->status;
+
+	if (!status_has_mode(status, MD_MVP)) return;
+
+	pc_setparam(sd, SP_KILLEDRID, md->mob_id);
+	pc_setparam(sd, SP_KILLEDGID, md->bl.id);
+	pc_setreg(sd, add_str("@mob_dead_x"), (int)md->bl.x);
+	pc_setreg(sd, add_str("@mob_dead_y"), (int)md->bl.y);
+	pc_setreg(sd, add_str("@mob_lasthit_rid"), (int)sd->bl.id);
+	pc_setreg(sd, add_str("@mob_lasthit_cid"), (int)sd->status.char_id);
+	pc_setreg(sd, add_str("@mob_mvp_rid"), (int)(mvp_sd ? mvp_sd->bl.id : 0));
+	pc_setreg(sd, add_str("@mob_mvp_cid"), (int)(mvp_sd ? mvp_sd->status.char_id : 0));
+
+	npc_script_event(sd, NPCE_KILLMVP);
+}
+#endif // Pandas_NpcEvent_KILLMVP
+
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+//************************************
+// Method:      npc_event_batrecfree
+// Description: 用来触发 OnBatrecFreeExpress 实时事件的辅助函数
+// Access:      public 
+// Parameter:   struct block_list * bl
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/03/07 18:23
+//************************************ 
+void npc_event_aide_batrecfree(struct block_list* bl) {
+	nullpo_retv(bl);
+
+	if (!bl || !batrec_support(bl)) return;
+
+	mapreg_setreg(add_str("$@batrecfree_gid"), bl->id);
+	mapreg_setreg(add_str("$@batrecfree_type"), bl->type);
+
+	mapreg_setreg(add_str("$@batrecfree_mapid"), bl->m);
+	mapreg_setregstr(add_str("$@batrecfree_mapname$"), map[bl->m].name);
+	mapreg_setreg(add_str("$@batrecfree_x"), bl->x);
+	mapreg_setreg(add_str("$@batrecfree_y"), bl->y);
+
+	npc_event_doall(script_config.battlerecord_free_express_name);
+}
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+//************************************
+// Method:      npc_event_aide_unitkill
+// Description: 用来触发 OnUnitKillExpress 实时事件的辅助函数
+// Access:      public 
+// Parameter:   struct block_list * src
+// Parameter:   struct block_list * target
+// Parameter:   uint16 skill_id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/03/14 20:11
+//************************************ 
+void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, uint16 skill_id) {
+	nullpo_retv(target);
+
+	mapreg_setreg(add_str("$@killed_gid"), (target ? target->id : 0));						// 死亡单位的游戏单位编号
+	mapreg_setreg(add_str("$@killed_type"), (target ? target->type : 0));					// 死亡单位的类型
+	mapreg_setreg(add_str("$@killed_mapid"), (target ? target->m : -1));					// 死亡单位所在的地图编号
+	mapreg_setregstr(add_str("$@killed_mapname$"), (target ? map[target->m].name : ""));	// 死亡单位所在的地图名称
+	mapreg_setreg(add_str("$@killed_x"), (target ? target->x : 0));							// 死亡单位所在的 X 坐标
+	mapreg_setreg(add_str("$@killed_y"), (target ? target->y : 0));							// 死亡单位所在的 Y 坐标
+	mapreg_setreg(add_str("$@killed_classid"), (target ? status_get_class(target) : 0));	// 死亡单位的种类编号(魔物编号\生命体编号等等)
+
+	mapreg_setreg(add_str("$@killer_gid"), (src ? src->id : 0));							// 最后一击杀手单位的游戏单位编号(若为 0 则表示被系统击杀)
+	mapreg_setreg(add_str("$@killer_type"), (src ? src->type : 0));							// 最后一击杀手单位的类型(若为 0 则表示被系统击杀)
+	mapreg_setreg(add_str("$@killer_mapid"), (src ? src->m : -1));							// 最后一击杀手单位所在的地图编号
+	mapreg_setregstr(add_str("$@killer_mapname$"), (src ? map[src->m].name : ""));			// 最后一击杀手单位所在的地图名称
+	mapreg_setreg(add_str("$@killer_x"), (src ? src->x : 0));								// 最后一击杀手单位所在的 X 坐标
+	mapreg_setreg(add_str("$@killer_y"), (src ? src->y : 0));								// 最后一击杀手单位所在的 Y 坐标
+	mapreg_setreg(add_str("$@killer_classid"), (src ? status_get_class(src) : 0));			// 死亡单位的种类编号(魔物编号\生命体编号等等)
+	mapreg_setreg(add_str("$@killer_skillid"), skill_id);									// 最后一击使用的技能编号(若为 0 则表示普通攻击)
+
+	npc_event_doall(script_config.unit_kill_express_name);
+}
+#endif // Pandas_NpcExpress_UNIT_KILL
 
 #ifdef Pandas_Helper_Common_Function
 //************************************
@@ -622,6 +719,28 @@ int npc_event_doall_id(const char* name, int rid)
 	safesnprintf(buf, sizeof(buf), "::%s", name);
 	ev_db->foreach(ev_db,npc_event_doall_sub,&c,buf,rid);
 	return c;
+}
+
+// runs the specified event on all NPCs with the given path
+int npc_event_doall_path( const char* event_name, const char* path ){
+	s_mapiterator* iter = mapit_geteachnpc();
+	npc_data* nd;
+	int count = 0;
+
+	while( ( nd = (npc_data*)mapit_next( iter ) ) != nullptr ){
+		if( nd->path && strcasecmp( nd->path, path ) == 0 ){
+			char name[EVENT_NAME_LENGTH];
+
+			safesnprintf( name, EVENT_NAME_LENGTH, "%s::%s", nd->exname, event_name );
+
+			count += npc_event_do( name );
+		}
+	}
+
+	ShowStatus( "Event '" CL_WHITE "%s" CL_RESET "' executed with '" CL_WHITE "%d" CL_RESET "' NPCs.\n", event_name, count );
+
+	mapit_free(iter);
+	return count;
 }
 
 /*==========================================
@@ -1208,6 +1327,7 @@ int npc_touch_areanpc(struct map_session_data* sd, int16 m, int16 x, int16 y, st
 			sd->count_rewarp = 0;
 			break;
 		}
+
 		pc_setpos(sd, nd->u.warp.mapindex, nd->u.warp.x, nd->u.warp.y, CLR_OUTSIGHT);
 		return 2;
 	case NPCTYPE_SCRIPT:
@@ -1688,7 +1808,7 @@ static enum e_CASHSHOP_ACK npc_cashshop_process_payment(struct npc_data *nd, int
 
 					memset(output, '\0', sizeof(output));
 
-					sprintf(output, msg_txt(sd, 712), id->jname, id->nameid); // You do not have enough %s (%u).
+					sprintf(output, msg_txt(sd, 712), id->ename.c_str(), id->nameid); // You do not have enough %s (%u).
 					clif_messagecolor(&sd->bl, color_table[COLOR_RED], output, false, SELF);
 					return ERROR_TYPE_PURCHASE_FAIL;
 				}
@@ -1895,7 +2015,7 @@ void npc_shop_currency_type(struct map_session_data *sd, struct npc_data *nd, in
 
 					memset(output, '\0', sizeof(output));
 
-					sprintf(output, msg_txt(sd, 714), id->jname, id->nameid); // Item Shop List: %s (%u)
+					sprintf(output, msg_txt(sd, 714), id->ename.c_str(), id->nameid); // Item Shop List: %s (%u)
 					clif_broadcast(&sd->bl, output, strlen(output) + 1, BC_BLUE,SELF);
 				}
 
@@ -1990,7 +2110,7 @@ int npc_cashshop_buy(struct map_session_data *sd, t_itemid nameid, int amount, i
 
 	if( (double)nd->u.shop.shop_item[i].value * amount > INT_MAX )
 	{
-		ShowWarning("npc_cashshop_buy: Item '%s' (%u) price overflow attempt!\n", item->name, nameid);
+		ShowWarning("npc_cashshop_buy: Item '%s' (%u) price overflow attempt!\n", item->name.c_str(), nameid);
 		ShowDebug("(NPC:'%s' (%s,%d,%d), player:'%s' (%d/%d), value:%d, amount:%d)\n",
 					nd->exname, map_mapid2mapname(nd->bl.m), nd->bl.x, nd->bl.y, sd->status.name, sd->status.account_id, sd->status.char_id, nd->u.shop.shop_item[i].value, amount);
 		return ERROR_TYPE_ITEM_ID;
@@ -2500,6 +2620,10 @@ void npc_unload_duplicates(struct npc_data* nd)
 int npc_unload(struct npc_data* nd, bool single) {
 	nullpo_ret(nd);
 
+#ifdef Pandas_BattleRecord
+	batrec_free(&nd->bl, true);
+#endif // Pandas_BattleRecord
+
 	status_change_clear(&nd->bl, 1);
 	npc_remove_map(nd);
 	map_deliddb(&nd->bl);
@@ -2599,6 +2723,8 @@ int npc_unload(struct npc_data* nd, bool single) {
 		}
 	}
 
+	nd->qi_data.clear();
+
 	script_stop_sleeptimers(nd->bl.id);
 	aFree(nd);
 
@@ -2664,7 +2790,7 @@ int npc_addsrcfile(const char* name, bool loadscript)
 		file_prev->next = file;
 
 	if (loadscript)
-		return npc_parsesrcfile(file->name, true);
+		return npc_parsesrcfile(file->name);
 
 	return 1;
 }
@@ -2850,6 +2976,11 @@ struct npc_data *npc_create_npc(int16 m, int16 x, int16 y){
 	nd->pandas.destruction_strategy = 0;
 	nd->pandas.destruction_timer = INVALID_TIMER;
 #endif // Pandas_Struct_Npc_Data_DestructionStrategy
+
+#ifdef Pandas_BattleRecord
+	nd->bl.type = BL_NPC;
+	batrec_new(&nd->bl);
+#endif // Pandas_BattleRecord
 
 	return nd;
 }
@@ -3171,15 +3302,15 @@ static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const 
 		}
 		if (value == 0 && (type == NPCTYPE_SHOP || type == NPCTYPE_MARKETSHOP)) { // NPC selling items for free!
 			ShowWarning("npc_parse_shop: Item %s [%u] is being sold for FREE in file '%s', line '%d'.\n",
-				id->name, nameid2, filepath, strline(buffer,start-buffer));
+				id->name.c_str(), nameid2, filepath, strline(buffer,start-buffer));
 		}
 		if( type == NPCTYPE_SHOP && value*0.75 < id->value_sell*1.24 ) { // Exploit possible: you can buy and sell back with profit
 			ShowWarning("npc_parse_shop: Item %s [%u] discounted buying price (%d->%d) is less than overcharged selling price (%d->%d) at file '%s', line '%d'.\n",
-				id->name, nameid2, value, (int)(value*0.75), id->value_sell, (int)(id->value_sell*1.24), filepath, strline(buffer,start-buffer));
+				id->name.c_str(), nameid2, value, (int)(value*0.75), id->value_sell, (int)(id->value_sell*1.24), filepath, strline(buffer,start-buffer));
 		}
 		if (type == NPCTYPE_MARKETSHOP && (!qty || qty > UINT16_MAX)) {
 			ShowWarning("npc_parse_shop: Item %s [%u] is stocked with invalid value %d, changed to 1. File '%s', line '%d'.\n",
-				id->name, nameid2, qty, filepath, strline(buffer,start-buffer));
+				id->name.c_str(), nameid2, qty, filepath, strline(buffer,start-buffer));
 			qty = 1;
 		}
 		//for logs filters, atcommands and iteminfo script command
@@ -3412,7 +3543,7 @@ static const char* npc_skip_script(const char* start, const char* buffer, const 
  * @param filepath : filename with path wich we are parsing
  * @return new index for next parsing
  */
-static const char* npc_parse_script(char* w1, char* w2, char* w3, char* w4, const char* start, const char* buffer, const char* filepath, bool runOnInit) {
+static const char* npc_parse_script(char* w1, char* w2, char* w3, char* w4, const char* start, const char* buffer, const char* filepath) {
 	int16 dir = 0;
 	short m, x, y, xs = 0, ys = 0; // [Valaris] thanks to fov
 	struct script_code *script;
@@ -3523,20 +3654,6 @@ static const char* npc_parse_script(char* w1, char* w2, char* w3, char* w4, cons
 	}
 
 	nd->u.scr.timerid = INVALID_TIMER;
-
-	if( runOnInit ) {
-		char evname[EVENT_NAME_LENGTH];
-		struct event_data *ev;
-
-		snprintf(evname, ARRAYLENGTH(evname), "%s::%s", nd->exname, script_config.init_event_name);
-
-		if( ( ev = (struct event_data*)strdb_get(ev_db, evname) ) ) {
-
-			//Execute OnInit
-			run_script(nd->u.scr.script,ev->pos,0,nd->bl.id);
-
-		}
-	}
 
 	return end;
 }
@@ -4076,9 +4193,10 @@ bool npc_movenpc(struct npc_data* nd, int16 x, int16 y)
 void npc_setdisplayname(struct npc_data* nd, const char* newname)
 {
 	nullpo_retv(nd);
+	struct map_data *mapdata = map_getmapdata(nd->bl.m);
 
 	safestrncpy(nd->name, newname, sizeof(nd->name));
-	if( map_getmapdata(nd->bl.m)->users )
+	if( mapdata && mapdata->users )
 		clif_name_area(&nd->bl);
 }
 
@@ -4328,6 +4446,12 @@ static const char* npc_parse_mob(char* w1, char* w2, char* w3, char* w4, const c
 	{	//Force a random spawn anywhere on the map.
 		mob.x = mob.y = 0;
 		mob.xs = mob.ys = -1;
+	}
+
+	// Check if monsters should have variance applied to their respawn time
+	if( ( ( battle_config.mob_spawn_variance & 1 ) == 0 && mob.state.boss ) || ( ( battle_config.mob_spawn_variance & 2 ) == 0 && !mob.state.boss ) ){
+		// Remove the variance
+		mob.delay2 = 0;
 	}
 
 	if(mob.delay1>0xfffffff || mob.delay2>0xfffffff) {
@@ -4685,7 +4809,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
  * @param runOnInit :  should we exec OnInit when it's done ?
  * @return 0:error, 1:success
  */
-int npc_parsesrcfile(const char* filepath, bool runOnInit)
+int npc_parsesrcfile(const char* filepath)
 {
 	int16 m, x, y;
 	int lines = 0;
@@ -4858,7 +4982,7 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 			if( strcasecmp(w1,"function") == 0 )
 				p = npc_parse_function(w1, w2, w3, w4, p, buffer, filepath);
 			else
-				p = npc_parse_script(w1,w2,w3,w4, p, buffer, filepath,runOnInit);
+				p = npc_parse_script(w1,w2,w3,w4, p, buffer, filepath);
 		}
 		else if( (i=0, sscanf(w2,"duplicate%n",&i), (i > 0 && w2[i] == '(')) && count > 3 )
 			p = npc_parse_duplicate(w1,w2,w3,w4, p, buffer, filepath);
@@ -4877,7 +5001,15 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 }
 
 #ifdef Pandas_ScriptEngine_Express
-bool npc_event_is_express_type(enum npce_event eventtype) {
+//************************************
+// Method:      npc_event_is_express
+// Description: 判断给定的事件类型是不是实时事件
+// Access:      public 
+// Parameter:   enum npce_event eventtype
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/09 19:40
+//************************************ 
+bool npc_event_is_express(enum npce_event eventtype) {
 	static std::vector<enum npce_event> express_npce = {
 #ifdef Pandas_NpcExpress_STATCALC
 		NPCE_STATCALC,	// statcalc_express_name	// OnPCStatCalcEvent		// 当角色能力被重新计算时触发事件
@@ -4890,6 +5022,22 @@ bool npc_event_is_express_type(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_SC_START
 		NPCX_SC_START,	// sc_start_express_name	// OnPCBuffStartExpress		// 当玩家成功获得一个状态(Buff)后触发实时事件
 #endif // Pandas_NpcExpress_SC_START
+
+#ifdef Pandas_NpcExpress_ENTERMAP
+		NPCX_ENTERMAP,	// entermap_express_name	// OnPCEnterMapExpress		// 当玩家进入或者改变地图时触发实时事件
+#endif // Pandas_NpcExpress_ENTERMAP
+
+#ifdef Pandas_NpcExpress_PROGRESSABORT
+		NPCX_PROGRESSABORT,	// progressabort_express_name	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
+#endif // Pandas_NpcExpress_PROGRESSABORT
+
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+		NPCX_BATTLERECORD_FREE,	// battlerecord_free_express_name	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+		NPCX_UNIT_KILL,	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -4898,17 +5046,117 @@ bool npc_event_is_express_type(enum npce_event eventtype) {
 	return (iter != express_npce.end());
 }
 
-bool npc_event_express(struct map_session_data* sd, struct event_data* ev, const char* eventname) {
+//************************************
+// Method:      npc_event_is_filter
+// Description: 判断给定的事件类型是不是过滤器事件
+// Access:      public 
+// Parameter:   enum npce_event eventtype
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/09 19:43
+//************************************ 
+bool npc_event_is_filter(enum npce_event eventtype) {
+	static std::vector<enum npce_event> filter_npce = {
+#ifdef Pandas_NpcFilter_IDENTIFY
+		NPCF_IDENTIFY,	// identify_filter_name	// OnPCIdentifyFilter		// 当玩家在装备鉴定列表中选择好装备, 并点击“确定”按钮时触发过滤器
+#endif // Pandas_NpcFilter_IDENTIFY
+
+#ifdef Pandas_NpcFilter_ENTERCHAT
+		NPCF_ENTERCHAT,	// enterchat_filter_name	// OnPCInChatroomFilter		// 当玩家进入 NPC 开启的聊天室时触发过滤器
+#endif // Pandas_NpcFilter_ENTERCHAT
+
+#ifdef Pandas_NpcFilter_INSERT_CARD
+		NPCF_INSERT_CARD,	// insert_card_filter_name	// OnPCInsertCardFilter		// 当玩家准备插入卡片时触发过滤器
+#endif // Pandas_NpcFilter_INSERT_CARD
+
+#ifdef Pandas_NpcFilter_USE_ITEM
+		NPCF_USE_ITEM,	// use_item_filter_name	// OnPCUseItemFilter		// 当玩家准备使用非装备类道具时触发过滤器
+#endif // Pandas_NpcFilter_USE_ITEM
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+		NPCF_USE_SKILL,	// use_skill_filter_name	// OnPCUseSkillFilter		// 当玩家准备使用技能时触发过滤器
+#endif // Pandas_NpcFilter_USE_SKILL
+
+#ifdef Pandas_NpcFilter_ROULETTE_OPEN
+		NPCF_ROULETTE_OPEN,	// roulette_open_filter_name	// OnPCOpenRouletteFilter		// 当玩家准备打开乐透大转盘的时候触发过滤器
+#endif // Pandas_NpcFilter_ROULETTE_OPEN
+
+#ifdef Pandas_NpcFilter_VIEW_EQUIP
+		NPCF_VIEW_EQUIP,	// view_equip_filter_name	// OnPCViewEquipFilter		// 当玩家准备查看某个角色的装备时触发过滤器
+#endif // Pandas_NpcFilter_VIEW_EQUIP
+
+#ifdef Pandas_NpcFilter_EQUIP
+		NPCF_EQUIP,	// equip_filter_name	// OnPCEquipFilter		// 当玩家准备穿戴装备时触发过滤器
+#endif // Pandas_NpcFilter_EQUIP
+
+#ifdef Pandas_NpcFilter_UNEQUIP
+		NPCF_UNEQUIP,	// unequip_filter_name	// OnPCUnequipFilter		// 当玩家准备脱下装备时触发过滤器
+#endif // Pandas_NpcFilter_UNEQUIP
+
+#ifdef Pandas_NpcFilter_CHANGETITLE
+		NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+#endif // Pandas_NpcFilter_CHANGETITLE
+
+#ifdef Pandas_NpcFilter_SC_START
+		NPCF_SC_START,	// sc_start_filter_name	// OnPCBuffStartFilter		// 当玩家准备获得一个状态(Buff)时触发过滤器
+#endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+		NPCF_USE_REVIVE_TOKEN,	// use_revive_token_filter_name	// OnPCUseReviveTokenFilter		// 当玩家使用菜单中的原地复活之证时触发过滤器
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+#ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
+		NPCF_ONECLICK_IDENTIFY,	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
+#endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
+	};
+
+	std::vector<enum npce_event>::iterator iter;
+	iter = std::find(filter_npce.begin(), filter_npce.end(), eventtype);
+	return (iter != filter_npce.end());
+}
+
+//************************************
+// Method:      npc_event_is_realtime
+// Description: 判断给定的事件是不是实时或者过滤器事件
+// Access:      public 
+// Parameter:   enum npce_event eventtype
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/09 20:51
+//************************************ 
+bool npc_event_is_realtime(enum npce_event eventtype) {
+	return (
+		npc_event_is_express(eventtype) ||
+		npc_event_is_filter(eventtype)
+	);
+}
+
+//************************************
+// Method:      npc_event_rightnow
+// Description: 立刻执行给定的实时或者过滤器事件
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct event_data * ev
+// Parameter:   const char * eventname
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/09 19:52
+//************************************ 
+bool npc_event_rightnow(struct map_session_data* sd, struct event_data* ev, const char* eventname) {
 	nullpo_retr(false, sd);
 	nullpo_retr(false, ev);
 
 	enum npce_event eventtype = npc_get_script_event_type(eventname);
-	if (eventtype == NPCE_MAX || !npc_event_is_express_type(eventtype))
+
+	if (eventtype == NPCE_MAX || !npc_event_exists(eventname))
+		return false;
+
+	if (!npc_event_is_realtime(eventtype))
 		return false;
 
 	enum npce_event workinevent_backup = sd->pandas.workinevent;
 	sd->pandas.workinevent = eventtype;
+	pc_setreg(sd, add_str("@interrupt_npcid"), sd->npc_id);
 	run_script(ev->nd->u.scr.script, ev->pos, sd->bl.id, ev->nd->bl.id);
+	pc_setreg(sd, add_str("@interrupt_npcid"), 0);
 	sd->pandas.workinevent = workinevent_backup;
 	return true;
 }
@@ -4937,7 +5185,7 @@ int npc_script_event(struct map_session_data* sd, enum npce_event type){
 
 	for( struct script_event_s& evt : vector ){
 #ifdef Pandas_ScriptEngine_Express
-		if (npc_event_express(sd, evt.event, evt.event_name))
+		if (npc_event_rightnow(sd, evt.event, evt.event_name))
 			continue;
 #endif // Pandas_ScriptEngine_Express
 		npc_event_sub( sd, evt.event, evt.event_name );
@@ -5024,6 +5272,16 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_SC_START:
 		return script_config.sc_start_filter_name;	// OnPCBuffStartFilter		// 当玩家准备获得一个状态(Buff)时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+	case NPCF_USE_REVIVE_TOKEN:
+		return script_config.use_revive_token_filter_name;	// OnPCUseReviveTokenFilter		// 当玩家使用菜单中的原地复活之证时触发过滤器
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+#ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
+	case NPCF_ONECLICK_IDENTIFY:
+		return script_config.oneclick_identify_filter_name;	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
+#endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -5055,11 +5313,6 @@ const char *npc_get_script_event_name(int npce_index)
 		return script_config.use_skill_event_name;	// OnPCUseSkillEvent		// 当玩家成功使用技能后触发事件
 #endif // Pandas_NpcEvent_USE_SKILL
 
-#ifdef Pandas_NpcEvent_PROGRESS_ABORT
-	case NPCE_PROGRESS_ABORT:
-		return script_config.progressbar_abort_event_name;	// OnPCProgressAbortEvent		// 当玩家的进度条被打断后触发事件
-#endif // Pandas_NpcEvent_PROGRESS_ABORT
-
 #ifdef Pandas_NpcEvent_EQUIP
 	case NPCE_EQUIP:
 		return script_config.equip_event_name;	// OnPCEquipEvent		// 当玩家成功穿戴一件装备时触发事件
@@ -5089,6 +5342,26 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_SC_START:
 		return script_config.sc_start_express_name;	// OnPCBuffStartExpress		// 当玩家成功获得一个状态(Buff)后触发实时事件
 #endif // Pandas_NpcExpress_SC_START
+
+#ifdef Pandas_NpcExpress_ENTERMAP
+	case NPCX_ENTERMAP:
+		return script_config.entermap_express_name;	// OnPCEnterMapExpress		// 当玩家进入或者改变地图时触发实时事件
+#endif // Pandas_NpcExpress_ENTERMAP
+
+#ifdef Pandas_NpcExpress_PROGRESSABORT
+	case NPCX_PROGRESSABORT:
+		return script_config.progressabort_express_name;	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
+#endif // Pandas_NpcExpress_PROGRESSABORT
+
+#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+	case NPCX_BATTLERECORD_FREE:
+		return script_config.battlerecord_free_express_name;	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
+#endif // Pandas_NpcExpress_BATTLERECORD_FREE
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	case NPCX_UNIT_KILL:
+		return script_config.unit_kill_express_name;	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:
@@ -5255,7 +5528,7 @@ int npc_reload(void) {
 	// Reloading npcs now
 	for (nsl = npc_src_files; nsl; nsl = nsl->next) {
 		ShowStatus("Loading NPC file: %s" CL_CLL "\r", nsl->name);
-		npc_parsesrcfile(nsl->name,false);
+		npc_parsesrcfile(nsl->name);
 	}
 
 #ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
@@ -5460,7 +5733,7 @@ void do_init_npc(void){
 	ShowStatus("Loading NPCs...\r");
 	for( file = npc_src_files; file != NULL; file = file->next ) {
 		ShowStatus("Loading NPC file: %s" CL_CLL "\r", file->name);
-		npc_parsesrcfile(file->name,false);
+		npc_parsesrcfile(file->name);
 	}
 
 #ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
@@ -5568,7 +5841,7 @@ bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool aut
 
 //************************************
 // Method:		npc_script_filter
-// Description:	执行一个 filter 事件, 并返回是否需要中断
+// Description:	执行指定类型的所有过滤器事件, 并返回是否需要中断
 // Parameter:	struct map_session_data * sd
 // Parameter:	enum npce_event type
 // Returns:		bool 需要中断则返回 true, 无需中断返回 false
@@ -5576,6 +5849,24 @@ bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool aut
 bool npc_script_filter(struct map_session_data* sd, enum npce_event type) {
 	nullpo_retr(false, sd);
 	npc_script_event(sd, type);
+	return getProcessHalt(sd, type);
+}
+
+//************************************
+// Method:      npc_script_filter
+// Description: 执行一个精确指定的过滤器事件, 并返回是否需要中断
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   const char * eventname
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/02/09 20:45
+//************************************ 
+bool npc_script_filter(struct map_session_data* sd, const char* eventname) {
+	nullpo_retr(false, sd);
+	enum npce_event type = npc_get_script_event_type(eventname);
+	struct event_data* ev = (struct event_data*)strdb_get(ev_db, eventname);
+	if (!npc_event_rightnow(sd, ev, eventname))
+		return false;
 	return getProcessHalt(sd, type);
 }
 #endif // Pandas_Struct_Map_Session_Data_EventHalt

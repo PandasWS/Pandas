@@ -270,19 +270,40 @@ bool isDirectoryExists(const std::string& path) {
 //************************************
 // Method:      makeDirectories
 // Description: 创建多层目录 (跨平台支持)
-// Parameter:   const std::string & path
+// Parameter:   const std::string & dirpath 目录路径
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2020/4/5 18:55
 //************************************
-bool makeDirectories(const std::string& path) {
+bool makeDirectories(const std::string& dirpath) {
 	try
 	{
-		boost::filesystem::path dirpath(path);
-		dirpath = dirpath.generic_path();
-		if (isDirectoryExists(path)) return true;
-		return boost::filesystem::create_directories(dirpath);
+		boost::filesystem::path path(dirpath);
+		path = path.generic_path();
+		if (isDirectoryExists(dirpath) || isFileExists(dirpath)) return true;
+		return boost::filesystem::create_directories(path);
 	}
 	catch (const boost::filesystem::filesystem_error &e)
+	{
+		ShowWarning("%s: %s\n", __func__, e.what());
+		return false;
+	}
+}
+
+//************************************
+// Method:      ensureDirectories
+// Description: 确保给定的文件路径其对应的目录 (跨平台支持)
+// Parameter:   const std::string & filepath 文件路径
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/1/12 00:02
+//************************************
+bool ensureDirectories(const std::string& filepath) {
+	try
+	{
+		boost::filesystem::path path(filepath);
+		path = path.generic_path().parent_path();
+		return makeDirectories(path.string());
+	}
+	catch (const boost::filesystem::filesystem_error& e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -341,6 +362,28 @@ bool copyDirectory(const boost::filesystem::path &from, const boost::filesystem:
 		return true;
 	}
 	catch (const std::runtime_error &e)
+	{
+		ShowWarning("%s: %s\n", __func__, e.what());
+		return false;
+	}
+}
+
+
+//************************************
+// Method:      isFileExists
+// Description: 判断文件是否存在 (跨平台支持)
+// Parameter:   const std::string & path
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2020/4/5 18:55
+//************************************
+bool isFileExists(const std::string& path) {
+	try
+	{
+		boost::filesystem::path dirpath(path);
+		dirpath = dirpath.generic_path();
+		return boost::filesystem::is_regular_file(dirpath);
+	}
+	catch (const boost::filesystem::filesystem_error& e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -618,6 +661,7 @@ std::string formatVersion(std::string ver, bool bPrefix, bool bSuffix) {
 	);
 }
 
+#ifdef Pandas_Version
 //************************************
 // Method:      getPandasVersion
 // Description: 用于获取 Pandas 的主程序版本号
@@ -673,6 +717,7 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 	return formatVersion(Pandas_Version, bPrefix, bSuffix);
 #endif // _WIN32
 }
+#endif // Pandas_Version
 
 //************************************
 // Method:      isGBKCharacter
@@ -764,13 +809,13 @@ bool isEscapeSequence(const char* start_p) {
 }
 
 //************************************
-// Method:      correct_isa_available
+// Method:      isaAvailableHotfix
 // Description: 修正在支持 AVX512 指令的设备上
 //              使用 std::unordered_map::reserve 会提示 Illegal instruction 的问题
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2019/11/17 23:28
 //************************************
-void correct_isa_available() {
+void isaAvailableHotfix() {
 #if (_MSC_VER == 1923)	// Visual Studio 2019 version 16.3
 	if (__isa_available > 5) {
 		__isa_available = 5;

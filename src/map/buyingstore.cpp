@@ -572,7 +572,7 @@ bool buyingstore_searchall(struct map_session_data* sd, const struct s_search_st
 			;
 		}
 
-		if( !searchstore_result(s->search_sd, sd->buyer_id, sd->status.account_id, sd->message, it->nameid, it->amount, it->price, buyingstore_blankslots, 0) )
+		if( !searchstore_result(s->search_sd, sd->buyer_id, sd->status.account_id, sd->message, it->nameid, it->amount, it->price, buyingstore_blankslots, 0, 0) )
 		{// result set full
 			return false;
 		}
@@ -684,13 +684,28 @@ void do_init_buyingstore_autotrade( void ) {
 				Sql_GetData(mmysql_handle, 0, &data, NULL); at->id = atoi(data);
 				Sql_GetData(mmysql_handle, 1, &data, NULL); at->account_id = atoi(data);
 				Sql_GetData(mmysql_handle, 2, &data, NULL); at->char_id = atoi(data);
-				Sql_GetData(mmysql_handle, 3, &data, NULL); at->sex = (data[0] == 'F') ? 0 : 1;
+				Sql_GetData(mmysql_handle, 3, &data, NULL); at->sex = (data[0] == 'F') ? SEX_FEMALE : SEX_MALE;
 				Sql_GetData(mmysql_handle, 4, &data, &len); safestrncpy(at->title, data, zmin(len + 1, MESSAGE_SIZE));
 				Sql_GetData(mmysql_handle, 5, &data, NULL); at->limit = atoi(data);
 				Sql_GetData(mmysql_handle, 6, &data, NULL); at->dir = atoi(data);
 				Sql_GetData(mmysql_handle, 7, &data, NULL); at->head_dir = atoi(data);
 				Sql_GetData(mmysql_handle, 8, &data, NULL); at->sit = atoi(data);
 				at->count = 0;
+
+#ifdef Pandas_Player_Suspend_System
+				// 账号已在线则跳过
+				// 避免角色已经被 @afk 或 @suspend 拉上线导致的潜在冲突
+				TBL_PC* sd = nullptr;
+				if ((sd = map_id2sd(at->account_id)) != NULL) {
+					aFree(at);
+					continue;
+				}
+
+				if (chrif_search(at->account_id) != NULL) {
+					aFree(at);
+					continue;
+				}
+#endif // Pandas_Player_Suspend_System
 
 				if (battle_config.feature_autotrade_direction >= 0)
 					at->dir = battle_config.feature_autotrade_direction;
@@ -769,6 +784,29 @@ void do_init_buyingstore_autotrade( void ) {
 		Sql_ShowDebug(mmysql_handle);
 	}
 }
+
+#ifdef Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
+//************************************
+// Method:      buyingstore_autotrader_cleardb
+// Description: 移除指定角色在数据库中的采购商店挂机记录
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/03/02 21:13
+//************************************ 
+void buyingstore_autotrader_cleardb(struct map_session_data* sd) {
+	nullpo_retv(sd);
+
+	// 清理 buyingstores_table 表中账号编号与 sd 一致的记录
+	// 此处无需清理 buyingstore_items_table 因为只要 buyingstores_table 的记录被移除,
+	// 那么下次地图服务器启动的时候 buyingstore_items_table 中的数据并不会对加载过程造成任何影响
+	if (sd && Sql_Query(mmysql_handle,
+		"DELETE FROM `%s` WHERE `account_id` = %d;",
+		buyingstores_table, sd->status.account_id) != SQL_SUCCESS) {
+		Sql_ShowDebug(mmysql_handle);
+	}
+}
+#endif // Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
 
 /**
  * Remove an autotrader's data

@@ -22,10 +22,12 @@
 	#define Pandas_ScriptEngine
 	#define Pandas_Redeclaration
 	#define Pandas_UserExperience
+	#define Pandas_YamlBlastCache
 	#define Pandas_Cleanup
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
 	#define Pandas_AtCommands
+	#define Pandas_Bonuses
 	#define Pandas_ScriptCommands
 	#define Pandas_ScriptResults
 	#define Pandas_ScriptParams
@@ -61,7 +63,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.0.9.0"
+	#define Pandas_Version "1.1.1.0"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -80,47 +82,10 @@
 #endif // Pandas_Basic
 
 // ============================================================================
-// 数据库增强组 - Pandas_DatabaseIncrease
-// ============================================================================
-
-#ifdef Pandas_DatabaseIncrease
-	// 是否启用 Pandas 的道具属性数据库 [Sola丶小克]
-	// 类似 item_flag 数据库, 不过 rAthena 自己会不断扩充 flag 的定义
-	// 为了避免未来可能存在的冲突, 直接创建一个新的数据库来存放对物品属性的自定义扩充
-	#define Pandas_Database_ItemProperties
-
-	// 是否启用魔物道具固定掉率数据库及其功能 [Sola丶小克]
-	// 通过这个数据库可以指定某个道具的全局固定掉落概率, 且能绕过等级惩罚和VIP掉率加成等机制
-	#define Pandas_Database_MobItem_FixedRatio
-
-	// 是否拓展 Yaml 的 Database 操作类使之能抑制错误信息 [Sola丶小克]
-	#define Pandas_Database_Yaml_BeQuiet
-
-	// 是否拓展 Yaml 的 Database 操作类使之能读取 UTF8-BOM 编码的文件 [Sola丶小克]
-	#define Pandas_Database_Yaml_Support_UTF8BOM
-#endif // Pandas_DatabaseIncrease
-
-// ============================================================================
 // 数据结构增强组 - Pandas_StructIncrease
 // ============================================================================
 
 #ifdef Pandas_StructIncrease
-	// 使 item_data 可记录此物品是否为宠物捕捉道具 [Sola丶小克]
-	// 结构体修改定位 itemdb.hpp -> item_data.taming_mobid
-	#define Pandas_Struct_Item_Data_Taming_Mobid
-
-	// 使 item_data 可记录此物品是否执行了 callfunc 指令 [Sola丶小克]
-	// 结构体修改定位 itemdb.hpp -> item_data.has_callfunc
-	#define Pandas_Struct_Item_Data_Has_CallFunc
-
-	// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
-	// 效果与 item_data.flag 类似, 只是数据源为 item_properties.yml 
-	// 结构体修改定位 itemdb.hpp -> item_data.properties
-	// 此选项开关需要依赖 Pandas_Database_ItemProperties 的拓展
-	#ifdef Pandas_Database_ItemProperties
-		#define Pandas_Struct_Item_Data_Properties
-	#endif // Pandas_Database_ItemProperties
-
 	// 使 map_session_data, npc_data, mob_data, homun_data,
 	// mercenary_data, elemental_data, pet_data 能够有一个独立的结构体用来
 	// 存放 Pandas 针对多单位通用的拓展 [Sola丶小克]
@@ -130,6 +95,9 @@
 	#ifdef Pandas_Struct_Unit_CommonData
 		// 使 s_unit_common_data 可记录单位的光环信息 [Sola丶小克]
 		#define Pandas_Struct_Unit_CommonData_Aura
+
+		// 使 s_unit_common_data 可记录战斗记录信息 [Sola丶小克]
+		#define Pandas_Struct_Unit_CommonData_BattleRecord
 	#endif // Pandas_Struct_Unit_CommonData
 
 	// 使 map_session_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
@@ -157,15 +125,47 @@
 		// 使 map_session_data 可记录即将支持捕捉的多个魔物编号 [Sola丶小克]
 		#define Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 
-		// 使 map_session_data 可记录是否即将被 recall 指令独立召唤 [Sola丶小克]
-		// 结构体修改定位 pc.hpp -> map_session_data.pandas.independent_recall
-		#define Pandas_Struct_Map_Session_Data_IndependentRecall
+		// 使 map_session_data 可记录接下来的 pc_setpos 调用是不是一次多人传送 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.multitransfer
+		#define Pandas_Struct_Map_Session_Data_MultiTransfer
+
+		// 使 map_session_data 可记录是否在 LoadEndAck 调用中不弹出队列中的事件 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.skip_loadendack_npc_event_dequeue
+		#define Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 
 		// 使 map_session_data 可记录离线挂店 / 挂机角色的朝向等状态数据 [Sola丶小克]
 		// rAthena 使用完成 autotrade 的朝向数据后就销毁掉了
 		// 为了能够支持离线挂店 / 挂机可以被 recall 召唤, 我们需要保留一部分数据
 		#define Pandas_Struct_Map_Session_Data_Autotrade_Configure
+
+		// 使 map_session_data 可记录玩家已经生成的 bonus_script 记录数 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.bonus_script_counter
+		#define Pandas_Struct_Map_Session_Data_BonusScript_Counter
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
+
+	// 使 item_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
+	// 结构体修改定位 itemdb.hpp -> item_data.pandas
+	#define Pandas_Struct_Item_Data_Pandas
+
+	// 以下选项开关需要依赖 Pandas_Struct_Item_Data_Pandas 的拓展
+	#ifdef Pandas_Struct_Item_Data_Pandas
+		// 使 item_data 可记录当前物品的使用、穿戴、卸装脚本的原文 [Sola丶小克]
+		// 结构体修改定位 itemdb.hpp -> item_data.pandas.script_plaintext
+		#define Pandas_Struct_Item_Data_Script_Plaintext
+
+		// 使 item_data 可记录当前物品可捕捉的魔物编号 [Sola丶小克]
+		// 结构体修改定位 itemdb.hpp -> item_data.pandas.taming_mobid
+		#define Pandas_Struct_Item_Data_Taming_Mobid
+
+		// 使 item_data 可记录此物品的使用脚本是否执行了 callfunc 指令 [Sola丶小克]
+		// 结构体修改定位 itemdb.hpp -> item_data.pandas.has_callfunc
+		#define Pandas_Struct_Item_Data_Has_CallFunc
+
+		// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
+		// 效果与 item_data.flag 类似, 只是数据源为 item_properties.yml 
+		// 结构体修改定位 itemdb.hpp -> item_data.pandas.properties
+		#define Pandas_Struct_Item_Data_Properties
+	#endif // Pandas_Struct_Item_Data_Pandas
 
 	// 使 npc_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
 	// 结构体修改定位 npc.hpp -> npc_data.pandas
@@ -184,7 +184,35 @@
 	// 在默认情况下 sd->state.autotrade 的值若为 0 则表示没有离线挂店
 	// 若非零的话则表示启用了离线挂店, 且 &2 表示开启的是离线摆摊挂店 &3 表示开启的是离线收购挂店
 	#define Pandas_Struct_Autotrade_Extend
+
+	// 对 bonus_script_data 的定义进行拓展处理 [Sola丶小克]
+	// 默认的 rAthena 中 bonus_script 机制并没有唯一编号的概念, 为了提高对 bonus_script 的控制粒度
+	// 我们需要将唯一编号引入到我们需要拓展的相关数据结构体中
+	#define Pandas_Struct_BonusScriptData_Extend
 #endif // Pandas_StructIncrease
+
+// ============================================================================
+// 数据库增强组 - Pandas_DatabaseIncrease
+// ============================================================================
+
+#ifdef Pandas_DatabaseIncrease
+	// 是否启用道具特殊属性数据库 [Sola丶小克]
+	// 为了避免未来可能存在的冲突, 直接创建一个新的数据库来存放对物品属性的自定义扩充
+	// 此选项依赖 Pandas_Struct_Item_Data_Properties 的拓展
+	#ifdef Pandas_Struct_Item_Data_Properties
+		#define Pandas_Database_ItemProperties
+	#endif // Pandas_Struct_Item_Data_Properties
+
+	// 是否启用魔物道具固定掉率数据库及其功能 [Sola丶小克]
+	// 通过这个数据库可以指定某个道具的全局固定掉落概率, 且能绕过等级惩罚和VIP掉率加成等机制
+	#define Pandas_Database_MobItem_FixedRatio
+
+	// 是否拓展 Yaml 的 Database 操作类使之能抑制错误信息 [Sola丶小克]
+	#define Pandas_Database_Yaml_BeQuiet
+
+	// 是否拓展 Yaml 的 Database 操作类使之能读取 UTF8-BOM 编码的文件 [Sola丶小克]
+	#define Pandas_Database_Yaml_Support_UTF8BOM
+#endif // Pandas_DatabaseIncrease
 
 // ============================================================================
 // 战斗配置组 - Pandas_BattleConfigure
@@ -253,6 +281,30 @@
 	// 是否启用 suspend_afk_headtop_viewid 配置选项及其功能 [Sola丶小克]
 	// 此选项用于当玩家进入离开模式时, 将头饰上的更换为哪一个指定的头饰外观编号
 	#define Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
+
+	// 是否启用 suspend_normal_bodydirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入普通模式时, 被拉上线的角色身体朝向哪里
+	#define Pandas_BattleConfig_Suspend_Normal_BodyDirection
+
+	// 是否启用 suspend_normal_headdirection 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入普通模式时, 被拉上线的角色头部朝向哪里
+	#define Pandas_BattleConfig_Suspend_Normal_HeadDirection
+
+	// 是否启用 suspend_normal_sitdown 配置选项及其功能 [Sola丶小克]
+	// 此选项用于指定当玩家进入普通模式时, 被拉上线的角色处于站立还是坐下状态
+	#define Pandas_BattleConfig_Suspend_Normal_Sitdown
+
+	// 是否启用 multiplayer_recall_behavior 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制多人召唤时是否避开在线摆摊玩家
+	#define Pandas_BattleConfig_Multiplayer_Recall_Behavior
+
+	// 是否启用 always_trigger_npc_killevent 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制当魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnNPCKillEvent 事件
+	#define Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
+
+	// 是否启用 always_trigger_mvp_killevent 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制当 MVP 魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnPCKillMvpEvent 事件
+	#define Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
@@ -275,6 +327,14 @@
 	// 增加 skip_erase 参数用于控制成功销毁副本后不 erase 掉 instance 对象
 	// 以便交由外部来进行 erase, 这样才能获取下一个指针的正确位置 (C++11) [Sola丶小克]
 	#define Pandas_FuncDefine_Instance_Destory
+
+	// 调整各单位的死亡处理函数, 以便支持更多参数信息 [Sola丶小克]
+	// 玩家单位	: pc.cpp -> pc_dead
+	// 魔物单位	: mob.cpp -> mob_dead
+	// 生命体单位	: homunculus.cpp -> hom_dead
+	// 佣兵单位	: mercenary.cpp -> mercenary_dead
+	// 元素精灵	: elemental.cpp -> elemental_dead
+	#define Pandas_FuncDefine_UnitDead_With_ExtendInfo
 
 	// 调整用于计算 MAX_INVENTORY 相关的变量
 	// 以便能够支持将背包的最大上限设置成超过 128 的值 [Sola丶小克]
@@ -340,6 +400,7 @@
 	#define Pandas_Packet_Obfuscation_Keys
 
 	// 使影子装备可以支持插卡, 而不会被强制转换成普通道具 [Sola丶小克]
+	// 也使得卡片可以设置为可插入到影子装备, 而不会被系统判定为无效道具, 被变成杂货物品(IT_ETC)
 	#define Pandas_Shadowgear_Support_Card
 
 	// 以下选项依赖 Pandas_Struct_Item_Data_Properties 的拓展
@@ -471,12 +532,23 @@
 	// 拓展出来两个宏: GUILD_INITIAL_MEMBER(初始化人数) 和 GUILD_EXTENSION_PERLEVEL (扩充组合体制每级增加人数)
 	#define Pandas_Guild_Extension_Configure
 
-	// 是否支持使用 @recall 指令单独召唤离线挂店 / 离线挂机的角色
+	// 是否支持使用 @recall 等指令单独召唤离线挂店 / 离线挂机的角色
 	// 主要用于管理员调整挂机单位的站位, 避免阻挡到其他的 NPC 或者传送点等 [Sola丶小克]
-	// 此选项依赖 Pandas_Struct_Map_Session_Data_IndependentRecall 和 Pandas_Struct_Map_Session_Data_Autotrade_Configure 的拓展
-	#if defined(Pandas_Struct_Map_Session_Data_IndependentRecall) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
-		#define Pandas_Support_IndependentRecall_Autotrade_Player
-	#endif // defined(Pandas_Struct_Map_Session_Data_IndependentRecall) && defined(Pandas_Struct_Map_Session_Data_Autotrade_Configure)
+	// 此选项依赖以下拓展, 任意一个不成立则将会 undef 此选项的定义
+	// - Pandas_Struct_Map_Session_Data_MultiTransfer
+	// - Pandas_Struct_Map_Session_Data_Autotrade_Configure
+	// - Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
+	#define Pandas_Support_Transfer_Autotrade_Player
+
+	#ifndef Pandas_Struct_Map_Session_Data_MultiTransfer
+		#undef Pandas_Support_Transfer_Autotrade_Player
+	#endif // Pandas_Struct_Map_Session_Data_MultiTransfer
+	#ifndef Pandas_Struct_Map_Session_Data_Autotrade_Configure
+		#undef Pandas_Support_Transfer_Autotrade_Player
+	#endif // Pandas_Struct_Map_Session_Data_Autotrade_Configure
+	#ifndef Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
+		#undef Pandas_Support_Transfer_Autotrade_Player
+	#endif // Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 
 	// 是否支持根据系统语言读取对应的消息数据库文件 [Sola丶小克]
 	#define Pandas_Adaptive_Importing_Message_Database
@@ -499,7 +571,10 @@
 	#define Pandas_Extract_SSOPacket_MacAddress
 
 	// 使程序能够持久化保存每个道具的脚本字符串 [Sola丶小克]
-	#define Pandas_Persistence_Itemdb_Script
+	// 此选项依赖 Pandas_Struct_Item_Data_Script_Plaintext 的拓展
+	#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+		#define Pandas_Persistence_Itemdb_Script
+	#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 	// 是否启用角色光环机制 [Sola丶小克]
 	// 此选项依赖 Pandas_Struct_Unit_CommonData_Aura 的拓展
@@ -517,6 +592,25 @@
 	// - 解除角色或其他拥有六维属性的单位的加点上限
 	//   默认的六维属性最大上限是 32767, 解除之后理论可达到 0x7FFFFFFF
 	#define Pandas_Extreme_Computing
+
+	// 是否启用战斗记录机制 (输出, 承伤等等) [Sola丶小克]
+	// 此选项依赖 Pandas_Struct_Unit_CommonData_BattleRecord 的拓展
+	#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
+		#define Pandas_BattleRecord
+	#endif // Pandas_Struct_Unit_CommonData_BattleRecord
+
+	// 是否启用 bonus_script 的唯一编号机制 [Sola丶小克]
+	// 此选项依赖以下拓展, 任意一个不成立则将会 undef 此选项的定义
+	// - Pandas_Struct_BonusScriptData_Extend
+	// - Pandas_Struct_Map_Session_Data_BonusScript_Counter
+	#define Pandas_BonusScript_Unique_ID
+
+	#ifndef Pandas_Struct_BonusScriptData_Extend
+		#undef Pandas_BonusScript_Unique_ID
+	#endif // Pandas_Struct_BonusScriptData_Extend
+	#ifndef Pandas_Struct_Map_Session_Data_BonusScript_Counter
+		#undef Pandas_BonusScript_Unique_ID
+	#endif // Pandas_Struct_Map_Session_Data_BonusScript_Counter
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -596,6 +690,36 @@
 
 	// 修正当 block_free 数组中存在重复指针时, 会导致的无效指针错误的问题 [Sola丶小克]
 	#define Pandas_Fix_DuplicateBlock_When_Freeblock_Unlock
+
+	// 修正复兴后 "魔术子弹"(GS_MAGICALBULLET) 的伤害溢出问题 [Sola丶小克]
+	// 处于该状态下若攻击者的 matk_min 小于被攻击者的 mdef 则会导致
+	// 这一次普攻出现计算溢出的情况, 可以秒杀一切 BOSS
+	#define Pandas_Fix_MagicalBullet_Damage_Overflow
+
+	// 修正 csv2yaml 辅助工具可能存在的多余反斜杠问题 [Sola丶小克]
+	#define Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
+
+	// 修正 yaml2sql 辅助工具无法生成不含 Body 节点的空 sql 问题 [Sola丶小克]
+	// 当来源文件不存在 Body 节点时, 应认为数据为空而生成空 sql 文件, 而不是直接放弃生成
+	#define	Pandas_Fix_Yaml2Sql_NoBodyNode_Break
+
+	// 修正频道系统出现频道重名时, 没有进行严格校验,
+	// 导致地图服务器结束时会提示存在内存泄露的问题 [Sola丶小克]
+	#define Pandas_Fix_Duplicate_Channel_Name_Make_MemoryLeak
+
+	// 修正 FAW 魔法傀儡 (技能编号: 2282) 重复扣减原石碎片的问题 [Sola丶小克]
+	#define Pandas_Fix_MagicDecoy_Twice_Deduction_Of_Ore
+
+	// 修正 progressbar 期间使用 @load 或 @jump 会导致角色传送后无法移动的问题 [Sola丶小克]
+	#define Pandas_Fix_Progressbar_Abort_Stuck
+
+	// 修正 progressbar 期间使用 @refresh 或 @refreshall 会导致角色无法移动的问题 [Sola丶小克]
+	#define Pandas_Fix_Progressbar_Refresh_Stuck
+
+	// 修正挂店中的角色被临时踢下线后, 如果趁着地图服务器还未重启而直接进入游戏
+	// 并对手推车中原先离线摆摊的商品进行增删操作, 可能会导致下次地图服务器启动时出现 vending_reopen 错误 3 的情况,
+	// 更严重的甚至在下次重启地图服务器后出现离线挂店的商品与价格的错位 [Sola丶小克]
+	#define Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -673,6 +797,23 @@
 	// 修正在未开启大乐透功能的情况下启动服务端, 再重新打开大乐透功能
 	// 并用 @reloadbattleconf 使之立刻生效之后, 点击大乐透按钮会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_RouletteData_UnInit
+
+	// 修正释放 script_code 后没有将指针置空, 导致的崩溃问题 [Sola丶小克]
+	// 感谢 Renee / HongShin 协助进行相关测试, 感谢 ╰づ记忆•斑驳〤 提出此问题
+	//
+	// 重现方法:
+	// - 编译成 Release 模式 (Debug 模式下编译器有内存访问越界保护, 无法被触发)
+	// - 登录游戏, 将 Alt+M 中的表情快捷键的 8 设置为 @reloaditemdb
+	// - 使用 @item 指令获取道具 12491, 双击执行
+	// - 不做出任何选择, 直接按 Alt+8 触发 @reloaditemdb
+	// - 完成重载后, 选择某一个菜单项 - 此时应该触发崩溃
+	// - 若没有崩溃, 则重复使用 12491 -> reload -> 选择, 直到崩溃
+	//
+	// reloaditemdb -> item_db.reload(); -> 触发每一个 item_data 的析构函数 (destruct function) ->
+	// script_free_code 释放掉 script/equip_script/unequip_script 的 script_code
+	// 但是释放后没有将对应的指针设为 NULL. 导致上述重现步骤中 script_free_state 函数针对 st->script->local.vars 
+	// 和 st->script->local.arrays 的空指针判断被绕过, 继而触发崩溃
+	#define Pandas_Crashfix_ScriptFreeCode_SetPointerNull
 #endif // Pandas_Crashfix
 
 // ============================================================================
@@ -685,10 +826,6 @@
 
 	// 是否优化 itemdb_searchname1 函数的实现方式 [Sola丶小克]
 	// 在默认情况下 rAthena 的 itemdb_searchname1 函数实现的非常低效
-	// 
-	// 优化后性能表现参考信息 (VS2019 + Win32)
-	// --------------------------------------------------------------
-	// 在 Release 模式下检索物品名称的性能提高大约 38 倍
 	#define Pandas_Speedup_Itemdb_SearchName
 
 	// 优化 map_readfromcache 中对每个 cell 的分配方式 [Sola丶小克]
@@ -786,7 +923,37 @@
 #ifdef Pandas_UserExperience
 	// 优化使用 @version 指令的回显信息 [Sola丶小克]
 	#define Pandas_UserExperience_AtCommand_Version
+
+	// 使 yaml2sql 辅助工具在加载 YAML 文件时能给个提示
+	// 否则容易因加载时间过长, 给使用者造成程序已经卡死的错觉 [Sola丶小克]
+	#define Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
+
+	// 调整 yaml2sql 辅助工具的询问确认流程 [Sola丶小克]
+	// 先询问是否能覆盖目标文件, 再尝试去加载来源数据文件, 以便优化体验
+	#define Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
 #endif // Pandas_UserExperience
+
+// ============================================================================
+// YAML 缓存组 - Pandas_YamlBlastCache
+// ============================================================================
+
+#ifdef Pandas_YamlBlastCache
+	// 能够对 YAML 类型的数据库进行序列化缓存 [Sola丶小克]
+	#define Pandas_YamlBlastCache_Serialize
+
+	// 以下选项开关需要依赖 Pandas_YamlBlastCache_Serialize 的拓展
+	#ifdef Pandas_YamlBlastCache_Serialize
+		// 是否启用对 ItemDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_ItemDatabase
+
+		// 是否启用对 QuestDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_QuestDatabase
+
+		// 是否启用对 SkillDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_SkillDatabase
+	#endif // Pandas_YamlBlastCache_Serialize
+#endif // Pandas_YamlBlastCache
+
 
 // ============================================================================
 // 无用代码清理组 - Pandas_Cleanup
@@ -870,6 +1037,16 @@
 		// 事件类型: Filter / 事件名称: OnPCBuffStartFilter
 		// 常量名称: NPCF_SC_START / 变量名称: sc_start_filter_name
 		#define Pandas_NpcFilter_SC_START
+
+		// 当玩家使用菜单中的原地复活之证时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCUseReviveTokenFilter
+		// 常量名称: NPCF_USE_REVIVE_TOKEN / 变量名称: use_revive_token_filter_name
+		#define Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+		// 当玩家使用一键鉴定道具时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCUseOCIdentifyFilter
+		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
+		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -901,11 +1078,6 @@
 	// 事件类型: Event / 事件名称: OnPCUseSkillEvent
 	// 常量名称: NPCE_USE_SKILL / 变量名称: use_skill_event_name
 	#define Pandas_NpcEvent_USE_SKILL
-
-	// 当玩家的进度条被打断后触发事件 [Sola丶小克]
-	// 事件类型: Event / 事件名称: OnPCProgressAbortEvent
-	// 常量名称: NPCE_PROGRESS_ABORT / 变量名称: progressbar_abort_event_name
-	#define Pandas_NpcEvent_PROGRESS_ABORT
 
 	// 当玩家成功穿戴一件装备时触发事件 [Sola丶小克]
 	// 事件类型: Event / 事件名称: OnPCEquipEvent
@@ -940,6 +1112,26 @@
 		// 事件类型: Express / 事件名称: OnPCBuffStartExpress
 		// 常量名称: NPCX_SC_START / 变量名称: sc_start_express_name
 		#define Pandas_NpcExpress_SC_START
+
+		// 当玩家进入或者改变地图时触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnPCEnterMapExpress
+		// 常量名称: NPCX_ENTERMAP / 变量名称: entermap_express_name
+		#define Pandas_NpcExpress_ENTERMAP
+
+		// 当 progressbar 进度条被打断时触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnPCProgressAbortExpress
+		// 常量名称: NPCX_PROGRESSABORT / 变量名称: progressabort_express_name
+		#define Pandas_NpcExpress_PROGRESSABORT
+
+		// 当战斗记录信息即将被清除时触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnBatrecFreeExpress
+		// 常量名称: NPCX_BATTLERECORD_FREE / 变量名称: battlerecord_free_express_name
+		#define Pandas_NpcExpress_BATTLERECORD_FREE
+
+		// 当某个单位被击杀时触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnUnitKillExpress
+		// 常量名称: NPCX_UNIT_KILL / 变量名称: unit_kill_express_name
+		#define Pandas_NpcExpress_UNIT_KILL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	
@@ -1066,10 +1258,28 @@
 #endif // Pandas_AtCommands
 
 // ============================================================================
+// 效果调整组 - Pandas_Bonuses
+// ============================================================================
+
+#ifdef Pandas_Bonuses
+	// 是否启用 bNoFieldGemStone 效果调整器 [Sola丶小克]
+	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+	// 常量名称: SP_PANDAS_NOFIELDGEMSTONE / 调整器名称: bNoFieldGemStone
+	// 变量位置: special_state / 变量名称: nofieldgemstone
+	// 使用原型: bonus bNoFieldGemStone;
+	#define Pandas_Bonus_bNoFieldGemStone
+	// PYHELP - BONUS - INSERT POINT - <Section 1>
+#endif // Pandas_Bonuses
+
+// ============================================================================
 // 脚本指令组 - Pandas_ScriptCommands
 // ============================================================================
 
 #ifdef Pandas_ScriptCommands
+	// 是否拓展 unitexists 脚本指令 [Sola丶小克]
+	// 添加一个可选参数, 用于强调单位必须存在且活着才返回 true
+	#define Pandas_ScriptCommand_UnitExists
+
 	// 是否启用 setheaddir 脚本指令 [Sola丶小克]
 	// 用于调整角色纸娃娃脑袋的朝向 (0 - 正前方; 1 - 向右看; 2 - 向左看)
 	#define Pandas_ScriptCommand_SetHeadDir
@@ -1292,6 +1502,76 @@
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_ScriptCommand_UnitAura
 	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 getunittarget 脚本指令 [Sola丶小克]
+	// 该指令用于获取指定单位当前正在攻击的目标单位编号
+	#define Pandas_ScriptCommand_GetUnitTarget
+
+	// 是否启用 unlockcmd 脚本指令 [Sola丶小克]
+	// 该指令用于解锁实时事件和过滤器事件的指令限制, 只能用于实时或过滤器事件
+	#define Pandas_ScriptCommand_UnlockCmd
+
+	// 是否启用战斗记录相关的脚本指令 [Sola丶小克]
+	// 此选项开关需要依赖 Pandas_BattleRecord 的拓展
+	#ifdef Pandas_BattleRecord
+		// 是否启用 batrec_query 脚本指令 [Sola丶小克]
+		// 查询指定单位的战斗记录, 查看与交互目标单位产生的具体记录值
+		#define Pandas_ScriptCommand_BattleRecordQuery
+
+		// 是否启用 batrec_rank 脚本指令 [Sola丶小克]
+		// 查询指定单位的战斗记录并对记录的值进行排序, 返回排行榜单
+		#define Pandas_ScriptCommand_BattleRecordRank
+
+		// 是否启用 batrec_sortout 脚本指令 [Sola丶小克]
+		// 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录
+		#define Pandas_ScriptCommand_BattleRecordSortout
+
+		// 是否启用 batrec_reset 脚本指令 [Sola丶小克]
+		// 清除指定单位的战斗记录
+		#define Pandas_ScriptCommand_BattleRecordReset
+
+		// 是否启用 enable_batrec 脚本指令 [Sola丶小克]
+		// 该指令用于启用指定单位的战斗记录
+		#define Pandas_ScriptCommand_EnableBattleRecord
+
+		// 是否启用 disable_batrec 脚本指令 [Sola丶小克]
+		// 该指令用于禁用指定单位的战斗记录
+		#define Pandas_ScriptCommand_DisableBattleRecord
+	#endif // Pandas_BattleRecord
+
+	// 是否启用 login 脚本指令 [Sola丶小克]
+	// 该指令用于将指定的角色以特定的登录模式拉上线
+	// 此选项开关需要依赖 Pandas_Player_Suspend_System 的拓展
+	#ifdef Pandas_Player_Suspend_System
+		#define Pandas_ScriptCommand_Login
+	#endif // Pandas_Player_Suspend_System
+
+	// 是否启用 checksuspend 脚本指令 [Sola丶小克]
+	// 该指令用于获取指定角色或指定账号当前在线角色的挂机模式
+	// 此选项开关需要依赖 Pandas_Struct_Autotrade_Extend 的拓展
+	#ifdef Pandas_Struct_Autotrade_Extend
+		#define Pandas_ScriptCommand_CheckSuspend
+	#endif // Pandas_Struct_Autotrade_Extend
+
+	// 是否启用 bonus_script_remove 脚本指令 [Sola丶小克]
+	// 该指令用于移除指定的 bonus_script 效果脚本
+	#define Pandas_ScriptCommand_BonusScriptRemove
+
+	// 是否启用 bonus_script_list 脚本指令 [Sola丶小克]
+	// 该指令用于获取指定角色当前激活的全部 bonus_script 效果脚本编号
+	#define Pandas_ScriptCommand_BonusScriptList
+
+	// 是否启用 bonus_script_exists 脚本指令 [Sola丶小克]
+	// 该指令用于查询指定角色是否已经激活了特定的 bonus_script 效果脚本
+	#define Pandas_ScriptCommand_BonusScriptExists
+
+	// 是否启用 bonus_script_getid 脚本指令 [Sola丶小克]
+	// 该指令用于查询效果脚本代码对应的效果脚本编号
+	#define Pandas_ScriptCommand_BonusScriptGetId
+
+	// 是否启用 bonus_script_info 脚本指令 [Sola丶小克]
+	// 该指令用于查询指定效果脚本的相关信息
+	#define Pandas_ScriptCommand_BonusScriptInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

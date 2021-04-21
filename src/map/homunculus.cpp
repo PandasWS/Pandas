@@ -31,7 +31,7 @@ struct homun_skill_tree_entry hskill_tree[MAX_HOMUNCULUS_CLASS][MAX_HOM_SKILL_TR
 
 static TIMER_FUNC(hom_hungry);
 static uint16 homunculus_count;
-static unsigned int hexptbl[MAX_LEVEL];
+static t_exp hexptbl[MAX_LEVEL];
 
 //For holding the view data of npc classes. [Skotlex]
 static struct view_data hom_viewdb[MAX_HOMUNCULUS_CLASS];
@@ -196,7 +196,11 @@ void hom_damage(struct homun_data *hd) {
 * @param hd
 * @return flag &1 - Standard dead, &2 - Remove object from map, &4 - Delete object from memory
 */
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int hom_dead(struct homun_data *hd)
+#else
+int hom_dead(struct homun_data *hd, struct block_list *src, uint16 skill_id)
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 {
 	//There's no intimacy penalties on death (from Tharis)
 	struct map_session_data *sd = hd->master;
@@ -206,6 +210,12 @@ int hom_dead(struct homun_data *hd)
 	//Delete timers when dead.
 	hom_hungry_timer_delete(hd);
 	hd->homunculus.hp = 0;
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	if (src && hd) {
+		npc_event_aide_unitkill(src, &hd->bl, skill_id);
+	}
+#endif // Pandas_NpcExpress_UNIT_KILL
 
 	if (!sd) //unit remove map will invoke unit free
 		return 3;
@@ -673,7 +683,7 @@ int hom_mutate(struct homun_data *hd, int homun_id)
 * @param hd
 * @param exp Added EXP
 */
-void hom_gainexp(struct homun_data *hd,int exp)
+void hom_gainexp(struct homun_data *hd,t_exp exp)
 {
 	int m_class;
 
@@ -1051,6 +1061,10 @@ void hom_alloc(struct map_session_data *sd, struct s_homunculus *hom)
 	hd->bl.x = hd->ud.to_x;
 	hd->bl.y = hd->ud.to_y;
 
+#ifdef Pandas_BattleRecord
+	batrec_new(&hd->bl);
+#endif // Pandas_BattleRecord
+
 	map_addiddb(&hd->bl);
 	status_calc_homunculus(hd, SCO_FIRST);
 
@@ -1324,7 +1338,6 @@ int hom_shuffle(struct homun_data *hd)
 {
 	struct map_session_data *sd;
 	int lv, i, skillpts;
-	unsigned int exp;
 	struct s_skill b_skill[MAX_HOMUNSKILL];
 
 	if (!hom_is_active(hd))
@@ -1332,7 +1345,7 @@ int hom_shuffle(struct homun_data *hd)
 
 	sd = hd->master;
 	lv = hd->homunculus.level;
-	exp = hd->homunculus.exp;
+	t_exp exp = hd->homunculus.exp;
 	memcpy(&b_skill, &hd->homunculus.hskill, sizeof(b_skill));
 	skillpts = hd->homunculus.skillpts;
 	//Reset values to level 1.
@@ -1632,7 +1645,7 @@ void read_homunculus_expdb(void)
 			if (line[0] == '/' && line[1] == '/')
 				continue;
 
-			hexptbl[j] = strtoul(line, NULL, 10);
+			hexptbl[j] = strtoull(line, NULL, 10);
 			if (!hexptbl[j++])
 				break;
 		}

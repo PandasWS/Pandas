@@ -168,11 +168,8 @@ int chat_joinchat(struct map_session_data* sd, int chatid, const char* pass)
 		struct npc_data *nd = BL_CAST(BL_NPC, cd->owner);
 		char eventname[EVENT_NAME_LENGTH] = { 0 };
 		snprintf(eventname, ARRAYLENGTH(eventname), "%s::%s", nd->exname, script_config.enterchat_filter_name);
-		if (npc_event_exists(eventname)) {
-			npc_event(sd, eventname, 0);
-			if (getProcessHalt(sd, NPCF_ENTERCHAT))
-				return 0;
-		}
+		if (npc_script_filter(sd, eventname))
+			return 0;
 	}
 #endif // Pandas_NpcFilter_ENTERCHAT
 	cd->usersd[cd->users] = sd;

@@ -462,7 +462,7 @@ bool vending_searchall(struct map_session_data* sd, const struct s_search_store_
 			if( itemdb_isspecial(it->card[0]) ) { // something, that is not a carded
 				continue;
 			}
-			slot = itemdb_slot(it->nameid);
+			slot = itemdb_slots(it->nameid);
 
 			for( c = 0; c < slot && it->card[c]; c ++ ) {
 				ARR_FIND( 0, s->card_count, cidx, s->cardlist[cidx].itemId == it->card[c] );
@@ -476,7 +476,7 @@ bool vending_searchall(struct map_session_data* sd, const struct s_search_store_
 			}
 		}
 
-		if( !searchstore_result(s->search_sd, sd->vender_id, sd->status.account_id, sd->message, it->nameid, sd->vending[i].amount, sd->vending[i].value, it->card, it->refine) ) { // result set full
+		if( !searchstore_result(s->search_sd, sd->vender_id, sd->status.account_id, sd->message, it->nameid, sd->vending[i].amount, sd->vending[i].value, it->card, it->refine, it->enchantgrade ) ) { // result set full
 			return false;
 		}
 	}
@@ -611,6 +611,21 @@ void do_init_vending_autotrade(void)
 				Sql_GetData(mmysql_handle, 7, &data, NULL); at->sit = atoi(data);
 				at->count = 0;
 
+#ifdef Pandas_Player_Suspend_System
+				// 账号已在线则跳过
+				// 避免角色已经被 @afk 或 @suspend 拉上线导致的潜在冲突
+				TBL_PC* sd = nullptr;
+				if ((sd = map_id2sd(at->account_id)) != NULL) {
+					aFree(at);
+					continue;
+				}
+
+				if (chrif_search(at->account_id) != NULL) {
+					aFree(at);
+					continue;
+				}
+#endif // Pandas_Player_Suspend_System
+
 				if (battle_config.feature_autotrade_direction >= 0)
 					at->dir = battle_config.feature_autotrade_direction;
 				if (battle_config.feature_autotrade_head_direction >= 0)
@@ -687,6 +702,29 @@ void do_init_vending_autotrade(void)
 		Sql_ShowDebug(mmysql_handle);
 	}
 }
+
+#ifdef Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
+//************************************
+// Method:      vending_autotrader_cleardb
+// Description: 移除指定角色在数据库中的摆摊商店挂机记录
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/03/02 21:13
+//************************************ 
+void vending_autotrader_cleardb(struct map_session_data* sd) {
+	nullpo_retv(sd);
+
+	// 清理 vendings_table 表中账号编号与 sd 一致的记录
+	// 此处无需清理 vending_items_table 因为只要 vendings_table 的记录被移除,
+	// 那么下次地图服务器启动的时候 vending_items_table 中的数据并不会对加载过程造成任何影响
+	if (sd && Sql_Query(mmysql_handle,
+		"DELETE FROM `%s` WHERE `account_id` = %d;",
+		vendings_table, sd->status.account_id) != SQL_SUCCESS) {
+		Sql_ShowDebug(mmysql_handle);
+	}
+}
+#endif // Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
 
 /**
  * Remove an autotrader's data

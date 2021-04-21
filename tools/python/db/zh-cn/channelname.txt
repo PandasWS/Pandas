@@ -1,0 +1,10 @@
+#global,#世界
+[Global],[世界]
+#support,#客服
+[Support],[客服]
+#trade,#交易
+[Trade],[交易]
+#ally,#同盟
+[Ally],[同盟]
+#map,#本地
+[Map],[本地]

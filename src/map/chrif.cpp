@@ -276,7 +276,7 @@ void chrif_setport(uint16 port) {
 
 // says whether the char-server is connected or not
 int chrif_isconnected(void) {
-	return (char_fd > 0 && session[char_fd] != NULL && chrif_state == 2);
+	return (session_isValid(char_fd) && chrif_state == 2);
 }
 
 /**
@@ -604,7 +604,7 @@ void chrif_on_ready(void) {
 		do_init_vending_autotrade();
 #ifdef Pandas_Player_Suspend_System
 		// 将处于离线挂机和离开模式的玩家召回自动上线
-		suspend_recall_online();
+		suspend_recall_all();
 #endif // Pandas_Player_Suspend_System
 		char_init_done = true;
 	}
@@ -1417,8 +1417,10 @@ int chrif_skillcooldown_save(struct map_session_data *sd) {
 		if (!sd->scd[i])
 			continue;
 
+#ifndef RENEWAL
 		if (!battle_config.guild_skill_relog_delay && (sd->scd[i]->skill_id >= GD_BATTLEORDER && sd->scd[i]->skill_id <= GD_EMERGENCYCALL))
 			continue;
+#endif
 
 		timer = get_timer(sd->scd[i]->timer);
 		if (timer == NULL || timer->func != skill_blockpc_end || DIFF_TICK(timer->tick, tick) < 0)
@@ -1732,6 +1734,9 @@ int chrif_bsdata_save(struct map_session_data *sd, bool quit) {
 			bs.flag = entry->flag;
 			bs.type = entry->type;
 			bs.icon = entry->icon;
+#ifdef Pandas_BonusScript_Unique_ID
+			bs.bonus_id = entry->bonus_id;
+#endif // Pandas_BonusScript_Unique_ID
 			memcpy(WFIFOP(char_fd, 9 + i * sizeof(struct bonus_script_data)), &bs, sizeof(struct bonus_script_data));
 			i++;
 		}
@@ -1778,8 +1783,14 @@ int chrif_bsdata_received(int fd) {
 			if (bs->script_str[0] == '\0' || !bs->tick)
 				continue;
 
+#ifndef Pandas_BonusScript_Unique_ID
 			if (!(entry = pc_bonus_script_add(sd, bs->script_str, bs->tick, (enum efst_types)bs->icon, bs->flag, bs->type)))
 				continue;
+#else
+			// 多传入一个数据库中保存的 bonus_id 以此来避免 pc_bonus_script_add 内部重复创建
+			if (!(entry = pc_bonus_script_add(sd, bs->script_str, bs->tick, (enum efst_types)bs->icon, bs->flag, bs->type, bs->bonus_id)))
+				continue;
+#endif // Pandas_BonusScript_Unique_ID
 
 			linkdb_insert(&sd->bonus_script.head, (void *)((intptr_t)entry), entry);
 		}
