@@ -4149,6 +4149,15 @@ ACMD_FUNC(reload) {
 #ifdef Pandas_Aura_Mechanism
 	else if (strstr(command, "auradb") || strncmp(message, "auradb", 4) == 0) {
 		aura_reload();
+
+		struct block_list* bl = nullptr;
+		struct s_mapiterator* iter = mapit_geteachiddb();
+		for (bl = (struct block_list*)mapit_first(iter); mapit_exists(iter); bl = (struct block_list*)mapit_next(iter)) {
+			aura_effects_refill(bl);
+			aura_refresh_client(bl);
+		}
+		mapit_free(iter);
+		
 		clif_displaymessage(fd, msg_txt_cn(sd, 106)); // Aura database has been reloaded.
 	}
 #endif // Pandas_Aura_Mechanism

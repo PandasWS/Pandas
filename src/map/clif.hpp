@@ -1166,7 +1166,7 @@ void clif_change_title_ack(struct map_session_data* sd, unsigned char result, un
 #endif // Pandas_Character_Title_Controller
 
 #ifdef Pandas_Aura_Mechanism
-void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_hidden, enum e_aura_special flag);
+void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_when_hidden, enum e_aura_special flag);
 #endif // Pandas_Aura_Mechanism
 
 #endif /* CLIF_HPP */

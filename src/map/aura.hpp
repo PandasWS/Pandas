@@ -4,12 +4,14 @@
 #pragma once
 
 #include "../common/database.hpp"
+#include "../common/timer.hpp"
+#include "../common/mmo.hpp"
 
 #ifdef Pandas_Aura_Mechanism
 
 struct s_aura {
-	uint32 aura_id;
-	std::vector<uint16> effects;
+	uint32 aura_id = 0;
+	std::vector<std::shared_ptr<s_aura_effect>> effects;
 };
 
 enum e_aura_special : uint32 {
@@ -35,6 +37,11 @@ void do_init_aura(void);
 
 std::shared_ptr<s_aura> aura_search(uint32 aura_id);
 enum e_aura_special aura_special(uint16 effect_id);
+TIMER_FUNC(aura_effects_timer);
+bool aura_need_hiding(struct block_list* bl);
+void aura_effects_clear(struct block_list* bl);
+void aura_effects_refill(struct block_list* bl);
+void aura_refresh_client(struct block_list* bl);
 void aura_make_effective(struct block_list* bl, uint32 aura_id, bool pc_saved = true);
 
 #endif // Pandas_Aura_Mechanism

@@ -1875,10 +1875,7 @@ void pc_reg_received(struct map_session_data *sd)
 	std::shared_ptr<s_aura> aura = aura_search(sd->ucd.aura.id);
 	if (aura) {
 		// 若是一个有效的光环编号则将其特效组合放到生效列表
-		sd->ucd.aura.effects.clear();
-		for (auto it : aura->effects) {
-			sd->ucd.aura.effects.push_back(it);
-		}
+		aura_effects_refill(&sd->bl);
 	}
 	else {
 		// 若不是一个有效的光环编号, 则将相关变量和值重置为 0

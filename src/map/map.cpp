@@ -2114,12 +2114,22 @@ void map_mobiddb(struct block_list* bl, int new_blockid) {
 	set_timerid(md->deletetimer, bl->id);
 
 	struct unit_data* ud = nullptr;
-	if ((ud = unit_bl2ud(bl)) != NULL) {
+	if ((ud = unit_bl2ud(bl)) != nullptr) {
 		set_timerid(ud->attacktimer, bl->id);
 		set_timerid(ud->skilltimer, bl->id);
 		set_timerid(ud->steptimer, bl->id);
 		set_timerid(ud->walktimer, bl->id);
 	}
+
+#ifdef Pandas_Aura_Mechanism
+	struct s_unit_common_data* ucd = nullptr;
+	if ((ucd = status_get_ucd(bl)) != nullptr) {
+		for (auto it : ucd->aura.effects) {
+			if (it->replay_tid == INVALID_TIMER) continue;
+			set_timerid(it->replay_tid, bl->id);
+		}
+	}
+#endif // Pandas_Aura_Mechanism
 
 	detect_invalid_timer(origin_blockid);
 
