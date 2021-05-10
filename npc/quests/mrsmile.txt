@@ -14,98 +14,98 @@
 //= 1.4a Fixed a little Typo error in duplicates. (bugreport:749) [Samuray22]
 //============================================================ 
 
--	script	Smile Assistance::SmileHelper	92,{
-	mes "[Smile Girl]";
+-	script	微笑小姐::SmileHelper	4_F_03,{
+	mes "[微笑小姐]";
 	mes "Hi ~ Hi ~";
-	mes "This is Smile Assistance.";
-	mes "How may I help you ?";
+	mes "我是微笑小姐.";
+	mes "請問需要幫忙嗎?";
 	next;
-	switch(select("^3355FFMr. Smile^000000 ?:Construct ^3355FFMr. Smile^000000 :Quit")) {
+	switch(select("- ^3355FF微笑先生^000000 ?:- 製作 ^3355FF笑臉面具^000000 :- 離開")) {
 	case 1:
-		mes "[Smile Girl]";
-		mes "National Event held by the command of ^5577FFHis majesty Tristram the 3rd^000000,";
-		mes "that intends to encourage the nation of the Rune-Midgarts Kingdom";
-		mes " to play in more enjoyable atmosphere!";
-		mes "I am ^3355FF' Smile Assistance '^000000,";
-		mes ".. who leads the national event under the name of ";
-		mes "^3355FFSmile throughout the Rune-Midgarts Kingdom~^000000";
+		mes "[微笑小姐]";
+		mes "我們持有 ^5577FF國王陛下特裡斯坦三世^000000 的命令,";
+		mes "有意促進盧恩.米德加茲王國全國的";
+		mes "人們沉浸在更愉快的氣氛中!";
+		mes "我是 ^3355FF' 微笑小姐 '^000000,";
+		mes ".. 隸屬於殿下領導,來負責這次 ";
+		mes "^3355FF讓盧恩.米德加茲王國充滿微笑~^000000的活動.";
 		next;
-		mes "[Smile Girl]";
-		mes "With simple and easy-to-get items,";
-		mes "I can provide you";
-		mes "^3355FF' Mr. Smile '^000000.";
-		mes "The requirements are followings.";
+		mes "[微笑小姐]";
+		mes "其實只需要一些簡單的東西,";
+		mes "我就能夠給你";
+		mes "^3355FF' 微笑面具 '^000000.";
+		mes "你需要準備下述東西.";
 		next;
-		mes "[Smile Girl]";
-		mes "^3355FF10 Jellopy^000000";
-		mes "^3355FF10 Fluff^000000";
-		mes "^3355FF10 Clover^000000";
+		mes "[微笑小姐]";
+		mes "^3355FF10 傑勒比結晶^000000";
+		mes "^3355FF10 毛^000000";
+		mes "^3355FF10 三葉幸運草^000000";
 		next;
-		mes "[Smile Girl]";
-		mes "With this event";
-		mes "Everybody will be happy and smile,";
-		mes "getting together with other people,";
-		mes "And will try to make Ragnarok the most enjoyable game in the world.";
+		mes "[微笑小姐]";
+		mes "尊敬的冒險家";
+		mes "為了完成這件神聖的任務,";
+		mes "請您務必參與進來.";
+		mes "盧恩.米德加茲王國萬歲!";
 		close;
 	case 2:
 		if (countitem(909) > 9 && countitem(914) > 9 && countitem(705) > 9) {
-			mes "[Smile Girl]";
-			mes "Congratulations !";
-			mes "Now please take this Mr.Smile.";
+			mes "[微笑小姐]";
+			mes "哈!";
+			mes "這就是我要的東西.";
 			next;
 			delitem 909,10; //Jellopy
 			delitem 914,10; //Fluff
 			delitem 705,10; //Clover
 			getitem 2278,1; //Mr_Smile
-			mes "[Smile Girl]";
-			mes "His majesty,Tristram the 3rd";
-			mes "has promised to try his best to make Ragnarok better and more enjoyable.";
+			mes "[微笑小姐]";
+			mes "威嚴的特裡斯坦三世";
+			mes "承諾讓他的子民在仙境世界中生活的更美好更有樂趣.";
 			next;
-			mes "The fact mentioned above";
-			mes "was announced by";
-			mes "the Public Information Bureau of the Rune-Midgarts Kingom.";
+			mes "上面提到這一事實";
+			mes "由米德加茲公共信息局";
+			mes "對整個盧恩.米德加茲王國進行宣傳與通告.";
 			close;
 		}
 		else {
-			mes "[Smile Girl]";
-			mes "Oh - unfortunately";
-			mes "You have not brought";
-			mes "enough items for Mr. Smile.";
-			mes "^3355FF10 Jellopy^000000";
-			mes "^3355FF10 Fluff^000000";
-			mes "^3355FF10 Clover^000000";
-			mes "Please check the requirements above.";
+			mes "[微笑小姐]";
+			mes "尊敬的冒險家.";
+			mes "您是否找到了我需要的東西?";
+			mes "如果在您身上.請拿給我製作吧.";
+			mes "^3355FF10 傑勒比結晶^000000";
+			mes "^3355FF10 毛^000000";
+			mes "^3355FF10 三葉幸運草^000000";
+			mes "請檢查是否達到上述要求.";
 			close;
 		}
 	case 3:
-		mes "[Smile Girl]";
-		mes "Thank you for visiting us.";
-		mes "We ..";
-		mes "The Rune-Midgarts Kingdom";
-		mes "always try to make Ragnarok";
-		mes "better and more enjoyable game.";
+		mes "[微笑小姐]";
+		mes "......";
+		mes "完蛋了 ..";
+		mes "難道真的沒有人";
+		mes "願意幫忙嗎";
+		mes "能不能在考慮一下.";
 		next;
-		mes "[Smile Girl]";
-		mes "We sincerely ask you";
-		mes "to cooperate.";
-		mes "The fact mentioned above";
-		mes "was announced by the Public Information Bureau of the Rune-Midgarts Kingom.";
+		mes "[微笑小姐]";
+		mes "我們真誠地請求";
+		mes "您的幫助.";
+		mes "如果您改變主意";
+		mes "請隨時來找我.";
 		close;
 	}
 }
 
 // Additional Smile Assistance staff
-alberta,113,53,4	duplicate(SmileHelper)	Smile Assistance#alb	92
-aldebaran,136,135,4	duplicate(SmileHelper)	Smile Assistance#alde	92
-geffen,119,107,4	duplicate(SmileHelper)	Smile Assistance#gef	92
-moc_ruins,59,154,3	duplicate(SmileHelper)	Smile Assistance#moc	92
-payon,186,104,5	duplicate(SmileHelper)	Smile Assistance#pay	92
-prontera,157,187,4	duplicate(SmileHelper)	Smile Assistance#prt	92
+alberta,113,53,4	duplicate(SmileHelper)	微笑小姐#alb	4_F_03
+aldebaran,136,135,4	duplicate(SmileHelper)	微笑小姐#alde	4_F_03
+geffen,119,107,4	duplicate(SmileHelper)	微笑小姐#gef	4_F_03
+moc_ruins,59,154,3	duplicate(SmileHelper)	微笑小姐#moc	4_F_03
+payon,186,104,5	duplicate(SmileHelper)	微笑小姐#pay	4_F_03
+prontera,157,187,4	duplicate(SmileHelper)	微笑小姐#prt	4_F_03
 
-//============================================================ 
+//============================================================
 // Old changelog
-//============================================================ 
+//============================================================
 //= Fully working. 1.1 Optimized
 //= 1.2 updated Payon coords [Lupus]
 //= 1.3 fixed exploit [Lupus]
-//============================================================ 
+//============================================================
