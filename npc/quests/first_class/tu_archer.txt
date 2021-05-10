@@ -31,62 +31,61 @@
 // Bard Jet
 //============================================================
 payon_in02,67,65,3	script	Bard Jet#tu	1_M_BARD,{
-	mes "[Jet]";
-	mes "Every god never grows old";
-	mes "Because of beautiful";
-	mes "Goddess, Idun.";
-	mes "Keeper of the apples of youth";
-	mes "Goddess of immortality.";
+	mes "[傑特]";
+	mes "每個神永遠不老";
+	mes "因為美麗的";
+	mes "神女,伊頓.";
+	mes "守護青春的貧果";
+	mes "女神的不朽.";
 	next;
 	mes "[Jet]";
 	if (BaseJob == Job_Archer){
-		mes "Ooh, you're an Archer?";
-		mes "There was a time when I too";
-		mes "was an Archer. But I've changed jobs, so now I entertain the masses with my songs and humor.";
+		mes "哦, 你是一個弓箭手?";
+		mes "曾經的我也是一位弓箭手";
+		mes "但我已經換了工作, 所以現在我招待群眾用我的歌曲和幽默.";
 		next;
-		mes "[Jet]";
-		mes "Speaking of which...";
-		mes "Let me tell you a joke!";
-		mes "Trust me, it's hilarious~";
-		mes "^333333*Ahem*^000000";
+		mes "[傑特]";
+		mes "說到這...";
+		mes "讓我告訴你一個笑話!";
+		mes "信我一把, 他一定很好笑~";
+		mes "^333333*咳咳*^000000";
 		emotion ET_SURPRISE;
 		next;
-		mes "[Jet]";
-		mes "A termite walks";
-		mes "into a bar and says,";
+		mes "[傑特]";
+		mes "白蟻走進一家酒吧，";
+		mes "並說,'這是調酒師在這?'";
 		mes "'Is the bar tender here?'";
 		mes "Hahahahaha!";
 		mes "Bwehehehehe!";
 		emotion ET_THROB;
 		next;
-		mes "[Jet]";
-		mes "Hahaha~!";
-		mes "Goodness,";
-		mes "I'm funny!";
-		mes "Now, you try!";
-		mes "Come on, make";
-		mes "up a joke~!";
+		mes "[傑特]";
+		mes "哈哈哈~!";
+		mes "善良,我很搞笑！";
+		mes "現在，換你來試試!";
+		mes "來吧, 我告訴你";
+		mes "一個笑話?!";
 		emotion ET_KIK;
 		next;
 		if (Sex == SEX_MALE) {
-			select("A joke, eh?");
+			select("一個笑話 痾?");
 			specialeffect2 EF_TALK_FROSTJOKE;
-			mes "[Jet]";
-			mes "Oh...";
-			mes "My...";
-			mes "God...";
+			mes "[傑特]";
+			mes "呵呵...";
+			mes "我的...";
+			mes "盤古阿...";
 			next;
-			mes "[Jet]";
-			mes "That was the greatest";
-			mes "joke I've ever heard in my";
-			mes "life! You really have a natural";
-			mes "talent for showmanship! You";
-			mes "just have to become a Bard!";
+			mes "[傑特]";
+			mes "這是一個傑出的笑話";
+			mes "笑話我聽過很多，";
+			mes "你的表演非常天然";
+			mes "你非常的有天賦！";
+			mes "你必須要成為一位吟遊詩人!!";
 		} else {
-			select("Scream!");
+			select("驚叫");
 			specialeffect2 EF_TALK_SCREAM;
-			mes "[Jet]";
-			mes "W-Wow...";
+			mes "[傑特]";
+			mes "W-哇...";
 			mes "I don't know why, but that was truly amazing. You must have";
 			mes "what it takes to become a Dancer...";
 		}
@@ -165,8 +164,8 @@ payon_in02,67,65,3	script	Bard Jet#tu	1_M_BARD,{
 //============================================================
 pay_arche,127,154,4	script	Sign#arc	2_BOARD1,{
 	mes " ";
-	mes " Archer Job Change Office ---> ";
-	mes " <--- Icarus ";
+	mes " 弓箭手轉職辦公室 ---> ";
+	mes " <--- 伊卡洛斯 ";
 	mes " ";
 	close;
 }
