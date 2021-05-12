@@ -1,4 +1,4 @@
-//===== rAthena Script ======================================= 
+﻿//===== rAthena Script ======================================= 
 //= 3rd Item Seller
 //===== By: ================================================== 
 //= Masao, Mercurial
@@ -116,27 +116,26 @@ job3_guil01,91,93,3	script	Rare Herb Collector	1_M_03,{
 -	shop	Shard_Seller	HIDDEN_NPC,no,6360:200,6363:200,6361:200,6362:200
 
 -	script	::pss	HIDDEN_NPC,{
-	npctalk "Do you have an element for each property?", "", bc_self;
 	callshop "Shard_Seller",1;
 	end;
 }
 
-gef_tower,105,172,5	duplicate(pss)	Point Merchant#Sorcerer	8_F_GIRL
-prt_in,131,66,0	duplicate(pss)	Point Merchant#Prontera	8_F_GIRL
-alberta,105,52,7	duplicate(pss)	Point Merchant#Alberta	8_F_GIRL
-aldebaran,133,114,5	duplicate(pss)	Point Merchant#Aldebaran	8_F_GIRL
-comodo,193,159,5	duplicate(pss)	Point Merchant#Comodo	8_F_GIRL
-geffen,129,49,5	duplicate(pss)	Point Merchant#Geffen	8_F_GIRL
-izlude,138,163,5	duplicate(pss)	Point Merchant#Izlude	8_F_GIRL	// Old coordinates: izlude (135,121)
-izlude_a,138,163,5	duplicate(pss)	Point Merchant#Izlude_a	8_F_GIRL
-izlude_b,138,163,5	duplicate(pss)	Point Merchant#Izlude_b	8_F_GIRL
-izlude_c,138,163,5	duplicate(pss)	Point Merchant#Izlude_c	8_F_GIRL
-izlude_d,138,163,5	duplicate(pss)	Point Merchant#Izlude_d	8_F_GIRL
-malangdo,214,163,5	duplicate(pss)	Point Merchant#Malangdo	8_F_GIRL
-mora,115,118,3	duplicate(pss)	Point Merchant#Mora	8_F_GIRL
-ra_in01,256,273,3	duplicate(pss)	Point Merchant#Rachel	8_F_GIRL
-veins,202,128,5	duplicate(pss)	Point Merchant#Veins	8_F_GIRL
-dicastes01,207,200,5	duplicate(pss)	Point Merchant#Dicastes	8_F_GIRL
-manuk,261,206,3	duplicate(pss)	Point Merchant#Manuk	8_F_GIRL
-splendide,207,160,5	duplicate(pss)	Point Merchant#Splendide	8_F_GIRL
-mid_camp,224,237,3	duplicate(pss)	Point Merchant#Midgard	8_F_GIRL
+gef_tower,105,172,5	duplicate(pss)	碎片商人#Sorcerer	8_F_GIRL
+prt_in,131,66,0	duplicate(pss)	碎片商人#Prontera	8_F_GIRL
+alberta,105,52,7	duplicate(pss)	碎片商人#Alberta	8_F_GIRL
+aldebaran,133,114,5	duplicate(pss)	碎片商人#Aldebaran	8_F_GIRL
+comodo,193,159,5	duplicate(pss)	碎片商人#Comodo	8_F_GIRL
+geffen,129,49,5	duplicate(pss)	碎片商人#Geffen	8_F_GIRL
+izlude,138,163,5	duplicate(pss)	碎片商人#Izlude	8_F_GIRL	// Old coordinates: izlude (135,121)
+izlude_a,138,163,5	duplicate(pss)	碎片商人#Izlude_a	8_F_GIRL
+izlude_b,138,163,5	duplicate(pss)	碎片商人#Izlude_b	8_F_GIRL
+izlude_c,138,163,5	duplicate(pss)	碎片商人#Izlude_c	8_F_GIRL
+izlude_d,138,163,5	duplicate(pss)	碎片商人#Izlude_d	8_F_GIRL
+malangdo,214,163,5	duplicate(pss)	碎片商人#Malangdo	8_F_GIRL
+mora,115,118,3	duplicate(pss)	碎片商人#Mora	8_F_GIRL
+ra_in01,256,273,3	duplicate(pss)	碎片商人#Rachel	8_F_GIRL
+veins,202,128,5	duplicate(pss)	碎片商人#Veins	8_F_GIRL
+dicastes01,207,200,5	duplicate(pss)	碎片商人#Dicastes	8_F_GIRL
+manuk,261,206,3	duplicate(pss)	碎片商人#Manuk	8_F_GIRL
+splendide,207,160,5	duplicate(pss)	碎片商人#Splendide	8_F_GIRL
+mid_camp,224,237,3	duplicate(pss)	碎片商人#Midgard	8_F_GIRL

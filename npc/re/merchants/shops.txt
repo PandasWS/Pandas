@@ -1,4 +1,4 @@
-//===== rAthena Script ======================================= 
+﻿//===== rAthena Script ======================================= 
 //= Shops
 //===== By: ================================================== 
 //= rAthena Dev Team
@@ -45,7 +45,7 @@ comodo,196,162,3	shop	Harive#candy	479,11513:-1,6144:-1
 //=======================================================
 dewata,218,164,4	shop	Weapon Dealer	536,1207:-1,1216:-1,1107:-1,1122:-1,1116:-1,1154:-1,1407:-1,1457:-1,1354:-1,1519:-1
 dewata,182,164,6	shop	Tool Dealer	536,611:-1,1750:-1,501:-1,502:-1,503:-1,504:-1,645:-1,656:-1,601:-1,602:-1,1065:-1,2239:-1,713:-1
-dewata,145,267,6	shop	Fruit Gardener	535,512:-1,513:-1,515:-1,516:-1,535:-1
+dewata,145,267,6	shop	水果商人	535,512:-1,513:-1,515:-1,516:-1,535:-1
 dewata,158,182,6	shop	Armor Dealer	536,2211:-1,2401:-1,2403:-1,2501:-1,2503:-1,2101:-1,2103:-1,2305:-1,2321:-1,2332:-1,2328:-1,2627:-1
 
 //=======================================================
@@ -68,21 +68,20 @@ geffen_in,78,169,3	shop	Advanced Potion Merchant#gef	1_F_03,11621:-1,11622:-1,11
 //=======================================================
 // Izlude
 //=======================================================
-izlude,124,165,4	shop	Fruit Gardener#iz	53,512:-1,513:-1,515:-1,516:-1
-izlude_a,124,165,4	duplicate(Fruit Gardener#iz)	Fruit Gardener#iz_a	53
-izlude_b,124,165,4	duplicate(Fruit Gardener#iz)	Fruit Gardener#iz_b	53
-izlude_c,124,165,4	duplicate(Fruit Gardener#iz)	Fruit Gardener#iz_c	53
-izlude_d,124,165,4	duplicate(Fruit Gardener#iz)	Fruit Gardener#iz_d	53
+izlude,124,165,4	shop	水果商人#iz	53,512:-1,513:-1,515:-1,516:-1
+izlude_a,124,165,4	duplicate(水果商人#iz)	水果商人#iz_a	53
+izlude_b,124,165,4	duplicate(水果商人#iz)	水果商人#iz_b	53
+izlude_c,124,165,4	duplicate(水果商人#iz)	水果商人#iz_c	53
+izlude_d,124,165,4	duplicate(水果商人#iz)	水果商人#iz_d	53
 izlude,160,186,0	shop	Butcher#iz	54,517:-1
 izlude_a,160,186,0	duplicate(Butcher#iz)	Butcher#iz_a	54
 izlude_b,160,186,0	duplicate(Butcher#iz)	Butcher#iz_b	54
 izlude_c,160,186,0	duplicate(Butcher#iz)	Butcher#iz_c	54
 izlude_d,160,186,0	duplicate(Butcher#iz)	Butcher#iz_d	54
-izlude,128,158,7	shop	Vendor from Milk Ranch#i	90,519:-1
-izlude_a,128,158,7	duplicate(Vendor from Milk Ranch#i)	Vendor from Milk Ranch#a	90
-izlude_b,128,158,7	duplicate(Vendor from Milk Ranch#i)	Vendor from Milk Ranch#b	90
-izlude_c,128,158,7	duplicate(Vendor from Milk Ranch#i)	Vendor from Milk Ranch#c	90
-izlude_d,128,158,7	duplicate(Vendor from Milk Ranch#i)	Vendor from Milk Ranch#d	90
+izlude,128,158,7	shop	牛奶商人#i	90,519:-1
+izlude_b,128,158,7	duplicate(牛奶商人#i)	牛奶商人#b	90
+izlude_c,128,158,7	duplicate(牛奶商人#i)	牛奶商人#c	90
+izlude_d,128,158,7	duplicate(牛奶商人#i)	牛奶商人#d	90
 izlude_in,72,98,3	shop	Pet Groomer#iz	124,537:-1,643:-1,10013:-1,10014:-1,554:-1,6113:-1,6114:-1,6115:-1
 izlude_in,57,110,0	shop	Tool Dealer#iz	47,611:-1,501:-1,502:-1,503:-1,504:-1,506:-1,645:-1,656:-1,601:-1,602:-1,1065:-1,1750:-1
 izlude_in,72,102,3	shop	Trading Merchant#iz	900,13200:-1,13221:-1,13222:-1,13150:-1,13102:-1,13151:-1,13154:-1,13155:-1,13163:-1,13165:-1,13168:-1
@@ -158,7 +157,7 @@ payon_in02,85,38,3	shop	Advanced Potion Merchant#pay3	4_F_ALCHE_A,11621:-1,11622
 //=======================================================
 ma_in01,73,22,3	shop	Weapon Dealer#ma	536,1207:-1,1216:-1,1107:-1,1122:-1,1116:-1,1154:-1,1407:-1,1457:-1,1354:-1,1519:-1
 ma_in01,22,23,3	shop	Tool Dealer#ma	536,611:-1,1750:-1,501:-1,502:-1,503:-1,504:-1,645:-1,656:-1,601:-1,602:-1,1065:-1,2239:-1
-malaya,150,261,3	shop	Fruit Gardener#ma	535,512:-1,513:-1,515:-1,516:-1,535:-1
+malaya,150,261,3	shop	水果商人#ma	535,512:-1,513:-1,515:-1,516:-1,535:-1
 ma_in01,67,13,5	shop	Armor Dealer#ma	536,2211:-1,2401:-1,2403:-1,2501:-1,2503:-1,2101:-1,2103:-1,2305:-1,2321:-1,2332:-1,2328:-1,2627:-1
 
 //=======================================================
