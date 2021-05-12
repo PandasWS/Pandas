@@ -226,7 +226,7 @@ OnTimer411000:
 	end;
 
 OnTimer421000:
-	npctalk "Talkative Adventurer : Oh-! Should I search for a Kafra Employee?";
+	npctalk "Talkative Adventurer : Oh-! Should I search for a ¥d´¶©ÔÂ¾­û?";
 	end;
 
 OnTimer487000:

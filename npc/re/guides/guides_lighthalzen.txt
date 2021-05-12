@@ -92,7 +92,7 @@ lighthalzen,207,310,5	script	Lighthalzen Guide#lhz01::GuideLighthalzen	852,{
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Armsmith ]:[ Seiayablem ]:[ Pet Groomer ]:[ Kafra Employees ]:[ Cool Event Corp. Staff ]:Previous Menu")) {
+				switch(select("[ Armsmith ]:[ Seiayablem ]:[ Pet Groomer ]:[ 卡普拉職員s ]:[ Cool Event Corp. Staff ]:Previous Menu")) {
 				case 1:
 					mes "[Lighthalzen Guide]";
 					mes "You may go to Fulerr,";
@@ -120,7 +120,7 @@ lighthalzen,207,310,5	script	Lighthalzen Guide#lhz01::GuideLighthalzen	852,{
 					next;
 					break;
 				case 4:
-					callsub L_Mark, "^008080Kafra Employees^000000";
+					callsub L_Mark, "^008080卡普拉職員s^000000";
 					viewpoint 1,164,99,13,0x008080;
 					viewpoint 1,164,99,14,0x008080;
 					next;

@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= BattleGround System - KvM Item Dealer
 //===== Description: =========================================
 //= [Official Conversion]

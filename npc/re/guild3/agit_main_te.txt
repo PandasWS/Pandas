@@ -70,13 +70,13 @@ OnAgitInit3:
 			monster .@map$,.@emproom[0],.@emproom[1],"Guardian Knight of Emperium",1219,2,.@npc_name$ +"::OnMyMobDead";
 			monster .@map$,.@emproom[0],.@emproom[1],"Raydric Archer",1276,5,.@npc_name$ +"::OnMyMobDead";
 		}
-		disablenpc "Kafra Employee#"+ replacestr(.@map$, "cas", "");
+		disablenpc "卡普拉職員#"+ replacestr(.@map$, "cas", "");
 	}
 	else {
 		requestguildinfo .@guild_id;
 		donpcevent "::OnFlagTE" + strnpcinfo(2);// Guild emblem on flags.
 		if (getcastledata(.@map$,CD_ENABLED_KAFRA)  == 0)
-			disablenpc "Kafra Employee#"+ replacestr(.@map$, "cas", "");
+			disablenpc "卡普拉職員#"+ replacestr(.@map$, "cas", "");
 
 		// Load purchased Guardian in castles.
 		if (.@map$ == "te_aldecas1") donpcevent "Clode::OnSpawnGuardians";
@@ -170,8 +170,8 @@ OnGuildBreak:
 	.@map$ = strnpcinfo(4);
 	if (.@map$ == "") end;
 	.@tmp$ = replacestr(.@map$, "cas", "");
-	killmonster .@map$, "Kafra Employee#"+ .@tmp$ +"::OnGuardianDied";
-	disablenpc "Kafra Employee#"+ .@tmp$;
+	killmonster .@map$, "卡普拉職員#"+ .@tmp$ +"::OnGuardianDied";
+	disablenpc "卡普拉職員#"+ .@tmp$;
 	setcastledata .@map$,CD_GUILD_ID,0;
 	sleep 7000;
 	announce "Guild Base [" + getcastlename(.@map$) + "] has been abandoned.",bc_all;
@@ -215,7 +215,7 @@ OnMyMobDead:
 	.@guildname$ = getguildname(.@guild_id);
 
 	cutin "kafra_01",2;
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	if (.@guild_id == getcharid(2)) {
 		mes "Welcome. ^ff0000" + .@guildname$ + "^000000 Member.";
 		mes "The Kafra Corporation will stay with you wherever you go.";
@@ -223,7 +223,7 @@ OnMyMobDead:
 		switch( select( "Use Storage", "Use Teleport Service", "Rent a Pushcart", "Cancel" ) ) {
 		case 1:
 			if (getskilllv("NV_BASIC") > 5) {
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Here, let me open";
 				mes "your Storage for you.";
 				mes "Thank you for using";
@@ -231,7 +231,7 @@ OnMyMobDead:
 				close2;
 				openstorage;
 			} else {
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "I'm sorry, but you";
 				mes "need the Novice's";
 				mes "Basic Skill Level 6 to";
@@ -245,7 +245,7 @@ OnMyMobDead:
 			else
 				callsub( S_Warp, "Prontera", "prontera",278,211 );
 		case 3:
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			if (BaseClass != Job_Merchant) {
 				mes "I'm sorry, but the";
 				mes "Pushcart rental service";
@@ -268,7 +268,7 @@ OnMyMobDead:
 				next;
 				if (select( "Rent a Pushcart","Cancel" ) == 1) {
 					if (Zeny < 800) {
-						mes "[Kafra Employee]";
+						mes "[卡普拉職員]";
 						mes "I'm sorry, but you";
 						mes "don't have enough";
 						mes "zeny to pay the Pushcart";
@@ -284,7 +284,7 @@ OnMyMobDead:
 			}
 			break;
 		case 4:
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "We, here at Kafra Corporation,";
 			mes "are always endeavoring to provide you with the best services. We hope that we meet your adventuring needs and standards of excellence.";
 			close2;
@@ -292,21 +292,21 @@ OnMyMobDead:
 		}
 	}
 	else {
-		mes "I am instructed to only offer my services to the ^ff0000"+ .@guildname$ +"^000000 Guild. Please try another Kafra Employee around here. Sorry for the inconvenience.";
+		mes "I am instructed to only offer my services to the ^ff0000"+ .@guildname$ +"^000000 Guild. Please try another 卡普拉職員 around here. Sorry for the inconvenience.";
 		close2;
 	}
 	cutin "",255;
 	end;
 
 S_Warp:
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	mes "Please choose";
 	mes "your destination.";
 	next;
 	switch( select( getarg(0) + " -> 200 z", "Cancel it" ) ) {
 	case 1:
 		if (Zeny < 200) {
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "I'm sorry, but you don't have";
 			mes "enough zeny for the Teleport";
 			mes "Service. The fee to teleport";
@@ -351,7 +351,7 @@ function GuardianData;
 	mes "Welcome. My honorable master, ^ff0000"+strcharinfo(0)+"^000000...";
 	mes "Your humble servent, "+strnpcinfo(1)+", is here to serve you.";
 	next;
-	switch( select( "Castle briefing", "Invest in commercial growth", "Invest in Castle Defenses", "Summon Guardian", "Hire / Fire a Kafra Employee", "Go into Master's room" ) ) {
+	switch( select( "Castle briefing", "Invest in commercial growth", "Invest in Castle Defenses", "Summon Guardian", "Hire / Fire a 卡普拉職員", "Go into Master's room" ) ) {
 	case 1:
 		.@economy_today = getcastledata(.@map$,CD_INVESTED_ECONOMY);
 		.@defense_today = getcastledata(.@map$,CD_INVESTED_DEFENSE);
@@ -416,7 +416,7 @@ function GuardianData;
 		else {
 			Zeny = Zeny - 10000;
 			setcastledata .@map$,(.@s + CD_ENABLED_GUARDIAN00),1;
-			guardian .@map$, .@x[.@s], .@y[.@s], .@name$[.@s], .@mob_id[.@s], "Kafra Employee#"+ replacestr(.@map$, "cas", "") +"::OnGuardianDied", .@s;
+			guardian .@map$, .@x[.@s], .@y[.@s], .@name$[.@s], .@mob_id[.@s], "卡普拉職員#"+ replacestr(.@map$, "cas", "") +"::OnGuardianDied", .@s;
 			mes "We completed the summoning of the Guardian. Our defenses are now increased with it in place.";
 		}
 		close;
@@ -424,7 +424,7 @@ function GuardianData;
 	case 5:
 		mes .@npc_name$;
 		if (getcastledata(.@map$,CD_ENABLED_KAFRA) == 1) {
-			mes "We are currently hiring a Kafra Employee... Do you want to fire the Kafra Employee?";
+			mes "We are currently hiring a 卡普拉職員... Do you want to fire the 卡普拉職員?";
 			next;
 			if (select( "Fire","Cancel" ) == 2) {
 				mes .@npc_name$;
@@ -432,23 +432,23 @@ function GuardianData;
 				close;
 			}
 			cutin "kafra_01",2;
-			mes "[ Hired Kafra Employee ]";
+			mes "[ Hired 卡普拉職員 ]";
 			mes "I worked so hard... How can you do that, Master?... Please... Please reconsider... Check it again, Master... Please...";
 			next;
 			if (select( "Fire","Cancel" ) == 2) {
-				mes "[ Hired Kafra Employee ]";
+				mes "[ Hired 卡普拉職員 ]";
 				mes "I'll work hard for you... Thank you!";
 				close;
 			}
-			mes "[ Hired Kafra Employee ]";
+			mes "[ Hired 卡普拉職員 ]";
 			mes "Oh, my goodness! This is nonsense!";
 			next;
 			cutin "",255;
-			disablenpc "Kafra Employee#" + replacestr(.@map$, "cas", "");
+			disablenpc "卡普拉職員#" + replacestr(.@map$, "cas", "");
 			setcastledata .@map$,CD_ENABLED_KAFRA,0;
 			mes .@npc_name$;
 			mes "....";
-			mes "I have discharged the Kafra Employee... But... are you unsatisfied with something?";
+			mes "I have discharged the 卡普拉職員... But... are you unsatisfied with something?";
 			close;
 		}
 		mes "Will you contact the kafra Main Office and Hire a Employee for our Castle?";
@@ -456,32 +456,32 @@ function GuardianData;
 		next;
 		if (select( "Hire.","Cancel" ) == 2) {
 			mes .@npc_name$;
-			mes "I did as you ordered, but some of our members will be unhappy. It will be better to hire a Kafra Employee quickly.";
+			mes "I did as you ordered, but some of our members will be unhappy. It will be better to hire a 卡普拉職員 quickly.";
 			close;
 		}
 		mes .@npc_name$;
 		if (getgdskilllv(.@guild_id,10001) == 0) {
-			mes "Master, we can't hire a Kafra Employee because we don't have a contract with the Kafra Main Office. If you want to obtain a contract with the Kafra Main Office, you will need to learn the Guild skill first.";
+			mes "Master, we can't hire a 卡普拉職員 because we don't have a contract with the Kafra Main Office. If you want to obtain a contract with the Kafra Main Office, you will need to learn the Guild skill first.";
 			close;
 		}
 		if (Zeny <  10000) {
-			mes "Well... I'm sorry but we don't have enough funds to hire a Kafra Employee.";
+			mes "Well... I'm sorry but we don't have enough funds to hire a 卡普拉職員.";
 			close;
 		}
 		Zeny = Zeny - 10000;
-		enablenpc "Kafra Employee#" + replacestr(.@map$, "cas", "");
+		enablenpc "卡普拉職員#" + replacestr(.@map$, "cas", "");
 		setcastledata .@map$,CD_ENABLED_KAFRA,1;
 
-		mes "We obtained a contract with the kafra Main Office, and hired a Kafra Employee.";
+		mes "We obtained a contract with the kafra Main Office, and hired a 卡普拉職員.";
 		next;
 		cutin "kafra_01",2;
-		mes "[ Hired Kafra Employee ]";
+		mes "[ Hired 卡普拉職員 ]";
 		mes "How do you do? I was dispatched from the Main Office.";
 		mes "I'll do my best to not tarnish the reputation of the Guild.";
 		next;
 		cutin "",255;
 		mes .@npc_name$;
-		mes "The Contract terms of the hired Kafra Employee are for 1 month and after this term, you will need to to pay an additional fee.";
+		mes "The Contract terms of the hired 卡普拉職員 are for 1 month and after this term, you will need to to pay an additional fee.";
 		mes "It will be useful for our members.";
 		close;
 
@@ -687,10 +687,10 @@ OnSpawnGuardians:
 	GuardianData( .@mob_id, .@x, .@y, .@name$ );
 	.@map$ = strnpcinfo(4);
 	.@tmp$ = replacestr(.@map$, "cas", "");
-	killmonster .@map$, "Kafra Employee#"+ .@tmp$ +"::OnGuardianDied";
+	killmonster .@map$, "卡普拉職員#"+ .@tmp$ +"::OnGuardianDied";
 	for ( .@i = 0; .@i < MAX_GUARDIANS; .@i++ ) {
 		if (getcastledata( .@map$,(.@i + CD_ENABLED_GUARDIAN00) ))
-			guardian .@map$, .@x[.@i], .@y[.@i], .@name$[.@i], .@mob_id[.@i], "Kafra Employee#"+ .@tmp$ +"::OnGuardianDied",.@i;
+			guardian .@map$, .@x[.@i], .@y[.@i], .@name$[.@i], .@mob_id[.@i], "卡普拉職員#"+ .@tmp$ +"::OnGuardianDied",.@i;
 	}
 }
 

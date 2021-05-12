@@ -96,7 +96,7 @@ gefg_cas03,34,208,1	duplicate(InsideFlagsG3)	Yesnelph#14	722
 //============================================================
 geffen,120,132,8	duplicate(InsideFlagsG3)	Yesnelph#15	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 gefg_cas03,116,89,5	duplicate(guildkafra)	Kafra Staff#gefg_cas03	117
 

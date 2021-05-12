@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= Lighthalzen City
 //===== By: ==================================================
 //=  erKURITA, Au{R}oN (Translated by Alan), $ephiroth

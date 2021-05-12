@@ -95,7 +95,7 @@ payg_cas05,55,260,2	duplicate(InsideFlagsPA5)	Bamboo Grove Hill#10	722
 payon,123,322,4	duplicate(InsideFlagsPA5)	Bamboo Grove Hill#11	722
 payon,166,161,3	duplicate(InsideFlagsPA5)	Bamboo Grove Hill#12	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 payg_cas05,276,227,1	duplicate(guildkafra)	Kafra Staff#payg_cas05	117
 

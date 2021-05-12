@@ -1,4 +1,4 @@
-//===== rAthena Script ======================================= 
+﻿//===== rAthena Script ======================================= 
 //= Warper
 //===== Description: ========================================= 
 //= A complete - but very condensed - warper script.

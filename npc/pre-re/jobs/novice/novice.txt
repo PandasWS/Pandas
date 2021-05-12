@@ -398,7 +398,7 @@ new_1-2,99,105,3	script	Interfaces Tutor#nv1	751,{
 			close;
 		case 3:
 			mes "[Kris]";
-			mes "So, would you like to be sent to a town? If you're confident that you've learned enough, head over to the right and speak to the ^3355FFKafra Employee^000000.";
+			mes "So, would you like to be sent to a town? If you're confident that you've learned enough, head over to the right and speak to the ^3355FF卡普拉職員^000000.";
 			next;
 			mes "[Kris]";
 			mes "The Kafra Services are very convenient once you get out into the real world. Their Teleport Service can be used to travel from town to town, and you can keep your items safe in the Kafra Storage.";
@@ -1176,7 +1176,7 @@ new_1-2,115,111,3	script	Item Tutor#nv	726,{
 			}
 		case 3:
 			mes "[Alice]";
-			mes "If you want to go to a town, ask the Kafra Employee to the right. Alright then, take care~";
+			mes "If you want to go to a town, ask the 卡普拉職員 to the right. Alright then, take care~";
 			close;
 		}
 	}
@@ -1214,7 +1214,7 @@ new_1-2,115,111,3	script	Item Tutor#nv	726,{
 			}
 		case 3:
 			mes "[Alice]";
-			mes "If you want to go to a town, ask the Kafra Employee to the right. Alright then, take care~";
+			mes "If you want to go to a town, ask the 卡普拉職員 to the right. Alright then, take care~";
 			close;
 		}
 	}
@@ -1253,14 +1253,14 @@ new_1-2,115,111,3	script	Item Tutor#nv	726,{
 			}
 		case 3:
 			mes "[Alice]";
-			mes "If you want to go to a town, ask the Kafra Employee to the right. Alright then, take care~";
+			mes "If you want to go to a town, ask the 卡普拉職員 to the right. Alright then, take care~";
 			close;
 		}
 	}
 }
 
-new_1-2,118,108,3	script	Kafra Employee#nv1	117,{
-	mes "[Kafra Employee]";
+new_1-2,118,108,3	script	卡普拉職員#nv1	117,{
+	mes "[卡普拉職員]";
 	mes "Welcome to";
 	mes "Kafra Corporation.";
 	mes "The Kafra services are";
@@ -1277,35 +1277,35 @@ new_1-2,118,108,3	script	Kafra Employee#nv1	117,{
 		set NEW_JOBLVUP,0;
 	}
 	next;
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	mes "I've been dispatched from Kafra Corporation Headquarters to assist new players such as yourself.";
 	next;
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	mes "Please, take heed!";
 	mes "If you move to a town";
 	mes "^4d4dffyou will be unable to return to the Training Grounds ever again^000000.";
 	next;
 	if ( select("Teleport Service","About Kafra services") == 1 ) {
 		if (nov_get_item02 < 10 && nov_get_item03 < 10 && nov_get_item04 < 10) {
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "I see, you must want to teleport to a town in Rune-Midgarts imediately. First, let me briefly inform you about the different towns and cities in Ragnarok.";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Prontera is the capital of the Rune-Midgarts kingdom, and its satellite, Izlude, is closeby.";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "^996633Morocc^000000 is in the desert. It's the town where you can change your job to the Thief and Assassin classes.";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "^006600Payon^000000 is in the mountains, and is famous for its Archer Village, where Novices can change their jobs to Archers.";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "The city of magic, ^993300Geffen^000000, is where people go to become Mages and Wizards.";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "^003399Alberta^000000, the port city, is where the Merchant Guild is located. You must also go to Alberta if you wish to travel by sea.";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Please choose";
 			mes "your destination.";
 			next;
@@ -1341,7 +1341,7 @@ new_1-2,118,108,3	script	Kafra Employee#nv1	117,{
 				set .@warpX,122; set .@warpY,65;
 				break;
 			}
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "You have decided";
 			mes "to go to "+.@dest$+".";
 			mes "May God be with you.";
@@ -1374,7 +1374,7 @@ new_1-2,118,108,3	script	Kafra Employee#nv1	117,{
 		else {
 			switch(select("Field Combat Course:Prontera:Morocc:Payon:Alberta:Geffen")) {
 			case 1:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Thank you, let";
 				mes "me send you to the";
 				mes "Field Combat Training Course.";
@@ -1412,7 +1412,7 @@ new_1-2,118,108,3	script	Kafra Employee#nv1	117,{
 				set .@warpX,122; set .@warpY,65;
 				break;
 			}
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "You have decided";
 			mes "to go to "+.@dest$+".";
 			mes "May God be with you.";
@@ -1436,7 +1436,7 @@ new_1-2,118,108,3	script	Kafra Employee#nv1	117,{
 		}
 	}
 	else {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Let me introduce you";
 		mes "to the Kafra Services.";
 		mes "In the menu, please choose";
@@ -1446,10 +1446,10 @@ new_1-2,118,108,3	script	Kafra Employee#nv1	117,{
 		while(1) {
 			switch(select("Save service:Storage service:Teleport service:Cart rental service:Cancel")) {
 			case 1:
-				mes "[Kafra Employee]";
-				mes "When you talk to a Kafra Employee and ask for the Save Service, the location of where you will revive, after being defeated in battle, will be changed.";
+				mes "[卡普拉職員]";
+				mes "When you talk to a 卡普拉職員 and ask for the Save Service, the location of where you will revive, after being defeated in battle, will be changed.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Your Respawn Point is always the last place where you have saved. Using a Butterfly Wing will return you to the place where you";
 				mes "last saved.";
 				next;
@@ -1473,32 +1473,32 @@ new_1-2,118,108,3	script	Kafra Employee#nv1	117,{
 				next;
 				break;
 			case 2:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "The Kafra Corporation is the world's largest company with a long and distinguished history on the Midgard continent.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "You can store and retrieve";
 				mes "your items in any town at your convenience. This Storage is shared by every character on one account.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "It's unreasonable to carry all of your items with you when you don't need them right away. Please use our Storage and keep your items safe and secure.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Our convenient Storage Service";
 				mes "is provided to our customers for a small fee which is different from town to town.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "However, you must be";
 				mes "at least ^3355FFBasic Skill Level 6^000000";
 				mes "to use the Storage.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "There are 3 different item sections of the Storage into which items are organized: Consumable, Equipment and Etc.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "There are a maximum of 300 Inventory Slots in Kafra Storage, meaning you can have up to 300 different kinds of items in Storage.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Remember though, that in the case of Equipment, each item takes up one Inventory Slot. The maximum number of items that can be placed in Kafra Storage is 30,000.";
 				if (nov_3_archer < 20) {
 					if (JobLevel < 7) {
@@ -1516,39 +1516,39 @@ new_1-2,118,108,3	script	Kafra Employee#nv1	117,{
 				next;
 				break;
 			case 3:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "The Kafra Corporation";
 				mes "provides our valued customers with a convenient Teleport Service which greatly cuts down on your";
 				mes "traveling time.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Our Teleport Service is safe and comfortable, and will allow you to fully explore the various lands of the Midgard continent.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "We thank our valued customers for their great support and continue to provide them with the best";
 				mes "of service.";
 				next;
 				break;
 			case 4:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "The Kafra Corporation";
 				mes "provides a Cart Rental Service to Merchants, as well as Blacksmiths and Alchemists.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "The flamboyantly mysterious";
 				mes "^CE6300Super Novice^000000 can use Carts, but we officially don't have a contract with that class. Still, somehow...";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Anyway, Merchants, Blacksmiths and Alchemists must also learn the ^3355FFPush Cart^000000 skill in order to be able to rent a cart.";
 				next;
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "The Cart Rental service";
 				mes "charge will differ from";
 				mes "town to town.";
 				next;
 				break;
 			case 5:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Thank you.";
 				close;
 			}
@@ -2092,11 +2092,11 @@ new_1-2,184,172,1	script	Understandings of Skills	47,{
 					break;
 				case 4:
 					mes "[Leo Handerson]";
-					mes "Kafra Employees of the";
+					mes "卡普拉職員s of the";
 					mes "Kafra Corporation are scattered throughout the world, providing their convenient services and Storage.";
 					next;
 					mes "[Leo Handerson]";
-					mes "In fact, there's a Kafra Employee just outside of this room. Talk to her, and she'll be more than happy to fully explain Kafra's Services.";
+					mes "In fact, there's a 卡普拉職員 just outside of this room. Talk to her, and she'll be more than happy to fully explain Kafra's Services.";
 					next;
 					mes "[Leo Handerson]";
 					mes "Anyway, you are";

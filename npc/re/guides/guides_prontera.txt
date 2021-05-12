@@ -121,7 +121,7 @@ prontera,154,187,4	script	Guide#01prontera::GuideProntera	105,{
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Eden Teleport Officer ]:[ Peco Peco Breeder ]:[ Riding Creature Master ]:[ Magic Gear Master ]:[ Peco Peco Remover ]:[ Trading Merchants ]:[ Mercenary Guildsman ]:[ Hypnotist ]:[ Kafra Employee ]:[ Leablem ]:[ Apprentice Craftsman ]:[ Pet Groomer ]:Previous Menu")) {
+				switch(select("[ Eden Teleport Officer ]:[ Peco Peco Breeder ]:[ Riding Creature Master ]:[ Magic Gear Master ]:[ Peco Peco Remover ]:[ Trading Merchants ]:[ Mercenary Guildsman ]:[ Hypnotist ]:[ 卡普拉職員 ]:[ Leablem ]:[ Apprentice Craftsman ]:[ Pet Groomer ]:Previous Menu")) {
 				case 1:
 					callsub L_Mark, F_Navi("Eden Teleport Officer","prontera,124,76","^800080"),1;
 					mes .@str$;
@@ -195,7 +195,7 @@ prontera,154,187,4	script	Guide#01prontera::GuideProntera	105,{
 					next;
 					break;
 				case 9:
-					callsub L_Mark, "^006400Kafra Employees^000000",1;
+					callsub L_Mark, "^006400卡普拉職員s^000000",1;
 					mes .@str$;
 					viewpoint 1,152,326,22,0xAAFF00;
 					viewpoint 1,30,207,23,0xAAFF00;

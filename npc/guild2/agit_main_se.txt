@@ -43,7 +43,7 @@ OnRecvCastle2:
 		monster strnpcinfo(2),0,0,"Tower Keeper",1270,4;
 	}
 	if (getcastledata(strnpcinfo(2),CD_ENABLED_KAFRA) < 1)
-		disablenpc "Kafra Employee#"+substr(strnpcinfo(2),0,1)+substr(strnpcinfo(2),8,9);
+		disablenpc "卡普拉職員#"+substr(strnpcinfo(2),0,1)+substr(strnpcinfo(2),8,9);
 	end;
 
 OnAgitStart2:
@@ -72,7 +72,7 @@ OnGuildBreak:
 	if (strnpcinfo(2) == "template") end;
 	killmonster strnpcinfo(2),"gard1#"+strnpcinfo(2)+"::OnGuardianDied";
 	killmonster strnpcinfo(2),"gard2#"+strnpcinfo(2)+"::OnGuardianDied";
-	disablenpc "Kafra Employee#"+substr(strnpcinfo(2),0,1)+substr(strnpcinfo(2),8,9);
+	disablenpc "卡普拉職員#"+substr(strnpcinfo(2),0,1)+substr(strnpcinfo(2),8,9);
 	setcastledata strnpcinfo(2),CD_GUILD_ID,0;
 	sleep 7000;
 	announce "Guild Base ["+getcastlename(strnpcinfo(2))+"] has been abandoned.",0;
@@ -438,13 +438,13 @@ OnTreasureDied:
 		if (getcastledata(strnpcinfo(4),CD_ENABLED_KAFRA) == 1) {
 			mes "[ Steward ]";
 			mes "Do you wish to dismiss";
-			mes "the Kafra Employee that";
+			mes "the 卡普拉職員 that";
 			mes "we've hired for the guild?";
 			next;
 			switch(select("Dismiss:Cancel")) {
 			case 1:
 				cutin "kafra_01",2;
-				mes "[ Hired Kafra Employee ]";
+				mes "[ Hired 卡普拉職員 ]";
 				mes "Master, please reconsider!";
 				mes "I've been working very hard";
 				mes "for the success of the guild!";
@@ -454,14 +454,14 @@ OnTreasureDied:
 				next;
 				switch(select("Dismiss:Cancel")) {
 				case 1:
-					mes "[ Hired Kafra Employee ]";
+					mes "[ Hired 卡普拉職員 ]";
 					mes "Why?! What have I done";
 					mes "to deserve this? Waaah~!";
 					next;
 					cutin "kafra_01",255;
 					break;
 				case 2:
-					mes "[ Hired Kafra Employee ]";
+					mes "[ Hired 卡普拉職員 ]";
 					mes "Thank you, Master!";
 					mes "I'll obey your every";
 					mes "command as best I can!";
@@ -477,10 +477,10 @@ OnTreasureDied:
 				mes "allow her to stay with us.";
 				close;
 			}
-			disablenpc "Kafra Employee#"+strnpcinfo(2);
+			disablenpc "卡普拉職員#"+strnpcinfo(2);
 			setcastledata strnpcinfo(4),CD_ENABLED_KAFRA,0;
 			mes "[ Steward ]";
-			mes "That Kafra Employee";
+			mes "That 卡普拉職員";
 			mes "has been dismissed.";
 			mes "Were really dissatisfied";
 			mes "by the quality of her service?";
@@ -489,7 +489,7 @@ OnTreasureDied:
 		else {
 			mes "[ Steward ]";
 			mes "Will you hire a";
-			mes "Kafra Employee to serve";
+			mes "卡普拉職員 to serve";
 			mes "our stronghold? You must";
 			mes "pay ^FF000010,000 Zeny^000000 to hire one.";
 			next;
@@ -498,7 +498,7 @@ OnTreasureDied:
 				if (getgdskilllv(.@GID,10001) == 0) {
 					mes "[ Steward ]";
 					mes "Master, we cannot hire a";
-					mes "Kafra Employee because";
+					mes "卡普拉職員 because";
 					mes "you have not yet attained";
 					mes "the ^FF0000Contract with Kafra^000000";
 					mes "guild skill.";
@@ -507,23 +507,23 @@ OnTreasureDied:
 				if (Zeny < 10000) {
 					mes "[ Steward ]";
 					mes "Master, we cannot hire a";
-					mes "Kafra Employee because";
+					mes "卡普拉職員 because";
 					mes "we do not have enough";
 					mes "funds to pay the contract fee.";
 					close;
 				}
 				set Zeny, Zeny-10000;
-				enablenpc "Kafra Employee#"+strnpcinfo(2);
+				enablenpc "卡普拉職員#"+strnpcinfo(2);
 				setcastledata strnpcinfo(4),CD_ENABLED_KAFRA,1;
 				mes "[ Steward ]";
 				mes "Very well. We have formed";
 				mes "a contract with the Kafra";
 				mes "Head Office, and hired a";
-				mes "Kafra Employee for our";
+				mes "卡普拉職員 for our";
 				mes "stronghold. Here she is~";
 				next;
 				cutin "kafra_01",2;
-				mes "[ Hired Kafra Employee ]";
+				mes "[ Hired 卡普拉職員 ]";
 				mes "How do you do? I've";
 				mes "been dispatched by the";
 				mes "Kafra Head Office to";
@@ -536,14 +536,14 @@ OnTreasureDied:
 				mes "Our contract will expire";
 				mes "after one month, so we must";
 				mes "pay additional fees to keep";
-				mes "this Kafra Employee in";
+				mes "this 卡普拉職員 in";
 				mes "the service of our guild.";
 				close;
 			case 2:
 				mes "[ Steward ]";
 				mes "As you command, Master.";
 				mes "However, I suggest hiring";
-				mes "a Kafra Employee as soon";
+				mes "a 卡普拉職員 as soon";
 				mes "as possible since our guild";
 				mes "would greatly benefit from";
 				mes "the convenient Kafra services.";
@@ -618,7 +618,7 @@ OnStartArena:
 	for(set .@i,CD_INVESTED_ECONOMY; .@i<CD_ENABLED_GUARDIAN00; set .@i,.@i+1)
 		setcastledata strnpcinfo(4),.@i,0;
 	// Disable Kafra
-	disablenpc "Kafra Employee#"+strnpcinfo(2);
+	disablenpc "卡普拉職員#"+strnpcinfo(2);
 
 	announce "The ["+getguildname(.@GID)+"] guild conquered the ["+.@region$+" "+charat(strnpcinfo(2),3)+"] stronghold of "+getcastlename(strnpcinfo(4))+"!",bc_all|bc_woe;
 	mapannounce strnpcinfo(4),"The emperium has been shattered!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;
@@ -840,7 +840,7 @@ OnInit:
 	cutin "kafra_01",2;
 	set .@GID, getcastledata(strnpcinfo(4),CD_GUILD_ID);
 	if (getcharid(2) == .@GID && getgdskilllv(.@GID,10001)) {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Welcome, proud member";
 		mes "of the ^FF0000"+GetGuildName(.@GID)+"^000000 Guild!";
 		mes "The Kafra Corporation is ready";
@@ -849,7 +849,7 @@ OnInit:
 		switch(select("Use Storage:Use Warp Service:Rent Pushcart:Cancel")) {
 		case 1:
 			if(!callfunc("F_CanOpenStorage")){
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "I'm so sorry, but you must";
 				mes "have at least Novice Skill";
 				mes "Lv.6 to use the Storage.";
@@ -857,14 +857,14 @@ OnInit:
 			else openstorage;
 			break;
 		case 2:
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Please tell me your";
 			mes "Warp destination.";
 			next;
 			switch(select("Rachel -> 200 z:Cancel")) {
 			case 1:
 				if (Zeny < 200) {
-					mes "[Kafra Employee]";
+					mes "[卡普拉職員]";
 					mes "I'm sorry, but you don't";
 					mes "have enough Zeny to pay";
 					mes "the warp fee. Would you";
@@ -883,19 +883,19 @@ OnInit:
 			break;
 		case 3:
 			if (BaseClass != Job_Merchant) {
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "I'm sorry, but the Pushcart";
 				mes "rental service can only be";
 				mes "used by Merchant, Blacksmith,";
 				mes "and Alchemist class characters.";
 			}
 			else if (checkcart() == 1) {
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Hm? You've already";
 				mes "rented a Pushcart.";
 			}
 			else {
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "The Pushcart rental fee";
 				mes "is 800 Zeny. Would you";
 				mes "like to rent a Pushcart?";
@@ -903,7 +903,7 @@ OnInit:
 				switch(select("Rent Pushcart:Cancel")) {
 				case 1:
 					if (Zeny < 800) {
-						mes "[Kafra Employee]";
+						mes "[卡普拉職員]";
 						mes "I'm sorry, but you don't";
 						mes "have enough Zeny to rent";
 						mes "one of our Pushcarts.";
@@ -920,7 +920,7 @@ OnInit:
 			}
 			break;
 		case 4:
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Thank you for using the";
 			mes "Kafra Service. Wherever";
 			mes "you go, Kafra will be";
@@ -934,13 +934,13 @@ OnInit:
 		end;
 	}
 	else {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "I'm sorry, but I've been";
 		mes "exclusively contracted";
 		mes "to the members of the";
 		mes "^FF0000"+getguildname(.@GID)+"^000000 Guild.";
 		mes "You'll have to ask another";
-		mes "Kafra Employee to help you...";
+		mes "卡普拉職員 to help you...";
 		close2;
 		cutin "kafra_01",255;
 		end;

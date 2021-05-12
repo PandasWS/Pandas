@@ -572,7 +572,7 @@ L_Warning:
 	mes "If there's any equipment that you are wearing now, or anything you're holding. Please empty it for your job change moment.";
 	next;
 	mes "[Captain Tigris]";
-	mes "Talk to the Kafra Employee to use the storage.";
+	mes "Talk to the 卡普拉職員 to use the storage.";
 	next;
 	mes "[Captain Tigris]";
 	mes "You might know already, if you are riding a Peco Peco, you should have left it behind. If you brought it, leave it and come again.";
@@ -1470,7 +1470,7 @@ job3_rune01,114,50,3	script	Rune Knight Velpino	468,{
 			mes "The magical monsters are the 3 kinds of magic monsters from Glast Heim that you might already know... It won't be an easy fight but if you just undergo this final suffering, you'll walk the path of a Rune Knight.";
 			next;
 			mes "[Rune Knight Velpino]";
-			mes "To help the preparation we've made a contract with the Kafra headquarters in Al De Baran by employing a Kafra Employee especially for this gathering place. So it would be good to visit her.";
+			mes "To help the preparation we've made a contract with the Kafra headquarters in Al De Baran by employing a 卡普拉職員 especially for this gathering place. So it would be good to visit her.";
 			next;
 			mes "[Rune Knight Velpino]";
 			mes "If you are ready just talk to me again.";
@@ -1487,7 +1487,7 @@ job3_rune01,114,50,3	script	Rune Knight Velpino	468,{
 				if (getequipisequiped(EQI_HEAD_TOP) || getequipisequiped(EQI_ARMOR) || getequipisequiped(EQI_GARMENT) || getequipisequiped(EQI_SHOES) ||
 				    getequipisequiped(EQI_ACC_L) || getequipisequiped(EQI_ACC_R) || getequipisequiped(EQI_HEAD_MID) || getequipisequiped(EQI_HEAD_LOW)) {
 					mes "[Rune Knight Velpino]";
-					mes "For this test, only a one-hand weapon, a shield or a two-handed weapon can be equipped. Keep your other equipments with the Kafra Employee in the center.";
+					mes "For this test, only a one-hand weapon, a shield or a two-handed weapon can be equipped. Keep your other equipments with the 卡普拉職員 in the center.";
 					close;
 				}
 				if (checkquest(3220,PLAYTIME) == 1) {
@@ -1513,7 +1513,7 @@ job3_rune01,114,50,3	script	Rune Knight Velpino	468,{
 					mes "The only set of weapons you can use should be within the weight limit of 400. Rune stones to be provided are 30 attack-only rune stones and 30 defense-only rune stones.";
 					next;
 					mes "[Rune Knight Velpino]";
-					mes "The remaining stuff you are holding should be kept by the Kafra employee in the middle.";
+					mes "The remaining stuff you are holding should be kept by the 卡普拉職員 in the middle.";
 					close;
 				}
 				// Custom translation

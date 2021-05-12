@@ -16,11 +16,11 @@ harboro1,356,211,5	script	Guide#rockridge01	4_F_ANYA,{
 	mes "Also, you can use ^B9062FNavigation^000000 mode by ^B9062Fclicking the name of the place^000000 I showed to you.";
 	while(true) {
 		next;
-		.@s = select( "[Kafra Employee]", "[Inn]", "[Weapon/Armor Shop]", "[Tool Shop]", "[Sheriff's Office]", "Clear mini-map.", "Cancel." );
+		.@s = select( "[卡普拉職員]", "[Inn]", "[Weapon/Armor Shop]", "[Tool Shop]", "[Sheriff's Office]", "Clear mini-map.", "Cancel." );
 		switch(.@s) {
 		case 1:
 			mes "[Sheriff Assistant]";
-			mes "The ^006400Kafra Employee^000000, got it. Please click the ^0000FFBox icon^000000 on your mini-map.";
+			mes "The ^006400卡普拉職員^000000, got it. Please click the ^0000FFBox icon^000000 on your mini-map.";
 			viewpoint 1,291,207,1,0xFFFF33;
 			break;
 		case 2:

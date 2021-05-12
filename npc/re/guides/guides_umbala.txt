@@ -26,11 +26,11 @@ umbala,128,94,3	script	Umbala Guide#01umbala::GuideUmbala	702,{
 	F_Navi("[Umbala Guide]");
 	while (1) {
 		next;
-		switch(select("[ Kafra Employee ]:[ Chief's House ]:[ Shaman's House ]:[ Weapon Shop ]:[ Tool Shop ]:[ Bungee Jump Area ]:[ Tree of Yggdrasil ]:Remove Marks from Mini-Map:Cancel")) {
+		switch(select("[ 卡普拉職員 ]:[ Chief's House ]:[ Shaman's House ]:[ Weapon Shop ]:[ Tool Shop ]:[ Bungee Jump Area ]:[ Tree of Yggdrasil ]:Remove Marks from Mini-Map:Cancel")) {
 		case 1:
 			mes "[Umbala Guide]";
 			mes "Let me mark the location of the";
-			mes "^0000FFKafra Employee^000000";
+			mes "^0000FF卡普拉職員^000000";
 			mes "on your mini-map.";
 			mes "Would you like to check any other locations?";
 			viewpoint 1,87,160,0,0x0A82FF;

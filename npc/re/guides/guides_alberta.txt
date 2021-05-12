@@ -92,7 +92,7 @@ alberta,23,238,4	script	Guide#01alberta::AlbertaGuide	105,{
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Eden Teleport Officer ]:[ Kafra Employee ]:[ Cool Event Employee ]:[ Bullet Merchant ]:[ Cooking Ingredient Merchant ]:Previous Menu")) {
+				switch(select("[ Eden Teleport Officer ]:[ 卡普拉職員 ]:[ Cool Event Employee ]:[ Bullet Merchant ]:[ Cooking Ingredient Merchant ]:Previous Menu")) {
 				case 1:
 					mes "[Alberta Guide]";
 					mes "^B9062FEden Teleport Officers^000000 are located in "+F_Navi("south Alberta","alberta,121,68");
@@ -106,7 +106,7 @@ alberta,23,238,4	script	Guide#01alberta::AlbertaGuide	105,{
 				case 2:
 					mes "[Alberta Guide]";
 					mes "Let me mark the location of the";
-					mes "^0000FFKafra Employees^000000";
+					mes "^0000FF卡普拉職員s^000000";
 					mes "on your mini-map.";
 					mes .@str$;
 					viewpoint 1,33,41,8,0x0A82FF;

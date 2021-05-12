@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= Card Seller A-Z
 //===== Description: =========================================
 //= Sells all cards dropped by mobs, grouped alphabetically.

@@ -1368,51 +1368,51 @@ izlude_b,195,213,5	duplicate(Con-Chliina Crewman#doi)	Con-Chliina Crewman#doib	4
 izlude_c,195,213,5	duplicate(Con-Chliina Crewman#doi)	Con-Chliina Crewman#doic	4_M_MERCAT1
 izlude_d,195,213,5	duplicate(Con-Chliina Crewman#doi)	Con-Chliina Crewman#doid	4_M_MERCAT1
 
-izlude,138,183,3	script	Vigilante Penne#doect01	4_DR_SOLDIER,{
+izlude,138,183,3	script	巡守隊員 彭內#doect01	4_DR_SOLDIER,{
 	if (Class == Job_Summoner) {
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "Hiya! Isn't it delightful to see the Farfalle Vigilante even here?";
 		next;
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "By the way, how's your settlement in this land coming along?";
 		mes "Have you been to ^4d4dffProntera^000000 or ^4d4dffPayon^000000 near here?";
 		next;
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "There is a Paradise Group you might want to visit.";
 		mes "It doesn't hurt to go visit there.";
 		close;
 	}
-	mes "[Vigilante Penne]";
-	mes "Humans always intrigue me with their peculiar look.";
-	mes "Like a big, hairless cat!";
+	mes "[巡守隊員 彭內]";
+	mes "人類長得好奇妙,是無毛的大貓咪...?";
 	next;
-	mes "[Vigilante Penne]";
-	mes "Me? Let me explain. I'm the proud member of the Farfalle Vigilante from the great Far-Star Continent.";
+	mes "[巡守隊員 彭內]";
+	mes "我嗎?";
+	mes "我是偉大的帕-斯達大陸上的蝴蝶巡守隊隊員!";
 	next;
-	switch( select( "Far-Star Continent?", "Farfalle Vigilante?", "Are you from the Cat Paw Commerce Group?" ) ) {
+	switch( select( "帕-斯達大陸?", "蝴蝶巡守隊?", "貓咪手商隊?" ) ) {
 	case 1:
-		mes "[Vigilante Penne]";
-		mes "There are more continents other than Midgard.";
-		mes "The land we crossed from is called Far-Star.";
+		mes "[巡守隊員 彭內]";
+		mes "這世界不只有米德加爾特大陸,";
+		mes "我們的故鄉是帕-斯達。";
 		next;
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "Well, we're no different because we thought there was only the Far-Star Continent under the sun.";
 		mes "The world sure is wide...";
 		close;
 	case 2:
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "So, do you see this ribbon that goes perfectly well with this cool uniform?";
 		mes "(Show the below-neck area.)";
 		next;
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "This is the symbol of our Farfalle Vigilante.";
 		mes "We are the legendary Vigilante Corp that protects Lasagna!";
 		next;
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "You have no idea how cool our leader Peperoncino can be...";
 		mes "We do all kinds of chores from handling the urchins at the port to maintaining the security of the village.";
 		next;
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "Moreover, you can come to this...Mid...Midgur...Midgar...";
 		mes "Anyway! You're allowed to come here only when the Farfalle Vigilante accepts.";
 		next;
@@ -1421,22 +1421,22 @@ izlude,138,183,3	script	Vigilante Penne#doect01	4_DR_SOLDIER,{
 		npctalk "Huh? Are you just passing by?", "", bc_self;
 		end;
 	case 3:
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "No, That's not it!!";
 		mes "The Cat Paw Commerce Group is led by Captain Tomei-Tomas!";
 		next;
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "I'm with the Farfalle Vigilante commanded by Leader Peperoncino!";
 		next;
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "Oh, my days! So you haven't even been to Lasagna, have you?";
 		mes "Our great Captain Gamberri ventured here in person!";
 		next;
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "We are gracious enough to give humans like you a chance to go to the land of Lasagna.";
 		mes "Before long, this Midgur...Midgarr...?? This land will soon be controlled by us, the Dorams!";
 		next;
-		mes "[Vigilante Penne]";
+		mes "[巡守隊員 彭內]";
 		mes "You'd better earn our favor. If you do, we might give you a job to clean anchovies in Lasagna!";
 		close;
 	}

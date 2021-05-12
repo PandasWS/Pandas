@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= Job Master
 //===== Description: =========================================
 //= A fully functional job changer.

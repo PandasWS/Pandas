@@ -600,9 +600,9 @@ OnTouch_:
 	end;
 }
 
-1@gef,124,65,4	script	Kafra Employee#gef_t	4_F_KAFRA4,{
+1@gef,124,65,4	script	炊┰戮#gef_t	4_F_KAFRA4,{
 	cutin "kafra_04",2;
-	mes "[Kafra Employee]";
+	mes "[炊┰戮]";
 	mes "Welcome~!";
 	mes "The Kafra Services.";
 	mes "are always on your side.";
@@ -3978,7 +3978,7 @@ OnEnable:
 // Cutscenes
 
 
-//席席席席席席席席席
+//?????????
 //   Event 1
 //__________________
 1@gef,159,172,6	duplicate(#gmt_dummy)	Geffen Gangster#1	682
@@ -3988,7 +3988,7 @@ OnEnable:
 1@gef,167,169,6	duplicate(#gmt_dummy)	Geffen Gangster#22	682
 1@gef,166,168,6	duplicate(#gmt_dummy)	Geffen Gangster#33	682
 1@gef,170,168,4	duplicate(#gmt_dummy)	Iris#Gef1	666
-1@gef,169,167,2	duplicate(#gmt_dummy)	Kafra Employee#1	114
+1@gef,169,167,2	duplicate(#gmt_dummy)	炊┰戮#1	114
 1@gef,173,167,4	duplicate(#gmt_dummy)	Chaos#Gef1	683
 1@gef,168,168,4	duplicate(#gmt_dummy)	Chaos#Gef2	683
 1@gef,162,174,4	duplicate(#gmt_dummy)	Chaos#3	683
@@ -4004,7 +4004,7 @@ OnTouch:
 	hideoffnpc instance_npcname("Geffen Gangster#1");
 	hideoffnpc instance_npcname("Geffen Gangster#2");
 	hideoffnpc instance_npcname("Geffen Gangster#3");
-	hideoffnpc instance_npcname("Kafra Employee#1");
+	hideoffnpc instance_npcname("炊┰戮#1");
 	'gmt_char_name$ = strcharinfo(0);
 	'GMTQuest = 1;
 
@@ -4020,9 +4020,9 @@ OnTimer1000:
 	switch('gmt_timer_evt1) {
 		case 1: npctalk "Geffen Gangster : Hey girl~", instance_npcname("Geffen Gangster#1"); break;
 		case 3: npctalk "Geffen Gangster : Whoo~ You have beautiful legs~!", instance_npcname("Geffen Gangster#2"); break;
-		case 5: npctalk "Kafra Employee : What are you doing?", instance_npcname("Kafra Employee#1"); break;
+		case 5: npctalk "炊┰戮 : What are you doing?", instance_npcname("炊┰戮#1"); break;
 		case 10: npctalk "Geffen Gangster : What do you think I'm doing~?", instance_npcname("Geffen Gangster#3"); break;
-		case 13: npctalk "Kafra Employee : You creep! Get away~!", instance_npcname("Kafra Employee#1"); break;
+		case 13: npctalk "炊┰戮 : You creep! Get away~!", instance_npcname("炊┰戮#1"); break;
 		case 15: npctalk "Geffen Gangster : How dare you!", instance_npcname("Geffen Gangster#1");	break;
 		case 16:
 			hideonnpc instance_npcname("Geffen Gangster#1");
@@ -4035,7 +4035,7 @@ OnTimer1000:
 		case 19: npctalk "Geffen Gangster : Wanna have some fun?", instance_npcname("Geffen Gangster#11"); break;
 		case 20: npctalk "Geffen Gangster : We won't bite!", instance_npcname("Geffen Gangster#22"); break;
 		case 21: npctalk "Geffen Gangster : Unless...", instance_npcname("Geffen Gangster#33"); break;
-		case 23: npctalk "Kafra Employee : Help me~!!!", instance_npcname("Kafra Employee#1"); break;
+		case 23: npctalk "炊┰戮 : Help me~!!!", instance_npcname("炊┰戮#1"); break;
 		case 25: unittalk 'gmt_account_id, "What can I do? I have to help."; break;
 		case 27:
 			enablenpc instance_npcname("#Event 1 start 2");
@@ -4066,7 +4066,7 @@ OnTimer1000:
 		case 3: npctalk "Geffen Gangster : What's with your attitude?", instance_npcname("Geffen Gangster#11"); break;
 		case 4: npctalk "Geffen Gangster : You're such an idiot!", instance_npcname("Geffen Gangster#22"); break;
 		case 5: npctalk "Geffen Gangster : Who're you calling bastards!?", instance_npcname("Geffen Gangster#33"); break;
-		case 8: npctalk "Kafra Employee : Please help me~!", instance_npcname("Kafra Employee#1"); break;
+		case 8: npctalk "炊┰戮 : Please help me~!", instance_npcname("炊┰戮#1"); break;
 		case 9:
 			unittalk 'gmt_account_id, "Time to teach them a lesson~!";
 			hideonnpc instance_npcname("Geffen Gangster#11");
@@ -4116,7 +4116,7 @@ OnTimer1000:
 			npctalk "Geffen Gangster : We should stop playing around...", instance_npcname("Geffen Gangster#2");
 			npctalk "Geffen Gangster : You're gonna pay the price!", instance_npcname("Geffen Gangster#3");
 			break;
-		case 4: npctalk "Kafra Employee : No... I'm scared...!", instance_npcname("Kafra Employee#1"); break;
+		case 4: npctalk "炊┰戮 : No... I'm scared...!", instance_npcname("炊┰戮#1"); break;
 		case 5:
 			hideoffnpc instance_npcname("Iris#Gef1");
 			npctalk "Iris : Hey, you stop right there~!!", instance_npcname("Iris#Gef1");
@@ -4220,7 +4220,7 @@ OnTimer1000:
 				cutin "", 255;
 				hideonnpc instance_npcname("Iris#Gef1");
                 hideonnpc instance_npcname("Chaos#Gef1");
-                hideonnpc instance_npcname("Kafra Employee#1");
+                hideonnpc instance_npcname("炊┰戮#1");
 				sleep2 2000;
 				unittalk 'gmt_account_id, "They sure are brave...";
 				sleep2 2000;
@@ -4235,7 +4235,7 @@ OnTimer1000:
 	end;
 }
 
-//席席席席席席席席席
+//?????????
 //   Event 2
 //__________________
 1@gef,75,172,4	duplicate(#gmt_dummy)	Geffen Bully#1	681
@@ -4525,7 +4525,7 @@ OnMobKilled:
 	end;
 }
 
-//席席席席席席席席席
+//?????????
 //   Event 3
 //__________________
 1@gef,111,146,4	duplicate(#gmt_dummy)	Geffen Resident#1	67
@@ -4789,7 +4789,7 @@ OnInstanceInit:
 	hideonnpc instance_npcname("Geffen Gangster#1");
 	hideonnpc instance_npcname("Geffen Gangster#2");
 	hideonnpc instance_npcname("Geffen Gangster#3");
-	hideonnpc instance_npcname("Kafra Employee#1");
+	hideonnpc instance_npcname("炊┰戮#1");
 	hideonnpc instance_npcname("Geffen Gangster#11");
 	hideonnpc instance_npcname("Geffen Gangster#22");
 	hideonnpc instance_npcname("Geffen Gangster#33");

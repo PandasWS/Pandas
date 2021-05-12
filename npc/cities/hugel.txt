@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= Hugel City
 //===== By: ==================================================
 //= vicious_pucca, Poki#3, erKURITA, Munin, and everybody in the

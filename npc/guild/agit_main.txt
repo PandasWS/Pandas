@@ -24,7 +24,7 @@
 //=   Spawn guardians when guild castle data is recieved.
 //=
 //= - Enables Kafra Services inside Guild Strongholds.
-//=   Visible Name required: Kafra Employee
+//=   Visible Name required: 卡普拉職員
 //=   Storage, Guild Storage, Teleport Service, Cart rental.
 //=
 //= - Treasure Chest spawning.
@@ -343,14 +343,14 @@ OnRecvCastle:
 
 	cutin "kafra_01",2;
 	if (getcharid(2) == .@GID) {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Welcome. ^ff0000" + GetGuildName(.@GID) + "^000000 Member.";
 		mes "The Kafra Corporation will stay with you wherever you go.";
 		next;
 		switch (select("Use Storage:Use Teleport Service:Rent a Pushcart:Cancel")) {
 		case 1:
 			if(!callfunc("F_CanOpenStorage")){
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "I'm sorry, but you";
 				mes "need the Novice's";
 				mes "Basic Skill Level 6 to";
@@ -359,7 +359,7 @@ OnRecvCastle:
 				cutin "",255;
 				end;
 			}
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Here, let me open";
 			mes "your Storage for you.";
 			mes "Thank you for using";
@@ -369,14 +369,14 @@ OnRecvCastle:
 			openstorage;
 			end;
 		case 2:
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Please choose";
 			mes "your destination.";
 			next;
 			switch (select(.@destination$+" -> 200z:Cancel")) {
 			case 1:
 				if (Zeny < 200) {
-					mes "[Kafra Employee]";
+					mes "[卡普拉職員]";
 					mes "I'm sorry, but you don't have";
 					mes "enough zeny for the Teleport";
 					mes "Service. The fee to teleport";
@@ -397,7 +397,7 @@ OnRecvCastle:
 			}
 		case 3:
 			if (BaseClass != Job_Merchant) {
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "I'm sorry, but the";
 				mes "Pushcart rental service";
 				mes "is only available to Merchants,";
@@ -409,7 +409,7 @@ OnRecvCastle:
 				end;
 			}
 			if (checkcart()) {
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "You already have";
 				mes "a Pushcart equipped.";
 				mes "Unfortunately, we can't";
@@ -419,7 +419,7 @@ OnRecvCastle:
 				cutin "",255;
 				end;
 			}
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "The Pushcart rental";
 			mes "fee is 800 zeny. Would";
 			mes "you like to rent a Pushcart?";
@@ -427,7 +427,7 @@ OnRecvCastle:
 			switch (select("Rent a Pushcart.:Cancel")) {
 			case 1:
 				if (Zeny < 800) {
-					mes "[Kafra Employee]";
+					mes "[卡普拉職員]";
 					mes "I'm sorry, but you";
 					mes "don't have enough";
 					mes "zeny to pay the Pushcart";
@@ -448,7 +448,7 @@ OnRecvCastle:
 				end;
 			}
 		case 4:
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "We, here at Kafra Corporation,";
 			mes "are always endeavoring to provide you with the best services. We hope that we meet your adventuring needs and standards of excellence.";
 			close2;
@@ -456,8 +456,8 @@ OnRecvCastle:
 			end;
 		}
 	}
-	mes "[Kafra Employee]";
-	mes "I am instructed to only offer my services to the ^ff0000"+GetGuildName(.@GID)+"^000000 Guild. Please try another Kafra Employee around here. Sorry for the inconvenience.";
+	mes "[卡普拉職員]";
+	mes "I am instructed to only offer my services to the ^ff0000"+GetGuildName(.@GID)+"^000000 Guild. Please try another 卡普拉職員 around here. Sorry for the inconvenience.";
 	close2;
 	cutin "",255;
 	end;
@@ -619,7 +619,7 @@ OnRecvCastle:
 	mes "Welcome. My honorable master, ^ff0000"+strcharinfo(0)+"^000000...";
 	mes "Your humble servent, "+strnpcinfo(1)+", is here to serve you.";
 	next;
-	switch (select("Castle briefing:Invest in commercial growth:Invest in Castle Defenses:Summon Guardian:Hire / Fire a Kafra Employee:Go into Master's room")) {
+	switch (select("Castle briefing:Invest in commercial growth:Invest in Castle Defenses:Summon Guardian:Hire / Fire a 卡普拉職員:Go into Master's room")) {
 	case 1:
 		mes "["+strnpcinfo(1)+"]";
 		mes "I will report the Castle briefing, Master.";
@@ -823,23 +823,23 @@ OnRecvCastle:
 	case 5:
 		if (GetCastleData(strnpcinfo(2),CD_ENABLED_KAFRA) == 1) {
 			mes "["+strnpcinfo(1)+"]";
-			mes "We are currently hiring a Kafra Employee... Do you want to fire the Kafra Employee?";
+			mes "We are currently hiring a 卡普拉職員... Do you want to fire the 卡普拉職員?";
 			next;
 			switch (select("Fire:Cancel")) {
 			case 1:
 				cutin "kafra_01",2;
-				mes "[ Hired Kafra Employee ]";
+				mes "[ Hired 卡普拉職員 ]";
 				mes "I worked so hard... How can you do that, Master?... Please... Please reconsider... Check it again, Master... Please...";
 				next;
 				switch (select("Fire:Cancel")) {
 				case 1:
-					mes "[ Hired Kafra Employee ]";
+					mes "[ Hired 卡普拉職員 ]";
 					mes "Oh, my goodness! This is nonsense!";
 					next;
 					cutin "",255;
 					break;
 				case 2:
-					mes "[ Hired Kafra Employee ]";
+					mes "[ Hired 卡普拉職員 ]";
 					mes "I'll work hard for you... Thank you!";
 					close;
 				}
@@ -853,7 +853,7 @@ OnRecvCastle:
 			SetCastleData strnpcinfo(2),CD_ENABLED_KAFRA,0;
 			mes "["+strnpcinfo(1)+"]";
 			mes "....";
-			mes "I have discharged the Kafra Employee... But... are you unsatisfied with something?";
+			mes "I have discharged the 卡普拉職員... But... are you unsatisfied with something?";
 			close;
 		}
 		mes "["+strnpcinfo(1)+"]";
@@ -864,33 +864,33 @@ OnRecvCastle:
 		case 1:
 			if (getgdskilllv(.@GID,10001) == 0) {
 				mes "["+strnpcinfo(1)+"]";
-				mes "Master, we can't hire a Kafra Employee because we don't have a contract with the Kafra Main Office. If you want to obtain a contract with the Kafra Main Office, you will need to learn the Guild skill first.";
+				mes "Master, we can't hire a 卡普拉職員 because we don't have a contract with the Kafra Main Office. If you want to obtain a contract with the Kafra Main Office, you will need to learn the Guild skill first.";
 				close;
 			}
 			if (Zeny < 10000) {
 				mes "["+strnpcinfo(1)+"]";
-				mes "Well... I'm sorry but we don't have enough funds to hire a Kafra Employee.";
+				mes "Well... I'm sorry but we don't have enough funds to hire a 卡普拉職員.";
 				close;
 			}
 			set Zeny, Zeny - 10000;
 			enablenpc "Kafra Staff#"+strnpcinfo(2);
 			SetCastleData strnpcinfo(2),CD_ENABLED_KAFRA,1;
 			mes "["+strnpcinfo(1)+"]";
-			mes "We obtained a contract with the kafra Main Office, and hired a Kafra Employee.";
+			mes "We obtained a contract with the kafra Main Office, and hired a 卡普拉職員.";
 			next;
 			cutin "kafra_01",2;
-			mes "[ Hired Kafra Employee ]";
+			mes "[ Hired 卡普拉職員 ]";
 			mes "How do you do? I was dispatched from the Main Office.";
 			mes "I'll do my best to not tarnish the reputation of the Guild.";
 			next;
 			cutin "",255;
 			mes "["+strnpcinfo(1)+"]";
-			mes "The Contract terms of the hired Kafra Employee are for 1 month and after this term, you will need to to pay an additional fee.";
+			mes "The Contract terms of the hired 卡普拉職員 are for 1 month and after this term, you will need to to pay an additional fee.";
 			mes "It will be useful for our members.";
 			close;
 		case 2:
 			mes "["+strnpcinfo(1)+"]";
-			mes "I did as you ordered, but some of our members will be unhappy. It will be better to hire a Kafra Employee quickly.";
+			mes "I did as you ordered, but some of our members will be unhappy. It will be better to hire a 卡普拉職員 quickly.";
 			close;
 		}
 	case 6:

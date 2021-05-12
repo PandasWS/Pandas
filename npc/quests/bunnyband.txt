@@ -16,9 +16,9 @@
 //= 1.6 Cleaning. [Euphy]
 //============================================================ 
 
-alberta,26,229,0	script	Kafra Employee#bunny	83,{
+alberta,26,229,0	script	卡普拉職員#bunny	83,{
 	if (BUNYBND == 1) {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Hello there~!";
 		mes "How'd you like to";
 		mes "participate in Kafra";
@@ -27,7 +27,7 @@ alberta,26,229,0	script	Kafra Employee#bunny	83,{
 		next;
 		switch(select("Sure, I brought the items.:Event Information:Cancel")) {
 		case 1:
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Alrighty~";
 			mes "Let me check to";
 			mes "see if you brought";
@@ -36,14 +36,14 @@ alberta,26,229,0	script	Kafra Employee#bunny	83,{
 			setarray .@Items[0],949,100,706,1,722,1,2213,1;
 			for(set .@i,0; .@i<8; set .@i,.@i+2)
 				if (countitem(.@Items[.@i]) < .@Items[.@i+1]) {
-					mes "[Kafra Employee]";
+					mes "[卡普拉職員]";
 					mes "Ooh, I'm sorry";
 					mes "but you need to";
 					mes "bring at least";
 					mes callfunc("F_InsertPlural",.@Items[.@i+1],getitemname(.@Items[.@i]))+".";
 					close;
 				}
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Great, I see that";
 			mes "you've gathered";
 			mes "everything I need to";
@@ -53,7 +53,7 @@ alberta,26,229,0	script	Kafra Employee#bunny	83,{
 			next;
 			for(set .@i,0; .@i<8; set .@i,.@i+2)
 				if (countitem(.@Items[.@i]) < .@Items[.@i+1]) {
-					mes "[Kafra Employee]";
+					mes "[卡普拉職員]";
 					mes "Hm? I'm sorry,";
 					mes "but I actually can't";
 					mes "make this right now. You";
@@ -66,14 +66,14 @@ alberta,26,229,0	script	Kafra Employee#bunny	83,{
 			delitem 706,1; //Four_Leaf_Clover
 			delitem 722,1; //Scarlet_Jewel
 			delitem 2213,1; //Cat_Hairband
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Ah, here you go~";
 			mes "The perfect Bunny Band!";
 			mes "Well, I hope you enjoy it.";
 			getitem 2214,1; //Bunny_Band
 			set BUNYBND,0;
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Thank you for";
 			mes "participating in this";
 			mes "special event and your";
@@ -86,7 +86,7 @@ alberta,26,229,0	script	Kafra Employee#bunny	83,{
 			close;
 		}
 	}
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	mes "Hi there~! Would you like";
 	mes "to join our special ^529DFFBunny";
 	mes "Band Event^000000 hosted by the Kafra";
@@ -96,7 +96,7 @@ alberta,26,229,0	script	Kafra Employee#bunny	83,{
 	switch(select("Join the Event:Event Information:Cancel")) {
 	case 1:
 		set BUNYBND,1;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Great! Thanks for";
 		mes "participating! If you";
 		mes "haven't already heard,";
@@ -104,7 +104,7 @@ alberta,26,229,0	script	Kafra Employee#bunny	83,{
 		mes "items if you want me put a";
 		mes "Bunny Band together for you...";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "100 Feathers,";
 		mes "1 Four-Leaf Clover,";
 		mes "1 Kitty Band and";
@@ -118,15 +118,15 @@ alberta,26,229,0	script	Kafra Employee#bunny	83,{
 		close;
 	}
 L_Info:
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	mes "To thank our valued";
 	mes "customers, Kafra Corporation";
 	mes "has prepared a special event";
-	mes "where Kafra Employee will assemble";
+	mes "where 卡普拉職員 will assemble";
 	mes "Bunny Bands for adventurers";
 	mes "who bring the required items.";
 	next;
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	mes "For this special,";
 	mes "one of a kind item,";
 	mes "bring 100 Feathers,";
@@ -134,7 +134,7 @@ L_Info:
 	mes "1 Kitty Band and";
 	mes "1 Pearl.";
 	next;
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	mes "When you're ready,";
 	mes "come back and bring";
 	mes "those items to me.";

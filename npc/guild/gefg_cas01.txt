@@ -92,7 +92,7 @@ gefg_cas01,64,16,4	duplicate(InsideFlagsG1)	Repherion#10	722
 //============================================================
 geffen,109,123,2	duplicate(InsideFlagsG1)	Repherion#11	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 gefg_cas01,83,47,3	duplicate(guildkafra)	Kafra Staff#gefg_cas01	117
 

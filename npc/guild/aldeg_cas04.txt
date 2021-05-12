@@ -101,7 +101,7 @@ aldeg_cas04,169,15,2	duplicate(InsideFlagsA4)	Wuerzburg#19	722
 //============================================================
 aldebaran,131,97,4	duplicate(InsideFlagsA4)	Wuerzburg#20	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 aldeg_cas04,45,88,0	duplicate(guildkafra)	Kafra Staff#aldeg_cas04	117
 

@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= Quests: Bird Nest, Lion Mask, Skeleton Manteau,
 //=         Fashion Hip Sack & Sales Banner
 //===== By: ==================================================

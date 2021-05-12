@@ -3232,9 +3232,9 @@ OnEnable:
 	hideonnpc "Tan#ein";
 	hideonnpc "Little Toby#ein-1";
 	hideonnpc "Airship Engineer#ein-1";
-	hideonnpc "Kafra Employee#ein1";
-	hideonnpc "Kafra Employee#ein2";
-	hideonnpc "Kafra Employee#ein3";
+	hideonnpc "卡普拉職員#ein1";
+	hideonnpc "卡普拉職員#ein2";
+	hideonnpc "卡普拉職員#ein3";
 	hideonnpc "Morei#ein";
 	hideonnpc "Mark#ein";
 	hideonnpc "Khemko#ein";
@@ -3351,9 +3351,9 @@ OnTimer600000:
 	hideoffnpc "Tan#ein";
 	hideoffnpc "Little Toby#ein-1";
 	hideoffnpc "Airship Engineer#ein-1";
-	hideoffnpc "Kafra Employee#ein1";
-	hideoffnpc "Kafra Employee#ein2";
-	hideoffnpc "Kafra Employee#ein3";
+	hideoffnpc "卡普拉職員#ein1";
+	hideoffnpc "卡普拉職員#ein2";
+	hideoffnpc "卡普拉職員#ein3";
 	hideoffnpc "Morei#ein";
 	hideoffnpc "Mark#ein";
 	hideoffnpc "Khemko#ein";

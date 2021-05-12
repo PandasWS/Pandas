@@ -186,7 +186,7 @@ alberta_in,53,43,6	script	Merchant#mer	86,{
 			mes "First, get the delivery package from the storehouse, and then take it to the former Swordman's Association in Prontera.";
 			next;
 			mes "[Chief Mahnsoo]";
-			mes "When you get there, give the package to the Kafra Employee stationed near there. Her name is Blossom. Did you get all that?";
+			mes "When you get there, give the package to the 卡普拉職員 stationed near there. Her name is Blossom. Did you get all that?";
 			next;
 			if (job_merchant_q2 == 1) {
 				mes "[Chief Mahnsoo]";
@@ -225,7 +225,7 @@ alberta_in,53,43,6	script	Merchant#mer	86,{
 			}
 		}
 		else if (job_merchant_q2 == 7 || job_merchant_q2 == 8) {
-			mes "First, get the package from the storehouse, and then give it to the Kafra Employee stationed on Byalan Island. Her name is Blossom.";
+			mes "First, get the package from the storehouse, and then give it to the 卡普拉職員 stationed on Byalan Island. Her name is Blossom.";
 			next;
 			if (job_merchant_q2 == 7) {
 				mes "[Chief Mahnsoo]";
@@ -385,7 +385,7 @@ alberta_in,53,43,6	script	Merchant#mer	86,{
 				mes "First, get the delivery package from the storehouse, then go to the former Swordman's Association in Prontera.";
 				next;
 				mes "[Chief Mahnsoo]";
-				mes "When you get there, visit the Kafra Employee stationed there. Her name is Blossom. Did you get";
+				mes "When you get there, visit the 卡普拉職員 stationed there. Her name is Blossom. Did you get";
 				mes "all of that?";
 				callsub S_GiveSerial,2485741,1,2328137,2,1009;
 				break;
@@ -401,7 +401,7 @@ alberta_in,53,43,6	script	Merchant#mer	86,{
 				callsub S_GiveSerial,3012685,5,3487372,6,1011;
 				break;
 			case 4:
-				mes "First, get the delivery package from the storehouse, and then give it to the Kafra Employee stationed on Byalan Island.";
+				mes "First, get the delivery package from the storehouse, and then give it to the 卡普拉職員 stationed on Byalan Island.";
 				callsub S_GiveSerial,3318702,7,3543625,8,1012;
 				next;
 				mes "[Chief Mahnsoo]";
@@ -938,10 +938,10 @@ geffen_in,155,122,4	script	Guild Staff#mer	47,{
 	}
 }
 
-prontera,248,42,0	script	Kafra Employee#mer	116,{
+prontera,248,42,0	script	卡普拉職員#mer	116,{
 	cutin "kafra_02",2;
 	if (job_merchant_q == 6 || job_merchant_q == 5) && (job_merchant_q2 == 2 || job_merchant_q2 == 1) {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Oh! Thank you for";
 		mes "traveling such a long";
 		mes "way to come over here~";
@@ -950,7 +950,7 @@ prontera,248,42,0	script	Kafra Employee#mer	116,{
 		end;
 	}
 	else if (job_merchant_q == 4 || job_merchant_q == 3) {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "A delivery from";
 		mes "the Merchant Guild?";
 		mes "Oh, yes, please set";
@@ -967,7 +967,7 @@ prontera,248,42,0	script	Kafra Employee#mer	116,{
 			end;
 		}
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Now, let me check";
 		mes "the serial number...";
 		if (job_merchant_q2 == 1 && countitem(1081) != 0) {
@@ -996,7 +996,7 @@ prontera,248,42,0	script	Kafra Employee#mer	116,{
 			else
 				mes "ordered had the serial number 2328137 or 2328137.";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "I'm afraid there";
 			mes "must be some kind";
 			mes "of mistake. Perhaps";
@@ -1011,7 +1011,7 @@ prontera,248,42,0	script	Kafra Employee#mer	116,{
 			set job_merchant_q,6;
 		else if (job_merchant_q == 3)
 			set job_merchant_q,5;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Thanks again";
 		mes "for going through";
 		mes "all of that trouble~";
@@ -1020,13 +1020,13 @@ prontera,248,42,0	script	Kafra Employee#mer	116,{
 		end;
 	}
 	else {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Welcome to the";
 		mes "Kafra Corportation,";
 		mes "where the service is";
 		mes "always on your side~";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "As you can see, the";
 		mes "Swordman Assocation";
 		mes "has moved to Izlude, a";
@@ -1036,7 +1036,7 @@ prontera,248,42,0	script	Kafra Employee#mer	116,{
 		next;
 		if (select("Use:Cancel") == 1) {
 			if (Zeny < 600) {
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "I'm sorry, but you";
 				mes "don't have enough zeny";
 				mes "for this Teleport Service.";
@@ -1056,10 +1056,10 @@ prontera,248,42,0	script	Kafra Employee#mer	116,{
 	}
 }
 
-//izlu2dun,106,58,4	script	Kafra Employee#mer	116,{
+//izlu2dun,106,58,4	script	卡普拉職員#mer	116,{
 function	script	F_MercKafra	{
 	if ((job_merchant_q == 6 || job_merchant_q == 5) && (job_merchant_q2 == 8 || job_merchant_q2 == 7)) {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Oh hello~";
 		mes "Um, is there";
 		mes "some special reason";
@@ -1069,7 +1069,7 @@ function	script	F_MercKafra	{
 		end;
 	}
 	else if (job_merchant_q == 4 || job_merchant_q == 3) {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "A delivery from";
 		mes "the Merchant Guild?";
 		mes "Oh, yes, please set";
@@ -1086,7 +1086,7 @@ function	script	F_MercKafra	{
 			end;
 		}
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Now, let me check";
 		mes "the serial number...";
 		if (job_merchant_q2 == 7 && countitem(1081) != 0) {
@@ -1125,7 +1125,7 @@ function	script	F_MercKafra	{
 			select("This is from Chief Mahnsoo of the Merchant Guild...");
 			delitem 1072,1; //Delivery_Message
 			set quest_alb_01,1;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Oh~! A letter from";
 			mes "Mahnsoo! Thank you";
 			mes "so much, I've been dying";
@@ -1133,7 +1133,7 @@ function	script	F_MercKafra	{
 			mes "he doing, is he alright?";
 			mes "I can't wait to read it...";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Oh, thank you for";
 			mes "going through all the";
 			mes "trouble of delivering all";
@@ -1143,7 +1143,7 @@ function	script	F_MercKafra	{
 			getitem 513,3; //Banana
 		}
 		else {
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Thanks again";
 			mes "for going through";
 			mes "all of that trouble~";

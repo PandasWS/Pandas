@@ -1,4 +1,4 @@
-//===== rAthena Script ======================================= 
+﻿//===== rAthena Script ======================================= 
 //= Euphy's WOE Controller
 //===== Changelogs: ==========================================
 //= 1.3a Initial SVN release [Euphy]

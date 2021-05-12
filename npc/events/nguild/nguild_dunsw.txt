@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= War of Emperium Dungeon Switch for NGuild Castles
 //===== By: ==================================================
 //= kobra_k88

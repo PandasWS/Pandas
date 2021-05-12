@@ -104,7 +104,7 @@ aldeg_cas01,210,150,4	duplicate(InsideFlagsA1)	Neuschwanstein#22	722
 //============================================================
 aldebaran,152,97,4	duplicate(InsideFlagsA1)	Neuschwanstein#23	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 aldeg_cas01,218,170,0	duplicate(guildkafra)	Kafra Staff#aldeg_cas01	117
 

@@ -105,9 +105,9 @@ yuno,59,212,4	script	Juno Guide#yuno01::GuideJuno	700,{
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Kafra Employees ]:[ Eden Teleport Officer ]:Previous Menu")) {
+				switch(select("[ 卡普拉職員s ]:[ Eden Teleport Officer ]:Previous Menu")) {
 				case 1:
-					callsub L_Mark, "^FA8072Kafra Employees^000000";
+					callsub L_Mark, "^FA8072卡普拉職員s^000000";
 					viewpoint 1,152,187,13,0xFA8072;
 					viewpoint 1,277,221,14,0xFA8072;
 					viewpoint 1,327,108,15,0xFA8072;

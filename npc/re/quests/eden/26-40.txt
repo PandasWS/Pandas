@@ -643,7 +643,7 @@ payon,179,66,3	script	Dashia	931,{
 		mes "Martins can be found in the Mjolnir Dead Pit, but the second floor is dangerous, so be careful!";
 		next;
 		mes "[Dashia]";
-		mes "To get there, ask a Kafra Employee in Geffen, they can warp you there.";
+		mes "To get there, ask a ¥d´¶©ÔÂ¾­û in Geffen, they can warp you there.";
 		break;
 	}
 	next;

@@ -96,7 +96,7 @@ payg_cas04,239,181,4	duplicate(InsideFlagsPA4)	Sacred Altar#10	722
 payon,118,322,4	duplicate(InsideFlagsPA4)	Sacred Altar#11	722
 payon,166,165,3	duplicate(InsideFlagsPA4)	Sacred Altar#12	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 payg_cas04,40,235,1	duplicate(guildkafra)	Kafra Staff#payg_cas04	117
 

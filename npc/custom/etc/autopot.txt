@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= Auto-Potion
 //===== Description: =========================================
 //= Provides an @autopot command to automatically use potions.

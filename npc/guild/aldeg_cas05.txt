@@ -100,7 +100,7 @@ aldeg_cas05,150,202,2	duplicate(InsideFlagsA5)	Rothenburg#18	722
 //============================================================
 aldebaran,128,97,4	duplicate(InsideFlagsA5)	Rothenburg#19	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 aldeg_cas05,31,190,0	duplicate(guildkafra)	Kafra Staff#aldeg_cas05	117
 

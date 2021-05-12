@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= BattleGround System - Flavius Entrance NPCs
 //===== Description: =========================================
 //= [Official Conversion]

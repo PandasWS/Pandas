@@ -96,7 +96,7 @@ prtg_cas05,273,257,4	duplicate(InsideFlagsPR5)	Gondul#12	722
 //============================================================
 prontera,165,194,5	duplicate(InsideFlagsPR5)	Gondul#13	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 prtg_cas05,52,41,4	duplicate(guildkafra)	Kafra Staff#prtg_cas05	117
 

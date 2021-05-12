@@ -88,9 +88,9 @@ morocc,153,286,6	script	Guide#01morocc::GuideMorocc	707,{
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Kafra Employee ]:[ Poison Herb Salesman ]:[ Dye Maker ]:[ Seiyablem ]:Previous Menu")) {
+				switch(select("[ 卡普拉職員 ]:[ Poison Herb Salesman ]:[ Dye Maker ]:[ Seiyablem ]:Previous Menu")) {
 				case 1:
-					callsub L_Mark,"^0000FFKafra Employees^000000";
+					callsub L_Mark,"^0000FF卡普拉職員s^000000";
 					viewpoint 1,156,97,7,0x0A82FF;
 					viewpoint 1,160,258,8,0x0A82FF;
 					next;
@@ -218,7 +218,7 @@ moc_ruins,159,53,3	script	Guide#01ruins::GuideMocRuins	707,{
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Eden Teleport Officer ]:[ Tool Dealer ]:[ Kafra Employee ]:[ Repairman ]:[ Pet Groomer ]:[ Chef Assistant ]:[ Leablem ]:Previous Menu")) {
+				switch(select("[ Eden Teleport Officer ]:[ Tool Dealer ]:[ 卡普拉職員 ]:[ Repairman ]:[ Pet Groomer ]:[ Chef Assistant ]:[ Leablem ]:Previous Menu")) {
 				case 1:
 					callsub L_Mark, F_Navi("Eden Teleport Officer","moc_ruins,68,164","^006400");
 					viewpoint 1,68,164,3,0xAAFF00;
@@ -236,7 +236,7 @@ moc_ruins,159,53,3	script	Guide#01ruins::GuideMocRuins	707,{
 					next;
 					break;
 				case 3:
-					callsub L_Mark, "^B9062FKafra Employee^000000";
+					callsub L_Mark, "^B9062F卡普拉職員^000000";
 					viewpoint 1,59,157,7,0xFF0000;
 					next;
 					break;

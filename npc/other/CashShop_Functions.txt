@@ -36,7 +36,7 @@
 // - No arguments.
 function	script	F_CashStore	{
 	cutin "kafra_01",2;
-	mes "[Kafra Employee]";
+	mes "[¥d´¶©ÔÂ¾­û]";
 	mes "Welcome to the Kafra Corporation.";
 	mes "Here, let me open your Storage for you.";
 	close2;

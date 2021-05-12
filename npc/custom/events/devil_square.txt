@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= Devil Square
 //===== By: ==================================================
 //= Kirlein, Stillhard (translation), AnnieRuru (rewrite)

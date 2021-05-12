@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+ï»¿//===== rAthena Script =======================================
 //= iRO 2008 Christmas Event
 //===== By: ==================================================
 //= Kisuka
@@ -583,13 +583,13 @@ prontera,226,306,4	script	Caroller#iROxmas08	79,{
 			mes "Let's see!!";
 			mes "One! Two! Three!";
 			if (.@SantaCardNpc == 1) {
-				cutin "Æ÷¸µÄ«µå",4; // Poring Card
+				cutin "ïœ‡è‘­è˜‹è„",4; // Poring Card
 			}
 			else if (.@SantaCardNpc == 2) {
-				cutin "¿£Á©¸µÄ«µå",4; // Angeling Card
+				cutin "ç¸›è–¨è‘­è˜‹è„",4; // Angeling Card
 			}
 			else if (.@SantaCardNpc == 3) {
-				cutin "°í½ºÆ®¸µÄ«µå",4; // Ghostring Card
+				cutin "å …è¶ïš¾è‘­è˜‹è„",4; // Ghostring Card
 			}
 			next;
 			set .@SantaCardTurn,.@SantaCardTurn+1;

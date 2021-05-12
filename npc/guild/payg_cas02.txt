@@ -96,7 +96,7 @@ payg_cas02,70,282,4	duplicate(InsideFlagsPA2)	Scarlet Palace#10	722
 payon,97,322,4	duplicate(InsideFlagsPA2)	Scarlet Palace#11	722
 payon,166,173,3	duplicate(InsideFlagsPA2)	Scarlet Palace#12	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 payg_cas02,22,275,5	duplicate(guildkafra)	Kafra Staff#payg_cas02	117
 

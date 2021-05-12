@@ -585,7 +585,7 @@ geffen_in,27,134,5	script	Waitress#elen	91,{
 		mes "Or at least, they're planning to. The airship isn't really ready to take off just yet. In the meantime, there's some weird customer representative over there who's offering a teleport service.";
 		next;
 		mes "[Elenore]";
-		mes "It seems like Kafra Corporation may finally have a competitor! Then again, I don't think many girls are as attractive as the Kafra Employees...";
+		mes "It seems like Kafra Corporation may finally have a competitor! Then again, I don't think many girls are as attractive as the ¥d´¶©ÔÂ¾­ûs...";
 		break;
 	case 2:
 		mes "[Elenore]";

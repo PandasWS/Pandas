@@ -646,7 +646,7 @@ malaya,63,185,4	script	Woman#ma08	583,{
 			break;
 		case 5:
 			mes "[Woman]";
-			mes "A Kafra Employee I'm friends with told me a story about a customer.";
+			mes "A ¥d´¶©ÔÂ¾­û I'm friends with told me a story about a customer.";
 			next;
 			mes "[Woman]";
 			mes "'Kafra, the wise never marry and when they marry, they become otherwise.'";

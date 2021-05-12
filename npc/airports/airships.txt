@@ -1,4 +1,4 @@
-//===== rAthena Script ======================================= 
+ï»¿//===== rAthena Script ======================================= 
 //= The Airship System Script
 //===== By: ================================================== 
 //= rAthena Dev Team
@@ -49,124 +49,124 @@ OnInit:
 	initnpctimer;
 	end;
 OnTimer20000:
-	mapannounce "airplane","¥Ø«e¥»­¸ªÅ¸¥¥¿¦b­¸¦V¦ã¦]¥¬Ã¹§J¤¤.",bc_map,"0x00ff00";
+	mapannounce "airplane","????????????????.",bc_map,"0x00ff00";
 	end;
 OnTimer50000:
-	mapannounce "airplane","µ¥¤@¤U­¸ªÅ¸¥´N­n©è¹F¦ã¦]¥¬Ã¹§J¤F.",bc_map,"0x00ff00";
+	mapannounce "airplane","????????????????.",bc_map,"0x00ff00";
 	end;
 OnTimer60000:
 	set $@airplanelocation,1;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
-	mapannounce "airplane","§Ú­Ì¤w©è¹F¦ã¦]¥¬Ã¹§J¡A¤U¾÷ªº®È«È¦A¨£¤F.",bc_map,"0x00ff00";
+	mapannounce "airplane","???????????????????.",bc_map,"0x00ff00";
 	end;
 OnTimer70000:
-	mapannounce "airplane","§Ú­Ì²{¦b°±¾a¦b¦ã¦]¥¬Ã¹§J¤¤¡Aµ¥¤@¤U§Ú­Ìªº­¸ªÅ¸¥´N­n¥XµoÅo.",bc_map,"0x00ff00";
+	mapannounce "airplane","????????????????????????????.",bc_map,"0x00ff00";
 	end;
 OnTimer80000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
-	mapannounce "airplane","­¸ªÅ¸¥¤w°_­¸,§Ú­Ì¤U¤@­Ó¥Øªº¦a¬O¸Ì§Æ¶ð¼ÖÂí.",bc_map,"0x70dbdb";
+	mapannounce "airplane","??????,??????????????.",bc_map,"0x70dbdb";
 	end;
 OnTimer100000:
-	mapannounce "airplane","¥Ø«e¥»­¸ªÅ¸¥¥¿­¸¦V¸Ì§Æ¶ð°ÇÂí¤¤.",bc_map,"0x70dbdb";
+	mapannounce "airplane","???????????????.",bc_map,"0x70dbdb";
 	end;
 OnTimer130000:
-	mapannounce "airplane","µ¥¤@¤U­¸ªÅ¸¥´N­n©è¹F¸Ì§Æ¶ð¼ÖÂí¤F.",bc_map,"0x70dbdb";
+	mapannounce "airplane","????????????????.",bc_map,"0x70dbdb";
 	end;
 OnTimer140000:
 	set $@airplanelocation,2;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
-	mapannounce "airplane","§Ú­Ì¤w©è¹F¸Ì§Æ¶ð¼ÖÂí¤¤¡Aµ¥¤@¤U§Ú­Ìªº­¸ªÅ¸¥´N­n¥XµoÅo.",bc_map,"0x70dbdb";
+	mapannounce "airplane","??????????????????????????.",bc_map,"0x70dbdb";
 	end;
 OnTimer150000:
-	mapannounce "airplane","§Ú­Ì²{¦b°±¾a¦b¸Ì§Æ¶ð¼ÖÂí¤¤,µ¥¤@¤U§Ú­Ìªº­¸ªÅ¸¥´N­n¥XµoÅo. The Airship will leave shortly.",bc_map,"0x70dbdb";
+	mapannounce "airplane","?????????????,??????????????. The Airship will leave shortly.",bc_map,"0x70dbdb";
 	end;
 OnTimer160000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
-	mapannounce "airplane","­¸ªÅ¸¥¤w°_­¸,§Ú­Ìªº¤U¤@­Ó¥Øªº¦a¬O¦ã¦]¥¬Ã¹§J.",bc_map,"0x00ff00";
+	mapannounce "airplane","??????,???????????????.",bc_map,"0x00ff00";
 	end;
 OnTimer180000:
-	mapannounce "airplane","¥Ø«e¥»­¸ªÅ¸¥¥¿¦b­¸¦V¦ã¦]¥¬Ã¹§J¤¤.",bc_map,"0x00ff00";
+	mapannounce "airplane","????????????????.",bc_map,"0x00ff00";
 	end;
 OnTimer210000:
-	mapannounce "airplane","µ¥¤@¤U­¸ªÅ¸¥´N­n©è¹F¦ã¦]¥¬Ã¹§J¤F.",bc_map,"0x00FF00";
+	mapannounce "airplane","????????????????.",bc_map,"0x00FF00";
 	end;
 OnTimer220000:
 	set $@airplanelocation,1;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
-	mapannounce "airplane","§Ú­Ì¥H©è¹F¦ã¦]¥¬Ã¹§J¡A¤U¾÷ªº®È«È¦A¨£¤F.",bc_map,"0x00ff00";
+	mapannounce "airplane","???????????????????.",bc_map,"0x00ff00";
 	end;
 OnTimer230000:
-	mapannounce "airplane","§Ú­Ì²{¦b°±¾a¦b¦ã¦]¥¬Ã¹§J¤¤,µ¥¤@¤U§Ú­Ìªº­¸ªÅ¸¥´N­n¥XµoÅo.",bc_map,"0x00ff00";
+	mapannounce "airplane","?????????????,??????????????.",bc_map,"0x00ff00";
 	end;
 OnTimer240000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
-	mapannounce "airplane","­¸ªÅ¸¥¤w°_­¸,§Ú­Ìªº¤U¤@­Ó¥Øªº¦a¬O¦¶¿Õ.",bc_map,"0xff8200";
+	mapannounce "airplane","??????,????????????.",bc_map,"0xff8200";
 	end;
 OnTimer260000:
-	mapannounce "airplane","¥Ø«e¥»­¸ªÅ¸¥¥¿­¸¦V¦¶¿Õ¤¤.",bc_map,"0xff8200";
+	mapannounce "airplane","????????????.",bc_map,"0xff8200";
 	end;
 OnTimer290000:
-	mapannounce "airplane","µ¥¤@¤U­¸ªÅ¸¥´N­n©è¹F¦¶¿Õ¤F.",bc_map,"0xff8200";
+	mapannounce "airplane","?????????????.",bc_map,"0xff8200";
 	end;
 OnTimer300000:
 	set $@airplanelocation,0;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
-	mapannounce "airplane","§Ú­Ì¤w©è¹F¦¶¿Õ¡A¤U¾÷ªº®È«È¦A¨£¤F.",bc_map,"0xff8200";
+	mapannounce "airplane","????????????????.",bc_map,"0xff8200";
 	end;
 OnTimer310000:
-	mapannounce "airplane","§Ú­Ì²{¦b°±¾a¦b¦¶¿Õ¤¤,µ¥¤@¤U§Ú­Ì­¸ªÅ¸¥´N­n¥XµoÅo.",bc_map,"0xff8200";
+	mapannounce "airplane","??????????,?????????????.",bc_map,"0xff8200";
 	end;
 OnTimer320000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
-	mapannounce "airplane","­¸ªÅ¸¥¤w°_­¸,§Ú­Ìªº¤U¤@­Ó¥Øªº¦a¬O·´¸¯.",bc_map,"0xca4bf3";
+	mapannounce "airplane","??????,????????????.",bc_map,"0xca4bf3";
 	end;
 OnTimer340000:
-	mapannounce "airplane","¥Ø«e¥»­¸ªÅ¸¥¥¿¦b­¸¦V·´¸¯¤¤.",bc_map,"0xca4bf3";
+	mapannounce "airplane","?????????????.",bc_map,"0xca4bf3";
 	end;
 OnTimer370000:
-	mapannounce "airplane","µ¥¤@¤U­¸ªÅ¸¥´N­n©è¹F·´¸¯¤F.",bc_map,"0xca4bf3";
+	mapannounce "airplane","?????????????.",bc_map,"0xca4bf3";
 	end;
 OnTimer380000:
 	set $@airplanelocation,3;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
-	mapannounce "airplane","§Ú­Ì¤w©è¹F·´¸¯,¤U¾÷ªº®È«È¦A¨£¤F.",bc_map,"0xca4bf3";
+	mapannounce "airplane","???????,????????.",bc_map,"0xca4bf3";
 	end;
 OnTimer390000:
-	mapannounce "airplane","§Ú­Ì²{¦b°±¾a¦b·´¸¯¤¤¡Aµ¥¤@¤U§Ú­Ìªº­¸ªÅ¸¥´N­n¥XµoÅo.",bc_map,"0xca4bf3";
+	mapannounce "airplane","?????????????????????????.",bc_map,"0xca4bf3";
 	end;
 OnTimer400000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
-	mapannounce "airplane","­¸ªÅ¸¥¤w°_­¸,§Ú­Ìªº¤U¤@­Ó¥Øªº¦a¬O¦¶¿Õ.",bc_map,"0xff8200";
+	mapannounce "airplane","??????,????????????.",bc_map,"0xff8200";
 	end;
 OnTimer420000:
-	mapannounce "airplane","¥Ø«e¥»­¸ªÅ¸¥¥¿­¸¦V¦¶¿Õ¤¤.",bc_map,"0xff8200";
+	mapannounce "airplane","????????????.",bc_map,"0xff8200";
 	end;
 OnTimer450000:
-	mapannounce "airplane","µ¥¤@¤U­¸ªÅ¸¥´N­n©è¹F¦¶¿Õ¤F.",bc_map,"0xff8200";
+	mapannounce "airplane","?????????????.",bc_map,"0xff8200";
 	end;
 OnTimer460000:
 	set $@airplanelocation,0;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
-	mapannounce "airplane","§Ú­Ì¤w©è¹F¦¶¿Õ,¤U¾÷ªº®È«È¦A¨£¤F.",bc_map,"0xff8200";
+	mapannounce "airplane","???????,????????.",bc_map,"0xff8200";
 	end;
 OnTimer470000:
-	mapannounce "airplane","§Ú­Ì²{¦b°±¾a¦b¦¶¿Õ¤¤,µ¥¤@¤U§Ú­Ìªº­¸ªÅ¸¥´N­n¥XµoÅo.",bc_map,"0xff8200";
+	mapannounce "airplane","??????????,??????????????.",bc_map,"0xff8200";
 	end;
 OnTimer480000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
-	mapannounce "airplane","­¸ªÅ¸¥¤w°_­¸,§Ú­Ìªº¤U¤@­Ó¥Øªº¦a¬O¦ã¦]¥¬Ã¹§J.",bc_map,"0x00ff00";
+	mapannounce "airplane","??????,???????????????.",bc_map,"0x00ff00";
 	stopnpctimer;
 	initnpctimer;
 }
@@ -178,29 +178,29 @@ airplane,247,64,5	duplicate(ExitAirplane)	Exit#airplane1b	857
 airplane,240,40,1	duplicate(ExitAirplane)	Exit#airplane2a	857
 airplane,247,40,1	duplicate(ExitAirplane)	Exit#airplane2b	857
 
-airplane,100,69,3	script	¾÷²Õ­û#ein-1	852,{
-	mes "[¾÷²Õ­û]";
-	mes "¦pªG§Ú­Ì©è¹F¤F±z©Ò·Q¥hªº¥Øªº¦a,";
-	mes "´N½Ðµn¤W«e¤èªº¼Ó±è¤U¾÷§a.";
-	mes "ÁÂÁÂ±z¿ï¾Ü¨Ï¥Î§Ú­ÌªºªA°È!";
-	mes "¯¬ºÖ±z¦³­Ó¬ü¦nªº¤@¤Ñ~";
+airplane,100,69,3	script	???#ein-1	852,{
+	mes "[???]";
+	mes "???????????????,";
+	mes "????????????.";
+	mes "????????????!";
+	mes "??????????~";
 	close;
 }
 
-airplane,64,94,1	script	¨Z¤Ú©Ô¤p«Ä#ein_p	787,{
+airplane,64,94,1	script	?????#ein_p	787,{
 	emotion ET_PROFUSELY_SWEAT;
-	mes "[«Äµ£]";
+	mes "[??]";
 	if (event_umbala >= 3) {
-		mes "Wow, ¶ý!";
-		mes "§A¬Ý¡I §A¬Ý!";
-		mes "§Ú­Ì²{¦b¦b­¸! §Ú­Ì...";
-		mes "§Ú­Ì¦b¤ÑªÅ¤W°Ú!";
+		mes "Wow, ?!";
+		mes "??? ??!";
+		mes "??????! ??...";
+		mes "???????!";
 	}
 	else {
-		mes "°¨®w°¨©Ô¥j!";
-		mes "´²©¬ ³îª÷ªi";
-		mes "¥d»Å ¯Ç °ò®¦¸¦ ÄBÃ¹.";
-		mes "ªiº¸«z«¢«¢«¢«¢!";
+		mes "?????!";
+		mes "?? ???";
+		mes "?? ? ??? ??.";
+		mes "???????!";
 	}
 	close;
 }

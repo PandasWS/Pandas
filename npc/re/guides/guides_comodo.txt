@@ -96,7 +96,7 @@ comodo,322,178,4	script	Comodo Guide#01comodo::GuideComodo	700,{
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Chief's House ]:[ Bor Robin ]:[ Kafra Employee ]:[ Roaming Bard ]:Previous Menu")) {
+				switch(select("[ Chief's House ]:[ Bor Robin ]:[ 卡普拉職員 ]:[ Roaming Bard ]:Previous Menu")) {
 				case 1:
 					callsub L_Mark, F_Navi("Chief's House","comodo,115,290","^6495ED");
 					viewpoint 1,114,294,11,0x6495ED;
@@ -111,7 +111,7 @@ comodo,322,178,4	script	Comodo Guide#01comodo::GuideComodo	700,{
 					next;
 					break;
 				case 3:
-					callsub L_Mark,"^1E90FFKafra Employee^000000";
+					callsub L_Mark,"^1E90FF卡普拉職員^000000";
 					viewpoint 1,195,149,13,0x1E90FF;
 					next;
 					break;

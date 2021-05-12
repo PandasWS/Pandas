@@ -3406,7 +3406,7 @@ prt_in,162,68,4	script	Vending Guide#pront	HIDDEN_NPC,{
 		mes "^FF0000[Vending Guide for Dummies]^000000";
 		mes "When you have learned the Pushcart";
 		mes "skill, you can go ahead and rent a";
-		mes "Cart form a Kafra Employee. Once";
+		mes "Cart form a ¥d´¶©ÔÂ¾­û. Once";
 		mes "this cart is equipped, it won't";
 		mes "disappear as long as you don't take";
 		mes "it off.";

@@ -100,7 +100,7 @@ prtg_cas02,162,161,4	duplicate(InsideFlagsPR2)	Swanhild#16	722
 //============================================================
 prontera,146,194,3	duplicate(InsideFlagsPR2)	Swanhild#17	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 prtg_cas02,71,36,4	duplicate(guildkafra)	Kafra Staff#prtg_cas02	117
 

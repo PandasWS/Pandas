@@ -665,8 +665,8 @@ prt_cas_q,26,30,3	script	Chamberlain Bell#ep16_m	4_M_RUSMAN1,{
 				mes "You want the Kafra Service.";
 				mes "Let me make a call right away.";
 				close2;
-				classchange( 4_F_KAFRA2, "Kafra Employee#ep16_s01", bc_self );
-				npctalk "Kafra Service.", "Kafra Employee#ep16_s01", bc_self;
+				classchange( 4_F_KAFRA2, "卡普拉職員#ep16_s01", bc_self );
+				npctalk "Kafra Service.", "卡普拉職員#ep16_s01", bc_self;
 				end;
 			case 2:
 				mes "[Belle]";
@@ -717,9 +717,9 @@ prt_cas_q,29,30,3	script	Giant Beast Manager#ep16_s01	HIDDEN_WARP_NPC,{
 		setriding;
 }
 
-prt_cas_q,28,30,3	script	Kafra Employee#ep16_s01	HIDDEN_WARP_NPC,{
+prt_cas_q,28,30,3	script	卡普拉職員#ep16_s01	HIDDEN_WARP_NPC,{
 	cutin "kafra_02",2;
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	mes "Hello. This is Kafra Service.";
 	mes "What can I do for you?";
 	next;
@@ -735,7 +735,7 @@ prt_cas_q,28,30,3	script	Kafra Employee#ep16_s01	HIDDEN_WARP_NPC,{
 		if (countitem(7060) > 0)
 			delitem 7060,1;// Warp_Free_Ticket
 		else if (Zeny < 500) {
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "I'm sorry, but you don't";
 			mes "have enough zeny to use";
 			mes "the Storage Service. Our";
@@ -745,29 +745,29 @@ prt_cas_q,28,30,3	script	Kafra Employee#ep16_s01	HIDDEN_WARP_NPC,{
 		else
 			Zeny = Zeny - 500;
 		openstorage;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Let me open the warehouse for you.";
 		mes "Thank you for using Kafra Service.";
 		close3;
 	case 2:
 		if (BaseClass != Job_Merchant) {
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "I am sorry,";
 			mes "The Cart Service is available for Merchant classes only.";
 			close3;
 		}
 		if (getskilllv("MC_PUSHCART") == 0) {// custom
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "You can only rent a cart after";
 			mes "learning the Pushcart Skill.";
 			close3;
 		}
 		if (checkcart() == 1) {
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "You are already equipped with a cart.";
 			close3;
 		}
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "The Cart Service costs 800 Zeny.";
 		mes "Would you use it?";
 		next;
@@ -777,7 +777,7 @@ prt_cas_q,28,30,3	script	Kafra Employee#ep16_s01	HIDDEN_WARP_NPC,{
 				setcart();
 			}
 			else if (Zeny < 800) {
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "You don't have enough money, dear customer.";
 				mes "The Cart Service costs 800 Zeny.";
 			}
@@ -788,7 +788,7 @@ prt_cas_q,28,30,3	script	Kafra Employee#ep16_s01	HIDDEN_WARP_NPC,{
 		}
 		close3;
 	case 3:
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Thank you for using Kafra Service as always.";
 		close3;
 	}

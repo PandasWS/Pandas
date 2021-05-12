@@ -93,7 +93,7 @@ gefg_cas02,68,36,2	duplicate(InsideFlagsG2)	Eeyorbriggar#11	722
 //============================================================
 geffen,112,129,1	duplicate(InsideFlagsG2)	Eeyorbriggar#12	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 gefg_cas02,23,66,3	duplicate(guildkafra)	Kafra Staff#gefg_cas02	117
 

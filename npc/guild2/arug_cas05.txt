@@ -22,7 +22,7 @@
 
 arug_cas05,328,98,3	duplicate(Steward#template)	Steward#ar05	55
 arug_cas05,146,315,3	duplicate(Guardian#template)	Eeos#ar05	868
-arug_cas05,315,98,5	duplicate(Kafra#template)	Kafra Employee#ar05	117
+arug_cas05,315,98,5	duplicate(Kafra#template)	¥d´¶©ÔÂ¾­û#ar05	117
 arug_cas05,65,171,0	duplicate(Guardian Stone#template)	1st Guardian Stone#ar05	844
 arug_cas05,212,149,0	duplicate(Guardian Stone#template)	2nd Guardian Stone#ar05	844
 arug_cas05,136,158,0	duplicate(Control#template)	Control Device01#ar05	111

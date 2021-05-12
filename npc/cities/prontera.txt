@@ -600,7 +600,7 @@ prt_church,103,76,0	script	Garnet#pront	67,{
 			mes "Once you learn ^6666CCWarp Portal^000000, the level of the Warp Portal skill will determine how many warp destinations, or Warp Points, you can memorize.";
 			next;
 			mes "[Garnet]";
-			mes "If you master the Warp Portal skill, you can have a maximum of 4 different Warp Points. But at least one Warp Point is designated as the Save Point that you've made with a Kafra Employee.";
+			mes "If you master the Warp Portal skill, you can have a maximum of 4 different Warp Points. But at least one Warp Point is designated as the Save Point that you've made with a 卡普拉職員.";
 			next;
 			mes "[Garnet]";
 			mes "Well, it's a bit of hassle, but if you want to make a certain place one of your Warp Points, you need to be physically there first. Then, type in ^6666CC/memo^000000 into the command prompt.";
@@ -692,7 +692,7 @@ prt_church,103,71,0	script	Henson#pront	120,{
 			mes "The ^6666CCTeleport^000000 skill teleports you to a random location in the field or city which you are currently in. Teleport will prove useful for quick escapes, but where you may end up is... unpredictable.";
 			next;
 			mes "[Henson]";
-			mes "Once the Teleport skill is mastered, you can Teleport to the latest Save Point that you have made with a Kafra Employee. I do not know why it is that way, but the Lord works in mysterious ways.";
+			mes "Once the Teleport skill is mastered, you can Teleport to the latest Save Point that you have made with a 卡普拉職員. I do not know why it is that way, but the Lord works in mysterious ways.";
 			next;
 			mes "[Henson]";
 			mes "When Teleport is mastered, you can also learn the ^6666CCWarp Portal^000000 skill. Ask Garnet if you wish to know more about Warp Portal.";

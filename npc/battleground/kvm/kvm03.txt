@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= BattleGround System - KvM 60-80
 //===== Description: =========================================
 //= [Official Conversion]

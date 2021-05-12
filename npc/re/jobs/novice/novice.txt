@@ -473,7 +473,7 @@ new_5-2,100,29,4	duplicate(NvSprakkiB)	Sprakki#nv5b	90
 		case 2:
 			mes "[Instructor Brade]";
 			mes "Town... Eh?";
-			mes "In that case, I will send you to where the Kafra Employee is at.";
+			mes "In that case, I will send you to where the 卡普拉職員 is at.";
 			mes "Use ^4d4dffKafra's Warp Service^000000 to go to town.";
 			close2;
 			warp strnpcinfo(4),41,172;
@@ -766,28 +766,28 @@ new_3-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv3	96
 new_4-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv4	96
 new_5-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv5	96
 
--	script	Kafra Employee#newbe07::NvKafra	-1,{
+-	script	卡普拉職員#newbe07::NvKafra	-1,{
 	if (job_novice_q < 8) {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Hello.";
 		mes "I don't think it's my turn yet.";
 		mes "Please talk to 'Chocolat' first.";
 		close;
 	} else if (job_novice_q == 8) {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Hello.";
 		mes "I've been dispatched by the Kafra Head Office to help trainees.";
 		mes "The Kafra Corporation is the world's largest company with a long and distinguished history on the Midgard continent.";
 		mes "It's important for you adventurers to be close with us.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "I will inform you about the Kafra Services which you will be using most frequently, [Save], [Storage] and [Teleport] Services.";
 		next;
-		mes "[Kafra Employee]";
-		mes "When you talk to a Kafra Employee and ask for the Save Service,";
+		mes "[卡普拉職員]";
+		mes "When you talk to a 卡普拉職員 and ask for the Save Service,";
 		mes "the location of where you will revive, after being defeated in battle, will be changed.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Your Respawn Point is always the last place where you have saved. Using a Butterfly Wing will return you to the place where you last saved.";
 		mes "This service is free to use, so feel free to use the Save Service anytime you like.";
 		next;
@@ -796,13 +796,13 @@ new_5-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv5	96
 		callsub L_Services,3; //Teleport
 		set job_novice_q,9;
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Do you want to hear another explanation?";
 		next;
 		while(1) {
 			set .@select, select("About Save:About Storage:About Teleport:About Cart:No More.");
 			if (.@select == 5) {
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "I hope you are satisfied with my explanation";
 				mes "about the Kafra Service.";
 				close;
@@ -811,11 +811,11 @@ new_5-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv5	96
 			next;
 		}
 	} else {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Kafra Service at your service.";
 		mes "What can I do for you?";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Let me inform you before you use the Teleport Service.";
 		mes "If you teleport to the village,";
 		mes "^4d4dffyou can NEVER come back to the Novice Training Field.^000000";
@@ -823,24 +823,24 @@ new_5-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv5	96
 		next;
 		switch(select("Teleport Service:About Kafra Service")) {
 		case 1:
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "So, you are going straight to town.";
 			mes "Let me give you a brief introduction.";
 			mes "^4d4dffProntera is the Capital City of the Rune-Midgarts Kingdom, and right next to it is Izlude^000000.";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "^4d4dffMorocc is the Desert City, you can change your job to Thief and Assassin^000000 here.";
 			mes "^4d4dffPayon is the Village in the Mountains, and it is close to the Archer Village^000000.";
 			mes "^4d4dffGeffen is the City of Magic. Go there if you want to become a Mage.^000000";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "^4d4dffAlberta is the Port City and there you can find the Merchant Guild^000000.";
 			mes "Also, if you are trying to take a boat to go somewhere, you have to go through Alberta first.";
 			mes "Select the town you want to teleport to.";
 			next;
 			switch(select("Prontera:Morocc:Payon:Alberta:Geffen")) {
 			case 1:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Rune-Midgarts' Capital, Prontera.";
 				mes "I will send you to Prontera.";
 				mes "May Freya bless you upon your journey.";
@@ -850,7 +850,7 @@ new_5-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv5	96
 				warp "prontera",150,50;
 				end;
 			case 2:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "The Desert City, Morocc...";
 				mes "It has lost it's former glory...";
 				mes "Do not lose the dream in your heart right now.";
@@ -860,7 +860,7 @@ new_5-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv5	96
 				warp "morocc",155,110;
 				end;
 			case 3:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Hmm, you want to be an Archer?.";
 				mes "Let's go to Payon.";
 				mes "Let Freya bless you.";
@@ -870,7 +870,7 @@ new_5-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv5	96
 				warp "payon",166,67;
 				end;
 			case 4:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "The Port City, Alberta.";
 				mes "Main city for all trades on the Midgard continent.";
 				mes "If you want to experience other civilizations, you have to visit Alberta first.";
@@ -880,7 +880,7 @@ new_5-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv5	96
 				warp "alberta",114,58;
 				end;
 			case 5:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "The City of Magic!";
 				mes "Geffen Tower is looking nice standing in the middle of Geffen City.";
 				mes "I will send you close to the Geffen fountain.";
@@ -892,7 +892,7 @@ new_5-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv5	96
 				end;
 			}
 		case 2:
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "I will explain about the Kafra Service.";
 			mes "Which Service do you want to be";
 			mes "informed about?";
@@ -900,7 +900,7 @@ new_5-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv5	96
 			while(1) {
 				set .@select, select("About Save:About Storage:About Teleport:About Cart:No More.");
 				if (.@select == 5) {
-					mes "[Kafra Employee]";
+					mes "[卡普拉職員]";
 					mes "I hope you are satisfied with my explanation";
 					mes "about the Kafra Service.";
 					close;
@@ -915,88 +915,88 @@ new_5-2,33,172,4	duplicate(NvChocolat)	Chocolat#nv5	96
 L_Services:
 	switch(getarg(0)) {
 	case 1:
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "When you are killed in a battle,";
 		mes "you can revive in the location you saved with this service.";
 		mes "If you save at a Kafra in each village";
 		mes "You can revive in the village you saved.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Saved location is always where";
 		mes "you saved last, and by using a Butterfly Wing,";
 		mes "you can teleport directly to your saved point.";
 		mes "So feel free to use this service.";
 		break;
 	case 2:
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Next is about using the Storage Service.";
 		mes "You can store and retrieve your items in any town at your convenience.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "It's unreasonable to carry all of your items with you when you don't need them right away.";
 		mes "Please use our Storage and keep your items safe and secure.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Our convenient Storage Service";
 		mes "is provided to our customers for a small fee which is different from town to town.";
 		mes "However, you must be";
 		mes "at least ^3355FFBasic Skill Level 6^000000";
 		mes "to use the Storage.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		//mes "There are 3 different item sections of the Storage into which items are organized: Consumable, Equipment and Etc.";
 		mes "There are 7 different item sections of the Storage into which items are organized: Consumable, Kafra (Item Mall), Armor, Weapons, Ammo, Cards, and Etc items.";
 		next;
 
 		// VIP System messages.
 		if (MIN_STORAGE != MAX_STORAGE) {
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "There are a maximum of "+MIN_STORAGE+" Inventory Slots in Kafra Storage, meaning you can have up to "+MIN_STORAGE+" different kinds of items in Storage.";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "If you have a Premium Subscription, the maximum Inventory Slots in Kafra Storage is "+MAX_STORAGE+"!";
 			mes "Remember though, that in the case of Equipment, each item takes up one Inventory Slot.";
 			mes "The maximum number of items that can be placed in Kafra Storage is 30,000.";
 			next;
 		} else {
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "There are a maximum of "+MAX_STORAGE+" Inventory Slots in Kafra Storage, meaning you can have up to "+MAX_STORAGE+" different kinds of items in Storage.";
 			next;
 		}
 
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "This Storage is shared by every character on one account.";
 		mes "Storage Fees can be vary for each Town.";
 		mes "So please keep that in mind when you are using our storage service.";
 		break;
 	case 3:
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "We also provide you with a Teleport Service to make your trips easier when you are trying to move a long distance.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "With our veteran teleporter's skill,";
 		mes "your trip will be safer and more comfortable.";
 		mes "Oh and remember that the places you can teleport to vary from town to town.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "This is all for your never ending";
 		mes "support. We are working hard to";
 		mes "repay our dept to our customers.";
 		break;
 	case 4:
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "The Kafra corporation provides Cart rental services";
 		mes "to customers engaged in commercial business.";
 		mes "Originally this cart rental service had been only provided";
 		mes "by the merchant guild in Alberta";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "However, since we took over this service";
 		mes "our merchant customers have been able to rent carts from almost anywhere.";
 		mes "The cart rental service is available only for job classes engaged in commercial business";
 		mes "such as ^4d4dffMerchants, Blacksmiths, Alchemists, and Super Novices^000000.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Of course you should learn the 'Pushcart' skill beforehand,";
 		mes "otherwise you will not be able to rent a cart from us.";
 		mes "The rental fee varies by town,";
@@ -1005,17 +1005,17 @@ L_Services:
 	}
 	return;
 }
-new_1-2,30,176,4	duplicate(NvKafra)	Kafra Employee#nv1	117
-new_2-2,30,176,4	duplicate(NvKafra)	Kafra Employee#nv2	117
-new_3-2,30,176,4	duplicate(NvKafra)	Kafra Employee#nv3	117
-new_4-2,30,176,4	duplicate(NvKafra)	Kafra Employee#nv4	117
-new_5-2,30,176,4	duplicate(NvKafra)	Kafra Employee#nv5	117
+new_1-2,30,176,4	duplicate(NvKafra)	卡普拉職員#nv1	117
+new_2-2,30,176,4	duplicate(NvKafra)	卡普拉職員#nv2	117
+new_3-2,30,176,4	duplicate(NvKafra)	卡普拉職員#nv3	117
+new_4-2,30,176,4	duplicate(NvKafra)	卡普拉職員#nv4	117
+new_5-2,30,176,4	duplicate(NvKafra)	卡普拉職員#nv5	117
 
 -	script	Cool Event Corp. Staff::NvCool	-1,{
 	if (job_novice_q < 9) {
 		mes "[Cool Event Corp. Staff]";
 		mes "This is not my turn.";
-		mes "have you finished talking to the Kafra Employee yet?";
+		mes "have you finished talking to the 卡普拉職員 yet?";
 		close;
 	} else if (job_novice_q == 9) {
 		mes "[Cool Event Corp. Staff]";
@@ -1036,7 +1036,7 @@ new_5-2,30,176,4	duplicate(NvKafra)	Kafra Employee#nv5	117
 		mes "Who knows, we might meet outside of this academy.";
 		next;
 		mes "[Cool Event Corp. Staff]";
-		mes "Mostly all of us wear red coats in the places that the Kafra Employee's don't work in.";
+		mes "Mostly all of us wear red coats in the places that the 卡普拉職員's don't work in.";
 		set job_novice_q,10;
 		close;
 	} else {
@@ -1068,7 +1068,7 @@ new_5-2,33,176,4	duplicate(NvCool)	Cool Event Corp. Staff::NvCool5	874
 		mes "Take note of this whenever you go to a new town.";
 		next;
 		mes "[Guide]";
-		mes "If you want to go to your first town, you can ask the Kafra Employee to the left.";
+		mes "If you want to go to your first town, you can ask the 卡普拉職員 to the left.";
 		mes "You can move there with the Teleport Service.";
 		set job_novice_q,11;
 		close;
@@ -1089,7 +1089,7 @@ new_5-2,33,176,4	duplicate(NvCool)	Cool Event Corp. Staff::NvCool5	874
 			mes "Take note of this whenever you go to a new town.";
 			next;
 			mes "[Guide]";
-			mes "If you want to go to your first town, you can ask the Kafra Employee to the left.";
+			mes "If you want to go to your first town, you can ask the 卡普拉職員 to the left.";
 			mes "You can move there with the Teleport Service.";
 			close;
 		case 2:

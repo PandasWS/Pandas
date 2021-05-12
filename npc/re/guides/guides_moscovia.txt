@@ -26,10 +26,10 @@ moscovia,161,76,3	script	Moscovia Guide#01mosc	959,{
 	set .@str$,"Is there anything else I can do for you?";
 	while (1) {
 		next;
-		switch(select("[ Kafra Employee ]:[ Palace ]:[ Chapel ]:[ Weapon Shop ]:[ Armor Shop ]:[ Tool Shop ]:[ Inn ]:[ Return to Alberta ]:Remove Marks from Mini-Map:Cancel")) {
+		switch(select("[ 卡普拉職員 ]:[ Palace ]:[ Chapel ]:[ Weapon Shop ]:[ Armor Shop ]:[ Tool Shop ]:[ Inn ]:[ Return to Alberta ]:Remove Marks from Mini-Map:Cancel")) {
 		case 1:
 			mes "[Moscovia Guide]";
-			mes "The ^0000FFKafra Employee^000000 has";
+			mes "The ^0000FF卡普拉職員^000000 has";
 			mes "been marked on your mini-map";
 			mes "Check your mini-map.";
 			mes "Do you need anything else?";

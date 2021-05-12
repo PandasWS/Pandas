@@ -1270,7 +1270,7 @@ izlude,120,207,4	script	Information Staff#0	8W_SOLDIER,{
 				break;
 			case 2:
 				while (1) {
-					switch(select("[ Eden Group Teleporter ]", "[ Kafra Employee ]", "[ Mesmerizer ]", "[ Wedding Secretary ]", "[ Mercenary Guild Official ]", "[ Taming Merchant ]", "Go back to the previous menu")) {
+					switch(select("[ Eden Group Teleporter ]", "[ 卡普拉職員 ]", "[ Mesmerizer ]", "[ Wedding Secretary ]", "[ Mercenary Guild Official ]", "[ Taming Merchant ]", "Go back to the previous menu")) {
 					case 1:
 						mes "[Information Staff]";
 						mes "For now, I will mark the location of the";
@@ -1283,7 +1283,7 @@ izlude,120,207,4	script	Information Staff#0	8W_SOLDIER,{
 					case 2:
 						mes "[Information Staff]";
 						mes "I will mark the location of the";
-						mes "<NAVI>[Kafra Employee]<INFO>izlude,128,148,</INFO></NAVI>";
+						mes "<NAVI>[卡普拉職員]<INFO>izlude,128,148,</INFO></NAVI>";
 						mes "on the mini map.";
 						mes "Do you need additional directions?";
 						viewpoint 1, 128, 148, 9, 0xFFFF54;
@@ -1536,7 +1536,7 @@ izlude,120,207,4	script	Information Staff#0	8W_SOLDIER,{
 				break;
 			case 2:
 				while (1) {
-					switch(select("[ Eden Group Teleporter ]:[ Kafra Employee ]:[ Mesmerizer ]:[ Wedding Secretary ]:[ Mercenary Guild Official ]:[ Taming Merchant ]:Go back to the previous menu")) {
+					switch(select("[ Eden Group Teleporter ]:[ 卡普拉職員 ]:[ Mesmerizer ]:[ Wedding Secretary ]:[ Mercenary Guild Official ]:[ Taming Merchant ]:Go back to the previous menu")) {
 					case 1:
 						mes "[Information Staff]";
 						mes "For now, I will mark the location of the";
@@ -1549,7 +1549,7 @@ izlude,120,207,4	script	Information Staff#0	8W_SOLDIER,{
 					case 2:
 						mes "[Information Staff]";
 						mes "I will mark the location of the";
-						mes "<NAVI>[Kafra Employee]<INFO>izlude,128,148,</INFO></NAVI>";
+						mes "<NAVI>[卡普拉職員]<INFO>izlude,128,148,</INFO></NAVI>";
 						mes "on the mini map.";
 						mes "Do you need additional directions?";
 						viewpoint 1, 128, 148, 9, 0xFFFF54;
@@ -5345,7 +5345,7 @@ iz_ac01,95,46,5	script	Kafra Guide Trainer#ac	4_F_KAFRA1,{
 				mes "To use the storage, you need to be over Novice Job Level 6 and higher.";
 				next;
 				mes "[Kafra Guide Trainer]";
-				mes "For a small fee, most Kafra Employees will let you open your storage.";
+				mes "For a small fee, most 卡普拉職員s will let you open your storage.";
 				mes "You can even buy Kafra Cards from the Item Mall to open storage from anywhere!";
 				mes "Do you want to use the storage?";
 				next;
@@ -5382,7 +5382,7 @@ iz_ac01,95,46,5	script	Kafra Guide Trainer#ac	4_F_KAFRA1,{
 				mes "Teleport service is a service that sends you to various locations throughout Midgard.";
 				next;
 				mes "[Kafra Guide Trainer]";
-				mes "Different Kafra Employees have different teleport locations to send you to so you need to talk to them to find out where they're teleporting to.";
+				mes "Different 卡普拉職員s have different teleport locations to send you to so you need to talk to them to find out where they're teleporting to.";
 				next;
 				mes "[Kafra Guide Trainer]";
 				mes "Ok, so for educational purposes I'm offering a free teleport service here at the Academy.";

@@ -98,7 +98,7 @@ prtg_cas04,263,27,4	duplicate(InsideFlagsPR4)	Skoegul#14	722
 //============================================================
 prontera,167,203,6	duplicate(InsideFlagsPR4)	Skoegul#15	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 prtg_cas04,258,247,4	duplicate(guildkafra)	Kafra Staff#prtg_cas04	117
 

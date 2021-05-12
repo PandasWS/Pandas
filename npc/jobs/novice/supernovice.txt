@@ -384,24 +384,24 @@ aldeba_in,216,169,5	script	Esseray#sn	86,{
 	}
 }
 
-aldebaran,54,238,5	script	Kafra Employee#sn	117,{
+aldebaran,54,238,5	script	卡普拉職員#sn	117,{
 	if (BaseJob == Job_Super_Novice) {
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		if (Sex == SEX_MALE)
 			mes "Hello, Mister Super Novice~";
 		else
 			mes "Hello, Super Novice, Ma'am.";
 		mes "You must have been really";
 		mes "dissapointed that the other";
-		mes "Kafra Employees wouldn't let";
+		mes "卡普拉職員s wouldn't let";
 		mes "you rent a cart from them.";
 		mes "But don't you worry now...";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "I'm here to support you guys";
 		mes "by providing carts...";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "^3355FF*whispers*^000000";
 		mes "^555555I am not supposed to do this";
 		mes "because it's against our";
@@ -409,11 +409,11 @@ aldebaran,54,238,5	script	Kafra Employee#sn	117,{
 		mes "really sorry for Super Novices";
 		mes "...so here I am.^000000";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Anyway, would you like to rent a cart? The service fee is 1,900 zeny.";
 		next;
 		if (select("Rent a Cart.:Cancel.") == 1) {
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Oh, here's the thing...";
 			mes "Have you learned the 'Push Cart'";
 			mes "skill? I can just rent you a";
@@ -421,13 +421,13 @@ aldebaran,54,238,5	script	Kafra Employee#sn	117,{
 			mes "learned to push it, you'll";
 			mes "just be wasting your zeny.";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "So make sure that you have";
 			mes "the 'Push Cart' skill already.";
 			next;
 			if (select("Rent a Cart.:Cancel.") == 1) {
 				if (checkcart()) {
-					mes "[Kafra Employee]";
+					mes "[卡普拉職員]";
 					mes "Oh, you've already equipped a cart.";
 					close;
 				}
@@ -435,36 +435,36 @@ aldebaran,54,238,5	script	Kafra Employee#sn	117,{
 					set RESRVPTS, RESRVPTS + 190;
 					set Zeny, Zeny-1900;
 					if (getskilllv("MC_PUSHCART") > 0) setcart;
-					mes "[Kafra Employee]";
+					mes "[卡普拉職員]";
 					mes "Thank you for using my service.";
 					mes "Although what I am doing might";
 					mes "not be legitimate to other";
-					mes "Kafra Employees, I strongly";
+					mes "卡普拉職員s, I strongly";
 					mes "believe I am doing what's right for the customers.";
 					close;
 				}
 				else {
-					mes "[Kafra Employee]";
+					mes "[卡普拉職員]";
 					mes "I am sorry, but you do not have enough zeny with you. The service fee is 1,900 zeny.";
 					close;
 				}
 			}
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Please come again.";
 			mes "Thank you for using my services.";
 			close;
 		}
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Please come again.";
 		mes "Thank you for using my services.";
 		close;
 	}
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	mes "Good da--Oops...!";
 	mes "I don't think I can provide you";
 	mes "with the services you want...";
 	mes "Please go talk to another";
-	mes "Kafra employee. I apologize";
+	mes "卡普拉職員. I apologize";
 	mes "for such inconvenience...";
 	close;
 }

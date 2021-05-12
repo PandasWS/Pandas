@@ -280,10 +280,10 @@ moc_para01,25,35,4	script	Instructor Boya#para01	4_M_KNIGHT_GOLD,{
 		}
 	}
 	else if (para_suv01 < 28) {
-		mes "Umm. Orc village has a Kafra Employee there so you can use the Kafra services.";
+		mes "Umm. Orc village has a 卡普拉職員 there so you can use the Kafra services.";
 		next;
 		mes "[Boya]";
-		mes "One of our dispatched members is waiting in the building near the Kafra Employee.";
+		mes "One of our dispatched members is waiting in the building near the 卡普拉職員.";
 	}
 	else if (para_suv01 == 28) {
 		mes "Cool! You passed the third step of training.";
@@ -300,10 +300,10 @@ moc_para01,25,35,4	script	Instructor Boya#para01	4_M_KNIGHT_GOLD,{
 		completequest 7151;
 	}
 	else if (para_suv01 < 32) {
-		mes "Umm. Orc village has a Kafra Employee there so you can use the Kafra services there.";
+		mes "Umm. Orc village has a 卡普拉職員 there so you can use the Kafra services there.";
 		next;
 		mes "[Boya]";
-		mes "One of our dispatched members is waiting in the building near the Kafra Employee.";
+		mes "One of our dispatched members is waiting in the building near the 卡普拉職員.";
 	}
 	else if (para_suv01 == 32) {
 		mes "Cool! You passed the third step of training.";
@@ -539,11 +539,11 @@ S_Quest3:
 		mes "Or you can go out through the western gate of Geffen and keep heading southeast..";
 		next;
 		mes "[Boya]";
-		mes "Umm. Orc village has a Kafra Employee dispatched there so you could use the Kafra services..";
+		mes "Umm. Orc village has a 卡普拉職員 dispatched there so you could use the Kafra services..";
 		mes "It's up to you.";
 		next;
 		mes "[Boya]";
-		mes "One of our dispatched members is waiting in the building near the Kafra Employee.";
+		mes "One of our dispatched members is waiting in the building near the 卡普拉職員.";
 		next;
 		mes "[Boya]";
 		mes "She will explain what needs to be done there.";
@@ -564,11 +564,11 @@ S_Quest3:
 		mes "Or you can go out through the western gate of Geffen and keep heading southeast..";
 		next;
 		mes "[Boya]";
-		mes "Umm. Orc village has a Kafra Employee dispatched there so you could use the Kafra services..";
+		mes "Umm. Orc village has a 卡普拉職員 dispatched there so you could use the Kafra services..";
 		mes "It's up to you.";
 		next;
 		mes "[Boya]";
-		mes "One of our dispatched members is waiting in the building near the Kafra Employee.";
+		mes "One of our dispatched members is waiting in the building near the 卡普拉職員.";
 		next;
 		mes "[Boya]";
 		mes "She will explain what needs to be done there.";

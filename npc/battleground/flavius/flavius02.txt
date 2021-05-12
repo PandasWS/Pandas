@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= BattleGround System - Flavius Second
 //===== Description: =========================================
 //= [Official Conversion]

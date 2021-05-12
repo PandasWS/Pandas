@@ -98,7 +98,7 @@ prtg_cas01,45,46,4	duplicate(InsideFlagsPR1)	Kriemhild#14	722
 //============================================================
 prontera,155,190,4	duplicate(InsideFlagsPR1)	Kriemhild#15	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 prtg_cas01,96,173,0	duplicate(guildkafra)	Kafra Staff#prtg_cas01	117
 

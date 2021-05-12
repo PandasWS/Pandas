@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= Platinum Skills
 //===== Description: =========================================
 //= Single NPC that assigns quests skills for all classes

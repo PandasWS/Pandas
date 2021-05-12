@@ -8593,11 +8593,11 @@ OnTouch_:
 	}
 }
 
-aldebaran,58,225,4	script	Kafra Employee#l1	4_F_KAFRA2,{
+aldebaran,58,225,4	script	卡普拉職員#l1	4_F_KAFRA2,{
 
 	if(lhz_boss != 17)
 	{
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Welcome to the";
 		mes "Kafra Headquarters.";
 		mes "Here in the heart of";
@@ -8605,14 +8605,14 @@ aldebaran,58,225,4	script	Kafra Employee#l1	4_F_KAFRA2,{
 		mes "can be provided with special";
 		mes "services offered nowhere else!";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "If you need anything,";
 		mes "please inquire the Kafra";
 		mes "Employees inside the building.";
 		mes "Thank you and have a good day~";
 		close;
 	}
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	mes "Good day~";
 	mes "The Kafra Corporation is";
 	mes "always working to ensure";
@@ -8622,7 +8622,7 @@ aldebaran,58,225,4	script	Kafra Employee#l1	4_F_KAFRA2,{
 	switch( select( "I have a question.","I'm fine, thanks." ) )
 	{
 		case 1:
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Sure, I'll answer your";
 			mes "question to the best of";
 			mes "my ability. However, I may";
@@ -8635,7 +8635,7 @@ aldebaran,58,225,4	script	Kafra Employee#l1	4_F_KAFRA2,{
 				case 1:
 					break;
 			}
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Oh, Benith? Sure, you";
 			mes "can find her here inside";
 			mes "Kafra Headquarters to the";
@@ -8643,7 +8643,7 @@ aldebaran,58,225,4	script	Kafra Employee#l1	4_F_KAFRA2,{
 			mes "a special uniform, so you";
 			mes "can spot her easily.";
 			next;
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Okay then,";
 			mes "have a good day!";
 			mes "Always remember";
@@ -8652,7 +8652,7 @@ aldebaran,58,225,4	script	Kafra Employee#l1	4_F_KAFRA2,{
 			close;
 
 		case 2:
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "Feel free to ask any";
 			mes "one of our conveniently";
 			mes "located employees if you";
@@ -8663,7 +8663,7 @@ aldebaran,58,225,4	script	Kafra Employee#l1	4_F_KAFRA2,{
 	}
 }
 
-aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
+aldeba_in,155,240,5	script	卡普拉職員#l2	4_F_AGENTKAFRA,{
 
 	if(checkweight(7343,1) != 1)
 	{
@@ -8677,7 +8677,7 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 	}
 	if(lhz_boss < 17)
 	{
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Welcome to";
 		mes "Kafra Headquarters.";
 		mes "What's new with Kafra?";
@@ -8685,7 +8685,7 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 		mes "we're developing a brand new";
 		mes "program with Cool Event Corp.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "This new program will";
 		mes "provide a direct teleport";
 		mes "service to dungeons for";
@@ -8693,7 +8693,7 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 		mes "valued customers. Is";
 		mes "that not... exciting?";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Due to technical issues,";
 		mes "Kafra Corp and Cool Event";
 		mes "Corp cannot provide teleport";
@@ -8701,7 +8701,7 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 		mes "so one common teleport service";
 		mes "provider will be selected.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Therefore, elections will";
 		mes "be held to determine which";
 		mes "company will provide this";
@@ -8712,7 +8712,7 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 	}
 	else if(lhz_boss == 17)
 	{
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Welcome to";
 		mes "Kafra Headquarters.";
 		mes "What's new with Kafra?";
@@ -8720,7 +8720,7 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 		mes "we're developing a brand new";
 		mes "program with Cool Event Corp.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "This new program will";
 		mes "provide a direct teleport";
 		mes "service to dungeons for";
@@ -8728,7 +8728,7 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 		mes "valued customers. Is";
 		mes "that not... exciting?";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Due to technical issues,";
 		mes "Kafra Corp and Cool Event";
 		mes "Corp cannot provide teleport";
@@ -8736,7 +8736,7 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 		mes "so one common teleport service";
 		mes "provider will be selected.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "We'd like to inform";
 		mes "you that the customers";
 		mes "will decide the teleport";
@@ -8744,7 +8744,7 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 		mes "an election. Your vote will";
 		mes "be much appreciated.";
 		next;
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Remember to take part";
 		mes "in the polls that will be";
 		mes "taking place in the cities";
@@ -8754,7 +8754,7 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 		switch( select( "Okay.","I can't wait!" ) )
 		{
 			case 1:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "Uh oh...";
 				mes "Did you have a question?";
 				mes "In all honesty, I don't know";
@@ -8765,13 +8765,13 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 				switch( select( "Oh, that's okay then.","Are you Benith..?" ) )
 				{
 					case 1:
-						mes "[Kafra Employee]";
+						mes "[卡普拉職員]";
 						mes "*Whew!*";
 						mes "Oh good. Well, if you";
 						mes "do have any questions";
 						mes "about the Kafra Services,";
 						mes "please ask one of the regular";
-						mes "Kafra Employees. Thank you.";
+						mes "卡普拉職員s. Thank you.";
 						close;
 
 					case 2:
@@ -8841,7 +8841,7 @@ aldeba_in,155,240,5	script	Kafra Employee#l2	4_F_AGENTKAFRA,{
 				}
 
 			case 2:
-				mes "[Kafra Employee]";
+				mes "[卡普拉職員]";
 				mes "That makes one of u--";
 				mes "I mean, your participation";
 				mes "is very much appreciated.";

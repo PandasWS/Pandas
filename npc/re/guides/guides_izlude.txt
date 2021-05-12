@@ -105,7 +105,7 @@
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Eden Teleport Officer ]:[ Kafra Employee ]:[ Hypnotist ]:[ Newlywed Helper ]:[ Mercenary Guildsman ]:[ Pet Groomer ]:Previous Menu")) {
+				switch(select("[ Eden Teleport Officer ]:[ 卡普拉職員 ]:[ Hypnotist ]:[ Newlywed Helper ]:[ Mercenary Guildsman ]:[ Pet Groomer ]:Previous Menu")) {
 				case 1:
 					mes "[Izlude Guide]";
 					mes "The "+F_Navi("Eden Teleport Officer",.@map$+",131,148","^0000FF");
@@ -117,7 +117,7 @@
 					next;
 					break;
 				case 2:
-					callsub L_Mark, F_Navi("Kafra Employee",.@map$+",128,148","^FF5400"),1;
+					callsub L_Mark, F_Navi("卡普拉職員",.@map$+",128,148","^FF5400"),1;
 					viewpoint 1,128,148,9,0xFF5400;
 					next;
 					break;

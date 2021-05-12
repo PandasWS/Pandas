@@ -101,7 +101,7 @@ aldeg_cas03,96,62,2	duplicate(InsideFlagsA3)	Nuernberg#19	722
 //============================================================
 aldebaran,134,97,4	duplicate(InsideFlagsA3)	Nuernberg#20	722
 
-// Kafra Employee
+// ¥d´¶©ÔÂ¾­û
 //============================================================
 aldeg_cas03,118,76,0	duplicate(guildkafra)	Kafra Staff#aldeg_cas03	117
 

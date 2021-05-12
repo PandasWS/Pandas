@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= War of Emperium Treasure Rooms for NGuild Guild Castles
 //===== By: ==================================================
 //= kobra_k88

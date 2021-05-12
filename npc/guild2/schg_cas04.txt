@@ -22,7 +22,7 @@
 
 schg_cas04,247,305,3	duplicate(Steward#template)	Steward#sc04	55
 schg_cas04,123,306,3	duplicate(Guardian#template)	Ef#sc04	868
-schg_cas04,300,287,5	duplicate(Kafra#template)	Kafra Employee#sc04	117
+schg_cas04,300,287,5	duplicate(Kafra#template)	¥d´¶©ÔÂ¾­û#sc04	117
 schg_cas04,27,36,0	duplicate(Guardian Stone#template)	1st Guardian Stone#sc04	844
 schg_cas04,208,75,0	duplicate(Guardian Stone#template)	2nd Guardian Stone#sc04	844
 schg_cas04,124,52,0	duplicate(Control#template)	Control Device01#sc04	111

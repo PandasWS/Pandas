@@ -1,4 +1,4 @@
-//===== rAthena Script =======================================
+﻿//===== rAthena Script =======================================
 //= BattleGround System - Tierra Gorge 2
 //===== Description: =========================================
 //= [Official Conversion]

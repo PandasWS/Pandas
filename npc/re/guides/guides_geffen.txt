@@ -94,7 +94,7 @@ geffen,203,116,4	script	Guide#01geffen::GuideGeffen	705,{
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Eden Teleport Officer ]:[ Kafra Employee ]:[ Pet Groomer ]:[ Chef Assistant ]:[ Dimensional Arcanist Guide ]:Previous Menu")) {
+				switch(select("[ Eden Teleport Officer ]:[ 卡普拉職員 ]:[ Pet Groomer ]:[ Chef Assistant ]:[ Dimensional Arcanist Guide ]:Previous Menu")) {
 				case 1:
 					callsub L_Mark, F_Navi("Eden Teleport Officers","geffen,132,66","^B9062F");
 					viewpoint 1,61,180,7,0xFF0000;
@@ -102,7 +102,7 @@ geffen,203,116,4	script	Guide#01geffen::GuideGeffen	705,{
 					next;
 					break;
 				case 2:
-					callsub L_Mark, "^FF5400Kafra Employees^000000";
+					callsub L_Mark, "^FF5400卡普拉職員s^000000";
 					viewpoint 1,203,123,10,0xFFB400;
 					viewpoint 1,120,62,11,0xFFB400;
 					next;

@@ -1127,23 +1127,23 @@ moc_para01,30,187,4	script	Mail Annex Station	888,{
 }
 auction_03,152,16,0	warp	#mail_annex_warp	1,1,moc_para01,30,184
 
-auction_03,152,42,4	script	Kafra Employee#annex	117,{
-	mes "[Kafra Employee]";
+auction_03,152,42,4	script	卡普拉職員#annex	117,{
+	mes "[卡普拉職員]";
 	mes "Welcome to the Kafra's Mail Annex Station. This is now the only place to send and retrieve mail.";
 	next;
-	mes "[Kafra Employee]";
+	mes "[卡普拉職員]";
 	mes "What would you like to do?";
 	next;
 	switch(select("Access Mail:Storage:Cancel")) {
 	case 1:
 		if (Zeny < 130) {
-			mes "[Kafra Employee]";
+			mes "[卡普拉職員]";
 			mes "I am sorry, but you do not have enough money.";
 			mes "To use the mailbox service,";
 			mes "you are required to pay 130 zeny.";
 			close;
 		}
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Thank you for using the Kafra Service.";
 		set Zeny, Zeny - 130;
 		close2;
@@ -1153,7 +1153,7 @@ auction_03,152,42,4	script	Kafra Employee#annex	117,{
 		callfunc "F_KafStor",0,1200,0;
 		end;
 	case 3:
-		mes "[Kafra Employee]";
+		mes "[卡普拉職員]";
 		mes "Thank you for using the Kafra Service.";
 		close;
 	}

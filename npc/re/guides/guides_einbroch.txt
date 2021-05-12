@@ -134,7 +134,7 @@ einbroch,72,202,4	script	Einbroch Guide#ein01::GuideEinbroch	852,{
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Armsmith ]:[ Kafra Employees ]:[ Eden Teleport Officer ]:Previous Menu")) {
+				switch(select("[ Armsmith ]:[ 卡普拉職員s ]:[ Eden Teleport Officer ]:Previous Menu")) {
 				case 1:
 					mes "[Einbroch Guide]";
 					mes "You may go to ^FF1493Manthasman^000000,";
@@ -152,7 +152,7 @@ einbroch,72,202,4	script	Einbroch Guide#ein01::GuideEinbroch	852,{
 				case 2:
 					mes "[Einbroch Guide]";
 					mes "I will mark the locations";
-					mes "of the ^DA70D6Kafra Employees^000000";
+					mes "of the ^DA70D6卡普拉職員s^000000";
 					mes "on your mini-map.";
 					mes "Would you like to check any other locations?";
 					viewpoint 1,242,205,11,0xDA70D6;
@@ -223,7 +223,7 @@ einbech,67,37,4	script	Einbech Guide#einbech01::GuideEinbech	852,{
 	F_Navi("[Einbech Guide]");
 	next;
 	while (1) {
-		switch(select("[ Tavern ]:[ Tool Shop ]:[ Train Station ]:[ Mine ]:[ Kafra Employee ]:Remove Marks from Mini-Map:Cancel")) {
+		switch(select("[ Tavern ]:[ Tool Shop ]:[ Train Station ]:[ Mine ]:[ 卡普拉職員 ]:Remove Marks from Mini-Map:Cancel")) {
 		case 1:
 			mes "[Einbech Guide]";
 			mes "The "+F_Navi("Tavern","einbech,157,106")+" is located";
@@ -265,7 +265,7 @@ einbech,67,37,4	script	Einbech Guide#einbech01::GuideEinbech	852,{
 		case 5:
 			mes "[Einbech Guide]";
 			mes "I will mark the location";
-			mes "of the ^FF1493Kafra Employee^000000";
+			mes "of the ^FF1493卡普拉職員^000000";
 			mes "on your mini-map.";
 			mes "Would you like to check any other locations?";
 			viewpoint 1,181,132,4,0xFF1493;

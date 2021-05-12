@@ -70,7 +70,7 @@ payon,160,67,3	script	Guide#01payon::GuidePayon	708,{
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Eden Teleport Officer ]:[ Kafra Shop ]:[ Repair / Armsmith ]:[ Kafra Employee ]:[ Trap Specialist ]:[ Seiayblem ]:[ Leablem ]:[ Jade ]:[ Pet Groomer ]:[ Chef Assistant ]:Previous Menu")) {
+				switch(select("[ Eden Teleport Officer ]:[ Kafra Shop ]:[ Repair / Armsmith ]:[ 卡普拉職員 ]:[ Trap Specialist ]:[ Seiayblem ]:[ Leablem ]:[ Jade ]:[ Pet Groomer ]:[ Chef Assistant ]:Previous Menu")) {
 				case 1:
 					callsub L_Mark, F_Navi("Eden Teleport Officer","payon,177,111","^0000FF");
 					viewpoint 1,177,111,7,0x0A82FF;
@@ -87,7 +87,7 @@ payon,160,67,3	script	Guide#01payon::GuidePayon	708,{
 					next;
 					break;
 				case 4:
-					callsub L_Mark, "^7F3300Kafra Employees^000000";
+					callsub L_Mark, "^7F3300卡普拉職員s^000000";
 					viewpoint 1,181,104,10,0xD2691E;
 					viewpoint 1,175,226,11,0xD2691E;
 					next;
@@ -200,7 +200,7 @@ pay_arche,86,33,4	script	Guide#05payon	708,{
 	next;
 	set .@str$,"Would you like to check any other locations?";
 	while (1) {
-		switch(select("[ Payon Dungeon ]:[ Archer Guild ]:[ Tool Shop ]:[ Kafra Employee ]:[ Mercenary Guildsman ]:[ Alchemist Guildsman ]:[ Eden Teleport Officer ]:Remove Marks from Mini-Map:Cancel")) {
+		switch(select("[ Payon Dungeon ]:[ Archer Guild ]:[ Tool Shop ]:[ 卡普拉職員 ]:[ Mercenary Guildsman ]:[ Alchemist Guildsman ]:[ Eden Teleport Officer ]:Remove Marks from Mini-Map:Cancel")) {
 		case 1:
 			mes "[Payon Guide]";
 			mes "Let me mark the entrance of";
@@ -230,7 +230,7 @@ pay_arche,86,33,4	script	Guide#05payon	708,{
 			break;
 		case 4:
 			mes "[Payon Guide]";
-			mes "Let me mark the location of the ^006400Kafra Employee^000000";
+			mes "Let me mark the location of the ^006400卡普拉職員^000000";
 			mes "on your mini-map.";
 			mes .@str$;
 			viewpoint 1,55,123,3,0xAAFF00;
