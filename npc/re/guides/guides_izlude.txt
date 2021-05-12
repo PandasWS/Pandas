@@ -1,4 +1,4 @@
-//===== rAthena Script ======================================= 
+﻿//===== rAthena Script ======================================= 
 //= Izlude Guides
 //===== By: ================================================== 
 //= L0ne_W0lf
@@ -20,79 +20,76 @@
 
 -	script	::GuideIzlude	-1,{
 	cutin "prt_soldier",2;
-	mes "[Izlude Guide]";
-	mes "Welcome to ^8B4513Izlude^000000,";
-	mes "Prontera's satellite town.";
-	mes "Do you need help navigating the town?";
-	F_Navi("[Izlude Guide]");
+	mes "[伊斯魯德島 解說員]";
+	mes "你好~!";
+	mes "衛星都市 ^8B4513伊斯魯德島^000000,";
+	mes "誠摯地歡迎大家蒞臨";
+	F_Navi("[伊斯魯德島 解說員]");
 	next;
 	set .@map$, strnpcinfo(4);
 	while (1) {
-		switch(select("[ Main Facilities ]:[ Merchants & Helpers ]:Remove Marks from Mini-Map:Cancel")) {
+		switch(select("[ 主要設施 ]:[ 商人 & 小幫手 ]:刪除小地圖的標記:結束對話")) {
 		case 1:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Cryptura Academy ]:[ Marina ]:[ International Airship ]:[ Arena ]:[ Kit Shop ]:[ Swordsman Guild ]:[ Enchant Association ]:[ Forge ]:Previous Menu")) {
+				switch(select("[ 克里圖拉學院 ]:[ 碼頭 ]:[ 飛空艇(國際線) ]:[ 競技場 ]:[ 商店 ]:[ 劍士公會 ]:[ 強化協會 ]:[ 鐵工廠 ]:[返回上一層選單]")) {
 				case 1:
-					mes "[Izlude Guide]";
-					mes "Novice adventurers should go to "+F_Navi("Cryptura Academy","iz_ac01,100,39")+" to receive more information and training!";
-					mes "Would you like to check any other locations?";
+					mes "[伊斯魯德島 解說員]";
+					mes "新手冒險家可透過 "+F_Navi("克里圖拉學院","iz_ac01,100,39")+"";
+					mes "來取得更詳盡的資訊和優惠喔！";
+					mes "還需要其他服務嗎?";
 					viewpoint 1,128,260,0,0xD2691E;
 					next;
 					break;
 				case 2:
-					mes "[Izlude Guide]";
-					mes "You can use the "+F_Navi("Marina",.@map$+",197,205","^B9062F");
-					mes "to go to ^8B4513Alberta^000000 or ^8B4513Byalan Island^000000.";
-					mes "Beware of ^8B4513Izlude Dungeon^000000";
-					mes "on Byalan Island since it is";
-					mes "filled with dreadful monsters.";
-					mes "Would you like to check any other locations?";
+					mes "[伊斯魯德島 解說員]";
+					mes "可透過西北方的 "+F_Navi("碼頭",.@map$+",197,205","^B9062F");
+					mes "到達 ^8B4513艾爾貝塔^000000 或 ^8B4513柏伊亞嵐島^000000";
+					mes "等地。";
 					viewpoint 1,197,205,1,0xFF0000;
 					next;
 					break;
 				case 3:
-					mes "[Izlude Guide]";
-					mes "The "+F_Navi("International Airship",.@map$+",202,75","^0000FF");
-					mes "goes to ^8B4513Juno^000000 and ^8B4513Rachel^000000.";
-					mes "Let me mark its location";
-					mes "on your mini-map.";
-					mes "Would you like to check any other locations?";
+					mes "[伊斯魯德島 解說員]";
+					mes "東南方的 "+F_Navi("飛空艇國際線",.@map$+",202,75","^0000FF");
+					mes "可飛往秀發茲發德共和國的首都^8B4513朱諾^000000,";
+					mes "和阿盧納貝茲叫國的首都^8B4513拉赫^000000等地";
+					mes "還需要其他服務嗎?";
 					viewpoint 1,210,73,2,0x0A82FF;
 					next;
 					break;
 				case 4:
-					mes "[Izlude Guide]";
-					mes "The "+F_Navi("Arena",.@map$+",213,161","^FF5400");
-					mes "is a perfect place to";
-					mes "test your combat capabilities.";
-					mes "Let me mark its location";
-					mes "on your mini-map.";
-					mes "Would you like to check any other locations?";
+					mes "[伊斯魯德島 解說員]";
+					mes "位於東邊的"+F_Navi("競技場",.@map$+",213,161","^FF5400");
+					mes "則是測試自己戰鬥時力的";
+					mes "最佳場地,";
+					mes "位置已經標記在";
+					mes "小地圖上了,";
+					mes "還需要其他服務嗎?";
 					viewpoint 1,213,161,3,0xFF5400;
 					next;
 					break;
 				case 5:
-					callsub L_Mark, F_Navi("Kit Shop",.@map$+",110,182","^006400");
+					callsub L_Mark, F_Navi("商店",.@map$+",110,182","^006400");
 					viewpoint 1,108,179,4,0xAAFF00;
 					next;
 					break;
 				case 6:
-					mes "[Izlude Guide]";
-					mes "The "+F_Navi("Swordsman Guild",.@map$+",51,172")+" is where you can ^800080change your job to Swordsman.^000000";
-					mes "Let me mark its location";
-					mes "on your mini-map.";
-					mes "Would you like to check any other locations?";
+					mes "[伊斯魯德島 解說員]";
+					mes " "+F_Navi("劍士公會",.@map$+",51,172")+"是負責劍士轉職的地方,";
+					mes "位置已經標記在";
+					mes "小地圖上了,";
+					mes "還需要其他服務嗎?";
 					viewpoint 1,52,172,5,0xDA70D6;
 					next;
 					break;
 				case 7:
-					callsub L_Mark, F_Navi("Enchant Association",.@map$+",97,125","^B9062F");
+					callsub L_Mark, F_Navi("強化協會",.@map$+",97,125","^B9062F");
 					viewpoint 1,97,125,6,0xDA70D6;
 					next;
 					break;
 				case 8:
-					callsub L_Mark, F_Navi("Forge",.@map$+",153,126");
+					callsub L_Mark, F_Navi("鐵工廠",.@map$+",153,126");
 					viewpoint 1,153,126,7,0xAAFF00;
 					next;
 					break;
@@ -105,44 +102,42 @@
 		case 2:
 			set .@loop,1;
 			while (.@loop) {
-				switch(select("[ Eden Teleport Officer ]:[ �d����¾�� ]:[ Hypnotist ]:[ Newlywed Helper ]:[ Mercenary Guildsman ]:[ Pet Groomer ]:Previous Menu")) {
+				switch(select("[ 伊甸園傳送師 ]:[ 卡普拉職員 ]:[ 催眠師 ]:[ 新婚秘書 ]:[ 傭兵公會管理員 ]:[ 認養寵物傷人 ]:[返回上一層選單]")) {
 				case 1:
-					mes "[Izlude Guide]";
-					mes "The "+F_Navi("Eden Teleport Officer",.@map$+",131,148","^0000FF");
-					mes "is currently staying inside";
-					mes "the Swordsman Guild building.";
-					mes "Let me mark his location on your mini-map.";
-					mes "Would you like to check any other locations?";
+					mes "[伊斯魯德島 解說員]";
+					mes "把 "+F_Navi("伊甸園傳送師",.@map$+",131,148","^0000FF");
+					mes "位置已經標記在";
+					mes "小地圖上了,";
+					mes "還需要其他服務嗎?";
 					viewpoint 1,131,148,8,0x0A82FF;
 					next;
 					break;
 				case 2:
-					callsub L_Mark, F_Navi("�d����¾��",.@map$+",128,148","^FF5400"),1;
+					callsub L_Mark, F_Navi("卡普拉職員",.@map$+",128,148","^FF5400"),1;
 					viewpoint 1,128,148,9,0xFF5400;
 					next;
 					break;
 				case 3:
-					callsub L_Mark, F_Navi("Hypnotist",.@map$+",127,175"),1;
+					callsub L_Mark, F_Navi("催眠師",.@map$+",127,175"),1;
 					viewpoint 1,127,175,10,0x006400;
 					next;
 					break;
 				case 4:
-					mes "[Izlude Guide]";
-					mes "If you'd like to go on a honeymoon to";
-					mes "^8B4513Jawaii^000000, the paradise of newlyweds,";
-					mes "please speak to the ";
-					mes F_Navi("Newlywed Helper",.@map$+",180,224","^B9062F")+".";
-					mes "Would you like to check any other locations?";
+					mes "[伊斯魯德島 解說員]";
+					mes "想要到夫婦們的渡假勝地";
+					mes "^8B4513爪哇咿^000000的話,";
+					mes "請向"+F_Navi("新婚秘書",.@map$+",180,224","^0000FF");
+					mes "詢問吧!還需要其他服務嗎?";
 					viewpoint 1,180,224,11,0xFF0000;
 					next;
 					break;
 				case 5:
-					callsub L_Mark, F_Navi("Mercenary Guildsman",.@map$+",47,170","^0000FF");
+					callsub L_Mark, F_Navi("傭兵公會管理員",.@map$+",47,170","^0000FF");
 					viewpoint 1,47,170,12,0xDA70D6;
 					next;
 					break;
 				case 6:
-					callsub L_Mark, F_Navi("Pet Groomer","izlude_in,72,98"),1;
+					callsub L_Mark, F_Navi("認養寵物商人","izlude_in,72,98"),1;
 					viewpoint 1,108,179,13,0x006400;
 					next;
 					break;
@@ -153,9 +148,9 @@
 			}
 			break;
 		case 3:
-			mes "[Izlude Guide]";
-			mes "Sure, I'll remove all marks from your mini-map.";
-			mes "Is there anything else I can do for you?";
+			mes "[伊斯魯德島 解說員]";
+			mes "已經幫你刪除,";
+			mes "還需要其他服務嗎?";
 			viewpoint 2,1,1,0,0xFFFF00;
 			viewpoint 2,1,1,1,0x000000;
 			viewpoint 2,1,1,2,0xFF0000;
@@ -173,9 +168,9 @@
 			next;
 			break;
 		case 4:
-			mes "[Izlude Guide]";
-			mes "Enjoy your stay.";
-			mes "Bye~!";
+			mes "[伊斯魯德島 解說員]";
+			mes "祝你旅途愉快!";
+			mes "掰掰!再見~!";
 			close2;
 			cutin "prt_soldier",255;
 			end;
@@ -183,27 +178,26 @@
 	}
 	end;
 L_Mark:
-	mes "[Izlude Guide]";
+	mes "[伊斯魯德島 解說員]";
 	if (getarg(1,0)) {
-		mes "Let me mark the location of the";
+		mes "我已經在地圖上幫您標記上";
 		mes getarg(0);
 	} else
-		mes "Let me mark the location of the "+getarg(0);
-	mes "on your mini-map.";
-	mes "Would you like to check any other locations?";
+		mes "我已經在地圖上幫您標記上 "+getarg(0);
+		mes "還需要其他服務嗎?";
 	return;
 }
 
-izlude,129,175,4	duplicate(GuideIzlude)	Guide#01izlude	105
-izlude_a,129,175,4	duplicate(GuideIzlude)	Guide#01izlude_a	105
-izlude_b,129,175,4	duplicate(GuideIzlude)	Guide#01izlude_b	105
-izlude_c,129,175,4	duplicate(GuideIzlude)	Guide#01izlude_c	105
-izlude_d,129,175,4	duplicate(GuideIzlude)	Guide#01izlude_d	105
+izlude,129,175,4	duplicate(GuideIzlude)	解說員#01izlude	105
+izlude_a,129,175,4	duplicate(GuideIzlude)	解說員#01izlude_a	105
+izlude_b,129,175,4	duplicate(GuideIzlude)	解說員#01izlude_b	105
+izlude_c,129,175,4	duplicate(GuideIzlude)	解說員#01izlude_c	105
+izlude_d,129,175,4	duplicate(GuideIzlude)	解說員#01izlude_d	105
 
-izlude,133,113,4	duplicate(GuideIzlude)	Guide#02izlude	105
-izlude_a,133,113,4	duplicate(GuideIzlude)	Guide#02izlude_a	105
-izlude_b,133,113,4	duplicate(GuideIzlude)	Guide#02izlude_b	105
-izlude_c,133,113,4	duplicate(GuideIzlude)	Guide#02izlude_c	105
-izlude_d,133,113,4	duplicate(GuideIzlude)	Guide#02izlude_d	105
+izlude,133,113,4	duplicate(GuideIzlude)	解說員#02izlude	105
+izlude_a,133,113,4	duplicate(GuideIzlude)	解說員#02izlude_a	105
+izlude_b,133,113,4	duplicate(GuideIzlude)	解說員#02izlude_b	105
+izlude_c,133,113,4	duplicate(GuideIzlude)	解說員#02izlude_c	105
+izlude_d,133,113,4	duplicate(GuideIzlude)	解說員#02izlude_d	105
 
 //izlude,120,206,4	duplicate(GuideIzlude)	Guide#03izlude	105

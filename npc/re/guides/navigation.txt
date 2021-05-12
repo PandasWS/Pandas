@@ -1,4 +1,4 @@
-//===== rAthena Script ======================================= 
+﻿//===== rAthena Script ======================================= 
 //= Navigation Functions
 //===== By: ================================================== 
 //= Euphy
@@ -29,7 +29,8 @@ function	script	F_Navi	{
 		if (!.@disabled) {
 			next;
 			mes getarg(0);
-			mes "When you click on the ^B9062F[location name]^000000, you'll receive the most advanced ^B9062FNavigation^000000 services!";
+			mes "當點擊 ^B9062F[據點名稱]^000000時,";
+			mes "還提供最先進的導航服務哦.";
 		}
 		return;
 	default: // Display navigation link, if enabled; else set text color, if available.
