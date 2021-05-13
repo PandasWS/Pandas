@@ -95,7 +95,7 @@ function	script	Promotional_Staff	{
 	}
 }
 
-prontera,163,53,3	script	Promotional Staff#prt	100,{
+prontera,163,53,3	script	廣宣人員#prt	100,{
 	callfunc "Promotional_Staff";
 	end;
 }
@@ -235,7 +235,7 @@ prontera,163,53,3	script	Promotional Staff#prt	100,{
 	if (ep13_ryu == 8) {
 		mes "[Recruiter]";
 		mes "I've heard of you.";
-		mes "You've finished the tests from the Promotional Staff?";
+		mes "You've finished the tests from the 廣宣人員?";
 		next;
 		mes "[Recruiter]";
 		mes "You are definitely brave enough to venture to this new land.";
@@ -298,7 +298,7 @@ prontera,163,53,3	script	Promotional Staff#prt	100,{
 	if (ep13_ryu > 0) {
 		mes "[Recruiter]";
 		mes "What're you doing here?";
-		mes "Just go to ^FF0000Aldebaran^000000, and find the ^FF0000Promotional Staff^000000. As I advised you, you'd better save time.";
+		mes "Just go to ^FF0000Aldebaran^000000, and find the ^FF0000廣宣人員^000000. As I advised you, you'd better save time.";
 		close;
 	}
 	mes "[Recruiter]";
@@ -324,7 +324,7 @@ prontera,163,53,3	script	Promotional Staff#prt	100,{
 		mes "Ok! Let me start by telling you the story of the mission!!";
 		next;
 		mes "[Recruiter]";
-		mes "All of this of course, the Promotional Staff can tell you, but they're not that reliable. So, let me explain to you. Just listen carefully.";
+		mes "All of this of course, the 廣宣人員 can tell you, but they're not that reliable. So, let me explain to you. Just listen carefully.";
 		next;
 		mes "[Recruiter]";
 		mes "Um... There's not that much to tell you...";
@@ -342,7 +342,7 @@ prontera,163,53,3	script	Promotional Staff#prt	100,{
 		mes "I will tell you everything.";
 		next;
 		mes "[Recruiter]";
-		mes "Just go to the ^FF0000Promotional Staff^000000 in Aldebaran and get permission. They can judge you more carefully than me. Go ahead.";
+		mes "Just go to the ^FF0000廣宣人員^000000 in Aldebaran and get permission. They can judge you more carefully than me. Go ahead.";
 		next;
 		mes "[Recruiter]";
 		mes "They will take care of everything, if you say that you've been sent by the Recruiter in Prontera.";
@@ -351,7 +351,7 @@ prontera,163,53,3	script	Promotional Staff#prt	100,{
 		set ep13_ryu,1;
 		mes "[Recruiter]";
 		mes "Time is zeny, just go.";
-		mes "As soon as you visit the Promotional Staff, you will be allowed to travel to the unknown land.";
+		mes "As soon as you visit the 廣宣人員, you will be allowed to travel to the unknown land.";
 		close;
 	case 2:
 		mes "[Recruiter]";
@@ -366,52 +366,52 @@ prontera,163,53,3	script	Promotional Staff#prt	100,{
 	}
 }
 
-aldebaran,127,138,3	script	Promotional Staff#alde	100,{
+aldebaran,127,138,3	script	廣宣人員#alde	100,{
 	if (ep13_ryu > 3) {
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Did you try out for the test, or are you already enjoying your adventures?";
 		close;
 	}
 	if (ep13_ryu == 3) {
-		mes "[Promotional Staff]";
-		mes "Just visit the ^FF0000Promotional Staff in Geffen^000000. You have no business with me anymore. Bless you. I wish you a safe adventure.";
+		mes "[廣宣人員]";
+		mes "Just visit the ^FF0000廣宣人員 in Geffen^000000. You have no business with me anymore. Bless you. I wish you a safe adventure.";
 		close;
 	}
 	if (ep13_ryu == 2) {
 		if (countitem(909) < 300) {
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "Don't forget to bring... ^FF0000300 Jellopy^000000.";
 			mes "Got it? ^FF0000300 Jellopy^000000!";
 			mes "Let me know once you got them.";
 			close;
 		}
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Hey! Let me know once you collect all of them.";
 		mes "Don't disturb me anymore. I'm a busy man... What a waste.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Hm? Did you bring all of them?";
 		mes "No! It's quite an annoying job";
 		mes "I'm impressed that you managed to do such a menial thing to bring 300 Jellopy!";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "You have guts kid!";
 		mes "You're a good-willed person!";
 		mes "Ok, you win!";
 		mes "You pass!!";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Adventurers like you";
 		mes "are not common";
 		mes "A hard-boiled soldier!";
 		mes "Stronger than me!";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Now can you go to the";
-		mes "Promotional Staff in Geffen?";
+		mes "廣宣人員 in Geffen?";
 		mes "He will test you again.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "You know this isn't an easy quest.";
 		mes "You resolved to carry it out, didn't you?";
 		mes "Brace yourself for it.";
@@ -419,45 +419,45 @@ aldebaran,127,138,3	script	Promotional Staff#alde	100,{
 		delitem 909,300; //Jellopy
 		changequest 10058,10059;
 		set ep13_ryu,3;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Anyway you did the first step.";
 		mes "Bless you!";
 		close;
 	}
 	if (ep13_ryu == 1) {
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "We want the adventurers who are super curious and extremely brave. Join us for a wonderful adventure!";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Hey, you're a well-versed person, right? Are you interested in my story?";
 		next;
 		select("I have something for you.");
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "For me??";
 		mes "I hate annoying stuff.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Ahh... I sensed that I would get your request.";
 		mes "The recruiter sent you here to get tested?";
 		mes "Hmm.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Ah! They always push me,";
 		mes "to suffer from so much work";
 		mes "I live a hard life!";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "My job is testing if you are strong and brave enough for this adventure.";
 		mes "What a bother!";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "I will accept you if you bring me ^FF0000300 Jellopy^000000.";
 		mes "I believe that you can bring them to me.";
 		mes "Are you ready?";
 		next;
 		changequest 10057,10058;
 		set ep13_ryu,2;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Just go ahead and hunt monsters, or whatever and collect 300 jellopies.";
 		mes "Then we can go forward.";
 		close;
@@ -466,47 +466,47 @@ aldebaran,127,138,3	script	Promotional Staff#alde	100,{
 	end;
 }
 
-geffen,90,67,3	script	Promotional Staff#gef	100,{
+geffen,90,67,3	script	廣宣人員#gef	100,{
 	if (ep13_ryu > 6) {
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Did you take the test?";
 		mes "Or are you already enjoying your adventure?";
 		close;
 	}
 	if (ep13_ryu == 6) {
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "You didn't visit ^FF0000Izlude^000000, did you?";
 		mes "Or do you have any business in Geffen?";
 		close;
 	}
 	if (ep13_ryu == 5) {
 		if (countitem(723) == 0) {
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "^FF00001 Ruby!!^000000.";
 			mes "Don't you forget it!";
 			mes "Hurry up! Time is zeny!";
 			close;
 		}
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Wow, you brought a genuine Jewel.";
 		mes "You are absolutely qualified.";
 		mes "I can tell these things.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Am I exaggerating?";
 		mes "It's true that you're";
 		mes "considerably strong.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Ok! My job is done.";
 		mes "Good job!!";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Next step is Izlude!";
-		mes "You can get tested by the Promotional Staff there.";
+		mes "You can get tested by the 廣宣人員 there.";
 		mes "Hurry up!";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "The unknown place...";
 		mes "It is a very dangerous place so you must go through these tests before we can send you....";
 		mes "We're pretty picky.";
@@ -514,28 +514,28 @@ geffen,90,67,3	script	Promotional Staff#gef	100,{
 		delitem 723,1; //Cardinal_Jewel
 		changequest 10061,10062;
 		set ep13_ryu,6;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "I hope you can do it!";
 		mes "Good luck!";
 		close;
 	}
 	if (ep13_ryu == 4) {
 		if (countitem(721) == 0) {
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "The one you should bring me is";
 			mes "^FF0000Emerald^000000. Can you get it?";
 			close;
 		}
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "You brought it so soon!";
 		mes "You're a real adventurer!";
 		mes "I will accept this Emerald as evidence.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "This isn't something I wanted to keep for myself.";
 		mes "You know that, right?";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Next bring me ^FF00001 Ruby^000000.";
 		mes "I can't judge you with only one jewel.";
 		mes "So I need one more stone.";
@@ -543,36 +543,36 @@ geffen,90,67,3	script	Promotional Staff#gef	100,{
 		delitem 721,1; //Azure_Jewel
 		changequest 10060,10061;
 		set ep13_ryu,5;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Please bring me a Ruby.";
 		mes "As I mentioned, this is the second request.";
 		mes "I will wait until you bring me a stone again.";
 		close;
 	}
 	if (ep13_ryu == 3) {
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "We are recruiting adventurers who are strong and curious. Try your life at something more challenging.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Hey, you're a knowledgeable person, right? Are you interested in my story?";
 		next;
 		select("The Staff in Aldebaran sent me.");
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Oh he did?";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Ok, I guess that it's time for the second part of your test.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "I need you to gather some stones for me.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "I will accept you if you bring ^FF00001 Emerald^000000.";
 		mes "Are you ready?";
 		next;
 		changequest 10059,10060;
 		set ep13_ryu,4;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Just bring me ^ff00001 Emerald^000000.";
 		mes "That isn't hard for you right?";
 		mes "Then we can go forward.";
@@ -584,57 +584,57 @@ geffen,90,67,3	script	Promotional Staff#gef	100,{
 
 -	script	::PromotionalStaff_izlude	-1,{
 	if (ep13_ryu > 8) {
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "I bless you for your future! May it be full of happiness!";
 		close;
 	}
 	if (ep13_ryu == 8) {
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "The test is done!";
 		mes "If you have any other business, go to the palace.";
 		close;
 	}
 	if (ep13_ryu == 7) {
 		if (BaseLevel < 70) {
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "You don't look that strong.";
 			mes "Nothing but skin and bones!";
 			mes "Not reliable.";
 			mes "You should level up more before";
 			mes "considering this adventure.";
 			next;
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "I don't need adventurers who are";
 			mes "body-builders... but at least";
 			mes "someone not so little!!";
 			close;
 		}
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Wow! You are considerably";
 		mes "stronger than before!";
 		mes "Let me see...";
 		mes "You look different!";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Um...";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Ok, it's done!";
 		mes "You seemed a sore weak of a soul,";
 		mes "but now, you're quite stronger than";
 		mes "before. Great! You will do!!";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "We have quite high expectations to meet.";
 		mes "Though the new place is dangerous,";
 		mes "no need to check thoroughly";
 		mes "anymore.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "It's not a hell-hole!";
 		mes "Ukk!";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Anyway, just go back to the";
 		mes "Recruiter. I will forward to him";
 		mes "that you passed all the steps. Good";
@@ -642,61 +642,61 @@ geffen,90,67,3	script	Promotional Staff#gef	100,{
 		next;
 		changequest 10063,10064;
 		set ep13_ryu,8;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Bless all of your heart,";
 		mes "for your great future!";
 		close;
 	}
 	if (ep13_ryu == 6) {
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "We are recruiting adventurers";
 		mes "who are quite strong and curious.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Hey, you're a knowledgeable adventurer. Are you interested in my story?";
 		next;
 		select("I have something for you.");
-		mes "[Promotional Staff]";
-		mes "Um, you're the one sent to be tested, correct? You are in the right place. I'm the Promotional Staff in Izlude.";
+		mes "[廣宣人員]";
+		mes "Um, you're the one sent to be tested, correct? You are in the right place. I'm the 廣宣人員 in Izlude.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "I guess you're qualified enough to go... I think no more testing is needed.";
 		next;
-		mes "[Promotional Staff]";
+		mes "[廣宣人員]";
 		mes "Let me see...";
 		next;
 		if (BaseLevel > 69) {
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "I think you're good enough!";
 			mes "No more testing!!";
 			mes "Ok! You pass!";
 			next;
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "We have quite high expectations to meet.";
 			mes "Though the new place is dangerous,";
 			mes "no need to check thoroughly right now.";
 			next;
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "It's not a hell-hole!";
 			mes "Ukk...";
 			next;
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "Anyway, just go back to the recruiter.";
 			mes "I will forward to him that you passed all the steps.";
 			mes "Good job, friend!";
 			next;
 			changequest 10062,10064;
 			set ep13_ryu,8;
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "May Freya bless you,";
 			mes "for your great future!";
 			close;
 		}
 		else {
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "Hmm...";
 			next;
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "You don't look that strong.";
 			mes "Nothing but skin and bones!";
 			mes "Not reliable.";
@@ -704,7 +704,7 @@ geffen,90,67,3	script	Promotional Staff#gef	100,{
 			next;
 			changequest 10062,10063;
 			set ep13_ryu,7;
-			mes "[Promotional Staff]";
+			mes "[廣宣人員]";
 			mes "Please level up a little more. I";
 			mes "can't accept that you're strong";
 			mes "enough. Sorry.";

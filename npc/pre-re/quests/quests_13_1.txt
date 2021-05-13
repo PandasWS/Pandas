@@ -1,4 +1,4 @@
-//===== rAthena Script ======================================= 
+﻿//===== rAthena Script ======================================= 
 //= Quest NPCs related to Ash-Vacuum
 //===== By: ================================================== 
 //= Euphy
@@ -13,7 +13,7 @@
 //= 1.1 Renewal script update for ep16.1 [Capuche]
 //============================================================ 
 
-izlude,99,136,5	duplicate(PromotionalStaff_izlude)	Promotional Staff#iz	100
+izlude,99,136,5	duplicate(PromotionalStaff_izlude)	廣宣人員#iz	100
 prt_castle,121,51,3	duplicate(Alliance Manager#prt_)	Alliance Manager#prt	4_M_CRU_OLD
 prt_castle,117,51,5	duplicate(Member of Alliance#prt_)	Member of Alliance#prt	4_M_SAGE_A
 prt_castle,83,67,5	duplicate(Recruiter for the Brave_)	Recruiter for the Brave	4_M_MANAGER
