@@ -1,4 +1,4 @@
-//===== rAthena Script ======================================= 
+﻿//===== rAthena Script ======================================= 
 //= Izlude Town Renewal
 //===== By: ================================================== 
 //= Masao
@@ -47,11 +47,11 @@ izlude_b,85,103,4	duplicate(Dega_izlude)	Dega#izlude_b	4_M_02
 izlude_c,85,103,4	duplicate(Dega_izlude)	Dega#izlude_c	4_M_02
 izlude_d,85,103,4	duplicate(Dega_izlude)	Dega#izlude_d	4_M_02
 
-izlude,140,186,4	duplicate(Kylick_izlude)	Kylick#izlude	4W_M_01
-izlude_a,140,186,4	duplicate(Kylick_izlude)	Kylick#izlude_a	4W_M_01
-izlude_b,140,186,4	duplicate(Kylick_izlude)	Kylick#izlude_b	4W_M_01
-izlude_c,140,186,4	duplicate(Kylick_izlude)	Kylick#izlude_c	4W_M_01
-izlude_d,140,186,4	duplicate(Kylick_izlude)	Kylick#izlude_d	4W_M_01
+izlude,140,186,4	duplicate(齊黎_izlude)	齊黎#izlude	4W_M_01
+izlude_a,140,186,4	duplicate(齊黎_izlude)	齊黎#izlude_a	4W_M_01
+izlude_b,140,186,4	duplicate(齊黎_izlude)	齊黎#izlude_b	4W_M_01
+izlude_c,140,186,4	duplicate(齊黎_izlude)	齊黎#izlude_c	4W_M_01
+izlude_d,140,186,4	duplicate(齊黎_izlude)	齊黎#izlude_d	4W_M_01
 
 izlude,57,159,2	duplicate(Red_izlude)	Red#izlude	4_M_03
 izlude_a,57,159,2	duplicate(Red_izlude)	Red#izlude_a	4_M_03
@@ -226,7 +226,7 @@ OnTimer411000:
 	end;
 
 OnTimer421000:
-	npctalk "Talkative Adventurer : Oh-! Should I search for a �d����¾��?";
+	npctalk "Talkative Adventurer : Oh-! Should I search for a 卡普拉職員?";
 	end;
 
 OnTimer487000:

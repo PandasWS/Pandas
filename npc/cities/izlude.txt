@@ -222,34 +222,29 @@
 	}
 }
 
--	script	::Kylick_izlude	-1,{
+-	script	::齊黎_izlude	-1,{
 	if (!checkre(0) && rand(2)) {
-		mes "[Kylick]";
-		mes "I was thinking, even though the people of Izlude live so close to the ocean...";
+		mes "[齊黎]";
+		mes "咳咳~!我們伊斯魯的島啊!";
+		mes "不僅擔任維護這塊土地的安全,";
+		mes "我們負責範圍還妥展到那邊廣闊的";
+		mes "大海去呢!";
 		next;
-		mes "[Kylick]";
-		mes "There are other cultures that have completely developed by living off of the sea. Of course, I'm talking about Amatsu.";
-		next;
-		mes "[Kylick]";
-		mes "I hear the cuisine there is really good! Although the idea of eating raw fish is new to me, I would love to go there, and try it just once!";
+		mes "[齊黎]";
+		mes "所以啦!架設了這個超大的望遠鏡";
+		mes "要來好好觀察一下海的那邊！";
+		mes "先準備好才是王道呢!";
 		close;
 	} else {
-		mes "[Kylick]";
-		mes "Don't you think Binoculars";
-		mes "are really COOL?! You can";
-		mes "see all sorts of places...!";
+		mes "[齊黎]";
+		mes "咳嗽~!";
+		mes "伊斯魯德島,不只負責陸上的安全,";
+		mes "還負責那寬廣海洋的安全,";
 		next;
-		mes "[Kylick]";
-		mes "Here in Izlude, we are responsible for maintaining peace not only on land but also at sea. That's why this city has a huge telescope.";
-		next;
-		mes "[Kylick]";
-		mes "This telescope constantly watches over the sea, so that we can prevent any serious trouble from happening. You know...";
-		next;
-		mes "[Kylick]";
-		mes "An ounce of";
-		mes "prevention is worth";
-		mes "a pound of cure";
-		mes "after all, right?";
+		mes "[齊黎]";
+		mes "所以架設大望遠鏡,可以看到遠海,";
+		mes "可以提前作準備,所有的事情提早做準備";
+		mes "這是一定要的啦.";
 		close;
 	}
 }

@@ -1,4 +1,4 @@
-//===== rAthena Script ======================================= 
+﻿//===== rAthena Script ======================================= 
 //= Quest NPCs related to Ash-Vacuum
 //===== By: ================================================== 
 //= L0ne_W0lf
@@ -34,51 +34,63 @@
 // Onward to the New World :: ep13_gogo
 //============================================================ 
 function	script	Promotional_Staff	{
-	mes "[Promotional Staff]";
-	mes "We are looking for adventurers who are super curious and extremely brave.";
-	mes "Join us for a wonderful adventure!";
+	mes "[廣宣人員]";
+	mes "我們正在徵求充滿好奇心";
+	mes "與勇敢的冒險家!";
+	mes "勇士們~喔快挑戰吧!";
 	next;
-	mes "[Promotional Staff]";
-	mes "Hey, you're a knowledgeable person, right? Are you interested in my story?";
+	mes "[廣宣人員]";
+	mes "這位氣質不俗的冒險家,";
+	mes "你願不願意停下腳步";
+	mes "聽我講完再走呢?";
 	next;
-	switch(select("Yes.:No, thanks.")) {
+	switch(select("[願意]:[我有急事..]")) {
 	case 1:
-		mes "[Promotional Staff]";
-		mes "You're a real adventurer.";
-		mes "Good for you!";
-		mes "You won't regret it.";
+		mes "[廣宣人員]";
+		mes "嗯!很好!這樣才算";
+		mes "正港的冒險家!勇士哩!";
+		mes "呵呵呵... 是正確的選擇!";
 		next;
-		mes "[Promotional Staff]";
-		mes "I usually send adventurers to";
-		mes "newly found places for research.";
-		mes "It's quite challeging, as nobody's ever been to these places.";
+		mes "[廣宣人員]";
+		mes "也不算是什麼多偉大的故事,";
+		mes "我打算派冒險家們";
+		mes "到新發現的地區,";
+		mes "進行相關的調查,";
+		mes "由於是未曾有人去過的地方..";
 		next;
-		mes "[Promotional Staff]";
-		mes "The missions are quite dangerous,";
-		mes "so only those who are courageous";
-		mes "are qualified for the challenge";
-		mes "of this mission.";
+		mes "[廣宣人員]";
+		mes "那邊因為危險不能隨便";
+		mes "找人過去,所以我想";
+		mes "挑選幾位堅強又勇敢的";
+		mes "冒險家去調查!";
 		next;
-		mes "[Promotional Staff]";
-		mes "I'm not sure that you're strong enough, but you seem brave. How about going to the kingdom receptionist? He should be in the first room of Prontera Castle.";
+		mes "[廣宣人員]";
+		mes " 我觀察你應該至少";
+		mes " 是一位勇敢的冒險家...";
+		mes " 你去王宮看看吧!";
+		mes " 那邊會有招募官.";
 		next;
-		mes "[Promotional Staff]";
-		mes "From what I've heard about this place... It's not a new continent.";
-		mes "I don't know where it is.";
-		mes "Hmm... Inside of the sky?";
+		mes "[廣宣人員]";
+		mes "那個全新的地區..";
+		mes "據說並不存在於";
+		mes "米德加爾特大陸上，";
+		mes "難道是發現了天堂嗎?";
 		next;
-		mes "[Promotional Staff]";
-		mes "Could just be a rumor,";
-		mes "but I don't know exactly.";
-		mes "It's not my business.";
+		mes "[廣宣人員]";
+		mes "我個人猜測只是";
+		mes "傳聞而已..但這並不關我的事！";
 		next;
-		mes "[Promotional Staff]";
-		mes "Anyway, I'm supposed to inform many adventurers about it.";
-		mes "There's no time to waste!";
+		mes "[廣宣人員]";
+		mes "反正你去了也沒損失，";
+		mes "我還要告訴其他冒險家";
+		mes "這項消息..你先去吧！";
 		close;
 	case 2:
-		mes "[Promotional Staff]";
-		mes "Huh, I thought you were a real adventurer. You're missing a big opportunity. You're definitely not brave. Absolutely not!";
+		mes "[廣宣人員]";
+		mes "吱!真正的冒險家";
+		mes "事不會錯失這機會的，";
+		mes "你應該是假冒的";
+		mes "冒險家吧!";
 		close;
 	}
 }
