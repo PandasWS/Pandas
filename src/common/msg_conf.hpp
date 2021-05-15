@@ -45,17 +45,17 @@ enum lang_types {
 // 截止 2018年11月20日 rAthena 默认的宏定义默认值如下:
 // LOGIN_MAX_MSG 的值是 30、CHAR_MAX_MSG 的值是 300、MAP_MAX_MSG 的值是 1550
 // 
-// 为了能够拥有统一的区间段, Pandas 将会把他们的区段最大值都补充到 3000,
-// 并从 2000 开始使用自定义的消息.
+// 为了能够拥有统一的区间段, Pandas 将会把他们的区段最大值都补充到 4000,
+// 并从 3000 开始使用自定义的消息.
 //
-// 若某天 MAP_MAX_MSG 的值扩大到接近 2000 了, 那么消息区段得重新偏移
+// 若某天 MAP_MAX_MSG 的值扩大到接近 3000 了, 那么消息区段得重新偏移
 //
 // 启用此机制后, 会在 login.hpp \ char.hpp \ map.hpp 提供一个 msg_txt_cn 的宏定义函数
 // 通过 msg_txt_cn 传入的 msg_number 会自动加 ALL_EXTEND_FIRST_MSG 作为最终的 msg_number
 // 并从 conf/msg_conf 中读取对应的消息, 作为返回值.
 // =================================================================================
-#define ALL_EXTEND_MSG 3000
-#define ALL_EXTEND_FIRST_MSG 2000
+#define ALL_EXTEND_MSG 4000
+#define ALL_EXTEND_FIRST_MSG 3000
 
 #ifndef Pandas_Message_Conf
 const char* disabled_msg_txt(int msg_number);
