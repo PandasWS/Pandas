@@ -168,10 +168,10 @@ configures = [
         'operate' : 'LineReplaceController',
         'operate_params' : {
             'transdb_name' : 'mobname',
-            'pattern' : r"(.*?\()(\d+)(,.*?,')(.*?)(',.*)",
-            'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>',
+            'pattern' : r"(.*?\()(\d+)(,.*?)(,.*?,')(.*?)(',.*)",
+            'replace_sub' : r'\g<1>\g<2>\g<3>\g<4>\g<5>\g<6>',
             'id_pos' : 2,
-            'replace_pos' : 4,
+            'replace_pos' : 5,
             'replace_escape' : True,
             'save_encoding' : 'UTF-8'
         },
@@ -371,7 +371,23 @@ configures = [
         'filepath' : [
             'conf/inter_server.yml'
         ]
-    }
+    },
+    {
+        'operate' : 'YamlReplaceController',
+        'operate_params' : {
+            'transdb_name' : 'mobname',
+            'id_field' : 'Id',
+            'target_field' : 'JapaneseName',
+            'target_pos' : 3,
+            'replace_escape' : False,
+            'replace_decorate' : 'YamlDoubleQuotedHandling',
+            'save_encoding' : 'UTF-8-SIG'
+        },
+        'globpath' : [
+            'db/pre-re/mob_db.yml',
+            'db/re/mob_db.yml'
+        ]
+    },
 ]
 
 def MobSkillForSkillName(origin, target):
@@ -728,6 +744,7 @@ class YamlReplaceController():
     def __init__(self, **kwargs):
         self.__id_field = self.__getfromdict(kwargs, 'id_field')
         self.__target_field = self.__getfromdict(kwargs, 'target_field')
+        self.__target_pos = self.__getfromdict(kwargs, 'target_pos')
         self.__lang = self.__getfromdict(kwargs, 'lang')
         self.__transdb_name = self.__getfromdict(kwargs, 'transdb_name')
         self.__save_encoding = self.__getfromdict(kwargs, 'save_encoding')
@@ -785,7 +802,12 @@ class YamlReplaceController():
             if self.__replace_decorate is not None:
                 transname = globals()[self.__replace_decorate](item, transname)
 
-            item[self.__target_field] = transname
+            if self.__target_pos:
+                if self.__target_field in item:
+                    del item[self.__target_field]
+                item.insert(self.__target_pos, self.__target_field, transname)
+            else:
+                item[self.__target_field] = transname
         return contents
     
     def __save(self, contents, filename):
