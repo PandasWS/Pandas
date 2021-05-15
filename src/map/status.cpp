@@ -3439,6 +3439,25 @@ int status_calc_mob_(struct mob_data* md, enum e_status_calc_opt opt)
 		}
 		if (opt&SCO_FIRST)
 			memcpy(&md->status, &md->db->status, sizeof(struct status_data));
+
+#ifdef Pandas_MapFlag_MaxASPD
+		if (opt&SCO_FIRST) {
+			float adelay_bonus = 1.0f;
+			pec_ushort amotion_origin = md->db->status.amotion;
+
+			if (map_getmapflag(md->bl.m, MF_MAXASPD) && amotion_origin) {
+				int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 0);
+				if (val) {
+					val = 2000 - val * 10;
+					val = max(val, md->status.amotion);
+					md->status.amotion = min(val, 2000);
+					adelay_bonus = (float)md->status.amotion / (float)amotion_origin;
+					md->status.adelay = (pec_ushort)(md->status.adelay * adelay_bonus);
+				}
+			}
+		}
+#endif // Pandas_MapFlag_MaxASPD
+
 		return 0;
 	}
 	if (!md->base_status)
@@ -3446,6 +3465,24 @@ int status_calc_mob_(struct mob_data* md, enum e_status_calc_opt opt)
 
 	status = md->base_status;
 	memcpy(status, &md->db->status, sizeof(struct status_data));
+
+#ifdef Pandas_MapFlag_MaxASPD
+	{
+		float adelay_bonus = 1.0f;
+		pec_ushort amotion_origin = md->db->status.amotion;
+
+		if (map_getmapflag(md->bl.m, MF_MAXASPD) && amotion_origin) {
+			int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 0);
+			if (val) {
+				val = 2000 - val * 10;
+				val = max(val, md->status.amotion);
+				md->status.amotion = min(val, 2000);
+				adelay_bonus = (float)md->status.amotion / (float)amotion_origin;
+				md->status.adelay = (pec_ushort)(md->status.adelay * adelay_bonus);
+			}
+		}
+	}
+#endif // Pandas_MapFlag_MaxASPD
 
 	if (flag&(8|16))
 		mbl = map_id2bl(md->master_id);
@@ -6162,6 +6199,22 @@ void status_calc_bl_main(struct block_list *bl, /*enum scb_flag*/int flag)
 			amotion = status_calc_fix_aspd(bl, sc, amotion);
 			status->amotion = cap_value(amotion, battle_config.max_aspd, 2000);
 
+#ifdef Pandas_MapFlag_MaxASPD
+			// 根据地图标记重新计算人工生命体的 amotion 动画延迟时间
+			if (map_getmapflag(bl->m, MF_MAXASPD)) {
+				int val = map_getmapflag_param(bl->m, MF_MAXASPD, 0);
+				if (val) {
+					// 地图标记预期的延迟时间
+					// 延迟时间 = 2000 - 193(假设) * 10 = 2000 - 1930 = 70, 也就是延迟为 70 毫秒
+					val = 2000 - val * 10;
+					// 原先人工生命体有一个自己的动画延迟时间, 与地图标记预期的延迟时间中取最大的那个 (延迟越大表示攻击速度越慢)
+					val = max(val, status->amotion);
+					// 随后再与最大延迟值 2000 毫秒进行比较, 取比较小的哪个作为实际生效值
+					status->amotion = min(val, 2000);
+				}
+			}
+#endif // Pandas_MapFlag_MaxASPD
+
 			status->adelay = status->amotion;
 		} else if ( bl->type&BL_PC ) {
 			uint16 skill_lv;
@@ -6198,8 +6251,51 @@ void status_calc_bl_main(struct block_list *bl, /*enum scb_flag*/int flag)
 			amotion = status_calc_fix_aspd(bl, sc, amotion);
 			status->amotion = cap_value(amotion, battle_config.monster_max_aspd, 2000);
 
+#ifndef Pandas_MapFlag_MaxASPD
+			// 这部分处理人工生命体和玩家单位以外的其他单位 (佣兵、魔物等),
+			// 若没有启用 maxaspd 地图标记则走原来的流程.
+			
+			// 其中 temp 在这里是指将 b_status->adelay 攻击延迟值按照 status->aspd_rate 进行缩放后的新的延迟值
+			// 然后确保 temp 不低于 battle_config.monster_max_aspd*2 且不高于 4000, 然后将它应用到 status->adelay
 			temp = b_status->adelay*status->aspd_rate/1000;
 			status->adelay = cap_value(temp, battle_config.monster_max_aspd*2, 4000);
+#else
+			// 这部分处理人工生命体和玩家单位以外的其他单位 (佣兵、魔物等),
+			// 已经启用了 maxaspd 地图标记时, 则需要将其影响考虑在内使之生效.
+			
+			// 此处的 adelay_bonus 是需要将 adelay 拓展的倍率系数
+			float adelay_bonus = 1.0f;
+
+			// 此处的 amotion_origin 用于保存原始的攻击动作延迟(amotion), 注意该值并不是 b_status->amotion
+			// 而是基于 b_status->amotion 已经被 status_calc_aspd_rate 和 status_calc_fix_aspd 修正过的值
+			pec_ushort amotion_origin = status->amotion;
+
+			if (map_getmapflag(bl->m, MF_MAXASPD) && amotion_origin) {
+				int val = map_getmapflag_param(bl->m, MF_MAXASPD, 0);
+				if (val) {
+					// 地图标记预期的延迟时间
+					// 延迟时间 = 2000 - 193(假设) * 10 = 2000 - 1930 = 70, 也就是延迟为 70 毫秒
+					val = 2000 - val * 10;
+
+					// 在经过了 status_calc_aspd_rate 和 status_calc_fix_aspd 修正过的攻击动作延迟
+					// 与地图标记预期的延迟时间中取最大的那个 (延迟越大表示攻击速度越慢)
+					val = max(val, status->amotion);
+
+					// 随后再与最大延迟值 2000 毫秒进行比较, 取比较小的哪个作为实际生效值
+					status->amotion = min(val, 2000);
+
+					// 计算出一个最新的动作延迟值与原始的攻击动作延迟值之间的倍率系数
+					adelay_bonus = (float)status->amotion / (float)amotion_origin;
+				}
+			}
+
+			// 其中 temp 在这里是指将 b_status->adelay 攻击延迟值按照 status->aspd_rate 进行缩放后的新的延迟值
+			// 这里与人工生命体算法差异的地方是: 还会额外乘以 adelay_bonus 系数
+			temp = int((b_status->adelay * status->aspd_rate / 1000) * adelay_bonus);
+
+			// 然后确保 temp 不低于 battle_config.monster_max_aspd*2 且不高于 4000, 然后将它应用到 status->adelay
+			status->adelay = cap_value(temp, battle_config.monster_max_aspd*2, 4000);
+#endif // Pandas_MapFlag_MaxASPD
 		}
 	}
 

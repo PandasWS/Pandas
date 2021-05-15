@@ -3968,12 +3968,12 @@ ACMD_FUNC(partyrecall)
  *------------------------------------------*/
 #ifdef Pandas_FuncLogic_ATCOMMAND_RELOAD
 //************************************
-// Method:      atcommand_recalc_all
+// Method:      atcommand_status_recalc_pc
 // Description: 重新计算全服玩家的能力值属性 (用于 @reload 系列指令后的全服玩家能力值刷新使用)
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/02/28 12:08
 //************************************
-static void atcommand_recalc_all() {
+static void atcommand_status_recalc_pc() {
 	struct s_mapiterator* iter;
 	struct map_session_data* sd;
 
@@ -4076,7 +4076,7 @@ ACMD_FUNC(reload) {
 
 #ifdef Pandas_FuncLogic_ATCOMMAND_RELOAD
 		// 当执行完成 @reloadbattleconf 之后, 重新计算全服玩家的能力值属性
-		atcommand_recalc_all();
+		atcommand_status_recalc_pc();
 #endif // Pandas_FuncLogic_ATCOMMAND_RELOAD
 
 		clif_displaymessage(fd, msg_txt(sd,255)); // Battle configuration has been reloaded.
@@ -4461,6 +4461,11 @@ ACMD_FUNC(mapinfo) {
 	if (map_getmapflag(m_id, MF_NOAURA))
 		strcat(atcmd_output, " NoAura |");
 #endif // Pandas_MapFlag_NoAura
+#ifdef Pandas_MapFlag_MaxASPD
+	if (map_getmapflag(m_id, MF_MAXASPD)) {
+		sprintf(atcmd_output, "%s MaxASPD: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXASPD, 0));
+	}
+#endif // Pandas_MapFlag_MaxASPD
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
@@ -8629,6 +8634,10 @@ ACMD_FUNC(mapflag) {
 #ifdef Pandas_MapFlag_NoSkill2
 			disabled_mf.insert(disabled_mf.begin(), MF_NOSKILL2);
 #endif // Pandas_MapFlag_NoSkill2
+
+#ifdef Pandas_MapFlag_MaxASPD
+			disabled_mf.insert(disabled_mf.begin(), MF_MAXASPD);
+#endif // Pandas_MapFlag_MaxASPD
 
 			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
 

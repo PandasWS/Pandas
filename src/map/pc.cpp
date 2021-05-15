@@ -13928,7 +13928,8 @@ short pc_maxaspd(struct map_session_data *sd) {
 	if (map_flag_gvg(sd->bl.m) && battle_config.max_aspd_for_gvg > 0) {
 		// 先根据 rAthena 默认的攻速公式, 计算出即将返回的攻速数值
 		int aspd = ((sd->class_ & JOBL_THIRD) ? battle_config.max_third_aspd : (
-			((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd :
+			((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (
+				(sd->class_ & MAPID_BASEMASK) == MAPID_SUMMONER) ? battle_config.max_summoner_aspd :
 			battle_config.max_aspd));
 
 		// 若 PVP 地图限制的攻速比原先 rAthena 计算的攻速更小 (限制更严格, 攻速更慢), 那么以最小的为准
@@ -13944,7 +13945,8 @@ short pc_maxaspd(struct map_session_data *sd) {
 	if (map_flag_vs(sd->bl.m) && battle_config.max_aspd_for_pvp > 0) {
 		// 先根据 rAthena 默认的攻速公式, 计算出即将返回的攻速数值
 		int aspd = ((sd->class_ & JOBL_THIRD) ? battle_config.max_third_aspd : (
-			((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd :
+			((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (
+				(sd->class_ & MAPID_BASEMASK) == MAPID_SUMMONER) ? battle_config.max_summoner_aspd :
 			battle_config.max_aspd));
 
 		// 若 PVP 地图限制的攻速比原先 rAthena 计算的攻速更小 (限制更严格, 攻速更慢), 那么以最小的为准
@@ -13954,6 +13956,26 @@ short pc_maxaspd(struct map_session_data *sd) {
 		}
 	}
 #endif // Pandas_BattleConfig_MaxAspdForPVP
+
+#ifdef Pandas_MapFlag_MaxASPD
+	if (map_getmapflag(sd->bl.m, MF_MAXASPD)) {
+		int val = map_getmapflag_param(sd->bl.m, MF_MAXASPD, 0);
+		if (val) {
+			// 先根据 rAthena 默认的攻速公式, 计算出即将返回的攻速数值
+			int aspd = ((sd->class_ & JOBL_THIRD) ? battle_config.max_third_aspd : (
+				((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (
+					(sd->class_ & MAPID_BASEMASK) == MAPID_SUMMONER) ? battle_config.max_summoner_aspd :
+				battle_config.max_aspd));
+
+			val = 2000 - val * 10;
+			// 若 MaxAspd 地图标记所限制的攻速比原先 rAthena 计算的攻速更小 (限制更严格, 攻速更慢), 那么以最小的为准
+			// 需要注意: 这里返回的攻速值, 实际上是攻击间隔延迟的毫秒数 (值越大, 攻速越慢; 值越小, 攻速越快)
+			if (aspd < val) {
+				return val;
+			}
+		}
+	}
+#endif // Pandas_MapFlag_MaxASPD
 
 	return (( sd->class_&JOBL_THIRD) ? battle_config.max_third_aspd : (
 			((sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (

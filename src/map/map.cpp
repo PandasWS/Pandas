@@ -5025,22 +5025,27 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 		case MF_MOBINFO:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_Mobinfo
+
 #ifdef Pandas_MapFlag_MobDroprate
 		case MF_MOBDROPRATE:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_MobDroprate
+
 #ifdef Pandas_MapFlag_MvpDroprate
 		case MF_MVPDROPRATE:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_MvpDroprate
+
 #ifdef Pandas_MapFlag_MaxHeal
 		case MF_MAXHEAL:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_MaxHeal
+
 #ifdef Pandas_MapFlag_MaxDmg_Skill
 		case MF_MAXDMG_SKILL:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_MaxDmg_Skill
+
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 		case MF_MAXDMG_NORMAL:
 			return map_getmapflag_param(m, mapflag, args, 0);
@@ -5050,6 +5055,11 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 		case MF_NOSKILL2:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_NoSkill2
+
+#ifdef Pandas_MapFlag_MaxASPD
+		case MF_MAXASPD:
+			return map_getmapflag_param(m, mapflag, args, 0);
+#endif // Pandas_MapFlag_MaxASPD
 
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 5>
 		default:
@@ -5407,6 +5417,29 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			mapdata->flag[mapflag] = status;
 			break;
 #endif // Pandas_MapFlag_NoSkill2
+#ifdef Pandas_MapFlag_MaxASPD
+		case MF_MAXASPD:
+			if (!status)
+				map_setmapflag_param(m, mapflag, 0);
+			else {
+				nullpo_retr(false, args);
+				if (args) {
+					if (args->flag_val != 0) {
+						if (args->flag_val < 1) {
+							ShowWarning("map_setmapflag: The minimum ASPD cannot be less than 1, and it has been forcibly set to 1.\n");
+						}
+						else if (args->flag_val > 199) {
+							ShowWarning("map_setmapflag: The maximum ASPD cannot be greater than 199, and it has been forcibly set to 199.\n");
+						}
+						args->flag_val = cap_value(args->flag_val, 1, 199);
+					}
+					map_setmapflag_param(m, mapflag, args->flag_val);
+					status = !(args->flag_val == 0);
+				}
+			}
+			mapdata->flag[mapflag] = status;
+			break;
+#endif // Pandas_MapFlag_MaxASPD
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 6>
 		default:
 			mapdata->flag[mapflag] = status;
@@ -5518,6 +5551,20 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		break;
 	}
 #endif // Pandas_MapFlag_NoAura
+#ifdef Pandas_MapFlag_MaxASPD
+	case MF_MAXASPD:
+	{
+		struct s_mapiterator* iter = mapit_geteachiddb();
+		struct block_list* bl = nullptr;
+		for (bl = (struct block_list*)mapit_first(iter); mapit_exists(iter); bl = (struct block_list*)mapit_next(iter)) {
+			if (!bl || bl->m != m)
+				continue;
+			status_calc_bl_(bl, SCB_ALL, SCO_FORCE);
+		}
+		mapit_free(iter);
+		break;
+	}
+#endif // Pandas_MapFlag_MaxASPD
 	}
 #endif // Pandas_Mapflags
 
