@@ -211,6 +211,8 @@
     <Delete Files="$(SolutionDir)zlib.dll" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)serv.bat" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)yaml2sql.bat" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)yaml2sql.lib" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)yaml2sql.exp" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)yaml2sql-pre.exe" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)yaml2sql-pre.pdb" ContinueOnError="true" />
   </Target>

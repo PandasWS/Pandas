@@ -328,6 +328,8 @@
     <Delete Files="$(SolutionDir)serv.bat" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)mapserv.bat" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)runserver.bat" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)map-server.lib" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)map-server.exp" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)map-server-pre.exe" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)map-server-pre.pdb" ContinueOnError="true" />
   </Target>

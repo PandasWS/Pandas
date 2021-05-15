@@ -205,6 +205,10 @@
     <Delete Files="$(SolutionDir)zlib.dll" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)serv.bat" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)yamlupgrade.bat" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)yamlupgrade.lib" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)yamlupgrade.exp" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)yamlupgrade-pre.exe" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)yamlupgrade-pre.pdb" ContinueOnError="true" />
   </Target>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.dll" DestinationFolder="$(SolutionDir)" ContinueOnError="true" Condition="!Exists('$(SolutionDir)zlib.dll')" />
