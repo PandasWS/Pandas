@@ -4119,7 +4119,7 @@ ACMD_FUNC(reload) {
 		iter = mapit_geteachiddb();
 		for (bl = (struct block_list*)mapit_first(iter); mapit_exists(iter); bl = (struct block_list*)mapit_next(iter)) {
 			if (bl->type == BL_NPC || bl->type == BL_MOB) {
-				batrec_free(bl, true);
+				batrec_free(bl);
 			}
 		}
 		mapit_free(iter);

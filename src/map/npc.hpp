@@ -1411,10 +1411,6 @@ enum npce_event : uint8 {
 	NPCX_PROGRESSABORT,	// progressabort_express_name	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
 
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-	NPCX_BATTLERECORD_FREE,	// battlerecord_free_express_name	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
-
 #ifdef Pandas_NpcExpress_UNIT_KILL
 	NPCX_UNIT_KILL,	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
 #endif // Pandas_NpcExpress_UNIT_KILL
@@ -1426,10 +1422,6 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_KILLMVP
 void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md);
 #endif // Pandas_NpcEvent_KILLMVP
-
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-void npc_event_aide_batrecfree(struct block_list* bl);
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
 
 #ifdef Pandas_NpcExpress_UNIT_KILL
 void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, uint16 skillid);

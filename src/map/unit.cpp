@@ -3362,7 +3362,7 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 		unit_remove_map(bl, clrtype);
 
 #ifdef Pandas_BattleRecord
-	batrec_free(bl, true);
+	batrec_free(bl);
 #endif // Pandas_BattleRecord
 
 #ifdef Pandas_Aura_Mechanism

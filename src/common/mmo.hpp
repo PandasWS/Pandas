@@ -290,7 +290,6 @@ struct s_unit_common_data {
 	#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
 		struct s_ucd_batrec {
 			bool dorecord = false;					// 是否进行记录
-			bool recfree_triggered = false;			// 是否已经触发过了 OnBatrecFreeExpress 事件
 			batrec_map* dmg_receive = nullptr;		// 受到的伤害 <伤害来源GID, 伤害值>
 			batrec_map* dmg_cause = nullptr;		// 造成的伤害 <攻击目标GID, 伤害值>
 		} batrec;

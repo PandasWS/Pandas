@@ -395,10 +395,6 @@ struct Script_Config script_config = {
 	"OnPCProgressAbortExpress",	// NPCX_PROGRESSABORT		// progressabort_express_name	// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
 
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-	"OnBatrecFreeExpress",	// NPCX_BATTLERECORD_FREE		// battlerecord_free_express_name	// 当战斗记录信息即将被清除时触发实时事件
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
-
 #ifdef Pandas_NpcExpress_UNIT_KILL
 	"OnUnitKillExpress",	// NPCX_UNIT_KILL		// unit_kill_express_name	// 当某个单位被击杀时触发实时事件
 #endif // Pandas_NpcExpress_UNIT_KILL
@@ -28940,8 +28936,7 @@ BUILDIN_FUNC(batrec_sortout) {
 BUILDIN_FUNC(batrec_reset) {
 	struct block_list* bl = nullptr;
 	bl = map_id2bl(script_getnum(st, 2));
-	// 此处的重置不触发 OnBatrecFreeExpress 事件. 且不会重置触发标记
-	batrec_reset(bl, false, false);
+	batrec_reset(bl);
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_BattleRecordReset

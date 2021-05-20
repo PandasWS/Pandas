@@ -1149,11 +1149,6 @@
 		// 常量名称: NPCX_PROGRESSABORT / 变量名称: progressabort_express_name
 		#define Pandas_NpcExpress_PROGRESSABORT
 
-		// 当战斗记录信息即将被清除时触发实时事件 [Sola丶小克]
-		// 事件类型: Express / 事件名称: OnBatrecFreeExpress
-		// 常量名称: NPCX_BATTLERECORD_FREE / 变量名称: battlerecord_free_express_name
-		#define Pandas_NpcExpress_BATTLERECORD_FREE
-
 		// 当某个单位被击杀时触发实时事件 [Sola丶小克]
 		// 事件类型: Express / 事件名称: OnUnitKillExpress
 		// 常量名称: NPCX_UNIT_KILL / 变量名称: unit_kill_express_name

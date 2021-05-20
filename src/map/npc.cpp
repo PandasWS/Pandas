@@ -38,9 +38,9 @@
 #include "pet.hpp"
 #include "script.hpp" // script_config
 
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+#ifdef Pandas_NpcExpress_UNIT_KILL
 #include "mapreg.hpp"
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
+#endif // Pandas_NpcExpress_UNIT_KILL
 
 using namespace rathena;
 
@@ -164,32 +164,6 @@ void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data
 	npc_script_event(sd, NPCE_KILLMVP);
 }
 #endif // Pandas_NpcEvent_KILLMVP
-
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-//************************************
-// Method:      npc_event_batrecfree
-// Description: 用来触发 OnBatrecFreeExpress 实时事件的辅助函数
-// Access:      public 
-// Parameter:   struct block_list * bl
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/03/07 18:23
-//************************************ 
-void npc_event_aide_batrecfree(struct block_list* bl) {
-	nullpo_retv(bl);
-
-	if (!bl || !batrec_support(bl)) return;
-
-	mapreg_setreg(add_str("$@batrecfree_gid"), bl->id);
-	mapreg_setreg(add_str("$@batrecfree_type"), bl->type);
-
-	mapreg_setreg(add_str("$@batrecfree_mapid"), bl->m);
-	mapreg_setregstr(add_str("$@batrecfree_mapname$"), map[bl->m].name);
-	mapreg_setreg(add_str("$@batrecfree_x"), bl->x);
-	mapreg_setreg(add_str("$@batrecfree_y"), bl->y);
-
-	npc_event_doall(script_config.battlerecord_free_express_name);
-}
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
 
 #ifdef Pandas_NpcExpress_UNIT_KILL
 //************************************
@@ -2621,7 +2595,7 @@ int npc_unload(struct npc_data* nd, bool single) {
 	nullpo_ret(nd);
 
 #ifdef Pandas_BattleRecord
-	batrec_free(&nd->bl, true);
+	batrec_free(&nd->bl);
 #endif // Pandas_BattleRecord
 
 	status_change_clear(&nd->bl, 1);
@@ -5044,10 +5018,6 @@ bool npc_event_is_express(enum npce_event eventtype) {
 		NPCX_PROGRESSABORT,	// progressabort_express_name	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
 
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-		NPCX_BATTLERECORD_FREE,	// battlerecord_free_express_name	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
-
 #ifdef Pandas_NpcExpress_UNIT_KILL
 		NPCX_UNIT_KILL,	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
 #endif // Pandas_NpcExpress_UNIT_KILL
@@ -5365,11 +5335,6 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_PROGRESSABORT:
 		return script_config.progressabort_express_name;	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
-
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-	case NPCX_BATTLERECORD_FREE:
-		return script_config.battlerecord_free_express_name;	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
 
 #ifdef Pandas_NpcExpress_UNIT_KILL
 	case NPCX_UNIT_KILL:
