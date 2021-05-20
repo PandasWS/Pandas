@@ -115,7 +115,7 @@ void batrec_new(struct block_list* bl) {
 	ucd->batrec.dmg_cause->clear();
 
 	ucd->batrec.dorecord = (
-		battle_config.batrec_autoenabled_unit & bl->type == bl->type
+		(battle_config.batrec_autoenabled_unit & bl->type) == bl->type
 	);
 }
 
