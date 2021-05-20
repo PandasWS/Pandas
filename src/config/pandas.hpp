@@ -306,6 +306,10 @@
 	// 是否启用 always_trigger_mvp_killevent 配置选项及其功能 [Sola丶小克]
 	// 此选项用于控制当 MVP 魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnPCKillMvpEvent 事件
 	#define Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
+
+	// 是否启用 batrec_autoenabled_unit 配置选项及其功能 [Sola丶小克]
+	// 此选项用于设置默认情况下有哪些类型的单位会启用战斗记录
+	#define Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 

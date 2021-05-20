@@ -9291,6 +9291,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
 	{ "always_trigger_mvp_killevent",    &battle_config.always_trigger_mvp_killevent,       1,      0,      1,              },
 #endif // Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
+#ifdef Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
+	{ "batrec_autoenabled_unit",         &battle_config.batrec_autoenabled_unit,            542,    0,      BL_ALL,         },
+#endif // Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };

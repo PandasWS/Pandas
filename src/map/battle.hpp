@@ -757,6 +757,9 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
 	int always_trigger_mvp_killevent;		// 当 MVP 魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnPCKillMvpEvent 事件 [Sola丶小克]
 #endif // Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
+#ifdef Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
+	int batrec_autoenabled_unit;			// 有哪些单位默认开启战斗记录 [Sola丶小克]
+#endif // Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

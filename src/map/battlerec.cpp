@@ -114,8 +114,9 @@ void batrec_new(struct block_list* bl) {
 	ucd->batrec.dmg_receive->clear();
 	ucd->batrec.dmg_cause->clear();
 
-	// 玩家类型默认不启用记录, 否则在线一直打怪记录会一直堆积
-	ucd->batrec.dorecord = (bl->type != BL_PC);
+	ucd->batrec.dorecord = (
+		battle_config.batrec_autoenabled_unit & bl->type == bl->type
+	);
 }
 
 //************************************
