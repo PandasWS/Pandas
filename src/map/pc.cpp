@@ -6383,6 +6383,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 	sd->state.warping = 1;
 	sd->state.workinprogress = WIP_DISABLE_NONE;
 	sd->state.mail_writing = false;
+	sd->state.refineui_open = false;
 
 	if( sd->state.changemap ) { // Misc map-changing settings
 		int curr_map_instance_id = map_getmapdata(sd->bl.m)->instance_id, new_map_instance_id = (mapdata ? mapdata->instance_id : 0);
@@ -6736,20 +6737,17 @@ int pc_get_skillcooldown(struct map_session_data *sd, uint16 skill_id, uint16 sk
 
 	int cooldown = skill_get_cooldown(skill_id, skill_lv);
 
-	if (cooldown == 0)
-		return 0;
-
-	if (skill_id == SU_TUNABELLY && pc_checkskill(sd, SU_SPIRITOFSEA))
+	if (skill_id == SU_TUNABELLY && pc_checkskill(sd, SU_SPIRITOFSEA) > 0)
 		cooldown -= skill_get_time(SU_TUNABELLY, skill_lv);
 
 	for (auto &it : sd->skillcooldown) {
 		if (it.id == skill_id) {
 			cooldown += it.val;
-			cooldown = max(0, cooldown);
 			break;
 		}
 	}
-	return cooldown;
+
+	return max(0, cooldown);
 }
 
 /*==========================================
@@ -9663,8 +9661,12 @@ int pc_itemheal(struct map_session_data *sd, t_itemid itemid, int hp, int sp)
 		if (sd->sc.data[SC_INCHEALRATE])
 			bonus += bonus * sd->sc.data[SC_INCHEALRATE]->val1 / 100;
 		// 2014 Halloween Event : Pumpkin Bonus
-		if (sd->sc.data[SC_MTF_PUMPKIN] && itemid == ITEMID_PUMPKIN)
-			bonus += bonus * sd->sc.data[SC_MTF_PUMPKIN]->val1 / 100;
+		if (sd->sc.data[SC_MTF_PUMPKIN]) {
+			if (itemid == ITEMID_PUMPKIN)
+				bonus += bonus * sd->sc.data[SC_MTF_PUMPKIN]->val1 / 100;
+			else if (itemid == ITEMID_COOKIE_BAT)
+				bonus += sd->sc.data[SC_MTF_PUMPKIN]->val2;
+		}
 
 		tmp = hp * bonus / 100; // Overflow check
 		if (bonus != 100 && tmp > hp)
