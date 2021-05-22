@@ -217,6 +217,12 @@ int hom_dead(struct homun_data *hd, struct block_list *src, uint16 skill_id)
 	}
 #endif // Pandas_NpcExpress_UNIT_KILL
 
+#ifdef Pandas_BattleRecord
+	if (hd) {
+		batrec_reset(&hd->bl);
+	}
+#endif // Pandas_BattleRecord
+
 	if (!sd) //unit remove map will invoke unit free
 		return 3;
 
@@ -240,6 +246,10 @@ int hom_vaporize(struct map_session_data *sd, int flag)
 	hd = sd->hd;
 	if (!hd || hd->homunculus.vaporize)
 		return 0;
+
+#ifdef Pandas_BattleRecord
+	batrec_reset(&hd->bl);
+#endif // Pandas_BattleRecord
 
 	if (status_isdead(&hd->bl))
 		return 0; //Can't vaporize a dead homun.
