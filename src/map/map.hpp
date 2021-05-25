@@ -301,26 +301,16 @@ enum e_race : int8{
 	RC_MAX //auto upd enum for array size
 };
 
-enum e_classAE : int8{
-	CLASS_NONE = -1, //don't give us bonus
-	CLASS_NORMAL = 0,
-	CLASS_BOSS,
-	CLASS_GUARDIAN,
-	CLASS_BATTLEFIELD,
-	CLASS_ALL,
-	CLASS_MAX //auto upd enum for array len
-};
-
 enum e_race2 : uint8{
 	RC2_NONE = 0,
 	RC2_GOBLIN,
 	RC2_KOBOLD,
 	RC2_ORC,
 	RC2_GOLEM,
-	RC2_GUARDIAN,
+	RC2_GUARDIAN, // Deprecated to CLASS_GUARDIAN
 	RC2_NINJA,
 	RC2_GVG,
-	RC2_BATTLEFIELD,
+	RC2_BATTLEFIELD, // Deprecated to CLASS_BATTLEFIELD
 	RC2_TREASURE,
 	RC2_BIOLAB,
 	RC2_MANUK,
@@ -679,6 +669,9 @@ enum e_mapflag : int16 {
 #ifdef Pandas_MapFlag_NoAura
 	MF_NOAURA,
 #endif // Pandas_MapFlag_NoAura
+#ifdef Pandas_MapFlag_MaxASPD
+	MF_MAXASPD,
+#endif // Pandas_MapFlag_MaxASPD
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };
@@ -1168,7 +1161,10 @@ int map_setipport(unsigned short map, uint32 ip, uint16 port);
 int map_eraseipport(unsigned short map, uint32 ip, uint16 port);
 int map_eraseallipport(void);
 void map_addiddb(struct block_list *);
-void map_deliddb(struct block_list *bl);
+#ifdef Pandas_BattleRecord
+void map_mobiddb(struct block_list* bl, int new_blockid);
+#endif // Pandas_BattleRecord
+void map_deliddb(struct block_list* bl);
 void map_foreachpc(int (*func)(struct map_session_data* sd, va_list args), ...);
 void map_foreachmob(int (*func)(struct mob_data* md, va_list args), ...);
 void map_foreachnpc(int (*func)(struct npc_data* nd, va_list args), ...);

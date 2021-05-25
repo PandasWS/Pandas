@@ -893,6 +893,11 @@ void clif_messagecolor_target(struct block_list *bl, unsigned long color, const 
 #define clif_messagecolor(bl, color, msg, rgb2bgr, type) clif_messagecolor_target(bl, color, msg, rgb2bgr, type, NULL) // Mob/Npc color talk [SnakeDrak]
 void clif_specialeffect_value(struct block_list* bl, int effect_id, int num, send_target target);
 
+#ifdef Pandas_PacketFunction_RemoveSpecialEffect
+void clif_removespecialeffect(struct block_list* bl, int effect_id, send_target target);
+void clif_removespecialeffect_single(struct block_list* bl, int effect_id, struct block_list* to_target);
+#endif // Pandas_PacketFunction_RemoveSpecialEffect
+
 void clif_GM_kickack(struct map_session_data *sd, int id);
 void clif_GM_kick(struct map_session_data *sd,struct map_session_data *tsd);
 void clif_manner_message(struct map_session_data* sd, uint32 type);
@@ -1081,6 +1086,9 @@ void clif_sale_end(struct sale_item_data* sale_item, struct block_list* bl, enum
 void clif_sale_amount(struct sale_item_data* sale_item, struct block_list* bl, enum send_target target);
 void clif_sale_open(struct map_session_data* sd);
 
+// Refine UI
+void clif_refineui_open( struct map_session_data* sd );
+
 /**
  * Color Table
  **/
@@ -1158,7 +1166,7 @@ void clif_change_title_ack(struct map_session_data* sd, unsigned char result, un
 #endif // Pandas_Character_Title_Controller
 
 #ifdef Pandas_Aura_Mechanism
-void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_hidden, enum e_aura_special flag);
+void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_when_hidden, enum e_aura_special flag);
 #endif // Pandas_Aura_Mechanism
 
 #endif /* CLIF_HPP */

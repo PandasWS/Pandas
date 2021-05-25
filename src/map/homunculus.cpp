@@ -196,7 +196,11 @@ void hom_damage(struct homun_data *hd) {
 * @param hd
 * @return flag &1 - Standard dead, &2 - Remove object from map, &4 - Delete object from memory
 */
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int hom_dead(struct homun_data *hd)
+#else
+int hom_dead(struct homun_data *hd, struct block_list *src, uint16 skill_id)
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 {
 	//There's no intimacy penalties on death (from Tharis)
 	struct map_session_data *sd = hd->master;
@@ -207,10 +211,26 @@ int hom_dead(struct homun_data *hd)
 	hom_hungry_timer_delete(hd);
 	hd->homunculus.hp = 0;
 
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	if (src && hd) {
+		npc_event_aide_unitkill(src, &hd->bl, skill_id);
+	}
+#endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_BattleRecord
+	if (hd) {
+		batrec_reset(&hd->bl);
+	}
+#endif // Pandas_BattleRecord
+
 	if (!sd) //unit remove map will invoke unit free
 		return 3;
 
 	clif_emotion(&sd->bl, ET_CRY);
+
+#ifdef RENEWAL
+	status_change_end(&sd->bl, status_skill2sc(AM_CALLHOMUN), INVALID_TIMER);
+#endif
 
 	//Remove from map (if it has no intimacy, it is auto-removed from memory)
 	return 3;
@@ -231,6 +251,10 @@ int hom_vaporize(struct map_session_data *sd, int flag)
 	if (!hd || hd->homunculus.vaporize)
 		return 0;
 
+#ifdef Pandas_BattleRecord
+	batrec_reset(&hd->bl);
+#endif // Pandas_BattleRecord
+
 	if (status_isdead(&hd->bl))
 		return 0; //Can't vaporize a dead homun.
 
@@ -247,6 +271,10 @@ int hom_vaporize(struct map_session_data *sd, int flag)
 	}
 	clif_hominfo(sd, sd->hd, 0);
 	hom_save(hd);
+
+#ifdef RENEWAL
+	status_change_end(&sd->bl, status_skill2sc(AM_CALLHOMUN), INVALID_TIMER);
+#endif
 
 	return unit_remove_map(&hd->bl, CLR_OUTSIGHT);
 }
@@ -535,7 +563,6 @@ int hom_levelup(struct homun_data *hd)
 			growth_int/10.0, growth_dex/10.0, growth_luk/10.0);
 		clif_messagecolor(&hd->master->bl, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
 	}
-
 	return 1;
 }
 
@@ -719,7 +746,7 @@ void hom_gainexp(struct homun_data *hd,t_exp exp)
 }
 
 /**
-* Increase homunculu sintimacy
+* Increase homunculus intimacy
 * @param hd
 * @param value Added intimacy
 * @return New intimacy value
@@ -738,7 +765,7 @@ int hom_increase_intimacy(struct homun_data * hd, unsigned int value)
 }
 
 /**
-* Decrease homunculu sintimacy
+* Decrease homunculus intimacy
 * @param hd
 * @param value Reduced intimacy
 * @return New intimacy value
@@ -1051,6 +1078,10 @@ void hom_alloc(struct map_session_data *sd, struct s_homunculus *hom)
 	hd->bl.x = hd->ud.to_x;
 	hd->bl.y = hd->ud.to_y;
 
+#ifdef Pandas_BattleRecord
+	batrec_new(&hd->bl);
+#endif // Pandas_BattleRecord
+
 	map_addiddb(&hd->bl);
 	status_calc_homunculus(hd, SCO_FIRST);
 
@@ -1124,6 +1155,11 @@ bool hom_call(struct map_session_data *sd)
 	} else
 		//Warp him to master.
 		unit_warp(&hd->bl,sd->bl.m, sd->bl.x, sd->bl.y,CLR_OUTSIGHT);
+
+#ifdef RENEWAL
+	sc_start(&sd->bl, &sd->bl, status_skill2sc(AM_CALLHOMUN), 100, 1, skill_get_time(AM_CALLHOMUN, 1));
+#endif
+
 	return true;
 }
 
@@ -1179,6 +1215,10 @@ int hom_recv_data(uint32 account_id, struct s_homunculus *sh, int flag)
 		clif_homskillinfoblock(sd);
 		hom_init_timers(hd);
 	}
+
+#ifdef RENEWAL
+	sc_start(&sd->bl, &sd->bl, status_skill2sc(AM_CALLHOMUN), 100, 1, skill_get_time(AM_CALLHOMUN, 1));
+#endif
 
 	return 1;
 }
@@ -1264,6 +1304,10 @@ int hom_ressurect(struct map_session_data* sd, unsigned char per, short x, short
 			return 0;
 		clif_spawn(&hd->bl);
 	}
+
+#ifdef RENEWAL
+	sc_start(&sd->bl, &sd->bl, status_skill2sc(AM_CALLHOMUN), 100, 1, skill_get_time(AM_CALLHOMUN, 1));
+#endif
 
 	return status_revive(&hd->bl, per, 0);
 }

@@ -208,6 +208,14 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_SC_START
 	const char* sc_start_filter_name;	// NPCF_SC_START	// OnPCBuffStartFilter	// 当玩家准备获得一个状态(Buff)时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+	const char* use_revive_token_filter_name;	// NPCF_USE_REVIVE_TOKEN	// OnPCUseReviveTokenFilter	// 当玩家使用菜单中的原地复活之证时触发过滤器
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+#ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
+	const char* oneclick_identify_filter_name;	// NPCF_ONECLICK_IDENTIFY	// OnPCUseOCIdentifyFilter	// 当玩家使用一键鉴定道具时触发过滤器
+#endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/
@@ -266,6 +274,10 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_PROGRESSABORT
 	const char* progressabort_express_name;	// NPCX_PROGRESSABORT	// OnPCProgressAbortExpress	// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	const char* unit_kill_express_name;	// NPCX_UNIT_KILL	// OnUnitKillExpress	// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related
@@ -2154,6 +2166,29 @@ enum e_pcblock_action_flag : uint16 {
 	PCBLOCK_NPC      = 0x18D,
 	PCBLOCK_EMOTION  = 0x200,
 	PCBLOCK_ALL      = 0x3FF,
+};
+
+/* getiteminfo/setiteminfo script commands */
+enum e_iteminfo : uint8 {
+	ITEMINFO_BUY = 0,
+	ITEMINFO_SELL,
+	ITEMINFO_TYPE,
+	ITEMINFO_MAXCHANCE,
+	ITEMINFO_GENDER,
+	ITEMINFO_LOCATIONS,
+	ITEMINFO_WEIGHT,
+	ITEMINFO_ATTACK,
+	ITEMINFO_DEFENSE,
+	ITEMINFO_RANGE,
+	ITEMINFO_SLOT,
+	ITEMINFO_VIEW,
+	ITEMINFO_EQUIPLEVELMIN,
+	ITEMINFO_WEAPONLEVEL,
+	ITEMINFO_ALIASNAME,
+	ITEMINFO_EQUIPLEVELMAX,
+	ITEMINFO_MAGICATTACK,
+	ITEMINFO_ID,
+	ITEMINFO_AEGISNAME	// 18
 };
 
 #ifdef Pandas_ScriptCommand_SelfDeletion

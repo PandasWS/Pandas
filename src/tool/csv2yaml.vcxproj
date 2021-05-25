@@ -180,6 +180,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="csv2yaml.hpp" />
+    <ClInclude Include="yaml.hpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\common\database.cpp" />
     <ClCompile Include="csv2yaml.cpp" />
   </ItemGroup>
@@ -217,6 +221,8 @@
     <Delete Files="$(SolutionDir)zlib.dll" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)serv.bat" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)csv2yaml.bat" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)csv2yaml.lib" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)csv2yaml.exp" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)csv2yaml-pre.exe" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)csv2yaml-pre.pdb" ContinueOnError="true" />
   </Target>

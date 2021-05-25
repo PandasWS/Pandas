@@ -122,7 +122,7 @@ uint64 QuestDatabase::parseBodyNode(const YAML::Node &node) {
 				if (!this->asString(targetNode, "Mob", mob_name))
 					return 0;
 
-				struct mob_db *mob = mobdb_search_aegisname(mob_name.c_str());
+				std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname(mob_name.c_str());
 
 				if (!mob) {
 					this->invalidWarning(targetNode["Mob"], "Mob %s does not exist, skipping.\n", mob_name.c_str());
@@ -332,7 +332,7 @@ uint64 QuestDatabase::parseBodyNode(const YAML::Node &node) {
 				if (!this->asString(dropNode, "Mob", mob_name))
 					return 0;
 
-				struct mob_db *mob = mobdb_search_aegisname(mob_name.c_str());
+				std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname(mob_name.c_str());
 
 				if (!mob) {
 					this->invalidWarning(dropNode["Mob"], "Mob %s does not exist, skipping.\n", mob_name.c_str());
@@ -915,6 +915,15 @@ bool QuestDatabase::reload() {
 }
 
 #ifdef Pandas_YamlBlastCache_QuestDatabase
+//************************************
+// Method:      doSerialize
+// Description: 对 QuestDatabase 进行序列化和反序列化操作
+// Access:      public 
+// Parameter:   const std::string & type
+// Parameter:   void * archive
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/04/18 22:35
+//************************************ 
 bool QuestDatabase::doSerialize(const std::string& type, void* archive) {
 	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
 		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;

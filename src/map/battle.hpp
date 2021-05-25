@@ -625,7 +625,6 @@ struct Battle_Config
 	int death_penalty_maxlv;
 	int exp_cost_redemptio;
 	int exp_cost_redemptio_limit;
-	int exp_cost_inspiration;
 	int mvp_exp_reward_message;
 	int can_damage_skill; //Which BL types can damage traps
 	int atcommand_levelup_events;
@@ -646,7 +645,6 @@ struct Battle_Config
 	int guild_alliance_onlygm;
 	int feature_achievement;
 	int allow_bound_sell;
-	int event_refine_chance;
 	int autoloot_adjust;
 	int feature_petevolution;
 	int feature_pet_autofeed;
@@ -689,6 +687,10 @@ struct Battle_Config
 	int homunculus_starving_delay;
 	int drop_connection_on_quit;
 	int mob_spawn_variance;
+	int mercenary_autoloot;
+	int mer_idle_no_share;
+	int idletime_mer_option;
+	int feature_refineui;
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
@@ -748,6 +750,15 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_Multiplayer_Recall_Behavior
 	int multiplayer_recall_behavior;		// 控制多人召唤时是否避开在线摆摊玩家 [Sola丶小克]
 #endif // Pandas_BattleConfig_Multiplayer_Recall_Behavior
+#ifdef Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
+	int always_trigger_npc_killevent;		// 当魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnNPCKillEvent 事件 [Sola丶小克]
+#endif // Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
+#ifdef Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
+	int always_trigger_mvp_killevent;		// 当 MVP 魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnPCKillMvpEvent 事件 [Sola丶小克]
+#endif // Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
+#ifdef Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
+	int batrec_autoenabled_unit;			// 有哪些单位默认开启战斗记录 [Sola丶小克]
+#endif // Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

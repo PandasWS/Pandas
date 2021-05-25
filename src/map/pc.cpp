@@ -1062,6 +1062,10 @@ void pc_setnewpc(struct map_session_data *sd, uint32 account_id, uint32 char_id,
 		sd->canlog_tick = gettick();
 	//Required to prevent homunculus copuing a base speed of 0.
 	sd->battle_status.speed = sd->base_status.speed = DEFAULT_WALK_SPEED;
+
+#ifdef Pandas_BattleRecord
+	batrec_new(&sd->bl);
+#endif // Pandas_BattleRecord
 }
 
 /**
@@ -1696,6 +1700,9 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 	sd->avail_quests = 0;
 	sd->save_quest = false;
 	sd->count_rewarp = 0;
+	sd->mail.pending_weight = 0;
+	sd->mail.pending_zeny = 0;
+	sd->mail.pending_slots = 0;
 
 	sd->regs.vars = i64db_alloc(DB_OPT_BASE);
 	sd->regs.arrays = NULL;
@@ -1719,6 +1726,10 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 
 	//Prevent S. Novices from getting the no-death bonus just yet. [Skotlex]
 	sd->die_counter=-1;
+
+#ifdef Pandas_BonusScript_Unique_ID
+	sd->pandas.bonus_script_counter = 0;
+#endif // Pandas_BonusScript_Unique_ID
 
 	// 以下这行注释是为了方便 pyhelp_extracter.py 提取翻译文本使用的
 	// ShowInfo("'" CL_WHITE "%s" CL_RESET "' logged in. (AID/CID: '" CL_WHITE "%d/%d" CL_RESET "', IP: '" CL_WHITE "%d.%d.%d.%d" CL_RESET "', Group '" CL_WHITE "%d" CL_RESET "').\n", sd->status.name, sd->status.account_id, sd->status.char_id, CONVIP(ip), sd->group_id);
@@ -1861,12 +1872,21 @@ void pc_reg_received(struct map_session_data *sd)
 	// 从角色的变量中读取当前角色设置启用的光环编号
 	sd->ucd.aura.id = static_cast<int32>(pc_readglobalreg(sd, add_str(AURA_VARIABLE)));
 
-	// 若不是一个有效的光环编号, 则将相关变量和值重置为 0
-	if (!aura_search(sd->ucd.aura.id)) {
+	std::shared_ptr<s_aura> aura = aura_search(sd->ucd.aura.id);
+	if (aura) {
+		// 若是一个有效的光环编号则将其特效组合放到生效列表
+		aura_effects_refill(&sd->bl);
+	}
+	else {
+		// 若不是一个有效的光环编号, 则将相关变量和值重置为 0
 		sd->ucd.aura.id = 0;
 		pc_setglobalreg(sd, add_str(AURA_VARIABLE), 0);
 	}
 #endif // Pandas_Struct_Unit_CommonData_Aura
+
+#ifdef Pandas_BonusScript_Unique_ID
+	sd->pandas.bonus_script_counter = static_cast<uint32>(pc_readglobalreg(sd, add_str(BONUS_SCRIPT_COUNTER_VAR)));
+#endif // Pandas_BonusScript_Unique_ID
 
 	// Cooking Exp
 	sd->cook_mastery = static_cast<short>(pc_readglobalreg(sd, add_str(COOKMASTERY_VAR)));
@@ -6154,7 +6174,7 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 	sd_status= status_get_status_data(&sd->bl);
 	md_status= status_get_status_data(bl);
 
-	if (md->master_id || status_has_mode(md_status, MD_STATUS_IMMUNE) || status_get_race2(&md->bl) == RC2_TREASURE ||
+	if (md->master_id || status_has_mode(md_status, MD_STATUSIMMUNE) || util::vector_exists(status_get_race2(&md->bl), RC2_TREASURE) ||
 		map_getmapflag(bl->m, MF_NOMOBLOOT) || // check noloot map flag [Lorky]
 		(battle_config.skill_steal_max_tries && //Reached limit of steal attempts. [Lupus]
 			md->state.steal_flag++ >= battle_config.skill_steal_max_tries)
@@ -6176,14 +6196,14 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 
 	// Try dropping one item, in the order from first to last possible slot.
 	// Droprate is affected by the skill success rate.
-	for( i = 0; i < MAX_STEAL_DROP; i++ )
+	for( i = 0; i < MAX_MOB_DROP; i++ )
 		if( md->db->dropitem[i].nameid > 0 && !md->db->dropitem[i].steal_protected && itemdb_exists(md->db->dropitem[i].nameid) && rnd() % 10000 < md->db->dropitem[i].rate
 #ifndef RENEWAL
 		* rate/100.
 #endif
 		)
 			break;
-	if( i == MAX_STEAL_DROP )
+	if( i == MAX_MOB_DROP )
 		return false;
 
 	itemid = md->db->dropitem[i].nameid;
@@ -6233,7 +6253,7 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 		struct item_data *i_data;
 		char message[128];
 		i_data = itemdb_search(itemid);
-		sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, i_data->ename.c_str(), (float)md->db->dropitem[i].rate / 100);
+		sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname.c_str(), i_data->ename.c_str(), (float)md->db->dropitem[i].rate / 100);
 		//MSG: "'%s' stole %s's %s (chance: %0.02f%%)"
 		intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);
 	}
@@ -6257,7 +6277,7 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *target)
 	md = (TBL_MOB*)target;
 	target_lv = status_get_lv(target);
 
-	if (md->state.steal_coin_flag || md->sc.data[SC_STONE] || md->sc.data[SC_FREEZE] || status_bl_has_mode(target,MD_STATUS_IMMUNE) || status_get_race2(&md->bl) == RC2_TREASURE)
+	if (md->state.steal_coin_flag || md->sc.data[SC_STONE] || md->sc.data[SC_FREEZE] || status_bl_has_mode(target,MD_STATUSIMMUNE) || util::vector_exists(status_get_race2(&md->bl), RC2_TREASURE))
 		return 0;
 
 	rate = sd->battle_status.dex / 2 + 2 * (sd->status.base_level - target_lv) + (10 * pc_checkskill(sd, RG_STEALCOIN)) + sd->battle_status.luk / 2;
@@ -6363,6 +6383,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 	sd->state.warping = 1;
 	sd->state.workinprogress = WIP_DISABLE_NONE;
 	sd->state.mail_writing = false;
+	sd->state.refineui_open = false;
 
 	if( sd->state.changemap ) { // Misc map-changing settings
 		int curr_map_instance_id = map_getmapdata(sd->bl.m)->instance_id, new_map_instance_id = (mapdata ? mapdata->instance_id : 0);
@@ -6377,7 +6398,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 				instance_addusers(new_map_instance_id);
 		}
 
-		if (sd->bg_id && !mapdata->flag[MF_BATTLEGROUND]) // Moving to a map that isn't a Battlegrounds
+		if (sd->bg_id && mapdata && !mapdata->flag[MF_BATTLEGROUND]) // Moving to a map that isn't a Battlegrounds
 			bg_team_leave(sd, false, true);
 
 		sd->state.pmap = sd->bl.m;
@@ -6414,7 +6435,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		if (sd->regen.state.gc)
 			sd->regen.state.gc = 0;
 		// make sure vending is allowed here
-		if (sd->state.vending && mapdata->flag[MF_NOVENDING]) {
+		if (sd->state.vending && mapdata && mapdata->flag[MF_NOVENDING]) {
 			clif_displaymessage (sd->fd, msg_txt(sd,276)); // "You can't open a shop on this map"
 			vending_closevending(sd);
 		}
@@ -6448,6 +6469,12 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		}else{
 			st = nullptr;
 		}
+
+		if (sd->bg_id) // Switching map servers, remove from bg
+			bg_team_leave(sd, false, true);
+
+		if (sd->state.vending) // Stop vending
+			vending_closevending(sd);
 
 		npc_script_event(sd, NPCE_LOGOUT);
 		//remove from map, THEN change x/y coordinates
@@ -6612,7 +6639,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
  *	0 = Success
  *	1,2,3 = Fail
  *------------------------------------------*/
-char pc_randomwarp(struct map_session_data *sd, clr_type type)
+char pc_randomwarp(struct map_session_data *sd, clr_type type, bool ignore_mapflag)
 {
 	int x,y,i=0;
 
@@ -6620,7 +6647,7 @@ char pc_randomwarp(struct map_session_data *sd, clr_type type)
 
 	struct map_data *mapdata = map_getmapdata(sd->bl.m);
 
-	if (mapdata->flag[MF_NOTELEPORT]) //Teleport forbidden
+	if (mapdata->flag[MF_NOTELEPORT] && !ignore_mapflag) //Teleport forbidden
 		return 3;
 
 	do {
@@ -6710,20 +6737,17 @@ int pc_get_skillcooldown(struct map_session_data *sd, uint16 skill_id, uint16 sk
 
 	int cooldown = skill_get_cooldown(skill_id, skill_lv);
 
-	if (cooldown == 0)
-		return 0;
-
-	if (skill_id == SU_TUNABELLY && pc_checkskill(sd, SU_SPIRITOFSEA))
+	if (skill_id == SU_TUNABELLY && pc_checkskill(sd, SU_SPIRITOFSEA) > 0)
 		cooldown -= skill_get_time(SU_TUNABELLY, skill_lv);
 
 	for (auto &it : sd->skillcooldown) {
 		if (it.id == skill_id) {
 			cooldown += it.val;
-			cooldown = max(0, cooldown);
 			break;
 		}
 	}
-	return cooldown;
+
+	return max(0, cooldown);
 }
 
 /*==========================================
@@ -8741,7 +8765,11 @@ void pc_close_npc(struct map_session_data *sd,int flag)
 /*==========================================
  * Invoked when a player has negative current hp
  *------------------------------------------*/
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int pc_dead(struct map_session_data *sd,struct block_list *src)
+#else
+int pc_dead(struct map_session_data *sd,struct block_list *src, uint16 skill_id)
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 {
 	int i=0,k=0;
 	t_tick tick = gettick();
@@ -8930,6 +8958,12 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 		}
 	}
 
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	if (src && sd) {
+		npc_event_aide_unitkill(src, &sd->bl, skill_id);
+	}
+#endif // Pandas_NpcExpress_UNIT_KILL
+
 	if(battle_config.bone_drop==2
 		|| (battle_config.bone_drop==1 && mapdata->flag[MF_PVP]))
 	{
@@ -8995,8 +9029,11 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 		else
 			job_penalty = 0;
 
-		if (base_penalty || job_penalty)
-			pc_lostexp(sd, base_penalty, job_penalty);
+		if (base_penalty || job_penalty) {
+			short insurance_idx = pc_search_inventory(sd, ITEMID_NEW_INSURANCE);
+			if (insurance_idx < 0 || pc_delitem(sd, insurance_idx, 1, 0, 1, LOG_TYPE_CONSUME) != 0)
+				pc_lostexp(sd, base_penalty, job_penalty);
+		}
 
 		if( zeny_penalty > 0 && !mapdata->flag[MF_NOZENYPENALTY]) {
 			zeny_penalty = (uint32)( sd->status.zeny * ( zeny_penalty / 10000. ) );
@@ -9108,6 +9145,11 @@ void pc_revive(struct map_session_data *sd,unsigned int hp, unsigned int sp) {
 
 bool pc_revive_item(struct map_session_data *sd) {
 	nullpo_retr(false, sd);
+
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+	if (npc_script_filter(sd, NPCF_USE_REVIVE_TOKEN))
+		return false;
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
 
 	if (!pc_isdead(sd) || sd->respawn_tid != INVALID_TIMER)
 		return false;
@@ -9419,12 +9461,15 @@ bool pc_setparam(struct map_session_data *sd,int64 type,int64 val_tmp)
 		sd->battle_status.hp = cap_value(val, 1, (int)sd->battle_status.max_hp);
 		break;
 	case SP_MAXHP:
+#ifndef Pandas_Extreme_Computing
+		// 此处的 sd->battle_status.max_hp 已经在 status_calc_maxhpsp_pc 函数中统一限制区间
 		if (sd->status.base_level < 100)
 			sd->battle_status.max_hp = cap_value(val, 1, battle_config.max_hp_lv99);
 		else if (sd->status.base_level < 151)
 			sd->battle_status.max_hp = cap_value(val, 1, battle_config.max_hp_lv150);
 		else
 			sd->battle_status.max_hp = cap_value(val, 1, battle_config.max_hp);
+#endif // Pandas_Extreme_Computing
 
 		if( sd->battle_status.max_hp < sd->battle_status.hp )
 		{
@@ -9436,7 +9481,10 @@ bool pc_setparam(struct map_session_data *sd,int64 type,int64 val_tmp)
 		sd->battle_status.sp = cap_value(val, 0, (int)sd->battle_status.max_sp);
 		break;
 	case SP_MAXSP:
+#ifndef Pandas_Extreme_Computing
+		// 此处的 sd->battle_status.max_sp 已经在 status_calc_maxhpsp_pc 函数中统一限制区间
 		sd->battle_status.max_sp = cap_value(val, 1, battle_config.max_sp);
+#endif // Pandas_Extreme_Computing
 
 		if( sd->battle_status.max_sp < sd->battle_status.sp )
 		{
@@ -9613,8 +9661,12 @@ int pc_itemheal(struct map_session_data *sd, t_itemid itemid, int hp, int sp)
 		if (sd->sc.data[SC_INCHEALRATE])
 			bonus += bonus * sd->sc.data[SC_INCHEALRATE]->val1 / 100;
 		// 2014 Halloween Event : Pumpkin Bonus
-		if (sd->sc.data[SC_MTF_PUMPKIN] && itemid == ITEMID_PUMPKIN)
-			bonus += bonus * sd->sc.data[SC_MTF_PUMPKIN]->val1 / 100;
+		if (sd->sc.data[SC_MTF_PUMPKIN]) {
+			if (itemid == ITEMID_PUMPKIN)
+				bonus += bonus * sd->sc.data[SC_MTF_PUMPKIN]->val1 / 100;
+			else if (itemid == ITEMID_COOKIE_BAT)
+				bonus += sd->sc.data[SC_MTF_PUMPKIN]->val2;
+		}
 
 		tmp = hp * bonus / 100; // Overflow check
 		if (bonus != 100 && tmp > hp)
@@ -10037,7 +10089,7 @@ void pc_changelook(struct map_session_data *sd,int type,int val) {
 /*==========================================
  * Give an option (type) to player (sd) and display it to client
  *------------------------------------------*/
-void pc_setoption(struct map_session_data *sd,int type)
+void pc_setoption(struct map_session_data *sd,int type, int subtype)
 {
 	int p_type, new_look=0;
 	nullpo_retv(sd);
@@ -10076,45 +10128,18 @@ void pc_setoption(struct map_session_data *sd,int type)
 	else if (!(type&OPTION_FALCON) && p_type&OPTION_FALCON) //Falcon OFF
 		clif_status_load(&sd->bl,EFST_FALCON,0);
 
-	if( (sd->class_&MAPID_THIRDMASK) == MAPID_RANGER ) {
-		if( type&OPTION_WUGRIDER && !(p_type&OPTION_WUGRIDER) ) { // Mounting
-			clif_status_load(&sd->bl,EFST_WUGRIDER,1);
-			status_calc_pc(sd,SCO_NONE);
-		} else if( !(type&OPTION_WUGRIDER) && p_type&OPTION_WUGRIDER ) { // Dismount
-			clif_status_load(&sd->bl,EFST_WUGRIDER,0);
-			status_calc_pc(sd,SCO_NONE);
-		}
+	if( type&OPTION_WUGRIDER && !(p_type&OPTION_WUGRIDER) ) { // Mounting
+		clif_status_load(&sd->bl,EFST_WUGRIDER,1);
+		status_calc_pc(sd,SCO_NONE);
+	} else if( !(type&OPTION_WUGRIDER) && p_type&OPTION_WUGRIDER ) { // Dismount
+		clif_status_load(&sd->bl,EFST_WUGRIDER,0);
+		status_calc_pc(sd,SCO_NONE);
 	}
-	if( (sd->class_&MAPID_THIRDMASK) == MAPID_MECHANIC ) {
-		if( type&OPTION_MADOGEAR && !(p_type&OPTION_MADOGEAR) ) {
-			status_calc_pc(sd,SCO_NONE);
-			for (const auto &sc : mado_statuses) {
-				uint16 skill_id = status_sc2skill(sc);
 
-				if (skill_id > 0 && !skill_get_inf2(skill_id, INF2_ALLOWONMADO))
-					status_change_end(&sd->bl,sc,INVALID_TIMER);
-			}
-			pc_bonus_script_clear(sd,BSF_REM_ON_MADOGEAR);
-
-#if PACKETVER_MAIN_NUM >= 20191120 || PACKETVER_RE_NUM >= 20191106
-			clif_status_load( &sd->bl, EFST_MADOGEAR, 1 );
-#endif
-		} else if( !(type&OPTION_MADOGEAR) && p_type&OPTION_MADOGEAR ) {
-			status_calc_pc(sd,SCO_NONE);
-			status_change_end(&sd->bl,SC_SHAPESHIFT,INVALID_TIMER);
-			status_change_end(&sd->bl,SC_HOVERING,INVALID_TIMER);
-			status_change_end(&sd->bl,SC_ACCELERATION,INVALID_TIMER);
-			status_change_end(&sd->bl,SC_OVERHEAT_LIMITPOINT,INVALID_TIMER);
-			status_change_end(&sd->bl,SC_OVERHEAT,INVALID_TIMER);
-			status_change_end(&sd->bl,SC_MAGNETICFIELD,INVALID_TIMER);
-			status_change_end(&sd->bl,SC_NEUTRALBARRIER_MASTER,INVALID_TIMER);
-			status_change_end(&sd->bl,SC_STEALTHFIELD_MASTER,INVALID_TIMER);
-			pc_bonus_script_clear(sd,BSF_REM_ON_MADOGEAR);
-
-#if PACKETVER_MAIN_NUM >= 20191120 || PACKETVER_RE_NUM >= 20191106
-			clif_status_load( &sd->bl, EFST_MADOGEAR, 0 );
-#endif
-		}
+	if( type&OPTION_MADOGEAR && !(p_type&OPTION_MADOGEAR) ) {
+		sc_start(&sd->bl, &sd->bl, SC_MADOGEAR, 100, subtype, INFINITE_TICK);
+	} else if( !(type&OPTION_MADOGEAR) && p_type&OPTION_MADOGEAR ) {
+		status_change_end(&sd->bl, SC_MADOGEAR, INVALID_TIMER);
 	}
 
 	if (type&OPTION_FLYING && !(p_type&OPTION_FLYING))
@@ -10218,16 +10243,22 @@ void pc_setriding(struct map_session_data* sd, int flag)
 	}
 }
 
-/*==========================================
+/**
  * Give player a mado
- *------------------------------------------*/
-void pc_setmadogear(struct map_session_data* sd, int flag)
+ * @param sd: Player
+ * @param flag: Enable or disable mado
+ * @param type: See pc.hpp::e_mado_type (Default is MADO_ROBOT)
+ */
+void pc_setmadogear(struct map_session_data *sd, bool flag, e_mado_type type)
 {
-	if( flag ){
-		if( pc_checkskill(sd,NC_MADOLICENCE) > 0 )
-			pc_setoption(sd, sd->sc.option|OPTION_MADOGEAR);
-	} else if( pc_ismadogear(sd) ){
-			pc_setoption(sd, sd->sc.option&~OPTION_MADOGEAR);
+	if ((sd->class_ & MAPID_THIRDMASK) != MAPID_MECHANIC)
+		return;
+
+	if (flag) {
+		if (pc_checkskill(sd, NC_MADOLICENCE) > 0)
+			pc_setoption(sd, sd->sc.option | OPTION_MADOGEAR, type);
+	} else if (pc_ismadogear(sd)) {
+		pc_setoption(sd, sd->sc.option & ~OPTION_MADOGEAR);
 	}
 }
 
@@ -12335,7 +12366,7 @@ void pc_delspiritcharm(struct map_session_data *sd, int count, int type)
  * @param type: 1 - EXP, 2 - Item Drop
  * @return Penalty rate
  */
-uint16 pc_level_penalty_mod( struct map_session_data* sd, e_penalty_type type, struct mob_db* mob, mob_data* md ){
+uint16 pc_level_penalty_mod( struct map_session_data* sd, e_penalty_type type, std::shared_ptr<s_mob_db> mob, mob_data* md ){
 	// No player was attached, we don't use any modifier (100 = rates are not touched)
 	if( sd == nullptr ){
 		return 100;
@@ -12352,7 +12383,7 @@ uint16 pc_level_penalty_mod( struct map_session_data* sd, e_penalty_type type, s
 		return 100;
 	}
 
-	if( ( type == PENALTY_DROP || type == PENALTY_MVP_DROP ) && status_has_mode( &mob->status, MD_FIXED_ITEMDROP )  ){
+	if( ( type == PENALTY_DROP || type == PENALTY_MVP_DROP ) && status_has_mode( &mob->status, MD_FIXEDITEMDROP )  ){
 		return 100;
 	}
 
@@ -13546,7 +13577,11 @@ void pc_bonus_script(struct map_session_data *sd) {
  * @return New created entry pointer or NULL if failed or NULL if duplicate fail
  * @author [Cydh]
  **/
+#ifndef Pandas_BonusScript_Unique_ID
 struct s_bonus_script_entry *pc_bonus_script_add(struct map_session_data *sd, const char *script_str, t_tick dur, enum efst_types icon, uint16 flag, uint8 type) {
+#else
+struct s_bonus_script_entry *pc_bonus_script_add(struct map_session_data *sd, const char *script_str, t_tick dur, enum efst_types icon, uint16 flag, uint8 type, uint64 bonus_id) {
+#endif // Pandas_BonusScript_Unique_ID
 	struct script_code *script = NULL;
 	struct linkdb_node *node = NULL;
 	struct s_bonus_script_entry *entry = NULL;
@@ -13591,6 +13626,11 @@ struct s_bonus_script_entry *pc_bonus_script_add(struct map_session_data *sd, co
 	entry->tick = dur; // Use duration first, on run change to expire time
 	entry->type = type;
 	entry->script = script;
+#ifdef Pandas_BonusScript_Unique_ID
+	// 若参数中的 bonus_id 字段不为零, 则使用参数给出的值作为 bonus_id
+	// 否则使用 pc_bonus_script_generate_unique_id 重新生成一个新的 bonus_script 唯一编号
+	entry->bonus_id = (!bonus_id ? pc_bonus_script_generate_unique_id(sd) : bonus_id);
+#endif // Pandas_BonusScript_Unique_ID
 	sd->bonus_script.count++;
 	return entry;
 }
@@ -13705,6 +13745,96 @@ void pc_bonus_script_clear(struct map_session_data *sd, uint16 flag) {
 		status_calc_pc(sd,SCO_NONE);
 }
 
+#ifdef Pandas_BonusScript_Unique_ID
+//************************************
+// Method:      pc_bonus_script_generate_unique_id
+// Description: 生成与当前角色相关的 bonus_script 唯一编号
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Returns:     uint64
+// Author:      Sola丶小克(CairoLee)  2021/04/05 16:33
+//************************************ 
+uint64 pc_bonus_script_generate_unique_id(struct map_session_data* sd) {
+	nullpo_ret(sd);
+	uint64 bonus_script_unique_id = ((uint64)sd->status.char_id << 32) | sd->pandas.bonus_script_counter++;
+	pc_setglobalreg(sd, add_str(BONUS_SCRIPT_COUNTER_VAR), sd->pandas.bonus_script_counter);
+	return bonus_script_unique_id;
+}
+#endif // Pandas_BonusScript_Unique_ID
+
+#ifdef Pandas_ScriptCommand_BonusScriptRemove
+//************************************
+// Method:      pc_bonus_script_remove
+// Description: 移除指定的 bonus_script 效果脚本
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   uint64 bonus_id
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/04/05 17:37
+//************************************ 
+bool pc_bonus_script_remove(struct map_session_data* sd, uint64 bonus_id) {
+	struct linkdb_node* node = NULL;
+	struct s_bonus_script_entry* entry = NULL;
+	uint16 count = 0;
+
+	if (!sd)
+		return false;
+
+	if ((node = sd->bonus_script.head)) {
+		while (node) {
+			struct linkdb_node* next = node->next;
+			entry = (struct s_bonus_script_entry*)node->data;
+			if (bonus_id == entry->bonus_id) {
+				linkdb_erase(&sd->bonus_script.head, (void*)((intptr_t)entry));
+				pc_bonus_script_free_entry(sd, entry);
+				count++;
+			}
+			node = next;
+		}
+	}
+
+	pc_bonus_script_check_final(sd);
+
+	if (count) {
+		status_calc_pc(sd, SCO_NONE);
+	}
+
+	return (count > 0);
+}
+#endif // Pandas_ScriptCommand_BonusScriptRemove
+
+#ifdef Pandas_ScriptCommand_BonusScriptExists
+//************************************
+// Method:      pc_bonus_script_exists
+// Description: 判断指定的 bonus_script 效果脚本是否已存在 (或者说: 已激活)
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   uint64 bonus_id
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/04/05 17:39
+//************************************ 
+bool pc_bonus_script_exists(struct map_session_data* sd, uint64 bonus_id) {
+	struct linkdb_node* node = NULL;
+	struct s_bonus_script_entry* entry = NULL;
+
+	if (!sd)
+		return false;
+
+	if ((node = sd->bonus_script.head)) {
+		while (node) {
+			struct linkdb_node* next = node->next;
+			entry = (struct s_bonus_script_entry*)node->data;
+			if (bonus_id == entry->bonus_id) {
+				return true;
+			}
+			node = next;
+		}
+	}
+
+	return false;
+}
+#endif // Pandas_ScriptCommand_BonusScriptExists
+
 /** [Cydh]
  * Gives/removes SC_BASILICA when player steps in/out the cell with 'cell_basilica'
  * @param sd: Target player
@@ -13800,7 +13930,8 @@ short pc_maxaspd(struct map_session_data *sd) {
 	if (map_flag_gvg(sd->bl.m) && battle_config.max_aspd_for_gvg > 0) {
 		// 先根据 rAthena 默认的攻速公式, 计算出即将返回的攻速数值
 		int aspd = ((sd->class_ & JOBL_THIRD) ? battle_config.max_third_aspd : (
-			((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd :
+			((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (
+				(sd->class_ & MAPID_BASEMASK) == MAPID_SUMMONER) ? battle_config.max_summoner_aspd :
 			battle_config.max_aspd));
 
 		// 若 PVP 地图限制的攻速比原先 rAthena 计算的攻速更小 (限制更严格, 攻速更慢), 那么以最小的为准
@@ -13816,7 +13947,8 @@ short pc_maxaspd(struct map_session_data *sd) {
 	if (map_flag_vs(sd->bl.m) && battle_config.max_aspd_for_pvp > 0) {
 		// 先根据 rAthena 默认的攻速公式, 计算出即将返回的攻速数值
 		int aspd = ((sd->class_ & JOBL_THIRD) ? battle_config.max_third_aspd : (
-			((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd :
+			((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (
+				(sd->class_ & MAPID_BASEMASK) == MAPID_SUMMONER) ? battle_config.max_summoner_aspd :
 			battle_config.max_aspd));
 
 		// 若 PVP 地图限制的攻速比原先 rAthena 计算的攻速更小 (限制更严格, 攻速更慢), 那么以最小的为准
@@ -13826,6 +13958,26 @@ short pc_maxaspd(struct map_session_data *sd) {
 		}
 	}
 #endif // Pandas_BattleConfig_MaxAspdForPVP
+
+#ifdef Pandas_MapFlag_MaxASPD
+	if (map_getmapflag(sd->bl.m, MF_MAXASPD)) {
+		int val = map_getmapflag_param(sd->bl.m, MF_MAXASPD, 0);
+		if (val) {
+			// 先根据 rAthena 默认的攻速公式, 计算出即将返回的攻速数值
+			int aspd = ((sd->class_ & JOBL_THIRD) ? battle_config.max_third_aspd : (
+				((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (
+					(sd->class_ & MAPID_BASEMASK) == MAPID_SUMMONER) ? battle_config.max_summoner_aspd :
+				battle_config.max_aspd));
+
+			val = 2000 - val * 10;
+			// 若 MaxAspd 地图标记所限制的攻速比原先 rAthena 计算的攻速更小 (限制更严格, 攻速更慢), 那么以最小的为准
+			// 需要注意: 这里返回的攻速值, 实际上是攻击间隔延迟的毫秒数 (值越大, 攻速越慢; 值越小, 攻速越快)
+			if (aspd < val) {
+				return val;
+			}
+		}
+	}
+#endif // Pandas_MapFlag_MaxASPD
 
 	return (( sd->class_&JOBL_THIRD) ? battle_config.max_third_aspd : (
 			((sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (

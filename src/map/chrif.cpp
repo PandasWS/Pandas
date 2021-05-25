@@ -114,6 +114,7 @@ static uint16 char_port = 6121;
 static char userid[NAME_LENGTH], passwd[NAME_LENGTH];
 static int chrif_state = 0;
 int other_mapserver_count=0; //Holds count of how many other map servers are online (apart of this instance) [Skotlex]
+char charserver_name[NAME_LENGTH];
 
 //Interval at which map server updates online listing. [Valaris]
 #define CHECK_INTERVAL 3600000
@@ -625,14 +626,19 @@ int chrif_sendmapack(int fd) {
 		exit(EXIT_FAILURE);
 	}
 
-	// Server name
-	memcpy(wisp_server_name, RFIFOP(fd,5), NAME_LENGTH);
-	ShowStatus("Map-server connected to char-server '" CL_WHITE "%s" CL_RESET "'.\n", wisp_server_name);
+	// Whisper name
+	safestrncpy( wisp_server_name, RFIFOCP( fd, offs ), NAME_LENGTH );
 
 	// Default map
-	memcpy(map_default.mapname, RFIFOP(fd, (offs+=NAME_LENGTH)), MAP_NAME_LENGTH);
+	safestrncpy( map_default.mapname, RFIFOCP( fd, ( offs += NAME_LENGTH ) ), MAP_NAME_LENGTH );
 	map_default.x = RFIFOW(fd, (offs+=MAP_NAME_LENGTH));
 	map_default.y = RFIFOW(fd, (offs+=2));
+
+	// Server name
+	safestrncpy( charserver_name, RFIFOCP( fd, ( offs += 2 ) ), NAME_LENGTH );
+
+	ShowStatus( "Map-server connected to char-server '" CL_WHITE "%s" CL_RESET "' (whispername: %s).\n", charserver_name, wisp_server_name );
+
 	if (battle_config.etc_log)
 		ShowInfo("Received default map from char-server '" CL_WHITE "%s %d,%d" CL_RESET "'.\n", map_default.mapname, map_default.x, map_default.y);
 
@@ -1734,6 +1740,9 @@ int chrif_bsdata_save(struct map_session_data *sd, bool quit) {
 			bs.flag = entry->flag;
 			bs.type = entry->type;
 			bs.icon = entry->icon;
+#ifdef Pandas_BonusScript_Unique_ID
+			bs.bonus_id = entry->bonus_id;
+#endif // Pandas_BonusScript_Unique_ID
 			memcpy(WFIFOP(char_fd, 9 + i * sizeof(struct bonus_script_data)), &bs, sizeof(struct bonus_script_data));
 			i++;
 		}
@@ -1780,8 +1789,14 @@ int chrif_bsdata_received(int fd) {
 			if (bs->script_str[0] == '\0' || !bs->tick)
 				continue;
 
+#ifndef Pandas_BonusScript_Unique_ID
 			if (!(entry = pc_bonus_script_add(sd, bs->script_str, bs->tick, (enum efst_types)bs->icon, bs->flag, bs->type)))
 				continue;
+#else
+			// 多传入一个数据库中保存的 bonus_id 以此来避免 pc_bonus_script_add 内部重复创建
+			if (!(entry = pc_bonus_script_add(sd, bs->script_str, bs->tick, (enum efst_types)bs->icon, bs->flag, bs->type, bs->bonus_id)))
+				continue;
+#endif // Pandas_BonusScript_Unique_ID
 
 			linkdb_insert(&sd->bonus_script.head, (void *)((intptr_t)entry), entry);
 		}

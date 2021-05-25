@@ -273,6 +273,7 @@ def arrange_renewal(packagedir):
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
     copyfile(project_slndir + 'yaml2sql.exe', packagedir + 'yaml2sql.exe')
+    copyfile(project_slndir + 'yamlupgrade.exe', packagedir + 'yamlupgrade.exe')
 
 def arrange_pre_renewal(packagedir):
     '''
@@ -291,6 +292,7 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'csv2yaml-pre.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
     copyfile(project_slndir + 'yaml2sql-pre.exe', packagedir + 'yaml2sql.exe')
+    copyfile(project_slndir + 'yamlupgrade-pre.exe', packagedir + 'yamlupgrade.exe')
 
 def process_sub(export_file, renewal, langinfo):
     print('')

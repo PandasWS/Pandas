@@ -346,6 +346,45 @@ t_tick sett_tickimer(int tid, t_tick tick)
 	return tick;
 }
 
+#ifdef Pandas_BattleRecord
+//************************************
+// Method:      set_timerid
+// Description: 设置指定定时器携带的 id 参数值
+// Access:      public 
+// Parameter:   int tid
+// Parameter:   int id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/03/13 19:13
+//************************************ 
+void set_timerid(int tid, int id) {
+	if (tid == INVALID_TIMER || tid >= timer_data_num) {
+		return;
+	}
+
+	if (timer_data[tid].type) {
+		timer_data[tid].id = id;
+	}
+}
+
+//************************************
+// Method:      detect_invalid_timer
+// Description: 寻找未被销毁的触发时携带的 id 等于指定值的定时器
+// Access:      public 
+// Parameter:   int id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/03/13 19:02
+//************************************ 
+void detect_invalid_timer(int id) {
+	int tid = -1;
+	for (tid = 0; tid < timer_data_max; tid++) {
+		if (timer_data[tid].type && timer_data[tid].id == id && timer_data[tid].func) {
+			// 若真的找到则报告出来, 这意味着 map_mobiddb 没处理干净
+			ShowWarning("%s: found invalid timer point to %d (timer id = %d, func = %s)\n", __func__, id, tid, search_timer_func_list(timer_data[tid].func));
+		}
+	}
+}
+#endif // Pandas_BattleRecord
+
 /// Executes all expired timers.
 /// Returns the value of the smallest non-expired timer (or 1 second if there aren't any).
 t_tick do_timer(t_tick tick)

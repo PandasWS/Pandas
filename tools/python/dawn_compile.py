@@ -157,6 +157,7 @@ def clean_environment():
     Common.glob_delete(slndir('csv2yaml*'))
     Common.glob_delete(slndir('mapcache*'))
     Common.glob_delete(slndir('yaml2sql*'))
+    Common.glob_delete(slndir('yamlupgrade*'))
 
     Common.glob_delete(slndir('logserv.bat'))
     Common.glob_delete(slndir('charserv.bat'))
@@ -251,6 +252,8 @@ def compile_prere(version):
     shutil.move(slndir('yaml2sql.pdb'), slndir('yaml2sql-pre-t.pdb'))
     shutil.move(slndir('csv2yaml.exe'), slndir('csv2yaml-pre-t.exe'))
     shutil.move(slndir('csv2yaml.pdb'), slndir('csv2yaml-pre-t.pdb'))
+    shutil.move(slndir('yamlupgrade.exe'), slndir('yamlupgrade-pre-t.exe'))
+    shutil.move(slndir('yamlupgrade.pdb'), slndir('yamlupgrade-pre-t.pdb'))
     
     print('')
 
@@ -288,6 +291,8 @@ def compile_renewal(version):
     shutil.move(slndir('yaml2sql-pre-t.pdb'), slndir('yaml2sql-pre.pdb'))
     shutil.move(slndir('csv2yaml-pre-t.exe'), slndir('csv2yaml-pre.exe'))
     shutil.move(slndir('csv2yaml-pre-t.pdb'), slndir('csv2yaml-pre.pdb'))
+    shutil.move(slndir('yamlupgrade-pre-t.exe'), slndir('yamlupgrade-pre.exe'))
+    shutil.move(slndir('yamlupgrade-pre-t.pdb'), slndir('yamlupgrade-pre.pdb'))
     
     print('')
 
@@ -341,18 +346,16 @@ def main():
     else:
         Message.ShowStatus('当前模拟器代码仓库的工作区是干净的.')
 
-    # 检查 Crashrpt 使用的信息是否都设置好了, 若没有且企图编译正式版, 则给与提示
+    # 检查 Crashrpt 使用的信息是否都设置好了
     if Common.is_pandas_release(os.path.abspath(project_slndir)):
-        if not os.getenv("DEFINE_CRASHRPT_APPID"):
-            Message.ShowWarning('当前并未设置 AppID, 且企图编译正式版.')
-            Common.exit_with_pause(-1)
-        if Common.md5(os.getenv("DEFINE_CRASHRPT_APPID")) != '952648de2d8f063a07331ae3827bc406':
-            Message.ShowWarning('当前已设置了 AppID, 但并非正式版使用的 AppID.')
-            Common.exit_with_pause(-1)
-        if not os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
-            Message.ShowWarning('当前并未设置 PublicKey, 且企图编译正式版.')
-            Common.exit_with_pause(-1)
-    
+        if os.getenv("DEFINE_CRASHRPT_APPID"):
+            if Common.md5(os.getenv("DEFINE_CRASHRPT_APPID")) != '952648de2d8f063a07331ae3827bc406':
+                Message.ShowWarning('当前已设置了 AppID, 但并非正式版使用的 AppID.')
+                Common.exit_with_pause(-1)
+            if not os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
+                Message.ShowWarning('正在计划编译正式版, 但并未设置 PublicKey 请检查...')
+                Common.exit_with_pause(-1)
+
     Message.ShowStatus('即将开始编译, 编译速度取决于电脑性能, 请耐心...')
 
     # 清理目前的工作目录, 把一些可明确移除的删掉

@@ -1344,6 +1344,14 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_SC_START
 	NPCF_SC_START,	// sc_start_filter_name	// OnPCBuffStartFilter		// 当玩家准备获得一个状态(Buff)时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+	NPCF_USE_REVIVE_TOKEN,	// use_revive_token_filter_name	// OnPCUseReviveTokenFilter		// 当玩家使用菜单中的原地复活之证时触发过滤器
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+#ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
+	NPCF_ONECLICK_IDENTIFY,	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
+#endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
@@ -1399,17 +1407,25 @@ enum npce_event : uint8 {
 	NPCX_ENTERMAP,	// entermap_express_name	// OnPCEnterMapExpress		// 当玩家进入或者改变地图时触发实时事件
 #endif // Pandas_NpcExpress_ENTERMAP
 
-#ifdef Pandas_NpcExpress_UNITFREE
-	NPCX_UNITFREE,	// unitfree_express_name	// OnUnitFreeExpress		// 当游戏单位被销毁时触发实时事件
-#endif // Pandas_NpcExpress_UNITFREE
-
 #ifdef Pandas_NpcExpress_PROGRESSABORT
 	NPCX_PROGRESSABORT,	// progressabort_express_name	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	NPCX_UNIT_KILL,	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX
 };
+
+#ifdef Pandas_NpcEvent_KILLMVP
+void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md);
+#endif // Pandas_NpcEvent_KILLMVP
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, uint16 skillid);
+#endif // Pandas_NpcExpress_UNIT_KILL
 
 #ifdef Pandas_Helper_Common_Function
 struct event_data* npc_event_data(const char* eventname);

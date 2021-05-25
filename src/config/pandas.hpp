@@ -15,6 +15,7 @@
 	#define Pandas_StructIncrease
 	#define Pandas_BattleConfigure
 	#define Pandas_FuncIncrease
+	#define Pandas_PacketFunction
 	#define Pandas_CreativeWork
 	#define Pandas_Speedup
 	#define Pandas_Bugfix
@@ -63,7 +64,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.1.1"
+	#define Pandas_Version "1.1.2.1"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -137,6 +138,10 @@
 		// rAthena 使用完成 autotrade 的朝向数据后就销毁掉了
 		// 为了能够支持离线挂店 / 挂机可以被 recall 召唤, 我们需要保留一部分数据
 		#define Pandas_Struct_Map_Session_Data_Autotrade_Configure
+
+		// 使 map_session_data 可记录玩家已经生成的 bonus_script 记录数 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.bonus_script_counter
+		#define Pandas_Struct_Map_Session_Data_BonusScript_Counter
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
 
 	// 使 item_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
@@ -180,6 +185,11 @@
 	// 在默认情况下 sd->state.autotrade 的值若为 0 则表示没有离线挂店
 	// 若非零的话则表示启用了离线挂店, 且 &2 表示开启的是离线摆摊挂店 &3 表示开启的是离线收购挂店
 	#define Pandas_Struct_Autotrade_Extend
+
+	// 对 bonus_script_data 的定义进行拓展处理 [Sola丶小克]
+	// 默认的 rAthena 中 bonus_script 机制并没有唯一编号的概念, 为了提高对 bonus_script 的控制粒度
+	// 我们需要将唯一编号引入到我们需要拓展的相关数据结构体中
+	#define Pandas_Struct_BonusScriptData_Extend
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -288,6 +298,18 @@
 	// 是否启用 multiplayer_recall_behavior 配置选项及其功能 [Sola丶小克]
 	// 此选项用于控制多人召唤时是否避开在线摆摊玩家
 	#define Pandas_BattleConfig_Multiplayer_Recall_Behavior
+
+	// 是否启用 always_trigger_npc_killevent 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制当魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnNPCKillEvent 事件
+	#define Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
+
+	// 是否启用 always_trigger_mvp_killevent 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制当 MVP 魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnPCKillMvpEvent 事件
+	#define Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
+
+	// 是否启用 batrec_autoenabled_unit 配置选项及其功能 [Sola丶小克]
+	// 此选项用于设置默认情况下有哪些类型的单位会启用战斗记录
+	#define Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
@@ -311,6 +333,14 @@
 	// 以便交由外部来进行 erase, 这样才能获取下一个指针的正确位置 (C++11) [Sola丶小克]
 	#define Pandas_FuncDefine_Instance_Destory
 
+	// 调整各单位的死亡处理函数, 以便支持更多参数信息 [Sola丶小克]
+	// 玩家单位	: pc.cpp -> pc_dead
+	// 魔物单位	: mob.cpp -> mob_dead
+	// 生命体单位	: homunculus.cpp -> hom_dead
+	// 佣兵单位	: mercenary.cpp -> mercenary_dead
+	// 元素精灵	: elemental.cpp -> elemental_dead
+	#define Pandas_FuncDefine_UnitDead_With_ExtendInfo
+
 	// 调整用于计算 MAX_INVENTORY 相关的变量
 	// 以便能够支持将背包的最大上限设置成超过 128 的值 [Sola丶小克]
 	// 
@@ -326,6 +356,19 @@
 	// 因为 rAthena 官方实现的该函数在切换队长后的处理并不友好 [Sola丶小克]
 	#define Pandas_FuncLogic_Instance_Destroy_Command
 #endif // Pandas_FuncIncrease
+
+// ============================================================================
+// 封包修改组 - Pandas_PacketFunction
+// ============================================================================
+
+#ifdef Pandas_PacketFunction
+	// 实现 0xb0d 封包发送函数, 用于告诉客户端移除指定单位的特效
+	// 
+	// 涉及到的函数有:
+	// - clif_removespecialeffect
+	// - clif_removespecialeffect_single
+	#define Pandas_PacketFunction_RemoveSpecialEffect
+#endif // Pandas_PacketFunction
 
 // ============================================================================
 // 原创功能组 - Pandas_CreativeWork
@@ -552,10 +595,19 @@
 	#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 	// 是否启用角色光环机制 [Sola丶小克]
-	// 此选项依赖 Pandas_Struct_Unit_CommonData_Aura 的拓展
-	#ifdef Pandas_Struct_Unit_CommonData_Aura
-		#define Pandas_Aura_Mechanism
+	// 此选项依赖以下拓展, 任意一个不成立则将会 undef 此选项的定义
+	// - Pandas_Struct_Unit_CommonData_Aura
+	// - Pandas_PacketFunction_RemoveSpecialEffect (特定客户端版本下依赖)
+	#define Pandas_Aura_Mechanism
+
+	#ifndef Pandas_Struct_Unit_CommonData_Aura
+		#undef Pandas_Aura_Mechanism
 	#endif // Pandas_Struct_Unit_CommonData_Aura
+	#if PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
+		#ifndef Pandas_PacketFunction_RemoveSpecialEffect
+			#undef Pandas_Aura_Mechanism
+		#endif // Pandas_PacketFunction_RemoveSpecialEffect
+	#endif // PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
 
 	// 优化对极端计算的支持 (AKA: 变态服拓展包) [Sola丶小克]
 	// 主要用来解决因为 rAthena 主要定位于仿官服带来的各种数值计算的限制
@@ -573,6 +625,19 @@
 	#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
 		#define Pandas_BattleRecord
 	#endif // Pandas_Struct_Unit_CommonData_BattleRecord
+
+	// 是否启用 bonus_script 的唯一编号机制 [Sola丶小克]
+	// 此选项依赖以下拓展, 任意一个不成立则将会 undef 此选项的定义
+	// - Pandas_Struct_BonusScriptData_Extend
+	// - Pandas_Struct_Map_Session_Data_BonusScript_Counter
+	#define Pandas_BonusScript_Unique_ID
+
+	#ifndef Pandas_Struct_BonusScriptData_Extend
+		#undef Pandas_BonusScript_Unique_ID
+	#endif // Pandas_Struct_BonusScriptData_Extend
+	#ifndef Pandas_Struct_Map_Session_Data_BonusScript_Counter
+		#undef Pandas_BonusScript_Unique_ID
+	#endif // Pandas_Struct_Map_Session_Data_BonusScript_Counter
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -913,6 +978,9 @@
 
 		// 是否启用对 SkillDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_SkillDatabase
+
+		// 是否启用对 MobDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_MobDatabase
 	#endif // Pandas_YamlBlastCache_Serialize
 #endif // Pandas_YamlBlastCache
 
@@ -999,6 +1067,16 @@
 		// 事件类型: Filter / 事件名称: OnPCBuffStartFilter
 		// 常量名称: NPCF_SC_START / 变量名称: sc_start_filter_name
 		#define Pandas_NpcFilter_SC_START
+
+		// 当玩家使用菜单中的原地复活之证时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCUseReviveTokenFilter
+		// 常量名称: NPCF_USE_REVIVE_TOKEN / 变量名称: use_revive_token_filter_name
+		#define Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+		// 当玩家使用一键鉴定道具时触发过滤器 [Sola丶小克]
+		// 事件类型: Filter / 事件名称: OnPCUseOCIdentifyFilter
+		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
+		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -1074,6 +1152,11 @@
 		// 事件类型: Express / 事件名称: OnPCProgressAbortExpress
 		// 常量名称: NPCX_PROGRESSABORT / 变量名称: progressabort_express_name
 		#define Pandas_NpcExpress_PROGRESSABORT
+
+		// 当某个单位被击杀时触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnUnitKillExpress
+		// 常量名称: NPCX_UNIT_KILL / 变量名称: unit_kill_express_name
+		#define Pandas_NpcExpress_UNIT_KILL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	
@@ -1160,6 +1243,10 @@
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_MapFlag_NoAura
 	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 maxaspd 地图标记 [Sola丶小克]
+	// 该标记用于限制此地图上单位的最大攻击速度 (ASDP: 1~199)
+	#define Pandas_MapFlag_MaxASPD
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 
@@ -1218,6 +1305,10 @@
 // ============================================================================
 
 #ifdef Pandas_ScriptCommands
+	// 是否拓展 unitexists 脚本指令 [Sola丶小克]
+	// 添加一个可选参数, 用于强调单位必须存在且活着才返回 true
+	#define Pandas_ScriptCommand_UnitExists
+
 	// 是否启用 setheaddir 脚本指令 [Sola丶小克]
 	// 用于调整角色纸娃娃脑袋的朝向 (0 - 正前方; 1 - 向右看; 2 - 向左看)
 	#define Pandas_ScriptCommand_SetHeadDir
@@ -1464,9 +1555,9 @@
 		// 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录
 		#define Pandas_ScriptCommand_BattleRecordSortout
 
-		// 是否启用 batrec_clear 脚本指令 [Sola丶小克]
+		// 是否启用 batrec_reset 脚本指令 [Sola丶小克]
 		// 清除指定单位的战斗记录
-		#define Pandas_ScriptCommand_BattleRecordClear
+		#define Pandas_ScriptCommand_BattleRecordReset
 
 		// 是否启用 enable_batrec 脚本指令 [Sola丶小克]
 		// 该指令用于启用指定单位的战斗记录
@@ -1490,6 +1581,26 @@
 	#ifdef Pandas_Struct_Autotrade_Extend
 		#define Pandas_ScriptCommand_CheckSuspend
 	#endif // Pandas_Struct_Autotrade_Extend
+
+	// 是否启用 bonus_script_remove 脚本指令 [Sola丶小克]
+	// 该指令用于移除指定的 bonus_script 效果脚本
+	#define Pandas_ScriptCommand_BonusScriptRemove
+
+	// 是否启用 bonus_script_list 脚本指令 [Sola丶小克]
+	// 该指令用于获取指定角色当前激活的全部 bonus_script 效果脚本编号
+	#define Pandas_ScriptCommand_BonusScriptList
+
+	// 是否启用 bonus_script_exists 脚本指令 [Sola丶小克]
+	// 该指令用于查询指定角色是否已经激活了特定的 bonus_script 效果脚本
+	#define Pandas_ScriptCommand_BonusScriptExists
+
+	// 是否启用 bonus_script_getid 脚本指令 [Sola丶小克]
+	// 该指令用于查询效果脚本代码对应的效果脚本编号
+	#define Pandas_ScriptCommand_BonusScriptGetId
+
+	// 是否启用 bonus_script_info 脚本指令 [Sola丶小克]
+	// 该指令用于查询指定效果脚本的相关信息
+	#define Pandas_ScriptCommand_BonusScriptInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

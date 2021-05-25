@@ -22,7 +22,6 @@ struct status_change;
 
 /**
  * Max Refine available to your server
- * Changing this limit requires edits to refine_db.txt
  **/
 #ifdef RENEWAL
 #	define MAX_REFINE 20
@@ -31,36 +30,74 @@ struct status_change;
 #endif
 
 /// Refine type
-enum refine_type {
-	REFINE_TYPE_ARMOR	= 0,
-	REFINE_TYPE_WEAPON1	= 1,
-	REFINE_TYPE_WEAPON2	= 2,
-	REFINE_TYPE_WEAPON3	= 3,
-	REFINE_TYPE_WEAPON4	= 4,
-	REFINE_TYPE_SHADOW	= 5,
-	REFINE_TYPE_MAX		= 6
+enum e_refine_type : uint16{
+	REFINE_TYPE_ARMOR = 0,
+	REFINE_TYPE_WEAPON,
+	REFINE_TYPE_SHADOW_ARMOR,
+	REFINE_TYPE_SHADOW_WEAPON,
+	REFINE_TYPE_MAX
 };
 
 /// Refine cost type
-enum refine_cost_type {
+enum e_refine_cost_type : uint16{
 	REFINE_COST_NORMAL = 0,
-	REFINE_COST_OVER10,
 	REFINE_COST_HD,
 	REFINE_COST_ENRICHED,
-	REFINE_COST_OVER10_HD,
-	REFINE_COST_HOLINK,
-	REFINE_COST_WAGJAK,
 	REFINE_COST_MAX
 };
 
-struct refine_cost {
-	t_itemid nameid;
-	int zeny;
+/// Refine script parameters
+enum e_refine_parameter{
+	REFINE_MATERIAL_ID = 0,
+	REFINE_ZENY_COST
 };
 
-/// Get refine chance
-int status_get_refine_chance(enum refine_type wlv, int refine, bool enriched);
-int status_get_refine_cost(int weapon_lv, int type, bool what);
+struct s_refine_cost{
+	uint16 index;
+	t_itemid nameid;
+	uint16 chance;
+	uint32 zeny;
+	uint16 breaking_rate;
+	uint16 downgrade_amount;
+};
+
+struct s_refine_level_info{
+	uint16 level;
+	uint32 bonus;
+	uint32 randombonus_max;
+	uint16 blessing_amount;
+	std::unordered_map<uint16, std::shared_ptr<s_refine_cost>> costs;
+};
+
+struct s_refine_levels_info{
+	uint16 level;
+	std::unordered_map<uint16, std::shared_ptr<s_refine_level_info>> levels;
+};
+
+struct s_refine_info{
+	uint16 groupId;
+	std::unordered_map<uint16, std::shared_ptr<s_refine_levels_info>> levels;
+};
+
+class RefineDatabase : public TypesafeYamlDatabase<uint16, s_refine_info>{
+private:
+	bool calculate_refine_info( const struct item_data& data, e_refine_type& refine_type, uint16& level );
+	std::shared_ptr<s_refine_level_info> findLevelInfoSub( const struct item_data& data, struct item& item, uint16 refine );
+
+public:
+	RefineDatabase() : TypesafeYamlDatabase( "REFINE_DB", 1 ){
+
+	}
+
+	const std::string getDefaultLocation();
+	uint64 parseBodyNode( const YAML::Node& node );
+
+	// Additional
+	std::shared_ptr<s_refine_level_info> findLevelInfo( const struct item_data& data, struct item& item );
+	std::shared_ptr<s_refine_level_info> findCurrentLevelInfo( const struct item_data& data, struct item& item );
+};
+
+extern RefineDatabase refine_db;
 
 /// Weapon attack modification for size
 struct s_sizefix_db {
@@ -484,9 +521,9 @@ enum sc_type : int16 {
 	 **/
 	SC_REFLECTDAMAGE,
 	SC_FORCEOFVANGUARD,
-	SC_SHIELDSPELL_DEF,
-	SC_SHIELDSPELL_MDEF,
-	SC_SHIELDSPELL_REF,//380
+	SC_SHIELDSPELL_HP,
+	SC_SHIELDSPELL_SP,
+	SC_SHIELDSPELL_ATK,//380
 	SC_EXEEDBREAK,
 	SC_PRESTIGE,
 	SC_BANDING,
@@ -938,8 +975,18 @@ enum sc_type : int16 {
 	SC_EP16_2_BUFF_SS,
 	SC_EP16_2_BUFF_SC,
 	SC_EP16_2_BUFF_AC,
+	
+	// Job Improvement Bundle
+	SC_OVERBRANDREADY,
+	SC_POISON_MIST,
+	SC_STONE_WALL,
+	SC_CLOUD_POISON,
+	SC_HOMUN_TIME,
 
 	SC_EMERGENCY_MOVE,
+	SC_MADOGEAR,
+
+	SC_NPC_HALLUCINATIONWALK,
 
 #ifdef RENEWAL
 	SC_EXTREMITYFIST2, //! NOTE: This SC should be right before SC_MAX, so it doesn't disturb if RENEWAL is disabled
@@ -2629,7 +2676,6 @@ struct status_change {
 #ifndef RENEWAL
 	unsigned char sg_counter; //Storm gust counter (previous hits from storm gust)
 #endif
-	unsigned char bs_counter; // Blood Sucker counter
 	struct status_change_entry *data[SC_MAX];
 };
 
@@ -2735,7 +2781,7 @@ unsigned char status_calc_attack_element(struct block_list *bl, struct status_ch
 int status_get_party_id(struct block_list *bl);
 int status_get_guild_id(struct block_list *bl);
 int status_get_emblem_id(struct block_list *bl);
-enum e_race2 status_get_race2(struct block_list *bl);
+std::vector<e_race2> status_get_race2(struct block_list *bl);
 
 struct view_data *status_get_viewdata(struct block_list *bl);
 void status_set_viewdata(struct block_list *bl, int class_);
@@ -2814,8 +2860,83 @@ pec_ushort status_base_matk_max(struct block_list *bl, const struct status_data*
 pec_ushort status_base_atk(const struct block_list *bl, const struct status_data *status, int level);
 
 void initChangeTables(void);
-int status_readdb(void);
+int status_readdb( bool reload = false );
 int do_init_status(void);
 void do_final_status(void);
+
+#ifdef Pandas_YamlBlastCache_Serialize
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct weapon_atk
+		// ======================================================================
+
+		template <typename Archive>
+		void serialize(Archive& ar, struct weapon_atk& t, const unsigned int version)
+		{
+			ar& t.atk;
+			ar& t.atk2;
+			ar& t.range;
+			ar& t.ele;
+#ifdef RENEWAL
+			ar& t.matk;
+			ar& t.wlv;
+#endif
+		}
+
+		// ======================================================================
+		// struct status_data
+		// ======================================================================
+
+		template <typename Archive>
+		void serialize(Archive& ar, struct status_data& t, const unsigned int version)
+		{
+			ar& t.hp;
+			ar& t.sp;
+			ar& t.max_hp;
+			ar& t.max_sp;
+			ar& t.str;
+			ar& t.agi;
+			ar& t.vit;
+			ar& t.int_;
+			ar& t.dex;
+			ar& t.luk;
+			ar& t.eatk;
+			ar& t.batk;
+#ifdef RENEWAL
+			ar& t.watk;
+			ar& t.watk2;
+#endif
+			ar& t.matk_min;
+			ar& t.matk_max;
+			ar& t.speed;
+			ar& t.amotion;
+			ar& t.adelay;
+			ar& t.dmotion;
+			ar& t.mode;
+			ar& t.hit;
+			ar& t.flee;
+			ar& t.cri;
+			ar& t.flee2;
+			ar& t.def2;
+			ar& t.mdef2;
+#ifdef RENEWAL_ASPD
+			ar& t.aspd_rate2;
+#endif
+			ar& t.aspd_rate;
+			ar& t.def;
+			ar& t.mdef;
+
+			ar& t.def_ele;
+			ar& t.ele_lv;
+			ar& t.size;
+			ar& t.race;
+			ar& t.class_;
+			ar& t.rhw;
+			ar& t.lhw;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_Serialize
 
 #endif /* STATUS_HPP */

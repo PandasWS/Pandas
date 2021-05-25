@@ -162,24 +162,26 @@ void chmapif_sendall_playercount(int users){
  * Send some misc info to new map-server.
  * - Server name for whisper name
  * - Default map
- * HZ 0x2afb <size>.W <status>.B <name>.24B <mapname>.11B <map_x>.W <map_y>.W
+ * HZ 0x2afb <size>.W <status>.B <whisper name>.24B <mapname>.11B <map_x>.W <map_y>.W <server name>.24B
  * @param fd
  **/
 void chmapif_send_misc(int fd) {
 	uint16 offs = 5;
-	unsigned char buf[45];
+	unsigned char buf[45+NAME_LENGTH];
 
 	memset(buf, '\0', sizeof(buf));
 	WBUFW(buf, 0) = 0x2afb;
 	// 0 succes, 1:failure
 	WBUFB(buf, 4) = 0;
 	// Send name for wisp to player
-	memcpy(WBUFP(buf, 5), charserv_config.wisp_server_name, NAME_LENGTH);
+	safestrncpy( WBUFCP( buf, 5 ), charserv_config.wisp_server_name, NAME_LENGTH );
 	// Default map
-	memcpy(WBUFP(buf, (offs+=NAME_LENGTH)), charserv_config.default_map, MAP_NAME_LENGTH); // 29
+	safestrncpy( WBUFCP( buf, ( offs += NAME_LENGTH ) ), charserv_config.default_map, MAP_NAME_LENGTH ); // 29
 	WBUFW(buf, (offs+=MAP_NAME_LENGTH)) = charserv_config.default_map_x; // 41
 	WBUFW(buf, (offs+=2)) = charserv_config.default_map_y; // 43
 	offs+=2;
+	safestrncpy( WBUFCP( buf, offs ), charserv_config.server_name, sizeof( charserv_config.server_name ) ); // 45
+	offs += NAME_LENGTH;
 
 	// Length
 	WBUFW(buf, 2) = offs;
@@ -1335,6 +1337,7 @@ int chmapif_bonus_script_get(int fd) {
 
 		RFIFOSKIP(fd,6);
 
+#ifndef Pandas_BonusScript_Unique_ID
 		if (SQL_ERROR == SqlStmt_Prepare(stmt,
 			"SELECT `script`, `tick`, `flag`, `type`, `icon` FROM `%s` WHERE `char_id` = '%d' LIMIT %d",
 			schema_config.bonus_script_db, cid, MAX_PC_BONUS_SCRIPT) ||
@@ -1350,6 +1353,24 @@ int chmapif_bonus_script_get(int fd) {
 			SqlStmt_Free(stmt);
 			return 1;
 		}
+#else
+		if (SQL_ERROR == SqlStmt_Prepare(stmt,
+			"SELECT `script`, `tick`, `flag`, `type`, `icon`, `id` FROM `%s` WHERE `char_id` = '%d' LIMIT %d",	// 增加了一个 ID 字段
+			schema_config.bonus_script_db, cid, MAX_PC_BONUS_SCRIPT) ||
+			SQL_ERROR == SqlStmt_Execute(stmt) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &tmp_bsdata.script_str, sizeof(tmp_bsdata.script_str), NULL, NULL) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 1, SQLDT_INT64, &tmp_bsdata.tick, 0, NULL, NULL) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 2, SQLDT_UINT16, &tmp_bsdata.flag, 0, NULL, NULL) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 3, SQLDT_UINT8, &tmp_bsdata.type, 0, NULL, NULL) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 4, SQLDT_INT16, &tmp_bsdata.icon, 0, NULL, NULL) ||
+			SQL_ERROR == SqlStmt_BindColumn(stmt, 5, SQLDT_UINT64, &tmp_bsdata.bonus_id, 0, NULL, NULL)			// 绑定了一个 ID 字段
+			)
+		{
+			SqlStmt_ShowDebug(stmt);
+			SqlStmt_Free(stmt);
+			return 1;
+		}
+#endif // Pandas_BonusScript_Unique_ID
 
 		if ((num_rows = (uint8)SqlStmt_NumRows(stmt)) > 0) {
 			uint8 i;
@@ -1371,6 +1392,9 @@ int chmapif_bonus_script_get(int fd) {
 				bsdata.flag = tmp_bsdata.flag;
 				bsdata.type = tmp_bsdata.type;
 				bsdata.icon = tmp_bsdata.icon;
+#ifdef Pandas_BonusScript_Unique_ID
+				bsdata.bonus_id = tmp_bsdata.bonus_id;
+#endif // Pandas_BonusScript_Unique_ID
 				memcpy(WFIFOP(fd, 9 + i * sizeof(struct bonus_script_data)), &bsdata, sizeof(struct bonus_script_data));
 			}
 
@@ -1411,13 +1435,21 @@ int chmapif_bonus_script_save(int fd) {
 			uint8 i;
 
 			StringBuf_Init(&buf);
+#ifndef Pandas_BonusScript_Unique_ID
 			StringBuf_Printf(&buf, "INSERT INTO `%s` (`char_id`, `script`, `tick`, `flag`, `type`, `icon`) VALUES ", schema_config.bonus_script_db);
+#else
+			StringBuf_Printf(&buf, "INSERT INTO `%s` (`char_id`, `script`, `tick`, `flag`, `type`, `icon`, `id`) VALUES ", schema_config.bonus_script_db);	// 增加了一个 ID 字段
+#endif // Pandas_BonusScript_Unique_ID
 			for (i = 0; i < count; ++i) {
 				memcpy(&bsdata, RFIFOP(fd, 9 + i*sizeof(struct bonus_script_data)), sizeof(struct bonus_script_data));
 				Sql_EscapeString(sql_handle, esc_script, bsdata.script_str);
 				if (i > 0)
 					StringBuf_AppendStr(&buf,", ");
+#ifndef Pandas_BonusScript_Unique_ID
 				StringBuf_Printf(&buf, "('%d','%s','%" PRtf "','%d','%d','%d')", cid, esc_script, bsdata.tick, bsdata.flag, bsdata.type, bsdata.icon);
+#else
+				StringBuf_Printf(&buf, "('%d','%s','%" PRtf "','%d','%d','%d','%" PRIu64 "')", cid, esc_script, bsdata.tick, bsdata.flag, bsdata.type, bsdata.icon, bsdata.bonus_id);	// 增加了一个 ID 字段
+#endif // Pandas_BonusScript_Unique_ID
 			}
 			if (SQL_ERROR == Sql_QueryStr(sql_handle,StringBuf_Value(&buf)))
 				Sql_ShowDebug(sql_handle);

@@ -252,6 +252,10 @@ int elemental_data_received(struct s_elemental *ele, bool flag) {
 		ed->bl.x = ed->ud.to_x;
 		ed->bl.y = ed->ud.to_y;
 
+#ifdef Pandas_BattleRecord
+		batrec_new(&ed->bl);
+#endif // Pandas_BattleRecord
+
 		map_addiddb(&ed->bl);
 		status_calc_elemental(ed,SCO_FIRST);
 		ed->last_spdrain_time = ed->last_thinktime = gettick();
@@ -542,7 +546,18 @@ void elemental_heal(struct elemental_data *ed, int hp, int sp) {
 		clif_elemental_updatestatus(ed->master, SP_SP);
 }
 
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 int elemental_dead(struct elemental_data *ed) {
+#else
+int elemental_dead(struct elemental_data *ed, struct block_list *src, uint16 skill_id) {
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	if (src && ed) {
+		npc_event_aide_unitkill(src, &ed->bl, skill_id);
+	}
+#endif // Pandas_NpcExpress_UNIT_KILL
+
 	elemental_delete(ed);
 	return 0;
 }

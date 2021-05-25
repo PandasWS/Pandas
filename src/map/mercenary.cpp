@@ -396,6 +396,10 @@ bool mercenary_recv_data(struct s_mercenary *merc, bool flag)
 		md->bl.x = md->ud.to_x;
 		md->bl.y = md->ud.to_y;
 
+#ifdef Pandas_BattleRecord
+		batrec_new(&md->bl);
+#endif // Pandas_BattleRecord
+
 		map_addiddb(&md->bl);
 		status_calc_mercenary(md, SCO_FIRST);
 		md->contract_timer = INVALID_TIMER;
@@ -441,7 +445,17 @@ void mercenary_heal(struct mercenary_data *md, int hp, int sp) {
  * @param md: Mercenary
  * @return false for status_damage
  */
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 bool mercenary_dead(struct mercenary_data *md) {
+#else
+bool mercenary_dead(struct mercenary_data *md, struct block_list *src, uint16 skill_id) {
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	if (md && src) {
+		npc_event_aide_unitkill(src, &md->bl, skill_id);
+	}
+#endif // Pandas_NpcExpress_UNIT_KILL
 	mercenary_delete(md, 1);
 	return false;
 }

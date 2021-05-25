@@ -38,6 +38,10 @@
 #include "pet.hpp"
 #include "script.hpp" // script_config
 
+#ifdef Pandas_NpcExpress_UNIT_KILL
+#include "mapreg.hpp"
+#endif // Pandas_NpcExpress_UNIT_KILL
+
 using namespace rathena;
 
 struct npc_data* fake_nd;
@@ -128,6 +132,73 @@ struct script_event_s{
 
 // Holds pointers to the commonly executed scripts for speedup. [Skotlex]
 std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
+
+#ifdef Pandas_NpcEvent_KILLMVP
+//************************************
+// Method:      npc_event_aide_killmvp
+// Description: 用来触发 OnPCKillMvpEvent 事件的辅助函数
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct map_session_data * mvp_sd
+// Parameter:   struct mob_data * md
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/04/03 20:10
+//************************************ 
+void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md) {
+	if (!sd || !md) return;
+
+	struct status_data* status;
+	status = &md->status;
+
+	if (!status_has_mode(status, MD_MVP)) return;
+
+	pc_setparam(sd, SP_KILLEDRID, md->mob_id);
+	pc_setparam(sd, SP_KILLEDGID, md->bl.id);
+	pc_setreg(sd, add_str("@mob_dead_x"), (int)md->bl.x);
+	pc_setreg(sd, add_str("@mob_dead_y"), (int)md->bl.y);
+	pc_setreg(sd, add_str("@mob_lasthit_rid"), (int)sd->bl.id);
+	pc_setreg(sd, add_str("@mob_lasthit_cid"), (int)sd->status.char_id);
+	pc_setreg(sd, add_str("@mob_mvp_rid"), (int)(mvp_sd ? mvp_sd->bl.id : 0));
+	pc_setreg(sd, add_str("@mob_mvp_cid"), (int)(mvp_sd ? mvp_sd->status.char_id : 0));
+
+	npc_script_event(sd, NPCE_KILLMVP);
+}
+#endif // Pandas_NpcEvent_KILLMVP
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+//************************************
+// Method:      npc_event_aide_unitkill
+// Description: 用来触发 OnUnitKillExpress 实时事件的辅助函数
+// Access:      public 
+// Parameter:   struct block_list * src
+// Parameter:   struct block_list * target
+// Parameter:   uint16 skill_id
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/03/14 20:11
+//************************************ 
+void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, uint16 skill_id) {
+	nullpo_retv(target);
+
+	mapreg_setreg(add_str("$@killed_gid"), (target ? target->id : 0));						// 死亡单位的游戏单位编号
+	mapreg_setreg(add_str("$@killed_type"), (target ? target->type : 0));					// 死亡单位的类型
+	mapreg_setreg(add_str("$@killed_mapid"), (target ? target->m : -1));					// 死亡单位所在的地图编号
+	mapreg_setregstr(add_str("$@killed_mapname$"), (target ? map[target->m].name : ""));	// 死亡单位所在的地图名称
+	mapreg_setreg(add_str("$@killed_x"), (target ? target->x : 0));							// 死亡单位所在的 X 坐标
+	mapreg_setreg(add_str("$@killed_y"), (target ? target->y : 0));							// 死亡单位所在的 Y 坐标
+	mapreg_setreg(add_str("$@killed_classid"), (target ? status_get_class(target) : 0));	// 死亡单位的种类编号(魔物编号\生命体编号等等)
+
+	mapreg_setreg(add_str("$@killer_gid"), (src ? src->id : 0));							// 最后一击杀手单位的游戏单位编号(若为 0 则表示被系统击杀)
+	mapreg_setreg(add_str("$@killer_type"), (src ? src->type : 0));							// 最后一击杀手单位的类型(若为 0 则表示被系统击杀)
+	mapreg_setreg(add_str("$@killer_mapid"), (src ? src->m : -1));							// 最后一击杀手单位所在的地图编号
+	mapreg_setregstr(add_str("$@killer_mapname$"), (src ? map[src->m].name : ""));			// 最后一击杀手单位所在的地图名称
+	mapreg_setreg(add_str("$@killer_x"), (src ? src->x : 0));								// 最后一击杀手单位所在的 X 坐标
+	mapreg_setreg(add_str("$@killer_y"), (src ? src->y : 0));								// 最后一击杀手单位所在的 Y 坐标
+	mapreg_setreg(add_str("$@killer_classid"), (src ? status_get_class(src) : 0));			// 死亡单位的种类编号(魔物编号\生命体编号等等)
+	mapreg_setreg(add_str("$@killer_skillid"), skill_id);									// 最后一击使用的技能编号(若为 0 则表示普通攻击)
+
+	npc_event_doall(script_config.unit_kill_express_name);
+}
+#endif // Pandas_NpcExpress_UNIT_KILL
 
 #ifdef Pandas_Helper_Common_Function
 //************************************
@@ -1476,7 +1547,7 @@ void run_tomb(struct map_session_data* sd, struct npc_data* nd)
 	strftime(time, sizeof(time), "%H:%M", localtime(&nd->u.tomb.kill_time));
 
 	// TODO: Find exact color?
-	snprintf(buffer, sizeof(buffer), msg_txt(sd,657), nd->u.tomb.md->db->name);
+	snprintf(buffer, sizeof(buffer), msg_txt(sd,657), nd->u.tomb.md->db->name.c_str());
 	clif_scriptmes(sd, nd->bl.id, buffer);
 
 	clif_scriptmes(sd, nd->bl.id, msg_txt(sd,658));
@@ -2523,6 +2594,10 @@ void npc_unload_duplicates(struct npc_data* nd)
 int npc_unload(struct npc_data* nd, bool single) {
 	nullpo_ret(nd);
 
+#ifdef Pandas_BattleRecord
+	batrec_free(&nd->bl);
+#endif // Pandas_BattleRecord
+
 	status_change_clear(&nd->bl, 1);
 	npc_remove_map(nd);
 	map_deliddb(&nd->bl);
@@ -2875,6 +2950,11 @@ struct npc_data *npc_create_npc(int16 m, int16 x, int16 y){
 	nd->pandas.destruction_strategy = 0;
 	nd->pandas.destruction_timer = INVALID_TIMER;
 #endif // Pandas_Struct_Npc_Data_DestructionStrategy
+
+#ifdef Pandas_BattleRecord
+	nd->bl.type = BL_NPC;
+	batrec_new(&nd->bl);
+#endif // Pandas_BattleRecord
 
 	return nd;
 }
@@ -4686,6 +4766,19 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 		}
 #endif // Pandas_MapFlag_NoSkill2
 
+#ifdef Pandas_MapFlag_MaxASPD
+		case MF_MAXASPD: {
+			// 若脚本中 mapflag 指定的数值无效或为默认值: 0, 则立刻关闭这个地图标记
+			union u_mapflag_args args = {};
+
+			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 0 || !state)
+				map_setmapflag(m, mapflag, false);
+			else
+				map_setmapflag_sub(m, mapflag, true, &args);
+			break;
+		}
+#endif // Pandas_MapFlag_MaxASPD
+
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 7>
 
 		// All others do not need special treatment
@@ -4924,6 +5017,10 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_PROGRESSABORT
 		NPCX_PROGRESSABORT,	// progressabort_express_name	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+		NPCX_UNIT_KILL,	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -4985,6 +5082,14 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_SC_START
 		NPCF_SC_START,	// sc_start_filter_name	// OnPCBuffStartFilter		// 当玩家准备获得一个状态(Buff)时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+		NPCF_USE_REVIVE_TOKEN,	// use_revive_token_filter_name	// OnPCUseReviveTokenFilter		// 当玩家使用菜单中的原地复活之证时触发过滤器
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+#ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
+		NPCF_ONECLICK_IDENTIFY,	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
+#endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -5150,6 +5255,16 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_SC_START:
 		return script_config.sc_start_filter_name;	// OnPCBuffStartFilter		// 当玩家准备获得一个状态(Buff)时触发过滤器
 #endif // Pandas_NpcFilter_SC_START
+
+#ifdef Pandas_NpcFilter_USE_REVIVE_TOKEN
+	case NPCF_USE_REVIVE_TOKEN:
+		return script_config.use_revive_token_filter_name;	// OnPCUseReviveTokenFilter		// 当玩家使用菜单中的原地复活之证时触发过滤器
+#endif // Pandas_NpcFilter_USE_REVIVE_TOKEN
+
+#ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
+	case NPCF_ONECLICK_IDENTIFY:
+		return script_config.oneclick_identify_filter_name;	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
+#endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -5220,6 +5335,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_PROGRESSABORT:
 		return script_config.progressabort_express_name;	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
+
+#ifdef Pandas_NpcExpress_UNIT_KILL
+	case NPCX_UNIT_KILL:
+		return script_config.unit_kill_express_name;	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
+#endif // Pandas_NpcExpress_UNIT_KILL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:

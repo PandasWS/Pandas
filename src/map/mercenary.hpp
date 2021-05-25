@@ -71,7 +71,11 @@ bool mercenary_recv_data(struct s_mercenary *merc, bool flag);
 void mercenary_save(struct mercenary_data *md);
 
 void mercenary_heal(struct mercenary_data *md, int hp, int sp);
+#ifndef Pandas_FuncDefine_UnitDead_With_ExtendInfo
 bool mercenary_dead(struct mercenary_data *md);
+#else
+bool mercenary_dead(struct mercenary_data *md, struct block_list *src, uint16 skill_id);
+#endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 
 int mercenary_delete(struct mercenary_data *md, int reply);
 void mercenary_contract_stop(struct mercenary_data *md);

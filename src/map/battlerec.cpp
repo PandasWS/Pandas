@@ -11,6 +11,7 @@
 #include "status.hpp"
 
 #include "../common/utilities.hpp"
+#include "../common/nullpo.hpp"
 
 //************************************
 // Method:      batrec_key
@@ -92,33 +93,30 @@ bool batrec_cmp_desc(std::pair<uint32, s_batrec_item_ptr>& l,
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:44
 //************************************ 
 void batrec_new(struct block_list* bl) {
+	nullpo_retv(bl);
+
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(bl))) return;
 
-	switch (bl->type) {
-	case BL_PC:
-	case BL_MOB:
-	case BL_PET:
-	case BL_HOM:
-	case BL_MER:
-	case BL_NPC:
-	case BL_ELEM:
-		if (!ucd->batrec.dmg_receive)
-			ucd->batrec.dmg_receive = new batrec_map;
-		if (!ucd->batrec.dmg_cause)
-			ucd->batrec.dmg_cause = new batrec_map;
-
-		ucd->batrec.dmg_receive->clear();
-		ucd->batrec.dmg_cause->clear();
-
-		// 玩家类型默认不启用记录, 否则在线一直打怪记录会一直堆积
-		ucd->batrec.dorecord = (bl->type != BL_PC);
-		break;
-	default:
+	if (!batrec_support(bl)) {
 		batrec_free(bl);
 		ucd->batrec.dorecord = false;
 		return;
 	}
+
+	if (!ucd->batrec.dmg_receive) {
+		ucd->batrec.dmg_receive = new batrec_map;
+	}
+	if (!ucd->batrec.dmg_cause) {
+		ucd->batrec.dmg_cause = new batrec_map;
+	}
+
+	ucd->batrec.dmg_receive->clear();
+	ucd->batrec.dmg_cause->clear();
+
+	ucd->batrec.dorecord = (
+		(battle_config.batrec_autoenabled_unit & bl->type) == bl->type
+	);
 }
 
 //************************************
@@ -127,9 +125,11 @@ void batrec_new(struct block_list* bl) {
 // Access:      public 
 // Parameter:   struct block_list * bl
 // Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/02/14 13:44
+// Author:      Sola丶小克(CairoLee)  2021/03/21 17:39
 //************************************ 
 void batrec_free(struct block_list* bl) {
+	nullpo_retv(bl);
+
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(bl))) return;
 
@@ -154,6 +154,8 @@ void batrec_free(struct block_list* bl) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 void batrec_sortout(struct block_list* bl, e_batrec_type type) {
+	nullpo_retv(bl);
+
 	batrec_map* rec = nullptr;
 	if (!(rec = batrec_getmap(bl, type)))
 		return;
@@ -182,6 +184,8 @@ void batrec_sortout(struct block_list* bl, e_batrec_type type) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 19:20
 //************************************ 
 void batrec_sortout(struct block_list* bl) {
+	nullpo_retv(bl);
+
 	batrec_sortout(bl, BRT_DMG_RECEIVE);
 	batrec_sortout(bl, BRT_DMG_CAUSE);
 }
@@ -195,6 +199,8 @@ void batrec_sortout(struct block_list* bl) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 inline int32 batrec_masterid(struct block_list* bl) {
+	nullpo_retr(0, bl);
+
 	if (!bl) return 0;
 
 	TBL_PC* sd = nullptr;
@@ -229,6 +235,33 @@ inline int32 batrec_masterid(struct block_list* bl) {
 }
 
 //************************************
+// Method:      batrec_dorecord
+// Description: 判断指定单位是否需要记录战斗信息
+// Access:      public 
+// Parameter:   struct block_list * bl
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/03/09 23:46
+//************************************ 
+bool batrec_dorecord(struct block_list* bl) {
+	nullpo_retr(false, bl);
+
+	struct s_unit_common_data* ucd = nullptr;
+	if (!(ucd = status_get_ucd(bl))) return false;
+
+	// 如果该单位会进行战斗记录, 那么确保对应的字典是存在的
+	if (ucd->batrec.dorecord) {
+		if (!ucd->batrec.dmg_receive) {
+			ucd->batrec.dmg_receive = new batrec_map;
+		}
+		if (!ucd->batrec.dmg_cause) {
+			ucd->batrec.dmg_cause = new batrec_map;
+		}
+	}
+
+	return ucd->batrec.dorecord;
+}
+
+//************************************
 // Method:      batrec_getmap
 // Description: 获取指定单位特定类型的战斗记录字典
 // Access:      public 
@@ -238,17 +271,16 @@ inline int32 batrec_masterid(struct block_list* bl) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 batrec_map* batrec_getmap(struct block_list* bl, e_batrec_type type) {
+	nullpo_retr(nullptr, bl);
+
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(bl))) return nullptr;
-	if (!ucd->batrec.dorecord) return nullptr;
 
 	switch (type) {
 	case BRT_DMG_RECEIVE:
 		return ucd->batrec.dmg_receive;
-		break;
 	case BRT_DMG_CAUSE:
 		return ucd->batrec.dmg_cause;
-		break;
 	default:
 		return nullptr;
 	}
@@ -265,6 +297,8 @@ batrec_map* batrec_getmap(struct block_list* bl, e_batrec_type type) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 void batrec_aggregation(batrec_map* origin_rec, batrec_map& ret_rec, e_batrec_agg agg) {
+	nullpo_retv(origin_rec);
+
 	if (agg != BRA_COMBINE) {
 		ret_rec = *origin_rec;
 		return;
@@ -323,10 +357,16 @@ void batrec_aggregation(batrec_map* origin_rec, batrec_map& ret_rec, e_batrec_ag
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 bool batrec_record(struct block_list* mbl, struct block_list* tbl, e_batrec_type type, int damage) {
+	nullpo_retr(false, mbl);
+	nullpo_retr(false, tbl);
+
 	if (!mbl || !tbl)
 		return false;
 
 	if (batrec_key(mbl) == batrec_key(tbl))
+		return false;
+
+	if (!batrec_dorecord(mbl))
 		return false;
 
 	batrec_map* rec = nullptr;
@@ -365,6 +405,8 @@ bool batrec_record(struct block_list* mbl, struct block_list* tbl, e_batrec_type
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 int64 batrec_query(struct block_list* mbl, uint32 id, e_batrec_type type, e_batrec_agg agg) {
+	nullpo_retr(-1, mbl);
+
 	batrec_map* origin_rec = nullptr;
 	if (!(origin_rec = batrec_getmap(mbl, type)))
 		return -1;
@@ -386,14 +428,21 @@ int64 batrec_query(struct block_list* mbl, uint32 id, e_batrec_type type, e_batr
 // Access:      public 
 // Parameter:   struct block_list * mbl
 // Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
+// Author:      Sola丶小克(CairoLee)  2021/03/21 15:27
 //************************************ 
 void batrec_reset(struct block_list* mbl) {
+	nullpo_retv(mbl);
+
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(mbl))) return;
 
-	ucd->batrec.dmg_cause->clear();
-	ucd->batrec.dmg_receive->clear();
+	if (ucd->batrec.dmg_receive) {
+		ucd->batrec.dmg_receive->clear();
+	}
+
+	if (ucd->batrec.dmg_cause) {
+		ucd->batrec.dmg_cause->clear();
+	}
 }
 
 //************************************
@@ -406,9 +455,10 @@ void batrec_reset(struct block_list* mbl) {
 // Author:      Sola丶小克(CairoLee)  2021/02/14 13:43
 //************************************ 
 void batrec_reset(struct block_list* mbl, e_batrec_type type) {
+	nullpo_retv(mbl);
+
 	batrec_map* rec = nullptr;
 	if (!(rec = batrec_getmap(mbl, type)))
 		return;
-
 	rec->clear();
 }
