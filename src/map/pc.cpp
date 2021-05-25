@@ -13863,7 +13863,7 @@ void pc_cell_basilica(struct map_session_data *sd) {
  * @param flag: parameter will be checked
  * @return max_param
  */
-pec_short pc_maxparameter(struct map_session_data *sd, enum e_params param) {
+pec_ushort pc_maxparameter(struct map_session_data *sd, enum e_params param) {
 	int idx = -1, class_ = sd->class_;
 
 	if ((idx = pc_class2idx(pc_mapid2jobid(class_,sd->status.sex))) >= 0) {

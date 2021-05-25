@@ -2174,6 +2174,13 @@ void clif_changemapserver(struct map_session_data* sd, unsigned short map_index,
 	WFIFOW(fd,18) = x;
 	WFIFOW(fd,20) = y;
 	WFIFOL(fd,22) = htonl(ip);
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	if (pandas_inter_hide_server_ipaddress) {
+		// 若希望不主动返回服务器的 IP 地址, 那么将此处的地图服务器 IP 重设为 0
+		// 此处调整会导致无法适应多 IP 地址的地图服务器架构, 但是可以支持单服务器不同端口的这种形式...
+		WFIFOL(fd,22) = 0;
+	}
+#endif // Pandas_InterConfig_HideServerIpAddress
 	WFIFOW(fd,26) = ntows(htons(port)); // [!] LE byte order here [!]
 #if PACKETVER >= 20170315
 	memset(WFIFOP(fd, 28), 0, 128); // Unknown

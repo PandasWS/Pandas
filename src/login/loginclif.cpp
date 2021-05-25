@@ -137,6 +137,12 @@ static void logclif_auth_ok(struct login_session_data* sd) {
 			continue;
 		subnet_char_ip = lan_subnetcheck(ip); // Advanced subnet check [LuzZza]
 		WFIFOL(fd,header+n*size) = htonl((subnet_char_ip) ? subnet_char_ip : ch_server[i].ip);
+#ifdef Pandas_InterConfig_HideServerIpAddress
+		if (pandas_inter_hide_server_ipaddress) {
+			// 若希望不主动返回服务器的 IP 地址, 那么将此处的角色服务器 IP 重设为 0
+			WFIFOL(fd,header+n*size) = 0;
+		}
+#endif // Pandas_InterConfig_HideServerIpAddress
 		WFIFOW(fd,header+n*size+4) = ntows(htons(ch_server[i].port)); // [!] LE byte order here [!]
 		memcpy(WFIFOP(fd,header+n*size+6), ch_server[i].name, 20);
 		WFIFOW(fd,header+n*size+26) = login_get_usercount( ch_server[i].users );

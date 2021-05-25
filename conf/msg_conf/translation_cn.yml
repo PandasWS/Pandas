@@ -1563,7 +1563,7 @@ Body:
 - Original: "Pincode is disabled.\n"
   Translation: ""
 - Original: "Pinging SQL server to keep connection alive...\n"
-  Translation: "正在给数据库服务器发送心跳包, 以维持连接的激活状态...\n"
+  Translation: "为了维持与数据库的连接, 正在给 SQL 服务器发送心跳包...\n"
 - Original: "Player %s (%d:%d) sent a hexed packet trying to buy %d of nonstackable item %u!\n"
   Translation: ""
 - Original: "Player %u sent incorrect cash shop buy packet (len %u:%[{PRIdPTR}])!\n"

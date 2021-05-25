@@ -59,6 +59,11 @@ using namespace rathena;
 
 char default_codepage[32] = "";
 
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	// 是否不主动返回服务器的 IP 地址给到客户端
+	int pandas_inter_hide_server_ipaddress = 0;
+#endif // Pandas_InterConfig_HideServerIpAddress
+
 int map_server_port = 3306;
 char map_server_ip[64] = "127.0.0.1";
 char map_server_id[32] = "ragnarok";
@@ -4448,6 +4453,10 @@ int inter_config_read(const char *cfgName)
 		else if (strcmpi(w1, "suspend_table") == 0)
 			safestrncpy(suspend_table, w2, sizeof(suspend_table));
 #endif // Pandas_Player_Suspend_System
+#ifdef Pandas_InterConfig_HideServerIpAddress
+		else if (strcmpi(w1, "hide_server_ipaddress") == 0)
+			pandas_inter_hide_server_ipaddress = config_switch(w2);
+#endif // Pandas_InterConfig_HideServerIpAddress
 		else
 		//Map Server SQL DB
 		if(strcmpi(w1,"map_server_ip")==0)

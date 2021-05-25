@@ -14,6 +14,7 @@
 	#define Pandas_DatabaseIncrease
 	#define Pandas_StructIncrease
 	#define Pandas_BattleConfigure
+	#define Pandas_InternalConfigure
 	#define Pandas_FuncIncrease
 	#define Pandas_PacketFunction
 	#define Pandas_CreativeWork
@@ -312,6 +313,16 @@
 	#define Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
+
+// ============================================================================
+// 服务器通用配置组 - Pandas_InternalConfigure
+// ============================================================================
+
+#ifdef Pandas_InternalConfigure
+	// 是否启用 hide_server_ipaddress 配置选项及其功能 [Sola丶小克]
+	// 此选项用于确保服务端不主动返回服务器的 IP 地址给到客户端, 通常用于支持代理方式登录
+	#define Pandas_InterConfig_HideServerIpAddress
+#endif // Pandas_InternalConfigure
 
 // ============================================================================
 // 函数修改组 - Pandas_FuncIncrease
