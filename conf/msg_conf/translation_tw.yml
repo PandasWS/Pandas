@@ -3355,6 +3355,8 @@ Body:
 - Original: "connect_check: Connection from %d.%d.%d.%d %s\n"
   Translation: ""
 - Original: "connect_check: DDoS Attack detected from %d.%d.%d.%d!\n"
+  Translation: "connect_check: 發現 %d.%d.%d.%d 短時間內頻繁請求連線, 已將其判定為 DDoS 攻擊!\n"
+- Original: "connect_check: Found match from %s list:%d.%d.%d.%d IP:%d.%d.%d.%d Mask:%d.%d.%d.%d\n"
   Translation: ""
 - Original: "connect_check: Found match from allow list:%d.%d.%d.%d IP:%d.%d.%d.%d Mask:%d.%d.%d.%d\n"
   Translation: ""
