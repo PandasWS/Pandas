@@ -53,6 +53,11 @@ using namespace rathena;
 char default_codepage[32] = "";
 #endif // Pandas_SQL_Configure_Optimization
 
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	// 是否不主动返回服务器的 IP 地址给到客户端
+	int pandas_inter_hide_server_ipaddress = 0;
+#endif // Pandas_InterConfig_HideServerIpAddress
+
 static char* msg_table[LOGIN_MAX_MSG];	/// Login Server messages_conf
 
 //definition of exported var declared in header
@@ -756,6 +761,10 @@ bool login_config_read(const char* cfgName, bool normal) {
 				login_config.char_per_account = MIN_CHARS;
 			}
 		}
+#ifdef Pandas_InterConfig_HideServerIpAddress
+		else if (!strcmpi(w1, "hide_server_ipaddress"))
+			pandas_inter_hide_server_ipaddress = config_switch(w2);
+#endif // Pandas_InterConfig_HideServerIpAddress
 
 #ifdef Pandas_Strict_Userid_Verification
 		else if (!strcmpi(w1, "strict_new_account_userid"))

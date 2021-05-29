@@ -14,6 +14,7 @@
 	#define Pandas_DatabaseIncrease
 	#define Pandas_StructIncrease
 	#define Pandas_BattleConfigure
+	#define Pandas_InternalConfigure
 	#define Pandas_FuncIncrease
 	#define Pandas_PacketFunction
 	#define Pandas_CreativeWork
@@ -314,6 +315,16 @@
 #endif // Pandas_BattleConfigure
 
 // ============================================================================
+// 服务器通用配置组 - Pandas_InternalConfigure
+// ============================================================================
+
+#ifdef Pandas_InternalConfigure
+	// 是否启用 hide_server_ipaddress 配置选项及其功能 [Sola丶小克]
+	// 此选项用于确保服务端不主动返回服务器的 IP 地址给到客户端, 通常用于支持代理方式登录
+	#define Pandas_InterConfig_HideServerIpAddress
+#endif // Pandas_InternalConfigure
+
+// ============================================================================
 // 函数修改组 - Pandas_FuncIncrease
 // ============================================================================
 
@@ -355,6 +366,15 @@
 	// 重写 instance.cpp -> instance_destroy_command 函数
 	// 因为 rAthena 官方实现的该函数在切换队长后的处理并不友好 [Sola丶小克]
 	#define Pandas_FuncLogic_Instance_Destroy_Command
+
+	// 当某个 IP 地址被判定为可以连接的时候, 不再将其列入 DDoS 攻击的判定范围 [Sola丶小克]
+	// 在默认 rAthena 的逻辑下, 就算某个 IP 地址就算被判定成允许连接, 
+	// 只要他连接频度过高也依然会在终端呈现出: 发现来自 %d.%d.%d.%d 的 DDoS 攻击!
+	// 虽然有提示， 但是根据白名单规则却又进行了放行操作.. 因此这个提示是很没意义的.
+	//
+	// 启用此选项将改变判断逻辑, 变成如下:
+	// 只要 IP 地址被判定为无条件放行, 那么他将不会因为高频连接而被判定为发起了 DDoS 攻击.
+	#define Pandas_FuncLogic_Whitelist_Privileges
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -638,6 +658,16 @@
 	#ifndef Pandas_Struct_Map_Session_Data_BonusScript_Counter
 		#undef Pandas_BonusScript_Unique_ID
 	#endif // Pandas_Struct_Map_Session_Data_BonusScript_Counter
+
+	// 是否启用对负载均衡的友好处理支持 [Sola丶小克]
+	// 启用阿里云和 Google Cloud 等云计算平台的负载均衡业务后, 通常会对存活的后端服务器进行健康监测
+	// 此举会导致终端出现大量的无价值信息. 比如:
+	// 大量健康检查探测服务器的 IP 地址不断的与我们的游戏服务端建立连接, 确认我们端口正常工作后就立刻关闭连接
+	// 以及他们频繁访问我们的游戏服务器, 导致我们将他们判定为发起了 DDoS 攻击的提示信息.
+	//
+	// 启用此选项后, 我们将支持在 packet_athena.conf 中设置这些健康检查的服务器 IP 区段
+	// 在不影响他们对我们正常服务器进行探测的情况下, 不再显示出大量无价值信息到终端干扰游戏管理员观察服务器状态.
+	#define Pandas_Health_Monitors_Silent
 #endif // Pandas_CreativeWork
 
 // ============================================================================

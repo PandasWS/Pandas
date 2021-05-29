@@ -1110,7 +1110,7 @@ enum e_params {
 	PARAM_LUK,
 	PARAM_MAX
 };
-pec_short pc_maxparameter(struct map_session_data *sd, enum e_params param);
+pec_ushort pc_maxparameter(struct map_session_data *sd, enum e_params param);
 short pc_maxaspd(struct map_session_data *sd);
 
 /**

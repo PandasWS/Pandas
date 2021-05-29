@@ -56,6 +56,11 @@ char char_codepage[32] = "";
 #endif // Pandas_SQL_Configure_Optimization
 unsigned int party_share_level = 10;
 
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	// 是否不主动返回服务器的 IP 地址给到客户端
+	int pandas_inter_hide_server_ipaddress = 0;
+#endif // Pandas_InterConfig_HideServerIpAddress
+
 /// Received packet Lengths from map-server
 int inter_recv_packet_length[] = {
 	-1,-1, 7,-1, -1,13,36, (2+4+4+4+1+NAME_LENGTH),  0,-1, 0, 0,  0, 0,  0, 0,	// 3000-
@@ -833,6 +838,10 @@ int inter_config_read(const char* cfgName)
 			cfgFile = w2;
 		else if(!strcmpi(w1,"import"))
 			inter_config_read(w2);
+#ifdef Pandas_InterConfig_HideServerIpAddress
+		else if (!strcmpi(w1, "hide_server_ipaddress"))
+			pandas_inter_hide_server_ipaddress = config_switch(w2);
+#endif // Pandas_InterConfig_HideServerIpAddress
 	}
 	fclose(fp);
 

@@ -24,6 +24,10 @@
 #include "map_artisan.hpp"
 #endif // Pandas
 
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	extern int pandas_inter_hide_server_ipaddress;
+#endif // Pandas_InterConfig_HideServerIpAddress
+
 struct npc_data;
 struct item_data;
 struct Channel;

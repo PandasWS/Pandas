@@ -199,4 +199,8 @@ void send_shortlist_add_fd(int fd);
 void send_shortlist_do_sends();
 #endif
 
+#ifdef Pandas_Health_Monitors_Silent
+bool suppresses_close_mes(uint32 ip);
+#endif // Pandas_Health_Monitors_Silent
+
 #endif /* SOCKET_HPP */
