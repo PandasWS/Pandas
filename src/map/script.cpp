@@ -26151,7 +26151,9 @@ BUILDIN_FUNC(mobremove) {
 		unit_remove_map(bl, CLR_OUTSIGHT);
 		if (!(md->sc.data[SC_KAIZEL] || (md->sc.data[SC_REBIRTH] && !md->state.rebirth)))
 			mob_setdelayspawn(md);
+#ifdef Pandas_BattleRecord
 		map_mobiddb(bl, npc_get_new_npc_id());
+#endif // Pandas_BattleRecord
 	}
 
 	return SCRIPT_CMD_SUCCESS;

@@ -2107,8 +2107,23 @@ void map_mobiddb(struct block_list* bl, int new_blockid) {
 	TBL_MOB* md = (TBL_MOB*)bl;
 	if (idb_exists(bossid_db, origin_blockid)) {
 		idb_remove(bossid_db, origin_blockid);
-		if (md->state.boss)
-			idb_put(bossid_db, bl->id, bl);
+		idb_put(bossid_db, bl->id, bl);
+
+		struct s_mapiterator* iter = nullptr;
+		struct map_session_data* pl_sd = nullptr;
+		iter = mapit_getallusers();
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			struct status_change* const sc = status_get_sc(&pl_sd->bl);
+			if (!sc) continue;
+
+			struct status_change_entry* const sce = sc->data[SC_BOSSMAPINFO];
+			if (!sce) continue;
+
+			if (sce->val1 == origin_blockid) {
+				sce->val1 = bl->id;
+			}
+		}
+		mapit_free(iter);
 	}
 
 	// 接下来重设一些与游戏单位编号相关的定时器
