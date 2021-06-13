@@ -5278,8 +5278,8 @@ short pc_search_inventory(struct map_session_data *sd, t_itemid nameid) {
 	short i;
 	nullpo_retr(-1, sd);
 
-	ARR_FIND( 0, MAX_INVENTORY, i, sd->inventory.u.items_inventory[i].nameid == nameid && (sd->inventory.u.items_inventory[i].amount > 0 || nameid == 0) );
-	return ( i < MAX_INVENTORY ) ? i : -1;
+	ARR_FIND( 0, P_SD_MAX_INVENTORY, i, sd->inventory.u.items_inventory[i].nameid == nameid && (sd->inventory.u.items_inventory[i].amount > 0 || nameid == 0) );
+	return ( i < P_SD_MAX_INVENTORY) ? i : -1;
 }
 
 /** Attempt to add a new item to player inventory
@@ -5321,7 +5321,7 @@ enum e_additem_result pc_additem(struct map_session_data *sd,struct item *item,i
 	if(sd->weight + w > sd->max_weight)
 		return ADDITEM_OVERWEIGHT;
 
-	i = MAX_INVENTORY;
+	i = P_SD_MAX_INVENTORY;
 
 	if (id->flag.guid && !item->unique_id)
 		item->unique_id = pc_generate_unique_id(sd);
@@ -5332,7 +5332,7 @@ enum e_additem_result pc_additem(struct map_session_data *sd,struct item *item,i
 
 	// Stackable | Non Rental
 	if( itemdb_isstackable2(id) && item->expire_time == 0 ) {
-		for( i = 0; i < MAX_INVENTORY; i++ ) {
+		for( i = 0; i < P_SD_MAX_INVENTORY; i++ ) {
 			if( sd->inventory.u.items_inventory[i].nameid == item->nameid &&
 				sd->inventory.u.items_inventory[i].bound == item->bound &&
 				sd->inventory.u.items_inventory[i].expire_time == 0 &&
@@ -5347,7 +5347,7 @@ enum e_additem_result pc_additem(struct map_session_data *sd,struct item *item,i
 		}
 	}
 
-	if (i >= MAX_INVENTORY) {
+	if (i >= P_SD_MAX_INVENTORY) {
 		i = pc_search_inventory(sd,0);
 		if( i < 0 )
 			return ADDITEM_OVERITEM;

@@ -43,6 +43,7 @@
 
 #ifndef Pandas_ClientFeature_InventoryExpansion
 #define MAX_INVENTORY 100 ///Maximum items in player inventory
+#define P_SD_MAX_INVENTORY MAX_INVENTORY // 熊猫自定义的拓展宏, 未开启背包拓展的时候等同于 MAX_INVENTORY
 #else
 	#if PACKETVER_MAIN_NUM >= 20181219 || PACKETVER_RE_NUM >= 20181219 || PACKETVER_ZERO_NUM >= 20181212
 		#define MAX_INVENTORY 200
@@ -57,6 +58,8 @@
 	#if FIXED_INVENTORY_SIZE > MAX_INVENTORY
 		#error FIXED_INVENTORY_SIZE must be same or smaller than MAX_INVENTORY
 	#endif
+
+	#define P_SD_MAX_INVENTORY sd->pandas.inventory_size // 开启背包拓展后, 变成获取玩家的背包容量上限
 #endif // Pandas_ClientFeature_InventoryExpansion
 
 /** Max number of characters per account. Note that changing this setting alone is not enough if the client is not hexed to support more characters as well.

@@ -2838,7 +2838,7 @@ void clif_additem( struct map_session_data *sd, int n, int amount, unsigned char
 	if( fail ){
 		p = {};
 	}else{
-		if( n < 0 || n >= MAX_INVENTORY || sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == nullptr ){
+		if( n < 0 || n >= P_SD_MAX_INVENTORY || sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == nullptr ){
 			return;
 		}
 
