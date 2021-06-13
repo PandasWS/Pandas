@@ -18,6 +18,7 @@
 	#define Pandas_FuncIncrease
 	#define Pandas_PacketFunction
 	#define Pandas_CreativeWork
+	#define Pandas_ClientFeatures
 	#define Pandas_Speedup
 	#define Pandas_Bugfix
 	#define Pandas_Crashfix
@@ -143,6 +144,10 @@
 		// 使 map_session_data 可记录玩家已经生成的 bonus_script 记录数 [Sola丶小克]
 		// 结构体修改定位 pc.hpp -> map_session_data.pandas.bonus_script_counter
 		#define Pandas_Struct_Map_Session_Data_BonusScript_Counter
+
+		// 使 map_session_data 可记录角色的背包容量上限 [Sola丶小克]
+		// 结构体修改定位 pc.hpp -> map_session_data.pandas.inventory_size
+		#define Pandas_Struct_Map_Session_Data_InventorySize
 	#endif // Pandas_Struct_Map_Session_Data_Pandas
 
 	// 使 item_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
@@ -669,6 +674,19 @@
 	// 在不影响他们对我们正常服务器进行探测的情况下, 不再显示出大量无价值信息到终端干扰游戏管理员观察服务器状态.
 	#define Pandas_Health_Monitors_Silent
 #endif // Pandas_CreativeWork
+
+// ============================================================================
+// 客户端特性支持组 - Pandas_ClientFeatures
+// ============================================================================
+
+#ifdef Pandas_ClientFeatures
+	// 是否启用官方客户端支持的背包扩充机制, 实装对 25793 的利用 [Sola丶小克]
+	// 注意: 此功能只对大于等于 20181219 的 RagexeRE 客户端有效 (ZERO 客户端需要大于 20181212 才有效)
+	// 此选项依赖 Pandas_Struct_Map_Session_Data_InventorySize 的拓展
+	#ifdef Pandas_Struct_Map_Session_Data_InventorySize
+		#define Pandas_ClientFeature_InventoryExpansion
+	#endif // Pandas_Struct_Map_Session_Data_InventorySize
+#endif // Pandas_ClientFeatures
 
 // ============================================================================
 // 官方BUG修正组 - Pandas_Bugfix
@@ -1631,6 +1649,22 @@
 	// 是否启用 bonus_script_info 脚本指令 [Sola丶小克]
 	// 该指令用于查询指定效果脚本的相关信息
 	#define Pandas_ScriptCommand_BonusScriptInfo
+
+	// 是否启用 expandinventory_ack 脚本指令 [Sola丶小克]
+	// 该指令用于响应客户端的背包扩容请求, 并告知客户端下一步的动作
+	#define Pandas_ScriptCommand_ExpandInventoryACK
+
+	// 是否启用 expandinventory_result 脚本指令 [Sola丶小克]
+	// 该指令用于发送给客户端最终的背包扩容结果
+	#define Pandas_ScriptCommand_ExpandInventoryResult
+
+	// 是否启用 expandinventory_adjust 脚本指令 [Sola丶小克]
+	// 该指令用于增加角色的背包容量上限
+	#define Pandas_ScriptCommand_ExpandInventoryAdjust
+
+	// 是否启用 getinventorysize 脚本指令 [Sola丶小克]
+	// 该指令用于查询并获取当前角色的背包容量上限
+	#define Pandas_ScriptCommand_GetInventorySize
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

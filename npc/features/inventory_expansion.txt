@@ -1,0 +1,77 @@
+﻿//===== PandasWS Script ======================================
+//= 衔接背包拓展机制的核心脚本
+//===== 维护人员: ============================================
+//= 熊猫模拟器开发者团队
+//===== 当前版本: ============================================
+//= 1.0
+//===== 脚本描述: ============================================
+//= 此脚本用于处理背包拓展机制的一些逻辑代码
+//= 将处理逻辑设计成脚本可以方便 GM 更灵活的利用此功能
+//============================================================
+
+-	script	inventory_expansion	FAKE_NPC,{
+end;
+
+// 标签说明: OnInvExpandRequest
+// 请注意这不是一个事件, 就是一个普通标签.
+// 这个标签必须写在名为 inventory_expansion 的 NPC 下才会被程序调用
+// 
+// 触发时机: 当玩家点击背包左下角的扩容按钮时,
+// 如果玩家是活着的且没有在忙其他事情, 那么此标签就会被触发.
+OnInvExpandRequest:
+	// 看看玩家当前的背包容量 + 10 之后会不会超过最大上限, 超过则拒绝本次扩容请求
+	// 提示: 此处的 MAX_INVENTORY 最大上限调整为了 200
+	if (getinventorysize() + 10 > MAX_INVENTORY) {
+		expandinventory_ack(EXPAND_INV_MAX_SIZE);
+		end;
+	}
+	
+	// 判断玩家身上的道具数量是否足够, 不够则拒绝本次扩容请求
+	if (countitem(25793) < 1) {
+		expandinventory_ack(EXPAND_INV_MISSING_ITEM);
+		end;
+	}
+	
+	// 上面的检测都通过了, 告诉客户端应该给我们的玩家弹出确认框
+	// 提示玩家即将消耗 25793 来扩容, 然后等用户选择
+	expandinventory_ack(EXPAND_INV_ASK_CONFIRMATION, 25793);
+end;
+
+// 标签说明: OnInvExpandConfirmed
+// 请注意这不是一个事件, 就是一个普通标签.
+// 这个标签必须写在名为 inventory_expansion 的 NPC 下才会被程序调用
+//
+// 触发时机: 当 OnInvExpandRequest 中返回了 EXPAND_INV_ASK_CONFIRMATION 给玩家弹出确认窗口后
+// 如果玩家选择了[确定/同意], 那么此标签就会被触发.
+OnInvExpandConfirmed:
+	// 看看玩家当前的背包容量 + 10 之后会不会超过最大上限, 超过则拒绝本次扩容请求
+	// 提示: 此处的 MAX_INVENTORY 最大上限调整为了 200
+	if (getinventorysize() + 10 > MAX_INVENTORY) {
+		expandinventory_result(EXPAND_INV_RESULT_MAX_SIZE);
+		end;
+	}
+	
+	// 判断玩家身上的道具数量是否足够, 不够则拒绝本次扩容请求
+	if (countitem(25793) < 1) {
+		expandinventory_result(EXPAND_INV_RESULT_MISSING_ITEM);
+		end;
+	}
+	
+	// 实施真正的背包扩容操作, 成功的话告诉客户端
+	if (expandinventory_adjust(10) == true) {
+		// 操作成功立刻删除掉对应的消耗道具
+		delitem(25793, 1);
+		expandinventory_result(EXPAND_INV_RESULT_SUCCESS);
+	}
+end;
+
+// 标签说明: OnInvExpandRejected
+// 请注意这不是一个事件, 就是一个普通标签.
+// 这个标签必须写在名为 inventory_expansion 的 NPC 下才会被程序调用
+//
+// 触发时机: 当 OnInvExpandRequest 中返回了 EXPAND_INV_ASK_CONFIRMATION 给玩家弹出确认窗口后
+// 如果玩家选择了[取消/拒绝], 那么此标签就会被触发.
+OnInvExpandRejected:
+	// 暂时什么都不需要做
+end;
+}

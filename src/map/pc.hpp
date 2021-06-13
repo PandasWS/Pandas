@@ -74,9 +74,14 @@ enum sc_type : int16;
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 #define AURA_VARIABLE "PANDAS_AURASET"
 #endif // Pandas_Struct_Unit_CommonData_Aura
+
 #ifdef Pandas_BonusScript_Unique_ID
 #define BONUS_SCRIPT_COUNTER_VAR "PANDAS_BONUSSCRIPT_COUNTER"
 #endif // Pandas_BonusScript_Unique_ID
+
+#ifdef Pandas_ClientFeature_InventoryExpansion
+#define INVENTORY_SIZE_VAR "PANDAS_INVENTORY_SIZE"
+#endif // Pandas_ClientFeature_InventoryExpansion
 
 //Update this max as necessary. 55 is the value needed for Super Baby currently
 //Raised to 105 since Expanded Super Baby needs it.
@@ -880,6 +885,9 @@ struct map_session_data {
 #ifdef Pandas_Struct_Map_Session_Data_BonusScript_Counter
 		uint32 bonus_script_counter;		// 玩家已经生成的 bonus_script 记录数
 #endif // Pandas_Struct_Map_Session_Data_BonusScript_Counter
+#ifdef Pandas_Struct_Map_Session_Data_InventorySize
+		uint32 inventory_size;				// 角色的背包容量上限
+#endif // Pandas_Struct_Map_Session_Data_InventorySize
 	} pandas;
 #endif // Pandas_Struct_Map_Session_Data_Pandas
 
@@ -1233,6 +1241,9 @@ void pc_respawn(struct map_session_data* sd, clr_type clrtype);
 void pc_setnewpc(struct map_session_data *sd, uint32 account_id, uint32 char_id, int login_id1, t_tick client_tick, int sex, int fd);
 bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_time, int group_id, struct mmo_charstatus *st, bool changing_mapservers);
 void pc_authfail(struct map_session_data *sd);
+#ifdef Pandas_ClientFeature_InventoryExpansion
+bool pc_expandInventory(struct map_session_data* sd, int adjustSize);
+#endif // Pandas_ClientFeature_InventoryExpansion
 void pc_reg_received(struct map_session_data *sd);
 void pc_close_npc(struct map_session_data *sd,int flag);
 TIMER_FUNC(pc_close_npc_timer);

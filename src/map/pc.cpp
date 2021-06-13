@@ -1731,6 +1731,10 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 	sd->pandas.bonus_script_counter = 0;
 #endif // Pandas_BonusScript_Unique_ID
 
+#ifdef Pandas_ClientFeature_InventoryExpansion
+	sd->pandas.inventory_size = 0;
+#endif // Pandas_ClientFeature_InventoryExpansion
+
 	// 以下这行注释是为了方便 pyhelp_extracter.py 提取翻译文本使用的
 	// ShowInfo("'" CL_WHITE "%s" CL_RESET "' logged in. (AID/CID: '" CL_WHITE "%d/%d" CL_RESET "', IP: '" CL_WHITE "%d.%d.%d.%d" CL_RESET "', Group '" CL_WHITE "%d" CL_RESET "').\n", sd->status.name, sd->status.account_id, sd->status.char_id, CONVIP(ip), sd->group_id);
 
@@ -1845,6 +1849,26 @@ bool pc_set_hate_mob(struct map_session_data *sd, int pos, struct block_list *bl
 	return true;
 }
 
+#ifdef Pandas_ClientFeature_InventoryExpansion
+bool pc_expandInventory(struct map_session_data* sd, int adjustSize) {
+	nullpo_retr(false, sd);
+	const int invSize = sd->pandas.inventory_size;
+
+	if (adjustSize > MAX_INVENTORY || invSize + adjustSize <= FIXED_INVENTORY_SIZE || invSize + adjustSize > MAX_INVENTORY) {
+		clif_inventoryExpandResult(sd, EXPAND_INVENTORY_RESULT_MAX_SIZE);
+		return false;
+	}
+	if (pc_isdead(sd) || sd->state.vending || sd->state.prevend || sd->state.buyingstore || sd->chatID != 0 || sd->state.trading || sd->state.storage_flag || sd->state.prevend) {
+		clif_inventoryExpandResult(sd, EXPAND_INVENTORY_RESULT_OTHER_WORK);
+		return false;
+	}
+	sd->pandas.inventory_size += adjustSize;
+	pc_setglobalreg(sd, add_str(INVENTORY_SIZE_VAR), sd->pandas.inventory_size);
+	clif_inventoryExpansionInfo(sd);
+	return true;
+}
+#endif // Pandas_ClientFeature_InventoryExpansion
+
 /*==========================================
  * Invoked once after the char/account/account2 registry variables are received. [Skotlex]
  * We didn't receive item information at this point so DO NOT attempt to do item operations here.
@@ -1867,6 +1891,17 @@ void pc_reg_received(struct map_session_data *sd)
 	// Cash shop
 	sd->cashPoints = static_cast<int>(pc_readaccountreg(sd, add_str(CASHPOINT_VAR)));
 	sd->kafraPoints = static_cast<int>(pc_readaccountreg(sd, add_str(KAFRAPOINT_VAR)));
+
+#ifdef Pandas_ClientFeature_InventoryExpansion
+	sd->pandas.inventory_size = static_cast<uint32>(pc_readglobalreg(sd, add_str(INVENTORY_SIZE_VAR)));
+
+	// 读取出来的值如果不在合理范围则将背包容量上限设置为 FIXED_INVENTORY_SIZE
+	if (sd->pandas.inventory_size < FIXED_INVENTORY_SIZE || sd->pandas.inventory_size > MAX_INVENTORY) {
+		sd->pandas.inventory_size = FIXED_INVENTORY_SIZE;
+		pc_setglobalreg(sd, add_str(INVENTORY_SIZE_VAR), FIXED_INVENTORY_SIZE);
+	}
+	clif_inventoryExpansionInfo(sd);
+#endif // Pandas_ClientFeature_InventoryExpansion
 
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 	// 从角色的变量中读取当前角色设置启用的光环编号

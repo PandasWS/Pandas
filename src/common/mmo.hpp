@@ -40,7 +40,25 @@
 #endif
 
 #define MAX_MAP_PER_SERVER 1500 /// Maximum amount of maps available on a server
+
+#ifndef Pandas_ClientFeature_InventoryExpansion
 #define MAX_INVENTORY 100 ///Maximum items in player inventory
+#else
+	#if PACKETVER_MAIN_NUM >= 20181219 || PACKETVER_RE_NUM >= 20181219 || PACKETVER_ZERO_NUM >= 20181212
+		#define MAX_INVENTORY 200
+	#else
+		#define MAX_INVENTORY 100
+	#endif  // PACKETVER_MAIN_NUM >= 20181219 || PACKETVER_RE_NUM >= 20181219 || PACKETVER_ZERO_NUM >= 20181212
+
+	#ifndef FIXED_INVENTORY_SIZE
+		#define FIXED_INVENTORY_SIZE 100
+	#endif
+
+	#if FIXED_INVENTORY_SIZE > MAX_INVENTORY
+		#error FIXED_INVENTORY_SIZE must be same or smaller than MAX_INVENTORY
+	#endif
+#endif // Pandas_ClientFeature_InventoryExpansion
+
 /** Max number of characters per account. Note that changing this setting alone is not enough if the client is not hexed to support more characters as well.
 * Max value tested was 265 */
 #ifndef MAX_CHARS
