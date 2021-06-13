@@ -312,12 +312,6 @@ struct quest {
 	e_quest_state state;             ///< Current quest state
 };
 
-struct s_item_randomoption {
-	short id;
-	short value;
-	char param;
-};
-
 /// Achievement log entry
 struct achievement {
 	int achievement_id;                    ///< Achievement ID
@@ -326,6 +320,17 @@ struct achievement {
 	time_t rewarded;                       ///< Received reward?
 	int score;                             ///< Amount of points achievement is worth
 };
+
+// NetBSD 5 and Solaris don't like pragma pack but accept the packed attribute
+#if !defined( sun ) && ( !defined( __NETBSD__ ) || __NetBSD_Version__ >= 600000000 )
+	#pragma pack( push, 1 )
+#endif
+
+struct s_item_randomoption {
+	short id;
+	short value;
+	char param;
+} __attribute__((packed));
 
 struct item {
 	int id;
@@ -342,7 +347,12 @@ struct item {
 	uint64 unique_id;
 	unsigned int equipSwitch; // location(s) where item is equipped for equip switching (using enum equip_pos for bitmasking)
 	uint8 enchantgrade;
-};
+} __attribute__((packed));
+
+// NetBSD 5 and Solaris don't like pragma pack but accept the packed attribute
+#if !defined( sun ) && ( !defined( __NETBSD__ ) || __NetBSD_Version__ >= 600000000 )
+	#pragma pack( pop )
+#endif
 
 //Equip position constants
 enum equip_pos : uint32 {

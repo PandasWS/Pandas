@@ -1751,6 +1751,18 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_MADOGEAR] = EFST_RIDING;
 #endif
 
+	// ep15
+	StatusIconChangeTable[SC_PACKING_ENVELOPE1] = EFST_PACKING_ENVELOPE1;
+	StatusIconChangeTable[SC_PACKING_ENVELOPE2] = EFST_PACKING_ENVELOPE2;
+	StatusIconChangeTable[SC_PACKING_ENVELOPE3] = EFST_PACKING_ENVELOPE3;
+	StatusIconChangeTable[SC_PACKING_ENVELOPE4] = EFST_PACKING_ENVELOPE4;
+	StatusIconChangeTable[SC_PACKING_ENVELOPE5] = EFST_PACKING_ENVELOPE5;
+	StatusIconChangeTable[SC_PACKING_ENVELOPE6] = EFST_PACKING_ENVELOPE6;
+	StatusIconChangeTable[SC_PACKING_ENVELOPE7] = EFST_PACKING_ENVELOPE7;
+	StatusIconChangeTable[SC_PACKING_ENVELOPE8] = EFST_PACKING_ENVELOPE8;
+	StatusIconChangeTable[SC_PACKING_ENVELOPE9] = EFST_PACKING_ENVELOPE9;
+	StatusIconChangeTable[SC_PACKING_ENVELOPE10] = EFST_PACKING_ENVELOPE10;
+
 	/* Other SC which are not necessarily associated to skills */
 	StatusChangeFlagTable[SC_ASPDPOTION0] |= SCB_ASPD;
 	StatusChangeFlagTable[SC_ASPDPOTION1] |= SCB_ASPD;
@@ -1937,6 +1949,17 @@ void initChangeTables(void)
 #endif
 
 	StatusChangeFlagTable[SC_MADOGEAR] |= SCB_SPEED;
+
+	StatusChangeFlagTable[SC_PACKING_ENVELOPE1] |= SCB_WATK;
+	StatusChangeFlagTable[SC_PACKING_ENVELOPE2] |= SCB_MATK;
+	StatusChangeFlagTable[SC_PACKING_ENVELOPE3] |= SCB_MAXHP;
+	StatusChangeFlagTable[SC_PACKING_ENVELOPE4] |= SCB_MAXSP;
+	StatusChangeFlagTable[SC_PACKING_ENVELOPE5] |= SCB_FLEE;
+	StatusChangeFlagTable[SC_PACKING_ENVELOPE6] |= SCB_ASPD;
+	StatusChangeFlagTable[SC_PACKING_ENVELOPE7] |= SCB_DEF;
+	StatusChangeFlagTable[SC_PACKING_ENVELOPE8] |= SCB_MDEF;
+	StatusChangeFlagTable[SC_PACKING_ENVELOPE9] |= SCB_CRI;
+	StatusChangeFlagTable[SC_PACKING_ENVELOPE10] |= SCB_HIT;
 
 	/* StatusDisplayType Table [Ind] */
 	StatusDisplayType[SC_ALL_RIDING]	  = BL_PC;
@@ -3840,6 +3863,8 @@ static int status_get_hpbonus(struct block_list *bl, enum e_status_bonus type) {
 				bonus -= sc->data[SC__WEAKNESS]->val2;
 			if(sc->data[SC_EQC])
 				bonus -= sc->data[SC_EQC]->val3;
+			if(sc->data[SC_PACKING_ENVELOPE3])
+				bonus += sc->data[SC_PACKING_ENVELOPE3]->val1;
 		}
 		// Max rate reduce is -100%
 		bonus = cap_value(bonus,-100,INT_MAX);
@@ -3972,6 +3997,8 @@ static int status_get_spbonus(struct block_list *bl, enum e_status_bonus type) {
 				bonus += sc->data[SC_LUXANIMA]->val3;
 			if (sc->data[SC_MTF_MSP])
 				bonus += sc->data[SC_MTF_MSP]->val1;
+			if(sc->data[SC_PACKING_ENVELOPE4])
+				bonus += sc->data[SC_PACKING_ENVELOPE4]->val1;
 
 			//Decreasing
 			if (sc->data[SC_MELODYOFSINK])
@@ -7177,6 +7204,8 @@ static pec_ushort status_calc_watk(struct block_list *bl, struct status_change *
 		watk += watk * sc->data[SC_SUNSTANCE]->val2 / 100;
 	if (sc->data[SC_SOULFALCON])
 		watk += sc->data[SC_SOULFALCON]->val2;
+	if (sc->data[SC_PACKING_ENVELOPE1])
+		watk += sc->data[SC_PACKING_ENVELOPE1]->val1;
 
 	return (pec_ushort)cap_value(watk,0,PEC_USHRT_MAX);
 }
@@ -7240,6 +7269,8 @@ static pec_ushort status_calc_ematk(struct block_list *bl, struct status_change 
 		matk += sc->data[SC__AUTOSHADOWSPELL]->val4 * 5;
 	if (sc->data[SC_INSPIRATION])
 		matk += sc->data[SC_INSPIRATION]->val2;
+	if (sc->data[SC_PACKING_ENVELOPE2])
+		matk += sc->data[SC_PACKING_ENVELOPE2]->val1;
 
 	return (pec_ushort)cap_value(matk,0,PEC_USHRT_MAX);
 }
@@ -7361,6 +7392,8 @@ static pec_short status_calc_critical(struct block_list *bl, struct status_chang
 		critical += sc->data[SC_BEYONDOFWARCRY]->val3;
 	if (sc->data[SC_MTF_HITFLEE])
 		critical += sc->data[SC_MTF_HITFLEE]->val1;
+	if (sc->data[SC_PACKING_ENVELOPE9])
+		critical += sc->data[SC_PACKING_ENVELOPE9]->val1 * 10;
 
 	return (pec_short)cap_value(critical,10,PEC_SHRT_MAX);
 }
@@ -7429,6 +7462,8 @@ static pec_short status_calc_hit(struct block_list *bl, struct status_change *sc
 		hit += sc->data[SC_SOULFALCON]->val3;
 	if (sc->data[SC_SATURDAYNIGHTFEVER])
 		hit -= 50 + 50 * sc->data[SC_SATURDAYNIGHTFEVER]->val1;
+	if (sc->data[SC_PACKING_ENVELOPE10])
+		hit += sc->data[SC_PACKING_ENVELOPE10]->val1;
 
 	return (pec_short)cap_value(hit,1,PEC_SHRT_MAX);
 }
@@ -7541,6 +7576,8 @@ static pec_short status_calc_flee(struct block_list *bl, struct status_change *s
 	//	flee -= (flee * sc->data[SC_C_MARKER]->val3) / 100;
 	if (sc->data[SC_GROOMING])
 		flee += sc->data[SC_GROOMING]->val2;
+	if (sc->data[SC_PACKING_ENVELOPE5])
+		flee += sc->data[SC_PACKING_ENVELOPE5]->val1;
 
 	return (pec_short)cap_value(flee,1,PEC_SHRT_MAX);
 }
@@ -7667,6 +7704,8 @@ static pec_defType status_calc_def(struct block_list *bl, struct status_change *
 		def += sc->data[SC_SOULGOLEM]->val2;
 	if (sc->data[SC_STONE_WALL])
 		def += sc->data[SC_STONE_WALL]->val2;
+	if( sc->data[SC_PACKING_ENVELOPE7] )
+		def += sc->data[SC_PACKING_ENVELOPE7]->val1;
 
 	return (pec_defType)cap_value(def,PEC_DEFTYPE_MIN,PEC_DEFTYPE_MAX);
 }
@@ -7795,6 +7834,8 @@ static pec_defType status_calc_mdef(struct block_list *bl, struct status_change 
 		mdef += sc->data[SC_SOULGOLEM]->val3;
 	if (sc->data[SC_STONE_WALL])
 		mdef += sc->data[SC_STONE_WALL]->val3;
+	if (sc->data[SC_PACKING_ENVELOPE8])
+		mdef += sc->data[SC_PACKING_ENVELOPE8]->val1;
 
 	return (pec_defType)cap_value(mdef,PEC_DEFTYPE_MIN,PEC_DEFTYPE_MAX);
 }
@@ -8216,6 +8257,8 @@ static short status_calc_fix_aspd(struct block_list *bl, struct status_change *s
 		aspd -= sc->data[SC_HEAT_BARREL]->val1 * 10;
 	if (sc->data[SC_EP16_2_BUFF_SS])
 		aspd -= 100; // +10 ASPD
+	if (sc->data[SC_PACKING_ENVELOPE6])
+		aspd -= sc->data[SC_PACKING_ENVELOPE6]->val1 * 10;
 
 	return cap_value(aspd, 0, 2000); // Will be recap for proper bl anyway
 }
@@ -13567,6 +13610,16 @@ int status_change_clear(struct block_list* bl, int type)
 			case SC_SOULENERGY:
 			case SC_MADOGEAR:
 			case SC_HOMUN_TIME:
+			case SC_PACKING_ENVELOPE1:
+			case SC_PACKING_ENVELOPE2:
+			case SC_PACKING_ENVELOPE3:
+			case SC_PACKING_ENVELOPE4:
+			case SC_PACKING_ENVELOPE5:
+			case SC_PACKING_ENVELOPE6:
+			case SC_PACKING_ENVELOPE7:
+			case SC_PACKING_ENVELOPE8:
+			case SC_PACKING_ENVELOPE9:
+			case SC_PACKING_ENVELOPE10:
 			// Costumes
 			case SC_MOONSTAR:
 			case SC_SUPER_STAR:

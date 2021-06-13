@@ -68,7 +68,7 @@ private:
 	}
 #endif // Pandas_YamlBlastCache_QuestDatabase
 public:
-	QuestDatabase() : TypesafeYamlDatabase("QUEST_DB", 2) {
+	QuestDatabase() : TypesafeYamlDatabase("QUEST_DB", 2, 1) {
 #ifdef Pandas_YamlBlastCache_QuestDatabase
 		this->supportSerialize = true;
 #endif // Pandas_YamlBlastCache_QuestDatabase

@@ -2043,6 +2043,9 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 					case SC_REUSE_LIMIT_LUXANIMA:	case SC_LUXANIMA:	case SC_SOULENERGY:
 					case SC_EP16_2_BUFF_SS:		case SC_EP16_2_BUFF_SC:	case SC_EP16_2_BUFF_AC:
 					case SC_EMERGENCY_MOVE:		case SC_MADOGEAR:		case SC_HOMUN_TIME:
+					case SC_PACKING_ENVELOPE1:	case SC_PACKING_ENVELOPE2:	case SC_PACKING_ENVELOPE3:
+					case SC_PACKING_ENVELOPE4:	case SC_PACKING_ENVELOPE5:	case SC_PACKING_ENVELOPE6:
+					case SC_PACKING_ENVELOPE7:	case SC_PACKING_ENVELOPE8:	case SC_PACKING_ENVELOPE9:	case SC_PACKING_ENVELOPE10:
 						continue;
 					case SC_WHISTLE:		case SC_ASSNCROS:		case SC_POEMBRAGI:
 					case SC_APPLEIDUN:		case SC_HUMMING:		case SC_DONTFORGETME:
@@ -2298,7 +2301,7 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 		dstmd && !status_has_mode(tstatus,MD_STATUSIMMUNE) &&
 		(rnd()%10000 < sd->bonus.classchange))
 	{
-		int class_ = mob_get_random_id(MOBG_Branch_Of_Dead_Tree, RMF_DB_RATE, 0);
+		int class_ = mob_get_random_id(MOBG_BRANCH_OF_DEAD_TREE, RMF_DB_RATE, 0);
 		if (class_ != 0 && mobdb_checkid(class_))
 			mob_class_change(dstmd,class_);
 	}
@@ -6819,7 +6822,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 				clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
 				break;
 			}
-			class_ = (skill_id == SA_MONOCELL ? MOBID_PORING : mob_get_random_id(MOBG_ClassChange, RMF_DB_RATE, 0));
+			class_ = (skill_id == SA_MONOCELL ? MOBID_PORING : mob_get_random_id(MOBG_CLASSCHANGE, RMF_DB_RATE, 0));
 			clif_skill_nodamage(src,bl,skill_id,skill_lv,1);
 			mob_class_change(dstmd,class_);
 			if( tsc && status_has_mode(&dstmd->status,MD_STATUSIMMUNE) ) {
@@ -7256,7 +7259,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 				break;
 			}
 
-			int id = mob_get_random_id(MOBG_Taekwon_Mission, RMF_NONE, 0);
+			int id = mob_get_random_id(MOBG_TAEKWON_MISSION, RMF_NONE, 0);
 
 			if (!id) {
 				clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
@@ -8521,6 +8524,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 					case SC_REUSE_LIMIT_LUXANIMA:	case SC_LUXANIMA:	case SC_SOULENERGY:
 					case SC_EP16_2_BUFF_SS:		case SC_EP16_2_BUFF_SC:	case SC_EP16_2_BUFF_AC:
 					case SC_EMERGENCY_MOVE:		case SC_HOMUN_TIME:
+					case SC_PACKING_ENVELOPE1:	case SC_PACKING_ENVELOPE2:	case SC_PACKING_ENVELOPE3:
+					case SC_PACKING_ENVELOPE4:	case SC_PACKING_ENVELOPE5:	case SC_PACKING_ENVELOPE6:
+					case SC_PACKING_ENVELOPE7:	case SC_PACKING_ENVELOPE8:	case SC_PACKING_ENVELOPE9:	case SC_PACKING_ENVELOPE10:
 						continue;
 					case SC_WHISTLE:
 					case SC_ASSNCROS:
@@ -10060,6 +10066,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 					case SC_REUSE_LIMIT_LUXANIMA:		case SC_LUXANIMA:	case SC_SOULENERGY:
 					case SC_EP16_2_BUFF_SS:		case SC_EP16_2_BUFF_SC:	case SC_EP16_2_BUFF_AC:
 					case SC_EMERGENCY_MOVE:		case SC_MADOGEAR:		case SC_HOMUN_TIME:
+					case SC_PACKING_ENVELOPE1:	case SC_PACKING_ENVELOPE2:	case SC_PACKING_ENVELOPE3:
+					case SC_PACKING_ENVELOPE4:	case SC_PACKING_ENVELOPE5:	case SC_PACKING_ENVELOPE6:
+					case SC_PACKING_ENVELOPE7:	case SC_PACKING_ENVELOPE8:	case SC_PACKING_ENVELOPE9:	case SC_PACKING_ENVELOPE10:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )

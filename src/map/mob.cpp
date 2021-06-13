@@ -81,12 +81,6 @@ const t_tick MOB_MAX_DELAY = 24 * 3600 * 1000;
 // holds Monster Spawn informations
 std::unordered_map<uint16, std::vector<spawn_info>> mob_spawn_data;
 
-//Dynamic mob chat database
-std::map<short,struct mob_chat> mob_chat_db;
-struct mob_chat *mob_chat(short id) {
-	return util::map_find( mob_chat_db, id );
-}
-
 //Dynamic item drop ratio database for per-item drop ratio modifiers overriding global drop ratios.
 #define MAX_ITEMRATIO_MOBS 10
 struct s_mob_item_drop_ratio {
@@ -107,18 +101,8 @@ std::unordered_map<int32, std::shared_ptr<s_mob_skill_db>> mob_skill_db; /// Mon
 static struct eri *item_drop_ers; //For loot drops delay structures.
 static struct eri *item_drop_list_ers;
 
-struct s_randomsummon_entry {
-	uint16 mob_id;
-	uint32 rate;
-};
-
-struct s_randomsummon_group {
-	uint8 random_id;
-	struct s_randomsummon_entry *list;
-	uint16 count;
-};
-
-static DBMap *mob_summon_db; /// Random Summon DB. struct s_randomsummon_group -> group_id
+MobSummonDatabase mob_summon_db;
+MobChatDatabase mob_chat_db;
 
 /*==========================================
  * Local prototype declaration   (only required thing)
@@ -523,44 +507,44 @@ struct mob_data* mob_spawn_dataset(struct spawn_data *data)
  *------------------------------------------*/
 int mob_get_random_id(int type, enum e_random_monster_flags flag, int lv)
 {
-	struct s_randomsummon_group *msummon = (struct s_randomsummon_group *)idb_get(mob_summon_db, type);
+	std::shared_ptr<s_randomsummon_group> summon = mob_summon_db.find(type);
 
-	if (type == MOBG_Bloody_Dead_Branch && flag&RMF_MOB_NOT_BOSS)
+	if (type == MOBG_BLOODY_DEAD_BRANCH && flag&RMF_MOB_NOT_BOSS)
 		flag = static_cast<e_random_monster_flags>(flag&~RMF_MOB_NOT_BOSS);
 	
-	if (!msummon) {
+	if (!summon) {
 		ShowError("mob_get_random_id: Invalid type (%d) of random monster.\n", type);
 		return 0;
 	}
-	if (!msummon->count) {
+	if (summon->list.empty()) {
 		ShowError("mob_get_random_id: Random monster type %d is not defined.\n", type);
 		return 0;
 	}
 
-	std::shared_ptr<s_mob_db> mob;
-	int i = 0, mob_id = 0, rand = 0;
-	struct s_randomsummon_entry *entry = nullptr;
+	for( size_t i = 0, max = summon->list.size() * 3; i < max; i++ ){
+		std::shared_ptr<s_randomsummon_entry> entry = util::umap_random( summon->list );
+		std::shared_ptr<s_mob_db> mob = mob_db.find( entry->mob_id );
 
-	do {
-		rand = rnd()%msummon->count;
-		entry = &msummon->list[rand];
-		mob_id = entry->mob_id;
-		mob = mob_db.find(mob_id);
-	} while ((rand == 0 || // Skip default first
-		mob == nullptr ||
-		mob_is_clone(mob_id) ||
-		(flag&RMF_DB_RATE && (entry->rate < 1000000 && entry->rate <= rnd() % 1000000)) ||
-		(flag&RMF_CHECK_MOB_LV && lv < mob->lv) ||
-		(flag&RMF_MOB_NOT_BOSS && status_has_mode(&mob->status,MD_STATUSIMMUNE) ) ||
-		(flag&RMF_MOB_NOT_SPAWN && !mob_has_spawn(mob_id)) ||
-		(flag&RMF_MOB_NOT_PLANT && status_has_mode(&mob->status,MD_IGNOREMELEE|MD_IGNOREMAGIC|MD_IGNORERANGED|MD_IGNOREMISC) )
-	) && (i++) < MAX_MOB_DB && msummon->count > 1);
+		if(mob == nullptr ||
+			mob_is_clone( entry->mob_id ) ||
+			(flag&RMF_DB_RATE && (entry->rate < 1000000 && entry->rate <= rnd() % 1000000)) ||
+			(flag&RMF_CHECK_MOB_LV && lv < mob->lv) ||
+			(flag&RMF_MOB_NOT_BOSS && status_has_mode(&mob->status,MD_STATUSIMMUNE) ) ||
+			(flag&RMF_MOB_NOT_SPAWN && !mob_has_spawn( entry->mob_id )) ||
+			(flag&RMF_MOB_NOT_PLANT && status_has_mode(&mob->status,MD_IGNOREMELEE|MD_IGNOREMAGIC|MD_IGNORERANGED|MD_IGNOREMISC) )
+		){
+			continue;
+		}
 
-	if (i >= MAX_MOB_DB && &msummon->list[0]) {
-		ShowError("mob_get_random_id: no suitable monster found, use fallback for given list. Last_MobID: %d\n", mob_id);
-		mob_id = msummon->list[0].mob_id;
+		return entry->mob_id;
 	}
-	return mob_id;
+
+	if (mob_db.find( summon->default_mob_id ) == nullptr) {
+		ShowError("mob_get_random_id: Default monster is not defined for type %d.\n", type);
+		return 0;
+	}
+
+	return summon->default_mob_id;
 }
 
 /*==========================================
@@ -3155,7 +3139,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 				((battle_config.taekwon_mission_mobname == 1 && util::vector_exists(status_get_race2(&md->bl), RC2_GOBLIN) && util::vector_exists(mission_mdb->race2, RC2_GOBLIN)) ||
 				(battle_config.taekwon_mission_mobname == 2 && mob->jname.compare(mission_mdb->jname) == 0))))
 			{ //TK_MISSION [Skotlex]
-				if (++(sd->mission_count) >= 100 && (temp = mob_get_random_id(MOBG_Branch_Of_Dead_Tree, static_cast<e_random_monster_flags>(RMF_CHECK_MOB_LV|RMF_MOB_NOT_BOSS|RMF_MOB_NOT_SPAWN), sd->status.base_level)))
+				if (++(sd->mission_count) >= 100 && (temp = mob_get_random_id(MOBG_BRANCH_OF_DEAD_TREE, static_cast<e_random_monster_flags>(RMF_CHECK_MOB_LV|RMF_MOB_NOT_BOSS|RMF_MOB_NOT_SPAWN), sd->status.base_level)))
 				{
 					pc_addfame(sd, battle_config.fame_taekwon_mission);
 					sd->mission_mobid = temp;
@@ -3992,7 +3976,7 @@ int mobskill_use(struct mob_data *md, t_tick tick, int event)
 		}
 		//Skill used. Post-setups...
 		if ( ms[i]->msg_id ){ //Display color message [SnakeDrak]
-			struct mob_chat *mc = mob_chat(ms[i]->msg_id);
+			std::shared_ptr<s_mob_chat> mc = mob_chat_db.find(ms[i]->msg_id);
 
 			if (mc) {
 				std::string name = md->name, output;
@@ -5649,114 +5633,164 @@ uint64 MobAvailDatabase::parseBodyNode(const YAML::Node &node) {
 
 MobAvailDatabase mob_avail_db;
 
-/*==========================================
- * Reading of random monster data
- * MobGroup,MobID,DummyName,Rate
- *------------------------------------------*/
-static bool mob_readdb_group(char* str[], int columns, int current){
-	struct s_randomsummon_group *msummon = NULL;
-	int mob_id, group = 0;
-	unsigned short i = 0;
-	bool set_default = false;
 
-	if (ISDIGIT(str[0][0]) && ISDIGIT(str[0][1]))
-		group = atoi(str[0]);
-	else {
-		int64 group_tmp;
-
-		if (!script_get_constant(str[0], &group_tmp)) {
-			ShowError("mob_readdb_group: Invalid random monster group '%s'\n", str[0]);
-			return false;
-		}
-		group = static_cast<int>(group_tmp);
-	}
-
-	mob_id = atoi(str[1]);
-	if (mob_id != 0 && mob_db.find(mob_id) == nullptr) {
-		ShowError("mob_readdb_group: Invalid random monster group '%s'\n", str[0]);
-		return false;
-	}
-	else if (mob_id == 0){
-		mob_id = atoi(str[3]);
-		if (mob_db.find(mob_id) == nullptr) {
-			ShowError("mob_readdb_group: Invalid random monster group '%s'\n", str[0]);
-			return false;
-		}
-		set_default = true;
-	}
-
-	if (!(msummon = (struct s_randomsummon_group *)idb_get(mob_summon_db, group))) {
-		CREATE(msummon, struct s_randomsummon_group, 1);
-		CREATE(msummon->list, struct s_randomsummon_entry, (msummon->count = 1));
-		msummon->list[0].mob_id = mob_id;
-		msummon->list[0].rate = atoi(str[3]);
-		msummon->random_id = group;
-		idb_put(mob_summon_db, group, msummon);
-	}
-	else {
-		ARR_FIND(0, msummon->count, i, set_default || (i > 0 && msummon->list[i].mob_id == mob_id));
-		if (i >= msummon->count)
-			RECREATE(msummon->list, struct s_randomsummon_entry, ++msummon->count);
-		msummon->list[i].mob_id = mob_id;
-		msummon->list[i].rate = atoi(str[3]);
-	}
-
-	return true;
+const std::string MobSummonDatabase::getDefaultLocation() {
+	return std::string(db_path) + "/mob_summon.yml";
 }
 
-//processes one mob_chat_db entry [SnakeDrak]
-//db struct: Line_ID,Color_Code,Dialog
-static bool mob_parse_row_chatdb(char* fields[], int columns, int current)
-{
-	char* msg;
-	struct mob_chat *ms;
-	int msg_id;
-	size_t len;
+/**
+ * Reads and parses an entry from the mob_summon.
+ * @param node: YAML node containing the entry.
+ * @return count of successfully parsed rows
+ */
+uint64 MobSummonDatabase::parseBodyNode(const YAML::Node &node) {
+	std::string group_name;
 
-	msg_id = atoi(fields[0]);
+	if (!this->asString(node, "Group", group_name))
+		return 0;
 
-	if (msg_id <= 0){
-		ShowError("mob_parse_row_chatdb: Invalid chat ID '%d' in line %d\n", msg_id, current);
-		return false;
+	std::string group_name_constant = "MOBG_" + group_name;
+	int64 constant;
+
+	if (!script_get_constant(group_name_constant.c_str(), &constant) || constant < MOBG_BRANCH_OF_DEAD_TREE || constant >= MOBG_MAX) {
+		this->invalidWarning(node["Group"], "Invalid monster group %s.\n", group_name.c_str());
+		return 0;
 	}
 
-	ms = mob_chat(msg_id);
+	uint16 id = static_cast<uint16>(constant);
 
-	if( ms == NULL ){
-		try{
-			ms = &mob_chat_db[msg_id];
-		}catch( const std::bad_alloc& ){
-			ShowError( "mob_parse_row_chatdb: Memory allocation for chat ID '%d' failed.\n", msg_id );
-			return false;
+	std::shared_ptr<s_randomsummon_group> summon = this->find(id);
+	bool exists = summon != nullptr;
+
+	if (!exists) {
+		if (!this->nodesExist(node, { "Default" }))
+			return 0;
+
+		summon = std::make_shared<s_randomsummon_group>();
+		summon->random_id = id;
+	}
+
+	if (this->nodeExists(node, "Default")) {
+		std::string mob_name;
+
+		if (!this->asString(node, "Default", mob_name))
+			return 0;
+
+		std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname(mob_name.c_str());
+
+		if (mob == nullptr) {
+			this->invalidWarning(node["Default"], "Unknown mob %s.\n", mob_name.c_str());
+			return 0;
+		}
+		summon->default_mob_id = mob->vd.class_;
+	}
+
+	if (this->nodeExists(node, "Summon")) {
+		const YAML::Node &MobNode = node["Summon"];
+
+		for (const YAML::Node &mobit : MobNode) {
+			if (!this->nodesExist(mobit, { "Mob", "Rate" })) {
+				continue;
+			}
+
+			std::string mob_name;
+
+			if (!this->asString(mobit, "Mob", mob_name))
+				continue;
+
+			std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname(mob_name.c_str());
+
+			if (mob == nullptr) {
+				this->invalidWarning(mobit["Mob"], "Unknown mob %s.\n", mob_name.c_str());
+				continue;
+			}
+
+			uint32 rate;
+
+			if (!this->asUInt32(mobit, "Rate", rate))
+				continue;
+
+			uint16 mob_id = mob->vd.class_;
+
+			if (rate == 0) {
+				if (summon->list.erase(mob_id) == 0)
+					this->invalidWarning(mobit["Rate"], "Failed to remove %s, the monster doesn't exist in group %s.\n", mob_name.c_str(), group_name.c_str());
+				continue;
+			}
+
+			std::shared_ptr<s_randomsummon_entry> entry = util::umap_find(summon->list, mob_id);
+
+			if (entry == nullptr) {
+				entry = std::make_shared<s_randomsummon_entry>();
+				entry->mob_id = mob->vd.class_;
+				summon->list[mob_id] = entry;
+			}
+			entry->rate = rate;
 		}
 	}
+
+	if (!exists)
+		this->put(id, summon);
+
+	return 1;
+}
+
+const std::string MobChatDatabase::getDefaultLocation() {
+	return std::string(db_path) + "/mob_chat_db.yml";
+}
+
+/**
+ * Reads and parses an entry from the mob_chat_db.
+ * @param node: YAML node containing the entry.
+ * @return count of successfully parsed rows
+ */
+uint64 MobChatDatabase::parseBodyNode(const YAML::Node &node) {
+	uint16 id;
+
+	if (!this->asUInt16(node, "Id", id))
+		return 0;
+
+	std::shared_ptr<s_mob_chat> chat = this->find(id);
+	bool exists = chat != nullptr;
+
+	if (!exists) {
+		if (!this->nodesExist(node, { "Dialog" })) {
+			return 0;
+		}
+
+		chat = std::make_shared<s_mob_chat>();
+		chat->msg_id = id;
+	}
 	
-	//MSG ID
-	ms->msg_id=msg_id;
-	//Color
-	ms->color=strtoul(fields[1],NULL,0);
-	//Message
-	msg = fields[2];
-	len = strlen(msg);
+	if (this->nodeExists(node, "Color")) {
+		std::string hex;
 
-	while( len && ( msg[len-1]=='\r' || msg[len-1]=='\n' ) )
-	{// find EOL to strip
-		len--;
+		if (!this->asString(node, "Color", hex))
+			return 0;
+
+		chat->color = strtoul(hex.c_str(), nullptr, 0);
+	} else {
+		if (!exists)
+			chat->color = strtoul("0xFF0000", nullptr, 0);
 	}
 
-	if(len>(CHAT_SIZE_MAX-1)){
-		ShowError("mob_parse_row_chatdb: Message too long! Line %d, id: %d\n", current, msg_id);
-		return false;
-	}
-	else if( !len ){
-		ShowWarning("mob_parse_row_chatdb: Empty message for id %d.\n", msg_id);
-		return false;
+	if (this->nodeExists(node, "Dialog")) {
+		std::string msg;
+
+		if (!this->asString(node, "Dialog", msg))
+			return 0;
+
+		if (msg.length() > (CHAT_SIZE_MAX-1)) {
+			this->invalidWarning(node["Dialog"], "Message too long!\n");
+			return 0;
+		}
+		chat->msg = msg;
 	}
 
-	msg[len] = 0;  // strip previously found EOL
-	safestrncpy(ms->msg, fields[2], CHAT_SIZE_MAX);
+	if (!exists)
+		this->put(id, chat);
 
-	return true;
+	return 1;
 }
 
 /*==========================================
@@ -5992,8 +6026,15 @@ static bool mob_parse_row_mobskilldb(char** str, int columns, int current)
 	else
 		ms->emotion = -1;
 
-	if(str[18] != NULL && mob_chat(atoi(str[18]))!=NULL)
-		ms->msg_id = atoi(str[18]);
+	if (*str[18]) {
+		uint16 id = static_cast<uint16>(strtol(str[18], nullptr, 10));
+		if (mob_chat_db.find(id) != nullptr)
+			ms->msg_id = id;
+		else {
+			ms->msg_id = 0;
+			ShowWarning("mob_parse_row_mobskilldb: Unknown chat ID %s for monster %d.\n", str[18], mob_id);
+		}
+	}
 	else
 		ms->msg_id = 0;
 
@@ -6338,23 +6379,6 @@ static void mob_skill_db_set_single(struct s_mob_skill_db *skill) {
 }
 
 /**
- * Free random summon data
- **/
-static int mob_summon_db_free(DBKey key, DBData *data, va_list ap) {
-	struct s_randomsummon_group *msummon = (struct s_randomsummon_group *)db_data2ptr(data);
-	if (msummon) {
-		if (msummon->list) {
-			aFree(msummon->list);
-			msummon->list = NULL;
-			msummon->count = 0;
-		}
-		aFree(msummon);
-		msummon = NULL;
-	}
-	return 0;
-}
-
-/**
  * Set monster skills
  **/
 static void mob_skill_db_set(void) {
@@ -6381,6 +6405,8 @@ static void mob_load(void)
 	else
 		mob_db.load();
 
+	mob_chat_db.load();	// load before mob_skill_db
+
 	for(int i = 0; i < ARRAYLENGTH(dbsubpath); i++){	
 		int n1 = strlen(db_path)+strlen(dbsubpath[i])+1;
 		int n2 = strlen(db_path)+strlen(DBPATH)+strlen(dbsubpath[i])+1;
@@ -6397,27 +6423,19 @@ static void mob_load(void)
 			safesnprintf(dbsubpath2,n1,"%s%s",db_path,dbsubpath[i]);
 		}
 
-		sv_readdb(dbsubpath1, "mob_chat_db.txt", '#', 3, 3, -1, &mob_parse_row_chatdb, silent);
-
 		if( db_use_sqldbs && i == 0 )
 			mob_read_sqlskilldb();
 		else
 			mob_readskilldb(dbsubpath2, silent);
 
 		sv_readdb(dbsubpath1, "mob_item_ratio.txt", ',', 2, 2+MAX_ITEMRATIO_MOBS, -1, &mob_readdb_itemratio, silent);
-		sv_readdb(dbsubpath2, "mob_random_db.txt", ',', 4, 4, -1, &mob_readdb_group, silent);
-		sv_readdb(dbsubpath2, "mob_branch.txt", ',', 4, 4, -1, &mob_readdb_group, silent);
-		sv_readdb(dbsubpath2, "mob_poring.txt", ',', 4, 4, -1, &mob_readdb_group, silent);
-		sv_readdb(dbsubpath2, "mob_boss.txt", ',', 4, 4, -1, &mob_readdb_group, silent);
-		sv_readdb(dbsubpath1, "mob_pouch.txt", ',', 4, 4, -1, &mob_readdb_group, silent);
-		sv_readdb(dbsubpath1, "mob_mission.txt", ',', 4, 4, -1, &mob_readdb_group, silent);
-		sv_readdb(dbsubpath1, "mob_classchange.txt", ',', 4, 4, -1, &mob_readdb_group, silent);
 
 		aFree(dbsubpath1);
 		aFree(dbsubpath2);
 	}
 
 	mob_avail_db.load();
+	mob_summon_db.load();
 
 	mob_drop_ratio_adjust();
 	mob_skill_db_set();
@@ -6434,7 +6452,6 @@ void mob_db_load(bool is_reload){
 		item_drop_list_ers = ers_new(sizeof(struct item_drop_list),"mob.cpp::item_drop_list_ers",ERS_OPT_NONE);
 	}
 	mob_item_drop_ratio = uidb_alloc(DB_OPT_BASE);
-	mob_summon_db = idb_alloc(DB_OPT_BASE);
 
 #ifdef Pandas_Database_MobItem_FixedRatio
 	mobitem_fixedratio_db.load();
@@ -6589,7 +6606,7 @@ void do_final_mob(bool is_reload){
 	mob_skill_db.clear();
 
 	mob_item_drop_ratio->destroy(mob_item_drop_ratio,mob_item_drop_ratio_free);
-	mob_summon_db->destroy(mob_summon_db, mob_summon_db_free);
+	mob_summon_db.clear();
 
 #ifdef Pandas_Database_MobItem_FixedRatio
 	mobitem_fixedratio_db.clear();
