@@ -16458,8 +16458,13 @@ BUILDIN_FUNC(isequippedcnt)
 			short index = sd->equip_index[j];
 			if (index < 0)
 				continue;
+#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 			if (pc_is_same_equip_index((enum equip_index)j, sd->equip_index, index))
 				continue;
+#else
+			if (pc_is_same_equip_index(sd, (enum equip_index)j, sd->equip_index, index))
+				continue;
+#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 
 			if (!sd->inventory_data[index])
 				continue;
@@ -16513,8 +16518,13 @@ BUILDIN_FUNC(isequipped)
 			short index = sd->equip_index[j];
 			if(index < 0)
 				continue;
+#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 			if (pc_is_same_equip_index((enum equip_index)i, sd->equip_index, index))
 				continue;
+#else
+			if (pc_is_same_equip_index(sd, (enum equip_index)i, sd->equip_index, index))
+				continue;
+#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 
 			if(!sd->inventory_data[index])
 				continue;

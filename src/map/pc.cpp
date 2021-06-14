@@ -1255,8 +1255,13 @@ bool pc_isequipped(struct map_session_data *sd, t_itemid nameid)
 		short index = sd->equip_index[i], j;
 		if( index < 0 )
 			continue;
+#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 		if( pc_is_same_equip_index((enum equip_index)i, sd->equip_index, index) )
 			continue;
+#else
+		if (pc_is_same_equip_index(sd, (enum equip_index)i, sd->equip_index, index))
+			continue;
+#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 		if( !sd->inventory_data[index] ) 
 			continue;
 		if( sd->inventory_data[index]->nameid == nameid )
@@ -10817,8 +10822,13 @@ static int pc_checkcombo(struct map_session_data *sd, item_data *data) {
 
 				if (index < 0)
 					continue;
+#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 				if (pc_is_same_equip_index((equip_index)k, sd->equip_index, index))
 					continue;
+#else
+				if (pc_is_same_equip_index(sd, (equip_index)k, sd->equip_index, index))
+					continue;
+#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 				if (!sd->inventory_data[index])
 					continue;
 
@@ -14072,9 +14082,16 @@ short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id)
 * @param index Known index item in inventory from sd->equip_index[] to compare with specified EQI in *equip_index
 * @return True if item in same inventory index, False if doesn't
 */
-bool pc_is_same_equip_index(enum equip_index eqi, short *equip_index, short index) {
+#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
+bool pc_is_same_equip_index(enum equip_index eqi, short* equip_index, short index) {
 	if (index < 0 || index >= MAX_INVENTORY)
 		return true;
+#else
+bool pc_is_same_equip_index(struct map_session_data*sd, enum equip_index eqi, short* equip_index, short index) {
+	nullpo_retr(true, sd);
+	if (index < 0 || index >= P_MAX_INVENTORY(sd))
+		return true;
+#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 	// Dual weapon checks
 	if (eqi == EQI_HAND_R && equip_index[EQI_HAND_L] == index)
 		return true;

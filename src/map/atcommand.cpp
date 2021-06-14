@@ -2368,8 +2368,13 @@ ACMD_FUNC(refine)
 			continue;
 		if(j == EQI_AMMO)
 			continue;
+#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 		if (pc_is_same_equip_index((enum equip_index)j, sd->equip_index, i))
 			continue;
+#else
+		if (pc_is_same_equip_index(sd, (enum equip_index)j, sd->equip_index, i))
+			continue;
+#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 
 		if(position && !(sd->inventory.u.items_inventory[i].equip & position))
 			continue;
@@ -10341,8 +10346,13 @@ ACMD_FUNC(cloneequip) {
 				continue;
 			if (i == EQI_AMMO)
 				continue;
+#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 			if (pc_is_same_equip_index((enum equip_index) i, pl_sd->equip_index, idx))
 				continue;
+#else
+			if (pc_is_same_equip_index(pl_sd, (enum equip_index)i, pl_sd->equip_index, idx))
+				continue;
+#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 
 			tmp_item = pl_sd->inventory.u.items_inventory[idx];
 			if (itemdb_isspecial(tmp_item.card[0]))

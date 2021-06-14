@@ -387,6 +387,10 @@
 	// 启用此选项将改变判断逻辑, 变成如下:
 	// 只要 IP 地址被判定为无条件放行, 那么他将不会因为高频连接而被判定为发起了 DDoS 攻击.
 	#define Pandas_FuncLogic_Whitelist_Privileges
+
+	// 在 pc.cpp 中的 pc_is_same_equip_index 增加 sd 参数 [Sola丶小克]
+	// 新增的 sd 用于在启用了背包拓展机制时, 能够更加正确的计算玩家的背包容量而不是使用默认的 MAX_INVENTORY
+	#define Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -693,6 +697,11 @@
 	#ifdef Pandas_Struct_MMO_CharStatus_InventorySize
 		#define Pandas_ClientFeature_InventoryExpansion
 	#endif // Pandas_Struct_MMO_CharStatus_InventorySize
+
+	// 如果没有启用对背包扩充机制的支持, 那么也同时取消掉对 pc_is_same_equip_index 的调整
+	#ifndef Pandas_ClientFeature_InventoryExpansion
+		#undef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
+	#endif // Pandas_ClientFeature_InventoryExpansion
 #endif // Pandas_ClientFeatures
 
 // ============================================================================
