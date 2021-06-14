@@ -61,3 +61,12 @@ UPDATE `inventory` SET `card2` = `card2` & 65535 WHERE `card0` = 254 OR `card0` 
 UPDATE `cart_inventory` SET `card2` = `card2` & 65535 WHERE `card0` = 254 OR `card0` = 255;
 UPDATE `storage` SET `card2` = `card2` & 65535 WHERE `card0` = 254 OR `card0` = 255;
 UPDATE `guild_storage` SET `card2` = `card2` & 65535 WHERE `card0` = 254 OR `card0` = 255;
+
+-- -----------------------------------------------
+-- 熊猫模拟器自定义修改
+-- -----------------------------------------------
+
+-- 使 char 可记录角色背包容量上限
+ALTER TABLE `char`
+	ADD COLUMN `inventory_size` int(11) unsigned NOT NULL default '100';
+

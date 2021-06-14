@@ -79,10 +79,6 @@ enum sc_type : int16;
 #define BONUS_SCRIPT_COUNTER_VAR "PANDAS_BONUSSCRIPT_COUNTER"
 #endif // Pandas_BonusScript_Unique_ID
 
-#ifdef Pandas_ClientFeature_InventoryExpansion
-#define INVENTORY_SIZE_VAR "PANDAS_INVENTORY_SIZE"
-#endif // Pandas_ClientFeature_InventoryExpansion
-
 //Update this max as necessary. 55 is the value needed for Super Baby currently
 //Raised to 105 since Expanded Super Baby needs it.
 #define MAX_SKILL_TREE 105
@@ -885,9 +881,6 @@ struct map_session_data {
 #ifdef Pandas_Struct_Map_Session_Data_BonusScript_Counter
 		uint32 bonus_script_counter;		// 玩家已经生成的 bonus_script 记录数
 #endif // Pandas_Struct_Map_Session_Data_BonusScript_Counter
-#ifdef Pandas_Struct_Map_Session_Data_InventorySize
-		uint32 inventory_size;				// 角色的背包容量上限
-#endif // Pandas_Struct_Map_Session_Data_InventorySize
 	} pandas;
 #endif // Pandas_Struct_Map_Session_Data_Pandas
 

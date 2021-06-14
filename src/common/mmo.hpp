@@ -59,7 +59,7 @@
 		#error FIXED_INVENTORY_SIZE must be same or smaller than MAX_INVENTORY
 	#endif
 
-	#define P_SD_MAX_INVENTORY sd->pandas.inventory_size // 开启背包拓展后, 变成获取玩家的背包容量上限
+	#define P_SD_MAX_INVENTORY sd->status.inventory_size // 开启背包拓展后, 变成获取玩家的背包容量上限
 #endif // Pandas_ClientFeature_InventoryExpansion
 
 /** Max number of characters per account. Note that changing this setting alone is not enough if the client is not hexed to support more characters as well.
@@ -648,6 +648,10 @@ struct mmo_charstatus {
 
 	time_t delete_date;
 	time_t unban_time;
+
+#ifdef Pandas_Struct_MMO_CharStatus_InventorySize
+	uint32 inventory_size;
+#endif // Pandas_Struct_MMO_CharStatus_InventorySize
 
 	// Char server addon system
 	unsigned int character_moves;
