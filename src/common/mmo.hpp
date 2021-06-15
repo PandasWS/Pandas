@@ -654,7 +654,7 @@ struct mmo_charstatus {
 	time_t unban_time;
 
 #ifdef Pandas_Struct_MMO_CharStatus_InventorySize
-	uint32 inventory_size;
+	uint16 inventory_size;
 #endif // Pandas_Struct_MMO_CharStatus_InventorySize
 
 	// Char server addon system

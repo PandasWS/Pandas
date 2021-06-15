@@ -68,5 +68,5 @@ UPDATE `guild_storage` SET `card2` = `card2` & 65535 WHERE `card0` = 254 OR `car
 
 -- 使 char 可记录角色背包容量上限
 ALTER TABLE `char`
-	ADD COLUMN `inventory_size` int(11) unsigned NOT NULL default '100';
+	ADD COLUMN `inventory_size` smallint(6) unsigned NOT NULL default '100';
 

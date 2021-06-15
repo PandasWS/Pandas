@@ -29395,7 +29395,7 @@ BUILDIN_FUNC(expandinventory_ack) {
 	}
 
 	uint8 ack = script_getnum(st, 2);
-	if (ack < EXPAND_INVENTORY_ASK_CONFIRMATION || ack > EXPAND_INVENTORY_MAX_SIZE) {
+	if (ack > EXPAND_INVENTORY_MAX_SIZE) {
 		ShowError("buildin_expandinventory_ack: The ack param should be in range 0-%d, currently type is: %d.\n", 4, ack);
 		return SCRIPT_CMD_FAILURE;
 	}
@@ -29430,7 +29430,7 @@ BUILDIN_FUNC(expandinventory_result) {
 	}
 
 	uint8 result = script_getnum(st, 2);
-	if (result < EXPAND_INVENTORY_RESULT_SUCCESS || result > EXPAND_INVENTORY_RESULT_MAX_SIZE) {
+	if (result > EXPAND_INVENTORY_RESULT_MAX_SIZE) {
 		ShowError("buildin_expandinventory_result: The result param should be in range 0-%d, currently type is: %d.\n", 4, result);
 		return SCRIPT_CMD_FAILURE;
 	}
