@@ -311,7 +311,7 @@ int char_divorce_char_sql(int partner_id1, int partner_id2);
 int char_memitemdata_to_sql(const struct item items[], int max, int id, enum storage_type tableswitch, uint8 stor_id);
 #ifdef Pandas_ClientFeature_InventoryExpansion
 int char_inventory_max(int char_id);
-#endif Pandas_ClientFeature_InventoryExpansion
+#endif // Pandas_ClientFeature_InventoryExpansion
 bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storage_type tableswitch, uint8 stor_id);
 
 int char_married(int pl1,int pl2);

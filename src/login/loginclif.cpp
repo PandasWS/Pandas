@@ -519,7 +519,7 @@ int logclif_parse(int fd) {
 	{
 #ifdef Pandas_Health_Monitors_Silent
 		if (!suppresses_close_mes(ipl))
-#endif Pandas_Health_Monitors_Silent
+#endif // Pandas_Health_Monitors_Silent
 		ShowInfo("Closed connection from '" CL_WHITE "%s" CL_RESET "'.\n", ip);
 		do_close(fd);
 		return 0;

@@ -14949,7 +14949,8 @@ BUILDIN_FUNC(getinventorylist)
 			pc_setreg(sd, reference_uid(add_str("@inventorylist_idx"), j), i);
 
 			// 字符串数组 - @inventorylist_uid$ 用于保存道具的唯一编号
-			std::string unique_id = boost::str(boost::format("%1%") % sd->inventory.u.items_inventory[i].unique_id);
+			uint64 _tmp_for_gcc = sd->inventory.u.items_inventory[i].unique_id;
+			std::string unique_id = boost::str(boost::format("%1%") % _tmp_for_gcc);
 			pc_setregstr(sd, reference_uid(add_str("@inventorylist_uid$"), j), unique_id.c_str());
 #endif // Pandas_ScriptResults_GetInventoryList
 			j++;

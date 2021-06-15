@@ -2,7 +2,7 @@ queries:
   - exclude: cpp/potentially-dangerous-function
 extraction:
   cpp:
-    prepare:
+    after_prepare:
       - cd $LGTM_WORKSPACE
       - mkdir cmake_builed
       - CMAKE_URL="https://cmake.org/files/v3.18/cmake-3.18.0-Linux-x86_64.tar.gz"
