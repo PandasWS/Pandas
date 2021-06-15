@@ -3367,13 +3367,13 @@ void intif_itembound_guild_retrieve(uint32 char_id,uint32 account_id,int guild_i
 	struct map_session_data* sd = nullptr;
 	sd = map_charid2sd(char_id);
 	
-	WFIFOHEAD(inter_fd,12 + 4);
+	WFIFOHEAD(inter_fd,12 + 2);
 	WFIFOW(inter_fd,0) = 0x3056;
 	WFIFOL(inter_fd,2) = char_id;
 	WFIFOL(inter_fd,6) = account_id;
 	WFIFOW(inter_fd,10) = guild_id;
 	WFIFOW(inter_fd,10 + 2) = (sd ? sd->status.inventory_size : FIXED_INVENTORY_SIZE);
-	WFIFOSET(inter_fd,12 + 4);
+	WFIFOSET(inter_fd,12 + 2);
 #endif // Pandas_ClientFeature_InventoryExpansion
 	if (gstor)
 		gstor->lock = true; //Lock for retrieval process

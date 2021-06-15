@@ -357,7 +357,7 @@ bool mapif_parse_itembound_retrieve(int fd)
 	int j, guild_id = RFIFOW(fd,10);
 	uint32 char_id = RFIFOL(fd,2), account_id = RFIFOL(fd,6);
 #ifdef Pandas_ClientFeature_InventoryExpansion
-	uint32 inventory_size = RFIFOL(fd,10 + 2);
+	uint16 inventory_size = RFIFOW(fd,10 + 2);
 #endif // Pandas_ClientFeature_InventoryExpansion
 
 	StringBuf_Init(&buf);
