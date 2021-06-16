@@ -698,6 +698,11 @@
 		#define Pandas_ClientFeature_InventoryExpansion
 	#endif // Pandas_Struct_MMO_CharStatus_InventorySize
 
+	// 如果客户端版本不符合要求, 那么取消掉对背包扩充的支持
+	#if !(PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114)
+		#undef Pandas_ClientFeature_InventoryExpansion
+	#endif // !(PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114)
+
 	// 如果没有启用对背包扩充机制的支持, 那么也同时取消掉对 pc_is_same_equip_index 的调整
 	#ifndef Pandas_ClientFeature_InventoryExpansion
 		#undef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
@@ -1689,7 +1694,10 @@
 
 	// 是否启用 getinventorysize 脚本指令 [Sola丶小克]
 	// 该指令用于查询并获取当前角色的背包容量上限
-	#define Pandas_ScriptCommand_GetInventorySize
+	// 此选项开关需要依赖 Pandas_ClientFeature_InventoryExpansion 的拓展
+	#ifdef Pandas_ClientFeature_InventoryExpansion
+		#define Pandas_ScriptCommand_GetInventorySize
+	#endif // Pandas_ClientFeature_InventoryExpansion
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
