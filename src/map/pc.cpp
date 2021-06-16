@@ -12830,7 +12830,11 @@ static bool pc_readdb_job_basehpsp(char* fields[], int columns, int current)
 			use_endlvl = job_info[idx].max_level[0];
 		
 		if(type == 0) {	//hp type
+#ifndef Pandas_LGTM_Optimization
 			uint16 j;
+#else
+			int j;
+#endif // Pandas_LGTM_Optimization
 			for(j = 0; j < use_endlvl; j++) {
 				if (atoi(fields[j+4])) {
 					uint16 lvl_idx = startlvl-1+j;
@@ -12843,7 +12847,11 @@ static bool pc_readdb_job_basehpsp(char* fields[], int columns, int current)
 			}
 		}
 		else { //sp type
+#ifndef Pandas_LGTM_Optimization
 			uint16 j;
+#else
+			int j;
+#endif // Pandas_LGTM_Optimization
 			for(j = 0; j < use_endlvl; j++) {
 				if (atoi(fields[j+4])) {
 					uint16 lvl_idx = startlvl-1+j;
@@ -13029,7 +13037,11 @@ void pc_readdb(void) {
 	//Checking if all class have their data
 	for (i = 0; i < JOB_MAX; i++) {
 		int idx;
+#ifndef Pandas_LGTM_Optimization
 		uint16 j;
+#else
+		unsigned int j;
+#endif // Pandas_LGTM_Optimization
 		if (!pcdb_checkid(i))
 			continue;
 		if (i == JOB_WEDDING || i == JOB_XMAS || i == JOB_SUMMER || i == JOB_HANBOK || i == JOB_OKTOBERFEST || i == JOB_SUMMER2)

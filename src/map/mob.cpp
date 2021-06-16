@@ -251,7 +251,11 @@ void mvptomb_destroy(struct mob_data *md) {
 	struct npc_data *nd;
 
 	if ( (nd = map_id2nd(md->tomb_nid)) ) {
+#ifndef Pandas_LGTM_Optimization
 		int16 i;
+#else
+		int i;
+#endif // Pandas_LGTM_Optimization
 		struct map_data *mapdata = map_getmapdata(nd->bl.m);
 
 		clif_clearunit_area(&nd->bl,CLR_OUTSIGHT);

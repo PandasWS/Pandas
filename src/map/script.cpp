@@ -23619,7 +23619,11 @@ BUILDIN_FUNC(mergeitem2) {
 		if (!it || !it->unique_id || it->expire_time || !itemdb_isstackable(it->nameid))
 			continue;
 		if ((!nameid || (nameid == it->nameid))) {
+#ifndef Pandas_LGTM_Optimization
 			uint8 k;
+#else
+			uint16 k;
+#endif // Pandas_LGTM_Optimization
 			if (!count) {
 				CREATE(items, struct item, 1);
 				memcpy(&items[count++], it, sizeof(struct item));

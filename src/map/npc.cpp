@@ -2099,7 +2099,11 @@ int npc_cashshop_buy(struct map_session_data *sd, t_itemid nameid, int amount, i
 
 	if( !pet_create_egg(sd, nameid) ) {
 		struct item item_tmp;
+#ifndef Pandas_LGTM_Optimization
 		unsigned short get_amt = amount, j;
+#else
+		int get_amt = amount, j;
+#endif // Pandas_LGTM_Optimization
 
 		memset(&item_tmp, 0, sizeof(item_tmp));
 		item_tmp.nameid = nameid;
@@ -2508,7 +2512,11 @@ uint8 npc_selllist(struct map_session_data* sd, int n, unsigned short *item_list
 //This doesn't remove it from map_db
 int npc_remove_map(struct npc_data* nd)
 {
+#ifndef Pandas_LGTM_Optimization
 	int16 i;
+#else
+	int i;
+#endif // Pandas_LGTM_Optimization
 	nullpo_retr(1, nd);
 
 	if(nd->bl.prev == NULL || nd->bl.m < 0)

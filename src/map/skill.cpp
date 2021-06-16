@@ -18947,7 +18947,11 @@ int skill_delunitgroup_(struct skill_unit_group *group, const char* file, int li
 {
 	struct block_list* src;
 	struct unit_data *ud;
+#ifndef Pandas_LGTM_Optimization
 	short i, j;
+#else
+	int i, j;
+#endif // Pandas_LGTM_Optimization
 	int link_group_id;
 
 	if( group == NULL ) {
