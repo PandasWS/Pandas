@@ -307,8 +307,20 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 		(p->unban_time != cp->unban_time) || (p->font != cp->font) || (p->uniqueitem_counter != cp->uniqueitem_counter) ||
 		(p->hotkey_rowshift != cp->hotkey_rowshift) || (p->clan_id != cp->clan_id ) || (p->title_id != cp->title_id) ||
 		(p->show_equip != cp->show_equip) || (p->hotkey_rowshift2 != cp->hotkey_rowshift2)
+#ifdef Pandas_ClientFeature_InventoryExpansion
+		|| (p->inventory_size != cp->inventory_size)
+#endif // Pandas_ClientFeature_InventoryExpansion
 	)
 	{	//Save status
+
+#ifdef Pandas_ClientFeature_InventoryExpansion
+		if (p->inventory_size == 0 || p->inventory_size > MAX_INVENTORY) {
+			ShowError("Wrong inventory_size field: %d. Must be in range 1 to %d. Character %s (CID: %d, AID: %d)\n",
+				p->inventory_size, MAX_INVENTORY, p->name, p->char_id, p->account_id);
+			p->inventory_size = FIXED_INVENTORY_SIZE;
+		}
+#endif // Pandas_ClientFeature_InventoryExpansion
+
 		if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `base_level`='%d', `job_level`='%d',"
 			"`base_exp`='%" PRIu64 "', `job_exp`='%" PRIu64 "', `zeny`='%d',"
 			"`max_hp`='%u',`hp`='%u',`max_sp`='%u',`sp`='%u',`status_point`='%d',`skill_point`='%d',"
@@ -322,6 +334,9 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			"`last_map`='%s',`last_x`='%d',`last_y`='%d',`save_map`='%s',`save_x`='%d',`save_y`='%d', `rename`='%d',"
 			"`delete_date`='%lu',`robe`='%d',`moves`='%d',`font`='%u',`uniqueitem_counter`='%u',"
 			"`hotkey_rowshift`='%d', `clan_id`='%d', `title_id`='%lu', `show_equip`='%d', `hotkey_rowshift2`='%d'"
+#ifdef Pandas_ClientFeature_InventoryExpansion
+			",`inventory_size`='%d'"
+#endif // Pandas_ClientFeature_InventoryExpansion
 			" WHERE `account_id`='%d' AND `char_id` = '%d'",
 			schema_config.char_db, p->base_level, p->job_level,
 			p->base_exp, p->job_exp, p->zeny,
@@ -334,6 +349,9 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			(unsigned long)p->delete_date, // FIXME: platform-dependent size
 			p->robe, p->character_moves, p->font, p->uniqueitem_counter,
 			p->hotkey_rowshift, p->clan_id, p->title_id, p->show_equip, p->hotkey_rowshift2,
+#ifdef Pandas_ClientFeature_InventoryExpansion
+			p->inventory_size,
+#endif // Pandas_ClientFeature_InventoryExpansion
 			p->account_id, p->char_id) )
 		{
 			Sql_ShowDebug(sql_handle);
@@ -746,6 +764,17 @@ int char_memitemdata_to_sql(const struct item items[], int max, int id, enum sto
 	return errors;
 }
 
+#ifdef Pandas_ClientFeature_InventoryExpansion
+int char_inventory_max(int char_id) {
+	struct mmo_charstatus char_dat;
+	if (!char_mmo_char_fromsql(char_id, &char_dat, false)) {
+		ShowError("char_inventory_max: Load character data failed (CID: %d), defaulting to MAX_INVENTORY.\n", char_id);
+		return MAX_INVENTORY;
+	}
+	return char_dat.inventory_size;
+}
+#endif // Pandas_ClientFeature_InventoryExpansion
+
 bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storage_type tableswitch, uint8 stor_id) {
 	StringBuf buf;
 	SqlStmt* stmt;
@@ -759,7 +788,11 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 			tablename = schema_config.inventory_db;
 			selectoption = "char_id";
 			storage = p->u.items_inventory;
+#ifndef Pandas_ClientFeature_InventoryExpansion
 			max2 = MAX_INVENTORY;
+#else
+			max2 = char_inventory_max(id);
+#endif // Pandas_ClientFeature_InventoryExpansion
 			break;
 		case TABLE_CART:
 			printname = "Cart";
@@ -936,6 +969,9 @@ int char_mmo_chars_fromsql(struct char_session_data* sd, uint8* buf, uint8* coun
 		"`clothes_color`,`body`,`weapon`,`shield`,`head_top`,`head_mid`,`head_bottom`,`last_map`,`rename`,`delete_date`,"
 		"`robe`,`moves`,`unban_time`,`font`,`uniqueitem_counter`,`sex`,`hotkey_rowshift`,`title_id`,`show_equip`,"
 		"`hotkey_rowshift2`"
+#ifdef Pandas_ClientFeature_InventoryExpansion
+		",`inventory_size`"
+#endif // Pandas_ClientFeature_InventoryExpansion
 		" FROM `%s` WHERE `account_id`='%d' AND `char_num` < '%d'", schema_config.char_db, sd->account_id, MAX_CHARS)
 	||	SQL_ERROR == SqlStmt_Execute(stmt)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 0,  SQLDT_INT,    &p.char_id, 0, NULL, NULL)
@@ -993,6 +1029,9 @@ int char_mmo_chars_fromsql(struct char_session_data* sd, uint8* buf, uint8* coun
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 43, SQLDT_ULONG,  &p.title_id, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 44, SQLDT_UINT16, &p.show_equip, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 45, SQLDT_UCHAR,  &p.hotkey_rowshift2, 0, NULL, NULL)
+#ifdef Pandas_ClientFeature_InventoryExpansion
+	||  SQL_ERROR == SqlStmt_BindColumn(stmt, 46, SQLDT_UINT16, &p.inventory_size, 0, NULL, NULL)
+#endif // Pandas_ClientFeature_InventoryExpansion
 	)
 	{
 		SqlStmt_ShowDebug(stmt);
@@ -1002,6 +1041,14 @@ int char_mmo_chars_fromsql(struct char_session_data* sd, uint8* buf, uint8* coun
 
 	for( i = 0; i < MAX_CHARS && SQL_SUCCESS == SqlStmt_NextRow(stmt); i++ )
 	{
+#ifdef Pandas_ClientFeature_InventoryExpansion
+		if (p.inventory_size == 0 || p.inventory_size > MAX_INVENTORY) {
+			ShowError("Wrong inventorySize field: %d. Must be in range 1 to %d. Character %s (CID: %d, AID: %d)\n",
+				p.inventory_size, MAX_INVENTORY, p.name, p.char_id, p.account_id);
+			p.inventory_size = FIXED_INVENTORY_SIZE;
+		}
+#endif // Pandas_ClientFeature_InventoryExpansion
+
 		p.last_point.map = mapindex_name2id(last_map);
 		sd->found_char[p.slot] = p.char_id;
 		sd->unban_time[p.slot] = p.unban_time;
@@ -1043,6 +1090,9 @@ int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus* p, bool load_ev
 	char sex[2];
 
 	memset(p, 0, sizeof(struct mmo_charstatus));
+#ifdef Pandas_ClientFeature_InventoryExpansion
+	p->inventory_size = FIXED_INVENTORY_SIZE;
+#endif // Pandas_ClientFeature_InventoryExpansion
 
 	if (charserv_config.save_log) ShowInfo("Char load request (%d)\n", char_id);
 
@@ -1061,6 +1111,9 @@ int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus* p, bool load_ev
 		"`hair_color`,`clothes_color`,`body`,`weapon`,`shield`,`head_top`,`head_mid`,`head_bottom`,`last_map`,`last_x`,`last_y`,"
 		"`save_map`,`save_x`,`save_y`,`partner_id`,`father`,`mother`,`child`,`fame`,`rename`,`delete_date`,`robe`, `moves`,"
 		"`unban_time`,`font`,`uniqueitem_counter`,`sex`,`hotkey_rowshift`,`clan_id`,`title_id`,`show_equip`,`hotkey_rowshift2`"
+#ifdef Pandas_ClientFeature_InventoryExpansion
+		",`inventory_size`"
+#endif // Pandas_ClientFeature_InventoryExpansion
 		" FROM `%s` WHERE `char_id`=? LIMIT 1", schema_config.char_db)
 	||	SQL_ERROR == SqlStmt_BindParam(stmt, 0, SQLDT_INT, &char_id, 0)
 	||	SQL_ERROR == SqlStmt_Execute(stmt)
@@ -1136,6 +1189,9 @@ int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus* p, bool load_ev
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 60, SQLDT_ULONG,  &p->title_id, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 61, SQLDT_UINT16, &p->show_equip, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 62, SQLDT_UCHAR,  &p->hotkey_rowshift2, 0, NULL, NULL)
+#ifdef Pandas_ClientFeature_InventoryExpansion
+	||  SQL_ERROR == SqlStmt_BindColumn(stmt, 63, SQLDT_UINT16, &p->inventory_size, 0, NULL, NULL)
+#endif // Pandas_ClientFeature_InventoryExpansion
 	)
 	{
 		SqlStmt_ShowDebug(stmt);
@@ -1170,6 +1226,14 @@ int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus* p, bool load_ev
 		p->save_point.x = charserv_config.default_map_x;
 		p->save_point.y = charserv_config.default_map_y;
 	}
+
+#ifdef Pandas_ClientFeature_InventoryExpansion
+	if (p->inventory_size == 0 || p->inventory_size > MAX_INVENTORY) {
+		ShowError("Wrong inventorySize field: %d. Must be in range 1 to %d. Character %s (CID: %d, AID: %d)\n",
+			p->inventory_size, MAX_INVENTORY, p->name, p->char_id, p->account_id);
+		p->inventory_size = FIXED_INVENTORY_SIZE;
+	}
+#endif // Pandas_ClientFeature_InventoryExpansion
 
 	StringBuf_Init(&msg_buf);
 	StringBuf_AppendStr(&msg_buf, " status");
@@ -1542,6 +1606,7 @@ int char_make_new_char( struct char_session_data* sd, char* name_, int str, int 
 	// 此处写入六维能力值使用了 %d 来替换 int 也是合适的, 暂时无需对它进行扩容
 #endif // Pandas_Extreme_Computing
 
+#ifndef Pandas_ClientFeature_InventoryExpansion
 	//Insert the new char entry to the database
 	if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`account_id`, `char_num`, `name`, `class`, `zeny`, `status_point`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, `max_hp`, `hp`,"
 		"`max_sp`, `sp`, `hair`, `hair_color`, `last_map`, `last_x`, `last_y`, `save_map`, `save_x`, `save_y`, `sex`) VALUES ("
@@ -1553,6 +1618,19 @@ int char_make_new_char( struct char_session_data* sd, char* name_, int str, int 
 		Sql_ShowDebug(sql_handle);
 		return -2; //No, stop the procedure!
 	}
+#else
+	// 在原来的字段基础上, 新增 inventory_size 字段用来记录角色的背包容量
+	if (SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`account_id`, `char_num`, `name`, `class`, `zeny`, `status_point`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, `max_hp`, `hp`,"
+		"`max_sp`, `sp`, `hair`, `hair_color`, `last_map`, `last_x`, `last_y`, `save_map`, `save_x`, `save_y`, `sex`, `inventory_size`) VALUES ("
+		"'%d', '%d', '%s', '%d', '%d',  '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%u', '%u', '%u', '%u', '%d', '%d', '%s', '%d', '%d', '%s', '%d', '%d', '%c', '%d')",
+		schema_config.char_db, sd->account_id, slot, esc_name, start_job, charserv_config.start_zeny, status_points, str, agi, vit, int_, dex, luk,
+		(40 * (100 + vit) / 100), (40 * (100 + vit) / 100), (11 * (100 + int_) / 100), (11 * (100 + int_) / 100), hair_style, hair_color,
+		mapindex_id2name(tmp_start_point[start_point_idx].map), tmp_start_point[start_point_idx].x, tmp_start_point[start_point_idx].y, mapindex_id2name(tmp_start_point[start_point_idx].map), tmp_start_point[start_point_idx].x, tmp_start_point[start_point_idx].y, sex, FIXED_INVENTORY_SIZE))
+	{
+		Sql_ShowDebug(sql_handle);
+		return -2; //No, stop the procedure!
+	}
+#endif // Pandas_ClientFeature_InventoryExpansion
 
 	//Retrieve the newly auto-generated char id
 	char_id = (int)Sql_LastInsertId(sql_handle);

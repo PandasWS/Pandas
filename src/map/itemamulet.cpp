@@ -64,9 +64,9 @@ bool amulet_is_firstone(struct map_session_data *sd, struct item *item, int amou
 	if (!itemdb_isstackable2(id) || item->expire_time != 0)
 		return false;
 
-	uint32 i = MAX_INVENTORY;
+	uint32 i = P_MAX_INVENTORY(sd);
 	bool is_firstone = true;
-	for (i = 0; i < MAX_INVENTORY; i++) {
+	for (i = 0; i < P_MAX_INVENTORY(sd); i++) {
 		if (sd->inventory.u.items_inventory[i].nameid == item->nameid &&
 			sd->inventory.u.items_inventory[i].bound == item->bound &&
 			sd->inventory.u.items_inventory[i].expire_time == 0 &&
@@ -178,7 +178,7 @@ void amulet_status_calc(struct map_session_data *sd, enum e_status_calc_opt opt)
 
 	short save_current_equip_item_index = current_equip_item_index;
 
-	for (uint32 i = 0; i < MAX_INVENTORY; i++) {
+	for (uint32 i = 0; i < P_MAX_INVENTORY(sd); i++) {
 		if (!sd || !sd->inventory_data[i])
 			continue;
 

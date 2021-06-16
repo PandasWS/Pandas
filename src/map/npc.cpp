@@ -1787,7 +1787,7 @@ static enum e_CASHSHOP_ACK npc_cashshop_process_payment(struct npc_data *nd, int
 					return ERROR_TYPE_PURCHASE_FAIL;
 				}
 
-				for (i = 0; i < MAX_INVENTORY && delete_amount > 0; i++) {
+				for (i = 0; i < P_MAX_INVENTORY(sd) && delete_amount > 0; i++) {
 					struct item *it;
 					int amount = 0;
 
@@ -1993,7 +1993,7 @@ void npc_shop_currency_type(struct map_session_data *sd, struct npc_data *nd, in
 					clif_broadcast(&sd->bl, output, strlen(output) + 1, BC_BLUE,SELF);
 				}
 
-				for (i = 0; i < MAX_INVENTORY; i++) {
+				for (i = 0; i < P_MAX_INVENTORY(sd); i++) {
 					if (sd->inventory.u.items_inventory[i].amount > 0 && sd->inventory.u.items_inventory[i].nameid == id->nameid && pc_can_sell_item(sd, &sd->inventory.u.items_inventory[i], nd->subtype))
 						total += sd->inventory.u.items_inventory[i].amount;
 				}
@@ -2422,7 +2422,7 @@ uint8 npc_selllist(struct map_session_data* sd, int n, unsigned short *item_list
 		idx    = item_list[i*2]-2;
 		amount = item_list[i*2+1];
 
-		if( idx >= MAX_INVENTORY || idx < 0 || amount < 0 )
+		if( idx >= P_MAX_INVENTORY(sd) || idx < 0 || amount < 0 )
 		{
 			return 1;
 		}

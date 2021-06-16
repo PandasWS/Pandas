@@ -74,6 +74,7 @@ enum sc_type : int16;
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 #define AURA_VARIABLE "PANDAS_AURASET"
 #endif // Pandas_Struct_Unit_CommonData_Aura
+
 #ifdef Pandas_BonusScript_Unique_ID
 #define BONUS_SCRIPT_COUNTER_VAR "PANDAS_BONUSSCRIPT_COUNTER"
 #endif // Pandas_BonusScript_Unique_ID
@@ -1233,6 +1234,9 @@ void pc_respawn(struct map_session_data* sd, clr_type clrtype);
 void pc_setnewpc(struct map_session_data *sd, uint32 account_id, uint32 char_id, int login_id1, t_tick client_tick, int sex, int fd);
 bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_time, int group_id, struct mmo_charstatus *st, bool changing_mapservers);
 void pc_authfail(struct map_session_data *sd);
+#ifdef Pandas_ClientFeature_InventoryExpansion
+bool pc_expandInventory(struct map_session_data* sd, int adjustSize);
+#endif // Pandas_ClientFeature_InventoryExpansion
 void pc_reg_received(struct map_session_data *sd);
 void pc_close_npc(struct map_session_data *sd,int flag);
 TIMER_FUNC(pc_close_npc_timer);
@@ -1570,7 +1574,11 @@ void pc_cell_basilica(struct map_session_data *sd);
 short pc_get_itemgroup_bonus(struct map_session_data* sd, t_itemid nameid);
 short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id);
 
+#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 bool pc_is_same_equip_index(enum equip_index eqi, short *equip_index, short index);
+#else
+bool pc_is_same_equip_index(struct map_session_data* sd, enum equip_index eqi, short* equip_index, short index);
+#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 /// Check if player is Taekwon Ranker and the level is >= 90 (battle_config.taekwon_ranker_min_lv)
 #define pc_is_taekwon_ranker(sd) (((sd)->class_&MAPID_UPPERMASK) == MAPID_TAEKWON && (sd)->status.base_level >= battle_config.taekwon_ranker_min_lv && pc_famerank((sd)->status.char_id,MAPID_TAEKWON))
 

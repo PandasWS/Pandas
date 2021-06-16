@@ -40,7 +40,32 @@
 #endif
 
 #define MAX_MAP_PER_SERVER 1500 /// Maximum amount of maps available on a server
+
+#ifndef Pandas_ClientFeature_InventoryExpansion
 #define MAX_INVENTORY 100 ///Maximum items in player inventory
+
+// 熊猫自定义的拓展宏, 未开启背包拓展的时候等同于 MAX_INVENTORY
+#define P_MAX_INVENTORY(x) MAX_INVENTORY
+#else
+	#if PACKETVER_MAIN_NUM >= 20181219 || PACKETVER_RE_NUM >= 20181219 || PACKETVER_ZERO_NUM >= 20181212
+		#define MAX_INVENTORY 200
+	#else
+		#define MAX_INVENTORY 100
+	#endif  // PACKETVER_MAIN_NUM >= 20181219 || PACKETVER_RE_NUM >= 20181219 || PACKETVER_ZERO_NUM >= 20181212
+
+	#ifndef FIXED_INVENTORY_SIZE
+		#define FIXED_INVENTORY_SIZE 100
+	#endif
+
+	#if FIXED_INVENTORY_SIZE > MAX_INVENTORY
+		#error FIXED_INVENTORY_SIZE must be same or smaller than MAX_INVENTORY
+	#endif
+
+	// 开启背包拓展后, 变成获取玩家的背包容量上限
+	#define __PMI_CONCAT_GCC(x, y) x ## y
+	#define P_MAX_INVENTORY(v) __PMI_CONCAT_GCC(,v)->status.inventory_size
+#endif // Pandas_ClientFeature_InventoryExpansion
+
 /** Max number of characters per account. Note that changing this setting alone is not enough if the client is not hexed to support more characters as well.
 * Max value tested was 265 */
 #ifndef MAX_CHARS
@@ -627,6 +652,10 @@ struct mmo_charstatus {
 
 	time_t delete_date;
 	time_t unban_time;
+
+#ifdef Pandas_Struct_MMO_CharStatus_InventorySize
+	uint16 inventory_size;
+#endif // Pandas_Struct_MMO_CharStatus_InventorySize
 
 	// Char server addon system
 	unsigned int character_moves;

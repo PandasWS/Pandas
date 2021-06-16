@@ -18,6 +18,7 @@
 	#define Pandas_FuncIncrease
 	#define Pandas_PacketFunction
 	#define Pandas_CreativeWork
+	#define Pandas_ClientFeatures
 	#define Pandas_Speedup
 	#define Pandas_Bugfix
 	#define Pandas_Crashfix
@@ -191,6 +192,17 @@
 	// 默认的 rAthena 中 bonus_script 机制并没有唯一编号的概念, 为了提高对 bonus_script 的控制粒度
 	// 我们需要将唯一编号引入到我们需要拓展的相关数据结构体中
 	#define Pandas_Struct_BonusScriptData_Extend
+
+	// 拓展 mmo_charstatus 结构体中的字段 [Sola丶小克]
+	// 结构体修改定位 mmo.hpp -> mmo_charstatus
+	#define Pandas_Struct_MMO_CharStatus_Extend
+
+	// 以下选项开关需要依赖 Pandas_Struct_MMO_CharStatus_Extend 的拓展
+	#ifdef Pandas_Struct_MMO_CharStatus_Extend
+		// 使 mmo_charstatus 可记录角色的背包容量上限 [Sola丶小克]
+		// 结构体修改定位 mmo.hpp -> mmo_charstatus.inventory_size
+		#define Pandas_Struct_MMO_CharStatus_InventorySize
+	#endif // Pandas_Struct_MMO_CharStatus_Extend
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -375,6 +387,10 @@
 	// 启用此选项将改变判断逻辑, 变成如下:
 	// 只要 IP 地址被判定为无条件放行, 那么他将不会因为高频连接而被判定为发起了 DDoS 攻击.
 	#define Pandas_FuncLogic_Whitelist_Privileges
+
+	// 在 pc.cpp 中的 pc_is_same_equip_index 增加 sd 参数 [Sola丶小克]
+	// 新增的 sd 用于在启用了背包拓展机制时, 能够更加正确的计算玩家的背包容量而不是使用默认的 MAX_INVENTORY
+	#define Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -669,6 +685,24 @@
 	// 在不影响他们对我们正常服务器进行探测的情况下, 不再显示出大量无价值信息到终端干扰游戏管理员观察服务器状态.
 	#define Pandas_Health_Monitors_Silent
 #endif // Pandas_CreativeWork
+
+// ============================================================================
+// 客户端特性支持组 - Pandas_ClientFeatures
+// ============================================================================
+
+#ifdef Pandas_ClientFeatures
+	// 是否启用官方客户端支持的背包扩充机制, 实装对 25793 的利用 [Sola丶小克]
+	// 注意: 此功能只对大于等于 20181219 的 RagexeRE 客户端有效 (ZERO 客户端需要大于 20181212 才有效)
+	// 此选项依赖 Pandas_Struct_MMO_CharStatus_InventorySize 的拓展
+	#ifdef Pandas_Struct_MMO_CharStatus_InventorySize
+		#define Pandas_ClientFeature_InventoryExpansion
+	#endif // Pandas_Struct_MMO_CharStatus_InventorySize
+
+	// 如果没有启用对背包扩充机制的支持, 那么也同时取消掉对 pc_is_same_equip_index 的调整
+	#ifndef Pandas_ClientFeature_InventoryExpansion
+		#undef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
+	#endif // Pandas_ClientFeature_InventoryExpansion
+#endif // Pandas_ClientFeatures
 
 // ============================================================================
 // 官方BUG修正组 - Pandas_Bugfix
@@ -1631,6 +1665,31 @@
 	// 是否启用 bonus_script_info 脚本指令 [Sola丶小克]
 	// 该指令用于查询指定效果脚本的相关信息
 	#define Pandas_ScriptCommand_BonusScriptInfo
+
+	// 是否启用 expandinventory_ack 脚本指令 [Sola丶小克]
+	// 该指令用于响应客户端的背包扩容请求, 并告知客户端下一步的动作
+	// 此选项开关需要依赖 Pandas_ClientFeature_InventoryExpansion 的拓展
+	#ifdef Pandas_ClientFeature_InventoryExpansion
+		#define Pandas_ScriptCommand_ExpandInventoryACK
+	#endif // Pandas_ClientFeature_InventoryExpansion
+
+	// 是否启用 expandinventory_result 脚本指令 [Sola丶小克]
+	// 该指令用于发送给客户端最终的背包扩容结果
+	// 此选项开关需要依赖 Pandas_ClientFeature_InventoryExpansion 的拓展
+	#ifdef Pandas_ClientFeature_InventoryExpansion
+		#define Pandas_ScriptCommand_ExpandInventoryResult
+	#endif // Pandas_ClientFeature_InventoryExpansion
+
+	// 是否启用 expandinventory_adjust 脚本指令 [Sola丶小克]
+	// 该指令用于增加角色的背包容量上限
+	// 此选项开关需要依赖 Pandas_ClientFeature_InventoryExpansion 的拓展
+	#ifdef Pandas_ClientFeature_InventoryExpansion
+		#define Pandas_ScriptCommand_ExpandInventoryAdjust
+	#endif // Pandas_ClientFeature_InventoryExpansion
+
+	// 是否启用 getinventorysize 脚本指令 [Sola丶小克]
+	// 该指令用于查询并获取当前角色的背包容量上限
+	#define Pandas_ScriptCommand_GetInventorySize
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
