@@ -314,7 +314,7 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 	{	//Save status
 
 #ifdef Pandas_ClientFeature_InventoryExpansion
-		if (p->inventory_size = 0 || p->inventory_size > MAX_INVENTORY) {
+		if (p->inventory_size == 0 || p->inventory_size > MAX_INVENTORY) {
 			ShowError("Wrong inventory_size field: %d. Must be in range 1 to %d. Character %s (CID: %d, AID: %d)\n",
 				p->inventory_size, MAX_INVENTORY, p->name, p->char_id, p->account_id);
 			p->inventory_size = FIXED_INVENTORY_SIZE;
@@ -1042,7 +1042,7 @@ int char_mmo_chars_fromsql(struct char_session_data* sd, uint8* buf, uint8* coun
 	for( i = 0; i < MAX_CHARS && SQL_SUCCESS == SqlStmt_NextRow(stmt); i++ )
 	{
 #ifdef Pandas_ClientFeature_InventoryExpansion
-		if (p.inventory_size = 0 || p.inventory_size > MAX_INVENTORY) {
+		if (p.inventory_size == 0 || p.inventory_size > MAX_INVENTORY) {
 			ShowError("Wrong inventorySize field: %d. Must be in range 1 to %d. Character %s (CID: %d, AID: %d)\n",
 				p.inventory_size, MAX_INVENTORY, p.name, p.char_id, p.account_id);
 			p.inventory_size = FIXED_INVENTORY_SIZE;
@@ -1228,7 +1228,7 @@ int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus* p, bool load_ev
 	}
 
 #ifdef Pandas_ClientFeature_InventoryExpansion
-	if (p->inventory_size = 0 || p->inventory_size > MAX_INVENTORY) {
+	if (p->inventory_size == 0 || p->inventory_size > MAX_INVENTORY) {
 		ShowError("Wrong inventorySize field: %d. Must be in range 1 to %d. Character %s (CID: %d, AID: %d)\n",
 			p->inventory_size, MAX_INVENTORY, p->name, p->char_id, p->account_id);
 		p->inventory_size = FIXED_INVENTORY_SIZE;
