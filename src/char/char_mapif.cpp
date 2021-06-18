@@ -218,7 +218,8 @@ void chmapif_send_maps(int fd, int map_id, int count, unsigned char *mapbuf) {
 #ifndef Pandas_LGTM_Optimization
 			uint16 i, j;
 #else
-			size_t i, j;
+			size_t i;
+			uint16 j;
 #endif // Pandas_LGTM_Optimization
 
 			WFIFOHEAD(fd,10 +4*map_server[x].map.size());

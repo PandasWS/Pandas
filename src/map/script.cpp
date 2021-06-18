@@ -29398,6 +29398,7 @@ BUILDIN_FUNC(expandinventory_ack) {
 		return SCRIPT_CMD_FAILURE;
 	}
 
+#ifdef Pandas_ClientFeature_InventoryExpansion
 	uint8 ack = script_getnum(st, 2);
 	if (ack > EXPAND_INVENTORY_MAX_SIZE) {
 		ShowError("buildin_expandinventory_ack: The ack param should be in range 0-%d, currently type is: %d.\n", 4, ack);
@@ -29415,6 +29416,9 @@ BUILDIN_FUNC(expandinventory_ack) {
 	}
 
 	clif_inventoryExpandAck(sd, (e_expand_inventory)ack, itemId);
+#else
+	ShowError("buildin_expandinventory_ack: This command requires PACKETVER 2018-12-19 or newer.\n");
+#endif // Pandas_ClientFeature_InventoryExpansion
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_ExpandInventoryACK
@@ -29433,6 +29437,7 @@ BUILDIN_FUNC(expandinventory_result) {
 		return SCRIPT_CMD_FAILURE;
 	}
 
+#ifdef Pandas_ClientFeature_InventoryExpansion
 	uint8 result = script_getnum(st, 2);
 	if (result > EXPAND_INVENTORY_RESULT_MAX_SIZE) {
 		ShowError("buildin_expandinventory_result: The result param should be in range 0-%d, currently type is: %d.\n", 4, result);
@@ -29440,6 +29445,9 @@ BUILDIN_FUNC(expandinventory_result) {
 	}
 
 	clif_inventoryExpandResult(sd, (e_expand_inventory_result)result);
+#else
+	ShowError("buildin_expandinventory_result: This command requires PACKETVER 2018-12-19 or newer.\n");
+#endif // Pandas_ClientFeature_InventoryExpansion
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_ExpandInventoryResult
@@ -29457,7 +29465,12 @@ BUILDIN_FUNC(expandinventory_adjust) {
 	if (!script_rid2sd(sd)) {
 		return SCRIPT_CMD_FAILURE;
 	}
+#ifdef Pandas_ClientFeature_InventoryExpansion
 	script_pushint(st, pc_expandInventory(sd, script_getnum(st, 2)));
+#else
+	ShowError("buildin_expandinventory_adjust: This command requires PACKETVER 2018-12-19 or newer.\n");
+	script_pushint(st, 0);
+#endif // Pandas_ClientFeature_InventoryExpansion
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_ExpandInventoryAdjust
@@ -29476,7 +29489,11 @@ BUILDIN_FUNC(getinventorysize) {
 		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
+#ifdef Pandas_ClientFeature_InventoryExpansion
 	script_pushint(st, sd->status.inventory_size);
+#else
+	script_pushint(st, MAX_INVENTORY);
+#endif // Pandas_ClientFeature_InventoryExpansion
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_GetInventorySize
