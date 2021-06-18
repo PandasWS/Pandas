@@ -95,8 +95,13 @@ int logcnslif_get_options(int argc, char ** argv) {
  * @return 1=success
  */
 int cnslif_parse(const char* buf){
+#ifndef Pandas_Crashfix_Variable_Init
 	char type[64];
 	char command[64];
+#else
+	char type[64] = { 0 };
+	char command[64] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	int n=0;
 
 	if( ( n = sscanf(buf, "%127[^:]:%255[^\n\r]", type, command) ) < 2 ){
@@ -123,7 +128,14 @@ int cnslif_parse(const char* buf){
 		}
 		if( strcmpi("create",type) == 0 )
 		{
+#ifndef Pandas_Crashfix_Variable_Init
 			char username[NAME_LENGTH], password[NAME_LENGTH], md5password[32+1], sex; //23+1 plaintext 32+1 md5
+#else
+
+			char username[NAME_LENGTH] = { 0 }, password[NAME_LENGTH] = { 0 }; // 23+1 plaintext 
+			char md5password[32 + 1] = { 0 };	// 32+1 md5
+			char sex = 0;
+#endif // Pandas_Crashfix_Variable_Init
 			bool md5 = 0;
 			if( sscanf(command, "%23s %23s %c", username, password, &sex) < 3 || strnlen(username, sizeof(username)) < 4 || strnlen(password, sizeof(password)) < 1 ){
 				ShowWarning("Console: Invalid parameters for '%s'. Usage: %s <username> <password> <sex:F/M>\n", type, type);

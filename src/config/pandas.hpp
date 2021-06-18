@@ -714,6 +714,12 @@
 // ============================================================================
 
 #ifdef Pandas_Bugfix
+	// 修正潜在可能存在算术溢出的情况 [Sola丶小克]
+	#define Pandas_Fix_Potential_Arithmetic_Overflow
+
+	// 修正未判断 sscanf 返回值可能导致程序工作不符合预期的问题 [Sola丶小克]
+	#define Pandas_Fix_Ignore_sscanf_Return_Value
+
 	// 修正在部分情况下角色公会图标刷新不及时的问题 [Sola丶小克]
 	#define Pandas_Fix_GuildEmblem_Update
 
@@ -963,6 +969,9 @@
 	#ifdef Pandas_Crashfix_EventDatabase_Clean_Synchronize
 		#define Pandas_Speedup_Unloadnpc_Without_Refactoring_ScriptEvent
 	#endif // Pandas_Crashfix_EventDatabase_Clean_Synchronize
+
+	// 通过微调程序逻辑改善 C26817 这样的常量引用性能优化场景 [Sola丶小克]
+	#define Pandas_Speedup_Constant_References
 #endif // Pandas_Speedup
 
 // ============================================================================
