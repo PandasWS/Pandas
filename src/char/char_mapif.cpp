@@ -138,7 +138,11 @@ int chmapif_send_fame_list(int fd){
  * @param fame: number of points
  */
 void chmapif_update_fame_list(int type, int index, int fame) {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[8];
+#else
+	unsigned char buf[8] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0) = 0x2b22;
 	WBUFB(buf,2) = type;
 	WBUFB(buf,3) = index;
@@ -151,7 +155,11 @@ void chmapif_update_fame_list(int type, int index, int fame) {
  * @param users: number of players on this char-serv
  */
 void chmapif_sendall_playercount(int users){
+#ifndef Pandas_Crashfix_Variable_Init
 	uint8 buf[6];
+#else
+	uint8 buf[6] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	// send number of players to all map-servers
 	WBUFW(buf,0) = 0x2b00;
 	WBUFL(buf,2) = users;
@@ -881,7 +889,11 @@ int chmapif_parse_fwlog_changestatus(int fd){
  * @param partner_id2: char id2 divorced
  */
 void chmapif_send_ackdivorce(int partner_id1, int partner_id2){
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[11];
+#else
+	unsigned char buf[11] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0) = 0x2b12;
 	WBUFL(buf,2) = partner_id1;
 	WBUFL(buf,6) = partner_id2;
@@ -1291,7 +1303,11 @@ int chmapif_parse_reqcharban(int fd){
 
 			// condition applies; send to all map-servers to disconnect the player
 			if( unban_time > now ) {
+#ifndef Pandas_Crashfix_Variable_Init
 					unsigned char buf[11];
+#else
+					unsigned char buf[11] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 					WBUFW(buf,0) = 0x2b14;
 					WBUFL(buf,2) = t_cid;
 					WBUFB(buf,6) = 2;

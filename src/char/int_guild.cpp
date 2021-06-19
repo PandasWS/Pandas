@@ -941,7 +941,11 @@ int mapif_guild_created(int fd,uint32 account_id,struct guild *g)
 // Guild not found
 int mapif_guild_noinfo(int fd,int guild_id)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[12];
+#else
+	unsigned char buf[12] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x3831;
 	WBUFW(buf,2)=8;
 	WBUFL(buf,4)=guild_id;
@@ -956,7 +960,11 @@ int mapif_guild_noinfo(int fd,int guild_id)
 // Send guild info
 int mapif_guild_info(int fd,struct guild *g)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[8+sizeof(struct guild)];
+#else
+	unsigned char buf[8 + sizeof(struct guild)] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x3831;
 	WBUFW(buf,2)=4+sizeof(struct guild);
 	memcpy(buf+4,g,sizeof(struct guild));
@@ -983,7 +991,11 @@ int mapif_guild_memberadded(int fd,int guild_id,uint32 account_id,uint32 char_id
 // ACK member leave
 int mapif_guild_withdraw(int guild_id,uint32 account_id,uint32 char_id,int flag, const char *name, const char *mes)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[55+NAME_LENGTH];
+#else
+	unsigned char buf[55 + NAME_LENGTH] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf, 0)=0x3834;
 	WBUFL(buf, 2)=guild_id;
 	WBUFL(buf, 6)=account_id;
@@ -999,7 +1011,11 @@ int mapif_guild_withdraw(int guild_id,uint32 account_id,uint32 char_id,int flag,
 // Send short member's info
 int mapif_guild_memberinfoshort(struct guild *g,int idx)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[19];
+#else
+	unsigned char buf[19] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf, 0)=0x3835;
 	WBUFL(buf, 2)=g->guild_id;
 	WBUFL(buf, 6)=g->member[idx].account_id;
@@ -1014,7 +1030,11 @@ int mapif_guild_memberinfoshort(struct guild *g,int idx)
 // Send guild broken
 int mapif_guild_broken(int guild_id,int flag)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[7];
+#else
+	unsigned char buf[7] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x3836;
 	WBUFL(buf,2)=guild_id;
 	WBUFB(buf,6)=flag;
@@ -1026,7 +1046,11 @@ int mapif_guild_broken(int guild_id,int flag)
 // Send guild message
 int mapif_guild_message(int guild_id,uint32 account_id,char *mes,int len, int sfd)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[512];
+#else
+	unsigned char buf[512] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	if (len > 500)
 		len = 500;
 	WBUFW(buf,0)=0x3837;
@@ -1041,7 +1065,11 @@ int mapif_guild_message(int guild_id,uint32 account_id,char *mes,int len, int sf
 // Send basic info
 int mapif_guild_basicinfochanged(int guild_id,int type,const void *data,int len)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[2048];
+#else
+	unsigned char buf[2048] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	if (len > 2038)
 		len = 2038;
 	WBUFW(buf, 0)=0x3839;
@@ -1056,7 +1084,11 @@ int mapif_guild_basicinfochanged(int guild_id,int type,const void *data,int len)
 // Send member info
 int mapif_guild_memberinfochanged(int guild_id,uint32 account_id,uint32 char_id, int type,const void *data,int len)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[2048];
+#else
+	unsigned char buf[2048] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	if (len > 2030)
 		len = 2030;
 	WBUFW(buf, 0)=0x383a;
@@ -1073,7 +1105,11 @@ int mapif_guild_memberinfochanged(int guild_id,uint32 account_id,uint32 char_id,
 // ACK guild skill up
 int mapif_guild_skillupack(int guild_id,uint16 skill_id,uint32 account_id)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[14];
+#else
+	unsigned char buf[14] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf, 0)=0x383c;
 	WBUFL(buf, 2)=guild_id;
 	WBUFL(buf, 6)=skill_id;
@@ -1085,7 +1121,11 @@ int mapif_guild_skillupack(int guild_id,uint16 skill_id,uint32 account_id)
 // ACK guild alliance
 int mapif_guild_alliance(int guild_id1,int guild_id2,uint32 account_id1,uint32 account_id2,int flag,const char *name1,const char *name2)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[19+2*NAME_LENGTH];
+#else
+	unsigned char buf[19 + 2 * NAME_LENGTH] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf, 0)=0x383d;
 	WBUFL(buf, 2)=guild_id1;
 	WBUFL(buf, 6)=guild_id2;
@@ -1101,7 +1141,11 @@ int mapif_guild_alliance(int guild_id1,int guild_id2,uint32 account_id1,uint32 a
 // Send a guild position desc
 int mapif_guild_position(struct guild *g,int idx)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[12 + sizeof(struct guild_position)];
+#else
+	unsigned char buf[12 + sizeof(struct guild_position)] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x383b;
 	WBUFW(buf,2)=sizeof(struct guild_position)+12;
 	WBUFL(buf,4)=g->guild_id;
@@ -1114,7 +1158,11 @@ int mapif_guild_position(struct guild *g,int idx)
 // Send the guild notice
 int mapif_guild_notice(struct guild *g)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[256];
+#else
+	unsigned char buf[256] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x383e;
 	WBUFL(buf,2)=g->guild_id;
 	memcpy(WBUFP(buf,6),g->mes1,MAX_GUILDMES1);
@@ -1126,7 +1174,11 @@ int mapif_guild_notice(struct guild *g)
 // Send emblem data
 int mapif_guild_emblem(struct guild *g)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[12 + sizeof(g->emblem_data)];
+#else
+	unsigned char buf[12 + sizeof(g->emblem_data)] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x383f;
 	WBUFW(buf,2)=g->emblem_len+12;
 	WBUFL(buf,4)=g->guild_id;
@@ -1139,7 +1191,11 @@ int mapif_guild_emblem(struct guild *g)
 // Send the guild emblem_id (version)
 int mapif_guild_emblem_version(guild* g)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[10];
+#else
+	unsigned char buf[10] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf, 0) = 0x3841;
 	WBUFL(buf, 2) = g->guild_id;
 	WBUFL(buf, 6) = g->emblem_id;
@@ -1150,7 +1206,11 @@ int mapif_guild_emblem_version(guild* g)
 
 int mapif_guild_master_changed(struct guild *g, int aid, int cid, time_t time)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[18];
+#else
+	unsigned char buf[18] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x3843;
 	WBUFL(buf,2)=g->guild_id;
 	WBUFL(buf,6)=aid;
