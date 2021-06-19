@@ -491,7 +491,11 @@ void mapif_parse_Mail_delete(int fd)
  *------------------------------------------*/
 void mapif_Mail_new(struct mail_message *msg)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[75];
+#else
+	unsigned char buf[75] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 
 	if( !msg || !msg->id )
 		return;

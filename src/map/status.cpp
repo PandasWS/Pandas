@@ -6551,8 +6551,13 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 	} else if( bl->type == BL_ELEM ) {
 		TBL_ELEM* ed = BL_CAST(BL_ELEM, bl);
 
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 		if (!ed->master)
 			return;
+#else
+		if (!ed || !ed->master)
+			return;
+#endif // Pandas_Crashfix_Prevent_NullPointer
 
 		if( b_status.max_hp != status->max_hp )
 			clif_elemental_updatestatus(ed->master, SP_MAXHP);

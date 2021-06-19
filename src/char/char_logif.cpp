@@ -135,7 +135,11 @@ void chlogif_send_usercount(int users){
 
 
 TIMER_FUNC(chlogif_broadcast_user_count){
+#ifndef Pandas_Crashfix_Variable_Init
 	uint8 buf[6];
+#else
+	uint8 buf[6] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	int users = char_count_users();
 
 	// only send an update when needed
@@ -448,7 +452,11 @@ int chlogif_parse_ackchangesex(int fd)
 	if (RFIFOREST(fd) < 7)
 		return 0;
 	else {
+#ifndef Pandas_Crashfix_Variable_Init
 		unsigned char buf[7];
+#else
+		unsigned char buf[7] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 		int acc = RFIFOL(fd,2);
 		int sex = RFIFOB(fd,6);
 		RFIFOSKIP(fd,7);
@@ -502,7 +510,11 @@ int chlogif_parse_ackchangesex(int fd)
 int chlogif_parse_ackchangecharsex(int char_id, int sex)
 {
 	int class_ = 0, guild_id = 0, account_id = 0;
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[7];
+#else
+	unsigned char buf[7] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	char *data;
 
 	// get character data
@@ -552,7 +564,11 @@ int chlogif_parse_accbannotification(int fd){
 	if (RFIFOREST(fd) < 11)
 		return 0;
 	else { // send to all map-servers to disconnect the player
+#ifndef Pandas_Crashfix_Variable_Init
 		unsigned char buf[11];
+#else
+		unsigned char buf[11] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 		WBUFW(buf,0) = 0x2b14;
 		WBUFL(buf,2) = RFIFOL(fd,2);
 		WBUFB(buf,6) = RFIFOB(fd,6); // 0: change of statut, 1: ban
@@ -602,7 +618,11 @@ int chlogif_parse_askkick(int fd){
 }
 
 int chlogif_parse_updip(int fd){
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[2];
+#else
+	unsigned char buf[2] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	uint32 new_ip = 0;
 
 	/**

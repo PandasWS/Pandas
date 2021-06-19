@@ -1,5 +1,6 @@
 queries:
   - exclude: cpp/potentially-dangerous-function
+  - exclude: cpp/constant-comparison
 extraction:
   cpp:
     after_prepare:

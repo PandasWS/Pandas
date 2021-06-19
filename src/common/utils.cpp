@@ -86,6 +86,10 @@ void ShowDump(const void* buffer, size_t length)
 
 static char* checkpath(char *path, const char *srcpath)
 {	// just make sure the char*path is not const
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!path || !srcpath)
+		return path;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 	char *p=path;
 	if(NULL!=path && NULL!=srcpath)
 	while(*srcpath) {

@@ -698,6 +698,11 @@
 		#define Pandas_ClientFeature_InventoryExpansion
 	#endif // Pandas_Struct_MMO_CharStatus_InventorySize
 
+	// 如果客户端版本不符合要求, 那么取消掉对背包扩充的支持
+	#if !(PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114)
+		#undef Pandas_ClientFeature_InventoryExpansion
+	#endif // !(PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114)
+
 	// 如果没有启用对背包扩充机制的支持, 那么也同时取消掉对 pc_is_same_equip_index 的调整
 	#ifndef Pandas_ClientFeature_InventoryExpansion
 		#undef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
@@ -709,6 +714,12 @@
 // ============================================================================
 
 #ifdef Pandas_Bugfix
+	// 修正潜在可能存在算术溢出的情况 [Sola丶小克]
+	#define Pandas_Fix_Potential_Arithmetic_Overflow
+
+	// 修正未判断 sscanf 返回值可能导致程序工作不符合预期的问题 [Sola丶小克]
+	#define Pandas_Fix_Ignore_sscanf_Return_Value
+
 	// 修正在部分情况下角色公会图标刷新不及时的问题 [Sola丶小克]
 	#define Pandas_Fix_GuildEmblem_Update
 
@@ -958,6 +969,9 @@
 	#ifdef Pandas_Crashfix_EventDatabase_Clean_Synchronize
 		#define Pandas_Speedup_Unloadnpc_Without_Refactoring_ScriptEvent
 	#endif // Pandas_Crashfix_EventDatabase_Clean_Synchronize
+
+	// 通过微调程序逻辑改善 C26817 这样的常量引用性能优化场景 [Sola丶小克]
+	#define Pandas_Speedup_Constant_References
 #endif // Pandas_Speedup
 
 // ============================================================================
@@ -1668,24 +1682,15 @@
 
 	// 是否启用 expandinventory_ack 脚本指令 [Sola丶小克]
 	// 该指令用于响应客户端的背包扩容请求, 并告知客户端下一步的动作
-	// 此选项开关需要依赖 Pandas_ClientFeature_InventoryExpansion 的拓展
-	#ifdef Pandas_ClientFeature_InventoryExpansion
-		#define Pandas_ScriptCommand_ExpandInventoryACK
-	#endif // Pandas_ClientFeature_InventoryExpansion
+	#define Pandas_ScriptCommand_ExpandInventoryACK
 
 	// 是否启用 expandinventory_result 脚本指令 [Sola丶小克]
 	// 该指令用于发送给客户端最终的背包扩容结果
-	// 此选项开关需要依赖 Pandas_ClientFeature_InventoryExpansion 的拓展
-	#ifdef Pandas_ClientFeature_InventoryExpansion
-		#define Pandas_ScriptCommand_ExpandInventoryResult
-	#endif // Pandas_ClientFeature_InventoryExpansion
+	#define Pandas_ScriptCommand_ExpandInventoryResult
 
 	// 是否启用 expandinventory_adjust 脚本指令 [Sola丶小克]
 	// 该指令用于增加角色的背包容量上限
-	// 此选项开关需要依赖 Pandas_ClientFeature_InventoryExpansion 的拓展
-	#ifdef Pandas_ClientFeature_InventoryExpansion
-		#define Pandas_ScriptCommand_ExpandInventoryAdjust
-	#endif // Pandas_ClientFeature_InventoryExpansion
+	#define Pandas_ScriptCommand_ExpandInventoryAdjust
 
 	// 是否启用 getinventorysize 脚本指令 [Sola丶小克]
 	// 该指令用于查询并获取当前角色的背包容量上限

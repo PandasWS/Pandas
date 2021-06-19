@@ -138,7 +138,11 @@ int chmapif_send_fame_list(int fd){
  * @param fame: number of points
  */
 void chmapif_update_fame_list(int type, int index, int fame) {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[8];
+#else
+	unsigned char buf[8] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0) = 0x2b22;
 	WBUFB(buf,2) = type;
 	WBUFB(buf,3) = index;
@@ -151,7 +155,11 @@ void chmapif_update_fame_list(int type, int index, int fame) {
  * @param users: number of players on this char-serv
  */
 void chmapif_sendall_playercount(int users){
+#ifndef Pandas_Crashfix_Variable_Init
 	uint8 buf[6];
+#else
+	uint8 buf[6] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	// send number of players to all map-servers
 	WBUFW(buf,0) = 0x2b00;
 	WBUFL(buf,2) = users;
@@ -215,7 +223,12 @@ void chmapif_send_maps(int fd, int map_id, int count, unsigned char *mapbuf) {
 	// Transmitting the maps of the other map-servers to the new map-server
 	for (x = 0; x < ARRAYLENGTH(map_server); x++) {
 		if (session_isValid(map_server[x].fd) && x != map_id) {
+#ifndef Pandas_LGTM_Optimization
 			uint16 i, j;
+#else
+			size_t i;
+			uint16 j;
+#endif // Pandas_LGTM_Optimization
 
 			WFIFOHEAD(fd,10 +4*map_server[x].map.size());
 			WFIFOW(fd,0) = 0x2b04;
@@ -876,7 +889,11 @@ int chmapif_parse_fwlog_changestatus(int fd){
  * @param partner_id2: char id2 divorced
  */
 void chmapif_send_ackdivorce(int partner_id1, int partner_id2){
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[11];
+#else
+	unsigned char buf[11] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0) = 0x2b12;
 	WBUFL(buf,2) = partner_id1;
 	WBUFL(buf,6) = partner_id2;
@@ -1286,7 +1303,11 @@ int chmapif_parse_reqcharban(int fd){
 
 			// condition applies; send to all map-servers to disconnect the player
 			if( unban_time > now ) {
+#ifndef Pandas_Crashfix_Variable_Init
 					unsigned char buf[11];
+#else
+					unsigned char buf[11] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 					WBUFW(buf,0) = 0x2b14;
 					WBUFL(buf,2) = t_cid;
 					WBUFB(buf,6) = 2;
@@ -1598,7 +1619,11 @@ void chmapif_server_reset(int id){
 	WBUFW(buf,0) = 0x2b20;
 	WBUFL(buf,4) = htonl(map_server[id].ip);
 	WBUFW(buf,8) = htons(map_server[id].port);
+#ifndef Pandas_LGTM_Optimization
 	for(uint16 i = 0; i < map_server[id].map.size(); i++)
+#else
+	for(size_t i = 0; i < map_server[id].map.size(); i++)
+#endif // Pandas_LGTM_Optimization
 		if (map_server[id].map[i])
 			WBUFW(buf,10+(j++)*4) = map_server[id].map[i];
 	if (j > 0) {

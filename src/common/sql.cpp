@@ -349,7 +349,11 @@ static int Sql_P_Keepalive(Sql* self)
 	// establish keepalive
 	ping_interval = timeout - 30; // 30-second reserve
 	//add_timer_func_list(Sql_P_KeepaliveTimer, "Sql_P_KeepaliveTimer");
+#ifndef Pandas_Fix_Potential_Arithmetic_Overflow
 	return add_timer_interval(gettick() + ping_interval*1000, Sql_P_KeepaliveTimer, 0, (intptr_t)self, ping_interval*1000);
+#else
+	return add_timer_interval(gettick() + (t_tick)ping_interval * 1000, Sql_P_KeepaliveTimer, 0, (intptr_t)self, ping_interval * 1000);
+#endif // Pandas_Fix_Potential_Arithmetic_Overflow
 }
 
 
@@ -1119,7 +1123,11 @@ void ra_mysql_error_handler(unsigned int ecode) {
 }
 
 void Sql_inter_server_read(const char* cfgName, bool first) {
+#ifndef Pandas_Crashfix_Variable_Init
 	char line[1024], w1[1024], w2[1024];
+#else
+	char line[1024] = { 0 }, w1[1024] = { 0 }, w2[1024] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	FILE* fp;
 
 	fp = fopen(cfgName, "r");

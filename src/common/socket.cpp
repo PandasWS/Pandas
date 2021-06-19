@@ -1305,8 +1305,13 @@ static TIMER_FUNC(connect_check_clear){
 		prev_hist = &root;
 		root.next = hist = connect_history[i];
 		while( hist ){
+#ifndef Pandas_Fix_Potential_Arithmetic_Overflow
 			if( (!hist->ddos && DIFF_TICK(tick,hist->tick) > ddos_interval*3) ||
 					(hist->ddos && DIFF_TICK(tick,hist->tick) > ddos_autoreset) )
+#else
+			if ((!hist->ddos && DIFF_TICK(tick, hist->tick) > (t_tick)ddos_interval * 3) ||
+				(hist->ddos && DIFF_TICK(tick, hist->tick) > ddos_autoreset))
+#endif // Pandas_Fix_Potential_Arithmetic_Overflow
 			{// Remove connection history
 				prev_hist->next = hist->next;
 				aFree(hist);
@@ -1377,7 +1382,11 @@ int access_ipmask(const char* str, AccessControl* acc)
 
 int socket_config_read(const char* cfgName)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	char line[1024],w1[1024],w2[1024];
+#else
+	char line[1024] = { 0 }, w1[1024] = { 0 }, w2[1024] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	FILE *fp;
 
 	fp = fopen(cfgName, "r");

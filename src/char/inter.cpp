@@ -806,7 +806,11 @@ int inter_config_read(const char* cfgName)
 	}
 
 	while(fgets(line, sizeof(line), fp)) {
+#ifndef Pandas_Crashfix_Variable_Init
 		char w1[24], w2[1024];
+#else
+		char w1[24] = { 0 }, w2[1024] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 
 		if (line[0] == '/' && line[1] == '/')
 			continue;
@@ -1065,7 +1069,11 @@ int mapif_broadcast(unsigned char *mes, int len, unsigned long fontColor, short 
 // Wis sending
 int mapif_wis_message(struct WisData *wd)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[2048];
+#else
+	unsigned char buf[2048] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	int headersize = 12 + 2 * NAME_LENGTH;
 
 	if (wd->len > 2047-headersize) wd->len = 2047-headersize; //Force it to fit to avoid crashes. [Skotlex]
@@ -1171,7 +1179,11 @@ int mapif_parse_broadcast_item(int fd) {
 // Wis sending result
 // flag: 0: success to send wisper, 1: target character is not loged in?, 2: ignored by target
 int mapif_wis_reply( int mapserver_fd, char* target, uint8 flag ){
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[27];
+#else
+	unsigned char buf[27] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 
 	WBUFW(buf, 0) = 0x3802;
 	safestrncpy(WBUFCP(buf, 2), target, NAME_LENGTH);

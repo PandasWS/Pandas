@@ -1739,7 +1739,11 @@ enum e_char_del_response char_delete(struct char_session_data* sd, uint32 char_i
 	/* De-addopt [Zephyrus] */
 	if( father_id || mother_id )
 	{ // Char is Baby
+#ifndef Pandas_Crashfix_Variable_Init
 		unsigned char buf[64];
+#else
+		unsigned char buf[64] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 
 		if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `child`='0' WHERE `char_id`='%d' OR `char_id`='%d'", schema_config.char_db, father_id, mother_id) )
 			Sql_ShowDebug(sql_handle);
@@ -2685,7 +2689,11 @@ bool char_checkdb(void){
 }
 
 void char_sql_config_read(const char* cfgName) {
+#ifndef Pandas_Crashfix_Variable_Init
 	char line[1024], w1[1024], w2[1024];
+#else
+	char line[1024] = { 0 }, w1[1024] = { 0 }, w2[1024] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	FILE* fp;
 
 	if ((fp = fopen(cfgName, "r")) == NULL) {

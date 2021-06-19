@@ -232,7 +232,11 @@ void login_online_db_setoffline( int char_server ){
  * @return : 0
  */
 static TIMER_FUNC(login_online_data_cleanup){
+#ifndef Pandas_Speedup_Constant_References
 	for( std::pair<uint32,struct online_login_data> pair : online_db  ){
+#else
+	for (auto& pair : online_db) {
+#endif // Pandas_Speedup_Constant_References
 		// Unknown server.. set them offline
 		if( pair.second.char_server == -2 ){
 			login_remove_online_user( pair.first );
@@ -305,7 +309,11 @@ int login_mmo_auth_new(const char* userid, const char* pass, const char sex, con
 
 	if( DIFF_TICK(tick, new_reg_tick) > 0 ) {// Update the registration check.
 		num_regs = 0;
+#ifndef Pandas_Fix_Potential_Arithmetic_Overflow
 		new_reg_tick = tick + login_config.time_allowed*1000;
+#else
+		new_reg_tick = tick + (t_tick)login_config.time_allowed * 1000;
+#endif // Pandas_Fix_Potential_Arithmetic_Overflow
 	}
 	++num_regs;
 
@@ -327,6 +335,9 @@ int login_mmo_auth_new(const char* userid, const char* pass, const char sex, con
  *	x: acc state (TODO document me deeper)
  */
 int login_mmo_auth(struct login_session_data* sd, bool isServer) {
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+	if (!sd) return 0;
+#endif // Pandas_Crashfix_Prevent_NullPointer
 	struct mmo_account acc;
 	int len;
 
@@ -590,7 +601,11 @@ void login_do_final_msg(void){
 int login_lan_config_read(const char *lancfgName) {
 	FILE *fp;
 	int line_num = 0, s_subnet=ARRAYLENGTH(subnet);
+#ifndef Pandas_Crashfix_Variable_Init
 	char line[1024], w1[64], w2[64], w3[64], w4[64];
+#else
+	char line[1024] = { 0 }, w1[64] = { 0 }, w2[64] = { 0 }, w3[64] = { 0 }, w4[64] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 
 	if((fp = fopen(lancfgName, "r")) == NULL) {
 		ShowWarning("LAN Support configuration file is not found: %s\n", lancfgName);
@@ -642,7 +657,11 @@ int login_lan_config_read(const char *lancfgName) {
  * @return True:success, Fals:failure (file not found|readable)
  */
 bool login_config_read(const char* cfgName, bool normal) {
+#ifndef Pandas_Crashfix_Variable_Init
 	char line[1024], w1[32], w2[1024];
+#else
+	char line[1024] = { 0 }, w1[32] = { 0 }, w2[1024] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	FILE* fp = fopen(cfgName, "r");
 	if (fp == NULL) {
 		ShowError("Configuration file (%s) not found.\n", cfgName);
@@ -735,7 +754,15 @@ bool login_config_read(const char* cfgName, bool normal) {
 						memcpy(buf, &md5[i], 2);
 						buf[2] = 0;
 
+#ifndef Pandas_Fix_Ignore_sscanf_Return_Value
 						sscanf(buf, "%2x", &byte);
+#else
+						if (sscanf(buf, "%2x", &byte) != 1) {
+							ShowWarning("The client hash length is incorrect (hash: %s), skipping it...\n", md5);
+							nnode->hash[0] = '\0';
+							break;
+						}
+#endif // Pandas_Fix_Ignore_sscanf_Return_Value
 						nnode->hash[i / 2] = (uint8)(byte & 0xFF);
 					}
 				}
