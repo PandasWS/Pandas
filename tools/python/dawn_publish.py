@@ -24,6 +24,7 @@ import glob
 import shutil
 import imple_translate as trans
 
+from dotenv import load_dotenv
 from libs import Common, Message
 
 # 切换工作目录为脚本所在目录
@@ -196,7 +197,7 @@ def arrange_common(packagedir):
     rmdir(packagedir + 'sql-files/tools')
     rmdir(packagedir + 'sql-files/upgrades')
     
-    copyfile(packagedir + 'tools/batches/runserver.bat', packagedir + 'renewal.bat')
+    copyfile(packagedir + 'tools/batches/runserver.bat', packagedir + 'runserver.bat')
     remove_file(packagedir + 'tools/batches', 'runserver.bat')
     
     # --------------------------------------------------------
@@ -306,7 +307,8 @@ def process_sub(export_file, renewal, langinfo):
     ))
 
     # 构建解压的打包目录
-    packagedir = '../Release/Pandas/{version}/Pandas_{version}_{timestamp}_{model}_{lang}'.format(
+    packagedir = '../Release/{project_name}/{version}/{project_name}_{version}_{timestamp}_{model}_{lang}'.format(
+        project_name = os.getenv('DEFINE_PROJECT_NAME'),
         version = version, model = 'RE' if renewal else 'PRE',
         timestamp = Common.timefmt(True), lang = langinfo['dirname']
     )
@@ -359,25 +361,32 @@ def process(export_file, renewal):
     '''
     开始进行处理工作
     '''
-    process_sub(
-        export_file = export_file,
-        renewal = renewal,
-        langinfo = {
-            'trans' : 'zh-cn',
-            'dirname' : 'GBK',
-            'name' : '简体中文'
-        }
-    )
+
+    # 若环境变量为空则设置个默认值
+    if not os.getenv('DEFINE_PUBLISH_LANG'):
+        os.environ["DEFINE_PUBLISH_LANG"] = "gbk,big5"
     
-    process_sub(
-        export_file = export_file,
-        renewal = renewal,
-        langinfo = {
-            'trans' : 'zh-tw',
-            'dirname' : 'BIG5',
-            'name' : '繁体中文'
-        }
-    )
+    if 'gbk' in os.getenv('DEFINE_PUBLISH_LANG').split(','):
+        process_sub(
+            export_file = export_file,
+            renewal = renewal,
+            langinfo = {
+                'trans' : 'zh-cn',
+                'dirname' : 'GBK',
+                'name' : '简体中文'
+            }
+        )
+    
+    if 'big5' in os.getenv('DEFINE_PUBLISH_LANG').split(','):
+        process_sub(
+            export_file = export_file,
+            renewal = renewal,
+            langinfo = {
+                'trans' : 'zh-tw',
+                'dirname' : 'BIG5',
+                'name' : '繁体中文'
+            }
+        )
 
 def clean(export_file):
     '''
@@ -391,18 +400,42 @@ def main():
     '''
     主入口函数
     '''
+    # 加载 .env 中的配置信息
+    load_dotenv(dotenv_path='.config.env', encoding='UTF-8')
+    
+    # 若无配置信息则自动复制一份文件出来
+    if not Common.is_file_exists('.config.env'):
+        shutil.copyfile('.config.env.sample', '.config.env')
+
     # 显示欢迎信息
     Common.welcome('打包流程辅助脚本')
     print('')
 
     pandas_ver = Common.get_pandas_ver(os.path.abspath(project_slndir))
     Message.ShowInfo('当前模拟器的主版本是 %s' % pandas_ver)
+    
 
+    # 若环境变量为空则设置个默认值
+    if not os.getenv('DEFINE_PROJECT_NAME'):
+        os.environ["DEFINE_PROJECT_NAME"] = "Pandas"
+
+    if not os.getenv('DEFINE_COMPILE_MODE'):
+        os.environ["DEFINE_COMPILE_MODE"] = "re,pre"
+    
+    Message.ShowInfo('当前输出的项目名称为: %s' % os.getenv('DEFINE_PROJECT_NAME'))
+    
     # 检查是否已经完成了编译
-    if not Common.is_compiled(project_slndir):
-        Message.ShowWarning('检测到打包需要的编译产物不完整, 请重新编译. 程序终止.')
-        print('')
-        Common.exit_with_pause(-1)
+    if 're' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+        if not Common.is_compiled(project_slndir, checkmodel='re'):
+            Message.ShowWarning('检测到打包需要的编译产物不完整, 请重新编译. 程序终止.')
+            print('')
+            Common.exit_with_pause(-1)
+
+    if 'pre' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+        if not Common.is_compiled(project_slndir, checkmodel='pre'):
+            Message.ShowWarning('检测到打包需要的编译产物不完整, 请重新编译. 程序终止.')
+            print('')
+            Common.exit_with_pause(-1)
 
     # 导出当前仓库, 变成一个归档压缩文件
     Message.ShowInfo('正在将当前分支的 HEAD 内容导出成归档文件...')
@@ -413,8 +446,11 @@ def main():
     Message.ShowInfo('归档文件导出完成, 此文件将在程序结束时被删除.') 
 
     # 基于归档压缩文件, 进行打包处理
-    process(export_file, renewal=True)
-    process(export_file, renewal=False)
+    if 're' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+        process(export_file, renewal=True)
+    
+    if 'pre' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+        process(export_file, renewal=False)
 
     # 执行一些清理工作
     clean(export_file)

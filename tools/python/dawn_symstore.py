@@ -30,11 +30,8 @@ os.chdir(os.path.split(os.path.realpath(__file__))[0])
 # 工程文件的主目录相对此脚本文件的位置
 project_slndir = '../../'
 
-# 符号仓库工程路径
-project_symstoredir = os.path.abspath(project_slndir + '../Symbols')
-
-# 符号文件的 Git 仓库路径
-symbols_giturl = 'https://github.com/PandasWS/Symbols.git'
+# 符号仓库工程路径 (在 main 函数中赋值)
+project_symstoredir = ''
 
 def ensure_store():
     if not Common.is_dir_exists(project_symstoredir):
@@ -44,7 +41,16 @@ def ensure_store():
         }):
             return False
 
-        git.Repo.clone_from(symbols_giturl, project_symstoredir)
+        # 若环境变量为空则设置个默认值
+        if not os.getenv('DEFINE_REMOTE_SYMBOLS_URL'):
+            os.environ["DEFINE_REMOTE_SYMBOLS_URL"] = "https://github.com/PandasWS/Symbols.git"
+
+        Message.ShowWarning('可能会抛出 UnicodeDecodeError 错误, 请无视即可.')
+        
+        try:
+            git.Repo.clone_from(os.getenv('DEFINE_REMOTE_SYMBOLS_URL'), project_symstoredir)
+        except IndexError as _err:
+            pass
     return True
 
 def ensure_store_clean():
@@ -122,7 +128,9 @@ def make_commit():
             return False
 
         repo.git.add('.')
-        repo.git.commit('-m', '归档 Pandas {version} 版本的符号文件和编译产物, 代码源自 PandasWS/Pandas@{githash} 仓库'.format(
+        repo.git.commit('-m', '归档 {project_name} {version} 版本的符号文件和编译产物, 代码源自 {symbols_source}@{githash} 仓库'.format(
+            project_name = os.getenv('DEFINE_PROJECT_NAME'),
+            symbols_source = os.getenv('DEFINE_SYMBOLS_SOURCE'),
             version = Common.get_pandas_ver(project_slndir, 'v'),
             githash = Common.get_pandas_hash(project_slndir)
         ))
@@ -144,10 +152,32 @@ def main():
     Common.welcome('符号归档辅助脚本')
     print('')
     
+    # 若环境变量为空则设置个默认值
+    if not os.getenv('DEFINE_PROJECT_NAME'):
+        os.environ["DEFINE_PROJECT_NAME"] = "Pandas"
+
+    if not os.getenv('DEFINE_SYMBOLS_SOURCE'):
+        os.environ["DEFINE_SYMBOLS_SOURCE"] = "PandasWS/Pandas"
+
+    if not os.getenv('DEFINE_COMPILE_MODE'):
+        os.environ["DEFINE_COMPILE_MODE"] = "re,pre"
+    
+    # 符号仓库工程路径
+    global project_symstoredir
+    project_symstoredir = os.path.abspath(project_slndir + '../Symbols/' + os.getenv('DEFINE_PROJECT_NAME'))
+    
+    Message.ShowInfo('当前输出的项目名称为: %s' % os.getenv('DEFINE_PROJECT_NAME'))
+
     # 检查是否已经完成了编译
-    if not Common.is_compiled(project_slndir):
-        Message.ShowWarning('检测到打包需要的编译产物不完整, 请重新编译. 程序终止.')
-        Common.exit_with_pause(-1)
+    if 're' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+        if not Common.is_compiled(project_slndir, checkmodel='re'):
+            Message.ShowWarning('检测到打包需要的编译产物不完整, 请重新编译. 程序终止.')
+            Common.exit_with_pause(-1)
+
+    if 'pre' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+        if not Common.is_compiled(project_slndir, checkmodel='pre'):
+            Message.ShowWarning('检测到打包需要的编译产物不完整, 请重新编译. 程序终止.')
+            Common.exit_with_pause(-1)
 
     # 检查符号仓库是否存在, 不存在则创建
     if not ensure_store():
@@ -173,16 +203,23 @@ def main():
     # 搜索工程目录全部 pdb 文件和 exe 文件, 进行归档
     deploy_symbols(project_slndir)
     
+    # 若环境变量为空则设置个默认值
+    if not os.getenv('DEFINE_SYMBOLS_COMMIT'):
+        os.environ["DEFINE_SYMBOLS_COMMIT"] = "3"
+    
+    commit_flag = int(os.getenv('DEFINE_SYMBOLS_COMMIT'))
+    
     # 自动进行 git 提交操作
-    # 只有编译的是正式版以及设置了正式版的 AppID 才会自动提交
-    if not Common.is_pandas_release(os.path.abspath(project_slndir)):
-        Message.ShowStatus('符号文件已经归档完毕...')
-        Common.exit_with_pause()
+    if commit_flag & 1 == 1:
+        if not Common.is_pandas_release(os.path.abspath(project_slndir)):
+            Message.ShowStatus('符号文件已经归档完毕, 但并非正式版所以未自动提交...')
+            Common.exit_with_pause()
 
-    if Common.md5(os.getenv("DEFINE_CRASHRPT_APPID")) != '952648de2d8f063a07331ae3827bc406':
-        Message.ShowStatus('符号文件已经归档完毕...')
-        Common.exit_with_pause()
-        
+    if commit_flag & 2 == 2:
+        if Common.md5(os.getenv("DEFINE_CRASHRPT_APPID")) != '952648de2d8f063a07331ae3827bc406':
+            Message.ShowStatus('符号文件已经归档完毕, 但未设置熊猫模拟器官方正式版的崩溃上报 APPID, 所以并未自动提交...')
+            Common.exit_with_pause()
+
     Message.ShowStatus('符号文件已经归档完毕, 正在提交...')
     if not make_commit():
         Message.ShowWarning('很抱歉, 提交失败! 请确认失败的原因. 程序终止.')
