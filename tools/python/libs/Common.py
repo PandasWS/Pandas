@@ -399,24 +399,32 @@ def is_compiled(slndir, checkmodel = 'all', checksymbol = True):
         checkfiles.append('char-server.exe')
         checkfiles.append('map-server.exe')
         checkfiles.append('csv2yaml.exe')
+        checkfiles.append('yaml2sql.exe')
+        checkfiles.append('yamlupgrade.exe')
         
         if checksymbol:
             checkfiles.append('login-server.pdb')
             checkfiles.append('char-server.pdb')
             checkfiles.append('map-server.pdb')
             checkfiles.append('csv2yaml.pdb')
+            checkfiles.append('yaml2sql.pdb')
+            checkfiles.append('yamlupgrade.pdb')
         
     if 'pre' == checkmodel or 'all' == checkmodel:
         checkfiles.append('login-server-pre.exe')
         checkfiles.append('char-server-pre.exe')
         checkfiles.append('map-server-pre.exe')
-        checkfiles.append('csv2yaml.exe')
+        checkfiles.append('csv2yaml-pre.exe')
+        checkfiles.append('yaml2sql-pre.exe')
+        checkfiles.append('yamlupgrade-pre.exe')
         
         if checksymbol:
             checkfiles.append('login-server-pre.pdb')
             checkfiles.append('char-server-pre.pdb')
             checkfiles.append('map-server-pre.pdb')
-            checkfiles.append('csv2yaml.pdb')
+            checkfiles.append('csv2yaml-pre.pdb')
+            checkfiles.append('yaml2sql-pre.pdb')
+            checkfiles.append('yamlupgrade-pre.pdb')
 
     for filename in checkfiles:
         filepath = os.path.abspath(slndir + filename)

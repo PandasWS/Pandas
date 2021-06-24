@@ -42,6 +42,22 @@ project_cachedir = 'tools/python/cache/'
 # 编译输出日志的路径
 compile_logfile = '%s/compile.log' % project_cachedir
 
+# 编译产物列表, 请列出避免在同时编译复兴前和复兴后版本时被覆盖
+product_files = [
+    'login-server.exe',
+    'login-server.pdb',
+    'char-server.exe',
+    'char-server.pdb',
+    'map-server.exe',
+    'map-server.pdb',
+    'yaml2sql.exe',
+    'yaml2sql.pdb',
+    'csv2yaml.exe',
+    'csv2yaml.pdb',
+    'yamlupgrade.exe',
+    'yamlupgrade.pdb'
+]
+
 # 配置能支持的 Visual Studio 相关信息
 vs_configure = [
     {
@@ -69,6 +85,19 @@ vs_configure = [
         'vcvarsall' : r'vcvarsall.bat'
     }
 ]
+
+def move_product_files(src_suffix, dst_suffix):
+    '''
+    移动编译产物的位置
+    '''
+    for filename in product_files:
+        splits = os.path.splitext(filename)
+        basename = splits[0]
+        extname_with_dot = splits[1]
+        shutil.move(
+            slndir(basename + src_suffix + extname_with_dot),
+            slndir(basename + dst_suffix + extname_with_dot)
+        )
 
 def get_reg_value(vs):
     '''
@@ -242,18 +271,10 @@ def compile_prere(version):
 
     # 将复兴前版本的编译产物重命名一下, 避免编译复兴后版本时被覆盖
 	# 因 ab7a827 的修改每次清理工程时, 也会同时清理复兴前的编译产物, 所以这里需要临时重命名
-    shutil.move(slndir('login-server.exe'), slndir('login-server-pre-t.exe'))
-    shutil.move(slndir('login-server.pdb'), slndir('login-server-pre-t.pdb'))
-    shutil.move(slndir('char-server.exe'), slndir('char-server-pre-t.exe'))
-    shutil.move(slndir('char-server.pdb'), slndir('char-server-pre-t.pdb'))
-    shutil.move(slndir('map-server.exe'), slndir('map-server-pre-t.exe'))
-    shutil.move(slndir('map-server.pdb'), slndir('map-server-pre-t.pdb'))
-    shutil.move(slndir('yaml2sql.exe'), slndir('yaml2sql-pre-t.exe'))
-    shutil.move(slndir('yaml2sql.pdb'), slndir('yaml2sql-pre-t.pdb'))
-    shutil.move(slndir('csv2yaml.exe'), slndir('csv2yaml-pre-t.exe'))
-    shutil.move(slndir('csv2yaml.pdb'), slndir('csv2yaml-pre-t.pdb'))
-    shutil.move(slndir('yamlupgrade.exe'), slndir('yamlupgrade-pre-t.exe'))
-    shutil.move(slndir('yamlupgrade.pdb'), slndir('yamlupgrade-pre-t.pdb'))
+    if 're' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+        move_product_files('', '-pre-t')
+    else:
+        move_product_files('', '-pre')
     
     print('')
 
@@ -281,18 +302,8 @@ def compile_renewal(version):
         Common.exit_with_pause(-1)
     
     # 将之前 compile_prere 中临时重命名的复兴前产物全部改回正常的文件名
-    shutil.move(slndir('login-server-pre-t.exe'), slndir('login-server-pre.exe'))
-    shutil.move(slndir('login-server-pre-t.pdb'), slndir('login-server-pre.pdb'))
-    shutil.move(slndir('char-server-pre-t.exe'), slndir('char-server-pre.exe'))
-    shutil.move(slndir('char-server-pre-t.pdb'), slndir('char-server-pre.pdb'))
-    shutil.move(slndir('map-server-pre-t.exe'), slndir('map-server-pre.exe'))
-    shutil.move(slndir('map-server-pre-t.pdb'), slndir('map-server-pre.pdb'))
-    shutil.move(slndir('yaml2sql-pre-t.exe'), slndir('yaml2sql-pre.exe'))
-    shutil.move(slndir('yaml2sql-pre-t.pdb'), slndir('yaml2sql-pre.pdb'))
-    shutil.move(slndir('csv2yaml-pre-t.exe'), slndir('csv2yaml-pre.exe'))
-    shutil.move(slndir('csv2yaml-pre-t.pdb'), slndir('csv2yaml-pre.pdb'))
-    shutil.move(slndir('yamlupgrade-pre-t.exe'), slndir('yamlupgrade-pre.exe'))
-    shutil.move(slndir('yamlupgrade-pre-t.pdb'), slndir('yamlupgrade-pre.pdb'))
+    if 'pre' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+        move_product_files('-pre-t', '-pre')
     
     print('')
 
@@ -350,10 +361,10 @@ def main():
     if Common.is_pandas_release(os.path.abspath(project_slndir)):
         if os.getenv("DEFINE_CRASHRPT_APPID"):
             if Common.md5(os.getenv("DEFINE_CRASHRPT_APPID")) != '952648de2d8f063a07331ae3827bc406':
-                Message.ShowWarning('当前已设置了 AppID, 但并非正式版使用的 AppID.')
+                Message.ShowWarning('当前已设置了 AppID, 但并非熊猫模拟器官方发布版使用的 AppID.')
                 Common.exit_with_pause(-1)
             if not os.getenv("DEFINE_CRASHRPT_PUBLICKEY"):
-                Message.ShowWarning('正在计划编译正式版, 但并未设置 PublicKey 请检查...')
+                Message.ShowWarning('计划编译正式版但并未设置崩溃上报公钥, 请检查...')
                 Common.exit_with_pause(-1)
 
     Message.ShowStatus('即将开始编译, 编译速度取决于电脑性能, 请耐心...')
@@ -361,11 +372,17 @@ def main():
     # 清理目前的工作目录, 把一些可明确移除的删掉
     clean_environment()
 
+    # 若环境变量为空则设置个默认值
+    if not os.getenv('DEFINE_COMPILE_MODE'):
+        os.environ["DEFINE_COMPILE_MODE"] = "re,pre"
+
     # 编译 Pandas 的复兴前版本
-    compile_prere(pandas_ver)
+    if 'pre' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+        compile_prere(pandas_ver)
 
     # 编译 Pandas 的复兴后版本
-    compile_renewal(pandas_ver)
+    if 're' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+        compile_renewal(pandas_ver)
 
     Message.ShowStatus('编译工作已经全部结束, 请归档符号并执行打包流程.')
 
