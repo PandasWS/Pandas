@@ -22638,8 +22638,15 @@ uint64 SkillDatabase::parseBodyNode(const YAML::Node &node) {
 					skill->unit_flag.reset(static_cast<uint8>(constant));
 			}
 
+#ifndef Pandas_YamlBlastCache_SkillDatabase
+			// 按照规范, 不应该在此进行战斗配置选项的应用
+			// 将这部分应用操作挪动到: SkillDatabase::loadingFinished 来实现
+			// 避免疾风缓存将这里的值缓存住之后导致 defnotenemy 战斗配置选项无效
+			//
+			// 备注: 2021年6月30日 发现 defnotenemy 这个战斗配置选项没有在战斗配置文件...
 			if (skill->unit_flag[UF_NOENEMY] && battle_config.defnotenemy)
 				skill->unit_target = BCT_NOENEMY;
+#endif // Pandas_YamlBlastCache_SkillDatabase
 
 			// By default, target just characters.
 			skill->unit_target |= BL_CHAR;
@@ -22674,6 +22681,18 @@ void SkillDatabase::clear() {
 }
 
 #ifdef Pandas_YamlBlastCache_SkillDatabase
+
+void SkillDatabase::loadingFinished() {
+	for (const auto& it : skill_db) {
+		auto skill = it.second;
+
+		// 从 parseBodyNode 把代码挪下来, 在此进行具体的战斗配置选项应用
+		// 因为疾风缓存在完成缓存的读取工作之后依然会触发 SkillDatabase::loadingFinished
+		if (skill->unit_flag[UF_NOENEMY] && battle_config.defnotenemy)
+			skill->unit_target = BCT_NOENEMY;
+	}
+}
+
 //************************************
 // Method:      doSerialize
 // Description: 对 SkillDatabase 进行序列化和反序列化操作

@@ -611,6 +611,10 @@ static bool parse_skill_constants_txt(char *split[], int columns, int current) {
 }
 
 #ifdef Pandas_YamlBlastCache_SkillDatabase
+void SkillDatabase::loadingFinished() {
+	// 在这里什么都不用做
+}
+
 bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
 	return TypesafeCachedYamlDatabase<uint16, s_skill_db>::doSerialize(type, archive);
 }

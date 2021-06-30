@@ -328,6 +328,7 @@ public:
 	void clear();
 
 #ifdef Pandas_YamlBlastCache_SkillDatabase
+	void loadingFinished();
 	bool doSerialize(const std::string& type, void* archive);
 	void afterSerialize();
 #endif // Pandas_YamlBlastCache_SkillDatabase

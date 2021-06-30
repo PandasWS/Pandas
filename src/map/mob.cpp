@@ -4547,7 +4547,14 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asUInt64(node, "BaseExp", exp))
 			return 0;
 
+#ifndef Pandas_YamlBlastCache_MobDatabase
+		// 按照规范, 不应该在此进行战斗配置选项的应用
+		// 将这部分应用操作挪动到: MobDatabase::loadingFinished 来实现
+		// 避免疾风缓存将这里的值缓存住之后导致 base_exp_rate 战斗配置选项无效
 		mob->base_exp = static_cast<t_exp>(cap_value((double)exp * (double)battle_config.base_exp_rate / 100., 0, MAX_EXP));
+#else
+		mob->base_exp = static_cast<t_exp>(cap_value((double)exp, 0, MAX_EXP));
+#endif // Pandas_YamlBlastCache_MobDatabase
 	} else {
 		if (!exists)
 			mob->base_exp = 0;
@@ -4559,7 +4566,14 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asUInt64(node, "JobExp", exp))
 			return 0;
 
+#ifndef Pandas_YamlBlastCache_MobDatabase
+		// 按照规范, 不应该在此进行战斗配置选项的应用
+		// 将这部分应用操作挪动到: MobDatabase::loadingFinished 来实现
+		// 避免疾风缓存将这里的值缓存住之后导致 job_exp_rate 战斗配置选项无效
 		mob->job_exp = static_cast<t_exp>(cap_value((double)exp * (double)battle_config.job_exp_rate / 100., 0, MAX_EXP));
+#else
+		mob->job_exp = static_cast<t_exp>(cap_value((double)exp, 0, MAX_EXP));
+#endif // Pandas_YamlBlastCache_MobDatabase
 	} else {
 		if (!exists)
 			mob->job_exp = 0;
@@ -4571,7 +4585,14 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asUInt64(node, "MvpExp", exp))
 			return 0;
 
+#ifndef Pandas_YamlBlastCache_MobDatabase
+		// 按照规范, 不应该在此进行战斗配置选项的应用
+		// 将这部分应用操作挪动到: MobDatabase::loadingFinished 来实现
+		// 避免疾风缓存将这里的值缓存住之后导致 mvp_exp_rate 战斗配置选项无效
 		mob->mexp = static_cast<t_exp>(cap_value((double)exp * (double)battle_config.mvp_exp_rate / 100., 0, MAX_EXP));
+#else
+		mob->mexp = static_cast<t_exp>(cap_value((double)exp, 0, MAX_EXP));
+#endif // Pandas_YamlBlastCache_MobDatabase
 	} else {
 		if (!exists)
 			mob->mexp = 0;
@@ -5053,6 +5074,14 @@ void MobDatabase::loadingFinished() {
 				mob->status.mode = static_cast<e_mode>(mob->status.mode | MD_FIXEDITEMDROP);
 				break;
 		}
+
+#ifdef Pandas_YamlBlastCache_MobDatabase
+		// 从 parseBodyNode 把代码挪下来, 在此进行具体的战斗配置选项应用
+		// 因为疾风缓存在完成缓存的读取工作之后依然会触发 MobDatabase::loadingFinished
+		mob->base_exp = static_cast<t_exp>(cap_value((double)mob->base_exp * (double)battle_config.base_exp_rate / 100., 0, MAX_EXP));
+		mob->job_exp = static_cast<t_exp>(cap_value((double)mob->job_exp * (double)battle_config.job_exp_rate / 100., 0, MAX_EXP));
+		mob->mexp = static_cast<t_exp>(cap_value((double)mob->mexp * (double)battle_config.mvp_exp_rate / 100., 0, MAX_EXP));
+#endif // Pandas_YamlBlastCache_MobDatabase
 
 		if (battle_config.view_range_rate != 100)
 			mob->range2 = cap_value(mob->range2, 1, mob->range2 * battle_config.view_range_rate / 100);
