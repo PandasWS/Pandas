@@ -331,11 +331,10 @@ bool YamlDatabase::load(){
 	}
 
 	bool ret = this->load( this->getDefaultLocation() );
-	this->loadingFinished();
-
 	if (ret) {
 		this->saveToSerialize();
 	}
+	this->loadingFinished();
 #endif // Pandas_YamlBlastCache_Serialize
 
 	return ret;
