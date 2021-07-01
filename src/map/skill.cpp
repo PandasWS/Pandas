@@ -22639,14 +22639,10 @@ uint64 SkillDatabase::parseBodyNode(const YAML::Node &node) {
 			}
 
 #ifndef Pandas_YamlBlastCache_SkillDatabase
-			// 按照规范, 不应该在此进行战斗配置选项的应用
 			// 将这部分应用操作挪动到: SkillDatabase::loadingFinished 来实现
-			// 避免疾风缓存将这里的值缓存住之后导致 defnotenemy 战斗配置选项无效
-			//
-			// 备注: 2021年6月30日 发现 defnotenemy 这个战斗配置选项没有在战斗配置文件...
+			// 避免疾风缓存将这里的值缓存住之后导致 defunit_not_enemy 战斗配置选项无效
 			if (skill->unit_flag[UF_NOENEMY] && battle_config.defnotenemy)
 				skill->unit_target = BCT_NOENEMY;
-#endif // Pandas_YamlBlastCache_SkillDatabase
 
 			// By default, target just characters.
 			skill->unit_target |= BL_CHAR;
@@ -22656,6 +22652,7 @@ uint64 SkillDatabase::parseBodyNode(const YAML::Node &node) {
 				skill->unit_target &= ~BL_MOB;
 			if (skill->unit_flag[UF_SKILL])
 				skill->unit_target |= BL_SKILL;
+#endif // Pandas_YamlBlastCache_SkillDatabase
 		} else {
 			if (!exists){
 				skill->unit_flag = UF_NONE;
@@ -22690,6 +22687,15 @@ void SkillDatabase::loadingFinished() {
 		// 因为疾风缓存在完成缓存的读取工作之后依然会触发 SkillDatabase::loadingFinished
 		if (skill->unit_flag[UF_NOENEMY] && battle_config.defnotenemy)
 			skill->unit_target = BCT_NOENEMY;
+
+		// By default, target just characters.
+		skill->unit_target |= BL_CHAR;
+		if (skill->unit_flag[UF_NOPC])
+			skill->unit_target &= ~BL_PC;
+		if (skill->unit_flag[UF_NOMOB])
+			skill->unit_target &= ~BL_MOB;
+		if (skill->unit_flag[UF_SKILL])
+			skill->unit_target |= BL_SKILL;
 	}
 }
 
