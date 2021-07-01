@@ -90,6 +90,10 @@ static inline int32 client_exp(t_exp exp) {
 /* for clif_clearunit_delayed */
 static struct eri *delay_clearunit_ers;
 
+#ifdef Pandas_Send_Twice_ClearUnit_For_Dead_Mob
+static struct eri* twice_clearunit_ers;
+#endif // Pandas_Send_Twice_ClearUnit_For_Dead_Mob
+
 struct s_packet_db packet_db[MAX_PACKET_DB + 1];
 int packet_db_ack[MAX_ACK_FUNC + 1];
 // Reuseable global packet buffer to prevent too many allocations
@@ -949,6 +953,28 @@ void clif_clearunit_single(int id, clr_type type, int fd)
 	WFIFOSET(fd, packet_len(0x80));
 }
 
+#ifdef Pandas_Send_Twice_ClearUnit_For_Dead_Mob
+static TIMER_FUNC(clif_clearunit_twice_sub) {
+	struct block_list* bl = (struct block_list*)data;
+
+	if (!bl) {
+		ers_free(twice_clearunit_ers, bl);
+		return 0;
+	}
+
+	unsigned char buf[8] = { 0 };
+
+	WBUFW(buf, 0) = 0x80;
+	WBUFL(buf, 2) = bl->id;
+	WBUFB(buf, 6) = (clr_type)id;
+
+	clif_send(buf, packet_len(0x80), bl, (clr_type)id == CLR_DEAD ? AREA : AREA_WOS);
+
+	ers_free(twice_clearunit_ers, bl);
+	return 0;
+}
+#endif // Pandas_Send_Twice_ClearUnit_For_Dead_Mob
+
 /// Makes a unit (char, npc, mob, homun) disappear to all clients in area (ZC_NOTIFY_VANISH).
 /// 0080 <id>.L <type>.B
 /// type:
@@ -973,6 +999,16 @@ void clif_clearunit_area(struct block_list* bl, clr_type type)
 		WBUFL(buf,2) = disguised_bl_id( bl->id );
 		clif_send(buf, packet_len(0x80), bl, SELF);
 	}
+
+#ifdef Pandas_Send_Twice_ClearUnit_For_Dead_Mob
+	if (bl->type == BL_MOB && type == CLR_DEAD) {
+		struct block_list* tbl = ers_alloc(twice_clearunit_ers, struct block_list);
+		if (tbl) {
+			memcpy(tbl, bl, sizeof(struct block_list));
+			add_timer(gettick() + Pandas_Send_Twice_ClearUnit_For_Dead_Mob, clif_clearunit_twice_sub, (int)type, (intptr_t)tbl);
+		}
+	}
+#endif // Pandas_Send_Twice_ClearUnit_For_Dead_Mob
 }
 
 
@@ -23085,8 +23121,14 @@ void do_init_clif(void) {
 #endif
 
 	delay_clearunit_ers = ers_new(sizeof(struct block_list),"clif.cpp::delay_clearunit_ers",ERS_OPT_CLEAR);
+#ifdef Pandas_Send_Twice_ClearUnit_For_Dead_Mob
+	twice_clearunit_ers = ers_new(sizeof(struct block_list),"clif.cpp::twice_clearunit_ers", ERS_OPT_CLEAR);
+#endif // Pandas_Send_Twice_ClearUnit_For_Dead_Mob
 }
 
 void do_final_clif(void) {
 	ers_destroy(delay_clearunit_ers);
+#ifdef Pandas_Send_Twice_ClearUnit_For_Dead_Mob
+	ers_destroy(twice_clearunit_ers);
+#endif // Pandas_Send_Twice_ClearUnit_For_Dead_Mob
 }
