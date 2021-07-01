@@ -759,6 +759,12 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
 	int batrec_autoenabled_unit;			// 有哪些单位默认开启战斗记录 [Sola丶小克]
 #endif // Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
+#ifdef Pandas_BattleConfig_Repeat_ClearUnit_Interval
+	int repeat_clearunit_interval;
+#endif // Pandas_BattleConfig_Repeat_ClearUnit_Interval
+#ifdef Pandas_BattleConfig_Dead_Area_Size
+	int dead_area_size;
+#endif // Pandas_BattleConfig_Dead_Area_Size
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

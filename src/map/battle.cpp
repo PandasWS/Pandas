@@ -9243,26 +9243,32 @@ static const struct _battle_data {
 	{ "suspend_afk_headtop_viewid",         &battle_config.suspend_afk_headtop_viewid,      471,    0,      INT_MAX,        },
 #endif // Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
 #ifdef Pandas_BattleConfig_Suspend_Normal_BodyDirection
-	{ "suspend_normal_bodydirection",    &battle_config.suspend_normal_bodydirection,       -1,     -1,     7,              },
+	{ "suspend_normal_bodydirection",       &battle_config.suspend_normal_bodydirection,    -1,     -1,     7,              },
 #endif // Pandas_BattleConfig_Suspend_Normal_BodyDirection
 #ifdef Pandas_BattleConfig_Suspend_Normal_HeadDirection
-	{ "suspend_normal_headdirection",    &battle_config.suspend_normal_headdirection,       -1,     -1,     2,              },
+	{ "suspend_normal_headdirection",       &battle_config.suspend_normal_headdirection,    -1,     -1,     2,              },
 #endif // Pandas_BattleConfig_Suspend_Normal_HeadDirection
 #ifdef Pandas_BattleConfig_Suspend_Normal_Sitdown
-	{ "suspend_normal_sitdown",    &battle_config.suspend_normal_sitdown,                   -1,     -1,     1,              },
+	{ "suspend_normal_sitdown",             &battle_config.suspend_normal_sitdown,          -1,     -1,     1,              },
 #endif // Pandas_BattleConfig_Suspend_Normal_Sitdown
 #ifdef Pandas_BattleConfig_Multiplayer_Recall_Behavior
-	{ "multiplayer_recall_behavior",    &battle_config.multiplayer_recall_behavior,         3,      0,      3,              },
+	{ "multiplayer_recall_behavior",        &battle_config.multiplayer_recall_behavior,     3,      0,      3,              },
 #endif // Pandas_BattleConfig_Multiplayer_Recall_Behavior
 #ifdef Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
-	{ "always_trigger_npc_killevent",    &battle_config.always_trigger_npc_killevent,       0,      0,      1,              },
+	{ "always_trigger_npc_killevent",       &battle_config.always_trigger_npc_killevent,    0,      0,      1,              },
 #endif // Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
 #ifdef Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
-	{ "always_trigger_mvp_killevent",    &battle_config.always_trigger_mvp_killevent,       1,      0,      1,              },
+	{ "always_trigger_mvp_killevent",       &battle_config.always_trigger_mvp_killevent,    1,      0,      1,              },
 #endif // Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
 #ifdef Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
-	{ "batrec_autoenabled_unit",         &battle_config.batrec_autoenabled_unit,            542,    0,      BL_ALL,         },
+	{ "batrec_autoenabled_unit",           &battle_config.batrec_autoenabled_unit,          542,    0,      BL_ALL,         },
 #endif // Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
+#ifdef Pandas_BattleConfig_Repeat_ClearUnit_Interval
+	{ "repeat_clearunit_interval",         &battle_config.repeat_clearunit_interval,        0,      0,      1000,           },
+#endif // Pandas_BattleConfig_Repeat_ClearUnit_Interval
+#ifdef Pandas_BattleConfig_Dead_Area_Size
+	{ "dead_area_size",                    &battle_config.dead_area_size,                   28,     0,      200,            },
+#endif // Pandas_BattleConfig_Dead_Area_Size
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };

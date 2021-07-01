@@ -199,6 +199,9 @@ enum send_target : uint8_t {
 	ALL_CLIENT = 0,
 	ALL_SAMEMAP,
 	AREA,				// area
+#ifdef Pandas_Ease_Mob_Stuck_After_Dead
+	AREA_DEAD,			// area, for clear unit (monster death)
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
 	AREA_WOS,			// area, without self
 	AREA_WOC,			// area, without chatrooms
 	AREA_WOSC,			// area, without own chatroom

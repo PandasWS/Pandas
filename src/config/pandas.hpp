@@ -323,6 +323,14 @@
 	// 是否启用 batrec_autoenabled_unit 配置选项及其功能 [Sola丶小克]
 	// 此选项用于设置默认情况下有哪些类型的单位会启用战斗记录
 	#define Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
+
+	// 是否启用 repeat_clearunit_interval 配置选项及其功能 [Sola丶小克]
+	// 此选项用于设置重发魔物死亡封包的间隔时间 (单位为: 毫秒)
+	#define Pandas_BattleConfig_Repeat_ClearUnit_Interval
+
+	// 是否启用 dead_area_size 配置选项及其功能 [Sola丶小克]
+	// 此选项用于设置魔物死亡封包将会发送给周围多少个格的玩家
+	#define Pandas_BattleConfig_Dead_Area_Size
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
@@ -714,6 +722,34 @@
 // ============================================================================
 
 #ifdef Pandas_Bugfix
+	// 缓解魔物死亡但客户端没移除魔物单位的问题 [Sola丶小克]
+	//
+	// 造成问题存在几个可能的原因, 且这些原因在逻辑上都是合理存在的, 因此每种情况都要进行规避:
+	//
+	// 第一种情况:
+	//     魔物死亡后会发送 clif_clearunit_area 的 CLR_DEAD 封包给客户端
+	//     但是由于复杂网络结构 (比如: 使用了转发\盾机\负载均衡), 可能会导致这个小封包粘在上一个封包中发出
+	//     导致客户端无法正常收到和解析这个小封包.
+	//     
+	//     缓解措施是: 在一个指定的时间间隔内, 由服务端补发一个封包给客户端
+	//     但付出的代价是每个魔物死亡都需要额外发送一个封包, 请根据网络环境酌情选择开启或者关闭
+	//     可通过 repeat_clearunit_interval 战斗配置选项控制发送间隔
+	//     但是要注意, 取值不能太大 (间隔不能太久), 否则一方面没意义,
+	//     另外一方面如果魔物由于其他机制用相同的 GameID 复活则会导致它被错误的移除
+	//
+	// 第二种情况:
+	//     部分技能会击退魔物, 当你召唤 100 个波利，然后用暴风雪打距离屏幕边缘的怪物
+	//     技能读条完毕后立刻往反方向移动 (提前 @speed 1), 等暴风雪结束后回来观看, 较大概率会有魔物死亡但没被移除
+	//
+	//     造成这一现象的原因是, 当魔物死亡的时候 clif_clearunit_area 的 CLR_DEAD 封包会发送给
+	//     死亡的魔物周围 AREA_SIZE 格子的其他单位, 但如果你跑得太快, 那么封包发送的时候你已经不在接收范围内了
+	//     最后导致看起来和没收到 clif_clearunit_area 的 CLR_DEAD 封包一样, 客户端就无法移除它
+	//
+	//     缓解措施是: 在发送 clif_clearunit_area 的 CLR_DEAD 封包时, 给与一个更大的 AREA_SIZE
+	//
+	// 可能还会有其他情况导致类似的事情发生, 碰见再具体分析
+	#define Pandas_Ease_Mob_Stuck_After_Dead
+
 	// 修正邮件系统在获取多道具时, 若多个道具中只有部分物品需要背包槽位,
 	// 会提示背包已满无法提取道具的情况 [Sola丶小克]
 	//
