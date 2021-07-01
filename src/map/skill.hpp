@@ -319,6 +319,7 @@ public:
 	SkillDatabase() : TypesafeCachedYamlDatabase("SKILL_DB", 1) {
 #ifdef Pandas_YamlBlastCache_SkillDatabase
 		this->supportSerialize = true;
+		this->serializeVersion = 1;
 #endif // Pandas_YamlBlastCache_SkillDatabase
 	}
 
@@ -328,6 +329,7 @@ public:
 	void clear();
 
 #ifdef Pandas_YamlBlastCache_SkillDatabase
+	void loadingFinished();
 	bool doSerialize(const std::string& type, void* archive);
 	void afterSerialize();
 #endif // Pandas_YamlBlastCache_SkillDatabase
