@@ -156,6 +156,10 @@ bool YamlDatabase::isCacheEffective() {
 		return false;
 	}
 
+	if (rocketConfig.Get<uint8>(this->type + ".VERSION", 0) != this->serializeVersion) {
+		return false;
+	}
+
 	for (uint32 cur = 0; cur < count; cur++) {
 		std::string cfg_path = rocketConfig.Get<std::string>(this->type + ".FILE_" + std::to_string(cur), "");
 		std::string cfg_hash = rocketConfig.Get<std::string>(this->type + ".HASH_" + std::to_string(cur), "");
@@ -300,6 +304,7 @@ bool YamlDatabase::saveToSerialize() {
 		if (fireResult) {
 			std::string blashHash = this->getBlashCacheHash(blashPath);
 			rocketConfig.Set(this->type + ".BLAST", blashHash);
+			rocketConfig.Set(this->type + ".VERSION", this->serializeVersion);
 		}
 
 		return fireResult;

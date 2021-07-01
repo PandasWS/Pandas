@@ -95,6 +95,7 @@ protected:
 
 #ifdef Pandas_YamlBlastCache_Serialize
 	bool supportSerialize = false;
+	uint8 serializeVersion = 0;
 #endif // Pandas_YamlBlastCache_Serialize
 
 public:
