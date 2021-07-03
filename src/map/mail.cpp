@@ -318,6 +318,11 @@ void mail_getattachment(struct map_session_data* sd, struct mail_message* msg, i
 			}else{
 				int slots = id->inventorySlotNeeded( item[i].amount );
 
+#ifdef Pandas_Fix_Mail_Attachment_Pending_Slots_Overflow
+				if (pc_checkadditem(sd, item[i].nameid, item[i].amount) != CHKADDITEM_NEW)
+					slots = 0;
+#endif // Pandas_Fix_Mail_Attachment_Pending_Slots_Overflow
+
 				// Add the item normally
 				if( pc_additem( sd, &item[i], item[i].amount, LOG_TYPE_MAIL ) == ADDITEM_SUCCESS ){
 					item_received = true;
