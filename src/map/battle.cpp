@@ -6111,6 +6111,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 #endif
 	}
 
+#ifndef Pandas_Fix_Duplicate_Cardfix_Calculation
 	if(tsd) { // Card Fix for target (tsd), 2 is not added to the "left" flag meaning "target cards only"
 #ifdef RENEWAL
 		switch(skill_id) {
@@ -6126,6 +6127,23 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		}
 #endif
 	}
+#else
+	// 复兴后已经在上面完成了 Card Fix for attacker (sd) 和 Card Fix for target (tsd) 卡片修正
+	// 此处无需再重复修正了. 否则将会触发: https://github.com/rathena/rathena/issues/5932 所反馈的问题
+#ifndef RENEWAL
+	if(tsd) { // Card Fix for target (tsd), 2 is not added to the "left" flag meaning "target cards only"
+		switch(skill_id) {
+			case NJ_ISSEN:
+				break; //These skills will do a card fix later
+			default:
+				wd.damage += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.damage, 0, wd.flag);
+				if(is_attack_left_handed(src, skill_id))
+					wd.damage2 += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.damage2, 1, wd.flag);
+				break;
+		}
+	}
+#endif // RENEWAL
+#endif // Pandas_Fix_Duplicate_Cardfix_Calculation
 
 	// only do 1 dmg to plant, no need to calculate rest
 	if(infdef){

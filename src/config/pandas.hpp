@@ -727,6 +727,10 @@
 	// 修正潜在可能存在算术溢出的情况 [Sola丶小克]
 	#define Pandas_Fix_Potential_Arithmetic_Overflow
 
+	// 解决复兴后卡片修正被应用了两次的问题 [Sola丶小克]
+	// 相关反馈: https://github.com/rathena/rathena/issues/5932
+	#define Pandas_Fix_Duplicate_Cardfix_Calculation
+
 	// 修正未判断 sscanf 返回值可能导致程序工作不符合预期的问题 [Sola丶小克]
 	#define Pandas_Fix_Ignore_sscanf_Return_Value
 
