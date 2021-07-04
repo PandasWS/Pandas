@@ -347,8 +347,15 @@ static void display_title(void) {
 	else if( git[0] != UNKNOWN_VERSION )
 		ShowInfo("Git Hash: '" CL_WHITE "%s" CL_RESET "'\n", git);
 #else
+
+#ifdef RENEWAL
+	const char* mode = "Renewal";
+#else
+	const char* mode = "Pre-Renewal";
+#endif // RENEWAL
+
 	// 在程序启动时显示 Pandas 的版本号
-	ShowInfo("Pandas Version: " CL_WHITE "%s" CL_RESET "\n", getPandasVersion().c_str());
+	ShowInfo("Pandas Version: " CL_WHITE "%s" CL_RESET " (Mode: %s)\n", getPandasVersion().c_str(), mode);
 
 	// 若宏定义开关指定了源码的版本号和分支, 那么也一起打印出来
 	std::string branch(GIT_BRANCH), hash(GIT_HASH);
