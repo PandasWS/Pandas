@@ -1,6 +1,6 @@
 '''
 //===== Pandas Python Script =================================
-//= 版本号修改辅助脚本
+//= 版本号批量修改辅助脚本
 //===== By: ================================================== 
 //= Sola丶小克
 //===== Current Version: ===================================== 
@@ -31,12 +31,12 @@ project_slndir = '../../'
 options = {
     r'.*\.rc$' : [
         {
-            'regex' : r'FILEVERSION (\d,\d,\d,\d)',
+            'regex' : r'FILEVERSION (\d+,\d+,\d+,\d+)',
             'replto' : r'FILEVERSION %s',
             'vmode' : ','
         },
         {
-            'regex' : r'PRODUCTVERSION (\d,\d,\d,\d)',
+            'regex' : r'PRODUCTVERSION (\d+,\d+,\d+,\d+)',
             'replto' : r'PRODUCTVERSION %s',
             'vmode' : ','
         },
@@ -135,7 +135,7 @@ class VersionUpdater():
 def main():
     os.chdir(os.path.split(os.path.realpath(__file__))[0])
 
-    Common.welcome('版本号修改辅助脚本')
+    Common.welcome('版本号批量修改辅助脚本')
 
     print('')
 
