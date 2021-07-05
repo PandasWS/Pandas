@@ -10,6 +10,21 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+## [v1.1.3] - `2021-07-05`
+
+### 添加
+
+- 使程序启动时能显示编译时确定的工作模式
+- 丰富编译、打包、签名存储环节的可配置项, 以便进行多项目管理 (#374)
+
+### 修正
+
+- 修正疾风引擎导致部分战斗配置选项无效的问题 (#375)
+- 缓解魔物死亡但客户端没移除魔物单位的问题
+- 修正邮件拥有多个道具附件时, 特定情况下背包槽位计算错误的问题 (#376)
+- 解决复兴后部分卡片修正被应用了两次的问题 (#377)
+- 修正版本号批量修改辅助脚本无法改变多位数版本号的问题
+
 ## [v1.1.2] - `2021-06-21`
 
 ### 升级
@@ -391,6 +406,7 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.1.3]: https://github.com/PandasWS/Pandas/compare/v1.1.2...v1.1.3
 [v1.1.2]: https://github.com/PandasWS/Pandas/compare/v1.1.1...v1.1.2
 [v1.1.1]: https://github.com/PandasWS/Pandas/compare/v1.1.0...v1.1.1
 [v1.1.0]: https://github.com/PandasWS/Pandas/compare/v1.0.9...v1.1.0
