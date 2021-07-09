@@ -3147,7 +3147,7 @@ void clif_inventorylist( struct map_session_data *sd ){
 			// 这里处理的是: 
 			// 当"玩家自己"看自己装备栏时, 根据开关决定是否隐藏外观 [Sola丶小克]
 			if (sd->inventory_data[i]->look != 0) {
-				if (sd->inventory_data[i]->pandas.properties.noview_mask & ITEM_NOVIEW_WHEN_I_SEE) {
+				if (ITEM_PROPERTIES_HASFLAG(sd->inventory_data[i], noview_mask, ITEM_NOVIEW_WHEN_I_SEE)) {
 					// 构建一个 item_data 但将它的 look 设置为 0
 					struct item_data id = { 0 };
 					memcpy(&id, sd->inventory_data[i], sizeof(struct item_data));
@@ -4294,7 +4294,7 @@ void clif_equipitemack(struct map_session_data *sd,int n,int pos,uint8 flag)
 #ifdef Pandas_Item_ControlViewID
 	// 若装备刚穿戴成功的话, 也需要根据情况看看是否需要过滤掉外观 [Sola丶小克]
 	if (flag == ITEM_EQUIP_ACK_OK && sd->inventory_data[n]->look != 0) {
-		if (sd->inventory_data[n]->pandas.properties.noview_mask & ITEM_NOVIEW_WHEN_I_SEE) {
+		if (ITEM_PROPERTIES_HASFLAG(sd->inventory_data[n], noview_mask, ITEM_NOVIEW_WHEN_I_SEE)) {
 			look = 0;
 		}
 	}
@@ -10793,7 +10793,7 @@ void clif_viewequip_ack( struct map_session_data* sd, struct map_session_data* t
 			// 这里处理的是: 
 			// 当"其他玩家"看自己装备栏时, 根据开关决定是否隐藏外观 [Sola丶小克]
 			if (tsd->inventory_data[k]->look != 0) {
-				if (tsd->inventory_data[k]->pandas.properties.noview_mask & ITEM_NOVIEW_WHEN_T_SEE) {
+				if (ITEM_PROPERTIES_HASFLAG(tsd->inventory_data[k], noview_mask, ITEM_NOVIEW_WHEN_T_SEE)) {
 					// 构建一个 item_data 但将它的 look 设置为 0
 					struct item_data id = { 0 };
 					memcpy(&id, tsd->inventory_data[k], sizeof(struct item_data));

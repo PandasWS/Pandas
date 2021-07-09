@@ -5,6 +5,7 @@
 
 #include "pc.hpp"
 #include "itemdb.hpp"
+#include "itemprops.hpp"
 
 #include "../common/nullpo.hpp"
 #include "../common/utils.hpp"
@@ -22,7 +23,7 @@ extern short current_equip_item_index;
 bool amulet_is(t_itemid nameid) {
 #ifdef Pandas_Item_Amulet_System
 	struct item_data* item = itemdb_search(nameid);
-	return (item && item->pandas.properties.is_amulet);
+	return ITEM_PROPERTIES_HASFLAG(item, special_mask, ITEM_PRO_IS_AMULET_ITEM);
 #else
 	return false;
 #endif // Pandas_Item_Amulet_System

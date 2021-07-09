@@ -1298,6 +1298,10 @@ void ItemDatabase::afterSerialize() {
 		SERIALIZE_SET_MEMORY_ZERO(item->mob);
 		item->combos.clear();
 
+#ifdef Pandas_Struct_Item_Data_Properties
+		SERIALIZE_SET_MEMORY_ZERO(item->pandas.properties);
+#endif // Pandas_Struct_Item_Data_Properties
+
 		// ==================================================================
 		// 根据脚本明文重新生成脚本指令序列
 		// ==================================================================
@@ -3005,6 +3009,13 @@ static void itemdb_read(void) {
 
 	random_option_db.load();
 	random_option_group.load();
+
+#ifdef Pandas_Database_ItemProperties
+	// 加载 item_properties.yml 必须在 item_db.load(); 之后进行
+	// 因此加载过程中需要判断物品编号是否有效, 这需要依赖 itemdb_read 的执行结果
+	item_properties_db.load();
+	item_properties_db.parsePropertiesToItemDB(item_db);
+#endif // Pandas_Database_ItemProperties
 }
 
 /*==========================================
@@ -3091,13 +3102,6 @@ void itemdb_reload(void) {
 	itemdb_read();
 	cashshop_reloaddb();
 
-#ifdef Pandas_Database_ItemProperties
-	// 加载 item_properties.yml 必须在 itemdb_read 之后进行
-	// 因此加载过程中需要判断物品编号是否有效, 这需要依赖 itemdb_read 的执行结果
-	item_properties_db.load();
-	item_properties_db.parsePropertiesToItemDB(item_db);
-#endif // Pandas_Database_ItemProperties
-
 	if (battle_config.feature_roulette)
 		itemdb_parse_roulette_db();
 
@@ -3157,13 +3161,6 @@ void do_final_itemdb(void) {
 void do_init_itemdb(void) {
 	itemdb_group = uidb_alloc(DB_OPT_BASE);
 	itemdb_read();
-
-#ifdef Pandas_Database_ItemProperties
-	// 加载 item_properties.yml 必须在 itemdb_read 之后进行
-	// 因此加载过程中需要判断物品编号是否有效, 这需要依赖 itemdb_read 的执行结果
-	item_properties_db.load();
-	item_properties_db.parsePropertiesToItemDB(item_db);
-#endif // Pandas_Database_ItemProperties
 
 	if (battle_config.feature_roulette)
 		itemdb_parse_roulette_db();

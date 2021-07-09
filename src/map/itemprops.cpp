@@ -7,6 +7,19 @@
 
 ItemProperties item_properties_db;
 
+#define GETYAML_NODE_BOOL(ynode, var, targetfield, mask) {\
+	if (this->nodeExists(ynode, var)) {\
+		bool option = false;\
+		if (!this->asBool(ynode, var, option)) {\
+			return 0;\
+		}\
+		if (option)\
+			targetfield |= mask;\
+		else\
+			targetfield &= ~mask;\
+	}\
+}
+
 //************************************
 // Method:      getDefaultLocation
 // Description: 获取 YAML 数据文件的具体路径
@@ -45,45 +58,23 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "Property")) {
-		uint32 property = 0;
-
-		if (!this->asUInt32(node, "Property", property)) {
-			return 0;
-		}
-
-		properties_item->property = property;
+		const YAML::Node& propertyNode = node["Property"];
+		GETYAML_NODE_BOOL(propertyNode, "AvoidConsumeForUse", properties_item->special, ITEM_PRO_AVOID_CONSUME_FOR_USE);
+		GETYAML_NODE_BOOL(propertyNode, "AvoidConsumeForSkill", properties_item->special, ITEM_PRO_AVOID_CONSUME_FOR_SKILL);
+		GETYAML_NODE_BOOL(propertyNode, "IsAmuletItem", properties_item->special, ITEM_PRO_IS_AMULET_ITEM);
 	}
 
 	if (this->nodeExists(node, "ControlViewID")) {
 		const YAML::Node& noviewNode = node["ControlViewID"];
-
-		#define GETYAML_NODE_BOOL(ynode, var, mask) {\
-			if (this->nodeExists(ynode, var)) {\
-				bool option = false;\
-				if (!this->asBool(ynode, var, option)) {\
-					return 0;\
-				}\
-				if (option)\
-					properties_item->noview |= mask;\
-				else\
-					properties_item->noview &= ~mask;\
-			}\
-		}
-
-		GETYAML_NODE_BOOL(noviewNode, "InvisibleWhenISee", ITEM_NOVIEW_WHEN_I_SEE);
-		GETYAML_NODE_BOOL(noviewNode, "InvisibleWhenTheySee", ITEM_NOVIEW_WHEN_T_SEE);
-
-		#undef GETYAML_NODE_BOOL
+		GETYAML_NODE_BOOL(noviewNode, "InvisibleWhenISee", properties_item->noview, ITEM_NOVIEW_WHEN_I_SEE);
+		GETYAML_NODE_BOOL(noviewNode, "InvisibleWhenTheySee", properties_item->noview, ITEM_NOVIEW_WHEN_T_SEE);
 	}
 
 	if (this->nodeExists(node, "AnnouceRules")) {
-		uint32 annouceRules = 0;
-
-		if (!this->asUInt32(node, "AnnouceRules", annouceRules)) {
-			return 0;
-		}
-
-		properties_item->annouce = annouceRules;
+		const YAML::Node& annouceNode = node["AnnouceRules"];
+		GETYAML_NODE_BOOL(annouceNode, "DropToGround", properties_item->annouce, ITEM_ANNOUCE_DROP_TO_GROUND);
+		GETYAML_NODE_BOOL(annouceNode, "DropToInventoryForMVP", properties_item->annouce, ITEM_ANNOUCE_DROP_TO_INVENTORY_FOR_MVP);
+		GETYAML_NODE_BOOL(annouceNode, "StealToInventory", properties_item->annouce, ITEM_ANNOUCE_STEAL_TO_INVENTORY);
 	}
 
 	if (!exists) {
@@ -107,16 +98,14 @@ void ItemProperties::parsePropertiesToItemDB(ItemDatabase& item_db) {
 		auto item = it.second;
 
 		if (value) {
-			item->pandas.properties.avoid_use_consume = ((value->property & 1) == 1);
-			item->pandas.properties.avoid_skill_consume = ((value->property & 2) == 2);
-			item->pandas.properties.is_amulet = ((value->property & 4) == 4);
+			item->pandas.properties.special_mask = value->special;
 			item->pandas.properties.noview_mask = value->noview;
 			item->pandas.properties.annouce_mask = value->annouce;
 		}
 
 #ifdef Pandas_Item_Amulet_System
 		// 若为护身符道具, 则直接改写它的物品类型为 IT_AMULET
-		if (item->pandas.properties.is_amulet) {
+		if (ITEM_PROPERTIES_HASFLAG(item, special_mask, ITEM_PRO_IS_AMULET_ITEM)) {
 			item->type = IT_AMULET;
 		}
 #endif // Pandas_Item_Amulet_System

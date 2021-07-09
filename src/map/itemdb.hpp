@@ -970,9 +970,7 @@ struct item_data
 #ifdef Pandas_Struct_Item_Data_Properties
 		// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
 		struct {
-			bool avoid_use_consume = false;
-			bool avoid_skill_consume = false;
-			bool is_amulet = false;
+			uint32 special_mask = 0;
 			uint32 noview_mask = 0;
 			uint32 annouce_mask = 0;
 		} properties;
@@ -1088,7 +1086,7 @@ public:
 	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 1) {
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 		this->supportSerialize = true;
-		this->serializeVersion = 1;
+		this->serializeVersion = 2;
 #endif // Pandas_YamlBlastCache_ItemDatabase
 	}
 
@@ -1273,14 +1271,6 @@ namespace boost {
 #ifdef Pandas_Struct_Item_Data_Has_CallFunc
 			ar& t.pandas.has_callfunc;
 #endif // Pandas_Struct_Item_Data_Has_CallFunc
-
-#ifdef Pandas_Struct_Item_Data_Properties
-			ar& t.pandas.properties.avoid_use_consume;
-			ar& t.pandas.properties.avoid_skill_consume;
-			ar& t.pandas.properties.is_amulet;
-			ar& t.pandas.properties.noview_mask;
-			ar& t.pandas.properties.annouce_mask;
-#endif // Pandas_Struct_Item_Data_Properties
 
 #endif // Pandas_Struct_Item_Data_Pandas
 		}

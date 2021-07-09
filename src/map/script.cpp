@@ -76,6 +76,10 @@
 #include "aura.hpp"
 #endif // Pandas_Aura_Mechanism
 
+#ifdef Pandas_Item_Properties
+#include "itemprops.hpp"
+#endif // Pandas_Item_Properties
+
 using namespace rathena;
 
 const int64 SCRIPT_INT_MIN = INT64_MIN;
@@ -14662,8 +14666,12 @@ BUILDIN_FUNC(getiteminfo)
 		}
 
 #ifdef Pandas_Struct_Item_Data_Properties
-		case -3: script_pushint(st, i_data->pandas.properties.avoid_use_consume ? 1 : 0); break;
-		case -4: script_pushint(st, i_data->pandas.properties.avoid_skill_consume ? 1 : 0);	break;
+		case -3:
+			script_pushint(st, ITEM_PROPERTIES_HASFLAG(i_data, special_mask, ITEM_PRO_AVOID_CONSUME_FOR_USE) ? 1 : 0);
+			break;
+		case -4:
+			script_pushint(st, ITEM_PROPERTIES_HASFLAG(i_data, special_mask, ITEM_PRO_AVOID_CONSUME_FOR_SKILL) ? 1 : 0);
+			break;
 #else
 		case -3: script_pushint(st, 0);	break;
 		case -4: script_pushint(st, 0);	break;
