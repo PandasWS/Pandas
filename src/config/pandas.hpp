@@ -396,9 +396,14 @@
 	// 只要 IP 地址被判定为无条件放行, 那么他将不会因为高频连接而被判定为发起了 DDoS 攻击.
 	#define Pandas_FuncLogic_Whitelist_Privileges
 
-	// 在 pc.cpp 中的 pc_is_same_equip_index 增加 sd 参数 [Sola丶小克]
-	// 新增的 sd 用于在启用了背包拓展机制时, 能够更加正确的计算玩家的背包容量而不是使用默认的 MAX_INVENTORY
+	// 在 pc.cpp 中给 pc_is_same_equip_index 函数增加 sd 参数 [Sola丶小克]
+	// 新增的 sd 参数用于在启用了背包拓展机制之后能够更加正确的计算玩家的背包容量,
+	// 而不是使用默认固定的 MAX_INVENTORY
 	#define Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
+
+	// 调整 clif.cpp 中给 clif_item_equip 函数增加 caller 参数 [Sola丶小克]
+	// 新增的 caller 参数用来标记调用这个函数的调用者是谁, 以便在必要情况下能够调整返回给客户端的字段值
+	#define Pandas_FuncParams_Clif_Item_Equip
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -485,7 +490,10 @@
 		//
 		// ControlViewID 节点中的 InvisibleWhenISee 子节点
 		// ControlViewID 节点中的 InvisibleWhenTheySee 子节点
-		#define Pandas_Item_ControlViewID
+		// 此选项依赖 Pandas_FuncParams_Clif_Item_Equip 的拓展
+		#ifdef Pandas_FuncParams_Clif_Item_Equip
+			#define Pandas_Item_ControlViewID
+		#endif // Pandas_FuncParams_Clif_Item_Equip
 
 		// 是否启用特殊的道具掉落公告规则 [Sola丶小克]
 		// 此选项开启后 (item_properties.yml) 数据库中以下选项才能发挥作用:

@@ -3,17 +3,17 @@
 ###########################################################################
 #
 #  - ItemID                      想进行特殊设置的道具编号
-#    Property:                   可选列表, 标出物品有什么特殊属性或者是作用
-#      AvoidConsumeForUse          可选, 避免物品被玩家主动从背包或快捷栏使用而消耗
-#      AvoidConsumeForSkill        可选, 避免物品被作为发动技能的必要道具而消耗
-#      IsAmuletItem                可选, 表示此物品是一个护身符类型的道具
-#    ControlViewID:              可选列表, 控制是否需要在特定场景下隐藏此道具的外观
-#      InvisibleWhenISee           可选, 当我自己在装备面板中查看装备时隐藏外观
-#      InvisibleWhenTheySee        可选, 当其他人查看我的装备时隐藏外观
-#    AnnouceRules:               可选列表, 控制物品掉落时的特殊公告时机
-#      DropToGround:               可选, 当打死魔物死亡后将道具掉落到地上时公告
-#      DropToInventoryForMVP:      可选, 当打死魔物掉落 MVP 道具到玩家背包时公告
-#      StealToInventory:           可选, 使用"偷窃"技能从魔物身上偷到此物品时公告
+#    Property:
+#      AvoidConsumeForUse        避免物品被玩家主动从背包或快捷栏使用而消耗
+#      AvoidConsumeForSkill      避免物品被作为发动技能的必要道具而消耗
+#      IsAmuletItem              表示此物品是一个护身符类型的道具
+#    ControlViewID:
+#      InvisibleWhenISee         当我自己在装备面板中查看装备时隐藏外观
+#      InvisibleWhenTheySee      当其他人查看我的装备时隐藏外观
+#    AnnouceRules:
+#      DropToGround:             当打死魔物死亡后将道具掉落到地上时公告
+#      DropToInventoryForMVP:    当打死魔物掉落 MVP 道具到玩家背包时公告
+#      StealToInventory:         使用"偷窃"技能从魔物身上偷到此物品时公告
 #
 ###########################################################################
 #
@@ -123,7 +123,6 @@ Body:
 #      DropToGround: false
 #      DropToInventoryForMVP: false
 #      StealToInventory: false
-
 
 Footer:
   Imports:
