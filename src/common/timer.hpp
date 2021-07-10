@@ -60,7 +60,7 @@ t_tick addt_tickimer(int tid, t_tick tick);
 t_tick sett_tickimer(int tid, t_tick tick);
 
 #ifdef Pandas_BattleRecord
-void set_timerid(int tid, int id);
+void exchange_timer_id(int origin_id, int new_id);
 void detect_invalid_timer(int id);
 #endif // Pandas_BattleRecord
 int add_timer_func_list(TimerFunc func, const char* name);

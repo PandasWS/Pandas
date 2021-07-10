@@ -2132,40 +2132,20 @@ void map_mobiddb(struct block_list* bl, int new_blockid) {
 	}
 
 	// 接下来重设一些与游戏单位编号相关的定时器
+	exchange_timer_id(origin_blockid, new_blockid);
 
-	set_timerid(md->spawn_timer, bl->id);
-	set_timerid(md->deletetimer, bl->id);
-
-	struct unit_data* ud = nullptr;
-	if ((ud = unit_bl2ud(bl)) != nullptr) {
-		set_timerid(ud->attacktimer, bl->id);
-		set_timerid(ud->skilltimer, bl->id);
-		set_timerid(ud->steptimer, bl->id);
-		set_timerid(ud->walktimer, bl->id);
-	}
-
-#ifdef Pandas_Aura_Mechanism
-	struct s_unit_common_data* ucd = nullptr;
-	if ((ucd = status_get_ucd(bl)) != nullptr) {
-		for (auto it : ucd->aura.effects) {
-			if (it->replay_tid == INVALID_TIMER) continue;
-			set_timerid(it->replay_tid, bl->id);
-		}
-	}
-#endif // Pandas_Aura_Mechanism
-
+	// 进行一些遗漏检测, 如果发现有未处理的定时器则需要警告出来
 	detect_invalid_timer(origin_blockid);
 
 	// 接下来处理与游戏单位编号相关的 skill_unit_group
-
-	if (ud) {
+	struct unit_data* ud = nullptr;
+	if ((ud = unit_bl2ud(bl)) != nullptr) {
 		for (int i = 0; i < MAX_SKILLUNITGROUP; i++) {
 			if (ud->skillunit[i] && ud->skillunit[i]->src_id == origin_blockid) {
 				ud->skillunit[i]->src_id = bl->id;
 			}
 		}
 	}
-
 }
 #endif // Pandas_BattleRecord
 
