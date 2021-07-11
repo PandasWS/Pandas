@@ -5412,7 +5412,7 @@ char pc_delitem(struct map_session_data *sd,int n,int amount,int type, short rea
 
 #ifdef Pandas_Item_Properties
 	// 避免物品被作为发动技能的必要道具而消耗
-	if (sd->inventory_data[n]->pandas.properties.avoid_skill_consume && reason == 1)
+	if (ITEM_PROPERTIES_HASFLAG(sd->inventory_data[n], special_mask, ITEM_PRO_AVOID_CONSUME_FOR_SKILL) && reason == 1)
 		return 0;
 #endif // Pandas_Item_Properties
 
@@ -5900,6 +5900,15 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 	amount = item.amount;
 	script = id->script;
+
+#ifdef Pandas_Item_Properties
+	// 判断是否需要避免物品被玩家主动使用而消耗
+	// 若可以被玩家主动使用而消耗, 那么执行原有的道具删除流程
+	if (ITEM_PROPERTIES_HASFLAG(id, special_mask, ITEM_PRO_AVOID_CONSUME_FOR_USE)) {
+		clif_useitemack(sd, n, 0, false);
+	}
+	else {
+#endif // Pandas_Item_Properties
 	//Check if the item is to be consumed immediately [Skotlex]
 	if (id->flag.delay_consume > 0)
 		clif_useitemack(sd, n, amount, true);
@@ -5907,24 +5916,15 @@ int pc_useitem(struct map_session_data *sd,int n)
 	{
 		if( item.expire_time == 0 && nameid != ITEMID_REINS_OF_MOUNT )
 		{
-#ifndef Pandas_Item_Properties
 			clif_useitemack(sd, n, amount - 1, true);
 			pc_delitem(sd, n, 1, 1, 0, LOG_TYPE_CONSUME); // Rental Usable Items are not deleted until expiration
-#else
-			// 判断是否需要避免物品被玩家主动使用而消耗
-			// 若可以被玩家主动使用而消耗, 那么执行原有的道具删除流程
-			if (id && id->pandas.properties.avoid_use_consume) {
-				clif_useitemack(sd, n, amount, true);
-			}
-			else {
-				clif_useitemack(sd, n, amount - 1, true);
-				pc_delitem(sd, n, 1, 1, 0, LOG_TYPE_CONSUME); // Rental Usable Items are not deleted until expiration
-			}
-#endif // Pandas_Item_Properties
 		}
 		else
 			clif_useitemack(sd, n, 0, false);
 	}
+#ifdef Pandas_Item_Properties
+	}
+#endif // Pandas_Item_Properties
 	if (item.card[0]==CARD0_CREATE && pc_famerank(MakeDWord(item.card[2],item.card[3]), MAPID_ALCHEMIST))
 	    potion_flag = 2; // Famous player's potions have 50% more efficiency
 
@@ -6263,7 +6263,7 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 	
 	if (sd) {
 		struct item_data* dd = itemdb_search(itemid);
-		if (dd && dd->pandas.properties.annouce_mask & ITEM_ANNOUCE_STEAL_TO_INVENTORY) {
+		if (ITEM_PROPERTIES_HASFLAG(dd, annouce_mask, ITEM_ANNOUCE_STEAL_TO_INVENTORY)) {
 			char message[128] = { 0 };
 			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, dd->ename.c_str(), (float)md->db->dropitem[i].rate / 100);
 			intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);

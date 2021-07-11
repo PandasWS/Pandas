@@ -2886,7 +2886,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 
 			if (mvp_sd && ditem) {
 				struct item_data* dd = itemdb_search(ditem->item_data.nameid);
-				if (dd && dd->pandas.properties.annouce_mask & ITEM_ANNOUCE_DROP_TO_GROUND) {
+				if (ITEM_PROPERTIES_HASFLAG(dd, annouce_mask, ITEM_ANNOUCE_DROP_TO_GROUND)) {
 					char message[128] = { 0 };
 					sprintf(message, msg_txt(NULL,541), mvp_sd->status.name, md->name, it->ename.c_str(), (float)drop_rate / 100);
 					intif_broadcast(message,strlen(message)+1,BC_DEFAULT);
@@ -3076,7 +3076,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 				bool is_spceial_annouced = false;
 
 				if (mvp_sd && i_data) {
-					if (i_data->pandas.properties.annouce_mask & ITEM_ANNOUCE_MVPITEM_DROP_TO_INVENTORY) {
+					if (ITEM_PROPERTIES_HASFLAG(i_data, annouce_mask, ITEM_ANNOUCE_DROP_TO_INVENTORY_FOR_MVP)) {
 						char message[128] = { 0 };
 						sprintf(message, msg_txt(NULL,541), mvp_sd->status.name, md->name, i_data->ename.c_str(), temp / 100.);
 						intif_broadcast(message,strlen(message)+1,BC_DEFAULT);
