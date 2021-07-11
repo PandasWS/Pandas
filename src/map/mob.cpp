@@ -2875,7 +2875,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 				continue;
 
 #ifdef Pandas_NpcExpress_MOBDROPITEM
-			if (md && !npc_express_aide_mobdropitem(md, src, dlist, md->db->dropitem[i].nameid, drop_rate))
+			if (md && !npc_express_aide_mobdropitem(md, src, dlist, md->db->dropitem[i].nameid, drop_rate, 1))
 				continue;
 #endif // Pandas_NpcExpress_MOBDROPITEM
 
@@ -2923,7 +2923,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 			mobdrop.nameid = itemdb_searchrandomid(IG_FINDINGORE,1);
 			ditem = mob_setdropitem(&mobdrop, 1, md->mob_id);
 #ifdef Pandas_NpcExpress_MOBDROPITEM
-			if (npc_express_aide_mobdropitem(md, src, dlist, mobdrop.nameid, battle_config.finding_ore_rate / 10))
+			if (npc_express_aide_mobdropitem(md, src, dlist, mobdrop.nameid, battle_config.finding_ore_rate / 10, 2))
 #endif // Pandas_NpcExpress_MOBDROPITEM
 			mob_item_drop(md, dlist, ditem, 0, battle_config.finding_ore_rate/10, homkillonly || merckillonly);
 		}
@@ -2958,7 +2958,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 					mobdrop.nameid = dropid;
 
 #ifdef Pandas_NpcExpress_MOBDROPITEM
-					if (!npc_express_aide_mobdropitem(md, src, dlist, mobdrop.nameid, drop_rate))
+					if (!npc_express_aide_mobdropitem(md, src, dlist, mobdrop.nameid, drop_rate, 3))
 						continue;
 #endif // Pandas_NpcExpress_MOBDROPITEM
 
@@ -2981,7 +2981,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 				mob_item_drop(md, dlist, mob_setlootitem(&md->lootitems[i], md->mob_id), 1, 10000, homkillonly || merckillonly);
 #else
 			for (i = 0; i < md->lootitem_count; i++) {
-				if (md && !npc_express_aide_mobdropitem(md, src, dlist, md->lootitems[i].item.nameid, 10000))
+				if (md && !npc_express_aide_mobdropitem(md, src, dlist, md->lootitems[i].item.nameid, 10000, 4))
 					continue;
 				mob_item_drop(md, dlist, mob_setlootitem(&md->lootitems[i], md->mob_id), 1, 10000, homkillonly || merckillonly);
 			}
@@ -3005,7 +3005,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 			mob_item_drop(md, dlist, mob_setlootitem(&md->lootitems[i], md->mob_id), 1, 10000, homkillonly || merckillonly);
 #else
 		for (i = 0; i < md->lootitem_count; i++) {
-			if (md && !npc_express_aide_mobdropitem(md, src, dlist, md->lootitems[i].item.nameid, 10000))
+			if (md && !npc_express_aide_mobdropitem(md, src, dlist, md->lootitems[i].item.nameid, 10000, 4))
 				continue;
 			mob_item_drop(md, dlist, mob_setlootitem(&md->lootitems[i], md->mob_id), 1, 10000, homkillonly || merckillonly);
 		}
@@ -3093,7 +3093,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 				}
 
 #ifdef Pandas_NpcExpress_MOBDROPITEM
-				if (!npc_express_aide_mobdropitem(md, src, (mvp_sd ? mvp_sd->bl.id : 0), mdrop[i].nameid, temp))
+				if (!npc_express_aide_mobdropitem(md, src, (mvp_sd ? mvp_sd->bl.id : 0), mdrop[i].nameid, temp, 5))
 					continue;
 #endif // Pandas_NpcExpress_MOBDROPITEM
 

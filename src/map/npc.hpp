@@ -1430,8 +1430,10 @@ void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data
 void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, uint16 skillid);
 #endif // Pandas_NpcExpress_UNIT_KILL
 #ifdef Pandas_NpcExpress_MOBDROPITEM
-bool npc_express_aide_mobdropitem(struct mob_data* md, struct block_list* src, int belond_rid, t_itemid nameid, int drop_rate);
-bool npc_express_aide_mobdropitem(struct mob_data* md, struct block_list* src, struct item_drop_list* dlist, t_itemid nameid, int drop_rate);
+bool npc_express_aide_mobdropitem(struct mob_data* md,
+	struct block_list* src, int belond_rid, t_itemid nameid, int drop_rate, int drop_type);
+bool npc_express_aide_mobdropitem(struct mob_data* md,
+	struct block_list* src, struct item_drop_list* dlist, t_itemid nameid, int drop_rate, int drop_type);
 #endif // Pandas_NpcExpress_MOBDROPITEM
 
 #ifdef Pandas_Helper_Common_Function
