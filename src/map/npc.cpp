@@ -42,6 +42,10 @@
 #include "mapreg.hpp"
 #endif // Pandas_NpcExpress_UNIT_KILL
 
+#ifdef Pandas_Item_Properties
+#include "itemprops.hpp"
+#endif // Pandas_Item_Properties
+
 using namespace rathena;
 
 struct npc_data* fake_nd;
@@ -199,6 +203,62 @@ void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, 
 	npc_event_doall(script_config.unit_kill_express_name);
 }
 #endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_NpcExpress_MOBDROPITEM
+//************************************
+// Method:      npc_express_aide_mobdropitem
+// Description: 用于触发魔物掉落道具实时事件的辅助函数
+// Access:      public 
+// Parameter:   struct mob_data * md
+// Parameter:   int belond_rid
+// Parameter:   t_itemid nameid
+// Parameter:   int drop_rate
+// Returns:     bool 返回 true 表示可以掉落, 返回 false 表示放弃掉落
+// Author:      Sola丶小克(CairoLee)  2021/07/11 12:44
+//************************************ 
+bool npc_express_aide_mobdropitem(struct mob_data* md, struct block_list* src, int belond_rid, t_itemid nameid, int drop_rate) {
+	struct item_data* id = itemdb_search(nameid);
+
+	if (ITEM_PROPERTIES_HASFLAG(id, special_mask, ITEM_PRO_EXECUTE_MOBDROP_EXPRESS)) {
+		mapreg_setreg(add_str("$@mobdrop_mobid"), (md ? md->mob_id : 0));
+		mapreg_setreg(add_str("$@mobdrop_itemid"), nameid);
+		mapreg_setreg(add_str("$@mobdrop_rate"), drop_rate);
+		mapreg_setreg(add_str("$@mobdrop_killerrid"), (src && src->type == BL_PC ? src->id : 0));
+		mapreg_setreg(add_str("$@mobdrop_belongrid"), belond_rid);
+		mapreg_setreg(add_str("$@mobdrop_bypass"), 0);
+
+		npc_event_doall(script_config.mobdropitem_express_name);
+
+		// 若 $@mobdrop_bypass 为 0 表示可以继续掉落, 为 1 表示放弃掉落此道具
+		return (mapreg_readreg(add_str("$@mobdrop_bypass")) == 0);
+	}
+
+	return true;
+}
+
+//************************************
+// Method:      npc_express_aide_mobdropitem
+// Description: 用于触发魔物掉落道具实时事件的辅助函数
+// Access:      public 
+// Parameter:   struct mob_data * md
+// Parameter:   struct item_drop_list * dlist
+// Parameter:   t_itemid nameid
+// Parameter:   int drop_rate
+// Returns:     bool 返回 true 表示可以掉落, 返回 false 表示放弃掉落
+// Author:      Sola丶小克(CairoLee)  2021/07/11 17:40
+//************************************ 
+bool npc_express_aide_mobdropitem(struct mob_data* md, struct block_list* src, struct item_drop_list* dlist, t_itemid nameid, int drop_rate) {
+	if (dlist) {
+		TBL_PC* belond = NULL;
+		belond = map_charid2sd(dlist->first_charid);
+		if (belond == NULL) belond = map_charid2sd(dlist->second_charid);
+		if (belond == NULL) belond = map_charid2sd(dlist->third_charid);
+
+		return npc_express_aide_mobdropitem(md, src, (belond ? belond->bl.id : 0), nameid, drop_rate);
+	}
+	return npc_express_aide_mobdropitem(md, src, 0, nameid, drop_rate);
+}
+#endif // Pandas_NpcExpress_MOBDROPITEM
 
 #ifdef Pandas_Helper_Common_Function
 //************************************
@@ -5032,6 +5092,10 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_UNIT_KILL
 		NPCX_UNIT_KILL,	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
 #endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_NpcExpress_MOBDROPITEM
+		NPCX_MOBDROPITEM,	// mobdropitem_express_name	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
+#endif // Pandas_NpcExpress_MOBDROPITEM
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -5351,6 +5415,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_UNIT_KILL:
 		return script_config.unit_kill_express_name;	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
 #endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_NpcExpress_MOBDROPITEM
+	case NPCX_MOBDROPITEM:
+		return script_config.mobdropitem_express_name;	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
+#endif // Pandas_NpcExpress_MOBDROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:
