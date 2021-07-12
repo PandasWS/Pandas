@@ -740,6 +740,7 @@
 	$@mobdrop_mobid			即将掉落道具的魔物编号
 	$@mobdrop_itemid		即将掉落道具的编号
 	$@mobdrop_rate			即将掉落道具在应用诸多修正后的最终掉率
+	$@mobdrop_mapname$		掉落道具魔物所在的地图名称
 	
 	$@mobdrop_from			道具的详细掉落来源, 用于帮助脚本进行更详细的判断
 	

@@ -237,6 +237,7 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 		mapreg_setreg(add_str("$@mobdrop_itemid"), nameid);
 		mapreg_setreg(add_str("$@mobdrop_rate"), drop_rate);
 		mapreg_setreg(add_str("$@mobdrop_from"), drop_type);
+		mapreg_setregstr(add_str("$@mobdrop_mapname$"), (md ? map[md->bl.m].name : ""));
 		mapreg_setreg(add_str("$@mobdrop_killerrid"), (src && src->type == BL_PC ? src->id : 0));
 		mapreg_setreg(add_str("$@mobdrop_belongrid"), belond_rid);
 		mapreg_setreg(add_str("$@mobdrop_bypass"), 0);
