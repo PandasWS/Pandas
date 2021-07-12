@@ -454,8 +454,13 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 
 				if( p->skill[i].lv == 0 && ( p->skill[i].flag == SKILL_FLAG_PERM_GRANTED || p->skill[i].flag == SKILL_FLAG_PERMANENT ) )
 					continue;
+#ifndef Pandas_Fix_ShadowChaser_Lose_Skill
 				if( p->skill[i].flag != SKILL_FLAG_PERMANENT && p->skill[i].flag != SKILL_FLAG_PERM_GRANTED && (p->skill[i].flag - SKILL_FLAG_REPLACED_LV_0) == 0 )
 					continue;
+#else
+				if( p->skill[i].flag != SKILL_FLAG_PERMANENT && p->skill[i].flag != SKILL_FLAG_PERM_GRANTED && (p->skill[i].flag - SKILL_FLAG_REPLACED_LV_0) <= 0 )
+					continue;
+#endif // Pandas_Fix_ShadowChaser_Lose_Skill
 				if( count )
 					StringBuf_AppendStr(&buf, ",");
 				StringBuf_Printf(&buf, "('%d','%d','%d','%d')", char_id, p->skill[i].id,
