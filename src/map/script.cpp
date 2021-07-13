@@ -402,6 +402,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcExpress_UNIT_KILL
 	"OnUnitKillExpress",	// NPCX_UNIT_KILL		// unit_kill_express_name	// 当某个单位被击杀时触发实时事件
 #endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_NpcExpress_MOBDROPITEM
+	"OnMobDropItemExpress",	// NPCX_MOBDROPITEM		// mobdropitem_express_name	// 当魔物即将掉落道具时触发实时事件
+#endif // Pandas_NpcExpress_MOBDROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 
 	// NPC related

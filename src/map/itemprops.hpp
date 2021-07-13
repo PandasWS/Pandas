@@ -31,7 +31,8 @@ enum e_item_annouce : uint32 {
 enum e_item_property : uint32 {
 	ITEM_PRO_AVOID_CONSUME_FOR_USE		= 0x0001,	// 表示避免物品被玩家主动使用而消耗
 	ITEM_PRO_AVOID_CONSUME_FOR_SKILL	= 0x0002,	// 避免物品被作为发动技能的必要道具而消耗
-	ITEM_PRO_IS_AMULET_ITEM				= 0x0004	// 表示此物品是一个护身符类型的道具
+	ITEM_PRO_IS_AMULET_ITEM				= 0x0004,	// 表示此物品是一个护身符类型的道具
+	ITEM_PRO_EXECUTE_MOBDROP_EXPRESS	= 0x0008	// 此物品能触发 OnMobDropItemExpress 实时事件
 };
 
 struct s_item_properties {
@@ -43,7 +44,7 @@ struct s_item_properties {
 
 class ItemProperties : public TypesafeYamlDatabase<uint32, s_item_properties> {
 public:
-	ItemProperties() : TypesafeYamlDatabase("ITEM_PROPERTIES_DB", 1) {
+	ItemProperties() : TypesafeYamlDatabase("ITEM_PROPERTIES_DB", 2) {
 
 	}
 

@@ -1293,6 +1293,11 @@
 		// 事件类型: Express / 事件名称: OnUnitKillExpress
 		// 常量名称: NPCX_UNIT_KILL / 变量名称: unit_kill_express_name
 		#define Pandas_NpcExpress_UNIT_KILL
+
+		// 当魔物即将掉落道具时触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnMobDropItemExpress
+		// 常量名称: NPCX_MOBDROPITEM / 变量名称: mobdropitem_express_name
+		#define Pandas_NpcExpress_MOBDROPITEM
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	

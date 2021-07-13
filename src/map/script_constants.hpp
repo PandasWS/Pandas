@@ -141,6 +141,10 @@
 #ifdef Pandas_NpcExpress_UNIT_KILL
 	export_constant(NPCX_UNIT_KILL);	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
 #endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_NpcExpress_MOBDROPITEM
+	export_constant(NPCX_MOBDROPITEM);	// mobdropitem_express_name	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
+#endif // Pandas_NpcExpress_MOBDROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
 #endif // Pandas_ScriptCommands
 

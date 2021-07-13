@@ -62,6 +62,7 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 		GETYAML_NODE_BOOL(propertyNode, "AvoidConsumeForUse", properties_item->special, ITEM_PRO_AVOID_CONSUME_FOR_USE);
 		GETYAML_NODE_BOOL(propertyNode, "AvoidConsumeForSkill", properties_item->special, ITEM_PRO_AVOID_CONSUME_FOR_SKILL);
 		GETYAML_NODE_BOOL(propertyNode, "IsAmuletItem", properties_item->special, ITEM_PRO_IS_AMULET_ITEM);
+		GETYAML_NODE_BOOL(propertyNode, "ExecuteMobDropExpress", properties_item->special, ITEM_PRO_EXECUTE_MOBDROP_EXPRESS);
 	}
 
 	if (this->nodeExists(node, "ControlViewID")) {

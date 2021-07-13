@@ -1414,6 +1414,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcExpress_UNIT_KILL
 	NPCX_UNIT_KILL,	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
 #endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_NpcExpress_MOBDROPITEM
+	NPCX_MOBDROPITEM,	// mobdropitem_express_name	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
+#endif // Pandas_NpcExpress_MOBDROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX
@@ -1422,10 +1426,15 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_KILLMVP
 void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md);
 #endif // Pandas_NpcEvent_KILLMVP
-
 #ifdef Pandas_NpcExpress_UNIT_KILL
 void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, uint16 skillid);
 #endif // Pandas_NpcExpress_UNIT_KILL
+#ifdef Pandas_NpcExpress_MOBDROPITEM
+bool npc_express_aide_mobdropitem(struct mob_data* md,
+	struct block_list* src, int belond_rid, t_itemid nameid, int drop_rate, int drop_type);
+bool npc_express_aide_mobdropitem(struct mob_data* md,
+	struct block_list* src, struct item_drop_list* dlist, t_itemid nameid, int drop_rate, int drop_type);
+#endif // Pandas_NpcExpress_MOBDROPITEM
 
 #ifdef Pandas_Helper_Common_Function
 struct event_data* npc_event_data(const char* eventname);
