@@ -2361,6 +2361,11 @@ void battle_consume_ammo(struct map_session_data*sd, int skill, int lv)
 {
 	int qty = 1;
 
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+	if (!sd)
+		return;
+#endif // Pandas_Crashfix_Prevent_NullPointer
+
 	if (!battle_config.arrow_decrement)
 		return;
 
