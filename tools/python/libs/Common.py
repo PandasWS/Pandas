@@ -14,7 +14,6 @@ from functools import partial
 
 import chardet
 import git
-import pdbparse
 import pefile
 from colorama import Back, Fore, Style, init
 
@@ -22,6 +21,7 @@ from libs import Message
 
 if platform.system() == 'Windows':
     import winreg
+    import pdbparse
 
 __all__ = [
     'md5',

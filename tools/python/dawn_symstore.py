@@ -20,6 +20,7 @@ environment.initialize()
 import os
 import git
 import shutil
+import platform
 
 from dotenv import load_dotenv
 from libs import Common, Inputer, Message
@@ -151,6 +152,11 @@ def main():
     # 显示欢迎信息
     Common.welcome('符号归档辅助脚本')
     print('')
+    
+    # 由于 pdbparse 只能在 Windows 环境下安装, 此处进行限制
+    if platform.system() != 'Windows':
+        Message.ShowWarning('该脚本只能在 Windows 环境下运行, 程序终止.')
+        Common.exit_with_pause(-1)
     
     # 若环境变量为空则设置个默认值
     if not os.getenv('DEFINE_PROJECT_NAME'):
