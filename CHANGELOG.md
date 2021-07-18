@@ -10,6 +10,23 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+## [v1.1.4] - `2021-07-18`
+
+### 添加
+
+- 实现 `OnMobDropItemExpress` 实时事件, 当魔物即将掉落道具时触发 (#382)
+
+### 修正
+
+- 修正逐影在“抄袭/复制”技能后角色服务器可能会丢失该角色全部技能的问题 (#384)
+- 修正 `WM_REVERBERATION` 被魔物使用时会导致地图服务器崩溃的问题
+- 使用更可靠的方式来更新定时器指向的游戏单位编号 (#380)
+
+### 调整
+
+- 调整 `item_properties.yml` 以匹配正确的 YAML 配置风格, 不再使用掩码 (#379) 
+- 在 Linux 环境下 pipenv 不再安装 `pdbparse` 模块
+
 ## [v1.1.3] - `2021-07-05`
 
 ### 添加
@@ -406,6 +423,7 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.1.4]: https://github.com/PandasWS/Pandas/compare/v1.1.3...v1.1.4
 [v1.1.3]: https://github.com/PandasWS/Pandas/compare/v1.1.2...v1.1.3
 [v1.1.2]: https://github.com/PandasWS/Pandas/compare/v1.1.1...v1.1.2
 [v1.1.1]: https://github.com/PandasWS/Pandas/compare/v1.1.0...v1.1.1
