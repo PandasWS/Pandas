@@ -11851,7 +11851,7 @@ BUILDIN_FUNC(announce)
 	int         fontAlign = script_hasdata(st,7) ? script_getnum(st,7) : 0;     // default fontAlign
 	int         fontY     = script_hasdata(st,8) ? script_getnum(st,8) : 0;     // default fontY
 
-	if (flag&(BC_TARGET_MASK|BC_SOURCE_MASK)) // Broadcast source or broadcast region defined
+	if (flag&(BC_TARGET_MASK|BC_SOURCE_MASK|BC_NAME)) // Broadcast source or broadcast region defined
 	{
 		send_target target;
 		struct block_list *bl;
@@ -11878,10 +11878,23 @@ BUILDIN_FUNC(announce)
 			default:		target = ALL_CLIENT;	break; // BC_ALL
 		}
 
-		if (fontColor)
-			clif_broadcast2(bl, mes, (int)strlen(mes)+1, strtol(fontColor, (char **)NULL, 0), fontType, fontSize, fontAlign, fontY, target);
-		else
-			clif_broadcast(bl, mes, (int)strlen(mes)+1, flag&BC_COLOR_MASK, target);
+		if (flag&BC_NAME)
+		{
+			char output[CHAT_SIZE_MAX];
+
+			if (!fontColor)
+				fontColor = "0xFFFF00";
+
+			sprintf(output, "%06x%s", strtol(fontColor, (char**)NULL, 0), mes);
+			clif_broadcast(bl, output, (int)strlen(output) + 1, flag, target);
+		}
+		else {
+
+			if (fontColor)
+				clif_broadcast2(bl, mes, (int)strlen(mes) + 1, strtol(fontColor, (char**)NULL, 0), fontType, fontSize, fontAlign, fontY, target);
+			else
+				clif_broadcast(bl, mes, (int)strlen(mes) + 1, flag & BC_COLOR_MASK, target);
+		}
 	}
 	else
 	{

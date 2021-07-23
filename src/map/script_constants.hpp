@@ -555,6 +555,7 @@
 	export_constant(BC_YELLOW);
 	export_constant(BC_BLUE);
 	export_constant(BC_WOE);
+	export_constant(BC_NAME);
 
 	/* mapflags */
 	export_constant(MF_NOMEMO);
