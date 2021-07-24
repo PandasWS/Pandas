@@ -543,7 +543,7 @@ int mob_get_random_id(int type, enum e_random_monster_flags flag, int lv)
 		return entry->mob_id;
 	}
 
-	if (mob_db.find( summon->default_mob_id ) == nullptr) {
+	if (!mob_db.exists( summon->default_mob_id )) {
 		ShowError("mob_get_random_id: Default monster is not defined for type %d.\n", type);
 		return 0;
 	}
@@ -702,7 +702,7 @@ int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y, const
 
 		if (mob_id == MOBID_EMPERIUM)
 		{
-			struct guild_castle* gc = guild_mapindex2gc(map_getmapdata(m)->index);
+			std::shared_ptr<guild_castle> gc = castle_db.mapindex2gc(map_getmapdata(m)->index);
 			struct guild* g = (gc) ? guild_search(gc->guild_id) : nullptr;
 			if (gc)
 			{
@@ -843,7 +843,6 @@ int mob_spawn_guardian(const char* mapname, int16 x, int16 y, const char* mobnam
 	struct mob_data *md=nullptr;
 	struct spawn_data data;
 	struct guild *g=nullptr;
-	struct guild_castle *gc;
 	int16 m;
 	memset(&data, 0, sizeof(struct spawn_data)); //fixme
 	data.num = 1;
@@ -887,8 +886,8 @@ int mob_spawn_guardian(const char* mapname, int16 x, int16 y, const char* mobnam
 	if (!mob_parse_dataset(&data))
 		return 0;
 
-	gc=guild_mapname2gc(mapname);
-	if (gc == NULL)
+	std::shared_ptr<guild_castle> gc = castle_db.mapname2gc(mapname);
+	if (gc == nullptr)
 	{
 		ShowError("mob_spawn_guardian: No castle set at map %s\n", mapname);
 		return 0;
@@ -2920,7 +2919,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 		if (sd == mvp_sd && pc_checkskill(sd,BS_FINDINGORE)>0 && battle_config.finding_ore_rate/10 >= rnd()%10000) {
 			struct s_mob_drop mobdrop;
 			memset(&mobdrop, 0, sizeof(struct s_mob_drop));
-			mobdrop.nameid = itemdb_searchrandomid(IG_FINDINGORE,1);
+			mobdrop.nameid = itemdb_group.get_random_item_id(IG_FINDINGORE,1);
 			ditem = mob_setdropitem(&mobdrop, 1, md->mob_id);
 #ifdef Pandas_NpcExpress_MOBDROPITEM
 			if (npc_express_aide_mobdropitem(md, src, dlist, mobdrop.nameid, battle_config.finding_ore_rate / 10, 2))
@@ -2953,7 +2952,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 
 					if (rnd()%10000 >= drop_rate)
 						continue;
-					dropid = (it.nameid > 0) ? it.nameid : itemdb_searchrandomid(it.group,1);
+					dropid = (it.nameid > 0) ? it.nameid : itemdb_group.get_random_item_id(it.group,1);
 					memset(&mobdrop, 0, sizeof(struct s_mob_drop));
 					mobdrop.nameid = dropid;
 
@@ -4503,7 +4502,8 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 			return 0;
 
 		mob = std::make_shared<s_mob_db>();
-		mob->vd.class_ = static_cast<uint16>(mob_id);
+		mob->id = mob_id;
+		mob->vd.class_ = static_cast<uint16>(mob->id);
 	}
 
 	if (this->nodeExists(node, "AegisName")) {
@@ -4953,7 +4953,7 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 		mob->status.adelay = cap_value(speed, battle_config.monster_max_aspd * 2, 4000);
 	} else {
 		if (!exists)
-			mob->status.adelay = 0;
+			mob->status.adelay = cap_value(0, battle_config.monster_max_aspd * 2, 4000);
 	}
 	
 	if (this->nodeExists(node, "AttackMotion")) {
@@ -4965,7 +4965,7 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 		mob->status.amotion = cap_value(speed, battle_config.monster_max_aspd, 2000);
 	} else {
 		if (!exists)
-			mob->status.amotion = 0;
+			mob->status.amotion = cap_value(0, battle_config.monster_max_aspd, 2000);
 	}
 
 	if (this->nodeExists(node, "DamageMotion")) {
@@ -5440,7 +5440,7 @@ uint64 MobAvailDatabase::parseBodyNode(const YAML::Node &node) {
 				return 0;
 			}
 
-			constant = sprite_mob->vd.class_;
+			constant = sprite_mob->id;
 		}
 
 		mob->vd.class_ = (unsigned short)constant;
@@ -5640,7 +5640,7 @@ uint64 MobAvailDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "PetEquip")) {
-		std::shared_ptr<s_pet_db> pet_db_ptr = pet_db.find(mob->vd.class_);
+		std::shared_ptr<s_pet_db> pet_db_ptr = pet_db.find(mob->id);
 
 		if (pet_db_ptr == nullptr) {
 			this->invalidWarning(node["PetEquip"], "PetEquip is only applicable to defined pets.\n");
@@ -5749,7 +5749,8 @@ uint64 MobSummonDatabase::parseBodyNode(const YAML::Node &node) {
 			this->invalidWarning(node["Default"], "Unknown mob %s.\n", mob_name.c_str());
 			return 0;
 		}
-		summon->default_mob_id = mob->vd.class_;
+
+		summon->default_mob_id = mob->id;
 	}
 
 	if (this->nodeExists(node, "Summon")) {
@@ -5777,7 +5778,7 @@ uint64 MobSummonDatabase::parseBodyNode(const YAML::Node &node) {
 			if (!this->asUInt32(mobit, "Rate", rate))
 				continue;
 
-			uint16 mob_id = mob->vd.class_;
+			uint16 mob_id = mob->id;
 
 			if (rate == 0) {
 				if (summon->list.erase(mob_id) == 0)
@@ -5789,7 +5790,7 @@ uint64 MobSummonDatabase::parseBodyNode(const YAML::Node &node) {
 
 			if (entry == nullptr) {
 				entry = std::make_shared<s_randomsummon_entry>();
-				entry->mob_id = mob->vd.class_;
+				entry->mob_id = mob_id;
 				summon->list[mob_id] = entry;
 			}
 			entry->rate = rate;
@@ -6410,7 +6411,7 @@ static void mob_skill_db_set_single_sub(std::shared_ptr<s_mob_db> mob, struct s_
 	}
 
 	if (i < skill->skill.size())
-		ShowWarning("Monster '%s' (%d, src:%d) reaches max skill limit %d. Ignores '%zu' skills left.\n", mob->sprite.c_str(), mob->vd.class_, skill->mob_id, MAX_MOBSKILL, skill->skill.size() - i);
+		ShowWarning("Monster '%s' (%d, src:%d) reaches max skill limit %d. Ignores '%zu' skills left.\n", mob->sprite.c_str(), mob->id, skill->mob_id, MAX_MOBSKILL, skill->skill.size() - i);
 }
 
 /**

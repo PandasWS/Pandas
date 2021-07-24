@@ -117,6 +117,8 @@ char log_codepage[32] = "";
 #endif // Pandas_SQL_Configure_Optimization
 Sql* logmysql_handle;
 
+uint32 start_status_points = 48;
+
 // DBMap declaration
 static DBMap* id_db=NULL; /// int id -> struct block_list*
 static DBMap* pc_db=NULL; /// int id -> struct map_session_data*
@@ -4499,6 +4501,9 @@ int inter_config_read(const char *cfgName)
 			safestrncpy(log_codepage, w2, sizeof(log_codepage));
 		else
 #endif // Pandas_SQL_Configure_Optimization
+		if(strcmpi(w1,"start_status_points")==0)
+			start_status_points=atoi(w2);
+		else
 		if( mapreg_config_read(w1,w2) )
 			continue;
 		//support the import command, just like any other config

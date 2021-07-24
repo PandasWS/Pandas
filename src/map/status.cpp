@@ -3577,11 +3577,10 @@ int status_calc_mob_(struct mob_data* md, enum e_status_calc_opt opt)
 	status_calc_misc(&md->bl, status, md->level);
 
 	if(flag&4) { // Strengthen Guardians - custom value +10% / lv
-		struct guild_castle *gc;
 		struct map_data *mapdata = map_getmapdata(md->bl.m);
+		std::shared_ptr<guild_castle> gc = castle_db.mapname2gc(mapdata->name);
 
-		gc=guild_mapname2gc(mapdata->name);
-		if (!gc)
+		if (gc == nullptr)
 			ShowError("status_calc_mob: No castle set at map %s\n", mapdata->name);
 		else if(gc->castle_id < 24 || md->mob_id == MOBID_EMPERIUM) {
 #ifdef RENEWAL
@@ -4518,7 +4517,7 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		if(sd->inventory_data[index]) { // Arrows
 			sd->bonus.arrow_atk += sd->inventory_data[index]->atk;
 			sd->state.lr_flag = 2;
-			if( !itemdb_group_item_exists(IG_THROWABLE, sd->inventory_data[index]->nameid) ) // Don't run scripts on throwable items
+			if( !itemdb_group.item_exists(IG_THROWABLE, sd->inventory_data[index]->nameid) ) // Don't run scripts on throwable items
 				run_script(sd->inventory_data[index]->script,0,sd->bl.id,0);
 			sd->state.lr_flag = 0;
 			if (!calculating) // Abort, run_script retriggered status_calc_pc. [Skotlex]
@@ -9272,6 +9271,12 @@ static int status_get_sc_interval(enum sc_type type)
 		case SC_BLEEDING:
 		case SC_TOXIN:
 			return 10000;
+		case SC_HELLS_PLANT:
+			return 333;
+		case SC_SHIELDSPELL_HP:
+			return 3000;
+		case SC_SHIELDSPELL_SP:
+			return 5000;
 		default:
 			break;
 	}
@@ -12127,8 +12132,8 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			tick_time = 3000;
 			break;
 		case SC_HELLS_PLANT:
-			tick_time = 333;
-			val4 = tick / tick_time;
+			tick_time = status_get_sc_interval(type);
+			val4 = tick - tick_time; // Remaining time
 			break;
 		case SC_SWINGDANCE:
 			val3 = 3 * val1 + val2; // Walk speed and aspd reduction.
@@ -12238,13 +12243,13 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			break;
 		case SC_SHIELDSPELL_HP:
 			val2 = 3; // 3% HP every 3 seconds
-			tick_time = 3000;
-			val4 = tick / tick_time;
+			tick_time = status_get_sc_interval(type);
+			val4 = tick - tick_time; // Remaining time
 			break;
 		case SC_SHIELDSPELL_SP:
 			val2 = 3; // 3% SP every 5 seconds
-			tick_time = 5000;
-			val4 = tick / tick_time;
+			tick_time = status_get_sc_interval(type);
+			val4 = tick - tick_time; // Remaining time
 			break;
 		case SC_SHIELDSPELL_ATK:
 			val2 = 150; // WATK/MATK bonus
@@ -15140,10 +15145,8 @@ TIMER_FUNC(status_change_timer){
 		}
 
 	case SC_HELLS_PLANT:
-		if (--(sce->val4) > 0) {
-			skill_castend_damage_id(bl, bl, GN_HELLS_PLANT_ATK, sce->val1, tick, 0);
-			sc_timer_next(333 + tick);
-			return 0;
+		if( sce->val4 >= 0 ){
+			skill_castend_damage_id( bl, bl, GN_HELLS_PLANT_ATK, sce->val1, tick, 0 );
 		}
 		break;
 
@@ -15261,20 +15264,14 @@ TIMER_FUNC(status_change_timer){
 		break;
 
 	case SC_SHIELDSPELL_HP:
-		if (sce->val4 >= 0) {
-			if (status->hp < status->max_hp)
-				status_heal(bl, status->max_hp * sce->val2 / 100, 0, 1);
-			sc_timer_next(3000 + tick);
-			return 0;
+		if( sce->val4 >= 0 && status->hp < status->max_hp ){
+			status_heal( bl, status->max_hp * sce->val2 / 100, 0, 1 );
 		}
 		break;
 
 	case SC_SHIELDSPELL_SP:
-		if (sce->val4 >= 0) {
-			if (status->sp < status->max_sp)
-				status_heal(bl, 0, status->max_sp * sce->val2 / 100, 1);
-			sc_timer_next(5000 + tick);
-			return 0;
+		if( sce->val4 >= 0 && status->sp < status->max_sp ){
+			status_heal( bl, 0, status->max_sp * sce->val2 / 100, 1 );
 		}
 		break;
 
