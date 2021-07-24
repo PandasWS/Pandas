@@ -6779,7 +6779,15 @@ void clif_broadcast(struct block_list* bl, const char* mes, int len, int type, e
 	p->packetType = HEADER_ZC_BROADCAST;
 	p->PacketLength = (int16)( sizeof( struct PACKET_ZC_BROADCAST ) + len );
 
-	if( ( type&BC_BLUE ) != 0 ){
+	if ((type & BC_NAME)) {
+		int16 length = (int16)(NAME_LENGTH + 4);
+
+		sprintf(p->message, "micc%s", ((TBL_PC*)bl)->status.name);
+		strncpy(&p->message[length], mes, len);
+
+		p->PacketLength += length;
+	}
+	else if( ( type&BC_BLUE ) != 0 ){
 		const char* color = "blue";
 		int16 length = (int16)strlen( color );
 

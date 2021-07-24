@@ -250,7 +250,7 @@ enum broadcast_flags : uint8_t {
 	BC_BLUE			= 0x10,
 	BC_WOE			= 0x20,
 	BC_COLOR_MASK	= 0x30, // BC_YELLOW|BC_BLUE|BC_WOE
-
+	BC_NAME			= 0x40,
 	BC_DEFAULT		= BC_ALL|BC_PC|BC_YELLOW
 };
 
