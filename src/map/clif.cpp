@@ -16248,21 +16248,6 @@ void clif_Mail_setattachment( struct map_session_data* sd, int index, int amount
 	if( flag ){
 		memset( &p, 0, sizeof( p ) );
 	}else{
-#ifdef Pandas_Crashfix_Prevent_NullPointer
-		for (int i = 0; i < MAIL_MAX_ITEM; i++) {
-			if (sd->mail.item[i].nameid == 0) {
-				continue;
-			}
-
-			if (!sd->inventory_data[sd->mail.item[i].index]) {
-				memset(&p, 0, sizeof(p));
-				p.PacketType = rodexadditem;
-				p.result = 2;	// fatal error
-				clif_send(&p, sizeof(p), &sd->bl, SELF);
-				return;
-			}
-		}
-#endif // Pandas_Crashfix_Prevent_NullPointer
 		struct item* item = &sd->inventory.u.items_inventory[server_index(index)];
 
 		p.index = index;
@@ -16282,7 +16267,9 @@ void clif_Mail_setattachment( struct map_session_data* sd, int index, int amount
 			}
 
 #ifdef Pandas_Crashfix_Prevent_NullPointer
-			if (sd->inventory_data[sd->mail.item[i].index])
+			if (!sd->inventory_data[sd->mail.item[i].index]) {
+				return;	// 直接放弃发送封包
+			}
 #endif // Pandas_Crashfix_Prevent_NullPointer
 			p.weight += sd->mail.item[i].amount * ( sd->inventory_data[sd->mail.item[i].index]->weight / 10 );
 		}
