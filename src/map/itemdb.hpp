@@ -1091,7 +1091,6 @@ public:
 	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 1) {
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 		this->supportSerialize = true;
-		this->serializeVersion = 2;
 #endif // Pandas_YamlBlastCache_ItemDatabase
 	}
 

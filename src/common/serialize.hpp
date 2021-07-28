@@ -26,13 +26,13 @@
 
 //************************************
 // 此处的疾风缓存版本会被纳入缓存散列的计算过程中
-// 变缓存版本会导致所有缓存过期
+// 注意: 变缓存版本会导致所有缓存过期
 //************************************
-#define BLASTCACHE_VERSION 20210124
+#define BLASTCACHE_VERSION 20210727
 
 //************************************
 // 若想启用二进制格式的缓存, 则启用此段代码(并禁用其他)
-// 变更缓存格式会导致所有缓存过期
+// 注意: 变更缓存格式会导致所有缓存过期
 //************************************
 #define SERIALIZE_SAVE_ARCHIVE boost::archive::binary_oarchive
 #define SERIALIZE_SAVE_STREAM_FLAG std::ofstream::binary | std::ofstream::out
@@ -41,7 +41,7 @@
 
 //************************************
 // 若想启用文本格式的缓存, 则启用此段代码(并禁用其他)
-// 变更缓存格式会导致所有缓存过期
+// 注意: 变更缓存格式会导致所有缓存过期
 //************************************
 // #define SERIALIZE_SAVE_ARCHIVE boost::archive::text_oarchive
 // #define SERIALIZE_SAVE_STREAM_FLAG std::ofstream::out

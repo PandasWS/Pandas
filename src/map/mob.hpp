@@ -265,7 +265,6 @@ public:
 	MobDatabase() : TypesafeCachedYamlDatabase("MOB_DB", 2, 1) {
 #ifdef Pandas_YamlBlastCache_MobDatabase
 		this->supportSerialize = true;
-		this->serializeVersion = 1;
 #endif // Pandas_YamlBlastCache_MobDatabase
 	}
 
