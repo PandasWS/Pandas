@@ -20,6 +20,10 @@
 
 void mail_clear(struct map_session_data *sd)
 {
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	int i;
 
 	for( i = 0; i < MAIL_MAX_ITEM; i++ ){
@@ -127,6 +131,10 @@ bool mail_removezeny( struct map_session_data *sd, bool flag ){
 * @return see enum mail_attach_result in mail.hpp
 */
 enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uint32 amount) {
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return MAIL_ATTACH_ERROR;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	if( pc_istrading(sd) )
 		return MAIL_ATTACH_ERROR;
 
@@ -285,6 +293,10 @@ bool mail_setattachment(struct map_session_data *sd, struct mail_message *msg)
 }
 
 void mail_getattachment(struct map_session_data* sd, struct mail_message* msg, int zeny, struct item* item){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd || !msg || !item) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	int i;
 	bool item_received = false;
 
@@ -396,6 +408,10 @@ void mail_deliveryfail(struct map_session_data *sd, struct mail_message *msg){
 // This function only check if the mail operations are valid
 bool mail_invalid_operation(struct map_session_data *sd)
 {
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return false;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 #if PACKETVER < 20150513
 	if( !map_getmapflag(sd->bl.m, MF_TOWN) && !pc_can_use_command(sd, "mail", COMMAND_ATCOMMAND) )
 	{
