@@ -550,6 +550,7 @@ namespace boost {
 		template <typename Archive>
 		void serialize(Archive& ar, struct s_mob_db& t, const unsigned int version)
 		{
+			ar& t.id;
 			ar& t.sprite;
 			ar& t.name;
 			ar& t.jname;
