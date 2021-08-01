@@ -192,7 +192,15 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 
 			// Check if it exceeds the total weight
 			if( battle_config.mail_attachment_weight ){
+#ifndef Pandas_Fix_Mail_Attachment_Weight_Defects
 				for( j = 0; j < i; j++ ){
+#else
+				for (j = 0; j <= i; j++) {
+					if (sd->mail.item[j].nameid == 0) {
+						continue;
+					}
+
+#endif // Pandas_Fix_Mail_Attachment_Weight_Defects
 #ifdef Pandas_Crashfix_Prevent_NullPointer
 					if (!sd->inventory_data[sd->mail.item[j].index]) {
 						return MAIL_ATTACH_ERROR;
@@ -220,7 +228,15 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 
 			// Check if it exceeds the total weight
 			if( battle_config.mail_attachment_weight ){
+#ifndef Pandas_Fix_Mail_Attachment_Weight_Defects
 				for( j = 0; j < i; j++ ){
+#else
+				for (j = 0; j <= i; j++) {
+					if (sd->mail.item[j].nameid == 0) {
+						continue;
+					}
+
+#endif // Pandas_Fix_Mail_Attachment_Weight_Defects
 #ifdef Pandas_Crashfix_Prevent_NullPointer
 					if (!sd->inventory_data[sd->mail.item[j].index]) {
 						return MAIL_ATTACH_ERROR;
