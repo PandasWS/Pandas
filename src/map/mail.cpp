@@ -193,6 +193,11 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 			// Check if it exceeds the total weight
 			if( battle_config.mail_attachment_weight ){
 				for( j = 0; j < i; j++ ){
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+					if (!sd->inventory_data[sd->mail.item[j].index]) {
+						return MAIL_ATTACH_ERROR;
+					}
+#endif // Pandas_Crashfix_Prevent_NullPointer
 					total += sd->mail.item[j].amount * ( sd->inventory_data[sd->mail.item[j].index]->weight / 10 );
 				}
 
@@ -216,6 +221,11 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 			// Check if it exceeds the total weight
 			if( battle_config.mail_attachment_weight ){
 				for( j = 0; j < i; j++ ){
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+					if (!sd->inventory_data[sd->mail.item[j].index]) {
+						return MAIL_ATTACH_ERROR;
+					}
+#endif // Pandas_Crashfix_Prevent_NullPointer
 					total += sd->mail.item[j].amount * ( sd->inventory_data[sd->mail.item[j].index]->weight / 10 );
 				}
 
