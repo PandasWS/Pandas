@@ -203,6 +203,9 @@
 		// 结构体修改定位 mmo.hpp -> mmo_charstatus.inventory_size
 		#define Pandas_Struct_MMO_CharStatus_InventorySize
 	#endif // Pandas_Struct_MMO_CharStatus_Extend
+
+	// 使 s_mail.item 能有一个 details 字段用来记录附件道具更详细的信息 [Sola丶小克]
+	#define Pandas_Struct_S_Mail_With_Details
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -894,6 +897,13 @@
 	// 并对手推车中原先离线摆摊的商品进行增删操作, 可能会导致下次地图服务器启动时出现 vending_reopen 错误 3 的情况,
 	// 更严重的甚至在下次重启地图服务器后出现离线挂店的商品与价格的错位 [Sola丶小克]
 	#define Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
+
+	// 发送邮件之前, 对附件中的道具进行更加严格的检查
+	// 当检测到附件内容非法的时候也能正确的重置客户端物品栏中的状态, 避免错乱
+	// 此选项开关需要依赖 Pandas_Struct_S_Mail_With_Details 的拓展 [Sola丶小克]
+	#ifdef Pandas_Struct_S_Mail_With_Details
+		#define Pandas_Fix_Mail_ItemAttachment_Check
+	#endif // Pandas_Struct_S_Mail_With_Details
 #endif // Pandas_Bugfix
 
 // ============================================================================
