@@ -1634,8 +1634,20 @@ void run_tomb(struct map_session_data* sd, struct npc_data* nd)
 
 	strftime(time, sizeof(time), "%H:%M", localtime(&nd->u.tomb.kill_time));
 
+#ifndef Pandas_Make_Tomb_Mobname_Follow_Override_Mob_Names
 	// TODO: Find exact color?
 	snprintf(buffer, sizeof(buffer), msg_txt(sd,657), nd->u.tomb.md->db->name.c_str());
+#else
+	memset(buffer, 0, sizeof(buffer));
+	// 默认情况下先使用魔物被召唤时赋予的名称 (以前只会读取 DB 里的名称)
+	snprintf(buffer, sizeof(buffer), msg_txt(sd, 657), nd->u.tomb.md->name);
+
+	// 然后再根据 override_mob_names 战斗配置选项决定应该使用哪个字段的魔物名进行覆盖
+	if (battle_config.override_mob_names == 1)
+		snprintf(buffer, sizeof(buffer), msg_txt(sd, 657), nd->u.tomb.md->db->name.c_str());
+	else if (battle_config.override_mob_names == 2)
+		snprintf(buffer, sizeof(buffer), msg_txt(sd, 657), nd->u.tomb.md->db->jname.c_str());
+#endif // Pandas_Make_Tomb_Mobname_Follow_Override_Mob_Names
 	clif_scriptmes(sd, nd->bl.id, buffer);
 
 	clif_scriptmes(sd, nd->bl.id, msg_txt(sd,658));

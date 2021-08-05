@@ -510,6 +510,9 @@
 	// 使 pointshop 类型的商店能支持指定变量别名, 用于展现给玩家 [Sola丶小克]
 	#define Pandas_Support_Pointshop_Variable_DisplayName
 
+	// 使墓碑中的魔物名称能尊重 override_mob_names 战斗配置选项的设置 [Sola丶小克]
+	#define Pandas_Make_Tomb_Mobname_Follow_Override_Mob_Names
+
 	// 检测 import 目录是否存在, 若不存在能够从 import-tmpl 复制一份 [Sola丶小克]
 	#define Pandas_Deploy_Import_Directories
 
