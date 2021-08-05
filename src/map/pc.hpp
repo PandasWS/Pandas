@@ -709,6 +709,10 @@ struct map_session_data {
 		struct {
 			t_itemid nameid;
 			int index, amount;
+#ifdef Pandas_Struct_S_Mail_With_Details
+			// 添加的 details 字段用于记录附件道具更详细的信息
+			struct item details = { 0 };
+#endif // Pandas_Struct_S_Mail_With_Details
 		} item[MAIL_MAX_ITEM];
 		int zeny;
 		struct mail_data inbox;

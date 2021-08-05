@@ -30,6 +30,9 @@ void mail_clear(struct map_session_data *sd)
 		sd->mail.item[i].nameid = 0;
 		sd->mail.item[i].index = 0;
 		sd->mail.item[i].amount = 0;
+#ifdef Pandas_Struct_S_Mail_With_Details
+		memset(&sd->mail.item[i].details, 0, sizeof(struct item));
+#endif // Pandas_Struct_S_Mail_With_Details
 	}
 	sd->mail.zeny = 0;
 
@@ -83,6 +86,9 @@ int mail_removeitem(struct map_session_data *sd, short flag, int idx, int amount
 				sd->mail.item[i].index = sd->mail.item[i+1].index;
 				sd->mail.item[i].nameid = sd->mail.item[i+1].nameid;
 				sd->mail.item[i].amount = sd->mail.item[i+1].amount;
+#ifdef Pandas_Struct_S_Mail_With_Details
+				memcpy(&sd->mail.item[i].details, &sd->mail.item[i+1].details, sizeof(sd->mail.item[i].details));
+#endif // Pandas_Struct_S_Mail_With_Details
 			}
 
 			// Zero the rest
@@ -90,6 +96,9 @@ int mail_removeitem(struct map_session_data *sd, short flag, int idx, int amount
 				sd->mail.item[i].index = 0;
 				sd->mail.item[i].nameid = 0;
 				sd->mail.item[i].amount = 0;
+#ifdef Pandas_Struct_S_Mail_With_Details
+				memset(&sd->mail.item[i].details, 0, sizeof(sd->mail.item[i].details));
+#endif // Pandas_Struct_S_Mail_With_Details
 			}
 		}
 
@@ -265,6 +274,33 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 		sd->mail.item[i].index = idx;
 		sd->mail.item[i].nameid = sd->inventory.u.items_inventory[idx].nameid;
 		sd->mail.item[i].amount = amount;
+
+#ifdef Pandas_Struct_S_Mail_With_Details
+		// 记录更多此附件道具的详细信息, 以便在发送环节进行更严格的校验
+		memset(&sd->mail.item[i].details, 0, sizeof(sd->mail.item[i].details));
+
+		sd->mail.item[i].details.nameid = sd->inventory.u.items_inventory[idx].nameid;
+		sd->mail.item[i].details.identify = sd->inventory.u.items_inventory[idx].identify;
+		sd->mail.item[i].details.refine = sd->inventory.u.items_inventory[idx].refine;
+		sd->mail.item[i].details.attribute = sd->inventory.u.items_inventory[idx].attribute;
+		sd->mail.item[i].details.expire_time = sd->inventory.u.items_inventory[idx].expire_time;
+		sd->mail.item[i].details.bound = sd->inventory.u.items_inventory[idx].bound;
+		sd->mail.item[i].details.enchantgrade = sd->inventory.u.items_inventory[idx].enchantgrade;
+		sd->mail.item[i].details.amount = sd->inventory.u.items_inventory[idx].amount;
+		sd->mail.item[i].details.unique_id = sd->inventory.u.items_inventory[idx].unique_id;
+		sd->mail.item[i].details.equip = sd->inventory.u.items_inventory[idx].equip;
+		sd->mail.item[i].details.equipSwitch = sd->inventory.u.items_inventory[idx].equipSwitch;
+
+		for (int j = sd->inventory_data[idx]->slots; j < MAX_SLOTS; j++)
+			sd->mail.item[i].details.card[j] = sd->inventory.u.items_inventory[idx].card[j];
+
+		for (int j = 0; j < MAX_ITEM_RDM_OPT; j++) {
+			sd->mail.item[i].details.option[j].id = sd->inventory.u.items_inventory[idx].option[j].id;
+			sd->mail.item[i].details.option[j].value = sd->inventory.u.items_inventory[idx].option[j].value;
+			sd->mail.item[i].details.option[j].param = sd->inventory.u.items_inventory[idx].option[j].param;
+		}
+#endif // Pandas_Struct_S_Mail_With_Details
+
 		return MAIL_ATTACH_SUCCESS;
 	}
 }
@@ -464,6 +500,47 @@ void mail_send(struct map_session_data *sd, const char *dest_name, const char *t
 
 	if( sd->state.trading )
 		return;
+
+#ifdef Pandas_Fix_Mail_ItemAttachment_Check
+	bool found_invalid_item = false;
+	for (int i = 0; i < MAIL_MAX_ITEM; i++) {
+		bool need_send_delitem = false;
+		int idx = sd->mail.item[i].index;
+
+		if (sd->mail.item[i].nameid == 0)
+			continue;
+
+		if (idx < 0 || idx > P_MAX_INVENTORY(sd)) {
+			found_invalid_item = true;
+		}
+		else if ((sd->mail.item[i].amount <= 0 || sd->mail.item[i].amount > sd->inventory.u.items_inventory[idx].amount) ||
+			(sd->inventory.u.items_inventory[idx].refine != sd->mail.item[i].details.refine) ||
+			(sd->inventory.u.items_inventory[idx].expire_time != sd->mail.item[i].details.expire_time) ||
+			(sd->inventory.u.items_inventory[idx].attribute != sd->mail.item[i].details.attribute) ||
+			(sd->inventory.u.items_inventory[idx].identify != sd->mail.item[i].details.identify) ||
+			(sd->inventory.u.items_inventory[idx].bound != sd->mail.item[i].details.bound) ||
+			(sd->inventory.u.items_inventory[idx].unique_id != sd->mail.item[i].details.unique_id) ||
+			(sd->inventory.u.items_inventory[idx].equip != sd->mail.item[i].details.equip) ||
+			(sd->inventory.u.items_inventory[idx].equipSwitch != sd->mail.item[i].details.equipSwitch) ||
+			(memcmp(&sd->inventory.u.items_inventory[idx].card, &sd->mail.item[i].details.card, sizeof(sd->mail.item[i].details.card)) != 0) ||
+			(memcmp(&sd->inventory.u.items_inventory[idx].option, &sd->mail.item[i].details.option, sizeof(sd->mail.item[i].details.option)) != 0)
+			) {
+			need_send_delitem = true;
+			found_invalid_item = true;
+		}
+
+		if (need_send_delitem) {
+			clif_delitem(sd, idx, sd->mail.item[i].amount, 0);
+		}
+	}
+
+	if (found_invalid_item) {
+		mail_clear(sd);
+		clif_Mail_send(sd, WRITE_MAIL_FAILED_ITEM); // fail
+		clif_inventorylist(sd);
+		return;
+	}
+#endif // Pandas_Fix_Mail_ItemAttachment_Check
 
 	if( DIFF_TICK(sd->cansendmail_tick, gettick()) > 0 ) {
 		clif_displaymessage(sd->fd,msg_txt(sd,675)); //"Cannot send mails too fast!!."
