@@ -118,6 +118,11 @@ set( GLOBAL_DEFINITIONS ${COMPILE_DEFINITIONS}  CACHE INTERNAL "" )# string (spa
 mark_as_advanced( GLOBAL_LIBRARIES  GLOBAL_INCLUDE_DIRS  GLOBAL_DEFINITIONS )
 if( WIN32 )
 	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -DFD_SETSIZE=4096" )
+else()
+	# 若处于 Linux 平台上, 那么添加 -g 参数用于携带调试信息
+	# 以便可以在 Release 模式下使用 gdb 快速的进行程序崩溃错误调试
+	# 特别针对那些 Release 模式下才能触发, 但 Debug 模式下无法触发的崩溃场景
+	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -g" )
 endif()
 if( MSVC )
 	set_property( CACHE GLOBAL_LIBRARIES    PROPERTY VALUE ${GLOBAL_LIBRARIES} "oldnames.lib" "ws2_32.lib" )
