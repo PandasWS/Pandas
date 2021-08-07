@@ -126,18 +126,9 @@ static void item_group_txt_data(const std::string& modePath, const std::string& 
 template<typename Func>
 bool process( const std::string& type, uint32 version, const std::vector<std::string>& paths, const std::string& name, Func lambda, const std::string& rename = "" ){
 	for( const std::string& path : paths ){
-#ifndef Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
 		const std::string name_ext = name + ".txt";
 		const std::string from = path + "/" + name_ext;
 		const std::string to = path + "/" + (rename.size() > 0 ? rename : name) + ".yml";
-#else
-		std::string name_ext = name + ".txt";
-		std::string from = path + "/" + name_ext;
-		std::string to = path + "/" + (rename.size() > 0 ? rename : name) + ".yml";
-
-		strReplace(from, "//", "/");
-		strReplace(to, "//", "/");
-#endif // Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
 
 		if( fileExists( from ) ){
 			if( !askConfirmation( "Found the file \"%s\", which requires migration to yml.\nDo you want to convert it now? (Y/N)\n", from.c_str() ) ){
@@ -166,6 +157,16 @@ bool process( const std::string& type, uint32 version, const std::vector<std::st
 			prepareHeader(out, type, version, (rename.size() > 0 ? rename : name));
 			prepareBody();
 
+#ifdef Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
+			// 若 path 的结尾不是斜杠, 则在回调 lambda 的时候把 path 的斜杠加上
+			if (!strEndWith(path, "/")) {
+				if (!lambda(path + "/", name_ext)) {
+					out.close();
+					return false;
+				}
+			}
+			else 
+#endif // Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
 			if( !lambda( path, name_ext ) ){
 				out.close();
 				return false;
@@ -186,15 +187,31 @@ bool process( const std::string& type, uint32 version, const std::vector<std::st
 
 int do_init( int argc, char** argv ){
 	const std::string path_db = std::string( db_path );
+#ifndef Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
 	const std::string path_db_mode = path_db + "/" + DBPATH;
 	const std::string path_db_import = path_db + "/" + DBIMPORT + "/";
+#else
+	// 移除 const 关键字
+	std::string path_db_mode = path_db + "/" + DBPATH;
+	std::string path_db_import = path_db + "/" + DBIMPORT + "/";
+
+	// 直接在此处删掉最末尾的 / 斜杠
+	path_db_mode.pop_back();
+	path_db_import.pop_back();
+#endif // Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
 
 	// Loads required conversion constants
 	if (fileExists(item_db.getDefaultLocation())) {
 		item_db.load();
 	} else {
+#ifndef Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
 		parse_item_constants_txt( ( path_db_mode + "item_db.txt" ).c_str() );
 		parse_item_constants_txt( ( path_db_import + "item_db.txt" ).c_str() );
+#else
+		// 这地方是个特例, 反而需要补充一个斜杠上去
+		parse_item_constants_txt((path_db_mode + "/item_db.txt").c_str());
+		parse_item_constants_txt((path_db_import + "/item_db.txt").c_str());
+#endif // Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
 	}
 	if (fileExists(mob_db.getDefaultLocation())) {
 		mob_db.load();
