@@ -723,7 +723,11 @@ int _vShowMessage(enum msg_type flag, std::string instr, va_list ap)
 				flag == MSG_DEBUG ? "Debug" :
 				"Unknown");
 			va_copy(apcopy, ap);
+#ifndef Pandas_Console_Charset_SmartConvert
 			vfprintf(log,string,apcopy);
+#else
+			PandasUtf8::vfprintf(log, string, apcopy);
+#endif // Pandas_Console_Charset_SmartConvert
 			va_end(apcopy);
 			fclose(log);
 		}
