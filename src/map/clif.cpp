@@ -6779,15 +6779,20 @@ void clif_broadcast(struct block_list* bl, const char* mes, int len, int type, e
 	p->packetType = HEADER_ZC_BROADCAST;
 	p->PacketLength = (int16)( sizeof( struct PACKET_ZC_BROADCAST ) + len );
 
-	if ((type & BC_NAME)) {
+#ifdef Pandas_ScriptCommand_Announce
+	if (type & BC_NAME && bl && bl->type == BL_PC) {
 		int16 length = (int16)(NAME_LENGTH + 4);
 
+		// 如果此处以 micc 开头, 那么 micc 紧接着的字符串将作为发送者
+		// 发送者以外的其他玩家在聊天窗口双击信息时, 将会把发送者名称自动放到聊天栏的私聊目标中
 		sprintf(p->message, "micc%s", ((TBL_PC*)bl)->status.name);
 		strncpy(&p->message[length], mes, len);
 
 		p->PacketLength += length;
 	}
-	else if( ( type&BC_BLUE ) != 0 ){
+	else
+#endif // Pandas_ScriptCommand_Announce
+	if( ( type&BC_BLUE ) != 0 ){
 		const char* color = "blue";
 		int16 length = (int16)strlen( color );
 
