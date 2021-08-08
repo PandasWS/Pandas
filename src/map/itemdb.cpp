@@ -2247,7 +2247,7 @@ bool itemdb_dummy_roulette_db(void) {
 	// @reloadbattleconf 来重新加载配置文件的话
 	// 在进行过上述操作后, 点击大乐透按钮会导致地图服务器崩溃.
 	//
-	// 为了修复上面这个问题, 改造了一下大乐透数据的加载逻辑, 当没启用 feature.roulette 的时候
+	// 为了修复上面这个问题, 改造了一下大乐透数据的加载逻辑, 当 feature.roulette 设为 off 的时候
 	// 会默认为 大乐透的数据变量 rd 填充上默认的 苹果
 	// 这样再进行上述操作的时候, 就不会再出现崩溃的问题了, 虽然看起来显得繁琐
 
@@ -3165,7 +3165,9 @@ void itemdb_reload(void) {
 	itemdb_read();
 	cashshop_reloaddb();
 
+#ifndef Pandas_Crashfix_RouletteData_UnInit
 	if (battle_config.feature_roulette)
+#endif // Pandas_Crashfix_RouletteData_UnInit
 		itemdb_parse_roulette_db();
 
 #ifdef Pandas_Crashfix_RouletteData_UnInit
@@ -3214,7 +3216,9 @@ void do_final_itemdb(void) {
 	itemdb_speedup_clear();
 #endif // Pandas_Speedup_Itemdb_SearchName
 
+#ifndef Pandas_Crashfix_RouletteData_UnInit
 	if (battle_config.feature_roulette)
+#endif // Pandas_Crashfix_RouletteData_UnInit
 		itemdb_roulette_free();
 }
 
