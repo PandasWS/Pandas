@@ -11897,7 +11897,7 @@ BUILDIN_FUNC(announce)
 				fontColor = "0xFFFF00";
 
 			// 将颜色代码放到文本信息的最开头
-			sprintf(output, "%06x%s", strtol(fontColor, (char**)NULL, 0), mes);
+			sprintf(output, "%06lx%s", strtol(fontColor, (char**)NULL, 0), mes);
 
 			// 调用 clif_broadcast 将信息发送给客户端
 			clif_broadcast(bl, output, (int)strlen(output) + 1, flag, target);
