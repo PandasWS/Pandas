@@ -1473,6 +1473,14 @@
 // ============================================================================
 
 #ifdef Pandas_ScriptCommands
+	// 是否拓展 announce 脚本指令 [Sense 提交] [Sola丶小克 改进]
+	// 使 announce 指令能够支持 bc_name 标记位
+	// 携带此标记位的公告能够在双击公告时将发布者角色名称填写到聊天窗口
+	// 
+	// 备注: 自己发送的公告自己双击则无效
+	// 提示: 使用 20130807 客户端测试通过, 更早之前的客户端没有测试过
+	#define Pandas_ScriptCommand_Announce
+
 	// 是否拓展 unitexists 脚本指令 [Sola丶小克]
 	// 添加一个可选参数, 用于强调单位必须存在且活着才返回 true
 	#define Pandas_ScriptCommand_UnitExists

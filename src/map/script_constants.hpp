@@ -555,6 +555,9 @@
 	export_constant(BC_YELLOW);
 	export_constant(BC_BLUE);
 	export_constant(BC_WOE);
+#ifdef Pandas_ScriptCommand_Announce
+	export_constant(BC_NAME);
+#endif // Pandas_ScriptCommand_Announce
 
 	/* mapflags */
 	export_constant(MF_NOMEMO);

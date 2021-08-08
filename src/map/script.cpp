@@ -11850,7 +11850,11 @@ BUILDIN_FUNC(announce)
 	int         fontAlign = script_hasdata(st,7) ? script_getnum(st,7) : 0;     // default fontAlign
 	int         fontY     = script_hasdata(st,8) ? script_getnum(st,8) : 0;     // default fontY
 
+#ifndef Pandas_ScriptCommand_Announce
 	if (flag&(BC_TARGET_MASK|BC_SOURCE_MASK)) // Broadcast source or broadcast region defined
+#else
+	if (flag&(BC_TARGET_MASK|BC_SOURCE_MASK|BC_NAME)) // Broadcast source or broadcast region defined
+#endif // Pandas_ScriptCommand_Announce
 	{
 		send_target target;
 		struct block_list *bl;
@@ -11877,10 +11881,34 @@ BUILDIN_FUNC(announce)
 			default:		target = ALL_CLIENT;	break; // BC_ALL
 		}
 
+#ifndef Pandas_ScriptCommand_Announce
 		if (fontColor)
 			clif_broadcast2(bl, mes, (int)strlen(mes)+1, strtol(fontColor, (char **)NULL, 0), fontType, fontSize, fontAlign, fontY, target);
 		else
 			clif_broadcast(bl, mes, (int)strlen(mes)+1, flag&BC_COLOR_MASK, target);
+#else
+		if (flag & BC_NAME && bl && bl->type == BL_PC) {
+			// 若携带了 BC_NAME 标记位, 则强制只能走 clif_broadcast
+			char output[CHAT_SIZE_MAX] = { 0 };
+
+			// 若没有指定颜色, 则指定黄色作为默认色
+			if (!fontColor)
+				fontColor = "0xFFFF00";
+
+			// 将颜色代码放到文本信息的最开头
+			sprintf(output, "%06lx%s", strtol(fontColor, (char**)NULL, 0), mes);
+
+			// 调用 clif_broadcast 将信息发送给客户端
+			clif_broadcast(bl, output, (int)strlen(output) + 1, flag, target);
+		}
+		else {
+			// 在原始流程中如果携带了字体颜色则走 clif_broadcast2 否则走 clif_broadcast
+			if (fontColor)
+				clif_broadcast2(bl, mes, (int)strlen(mes) + 1, strtol(fontColor, (char**)NULL, 0), fontType, fontSize, fontAlign, fontY, target);
+			else
+				clif_broadcast(bl, mes, (int)strlen(mes) + 1, flag & BC_COLOR_MASK, target);
+		}
+#endif // Pandas_ScriptCommand_Announce
 	}
 	else
 	{
