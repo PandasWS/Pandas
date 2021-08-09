@@ -210,7 +210,8 @@ std::string YamlDatabase::getBlashCacheHash(const std::string& path) {
 		return "";
 
 	std::string content = boost::str(
-		boost::format("%1%|%2%|%3%|%4%|%5%|%6%") %
+		boost::format("%1%|%2%|%3%|%4%|%5%|%6%|%7%") %
+		getPandasVersion() %
 		BLASTCACHE_VERSION %
 		typeid(SERIALIZE_LOAD_ARCHIVE).name() %
 		typeid(SERIALIZE_SAVE_ARCHIVE).name() %

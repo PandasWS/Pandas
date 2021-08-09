@@ -1561,6 +1561,45 @@ uint8 ItemGroupDatabase::pc_get_itemgroup(uint16 group_id, bool identify, map_se
 	return 0;
 }
 
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+//************************************
+// Method:      doSerialize
+// Description: 对 ItemDatabase 进行序列化和反序列化操作
+// Access:      public 
+// Parameter:   const std::string & type
+// Parameter:   void * archive
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/08/09 19:45
+//************************************ 
+bool ItemGroupDatabase::doSerialize(const std::string& type, void* archive) {
+	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
+		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, ItemGroupDatabase);
+		*ar&* this;
+		return true;
+	}
+	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
+		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, ItemGroupDatabase);
+		*ar&* this;
+		return true;
+	}
+	return false;
+}
+
+//************************************
+// Method:      afterSerialize
+// Description: 反序列化完成之后对 itemdb_group 中的对象进行加工处理
+// Access:      public 
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/08/09 19:45
+//************************************ 
+void ItemGroupDatabase::afterSerialize()
+{
+	// no thing need to do after serialize
+}
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
+
 /** Searches for the item_data. Use this to check if item exists or not.
 * @param nameid
 * @return *item_data if item is exist, or NULL if not

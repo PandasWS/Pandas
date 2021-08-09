@@ -1140,6 +1140,9 @@
 
 		// 是否启用对 MobDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_MobDatabase
+
+		// 是否启用对 ItemGroupDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_ItemGroupDatabase
 	#endif // Pandas_YamlBlastCache_Serialize
 #endif // Pandas_YamlBlastCache
 
