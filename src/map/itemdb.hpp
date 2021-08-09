@@ -1123,9 +1123,20 @@ public:
 extern ItemDatabase item_db;
 
 class ItemGroupDatabase : public TypesafeCachedYamlDatabase<uint16, s_item_group_db> {
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+private:
+	friend class boost::serialization::access;
+
+	template <typename Archive>
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<uint16, s_item_group_db>>(*this);
+	}
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 public:
 	ItemGroupDatabase() : TypesafeCachedYamlDatabase("ITEM_GROUP_DB", 1) {
-
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+		this->supportSerialize = true;
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 	}
 
 	const std::string getDefaultLocation();
@@ -1138,6 +1149,11 @@ public:
 	t_itemid get_random_item_id(uint16 group_id, uint8 sub_group);
 	std::shared_ptr<s_item_group_entry> get_random_entry(uint16 group_id, uint8 sub_group);
 	uint8 pc_get_itemgroup(uint16 group_id, bool identify, map_session_data *sd);
+
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+	bool doSerialize(const std::string& type, void* archive);
+	void afterSerialize();
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 };
 
 extern ItemGroupDatabase itemdb_group;
@@ -1307,5 +1323,49 @@ namespace boost {
 	} // namespace serialization
 } // namespace boost
 #endif // Pandas_YamlBlastCache_ItemDatabase
+
+
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_item_group_entry
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_item_group_entry& t, const unsigned int version)
+		{
+			ar& t.nameid;
+			ar& t.rate;
+			ar& t.duration;
+			ar& t.amount;
+			ar& t.isAnnounced;
+			ar& t.GUID;
+			ar& t.isNamed;
+			ar& t.bound;
+		}
+
+		// ======================================================================
+		// struct s_item_group_random
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_item_group_random& t, const unsigned int version)
+		{
+			ar& t.total_rate;
+			ar& t.data;
+		}
+
+		// ======================================================================
+		// struct s_item_group_db
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_item_group_db& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.random;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
+
 
 #endif /* ITEMDB_HPP */

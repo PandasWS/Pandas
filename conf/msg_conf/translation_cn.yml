@@ -4219,7 +4219,7 @@ Body:
 - Original: "npc_parse_script: original npc not found for duplicate in file '%s', line '%d' : %s\n"
   Translation: "npc_parse_script: 复制 NPC 时发现原始 NPC 并不存在, 请检查 '%s' 中第 '%d' 行, 原始 NPC 名称: %s\n"
 - Original: "npc_parse_shop: (MARKETSHOP) Feature is disabled, need client 20131223 or newer. Ignoring file '%s', line '%d\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n"
-  Translation: "npc_parse_shop: 限购商店要求 PACKETVER 必须大于等于 2015-05-13 才支持, 已自动禁用.\n已忽略 '%s' 中第 %d 行配置的限购商店信息:\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n"
+  Translation: "npc_parse_shop: 限购商店要求 PACKETVER 必须大于等于 2013-12-23 才支持, 已自动禁用.\n已忽略 '%s' 中第 %d 行配置的限购商店信息:\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n"
 - Original: "npc_parse_shop: (MARKETSHOP) Invalid item definition in file '%s', line '%d'. Ignoring the rest of the line...\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n"
   Translation: ""
 - Original: "npc_parse_shop: Ignoring empty shop in file '%s', line '%d'.\n"
