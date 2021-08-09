@@ -3089,6 +3089,44 @@ bool RandomOptionGroupDatabase::option_get_id(std::string name, uint16 &id) {
 	return false;
 }
 
+#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
+//************************************
+// Method:      doSerialize
+// Description: 对 RandomOptionGroupDatabase 进行序列化和反序列化操作
+// Access:      public 
+// Parameter:   const std::string & type
+// Parameter:   void * archive
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/08/09 22:53
+//************************************ 
+bool RandomOptionGroupDatabase::doSerialize(const std::string& type, void* archive) {
+	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
+		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionGroupDatabase);
+		*ar&* this;
+		return true;
+	}
+	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
+		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionGroupDatabase);
+		*ar&* this;
+		return true;
+	}
+	return false;
+}
+
+//************************************
+// Method:      afterSerialize
+// Description: 反序列化完成之后对 random_option_group 中的对象进行加工处理
+// Access:      public 
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/08/09 22:53
+//************************************ 
+void RandomOptionGroupDatabase::afterSerialize() {
+	// no thing need to do after serialize
+}
+#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
+
 /**
 * Read all item-related databases
 */

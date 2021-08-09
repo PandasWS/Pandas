@@ -1081,9 +1081,20 @@ public:
 extern RandomOptionDatabase random_option_db;
 
 class RandomOptionGroupDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_group> {
+#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
+private:
+	friend class boost::serialization::access;
+
+	template <typename Archive>
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint16, s_random_opt_group>>(*this);
+	}
+#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 public:
 	RandomOptionGroupDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_GROUP", 1) {
-
+#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
+		this->supportSerialize = true;
+#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 	}
 
 	const std::string getDefaultLocation();
@@ -1093,6 +1104,11 @@ public:
 	bool add_option(const YAML::Node &node, std::shared_ptr<s_random_opt_group_entry> &entry);
 	bool option_exists(std::string name);
 	bool option_get_id(std::string name, uint16 &id);
+
+#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
+	bool doSerialize(const std::string& type, void* archive);
+	void afterSerialize();
+#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 };
 
 extern RandomOptionGroupDatabase random_option_group;
@@ -1407,6 +1423,39 @@ namespace boost {
 	} // namespace serialization
 } // namespace boost
 #endif // Pandas_YamlBlastCache_RandomOptionDatabase
+
+
+#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_random_opt_group_entry
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_random_opt_group_entry& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.min_value;
+			ar& t.max_value;
+			ar& t.param;
+			ar& t.chance;
+		}
+
+		// ======================================================================
+		// struct s_random_opt_group
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_random_opt_group& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.name;
+			ar& t.slots;
+			ar& t.max_random;
+			ar& t.random_options;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 
 
 #endif /* ITEMDB_HPP */
