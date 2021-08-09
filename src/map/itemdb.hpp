@@ -1020,6 +1020,10 @@ struct s_random_opt_data
 	std::string name;
 	script_code *script;
 
+#ifdef Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+	std::string script_plaintext;
+#endif // Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+
 	~s_random_opt_data() {
 		if (script)
 			script_free_code(script);
@@ -1044,9 +1048,20 @@ struct s_random_opt_group {
 };
 
 class RandomOptionDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_data> {
+#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
+private:
+	friend class boost::serialization::access;
+
+	template <typename Archive>
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint16, s_random_opt_data>>(*this);
+	}
+#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 public:
 	RandomOptionDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_DB", 1) {
-
+#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
+		this->supportSerialize = true;
+#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 	}
 
 	const std::string getDefaultLocation();
@@ -1056,6 +1071,11 @@ public:
 	// Additional
 	bool option_exists(std::string name);
 	bool option_get_id(std::string name, uint16 &id);
+
+#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
+	bool doSerialize(const std::string& type, void* archive);
+	void afterSerialize();
+#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 };
 
 extern RandomOptionDatabase random_option_db;
@@ -1304,11 +1324,13 @@ namespace boost {
 
 #ifdef Pandas_Struct_Item_Data_Pandas
 
-#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+			//ar& t.script;					// 改用 t.pandas.script_plaintext.script 来序列化数据
+			//ar& t.equip_script;			// 改用 t.pandas.script_plaintext.equip_script 来序列化数据
+			//ar& t.unequip_script;			// 改用 t.pandas.script_plaintext.unequip_script 来序列化数据
+
 			ar& t.pandas.script_plaintext.script;
 			ar& t.pandas.script_plaintext.equip_script;
 			ar& t.pandas.script_plaintext.unequip_script;
-#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
 			ar& t.pandas.taming_mobid;
@@ -1366,6 +1388,25 @@ namespace boost {
 	} // namespace serialization
 } // namespace boost
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
+
+
+#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_random_opt_data
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_random_opt_data& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.name;
+			//ar& t.script;				// 改用 t.script_plaintext 来序列化数据
+			ar& t.script_plaintext;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 
 
 #endif /* ITEMDB_HPP */

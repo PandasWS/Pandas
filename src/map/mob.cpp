@@ -4386,7 +4386,7 @@ bool MobDatabase::doSerialize(const std::string& type, void* archive) {
 // Author:      Sola丶小克(CairoLee)  2021/04/18 22:31
 //************************************ 
 void MobDatabase::afterSerialize() {
-	for (const auto& it : mob_db) {
+	for (const auto& it : *this) {
 		auto mob = it.second;
 
 		// ==================================================================
