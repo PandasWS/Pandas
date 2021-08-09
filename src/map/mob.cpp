@@ -4438,7 +4438,7 @@ bool MobDatabase::parseDropNode(std::string nodeName, YAML::Node node, uint8 max
 		if (!this->asString(dropit, "Item", item_name))
 			return false;
 
-		item_data *item = itemdb_search_aegisname(item_name.c_str());
+		std::shared_ptr<item_data> item = item_db.search_aegisname( item_name.c_str() );
 
 		if (item == nullptr) {
 			this->invalidWarning(dropit["Item"], "Monster %s item %s does not exist, skipping.\n", nodeName.c_str(), item_name.c_str());
@@ -5545,7 +5545,7 @@ uint64 MobAvailDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asString(node, "Weapon", weapon))
 			return 0;
 
-		struct item_data *item = itemdb_search_aegisname(weapon.c_str());
+		std::shared_ptr<item_data> item = item_db.search_aegisname( weapon.c_str() );
 
 		if (item == nullptr) {
 			this->invalidWarning(node["Weapon"], "Weapon %s is not a valid item.\n", weapon.c_str());
@@ -5566,7 +5566,7 @@ uint64 MobAvailDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asString(node, "Shield", shield))
 			return 0;
 
-		struct item_data *item = itemdb_search_aegisname(shield.c_str());
+		std::shared_ptr<item_data> item = item_db.search_aegisname( shield.c_str() );
 
 		if (item == nullptr) {
 			this->invalidWarning(node["Shield"], "Shield %s is not a valid item.\n", shield.c_str());
@@ -5587,9 +5587,9 @@ uint64 MobAvailDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asString(node, "HeadTop", head))
 			return 0;
 
-		struct item_data *item;
+		std::shared_ptr<item_data> item = item_db.search_aegisname( head.c_str() );
 
-		if ((item = itemdb_search_aegisname(head.c_str())) == nullptr) {
+		if (item == nullptr) {
 			this->invalidWarning(node["HeadTop"], "HeadTop %s is not a valid item.\n", head.c_str());
 			return 0;
 		}
@@ -5608,7 +5608,7 @@ uint64 MobAvailDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asString(node, "HeadMid", head))
 			return 0;
 
-		struct item_data *item = itemdb_search_aegisname(head.c_str());
+		std::shared_ptr<item_data> item = item_db.search_aegisname( head.c_str() );
 
 		if (item == nullptr) {
 			this->invalidWarning(node["HeadMid"], "HeadMid %s is not a valid item.\n", head.c_str());
@@ -5629,7 +5629,7 @@ uint64 MobAvailDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asString(node, "HeadLow", head))
 			return 0;
 
-		struct item_data *item = itemdb_search_aegisname(head.c_str());
+		std::shared_ptr<item_data> item = item_db.search_aegisname( head.c_str() );
 
 		if (item == nullptr) {
 			this->invalidWarning(node["HeadLow"], "HeadLow %s is not a valid item.\n", head.c_str());
@@ -5652,7 +5652,7 @@ uint64 MobAvailDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asString(node, "PetEquip", equipment))
 			return 0;
 
-		struct item_data *item = itemdb_search_aegisname(equipment.c_str());
+		std::shared_ptr<item_data> item = item_db.search_aegisname( equipment.c_str() );
 
 		if (item == nullptr) {
 			this->invalidWarning(node["PetEquip"], "PetEquip %s is not a valid item.\n", equipment.c_str());

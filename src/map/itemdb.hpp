@@ -760,6 +760,9 @@ enum e_random_item_group {
 	IG_ENCHANT_STONE_BOX19,
 	IG_ENCHANT_STONE_BOX20,
 	IG_ENCHANT_STONE_BOX21,
+	IG_XMAS_PACKAGE_14,
+	IG_EASTER_EGG,
+	IG_PITAPAT_BOX,
 
 	IG_MAX,
 };
@@ -1076,6 +1079,9 @@ extern RandomOptionGroupDatabase random_option_group;
 
 class ItemDatabase : public TypesafeCachedYamlDatabase<t_itemid, item_data> {
 private:
+	std::unordered_map<std::string, std::shared_ptr<item_data>> nameToItemDataMap;
+	std::unordered_map<std::string, std::shared_ptr<item_data>> aegisNameToItemDataMap;
+
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 	friend class boost::serialization::access;
 
@@ -1097,6 +1103,16 @@ public:
 	const std::string getDefaultLocation();
 	uint64 parseBodyNode(const YAML::Node& node);
 	void loadingFinished();
+	void clear() override{
+		TypesafeCachedYamlDatabase::clear();
+
+		this->nameToItemDataMap.clear();
+		this->aegisNameToItemDataMap.clear();
+	}
+
+	// Additional
+	std::shared_ptr<item_data> searchname( const char* name );
+	std::shared_ptr<item_data> search_aegisname( const char *name );
 
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 	bool doSerialize(const std::string& type, void* archive);
@@ -1126,8 +1142,6 @@ public:
 
 extern ItemGroupDatabase itemdb_group;
 
-struct item_data* itemdb_searchname(const char *name);
-struct item_data* itemdb_search_aegisname( const char *str );
 int itemdb_searchname_array(struct item_data** data, int size, const char *str);
 struct item_data* itemdb_search(t_itemid nameid);
 struct item_data* itemdb_exists(t_itemid nameid);

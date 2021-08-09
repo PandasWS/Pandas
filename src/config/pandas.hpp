@@ -1011,10 +1011,6 @@
 	// 是否在一些关键耗时节点打印出耗时情况 [Sola丶小克]
 	#define Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
-	// 是否优化 itemdb_searchname1 函数的实现方式 [Sola丶小克]
-	// 在默认情况下 rAthena 的 itemdb_searchname1 函数实现的非常低效
-	#define Pandas_Speedup_Itemdb_SearchName
-
 	// 优化 map_readfromcache 中对每个 cell 的分配方式 [Sola丶小克]
 	// 主要降低 map_gat2cell 的调用次数, 因为一张地图需要加载 40000 个 cell
 	// 虽然已经启用了 static 和 inline 但内部调用 struct 创建构体也是开销非常大的.
