@@ -206,6 +206,9 @@
 
 	// 使 s_mail.item 能有一个 details 字段用来记录附件道具更详细的信息 [Sola丶小克]
 	#define Pandas_Struct_S_Mail_With_Details
+
+	// 使 s_random_opt_data 能保存脚本的明文 [Sola丶小克]
+	#define Pandas_Struct_S_Random_Opt_Data_With_Plaintext
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -1130,7 +1133,10 @@
 	// 以下选项开关需要依赖 Pandas_YamlBlastCache_Serialize 的拓展
 	#ifdef Pandas_YamlBlastCache_Serialize
 		// 是否启用对 ItemDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_ItemDatabase
+		// 此选项需要依赖 Pandas_Struct_Item_Data_Script_Plaintext 的拓展
+		#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+				#define Pandas_YamlBlastCache_ItemDatabase
+		#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 		// 是否启用对 QuestDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_QuestDatabase
@@ -1143,6 +1149,12 @@
 
 		// 是否启用对 ItemGroupDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_ItemGroupDatabase
+
+		// 是否启用对 RandomOptionDatabase 的序列化支持 [Sola]
+		// 此选项需要依赖 Pandas_Struct_S_Random_Opt_Data_With_Plaintext 的拓展
+		#ifdef Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+			#define Pandas_YamlBlastCache_RandomOptionDatabase
+		#endif // Pandas_Struct_S_Random_Opt_Data_With_Plaintext
 	#endif // Pandas_YamlBlastCache_Serialize
 #endif // Pandas_YamlBlastCache
 

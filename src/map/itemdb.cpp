@@ -1213,7 +1213,7 @@ bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
 // Author:      Sola丶小克(CairoLee)  2021/04/18 22:33
 //************************************ 
 void ItemDatabase::afterSerialize() {
-	for (const auto& it : item_db) {
+	for (const auto& it : *this) {
 		auto item = it.second;
 
 		// ==================================================================
@@ -1594,8 +1594,7 @@ bool ItemGroupDatabase::doSerialize(const std::string& type, void* archive) {
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/08/09 19:45
 //************************************ 
-void ItemGroupDatabase::afterSerialize()
-{
+void ItemGroupDatabase::afterSerialize() {
 	// no thing need to do after serialize
 }
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
@@ -2765,6 +2764,10 @@ uint64 RandomOptionDatabase::parseBodyNode(const YAML::Node &node) {
 		}
 
 		randopt->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), id, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+
+#ifdef Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+		randopt->script_plaintext = strTrim(script);
+#endif // Pandas_Struct_S_Random_Opt_Data_With_Plaintext
 	}
 
 	if (!exists)
@@ -2826,6 +2829,52 @@ bool RandomOptionDatabase::option_get_id(std::string name, uint16 &id) {
 
 	return false;
 }
+
+#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
+//************************************
+// Method:      doSerialize
+// Description: 对 RandomOptionDatabase 进行序列化和反序列化操作
+// Access:      public 
+// Parameter:   const std::string & type
+// Parameter:   void * archive
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/08/09 20:46
+//************************************ 
+bool RandomOptionDatabase::doSerialize(const std::string& type, void* archive) {
+	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
+		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionDatabase);
+		*ar&* this;
+		return true;
+	}
+	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
+		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionDatabase);
+		*ar&* this;
+		return true;
+	}
+	return false;
+}
+
+//************************************
+// Method:      afterSerialize
+// Description: 反序列化完成之后对 random_option_db 中的对象进行加工处理
+// Access:      public 
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/08/09 20:46
+//************************************ 
+void RandomOptionDatabase::afterSerialize() {
+	for (const auto& pair : *this) {
+		// ==================================================================
+		// 根据脚本明文重新生成脚本指令序列
+		// ==================================================================
+		pair.second->script = parse_script(
+			pair.second->script_plaintext.c_str(),
+			"random_option_db_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
+		);
+	}
+}
+#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 
 const std::string RandomOptionGroupDatabase::getDefaultLocation() {
 	return std::string(db_path) + "/item_randomopt_group.yml";

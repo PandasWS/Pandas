@@ -22749,7 +22749,7 @@ bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
 void SkillDatabase::afterSerialize() {
 	memset(skilldb_id2idx, 0, sizeof(skilldb_id2idx));
 	skill_num = 1;
-	for (const auto& it : skill_db) {
+	for (const auto& it : *this) {
 		auto skill = it.second;
 		skilldb_id2idx[skill->nameid] = skill_num;
 		skill_num++;
