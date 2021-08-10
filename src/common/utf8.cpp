@@ -19,7 +19,7 @@
 	#include <locale.h>
 	#include <langinfo.h>
 
-	#include "../common/iconv.hpp"
+	#include <iconv.h>
 #endif // _WIN32
 
 #include <unordered_map>
@@ -189,7 +189,7 @@ std::string getDefaultCodepage() {
 
 //************************************
 // Method:      UnicodeEncode
-// Description: 
+// Description: 将给定的 ANSI 字符串编码成 Unicode 字符串
 // Parameter:   const std::string & strANSI
 // Parameter:   unsigned int nCodepage
 // Returns:     std::wstring
@@ -207,7 +207,7 @@ std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage) {
 
 //************************************
 // Method:      UnicodeDecode
-// Description: 
+// Description: 将给定的 Unicode 字符串解码成 ANSI 字符串
 // Parameter:   const std::wstring & strUnicode
 // Parameter:   unsigned int nCodepage
 // Returns:     std::string
@@ -292,6 +292,109 @@ bool setupConsoleOutputCP() {
 #else
 
 //************************************
+// Method:      UnicodeEncode
+// Description: 将给定的 ANSI 字符串编码成 Unicode 字符串
+// Access:      public 
+// Parameter:   const std::string & strANSI
+// Parameter:   const std::string & encoding
+// Returns:     std::wstring
+// Author:      Sola丶小克(CairoLee)  2021/08/10 21:12
+//************************************ 
+std::wstring UnicodeEncode(const std::string& strANSI, const std::string& encoding) {
+	iconv_t descr_in = iconv_open("WCHAR_T", encoding.c_str());
+
+	if ((iconv_t)-1 == descr_in) {
+		return L"";
+	}
+
+	const char* instr = strANSI.c_str();
+	size_t instr_len = (strANSI.length() + 1) * sizeof(char);
+
+	wchar_t* result_buf = new wchar_t[instr_len * sizeof(wchar_t)];
+	wchar_t* result_buf_out = result_buf;
+	size_t result_buf_len = instr_len * sizeof(wchar_t);
+
+	size_t iconv_result = iconv(descr_in,
+		(char**)&instr, &instr_len,
+		(char**)&result_buf, &result_buf_len
+	);
+
+	std::wstring w_content(result_buf_out);
+	delete[] result_buf_out;
+	iconv_close(descr_in);
+
+	return std::move(w_content);
+}
+
+//************************************
+// Method:      UnicodeDecode
+// Description: 将给定的 Unicode 字符串解码成 ANSI 字符串
+// Access:      public 
+// Parameter:   const std::wstring & strUnicode
+// Parameter:   const std::string & encoding
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/08/10 21:13
+//************************************ 
+std::string UnicodeDecode(const std::wstring& strUnicode, const std::string& encoding) {
+	iconv_t descr_out = iconv_open(encoding.c_str(), "WCHAR_T");
+
+	if ((iconv_t)-1 == descr_out) {
+		return "";
+	}
+
+	const char* instr = (const char*)strUnicode.c_str();
+	size_t instr_len = (strUnicode.length() + 1) * sizeof(wchar_t);
+
+	char* result_buf = new char[instr_len];
+	char* result_buf_out = result_buf;
+	size_t result_buf_len = instr_len;
+
+	size_t iconv_result = iconv(descr_out,
+		(char**)&instr, &instr_len,
+		(char**)&result_buf, &result_buf_len
+	);
+
+	std::string s_content(result_buf_out);
+	delete[] result_buf_out;
+	iconv_close(descr_out);
+
+	return std::move(s_content);
+}
+
+//************************************
+// Method:      splashForBIG5
+// Description: 若目标编码需要转换成 BIG5 的话,
+//              额外需要将字符低位为 0x5C 的字符后面补一个反斜杠 
+// Access:      public 
+// Parameter:   const std::wstring & strUnicode
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/08/10 21:15
+//************************************ 
+std::string splashForBIG5(const std::wstring& strUnicode) {
+	std::string strAnsi;
+
+	for (wchar_t uniChar : strUnicode) {
+		// 遍历每一个多字节字符串, 将他们转换成 std::wstring
+		std::wstring uniStr;
+		uniStr.push_back(uniChar);
+
+		// 将 uniStr 单独转换成 Ansi 字符
+		std::string ansiChar = UnicodeDecode(uniStr, "BIG5");
+
+		// 如若 ansiChar 等于两个字节, 且字符的低位等于 0x5C,
+		// 那么输出时末尾多来个反斜杠
+		if (ansiChar.size() == 2 && ansiChar.c_str()[1] == 0x5C) {
+			strAnsi += ansiChar + "\\";
+			continue;
+		}
+
+		strAnsi += ansiChar;
+	}
+
+	return strAnsi;
+}
+
+//************************************
 // Method:      iconvConvert
 // Description: 在 Linux 平台上使用 iconv 库进行字符编码转换
 // Parameter:   const std::string & val
@@ -302,10 +405,12 @@ bool setupConsoleOutputCP() {
 //************************************
 std::string iconvConvert(const std::string& val, const std::string& in_enc, const std::string& out_enc) {
 	if (in_enc == out_enc) return val;
-	iconvpp::converter conv(out_enc, in_enc, true);
-	std::string result;
-	conv.convert(val, result);
-	return result;
+
+	std::wstring strUnicode = UnicodeEncode(val, in_enc);
+	if (out_enc == "BIG5") {
+		return splashForBIG5(strUnicode);
+	}
+	return UnicodeDecode(strUnicode, out_enc);
 }
 
 //************************************
