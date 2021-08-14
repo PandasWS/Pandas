@@ -10,6 +10,37 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+## [v1.1.5] - `2021-08-14`
+
+### 升级
+
+- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入: `upgrade_to_1.1.5_main_use_sql_db.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
+### 添加
+
+- 使 `announce` 脚本指令发送的公告信息能够支持双击私聊发送者 (#396) (感谢 "Sense" 实现)
+- 使墓碑中的魔物名称能尊重 `override_mob_names` 战斗配置选项的设置
+- 使疾风缓存支持 item_group_db.yml, item_randomopt_db.yml, item_randomopt_group.yml 数据库
+- 修正在 Liunx 平台上对 `big5` 编码的支持 (感谢 "s11005349" 反馈) (#398)
+
+### 修正
+
+- 修正 `script_instancegetid` 中的一处空指针崩溃 (感谢 "VanillaIRV" 反馈) (#387)
+- 修正 `mail_attachment_weight` 选项在特定操作顺序下无效的问题 (感谢 "qsc7831449" 反馈)
+- 发送邮件之前, 对附件中的道具进行更加严格的检查 (#392)
+- 强化邮件系统的参数校验和空指针判断, 避免特殊操作导致地图服务器崩溃 (#388)
+- 修正在不支持乐透大转盘机制的客户端上会出现内存泄露的问题
+- 使 Linux 平台上输出日志文件时, 字符编码能与终端信息的输出编码一致 (感谢 "余伯芒" 反馈)
+
+### 调整
+
+- 调整缓存的过期策略, 改变结构体大小将强制缓存过期 (#389)
+- 提升 SQL 版物品数据库中 price_buy 和 price_sell 的字段类型 (感谢 "懒猪" 反馈)
+- 调整 csv2yaml 转换工具的路径处理细节, 并汉化部分终端错误提示文本
+
 ## [v1.1.4] - `2021-07-18`
 
 ### 添加
@@ -423,6 +454,7 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.1.5]: https://github.com/PandasWS/Pandas/compare/v1.1.4...v1.1.5
 [v1.1.4]: https://github.com/PandasWS/Pandas/compare/v1.1.3...v1.1.4
 [v1.1.3]: https://github.com/PandasWS/Pandas/compare/v1.1.2...v1.1.3
 [v1.1.2]: https://github.com/PandasWS/Pandas/compare/v1.1.1...v1.1.2
