@@ -1811,6 +1811,10 @@
 	// 是否启用 getmapspawns 脚本指令 [Sola丶小克]
 	// 该指令用于获取指定地图的魔物刷新点信息
 	#define Pandas_ScriptCommand_GetMapSpawns
+
+	// 是否启用 getcalendartime 脚本指令 [Haru]
+	// 该指令用于获取下次出现指定时间的 UNIX 时间戳
+	#define Pandas_ScriptCommand_GetCalendarTime
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
