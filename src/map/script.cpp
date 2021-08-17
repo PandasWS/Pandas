@@ -5268,6 +5268,77 @@ bool script_get_mapindex(struct script_state *st, const char* mapname, int &mapi
 
 	return (mapindex >= 0);
 }
+
+//************************************
+// Method:      script_both_setreg
+// Description: 同时设置 $@ 和 @ 数值变量 (设置 @ 变量的前提是能找到 sd)
+// Access:      public 
+// Parameter:   struct script_state * st
+// Parameter:   const char * varname_without_prefix
+// Parameter:   int64 value
+// Parameter:   bool isarray	是不是数组
+// Parameter:   int index		如果是数组那么索引是多少
+// Parameter:   int char_id		若提供了角色编号则将 @ 变量值写入该角色
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/08/17 23:34
+//************************************ 
+void script_both_setreg(struct script_state* st, const char* varname_without_prefix, int64 value, bool isarray, int index = -1, int char_id = 0) {
+	struct map_session_data* sd = nullptr;
+	int64 varid = 0;
+
+	sd = map_id2sd(st->rid);
+	if (char_id) {
+		sd = map_charid2sd(char_id);
+	}
+
+	std::string varname = "$@";
+	varname += varname_without_prefix;
+	varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+	mapreg_setreg(varid, value);
+
+	if (sd) {
+		varname = "@";
+		varname += varname_without_prefix;
+		varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+		pc_setreg(sd, varid, value);
+	}
+}
+
+//************************************
+// Method:      script_both_setregstr
+// Description: 同时设置 $@ 和 @ 字符串变量 (设置 @ 变量的前提是能找到 sd)
+// Access:      public 
+// Parameter:   struct script_state * st
+// Parameter:   const char * varname_without_prefix
+// Parameter:   const char * value
+// Parameter:   bool isarray	是不是数组
+// Parameter:   int index		如果是数组那么索引是多少
+// Parameter:   int char_id		若提供了角色编号则将 @ 变量值写入该角色
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/08/17 23:36
+//************************************ 
+void script_both_setregstr(struct script_state* st, const char* varname_without_prefix, const char* value, bool isarray, int index = -1, int char_id = 0) {
+	struct map_session_data* sd = nullptr;
+	int64 varid = 0;
+
+	sd = map_id2sd(st->rid);
+	if (char_id) {
+		sd = map_charid2sd(char_id);
+	}
+
+	std::string varname = "$@";
+	varname += varname_without_prefix;
+	varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+	mapreg_setregstr(varid, value);
+
+	if (sd) {
+		varname = "@";
+		varname += varname_without_prefix;
+		varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+		pc_setregstr(sd, varid, value);
+	}
+}
+
 #endif // Pandas_ScriptCommands
 
 /*==========================================
@@ -29592,7 +29663,7 @@ BUILDIN_FUNC(getmapspawns) {
 	std::string mapname = script_getstr(st, 2);
 	int char_id = script_hasdata(st, 3) ? script_getnum(st, 3) : 0;
 
-	mapreg_setreg(add_str("$@spawn_count"), 0);
+	script_both_setreg(st, "spawn_count", 0, false, -1, char_id);
 
 	if (!script_get_mapindex(st, mapname.c_str(), mapindex, char_id)) {
 		ShowError("buildin_getmapspawns: Could not found valid map by map name '%s'\n", mapname.c_str());
@@ -29616,33 +29687,120 @@ BUILDIN_FUNC(getmapspawns) {
 		if (!mapdata || mapdata->moblist[i] == nullptr) continue;
 		struct spawn_data* data = mapdata->moblist[i];
 
-		mapreg_setreg(reference_uid(add_str("$@spawn_mobid"), j), data->id);
-		mapreg_setregstr(reference_uid(add_str("$@spawn_name$"), j), data->name);
-		mapreg_setreg(reference_uid(add_str("$@spawn_num"), j), data->num);
-		mapreg_setreg(reference_uid(add_str("$@spawn_active"), j), data->active);
-		mapreg_setreg(reference_uid(add_str("$@spawn_size"), j), data->state.size);
-		mapreg_setreg(reference_uid(add_str("$@spawn_isboss"), j), data->state.boss);
-		mapreg_setreg(reference_uid(add_str("$@spawn_ai"), j), data->state.ai);
-		mapreg_setreg(reference_uid(add_str("$@spawn_level"), j), data->level);
-		mapreg_setreg(reference_uid(add_str("$@spawn_delay1"), j), data->delay1);
-		mapreg_setreg(reference_uid(add_str("$@spawn_delay2"), j), data->delay2);
-		mapreg_setregstr(reference_uid(add_str("$@spawn_eventname$"), j), data->eventname);
+		script_both_setreg(st, "spawn_mobid", data->id, true, j, char_id);
+		script_both_setregstr(st, "spawn_name$", data->name, true, j, char_id);
+		script_both_setreg(st, "spawn_num", data->num, true, j, char_id);
+		script_both_setreg(st, "spawn_active", data->active, true, j, char_id);
+		script_both_setreg(st, "spawn_size", data->state.size, true, j, char_id);
+		script_both_setreg(st, "spawn_isboss", data->state.boss, true, j, char_id);
+		script_both_setreg(st, "spawn_ai", data->state.ai, true, j, char_id);
+		script_both_setreg(st, "spawn_level", data->level, true, j, char_id);
+		script_both_setreg(st, "spawn_delay1", data->delay1, true, j, char_id);
+		script_both_setreg(st, "spawn_delay2", data->delay2, true, j, char_id);
+		script_both_setregstr(st, "spawn_eventname$", data->eventname, true, j, char_id);
 
-		mapreg_setreg(reference_uid(add_str("$@spawn_mapid"), j), data->m);
-		mapreg_setregstr(reference_uid(add_str("$@spawn_mapname$"), j), mapdata->name);
-		mapreg_setreg(reference_uid(add_str("$@spawn_x"), j), data->x);
-		mapreg_setreg(reference_uid(add_str("$@spawn_y"), j), data->y);
-		mapreg_setreg(reference_uid(add_str("$@spawn_xs"), j), data->xs);
-		mapreg_setreg(reference_uid(add_str("$@spawn_ys"), j), data->ys);
+		script_both_setreg(st, "spawn_mapid", data->m, true, j, char_id);
+		script_both_setregstr(st, "spawn_mapname$", mapdata->name, true, j, char_id);
+		script_both_setreg(st, "spawn_x", data->x, true, j, char_id);
+		script_both_setreg(st, "spawn_y", data->y, true, j, char_id);
+		script_both_setreg(st, "spawn_xs", data->xs, true, j, char_id);
+		script_both_setreg(st, "spawn_ys", data->ys, true, j, char_id);
 
 		j++;
 	}
 
-	mapreg_setreg(add_str("$@spawn_count"), j);
+	script_both_setreg(st, "spawn_count", j, false, -1, char_id);
 	script_pushint(st, j);
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_GetMapSpawns
+
+#ifdef Pandas_ScriptCommand_GetMobSpawns
+/* ===========================================================
+ * 指令: getmobspawns
+ * 描述: 查询指定魔物在不同地图的刷新点信息
+ * 用法: getmobspawns <魔物编号>{,"<地图名称>"{,<角色编号>}};
+ * 返回: 成功则返回找到的刷新点数量, 失败则返回 -1
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getmobspawns) {
+	int mapindex = -1;
+	int mob_id = script_getnum(st, 2);
+	std::string mapname = (script_hasdata(st, 3) && script_isstring(st, 3)) ? script_getstr(st, 3) : "";
+	int char_id = (script_hasdata(st, 4) && script_isint(st, 4)) ? script_getnum(st, 4) : 0;
+
+	script_both_setreg(st, "spawn_count", 0, false, -1, char_id);
+
+	// 若指定了地图名称则顺带查询地图数据信息, 没指定就算了
+	if (mapname.length() > 0) {
+		if (!script_get_mapindex(st, mapname.c_str(), mapindex, char_id)) {
+			ShowError("buildin_getmobspawns: Could not found valid map by map name '%s'\n", mapname.c_str());
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		struct map_data* mapdata = map_getmapdata(mapindex);
+
+		if (!mapdata) {
+			script_reportsrc(st);
+			script_reportfunc(st);
+			ShowError("buildin_getmobspawns: Could not found valid map by map name '%s'\n", mapname.c_str());
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	// 通过 rAthena 内建的刷新点缓存快速确定关联地图
+	const std::vector<spawn_info> spawns = mob_get_spawns(mob_id);
+
+	int j = 0;
+
+	for (auto& spawn : spawns) {
+		int16 mapid = map_mapindex2mapid(spawn.mapindex);
+
+		// 若设置了仅查询某地图的魔物刷新点信息, 那么非指定地图的都跳过
+		if (mapindex != -1 && mapid != mapindex)
+			continue;
+
+		// 获取有记载指定魔物刷新点的目标地图数据
+		struct map_data* mapdata = map_getmapdata(mapid);
+
+		// 找不到对应地图的数据则直接跳过
+		if (!mapdata) continue;
+
+		for (int i = 0; i < MAX_MOB_LIST_PER_MAP; i++) {
+			if (!mapdata || mapdata->moblist[i] == nullptr) continue;
+			struct spawn_data* data = mapdata->moblist[i];
+			if (data->id != mob_id) continue;
+
+			script_both_setreg(st, "spawn_mobid", data->id, true, j, char_id);
+			script_both_setregstr(st, "spawn_name$", data->name, true, j, char_id);
+			script_both_setreg(st, "spawn_num", data->num, true, j, char_id);
+			script_both_setreg(st, "spawn_active", data->active, true, j, char_id);
+			script_both_setreg(st, "spawn_size", data->state.size, true, j, char_id);
+			script_both_setreg(st, "spawn_isboss", data->state.boss, true, j, char_id);
+			script_both_setreg(st, "spawn_ai", data->state.ai, true, j, char_id);
+			script_both_setreg(st, "spawn_level", data->level, true, j, char_id);
+			script_both_setreg(st, "spawn_delay1", data->delay1, true, j, char_id);
+			script_both_setreg(st, "spawn_delay2", data->delay2, true, j, char_id);
+			script_both_setregstr(st, "spawn_eventname$", data->eventname, true, j, char_id);
+
+			script_both_setreg(st, "spawn_mapid", data->m, true, j, char_id);
+			script_both_setregstr(st, "spawn_mapname$", mapdata->name, true, j, char_id);
+			script_both_setreg(st, "spawn_x", data->x, true, j, char_id);
+			script_both_setreg(st, "spawn_y", data->y, true, j, char_id);
+			script_both_setreg(st, "spawn_xs", data->xs, true, j, char_id);
+			script_both_setreg(st, "spawn_ys", data->ys, true, j, char_id);
+
+			j++;
+		}
+	}
+
+	script_both_setreg(st, "spawn_count", j, false, -1, char_id);
+	script_pushint(st, j);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetMobSpawns
 
 #ifdef Pandas_ScriptCommand_GetCalendarTime
 /* ===========================================================
@@ -30636,6 +30794,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetMapSpawns
 	BUILDIN_DEF(getmapspawns, "s?"),					// 在此写上脚本指令说明 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetMapSpawns
+#ifdef Pandas_ScriptCommand_GetMobSpawns
+	BUILDIN_DEF(getmobspawns,"i??"),					// 查询指定魔物在不同地图的刷新点信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetMobSpawns
 #ifdef Pandas_ScriptCommand_GetCalendarTime
 	BUILDIN_DEF(getcalendartime,"ii??"),				// 获取下次出现指定时间的 UNIX 时间戳 [Haru]
 #endif // Pandas_ScriptCommand_GetCalendarTime
