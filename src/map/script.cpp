@@ -29564,6 +29564,111 @@ BUILDIN_FUNC(getinventorysize) {
 }
 #endif // Pandas_ScriptCommand_GetInventorySize
 
+#ifdef Pandas_ScriptCommand_GetCalendarTime
+/* ===========================================================
+ * 指令: getcalendartime
+ * 描述: 获取下次出现指定时间的 UNIX 时间戳
+ * 用法: getcalendartime <小时>,<分钟>{,<月的第几天>{,<周的第几天>}};
+ * 返回: 成功则返回时间戳, 失败则返回 -1
+ * 作者: Haru <haru@dotalux.com>
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getcalendartime) {
+	struct tm info = { 0 };
+	int day_of_month = script_hasdata(st, 4) ? script_getnum(st, 4) : -1;
+	int day_of_week = script_hasdata(st, 5) ? script_getnum(st, 5) : -1;
+	int year = date_get_year();
+	int month = date_get_month();
+	int day = date_get_dayofmonth();
+	int cur_hour = date_get_hour();
+	int cur_min = date_get_min();
+	int hour = script_getnum(st, 2);
+	int minute = script_getnum(st, 3);
+
+	info.tm_sec = 0;
+	info.tm_min = minute;
+	info.tm_hour = hour;
+	info.tm_mday = day;
+	info.tm_mon = month - 1;
+	info.tm_year = year - 1900;
+
+	if (day_of_month > -1 && day_of_week > -1) {
+		ShowError("buildin_getcalendartime: You must only specify a day_of_week or a day_of_month, not both\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (day_of_month > -1 && (day_of_month < 1 || day_of_month > 31)) {
+		ShowError("buildin_getcalendartime: Day of Month in invalid range. Must be between 1 and 31.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (day_of_week > -1 && (day_of_week < 0 || day_of_week > 6)) {
+		ShowError("buildin_getcalendartime: Day of Week in invalid range. Must be between 0 and 6.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (hour > -1 && (hour > 23)) {
+		ShowError("buildin_getcalendartime: Hour in invalid range. Must be between 0 and 23.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (minute > -1 && (minute > 59)) {
+		ShowError("buildin_getcalendartime: Minute in invalid range. Must be between 0 and 59.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (hour == -1 || minute == -1) {
+		ShowError("buildin_getcalendartime: Minutes and Hours are required\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (day_of_month > -1) {
+		if (day_of_month < day) { // Next Month
+			info.tm_mon++;
+		}
+		else if (day_of_month == day) { // Today
+			if (hour < cur_hour || (hour == cur_hour && minute < cur_min)) { // But past time, next month
+				info.tm_mon++;
+			}
+		}
+
+		// Loops until month has finding a month that has day_of_month
+		do {
+			time_t t;
+			struct tm* lt;
+			info.tm_mday = day_of_month;
+			t = mktime(&info);
+			lt = localtime(&t);
+			info = *lt;
+		} while (info.tm_mday != day_of_month);
+	}
+	else if (day_of_week > -1) {
+		int cur_wday = date_get_dayofweek();
+
+		if (day_of_week > cur_wday) { // This week
+			info.tm_mday += (day_of_week - cur_wday);
+		}
+		else if (day_of_week == cur_wday) { // Today
+			if (hour < cur_hour || (hour == cur_hour && minute <= cur_min)) {
+				info.tm_mday += 7; // Next week
+			}
+		}
+		else if (day_of_week < cur_wday) { // Next week
+			info.tm_mday += (7 - cur_wday + day_of_week);
+		}
+	}
+	else if (day_of_week == -1 && day_of_month == -1) { // Next occurence of hour/min
+		if (hour < cur_hour || (hour == cur_hour && minute < cur_min)) {
+			info.tm_mday++;
+		}
+	}
+
+	script_pushint(st, mktime(&info));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetCalendarTime
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -29795,6 +29900,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetInventorySize
 	BUILDIN_DEF(getinventorysize,"?"),					// 查询并获取当前角色的背包容量上限 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetInventorySize
+#ifdef Pandas_ScriptCommand_GetCalendarTime
+	BUILDIN_DEF(getcalendartime,"ii??"),				// 获取下次出现指定时间的 UNIX 时间戳 [Haru]
+#endif // Pandas_ScriptCommand_GetCalendarTime
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
