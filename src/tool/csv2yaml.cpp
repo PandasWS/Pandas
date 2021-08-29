@@ -456,6 +456,12 @@ int do_init( int argc, char** argv ){
 		return 0;
 	}
 
+
+	if (!process("CONSTANT_DB", 1, root_paths, "const", [](const std::string& path, const std::string& name_ext) -> bool {
+		return sv_readdb(path.c_str(), name_ext.c_str(), ',', 1, 3, -1, &read_constdb, false);
+	})) {
+		return 0;
+	}
 	// TODO: add implementations ;-)
 
 	return 0;
@@ -1346,8 +1352,6 @@ static bool skill_parse_row_skilldb(char* split[], int columns, int current) {
 			body << YAML::Key << "AllowWhenPerforming" << YAML::Value << "true";
 		if (inf3_val & 0x10)
 			body << YAML::Key << "TargetEmperium" << YAML::Value << "true";
-		if (inf3_val & 0x20)
-			body << YAML::Key << "IgnoreStasis" << YAML::Value << "true";
 		if (inf3_val & 0x40)
 			body << YAML::Key << "IgnoreKagehumi" << YAML::Value << "true";
 		if (inf3_val & 0x80)
@@ -4088,5 +4092,34 @@ static bool status_readdb_attrfix(const char* file) {
 
 	fclose(fp);
 	ShowStatus("Done reading '" CL_WHITE "%d" CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'.\n", count, file);
+	return true;
+}
+
+// Copied and adjusted from script.cpp
+static bool read_constdb(char* fields[], int columns, int current) {
+	char name[1024], val[1024];
+	int type = 0;
+
+	if( columns > 1 ){
+		if( sscanf(fields[0], "%1023[A-Za-z0-9/_]", name) != 1 ||
+			sscanf(fields[1], "%1023[A-Za-z0-9/_]", val) != 1 || 
+			( columns >= 2 && sscanf(fields[2], "%11d", &type) != 1 ) ){
+			ShowWarning("Skipping line '" CL_WHITE "%d" CL_RESET "', invalid constant definition\n", current);
+			return false;
+		}
+	}else{
+		if( sscanf(fields[0], "%1023[A-Za-z0-9/_] %1023[A-Za-z0-9/_-] %11d", name, val, &type) < 2 ){
+			ShowWarning( "Skipping line '" CL_WHITE "%d" CL_RESET "', invalid constant definition\n", current );
+			return false;
+		}
+	}
+
+	body << YAML::BeginMap;
+	body << YAML::Key << "Name" << YAML::Value << name;
+	body << YAML::Key << "Value" << YAML::Value << val;
+	if (type != 0)
+		body << YAML::Key << "Parameter" << YAML::Value << "true";
+	body << YAML::EndMap;
+
 	return true;
 }

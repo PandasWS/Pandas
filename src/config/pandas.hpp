@@ -410,6 +410,10 @@
 	// 调整 clif.cpp 中给 clif_item_equip 函数增加 caller 参数 [Sola丶小克]
 	// 新增的 caller 参数用来标记调用这个函数的调用者是谁, 以便在必要情况下能够调整返回给客户端的字段值
 	#define Pandas_FuncParams_Clif_Item_Equip
+
+	// 调整 mob.cpp 的 mob_getdroprate 函数增加 md 参数 [Sola丶小克]
+	// 新增的 md 参数用于在 mob_getdroprate 进行掉率计算时能根据魔物实例进行必要调整
+	#define Pandas_FuncParams_Mob_GetDroprate
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -798,10 +802,6 @@
 
 	// 修正潜在可能存在算术溢出的情况 [Sola丶小克]
 	#define Pandas_Fix_Potential_Arithmetic_Overflow
-
-	// 解决复兴后卡片修正被应用了两次的问题 [Sola丶小克]
-	// 相关反馈: https://github.com/rathena/rathena/issues/5932
-	#define Pandas_Fix_Duplicate_Cardfix_Calculation
 
 	// 修正未判断 sscanf 返回值可能导致程序工作不符合预期的问题 [Sola丶小克]
 	#define Pandas_Fix_Ignore_sscanf_Return_Value
