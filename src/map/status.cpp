@@ -2516,7 +2516,6 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 		int idx = 0;
 		idx = pc_search_inventory(sd, 7621);
 		pc_delitem(sd, idx, 1, 0, 0, LOG_TYPE_NONE);
-		sd->bonus.siegfriedr_i = false;
 	}
 #endif // Pandas_Bonus_bSiegfried
 	// Always run NPC scripts for players last
