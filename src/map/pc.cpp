@@ -4452,6 +4452,16 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 		PC_BONUS_CHK_ELEMENT(type2, SP_MAGIC_SUBDEF_ELE);
 		sd->indexed_bonus.magic_subdefele[type2] += val;
 		break;
+#ifdef Pandas_Bonus_bReborn
+	case SP_PANDAS_REBORN: // bonus2 bReborn,r,n;
+		if (sd->state.lr_flag != 2) {
+			sd->indexed_bonus.brebornr += type2;
+			sd->indexed_bonus.brebornn += val;
+			sd->indexed_bonus.brebornr = cap_value(sd->indexed_bonus.brebornr, 0, 10000);
+			sd->indexed_bonus.brebornn = cap_value(sd->indexed_bonus.brebornn, 1, 100);
+		}
+		break;
+#endif // Pandas_Bonus_bReborn
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
 		if (running_npc_stat_calc_event) {

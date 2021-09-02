@@ -1479,6 +1479,12 @@
 	// 变量位置: special_state / 变量名称: nofieldgemstone
 	// 使用原型: bonus bNoFieldGemStone;
 	#define Pandas_Bonus_bNoFieldGemStone
+	// 是否启用 bReborn 效果调整器 [聽風]
+	// 当玩家死亡时有 r% 的概率复活并恢复 n% 的血量
+	// 常量名称: SP_PANDAS_REBORN / 调整器名称: bReborn
+	// 变量位置: indexed_bonus / 变量名称: brebornr & brebornn
+	// 使用原型: bonus2 bReborn,r,n;
+	#define Pandas_Bonus_bReborn
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 

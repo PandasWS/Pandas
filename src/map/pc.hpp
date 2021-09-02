@@ -530,6 +530,10 @@ struct map_session_data {
 		int dropaddrace[RC_MAX];
 		int dropaddclass[CLASS_MAX];
 		int magic_subdefele[ELE_MAX];
+#ifdef Pandas_Bonus_bReborn
+		int brebornr;
+		int brebornn;
+#endif // Pandas_Bonus_bReborn
 	} indexed_bonus;
 	// zeroed arrays end here.
 
