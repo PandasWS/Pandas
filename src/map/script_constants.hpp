@@ -145,6 +145,10 @@
 #ifdef Pandas_NpcExpress_MOBDROPITEM
 	export_constant(NPCX_MOBDROPITEM);	// mobdropitem_express_name	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+	export_constant(NPCX_PCATTACK);	// pcattack_express_name	// OnPCAttackExpress		// 当玩家攻击时触发的实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
 #endif // Pandas_ScriptCommands
 

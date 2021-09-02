@@ -282,6 +282,10 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_MOBDROPITEM
 	const char* mobdropitem_express_name;	// NPCX_MOBDROPITEM	// OnMobDropItemExpress	// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+	const char* pcattack_express_name;	// NPCX_PCATTACK	// OnPCAttackExpress	// 当玩家攻击时触发的实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related

@@ -5136,6 +5136,10 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_MOBDROPITEM
 		NPCX_MOBDROPITEM,	// mobdropitem_express_name	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+		NPCX_PCATTACK,	// pcattack_express_name	// OnPCAttackExpress		// 当玩家攻击时触发的实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -5460,6 +5464,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_MOBDROPITEM:
 		return script_config.mobdropitem_express_name;	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+	case NPCX_PCATTACK:
+		return script_config.pcattack_express_name;	// OnPCAttackExpress		// 当玩家攻击时触发的实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:

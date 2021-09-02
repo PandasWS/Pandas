@@ -1339,6 +1339,11 @@
 		// 事件类型: Express / 事件名称: OnMobDropItemExpress
 		// 常量名称: NPCX_MOBDROPITEM / 变量名称: mobdropitem_express_name
 		#define Pandas_NpcExpress_MOBDROPITEM
+
+		// 当玩家攻击时触发的实时事件 [聽風]
+		// 事件类型: Express / 事件名称: OnPCAttackExpress
+		// 常量名称: NPCX_PCATTACK / 变量名称: pcattack_express_name
+		#define Pandas_NpcExpress_PCATTACK
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	

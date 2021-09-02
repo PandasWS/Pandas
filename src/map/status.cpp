@@ -2311,7 +2311,27 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 			return (int)skill_unit_ondamaged((struct skill_unit *)target, hp);
 		return 0;
 	}
-
+#ifdef Pandas_NpcExpress_PCATTACK
+	// 当玩家攻击时触发的实时事件 [聽風]
+	if (src && target && hp > 0) {
+		struct map_session_data *sd = NULL;
+		struct mob_data *md = (TBL_MOB*)target;
+		sd = BL_CAST(BL_PC, battle_get_master(src));
+		if (sd) {
+			pc_setreg(sd, add_str("@attack_mobid"), md->mob_id);
+			pc_setreg(sd, add_str("@attack_type"), src->type);
+			pc_setreg(sd, add_str("@attack_gid"), src->id);
+			pc_setreg(sd, add_str("@attack_targetgid"), md->bl.id);
+			pc_setreg(sd, add_str("@attack_skillid"), skill_id);
+			pc_setreg(sd, add_str("@attack_dmg"), hp);
+			npc_script_event(sd, NPCX_PCATTACK);
+			hp = (int)cap_value(pc_readreg(sd, add_str("@attack_dmg")), INT_MIN, INT_MAX);
+			//clif_damage(src, target, gettick(), 0, 0, hp, 1, DMG_NORMAL, 0, false);
+			//To 小克
+			//这里如果加上上面的那一行，修改后的值会重复显示攻击动作及伤害，我搞不定了，交给你了
+		}
+	}
+#endif // Pandas_NpcExpress_PCATTACK
 	status = status_get_status_data(target);
 	if(!status || status == &dummy_status )
 		return 0;
