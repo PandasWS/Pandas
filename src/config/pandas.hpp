@@ -1479,6 +1479,12 @@
 	// 变量位置: special_state / 变量名称: nofieldgemstone
 	// 使用原型: bonus bNoFieldGemStone;
 	#define Pandas_Bonus_bNoFieldGemStone
+	// 是否启用 bSiegFried 效果调整器 [聽風]
+	// 当玩家死亡时有 n/100% 的概率触发原地复活之证效果 物品 ID# 7621 (Token_Of_Siegfried)
+	// 常量名称: SP_PANDAS_SIEGFRIED / 调整器名称: bSiegFried
+	// 变量位置: indexed_bonus / 变量名称: siegfriedr_rate
+	// 使用原型: bonus bSiegFried,n;
+	#define Pandas_Bonus_bSiegfried
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 

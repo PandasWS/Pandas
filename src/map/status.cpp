@@ -37,6 +37,7 @@
 #include "pc_groups.hpp"
 #include "pet.hpp"
 #include "script.hpp"
+#include "log.hpp"
 
 #ifdef Pandas_Item_Amulet_System
 #include "itemamulet.hpp"
@@ -2509,7 +2510,15 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 		skill_unit_move(target,gettick(),4);
 		skill_cleartimerskill(target);
 	}
-
+#ifdef Pandas_Bonus_bSiegfried
+	TBL_PC *sd = BL_CAST(BL_PC, target);
+	if (sd->bonus.siegfriedr_i == true) {
+		int idx = 0;
+		idx = pc_search_inventory(sd, 7621);
+		pc_delitem(sd, idx, 1, 0, 0, LOG_TYPE_NONE);
+		sd->bonus.siegfriedr_i = false;
+	}
+#endif // Pandas_Bonus_bSiegfried
 	// Always run NPC scripts for players last
 	//FIXME those ain't always run if a player die if he was resurrect meanwhile
 	//cf SC_REBIRTH, SC_KAIZEL, pc_dead...
@@ -2524,7 +2533,7 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 
 		npc_script_event(sd,NPCE_DIE);
 	}
-
+	
 	return (int)(hp+sp);
 }
 

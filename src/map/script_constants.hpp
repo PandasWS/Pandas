@@ -998,6 +998,10 @@
 	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	export_constant2("bNoFieldGemStone", SP_PANDAS_NOFIELDGEMSTONE);
 #endif // Pandas_Bonus_bNoFieldGemStone
+#ifdef Pandas_Bonus_bSiegfried
+	// 当玩家死亡时有 n/100% 的概率触发原地复活之证效果 物品 ID# 7621 (Token_Of_Siegfried) [聽風]
+	export_constant2("bSiegFried", SP_PANDAS_SIEGFRIED);
+#endif // Pandas_Bonus_bSiegfried
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses

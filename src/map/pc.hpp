@@ -603,6 +603,10 @@ struct map_session_data {
 		uint8 absorb_dmg_maxhp; // [Cydh]
 		short critical_rangeatk;
 		short weapon_atk_rate, weapon_matk_rate;
+#ifdef Pandas_Bonus_bSiegfried
+		int siegfriedr_rate;
+		bool siegfriedr_i;
+#endif // Pandas_Bonus_bSiegfried
 	} bonus;
 	// zeroed vars end here.
 

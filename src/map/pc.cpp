@@ -3848,6 +3848,13 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 				sd->special_state.nofieldgemstone = 1;
 			break;
 #endif // Pandas_Bonus_bNoFieldGemStone
+#ifdef Pandas_Bonus_bSiegfried
+		case SP_PANDAS_SIEGFRIED: // bonus bSiegFried,n;
+			if (sd->state.lr_flag != 2) {
+				sd->bonus.siegfriedr_rate += val;
+			}
+			break;
+#endif // Pandas_Bonus_bSiegfried
 		// PYHELP - BONUS - INSERT POINT - <Section 5>
 		default:
 #ifdef Pandas_NpcExpress_STATCALC
@@ -8796,7 +8803,18 @@ int pc_dead(struct map_session_data *sd,struct block_list *src, uint16 skill_id)
 	int i=0,k=0;
 	t_tick tick = gettick();
 	struct map_data *mapdata = map_getmapdata(sd->bl.m);
-
+#ifdef Pandas_Bonus_bSiegfried
+	sd->bonus.siegfriedr_i = false;
+	if (rnd() % 10000 < sd->bonus.siegfriedr_rate) {
+		sd->bonus.siegfriedr_i = true;
+		struct item item_tmp = {};
+		
+		item_tmp.nameid = 7621;
+		item_tmp.identify = 1;
+		item_tmp.bound = BOUND_NONE;
+		pc_additem(sd, &item_tmp, 1, LOG_TYPE_NONE);
+	}
+#endif // Pandas_Bonus_bSiegfried
 	// Activate Steel body if a super novice dies at 99+% exp [celest]
 	// Super Novices have no kill or die functions attached when saved by their angel
 	if (!sd->state.snovice_dead_flag && (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE) {
@@ -9142,7 +9160,6 @@ int pc_dead(struct map_session_data *sd,struct block_list *src, uint16 skill_id)
 			}
 		}
 	}
-
 	//Reset "can log out" tick.
 	if( battle_config.prevent_logout )
 		sd->canlog_tick = gettick() - battle_config.prevent_logout;
@@ -9188,6 +9205,16 @@ bool pc_revive_item(struct map_session_data *sd) {
 
 	int16 item_position = itemdb_group.item_exists_pc(sd, IG_TOKEN_OF_SIEGFRIED);
 	uint8 hp = 100, sp = 100;
+
+#ifdef Pandas_Bonus_bSiegfried
+	if (sd->bonus.siegfriedr_i == true) {
+		if (!status_revive(&sd->bl, hp, sp))
+			return false;
+		clif_skill_nodamage(&sd->bl, &sd->bl, ALL_RESURRECTION, 4, 1);
+		sd->bonus.siegfriedr_i = false;
+		return true;
+	}
+#endif // Pandas_Bonus_bSiegfried
 
 	if (item_position < 0) {
 		if (sd->sc.data[SC_LIGHT_OF_REGENE]) {
