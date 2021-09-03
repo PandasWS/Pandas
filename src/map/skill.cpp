@@ -3540,7 +3540,7 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 			pc_setreg(ssd, add_str("@attack_type"), src->type);
 			pc_setreg(ssd, add_str("@attack_gid"), src->id);
 			pc_setreg(ssd, add_str("@attack_targetgid"), md->bl.id);
-			pc_setreg(sd, add_str("@attack_skillid"), skill_id);
+			pc_setreg(ssd, add_str("@attack_skillid"), skill_id);
 			pc_setreg(ssd, add_str("@attack_dmg"), dmg.damage);
 			npc_script_event(ssd, NPCX_PCATTACK);
 			damage = (int)cap_value(pc_readreg(ssd, add_str("@attack_dmg")), INT_MIN, INT_MAX);
