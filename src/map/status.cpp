@@ -4367,6 +4367,10 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	sd->sp_vanish.clear();
 	sd->hp_vanish.clear();
 
+#ifdef Pandas_Bonus_bAddSkillRange
+	// 增加 sk 技能 n 格攻击距离 [聽風]
+	sd->addskillrange_sk.clear();
+#endif // Pandas_Bonus_bAddSkillRange
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	sd->pandas.multi_catch_target_class.clear();
 #endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
@@ -5207,6 +5211,12 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 			sd->bonus.perfect_hit += 20 + 10 * pc_checkskill(sd, SO_STRIKING);
 	}
 	status_cpy(&sd->battle_status, base_status);
+
+#ifdef Pandas_Bonus_bAddSkillRange
+	for (auto &it : sd->addskillrange_sk) {
+		clif_skillinfo(sd, it.id, 0);
+	}
+#endif // Pandas_Bonus_bAddSkillRang
 
 // ----- CLIENT-SIDE REFRESH -----
 	if(!sd->bl.prev) {

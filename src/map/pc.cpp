@@ -4452,6 +4452,18 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 		PC_BONUS_CHK_ELEMENT(type2, SP_MAGIC_SUBDEF_ELE);
 		sd->indexed_bonus.magic_subdefele[type2] += val;
 		break;
+#ifdef Pandas_Bonus_bAddSkillRange
+	case SP_PANDAS_ADDSKILLRANGE: // bonus2 bAddSkillRange,sk,n;
+		if (sd->state.lr_flag == 2)
+			break;
+		if (sd->addskillrange_sk.size() == MAX_PC_BONUS) {
+			ShowWarning("pc_bonus2: SP_PANDAS_ADDSKILLRANGE: Reached max (%d) number of skills per character, bonus skill %d (+%d%%) lost.\n", MAX_PC_BONUS, type2, val);
+			break;
+		}
+
+		pc_bonus_itembonus(sd->addskillrange_sk, type2, val, false);
+		break;
+#endif // Pandas_Bonus_bAddSkillRange
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
 		if (running_npc_stat_calc_event) {
@@ -8687,6 +8699,26 @@ static TIMER_FUNC(pc_respawn_timer){
 
 	return 0;
 }
+
+#ifdef Pandas_Bonus_bAddSkillRange
+int pc_addskillrange_bonus(struct map_session_data *sd, uint16 skill_id)
+{
+	int bonus = 0;
+
+	nullpo_ret(sd);
+
+	skill_id = skill_dummy2skill_id(skill_id);
+
+	for (auto &it : sd->addskillrange_sk) {
+		if (it.id == skill_id) {
+			bonus += it.val;
+			break;
+		}
+	}
+
+	return bonus;
+}
+#endif // Pandas_Bonus_bAddSkillRange
 
 /*==========================================
  * Invoked when a player has received damage

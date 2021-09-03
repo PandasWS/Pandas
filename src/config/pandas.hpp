@@ -1479,6 +1479,12 @@
 	// 变量位置: special_state / 变量名称: nofieldgemstone
 	// 使用原型: bonus bNoFieldGemStone;
 	#define Pandas_Bonus_bNoFieldGemStone
+	// 是否启用 bAddSkillRange 效果调整器 [聽風]
+	// 增加 sk 技能 n 格攻击距离
+	// 常量名称: SP_PANDAS_ADDSKILLRANGE / 调整器名称: bAddSkillRange
+	// 变量位置: s_item_bonus / 变量名称: addskillrange_sk
+	// 使用原型: bonus2 bAddSkillRange,sk,n;
+	#define Pandas_Bonus_bAddSkillRange
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 

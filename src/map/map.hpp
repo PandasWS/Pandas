@@ -529,6 +529,9 @@ enum _sp {
 	#ifdef Pandas_Bonus_bNoFieldGemStone
 		SP_PANDAS_NOFIELDGEMSTONE,	// 调整器名称: bNoFieldGemStone / 说明: 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	#endif // Pandas_Bonus_bNoFieldGemStone
+	#ifdef Pandas_Bonus_bAddSkillRange
+		SP_PANDAS_ADDSKILLRANGE,	// 调整器名称: bAddSkillRange / 说明: 增加 sk 技能 n 格攻击距离
+	#endif // Pandas_Bonus_bAddSkillRange
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses

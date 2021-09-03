@@ -363,6 +363,10 @@ e_cast_type skill_get_casttype (uint16 skill_id) {
 	return CAST_DAMAGE;
 }
 
+#ifdef Pandas_Bonus_bAddSkillRange
+int pc_addskillrange_bonus(struct map_session_data *sd, uint16 skill_id);
+#endif // Pandas_Bonus_bAddSkillRange
+
 //Returns actual skill range taking into account attack range and AC_OWL [Skotlex]
 int skill_get_range2(struct block_list *bl, uint16 skill_id, uint16 skill_lv, bool isServer) {
 	if( bl->type == BL_MOB && battle_config.mob_ai&0x400 )
@@ -404,6 +408,18 @@ int skill_get_range2(struct block_list *bl, uint16 skill_id, uint16 skill_lv, bo
 
 	if( !range && bl->type != BL_PC )
 		return 9; // Enable non players to use self skills on others. [Skotlex]
+#ifdef Pandas_Bonus_bAddSkillRange
+	if (bl->type == BL_PC) {
+		TBL_PC *sd = (TBL_PC*)bl;
+		int i = pc_addskillrange_bonus(sd, skill_id);
+		if (i != 0) {
+			range += i;
+			if (range > 14) {
+				range = 14; // 技能攻击范围不能超过 14
+			}
+		}
+	}
+#endif // Pandas_Bonus_bAddSkillRang
 	return range;
 }
 

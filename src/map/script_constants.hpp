@@ -998,6 +998,10 @@
 	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	export_constant2("bNoFieldGemStone", SP_PANDAS_NOFIELDGEMSTONE);
 #endif // Pandas_Bonus_bNoFieldGemStone
+#ifdef Pandas_Bonus_bAddSkillRange
+	// 增加 sk 技能 n 格攻击距离 [聽風]
+	export_constant2("bAddSkillRange", SP_PANDAS_ADDSKILLRANGE);
+#endif // Pandas_Bonus_bAddSkillRange
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses
