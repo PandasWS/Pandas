@@ -3529,7 +3529,25 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 
 	//combo handling
 	skill_combo(src,dsrc,bl,skill_id,skill_lv,tick);
-
+#ifdef Pandas_NpcExpress_PCATTACK
+	// 当玩家攻击时触发的实时事件 [聽風]
+	if (src && bl && damage > 0) {
+		struct map_session_data *ssd = NULL;
+		struct mob_data *md = (TBL_MOB*)bl;
+		ssd = BL_CAST(BL_PC, battle_get_master(src));
+		if (ssd) {
+			pc_setreg(ssd, add_str("@attack_mobid"), md->mob_id);
+			pc_setreg(ssd, add_str("@attack_type"), src->type);
+			pc_setreg(ssd, add_str("@attack_gid"), src->id);
+			pc_setreg(ssd, add_str("@attack_targetgid"), md->bl.id);
+			pc_setreg(sd, add_str("@attack_skillid"), skill_id);
+			pc_setreg(ssd, add_str("@attack_dmg"), dmg.damage);
+			npc_script_event(ssd, NPCX_PCATTACK);
+			damage = (int)cap_value(pc_readreg(ssd, add_str("@attack_dmg")), INT_MIN, INT_MAX);
+			dmg.damage = damage;
+		}
+	}
+#endif // Pandas_NpcExpress_PCATTACK
 	//Display damage.
 	switch( skill_id ) {
 		case PA_GOSPEL: //Should look like Holy Cross [Skotlex]

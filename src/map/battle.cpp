@@ -7991,7 +7991,25 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			skill_attack(skill_get_type(skill_id), src, src, target, skill_id, sc->data[SC_DUPLELIGHT]->val1, tick, SD_LEVEL);
 		}
 	}
-
+#ifdef Pandas_NpcExpress_PCATTACK
+	// 当玩家攻击时触发的实时事件 [聽風]
+	if (src && target && damage > 0) {
+		struct map_session_data *ssd = NULL;
+		struct mob_data *md = (TBL_MOB*)target;
+		ssd = BL_CAST(BL_PC, battle_get_master(src));
+		if (ssd) {
+			pc_setreg(ssd, add_str("@attack_mobid"), md->mob_id);
+			pc_setreg(ssd, add_str("@attack_type"), src->type);
+			pc_setreg(ssd, add_str("@attack_gid"), src->id);
+			pc_setreg(ssd, add_str("@attack_targetgid"), md->bl.id);
+			pc_setreg(sd, add_str("@attack_skillid"), 0);
+			pc_setreg(ssd, add_str("@attack_dmg"), wd.damage);
+			npc_script_event(ssd, NPCX_PCATTACK);
+			damage = (int)cap_value(pc_readreg(ssd, add_str("@attack_dmg")), INT_MIN, INT_MAX);
+			wd.damage = damage;
+		}
+	}
+#endif // Pandas_NpcExpress_PCATTACK
 	wd.dmotion = clif_damage(src, target, tick, wd.amotion, wd.dmotion, wd.damage, wd.div_ , wd.type, wd.damage2, wd.isspdamage);
 
 	if (sd && sd->bonus.splash_range > 0 && damage > 0)
