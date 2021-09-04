@@ -340,6 +340,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
 	"OnPCUseOCIdentifyFilter",	// NPCF_ONECLICK_IDENTIFY		// oneclick_identify_filter_name	// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	"OnPCPartyJoinFilter",	// NPCF_PARTYJOIN		// partyjoin_filter_name	// 当玩家加入了一个队伍后, 此事件会被触发 [聽風]
+#endif // Pandas_NpcFilter_PARTYJOIN
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/

@@ -1352,6 +1352,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
 	NPCF_ONECLICK_IDENTIFY,	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	NPCF_PARTYJOIN,	// partyjoin_filter_name	// OnPCPartyJoinFilter		// 当玩家加入了一个队伍后, 此事件会被触发 [聽風]
+#endif // Pandas_NpcFilter_PARTYJOIN
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/

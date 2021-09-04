@@ -1254,6 +1254,11 @@
 		// 事件类型: Filter / 事件名称: OnPCUseOCIdentifyFilter
 		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
 		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+		// 当玩家加入了一个队伍后, 此事件会被触发 [聽風] [维护者昵称]
+		// 事件类型: Filter / 事件名称: OnPCPartyJoinFilter
+		// 常量名称: NPCF_PARTYJOIN / 变量名称: partyjoin_filter_name
+		#define Pandas_NpcFilter_PARTYJOIN
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
