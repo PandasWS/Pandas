@@ -8003,10 +8003,20 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			pc_setreg(ssd, add_str("@attack_gid"), src->id);
 			pc_setreg(ssd, add_str("@attack_targetgid"), md->bl.id);
 			pc_setreg(ssd, add_str("@attack_skillid"), 0);
-			pc_setreg(ssd, add_str("@attack_dmg"), wd.damage);
+			pc_setreg(ssd, add_str("@attack_dmg"), damage);
 			npc_script_event(ssd, NPCX_PCATTACK);
-			damage = (int)cap_value(pc_readreg(ssd, add_str("@attack_dmg")), INT_MIN, INT_MAX);
-			wd.damage = damage;
+			int newdamage = (int)cap_value(pc_readreg(ssd, add_str("@attack_dmg")), INT_MIN, INT_MAX);
+			damage = newdamage;
+			wd.damage = newdamage;
+			if (wd.damage2) {
+				damage -= wd.damage2;
+				wd.damage = damage;
+			}
+			if (newdamage <= 0) {
+				damage = 0;
+				wd.damage = 0;
+				wd.damage2 = 0;
+			}
 		}
 	}
 #endif // Pandas_NpcExpress_PCATTACK
