@@ -340,6 +340,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
 	"OnPCUseOCIdentifyFilter",	// NPCF_ONECLICK_IDENTIFY		// oneclick_identify_filter_name	// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+	"OnPCPartyLeaveFilter",	// NPCF_PARTYLEAVE		// partyleave_filter_name	// 当玩家离开队伍(无论是自愿还是被踢)，触发此事件 [聽風]
+#endif // Pandas_NpcFilter_PARTYLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/

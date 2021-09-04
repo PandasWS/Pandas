@@ -1254,6 +1254,11 @@
 		// 事件类型: Filter / 事件名称: OnPCUseOCIdentifyFilter
 		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
 		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+		// 当玩家离开队伍(无论是自愿还是被踢)，触发此事件 [聽風] [维护者昵称]
+		// 事件类型: Filter / 事件名称: OnPCPartyLeaveFilter
+		// 常量名称: NPCF_PARTYLEAVE / 变量名称: partyleave_filter_name
+		#define Pandas_NpcFilter_PARTYLEAVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
