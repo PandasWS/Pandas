@@ -4367,6 +4367,10 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	sd->sp_vanish.clear();
 	sd->hp_vanish.clear();
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+	// 移除技能 sk 的需求条件, bitmask 为 掩码类型(可叠加) [聽風]
+	sd->skillnorequire_sk.clear();
+#endif // Pandas_Bonus_bSkillNoRequire
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	sd->pandas.multi_catch_target_class.clear();
 #endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass

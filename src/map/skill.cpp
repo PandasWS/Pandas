@@ -16787,6 +16787,10 @@ void skill_consume_requirement(struct map_session_data *sd, uint16 skill_id, uin
 	}
 }
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+int pc_skillnorequire_bonus(struct map_session_data *sd, uint16 skill_id);
+#endif // Pandas_Bonus_bSkillNoRequire
+
 /**
  * Get skill requirements and return the value after some additional/reduction condition (such item bonus and status change)
  * @param sd Player's that will be checked
@@ -17151,6 +17155,45 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 			req.eqItem.shrink_to_fit();
 		}
 	}
+
+#ifdef Pandas_Bonus_bSkillNoRequire
+	int sk_bitmask = pc_skillnorequire_bonus(sd, skill_id);
+	if (sk_bitmask & 1)	//移除 施放技能时需要的HP
+		req.hp = 0;
+	if (sk_bitmask & 16)	//移除 施放技能时需要的最大HP
+		req.mhp = 0;
+	if (sk_bitmask & 2)	//移除 施放技能时需要的SP
+		req.sp = 0;
+	if (sk_bitmask & 4)	//移除 施放技能时需要的HP百分比
+		req.hp_rate = 0;
+	if (sk_bitmask & 8)	//移除 施放技能时需要的SP百分比
+		req.sp_rate = 0;
+	if (sk_bitmask & 32)	//移除 施放技能时需要的Zeny
+		req.zeny = 0;
+	if (sk_bitmask & 64)	//施放技能时需要的武器
+		req.weapon = 0;
+	if (sk_bitmask & 128 ) {	//移除 施放技能时需要的子弹/箭矢（填了这个时，256 可以不需要）
+		req.ammo = 0;
+		req.ammo_qty = 0;
+	}
+	if (sk_bitmask & 256) {	//移除 施放技能时需要的子弹/箭矢 数量（单填这个时，还是需要身上有至少一个道具）
+		req.ammo_qty = 0;
+	}
+	if (sk_bitmask & 512)	//移除 施放技能时需要的特殊状态
+		req.state = ST_NONE;
+	if (sk_bitmask & 1024) {	//移除 施放技能时需要的SC_Buff状态
+		req.status.clear();
+		req.status.shrink_to_fit();
+	}
+	if (sk_bitmask & 4096) {	//移除 施放技能时需要的道具
+		memset(req.itemid, 0, sizeof(req.itemid));
+		memset(req.amount, 0, sizeof(req.amount));
+	}
+	if (sk_bitmask & 8192) {	//移除 施放技能时需要的装备
+		req.eqItem.clear();
+		req.eqItem.shrink_to_fit();
+	}
+#endif // Pandas_Bonus_bSkillNoRequire
 
 	return req;
 }

@@ -998,6 +998,10 @@
 	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	export_constant2("bNoFieldGemStone", SP_PANDAS_NOFIELDGEMSTONE);
 #endif // Pandas_Bonus_bNoFieldGemStone
+#ifdef Pandas_Bonus_bSkillNoRequire
+	// 移除技能 sk 的需求条件, bitmask 为 掩码类型(可叠加) [聽風]
+	export_constant2("bSkillNoRequire", SP_PANDAS_SKILLNOREQUIRE);
+#endif // Pandas_Bonus_bSkillNoRequire
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses

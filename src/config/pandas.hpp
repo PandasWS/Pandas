@@ -1479,6 +1479,12 @@
 	// 变量位置: special_state / 变量名称: nofieldgemstone
 	// 使用原型: bonus bNoFieldGemStone;
 	#define Pandas_Bonus_bNoFieldGemStone
+	// 是否启用 Pandas_Bonus_bSkillNoRequire 效果调整器 [聽風]
+	// 移除技能 sk 的需求条件, bitmask 为 掩码类型(可叠加) [聽風]
+	// 常量名称: SP_PANDAS_SKILLNOREQUIRE / 调整器名称: bSkillNoRequire
+	// 变量位置: s_item_bonus / 变量名称: skillnorequire_sk
+	// 使用原型: bonus2 bSkillNoRequire,sk,bitmask;
+#define Pandas_Bonus_bSkillNoRequire
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 

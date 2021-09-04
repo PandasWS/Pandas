@@ -529,6 +529,9 @@ enum _sp {
 	#ifdef Pandas_Bonus_bNoFieldGemStone
 		SP_PANDAS_NOFIELDGEMSTONE,	// 调整器名称: bNoFieldGemStone / 说明: 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	#endif // Pandas_Bonus_bNoFieldGemStone
+	#ifdef Pandas_Bonus_bSkillNoRequire
+		SP_PANDAS_SKILLNOREQUIRE,	// 调整器名称: bSkillNoRequire / 说明: // 移除技能 sk 的需求条件, bitmask 为 掩码类型(可叠加) [聽風]
+	#endif // Pandas_Bonus_bSkillNoRequire
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses
