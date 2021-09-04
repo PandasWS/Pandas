@@ -492,6 +492,10 @@ struct mob_data* mob_spawn_dataset(struct spawn_data *data)
 	batrec_new(&md->bl);
 #endif // Pandas_BattleRecord
 
+#ifdef Pandas_Struct_Mob_Data_DamageTaken
+	md->pandas.damagetaken = -1;
+#endif // Pandas_Struct_Mob_Data_DamageTaken
+
 	map_addiddb(&md->bl);
 	return md;
 }

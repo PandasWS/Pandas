@@ -18912,6 +18912,10 @@ BUILDIN_FUNC(getunitdata)
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			getunitdata_sub(UMOB_AURA, md->ucd.aura.id);
 #endif // Pandas_Struct_Unit_CommonData_Aura
+#ifdef Pandas_ScriptParams_UnitData_DamageTaken
+			getunitdata_sub(UMOB_DAMAGETAKEN, md->pandas.damagetaken);
+			getunitdata_sub(UMOB_DAMAGETAKEN_DB, md->db->damagetaken);
+#endif // Pandas_ScriptParams_UnitData_DamageTaken
 			break;
 
 		case BL_HOM:
@@ -19334,6 +19338,9 @@ BUILDIN_FUNC(setunitdata)
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			case UMOB_AURA: aura_make_effective(bl, value); break;
 #endif // Pandas_Struct_Unit_CommonData_Aura
+#ifdef Pandas_ScriptParams_UnitData_DamageTaken
+			case UMOB_DAMAGETAKEN: md->pandas.damagetaken = cap_value(value, -1, UINT16_MAX); break;
+#endif // Pandas_ScriptParams_UnitData_DamageTaken
 			default:
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_MOB.\n", type);
 				return SCRIPT_CMD_FAILURE;
