@@ -216,6 +216,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
 	const char* oneclick_identify_filter_name;	// NPCF_ONECLICK_IDENTIFY	// OnPCUseOCIdentifyFilter	// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	const char* guildcreate_filter_name;	// NPCF_GUILDCREATE	// OnPCGuildCreateFilter	// 当玩家创建了一个公会后, 此事件会被触发 (关联到会长) [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/

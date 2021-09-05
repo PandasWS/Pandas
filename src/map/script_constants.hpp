@@ -79,6 +79,10 @@
 #ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
 	export_constant(NPCF_ONECLICK_IDENTIFY);	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	export_constant(NPCF_GUILDCREATE);	// guildcreate_filter_name	// OnPCGuildCreateFilter		// 当玩家创建了一个公会后, 此事件会被触发 (关联到会长) [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	/************************************************************************/

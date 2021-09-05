@@ -1254,6 +1254,11 @@
 		// 事件类型: Filter / 事件名称: OnPCUseOCIdentifyFilter
 		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
 		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+		// 当玩家创建了一个公会后, 此事件会被触发 (关联到会长) [聽風]
+		// 事件类型: Filter / 事件名称: OnPCGuildCreateFilter
+		// 常量名称: NPCF_GUILDCREATE / 变量名称: guildcreate_filter_name
+		#define Pandas_NpcFilter_GUILDCREATE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
