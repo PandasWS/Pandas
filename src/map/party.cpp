@@ -590,7 +590,7 @@ int party_removemember(struct map_session_data* sd, uint32 account_id, char* nam
 	if( i == MAX_PARTY )
 		return 0; // no such char in party
 #ifdef Pandas_NpcFilter_PARTYLEAVE
-	if (sd) {
+	if (p && sd) {
 		pc_setreg(sd, add_str("@left_party_id"), p->party.party_id);
 		pc_setregstr(sd, add_str("@left_party_name$"), p->party.name);
 		pc_setreg(sd, add_str("@left_party_kick"), 1);
@@ -645,7 +645,7 @@ int party_leave(struct map_session_data *sd)
 	if( i == MAX_PARTY )
 		return 0;
 #ifdef Pandas_NpcFilter_PARTYLEAVE
-	if (sd) {
+	if (p && sd) {
 		pc_setreg(sd, add_str("@left_party_id"), p->party.party_id);
 		pc_setregstr(sd, add_str("@left_party_name$"), p->party.name);
 		pc_setreg(sd, add_str("@left_party_kick"), 0);

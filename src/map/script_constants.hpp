@@ -81,7 +81,7 @@
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_PARTYLEAVE
-	export_constant(NPCF_PARTYLEAVE);	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家离开队伍(无论是自愿还是被踢)，触发此事件 [聽風]
+	export_constant(NPCF_PARTYLEAVE);	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家离开队伍(无论是自愿还是被踢), 触发此事件 [聽風]
 #endif // Pandas_NpcFilter_PARTYLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
