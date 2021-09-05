@@ -1354,7 +1354,7 @@ enum npce_event : uint8 {
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-	NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家离开公会(无论是自愿还是被踢)，触发此过滤器 [聽風]
+	NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家离开公会(无论是自愿还是被踢), 触发此过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 

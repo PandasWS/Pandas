@@ -940,7 +940,7 @@ int guild_leave(struct map_session_data* sd, int guild_id, uint32 account_id, ui
 		map_flag_gvg2(sd->bl.m))
 		return 0;
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-	if (sd) {
+	if (g && sd) {
 		pc_setreg(sd, add_str("@left_guild_id"), g->guild_id);
 		pc_setregstr(sd, add_str("@left_guild_name$"), g->name);
 		pc_setreg(sd, add_str("@left_guild_kick"), 0);
@@ -985,7 +985,7 @@ int guild_expulsion(struct map_session_data* sd, int guild_id, uint32 account_id
 	// find the member and perform expulsion
 	i = guild_getindex(g, account_id, char_id);
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-	if (sd) {
+	if (g && sd) {
 		pc_setreg(sd, add_str("@left_guild_id"), g->guild_id);
 		pc_setregstr(sd, add_str("@left_guild_name$"), g->name);
 		pc_setreg(sd, add_str("@left_guild_kick"), 1);

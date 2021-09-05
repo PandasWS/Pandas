@@ -81,7 +81,7 @@
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-	export_constant(NPCF_GUILDLEAVE);	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家离开公会(无论是自愿还是被踢)，触发此过滤器 [聽風]
+	export_constant(NPCF_GUILDLEAVE);	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家离开公会(无论是自愿还是被踢), 触发此过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 

@@ -218,7 +218,7 @@ struct Script_Config {
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-	const char* guildleave_filter_name;	// NPCF_GUILDLEAVE	// OnPCGuildLeaveFilter	// 当玩家离开公会(无论是自愿还是被踢)，触发此过滤器 [聽風]
+	const char* guildleave_filter_name;	// NPCF_GUILDLEAVE	// OnPCGuildLeaveFilter	// 当玩家离开公会(无论是自愿还是被踢), 触发此过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
