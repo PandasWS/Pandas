@@ -5205,6 +5205,10 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
 		NPCF_ONECLICK_IDENTIFY,	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+		NPCF_GUILDJOIN,	// guildjoin_filter_name	// OnPCGuildJoinFilter		// 当玩家加入了一个公会后, 此过滤器会被触发 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -5380,6 +5384,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_ONECLICK_IDENTIFY:
 		return script_config.oneclick_identify_filter_name;	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+	case NPCF_GUILDJOIN:
+		return script_config.guildjoin_filter_name;	// OnPCGuildJoinFilter		// 当玩家加入了一个公会后, 此过滤器会被触发 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
