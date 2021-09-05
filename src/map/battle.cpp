@@ -8004,6 +8004,8 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			pc_setreg(ssd, add_str("@attack_targetgid"), md->bl.id);
 			pc_setreg(ssd, add_str("@attack_skillid"), 0);
 			pc_setreg(ssd, add_str("@attack_dmg"), damage);
+			pc_setreg(ssd, add_str("@attack_atktype"), wd.flag);
+			pc_setreg(ssd, add_str("@attack_targettype"), target->type);
 			npc_script_event(ssd, NPCX_PCATTACK);
 			int newdamage = (int)cap_value(pc_readreg(ssd, add_str("@attack_dmg")), INT_MIN, INT_MAX);
 			damage = newdamage;
