@@ -181,5 +181,3 @@ __pycache__
 # Other
 /src/*/*.aps
 /db/cache
-/npc
-/tfdmp
