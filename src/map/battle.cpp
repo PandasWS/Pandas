@@ -1805,8 +1805,23 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 	if (bl->type == BL_MOB) { // Reduces damage received for Green Aura MVP
 		mob_data *md = BL_CAST(BL_MOB, bl);
 
+#ifndef Pandas_Struct_Mob_Data_DamageTaken
 		if (md && md->db->damagetaken != 100)
 			damage = i64max(damage * md->db->damagetaken / 100, 1);
+#else
+		if (md) {
+			if (md->pandas.damagetaken < 0) {
+				// 若魔物自己没有承伤倍率, 那么就用 db 里面的设置来计算
+				if (md->db->damagetaken != 100)
+					damage = i64max(damage * md->db->damagetaken / 100, 1);
+			}
+			else {
+				// 否则就用魔物自己的承伤倍率来进行伤害修正
+				if (md->pandas.damagetaken != 100)
+					damage = i64max(damage * md->pandas.damagetaken / 100, 1);
+			}
+		}
+#endif // Pandas_Struct_Mob_Data_DamageTaken
 	}
 
 	return damage;

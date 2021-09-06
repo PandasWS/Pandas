@@ -365,6 +365,14 @@ struct mob_data {
 
 	e_mob_bosstype get_bosstype();
 
+#ifdef Pandas_Struct_Mob_Data_Pandas
+	struct {
+#ifdef Pandas_Struct_Mob_Data_DamageTaken
+		int damagetaken = -1;	// 魔物实例的承伤倍率, 若为 -1 则表示使用 db 中设置的承伤倍率 [Sola丶小克] 
+#endif // Pandas_Struct_Mob_Data_DamageTaken
+	} pandas;
+#endif // Pandas_Struct_Mob_Data_Pandas
+
 #ifdef Pandas_Struct_Unit_CommonData
 	struct s_unit_common_data ucd;
 #endif // Pandas_Struct_Unit_CommonData
