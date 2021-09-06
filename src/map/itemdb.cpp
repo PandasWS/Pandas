@@ -1300,7 +1300,17 @@ std::shared_ptr<item_data> ItemDatabase::searchname( const char* name ){
 	// Convert it to lower
 	util::tolower( lowername );
 
+#ifndef Pandas_Fix_Itemdb_Searchname_Logic
 	return util::umap_find( this->aegisNameToItemDataMap, lowername );
+#else
+	std::shared_ptr<item_data> result = util::umap_find(this->nameToItemDataMap, lowername);
+
+	if (result != nullptr) {
+		return result;
+	}
+
+	return util::umap_find(this->aegisNameToItemDataMap, lowername);
+#endif // Pandas_Fix_Itemdb_Searchname_Logic
 }
 
 std::shared_ptr<item_data> ItemDatabase::search_aegisname( const char *name ){

@@ -743,6 +743,11 @@
 // ============================================================================
 
 #ifdef Pandas_Bugfix
+	// 修正 @item 等指令只能使用 AegisName 来创造道具的问题 [Sola丶小克]
+	// 此问题由 rAthena 的 6b84115 号提交引入, 相关链接如下:
+	// https://github.com/rathena/rathena/commit/6b841157909ac17c0b82b917763976f43be2f89f
+	#define Pandas_Fix_Itemdb_Searchname_Logic
+
 	// 修正 mail_attachment_weight 选项在特定操作顺序下无效的问题 [Sola丶小克]
 	// 若一次性放入超过 mail_attachment_weight 负重限制的道具到邮件中时, 程序可以正常的判断出超重
 	// 但是若分多次, 放入相同一件物品到邮件附件中, 那么 mail_attachment_weight 的负重限制将会失去作用
