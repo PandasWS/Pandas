@@ -421,6 +421,10 @@
 	// 调整 clif.cpp 中给 clif_item_equip 函数增加 caller 参数 [Sola丶小克]
 	// 新增的 caller 参数用来标记调用这个函数的调用者是谁, 以便在必要情况下能够调整返回给客户端的字段值
 	#define Pandas_FuncParams_Clif_Item_Equip
+
+	// 调整 mob.cpp 的 mob_getdroprate 函数增加 md 参数 [Sola丶小克]
+	// 新增的 md 参数用于在 mob_getdroprate 进行掉率计算时能根据魔物实例进行必要调整
+	#define Pandas_FuncParams_Mob_GetDroprate
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -750,6 +754,11 @@
 // ============================================================================
 
 #ifdef Pandas_Bugfix
+	// 修正 @item 等指令只能使用 AegisName 来创造道具的问题 [Sola丶小克]
+	// 此问题由 rAthena 的 6b84115 号提交引入, 相关链接如下:
+	// https://github.com/rathena/rathena/commit/6b841157909ac17c0b82b917763976f43be2f89f
+	#define Pandas_Fix_Itemdb_Searchname_Logic
+
 	// 修正 mail_attachment_weight 选项在特定操作顺序下无效的问题 [Sola丶小克]
 	// 若一次性放入超过 mail_attachment_weight 负重限制的道具到邮件中时, 程序可以正常的判断出超重
 	// 但是若分多次, 放入相同一件物品到邮件附件中, 那么 mail_attachment_weight 的负重限制将会失去作用
@@ -809,10 +818,6 @@
 
 	// 修正潜在可能存在算术溢出的情况 [Sola丶小克]
 	#define Pandas_Fix_Potential_Arithmetic_Overflow
-
-	// 解决复兴后卡片修正被应用了两次的问题 [Sola丶小克]
-	// 相关反馈: https://github.com/rathena/rathena/issues/5932
-	#define Pandas_Fix_Duplicate_Cardfix_Calculation
 
 	// 修正未判断 sscanf 返回值可能导致程序工作不符合预期的问题 [Sola丶小克]
 	#define Pandas_Fix_Ignore_sscanf_Return_Value
