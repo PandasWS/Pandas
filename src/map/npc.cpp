@@ -5205,6 +5205,10 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
 		NPCF_ONECLICK_IDENTIFY,	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDLEAVE
+		NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家离开公会(无论是自愿还是被踢), 触发此过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDLEAVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -5380,6 +5384,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_ONECLICK_IDENTIFY:
 		return script_config.oneclick_identify_filter_name;	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDLEAVE
+	case NPCF_GUILDLEAVE:
+		return script_config.guildleave_filter_name;	// OnPCGuildLeaveFilter		// 当玩家离开公会(无论是自愿还是被踢), 触发此过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
