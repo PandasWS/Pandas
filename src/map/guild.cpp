@@ -821,7 +821,7 @@ int guild_reply_invite(struct map_session_data* sd, int guild_id, int flag) {
 			return 0;
 		}
 #ifdef Pandas_NpcFilter_GUILDJOIN
-		if (sd) {
+		if (sd && tsd) {
 			pc_setreg(sd, add_str("@join_guild_id"), guild_id);
 			pc_setreg(sd, add_str("@join_guild_aid"), tsd->status.account_id);
 			if (npc_script_filter(sd, NPCF_GUILDJOIN)) {
