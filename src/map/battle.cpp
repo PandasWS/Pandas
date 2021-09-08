@@ -7968,6 +7968,49 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			skill_attack(skill_get_type(skill_id), src, src, target, skill_id, sc->data[SC_DUPLELIGHT]->val1, tick, SD_LEVEL);
 		}
 	}
+#ifdef Pandas_Bonus_bFinalAddRace
+	int64 rcdamage = damage;
+#endif // Pandas_Bonus_bFinalAddRace
+#ifdef Pandas_Bonus_bFinalAddClass
+	int64 cldamage = damage;
+#endif // Pandas_Bonus_bFinalAddClass
+#ifdef Pandas_Bonus_bFinalAddRace
+	if (sd->finaladd_race[tstatus->race].rc) {
+		if (wd.flag&sd->finaladd_race[tstatus->race].bf) {
+			damage += rcdamage / 100 * sd->finaladd_race[tstatus->race].rate;
+			wd.damage = damage;
+		}
+	}
+	if (sd->finaladd_race[RC_ALL].rc) {
+		if (wd.flag&sd->finaladd_race[RC_ALL].bf) {
+			damage += rcdamage / 100 * sd->finaladd_race[RC_ALL].rate;
+			wd.damage = damage;
+		}
+	}
+#endif // Pandas_Bonus_bFinalAddRace
+#ifdef Pandas_Bonus_bFinalAddClass
+	if (sd->finaladd_class[tstatus->class_].cl) {
+		if (wd.flag&sd->finaladd_class[tstatus->class_].bf) {
+			damage += cldamage / 100 * sd->finaladd_class[tstatus->class_].rate;
+			wd.damage = damage;
+		}
+	}
+	if (sd->finaladd_class[CLASS_ALL].cl) {
+		if (wd.flag&sd->finaladd_class[CLASS_ALL].bf) {
+			damage += cldamage / 100 * sd->finaladd_class[CLASS_ALL].rate;
+			wd.damage = damage;
+		}
+	}
+#endif // Pandas_Bonus_bFinalAddClass
+	//双手武器处理
+#if defined(Pandas_Bonus_bFinalAddRace) || defined(Pandas_Bonus_bFinalAddClass)
+	if (wd.damage2) {
+		damage -= wd.damage2;
+		wd.damage = damage;
+	}
+#endif // Pandas_Bonus_bFinalAddRace || Pandas_Bonus_bFinalAddClass
+//聽風注：
+//    OnPCAttackExpress事件处理放在本行后面
 
 	wd.dmotion = clif_damage(src, target, tick, wd.amotion, wd.dmotion, wd.damage, wd.div_ , wd.type, wd.damage2, wd.isspdamage);
 

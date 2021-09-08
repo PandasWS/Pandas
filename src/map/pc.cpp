@@ -4602,6 +4602,26 @@ void pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 		sd->norecover_state_race[type2].rate = type3;
 		sd->norecover_state_race[type2].tick = val;
 		break;
+#ifdef Pandas_Bonus_bFinalAddRace
+	case SP_PANDAS_FINALADDRACE: // bonus3 bFinalAddRace,r,x,bf;
+		PC_BONUS_CHK_RACE(type2, SP_PANDAS_FINALADDRACE);
+		if (sd->state.lr_flag == 2)
+			break;
+		sd->finaladd_race[type2].rc = type2;
+		sd->finaladd_race[type2].rate += type3;
+		sd->finaladd_race[type2].bf = val;
+		break;
+#endif // Pandas_Bonus_bFinalAddRace
+#ifdef Pandas_Bonus_bFinalAddClass
+	case SP_PANDAS_FINALADDCLASS: // bonus3 bFinalAddClass,c,x,bf;
+		PC_BONUS_CHK_CLASS(type2, SP_PANDAS_FINALADDCLASS);
+		if (sd->state.lr_flag == 2)
+			break;
+		sd->finaladd_class[type2].cl = type2;
+		sd->finaladd_class[type2].rate += type3;
+		sd->finaladd_class[type2].bf += val;
+		break;
+#endif // Pandas_Bonus_bFinalAddClass
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
 		if (running_npc_stat_calc_event) {

@@ -1002,6 +1002,14 @@
 	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	export_constant2("bNoFieldGemStone", SP_PANDAS_NOFIELDGEMSTONE);
 #endif // Pandas_Bonus_bNoFieldGemStone
+#ifdef Pandas_Bonus_bFinalAddRace
+	// 使用 bf 攻击时, 增加 r 种族 x% 的伤害(在最终伤害上全段修正) [聽風]
+	export_constant2("bFinalAddRace", SP_PANDAS_FINALADDRACE);
+#endif // Pandas_Bonus_bFinalAddRace
+#ifdef Pandas_Bonus_bFinalAddClass
+	// 使用 bf 攻击时, 增加 c 类别魔物 x% 的伤害(在最终伤害上全段修正) [聽風]
+	export_constant2("bFinalAddClass", SP_PANDAS_FINALADDCLASS);
+#endif // Pandas_Bonus_bFinalAddClass
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses
