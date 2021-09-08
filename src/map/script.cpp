@@ -326,7 +326,7 @@ struct Script_Config script_config = {
 #endif // Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
-	"OnPCChangeTitleFilter",	// NPCF_CHANGETITLE		// changetitle_filter_name	// 当玩家试图变更称号时将触发此过滤器
+	"OnPCChangeTitleFilter",	// NPCF_CHANGETITLE		// changetitle_filter_name	// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -341,9 +341,17 @@ struct Script_Config script_config = {
 	"OnPCUseOCIdentifyFilter",	// NPCF_ONECLICK_IDENTIFY		// oneclick_identify_filter_name	// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	"OnPCGuildCreateFilter",	// NPCF_GUILDCREATE		// guildcreate_filter_name	// 当玩家准备创建公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
+
 #ifdef Pandas_NpcFilter_GUILDJOIN
-	"OnPCGuildJoinFilter",	// NPCF_GUILDJOIN		// guildjoin_filter_name	// 当玩家即将加入公会时, 此过滤器会被触发 [聽風]
+	"OnPCGuildJoinFilter",	// NPCF_GUILDJOIN		// guildjoin_filter_name	// 当玩家即将加入公会时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDJOIN
+
+#ifdef Pandas_NpcFilter_GUILDLEAVE
+	"OnPCGuildLeaveFilter",	// NPCF_GUILDLEAVE		// guildleave_filter_name	// 当玩家准备离开公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
@@ -642,12 +650,15 @@ static void script_reportsrc(struct script_state *st)
 		return;
 
 	switch( bl->type ) {
-		case BL_NPC:
+		case BL_NPC: {
+			struct npc_data* nd = (struct npc_data*)bl;
+
 			if( bl->m >= 0 )
-				ShowDebug("Source (NPC): %s at %s (%d,%d)\n", ((struct npc_data *)bl)->name, map_mapid2mapname(bl->m), bl->x, bl->y);
+				ShowDebug("Source (NPC): %s at %s (%d,%d)\n", nd->name, map_mapid2mapname(bl->m), bl->x, bl->y);
 			else
-				ShowDebug("Source (NPC): %s (invisible/not on a map)\n", ((struct npc_data *)bl)->name);
-			break;
+				ShowDebug("Source (NPC): %s (invisible/not on a map)\n", nd->name);
+			ShowDebug( "Source (NPC): %s is located in: %s\n", nd->name, nd->path );
+			} break;
 		default:
 			if( bl->m >= 0 )
 				ShowDebug("Source (Non-NPC type %d): name %s at %s (%d,%d)\n", bl->type, status_get_name(bl), map_mapid2mapname(bl->m), bl->x, bl->y);
@@ -2504,51 +2515,39 @@ void script_set_constant_(const char* name, int64 value, const char* constant_na
 	}
 }
 
-static bool read_constdb_sub( char* fields[], int columns, int current ){
-	char name[1024], val[1024];
-	int type = 0;
-
-	if( columns > 1 ){
-		if( sscanf(fields[0], "%1023[A-Za-z0-9/_]", name) != 1 ||
-			sscanf(fields[1], "%1023[A-Za-z0-9/_]", val) != 1 || 
-			( columns >= 2 && sscanf(fields[2], "%11d", &type) != 1 ) ){
-			ShowWarning("Skipping line '" CL_WHITE "%d" CL_RESET "', invalid constant definition\n", current);
-			return false;
-		}
-	}else{
-		if( sscanf(fields[0], "%1023[A-Za-z0-9/_] %1023[A-Za-z0-9/_-] %11d", name, val, &type) < 2 ){
-			ShowWarning( "Skipping line '" CL_WHITE "%d" CL_RESET "', invalid constant definition\n", current );
-			return false;
-		}
-	}
-
-	script_set_constant(name, (int)strtol(val, NULL, 0), (type != 0), false);
-
-	return true;
+const std::string ConstantDatabase::getDefaultLocation(){
+	return std::string(db_path) + "/const.yml";
 }
 
-/*==========================================
- * Reading constant databases
- * const.txt
- *------------------------------------------*/
-static void read_constdb(void){
-	const char* dbsubpath[] = {
-		"",
-		"/" DBIMPORT,
-	};
+uint64 ConstantDatabase::parseBodyNode( const YAML::Node& node ) {
+	std::string constant_name;
 
-	for( int i = 0; i < ARRAYLENGTH(dbsubpath); i++ ){
-		int n2 = strlen(db_path) + strlen(dbsubpath[i]) + 1;
-		char* dbsubpath2 = (char*)aMalloc(n2 + 1);
-		bool silent = i > 0;
+	if (!this->asString( node, "Name", constant_name ))
+		return 0;
 
-		safesnprintf(dbsubpath2, n2, "%s%s", db_path, dbsubpath[i]);
+	char name[1024];
 
-		sv_readdb(dbsubpath2, "const.txt", ',', 1, 3, -1, &read_constdb_sub, silent);
-
-		aFree(dbsubpath2);
+	if (sscanf(constant_name.c_str(), "%1023[A-Za-z0-9/_]", name) != 1) {
+		this->invalidWarning( node["Name"], "Invalid constant definition \"%s\", skipping.\n", constant_name.c_str() );
+		return 0;
 	}
+
+	int64 val;
+
+	if (!this->asInt64( node, "Value", val ))
+		return 0;
+
+	bool type = false;
+
+	if (this->nodeExists(node, "Parameter") && !this->asBool( node, "Parameter", type ))
+		return 0;
+
+	script_set_constant(name, val, type, false);
+
+	return 1;
 }
+
+ConstantDatabase constant_db;
 
 /**
  * Sets source-end constants for NPC scripts to access.
@@ -5242,21 +5241,107 @@ bool script_get_array(struct script_state* st, int loc, int& ret_varid, char*& r
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2021/02/12 00:12
 //************************************ 
-bool script_get_mapindex(struct script_state *st, const char* mapname, int &mapindex) {
-	if (strcmp(mapname, "this") == 0) {
-		struct map_session_data *sd = nullptr;
-		if (!script_rid2sd(sd)) {
+bool script_get_mapindex(struct script_state *st, const char* mapname, int &mapindex, int char_id = 0) {
+	if (stricmp(mapname, "this") != 0) {
+		mapindex = map_mapname2mapid(mapname);
+		return (mapindex >= 0);
+	}
+
+	struct map_session_data* sd = nullptr;
+
+	if (char_id) {
+		sd = map_charid2sd(char_id);
+		if (!sd) {
+			script_reportsrc(st);
+			script_reportfunc(st);
+			ShowError("buildin_%s: mapname is 'this', but player with char id '%d' is not found.\n", script_getfuncname(st));
+			return false;
+		}
+	}
+	else {
+		sd = map_id2sd(st->rid);
+		if (!sd) {
 			script_reportsrc(st);
 			script_reportfunc(st);
 			ShowError("buildin_%s: mapname is 'this', please attach to a player.\n", script_getfuncname(st));
 			return false;
 		}
-		mapindex = sd->bl.m;
 	}
-	else
-		mapindex = map_mapname2mapid(mapname);
+	mapindex = sd->bl.m;
+
 	return (mapindex >= 0);
 }
+
+//************************************
+// Method:      script_both_setreg
+// Description: 同时设置 $@ 和 @ 数值变量 (设置 @ 变量的前提是能找到 sd)
+// Access:      public 
+// Parameter:   struct script_state * st
+// Parameter:   const char * varname_without_prefix
+// Parameter:   int64 value
+// Parameter:   bool isarray	是不是数组
+// Parameter:   int index		如果是数组那么索引是多少
+// Parameter:   int char_id		若提供了角色编号则将 @ 变量值写入该角色
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/08/17 23:34
+//************************************ 
+void script_both_setreg(struct script_state* st, const char* varname_without_prefix, int64 value, bool isarray, int index = -1, int char_id = 0) {
+	struct map_session_data* sd = nullptr;
+	int64 varid = 0;
+
+	sd = map_id2sd(st->rid);
+	if (char_id) {
+		sd = map_charid2sd(char_id);
+	}
+
+	std::string varname = "$@";
+	varname += varname_without_prefix;
+	varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+	mapreg_setreg(varid, value);
+
+	if (sd) {
+		varname = "@";
+		varname += varname_without_prefix;
+		varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+		pc_setreg(sd, varid, value);
+	}
+}
+
+//************************************
+// Method:      script_both_setregstr
+// Description: 同时设置 $@ 和 @ 字符串变量 (设置 @ 变量的前提是能找到 sd)
+// Access:      public 
+// Parameter:   struct script_state * st
+// Parameter:   const char * varname_without_prefix
+// Parameter:   const char * value
+// Parameter:   bool isarray	是不是数组
+// Parameter:   int index		如果是数组那么索引是多少
+// Parameter:   int char_id		若提供了角色编号则将 @ 变量值写入该角色
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/08/17 23:36
+//************************************ 
+void script_both_setregstr(struct script_state* st, const char* varname_without_prefix, const char* value, bool isarray, int index = -1, int char_id = 0) {
+	struct map_session_data* sd = nullptr;
+	int64 varid = 0;
+
+	sd = map_id2sd(st->rid);
+	if (char_id) {
+		sd = map_charid2sd(char_id);
+	}
+
+	std::string varname = "$@";
+	varname += varname_without_prefix;
+	varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+	mapreg_setregstr(varid, value);
+
+	if (sd) {
+		varname = "@";
+		varname += varname_without_prefix;
+		varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+		pc_setregstr(sd, varid, value);
+	}
+}
+
 #endif // Pandas_ScriptCommands
 
 /*==========================================
@@ -5374,7 +5459,7 @@ void do_init_script(void) {
 
 	mapreg_init();
 	add_buildin_func();
-	read_constdb();
+	constant_db.load();
 	script_hardcoded_constants();
 }
 
@@ -18830,6 +18915,10 @@ BUILDIN_FUNC(getunitdata)
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			getunitdata_sub(UMOB_AURA, md->ucd.aura.id);
 #endif // Pandas_Struct_Unit_CommonData_Aura
+#ifdef Pandas_ScriptParams_UnitData_DamageTaken
+			getunitdata_sub(UMOB_DAMAGETAKEN, md->pandas.damagetaken);
+			getunitdata_sub(UMOB_DAMAGETAKEN_DB, md->db->damagetaken);
+#endif // Pandas_ScriptParams_UnitData_DamageTaken
 			break;
 
 		case BL_HOM:
@@ -19252,6 +19341,9 @@ BUILDIN_FUNC(setunitdata)
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			case UMOB_AURA: aura_make_effective(bl, value); break;
 #endif // Pandas_Struct_Unit_CommonData_Aura
+#ifdef Pandas_ScriptParams_UnitData_DamageTaken
+			case UMOB_DAMAGETAKEN: md->pandas.damagetaken = cap_value(value, -1, UINT16_MAX); break;
+#endif // Pandas_ScriptParams_UnitData_DamageTaken
 			default:
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_MOB.\n", type);
 				return SCRIPT_CMD_FAILURE;
@@ -20249,7 +20341,7 @@ BUILDIN_FUNC(warpportal)
 	unsigned short mapindex;
 	int tpx;
 	int tpy;
-	struct skill_unit_group* group;
+	std::shared_ptr<s_skill_unit_group> group;
 	struct block_list* bl;
 
 	bl = map_id2bl(st->oid);
@@ -20318,7 +20410,7 @@ BUILDIN_FUNC(openauction)
 ///
 /// checkcell("<map name>",<x>,<y>,<type>) -> <bool>
 ///
-/// @see cell_chk* constants in const.txt for the types
+/// @see cell_chk* constants in src/map/script_constants.hpp for the types
 BUILDIN_FUNC(checkcell)
 {
 	int16 m = map_mapname2mapid(script_getstr(st,2));
@@ -20335,7 +20427,7 @@ BUILDIN_FUNC(checkcell)
 ///
 /// setcell "<map name>",<x1>,<y1>,<x2>,<y2>,<type>,<flag>;
 ///
-/// @see cell_* constants in const.txt for the types
+/// @see cell_* constants in src/map/script_constants.hpp for the types
 BUILDIN_FUNC(setcell)
 {
 	int16 m = map_mapname2mapid(script_getstr(st,2));
@@ -29568,238 +29660,268 @@ BUILDIN_FUNC(getinventorysize) {
 }
 #endif // Pandas_ScriptCommand_GetInventorySize
 
+#ifdef Pandas_ScriptCommand_GetMapSpawns
+/* ===========================================================
+ * 指令: getmapspawns
+ * 描述: 获取指定地图的魔物刷新点信息
+ * 用法: getmapspawns "<地图名称>"{,<角色编号>};
+ * 返回: 成功则返回找到的刷新点数量, 失败则返回 -1
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getmapspawns) {
+	int mapindex = -1;
+	std::string mapname = script_getstr(st, 2);
+	int char_id = script_hasdata(st, 3) ? script_getnum(st, 3) : 0;
+
+	script_both_setreg(st, "spawn_count", 0, false, -1, char_id);
+
+	if (!script_get_mapindex(st, mapname.c_str(), mapindex, char_id)) {
+		ShowError("buildin_getmapspawns: Could not found valid map by map name '%s'\n", mapname.c_str());
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	struct map_data* mapdata = map_getmapdata(mapindex);
+
+	if (!mapdata) {
+		script_reportsrc(st);
+		script_reportfunc(st);
+		ShowError("buildin_getmapspawns: Could not found valid map by map name '%s'\n", mapname.c_str());
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int j = 0;
+
+	for (int i = 0; i < MAX_MOB_LIST_PER_MAP; i++) {
+		if (!mapdata || mapdata->moblist[i] == nullptr) continue;
+		struct spawn_data* data = mapdata->moblist[i];
+
+		script_both_setreg(st, "spawn_mobid", data->id, true, j, char_id);
+		script_both_setregstr(st, "spawn_name$", data->name, true, j, char_id);
+		script_both_setreg(st, "spawn_num", data->num, true, j, char_id);
+		script_both_setreg(st, "spawn_active", data->active, true, j, char_id);
+		script_both_setreg(st, "spawn_size", data->state.size, true, j, char_id);
+		script_both_setreg(st, "spawn_isboss", data->state.boss, true, j, char_id);
+		script_both_setreg(st, "spawn_ai", data->state.ai, true, j, char_id);
+		script_both_setreg(st, "spawn_level", data->level, true, j, char_id);
+		script_both_setreg(st, "spawn_delay1", data->delay1, true, j, char_id);
+		script_both_setreg(st, "spawn_delay2", data->delay2, true, j, char_id);
+		script_both_setregstr(st, "spawn_eventname$", data->eventname, true, j, char_id);
+
+		script_both_setreg(st, "spawn_mapid", data->m, true, j, char_id);
+		script_both_setregstr(st, "spawn_mapname$", mapdata->name, true, j, char_id);
+		script_both_setreg(st, "spawn_x", data->x, true, j, char_id);
+		script_both_setreg(st, "spawn_y", data->y, true, j, char_id);
+		script_both_setreg(st, "spawn_xs", data->xs, true, j, char_id);
+		script_both_setreg(st, "spawn_ys", data->ys, true, j, char_id);
+
+		j++;
+	}
+
+	script_both_setreg(st, "spawn_count", j, false, -1, char_id);
+	script_pushint(st, j);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetMapSpawns
+
+#ifdef Pandas_ScriptCommand_GetMobSpawns
+/* ===========================================================
+ * 指令: getmobspawns
+ * 描述: 查询指定魔物在不同地图的刷新点信息
+ * 用法: getmobspawns <魔物编号>{,"<地图名称>"{,<角色编号>}};
+ * 返回: 成功则返回找到的刷新点数量, 失败则返回 -1
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getmobspawns) {
+	int mapindex = -1;
+	int mob_id = script_getnum(st, 2);
+	std::string mapname = (script_hasdata(st, 3) && script_isstring(st, 3)) ? script_getstr(st, 3) : "";
+	int char_id = (script_hasdata(st, 4) && script_isint(st, 4)) ? script_getnum(st, 4) : 0;
+
+	script_both_setreg(st, "spawn_count", 0, false, -1, char_id);
+
+	// 若指定了地图名称则顺带查询地图数据信息, 没指定就算了
+	if (mapname.length() > 0) {
+		if (!script_get_mapindex(st, mapname.c_str(), mapindex, char_id)) {
+			ShowError("buildin_getmobspawns: Could not found valid map by map name '%s'\n", mapname.c_str());
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		struct map_data* mapdata = map_getmapdata(mapindex);
+
+		if (!mapdata) {
+			script_reportsrc(st);
+			script_reportfunc(st);
+			ShowError("buildin_getmobspawns: Could not found valid map by map name '%s'\n", mapname.c_str());
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	// 通过 rAthena 内建的刷新点缓存快速确定关联地图
+	const std::vector<spawn_info> spawns = mob_get_spawns(mob_id);
+
+	int j = 0;
+
+	for (auto& spawn : spawns) {
+		int16 mapid = map_mapindex2mapid(spawn.mapindex);
+
+		// 若设置了仅查询某地图的魔物刷新点信息, 那么非指定地图的都跳过
+		if (mapindex != -1 && mapid != mapindex)
+			continue;
+
+		// 获取有记载指定魔物刷新点的目标地图数据
+		struct map_data* mapdata = map_getmapdata(mapid);
+
+		// 找不到对应地图的数据则直接跳过
+		if (!mapdata) continue;
+
+		for (int i = 0; i < MAX_MOB_LIST_PER_MAP; i++) {
+			if (!mapdata || mapdata->moblist[i] == nullptr) continue;
+			struct spawn_data* data = mapdata->moblist[i];
+			if (data->id != mob_id) continue;
+
+			script_both_setreg(st, "spawn_mobid", data->id, true, j, char_id);
+			script_both_setregstr(st, "spawn_name$", data->name, true, j, char_id);
+			script_both_setreg(st, "spawn_num", data->num, true, j, char_id);
+			script_both_setreg(st, "spawn_active", data->active, true, j, char_id);
+			script_both_setreg(st, "spawn_size", data->state.size, true, j, char_id);
+			script_both_setreg(st, "spawn_isboss", data->state.boss, true, j, char_id);
+			script_both_setreg(st, "spawn_ai", data->state.ai, true, j, char_id);
+			script_both_setreg(st, "spawn_level", data->level, true, j, char_id);
+			script_both_setreg(st, "spawn_delay1", data->delay1, true, j, char_id);
+			script_both_setreg(st, "spawn_delay2", data->delay2, true, j, char_id);
+			script_both_setregstr(st, "spawn_eventname$", data->eventname, true, j, char_id);
+
+			script_both_setreg(st, "spawn_mapid", data->m, true, j, char_id);
+			script_both_setregstr(st, "spawn_mapname$", mapdata->name, true, j, char_id);
+			script_both_setreg(st, "spawn_x", data->x, true, j, char_id);
+			script_both_setreg(st, "spawn_y", data->y, true, j, char_id);
+			script_both_setreg(st, "spawn_xs", data->xs, true, j, char_id);
+			script_both_setreg(st, "spawn_ys", data->ys, true, j, char_id);
+
+			j++;
+		}
+	}
+
+	script_both_setreg(st, "spawn_count", j, false, -1, char_id);
+	script_pushint(st, j);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetMobSpawns
+
+#ifdef Pandas_ScriptCommand_GetCalendarTime
+/* ===========================================================
+ * 指令: getcalendartime
+ * 描述: 获取下次出现指定时间的 UNIX 时间戳
+ * 用法: getcalendartime <小时>,<分钟>{,<月的第几天>{,<周的第几天>}};
+ * 返回: 成功则返回时间戳, 失败则返回 -1
+ * 作者: Haru <haru@dotalux.com>
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getcalendartime) {
+	struct tm info = { 0 };
+	int day_of_month = script_hasdata(st, 4) ? script_getnum(st, 4) : -1;
+	int day_of_week = script_hasdata(st, 5) ? script_getnum(st, 5) : -1;
+	int year = date_get_year();
+	int month = date_get_month();
+	int day = date_get_dayofmonth();
+	int cur_hour = date_get_hour();
+	int cur_min = date_get_min();
+	int hour = script_getnum(st, 2);
+	int minute = script_getnum(st, 3);
+
+	info.tm_sec = 0;
+	info.tm_min = minute;
+	info.tm_hour = hour;
+	info.tm_mday = day;
+	info.tm_mon = month - 1;
+	info.tm_year = year - 1900;
+
+	if (day_of_month > -1 && day_of_week > -1) {
+		ShowError("buildin_getcalendartime: You must only specify a day_of_week or a day_of_month, not both\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (day_of_month > -1 && (day_of_month < 1 || day_of_month > 31)) {
+		ShowError("buildin_getcalendartime: Day of Month in invalid range. Must be between 1 and 31.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (day_of_week > -1 && (day_of_week < 0 || day_of_week > 6)) {
+		ShowError("buildin_getcalendartime: Day of Week in invalid range. Must be between 0 and 6.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (hour > -1 && (hour > 23)) {
+		ShowError("buildin_getcalendartime: Hour in invalid range. Must be between 0 and 23.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (minute > -1 && (minute > 59)) {
+		ShowError("buildin_getcalendartime: Minute in invalid range. Must be between 0 and 59.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (hour == -1 || minute == -1) {
+		ShowError("buildin_getcalendartime: Minutes and Hours are required\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (day_of_month > -1) {
+		if (day_of_month < day) { // Next Month
+			info.tm_mon++;
+		}
+		else if (day_of_month == day) { // Today
+			if (hour < cur_hour || (hour == cur_hour && minute < cur_min)) { // But past time, next month
+				info.tm_mon++;
+			}
+		}
+
+		// Loops until month has finding a month that has day_of_month
+		do {
+			time_t t;
+			struct tm* lt;
+			info.tm_mday = day_of_month;
+			t = mktime(&info);
+			lt = localtime(&t);
+			info = *lt;
+		} while (info.tm_mday != day_of_month);
+	}
+	else if (day_of_week > -1) {
+		int cur_wday = date_get_dayofweek();
+
+		if (day_of_week > cur_wday) { // This week
+			info.tm_mday += (day_of_week - cur_wday);
+		}
+		else if (day_of_week == cur_wday) { // Today
+			if (hour < cur_hour || (hour == cur_hour && minute <= cur_min)) {
+				info.tm_mday += 7; // Next week
+			}
+		}
+		else if (day_of_week < cur_wday) { // Next week
+			info.tm_mday += (7 - cur_wday + day_of_week);
+		}
+	}
+	else if (day_of_week == -1 && day_of_month == -1) { // Next occurence of hour/min
+		if (hour < cur_hour || (hour == cur_hour && minute < cur_min)) {
+			info.tm_mday++;
+		}
+	}
+
+	script_pushint(st, mktime(&info));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetCalendarTime
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
 /// for an explanation on args, see add_buildin_func
 struct script_function buildin_func[] = {
-#ifdef Pandas_ScriptCommand_SetHeadDir
-	BUILDIN_DEF(setheaddir,"i?"),						// 调整角色纸娃娃脑袋的朝向 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SetHeadDir
-#ifdef Pandas_ScriptCommand_SetBodyDir
-	BUILDIN_DEF(setbodydir,"i?"),						// 用于调整角色纸娃娃身体的朝向 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SetBodyDir
-#ifdef Pandas_ScriptCommand_OpenBank
-	BUILDIN_DEF(openbank,"?"),							// 让指定的角色立刻打开银行界面 [Sola丶小克]
-#endif // Pandas_ScriptCommand_OpenBank
-#ifdef Pandas_ScriptCommand_InstanceUsers
-	BUILDIN_DEF(instance_users,"i"),					// 获取指定的副本实例中, 已经进入副本地图的人数 [Sola丶小克]
-#endif // Pandas_ScriptCommand_InstanceUsers
-#ifdef Pandas_ScriptCommand_CapValue
-	BUILDIN_DEF(cap,"iii"),								// 确保数值不低于给定的最小值, 不超过给定的最大值 [Sola丶小克]
-	BUILDIN_DEF2(cap,"cap_value","iii"),				// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_CapValue
-#ifdef Pandas_ScriptCommand_MobRemove
-	BUILDIN_DEF(mobremove,"i"),							// 根据 GID 移除一个魔物单位 [Sola丶小克]
-#endif // Pandas_ScriptCommand_MobRemove
-#ifdef Pandas_ScriptCommand_MesClear
-	BUILDIN_DEF2(clear,"mesclear",""),					// 由于 rAthena 已经实现 clear 指令, 这里兼容老版本 mesclear 指令 [Sola丶小克]
-#endif // Pandas_ScriptCommand_MesClear
-#ifdef Pandas_ScriptCommand_BattleIgnore
-	BUILDIN_DEF(battleignore,"i?"),						// 将角色设置为魔物免战状态, 避免被魔物攻击 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BattleIgnore
-#ifdef Pandas_ScriptCommand_GetHotkey
-	BUILDIN_DEF(gethotkey,"i?"),						// 获取指定快捷键位置当前的信息 [Sola丶小克]
-	BUILDIN_DEF2(gethotkey,"get_hotkey","i?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_GetHotkey
-#ifdef Pandas_ScriptCommand_SetHotkey
-	BUILDIN_DEF(sethotkey,"iiii"),						// 设置指定快捷键位置的信息 [Sola丶小克]
-	BUILDIN_DEF2(sethotkey,"set_hotkey","iiii"),		// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_SetHotkey
-#ifdef Pandas_ScriptCommand_ShowVend
-	BUILDIN_DEF(showvend,"si?"),						// 使指定的 NPC 头上可以显示露天商店的招牌 [Jian916]
-#endif // Pandas_ScriptCommand_ShowVend
-#ifdef Pandas_ScriptCommand_ViewEquip
-	BUILDIN_DEF(viewequip,"i?"),						// 查看指定在线角色的装备面板信息 [Sola丶小克]
-#endif // Pandas_ScriptCommand_ViewEquip
-#ifdef Pandas_ScriptCommand_CountItemIdx
-	BUILDIN_DEF(countitemidx,"i?"),						// 获取指定背包序号的道具在背包中的数量 [Sola丶小克]
-	BUILDIN_DEF2(countitemidx,"countinventory","i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_CountItemIdx
-#ifdef Pandas_ScriptCommand_DelItemIdx
-	BUILDIN_DEF(delitemidx,"i??"),						// 移除指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(delitemidx,"delinventory","i??"),		// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_DelItemIdx
-#ifdef Pandas_ScriptCommand_IdentifyIdx
-	BUILDIN_DEF(identifyidx,"i?"),						// 鉴定指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(identifyidx,"identifybyidx","i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_IdentifyIdx
-#ifdef Pandas_ScriptCommand_UnEquipIdx
-	BUILDIN_DEF(unequipidx,"i?"),						// 脱下指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(unequipidx,"unequipinventory","i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_UnEquipIdx
-#ifdef Pandas_ScriptCommand_EquipIdx
-	BUILDIN_DEF(equipidx,"i?"),							// 穿戴指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(equipidx,"equipinventory","i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_EquipIdx
-#ifdef Pandas_ScriptCommand_ItemExists
-	BUILDIN_DEF(itemexists,"v"),						// 确认物品数据库中是否存在指定物品 [Sola丶小克]
-	BUILDIN_DEF2(itemexists,"existitem","v"),			// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_ItemExists
-#ifdef Pandas_ScriptCommand_RentTime
-	BUILDIN_DEF(renttime,"ii?"),						// 增加/减少指定位置装备的租赁时间 [Sola丶小克]
-	BUILDIN_DEF2(renttime,"setrenttime","ii?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
-	BUILDIN_DEF2(renttime,"resume","ii?"),				// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_RentTime
-#ifdef Pandas_ScriptCommand_GetEquipIdx
-	BUILDIN_DEF(getequipidx,"i?"),						// 获取指定位置装备的背包序号 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetEquipIdx
-#ifdef Pandas_ScriptCommand_StatusCalc
-	BUILDIN_DEF2(recalculatestat,"statuscalc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 statuscalc 指令 [Sola丶小克]
-	BUILDIN_DEF2(recalculatestat,"status_calc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 status_calc 指令
-#endif // Pandas_ScriptCommand_StatusCalc
-#ifdef Pandas_ScriptCommand_GetEquipExpireTick
-	BUILDIN_DEF(getequipexpiretick,"i?"),				// 获取指定位置装备的租赁到期剩余秒数 [Sola丶小克]
-	BUILDIN_DEF2(getequipexpiretick,"isrental","i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_GetEquipExpireTick
-#ifdef Pandas_ScriptCommand_GetInventoryInfo
-	BUILDIN_DEF(getinventoryinfo,"ii?"),				// 查询指定背包序号的道具的详细信息 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetInventoryInfo
-#ifdef Pandas_ScriptCommand_StatusCheck
-	BUILDIN_DEF(statuscheck,"i?"),						// 判断状态是否存在, 并取得相关的状态参数 [Sola丶小克]
-	BUILDIN_DEF2(statuscheck,"sc_check","i?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_StatusCheck
-#ifdef Pandas_ScriptCommand_RentTimeIdx
-	BUILDIN_DEF(renttimeidx,"ii?"),						// 增加/减少指定背包序号道具的租赁时间 [Sola丶小克]
-#endif // Pandas_ScriptCommand_RentTimeIdx
-#ifdef Pandas_ScriptCommand_PartyLeave
-	BUILDIN_DEF(party_leave,"?"),						// 使当前角色或指定角色退出队伍 [Sola丶小克]
-#endif // Pandas_ScriptCommand_PartyLeave
-#ifdef Pandas_ScriptCommand_Script4Each
-	BUILDIN_DEF(script4each,"si?????"),						// 对指定范围的玩家执行相同的一段脚本 [Sola丶小克]
-	BUILDIN_DEF2(script4each,"script4eachmob","si?????"),	// 对指定范围的魔物执行相同的一段脚本
-	BUILDIN_DEF2(script4each,"script4eachnpc","si?????"),	// 对指定范围的 NPC 执行相同的一段脚本
-#endif // Pandas_ScriptCommand_Script4Each
-#ifdef Pandas_ScriptCommand_SearchArray
-	BUILDIN_DEF2(inarray,"searcharray","rv"),			// 由于 rAthena 已经实现 inarray 指令, 这里兼容老版本 searcharray 指令 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SearchArray
-#ifdef Pandas_ScriptCommand_GetSameIpInfo
-	BUILDIN_DEF(getsameipinfo,"??"),					// 获得某个指定 IP 在线的玩家信息 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetSameIpInfo
-#ifdef Pandas_ScriptCommand_Logout
-	BUILDIN_DEF(logout,"i?"),							// 使指定的角色立刻登出游戏 [Sola丶小克]
-#endif // Pandas_ScriptCommand_Logout
-#ifdef Pandas_ScriptCommand_WarpPartyRevive
-	BUILDIN_DEF2(warpparty,"warppartyrevive","siii???"),// 与 warpparty 类似, 但可以复活死亡的队友并传送 [Sola丶小克]
-	BUILDIN_DEF2(warpparty,"warpparty2","siii???"),		// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_WarpPartyRevive
-#ifdef Pandas_ScriptCommand_GetAreaGid
-	BUILDIN_DEF(getareagid,"ri??????"),					// 获取指定范围内特定类型单位的全部 GID [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetAreaGid
-#ifdef Pandas_ScriptCommand_ProcessHalt
-	BUILDIN_DEF(processhalt,"?"),						// 用于中断源代码的后续处理逻辑 [Sola丶小克]
-#endif // Pandas_ScriptCommand_ProcessHalt
-#ifdef Pandas_ScriptCommand_SetEventTrigger
-	BUILDIN_DEF(settrigger,"ii"),						// 使用该指令可以设置某个事件或过滤器的触发行为 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SetEventTrigger
-#ifdef Pandas_ScriptCommand_MessageColor
-	BUILDIN_DEF(messagecolor,"s???"),					// 发送指定颜色的消息文本到聊天窗口中 [Sola丶小克]
-#endif // Pandas_ScriptCommand_MessageColor
-#ifdef Pandas_ScriptCommand_Copynpc
-	BUILDIN_DEF(copynpc,"???????"),						// 复制指定的 NPC 到一个新的位置 [Sola丶小克]
-#endif // Pandas_ScriptCommand_Copynpc
-#ifdef Pandas_ScriptCommand_GetTimeFmt
-	BUILDIN_DEF(gettimefmt,"s??"),						// 将当前时间格式化输出成字符串, 是 gettimestr 的改进版 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetTimeFmt
-#ifdef Pandas_ScriptCommand_MultiCatchPet
-	BUILDIN_DEF(multicatchpet,"*"),						// 与 catchpet 指令类似, 但可以指定更多支持捕捉的魔物编号 [Sola丶小克]
-	BUILDIN_DEF2(multicatchpet, "mpet", "*"),			// 指定一个别名, 以便简化编码工作量
-#endif // Pandas_ScriptCommand_MultiCatchPet
-#ifdef Pandas_ScriptCommand_SelfDeletion
-	BUILDIN_DEF(selfdeletion,"*"),						// 设置 NPC 的自毁策略 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SelfDeletion
-#ifdef Pandas_ScriptCommand_SetCharTitle
-	BUILDIN_DEF(setchartitle,"i?"),						// 设置指定玩家的称号ID [Sola丶小克]
-#endif // Pandas_ScriptCommand_SetCharTitle
-#ifdef Pandas_ScriptCommand_GetCharTitle
-	BUILDIN_DEF(getchartitle,"?"),						// 获得指定玩家的称号ID [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetCharTitle
-#ifdef Pandas_ScriptCommand_NpcExists
-	BUILDIN_DEF(npcexists,"s?"),						// 判断指定名称的 NPC 是否存在 [Sola丶小克]
-#endif // Pandas_ScriptCommand_NpcExists
-#ifdef Pandas_ScriptCommand_StorageGetItem
-	BUILDIN_DEF(storagegetitem,"vi?"),								// 往仓库直接创造一个指定的道具 [Sola丶小克]
-	BUILDIN_DEF2(storagegetitem, "storagegetitembound", "vii?"),	// 与 getitembound 类似, 只不过是将道具直接创建到仓库
-#endif // Pandas_ScriptCommand_StorageGetItem
-#ifdef Pandas_ScriptCommand_SetInventoryInfo
-	BUILDIN_DEF(setinventoryinfo,"iii??"),				// 设置指定背包序号的道具的详细信息 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SetInventoryInfo
-#ifdef Pandas_ScriptCommand_UpdateInventory
-	BUILDIN_DEF(updateinventory,"?"),					// 重新下发关联玩家的背包数据给客户端 [Sola丶小克]
-#endif // Pandas_ScriptCommand_UpdateInventory
-#ifdef Pandas_ScriptCommand_GetCharMacAddress
-	BUILDIN_DEF(getcharmac,"?"),						// 获取指定角色登录时使用的 MAC 地址 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetCharMacAddress
-#ifdef Pandas_ScriptCommand_GetConstant
-	BUILDIN_DEF(getconstant,"s"),						// 查询一个常量字符串对应的数值 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetConstant
-#ifdef Pandas_ScriptCommand_Preg_Search
-	BUILDIN_DEF(preg_search,"ssir"),					// 使用正则表达式搜索并返回首个匹配的分组内容 [Sola丶小克]
-#endif // Pandas_ScriptCommand_Preg_Search
-#ifdef Pandas_ScriptCommand_Aura
-	BUILDIN_DEF(aura,"i?"),								// 激活指定的光环组合 [Sola丶小克]
-#endif // Pandas_ScriptCommand_Aura
-#ifdef Pandas_ScriptCommand_UnitAura
-	BUILDIN_DEF(unitaura,"ii"),							// 用于调整七种单位的光环组合 [Sola丶小克]
-#endif // Pandas_ScriptCommand_UnitAura
-#ifdef Pandas_ScriptCommand_GetUnitTarget
-	BUILDIN_DEF(getunittarget,"i"),						// 获取指定单位当前正在攻击的目标单位编号 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetUnitTarget
-#ifdef Pandas_ScriptCommand_UnlockCmd
-	BUILDIN_DEF(unlockcmd,""),							// 解锁实时事件和过滤器事件的指令限制 [Sola丶小克]
-#endif // Pandas_ScriptCommand_UnlockCmd
-#ifdef Pandas_ScriptCommand_BattleRecordQuery
-	BUILDIN_DEF(batrec_query,"iii?"),					// 查询指定单位的战斗记录, 查看与交互目标单位产生的具体记录值 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BattleRecordQuery
-#ifdef Pandas_ScriptCommand_BattleRecordRank
-	BUILDIN_DEF(batrec_rank,"irri??"),					// 查询指定单位的战斗记录并对记录的值进行排序, 返回排行榜单 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BattleRecordRank
-#ifdef Pandas_ScriptCommand_BattleRecordSortout
-	BUILDIN_DEF(batrec_sortout, "i?"),					// 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BattleRecordSortout
-#ifdef Pandas_ScriptCommand_BattleRecordReset
-	BUILDIN_DEF(batrec_reset,"i"),						// 清除指定单位的战斗记录 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BattleRecordReset
-#ifdef Pandas_ScriptCommand_EnableBattleRecord
-	BUILDIN_DEF(enable_batrec,"?"),						// 启用指定单位的战斗记录 [Sola丶小克]
-#endif // Pandas_ScriptCommand_EnableBattleRecord
-#ifdef Pandas_ScriptCommand_DisableBattleRecord
-	BUILDIN_DEF(disable_batrec,"?"),					// 禁用指定单位的战斗记录 [Sola丶小克]
-#endif // Pandas_ScriptCommand_DisableBattleRecord
-#ifdef Pandas_ScriptCommand_Login
-	BUILDIN_DEF(login,"i????"),							// 将指定的角色以特定的登录模式拉上线 [Sola丶小克]
-#endif // Pandas_ScriptCommand_Login
-#ifdef Pandas_ScriptCommand_CheckSuspend
-	BUILDIN_DEF(checksuspend,"?"),						// 获取指定角色或指定账号当前在线角色的挂机模式 [Sola丶小克]
-#endif // Pandas_ScriptCommand_CheckSuspend
-#ifdef Pandas_ScriptCommand_BonusScriptRemove
-	BUILDIN_DEF(bonus_script_remove,"i?"),				// 移除指定的 bonus_script 效果脚本 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BonusScriptRemove
-#ifdef Pandas_ScriptCommand_BonusScriptList
-	BUILDIN_DEF(bonus_script_list,"r?"),				// 获取指定角色当前激活的全部 bonus_script 效果脚本编号 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BonusScriptList
-#ifdef Pandas_ScriptCommand_BonusScriptExists
-	BUILDIN_DEF(bonus_script_exists,"i?"),				// 查询指定角色是否已经激活了特定的 bonus_script 效果脚本 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BonusScriptExists
-#ifdef Pandas_ScriptCommand_BonusScriptGetId
-	BUILDIN_DEF(bonus_script_getid,"sr?"),				// 查询效果脚本代码对应的效果脚本编号 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BonusScriptGetId
-#ifdef Pandas_ScriptCommand_BonusScriptInfo
-	BUILDIN_DEF(bonus_script_info,"ii?"),				// 查询指定效果脚本的相关信息 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BonusScriptInfo
-#ifdef Pandas_ScriptCommand_ExpandInventoryACK
-	BUILDIN_DEF(expandinventory_ack,"i?"),				// 响应客户端的背包扩容请求, 并告知客户端下一步的动作 [Sola丶小克]
-#endif // Pandas_ScriptCommand_ExpandInventoryACK
-#ifdef Pandas_ScriptCommand_ExpandInventoryResult
-	BUILDIN_DEF(expandinventory_result,"i"),			// 发送给客户端最终的背包扩容结果 [Sola丶小克]
-#endif // Pandas_ScriptCommand_ExpandInventoryResult
-#ifdef Pandas_ScriptCommand_ExpandInventoryAdjust
-	BUILDIN_DEF(expandinventory_adjust,"i"),			// 增加角色的背包容量上限 [Sola丶小克]
-#endif // Pandas_ScriptCommand_ExpandInventoryAdjust
-#ifdef Pandas_ScriptCommand_GetInventorySize
-	BUILDIN_DEF(getinventorysize,"?"),					// 查询并获取当前角色的背包容量上限 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetInventorySize
-	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
 	BUILDIN_DEF(next,""),
@@ -30448,6 +30570,247 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(rentalcountitem, "rentalcountitem3", "viiiiiiirrr?"),
 
 	BUILDIN_DEF(getenchantgrade, ""),
+
+	// -----------------------------------------------------------------
+	// 熊猫模拟器拓展脚本指令 - 开始
+	// -----------------------------------------------------------------
+
+#ifdef Pandas_ScriptCommand_SetHeadDir
+	BUILDIN_DEF(setheaddir, "i?"),						// 调整角色纸娃娃脑袋的朝向 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SetHeadDir
+#ifdef Pandas_ScriptCommand_SetBodyDir
+	BUILDIN_DEF(setbodydir, "i?"),						// 用于调整角色纸娃娃身体的朝向 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SetBodyDir
+#ifdef Pandas_ScriptCommand_OpenBank
+	BUILDIN_DEF(openbank, "?"),							// 让指定的角色立刻打开银行界面 [Sola丶小克]
+#endif // Pandas_ScriptCommand_OpenBank
+#ifdef Pandas_ScriptCommand_InstanceUsers
+	BUILDIN_DEF(instance_users, "i"),					// 获取指定的副本实例中, 已经进入副本地图的人数 [Sola丶小克]
+#endif // Pandas_ScriptCommand_InstanceUsers
+#ifdef Pandas_ScriptCommand_CapValue
+	BUILDIN_DEF(cap, "iii"),							// 确保数值不低于给定的最小值, 不超过给定的最大值 [Sola丶小克]
+	BUILDIN_DEF2(cap, "cap_value", "iii"),				// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_CapValue
+#ifdef Pandas_ScriptCommand_MobRemove
+	BUILDIN_DEF(mobremove, "i"),						// 根据 GID 移除一个魔物单位 [Sola丶小克]
+#endif // Pandas_ScriptCommand_MobRemove
+#ifdef Pandas_ScriptCommand_MesClear
+	BUILDIN_DEF2(clear, "mesclear", ""),				// 由于 rAthena 已经实现 clear 指令, 这里兼容老版本 mesclear 指令 [Sola丶小克]
+#endif // Pandas_ScriptCommand_MesClear
+#ifdef Pandas_ScriptCommand_BattleIgnore
+	BUILDIN_DEF(battleignore, "i?"),					// 将角色设置为魔物免战状态, 避免被魔物攻击 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleIgnore
+#ifdef Pandas_ScriptCommand_GetHotkey
+	BUILDIN_DEF(gethotkey, "i?"),						// 获取指定快捷键位置当前的信息 [Sola丶小克]
+	BUILDIN_DEF2(gethotkey, "get_hotkey", "i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_GetHotkey
+#ifdef Pandas_ScriptCommand_SetHotkey
+	BUILDIN_DEF(sethotkey, "iiii"),						// 设置指定快捷键位置的信息 [Sola丶小克]
+	BUILDIN_DEF2(sethotkey, "set_hotkey", "iiii"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_SetHotkey
+#ifdef Pandas_ScriptCommand_ShowVend
+	BUILDIN_DEF(showvend, "si?"),						// 使指定的 NPC 头上可以显示露天商店的招牌 [Jian916]
+#endif // Pandas_ScriptCommand_ShowVend
+#ifdef Pandas_ScriptCommand_ViewEquip
+	BUILDIN_DEF(viewequip, "i?"),						// 查看指定在线角色的装备面板信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_ViewEquip
+#ifdef Pandas_ScriptCommand_CountItemIdx
+	BUILDIN_DEF(countitemidx, "i?"),					// 获取指定背包序号的道具在背包中的数量 [Sola丶小克]
+	BUILDIN_DEF2(countitemidx, "countinventory", "i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_CountItemIdx
+#ifdef Pandas_ScriptCommand_DelItemIdx
+	BUILDIN_DEF(delitemidx, "i??"),						// 移除指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(delitemidx, "delinventory", "i??"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_DelItemIdx
+#ifdef Pandas_ScriptCommand_IdentifyIdx
+	BUILDIN_DEF(identifyidx, "i?"),						// 鉴定指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(identifyidx, "identifybyidx", "i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_IdentifyIdx
+#ifdef Pandas_ScriptCommand_UnEquipIdx
+	BUILDIN_DEF(unequipidx, "i?"),						// 脱下指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(unequipidx, "unequipinventory", "i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_UnEquipIdx
+#ifdef Pandas_ScriptCommand_EquipIdx
+	BUILDIN_DEF(equipidx, "i?"),						// 穿戴指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(equipidx, "equipinventory", "i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_EquipIdx
+#ifdef Pandas_ScriptCommand_ItemExists
+	BUILDIN_DEF(itemexists, "v"),						// 确认物品数据库中是否存在指定物品 [Sola丶小克]
+	BUILDIN_DEF2(itemexists, "existitem", "v"),			// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_ItemExists
+#ifdef Pandas_ScriptCommand_RentTime
+	BUILDIN_DEF(renttime, "ii?"),						// 增加/减少指定位置装备的租赁时间 [Sola丶小克]
+	BUILDIN_DEF2(renttime, "setrenttime", "ii?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+	BUILDIN_DEF2(renttime, "resume", "ii?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_RentTime
+#ifdef Pandas_ScriptCommand_GetEquipIdx
+	BUILDIN_DEF(getequipidx, "i?"),						// 获取指定位置装备的背包序号 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetEquipIdx
+#ifdef Pandas_ScriptCommand_StatusCalc
+	BUILDIN_DEF2(recalculatestat, "statuscalc", ""),	// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 statuscalc 指令 [Sola丶小克]
+	BUILDIN_DEF2(recalculatestat, "status_calc", ""),	// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 status_calc 指令
+#endif // Pandas_ScriptCommand_StatusCalc
+#ifdef Pandas_ScriptCommand_GetEquipExpireTick
+	BUILDIN_DEF(getequipexpiretick, "i?"),				// 获取指定位置装备的租赁到期剩余秒数 [Sola丶小克]
+	BUILDIN_DEF2(getequipexpiretick, "isrental", "i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_GetEquipExpireTick
+#ifdef Pandas_ScriptCommand_GetInventoryInfo
+	BUILDIN_DEF(getinventoryinfo, "ii?"),				// 查询指定背包序号的道具的详细信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetInventoryInfo
+#ifdef Pandas_ScriptCommand_StatusCheck
+	BUILDIN_DEF(statuscheck, "i?"),						// 判断状态是否存在, 并取得相关的状态参数 [Sola丶小克]
+	BUILDIN_DEF2(statuscheck, "sc_check", "i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_StatusCheck
+#ifdef Pandas_ScriptCommand_RentTimeIdx
+	BUILDIN_DEF(renttimeidx, "ii?"),					// 增加/减少指定背包序号道具的租赁时间 [Sola丶小克]
+#endif // Pandas_ScriptCommand_RentTimeIdx
+#ifdef Pandas_ScriptCommand_PartyLeave
+	BUILDIN_DEF(party_leave, "?"),						// 使当前角色或指定角色退出队伍 [Sola丶小克]
+#endif // Pandas_ScriptCommand_PartyLeave
+#ifdef Pandas_ScriptCommand_Script4Each
+	BUILDIN_DEF(script4each, "si?????"),					// 对指定范围的玩家执行相同的一段脚本 [Sola丶小克]
+	BUILDIN_DEF2(script4each, "script4eachmob", "si?????"),	// 对指定范围的魔物执行相同的一段脚本
+	BUILDIN_DEF2(script4each, "script4eachnpc", "si?????"),	// 对指定范围的 NPC 执行相同的一段脚本
+#endif // Pandas_ScriptCommand_Script4Each
+#ifdef Pandas_ScriptCommand_SearchArray
+	BUILDIN_DEF2(inarray, "searcharray", "rv"),			// 由于 rAthena 已经实现 inarray 指令, 这里兼容老版本 searcharray 指令 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SearchArray
+#ifdef Pandas_ScriptCommand_GetSameIpInfo
+	BUILDIN_DEF(getsameipinfo, "??"),					// 获得某个指定 IP 在线的玩家信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetSameIpInfo
+#ifdef Pandas_ScriptCommand_Logout
+	BUILDIN_DEF(logout, "i?"),							// 使指定的角色立刻登出游戏 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Logout
+#ifdef Pandas_ScriptCommand_WarpPartyRevive
+	BUILDIN_DEF2(warpparty, "warppartyrevive", "siii???"),	// 与 warpparty 类似, 但可以复活死亡的队友并传送 [Sola丶小克]
+	BUILDIN_DEF2(warpparty, "warpparty2", "siii???"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_WarpPartyRevive
+#ifdef Pandas_ScriptCommand_GetAreaGid
+	BUILDIN_DEF(getareagid, "ri??????"),				// 获取指定范围内特定类型单位的全部 GID [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetAreaGid
+#ifdef Pandas_ScriptCommand_ProcessHalt
+	BUILDIN_DEF(processhalt, "?"),						// 用于中断源代码的后续处理逻辑 [Sola丶小克]
+#endif // Pandas_ScriptCommand_ProcessHalt
+#ifdef Pandas_ScriptCommand_SetEventTrigger
+	BUILDIN_DEF(settrigger, "ii"),						// 使用该指令可以设置某个事件或过滤器的触发行为 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SetEventTrigger
+#ifdef Pandas_ScriptCommand_MessageColor
+	BUILDIN_DEF(messagecolor, "s???"),					// 发送指定颜色的消息文本到聊天窗口中 [Sola丶小克]
+#endif // Pandas_ScriptCommand_MessageColor
+#ifdef Pandas_ScriptCommand_Copynpc
+	BUILDIN_DEF(copynpc, "???????"),					// 复制指定的 NPC 到一个新的位置 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Copynpc
+#ifdef Pandas_ScriptCommand_GetTimeFmt
+	BUILDIN_DEF(gettimefmt, "s??"),						// 将当前时间格式化输出成字符串, 是 gettimestr 的改进版 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetTimeFmt
+#ifdef Pandas_ScriptCommand_MultiCatchPet
+	BUILDIN_DEF(multicatchpet, "*"),					// 与 catchpet 指令类似, 但可以指定更多支持捕捉的魔物编号 [Sola丶小克]
+		BUILDIN_DEF2(multicatchpet, "mpet", "*"),		// 指定一个别名, 以便简化编码工作量
+#endif // Pandas_ScriptCommand_MultiCatchPet
+#ifdef Pandas_ScriptCommand_SelfDeletion
+	BUILDIN_DEF(selfdeletion, "*"),						// 设置 NPC 的自毁策略 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SelfDeletion
+#ifdef Pandas_ScriptCommand_SetCharTitle
+	BUILDIN_DEF(setchartitle, "i?"),					// 设置指定玩家的称号ID [Sola丶小克]
+#endif // Pandas_ScriptCommand_SetCharTitle
+#ifdef Pandas_ScriptCommand_GetCharTitle
+	BUILDIN_DEF(getchartitle, "?"),						// 获得指定玩家的称号ID [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetCharTitle
+#ifdef Pandas_ScriptCommand_NpcExists
+	BUILDIN_DEF(npcexists, "s?"),						// 判断指定名称的 NPC 是否存在 [Sola丶小克]
+#endif // Pandas_ScriptCommand_NpcExists
+#ifdef Pandas_ScriptCommand_StorageGetItem
+	BUILDIN_DEF(storagegetitem, "vi?"),								// 往仓库直接创造一个指定的道具 [Sola丶小克]
+	BUILDIN_DEF2(storagegetitem, "storagegetitembound", "vii?"),	// 与 getitembound 类似, 只不过是将道具直接创建到仓库
+#endif // Pandas_ScriptCommand_StorageGetItem
+#ifdef Pandas_ScriptCommand_SetInventoryInfo
+	BUILDIN_DEF(setinventoryinfo, "iii??"),				// 设置指定背包序号的道具的详细信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SetInventoryInfo
+#ifdef Pandas_ScriptCommand_UpdateInventory
+	BUILDIN_DEF(updateinventory, "?"),					// 重新下发关联玩家的背包数据给客户端 [Sola丶小克]
+#endif // Pandas_ScriptCommand_UpdateInventory
+#ifdef Pandas_ScriptCommand_GetCharMacAddress
+	BUILDIN_DEF(getcharmac, "?"),						// 获取指定角色登录时使用的 MAC 地址 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetCharMacAddress
+#ifdef Pandas_ScriptCommand_GetConstant
+	BUILDIN_DEF(getconstant, "s"),						// 查询一个常量字符串对应的数值 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetConstant
+#ifdef Pandas_ScriptCommand_Preg_Search
+	BUILDIN_DEF(preg_search, "ssir"),					// 使用正则表达式搜索并返回首个匹配的分组内容 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Preg_Search
+#ifdef Pandas_ScriptCommand_Aura
+	BUILDIN_DEF(aura, "i?"),							// 激活指定的光环组合 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Aura
+#ifdef Pandas_ScriptCommand_UnitAura
+	BUILDIN_DEF(unitaura, "ii"),						// 用于调整七种单位的光环组合 [Sola丶小克]
+#endif // Pandas_ScriptCommand_UnitAura
+#ifdef Pandas_ScriptCommand_GetUnitTarget
+	BUILDIN_DEF(getunittarget, "i"),					// 获取指定单位当前正在攻击的目标单位编号 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetUnitTarget
+#ifdef Pandas_ScriptCommand_UnlockCmd
+	BUILDIN_DEF(unlockcmd, ""),							// 解锁实时事件和过滤器事件的指令限制 [Sola丶小克]
+#endif // Pandas_ScriptCommand_UnlockCmd
+#ifdef Pandas_ScriptCommand_BattleRecordQuery
+	BUILDIN_DEF(batrec_query, "iii?"),					// 查询指定单位的战斗记录, 查看与交互目标单位产生的具体记录值 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordQuery
+#ifdef Pandas_ScriptCommand_BattleRecordRank
+	BUILDIN_DEF(batrec_rank, "irri??"),					// 查询指定单位的战斗记录并对记录的值进行排序, 返回排行榜单 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordRank
+#ifdef Pandas_ScriptCommand_BattleRecordSortout
+	BUILDIN_DEF(batrec_sortout, "i?"),					// 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordSortout
+#ifdef Pandas_ScriptCommand_BattleRecordReset
+	BUILDIN_DEF(batrec_reset, "i"),						// 清除指定单位的战斗记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordReset
+#ifdef Pandas_ScriptCommand_EnableBattleRecord
+	BUILDIN_DEF(enable_batrec, "?"),					// 启用指定单位的战斗记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_EnableBattleRecord
+#ifdef Pandas_ScriptCommand_DisableBattleRecord
+	BUILDIN_DEF(disable_batrec, "?"),					// 禁用指定单位的战斗记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_DisableBattleRecord
+#ifdef Pandas_ScriptCommand_Login
+	BUILDIN_DEF(login, "i????"),						// 将指定的角色以特定的登录模式拉上线 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Login
+#ifdef Pandas_ScriptCommand_CheckSuspend
+	BUILDIN_DEF(checksuspend, "?"),						// 获取指定角色或指定账号当前在线角色的挂机模式 [Sola丶小克]
+#endif // Pandas_ScriptCommand_CheckSuspend
+#ifdef Pandas_ScriptCommand_BonusScriptRemove
+	BUILDIN_DEF(bonus_script_remove, "i?"),				// 移除指定的 bonus_script 效果脚本 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptRemove
+#ifdef Pandas_ScriptCommand_BonusScriptList
+	BUILDIN_DEF(bonus_script_list, "r?"),				// 获取指定角色当前激活的全部 bonus_script 效果脚本编号 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptList
+#ifdef Pandas_ScriptCommand_BonusScriptExists
+	BUILDIN_DEF(bonus_script_exists, "i?"),				// 查询指定角色是否已经激活了特定的 bonus_script 效果脚本 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptExists
+#ifdef Pandas_ScriptCommand_BonusScriptGetId
+	BUILDIN_DEF(bonus_script_getid, "sr?"),				// 查询效果脚本代码对应的效果脚本编号 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptGetId
+#ifdef Pandas_ScriptCommand_BonusScriptInfo
+	BUILDIN_DEF(bonus_script_info, "ii?"),				// 查询指定效果脚本的相关信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptInfo
+#ifdef Pandas_ScriptCommand_ExpandInventoryACK
+	BUILDIN_DEF(expandinventory_ack, "i?"),				// 响应客户端的背包扩容请求, 并告知客户端下一步的动作 [Sola丶小克]
+#endif // Pandas_ScriptCommand_ExpandInventoryACK
+#ifdef Pandas_ScriptCommand_ExpandInventoryResult
+	BUILDIN_DEF(expandinventory_result, "i"),			// 发送给客户端最终的背包扩容结果 [Sola丶小克]
+#endif // Pandas_ScriptCommand_ExpandInventoryResult
+#ifdef Pandas_ScriptCommand_ExpandInventoryAdjust
+	BUILDIN_DEF(expandinventory_adjust, "i"),			// 增加角色的背包容量上限 [Sola丶小克]
+#endif // Pandas_ScriptCommand_ExpandInventoryAdjust
+#ifdef Pandas_ScriptCommand_GetInventorySize
+	BUILDIN_DEF(getinventorysize, "?"),					// 查询并获取当前角色的背包容量上限 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetInventorySize
+#ifdef Pandas_ScriptCommand_GetMapSpawns
+	BUILDIN_DEF(getmapspawns, "s?"),					// 在此写上脚本指令说明 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetMapSpawns
+#ifdef Pandas_ScriptCommand_GetMobSpawns
+	BUILDIN_DEF(getmobspawns,"i??"),					// 查询指定魔物在不同地图的刷新点信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetMobSpawns
+#ifdef Pandas_ScriptCommand_GetCalendarTime
+	BUILDIN_DEF(getcalendartime,"ii??"),				// 获取下次出现指定时间的 UNIX 时间戳 [Haru]
+#endif // Pandas_ScriptCommand_GetCalendarTime
+	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
 
