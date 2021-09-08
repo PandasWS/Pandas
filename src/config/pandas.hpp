@@ -1255,7 +1255,7 @@
 		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
 		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
 
-		// 当玩家加入了一个公会后, 此过滤器会被触发 [聽風]
+		// 当玩家即将加入公会时, 此过滤器会被触发 [聽風]
 		// 事件类型: Filter / 事件名称: OnPCGuildJoinFilter
 		// 常量名称: NPCF_GUILDJOIN / 变量名称: guildjoin_filter_name
 		#define Pandas_NpcFilter_GUILDJOIN

@@ -218,7 +218,7 @@ struct Script_Config {
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_GUILDJOIN
-	const char* guildjoin_filter_name;	// NPCF_GUILDJOIN	// OnPCGuildJoinFilter	// 当玩家加入了一个公会后, 此过滤器会被触发 [聽風]
+	const char* guildjoin_filter_name;	// NPCF_GUILDJOIN	// OnPCGuildJoinFilter	// 当玩家即将加入公会时, 此过滤器会被触发 [聽風]
 #endif // Pandas_NpcFilter_GUILDJOIN
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
