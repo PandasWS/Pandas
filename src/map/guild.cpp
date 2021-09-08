@@ -513,7 +513,13 @@ int guild_create(struct map_session_data *sd, const char *name) {
 		clif_guild_created(sd,3);
 		return 0;
 	}
-
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	if (sd) {
+		pc_setregstr(sd, add_str("@create_guild_name$"), name);
+		if (npc_script_filter(sd, NPCF_GUILDCREATE))
+			return 0;
+	}
+#endif // Pandas_NpcFilter_GUILDCREATE
 	guild_makemember(&m,sd);
 	m.position=0;
 	intif_guild_create(name,&m);

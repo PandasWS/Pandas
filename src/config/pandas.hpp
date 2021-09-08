@@ -1271,7 +1271,12 @@
 		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
 		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
 
-		// 当玩家离开公会(无论是自愿还是被踢), 触发此过滤器 [聽風]
+		// 当玩家准备创建公会时触发此过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCGuildCreateFilter
+		// 常量名称: NPCF_GUILDCREATE / 变量名称: guildcreate_filter_name
+		#define Pandas_NpcFilter_GUILDCREATE
+
+		// 当玩家准备离开公会时触发此过滤器 [聽風]
 		// 事件类型: Filter / 事件名称: OnPCGuildLeaveFilter
 		// 常量名称: NPCF_GUILDLEAVE / 变量名称: guildleave_filter_name
 		#define Pandas_NpcFilter_GUILDLEAVE
