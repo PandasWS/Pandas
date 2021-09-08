@@ -3532,39 +3532,38 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 	//combo handling
 	skill_combo(src,dsrc,bl,skill_id,skill_lv,tick);
 #ifdef Pandas_Bonus_bFinalAddRace
-	int64 rcdamage = damage;
+	int64 rcdamage = dmg.damage;
 #endif // Pandas_Bonus_bFinalAddRace
 #ifdef Pandas_Bonus_bFinalAddClass
-	int64 cldamage = damage;
+	int64 cldamage = dmg.damage;
 #endif // Pandas_Bonus_bFinalAddClass
 #ifdef Pandas_Bonus_bFinalAddRace
 	if (sd->finaladd_race[tstatus->race].rc) {
 		if (dmg.flag&sd->finaladd_race[tstatus->race].bf) {
-			damage += rcdamage / 100 * sd->finaladd_race[tstatus->race].rate;
-			dmg.damage = damage;
+			dmg.damage += rcdamage / 100 * sd->finaladd_race[tstatus->race].rate;
 		}
 	}
 	if (sd->finaladd_race[RC_ALL].rc) {
 		if (dmg.flag&sd->finaladd_race[RC_ALL].bf) {
-			damage += rcdamage / 100 * sd->finaladd_race[RC_ALL].rate;
-			dmg.damage = damage;
+			dmg.damage += rcdamage / 100 * sd->finaladd_race[RC_ALL].rate;
 		}
 	}
 #endif // Pandas_Bonus_bFinalAddRace
 #ifdef Pandas_Bonus_bFinalAddClass
 	if (sd->finaladd_class[tstatus->class_].cl) {
 		if (dmg.flag&sd->finaladd_class[tstatus->class_].bf) {
-			damage += cldamage / 100 * sd->finaladd_class[tstatus->class_].rate;
-			dmg.damage = damage;
+			dmg.damage += cldamage / 100 * sd->finaladd_class[tstatus->class_].rate;
 		}
 	}
 	if (sd->finaladd_class[CLASS_ALL].cl) {
 		if (dmg.flag&sd->finaladd_class[CLASS_ALL].bf) {
-			damage += cldamage / 100 * sd->finaladd_class[CLASS_ALL].rate;
-			dmg.damage = damage;
+			dmg.damage += cldamage / 100 * sd->finaladd_class[CLASS_ALL].rate;
 		}
 	}
 #endif // Pandas_Bonus_bFinalAddClass
+#if defined(Pandas_Bonus_bFinalAddRace) || defined(Pandas_Bonus_bFinalAddClass)
+	damage = dmg.damage + dmg.damage2;
+#endif // Pandas_Bonus_bFinalAddRace || Pandas_Bonus_bFinalAddClass
 //聽風注：
 //    OnPCAttackExpress事件处理放在本行后面
 
