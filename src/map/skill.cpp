@@ -3533,7 +3533,7 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 	skill_combo(src,dsrc,bl,skill_id,skill_lv,tick);
 #ifdef Pandas_Bonus_bStatusAddDamage
 	if (tsc) {
-		for (int i = 1; i < SC_MAX; i++) {
+		for (int i = 0; i < SC_MAX; i++) {
 			if (sd->addstatusdamage[i].addsc && tsc->data[i]) {
 				if (dmg.flag&sd->addstatusdamage[i].bf) {
 					if (rnd() % 1000 < sd->addstatusdamage[i].rate) {
@@ -3547,7 +3547,7 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 #ifdef Pandas_Bonus_bStatusAddDamageRate
 	if (tsc) {
 		int64 add_damage = dmg.damage;
-		for (int i = 1; i < SC_MAX; i++) {
+		for (int i = 0; i < SC_MAX; i++) {
 			if (sd->addstatusdamagerate[i].addsc && tsc->data[i]) {
 				if (dmg.flag&sd->addstatusdamagerate[i].bf) {
 					if (rnd() % 1000 < sd->addstatusdamagerate[i].rate) {

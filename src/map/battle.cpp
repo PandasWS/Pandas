@@ -7971,7 +7971,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 #ifdef Pandas_Bonus_bStatusAddDamage
 	if (tsc) {
-		for (int i = 1; i < SC_MAX; i++) {
+		for (int i = 0; i < SC_MAX; i++) {
 			if (sd->addstatusdamage[i].addsc && tsc->data[i]) {
 				if (wd.flag&sd->addstatusdamage[i].bf) {
 					if (rnd()%1000 < sd->addstatusdamage[i].rate) {
@@ -7985,7 +7985,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 #ifdef Pandas_Bonus_bStatusAddDamageRate
 	if (tsc) {
 		int64 add_damage = wd.damage;
-		for (int i = 1; i < SC_MAX; i++) {
+		for (int i = 0; i < SC_MAX; i++) {
 			if (sd->addstatusdamagerate[i].addsc && tsc->data[i]) {
 				if (wd.flag&sd->addstatusdamagerate[i].bf) {
 					if (rnd() % 1000 < sd->addstatusdamagerate[i].rate) {
