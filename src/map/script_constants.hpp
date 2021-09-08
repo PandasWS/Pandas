@@ -1002,6 +1002,14 @@
 	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	export_constant2("bNoFieldGemStone", SP_PANDAS_NOFIELDGEMSTONE);
 #endif // Pandas_Bonus_bNoFieldGemStone
+#ifdef Pandas_Bonus_bStatusAddDamage
+	// 当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n [聽風]
+	export_constant2("bStatusAddDamage", SP_PANDAS_STATUSADDDAMAGE);
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	// 当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n% [聽風]
+	export_constant2("bStatusAddDamageRate", SP_PANDAS_STATUSADDDAMAGERATE);
+#endif // Pandas_Bonus_bStatusAddDamageRate
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses

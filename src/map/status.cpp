@@ -4386,6 +4386,12 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		+ sizeof(sd->norecover_state_race)
 		+ sizeof(sd->hp_vanish_race)
 		+ sizeof(sd->sp_vanish_race)
+#ifdef Pandas_Bonus_bStatusAddDamage
+		+ sizeof(sd->addstatusdamage)
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+		+ sizeof(sd->addstatusdamagerate)
+#endif // Pandas_Bonus_bStatusAddDamageRate
 	);
 
 	memset(&sd->bonus, 0, sizeof(sd->bonus));

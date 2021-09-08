@@ -3531,6 +3531,36 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 
 	//combo handling
 	skill_combo(src,dsrc,bl,skill_id,skill_lv,tick);
+#ifdef Pandas_Bonus_bStatusAddDamage
+	if (tsc) {
+		for (int i = 1; i < SC_MAX; i++) {
+			if (sd->addstatusdamage[i].addsc && tsc->data[i]) {
+				if (dmg.flag&sd->addstatusdamage[i].bf) {
+					if (rnd() % 1000 < sd->addstatusdamage[i].rate) {
+						dmg.damage += sd->addstatusdamage[i].n;
+					}
+				}
+			}
+		}
+	}
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	if (tsc) {
+		int64 add_damage = dmg.damage;
+		for (int i = 1; i < SC_MAX; i++) {
+			if (sd->addstatusdamagerate[i].addsc && tsc->data[i]) {
+				if (dmg.flag&sd->addstatusdamagerate[i].bf) {
+					if (rnd() % 1000 < sd->addstatusdamagerate[i].rate) {
+						dmg.damage += add_damage / 100 * sd->addstatusdamagerate[i].n;
+					}
+				}
+			}
+		}
+	}
+#endif // Pandas_Bonus_bStatusAddDamageRate
+#if defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+	damage = dmg.damage + dmg.damage2;
+#endif // Pandas_Bonus_bStatusAddDamage || Pandas_Bonus_bStatusAddDamageRate
 
 	//Display damage.
 	switch( skill_id ) {

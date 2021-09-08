@@ -4694,7 +4694,26 @@ void pc_bonus4(struct map_session_data *sd,int type,int type2,int type3,int type
 		sd->mdef_set_race[type2].tick = type4;
 		sd->mdef_set_race[type2].value = val;
 		break;
-
+#ifdef Pandas_Bonus_bStatusAddDamage
+	case SP_PANDAS_STATUSADDDAMAGE: // bonus4 bStatusAddDamage,sc,n,r,bf;
+		if (sd->state.lr_flag == 2)
+			break;
+		sd->addstatusdamage[type2].addsc = type2;
+		sd->addstatusdamage[type2].n += type3;
+		sd->addstatusdamage[type2].rate += type4;
+		sd->addstatusdamage[type2].bf = val;
+		break;
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	case SP_PANDAS_STATUSADDDAMAGERATE: // bonus4 bStatusAddDamageRate,sc,n,r,bf;
+		if (sd->state.lr_flag == 2)
+			break;
+		sd->addstatusdamage[type2].addsc = type2;
+		sd->addstatusdamage[type2].n += type3;
+		sd->addstatusdamage[type2].rate += type4;
+		sd->addstatusdamage[type2].bf = val;
+		break;
+#endif // Pandas_Bonus_bStatusAddDamageRate
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
 		if (running_npc_stat_calc_event) {

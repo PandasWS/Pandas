@@ -559,7 +559,16 @@ struct map_session_data {
 			per;	///< % HP/SP vanished/gained
 	} hp_vanish_race[RC_MAX], sp_vanish_race[RC_MAX];
 	// zeroed structures end here
-
+#ifdef Pandas_Bonus_bStatusAddDamage
+	struct {
+		int addsc, n, rate, bf;
+	} addstatusdamage[SC_MAX];
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	struct {
+		int addsc, n, rate, bf;
+	} addstatusdamagerate[SC_MAX];
+#endif // Pandas_Bonus_bStatusAddDamageRate
 	// zeroed vars start here.
 	struct s_bonus {
 		int hp, sp;

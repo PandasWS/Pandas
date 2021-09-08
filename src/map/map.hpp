@@ -543,6 +543,12 @@ enum _sp {
 	#ifdef Pandas_Bonus_bNoFieldGemStone
 		SP_PANDAS_NOFIELDGEMSTONE,	// 调整器名称: bNoFieldGemStone / 说明: 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	#endif // Pandas_Bonus_bNoFieldGemStone
+	#ifdef Pandas_Bonus_bStatusAddDamage
+		SP_PANDAS_STATUSADDDAMAGE,	// 调整器名称: bStatusAddDamage / 说明: 当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n [聽風]
+	#endif // Pandas_Bonus_bStatusAddDamage
+	#ifdef Pandas_Bonus_bStatusAddDamageRate
+		SP_PANDAS_STATUSADDDAMAGERATE,	// 调整器名称: bStatusAddDamageRate / 说明: 当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n% [聽風]
+	#endif // Pandas_Bonus_bStatusAddDamageRate
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses

@@ -7969,6 +7969,37 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 	}
 
+#ifdef Pandas_Bonus_bStatusAddDamage
+	if (tsc) {
+		for (int i = 1; i < SC_MAX; i++) {
+			if (sd->addstatusdamage[i].addsc && tsc->data[i]) {
+				if (wd.flag&sd->addstatusdamage[i].bf) {
+					if (rnd()%1000 < sd->addstatusdamage[i].rate) {
+						wd.damage += sd->addstatusdamage[i].n;
+					}
+				}
+			}
+		}
+	}
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	if (tsc) {
+		int64 add_damage = wd.damage;
+		for (int i = 1; i < SC_MAX; i++) {
+			if (sd->addstatusdamagerate[i].addsc && tsc->data[i]) {
+				if (wd.flag&sd->addstatusdamagerate[i].bf) {
+					if (rnd() % 1000 < sd->addstatusdamagerate[i].rate) {
+						wd.damage += add_damage / 100 * sd->addstatusdamagerate[i].n;
+					}
+				}
+			}
+		}
+	}
+#endif // Pandas_Bonus_bStatusAddDamageRate
+#if defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+	damage = wd.damage + wd.damage2;
+#endif // Pandas_Bonus_bStatusAddDamage || Pandas_Bonus_bStatusAddDamageRate
+	
 	wd.dmotion = clif_damage(src, target, tick, wd.amotion, wd.dmotion, wd.damage, wd.div_ , wd.type, wd.damage2, wd.isspdamage);
 
 	if (sd && sd->bonus.splash_range > 0 && damage > 0)
