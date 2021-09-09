@@ -4486,6 +4486,10 @@ ACMD_FUNC(mapinfo) {
 		sprintf(atcmd_output, "%s MaxASPD: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXASPD, 0));
 	}
 #endif // Pandas_MapFlag_MaxASPD
+#ifdef Pandas_MapFlag_HideDamage
+	if (map_getmapflag(m_id, MF_HIDEDAMAGE))
+		strcat(atcmd_output, " HideDamage |");
+#endif // Pandas_MapFlag_HideDamage
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags

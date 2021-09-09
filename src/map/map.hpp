@@ -693,6 +693,9 @@ enum e_mapflag : int16 {
 #ifdef Pandas_MapFlag_MaxASPD
 	MF_MAXASPD,
 #endif // Pandas_MapFlag_MaxASPD
+#ifdef Pandas_MapFlag_HideDamage
+	MF_HIDEDAMAGE,
+#endif // Pandas_MapFlag_HideDamage
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };

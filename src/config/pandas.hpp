@@ -1455,6 +1455,10 @@
 	// 是否启用 maxaspd 地图标记 [Sola丶小克]
 	// 该标记用于限制此地图上单位的最大攻击速度 (ASDP: 1~199)
 	#define Pandas_MapFlag_MaxASPD
+
+	// 是否启用 hidedamage 地图标记 [HongShin]
+	// 该标记用于隐藏此地图上的实际伤害
+	#define Pandas_MapFlag_HideDamage
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 

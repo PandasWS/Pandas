@@ -5343,6 +5343,12 @@ int clif_damage(struct block_list* src, struct block_list* dst, t_tick tick, int
 		WBUFL(buf,22) = damage;
 		WBUFL(buf,27+offset) = damage2;
 #endif
+#ifdef Pandas_MapFlag_HideDamage
+		if (map_getmapflag(src->m, MF_HIDEDAMAGE)) {
+			WBUFL(buf, 22) = INT_MIN;
+			WBUFL(buf, 27 + offset) = INT_MIN;
+		} 
+#endif // Pandas_MapFlag_HideDamage
 	}
 #if PACKETVER >= 20131223
 	WBUFB(buf,26) = (spdamage) ? 1 : 0; // IsSPDamage - Displays blue digits.
@@ -6142,6 +6148,11 @@ int clif_skill_damage(struct block_list *src,struct block_list *dst,t_tick tick,
 		WBUFL(buf,24)=damage?div:0;
 	} else {
 		WBUFL(buf,24)=damage;
+#ifdef Pandas_MapFlag_HideDamage
+		if (map_getmapflag(src->m, MF_HIDEDAMAGE)) {
+			WBUFL(buf, 24) = INT_MIN;
+		}
+#endif // Pandas_MapFlag_HideDamage
 	}
 	WBUFW(buf,28)=skill_lv;
 	WBUFW(buf,30)=div;
