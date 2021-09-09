@@ -326,7 +326,7 @@ struct Script_Config script_config = {
 #endif // Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
-	"OnPCChangeTitleFilter",	// NPCF_CHANGETITLE		// changetitle_filter_name	// 当玩家试图变更称号时将触发此过滤器
+	"OnPCChangeTitleFilter",	// NPCF_CHANGETITLE		// changetitle_filter_name	// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -342,11 +342,15 @@ struct Script_Config script_config = {
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_GUILDCREATE
-	"OnPCGuildCreateFilter",	// NPCF_GUILDCREATE		// guildcreate_filter_name	// 当玩家准备创建公会时触发此过滤器 [聽風]
+	"OnPCGuildCreateFilter",	// NPCF_GUILDCREATE		// guildcreate_filter_name	// 当玩家准备创建公会时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDCREATE
 
+#ifdef Pandas_NpcFilter_GUILDJOIN
+	"OnPCGuildJoinFilter",	// NPCF_GUILDJOIN		// guildjoin_filter_name	// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-	"OnPCGuildLeaveFilter",	// NPCF_GUILDLEAVE		// guildleave_filter_name	// 当玩家准备离开公会时触发此过滤器 [聽風]
+	"OnPCGuildLeaveFilter",	// NPCF_GUILDLEAVE		// guildleave_filter_name	// 当玩家准备离开公会时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 

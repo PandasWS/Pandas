@@ -1250,7 +1250,7 @@
 		#define Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_Character_Title_Controller
-		// 当玩家试图变更称号时将触发此过滤器 [Sola丶小克]
+		// 当玩家试图变更称号时将触发过滤器 [Sola丶小克]
 		// 事件类型: Filter / 事件名称: OnPCChangeTitleFilter
 		// 常量名称: NPCF_CHANGETITLE / 变量名称: changetitle_filter_name
 		#define Pandas_NpcFilter_CHANGETITLE
@@ -1271,12 +1271,17 @@
 		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
 		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
 
-		// 当玩家准备创建公会时触发此过滤器 [聽風]
+		// 当玩家准备创建公会时触发过滤器 [聽風]
 		// 事件类型: Filter / 事件名称: OnPCGuildCreateFilter
 		// 常量名称: NPCF_GUILDCREATE / 变量名称: guildcreate_filter_name
 		#define Pandas_NpcFilter_GUILDCREATE
 
-		// 当玩家准备离开公会时触发此过滤器 [聽風]
+		// 当玩家即将加入公会时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCGuildJoinFilter
+		// 常量名称: NPCF_GUILDJOIN / 变量名称: guildjoin_filter_name
+		#define Pandas_NpcFilter_GUILDJOIN
+
+		// 当玩家准备离开公会时触发过滤器 [聽風]
 		// 事件类型: Filter / 事件名称: OnPCGuildLeaveFilter
 		// 常量名称: NPCF_GUILDLEAVE / 变量名称: guildleave_filter_name
 		#define Pandas_NpcFilter_GUILDLEAVE
