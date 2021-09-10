@@ -156,13 +156,16 @@ int party_create(struct map_session_data *sd,char *name,int item,int item2)
 		clif_party_created(sd,2);
 		return -2;
 	}
+
 #ifdef Pandas_NpcFilter_PARTYCREATE
 	if (sd) {
 		pc_setregstr(sd, add_str("@create_party_name$"), name);
-		if (npc_script_filter(sd, NPCF_PARTYCREATE))
+		if (npc_script_filter(sd, NPCF_PARTYCREATE)) {
 			return 0;
+		}
 	}
 #endif // Pandas_NpcFilter_PARTYCREATE
+
 	sd->party_creating = true;
 	party_fill_member(&leader, sd, 1);
 	intif_create_party(&leader,name,item,item2);

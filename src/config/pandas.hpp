@@ -1255,7 +1255,7 @@
 		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
 		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
 
-		// 当玩家准备创建队伍时触发过滤器 [聽風] [维护者昵称]
+		// 当玩家准备创建队伍时触发过滤器 [聽風]
 		// 事件类型: Filter / 事件名称: OnPCPartyCreateFilter
 		// 常量名称: NPCF_PARTYCREATE / 变量名称: partycreate_filter_name
 		#define Pandas_NpcFilter_PARTYCREATE
