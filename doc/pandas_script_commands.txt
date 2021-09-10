@@ -2143,3 +2143,58 @@ NPC名称:
 	getcalendartime(19, 10, -1, MONDAY);	// 获取下次 周一 19:10 的时间戳
 
 --------------------------------------------------------------
+
+*getskillinfo <类型>,<技能ID>{,<其他参数>};
+
+获取技能skill_db信息(<其他参数>均从0开始)	[聽風]
+
+类型:
+	1 	- 返回技能施放类型. (返回 0 - 地面技能, 1 - 伤害技能, 2 - 无伤害技能)
+	2 	- 返回技能名称 skill_db 中的 Name.
+	3 	- 返回技能说明 skill_db 中的 Description.
+	4 	- 返回技能树中的最大等级. <其他参数> 传入职业代码
+	5 	- 返回技能攻击类型 skill_db 中的 attack type. (返回 BF_WEAPON BF_MAGIC BF_MISC)
+	6 	- 返回打击类型 skill_db 中的 Hit.
+	7 	- 返回技能类型1 skill_db 中的 inf. (返回 0 - 被动, 1 - 敌人, 2 - 地面, 4 - 自身, 16 - 朋友, 32 - 陷阱)
+	8 	- 返回技能属性 skill_db 中的 Element. <其他参数> 传入技能等级
+	9 	- 返回技能伤害类型 skill_db 中的 nk. (返回 @getskill_nk数组数量)
+	10 	- 返回技能最大等级 skill_db 中的 MaxLevel.
+	11 	- 返回技能攻击距离 skill_db 中的 Range. <其他参数> 传入技能等级
+	12 	- 返回技能溅射范围 skill_db 中的 SplashArea. <其他参数> 传入技能等级
+	13 	- 返回技能打击次数 skill_db 中的 list_num. <其他参数> 传入技能等级
+	14 	- 返回技能吟唱时间 skill_db 中的 CastingTime. <其他参数> 传入技能等级
+	15 	- 返回技能公共延迟 skill_db 中的 AfterCastActDelay. <其他参数> 传入技能等级
+	16 	- 返回技能攻击僵直 skill_db 中的 AfterCastWalkDelay. <其他参数> 传入技能等级
+	17 	- 返回技能时刻参数 skill_db 中的 Duration1. <其他参数> 传入技能等级
+	18 	- 返回技能时刻参数 skill_db 中的 Duration2. <其他参数> 传入技能等级
+	19 	- 返回技能吟唱时间的影响 skill_db 中的 CastTimeFlags. (返回 1 - 不受Dex影响, 2 - 不受SC影响, 3 - 不受Item影响)
+	20 	- 返回技能延迟的影响 skill_db 中的 CastDelayFlags. (返回 1 - 不受Dex影响, 2 - 不受SC影响, 3 - 不受Item影响)
+	21 	- 返回技能施法期间防御降低倍率 skill_db 中的 cast_def_rate.
+	22 	- 返回技能类型2 skill_db 中的 inf2. (返回 @getskill_inf2数组数量)
+	23 	- 返回技能是否可被打断 skill_db 中的 CastCancel.
+	24 	- 返回技能施放最大数量 skill_db 中的 MaxCount. <其他参数> 传入技能等级
+	25 	- 返回技能击退距离 skill_db 中的 Knockback. <其他参数> 传入技能等级
+	26 	- 返回技能冷却 skill_db 中的 Cooldown. <其他参数> 传入技能等级
+	27 	- 返回技能使用限制 skill_db Unit 里的 Id.
+	28 	- 返回技能使用限制 skill_db Unit 里的 AlternateId.
+	29 	- 返回技能使用限制 skill_db Unit 里的 Layout. <其他参数> 传入技能等级
+	30 	- 返回技能使用限制 skill_db Unit 中的 Range. <其他参数> 传入技能等级
+	31 	- 返回技能使用限制 skill_db Unit 中的 Interval.
+	32 	- 返回技能使用限制 skill_db Unit 中的 Target.
+	33 	- 返回技能使用限制 skill_db Unit 中的 Flag. (返回 @getskill_unit_flag数组数量)
+	34 	- 返回技能消耗的HP skill_db Requires 中的 中的 HPCost. <其他参数> 传入技能等级
+	35 	- 返回技能有多少HP才可能使用 skill_db Requires 中的 MaxHPTrigger. <其他参数> 传入技能等级
+	36 	- 返回技能消耗的SP skill_db Requires 中的 SPCost. <其他参数> 传入技能等级
+	37 	- 返回技能消耗的百分比HP skill_db Requires 中的 HPRateCost. <其他参数> 传入技能等级
+	38 	- 返回技能消耗的百分比SP skill_db Requires 中的 SPRateCost. <其他参数> 传入技能等级
+	39 	- 返回技能消耗的Zeny skill_db Requires 中的 ZenyCost. <其他参数> 传入技能等级
+	40 	- 返回技能所需的武器类型 skill_db Requires 中的 Weapon.
+	41 	- 返回技能所需的弹药类型 skill_db Requires 中的 Ammo.
+	42 	- 返回技能所需的弹药数量 skill_db Requires 中的 AmmoAmount. <其他参数> 传入技能等级
+	43 	- 返回技能所需的特殊状态 skill_db Requires 中的 State.
+	44 	- 返回技能所需的SC_Buff状态 skill_db Requires 中的 Status.
+	45 	- 返回技能所需气球个数 skill_db Requires 中的 SpiritSphereCost. <其他参数> 传入技能等级
+	46 	- 返回技能所需物品ID skill_db Requires 中 ItemCost 里的 Item. <其他参数> 传入第几项消耗品
+	47 	- 返回技能所需物品数量 skill_db Requires 中 ItemCost 里的 Amount. <其他参数> 传入第几项消耗品
+	48 	- 返回技能所需装备 skill_db Requires 中的 Equipment. <其他参数> 传入第几项装备
+--------------------------------------------------------------

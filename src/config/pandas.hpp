@@ -1850,6 +1850,10 @@
 	// 是否启用 getcalendartime 脚本指令 [Haru]
 	// 该指令用于获取下次出现指定时间的 UNIX 时间戳
 	#define Pandas_ScriptCommand_GetCalendarTime
+
+	// 是否启用 getskillinfo 脚本指令 [维护者昵称]
+	// TODO: 请在此填写此脚本指令的说明
+	#define Pandas_ScriptCommand_GetSkillInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
