@@ -352,6 +352,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_GUILDLEAVE
 	"OnPCGuildLeaveFilter",	// NPCF_GUILDLEAVE		// guildleave_filter_name	// 当玩家准备离开公会时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDLEAVE
+
+#ifdef Pandas_NpcFilter_PARTYCREATE
+	"OnPCPartyCreateFilter",	// NPCF_PARTYCREATE		// partycreate_filter_name	// 当玩家准备创建队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYCREATE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
