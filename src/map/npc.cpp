@@ -3001,7 +3001,7 @@ void npc_parsename(struct npc_data* nd, const char* name, const char* start, con
  */
 int npc_parseview(const char* w4, const char* start, const char* buffer, const char* filepath) {
 	int i = 0;
-	char viewid[1024];	// Max size of name from const.txt, see read_constdb.
+	char viewid[1024];	// Max size of name from const.yml, see ConstantDatabase::parseBodyNode.
 
 	// Extract view ID / constant
 	while (w4[i] != '\0') {
@@ -5191,7 +5191,7 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #endif // Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
-		NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+		NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -5205,6 +5205,18 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
 		NPCF_ONECLICK_IDENTIFY,	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDCREATE
+		NPCF_GUILDCREATE,	// guildcreate_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+		NPCF_GUILDJOIN,	// guildjoin_filter_name	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
+#ifdef Pandas_NpcFilter_GUILDLEAVE
+		NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDLEAVE
 
 #ifdef Pandas_NpcFilter_PARTYCREATE
 		NPCF_PARTYCREATE,	// partycreate_filter_name	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器 [聽風]
@@ -5367,7 +5379,7 @@ const char *npc_get_script_event_name(int npce_index)
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
 	case NPCF_CHANGETITLE:
-		return script_config.changetitle_filter_name;	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+		return script_config.changetitle_filter_name;	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -5384,6 +5396,21 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_ONECLICK_IDENTIFY:
 		return script_config.oneclick_identify_filter_name;	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	case NPCF_GUILDCREATE:
+		return script_config.guildcreate_filter_name;	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+	case NPCF_GUILDJOIN:
+		return script_config.guildjoin_filter_name;	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
+#ifdef Pandas_NpcFilter_GUILDLEAVE
+	case NPCF_GUILDLEAVE:
+		return script_config.guildleave_filter_name;	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDLEAVE
 
 #ifdef Pandas_NpcFilter_PARTYCREATE
 	case NPCF_PARTYCREATE:
