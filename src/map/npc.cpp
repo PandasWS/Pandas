@@ -5207,7 +5207,7 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_PARTYJOIN
-		NPCF_PARTYJOIN,	// partyjoin_filter_name	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时, 此过滤器会被触发 [聽風]
+		NPCF_PARTYJOIN,	// partyjoin_filter_name	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYJOIN
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
@@ -5387,7 +5387,7 @@ const char *npc_get_script_event_name(int npce_index)
 
 #ifdef Pandas_NpcFilter_PARTYJOIN
 	case NPCF_PARTYJOIN:
-		return script_config.partyjoin_filter_name;	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时, 此过滤器会被触发 [聽風]
+		return script_config.partyjoin_filter_name;	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYJOIN
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 

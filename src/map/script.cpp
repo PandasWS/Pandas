@@ -342,7 +342,7 @@ struct Script_Config script_config = {
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_PARTYJOIN
-	"OnPCPartyJoinFilter",	// NPCF_PARTYJOIN		// partyjoin_filter_name	// 当玩家即将加入队伍时, 此过滤器会被触发 [聽風]
+	"OnPCPartyJoinFilter",	// NPCF_PARTYJOIN		// partyjoin_filter_name	// 当玩家即将加入队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYJOIN
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 

@@ -468,19 +468,21 @@ int party_reply_invite(struct map_session_data *sd,int party_id,int flag)
 	}
 
 	tsd = map_id2sd(sd->party_invite_account);
+
 #ifdef Pandas_NpcFilter_PARTYJOIN
-	if (sd) {
+	if (flag == 1 && sd && tsd) {
 		pc_setreg(sd, add_str("@join_party_id"), party_id);
 		pc_setreg(sd, add_str("@join_party_aid"), tsd->status.account_id);
 		if (npc_script_filter(sd, NPCF_PARTYJOIN)) {
 			sd->party_invite = 0;
 			sd->party_invite_account = 0;
-			if (tsd != NULL)
-				clif_party_invite_reply(tsd, sd->status.name, PARTY_REPLY_REJECTED);
+
+			clif_party_invite_reply(tsd, sd->status.name, PARTY_REPLY_REJECTED);
 			return 0;
 		}
 	}
 #endif // Pandas_NpcFilter_PARTYJOIN
+
 	if( flag == 1 && !sd->party_creating && !sd->party_joining ) { // accepted and allowed
 		sd->party_joining = true;
 		party_fill_member(&member, sd, 0);

@@ -1255,7 +1255,7 @@
 		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
 		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
 
-		// 当玩家即将加入队伍时, 此过滤器会被触发 [聽風]
+		// 当玩家即将加入队伍时触发过滤器 [聽風]
 		// 事件类型: Filter / 事件名称: OnPCPartyJoinFilter
 		// 常量名称: NPCF_PARTYJOIN / 变量名称: partyjoin_filter_name
 		#define Pandas_NpcFilter_PARTYJOIN
