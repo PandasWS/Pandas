@@ -759,6 +759,10 @@
 	// https://github.com/rathena/rathena/commit/6b841157909ac17c0b82b917763976f43be2f89f
 	#define Pandas_Fix_Itemdb_Searchname_Logic
 
+	// 使 search_aegisname 仅搜索 aegisNameToItemDataMap [Sola丶小克]
+	// 作为物品数据库体系中的唯一名称, 若指定搜索了 AegisName 则不应该在失败后搜索 nameToItemDataMap
+	#define Pandas_Fix_Itemdb_SearchAegisname_Logic
+
 	// 修正 mail_attachment_weight 选项在特定操作顺序下无效的问题 [Sola丶小克]
 	// 若一次性放入超过 mail_attachment_weight 负重限制的道具到邮件中时, 程序可以正常的判断出超重
 	// 但是若分多次, 放入相同一件物品到邮件附件中, 那么 mail_attachment_weight 的负重限制将会失去作用
