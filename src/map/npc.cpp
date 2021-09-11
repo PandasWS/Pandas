@@ -2257,7 +2257,7 @@ uint8 npc_buylist(struct map_session_data* sd, uint16 n, struct s_npc_buy_list *
 #ifndef Pandas_FuncExtend_Increase_Inventory
 	uint8 market_index[MAX_INVENTORY];
 #else
-	int market_index[MAX_INVENTORY];
+	int market_index[G_MAX_INVENTORY];
 #endif // Pandas_FuncExtend_Increase_Inventory
 
 	nullpo_retr(3, sd);
