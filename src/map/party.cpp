@@ -157,6 +157,15 @@ int party_create(struct map_session_data *sd,char *name,int item,int item2)
 		return -2;
 	}
 
+#ifdef Pandas_NpcFilter_PARTYCREATE
+	if (sd) {
+		pc_setregstr(sd, add_str("@create_party_name$"), name);
+		if (npc_script_filter(sd, NPCF_PARTYCREATE)) {
+			return 0;
+		}
+	}
+#endif // Pandas_NpcFilter_PARTYCREATE
+
 	sd->party_creating = true;
 	party_fill_member(&leader, sd, 1);
 	intif_create_party(&leader,name,item,item2);
@@ -468,6 +477,20 @@ int party_reply_invite(struct map_session_data *sd,int party_id,int flag)
 	}
 
 	tsd = map_id2sd(sd->party_invite_account);
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	if (flag == 1 && sd && tsd) {
+		pc_setreg(sd, add_str("@join_party_id"), party_id);
+		pc_setreg(sd, add_str("@join_party_aid"), tsd->status.account_id);
+		if (npc_script_filter(sd, NPCF_PARTYJOIN)) {
+			sd->party_invite = 0;
+			sd->party_invite_account = 0;
+
+			clif_party_invite_reply(tsd, sd->status.name, PARTY_REPLY_REJECTED);
+			return 0;
+		}
+	}
+#endif // Pandas_NpcFilter_PARTYJOIN
 
 	if( flag == 1 && !sd->party_creating && !sd->party_joining ) { // accepted and allowed
 		sd->party_joining = true;

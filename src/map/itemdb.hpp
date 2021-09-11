@@ -839,6 +839,7 @@ struct s_item_group_entry
 		amount; /// Amount of item will be obtained
 	bool isAnnounced, /// Broadcast if player get this item
 		GUID, /// Gives Unique ID for items in each box opened
+		isStacked, /// Whether stackable items are given stacked
 		isNamed; /// Named the item (if possible)
 	uint8 bound; /// Makes the item as bound item (according to bound type)
 };
@@ -1378,6 +1379,7 @@ namespace boost {
 			ar& t.amount;
 			ar& t.isAnnounced;
 			ar& t.GUID;
+			ar& t.isStacked;
 			ar& t.isNamed;
 			ar& t.bound;
 		}
