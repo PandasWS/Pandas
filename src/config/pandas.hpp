@@ -806,16 +806,6 @@
 	// 可能还会有其他情况导致类似的事情发生, 碰见再具体分析
 	#define Pandas_Ease_Mob_Stuck_After_Dead
 
-	// 修正邮件系统在获取多道具时, 若多个道具中只有部分物品需要背包槽位,
-	// 会提示背包已满无法提取道具的情况 [Sola丶小克]
-	//
-	// 重现方法:
-	// 发送一封携带 4 个附件的邮件, 其中红色药水、蓝色药水各 1 瓶, 以及两把 1201 武器
-	// 确保身上红色和蓝色药水都有的情况下, 从邮件附件中提取道具
-	// 此时实际上只需要额外 2 个背包槽位即可提取附件, 但计算过程中认为是 4 个
-	// 导致 sd->mail.pending_slots 存值 2 被减去 4 之后溢出
-	#define Pandas_Fix_Mail_Attachment_Pending_Slots_Overflow
-
 	// 修正潜在可能存在算术溢出的情况 [Sola丶小克]
 	#define Pandas_Fix_Potential_Arithmetic_Overflow
 
@@ -1597,8 +1587,9 @@
 	// 获取指定背包序号的道具在背包中的数量 (该指令有一个用于兼容的别名: countinventory)
 	#define Pandas_ScriptCommand_CountItemIdx
 
-	// 是否启用 delitemidx 脚本指令 [Sola丶小克]
-	// 移除指定背包序号的道具, 其中数量参数可不填, 若不填则表示删除指定道具的全部
+	// 是否启用 delitemidx 脚本指令的别名 delinventory [Sola丶小克]
+	// https://github.com/rathena/rathena/commit/c18707bb6dd2bd6068bc0d3708401871a2d7270c
+	// 由于 rAthena 官方实现了 delitemidx, 因此使用它来接替原先熊猫模拟器的自定义实现
 	#define Pandas_ScriptCommand_DelItemIdx
 
 	// 是否启用 identifyidx 脚本指令 [Sola丶小克]
