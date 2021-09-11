@@ -1295,6 +1295,11 @@
 		// 事件类型: Filter / 事件名称: OnPCPartyJoinFilter
 		// 常量名称: NPCF_PARTYJOIN / 变量名称: partyjoin_filter_name
 		#define Pandas_NpcFilter_PARTYJOIN
+
+		// 当玩家准备离开队伍时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCPartyLeaveFilter
+		// 常量名称: NPCF_PARTYLEAVE / 变量名称: partyleave_filter_name
+		#define Pandas_NpcFilter_PARTYLEAVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
