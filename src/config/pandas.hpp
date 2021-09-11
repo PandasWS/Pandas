@@ -1290,6 +1290,11 @@
 		// 事件类型: Filter / 事件名称: OnPCPartyCreateFilter
 		// 常量名称: NPCF_PARTYCREATE / 变量名称: partycreate_filter_name
 		#define Pandas_NpcFilter_PARTYCREATE
+
+		// 当玩家即将加入队伍时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCPartyJoinFilter
+		// 常量名称: NPCF_PARTYJOIN / 变量名称: partyjoin_filter_name
+		#define Pandas_NpcFilter_PARTYJOIN
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
