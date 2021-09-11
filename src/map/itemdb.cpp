@@ -1321,11 +1321,15 @@ std::shared_ptr<item_data> ItemDatabase::search_aegisname( const char *name ){
 
 	std::shared_ptr<item_data> result = util::umap_find( this->aegisNameToItemDataMap, lowername );
 
+#ifndef Pandas_Fix_Itemdb_SearchAegisname_Logic
 	if( result != nullptr ){
 		return result;
 	}
 
 	return util::umap_find( this->nameToItemDataMap, lowername );
+#else
+	return result;
+#endif // Pandas_Fix_Itemdb_SearchAegisname_Logic
 }
 
 ItemDatabase item_db;
