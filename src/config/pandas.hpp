@@ -1457,7 +1457,7 @@
 	#define Pandas_MapFlag_MaxASPD
 
 	// 是否启用 noslave 地图标记 [HongShin]
-	// 该标记用于限制此地图上魔物禁止招唤随从
+	// 该标记用于禁止此地图上的魔物召唤随从
 	#define Pandas_MapFlag_NoSlave
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags

@@ -3652,8 +3652,8 @@ int mob_summonslave(struct mob_data *md2,int *value,int amount,uint16 skill_id)
 		return 0;
 
 #ifdef Pandas_MapFlag_NoSlave
-	if (map_getmapflag(md2->bl.m, MF_NOSLAVE)) {
-		return false;
+	if (md2 && map_getmapflag(md2->bl.m, MF_NOSLAVE)) {
+		return 0;
 	}
 #endif // Pandas_MapFlag_NoSlave
 
