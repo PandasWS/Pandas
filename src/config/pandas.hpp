@@ -1469,6 +1469,10 @@
 	// 是否启用 maxaspd 地图标记 [Sola丶小克]
 	// 该标记用于限制此地图上单位的最大攻击速度 (ASDP: 1~199)
 	#define Pandas_MapFlag_MaxASPD
+
+	// 是否启用 noslave 地图标记 [HongShin]
+	// 该标记用于禁止此地图上的魔物召唤随从
+	#define Pandas_MapFlag_NoSlave
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 

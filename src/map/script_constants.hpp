@@ -729,6 +729,10 @@
 	export_constant(MF_MAXASPD);
 #endif // Pandas_MapFlag_MaxASPD
 
+#ifdef Pandas_MapFlag_NoSlave
+	export_constant(MF_NOSLAVE);
+#endif // Pandas_MapFlag_NoSlave
+
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
 	/* setcell types */
