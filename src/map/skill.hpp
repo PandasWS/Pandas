@@ -232,6 +232,7 @@ struct s_skill_require {
 	int32 amount[MAX_SKILL_ITEM_REQUIRE];	/// Amount of item
 	std::vector<t_itemid> eqItem;				/// List of equipped item
 	std::vector<sc_type> status;			/// List of Status required (SC)
+	bool itemid_level_dependent;			/// If the ItemCost is skill level dependent or not.
 };
 
 /// Skill Copyable structure.
@@ -313,7 +314,7 @@ private:
 	}
 #endif // Pandas_YamlBlastCache_SkillDatabase
 public:
-	SkillDatabase() : TypesafeCachedYamlDatabase("SKILL_DB", 1) {
+	SkillDatabase() : TypesafeCachedYamlDatabase("SKILL_DB", 2, 1) {
 #ifdef Pandas_YamlBlastCache_SkillDatabase
 		this->supportSerialize = true;
 #endif // Pandas_YamlBlastCache_SkillDatabase
@@ -589,7 +590,7 @@ std::shared_ptr<s_skill_unit_group> skill_initunitgroup(struct block_list* src, 
 int skill_delunitgroup_(std::shared_ptr<s_skill_unit_group> group, const char* file, int line, const char* func);
 #define skill_delunitgroup(group) skill_delunitgroup_(group,__FILE__,__LINE__,__func__)
 void skill_clear_unitgroup(struct block_list *src);
-int skill_clear_group(struct block_list *bl, int flag);
+int skill_clear_group(block_list *bl, uint8 flag);
 void ext_skill_unit_onplace(struct skill_unit *unit, struct block_list *bl, t_tick tick);
 int64 skill_unit_ondamaged(struct skill_unit *unit,int64 damage);
 
@@ -2492,6 +2493,7 @@ namespace boost {
 			ar& t.amount;
 			ar& t.eqItem;
 			ar& t.status;
+			ar& t.itemid_level_dependent;
 		}
 	} // namespace serialization
 } // namespace boost
