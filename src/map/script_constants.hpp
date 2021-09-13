@@ -733,6 +733,10 @@
 	export_constant(MF_NOSLAVE);
 #endif // Pandas_MapFlag_NoSlave
 
+#ifdef Pandas_MapFlag_NoBank
+	export_constant(MF_NOBANK);
+#endif // Pandas_MapFlag_NoBank
+
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
 	/* setcell types */

@@ -7565,6 +7565,14 @@ void clif_parse_BankOpen(int fd, struct map_session_data* sd) {
 	//TODO check if preventing trade or stuff like that
 	//also mark something in case char ain't available for saving, should we check now ?
 	nullpo_retv(sd);
+
+#ifdef Pandas_MapFlag_NoBank
+	if (map_getmapflag(sd->bl.m, MF_NOBANK)) {
+		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 10), false, SELF); // This map prohibit using the bank system.
+		return;
+	}
+#endif // Pandas_MapFlag_NoBank
+
 	if( !battle_config.feature_banking ) {
 		clif_messagecolor(&sd->bl,color_table[COLOR_RED],msg_txt(sd,1496),false,SELF); //Banking is disabled
 		return;
@@ -7647,6 +7655,13 @@ void clif_Bank_Check(struct map_session_data* sd) {
 void clif_parse_BankCheck(int fd, struct map_session_data* sd) {
 	nullpo_retv(sd);
 
+#ifdef Pandas_MapFlag_NoBank
+	if (map_getmapflag(sd->bl.m, MF_NOBANK)) {
+		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 10), false, SELF); // This map prohibit using the bank system.
+		return;
+	}
+#endif // Pandas_MapFlag_NoBank
+
 	if( !battle_config.feature_banking ) {
 		clif_messagecolor(&sd->bl,color_table[COLOR_RED],msg_txt(sd,1496),false,SELF); //Banking is disabled
 		return;
@@ -7691,6 +7706,14 @@ void clif_bank_deposit(struct map_session_data *sd, enum e_BANKING_DEPOSIT_ACK r
  */
 void clif_parse_BankDeposit(int fd, struct map_session_data* sd) {
 	nullpo_retv(sd);
+
+#ifdef Pandas_MapFlag_NoBank
+	if (map_getmapflag(sd->bl.m, MF_NOBANK)) {
+		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 10), false, SELF); // This map prohibit using the bank system.
+		return;
+	}
+#endif // Pandas_MapFlag_NoBank
+
 	if( !battle_config.feature_banking ) {
 		clif_messagecolor(&sd->bl,color_table[COLOR_RED],msg_txt(sd,1496),false,SELF); //Banking is disabled
 		return;
@@ -7739,6 +7762,14 @@ void clif_bank_withdraw(struct map_session_data *sd,enum e_BANKING_WITHDRAW_ACK 
  */
 void clif_parse_BankWithdraw(int fd, struct map_session_data* sd) {
         nullpo_retv(sd);
+
+#ifdef Pandas_MapFlag_NoBank
+		if (map_getmapflag(sd->bl.m, MF_NOBANK)) {
+			clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 10), false, SELF); // This map prohibit using the bank system.
+			return;
+		}
+#endif // Pandas_MapFlag_NoBank
+
 	if( !battle_config.feature_banking ) {
 		clif_messagecolor(&sd->bl,color_table[COLOR_RED],msg_txt(sd,1496),false,SELF); //Banking is disabled
 		return;
