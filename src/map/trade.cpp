@@ -176,7 +176,7 @@ void trade_tradeack(struct map_session_data *sd, int type)
  */
 int impossible_trade_check(struct map_session_data *sd)
 {
-	struct item inventory[MAX_INVENTORY];
+	struct item inventory[G_MAX_INVENTORY];
 	char message_to_gm[200];
 	int i, index;
 
@@ -242,8 +242,8 @@ int impossible_trade_check(struct map_session_data *sd)
  */
 int trade_check(struct map_session_data *sd, struct map_session_data *tsd)
 {
-	struct item inventory[MAX_INVENTORY];
-	struct item inventory2[MAX_INVENTORY];
+	struct item inventory[G_MAX_INVENTORY];
+	struct item inventory2[G_MAX_INVENTORY];
 	struct item_data *data;
 	int trade_i, i, n;
 

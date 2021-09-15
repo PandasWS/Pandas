@@ -1110,7 +1110,7 @@ int guild_member_withdraw(int guild_id, uint32 account_id, uint32 char_id, int f
 void guild_retrieveitembound(uint32 char_id, uint32 account_id, int guild_id) {
 	TBL_PC *sd = map_charid2sd(char_id);
 	if (sd) { //Character is online
-		int idxlist[MAX_INVENTORY];
+		int idxlist[G_MAX_INVENTORY];
 		int j;
 		j = pc_bound_chk(sd,BOUND_GUILD,idxlist);
 		if (j) {
@@ -2085,7 +2085,7 @@ int guild_break(struct map_session_data *sd,char *name) {
 	int i;
 #ifdef BOUND_ITEMS
 	int j;
-	int idxlist[MAX_INVENTORY];
+	int idxlist[G_MAX_INVENTORY];
 #endif
 
 	nullpo_ret(sd);

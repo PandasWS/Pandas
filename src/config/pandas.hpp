@@ -80,7 +80,7 @@
 	// 是否启用一些杂乱的自定义辅助函数
 	#define Pandas_Helper_Common_Function
 
-	// 是否启用 LGTM 建议的一些处理措施, 避免潜在风险
+	// 是否启用 LGTM 建议的处理措施, 避免潜在风险
 	#define Pandas_LGTM_Optimization
 #endif // Pandas_Basic
 

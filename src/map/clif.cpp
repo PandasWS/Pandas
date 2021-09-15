@@ -21462,8 +21462,8 @@ static bool clif_merge_item_check(struct item_data *id, struct item *it) {
  * @param sd
  **/
 void clif_merge_item_open(struct map_session_data *sd) {
-	unsigned char buf[4 + MAX_INVENTORY*2] = { 0 };
-	unsigned short cmd = 0, n = 0, i = 0, indexes[MAX_INVENTORY] = { 0 };
+	unsigned char buf[4 + G_MAX_INVENTORY*2] = { 0 };
+	unsigned short cmd = 0, n = 0, i = 0, indexes[G_MAX_INVENTORY] = { 0 };
 	int len = 0;
 	struct s_packet_db *info = NULL;
 	struct item *it;
@@ -21506,7 +21506,7 @@ void clif_merge_item_open(struct map_session_data *sd) {
  **/
 void clif_parse_merge_item_req(int fd, struct map_session_data* sd) {
 	struct s_packet_db *info = NULL;
-	unsigned short n = 0, indexes[MAX_INVENTORY] = { 0 }, i, j;
+	unsigned short n = 0, indexes[G_MAX_INVENTORY] = { 0 }, i, j;
 	unsigned int count = 0;
 	struct item_data *id = NULL;
 

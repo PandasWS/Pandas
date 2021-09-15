@@ -9131,8 +9131,8 @@ BUILDIN_FUNC(delitemidx) {
 	}
 
 	int idx = script_getnum(st, 2);
-	if (idx < 0 || idx >= MAX_INVENTORY) {
-		ShowWarning("buildin_delitemidx: Index %d is out of the range 0-%d.\n", idx, MAX_INVENTORY - 1);
+	if (idx < 0 || idx >= P_MAX_INVENTORY(sd)) {
+		ShowWarning("buildin_delitemidx: Index %d is out of the range 0-%d.\n", idx, P_MAX_INVENTORY(sd) - 1);
 		script_pushint(st, false);
 		return SCRIPT_CMD_FAILURE;
 	}
@@ -29652,7 +29652,7 @@ BUILDIN_FUNC(getinventorysize) {
 #ifdef Pandas_ClientFeature_InventoryExpansion
 	script_pushint(st, sd->status.inventory_size);
 #else
-	script_pushint(st, MAX_INVENTORY);
+	script_pushint(st, G_MAX_INVENTORY);
 #endif // Pandas_ClientFeature_InventoryExpansion
 	return SCRIPT_CMD_SUCCESS;
 }

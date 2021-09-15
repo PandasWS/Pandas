@@ -195,7 +195,12 @@
 	export_constant(PACKETVER);
 	export_constant(MAX_LEVEL);
 	export_constant(MAX_STORAGE);
-	export_constant(MAX_INVENTORY);
+	// -------------------------------------------------------------------------------------
+	// 被调整改造之后, 需要让 MAX_INVENTORY 脚本常量的值等于 G_MAX_INVENTORY
+	// -------------------------------------------------------------------------------------
+	//export_constant(MAX_INVENTORY);
+	script_set_constant("MAX_INVENTORY", G_MAX_INVENTORY, false, false);
+	// -------------------------------------------------------------------------------------
 	export_constant(MAX_CART);
 	export_constant(MAX_ZENY);
 	export_constant(MAX_PARTY);
