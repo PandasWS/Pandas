@@ -1457,7 +1457,7 @@
 	#define Pandas_MapFlag_MaxASPD
 
 	// 是否启用 nouseitem 地图标记 [HongShin]
-	// 该标记用于限制玩家在此地图上禁止使用物品
+	// 该标记用于禁止玩家在地图上使用消耗型物品道具
 	#define Pandas_MapFlag_NoUseItem
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
