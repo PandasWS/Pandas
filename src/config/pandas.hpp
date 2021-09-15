@@ -80,7 +80,7 @@
 	// 是否启用一些杂乱的自定义辅助函数
 	#define Pandas_Helper_Common_Function
 
-	// 是否启用 LGTM 建议的一些处理措施, 避免潜在风险
+	// 是否启用 LGTM 建议的处理措施, 避免潜在风险
 	#define Pandas_LGTM_Optimization
 #endif // Pandas_Basic
 
@@ -759,6 +759,10 @@
 	// https://github.com/rathena/rathena/commit/6b841157909ac17c0b82b917763976f43be2f89f
 	#define Pandas_Fix_Itemdb_Searchname_Logic
 
+	// 使 search_aegisname 仅搜索 aegisNameToItemDataMap [Sola丶小克]
+	// 作为物品数据库体系中的唯一名称, 若指定搜索了 AegisName 则不应该在失败后搜索 nameToItemDataMap
+	#define Pandas_Fix_Itemdb_SearchAegisname_Logic
+
 	// 修正 mail_attachment_weight 选项在特定操作顺序下无效的问题 [Sola丶小克]
 	// 若一次性放入超过 mail_attachment_weight 负重限制的道具到邮件中时, 程序可以正常的判断出超重
 	// 但是若分多次, 放入相同一件物品到邮件附件中, 那么 mail_attachment_weight 的负重限制将会失去作用
@@ -805,16 +809,6 @@
 	//
 	// 可能还会有其他情况导致类似的事情发生, 碰见再具体分析
 	#define Pandas_Ease_Mob_Stuck_After_Dead
-
-	// 修正邮件系统在获取多道具时, 若多个道具中只有部分物品需要背包槽位,
-	// 会提示背包已满无法提取道具的情况 [Sola丶小克]
-	//
-	// 重现方法:
-	// 发送一封携带 4 个附件的邮件, 其中红色药水、蓝色药水各 1 瓶, 以及两把 1201 武器
-	// 确保身上红色和蓝色药水都有的情况下, 从邮件附件中提取道具
-	// 此时实际上只需要额外 2 个背包槽位即可提取附件, 但计算过程中认为是 4 个
-	// 导致 sd->mail.pending_slots 存值 2 被减去 4 之后溢出
-	#define Pandas_Fix_Mail_Attachment_Pending_Slots_Overflow
 
 	// 修正潜在可能存在算术溢出的情况 [Sola丶小克]
 	#define Pandas_Fix_Potential_Arithmetic_Overflow
@@ -1250,7 +1244,7 @@
 		#define Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_Character_Title_Controller
-		// 当玩家试图变更称号时将触发此过滤器 [Sola丶小克]
+		// 当玩家试图变更称号时将触发过滤器 [Sola丶小克]
 		// 事件类型: Filter / 事件名称: OnPCChangeTitleFilter
 		// 常量名称: NPCF_CHANGETITLE / 变量名称: changetitle_filter_name
 		#define Pandas_NpcFilter_CHANGETITLE
@@ -1271,15 +1265,35 @@
 		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
 		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
 
-		// 当玩家准备创建公会时触发此过滤器 [聽風]
+		// 当玩家准备创建公会时触发过滤器 [聽風]
 		// 事件类型: Filter / 事件名称: OnPCGuildCreateFilter
 		// 常量名称: NPCF_GUILDCREATE / 变量名称: guildcreate_filter_name
 		#define Pandas_NpcFilter_GUILDCREATE
 
-		// 当玩家准备离开公会时触发此过滤器 [聽風]
+		// 当玩家即将加入公会时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCGuildJoinFilter
+		// 常量名称: NPCF_GUILDJOIN / 变量名称: guildjoin_filter_name
+		#define Pandas_NpcFilter_GUILDJOIN
+
+		// 当玩家准备离开公会时触发过滤器 [聽風]
 		// 事件类型: Filter / 事件名称: OnPCGuildLeaveFilter
 		// 常量名称: NPCF_GUILDLEAVE / 变量名称: guildleave_filter_name
 		#define Pandas_NpcFilter_GUILDLEAVE
+
+		// 当玩家准备创建队伍时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCPartyCreateFilter
+		// 常量名称: NPCF_PARTYCREATE / 变量名称: partycreate_filter_name
+		#define Pandas_NpcFilter_PARTYCREATE
+
+		// 当玩家即将加入队伍时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCPartyJoinFilter
+		// 常量名称: NPCF_PARTYJOIN / 变量名称: partyjoin_filter_name
+		#define Pandas_NpcFilter_PARTYJOIN
+
+		// 当玩家准备离开队伍时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCPartyLeaveFilter
+		// 常量名称: NPCF_PARTYLEAVE / 变量名称: partyleave_filter_name
+		#define Pandas_NpcFilter_PARTYLEAVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -1456,6 +1470,14 @@
 	// 该标记用于限制此地图上单位的最大攻击速度 (ASDP: 1~199)
 	#define Pandas_MapFlag_MaxASPD
 
+	// 是否启用 noslave 地图标记 [HongShin]
+	// 该标记用于禁止此地图上的魔物召唤随从
+	#define Pandas_MapFlag_NoSlave
+
+	// 是否启用 nobank 地图标记 [聽風]
+	// 该标记用于禁止玩家在地图上使用银行系统 (包括存款 / 提现操作)
+	#define Pandas_MapFlag_NoBank
+
 	// 是否启用 nouseitem 地图标记 [HongShin]
 	// 该标记用于禁止玩家在地图上使用消耗型物品道具
 	#define Pandas_MapFlag_NoUseItem
@@ -1581,8 +1603,9 @@
 	// 获取指定背包序号的道具在背包中的数量 (该指令有一个用于兼容的别名: countinventory)
 	#define Pandas_ScriptCommand_CountItemIdx
 
-	// 是否启用 delitemidx 脚本指令 [Sola丶小克]
-	// 移除指定背包序号的道具, 其中数量参数可不填, 若不填则表示删除指定道具的全部
+	// 是否启用 delitemidx 脚本指令的别名 delinventory [Sola丶小克]
+	// https://github.com/rathena/rathena/commit/c18707bb6dd2bd6068bc0d3708401871a2d7270c
+	// 由于 rAthena 官方实现了 delitemidx, 因此使用它来接替原先熊猫模拟器的自定义实现
 	#define Pandas_ScriptCommand_DelItemIdx
 
 	// 是否启用 identifyidx 脚本指令 [Sola丶小克]

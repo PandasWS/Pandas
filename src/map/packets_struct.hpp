@@ -1298,7 +1298,7 @@ struct packet_viewequip_ack {
 #endif
 	uint8 sex;
 	// [4144] need remove MAX_INVENTORY from here
-	struct EQUIPITEM_INFO list[MAX_INVENTORY];
+	struct EQUIPITEM_INFO list[G_MAX_INVENTORY];
 } __attribute__((packed));
 
 struct packet_notify_bounditem {
