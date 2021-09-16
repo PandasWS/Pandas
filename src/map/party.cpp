@@ -157,6 +157,15 @@ int party_create(struct map_session_data *sd,char *name,int item,int item2)
 		return -2;
 	}
 
+#ifdef Pandas_NpcFilter_PARTYCREATE
+	if (sd) {
+		pc_setregstr(sd, add_str("@create_party_name$"), name);
+		if (npc_script_filter(sd, NPCF_PARTYCREATE)) {
+			return 0;
+		}
+	}
+#endif // Pandas_NpcFilter_PARTYCREATE
+
 	sd->party_creating = true;
 	party_fill_member(&leader, sd, 1);
 	intif_create_party(&leader,name,item,item2);
@@ -469,6 +478,20 @@ int party_reply_invite(struct map_session_data *sd,int party_id,int flag)
 
 	tsd = map_id2sd(sd->party_invite_account);
 
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	if (flag == 1 && sd && tsd) {
+		pc_setreg(sd, add_str("@join_party_id"), party_id);
+		pc_setreg(sd, add_str("@join_party_aid"), tsd->status.account_id);
+		if (npc_script_filter(sd, NPCF_PARTYJOIN)) {
+			sd->party_invite = 0;
+			sd->party_invite_account = 0;
+
+			clif_party_invite_reply(tsd, sd->status.name, PARTY_REPLY_REJECTED);
+			return 0;
+		}
+	}
+#endif // Pandas_NpcFilter_PARTYJOIN
+
 	if( flag == 1 && !sd->party_creating && !sd->party_joining ) { // accepted and allowed
 		sd->party_joining = true;
 		party_fill_member(&member, sd, 0);
@@ -590,6 +613,18 @@ int party_removemember(struct map_session_data* sd, uint32 account_id, char* nam
 	if( i == MAX_PARTY )
 		return 0; // no such char in party
 
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+	if (p && sd) {
+		pc_setreg(sd, add_str("@left_party_id"), p->party.party_id);
+		pc_setregstr(sd, add_str("@left_party_name$"), p->party.name);
+		pc_setreg(sd, add_str("@left_party_kick"), 1);	// 被驱逐
+		pc_setreg(sd, add_str("@left_party_aid"), p->party.member[i].account_id);
+		if (npc_script_filter(sd, NPCF_PARTYLEAVE)) {
+			return 0;
+		}
+	}
+#endif // Pandas_NpcFilter_PARTYLEAVE
+
 	party_trade_bound_cancel(sd);
 	intif_party_leave(p->party.party_id,account_id,p->party.member[i].char_id,p->party.member[i].name,PARTY_MEMBER_WITHDRAW_EXPEL);
 
@@ -635,6 +670,18 @@ int party_leave(struct map_session_data *sd)
 	if( i == MAX_PARTY )
 		return 0;
 
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+	if (p && sd) {
+		pc_setreg(sd, add_str("@left_party_id"), p->party.party_id);
+		pc_setregstr(sd, add_str("@left_party_name$"), p->party.name);
+		pc_setreg(sd, add_str("@left_party_kick"), 0);	// 自愿退出队伍
+		pc_setreg(sd, add_str("@left_party_aid"), sd->status.account_id);
+		if (npc_script_filter(sd, NPCF_PARTYLEAVE)) {
+			return 0;
+		}
+	}
+#endif // Pandas_NpcFilter_PARTYLEAVE
+
 	party_trade_bound_cancel(sd);
 	intif_party_leave(p->party.party_id,sd->status.account_id,sd->status.char_id,sd->status.name,PARTY_MEMBER_WITHDRAW_LEAVE);
 	return 1;
@@ -660,7 +707,7 @@ int party_member_withdraw(int party_id, uint32 account_id, uint32 char_id, char 
 
 	if( sd && sd->status.party_id == party_id ) {
 #ifdef BOUND_ITEMS
-		int idxlist[MAX_INVENTORY]; //or malloc to reduce consumtion
+		int idxlist[G_MAX_INVENTORY]; //or malloc to reduce consumtion
 		int j,i;
 
 		party_trade_bound_cancel(sd);

@@ -1857,7 +1857,7 @@ bool pc_expandInventory(struct map_session_data* sd, int adjustSize) {
 	nullpo_retr(false, sd);
 	const int invSize = sd->status.inventory_size;
 
-	if (adjustSize > MAX_INVENTORY || invSize + adjustSize <= FIXED_INVENTORY_SIZE || invSize + adjustSize > MAX_INVENTORY) {
+	if (adjustSize > G_MAX_INVENTORY || invSize + adjustSize <= FIXED_INVENTORY_SIZE || invSize + adjustSize > G_MAX_INVENTORY) {
 		clif_inventoryExpandResult(sd, EXPAND_INVENTORY_RESULT_MAX_SIZE);
 		return false;
 	}
@@ -5767,6 +5767,13 @@ int pc_useitem(struct map_session_data *sd,int n)
 	if (sd->state.mail_writing)
 		return 0;
 
+#ifdef Pandas_MapFlag_NoUseItem
+	if (sd && map_getmapflag(sd->bl.m, MF_NOUSEITEM)) {
+		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 11), false, SELF); // This map prohibit use the consumable items!
+		return 0;
+	}
+#endif // Pandas_MapFlag_NoUseItem
+
 #ifdef Pandas_NpcFilter_USE_ITEM
 	if (sd && sd->inventory_data[n]) {
 		item = sd->inventory.u.items_inventory[n];
@@ -7637,7 +7644,7 @@ int pc_checkbaselevelup(struct map_session_data *sd) {
 void pc_baselevelchanged(struct map_session_data *sd) {
 	uint8 i;
 	for( i = 0; i < EQI_MAX; i++ ) {
-		if( sd->equip_index[i] >= 0 ) {
+		if( sd->equip_index[i] >= 0 && sd->inventory_data[sd->equip_index[i]] ) {
 			if( sd->inventory_data[ sd->equip_index[i] ]->elvmax && sd->status.base_level > (unsigned int)sd->inventory_data[ sd->equip_index[i] ]->elvmax )
 				pc_unequipitem(sd, sd->equip_index[i], 3);
 		}
@@ -9074,7 +9081,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src, uint16 skill_id)
 			if(id == 0)
 				continue;
 			if(id == -1){
-				int eq_num=0,eq_n[MAX_INVENTORY];
+				int eq_num=0,eq_n[G_MAX_INVENTORY];
 				memset(eq_n,0,sizeof(eq_n));
 				for(i=0;i<P_MAX_INVENTORY(sd);i++) {
 					if( (type&NMDT_INVENTORY && !sd->inventory.u.items_inventory[i].equip)
@@ -11924,7 +11931,7 @@ bool pc_divorce(struct map_session_data *sd)
 	sd->status.partner_id = 0;
 	p_sd->status.partner_id = 0;
 #ifndef Pandas_ClientFeature_InventoryExpansion
-	for( i = 0; i < MAX_INVENTORY; i++ )
+	for( i = 0; i < G_MAX_INVENTORY; i++ )
 	{
 		if( sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_M || sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_F )
 			pc_delitem(sd, i, 1, 0, 0, LOG_TYPE_OTHER);
@@ -14106,7 +14113,7 @@ short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id)
 */
 #ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 bool pc_is_same_equip_index(enum equip_index eqi, short* equip_index, short index) {
-	if (index < 0 || index >= MAX_INVENTORY)
+	if (index < 0 || index >= G_MAX_INVENTORY)
 		return true;
 #else
 bool pc_is_same_equip_index(struct map_session_data*sd, enum equip_index eqi, short* equip_index, short index) {

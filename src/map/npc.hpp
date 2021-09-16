@@ -1237,8 +1237,34 @@ enum e_job_types
 	JT_4_4JOB_PHANTOMBOOK2,
 	JT_4_4JOB_PHANTOMBOOK3,
 	JT_4_VENDING_MACHINE2,
-
-	JT_4_STAR_BOX_SCORE = 10403,
+	JT_4_EP18_MARAM,
+	JT_4_EP18_MIRIAM,
+	JT_4_EP18_SUAD,
+	JT_4_EP18_IMRIL,
+	JT_4_EP18_MERCHANT,
+	JT_4_EP18_TAMARIN,
+	JT_4_EP18_DEW,
+	JT_4_EP18_MARK,
+	JT_4_EP18_ALF,
+	JT_4_EP18_SHULANG,
+	JT_4_EP18_BAGOT,
+	JT_4_EP18_DEMIFREYA,
+	JT_4_EP18_KAMIL,
+	JT_4_EP18_HAZAR,
+	JT_4_EP18_WAGON,
+	JT_4_EP18_PAPERS,
+	JT_4_EP18_HALFFLOWER,
+	JT_4_EP18_GW_OLD01,
+	JT_4_EP18_GW_OLD02,
+	JT_4_EP18_GW_MIDDLE01,
+	JT_4_EP18_GW_MIDDLE02,
+	JT_4_EP18_GW_MAN01,
+	JT_4_EP18_GW_MAN02,
+	JT_4_EP18_GW_WOMAN01,
+	JT_4_EP18_GW_WOMAN02,
+	JT_4_EP18_GW_CHILD01,
+	JT_4_EP18_GW_CHILD02,
+	JT_4_STAR_BOX_SCORE,
 	JT_4_STAR_BOX_POW1,
 	JT_4_STAR_BOX_POW2,
 	JT_4_STAR_BOX_STA1,
@@ -1263,6 +1289,21 @@ enum e_job_types
 	JT_4_STAR_BOX_TRAP1,
 	JT_4_STAR_BOX_TRAP2,
 	JT_4_STAR_BOX_MASTER,
+	JT_4_POINT_RED,
+	JT_4_POINT_BLUE,
+	JT_4_POINT_YELLOW,
+	JT_4_POINT_BLACK,
+	JT_4_POINT_WHITE,
+
+	JT_1_JOURNEY_STONE_D = 10442,
+	JT_1_JOURNEY_STONE_F,
+	JT_ROZ_MQ_SIGRUN,
+	JT_ROZ_MQ_SIGRUN_S,
+	JT_ROZ_MQ_HARACE01,
+	JT_ROZ_MQ_HARACE02,
+	JT_ROZ_MQ_SAHARIO,
+	JT_ROZ_MQ_SUPIGEL,
+	JT_ROZ_MQ_DEADSOLDIER,
 
 	JT_NEW_NPC_3RD_END = 19999,
 	NPC_RANGE3_END, // Official: JT_NEW_NPC_3RD_END=19999
@@ -1338,7 +1379,7 @@ enum npce_event : uint8 {
 #endif // Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
-	NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+	NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -1354,12 +1395,28 @@ enum npce_event : uint8 {
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_GUILDCREATE
-	NPCF_GUILDCREATE,	// guildcreate_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发此过滤器 [聽風]
+	NPCF_GUILDCREATE,	// guildcreate_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDCREATE
 
+#ifdef Pandas_NpcFilter_GUILDJOIN
+	NPCF_GUILDJOIN,	// guildjoin_filter_name	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-	NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发此过滤器 [聽風]
+	NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDLEAVE
+
+#ifdef Pandas_NpcFilter_PARTYCREATE
+	NPCF_PARTYCREATE,	// partycreate_filter_name	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYCREATE
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	NPCF_PARTYJOIN,	// partyjoin_filter_name	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYJOIN
+
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+	NPCF_PARTYLEAVE,	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
@@ -1475,8 +1532,8 @@ void npc_setcells(struct npc_data* nd);
 void npc_unsetcells(struct npc_data* nd);
 bool npc_movenpc(struct npc_data* nd, int16 x, int16 y);
 bool npc_is_cloaked(struct npc_data* nd, struct map_session_data* sd);
-bool npc_enable_target(const char* name, uint32 char_id, int flag);
-#define npc_enable(name, flag) npc_enable_target(name, 0, flag)
+bool npc_enable_target(npc_data* nd, uint32 char_id, int flag);
+#define npc_enable(nd, flag) npc_enable_target(nd, 0, flag)
 void npc_setdisplayname(struct npc_data* nd, const char* newname);
 void npc_setclass(struct npc_data* nd, short class_);
 struct npc_data* npc_name2id(const char* name);
