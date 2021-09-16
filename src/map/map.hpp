@@ -699,6 +699,9 @@ enum e_mapflag : int16 {
 #ifdef Pandas_MapFlag_NoBank
 	MF_NOBANK,
 #endif // Pandas_MapFlag_NoBank
+#ifdef Pandas_MapFlag_NoUseItem
+	MF_NOUSEITEM,
+#endif // Pandas_MapFlag_NoUseItem
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };

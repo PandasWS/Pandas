@@ -1477,6 +1477,10 @@
 	// 是否启用 nobank 地图标记 [聽風]
 	// 该标记用于禁止玩家在地图上使用银行系统 (包括存款 / 提现操作)
 	#define Pandas_MapFlag_NoBank
+
+	// 是否启用 nouseitem 地图标记 [HongShin]
+	// 该标记用于禁止玩家在地图上使用消耗型物品道具
+	#define Pandas_MapFlag_NoUseItem
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 

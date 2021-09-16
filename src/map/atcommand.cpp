@@ -4494,6 +4494,10 @@ ACMD_FUNC(mapinfo) {
 	if (map_getmapflag(m_id, MF_NOBANK))
 		strcat(atcmd_output, " NoBank |");
 #endif // Pandas_MapFlag_NoBank
+#ifdef Pandas_MapFlag_NoUseItem
+	if (map_getmapflag(m_id, MF_NOUSEITEM))
+		strcat(atcmd_output, " NoUseItem |");
+#endif // Pandas_MapFlag_NoUseItem
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
