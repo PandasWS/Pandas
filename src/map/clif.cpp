@@ -5343,6 +5343,19 @@ int clif_damage(struct block_list* src, struct block_list* dst, t_tick tick, int
 		WBUFL(buf,22) = damage;
 		WBUFL(buf,27+offset) = damage2;
 #endif
+#ifdef Pandas_MapFlag_HideDamage
+		if (src && map_getmapflag(src->m, MF_HIDEDAMAGE)) {
+			// 伤害会存在段数的概念, 返回的伤害值客户端会除以段数之后得到每一段的伤害值, 并且播放 div 指定的段数. 
+			// 若除以 div 段数后的伤害值是负数, 则客户端不会展现出具体的伤害值.
+			// 
+			// 因此下面直接返回一个负数的 div 作为伤害值,
+			// 客户端计算完成后每一段的伤害值就被我们控制成了 -1 从而实现隐藏伤害的目的.
+			//
+			// 备注: 这里刻意不处理 miss 的情况, 以此实现打 miss 的时候客户端也不会显示 miss
+			WBUFL(buf, 22) = div * -1;
+			WBUFL(buf, 27 + offset) = div * -1;
+		} 
+#endif // Pandas_MapFlag_HideDamage
 	}
 #if PACKETVER >= 20131223
 	WBUFB(buf,26) = (spdamage) ? 1 : 0; // IsSPDamage - Displays blue digits.
@@ -6145,6 +6158,18 @@ int clif_skill_damage(struct block_list *src,struct block_list *dst,t_tick tick,
 	}
 	WBUFW(buf,28)=skill_lv;
 	WBUFW(buf,30)=div;
+#ifdef Pandas_MapFlag_HideDamage
+	if (src && map_getmapflag(src->m, MF_HIDEDAMAGE)) {
+		// 伤害会存在段数的概念, 返回的伤害值客户端会除以段数之后得到每一段的伤害值, 并且播放 div 指定的段数. 
+		// 若除以 div 段数后的伤害值是负数, 则客户端不会展现出具体的伤害值.
+		// 
+		// 因此下面直接返回一个负数的 div 作为伤害值,
+		// 客户端计算完成后每一段的伤害值就被我们控制成了 -1 从而实现隐藏伤害的目的.
+		//
+		// 备注: 这里刻意不处理 miss 的情况, 以此实现打 miss 的时候客户端也不会显示 miss
+		WBUFL(buf, 24) = div * -1;
+	}
+#endif // Pandas_MapFlag_HideDamage
 	// For some reason, late 2013 and newer clients have
 	// a issue that causes players and monsters to endure
 	// type 6 (ACTION_SKILL) skills. So we have to do a small

@@ -4498,6 +4498,10 @@ ACMD_FUNC(mapinfo) {
 	if (map_getmapflag(m_id, MF_NOUSEITEM))
 		strcat(atcmd_output, " NoUseItem |");
 #endif // Pandas_MapFlag_NoUseItem
+#ifdef Pandas_MapFlag_HideDamage
+	if (map_getmapflag(m_id, MF_HIDEDAMAGE))
+		strcat(atcmd_output, " HideDamage |");
+#endif // Pandas_MapFlag_HideDamage
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags

@@ -1481,6 +1481,10 @@
 	// 是否启用 nouseitem 地图标记 [HongShin]
 	// 该标记用于禁止玩家在地图上使用消耗型物品道具
 	#define Pandas_MapFlag_NoUseItem
+
+	// 是否启用 hidedamage 地图标记 [HongShin]
+	// 该标记用于隐藏此地图上任何攻击的实际伤害数值 (无论什么单位, 无论是否 MISS)
+	#define Pandas_MapFlag_HideDamage
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 
