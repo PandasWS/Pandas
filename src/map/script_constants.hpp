@@ -4571,6 +4571,83 @@
 	export_deprecated_constant3("UNITTYPE_MER", BL_MER, "BL_MER");
 	export_deprecated_constant3("UNITTYPE_ELEM", BL_ELEM, "BL_ELEM");
 
+#ifdef Pandas_ScriptCommand_GetSkillInfo
+	export_constant(CAST_GROUND);
+	export_constant(CAST_DAMAGE);
+	export_constant(CAST_NODAMAGE);
+
+	export_constant(DMG_NORMAL);
+	export_constant(DMG_PICKUP_ITEM);
+	export_constant(DMG_SIT_DOWN);
+	export_constant(DMG_STAND_UP);
+	export_constant(DMG_ENDURE);
+	export_constant(DMG_SPLASH);
+	export_constant(DMG_SINGLE);
+	export_constant(DMG_REPEAT);
+	export_constant(DMG_MULTI_HIT);
+	export_constant(DMG_MULTI_HIT_ENDURE);
+	export_constant(DMG_CRITICAL);
+	export_constant(DMG_LUCY_DODGE);
+	export_constant(DMG_TOUCH);
+	export_constant(DMG_MULTI_HIT_CRITICAL);
+
+	export_constant(SKILL_COPY_PLAGIARISM);
+	export_constant(SKILL_COPY_REPRODUCE);
+
+	export_constant(SKI_CASTTYPE);
+	export_constant(SKI_NAME);
+	export_constant(SKI_DESCRIPTION);
+	export_constant(SKI_MAXLEVEL_IN_SKILLTREE);
+	export_constant(SKI_SKILLTYPE);
+	export_constant(SKI_HIT);
+	export_constant(SKI_TARGETTYPE);
+	export_constant(SKI_ELEMENT);
+	export_constant(SKI_DAMAGEFLAGS);
+	export_constant(SKI_MAXLEVEL);
+	export_constant(SKI_RANGE);
+	export_constant(SKI_SPLASHAREA);
+	export_constant(SKI_HITCOUNT);
+	export_constant(SKI_CASTTIME);
+	export_constant(SKI_FIXEDCASTTIME);
+	export_constant(SKI_AFTERCASTACTDELAY);
+	export_constant(SKI_AFTERCASTWALKDELAY);
+	export_constant(SKI_DURATION1);
+	export_constant(SKI_DURATION2);
+	export_constant(SKI_CASTTIMEFLAGS);
+	export_constant(SKI_CASTDELAYFLAGS);
+	export_constant(SKI_CASTDEFENSEREDUCTION);
+	export_constant(SKI_FLAGS);
+	export_constant(SKI_CASTCANCEL);
+	export_constant(SKI_ACTIVEINSTANCE);
+	export_constant(SKI_KNOCKBACK);
+	export_constant(SKI_COOLDOWN);
+	export_constant(SKI_NONEARNPC_TYPE);
+	export_constant(SKI_NONEARNPC_ADDITIONALRANGE);
+	export_constant(SKI_COPYFLAGS_SKILL);
+	export_constant(SKI_COPYFLAGS_REMOVEREQUIREMENT);
+	export_constant(SKI_UNIT_ID);
+	export_constant(SKI_UNIT_ALTERNATEID);
+	export_constant(SKI_UNIT_LAYOUT);
+	export_constant(SKI_UNIT_RANGE);
+	export_constant(SKI_UNIT_INTERVAL);
+	export_constant(SKI_UNIT_TARGET);
+	export_constant(SKI_UNIT_FLAG);
+	export_constant(SKI_REQUIRES_HPCOST);
+	export_constant(SKI_REQUIRES_SPCOST);
+	export_constant(SKI_REQUIRES_MAXHPTRIGGER);
+	export_constant(SKI_REQUIRES_HPRATECOST);
+	export_constant(SKI_REQUIRES_SPRATECOST);
+	export_constant(SKI_REQUIRES_ZENYCOST);
+	export_constant(SKI_REQUIRES_WEAPON);
+	export_constant(SKI_REQUIRES_AMMO);
+	export_constant(SKI_REQUIRES_AMMOAMOUNT);
+	export_constant(SKI_REQUIRES_STATE);
+	export_constant(SKI_REQUIRES_STATUS);
+	export_constant(SKI_REQUIRES_SPHERECOST);
+	export_constant(SKI_REQUIRES_ITEMCOST);
+	export_constant(SKI_REQUIRES_EQUIPMENT);
+#endif // Pandas_ScriptCommand_GetSkillInfo
+
 	/* unit control - mob */
 	export_constant(UMOB_SIZE);
 	export_constant(UMOB_LEVEL);

@@ -29920,202 +29920,142 @@ BUILDIN_FUNC(getcalendartime) {
 #ifdef Pandas_ScriptCommand_GetSkillInfo
 /* ===========================================================
  * 指令: getskillinfo
- * 描述: 获取技能信息
- * 用法: getskillinfo <类型>,<技能ID>{,<其他参数>};
- * 返回: 详见doc
+ * 描述: 获取指定技能在技能数据库中所配置的各项信息
+ * 用法: getskillinfo <查询的信息类型>,<技能编号>{,<技能等级>{,<角色编号>}};
+ * 用法: getskillinfo <查询的信息类型>,<"技能名称">{,<技能等级>{,<角色编号>}};
+ * 返回: 请查阅 doc/pandas_script_commands.txt 中的说明
  * 作者: 聽風
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(getskillinfo) {
-	int type, parameter;
-	uint16 skill_id;
-	int i,j = 0;
-	TBL_PC* sd;
-	if (!script_rid2sd(sd))
-		return SCRIPT_CMD_SUCCESS;// no player attached, report source
+	int type = 0;
+	uint16 skill_id = 0;
+	int i = 0, j = 0;
+	int skill_lv = (script_hasdata(st, 4) && script_isint(st, 4)) ? script_getnum(st, 4) : 0;
+	int char_id = (script_hasdata(st, 5) && script_isint(st, 5)) ? script_getnum(st, 5) : 0;
 
 	type = script_getnum(st, 2);
 	if (script_isstring(st, 3)) {
 		const char *name = script_getstr(st, 3);
-
 		if (!(skill_id = skill_name2id(name))) {
-			ShowError("buildin_getskillinfo: 技能名称 %s 无效.\n", name);
+			ShowError("buildin_getskillinfo: Invalid skill name %s.\n", name);
 			return SCRIPT_CMD_FAILURE;
 		}
 	}
 	else {
 		skill_id = script_getnum(st, 3);
 		if (!skill_get_index(skill_id)) {
-			ShowError("buildin_getskillinfo: 技能ID %d 无效.\n", skill_id);
+			ShowError("buildin_getskillinfo: Invalid skill ID %d.\n", skill_id);
 			return SCRIPT_CMD_FAILURE;
 		}
 	}
-	parameter = (script_hasdata(st, 4) ? script_getnum(st, 4) : 0);
+
+	std::shared_ptr<s_skill_db> skill = skill_db.find(skill_id);
+	if (skill == nullptr) {
+		ShowError("buildin_getskillinfo: Invalid skill ID %d.\n", skill_id);
+		return SCRIPT_CMD_FAILURE;
+	}
+
 	switch (type) {
-		case 1:	//返回技能施放类型. (返回 0 - 地面技能, 1 - 伤害技能, 2 - 无伤害技能)
-			script_pushint(st, skill_get_casttype(skill_id));
+		case SKI_CASTTYPE: script_pushint(st, skill_get_casttype(skill_id)); break;
+		case SKI_NAME: script_pushstrcopy(st, skill->name); break;
+		case SKI_DESCRIPTION: script_pushstrcopy(st, skill->desc); break;
+		case SKI_MAXLEVEL_IN_SKILLTREE: script_pushint(st, skill_tree_get_max(skill_id,skill_lv)); break;
+		case SKI_SKILLTYPE: script_pushint(st, skill_get_type(skill_id)); break;
+		case SKI_HIT: script_pushint(st, skill->hit); break;
+		case SKI_TARGETTYPE: script_pushint(st, skill->inf); break;
+		case SKI_ELEMENT: script_pushint(st, skill->element[skill_lv]); break;
+		case SKI_MAXLEVEL: script_pushint(st, skill_get_max(skill_id)); break;
+		case SKI_RANGE: script_pushint(st, skill->range[skill_lv]); break;
+		case SKI_SPLASHAREA: script_pushint(st, skill->splash[skill_lv]); break;
+		case SKI_HITCOUNT: script_pushint(st, skill->num[skill_lv]); break;
+		case SKI_CASTTIME: script_pushint(st, skill->cast[skill_lv]); break;
+#ifdef RENEWAL_CAST
+		case SKI_FIXEDCASTTIME: script_pushint(st, skill->fixed_cast[skill_lv]); break;
+#else
+		case SKI_FIXEDCASTTIME: script_pushint(st, -1); break;
+#endif // RENEWAL_CAST
+		case SKI_AFTERCASTACTDELAY: script_pushint(st, skill->delay[skill_lv]); break;
+		case SKI_AFTERCASTWALKDELAY: script_pushint(st, skill->walkdelay[skill_lv]); break;
+		case SKI_DURATION1: script_pushint(st, skill->upkeep_time[skill_lv]); break;
+		case SKI_DURATION2: script_pushint(st, skill->upkeep_time2[skill_lv]); break;
+		case SKI_CASTTIMEFLAGS: script_pushint(st, skill->castnodex); break;
+		case SKI_CASTDELAYFLAGS: script_pushint(st, skill->delaynodex); break;
+		case SKI_CASTDEFENSEREDUCTION: script_pushint(st, skill->cast_def_rate); break;
+		case SKI_CASTCANCEL: script_pushint(st, skill->castcancel); break;
+		case SKI_ACTIVEINSTANCE: script_pushint(st, skill->maxcount[skill_lv]); break;
+		case SKI_KNOCKBACK: script_pushint(st, skill->blewcount[skill_lv]); break;
+		case SKI_COOLDOWN: script_pushint(st, skill->cooldown[skill_lv]); break;
+		case SKI_NONEARNPC_TYPE: script_pushint(st, skill->unit_nonearnpc_type); break;
+		case SKI_NONEARNPC_ADDITIONALRANGE: script_pushint(st, skill->unit_nonearnpc_range); break;
+		case SKI_COPYFLAGS_SKILL: script_pushint(st, skill->copyable.option); break;
+		case SKI_UNIT_ID: script_pushint(st, skill->unit_id); break;
+		case SKI_UNIT_ALTERNATEID: script_pushint(st, skill->unit_id2); break;
+		case SKI_UNIT_LAYOUT: script_pushint(st, skill->unit_layout_type[skill_lv]); break;
+		case SKI_UNIT_RANGE: script_pushint(st, skill->unit_range[skill_lv]); break;
+		case SKI_UNIT_INTERVAL: script_pushint(st, skill->unit_interval); break;
+		case SKI_UNIT_TARGET: script_pushint(st, skill->unit_target); break;
+		case SKI_REQUIRES_HPCOST: script_pushint(st, skill->require.hp[skill_lv]); break;
+		case SKI_REQUIRES_SPCOST: script_pushint(st, skill->require.sp[skill_lv]); break;
+		case SKI_REQUIRES_MAXHPTRIGGER: script_pushint(st, skill->require.mhp[skill_lv]); break;
+		case SKI_REQUIRES_HPRATECOST: script_pushint(st, skill->require.hp_rate[skill_lv]); break;
+		case SKI_REQUIRES_SPRATECOST: script_pushint(st, skill->require.sp_rate[skill_lv]); break;
+		case SKI_REQUIRES_ZENYCOST: script_pushint(st, skill->require.zeny[skill_lv]); break;
+		case SKI_REQUIRES_WEAPON: script_pushint(st, skill->require.weapon); break;
+		case SKI_REQUIRES_AMMO: script_pushint(st, skill->require.ammo); break;
+		case SKI_REQUIRES_AMMOAMOUNT: script_pushint(st, skill->require.ammo_qty[skill_lv]); break;
+		case SKI_REQUIRES_STATE: script_pushint(st, skill->require.state); break;
+		case SKI_REQUIRES_SPHERECOST: script_pushint(st, skill->require.spiritball[skill_lv]); break;
+
+		case SKI_REQUIRES_STATUS:
+			for (const auto& sc : skill->require.status) {
+				script_both_setreg(st, "skill_requires_status", (int64)sc, true, j, char_id);
+				j++;
+			}
+			script_pushint(st, j);
 			break;
-		case 2:	//返回技能名称 skill_db 中的 Name.
-			script_pushstrcopy(st, skill_db.find(skill_id)->name);
-			break;
-		case 3:	//返回技能说明 skill_db 中的 Description.
-			script_pushstrcopy(st, skill_db.find(skill_id)->desc);
-			break;
-		case 4:	//返回技能树中的最大等级. <其他参数> 传入职业代码
-			script_pushint(st, skill_tree_get_max(skill_id,parameter));
-			break;
-		case 5:	//返回技能攻击类型 skill_db 中的 attack type. (返回 BF_WEAPON BF_MAGIC BF_MISC)
-			script_pushint(st, skill_get_type(skill_id));
-			break;
-		case 6:	//返回打击类型 skill_db 中的 Hit.
-			script_pushint(st, skill_db.find(skill_id)->hit);
-			break;
-		case 7:	//返回技能类型1 skill_db 中的 inf. (返回 0 - 被动, 1 - 敌人, 2 - 地面, 4 - 自身, 16 - 朋友, 32 - 陷阱)
-			script_pushint(st, skill_db.find(skill_id)->inf);
-			break;
-		case 8:	//返回技能属性 skill_db 中的 Element. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->element[parameter]);
-			break;
-		case 9:	//返回技能伤害类型 skill_db 中的 nk. (返回 @getskill_nk数组数量)
+		case SKI_DAMAGEFLAGS:
 			for (i = 0; i < NK_MAX; i++) {
-				if (skill_db.find(skill_id)->nk[i]) {
-					pc_setreg(sd, reference_uid(add_str("@getskill_nk"), j), skill_db.find(skill_id)->nk[i]);
-					j++;
-				}
+				if (!skill->nk[i]) continue;
+				script_both_setreg(st, "skill_damage_flags", skill->nk[i], true, j, char_id);
+				j++;
 			}
 			script_pushint(st, j);
 			break;
-		case 10:	//返回技能最大等级 skill_db 中的 MaxLevel.
-			script_pushint(st, skill_get_max(skill_id));
-			break;
-		case 11:	//返回技能攻击距离 skill_db 中的 Range. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->range[parameter]);
-			break;
-		case 12:	//返回技能溅射范围 skill_db 中的 SplashArea. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->splash[parameter]);
-			break;
-		case 13:	//返回技能打击次数 skill_db 中的 list_num. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->num[parameter]);
-			break;
-		case 14:	//返回技能吟唱时间 skill_db 中的 CastingTime. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->cast[parameter]);
-			break;
-		case 15:	//返回技能公共延迟 skill_db 中的 AfterCastActDelay. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->delay[parameter]);
-			break;
-		case 16:	//返回技能攻击僵直 skill_db 中的 AfterCastWalkDelay. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->walkdelay[parameter]);
-			break;
-		case 17:	//返回技能时刻参数 skill_db 中的 Duration1. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->upkeep_time[parameter]);
-			break;
-		case 18:	//返回技能时刻参数 skill_db 中的 Duration2. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->upkeep_time2[parameter]);
-			break;
-		case 19:	//返回技能吟唱时间的影响 skill_db 中的 CastTimeFlags. (返回 1 - 不受Dex影响, 2 - 不受SC影响, 3 - 不受Item影响)
-			script_pushint(st, skill_db.find(skill_id)->castnodex);
-			break;
-		case 20:	//返回技能延迟的影响 skill_db 中的 CastDelayFlags. (返回 1 - 不受Dex影响, 2 - 不受SC影响, 3 - 不受Item影响)
-			script_pushint(st, skill_db.find(skill_id)->delaynodex);
-			break;
-		case 21:	//返回技能施法期间防御降低倍率 skill_db 中的 cast_def_rate.
-			script_pushint(st, skill_db.find(skill_id)->cast_def_rate);
-			break;
-		case 22:	//返回技能类型2 skill_db 中的 inf2. (返回 @getskill_inf2数组数量)
+		case SKI_FLAGS:
 			for (i = 0; i < INF2_MAX; i++) {
-				if (skill_db.find(skill_id)->inf2[i]) {
-					pc_setreg(sd, reference_uid(add_str("@getskill_inf2"), j), skill_db.find(skill_id)->inf2[i]);
-					j++;
-				}
+				if (!skill->inf2[i]) continue;
+				script_both_setreg(st, "skill_flags", skill->inf2[i], true, j, char_id);
+				j++;
 			}
 			script_pushint(st, j);
 			break;
-		case 23:	//返回技能是否可被打断 skill_db 中的 CastCancel.
-			script_pushint(st, skill_db.find(skill_id)->castcancel);
-			break;
-		case 24:	//返回技能施放最大数量 skill_db 中的 MaxCount. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->maxcount[parameter]);
-			break;
-		case 25:	//返回技能击退距离 skill_db 中的 Knockback. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->blewcount[parameter]);
-			break;
-		case 26:	//返回技能冷却 skill_db 中的 Cooldown. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->cooldown[parameter]);
-			break;
-		case 27:	//返回技能使用限制 skill_db Unit 里的 Id.
-			script_pushint(st, skill_db.find(skill_id)->unit_id);
-			break;
-		case 28:	//返回技能使用限制 skill_db Unit 里的 AlternateId.
-			script_pushint(st, skill_db.find(skill_id)->unit_id2);
-			break;
-		case 29:	//返回技能使用限制 skill_db Unit 里的 Layout. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->unit_layout_type[parameter]);
-			break;
-		case 30:	//返回技能使用限制 skill_db Unit 中的 Range. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->unit_range[parameter]);
-			break;
-		case 31:	//返回技能使用限制 skill_db Unit 中的 Interval.
-			script_pushint(st, skill_db.find(skill_id)->unit_interval);
-			break;
-		case 32:	//返回技能使用限制 skill_db Unit 中的 Target.
-			script_pushint(st, skill_db.find(skill_id)->unit_target);
-			break;
-		case 33:	//返回技能使用限制 skill_db Unit 中的 Flag. (返回 @getskill_unit_flag数组数量)
+		case SKI_UNIT_FLAG:
 			for (i = 0; i < UF_MAX; i++) {
-				if (skill_db.find(skill_id)->unit_flag[i]) {
-					pc_setreg(sd, reference_uid(add_str("@getskill_unit_flag"), j), skill_db.find(skill_id)->unit_flag[i]);
-					j++;
-				}
+				if (!skill->unit_flag[i]) continue;
+				script_both_setreg(st, "skill_unit_flag", skill->unit_flag[i], true, j, char_id);
+				j++;
 			}
 			script_pushint(st, j);
 			break;
-		case 34:	//返回技能消耗的HP skill_db Requires 中的 中的 HPCost. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->require.hp[parameter]);
+		case SKI_REQUIRES_EQUIPMENT:
+			for (const auto& item : skill->require.eqItem) {
+				script_both_setreg(st, "skill_requires_equipment", (int64)item, true, j, char_id);
+				j++;
+			}
+			script_pushint(st, j);
 			break;
-		case 35:	//返回技能有多少HP才可能使用 skill_db Requires 中的 MaxHPTrigger. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->require.mhp[parameter]);
-			break;
-		case 36:	//返回技能消耗的SP skill_db Requires 中的 SPCost. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->require.sp[parameter]);
-			break;
-		case 37:	//返回技能消耗的百分比HP skill_db Requires 中的 HPRateCost. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->require.hp_rate[parameter]);
-			break;
-		case 38:	//返回技能消耗的百分比SP skill_db Requires 中的 SPRateCost. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->require.sp_rate[parameter]);
-			break;
-		case 39:	//返回技能消耗的Zeny skill_db Requires 中的 ZenyCost. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->require.zeny[parameter]);
-			break;
-		case 40:	//返回技能所需的武器类型 skill_db Requires 中的 Weapon.
-			script_pushint(st, skill_db.find(skill_id)->require.weapon);
-			break;
-		case 41:	//返回技能所需的弹药类型 skill_db Requires 中的 Ammo.
-			script_pushint(st, skill_db.find(skill_id)->require.ammo);
-			break;
-		case 42:	//返回技能所需的弹药数量 skill_db Requires 中的 AmmoAmount. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->require.ammo_qty[parameter]);
-			break;
-		case 43:	//返回技能所需的特殊状态 skill_db Requires 中的 State.
-			script_pushint(st, skill_db.find(skill_id)->require.state);
-			break;
-		case 44:	//返回技能所需的SC_Buff状态 skill_db Requires 中的 Status.
-			script_pushint(st, skill_db.find(skill_id)->require.status[parameter]);
-			break;
-		case 45:	//返回技能所需气球个数 skill_db Requires 中的 SpiritSphereCost. <其他参数> 传入技能等级
-			script_pushint(st, skill_db.find(skill_id)->require.spiritball[parameter]);
-			break;
-		case 46:	//返回技能所需物品ID skill_db Requires 中 ItemCost 里的 Item. <其他参数> 传入第几项消耗品
-			script_pushint(st, skill_db.find(skill_id)->require.itemid[parameter]);
-			break;
-		case 47:	//返回技能所需物品数量 skill_db Requires 中 ItemCost 里的 Amount. <其他参数> 传入第几项消耗品
-			script_pushint(st, skill_db.find(skill_id)->require.amount[parameter]);
-			break;
-		case 48:	//返回技能所需装备 skill_db Requires 中的 Equipment. <其他参数> 传入第几项装备
-			script_pushint(st, skill_db.find(skill_id)->require.eqItem[parameter]);
+		case SKI_REQUIRES_ITEMCOST:
+			for (i = 0; i < MAX_SKILL_ITEM_REQUIRE; i++) {
+				if (!skill->require.itemid[i]) continue;
+				script_both_setreg(st, "skill_requires_itemid", skill->require.itemid[i], true, j, char_id);
+				script_both_setreg(st, "skill_requires_amount", skill->require.amount[i], true, j, char_id);
+				j++;
+			}
+			script_pushint(st, j);
 			break;
 		default:
-			script_pushint(st,0);
-			break;
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
 	}
 	
 	return SCRIPT_CMD_SUCCESS;
@@ -31016,7 +30956,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getcalendartime,"ii??"),				// 获取下次出现指定时间的 UNIX 时间戳 [Haru]
 #endif // Pandas_ScriptCommand_GetCalendarTime
 #ifdef Pandas_ScriptCommand_GetSkillInfo
-		BUILDIN_DEF(getskillinfo, "iv?"),						// 获取技能信息 [聽風]
+	BUILDIN_DEF(getskillinfo, "iv??"),					// 获取指定技能在技能数据库中所配置的各项信息 [聽風]
 #endif // Pandas_ScriptCommand_GetSkillInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 

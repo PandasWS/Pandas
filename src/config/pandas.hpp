@@ -1852,7 +1852,7 @@
 	#define Pandas_ScriptCommand_GetCalendarTime
 
 	// 是否启用 getskillinfo 脚本指令 [聽風]
-	// 获取技能skill_db信息
+	// 该指令用于获取指定技能在技能数据库中所配置的各项信息
 	#define Pandas_ScriptCommand_GetSkillInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
