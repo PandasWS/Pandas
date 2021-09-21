@@ -254,6 +254,11 @@ def arrange_common(packagedir):
     if os.path.exists(packagedir + 'sql-files/composer/logs'):
         shutil.move(packagedir + 'sql-files/composer/logs', packagedir + 'sql-files/logs/upgrades')
         
+    # WEB 接口数据库
+    os.makedirs(packagedir + 'sql-files/web/creation')
+    shutil.move(packagedir + 'sql-files/web.sql', packagedir + 'sql-files/web/creation/01.web.sql')
+    
+    # 清理工作
     rmdir(packagedir + 'sql-files/composer')
     rmdir(packagedir + 'sql-files/compatibility')
 
