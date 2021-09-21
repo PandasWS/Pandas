@@ -2189,7 +2189,7 @@ Body:
 - Original: "Web server hasn't started, stopping.\n"
   Translation: "WEB 介面伺服器未啟動, 正在停止.\n"
 - Original: "Web server not running, sleeping 1 second.\n"
-  Translation: "檢測到 WEB 介面伺服器並未執行, 將在 1 秒鐘後重新檢測.\n"
+  Translation: "當前 WEB 介面伺服器還未進入就緒狀態, 將在 1 秒鐘後重試...\n"
 - Original: "Whips are always female-only, defaulting to SEX_FEMALE.\n"
   Translation: "鞭子只能給女性角色使用, 強制將其性別限制調整為 SEX_FEMALE.\n"
 - Original: "Whisper event in npc '[{CL_WHITE}]%s[{CL_RESET}]' was ignored, because it's name is too long.\n"
