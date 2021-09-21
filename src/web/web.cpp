@@ -44,18 +44,27 @@ char login_server_ip[64] = "127.0.0.1";
 char login_server_id[32] = "ragnarok";
 char login_server_pw[32] = "";
 char login_server_db[32] = "ragnarok";
+#ifdef Pandas_SQL_Configure_Optimization
+char login_codepage[32] = "";
+#endif // Pandas_SQL_Configure_Optimization
 
 int  char_server_port = 3306;
 char char_server_ip[64] = "127.0.0.1";
 char char_server_id[32] = "ragnarok";
 char char_server_pw[32] = "";
 char char_server_db[32] = "ragnarok";
+#ifdef Pandas_SQL_Configure_Optimization
+char char_codepage[32] = "";
+#endif // Pandas_SQL_Configure_Optimization
 
 int web_server_port = 3306;
 char web_server_ip[64] = "127.0.0.1";
 char web_server_id[32] = "ragnarok";
 char web_server_pw[32] = "";
 char web_server_db[32] = "ragnarok";
+#ifdef Pandas_SQL_Configure_Optimization
+char web_codepage[32] = "";
+#endif // Pandas_SQL_Configure_Optimization
 
 char default_codepage[32] = "";
 
@@ -212,6 +221,14 @@ int inter_config_read(const char* cfgName)
 			safestrncpy(guild_db_table, w2, sizeof(guild_db_table));
 		else if (!strcmpi(w1, "char_db"))
 			safestrncpy(char_db_table, w2, sizeof(char_db_table));
+#ifdef Pandas_SQL_Configure_Optimization
+		else if (!strcmpi(w1, "login_codepage"))
+			safestrncpy(login_codepage, w2, sizeof(login_codepage));
+		else if (!strcmpi(w1, "char_codepage"))
+			safestrncpy(char_codepage, w2, sizeof(char_codepage));
+		else if (!strcmpi(w1, "web_codepage"))
+			safestrncpy(web_codepage, w2, sizeof(web_codepage));
+#endif // Pandas_SQL_Configure_Optimization
 		else if(!strcmpi(w1,"import"))
 			inter_config_read(w2);
 	}
@@ -282,11 +299,19 @@ int web_sql_init(void) {
 	}
 	ShowStatus("Connect success! (Web Server Connection)\n");
 
+#ifndef Pandas_SQL_Configure_Optimization
 	if (strlen(default_codepage) > 0) {
 		if (SQL_ERROR == Sql_SetEncoding(web_handle, default_codepage))
 			Sql_ShowDebug(web_handle);
 	}
-
+#else
+	if (SQL_ERROR == Sql_SetEncoding(login_handle, login_codepage, default_codepage, "Login-Server"))
+		Sql_ShowDebug(login_handle);
+	if (SQL_ERROR == Sql_SetEncoding(char_handle, char_codepage, default_codepage, "Char-Server"))
+		Sql_ShowDebug(char_handle);
+	if (SQL_ERROR == Sql_SetEncoding(web_handle, web_codepage, default_codepage, "Web-Server"))
+		Sql_ShowDebug(web_handle);
+#endif // Pandas_SQL_Configure_Optimization
 
 	return 0;
 }
