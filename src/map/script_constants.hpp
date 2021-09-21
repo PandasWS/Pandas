@@ -4576,21 +4576,6 @@
 	export_constant(CAST_DAMAGE);
 	export_constant(CAST_NODAMAGE);
 
-	export_constant(DMG_NORMAL);
-	export_constant(DMG_PICKUP_ITEM);
-	export_constant(DMG_SIT_DOWN);
-	export_constant(DMG_STAND_UP);
-	export_constant(DMG_ENDURE);
-	export_constant(DMG_SPLASH);
-	export_constant(DMG_SINGLE);
-	export_constant(DMG_REPEAT);
-	export_constant(DMG_MULTI_HIT);
-	export_constant(DMG_MULTI_HIT_ENDURE);
-	export_constant(DMG_CRITICAL);
-	export_constant(DMG_LUCY_DODGE);
-	export_constant(DMG_TOUCH);
-	export_constant(DMG_MULTI_HIT_CRITICAL);
-
 	export_constant(SKILL_COPY_PLAGIARISM);
 	export_constant(SKILL_COPY_REPRODUCE);
 
