@@ -165,7 +165,7 @@ enum e_system_language getSystemLanguage() {
 		return SYSTEM_LANGUAGE_CHT;
 	else if (boost::istarts_with(szLocale, "en_US"))
 		return SYSTEM_LANGUAGE_ENG;
-	else if (boost::iequals(szLocale, "C"))
+	else if (boost::istarts_with(szLocale, "C."))
 		return SYSTEM_LANGUAGE_ENG;
 	else {
 		printf("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale);
