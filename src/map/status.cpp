@@ -4285,7 +4285,6 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	sd->hprate = 100;
 	sd->sprate = 100;
 	sd->castrate = 100;
-	sd->delayrate = 100;
 	sd->dsprate = 100;
 	sd->hprecov_rate = 100;
 	sd->sprecov_rate = 100;
@@ -5039,8 +5038,6 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		sd->dsprate = 0;
 	if(sd->castrate < 0)
 		sd->castrate = 0;
-	if(sd->delayrate < 0)
-		sd->delayrate = 0;
 	if(sd->hprecov_rate < 0)
 		sd->hprecov_rate = 0;
 	if(sd->sprecov_rate < 0)
