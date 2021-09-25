@@ -10,6 +10,42 @@
 
 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
 
+
+## [v1.1.6] - `2021-09-25`
+
+### 升级
+
+- 使用 `web-server` 工程需要将 `PACKETVER` 调整为大于等于 `20200300` 的版本
+- 使用 `web-server` 需要导入 `sql-files\web\creation\01.web.sql` 建立所需的数据库表
+
+### 添加
+
+- 将 `web-server` 工程整合进来, 以便提供客户端所需配套的 WEB 接口服务 (#432)
+- 实现 `getcalendartime` 脚本指令, 用于获取下次出现指定时间的 UNIX 时间戳 (#400)
+- 实现 `getmapspawns` 脚本指令, 用于获取指定地图的魔物刷新点信息 (#401)
+- 实现 `getmobspawns` 脚本指令, 用于查询指定魔物在不同地图的刷新点信息 (#402)
+- 实现 `getskillinfo` 脚本指令, 用于获取指定技能在技能数据库中所配置的各项信息 (#429)
+- 使 `setuntdata` / `getunitdata` 支持设置指定魔物的承伤倍率 (感谢 "人鱼姬的眼泪" 建议) (#416)
+- 实现 `OnPCGuildLeaveFilter` 过滤器, 当玩家主动离开或被驱逐出公会时触发 [聽風] (#419)
+- 实现 `OnPCGuildCreateFilter` 过滤器, 当玩家准备创建公会时触发过滤器 [聽風] (#417)
+- 实现 `OnPCGuildJoinFilter` 过滤器, 当玩家即将加入公会时触发过滤器 [聽風] (#418)
+- 实现 `OnPCPartyCreateFilter` 过滤器, 当玩家准备创建队伍时触发过滤器 [聽風] (#413)
+- 实现 `OnPCPartyJoinFilter` 过滤器, 当玩家即将加入队伍时触发过滤器 [聽風] (#414)
+- 实现 `OnPCPartyLeaveFilter` 过滤器, 当玩家准备离开队伍时触发过滤器 [聽風] (#415)
+- 实现 `noslave` 地图标记, 用于禁止魔物在指定地图上召唤随从 (#424)
+- 实现 `nobank` 地图标记, 用于禁止玩家在地图上使用银行系统 [聽風] (#426)
+- 实现 `nouseitem` 地图标记, 用于禁止玩家在地图上使用消耗型物品道具 (#425)
+- 实现 `hidedamage` 地图标记, 用于隐藏此地图上任何攻击的实际伤害数值 (#427)
+
+### 修正
+
+- 修正 `@item` 等指令只能使用 `AegisName` 来创造道具的问题 (#420)
+
+### 调整
+
+- 将 `MAX_INVENTORY` 废弃并改成用 `G_MAX_INVENTORY` 或 `P_MAX_INVENTORY` (#431)
+- 汉化和校正部分配置文件的注释信息
+
 ## [v1.1.5] - `2021-08-14`
 
 ### 升级
@@ -454,6 +490,7 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+[v1.1.6]: https://github.com/PandasWS/Pandas/compare/v1.1.5...v1.1.6
 [v1.1.5]: https://github.com/PandasWS/Pandas/compare/v1.1.4...v1.1.5
 [v1.1.4]: https://github.com/PandasWS/Pandas/compare/v1.1.3...v1.1.4
 [v1.1.3]: https://github.com/PandasWS/Pandas/compare/v1.1.2...v1.1.3
