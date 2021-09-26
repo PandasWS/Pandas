@@ -22,7 +22,6 @@
 #include "../common/socket.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "char_clif.hpp"
 #include "char_cnslif.hpp"

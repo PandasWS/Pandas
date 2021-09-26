@@ -20,9 +20,6 @@
 #include "db.hpp" // ARR_FIND, ARRAYLENGTH
 #endif // Pandas_SQL_Configure_Optimization
 
-#include "../custom/defines_core.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
-
 // MySQL 8.0 or later removed my_bool typedef.
 // Reintroduce it as a bandaid fix.
 // See https://bugs.mysql.com/?id=87337

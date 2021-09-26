@@ -16,7 +16,6 @@
 #include "../common/mmo.hpp"
 #include "../common/showmsg.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 std::string grf_list_file = "conf/grf-files.txt";
 std::string map_list_file = "map_index.txt";

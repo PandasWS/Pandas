@@ -1,11 +1,14 @@
 ﻿// Copyright (c) Pandas Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#ifndef _RATHENA_CN_CONFIG_HPP_
-#define _RATHENA_CN_CONFIG_HPP_
+#pragma once
 
-#include "renewal.hpp"
-#include "packets.hpp"
+#include "../custom/defines_pre.hpp"
+#include "./packets.hpp"
+#include "./renewal.hpp"
+#include "./secure.hpp"
+#include "./classes/general.hpp"
+#include "../custom/defines_post.hpp"
 
 #define Pandas
 
@@ -1913,5 +1916,3 @@
 		#define Pandas_ScriptParams_UnitData_DamageTaken
 	#endif // Pandas_Struct_Mob_Data_DamageTaken
 #endif // Pandas_ScriptParams
-
-#endif // _RATHENA_CN_CONFIG_HPP_

@@ -19,7 +19,6 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "battleground.hpp"

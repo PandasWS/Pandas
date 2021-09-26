@@ -14,7 +14,6 @@
 #include "../common/strlib.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "chrif.hpp"

@@ -3,19 +3,13 @@
 
 #pragma once
 
-#include "../config/pandas.hpp"	// 引入主要的宏定义文件 [Sola丶小克]
-
-#ifdef Pandas
-
-	#include "../common/utf8.hpp"
-
-#endif // Pandas
+#include "../config/pandas.hpp"
 
 #ifdef Pandas_Support_Read_UTF8BOM_Configure
+	#include "../common/utf8.hpp"
 
 	#define fopen(FNAME, MODE) PandasUtf8::fopen(FNAME, MODE)
 	#define fgets(BUFFER, MAXCOUNT, STREAM) PandasUtf8::fgets(BUFFER, MAXCOUNT, STREAM)
 	#define fread(BUFFER, ELESIZE, ELECOUNT, STREAM) PandasUtf8::fread(BUFFER, ELESIZE, ELECOUNT, STREAM)
 	#define fclose(FPOINTER) PandasUtf8::fclose(FPOINTER)
-
 #endif // Pandas_Support_Read_UTF8BOM_Configure

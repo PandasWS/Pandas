@@ -9,6 +9,11 @@
 #include "../common/performance.hpp"
 #include "../common/assistant.hpp"
 
+#undef fopen
+#undef fgets
+#undef fread
+#undef fclose
+
 #ifdef _WIN32
 	#include <windows.h>
 #else
