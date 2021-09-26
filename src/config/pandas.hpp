@@ -1189,6 +1189,9 @@
 	//
 	// 所以熊猫表示, 我们也干脆删了吧!! Oh yeah!
 	#define Pandas_Cleanup_Useless_SQL_Global_Configure
+
+	// 清理掉一些没啥作用看着还心烦的终端提示信息 [Sola丶小克]
+	#define Pandas_Cleanup_Useless_Message
 #endif // Pandas_Cleanup
 
 // ============================================================================

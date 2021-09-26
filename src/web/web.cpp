@@ -456,7 +456,9 @@ int do_init(int argc, char** argv) {
 	for (int i = 0; i < 10; i++) {
 		if (http_server->is_running() || runflag != WEBSERVER_ST_RUNNING)
 			break;
+#ifndef Pandas_Cleanup_Useless_Message
 		ShowDebug("Web server not running, sleeping 1 second.\n");
+#endif // Pandas_Cleanup_Useless_Message
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 

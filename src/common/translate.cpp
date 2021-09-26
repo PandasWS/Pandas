@@ -60,13 +60,6 @@ void TranslateDB::showStatus() {
 	else {
 		ShowInfo("Console translation initialized: " CL_WHITE "'%s'" CL_RESET ".\n", szLocation.c_str());
 	}
-
-#ifdef _WIN32
-	ShowInfo("Diagnostic information: System Codepage = %d | UILanguage = 0x%04X | Console Codepage = %d\n", GetACP(), GetUserDefaultUILanguage(), GetConsoleOutputCP());
-#else
-	setlocale(LC_ALL, "");
-	ShowInfo("Diagnostic information: Langinfo: %s | Locale: %s\n", nl_langinfo(CODESET), setlocale(LC_CTYPE, NULL));
-#endif // _WIN32
 }
 
 //************************************
