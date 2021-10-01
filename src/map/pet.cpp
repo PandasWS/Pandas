@@ -1808,7 +1808,12 @@ static int pet_ai_sub_hard(struct pet_data *pd, struct map_session_data *sd, t_t
 
 			return 0;
 		}
-
+#ifdef Pandas_MapFlag_NoAttack
+		if (pd && map_getmapflag(pd->bl.m, MF_NOATTACK)) {
+			if ((map_getmapflag_param(pd->bl.m, MF_NOATTACK, 0) & BL_PET) == BL_PET)
+				return false;
+		}
+#endif // Pandas_MapFlag_NoAttack
 		//Continuous attack.
 		unit_attack(&pd->bl, pd->target_id, 1);
 	} else { // Item Targeted, attempt loot

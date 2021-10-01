@@ -744,7 +744,12 @@ static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_
 			if(	elemental_action(ed,target,tick) )
 				return 1;
 		}
-
+#ifdef Pandas_MapFlag_NoAttack
+		if (ed && map_getmapflag(ed->bl.m, MF_NOATTACK)) {
+			if ((map_getmapflag_param(ed->bl.m, MF_NOATTACK, 0) & BL_ELEM) == BL_ELEM)
+				return false;
+		}
+#endif // Pandas_MapFlag_NoAttack
 		//Attempt to attack.
 		//At this point we know the target is attackable, we just gotta check if the range matches.
 		if( ed->ud.target == target->id && ed->ud.attacktimer != INVALID_TIMER ) //Already locked.

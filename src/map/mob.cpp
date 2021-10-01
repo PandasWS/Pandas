@@ -1928,7 +1928,12 @@ static bool mob_ai_sub_hard(struct mob_data *md, t_tick tick)
 		mob_unlocktarget(md, tick);
 		return true;
 	}
-
+#ifdef Pandas_MapFlag_NoAttack
+	if (md && map_getmapflag(md->bl.m, MF_NOATTACK)) {
+		if ((map_getmapflag_param(md->bl.m, MF_NOATTACK, 0) & BL_MOB) == BL_MOB)
+			return false;
+	}
+#endif // Pandas_MapFlag_NoAttack
 	//Attempt to attack.
 	//At this point we know the target is attackable, we just gotta check if the range matches.
 	if (battle_check_range(&md->bl, tbl, md->status.rhw.range) && !(md->sc.option&OPTION_HIDE))

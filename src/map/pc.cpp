@@ -10351,6 +10351,12 @@ bool pc_can_attack( struct map_session_data *sd, int target_id ) {
 		sd->sc.data[SC_KINGS_GRACE] )
 			return false;
 
+#ifdef Pandas_MapFlag_NoAttack
+	if (sd && map_getmapflag(sd->bl.m, MF_NOATTACK)) {
+		if ((map_getmapflag_param(sd->bl.m, MF_NOATTACK, 0) & BL_PC) == BL_PC)
+			return false;
+	}
+#endif // Pandas_MapFlag_NoAttack
 	return true;
 }
 
