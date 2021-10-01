@@ -1929,9 +1929,17 @@
 // ============================================================================
 
 #ifdef Pandas_WebServer
-	// 强化 WEB 接口服务器对中文客户端的适配 [Sola丶小克]
+	// 是否解决数据表中看到中文乱码的问题 [Sola丶小克]
+	// 
 	// 客户端发送给 WEB 接口的内容使用的是 UTF8 编码, 我们需要将内容存放到数据库中去
 	// 但数据库本身的编码可能不是 UTF8, 因此在入库之前需要将内容进行适当的编码转换, 否则数据库中看到的会是乱码
 	// 同理, 将数据库中保存的内容读取出来后也需要转换成 UTF8 编码才能发送给客户端
-	#define Pandas_WebServer_EncodingAdaptive
+	#define Pandas_WebServer_Database_EncodingAdaptive
+
+	// 是否解决开启 print_req_res 后终端看到客户端发来的中文乱码问题 [Sola丶小克]
+	//
+	// 客户端发送给 WEB 接口的内容使用的是 UTF8 编码, 但我们的终端程序通常不是工作在 UTF8 编码下
+	// 因此如果将客户端发送来的中文直接打印到终端就会变成乱码
+	// 启用该选项后将会对 logger 中输出的信息转换成当前终端使用的编码再打印到终端
+	#define Pandas_WebServer_Logger_EncodingAdaptive
 #endif // Pandas_WebServer

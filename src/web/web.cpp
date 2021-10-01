@@ -79,9 +79,9 @@ char char_configs_table[32] = "char_configs";
 char guild_db_table[32] = "guild";
 char char_db_table[32] = "char";
 
-#ifdef Pandas_WebServer_EncodingAdaptive
+#ifdef Pandas_WebServer_Database_EncodingAdaptive
 char web_connection_encoding[32] = { 0 };
-#endif // Pandas_WebServer_EncodingAdaptive
+#endif // Pandas_WebServer_Database_EncodingAdaptive
 
 int parse_console(const char * buf) {
 	return 1;
@@ -317,10 +317,10 @@ int web_sql_init(void) {
 		Sql_ShowDebug(web_handle);
 #endif // Pandas_SQL_Configure_Optimization
 
-#ifdef Pandas_WebServer_EncodingAdaptive
+#ifdef Pandas_WebServer_Database_EncodingAdaptive
 	// 读取最终生效的 WEB 接口数据库服务器连接编码
 	Sql_GetEncoding(web_handle, web_connection_encoding);
-#endif // Pandas_WebServer_EncodingAdaptive
+#endif // Pandas_WebServer_Database_EncodingAdaptive
 
 	return 0;
 }
@@ -403,19 +403,19 @@ void logger(const Request & req, const Response & res) {
 	if (web_config.print_req_res) {
 		ShowDebug("Incoming Headers are:\n");
 		for (const auto & header : req.headers) {
-			ShowDebug("\t%s: %s\n", header.first.c_str(), header.second.c_str());
+			ShowDebug("\t%s: %s\n", U2ACE(header.first).c_str(), U2ACE(header.second).c_str());
 		}
 		ShowDebug("Incoming Pages are:\n");
 		for (const auto & file : req.files) {
-			ShowDebug("\t%s: %s\n", file.first.c_str(), file.second.content.c_str());
+			ShowDebug("\t%s: %s\n", U2ACE(file.first).c_str(), U2ACE(file.second.content).c_str());
 		}
 		ShowDebug("Outgoing Headers are:\n");
 		for (const auto & header : res.headers) {
-			ShowDebug("\t%s: %s\n", header.first.c_str(), header.second.c_str());
+			ShowDebug("\t%s: %s\n", U2ACE(header.first).c_str(), U2ACE(header.second).c_str());
 		}
 		ShowDebug("Response status is: %d\n", res.status);
 		// since the body may be binary, might not print entire body (has null character).
-		ShowDebug("Body is:\n%s\n", res.body.c_str());
+		ShowDebug("Body is:\n%s\n", U2ACE(res.body).c_str());
 	}
 	ShowInfo("%s [%s %s] %d\n", req.remote_addr.c_str(), req.method.c_str(), req.path.c_str(), res.status);
 }
