@@ -1936,12 +1936,12 @@
 	// 同理, 将数据库中保存的内容读取出来后也需要转换成 UTF8 编码才能发送给客户端
 	#define Pandas_WebServer_Database_EncodingAdaptive
 
-	// 是否解决开启 print_req_res 后终端看到客户端发来的中文乱码问题 [Sola丶小克]
+	// 是否解决终端看到客户端发来的中文乱码问题 [Sola丶小克]
 	//
-	// 客户端发送给 WEB 接口的内容使用的是 UTF8 编码, 但我们的终端程序通常不是工作在 UTF8 编码下
-	// 因此如果将客户端发送来的中文直接打印到终端就会变成乱码
-	// 启用该选项后将会对 logger 中输出的信息转换成当前终端使用的编码再打印到终端
-	#define Pandas_WebServer_Logger_EncodingAdaptive
+	// 客户端发送给 WEB 接口的内容使用的是 UTF8 编码, 但我们的终端程序通常不是工作在 UTF8 编码环境下,
+	// 因此如果将客户端发送来的中文直接打印到终端就会变成乱码.
+	// 启用该选项后将会对客户端发送来的 UTF8 信息在输出时转换成当前终端使用的编码再打印到终端
+	#define Pandas_WebServer_Console_EncodingAdaptive
 
 	// 是否改进开启 print_req_res 后打印信息的呈现方式, 使信息的区域划分更清晰 [Sola丶小克]
 	#define Pandas_WebServer_Logger_Improved_Presentation

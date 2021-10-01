@@ -2207,7 +2207,7 @@ Body:
 - Original: "Your MySQL does not support SHA2 and MD5 - no hashing will be used for login token creation.\n"
   Translation: ""
 - Original: "[AccountID: %d, World: \"%s\"] Not found in table, sending new info.\n"
-  Translation: "[賬號編號: %d, 世界: \"%s\"] 查詢不到儲存在資料表中的資料, 正在構造新資訊返回給客戶端.\n"
+  Translation: "[賬號編號: %d, 世界: \"%s\"] 查無資料, 正在構造新資訊給客戶端.\n"
 - Original: "[GuildID: %d / World: \"%s\"] Not found in table\n"
   Translation: "[公會編號: %d / 世界: \"%s\"] 查詢不到儲存在資料表中的資料.\n"
 - Original: "[Instance] Created map '%s' (%d) from '%s' (%d).\n"

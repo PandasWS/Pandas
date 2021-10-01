@@ -92,7 +92,7 @@ void clearModeMapping(FILE* _fp) {
 
 //************************************
 // Method:      charsetToCodepage
-// Description: 请简要介绍该函数的作用
+// Description: 提供编码名称来查询在 Windows 平台上对应的页码
 // Access:      public 
 // Parameter:   const std::string & charset
 // Returns:     uint32

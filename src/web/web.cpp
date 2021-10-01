@@ -81,6 +81,7 @@ char char_db_table[32] = "char";
 
 #ifdef Pandas_WebServer_Database_EncodingAdaptive
 char web_connection_encoding[32] = { 0 };
+char character_codepage[32] = { 0 };
 #endif // Pandas_WebServer_Database_EncodingAdaptive
 
 int parse_console(const char * buf) {
@@ -129,6 +130,11 @@ bool web_config_read(const char* cfgName, bool normal) {
 				web_config.web_port = (uint16)atoi(w2);
 		}
 
+#ifdef Pandas_WebServer_Database_EncodingAdaptive
+		if (!strcmpi(w1, "character_codepage"))
+			safestrncpy(character_codepage, w2, sizeof(character_codepage) - 1);
+		else
+#endif // Pandas_WebServer_Database_EncodingAdaptive
 		if (!strcmpi(w1, "timestamp_format"))
 			safestrncpy(timestamp_format, w2, 20);
 		else if (!strcmpi(w1, "db_path"))
