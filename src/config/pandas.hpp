@@ -1942,4 +1942,7 @@
 	// 因此如果将客户端发送来的中文直接打印到终端就会变成乱码
 	// 启用该选项后将会对 logger 中输出的信息转换成当前终端使用的编码再打印到终端
 	#define Pandas_WebServer_Logger_EncodingAdaptive
+
+	// 是否改进开启 print_req_res 后打印信息的呈现方式, 使信息的区域划分更清晰 [Sola丶小克]
+	#define Pandas_WebServer_Logger_Improved_Presentation
 #endif // Pandas_WebServer
