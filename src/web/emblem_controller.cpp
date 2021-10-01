@@ -47,7 +47,7 @@ HANDLER_FUNC(emblem_download) {
 		return;
 	}
 
-	auto world_name_str = req.get_file_value("WorldName").content;
+	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
 	auto world_name = world_name_str.c_str();
 	auto guild_id = std::stoi(req.get_file_value("GDID").content);
 
@@ -154,7 +154,7 @@ HANDLER_FUNC(emblem_upload) {
 		return;
 	}
 
-	auto world_name_str = req.get_file_value("WorldName").content;
+	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
 	auto world_name = world_name_str.c_str();
 	auto guild_id = std::stoi(req.get_file_value("GDID").content);
 	auto imgtype_str = req.get_file_value("ImgType").content;

@@ -12,6 +12,19 @@
 #include "../common/timer.hpp"
 #include "../config/core.hpp"
 
+#include "../common/utf8.hpp"
+
+#ifdef Pandas_WebServer_EncodingAdaptive
+	// Utf8 to Ansi with Web Encoding
+	#define U2AWE(x) PandasUtf8::utf8ToAnsi(x, web_connection_encoding)
+	// Ansi to Utf8 with Web Encoding
+	#define A2UWE(x) PandasUtf8::ansiToUtf8(x, web_connection_encoding)
+#else
+	// Utf8 to Ansi with Web Encoding
+	#define U2AWE(x) x
+	// Ansi to Utf8 with Web Encoding
+	#define A2UWE(x) x
+#endif // Pandas_WebServer_EncodingAdaptive
 
 enum E_WEBSERVER_ST {
 	WEBSERVER_ST_RUNNING = CORE_ST_LAST,
@@ -40,6 +53,10 @@ extern char user_configs_table[32];
 extern char char_configs_table[32];
 extern char guild_db_table[32];
 extern char char_db_table[32];
+
+#ifdef Pandas_WebServer_EncodingAdaptive
+extern char web_connection_encoding[32];
+#endif // Pandas_WebServer_EncodingAdaptive
 
 #define msg_config_read(cfgName) web_msg_config_read(cfgName)
 #define msg_txt(msg_number) web_msg_txt(msg_number)

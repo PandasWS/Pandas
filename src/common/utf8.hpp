@@ -59,7 +59,9 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 int fclose(FILE* _fp);
 
 std::string utf8ToAnsi(const std::string& strUtf8);
+std::string utf8ToAnsi(const std::string& strUtf8, const std::string& toCharset);
 std::string ansiToUtf8(const std::string& strAnsi);
+std::string ansiToUtf8(const std::string& strAnsi, const std::string& fromCharset);
 
 std::string getDefaultCodepage();
 

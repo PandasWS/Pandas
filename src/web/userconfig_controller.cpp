@@ -21,12 +21,12 @@ HANDLER_FUNC(userconfig_save) {
 	}
 	
 	auto account_id = std::stoi(req.get_file_value("AID").content);
-	auto world_name_str = req.get_file_value("WorldName").content;
+	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
 	auto world_name = world_name_str.c_str();
 	std::string data;
 
 	if (req.has_file("data")) {
-		data = req.get_file_value("data").content;
+		data = U2AWE(req.get_file_value("data").content);
 	} else {
 		data = "{\"Type\": 1}";
 	}
@@ -103,7 +103,7 @@ HANDLER_FUNC(userconfig_load) {
 	// }
 
 	auto account_id = std::stoi(req.get_file_value("AID").content);
-	auto world_name_str = req.get_file_value("WorldName").content;
+	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
 	auto world_name = world_name_str.c_str();
 
 	SQLLock sl(WEB_SQL_LOCK);
@@ -150,5 +150,5 @@ HANDLER_FUNC(userconfig_load) {
 	sl.unlock();
 
 	databuf[sizeof(databuf) - 1] = 0;
-	res.set_content(databuf, "application/json");
+	res.set_content(A2UWE(databuf), "application/json");
 }

@@ -37,6 +37,7 @@
 	#define Pandas_ScriptCommands
 	#define Pandas_ScriptResults
 	#define Pandas_ScriptParams
+	#define Pandas_WebServer
 #endif // Pandas
 
 #ifndef GIT_BRANCH
@@ -246,6 +247,9 @@
 
 	// 是否拓展 Yaml 的 Database 操作类使之能读取 UTF8-BOM 编码的文件 [Sola丶小克]
 	#define Pandas_Database_Yaml_Support_UTF8BOM
+
+	// 是否支持用于读取 SQL 连接编码的 Sql_GetEncoding 函数 [Sola丶小克]
+	#define Pandas_Database_SQL_GetEncoding
 #endif // Pandas_DatabaseIncrease
 
 // ============================================================================
@@ -753,7 +757,7 @@
 #endif // Pandas_ClientFeatures
 
 // ============================================================================
-// 官方BUG修正组 - Pandas_Bugfix
+// 官方缺陷修正组 - Pandas_Bugfix
 // ============================================================================
 
 #ifdef Pandas_Bugfix
@@ -1195,7 +1199,7 @@
 #endif // Pandas_Cleanup
 
 // ============================================================================
-// NPC事件组 - Pandas_NpcEvent
+// NPC 事件组 - Pandas_NpcEvent
 // ============================================================================
 
 #ifdef Pandas_NpcEvent
@@ -1919,3 +1923,15 @@
 		#define Pandas_ScriptParams_UnitData_DamageTaken
 	#endif // Pandas_Struct_Mob_Data_DamageTaken
 #endif // Pandas_ScriptParams
+
+// ============================================================================
+// WEB 服务器修改组 - Pandas_WebServer
+// ============================================================================
+
+#ifdef Pandas_WebServer
+	// 强化 WEB 接口服务器对中文客户端的适配 [Sola丶小克]
+	// 客户端发送给 WEB 接口的内容使用的是 UTF8 编码, 我们需要将内容存放到数据库中去
+	// 但数据库本身的编码可能不是 UTF8, 因此在入库之前需要将内容进行适当的编码转换, 否则数据库中看到的会是乱码
+	// 同理, 将数据库中保存的内容读取出来后也需要转换成 UTF8 编码才能发送给客户端
+	#define Pandas_WebServer_EncodingAdaptive
+#endif // Pandas_WebServer

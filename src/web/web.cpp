@@ -79,6 +79,10 @@ char char_configs_table[32] = "char_configs";
 char guild_db_table[32] = "guild";
 char char_db_table[32] = "char";
 
+#ifdef Pandas_WebServer_EncodingAdaptive
+char web_connection_encoding[32] = { 0 };
+#endif // Pandas_WebServer_EncodingAdaptive
+
 int parse_console(const char * buf) {
 	return 1;
 }
@@ -312,6 +316,11 @@ int web_sql_init(void) {
 	if (SQL_ERROR == Sql_SetEncoding(web_handle, web_codepage, default_codepage, "Web-Server"))
 		Sql_ShowDebug(web_handle);
 #endif // Pandas_SQL_Configure_Optimization
+
+#ifdef Pandas_WebServer_EncodingAdaptive
+	// 读取最终生效的 WEB 接口数据库服务器连接编码
+	Sql_GetEncoding(web_handle, web_connection_encoding);
+#endif // Pandas_WebServer_EncodingAdaptive
 
 	return 0;
 }
