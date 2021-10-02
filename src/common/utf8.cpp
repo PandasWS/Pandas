@@ -91,6 +91,30 @@ void clearModeMapping(FILE* _fp) {
 }
 
 //************************************
+// Method:      charsetToCodepage
+// Description: 提供编码名称来查询在 Windows 平台上对应的页码
+// Access:      public 
+// Parameter:   const std::string & charset
+// Returns:     uint32
+// Author:      Sola丶小克(CairoLee)  2021/09/30 20:22
+//************************************ 
+uint32 charsetToCodepage(const std::string& charset) {
+	std::string cs = boost::to_lower_copy(charset);
+	if (cs == "gbk")
+		return 936;
+	else if (cs == "big5")
+		return 950;
+	else if (cs == "utf8" || cs == "utf8mb4")
+		return 65001;
+	else if (cs == "latin1")
+		return 1252;
+	else {
+		ShowWarning("%s: Unsupport charset: %s, defaulting to CP_ACP\n", __func__, charset.c_str());
+		return 0; // CP_ACP
+	}
+}
+
+//************************************
 // Method:      getConsoleEncoding
 // Description: 获取当前操作系统终端控制台的默认编码
 // Returns:     enum e_console_encoding
@@ -490,7 +514,7 @@ int vfprintf(FILE* file, const char* fmt, va_list args) {
 
 //************************************
 // Method:      utf8ToAnsi
-// Description: 将 UTF8 字符串转换为 ANSI 字符串
+// Description: 将 UTF8 字符串转换为 ANSI 字符串 (ANSI 字符将自适应当前系统语言对应的编码)
 // Parameter:   const std::string & strUtf8 须为 UTF-8 编码的字符串
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/01/24 00:26
@@ -520,8 +544,42 @@ std::string utf8ToAnsi(const std::string& strUtf8) {
 }
 
 //************************************
+// Method:      utf8ToAnsi
+// Description: 将 UTF8 字符串转换为 ANSI 字符串 (ANSI 字符将使用指定的编码)
+// Access:      public 
+// Parameter:   const std::string & strUtf8
+// Parameter:   const std::string & toCharset
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/09/30 20:57
+//************************************ 
+std::string utf8ToAnsi(const std::string& strUtf8, const std::string& toCharset) {
+#ifdef _WIN32
+	if (toCharset.empty())
+		return utf8ToAnsi(strUtf8);
+
+	uint32 nCodepage = charsetToCodepage(toCharset);
+	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strUtf8, CP_UTF8);
+	if (nCodepage == 950) {
+		// 若指定的目标 Codepage 是繁体中文 (BIG5),
+		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
+		return PandasUtf8::splashForBIG5(strUnicode);
+	}
+	else {
+		// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 ANSI 字符即可
+		return PandasUtf8::UnicodeDecode(strUnicode, nCodepage);
+	}
+#else
+	if (toCharset.empty())
+		return utf8ToAnsi(strUtf8);
+
+	std::string toCharsetUpper = boost::to_upper_copy(toCharset);
+	return PandasUtf8::iconvConvert(strUtf8, "UTF-8", toCharsetUpper);
+#endif // _WIN32
+}
+
+//************************************
 // Method:      ansiToUtf8
-// Description: 将 ANSI 字符串转换为 UTF8 字符串
+// Description: 将 ANSI 字符串转换为 UTF8 字符串 (ANSI 字符将自适应当前系统语言对应的编码)
 // Parameter:   const std::string & strAnsi 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/01/24 00:26
@@ -539,6 +597,32 @@ std::string ansiToUtf8(const std::string& strAnsi) {
 	default: fromCharset = PandasUtf8::getDefaultCodepage(); break;
 	}
 	return PandasUtf8::iconvConvert(strAnsi, fromCharset, "UTF-8");
+#endif // _WIN32
+}
+
+//************************************
+// Method:      ansiToUtf8
+// Description: 将 ANSI 字符串转换为 UTF8 字符串 (ANSI 字符将使用指定的编码)
+// Access:      public 
+// Parameter:   const std::string & strAnsi
+// Parameter:   const std::string & fromCharset
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/09/30 20:57
+//************************************ 
+std::string ansiToUtf8(const std::string& strAnsi, const std::string& fromCharset) {
+#ifdef _WIN32
+	if (fromCharset.empty())
+		return ansiToUtf8(strAnsi);
+
+	uint32 nCodepage = charsetToCodepage(fromCharset);
+	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strAnsi, nCodepage);
+	return PandasUtf8::UnicodeDecode(strUnicode, CP_UTF8);
+#else
+	if (fromCharset.empty())
+		return ansiToUtf8(strAnsi);
+
+	std::string fromCharsetUpper = boost::to_upper_copy(fromCharset);
+	return PandasUtf8::iconvConvert(strAnsi, fromCharsetUpper, "UTF-8");
 #endif // _WIN32
 }
 

@@ -51,6 +51,11 @@ HANDLER_FUNC(emblem_download) {
 	auto world_name = world_name_str.c_str();
 	auto guild_id = std::stoi(req.get_file_value("GDID").content);
 
+#ifdef Pandas_WebServer_Database_EncodingAdaptive
+	auto world_name_str_we = U2AWE(world_name_str);
+	auto world_name_we = world_name_str_we.c_str();
+#endif // Pandas_WebServer_Database_EncodingAdaptive
+
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
@@ -59,7 +64,11 @@ HANDLER_FUNC(emblem_download) {
 			"SELECT `version`, `file_type`, `file_data` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
 			guild_emblems_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &guild_id, sizeof(guild_id))
+#ifndef Pandas_WebServer_Database_EncodingAdaptive
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name, strlen(world_name))
+#else
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name_we, strlen(world_name_we))
+#endif // Pandas_WebServer_Database_EncodingAdaptive
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
 		SqlStmt_ShowDebug(stmt);
@@ -77,7 +86,11 @@ HANDLER_FUNC(emblem_download) {
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
 		SqlStmt_Free(stmt);
+#ifndef Pandas_WebServer_Console_EncodingAdaptive
 		ShowError("[GuildID: %d / World: \"%s\"] Not found in table\n", guild_id, world_name);
+#else
+		ShowError("[GuildID: %d / World: \"%s\"] Not found in table\n", guild_id, U2ACE(world_name).c_str());
+#endif // Pandas_WebServer_Console_EncodingAdaptive
 		sl.unlock();
 		res.status = 404;
 		res.set_content("Error", "text/plain");
@@ -161,6 +174,11 @@ HANDLER_FUNC(emblem_upload) {
 	auto imgtype = imgtype_str.c_str();
 	auto img = req.get_file_value("Img").content;
 	auto img_cstr = img.c_str();
+
+#ifdef Pandas_WebServer_Database_EncodingAdaptive
+	auto world_name_str_we = U2AWE(world_name_str);
+	auto world_name_we = world_name_str_we.c_str();
+#endif // Pandas_WebServer_Database_EncodingAdaptive
 	
 	if (imgtype_str != "BMP" && imgtype_str != "GIF") {
 		ShowError("Invalid image type %s, rejecting!\n", imgtype);
@@ -237,7 +255,11 @@ HANDLER_FUNC(emblem_upload) {
 			"SELECT `version` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
 			guild_emblems_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &guild_id, sizeof(guild_id))
+#ifndef Pandas_WebServer_Database_EncodingAdaptive
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name, strlen(world_name))
+#else
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name_we, strlen(world_name_we))
+#endif // Pandas_WebServer_Database_EncodingAdaptive
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
 		SqlStmt_ShowDebug(stmt);
@@ -271,7 +293,11 @@ HANDLER_FUNC(emblem_upload) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_UINT32, &version, sizeof(version))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)imgtype, strlen(imgtype))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_INT, &guild_id, sizeof(guild_id))
+#ifndef Pandas_WebServer_Database_EncodingAdaptive
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)world_name, strlen(world_name))
+#else
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)world_name_we, strlen(world_name_we))
+#endif // Pandas_WebServer_Database_EncodingAdaptive
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_BLOB, (void *)img.c_str(), length)
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
