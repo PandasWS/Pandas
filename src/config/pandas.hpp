@@ -1945,4 +1945,19 @@
 
 	// 是否改进开启 print_req_res 后打印信息的呈现方式, 使信息的区域划分更清晰 [Sola丶小克]
 	#define Pandas_WebServer_Logger_Improved_Presentation
+
+	// 是否重写部分控制器的核心处理代码 [Sola丶小克]
+	// 此选项依赖以下拓展, 任意一个不成立则将会 undef 此选项的定义
+	// - Pandas_WebServer_Database_EncodingAdaptive
+	// - Pandas_WebServer_Console_EncodingAdaptive
+	#define Pandas_WebServer_Rewrite_Controller_HandlerFunc
+
+	#ifndef Pandas_WebServer_Database_EncodingAdaptive
+		#undef Pandas_WebServer_Rewrite_Controller_HandlerFunc
+	#endif // Pandas_WebServer_Database_EncodingAdaptive
+
+	#ifndef Pandas_WebServer_Console_EncodingAdaptive
+		#undef Pandas_WebServer_Rewrite_Controller_HandlerFunc
+	#endif // Pandas_WebServer_Console_EncodingAdaptive
+
 #endif // Pandas_WebServer

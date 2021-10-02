@@ -45,7 +45,7 @@ std::unordered_map<FILE*, e_file_charsetmode> __fpmodecache;
 
 // 此处定义的缓冲区大小可参考 showmsg.cpp 中 SBUF_SIZE 的定义
 // 按照 rAthena 的建议, 此处的 STRBUF_SIZE 不会设置低于 SBUF_SIZE 设定的值
-#define STRBUF_SIZE 2054
+#define STRBUF_SIZE 1024 * 4
 
 //************************************
 // Method:      setModeMapping
