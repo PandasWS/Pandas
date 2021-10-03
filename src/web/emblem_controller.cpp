@@ -298,15 +298,8 @@ HANDLER_FUNC(emblem_upload) {
 using namespace nlohmann;
 
 HANDLER_FUNC(emblem_download) {
-	json response = {
-		{"Type", 1}
-	};
-
 	if (!isAuthorized(req, false)) {
-		response["Type"] = 4;
-		response["Error"] = "Authorization verification failure.";
-		res.status = 403;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 403, 4, "Authorization verification failure.");
 		return;
 	}
 
@@ -320,10 +313,7 @@ HANDLER_FUNC(emblem_download) {
 		fail = true;
 	}
 	if (fail) {
-		response["Type"] = 4;
-		response["Error"] = "Missing necessary parameters to process the request.";
-		res.status = 400;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 400, 4, "Missing necessary parameters to process the request.");
 		return;
 	}
 
@@ -346,10 +336,7 @@ HANDLER_FUNC(emblem_download) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		response["Type"] = 4;
-		response["Error"] = "There is an exception in the database table structure.";
-		res.status = 502;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 502, 4, "There is an exception in the database table structure.");
 		return;
 	}
 
@@ -359,7 +346,7 @@ HANDLER_FUNC(emblem_download) {
 	memset(blob, 0, MAX_EMBLEM_SIZE);
 
 	// 基于 blob 构建一个智能指针, 当智能指针被析构时自动释放 blob 申请的内存区域
-	std::shared_ptr<char> p_blob = std::shared_ptr<char>(blob, [](char* p)->void {delete[] p; });
+	std::shared_ptr<char> __blob = std::shared_ptr<char>(blob, [](char* p)->void {delete[] p; });
 
 	uint32 emblem_size;
 
@@ -367,10 +354,7 @@ HANDLER_FUNC(emblem_download) {
 		SqlStmt_Free(stmt);
 		ShowError("[GuildID: %d / World: \"%s\"] Not found in table\n", guild_id, U2ACE(req.get_file_value("WorldName").content).c_str());
 		sl.unlock();
-		response["Type"] = 4;
-		response["Error"] = "Could not find the guild emblem.";
-		res.status = 404;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 404, 4, "Could not find the guild emblem data.");
 		return;
 	}
 
@@ -382,10 +366,7 @@ HANDLER_FUNC(emblem_download) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		response["Type"] = 4;
-		response["Error"] = "Could not load the emblem data from database.";
-		res.status = 502;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 502, 4, "Could not load the emblem data from database.");
 		return;
 	}
 
@@ -394,19 +375,13 @@ HANDLER_FUNC(emblem_download) {
 
 	if (version != guild_emblem_version) {
 		ShowDebug("Emblem version is not match, current version is %d and the version required by the client is %d.\n", version, guild_emblem_version);
-		response["Type"] = 4;
-		response["Error"] = "Emblem version is not match!";
-		res.status = 502;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 502, 4, "The requested emblem version does not match.");
 		return;
 	}
 
 	if (emblem_size > MAX_EMBLEM_SIZE) {
 		ShowDebug("Emblem is too big, current size is %d and the max length is %d.\n", emblem_size, MAX_EMBLEM_SIZE);
-		response["Type"] = 4;
-		response["Error"] = "Emblem is too big, rejecting!";
-		res.status = 502;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 502, 4, "Emblem is too big, reject.");
 		return;
 	}
 
@@ -417,10 +392,7 @@ HANDLER_FUNC(emblem_download) {
 		content_type = "image/gif";
 	else {
 		ShowError("Invalid image type %s, rejecting!\n", filetype);
-		response["Type"] = 4;
-		response["Error"] = "Unsupported image type, rejecting!";
-		res.status = 502;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 502, 4, "Unsupported image type, reject.");
 		return;
 	}
 
@@ -430,15 +402,8 @@ HANDLER_FUNC(emblem_download) {
 
 
 HANDLER_FUNC(emblem_upload) {
-	json response = {
-		{"Type", 1}
-	};
-
 	if (!isAuthorized(req, true)) {
-		response["Type"] = 3;
-		response["Error"] = "Authorization verification failure.";
-		res.status = 403;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 403, 3, "Authorization verification failure.");
 		return;
 	}
 
@@ -460,10 +425,7 @@ HANDLER_FUNC(emblem_upload) {
 		fail = true;
 	}
 	if (fail) {
-		response["Type"] = 3;
-		response["Error"] = "Missing necessary parameters to process the request.";
-		res.status = 400;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 400, 3, "Missing necessary parameters to process the request.");
 		return;
 	}
 
@@ -477,64 +439,43 @@ HANDLER_FUNC(emblem_upload) {
 	
 	if (imgtype_str != "BMP" && imgtype_str != "GIF") {
 		ShowError("Invalid image type %s, rejecting!\n", imgtype);
-		response["Type"] = 3;
-		response["Error"] = "Unsupported image type, rejecting!";
-		res.status = 403;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 403, 3, "Unsupported image type, reject.");
 		return;
 	}
 
 	auto length = img.length();
 	if (length > MAX_EMBLEM_SIZE) {
 		ShowDebug("Emblem is too big, current size is %lu and the max length is %d.\n", length, MAX_EMBLEM_SIZE);
-		response["Type"] = 3;
-		response["Error"] = "Emblem is too big, rejecting!";
-		res.status = 403;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 403, 3, "The size of the emblem exceeds the maximum limit.");
 		return;
 	}
 
 	if (imgtype_str == "GIF") {
 		if (!web_config.allow_gifs) {
 			ShowDebug("Client sent GIF image but GIF image support is disabled.\n");
-			response["Type"] = 3;
-			response["Error"] = "Client sent GIF image but GIF image support is disabled.";
-			res.status = 403;
-			res.set_content(response.dump(), "application/json");
+			response_json(res, 403, 3, "GIF image support is disabled.");
 			return;
 		}
 		if (img.substr(0, 3) != "GIF") {
 			ShowDebug("Server received ImgType GIF but received file does not start with \"GIF\" magic header.\n");
-			response["Type"] = 3;
-			response["Error"] = "Server received ImgType GIF but received file does not start with \"GIF\" magic header.";
-			res.status = 403;
-			res.set_content(response.dump(), "application/json");
+			response_json(res, 403, 3, "Server received ImgType GIF but received file does not start with \"GIF\" magic header.");
 			return;
 		}
 	}
 	else if (imgtype_str == "BMP") {
 		if (length < 14) {
 			ShowDebug("File size is too short\n");
-			response["Type"] = 3;
-			response["Error"] = "Bitmap file size is too short.";
-			res.status = 403;
-			res.set_content(response.dump(), "application/json");
+			response_json(res, 403, 3, "Bitmap file size is too short.");
 			return;
 		}
 		if (img.substr(0, 2) != "BM") {
 			ShowDebug("Server received ImgType BMP but received file does not start with \"BM\" magic header.\n");
-			response["Type"] = 3;
-			response["Error"] = "Server received ImgType BMP but received file does not start with \"BM\" magic header.";
-			res.status = 403;
-			res.set_content(response.dump(), "application/json");
+			response_json(res, 403, 3, "Server received ImgType BMP but received file does not start with \"BM\" magic header.");
 			return;
 		}
 		if (RBUFL(img_cstr, 2) != length) {
 			ShowDebug("Bitmap size doesn't match size in file header.\n");
-			response["Type"] = 3;
-			response["Error"] = "Bitmap size doesn't match size in file header.";
-			res.status = 403;
-			res.set_content(response.dump(), "application/json");
+			response_json(res, 403, 3, "Bitmap size doesn't match size in file header.");
 			return;
 		}
 
@@ -549,10 +490,7 @@ HANDLER_FUNC(emblem_upload) {
 			}
 			if (((transcount * 300) / (length - offset)) > web_config.emblem_transparency_limit) {
 				ShowDebug("Bitmap transparency check failed.\n");
-				response["Type"] = 3;
-				response["Error"] = "Bitmap transparency check failed.";
-				res.status = 403;
-				res.set_content(response.dump(), "application/json");
+				response_json(res, 403, 3, "Bitmap transparency check failed.");
 				return;
 			}
 		}
@@ -572,10 +510,7 @@ HANDLER_FUNC(emblem_upload) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		response["Type"] = 3;
-		response["Error"] = "There is an exception in the database table structure.";
-		res.status = 502;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 502, 3, "There is an exception in the database table structure.");
 		return;
 	}
 
@@ -588,10 +523,7 @@ HANDLER_FUNC(emblem_upload) {
 			SqlStmt_ShowDebug(stmt);
 			SqlStmt_Free(stmt);
 			sl.unlock();
-			response["Type"] = 3;
-			response["Error"] = "Could not load the emblem version from database.";
-			res.status = 502;
-			res.set_content(response.dump(), "application/json");
+			response_json(res, 502, 3, "Could not load the emblem version from database.");
 			return;
 		}
 		version += 1;
@@ -611,19 +543,17 @@ HANDLER_FUNC(emblem_upload) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		response["Type"] = 3;
-		response["Error"] = "An error occurred while replaceing data.";
-		res.status = 502;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 502, 3, "An error occurred while replaceing data.");
 		return;
 	}
 
 	SqlStmt_Free(stmt);
 	sl.unlock();
 
+	json response = {};
 	response["Type"] = 1;
 	response["version"] = version;
-	res.set_content(response.dump(3), "application/json");
+	response_json(res, 200, response);
 }
 
 #endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc

@@ -160,15 +160,8 @@ HANDLER_FUNC(userconfig_load) {
 using namespace nlohmann;
 
 HANDLER_FUNC(userconfig_save) {
-	json response = {
-		{"Type", 1}
-	};
-
 	if (!isAuthorized(req, false)) {
-		response["Type"] = 3;
-		response["Error"] = "Authorization verification failure.";
-		res.status = 403;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 403, 3, "Authorization verification failure.");
 		return;
 	}
 	
@@ -178,7 +171,7 @@ HANDLER_FUNC(userconfig_save) {
 	std::string data;
 
 	if (!req.has_file("data")) {
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 200, 1);
 		return;
 	}
 
@@ -198,10 +191,7 @@ HANDLER_FUNC(userconfig_save) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		response["Type"] = 3;
-		response["Error"] = "There is an exception in the database table structure.";
-		res.status = 502;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 502, 3, "There is an exception in the database table structure.");
 		return;
 	}
 
@@ -239,10 +229,7 @@ HANDLER_FUNC(userconfig_save) {
 			SqlStmt_ShowDebug(stmt);
 			SqlStmt_Free(stmt);
 			sl.unlock();
-			response["Type"] = 3;
-			response["Error"] = "An error occurred while inserting data.";
-			res.status = 502;
-			res.set_content(response.dump(), "application/json");
+			response_json(res, 502, 3, "An error occurred while inserting data.");
 			return;
 		}
 	} else {
@@ -257,10 +244,7 @@ HANDLER_FUNC(userconfig_save) {
 			SqlStmt_ShowDebug(stmt);
 			SqlStmt_Free(stmt);
 			sl.unlock();
-			response["Type"] = 3;
-			response["Error"] = "An error occurred while updating data.";
-			res.status = 502;
-			res.set_content(response.dump(), "application/json");
+			response_json(res, 502, 3, "An error occurred while updating data.");
 			return;
 		}
 	}
@@ -268,19 +252,12 @@ HANDLER_FUNC(userconfig_save) {
 	SqlStmt_Free(stmt);
 	sl.unlock();
 
-	res.set_content(response.dump(), "application/json");
+	response_json(res, 200, 1);
 }
 
 HANDLER_FUNC(userconfig_load) {
-	json response = {
-		{"Type", 1}
-	};
-
 	if (!req.has_file("AID") || !req.has_file("WorldName")) {
-		response["Type"] = 3;
-		response["Error"] = "Missing necessary parameters to process the request.";
-		res.status = 400;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 400, 3, "Missing necessary parameters to process the request.");
 		return;
 	}
 
@@ -302,10 +279,7 @@ HANDLER_FUNC(userconfig_load) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		response["Type"] = 3;
-		response["Error"] = "There is an exception in the database table structure.";
-		res.status = 502;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 502, 3, "There is an exception in the database table structure.");
 		return;
 	}
 
@@ -313,7 +287,7 @@ HANDLER_FUNC(userconfig_load) {
 		SqlStmt_Free(stmt);
 		ShowDebug("[AccountID: %d, World: \"%s\"] Not found in table, sending new info.\n", account_id, U2ACE(req.get_file_value("WorldName").content).c_str());
 		sl.unlock();
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 200, 1);
 		return;
 	}
 
@@ -325,10 +299,7 @@ HANDLER_FUNC(userconfig_load) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		response["Type"] = 3;
-		response["Error"] = "Could not load the data from database.";
-		res.status = 502;
-		res.set_content(response.dump(), "application/json");
+		response_json(res, 502, 3, "Could not load the data from database.");
 		return;
 	}
 
@@ -336,9 +307,11 @@ HANDLER_FUNC(userconfig_load) {
 	sl.unlock();
 
 	databuf[sizeof(databuf) - 1] = 0;
+
+	json response = {};
 	response = json::parse(A2UWE(databuf));
 	response["Type"] = 1;
-	res.set_content(response.dump(3), "application/json");
+	response_json(res, 200, response);
 }
 
 #endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc
