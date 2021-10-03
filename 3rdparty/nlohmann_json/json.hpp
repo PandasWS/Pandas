@@ -26322,7 +26322,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
     @since version 3.0.0
     */
-    void merge_patch(const basic_json& apply_patch, bool erase_null = true)
+    void merge_patch(const basic_json& apply_patch)
     {
         if (apply_patch.is_object())
         {
@@ -26334,18 +26334,54 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             {
                 if (it.value().is_null())
                 {
-					if (erase_null)
-						erase(it.key());
+                    erase(it.key());
                 }
                 else
                 {
-                    operator[](it.key()).merge_patch(it.value(), erase_null);
+                    operator[](it.key()).merge_patch(it.value());
                 }
             }
         }
         else
         {
             *this = apply_patch;
+        }
+    }
+
+	//************************************
+	// Method:      merge_patch_v2
+	// Description: 能够允许不合入 patch 中值为 null 的字段
+	// Access:      public 
+	// Parameter:   const basic_json & apply_patch
+	// Parameter:   bool merge_null
+	// Returns:     void
+	// Author:      Sola丶小克(CairoLee)  2021/10/03 23:55
+	//************************************ 
+	void merge_patch_v2(const basic_json& apply_patch, bool merge_null = true)
+    {
+        if (apply_patch.is_object())
+        {
+            if (!is_object())
+            {
+                *this = object();
+            }
+            for (auto it = apply_patch.begin(); it != apply_patch.end(); ++it)
+            {
+                if (it.value().is_null())
+                {
+					if (merge_null)
+						erase(it.key());
+                }
+                else
+                {
+                    operator[](it.key()).merge_patch_v2(it.value(), merge_null);
+                }
+            }
+        }
+        else
+        {
+			if ((apply_patch.is_null() && merge_null) || (!apply_patch.is_null()))
+				*this = apply_patch;
         }
     }
 
