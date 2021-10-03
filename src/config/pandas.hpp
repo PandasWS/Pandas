@@ -1952,4 +1952,7 @@
 		#define Pandas_WebServer_Rewrite_Controller_HandlerFunc
 	#endif // Pandas_WebServer_Database_EncodingAdaptive
 
+	// 实现用于读写商店配置信息的 MerchantStore 接口 [Sola丶小克]
+	#define Pandas_WebServer_Implement_MerchantStore
+
 #endif // Pandas_WebServer

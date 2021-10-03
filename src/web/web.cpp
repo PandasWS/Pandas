@@ -30,6 +30,10 @@
 #include "http.hpp"
 #include "userconfig_controller.hpp"
 
+#ifdef Pandas_WebServer_Implement_MerchantStore
+#include "merchantstore_controller.hpp"
+#endif // Pandas_WebServer_Implement_MerchantStore
+
 
 using namespace rathena;
 
@@ -76,6 +80,9 @@ char login_table[32] = "login";
 char guild_emblems_table[32] = "guild_emblems";
 char user_configs_table[32] = "user_configs";
 char char_configs_table[32] = "char_configs";
+#ifdef Pandas_WebServer_Implement_MerchantStore
+char merchant_configs_table[32] = "merchant_configs";
+#endif // Pandas_WebServer_Implement_MerchantStore
 char guild_db_table[32] = "guild";
 char char_db_table[32] = "char";
 
@@ -261,6 +268,10 @@ int inter_config_read(const char* cfgName)
 			safestrncpy(user_configs_table, w2, sizeof(user_configs_table));
 		else if (!strcmpi(w1, "char_configs"))
 			safestrncpy(char_configs_table, w2, sizeof(char_configs_table));
+#ifdef Pandas_WebServer_Implement_MerchantStore
+		else if (!strcmpi(w1, "merchant_configs"))
+			safestrncpy(merchant_configs_table, w2, sizeof(merchant_configs_table));
+#endif // Pandas_WebServer_Implement_MerchantStore
 		else if (!strcmpi(w1, "guild_emblems"))
 			safestrncpy(guild_emblems_table, w2, sizeof(guild_emblems_table));
 		else if (!strcmpi(w1, "login_server_account_db"))
@@ -506,6 +517,10 @@ int do_init(int argc, char** argv) {
 	http_server->Post("/userconfig/save", userconfig_save);
 	http_server->Post("/charconfig/load", charconfig_load);
 	http_server->Post("/charconfig/save", charconfig_save);
+#ifdef Pandas_WebServer_Implement_MerchantStore
+	http_server->Post("/MerchantStore/load", merchantstore_load);
+	http_server->Post("/MerchantStore/save", merchantstore_save);
+#endif // Pandas_WebServer_Implement_MerchantStore
 
 	// set up logger
 	http_server->set_logger(logger);

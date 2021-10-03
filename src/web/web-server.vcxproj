@@ -182,6 +182,7 @@
     <ClCompile Include="auth.cpp" />
     <ClCompile Include="charconfig_controller.cpp" />
     <ClCompile Include="emblem_controller.cpp" />
+    <ClCompile Include="merchantstore_controller.cpp" />
     <ClCompile Include="sqllock.cpp" />
     <ClCompile Include="userconfig_controller.cpp" />
     <ClCompile Include="web.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="charconfig_controller.hpp" />
     <ClInclude Include="emblem_controller.hpp" />
     <ClInclude Include="http.hpp" />
+    <ClInclude Include="merchantstore_controller.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="sqllock.hpp" />
     <ClInclude Include="userconfig_controller.hpp" />
