@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS `user_configs` (
 
 CREATE TABLE IF NOT EXISTS `char_configs` (
   `account_id` int(11) unsigned NOT NULL,
+  `char_id` INT(11) UNSIGNED NOT NULL,	-- Pandas add this field for distinguish character data
   `world_name` varchar(32) NOT NULL,
   `data` longtext NOT NULL,
-  PRIMARY KEY (`account_id`, `world_name`)
+  PRIMARY KEY (`account_id`, `char_id`, `world_name`)	-- Pandas add char_id field into primary key
 ) ENGINE=MyISAM;
