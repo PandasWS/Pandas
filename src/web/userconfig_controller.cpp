@@ -164,18 +164,16 @@ HANDLER_FUNC(userconfig_save) {
 		response_json(res, 403, 3, "Authorization verification failure.");
 		return;
 	}
-	
-	auto account_id = std::stoi(req.get_file_value("AID").content);
-	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
-	auto world_name = world_name_str.c_str();
-	std::string data;
 
 	if (!req.has_file("data")) {
 		response_json(res, 200, 1);
 		return;
 	}
-
-	data = U2AWE(req.get_file_value("data").content);
+	
+	auto account_id = std::stoi(req.get_file_value("AID").content);
+	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
+	auto world_name = world_name_str.c_str();
+	std::string data = U2AWE(req.get_file_value("data").content);
 
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
