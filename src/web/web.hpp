@@ -5,6 +5,7 @@
 #define WEB_HPP
 
 #include <string>
+#include <httplib.h>
 
 #include "../common/cbasetypes.hpp"
 #include "../common/core.hpp" // CORE_ST_LAST
@@ -13,6 +14,7 @@
 #include "../config/core.hpp"
 
 #include "../common/utf8.hpp"
+#include "../../3rdparty/nlohmann_json/json.hpp"
 
 #ifdef Pandas_WebServer_Database_EncodingAdaptive
 	// Utf8 to Ansi with Web Encoding
@@ -37,6 +39,11 @@
 	// Ansi to Utf8 with Console Encoding
 	#define A2UCE(x) x
 #endif // Pandas_WebServer_Console_EncodingAdaptive
+
+#ifdef Pandas_WebServer_Rewrite_Controller_HandlerFunc
+void response_json(httplib::Response& res, int status_code, uint32 type, const std::string& errmes = "");
+void response_json(httplib::Response& res, int status_code, nlohmann::json& content);
+#endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc
 
 enum E_WEBSERVER_ST {
 	WEBSERVER_ST_RUNNING = CORE_ST_LAST,
