@@ -269,15 +269,15 @@ int inter_config_read(const char* cfgName)
 			safestrncpy(web_server_db,w2,sizeof(web_server_db));
 		else if(!strcmpi(w1,"default_codepage"))
 			safestrncpy(default_codepage,w2,sizeof(default_codepage));
-		else if (!strcmpi(w1, "user_configs"))
+		else if (!strcmpi(w1, "user_configs_table"))
 			safestrncpy(user_configs_table, w2, sizeof(user_configs_table));
-		else if (!strcmpi(w1, "char_configs"))
+		else if (!strcmpi(w1, "char_configs_table"))
 			safestrncpy(char_configs_table, w2, sizeof(char_configs_table));
 #ifdef Pandas_WebServer_Implement_MerchantStore
-		else if (!strcmpi(w1, "merchant_configs"))
+		else if (!strcmpi(w1, "merchant_configs_table"))
 			safestrncpy(merchant_configs_table, w2, sizeof(merchant_configs_table));
 #endif // Pandas_WebServer_Implement_MerchantStore
-		else if (!strcmpi(w1, "guild_emblems"))
+		else if (!strcmpi(w1, "guild_emblems_table"))
 			safestrncpy(guild_emblems_table, w2, sizeof(guild_emblems_table));
 		else if (!strcmpi(w1, "login_server_account_db"))
 			safestrncpy(login_table, w2, sizeof(login_table));
