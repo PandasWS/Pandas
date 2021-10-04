@@ -83,6 +83,9 @@ char char_configs_table[32] = "char_configs";
 #ifdef Pandas_WebServer_Implement_MerchantStore
 char merchant_configs_table[32] = "merchant_configs";
 #endif // Pandas_WebServer_Implement_MerchantStore
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+char recruitment_table[32] = "recruitment";
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 char guild_db_table[32] = "guild";
 char char_db_table[32] = "char";
 
@@ -273,12 +276,16 @@ int inter_config_read(const char* cfgName)
 			safestrncpy(user_configs_table, w2, sizeof(user_configs_table));
 		else if (!strcmpi(w1, "char_configs_table"))
 			safestrncpy(char_configs_table, w2, sizeof(char_configs_table));
+		else if (!strcmpi(w1, "guild_emblems_table"))
+			safestrncpy(guild_emblems_table, w2, sizeof(guild_emblems_table));
 #ifdef Pandas_WebServer_Implement_MerchantStore
 		else if (!strcmpi(w1, "merchant_configs_table"))
 			safestrncpy(merchant_configs_table, w2, sizeof(merchant_configs_table));
 #endif // Pandas_WebServer_Implement_MerchantStore
-		else if (!strcmpi(w1, "guild_emblems_table"))
-			safestrncpy(guild_emblems_table, w2, sizeof(guild_emblems_table));
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+		else if (!strcmpi(w1, "recruitment_table"))
+			safestrncpy(recruitment_table, w2, sizeof(recruitment_table));
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 		else if (!strcmpi(w1, "login_server_account_db"))
 			safestrncpy(login_table, w2, sizeof(login_table));
 		else if (!strcmpi(w1, "guild_db"))

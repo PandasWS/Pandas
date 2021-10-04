@@ -1953,7 +1953,12 @@
 	#endif // Pandas_WebServer_Database_EncodingAdaptive
 
 	// 实现用于读写商店配置信息的 MerchantStore 接口 [Sola丶小克]
+	// 启用后将支持 /MerchantStore/load 和 /MerchantStore/save 两个相关接口
 	#define Pandas_WebServer_Implement_MerchantStore
+
+	// 实现用于冒险家中介所的 party 接口 [Sola丶小克]
+	// 启用后将支持 /party/{list|get|add|del|search} 这几个相关接口
+	#define Pandas_WebServer_Implement_PartyRecruitment
 
 	// 在执行 logger 日志函数时是否在内部进行互斥处理 [Sola丶小克]
 	// 
