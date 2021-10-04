@@ -34,6 +34,9 @@
 #include "merchantstore_controller.hpp"
 #endif // Pandas_WebServer_Implement_MerchantStore
 
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+#include "recruitment_controller.hpp"
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 
 using namespace rathena;
 
@@ -536,6 +539,13 @@ int do_init(int argc, char** argv) {
 	http_server->Post("/MerchantStore/load", merchantstore_load);
 	http_server->Post("/MerchantStore/save", merchantstore_save);
 #endif // Pandas_WebServer_Implement_MerchantStore
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+	http_server->Post("/party/list", party_recruitment_list);
+	http_server->Post("/party/get", party_recruitment_get);
+	http_server->Post("/party/add", party_recruitment_add);
+	http_server->Post("/party/del", party_recruitment_del);
+	http_server->Post("/party/search", party_recruitment_search);
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 
 	// set up logger
 	http_server->set_logger(logger);
