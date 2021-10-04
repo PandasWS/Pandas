@@ -91,6 +91,11 @@ char web_connection_encoding[32] = { 0 };
 char character_codepage[32] = { 0 };
 #endif // Pandas_WebServer_Database_EncodingAdaptive
 
+#ifdef Pandas_WebServer_ApplyMutex_For_Logger
+#include <mutex>
+std::mutex g_logger_lock;
+#endif // Pandas_WebServer_ApplyMutex_For_Logger
+
 #ifdef Pandas_WebServer_Rewrite_Controller_HandlerFunc
 //************************************
 // Method:      response_json
@@ -454,6 +459,9 @@ void set_server_type(void) {
 
 // called just before sending repsonse
 void logger(const Request & req, const Response & res) {
+#ifdef Pandas_WebServer_ApplyMutex_For_Logger
+	std::lock_guard<std::mutex> locker(g_logger_lock);
+#endif // Pandas_WebServer_ApplyMutex_For_Logger
 	// make this a config
 	if (web_config.print_req_res) {
 #ifdef Pandas_WebServer_Logger_Improved_Presentation
