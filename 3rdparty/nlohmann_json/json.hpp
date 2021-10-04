@@ -26357,7 +26357,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 	// Returns:     void
 	// Author:      Sola丶小克(CairoLee)  2021/10/03 23:55
 	//************************************ 
-	void merge_patch_v2(const basic_json& apply_patch, bool merge_null = true)
+    void merge_patch_v2(const basic_json& apply_patch, bool merge_null = true)
     {
         if (apply_patch.is_object())
         {
@@ -26369,8 +26369,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             {
                 if (it.value().is_null())
                 {
-					if (merge_null)
-						erase(it.key());
+                    if (merge_null)
+                        erase(it.key());
                 }
                 else
                 {
@@ -26380,8 +26380,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
         else
         {
-			if ((apply_patch.is_null() && merge_null) || (!apply_patch.is_null()))
-				*this = apply_patch;
+            if ((apply_patch.is_null() && merge_null) || (!apply_patch.is_null()))
+                *this = apply_patch;
         }
     }
 
