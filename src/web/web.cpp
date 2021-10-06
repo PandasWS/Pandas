@@ -88,6 +88,7 @@ char merchant_configs_table[32] = "merchant_configs";
 #endif // Pandas_WebServer_Implement_MerchantStore
 #ifdef Pandas_WebServer_Implement_PartyRecruitment
 char recruitment_table[32] = "recruitment";
+char party_table[32] = "party";
 #endif // Pandas_WebServer_Implement_PartyRecruitment
 char guild_db_table[32] = "guild";
 char char_db_table[32] = "char";
@@ -288,6 +289,8 @@ int inter_config_read(const char* cfgName)
 #ifdef Pandas_WebServer_Implement_PartyRecruitment
 		else if (!strcmpi(w1, "recruitment_table"))
 			safestrncpy(recruitment_table, w2, sizeof(recruitment_table));
+		else if (!strcmpi(w1, "party_db"))
+			safestrncpy(party_table, w2, sizeof(party_table));
 #endif // Pandas_WebServer_Implement_PartyRecruitment
 		else if (!strcmpi(w1, "login_server_account_db"))
 			safestrncpy(login_table, w2, sizeof(login_table));
@@ -540,10 +543,10 @@ int do_init(int argc, char** argv) {
 	http_server->Post("/MerchantStore/save", merchantstore_save);
 #endif // Pandas_WebServer_Implement_MerchantStore
 #ifdef Pandas_WebServer_Implement_PartyRecruitment
-	http_server->Post("/party/list", party_recruitment_list);
-	http_server->Post("/party/get", party_recruitment_get);
 	http_server->Post("/party/add", party_recruitment_add);
 	http_server->Post("/party/del", party_recruitment_del);
+	http_server->Post("/party/get", party_recruitment_get);
+	http_server->Post("/party/list", party_recruitment_list);
 	http_server->Post("/party/search", party_recruitment_search);
 #endif // Pandas_WebServer_Implement_PartyRecruitment
 

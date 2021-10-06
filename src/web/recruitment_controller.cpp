@@ -15,7 +15,11 @@
 
 using namespace nlohmann;
 
-HANDLER_FUNC(party_recruitment_list) {
+HANDLER_FUNC(party_recruitment_add) {
+	response_json(res, 404, 0);
+}
+
+HANDLER_FUNC(party_recruitment_del) {
 	response_json(res, 404, 0);
 }
 
@@ -23,11 +27,7 @@ HANDLER_FUNC(party_recruitment_get) {
 	response_json(res, 404, 0);
 }
 
-HANDLER_FUNC(party_recruitment_add) {
-	response_json(res, 404, 0);
-}
-
-HANDLER_FUNC(party_recruitment_del) {
+HANDLER_FUNC(party_recruitment_list) {
 	response_json(res, 404, 0);
 }
 

@@ -170,11 +170,10 @@ HANDLER_FUNC(charconfig_save) {
 		return;
 	}
 	
-	auto account_id = std::stoi(req.get_file_value("AID").content);
-	auto char_id = std::stoi(req.get_file_value("GID").content);
-	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
-	auto world_name = world_name_str.c_str();
-	std::string data = U2AWE(req.get_file_value("data").content);
+	auto account_id = GET_NUMBER_FIELD("AID", 0);
+	auto char_id = GET_NUMBER_FIELD("GID", 0);
+	auto world_name = GET_STRING_FIELD("WorldName", "");
+	auto data = GET_STRING_FIELD("data", "");
 
 	// =============== 确保 AID (账号编号) 和 GID (角色编号) 合法存在 ===============
 	SQLLock charlock(CHAR_SQL_LOCK);
@@ -216,7 +215,7 @@ HANDLER_FUNC(charconfig_save) {
 			char_configs_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name, strlen(world_name))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
 		SqlStmt_ShowDebug(stmt);
@@ -254,7 +253,7 @@ HANDLER_FUNC(charconfig_save) {
 				char_configs_table)
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name, strlen(world_name))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
@@ -271,7 +270,7 @@ HANDLER_FUNC(charconfig_save) {
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &account_id, sizeof(account_id))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_INT, &char_id, sizeof(char_id))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)world_name, strlen(world_name))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
 			SqlStmt_ShowDebug(stmt);
@@ -294,10 +293,9 @@ HANDLER_FUNC(charconfig_load) {
 		return;
 	}
 
-	auto account_id = std::stoi(req.get_file_value("AID").content);
-	auto char_id = std::stoi(req.get_file_value("GID").content);
-	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
-	auto world_name = world_name_str.c_str();
+	auto account_id = GET_NUMBER_FIELD("AID", 0);
+	auto char_id = GET_NUMBER_FIELD("GID", 0);
+	auto world_name = GET_STRING_FIELD("WorldName", "");
 
 	// =============== 确保 AID (账号编号) 和 GID (角色编号) 合法存在 ===============
 	SQLLock charlock(CHAR_SQL_LOCK);
@@ -339,7 +337,7 @@ HANDLER_FUNC(charconfig_load) {
 			char_configs_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name, strlen(world_name))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
 		SqlStmt_ShowDebug(stmt);

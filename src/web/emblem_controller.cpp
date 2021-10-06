@@ -317,10 +317,9 @@ HANDLER_FUNC(emblem_download) {
 		return;
 	}
 
-	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
-	auto world_name = world_name_str.c_str();
-	auto guild_id = std::stoi(req.get_file_value("GDID").content);
-	auto guild_emblem_version = std::stoi(req.get_file_value("Version").content);
+	auto guild_id = GET_NUMBER_FIELD("GDID", 0);
+	auto guild_emblem_version = GET_NUMBER_FIELD("Version", 0);
+	auto world_name = GET_STRING_FIELD("WorldName", "");
 
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
@@ -330,7 +329,7 @@ HANDLER_FUNC(emblem_download) {
 			"SELECT `version`, `file_type`, `file_data` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
 			guild_emblems_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &guild_id, sizeof(guild_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name, strlen(world_name))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
 		SqlStmt_ShowDebug(stmt);
@@ -429,16 +428,13 @@ HANDLER_FUNC(emblem_upload) {
 		return;
 	}
 
-	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
-	auto world_name = world_name_str.c_str();
-	auto guild_id = std::stoi(req.get_file_value("GDID").content);
-	auto imgtype_str = req.get_file_value("ImgType").content;
-	auto imgtype = imgtype_str.c_str();
-	auto img = req.get_file_value("Img").content;
-	auto img_cstr = img.c_str();
-	
-	if (imgtype_str != "BMP" && imgtype_str != "GIF") {
-		ShowError("Invalid image type %s, rejecting!\n", imgtype);
+	auto guild_id = GET_NUMBER_FIELD("GDID", 0);
+	auto imgtype = GET_STRING_FIELD("ImgType", "");
+	auto img = GET_RAWSTR_FIELD("Img", "");
+	auto world_name = GET_STRING_FIELD("WorldName", "");
+
+	if (imgtype != "BMP" && imgtype != "GIF") {
+		ShowError("Invalid image type %s, rejecting!\n", imgtype.c_str());
 		response_json(res, 403, 3, "Unsupported image type, reject.");
 		return;
 	}
@@ -450,7 +446,7 @@ HANDLER_FUNC(emblem_upload) {
 		return;
 	}
 
-	if (imgtype_str == "GIF") {
+	if (imgtype == "GIF") {
 		if (!web_config.allow_gifs) {
 			ShowDebug("Client sent GIF image but GIF image support is disabled.\n");
 			response_json(res, 403, 3, "GIF image support is disabled.");
@@ -462,7 +458,7 @@ HANDLER_FUNC(emblem_upload) {
 			return;
 		}
 	}
-	else if (imgtype_str == "BMP") {
+	else if (imgtype == "BMP") {
 		if (length < 14) {
 			ShowDebug("File size is too short\n");
 			response_json(res, 403, 3, "Bitmap file size is too short.");
@@ -473,18 +469,18 @@ HANDLER_FUNC(emblem_upload) {
 			response_json(res, 403, 3, "Server received ImgType BMP but received file does not start with \"BM\" magic header.");
 			return;
 		}
-		if (RBUFL(img_cstr, 2) != length) {
+		if (RBUFL(img.c_str(), 2) != length) {
 			ShowDebug("Bitmap size doesn't match size in file header.\n");
 			response_json(res, 403, 3, "Bitmap size doesn't match size in file header.");
 			return;
 		}
 
 		if (web_config.emblem_transparency_limit < 100) {
-			uint32 offset = RBUFL(img_cstr, 0x0A);
+			uint32 offset = RBUFL(img.c_str(), 0x0A);
 			int i, transcount = 1, tmp[3];
 			for (i = offset; i < length - 1; i++) {
 				int j = i % 3;
-				tmp[j] = RBUFL(img_cstr, i);
+				tmp[j] = RBUFL(img.c_str(), i);
 				if (j == 2 && (tmp[0] == 0xFFFF00FF) && (tmp[1] == 0xFFFF00) && (tmp[2] == 0xFF00FFFF)) //if pixel is transparent
 					transcount++;
 			}
@@ -504,7 +500,7 @@ HANDLER_FUNC(emblem_upload) {
 			"SELECT `version` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
 			guild_emblems_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &guild_id, sizeof(guild_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name, strlen(world_name))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
 		SqlStmt_ShowDebug(stmt);
@@ -534,9 +530,9 @@ HANDLER_FUNC(emblem_upload) {
 		"REPLACE INTO `%s` (`version`, `file_type`, `guild_id`, `world_name`, `file_data`) VALUES (?, ?, ?, ?, ?)",
 		guild_emblems_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_UINT32, &version, sizeof(version))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)imgtype, strlen(imgtype))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)imgtype.c_str(), strlen(imgtype.c_str()))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_INT, &guild_id, sizeof(guild_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)world_name, strlen(world_name))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_BLOB, (void *)img.c_str(), length)
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {

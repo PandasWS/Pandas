@@ -169,11 +169,10 @@ HANDLER_FUNC(userconfig_save) {
 		response_json(res, 200, 1);
 		return;
 	}
-	
-	auto account_id = std::stoi(req.get_file_value("AID").content);
-	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
-	auto world_name = world_name_str.c_str();
-	std::string data = U2AWE(req.get_file_value("data").content);
+
+	auto account_id = GET_NUMBER_FIELD("AID", 0);
+	auto world_name = GET_STRING_FIELD("WorldName", "");
+	auto data = GET_STRING_FIELD("data", "");
 
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
@@ -183,7 +182,7 @@ HANDLER_FUNC(userconfig_save) {
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
 			user_configs_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name, strlen(world_name))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
 		SqlStmt_ShowDebug(stmt);
@@ -220,7 +219,7 @@ HANDLER_FUNC(userconfig_save) {
 				"INSERT INTO `%s` (`account_id`, `world_name`, `data`) VALUES (?, ?, ?)",
 				user_configs_table)
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name, strlen(world_name))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
@@ -236,7 +235,7 @@ HANDLER_FUNC(userconfig_save) {
 				user_configs_table)
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &account_id, sizeof(account_id))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name, strlen(world_name))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
 			SqlStmt_ShowDebug(stmt);
@@ -259,9 +258,8 @@ HANDLER_FUNC(userconfig_load) {
 		return;
 	}
 
-	auto account_id = std::stoi(req.get_file_value("AID").content);
-	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
-	auto world_name = world_name_str.c_str();
+	auto account_id = GET_NUMBER_FIELD("AID", 0);
+	auto world_name = GET_STRING_FIELD("WorldName", "");
 
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
@@ -271,7 +269,7 @@ HANDLER_FUNC(userconfig_load) {
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
 			user_configs_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name, strlen(world_name))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
 		SqlStmt_ShowDebug(stmt);
