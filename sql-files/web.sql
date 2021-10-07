@@ -66,5 +66,5 @@ CREATE TABLE IF NOT EXISTS `recruitment` (
   `min_level` INT(11) UNSIGNED NOT NULL,
   `max_level` INT(11) UNSIGNED NOT NULL,
   `memo` varchar(32) NOT NULL DEFAULT '',
-  PRIMARY KEY (`account_id`, `char_id`, `world_name`, `adventure_type`)
+  PRIMARY KEY (`account_id`, `char_id`, `world_name`)
 ) ENGINE=MyISAM;

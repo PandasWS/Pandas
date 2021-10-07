@@ -115,7 +115,7 @@ std::mutex g_logger_lock;
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/10/03 10:18
 //************************************ 
-void response_json(httplib::Response& res, int status_code, uint32 type, const std::string& errmes) {
+void response_json(httplib::Response& res, int status_code, int type, const std::string& errmes) {
 	nlohmann::json content = {};
 	content["Type"] = type;
 	if (!errmes.empty()) {
