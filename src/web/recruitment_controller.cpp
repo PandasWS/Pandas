@@ -257,16 +257,15 @@ HANDLER_FUNC(party_recruitment_list) {
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto page = GET_NUMBER_FIELD("page", 1);
 
-	// 用来列举当前服务器中已经发布的招募内容
-	// 但根据观察台服的实际情况, 刚开始打开招募界面的一瞬间请求的 list 接口所返回的数据并不会被客户端呈现
-	// 上面这个情况不确定是否为 BUG, 未来可以尝试模拟返回 search 接口一致的结果看看
-
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
-	if (SQL_SUCCESS != Sql_Query(handle, "SELECT COUNT(*) FROM `%s`", recruitment_table) ||
+	if (SQL_SUCCESS != Sql_Query(handle,
+		"SELECT COUNT(*) FROM `%s` "
+		"WHERE `account_id` != %d AND `world_name` = '%s'",
+		recruitment_table, account_id, world_name.c_str()) ||
 		SQL_SUCCESS != Sql_NextRow(handle)) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
@@ -315,7 +314,7 @@ HANDLER_FUNC(party_recruitment_list) {
 	json response;
 	response["Type"] = 1;
 
-	if (max_page) {
+	if (record_cnt) {
 		response["totalPage"] = max_page;
 		response["data"] = json::array();
 
@@ -378,7 +377,7 @@ HANDLER_FUNC(party_recruitment_search) {
 	auto dealer = GET_NUMBER_FIELD("Dealer", 0);
 	auto assist = GET_NUMBER_FIELD("Assist", 0);
 	auto adventure_type = GET_NUMBER_FIELD("Type", 0);
-	auto page = GET_NUMBER_FIELD("page", 1);	// 含义是搜索结果的第几页?
+	auto page = GET_NUMBER_FIELD("page", 1);
 
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
@@ -484,7 +483,7 @@ HANDLER_FUNC(party_recruitment_search) {
 	json response;
 	response["Type"] = 1;
 
-	if (max_page) {
+	if (record_cnt) {
 		response["totalPage"] = max_page;
 		response["data"] = json::array();
 
