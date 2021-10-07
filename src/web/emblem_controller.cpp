@@ -311,9 +311,9 @@ HANDLER_FUNC(emblem_download) {
 	auto guild_emblem_version = GET_NUMBER_FIELD("Version", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
-	SQLLock sl(WEB_SQL_LOCK);
-	sl.lock();
-	auto handle = sl.getHandle();
+	SQLLock weblock(WEB_SQL_LOCK);
+	weblock.lock();
+	auto handle = weblock.getHandle();
 	SqlStmt * stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `version`, `file_type`, `file_data` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
@@ -324,7 +324,7 @@ HANDLER_FUNC(emblem_download) {
 	) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
-		sl.unlock();
+		weblock.unlock();
 		response_json(res, 502, 4, "There is an exception in the database table structure.");
 		return;
 	}
@@ -342,7 +342,7 @@ HANDLER_FUNC(emblem_download) {
 	if (SqlStmt_NumRows(stmt) <= 0) {
 		SqlStmt_Free(stmt);
 		ShowError("[GuildID: %d / World: \"%s\"] Not found in table\n", guild_id, U2ACE(req.get_file_value("WorldName").content).c_str());
-		sl.unlock();
+		weblock.unlock();
 		response_json(res, 404, 4, "Could not find the guild emblem data.");
 		return;
 	}
@@ -354,13 +354,13 @@ HANDLER_FUNC(emblem_download) {
 	) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
-		sl.unlock();
+		weblock.unlock();
 		response_json(res, 502, 4, "Could not load the emblem data from database.");
 		return;
 	}
 
 	SqlStmt_Free(stmt);
-	sl.unlock();
+	weblock.unlock();
 
 	if (version != guild_emblem_version) {
 		ShowDebug("Emblem version is not match, current version is %d and the version required by the client is %d.\n", version, guild_emblem_version);
@@ -465,9 +465,9 @@ HANDLER_FUNC(emblem_upload) {
 		}
 	}
 
-	SQLLock sl(WEB_SQL_LOCK);
-	sl.lock();
-	auto handle = sl.getHandle();
+	SQLLock weblock(WEB_SQL_LOCK);
+	weblock.lock();
+	auto handle = weblock.getHandle();
 	SqlStmt * stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `version` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
@@ -478,7 +478,7 @@ HANDLER_FUNC(emblem_upload) {
 	) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
-		sl.unlock();
+		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
 		return;
 	}
@@ -491,7 +491,7 @@ HANDLER_FUNC(emblem_upload) {
 		) {
 			SqlStmt_ShowDebug(stmt);
 			SqlStmt_Free(stmt);
-			sl.unlock();
+			weblock.unlock();
 			response_json(res, 502, 3, "Could not load the emblem version from database.");
 			return;
 		}
@@ -511,13 +511,13 @@ HANDLER_FUNC(emblem_upload) {
 	) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
-		sl.unlock();
+		weblock.unlock();
 		response_json(res, 502, 3, "An error occurred while replaceing data.");
 		return;
 	}
 
 	SqlStmt_Free(stmt);
-	sl.unlock();
+	weblock.unlock();
 
 	json response = {};
 	response["Type"] = 1;

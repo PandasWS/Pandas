@@ -173,9 +173,9 @@ HANDLER_FUNC(userconfig_save) {
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto data = GET_STRING_FIELD("data", "");
 
-	SQLLock sl(WEB_SQL_LOCK);
-	sl.lock();
-	auto handle = sl.getHandle();
+	SQLLock weblock(WEB_SQL_LOCK);
+	weblock.lock();
+	auto handle = weblock.getHandle();
 	SqlStmt * stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
@@ -186,7 +186,7 @@ HANDLER_FUNC(userconfig_save) {
 	) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
-		sl.unlock();
+		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
 		return;
 	}
@@ -224,7 +224,7 @@ HANDLER_FUNC(userconfig_save) {
 		) {
 			SqlStmt_ShowDebug(stmt);
 			SqlStmt_Free(stmt);
-			sl.unlock();
+			weblock.unlock();
 			response_json(res, 502, 3, "An error occurred while inserting data.");
 			return;
 		}
@@ -239,14 +239,14 @@ HANDLER_FUNC(userconfig_save) {
 		) {
 			SqlStmt_ShowDebug(stmt);
 			SqlStmt_Free(stmt);
-			sl.unlock();
+			weblock.unlock();
 			response_json(res, 502, 3, "An error occurred while updating data.");
 			return;
 		}
 	}
 
 	SqlStmt_Free(stmt);
-	sl.unlock();
+	weblock.unlock();
 
 	response_json(res, 200, 1);
 }
@@ -263,9 +263,9 @@ HANDLER_FUNC(userconfig_load) {
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
-	SQLLock sl(WEB_SQL_LOCK);
-	sl.lock();
-	auto handle = sl.getHandle();
+	SQLLock weblock(WEB_SQL_LOCK);
+	weblock.lock();
+	auto handle = weblock.getHandle();
 	SqlStmt * stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
@@ -276,7 +276,7 @@ HANDLER_FUNC(userconfig_load) {
 	) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
-		sl.unlock();
+		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
 		return;
 	}
@@ -284,7 +284,7 @@ HANDLER_FUNC(userconfig_load) {
 	if (SqlStmt_NumRows(stmt) <= 0) {
 		SqlStmt_Free(stmt);
 		ShowDebug("[AccountID: %d, World: \"%s\"] Not found in table, sending new info.\n", account_id, U2ACE(req.get_file_value("WorldName").content).c_str());
-		sl.unlock();
+		weblock.unlock();
 		response_json(res, 200, 1);
 		return;
 	}
@@ -296,13 +296,13 @@ HANDLER_FUNC(userconfig_load) {
 	) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
-		sl.unlock();
+		weblock.unlock();
 		response_json(res, 502, 3, "Could not load the data from database.");
 		return;
 	}
 
 	SqlStmt_Free(stmt);
-	sl.unlock();
+	weblock.unlock();
 
 	databuf[sizeof(databuf) - 1] = 0;
 
