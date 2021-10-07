@@ -2438,7 +2438,7 @@
 #endif
 
 #ifdef Pandas_PacketFunction_PartyJoinRequest
-#if PACKETVER >= 20200902
+#if PACKETVER >= 20200300
 	parseable_packet( HEADER_CZ_PARTY_JOIN_REQUEST, sizeof(struct PACKET_CZ_PARTY_JOIN_REQUEST), clif_parse_PartyJoinRequest, 0);
 #endif
 #endif // Pandas_PacketFunction_PartyJoinRequest
