@@ -260,7 +260,7 @@ HANDLER_FUNC(party_recruitment_list) {
 		"SELECT `account_id`, `char_id`, `char_name`, `world_name`, `adventure_type`, "
 		"`tanker`, `dealer`, `healer`, `assist`, `min_level`, `max_level`, `memo` "
 		"FROM `%s` WHERE (`account_id` != ? AND `world_name` = ?) LIMIT %d, %d",
-		recruitment_table, page - 1, RECRUITMENT_PAGESIZE)
+		recruitment_table, (page - 1) * RECRUITMENT_PAGESIZE, RECRUITMENT_PAGESIZE)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
@@ -395,7 +395,7 @@ HANDLER_FUNC(party_recruitment_search) {
 		if (SQL_SUCCESS != SqlStmt_Prepare(stmt, sqlcmd.c_str(),
 			recruitment_table, min_level, max_level, account_id,
 			keyword.c_str(), keyword.c_str(), // 若关键字不为空, 则而外需要多两个参数
-			page - 1, RECRUITMENT_PAGESIZE)
+			(page - 1) * RECRUITMENT_PAGESIZE, RECRUITMENT_PAGESIZE)
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 			) {
