@@ -1195,4 +1195,8 @@ void clif_change_title_ack(struct map_session_data* sd, unsigned char result, un
 void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_when_hidden, enum e_aura_special flag);
 #endif // Pandas_Aura_Mechanism
 
+#ifdef Pandas_PacketFunction_PartyJoinRequest
+void clif_parse_PartyJoinRequest(int fd, struct map_session_data* sd);
+#endif // Pandas_PacketFunction_PartyJoinRequest
+
 #endif /* CLIF_HPP */

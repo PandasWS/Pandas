@@ -14351,6 +14351,19 @@ void clif_parse_PartyInvite2(int fd, struct map_session_data *sd){
 	party_invite(sd, t_sd);
 }
 
+#ifdef Pandas_PacketFunction_PartyJoinRequest
+/*
+ * Request join party from Adventurer's Agency
+ * 0ae6 <CharID>L <AccountID>L (CZ_PARTY_JOIN_REQUEST)
+ */
+void clif_parse_PartyJoinRequest(int fd, struct map_session_data* sd) {
+	nullpo_retv(sd);
+
+	struct PACKET_CZ_PARTY_JOIN_REQUEST* p = (struct PACKET_CZ_PARTY_JOIN_REQUEST*)RFIFOP(fd, 0);
+	ShowDebug("Party Leader CharID = %d | AccountID = %d\n", p->partyleader_char_id, p->partyleader_account_id);
+}
+#endif // Pandas_PacketFunction_PartyJoinRequest
+
 
 /// Party invitation reply
 /// 00ff <party id>.L <flag>.L (CZ_JOIN_GROUP)

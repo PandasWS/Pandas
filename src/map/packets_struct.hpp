@@ -4130,6 +4130,15 @@ struct PACKET_ZC_NOTIFY_SKILL_POSITION {
 };
 DEFINE_PACKET_HEADER(ZC_NOTIFY_SKILL_POSITION, 0x0115);
 
+#ifdef Pandas_PacketFunction_PartyJoinRequest
+struct PACKET_CZ_PARTY_JOIN_REQUEST {
+	int16 packetType;
+	uint32 partyleader_char_id;
+	uint32 partyleader_account_id;
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(CZ_PARTY_JOIN_REQUEST, 0x0ae6);
+#endif // Pandas_PacketFunction_PartyJoinRequest
+
 #if !defined(sun) && (!defined(__NETBSD__) || __NetBSD_Version__ >= 600000000) // NetBSD 5 and Solaris don't like pragma pack but accept the packed attribute
 #pragma pack(pop)
 #endif // not NetBSD < 6 / Solaris

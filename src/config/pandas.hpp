@@ -439,12 +439,20 @@
 // ============================================================================
 
 #ifdef Pandas_PacketFunction
-	// 实现 0xb0d 封包发送函数, 用于告诉客户端移除指定单位的特效
+	// 是否实现 0xb0d 封包发送函数 [Sola丶小克]
+	// 该封包用于告诉客户端移除指定单位的特效, 实现特性的精细化控制
 	// 
 	// 涉及到的函数有:
 	// - clif_removespecialeffect
 	// - clif_removespecialeffect_single
 	#define Pandas_PacketFunction_RemoveSpecialEffect
+
+	// 是否实现 0x0ae6 封包处理函数 [Sola丶小克]
+	// 该封包用于响应客户端中冒险者中介所的加入队伍请求
+	// 
+	// 当前仅支持 PACKETVER >= 20200902 的客户端,
+	// 若更早之前的客户端也支持则需要放宽客户端封包版本的限制条件
+	#define Pandas_PacketFunction_PartyJoinRequest
 #endif // Pandas_PacketFunction
 
 // ============================================================================
