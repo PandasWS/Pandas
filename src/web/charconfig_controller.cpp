@@ -165,10 +165,10 @@ HANDLER_FUNC(charconfig_save) {
 		return;
 	}
 
-	if (!req.has_file("data")) {
-		response_json(res, 200, 1);
-		return;
-	}
+	REQUIRE_FIELD_EXISTS_STRICT("AID");
+	REQUIRE_FIELD_EXISTS_STRICT("GID");
+	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
+	REQUIRE_FIELD_EXISTS_STRICT("data");
 	
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
@@ -292,6 +292,10 @@ HANDLER_FUNC(charconfig_load) {
 		response_json(res, 403, 3, "Authorization verification failure.");
 		return;
 	}
+
+	REQUIRE_FIELD_EXISTS_STRICT("AID");
+	REQUIRE_FIELD_EXISTS_STRICT("GID");
+	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);

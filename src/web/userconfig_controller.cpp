@@ -165,10 +165,9 @@ HANDLER_FUNC(userconfig_save) {
 		return;
 	}
 
-	if (!req.has_file("data")) {
-		response_json(res, 200, 1);
-		return;
-	}
+	REQUIRE_FIELD_EXISTS_STRICT("AID");
+	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
+	REQUIRE_FIELD_EXISTS_STRICT("data");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
@@ -257,6 +256,9 @@ HANDLER_FUNC(userconfig_load) {
 		response_json(res, 400, 3, "Missing necessary parameters to process the request.");
 		return;
 	}
+
+	REQUIRE_FIELD_EXISTS_STRICT("AID");
+	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");

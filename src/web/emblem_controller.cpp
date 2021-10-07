@@ -303,19 +303,9 @@ HANDLER_FUNC(emblem_download) {
 		return;
 	}
 
-	bool fail = false;
-	if (!req.has_file("GDID")) {
-		ShowDebug("Missing GuildID field for emblem download.\n");
-		fail = true;
-	}
-	if (!req.has_file("WorldName")) {
-		ShowDebug("Missing WorldName field for emblem download.\n");
-		fail = true;
-	}
-	if (fail) {
-		response_json(res, 400, 4, "Missing necessary parameters to process the request.");
-		return;
-	}
+	REQUIRE_FIELD_EXISTS_STRICT("GDID");
+	REQUIRE_FIELD_EXISTS_STRICT("Version");
+	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
 
 	auto guild_id = GET_NUMBER_FIELD("GDID", 0);
 	auto guild_emblem_version = GET_NUMBER_FIELD("Version", 0);
@@ -406,27 +396,10 @@ HANDLER_FUNC(emblem_upload) {
 		return;
 	}
 
-	bool fail = false;
-	if (!req.has_file("GDID")) {
-		ShowDebug("Missing GuildID field for emblem download.\n");
-		fail = true;
-	}
-	if (!req.has_file("WorldName")) {
-		ShowDebug("Missing WorldName field for emblem download.\n");
-		fail = true;
-	}
-	if (!req.has_file("Img")) {
-		ShowDebug("Missing Img field for emblem download.\n");
-		fail = true;
-	}
-	if (!req.has_file("ImgType")) {
-		ShowDebug("Missing ImgType for emblem download.\n");
-		fail = true;
-	}
-	if (fail) {
-		response_json(res, 400, 3, "Missing necessary parameters to process the request.");
-		return;
-	}
+	REQUIRE_FIELD_EXISTS_STRICT("GDID");
+	REQUIRE_FIELD_EXISTS_STRICT("ImgType");
+	REQUIRE_FIELD_EXISTS_STRICT("Img");
+	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
 
 	auto guild_id = GET_NUMBER_FIELD("GDID", 0);
 	auto imgtype = GET_STRING_FIELD("ImgType", "");

@@ -29,4 +29,18 @@ typedef HANDLER_FUNC((*handler_func));
 #define GET_RAWSTR_FIELD(field, def_val) \
 	(req.has_file(field) ? req.get_file_value(field).content : def_val)
 
+// 严格要求指定字段存在, 若不存在则返回 400 状态码并给与 Type 赋值 3 以及附赠错误信息
+#define REQUIRE_FIELD_EXISTS_STRICT(field) \
+	if (!req.has_file(field)) { \
+		response_json(res, 400, 3, "Sorry, missing '" ##field "' field for process request."); \
+		return; \
+	}
+
+// 友好的要求指定字段存在, 若不存在则返回 200 状态码并给与 Type 赋值 1
+#define REQUIRE_FIELD_EXISTS(field) \
+	if (!req.has_file(field)) { \
+		response_json(res, 200, 1); \
+		return; \
+	}
+
 #endif

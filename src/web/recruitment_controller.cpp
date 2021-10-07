@@ -28,10 +28,22 @@ HANDLER_FUNC(party_recruitment_add) {
 		return;
 	}
 
+	REQUIRE_FIELD_EXISTS_STRICT("AID");
+	REQUIRE_FIELD_EXISTS_STRICT("GID");
+	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
+	REQUIRE_FIELD_EXISTS_STRICT("CharName");
+	REQUIRE_FIELD_EXISTS_STRICT("Memo");
+	REQUIRE_FIELD_EXISTS_STRICT("MinLV");
+	REQUIRE_FIELD_EXISTS_STRICT("MaxLV");
+	REQUIRE_FIELD_EXISTS_STRICT("Tanker");
+	REQUIRE_FIELD_EXISTS_STRICT("Healer");
+	REQUIRE_FIELD_EXISTS_STRICT("Dealer");
+	REQUIRE_FIELD_EXISTS_STRICT("Assist");
+	REQUIRE_FIELD_EXISTS_STRICT("Type");
+
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
-
 	auto char_name = GET_STRING_FIELD("CharName", "");
 	auto memo = GET_STRING_FIELD("Memo", "");
 	auto min_level = GET_NUMBER_FIELD("MinLV", 0);
@@ -103,6 +115,10 @@ HANDLER_FUNC(party_recruitment_del) {
 		return;
 	}
 
+	REQUIRE_FIELD_EXISTS_STRICT("AID");
+	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
+	REQUIRE_FIELD_EXISTS_STRICT("MasterAID");
+
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto leader_account_id = GET_NUMBER_FIELD("MasterAID", 0);
@@ -136,6 +152,10 @@ HANDLER_FUNC(party_recruitment_get) {
 		response_json(res, 403, 3, "Authorization verification failure.");
 		return;
 	}
+
+	REQUIRE_FIELD_EXISTS_STRICT("AID");
+	REQUIRE_FIELD_EXISTS_STRICT("GID");
+	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
@@ -226,6 +246,11 @@ HANDLER_FUNC(party_recruitment_list) {
 		response_json(res, 403, 3, "Authorization verification failure.");
 		return;
 	}
+
+	REQUIRE_FIELD_EXISTS_STRICT("AID");
+	REQUIRE_FIELD_EXISTS_STRICT("GID");
+	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
+	REQUIRE_FIELD_EXISTS_STRICT("page");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
@@ -328,6 +353,19 @@ HANDLER_FUNC(party_recruitment_search) {
 		response_json(res, 403, 3, "Authorization verification failure.");
 		return;
 	}
+
+	REQUIRE_FIELD_EXISTS_STRICT("AID");
+	REQUIRE_FIELD_EXISTS_STRICT("GID");
+	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
+//	REQUIRE_FIELD_EXISTS_STRICT("Memo");	// 玩家不选则客户端不传, 不做校验
+	REQUIRE_FIELD_EXISTS_STRICT("MinLV");
+	REQUIRE_FIELD_EXISTS_STRICT("MaxLV");
+// 	REQUIRE_FIELD_EXISTS_STRICT("Tanker");	// 玩家不选则客户端不传, 不做校验
+// 	REQUIRE_FIELD_EXISTS_STRICT("Healer");	// 玩家不选则客户端不传, 不做校验
+// 	REQUIRE_FIELD_EXISTS_STRICT("Dealer");	// 玩家不选则客户端不传, 不做校验
+// 	REQUIRE_FIELD_EXISTS_STRICT("Assist");	// 玩家不选则客户端不传, 不做校验
+//	REQUIRE_FIELD_EXISTS_STRICT("Type");	// 玩家不选则客户端不传, 不做校验
+	REQUIRE_FIELD_EXISTS_STRICT("page");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
