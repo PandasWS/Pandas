@@ -70,6 +70,7 @@ extern char merchant_configs_table[32];
 #endif // Pandas_WebServer_Implement_MerchantStore
 #ifdef Pandas_WebServer_Implement_PartyRecruitment
 extern char recruitment_table[32];
+extern char party_table[32];
 #endif // Pandas_WebServer_Implement_PartyRecruitment
 extern char guild_db_table[32];
 extern char char_db_table[32];

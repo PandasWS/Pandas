@@ -163,6 +163,25 @@ bool isVaildAccount(uint32 account_id) {
 // Author:      Sola丶小克(CairoLee)  2021/10/08 19:15
 //************************************ 
 bool isPartyLeader(uint32 account_id, uint32 char_id) {
-	return false;
+	SQLLock charlock(CHAR_SQL_LOCK);
+	charlock.lock();
+	auto char_handle = charlock.getHandle();
+	SqlStmt* stmt = SqlStmt_Malloc(char_handle);
+
+	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+		"SELECT `party_id` FROM `%s` WHERE (`leader_id` = ? AND `leader_char` = ?) LIMIT 1",
+		party_table)
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != SqlStmt_Execute(stmt) || SqlStmt_NumRows(stmt) <= 0
+		) {
+		SqlStmt_Free(stmt);
+		charlock.unlock();
+		return false;
+	}
+
+	SqlStmt_Free(stmt);
+	charlock.unlock();
+	return true;
 }
 #endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc

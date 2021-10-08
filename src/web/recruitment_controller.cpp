@@ -59,6 +59,11 @@ HANDLER_FUNC(party_recruitment_add) {
 		return;
 	}
 
+	if (!isPartyLeader(account_id, char_id)) {
+		response_json(res, 400, 3, "The character specified by the \"GID\" must be the party leader.");
+		return;
+	}
+
 	// TODO: 将表结构检查统一提取到某个地方去
 
 	SQLLock weblock(WEB_SQL_LOCK);
