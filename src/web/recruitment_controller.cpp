@@ -71,17 +71,17 @@ HANDLER_FUNC(party_recruitment_add) {
 	auto handle = weblock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-		"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
-		recruitment_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
-		) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		RETURN_STMT_FAILURE(stmt, weblock);
-	}
+// 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+// 		"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
+// 		recruitment_table)
+// 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
+// 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
+// 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
+// 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+// 		) {
+// 		response_json(res, 502, 3, "There is an exception in the database table structure.");
+// 		RETURN_STMT_FAILURE(stmt, weblock);
+// 	}
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 		"REPLACE INTO `%s` (`account_id`, `char_id`, `char_name`, `world_name`, `adventure_type`, "
@@ -263,20 +263,31 @@ HANDLER_FUNC(party_recruitment_list) {
 	auto handle = weblock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
-	if (SQL_SUCCESS != Sql_Query(handle,
-		"SELECT COUNT(*) FROM `%s` "
-		"WHERE `account_id` != %d AND `world_name` = '%s'",
-		recruitment_table, account_id, world_name.c_str()) ||
-		SQL_SUCCESS != Sql_NextRow(handle)) {
+	// ============================================================
+	// Query the record count for calc max page number
+	// ============================================================
+
+	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+		"SELECT COUNT(*) FROM `%s` WHERE `account_id` != ? AND `world_name` = ?",
+		recruitment_table)
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
+		|| SQL_SUCCESS != SqlStmt_Execute(stmt)) {
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
-	char* data = nullptr;
-	Sql_GetData(handle, 0, &data, NULL);
-	int record_cnt = std::atoi(data);
+	int record_cnt = 0;
+	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &record_cnt, sizeof(record_cnt), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_NextRow(stmt)) {
+		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		RETURN_STMT_FAILURE(stmt, weblock);
+	}
 	int max_page = (int)ceil((double)record_cnt / RECRUITMENT_PAGESIZE);
-	Sql_FreeResult(handle);
+
+	// ============================================================
+	// Query records by the specified page number
+	// ============================================================
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 		"SELECT `account_id`, `char_id`, `char_name`, `world_name`, `adventure_type`, "
@@ -293,18 +304,22 @@ HANDLER_FUNC(party_recruitment_list) {
 
 	s_recruitment p;
 
-	SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &p.account_id, sizeof(p.account_id), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 1, SQLDT_INT, &p.char_id, sizeof(p.char_id), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 2, SQLDT_STRING, &p.char_name, sizeof(p.char_name), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 3, SQLDT_STRING, &p.world_name, sizeof(p.world_name), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 4, SQLDT_UINT8, &p.adventure_type, sizeof(p.adventure_type), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 5, SQLDT_UINT8, &p.tanker, sizeof(p.tanker), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 6, SQLDT_UINT8, &p.dealer, sizeof(p.dealer), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 7, SQLDT_UINT8, &p.healer, sizeof(p.healer), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 8, SQLDT_UINT8, &p.assist, sizeof(p.assist), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 9, SQLDT_UINT32, &p.min_level, sizeof(p.min_level), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 10, SQLDT_UINT32, &p.max_level, sizeof(p.max_level), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.memo, sizeof(p.memo), NULL, NULL);
+	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &p.account_id, sizeof(p.account_id), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 1, SQLDT_INT, &p.char_id, sizeof(p.char_id), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 2, SQLDT_STRING, &p.char_name, sizeof(p.char_name), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 3, SQLDT_STRING, &p.world_name, sizeof(p.world_name), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 4, SQLDT_UINT8, &p.adventure_type, sizeof(p.adventure_type), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 5, SQLDT_UINT8, &p.tanker, sizeof(p.tanker), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 6, SQLDT_UINT8, &p.dealer, sizeof(p.dealer), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 7, SQLDT_UINT8, &p.healer, sizeof(p.healer), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 8, SQLDT_UINT8, &p.assist, sizeof(p.assist), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 9, SQLDT_UINT32, &p.min_level, sizeof(p.min_level), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 10, SQLDT_UINT32, &p.max_level, sizeof(p.max_level), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.memo, sizeof(p.memo), NULL, NULL)
+		) {
+		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		RETURN_STMT_FAILURE(stmt, weblock);
+	}
 
 	json response;
 	response["Type"] = 1;
@@ -382,6 +397,10 @@ HANDLER_FUNC(party_recruitment_search) {
 	auto handle = weblock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
+	// ============================================================
+	// Query the record count for calc max page number
+	// ============================================================
+
 	std::string sqlcmd = "SELECT COUNT(*) FROM `%s` "
 		"WHERE `min_level` <= %d AND `max_level` >= %d AND `account_id` != %d ";
 	if (adventure_type) {
@@ -395,18 +414,24 @@ HANDLER_FUNC(party_recruitment_search) {
 	if (assist) sqlcmd += " AND `assist` = 1 ";
 	if (keyword.length()) sqlcmd += "AND (`char_name` LIKE '%%%s%%' OR `memo` LIKE '%%%s%%')";
 
-	if (SQL_SUCCESS != Sql_Query(handle, sqlcmd.c_str(), recruitment_table,
+	if (SQL_SUCCESS != SqlStmt_Prepare(stmt, sqlcmd.c_str(), recruitment_table,
 		min_level, max_level, account_id, keyword.c_str(), keyword.c_str())
-		|| SQL_SUCCESS != Sql_NextRow(handle)) {
+		|| SQL_SUCCESS != SqlStmt_Execute(stmt)) {
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
-	char* data = nullptr;
-	Sql_GetData(handle, 0, &data, NULL);
-	int record_cnt = std::atoi(data);
+	int record_cnt = 0;
+	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &record_cnt, sizeof(record_cnt), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_NextRow(stmt)) {
+		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		RETURN_STMT_FAILURE(stmt, weblock);
+	}
 	int max_page = (int)ceil((double)record_cnt / RECRUITMENT_PAGESIZE);
-	Sql_FreeResult(handle);
+
+	// ============================================================
+	// Query records by the specified page number
+	// ============================================================
 
 	sqlcmd = "SELECT `account_id`, `char_id`, `char_name`, `world_name`, `adventure_type`, "
 		"`tanker`, `dealer`, `healer`, `assist`, `min_level`, `max_level`, `memo` "
@@ -454,18 +479,22 @@ HANDLER_FUNC(party_recruitment_search) {
 
 	s_recruitment p;
 
-	SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &p.account_id, sizeof(p.account_id), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 1, SQLDT_INT, &p.char_id, sizeof(p.char_id), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 2, SQLDT_STRING, &p.char_name, sizeof(p.char_name), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 3, SQLDT_STRING, &p.world_name, sizeof(p.world_name), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 4, SQLDT_UINT8, &p.adventure_type, sizeof(p.adventure_type), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 5, SQLDT_UINT8, &p.tanker, sizeof(p.tanker), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 6, SQLDT_UINT8, &p.dealer, sizeof(p.dealer), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 7, SQLDT_UINT8, &p.healer, sizeof(p.healer), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 8, SQLDT_UINT8, &p.assist, sizeof(p.assist), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 9, SQLDT_UINT32, &p.min_level, sizeof(p.min_level), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 10, SQLDT_UINT32, &p.max_level, sizeof(p.max_level), NULL, NULL);
-	SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.memo, sizeof(p.memo), NULL, NULL);
+	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &p.account_id, sizeof(p.account_id), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 1, SQLDT_INT, &p.char_id, sizeof(p.char_id), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 2, SQLDT_STRING, &p.char_name, sizeof(p.char_name), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 3, SQLDT_STRING, &p.world_name, sizeof(p.world_name), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 4, SQLDT_UINT8, &p.adventure_type, sizeof(p.adventure_type), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 5, SQLDT_UINT8, &p.tanker, sizeof(p.tanker), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 6, SQLDT_UINT8, &p.dealer, sizeof(p.dealer), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 7, SQLDT_UINT8, &p.healer, sizeof(p.healer), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 8, SQLDT_UINT8, &p.assist, sizeof(p.assist), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 9, SQLDT_UINT32, &p.min_level, sizeof(p.min_level), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 10, SQLDT_UINT32, &p.max_level, sizeof(p.max_level), NULL, NULL)
+		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.memo, sizeof(p.memo), NULL, NULL)
+		) {
+		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		RETURN_STMT_FAILURE(stmt, weblock);
+	}
 
 	json response;
 	response["Type"] = 1;
