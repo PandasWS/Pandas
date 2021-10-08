@@ -179,8 +179,8 @@ HANDLER_FUNC(userconfig_save) {
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
-			user_configs_table)
+		"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
+		user_configs_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
@@ -213,8 +213,8 @@ HANDLER_FUNC(userconfig_save) {
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
 		if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-				"INSERT INTO `%s` (`account_id`, `world_name`, `data`) VALUES (?, ?, ?)",
-				user_configs_table)
+			"INSERT INTO `%s` (`account_id`, `world_name`, `data`) VALUES (?, ?, ?)",
+			user_configs_table)
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
@@ -225,8 +225,8 @@ HANDLER_FUNC(userconfig_save) {
 		}
 	} else {
 		if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-				"UPDATE `%s` SET `data` = ? WHERE (`account_id` = ? AND `world_name` = ?)",
-				user_configs_table)
+			"UPDATE `%s` SET `data` = ? WHERE (`account_id` = ? AND `world_name` = ?)",
+			user_configs_table)
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &account_id, sizeof(account_id))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
@@ -253,14 +253,19 @@ HANDLER_FUNC(userconfig_load) {
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
+	if (!isVaildAccount(account_id)) {
+		response_json(res, 400, 3, "The account specified by the \"AID\" does not exist.");
+		return;
+	}
+
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
-			user_configs_table)
+		"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
+		user_configs_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)

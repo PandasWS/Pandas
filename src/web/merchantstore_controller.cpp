@@ -33,6 +33,11 @@ HANDLER_FUNC(merchantstore_save) {
 	auto store_type = GET_NUMBER_FIELD("Type", 0);
 	auto data = GET_STRING_FIELD("data", "");
 
+	if (!isVaildCharacter(account_id, char_id)) {
+		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		return;
+	}
+
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
@@ -101,6 +106,11 @@ HANDLER_FUNC(merchantstore_load) {
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto store_type = GET_NUMBER_FIELD("Type", 0);
+
+	if (!isVaildCharacter(account_id, char_id)) {
+		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		return;
+	}
 
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();

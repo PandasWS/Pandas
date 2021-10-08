@@ -317,8 +317,8 @@ HANDLER_FUNC(emblem_download) {
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-			"SELECT `version`, `file_type`, `file_data` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
-			guild_emblems_table)
+		"SELECT `version`, `file_type`, `file_data` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
+		guild_emblems_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &guild_id, sizeof(guild_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
@@ -464,8 +464,8 @@ HANDLER_FUNC(emblem_upload) {
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-			"SELECT `version` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
-			guild_emblems_table)
+		"SELECT `version` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
+		guild_emblems_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &guild_id, sizeof(guild_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)

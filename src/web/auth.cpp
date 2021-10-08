@@ -89,3 +89,80 @@ bool isAuthorized(const Request &request, bool checkGuildLeader) {
 	charlock.unlock();
 	return true;
 }
+
+#ifdef Pandas_WebServer_Rewrite_Controller_HandlerFunc
+//************************************
+// Method:      isVaildCharacter
+// Description: 验证指定的账号编号与角色编号是否存在且匹配
+// Access:      public 
+// Parameter:   uint32 account_id
+// Parameter:   uint32 char_id
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/10/08 19:08
+//************************************ 
+bool isVaildCharacter(uint32 account_id, uint32 char_id) {
+	SQLLock charlock(CHAR_SQL_LOCK);
+	charlock.lock();
+	auto char_handle = charlock.getHandle();
+	SqlStmt* stmt = SqlStmt_Malloc(char_handle);
+
+	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+		"SELECT `char_id` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ?) LIMIT 1",
+		char_db_table)
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != SqlStmt_Execute(stmt) || SqlStmt_NumRows(stmt) <= 0
+		) {
+		SqlStmt_Free(stmt);
+		charlock.unlock();
+		return false;
+	}
+
+	SqlStmt_Free(stmt);
+	charlock.unlock();
+	return true;
+}
+
+//************************************
+// Method:      isVaildAccount
+// Description: 验证指定的账号编号是否有效
+// Access:      public 
+// Parameter:   uint32 account_id
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/10/08 19:08
+//************************************ 
+bool isVaildAccount(uint32 account_id) {
+	SQLLock loginlock(LOGIN_SQL_LOCK);
+	loginlock.lock();
+	auto char_handle = loginlock.getHandle();
+	SqlStmt* stmt = SqlStmt_Malloc(char_handle);
+
+	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+		"SELECT `account_id` FROM `%s` WHERE `account_id` = ? LIMIT 1",
+		login_table)
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != SqlStmt_Execute(stmt) || SqlStmt_NumRows(stmt) <= 0
+		) {
+		SqlStmt_Free(stmt);
+		loginlock.unlock();
+		return false;
+	}
+
+	SqlStmt_Free(stmt);
+	loginlock.unlock();
+	return true;
+}
+
+//************************************
+// Method:      isPartyLeader
+// Description: 验证指定的角色是否是某个小队的队长
+// Access:      public 
+// Parameter:   uint32 account_id
+// Parameter:   uint32 char_id
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/10/08 19:15
+//************************************ 
+bool isPartyLeader(uint32 account_id, uint32 char_id) {
+	return false;
+}
+#endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc

@@ -4,12 +4,15 @@
 #ifndef HTTP_HPP
 #define HTTP_HPP
 
-
+#include <string>
 #include <httplib.h>
 
 #ifdef WIN32
 #include <Windows.h>
 #endif
+
+#include "../config/pandas.hpp"
+#include "../nlohmann_json/json.hpp"
 
 typedef httplib::Request Request;
 typedef httplib::Response Response;
@@ -63,5 +66,10 @@ typedef HANDLER_FUNC((*handler_func));
 		return; \
 	} \
 }
+
+#ifdef Pandas_WebServer_Rewrite_Controller_HandlerFunc
+void response_json(httplib::Response& res, int status_code, int type, const std::string& errmes = "");
+void response_json(httplib::Response& res, int status_code, nlohmann::json& content);
+#endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc
 
 #endif

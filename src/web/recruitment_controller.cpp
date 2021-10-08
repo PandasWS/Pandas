@@ -54,7 +54,10 @@ HANDLER_FUNC(party_recruitment_add) {
 	auto assist = GET_NUMBER_FIELD("Assist", 0);
 	auto adventure_type = GET_NUMBER_FIELD("Type", 0);
 
-	// TODO: 确保 AID (账号编号) 和 GID (角色编号) 合法存在
+	if (!isVaildCharacter(account_id, char_id)) {
+		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		return;
+	}
 
 	// TODO: 将表结构检查统一提取到某个地方去
 
@@ -152,6 +155,11 @@ HANDLER_FUNC(party_recruitment_get) {
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
+	if (!isVaildCharacter(account_id, char_id)) {
+		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		return;
+	}
+
 	// 用来获取自己发布的内容, 返回值的 Type 字段固定为 1
 	// 2021年10月6日测试结论表示：无法通过控制 Type 的值来决定是否展现队长的信息登记入口
 
@@ -239,6 +247,11 @@ HANDLER_FUNC(party_recruitment_list) {
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto page = GET_NUMBER_FIELD("page", 1);
+
+	if (!isVaildCharacter(account_id, char_id)) {
+		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		return;
+	}
 
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
@@ -354,6 +367,11 @@ HANDLER_FUNC(party_recruitment_search) {
 	auto adventure_type = GET_NUMBER_FIELD("Type", 0);
 	auto page = GET_NUMBER_FIELD("page", 1);
 
+	if (!isVaildCharacter(account_id, char_id)) {
+		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		return;
+	}
+
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
@@ -373,7 +391,7 @@ HANDLER_FUNC(party_recruitment_search) {
 	if (keyword.length()) sqlcmd += "AND (`char_name` LIKE '%%%s%%' OR `memo` LIKE '%%%s%%')";
 
 	if (SQL_SUCCESS != Sql_Query(handle, sqlcmd.c_str(), recruitment_table,
-			min_level, max_level, account_id, keyword.c_str(), keyword.c_str())
+		min_level, max_level, account_id, keyword.c_str(), keyword.c_str())
 		|| SQL_SUCCESS != Sql_NextRow(handle)) {
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
 		RETURN_STMT_FAILURE(stmt, weblock);

@@ -40,11 +40,6 @@
 	#define A2UCE(x) x
 #endif // Pandas_WebServer_Console_EncodingAdaptive
 
-#ifdef Pandas_WebServer_Rewrite_Controller_HandlerFunc
-void response_json(httplib::Response& res, int status_code, int type, const std::string& errmes = "");
-void response_json(httplib::Response& res, int status_code, nlohmann::json& content);
-#endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc
-
 enum E_WEBSERVER_ST {
 	WEBSERVER_ST_RUNNING = CORE_ST_LAST,
 	WEBSERVER_ST_STARTING,

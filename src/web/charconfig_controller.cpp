@@ -175,31 +175,10 @@ HANDLER_FUNC(charconfig_save) {
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto data = GET_STRING_FIELD("data", "");
 
-	// =============== 确保 AID (账号编号) 和 GID (角色编号) 合法存在 ===============
-	SQLLock charlock(CHAR_SQL_LOCK);
-	charlock.lock();
-	auto char_handle = charlock.getHandle();
-	SqlStmt* char_stmt = SqlStmt_Malloc(char_handle);
-
-	if (SQL_SUCCESS != SqlStmt_Prepare(char_stmt,
-		"SELECT `char_id` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ?) LIMIT 1",
-		char_db_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(char_stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(char_stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_Execute(char_stmt)
-		) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		RETURN_STMT_FAILURE(char_stmt, charlock);
-	}
-
-	if (SqlStmt_NumRows(char_stmt) <= 0) {
+	if (!isVaildCharacter(account_id, char_id)) {
 		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
-		RETURN_STMT_SUCCESS(char_stmt, charlock);
+		return;
 	}
-
-	SqlStmt_Free(char_stmt);
-	charlock.unlock();
-	// ========================================================================
 
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
@@ -207,8 +186,8 @@ HANDLER_FUNC(charconfig_save) {
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
-			char_configs_table)
+		"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
+		char_configs_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
@@ -242,8 +221,8 @@ HANDLER_FUNC(charconfig_save) {
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
 		if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-				"INSERT INTO `%s` (`account_id`, `char_id`, `world_name`, `data`) VALUES (?, ?, ?, ?)",
-				char_configs_table)
+			"INSERT INTO `%s` (`account_id`, `char_id`, `world_name`, `data`) VALUES (?, ?, ?, ?)",
+			char_configs_table)
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
@@ -255,8 +234,8 @@ HANDLER_FUNC(charconfig_save) {
 		}
 	} else {
 		if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-				"UPDATE `%s` SET `data` = ? WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?)",
-				char_configs_table)
+			"UPDATE `%s` SET `data` = ? WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?)",
+			char_configs_table)
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &account_id, sizeof(account_id))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_INT, &char_id, sizeof(char_id))
@@ -286,31 +265,10 @@ HANDLER_FUNC(charconfig_load) {
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
-	// =============== 确保 AID (账号编号) 和 GID (角色编号) 合法存在 ===============
-	SQLLock charlock(CHAR_SQL_LOCK);
-	charlock.lock();
-	auto char_handle = charlock.getHandle();
-	SqlStmt* char_stmt = SqlStmt_Malloc(char_handle);
-
-	if (SQL_SUCCESS != SqlStmt_Prepare(char_stmt,
-		"SELECT `char_id` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ?) LIMIT 1",
-		char_db_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(char_stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(char_stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_Execute(char_stmt)
-		) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		RETURN_STMT_FAILURE(char_stmt, charlock);
-	}
-
-	if (SqlStmt_NumRows(char_stmt) <= 0) {
+	if (!isVaildCharacter(account_id, char_id)) {
 		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
-		RETURN_STMT_SUCCESS(char_stmt, charlock);
+		return;
 	}
-
-	SqlStmt_Free(char_stmt);
-	charlock.unlock();
-	// ========================================================================
 
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
@@ -318,8 +276,8 @@ HANDLER_FUNC(charconfig_load) {
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
-			char_configs_table)
+		"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
+		char_configs_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
