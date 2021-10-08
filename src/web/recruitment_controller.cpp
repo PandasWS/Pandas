@@ -7,12 +7,12 @@
 
 #include "../common/showmsg.hpp"
 #include "../common/sql.hpp"
+#include "../common/strlib.hpp"
 
 #include "auth.hpp"
 #include "http.hpp"
 #include "sqllock.hpp"
 #include "web.hpp"
-#include "../common/strlib.hpp"
 
 using namespace nlohmann;
 
@@ -62,6 +62,7 @@ HANDLER_FUNC(party_recruitment_add) {
 	weblock.lock();
 	auto handle = weblock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 		"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
 		recruitment_table)
@@ -70,11 +71,8 @@ HANDLER_FUNC(party_recruitment_add) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
@@ -96,11 +94,8 @@ HANDLER_FUNC(party_recruitment_add) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, SQLDT_STRING, (void*)memo.c_str(), strlen(memo.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "An error occurred while inserting data.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	SqlStmt_Free(stmt);
@@ -127,6 +122,7 @@ HANDLER_FUNC(party_recruitment_del) {
 	weblock.lock();
 	auto handle = weblock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 		"DELETE FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
 		recruitment_table)
@@ -134,17 +130,12 @@ HANDLER_FUNC(party_recruitment_del) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
-	SqlStmt_Free(stmt);
-	weblock.unlock();
-
 	response_json(res, 200, 1);
+	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 HANDLER_FUNC(party_recruitment_get) {
@@ -168,6 +159,7 @@ HANDLER_FUNC(party_recruitment_get) {
 	weblock.lock();
 	auto handle = weblock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 		"SELECT `account_id`, `char_id`, `char_name`, `world_name`, `adventure_type`, "
 		"`tanker`, `dealer`, `healer`, `assist`, `min_level`, `max_level`, `memo` "
@@ -177,18 +169,13 @@ HANDLER_FUNC(party_recruitment_get) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 200, 1);
-		return;
+		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
 	s_recruitment p;
@@ -207,14 +194,9 @@ HANDLER_FUNC(party_recruitment_get) {
 		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.memo, sizeof(p.memo), NULL, NULL)
 		|| SQL_ERROR == SqlStmt_NextRow(stmt)
 		) {
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 200, 1);	// TODO: 能否返回某种错误
-		return;
+		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
-
-	SqlStmt_Free(stmt);
-	weblock.unlock();
 
 	safestrncpy(p.char_name, A2UWE(p.char_name).c_str(), NAME_LENGTH);
 	safestrncpy(p.world_name, A2UWE(p.world_name).c_str(), 32);
@@ -239,6 +221,7 @@ HANDLER_FUNC(party_recruitment_get) {
 	};
 
 	response_json(res, 200, response);
+	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 HANDLER_FUNC(party_recruitment_list) {
@@ -267,11 +250,8 @@ HANDLER_FUNC(party_recruitment_list) {
 		"WHERE `account_id` != %d AND `world_name` = '%s'",
 		recruitment_table, account_id, world_name.c_str()) ||
 		SQL_SUCCESS != Sql_NextRow(handle)) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	char* data = nullptr;
@@ -289,11 +269,8 @@ HANDLER_FUNC(party_recruitment_list) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	s_recruitment p;
@@ -341,10 +318,8 @@ HANDLER_FUNC(party_recruitment_list) {
 		}
 	}
 
-	SqlStmt_Free(stmt);
-	weblock.unlock();
-
 	response_json(res, 200, response);
+	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 HANDLER_FUNC(party_recruitment_search) {
@@ -400,11 +375,8 @@ HANDLER_FUNC(party_recruitment_search) {
 	if (SQL_SUCCESS != Sql_Query(handle, sqlcmd.c_str(), recruitment_table,
 			min_level, max_level, account_id, keyword.c_str(), keyword.c_str())
 		|| SQL_SUCCESS != Sql_NextRow(handle)) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	char* data = nullptr;
@@ -436,11 +408,8 @@ HANDLER_FUNC(party_recruitment_search) {
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 			) {
-			SqlStmt_ShowDebug(stmt);
-			SqlStmt_Free(stmt);
-			weblock.unlock();
 			response_json(res, 502, 3, "There is an exception in the database table structure.");
-			return;
+			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	}
 	else {
@@ -450,19 +419,14 @@ HANDLER_FUNC(party_recruitment_search) {
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 			) {
-			SqlStmt_ShowDebug(stmt);
-			SqlStmt_Free(stmt);
-			weblock.unlock();
 			response_json(res, 502, 3, "There is an exception in the database table structure.");
-			return;
+			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	}
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 200, 1);
-		return;
+		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
 	s_recruitment p;
@@ -510,8 +474,6 @@ HANDLER_FUNC(party_recruitment_search) {
 		}
 	}
 
-	SqlStmt_Free(stmt);
-	weblock.unlock();
-
 	response_json(res, 200, response);
+	RETURN_STMT_SUCCESS(stmt, weblock);
 }

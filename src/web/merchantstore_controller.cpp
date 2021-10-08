@@ -37,6 +37,7 @@ HANDLER_FUNC(merchantstore_save) {
 	weblock.lock();
 	auto handle = weblock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 		"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ? AND `store_type` = ?) LIMIT 1",
 		merchant_configs_table)
@@ -46,11 +47,8 @@ HANDLER_FUNC(merchantstore_save) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_INT, &store_type, sizeof(store_type))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
@@ -64,11 +62,8 @@ HANDLER_FUNC(merchantstore_save) {
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_STRING, (void*)data.c_str(), strlen(data.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 			) {
-			SqlStmt_ShowDebug(stmt);
-			SqlStmt_Free(stmt);
-			weblock.unlock();
 			response_json(res, 502, 3, "An error occurred while inserting data.");
-			return;
+			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	}
 	else {
@@ -82,18 +77,13 @@ HANDLER_FUNC(merchantstore_save) {
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_INT, &store_type, sizeof(store_type))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 			) {
-			SqlStmt_ShowDebug(stmt);
-			SqlStmt_Free(stmt);
-			weblock.unlock();
 			response_json(res, 502, 3, "An error occurred while updating data.");
-			return;
+			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	}
 
-	SqlStmt_Free(stmt);
-	weblock.unlock();
-
 	response_json(res, 200, 1);
+	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 HANDLER_FUNC(merchantstore_load) {
@@ -116,6 +106,7 @@ HANDLER_FUNC(merchantstore_load) {
 	weblock.lock();
 	auto handle = weblock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 		"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ? AND `store_type` = ?) LIMIT 1",
 		merchant_configs_table)
@@ -125,18 +116,13 @@ HANDLER_FUNC(merchantstore_load) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_INT, &store_type, sizeof(store_type))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 200, 1);
-		return;
+		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
 	char databuf[10000] = { 0 };
@@ -144,15 +130,9 @@ HANDLER_FUNC(merchantstore_load) {
 	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
 		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
 		) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "Could not load the data from database.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
-
-	SqlStmt_Free(stmt);
-	weblock.unlock();
 
 	databuf[sizeof(databuf) - 1] = 0;
 
@@ -160,4 +140,5 @@ HANDLER_FUNC(merchantstore_load) {
 	response = json::parse(A2UWE(databuf));
 	response["Type"] = 1;
 	response_json(res, 200, response);
+	RETURN_STMT_SUCCESS(stmt, weblock);
 }

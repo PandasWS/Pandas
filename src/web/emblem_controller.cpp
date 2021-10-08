@@ -56,7 +56,7 @@ HANDLER_FUNC(emblem_download) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `version`, `file_type`, `file_data` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
 			guild_emblems_table)
@@ -234,7 +234,7 @@ HANDLER_FUNC(emblem_upload) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `version` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
 			guild_emblems_table)
@@ -314,7 +314,8 @@ HANDLER_FUNC(emblem_download) {
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `version`, `file_type`, `file_data` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
 			guild_emblems_table)
@@ -322,11 +323,8 @@ HANDLER_FUNC(emblem_download) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 4, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	uint32 version = 0;
@@ -337,14 +335,12 @@ HANDLER_FUNC(emblem_download) {
 	// 基于 blob 构建一个智能指针, 当智能指针被析构时自动释放 blob 申请的内存区域
 	std::shared_ptr<char> __blob = std::shared_ptr<char>(blob, [](char* p)->void {delete[] p; });
 
-	uint32 emblem_size;
+	uint32 emblem_size = 0;
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
-		SqlStmt_Free(stmt);
 		ShowError("[GuildID: %d / World: \"%s\"] Not found in table\n", guild_id, U2ACE(req.get_file_value("WorldName").content).c_str());
-		weblock.unlock();
 		response_json(res, 404, 4, "Could not find the guild emblem data.");
-		return;
+		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
 	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_UINT32, &version, sizeof(version), nullptr, nullptr)
@@ -352,11 +348,8 @@ HANDLER_FUNC(emblem_download) {
 		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 2, SQLDT_BLOB, blob, MAX_EMBLEM_SIZE, &emblem_size, nullptr)
 		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
 	) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 4, "Could not load the emblem data from database.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	SqlStmt_Free(stmt);
@@ -468,7 +461,8 @@ HANDLER_FUNC(emblem_upload) {
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `version` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
 			guild_emblems_table)
@@ -476,11 +470,8 @@ HANDLER_FUNC(emblem_upload) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	uint32 version = START_VERSION;
@@ -489,11 +480,8 @@ HANDLER_FUNC(emblem_upload) {
 		if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_UINT32, &version, sizeof(version), NULL, NULL)
 			|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
 		) {
-			SqlStmt_ShowDebug(stmt);
-			SqlStmt_Free(stmt);
-			weblock.unlock();
 			response_json(res, 502, 3, "Could not load the emblem version from database.");
-			return;
+			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 		version += 1;
 	}
@@ -509,20 +497,15 @@ HANDLER_FUNC(emblem_upload) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_BLOB, (void *)img.c_str(), length)
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "An error occurred while replaceing data.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
-
-	SqlStmt_Free(stmt);
-	weblock.unlock();
 
 	json response = {};
 	response["Type"] = 1;
 	response["version"] = version;
 	response_json(res, 200, response);
+	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 #endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc

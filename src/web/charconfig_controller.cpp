@@ -35,7 +35,7 @@ HANDLER_FUNC(charconfig_save) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
 			char_configs_table)
@@ -111,7 +111,7 @@ HANDLER_FUNC(charconfig_load) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
 			char_configs_table)
@@ -188,18 +188,13 @@ HANDLER_FUNC(charconfig_save) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(char_stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
 		|| SQL_SUCCESS != SqlStmt_Execute(char_stmt)
 		) {
-		SqlStmt_ShowDebug(char_stmt);
-		SqlStmt_Free(char_stmt);
-		charlock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(char_stmt, charlock);
 	}
 
 	if (SqlStmt_NumRows(char_stmt) <= 0) {
-		SqlStmt_Free(char_stmt);
-		charlock.unlock();
 		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
-		return;
+		RETURN_STMT_SUCCESS(char_stmt, charlock);
 	}
 
 	SqlStmt_Free(char_stmt);
@@ -209,7 +204,8 @@ HANDLER_FUNC(charconfig_save) {
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
 			char_configs_table)
@@ -218,11 +214,8 @@ HANDLER_FUNC(charconfig_save) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	// 客户端只会回传被修改过的那部分数据, 没有修改过的不会发送给服务端
@@ -257,11 +250,8 @@ HANDLER_FUNC(charconfig_save) {
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-			SqlStmt_ShowDebug(stmt);
-			SqlStmt_Free(stmt);
-			weblock.unlock();
 			response_json(res, 502, 3, "An error occurred while inserting data.");
-			return;
+			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	} else {
 		if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
@@ -273,18 +263,13 @@ HANDLER_FUNC(charconfig_save) {
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-			SqlStmt_ShowDebug(stmt);
-			SqlStmt_Free(stmt);
-			weblock.unlock();
 			response_json(res, 502, 3, "An error occurred while updating data.");
-			return;
+			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	}
 
-	SqlStmt_Free(stmt);
-	weblock.unlock();
-
 	response_json(res, 200, 1);
+	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 HANDLER_FUNC(charconfig_load) {
@@ -314,18 +299,13 @@ HANDLER_FUNC(charconfig_load) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(char_stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
 		|| SQL_SUCCESS != SqlStmt_Execute(char_stmt)
 		) {
-		SqlStmt_ShowDebug(char_stmt);
-		SqlStmt_Free(char_stmt);
-		charlock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(char_stmt, charlock);
 	}
 
 	if (SqlStmt_NumRows(char_stmt) <= 0) {
-		SqlStmt_Free(char_stmt);
-		charlock.unlock();
 		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
-		return;
+		RETURN_STMT_SUCCESS(char_stmt, charlock);
 	}
 
 	SqlStmt_Free(char_stmt);
@@ -335,7 +315,8 @@ HANDLER_FUNC(charconfig_load) {
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
 			char_configs_table)
@@ -344,19 +325,14 @@ HANDLER_FUNC(charconfig_load) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
-		SqlStmt_Free(stmt);
 		ShowDebug("[AccountID: %d, World: \"%s\"] Not found in table, sending new info.\n", account_id, U2ACE(req.get_file_value("WorldName").content).c_str());
-		weblock.unlock();
 		response_json(res, 200, 1);
-		return;
+		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
 	char databuf[10000] = { 0 };
@@ -364,15 +340,9 @@ HANDLER_FUNC(charconfig_load) {
 	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
 		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
 	) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		weblock.unlock();
 		response_json(res, 502, 3, "Could not load the data from database.");
-		return;
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
-
-	SqlStmt_Free(stmt);
-	weblock.unlock();
 
 	databuf[sizeof(databuf) - 1] = 0;
 
@@ -380,6 +350,7 @@ HANDLER_FUNC(charconfig_load) {
 	response = json::parse(A2UWE(databuf));
 	response["Type"] = 1;
 	response_json(res, 200, response);
+	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 #endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc
