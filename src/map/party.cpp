@@ -508,6 +508,92 @@ int party_reply_invite(struct map_session_data *sd,int party_id,int flag)
 	return 0;
 }
 
+#ifdef Pandas_PacketFunction_PartyJoinRequest
+bool party_join(struct map_session_data* sd, uint32 leader_aid, uint32 leader_cid)
+{
+	nullpo_retr(false, sd);
+
+	// 检查希望加入队伍的玩家是否已经加入到了其他的队伍
+	if (sd->status.party_id > 0 || sd->party_invite > 0)
+	{// already associated with a party
+		clif_displaymessage(sd->fd, "[debug] sd->status.party_id > 0 || sd->party_invite > 0");
+		//clif_party_invite_reply(sd, sd->status.name, PARTY_REPLY_JOIN_OTHER_PARTY);
+		return false;
+	}
+
+	// 判断队长角色是否在线
+	struct map_session_data* leader_sd = map_id2sd(leader_aid);
+	if (!leader_sd || leader_sd->status.char_id != leader_cid || !leader_sd->fd) {
+		clif_displaymessage(sd->fd, "[debug] target party leater already offline");
+		//clif_party_invite_reply(sd, "", PARTY_REPLY_OFFLINE);
+		return false;
+	}
+
+	// 确认队长所在的队伍是否存在
+	struct party_data* p = nullptr;
+	if ((p = party_search(leader_sd->status.party_id)) == nullptr) {
+		clif_displaymessage(sd->fd, "[debug] target party leater not in a party, maybe the party alread dismiss");
+		return false;
+	}
+
+	// 确保指定角色真的是队伍的队长
+	int i = 0;
+	ARR_FIND(0, MAX_PARTY, i, p->data[i].sd == leader_sd);
+	if (i == MAX_PARTY || !p->party.member[i].leader) {
+		clif_displaymessage(sd->fd, "[debug] target player is not the party leader");
+		return false;
+	}
+
+	// 跟进设置禁止相同账号的角色加入到同一个队伍
+	if (sd && battle_config.block_account_in_same_party) {
+		ARR_FIND(0, MAX_PARTY, i, p->party.member[i].account_id == sd->status.account_id);
+		if (i < MAX_PARTY) {
+			clif_displaymessage(sd->fd, "[debug] not allow same account char in same party");
+			//clif_party_invite_reply(sd, sd->status.name, PARTY_REPLY_DUAL);
+			return false;
+		}
+	}
+
+	// 检查队伍中是否还有空余位置可以让当前希望加入队伍的玩家进入
+	ARR_FIND(0, MAX_PARTY, i, p->party.member[i].account_id == 0);
+	if (i == MAX_PARTY) {
+		clif_displaymessage(sd->fd, "[debug] party alread full");
+		//clif_party_invite_reply(sd, (leader_sd ? leader_sd->status.name : ""), PARTY_REPLY_FULL);
+		return false;
+	}
+
+	// 检查队长和希望加入队伍的玩家是否都有权限组建或加入队伍
+	if ((leader_sd && !pc_has_permission(leader_sd, PC_PERM_PARTY)) || (sd && !pc_has_permission(sd, PC_PERM_PARTY))) {
+		clif_displaymessage(sd->fd, "[debug] Your GM level doesn't authorize you to preform this action on the specified player.");
+		clif_displaymessage(sd->fd, msg_txt(sd, 81)); // "Your GM level doesn't authorize you to preform this action on the specified player."
+		return false;
+	}
+
+	// 使希望加入队伍的玩家记录上目标队伍和目标队长的信息
+	sd->party_invite = leader_sd->status.party_id;
+	sd->party_invite_account = leader_sd->status.account_id;
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	if (sd && leader_sd) {
+		pc_setreg(sd, add_str("@join_party_id"), sd->party_invite);
+		pc_setreg(sd, add_str("@join_party_aid"), leader_sd->status.account_id);
+		if (npc_script_filter(sd, NPCF_PARTYJOIN)) {
+			sd->party_invite = 0;
+			sd->party_invite_account = 0;
+			return false;
+		}
+	}
+#endif // Pandas_NpcFilter_PARTYJOIN
+
+	// 通知角色服务器来执行加入队伍的过程
+	struct party_member member = { 0 };
+	sd->party_joining = true;
+	party_fill_member(&member, sd, 0);
+	intif_party_addmember(sd->party_invite, &member);
+	return true;
+}
+#endif // Pandas_PacketFunction_PartyJoinRequest
+
 //Invoked when a player joins:
 //- Loads up party data if not in server
 //- Sets up the pointer to him

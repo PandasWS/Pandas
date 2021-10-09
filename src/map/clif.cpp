@@ -14359,8 +14359,25 @@ void clif_parse_PartyInvite2(int fd, struct map_session_data *sd){
 void clif_parse_PartyJoinRequest(int fd, struct map_session_data* sd) {
 	nullpo_retv(sd);
 
-	struct PACKET_CZ_PARTY_JOIN_REQUEST* p = (struct PACKET_CZ_PARTY_JOIN_REQUEST*)RFIFOP(fd, 0);
-	ShowDebug("Party Leader CharID = %d | AccountID = %d\n", p->partyleader_char_id, p->partyleader_account_id);
+	if (map_getmapflag(sd->bl.m, MF_PARTYLOCK)) {
+		clif_party_invite_reply(sd, "", PARTY_REPLY_INVALID_MAPPROPERTY_ME);
+		return;
+	}
+
+	if (battle_config.basic_skill_check && pc_checkskill(sd, NV_BASIC) < 5 && pc_checkskill(sd, SU_BASIC_SKILL) < 1) {
+		clif_msg(sd, 3496); // You can not join the party because your job level is low.
+		return;
+	}
+
+	struct PACKET_CZ_PARTY_JOIN_REQUEST* p = nullptr;
+	p = (struct PACKET_CZ_PARTY_JOIN_REQUEST*)RFIFOP(fd, 0);
+
+	if (party_join(sd, p->partyleader_account_id, p->partyleader_char_id)) {
+		clif_displaymessage(fd, "[debug] join party success");
+	}
+	else {
+		clif_displaymessage(fd, "[debug] join party failed");
+	}
 }
 #endif // Pandas_PacketFunction_PartyJoinRequest
 
