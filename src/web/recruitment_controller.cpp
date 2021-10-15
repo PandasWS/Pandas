@@ -16,30 +16,30 @@
 
 using namespace nlohmann;
 
+#define SUCCESS_RET 1
+#define FAILURE_RET -3
+#define REQUIRE_FIELD_EXISTS(x) REQUIRE_FIELD_EXISTS_R(x)
+
 #define RECRUITMENT_PAGESIZE 10
 
 HANDLER_FUNC(party_recruitment_add) {
-	// TODO: 尝试过 -1、0、2、3 都不是中介所创建失败的返回值
-	// 但是客户端中在 msgstringtable 确实有创建失败的文本信息
-	// 还需要继续探索或者分析正确的返回值是多少
-
 	if (!isAuthorized(req, false)) {
-		response_json(res, 403, 3, "Authorization verification failure.");
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
 		return;
 	}
 
-	REQUIRE_FIELD_EXISTS_STRICT("AID");
-	REQUIRE_FIELD_EXISTS_STRICT("GID");
-	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
-	REQUIRE_FIELD_EXISTS_STRICT("CharName");
-	REQUIRE_FIELD_EXISTS_STRICT("Memo");
-	REQUIRE_FIELD_EXISTS_STRICT("MinLV");
-	REQUIRE_FIELD_EXISTS_STRICT("MaxLV");
-	REQUIRE_FIELD_EXISTS_STRICT("Tanker");
-	REQUIRE_FIELD_EXISTS_STRICT("Healer");
-	REQUIRE_FIELD_EXISTS_STRICT("Dealer");
-	REQUIRE_FIELD_EXISTS_STRICT("Assist");
-	REQUIRE_FIELD_EXISTS_STRICT("Type");
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("GID");
+	REQUIRE_FIELD_EXISTS("WorldName");
+	REQUIRE_FIELD_EXISTS("CharName");
+	REQUIRE_FIELD_EXISTS("Memo");
+	REQUIRE_FIELD_EXISTS("MinLV");
+	REQUIRE_FIELD_EXISTS("MaxLV");
+	REQUIRE_FIELD_EXISTS("Tanker");
+	REQUIRE_FIELD_EXISTS("Healer");
+	REQUIRE_FIELD_EXISTS("Dealer");
+	REQUIRE_FIELD_EXISTS("Assist");
+	REQUIRE_FIELD_EXISTS("Type");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
@@ -55,22 +55,21 @@ HANDLER_FUNC(party_recruitment_add) {
 	auto adventure_type = GET_NUMBER_FIELD("Type", 0);
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
 		return;
 	}
 
 	if (!isPartyLeader(account_id, char_id)) {
-		response_json(res, 400, 3, "The character specified by the \"GID\" must be the party leader.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" must be the party leader.");
 		return;
 	}
-
-	// TODO: 将表结构检查统一提取到某个地方去
 
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
+	// TODO: 将表结构检查统一提取到某个地方去
 // 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 // 		"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
 // 		recruitment_table)
@@ -79,7 +78,7 @@ HANDLER_FUNC(party_recruitment_add) {
 // 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 // 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 // 		) {
-// 		response_json(res, 502, 3, "There is an exception in the database table structure.");
+// 		make_response(res, 502, 3, "There is an exception in the database table structure.");
 // 		RETURN_STMT_FAILURE(stmt, weblock);
 // 	}
 
@@ -102,25 +101,25 @@ HANDLER_FUNC(party_recruitment_add) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, SQLDT_STRING, (void*)memo.c_str(), strlen(memo.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-		response_json(res, 502, 3, "An error occurred while inserting data.");
+		make_response(res, FAILURE_RET, "An error occurred while inserting data.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	SqlStmt_Free(stmt);
 	weblock.unlock();
 
-	response_json(res, 200, 1);
+	make_response(res, SUCCESS_RET);
 }
 
 HANDLER_FUNC(party_recruitment_del) {
 	if (!isAuthorized(req, false)) {
-		response_json(res, 403, 3, "Authorization verification failure.");
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
 		return;
 	}
 
-	REQUIRE_FIELD_EXISTS_STRICT("AID");
-	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
-	REQUIRE_FIELD_EXISTS_STRICT("MasterAID");
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("WorldName");
+	REQUIRE_FIELD_EXISTS("MasterAID");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
@@ -138,35 +137,32 @@ HANDLER_FUNC(party_recruitment_del) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
-	response_json(res, 200, 1);
+	make_response(res, SUCCESS_RET);
 	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 HANDLER_FUNC(party_recruitment_get) {
 	if (!isAuthorized(req, false)) {
-		response_json(res, 403, 3, "Authorization verification failure.");
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
 		return;
 	}
 
-	REQUIRE_FIELD_EXISTS_STRICT("AID");
-	REQUIRE_FIELD_EXISTS_STRICT("GID");
-	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("GID");
+	REQUIRE_FIELD_EXISTS("WorldName");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
 		return;
 	}
-
-	// 用来获取自己发布的内容, 返回值的 Type 字段固定为 1
-	// 2021年10月6日测试结论表示：无法通过控制 Type 的值来决定是否展现队长的信息登记入口
 
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
@@ -182,12 +178,12 @@ HANDLER_FUNC(party_recruitment_get) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
-		response_json(res, 200, 1);
+		make_response(res, SUCCESS_RET);
 		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
@@ -207,7 +203,7 @@ HANDLER_FUNC(party_recruitment_get) {
 		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.memo, sizeof(p.memo), NULL, NULL)
 		|| SQL_ERROR == SqlStmt_NextRow(stmt)
 		) {
-		response_json(res, 200, 1);	// TODO: 能否返回某种错误
+		make_response(res, FAILURE_RET, "An error occurred while binding column.");
 		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
@@ -216,7 +212,7 @@ HANDLER_FUNC(party_recruitment_get) {
 	safestrncpy(p.memo, A2UWE(p.memo).c_str(), 32);
 
 	json response = {
-		{"Type", 1},
+		{"Type", SUCCESS_RET},
 		{"data", {
 			{"AID", p.account_id},
 			{"GID", p.char_id},
@@ -233,20 +229,20 @@ HANDLER_FUNC(party_recruitment_get) {
 		}}
 	};
 
-	response_json(res, 200, response);
+	make_response(res, response);
 	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 HANDLER_FUNC(party_recruitment_list) {
 	if (!isAuthorized(req, false)) {
-		response_json(res, 403, 3, "Authorization verification failure.");
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
 		return;
 	}
 
-	REQUIRE_FIELD_EXISTS_STRICT("AID");
-	REQUIRE_FIELD_EXISTS_STRICT("GID");
-	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
-	REQUIRE_FIELD_EXISTS_STRICT("page");
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("GID");
+	REQUIRE_FIELD_EXISTS("WorldName");
+	REQUIRE_FIELD_EXISTS("page");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
@@ -254,7 +250,7 @@ HANDLER_FUNC(party_recruitment_list) {
 	auto page = GET_NUMBER_FIELD("page", 1);
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
 		return;
 	}
 
@@ -273,14 +269,14 @@ HANDLER_FUNC(party_recruitment_list) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	int record_cnt = 0;
 	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &record_cnt, sizeof(record_cnt), NULL, NULL)
 		|| SQL_ERROR == SqlStmt_NextRow(stmt)) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while binding column.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 	int max_page = (int)ceil((double)record_cnt / RECRUITMENT_PAGESIZE);
@@ -298,7 +294,7 @@ HANDLER_FUNC(party_recruitment_list) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
@@ -317,12 +313,12 @@ HANDLER_FUNC(party_recruitment_list) {
 		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 10, SQLDT_UINT32, &p.max_level, sizeof(p.max_level), NULL, NULL)
 		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.memo, sizeof(p.memo), NULL, NULL)
 		) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while binding column.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	json response;
-	response["Type"] = 1;
+	response["Type"] = SUCCESS_RET;
 
 	if (record_cnt) {
 		response["totalPage"] = max_page;
@@ -351,28 +347,28 @@ HANDLER_FUNC(party_recruitment_list) {
 		}
 	}
 
-	response_json(res, 200, response);
+	make_response(res, response);
 	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 HANDLER_FUNC(party_recruitment_search) {
 	if (!isAuthorized(req, false)) {
-		response_json(res, 403, 3, "Authorization verification failure.");
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
 		return;
 	}
 
-	REQUIRE_FIELD_EXISTS_STRICT("AID");
-	REQUIRE_FIELD_EXISTS_STRICT("GID");
-	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
-//	REQUIRE_FIELD_EXISTS_STRICT("Memo");	// 玩家不选则客户端不传, 不做校验
-	REQUIRE_FIELD_EXISTS_STRICT("MinLV");
-	REQUIRE_FIELD_EXISTS_STRICT("MaxLV");
-// 	REQUIRE_FIELD_EXISTS_STRICT("Tanker");	// 玩家不选则客户端不传, 不做校验
-// 	REQUIRE_FIELD_EXISTS_STRICT("Healer");	// 玩家不选则客户端不传, 不做校验
-// 	REQUIRE_FIELD_EXISTS_STRICT("Dealer");	// 玩家不选则客户端不传, 不做校验
-// 	REQUIRE_FIELD_EXISTS_STRICT("Assist");	// 玩家不选则客户端不传, 不做校验
-//	REQUIRE_FIELD_EXISTS_STRICT("Type");	// 玩家不选则客户端不传, 不做校验
-	REQUIRE_FIELD_EXISTS_STRICT("page");
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("GID");
+	REQUIRE_FIELD_EXISTS("WorldName");
+//	REQUIRE_FIELD_EXISTS("Memo");	// 玩家不选则客户端不传, 不做校验
+	REQUIRE_FIELD_EXISTS("MinLV");
+	REQUIRE_FIELD_EXISTS("MaxLV");
+// 	REQUIRE_FIELD_EXISTS("Tanker");	// 玩家不选则客户端不传, 不做校验
+// 	REQUIRE_FIELD_EXISTS("Healer");	// 玩家不选则客户端不传, 不做校验
+// 	REQUIRE_FIELD_EXISTS("Dealer");	// 玩家不选则客户端不传, 不做校验
+// 	REQUIRE_FIELD_EXISTS("Assist");	// 玩家不选则客户端不传, 不做校验
+//	REQUIRE_FIELD_EXISTS("Type");	// 玩家不选则客户端不传, 不做校验
+	REQUIRE_FIELD_EXISTS("page");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
@@ -388,7 +384,7 @@ HANDLER_FUNC(party_recruitment_search) {
 	auto page = GET_NUMBER_FIELD("page", 1);
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
 		return;
 	}
 
@@ -417,14 +413,14 @@ HANDLER_FUNC(party_recruitment_search) {
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt, sqlcmd.c_str(), recruitment_table,
 		min_level, max_level, account_id, keyword.c_str(), keyword.c_str())
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	int record_cnt = 0;
 	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &record_cnt, sizeof(record_cnt), NULL, NULL)
 		|| SQL_ERROR == SqlStmt_NextRow(stmt)) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while binding column.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 	int max_page = (int)ceil((double)record_cnt / RECRUITMENT_PAGESIZE);
@@ -456,7 +452,7 @@ HANDLER_FUNC(party_recruitment_search) {
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 			) {
-			response_json(res, 502, 3, "There is an exception in the database table structure.");
+			make_response(res, FAILURE_RET, "An error occurred while executing query.");
 			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	}
@@ -467,13 +463,13 @@ HANDLER_FUNC(party_recruitment_search) {
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 			) {
-			response_json(res, 502, 3, "There is an exception in the database table structure.");
+			make_response(res, FAILURE_RET, "An error occurred while executing query.");
 			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	}
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
-		response_json(res, 200, 1);
+		make_response(res, SUCCESS_RET);
 		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
@@ -492,12 +488,12 @@ HANDLER_FUNC(party_recruitment_search) {
 		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 10, SQLDT_UINT32, &p.max_level, sizeof(p.max_level), NULL, NULL)
 		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.memo, sizeof(p.memo), NULL, NULL)
 		) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while binding column.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	json response;
-	response["Type"] = 1;
+	response["Type"] = SUCCESS_RET;
 
 	if (record_cnt) {
 		response["totalPage"] = max_page;
@@ -526,6 +522,6 @@ HANDLER_FUNC(party_recruitment_search) {
 		}
 	}
 
-	response_json(res, 200, response);
+	make_response(res, response);
 	RETURN_STMT_SUCCESS(stmt, weblock);
 }

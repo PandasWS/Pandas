@@ -297,15 +297,19 @@ HANDLER_FUNC(emblem_upload) {
 
 using namespace nlohmann;
 
+#define SUCCESS_RET 1
+#define FAILURE_RET 4
+#define REQUIRE_FIELD_EXISTS(x) REQUIRE_FIELD_EXISTS_T(x)
+
 HANDLER_FUNC(emblem_download) {
 	if (!isAuthorized(req, false)) {
-		response_json(res, 403, 4, "Authorization verification failure.");
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
 		return;
 	}
 
-	REQUIRE_FIELD_EXISTS_STRICT("GDID");
-	REQUIRE_FIELD_EXISTS_STRICT("Version");
-	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
+	REQUIRE_FIELD_EXISTS("GDID");
+	REQUIRE_FIELD_EXISTS("Version");
+	REQUIRE_FIELD_EXISTS("WorldName");
 
 	auto guild_id = GET_NUMBER_FIELD("GDID", 0);
 	auto guild_emblem_version = GET_NUMBER_FIELD("Version", 0);
@@ -323,7 +327,7 @@ HANDLER_FUNC(emblem_download) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		response_json(res, 502, 4, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
@@ -339,7 +343,7 @@ HANDLER_FUNC(emblem_download) {
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
 		ShowError("[GuildID: %d / World: \"%s\"] Not found in table\n", guild_id, U2ACE(req.get_file_value("WorldName").content).c_str());
-		response_json(res, 404, 4, "Could not find the guild emblem data.");
+		make_response(res, FAILURE_RET, "An error occurred while binding column.");
 		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
@@ -348,7 +352,7 @@ HANDLER_FUNC(emblem_download) {
 		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 2, SQLDT_BLOB, blob, MAX_EMBLEM_SIZE, &emblem_size, nullptr)
 		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
 	) {
-		response_json(res, 502, 4, "Could not load the emblem data from database.");
+		make_response(res, FAILURE_RET, "Could not load the emblem data from database.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
@@ -357,13 +361,13 @@ HANDLER_FUNC(emblem_download) {
 
 	if (version != guild_emblem_version) {
 		ShowDebug("Emblem version is not match, current version is %d and the version required by the client is %d.\n", version, guild_emblem_version);
-		response_json(res, 502, 4, "The requested emblem version does not match.");
+		make_response(res, FAILURE_RET, "The requested emblem version does not match.");
 		return;
 	}
 
 	if (emblem_size > MAX_EMBLEM_SIZE) {
 		ShowDebug("Emblem is too big, current size is %d and the max length is %d.\n", emblem_size, MAX_EMBLEM_SIZE);
-		response_json(res, 502, 4, "Emblem is too big, reject.");
+		make_response(res, FAILURE_RET, "Emblem is too big, reject.");
 		return;
 	}
 
@@ -374,7 +378,7 @@ HANDLER_FUNC(emblem_download) {
 		content_type = "image/gif";
 	else {
 		ShowError("Invalid image type %s, rejecting!\n", filetype);
-		response_json(res, 502, 4, "Unsupported image type, reject.");
+		make_response(res, FAILURE_RET, "Unsupported image type, reject.");
 		return;
 	}
 
@@ -385,14 +389,14 @@ HANDLER_FUNC(emblem_download) {
 
 HANDLER_FUNC(emblem_upload) {
 	if (!isAuthorized(req, true)) {
-		response_json(res, 403, 3, "Authorization verification failure.");
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
 		return;
 	}
 
-	REQUIRE_FIELD_EXISTS_STRICT("GDID");
-	REQUIRE_FIELD_EXISTS_STRICT("ImgType");
-	REQUIRE_FIELD_EXISTS_STRICT("Img");
-	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
+	REQUIRE_FIELD_EXISTS("GDID");
+	REQUIRE_FIELD_EXISTS("ImgType");
+	REQUIRE_FIELD_EXISTS("Img");
+	REQUIRE_FIELD_EXISTS("WorldName");
 
 	auto guild_id = GET_NUMBER_FIELD("GDID", 0);
 	auto imgtype = GET_STRING_FIELD("ImgType", "");
@@ -401,43 +405,43 @@ HANDLER_FUNC(emblem_upload) {
 
 	if (imgtype != "BMP" && imgtype != "GIF") {
 		ShowError("Invalid image type %s, rejecting!\n", imgtype.c_str());
-		response_json(res, 403, 3, "Unsupported image type, reject.");
+		make_response(res, FAILURE_RET, "Unsupported image type, reject.");
 		return;
 	}
 
 	auto length = img.length();
 	if (length > MAX_EMBLEM_SIZE) {
 		ShowDebug("Emblem is too big, current size is %lu and the max length is %d.\n", length, MAX_EMBLEM_SIZE);
-		response_json(res, 403, 3, "The size of the emblem exceeds the maximum limit.");
+		make_response(res, FAILURE_RET, "The size of the emblem exceeds the maximum limit.");
 		return;
 	}
 
 	if (imgtype == "GIF") {
 		if (!web_config.allow_gifs) {
 			ShowDebug("Client sent GIF image but GIF image support is disabled.\n");
-			response_json(res, 403, 3, "GIF image support is disabled.");
+			make_response(res, FAILURE_RET, "GIF image support is disabled.");
 			return;
 		}
 		if (img.substr(0, 3) != "GIF") {
 			ShowDebug("Server received ImgType GIF but received file does not start with \"GIF\" magic header.\n");
-			response_json(res, 403, 3, "Server received ImgType GIF but received file does not start with \"GIF\" magic header.");
+			make_response(res, FAILURE_RET, "Server received ImgType GIF but received file does not start with \"GIF\" magic header.");
 			return;
 		}
 	}
 	else if (imgtype == "BMP") {
 		if (length < 14) {
 			ShowDebug("File size is too short\n");
-			response_json(res, 403, 3, "Bitmap file size is too short.");
+			make_response(res, FAILURE_RET, "Bitmap file size is too short.");
 			return;
 		}
 		if (img.substr(0, 2) != "BM") {
 			ShowDebug("Server received ImgType BMP but received file does not start with \"BM\" magic header.\n");
-			response_json(res, 403, 3, "Server received ImgType BMP but received file does not start with \"BM\" magic header.");
+			make_response(res, FAILURE_RET, "Server received ImgType BMP but received file does not start with \"BM\" magic header.");
 			return;
 		}
 		if (RBUFL(img.c_str(), 2) != length) {
 			ShowDebug("Bitmap size doesn't match size in file header.\n");
-			response_json(res, 403, 3, "Bitmap size doesn't match size in file header.");
+			make_response(res, FAILURE_RET, "Bitmap size doesn't match size in file header.");
 			return;
 		}
 
@@ -452,7 +456,7 @@ HANDLER_FUNC(emblem_upload) {
 			}
 			if (((transcount * 300) / (length - offset)) > web_config.emblem_transparency_limit) {
 				ShowDebug("Bitmap transparency check failed.\n");
-				response_json(res, 403, 3, "Bitmap transparency check failed.");
+				make_response(res, FAILURE_RET, "Bitmap transparency check failed.");
 				return;
 			}
 		}
@@ -470,7 +474,7 @@ HANDLER_FUNC(emblem_upload) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
@@ -480,7 +484,7 @@ HANDLER_FUNC(emblem_upload) {
 		if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_UINT32, &version, sizeof(version), NULL, NULL)
 			|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
 		) {
-			response_json(res, 502, 3, "Could not load the emblem version from database.");
+			make_response(res, FAILURE_RET, "An error occurred while binding column.");
 			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 		version += 1;
@@ -497,14 +501,14 @@ HANDLER_FUNC(emblem_upload) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_BLOB, (void *)img.c_str(), length)
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		response_json(res, 502, 3, "An error occurred while replaceing data.");
+		make_response(res, FAILURE_RET, "An error occurred while replaceing data.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	json response = {};
-	response["Type"] = 1;
+	response["Type"] = SUCCESS_RET;
 	response["version"] = version;
-	response_json(res, 200, response);
+	make_response(res, response);
 	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 

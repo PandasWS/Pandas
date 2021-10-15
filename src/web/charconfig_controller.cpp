@@ -159,16 +159,20 @@ HANDLER_FUNC(charconfig_load) {
 
 using namespace nlohmann;
 
+#define SUCCESS_RET 1
+#define FAILURE_RET 3
+#define REQUIRE_FIELD_EXISTS(x) REQUIRE_FIELD_EXISTS_T(x)
+
 HANDLER_FUNC(charconfig_save) {
 	if (!isAuthorized(req, false)) {
-		response_json(res, 403, 3, "Authorization verification failure.");
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
 		return;
 	}
 
-	REQUIRE_FIELD_EXISTS_STRICT("AID");
-	REQUIRE_FIELD_EXISTS_STRICT("GID");
-	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
-	REQUIRE_FIELD_EXISTS_STRICT("data");
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("GID");
+	REQUIRE_FIELD_EXISTS("WorldName");
+	REQUIRE_FIELD_EXISTS("data");
 	
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
@@ -176,7 +180,7 @@ HANDLER_FUNC(charconfig_save) {
 	auto data = GET_STRING_FIELD("data", "");
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
 		return;
 	}
 
@@ -193,7 +197,7 @@ HANDLER_FUNC(charconfig_save) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
@@ -229,7 +233,7 @@ HANDLER_FUNC(charconfig_save) {
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-			response_json(res, 502, 3, "An error occurred while inserting data.");
+			make_response(res, FAILURE_RET, "An error occurred while inserting data.");
 			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	} else {
@@ -242,31 +246,31 @@ HANDLER_FUNC(charconfig_save) {
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-			response_json(res, 502, 3, "An error occurred while updating data.");
+			make_response(res, FAILURE_RET, "An error occurred while updating data.");
 			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	}
 
-	response_json(res, 200, 1);
+	make_response(res, SUCCESS_RET);
 	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 HANDLER_FUNC(charconfig_load) {
 	if (!isAuthorized(req, false)) {
-		response_json(res, 403, 3, "Authorization verification failure.");
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
 		return;
 	}
 
-	REQUIRE_FIELD_EXISTS_STRICT("AID");
-	REQUIRE_FIELD_EXISTS_STRICT("GID");
-	REQUIRE_FIELD_EXISTS_STRICT("WorldName");
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("GID");
+	REQUIRE_FIELD_EXISTS("WorldName");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		response_json(res, 400, 3, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
 		return;
 	}
 
@@ -283,13 +287,13 @@ HANDLER_FUNC(charconfig_load) {
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
 		ShowDebug("[AccountID: %d, World: \"%s\"] Not found in table, sending new info.\n", account_id, U2ACE(req.get_file_value("WorldName").content).c_str());
-		response_json(res, 200, 1);
+		make_response(res, SUCCESS_RET);
 		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
@@ -298,7 +302,7 @@ HANDLER_FUNC(charconfig_load) {
 	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
 		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
 	) {
-		response_json(res, 502, 3, "Could not load the data from database.");
+		make_response(res, FAILURE_RET, "An error occurred while binding column.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
@@ -306,8 +310,8 @@ HANDLER_FUNC(charconfig_load) {
 
 	json response = {};
 	response = json::parse(A2UWE(databuf));
-	response["Type"] = 1;
-	response_json(res, 200, response);
+	response["Type"] = SUCCESS_RET;
+	make_response(res, response);
 	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 

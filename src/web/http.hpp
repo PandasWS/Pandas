@@ -33,17 +33,17 @@ typedef HANDLER_FUNC((*handler_func));
 	(req.has_file(field) ? req.get_file_value(field).content : def_val)
 
 // 严格要求指定字段存在, 若不存在则返回 400 状态码并给与 Type 赋值 3 以及附赠错误信息
-#define REQUIRE_FIELD_EXISTS_STRICT(field) { \
+#define REQUIRE_FIELD_EXISTS_T(field) { \
 	if (!req.has_file(field)) { \
-		response_json(res, 400, 3, "Sorry, missing '" ##field "' field for process request."); \
+		make_response(res, 3, "Sorry, missing '" ##field "' field for process request."); \
 		return; \
 	} \
 }
 
-// 友好的要求指定字段存在, 若不存在则返回 200 状态码并给与 Type 赋值 1
-#define REQUIRE_FIELD_EXISTS(field) { \
+// 严格要求指定字段存在, 若不存在则返回 400 状态码并给与 Result 赋值 3 以及附赠错误信息
+#define REQUIRE_FIELD_EXISTS_R(field) { \
 	if (!req.has_file(field)) { \
-		response_json(res, 200, 1); \
+		make_response(res, -3, "Sorry, missing '" ##field "' field for process request."); \
 		return; \
 	} \
 }
@@ -68,8 +68,8 @@ typedef HANDLER_FUNC((*handler_func));
 }
 
 #ifdef Pandas_WebServer_Rewrite_Controller_HandlerFunc
-void response_json(httplib::Response& res, int status_code, int type, const std::string& errmes = "");
-void response_json(httplib::Response& res, int status_code, nlohmann::json& content);
+void make_response(httplib::Response& res, int type, const std::string& errmes = "", int status_code = 200);
+void make_response(httplib::Response& res, nlohmann::json& content, int status_code = 200);
 #endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc
 
 #endif

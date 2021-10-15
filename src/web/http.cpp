@@ -5,19 +5,19 @@
 
 #ifdef Pandas_WebServer_Rewrite_Controller_HandlerFunc
 //************************************
-// Method:      response_json
-// Description: 构造标准响应 JSON 内容对象并将它设置为接口响应内容
+// Method:      make_response
+// Description: 构造标准响应对象并将它设置为接口响应内容
 // Access:      public 
 // Parameter:   httplib::Response & res
-// Parameter:   int status_code
-// Parameter:   uint32 type
+// Parameter:   int type (负数则使用 Result 作为字段名, 正数用 Type 作为字段名)
 // Parameter:   const std::string & errmes
+// Parameter:   int status_code
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/10/03 10:18
 //************************************ 
-void response_json(httplib::Response& res, int status_code, int type, const std::string& errmes) {
+void make_response(httplib::Response& res, int type, const std::string& errmes, int status_code) {
 	nlohmann::json content = {};
-	content["Type"] = type;
+	content[(type < 0 ? "Result" : "Type")] = abs(type);
 	if (!errmes.empty()) {
 		content["Error"] = errmes;
 	}
@@ -26,16 +26,16 @@ void response_json(httplib::Response& res, int status_code, int type, const std:
 }
 
 //************************************
-// Method:      response_json
+// Method:      make_response
 // Description: 将给定的 JSON 内容对象设置为接口响应内容
 // Access:      public 
 // Parameter:   httplib::Response & res
-// Parameter:   int status_code
 // Parameter:   nlohmann::json & content
+// Parameter:   int status_code
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/10/03 10:18
 //************************************ 
-void response_json(httplib::Response& res, int status_code, nlohmann::json& content) {
+void make_response(httplib::Response& res, nlohmann::json& content, int status_code) {
 	res.status = status_code;
 	res.set_content(content.dump(3), "application/json");
 }
