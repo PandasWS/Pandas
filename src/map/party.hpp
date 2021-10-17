@@ -70,6 +70,7 @@ int party_member_withdraw(int party_id, uint32 account_id, uint32 char_id, char 
 int party_reply_invite(struct map_session_data *sd,int party_id,int flag);
 #ifdef Pandas_PacketFunction_PartyJoinRequest
 bool party_join(struct map_session_data* sd, uint32 leader_aid, uint32 leader_cid);
+void party_join_approval(struct map_session_data* leader_sd, uint8 approval);
 #endif // Pandas_PacketFunction_PartyJoinRequest
 #define party_add_member(party_id,sd) party_reply_invite(sd,party_id,1)
 int party_recv_noinfo(int party_id, uint32 char_id);

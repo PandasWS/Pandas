@@ -441,10 +441,6 @@
 #ifdef Pandas_PacketFunction
 	// 是否实现 0xb0d 封包发送函数 [Sola丶小克]
 	// 该封包用于告诉客户端移除指定单位的特效, 实现特性的精细化控制
-	// 
-	// 涉及到的函数有:
-	// - clif_removespecialeffect
-	// - clif_removespecialeffect_single
 	#define Pandas_PacketFunction_RemoveSpecialEffect
 
 	// 是否实现 0x0ae6 封包处理函数 [Sola丶小克]
@@ -457,7 +453,9 @@
 	// 以 20200122 客户端举例, 这个版本的客户端也有冒险家中介所, 但是连接的 3000 端口是标准 TCP 协议,
 	// 也就是说有可能在 KRO 早期, 这部分助手接口功能其实是类似 MAP-SERVER 这种服务端提供的,
 	// 在 2020 年的 3 月份开始的客户端如 20200304 才修改成以 HTTP 协议的方式提供服务.
-	#define Pandas_PacketFunction_PartyJoinRequest
+	#if PACKETVER >= 20200300
+		#define Pandas_PacketFunction_PartyJoinRequest
+	#endif PACKETVER >= 20200300
 #endif // Pandas_PacketFunction
 
 // ============================================================================
