@@ -116,8 +116,8 @@ int logchrif_parse_reqauth(int fd, int id,char* ip){
 #else
 			// 在 rAthena 官方发送的封包基础上, 多发送两个定长的字符串字段
 			// 此处将 login-server 记录的当前玩家的 mac 和 lan 地址发送给 char-server 中 0x2713 封包的处理函数
-			memcpy(WFIFOP(fd,21), node->mac_address, MACADDRESS_LENGTH);
-			memcpy(WFIFOP(fd,21 + MACADDRESS_LENGTH), node->lan_address, IP4ADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 21), node->mac_address, MACADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 21 + MACADDRESS_LENGTH), node->lan_address, IP4ADDRESS_LENGTH);
 			WFIFOSET(fd,21 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
 #endif // Pandas_Extract_SSOPacket_MacAddress
 
@@ -145,8 +145,8 @@ int logchrif_parse_reqauth(int fd, int id,char* ip){
 			// 在 rAthena 官方发送的封包基础上, 多发送两个定长的字符串字段
 			// 这里发送的是验证被拒绝时的响应包, 此时没有办法读取到正确的 MAC 地址, 直接返回空
 			// 此处将 login-server 记录的当前玩家的 mac 和 lan 地址发送给 char-server 中 0x2713 封包的处理函数
-			memcpy(WFIFOP(fd,21), "", MACADDRESS_LENGTH);
-			memcpy(WFIFOP(fd,21 + MACADDRESS_LENGTH), "", IP4ADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 21), "", MACADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 21 + MACADDRESS_LENGTH), "", IP4ADDRESS_LENGTH);
 			WFIFOSET(fd,21 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
 #endif // Pandas_Extract_SSOPacket_MacAddress
 		}

@@ -455,7 +455,7 @@
 	// 在 2020 年的 3 月份开始的客户端如 20200304 才修改成以 HTTP 协议的方式提供服务.
 	#if PACKETVER >= 20200300
 		#define Pandas_PacketFunction_PartyJoinRequest
-	#endif PACKETVER >= 20200300
+	#endif // PACKETVER >= 20200300
 #endif // Pandas_PacketFunction
 
 // ============================================================================
