@@ -35,7 +35,9 @@ typedef HANDLER_FUNC((*handler_func));
 // 严格要求指定字段存在, 若不存在则返回 400 状态码并给与 Type 赋值 3 以及附赠错误信息
 #define REQUIRE_FIELD_EXISTS_T(field) { \
 	if (!req.has_file(field)) { \
-		make_response(res, 3, "Sorry, missing '" ##field "' field for process request."); \
+		char __mes[128] = { 0 }; \
+		snprintf(__mes, 128, "Sorry, missing '%s' field for process request.", field); \
+		make_response(res, 3, __mes); \
 		return; \
 	} \
 }
@@ -43,7 +45,9 @@ typedef HANDLER_FUNC((*handler_func));
 // 严格要求指定字段存在, 若不存在则返回 400 状态码并给与 Result 赋值 3 以及附赠错误信息
 #define REQUIRE_FIELD_EXISTS_R(field) { \
 	if (!req.has_file(field)) { \
-		make_response(res, -3, "Sorry, missing '" ##field "' field for process request."); \
+		char __mes[128] = { 0 }; \
+		snprintf(__mes, 128, "Sorry, missing '%s' field for process request.", field); \
+		make_response(res, -3, __mes); \
 		return; \
 	} \
 }
