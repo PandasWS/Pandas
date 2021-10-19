@@ -588,7 +588,7 @@ bool party_join(struct map_session_data* sd, uint32 leader_aid, uint32 leader_ci
 
 	// 让队长记住当前有哪个玩家正在等待审批
 	leader_sd->party_applicant = p->party.party_id;
-	leader_sd->party_applicant_account = sd->status.account_id;
+	leader_sd->party_applicant_char = sd->status.char_id;
 
 	// 发送请求让队长进行确认
 	clif_party_join_ask_approval(leader_sd, sd);
@@ -611,13 +611,13 @@ void party_join_approval(struct map_session_data* leader_sd, uint8 approval)
 	// 当前并没有需要处理的操作
 	if (leader_sd->status.party_id == 0 || leader_sd->party_applicant != leader_sd->status.party_id) {
 		leader_sd->party_applicant = 0;
-		leader_sd->party_applicant_account = 0;
+		leader_sd->party_applicant_char = 0;
 		return;
 	}
 
 	// 判断申请者是否还在线
 	struct map_session_data* sd = nullptr;
-	sd = map_id2sd(leader_sd->party_applicant_account);
+	sd = map_charid2sd(leader_sd->party_applicant_char);
 	if (!sd) {
 		clif_party_join_reply(leader_sd, "", "", PARTY_JOIN_REPLY_CHARACTER_NOTFOUND);
 		return;
@@ -687,7 +687,7 @@ void party_join_approval(struct map_session_data* leader_sd, uint8 approval)
 			sd->party_invite = 0;
 			sd->party_invite_account = 0;
 			sd->party_applicant = 0;
-			sd->party_applicant_account = 0;
+			sd->party_applicant_char = 0;
 			return;
 		}
 	}
@@ -761,9 +761,9 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 			clif_party_invite_reply(sd2,sd->status.name,PARTY_REPLY_FULL);
 #ifdef Pandas_PacketFunction_PartyJoinRequest
 		// 如果 sd2 队长记录着希望通过此玩家加入队伍的审批, 那么在此告诉队长队伍满了 (其实是异常了)
-		if (sd && sd2 && sd2->party_applicant_account == sd->status.account_id) {
+		if (sd && sd2 && sd2->party_applicant_char == sd->status.char_id) {
 			sd2->party_applicant = 0;
-			sd2->party_applicant_account = 0;
+			sd2->party_applicant_char = 0;
 			clif_party_join_reply(sd2, sd->status.name, p->party.name, PARTY_JOIN_REPLY_FULL);
 		}
 #endif // Pandas_PacketFunction_PartyJoinRequest
@@ -781,9 +781,9 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 
 #ifdef Pandas_PacketFunction_PartyJoinRequest
 	// 如果 sd2 队长记录着希望通过此玩家加入队伍的审批, 那么在此告诉 sd 申请者加入成功
-	if (sd && sd2 && sd2->party_applicant_account == sd->status.account_id) {
+	if (sd && sd2 && sd2->party_applicant_char == sd->status.char_id) {
 		sd2->party_applicant = 0;
-		sd2->party_applicant_account = 0;
+		sd2->party_applicant_char = 0;
 		clif_party_join_reply(sd, sd->status.name, p->party.name, PARTY_JOIN_REPLY_ACCEPTED);
 	}
 #endif // Pandas_PacketFunction_PartyJoinRequest
