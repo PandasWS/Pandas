@@ -7,8 +7,8 @@
 #include "../common/mmo.hpp"
 
 struct s_recruitment {
-	uint32 account_id;
-	uint32 char_id;
+	uint32 account_id = 0;
+	uint32 char_id = 0;
 	char world_name[32] = { 0 };
 	char char_name[NAME_LENGTH] = { 0 };
 	char memo[32] = { 0 };

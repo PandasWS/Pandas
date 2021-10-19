@@ -14366,6 +14366,8 @@ void clif_parse_PartyInvite2(int fd, struct map_session_data *sd){
 //************************************ 
 void clif_party_join_reply(struct map_session_data* sd, const char* player_name, const char* party_name, enum e_party_join_reply reply) {
 	nullpo_retv(sd);
+	nullpo_retv(player_name);
+	nullpo_retv(party_name);
 
 	struct PACKET_ZC_JOIN_PARTY_REPLY* p = nullptr;
 	p = (struct PACKET_ZC_JOIN_PARTY_REPLY*)packet_buffer;

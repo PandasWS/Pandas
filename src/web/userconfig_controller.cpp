@@ -279,7 +279,7 @@ HANDLER_FUNC(userconfig_load) {
 	}
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
-		ShowDebug("[AccountID: %d, World: \"%s\"] Not found in table, sending new info.\n", account_id, U2ACE(req.get_file_value("WorldName").content).c_str());
+		//ShowDebug("[AccountID: %d, World: \"%s\"] Not found in table, sending new info.\n", account_id, U2ACE(req.get_file_value("WorldName").content).c_str());
 		make_response(res, SUCCESS_RET);
 		RETURN_STMT_SUCCESS(stmt, weblock);
 	}

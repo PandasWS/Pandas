@@ -608,8 +608,8 @@ void party_join_approval(struct map_session_data* leader_sd, uint8 approval)
 {
 	nullpo_retv(leader_sd);
 
-	// 实际上并没有需要处理的操作
-	if (leader_sd->party_applicant != leader_sd->status.party_id) {
+	// 当前并没有需要处理的操作
+	if (leader_sd->status.party_id == 0 || leader_sd->party_applicant != leader_sd->status.party_id) {
 		leader_sd->party_applicant = 0;
 		leader_sd->party_applicant_account = 0;
 		return;
@@ -762,8 +762,8 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 #ifdef Pandas_PacketFunction_PartyJoinRequest
 		// 如果 sd2 队长记录着希望通过此玩家加入队伍的审批, 那么在此告诉队长队伍满了 (其实是异常了)
 		if (sd && sd2 && sd2->party_applicant_account == sd->status.account_id) {
-			sd->party_applicant = 0;
-			sd->party_applicant_account = 0;
+			sd2->party_applicant = 0;
+			sd2->party_applicant_account = 0;
 			clif_party_join_reply(sd2, sd->status.name, p->party.name, PARTY_JOIN_REPLY_FULL);
 		}
 #endif // Pandas_PacketFunction_PartyJoinRequest
@@ -782,8 +782,8 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 #ifdef Pandas_PacketFunction_PartyJoinRequest
 	// 如果 sd2 队长记录着希望通过此玩家加入队伍的审批, 那么在此告诉 sd 申请者加入成功
 	if (sd && sd2 && sd2->party_applicant_account == sd->status.account_id) {
-		sd->party_applicant = 0;
-		sd->party_applicant_account = 0;
+		sd2->party_applicant = 0;
+		sd2->party_applicant_account = 0;
 		clif_party_join_reply(sd, sd->status.name, p->party.name, PARTY_JOIN_REPLY_ACCEPTED);
 	}
 #endif // Pandas_PacketFunction_PartyJoinRequest
