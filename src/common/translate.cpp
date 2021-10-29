@@ -29,8 +29,8 @@ const std::string TranslateDB::getDefaultLocation() {
 	std::string postfix;
 
 	switch (PandasUtf8::systemLanguage) {
-	case PandasUtf8::SYSTEM_LANGUAGE_CHS: postfix = "cn"; break;
-	case PandasUtf8::SYSTEM_LANGUAGE_CHT: postfix = "tw"; break;
+	case PandasUtf8::PANDAS_LANGUAGE_CHS: postfix = "cn"; break;
+	case PandasUtf8::PANDAS_LANGUAGE_CHT: postfix = "tw"; break;
 	}
 
 	if (postfix.empty()) return "";
@@ -53,7 +53,9 @@ void TranslateDB::showStatus() {
 	std::string szLocation = this->getCurrentFile();
 	if (szLocation.empty()) {
 		// 若系统语言是英文, 那么就不打印与终端翻译机制相关的信息
-		if (PandasUtf8::systemLanguage == PandasUtf8::SYSTEM_LANGUAGE_ENG) return;
+		if (PandasUtf8::systemLanguage == PandasUtf8::PANDAS_LANGUAGE_ENG) {
+			return;
+		}
 
 		ShowInfo("Console translation system was deactivated.\n");
 	}

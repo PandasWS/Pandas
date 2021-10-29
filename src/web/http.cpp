@@ -2,6 +2,7 @@
 // For more information, see LICENCE in the main folder
 
 #include "http.hpp"
+#include "web.hpp"
 
 #ifdef Pandas_WebServer_Rewrite_Controller_HandlerFunc
 //************************************
@@ -21,8 +22,15 @@ void make_response(httplib::Response& res, int type, const std::string& errmes, 
 	if (!errmes.empty()) {
 		content["Error"] = errmes;
 	}
+
 	res.status = status_code;
-	res.set_content(content.dump(3), "application/json");
+	std::string content_str = content.dump(3);
+
+	if (PandasUtf8::getEncodingByLanguage() == PandasUtf8::PANDAS_ENCODING_BIG5) {
+		content_str = PandasUtf8::splashForUtf8(content_str);
+	}
+
+	res.set_content(content_str, "application/json");
 }
 
 //************************************
@@ -37,6 +45,12 @@ void make_response(httplib::Response& res, int type, const std::string& errmes, 
 //************************************ 
 void make_response(httplib::Response& res, nlohmann::json& content, int status_code) {
 	res.status = status_code;
-	res.set_content(content.dump(3), "application/json");
+	std::string content_str = content.dump(3);
+
+	if (PandasUtf8::getEncodingByLanguage() == PandasUtf8::PANDAS_ENCODING_BIG5) {
+		content_str = PandasUtf8::splashForUtf8(content_str);
+	}
+
+	res.set_content(content_str, "application/json");
 }
 #endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc

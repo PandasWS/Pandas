@@ -23,31 +23,52 @@ enum e_file_charsetmode : uint8 {
 	FILE_CHARSETMODE_UCS2_BE
 };
 
-enum e_console_encoding : uint8 {
-	CONSOLE_ENCODING_UNKNOW = 0,
-	CONSOLE_ENCODING_LATIN1,
-	CONSOLE_ENCODING_UTF8,
-	CONSOLE_ENCODING_GBK,
-	CONSOLE_ENCODING_BIG5
+enum e_pandas_encoding : uint8 {
+	PANDAS_ENCODING_UNKNOW = 0,
+	PANDAS_ENCODING_LATIN1,
+	PANDAS_ENCODING_UTF8,
+	PANDAS_ENCODING_GBK,
+	PANDAS_ENCODING_BIG5
 };
 
-enum e_system_language : uint8 {
-	SYSTEM_LANGUAGE_UNKNOW = 0,
-	SYSTEM_LANGUAGE_ENG,
-	SYSTEM_LANGUAGE_CHS,
-	SYSTEM_LANGUAGE_CHT
+enum e_pandas_language : uint8 {
+	PANDAS_LANGUAGE_UNKNOW = 0,
+	PANDAS_LANGUAGE_ENG,
+	PANDAS_LANGUAGE_CHS,
+	PANDAS_LANGUAGE_CHT
 };
 
 // 引用全局变量声明, 变量定义在 utf8.cpp 中
-extern enum e_console_encoding consoleEncoding;
-extern enum e_system_language systemLanguage;
+extern enum e_pandas_encoding systemEncoding;
+extern enum e_pandas_language systemLanguage;
+
+enum e_pandas_language getSystemLanguage();
+enum e_pandas_encoding getSystemEncoding(bool bIgnoreUtf8 = false);
+enum e_pandas_encoding getEncodingByLanguage(e_pandas_language lang = systemLanguage);
+
+std::string utf8ToAnsi(const std::string& strUtf8);
+std::string utf8ToAnsi(const std::string& strUtf8, e_pandas_encoding toCharset);
+std::string utf8ToAnsi(const std::string& strUtf8, const std::string& strToEncoding);
+
+std::string ansiToUtf8(const std::string& strAnsi);
+std::string ansiToUtf8(const std::string& strAnsi, e_pandas_encoding fromEncoding);
+std::string ansiToUtf8(const std::string& strAnsi, const std::string& strFromEncoding);
+
+std::string splashForUtf8(const std::string& strUtf8);
+
+#ifdef _WIN32
+	bool setupConsoleOutputCP();
+#else
+	std::string iconvConvert(const std::string& val, e_pandas_encoding in_enc, e_pandas_encoding out_enc);
+	std::string consoleConvert(const std::string& mes);
+	int vfprintf(FILE* file, const char* fmt, va_list args);
+#endif // _WIN32
+
+//////////////////////////////////////////////////////////////////////////
 
 void setModeMapping(FILE* _fp, e_file_charsetmode _mode);
 e_file_charsetmode getModeMapping(FILE* _fp);
 void clearModeMapping(FILE* _fp);
-
-enum e_console_encoding getConsoleEncoding();
-enum e_system_language getSystemLanguage();
 
 // 对一系列的文件操作函数进行额外的加工操作
 // 最终通过 src/common/utf8_defines.hpp 进行整个工程的函数替换操作
@@ -57,23 +78,6 @@ FILE* fopen(const char* _FileName, const char* _Mode);
 char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream);
 size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream);
 int fclose(FILE* _fp);
-
-std::string utf8ToAnsi(const std::string& strUtf8);
-std::string utf8ToAnsi(const std::string& strUtf8, const std::string& toCharset);
-std::string ansiToUtf8(const std::string& strAnsi);
-std::string ansiToUtf8(const std::string& strAnsi, const std::string& fromCharset);
-
-std::string getDefaultCodepage();
-
-#ifdef _WIN32
-	bool setupConsoleOutputCP();
-	std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage);
-	std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage);
-#else
-	std::string iconvConvert(const std::string& val, const std::string& in_enc, const std::string& out_enc);
-	std::string consoleConvert(const std::string& mes);
-	int vfprintf(FILE* file, const char* fmt, va_list args);
-#endif // _WIN32
 
 } // namespace PandasUtf8
 

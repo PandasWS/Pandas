@@ -30,22 +30,698 @@
 #include <unordered_map>
 
 namespace PandasUtf8 {
-
-// 当无法通过 PandasUtf8::systemLanguage 获得契合的字符编码时
-// 将会使用这里定义的默认编码 (主要是在 Linux 平台上使用)
-#define DEFAULT_ENCODING "GBK"
-
-// 设定两个全局变量用于保存系统的语言和控制台的编码
-// 这两个东西通常程序启动后就不会再发生任何变化, 为了避免频繁检测, 缓存起来比较值得
-enum e_console_encoding consoleEncoding = getConsoleEncoding();
-enum e_system_language systemLanguage = getSystemLanguage();
-
-// 用于保存 FILE 指针和文件编码模式的缓存
-std::unordered_map<FILE*, e_file_charsetmode> __fpmodecache;
+// -------------------------------------------------------------------
+// 概念定义
+// -------------------------------------------------------------------
+// 系统语言: (System Language, 与 e_pandas_language 对应)
+// 	   系统语言是指操作系统展现给用户的语言, 决定着熊猫模拟器用什么样的终端汉化信息.
+// 	   本文件中的 getSystemLanguage 函数用来获取当前操作系统的系统语言.
+// 
+//     在 Windows 中在控制面板可以修改, 使用 GetUserDefaultUILanguage 读取
+//     在 Linux 中使用 setlocale(LC_CTYPE, NULL) 读取, 既 zh_CN.UTF-8 中的前半段: zh_CN
+//
+// 字符编码: (Character Encoding, 与 e_pandas_encoding 对应)
+//     字符编码是指当前程序默认使用的编码, 比如 BIG5, GBK 等.
+// 	   本文件中的 getSystemEncoding 函数用来获取当前操作系统的字符编码.
+//
+//     在 Windows 中使用 GetACP 来获取页码(Codepage), 使用页码进行字符编码的判断
+//     在 Linux 中使用 setlocale(LC_CTYPE, NULL) 读取, 既 zh_CN.UTF-8 中的后半段: UTF-8
+//
+// 字符页码: (Character Codepage)
+//     页码的概念仅在 Windows 系统上存在, 针对非 Unicode 程序系统会用页码来理解程序中的字符串.
+//     而 Athena 系列模拟器都是非 Unicode 程序, 因此该值在 Windows 平台是关键的.
+//
+//     在本文件中我们将会使用 Codepage 来判断出 Encoding, 一切操作以 Encoding 作为基准,
+//     在一些必要场景会进行 Encoding 和 Codepage 之间的相互转换.
+//
+// 特殊情况:
+//     在 Win10 系统开始, Codepage 会被实验性的设置为 CP_UTF8 即 65001.
+// 	   但由于客户端能呈现的更多是 BIG5 或者 GBK 这样的编码, 因此当 GetACP 得到的是 CP_UTF8 时,
+// 	   我们会根据系统语言来确定理想的字符编码.
+// -------------------------------------------------------------------
 
 // 此处定义的缓冲区大小可参考 showmsg.cpp 中 SBUF_SIZE 的定义
 // 按照 rAthena 的建议, 此处的 STRBUF_SIZE 不会设置低于 SBUF_SIZE 设定的值
 #define STRBUF_SIZE 1024 * 4
+
+// 当无法通过获得契合的字符编码时, 将会使用这里定义的默认编码 (Linux 平台上使用)
+#define UNSUPPORT_DEFAULT_CODEPAGE "GBK"
+#define UNSUPPORT_DEFAULT_ENCODING PANDAS_ENCODING_GBK
+
+// 设定两个全局变量用于保存系统的语言和控制台的编码
+// 这两个东西通常程序启动后就不会再发生任何变化, 为了避免频繁检测缓存起来比较值得
+enum e_pandas_language systemLanguage = getSystemLanguage();
+enum e_pandas_encoding systemEncoding = getSystemEncoding();
+
+//************************************
+// Method:      getSystemLanguage
+// Description: 获取当前操作系统的默认展现语言
+// Returns:     enum e_pandas_language
+// Author:      Sola丶小克(CairoLee)  2020/01/24 21:59
+//************************************
+enum e_pandas_language getSystemLanguage() {
+#ifdef _WIN32
+	// GetUserDefaultUILanguage 获取到的编码对照表:
+	// https://www.voidtools.com/support/everything/language_ids/
+	switch (GetUserDefaultUILanguage()) {
+	case 0x0409: return PANDAS_LANGUAGE_ENG;	// English (United States)
+	case 0x0804: return PANDAS_LANGUAGE_CHS;	// Chinese (PRC) 
+	case 0x0404: return PANDAS_LANGUAGE_CHT;	// Chinese (Taiwan Region)
+	case 0x0c04: return PANDAS_LANGUAGE_CHT;	// Chinese (Hong Kong SAR, PRC) 
+	default: return PANDAS_LANGUAGE_ENG;
+	}
+#else
+	setlocale(LC_ALL, "");
+	char* szLocale = setlocale(LC_CTYPE, NULL);
+
+	if (boost::istarts_with(szLocale, "zh_CN"))
+		return PANDAS_LANGUAGE_CHS;
+	else if (boost::istarts_with(szLocale, "zh_TW"))
+		return PANDAS_LANGUAGE_CHT;
+	else if (boost::istarts_with(szLocale, "zh_HK"))
+		return PANDAS_LANGUAGE_CHT;
+	else if (boost::istarts_with(szLocale, "en_US"))
+		return PANDAS_LANGUAGE_ENG;
+	else if (boost::istarts_with(szLocale, "C."))
+		return PANDAS_LANGUAGE_ENG;
+	else {
+		printf("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale);
+	}
+
+	return PANDAS_LANGUAGE_ENG;
+#endif // _WIN32
+}
+
+//************************************
+// Method:      getSystemEncoding
+// Description: 获取当前操作系统终端控制台的默认编码
+// Returns:     enum e_pandas_encoding
+// Author:      Sola丶小克(CairoLee)  2020/01/24 15:51
+//************************************
+enum e_pandas_encoding getSystemEncoding(bool bIgnoreUtf8) {
+#ifdef _WIN32
+	// 关于 GetACP 的编码对应表可以在以下文档中查询:
+	// https://docs.microsoft.com/zh-cn/windows/win32/intl/code-page-identifiers
+	UINT nCodepage = GetACP();
+
+	switch (nCodepage) {
+	case 936:	// GBK
+		return PANDAS_ENCODING_GBK;
+	case 950:	// BIG5
+		return PANDAS_ENCODING_BIG5;
+	case 1252:	// LATIN1
+		return PANDAS_ENCODING_LATIN1;
+	case 65001:	// UTF-8
+		if (!bIgnoreUtf8) {
+			return PANDAS_ENCODING_UTF8;
+		}
+		switch (systemLanguage) {
+		case PANDAS_LANGUAGE_ENG: return PANDAS_ENCODING_LATIN1;
+		case PANDAS_LANGUAGE_CHS: return PANDAS_ENCODING_GBK;
+		case PANDAS_LANGUAGE_CHT: return PANDAS_ENCODING_BIG5;
+		default:
+			return PANDAS_ENCODING_LATIN1;
+		}
+	default:
+		ShowWarning("%s: Unsupport default ANSI codepage: %d, defaulting to latin1\n", __func__, nCodepage);
+		return PANDAS_ENCODING_LATIN1;
+	}
+#else
+	setlocale(LC_ALL, "");
+	char* szLanginfo = nl_langinfo(CODESET);
+
+	if (boost::icontains(szLanginfo, "UTF-8")) {
+		if (!bIgnoreUtf8) {
+			return PANDAS_ENCODING_UTF8;
+		}
+		switch (systemLanguage) {
+		case PANDAS_LANGUAGE_ENG: return PANDAS_ENCODING_LATIN1;
+		case PANDAS_LANGUAGE_CHS: return PANDAS_ENCODING_GBK;
+		case PANDAS_LANGUAGE_CHT: return PANDAS_ENCODING_BIG5;
+		default:
+			return PANDAS_ENCODING_LATIN1;
+		}
+	}
+	else if (boost::icontains(szLanginfo, "GBK"))
+		return PANDAS_ENCODING_GBK;
+	else if (boost::icontains(szLanginfo, "GB18030"))
+		return PANDAS_ENCODING_GBK;
+	else if (boost::icontains(szLanginfo, "Big5HKSCS"))
+		return PANDAS_ENCODING_BIG5;
+	else if (boost::icontains(szLanginfo, "Big5"))
+		return PANDAS_ENCODING_BIG5;
+	else if (boost::icontains(szLanginfo, "ANSI_X3.4-1968"))
+		return PANDAS_ENCODING_LATIN1;
+	else {
+		printf("%s: Unsupport codeset: %s, defaulting to latin1\n", __func__, szLanginfo);
+	}
+
+	return PANDAS_ENCODING_LATIN1;
+#endif // _WIN32
+}
+
+//************************************
+// Method:      getEncodingByLanguage
+// Description: 根据指定的系统语言获取与之匹配的字符编码
+// Access:      public 
+// Parameter:   e_pandas_language lang
+// Returns:     enum e_pandas_encoding
+// Author:      Sola丶小克(CairoLee)  2021/10/28 17:41
+//************************************ 
+enum e_pandas_encoding getEncodingByLanguage(e_pandas_language lang) {
+	switch (lang) {
+	case PANDAS_LANGUAGE_CHS: return PANDAS_ENCODING_GBK;
+	case PANDAS_LANGUAGE_CHT: return PANDAS_ENCODING_BIG5;
+	default: return UNSUPPORT_DEFAULT_ENCODING;
+	}
+}
+
+//************************************
+// Method:      getEncodingByString
+// Description: 提供一个编码字符串来将他转换成一个 e_pandas_encoding 枚举值
+// Access:      public 
+// Parameter:   const std::string & strEncoding
+// Returns:     enum e_pandas_encoding
+// Author:      Sola丶小克(CairoLee)  2021/10/28 18:56
+//************************************ 
+enum e_pandas_encoding getEncodingByString(const std::string& strEncoding) {
+	if (boost::icontains(strEncoding, "UTF-8"))
+		return PANDAS_ENCODING_UTF8;
+	if (boost::icontains(strEncoding, "GBK"))
+		return PANDAS_ENCODING_GBK;
+	if (boost::icontains(strEncoding, "BIG5"))
+		return PANDAS_ENCODING_BIG5;
+	if (boost::icontains(strEncoding, "LATIN1"))
+		return PANDAS_ENCODING_LATIN1;
+	return PANDAS_ENCODING_UNKNOW;
+}
+
+#ifdef _WIN32
+//************************************
+// Method:      convertEncodingToCodepage
+// Description: 根据 Encoding 来获取与之对应的字符内码
+// Access:      public 
+// Parameter:   enum e_pandas_encoding encoding
+// Returns:     unsigned int
+// Author:      Sola丶小克(CairoLee)  2021/10/28 16:48
+//************************************ 
+unsigned int convertEncodingToCodepage(enum e_pandas_encoding encoding) {
+	switch (encoding) {
+	case PANDAS_ENCODING_GBK: return 936;
+	case PANDAS_ENCODING_BIG5: return 950;
+	case PANDAS_ENCODING_LATIN1: return 1252;
+	case PANDAS_ENCODING_UTF8: return 65001;
+	default:
+		ShowWarning("%s: Unsupport encoding: e_pandas_encoding[%d], defaulting to latin1\n", __func__, (int)encoding);
+		return 1252;
+	}
+}
+#else
+//************************************
+// Method:      convertEncodingToCodepage
+// Description: 根据 Encoding 来获取与之对应的编码字符串
+// Access:      public 
+// Parameter:   enum e_pandas_encoding encoding
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/10/28 17:23
+//************************************ 
+std::string convertEncodingToCodepage(enum e_pandas_encoding encoding) {
+	switch (encoding) {
+	case PANDAS_ENCODING_GBK: return "GBK";
+	case PANDAS_ENCODING_BIG5: return "BIG5";
+	case PANDAS_ENCODING_LATIN1: return "LATIN1";
+	case PANDAS_ENCODING_UTF8: return "UTF-8";
+	default:
+		ShowWarning("%s: Unsupport encoding: e_pandas_encoding[%d], defaulting to %s\n", __func__, UNSUPPORT_DEFAULT_CODEPAGE);
+		return UNSUPPORT_DEFAULT_CODEPAGE;
+	}
+}
+#endif // _WIN32
+
+#ifdef _WIN32
+//************************************
+// Method:      setupConsoleOutputCP
+// Description: 根据系统语言设置我们预期的终端输出编码
+//              避免 Win10 将非 Unicode 文本编码调为 Beta:UTF8 的影响
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2020/8/4 22:52
+//************************************
+bool setupConsoleOutputCP() {
+	e_pandas_encoding eEncoding = getSystemEncoding(true);
+	unsigned int nCodepage = convertEncodingToCodepage(eEncoding);
+	return (!SetConsoleOutputCP(nCodepage) || !SetConsoleCP(nCodepage));
+}
+#endif // _WIN32
+
+//************************************
+// Method:      UnicodeEncode
+// Description: 将给定的 ANSI 字符串编码成 Unicode 字符串
+// Parameter:   const std::string & strANSI
+// Parameter:   unsigned int nCodepage
+// Returns:     std::wstring
+// Author:      Sola丶小克(CairoLee)  2020/01/31 14:00
+//************************************
+std::wstring UnicodeEncode(const std::string& strANSI, e_pandas_encoding strEncoding) {
+#ifdef _WIN32
+	unsigned int nCodepage = convertEncodingToCodepage(strEncoding);
+	int unicodeLen = MultiByteToWideChar(nCodepage, 0, strANSI.c_str(), -1, NULL, 0);
+	wchar_t* strUnicode = new wchar_t[unicodeLen];
+	wmemset(strUnicode, 0, unicodeLen);
+	MultiByteToWideChar(nCodepage, 0, strANSI.c_str(), -1, strUnicode, unicodeLen);
+	std::wstring encoded(strUnicode);
+	delete[] strUnicode;
+	return std::move(encoded);
+#else
+	std::string encoding = convertEncodingToCodepage(strEncoding);
+	iconv_t descr_in = iconv_open("WCHAR_T", encoding.c_str());
+
+	if ((iconv_t)-1 == descr_in) {
+		return L"";
+	}
+
+	const char* instr = strANSI.c_str();
+	size_t instr_len = (strANSI.length() + 1) * sizeof(char);
+
+	wchar_t* result_buf = new wchar_t[instr_len * sizeof(wchar_t)];
+	wchar_t* result_buf_out = result_buf;
+	size_t result_buf_len = instr_len * sizeof(wchar_t);
+
+	size_t iconv_result = iconv(descr_in,
+		(char**)&instr, &instr_len,
+		(char**)&result_buf, &result_buf_len
+	);
+
+	std::wstring w_content(result_buf_out);
+	delete[] result_buf_out;
+	iconv_close(descr_in);
+
+	return std::move(w_content);
+#endif // _WIN32
+}
+
+//************************************
+// Method:      UnicodeDecode
+// Description: 将给定的 Unicode 字符串解码成 ANSI 字符串
+// Access:      public 
+// Parameter:   const std::wstring & strUnicode
+// Parameter:   e_pandas_encoding strEncoding
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/10/29 21:47
+//************************************ 
+std::string UnicodeDecode(const std::wstring& strUnicode, e_pandas_encoding strEncoding) {
+#ifdef _WIN32
+	unsigned int nCodepage = convertEncodingToCodepage(strEncoding);
+	int ansiLen = WideCharToMultiByte(nCodepage, 0, strUnicode.c_str(), -1, NULL, 0, NULL, NULL);
+	char* strAnsi = new char[ansiLen];
+	memset(strAnsi, 0, ansiLen);
+	WideCharToMultiByte(nCodepage, 0, strUnicode.c_str(), -1, strAnsi, ansiLen, NULL, NULL);
+	std::string decoded(strAnsi);
+	delete[] strAnsi;
+	return std::move(decoded);
+#else
+	std::string encoding = convertEncodingToCodepage(strEncoding);
+	iconv_t descr_out = iconv_open(encoding.c_str(), "WCHAR_T");
+
+	if ((iconv_t)-1 == descr_out) {
+		return "";
+	}
+
+	const char* instr = (const char*)strUnicode.c_str();
+	size_t instr_len = (strUnicode.length() + 1) * sizeof(wchar_t);
+
+	char* result_buf = new char[instr_len];
+	char* result_buf_out = result_buf;
+	size_t result_buf_len = instr_len;
+
+	size_t iconv_result = iconv(descr_out,
+		(char**)&instr, &instr_len,
+		(char**)&result_buf, &result_buf_len
+	);
+
+	std::string s_content(result_buf_out);
+	delete[] result_buf_out;
+	iconv_close(descr_out);
+
+	return std::move(s_content);
+#endif // _WIN32
+}
+
+//************************************
+// Method:      splashUnicodeToBIG5
+// Description: 当其他字符串从 Unicode 转换成 BIG5 编码的字符串时,
+//              若发现字符低位为 0x5C 的字符则在后面补一个反斜杠, 用于解决 BIG5 冲码问题 
+// Parameter:   const std::wstring & strUnicode
+// Returns:     std::string 输出的将会是繁体中文的 ANSI 字符串
+// Author:      Sola丶小克(CairoLee)  2020/8/2 21:32
+//************************************
+std::string splashUnicodeToBIG5(const std::wstring& strUnicode) {
+	std::string strAnsi;
+
+	for (wchar_t uniChar : strUnicode) {
+		// 遍历每一个多字节字符串, 将他们转换成 std::wstring
+		std::wstring uniStr;
+		uniStr.push_back(uniChar);
+
+		// 将 uniStr 单独转换成 Ansi 字符
+		std::string ansiChar = UnicodeDecode(uniStr, PANDAS_ENCODING_BIG5);
+
+		// 如若 ansiChar 等于两个字节, 且字符的低位等于 0x5C,
+		// 那么输出时末尾多来个反斜杠
+		if (ansiChar.size() == 2 && ansiChar.c_str()[1] == 0x5C) {
+			strAnsi += ansiChar + "\\";
+			continue;
+		}
+
+		strAnsi += ansiChar;
+	}
+
+	return strAnsi;
+}
+
+//************************************
+// Method:      unsplashUnicodeToUtf8
+// Description: 当 BIG5 繁体中文字符串从 Unicode 转换成 Utf8 字符串时,
+//              自动移除用来解决 BIG5 编码冲码的 0x5C 反斜杠
+// Access:      public 
+// Parameter:   const std::wstring & strUnicode 从 BIG5 编码用 UnicodeEncode 函数转换成的 Unicode 字符串
+// Returns:     std::string 输出的字符串将会是 Utf8 编码的字符串
+// Author:      Sola丶小克(CairoLee)  2021/10/22 18:54
+//************************************ 
+std::string unsplashUnicodeToUtf8(const std::wstring& strUnicode) {
+	std::string strUtf8;
+	bool bNeedSkipNextSplash = false;
+
+	for (wchar_t uniChar : strUnicode) {
+		if (uniChar == 0x5C && bNeedSkipNextSplash) {
+			bNeedSkipNextSplash = false;
+			continue;
+		}
+
+		// 无论上面是否处理成功都将标记位重置回默认
+		bNeedSkipNextSplash = false;
+
+		// 遍历每一个多字节字符串, 将他们转换成 std::wstring
+		std::wstring uniStr;
+		uniStr.push_back(uniChar);
+
+		// 将 uniStr 单独转换成 Ansi 字符
+		std::string ansiChar = UnicodeDecode(uniStr, PANDAS_ENCODING_BIG5);
+
+		// 如若 ansiChar 等于两个字节, 且字符的低位等于 0x5C,
+		// 那么跳过下一个紧挨着的反斜杠
+		if (ansiChar.size() == 2 && ansiChar.c_str()[1] == 0x5C) {
+			bNeedSkipNextSplash = true;
+		}
+
+		std::string utf8Char = UnicodeDecode(uniStr, PANDAS_ENCODING_UTF8);
+		strUtf8 += utf8Char;
+	}
+
+	return strUtf8;
+}
+
+//************************************
+// Method:      splashForUtf8
+// Description: 当 Utf8 字符串中包含的 BIG5 字符低位为 0x5C 时, 自动追加反斜杠
+//              在正常情况下这毫无意义, 不过游戏客户端比较呆, 没办法.
+// Access:      public 
+// Parameter:   const std::string & strUtf8 兼容 BIG5 编码的 Utf8 字符串
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/10/25 22:33
+//************************************ 
+std::string splashForUtf8(const std::string& strUtf8) {
+	std::string strResult;
+	std::wstring strUnicode = UnicodeEncode(strUtf8, PANDAS_ENCODING_UTF8);
+
+	for (wchar_t uniChar : strUnicode) {
+		// 遍历每一个多字节字符串, 将他们转换成 std::wstring
+		std::wstring uniStr;
+		uniStr.push_back(uniChar);
+
+		// 将 uniStr 单独转换成 Ansi 字符
+		std::string ansiChar = UnicodeDecode(uniStr, PANDAS_ENCODING_BIG5);
+		std::string utf8Char = UnicodeDecode(uniStr, PANDAS_ENCODING_UTF8);
+
+		// 如若 ansiChar 等于两个字节, 且字符的低位等于 0x5C,
+		// 那么输出时末尾多来个反斜杠
+		if (ansiChar.size() == 2 && ansiChar.c_str()[1] == 0x5C) {
+			strResult += utf8Char + "\\";
+			continue;
+		}
+
+		strResult += utf8Char;
+	}
+
+	return strResult;
+}
+
+#ifndef _WIN32
+//************************************
+// Method:      iconvConvert
+// Description: 在 Linux 平台上使用 iconv 库进行字符编码转换
+// Access:      public 
+// Parameter:   const std::string & val
+// Parameter:   e_pandas_encoding in_enc
+// Parameter:   e_pandas_encoding out_enc
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/10/29 09:26
+//************************************ 
+std::string iconvConvert(const std::string& val, e_pandas_encoding in_enc, e_pandas_encoding out_enc) {
+	if (in_enc == out_enc) return val;
+
+	std::wstring strUnicode = UnicodeEncode(val, in_enc);
+	if (out_enc == PANDAS_ENCODING_BIG5) {
+		return splashUnicodeToBIG5(strUnicode);
+	}
+	else if (out_enc == PANDAS_ENCODING_UTF8 && in_enc == PANDAS_ENCODING_BIG5) {
+		return unsplashUnicodeToUtf8(strUnicode);
+	}
+
+	return UnicodeDecode(strUnicode, out_enc);
+}
+
+//************************************
+// Method:      consoleConvert
+// Description: 在 Linux 环境下对输出到控制台的文本进行编码转换
+// Parameter:   const std::string & mes
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/02/05 16:42
+//************************************
+std::string consoleConvert(const std::string& mes) {
+#ifdef BUILDBOT
+	// 若当前程序编译运行在持续集成环境
+	// 那么不进行任何终端编码的转换操作, 让它持续处于英文状态
+	return mes;
+#endif // BUILDBOT
+
+	// 在 Linux 环境下我们目前只接受终端编码为 UTF8 的情况
+	// 如果当前的终端编码不为 UTF8 则停止进行任何转换的具体工作, 维持英文状态
+	if (systemEncoding != PANDAS_ENCODING_UTF8) {
+		return mes;
+	}
+
+	e_pandas_encoding fromEncoding = getEncodingByLanguage();
+	if (fromEncoding != PANDAS_ENCODING_GBK && fromEncoding != PANDAS_ENCODING_BIG5) {
+		return mes;
+	}
+
+	return iconvConvert(mes, fromEncoding, PANDAS_ENCODING_UTF8);
+}
+
+//************************************
+// Method:      vfprintf
+// Description: 用于对 vfprintf 函数进行劫持和编码转换处理
+// Parameter:   FILE * file
+// Parameter:   const char * fmt
+// Parameter:   va_list args
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2020/02/05 16:13
+//************************************
+int vfprintf(FILE* file, const char* fmt, va_list args) {
+	va_list apcopy;
+	va_copy(apcopy, args);
+
+	char sbuf[STRBUF_SIZE] = { 0 };
+	int len = vsnprintf(sbuf, STRBUF_SIZE, fmt, apcopy);
+	std::string strBuf;
+
+	if (len >= 0 && len < STRBUF_SIZE) {
+		strBuf = std::string(sbuf);
+	}
+	else {
+		StringBuf* sbuf = StringBuf_Malloc();
+		StringBuf_Vprintf(sbuf, fmt, args);
+		strBuf = std::string(StringBuf_Value(sbuf));
+		StringBuf_Free(sbuf);
+		printf("%s: dynamic buffer used, increase the static buffer size to %d or more.\n", __func__, len + 1);
+	}
+
+	va_end(apcopy);
+
+	// 进行字符串编码的转码加工处理
+	strBuf = consoleConvert(strBuf);
+
+	// 将处理完的字符串输出到指定的地方去 (显示到终端)
+	return fprintf(file, "%s", strBuf.c_str());
+}
+
+#endif // _WIN32
+
+//************************************
+// Method:      utf8ToAnsi
+// Description: 将 UTF8 字符串转换为 ANSI 字符串 (ANSI 字符将自适应当前系统语言对应的编码)
+// Parameter:   const std::string & strUtf8 须为 UTF-8 编码的字符串
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/01/24 00:26
+//************************************
+std::string utf8ToAnsi(const std::string& strUtf8) {
+#ifdef _WIN32
+	e_pandas_encoding eEncoding = getSystemEncoding(true);
+	uint32 nCodepage = convertEncodingToCodepage(eEncoding);
+	std::wstring strUnicode = UnicodeEncode(strUtf8, PANDAS_ENCODING_UTF8);
+
+	if (eEncoding == PANDAS_ENCODING_BIG5) {
+		// 若当前系统的目标 Codepage 是繁体中文 (BIG5),
+		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
+		return splashUnicodeToBIG5(strUnicode);
+	}
+
+	// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 ANSI 字符即可
+	return UnicodeDecode(strUnicode, eEncoding);
+#else
+	e_pandas_encoding toEncoding = getEncodingByLanguage();
+	return iconvConvert(strUtf8, PANDAS_ENCODING_UTF8, toEncoding);
+#endif // _WIN32
+}
+
+//************************************
+// Method:      utf8ToAnsi
+// Description: 将 UTF8 字符串转换为 ANSI 字符串 (ANSI 字符将使用指定的编码)
+// Access:      public 
+// Parameter:   const std::string & strUtf8
+// Parameter:   const std::string & toEncoding
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/09/30 20:57
+//************************************ 
+std::string utf8ToAnsi(const std::string& strUtf8, e_pandas_encoding toEncoding) {
+#ifdef _WIN32
+	if (toEncoding == PANDAS_ENCODING_UNKNOW)
+		return utf8ToAnsi(strUtf8);
+
+	uint32 nCodepage = convertEncodingToCodepage(toEncoding);
+	std::wstring strUnicode = UnicodeEncode(strUtf8, PANDAS_ENCODING_UTF8);
+
+	if (toEncoding == PANDAS_ENCODING_BIG5) {
+		// 若指定的目标 Codepage 是繁体中文 (BIG5),
+		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
+		return splashUnicodeToBIG5(strUnicode);
+	}
+
+	// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 ANSI 字符即可
+	return UnicodeDecode(strUnicode, toEncoding);
+#else
+	if (toEncoding == PANDAS_ENCODING_UNKNOW)
+		return utf8ToAnsi(strUtf8);
+	return iconvConvert(strUtf8, PANDAS_ENCODING_UTF8, toEncoding);
+#endif // _WIN32
+}
+
+//************************************
+// Method:      utf8ToAnsi
+// Description: 将 UTF8 字符串转换为 ANSI 字符串 (ANSI 字符将使用指定的编码)
+// Access:      public 
+// Parameter:   const std::string & strUtf8
+// Parameter:   const std::string & strToEncoding
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/10/28 18:54
+//************************************ 
+std::string utf8ToAnsi(const std::string& strUtf8, const std::string& strToEncoding) {
+	e_pandas_encoding toEncoding = getEncodingByString(strToEncoding);
+	if (toEncoding == PANDAS_ENCODING_UNKNOW) {
+		return strUtf8;
+	}
+	return utf8ToAnsi(strUtf8, toEncoding);
+}
+
+//************************************
+// Method:      ansiToUtf8
+// Description: 将 ANSI 字符串转换为 UTF8 字符串 (ANSI 字符将自适应当前系统语言对应的编码)
+// Parameter:   const std::string & strAnsi 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2020/01/24 00:26
+//************************************
+std::string ansiToUtf8(const std::string& strAnsi) {
+#ifdef _WIN32
+	e_pandas_encoding eEncoding = getSystemEncoding(true);
+	uint32 nCodepage = convertEncodingToCodepage(eEncoding);
+	std::wstring strUnicode = UnicodeEncode(strAnsi, eEncoding);
+
+	if (eEncoding == PANDAS_ENCODING_BIG5) {
+		// 若当前系统的目标 Codepage 是繁体中文 (BIG5),
+		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动移除紧接着的反斜杠
+		return unsplashUnicodeToUtf8(strUnicode);
+	}
+
+	// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 Utf8 字符即可
+	return UnicodeDecode(strUnicode, PANDAS_ENCODING_UTF8);
+#else
+	e_pandas_encoding fromEncoding = getEncodingByLanguage();
+	return iconvConvert(strAnsi, fromEncoding, PANDAS_ENCODING_UTF8);
+#endif // _WIN32
+}
+
+//************************************
+// Method:      ansiToUtf8
+// Description: 将 ANSI 字符串转换为 UTF8 字符串 (ANSI 字符将使用指定的编码)
+// Access:      public 
+// Parameter:   const std::string & strAnsi
+// Parameter:   const std::string & fromEncoding
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/09/30 20:57
+//************************************ 
+std::string ansiToUtf8(const std::string& strAnsi, e_pandas_encoding fromEncoding) {
+#ifdef _WIN32
+	if (fromEncoding == PANDAS_ENCODING_UNKNOW)
+		return ansiToUtf8(strAnsi);
+
+	std::wstring strUnicode = UnicodeEncode(strAnsi, fromEncoding);
+
+	if (fromEncoding == PANDAS_ENCODING_BIG5) {
+		// 若当前指定的目标 Codepage 是繁体中文 (BIG5),
+		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动移除紧接着的反斜杠
+		return unsplashUnicodeToUtf8(strUnicode);
+	}
+
+	// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 Utf8 字符即可
+	return UnicodeDecode(strUnicode, PANDAS_ENCODING_UTF8);
+#else
+	if (fromEncoding == PANDAS_ENCODING_UNKNOW)
+		return ansiToUtf8(strAnsi);
+	return iconvConvert(strAnsi, fromEncoding, PANDAS_ENCODING_UTF8);
+#endif // _WIN32
+}
+
+//************************************
+// Method:      ansiToUtf8
+// Description: 将 ANSI 字符串转换为 UTF8 字符串 (ANSI 字符将使用指定的编码)
+// Access:      public 
+// Parameter:   const std::string & strAnsi
+// Parameter:   const std::string & strFromEncoding
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2021/10/28 18:54
+//************************************ 
+std::string ansiToUtf8(const std::string& strAnsi, const std::string& strFromEncoding) {
+	e_pandas_encoding fromEncoding = getEncodingByString(strFromEncoding);
+	if (fromEncoding == PANDAS_ENCODING_UNKNOW) {
+		return strAnsi;
+	}
+	return ansiToUtf8(strAnsi, fromEncoding);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+// 用于保存 FILE 指针和文件编码模式的缓存
+std::unordered_map<FILE*, e_file_charsetmode> __fpmodecache;
 
 //************************************
 // Method:      setModeMapping
@@ -91,542 +767,6 @@ void clearModeMapping(FILE* _fp) {
 }
 
 //************************************
-// Method:      charsetToCodepage
-// Description: 提供编码名称来查询在 Windows 平台上对应的页码
-// Access:      public 
-// Parameter:   const std::string & charset
-// Returns:     uint32
-// Author:      Sola丶小克(CairoLee)  2021/09/30 20:22
-//************************************ 
-uint32 charsetToCodepage(const std::string& charset) {
-	std::string cs = boost::to_lower_copy(charset);
-	if (cs == "gbk")
-		return 936;
-	else if (cs == "big5")
-		return 950;
-	else if (cs == "utf8" || cs == "utf8mb4")
-		return 65001;
-	else if (cs == "latin1")
-		return 1252;
-	else {
-		ShowWarning("%s: Unsupport charset: %s, defaulting to CP_ACP\n", __func__, charset.c_str());
-		return 0; // CP_ACP
-	}
-}
-
-//************************************
-// Method:      getConsoleEncoding
-// Description: 获取当前操作系统终端控制台的默认编码
-// Returns:     enum e_console_encoding
-// Author:      Sola丶小克(CairoLee)  2020/01/24 15:51
-//************************************
-enum e_console_encoding getConsoleEncoding() {
-#ifdef _WIN32
-	// 关于 GetACP 的编码对应表可以在以下文档中查询:
-	// https://docs.microsoft.com/zh-cn/windows/win32/intl/code-page-identifiers
-	UINT nCodepage = GetACP();
-
-	switch (nCodepage) {
-	case 936:	// GBK
-		return CONSOLE_ENCODING_GBK;
-	case 950:	// BIG5
-		return CONSOLE_ENCODING_BIG5;
-	case 1252:	// LATIN1
-		return CONSOLE_ENCODING_LATIN1;
-	case 65001:	// UTF-8
-		return CONSOLE_ENCODING_UTF8;
-	default:
-		ShowWarning("%s: Unsupport default ANSI codepage: %d, defaulting to latin1\n", __func__, nCodepage);
-		return CONSOLE_ENCODING_LATIN1;
-	}
-#else
-	setlocale(LC_ALL, "");
-	char* szLanginfo = nl_langinfo(CODESET);
-
-	if (boost::icontains(szLanginfo, "UTF-8"))
-		return CONSOLE_ENCODING_UTF8;
-	else if (boost::icontains(szLanginfo, "GBK"))
-		return CONSOLE_ENCODING_GBK;
-	else if (boost::icontains(szLanginfo, "GB18030"))
-		return CONSOLE_ENCODING_GBK;
-	else if (boost::icontains(szLanginfo, "Big5HKSCS"))
-		return CONSOLE_ENCODING_BIG5;
-	else if (boost::icontains(szLanginfo, "Big5"))
-		return CONSOLE_ENCODING_BIG5;
-	else if (boost::icontains(szLanginfo, "ANSI_X3.4-1968"))
-		return CONSOLE_ENCODING_LATIN1;
-	else {
-		printf("%s: Unsupport codeset: %s, defaulting to latin1\n", __func__, szLanginfo);
-	}
-
-	return CONSOLE_ENCODING_LATIN1;
-#endif // _WIN32
-}
-
-//************************************
-// Method:      getSystemLanguage
-// Description: 获取当前操作系统的默认展现语言
-// Returns:     enum e_system_language
-// Author:      Sola丶小克(CairoLee)  2020/01/24 21:59
-//************************************
-enum e_system_language getSystemLanguage() {
-#ifdef _WIN32
-	// GetUserDefaultUILanguage 获取到的编码对照表:
-	// https://www.voidtools.com/support/everything/language_ids/
-	switch (GetUserDefaultUILanguage()) {
-	case 0x0409:	// English (United States)
-		return SYSTEM_LANGUAGE_ENG;
-	case 0x0804:	// Chinese (PRC) 
-		return SYSTEM_LANGUAGE_CHS;
-	case 0x0404:	// Chinese (Taiwan Region)
-	case 0x0c04:	// Chinese (Hong Kong SAR, PRC) 
-		return SYSTEM_LANGUAGE_CHT;
-	default:
-		return SYSTEM_LANGUAGE_ENG;
-	}
-#else
-	setlocale(LC_ALL, "");
-	char* szLocale = setlocale(LC_CTYPE, NULL);
-
-	if (boost::istarts_with(szLocale, "zh_CN"))
-		return SYSTEM_LANGUAGE_CHS;
-	else if (boost::istarts_with(szLocale, "zh_TW"))
-		return SYSTEM_LANGUAGE_CHT;
-	else if (boost::istarts_with(szLocale, "en_US"))
-		return SYSTEM_LANGUAGE_ENG;
-	else if (boost::istarts_with(szLocale, "C."))
-		return SYSTEM_LANGUAGE_ENG;
-	else {
-		printf("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale);
-	}
-
-	return SYSTEM_LANGUAGE_ENG;
-#endif // _WIN32
-}
-
-//************************************
-// Method:      getDefaultCodepage
-// Description: 获取无法根据系统语言获取到对应的编码时采用的默认编码
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2020/02/08 15:53
-//************************************
-std::string getDefaultCodepage() {
-	return std::string(DEFAULT_ENCODING);
-}
-
-#ifdef _WIN32
-
-//************************************
-// Method:      UnicodeEncode
-// Description: 将给定的 ANSI 字符串编码成 Unicode 字符串
-// Parameter:   const std::string & strANSI
-// Parameter:   unsigned int nCodepage
-// Returns:     std::wstring
-// Author:      Sola丶小克(CairoLee)  2020/01/31 14:00
-//************************************
-std::wstring UnicodeEncode(const std::string& strANSI, unsigned int nCodepage) {
-	int unicodeLen = MultiByteToWideChar(nCodepage, 0, strANSI.c_str(), -1, NULL, 0);
-	wchar_t* strUnicode = new wchar_t[unicodeLen];
-	wmemset(strUnicode, 0, unicodeLen);
-	MultiByteToWideChar(nCodepage, 0, strANSI.c_str(), -1, strUnicode, unicodeLen);
-	std::wstring encoded(strUnicode);
-	delete[] strUnicode;
-	return std::move(encoded);
-}
-
-//************************************
-// Method:      UnicodeDecode
-// Description: 将给定的 Unicode 字符串解码成 ANSI 字符串
-// Parameter:   const std::wstring & strUnicode
-// Parameter:   unsigned int nCodepage
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2020/01/31 14:00
-//************************************
-std::string UnicodeDecode(const std::wstring& strUnicode, unsigned int nCodepage) {
-	int ansiLen = WideCharToMultiByte(nCodepage, 0, strUnicode.c_str(), -1, NULL, 0, NULL, NULL);
-	char* strAnsi = new char[ansiLen];
-	memset(strAnsi, 0, ansiLen);
-	WideCharToMultiByte(nCodepage, 0, strUnicode.c_str(), -1, strAnsi, ansiLen, NULL, NULL);
-	std::string decoded(strAnsi);
-	delete[] strAnsi;
-	return std::move(decoded);
-}
-
-//************************************
-// Method:      splashForBIG5
-// Description: 若目标编码需要转换成 BIG5 的话,
-//              额外需要将字符低位为 0x5C 的字符后面补一个反斜杠 
-// Parameter:   const std::wstring & strUnicode
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2020/8/2 21:32
-//************************************
-std::string splashForBIG5(const std::wstring& strUnicode) {
-	std::string strAnsi;
-
-	for (wchar_t uniChar : strUnicode) {
-		// 遍历每一个多字节字符串, 将他们转换成 std::wstring
-		std::wstring uniStr;
-		uniStr.push_back(uniChar);
-
-		// 将 uniStr 单独转换成 Ansi 字符
-		std::string ansiChar = PandasUtf8::UnicodeDecode(uniStr, 950);
-
-		// 如若 ansiChar 等于两个字节, 且字符的低位等于 0x5C,
-		// 那么输出时末尾多来个反斜杠
-		if (ansiChar.size() == 2 && ansiChar.c_str()[1] == 0x5C) {
-			strAnsi += ansiChar + "\\";
-			continue;
-		}
-
-		strAnsi += ansiChar;
-	}
-
-	return strAnsi;
-}
-
-//************************************
-// Method:      getSystemLanguageACP
-// Description: 获取基于当前系统的语言获取我们预期的 Codepage 编码
-// Returns:     unsigned int
-// Author:      Sola丶小克(CairoLee)  2020/8/3 22:27
-//************************************
-unsigned int getSystemLanguageACP() {
-	if (GetACP() != 65001) {
-		return GetACP();
-	}
-
-	switch (PandasUtf8::systemLanguage)
-	{
-	case SYSTEM_LANGUAGE_CHS:
-		return 936;
-	case SYSTEM_LANGUAGE_CHT:
-		return 950;
-	default:
-		return GetACP();
-	}
-}
-
-//************************************
-// Method:      setupConsoleOutputCP
-// Description: 根据系统语言设置我们预期的终端输出编码
-//              避免 Win10 将非 Unicode 文本编码调为 Beta:UTF8 的影响
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2020/8/4 22:52
-//************************************
-bool setupConsoleOutputCP() {
-	unsigned int uCodepage = getSystemLanguageACP();
-	return (!SetConsoleOutputCP(uCodepage) || !SetConsoleCP(uCodepage));
-}
-
-#else
-
-//************************************
-// Method:      UnicodeEncode
-// Description: 将给定的 ANSI 字符串编码成 Unicode 字符串
-// Access:      public 
-// Parameter:   const std::string & strANSI
-// Parameter:   const std::string & encoding
-// Returns:     std::wstring
-// Author:      Sola丶小克(CairoLee)  2021/08/10 21:12
-//************************************ 
-std::wstring UnicodeEncode(const std::string& strANSI, const std::string& encoding) {
-	iconv_t descr_in = iconv_open("WCHAR_T", encoding.c_str());
-
-	if ((iconv_t)-1 == descr_in) {
-		return L"";
-	}
-
-	const char* instr = strANSI.c_str();
-	size_t instr_len = (strANSI.length() + 1) * sizeof(char);
-
-	wchar_t* result_buf = new wchar_t[instr_len * sizeof(wchar_t)];
-	wchar_t* result_buf_out = result_buf;
-	size_t result_buf_len = instr_len * sizeof(wchar_t);
-
-	size_t iconv_result = iconv(descr_in,
-		(char**)&instr, &instr_len,
-		(char**)&result_buf, &result_buf_len
-	);
-
-	std::wstring w_content(result_buf_out);
-	delete[] result_buf_out;
-	iconv_close(descr_in);
-
-	return std::move(w_content);
-}
-
-//************************************
-// Method:      UnicodeDecode
-// Description: 将给定的 Unicode 字符串解码成 ANSI 字符串
-// Access:      public 
-// Parameter:   const std::wstring & strUnicode
-// Parameter:   const std::string & encoding
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2021/08/10 21:13
-//************************************ 
-std::string UnicodeDecode(const std::wstring& strUnicode, const std::string& encoding) {
-	iconv_t descr_out = iconv_open(encoding.c_str(), "WCHAR_T");
-
-	if ((iconv_t)-1 == descr_out) {
-		return "";
-	}
-
-	const char* instr = (const char*)strUnicode.c_str();
-	size_t instr_len = (strUnicode.length() + 1) * sizeof(wchar_t);
-
-	char* result_buf = new char[instr_len];
-	char* result_buf_out = result_buf;
-	size_t result_buf_len = instr_len;
-
-	size_t iconv_result = iconv(descr_out,
-		(char**)&instr, &instr_len,
-		(char**)&result_buf, &result_buf_len
-	);
-
-	std::string s_content(result_buf_out);
-	delete[] result_buf_out;
-	iconv_close(descr_out);
-
-	return std::move(s_content);
-}
-
-//************************************
-// Method:      splashForBIG5
-// Description: 若目标编码需要转换成 BIG5 的话,
-//              额外需要将字符低位为 0x5C 的字符后面补一个反斜杠 
-// Access:      public 
-// Parameter:   const std::wstring & strUnicode
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2021/08/10 21:15
-//************************************ 
-std::string splashForBIG5(const std::wstring& strUnicode) {
-	std::string strAnsi;
-
-	for (wchar_t uniChar : strUnicode) {
-		// 遍历每一个多字节字符串, 将他们转换成 std::wstring
-		std::wstring uniStr;
-		uniStr.push_back(uniChar);
-
-		// 将 uniStr 单独转换成 Ansi 字符
-		std::string ansiChar = UnicodeDecode(uniStr, "BIG5");
-
-		// 如若 ansiChar 等于两个字节, 且字符的低位等于 0x5C,
-		// 那么输出时末尾多来个反斜杠
-		if (ansiChar.size() == 2 && ansiChar.c_str()[1] == 0x5C) {
-			strAnsi += ansiChar + "\\";
-			continue;
-		}
-
-		strAnsi += ansiChar;
-	}
-
-	return strAnsi;
-}
-
-//************************************
-// Method:      iconvConvert
-// Description: 在 Linux 平台上使用 iconv 库进行字符编码转换
-// Parameter:   const std::string & val
-// Parameter:   const std::string & in_enc
-// Parameter:   const std::string out_enc
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2020/02/02 23:42
-//************************************
-std::string iconvConvert(const std::string& val, const std::string& in_enc, const std::string& out_enc) {
-	if (in_enc == out_enc) return val;
-
-	std::wstring strUnicode = UnicodeEncode(val, in_enc);
-	if (out_enc == "BIG5") {
-		return splashForBIG5(strUnicode);
-	}
-	return UnicodeDecode(strUnicode, out_enc);
-}
-
-//************************************
-// Method:      consoleConvert
-// Description: 在 Linux 环境下对输出到控制台的文本进行编码转换
-// Parameter:   const std::string & mes
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2020/02/05 16:42
-//************************************
-std::string consoleConvert(const std::string& mes) {
-#ifdef BUILDBOT
-	// 若当前程序编译运行在持续集成环境
-	// 那么不进行任何终端编码的转换操作, 让它持续处于英文状态
-	return mes;
-#endif // BUILDBOT
-
-	// 在 Linux 环境下我们目前只接受终端编码为 UTF8 的情况
-	// 如果当前的终端编码不为 UTF8 则停止进行任何转换的具体工作, 维持英文状态
-	if (PandasUtf8::consoleEncoding != CONSOLE_ENCODING_UTF8) {
-		return mes;
-	}
-
-	std::string _from;
-
-	switch (PandasUtf8::systemLanguage) {
-		case SYSTEM_LANGUAGE_CHT: _from = "BIG5"; break;
-		case SYSTEM_LANGUAGE_CHS: _from = "GBK"; break;
-		default: return mes; break;
-	}
-
-	return PandasUtf8::iconvConvert(mes, _from, "UTF-8");
-}
-
-//************************************
-// Method:      vfprintf
-// Description: 用于对 vfprintf 函数进行劫持和编码转换处理
-// Parameter:   FILE * file
-// Parameter:   const char * fmt
-// Parameter:   va_list args
-// Returns:     int
-// Author:      Sola丶小克(CairoLee)  2020/02/05 16:13
-//************************************
-int vfprintf(FILE* file, const char* fmt, va_list args) {
-	va_list apcopy;
-	va_copy(apcopy, args);
-
-	char sbuf[STRBUF_SIZE] = { 0 };
-	int len = vsnprintf(sbuf, STRBUF_SIZE, fmt, apcopy);
-	std::string strBuf;
-
-	if (len >= 0 && len < STRBUF_SIZE) {
-		strBuf = std::string(sbuf);
-	}
-	else {
-		StringBuf* sbuf = StringBuf_Malloc();
-		StringBuf_Vprintf(sbuf, fmt, args);
-		strBuf = std::string(StringBuf_Value(sbuf));
-		StringBuf_Free(sbuf);
-		printf("%s: dynamic buffer used, increase the static buffer size to %d or more.\n", __func__, len + 1);
-	}
-
-	va_end(apcopy);
-
-	// 进行字符串编码的转码加工处理
-	strBuf = PandasUtf8::consoleConvert(strBuf);
-
-	// 将处理完的字符串输出到指定的地方去 (显示到终端)
-	return fprintf(file, "%s", strBuf.c_str());
-}
-
-#endif // _WIN32
-
-//************************************
-// Method:      utf8ToAnsi
-// Description: 将 UTF8 字符串转换为 ANSI 字符串 (ANSI 字符将自适应当前系统语言对应的编码)
-// Parameter:   const std::string & strUtf8 须为 UTF-8 编码的字符串
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2020/01/24 00:26
-//************************************
-std::string utf8ToAnsi(const std::string& strUtf8) {
-#ifdef _WIN32
-	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strUtf8, CP_UTF8);
-	if (GetACP() == 950 || getSystemLanguageACP() == 950) {
-		// 若当前系统的目标 Codepage 是繁体中文 (BIG5),
-		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
-		return PandasUtf8::splashForBIG5(strUnicode);
-	}
-	else {
-		// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 ANSI 字符即可
-		uint32 nCodepage = getSystemLanguageACP();
-		return PandasUtf8::UnicodeDecode(strUnicode, nCodepage);
-	}
-#else
-	std::string toCharset;
-	switch (PandasUtf8::systemLanguage) {
-	case SYSTEM_LANGUAGE_CHS: toCharset = "GBK"; break;
-	case SYSTEM_LANGUAGE_CHT: toCharset = "BIG5"; break;
-	default: toCharset = PandasUtf8::getDefaultCodepage(); break;
-	}
-	return PandasUtf8::iconvConvert(strUtf8, "UTF-8", toCharset);
-#endif // _WIN32
-}
-
-//************************************
-// Method:      utf8ToAnsi
-// Description: 将 UTF8 字符串转换为 ANSI 字符串 (ANSI 字符将使用指定的编码)
-// Access:      public 
-// Parameter:   const std::string & strUtf8
-// Parameter:   const std::string & toCharset
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2021/09/30 20:57
-//************************************ 
-std::string utf8ToAnsi(const std::string& strUtf8, const std::string& toCharset) {
-#ifdef _WIN32
-	if (toCharset.empty())
-		return utf8ToAnsi(strUtf8);
-
-	uint32 nCodepage = charsetToCodepage(toCharset);
-	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strUtf8, CP_UTF8);
-	if (nCodepage == 950) {
-		// 若指定的目标 Codepage 是繁体中文 (BIG5),
-		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
-		return PandasUtf8::splashForBIG5(strUnicode);
-	}
-	else {
-		// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 ANSI 字符即可
-		return PandasUtf8::UnicodeDecode(strUnicode, nCodepage);
-	}
-#else
-	if (toCharset.empty())
-		return utf8ToAnsi(strUtf8);
-
-	std::string toCharsetUpper = boost::to_upper_copy(toCharset);
-	return PandasUtf8::iconvConvert(strUtf8, "UTF-8", toCharsetUpper);
-#endif // _WIN32
-}
-
-//************************************
-// Method:      ansiToUtf8
-// Description: 将 ANSI 字符串转换为 UTF8 字符串 (ANSI 字符将自适应当前系统语言对应的编码)
-// Parameter:   const std::string & strAnsi 须为 GBK 或 BIG5 等 ANSI 类编码的字符串
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2020/01/24 00:26
-//************************************
-std::string ansiToUtf8(const std::string& strAnsi) {
-#ifdef _WIN32
-	uint32 nCodepage = getSystemLanguageACP();
-	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strAnsi, nCodepage);
-	return PandasUtf8::UnicodeDecode(strUnicode, CP_UTF8);
-#else
-	std::string fromCharset;
-	switch (PandasUtf8::systemLanguage) {
-	case SYSTEM_LANGUAGE_CHS: fromCharset = "GBK"; break;
-	case SYSTEM_LANGUAGE_CHT: fromCharset = "BIG5"; break;
-	default: fromCharset = PandasUtf8::getDefaultCodepage(); break;
-	}
-	return PandasUtf8::iconvConvert(strAnsi, fromCharset, "UTF-8");
-#endif // _WIN32
-}
-
-//************************************
-// Method:      ansiToUtf8
-// Description: 将 ANSI 字符串转换为 UTF8 字符串 (ANSI 字符将使用指定的编码)
-// Access:      public 
-// Parameter:   const std::string & strAnsi
-// Parameter:   const std::string & fromCharset
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2021/09/30 20:57
-//************************************ 
-std::string ansiToUtf8(const std::string& strAnsi, const std::string& fromCharset) {
-#ifdef _WIN32
-	if (fromCharset.empty())
-		return ansiToUtf8(strAnsi);
-
-	uint32 nCodepage = charsetToCodepage(fromCharset);
-	std::wstring strUnicode = PandasUtf8::UnicodeEncode(strAnsi, nCodepage);
-	return PandasUtf8::UnicodeDecode(strUnicode, CP_UTF8);
-#else
-	if (fromCharset.empty())
-		return ansiToUtf8(strAnsi);
-
-	std::string fromCharsetUpper = boost::to_upper_copy(fromCharset);
-	return PandasUtf8::iconvConvert(strAnsi, fromCharsetUpper, "UTF-8");
-#endif // _WIN32
-}
-
-//************************************
 // Method:      get_charsetmode
 // Description: 提供一个缓冲区, 尝试获取其编码模式
 // Access:      public 
@@ -665,7 +805,7 @@ enum e_file_charsetmode get_charsetmode(unsigned char* buf, size_t extracted) {
 //************************************
 enum e_file_charsetmode fmode(FILE* _Stream) {
 	// 优先从缓存中读取
-	enum e_file_charsetmode cached_charsetmode = PandasUtf8::getModeMapping(_Stream);
+	enum e_file_charsetmode cached_charsetmode = getModeMapping(_Stream);
 	if (cached_charsetmode != FILE_CHARSETMODE_UNKNOW) {
 		return cached_charsetmode;
 	}
@@ -692,7 +832,7 @@ enum e_file_charsetmode fmode(FILE* _Stream) {
 	fseek(_Stream, curpos, SEEK_SET);
 
 	// 将当前分析到的 charset_mode 保存到缓存
-	PandasUtf8::setModeMapping(_Stream, charset_mode);
+	setModeMapping(_Stream, charset_mode);
 
 	return charset_mode;
 }
@@ -751,7 +891,7 @@ FILE* fopen(const char* _FileName, const char* _Mode) {
 // Author:      Sola丶小克(CairoLee)  2020/02/16 01:05
 //************************************
 int fclose(FILE* _fp) {
-	PandasUtf8::clearModeMapping(_fp);
+	clearModeMapping(_fp);
 	return ::fclose(_fp);
 }
 
@@ -779,7 +919,7 @@ char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
 	delete[] buffer;
 
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-	std::string ansi = PandasUtf8::utf8ToAnsi(line);
+	std::string ansi = utf8ToAnsi(line);
 	memset(_Buffer, 0, _MaxCount);
 
 	// 按道理来说, 此函数主要负责将 UTF8-BOM 编码的字符转成 ANSI
@@ -831,7 +971,7 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 	}
 
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-	std::string ansi = PandasUtf8::utf8ToAnsi(std::string(buffer));
+	std::string ansi = utf8ToAnsi(std::string(buffer));
 	memset(_Buffer, 0, _ElementSize * _ElementCount);
 	delete[] buffer;
 
