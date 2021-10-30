@@ -439,12 +439,15 @@
 // ============================================================================
 
 #ifdef Pandas_PacketFunction
-	// 实现 0xb0d 封包发送函数, 用于告诉客户端移除指定单位的特效
-	// 
-	// 涉及到的函数有:
-	// - clif_removespecialeffect
-	// - clif_removespecialeffect_single
+	// 是否实现 0xb0d 封包发送函数 [Sola丶小克]
+	// 该封包用于告诉客户端移除指定单位的特效, 实现特性的精细化控制
 	#define Pandas_PacketFunction_RemoveSpecialEffect
+
+	// 是否实现冒险家中介所相关的封包处理函数 [Sola丶小克]
+	// 用于响应客户端中冒险者中介所的加入队伍请求, 包含了队长进行确认的相关逻辑
+	#if PACKETVER >= 20200300
+		#define Pandas_PacketFunction_PartyJoinRequest
+	#endif // PACKETVER >= 20200300
 #endif // Pandas_PacketFunction
 
 // ============================================================================
@@ -1953,7 +1956,12 @@
 	#endif // Pandas_WebServer_Database_EncodingAdaptive
 
 	// 实现用于读写商店配置信息的 MerchantStore 接口 [Sola丶小克]
+	// 启用后将支持 /MerchantStore/load 和 /MerchantStore/save 两个相关接口
 	#define Pandas_WebServer_Implement_MerchantStore
+
+	// 实现用于冒险家中介所的 party 接口 [Sola丶小克]
+	// 启用后将支持 /party/{list|get|add|del|search} 这几个相关接口
+	#define Pandas_WebServer_Implement_PartyRecruitment
 
 	// 在执行 logger 日志函数时是否在内部进行互斥处理 [Sola丶小克]
 	// 

@@ -40,11 +40,6 @@
 	#define A2UCE(x) x
 #endif // Pandas_WebServer_Console_EncodingAdaptive
 
-#ifdef Pandas_WebServer_Rewrite_Controller_HandlerFunc
-void response_json(httplib::Response& res, int status_code, uint32 type, const std::string& errmes = "");
-void response_json(httplib::Response& res, int status_code, nlohmann::json& content);
-#endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc
-
 enum E_WEBSERVER_ST {
 	WEBSERVER_ST_RUNNING = CORE_ST_LAST,
 	WEBSERVER_ST_STARTING,
@@ -73,6 +68,10 @@ extern char char_configs_table[32];
 #ifdef Pandas_WebServer_Implement_MerchantStore
 extern char merchant_configs_table[32];
 #endif // Pandas_WebServer_Implement_MerchantStore
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+extern char recruitment_table[32];
+extern char party_table[32];
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 extern char guild_db_table[32];
 extern char char_db_table[32];
 

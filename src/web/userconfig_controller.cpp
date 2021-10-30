@@ -35,7 +35,7 @@ HANDLER_FUNC(userconfig_save) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
 			user_configs_table)
@@ -111,7 +111,7 @@ HANDLER_FUNC(userconfig_load) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
 			user_configs_table)
@@ -159,38 +159,38 @@ HANDLER_FUNC(userconfig_load) {
 
 using namespace nlohmann;
 
+#define SUCCESS_RET 1
+#define FAILURE_RET 3
+#define REQUIRE_FIELD_EXISTS(x) REQUIRE_FIELD_EXISTS_T(x)
+
 HANDLER_FUNC(userconfig_save) {
 	if (!isAuthorized(req, false)) {
-		response_json(res, 403, 3, "Authorization verification failure.");
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
 		return;
 	}
 
-	if (!req.has_file("data")) {
-		response_json(res, 200, 1);
-		return;
-	}
-	
-	auto account_id = std::stoi(req.get_file_value("AID").content);
-	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
-	auto world_name = world_name_str.c_str();
-	std::string data = U2AWE(req.get_file_value("data").content);
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("WorldName");
+	REQUIRE_FIELD_EXISTS("data");
 
-	SQLLock sl(WEB_SQL_LOCK);
-	sl.lock();
-	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	auto account_id = GET_NUMBER_FIELD("AID", 0);
+	auto world_name = GET_STRING_FIELD("WorldName", "");
+	auto data = GET_STRING_FIELD("data", "");
+
+	SQLLock weblock(WEB_SQL_LOCK);
+	weblock.lock();
+	auto handle = weblock.getHandle();
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
-			user_configs_table)
+		"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
+		user_configs_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name, strlen(world_name))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		sl.unlock();
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	// 客户端只会回传被修改过的那部分数据, 没有修改过的不会发送给服务端
@@ -217,76 +217,71 @@ HANDLER_FUNC(userconfig_save) {
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
 		if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-				"INSERT INTO `%s` (`account_id`, `world_name`, `data`) VALUES (?, ?, ?)",
-				user_configs_table)
+			"INSERT INTO `%s` (`account_id`, `world_name`, `data`) VALUES (?, ?, ?)",
+			user_configs_table)
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name, strlen(world_name))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-			SqlStmt_ShowDebug(stmt);
-			SqlStmt_Free(stmt);
-			sl.unlock();
-			response_json(res, 502, 3, "An error occurred while inserting data.");
-			return;
+			make_response(res, FAILURE_RET, "An error occurred while inserting data.");
+			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	} else {
 		if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-				"UPDATE `%s` SET `data` = ? WHERE (`account_id` = ? AND `world_name` = ?)",
-				user_configs_table)
+			"UPDATE `%s` SET `data` = ? WHERE (`account_id` = ? AND `world_name` = ?)",
+			user_configs_table)
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
 			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &account_id, sizeof(account_id))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name, strlen(world_name))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
-			SqlStmt_ShowDebug(stmt);
-			SqlStmt_Free(stmt);
-			sl.unlock();
-			response_json(res, 502, 3, "An error occurred while updating data.");
-			return;
+			make_response(res, FAILURE_RET, "An error occurred while updating data.");
+			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	}
 
-	SqlStmt_Free(stmt);
-	sl.unlock();
-
-	response_json(res, 200, 1);
+	make_response(res, SUCCESS_RET);
+	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 HANDLER_FUNC(userconfig_load) {
 	if (!req.has_file("AID") || !req.has_file("WorldName")) {
-		response_json(res, 400, 3, "Missing necessary parameters to process the request.");
+		make_response(res, FAILURE_RET, "Missing necessary parameters to process the request.");
 		return;
 	}
 
-	auto account_id = std::stoi(req.get_file_value("AID").content);
-	auto world_name_str = U2AWE(req.get_file_value("WorldName").content);
-	auto world_name = world_name_str.c_str();
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("WorldName");
 
-	SQLLock sl(WEB_SQL_LOCK);
-	sl.lock();
-	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	auto account_id = GET_NUMBER_FIELD("AID", 0);
+	auto world_name = GET_STRING_FIELD("WorldName", "");
+
+	if (!isVaildAccount(account_id)) {
+		make_response(res, FAILURE_RET, "The account specified by the \"AID\" does not exist.");
+		return;
+	}
+
+	SQLLock weblock(WEB_SQL_LOCK);
+	weblock.lock();
+	auto handle = weblock.getHandle();
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
-			user_configs_table)
+		"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
+		user_configs_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name, strlen(world_name))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 	) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		sl.unlock();
-		response_json(res, 502, 3, "There is an exception in the database table structure.");
-		return;
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
 	if (SqlStmt_NumRows(stmt) <= 0) {
-		SqlStmt_Free(stmt);
-		ShowDebug("[AccountID: %d, World: \"%s\"] Not found in table, sending new info.\n", account_id, U2ACE(req.get_file_value("WorldName").content).c_str());
-		sl.unlock();
-		response_json(res, 200, 1);
-		return;
+		//ShowDebug("[AccountID: %d, World: \"%s\"] Not found in table, sending new info.\n", account_id, U2ACE(req.get_file_value("WorldName").content).c_str());
+		make_response(res, SUCCESS_RET);
+		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
 	char databuf[10000] = { 0 };
@@ -294,22 +289,17 @@ HANDLER_FUNC(userconfig_load) {
 	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
 		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
 	) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
-		sl.unlock();
-		response_json(res, 502, 3, "Could not load the data from database.");
-		return;
+		make_response(res, FAILURE_RET, "An error occurred while binding column.");
+		RETURN_STMT_FAILURE(stmt, weblock);
 	}
-
-	SqlStmt_Free(stmt);
-	sl.unlock();
 
 	databuf[sizeof(databuf) - 1] = 0;
 
 	json response = {};
 	response = json::parse(A2UWE(databuf));
-	response["Type"] = 1;
-	response_json(res, 200, response);
+	response["Type"] = SUCCESS_RET;
+	make_response(res, response);
+	RETURN_STMT_SUCCESS(stmt, weblock);
 }
 
 #endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc

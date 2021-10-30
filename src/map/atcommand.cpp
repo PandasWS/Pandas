@@ -4443,37 +4443,51 @@ ACMD_FUNC(mapinfo) {
 #endif // Pandas_MapFlag_NoMerc
 #ifdef Pandas_MapFlag_Mobinfo
 	if (map_getmapflag(m_id, MF_MOBINFO)) {
-		sprintf(atcmd_output, "%s Mobinfo: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MOBINFO, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " Mobinfo: %d |", map_getmapflag_param(m_id, MF_MOBINFO, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_Mobinfo
 #ifdef Pandas_MapFlag_MobDroprate
 	if (map_getmapflag(m_id, MF_MOBDROPRATE)) {
-		sprintf(atcmd_output, "%s MobDroprate: %d%% |", atcmd_output, map_getmapflag_param(m_id, MF_MOBDROPRATE, 100));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MobDroprate: %d%% |", map_getmapflag_param(m_id, MF_MOBDROPRATE, 100));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MobDroprate
 #ifdef Pandas_MapFlag_MvpDroprate
 	if (map_getmapflag(m_id, MF_MVPDROPRATE)) {
-		sprintf(atcmd_output, "%s MvpDroprate: %d%% |", atcmd_output, map_getmapflag_param(m_id, MF_MVPDROPRATE, 100));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MvpDroprate: %d%% |", map_getmapflag_param(m_id, MF_MVPDROPRATE, 100));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MvpDroprate
 #ifdef Pandas_MapFlag_MaxHeal
 	if (map_getmapflag(m_id, MF_MAXHEAL)) {
-		sprintf(atcmd_output, "%s MaxHeal: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXHEAL, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxHeal: %d |", map_getmapflag_param(m_id, MF_MAXHEAL, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxHeal
 #ifdef Pandas_MapFlag_MaxDmg_Skill
 	if (map_getmapflag(m_id, MF_MAXDMG_SKILL)) {
-		sprintf(atcmd_output, "%s MaxDmg_Skill: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXDMG_SKILL, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxDmg_Skill: %d |", map_getmapflag_param(m_id, MF_MAXDMG_SKILL, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxDmg_Skill
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 	if (map_getmapflag(m_id, MF_MAXDMG_NORMAL)) {
-		sprintf(atcmd_output, "%s MaxDmg_Normal: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXDMG_NORMAL, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxDmg_Normal: %d |", map_getmapflag_param(m_id, MF_MAXDMG_NORMAL, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxDmg_Normal
 #ifdef Pandas_MapFlag_NoSkill2
 	if (map_getmapflag(m_id, MF_NOSKILL2)) {
-		sprintf(atcmd_output, "%s NoSkill2: %d |", atcmd_output, map_getmapflag_param(m_id, MF_NOSKILL2, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " NoSkill2: %d |", map_getmapflag_param(m_id, MF_NOSKILL2, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_NoSkill2
 #ifdef Pandas_MapFlag_NoAura
@@ -4482,7 +4496,9 @@ ACMD_FUNC(mapinfo) {
 #endif // Pandas_MapFlag_NoAura
 #ifdef Pandas_MapFlag_MaxASPD
 	if (map_getmapflag(m_id, MF_MAXASPD)) {
-		sprintf(atcmd_output, "%s MaxASPD: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXASPD, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxASPD: %d |", map_getmapflag_param(m_id, MF_MAXASPD, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxASPD
 #ifdef Pandas_MapFlag_NoSlave

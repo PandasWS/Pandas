@@ -289,7 +289,7 @@ const char* error_msg(void)
 	int code = sErrno;
 	snprintf(buf, sizeof(buf), "error %d: %s", code, sErr(code));
 #ifdef Pandas_Console_Charset_SmartConvert
-	if (PandasUtf8::consoleEncoding == PandasUtf8::CONSOLE_ENCODING_UTF8) {
+	if (PandasUtf8::systemEncoding == PandasUtf8::PANDAS_ENCODING_UTF8) {
 		snprintf(buf, sizeof(buf), "%s", PandasUtf8::utf8ToAnsi(buf).c_str());
 	}
 #endif // Pandas_Console_Charset_SmartConvert

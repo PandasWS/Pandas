@@ -72,6 +72,7 @@
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)3rdparty\boost;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -79,6 +80,7 @@
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)3rdparty\boost;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -86,6 +88,7 @@
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)3rdparty\boost;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -93,6 +96,7 @@
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)3rdparty\boost;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -182,7 +186,9 @@
     <ClCompile Include="auth.cpp" />
     <ClCompile Include="charconfig_controller.cpp" />
     <ClCompile Include="emblem_controller.cpp" />
+    <ClCompile Include="http.cpp" />
     <ClCompile Include="merchantstore_controller.cpp" />
+    <ClCompile Include="recruitment_controller.cpp" />
     <ClCompile Include="sqllock.cpp" />
     <ClCompile Include="userconfig_controller.cpp" />
     <ClCompile Include="web.cpp" />
@@ -193,6 +199,7 @@
     <ClInclude Include="emblem_controller.hpp" />
     <ClInclude Include="http.hpp" />
     <ClInclude Include="merchantstore_controller.hpp" />
+    <ClInclude Include="recruitment_controller.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="sqllock.hpp" />
     <ClInclude Include="userconfig_controller.hpp" />

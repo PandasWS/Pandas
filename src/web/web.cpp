@@ -34,6 +34,9 @@
 #include "merchantstore_controller.hpp"
 #endif // Pandas_WebServer_Implement_MerchantStore
 
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+#include "recruitment_controller.hpp"
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 
 using namespace rathena;
 
@@ -83,6 +86,10 @@ char char_configs_table[32] = "char_configs";
 #ifdef Pandas_WebServer_Implement_MerchantStore
 char merchant_configs_table[32] = "merchant_configs";
 #endif // Pandas_WebServer_Implement_MerchantStore
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+char recruitment_table[32] = "recruitment";
+char party_table[32] = "party";
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 char guild_db_table[32] = "guild";
 char char_db_table[32] = "char";
 
@@ -95,44 +102,6 @@ char character_codepage[32] = { 0 };
 #include <mutex>
 std::mutex g_logger_lock;
 #endif // Pandas_WebServer_ApplyMutex_For_Logger
-
-#ifdef Pandas_WebServer_Rewrite_Controller_HandlerFunc
-//************************************
-// Method:      response_json
-// Description: 构造标准响应 JSON 内容对象并将它设置为接口响应内容
-// Access:      public 
-// Parameter:   httplib::Response & res
-// Parameter:   int status_code
-// Parameter:   uint32 type
-// Parameter:   const std::string & errmes
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/10/03 10:18
-//************************************ 
-void response_json(httplib::Response& res, int status_code, uint32 type, const std::string& errmes) {
-	nlohmann::json content = {};
-	content["Type"] = type;
-	if (!errmes.empty()) {
-		content["Error"] = errmes;
-	}
-	res.status = status_code;
-	res.set_content(content.dump(3), "application/json");
-}
-
-//************************************
-// Method:      response_json
-// Description: 将给定的 JSON 内容对象设置为接口响应内容
-// Access:      public 
-// Parameter:   httplib::Response & res
-// Parameter:   int status_code
-// Parameter:   nlohmann::json & content
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/10/03 10:18
-//************************************ 
-void response_json(httplib::Response& res, int status_code, nlohmann::json& content) {
-	res.status = status_code;
-	res.set_content(content.dump(3), "application/json");
-}
-#endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc
 
 int parse_console(const char * buf) {
 	return 1;
@@ -269,16 +238,22 @@ int inter_config_read(const char* cfgName)
 			safestrncpy(web_server_db,w2,sizeof(web_server_db));
 		else if(!strcmpi(w1,"default_codepage"))
 			safestrncpy(default_codepage,w2,sizeof(default_codepage));
-		else if (!strcmpi(w1, "user_configs"))
+		else if (!strcmpi(w1, "user_configs_table"))
 			safestrncpy(user_configs_table, w2, sizeof(user_configs_table));
-		else if (!strcmpi(w1, "char_configs"))
+		else if (!strcmpi(w1, "char_configs_table"))
 			safestrncpy(char_configs_table, w2, sizeof(char_configs_table));
+		else if (!strcmpi(w1, "guild_emblems_table"))
+			safestrncpy(guild_emblems_table, w2, sizeof(guild_emblems_table));
 #ifdef Pandas_WebServer_Implement_MerchantStore
-		else if (!strcmpi(w1, "merchant_configs"))
+		else if (!strcmpi(w1, "merchant_configs_table"))
 			safestrncpy(merchant_configs_table, w2, sizeof(merchant_configs_table));
 #endif // Pandas_WebServer_Implement_MerchantStore
-		else if (!strcmpi(w1, "guild_emblems"))
-			safestrncpy(guild_emblems_table, w2, sizeof(guild_emblems_table));
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+		else if (!strcmpi(w1, "recruitment_table"))
+			safestrncpy(recruitment_table, w2, sizeof(recruitment_table));
+		else if (!strcmpi(w1, "party_db"))
+			safestrncpy(party_table, w2, sizeof(party_table));
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 		else if (!strcmpi(w1, "login_server_account_db"))
 			safestrncpy(login_table, w2, sizeof(login_table));
 		else if (!strcmpi(w1, "guild_db"))
@@ -529,6 +504,13 @@ int do_init(int argc, char** argv) {
 	http_server->Post("/MerchantStore/load", merchantstore_load);
 	http_server->Post("/MerchantStore/save", merchantstore_save);
 #endif // Pandas_WebServer_Implement_MerchantStore
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+	http_server->Post("/party/add", party_recruitment_add);
+	http_server->Post("/party/del", party_recruitment_del);
+	http_server->Post("/party/get", party_recruitment_get);
+	http_server->Post("/party/list", party_recruitment_list);
+	http_server->Post("/party/search", party_recruitment_search);
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 
 	// set up logger
 	http_server->set_logger(logger);
