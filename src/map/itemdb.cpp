@@ -162,8 +162,24 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			return 0;
 		}
 
+		if( exists ){
+			// Create a copy
+			std::string aegisname = item->name;
+			// Convert it to lower
+			util::tolower( aegisname );
+			// Remove old AEGIS name from lookup
+			this->aegisNameToItemDataMap.erase( aegisname );
+		}
+
 		item->name.resize(ITEM_NAME_LENGTH);
 		item->name = name.c_str();
+
+		// Create a copy
+		std::string aegisname = name;
+		// Convert it to lower
+		util::tolower( aegisname );
+
+		this->aegisNameToItemDataMap[aegisname] = item;
 	}
 
 	if (this->nodeExists(node, "Name")) {
@@ -172,8 +188,24 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asString(node, "Name", name))
 			return 0;
 
+		if( exists ){
+			// Create a copy
+			std::string ename = item->ename;
+			// Convert it to lower
+			util::tolower( ename );
+			// Remove old name from lookup
+			this->nameToItemDataMap.erase( ename );
+		}
+
 		item->ename.resize(ITEM_NAME_LENGTH);
 		item->ename = name.c_str();
+
+		// Create a copy
+		std::string ename = name;
+		// Convert it to lower
+		util::tolower( ename );
+
+		this->nameToItemDataMap[ename] = item;
 	}
 
 	if (this->nodeExists(node, "Type")) {
@@ -1159,27 +1191,6 @@ void ItemDatabase::loadingFinished(){
 
 		item_db.put( ITEMID_DUMMY, dummy_item );
 	}
-
-	// Prepare the container size to not allocate often
-	this->nameToItemDataMap.reserve( this->size() );
-	this->aegisNameToItemDataMap.reserve( this->size() );
-
-	// Build the name lookup maps
-	for( const auto& entry : *this ){
-		// Create a copy
-		std::string ename = entry.second->ename;
-		// Convert it to lower
-		util::tolower( ename );
-
-		this->nameToItemDataMap[ename] = entry.second;
-
-		// Create a copy
-		std::string aegisname = entry.second->name;
-		// Convert it to lower
-		util::tolower( aegisname );
-
-		this->aegisNameToItemDataMap[aegisname] = entry.second;
-	}
 }
 
 #ifdef Pandas_YamlBlastCache_ItemDatabase
@@ -1293,26 +1304,16 @@ e_sex ItemDatabase::defaultGender( const YAML::Node &node, std::shared_ptr<item_
 	return static_cast<e_sex>( id->sex );
 }
 
-std::shared_ptr<item_data> ItemDatabase::searchname( const char* name ){
+std::shared_ptr<item_data> ItemDatabase::search_aegisname( const char* name ){
 	// Create a copy
 	std::string lowername = name;
 	// Convert it to lower
 	util::tolower( lowername );
 
-#ifndef Pandas_Fix_Itemdb_Searchname_Logic
 	return util::umap_find( this->aegisNameToItemDataMap, lowername );
-#else
-	std::shared_ptr<item_data> result = util::umap_find(this->nameToItemDataMap, lowername);
-
-	if (result != nullptr) {
-		return result;
-	}
-
-	return util::umap_find(this->aegisNameToItemDataMap, lowername);
-#endif // Pandas_Fix_Itemdb_Searchname_Logic
 }
 
-std::shared_ptr<item_data> ItemDatabase::search_aegisname( const char *name ){
+std::shared_ptr<item_data> ItemDatabase::searchname( const char *name ){
 	// Create a copy
 	std::string lowername = name;
 	// Convert it to lower
@@ -1320,15 +1321,11 @@ std::shared_ptr<item_data> ItemDatabase::search_aegisname( const char *name ){
 
 	std::shared_ptr<item_data> result = util::umap_find( this->aegisNameToItemDataMap, lowername );
 
-#ifndef Pandas_Fix_Itemdb_SearchAegisname_Logic
 	if( result != nullptr ){
 		return result;
 	}
 
 	return util::umap_find( this->nameToItemDataMap, lowername );
-#else
-	return result;
-#endif // Pandas_Fix_Itemdb_SearchAegisname_Logic
 }
 
 ItemDatabase item_db;
@@ -2406,9 +2403,12 @@ static bool itemdb_read_sqldb_sub(std::vector<std::string> str) {
 	int32 index = -1;
 
 	node["Id"] = std::stoul(str[++index], nullptr, 10);
-	node["AegisName"] = str[++index];
-	node["Name"] = str[++index];
-	node["Type"] = str[++index];
+	if (!str[++index].empty())
+		node["AegisName"] = str[index];
+	if (!str[++index].empty())
+		node["Name"] = str[index];
+	if (!str[++index].empty())
+		node["Type"] = str[index];
 	if (!str[++index].empty())
 		node["SubType"] = str[index];
 	if (!str[++index].empty())

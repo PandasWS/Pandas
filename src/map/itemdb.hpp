@@ -1125,6 +1125,11 @@ private:
 	template <typename Archive>
 	void serialize(Archive& ar, const unsigned int version) {
 		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<t_itemid, item_data>>(*this);
+
+		// 由于 029d8df 的改动, 类私有成员 nameToItemDataMap 和 aegisNameToItemDataMap 的数据已经不会在
+		// loadingFinished 中构建, 因此这里将它们的内容也保存到疾风缓存中去.
+		ar& nameToItemDataMap;
+		ar& aegisNameToItemDataMap;
 	}
 #endif // Pandas_YamlBlastCache_ItemDatabase
 
