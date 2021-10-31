@@ -16857,6 +16857,10 @@ void clif_parse_Mail_refreshinbox(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
+	if( mail_invalid_operation( sd ) ){
+		return;
+	}
+
 #if PACKETVER < 20150513
 	struct mail_data* md = &sd->mail.inbox;
 
@@ -17046,11 +17050,6 @@ void clif_parse_Mail_read(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 #if PACKETVER < 20150513
 	int mail_id = RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 #else
@@ -17087,14 +17086,13 @@ void clif_parse_Mail_beginwrite(int fd, struct map_session_data* sd) {
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 	char name[NAME_LENGTH];
 
 	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
+
+	if( mail_invalid_operation( sd ) ){
+		return;
+	}
 
 	if( sd->state.storage_flag || sd->state.mail_writing || sd->trade_partner ){
 		clif_send_Mail_beginwrite_ack(sd, name, false);
@@ -17142,12 +17140,11 @@ void clif_parse_Mail_Receiver_Check(int fd, struct map_session_data *sd) {
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 	static char name[NAME_LENGTH];
+
+	if( mail_invalid_operation( sd ) ){
+		return;
+	}
 
 	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
 
@@ -17162,11 +17159,6 @@ void clif_parse_Mail_getattach( int fd, struct map_session_data *sd ){
 #ifdef Pandas_Crashfix_FunctionParams_Verify
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
-
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
 
 	int i;
 	struct mail_message* msg;
@@ -17278,11 +17270,6 @@ void clif_parse_Mail_delete(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 #if PACKETVER < 20150513
 	int mail_id = RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 #else
@@ -17331,11 +17318,6 @@ void clif_parse_Mail_return(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 	int mail_id = RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 	//char *rec_name = RFIFOP(fd,packet_db[RFIFOW(fd,0)].pos[1]);
 	int i;
@@ -17361,11 +17343,6 @@ void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 	struct s_packet_db* info = &packet_db[RFIFOW(fd,0)];
 	uint16 idx = RFIFOW(fd,info->pos[0]);
 #if PACKETVER < 20150513
@@ -17382,6 +17359,10 @@ void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
 
 	if (sd->inventory_data[server_index(idx)] == nullptr)
 		return;
+
+	if( mail_invalid_operation( sd ) ){
+		return;
+	}
 
 	flag = mail_setitem(sd, idx, amount);
 
@@ -17461,11 +17442,6 @@ void clif_parse_Mail_send(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 #if PACKETVER < 20150513
 	struct s_packet_db* info = &packet_db[RFIFOW(fd,0)];
 
@@ -17477,6 +17453,12 @@ void clif_parse_Mail_send(int fd, struct map_session_data *sd){
 		return;
 	}
 
+#ifdef Pandas_MapFlag_NoMail
+	if (mail_invalid_operation(sd)) {
+		return;
+	}
+#endif // Pandas_MapFlag_NoMail
+
 	mail_send(sd, RFIFOCP(fd,info->pos[1]), RFIFOCP(fd,info->pos[2]), RFIFOCP(fd,info->pos[4]), RFIFOB(fd,info->pos[3]));
 #else
 	uint16 length = RFIFOW(fd, 2);
@@ -17484,6 +17466,10 @@ void clif_parse_Mail_send(int fd, struct map_session_data *sd){
 	if( length < 0x3e ){
 		ShowWarning("Too short...\n");
 		clif_Mail_send(sd, WRITE_MAIL_FAILED);
+		return;
+	}
+
+	if( mail_invalid_operation( sd ) ){
 		return;
 	}
 

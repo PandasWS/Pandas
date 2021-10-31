@@ -662,6 +662,7 @@
 	export_constant(MF_PRIVATEAIRSHIP_DESTINATION);
 	export_constant(MF_SKILL_DURATION);
 	export_constant(MF_NOCASHSHOP);
+	export_constant(MF_NORODEX);
 
 #ifdef Pandas_MapFlag_Mobinfo
 	export_constant(MF_MOBINFO);

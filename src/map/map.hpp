@@ -640,6 +640,7 @@ enum e_mapflag : int16 {
 	MF_PRIVATEAIRSHIP_DESTINATION,
 	MF_SKILL_DURATION,
 	MF_NOCASHSHOP,
+	MF_NORODEX,
 #ifdef Pandas_MapFlag_Mobinfo
 	MF_MOBINFO,
 #endif // Pandas_MapFlag_Mobinfo
