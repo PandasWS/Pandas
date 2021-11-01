@@ -210,6 +210,22 @@ public:
 	uint64 parseBodyNode(const YAML::Node &node);
 };
 
+struct s_mob_item_drop_ratio {
+	t_itemid nameid;
+	uint16 drop_ratio;
+	std::vector<uint16> mob_ids;
+};
+
+class MobItemRatioDatabase : public TypesafeYamlDatabase<t_itemid, s_mob_item_drop_ratio> {
+public:
+	MobItemRatioDatabase() : TypesafeYamlDatabase("MOB_ITEM_RATIO_DB", 1) {
+
+	}
+
+	const std::string getDefaultLocation();
+	uint64 parseBodyNode(const YAML::Node &node);
+};
+
 struct spawn_info {
 	unsigned short mapindex;
 	unsigned short qty;
@@ -337,6 +353,7 @@ struct mob_data {
 	int8 skill_idx; // Index of last used skill from db->skill[]
 	t_tick skilldelay[MAX_MOBSKILL];
 	char npc_event[EVENT_NAME_LENGTH];
+	char idle_event[EVENT_NAME_LENGTH];
 	/**
 	 * Did this monster summon something?
 	 * Used to flag summon deletions, saves a worth amount of memory
@@ -348,6 +365,14 @@ struct mob_data {
 	int tomb_nid;
 
 	e_mob_bosstype get_bosstype();
+
+#ifdef Pandas_Struct_Mob_Data_Pandas
+	struct {
+#ifdef Pandas_Struct_Mob_Data_DamageTaken
+		int damagetaken = -1;	// 魔物实例的承伤倍率, 若为 -1 则表示使用 db 中设置的承伤倍率 [Sola丶小克] 
+#endif // Pandas_Struct_Mob_Data_DamageTaken
+	} pandas;
+#endif // Pandas_Struct_Mob_Data_Pandas
 
 #ifdef Pandas_Struct_Unit_CommonData
 	struct s_unit_common_data ucd;
@@ -499,6 +524,7 @@ int mob_class_change(struct mob_data *md,int mob_id);
 int mob_warpslave(struct block_list *bl, int range);
 int mob_linksearch(struct block_list *bl,va_list ap);
 
+bool mob_chat_display_message (mob_data &md, uint16 msg_id);
 int mobskill_use(struct mob_data *md,t_tick tick,int event);
 int mobskill_event(struct mob_data *md,struct block_list *src,t_tick tick, int flag);
 int mob_summonslave(struct mob_data *md2,int *value,int amount,uint16 skill_id);
@@ -515,6 +541,12 @@ void mob_reload(void);
 void mob_add_spawn(uint16 mob_id, const struct spawn_info& new_spawn);
 const std::vector<spawn_info> mob_get_spawns(uint16 mob_id);
 bool mob_has_spawn(uint16 mob_id);
+
+#ifndef Pandas_FuncParams_Mob_GetDroprate
+int mob_getdroprate(struct block_list *src, std::shared_ptr<s_mob_db> mob, int base_rate, int drop_modifier);
+#else
+int mob_getdroprate(struct block_list* src, std::shared_ptr<s_mob_db> mob, int base_rate, int drop_modifier, struct mob_data* md = nullptr);
+#endif // Pandas_FuncParams_Mob_GetDroprate
 
 // MvP Tomb System
 int mvptomb_setdelayspawn(struct npc_data *nd);

@@ -81,14 +81,7 @@ const t_tick MOB_MAX_DELAY = 24 * 3600 * 1000;
 // holds Monster Spawn informations
 std::unordered_map<uint16, std::vector<spawn_info>> mob_spawn_data;
 
-//Dynamic item drop ratio database for per-item drop ratio modifiers overriding global drop ratios.
-#define MAX_ITEMRATIO_MOBS 10
-struct s_mob_item_drop_ratio {
-	t_itemid nameid;
-	int drop_ratio;
-	unsigned short mob_id[MAX_ITEMRATIO_MOBS];
-};
-static DBMap *mob_item_drop_ratio;
+MobItemRatioDatabase mob_item_drop_ratio;
 
 /// Mob skill struct for temporary storage
 struct s_mob_skill_db {
@@ -498,6 +491,10 @@ struct mob_data* mob_spawn_dataset(struct spawn_data *data)
 #ifdef Pandas_BattleRecord
 	batrec_new(&md->bl);
 #endif // Pandas_BattleRecord
+
+#ifdef Pandas_Struct_Mob_Data_DamageTaken
+	md->pandas.damagetaken = -1;
+#endif // Pandas_Struct_Mob_Data_DamageTaken
 
 	map_addiddb(&md->bl);
 	return md;
@@ -1546,6 +1543,10 @@ int mob_unlocktarget(struct mob_data *md, t_tick tick)
 		//Because it is not unset when the mob finishes walking.
 		md->state.skillstate = MSS_IDLE;
 	case MSS_IDLE:
+		if( md->ud.walktimer == INVALID_TIMER && md->idle_event[0] && npc_event_do_id( md->idle_event, md->bl.id ) > 0 ){
+			md->idle_event[0] = 0;
+			break;
+		}
 		// Idle skill.
 		if (!(++md->ud.walk_count%IDLE_SKILL_INTERVAL) && mobskill_use(md, tick, -1))
 			break;
@@ -1573,7 +1574,8 @@ int mob_unlocktarget(struct mob_data *md, t_tick tick)
 		md->ud.target_to = 0;
 		unit_set_target(&md->ud, 0);
 	}
-	if (battle_config.official_cell_stack_limit > 0
+	
+	if (!md->ud.state.ignore_cell_stack_limit && battle_config.official_cell_stack_limit > 0
 		&& (md->min_chase == md->db->range3 || battle_config.mob_ai & 0x8)
 		&& map_count_oncell(md->bl.m, md->bl.x, md->bl.y, BL_CHAR | BL_NPC, 1) > battle_config.official_cell_stack_limit) {
 		unit_walktoxy(&md->bl, md->bl.x, md->bl.y, 8);
@@ -2075,6 +2077,15 @@ static int mob_ai_sub_lazy(struct mob_data *md, va_list args)
 		return 0;
 	}
 
+	if (md->ud.walktimer == INVALID_TIMER) {
+		// Because it is not unset when the mob finishes walking.
+		md->state.skillstate = MSS_IDLE;
+		if (md->idle_event[0] && npc_event_do_id( md->idle_event, md->bl.id ) > 0) {
+			md->idle_event[0] = 0;
+			return 0;
+		}
+	}
+
 	if( DIFF_TICK(md->next_walktime,tick) < 0 && status_has_mode(&md->status,MD_CANMOVE) && unit_can_move(&md->bl) )
 	{
 		// Move probability for mobs away from players
@@ -2086,9 +2097,6 @@ static int mob_ai_sub_lazy(struct mob_data *md, va_list args)
 	}
 	else if( md->ud.walktimer == INVALID_TIMER )
 	{
-		//Because it is not unset when the mob finishes walking.
-		md->state.skillstate = MSS_IDLE;
-
 		// Probability for mobs far from players from doing their IDLE skill.
 		// In Aegis, this is 100% for mobs that have been activated by players and none otherwise.
 		if( mob_is_spotted(md) &&
@@ -2507,6 +2515,103 @@ void mob_damage(struct mob_data *md, struct block_list *src, int damage)
 #endif
 }
 
+/**
+ * Get modified drop rate
+ * @param src: Source object
+ * @param mob: Monster data
+ * @param base_rate: Base drop rate
+ * @param drop_modifier: RENEWAL_DROP level modifier
+ * @return Modified drop rate
+ */
+#ifndef Pandas_FuncParams_Mob_GetDroprate
+int mob_getdroprate(struct block_list *src, std::shared_ptr<s_mob_db> mob, int base_rate, int drop_modifier)
+#else
+int mob_getdroprate(struct block_list* src, std::shared_ptr<s_mob_db> mob, int base_rate, int drop_modifier, struct mob_data* md)
+#endif // Pandas_FuncParams_Mob_GetDroprate
+{
+	int drop_rate = base_rate;
+
+	if (battle_config.mob_size_influence) { // Change drops depending on monsters size [Valaris]
+		if (mob->status.size == SZ_MEDIUM && drop_rate >= 2)
+			drop_rate /= 2; // SZ_MEDIUM actually is small size modification... this is not a bug!
+		else if (mob->status.size == SZ_BIG)
+			drop_rate *= 2;
+	}
+
+	if (src) {
+		if (battle_config.drops_by_luk) // Drops affected by luk as a fixed increase [Valaris]
+			drop_rate += status_get_luk(src) * battle_config.drops_by_luk / 100;
+		if (battle_config.drops_by_luk2) // Drops affected by luk as a % increase [Skotlex]
+			drop_rate += (int)(0.5 + drop_rate * status_get_luk(src) * battle_config.drops_by_luk2 / 10000.);
+
+		if (src->type == BL_PC) { // Player specific drop rate adjustments
+			struct map_session_data *sd = (struct map_session_data*)src;
+			int drop_rate_bonus = 100;
+
+			// In PK mode players get an additional drop chance bonus of 25% if there is a 20 level difference
+			if( battle_config.pk_mode && (int)(mob->lv - sd->status.base_level) >= 20 ){
+				drop_rate_bonus += 25;
+			}
+
+			// Add class and race specific bonuses
+			drop_rate_bonus += sd->indexed_bonus.dropaddclass[mob->status.class_] + sd->indexed_bonus.dropaddclass[CLASS_ALL];
+			drop_rate_bonus += sd->indexed_bonus.dropaddrace[mob->status.race] + sd->indexed_bonus.dropaddrace[RC_ALL];
+
+			if (sd->sc.data[SC_ITEMBOOST])
+				drop_rate_bonus += sd->sc.data[SC_ITEMBOOST]->val1;
+
+			int cap;
+
+			if (pc_isvip(sd)) { // Increase item drop rate for VIP.
+				// Unsure how the VIP and other bonuses should stack, this is additive.
+				drop_rate_bonus += battle_config.vip_drop_increase;
+				cap = battle_config.drop_rate_cap_vip;
+			} else
+				cap = battle_config.drop_rate_cap;
+
+			drop_rate = (int)( 0.5 + drop_rate * drop_rate_bonus / 100. );
+
+			// Now limit the drop rate to never be exceed the cap (default: 90%), unless it is originally above it already.
+			if( drop_rate > cap && base_rate < cap ){
+				drop_rate = cap;
+			}
+		}
+	}
+
+#ifdef Pandas_MapFlag_MobDroprate
+	if (md) {
+		struct map_data* mapdata = map_getmapdata(md->bl.m);
+		if (!status_has_mode(&md->status, MD_MVP))
+			drop_rate = apply_rate(drop_rate, map_getmapflag_param(md->bl.m, MF_MOBDROPRATE, 100));
+	}
+#endif // Pandas_MapFlag_MobDroprate
+
+#ifdef Pandas_MapFlag_MvpDroprate
+	if (md) {
+		struct map_data* mapdata = map_getmapdata(md->bl.m);
+		if (status_has_mode(&md->status, MD_MVP))
+			drop_rate = apply_rate(drop_rate, map_getmapflag_param(md->bl.m, MF_MVPDROPRATE, 100));
+	}
+#endif // Pandas_MapFlag_MvpDroprate
+
+#ifdef RENEWAL_DROP
+	drop_rate = apply_rate( drop_rate, drop_modifier );
+#endif
+
+	// Cap it to 100%
+	drop_rate = min( drop_rate, 10000 );
+
+	// If the monster's drop rate can become 0
+	if( battle_config.drop_rate0item ){
+		drop_rate = max( drop_rate, 0 );
+	}else{
+		// If not - cap to 0.01% drop rate - as on official servers
+		drop_rate = max( drop_rate, 1 );
+	}
+
+	return drop_rate;
+}
+
 /*==========================================
  * Signals death of mob.
  * type&1 -> no drops, type&2 -> no exp
@@ -2772,9 +2877,10 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 		struct item_drop_list *dlist = ers_alloc(item_drop_list_ers, struct item_drop_list);
 		struct item_drop *ditem;
 		struct item_data* it = NULL;
-		int drop_rate;
+		int drop_rate, drop_modifier = 100;
+
 #ifdef RENEWAL_DROP
-		int drop_modifier = pc_level_penalty_mod( mvp_sd != nullptr ? mvp_sd : second_sd != nullptr ? second_sd : third_sd, PENALTY_DROP, nullptr, md );
+		drop_modifier = pc_level_penalty_mod( mvp_sd != nullptr ? mvp_sd : second_sd != nullptr ? second_sd : third_sd, PENALTY_DROP, nullptr, md );
 #endif
 		dlist->m = md->bl.m;
 		dlist->x = md->bl.x;
@@ -2789,79 +2895,12 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 				continue;
 			if ( !(it = itemdb_exists(md->db->dropitem[i].nameid)) )
 				continue;
-			drop_rate = md->db->dropitem[i].rate;
-			if (drop_rate <= 0) {
-				if (battle_config.drop_rate0item)
-					continue;
-				drop_rate = 1;
-			}
 
-			// change drops depending on monsters size [Valaris]
-			if (battle_config.mob_size_influence) {
-				if (md->special_state.size == SZ_MEDIUM && drop_rate >= 2)
-					drop_rate /= 2;
-				else if( md->special_state.size == SZ_BIG)
-					drop_rate *= 2;
-			}
-
-			if (src) {
-				//Drops affected by luk as a fixed increase [Valaris]
-				if (battle_config.drops_by_luk)
-					drop_rate += status_get_luk(src)*battle_config.drops_by_luk/100;
-				//Drops affected by luk as a % increase [Skotlex]
-				if (battle_config.drops_by_luk2)
-					drop_rate += (int)(0.5+drop_rate*status_get_luk(src)*battle_config.drops_by_luk2/10000.);
-			}
-
-			// Player specific drop rate adjustments
-			if( sd ){
-				int drop_rate_bonus = 0;
-
-				// pk_mode increase drops if 20 level difference [Valaris]
-				if( battle_config.pk_mode && (int)(md->level - sd->status.base_level) >= 20 )
-					drop_rate = (int)(drop_rate*1.25);
-
-				// Add class and race specific bonuses
-				drop_rate_bonus += sd->indexed_bonus.dropaddclass[md->status.class_] + sd->indexed_bonus.dropaddclass[CLASS_ALL];
-				drop_rate_bonus += sd->indexed_bonus.dropaddrace[md->status.race] + sd->indexed_bonus.dropaddrace[RC_ALL];
-
-				// Increase drop rate if user has SC_ITEMBOOST
-				if (sd->sc.data[SC_ITEMBOOST])
-					drop_rate_bonus += sd->sc.data[SC_ITEMBOOST]->val1;
-
-				drop_rate_bonus = (int)(0.5 + drop_rate * drop_rate_bonus / 100.);
-				// Now rig the drop rate to never be over 90% unless it is originally >90%.
-				drop_rate = i32max(drop_rate, cap_value(drop_rate_bonus, 0, 9000));
-
-				if (pc_isvip(sd)) { // Increase item drop rate for VIP.
-					drop_rate += (int)(0.5 + drop_rate * battle_config.vip_drop_increase / 100.);
-					drop_rate = min(drop_rate,10000); //cap it to 100%
-				}
-			}
-
-#ifdef Pandas_MapFlag_MobDroprate
-			{
-				struct map_data *mapdata = map_getmapdata(m);
-				if (!status_has_mode(&md->status, MD_MVP))
-					drop_rate = apply_rate(drop_rate, map_getmapflag_param(m, MF_MOBDROPRATE, 100));
-			}
-#endif // Pandas_MapFlag_MobDroprate
-
-#ifdef Pandas_MapFlag_MvpDroprate
-			{
-				struct map_data *mapdata = map_getmapdata(m);
-				if (status_has_mode(&md->status, MD_MVP))
-					drop_rate = apply_rate(drop_rate, map_getmapflag_param(m, MF_MVPDROPRATE, 100));
-			}
-#endif // Pandas_MapFlag_MvpDroprate
-
-#ifdef RENEWAL_DROP
-			if( drop_modifier != 100 ) {
-				drop_rate = apply_rate(drop_rate, drop_modifier);
-				if( drop_rate < 1 )
-					drop_rate = 1;
-			}
-#endif
+#ifndef Pandas_FuncParams_Mob_GetDroprate
+			drop_rate = mob_getdroprate(src, md->db, md->db->dropitem[i].rate, drop_modifier);
+#else
+			drop_rate = mob_getdroprate(src, md->db, md->db->dropitem[i].rate, drop_modifier, md);
+#endif // Pandas_FuncParams_Mob_GetDroprate
 
 #ifdef Pandas_Database_MobItem_FixedRatio
 			// 若严格固定掉率, 那么无视上面的等级惩罚、VIP掉率加成、地图标记掉率修正等计算
@@ -2904,7 +2943,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 #endif // Pandas_Item_Special_Annouce
 
 			//A Rare Drop Global Announce by Lupus
-			if( mvp_sd && drop_rate <= battle_config.rare_drop_announce ) {
+			if( mvp_sd && md->db->dropitem[i].rate <= battle_config.rare_drop_announce ) {
 				char message[128];
 				sprintf (message, msg_txt(NULL,541), mvp_sd->status.name, md->name, it->ename.c_str(), (float)drop_rate/100);
 				//MSG: "'%s' won %s's %s (chance: %0.02f%%)"
@@ -3622,6 +3661,13 @@ int mob_summonslave(struct mob_data *md2,int *value,int amount,uint16 skill_id)
 
 	if(mobdb_checkid(value[0]) == 0)
 		return 0;
+
+#ifdef Pandas_MapFlag_NoSlave
+	if (md2 && map_getmapflag(md2->bl.m, MF_NOSLAVE)) {
+		return 0;
+	}
+#endif // Pandas_MapFlag_NoSlave
+
 	/**
 	 * Flags this monster is able to summon; saves a worth amount of memory upon deletion
 	 **/
@@ -3805,6 +3851,24 @@ struct mob_data *mob_getfriendstatus(struct mob_data *md,int cond1,int cond2)
 
 	map_foreachinallrange(mob_getfriendstatus_sub, &md->bl, 8,BL_MOB, md,cond1,cond2,&fr);
 	return fr;
+}
+
+// Display message from mob_chat_db.yml
+bool mob_chat_display_message(mob_data &md, uint16 msg_id) {
+	std::shared_ptr<s_mob_chat> mc = mob_chat_db.find(msg_id);
+
+	if (mc != nullptr) {
+		std::string name = md.name, output;
+		std::size_t unique = name.find("#");
+
+		if (unique != std::string::npos)
+			name = name.substr(0, unique); // discard extra name identifier if present [Daegaladh]
+		output = name + " : " + mc->msg;
+
+		clif_messagecolor(&md.bl, mc->color, output.c_str(), true, AREA_CHAT_WOC);
+		return true;
+	}
+	return false;
 }
 
 /*==========================================
@@ -4013,18 +4077,7 @@ int mobskill_use(struct mob_data *md, t_tick tick, int event)
 		}
 		//Skill used. Post-setups...
 		if ( ms[i]->msg_id ){ //Display color message [SnakeDrak]
-			std::shared_ptr<s_mob_chat> mc = mob_chat_db.find(ms[i]->msg_id);
-
-			if (mc) {
-				std::string name = md->name, output;
-				std::size_t unique = name.find("#");
-
-				if (unique != std::string::npos)
-					name = name.substr(0, unique); // discard extra name identifier if present [Daegaladh]
-				output = name + " : " + mc->msg;
-
-				clif_messagecolor(&md->bl, mc->color, output.c_str(), true, AREA_CHAT_WOC);
-			}
+			mob_chat_display_message(*md, ms[i]->msg_id);
 		}
 		if(!(battle_config.mob_ai&0x200)) { //pass on delay to same skill.
 			for (j = 0; j < ms.size(); j++)
@@ -4332,22 +4385,17 @@ static unsigned int mob_drop_adjust(int baserate, int rate_adjust, unsigned shor
 
 /**
  * Check if global item drop rate is overriden for given item
- * in db/mob_item_ratio.txt
+ * in db/mob_item_ratio.yml
  * @param nameid ID of the item
  * @param mob_id ID of the monster
  * @param rate_adjust pointer to store ratio if found
  */
 static void item_dropratio_adjust(t_itemid nameid, int mob_id, int *rate_adjust)
 {
-	struct s_mob_item_drop_ratio *item_ratio = (struct s_mob_item_drop_ratio *)uidb_get(mob_item_drop_ratio, nameid);
+	std::shared_ptr<s_mob_item_drop_ratio> item_ratio = mob_item_drop_ratio.find(nameid);
 	if( item_ratio) {
-		if( item_ratio->mob_id[0] ) { // only for listed mobs
-			int i;
-			ARR_FIND(0, MAX_ITEMRATIO_MOBS, i, item_ratio->mob_id[i] == mob_id);
-			if( i < MAX_ITEMRATIO_MOBS ) // found
-				*rate_adjust = item_ratio->drop_ratio;
-		}
-		else // for all mobs
+		// If it is empty it is applied to all monsters, if not it is only applied if the monster is in the vector
+		if( item_ratio->mob_ids.empty() || util::vector_exists( item_ratio->mob_ids, static_cast<uint16>( mob_id ) ) )
 			*rate_adjust = item_ratio->drop_ratio;
 	}
 }
@@ -4512,6 +4560,10 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asString(node, "AegisName", name))
 			return 0;
 
+		if (name.length() > NAME_LENGTH) {
+			this->invalidWarning(node["AegisName"], "AegisName \"%s\" exceeds maximum of %d characters, capping...\n", name.c_str(), NAME_LENGTH - 1);
+		}
+
 		name.resize(NAME_LENGTH);
 		mob->sprite = name;
 	}
@@ -4522,6 +4574,10 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asString(node, "Name", name))
 			return 0;
 
+		if (name.length() > NAME_LENGTH) {
+			this->invalidWarning(node["Name"], "Name \"%s\" exceeds maximum of %d characters, capping...\n", name.c_str(), NAME_LENGTH - 1);
+		}
+
 		name.resize(NAME_LENGTH);
 		mob->name = name;
 	}
@@ -4531,6 +4587,10 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 
 		if (!this->asString(node, "JapaneseName", name))
 			return 0;
+
+		if (name.length() > NAME_LENGTH) {
+			this->invalidWarning(node["JapaneseName"], "JapaneseName \"%s\" exceeds maximum of %d characters, capping...\n", name.c_str(), NAME_LENGTH - 1);
+		}
 
 		name.resize(NAME_LENGTH);
 		mob->jname = name;
@@ -4663,7 +4723,7 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 			mob->status.rhw.atk2 = 0;
 #endif
 	}
-	
+
 	if (this->nodeExists(node, "Defense")) {
 		uint16 def;
 
@@ -4680,7 +4740,7 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!exists)
 			mob->status.def = 0;
 	}
-	
+
 	if (this->nodeExists(node, "MagicDefense")) {
 		uint16 def;
 
@@ -4697,7 +4757,7 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!exists)
 			mob->status.mdef = 0;
 	}
-	
+
 	if (this->nodeExists(node, "Str")) {
 		uint16 stat;
 
@@ -4769,7 +4829,7 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!exists)
 			mob->status.luk = 1;
 	}
-	
+
 	if (this->nodeExists(node, "AttackRange")) {
 		uint16 range;
 
@@ -5118,10 +5178,10 @@ void MobDatabase::loadingFinished() {
 #endif // Pandas_YamlBlastCache_MobDatabase
 
 		if (battle_config.view_range_rate != 100)
-			mob->range2 = cap_value(mob->range2, 1, mob->range2 * battle_config.view_range_rate / 100);
+			mob->range2 = max(1, mob->range2 * battle_config.view_range_rate / 100);
 
 		if (battle_config.chase_range_rate != 100)
-			mob->range3 = cap_value(mob->range3, mob->range2, mob->range3 * battle_config.chase_range_rate / 100);
+			mob->range3 = max(mob->range2, mob->range3 * battle_config.chase_range_rate / 100);
 
 		// Tests showed that chase range is effectively 2 cells larger than expected [Playtester]
 		mob->range3 += 2;
@@ -5172,8 +5232,10 @@ static bool mob_read_sqldb_sub(std::vector<std::string> str) {
 	int32 index = -1;
 
 	node["Id"] = std::stoul(str[++index]);
-	node["AegisName"] = str[++index];
-	node["Name"] = str[++index];
+	if (!str[++index].empty())
+		node["AegisName"] = str[index];
+	if (!str[++index].empty())
+		node["Name"] = str[index];
 	if (!str[++index].empty())
 		node["JapaneseName"] = str[index];
 	if (!str[++index].empty() && std::stoi(str[index]) > 1)
@@ -6180,51 +6242,83 @@ static int mob_read_sqlskilldb(void)
 	return 0;
 }
 
-/**
- * Read mob_item_ratio.txt
- */
-static bool mob_readdb_itemratio(char* str[], int columns, int current)
-{
-	t_itemid nameid;
-	int ratio, i;
-	struct s_mob_item_drop_ratio *item_ratio;
-	nameid = strtoul(str[0], nullptr, 10);
-
-	if (itemdb_exists(nameid) == NULL) {
-		ShowWarning("mob_readdb_itemratio: Invalid item id %u.\n", nameid);
-		return false;
-	}
-
-	ratio = atoi(str[1]);
-
-	if (!(item_ratio = (struct s_mob_item_drop_ratio *)uidb_get(mob_item_drop_ratio,nameid)))
-		CREATE(item_ratio, struct s_mob_item_drop_ratio, 1);
-
-	item_ratio->drop_ratio = ratio;
-	memset(item_ratio->mob_id, 0, sizeof(item_ratio->mob_id));
-	for (i = 0; i < columns-2; i++) {
-		uint16 mob_id = atoi(str[i+2]);
-		if (mob_db.find(mob_id) == nullptr)
-			ShowError("mob_readdb_itemratio: Invalid monster with ID %hu (Item:%u Col:%d).\n", mob_id, nameid, columns);
-		else
-			item_ratio->mob_id[i] = atoi(str[i+2]);
-	}
-
-	if (!item_ratio->nameid) {
-		item_ratio->nameid = nameid;
-		uidb_put(mob_item_drop_ratio, nameid, item_ratio);
-	}
-
-	return true;
+const std::string MobItemRatioDatabase::getDefaultLocation() {
+	return std::string(db_path) + "/mob_item_ratio.yml";
 }
 
 /**
- * Free drop ratio data
- **/
-static int mob_item_drop_ratio_free(DBKey key, DBData *data, va_list ap) {
-	struct s_mob_item_drop_ratio *item_ratio = (struct s_mob_item_drop_ratio *)db_data2ptr(data);
-	aFree(item_ratio);
-	return 0;
+ * Reads and parses an entry from the mob_item_ratio.
+ * @param node: YAML node containing the entry.
+ * @return count of successfully parsed rows
+ */
+uint64 MobItemRatioDatabase::parseBodyNode(const YAML::Node &node) {
+	std::string item_name;
+
+	if (!this->asString(node, "Item", item_name))
+		return 0;
+
+	std::shared_ptr<item_data> item = item_db.search_aegisname(item_name.c_str());
+
+	if (item == nullptr) {
+		this->invalidWarning(node["Item"], "Item %s does not exist, skipping.\n", item_name.c_str());
+		return 0;
+	}
+
+	t_itemid nameid = item->nameid;
+
+	std::shared_ptr<s_mob_item_drop_ratio> data = this->find(nameid);
+	bool exists = data != nullptr;
+
+	if (!exists) {
+		if (!this->nodesExist(node, { "Ratio" })) {
+			return 0;
+		}
+
+		data = std::make_shared<s_mob_item_drop_ratio>();
+		data->nameid = nameid;
+	}
+	
+	if (this->nodeExists(node, "Ratio")) {
+		uint16 ratio;
+
+		if (!this->asUInt16(node, "Ratio", ratio))
+			return 0;
+
+		data->drop_ratio = ratio;
+	}
+
+	if (this->nodeExists(node, "List")) {
+		const YAML::Node &MobNode = node["List"];
+
+		for (const auto mobit : MobNode) {
+			std::string mob_name = mobit.first.as<std::string>();
+
+			std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname(mob_name.c_str());
+
+			if (mob == nullptr) {
+				this->invalidWarning(node["List"], "Unknown mob %s, skipping.\n", mob_name.c_str());
+				continue;
+			}
+			uint16 mob_id = mob->id;
+
+			bool active;
+
+			if (!this->asBool(node["List"], mob_name, active))
+				return 0;
+
+			if (!active) {
+				util::vector_erase_if_exists(data->mob_ids, mob_id);
+				continue;
+			}
+
+			data->mob_ids.push_back(mob_id);
+		}
+	}
+
+	if (!exists)
+		this->put(nameid, data);
+
+	return 1;
 }
 
 /**
@@ -6253,6 +6347,13 @@ static void mob_drop_ratio_adjust(void){
 
 			// Adjust the rate if there is an entry in mob_item_ratio
 			item_dropratio_adjust( nameid, mob_id, &rate_adjust );
+
+			// remove the item if the rate of item_dropratio_adjust is 0
+			if (rate_adjust == 0) {
+				mob->mvpitem[j].nameid = 0;
+				mob->mvpitem[j].rate = 0;
+				continue;
+			}
 
 			// Adjust rate with given algorithms
 			rate = mob_drop_adjust( rate, rate_adjust, battle_config.item_drop_mvp_min, battle_config.item_drop_mvp_max );
@@ -6354,6 +6455,14 @@ static void mob_drop_ratio_adjust(void){
 			}
 
 			item_dropratio_adjust( nameid, mob_id, &rate_adjust );
+
+			// remove the item if the rate of item_dropratio_adjust is 0
+			if (rate_adjust == 0) {
+				mob->dropitem[j].nameid = 0;
+				mob->dropitem[j].rate = 0;
+				continue;
+			}
+
 			rate = mob_drop_adjust( rate, rate_adjust, ratemin, ratemax );
 
 #ifdef Pandas_Database_MobItem_FixedRatio
@@ -6390,7 +6499,7 @@ static void mob_drop_ratio_adjust(void){
 	}
 
 	// Now that we are done we can delete the stored item ratios
-	mob_item_drop_ratio->clear( mob_item_drop_ratio, mob_item_drop_ratio_free );
+	mob_item_drop_ratio.clear();
 }
 
 /**
@@ -6496,12 +6605,12 @@ static void mob_load(void)
 		else
 			mob_readskilldb(dbsubpath2, silent);
 
-		sv_readdb(dbsubpath1, "mob_item_ratio.txt", ',', 2, 2+MAX_ITEMRATIO_MOBS, -1, &mob_readdb_itemratio, silent);
 
 		aFree(dbsubpath1);
 		aFree(dbsubpath2);
 	}
 
+	mob_item_drop_ratio.load();
 	mob_avail_db.load();
 	mob_summon_db.load();
 
@@ -6519,7 +6628,6 @@ void mob_db_load(bool is_reload){
 		item_drop_ers = ers_new(sizeof(struct item_drop),"mob.cpp::item_drop_ers",ERS_OPT_CLEAN);
 		item_drop_list_ers = ers_new(sizeof(struct item_drop_list),"mob.cpp::item_drop_list_ers",ERS_OPT_NONE);
 	}
-	mob_item_drop_ratio = uidb_alloc(DB_OPT_BASE);
 
 #ifdef Pandas_Database_MobItem_FixedRatio
 	mobitem_fixedratio_db.load();
@@ -6673,7 +6781,7 @@ void do_final_mob(bool is_reload){
 	mob_chat_db.clear();
 	mob_skill_db.clear();
 
-	mob_item_drop_ratio->destroy(mob_item_drop_ratio,mob_item_drop_ratio_free);
+	mob_item_drop_ratio.clear();
 	mob_summon_db.clear();
 
 #ifdef Pandas_Database_MobItem_FixedRatio

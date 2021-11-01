@@ -10,7 +10,6 @@
 #include "../common/showmsg.hpp"
 #include "../common/sql.hpp" // SQL_INNODB
 #include "../common/strlib.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "homunculus.hpp"

@@ -5,6 +5,7 @@
 #define MALLOC_HPP
 
 #include "cbasetypes.hpp"
+#include "utf8_defines.hpp"
 
 #define ALC_MARK __FILE__, __LINE__, __func__
 
