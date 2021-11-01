@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS `bonus_script` (
   `flag` SMALLINT(5) UNSIGNED NOT NULL DEFAULT '0',
   `type` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
   `icon` SMALLINT(3) NOT NULL DEFAULT '-1',
---   PRIMARY KEY (`char_id`, `type`)	-- Pandas comment for allow duplicate bonus_script
+--   PRIMARY KEY (`char_id`)	-- Pandas comment for allow duplicate bonus_script
   PRIMARY KEY (`id`)					-- Pandas add for make sure this table has new PRIMARY KEY
 ) ENGINE=InnoDB;
 

@@ -387,7 +387,7 @@ static inline unsigned char clif_bl_type(struct block_list *bl, bool walking) {
 // There is one exception and this is if they are walking.
 // Since walking NPCs are not supported on official servers, the client does not know how to handle it.
 #if PACKETVER >= 20170726
-				   return ( pcdb_checkid(status_get_viewdata(bl)->class_) && walking ) ? 0x0 : 0x6; //NPC_EVT_TYPE
+					return ( pcdb_checkid(status_get_viewdata(bl)->class_) && walking ) ? 0x0 : 0xC; // New walking NPC type
 #else
 				   return pcdb_checkid(status_get_viewdata(bl)->class_) ? 0x0 : 0x6; //NPC_EVT_TYPE
 #endif
@@ -918,13 +918,34 @@ void clif_dropflooritem( struct flooritem_data* fitem, bool canShowEffect ){
 		if( dropEffect > 0 ){
 			p.showdropeffect = 1;
 			p.dropeffectmode = dropEffect - 1;
-		}else{
+		}else if (battle_config.rndopt_drop_pillar != 0){
+			uint8 optionCount = 0;
+
+			for (uint8 i = 0; i < MAX_ITEM_RDM_OPT; i++) {
+				if (fitem->item.option[i].id != 0) {
+					optionCount++;
+				}
+			}
+
+			if (optionCount > 0) {
+				p.showdropeffect = 1;
+				if (optionCount == 1)
+					p.dropeffectmode = DROPEFFECT_BLUE_PILLAR - 1;
+				else if (optionCount == 2)
+					p.dropeffectmode = DROPEFFECT_YELLOW_PILLAR - 1;
+				else
+					p.dropeffectmode = DROPEFFECT_PURPLE_PILLAR - 1;
+			} else {
+				p.showdropeffect = 0;
+				p.dropeffectmode = DROPEFFECT_NONE;
+			}
+		} else {
 			p.showdropeffect = 0;
-			p.dropeffectmode = 0;
+			p.dropeffectmode = DROPEFFECT_NONE;
 		}
 	}else{
 		p.showdropeffect = 0;
-		p.dropeffectmode = 0;
+		p.dropeffectmode = DROPEFFECT_NONE;
 	}
 #endif
 	clif_send( &p, sizeof(p), &fitem->bl, AREA );
@@ -7437,32 +7458,27 @@ void clif_item_damaged(struct map_session_data* sd, unsigned short position)
 void clif_item_refine_list( struct map_session_data *sd ){
 	nullpo_retv( sd );
 
-	int fd = sd->fd;
+	struct PACKET_ZC_NOTIFY_WEAPONITEMLIST *p = (struct PACKET_ZC_NOTIFY_WEAPONITEMLIST *)packet_buffer;
 
-	if( !session_isActive( fd ) ){
-		return;
-	}
-
-	WFIFOHEAD( fd, sizeof( struct PACKET_ZC_NOTIFY_WEAPONITEMLIST ) + sizeof( struct PACKET_ZC_NOTIFY_WEAPONITEMLIST_sub ) * P_MAX_INVENTORY(sd));
-	struct PACKET_ZC_NOTIFY_WEAPONITEMLIST *p = (struct PACKET_ZC_NOTIFY_WEAPONITEMLIST *)WFIFOP( fd, 0 );
-	p->packetType = 0x221;
+	p->packetType = HEADER_ZC_NOTIFY_WEAPONITEMLIST;
 
 	uint16 skill_lv = pc_checkskill( sd, WS_WEAPONREFINE );
 
-	int refine_item[5];
+	int refine_item[MAX_WEAPON_LEVEL];
 
-	refine_item[0] = -1;
-	refine_item[1] = pc_search_inventory( sd, ITEMID_PHRACON );
-	refine_item[2] = pc_search_inventory( sd, ITEMID_EMVERETARCON );
-	refine_item[3] = refine_item[4] = pc_search_inventory( sd, ITEMID_ORIDECON );
+	refine_item[0] = pc_search_inventory( sd, ITEMID_PHRACON );
+	refine_item[1] = pc_search_inventory( sd, ITEMID_EMVERETARCON );
+	refine_item[2] = refine_item[3] = pc_search_inventory( sd, ITEMID_ORIDECON );
+#ifdef RENEWAL
+	refine_item[4] = -1;
+#endif
 
 	int count = 0;
 	for( int i = 0; i < P_MAX_INVENTORY(sd); i++ ){
-		uint16 wlv;
-
 		if( sd->inventory.u.items_inventory[i].nameid > 0 && sd->inventory.u.items_inventory[i].refine < skill_lv &&
-			sd->inventory.u.items_inventory[i].identify && ( wlv = itemdb_wlv(sd->inventory.u.items_inventory[i].nameid ) ) >= 1 &&
-			refine_item[wlv] != -1 && !( sd->inventory.u.items_inventory[i].equip & EQP_ARMS ) ){
+			sd->inventory_data[i] != nullptr && sd->inventory_data[i]->type == IT_WEAPON &&
+			sd->inventory.u.items_inventory[i].identify && sd->inventory_data[i]->weapon_level >= 1 &&
+			refine_item[sd->inventory_data[i]->weapon_level - 1] != -1 && !( sd->inventory.u.items_inventory[i].equip & EQP_ARMS ) ){
 
 			p->items[count].index = client_index( i );
 			p->items[count].itemId = client_nameid( sd->inventory.u.items_inventory[i].nameid );
@@ -7473,7 +7489,8 @@ void clif_item_refine_list( struct map_session_data *sd ){
 	}
 
 	p->packetLength = sizeof( struct PACKET_ZC_NOTIFY_WEAPONITEMLIST ) + sizeof( struct PACKET_ZC_NOTIFY_WEAPONITEMLIST_sub ) * count;
-	WFIFOSET( fd, p->packetLength );
+
+	clif_send( p, p->packetLength, &sd->bl, SELF );
 
 	if( count > 0 ){
 		sd->menuskill_id = WS_WEAPONREFINE;
@@ -16836,6 +16853,10 @@ void clif_parse_Mail_refreshinbox(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
+	if( mail_invalid_operation( sd ) ){
+		return;
+	}
+
 #if PACKETVER < 20150513
 	struct mail_data* md = &sd->mail.inbox;
 
@@ -17025,11 +17046,6 @@ void clif_parse_Mail_read(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 #if PACKETVER < 20150513
 	int mail_id = RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 #else
@@ -17066,14 +17082,13 @@ void clif_parse_Mail_beginwrite(int fd, struct map_session_data* sd) {
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 	char name[NAME_LENGTH];
 
 	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
+
+	if( mail_invalid_operation( sd ) ){
+		return;
+	}
 
 	if( sd->state.storage_flag || sd->state.mail_writing || sd->trade_partner ){
 		clif_send_Mail_beginwrite_ack(sd, name, false);
@@ -17121,12 +17136,11 @@ void clif_parse_Mail_Receiver_Check(int fd, struct map_session_data *sd) {
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 	static char name[NAME_LENGTH];
+
+	if( mail_invalid_operation( sd ) ){
+		return;
+	}
 
 	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
 
@@ -17141,11 +17155,6 @@ void clif_parse_Mail_getattach( int fd, struct map_session_data *sd ){
 #ifdef Pandas_Crashfix_FunctionParams_Verify
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
-
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
 
 	int i;
 	struct mail_message* msg;
@@ -17257,11 +17266,6 @@ void clif_parse_Mail_delete(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 #if PACKETVER < 20150513
 	int mail_id = RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 #else
@@ -17310,11 +17314,6 @@ void clif_parse_Mail_return(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 	int mail_id = RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 	//char *rec_name = RFIFOP(fd,packet_db[RFIFOW(fd,0)].pos[1]);
 	int i;
@@ -17340,11 +17339,6 @@ void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 	struct s_packet_db* info = &packet_db[RFIFOW(fd,0)];
 	uint16 idx = RFIFOW(fd,info->pos[0]);
 #if PACKETVER < 20150513
@@ -17361,6 +17355,10 @@ void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
 
 	if (sd->inventory_data[server_index(idx)] == nullptr)
 		return;
+
+	if( mail_invalid_operation( sd ) ){
+		return;
+	}
 
 	flag = mail_setitem(sd, idx, amount);
 
@@ -17440,11 +17438,6 @@ void clif_parse_Mail_send(int fd, struct map_session_data *sd){
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
-#ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
-		return;
-#endif // Pandas_MapFlag_NoMail
-
 #if PACKETVER < 20150513
 	struct s_packet_db* info = &packet_db[RFIFOW(fd,0)];
 
@@ -17456,6 +17449,12 @@ void clif_parse_Mail_send(int fd, struct map_session_data *sd){
 		return;
 	}
 
+#ifdef Pandas_MapFlag_NoMail
+	if (mail_invalid_operation(sd)) {
+		return;
+	}
+#endif // Pandas_MapFlag_NoMail
+
 	mail_send(sd, RFIFOCP(fd,info->pos[1]), RFIFOCP(fd,info->pos[2]), RFIFOCP(fd,info->pos[4]), RFIFOB(fd,info->pos[3]));
 #else
 	uint16 length = RFIFOW(fd, 2);
@@ -17463,6 +17462,10 @@ void clif_parse_Mail_send(int fd, struct map_session_data *sd){
 	if( length < 0x3e ){
 		ShowWarning("Too short...\n");
 		clif_Mail_send(sd, WRITE_MAIL_FAILED);
+		return;
+	}
+
+	if( mail_invalid_operation( sd ) ){
 		return;
 	}
 
@@ -17886,6 +17889,11 @@ void clif_parse_cashshop_open_request( int fd, struct map_session_data* sd ){
 
 	tab = p->tab;
 #endif
+
+	if (map_getmapflag(sd->bl.m, MF_NOCASHSHOP)) {
+		clif_displaymessage(fd, msg_txt(sd, 451)); // Cash Shop is disabled on this map.
+		return;
+	}
 
 	sd->state.cashshop_open = true;
 	sd->npc_shopid = -1; // Set npc_shopid when using cash shop from "cash shop" button [Aelys|Susu] bugreport:96
@@ -23120,11 +23128,15 @@ void clif_parse_refineui_refine( int fd, struct map_session_data* sd ){
 
 	// Try to refine the item
 	if( cost->chance >= ( rnd() % 10000 ) ){
+		log_pick_pc( sd, LOG_TYPE_OTHER, -1, item );
 		// Success
 		item->refine = cap_value( item->refine + 1, 0, MAX_REFINE );
+		log_pick_pc( sd, LOG_TYPE_OTHER, 1, item );
 		clif_misceffect( &sd->bl, 3 );
 		clif_refine( fd, 0, index, item->refine );
-		achievement_update_objective( sd, AG_ENCHANT_SUCCESS, 2, id->wlv, item->refine );
+		if( id->type == IT_WEAPON ){
+			achievement_update_objective( sd, AG_ENCHANT_SUCCESS, 2, id->weapon_level, item->refine );
+		}
 		clif_refineui_info( sd, index );
 	}else{
 		// Failure

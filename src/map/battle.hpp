@@ -689,6 +689,7 @@ struct Battle_Config
 	int mer_idle_no_share;
 	int idletime_mer_option;
 	int feature_refineui;
+	int rndopt_drop_pillar;
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
