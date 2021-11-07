@@ -431,7 +431,7 @@ struct Script_Config script_config = {
 #endif // Pandas_NpcExpress_MOBDROPITEM
 
 #ifdef Pandas_NpcExpress_PCATTACK
-	"OnPCAttackExpress",	// NPCX_PCATTACK		// pcattack_express_name	// 当玩家攻击时触发的实时事件 [聽風]
+	"OnPCAttackExpress",	// NPCX_PCATTACK		// pcattack_express_name	// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
 #endif // Pandas_NpcExpress_PCATTACK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 

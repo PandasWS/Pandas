@@ -7995,37 +7995,52 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			skill_attack(skill_get_type(skill_id), src, src, target, skill_id, sc->data[SC_DUPLELIGHT]->val1, tick, SD_LEVEL);
 		}
 	}
+
 #ifdef Pandas_NpcExpress_PCATTACK
-	// 当玩家攻击时触发的实时事件 [聽風]
 	if (src && target && damage > 0) {
-		struct map_session_data *ssd = NULL;
-		struct mob_data *md = (TBL_MOB*)target;
-		ssd = BL_CAST(BL_PC, battle_get_master(src));
-		if (ssd) {
-			pc_setreg(ssd, add_str("@attack_mobid"), md->mob_id);
-			pc_setreg(ssd, add_str("@attack_type"), src->type);
-			pc_setreg(ssd, add_str("@attack_gid"), src->id);
-			pc_setreg(ssd, add_str("@attack_targetgid"), md->bl.id);
-			pc_setreg(ssd, add_str("@attack_skillid"), 0);
-			pc_setreg(ssd, add_str("@attack_dmg"), damage);
-			pc_setreg(ssd, add_str("@attack_atktype"), wd.flag);
-			pc_setreg(ssd, add_str("@attack_targettype"), target->type);
-			npc_script_event(ssd, NPCX_PCATTACK);
-			int newdamage = (int)cap_value(pc_readreg(ssd, add_str("@attack_dmg")), INT_MIN, INT_MAX);
-			damage = newdamage;
-			wd.damage = newdamage;
-			if (wd.damage2) {
-				damage -= wd.damage2;
-				wd.damage = damage;
+		// 负责执行事件的玩家对象 (事件执行者)
+		struct map_session_data* esd = nullptr;
+
+		// 若攻击者不是玩家单位, 那么试图获取攻击者的主人
+		if (src->type != BL_PC) {
+			struct block_list* mbl = nullptr;
+			mbl = battle_get_master(src);
+			if (mbl != nullptr && mbl->type == BL_PC) {
+				esd = BL_CAST(BL_PC, mbl);
 			}
-			if (newdamage <= 0) {
-				damage = 0;
-				wd.damage = 0;
-				wd.damage2 = 0;
-			}
+		}
+
+		// 若负责执行事件的玩家对象依然没被指定
+		// 且攻击者是一个玩家单位, 那么将攻击者直接指定成负责执行事件的玩家
+		if (!esd && src->type == BL_PC) {
+			esd = (TBL_PC*)src;
+		}
+
+
+		// 若到这里还没有一个合适的事件执行者则不需要触发事件
+		if (esd) {
+			pc_setreg(esd, add_str("@attack_src_type"), src->type);
+			pc_setreg(esd, add_str("@attack_src_gid"), src->id);
+
+			pc_setreg(esd, add_str("@attack_target_type"), target->type);
+			pc_setreg(esd, add_str("@attack_target_gid"), target->id);
+			pc_setreg(esd, add_str("@attack_target_mobid"), (target->type == BL_MOB ? ((TBL_MOB*)target)->mob_id : 0));
+
+			pc_setreg(esd, add_str("@attack_damage_flag"), wd.flag);
+			pc_setreg(esd, add_str("@attack_damage_skillid"), 0);
+			pc_setreg(esd, add_str("@attack_damage_skilllv"), 0);
+			pc_setreg(esd, add_str("@attack_damage_right"), wd.damage);
+			pc_setreg(esd, add_str("@attack_damage_left"), wd.damage2);
+
+			npc_script_event(esd, NPCX_PCATTACK);
+
+			wd.damage = (int)cap_value(pc_readreg(esd, add_str("@attack_damage_right")), INT_MIN, INT_MAX);
+			wd.damage2 = (int)cap_value(pc_readreg(esd, add_str("@attack_damage_left")), INT_MIN, INT_MAX);
+			damage = wd.damage + wd.damage2;
 		}
 	}
 #endif // Pandas_NpcExpress_PCATTACK
+
 	wd.dmotion = clif_damage(src, target, tick, wd.amotion, wd.dmotion, wd.damage, wd.div_ , wd.type, wd.damage2, wd.isspdamage);
 
 	if (sd && sd->bonus.splash_range > 0 && damage > 0)

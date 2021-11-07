@@ -877,40 +877,53 @@
 
 *OnPCAttackExpress:
 
-当玩家攻击成功时触发的实时事件 [聽風]
+当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
 
 事件关联:
-	关联到触发的玩家，如果是宠物/生命体/佣兵/元素则直接关联到其主人
+	关联到触发攻击行为的玩家
+	如果是宠物/生命体/佣兵/元素则直接关联到其主人
 
 携带参数:
-	@attack_type			攻击者实体类型
-	@attack_targettype		被攻击者实体类型
-		BL_PC   - 玩家
-		BL_MOB  - 魔物
-		BL_PET  - 宠物
-		BL_HOM  - 生命体
-		BL_MER  - 佣兵
-		BL_ELEM - 元素
-		
-	@attack_atktype		攻击类型(使用位于运算, 计算是不是想要的攻击类型)
+	@attack_src_type			攻击者的类型
+	@attack_src_gid				攻击者的游戏单位编号 (若是玩家则返回账号编号)
+
+	@attack_target_type			被攻击者的类型
+	@attack_target_gid			被攻击者的游戏单位编号 (若是玩家则返回账号编号)
+	@attack_target_mobid		被攻击者的魔物编号 (若是不是魔物则返回 0)
+
+	@attack_damage_flag			本次攻击的伤害类型 (位运算)
 		按攻击范围:
-			BF_SHORT:  近距离攻击
-			BF_LONG:   远距离攻击
-			默认:   BF_SHORT+BF_LONG
+			BF_SHORT:			近距离攻击
+			BF_LONG:			远距离攻击
 		按攻击类型:
-			BF_WEAPON: 武器攻击
-			BF_MAGIC:  魔法攻击
-			BF_MISC:   混合攻击
-			默认:   BF_WEAPON
+			BF_WEAPON:			武器攻击
+			BF_MAGIC:			魔法攻击
+			BF_MISC:			混合攻击
 		按技能类型:
-			BF_NORMAL: 普通攻击
-			BF_SKILL:  技能攻击
-			默认:   如果攻击类型是 BF_WEAPON (only) BF_NORMAL, 否则 BF_SKILL+BF_NORMAL.
-	
-	@attack_gid			攻击者的gid，如果是玩家则返回Aid
-	@attack_mobid		被攻击的魔物id(被攻击者为玩家时返回 0 )
-	@attack_targetgid	被攻击的目标的gid(被攻击者为玩家时返回 Aid )
-	@attack_skillid		本次攻击使用的技能id(为 0 则表示普通攻击)
-	@attack_dmg			本次攻击造成的伤害值(该值可被修改，修改后目标将受到修改后值的伤害)
+			BF_NORMAL:			普通攻击
+			BF_SKILL:			技能攻击
+		
+		例子:
+		----------------
+		if (@attack_damage_flag & BF_MAGIC == BF_MAGIC) {
+			dispbottom "这是一次魔法攻击";
+		}
+		
+		if (@attack_damage_flag & (BF_MAGIC|BF_LONG) == (BF_MAGIC|BF_LONG)) {
+			dispbottom "这是一次远距离魔法攻击";
+		}
+		
+	@attack_damage_skillid		本次攻击使用的技能编号 (若为 0 则表示普通攻击)
+	@attack_damage_skilllv		本次攻击使用的技能等级
+	@attack_damage_right		本次攻击右手武器造成的伤害值 (该值可被修改)
+	@attack_damage_left			本次攻击左手武器造成的伤害值 (该值可被修改)
+
+注意事项:
+	只有即将发生伤害时才会触发此事件, 若为 MISS 则不触发此事件.
+
+性能警告:
+	全服建议最多只有一个 NPC 负责处理此事件.
+	全服在线玩家的任意一次实际造成伤害的攻击都将触发此事件,
+	因此请不要在事件中进行耗时操作.
 
 --------------------------------------------------------------
