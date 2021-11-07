@@ -3549,6 +3549,50 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 	//combo handling
 	skill_combo(src,dsrc,bl,skill_id,skill_lv,tick);
 
+#ifdef Pandas_NpcExpress_PCATTACK
+	if (src && bl && damage > 0) {
+		// 负责执行事件的玩家对象 (事件执行者)
+		struct map_session_data *esd = nullptr;
+
+		// 若攻击者不是玩家单位, 那么试图获取攻击者的主人
+		if (src->type != BL_PC) {
+			struct block_list* mbl = nullptr;
+			mbl = battle_get_master(src);
+			if (mbl !=nullptr && mbl->type == BL_PC) {
+				esd = BL_CAST(BL_PC, mbl);
+			}
+		}
+
+		// 若负责执行事件的玩家对象依然没被指定
+		// 且攻击者是一个玩家单位, 那么将攻击者直接指定成负责执行事件的玩家
+		if (!esd && src->type == BL_PC) {
+			esd = (TBL_PC*)src;
+		}
+
+		// 若到这里还没有一个合适的事件执行者则不需要触发事件
+		if (esd) {
+			pc_setreg(esd, add_str("@attack_src_type"), src->type);
+			pc_setreg(esd, add_str("@attack_src_gid"), src->id);
+
+			pc_setreg(esd, add_str("@attack_target_type"), bl->type);
+			pc_setreg(esd, add_str("@attack_target_gid"), bl->id);
+			pc_setreg(esd, add_str("@attack_target_mobid"), (bl->type == BL_MOB ? ((TBL_MOB*)bl)->mob_id : 0));
+
+			pc_setreg(esd, add_str("@attack_damage_flag"), dmg.flag);
+			pc_setreg(esd, add_str("@attack_damage_skillid"), skill_id);
+			pc_setreg(esd, add_str("@attack_damage_skilllv"), skill_lv);
+			pc_setreg(esd, add_str("@attack_damage_right"), dmg.damage);
+			pc_setreg(esd, add_str("@attack_damage_left"), dmg.damage2);
+
+			npc_script_event(esd, NPCX_PCATTACK);
+
+			dmg.damage = (int)cap_value(pc_readreg(esd, add_str("@attack_damage_right")), INT_MIN, INT_MAX);
+			dmg.damage2 = (int)cap_value(pc_readreg(esd, add_str("@attack_damage_left")), INT_MIN, INT_MAX);
+			damage = dmg.damage + dmg.damage2;
+		}
+	}
+#endif // Pandas_NpcExpress_PCATTACK
+
 	//Display damage.
 	switch( skill_id ) {
 		case PA_GOSPEL: //Should look like Holy Cross [Skotlex]
