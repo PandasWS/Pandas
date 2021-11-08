@@ -23,7 +23,6 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "achievement.hpp"
 #include "battle.hpp"
@@ -2398,7 +2397,9 @@ ACMD_FUNC(refine)
 			clif_additem(sd, i, 1, 0);
 			pc_equipitem(sd, i, current_position);
 			clif_misceffect(&sd->bl, 3);
-			achievement_update_objective(sd, AG_ENCHANT_SUCCESS, 2, sd->inventory_data[i]->wlv, sd->inventory.u.items_inventory[i].refine);
+			if( sd->inventory_data[i]->type == IT_WEAPON ){
+				achievement_update_objective(sd, AG_ENCHANT_SUCCESS, 2, sd->inventory_data[i]->weapon_level, sd->inventory.u.items_inventory[i].refine);
+			}
 			count++;
 		}
 	}
@@ -4444,37 +4445,51 @@ ACMD_FUNC(mapinfo) {
 #endif // Pandas_MapFlag_NoMerc
 #ifdef Pandas_MapFlag_Mobinfo
 	if (map_getmapflag(m_id, MF_MOBINFO)) {
-		sprintf(atcmd_output, "%s Mobinfo: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MOBINFO, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " Mobinfo: %d |", map_getmapflag_param(m_id, MF_MOBINFO, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_Mobinfo
 #ifdef Pandas_MapFlag_MobDroprate
 	if (map_getmapflag(m_id, MF_MOBDROPRATE)) {
-		sprintf(atcmd_output, "%s MobDroprate: %d%% |", atcmd_output, map_getmapflag_param(m_id, MF_MOBDROPRATE, 100));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MobDroprate: %d%% |", map_getmapflag_param(m_id, MF_MOBDROPRATE, 100));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MobDroprate
 #ifdef Pandas_MapFlag_MvpDroprate
 	if (map_getmapflag(m_id, MF_MVPDROPRATE)) {
-		sprintf(atcmd_output, "%s MvpDroprate: %d%% |", atcmd_output, map_getmapflag_param(m_id, MF_MVPDROPRATE, 100));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MvpDroprate: %d%% |", map_getmapflag_param(m_id, MF_MVPDROPRATE, 100));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MvpDroprate
 #ifdef Pandas_MapFlag_MaxHeal
 	if (map_getmapflag(m_id, MF_MAXHEAL)) {
-		sprintf(atcmd_output, "%s MaxHeal: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXHEAL, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxHeal: %d |", map_getmapflag_param(m_id, MF_MAXHEAL, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxHeal
 #ifdef Pandas_MapFlag_MaxDmg_Skill
 	if (map_getmapflag(m_id, MF_MAXDMG_SKILL)) {
-		sprintf(atcmd_output, "%s MaxDmg_Skill: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXDMG_SKILL, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxDmg_Skill: %d |", map_getmapflag_param(m_id, MF_MAXDMG_SKILL, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxDmg_Skill
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 	if (map_getmapflag(m_id, MF_MAXDMG_NORMAL)) {
-		sprintf(atcmd_output, "%s MaxDmg_Normal: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXDMG_NORMAL, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxDmg_Normal: %d |", map_getmapflag_param(m_id, MF_MAXDMG_NORMAL, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxDmg_Normal
 #ifdef Pandas_MapFlag_NoSkill2
 	if (map_getmapflag(m_id, MF_NOSKILL2)) {
-		sprintf(atcmd_output, "%s NoSkill2: %d |", atcmd_output, map_getmapflag_param(m_id, MF_NOSKILL2, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " NoSkill2: %d |", map_getmapflag_param(m_id, MF_NOSKILL2, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_NoSkill2
 #ifdef Pandas_MapFlag_NoAura
@@ -4483,9 +4498,27 @@ ACMD_FUNC(mapinfo) {
 #endif // Pandas_MapFlag_NoAura
 #ifdef Pandas_MapFlag_MaxASPD
 	if (map_getmapflag(m_id, MF_MAXASPD)) {
-		sprintf(atcmd_output, "%s MaxASPD: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXASPD, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxASPD: %d |", map_getmapflag_param(m_id, MF_MAXASPD, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxASPD
+#ifdef Pandas_MapFlag_NoSlave
+	if (map_getmapflag(m_id, MF_NOSLAVE))
+		strcat(atcmd_output, " NoSlave |");
+#endif // Pandas_MapFlag_NoSlave
+#ifdef Pandas_MapFlag_NoBank
+	if (map_getmapflag(m_id, MF_NOBANK))
+		strcat(atcmd_output, " NoBank |");
+#endif // Pandas_MapFlag_NoBank
+#ifdef Pandas_MapFlag_NoUseItem
+	if (map_getmapflag(m_id, MF_NOUSEITEM))
+		strcat(atcmd_output, " NoUseItem |");
+#endif // Pandas_MapFlag_NoUseItem
+#ifdef Pandas_MapFlag_HideDamage
+	if (map_getmapflag(m_id, MF_HIDEDAMAGE))
+		strcat(atcmd_output, " HideDamage |");
+#endif // Pandas_MapFlag_HideDamage
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
@@ -4927,8 +4960,10 @@ ACMD_FUNC(shownpc)
 		return -1;
 	}
 
-	if (npc_name2id(NPCname) != NULL) {
-		npc_enable(NPCname, 1);
+	npc_data* nd = npc_name2id(NPCname);
+
+	if (nd) {
+		npc_enable(*nd, NPCVIEW_ENABLE);
 		clif_displaymessage(fd, msg_txt(sd,110)); // Npc Enabled.
 	} else {
 		clif_displaymessage(fd, msg_txt(sd,111)); // This NPC doesn't exist.
@@ -4953,12 +4988,14 @@ ACMD_FUNC(hidenpc)
 		return -1;
 	}
 
-	if (npc_name2id(NPCname) == NULL) {
+	npc_data* nd = npc_name2id(NPCname);
+
+	if (!nd) {
 		clif_displaymessage(fd, msg_txt(sd,111)); // This NPC doesn't exist.
 		return -1;
 	}
 
-	npc_enable(NPCname, 0);
+	npc_enable(*nd, NPCVIEW_DISABLE);
 	clif_displaymessage(fd, msg_txt(sd,112)); // Npc Disabled.
 	return 0;
 }
@@ -7678,25 +7715,18 @@ ACMD_FUNC(mobinfo)
 		clif_displaymessage(fd, msg_txt(sd,1245)); //  Drops:
 		strcpy(atcmd_output, " ");
 		unsigned int j = 0;
+		int drop_modifier = 100;
 #ifdef RENEWAL_DROP
-		int penalty = pc_level_penalty_mod( sd, PENALTY_DROP, mob );
+		if( battle_config.atcommand_mobinfo_type ){
+			drop_modifier = pc_level_penalty_mod( sd, PENALTY_DROP, mob );
+		}
 #endif
 
 		for (i = 0; i < MAX_MOB_DROP_TOTAL; i++) {
-			int droprate;
 			if (mob->dropitem[i].nameid == 0 || mob->dropitem[i].rate < 1 || (item_data = itemdb_exists(mob->dropitem[i].nameid)) == NULL)
 				continue;
-			droprate = mob->dropitem[i].rate;
 
-#ifdef RENEWAL_DROP
-			if( battle_config.atcommand_mobinfo_type ) {
-				droprate = droprate * penalty / 100;
-				if (droprate <= 0 && !battle_config.drop_rate0item)
-					droprate = 1;
-			}
-#endif
-			if (pc_isvip(sd)) // Display drop rate increase for VIP
-				droprate += (droprate * battle_config.vip_drop_increase) / 100;
+			int droprate = mob_getdroprate( &sd->bl, mob, mob->dropitem[i].rate, drop_modifier );
 
 #ifdef Pandas_Database_MobItem_FixedRatio
 			// 若严格固定掉率, 那么无视上面的等级惩罚、VIP掉率加成等计算
@@ -8673,7 +8703,7 @@ ACMD_FUNC(mapflag) {
 
 			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
 
-			if (flag && std::find(disabled_mf.begin(), disabled_mf.end(), mapflag) != disabled_mf.end()) {
+			if (flag > 0 && util::vector_exists(disabled_mf, mapflag)) {
 				sprintf(atcmd_output,"[ @mapflag ] %s flag cannot be enabled as it requires unique values.", flag_name);
 				clif_displaymessage(sd->fd,atcmd_output);
 			} else {

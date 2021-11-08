@@ -23,7 +23,6 @@
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
 #include "../config/core.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "account.hpp"
 #include "ipban.hpp"
@@ -489,7 +488,7 @@ int login_mmo_auth(struct login_session_data* sd, bool isServer) {
 		safestrncpy(acc.lan_address, session[sd->fd]->lan_address, IP4ADDRESS_LENGTH);
 	}
 #endif // Pandas_Extract_SSOPacket_MacAddress
-	accounts->save(accounts, &acc);
+	accounts->save(accounts, &acc, true);
 
 	if( login_config.use_web_auth_token ){
 		safestrncpy( sd->web_auth_token, acc.web_auth_token, WEB_AUTH_TOKEN_LENGTH );

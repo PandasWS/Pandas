@@ -16,7 +16,6 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "atcommand.hpp"
 #include "battleground.hpp"
@@ -34,8 +33,6 @@
 #include "pc.hpp"
 #include "pc_groups.hpp"
 #include "pet.hpp"
-
-int attr_fix_table[MAX_ELE_LEVEL][ELE_MAX][ELE_MAX];
 
 struct Battle_Config battle_config;
 static struct eri *delay_damage_ers; //For battle delay damage structures.
@@ -406,20 +403,6 @@ int battle_delay_damage(t_tick tick, int amotion, struct block_list *src, struct
 }
 
 /**
- * Get attribute ratio
- * @param atk_elem Attack element enum e_element
- * @param def_type Defense element enum e_element
- * @param def_lv Element level 1 ~ MAX_ELE_LEVEL
- */
-int battle_attr_ratio(int atk_elem, int def_type, int def_lv)
-{
-	if (!CHK_ELEMENT(atk_elem) || !CHK_ELEMENT(def_type) || !CHK_ELEMENT_LEVEL(def_lv))
-		return 100;
-
-	return attr_fix_table[def_lv-1][atk_elem][def_type];
-}
-
-/**
  * Does attribute fix modifiers.
  * Added passing of the chars so that the status changes can affect it. [Skotlex]
  * Note: Passing src/target == NULL is perfectly valid, it skips SC_ checks.
@@ -448,7 +431,7 @@ int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 d
 		return damage;
 	}
 
-	ratio = attr_fix_table[def_lv-1][atk_elem][def_type];
+	ratio = elemental_attribute_db.getAttribute(def_lv-1, atk_elem, def_type);
 	if (sc && sc->count) { //increase dmg by src status
 		switch(atk_elem){
 			case ELE_FIRE:
@@ -485,7 +468,7 @@ int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 d
 	if( target && target->type == BL_SKILL ) {
 		if( atk_elem == ELE_FIRE && battle_getcurrentskill(target) == GN_WALLOFTHORN ) {
 			struct skill_unit *su = (struct skill_unit*)target;
-			struct skill_unit_group *sg;
+			std::shared_ptr<s_skill_unit_group> sg;
 			struct block_list *src2;
 
 			if( !su || !su->alive || (sg = su->group) == NULL || !sg || sg->val3 == -1 ||
@@ -525,6 +508,21 @@ int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 d
 #else
 					damage += (int64)(damage * 50 / 100);
 #endif
+				if( tsc->data[SC_WIDEWEB] ) {
+#ifdef RENEWAL
+					ratio += 100;
+#else
+					damage *= 2;
+#endif
+					status_change_end(target,SC_WIDEWEB,INVALID_TIMER);
+				}
+				if( tsc->data[SC_BURNT] ) {
+#ifdef RENEWAL
+					ratio += 400;
+#else
+					damage += (int64)(damage * 400 / 100);
+#endif
+				}
 				break;
 			case ELE_HOLY:
 				if (tsc->data[SC_ORATIO])
@@ -651,7 +649,7 @@ int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 d
 int battle_calc_cardfix(int attack_type, struct block_list *src, struct block_list *target, std::bitset<NK_MAX> nk, int rh_ele, int lh_ele, int64 damage, int left, int flag){
 	struct map_session_data *sd, ///< Attacker session data if BL_PC
 		*tsd; ///< Target session data if BL_PC
-	pec_short cardfix = 1000;
+	int cardfix = 1000;
 	int s_class, ///< Attacker class
 		t_class; ///< Target class
 	std::vector<e_race2> s_race2, /// Attacker Race2
@@ -1150,7 +1148,7 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 
 	// ATK_BLOCK Type
 	if ((sce = sc->data[SC_SAFETYWALL]) && (flag&(BF_SHORT | BF_MAGIC)) == BF_SHORT) {
-		skill_unit_group *group = skill_id2group(sce->val3);
+		std::shared_ptr<s_skill_unit_group> group = skill_id2group(sce->val3);
 
 		if (group) {
 			d->dmg_lv = ATK_BLOCK;
@@ -1498,6 +1496,8 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 			damage <<= 1;
 		if (sc->data[SC_DARKCROW] && (flag&(BF_SHORT|BF_MAGIC)) == BF_SHORT) {
 			int bonus = sc->data[SC_DARKCROW]->val2;
+		if( sc->data[SC_BURNT] && status_get_element(src) == ELE_FIRE )
+			damage += damage * 666 / 100; //Custom value
 
 			if (status_get_class_(bl) == CLASS_BOSS)
 				bonus /= 2;
@@ -1821,8 +1821,23 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 	if (bl->type == BL_MOB) { // Reduces damage received for Green Aura MVP
 		mob_data *md = BL_CAST(BL_MOB, bl);
 
+#ifndef Pandas_Struct_Mob_Data_DamageTaken
 		if (md && md->db->damagetaken != 100)
 			damage = i64max(damage * md->db->damagetaken / 100, 1);
+#else
+		if (md) {
+			if (md->pandas.damagetaken < 0) {
+				// 若魔物自己没有承伤倍率, 那么就用 db 里面的设置来计算
+				if (md->db->damagetaken != 100)
+					damage = i64max(damage * md->db->damagetaken / 100, 1);
+			}
+			else {
+				// 否则就用魔物自己的承伤倍率来进行伤害修正
+				if (md->pandas.damagetaken != 100)
+					damage = i64max(damage * md->pandas.damagetaken / 100, 1);
+			}
+		}
+#endif // Pandas_Struct_Mob_Data_DamageTaken
 	}
 
 	return damage;
@@ -2276,8 +2291,8 @@ static int64 battle_calc_base_damage(struct block_list *src, struct status_data 
 		if (!(flag&1) || (flag&2)) { //Normal attacks
 			atkmin = status->dex;
 
-			if (sd->equip_index[type] >= 0 && sd->inventory_data[sd->equip_index[type]])
-				atkmin = atkmin*(80 + sd->inventory_data[sd->equip_index[type]]->wlv*20)/100;
+			if (sd->equip_index[type] >= 0 && sd->inventory_data[sd->equip_index[type]] && sd->inventory_data[sd->equip_index[type]]->type == IT_WEAPON)
+				atkmin = atkmin*(80 + sd->inventory_data[sd->equip_index[type]]->weapon_level*20)/100;
 
 			if (atkmin > atkmax)
 				atkmin = atkmax;
@@ -2404,9 +2419,10 @@ static int battle_range_type(struct block_list *src, struct block_list *target, 
 			break;
 #ifdef RENEWAL
 		case KN_BRANDISHSPEAR:
-			// Renewal changes to ranged physical damage
-			return BF_LONG;
+		// Renewal changes to ranged physical damage
 #endif
+		case SR_RAMPAGEBLASTER:
+			return BF_LONG;
 		case NJ_KIRIKAGE:
 			// Cast range mimics NJ_SHADOWJUMP but damage is considered melee
 		case GC_CROSSIMPACT:
@@ -3774,7 +3790,7 @@ static void battle_calc_multi_attack(struct Damage* wd, struct block_list *src,s
 				wd->div_++;
 			break;
 		case SR_RIDEINLIGHTNING:
-			wd->div_ = (sd ? max(1, sd->spiritball_old) : 1);
+			wd->div_ = (sd ? max(1, skill_lv) : 1);
 			break;
 		case RL_QD_SHOT:
 			wd->div_ = 1 + (sd ? sd->status.job_level : 1) / 20 + (tsc && tsc->data[SC_C_MARKER] ? 2 : 0);
@@ -3838,7 +3854,7 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 
 					if (index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON)
 						skillratio += -100 + sd->inventory_data[index]->weight / 10 + sd->inventory_data[index]->atk +
-							100 * sd->inventory_data[index]->wlv * (sd->inventory.u.items_inventory[index].refine + 6);
+							100 * sd->inventory_data[index]->weapon_level * (sd->inventory.u.items_inventory[index].refine + 6);
 				}
 				status_change_end(src,SC_CRUSHSTRIKE,INVALID_TIMER);
 				skill_break_equip(src,src,EQP_WEAPON,2000,BCT_SELF);
@@ -5799,7 +5815,11 @@ static struct Damage initialize_weapon_data(struct block_list *src, struct block
 					wd.flag |= BF_LONG;
 		}
 	} else {
-		wd.flag |= is_skill_using_arrow(src, skill_id)?BF_LONG:BF_SHORT;
+		bool is_long = false;
+
+		if (is_skill_using_arrow(src, skill_id) || (sc && sc->data[SC_SOULATTACK]))
+			is_long = true;
+		wd.flag |= is_long ? BF_LONG : BF_SHORT;
 	}
 
 	return wd;
@@ -5969,22 +5989,22 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				wd.weaponAtk2 += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.weaponAtk2, 3, wd.flag);
 				wd.equipAtk2 += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.equipAtk2, 3, wd.flag);
 			}
+		}
 
-			//Card Fix for target (tsd), 2 is not added to the "left" flag meaning "target cards only"
-			if (tsd) {
-				std::bitset<NK_MAX> ignoreele_nk = nk;
+		//Card Fix for target (tsd), 2 is not added to the "left" flag meaning "target cards only"
+		if (tsd && skill_id != NJ_ISSEN && skill_id != GN_FIRE_EXPANSION_ACID) { // These skills will do a card fix later
+			std::bitset<NK_MAX> ignoreele_nk = nk;
 
-				ignoreele_nk.set(NK_IGNOREELEMENT);
-				wd.statusAtk += battle_calc_cardfix(BF_WEAPON, src, target, ignoreele_nk, right_element, left_element, wd.statusAtk, 0, wd.flag);
-				wd.weaponAtk += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.weaponAtk, 0, wd.flag);
-				wd.equipAtk += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.equipAtk, 0, wd.flag);
-				wd.masteryAtk += battle_calc_cardfix(BF_WEAPON, src, target, ignoreele_nk, right_element, left_element, wd.masteryAtk, 0, wd.flag);
-				if (is_attack_left_handed(src, skill_id)) {
-					wd.statusAtk2 += battle_calc_cardfix(BF_WEAPON, src, target, ignoreele_nk, right_element, left_element, wd.statusAtk2, 1, wd.flag);
-					wd.weaponAtk2 += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.weaponAtk2, 1, wd.flag);
-					wd.equipAtk2 += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.equipAtk2, 1, wd.flag);
-					wd.masteryAtk2 += battle_calc_cardfix(BF_WEAPON, src, target, ignoreele_nk, right_element, left_element, wd.masteryAtk2, 1, wd.flag);
-				}
+			ignoreele_nk.set(NK_IGNOREELEMENT);
+			wd.statusAtk += battle_calc_cardfix(BF_WEAPON, src, target, ignoreele_nk, right_element, left_element, wd.statusAtk, 0, wd.flag);
+			wd.weaponAtk += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.weaponAtk, 0, wd.flag);
+			wd.equipAtk += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.equipAtk, 0, wd.flag);
+			wd.masteryAtk += battle_calc_cardfix(BF_WEAPON, src, target, ignoreele_nk, right_element, left_element, wd.masteryAtk, 0, wd.flag);
+			if (is_attack_left_handed(src, skill_id)) {
+				wd.statusAtk2 += battle_calc_cardfix(BF_WEAPON, src, target, ignoreele_nk, right_element, left_element, wd.statusAtk2, 1, wd.flag);
+				wd.weaponAtk2 += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.weaponAtk2, 1, wd.flag);
+				wd.equipAtk2 += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.equipAtk2, 1, wd.flag);
+				wd.masteryAtk2 += battle_calc_cardfix(BF_WEAPON, src, target, ignoreele_nk, right_element, left_element, wd.masteryAtk2, 1, wd.flag);
 			}
 		}
 
@@ -5993,7 +6013,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 
 		if (sd) { //monsters, homuns and pets have their damage computed directly
 			wd.damage = wd.statusAtk + wd.weaponAtk + wd.equipAtk + wd.masteryAtk + bonus_damage;
-			wd.damage2 = wd.statusAtk2 + wd.weaponAtk2 + wd.equipAtk2 + wd.masteryAtk2 + bonus_damage;
+			if (is_attack_left_handed(src, skill_id))
+				wd.damage2 = wd.statusAtk2 + wd.weaponAtk2 + wd.equipAtk2 + wd.masteryAtk2 + bonus_damage;
 			if (wd.flag & BF_SHORT)
 				ATK_ADDRATE(wd.damage, wd.damage2, sd->bonus.short_attack_atk_rate);
 			if(wd.flag&BF_LONG && (skill_id != RA_WUGBITE && skill_id != RA_WUGSTRIKE)) //Long damage rate addition doesn't use weapon + equip attack
@@ -6126,40 +6147,17 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 #endif
 	}
 
-#ifndef Pandas_Fix_Duplicate_Cardfix_Calculation
-	if(tsd) { // Card Fix for target (tsd), 2 is not added to the "left" flag meaning "target cards only"
 #ifdef RENEWAL
-		switch(skill_id) {
-			case NJ_ISSEN:
-			case GN_FIRE_EXPANSION_ACID:
-				break; //These skills will do a card fix later
-			default:
-#endif
-				wd.damage += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.damage, 0, wd.flag);
-				if(is_attack_left_handed(src, skill_id))
-					wd.damage2 += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.damage2, 1, wd.flag);
-#ifdef RENEWAL
-				break;
-		}
-#endif
-	}
+	// In renewal only do it for non player attacks
+	if( tsd && !sd ){
 #else
-	// 复兴后已经在上面完成了 Card Fix for attacker (sd) 和 Card Fix for target (tsd) 卡片修正
-	// 此处无需再重复修正了. 否则将会触发: https://github.com/rathena/rathena/issues/5932 所反馈的问题
-#ifndef RENEWAL
-	if(tsd) { // Card Fix for target (tsd), 2 is not added to the "left" flag meaning "target cards only"
-		switch(skill_id) {
-			case NJ_ISSEN:
-				break; //These skills will do a card fix later
-			default:
-				wd.damage += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.damage, 0, wd.flag);
-				if(is_attack_left_handed(src, skill_id))
-					wd.damage2 += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.damage2, 1, wd.flag);
-				break;
-		}
+	if( tsd ){
+#endif
+		// Card Fix for target (tsd), 2 is not added to the "left" flag meaning "target cards only"
+		wd.damage += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.damage, 0, wd.flag);
+		if(is_attack_left_handed(src, skill_id))
+			wd.damage2 += battle_calc_cardfix(BF_WEAPON, src, target, nk, right_element, left_element, wd.damage2, 1, wd.flag);
 	}
-#endif // RENEWAL
-#endif // Pandas_Fix_Duplicate_Cardfix_Calculation
 
 	// only do 1 dmg to plant, no need to calculate rest
 	if(infdef){
@@ -6817,6 +6815,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						i = cap_value(i, 1, 4);
 						skillratio = 2500 + ((skill_lv - i + 1) * 500);
 						break;
+					case NPC_FIRESTORM:
+						skillratio += 200;
+						break;
 					case NPC_HELLBURNING:
 						skillratio += 900;
 						break;
@@ -7249,6 +7250,9 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 				md.damage = ssc->data[SC_MAXPAIN]->val2;
 			else
 				md.damage = 0;
+			break;
+		case NPC_WIDESUCK:
+			md.damage = tstatus->max_hp * 15 / 100;
 			break;
 		case SU_SV_ROOTTWIST_ATK:
 			md.damage = 100;
@@ -7992,6 +7996,51 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 	}
 
+#ifdef Pandas_NpcExpress_PCATTACK
+	if (src && target && damage > 0) {
+		// 负责执行事件的玩家对象 (事件执行者)
+		struct map_session_data* esd = nullptr;
+
+		// 若攻击者不是玩家单位, 那么试图获取攻击者的主人
+		if (src->type != BL_PC) {
+			struct block_list* mbl = nullptr;
+			mbl = battle_get_master(src);
+			if (mbl != nullptr && mbl->type == BL_PC) {
+				esd = BL_CAST(BL_PC, mbl);
+			}
+		}
+
+		// 若负责执行事件的玩家对象依然没被指定
+		// 且攻击者是一个玩家单位, 那么将攻击者直接指定成负责执行事件的玩家
+		if (!esd && src->type == BL_PC) {
+			esd = (TBL_PC*)src;
+		}
+
+
+		// 若到这里还没有一个合适的事件执行者则不需要触发事件
+		if (esd) {
+			pc_setreg(esd, add_str("@attack_src_type"), src->type);
+			pc_setreg(esd, add_str("@attack_src_gid"), src->id);
+
+			pc_setreg(esd, add_str("@attack_target_type"), target->type);
+			pc_setreg(esd, add_str("@attack_target_gid"), target->id);
+			pc_setreg(esd, add_str("@attack_target_mobid"), (target->type == BL_MOB ? ((TBL_MOB*)target)->mob_id : 0));
+
+			pc_setreg(esd, add_str("@attack_damage_flag"), wd.flag);
+			pc_setreg(esd, add_str("@attack_damage_skillid"), 0);
+			pc_setreg(esd, add_str("@attack_damage_skilllv"), 0);
+			pc_setreg(esd, add_str("@attack_damage_right"), wd.damage);
+			pc_setreg(esd, add_str("@attack_damage_left"), wd.damage2);
+
+			npc_script_event(esd, NPCX_PCATTACK);
+
+			wd.damage = (int)cap_value(pc_readreg(esd, add_str("@attack_damage_right")), INT_MIN, INT_MAX);
+			wd.damage2 = (int)cap_value(pc_readreg(esd, add_str("@attack_damage_left")), INT_MIN, INT_MAX);
+			damage = wd.damage + wd.damage2;
+		}
+	}
+#endif // Pandas_NpcExpress_PCATTACK
+
 	wd.dmotion = clif_damage(src, target, tick, wd.amotion, wd.dmotion, wd.damage, wd.div_ , wd.type, wd.damage2, wd.isspdamage);
 
 	if (sd && sd->bonus.splash_range > 0 && damage > 0)
@@ -8123,11 +8172,8 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 					if( BL_PC&battle_config.land_skill_limit &&
 						(maxcount = skill_get_maxcount(r_skill, r_lv)) > 0
 					  ) {
-						int v;
-						for(v=0;v<MAX_SKILLUNITGROUP && sd->ud.skillunit[v] && maxcount;v++) {
-							if(sd->ud.skillunit[v]->skill_id == r_skill)
-								maxcount--;
-						}
+						unit_skillunit_maxcount(sd->ud, r_skill, maxcount);
+
 						if( maxcount == 0 )
 							type = -1;
 					}
@@ -8513,9 +8559,9 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 			{ //Normal mobs
 				if(
 					( target->type == BL_MOB && t_bl->type == BL_PC && ( ((TBL_MOB*)target)->special_state.ai != AI_ZANZOU && ((TBL_MOB*)target)->special_state.ai != AI_ATTACK ) ) ||
-					( t_bl->type == BL_MOB && !((TBL_MOB*)t_bl)->special_state.ai )
+					( t_bl->type == BL_MOB && (((TBL_MOB*)t_bl)->special_state.ai == AI_NONE || ((TBL_MOB*)t_bl)->special_state.ai == AI_WAVEMODE ))
 				  )
-					state |= BCT_PARTY; //Normal mobs with no ai are friends.
+					state |= BCT_PARTY; //Normal mobs with no ai or with AI_WAVEMODE are friends.
 				else
 					state |= BCT_ENEMY; //However, all else are enemies.
 			}
@@ -8984,6 +9030,8 @@ static const struct _battle_data {
 	{ "mob_max_skilllvl",                   &battle_config.mob_max_skilllvl,                MAX_MOBSKILL_LEVEL, 1, MAX_MOBSKILL_LEVEL, },
 	{ "retaliate_to_master",                &battle_config.retaliate_to_master,             1,      0,      1,              },
 	{ "rare_drop_announce",                 &battle_config.rare_drop_announce,              0,      0,      10000,          },
+	{ "drop_rate_cap",                      &battle_config.drop_rate_cap,                   9000,   0,      10000,          },
+	{ "drop_rate_cap_vip",                  &battle_config.drop_rate_cap_vip,               9000,   0,      10000,          },
 	{ "duel_allow_pvp",                     &battle_config.duel_allow_pvp,                  0,      0,      1,              },
 	{ "duel_allow_gvg",                     &battle_config.duel_allow_gvg,                  0,      0,      1,              },
 	{ "duel_allow_teleport",                &battle_config.duel_allow_teleport,             0,      0,      1,              },
@@ -9227,6 +9275,7 @@ static const struct _battle_data {
 	{ "mer_idle_no_share" ,                 &battle_config.mer_idle_no_share,               0,      0,      INT_MAX,        },
 	{ "idletime_mer_option",                &battle_config.idletime_mer_option,             0x1F,   0x1,    0xFFF,          },
 	{ "feature.refineui",                   &battle_config.feature_refineui,                1,      0,      1,              },
+	{ "rndopt_drop_pillar",                 &battle_config.rndopt_drop_pillar,              1,      0,      1,              },
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent

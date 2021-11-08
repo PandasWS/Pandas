@@ -9,8 +9,7 @@
 #include "malloc.hpp"
 #include "showmsg.hpp"
 
-#include "../custom/defines_core.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
+#include "../common/assistant.hpp"
 
 #define J_MAX_MALLOC_SIZE 65535
 

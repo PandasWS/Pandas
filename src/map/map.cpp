@@ -20,7 +20,6 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "achievement.hpp"
 #include "atcommand.hpp"
@@ -1895,6 +1894,7 @@ bool map_closest_freecell(int16 m, int16 *x, int16 *y, int type, int flag)
  * @param third_charid : 3rd player that could loot the item (3rd charid that could loot for third_get_charid duration)
  * @param flag: &1 MVP item. &2 do stacking check. &4 bypass droppable check.
  * @param mob_id: Monster ID if dropped by monster
+ * @param canShowEffect: enable pillar effect on the dropped item (if set in the database)
  * @return 0:failure, x:item_gid [MIN_FLOORITEM;MAX_FLOORITEM]==[2;START_ACCOUNT_NUM]
  *------------------------------------------*/
 #ifndef Pandas_Fix_Item_Trade_FloorDropable
@@ -2136,18 +2136,18 @@ void map_mobiddb(struct block_list* bl, int new_blockid) {
 	// 接下来重设一些与游戏单位编号相关的定时器
 	exchange_timer_id(origin_blockid, new_blockid);
 
-	// 进行一些遗漏检测, 如果发现有未处理的定时器则需要警告出来
-	detect_invalid_timer(origin_blockid);
-
-	// 接下来处理与游戏单位编号相关的 skill_unit_group
+	// 接下来处理与游戏单位编号相关的 s_skill_unit_group
 	struct unit_data* ud = nullptr;
 	if ((ud = unit_bl2ud(bl)) != nullptr) {
-		for (int i = 0; i < MAX_SKILLUNITGROUP; i++) {
-			if (ud->skillunit[i] && ud->skillunit[i]->src_id == origin_blockid) {
-				ud->skillunit[i]->src_id = bl->id;
+		for (const auto su : ud->skillunits) {
+			if (su->src_id == origin_blockid) {
+				su->src_id = bl->id;
 			}
 		}
 	}
+
+	// 进行一些遗漏检测, 如果发现有未处理的定时器则需要警告出来
+	detect_invalid_timer(origin_blockid);
 }
 #endif // Pandas_BattleRecord
 
@@ -5236,13 +5236,23 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			mapdata->flag[mapflag] = status;
 			break;
 		case MF_RESTRICTED:
-			nullpo_retr(false, args);
+			if (!status) {
+				if (args == nullptr) {
+					mapdata->zone = 0;
+				} else {
+					mapdata->zone ^= (1 << (args->flag_val + 1)) << 3;
+				}
 
-			mapdata->flag[mapflag] = status;
-			if (!status)
-				mapdata->zone ^= (1 << (args->flag_val + 1)) << 3;
-			else
+				// Don't completely disable the mapflag's status if other zones are active
+				if (mapdata->zone == 0) {
+					mapdata->flag[mapflag] = status;
+				}
+			} else {
+				nullpo_retr(false, args);
+
 				mapdata->zone |= (1 << (args->flag_val + 1)) << 3;
+				mapdata->flag[mapflag] = status;
+			}
 			break;
 		case MF_NOCOMMAND:
 			if (status) {
