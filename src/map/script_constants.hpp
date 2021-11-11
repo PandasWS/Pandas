@@ -1048,13 +1048,13 @@
 #ifdef Pandas_Bonuses
 
 #ifdef Pandas_Bonus_bNoFieldGemStone
-	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+	// 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	export_constant2("bNoFieldGemStone", SP_PANDAS_NOFIELDGEMSTONE);
 #endif // Pandas_Bonus_bNoFieldGemStone
-#ifdef Pandas_Bonus_bReborn
-	// 当玩家死亡时有 r% 的概率复活并恢复 n% 的血量
-	export_constant2("bReborn", SP_PANDAS_REBORN);
-#endif // Pandas_Bonus_bReborn
+#ifdef Pandas_Bonus_bRebirthWithHeal
+	// 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
+	export_constant2("bRebirthWithHeal", SP_PANDAS_REBIRTHWITHHEAL);
+#endif // Pandas_Bonus_bRebirthWithHeal
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses

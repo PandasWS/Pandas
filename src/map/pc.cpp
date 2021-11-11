@@ -3868,7 +3868,7 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 				sd->special_state.nofieldgemstone = 1;
 			break;
 #endif // Pandas_Bonus_bNoFieldGemStone
-		// PYHELP - BONUS - INSERT POINT - <Section 5>
+		// PYHELP - BONUS - INSERT POINT - <Section 6>
 		default:
 #ifdef Pandas_NpcExpress_STATCALC
 			if (running_npc_stat_calc_event) {
@@ -4506,16 +4506,7 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 
 		pc_bonus_itembonus( sd->itemgroupsphealrate, type2, val, false );
 		break;
-#ifdef Pandas_Bonus_bReborn
-	case SP_PANDAS_REBORN: // bonus2 bReborn,r,n;
-		if (sd->state.lr_flag != 2) {
-			sd->indexed_bonus.brebornr += type2;
-			sd->indexed_bonus.brebornn += val;
-			sd->indexed_bonus.brebornr = cap_value(sd->indexed_bonus.brebornr, 0, 10000);
-			sd->indexed_bonus.brebornn = cap_value(sd->indexed_bonus.brebornn, 1, 100);
-		}
-		break;
-#endif // Pandas_Bonus_bReborn
+		// PYHELP - BONUS - INSERT POINT - <Section 7>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
 		if (running_npc_stat_calc_event) {
@@ -4666,6 +4657,21 @@ void pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 		sd->norecover_state_race[type2].rate = type3;
 		sd->norecover_state_race[type2].tick = val;
 		break;
+
+#ifdef Pandas_Bonus_bRebirthWithHeal
+	case SP_PANDAS_REBIRTHWITHHEAL: // bonus3 bRebirthWithHeal,r,h,s;
+		if (sd->state.lr_flag != 2) {
+			sd->bonus.rebirth_rate += type2;
+			sd->bonus.rebirth_heal_percent_hp += type3;
+			sd->bonus.rebirth_heal_percent_sp += val;
+
+			sd->bonus.rebirth_rate = cap_value(sd->bonus.rebirth_rate, 0, 10000);
+			sd->bonus.rebirth_heal_percent_hp = cap_value(sd->bonus.rebirth_heal_percent_hp, 0, 100);
+			sd->bonus.rebirth_heal_percent_sp = cap_value(sd->bonus.rebirth_heal_percent_sp, 0, 100);
+		}
+		break;
+#endif // Pandas_Bonus_bRebirthWithHeal
+		// PYHELP - BONUS - INSERT POINT - <Section 8>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
 		if (running_npc_stat_calc_event) {
@@ -4758,6 +4764,7 @@ void pc_bonus4(struct map_session_data *sd,int type,int type2,int type3,int type
 		sd->mdef_set_race[type2].tick = type4;
 		sd->mdef_set_race[type2].value = val;
 		break;
+		// PYHELP - BONUS - INSERT POINT - <Section 9>
 
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
@@ -4817,6 +4824,7 @@ void pc_bonus5(struct map_session_data *sd,int type,int type2,int type3,int type
 		if( sd->state.lr_flag != 2 )
 			pc_bonus_addeff_onskill(sd->addeff_onskill, (sc_type)type3, type4, type2, type5, val);
 		break;
+		// PYHELP - BONUS - INSERT POINT - <Section 10>
 
 	default:
  #ifdef Pandas_NpcExpress_STATCALC

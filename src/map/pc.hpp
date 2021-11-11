@@ -533,10 +533,6 @@ struct map_session_data {
 		int dropaddrace[RC_MAX];
 		int dropaddclass[CLASS_MAX];
 		int magic_subdefele[ELE_MAX];
-#ifdef Pandas_Bonus_bReborn
-		int brebornr;
-		int brebornn;
-#endif // Pandas_Bonus_bReborn
 	} indexed_bonus;
 	// zeroed arrays end here.
 
@@ -611,6 +607,10 @@ struct map_session_data {
 		uint8 absorb_dmg_maxhp; // [Cydh]
 		short critical_rangeatk;
 		short weapon_atk_rate, weapon_matk_rate;
+#ifdef Pandas_Bonus_bRebirthWithHeal
+		int rebirth_rate, rebirth_heal_percent_hp, rebirth_heal_percent_sp;
+#endif // Pandas_Bonus_bRebirthWithHeal
+		// PYHELP - BONUS - INSERT POINT - <Section 5>
 	} bonus;
 	// zeroed vars end here.
 

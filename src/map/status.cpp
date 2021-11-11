@@ -2501,6 +2501,28 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 		return (int)(hp+sp);
 	}
 
+#ifdef Pandas_Bonus_bRebirthWithHeal
+	if (target && target->type == BL_PC) {
+		TBL_PC* tsd = BL_CAST(BL_PC, target);
+#ifdef Pandas_MapFlag_NoToken
+		if (tsd && rnd() % 10000 < tsd->bonus.rebirth_rate && tsd->bl.m >= 0 && !map_getmapflag(tsd->bl.m, MF_NOTOKEN)) {
+#else
+		if (tsd && rnd() % 10000 < tsd->bonus.rebirth_rate) {
+#endif // Pandas_MapFlag_NoToken
+
+			if (tsd->special_state.restart_full_recover) {
+				status_revive(target, 100, 100);
+			}
+			else {
+				status_revive(target, tsd->bonus.rebirth_heal_percent_hp, tsd->bonus.rebirth_heal_percent_sp);
+			}
+
+			clif_skill_nodamage(target, target, ALL_RESURRECTION, 1, 1);
+			return (int)(hp + sp);
+		}
+	}
+#endif // Pandas_Bonus_bRebirthWithHeal
+
 	status_change_clear(target,0);
 
 	if(flag&4) // Delete from memory. (also invokes map removal code)
@@ -2529,25 +2551,6 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 		}
 
 		npc_script_event(sd,NPCE_DIE);
-#ifdef Pandas_Bonus_bReborn
-		if (rnd() % 10000 < sd->indexed_bonus.brebornr) {
-#ifdef Pandas_MapFlag_NoToken
-			if (sd && sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOTOKEN)) {
-				clif_displaymessage(sd->fd, msg_txt_cn(sd, 17));	// 此地图禁止原地复活!
-				return (int)(hp + sp);
-			}
-#endif // Pandas_MapFlag_NoToken
-			nullpo_retr(-1, sd);
-			if (!status_revive(&sd->bl, sd->indexed_bonus.brebornn, 100))
-			{
-				clif_displaymessage(sd->fd, msg_txt(sd, 667)); // You're not dead.
-				return -1;
-			}
-			clif_skill_nodamage(&sd->bl, &sd->bl, ALL_RESURRECTION, 4, 1);
-			clif_displaymessage(sd->fd, msg_txt(sd, 16)); // You've been revived! It's a miracle!
-			//ShowDebug("死亡Bonus调试 r:%d n:%d\n", sd->indexed_bonus.brebornr, sd->indexed_bonus.brebornn);
-		}
-#endif // Pandas_Bonus_bReborn
 	}
 
 	return (int)(hp+sp);
