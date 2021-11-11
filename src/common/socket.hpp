@@ -141,6 +141,7 @@ int WFIFOSET(int fd, size_t len);
 int RFIFOSKIP(int fd, size_t len);
 
 int do_sockets(t_tick next);
+int do_wait(t_tick next);
 void do_close(int fd);
 void socket_init(void);
 void socket_final(void);
@@ -198,5 +199,9 @@ void send_shortlist_add_fd(int fd);
 // Do pending network sends (and eof handling) from the shortlist.
 void send_shortlist_do_sends();
 #endif
+
+#ifdef Pandas_Health_Monitors_Silent
+bool suppresses_close_mes(uint32 ip);
+#endif // Pandas_Health_Monitors_Silent
 
 #endif /* SOCKET_HPP */

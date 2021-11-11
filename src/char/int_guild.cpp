@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <string.h>
+#include <yaml-cpp/yaml.h>
 
 #include "../common/cbasetypes.hpp"
 #include "../common/malloc.hpp"
@@ -37,8 +38,6 @@ static const char dataToHex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9
 //Guild cache
 static DBMap* guild_db_; // int guild_id -> struct guild*
 static DBMap *castle_db;
-
-static t_exp guild_exp[MAX_GUILDLEVEL];
 
 int mapif_parse_GuildLeave(int fd,int guild_id,uint32 account_id,uint32 char_id,int flag,const char *mes);
 int mapif_guild_broken(int guild_id,int flag);
@@ -637,21 +636,6 @@ struct guild_castle* inter_guildcastle_fromsql(int castle_id)
 }
 
 
-// Read exp_guild.txt
-bool exp_guild_parse_row(char* split[], int column, int current)
-{
-	t_exp exp = strtoull(split[0], nullptr, 10);
-
-	if (exp > MAX_GUILD_EXP) {
-		ShowError("exp_guild: Invalid exp %" PRIu64 " at line %d, exceeds max of %" PRIu64 "\n", exp, current, MAX_GUILD_EXP);
-		return false;
-	}
-
-	guild_exp[current] = exp;
-	return true;
-}
-
-
 int inter_guild_CharOnline(uint32 char_id, int guild_id)
 {
 	struct guild *g;
@@ -757,23 +741,73 @@ int inter_guild_CharOffline(uint32 char_id, int guild_id)
 	return 1;
 }
 
-// Initialize guild sql
-int inter_guild_sql_init(void)
-{
-	const char *filename[]={ DBPATH"exp_guild.txt", DBIMPORT"/exp_guild.txt"};
-	int i;
+const std::string GuildExpDatabase::getDefaultLocation() {
+	return std::string(db_path) + "/exp_guild.yml";
+}
+
+uint64 GuildExpDatabase::parseBodyNode(const YAML::Node &node) {
+	if (!this->nodesExist(node, { "Level", "Exp" })) {
+		return 0;
+	}
+
+	uint16 level;
+
+	if (!this->asUInt16(node, "Level", level))
+		return 0;
+
+	if (level == 0) {
+		this->invalidWarning(node, "The minimum guild level is 1.\n");
+		return 0;
+	}
+	if (level >= MAX_GUILDLEVEL) {
+		this->invalidWarning(node["Level"], "Guild level %d exceeds maximum level %d, skipping.\n", level, MAX_GUILDLEVEL);
+		return 0;
+	}
+
+	t_exp exp;
+
+	if (!this->asUInt64(node, "Exp", exp))
+		return 0;
+
+	if (exp > MAX_GUILD_EXP) {
+		this->invalidWarning(node["Exp"], "Guild exp %" PRIu64 " exceeds max of %" PRIu64 ".\n", exp, MAX_GUILD_EXP);
+		return 0;
+	}
+
+	std::shared_ptr<s_guild_exp_db> guild_exp = this->find(level);
+	bool exists = guild_exp != nullptr;
+
+	if (!exists) {
+		guild_exp = std::make_shared<s_guild_exp_db>();
+		guild_exp->level = level;
+	}
+
+	guild_exp->exp = static_cast<t_exp>(exp);
+
+	if (!exists)
+		this->put(level, guild_exp);
+
+	return 1;
+}
+
+GuildExpDatabase guild_exp_db;
+
+void GuildExpDatabase::loadingFinished() {
+	for (uint16 level = 1; level < MAX_GUILDLEVEL; level++) {
+		if (this->get_nextexp(level) == 0)
+			ShowError("Missing experience for guild level %d.\n", level);
+	}
+}
+
+// Initialize guild sql and read exp_guild.yml
+void inter_guild_sql_init(void) {
 	//Initialize the guild cache
 	guild_db_= idb_alloc(DB_OPT_RELEASE_DATA);
 	castle_db = idb_alloc(DB_OPT_RELEASE_DATA);
 
-	//Read exp file
-	for(i = 0; i<ARRAYLENGTH(filename); i++){
-		sv_readdb(db_path, filename[i], ',', 1, 1, MAX_GUILDLEVEL, exp_guild_parse_row, i > 0);
-	}
-
+	guild_exp_db.load();
 	add_timer_func_list(guild_save_timer, "guild_save_timer");
 	add_timer(gettick() + 10000, guild_save_timer, 0, 0);
-	return 0;
 }
 
 /**
@@ -835,14 +869,10 @@ bool guild_check_empty(struct guild *g)
 	return i < g->max_member ? false : true; // not empty
 }
 
-t_exp guild_nextexp(int level)
-{
-	if (level == 0)
-		return 1;
-	if (level < 0 || level > MAX_GUILDLEVEL)
-		return 0;
+t_exp GuildExpDatabase::get_nextexp(uint16 level) {
+	std::shared_ptr<s_guild_exp_db> guild_exp = guild_exp_db.find(level);
 
-	return guild_exp[level-1];
+	return ((guild_exp == nullptr) ? 0 : guild_exp->exp);
 }
 
 int guild_checkskill(struct guild *g,int id)
@@ -854,23 +884,19 @@ int guild_checkskill(struct guild *g,int id)
 int guild_calcinfo(struct guild *g)
 {
 	int i,c;
-	t_exp nextexp;
 	struct guild before = *g; // Save guild current values
 
 	if(g->guild_lv<=0)
 		g->guild_lv = 1;
-	nextexp = guild_nextexp(g->guild_lv);
+	g->next_exp = guild_exp_db.get_nextexp(g->guild_lv);
 
 	// Consume guild exp and increase guild level
-	while(g->exp >= nextexp && nextexp > 0){	//fixed guild exp overflow [Kevin]
-		g->exp-=nextexp;
+	while(g->exp >= g->next_exp && g->next_exp > 0 && g->guild_lv < MAX_GUILDLEVEL){
+		g->exp-=g->next_exp;
 		g->guild_lv++;
 		g->skill_point++;
-		nextexp = guild_nextexp(g->guild_lv);
+		g->next_exp = guild_exp_db.get_nextexp(g->guild_lv);
 	}
-
-	// Save next exp step
-	g->next_exp = nextexp;
 
 	// Set the max number of members, Guild Extention skill - currently adds 6 to max per skill lv.
 #ifndef Pandas_Guild_Extension_Configure
@@ -941,7 +967,11 @@ int mapif_guild_created(int fd,uint32 account_id,struct guild *g)
 // Guild not found
 int mapif_guild_noinfo(int fd,int guild_id)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[12];
+#else
+	unsigned char buf[12] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x3831;
 	WBUFW(buf,2)=8;
 	WBUFL(buf,4)=guild_id;
@@ -956,7 +986,11 @@ int mapif_guild_noinfo(int fd,int guild_id)
 // Send guild info
 int mapif_guild_info(int fd,struct guild *g)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[8+sizeof(struct guild)];
+#else
+	unsigned char buf[8 + sizeof(struct guild)] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x3831;
 	WBUFW(buf,2)=4+sizeof(struct guild);
 	memcpy(buf+4,g,sizeof(struct guild));
@@ -983,7 +1017,11 @@ int mapif_guild_memberadded(int fd,int guild_id,uint32 account_id,uint32 char_id
 // ACK member leave
 int mapif_guild_withdraw(int guild_id,uint32 account_id,uint32 char_id,int flag, const char *name, const char *mes)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[55+NAME_LENGTH];
+#else
+	unsigned char buf[55 + NAME_LENGTH] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf, 0)=0x3834;
 	WBUFL(buf, 2)=guild_id;
 	WBUFL(buf, 6)=account_id;
@@ -999,7 +1037,11 @@ int mapif_guild_withdraw(int guild_id,uint32 account_id,uint32 char_id,int flag,
 // Send short member's info
 int mapif_guild_memberinfoshort(struct guild *g,int idx)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[19];
+#else
+	unsigned char buf[19] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf, 0)=0x3835;
 	WBUFL(buf, 2)=g->guild_id;
 	WBUFL(buf, 6)=g->member[idx].account_id;
@@ -1014,7 +1056,11 @@ int mapif_guild_memberinfoshort(struct guild *g,int idx)
 // Send guild broken
 int mapif_guild_broken(int guild_id,int flag)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[7];
+#else
+	unsigned char buf[7] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x3836;
 	WBUFL(buf,2)=guild_id;
 	WBUFB(buf,6)=flag;
@@ -1026,7 +1072,11 @@ int mapif_guild_broken(int guild_id,int flag)
 // Send guild message
 int mapif_guild_message(int guild_id,uint32 account_id,char *mes,int len, int sfd)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[512];
+#else
+	unsigned char buf[512] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	if (len > 500)
 		len = 500;
 	WBUFW(buf,0)=0x3837;
@@ -1041,7 +1091,11 @@ int mapif_guild_message(int guild_id,uint32 account_id,char *mes,int len, int sf
 // Send basic info
 int mapif_guild_basicinfochanged(int guild_id,int type,const void *data,int len)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[2048];
+#else
+	unsigned char buf[2048] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	if (len > 2038)
 		len = 2038;
 	WBUFW(buf, 0)=0x3839;
@@ -1056,7 +1110,11 @@ int mapif_guild_basicinfochanged(int guild_id,int type,const void *data,int len)
 // Send member info
 int mapif_guild_memberinfochanged(int guild_id,uint32 account_id,uint32 char_id, int type,const void *data,int len)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[2048];
+#else
+	unsigned char buf[2048] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	if (len > 2030)
 		len = 2030;
 	WBUFW(buf, 0)=0x383a;
@@ -1073,7 +1131,11 @@ int mapif_guild_memberinfochanged(int guild_id,uint32 account_id,uint32 char_id,
 // ACK guild skill up
 int mapif_guild_skillupack(int guild_id,uint16 skill_id,uint32 account_id)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[14];
+#else
+	unsigned char buf[14] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf, 0)=0x383c;
 	WBUFL(buf, 2)=guild_id;
 	WBUFL(buf, 6)=skill_id;
@@ -1085,7 +1147,11 @@ int mapif_guild_skillupack(int guild_id,uint16 skill_id,uint32 account_id)
 // ACK guild alliance
 int mapif_guild_alliance(int guild_id1,int guild_id2,uint32 account_id1,uint32 account_id2,int flag,const char *name1,const char *name2)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[19+2*NAME_LENGTH];
+#else
+	unsigned char buf[19 + 2 * NAME_LENGTH] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf, 0)=0x383d;
 	WBUFL(buf, 2)=guild_id1;
 	WBUFL(buf, 6)=guild_id2;
@@ -1101,7 +1167,11 @@ int mapif_guild_alliance(int guild_id1,int guild_id2,uint32 account_id1,uint32 a
 // Send a guild position desc
 int mapif_guild_position(struct guild *g,int idx)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[12 + sizeof(struct guild_position)];
+#else
+	unsigned char buf[12 + sizeof(struct guild_position)] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x383b;
 	WBUFW(buf,2)=sizeof(struct guild_position)+12;
 	WBUFL(buf,4)=g->guild_id;
@@ -1114,7 +1184,11 @@ int mapif_guild_position(struct guild *g,int idx)
 // Send the guild notice
 int mapif_guild_notice(struct guild *g)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[256];
+#else
+	unsigned char buf[256] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x383e;
 	WBUFL(buf,2)=g->guild_id;
 	memcpy(WBUFP(buf,6),g->mes1,MAX_GUILDMES1);
@@ -1126,7 +1200,11 @@ int mapif_guild_notice(struct guild *g)
 // Send emblem data
 int mapif_guild_emblem(struct guild *g)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[12 + sizeof(g->emblem_data)];
+#else
+	unsigned char buf[12 + sizeof(g->emblem_data)] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x383f;
 	WBUFW(buf,2)=g->emblem_len+12;
 	WBUFL(buf,4)=g->guild_id;
@@ -1139,7 +1217,11 @@ int mapif_guild_emblem(struct guild *g)
 // Send the guild emblem_id (version)
 int mapif_guild_emblem_version(guild* g)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[10];
+#else
+	unsigned char buf[10] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf, 0) = 0x3841;
 	WBUFL(buf, 2) = g->guild_id;
 	WBUFL(buf, 6) = g->emblem_id;
@@ -1150,7 +1232,11 @@ int mapif_guild_emblem_version(guild* g)
 
 int mapif_guild_master_changed(struct guild *g, int aid, int cid, time_t time)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[18];
+#else
+	unsigned char buf[18] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	WBUFW(buf,0)=0x3843;
 	WBUFL(buf,2)=g->guild_id;
 	WBUFL(buf,6)=aid;

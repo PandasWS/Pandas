@@ -1951,7 +1951,7 @@
 	parseable_packet(0x08E0,51,clif_parse_bg_queue_lobby_reply,2,3,27);
 	packet(0x08E1,51);
 	parseable_packet(0x090A,26,clif_parse_bg_queue_request_queue_number,2);
-	packet(0x090E,2);
+	packet( HEADER_ZC_ENTRY_QUEUE_INIT , sizeof(PACKET_ZC_ENTRY_QUEUE_INIT) );
 	packet(0x0977,14); //Monster HP Bar
 	parseable_packet(0x0916,26,clif_parse_GuildInvite2,2);
 	parseable_packet(0x091d,41,clif_parse_PartyBookingRegisterReq,2,4,6);
@@ -2400,9 +2400,15 @@
 #endif
 
 #if PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+#ifndef Pandas_ClientFeature_InventoryExpansion
 	parseable_packet( 0x0B14, sizeof( struct PACKET_CZ_INVENTORY_EXPAND ), clif_parse_dull, 0 );
 	parseable_packet( 0x0B16, sizeof( struct PACKET_CZ_INVENTORY_EXPAND_CONFIRMED ), clif_parse_dull, 0 );
 	parseable_packet( 0x0B19, sizeof( struct PACKET_CZ_INVENTORY_EXPAND_REJECTED ), clif_parse_dull, 0 );
+#else
+	parseable_packet(0x0B14, sizeof(struct PACKET_CZ_INVENTORY_EXPAND), clif_parse_inventoryExpansion, 0);
+	parseable_packet(0x0B16, sizeof(struct PACKET_CZ_INVENTORY_EXPAND_CONFIRMED), clif_parse_inventoryExpansionConfirmed, 0);
+	parseable_packet(0x0B19, sizeof(struct PACKET_CZ_INVENTORY_EXPAND_REJECTED), clif_parse_inventoryExpansionRejected, 0);
+#endif // Pandas_ClientFeature_InventoryExpansion
 #endif
 
 #if PACKETVER_MAIN_NUM >= 20190227 || PACKETVER_RE_NUM >= 20190220 || PACKETVER_ZERO_NUM >= 20190220

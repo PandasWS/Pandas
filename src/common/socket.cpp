@@ -40,6 +40,9 @@
 	#endif
 #endif
 
+#include <chrono>
+#include <thread>
+
 #include "cbasetypes.hpp"
 #include "malloc.hpp"
 #include "mmo.hpp"
@@ -277,6 +280,9 @@ static int create_session(int fd, RecvFunc func_recv, SendFunc func_send, ParseF
 #ifndef MINICORE
 	int ip_rules = 1;
 	static int connect_check(uint32 ip);
+	#ifdef Pandas_Health_Monitors_Silent
+		int hm_silent = 1;
+	#endif // Pandas_Health_Monitors_Silent
 #endif
 
 const char* error_msg(void)
@@ -284,6 +290,11 @@ const char* error_msg(void)
 	static char buf[512];
 	int code = sErrno;
 	snprintf(buf, sizeof(buf), "error %d: %s", code, sErr(code));
+#ifdef Pandas_Console_Charset_SmartConvert
+	if (PandasUtf8::consoleEncoding == PandasUtf8::CONSOLE_ENCODING_UTF8) {
+		snprintf(buf, sizeof(buf), "%s", PandasUtf8::utf8ToAnsi(buf).c_str());
+	}
+#endif // Pandas_Console_Charset_SmartConvert
 	return buf;
 }
 
@@ -898,6 +909,14 @@ int WFIFOSET(int fd, size_t len)
 	return 0;
 }
 
+
+// replacement for do_sockets, where it does nothing
+int do_wait(t_tick next)
+{
+	std::this_thread::sleep_for(std::chrono::milliseconds(next));
+	return 0;
+}
+
 int do_sockets(t_tick next)
 {
 #ifndef SOCKET_EPOLL
@@ -1102,6 +1121,11 @@ static int ddos_autoreset  = 10*60*1000;
 /// The array's index for any ip is ip&0xFFFF
 static ConnectHistory* connect_history[0x10000];
 
+#ifdef Pandas_Health_Monitors_Silent
+	static AccessControl* health_monitors = NULL;
+	static int health_monitorsnum = 0;
+#endif // Pandas_Health_Monitors_Silent
+
 static int connect_check_(uint32 ip);
 
 /// Verifies if the IP can connect. (with debug info)
@@ -1114,6 +1138,54 @@ static int connect_check(uint32 ip)
 	}
 	return result;
 }
+
+#ifdef Pandas_Health_Monitors_Silent
+//************************************
+// Method:      check_iplist
+// Description: 提供一个 IP 地址, 判断他是否在给定的 AccessControl 范围中
+// Access:      public 
+// Parameter:   uint32 ip
+// Parameter:   AccessControl * iplist
+// Parameter:   int list_cnt
+// Parameter:   const char * list_name
+// Returns:     int	返回 0 表示不在列表范围内, 返回 1 表示在列表范围内
+// Author:      Sola丶小克(CairoLee)  2021/05/28 18:20
+//************************************ 
+int check_iplist(uint32 ip, AccessControl* iplist, int list_cnt, const char* list_name) {
+	if (!iplist || list_cnt <= 0) {
+		return 0;
+	}
+
+	for (int i = 0; i < list_cnt; ++i) {
+		if ((ip & iplist[i].mask) == (iplist[i].ip & iplist[i].mask)) {
+			if (access_debug && !list_name) {
+				ShowInfo("connect_check: Found match from %s list:%d.%d.%d.%d IP:%d.%d.%d.%d Mask:%d.%d.%d.%d\n",
+					list_name,
+					CONVIP(ip),
+					CONVIP(access_allow[i].ip),
+					CONVIP(access_allow[i].mask));
+			}
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+//************************************
+// Method:      suppresses_close_mes
+// Description: 是否需要抑制此 IP 地址关闭连接的信息
+// Access:      public 
+// Parameter:   uint32 ip
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/05/28 18:48
+//************************************ 
+bool suppresses_close_mes(uint32 ip) {
+	return hm_silent && check_iplist(
+		ip, health_monitors, health_monitorsnum, nullptr
+	) == 1;
+}
+#endif // Pandas_Health_Monitors_Silent
 
 /// Verifies if the IP can connect.
 ///  0      : Connection Rejected
@@ -1152,6 +1224,12 @@ static int connect_check_(uint32 ip)
 			break;
 		}
 	}
+
+#ifdef Pandas_Health_Monitors_Silent
+	int is_healthip = 0;
+	is_healthip = check_iplist(ip, health_monitors, health_monitorsnum, "health");
+#endif // Pandas_Health_Monitors_Silent
+
 	// Decide connection status
 	//  0 : Reject
 	//  1 : Accept
@@ -1182,6 +1260,11 @@ static int connect_check_(uint32 ip)
 		break;
 	}
 
+#ifdef Pandas_Health_Monitors_Silent
+	if (hm_silent && is_healthip)
+		connect_ok = 2;
+#endif // Pandas_Health_Monitors_Silent
+
 	// Inspect connection history
 	while( hist ) {
 		if( ip == hist->ip )
@@ -1192,6 +1275,12 @@ static int connect_check_(uint32 ip)
 			} else if( DIFF_TICK(gettick(),hist->tick) < ddos_interval )
 			{// connection within ddos_interval
 				hist->tick = gettick();
+#ifdef Pandas_FuncLogic_Whitelist_Privileges
+				if (connect_ok == 2) {
+					hist->count = 0;
+					return connect_ok;
+				}
+#endif // Pandas_FuncLogic_Whitelist_Privileges
 				if( hist->count++ >= ddos_count )
 				{// DDoS attack detected
 					hist->ddos = 1;
@@ -1232,8 +1321,13 @@ static TIMER_FUNC(connect_check_clear){
 		prev_hist = &root;
 		root.next = hist = connect_history[i];
 		while( hist ){
+#ifndef Pandas_Fix_Potential_Arithmetic_Overflow
 			if( (!hist->ddos && DIFF_TICK(tick,hist->tick) > ddos_interval*3) ||
 					(hist->ddos && DIFF_TICK(tick,hist->tick) > ddos_autoreset) )
+#else
+			if ((!hist->ddos && DIFF_TICK(tick, hist->tick) > (t_tick)ddos_interval * 3) ||
+				(hist->ddos && DIFF_TICK(tick, hist->tick) > ddos_autoreset))
+#endif // Pandas_Fix_Potential_Arithmetic_Overflow
 			{// Remove connection history
 				prev_hist->next = hist->next;
 				aFree(hist);
@@ -1304,7 +1398,11 @@ int access_ipmask(const char* str, AccessControl* acc)
 
 int socket_config_read(const char* cfgName)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	char line[1024],w1[1024],w2[1024];
+#else
+	char line[1024] = { 0 }, w1[1024] = { 0 }, w2[1024] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	FILE *fp;
 
 	fp = fopen(cfgName, "r");
@@ -1356,6 +1454,17 @@ int socket_config_read(const char* cfgName)
 			ddos_autoreset = atoi(w2);
 		else if (!strcmpi(w1,"debug"))
 			access_debug = config_switch(w2);
+#ifdef Pandas_Health_Monitors_Silent
+		else if (!strcmpi(w1, "make_hm_silent"))
+			hm_silent = config_switch(w2);
+		else if (!strcmpi(w1, "health")) {
+			RECREATE(health_monitors, AccessControl, health_monitorsnum + 1);
+			if (access_ipmask(w2, &health_monitors[health_monitorsnum]))
+				++health_monitorsnum;
+			else
+				ShowError("socket_config_read: Invalid ip or ip range '%s'!\n", line);
+		}
+#endif // Pandas_Health_Monitors_Silent
 #ifdef SOCKET_EPOLL
 		else if( !strcmpi( w1, "epoll_maxevents" ) ){
 			epoll_maxevents = atoi(w2);
@@ -1398,6 +1507,11 @@ void socket_final(void)
 		aFree(access_allow);
 	if( access_deny )
 		aFree(access_deny);
+#ifdef Pandas_Health_Monitors_Silent
+	if (health_monitors)
+		aFree(health_monitors);
+#endif // Pandas_Health_Monitors_Silent
+
 #endif
 
 	for( i = 1; i < fd_max; i++ )

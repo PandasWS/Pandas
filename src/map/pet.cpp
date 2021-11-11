@@ -53,7 +53,7 @@ uint64 PetDatabase::parseBodyNode( const YAML::Node &node ){
 		return 0;
 	}
 
-	uint16 mob_id = mob->vd.class_;
+	uint16 mob_id = mob->id;
 
 	std::shared_ptr<s_pet_db> pet = this->find( mob_id );
 	bool exists = pet != nullptr;
@@ -75,7 +75,7 @@ uint64 PetDatabase::parseBodyNode( const YAML::Node &node ){
 			return 0;
 		}
 
-		struct item_data* item = itemdb_search_aegisname( item_name.c_str() );
+		std::shared_ptr<item_data> item = item_db.search_aegisname( item_name.c_str() );
 
 		if( item == nullptr ){
 			this->invalidWarning( node["TameItem"], "Taming item %s does not exist.\n", item_name.c_str() );
@@ -96,7 +96,7 @@ uint64 PetDatabase::parseBodyNode( const YAML::Node &node ){
 			return 0;
 		}
 
-		struct item_data* item = itemdb_search_aegisname( item_name.c_str() );
+		std::shared_ptr<item_data> item = item_db.search_aegisname( item_name.c_str() );
 
 		if( item == nullptr ){
 			this->invalidWarning( node["EggItem"], "Egg item %s does not exist.\n", item_name.c_str() );
@@ -113,7 +113,7 @@ uint64 PetDatabase::parseBodyNode( const YAML::Node &node ){
 			return 0;
 		}
 
-		struct item_data* item = itemdb_search_aegisname( item_name.c_str() );
+		std::shared_ptr<item_data> item = item_db.search_aegisname( item_name.c_str() );
 
 		if( item == nullptr ){
 			this->invalidWarning( node["EquipItem"], "Equip item %s does not exist.\n", item_name.c_str() );
@@ -134,7 +134,7 @@ uint64 PetDatabase::parseBodyNode( const YAML::Node &node ){
 			return 0;
 		}
 
-		struct item_data* item = itemdb_search_aegisname( item_name.c_str() );
+		std::shared_ptr<item_data> item = item_db.search_aegisname( item_name.c_str() );
 
 		if( item == nullptr ){
 			this->invalidWarning( node["FoodItem"], "Food item %s does not exist.\n", item_name.c_str() );
@@ -419,7 +419,7 @@ uint64 PetDatabase::parseBodyNode( const YAML::Node &node ){
 				return 0;
 			}
 
-			uint16 targetId = mob->vd.class_;
+			uint16 targetId = mob->id;
 
 			if( !this->nodeExists( evolutionNode, "ItemRequirements" ) ){
 				this->invalidWarning( evolutionNode, "Missing required node \"ItemRequirements\".\n" );
@@ -441,7 +441,7 @@ uint64 PetDatabase::parseBodyNode( const YAML::Node &node ){
 					return 0;
 				}
 
-				struct item_data* item = itemdb_search_aegisname( item_name.c_str() );
+				std::shared_ptr<item_data> item = item_db.search_aegisname( item_name.c_str() );
 
 				if( item == nullptr ){
 					this->invalidWarning( requirementNode["Item"], "Evolution requirement item %s does not exist.\n", item_name.c_str() );
@@ -1126,6 +1126,7 @@ int pet_birth_process(struct map_session_data *sd, struct s_pet *pet)
 #endif
 		clif_pet_equip_area(sd->pd);
 		clif_send_petstatus(sd);
+		clif_pet_autofeed_status(sd,true);
 	}
 
 	Assert((sd->status.pet_id == 0 || sd->pd == 0) || sd->pd->master == sd);
@@ -1199,7 +1200,7 @@ int pet_select_egg(struct map_session_data *sd,short egg_index)
 {
 	nullpo_ret(sd);
 
-	if(egg_index < 0 || egg_index >= MAX_INVENTORY)
+	if(egg_index < 0 || egg_index >= P_MAX_INVENTORY(sd))
 		return 0; //Forged packet!
 
 	if(sd->trade_partner)	//The player have trade in progress.
@@ -2178,7 +2179,7 @@ TIMER_FUNC(pet_skill_support_timer){
  * @return index of egg in player's inventory or -1 if the egg is not found.
  */
 int pet_egg_search(struct map_session_data* sd, int pet_id) {
-	for (int i = 0; i < MAX_INVENTORY; i++) {
+	for (int i = 0; i < P_MAX_INVENTORY(sd); i++) {
 		if (sd->inventory.u.items_inventory[i].card[0] == CARD0_PET &&
 			pet_id == MakeDWord(sd->inventory.u.items_inventory[i].card[1], sd->inventory.u.items_inventory[i].card[2]))
 			return i;
@@ -2207,7 +2208,7 @@ bool pet_evolution_requirements_check(struct map_session_data *sd, short pet_id)
 
 	for (const auto &requirement : evo_data->second->requirements) {
 		int count = 0;
-		for (int i = 0; i < MAX_INVENTORY; i++) {
+		for (int i = 0; i < P_MAX_INVENTORY(sd); i++) {
 			if (sd->inventory.u.items_inventory[i].nameid == requirement.first) {
 				count += sd->inventory.u.items_inventory[i].amount;
 			}
@@ -2261,7 +2262,7 @@ void pet_evolution(struct map_session_data *sd, int16 pet_id) {
 
 	for (const auto &requirement : pet_db_ptr->evolution_data[pet_id]->requirements) {
 		int count = requirement.second;
-		for (int i = 0; i < MAX_INVENTORY; i++) {
+		for (int i = 0; i < P_MAX_INVENTORY(sd); i++) {
 			item *slot = &sd->inventory.u.items_inventory[i];
 			int deduction = min(requirement.second, slot->amount);
 			if (slot->nameid == requirement.first) {

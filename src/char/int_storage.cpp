@@ -71,7 +71,11 @@ const char *inter_premiumStorage_getPrintableName(uint8 id) {
  */
 int inventory_tosql(uint32 char_id, struct s_storage* p)
 {
-	return char_memitemdata_to_sql(p->u.items_inventory, MAX_INVENTORY, char_id, TABLE_INVENTORY, p->stor_id);
+#ifndef Pandas_ClientFeature_InventoryExpansion
+	return char_memitemdata_to_sql(p->u.items_inventory, G_MAX_INVENTORY, char_id, TABLE_INVENTORY, p->stor_id);
+#else
+	return char_memitemdata_to_sql(p->u.items_inventory, char_inventory_max(char_id), char_id, TABLE_INVENTORY, p->stor_id);
+#endif //Pandas_ClientFeature_InventoryExpansion
 }
 
 /**
@@ -104,7 +108,11 @@ int cart_tosql(uint32 char_id, struct s_storage* p)
  */
 bool inventory_fromsql(uint32 char_id, struct s_storage* p)
 {
-	return char_memitemdata_from_sql( p, MAX_INVENTORY, char_id, TABLE_INVENTORY, p->stor_id );
+#ifndef Pandas_ClientFeature_InventoryExpansion
+	return char_memitemdata_from_sql( p, G_MAX_INVENTORY, char_id, TABLE_INVENTORY, p->stor_id );
+#else
+	return char_memitemdata_from_sql( p, char_inventory_max(char_id), char_id, TABLE_INVENTORY, p->stor_id );
+#endif // Pandas_ClientFeature_InventoryExpansion
 }
 
 /**
@@ -159,7 +167,7 @@ void inter_storage_checkDB(void) {
 		if (SQL_ERROR == Sql_Query(sql_handle, "SELECT  `id`,`account_id`,`nameid`,`amount`,`equip`,`identify`,`refine`,"
 			"`attribute`,`card0`,`card1`,`card2`,`card3`,`option_id0`,`option_val0`,`option_parm0`,`option_id1`,`option_val1`,`option_parm1`,"
 			"`option_id2`,`option_val2`,`option_parm2`,`option_id3`,`option_val3`,`option_parm3`,`option_id4`,`option_val4`,`option_parm4`,"
-			"`expire_time`,`bound`,`unique_id`"
+			"`expire_time`,`bound`,`unique_id`,`enchantgrade`"
 			" FROM `%s` LIMIT 1;", storage_table.second->table)) {
 			Sql_ShowDebug(sql_handle);
 		}else{
@@ -301,14 +309,15 @@ void mapif_itembound_ack(int fd, int account_id, int guild_id)
  * @param count
  * @author [Cydh]
  */
+#ifndef Pandas_ClientFeature_InventoryExpansion
 void mapif_itembound_store2gstorage(int fd, int guild_id, struct item items[], unsigned short count) {
-	int size = 8 + sizeof(struct item) * MAX_INVENTORY, i;
+	int size = 8 + sizeof(struct item) * G_MAX_INVENTORY, i;
 
 	WFIFOHEAD(fd, size);
 	WFIFOW(fd, 0) = 0x3857;
 	WFIFOW(fd, 2) = size;
 	WFIFOW(fd, 6) = guild_id;
-	for (i = 0; i < count && i < MAX_INVENTORY; i++) {
+	for (i = 0; i < count && i < G_MAX_INVENTORY; i++) {
 		if (!&items[i])
 			continue;
 		memcpy(WFIFOP(fd, 8 + (i * sizeof(struct item))), &items[i], sizeof(struct item));
@@ -316,6 +325,23 @@ void mapif_itembound_store2gstorage(int fd, int guild_id, struct item items[], u
 	WFIFOW(fd, 4) = i;
 	WFIFOSET(fd, size);
 }
+#else
+void mapif_itembound_store2gstorage(int fd, int guild_id, int max, struct item items[], unsigned short count) {
+	int size = 8 + sizeof(struct item) * max, i;
+
+	WFIFOHEAD(fd, size);
+	WFIFOW(fd, 0) = 0x3857;
+	WFIFOW(fd, 2) = size;
+	WFIFOW(fd, 6) = guild_id;
+	for (i = 0; i < count && i < max; i++) {
+		if (!&items[i])
+			continue;
+		memcpy(WFIFOP(fd, 8 + (i * sizeof(struct item))), &items[i], sizeof(struct item));
+	}
+	WFIFOW(fd, 4) = i;
+	WFIFOSET(fd, size);
+}
+#endif // Pandas_ClientFeature_InventoryExpansion
 
 /**
  * ZI 0x3056 <char_id>.L <account_id>.L <guild_id>.W
@@ -327,14 +353,17 @@ bool mapif_parse_itembound_retrieve(int fd)
 	StringBuf buf;
 	SqlStmt* stmt;
 	unsigned short i = 0, count = 0;
-	struct item item, items[MAX_INVENTORY];
+	struct item item, items[G_MAX_INVENTORY];
 	int j, guild_id = RFIFOW(fd,10);
 	uint32 char_id = RFIFOL(fd,2), account_id = RFIFOL(fd,6);
+#ifdef Pandas_ClientFeature_InventoryExpansion
+	uint16 inventory_size = RFIFOW(fd,10 + 2);
+#endif // Pandas_ClientFeature_InventoryExpansion
 
 	StringBuf_Init(&buf);
 
 	// Get bound items from player's inventory
-	StringBuf_AppendStr(&buf, "SELECT `id`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`, `bound`");
+	StringBuf_AppendStr(&buf, "SELECT `id`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`, `bound`, `enchantgrade`");
 	for( j = 0; j < MAX_SLOTS; ++j )
 		StringBuf_Printf(&buf, ", `card%d`", j);
 	for( j = 0; j < MAX_ITEM_RDM_OPT; ++j ) {
@@ -364,12 +393,13 @@ bool mapif_parse_itembound_retrieve(int fd)
 	SqlStmt_BindColumn(stmt, 6, SQLDT_CHAR,      &item.attribute,   0, NULL, NULL);
 	SqlStmt_BindColumn(stmt, 7, SQLDT_UINT,      &item.expire_time, 0, NULL, NULL);
 	SqlStmt_BindColumn(stmt, 8, SQLDT_UINT,      &item.bound,       0, NULL, NULL);
+	SqlStmt_BindColumn(stmt, 9, SQLDT_INT8,      &item.enchantgrade,0, NULL, NULL);
 	for( j = 0; j < MAX_SLOTS; ++j )
-		SqlStmt_BindColumn(stmt, 9+j, SQLDT_UINT, &item.card[j], 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt,10+j, SQLDT_UINT, &item.card[j], 0, NULL, NULL);
 	for( j = 0; j < MAX_ITEM_RDM_OPT; ++j ) {
-		SqlStmt_BindColumn(stmt, 9+MAX_SLOTS+j*3, SQLDT_SHORT, &item.option[j].id, 0, NULL, NULL);
-		SqlStmt_BindColumn(stmt, 10+MAX_SLOTS+j*3, SQLDT_SHORT, &item.option[j].value, 0, NULL, NULL);
-		SqlStmt_BindColumn(stmt, 11+MAX_SLOTS+j*3, SQLDT_CHAR, &item.option[j].param, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 11+MAX_SLOTS+j*3, SQLDT_SHORT, &item.option[j].id, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 12+MAX_SLOTS+j*3, SQLDT_SHORT, &item.option[j].value, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 13+MAX_SLOTS+j*3, SQLDT_CHAR, &item.option[j].param, 0, NULL, NULL);
 	}
 	memset(&items, 0, sizeof(items));
 	while( SQL_SUCCESS == SqlStmt_NextRow(stmt) )
@@ -400,7 +430,11 @@ bool mapif_parse_itembound_retrieve(int fd)
 	}
 
 	// Send the deleted items to map-server to store them in guild storage [Cydh]
+#ifndef Pandas_ClientFeature_InventoryExpansion
 	mapif_itembound_store2gstorage(fd, guild_id, items, count);
+#else
+	mapif_itembound_store2gstorage(fd, guild_id, inventory_size, items, count);
+#endif // Pandas_ClientFeature_InventoryExpansion
 
 	// Verifies equip bitmasks (see item.equip) and handles the sql statement
 #define CHECK_REMOVE(var,mask,token,num) {\
@@ -414,7 +448,11 @@ bool mapif_parse_itembound_retrieve(int fd)
 
 	StringBuf_Clear(&buf);
 	j = 0;
-	for (i = 0; i < count && i < MAX_INVENTORY; i++) {
+#ifndef Pandas_ClientFeature_InventoryExpansion
+	for (i = 0; i < count && i < G_MAX_INVENTORY; i++) {
+#else
+	for (i = 0; i < count && i < inventory_size; i++) {
+#endif // Pandas_ClientFeature_InventoryExpansion
 		if (!&items[i] || !items[i].equip)
 			continue;
 		// Equips can be at more than one slot at the same time

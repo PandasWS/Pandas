@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <stdarg.h>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -23,6 +24,10 @@
 #ifdef Pandas
 #include "map_artisan.hpp"
 #endif // Pandas
+
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	extern int pandas_inter_hide_server_ipaddress;
+#endif // Pandas_InterConfig_HideServerIpAddress
 
 struct npc_data;
 struct item_data;
@@ -51,6 +56,9 @@ void map_msg_reload(void);
 
 #define MAX_NPC_PER_MAP 512
 #define AREA_SIZE battle_config.area_size
+#ifdef Pandas_BattleConfig_Dead_Area_Size
+#define AREA_DEAD_SIZE battle_config.dead_area_size
+#endif // Pandas_BattleConfig_Dead_Area_Size
 #define DAMAGELOG_SIZE 30
 #define LOOTITEM_SIZE 10
 #define MAX_MOBSKILL 50		//Max 128, see mob skill_idx type if need this higher
@@ -351,6 +359,19 @@ enum e_element : int8{
 	ELE_WEAPON,
 	ELE_ENDOWED,
 	ELE_RANDOM,
+};
+
+static std::unordered_map<std::string, e_element> um_eleid2elename {
+	{ "Neutral", ELE_NEUTRAL },
+	{ "Water", ELE_WATER },
+	{ "Earth", ELE_EARTH },
+	{ "Fire", ELE_FIRE },
+	{ "Wind", ELE_WIND },
+	{ "Poison", ELE_POISON },
+	{ "Holy", ELE_HOLY },
+	{ "Dark", ELE_DARK },
+	{ "Ghost", ELE_GHOST },
+	{ "Undead", ELE_UNDEAD },
 };
 
 #define MAX_ELE_LEVEL 4 /// Maximum Element level
@@ -669,6 +690,21 @@ enum e_mapflag : int16 {
 #ifdef Pandas_MapFlag_NoAura
 	MF_NOAURA,
 #endif // Pandas_MapFlag_NoAura
+#ifdef Pandas_MapFlag_MaxASPD
+	MF_MAXASPD,
+#endif // Pandas_MapFlag_MaxASPD
+#ifdef Pandas_MapFlag_NoSlave
+	MF_NOSLAVE,
+#endif // Pandas_MapFlag_NoSlave
+#ifdef Pandas_MapFlag_NoBank
+	MF_NOBANK,
+#endif // Pandas_MapFlag_NoBank
+#ifdef Pandas_MapFlag_NoUseItem
+	MF_NOUSEITEM,
+#endif // Pandas_MapFlag_NoUseItem
+#ifdef Pandas_MapFlag_HideDamage
+	MF_HIDEDAMAGE,
+#endif // Pandas_MapFlag_HideDamage
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };
@@ -871,6 +907,8 @@ extern int minsave_interval;
 extern int16 save_settings;
 extern int night_flag; // 0=day, 1=night [Yor]
 extern int enable_spy; //Determines if @spy commands are active.
+
+extern uint32 start_status_points;
 
 // Agit Flags
 extern bool agit_flag;

@@ -1,5 +1,7 @@
 queries:
   - exclude: cpp/potentially-dangerous-function
+  - exclude: cpp/constant-comparison
+  - exclude: cpp/weak-cryptographic-algorithm
 extraction:
   cpp:
     after_prepare:

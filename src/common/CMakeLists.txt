@@ -138,7 +138,6 @@ set( COMMON_MINI_HEADERS
 	"${COMMON_SOURCE_DIR}/database.hpp"
 	"${COMMON_SOURCE_DIR}/performance.hpp"
 	"${COMMON_SOURCE_DIR}/processmutex.hpp"
-	"${COMMON_SOURCE_DIR}/iconv.hpp"
 	"${COMMON_SOURCE_DIR}/configparser.hpp"
 	"${COMMON_SOURCE_DIR}/serialize.hpp"
 	${LIBCONFIG_HEADERS} # needed by showmsg.hpp
@@ -220,7 +219,6 @@ if( WITH_ZLIB )
 		"${COMMON_SOURCE_DIR}/translate.hpp"
 		"${COMMON_SOURCE_DIR}/performance.hpp"
 		"${COMMON_SOURCE_DIR}/processmutex.hpp"
-		"${COMMON_SOURCE_DIR}/iconv.hpp"
 		"${COMMON_SOURCE_DIR}/configparser.hpp"
 		"${COMMON_SOURCE_DIR}/serialize.hpp"
 		${LIBCONFIG_HEADERS} # needed by conf.hpp/showmsg.hpp

@@ -22,6 +22,10 @@
 extern char default_codepage[32];
 #endif // Pandas_SQL_Configure_Optimization
 
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	extern int pandas_inter_hide_server_ipaddress;
+#endif // Pandas_InterConfig_HideServerIpAddress
+
 enum E_LOGINSERVER_ST {
 	LOGINSERVER_ST_RUNNING = CORE_ST_LAST,
 	LOGINSERVER_ST_STARTING,

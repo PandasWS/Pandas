@@ -995,6 +995,12 @@ bool sv_readdb(const char* directory, const char* filename, char delim, int minc
 
 	snprintf(path, sizeof(path), "%s/%s", directory, filename);
 
+#ifdef Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
+	// 若发现有两斜杠则将他处理成一个,
+	// 虽然影响不会很大但很多提示信息都会把路径打出来, 看着别扭
+	strReplace(path, "//", "/");
+#endif // Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
+
 	// open file
 	fp = fopen(path, "r");
 	if( fp == NULL )

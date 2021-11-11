@@ -12,6 +12,10 @@
 #include "../common/database.hpp"
 #include "../common/sql.hpp"
 
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	extern int pandas_inter_hide_server_ipaddress;
+#endif // Pandas_InterConfig_HideServerIpAddress
+
 struct s_storage_table;
 
 class InterServerDatabase : public TypesafeYamlDatabase<uint32, s_storage_table>{

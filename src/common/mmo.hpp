@@ -40,7 +40,46 @@
 #endif
 
 #define MAX_MAP_PER_SERVER 1500 /// Maximum amount of maps available on a server
-#define MAX_INVENTORY 100 ///Maximum items in player inventory
+
+#ifndef Pandas_ClientFeature_InventoryExpansion
+	// -------------------------------------------------------------------------------------
+	// 将 MAX_INVENTORY 重命名为 _ORIGIN_MAX_INVENTORY
+	// 此举是个防呆设计, 可以避免在合并外部代码后直接编译通过, 从而遗漏需要进行背包拓展改造的点
+	// -------------------------------------------------------------------------------------
+	// 
+	// 调整说明: 若您自己合并的第三方代码有使用到 MAX_INVENTORY 宏, 请按照以下列举的标准进行改写:
+	// 
+	// - 用于变量数组初始化的, 直接简单的改写成 G_MAX_INVENTORY 即可
+	// - 若用于进行边界保护判断, 且边界与某一个具体玩家无关, 则用 G_MAX_INVENTORY (G 是 Global 的简称, 即: 全局背包最大上限)
+	// - 若用于进行边界保护判断, 且边界与某一个具体玩家相关, 则用 P_MAX_INVENTORY (P 是 Personal 的简称, 即: 玩家背包最大上限)
+	//
+	//#define MAX_INVENTORY 100 ///Maximum items in player inventory
+	#define _ORIGIN_MAX_INVENTORY 100 ///Maximum items in player inventory
+
+	// 未开启背包拓展的时候 P_MAX_INVENTORY 与 G_MAX_INVENTORY 等同于 MAX_INVENTORY
+	#define P_MAX_INVENTORY(x) _ORIGIN_MAX_INVENTORY
+	#define G_MAX_INVENTORY _ORIGIN_MAX_INVENTORY
+#else
+	#if PACKETVER_MAIN_NUM >= 20181219 || PACKETVER_RE_NUM >= 20181219 || PACKETVER_ZERO_NUM >= 20181212
+		#define _ORIGIN_MAX_INVENTORY 200
+	#else
+		#define _ORIGIN_MAX_INVENTORY 100
+	#endif  // PACKETVER_MAIN_NUM >= 20181219 || PACKETVER_RE_NUM >= 20181219 || PACKETVER_ZERO_NUM >= 20181212
+
+	#ifndef FIXED_INVENTORY_SIZE
+		#define FIXED_INVENTORY_SIZE 100
+	#endif
+
+	#if FIXED_INVENTORY_SIZE > _ORIGIN_MAX_INVENTORY
+		#error FIXED_INVENTORY_SIZE must be same or smaller than MAX_INVENTORY
+	#endif
+
+	// 开启背包拓展后, 变成获取玩家的背包容量上限
+	#define __PMI_CONCAT_GCC(x, y) x ## y
+	#define P_MAX_INVENTORY(v) __PMI_CONCAT_GCC(,v)->status.inventory_size
+	#define G_MAX_INVENTORY _ORIGIN_MAX_INVENTORY
+#endif // Pandas_ClientFeature_InventoryExpansion
+
 /** Max number of characters per account. Note that changing this setting alone is not enough if the client is not hexed to support more characters as well.
 * Max value tested was 265 */
 #ifndef MAX_CHARS
@@ -255,6 +294,14 @@ enum e_mode {
 #define ATR_MASK 0x0FF0000
 #define CL_MASK 0xF000000
 
+#ifdef Pandas_Aura_Mechanism
+struct s_aura_effect {
+	uint16 effect_id = 0;
+	uint32 replay_interval = 0;
+	int32 replay_tid = INVALID_TIMER;
+};
+#endif // Pandas_Aura_Mechanism
+
 #ifdef Pandas_Struct_Unit_CommonData
 
 #ifdef Pandas_Struct_Unit_CommonData_BattleRecord
@@ -275,15 +322,13 @@ struct s_unit_common_data {
 	#ifdef Pandas_Struct_Unit_CommonData_Aura
 		struct s_ucd_aura {
 			uint32 id = 0;			// 该单位启用的光环编号
-			bool hidden = false;	// 是否需要隐藏光环
-			std::vector<uint16> effects;	// 该单位生效的特效组合
+			std::vector<std::shared_ptr<s_aura_effect>> effects;	// 该单位生效的特效组合
 		} aura;
 	#endif // Pandas_Struct_Unit_CommonData_Aura
 
 	#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
 		struct s_ucd_batrec {
 			bool dorecord = false;					// 是否进行记录
-			bool recfree_triggered = false;			// 是否已经触发过了 OnBatrecFreeExpress 事件
 			batrec_map* dmg_receive = nullptr;		// 受到的伤害 <伤害来源GID, 伤害值>
 			batrec_map* dmg_cause = nullptr;		// 造成的伤害 <攻击目标GID, 伤害值>
 		} batrec;
@@ -306,12 +351,6 @@ struct quest {
 	e_quest_state state;             ///< Current quest state
 };
 
-struct s_item_randomoption {
-	short id;
-	short value;
-	char param;
-};
-
 /// Achievement log entry
 struct achievement {
 	int achievement_id;                    ///< Achievement ID
@@ -320,6 +359,17 @@ struct achievement {
 	time_t rewarded;                       ///< Received reward?
 	int score;                             ///< Amount of points achievement is worth
 };
+
+// NetBSD 5 and Solaris don't like pragma pack but accept the packed attribute
+#if !defined( sun ) && ( !defined( __NETBSD__ ) || __NetBSD_Version__ >= 600000000 )
+	#pragma pack( push, 1 )
+#endif
+
+struct s_item_randomoption {
+	short id;
+	short value;
+	char param;
+} __attribute__((packed));
 
 struct item {
 	int id;
@@ -336,7 +386,12 @@ struct item {
 	uint64 unique_id;
 	unsigned int equipSwitch; // location(s) where item is equipped for equip switching (using enum equip_pos for bitmasking)
 	uint8 enchantgrade;
-};
+} __attribute__((packed));
+
+// NetBSD 5 and Solaris don't like pragma pack but accept the packed attribute
+#if !defined( sun ) && ( !defined( __NETBSD__ ) || __NetBSD_Version__ >= 600000000 )
+	#pragma pack( pop )
+#endif
 
 //Equip position constants
 enum equip_pos : uint32 {
@@ -464,7 +519,7 @@ struct s_storage {
 		unsigned put : 1;
 	} state;
 	union { // Max for inventory, storage, cart, and guild storage are 818 each without changing this struct and struct item [2016/08/14]
-		struct item items_inventory[MAX_INVENTORY];
+		struct item items_inventory[G_MAX_INVENTORY];
 		struct item items_storage[MAX_STORAGE];
 		struct item items_cart[MAX_CART];
 		struct item items_guild[MAX_GUILD_STORAGE];
@@ -611,6 +666,10 @@ struct mmo_charstatus {
 
 	time_t delete_date;
 	time_t unban_time;
+
+#ifdef Pandas_Struct_MMO_CharStatus_InventorySize
+	uint16 inventory_size;
+#endif // Pandas_Struct_MMO_CharStatus_InventorySize
 
 	// Char server addon system
 	unsigned int character_moves;
@@ -773,7 +832,7 @@ struct guild_castle {
 	int castle_id;
 	int mapindex;
 	char castle_name[NAME_LENGTH];
-	char castle_event[EVENT_NAME_LENGTH];
+	char castle_event[NPC_NAME_LENGTH];
 	int guild_id;
 	int economy;
 	int defense;

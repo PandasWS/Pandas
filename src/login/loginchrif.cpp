@@ -50,7 +50,11 @@ int logchrif_sendallwos(int sfd, uint8* buf, size_t len) {
  * @return 0
  */
 TIMER_FUNC(logchrif_sync_ip_addresses){
+#ifndef Pandas_Crashfix_Variable_Init
 	uint8 buf[2];
+#else
+	uint8 buf[2] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	ShowInfo("IP Sync in progress...\n");
 	WBUFW(buf,0) = 0x2735;
 	logchrif_sendallwos(-1, buf, 2);
@@ -316,7 +320,7 @@ int logchrif_parse_reqchangemail(int fd, int id, char* ip){
 			safestrncpy(acc.email, new_email, 40);
 			ShowNotice("Char-server '%s': Modify an e-mail on an account (@email GM command) (account: %d (%s), new e-mail: %s, ip: %s).\n", ch_server[id].name, account_id, acc.userid, new_email, ip);
 			// Save
-			accounts->save(accounts, &acc);
+			accounts->save(accounts, &acc, false);
 		}
 	}
 	return 1;
@@ -351,11 +355,15 @@ int logchrif_parse_requpdaccstate(int fd, int id, char* ip){
 
 			acc.state = state;
 			// Save
-			accounts->save(accounts, &acc);
+			accounts->save(accounts, &acc, false);
 
 			// notify other servers
 			if (state != 0){
+#ifndef Pandas_Crashfix_Variable_Init
 				uint8 buf[11];
+#else
+				uint8 buf[11] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 				WBUFW(buf,0) = 0x2731;
 				WBUFL(buf,2) = account_id;
 				WBUFB(buf,6) = 0; // 0: change of state, 1: ban
@@ -400,15 +408,20 @@ int logchrif_parse_reqbanacc(int fd, int id, char* ip){
 			else if( timestamp <= time(NULL) || timestamp == 0 )
 				ShowNotice("Char-server '%s': Error of ban request (account: %d, new date unbans the account, ip: %s).\n", ch_server[id].name, account_id, ip);
 			else{
+#ifndef Pandas_Crashfix_Variable_Init
 				uint8 buf[11];
 				char tmpstr[24];
+#else
+				uint8 buf[11] = { 0 };
+				char tmpstr[24] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 				timestamp2string(tmpstr, sizeof(tmpstr), timestamp, login_config.date_format);
 				ShowNotice("Char-server '%s': Ban request (account: %d, new final date of banishment: %s, ip: %s).\n", ch_server[id].name, account_id, tmpstr, ip);
 
 				acc.unban_time = timestamp;
 
 				// Save
-				accounts->save(accounts, &acc);
+				accounts->save(accounts, &acc, false);
 
 				WBUFW(buf,0) = 0x2731;
 				WBUFL(buf,2) = account_id;
@@ -443,14 +456,18 @@ int logchrif_parse_reqchgsex(int fd, int id, char* ip){
 		else if( acc.sex == 'S' )
 			ShowNotice("Char-server '%s': Error of sex change - account to change is a Server account (account: %d, ip: %s).\n", ch_server[id].name, account_id, ip);
 		else{
+#ifndef Pandas_Crashfix_Variable_Init
 			unsigned char buf[7];
+#else
+			unsigned char buf[7] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 			char sex = ( acc.sex == 'M' ) ? 'F' : 'M'; //Change gender
 
 			ShowNotice("Char-server '%s': Sex change (account: %d, new sex %c, ip: %s).\n", ch_server[id].name, account_id, sex, ip);
 
 			acc.sex = sex;
 			// Save
-			accounts->save(accounts, &acc);
+			accounts->save(accounts, &acc, false);
 
 			// announce to other servers
 			WBUFW(buf,0) = 0x2723;
@@ -510,7 +527,7 @@ int logchrif_parse_requnbanacc(int fd, int id, char* ip){
 		else{
 			ShowNotice("Char-server '%s': UnBan request (account: %d, ip: %s).\n", ch_server[id].name, account_id, ip);
 			acc.unban_time = 0;
-			accounts->save(accounts, &acc);
+			accounts->save(accounts, &acc, false);
 		}
 	}
 	return 1;
@@ -632,7 +649,7 @@ int logchrif_parse_updpincode(int fd){
 		if( accounts->load_num(accounts, &acc, RFIFOL(fd,4) ) ){
 			strncpy( acc.pincode, RFIFOCP(fd,8), PINCODE_LENGTH+1 );
 			acc.pincode_change = time( NULL );
-			accounts->save(accounts, &acc);
+			accounts->save(accounts, &acc, false);
 		}
 		RFIFOSKIP(fd,8 + PINCODE_LENGTH+1);
 	}
@@ -716,7 +733,7 @@ int logchrif_parse_reqvipdata(int fd) {
 				acc.char_slots = login_config.char_per_account;
 			}
 			acc.vip_time = vip_time;
-			accounts->save(accounts,&acc);
+			accounts->save(accounts,&acc, false);
 			if( flag&1 )
 				logchrif_sendvipdata(fd,&acc,((isvip)?0x1:0)|((flag&0x8)?0x4:0),mapfd);
 		}
@@ -730,7 +747,7 @@ int logchrif_parse_reqvipdata(int fd) {
 * Get account info that asked by inter/char-server
 */
 int logchrif_parse_accinfo(int fd) {
-	if( RFIFOREST(fd) < 23 )
+	if( RFIFOREST(fd) < 19 )
 		return 0;
 	else {
 		int map_fd = RFIFOL(fd, 2), u_fd = RFIFOL(fd, 6), u_aid = RFIFOL(fd, 10), account_id = RFIFOL(fd, 14);

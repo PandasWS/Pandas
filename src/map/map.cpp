@@ -59,6 +59,11 @@ using namespace rathena;
 
 char default_codepage[32] = "";
 
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	// 是否不主动返回服务器的 IP 地址给到客户端
+	int pandas_inter_hide_server_ipaddress = 0;
+#endif // Pandas_InterConfig_HideServerIpAddress
+
 int map_server_port = 3306;
 char map_server_ip[64] = "127.0.0.1";
 char map_server_id[32] = "ragnarok";
@@ -111,6 +116,8 @@ char log_db_db[32] = "log";
 char log_codepage[32] = "";
 #endif // Pandas_SQL_Configure_Optimization
 Sql* logmysql_handle;
+
+uint32 start_status_points = 48;
 
 // DBMap declaration
 static DBMap* id_db=NULL; /// int id -> struct block_list*
@@ -386,6 +393,9 @@ int map_addblock(struct block_list* bl)
 	}
 
 	struct map_data *mapdata = map_getmapdata(m);
+
+	if (mapdata->cell == nullptr) // Player warped to a freed map. Stop them!
+		return 1;
 
 	if( x < 0 || x >= mapdata->xs || y < 0 || y >= mapdata->ys )
 	{
@@ -2104,35 +2114,40 @@ void map_mobiddb(struct block_list* bl, int new_blockid) {
 	TBL_MOB* md = (TBL_MOB*)bl;
 	if (idb_exists(bossid_db, origin_blockid)) {
 		idb_remove(bossid_db, origin_blockid);
-		if (md->state.boss)
-			idb_put(bossid_db, bl->id, bl);
+		idb_put(bossid_db, bl->id, bl);
+
+		struct s_mapiterator* iter = nullptr;
+		struct map_session_data* pl_sd = nullptr;
+		iter = mapit_getallusers();
+		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+			struct status_change* const sc = status_get_sc(&pl_sd->bl);
+			if (!sc) continue;
+
+			struct status_change_entry* const sce = sc->data[SC_BOSSMAPINFO];
+			if (!sce) continue;
+
+			if (sce->val1 == origin_blockid) {
+				sce->val1 = bl->id;
+			}
+		}
+		mapit_free(iter);
 	}
 
 	// 接下来重设一些与游戏单位编号相关的定时器
+	exchange_timer_id(origin_blockid, new_blockid);
 
-	set_timerid(md->spawn_timer, bl->id);
-	set_timerid(md->deletetimer, bl->id);
-
+	// 接下来处理与游戏单位编号相关的 s_skill_unit_group
 	struct unit_data* ud = nullptr;
-	if ((ud = unit_bl2ud(bl)) != NULL) {
-		set_timerid(ud->attacktimer, bl->id);
-		set_timerid(ud->skilltimer, bl->id);
-		set_timerid(ud->steptimer, bl->id);
-		set_timerid(ud->walktimer, bl->id);
-	}
-
-	detect_invalid_timer(origin_blockid);
-
-	// 接下来处理与游戏单位编号相关的 skill_unit_group
-
-	if (ud) {
-		for (int i = 0; i < MAX_SKILLUNITGROUP; i++) {
-			if (ud->skillunit[i] && ud->skillunit[i]->src_id == origin_blockid) {
-				ud->skillunit[i]->src_id = bl->id;
+	if ((ud = unit_bl2ud(bl)) != nullptr) {
+		for (const auto su : ud->skillunits) {
+			if (su->src_id == origin_blockid) {
+				su->src_id = bl->id;
 			}
 		}
 	}
 
+	// 进行一些遗漏检测, 如果发现有未处理的定时器则需要警告出来
+	detect_invalid_timer(origin_blockid);
 }
 #endif // Pandas_BattleRecord
 
@@ -2204,7 +2219,7 @@ int map_quit(struct map_session_data *sd) {
 		bg_team_leave(sd, true, true);
 
 	if (sd->bg_queue_id > 0)
-		bg_queue_leave(sd);
+		bg_queue_leave(sd, false);
 
 	if( sd->status.clan_id )
 		clan_member_left(sd);
@@ -2986,22 +3001,24 @@ int map_delinstancemap(int m)
 	// Free memory
 	if (mapdata->cell)
 		aFree(mapdata->cell);
-	mapdata->cell = NULL;
+	mapdata->cell = nullptr;
 	if (mapdata->block)
 		aFree(mapdata->block);
-	mapdata->block = NULL;
+	mapdata->block = nullptr;
 	if (mapdata->block_mob)
 		aFree(mapdata->block_mob);
-	mapdata->block_mob = NULL;
+	mapdata->block_mob = nullptr;
 
 	map_free_questinfo(mapdata);
 	mapdata->damage_adjust = {};
 	mapdata->flag.clear();
 	mapdata->skill_damage.clear();
+	mapdata->instance_id = 0;
 
 	mapindex_removemap(mapdata->index);
 	map_removemapdb(mapdata);
 
+	mapdata->index = 0;
 	memset(&mapdata->name, '\0', sizeof(map[0].name)); // just remove the name
 	return 1;
 }
@@ -4433,6 +4450,10 @@ int inter_config_read(const char *cfgName)
 		else if (strcmpi(w1, "suspend_table") == 0)
 			safestrncpy(suspend_table, w2, sizeof(suspend_table));
 #endif // Pandas_Player_Suspend_System
+#ifdef Pandas_InterConfig_HideServerIpAddress
+		else if (strcmpi(w1, "hide_server_ipaddress") == 0)
+			pandas_inter_hide_server_ipaddress = config_switch(w2);
+#endif // Pandas_InterConfig_HideServerIpAddress
 		else
 		//Map Server SQL DB
 		if(strcmpi(w1,"map_server_ip")==0)
@@ -4480,6 +4501,9 @@ int inter_config_read(const char *cfgName)
 			safestrncpy(log_codepage, w2, sizeof(log_codepage));
 		else
 #endif // Pandas_SQL_Configure_Optimization
+		if(strcmpi(w1,"start_status_points")==0)
+			start_status_points=atoi(w2);
+		else
 		if( mapreg_config_read(w1,w2) )
 			continue;
 		//support the import command, just like any other config
@@ -5015,22 +5039,27 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 		case MF_MOBINFO:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_Mobinfo
+
 #ifdef Pandas_MapFlag_MobDroprate
 		case MF_MOBDROPRATE:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_MobDroprate
+
 #ifdef Pandas_MapFlag_MvpDroprate
 		case MF_MVPDROPRATE:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_MvpDroprate
+
 #ifdef Pandas_MapFlag_MaxHeal
 		case MF_MAXHEAL:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_MaxHeal
+
 #ifdef Pandas_MapFlag_MaxDmg_Skill
 		case MF_MAXDMG_SKILL:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_MaxDmg_Skill
+
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 		case MF_MAXDMG_NORMAL:
 			return map_getmapflag_param(m, mapflag, args, 0);
@@ -5040,6 +5069,11 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 		case MF_NOSKILL2:
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_NoSkill2
+
+#ifdef Pandas_MapFlag_MaxASPD
+		case MF_MAXASPD:
+			return map_getmapflag_param(m, mapflag, args, 0);
+#endif // Pandas_MapFlag_MaxASPD
 
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 5>
 		default:
@@ -5202,13 +5236,23 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			mapdata->flag[mapflag] = status;
 			break;
 		case MF_RESTRICTED:
-			nullpo_retr(false, args);
+			if (!status) {
+				if (args == nullptr) {
+					mapdata->zone = 0;
+				} else {
+					mapdata->zone ^= (1 << (args->flag_val + 1)) << 3;
+				}
 
-			mapdata->flag[mapflag] = status;
-			if (!status)
-				mapdata->zone ^= (1 << (args->flag_val + 1)) << 3;
-			else
+				// Don't completely disable the mapflag's status if other zones are active
+				if (mapdata->zone == 0) {
+					mapdata->flag[mapflag] = status;
+				}
+			} else {
+				nullpo_retr(false, args);
+
 				mapdata->zone |= (1 << (args->flag_val + 1)) << 3;
+				mapdata->flag[mapflag] = status;
+			}
 			break;
 		case MF_NOCOMMAND:
 			if (status) {
@@ -5397,6 +5441,29 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			mapdata->flag[mapflag] = status;
 			break;
 #endif // Pandas_MapFlag_NoSkill2
+#ifdef Pandas_MapFlag_MaxASPD
+		case MF_MAXASPD:
+			if (!status)
+				map_setmapflag_param(m, mapflag, 0);
+			else {
+				nullpo_retr(false, args);
+				if (args) {
+					if (args->flag_val != 0) {
+						if (args->flag_val < 1) {
+							ShowWarning("map_setmapflag: The minimum ASPD cannot be less than 1, and it has been forcibly set to 1.\n");
+						}
+						else if (args->flag_val > 199) {
+							ShowWarning("map_setmapflag: The maximum ASPD cannot be greater than 199, and it has been forcibly set to 199.\n");
+						}
+						args->flag_val = cap_value(args->flag_val, 1, 199);
+					}
+					map_setmapflag_param(m, mapflag, args->flag_val);
+					status = !(args->flag_val == 0);
+				}
+			}
+			mapdata->flag[mapflag] = status;
+			break;
+#endif // Pandas_MapFlag_MaxASPD
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 6>
 		default:
 			mapdata->flag[mapflag] = status;
@@ -5508,6 +5575,20 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		break;
 	}
 #endif // Pandas_MapFlag_NoAura
+#ifdef Pandas_MapFlag_MaxASPD
+	case MF_MAXASPD:
+	{
+		struct s_mapiterator* iter = mapit_geteachiddb();
+		struct block_list* bl = nullptr;
+		for (bl = (struct block_list*)mapit_first(iter); mapit_exists(iter); bl = (struct block_list*)mapit_next(iter)) {
+			if (!bl || bl->m != m)
+				continue;
+			status_calc_bl_(bl, SCB_ALL, SCO_FORCE);
+		}
+		mapit_free(iter);
+		break;
+	}
+#endif // Pandas_MapFlag_MaxASPD
 	}
 #endif // Pandas_Mapflags
 

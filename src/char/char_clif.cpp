@@ -801,6 +801,12 @@ void chclif_send_map_data( int fd, struct mmo_charstatus *cd, uint32 ipl, int ma
 	mapindex_getmapname_ext(mapindex_id2name(cd->last_point.map), WFIFOCP(fd,6));
 	uint32 subnet_map_ip = char_lan_subnetcheck(ipl); // Advanced subnet check [LuzZza]
 	WFIFOL(fd,22) = htonl((subnet_map_ip) ? subnet_map_ip : map_server[map_server_index].ip);
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	if (pandas_inter_hide_server_ipaddress) {
+		// 若希望不主动返回服务器的 IP 地址, 那么将此处的地图服务器 IP 重设为 0
+		WFIFOL(fd,22) = 0;
+	}
+#endif // Pandas_InterConfig_HideServerIpAddress
 	WFIFOW(fd,26) = ntows(htons(map_server[map_server_index].port)); // [!] LE byte order here [!]
 #if PACKETVER >= 20170315
 	memset(WFIFOP(fd, 28), 0, 128); // Unknown

@@ -1444,6 +1444,11 @@ NPC名称:
 使用建议:
 	若想知道当前角色使用的光环编号, 直接访问 PANDAS_AURASET 角色变量即可
 
+注意事项:
+	在客户端封包版本小于 20181002 的情况下, 获取/失去光环的玩家单位客户端
+	会黑屏一下以便刷新光环效果. 为获取最佳的光环效果, 建议使用客户端封包
+	版本大于等于 20181002 的客户端.
+
 --------------------------------------------------------------
 
 *unitaura <游戏单位编号>,<光环编号>;
@@ -1451,9 +1456,10 @@ NPC名称:
 使指定的单位可以激活指定的光环特效.
 光环本质是一组 Effect 效果的组合, 光环编号定义在 db/aura_db.yml 文件中.
 
-与 aura 指令不同的是, 若你已经知道某个玩家/魔物/佣兵/宠物/NPC/精灵/人工生命体的 <游戏单位编号>,
-那么也可以为他们套上一个光环 (但只有玩家单位的光环重启地图服务器也会被记住,
-其他的几种单位他们的光环会持续生效到地图服务器退出为止)
+若你已经知道某个玩家/魔物/佣兵/宠物/NPC/精灵/人工生命体的 <游戏单位编号>,
+那么也可以为他们套上一个光环 (但只有玩家的光环会记录在数据库中, 并且会在
+重启地图服务器后还能被恢复光环, 其他的几种单位他们的光环会持续生效到地图
+服务器退出为止)
 
 游戏单位编号:
 	这个编号有不同的叫法: GameID, GID, MapID 等
@@ -1467,8 +1473,9 @@ NPC名称:
 	成功返回 1, 失败返回 0
 
 注意事项:
-	使用 aura(1000); 等价于 unitaura(getcharid(3), 1000);
-	因为对于玩家来说他的 <账号编号> 就是 <游戏单位编号>
+	在客户端封包版本小于 20181002 的情况下, 获取/失去光环的玩家单位客户端
+	会黑屏一下以便刷新光环效果. 为获取最佳的光环效果, 建议使用客户端封包
+	版本大于等于 20181002 的客户端.
 
 --------------------------------------------------------------
 
@@ -1477,12 +1484,22 @@ NPC名称:
 
 在原先 rAthena 官方返回的信息基础上, <参数>和<返回的数组>中新增了以下索引:
 
-	UMOB_AURA - 魔物的光环编号
-	UHOM_AURA - 生命体的光环编号
-	UPET_AURA - 宠物的光环编号
-	UMER_AURA - 佣兵的光环编号
-	UELE_AURA - 精灵的光环编号
-	UNPC_AURA - NPC的光环编号
+	UMOB_AURA - 读取或设置魔物的光环编号
+	UHOM_AURA - 读取或设置生命体的光环编号
+	UPET_AURA - 读取或设置宠物的光环编号
+	UMER_AURA - 读取或设置佣兵的光环编号
+	UELE_AURA - 读取或设置精灵的光环编号
+	UNPC_AURA - 读取或设置NPC 的光环编号
+	
+	UMOB_DAMAGETAKEN - 读取或设置指定魔物的承伤倍率
+		若值为 -1 则表示直接使用魔物在 db 中设置的默认承伤倍率
+		设为 100 则表示魔物受到的伤害是 100%
+		设为 80 则表示玩家给魔物造成的伤害只会发挥 80% 的伤害量
+		设为 120 则表示玩家给魔物造成的伤害将发挥 120% 的伤害量
+		取值范围: 从 -1 到 65535
+
+	UMOB_DAMAGETAKEN_DB - 读取指定魔物在 db 中设置的默认承伤倍率
+		注意: 该参数暂时不能用于 setunitdata 指令
 
 --------------------------------------------------------------
 
@@ -1543,8 +1560,8 @@ NPC名称:
 	每个单位都有自己的战斗记录信息, 单位被销毁之前记录都在.
 	记录数上限没有限制, 但越多的记录会开销越多内存.
 	
-	您可以在 OnUnitKillExpress 或 OnBatrecFreeExpress 中获取战斗记录的内容,
-	以便立即使用它们, 或者将战斗记录数组保存到其他地方.
+	您可以在 OnUnitKillExpress 单位死亡事件中获取战斗记录的内容以便立即使用它们,
+	或者将战斗记录数组保存到其他地方.
 
 --------------------------------------------------------------
 
@@ -1587,8 +1604,8 @@ NPC名称:
 	每个单位都有自己的战斗记录信息, 单位被销毁之前记录都在.
 	记录数上限没有限制, 但越多的记录会开销越多内存.
 	
-	您可以在 OnUnitKillExpress 或 OnBatrecFreeExpress 中获取战斗记录的内容,
-	以便立即使用它们, 或者将战斗记录数组保存到其他地方.
+	您可以在 OnUnitKillExpress 单位死亡事件中获取战斗记录的内容以便立即使用它们,
+	或者将战斗记录数组保存到其他地方.
  
 --------------------------------------------------------------
 
@@ -1630,6 +1647,8 @@ NPC名称:
 	可选值, 若不传递则表示控制当前关联到脚本的角色
 
 提示信息:
+	您可以通过 batrec_autoenabled_unit 战斗配置选项来控制哪些单位会自动启用战斗记录.
+
 	玩家默认是不会启动战斗记录的, 因此需要使用该指令手动开启.
 	玩家角色在开启记录后, 除非玩家下线或者被明确的禁用, 否则将会一直记录.
 	
@@ -1682,6 +1701,12 @@ NPC名称:
 	SUSPEND_MODE_AFK		- 离开模式 (AFK)
 	SUSPEND_MODE_NORMAL		- 普通模式
 	可选值, 默认值为: SUSPEND_MODE_NORMAL
+
+提示信息:
+	请不要在 OnInit / OnInterIfInit / OnInterIfInitOnce 事件中使用该指令,
+	因为在触发这几个事件的时候服务器并未就绪.
+	
+	若必须要在这个时机使用本指令的话, 可以使用 addtimer 将延迟几秒再执行.
 
 返回值:
 	成功返回 1, 失败返回 0
@@ -1821,5 +1846,967 @@ NPC名称:
 	其中除查询类型 1 的返回值为字符串外, 其他查询类型的返回值皆为数值型.
 	其中查询类型 2 返回 -1 表示没有图标.
 	其中查询类型 4 返回 -1 表示该效果脚本永不超时.
+
+--------------------------------------------------------------
+
+*expandinventory_ack <响应代码>{,<物品编号>};
+
+用于响应客户端的背包扩容请求, 并告知客户端下一步的动作.
+只能用于 inventory_expansion 这个 NPC 的 OnInvExpandRequest 标签代码中.
+
+响应代码:
+	EXPAND_INV_ASK_CONFIRMATION	- 要求客户端弹出确认提示框 (需携带 <物品编号> 参数)
+	EXPAND_INV_FAILED			- 请求失败
+	EXPAND_INV_OTHER_WORK		- 角色正在忙于其他事务, 无法扩容
+	EXPAND_INV_MISSING_ITEM		- 没有提供指定的道具
+	EXPAND_INV_MAX_SIZE			- 当前角色背包已经扩容到极限
+
+物品编号:
+	在复兴后应该是物品编号为: 25793 的道具
+	但是你可以通过调整 inventory_expansion 的代码来随便修改成其他道具.
+	
+	物品编号并不是总需要发送, 比如你返回 EXPAND_INV_OTHER_WORK 的时候, 把物品编号填写 0 都行.
+	因为客户端在给出这个提示的时候用不上物品编号.
+
+返回值:
+	发送成功则没有返回值, 失败会报错
+
+提示信息:
+	您可以在 npc/features/inventory_expansion.txt 中找到 inventory_expansion 这个定制的 NPC,
+	调整它的代码可以修改背包扩容的处理逻辑.
+
+注意事项:
+	背包扩容是 RO 客户端支持的一个功能, 最大可以将角色的背包从 100 扩容到 200.
+	客户端则封包版本号必须 >= 20181031 才支持.
+
+--------------------------------------------------------------
+
+*expandinventory_result <结果代码>;
+
+用于发送给客户端最终的背包扩容结果.
+
+结果代码:
+	EXPAND_INV_RESULT_SUCCESS		- 扩容成功
+	EXPAND_INV_RESULT_FAILED		- 扩容失败
+	EXPAND_INV_RESULT_OTHER_WORK	- 角色正在忙于其他事务, 无法扩容
+	EXPAND_INV_RESULT_MISSING_ITEM	- 没有提供指定的道具
+	EXPAND_INV_RESULT_MAX_SIZE		- 当前角色背包已经扩容到极限
+
+返回值:
+	发送成功则没有返回值, 失败会报错
+
+提示信息:
+	您可以在 npc/features/inventory_expansion.txt 中找到 inventory_expansion 这个定制的 NPC,
+	调整它的代码可以修改背包扩容的处理逻辑.
+
+注意事项:
+	背包扩容是 RO 客户端支持的一个功能, 最大可以将角色的背包从 100 扩容到 200.
+	客户端则封包版本号必须 >= 20181031 才支持.
+
+--------------------------------------------------------------
+
+*expandinventory_adjust <增加多少容量>;
+
+用于调整角色的背包容量上限.
+
+增加多少容量:
+	玩家现在容量是 100 你想把它调整为 115, 那么此处只需要传递 15 即可
+
+返回值:
+	调整成功返回 1, 失败返回 0
+
+提示信息:
+	您可以在 npc/features/inventory_expansion.txt 中找到 inventory_expansion 这个定制的 NPC,
+	调整它的代码可以修改背包扩容的处理逻辑.
+
+注意事项:
+	背包扩容是 RO 客户端支持的一个功能, 最大可以将角色的背包从 100 扩容到 200.
+	客户端则封包版本号必须 >= 20181031 才支持.
+
+--------------------------------------------------------------
+
+*getinventorysize {<角色编号>};
+
+用于查询并获取指定角色的背包容量上限.
+
+返回值:
+	找不到角色则返回 0, 否则返回查询到的背包容量
+
+--------------------------------------------------------------
+
+*announce "<消息文本>",<标记位>{,<字体颜色>{,<字体类型>{,<字体大小>{,<字体对齐>{,<字体垂直>{,<角色编号>}}}}}};
+
+在 rAthena 原来的标记位基础上, 熊猫模拟器新增了以下标记位:
+
+标记位:
+	bc_name:	在聊天栏中双击此消息时会将发布者角色名称填写到聊天窗口
+
+示例代码:
+	announce "双击这条文本可以私聊我哟",bc_all|bc_name;
+
+提示信息:
+	若调用 announce 的脚本没有关联到玩家, 那么 bc_name 标记位将会被忽视.
+	
+	由于客户端限制, 在设置上 bc_name 标记位后, 除了<字体颜色>字段依然有效外, 其他像:
+	<字体类型>, <字体大小>, <字体对齐>, <字体垂直> 等字段将被忽视.
+
+注意事项:
+	发送者自己双击聊天栏中的公告信息是无效的, 其他玩家可以.
+	此功能在 20130807 客户端上测试有效, 更早之前的客户端并未经过测试.
+
+--------------------------------------------------------------
+
+*getmapspawns "<地图名称>"{,<角色编号>};
+
+用于获取指定地图的魔物刷新点信息.
+
+地图名称:
+	指定的地图名称, 比如 "prontera" 表示普隆德拉
+	地图名称可以设置为 "this", 表示获取当前脚本关联玩家所在的地图
+
+角色编号:
+	若指定了角色编号则使用 "this" 地图名称时将会查询指定角色所在地图的魔物刷新点信息
+	此外 @ 变量的值也将绑定记录到该角色身上
+
+信息通过变量返回:
+
+	@spawn_mobid[]		魔物编号 - 数值型数组
+	@spawn_name$[]		魔物名称 - 字符型数组
+						使用 monster 指令的刷怪点可以设置魔物名称,
+						因此当若有指定特殊魔物名称则优先返回特殊魔物名称
+	@spawn_num[]		刷新魔物数量 - 数值型数组
+	@spawn_active[]		魔物当前激活数量 - 数值型数组
+						当启用 dynamic_mobs 时, 如果地图没有玩家存在则魔物不会被激活
+	@spawn_size[]		魔物体型 - 数值型数组
+						若为 -1 表示默认体型, 通常可能的返回值有:
+							SZ_SMALL	-	表示小型
+							SZ_MEDIUM	-	表示中型
+							SZ_BIG		-	表示大型
+	@spawn_isboss[]		魔物是否为 BOSS (可被 BOSS 雷达探测) - 数值型数组
+							为 0 表示普通魔物, 为 1 表示 BOSS 魔物
+	@spawn_delay1[]		魔物死亡后的固定刷新间隔 (单位为毫秒) - 数值型数组
+	@spawn_delay2[]		额外的随机浮动刷新间隔 (单位为毫秒) - 数值型数组
+							若配置了 delay2 则魔物死亡后的刷新间隔为: delay1 ~ (delay1 + delay2) 之间的随机毫秒数
+	@spawn_ai[]			魔物的 AI 模式 - 数值型数组
+						若为 -1 表示默认 AI 模式, 通常可能的返回值有:
+							AI_NONE
+							AI_ATTACK
+							AI_SPHERE
+							AI_FLORA
+							AI_ZANZOU
+							AI_LEGION
+							AI_FAW
+							AI_GUILD
+	@spawn_level[]		魔物等级 - 数值型数组
+							使用 monster 指令的刷怪点可以设置魔物等级,
+							因此当若有指定特殊魔物等级则优先返回特殊魔物等级
+	@spawn_eventname$[]	魔物死亡时触发的事件标签 - 字符型数组
+							若为空字符串则表示没有指定魔物死亡时触发的事件标签
+	@spawn_mapid[]		魔物所在的地图编号 (通常没啥作用) - 数值型数组
+	@spawn_mapname$[]	魔物所在的地图名称 - 字符型数组
+	@spawn_map_x[]		魔物刷新点在地图上的 x 坐标 - 数值型数组
+	@spawn_map_y[]		魔物刷新点在地图上的 y 坐标 - 数值型数组
+	@spawn_map_xs[]		魔物刷新点在地图上的 xs 坐标 (若为 -1 则表示没有指定) - 数值型数组
+	@spawn_map_ys[]		魔物刷新点在地图上的 ys 坐标 (若为 -1 则表示没有指定) - 数值型数组
+
+
+	返回值及 @spawn_count[] 变量都会赋予查询到的魔物刷怪点数量.
+
+返回值:
+	成功则返回找到的刷新点数量, 失败则返回 -1
+
+注意事项:
+	返回值数组变量是 @ 开头的角色变量.
+	若指令在不关联任何玩家的情况下被执行之后, 可以改用 $@ 变量来承接返回值.
+	
+	若您使用 $@ 变量来承接返回值内容的话,
+	调用 getmapspawns 之后应该立刻使用变量的内容, 因为 $@ 变量是全服共享的, 
+	如果调用完成后不立刻使用, 可能里面填充的内容就被其他玩家调用 getmapspawns 替换掉了.
+	
+	当使用 "this" 指令的时候, 若脚本不关联任何玩家的话, 那么必须指定 <角色编号>,
+	否则地图服务器将无法理解 "this" 具体是哪一张地图.
+	
+	如果您希望列出一些菜单项让玩家做选择的话, 请使用 @ 变量承接.
+	因为 @ 变量只保存在玩家角色身上, 不会被服务器其他玩家调用 getmapspawns 指令而覆盖.
+
+--------------------------------------------------------------
+
+*getmobspawns <魔物编号>{,"<地图名称>"{,<角色编号>}};
+
+用于查询指定魔物在不同地图的刷新点信息.
+
+魔物编号:
+	想查询哪个魔物的刷新点信息, 就填写该魔物的编号
+
+地图名称:
+	指定的地图名称, 比如 "prontera" 表示普隆德拉
+	地图名称可以设置为 "this", 表示获取当前脚本关联玩家所在的地图
+
+角色编号:
+	若指定了角色编号则使用 "this" 地图名称时将会查询指定角色所在地图的魔物刷新点信息
+	此外 @ 变量的值也将绑定记录到该角色身上
+
+信息通过变量返回:
+
+	@spawn_mobid[]		魔物编号 - 数值型数组
+	@spawn_name$[]		魔物名称 - 字符型数组
+						使用 monster 指令的刷怪点可以设置魔物名称,
+						因此当若有指定特殊魔物名称则优先返回特殊魔物名称
+	@spawn_num[]		刷新魔物数量 - 数值型数组
+	@spawn_active[]		魔物当前激活数量 - 数值型数组
+						当启用 dynamic_mobs 时, 如果地图没有玩家存在则魔物不会被激活
+	@spawn_size[]		魔物体型 - 数值型数组
+						若为 -1 表示默认体型, 通常可能的返回值有:
+							SZ_SMALL	-	表示小型
+							SZ_MEDIUM	-	表示中型
+							SZ_BIG		-	表示大型
+	@spawn_isboss[]		魔物是否为 BOSS (可被 BOSS 雷达探测) - 数值型数组
+							为 0 表示普通魔物, 为 1 表示 BOSS 魔物
+	@spawn_delay1[]		魔物死亡后的固定刷新间隔 (单位为毫秒) - 数值型数组
+	@spawn_delay2[]		额外的随机浮动刷新间隔 (单位为毫秒) - 数值型数组
+							若配置了 delay2 则魔物死亡后的刷新间隔为: delay1 ~ (delay1 + delay2) 之间的随机毫秒数
+	@spawn_ai[]			魔物的 AI 模式 - 数值型数组
+						若为 -1 表示默认 AI 模式, 通常可能的返回值有:
+							AI_NONE
+							AI_ATTACK
+							AI_SPHERE
+							AI_FLORA
+							AI_ZANZOU
+							AI_LEGION
+							AI_FAW
+							AI_GUILD
+	@spawn_level[]		魔物等级 - 数值型数组
+							使用 monster 指令的刷怪点可以设置魔物等级,
+							因此当若有指定特殊魔物等级则优先返回特殊魔物等级
+	@spawn_eventname$[]	魔物死亡时触发的事件标签 - 字符型数组
+							若为空字符串则表示没有指定魔物死亡时触发的事件标签
+	@spawn_mapid[]		魔物所在的地图编号 (通常没啥作用) - 数值型数组
+	@spawn_mapname$[]	魔物所在的地图名称 - 字符型数组
+	@spawn_map_x[]		魔物刷新点在地图上的 x 坐标 - 数值型数组
+	@spawn_map_y[]		魔物刷新点在地图上的 y 坐标 - 数值型数组
+	@spawn_map_xs[]		魔物刷新点在地图上的 xs 坐标 (若为 -1 则表示没有指定) - 数值型数组
+	@spawn_map_ys[]		魔物刷新点在地图上的 ys 坐标 (若为 -1 则表示没有指定) - 数值型数组
+
+
+	返回值及 @spawn_count[] 变量都会赋予查询到的魔物刷怪点数量.
+
+返回值:
+	成功则返回找到的刷新点数量, 失败则返回 -1
+
+注意事项:
+	返回值数组变量是 @ 开头的角色变量.
+	若指令在不关联任何玩家的情况下被执行之后, 可以改用 $@ 变量来承接返回值.
+	
+	若您使用 $@ 变量来承接返回值内容的话,
+	调用 getmobspawns 之后应该立刻使用变量的内容, 因为 $@ 变量是全服共享的, 
+	如果调用完成后不立刻使用, 可能里面填充的内容就被其他玩家调用 getmobspawns 替换掉了.
+	
+	当使用 "this" 指令的时候, 若脚本不关联任何玩家的话, 那么必须指定 <角色编号>,
+	否则地图服务器将无法理解 "this" 具体是哪一张地图.
+	
+	如果您希望列出一些菜单项让玩家做选择的话, 请使用 @ 变量承接.
+	因为 @ 变量只保存在玩家角色身上, 不会被服务器其他玩家调用 getmobspawns 指令而覆盖.
+
+--------------------------------------------------------------
+
+*getcalendartime <小时>,<分钟>{,<月的第几天>{,<周的第几天>}};
+
+获取下次出现指定时间的 UNIX 时间戳
+
+小时:
+	可填写值为 0 ~ 23 代表 24 小时
+
+分钟:
+	可填写值为 0 ~ 59 代表 60 分钟
+
+月的第几天:
+	可填写值为 1 ~ 31 代表 31 天; 填写 -1 则表示与月份无关
+
+周的第几天:
+	SUNDAY - 周日
+	MONDAY - 周一
+	TUESDAY - 周二
+	WEDNESDAY - 周三
+	THURSDAY - 周四
+	FRIDAY - 周五
+	SATURDAY - 周六
+
+如果只想使用 <每周的第几天> 而不想使用 <每月的第几天>,
+那么将 <每月的第几天> 设为 -1 即可
+
+返回值:
+	成功则返回时间戳, 失败则返回 -1
+
+示例代码:
+	getcalendartime(19, 00); 				// 获取下次 19:00 的时间戳
+	getcalendartime(19, 00, 6); 			// 获取下次 6 号 19:00 的时间戳
+	getcalendartime(19, 10, -1, MONDAY);	// 获取下次 周一 19:10 的时间戳
+
+--------------------------------------------------------------
+
+*getskillinfo <查询的信息类型>,<技能编号>{,<技能等级>{,<角色编号>}};
+*getskillinfo <查询的信息类型>,<"技能名称">{,<技能等级>{,<角色编号>}};
+
+获取指定技能在技能数据库中所配置的各项信息
+
+查询的信息类型:
+	SKI_CASTTYPE
+		技能施法类型
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中提供的 TargetType 进行计算得出
+		
+		可能的返回值:
+		----------------
+		CAST_GROUND				/// 地面技能
+		CAST_DAMAGE				/// 伤害技能
+		CAST_NODAMAGE			/// 无伤害技能
+		
+	SKI_NAME
+		技能名称
+		
+		返回值为字符串类型
+		该字段的值来自 skill_db.yml 中的 Name 字段
+		通常技能名称是英文常量, 比如狂击的技能名称是 SM_BASH
+		
+	SKI_DESCRIPTION
+		技能描述
+		
+		返回值为字符串类型
+		该字段的值来自 skill_db.yml 中的 Description 字段
+		通常技能描述是游戏里的技能名称, 比如: 狂击
+		
+	SKI_MAXLEVEL_IN_SKILLTREE
+		指定职业的技能树中该技能的最大等级
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入要查询的职业代码
+		该字段的值来自 skill_tree.txt 中不同职业对被查询技能所设置的最大技能等级
+		
+	SKI_SKILLTYPE
+		技能伤害类型
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Type 字段
+		
+		可能的返回值:
+		----------------
+		BF_WEAPON				/// 物理攻击类型
+		BF_MAGIC				/// 魔法攻击类型
+		BF_MISC					/// 其他类型
+		
+	SKI_HIT
+		技能命中类型
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Hit 字段
+		
+		可能的返回值:
+		----------------
+		DMG_SINGLE				/// (skill?)
+		DMG_MULTI_HIT			/// multi-hit damage
+		
+	SKI_TARGETTYPE
+		技能目标类型
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 TargetType 字段
+		
+		可能的返回值:
+		----------------
+		INF_PASSIVE_SKILL		/// 
+		INF_ATTACK_SKILL		/// 
+		INF_GROUND_SKILL		/// 
+		INF_SELF_SKILL			/// 
+		INF_SUPPORT_SKILL		///
+		INF_TRAP_SKILL			///
+		
+	SKI_ELEMENT
+		技能属性
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Element 字段
+		
+		可能的返回值:
+		----------------
+		ELE_NEUTRAL				/// 无属性 / 自然属性
+		ELE_WATER				/// 水属性
+		ELE_EARTH				/// 地属性
+		ELE_FIRE				/// 火属性
+		ELE_WIND				/// 风属性
+		ELE_POISON				/// 毒属性
+		ELE_HOLY				/// 圣属性
+		ELE_DARK				/// 暗属性
+		ELE_GHOST				/// 幽灵属性
+		ELE_UNDEAD				/// 不死属性
+		ELE_WEAPON				/// 使用武器的属性
+		ELE_ENDOWED				/// ??? 谁有了解的翻译一下
+		ELE_RANDOM				/// 随机属性
+		
+	SKI_DAMAGEFLAGS
+		技能伤害的修正标记
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组名称为: @skill_damage_flags[]
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的数组名称为: $@skill_damage_flags[]
+		该字段的值来自 skill_db.yml 中的 DamageFlags 字段
+		
+		返回值数组中保存是该技能激活的伤害修正标记
+		
+		可能的返回值:
+		----------------
+		NK_SPLASH				/// 
+		NK_SPLASHSPLIT			/// 
+		NK_IGNOREATKCARD		/// 
+		NK_IGNOREELEMENT		/// 
+		NK_IGNOREDEFENSE		/// 
+		NK_IGNOREFLEE			/// 
+		NK_IGNOREDEFCARD		/// 
+		NK_CRITICAL				/// 
+		NK_IGNORELONGCARD		/// 
+		
+	SKI_MAXLEVEL
+		技能最大等级
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 MaxLevel 字段
+		
+	SKI_RANGE
+		技能有效范围 / 攻击距离
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Range 字段
+		
+	SKI_SPLASHAREA
+		技能溅射范围
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 SplashArea 字段
+		
+	SKI_HITCOUNT
+		技能打击段数
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 HitCount 字段
+		
+	SKI_CASTTIME
+		技能可变咏唱时间 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 CastTime 字段
+		
+	SKI_FIXEDCASTTIME
+		技能固定咏唱时间 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 FixedCastTime 字段
+		
+		仅复兴后版本中拥有固定咏唱时间这个设定, 复兴前版本中该类查询返回值强制为 -1
+		
+	SKI_AFTERCASTACTDELAY
+		技能咏唱完毕后的动作延迟时间, 别名: 技能公共延迟 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 AfterCastActDelay 字段
+		
+	SKI_AFTERCASTWALKDELAY
+		技能咏唱完毕后的移动僵直时间, 别名: 技能攻击僵直 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 AfterCastWalkDelay 字段
+		
+	SKI_DURATION1
+		技能时间配置字段 1 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Duration1 字段
+		
+		不同的技能对该字段的使用方式不同, 因此没有明确的作用说明
+		例如: 复兴后的 SM_ENDURE 技能在 Duration1 中配置的值被用作 "霸体" 的效果时长
+		
+	SKI_DURATION2
+		技能时间配置字段 2 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Duration2 字段
+		
+		不同的技能对该字段的使用方式不同, 因此没有明确的作用说明
+		例如: 复兴后的 PR_LEXDIVINA 技能在 Duration2 中配置的值被用作 "沉默之术" 的效果时长
+		
+	SKI_CASTTIMEFLAGS
+		技能咏唱时间的修正标记
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CastTimeFlags 字段
+		
+		可能的返回值:
+		----------------
+		SKILL_CAST_IGNOREDEX		/// 标记位, 无视 DEX 带来的修正影响
+		SKILL_CAST_IGNORESTATUS		/// 标记位, 无视角色状态 (StatusChange / 简称 SC) 的修正影响
+		SKILL_CAST_IGNOREITEMBONUS	/// 标记位, 无视 bonus 效果调整器的修正影响
+		
+	SKI_CASTDELAYFLAGS
+		技能延迟时间的修正标记
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CastDelayFlags 字段
+		
+		可能的返回值:
+		----------------
+		SKILL_CAST_IGNOREDEX		/// 标记位, 无视 DEX 带来的修正影响
+		SKILL_CAST_IGNORESTATUS		/// 标记位, 无视角色状态 (StatusChange / 简称 SC) 的修正影响
+		SKILL_CAST_IGNOREITEMBONUS	/// 标记位, 无视 bonus 效果调整器的修正影响
+		
+	SKI_CASTDEFENSEREDUCTION
+		技能在咏唱期间造成施法者的防御降低倍率
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CastDefenseReduction 字段
+		
+	SKI_FLAGS
+		技能特殊标记
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组名称为: @skill_flags[]
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的数组名称为: $@skill_flags[]
+		该字段的值来自 skill_db.yml 中的 Flags 字段
+		
+		返回值数组中保存是该技能的特殊标记
+		
+		可能的返回值:
+		----------------
+		INF2_ISQUEST				/// 这是任务技能
+		INF2_ISNPC					/// 
+		INF2_ISWEDDING				/// 这是结婚后才能拥有的技能
+		INF2_ISSPIRIT				/// 
+		INF2_ISGUILD				/// 这是公会技能
+		INF2_ISSONG					/// 
+		INF2_ISENSEMBLE				/// 
+		INF2_ISTRAP					/// 这是陷阱技能
+		INF2_TARGETSELF				/// 
+		INF2_NOTARGETSELF			/// 
+		INF2_PARTYONLY				/// 只能对队伍中的成员使用
+		INF2_GUILDONLY				/// 只能对公会中的成员使用
+		INF2_NOTARGETENEMY			/// 
+		INF2_ISAUTOSHADOWSPELL		/// 
+		INF2_ISCHORUS				/// 
+		INF2_IGNOREBGREDUCTION		/// 
+		INF2_IGNOREGVGREDUCTION		/// 
+		INF2_DISABLENEARNPC			/// 靠近部分 NPC 时禁止使用此技能
+		INF2_TARGETTRAP				/// 
+		INF2_IGNORELANDPROTECTOR	/// 
+		INF2_ALLOWWHENHIDDEN		/// 
+		INF2_ALLOWWHENPERFORMING	/// 
+		INF2_TARGETEMPERIUM			/// 
+		INF2_IGNOREKAGEHUMI			/// 
+		INF2_ALTERRANGEVULTURE		/// 
+		INF2_ALTERRANGESNAKEEYE		/// 
+		INF2_ALTERRANGESHADOWJUMP	/// 
+		INF2_ALTERRANGERADIUS		/// 
+		INF2_ALTERRANGERESEARCHTRAP	/// 
+		INF2_IGNOREHOVERING			/// 
+		INF2_ALLOWONWARG			/// 
+		INF2_ALLOWONMADO			/// 
+		INF2_TARGETMANHOLE			/// 
+		INF2_TARGETHIDDEN			/// 
+		INF2_INCREASEDANCEWITHWUGDAMAGE		/// 
+		INF2_IGNOREWUGBITE			/// 
+		INF2_IGNOREAUTOGUARD		/// 
+		INF2_IGNORECICADA			/// 
+		INF2_SHOWSCALE				/// 
+		
+	SKI_CASTCANCEL
+		技能在咏唱期间是否会被打断
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CastCancel 字段
+		
+	SKI_ACTIVEINSTANCE
+		技能同时存在的个数上限, 通常作用于地面技能
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 ActiveInstance 字段
+		
+	SKI_KNOCKBACK
+		技能击退距离
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Knockback 字段
+		
+	SKI_COOLDOWN
+		技能可以被再次使用的冷却时间 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Cooldown 字段
+		
+	SKI_NONEARNPC_TYPE
+		技能不可在哪些 NPC 附近使用
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 NoNearNPC 节点的 Type 字段
+		
+		该选项的两种情况生效:
+			当 Flags 中设定了 DisableNearNpc 时生效
+			当 Unit->Flag 中设定了 NoFootSet 时生效
+		
+		可能的返回值:
+		----------------
+		SKILL_NONEAR_WARPPORTAL		/// 标记位, 不能靠近传送点附近
+		SKILL_NONEAR_SHOP			/// 标记位, 不能靠近商店附近
+		SKILL_NONEAR_NPC			/// 标记位, 不能靠近 NPC 附近
+		SKILL_NONEAR_TOMB			/// 标记位, 不能靠近 MVP 坟墓附近
+		
+	SKI_NONEARNPC_ADDITIONALRANGE
+		技能不可靠近的 NPC 额外距离要求
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 NoNearNPC 节点的 AdditionalRange 字段
+		
+	SKI_COPYFLAGS_SKILL
+		技能是否能被复制
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CopyFlags 节点的 Skill 字段
+		
+		可能的返回值:
+		----------------
+		0							/// 不可被复制
+		SKILL_COPY_PLAGIARISM		/// 标记位, 可以被"抄袭"技能 (RG_PLAGIARISM) 复制
+		SKILL_COPY_REPRODUCE		/// 标记位, 可以被"复制"技能 (SC_REPRODUCE) 复制
+		
+	SKI_COPYFLAGS_REMOVEREQUIREMENT
+		技能被复制后, 抄袭者进行施法时是否忽略部分条件
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CopyFlags 节点的 RemoveRequirement 字段
+		
+		可能的返回值:
+		----------------
+		SKILL_REQ_HPCOST			/// 标记位, 无需扣减指定点数的 HP
+		SKILL_REQ_SPCOST			/// 标记位, 无需扣减指定点数的 SP
+		SKILL_REQ_HPRATECOST		/// 标记位, 无需扣减指定百分比的 HP
+		SKILL_REQ_SPRATECOST		/// 标记位, 无需扣减指定百分比的 SP
+		SKILL_REQ_MAXHPTRIGGER		/// 标记位, 无需检查至少要有百分之多少 HP 才能施法
+		SKILL_REQ_ZENYCOST			/// 标记位, 无需扣减指定数量的 Zeny
+		SKILL_REQ_WEAPON			/// 标记位, 无需检查武器符合特定类型
+		SKILL_REQ_AMMO				/// 标记位, 无需检查弹药符合特定类型
+		SKILL_REQ_STATE				/// 标记位, 无需检查场景类型
+		SKILL_REQ_STATUS			/// 标记位, 无需检查角色状态类型
+		SKILL_REQ_SPIRITSPHERECOST	/// 标记位, 无需检查灵气弹数量
+		SKILL_REQ_ITEMCOST			/// 标记位, 无需检查特定物品消耗品
+		SKILL_REQ_EQUIPMENT			/// 标记位, 无需检查是否穿戴特定装备
+		
+	SKI_UNIT_ID
+		技能绑定的首选 Unit 子单位编号
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Id 字段
+		
+	SKI_UNIT_ALTERNATEID
+		技能绑定的备选 Unit 子单位编号
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 AlternateId 字段
+		
+	SKI_UNIT_LAYOUT
+		技能绑定的 Unit 子单位布局
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Layout 字段
+		
+	SKI_UNIT_RANGE
+		技能绑定的 Unit 子单位作用距离
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Range 字段
+		
+	SKI_UNIT_INTERVAL
+		技能绑定的 Unit 子单位间隔时间 (单位为毫秒)
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Interval 字段
+		
+	SKI_UNIT_TARGET
+		技能绑定的 Unit 子单位作用目标
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Target 字段
+		
+		可能的返回值:
+		----------------
+		BCT_SELF					/// 自己
+		BCT_ENEMY					/// 敌人
+		BCT_PARTY					/// 队伍成员
+		BCT_GUILDALLY				/// 同盟成员, 不含公会成员
+		BCT_NEUTRAL					/// 自然目标
+		BCT_SAMEGUILD				/// 公会成员, 不含同盟成员
+		
+	SKI_UNIT_FLAG
+		技能绑定的 Unit 子单位特殊标记
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组名称为: @skill_unit_flag[]
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的数组名称为: $@skill_unit_flag[]
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Flag 字段
+		
+		可能的返回值:
+		----------------
+		UF_NOENEMY					/// If 'defunit_not_enemy' is set, the target is changed to 'friend'
+		UF_NOREITERATION			/// Spell cannot be stacked
+		UF_NOFOOTSET				/// Spell cannot be cast near/on targets
+		UF_NOOVERLAP				/// Spell effects do not overlap
+		UF_PATHCHECK				/// Only cells with a shootable path will be placed
+		UF_NOPC						/// May not target players
+		UF_NOMOB					/// May not target mobs
+		UF_SKILL					/// May target skills
+		UF_DANCE					/// Dance
+		UF_ENSEMBLE					/// Duet
+		UF_SONG						/// Song
+		UF_DUALMODE					/// Spells should trigger both ontimer and onplace/onout/onleft effects.
+		UF_NOKNOCKBACK				/// Skill unit cannot be knocked back
+		UF_RANGEDSINGLEUNIT			/// hack for ranged layout, only display center
+		UF_CRAZYWEEDIMMUNE			/// Immune to Crazy Weed removal
+		UF_REMOVEDBYFIRERAIN		/// removed by Fire Rain
+		UF_KNOCKBACKGROUP			/// knockback skill unit with its group instead of single unit
+		UF_HIDDENTRAP				/// Hidden trap [Cydh]
+		
+	SKI_REQUIRES_HPCOST
+		技能施法条件 - 需要扣减多少点 HP 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 HpCost 字段
+		
+	SKI_REQUIRES_SPCOST
+		技能施法条件 - 需要扣减多少点 SP 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 SpCost 字段
+		
+	SKI_REQUIRES_MAXHPTRIGGER
+		技能施法条件 - 需要至少剩余百分之多少的 HP 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 MaxHpTrigger 字段
+		
+	SKI_REQUIRES_HPRATECOST
+		技能施法条件 - 需要扣减百分之多少的 HP 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 HpRateCost 字段
+		
+	SKI_REQUIRES_SPRATECOST
+		技能施法条件 - 需要扣减百分之多少的 SP 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 SpRateCost 字段
+		
+	SKI_REQUIRES_ZENYCOST
+		技能施法条件 - 需要扣减多少 Zeny 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 ZenyCost 字段
+		
+	SKI_REQUIRES_WEAPON
+		技能施法条件 - 至少需要装备符合任意一个类型的武器才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 Weapon 字段
+		
+		可能的返回值:
+		----------------
+		0							/// 任何武器
+		W_DAGGER					/// 短剑
+		W_1HSWORD					/// 单手剑
+		W_2HSWORD					/// 双手剑
+		W_1HSPEAR					/// 单手矛/枪/戟
+		W_2HSPEAR					/// 双手矛/枪/戟
+		W_1HAXE						/// 单手斧
+		W_2HAXE						/// 双手斧
+		W_MACE						/// 单手钝器
+		W_2HMACE					/// 双手钝器
+		W_STAFF						/// 单手杖
+		W_2HSTAFF					/// 双手杖
+		W_BOW						/// 弓
+		W_KNUCKLE					/// 拳套
+		W_MUSICAL					/// 乐器
+		W_WHIP						/// 鞭子
+		W_BOOK						/// 书
+		W_KATAR						/// 拳刃
+		W_REVOLVER					/// 左轮手枪
+		W_RIFLE						/// 来复枪
+		W_GATLING					/// 格林机关枪
+		W_SHOTGUN					/// 散弹枪
+		W_GRENADE					/// 榴弹枪
+		W_HUUMA						/// 风魔
+		MAX_WEAPON_TYPE				/// 该值减去 1 等于最大的武器类型值 (遍历用)
+		
+		例子:
+		----------------
+		(返回值 & (1 << W_DAGGER)) == (1 << W_DAGGER) 成立则表示穿戴短剑才能施法
+		
+	SKI_REQUIRES_AMMO
+		技能施法条件 - 需要装备哪种类型的弹药才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 Ammo 字段
+		
+		可能的返回值:
+		----------------
+		0							/// 任何弹药
+		AMMO_ARROW					/// 箭矢
+		AMMO_DAGGER					/// 短刀
+		AMMO_BULLET					/// 子弹
+		AMMO_SHELL					/// 炮弹
+		AMMO_GRENADE				/// 榴弹
+		AMMO_SHURIKEN				/// 手里剑
+		AMMO_KUNAI					/// 苦无
+		AMMO_CANNONBALL				/// 加农炮弹
+		AMMO_THROWWEAPON			/// 投掷物品
+		MAX_AMMO_TYPE				/// 该值减去 1 等于最大的弹药类型值 (遍历用)
+		
+		例子:
+		----------------
+		(返回值 & (1 << AMMO_ARROW)) == (1 << AMMO_ARROW) 成立则表示使用箭矢作为弹药才能施法
+		
+	SKI_REQUIRES_AMMOAMOUNT
+		技能施法条件 - 需要多少个指定的弹药才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 AmmoAmount 字段
+		
+	SKI_REQUIRES_STATE
+		技能施法条件 - 必须在哪些特殊的环境状态下才能施法
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 State 字段
+		
+		可能的返回值:
+		----------------
+		ST_NONE,					/// 
+		ST_HIDDEN,					/// 
+		ST_RIDING,					/// 乘骑状态
+		ST_FALCON,					/// 猎鹰状态
+		ST_CART,					/// 有手推车状态
+		ST_SHIELD,					/// 
+		ST_RECOVER_WEIGHT_RATE,		/// 
+		ST_MOVE_ENABLE,				/// 
+		ST_WATER,					/// 站在水面上
+		ST_RIDINGDRAGON,			/// 
+		ST_WUG,						/// 
+		ST_RIDINGWUG,				/// 
+		ST_MADO,					/// 魔导机甲状态
+		ST_ELEMENTALSPIRIT,			/// 
+		ST_ELEMENTALSPIRIT2,		/// 
+		ST_PECO,					/// 
+		ST_SUNSTANCE,				/// 
+		ST_MOONSTANCE,				/// 
+		ST_STARSTANCE,				/// 
+		ST_UNIVERSESTANCE			/// 
+		
+	SKI_REQUIRES_STATUS
+		技能施法条件 - 必须在哪些特殊的角色状态下才能施法
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组名称为: @skill_requires_status[]
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的数组名称为: $@skill_requires_status[]
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 Status 字段
+		
+		返回值数组中保存是角色状态编号
+		备注: StatusChange / 简称 SC / 就是用 sc_start 可以启动的那些状态
+		
+		例子:
+		----------------
+		.@len = getskillinfo(SKI_REQUIRES_STATUS,"MO_EXTREMITYFIST");
+		dispbottom "MO_EXTREMITYFIST 要求角色有以下编号的状态才能使用:";
+		for (.@i = 0; .@i < .@len; .@i++) {
+			dispbottom sprintf("第 %d 个状态: 状态编号 %d", .@i, @skill_requires_status[.@i]);
+		}
+		
+	SKI_REQUIRES_SPHERECOST
+		技能施法条件 - 必须拥有多少个灵气弹才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 SphereCost 字段
+		
+	SKI_REQUIRES_ITEMCOST
+		技能施法条件 - 至少持有特定全部物品道具才能施法
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组共有两个:
+			@skill_requires_itemid[]	保存道具编号
+			@skill_requires_amount[]	保存所需的道具数量
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的两个数组名称为:
+			$@skill_requires_itemid[]	保存道具编号
+			$@skill_requires_amount[]	保存所需的道具数量
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 ItemCost 字段
+		
+		例子:
+		----------------
+		.@len = getskillinfo(SKI_REQUIRES_ITEMCOST,"KO_MAKIBISHI");
+		dispbottom "KO_MAKIBISHI 要求身上有[以下全部]道具才能使用:";
+		for (.@i = 0; .@i < .@len; .@i++) {
+			dispbottom sprintf("第 %d 个道具: 物品编号 %d x %d 个", .@i, @skill_requires_itemid[.@i], @skill_requires_amount[.@i]);
+		}
+		
+	SKI_REQUIRES_EQUIPMENT
+		技能施法条件 - 至少需要装备任意一件特定道具才能施法
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组名称为: @skill_requires_equipment[]
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的数组名称为: $@skill_requires_equipment[]
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 Equipment 字段
+		
+		返回值数组中保存是装备的道具编号
+		
+		例子:
+		----------------
+		.@len = getskillinfo(SKI_REQUIRES_EQUIPMENT,"RL_P_ALTER");
+		dispbottom "RL_P_ALTER 要求穿戴[以下任意一件]装备才能使用:";
+		for (.@i = 0; .@i < .@len; .@i++) {
+			dispbottom sprintf("第 %d 件装备: 物品编号 %d", .@i, @skill_requires_equipment[.@i]);
+		}
+		
+技能编号:
+	传入需要查询的技能编号 (定义在 skill_db 中每个技能的 Id 字段)
+	例如: 剑士狂击技能的技能编号是 5
+
+技能名称:
+	传入需要查询的技能名称 (定义在 skill_db 中每个技能的 Name 字段)
+	例如: 剑士狂击技能的名称是 SM_BASH (字符串类型)
+
+技能等级:
+	在绝大多数情况下这个参数用来填写要查询的技能等级
+	部分查询类型中 <技能等级> 可能会被用作传递其他信息, 例如: SKI_MAXLEVEL_IN_SKILLTREE
+
+返回值:
+	根据 <查询的信息类型> 的不同, 返回值的含义会有差异
+	具体返回值细节已经在上文中每个不同的 <查询的信息类型> 说明中定义
+	
+	若传递的 <查询的信息类型>, <技能编号>, <"技能名称"> 无效, 则将报错并返回 -1
 
 --------------------------------------------------------------

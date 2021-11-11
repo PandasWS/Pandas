@@ -211,6 +211,8 @@
     <Delete Files="$(SolutionDir)zlib.dll" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)serv.bat" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)mapcache.bat" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)mapcache.lib" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)mapcache.exp" ContinueOnError="true" />
   </Target>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.dll" DestinationFolder="$(SolutionDir)" ContinueOnError="true" Condition="!Exists('$(SolutionDir)zlib.dll')" />

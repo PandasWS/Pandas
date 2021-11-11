@@ -99,9 +99,8 @@ void batrec_new(struct block_list* bl) {
 	if (!(ucd = status_get_ucd(bl))) return;
 
 	if (!batrec_support(bl)) {
-		batrec_free(bl, false);
+		batrec_free(bl);
 		ucd->batrec.dorecord = false;
-		ucd->batrec.recfree_triggered = false;
 		return;
 	}
 
@@ -115,10 +114,9 @@ void batrec_new(struct block_list* bl) {
 	ucd->batrec.dmg_receive->clear();
 	ucd->batrec.dmg_cause->clear();
 
-	// 玩家类型默认不启用记录, 否则在线一直打怪记录会一直堆积
-	ucd->batrec.dorecord = (bl->type != BL_PC);
-
-	ucd->batrec.recfree_triggered = false;
+	ucd->batrec.dorecord = (
+		(battle_config.batrec_autoenabled_unit & bl->type) == bl->type
+	);
 }
 
 //************************************
@@ -126,20 +124,14 @@ void batrec_new(struct block_list* bl) {
 // Description: 释放指定单位的战斗记录字典
 // Access:      public 
 // Parameter:   struct block_list * bl
-// Parameter:   bool with_event
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/03/21 17:39
 //************************************ 
-void batrec_free(struct block_list* bl, bool with_event) {
+void batrec_free(struct block_list* bl) {
 	nullpo_retv(bl);
 
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(bl))) return;
-
-	if (!ucd->batrec.recfree_triggered && with_event) {
-		npc_event_aide_batrecfree(bl);
-		ucd->batrec.recfree_triggered = true;
-	}
 
 	if (ucd->batrec.dmg_receive) {
 		delete ucd->batrec.dmg_receive;
@@ -435,25 +427,14 @@ int64 batrec_query(struct block_list* mbl, uint32 id, e_batrec_type type, e_batr
 // Description: 重置并清空指定单位的所有战斗记录字典
 // Access:      public 
 // Parameter:   struct block_list * mbl
-// Parameter:   bool with_event
-// Parameter:   bool allow_next_trigger
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/03/21 15:27
 //************************************ 
-void batrec_reset(struct block_list* mbl, bool with_event, bool allow_next_trigger) {
+void batrec_reset(struct block_list* mbl) {
 	nullpo_retv(mbl);
 
 	struct s_unit_common_data* ucd = nullptr;
 	if (!(ucd = status_get_ucd(mbl))) return;
-
-	if (!ucd->batrec.recfree_triggered && with_event) {
-		npc_event_aide_batrecfree(mbl);
-		ucd->batrec.recfree_triggered = true;
-	}
-
-	if (allow_next_trigger) {
-		ucd->batrec.recfree_triggered = false;
-	}
 
 	if (ucd->batrec.dmg_receive) {
 		ucd->batrec.dmg_receive->clear();

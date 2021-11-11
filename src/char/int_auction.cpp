@@ -51,7 +51,7 @@ void auction_save(struct auction_data *auction)
 		return;
 
 	StringBuf_Init(&buf);
-	StringBuf_Printf(&buf, "UPDATE `%s` SET `seller_id` = '%d', `seller_name` = ?, `buyer_id` = '%d', `buyer_name` = ?, `price` = '%d', `buynow` = '%d', `hours` = '%d', `timestamp` = '%lu', `nameid` = '%u', `item_name` = ?, `type` = '%d', `refine` = '%d', `attribute` = '%d', `enchantgrade`",
+	StringBuf_Printf(&buf, "UPDATE `%s` SET `seller_id` = '%d', `seller_name` = ?, `buyer_id` = '%d', `buyer_name` = ?, `price` = '%d', `buynow` = '%d', `hours` = '%d', `timestamp` = '%lu', `nameid` = '%u', `item_name` = ?, `type` = '%d', `refine` = '%d', `attribute` = '%d', `enchantgrade` ='%d'",
 		schema_config.auction_db, auction->seller_id, auction->buyer_id, auction->price, auction->buynow, auction->hours, (unsigned long)auction->timestamp, auction->item.nameid, auction->type, auction->item.refine, auction->item.attribute, auction->item.enchantgrade);
 	for( j = 0; j < MAX_SLOTS; j++ )
 		StringBuf_Printf(&buf, ", `card%d` = '%u'", j, auction->item.card[j]);
@@ -143,7 +143,11 @@ unsigned int auction_create(struct auction_data *auction)
 
 void mapif_Auction_message(uint32 char_id, unsigned char result)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[74];
+#else
+	unsigned char buf[74] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 
 	WBUFW(buf,0) = 0x3854;
 	WBUFL(buf,2) = char_id;
@@ -283,7 +287,11 @@ void mapif_Auction_sendlist(int fd, uint32 char_id, short count, short pages, un
 
 void mapif_parse_Auction_requestlist(int fd)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	char searchtext[NAME_LENGTH];
+#else
+	char searchtext[NAME_LENGTH] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	uint32 char_id = RFIFOL(fd,4), len = sizeof(struct auction_data);
 	int price = RFIFOL(fd,10);
 	short type = RFIFOW(fd,8), page = max(1,RFIFOW(fd,14));

@@ -14,9 +14,11 @@
 	#define Pandas_DatabaseIncrease
 	#define Pandas_StructIncrease
 	#define Pandas_BattleConfigure
+	#define Pandas_InternalConfigure
 	#define Pandas_FuncIncrease
 	#define Pandas_PacketFunction
 	#define Pandas_CreativeWork
+	#define Pandas_ClientFeatures
 	#define Pandas_Speedup
 	#define Pandas_Bugfix
 	#define Pandas_Crashfix
@@ -64,7 +66,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.2.1"
+	#define Pandas_Version "1.1.6.0"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -78,7 +80,7 @@
 	// 是否启用一些杂乱的自定义辅助函数
 	#define Pandas_Helper_Common_Function
 
-	// 是否启用 LGTM 建议的一些处理措施, 避免潜在风险
+	// 是否启用 LGTM 建议的处理措施, 避免潜在风险
 	#define Pandas_LGTM_Optimization
 #endif // Pandas_Basic
 
@@ -179,6 +181,17 @@
 		#define Pandas_Struct_Npc_Data_DestructionStrategy
 	#endif // Pandas_Struct_Npc_Data_Pandas
 
+	// 使 mob_data 有一个独立的结构体用来存放 Pandas 的拓展 [Sola丶小克]
+	// 结构体修改定位 mob.hpp -> mob_data.pandas
+	#define Pandas_Struct_Mob_Data_Pandas
+
+	// 以下选项开关需要依赖 Pandas_Struct_Mob_Data_Pandas 的拓展
+	#ifdef Pandas_Struct_Mob_Data_Pandas
+		// 使 mob_data 结构体可记录此魔物的 damagetaken 承伤倍率 [Sola丶小克]
+		// 结构体修改定位 mob.hpp -> mob_data.pandas.damagetaken
+		#define Pandas_Struct_Mob_Data_DamageTaken
+	#endif // Pandas_Struct_Mob_Data_Pandas
+
 	// 对离线挂店 autotrade 的定义进行拓展处理 [Sola丶小克]
 	// 进行拓展处理之后能够在代码改动较少的情况下, 更好的支持多种不同类型的 "离线挂店" 行为
 	//
@@ -190,6 +203,23 @@
 	// 默认的 rAthena 中 bonus_script 机制并没有唯一编号的概念, 为了提高对 bonus_script 的控制粒度
 	// 我们需要将唯一编号引入到我们需要拓展的相关数据结构体中
 	#define Pandas_Struct_BonusScriptData_Extend
+
+	// 拓展 mmo_charstatus 结构体中的字段 [Sola丶小克]
+	// 结构体修改定位 mmo.hpp -> mmo_charstatus
+	#define Pandas_Struct_MMO_CharStatus_Extend
+
+	// 以下选项开关需要依赖 Pandas_Struct_MMO_CharStatus_Extend 的拓展
+	#ifdef Pandas_Struct_MMO_CharStatus_Extend
+		// 使 mmo_charstatus 可记录角色的背包容量上限 [Sola丶小克]
+		// 结构体修改定位 mmo.hpp -> mmo_charstatus.inventory_size
+		#define Pandas_Struct_MMO_CharStatus_InventorySize
+	#endif // Pandas_Struct_MMO_CharStatus_Extend
+
+	// 使 s_mail.item 能有一个 details 字段用来记录附件道具更详细的信息 [Sola丶小克]
+	#define Pandas_Struct_S_Mail_With_Details
+
+	// 使 s_random_opt_data 能保存脚本的明文 [Sola丶小克]
+	#define Pandas_Struct_S_Random_Opt_Data_With_Plaintext
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -306,8 +336,30 @@
 	// 是否启用 always_trigger_mvp_killevent 配置选项及其功能 [Sola丶小克]
 	// 此选项用于控制当 MVP 魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnPCKillMvpEvent 事件
 	#define Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
+
+	// 是否启用 batrec_autoenabled_unit 配置选项及其功能 [Sola丶小克]
+	// 此选项用于设置默认情况下有哪些类型的单位会启用战斗记录
+	#define Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
+
+	// 是否启用 repeat_clearunit_interval 配置选项及其功能 [Sola丶小克]
+	// 此选项用于设置重发魔物死亡封包的间隔时间 (单位为: 毫秒)
+	#define Pandas_BattleConfig_Repeat_ClearUnit_Interval
+
+	// 是否启用 dead_area_size 配置选项及其功能 [Sola丶小克]
+	// 此选项用于设置魔物死亡封包将会发送给周围多少个格的玩家
+	#define Pandas_BattleConfig_Dead_Area_Size
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
+
+// ============================================================================
+// 服务器通用配置组 - Pandas_InternalConfigure
+// ============================================================================
+
+#ifdef Pandas_InternalConfigure
+	// 是否启用 hide_server_ipaddress 配置选项及其功能 [Sola丶小克]
+	// 此选项用于确保服务端不主动返回服务器的 IP 地址给到客户端, 通常用于支持代理方式登录
+	#define Pandas_InterConfig_HideServerIpAddress
+#endif // Pandas_InternalConfigure
 
 // ============================================================================
 // 函数修改组 - Pandas_FuncIncrease
@@ -351,6 +403,28 @@
 	// 重写 instance.cpp -> instance_destroy_command 函数
 	// 因为 rAthena 官方实现的该函数在切换队长后的处理并不友好 [Sola丶小克]
 	#define Pandas_FuncLogic_Instance_Destroy_Command
+
+	// 当某个 IP 地址被判定为可以连接的时候, 不再将其列入 DDoS 攻击的判定范围 [Sola丶小克]
+	// 在默认 rAthena 的逻辑下, 就算某个 IP 地址就算被判定成允许连接, 
+	// 只要他连接频度过高也依然会在终端呈现出: 发现来自 %d.%d.%d.%d 的 DDoS 攻击!
+	// 虽然有提示， 但是根据白名单规则却又进行了放行操作.. 因此这个提示是很没意义的.
+	//
+	// 启用此选项将改变判断逻辑, 变成如下:
+	// 只要 IP 地址被判定为无条件放行, 那么他将不会因为高频连接而被判定为发起了 DDoS 攻击.
+	#define Pandas_FuncLogic_Whitelist_Privileges
+
+	// 在 pc.cpp 中给 pc_is_same_equip_index 函数增加 sd 参数 [Sola丶小克]
+	// 新增的 sd 参数用于在启用了背包拓展机制之后能够更加正确的计算玩家的背包容量,
+	// 而不是使用默认固定的 MAX_INVENTORY
+	#define Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
+
+	// 调整 clif.cpp 中给 clif_item_equip 函数增加 caller 参数 [Sola丶小克]
+	// 新增的 caller 参数用来标记调用这个函数的调用者是谁, 以便在必要情况下能够调整返回给客户端的字段值
+	#define Pandas_FuncParams_Clif_Item_Equip
+
+	// 调整 mob.cpp 的 mob_getdroprate 函数增加 md 参数 [Sola丶小克]
+	// 新增的 md 参数用于在 mob_getdroprate 进行掉率计算时能根据魔物实例进行必要调整
+	#define Pandas_FuncParams_Mob_GetDroprate
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -437,7 +511,10 @@
 		//
 		// ControlViewID 节点中的 InvisibleWhenISee 子节点
 		// ControlViewID 节点中的 InvisibleWhenTheySee 子节点
-		#define Pandas_Item_ControlViewID
+		// 此选项依赖 Pandas_FuncParams_Clif_Item_Equip 的拓展
+		#ifdef Pandas_FuncParams_Clif_Item_Equip
+			#define Pandas_Item_ControlViewID
+		#endif // Pandas_FuncParams_Clif_Item_Equip
 
 		// 是否启用特殊的道具掉落公告规则 [Sola丶小克]
 		// 此选项开启后 (item_properties.yml) 数据库中以下选项才能发挥作用:
@@ -450,6 +527,9 @@
 
 	// 使 pointshop 类型的商店能支持指定变量别名, 用于展现给玩家 [Sola丶小克]
 	#define Pandas_Support_Pointshop_Variable_DisplayName
+
+	// 使墓碑中的魔物名称能尊重 override_mob_names 战斗配置选项的设置 [Sola丶小克]
+	#define Pandas_Make_Tomb_Mobname_Follow_Override_Mob_Names
 
 	// 检测 import 目录是否存在, 若不存在能够从 import-tmpl 复制一份 [Sola丶小克]
 	#define Pandas_Deploy_Import_Directories
@@ -634,13 +714,108 @@
 	#ifndef Pandas_Struct_Map_Session_Data_BonusScript_Counter
 		#undef Pandas_BonusScript_Unique_ID
 	#endif // Pandas_Struct_Map_Session_Data_BonusScript_Counter
+
+	// 是否启用对负载均衡的友好处理支持 [Sola丶小克]
+	// 启用阿里云和 Google Cloud 等云计算平台的负载均衡业务后, 通常会对存活的后端服务器进行健康监测
+	// 此举会导致终端出现大量的无价值信息. 比如:
+	// 大量健康检查探测服务器的 IP 地址不断的与我们的游戏服务端建立连接, 确认我们端口正常工作后就立刻关闭连接
+	// 以及他们频繁访问我们的游戏服务器, 导致我们将他们判定为发起了 DDoS 攻击的提示信息.
+	//
+	// 启用此选项后, 我们将支持在 packet_athena.conf 中设置这些健康检查的服务器 IP 区段
+	// 在不影响他们对我们正常服务器进行探测的情况下, 不再显示出大量无价值信息到终端干扰游戏管理员观察服务器状态.
+	#define Pandas_Health_Monitors_Silent
 #endif // Pandas_CreativeWork
+
+// ============================================================================
+// 客户端特性支持组 - Pandas_ClientFeatures
+// ============================================================================
+
+#ifdef Pandas_ClientFeatures
+	// 是否启用官方客户端支持的背包扩充机制, 实装对 25793 的利用 [Sola丶小克]
+	// 注意: 此功能只对大于等于 20181219 的 RagexeRE 客户端有效 (ZERO 客户端需要大于 20181212 才有效)
+	// 此选项依赖 Pandas_Struct_MMO_CharStatus_InventorySize 的拓展
+	#ifdef Pandas_Struct_MMO_CharStatus_InventorySize
+		#define Pandas_ClientFeature_InventoryExpansion
+	#endif // Pandas_Struct_MMO_CharStatus_InventorySize
+
+	// 如果客户端版本不符合要求, 那么取消掉对背包扩充的支持
+	#if !(PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114)
+		#undef Pandas_ClientFeature_InventoryExpansion
+	#endif // !(PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114)
+
+	// 如果没有启用对背包扩充机制的支持, 那么也同时取消掉对 pc_is_same_equip_index 的调整
+	#ifndef Pandas_ClientFeature_InventoryExpansion
+		#undef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
+	#endif // Pandas_ClientFeature_InventoryExpansion
+#endif // Pandas_ClientFeatures
 
 // ============================================================================
 // 官方BUG修正组 - Pandas_Bugfix
 // ============================================================================
 
 #ifdef Pandas_Bugfix
+	// 修正 @item 等指令只能使用 AegisName 来创造道具的问题 [Sola丶小克]
+	// 此问题由 rAthena 的 6b84115 号提交引入, 相关链接如下:
+	// https://github.com/rathena/rathena/commit/6b841157909ac17c0b82b917763976f43be2f89f
+	#define Pandas_Fix_Itemdb_Searchname_Logic
+
+	// 使 search_aegisname 仅搜索 aegisNameToItemDataMap [Sola丶小克]
+	// 作为物品数据库体系中的唯一名称, 若指定搜索了 AegisName 则不应该在失败后搜索 nameToItemDataMap
+	#define Pandas_Fix_Itemdb_SearchAegisname_Logic
+
+	// 修正 mail_attachment_weight 选项在特定操作顺序下无效的问题 [Sola丶小克]
+	// 若一次性放入超过 mail_attachment_weight 负重限制的道具到邮件中时, 程序可以正常的判断出超重
+	// 但是若分多次, 放入相同一件物品到邮件附件中, 那么 mail_attachment_weight 的负重限制将会失去作用
+	#define Pandas_Fix_Mail_Attachment_Weight_Defects
+
+	// 修正逐影的“抄袭/复制”技能，在偷到技能后角色服务器存档时可能会出现 -8 报错的问题 [Sola丶小克]
+	// 被抄袭的技能的 flag 是 SKILL_FLAG_PLAGIARIZED 值为 2
+	// 但好不歹的写入到数据库之前 rAthena 计算技能等级的时候是拿着 flag - SKILL_FLAG_REPLACED_LV_0 (值为 10)
+	// 使抄袭的技能等级变成了 -8 级, 而数据库中的字段无法保存负数, 认为超过了保存范围而报错
+	// 若触发报错的话, 那么逐影的技能将全部丢失. 下次上线之后会发现技能是空的.
+	//
+	// 备注: 2021年7月12日 测试的时候, 发现有的数据库在经过配置后不会报错, -8 会被保存成 0
+	// 这种情况下技能不会全丢, 但也不是一种正确的预期情况
+	//
+	// 实际上抄袭和复制到的技能并不需要被写入到 skill 表, 而是记录在变量中
+	// 抄袭对应的技能编号保存在变量: SKILL_VAR_PLAGIARISM 等级是 SKILL_VAR_PLAGIARISM_LV
+	// 复制对应的技能编号保存在变量: SKILL_VAR_REPRODUCE 等级是 SKILL_VAR_REPRODUCE_LV
+	#define Pandas_Fix_ShadowChaser_Lose_Skill
+
+	// 缓解魔物死亡但客户端没移除魔物单位的问题 [Sola丶小克]
+	//
+	// 造成问题存在几个可能的原因, 且这些原因在逻辑上都是合理存在的, 因此每种情况都要进行规避:
+	//
+	// 第一种情况:
+	//     魔物死亡后会发送 clif_clearunit_area 的 CLR_DEAD 封包给客户端
+	//     但是由于复杂网络结构 (比如: 使用了转发\盾机\负载均衡), 可能会导致这个小封包粘在上一个封包中发出
+	//     导致客户端无法正常收到和解析这个小封包.
+	//     
+	//     缓解措施是: 在一个指定的时间间隔内, 由服务端补发一个封包给客户端
+	//     但付出的代价是每个魔物死亡都需要额外发送一个封包, 请根据网络环境酌情选择开启或者关闭
+	//     可通过 repeat_clearunit_interval 战斗配置选项控制发送间隔
+	//     但是要注意, 取值不能太大 (间隔不能太久), 否则一方面没意义,
+	//     另外一方面如果魔物由于其他机制用相同的 GameID 复活则会导致它被错误的移除
+	//
+	// 第二种情况:
+	//     部分技能会击退魔物, 当你召唤 100 个波利，然后用暴风雪打距离屏幕边缘的怪物
+	//     技能读条完毕后立刻往反方向移动 (提前 @speed 1), 等暴风雪结束后回来观看, 较大概率会有魔物死亡但没被移除
+	//
+	//     造成这一现象的原因是, 当魔物死亡的时候 clif_clearunit_area 的 CLR_DEAD 封包会发送给
+	//     死亡的魔物周围 AREA_SIZE 格子的其他单位, 但如果你跑得太快, 那么封包发送的时候你已经不在接收范围内了
+	//     最后导致看起来和没收到 clif_clearunit_area 的 CLR_DEAD 封包一样, 客户端就无法移除它
+	//
+	//     缓解措施是: 在发送 clif_clearunit_area 的 CLR_DEAD 封包时, 给与一个更大的 AREA_SIZE
+	//
+	// 可能还会有其他情况导致类似的事情发生, 碰见再具体分析
+	#define Pandas_Ease_Mob_Stuck_After_Dead
+
+	// 修正潜在可能存在算术溢出的情况 [Sola丶小克]
+	#define Pandas_Fix_Potential_Arithmetic_Overflow
+
+	// 修正未判断 sscanf 返回值可能导致程序工作不符合预期的问题 [Sola丶小克]
+	#define Pandas_Fix_Ignore_sscanf_Return_Value
+
 	// 修正在部分情况下角色公会图标刷新不及时的问题 [Sola丶小克]
 	#define Pandas_Fix_GuildEmblem_Update
 
@@ -663,11 +838,6 @@
 	// 修正 npc_unloadfile 和 npc_parsesrcfile 的行为会被空格影响的问题 [Sola丶小克]
 	// 如果 @reloadnpc 时给定的路径带空格, 系统将无法正确的 unloadnpc, 导致 npc 重复出现
 	#define Pandas_Fix_NPC_Filepath_WhiteSpace_Effects
-
-	// 修正关闭个人仓库和付费仓库时, 进行保存操作后 dirty 标记未被重置的问题 [Sola丶小克]
-	// 会导致每次关闭仓库时哪怕没有增删改仓库里面的道具, 也会触发仓库内容全量保存.
-	// 不做修正的话, 当出现大量关闭仓库请求且仓库容量比较大时, 对服务器性能会有些影响.
-	#define Pandas_Fix_Storage_DirtyFlag_Miss_Reset
 
 	// 修正 skill_db.yml 的 ItemCost 字段指定的 Item 道具不存在时
 	// 会导致地图服务器直接崩溃的问题. 看代码应该是 rAthena 的工程师手误了 [Sola丶小克]
@@ -743,6 +913,13 @@
 	// 并对手推车中原先离线摆摊的商品进行增删操作, 可能会导致下次地图服务器启动时出现 vending_reopen 错误 3 的情况,
 	// 更严重的甚至在下次重启地图服务器后出现离线挂店的商品与价格的错位 [Sola丶小克]
 	#define Pandas_Fix_When_Relogin_Then_Clear_Autotrade_Store
+
+	// 发送邮件之前, 对附件中的道具进行更加严格的检查
+	// 当检测到附件内容非法的时候也能正确的重置客户端物品栏中的状态, 避免错乱
+	// 此选项开关需要依赖 Pandas_Struct_S_Mail_With_Details 的拓展 [Sola丶小克]
+	#ifdef Pandas_Struct_S_Mail_With_Details
+		#define Pandas_Fix_Mail_ItemAttachment_Check
+	#endif // Pandas_Struct_S_Mail_With_Details
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -847,10 +1024,6 @@
 	// 是否在一些关键耗时节点打印出耗时情况 [Sola丶小克]
 	#define Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
-	// 是否优化 itemdb_searchname1 函数的实现方式 [Sola丶小克]
-	// 在默认情况下 rAthena 的 itemdb_searchname1 函数实现的非常低效
-	#define Pandas_Speedup_Itemdb_SearchName
-
 	// 优化 map_readfromcache 中对每个 cell 的分配方式 [Sola丶小克]
 	// 主要降低 map_gat2cell 的调用次数, 因为一张地图需要加载 40000 个 cell
 	// 虽然已经启用了 static 和 inline 但内部调用 struct 创建构体也是开销非常大的.
@@ -890,6 +1063,9 @@
 	#ifdef Pandas_Crashfix_EventDatabase_Clean_Synchronize
 		#define Pandas_Speedup_Unloadnpc_Without_Refactoring_ScriptEvent
 	#endif // Pandas_Crashfix_EventDatabase_Clean_Synchronize
+
+	// 通过微调程序逻辑改善 C26817 这样的常量引用性能优化场景 [Sola丶小克]
+	#define Pandas_Speedup_Constant_References
 #endif // Pandas_Speedup
 
 // ============================================================================
@@ -967,7 +1143,10 @@
 	// 以下选项开关需要依赖 Pandas_YamlBlastCache_Serialize 的拓展
 	#ifdef Pandas_YamlBlastCache_Serialize
 		// 是否启用对 ItemDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_ItemDatabase
+		// 此选项需要依赖 Pandas_Struct_Item_Data_Script_Plaintext 的拓展
+		#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+				#define Pandas_YamlBlastCache_ItemDatabase
+		#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 		// 是否启用对 QuestDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_QuestDatabase
@@ -977,6 +1156,18 @@
 
 		// 是否启用对 MobDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_MobDatabase
+
+		// 是否启用对 ItemGroupDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_ItemGroupDatabase
+
+		// 是否启用对 RandomOptionDatabase 的序列化支持 [Sola]
+		// 此选项需要依赖 Pandas_Struct_S_Random_Opt_Data_With_Plaintext 的拓展
+		#ifdef Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+			#define Pandas_YamlBlastCache_RandomOptionDatabase
+		#endif // Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+
+		// 是否启用对 RandomOptionGroupDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_RandomOptionGroupDatabase
 	#endif // Pandas_YamlBlastCache_Serialize
 #endif // Pandas_YamlBlastCache
 
@@ -1053,7 +1244,7 @@
 		#define Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_Character_Title_Controller
-		// 当玩家试图变更称号时将触发此过滤器 [Sola丶小克]
+		// 当玩家试图变更称号时将触发过滤器 [Sola丶小克]
 		// 事件类型: Filter / 事件名称: OnPCChangeTitleFilter
 		// 常量名称: NPCF_CHANGETITLE / 变量名称: changetitle_filter_name
 		#define Pandas_NpcFilter_CHANGETITLE
@@ -1073,6 +1264,36 @@
 		// 事件类型: Filter / 事件名称: OnPCUseOCIdentifyFilter
 		// 常量名称: NPCF_ONECLICK_IDENTIFY / 变量名称: oneclick_identify_filter_name
 		#define Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+		// 当玩家准备创建公会时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCGuildCreateFilter
+		// 常量名称: NPCF_GUILDCREATE / 变量名称: guildcreate_filter_name
+		#define Pandas_NpcFilter_GUILDCREATE
+
+		// 当玩家即将加入公会时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCGuildJoinFilter
+		// 常量名称: NPCF_GUILDJOIN / 变量名称: guildjoin_filter_name
+		#define Pandas_NpcFilter_GUILDJOIN
+
+		// 当玩家准备离开公会时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCGuildLeaveFilter
+		// 常量名称: NPCF_GUILDLEAVE / 变量名称: guildleave_filter_name
+		#define Pandas_NpcFilter_GUILDLEAVE
+
+		// 当玩家准备创建队伍时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCPartyCreateFilter
+		// 常量名称: NPCF_PARTYCREATE / 变量名称: partycreate_filter_name
+		#define Pandas_NpcFilter_PARTYCREATE
+
+		// 当玩家即将加入队伍时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCPartyJoinFilter
+		// 常量名称: NPCF_PARTYJOIN / 变量名称: partyjoin_filter_name
+		#define Pandas_NpcFilter_PARTYJOIN
+
+		// 当玩家准备离开队伍时触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCPartyLeaveFilter
+		// 常量名称: NPCF_PARTYLEAVE / 变量名称: partyleave_filter_name
+		#define Pandas_NpcFilter_PARTYLEAVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -1149,15 +1370,15 @@
 		// 常量名称: NPCX_PROGRESSABORT / 变量名称: progressabort_express_name
 		#define Pandas_NpcExpress_PROGRESSABORT
 
-		// 当战斗记录信息即将被清除时触发实时事件 [Sola丶小克]
-		// 事件类型: Express / 事件名称: OnBatrecFreeExpress
-		// 常量名称: NPCX_BATTLERECORD_FREE / 变量名称: battlerecord_free_express_name
-		#define Pandas_NpcExpress_BATTLERECORD_FREE
-
 		// 当某个单位被击杀时触发实时事件 [Sola丶小克]
 		// 事件类型: Express / 事件名称: OnUnitKillExpress
 		// 常量名称: NPCX_UNIT_KILL / 变量名称: unit_kill_express_name
 		#define Pandas_NpcExpress_UNIT_KILL
+
+		// 当魔物即将掉落道具时触发实时事件 [Sola丶小克]
+		// 事件类型: Express / 事件名称: OnMobDropItemExpress
+		// 常量名称: NPCX_MOBDROPITEM / 变量名称: mobdropitem_express_name
+		#define Pandas_NpcExpress_MOBDROPITEM
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	
@@ -1244,6 +1465,26 @@
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_MapFlag_NoAura
 	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 maxaspd 地图标记 [Sola丶小克]
+	// 该标记用于限制此地图上单位的最大攻击速度 (ASDP: 1~199)
+	#define Pandas_MapFlag_MaxASPD
+
+	// 是否启用 noslave 地图标记 [HongShin]
+	// 该标记用于禁止此地图上的魔物召唤随从
+	#define Pandas_MapFlag_NoSlave
+
+	// 是否启用 nobank 地图标记 [聽風]
+	// 该标记用于禁止玩家在地图上使用银行系统 (包括存款 / 提现操作)
+	#define Pandas_MapFlag_NoBank
+
+	// 是否启用 nouseitem 地图标记 [HongShin]
+	// 该标记用于禁止玩家在地图上使用消耗型物品道具
+	#define Pandas_MapFlag_NoUseItem
+
+	// 是否启用 hidedamage 地图标记 [HongShin]
+	// 该标记用于隐藏此地图上任何攻击的实际伤害数值 (无论什么单位, 无论是否 MISS)
+	#define Pandas_MapFlag_HideDamage
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 
@@ -1302,6 +1543,14 @@
 // ============================================================================
 
 #ifdef Pandas_ScriptCommands
+	// 是否拓展 announce 脚本指令 [Sense 提交] [Sola丶小克 改进]
+	// 使 announce 指令能够支持 bc_name 标记位
+	// 携带此标记位的公告能够在双击公告时将发布者角色名称填写到聊天窗口
+	// 
+	// 备注: 自己发送的公告自己双击则无效
+	// 提示: 使用 20130807 客户端测试通过, 更早之前的客户端没有测试过
+	#define Pandas_ScriptCommand_Announce
+
 	// 是否拓展 unitexists 脚本指令 [Sola丶小克]
 	// 添加一个可选参数, 用于强调单位必须存在且活着才返回 true
 	#define Pandas_ScriptCommand_UnitExists
@@ -1358,8 +1607,9 @@
 	// 获取指定背包序号的道具在背包中的数量 (该指令有一个用于兼容的别名: countinventory)
 	#define Pandas_ScriptCommand_CountItemIdx
 
-	// 是否启用 delitemidx 脚本指令 [Sola丶小克]
-	// 移除指定背包序号的道具, 其中数量参数可不填, 若不填则表示删除指定道具的全部
+	// 是否启用 delitemidx 脚本指令的别名 delinventory [Sola丶小克]
+	// https://github.com/rathena/rathena/commit/c18707bb6dd2bd6068bc0d3708401871a2d7270c
+	// 由于 rAthena 官方实现了 delitemidx, 因此使用它来接替原先熊猫模拟器的自定义实现
 	#define Pandas_ScriptCommand_DelItemIdx
 
 	// 是否启用 identifyidx 脚本指令 [Sola丶小克]
@@ -1598,6 +1848,38 @@
 	// 是否启用 bonus_script_info 脚本指令 [Sola丶小克]
 	// 该指令用于查询指定效果脚本的相关信息
 	#define Pandas_ScriptCommand_BonusScriptInfo
+
+	// 是否启用 expandinventory_ack 脚本指令 [Sola丶小克]
+	// 该指令用于响应客户端的背包扩容请求, 并告知客户端下一步的动作
+	#define Pandas_ScriptCommand_ExpandInventoryACK
+
+	// 是否启用 expandinventory_result 脚本指令 [Sola丶小克]
+	// 该指令用于发送给客户端最终的背包扩容结果
+	#define Pandas_ScriptCommand_ExpandInventoryResult
+
+	// 是否启用 expandinventory_adjust 脚本指令 [Sola丶小克]
+	// 该指令用于增加角色的背包容量上限
+	#define Pandas_ScriptCommand_ExpandInventoryAdjust
+
+	// 是否启用 getinventorysize 脚本指令 [Sola丶小克]
+	// 该指令用于查询并获取当前角色的背包容量上限
+	#define Pandas_ScriptCommand_GetInventorySize
+
+	// 是否启用 getmapspawns 脚本指令 [Sola丶小克]
+	// 该指令用于获取指定地图的魔物刷新点信息
+	#define Pandas_ScriptCommand_GetMapSpawns
+
+	// 是否启用 getmobspawns 脚本指令 [Sola丶小克]
+	// 该指令用于查询指定魔物在不同地图的刷新点信息
+	#define Pandas_ScriptCommand_GetMobSpawns
+
+	// 是否启用 getcalendartime 脚本指令 [Haru]
+	// 该指令用于获取下次出现指定时间的 UNIX 时间戳
+	#define Pandas_ScriptCommand_GetCalendarTime
+
+	// 是否启用 getskillinfo 脚本指令 [聽風]
+	// 该指令用于获取指定技能在技能数据库中所配置的各项信息
+	#define Pandas_ScriptCommand_GetSkillInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
@@ -1623,6 +1905,13 @@
 
 	// 是否拓展 getiteminfo 脚本指令的可用参数 [Sola丶小克]
 	#define Pandas_ScriptParams_GetItemInfo
+
+	// 是否拓展 setunitdata / getunitdata 指令的参数
+	// 使之能设置或者读取指定魔物实例的承伤倍率 (DamageTaken) [Sola丶小克]
+	// 此选项依赖 Pandas_Struct_Mob_Data_DamageTaken 的拓展
+	#ifdef Pandas_Struct_Mob_Data_DamageTaken
+		#define Pandas_ScriptParams_UnitData_DamageTaken
+	#endif // Pandas_Struct_Mob_Data_DamageTaken
 #endif // Pandas_ScriptParams
 
 #endif // _RATHENA_CN_CONFIG_HPP_

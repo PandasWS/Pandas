@@ -94,7 +94,14 @@ protected:
 	virtual void loadingFinished();
 
 #ifdef Pandas_YamlBlastCache_Serialize
+	// 用于设置此类的实例是否支持疾风缓存
+	// 如若设为 true 则将尝试对数据进行缓存读写操作,
+	// 想要为 YamlDatabase 的子类开启缓存功能之前, 必须先定义需要对哪些结构体进行序列化
 	bool supportSerialize = false;
+
+	// 用于记录被缓存的数据类型的大小
+	// 以便在通过宏定义修改数据体积后能够在 struct 长度变更时让缓存过期
+	uint32 datatypeSize = 0;
 #endif // Pandas_YamlBlastCache_Serialize
 
 public:
@@ -170,9 +177,15 @@ protected:
 
 public:
 	TypesafeYamlDatabase( const std::string type_, uint16 version_, uint16 minimumVersion_ ) : YamlDatabase( type_, version_, minimumVersion_ ){
+#ifdef Pandas_YamlBlastCache_Serialize
+		this->datatypeSize = sizeof(datatype);
+#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	TypesafeYamlDatabase( const std::string& type_, uint16 version_ ) : YamlDatabase( type_, version_, version_ ){
+#ifdef Pandas_YamlBlastCache_Serialize
+		this->datatypeSize = sizeof(datatype);
+#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	void clear(){
@@ -252,11 +265,15 @@ private:
 
 public:
 	TypesafeCachedYamlDatabase( const std::string type_, uint16 version_, uint16 minimumVersion_ ) : TypesafeYamlDatabase<keytype, datatype>( type_, version_, minimumVersion_ ){
-
+#ifdef Pandas_YamlBlastCache_Serialize
+		this->datatypeSize = sizeof(datatype);
+#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	TypesafeCachedYamlDatabase( const std::string& type_, uint16 version_ ) : TypesafeYamlDatabase<keytype, datatype>( type_, version_, version_ ){
-
+#ifdef Pandas_YamlBlastCache_Serialize
+		this->datatypeSize = sizeof(datatype);
+#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	void clear() override{

@@ -5,6 +5,7 @@
 
 #include "pc.hpp"
 #include "itemdb.hpp"
+#include "itemprops.hpp"
 
 #include "../common/nullpo.hpp"
 #include "../common/utils.hpp"
@@ -22,7 +23,7 @@ extern short current_equip_item_index;
 bool amulet_is(t_itemid nameid) {
 #ifdef Pandas_Item_Amulet_System
 	struct item_data* item = itemdb_search(nameid);
-	return (item && item->pandas.properties.is_amulet);
+	return ITEM_PROPERTIES_HASFLAG(item, special_mask, ITEM_PRO_IS_AMULET_ITEM);
 #else
 	return false;
 #endif // Pandas_Item_Amulet_System
@@ -64,9 +65,9 @@ bool amulet_is_firstone(struct map_session_data *sd, struct item *item, int amou
 	if (!itemdb_isstackable2(id) || item->expire_time != 0)
 		return false;
 
-	uint32 i = MAX_INVENTORY;
+	uint32 i = P_MAX_INVENTORY(sd);
 	bool is_firstone = true;
-	for (i = 0; i < MAX_INVENTORY; i++) {
+	for (i = 0; i < P_MAX_INVENTORY(sd); i++) {
 		if (sd->inventory.u.items_inventory[i].nameid == item->nameid &&
 			sd->inventory.u.items_inventory[i].bound == item->bound &&
 			sd->inventory.u.items_inventory[i].expire_time == 0 &&
@@ -178,7 +179,7 @@ void amulet_status_calc(struct map_session_data *sd, enum e_status_calc_opt opt)
 
 	short save_current_equip_item_index = current_equip_item_index;
 
-	for (uint32 i = 0; i < MAX_INVENTORY; i++) {
+	for (uint32 i = 0; i < P_MAX_INVENTORY(sd); i++) {
 		if (!sd || !sd->inventory_data[i])
 			continue;
 

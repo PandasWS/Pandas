@@ -18,6 +18,11 @@ struct s_performance_item {
 	nanoseconds duration_ns;
 	high_resolution_clock::time_point start_time;
 	uint64 total_cnt;
+
+	s_performance_item() {
+		duration_ns = nanoseconds::zero();
+		total_cnt = 0;
+	}
 };
 
 std::map<std::string, struct s_performance_item> __performance;

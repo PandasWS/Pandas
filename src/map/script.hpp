@@ -4,6 +4,7 @@
 #ifndef SCRIPT_HPP
 #define SCRIPT_HPP
 
+#include "../common/database.hpp"
 #include "../common/cbasetypes.hpp"
 #include "../common/db.hpp"
 #include "../common/mmo.hpp"
@@ -202,7 +203,7 @@ struct Script_Config {
 #endif // Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
-	const char* changetitle_filter_name;	// NPCF_CHANGETITLE	// OnPCChangeTitleFilter	// 当玩家试图变更称号时将触发此过滤器
+	const char* changetitle_filter_name;	// NPCF_CHANGETITLE	// OnPCChangeTitleFilter	// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -216,6 +217,30 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
 	const char* oneclick_identify_filter_name;	// NPCF_ONECLICK_IDENTIFY	// OnPCUseOCIdentifyFilter	// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	const char* guildcreate_filter_name;	// NPCF_GUILDCREATE	// OnPCGuildCreateFilter	// 当玩家准备创建公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+	const char* guildjoin_filter_name;	// NPCF_GUILDJOIN	// OnPCGuildJoinFilter	// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
+#ifdef Pandas_NpcFilter_GUILDLEAVE
+	const char* guildleave_filter_name;	// NPCF_GUILDLEAVE	// OnPCGuildLeaveFilter	// 当玩家准备离开公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDLEAVE
+
+#ifdef Pandas_NpcFilter_PARTYCREATE
+	const char* partycreate_filter_name;	// NPCF_PARTYCREATE	// OnPCPartyCreateFilter	// 当玩家准备创建队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYCREATE
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	const char* partyjoin_filter_name;	// NPCF_PARTYJOIN	// OnPCPartyJoinFilter	// 当玩家即将加入队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYJOIN
+
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+	const char* partyleave_filter_name;	// NPCF_PARTYLEAVE	// OnPCPartyLeaveFilter	// 当玩家准备离开队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/
@@ -275,13 +300,13 @@ struct Script_Config {
 	const char* progressabort_express_name;	// NPCX_PROGRESSABORT	// OnPCProgressAbortExpress	// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
 
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-	const char* battlerecord_free_express_name;	// NPCX_BATTLERECORD_FREE	// OnBatrecFreeExpress	// 当战斗记录信息即将被清除时触发实时事件
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
-
 #ifdef Pandas_NpcExpress_UNIT_KILL
 	const char* unit_kill_express_name;	// NPCX_UNIT_KILL	// OnUnitKillExpress	// 当某个单位被击杀时触发实时事件
 #endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_NpcExpress_MOBDROPITEM
+	const char* mobdropitem_express_name;	// NPCX_MOBDROPITEM	// OnMobDropItemExpress	// 当魔物即将掉落道具时触发实时事件
+#endif // Pandas_NpcExpress_MOBDROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related
@@ -560,6 +585,63 @@ enum e_questinfo_markcolor : uint8 {
 	#define FW_HEAVY            900
 #endif
 
+#ifdef Pandas_ScriptCommand_GetSkillInfo
+enum skillinfo_types {
+	SKI_CASTTYPE = 1,
+	SKI_NAME,
+	SKI_DESCRIPTION,
+	SKI_MAXLEVEL_IN_SKILLTREE,
+	SKI_SKILLTYPE,
+	SKI_HIT,
+	SKI_TARGETTYPE,
+	SKI_ELEMENT,
+	SKI_DAMAGEFLAGS,
+	SKI_MAXLEVEL,
+	SKI_RANGE,
+	SKI_SPLASHAREA,
+	SKI_HITCOUNT,
+	SKI_CASTTIME,
+	SKI_FIXEDCASTTIME,
+	SKI_AFTERCASTACTDELAY,
+	SKI_AFTERCASTWALKDELAY,
+	SKI_DURATION1,
+	SKI_DURATION2,
+	SKI_CASTTIMEFLAGS,
+	SKI_CASTDELAYFLAGS,
+	SKI_CASTDEFENSEREDUCTION,
+	SKI_FLAGS,
+	SKI_CASTCANCEL,
+	SKI_ACTIVEINSTANCE,
+	SKI_KNOCKBACK,
+	SKI_COOLDOWN,
+	SKI_NONEARNPC_TYPE,
+	SKI_NONEARNPC_ADDITIONALRANGE,
+	SKI_COPYFLAGS_SKILL,
+	SKI_COPYFLAGS_REMOVEREQUIREMENT,
+	SKI_UNIT_ID,
+	SKI_UNIT_ALTERNATEID,
+	SKI_UNIT_LAYOUT,
+	SKI_UNIT_RANGE,
+	SKI_UNIT_INTERVAL,
+	SKI_UNIT_TARGET,
+	SKI_UNIT_FLAG,
+	SKI_REQUIRES_HPCOST,
+	SKI_REQUIRES_SPCOST,
+	SKI_REQUIRES_MAXHPTRIGGER,
+	SKI_REQUIRES_HPRATECOST,
+	SKI_REQUIRES_SPRATECOST,
+	SKI_REQUIRES_ZENYCOST,
+	SKI_REQUIRES_WEAPON,
+	SKI_REQUIRES_AMMO,
+	SKI_REQUIRES_AMMOAMOUNT,
+	SKI_REQUIRES_STATE,
+	SKI_REQUIRES_STATUS,
+	SKI_REQUIRES_SPHERECOST,
+	SKI_REQUIRES_ITEMCOST,
+	SKI_REQUIRES_EQUIPMENT,
+};
+#endif // Pandas_ScriptCommand_GetSkillInfo
+
 enum unitdata_mobtypes {
 	UMOB_SIZE = 0,
 	UMOB_LEVEL,
@@ -617,6 +699,10 @@ enum unitdata_mobtypes {
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 	UMOB_AURA,
 #endif // Pandas_Struct_Unit_CommonData_Aura
+#ifdef Pandas_ScriptParams_UnitData_DamageTaken
+	UMOB_DAMAGETAKEN,
+	UMOB_DAMAGETAKEN_DB,
+#endif // Pandas_ScriptParams_UnitData_DamageTaken
 };
 
 enum unitdata_homuntypes {
@@ -2145,6 +2231,22 @@ enum e_hat_effects : int16{
 	HAT_EF_99LV_SOUL_R_GRAY,
 	HAT_EF_160LV_SOUL_R_GRAY,
 	HAT_EF_GEARWHEEL,
+	HAT_EF_GIFT_OF_SNOW,
+	HAT_EF_SNOW_POWDER,
+	HAT_EF_FALLING_SNOW,
+	HAT_EF_C_PHIGASIA_SCARF_EXE,
+	HAT_EF_C_KYEL_HYRE_ULTI_TW,
+	HAT_EF_C_MASTER,
+	HAT_EF_C_TIME_ACCESSORY,
+	HAT_EF_C_HELM_OF_RA,
+	HAT_EF_C_2021RTC_HEADSET_TW,
+	HAT_EF_C_MOONSTAR_ACCESSORY,
+	HAT_EF_BLACK_THUNDER,
+	HAT_EF_BLACK_THUNDER_DARK,
+	HAT_EF_C_RELEASED_GROUND,
+	HAT_EF_C_SAMBA_CARNIVAL,
+	HAT_EF_POISON_MASTER,
+	HAT_EF_C_SWIRLING_FLAME,
 	HAT_EF_MAX
 };
 
@@ -2193,6 +2295,17 @@ enum e_iteminfo : uint8 {
 	ITEMINFO_MAGICATTACK,
 	ITEMINFO_ID,
 	ITEMINFO_AEGISNAME	// 18
+};
+
+class ConstantDatabase : public YamlDatabase {
+public:
+	ConstantDatabase() : YamlDatabase("CONSTANT_DB", 1) {
+
+	}
+
+	void clear() { }
+	const std::string getDefaultLocation();
+	uint64 parseBodyNode(const YAML::Node& node);
 };
 
 #ifdef Pandas_ScriptCommand_SelfDeletion

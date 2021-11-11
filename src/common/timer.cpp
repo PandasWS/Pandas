@@ -348,21 +348,20 @@ t_tick sett_tickimer(int tid, t_tick tick)
 
 #ifdef Pandas_BattleRecord
 //************************************
-// Method:      set_timerid
-// Description: 设置指定定时器携带的 id 参数值
+// Method:      exchange_timer_id
+// Description: 将全部存活定时器的 id 从 origin_id 改成 new_id
 // Access:      public 
-// Parameter:   int tid
-// Parameter:   int id
+// Parameter:   int origin_id
+// Parameter:   int new_id
 // Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/03/13 19:13
+// Author:      Sola丶小克(CairoLee)  2021/07/10 17:48
 //************************************ 
-void set_timerid(int tid, int id) {
-	if (tid == INVALID_TIMER || tid >= timer_data_num) {
-		return;
-	}
-
-	if (timer_data[tid].type) {
-		timer_data[tid].id = id;
+void exchange_timer_id(int origin_id, int new_id) {
+	for (int tid = 0; tid < timer_data_num; tid++) {
+		if (tid == INVALID_TIMER) continue;
+		if (timer_data[tid].id > 0 && timer_data[tid].id == origin_id) {
+			timer_data[tid].id = new_id;
+		}
 	}
 }
 

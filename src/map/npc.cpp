@@ -38,9 +38,13 @@
 #include "pet.hpp"
 #include "script.hpp" // script_config
 
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
+#ifdef Pandas_NpcExpress_UNIT_KILL
 #include "mapreg.hpp"
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
+#endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_Item_Properties
+#include "itemprops.hpp"
+#endif // Pandas_Item_Properties
 
 using namespace rathena;
 
@@ -165,32 +169,6 @@ void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data
 }
 #endif // Pandas_NpcEvent_KILLMVP
 
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-//************************************
-// Method:      npc_event_batrecfree
-// Description: 用来触发 OnBatrecFreeExpress 实时事件的辅助函数
-// Access:      public 
-// Parameter:   struct block_list * bl
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/03/07 18:23
-//************************************ 
-void npc_event_aide_batrecfree(struct block_list* bl) {
-	nullpo_retv(bl);
-
-	if (!bl || !batrec_support(bl)) return;
-
-	mapreg_setreg(add_str("$@batrecfree_gid"), bl->id);
-	mapreg_setreg(add_str("$@batrecfree_type"), bl->type);
-
-	mapreg_setreg(add_str("$@batrecfree_mapid"), bl->m);
-	mapreg_setregstr(add_str("$@batrecfree_mapname$"), map[bl->m].name);
-	mapreg_setreg(add_str("$@batrecfree_x"), bl->x);
-	mapreg_setreg(add_str("$@batrecfree_y"), bl->y);
-
-	npc_event_doall(script_config.battlerecord_free_express_name);
-}
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
-
 #ifdef Pandas_NpcExpress_UNIT_KILL
 //************************************
 // Method:      npc_event_aide_unitkill
@@ -225,6 +203,90 @@ void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, 
 	npc_event_doall(script_config.unit_kill_express_name);
 }
 #endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_NpcExpress_MOBDROPITEM
+//************************************
+// Method:      npc_express_aide_mobdropitem
+// Description: 用于触发魔物掉落道具实时事件的辅助函数
+// Access:      public 
+// Parameter:   struct mob_data * md
+// Parameter:   struct block_list * src
+// Parameter:   int belond_rid
+// Parameter:   t_itemid nameid
+// Parameter:   int drop_rate
+// Parameter:   int drop_type
+//				该值代表掉落的类型, 用来区分掉落物品具体来源
+//				0 - 未知的掉落来源
+//				1 - 配置在 mob_db 中会掉落的普通道具
+//				2 - 魔物死亡掉落的矿石, 矿石掉率在 finding_ore_rate 战斗配置选项中指定
+//				3 - 使用 bonus 指定玩家击败魔物会掉落的道具 (如: bAddMonsterDropItem)
+//				4 - 之前魔物拾取的道具, 这类道具 100% 掉落 (比如波利吃掉的道具)
+//				5 - 配置在 mob_db 中会掉落的 MVP 奖励道具 (直接掉落到玩家背包)
+// Returns:     bool
+//				返回 true 表示可以掉落, 返回 false 表示放弃掉落
+// Author:      Sola丶小克(CairoLee)  2021/07/11 22:42
+//************************************ 
+bool npc_express_aide_mobdropitem(struct mob_data* md,
+	struct block_list* src, int belond_rid, t_itemid nameid,
+	int drop_rate, int drop_type
+) {
+	struct item_data* id = itemdb_search(nameid);
+
+	if (ITEM_PROPERTIES_HASFLAG(id, special_mask, ITEM_PRO_EXECUTE_MOBDROP_EXPRESS)) {
+		mapreg_setreg(add_str("$@mobdrop_mobid"), (md ? md->mob_id : 0));
+		mapreg_setreg(add_str("$@mobdrop_itemid"), nameid);
+		mapreg_setreg(add_str("$@mobdrop_rate"), drop_rate);
+		mapreg_setreg(add_str("$@mobdrop_from"), drop_type);
+		mapreg_setregstr(add_str("$@mobdrop_mapname$"), (md ? map[md->bl.m].name : ""));
+		mapreg_setreg(add_str("$@mobdrop_killerrid"), (src && src->type == BL_PC ? src->id : 0));
+		mapreg_setreg(add_str("$@mobdrop_belongrid"), belond_rid);
+		mapreg_setreg(add_str("$@mobdrop_bypass"), 0);
+
+		npc_event_doall(script_config.mobdropitem_express_name);
+
+		// 若 $@mobdrop_bypass 为 0 表示可以继续掉落, 为 1 表示放弃掉落此道具
+		return (mapreg_readreg(add_str("$@mobdrop_bypass")) == 0);
+	}
+
+	return true;
+}
+
+//************************************
+// Method:      npc_express_aide_mobdropitem
+// Description: 用于触发魔物掉落道具实时事件的辅助函数
+// Access:      public 
+// Parameter:   struct mob_data * md
+// Parameter:   struct block_list * src
+// Parameter:   struct item_drop_list * dlist
+// Parameter:   t_itemid nameid
+// Parameter:   int drop_rate
+// Parameter:   int drop_type
+//				该值代表掉落的类型, 用来区分掉落物品具体来源
+//				0 - 未知的掉落来源
+//				1 - 配置在 mob_db 中会掉落的普通道具
+//				2 - 魔物死亡掉落的矿石, 矿石掉率在 finding_ore_rate 战斗配置选项中指定
+//				3 - 使用 bonus 指定玩家击败魔物会掉落的道具 (如: bAddMonsterDropItem)
+//				4 - 之前魔物拾取的道具, 这类道具 100% 掉落 (比如波利吃掉的道具)
+//				5 - 配置在 mob_db 中会掉落的 MVP 奖励道具 (直接掉落到玩家背包)
+// Returns:     bool
+//				返回 true 表示可以掉落, 返回 false 表示放弃掉落
+// Author:      Sola丶小克(CairoLee)  2021/07/11 22:42
+//************************************ 
+bool npc_express_aide_mobdropitem(struct mob_data* md,
+	struct block_list* src, struct item_drop_list* dlist, t_itemid nameid,
+	int drop_rate, int drop_type
+) {
+	if (dlist) {
+		TBL_PC* belond = NULL;
+		belond = map_charid2sd(dlist->first_charid);
+		if (belond == NULL) belond = map_charid2sd(dlist->second_charid);
+		if (belond == NULL) belond = map_charid2sd(dlist->third_charid);
+
+		return npc_express_aide_mobdropitem(md, src, (belond ? belond->bl.id : 0), nameid, drop_rate, drop_type);
+	}
+	return npc_express_aide_mobdropitem(md, src, 0, nameid, drop_rate, drop_type);
+}
+#endif // Pandas_NpcExpress_MOBDROPITEM
 
 #ifdef Pandas_Helper_Common_Function
 //************************************
@@ -398,88 +460,81 @@ static int npc_cloaked_sub(struct block_list *bl, va_list ap)
 /*==========================================
  * Disable / Enable NPC
  *------------------------------------------*/
-bool npc_enable_target(const char* name, uint32 char_id, int flag)
+bool npc_enable_target(npc_data& nd, uint32 char_id, e_npcv_status flag)
 {
-	struct npc_data* nd = npc_name2id(name);
-
-	if (!nd) {
-		ShowError("npc_enable: Attempted to %s a non-existing NPC '%s' (flag=%d).\n", (flag&11) ? "show" : "hide", name, flag);
-		return false;
-	}
-
-	if (char_id > 0 && (flag & 24)) {
+	if (char_id > 0 && (flag & NPCVIEW_CLOAK)) {
 		map_session_data *sd = map_charid2sd(char_id);
 	
 		if (!sd) {
-			ShowError("npc_enable: Attempted to %s a NPC '%s' on an invalid target %d.\n", (flag & 8) ? "show" : "hide", name, char_id);
+			ShowError("npc_enable: Attempted to %s a NPC '%s' on an invalid target %d.\n", (flag & NPCVIEW_VISIBLE) ? "show" : "hide", nd.name, char_id);
 			return false;
 		}
 
-		unsigned int option = nd->sc.option;
-		if (flag&8)
-			nd->sc.option &= ~OPTION_CLOAK;
+		unsigned int option = nd.sc.option;
+		if (flag & NPCVIEW_CLOAKOFF)
+			nd.sc.option &= ~OPTION_CLOAK;
 		else
-			nd->sc.option |= OPTION_CLOAK;
+			nd.sc.option |= OPTION_CLOAK;
 
-		auto it = std::find(sd->cloaked_npc.begin(), sd->cloaked_npc.end(), nd->bl.id);
+		auto it = std::find(sd->cloaked_npc.begin(), sd->cloaked_npc.end(), nd.bl.id);
 	
-		if (it == sd->cloaked_npc.end() && option != nd->sc.option)
-			sd->cloaked_npc.push_back(nd->bl.id);
-		else if (it != sd->cloaked_npc.end() && option == nd->sc.option)
+		if (it == sd->cloaked_npc.end() && option != nd.sc.option)
+			sd->cloaked_npc.push_back(nd.bl.id);
+		else if (it != sd->cloaked_npc.end() && option == nd.sc.option)
 			sd->cloaked_npc.erase(it);
 	
-		if (nd->class_ != JT_WARPNPC && nd->class_ != JT_GUILD_FLAG)
-			clif_changeoption_target(&nd->bl, &sd->bl);
+		if (nd.class_ != JT_WARPNPC && nd.class_ != JT_GUILD_FLAG)
+			clif_changeoption_target(&nd.bl, &sd->bl);
 		else {
-			if (nd->sc.option&(OPTION_HIDE|OPTION_INVISIBLE|OPTION_CLOAK))
-				clif_clearunit_single(nd->bl.id, CLR_OUTSIGHT, sd->fd);
+			if (nd.sc.option&(OPTION_HIDE|OPTION_INVISIBLE|OPTION_CLOAK))
+				clif_clearunit_single(nd.bl.id, CLR_OUTSIGHT, sd->fd);
 			else
-				clif_spawn(&nd->bl);
+				clif_spawn(&nd.bl);
 		}
-		nd->sc.option = option;
+		nd.sc.option = option;
 	}
 	else {
-		if (flag&1) {
-			nd->sc.option &= ~OPTION_INVISIBLE;
-			clif_spawn(&nd->bl);
+		if (flag & NPCVIEW_ENABLE) {
+			nd.sc.option &= ~OPTION_INVISIBLE;
+			clif_spawn(&nd.bl);
 		}
-		else if (flag&2)
-			nd->sc.option &= ~OPTION_HIDE;
-		else if (flag&4)
-			nd->sc.option |= OPTION_HIDE;
-		else if (flag&8)
-			nd->sc.option &= ~OPTION_CLOAK;
-		else if (flag&16)
-			nd->sc.option |= OPTION_CLOAK;
+		else if (flag & NPCVIEW_HIDEOFF)
+			nd.sc.option &= ~OPTION_HIDE;
+		else if (flag & NPCVIEW_HIDEON)
+			nd.sc.option |= OPTION_HIDE;
+		else if (flag & NPCVIEW_CLOAKOFF)
+			nd.sc.option &= ~OPTION_CLOAK;
+		else if (flag & NPCVIEW_CLOAKON)
+			nd.sc.option |= OPTION_CLOAK;
 		else {	//Can't change the view_data to invisible class because the view_data for all npcs is shared! [Skotlex]
-			nd->sc.option |= OPTION_INVISIBLE;
-			clif_clearunit_area(&nd->bl,CLR_OUTSIGHT);  // Hack to trick maya purple card [Xazax]
+			nd.sc.option |= OPTION_INVISIBLE;
+			clif_clearunit_area(&nd.bl,CLR_OUTSIGHT);  // Hack to trick maya purple card [Xazax]
 		}
-		if (nd->class_ != JT_WARPNPC && nd->class_ != JT_GUILD_FLAG)	//Client won't display option changes for these classes [Toms]
-			clif_changeoption(&nd->bl);
+		if (nd.class_ != JT_WARPNPC && nd.class_ != JT_GUILD_FLAG)	//Client won't display option changes for these classes [Toms]
+			clif_changeoption(&nd.bl);
 		else {
-			if (nd->sc.option&(OPTION_HIDE|OPTION_INVISIBLE|OPTION_CLOAK))
-				clif_clearunit_area(&nd->bl,CLR_OUTSIGHT);
+			if (nd.sc.option&(OPTION_HIDE|OPTION_INVISIBLE|OPTION_CLOAK))
+				clif_clearunit_area(&nd.bl,CLR_OUTSIGHT);
 			else
-				clif_spawn(&nd->bl);
+				clif_spawn(&nd.bl);
 		}
-		map_foreachinmap(npc_cloaked_sub, nd->bl.m, BL_PC, nd->bl.id);	// Because npc option has been updated we remove the npc id from sd->cloaked_npc
+		map_foreachinmap(npc_cloaked_sub, nd.bl.m, BL_PC, nd.bl.id);	// Because npc option has been updated we remove the npc id from sd->cloaked_npc
 	}
 
-	if (flag&11) {	// check if player standing on a OnTouchArea
+	if (flag & NPCVIEW_VISIBLE) {	// check if player standing on a OnTouchArea
 		int xs = -1, ys = -1;
-		switch (nd->subtype) {
+		switch (nd.subtype) {
 		case NPCTYPE_SCRIPT:
-			xs = nd->u.scr.xs;
-			ys = nd->u.scr.ys;
+			xs = nd.u.scr.xs;
+			ys = nd.u.scr.ys;
 			break;
 		case NPCTYPE_WARP:
-			xs = nd->u.warp.xs;
-			ys = nd->u.warp.ys;
+			xs = nd.u.warp.xs;
+			ys = nd.u.warp.ys;
 			break;
 		}
 		if (xs > -1 && ys > -1)
-			map_foreachinallarea( npc_enable_sub, nd->bl.m, nd->bl.x-xs, nd->bl.y-ys, nd->bl.x+xs, nd->bl.y+ys, BL_PC, nd );
+			map_foreachinallarea( npc_enable_sub, nd.bl.m, nd.bl.x-xs, nd.bl.y-ys, nd.bl.x+xs, nd.bl.y+ys, BL_PC, &nd );
 	}
 
 	return true;
@@ -1572,8 +1627,20 @@ void run_tomb(struct map_session_data* sd, struct npc_data* nd)
 
 	strftime(time, sizeof(time), "%H:%M", localtime(&nd->u.tomb.kill_time));
 
+#ifndef Pandas_Make_Tomb_Mobname_Follow_Override_Mob_Names
 	// TODO: Find exact color?
 	snprintf(buffer, sizeof(buffer), msg_txt(sd,657), nd->u.tomb.md->db->name.c_str());
+#else
+	memset(buffer, 0, sizeof(buffer));
+	// 默认情况下先使用魔物被召唤时赋予的名称 (以前只会读取 DB 里的名称)
+	snprintf(buffer, sizeof(buffer), msg_txt(sd, 657), nd->u.tomb.md->name);
+
+	// 然后再根据 override_mob_names 战斗配置选项决定应该使用哪个字段的魔物名进行覆盖
+	if (battle_config.override_mob_names == 1)
+		snprintf(buffer, sizeof(buffer), msg_txt(sd, 657), nd->u.tomb.md->db->name.c_str());
+	else if (battle_config.override_mob_names == 2)
+		snprintf(buffer, sizeof(buffer), msg_txt(sd, 657), nd->u.tomb.md->db->jname.c_str());
+#endif // Pandas_Make_Tomb_Mobname_Follow_Override_Mob_Names
 	clif_scriptmes(sd, nd->bl.id, buffer);
 
 	clif_scriptmes(sd, nd->bl.id, msg_txt(sd,658));
@@ -1813,7 +1880,7 @@ static enum e_CASHSHOP_ACK npc_cashshop_process_payment(struct npc_data *nd, int
 					return ERROR_TYPE_PURCHASE_FAIL;
 				}
 
-				for (i = 0; i < MAX_INVENTORY && delete_amount > 0; i++) {
+				for (i = 0; i < P_MAX_INVENTORY(sd) && delete_amount > 0; i++) {
 					struct item *it;
 					int amount = 0;
 
@@ -2019,7 +2086,7 @@ void npc_shop_currency_type(struct map_session_data *sd, struct npc_data *nd, in
 					clif_broadcast(&sd->bl, output, strlen(output) + 1, BC_BLUE,SELF);
 				}
 
-				for (i = 0; i < MAX_INVENTORY; i++) {
+				for (i = 0; i < P_MAX_INVENTORY(sd); i++) {
 					if (sd->inventory.u.items_inventory[i].amount > 0 && sd->inventory.u.items_inventory[i].nameid == id->nameid && pc_can_sell_item(sd, &sd->inventory.u.items_inventory[i], nd->subtype))
 						total += sd->inventory.u.items_inventory[i].amount;
 				}
@@ -2125,7 +2192,11 @@ int npc_cashshop_buy(struct map_session_data *sd, t_itemid nameid, int amount, i
 
 	if( !pet_create_egg(sd, nameid) ) {
 		struct item item_tmp;
+#ifndef Pandas_LGTM_Optimization
 		unsigned short get_amt = amount, j;
+#else
+		int get_amt = amount, j;
+#endif // Pandas_LGTM_Optimization
 
 		memset(&item_tmp, 0, sizeof(item_tmp));
 		item_tmp.nameid = nameid;
@@ -2182,9 +2253,9 @@ uint8 npc_buylist(struct map_session_data* sd, uint16 n, struct s_npc_buy_list *
 	double z;
 	int i,j,k,w,skill,new_;
 #ifndef Pandas_FuncExtend_Increase_Inventory
-	uint8 market_index[MAX_INVENTORY];
+	uint8 market_index[G_MAX_INVENTORY];
 #else
-	int market_index[MAX_INVENTORY];
+	int market_index[G_MAX_INVENTORY];
 #endif // Pandas_FuncExtend_Increase_Inventory
 
 	nullpo_retr(3, sd);
@@ -2344,6 +2415,7 @@ static int npc_selllist_sub(struct map_session_data* sd, int n, unsigned short* 
 	int key_refine = 0;
 	int key_attribute = 0;
 	int key_identify = 0;
+	int key_enchantgrade = 0;
 	int key_card[MAX_SLOTS];
 	int key_option_id[MAX_ITEM_RDM_OPT], key_option_val[MAX_ITEM_RDM_OPT], key_option_param[MAX_ITEM_RDM_OPT];
 
@@ -2356,6 +2428,7 @@ static int npc_selllist_sub(struct map_session_data* sd, int n, unsigned short* 
 	script_cleararray_pc( sd, "@sold_refine" );
 	script_cleararray_pc( sd, "@sold_attribute" );
 	script_cleararray_pc( sd, "@sold_identify" );
+	script_cleararray_pc( sd, "@sold_enchantgrade" );
 
 	for( j = 0; j < MAX_SLOTS; j++ )
 	{// clear each of the card slot entries
@@ -2391,6 +2464,7 @@ static int npc_selllist_sub(struct map_session_data* sd, int n, unsigned short* 
 			script_setarray_pc( sd, "@sold_refine", i, sd->inventory.u.items_inventory[idx].refine, &key_refine );
 			script_setarray_pc( sd, "@sold_attribute", i, sd->inventory.u.items_inventory[idx].attribute, &key_attribute );
 			script_setarray_pc( sd, "@sold_identify", i, sd->inventory.u.items_inventory[idx].identify, &key_identify );
+			script_setarray_pc( sd, "@sold_enchantgrade", i, sd->inventory.u.items_inventory[idx].enchantgrade, &key_enchantgrade );
 
 			for( j = 0; j < MAX_SLOTS; j++ )
 			{// store each of the cards from the equipment in the array
@@ -2445,7 +2519,7 @@ uint8 npc_selllist(struct map_session_data* sd, int n, unsigned short *item_list
 		idx    = item_list[i*2]-2;
 		amount = item_list[i*2+1];
 
-		if( idx >= MAX_INVENTORY || idx < 0 || amount < 0 )
+		if( idx >= P_MAX_INVENTORY(sd) || idx < 0 || amount < 0 )
 		{
 			return 1;
 		}
@@ -2531,7 +2605,11 @@ uint8 npc_selllist(struct map_session_data* sd, int n, unsigned short *item_list
 //This doesn't remove it from map_db
 int npc_remove_map(struct npc_data* nd)
 {
+#ifndef Pandas_LGTM_Optimization
 	int16 i;
+#else
+	int i;
+#endif // Pandas_LGTM_Optimization
 	nullpo_retr(1, nd);
 
 	if(nd->bl.prev == NULL || nd->bl.m < 0)
@@ -2621,7 +2699,7 @@ int npc_unload(struct npc_data* nd, bool single) {
 	nullpo_ret(nd);
 
 #ifdef Pandas_BattleRecord
-	batrec_free(&nd->bl, true);
+	batrec_free(&nd->bl);
 #endif // Pandas_BattleRecord
 
 	status_change_clear(&nd->bl, 1);
@@ -2916,7 +2994,7 @@ void npc_parsename(struct npc_data* nd, const char* name, const char* start, con
  */
 int npc_parseview(const char* w4, const char* start, const char* buffer, const char* filepath) {
 	int i = 0;
-	char viewid[1024];	// Max size of name from const.txt, see read_constdb.
+	char viewid[1024];	// Max size of name from const.yml, see ConstantDatabase::parseBodyNode.
 
 	// Extract view ID / constant
 	while (w4[i] != '\0') {
@@ -2937,8 +3015,13 @@ int npc_parseview(const char* w4, const char* start, const char* buffer, const c
 
 		// Check if constant exists and get its value.
 		if(!script_get_constant(viewid, &val_tmp)) {
-			ShowWarning("npc_parseview: Invalid NPC constant '%s' specified in file '%s', line'%d'. Defaulting to INVISIBLE. \n", viewid, filepath, strline(buffer,start-buffer));
-			val = JT_INVISIBLE;
+			std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname(viewid);
+			if (mob != nullptr)
+				val = static_cast<int>(mob->vd.class_);
+			else {
+				ShowWarning("npc_parseview: Invalid NPC constant '%s' specified in file '%s', line'%d'. Defaulting to INVISIBLE. \n", viewid, filepath, strline(buffer,start-buffer));
+				val = JT_INVISIBLE;
+			}
 		} else
 			val = static_cast<int>(val_tmp);
 	}
@@ -4792,6 +4875,19 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 		}
 #endif // Pandas_MapFlag_NoSkill2
 
+#ifdef Pandas_MapFlag_MaxASPD
+		case MF_MAXASPD: {
+			// 若脚本中 mapflag 指定的数值无效或为默认值: 0, 则立刻关闭这个地图标记
+			union u_mapflag_args args = {};
+
+			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 0 || !state)
+				map_setmapflag(m, mapflag, false);
+			else
+				map_setmapflag_sub(m, mapflag, true, &args);
+			break;
+		}
+#endif // Pandas_MapFlag_MaxASPD
+
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 7>
 
 		// All others do not need special treatment
@@ -5031,13 +5127,13 @@ bool npc_event_is_express(enum npce_event eventtype) {
 		NPCX_PROGRESSABORT,	// progressabort_express_name	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
 
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-		NPCX_BATTLERECORD_FREE,	// battlerecord_free_express_name	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
-
 #ifdef Pandas_NpcExpress_UNIT_KILL
 		NPCX_UNIT_KILL,	// unit_kill_express_name	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
 #endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_NpcExpress_MOBDROPITEM
+		NPCX_MOBDROPITEM,	// mobdropitem_express_name	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
+#endif // Pandas_NpcExpress_MOBDROPITEM
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -5093,7 +5189,7 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #endif // Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
-		NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+		NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -5107,6 +5203,30 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
 		NPCF_ONECLICK_IDENTIFY,	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDCREATE
+		NPCF_GUILDCREATE,	// guildcreate_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+		NPCF_GUILDJOIN,	// guildjoin_filter_name	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
+#ifdef Pandas_NpcFilter_GUILDLEAVE
+		NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDLEAVE
+
+#ifdef Pandas_NpcFilter_PARTYCREATE
+		NPCF_PARTYCREATE,	// partycreate_filter_name	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYCREATE
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+		NPCF_PARTYJOIN,	// partyjoin_filter_name	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYJOIN
+
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+		NPCF_PARTYLEAVE,	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYLEAVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -5265,7 +5385,7 @@ const char *npc_get_script_event_name(int npce_index)
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
 	case NPCF_CHANGETITLE:
-		return script_config.changetitle_filter_name;	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+		return script_config.changetitle_filter_name;	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -5282,6 +5402,36 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_ONECLICK_IDENTIFY:
 		return script_config.oneclick_identify_filter_name;	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	case NPCF_GUILDCREATE:
+		return script_config.guildcreate_filter_name;	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+	case NPCF_GUILDJOIN:
+		return script_config.guildjoin_filter_name;	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
+#ifdef Pandas_NpcFilter_GUILDLEAVE
+	case NPCF_GUILDLEAVE:
+		return script_config.guildleave_filter_name;	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDLEAVE
+
+#ifdef Pandas_NpcFilter_PARTYCREATE
+	case NPCF_PARTYCREATE:
+		return script_config.partycreate_filter_name;	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYCREATE
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	case NPCF_PARTYJOIN:
+		return script_config.partyjoin_filter_name;	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYJOIN
+
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+	case NPCF_PARTYLEAVE:
+		return script_config.partyleave_filter_name;	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -5353,15 +5503,15 @@ const char *npc_get_script_event_name(int npce_index)
 		return script_config.progressabort_express_name;	// OnPCProgressAbortExpress		// 当 progressbar 进度条被打断时触发实时事件
 #endif // Pandas_NpcExpress_PROGRESSABORT
 
-#ifdef Pandas_NpcExpress_BATTLERECORD_FREE
-	case NPCX_BATTLERECORD_FREE:
-		return script_config.battlerecord_free_express_name;	// OnBatrecFreeExpress		// 当战斗记录信息即将被清除时触发实时事件
-#endif // Pandas_NpcExpress_BATTLERECORD_FREE
-
 #ifdef Pandas_NpcExpress_UNIT_KILL
 	case NPCX_UNIT_KILL:
 		return script_config.unit_kill_express_name;	// OnUnitKillExpress		// 当某个单位被击杀时触发实时事件
 #endif // Pandas_NpcExpress_UNIT_KILL
+
+#ifdef Pandas_NpcExpress_MOBDROPITEM
+	case NPCX_MOBDROPITEM:
+		return script_config.mobdropitem_express_name;	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
+#endif // Pandas_NpcExpress_MOBDROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:

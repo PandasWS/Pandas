@@ -458,6 +458,27 @@ void strReplace(std::wstring& str, const std::wstring& from, const std::wstring&
 }
 
 //************************************
+// Method:      strReplace
+// Description: 用于对 char[] 字符串数组进行全部替换操作
+// Access:      public 
+// Parameter:   char * str
+// Parameter:   const char * from
+// Parameter:   const char * to
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/08/07 16:10
+//************************************ 
+void strReplace(char* str, const char* from, const char* to) {
+	int len = strlen(str);
+	int from_len = strlen(from), to_len = strlen(to);
+	for (char* p = str; p = strstr(p, from); ++p) {
+		if (from_len != to_len) // shift end as needed 
+			memmove(p + to_len, p + from_len,
+				len - (p - str) + to_len);
+		memcpy(p, to, to_len);
+	}
+}
+
+//************************************
 // Method:      strContain
 // Description: 判断 str 中是否包含 needle 数组中的任何一个字符串 (不区分大小写)
 // Parameter:   std::vector<std::string> needle

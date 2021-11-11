@@ -199,6 +199,9 @@ enum send_target : uint8_t {
 	ALL_CLIENT = 0,
 	ALL_SAMEMAP,
 	AREA,				// area
+#ifdef Pandas_Ease_Mob_Stuck_After_Dead
+	AREA_DEAD,			// area, for clear unit (monster death)
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
 	AREA_WOS,			// area, without self
 	AREA_WOC,			// area, without chatrooms
 	AREA_WOSC,			// area, without own chatroom
@@ -247,7 +250,7 @@ enum broadcast_flags : uint8_t {
 	BC_BLUE			= 0x10,
 	BC_WOE			= 0x20,
 	BC_COLOR_MASK	= 0x30, // BC_YELLOW|BC_BLUE|BC_WOE
-
+	BC_NAME			= 0x40,
 	BC_DEFAULT		= BC_ALL|BC_PC|BC_YELLOW
 };
 
@@ -582,6 +585,28 @@ enum e_memorial_dungeon_command : uint16 {
 	COMMAND_MEMORIALDUNGEON_DESTROY_FORCE = 0x3,
 };
 
+#ifdef Pandas_ClientFeature_InventoryExpansion
+enum e_expand_inventory : uint8 {
+	EXPAND_INVENTORY_ASK_CONFIRMATION = 0,
+	EXPAND_INVENTORY_FAILED = 1,
+	EXPAND_INVENTORY_OTHER_WORK = 2,
+	EXPAND_INVENTORY_MISSING_ITEM = 3,
+	EXPAND_INVENTORY_MAX_SIZE = 4
+};
+
+enum e_expand_inventory_result : uint8 {
+	EXPAND_INVENTORY_RESULT_SUCCESS = 0,
+	EXPAND_INVENTORY_RESULT_FAILED = 1,
+	EXPAND_INVENTORY_RESULT_OTHER_WORK = 2,
+	EXPAND_INVENTORY_RESULT_MISSING_ITEM = 3,
+	EXPAND_INVENTORY_RESULT_MAX_SIZE = 4
+};
+
+void clif_inventoryExpansionInfo(struct map_session_data* sd);
+void clif_inventoryExpandAck(struct map_session_data* sd, enum e_expand_inventory result, int itemId);
+void clif_inventoryExpandResult(struct map_session_data* sd, enum e_expand_inventory_result result);
+#endif // Pandas_ClientFeature_InventoryExpansion
+
 int clif_setip(const char* ip);
 void clif_setbindip(const char* ip);
 void clif_setport(uint16 port);
@@ -880,6 +905,7 @@ void clif_send_petdata(struct map_session_data* sd, struct pet_data* pd, int typ
 #define clif_pet_performance(pd, param) clif_send_petdata(NULL, pd, 4, param)
 void clif_pet_emotion(struct pet_data *pd,int param);
 void clif_pet_food(struct map_session_data *sd,int foodid,int fail);
+void clif_pet_autofeed_status(struct map_session_data* sd, bool force);
 
 //friends list
 int clif_friendslist_toggle_sub(struct map_session_data *sd,va_list ap);
@@ -1166,7 +1192,7 @@ void clif_change_title_ack(struct map_session_data* sd, unsigned char result, un
 #endif // Pandas_Character_Title_Controller
 
 #ifdef Pandas_Aura_Mechanism
-void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_hidden, enum e_aura_special flag);
+void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_when_hidden, enum e_aura_special flag);
 #endif // Pandas_Aura_Mechanism
 
 #endif /* CLIF_HPP */

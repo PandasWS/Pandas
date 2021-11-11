@@ -30,8 +30,6 @@ const t_itemid UNKNOWN_ITEM_ID = 512;
 ///Maximum amount of items a combo may require
 #define MAX_ITEMS_PER_COMBO 6
 
-#define MAX_ITEMGROUP_RANDGROUP 4	///Max group for random item (increase this when needed). TODO: Remove this limit and use dynamic size if needed
-
 #define MAX_ROULETTE_LEVEL 7 /** client-defined value **/
 #define MAX_ROULETTE_COLUMNS 9 /** client-defined value **/
 
@@ -103,6 +101,7 @@ enum item_itemid : t_itemid
 	ITEMID_FRAGMENT_OF_CRYSTAL			= 7321,
 	ITEMID_SKULL_						= 7420,
 	ITEMID_TRAP_ALLOY					= 7940,
+	ITEMID_COOKIE_BAT					= 11605,
 	ITEMID_MERCENARY_RED_POTION			= 12184,
 	ITEMID_MERCENARY_BLUE_POTION		= 12185,
 	ITEMID_GIANT_FLY_WING				= 12212,
@@ -128,6 +127,7 @@ enum item_itemid : t_itemid
 	ITEMID_WOB_LOCAL					= 14585,
 	ITEMID_SIEGE_TELEPORT_SCROLL		= 14591,
 	ITEMID_WL_MB_SG						= 100065,
+	ITEMID_HOMUNCULUS_SUPPLEMENT		= 100371,
 };
 
 ///Rune Knight
@@ -739,6 +739,10 @@ enum e_random_item_group {
 	IG_PRIZEOFHERO,
 	IG_PRIVATE_AIRSHIP,
 	IG_TOKEN_OF_SIEGFRIED,
+	IG_ENCHANT_STONE_BOX,
+	IG_ENCHANT_STONE_BOX2,
+	IG_ENCHANT_STONE_BOX3,
+	IG_ENCHANT_STONE_BOX4,
 	IG_ENCHANT_STONE_BOX5,
 	IG_ENCHANT_STONE_BOX6,
 	IG_ENCHANT_STONE_BOX7,
@@ -750,6 +754,17 @@ enum e_random_item_group {
 	IG_ENCHANT_STONE_BOX13,
 	IG_ENCHANT_STONE_BOX14,
 	IG_ENCHANT_STONE_BOX15,
+	IG_ENCHANT_STONE_BOX16,
+	IG_ENCHANT_STONE_BOX17,
+	IG_ENCHANT_STONE_BOX18,
+	IG_ENCHANT_STONE_BOX19,
+	IG_ENCHANT_STONE_BOX20,
+	IG_ENCHANT_STONE_BOX21,
+	IG_XMAS_PACKAGE_14,
+	IG_EASTER_EGG,
+	IG_PITAPAT_BOX,
+
+	IG_MAX,
 };
 
 /// Enum for bound/sell restricted selling
@@ -819,28 +834,30 @@ struct s_item_combo {
 struct s_item_group_entry
 {
 	t_itemid nameid; /// Item ID
-	unsigned short duration, /// Duration if item as rental item (in minutes)
+	uint16 rate;
+	uint16 duration, /// Duration if item as rental item (in minutes)
 		amount; /// Amount of item will be obtained
 	bool isAnnounced, /// Broadcast if player get this item
 		GUID, /// Gives Unique ID for items in each box opened
+		isStacked, /// Whether stackable items are given stacked
 		isNamed; /// Named the item (if possible)
-	char bound; /// Makes the item as bound item (according to bound type)
+	uint8 bound; /// Makes the item as bound item (according to bound type)
 };
 
 /// Struct of random group
 struct s_item_group_random
 {
-	struct s_item_group_entry *data; /// Random group entry
-	unsigned short data_qty; /// Number of item in random group
+	uint32 total_rate;
+	std::unordered_map<t_itemid, std::shared_ptr<s_item_group_entry>> data; /// item ID, s_item_group_entry
+
+	std::shared_ptr<s_item_group_entry> get_random_itemsubgroup();
 };
 
 /// Struct of item group that will be used for db
 struct s_item_group_db
 {
-	unsigned short id, /// Item Group ID
-		must_qty; /// Number of must item at this group
-	struct s_item_group_entry *must; /// Must item entry
-	struct s_item_group_random random[MAX_ITEMGROUP_RANDGROUP]; //! TODO: Move this fixed array to dynamic size if needed.
+	uint16 id; /// Item Group ID
+	std::unordered_map<uint16, std::shared_ptr<s_item_group_random>> random;	/// group ID, s_item_group_random
 };
 
 /// Struct of Roulette db
@@ -962,9 +979,7 @@ struct item_data
 #ifdef Pandas_Struct_Item_Data_Properties
 		// 使 item_data 可记录此物品的特殊属性 [Sola丶小克]
 		struct {
-			bool avoid_use_consume = false;
-			bool avoid_skill_consume = false;
-			bool is_amulet = false;
+			uint32 special_mask = 0;
 			uint32 noview_mask = 0;
 			uint32 annouce_mask = 0;
 		} properties;
@@ -1006,6 +1021,10 @@ struct s_random_opt_data
 	std::string name;
 	script_code *script;
 
+#ifdef Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+	std::string script_plaintext;
+#endif // Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+
 	~s_random_opt_data() {
 		if (script)
 			script_free_code(script);
@@ -1030,9 +1049,20 @@ struct s_random_opt_group {
 };
 
 class RandomOptionDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_data> {
+#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
+private:
+	friend class boost::serialization::access;
+
+	template <typename Archive>
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint16, s_random_opt_data>>(*this);
+	}
+#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 public:
 	RandomOptionDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_DB", 1) {
-
+#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
+		this->supportSerialize = true;
+#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 	}
 
 	const std::string getDefaultLocation();
@@ -1042,14 +1072,30 @@ public:
 	// Additional
 	bool option_exists(std::string name);
 	bool option_get_id(std::string name, uint16 &id);
+
+#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
+	bool doSerialize(const std::string& type, void* archive);
+	void afterSerialize();
+#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 };
 
 extern RandomOptionDatabase random_option_db;
 
 class RandomOptionGroupDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_group> {
+#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
+private:
+	friend class boost::serialization::access;
+
+	template <typename Archive>
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint16, s_random_opt_group>>(*this);
+	}
+#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 public:
 	RandomOptionGroupDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_GROUP", 1) {
-
+#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
+		this->supportSerialize = true;
+#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 	}
 
 	const std::string getDefaultLocation();
@@ -1059,12 +1105,20 @@ public:
 	bool add_option(const YAML::Node &node, std::shared_ptr<s_random_opt_group_entry> &entry);
 	bool option_exists(std::string name);
 	bool option_get_id(std::string name, uint16 &id);
+
+#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
+	bool doSerialize(const std::string& type, void* archive);
+	void afterSerialize();
+#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 };
 
 extern RandomOptionGroupDatabase random_option_group;
 
 class ItemDatabase : public TypesafeCachedYamlDatabase<t_itemid, item_data> {
 private:
+	std::unordered_map<std::string, std::shared_ptr<item_data>> nameToItemDataMap;
+	std::unordered_map<std::string, std::shared_ptr<item_data>> aegisNameToItemDataMap;
+
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 	friend class boost::serialization::access;
 
@@ -1086,6 +1140,16 @@ public:
 	const std::string getDefaultLocation();
 	uint64 parseBodyNode(const YAML::Node& node);
 	void loadingFinished();
+	void clear() override{
+		TypesafeCachedYamlDatabase::clear();
+
+		this->nameToItemDataMap.clear();
+		this->aegisNameToItemDataMap.clear();
+	}
+
+	// Additional
+	std::shared_ptr<item_data> searchname( const char* name );
+	std::shared_ptr<item_data> search_aegisname( const char *name );
 
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 	bool doSerialize(const std::string& type, void* archive);
@@ -1095,8 +1159,42 @@ public:
 
 extern ItemDatabase item_db;
 
-struct item_data* itemdb_searchname(const char *name);
-struct item_data* itemdb_search_aegisname( const char *str );
+class ItemGroupDatabase : public TypesafeCachedYamlDatabase<uint16, s_item_group_db> {
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+private:
+	friend class boost::serialization::access;
+
+	template <typename Archive>
+	void serialize(Archive& ar, const unsigned int version) {
+		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<uint16, s_item_group_db>>(*this);
+	}
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
+public:
+	ItemGroupDatabase() : TypesafeCachedYamlDatabase("ITEM_GROUP_DB", 1) {
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+		this->supportSerialize = true;
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
+	}
+
+	const std::string getDefaultLocation();
+	uint64 parseBodyNode(const YAML::Node& node);
+	void loadingFinished();
+
+	// Additional
+	bool item_exists(uint16 group_id, t_itemid nameid);
+	int16 item_exists_pc(map_session_data *sd, uint16 group_id);
+	t_itemid get_random_item_id(uint16 group_id, uint8 sub_group);
+	std::shared_ptr<s_item_group_entry> get_random_entry(uint16 group_id, uint8 sub_group);
+	uint8 pc_get_itemgroup(uint16 group_id, bool identify, map_session_data *sd);
+
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+	bool doSerialize(const std::string& type, void* archive);
+	void afterSerialize();
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
+};
+
+extern ItemGroupDatabase itemdb_group;
+
 int itemdb_searchname_array(struct item_data** data, int size, const char *str);
 struct item_data* itemdb_search(t_itemid nameid);
 struct item_data* itemdb_exists(t_itemid nameid);
@@ -1121,9 +1219,6 @@ struct item_data* itemdb_exists(t_itemid nameid);
 #define itemdb_dropeffect(n) (itemdb_search(n)->flag.dropEffect)
 const char* itemdb_typename(enum item_types type);
 const char *itemdb_typename_ammo (e_ammo_type ammo);
-
-struct s_item_group_entry *itemdb_get_randgroupitem(uint16 group_id, uint8 sub_group);
-t_itemid itemdb_searchrandomid(uint16 group_id, uint8 sub_group);
 
 #define itemdb_value_buy(n) itemdb_search(n)->value_buy
 #define itemdb_value_sell(n) itemdb_search(n)->value_sell
@@ -1158,11 +1253,6 @@ bool itemdb_isstackable2(struct item_data *id);
 bool itemdb_isNoEquip(struct item_data *id, uint16 m);
 
 s_item_combo *itemdb_combo_exists(uint32 combo_id);
-
-struct s_item_group_db *itemdb_group_exists(unsigned short group_id);
-bool itemdb_group_item_exists(unsigned short group_id, t_itemid nameid);
-int16 itemdb_group_item_exists_pc(struct map_session_data *sd, unsigned short group_id);
-char itemdb_pc_get_itemgroup(uint16 group_id, bool identify, struct map_session_data *sd);
 
 bool itemdb_parse_roulette_db(void);
 
@@ -1251,11 +1341,13 @@ namespace boost {
 
 #ifdef Pandas_Struct_Item_Data_Pandas
 
-#ifdef Pandas_Struct_Item_Data_Script_Plaintext
+			//ar& t.script;					// 改用 t.pandas.script_plaintext.script 来序列化数据
+			//ar& t.equip_script;			// 改用 t.pandas.script_plaintext.equip_script 来序列化数据
+			//ar& t.unequip_script;			// 改用 t.pandas.script_plaintext.unequip_script 来序列化数据
+
 			ar& t.pandas.script_plaintext.script;
 			ar& t.pandas.script_plaintext.equip_script;
 			ar& t.pandas.script_plaintext.unequip_script;
-#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 #ifdef Pandas_Struct_Item_Data_Taming_Mobid
 			ar& t.pandas.taming_mobid;
@@ -1265,18 +1357,107 @@ namespace boost {
 			ar& t.pandas.has_callfunc;
 #endif // Pandas_Struct_Item_Data_Has_CallFunc
 
-#ifdef Pandas_Struct_Item_Data_Properties
-			ar& t.pandas.properties.avoid_use_consume;
-			ar& t.pandas.properties.avoid_skill_consume;
-			ar& t.pandas.properties.is_amulet;
-			ar& t.pandas.properties.noview_mask;
-			ar& t.pandas.properties.annouce_mask;
-#endif // Pandas_Struct_Item_Data_Properties
-
 #endif // Pandas_Struct_Item_Data_Pandas
 		}
 	} // namespace serialization
 } // namespace boost
 #endif // Pandas_YamlBlastCache_ItemDatabase
+
+
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_item_group_entry
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_item_group_entry& t, const unsigned int version)
+		{
+			ar& t.nameid;
+			ar& t.rate;
+			ar& t.duration;
+			ar& t.amount;
+			ar& t.isAnnounced;
+			ar& t.GUID;
+			ar& t.isStacked;
+			ar& t.isNamed;
+			ar& t.bound;
+		}
+
+		// ======================================================================
+		// struct s_item_group_random
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_item_group_random& t, const unsigned int version)
+		{
+			ar& t.total_rate;
+			ar& t.data;
+		}
+
+		// ======================================================================
+		// struct s_item_group_db
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_item_group_db& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.random;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
+
+
+#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_random_opt_data
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_random_opt_data& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.name;
+			//ar& t.script;				// 改用 t.script_plaintext 来序列化数据
+			ar& t.script_plaintext;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_RandomOptionDatabase
+
+
+#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_random_opt_group_entry
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_random_opt_group_entry& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.min_value;
+			ar& t.max_value;
+			ar& t.param;
+			ar& t.chance;
+		}
+
+		// ======================================================================
+		// struct s_random_opt_group
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_random_opt_group& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.name;
+			ar& t.slots;
+			ar& t.max_random;
+			ar& t.random_options;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
+
 
 #endif /* ITEMDB_HPP */

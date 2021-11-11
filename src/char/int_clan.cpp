@@ -125,7 +125,11 @@ static int mapif_parse_clan_request( int fd ){
 }
 
 static int mapif_parse_clan_message( int fd ){
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[500];
+#else
+	unsigned char buf[500] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	uint16 len;
 
 	len = RFIFOW(fd,2);
@@ -139,7 +143,11 @@ static int mapif_parse_clan_message( int fd ){
 }
 
 static void mapif_clan_refresh_onlinecount( int fd, struct clan* clan ){
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[8];
+#else
+	unsigned char buf[8] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 
 	WBUFW(buf,0) = 0x38A2;
 	WBUFL(buf,2) = clan->id;

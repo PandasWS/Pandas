@@ -56,6 +56,11 @@ char char_codepage[32] = "";
 #endif // Pandas_SQL_Configure_Optimization
 unsigned int party_share_level = 10;
 
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	// 是否不主动返回服务器的 IP 地址给到客户端
+	int pandas_inter_hide_server_ipaddress = 0;
+#endif // Pandas_InterConfig_HideServerIpAddress
+
 /// Received packet Lengths from map-server
 int inter_recv_packet_length[] = {
 	-1,-1, 7,-1, -1,13,36, (2+4+4+4+1+NAME_LENGTH),  0,-1, 0, 0,  0, 0,  0, 0,	// 3000-
@@ -801,7 +806,11 @@ int inter_config_read(const char* cfgName)
 	}
 
 	while(fgets(line, sizeof(line), fp)) {
+#ifndef Pandas_Crashfix_Variable_Init
 		char w1[24], w2[1024];
+#else
+		char w1[24] = { 0 }, w2[1024] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 
 		if (line[0] == '/' && line[1] == '/')
 			continue;
@@ -833,6 +842,10 @@ int inter_config_read(const char* cfgName)
 			cfgFile = w2;
 		else if(!strcmpi(w1,"import"))
 			inter_config_read(w2);
+#ifdef Pandas_InterConfig_HideServerIpAddress
+		else if (!strcmpi(w1, "hide_server_ipaddress"))
+			pandas_inter_hide_server_ipaddress = config_switch(w2);
+#endif // Pandas_InterConfig_HideServerIpAddress
 	}
 	fclose(fp);
 
@@ -1056,7 +1069,11 @@ int mapif_broadcast(unsigned char *mes, int len, unsigned long fontColor, short 
 // Wis sending
 int mapif_wis_message(struct WisData *wd)
 {
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[2048];
+#else
+	unsigned char buf[2048] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	int headersize = 12 + 2 * NAME_LENGTH;
 
 	if (wd->len > 2047-headersize) wd->len = 2047-headersize; //Force it to fit to avoid crashes. [Skotlex]
@@ -1162,7 +1179,11 @@ int mapif_parse_broadcast_item(int fd) {
 // Wis sending result
 // flag: 0: success to send wisper, 1: target character is not loged in?, 2: ignored by target
 int mapif_wis_reply( int mapserver_fd, char* target, uint8 flag ){
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[27];
+#else
+	unsigned char buf[27] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 
 	WBUFW(buf, 0) = 0x3802;
 	safestrncpy(WBUFCP(buf, 2), target, NAME_LENGTH);

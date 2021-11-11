@@ -135,7 +135,11 @@ void chlogif_send_usercount(int users){
 
 
 TIMER_FUNC(chlogif_broadcast_user_count){
+#ifndef Pandas_Crashfix_Variable_Init
 	uint8 buf[6];
+#else
+	uint8 buf[6] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	int users = char_count_users();
 
 	// only send an update when needed
@@ -437,7 +441,7 @@ void chlogif_parse_change_sex_sub(int sex, int acc, int char_id, int class_, int
 	if (SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `equip` = '0' WHERE `char_id` = '%d'", schema_config.inventory_db, char_id))
 		Sql_ShowDebug(sql_handle);
 
-	if (SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `class` = '%d', `weapon` = '0', `shield` = '0', `head_top` = '0', `head_mid` = '0', `head_bottom` = '0' WHERE `char_id` = '%d'", schema_config.char_db, class_, char_id))
+	if (SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `class` = '%d', `weapon` = '0', `shield` = '0', `head_top` = '0', `head_mid` = '0', `head_bottom` = '0', `sex` = '%c' WHERE `char_id` = '%d'", schema_config.char_db, class_, sex == SEX_MALE ? 'M' : 'F', char_id))
 		Sql_ShowDebug(sql_handle);
 	if (guild_id) // If there is a guild, update the guild_member data [Skotlex]
 		inter_guild_sex_changed(guild_id, acc, char_id, sex);
@@ -448,7 +452,11 @@ int chlogif_parse_ackchangesex(int fd)
 	if (RFIFOREST(fd) < 7)
 		return 0;
 	else {
+#ifndef Pandas_Crashfix_Variable_Init
 		unsigned char buf[7];
+#else
+		unsigned char buf[7] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 		int acc = RFIFOL(fd,2);
 		int sex = RFIFOB(fd,6);
 		RFIFOSKIP(fd,7);
@@ -502,7 +510,11 @@ int chlogif_parse_ackchangesex(int fd)
 int chlogif_parse_ackchangecharsex(int char_id, int sex)
 {
 	int class_ = 0, guild_id = 0, account_id = 0;
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[7];
+#else
+	unsigned char buf[7] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	char *data;
 
 	// get character data
@@ -520,10 +532,6 @@ int chlogif_parse_ackchangecharsex(int char_id, int sex)
 	Sql_GetData(sql_handle, 2, &data, NULL); guild_id = atoi(data);
 	Sql_FreeResult(sql_handle);
 
-	if (SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `sex` = '%c' WHERE `char_id` = '%d'", schema_config.char_db, sex == SEX_MALE ? 'M' : 'F', char_id)) {
-		Sql_ShowDebug(sql_handle);
-		return 1;
-	}
 	chlogif_parse_change_sex_sub(sex, account_id, char_id, class_, guild_id);
 
 	// disconnect player if online on char-server
@@ -552,7 +560,11 @@ int chlogif_parse_accbannotification(int fd){
 	if (RFIFOREST(fd) < 11)
 		return 0;
 	else { // send to all map-servers to disconnect the player
+#ifndef Pandas_Crashfix_Variable_Init
 		unsigned char buf[11];
+#else
+		unsigned char buf[11] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 		WBUFW(buf,0) = 0x2b14;
 		WBUFL(buf,2) = RFIFOL(fd,2);
 		WBUFB(buf,6) = RFIFOB(fd,6); // 0: change of statut, 1: ban
@@ -602,7 +614,11 @@ int chlogif_parse_askkick(int fd){
 }
 
 int chlogif_parse_updip(int fd){
+#ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[2];
+#else
+	unsigned char buf[2] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
 	uint32 new_ip = 0;
 
 	/**

@@ -90,6 +90,10 @@ static inline int32 client_exp(t_exp exp) {
 /* for clif_clearunit_delayed */
 static struct eri *delay_clearunit_ers;
 
+#ifdef Pandas_Ease_Mob_Stuck_After_Dead
+static struct eri* twice_clearunit_ers;
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
+
 struct s_packet_db packet_db[MAX_PACKET_DB + 1];
 int packet_db_ack[MAX_ACK_FUNC + 1];
 // Reuseable global packet buffer to prevent too many allocations
@@ -490,6 +494,15 @@ int clif_send(const void* buf, int len, struct block_list* bl, enum send_target 
 	std::shared_ptr<s_battleground_data> bg;
 	int x0 = 0, x1 = 0, y0 = 0, y1 = 0, fd;
 	struct s_mapiterator* iter;
+#ifdef Pandas_Ease_Mob_Stuck_After_Dead
+	uint16 area_size = AREA_SIZE;
+	if (type == AREA_DEAD) {
+		if (!AREA_DEAD_SIZE)
+			area_size = AREA_SIZE * 2;
+		else
+			area_size = AREA_DEAD_SIZE;
+	}
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
 
 	if( type != ALL_CLIENT )
 		nullpo_ret(bl);
@@ -524,12 +537,20 @@ int clif_send(const void* buf, int len, struct block_list* bl, enum send_target 
 
 	case AREA:
 	case AREA_WOSC:
+#ifdef Pandas_Ease_Mob_Stuck_After_Dead
+	case AREA_DEAD:
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
 		if (sd && bl->prev == NULL) //Otherwise source misses the packet.[Skotlex]
 			clif_send (buf, len, bl, SELF);
 	case AREA_WOC:
 	case AREA_WOS:
+#ifndef Pandas_Ease_Mob_Stuck_After_Dead
 		map_foreachinallarea(clif_send_sub, bl->m, bl->x-AREA_SIZE, bl->y-AREA_SIZE, bl->x+AREA_SIZE, bl->y+AREA_SIZE,
 			BL_PC, buf, len, bl, type);
+#else
+		map_foreachinallarea(clif_send_sub, bl->m, bl->x - area_size, bl->y - area_size, bl->x + area_size, bl->y + area_size,
+			BL_PC, buf, len, bl, type);
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
 		break;
 	case AREA_CHAT_WOC:
 		map_foreachinallarea(clif_send_sub, bl->m, bl->x-(AREA_SIZE-5), bl->y-(AREA_SIZE-5),
@@ -949,6 +970,28 @@ void clif_clearunit_single(int id, clr_type type, int fd)
 	WFIFOSET(fd, packet_len(0x80));
 }
 
+#ifdef Pandas_Ease_Mob_Stuck_After_Dead
+static TIMER_FUNC(clif_clearunit_twice_sub) {
+	struct block_list* bl = (struct block_list*)data;
+
+	if (!bl) {
+		ers_free(twice_clearunit_ers, bl);
+		return 0;
+	}
+
+	unsigned char buf[8] = { 0 };
+
+	WBUFW(buf, 0) = 0x80;
+	WBUFL(buf, 2) = bl->id;
+	WBUFB(buf, 6) = (clr_type)id;
+
+	clif_send(buf, packet_len(0x80), bl, (clr_type)id == CLR_DEAD ? AREA_DEAD : AREA_WOS);
+
+	ers_free(twice_clearunit_ers, bl);
+	return 0;
+}
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
+
 /// Makes a unit (char, npc, mob, homun) disappear to all clients in area (ZC_NOTIFY_VANISH).
 /// 0080 <id>.L <type>.B
 /// type:
@@ -967,12 +1010,29 @@ void clif_clearunit_area(struct block_list* bl, clr_type type)
 	WBUFL(buf,2) = bl->id;
 	WBUFB(buf,6) = type;
 
+#ifndef Pandas_Ease_Mob_Stuck_After_Dead
 	clif_send(buf, packet_len(0x80), bl, type == CLR_DEAD ? AREA : AREA_WOS);
+#else
+	clif_send(buf, packet_len(0x80), bl, type == CLR_DEAD ? AREA_DEAD : AREA_WOS);
+#endif //Pandas_Ease_Mob_Stuck_After_Dead
 
 	if(disguised(bl)) {
 		WBUFL(buf,2) = disguised_bl_id( bl->id );
 		clif_send(buf, packet_len(0x80), bl, SELF);
 	}
+
+#ifdef Pandas_Ease_Mob_Stuck_After_Dead
+	if (!battle_config.repeat_clearunit_interval) {
+		if (bl->type == BL_MOB && type == CLR_DEAD) {
+			struct block_list* tbl = ers_alloc(twice_clearunit_ers, struct block_list);
+			if (tbl) {
+				memcpy(tbl, bl, sizeof(struct block_list));
+				add_timer(gettick() + battle_config.repeat_clearunit_interval,
+					clif_clearunit_twice_sub, (int)type, (intptr_t)tbl);
+			}
+		}
+	}
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
 }
 
 
@@ -1066,19 +1126,19 @@ static int clif_setlevel(struct block_list* bl) {
 // Author:      Sola丶小克(CairoLee)  2020/09/26 16:38
 //************************************
 void clif_send_auras_single(struct block_list* bl, struct map_session_data* tsd) {
-	if (!bl || !tsd) return;
+	if (!bl || !tsd || bl->m == -1) return;
 
 	struct s_unit_common_data* ucd = status_get_ucd(bl);
-	if (!ucd || ucd->aura.hidden) return;
+	if (!ucd) return;
+	if (aura_need_hiding(bl)) return;
 
 #ifdef Pandas_MapFlag_NoAura
-	if (map_getmapflag(bl->m, MF_NOAURA))
-		return;
+	if (map_getmapflag(bl->m, MF_NOAURA)) return;
 #endif // Pandas_MapFlag_NoAura
 
 	for (auto it : ucd->aura.effects) {
-		if (!it) continue;
-		clif_specialeffect_single(bl, it, tsd->fd);
+		if (it->replay_tid != INVALID_TIMER) continue;
+		clif_specialeffect_single(bl, it->effect_id, tsd->fd);
 	}
 }
 
@@ -1088,28 +1148,28 @@ void clif_send_auras_single(struct block_list* bl, struct map_session_data* tsd)
 // Access:      public 
 // Parameter:   struct block_list * bl
 // Parameter:   enum send_target target
-// Parameter:   bool ignore_hidden 若角色处于隐藏状态则不发送光环信息
+// Parameter:   bool ignore_when_hidden 若角色处于隐藏状态则不发送光环信息
 // Parameter:   enum e_aura_special flag 指定仅发送某些特殊效果
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/10/11 11:49
 //************************************
-void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_hidden, enum e_aura_special flag) {
-	if (!bl) return;
+void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_when_hidden, enum e_aura_special flag) {
+	if (!bl || bl->m == -1) return;
 
 #ifdef Pandas_MapFlag_NoAura
-	if (map_getmapflag(bl->m, MF_NOAURA))
-		return;
+	if (map_getmapflag(bl->m, MF_NOAURA)) return;
 #endif // Pandas_MapFlag_NoAura
 
-	if ((status_ishiding(bl) || status_isinvisible(bl)) && ignore_hidden) return;
+	if (aura_need_hiding(bl) && ignore_when_hidden)
+		return;
 
 	struct s_unit_common_data* ucd = status_get_ucd(bl);
 	if (!ucd) return;
 
 	for (auto it : ucd->aura.effects) {
-		if (!it) continue;
-		if (flag != AURA_SPECIAL_NOTHING && (aura_special(it) & flag) != flag) continue;
-		clif_specialeffect(bl, it, target);
+		if (it->replay_tid != INVALID_TIMER) continue;
+		if (flag != AURA_SPECIAL_NOTHING && (aura_special(it->effect_id) & flag) != flag) continue;
+		clif_specialeffect(bl, it->effect_id, target);
 	}
 }
 #endif // Pandas_Aura_Mechanism
@@ -2174,6 +2234,13 @@ void clif_changemapserver(struct map_session_data* sd, unsigned short map_index,
 	WFIFOW(fd,18) = x;
 	WFIFOW(fd,20) = y;
 	WFIFOL(fd,22) = htonl(ip);
+#ifdef Pandas_InterConfig_HideServerIpAddress
+	if (pandas_inter_hide_server_ipaddress) {
+		// 若希望不主动返回服务器的 IP 地址, 那么将此处的地图服务器 IP 重设为 0
+		// 此处调整会导致无法适应多 IP 地址的地图服务器架构, 但是可以支持单服务器不同端口的这种形式...
+		WFIFOL(fd,22) = 0;
+	}
+#endif // Pandas_InterConfig_HideServerIpAddress
 	WFIFOW(fd,26) = ntows(htons(port)); // [!] LE byte order here [!]
 #if PACKETVER >= 20170315
 	memset(WFIFOP(fd, 28), 0, 128); // Unknown
@@ -2274,9 +2341,9 @@ void clif_selllist(struct map_session_data *sd)
 		return;
 
 	fd=sd->fd;
-	WFIFOHEAD(fd, MAX_INVENTORY * 10 + 4);
+	WFIFOHEAD(fd, P_MAX_INVENTORY(sd) * 10 + 4);
 	WFIFOW(fd,0)=0xc7;
-	for( i = 0; i < MAX_INVENTORY; i++ )
+	for( i = 0; i < P_MAX_INVENTORY(sd); i++ )
 	{
 		if( sd->inventory.u.items_inventory[i].nameid > 0 && sd->inventory_data[i] )
 		{
@@ -2831,7 +2898,7 @@ void clif_additem( struct map_session_data *sd, int n, int amount, unsigned char
 	if( fail ){
 		p = {};
 	}else{
-		if( n < 0 || n >= MAX_INVENTORY || sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == nullptr ){
+		if( n < 0 || n >= P_MAX_INVENTORY(sd) || sd->inventory.u.items_inventory[n].nameid == 0 || sd->inventory_data[n] == nullptr ){
 			return;
 		}
 
@@ -2920,7 +2987,18 @@ void clif_delitem(struct map_session_data *sd,int n,int amount, short reason)
 #endif
 }
 
+#ifndef Pandas_FuncParams_Clif_Item_Equip
 static void clif_item_equip( short idx, struct EQUIPITEM_INFO *p, struct item *it, struct item_data *id, int eqp_pos ){
+#else
+// 拓展 caller 参数的可选值:
+// -------------------------------------
+// 0 - 未知或者不关心的调用者
+// 1 - 调用者是 clif_inventorylist
+// 2 - 调用者是 clif_storagelist
+// 3 - 调用者是 clif_cartlist
+// 4 - 调用者是 clif_viewequip_ack
+static void clif_item_equip( short idx, struct EQUIPITEM_INFO *p, struct item *it, struct item_data *id, int eqp_pos, uint16 caller = 0 ){
+#endif // Pandas_FuncParams_Clif_Item_Equip
 	nullpo_retv( p );
 	nullpo_retv( it );
 	nullpo_retv( id );
@@ -2955,6 +3033,26 @@ static void clif_item_equip( short idx, struct EQUIPITEM_INFO *p, struct item *i
 #if PACKETVER >= 20100629
 	// TODO: WBUFW(buf,n+8) = (equip == -2 && id->equip == EQP_AMMO) ? id->equip : 0;
 	p->wItemSpriteNumber = ( id->equip&EQP_VISIBLE ) ? id->look : 0;
+
+#ifdef Pandas_Item_ControlViewID
+	switch (caller) {
+	case 1:
+		// 当"玩家自己"看自己装备栏时, 根据开关决定是否隐藏外观
+		if (id->look && ITEM_PROPERTIES_HASFLAG(id, noview_mask, ITEM_NOVIEW_WHEN_I_SEE) && caller == 1) {
+			p->wItemSpriteNumber = 0;
+		}
+		break;
+	case 4:
+		// 当"其他玩家"看自己装备栏时, 根据开关决定是否隐藏外观
+		if (id->look && ITEM_PROPERTIES_HASFLAG(id, noview_mask, ITEM_NOVIEW_WHEN_T_SEE) && caller == 4) {
+			p->wItemSpriteNumber = 0;
+		}
+		break;
+	default:
+		break;
+	}
+#endif // Pandas_Item_ControlViewID
+
 #endif
 
 #if PACKETVER >= 20120925
@@ -3062,7 +3160,7 @@ void clif_inventorylist( struct map_session_data *sd ){
 	int equip = 0;
 	int normal = 0;
 
-	for( int i = 0; i < MAX_INVENTORY; i++ ){
+	for( int i = 0; i < P_MAX_INVENTORY(sd); i++ ){
 		if( sd->inventory.u.items_inventory[i].nameid == 0 || sd->inventory_data[i] == nullptr ){
 			continue;
 		}
@@ -3070,33 +3168,11 @@ void clif_inventorylist( struct map_session_data *sd ){
 		// Non-stackable (Equippable)
 		if( !itemdb_isstackable2( sd->inventory_data[i] ) ){
 			
-#ifdef Pandas_Item_ControlViewID
-			// 龙王蛮蛮的部分时装图会导致其他玩家查看我装备的时候, 
-			// 切换到"时装"选项卡时客户端崩溃.
-			// 
-			// 为了解决这个问题, 这里增加一个配置选项, 
-			// 用于控制在别人查看我装备时可以屏蔽道具的外观编号
-			// 
-			// 这里处理的是: 
-			// 当"玩家自己"看自己装备栏时, 根据开关决定是否隐藏外观 [Sola丶小克]
-			if (sd->inventory_data[i]->look != 0) {
-				if (sd->inventory_data[i]->pandas.properties.noview_mask & ITEM_NOVIEW_WHEN_I_SEE) {
-					// 构建一个 item_data 但将它的 look 设置为 0
-					struct item_data id = { 0 };
-					memcpy(&id, sd->inventory_data[i], sizeof(struct item_data));
-					id.look = 0;
-					
-					// 用刚构建的 item_data 传递给 clif_item_equip 函数
-					clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->inventory.u.items_inventory[i], &id, pc_equippoint( sd, i ) );
-				}
-				else {
-					clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->inventory.u.items_inventory[i], sd->inventory_data[i], pc_equippoint( sd, i ) );
-				}
-			}
-			else
-#endif // Pandas_Item_ControlViewID
-			
+#ifndef Pandas_FuncParams_Clif_Item_Equip
 			clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->inventory.u.items_inventory[i], sd->inventory_data[i], pc_equippoint( sd, i ) );
+#else
+			clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->inventory.u.items_inventory[i], sd->inventory_data[i], pc_equippoint( sd, i ), 1 );
+#endif // Pandas_FuncParams_Clif_Item_Equip
 
 			if( equip == MAX_INVENTORY_ITEM_PACKET_NORMAL ){
 				itemlist_equip.PacketType  = inventorylistequipType;
@@ -3155,7 +3231,7 @@ void clif_inventorylist( struct map_session_data *sd ){
 #endif
 /* on 20120925 onwards this is a field on clif_item_equip/normal */
 #if PACKETVER >= 20111122 && PACKETVER < 20120925
-	for( int i = 0; i < MAX_INVENTORY; i++ ){
+	for( int i = 0; i < P_MAX_INVENTORY(sd); i++ ){
 		if( sd->inventory.u.items_inventory[i].nameid == 0 || sd->inventory_data[i] == NULL )
 			continue;
 
@@ -3191,7 +3267,11 @@ void clif_storagelist(struct map_session_data* sd, struct item* items, int items
 
 		// Non-stackable (Equippable)
 		if( !itemdb_isstackable2( id ) ){
+#ifndef Pandas_FuncParams_Clif_Item_Equip
 			clif_item_equip( client_storage_index( i ), &storage_itemlist_equip.list[equip++], &items[i], id, pc_equippoint_sub( sd, id ) );
+#else
+			clif_item_equip( client_storage_index( i ), &storage_itemlist_equip.list[equip++], &items[i], id, pc_equippoint_sub( sd, id ), 2 );
+#endif // Pandas_FuncParams_Clif_Item_Equip
 
 			if( equip == MAX_STORAGE_ITEM_PACKET_EQUIP ){
 				storage_itemlist_equip.PacketType  = storageListEquipType;
@@ -3277,7 +3357,11 @@ void clif_cartlist( struct map_session_data *sd ){
 
 		// Non-stackable (Equippable)
 		if( !itemdb_isstackable2(id) ){
+#ifndef Pandas_FuncParams_Clif_Item_Equip
 			clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->cart.u.items_cart[i], id, id->equip );
+#else
+			clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->cart.u.items_cart[i], id, id->equip, 3 );
+#endif // Pandas_FuncParams_Clif_Item_Equip
 		 // Stackable (Normal)
 		}else{
 			clif_item_normal( client_index( i ), &itemlist_normal.list[normal++], &sd->cart.u.items_cart[i], id );
@@ -3309,6 +3393,111 @@ void clif_cartlist( struct map_session_data *sd ){
 #endif
 }
 
+#ifdef Pandas_ClientFeature_InventoryExpansion
+
+void clif_inventoryExpansionInfo(struct map_session_data* sd) {
+#if PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+	nullpo_retv(sd);
+
+	const int fd = sd->fd;
+	WFIFOHEAD(fd, sizeof(struct PACKET_ZC_INVENTORY_EXPANSION_INFO));
+	struct PACKET_ZC_INVENTORY_EXPANSION_INFO* p = (struct PACKET_ZC_INVENTORY_EXPANSION_INFO*)WFIFOP(fd, 0);
+	p->packetType = HEADER_ZC_INVENTORY_EXPANSION_INFO;
+	p->expansionSize = sd->status.inventory_size - FIXED_INVENTORY_SIZE;
+	WFIFOSET(fd, sizeof(struct PACKET_ZC_INVENTORY_EXPANSION_INFO));
+
+#endif // PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+}
+
+void clif_inventoryExpandAck(struct map_session_data* sd, enum e_expand_inventory result, int itemId) {
+#if PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+	nullpo_retv(sd);
+
+	const int fd = sd->fd;
+	WFIFOHEAD(fd, sizeof(struct PACKET_ZC_ACK_INVENTORY_EXPAND));
+	struct PACKET_ZC_ACK_INVENTORY_EXPAND* p = (struct PACKET_ZC_ACK_INVENTORY_EXPAND*)WFIFOP(fd, 0);
+	p->packetType = HEADER_ZC_ACK_INVENTORY_EXPAND;
+	p->result = result;
+	p->itemId = itemId;
+	WFIFOSET(fd, sizeof(struct PACKET_ZC_ACK_INVENTORY_EXPAND));
+#endif // PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+}
+
+void clif_inventoryExpandResult(struct map_session_data* sd, enum e_expand_inventory_result result) {
+#if PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+	nullpo_retv(sd);
+
+	const int fd = sd->fd;
+	WFIFOHEAD(fd, sizeof(struct PACKET_ZC_ACK_INVENTORY_EXPAND_RESULT));
+	struct PACKET_ZC_ACK_INVENTORY_EXPAND_RESULT* p = (struct PACKET_ZC_ACK_INVENTORY_EXPAND_RESULT*)WFIFOP(fd, 0);
+	p->packetType = HEADER_ZC_ACK_INVENTORY_EXPAND_RESULT;
+	p->result = result;
+	WFIFOSET(fd, sizeof(struct PACKET_ZC_ACK_INVENTORY_EXPAND_RESULT));
+#endif // PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+}
+
+void clif_parse_inventoryExpansion(int fd, struct map_session_data* sd) {
+#if PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+	nullpo_retv(sd);
+
+	if (pc_isdead(sd) || pc_cant_act(sd)) {
+		clif_inventoryExpandAck(sd, EXPAND_INVENTORY_OTHER_WORK, 0);
+		return;
+	}
+
+	char evname[EVENT_NAME_LENGTH] = { 0 };
+	safestrncpy(evname, "inventory_expansion::OnInvExpandRequest", EVENT_NAME_LENGTH);
+
+	struct event_data* ev = nullptr; ;
+	if (!(ev = npc_event_data(evname))) {
+		ShowError("clif_parse_inventoryExpansion: event '%s' not found, operation failed.\n", evname);
+		return;
+	}
+
+	run_script(ev->nd->u.scr.script, ev->pos, sd->bl.id, ev->nd->bl.id);
+#endif // PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+}
+
+void clif_parse_inventoryExpansionConfirmed(int fd, struct map_session_data* sd) {
+#if PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+	nullpo_retv(sd);
+
+	if (pc_isdead(sd) || pc_cant_act(sd)) {
+		clif_inventoryExpandResult(sd, EXPAND_INVENTORY_RESULT_OTHER_WORK);
+		return;
+	}
+
+	char evname[EVENT_NAME_LENGTH] = { 0 };
+	safestrncpy(evname, "inventory_expansion::OnInvExpandConfirmed", EVENT_NAME_LENGTH);
+
+	struct event_data* ev = nullptr; ;
+	if (!(ev = npc_event_data(evname))) {
+		ShowError("clif_parse_inventoryExpansionConfirmed: event '%s' not found, operation failed.\n", evname);
+		return;
+	}
+
+	run_script(ev->nd->u.scr.script, ev->pos, sd->bl.id, ev->nd->bl.id);
+#endif // PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+}
+
+void clif_parse_inventoryExpansionRejected(int fd, struct map_session_data* sd) {
+#if PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+	nullpo_retv(sd);
+
+	char evname[EVENT_NAME_LENGTH] = { 0 };
+	safestrncpy(evname, "inventory_expansion::OnInvExpandRejected", EVENT_NAME_LENGTH);
+
+	struct event_data* ev = nullptr; ;
+	if (!(ev = npc_event_data(evname))) {
+		ShowError("clif_parse_inventoryExpansionRejected: event '%s' not found, operation failed.\n", evname);
+		return;
+	}
+
+	run_script(ev->nd->u.scr.script, ev->pos, sd->bl.id, ev->nd->bl.id);
+#endif // PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+}
+
+#endif // Pandas_ClientFeature_InventoryExpansion
 
 /// Removes cart (ZC_CARTOFF).
 /// 012b
@@ -4026,21 +4215,15 @@ void clif_arrow_fail(struct map_session_data *sd,int type) {
 void clif_arrow_create_list( struct map_session_data *sd ){
 	nullpo_retv( sd );
 
-	int fd = sd->fd;
-
-	if( !session_isActive( fd ) ){
-		return;
-	}
-
-	WFIFOHEAD( fd, sizeof( struct PACKET_ZC_MAKINGARROW_LIST ) + MAX_SKILL_ARROW_DB * sizeof( struct PACKET_ZC_MAKINGARROW_LIST_sub ) );
-	struct PACKET_ZC_MAKINGARROW_LIST *p = (struct PACKET_ZC_MAKINGARROW_LIST *)WFIFOP( fd, 0 );
+	struct PACKET_ZC_MAKINGARROW_LIST *p = (struct PACKET_ZC_MAKINGARROW_LIST *)packet_buffer;
 	p->packetType = HEADER_ZC_MAKINGARROW_LIST;
 
 	int count = 0;
-	for( int i = 0; i < MAX_SKILL_ARROW_DB; i++ ){
-		t_itemid nameid = skill_arrow_db[i].nameid;
 
-		if( !itemdb_exists( nameid ) ){
+	for (const auto &it : skill_arrow_db) {
+		t_itemid nameid = it.second->nameid;
+
+		if( !item_db.exists( nameid ) ){
 			continue;
 		}
 
@@ -4063,7 +4246,8 @@ void clif_arrow_create_list( struct map_session_data *sd ){
 	}
 
 	p->packetLength = sizeof( struct PACKET_ZC_MAKINGARROW_LIST ) + count * sizeof( struct PACKET_ZC_MAKINGARROW_LIST_sub );
-	WFIFOSET( fd, p->packetLength );
+
+	clif_send( p, p->packetLength, &sd->bl, SELF );
 
 	if( count > 0 ){
 		sd->menuskill_id = AC_MAKINGARROW;
@@ -4122,7 +4306,7 @@ void clif_equipitemack(struct map_session_data *sd,int n,int pos,uint8 flag)
 #ifdef Pandas_Item_ControlViewID
 	// 若装备刚穿戴成功的话, 也需要根据情况看看是否需要过滤掉外观 [Sola丶小克]
 	if (flag == ITEM_EQUIP_ACK_OK && sd->inventory_data[n]->look != 0) {
-		if (sd->inventory_data[n]->pandas.properties.noview_mask & ITEM_NOVIEW_WHEN_I_SEE) {
+		if (ITEM_PROPERTIES_HASFLAG(sd->inventory_data[n], noview_mask, ITEM_NOVIEW_WHEN_I_SEE)) {
 			look = 0;
 		}
 	}
@@ -4278,11 +4462,8 @@ void clif_changeoption_target( struct block_list* bl, struct block_list* target 
 #ifdef Pandas_Aura_Mechanism
 	struct s_unit_common_data* ucd = status_get_ucd(bl);
 
-	if (ucd && sc) {
-		if (!ucd->aura.hidden && (status_ishiding(bl) || status_isinvisible(bl) || sc->data[SC_CAMOUFLAGE])) {
-			// 此单位当前处于隐蔽状态, 需要隐藏光环
-			ucd->aura.hidden = true;
-
+	if (ucd) {
+		if (aura_need_hiding(bl)) {
 			// 通知 bl 视野范围内的其他单位: bl 已经离开了视野范围
 			// 迫使他们的客户端清除关于 bl 的缓存
 			clif_clearunit_area(bl, CLR_OUTSIGHT);
@@ -4291,10 +4472,7 @@ void clif_changeoption_target( struct block_list* bl, struct block_list* target 
 			// 使他们的客户端能够重新绘制 bl 单位到窗口中
 			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
 		}
-		else if (ucd->aura.hidden && !(status_ishiding(bl) || status_isinvisible(bl) || sc->data[SC_CAMOUFLAGE])) {
-			// 此单位不处于隐蔽状态, 可以恢复光环
-			ucd->aura.hidden = false;
-
+		else {
 			// 将 bl 的光环信息发送给周围其他玩家的客户端
 			clif_send_auras(bl, AREA_WOS, false, AURA_SPECIAL_NOTHING);
 
@@ -4352,7 +4530,7 @@ void clif_useitemack( struct map_session_data *sd, int index, int amount, bool o
 		return;
 	}
 
-	if( index < 0 || index >= MAX_INVENTORY || sd->inventory.u.items_inventory[index].nameid == 0 || sd->inventory_data[index] == nullptr ){
+	if( index < 0 || index >= P_MAX_INVENTORY(sd) || sd->inventory.u.items_inventory[index].nameid == 0 || sd->inventory_data[index] == nullptr ){
 		return;
 	}
 
@@ -4687,7 +4865,7 @@ void clif_tradeadditem( struct map_session_data* sd, struct map_session_data* ts
 	if( index ){
 		index = server_index( index );
 
-		if( index >= MAX_INVENTORY || sd->inventory.u.items_inventory[index].nameid == 0 || sd->inventory_data[index] == nullptr ){
+		if( index >= P_MAX_INVENTORY(sd) || sd->inventory.u.items_inventory[index].nameid == 0 || sd->inventory_data[index] == nullptr ){
 			return;
 		}
 
@@ -5165,6 +5343,19 @@ int clif_damage(struct block_list* src, struct block_list* dst, t_tick tick, int
 		WBUFL(buf,22) = damage;
 		WBUFL(buf,27+offset) = damage2;
 #endif
+#ifdef Pandas_MapFlag_HideDamage
+		if (src && map_getmapflag(src->m, MF_HIDEDAMAGE)) {
+			// 伤害会存在段数的概念, 返回的伤害值客户端会除以段数之后得到每一段的伤害值, 并且播放 div 指定的段数. 
+			// 若除以 div 段数后的伤害值是负数, 则客户端不会展现出具体的伤害值.
+			// 
+			// 因此下面直接返回一个负数的 div 作为伤害值,
+			// 客户端计算完成后每一段的伤害值就被我们控制成了 -1 从而实现隐藏伤害的目的.
+			//
+			// 备注: 这里刻意不处理 miss 的情况, 以此实现打 miss 的时候客户端也不会显示 miss
+			WBUFL(buf, 22) = div * -1;
+			WBUFL(buf, 27 + offset) = div * -1;
+		} 
+#endif // Pandas_MapFlag_HideDamage
 	}
 #if PACKETVER >= 20131223
 	WBUFB(buf,26) = (spdamage) ? 1 : 0; // IsSPDamage - Displays blue digits.
@@ -5967,6 +6158,18 @@ int clif_skill_damage(struct block_list *src,struct block_list *dst,t_tick tick,
 	}
 	WBUFW(buf,28)=skill_lv;
 	WBUFW(buf,30)=div;
+#ifdef Pandas_MapFlag_HideDamage
+	if (src && map_getmapflag(src->m, MF_HIDEDAMAGE)) {
+		// 伤害会存在段数的概念, 返回的伤害值客户端会除以段数之后得到每一段的伤害值, 并且播放 div 指定的段数. 
+		// 若除以 div 段数后的伤害值是负数, 则客户端不会展现出具体的伤害值.
+		// 
+		// 因此下面直接返回一个负数的 div 作为伤害值,
+		// 客户端计算完成后每一段的伤害值就被我们控制成了 -1 从而实现隐藏伤害的目的.
+		//
+		// 备注: 这里刻意不处理 miss 的情况, 以此实现打 miss 的时候客户端也不会显示 miss
+		WBUFL(buf, 24) = div * -1;
+	}
+#endif // Pandas_MapFlag_HideDamage
 	// For some reason, late 2013 and newer clients have
 	// a issue that causes players and monsters to endure
 	// type 6 (ACTION_SKILL) skills. So we have to do a small
@@ -6230,7 +6433,7 @@ void clif_skill_estimation(struct map_session_data *sd,struct block_list *dst)
 	WBUFW(buf,18)= status->def_ele;
 	for(i=0;i<9;i++)
 //		The following caps negative attributes to 0 since the client displays them as 255-fix. [Skotlex]
-		WBUFB(buf,20+i)= (unsigned char)((fix=battle_attr_ratio(i+1,status->def_ele, status->ele_lv))<0?0:fix);
+		WBUFB(buf,20+i)= (unsigned char)((fix=elemental_attribute_db.getAttribute(status->ele_lv, i+1, status->def_ele))<0?0:fix);
 
 	clif_send(buf,packet_len(0x18c),&sd->bl,sd->status.party_id>0?PARTY_SAMEMAP:SELF);
 }
@@ -6482,19 +6685,29 @@ void clif_efst_status_change_sub(struct block_list *tbl, struct block_list *bl, 
 		if (td)
 			tick = DIFF_TICK(td->tick, gettick());
 
-		if( spheres_sent && type >= SC_SPHERE_1 && type <= SC_SPHERE_5 ){
-#if PACKETVER > 20120418
-			clif_efst_status_change(tbl, bl->id, AREA_WOS, StatusIconChangeTable[type], tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3);
-#else
-			clif_status_change_sub(tbl, bl->id, StatusIconChangeTable[type], 1, tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3, AREA_WOS);
-#endif
-		}else{
-#if PACKETVER > 20120418
-			clif_efst_status_change(tbl, bl->id, target, StatusIconChangeTable[type], tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3);
-#else
-			clif_status_change_sub(tbl, bl->id, StatusIconChangeTable[type], 1, tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3, target);
-#endif
+		// Status changes that need special handling
+		switch( type ){
+			case SC_SPHERE_1:
+			case SC_SPHERE_2:
+			case SC_SPHERE_3:
+			case SC_SPHERE_4:
+			case SC_SPHERE_5:
+				if( spheres_sent ){
+					target = AREA_WOS;
+				}
+				break;
+			case SC_HELLS_PLANT:
+				if( sc && sc->data[type] ){
+					tick = sc->data[type]->val4;
+				}
+				break;
 		}
+
+#if PACKETVER > 20120418
+		clif_efst_status_change(tbl, bl->id, target, StatusIconChangeTable[type], tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3);
+#else
+		clif_status_change_sub(tbl, bl->id, StatusIconChangeTable[type], 1, tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3, target);
+#endif
 	}
 }
 
@@ -6596,6 +6809,19 @@ void clif_broadcast(struct block_list* bl, const char* mes, int len, int type, e
 	p->packetType = HEADER_ZC_BROADCAST;
 	p->PacketLength = (int16)( sizeof( struct PACKET_ZC_BROADCAST ) + len );
 
+#ifdef Pandas_ScriptCommand_Announce
+	if (type & BC_NAME && bl && bl->type == BL_PC) {
+		int16 length = (int16)(NAME_LENGTH + 4);
+
+		// 如果此处以 micc 开头, 那么 micc 紧接着的字符串将作为发送者
+		// 发送者以外的其他玩家在聊天窗口双击信息时, 将会把发送者名称自动放到聊天栏的私聊目标中
+		sprintf(p->message, "micc%s", ((TBL_PC*)bl)->status.name);
+		strncpy(&p->message[length], mes, len);
+
+		p->PacketLength += length;
+	}
+	else
+#endif // Pandas_ScriptCommand_Announce
 	if( ( type&BC_BLUE ) != 0 ){
 		const char* color = "blue";
 		int16 length = (int16)strlen( color );
@@ -6974,7 +7200,7 @@ void clif_use_card(struct map_session_data *sd,int idx)
 	int fd=sd->fd;
 
 	nullpo_retv(sd);
-	if (idx < 0 || idx >= MAX_INVENTORY) //Crash-fix from bad packets.
+	if (idx < 0 || idx >= P_MAX_INVENTORY(sd)) //Crash-fix from bad packets.
 		return;
 
 	if (!sd->inventory_data[idx] || sd->inventory_data[idx]->type != IT_CARD)
@@ -7003,10 +7229,10 @@ void clif_use_card(struct map_session_data *sd,int idx)
 #endif // Pandas_BattleConfig_CashMounting_UseitemLimit
 
 	ep=sd->inventory_data[idx]->equip;
-	WFIFOHEAD(fd,MAX_INVENTORY * 2 + 4);
+	WFIFOHEAD(fd, P_MAX_INVENTORY(sd) * 2 + 4);
 	WFIFOW(fd,0)=0x17b;
 
-	for(i=c=0;i<MAX_INVENTORY;i++){
+	for(i=c=0;i<P_MAX_INVENTORY(sd);i++){
 		int j;
 
 		if(sd->inventory_data[i] == NULL)
@@ -7084,9 +7310,9 @@ void clif_item_identify_list(struct map_session_data *sd)
 
 	fd=sd->fd;
 
-	WFIFOHEAD(fd,MAX_INVENTORY * 2 + 4);
+	WFIFOHEAD(fd,P_MAX_INVENTORY(sd) * 2 + 4);
 	WFIFOW(fd,0)=0x177;
-	for(i=c=0;i<MAX_INVENTORY;i++){
+	for(i=c=0;i<P_MAX_INVENTORY(sd);i++){
 		if(sd->inventory.u.items_inventory[i].nameid > 0 && !sd->inventory.u.items_inventory[i].identify){
 			WFIFOW(fd,c*2+4)=client_index(i);
 			c++;
@@ -7131,7 +7357,7 @@ void clif_item_repair_list( struct map_session_data *sd,struct map_session_data 
 		return;
 	}
 
-	int len = MAX_INVENTORY * sizeof( struct PACKET_ZC_REPAIRITEMLIST_sub ) + sizeof( struct PACKET_ZC_REPAIRITEMLIST );
+	int len = P_MAX_INVENTORY(dstsd) * sizeof( struct PACKET_ZC_REPAIRITEMLIST_sub ) + sizeof( struct PACKET_ZC_REPAIRITEMLIST );
 
 	// Preallocate the maximum size
 	WFIFOHEAD( fd, len );
@@ -7140,7 +7366,7 @@ void clif_item_repair_list( struct map_session_data *sd,struct map_session_data 
 
 	int c = 0;
 
-	for( int i = 0; i < MAX_INVENTORY; i++ ){
+	for( int i = 0; i < P_MAX_INVENTORY(dstsd); i++ ){
 		if( dstsd->inventory.u.items_inventory[i].nameid > 0 && dstsd->inventory.u.items_inventory[i].attribute != 0 && !itemdb_ishatched_egg( &dstsd->inventory.u.items_inventory[i] ) ){ // && skill_can_repair(sd,nameid)){
 			p->items[c].index = i;
 			p->items[c].itemId = client_nameid( dstsd->inventory.u.items_inventory[i].nameid );
@@ -7217,7 +7443,7 @@ void clif_item_refine_list( struct map_session_data *sd ){
 		return;
 	}
 
-	WFIFOHEAD( fd, sizeof( struct PACKET_ZC_NOTIFY_WEAPONITEMLIST ) + sizeof( struct PACKET_ZC_NOTIFY_WEAPONITEMLIST_sub ) * MAX_INVENTORY );
+	WFIFOHEAD( fd, sizeof( struct PACKET_ZC_NOTIFY_WEAPONITEMLIST ) + sizeof( struct PACKET_ZC_NOTIFY_WEAPONITEMLIST_sub ) * P_MAX_INVENTORY(sd));
 	struct PACKET_ZC_NOTIFY_WEAPONITEMLIST *p = (struct PACKET_ZC_NOTIFY_WEAPONITEMLIST *)WFIFOP( fd, 0 );
 	p->packetType = 0x221;
 
@@ -7231,7 +7457,7 @@ void clif_item_refine_list( struct map_session_data *sd ){
 	refine_item[3] = refine_item[4] = pc_search_inventory( sd, ITEMID_ORIDECON );
 
 	int count = 0;
-	for( int i = 0; i < MAX_INVENTORY; i++ ){
+	for( int i = 0; i < P_MAX_INVENTORY(sd); i++ ){
 		uint16 wlv;
 
 		if( sd->inventory.u.items_inventory[i].nameid > 0 && sd->inventory.u.items_inventory[i].refine < skill_lv &&
@@ -7364,6 +7590,14 @@ void clif_parse_BankOpen(int fd, struct map_session_data* sd) {
 	//TODO check if preventing trade or stuff like that
 	//also mark something in case char ain't available for saving, should we check now ?
 	nullpo_retv(sd);
+
+#ifdef Pandas_MapFlag_NoBank
+	if (map_getmapflag(sd->bl.m, MF_NOBANK)) {
+		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 10), false, SELF); // This map prohibit using the bank system.
+		return;
+	}
+#endif // Pandas_MapFlag_NoBank
+
 	if( !battle_config.feature_banking ) {
 		clif_messagecolor(&sd->bl,color_table[COLOR_RED],msg_txt(sd,1496),false,SELF); //Banking is disabled
 		return;
@@ -7446,6 +7680,13 @@ void clif_Bank_Check(struct map_session_data* sd) {
 void clif_parse_BankCheck(int fd, struct map_session_data* sd) {
 	nullpo_retv(sd);
 
+#ifdef Pandas_MapFlag_NoBank
+	if (map_getmapflag(sd->bl.m, MF_NOBANK)) {
+		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 10), false, SELF); // This map prohibit using the bank system.
+		return;
+	}
+#endif // Pandas_MapFlag_NoBank
+
 	if( !battle_config.feature_banking ) {
 		clif_messagecolor(&sd->bl,color_table[COLOR_RED],msg_txt(sd,1496),false,SELF); //Banking is disabled
 		return;
@@ -7490,6 +7731,14 @@ void clif_bank_deposit(struct map_session_data *sd, enum e_BANKING_DEPOSIT_ACK r
  */
 void clif_parse_BankDeposit(int fd, struct map_session_data* sd) {
 	nullpo_retv(sd);
+
+#ifdef Pandas_MapFlag_NoBank
+	if (map_getmapflag(sd->bl.m, MF_NOBANK)) {
+		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 10), false, SELF); // This map prohibit using the bank system.
+		return;
+	}
+#endif // Pandas_MapFlag_NoBank
+
 	if( !battle_config.feature_banking ) {
 		clif_messagecolor(&sd->bl,color_table[COLOR_RED],msg_txt(sd,1496),false,SELF); //Banking is disabled
 		return;
@@ -7538,6 +7787,14 @@ void clif_bank_withdraw(struct map_session_data *sd,enum e_BANKING_WITHDRAW_ACK 
  */
 void clif_parse_BankWithdraw(int fd, struct map_session_data* sd) {
         nullpo_retv(sd);
+
+#ifdef Pandas_MapFlag_NoBank
+		if (map_getmapflag(sd->bl.m, MF_NOBANK)) {
+			clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 10), false, SELF); // This map prohibit using the bank system.
+			return;
+		}
+#endif // Pandas_MapFlag_NoBank
+
 	if( !battle_config.feature_banking ) {
 		clif_messagecolor(&sd->bl,color_table[COLOR_RED],msg_txt(sd,1496),false,SELF); //Banking is disabled
 		return;
@@ -8336,9 +8593,9 @@ void clif_sendegg(struct map_session_data *sd)
 	}
 #endif // Pandas_MapFlag_NoPet
 
-	WFIFOHEAD(fd, MAX_INVENTORY * 2 + 4);
+	WFIFOHEAD(fd, P_MAX_INVENTORY(sd) * 2 + 4);
 	WFIFOW(fd,0)=0x1a6;
-	for(i=0,n=0;i<MAX_INVENTORY;i++){
+	for(i=0,n=0;i<P_MAX_INVENTORY(sd);i++){
 		if(sd->inventory.u.items_inventory[i].nameid == 0 || sd->inventory_data[i] == NULL ||
 		   sd->inventory_data[i]->type != IT_PETEGG ||
 		   sd->inventory.u.items_inventory[i].amount <= 0)
@@ -8446,6 +8703,28 @@ void clif_pet_food( struct map_session_data *sd, int foodid,int fail ){
 	clif_send( &p, sizeof( p ), &sd->bl, SELF );
 }
 
+/// Send pet auto feed info.
+void clif_pet_autofeed_status(struct map_session_data* sd, bool force) {
+#if PACKETVER >= 20141008
+	nullpo_retv(sd);
+
+	if (force || battle_config.pet_autofeed_always) {
+		// Always send ON or OFF
+		if (sd->pd && battle_config.feature_pet_autofeed) {
+			clif_configuration(sd, CONFIG_PET_AUTOFEED, sd->pd->pet.autofeed);
+		}
+		else {
+			clif_configuration(sd, CONFIG_PET_AUTOFEED, false);
+		}
+	}
+	else {
+		// Only send when enabled
+		if (sd->pd && battle_config.feature_pet_autofeed && sd->pd->pet.autofeed) {
+			clif_configuration(sd, CONFIG_PET_AUTOFEED, true);
+		}
+	}
+#endif
+}
 
 /// Presents a list of skills that can be auto-spelled (ZC_AUTOSPELLLIST).
 /// 01cd { <skill id>.L }*7
@@ -10617,32 +10896,11 @@ void clif_viewequip_ack( struct map_session_data* sd, struct map_session_data* t
 				continue;
 			}
 
-#ifdef Pandas_Item_ControlViewID
-			// 龙王蛮蛮的部分时装图会导致其他玩家查看我装备的时候, 
-			// 切换到"时装"选项卡时客户端崩溃.
-			// 
-			// 为了解决这个问题, 这里增加一个配置选项, 
-			// 用于控制在别人查看我装备时可以屏蔽道具的外观编号
-			// 
-			// 这里处理的是: 
-			// 当"其他玩家"看自己装备栏时, 根据开关决定是否隐藏外观 [Sola丶小克]
-			if (tsd->inventory_data[k]->look != 0) {
-				if (tsd->inventory_data[k]->pandas.properties.noview_mask & ITEM_NOVIEW_WHEN_T_SEE) {
-					// 构建一个 item_data 但将它的 look 设置为 0
-					struct item_data id = { 0 };
-					memcpy(&id, tsd->inventory_data[k], sizeof(struct item_data));
-					id.look = 0;
-					
-					// 用刚构建的 item_data 传递给 clif_item_equip 函数
-					clif_item_equip( client_index( k ), &packet.list[equip++], &tsd->inventory.u.items_inventory[k], &id, pc_equippoint( tsd, k ) );
-					
-					// 搞定了就直接进入下一个循环了
-					continue;
-				}
-			}
-#endif // Pandas_Item_ControlViewID
-
+#ifndef Pandas_FuncParams_Clif_Item_Equip
 			clif_item_equip( client_index( k ), &packet.list[equip++], &tsd->inventory.u.items_inventory[k], tsd->inventory_data[k], pc_equippoint( tsd, k ) );
+#else
+			clif_item_equip( client_index( k ), &packet.list[equip++], &tsd->inventory.u.items_inventory[k], tsd->inventory_data[k], pc_equippoint( tsd, k ), 4 );
+#endif // Pandas_FuncParams_Clif_Item_Equip
 		}
 	}
 
@@ -11331,21 +11589,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_partyinvitationstate(sd);
 		clif_equipcheckbox(sd);
 #endif
-#if PACKETVER >= 20141008
-		if( battle_config.pet_autofeed_always ){
-			// Always send ON or OFF
-			if( sd->pd && battle_config.feature_pet_autofeed ){
-				clif_configuration( sd, CONFIG_PET_AUTOFEED, sd->pd->pet.autofeed );
-			}else{
-				clif_configuration( sd, CONFIG_PET_AUTOFEED, false );
-			}
-		}else{
-			// Only send when enabled
-			if( sd->pd && battle_config.feature_pet_autofeed && sd->pd->pet.autofeed ){
-				clif_configuration( sd, CONFIG_PET_AUTOFEED, true );
-			}
-		}
-#endif
+		clif_pet_autofeed_status(sd,false);
 #if PACKETVER >= 20170920
 		if( battle_config.homunculus_autofeed_always ){
 			// Always send ON or OFF
@@ -12453,7 +12697,7 @@ void clif_parse_UseItem(int fd, struct map_session_data *sd)
 		sd->idletime_mer = last_tick;
 	n = RFIFOW(fd,packet_db[RFIFOW(fd,0)].pos[0])-2;
 
-	if(n <0 || n >= MAX_INVENTORY)
+	if(n <0 || n >= P_MAX_INVENTORY(sd))
 		return;
 	if (!pc_useitem(sd,n))
 		clif_useitemack(sd,n,0,false); //Send an empty ack packet or the client gets stuck.
@@ -12473,7 +12717,7 @@ void clif_parse_EquipItem(int fd,struct map_session_data *sd)
 		return;
 	}
 	index = RFIFOW(fd,info->pos[0])-2;
-	if (index < 0 || index >= MAX_INVENTORY)
+	if (index < 0 || index >= P_MAX_INVENTORY(sd))
 		return; //Out of bounds check.
 
 	if(sd->npc_id && !sd->npc_item_flag) {
@@ -13726,7 +13970,7 @@ void clif_parse_ItemIdentify(int fd,struct map_session_data *sd) {
 	// - Invalid item index
 	// - Invalid item ID or item doesn't exist
 	// - Item is already identified
-	if (idx < 0 || idx >= MAX_INVENTORY ||
+	if (idx < 0 || idx >= P_MAX_INVENTORY(sd) ||
 		sd->inventory.u.items_inventory[idx].nameid == 0 || sd->inventory_data[idx] == NULL ||
 		sd->inventory.u.items_inventory[idx].identify) {// cancel pressed
 			sd->state.workinprogress = WIP_DISABLE_NONE;
@@ -13866,7 +14110,7 @@ void clif_parse_MoveToKafra(int fd, struct map_session_data *sd)
 
 	item_index = RFIFOW(fd,info->pos[0])-2;
 	item_amount = RFIFOL(fd,info->pos[1]);
-	if (item_index < 0 || item_index >= MAX_INVENTORY || item_amount < 1)
+	if (item_index < 0 || item_index >= P_MAX_INVENTORY(sd) || item_amount < 1)
 		return;
 	if( sd->inventory.u.items_inventory[item_index].equipSwitch ){
 		clif_msg( sd, C_ITEM_EQUIP_SWITCH );
@@ -13917,7 +14161,7 @@ void clif_parse_MoveToKafraFromCart(int fd, struct map_session_data *sd){
 	if (!pc_iscarton(sd))
 		return;
 
-	if (idx < 0 || idx >= MAX_INVENTORY || amount < 1)
+	if (idx < 0 || idx >= P_MAX_INVENTORY(sd) || amount < 1)
 		return;
 	if( sd->inventory.u.items_inventory[idx].equipSwitch ){
 		clif_msg( sd, C_ITEM_EQUIP_SWITCH );
@@ -15175,7 +15419,6 @@ void clif_parse_GM_Item_Monster(int fd, struct map_session_data *sd)
 {
 	struct s_packet_db* info = &packet_db[RFIFOW(fd,0)];
 	int mob_id = 0;
-	struct item_data *id = NULL;
 	StringBuf command;
 	char *str;
 //#if PACKETVER >= 20131218
@@ -15200,12 +15443,14 @@ void clif_parse_GM_Item_Monster(int fd, struct map_session_data *sd)
 		return;
 	}
 
+	std::shared_ptr<item_data> id = item_db.searchname( str );
+
 	// Item
-	if( (id = itemdb_searchname(str)) ) {
+	if( id ){
 		StringBuf_Init(&command);
-		if( !itemdb_isstackable2(id) ) //Nonstackable
+		if( !itemdb_isstackable2( id.get() ) ){ //Nonstackable
 			StringBuf_Printf(&command, "%citem2 %u 1 0 0 0 0 0 0 0", atcommand_symbol, id->nameid);
-		else {
+		}else{
 			if (id->flag.guid)
 				StringBuf_Printf(&command, "%citem %u 1", atcommand_symbol, id->nameid);
 			else
@@ -16063,6 +16308,10 @@ void clif_parse_Check(int fd, struct map_session_data *sd)
 ///		1 = over weight
 ///		2 = fatal error
 void clif_Mail_setattachment( struct map_session_data* sd, int index, int amount, uint8 flag ){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	int fd = sd->fd;
 
 #if PACKETVER < 20150513
@@ -16095,6 +16344,11 @@ void clif_Mail_setattachment( struct map_session_data* sd, int index, int amount
 				continue;
 			}
 
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+			if (!sd->inventory_data[sd->mail.item[i].index]) {
+				return;	// 直接放弃发送封包
+			}
+#endif // Pandas_Crashfix_Prevent_NullPointer
 			p.weight += sd->mail.item[i].amount * ( sd->inventory_data[sd->mail.item[i].index]->weight / 10 );
 		}
 		p.favorite = item->favorite;
@@ -16121,6 +16375,10 @@ void clif_Mail_setattachment( struct map_session_data* sd, int index, int amount
 /// 09f2 <mail id>.Q <mail tab>.B <result>.B (ZC_ACK_ZENY_FROM_MAIL)
 /// 09f4 <mail id>.Q <mail tab>.B <result>.B (ZC_ACK_ITEM_FROM_MAIL)
 void clif_mail_getattachment(struct map_session_data* sd, struct mail_message *msg, uint8 result, enum mail_attachment_type type) {
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 #if PACKETVER < 20150513
 	int fd = sd->fd;
 
@@ -16129,6 +16387,11 @@ void clif_mail_getattachment(struct map_session_data* sd, struct mail_message *m
 	WFIFOB(fd,2) = result;
 	WFIFOSET(fd,packet_len(0x245));
 #else
+
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!msg) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	switch( type ){
 		case MAIL_ATT_ITEM:
 		case MAIL_ATT_ZENY:
@@ -16157,6 +16420,9 @@ void clif_mail_getattachment(struct map_session_data* sd, struct mail_message *m
 ///     1 = recipinent does not exist
 /// 09ed <result>.B (ZC_ACK_WRITE_MAIL)
 void clif_Mail_send(struct map_session_data* sd, enum mail_send_result result){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 #if PACKETVER < 20150513
 	int fd = sd->fd;
 
@@ -16181,6 +16447,10 @@ void clif_Mail_send(struct map_session_data* sd, enum mail_send_result result){
 ///     1 = failure
 // 09f6 <mail tab>.B <mail id>.Q (ZC_ACK_DELETE_MAIL)
 void clif_mail_delete( struct map_session_data* sd, struct mail_message *msg, bool success ){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd || !msg) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 #if PACKETVER < 20150513
 	int fd = sd->fd;
 
@@ -16221,6 +16491,10 @@ void clif_Mail_return(int fd, int mail_id, short fail)
 /// 024a <mail id>.L <title>.40B <sender>.24B (ZC_MAIL_RECEIVE)
 /// 09e7 <result>.B (ZC_NOTIFY_UNREADMAIL)
 void clif_Mail_new(struct map_session_data* sd, int mail_id, const char *sender, const char *title){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 #if PACKETVER < 20150513
 	int fd = sd->fd;
 
@@ -16264,6 +16538,10 @@ void clif_Mail_window(int fd, int flag)
 /// 0ac2 <packet len>.W <unknown>.B (ZC_ACK_MAIL_LIST3)
 ///		{ <type>.B <mail id>.Q <read>.B <type>.B <sender>.24B <expires>.L <title length>.W <title>.?B }*
 void clif_Mail_refreshinbox(struct map_session_data *sd,enum mail_inbox_type type,int64 mailID){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 #if PACKETVER < 20150513
 	int fd = sd->fd;
 	struct mail_data *md = &sd->mail.inbox;
@@ -16457,6 +16735,10 @@ void clif_Mail_refreshinbox(struct map_session_data *sd,enum mail_inbox_type typ
 /// 0ac0 <mail id>.Q <unknown>.16B (CZ_OPEN_MAILBOX2)
 /// 0ac1 <mail id>.Q <unknown>.16B (CZ_REQ_REFRESH_MAIL_LIST2)
 void clif_parse_Mail_refreshinbox(int fd, struct map_session_data *sd){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 #if PACKETVER < 20150513
 	struct mail_data* md = &sd->mail.inbox;
 
@@ -16520,6 +16802,10 @@ void clif_parse_Mail_refreshinbox(int fd, struct map_session_data *sd){
 ///		{  }*n
 // TODO: Packet description => for repeated block
 void clif_Mail_read( struct map_session_data *sd, int mail_id ){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	int i, fd = sd->fd;
 
 	ARR_FIND(0, MAIL_MAX_INBOX, i, sd->mail.inbox.msg[i].id == mail_id);
@@ -16638,6 +16924,9 @@ void clif_Mail_read( struct map_session_data *sd, int mail_id ){
 /// 0241 <mail id>.L (CZ_MAIL_OPEN)
 /// 09ea <mail tab>.B <mail id>.Q (CZ_REQ_READ_MAIL)
 void clif_parse_Mail_read(int fd, struct map_session_data *sd){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 
 #ifdef Pandas_MapFlag_NoMail
 	if (mapflag_helper_nomail(sd))
@@ -16662,6 +16951,9 @@ void clif_parse_Mail_read(int fd, struct map_session_data *sd){
 /// Allow a player to begin writing a mail
 /// 0a12 <receiver>.24B <success>.B (ZC_ACK_OPEN_WRITE_MAIL)
 void clif_send_Mail_beginwrite_ack( struct map_session_data *sd, char* name, bool success ){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 	PACKET_ZC_ACK_OPEN_WRITE_MAIL p = { 0 };
 
 	p.PacketType = rodexopenwrite;
@@ -16673,6 +16965,9 @@ void clif_send_Mail_beginwrite_ack( struct map_session_data *sd, char* name, boo
 /// Request to start writing a mail
 /// 0a08 <receiver>.24B (CZ_REQ_OPEN_WRITE_MAIL)
 void clif_parse_Mail_beginwrite(int fd, struct map_session_data* sd) {
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 
 #ifdef Pandas_MapFlag_NoMail
 	if (mapflag_helper_nomail(sd))
@@ -16697,6 +16992,9 @@ void clif_parse_Mail_beginwrite(int fd, struct map_session_data* sd) {
 /// Notification that the client cancelled writing a mail
 /// 0a03 (CZ_REQ_CANCEL_WRITE_MAIL)
 void clif_parse_Mail_cancelwrite( int fd, struct map_session_data *sd ){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 	sd->state.mail_writing = false;
 }
 
@@ -16704,6 +17002,9 @@ void clif_parse_Mail_cancelwrite( int fd, struct map_session_data *sd ){
 /// 0a14 <char id>.L <class>.W <base level>.W (ZC_CHECK_RECEIVE_CHARACTER_NAME)
 /// 0a51 <char id>.L <class>.W <base level>.W <name>.24B (ZC_CHECK_RECEIVE_CHARACTER_NAME2)
 void clif_Mail_Receiver_Ack( struct map_session_data* sd, uint32 char_id, short class_, uint32 level, const char* name ){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 	PACKET_ZC_CHECKNAME p = { 0 };
 
 	p.PacketType = rodexcheckplayer;
@@ -16719,6 +17020,9 @@ void clif_Mail_Receiver_Ack( struct map_session_data* sd, uint32 char_id, short 
 /// Request information about the recipient
 /// 0a13 <name>.24B (CZ_CHECK_RECEIVE_CHARACTER_NAME)
 void clif_parse_Mail_Receiver_Check(int fd, struct map_session_data *sd) {
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 
 #ifdef Pandas_MapFlag_NoMail
 	if (mapflag_helper_nomail(sd))
@@ -16737,6 +17041,9 @@ void clif_parse_Mail_Receiver_Check(int fd, struct map_session_data *sd) {
 /// 09f1 <mail id>.Q <mail tab>.B (CZ_REQ_ZENY_FROM_MAIL)
 /// 09f3 <mail id>.Q <mail tab>.B (CZ_REQ_ITEM_FROM_MAIL)
 void clif_parse_Mail_getattach( int fd, struct map_session_data *sd ){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 
 #ifdef Pandas_MapFlag_NoMail
 	if (mapflag_helper_nomail(sd))
@@ -16849,6 +17156,9 @@ void clif_parse_Mail_getattach( int fd, struct map_session_data *sd ){
 /// 0243 <mail id>.L (CZ_MAIL_DELETE)
 /// 09f5 <mail tab>.B <mail id>.Q (CZ_REQ_DELETE_MAIL)
 void clif_parse_Mail_delete(int fd, struct map_session_data *sd){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 
 #ifdef Pandas_MapFlag_NoMail
 	if (mapflag_helper_nomail(sd))
@@ -16899,6 +17209,9 @@ void clif_parse_Mail_delete(int fd, struct map_session_data *sd){
 /// Request to return a mail (CZ_REQ_MAIL_RETURN).
 /// 0273 <mail id>.L <receive name>.24B
 void clif_parse_Mail_return(int fd, struct map_session_data *sd){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 
 #ifdef Pandas_MapFlag_NoMail
 	if (mapflag_helper_nomail(sd))
@@ -16926,6 +17239,9 @@ void clif_parse_Mail_return(int fd, struct map_session_data *sd){
 /// 0247 <index>.W <amount>.L (CZ_MAIL_ADD_ITEM)
 /// 0a04 <index>.W <amount>.W (CZ_REQ_ADD_ITEM_TO_MAIL)
 void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 
 #ifdef Pandas_MapFlag_NoMail
 	if (mapflag_helper_nomail(sd))
@@ -16943,7 +17259,7 @@ void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
 
 	if( !chrif_isconnected() )
 		return;
-	if (amount < 0 || server_index(idx) >= MAX_INVENTORY)
+	if (amount < 0 || server_index(idx) >= P_MAX_INVENTORY(sd))
 		return;
 
 	if (sd->inventory_data[server_index(idx)] == nullptr)
@@ -16961,6 +17277,10 @@ void clif_parse_Mail_setattach(int fd, struct map_session_data *sd){
 /// Remove an item from a mail
 /// 0a07 <result>.B <index>.W <amount>.W <weight>.W
 void clif_mail_removeitem( struct map_session_data* sd, bool success, int index, int amount ){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	PACKET_ZC_ACK_REMOVE_ITEM_MAIL p = { 0 };
 
 	p.PacketType = rodexremoveitem;
@@ -16974,6 +17294,11 @@ void clif_mail_removeitem( struct map_session_data* sd, bool success, int index,
 			break;
 		}
 
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+		if (!sd->inventory_data[sd->mail.item[i].index]) {
+			return;		// 直接放弃发送封包
+		}
+#endif // Pandas_Crashfix_Prevent_NullPointer
 		total += sd->mail.item[i].amount * ( sd->inventory_data[sd->mail.item[i].index]->weight / 10 );
 	}
 
@@ -16990,6 +17315,10 @@ void clif_mail_removeitem( struct map_session_data* sd, bool success, int index,
 /// 0a06 <index>.W <amount>.W (CZ_REQ_REMOVE_ITEM_MAIL)
 void clif_parse_Mail_winopen(int fd, struct map_session_data *sd)
 {
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 #if PACKETVER < 20150513
 	int type = RFIFOW(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 
@@ -17010,6 +17339,9 @@ void clif_parse_Mail_winopen(int fd, struct map_session_data *sd)
 /// 09ec <packet len>.W <recipient>.24B <sender>.24B <zeny>.Q <title length>.W <body length>.W <title>.?B <body>.?B (CZ_REQ_WRITE_MAIL)
 /// 0a6e <packet len>.W <recipient>.24B <sender>.24B <zeny>.Q <title length>.W <body length>.W <char id>.L <title>.?B <body>.?B (CZ_REQ_WRITE_MAIL2)
 void clif_parse_Mail_send(int fd, struct map_session_data *sd){
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	if (!sd) return;
+#endif // Pandas_Crashfix_FunctionParams_Verify
 
 #ifdef Pandas_MapFlag_NoMail
 	if (mapflag_helper_nomail(sd))
@@ -17188,7 +17520,7 @@ void clif_parse_Auction_setitem(int fd, struct map_session_data *sd){
 	if( sd->auction.amount > 0 )
 		sd->auction.amount = 0;
 
-	if( idx < 0 || idx >= MAX_INVENTORY ) {
+	if( idx < 0 || idx >= P_MAX_INVENTORY(sd)) {
 		ShowWarning("Character %s trying to set invalid item index in auctions.\n", sd->status.name);
 		return;
 	}
@@ -17527,6 +17859,17 @@ void clif_cashshop_list( struct map_session_data* sd ){
 		for( int i = 0; i < cash_shop_items[tab].count; i++ ){
 			p->items[i].itemId = client_nameid( cash_shop_items[tab].item[i]->nameid );
 			p->items[i].price = cash_shop_items[tab].item[i]->price;
+#ifdef ENABLE_CASHSHOP_PREVIEW_PATCH
+			struct item_data* id = itemdb_search( cash_shop_items[tab].item[i]->nameid );
+
+			if( id == nullptr ){
+				p->items[i].location = 0;
+				p->items[i].viewSprite = 0;
+			}else{
+				p->items[i].location = pc_equippoint_sub( sd, id );
+				p->items[i].viewSprite = id->look;
+			}
+#endif
 		}
 
 		WFIFOSET( fd, len );
@@ -18898,11 +19241,11 @@ void clif_bg_queue_entry_init(struct map_session_data *sd)
 {
 	nullpo_retv(sd);
 
-	int fd = sd->fd;
+	struct PACKET_ZC_ENTRY_QUEUE_INIT p = {};
 
-	WFIFOHEAD(fd, packet_len(0x90e));
-	WFIFOW(fd,0) = 0x90e;
-	WFIFOSET(fd, packet_len(0x90e));
+	p.packetType = HEADER_ZC_ENTRY_QUEUE_INIT;
+
+	clif_send( &p, sizeof( p ), &sd->bl, SELF );
 }
 
 /// Custom Fonts (ZC_NOTIFY_FONT).
@@ -19591,7 +19934,7 @@ void clif_search_store_info_ack( struct map_session_data* sd ){
 	}
 
 	unsigned int start = sd->searchstore.pages * SEARCHSTORE_RESULTS_PER_PAGE ;
-	unsigned int end   = umin( sd->searchstore.count, start + SEARCHSTORE_RESULTS_PER_PAGE );
+	unsigned int end   = umin( sd->searchstore.items.size(), start + SEARCHSTORE_RESULTS_PER_PAGE );
 	int len = sizeof( struct PACKET_ZC_SEARCH_STORE_INFO_ACK ) + ( end - start ) * sizeof( struct PACKET_ZC_SEARCH_STORE_INFO_ACK_sub );
 
 	WFIFOHEAD( fd, len );
@@ -19604,8 +19947,8 @@ void clif_search_store_info_ack( struct map_session_data* sd ){
 	p->nextPage = searchstore_querynext( sd );
 	p->usesCount = (uint8)umin( sd->searchstore.uses, UINT8_MAX );
 
-	for( int i = start; i < end; i++ ) {
-		struct s_search_store_info_item* ssitem = &sd->searchstore.items[i];
+	for( int i = 0; i < end - start; i++ ) {
+		std::shared_ptr<s_search_store_info_item> ssitem = sd->searchstore.items[start + i];
 
 		p->items[i].storeId = ssitem->store_id;
 		p->items[i].AID = ssitem->account_id;
@@ -19617,10 +19960,11 @@ void clif_search_store_info_ack( struct map_session_data* sd ){
 		p->items[i].refine = ssitem->refine;
 
 		// make-up an item for clif_addcards
-		struct item it;
+		struct item it = {};
 
-		memset( &it, 0, sizeof( it ) );
-		memcpy( &it.card, &ssitem->card, sizeof( it.card ) );
+		for( int j = 0; j < MAX_SLOTS; j++ ){
+			it.card[j] = ssitem->card[j];
+		}
 		it.nameid = ssitem->nameid;
 		it.amount = ssitem->amount;
 
@@ -19750,14 +20094,7 @@ void clif_parse_debug(int fd,struct map_session_data *sd)
 void clif_elementalconverter_list( struct map_session_data *sd ){
 	nullpo_retv( sd );
 
-	int fd = sd->fd;
-
-	if( !session_isActive( fd ) ){
-		return;
-	}
-
-	WFIFOHEAD( fd, sizeof( struct PACKET_ZC_MAKINGARROW_LIST ) + MAX_SKILL_ARROW_DB * sizeof( struct PACKET_ZC_MAKINGARROW_LIST_sub ) );
-	struct PACKET_ZC_MAKINGARROW_LIST *p = (struct PACKET_ZC_MAKINGARROW_LIST *)WFIFOP( fd, 0 );
+	struct PACKET_ZC_MAKINGARROW_LIST *p = (struct PACKET_ZC_MAKINGARROW_LIST *)packet_buffer;
 	p->packetType = HEADER_ZC_MAKINGARROW_LIST;
 
 	int count = 0;
@@ -19769,7 +20106,8 @@ void clif_elementalconverter_list( struct map_session_data *sd ){
 	}
 
 	p->packetLength = sizeof( struct PACKET_ZC_MAKINGARROW_LIST ) + count * sizeof( struct PACKET_ZC_MAKINGARROW_LIST_sub );
-	WFIFOSET( fd, p->packetLength );
+
+	clif_send( p, p->packetLength, &sd->bl, SELF );
 
 	if( count > 0 ){
 		sd->menuskill_id = SA_CREATECON;
@@ -19807,13 +20145,13 @@ void clif_magicdecoy_list( struct map_session_data *sd, uint16 skill_lv, short x
 		return;
 	}
 
-	WFIFOHEAD( fd, sizeof( struct PACKET_ZC_MAKINGARROW_LIST ) + MAX_INVENTORY * sizeof( struct PACKET_ZC_MAKINGARROW_LIST_sub ) );
+	WFIFOHEAD( fd, sizeof( struct PACKET_ZC_MAKINGARROW_LIST ) + P_MAX_INVENTORY(sd) * sizeof( struct PACKET_ZC_MAKINGARROW_LIST_sub ) );
 	struct PACKET_ZC_MAKINGARROW_LIST *p = (struct PACKET_ZC_MAKINGARROW_LIST *)WFIFOP(fd, 0);
 	p->packetType = HEADER_ZC_MAKINGARROW_LIST;
 
 	int count = 0;
-	for( int i = 0; i < MAX_INVENTORY; i++ ){
-		if( itemdb_group_item_exists( IG_ELEMENT, sd->inventory.u.items_inventory[i].nameid ) ) {
+	for( int i = 0; i < P_MAX_INVENTORY(sd); i++ ){
+		if( itemdb_group.item_exists( IG_ELEMENT, sd->inventory.u.items_inventory[i].nameid ) ) {
 			p->items[count].itemId = client_nameid( sd->inventory.u.items_inventory[i].nameid );
 			count++;
 		}
@@ -19842,13 +20180,13 @@ void clif_poison_list( struct map_session_data *sd, uint16 skill_lv ){
 		return;
 	}
 
-	WFIFOHEAD( fd, sizeof( struct PACKET_ZC_MAKINGARROW_LIST ) + MAX_INVENTORY * sizeof( struct PACKET_ZC_MAKINGARROW_LIST_sub ) );
+	WFIFOHEAD( fd, sizeof( struct PACKET_ZC_MAKINGARROW_LIST ) + P_MAX_INVENTORY(sd) * sizeof( struct PACKET_ZC_MAKINGARROW_LIST_sub ) );
 	struct PACKET_ZC_MAKINGARROW_LIST *p = (struct PACKET_ZC_MAKINGARROW_LIST *)WFIFOP( fd, 0 );
 	p->packetType = HEADER_ZC_MAKINGARROW_LIST;
 
 	int count = 0;
-	for( int i = 0; i < MAX_INVENTORY; i++ ){
-		if( itemdb_group_item_exists( IG_POISON, sd->inventory.u.items_inventory[i].nameid ) ){
+	for( int i = 0; i < P_MAX_INVENTORY(sd); i++ ){
+		if( itemdb_group.item_exists( IG_POISON, sd->inventory.u.items_inventory[i].nameid ) ){
 			p->items[count].itemId = client_nameid( sd->inventory.u.items_inventory[i].nameid );
 			count++;
 		}
@@ -19988,7 +20326,7 @@ void clif_parse_MoveItem(int fd, struct map_session_data *sd) {
 		return;
 	}
 
-	if (index < 0 || index >= MAX_INVENTORY)
+	if (index < 0 || index >= P_MAX_INVENTORY(sd))
 		return;
 
 	if ( sd->inventory.u.items_inventory[index].favorite && type == 1 )
@@ -21115,8 +21453,8 @@ static bool clif_merge_item_has_pair(struct map_session_data *sd, struct item *i
 
 	nullpo_retr(false, sd);
 
-	ARR_FIND(0, MAX_INVENTORY, i, (it_ = &sd->inventory.u.items_inventory[i]) && it->nameid == it_->nameid && it->bound == it_->bound && memcmp(it_, it, sizeof(struct item)) != 0);
-	if (i < MAX_INVENTORY)
+	ARR_FIND(0, P_MAX_INVENTORY(sd), i, (it_ = &sd->inventory.u.items_inventory[i]) && it->nameid == it_->nameid && it->bound == it_->bound && memcmp(it_, it, sizeof(struct item)) != 0);
+	if (i < P_MAX_INVENTORY(sd))
 		return true;
 
 	return false;
@@ -21149,8 +21487,8 @@ static bool clif_merge_item_check(struct item_data *id, struct item *it) {
  * @param sd
  **/
 void clif_merge_item_open(struct map_session_data *sd) {
-	unsigned char buf[4 + MAX_INVENTORY*2] = { 0 };
-	unsigned short cmd = 0, n = 0, i = 0, indexes[MAX_INVENTORY] = { 0 };
+	unsigned char buf[4 + G_MAX_INVENTORY*2] = { 0 };
+	unsigned short cmd = 0, n = 0, i = 0, indexes[G_MAX_INVENTORY] = { 0 };
 	int len = 0;
 	struct s_packet_db *info = NULL;
 	struct item *it;
@@ -21164,7 +21502,7 @@ void clif_merge_item_open(struct map_session_data *sd) {
 		return;
 
 	// Get entries
-	for (i = 0; i < MAX_INVENTORY; i++) {
+	for (i = 0; i < P_MAX_INVENTORY(sd); i++) {
 		if (!clif_merge_item_check(sd->inventory_data[i], (it = &sd->inventory.u.items_inventory[i])))
 			continue;
 		if (clif_merge_item_has_pair(sd, it))
@@ -21193,7 +21531,7 @@ void clif_merge_item_open(struct map_session_data *sd) {
  **/
 void clif_parse_merge_item_req(int fd, struct map_session_data* sd) {
 	struct s_packet_db *info = NULL;
-	unsigned short n = 0, indexes[MAX_INVENTORY] = { 0 }, i, j;
+	unsigned short n = 0, indexes[G_MAX_INVENTORY] = { 0 }, i, j;
 	unsigned int count = 0;
 	struct item_data *id = NULL;
 
@@ -21213,7 +21551,7 @@ void clif_parse_merge_item_req(int fd, struct map_session_data* sd) {
 	for (i = 0, j = 0; i < n; i++) {
 		unsigned short idx = RFIFOW(fd, info->pos[1] + i*2) - 2;
 
-		if( idx < 0 || idx >= MAX_INVENTORY ){
+		if( idx < 0 || idx >= P_MAX_INVENTORY(sd)){
 			return;
 		}
 
@@ -21370,7 +21708,7 @@ void clif_parse_Oneclick_Itemidentify(int fd, struct map_session_data *sd) {
 	// - Invalid item index
 	// - Invalid item ID or item doesn't exist
 	// - Item is already identified
-	if (idx < 0 || idx >= MAX_INVENTORY ||
+	if (idx < 0 || idx >= P_MAX_INVENTORY(sd) ||
 		sd->inventory.u.items_inventory[idx].nameid == 0 || sd->inventory_data[idx] == NULL ||
 		sd->inventory.u.items_inventory[idx].identify)
 			return;
@@ -21441,7 +21779,7 @@ void clif_hat_effects( struct map_session_data* sd, struct block_list* bl, enum 
 
 	nullpo_retv( tsd );
 
-	if( tsd->hatEffects.empty() ){
+	if( tsd->hatEffects.empty() || map_getmapdata(tbl->m)->flag[MF_NOCOSTUME] ){
 		return;
 	}
 
@@ -21640,7 +21978,6 @@ void clif_sale_search_reply( struct map_session_data* sd, struct cash_item_data*
 void clif_parse_sale_search( int fd, struct map_session_data* sd ){
 #if PACKETVER_SUPPORTS_SALES
 	char item_name[ITEM_NAME_LENGTH];
-	struct item_data *id = NULL;
 
 	nullpo_retv(sd);
 
@@ -21654,7 +21991,7 @@ void clif_parse_sale_search( int fd, struct map_session_data* sd ){
 
 	safestrncpy( item_name, RFIFOCP(fd, 8), min(RFIFOW(fd, 2) - 7, ITEM_NAME_LENGTH) );
 
-	id = itemdb_searchname(item_name);
+	std::shared_ptr<item_data> id = item_db.searchname( item_name );
 
 	if( id ){
 		int i;
@@ -22044,7 +22381,7 @@ void clif_parse_private_airship_request( int fd, struct map_session_data* sd ){
 	t_itemid item_id = p->ItemID;
 
 	// Check if the item sent by the client is known to us
-	if( !itemdb_group_item_exists(IG_PRIVATE_AIRSHIP, item_id) ){
+	if( !itemdb_group.item_exists(IG_PRIVATE_AIRSHIP, item_id) ){
 		clif_private_airship_response( sd, PRIVATEAIRSHIP_ITEM_UNAVAILABLE );
 		return;
 	}
@@ -22200,7 +22537,7 @@ void clif_parse_equipswitch_remove( int fd, struct map_session_data* sd ){
 	}
 
 	// Check if the index is valid
-	if( index >= MAX_INVENTORY ){
+	if( index >= P_MAX_INVENTORY(sd)){
 		return;
 	}
 
@@ -22239,7 +22576,7 @@ void clif_parse_equipswitch_add( int fd, struct map_session_data* sd ){
 		return;
 	}
 
-	if( index >= MAX_INVENTORY || sd->inventory_data[index] == nullptr ){
+	if( index >= P_MAX_INVENTORY(sd) || sd->inventory_data[index] == nullptr ){
 		return;
 	}
 
@@ -22315,7 +22652,7 @@ void clif_parse_equipswitch_request_single( int fd, struct map_session_data* sd 
 	}
 
 	// Check if the index is valid
-	if( index >= MAX_INVENTORY ){
+	if( index >= P_MAX_INVENTORY(sd)){
 		return;
 	}
 
@@ -22557,7 +22894,7 @@ void clif_parse_refineui_add( int fd, struct map_session_data* sd ){
 	}
 
 	// Check if the index is valid
-	if( index >= MAX_INVENTORY ){
+	if( index >= P_MAX_INVENTORY(sd)){
 		return;
 	}
 
@@ -22584,7 +22921,7 @@ void clif_parse_refineui_refine( int fd, struct map_session_data* sd ){
 	}
 
 	// Check if the index is valid
-	if( index >= MAX_INVENTORY ){
+	if( index >= P_MAX_INVENTORY(sd)){
 		return;
 	}
 
@@ -22698,10 +23035,11 @@ void clif_parse_refineui_refine( int fd, struct map_session_data* sd ){
 		// Blacksmith blessings were used to prevent breaking and downgrading
 		if( blacksmith_amount > 0 ){
 			clif_refine( fd, 3, index, item->refine );
+			clif_refineui_info( sd, index );
 		// Delete the item if it is breakable
 		}else if( cost->breaking_rate > 0 && ( rnd() % 10000 ) < cost->breaking_rate ){
 			clif_refine( fd, 1, index, item->refine );
-			pc_delitem( sd, index, 1, 0, 0, LOG_TYPE_CONSUME );
+			pc_delitem( sd, index, 1, 0, 2, LOG_TYPE_CONSUME );
 		// Downgrade the item if necessary
 		}else if( cost->downgrade_amount > 0 ){
 			item->refine = cap_value( item->refine - cost->downgrade_amount, 0, MAX_REFINE );
@@ -22710,6 +23048,7 @@ void clif_parse_refineui_refine( int fd, struct map_session_data* sd ){
 		// Only show failure, but dont do anything
 		}else{
 			clif_refine( fd, 3, index, item->refine );
+			clif_refineui_info( sd, index );
 		}
 
 		clif_misceffect( &sd->bl, 2 );
@@ -22765,6 +23104,9 @@ static int clif_parse(int fd)
 				map_quit(sd);
 			}
 		} else {
+#ifdef Pandas_Health_Monitors_Silent
+			if (!suppresses_close_mes(session[fd]->client_addr))
+#endif // Pandas_Health_Monitors_Silent
 			ShowInfo("Closed connection from '" CL_WHITE "%s" CL_RESET "'.\n", ip2str(session[fd]->client_addr, NULL));
 		}
 		do_close(fd);
@@ -22965,8 +23307,14 @@ void do_init_clif(void) {
 #endif
 
 	delay_clearunit_ers = ers_new(sizeof(struct block_list),"clif.cpp::delay_clearunit_ers",ERS_OPT_CLEAR);
+#ifdef Pandas_Ease_Mob_Stuck_After_Dead
+	twice_clearunit_ers = ers_new(sizeof(struct block_list),"clif.cpp::twice_clearunit_ers", ERS_OPT_CLEAR);
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
 }
 
 void do_final_clif(void) {
 	ers_destroy(delay_clearunit_ers);
+#ifdef Pandas_Ease_Mob_Stuck_After_Dead
+	ers_destroy(twice_clearunit_ers);
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
 }

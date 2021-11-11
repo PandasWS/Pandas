@@ -6,11 +6,11 @@ DROP TABLE IF EXISTS `item_db2`;
 CREATE TABLE `item_db2` (
   `id` int(10) unsigned NOT NULL DEFAULT '0',
   `name_aegis` varchar(50) NOT NULL DEFAULT '',
-  `name_english` varchar(50) NOT NULL DEFAULT '',
+  `name_english` varchar(100) NOT NULL DEFAULT '',
   `type` varchar(20) DEFAULT NULL,
   `subtype` varchar(20) DEFAULT NULL,
-  `price_buy` mediumint(8) unsigned DEFAULT NULL,
-  `price_sell` mediumint(8) unsigned DEFAULT NULL,
+  `price_buy` int(10) unsigned DEFAULT NULL,	-- Pandas modify for raising the price limit : origin type is mediumint(8)
+  `price_sell` int(10) unsigned DEFAULT NULL,	-- Pandas modify for raising the price limit : origin type is mediumint(8)
   `weight` smallint(5) unsigned DEFAULT NULL,
   `attack` smallint(5) unsigned DEFAULT NULL,
   `defense` smallint(5) unsigned DEFAULT NULL,
