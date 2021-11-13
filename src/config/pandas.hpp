@@ -764,11 +764,6 @@
 // ============================================================================
 
 #ifdef Pandas_Bugfix
-	// 修正 mail_attachment_weight 选项在特定操作顺序下无效的问题 [Sola丶小克]
-	// 若一次性放入超过 mail_attachment_weight 负重限制的道具到邮件中时, 程序可以正常的判断出超重
-	// 但是若分多次, 放入相同一件物品到邮件附件中, 那么 mail_attachment_weight 的负重限制将会失去作用
-	#define Pandas_Fix_Mail_Attachment_Weight_Defects
-
 	// 修正逐影的“抄袭/复制”技能，在偷到技能后角色服务器存档时可能会出现 -8 报错的问题 [Sola丶小克]
 	// 被抄袭的技能的 flag 是 SKILL_FLAG_PLAGIARIZED 值为 2
 	// 但好不歹的写入到数据库之前 rAthena 计算技能等级的时候是拿着 flag - SKILL_FLAG_REPLACED_LV_0 (值为 10)
