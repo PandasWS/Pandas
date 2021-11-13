@@ -254,6 +254,14 @@ def arrange_common(packagedir):
     if os.path.exists(packagedir + 'sql-files/composer/logs'):
         shutil.move(packagedir + 'sql-files/composer/logs', packagedir + 'sql-files/logs/upgrades')
         
+    # WEB 接口数据库
+    os.makedirs(packagedir + 'sql-files/web/creation')
+    shutil.move(packagedir + 'sql-files/web.sql', packagedir + 'sql-files/web/creation/01.web.sql')
+    
+    if os.path.exists(packagedir + 'sql-files/composer/web'):
+        shutil.move(packagedir + 'sql-files/composer/web', packagedir + 'sql-files/web/upgrades')
+    
+    # 清理工作
     rmdir(packagedir + 'sql-files/composer')
     rmdir(packagedir + 'sql-files/compatibility')
 
@@ -271,6 +279,7 @@ def arrange_renewal(packagedir):
     copyfile(project_slndir + 'login-server.exe', packagedir + 'login-server.exe')
     copyfile(project_slndir + 'char-server.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server.exe', packagedir + 'map-server.exe')
+    copyfile(project_slndir + 'web-server.exe', packagedir + 'web-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
     copyfile(project_slndir + 'yaml2sql.exe', packagedir + 'yaml2sql.exe')
@@ -290,6 +299,7 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'login-server-pre.exe', packagedir + 'login-server.exe')
     copyfile(project_slndir + 'char-server-pre.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server-pre.exe', packagedir + 'map-server.exe')
+    copyfile(project_slndir + 'web-server-pre.exe', packagedir + 'web-server.exe')
     copyfile(project_slndir + 'csv2yaml-pre.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
     copyfile(project_slndir + 'yaml2sql-pre.exe', packagedir + 'yaml2sql.exe')

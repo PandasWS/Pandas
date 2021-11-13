@@ -2437,4 +2437,13 @@
 	parseable_packet( HEADER_CZ_SE_CASHSHOP_OPEN2, sizeof( struct PACKET_CZ_SE_CASHSHOP_OPEN2 ), clif_parse_cashshop_open_request, 0 );
 #endif
 
+#ifdef Pandas_PacketFunction_PartyJoinRequest
+#if PACKETVER >= 20200300
+	parseable_packet(HEADER_CZ_PARTY_REQUEST_TO_JOIN, sizeof(struct PACKET_CZ_PARTY_REQUEST_TO_JOIN), clif_parse_party_request_to_join, 0);
+	packet(HEADER_ZC_PARTY_REQUEST_APPROVAL, sizeof(PACKET_ZC_PARTY_REQUEST_APPROVAL));
+	parseable_packet(HEADER_CZ_PARTY_APPROVAL_RESULT, sizeof(struct PACKET_CZ_PARTY_APPROVAL_RESULT), clif_parse_party_approval_result, 0);
+	packet(HEADER_ZC_JOIN_PARTY_REPLY, sizeof(PACKET_ZC_JOIN_PARTY_REPLY));
+#endif
+#endif // Pandas_PacketFunction_PartyJoinRequest
+
 #endif /* CLIF_PACKETDB_HPP */

@@ -22,7 +22,7 @@ if( BUILD_SERVERS )
 
 	# 再找出 src/map 目录中的全部 cpp 文件, 保存到 MAP_SOURCES 变量
 	file(GLOB MAP_SOURCES ${MAP_SOURCE_DIR}/*.cpp)
-	# message( STATUS "LOGIN_SOURCES="${LOGIN_SOURCES})
+	# message( STATUS "MAP_SOURCES="${MAP_SOURCES})
 
 	# 设置依赖项目, 这里设置了依赖 common 项目
 	set( DEPENDENCIES common )

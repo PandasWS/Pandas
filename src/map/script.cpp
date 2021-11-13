@@ -39,7 +39,6 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "achievement.hpp"
 #include "atcommand.hpp"
@@ -326,7 +325,7 @@ struct Script_Config script_config = {
 #endif // Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
-	"OnPCChangeTitleFilter",	// NPCF_CHANGETITLE		// changetitle_filter_name	// 当玩家试图变更称号时将触发此过滤器
+	"OnPCChangeTitleFilter",	// NPCF_CHANGETITLE		// changetitle_filter_name	// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -340,6 +339,30 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_ONECLICK_IDENTIFY
 	"OnPCUseOCIdentifyFilter",	// NPCF_ONECLICK_IDENTIFY		// oneclick_identify_filter_name	// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
+
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	"OnPCGuildCreateFilter",	// NPCF_GUILDCREATE		// guildcreate_filter_name	// 当玩家准备创建公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+	"OnPCGuildJoinFilter",	// NPCF_GUILDJOIN		// guildjoin_filter_name	// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
+#ifdef Pandas_NpcFilter_GUILDLEAVE
+	"OnPCGuildLeaveFilter",	// NPCF_GUILDLEAVE		// guildleave_filter_name	// 当玩家准备离开公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDLEAVE
+
+#ifdef Pandas_NpcFilter_PARTYCREATE
+	"OnPCPartyCreateFilter",	// NPCF_PARTYCREATE		// partycreate_filter_name	// 当玩家准备创建队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYCREATE
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	"OnPCPartyJoinFilter",	// NPCF_PARTYJOIN		// partyjoin_filter_name	// 当玩家即将加入队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYJOIN
+
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+	"OnPCPartyLeaveFilter",	// NPCF_PARTYLEAVE		// partyleave_filter_name	// 当玩家准备离开队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
@@ -406,6 +429,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcExpress_MOBDROPITEM
 	"OnMobDropItemExpress",	// NPCX_MOBDROPITEM		// mobdropitem_express_name	// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+	"OnPCAttackExpress",	// NPCX_PCATTACK		// pcattack_express_name	// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 
 	// NPC related
@@ -638,12 +665,15 @@ static void script_reportsrc(struct script_state *st)
 		return;
 
 	switch( bl->type ) {
-		case BL_NPC:
+		case BL_NPC: {
+			struct npc_data* nd = (struct npc_data*)bl;
+
 			if( bl->m >= 0 )
-				ShowDebug("Source (NPC): %s at %s (%d,%d)\n", ((struct npc_data *)bl)->name, map_mapid2mapname(bl->m), bl->x, bl->y);
+				ShowDebug("Source (NPC): %s at %s (%d,%d)\n", nd->name, map_mapid2mapname(bl->m), bl->x, bl->y);
 			else
-				ShowDebug("Source (NPC): %s (invisible/not on a map)\n", ((struct npc_data *)bl)->name);
-			break;
+				ShowDebug("Source (NPC): %s (invisible/not on a map)\n", nd->name);
+			ShowDebug( "Source (NPC): %s is located in: %s\n", nd->name, nd->path );
+			} break;
 		default:
 			if( bl->m >= 0 )
 				ShowDebug("Source (Non-NPC type %d): name %s at %s (%d,%d)\n", bl->type, status_get_name(bl), map_mapid2mapname(bl->m), bl->x, bl->y);
@@ -2500,51 +2530,39 @@ void script_set_constant_(const char* name, int64 value, const char* constant_na
 	}
 }
 
-static bool read_constdb_sub( char* fields[], int columns, int current ){
-	char name[1024], val[1024];
-	int type = 0;
-
-	if( columns > 1 ){
-		if( sscanf(fields[0], "%1023[A-Za-z0-9/_]", name) != 1 ||
-			sscanf(fields[1], "%1023[A-Za-z0-9/_]", val) != 1 || 
-			( columns >= 2 && sscanf(fields[2], "%11d", &type) != 1 ) ){
-			ShowWarning("Skipping line '" CL_WHITE "%d" CL_RESET "', invalid constant definition\n", current);
-			return false;
-		}
-	}else{
-		if( sscanf(fields[0], "%1023[A-Za-z0-9/_] %1023[A-Za-z0-9/_-] %11d", name, val, &type) < 2 ){
-			ShowWarning( "Skipping line '" CL_WHITE "%d" CL_RESET "', invalid constant definition\n", current );
-			return false;
-		}
-	}
-
-	script_set_constant(name, (int)strtol(val, NULL, 0), (type != 0), false);
-
-	return true;
+const std::string ConstantDatabase::getDefaultLocation(){
+	return std::string(db_path) + "/const.yml";
 }
 
-/*==========================================
- * Reading constant databases
- * const.txt
- *------------------------------------------*/
-static void read_constdb(void){
-	const char* dbsubpath[] = {
-		"",
-		"/" DBIMPORT,
-	};
+uint64 ConstantDatabase::parseBodyNode( const YAML::Node& node ) {
+	std::string constant_name;
 
-	for( int i = 0; i < ARRAYLENGTH(dbsubpath); i++ ){
-		int n2 = strlen(db_path) + strlen(dbsubpath[i]) + 1;
-		char* dbsubpath2 = (char*)aMalloc(n2 + 1);
-		bool silent = i > 0;
+	if (!this->asString( node, "Name", constant_name ))
+		return 0;
 
-		safesnprintf(dbsubpath2, n2, "%s%s", db_path, dbsubpath[i]);
+	char name[1024];
 
-		sv_readdb(dbsubpath2, "const.txt", ',', 1, 3, -1, &read_constdb_sub, silent);
-
-		aFree(dbsubpath2);
+	if (sscanf(constant_name.c_str(), "%1023[A-Za-z0-9/_]", name) != 1) {
+		this->invalidWarning( node["Name"], "Invalid constant definition \"%s\", skipping.\n", constant_name.c_str() );
+		return 0;
 	}
+
+	int64 val;
+
+	if (!this->asInt64( node, "Value", val ))
+		return 0;
+
+	bool type = false;
+
+	if (this->nodeExists(node, "Parameter") && !this->asBool( node, "Parameter", type ))
+		return 0;
+
+	script_set_constant(name, val, type, false);
+
+	return 1;
 }
+
+ConstantDatabase constant_db;
 
 /**
  * Sets source-end constants for NPC scripts to access.
@@ -5238,21 +5256,107 @@ bool script_get_array(struct script_state* st, int loc, int& ret_varid, char*& r
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2021/02/12 00:12
 //************************************ 
-bool script_get_mapindex(struct script_state *st, const char* mapname, int &mapindex) {
-	if (strcmp(mapname, "this") == 0) {
-		struct map_session_data *sd = nullptr;
-		if (!script_rid2sd(sd)) {
+bool script_get_mapindex(struct script_state *st, const char* mapname, int &mapindex, int char_id = 0) {
+	if (stricmp(mapname, "this") != 0) {
+		mapindex = map_mapname2mapid(mapname);
+		return (mapindex >= 0);
+	}
+
+	struct map_session_data* sd = nullptr;
+
+	if (char_id) {
+		sd = map_charid2sd(char_id);
+		if (!sd) {
+			script_reportsrc(st);
+			script_reportfunc(st);
+			ShowError("buildin_%s: mapname is 'this', but player with char id '%d' is not found.\n", script_getfuncname(st));
+			return false;
+		}
+	}
+	else {
+		sd = map_id2sd(st->rid);
+		if (!sd) {
 			script_reportsrc(st);
 			script_reportfunc(st);
 			ShowError("buildin_%s: mapname is 'this', please attach to a player.\n", script_getfuncname(st));
 			return false;
 		}
-		mapindex = sd->bl.m;
 	}
-	else
-		mapindex = map_mapname2mapid(mapname);
+	mapindex = sd->bl.m;
+
 	return (mapindex >= 0);
 }
+
+//************************************
+// Method:      script_both_setreg
+// Description: 同时设置 $@ 和 @ 数值变量 (设置 @ 变量的前提是能找到 sd)
+// Access:      public 
+// Parameter:   struct script_state * st
+// Parameter:   const char * varname_without_prefix
+// Parameter:   int64 value
+// Parameter:   bool isarray	是不是数组
+// Parameter:   int index		如果是数组那么索引是多少
+// Parameter:   int char_id		若提供了角色编号则将 @ 变量值写入该角色
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/08/17 23:34
+//************************************ 
+void script_both_setreg(struct script_state* st, const char* varname_without_prefix, int64 value, bool isarray, int index = -1, int char_id = 0) {
+	struct map_session_data* sd = nullptr;
+	int64 varid = 0;
+
+	sd = map_id2sd(st->rid);
+	if (char_id) {
+		sd = map_charid2sd(char_id);
+	}
+
+	std::string varname = "$@";
+	varname += varname_without_prefix;
+	varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+	mapreg_setreg(varid, value);
+
+	if (sd) {
+		varname = "@";
+		varname += varname_without_prefix;
+		varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+		pc_setreg(sd, varid, value);
+	}
+}
+
+//************************************
+// Method:      script_both_setregstr
+// Description: 同时设置 $@ 和 @ 字符串变量 (设置 @ 变量的前提是能找到 sd)
+// Access:      public 
+// Parameter:   struct script_state * st
+// Parameter:   const char * varname_without_prefix
+// Parameter:   const char * value
+// Parameter:   bool isarray	是不是数组
+// Parameter:   int index		如果是数组那么索引是多少
+// Parameter:   int char_id		若提供了角色编号则将 @ 变量值写入该角色
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/08/17 23:36
+//************************************ 
+void script_both_setregstr(struct script_state* st, const char* varname_without_prefix, const char* value, bool isarray, int index = -1, int char_id = 0) {
+	struct map_session_data* sd = nullptr;
+	int64 varid = 0;
+
+	sd = map_id2sd(st->rid);
+	if (char_id) {
+		sd = map_charid2sd(char_id);
+	}
+
+	std::string varname = "$@";
+	varname += varname_without_prefix;
+	varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+	mapreg_setregstr(varid, value);
+
+	if (sd) {
+		varname = "@";
+		varname += varname_without_prefix;
+		varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
+		pc_setregstr(sd, varid, value);
+	}
+}
+
 #endif // Pandas_ScriptCommands
 
 /*==========================================
@@ -5370,7 +5474,7 @@ void do_init_script(void) {
 
 	mapreg_init();
 	add_buildin_func();
-	read_constdb();
+	constant_db.load();
 	script_hardcoded_constants();
 }
 
@@ -8446,8 +8550,8 @@ BUILDIN_FUNC(grouprandomitem) {
 }
 
 /**
-* makeitem <item id>,<amount>,"<map name>",<X>,<Y>;
-* makeitem "<item name>",<amount>,"<map name>",<X>,<Y>;
+* makeitem <item id>,<amount>,"<map name>",<X>,<Y>{,<canShowEffect>};
+* makeitem "<item name>",<amount>,"<map name>",<X>,<Y>{,<canShowEffect>};
 */
 BUILDIN_FUNC(makeitem) {
 	t_itemid nameid;
@@ -8455,6 +8559,7 @@ BUILDIN_FUNC(makeitem) {
 	const char *mapname;
 	int m;
 	struct item item_tmp;
+	bool canShowEffect = false;
 
 	if( script_isstring(st, 2) ){
 		const char *name = script_getstr(st, 2);
@@ -8488,7 +8593,10 @@ BUILDIN_FUNC(makeitem) {
 	x = script_getnum(st,5);
 	y = script_getnum(st,6);
 
-	if(strcmp(mapname,"this")==0) {
+	if (script_hasdata(st, 7))
+		canShowEffect = script_getnum(st, 7) != 0;
+
+	if (strcmp(mapname, "this")==0) {
 		TBL_PC *sd;
 		if (!script_rid2sd(sd))
 			return SCRIPT_CMD_SUCCESS; //Failed...
@@ -8506,16 +8614,16 @@ BUILDIN_FUNC(makeitem) {
 		item_tmp.identify = (battle_config.force_identified & 32 ? 1 : item_tmp.identify);
 #endif // Pandas_BattleConfig_Force_Identified
 
-	map_addflooritem(&item_tmp,amount,m,x,y,0,0,0,4,0);
+	map_addflooritem(&item_tmp, amount, m, x, y, 0, 0, 0, 4, 0, canShowEffect);
 	return SCRIPT_CMD_SUCCESS;
 }
 
 /**
- * makeitem2 <item id>,<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>;
- * makeitem2 "<item name>",<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>;
+ * makeitem2 <item id>,<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>{,<canShowEffect>};
+ * makeitem2 "<item name>",<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>{,<canShowEffect>};
  *
- * makeitem3 <item id>,<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>;
- * makeitem3 "<item name>",<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>;
+ * makeitem3 <item id>,<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>{,<canShowEffect>};
+ * makeitem3 "<item name>",<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>{,<canShowEffect>};
  */
 BUILDIN_FUNC(makeitem2) {
 	t_itemid nameid;
@@ -8525,6 +8633,7 @@ BUILDIN_FUNC(makeitem2) {
 	struct item item_tmp;
 	struct item_data *id;
 	const char *funcname = script_getfuncname(st);
+	bool canShowEffect = false;
 
 	if( script_isstring( st, 2 ) ){
 		const char *name = script_getstr( st, 2 );
@@ -8595,9 +8704,20 @@ BUILDIN_FUNC(makeitem2) {
 			int res = script_getitem_randomoption(st, nullptr, &item_tmp, funcname, 14);
 			if (res != SCRIPT_CMD_SUCCESS)
 				return res;
+
+			if (script_hasdata(st, 17)) {
+				if (script_getnum(st, 17) != 0)
+					canShowEffect = script_getnum(st, 17) != 0;
+			}
+		}
+		else {
+			if (script_hasdata(st, 14)) {
+				if (script_getnum(st, 14) != 0)
+					canShowEffect = script_getnum(st, 14) != 0;
+			}
 		}
 
-		map_addflooritem(&item_tmp,amount,m,x,y,0,0,0,4,0);
+		map_addflooritem(&item_tmp, amount, m, x, y, 0, 0, 0, 4, 0, canShowEffect);
 	}
 	else
 		return SCRIPT_CMD_FAILURE;
@@ -9017,6 +9137,43 @@ BUILDIN_FUNC(delitem2)
 	st->mes_active = 0;
 	clif_scriptclose(sd, st->oid);
 	return SCRIPT_CMD_FAILURE;
+}
+
+/// Deletes items from the target/attached player at given index.
+/// delitemidx <index>{,<amount>{,<char id>}};
+BUILDIN_FUNC(delitemidx) {
+	struct map_session_data* sd;
+
+	if (!script_charid2sd(4, sd)) {
+		script_pushint(st, false);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int idx = script_getnum(st, 2);
+	if (idx < 0 || idx >= P_MAX_INVENTORY(sd)) {
+		ShowWarning("buildin_delitemidx: Index %d is out of the range 0-%d.\n", idx, P_MAX_INVENTORY(sd) - 1);
+		script_pushint(st, false);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (sd->inventory_data[idx] == nullptr) {
+		ShowWarning("buildin_delitemidx: No item can be deleted from index %d of player %s (AID: %u, CID: %u).\n", idx, sd->status.name, sd->status.account_id, sd->status.char_id);
+		script_pushint(st, false);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int amount;
+	if (script_hasdata(st, 3))
+		amount = script_getnum(st, 3);
+	else
+		amount = sd->inventory.u.items_inventory[idx].amount;
+
+	if (amount > 0)
+		script_pushint(st, pc_delitem(sd, idx, amount, 0, 0, LOG_TYPE_SCRIPT) == 0);
+	else
+		script_pushint(st, false);
+
+	return SCRIPT_CMD_SUCCESS;
 }
 
 /*==========================================
@@ -9730,21 +9887,28 @@ BUILDIN_FUNC(getequiprefinerycnt)
  * return (npc)
  *	x : weapon level
  *	0 : false
- * getequipweaponlv(<equipment slot>{,<char_id>})
+ * getequipweaponlv({<equipment slot>{,<char_id>}})
  *------------------------------------------*/
 BUILDIN_FUNC(getequipweaponlv)
 {
-	int i = -1, num;
-	TBL_PC *sd;
+	int num;
 
-	num = script_getnum(st, 2);
+	if( script_hasdata( st, 2 ) ){
+		num = script_getnum(st, 2);
+	}else{
+		num = EQI_COMPOUND_ON;
+	}
+
+	struct map_session_data* sd;
 
 	if (!script_charid2sd(3, sd)) {
 		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	if (num == -1){
+	int i = -1;
+
+	if( num == EQI_COMPOUND_ON ){
 		if( current_equip_item_index == -1 ){
 			script_pushint(st, 0);
 			return SCRIPT_CMD_FAILURE;
@@ -9753,10 +9917,53 @@ BUILDIN_FUNC(getequipweaponlv)
 		i = current_equip_item_index;
 	}else if (equip_index_check(num))
 		i = pc_checkequip(sd, equip_bitmask[num]);
-	if (i >= 0 && sd->inventory_data[i])
-		script_pushint(st, sd->inventory_data[i]->wlv);
-	else
-		script_pushint(st, 0);
+	if( i >= 0 && sd->inventory_data[i] && sd->inventory_data[i]->type == IT_WEAPON ){
+		script_pushint( st, sd->inventory_data[i]->weapon_level );
+	}else{
+		script_pushint( st, 0 );
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(getequiparmorlv){
+	int num;
+
+	if( script_hasdata( st, 2 ) ){
+		num = script_getnum(st, 2);
+	}else{
+		num = EQI_COMPOUND_ON;
+	}
+
+	struct map_session_data* sd;
+
+	if( !script_charid2sd( 3, sd ) ){
+		script_pushint( st, 0 );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int i = -1;
+
+	if( num == EQI_COMPOUND_ON ){
+		if( current_equip_item_index == -1 ){
+			script_pushint( st, 0 );
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		i = current_equip_item_index;
+	}else if( equip_index_check( num ) ){
+		i = pc_checkequip( sd, equip_bitmask[num] );
+	}else{
+		ShowError( "buildin_getequiparmorlv: unsupported equip index %d.\n", num );
+		script_pushint( st, 0 );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( i >= 0 && sd->inventory_data[i] && sd->inventory_data[i]->type == IT_ARMOR ){
+		script_pushint( st, sd->inventory_data[i]->armor_level );
+	}else{
+		script_pushint( st, 0 );
+	}
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -9853,12 +10060,15 @@ BUILDIN_FUNC(successrefitem) {
 		clif_additem(sd,i,1,0);
 		pc_equipitem(sd,i,ep);
 		clif_misceffect(&sd->bl,3);
-		achievement_update_objective(sd, AG_ENCHANT_SUCCESS, 2, sd->inventory_data[i]->wlv, sd->inventory.u.items_inventory[i].refine);
+		if( sd->inventory_data[i]->type == IT_WEAPON ){
+			achievement_update_objective(sd, AG_ENCHANT_SUCCESS, 2, sd->inventory_data[i]->weapon_level, sd->inventory.u.items_inventory[i].refine);
+		}
 		if (sd->inventory.u.items_inventory[i].refine == battle_config.blacksmith_fame_refine_threshold &&
 			sd->inventory.u.items_inventory[i].card[0] == CARD0_FORGE &&
-			sd->status.char_id == (int)MakeDWord(sd->inventory.u.items_inventory[i].card[2],sd->inventory.u.items_inventory[i].card[3]))
+			sd->status.char_id == (int)MakeDWord(sd->inventory.u.items_inventory[i].card[2],sd->inventory.u.items_inventory[i].card[3]) &&
+			sd->inventory_data[i]->type == IT_WEAPON )
 		{ // Fame point system [DracoRPG]
-			switch (sd->inventory_data[i]->wlv){
+			switch( sd->inventory_data[i]->weapon_level ){
 				case 1:
 					pc_addfame(sd, battle_config.fame_refine_lv1); // Success to refine to +10 a lv1 weapon you forged = +1 fame point
 					break;
@@ -10184,9 +10394,6 @@ BUILDIN_FUNC(autobonus)
 	else
 		pos = sd->inventory.u.items_inventory[current_equip_item_index].equip;
 
-	if((sd->state.autobonus&pos) == pos)
-		return SCRIPT_CMD_SUCCESS;
-
 	rate = script_getnum(st,3);
 	dur = script_getnum(st,4);
 	bonus_script = script_getstr(st,2);
@@ -10224,9 +10431,6 @@ BUILDIN_FUNC(autobonus2)
 	else
 		pos = sd->inventory.u.items_inventory[current_equip_item_index].equip;
 
-	if((sd->state.autobonus&pos) == pos)
-		return SCRIPT_CMD_SUCCESS;
-
 	rate = script_getnum(st,3);
 	dur = script_getnum(st,4);
 	bonus_script = script_getstr(st,2);
@@ -10263,9 +10467,6 @@ BUILDIN_FUNC(autobonus3)
 		pos = current_equip_combo_pos;
 	else
 		pos = sd->inventory.u.items_inventory[current_equip_item_index].equip;
-
-	if((sd->state.autobonus&pos) == pos)
-		return SCRIPT_CMD_SUCCESS;
 
 	rate = script_getnum(st,3);
 	dur = script_getnum(st,4);
@@ -11263,6 +11464,8 @@ BUILDIN_FUNC(getmobdrops)
 
 		mapreg_setreg(reference_uid(add_str("$@MobDrop_item"), j), mob->dropitem[i].nameid);
 		mapreg_setreg(reference_uid(add_str("$@MobDrop_rate"), j), mob->dropitem[i].rate);
+		mapreg_setreg(reference_uid(add_str("$@MobDrop_nosteal"), j), mob->dropitem[i].steal_protected);
+		mapreg_setreg(reference_uid(add_str("$@MobDrop_randomopt"), j), mob->dropitem[i].randomopt_group);
 
 		j++;
 	}
@@ -12267,40 +12470,42 @@ BUILDIN_FUNC(getareadropitem)
  *------------------------------------------*/
 BUILDIN_FUNC(enablenpc)
 {
-	const char *str = script_getstr(st,2);
-	if (npc_enable(str,1))
-		return SCRIPT_CMD_SUCCESS;
+	npc_data* nd;
+	e_npcv_status flag = NPCVIEW_DISABLE;
+	int char_id = script_hasdata(st, 3) ? script_getnum(st, 3) : 0;
+	const char* command = script_getfuncname(st);
 
-	return SCRIPT_CMD_FAILURE;
-}
+	if (script_hasdata(st, 2))
+		nd = npc_name2id(script_getstr(st,2));
+	else
+		nd = map_id2nd(st->oid);
 
-/*==========================================
- *------------------------------------------*/
-BUILDIN_FUNC(disablenpc)
-{
-	const char *str = script_getstr(st,2);
-	if (npc_enable(str,0))
-		return SCRIPT_CMD_SUCCESS;
+	if (!strcmp(command,"enablenpc"))
+		flag = NPCVIEW_ENABLE;
+	else if (!strcmp(command,"disablenpc"))
+		flag = NPCVIEW_DISABLE;
+	else if (!strcmp(command,"hideoffnpc"))
+		flag = NPCVIEW_HIDEOFF;
+	else if (!strcmp(command,"hideonnpc"))
+		flag = NPCVIEW_HIDEON;
+	else if (!strcmp(command,"cloakoffnpc"))
+		flag = NPCVIEW_CLOAKOFF;
+	else if (!strcmp(command,"cloakonnpc"))
+		flag = NPCVIEW_CLOAKON;
+	else{
+		ShowError( "buildin_enablenpc: Undefined command \"%s\".\n", command );
+		return SCRIPT_CMD_FAILURE;
+	}
 
-	return SCRIPT_CMD_FAILURE;
-}
+	if (!nd) {
+		if (script_hasdata(st, 2))
+			ShowError("buildin_%s: Attempted to %s a non-existing NPC '%s' (flag=%d).\n", (flag & NPCVIEW_VISIBLE) ? "show" : "hide", command, script_getstr(st,2), flag);
+		else
+			ShowError("buildin_%s: Attempted to %s a non-existing NPC (flag=%d).\n", (flag & NPCVIEW_VISIBLE) ? "show" : "hide", command, flag);
+		return SCRIPT_CMD_FAILURE;
+	}
 
-/*==========================================
- *------------------------------------------*/
-BUILDIN_FUNC(hideoffnpc)
-{
-	const char *str = script_getstr(st,2);
-	if (npc_enable(str,2))
-		return SCRIPT_CMD_SUCCESS;
-
-	return SCRIPT_CMD_FAILURE;
-}
-/*==========================================
- *------------------------------------------*/
-BUILDIN_FUNC(hideonnpc)
-{
-	const char *str = script_getstr(st,2);
-	if (npc_enable(str,4))
+	if (npc_enable_target(*nd, char_id, flag))
 		return SCRIPT_CMD_SUCCESS;
 
 	return SCRIPT_CMD_FAILURE;
@@ -14666,7 +14871,20 @@ BUILDIN_FUNC(getiteminfo)
 			}
 			break;
 		case ITEMINFO_EQUIPLEVELMIN: script_pushint(st, i_data->elv); break;
-		case ITEMINFO_WEAPONLEVEL: script_pushint(st, i_data->wlv); break;
+		case ITEMINFO_WEAPONLEVEL:
+			if( i_data->type == IT_WEAPON ){
+				script_pushint( st, i_data->weapon_level );
+			}else{
+				script_pushint( st, 0 );
+			}
+			break;
+		case ITEMINFO_ARMORLEVEL:
+			if( i_data->type == IT_ARMOR ){
+				script_pushint( st, i_data->armor_level );
+			}else{
+				script_pushint( st, 0 );
+			}
+			break;
 		case ITEMINFO_ALIASNAME: script_pushint(st, i_data->view_id); break;
 		case ITEMINFO_EQUIPLEVELMAX: script_pushint(st, i_data->elvmax); break;
 		case ITEMINFO_MAGICATTACK: {
@@ -14831,7 +15049,36 @@ BUILDIN_FUNC(setiteminfo)
 			}
 			break;
 		case ITEMINFO_EQUIPLEVELMIN: i_data->elv = static_cast<uint16>(value); break;
-		case ITEMINFO_WEAPONLEVEL: i_data->wlv = static_cast<uint16>(value); break;
+		case ITEMINFO_WEAPONLEVEL:
+			if( i_data->type == IT_WEAPON ){
+				if( value > MAX_WEAPON_LEVEL ){
+					ShowError( "buildin_setiteminfo: weapon level %d is above maximum %d.\n", value, MAX_WEAPON_LEVEL );
+					script_pushint( st, -1 );
+					return SCRIPT_CMD_FAILURE;
+				}
+
+				i_data->weapon_level = static_cast<uint16>(value);
+				break;
+			}else{
+				ShowError( "buildin_setiteminfo: Can not set a weapon level for %d.\n", i_data->nameid );
+				script_pushint( st, -1 );
+				return SCRIPT_CMD_FAILURE;
+			}
+		case ITEMINFO_ARMORLEVEL:
+			if( i_data->type == IT_ARMOR ){
+				if( value > MAX_ARMOR_LEVEL ){
+					ShowError( "buildin_setiteminfo: armor level %d is above maximum %d.\n", value, MAX_ARMOR_LEVEL );
+					script_pushint( st, -1 );
+					return SCRIPT_CMD_FAILURE;
+				}
+
+				i_data->armor_level = static_cast<uint16>(value);
+				break;
+			}else{
+				ShowError( "buildin_setiteminfo: Can not set an armor level for %d.\n", i_data->nameid );
+				script_pushint( st, -1 );
+				return SCRIPT_CMD_FAILURE;
+			}
 		case ITEMINFO_ALIASNAME: i_data->view_id = static_cast<t_itemid>(value); break;
 		case ITEMINFO_EQUIPLEVELMAX: i_data->elvmax = static_cast<uint16>(value); break;
 		case ITEMINFO_MAGICATTACK: {
@@ -14970,6 +15217,7 @@ BUILDIN_FUNC(getinventorylist)
 	for(i=0;i<P_MAX_INVENTORY(sd);i++){
 		if(sd->inventory.u.items_inventory[i].nameid > 0 && sd->inventory.u.items_inventory[i].amount > 0){
 			pc_setreg(sd,reference_uid(add_str("@inventorylist_id"), j),sd->inventory.u.items_inventory[i].nameid);
+			pc_setreg(sd,reference_uid(add_str("@inventorylist_idx"), j),i);
 			pc_setreg(sd,reference_uid(add_str("@inventorylist_amount"), j),sd->inventory.u.items_inventory[i].amount);
 			pc_setreg(sd,reference_uid(add_str("@inventorylist_equip"), j),sd->inventory.u.items_inventory[i].equip);
 			pc_setreg(sd,reference_uid(add_str("@inventorylist_refine"), j),sd->inventory.u.items_inventory[i].refine);
@@ -14993,10 +15241,8 @@ BUILDIN_FUNC(getinventorylist)
 				pc_setreg(sd,reference_uid(add_str(randopt_var), j),sd->inventory.u.items_inventory[i].option[k].param);
 			}
 			pc_setreg(sd,reference_uid(add_str("@inventorylist_tradable"), j),pc_can_trade_item(sd, i));
+			pc_setreg(sd,reference_uid(add_str("@inventorylist_favorite"), j),sd->inventory.u.items_inventory[i].favorite);
 #ifdef Pandas_ScriptResults_GetInventoryList
-			// 数值型数组 - @inventorylist_idx 用于保存道具在 items_inventory 的索引
-			pc_setreg(sd, reference_uid(add_str("@inventorylist_idx"), j), i);
-
 			// 字符串数组 - @inventorylist_uid$ 用于保存道具的唯一编号
 			uint64 _tmp_for_gcc = sd->inventory.u.items_inventory[i].unique_id;
 			std::string unique_id = boost::str(boost::format("%1%") % _tmp_for_gcc);
@@ -18243,54 +18489,93 @@ BUILDIN_FUNC(setitemscript)
  * Add or Update a mob drop temporarily [Akinari]
  * Original Idea By: [Lupus]
  *
- * addmonsterdrop <mob_id or name>,<item_id>,<rate>;
+ * addmonsterdrop <mob_id or name>,<item_id>,<rate>,{<steal protected>,{<random option group id>}};
  *
  * If given an item the mob already drops, the rate
- * is updated to the new rate.  Rate cannot exceed 10000
- * Returns 1 if succeeded (added/updated a mob drop)
+ * is updated to the new rate. Rate range is 1-10000.
+ * Returns true if succeeded (added/updated a mob drop) false otherwise.
  *-------------------------------------------------------*/
 BUILDIN_FUNC(addmonsterdrop)
 {
 	std::shared_ptr<s_mob_db> mob;
-	int rate;
 
-	if(script_isstring(st, 2))
-		mob = mob_db.find(mobdb_searchname(script_getstr(st,2)));
+	if (script_isstring(st, 2))
+		mob = mob_db.find(mobdb_searchname(script_getstr(st, 2)));
 	else
-		mob = mob_db.find(script_getnum(st,2));
+		mob = mob_db.find(script_getnum(st, 2));
 
-	t_itemid item_id=script_getnum(st,3);
-	rate=script_getnum(st,4);
-
-	if(!itemdb_exists(item_id)){
-		ShowError("addmonsterdrop: Nonexistant item %u requested.\n", item_id );
+	if (mob == nullptr) {
+		if (script_isstring(st, 2))
+			ShowError("addmonsterdrop: bad mob name given %s\n", script_getstr(st, 2));
+		else
+			ShowError("addmonsterdrop: bad mob id given %d\n", script_getnum(st, 2));
+		script_pushint(st, false);
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	if(mob) { //We got a valid monster, check for available drop slot
-		unsigned char i, c = 0;
-		for(i = 0; i < MAX_MOB_DROP_TOTAL; i++) {
-			if(mob->dropitem[i].nameid) {
-				if(mob->dropitem[i].nameid == item_id) { //If it equals item_id we update that drop
-					c = i;
-					break;
-				}
-				continue;
-			}
-			if(!c) //Accept first available slot only
+	t_itemid item_id = script_getnum(st, 3);
+	item_data *itm = itemdb_exists(item_id);
+
+	if (itm == nullptr) {
+		ShowError("addmonsterdrop: Nonexistant item %u requested.\n", item_id);
+		script_pushint(st, false);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int rate = script_getnum(st, 4);
+
+	if (rate < 1 || rate > 10000) {
+		ShowError("addmonsterdrop: Invalid rate %d (min 1, max 10000).\n", rate);
+		script_pushint(st, false);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	uint16 c = 0;
+
+	for (uint16 i = 0; i < MAX_MOB_DROP_TOTAL; i++) {
+		if (mob->dropitem[i].nameid > 0) {
+			if (mob->dropitem[i].nameid == item_id) { // If it equals item_id we update that drop
 				c = i;
+				break;
+			}
+			continue;
 		}
-		if(c) { //Fill in the slot with the item and rate
-			mob->dropitem[c].nameid = item_id;
-			mob->dropitem[c].rate = (rate > 10000)?10000:rate;
-			mob_reload_itemmob_data(); // Reload the mob search data stored in the item_data
-			script_pushint(st,1);
-		} else //No place to put the new drop
-			script_pushint(st,0);
-	} else {
-		ShowWarning("addmonsterdrop: bad mob id given %d\n",script_getnum(st,2));
-		return SCRIPT_CMD_FAILURE;
+		if (c == 0) // Accept first available slot only
+			c = i;
 	}
+	if (c == 0) { // No place to put the new drop
+		script_pushint(st, false);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	int steal_protected = 0;
+	int group = 0;
+
+	if (script_hasdata(st,5))
+		steal_protected = script_getnum(st, 5);
+	if (script_hasdata(st,6)) {
+		group = script_getnum(st, 6);
+
+		if (!random_option_group.exists(group)) {
+			ShowError("buildin_addmonsterdrop: Unknown random option group %d.\n", group);
+			script_pushint(st, false);
+			return SCRIPT_CMD_FAILURE;
+		}
+		if (itm->type != IT_WEAPON && itm->type != IT_ARMOR && itm->type != IT_SHADOWGEAR) {
+			ShowError("buildin_addmonsterdrop: Random option group can't be used with this type of item (item Id: %d).\n", item_id);
+			script_pushint(st, false);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	// Fill in the slot with the item and rate
+	mob->dropitem[c].nameid = item_id;
+	mob->dropitem[c].rate = rate;
+	mob->dropitem[c].steal_protected = steal_protected > 0;
+	mob->dropitem[c].randomopt_group = group;
+	mob_reload_itemmob_data(); // Reload the mob search data stored in the item_data
+
+	script_pushint(st, true);
 	return SCRIPT_CMD_SUCCESS;
 
 }
@@ -18314,7 +18599,7 @@ BUILDIN_FUNC(delmonsterdrop)
 
 	t_itemid item_id=script_getnum(st,3);
 
-	if(!itemdb_exists(item_id)){
+	if(!item_db.exists(item_id)){
 		ShowError("delmonsterdrop: Nonexistant item %u requested.\n", item_id );
 		return SCRIPT_CMD_FAILURE;
 	}
@@ -18325,6 +18610,8 @@ BUILDIN_FUNC(delmonsterdrop)
 			if(mob->dropitem[i].nameid == item_id) {
 				mob->dropitem[i].nameid = 0;
 				mob->dropitem[i].rate = 0;
+				mob->dropitem[i].steal_protected = false;
+				mob->dropitem[i].randomopt_group = 0;
 				mob_reload_itemmob_data(); // Reload the mob search data stored in the item_data
 				script_pushint(st,1);
 				return SCRIPT_CMD_SUCCESS;
@@ -18826,9 +19113,14 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UMOB_ROBE, md->vd->robe);
 			getunitdata_sub(UMOB_BODY2, md->vd->body_style);
 			getunitdata_sub(UMOB_GROUP_ID, md->ud.group_id);
+			getunitdata_sub(UMOB_IGNORE_CELL_STACK_LIMIT, md->ud.state.ignore_cell_stack_limit);
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			getunitdata_sub(UMOB_AURA, md->ucd.aura.id);
 #endif // Pandas_Struct_Unit_CommonData_Aura
+#ifdef Pandas_ScriptParams_UnitData_DamageTaken
+			getunitdata_sub(UMOB_DAMAGETAKEN, md->pandas.damagetaken);
+			getunitdata_sub(UMOB_DAMAGETAKEN_DB, md->db->damagetaken);
+#endif // Pandas_ScriptParams_UnitData_DamageTaken
 			break;
 
 		case BL_HOM:
@@ -19248,9 +19540,13 @@ BUILDIN_FUNC(setunitdata)
 			case UMOB_ROBE: clif_changelook(bl, LOOK_ROBE, (unsigned short)value); break;
 			case UMOB_BODY2: clif_changelook(bl, LOOK_BODY2, (unsigned short)value); break;
 			case UMOB_GROUP_ID: md->ud.group_id = value; unit_refresh(bl); break;
+			case UMOB_IGNORE_CELL_STACK_LIMIT: md->ud.state.ignore_cell_stack_limit = value > 0; break;
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			case UMOB_AURA: aura_make_effective(bl, value); break;
 #endif // Pandas_Struct_Unit_CommonData_Aura
+#ifdef Pandas_ScriptParams_UnitData_DamageTaken
+			case UMOB_DAMAGETAKEN: md->pandas.damagetaken = cap_value(value, -1, UINT16_MAX); break;
+#endif // Pandas_ScriptParams_UnitData_DamageTaken
 			default:
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_MOB.\n", type);
 				return SCRIPT_CMD_FAILURE;
@@ -19752,6 +20048,13 @@ BUILDIN_FUNC(unitwalk)
 
 	ud = unit_bl2ud(bl);
 
+	if (bl->type == BL_NPC) {
+		if (!((TBL_NPC*)bl)->status.hp)
+			status_calc_npc(((TBL_NPC*)bl), SCO_FIRST);
+		else
+			status_calc_npc(((TBL_NPC*)bl), SCO_NONE);
+	}
+
 	if (!strcmp(cmd,"unitwalk")) {
 		int x = script_getnum(st,3);
 		int y = script_getnum(st,4);
@@ -19982,8 +20285,8 @@ BUILDIN_FUNC(unitemote)
 
 /// Makes the unit cast the skill on the target or self if no target is specified.
 ///
-/// unitskilluseid <unit_id>,<skill_id>,<skill_lv>{,<target_id>,<casttime>};
-/// unitskilluseid <unit_id>,"<skill name>",<skill_lv>{,<target_id>,<casttime>};
+/// unitskilluseid <unit_id>,<skill_id>,<skill_lv>{,<target_id>,<casttime>,<cancel>,<Line_ID>};
+/// unitskilluseid <unit_id>,"<skill name>",<skill_lv>{,<target_id>,<casttime>,<cancel>,<Line_ID>};
 BUILDIN_FUNC(unitskilluseid)
 {
 	int unit_id, target_id, casttime;
@@ -20009,15 +20312,26 @@ BUILDIN_FUNC(unitskilluseid)
 	skill_lv = script_getnum(st,4);
 	target_id = ( script_hasdata(st,5) ? script_getnum(st,5) : unit_id );
 	casttime = ( script_hasdata(st,6) ? script_getnum(st,6) : 0 );
-	
+	bool cancel = ( script_hasdata(st,7) ? script_getnum(st,7) > 0 : skill_get_castcancel(skill_id) );
+	int msg_id = (script_hasdata(st, 8) ? script_getnum(st, 8) : 0);
+
 	if(script_rid2bl(2,bl)){
+		if (msg_id > 0) {
+			if (bl->type != BL_MOB) {
+				ShowError("buildin_unitskilluseid: Msg can only be used for monster.\n");
+				return SCRIPT_CMD_FAILURE;
+			}
+			TBL_MOB* md = map_id2md(bl->id);
+			if (md)
+				mob_chat_display_message(*md, static_cast<uint16>(msg_id));
+		}
 		if (bl->type == BL_NPC) {
 			if (!((TBL_NPC*)bl)->status.hp)
 				status_calc_npc(((TBL_NPC*)bl), SCO_FIRST);
 			else
 				status_calc_npc(((TBL_NPC*)bl), SCO_NONE);
 		}
-		unit_skilluse_id2(bl, target_id, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), skill_get_castcancel(skill_id));
+		unit_skilluse_id2(bl, target_id, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -20025,8 +20339,8 @@ BUILDIN_FUNC(unitskilluseid)
 
 /// Makes the unit cast the skill on the target position.
 ///
-/// unitskillusepos <unit_id>,<skill_id>,<skill_lv>,<target_x>,<target_y>{,<casttime>};
-/// unitskillusepos <unit_id>,"<skill name>",<skill_lv>,<target_x>,<target_y>{,<casttime>};
+/// unitskillusepos <unit_id>,<skill_id>,<skill_lv>,<target_x>,<target_y>{,<casttime>,<cancel>,<Line_ID>};
+/// unitskillusepos <unit_id>,"<skill name>",<skill_lv>,<target_x>,<target_y>{,<casttime>,<cancel>,<Line_ID>};
 BUILDIN_FUNC(unitskillusepos)
 {
 	int skill_x, skill_y, casttime;
@@ -20052,15 +20366,26 @@ BUILDIN_FUNC(unitskillusepos)
 	skill_x  = script_getnum(st,5);
 	skill_y  = script_getnum(st,6);
 	casttime = ( script_hasdata(st,7) ? script_getnum(st,7) : 0 );
+	bool cancel = ( script_hasdata(st,8) ? script_getnum(st,8) > 0 : skill_get_castcancel(skill_id) );
+	int msg_id = (script_hasdata(st, 9) ? script_getnum(st, 9) : 0);
 
 	if(script_rid2bl(2,bl)){
+		if (msg_id > 0) {
+			if (bl->type != BL_MOB) {
+				ShowError("buildin_unitskilluseid: Msg can only be used for monster.\n");
+				return SCRIPT_CMD_FAILURE;
+			}
+			TBL_MOB* md = map_id2md(bl->id);
+			if (md)
+				mob_chat_display_message(*md, static_cast<uint16>(msg_id));
+		}
 		if (bl->type == BL_NPC) {
 			if (!((TBL_NPC*)bl)->status.hp)
 				status_calc_npc(((TBL_NPC*)bl), SCO_FIRST);
 			else
 				status_calc_npc(((TBL_NPC*)bl), SCO_NONE);
 		}
-		unit_skilluse_pos2(bl, skill_x, skill_y, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), skill_get_castcancel(skill_id));
+		unit_skilluse_pos2(bl, skill_x, skill_y, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -20248,7 +20573,7 @@ BUILDIN_FUNC(warpportal)
 	unsigned short mapindex;
 	int tpx;
 	int tpy;
-	struct skill_unit_group* group;
+	std::shared_ptr<s_skill_unit_group> group;
 	struct block_list* bl;
 
 	bl = map_id2bl(st->oid);
@@ -20283,14 +20608,20 @@ BUILDIN_FUNC(warpportal)
  **/
 BUILDIN_FUNC(openmail)
 {
-	TBL_PC* sd;
+	struct map_session_data* sd;
 
 	if (!script_charid2sd(2,sd))
 		return SCRIPT_CMD_FAILURE;
 
+#if PACKETVER < 20150513
 	mail_openmail(sd);
 
 	return SCRIPT_CMD_SUCCESS;
+#else
+	ShowError( "buildin_openmail: This command is not supported for PACKETVER 2015-05-13 or newer.\n" );
+
+	return SCRIPT_CMD_FAILURE;
+#endif
 }
 
 /**
@@ -20317,7 +20648,7 @@ BUILDIN_FUNC(openauction)
 ///
 /// checkcell("<map name>",<x>,<y>,<type>) -> <bool>
 ///
-/// @see cell_chk* constants in const.txt for the types
+/// @see cell_chk* constants in src/map/script_constants.hpp for the types
 BUILDIN_FUNC(checkcell)
 {
 	int16 m = map_mapname2mapid(script_getstr(st,2));
@@ -20334,7 +20665,7 @@ BUILDIN_FUNC(checkcell)
 ///
 /// setcell "<map name>",<x1>,<y1>,<x2>,<y2>,<type>,<flag>;
 ///
-/// @see cell_* constants in const.txt for the types
+/// @see cell_* constants in src/map/script_constants.hpp for the types
 BUILDIN_FUNC(setcell)
 {
 	int16 m = map_mapname2mapid(script_getstr(st,2));
@@ -20448,6 +20779,32 @@ BUILDIN_FUNC(mercenary_create)
 
 	contract_time = script_getnum(st,3);
 	mercenary_create(sd, class_, contract_time);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(mercenary_delete)
+{
+	struct map_session_data *sd;
+	int type = 0;
+
+	if( !script_charid2sd(2, sd) )
+		return SCRIPT_CMD_FAILURE;
+
+	if( sd->md == nullptr ) {
+		ShowWarning("buildin_mercenary_delete: Tried to delete a non existant mercenary from player '%s' (AID: %u, CID: %u)\n", sd->status.name, sd->status.account_id, sd->status.char_id);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( script_hasdata(st, 3) ) {
+		type = script_getnum(st, 3);
+		if( type < 0 || type > 3 ) {
+			ShowWarning("buildin_mercenary_delete: invalid type value of %d.\n", type);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+	
+	mercenary_delete(sd->md, type);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -25640,8 +25997,6 @@ BUILDIN_FUNC(mail){
 
 			msg.item[i].refine = (char)get_val2_num( st, reference_uid( id, start ), reference_getref( data ) );
 
-			script_removetop(st, -1, 0);
-
 			if (!item->flag.no_refine && (item->type == IT_WEAPON || item->type == IT_ARMOR || item->type == IT_SHADOWGEAR)) {
 				if (msg.item[i].refine > MAX_REFINE)
 					msg.item[i].refine = MAX_REFINE;
@@ -25668,9 +26023,7 @@ BUILDIN_FUNC(mail){
 
 			msg.item[i].bound = (char)get_val2_num( st, reference_uid( id, start ), reference_getref( data ) );
 
-			script_removetop(st, -1, 0);
-
-			if( msg.item[i].bound <= BOUND_NONE || msg.item[i].bound >= BOUND_MAX ){
+			if( msg.item[i].bound < BOUND_NONE || msg.item[i].bound >= BOUND_MAX ){
 				ShowError( "buildin_mail: bound %d for item %u is invalid.\n", msg.item[i].bound, msg.item[i].nameid );
 				return SCRIPT_CMD_FAILURE;
 			}
@@ -25699,11 +26052,11 @@ BUILDIN_FUNC(mail){
 		}
 	
 		// Random Options
-		if( !script_hasdata(st,12 + MAX_SLOTS) ){
+		if( !script_hasdata(st,11 + MAX_SLOTS) ){
 			break;
 		}
 
-		for( i = 0, j = 12 + MAX_SLOTS; i < MAX_ITEM_RDM_OPT && script_hasdata(st,j) && script_hasdata(st,j + 1) && script_hasdata(st,j + 2); i++, j++ ){
+		for( i = 0, j = 11 + MAX_SLOTS; i < MAX_ITEM_RDM_OPT && script_hasdata(st,j) && script_hasdata(st,j + 1) && script_hasdata(st,j + 2); i++, j++ ){
 			// Option IDs
 			data = script_getdata(st, j);
 
@@ -25988,28 +26341,20 @@ BUILDIN_FUNC(convertpcinfo) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
-BUILDIN_FUNC(cloakoffnpc)
-{
-	if (npc_enable_target(script_getstr(st, 2), script_hasdata(st, 3) ? script_getnum(st, 3) : 0, 8))
-		return SCRIPT_CMD_SUCCESS;
-
-	return SCRIPT_CMD_FAILURE;
-}
-
-BUILDIN_FUNC(cloakonnpc)
-{
-	if (npc_enable_target(script_getstr(st, 2), script_hasdata(st, 3) ? script_getnum(st, 3) : 0, 16))
-		return SCRIPT_CMD_SUCCESS;
-
-	return SCRIPT_CMD_FAILURE;
-}
-
 BUILDIN_FUNC(isnpccloaked)
 {
-	struct npc_data *nd = npc_name2id(script_getstr(st, 2));
+	npc_data *nd;
+
+	if (script_hasdata(st, 2))
+		nd = npc_name2id(script_getstr(st, 2));
+	else
+		nd = map_id2nd(st->oid);
 
 	if (!nd) {
-		ShowError("buildin_isnpccloaked: %s is a non-existing NPC.\n", script_getstr(st, 2));
+		if (script_hasdata(st, 2))
+			ShowError("buildin_isnpccloaked: %s is a non-existing NPC.\n", script_getstr(st, 2));
+		else
+			ShowError("buildin_isnpccloaked: non-existing NPC.\n");
 		return SCRIPT_CMD_FAILURE;
 	}
 
@@ -26058,6 +26403,33 @@ BUILDIN_FUNC(getenchantgrade){
 	}
 
 	script_pushint( st, sd->inventory.u.items_inventory[current_equip_item_index].enchantgrade );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/*==========================================
+ * mob_setidleevent( <monster game ID>, "<event label>" )
+ *------------------------------------------*/
+BUILDIN_FUNC(mob_setidleevent){
+	struct block_list* bl;
+
+	if( !script_rid2bl( 2, bl ) ){
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( bl->type != BL_MOB ){
+		ShowError( "buildin_mob_setidleevent: the target GID was not a monster.\n" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	struct mob_data* md = (struct mob_data*)bl;
+	if (md == nullptr)
+		return SCRIPT_CMD_FAILURE;
+
+	const char* idle_event = script_getstr( st, 3 );
+
+	check_event( st, idle_event );
+	safestrncpy( md->idle_event, idle_event, EVENT_NAME_LENGTH );
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -26540,51 +26912,6 @@ BUILDIN_FUNC(countitemidx) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_CountItemIdx
-
-#ifdef Pandas_ScriptCommand_DelItemIdx
-/* ===========================================================
- * 指令: delitemidx
- * 描述: 移除指定背包序号的道具
- * 用法: delitemidx <背包序号>{,<移除数量>{,<角色编号>}};
- * 返回: 操作成功则返回 1, 操作失败则返回 0
- * 作者: Sola丶小克
- * -----------------------------------------------------------*/
-BUILDIN_FUNC(delitemidx) {
-	struct map_session_data *sd = nullptr;
-	struct item_data *id = nullptr;
-	int idx = -1, amount = 0;
-
-	if (!script_charid2sd(4, sd)) {
-		script_pushint(st, 0);
-		return SCRIPT_CMD_SUCCESS;
-	}
-
-	idx = script_getnum(st, 2);
-	if (idx < 0 || idx >= sd->inventory.max_amount) {
-		ShowWarning("buildin_delitemidx: Index (%d) should be from 0-%d.\n", idx, sd->inventory.max_amount - 1);
-		script_pushint(st, 0);
-		return SCRIPT_CMD_SUCCESS;
-	}
-
-	if (!(id = itemdb_exists(sd->inventory.u.items_inventory[idx].nameid))) {
-		ShowWarning("buildin_delitemidx: Deleting invalid Item ID (%u).\n", sd->inventory.u.items_inventory[idx].nameid);
-		script_pushint(st, 0);
-		return SCRIPT_CMD_SUCCESS;
-	}
-
-	if (script_hasdata(st, 3))
-		amount = min(script_getnum(st, 3), sd->inventory.u.items_inventory[idx].amount);
-	else
-		amount = sd->inventory.u.items_inventory[idx].amount;
-
-	if (amount > 0)
-		script_pushint(st, (pc_delitem(sd, idx, amount, 0, 0, LOG_TYPE_SCRIPT) == 0 ? 1 : 0));
-	else
-		script_pushint(st, 0);
-
-	return SCRIPT_CMD_SUCCESS;
-}
-#endif // Pandas_ScriptCommand_DelItemIdx
 
 #ifdef Pandas_ScriptCommand_IdentifyIdx
 /* ===========================================================
@@ -29561,244 +29888,419 @@ BUILDIN_FUNC(getinventorysize) {
 #ifdef Pandas_ClientFeature_InventoryExpansion
 	script_pushint(st, sd->status.inventory_size);
 #else
-	script_pushint(st, MAX_INVENTORY);
+	script_pushint(st, G_MAX_INVENTORY);
 #endif // Pandas_ClientFeature_InventoryExpansion
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_GetInventorySize
+
+#ifdef Pandas_ScriptCommand_GetMapSpawns
+/* ===========================================================
+ * 指令: getmapspawns
+ * 描述: 获取指定地图的魔物刷新点信息
+ * 用法: getmapspawns "<地图名称>"{,<角色编号>};
+ * 返回: 成功则返回找到的刷新点数量, 失败则返回 -1
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getmapspawns) {
+	int mapindex = -1;
+	std::string mapname = script_getstr(st, 2);
+	int char_id = script_hasdata(st, 3) ? script_getnum(st, 3) : 0;
+
+	script_both_setreg(st, "spawn_count", 0, false, -1, char_id);
+
+	if (!script_get_mapindex(st, mapname.c_str(), mapindex, char_id)) {
+		ShowError("buildin_getmapspawns: Could not found valid map by map name '%s'\n", mapname.c_str());
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	struct map_data* mapdata = map_getmapdata(mapindex);
+
+	if (!mapdata) {
+		script_reportsrc(st);
+		script_reportfunc(st);
+		ShowError("buildin_getmapspawns: Could not found valid map by map name '%s'\n", mapname.c_str());
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int j = 0;
+
+	for (int i = 0; i < MAX_MOB_LIST_PER_MAP; i++) {
+		if (!mapdata || mapdata->moblist[i] == nullptr) continue;
+		struct spawn_data* data = mapdata->moblist[i];
+
+		script_both_setreg(st, "spawn_mobid", data->id, true, j, char_id);
+		script_both_setregstr(st, "spawn_name$", data->name, true, j, char_id);
+		script_both_setreg(st, "spawn_num", data->num, true, j, char_id);
+		script_both_setreg(st, "spawn_active", data->active, true, j, char_id);
+		script_both_setreg(st, "spawn_size", data->state.size, true, j, char_id);
+		script_both_setreg(st, "spawn_isboss", data->state.boss, true, j, char_id);
+		script_both_setreg(st, "spawn_ai", data->state.ai, true, j, char_id);
+		script_both_setreg(st, "spawn_level", data->level, true, j, char_id);
+		script_both_setreg(st, "spawn_delay1", data->delay1, true, j, char_id);
+		script_both_setreg(st, "spawn_delay2", data->delay2, true, j, char_id);
+		script_both_setregstr(st, "spawn_eventname$", data->eventname, true, j, char_id);
+
+		script_both_setreg(st, "spawn_mapid", data->m, true, j, char_id);
+		script_both_setregstr(st, "spawn_mapname$", mapdata->name, true, j, char_id);
+		script_both_setreg(st, "spawn_x", data->x, true, j, char_id);
+		script_both_setreg(st, "spawn_y", data->y, true, j, char_id);
+		script_both_setreg(st, "spawn_xs", data->xs, true, j, char_id);
+		script_both_setreg(st, "spawn_ys", data->ys, true, j, char_id);
+
+		j++;
+	}
+
+	script_both_setreg(st, "spawn_count", j, false, -1, char_id);
+	script_pushint(st, j);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetMapSpawns
+
+#ifdef Pandas_ScriptCommand_GetMobSpawns
+/* ===========================================================
+ * 指令: getmobspawns
+ * 描述: 查询指定魔物在不同地图的刷新点信息
+ * 用法: getmobspawns <魔物编号>{,"<地图名称>"{,<角色编号>}};
+ * 返回: 成功则返回找到的刷新点数量, 失败则返回 -1
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getmobspawns) {
+	int mapindex = -1;
+	int mob_id = script_getnum(st, 2);
+	std::string mapname = (script_hasdata(st, 3) && script_isstring(st, 3)) ? script_getstr(st, 3) : "";
+	int char_id = (script_hasdata(st, 4) && script_isint(st, 4)) ? script_getnum(st, 4) : 0;
+
+	script_both_setreg(st, "spawn_count", 0, false, -1, char_id);
+
+	// 若指定了地图名称则顺带查询地图数据信息, 没指定就算了
+	if (mapname.length() > 0) {
+		if (!script_get_mapindex(st, mapname.c_str(), mapindex, char_id)) {
+			ShowError("buildin_getmobspawns: Could not found valid map by map name '%s'\n", mapname.c_str());
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		struct map_data* mapdata = map_getmapdata(mapindex);
+
+		if (!mapdata) {
+			script_reportsrc(st);
+			script_reportfunc(st);
+			ShowError("buildin_getmobspawns: Could not found valid map by map name '%s'\n", mapname.c_str());
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	// 通过 rAthena 内建的刷新点缓存快速确定关联地图
+	const std::vector<spawn_info> spawns = mob_get_spawns(mob_id);
+
+	int j = 0;
+
+	for (auto& spawn : spawns) {
+		int16 mapid = map_mapindex2mapid(spawn.mapindex);
+
+		// 若设置了仅查询某地图的魔物刷新点信息, 那么非指定地图的都跳过
+		if (mapindex != -1 && mapid != mapindex)
+			continue;
+
+		// 获取有记载指定魔物刷新点的目标地图数据
+		struct map_data* mapdata = map_getmapdata(mapid);
+
+		// 找不到对应地图的数据则直接跳过
+		if (!mapdata) continue;
+
+		for (int i = 0; i < MAX_MOB_LIST_PER_MAP; i++) {
+			if (!mapdata || mapdata->moblist[i] == nullptr) continue;
+			struct spawn_data* data = mapdata->moblist[i];
+			if (data->id != mob_id) continue;
+
+			script_both_setreg(st, "spawn_mobid", data->id, true, j, char_id);
+			script_both_setregstr(st, "spawn_name$", data->name, true, j, char_id);
+			script_both_setreg(st, "spawn_num", data->num, true, j, char_id);
+			script_both_setreg(st, "spawn_active", data->active, true, j, char_id);
+			script_both_setreg(st, "spawn_size", data->state.size, true, j, char_id);
+			script_both_setreg(st, "spawn_isboss", data->state.boss, true, j, char_id);
+			script_both_setreg(st, "spawn_ai", data->state.ai, true, j, char_id);
+			script_both_setreg(st, "spawn_level", data->level, true, j, char_id);
+			script_both_setreg(st, "spawn_delay1", data->delay1, true, j, char_id);
+			script_both_setreg(st, "spawn_delay2", data->delay2, true, j, char_id);
+			script_both_setregstr(st, "spawn_eventname$", data->eventname, true, j, char_id);
+
+			script_both_setreg(st, "spawn_mapid", data->m, true, j, char_id);
+			script_both_setregstr(st, "spawn_mapname$", mapdata->name, true, j, char_id);
+			script_both_setreg(st, "spawn_x", data->x, true, j, char_id);
+			script_both_setreg(st, "spawn_y", data->y, true, j, char_id);
+			script_both_setreg(st, "spawn_xs", data->xs, true, j, char_id);
+			script_both_setreg(st, "spawn_ys", data->ys, true, j, char_id);
+
+			j++;
+		}
+	}
+
+	script_both_setreg(st, "spawn_count", j, false, -1, char_id);
+	script_pushint(st, j);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetMobSpawns
+
+#ifdef Pandas_ScriptCommand_GetCalendarTime
+/* ===========================================================
+ * 指令: getcalendartime
+ * 描述: 获取下次出现指定时间的 UNIX 时间戳
+ * 用法: getcalendartime <小时>,<分钟>{,<月的第几天>{,<周的第几天>}};
+ * 返回: 成功则返回时间戳, 失败则返回 -1
+ * 作者: Haru <haru@dotalux.com>
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getcalendartime) {
+	struct tm info = { 0 };
+	int day_of_month = script_hasdata(st, 4) ? script_getnum(st, 4) : -1;
+	int day_of_week = script_hasdata(st, 5) ? script_getnum(st, 5) : -1;
+	int year = date_get_year();
+	int month = date_get_month();
+	int day = date_get_dayofmonth();
+	int cur_hour = date_get_hour();
+	int cur_min = date_get_min();
+	int hour = script_getnum(st, 2);
+	int minute = script_getnum(st, 3);
+
+	info.tm_sec = 0;
+	info.tm_min = minute;
+	info.tm_hour = hour;
+	info.tm_mday = day;
+	info.tm_mon = month - 1;
+	info.tm_year = year - 1900;
+
+	if (day_of_month > -1 && day_of_week > -1) {
+		ShowError("buildin_getcalendartime: You must only specify a day_of_week or a day_of_month, not both\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (day_of_month > -1 && (day_of_month < 1 || day_of_month > 31)) {
+		ShowError("buildin_getcalendartime: Day of Month in invalid range. Must be between 1 and 31.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (day_of_week > -1 && (day_of_week < 0 || day_of_week > 6)) {
+		ShowError("buildin_getcalendartime: Day of Week in invalid range. Must be between 0 and 6.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (hour > -1 && (hour > 23)) {
+		ShowError("buildin_getcalendartime: Hour in invalid range. Must be between 0 and 23.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (minute > -1 && (minute > 59)) {
+		ShowError("buildin_getcalendartime: Minute in invalid range. Must be between 0 and 59.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	if (hour == -1 || minute == -1) {
+		ShowError("buildin_getcalendartime: Minutes and Hours are required\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (day_of_month > -1) {
+		if (day_of_month < day) { // Next Month
+			info.tm_mon++;
+		}
+		else if (day_of_month == day) { // Today
+			if (hour < cur_hour || (hour == cur_hour && minute < cur_min)) { // But past time, next month
+				info.tm_mon++;
+			}
+		}
+
+		// Loops until month has finding a month that has day_of_month
+		do {
+			time_t t;
+			struct tm* lt;
+			info.tm_mday = day_of_month;
+			t = mktime(&info);
+			lt = localtime(&t);
+			info = *lt;
+		} while (info.tm_mday != day_of_month);
+	}
+	else if (day_of_week > -1) {
+		int cur_wday = date_get_dayofweek();
+
+		if (day_of_week > cur_wday) { // This week
+			info.tm_mday += (day_of_week - cur_wday);
+		}
+		else if (day_of_week == cur_wday) { // Today
+			if (hour < cur_hour || (hour == cur_hour && minute <= cur_min)) {
+				info.tm_mday += 7; // Next week
+			}
+		}
+		else if (day_of_week < cur_wday) { // Next week
+			info.tm_mday += (7 - cur_wday + day_of_week);
+		}
+	}
+	else if (day_of_week == -1 && day_of_month == -1) { // Next occurence of hour/min
+		if (hour < cur_hour || (hour == cur_hour && minute < cur_min)) {
+			info.tm_mday++;
+		}
+	}
+
+	script_pushint(st, mktime(&info));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetCalendarTime
+
+#ifdef Pandas_ScriptCommand_GetSkillInfo
+/* ===========================================================
+ * 指令: getskillinfo
+ * 描述: 获取指定技能在技能数据库中所配置的各项信息
+ * 用法: getskillinfo <查询的信息类型>,<技能编号>{,<技能等级>{,<角色编号>}};
+ * 用法: getskillinfo <查询的信息类型>,<"技能名称">{,<技能等级>{,<角色编号>}};
+ * 返回: 请查阅 doc/pandas_script_commands.txt 中的说明
+ * 作者: 聽風
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getskillinfo) {
+	int type = 0;
+	uint16 skill_id = 0;
+	int i = 0, j = 0;
+	int skill_lv = (script_hasdata(st, 4) && script_isint(st, 4)) ? script_getnum(st, 4) : 0;
+	int char_id = (script_hasdata(st, 5) && script_isint(st, 5)) ? script_getnum(st, 5) : 0;
+
+	type = script_getnum(st, 2);
+	if (script_isstring(st, 3)) {
+		const char *name = script_getstr(st, 3);
+		if (!(skill_id = skill_name2id(name))) {
+			ShowError("buildin_getskillinfo: Invalid skill name %s.\n", name);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+	else {
+		skill_id = script_getnum(st, 3);
+		if (!skill_get_index(skill_id)) {
+			ShowError("buildin_getskillinfo: Invalid skill ID %d.\n", skill_id);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	std::shared_ptr<s_skill_db> skill = skill_db.find(skill_id);
+	if (skill == nullptr) {
+		ShowError("buildin_getskillinfo: Invalid skill ID %d.\n", skill_id);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	switch (type) {
+		case SKI_CASTTYPE: script_pushint(st, skill_get_casttype(skill_id)); break;
+		case SKI_NAME: script_pushstrcopy(st, skill->name); break;
+		case SKI_DESCRIPTION: script_pushstrcopy(st, skill->desc); break;
+		case SKI_MAXLEVEL_IN_SKILLTREE: script_pushint(st, skill_tree_get_max(skill_id,skill_lv)); break;
+		case SKI_SKILLTYPE: script_pushint(st, skill_get_type(skill_id)); break;
+		case SKI_HIT: script_pushint(st, skill->hit); break;
+		case SKI_TARGETTYPE: script_pushint(st, skill->inf); break;
+		case SKI_ELEMENT: script_pushint(st, skill->element[skill_lv]); break;
+		case SKI_MAXLEVEL: script_pushint(st, skill_get_max(skill_id)); break;
+		case SKI_RANGE: script_pushint(st, skill->range[skill_lv]); break;
+		case SKI_SPLASHAREA: script_pushint(st, skill->splash[skill_lv]); break;
+		case SKI_HITCOUNT: script_pushint(st, skill->num[skill_lv]); break;
+		case SKI_CASTTIME: script_pushint(st, skill->cast[skill_lv]); break;
+#ifdef RENEWAL_CAST
+		case SKI_FIXEDCASTTIME: script_pushint(st, skill->fixed_cast[skill_lv]); break;
+#else
+		case SKI_FIXEDCASTTIME: script_pushint(st, -1); break;
+#endif // RENEWAL_CAST
+		case SKI_AFTERCASTACTDELAY: script_pushint(st, skill->delay[skill_lv]); break;
+		case SKI_AFTERCASTWALKDELAY: script_pushint(st, skill->walkdelay[skill_lv]); break;
+		case SKI_DURATION1: script_pushint(st, skill->upkeep_time[skill_lv]); break;
+		case SKI_DURATION2: script_pushint(st, skill->upkeep_time2[skill_lv]); break;
+		case SKI_CASTTIMEFLAGS: script_pushint(st, skill->castnodex); break;
+		case SKI_CASTDELAYFLAGS: script_pushint(st, skill->delaynodex); break;
+		case SKI_CASTDEFENSEREDUCTION: script_pushint(st, skill->cast_def_rate); break;
+		case SKI_CASTCANCEL: script_pushint(st, skill->castcancel); break;
+		case SKI_ACTIVEINSTANCE: script_pushint(st, skill->maxcount[skill_lv]); break;
+		case SKI_KNOCKBACK: script_pushint(st, skill->blewcount[skill_lv]); break;
+		case SKI_COOLDOWN: script_pushint(st, skill->cooldown[skill_lv]); break;
+		case SKI_NONEARNPC_TYPE: script_pushint(st, skill->unit_nonearnpc_type); break;
+		case SKI_NONEARNPC_ADDITIONALRANGE: script_pushint(st, skill->unit_nonearnpc_range); break;
+		case SKI_COPYFLAGS_SKILL: script_pushint(st, skill->copyable.option); break;
+		case SKI_UNIT_ID: script_pushint(st, skill->unit_id); break;
+		case SKI_UNIT_ALTERNATEID: script_pushint(st, skill->unit_id2); break;
+		case SKI_UNIT_LAYOUT: script_pushint(st, skill->unit_layout_type[skill_lv]); break;
+		case SKI_UNIT_RANGE: script_pushint(st, skill->unit_range[skill_lv]); break;
+		case SKI_UNIT_INTERVAL: script_pushint(st, skill->unit_interval); break;
+		case SKI_UNIT_TARGET: script_pushint(st, skill->unit_target); break;
+		case SKI_REQUIRES_HPCOST: script_pushint(st, skill->require.hp[skill_lv]); break;
+		case SKI_REQUIRES_SPCOST: script_pushint(st, skill->require.sp[skill_lv]); break;
+		case SKI_REQUIRES_MAXHPTRIGGER: script_pushint(st, skill->require.mhp[skill_lv]); break;
+		case SKI_REQUIRES_HPRATECOST: script_pushint(st, skill->require.hp_rate[skill_lv]); break;
+		case SKI_REQUIRES_SPRATECOST: script_pushint(st, skill->require.sp_rate[skill_lv]); break;
+		case SKI_REQUIRES_ZENYCOST: script_pushint(st, skill->require.zeny[skill_lv]); break;
+		case SKI_REQUIRES_WEAPON: script_pushint(st, skill->require.weapon); break;
+		case SKI_REQUIRES_AMMO: script_pushint(st, skill->require.ammo); break;
+		case SKI_REQUIRES_AMMOAMOUNT: script_pushint(st, skill->require.ammo_qty[skill_lv]); break;
+		case SKI_REQUIRES_STATE: script_pushint(st, skill->require.state); break;
+		case SKI_REQUIRES_SPHERECOST: script_pushint(st, skill->require.spiritball[skill_lv]); break;
+
+		case SKI_REQUIRES_STATUS:
+			for (const auto& sc : skill->require.status) {
+				script_both_setreg(st, "skill_requires_status", (int64)sc, true, j, char_id);
+				j++;
+			}
+			script_pushint(st, j);
+			break;
+		case SKI_DAMAGEFLAGS:
+			for (i = 0; i < NK_MAX; i++) {
+				if (!skill->nk[i]) continue;
+				script_both_setreg(st, "skill_damage_flags", skill->nk[i], true, j, char_id);
+				j++;
+			}
+			script_pushint(st, j);
+			break;
+		case SKI_FLAGS:
+			for (i = 0; i < INF2_MAX; i++) {
+				if (!skill->inf2[i]) continue;
+				script_both_setreg(st, "skill_flags", skill->inf2[i], true, j, char_id);
+				j++;
+			}
+			script_pushint(st, j);
+			break;
+		case SKI_UNIT_FLAG:
+			for (i = 0; i < UF_MAX; i++) {
+				if (!skill->unit_flag[i]) continue;
+				script_both_setreg(st, "skill_unit_flag", skill->unit_flag[i], true, j, char_id);
+				j++;
+			}
+			script_pushint(st, j);
+			break;
+		case SKI_REQUIRES_EQUIPMENT:
+			for (const auto& item : skill->require.eqItem) {
+				script_both_setreg(st, "skill_requires_equipment", (int64)item, true, j, char_id);
+				j++;
+			}
+			script_pushint(st, j);
+			break;
+		case SKI_REQUIRES_ITEMCOST:
+			for (i = 0; i < MAX_SKILL_ITEM_REQUIRE; i++) {
+				if (!skill->require.itemid[i]) continue;
+				script_both_setreg(st, "skill_requires_itemid", skill->require.itemid[i], true, j, char_id);
+				script_both_setreg(st, "skill_requires_amount", skill->require.amount[i], true, j, char_id);
+				j++;
+			}
+			script_pushint(st, j);
+			break;
+		default:
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+	}
+	
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetSkillInfo
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
 /// for an explanation on args, see add_buildin_func
 struct script_function buildin_func[] = {
-#ifdef Pandas_ScriptCommand_SetHeadDir
-	BUILDIN_DEF(setheaddir,"i?"),						// 调整角色纸娃娃脑袋的朝向 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SetHeadDir
-#ifdef Pandas_ScriptCommand_SetBodyDir
-	BUILDIN_DEF(setbodydir,"i?"),						// 用于调整角色纸娃娃身体的朝向 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SetBodyDir
-#ifdef Pandas_ScriptCommand_OpenBank
-	BUILDIN_DEF(openbank,"?"),							// 让指定的角色立刻打开银行界面 [Sola丶小克]
-#endif // Pandas_ScriptCommand_OpenBank
-#ifdef Pandas_ScriptCommand_InstanceUsers
-	BUILDIN_DEF(instance_users,"i"),					// 获取指定的副本实例中, 已经进入副本地图的人数 [Sola丶小克]
-#endif // Pandas_ScriptCommand_InstanceUsers
-#ifdef Pandas_ScriptCommand_CapValue
-	BUILDIN_DEF(cap,"iii"),								// 确保数值不低于给定的最小值, 不超过给定的最大值 [Sola丶小克]
-	BUILDIN_DEF2(cap,"cap_value","iii"),				// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_CapValue
-#ifdef Pandas_ScriptCommand_MobRemove
-	BUILDIN_DEF(mobremove,"i"),							// 根据 GID 移除一个魔物单位 [Sola丶小克]
-#endif // Pandas_ScriptCommand_MobRemove
-#ifdef Pandas_ScriptCommand_MesClear
-	BUILDIN_DEF2(clear,"mesclear",""),					// 由于 rAthena 已经实现 clear 指令, 这里兼容老版本 mesclear 指令 [Sola丶小克]
-#endif // Pandas_ScriptCommand_MesClear
-#ifdef Pandas_ScriptCommand_BattleIgnore
-	BUILDIN_DEF(battleignore,"i?"),						// 将角色设置为魔物免战状态, 避免被魔物攻击 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BattleIgnore
-#ifdef Pandas_ScriptCommand_GetHotkey
-	BUILDIN_DEF(gethotkey,"i?"),						// 获取指定快捷键位置当前的信息 [Sola丶小克]
-	BUILDIN_DEF2(gethotkey,"get_hotkey","i?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_GetHotkey
-#ifdef Pandas_ScriptCommand_SetHotkey
-	BUILDIN_DEF(sethotkey,"iiii"),						// 设置指定快捷键位置的信息 [Sola丶小克]
-	BUILDIN_DEF2(sethotkey,"set_hotkey","iiii"),		// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_SetHotkey
-#ifdef Pandas_ScriptCommand_ShowVend
-	BUILDIN_DEF(showvend,"si?"),						// 使指定的 NPC 头上可以显示露天商店的招牌 [Jian916]
-#endif // Pandas_ScriptCommand_ShowVend
-#ifdef Pandas_ScriptCommand_ViewEquip
-	BUILDIN_DEF(viewequip,"i?"),						// 查看指定在线角色的装备面板信息 [Sola丶小克]
-#endif // Pandas_ScriptCommand_ViewEquip
-#ifdef Pandas_ScriptCommand_CountItemIdx
-	BUILDIN_DEF(countitemidx,"i?"),						// 获取指定背包序号的道具在背包中的数量 [Sola丶小克]
-	BUILDIN_DEF2(countitemidx,"countinventory","i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_CountItemIdx
-#ifdef Pandas_ScriptCommand_DelItemIdx
-	BUILDIN_DEF(delitemidx,"i??"),						// 移除指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(delitemidx,"delinventory","i??"),		// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_DelItemIdx
-#ifdef Pandas_ScriptCommand_IdentifyIdx
-	BUILDIN_DEF(identifyidx,"i?"),						// 鉴定指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(identifyidx,"identifybyidx","i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_IdentifyIdx
-#ifdef Pandas_ScriptCommand_UnEquipIdx
-	BUILDIN_DEF(unequipidx,"i?"),						// 脱下指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(unequipidx,"unequipinventory","i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_UnEquipIdx
-#ifdef Pandas_ScriptCommand_EquipIdx
-	BUILDIN_DEF(equipidx,"i?"),							// 穿戴指定背包序号的道具 [Sola丶小克]
-	BUILDIN_DEF2(equipidx,"equipinventory","i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_EquipIdx
-#ifdef Pandas_ScriptCommand_ItemExists
-	BUILDIN_DEF(itemexists,"v"),						// 确认物品数据库中是否存在指定物品 [Sola丶小克]
-	BUILDIN_DEF2(itemexists,"existitem","v"),			// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_ItemExists
-#ifdef Pandas_ScriptCommand_RentTime
-	BUILDIN_DEF(renttime,"ii?"),						// 增加/减少指定位置装备的租赁时间 [Sola丶小克]
-	BUILDIN_DEF2(renttime,"setrenttime","ii?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
-	BUILDIN_DEF2(renttime,"resume","ii?"),				// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_RentTime
-#ifdef Pandas_ScriptCommand_GetEquipIdx
-	BUILDIN_DEF(getequipidx,"i?"),						// 获取指定位置装备的背包序号 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetEquipIdx
-#ifdef Pandas_ScriptCommand_StatusCalc
-	BUILDIN_DEF2(recalculatestat,"statuscalc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 statuscalc 指令 [Sola丶小克]
-	BUILDIN_DEF2(recalculatestat,"status_calc",""),		// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 status_calc 指令
-#endif // Pandas_ScriptCommand_StatusCalc
-#ifdef Pandas_ScriptCommand_GetEquipExpireTick
-	BUILDIN_DEF(getequipexpiretick,"i?"),				// 获取指定位置装备的租赁到期剩余秒数 [Sola丶小克]
-	BUILDIN_DEF2(getequipexpiretick,"isrental","i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_GetEquipExpireTick
-#ifdef Pandas_ScriptCommand_GetInventoryInfo
-	BUILDIN_DEF(getinventoryinfo,"ii?"),				// 查询指定背包序号的道具的详细信息 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetInventoryInfo
-#ifdef Pandas_ScriptCommand_StatusCheck
-	BUILDIN_DEF(statuscheck,"i?"),						// 判断状态是否存在, 并取得相关的状态参数 [Sola丶小克]
-	BUILDIN_DEF2(statuscheck,"sc_check","i?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_StatusCheck
-#ifdef Pandas_ScriptCommand_RentTimeIdx
-	BUILDIN_DEF(renttimeidx,"ii?"),						// 增加/减少指定背包序号道具的租赁时间 [Sola丶小克]
-#endif // Pandas_ScriptCommand_RentTimeIdx
-#ifdef Pandas_ScriptCommand_PartyLeave
-	BUILDIN_DEF(party_leave,"?"),						// 使当前角色或指定角色退出队伍 [Sola丶小克]
-#endif // Pandas_ScriptCommand_PartyLeave
-#ifdef Pandas_ScriptCommand_Script4Each
-	BUILDIN_DEF(script4each,"si?????"),						// 对指定范围的玩家执行相同的一段脚本 [Sola丶小克]
-	BUILDIN_DEF2(script4each,"script4eachmob","si?????"),	// 对指定范围的魔物执行相同的一段脚本
-	BUILDIN_DEF2(script4each,"script4eachnpc","si?????"),	// 对指定范围的 NPC 执行相同的一段脚本
-#endif // Pandas_ScriptCommand_Script4Each
-#ifdef Pandas_ScriptCommand_SearchArray
-	BUILDIN_DEF2(inarray,"searcharray","rv"),			// 由于 rAthena 已经实现 inarray 指令, 这里兼容老版本 searcharray 指令 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SearchArray
-#ifdef Pandas_ScriptCommand_GetSameIpInfo
-	BUILDIN_DEF(getsameipinfo,"??"),					// 获得某个指定 IP 在线的玩家信息 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetSameIpInfo
-#ifdef Pandas_ScriptCommand_Logout
-	BUILDIN_DEF(logout,"i?"),							// 使指定的角色立刻登出游戏 [Sola丶小克]
-#endif // Pandas_ScriptCommand_Logout
-#ifdef Pandas_ScriptCommand_WarpPartyRevive
-	BUILDIN_DEF2(warpparty,"warppartyrevive","siii???"),// 与 warpparty 类似, 但可以复活死亡的队友并传送 [Sola丶小克]
-	BUILDIN_DEF2(warpparty,"warpparty2","siii???"),		// 指定一个别名, 以便兼容的老版本或其他服务端
-#endif // Pandas_ScriptCommand_WarpPartyRevive
-#ifdef Pandas_ScriptCommand_GetAreaGid
-	BUILDIN_DEF(getareagid,"ri??????"),					// 获取指定范围内特定类型单位的全部 GID [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetAreaGid
-#ifdef Pandas_ScriptCommand_ProcessHalt
-	BUILDIN_DEF(processhalt,"?"),						// 用于中断源代码的后续处理逻辑 [Sola丶小克]
-#endif // Pandas_ScriptCommand_ProcessHalt
-#ifdef Pandas_ScriptCommand_SetEventTrigger
-	BUILDIN_DEF(settrigger,"ii"),						// 使用该指令可以设置某个事件或过滤器的触发行为 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SetEventTrigger
-#ifdef Pandas_ScriptCommand_MessageColor
-	BUILDIN_DEF(messagecolor,"s???"),					// 发送指定颜色的消息文本到聊天窗口中 [Sola丶小克]
-#endif // Pandas_ScriptCommand_MessageColor
-#ifdef Pandas_ScriptCommand_Copynpc
-	BUILDIN_DEF(copynpc,"???????"),						// 复制指定的 NPC 到一个新的位置 [Sola丶小克]
-#endif // Pandas_ScriptCommand_Copynpc
-#ifdef Pandas_ScriptCommand_GetTimeFmt
-	BUILDIN_DEF(gettimefmt,"s??"),						// 将当前时间格式化输出成字符串, 是 gettimestr 的改进版 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetTimeFmt
-#ifdef Pandas_ScriptCommand_MultiCatchPet
-	BUILDIN_DEF(multicatchpet,"*"),						// 与 catchpet 指令类似, 但可以指定更多支持捕捉的魔物编号 [Sola丶小克]
-	BUILDIN_DEF2(multicatchpet, "mpet", "*"),			// 指定一个别名, 以便简化编码工作量
-#endif // Pandas_ScriptCommand_MultiCatchPet
-#ifdef Pandas_ScriptCommand_SelfDeletion
-	BUILDIN_DEF(selfdeletion,"*"),						// 设置 NPC 的自毁策略 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SelfDeletion
-#ifdef Pandas_ScriptCommand_SetCharTitle
-	BUILDIN_DEF(setchartitle,"i?"),						// 设置指定玩家的称号ID [Sola丶小克]
-#endif // Pandas_ScriptCommand_SetCharTitle
-#ifdef Pandas_ScriptCommand_GetCharTitle
-	BUILDIN_DEF(getchartitle,"?"),						// 获得指定玩家的称号ID [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetCharTitle
-#ifdef Pandas_ScriptCommand_NpcExists
-	BUILDIN_DEF(npcexists,"s?"),						// 判断指定名称的 NPC 是否存在 [Sola丶小克]
-#endif // Pandas_ScriptCommand_NpcExists
-#ifdef Pandas_ScriptCommand_StorageGetItem
-	BUILDIN_DEF(storagegetitem,"vi?"),								// 往仓库直接创造一个指定的道具 [Sola丶小克]
-	BUILDIN_DEF2(storagegetitem, "storagegetitembound", "vii?"),	// 与 getitembound 类似, 只不过是将道具直接创建到仓库
-#endif // Pandas_ScriptCommand_StorageGetItem
-#ifdef Pandas_ScriptCommand_SetInventoryInfo
-	BUILDIN_DEF(setinventoryinfo,"iii??"),				// 设置指定背包序号的道具的详细信息 [Sola丶小克]
-#endif // Pandas_ScriptCommand_SetInventoryInfo
-#ifdef Pandas_ScriptCommand_UpdateInventory
-	BUILDIN_DEF(updateinventory,"?"),					// 重新下发关联玩家的背包数据给客户端 [Sola丶小克]
-#endif // Pandas_ScriptCommand_UpdateInventory
-#ifdef Pandas_ScriptCommand_GetCharMacAddress
-	BUILDIN_DEF(getcharmac,"?"),						// 获取指定角色登录时使用的 MAC 地址 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetCharMacAddress
-#ifdef Pandas_ScriptCommand_GetConstant
-	BUILDIN_DEF(getconstant,"s"),						// 查询一个常量字符串对应的数值 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetConstant
-#ifdef Pandas_ScriptCommand_Preg_Search
-	BUILDIN_DEF(preg_search,"ssir"),					// 使用正则表达式搜索并返回首个匹配的分组内容 [Sola丶小克]
-#endif // Pandas_ScriptCommand_Preg_Search
-#ifdef Pandas_ScriptCommand_Aura
-	BUILDIN_DEF(aura,"i?"),								// 激活指定的光环组合 [Sola丶小克]
-#endif // Pandas_ScriptCommand_Aura
-#ifdef Pandas_ScriptCommand_UnitAura
-	BUILDIN_DEF(unitaura,"ii"),							// 用于调整七种单位的光环组合 [Sola丶小克]
-#endif // Pandas_ScriptCommand_UnitAura
-#ifdef Pandas_ScriptCommand_GetUnitTarget
-	BUILDIN_DEF(getunittarget,"i"),						// 获取指定单位当前正在攻击的目标单位编号 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetUnitTarget
-#ifdef Pandas_ScriptCommand_UnlockCmd
-	BUILDIN_DEF(unlockcmd,""),							// 解锁实时事件和过滤器事件的指令限制 [Sola丶小克]
-#endif // Pandas_ScriptCommand_UnlockCmd
-#ifdef Pandas_ScriptCommand_BattleRecordQuery
-	BUILDIN_DEF(batrec_query,"iii?"),					// 查询指定单位的战斗记录, 查看与交互目标单位产生的具体记录值 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BattleRecordQuery
-#ifdef Pandas_ScriptCommand_BattleRecordRank
-	BUILDIN_DEF(batrec_rank,"irri??"),					// 查询指定单位的战斗记录并对记录的值进行排序, 返回排行榜单 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BattleRecordRank
-#ifdef Pandas_ScriptCommand_BattleRecordSortout
-	BUILDIN_DEF(batrec_sortout, "i?"),					// 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BattleRecordSortout
-#ifdef Pandas_ScriptCommand_BattleRecordReset
-	BUILDIN_DEF(batrec_reset,"i"),						// 清除指定单位的战斗记录 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BattleRecordReset
-#ifdef Pandas_ScriptCommand_EnableBattleRecord
-	BUILDIN_DEF(enable_batrec,"?"),						// 启用指定单位的战斗记录 [Sola丶小克]
-#endif // Pandas_ScriptCommand_EnableBattleRecord
-#ifdef Pandas_ScriptCommand_DisableBattleRecord
-	BUILDIN_DEF(disable_batrec,"?"),					// 禁用指定单位的战斗记录 [Sola丶小克]
-#endif // Pandas_ScriptCommand_DisableBattleRecord
-#ifdef Pandas_ScriptCommand_Login
-	BUILDIN_DEF(login,"i????"),							// 将指定的角色以特定的登录模式拉上线 [Sola丶小克]
-#endif // Pandas_ScriptCommand_Login
-#ifdef Pandas_ScriptCommand_CheckSuspend
-	BUILDIN_DEF(checksuspend,"?"),						// 获取指定角色或指定账号当前在线角色的挂机模式 [Sola丶小克]
-#endif // Pandas_ScriptCommand_CheckSuspend
-#ifdef Pandas_ScriptCommand_BonusScriptRemove
-	BUILDIN_DEF(bonus_script_remove,"i?"),				// 移除指定的 bonus_script 效果脚本 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BonusScriptRemove
-#ifdef Pandas_ScriptCommand_BonusScriptList
-	BUILDIN_DEF(bonus_script_list,"r?"),				// 获取指定角色当前激活的全部 bonus_script 效果脚本编号 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BonusScriptList
-#ifdef Pandas_ScriptCommand_BonusScriptExists
-	BUILDIN_DEF(bonus_script_exists,"i?"),				// 查询指定角色是否已经激活了特定的 bonus_script 效果脚本 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BonusScriptExists
-#ifdef Pandas_ScriptCommand_BonusScriptGetId
-	BUILDIN_DEF(bonus_script_getid,"sr?"),				// 查询效果脚本代码对应的效果脚本编号 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BonusScriptGetId
-#ifdef Pandas_ScriptCommand_BonusScriptInfo
-	BUILDIN_DEF(bonus_script_info,"ii?"),				// 查询指定效果脚本的相关信息 [Sola丶小克]
-#endif // Pandas_ScriptCommand_BonusScriptInfo
-#ifdef Pandas_ScriptCommand_ExpandInventoryACK
-	BUILDIN_DEF(expandinventory_ack,"i?"),				// 响应客户端的背包扩容请求, 并告知客户端下一步的动作 [Sola丶小克]
-#endif // Pandas_ScriptCommand_ExpandInventoryACK
-#ifdef Pandas_ScriptCommand_ExpandInventoryResult
-	BUILDIN_DEF(expandinventory_result,"i"),			// 发送给客户端最终的背包扩容结果 [Sola丶小克]
-#endif // Pandas_ScriptCommand_ExpandInventoryResult
-#ifdef Pandas_ScriptCommand_ExpandInventoryAdjust
-	BUILDIN_DEF(expandinventory_adjust,"i"),			// 增加角色的背包容量上限 [Sola丶小克]
-#endif // Pandas_ScriptCommand_ExpandInventoryAdjust
-#ifdef Pandas_ScriptCommand_GetInventorySize
-	BUILDIN_DEF(getinventorysize,"?"),					// 查询并获取当前角色的背包容量上限 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetInventorySize
-	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 	// NPC interaction
 	BUILDIN_DEF(mes,"s*"),
 	BUILDIN_DEF(next,""),
@@ -29840,8 +30342,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getitem2,"viiiiiiii?"),
 	BUILDIN_DEF(getnameditem,"vv"),
 	BUILDIN_DEF2(grouprandomitem,"groupranditem","i?"),
-	BUILDIN_DEF(makeitem,"visii"),
-	BUILDIN_DEF(makeitem2,"visiiiiiiiii"),
+	BUILDIN_DEF(makeitem,"visii?"),
+	BUILDIN_DEF(makeitem2,"visiiiiiiiii?"),
 	BUILDIN_DEF(delitem,"vi?"),
 	BUILDIN_DEF2(delitem,"storagedelitem","vi?"),
 	BUILDIN_DEF2(delitem,"guildstoragedelitem","vi?"),
@@ -29850,6 +30352,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(delitem2,"storagedelitem2","viiiiiiii?"),
 	BUILDIN_DEF2(delitem2,"guildstoragedelitem2","viiiiiiii?"),
 	BUILDIN_DEF2(delitem2,"cartdelitem2","viiiiiiii?"),
+	BUILDIN_DEF(delitemidx,"i??"),
 	BUILDIN_DEF2(enableitemuse,"enable_items",""),
 	BUILDIN_DEF2(disableitemuse,"disable_items",""),
 	BUILDIN_DEF(cutin,"si"),
@@ -29888,7 +30391,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getequipisequiped,"i?"),
 	BUILDIN_DEF(getequipisenableref,"i?"),
 	BUILDIN_DEF(getequiprefinerycnt,"i?"),
-	BUILDIN_DEF(getequipweaponlv,"i?"),
+	BUILDIN_DEF(getequipweaponlv,"??"),
+	BUILDIN_DEF(getequiparmorlv, "??"),
 	BUILDIN_DEF(getequippercentrefinery,"i?"),
 	BUILDIN_DEF(successrefitem,"i??"),
 	BUILDIN_DEF(failedrefitem,"i?"),
@@ -29966,10 +30470,12 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(getunits, "getmapunits", "is?"),
 	BUILDIN_DEF2(getunits, "getareaunits", "isiiii?"),
 	BUILDIN_DEF(getareadropitem,"siiiiv"),
-	BUILDIN_DEF(enablenpc,"s"),
-	BUILDIN_DEF(disablenpc,"s"),
-	BUILDIN_DEF(hideoffnpc,"s"),
-	BUILDIN_DEF(hideonnpc,"s"),
+	BUILDIN_DEF(enablenpc,"?"),
+	BUILDIN_DEF2(enablenpc, "disablenpc", "?"),
+	BUILDIN_DEF2(enablenpc, "hideoffnpc", "?"),
+	BUILDIN_DEF2(enablenpc, "hideonnpc", "?"),
+	BUILDIN_DEF2(enablenpc, "cloakoffnpc", "??"),
+	BUILDIN_DEF2(enablenpc, "cloakonnpc", "??"),
 	BUILDIN_DEF(sc_start,"iii???"),
 	BUILDIN_DEF2(sc_start,"sc_start2","iiii???"),
 	BUILDIN_DEF2(sc_start,"sc_start4","iiiiii???"),
@@ -30164,7 +30670,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(disguise,"i?"), //disguise player. Lupus
 	BUILDIN_DEF(undisguise,"?"), //undisguise player. Lupus
 	BUILDIN_DEF(getmonsterinfo,"ii"), //Lupus
-	BUILDIN_DEF(addmonsterdrop,"vii"), //Akinari [Lupus]
+	BUILDIN_DEF(addmonsterdrop,"vii??"), //Akinari [Lupus]
 	BUILDIN_DEF(delmonsterdrop,"vi"), //Akinari [Lupus]
 	BUILDIN_DEF(axtoi,"s"),
 	BUILDIN_DEF(query_sql,"s*"),
@@ -30205,8 +30711,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(unitstopwalk,"i?"),
 	BUILDIN_DEF(unittalk,"is?"),
 	BUILDIN_DEF_DEPRECATED(unitemote,"ii","20170811"),
-	BUILDIN_DEF(unitskilluseid,"ivi??"), // originally by Qamera [Celest]
-	BUILDIN_DEF(unitskillusepos,"iviii?"), // [Celest]
+	BUILDIN_DEF(unitskilluseid,"ivi????"), // originally by Qamera [Celest]
+	BUILDIN_DEF(unitskillusepos,"iviii???"), // [Celest]
 // <--- [zBuffer] List of unit control commands
 	BUILDIN_DEF(sleep,"i"),
 	BUILDIN_DEF(sleep2,"i"),
@@ -30235,6 +30741,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(checkwall,"s"),
 	BUILDIN_DEF(searchitem,"rs"),
 	BUILDIN_DEF(mercenary_create,"ii"),
+	BUILDIN_DEF(mercenary_delete,"??"),
 	BUILDIN_DEF(mercenary_heal,"ii"),
 	BUILDIN_DEF(mercenary_sc_start,"iii"),
 	BUILDIN_DEF(mercenary_get_calls,"i"),
@@ -30409,7 +30916,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(getitem2,"getitem3","viiiiiiiirrr?"),
 	BUILDIN_DEF2(getitem2,"getitembound3","viiiiiiiiirrr?"),
 	BUILDIN_DEF2(rentitem2,"rentitem3","viiiiiiiirrr?"),
-	BUILDIN_DEF2(makeitem2,"makeitem3","visiiiiiiiiirrr"),
+	BUILDIN_DEF2(makeitem2,"makeitem3","visiiiiiiiiirrr?"),
 	BUILDIN_DEF2(delitem2,"delitem3","viiiiiiiirrr?"),
 	BUILDIN_DEF2(countitem,"countitem3","viiiiiiirrr?"),
 
@@ -30438,15 +30945,258 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(achievement_condition,"i"),
 	BUILDIN_DEF(getvariableofinstance,"ri"),
 	BUILDIN_DEF(convertpcinfo,"vi"),
-	BUILDIN_DEF(cloakoffnpc, "s?"),
-	BUILDIN_DEF(cloakonnpc, "s?"),
-	BUILDIN_DEF(isnpccloaked, "s?"),
+	BUILDIN_DEF(isnpccloaked, "??"),
 
 	BUILDIN_DEF(rentalcountitem, "v?"),
 	BUILDIN_DEF2(rentalcountitem, "rentalcountitem2", "viiiiiii?"),
 	BUILDIN_DEF2(rentalcountitem, "rentalcountitem3", "viiiiiiirrr?"),
 
 	BUILDIN_DEF(getenchantgrade, ""),
+
+	BUILDIN_DEF(mob_setidleevent, "is"),
+
+	// -----------------------------------------------------------------
+	// 熊猫模拟器拓展脚本指令 - 开始
+	// -----------------------------------------------------------------
+
+#ifdef Pandas_ScriptCommand_SetHeadDir
+	BUILDIN_DEF(setheaddir, "i?"),						// 调整角色纸娃娃脑袋的朝向 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SetHeadDir
+#ifdef Pandas_ScriptCommand_SetBodyDir
+	BUILDIN_DEF(setbodydir, "i?"),						// 用于调整角色纸娃娃身体的朝向 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SetBodyDir
+#ifdef Pandas_ScriptCommand_OpenBank
+	BUILDIN_DEF(openbank, "?"),							// 让指定的角色立刻打开银行界面 [Sola丶小克]
+#endif // Pandas_ScriptCommand_OpenBank
+#ifdef Pandas_ScriptCommand_InstanceUsers
+	BUILDIN_DEF(instance_users, "i"),					// 获取指定的副本实例中, 已经进入副本地图的人数 [Sola丶小克]
+#endif // Pandas_ScriptCommand_InstanceUsers
+#ifdef Pandas_ScriptCommand_CapValue
+	BUILDIN_DEF(cap, "iii"),							// 确保数值不低于给定的最小值, 不超过给定的最大值 [Sola丶小克]
+	BUILDIN_DEF2(cap, "cap_value", "iii"),				// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_CapValue
+#ifdef Pandas_ScriptCommand_MobRemove
+	BUILDIN_DEF(mobremove, "i"),						// 根据 GID 移除一个魔物单位 [Sola丶小克]
+#endif // Pandas_ScriptCommand_MobRemove
+#ifdef Pandas_ScriptCommand_MesClear
+	BUILDIN_DEF2(clear, "mesclear", ""),				// 由于 rAthena 已经实现 clear 指令, 这里兼容老版本 mesclear 指令 [Sola丶小克]
+#endif // Pandas_ScriptCommand_MesClear
+#ifdef Pandas_ScriptCommand_BattleIgnore
+	BUILDIN_DEF(battleignore, "i?"),					// 将角色设置为魔物免战状态, 避免被魔物攻击 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleIgnore
+#ifdef Pandas_ScriptCommand_GetHotkey
+	BUILDIN_DEF(gethotkey, "i?"),						// 获取指定快捷键位置当前的信息 [Sola丶小克]
+	BUILDIN_DEF2(gethotkey, "get_hotkey", "i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_GetHotkey
+#ifdef Pandas_ScriptCommand_SetHotkey
+	BUILDIN_DEF(sethotkey, "iiii"),						// 设置指定快捷键位置的信息 [Sola丶小克]
+	BUILDIN_DEF2(sethotkey, "set_hotkey", "iiii"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_SetHotkey
+#ifdef Pandas_ScriptCommand_ShowVend
+	BUILDIN_DEF(showvend, "si?"),						// 使指定的 NPC 头上可以显示露天商店的招牌 [Jian916]
+#endif // Pandas_ScriptCommand_ShowVend
+#ifdef Pandas_ScriptCommand_ViewEquip
+	BUILDIN_DEF(viewequip, "i?"),						// 查看指定在线角色的装备面板信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_ViewEquip
+#ifdef Pandas_ScriptCommand_CountItemIdx
+	BUILDIN_DEF(countitemidx, "i?"),					// 获取指定背包序号的道具在背包中的数量 [Sola丶小克]
+	BUILDIN_DEF2(countitemidx, "countinventory", "i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_CountItemIdx
+#ifdef Pandas_ScriptCommand_DelItemIdx
+	BUILDIN_DEF2(delitemidx, "delinventory", "i??"),	// 指定一个别名, 以便兼容的老版本或其他服务端 [Sola丶小克]
+#endif // Pandas_ScriptCommand_DelItemIdx
+#ifdef Pandas_ScriptCommand_IdentifyIdx
+	BUILDIN_DEF(identifyidx, "i?"),						// 鉴定指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(identifyidx, "identifybyidx", "i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_IdentifyIdx
+#ifdef Pandas_ScriptCommand_UnEquipIdx
+	BUILDIN_DEF(unequipidx, "i?"),						// 脱下指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(unequipidx, "unequipinventory", "i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_UnEquipIdx
+#ifdef Pandas_ScriptCommand_EquipIdx
+	BUILDIN_DEF(equipidx, "i?"),						// 穿戴指定背包序号的道具 [Sola丶小克]
+	BUILDIN_DEF2(equipidx, "equipinventory", "i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_EquipIdx
+#ifdef Pandas_ScriptCommand_ItemExists
+	BUILDIN_DEF(itemexists, "v"),						// 确认物品数据库中是否存在指定物品 [Sola丶小克]
+	BUILDIN_DEF2(itemexists, "existitem", "v"),			// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_ItemExists
+#ifdef Pandas_ScriptCommand_RentTime
+	BUILDIN_DEF(renttime, "ii?"),						// 增加/减少指定位置装备的租赁时间 [Sola丶小克]
+	BUILDIN_DEF2(renttime, "setrenttime", "ii?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+	BUILDIN_DEF2(renttime, "resume", "ii?"),			// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_RentTime
+#ifdef Pandas_ScriptCommand_GetEquipIdx
+	BUILDIN_DEF(getequipidx, "i?"),						// 获取指定位置装备的背包序号 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetEquipIdx
+#ifdef Pandas_ScriptCommand_StatusCalc
+	BUILDIN_DEF2(recalculatestat, "statuscalc", ""),	// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 statuscalc 指令 [Sola丶小克]
+	BUILDIN_DEF2(recalculatestat, "status_calc", ""),	// 由于 rAthena 已经实现 recalculatestat 指令, 这里兼容老版本 status_calc 指令
+#endif // Pandas_ScriptCommand_StatusCalc
+#ifdef Pandas_ScriptCommand_GetEquipExpireTick
+	BUILDIN_DEF(getequipexpiretick, "i?"),				// 获取指定位置装备的租赁到期剩余秒数 [Sola丶小克]
+	BUILDIN_DEF2(getequipexpiretick, "isrental", "i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_GetEquipExpireTick
+#ifdef Pandas_ScriptCommand_GetInventoryInfo
+	BUILDIN_DEF(getinventoryinfo, "ii?"),				// 查询指定背包序号的道具的详细信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetInventoryInfo
+#ifdef Pandas_ScriptCommand_StatusCheck
+	BUILDIN_DEF(statuscheck, "i?"),						// 判断状态是否存在, 并取得相关的状态参数 [Sola丶小克]
+	BUILDIN_DEF2(statuscheck, "sc_check", "i?"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_StatusCheck
+#ifdef Pandas_ScriptCommand_RentTimeIdx
+	BUILDIN_DEF(renttimeidx, "ii?"),					// 增加/减少指定背包序号道具的租赁时间 [Sola丶小克]
+#endif // Pandas_ScriptCommand_RentTimeIdx
+#ifdef Pandas_ScriptCommand_PartyLeave
+	BUILDIN_DEF(party_leave, "?"),						// 使当前角色或指定角色退出队伍 [Sola丶小克]
+#endif // Pandas_ScriptCommand_PartyLeave
+#ifdef Pandas_ScriptCommand_Script4Each
+	BUILDIN_DEF(script4each, "si?????"),					// 对指定范围的玩家执行相同的一段脚本 [Sola丶小克]
+	BUILDIN_DEF2(script4each, "script4eachmob", "si?????"),	// 对指定范围的魔物执行相同的一段脚本
+	BUILDIN_DEF2(script4each, "script4eachnpc", "si?????"),	// 对指定范围的 NPC 执行相同的一段脚本
+#endif // Pandas_ScriptCommand_Script4Each
+#ifdef Pandas_ScriptCommand_SearchArray
+	BUILDIN_DEF2(inarray, "searcharray", "rv"),			// 由于 rAthena 已经实现 inarray 指令, 这里兼容老版本 searcharray 指令 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SearchArray
+#ifdef Pandas_ScriptCommand_GetSameIpInfo
+	BUILDIN_DEF(getsameipinfo, "??"),					// 获得某个指定 IP 在线的玩家信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetSameIpInfo
+#ifdef Pandas_ScriptCommand_Logout
+	BUILDIN_DEF(logout, "i?"),							// 使指定的角色立刻登出游戏 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Logout
+#ifdef Pandas_ScriptCommand_WarpPartyRevive
+	BUILDIN_DEF2(warpparty, "warppartyrevive", "siii???"),	// 与 warpparty 类似, 但可以复活死亡的队友并传送 [Sola丶小克]
+	BUILDIN_DEF2(warpparty, "warpparty2", "siii???"),		// 指定一个别名, 以便兼容的老版本或其他服务端
+#endif // Pandas_ScriptCommand_WarpPartyRevive
+#ifdef Pandas_ScriptCommand_GetAreaGid
+	BUILDIN_DEF(getareagid, "ri??????"),				// 获取指定范围内特定类型单位的全部 GID [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetAreaGid
+#ifdef Pandas_ScriptCommand_ProcessHalt
+	BUILDIN_DEF(processhalt, "?"),						// 用于中断源代码的后续处理逻辑 [Sola丶小克]
+#endif // Pandas_ScriptCommand_ProcessHalt
+#ifdef Pandas_ScriptCommand_SetEventTrigger
+	BUILDIN_DEF(settrigger, "ii"),						// 使用该指令可以设置某个事件或过滤器的触发行为 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SetEventTrigger
+#ifdef Pandas_ScriptCommand_MessageColor
+	BUILDIN_DEF(messagecolor, "s???"),					// 发送指定颜色的消息文本到聊天窗口中 [Sola丶小克]
+#endif // Pandas_ScriptCommand_MessageColor
+#ifdef Pandas_ScriptCommand_Copynpc
+	BUILDIN_DEF(copynpc, "???????"),					// 复制指定的 NPC 到一个新的位置 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Copynpc
+#ifdef Pandas_ScriptCommand_GetTimeFmt
+	BUILDIN_DEF(gettimefmt, "s??"),						// 将当前时间格式化输出成字符串, 是 gettimestr 的改进版 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetTimeFmt
+#ifdef Pandas_ScriptCommand_MultiCatchPet
+	BUILDIN_DEF(multicatchpet, "*"),					// 与 catchpet 指令类似, 但可以指定更多支持捕捉的魔物编号 [Sola丶小克]
+		BUILDIN_DEF2(multicatchpet, "mpet", "*"),		// 指定一个别名, 以便简化编码工作量
+#endif // Pandas_ScriptCommand_MultiCatchPet
+#ifdef Pandas_ScriptCommand_SelfDeletion
+	BUILDIN_DEF(selfdeletion, "*"),						// 设置 NPC 的自毁策略 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SelfDeletion
+#ifdef Pandas_ScriptCommand_SetCharTitle
+	BUILDIN_DEF(setchartitle, "i?"),					// 设置指定玩家的称号ID [Sola丶小克]
+#endif // Pandas_ScriptCommand_SetCharTitle
+#ifdef Pandas_ScriptCommand_GetCharTitle
+	BUILDIN_DEF(getchartitle, "?"),						// 获得指定玩家的称号ID [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetCharTitle
+#ifdef Pandas_ScriptCommand_NpcExists
+	BUILDIN_DEF(npcexists, "s?"),						// 判断指定名称的 NPC 是否存在 [Sola丶小克]
+#endif // Pandas_ScriptCommand_NpcExists
+#ifdef Pandas_ScriptCommand_StorageGetItem
+	BUILDIN_DEF(storagegetitem, "vi?"),								// 往仓库直接创造一个指定的道具 [Sola丶小克]
+	BUILDIN_DEF2(storagegetitem, "storagegetitembound", "vii?"),	// 与 getitembound 类似, 只不过是将道具直接创建到仓库
+#endif // Pandas_ScriptCommand_StorageGetItem
+#ifdef Pandas_ScriptCommand_SetInventoryInfo
+	BUILDIN_DEF(setinventoryinfo, "iii??"),				// 设置指定背包序号的道具的详细信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_SetInventoryInfo
+#ifdef Pandas_ScriptCommand_UpdateInventory
+	BUILDIN_DEF(updateinventory, "?"),					// 重新下发关联玩家的背包数据给客户端 [Sola丶小克]
+#endif // Pandas_ScriptCommand_UpdateInventory
+#ifdef Pandas_ScriptCommand_GetCharMacAddress
+	BUILDIN_DEF(getcharmac, "?"),						// 获取指定角色登录时使用的 MAC 地址 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetCharMacAddress
+#ifdef Pandas_ScriptCommand_GetConstant
+	BUILDIN_DEF(getconstant, "s"),						// 查询一个常量字符串对应的数值 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetConstant
+#ifdef Pandas_ScriptCommand_Preg_Search
+	BUILDIN_DEF(preg_search, "ssir"),					// 使用正则表达式搜索并返回首个匹配的分组内容 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Preg_Search
+#ifdef Pandas_ScriptCommand_Aura
+	BUILDIN_DEF(aura, "i?"),							// 激活指定的光环组合 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Aura
+#ifdef Pandas_ScriptCommand_UnitAura
+	BUILDIN_DEF(unitaura, "ii"),						// 用于调整七种单位的光环组合 [Sola丶小克]
+#endif // Pandas_ScriptCommand_UnitAura
+#ifdef Pandas_ScriptCommand_GetUnitTarget
+	BUILDIN_DEF(getunittarget, "i"),					// 获取指定单位当前正在攻击的目标单位编号 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetUnitTarget
+#ifdef Pandas_ScriptCommand_UnlockCmd
+	BUILDIN_DEF(unlockcmd, ""),							// 解锁实时事件和过滤器事件的指令限制 [Sola丶小克]
+#endif // Pandas_ScriptCommand_UnlockCmd
+#ifdef Pandas_ScriptCommand_BattleRecordQuery
+	BUILDIN_DEF(batrec_query, "iii?"),					// 查询指定单位的战斗记录, 查看与交互目标单位产生的具体记录值 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordQuery
+#ifdef Pandas_ScriptCommand_BattleRecordRank
+	BUILDIN_DEF(batrec_rank, "irri??"),					// 查询指定单位的战斗记录并对记录的值进行排序, 返回排行榜单 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordRank
+#ifdef Pandas_ScriptCommand_BattleRecordSortout
+	BUILDIN_DEF(batrec_sortout, "i?"),					// 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordSortout
+#ifdef Pandas_ScriptCommand_BattleRecordReset
+	BUILDIN_DEF(batrec_reset, "i"),						// 清除指定单位的战斗记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BattleRecordReset
+#ifdef Pandas_ScriptCommand_EnableBattleRecord
+	BUILDIN_DEF(enable_batrec, "?"),					// 启用指定单位的战斗记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_EnableBattleRecord
+#ifdef Pandas_ScriptCommand_DisableBattleRecord
+	BUILDIN_DEF(disable_batrec, "?"),					// 禁用指定单位的战斗记录 [Sola丶小克]
+#endif // Pandas_ScriptCommand_DisableBattleRecord
+#ifdef Pandas_ScriptCommand_Login
+	BUILDIN_DEF(login, "i????"),						// 将指定的角色以特定的登录模式拉上线 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Login
+#ifdef Pandas_ScriptCommand_CheckSuspend
+	BUILDIN_DEF(checksuspend, "?"),						// 获取指定角色或指定账号当前在线角色的挂机模式 [Sola丶小克]
+#endif // Pandas_ScriptCommand_CheckSuspend
+#ifdef Pandas_ScriptCommand_BonusScriptRemove
+	BUILDIN_DEF(bonus_script_remove, "i?"),				// 移除指定的 bonus_script 效果脚本 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptRemove
+#ifdef Pandas_ScriptCommand_BonusScriptList
+	BUILDIN_DEF(bonus_script_list, "r?"),				// 获取指定角色当前激活的全部 bonus_script 效果脚本编号 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptList
+#ifdef Pandas_ScriptCommand_BonusScriptExists
+	BUILDIN_DEF(bonus_script_exists, "i?"),				// 查询指定角色是否已经激活了特定的 bonus_script 效果脚本 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptExists
+#ifdef Pandas_ScriptCommand_BonusScriptGetId
+	BUILDIN_DEF(bonus_script_getid, "sr?"),				// 查询效果脚本代码对应的效果脚本编号 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptGetId
+#ifdef Pandas_ScriptCommand_BonusScriptInfo
+	BUILDIN_DEF(bonus_script_info, "ii?"),				// 查询指定效果脚本的相关信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_BonusScriptInfo
+#ifdef Pandas_ScriptCommand_ExpandInventoryACK
+	BUILDIN_DEF(expandinventory_ack, "i?"),				// 响应客户端的背包扩容请求, 并告知客户端下一步的动作 [Sola丶小克]
+#endif // Pandas_ScriptCommand_ExpandInventoryACK
+#ifdef Pandas_ScriptCommand_ExpandInventoryResult
+	BUILDIN_DEF(expandinventory_result, "i"),			// 发送给客户端最终的背包扩容结果 [Sola丶小克]
+#endif // Pandas_ScriptCommand_ExpandInventoryResult
+#ifdef Pandas_ScriptCommand_ExpandInventoryAdjust
+	BUILDIN_DEF(expandinventory_adjust, "i"),			// 增加角色的背包容量上限 [Sola丶小克]
+#endif // Pandas_ScriptCommand_ExpandInventoryAdjust
+#ifdef Pandas_ScriptCommand_GetInventorySize
+	BUILDIN_DEF(getinventorysize, "?"),					// 查询并获取当前角色的背包容量上限 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetInventorySize
+#ifdef Pandas_ScriptCommand_GetMapSpawns
+	BUILDIN_DEF(getmapspawns, "s?"),					// 在此写上脚本指令说明 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetMapSpawns
+#ifdef Pandas_ScriptCommand_GetMobSpawns
+	BUILDIN_DEF(getmobspawns,"i??"),					// 查询指定魔物在不同地图的刷新点信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetMobSpawns
+#ifdef Pandas_ScriptCommand_GetCalendarTime
+	BUILDIN_DEF(getcalendartime,"ii??"),				// 获取下次出现指定时间的 UNIX 时间戳 [Haru]
+#endif // Pandas_ScriptCommand_GetCalendarTime
+#ifdef Pandas_ScriptCommand_GetSkillInfo
+	BUILDIN_DEF(getskillinfo, "iv??"),					// 获取指定技能在技能数据库中所配置的各项信息 [聽風]
+#endif // Pandas_ScriptCommand_GetSkillInfo
+	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
 

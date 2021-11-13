@@ -18,10 +18,8 @@
 
 #ifdef Pandas_SQL_Configure_Optimization
 #include "db.hpp" // ARR_FIND, ARRAYLENGTH
+#include "core.hpp" // SERVER_TYPE
 #endif // Pandas_SQL_Configure_Optimization
-
-#include "../custom/defines_core.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 // MySQL 8.0 or later removed my_bool typedef.
 // Reintroduce it as a bandaid fix.
@@ -256,28 +254,30 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 			break;
 		}
 
-		// 若使用的编码是 utf8 或 utf8mb4 中的任何一个, 则给予警告
-		size_t i = 0;
-		const char* non_ansi[] = { "utf8", "utf8mb4" };
-		ARR_FIND(0, ARRAYLENGTH(non_ansi), i, stricmp(current_codepage, non_ansi[i]) == 0);
-		if (ARRAYLENGTH(non_ansi) > i) {
-#ifndef BUILDBOT
-			if (connect_name != nullptr) {
-				ShowWarning("Server and client is not support Non-ANSI character set very well.\n");
-				ShowWarning("Please use ANSI character set as database encoding instead of " CL_WHITE "'%s'" CL_RESET " for " CL_WHITE "'%s'" CL_RESET " connection. The ANSI character set like: latin1, gbk, big5.\n", current_codepage, connect_name);
-			}
-#endif // BUILDBOT
+		// 如果使用的编码是 utf8 或 utf8mb4 中的任何一个, 则给予警告 (WEB 接口服务器除外)
+		if (SERVER_TYPE != ATHENA_SERVER_WEB) {
+			size_t i = 0;
+			const char* non_ansi[] = { "utf8", "utf8mb4" };
+			ARR_FIND(0, ARRAYLENGTH(non_ansi), i, stricmp(current_codepage, non_ansi[i]) == 0);
+			if (ARRAYLENGTH(non_ansi) > i) {
+	#ifndef BUILDBOT
+				if (connect_name != nullptr) {
+					ShowWarning("Server and client is not support Non-ANSI character set very well.\n");
+					ShowWarning("Please use ANSI character set as database encoding instead of " CL_WHITE "'%s'" CL_RESET " for " CL_WHITE "'%s'" CL_RESET " connection. The ANSI character set like: latin1, gbk, big5.\n", current_codepage, connect_name);
+				}
+	#endif // BUILDBOT
 
-			// 若目标数据库使用 utf8 或者 utf8mb4 编码, 
-			// 为了兼容性考虑, 会根据操作系统语言来选择使用 gbk 或 big5 编码,
-			// 若不是简体中文也不是繁体中文, 则直接使用当前数据库的 `character_set_database` 编码
-			switch (PandasUtf8::systemLanguage) {
-			case PandasUtf8::SYSTEM_LANGUAGE_CHS: encoding = "gbk"; break;
-			case PandasUtf8::SYSTEM_LANGUAGE_CHT: encoding = "big5"; break;
-			default: encoding = current_codepage; break;
-			}
+				// 若目标数据库使用 utf8 或者 utf8mb4 编码, 
+				// 为了兼容性考虑, 会根据操作系统语言来选择使用 gbk 或 big5 编码,
+				// 若不是简体中文也不是繁体中文, 则直接使用当前数据库的 `character_set_database` 编码
+				switch (PandasUtf8::systemLanguage) {
+				case PandasUtf8::PANDAS_LANGUAGE_CHS: encoding = "gbk"; break;
+				case PandasUtf8::PANDAS_LANGUAGE_CHT: encoding = "big5"; break;
+				default: encoding = current_codepage; break;
+				}
 
-			break;
+				break;
+			}
 		}
 
 		// 将连接编码设置为与数据库的 server character set 完全一致
@@ -305,7 +305,22 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 
 #endif // Pandas_SQL_Configure_Optimization
 
-
+#ifdef Pandas_Database_SQL_GetEncoding
+//************************************
+// Method:      Sql_GetEncoding
+// Description: 查询指定 SQL 连接并返回它的连接编码
+// Access:      public 
+// Parameter:   Sql * self
+// Parameter:   char * retv_encoding
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/09/30 11:22
+//************************************ 
+void Sql_GetEncoding(Sql* self, char* retv_encoding) {
+	MY_CHARSET_INFO cs;
+	mysql_get_character_set_info(&self->handle, &cs);
+	safestrncpy(retv_encoding, cs.csname, 32);
+}
+#endif // Pandas_Database_SQL_GetEncoding
 
 /// Pings the connection.
 int Sql_Ping(Sql* self)
@@ -544,6 +559,12 @@ void Sql_FreeResult(Sql* self)
 	}
 }
 
+/// Closes the handle
+void Sql_Close(Sql* self) {
+	if (self) {
+		mysql_close(&self->handle);
+	}
+}
 
 
 /// Shows debug information (last query).
@@ -567,6 +588,7 @@ void Sql_Free(Sql* self)
 		Sql_FreeResult(self);
 		StringBuf_Destroy(&self->buf);
 		if( self->keepalive != INVALID_TIMER ) delete_timer(self->keepalive, Sql_P_KeepaliveTimer);
+		Sql_Close(self);
 		aFree(self);
 	}
 }

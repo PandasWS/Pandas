@@ -839,6 +839,7 @@ struct s_item_group_entry
 		amount; /// Amount of item will be obtained
 	bool isAnnounced, /// Broadcast if player get this item
 		GUID, /// Gives Unique ID for items in each box opened
+		isStacked, /// Whether stackable items are given stacked
 		isNamed; /// Named the item (if possible)
 	uint8 bound; /// Makes the item as bound item (according to bound type)
 };
@@ -888,7 +889,8 @@ struct item_data
 	uint16 slots;
 	uint32 look;
 	uint16 elv;
-	uint16 wlv;
+	uint16 weapon_level;
+	uint16 armor_level;
 	t_itemid view_id;
 	uint16 elvmax; ///< Maximum level for this item
 #ifdef RENEWAL
@@ -1124,13 +1126,18 @@ private:
 	template <typename Archive>
 	void serialize(Archive& ar, const unsigned int version) {
 		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<t_itemid, item_data>>(*this);
+
+		// 由于 029d8df 的改动, 类私有成员 nameToItemDataMap 和 aegisNameToItemDataMap 的数据已经不会在
+		// loadingFinished 中构建, 因此这里将它们的内容也保存到疾风缓存中去.
+		ar& nameToItemDataMap;
+		ar& aegisNameToItemDataMap;
 	}
 #endif // Pandas_YamlBlastCache_ItemDatabase
 
 	e_sex defaultGender( const YAML::Node &node, std::shared_ptr<item_data> id );
 
 public:
-	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 1) {
+	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 2, 1) {
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 		this->supportSerialize = true;
 #endif // Pandas_YamlBlastCache_ItemDatabase
@@ -1208,7 +1215,7 @@ struct item_data* itemdb_exists(t_itemid nameid);
 #define itemdb_equip(n) itemdb_search(n)->equip
 #define itemdb_usescript(n) itemdb_search(n)->script
 #define itemdb_equipscript(n) itemdb_search(n)->script
-#define itemdb_wlv(n) itemdb_search(n)->wlv
+#define itemdb_wlv(n) itemdb_search(n)->weapon_level
 #define itemdb_range(n) itemdb_search(n)->range
 #define itemdb_slots(n) itemdb_search(n)->slots
 #define itemdb_available(n) (itemdb_search(n)->flag.available)
@@ -1288,7 +1295,8 @@ namespace boost {
 			ar& t.slots;
 			ar& t.look;
 			ar& t.elv;
-			ar& t.wlv;
+			ar& t.weapon_level;
+			ar& t.armor_level;
 			ar& t.view_id;
 			ar& t.elvmax;
 #ifdef RENEWAL
@@ -1378,6 +1386,7 @@ namespace boost {
 			ar& t.amount;
 			ar& t.isAnnounced;
 			ar& t.GUID;
+			ar& t.isStacked;
 			ar& t.isNamed;
 			ar& t.bound;
 		}

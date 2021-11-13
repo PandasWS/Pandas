@@ -10,8 +10,6 @@
 #include "showmsg.hpp"
 #include "strlib.hpp"
 
-#include "../common/utf8_defines.hpp"  // PandasWS
-
 DBMap *mapindex_db;
 struct _indexes {
 	char name[MAP_NAME_LENGTH]; //Stores map name

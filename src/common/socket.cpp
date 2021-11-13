@@ -40,14 +40,15 @@
 	#endif
 #endif
 
+#include <chrono>
+#include <thread>
+
 #include "cbasetypes.hpp"
 #include "malloc.hpp"
 #include "mmo.hpp"
 #include "showmsg.hpp"
 #include "strlib.hpp"
 #include "timer.hpp"
-
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 /////////////////////////////////////////////////////////////////////
 #if defined(WIN32)
@@ -288,7 +289,7 @@ const char* error_msg(void)
 	int code = sErrno;
 	snprintf(buf, sizeof(buf), "error %d: %s", code, sErr(code));
 #ifdef Pandas_Console_Charset_SmartConvert
-	if (PandasUtf8::consoleEncoding == PandasUtf8::CONSOLE_ENCODING_UTF8) {
+	if (PandasUtf8::systemEncoding == PandasUtf8::PANDAS_ENCODING_UTF8) {
 		snprintf(buf, sizeof(buf), "%s", PandasUtf8::utf8ToAnsi(buf).c_str());
 	}
 #endif // Pandas_Console_Charset_SmartConvert
@@ -903,6 +904,14 @@ int WFIFOSET(int fd, size_t len)
 	send_shortlist_add_fd(fd);
 #endif
 
+	return 0;
+}
+
+
+// replacement for do_sockets, where it does nothing
+int do_wait(t_tick next)
+{
+	std::this_thread::sleep_for(std::chrono::milliseconds(next));
 	return 0;
 }
 

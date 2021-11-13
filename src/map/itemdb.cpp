@@ -12,7 +12,6 @@
 #include "../common/strlib.hpp"
 #include "../common/utils.hpp"
 #include "../common/utilities.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp" // struct battle_config
 #include "cashshop.hpp"
@@ -156,6 +155,10 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asString(node, "AegisName", name))
 			return 0;
 
+		if (name.length() > ITEM_NAME_LENGTH) {
+			this->invalidWarning(node["AegisName"], "AegisName \"%s\" exceeds maximum of %d characters, capping...\n", name.c_str(), ITEM_NAME_LENGTH - 1);
+		}
+
 		std::shared_ptr<item_data> id = item_db.search_aegisname( name.c_str() );
 
 		if (id != nullptr && id->nameid != nameid) {
@@ -163,8 +166,24 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			return 0;
 		}
 
+		if( exists ){
+			// Create a copy
+			std::string aegisname = item->name;
+			// Convert it to lower
+			util::tolower( aegisname );
+			// Remove old AEGIS name from lookup
+			this->aegisNameToItemDataMap.erase( aegisname );
+		}
+
 		item->name.resize(ITEM_NAME_LENGTH);
 		item->name = name.c_str();
+
+		// Create a copy
+		std::string aegisname = name;
+		// Convert it to lower
+		util::tolower( aegisname );
+
+		this->aegisNameToItemDataMap[aegisname] = item;
 	}
 
 	if (this->nodeExists(node, "Name")) {
@@ -173,8 +192,28 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asString(node, "Name", name))
 			return 0;
 
+		if (name.length() > ITEM_NAME_LENGTH) {
+			this->invalidWarning(node["Name"], "Name \"%s\" exceeds maximum of %d characters, capping...\n", name.c_str(), ITEM_NAME_LENGTH - 1);
+		}
+
+		if( exists ){
+			// Create a copy
+			std::string ename = item->ename;
+			// Convert it to lower
+			util::tolower( ename );
+			// Remove old name from lookup
+			this->nameToItemDataMap.erase( ename );
+		}
+
 		item->ename.resize(ITEM_NAME_LENGTH);
 		item->ename = name.c_str();
+
+		// Create a copy
+		std::string ename = name;
+		// Convert it to lower
+		util::tolower( ename );
+
+		this->nameToItemDataMap[ename] = item;
 	}
 
 	if (this->nodeExists(node, "Type")) {
@@ -189,13 +228,6 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!script_get_constant(type_constant.c_str(), &constant) || constant < IT_HEALING || constant >= IT_MAX) {
 			this->invalidWarning(node["Type"], "Invalid item type %s, defaulting to IT_ETC.\n", type.c_str());
 			constant = IT_ETC;
-		}
-
-		if (constant == IT_DELAYCONSUME) { // Items that are consumed only after target confirmation
-			constant = IT_USABLE;
-			item->flag.delay_consume |= DELAYCONSUME_TEMP;
-		} else {
-			item->flag.delay_consume &= ~DELAYCONSUME_TEMP; // Remove delayed consumption flag if switching types
 		}
 
 		item->type = static_cast<item_types>(constant);
@@ -237,8 +269,6 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			item->subtype = 0;
 	}
 
-	// When a particular price is not given, we should base it off the other one
-	// (it is important to make a distinction between 'no price' and 0z)
 	if (this->nodeExists(node, "Buy")) {
 		uint32 buy;
 
@@ -246,17 +276,10 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			return 0;
 
 		item->value_buy = buy;
+		item->value_sell = 0;
 	} else {
 		if (!exists) {
-			if (this->nodeExists(node, "Sell")) {
-				uint32 sell;
-
-				if (!this->asUInt32(node, "Sell", sell))
-					return 0;
-
-				item->value_buy = sell * 2;
-			} else
-				item->value_buy = 0;
+			item->value_buy = 0;
 		}
 	}
 
@@ -267,14 +290,11 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			return 0;
 
 		item->value_sell = sell;
+		item->value_buy = 0;
 	} else {
-		if (!exists)
-			item->value_sell = item->value_buy / 2;
-	}
-
-	if (item->value_buy / 124. < item->value_sell / 75.) {
-		this->invalidWarning(node, "Buying/Selling [%d/%d] price of %s (%hu) allows Zeny making exploit through buying/selling at discounted/overcharged prices! Defaulting Sell to 1 Zeny.\n", item->value_buy, item->value_sell, item->name.c_str(), nameid);
-		item->value_sell = 1;
+		if (!exists) {
+			item->value_sell = 0;
+		}
 	}
 
 	if (this->nodeExists(node, "Weight")) {
@@ -531,18 +551,42 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 
 		if (lv > MAX_WEAPON_LEVEL) {
 			this->invalidWarning(node["WeaponLevel"], "Invalid weapon level %d, defaulting to 0.\n", lv);
-			lv = REFINE_TYPE_ARMOR;
+			lv = 0;
 		}
 
 		if (item->type != IT_WEAPON) {
 			this->invalidWarning(node["WeaponLevel"], "Item type is not a weapon, defaulting to 0.\n");
-			lv = REFINE_TYPE_ARMOR;
+			lv = 0;
 		}
 
-		item->wlv = lv;
+		item->weapon_level = lv;
 	} else {
 		if (!exists)
-			item->wlv = REFINE_TYPE_ARMOR;
+			item->weapon_level = 0;
+	}
+
+	if( this->nodeExists( node, "ArmorLevel" ) ){
+		uint16 level;
+
+		if( !this->asUInt16( node, "ArmorLevel", level ) ){
+			return 0;
+		}
+
+		if( level > MAX_ARMOR_LEVEL ){
+			this->invalidWarning( node["ArmorLevel"], "Invalid armor level %d, defaulting to 0.\n", level );
+			level = 0;
+		}
+
+		if( item->type != IT_ARMOR ){
+			this->invalidWarning( node["ArmorLevel"], "Item type is not an armor, defaulting to 0.\n" );
+			level = 0;
+		}
+
+		item->armor_level = level;
+	}else{
+		if( !exists ){
+			item->armor_level = 0;
+		}
 	}
 
 	if (this->nodeExists(node, "EquipLevelMin")) {
@@ -1142,6 +1186,61 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 }
 
 void ItemDatabase::loadingFinished(){
+	for (auto &tmp_item : item_db) {
+		std::shared_ptr<item_data> item = tmp_item.second;
+
+		// Items that are consumed only after target confirmation
+		if (item->type == IT_DELAYCONSUME) {
+			item->type = IT_USABLE;
+			item->flag.delay_consume |= DELAYCONSUME_TEMP;
+		} else {
+			item->flag.delay_consume &= ~DELAYCONSUME_TEMP; // Remove delayed consumption flag if switching types
+		}
+
+		if( item->type == IT_WEAPON ){
+			if( item->weapon_level == 0 ){
+				ShowWarning( "Item %s is a weapon, but does not have a weapon level. Consider adding it. Defaulting to 1.\n", item->name.c_str() );
+				item->weapon_level = 1;
+			}
+
+			if( item->armor_level != 0 ){
+				ShowWarning( "Item %s is a weapon, but has an armor level. Defaulting to 0.\n", item->name.c_str() );
+				item->armor_level = 0;
+			}
+		}else if( item->type == IT_ARMOR ){
+			if( item->armor_level == 0 ){
+				ShowWarning( "Item %s is an armor, but does not have an armor level. Consider adding it. Defaulting to 1.\n", item->name.c_str() );
+				item->armor_level = 1;
+			}
+
+			if( item->weapon_level != 0 ){
+				ShowWarning( "Item %s is an armor, but has a weapon level. Defaulting to 0.\n", item->name.c_str() );
+				item->weapon_level = 0;
+			}
+		}else{
+			if( item->weapon_level != 0 ){
+				ShowWarning( "Item %s is not a weapon, but has a weapon level. Defaulting to 0.\n", item->name.c_str() );
+				item->weapon_level = 0;
+			}
+
+			if( item->armor_level != 0 ){
+				ShowWarning( "Item %s is not an armor, but has an armor level. Defaulting to 0.\n", item->name.c_str() );
+				item->armor_level = 0;
+			}
+		}
+
+		// When a particular price is not given, we should base it off the other one
+		if (item->value_buy == 0 && item->value_sell > 0)
+			item->value_buy = item->value_sell * 2;
+		else if (item->value_buy > 0 && item->value_sell == 0)
+			item->value_sell = item->value_buy / 2;
+
+		if (item->value_buy / 124. < item->value_sell / 75.) {
+			ShowWarning("Buying/Selling [%d/%d] price of %s (%u) allows Zeny making exploit through buying/selling at discounted/overcharged prices! Defaulting Sell to 1 Zeny.\n", item->value_buy, item->value_sell, item->name.c_str(), item->nameid);
+			item->value_sell = 1;
+		}
+	}
+
 	if( !this->exists( ITEMID_DUMMY ) ){
 		// Create dummy item
 		std::shared_ptr<item_data> dummy_item = std::make_shared<item_data>();
@@ -1155,27 +1254,6 @@ void ItemDatabase::loadingFinished(){
 		dummy_item->view_id = UNKNOWN_ITEM_ID;
 
 		item_db.put( ITEMID_DUMMY, dummy_item );
-	}
-
-	// Prepare the container size to not allocate often
-	this->nameToItemDataMap.reserve( this->size() );
-	this->aegisNameToItemDataMap.reserve( this->size() );
-
-	// Build the name lookup maps
-	for( const auto& entry : *this ){
-		// Create a copy
-		std::string ename = entry.second->ename;
-		// Convert it to lower
-		util::tolower( ename );
-
-		this->nameToItemDataMap[ename] = entry.second;
-
-		// Create a copy
-		std::string aegisname = entry.second->name;
-		// Convert it to lower
-		util::tolower( aegisname );
-
-		this->aegisNameToItemDataMap[aegisname] = entry.second;
 	}
 }
 
@@ -1290,7 +1368,7 @@ e_sex ItemDatabase::defaultGender( const YAML::Node &node, std::shared_ptr<item_
 	return static_cast<e_sex>( id->sex );
 }
 
-std::shared_ptr<item_data> ItemDatabase::searchname( const char* name ){
+std::shared_ptr<item_data> ItemDatabase::search_aegisname( const char* name ){
 	// Create a copy
 	std::string lowername = name;
 	// Convert it to lower
@@ -1299,7 +1377,7 @@ std::shared_ptr<item_data> ItemDatabase::searchname( const char* name ){
 	return util::umap_find( this->aegisNameToItemDataMap, lowername );
 }
 
-std::shared_ptr<item_data> ItemDatabase::search_aegisname( const char *name ){
+std::shared_ptr<item_data> ItemDatabase::searchname( const char *name ){
 	// Create a copy
 	std::string lowername = name;
 	// Convert it to lower
@@ -1503,14 +1581,14 @@ static void itemdb_pc_get_itemgroup_sub(map_session_data *sd, bool identify, std
 
 	uint16 get_amt = 0;
 
-	if (itemdb_isstackable(data->nameid) && !data->GUID)
+	if (itemdb_isstackable(data->nameid) && data->isStacked)
 		get_amt = data->amount;
 	else
 		get_amt = 1;
 
 	tmp.amount = get_amt;
 
-	// Do loop for non-stackable item / stackable item with GUID
+	// Do loop for non-stackable item
 	for (uint16 i = 0; i < data->amount; i += get_amt) {
 		char flag = 0;
 		tmp.unique_id = data->GUID ? pc_generate_unique_id(sd) : 0; // Generate GUID
@@ -1831,8 +1909,11 @@ uint64 ItemGroupDatabase::parseBodyNode(const YAML::Node &node) {
 	std::string group_name_constant = "IG_" + group_name;
 	int64 constant;
 
-	if (!script_get_constant(group_name_constant.c_str(), &constant) || constant < IG_BLUEBOX || constant >= IG_MAX) {
-		this->invalidWarning(node["Group"], "Invalid group %s.\n", group_name.c_str());
+	if (!script_get_constant(group_name_constant.c_str(), &constant) || constant < IG_BLUEBOX) {
+		if (strncasecmp(group_name.c_str(), "IG_", 3) != 0)
+			this->invalidWarning(node["Group"], "Invalid group %s.\n", group_name.c_str());
+		else
+			this->invalidWarning(node["Group"], "Invalid group %s. Note that 'IG_' is automatically appended to the group name.\n", group_name.c_str());
 		return 0;
 	}
 
@@ -1993,6 +2074,18 @@ uint64 ItemGroupDatabase::parseBodyNode(const YAML::Node &node) {
 				} else {
 					if (!entry_exists)
 						entry->GUID = item->flag.guid;
+				}
+
+				if (this->nodeExists(listit, "Stacked")) {
+					bool isStacked;
+
+					if (!this->asBool(listit, "Stacked", isStacked))
+						continue;
+
+					entry->isStacked = isStacked;
+				} else {
+					if (!entry_exists)
+						entry->isStacked = true;
 				}
 
 				if (this->nodeExists(listit, "Named")) {
@@ -2374,9 +2467,12 @@ static bool itemdb_read_sqldb_sub(std::vector<std::string> str) {
 	int32 index = -1;
 
 	node["Id"] = std::stoul(str[++index], nullptr, 10);
-	node["AegisName"] = str[++index];
-	node["Name"] = str[++index];
-	node["Type"] = str[++index];
+	if (!str[++index].empty())
+		node["AegisName"] = str[index];
+	if (!str[++index].empty())
+		node["Name"] = str[index];
+	if (!str[++index].empty())
+		node["Type"] = str[index];
 	if (!str[++index].empty())
 		node["SubType"] = str[index];
 	if (!str[++index].empty())
@@ -2512,6 +2608,8 @@ static bool itemdb_read_sqldb_sub(std::vector<std::string> str) {
 	if (!str[++index].empty())
 		node["WeaponLevel"] = std::stoi(str[index]);
 	if (!str[++index].empty())
+		node["ArmorLevel"] = std::stoi(str[index]);
+	if (!str[++index].empty())
 		node["EquipLevelMin"] = std::stoi(str[index]);
 	if (!str[++index].empty())
 		node["EquipLevelMax"] = std::stoi(str[index]);
@@ -2643,7 +2741,7 @@ static int itemdb_read_sqldb(void) {
 			"`class_all`,`class_normal`,`class_upper`,`class_baby`,`gender`,"
 			"`location_head_top`,`location_head_mid`,`location_head_low`,`location_armor`,`location_right_hand`,`location_left_hand`,`location_garment`,`location_shoes`,`location_right_accessory`,`location_left_accessory`,"
 			"`location_costume_head_top`,`location_costume_head_mid`,`location_costume_head_low`,`location_costume_garment`,`location_ammo`,`location_shadow_armor`,`location_shadow_weapon`,`location_shadow_shield`,`location_shadow_shoes`,`location_shadow_right_accessory`,`location_shadow_left_accessory`,"
-			"`weapon_level`,`equip_level_min`,`equip_level_max`,`refineable`,`view`,`alias_name`,"
+			"`weapon_level`,`armor_level`,`equip_level_min`,`equip_level_max`,`refineable`,`view`,`alias_name`,"
 			"`flag_buyingstore`,`flag_deadbranch`,`flag_container`,`flag_uniqueid`,`flag_bindonequip`,`flag_dropannounce`,`flag_noconsume`,`flag_dropeffect`,"
 			"`delay_duration`,`delay_status`,`stack_amount`,`stack_inventory`,`stack_cart`,`stack_storage`,`stack_guildstorage`,`nouse_override`,`nouse_sitting`,"
 			"`trade_override`,`trade_nodrop`,`trade_notrade`,`trade_tradepartner`,`trade_nosell`,`trade_nocart`,`trade_nostorage`,`trade_noguildstorage`,`trade_nomail`,`trade_noauction`,`script`,`equip_script`,`unequip_script`"
