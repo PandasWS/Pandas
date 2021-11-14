@@ -1536,16 +1536,23 @@
 	// 是否启用 bNoFieldGemStone 效果调整器 [Sola丶小克]
 	// 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	// 常量名称: SP_PANDAS_NOFIELDGEMSTONE / 调整器名称: bNoFieldGemStone
-	// 变量位置: special_state / 变量名称: nofieldgemstone
+	// 变量位置: map_session_data.special_state / 变量名称: nofieldgemstone
 	// 使用原型: bonus bNoFieldGemStone;
 	#define Pandas_Bonus_bNoFieldGemStone
 
 	// 是否启用 bRebirthWithHeal 效果调整器 [聽風]
 	// 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
 	// 常量名称: SP_PANDAS_REBIRTHWITHHEAL / 调整器名称: bRebirthWithHeal
-	// 变量位置: bonus / 变量名称: rebirth_rate, rebirth_heal_percent_hp, rebirth_heal_percent_sp
+	// 变量位置: map_session_data.bonus / 变量名称: rebirth_rate, rebirth_heal_percent_hp, rebirth_heal_percent_sp
 	// 使用原型: bonus3 bRebirthWithHeal,r,h,s;
 	#define Pandas_Bonus_bRebirthWithHeal
+
+	// 是否启用 bAddSkillRange 效果调整器 [聽風]
+	// 增加 sk 技能 n 格攻击距离
+	// 常量名称: SP_PANDAS_ADDSKILLRANGE / 调整器名称: bAddSkillRange
+	// 变量位置: map_session_data / 变量名称: addskillrange
+	// 使用原型: bonus2 bAddSkillRange,sk,n;
+	#define Pandas_Bonus_bAddSkillRange
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 

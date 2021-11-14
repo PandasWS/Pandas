@@ -548,6 +548,9 @@ struct map_session_data {
 	std::vector<s_addeffectonskill> addeff_onskill;
 	std::vector<s_item_bonus> skillatk, skillusesprate, skillusesp, skillheal, skillheal2, skillblown, skillcastrate, skillfixcastrate, subskill, skillcooldown, skillfixcast,
 		skillvarcast, skilldelay, itemhealrate, add_def, add_mdef, add_mdmg, reseff, itemgrouphealrate, itemsphealrate, itemgroupsphealrate;
+#ifdef Pandas_Bonus_bAddSkillRange
+	std::vector<s_item_bonus> addskillrange;
+#endif // Pandas_Bonus_bAddSkillRange
 	std::vector<s_add_drop> add_drop;
 	std::vector<s_addele2> subele2;
 	std::vector<s_vanish_bonus> sp_vanish, hp_vanish;
@@ -1430,6 +1433,9 @@ void pc_checkitem(struct map_session_data*);
 void pc_check_available_item(struct map_session_data *sd, uint8 type);
 int pc_useitem(struct map_session_data*,int);
 
+#ifdef Pandas_Bonus_bAddSkillRange
+int pc_addskillrange_bonus(struct map_session_data* sd, uint16 skill_id);
+#endif // Pandas_Bonus_bAddSkillRange
 int pc_skillatk_bonus(struct map_session_data *sd, uint16 skill_id);
 int pc_sub_skillatk_bonus(struct map_session_data *sd, uint16 skill_id);
 int pc_skillheal_bonus(struct map_session_data *sd, uint16 skill_id);

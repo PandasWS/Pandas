@@ -1055,6 +1055,10 @@
 	// 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
 	export_constant2("bRebirthWithHeal", SP_PANDAS_REBIRTHWITHHEAL);
 #endif // Pandas_Bonus_bRebirthWithHeal
+#ifdef Pandas_Bonus_bAddSkillRange
+	// 增加 sk 技能 n 格攻击距离
+	export_constant2("bAddSkillRange", SP_PANDAS_ADDSKILLRANGE);
+#endif // Pandas_Bonus_bAddSkillRange
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses

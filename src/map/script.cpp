@@ -10309,6 +10309,9 @@ BUILDIN_FUNC(bonus)
 		case SP_SKILL_DELAY:
 		case SP_SKILL_USE_SP:
 		case SP_SUB_SKILL:
+#ifdef Pandas_Bonus_bAddSkillRange
+		case SP_PANDAS_ADDSKILLRANGE:
+#endif // Pandas_Bonus_bAddSkillRange
 			// these bonuses support skill names
 			if (script_isstring(st, 3)) {
 				const char *name = script_getstr(st, 3);

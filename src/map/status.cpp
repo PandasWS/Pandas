@@ -4395,6 +4395,24 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	sd->hp_vanish.clear();
 	sd->itemsphealrate.clear();
 	sd->itemgroupsphealrate.clear();
+#ifdef Pandas_Bonus_bAddSkillRange
+	// 若 addskillrange 中存在被调整过攻击距离的技能,
+	// 那么在重置之前先将技能编号保存下来
+	std::vector<uint16> skillid_list;
+	if (sd->addskillrange.size()) {
+		for (auto& it : sd->addskillrange) {
+			skillid_list.push_back(it.id);
+		}
+	}
+
+	// 然后进行重置操作
+	sd->addskillrange.clear();
+
+	// 最后刷新客户端关于这些技能的攻击距离信息
+	for (auto& it : skillid_list) {
+		clif_skillinfo(sd, it, 0);
+	}
+#endif // Pandas_Bonus_bAddSkillRange
 
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	sd->pandas.multi_catch_target_class.clear();
@@ -5252,6 +5270,12 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 			sd->bonus.perfect_hit += 20 + 10 * pc_checkskill(sd, SO_STRIKING);
 	}
 	status_cpy(&sd->battle_status, base_status);
+
+#ifdef Pandas_Bonus_bAddSkillRange
+	for (auto &it : sd->addskillrange) {
+		clif_skillinfo(sd, it.id, 0);
+	}
+#endif // Pandas_Bonus_bAddSkillRang
 
 // ----- CLIENT-SIDE REFRESH -----
 	if(!sd->bl.prev) {
