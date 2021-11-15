@@ -167,6 +167,7 @@ def arrange_common(packagedir):
     rmdir(packagedir + 'conf/import')
     rmdir(packagedir + 'doc/model')
     rmdir(packagedir + 'npc/test')
+    rmdir(packagedir + 'db/dicts')
     
     recursive_overwrite(packagedir + 'tools/python/dist/', packagedir)
     rmdir(packagedir + 'tools', ['batches'])
