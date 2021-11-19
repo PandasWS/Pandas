@@ -1898,6 +1898,11 @@
 	// 是否启用 getskillinfo 脚本指令 [聽風]
 	// 该指令用于获取指定技能在技能数据库中所配置的各项信息
 	#define Pandas_ScriptCommand_GetSkillInfo
+
+	// 是否启用 unitspecialeffect 脚本指令 [人鱼姬的思念]
+	// 给指定GID单位的添加一个特效
+	#define Pandas_ScriptCommand_unitspecialeffect
+
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
