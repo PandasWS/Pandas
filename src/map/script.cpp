@@ -30296,6 +30296,64 @@ BUILDIN_FUNC(getskillinfo) {
 }
 #endif // Pandas_ScriptCommand_GetSkillInfo
 
+/* removespecialeffect(<特效ID>{, <发送目标>{, <源GID>{, <目标GID>}}});
+*removespecialeffect(<特效ID>{, <发送目标>{, "<源NPC名>"{, <目标GID>}}});
+*
+*移除目标身上的一个特效效果, 如果指定 <源GID>("<源NPC名>") 则特效会显示在指定的源实体上
+*
+*发送目标
+*AREA - 发送给可视范围内的玩家(默认)
+*SELF - 发送给自己, 如果指定<目标GID> 则特效只能指定玩家看到
+*PARTY_AREA - 发送给可视范围内的指定队伍
+*GUILD_AREA - 发送给可视范围内的指定公会
+*BG_AREA - 发送给可视范围内的指定BG队伍
+*注意 : 本指令只在 20181002 以上客户端有效.
+* 原作者 :Hercules
+* 转译 :人鱼姬的思念
+*/
+
+#ifdef Pandas_ScriptCommand_removespecialeffect
+BUILDIN_FUNC(removespecialeffect) {
+	struct block_list* bl = NULL;
+	int type = script_getnum(st, 2);
+	enum send_target target = AREA;
+
+	if (script_hasdata(st, 3)) {
+		target = static_cast<send_target>(script_getnum(st, 3));
+	}
+
+	TBL_NPC* nd = nullptr;
+	if (script_hasdata(st, 4)) {
+		if ((nd = npc_name2id(script_getstr(st, 4))) != nullptr) {
+			bl = &nd->bl;
+		}
+		else {
+			script_rid2bl(4, bl);
+		}
+	}
+	else {
+		bl = map_id2bl(st->oid);
+	}
+
+
+	if (target == SELF) {
+		struct map_session_data* sd;
+		if (script_hasdata(st, 5)) {
+			sd = map_id2sd(script_getnum(st, 5));
+		}
+		else {
+			sd = map_id2sd(st->rid);
+		}
+		if (sd != NULL) {
+			clif_removespecialeffect_single(bl, type, &sd->bl);
+		}
+	}
+	else {
+		clif_removespecialeffect(bl, type, target);
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif //Pandas_ScriptCommand_removespecialeffect
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -31197,7 +31255,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getskillinfo, "iv??"),					// 获取指定技能在技能数据库中所配置的各项信息 [聽風]
 #endif // Pandas_ScriptCommand_GetSkillInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
-
+#ifdef Pandas_ScriptCommand_removespecialeffect
+		BUILDIN_DEF(removespecialeffect, "i???"),		//移除目标单位的特效 [人鱼姬的思念]
+#endif //Pandas_ScriptCommand_removespecialeffect
 #include "../custom/script_def.inc"
 
 	{NULL,NULL,NULL},
