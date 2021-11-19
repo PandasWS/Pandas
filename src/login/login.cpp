@@ -23,7 +23,6 @@
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
 #include "../config/core.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "account.hpp"
 #include "ipban.hpp"

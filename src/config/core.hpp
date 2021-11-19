@@ -9,6 +9,20 @@
  * For detailed guidance on these check http://rathena.org/wiki/SRC/config/
  **/
 
+// -----------------------------------------------------------------
+// 熊猫模拟器定义的部分头文件 - 开始
+// -----------------------------------------------------------------
+
+#include "../config/pandas.hpp"
+
+#include "../common/assistant.hpp"
+#include "../common/performance.hpp"
+#include "../common/utf8_defines.hpp"
+
+// -----------------------------------------------------------------
+// 熊猫模拟器定义的部分头文件 - 结束
+// -----------------------------------------------------------------
+
 #include "../custom/defines_pre.hpp"
 
 /// Max number of items on @autolootid list

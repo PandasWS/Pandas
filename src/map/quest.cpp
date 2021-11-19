@@ -14,7 +14,6 @@
 #include "../common/strlib.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "chrif.hpp"
@@ -319,11 +318,6 @@ uint64 QuestDatabase::parseBodyNode(const YAML::Node &node) {
 		const YAML::Node &drops = node["Drops"];
 
 		for (const YAML::Node &dropNode : drops) {
-			if (quest->objectives.size() >= MAX_QUEST_OBJECTIVES) {
-				this->invalidWarning(dropNode, "Drops list exceeds the maximum of %d, skipping.\n", MAX_QUEST_OBJECTIVES);
-				return 0;
-			}
-
 			uint32 mob_id = 0; // Can be 0 which means all monsters
 
 			if (this->nodeExists(dropNode, "Mob")) {

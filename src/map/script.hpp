@@ -307,6 +307,10 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_MOBDROPITEM
 	const char* mobdropitem_express_name;	// NPCX_MOBDROPITEM	// OnMobDropItemExpress	// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+	const char* pcattack_express_name;	// NPCX_PCATTACK	// OnPCAttackExpress	// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related
@@ -696,6 +700,7 @@ enum unitdata_mobtypes {
 	UMOB_ROBE,
 	UMOB_BODY2,
 	UMOB_GROUP_ID,
+	UMOB_IGNORE_CELL_STACK_LIMIT,
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 	UMOB_AURA,
 #endif // Pandas_Struct_Unit_CommonData_Aura
@@ -2294,7 +2299,8 @@ enum e_iteminfo : uint8 {
 	ITEMINFO_EQUIPLEVELMAX,
 	ITEMINFO_MAGICATTACK,
 	ITEMINFO_ID,
-	ITEMINFO_AEGISNAME	// 18
+	ITEMINFO_AEGISNAME,	// 18
+	ITEMINFO_ARMORLEVEL,
 };
 
 class ConstantDatabase : public YamlDatabase {

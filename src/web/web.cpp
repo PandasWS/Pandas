@@ -30,6 +30,13 @@
 #include "http.hpp"
 #include "userconfig_controller.hpp"
 
+#ifdef Pandas_WebServer_Implement_MerchantStore
+#include "merchantstore_controller.hpp"
+#endif // Pandas_WebServer_Implement_MerchantStore
+
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+#include "recruitment_controller.hpp"
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 
 using namespace rathena;
 
@@ -76,8 +83,25 @@ char login_table[32] = "login";
 char guild_emblems_table[32] = "guild_emblems";
 char user_configs_table[32] = "user_configs";
 char char_configs_table[32] = "char_configs";
+#ifdef Pandas_WebServer_Implement_MerchantStore
+char merchant_configs_table[32] = "merchant_configs";
+#endif // Pandas_WebServer_Implement_MerchantStore
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+char recruitment_table[32] = "recruitment";
+char party_table[32] = "party";
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 char guild_db_table[32] = "guild";
 char char_db_table[32] = "char";
+
+#ifdef Pandas_WebServer_Database_EncodingAdaptive
+char web_connection_encoding[32] = { 0 };
+char character_codepage[32] = { 0 };
+#endif // Pandas_WebServer_Database_EncodingAdaptive
+
+#ifdef Pandas_WebServer_ApplyMutex_For_Logger
+#include <mutex>
+std::mutex g_logger_lock;
+#endif // Pandas_WebServer_ApplyMutex_For_Logger
 
 int parse_console(const char * buf) {
 	return 1;
@@ -125,6 +149,11 @@ bool web_config_read(const char* cfgName, bool normal) {
 				web_config.web_port = (uint16)atoi(w2);
 		}
 
+#ifdef Pandas_WebServer_Database_EncodingAdaptive
+		if (!strcmpi(w1, "character_codepage"))
+			safestrncpy(character_codepage, w2, sizeof(character_codepage) - 1);
+		else
+#endif // Pandas_WebServer_Database_EncodingAdaptive
 		if (!strcmpi(w1, "timestamp_format"))
 			safestrncpy(timestamp_format, w2, 20);
 		else if (!strcmpi(w1, "db_path"))
@@ -209,12 +238,22 @@ int inter_config_read(const char* cfgName)
 			safestrncpy(web_server_db,w2,sizeof(web_server_db));
 		else if(!strcmpi(w1,"default_codepage"))
 			safestrncpy(default_codepage,w2,sizeof(default_codepage));
-		else if (!strcmpi(w1, "user_configs"))
+		else if (!strcmpi(w1, "user_configs_table"))
 			safestrncpy(user_configs_table, w2, sizeof(user_configs_table));
-		else if (!strcmpi(w1, "char_configs"))
+		else if (!strcmpi(w1, "char_configs_table"))
 			safestrncpy(char_configs_table, w2, sizeof(char_configs_table));
-		else if (!strcmpi(w1, "guild_emblems"))
+		else if (!strcmpi(w1, "guild_emblems_table"))
 			safestrncpy(guild_emblems_table, w2, sizeof(guild_emblems_table));
+#ifdef Pandas_WebServer_Implement_MerchantStore
+		else if (!strcmpi(w1, "merchant_configs_table"))
+			safestrncpy(merchant_configs_table, w2, sizeof(merchant_configs_table));
+#endif // Pandas_WebServer_Implement_MerchantStore
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+		else if (!strcmpi(w1, "recruitment_table"))
+			safestrncpy(recruitment_table, w2, sizeof(recruitment_table));
+		else if (!strcmpi(w1, "party_db"))
+			safestrncpy(party_table, w2, sizeof(party_table));
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 		else if (!strcmpi(w1, "login_server_account_db"))
 			safestrncpy(login_table, w2, sizeof(login_table));
 		else if (!strcmpi(w1, "guild_db"))
@@ -313,6 +352,11 @@ int web_sql_init(void) {
 		Sql_ShowDebug(web_handle);
 #endif // Pandas_SQL_Configure_Optimization
 
+#ifdef Pandas_WebServer_Database_EncodingAdaptive
+	// 读取最终生效的 WEB 接口数据库服务器连接编码
+	Sql_GetEncoding(web_handle, web_connection_encoding);
+#endif // Pandas_WebServer_Database_EncodingAdaptive
+
 	return 0;
 }
 
@@ -390,25 +434,39 @@ void set_server_type(void) {
 
 // called just before sending repsonse
 void logger(const Request & req, const Response & res) {
+#ifdef Pandas_WebServer_ApplyMutex_For_Logger
+	std::lock_guard<std::mutex> locker(g_logger_lock);
+#endif // Pandas_WebServer_ApplyMutex_For_Logger
 	// make this a config
 	if (web_config.print_req_res) {
+#ifdef Pandas_WebServer_Logger_Improved_Presentation
+		ShowDebug("--- Request Information Begin ---------------------------------------\n");
+#endif // Pandas_WebServer_Logger_Improved_Presentation
 		ShowDebug("Incoming Headers are:\n");
 		for (const auto & header : req.headers) {
-			ShowDebug("\t%s: %s\n", header.first.c_str(), header.second.c_str());
+			ShowDebug("\t%s: %s\n", U2ACE(header.first).c_str(), U2ACE(header.second).c_str());
 		}
 		ShowDebug("Incoming Pages are:\n");
 		for (const auto & file : req.files) {
-			ShowDebug("\t%s: %s\n", file.first.c_str(), file.second.content.c_str());
+			ShowDebug("\t%s: %s\n", U2ACE(file.first).c_str(), U2ACE(file.second.content).c_str());
 		}
 		ShowDebug("Outgoing Headers are:\n");
 		for (const auto & header : res.headers) {
-			ShowDebug("\t%s: %s\n", header.first.c_str(), header.second.c_str());
+			ShowDebug("\t%s: %s\n", U2ACE(header.first).c_str(), U2ACE(header.second).c_str());
 		}
 		ShowDebug("Response status is: %d\n", res.status);
 		// since the body may be binary, might not print entire body (has null character).
-		ShowDebug("Body is:\n%s\n", res.body.c_str());
+		ShowDebug("Body is:\n%s\n", U2ACE(res.body).c_str());
+#ifdef Pandas_WebServer_Logger_Improved_Presentation
+		ShowDebug("--- Request Information End -----------------------------------------\n");
+#endif // Pandas_WebServer_Logger_Improved_Presentation
 	}
 	ShowInfo("%s [%s %s] %d\n", req.remote_addr.c_str(), req.method.c_str(), req.path.c_str(), res.status);
+#ifdef Pandas_WebServer_Logger_Improved_Presentation
+	if (web_config.print_req_res) {
+		printf("\n\n");
+	}
+#endif // Pandas_WebServer_Logger_Improved_Presentation
 }
 
 
@@ -442,6 +500,17 @@ int do_init(int argc, char** argv) {
 	http_server->Post("/userconfig/save", userconfig_save);
 	http_server->Post("/charconfig/load", charconfig_load);
 	http_server->Post("/charconfig/save", charconfig_save);
+#ifdef Pandas_WebServer_Implement_MerchantStore
+	http_server->Post("/MerchantStore/load", merchantstore_load);
+	http_server->Post("/MerchantStore/save", merchantstore_save);
+#endif // Pandas_WebServer_Implement_MerchantStore
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+	http_server->Post("/party/add", party_recruitment_add);
+	http_server->Post("/party/del", party_recruitment_del);
+	http_server->Post("/party/get", party_recruitment_get);
+	http_server->Post("/party/list", party_recruitment_list);
+	http_server->Post("/party/search", party_recruitment_search);
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 
 	// set up logger
 	http_server->set_logger(logger);
@@ -456,7 +525,9 @@ int do_init(int argc, char** argv) {
 	for (int i = 0; i < 10; i++) {
 		if (http_server->is_running() || runflag != WEBSERVER_ST_RUNNING)
 			break;
+#ifndef Pandas_Cleanup_Useless_Message
 		ShowDebug("Web server not running, sleeping 1 second.\n");
+#endif // Pandas_Cleanup_Useless_Message
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 

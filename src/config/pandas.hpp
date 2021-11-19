@@ -1,11 +1,14 @@
 ﻿// Copyright (c) Pandas Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#ifndef _RATHENA_CN_CONFIG_HPP_
-#define _RATHENA_CN_CONFIG_HPP_
+#pragma once
 
-#include "renewal.hpp"
-#include "packets.hpp"
+#include "../custom/defines_pre.hpp"
+#include "./packets.hpp"
+#include "./renewal.hpp"
+#include "./secure.hpp"
+#include "./classes/general.hpp"
+#include "../custom/defines_post.hpp"
 
 #define Pandas
 
@@ -34,6 +37,7 @@
 	#define Pandas_ScriptCommands
 	#define Pandas_ScriptResults
 	#define Pandas_ScriptParams
+	#define Pandas_WebServer
 #endif // Pandas
 
 #ifndef GIT_BRANCH
@@ -66,7 +70,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.6.0"
+	#define Pandas_Version "1.1.7.0"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -243,6 +247,9 @@
 
 	// 是否拓展 Yaml 的 Database 操作类使之能读取 UTF8-BOM 编码的文件 [Sola丶小克]
 	#define Pandas_Database_Yaml_Support_UTF8BOM
+
+	// 是否支持用于读取 SQL 连接编码的 Sql_GetEncoding 函数 [Sola丶小克]
+	#define Pandas_Database_SQL_GetEncoding
 #endif // Pandas_DatabaseIncrease
 
 // ============================================================================
@@ -432,12 +439,15 @@
 // ============================================================================
 
 #ifdef Pandas_PacketFunction
-	// 实现 0xb0d 封包发送函数, 用于告诉客户端移除指定单位的特效
-	// 
-	// 涉及到的函数有:
-	// - clif_removespecialeffect
-	// - clif_removespecialeffect_single
+	// 是否实现 0xb0d 封包发送函数 [Sola丶小克]
+	// 该封包用于告诉客户端移除指定单位的特效, 实现特性的精细化控制
 	#define Pandas_PacketFunction_RemoveSpecialEffect
+
+	// 是否实现冒险家中介所相关的封包处理函数 [Sola丶小克]
+	// 用于响应客户端中冒险者中介所的加入队伍请求, 包含了队长进行确认的相关逻辑
+	#if PACKETVER >= 20200300
+		#define Pandas_PacketFunction_PartyJoinRequest
+	#endif // PACKETVER >= 20200300
 #endif // Pandas_PacketFunction
 
 // ============================================================================
@@ -750,24 +760,10 @@
 #endif // Pandas_ClientFeatures
 
 // ============================================================================
-// 官方BUG修正组 - Pandas_Bugfix
+// 官方缺陷修正组 - Pandas_Bugfix
 // ============================================================================
 
 #ifdef Pandas_Bugfix
-	// 修正 @item 等指令只能使用 AegisName 来创造道具的问题 [Sola丶小克]
-	// 此问题由 rAthena 的 6b84115 号提交引入, 相关链接如下:
-	// https://github.com/rathena/rathena/commit/6b841157909ac17c0b82b917763976f43be2f89f
-	#define Pandas_Fix_Itemdb_Searchname_Logic
-
-	// 使 search_aegisname 仅搜索 aegisNameToItemDataMap [Sola丶小克]
-	// 作为物品数据库体系中的唯一名称, 若指定搜索了 AegisName 则不应该在失败后搜索 nameToItemDataMap
-	#define Pandas_Fix_Itemdb_SearchAegisname_Logic
-
-	// 修正 mail_attachment_weight 选项在特定操作顺序下无效的问题 [Sola丶小克]
-	// 若一次性放入超过 mail_attachment_weight 负重限制的道具到邮件中时, 程序可以正常的判断出超重
-	// 但是若分多次, 放入相同一件物品到邮件附件中, 那么 mail_attachment_weight 的负重限制将会失去作用
-	#define Pandas_Fix_Mail_Attachment_Weight_Defects
-
 	// 修正逐影的“抄袭/复制”技能，在偷到技能后角色服务器存档时可能会出现 -8 报错的问题 [Sola丶小克]
 	// 被抄袭的技能的 flag 是 SKILL_FLAG_PLAGIARIZED 值为 2
 	// 但好不歹的写入到数据库之前 rAthena 计算技能等级的时候是拿着 flag - SKILL_FLAG_REPLACED_LV_0 (值为 10)
@@ -1186,10 +1182,13 @@
 	//
 	// 所以熊猫表示, 我们也干脆删了吧!! Oh yeah!
 	#define Pandas_Cleanup_Useless_SQL_Global_Configure
+
+	// 清理掉一些没啥作用看着还心烦的终端提示信息 [Sola丶小克]
+	#define Pandas_Cleanup_Useless_Message
 #endif // Pandas_Cleanup
 
 // ============================================================================
-// NPC事件组 - Pandas_NpcEvent
+// NPC 事件组 - Pandas_NpcEvent
 // ============================================================================
 
 #ifdef Pandas_NpcEvent
@@ -1379,6 +1378,11 @@
 		// 事件类型: Express / 事件名称: OnMobDropItemExpress
 		// 常量名称: NPCX_MOBDROPITEM / 变量名称: mobdropitem_express_name
 		#define Pandas_NpcExpress_MOBDROPITEM
+
+		// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
+		// 事件类型: Express / 事件名称: OnPCAttackExpress
+		// 常量名称: NPCX_PCATTACK / 变量名称: pcattack_express_name
+		#define Pandas_NpcExpress_PCATTACK
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	
@@ -1530,11 +1534,25 @@
 
 #ifdef Pandas_Bonuses
 	// 是否启用 bNoFieldGemStone 效果调整器 [Sola丶小克]
-	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+	// 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	// 常量名称: SP_PANDAS_NOFIELDGEMSTONE / 调整器名称: bNoFieldGemStone
-	// 变量位置: special_state / 变量名称: nofieldgemstone
+	// 变量位置: map_session_data.special_state / 变量名称: nofieldgemstone
 	// 使用原型: bonus bNoFieldGemStone;
 	#define Pandas_Bonus_bNoFieldGemStone
+
+	// 是否启用 bRebirthWithHeal 效果调整器 [聽風]
+	// 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
+	// 常量名称: SP_PANDAS_REBIRTHWITHHEAL / 调整器名称: bRebirthWithHeal
+	// 变量位置: map_session_data.bonus / 变量名称: rebirth_rate, rebirth_heal_percent_hp, rebirth_heal_percent_sp
+	// 使用原型: bonus3 bRebirthWithHeal,r,h,s;
+	#define Pandas_Bonus_bRebirthWithHeal
+
+	// 是否启用 bAddSkillRange 效果调整器 [聽風]
+	// 增加 sk 技能 n 格攻击距离
+	// 常量名称: SP_PANDAS_ADDSKILLRANGE / 调整器名称: bAddSkillRange
+	// 变量位置: map_session_data / 变量名称: addskillrange
+	// 使用原型: bonus2 bAddSkillRange,sk,n;
+	#define Pandas_Bonus_bAddSkillRange
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 
@@ -1914,4 +1932,46 @@
 	#endif // Pandas_Struct_Mob_Data_DamageTaken
 #endif // Pandas_ScriptParams
 
-#endif // _RATHENA_CN_CONFIG_HPP_
+// ============================================================================
+// WEB 服务器修改组 - Pandas_WebServer
+// ============================================================================
+
+#ifdef Pandas_WebServer
+	// 是否解决数据表中看到中文乱码的问题 [Sola丶小克]
+	// 
+	// 客户端发送给 WEB 接口的内容使用的是 UTF8 编码, 我们需要将内容存放到数据库中去
+	// 但数据库本身的编码可能不是 UTF8, 因此在入库之前需要将内容进行适当的编码转换, 否则数据库中看到的会是乱码
+	// 同理, 将数据库中保存的内容读取出来后也需要转换成 UTF8 编码才能发送给客户端
+	#define Pandas_WebServer_Database_EncodingAdaptive
+
+	// 是否解决终端看到客户端发来的中文乱码问题 [Sola丶小克]
+	//
+	// 客户端发送给 WEB 接口的内容使用的是 UTF8 编码, 但我们的终端程序通常不是工作在 UTF8 编码环境下,
+	// 因此如果将客户端发送来的中文直接打印到终端就会变成乱码.
+	// 启用该选项后将会对客户端发送来的 UTF8 信息在输出时转换成当前终端使用的编码再打印到终端
+	#define Pandas_WebServer_Console_EncodingAdaptive
+
+	// 是否改进开启 print_req_res 后打印信息的呈现方式, 使信息的区域划分更清晰 [Sola丶小克]
+	#define Pandas_WebServer_Logger_Improved_Presentation
+
+	// 是否重写部分控制器的核心处理代码 [Sola丶小克]
+	// 此选项依赖 Pandas_WebServer_Database_EncodingAdaptive 的拓展
+	#ifdef Pandas_WebServer_Database_EncodingAdaptive
+		#define Pandas_WebServer_Rewrite_Controller_HandlerFunc
+	#endif // Pandas_WebServer_Database_EncodingAdaptive
+
+	// 实现用于读写商店配置信息的 MerchantStore 接口 [Sola丶小克]
+	// 启用后将支持 /MerchantStore/load 和 /MerchantStore/save 两个相关接口
+	#define Pandas_WebServer_Implement_MerchantStore
+
+	// 实现用于冒险家中介所的 party 接口 [Sola丶小克]
+	// 启用后将支持 /party/{list|get|add|del|search} 这几个相关接口
+	#define Pandas_WebServer_Implement_PartyRecruitment
+
+	// 在执行 logger 日志函数时是否在内部进行互斥处理 [Sola丶小克]
+	// 
+	// 如果不进行互斥操作的话, 在打开 print_req_res 的情况下，
+	// 如果请求间隔很短会导致终端输出日志信息的时候由于并发而混在一起
+	// 比如: 冒险者查询接口就是 party/list 然后立刻 party/get 两个请求间隔非常短
+	#define Pandas_WebServer_ApplyMutex_For_Logger
+#endif // Pandas_WebServer

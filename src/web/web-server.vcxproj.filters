@@ -33,6 +33,15 @@
     <ClCompile Include="web.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="merchantstore_controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="recruitment_controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="http.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="auth.hpp">
@@ -60,6 +69,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="merchantstore_controller.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="recruitment_controller.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

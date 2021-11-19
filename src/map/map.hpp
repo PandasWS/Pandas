@@ -397,6 +397,7 @@ enum mob_ai {
 	AI_LEGION,
 	AI_FAW,
 	AI_GUILD,
+	AI_WAVEMODE,
 	AI_MAX
 };
 
@@ -531,9 +532,8 @@ enum _sp {
 	SP_WEAPON_ATK_RATE, SP_WEAPON_MATK_RATE, SP_DROP_ADDRACE, SP_DROP_ADDCLASS, SP_NO_MADO_FUEL, // 2083-2087
 	SP_IGNORE_DEF_CLASS_RATE, SP_REGEN_PERCENT_HP, SP_REGEN_PERCENT_SP, SP_SKILL_DELAY, SP_NO_WALK_DELAY, //2088-2092
 	SP_LONG_SP_GAIN_VALUE, SP_LONG_HP_GAIN_VALUE, SP_SHORT_ATK_RATE, SP_MAGIC_SUBSIZE, SP_CRIT_DEF_RATE, // 2093-2097
-	SP_MAGIC_SUBDEF_ELE, SP_REDUCE_DAMAGE_RETURN // 2098-2099
+	SP_MAGIC_SUBDEF_ELE, SP_REDUCE_DAMAGE_RETURN, SP_ADD_ITEM_SPHEAL_RATE, SP_ADD_ITEMGROUP_SPHEAL_RATE, // 2098-2101
 #ifdef Pandas_ScriptParams_ReadParam
-	,
 	SP_EXTEND_UNUSED = 3100,
 	SP_STR_ALL, SP_AGI_ALL, SP_VIT_ALL, SP_INT_ALL, SP_DEX_ALL, SP_LUK_ALL,	// 3101-3106
 #endif // Pandas_ScriptParams_ReadParam
@@ -541,8 +541,14 @@ enum _sp {
 #ifdef Pandas_Bonuses
 	SP_PANDAS_EXTEND_BONUS_START = 3500,
 	#ifdef Pandas_Bonus_bNoFieldGemStone
-		SP_PANDAS_NOFIELDGEMSTONE,	// 调整器名称: bNoFieldGemStone / 说明: 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+		SP_PANDAS_NOFIELDGEMSTONE,	// 调整器名称: bNoFieldGemStone / 说明: 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	#endif // Pandas_Bonus_bNoFieldGemStone
+	#ifdef Pandas_Bonus_bRebirthWithHeal
+		SP_PANDAS_REBIRTHWITHHEAL,	// 调整器名称: bRebirthWithHeal / 说明: 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
+	#endif // Pandas_Bonus_bRebirthWithHeal
+	#ifdef Pandas_Bonus_bAddSkillRange
+		SP_PANDAS_ADDSKILLRANGE,	// 调整器名称: bAddSkillRange / 说明: 增加 sk 技能 n 格攻击距离
+	#endif // Pandas_Bonus_bAddSkillRange
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses
@@ -639,6 +645,8 @@ enum e_mapflag : int16 {
 	MF_PRIVATEAIRSHIP_SOURCE,
 	MF_PRIVATEAIRSHIP_DESTINATION,
 	MF_SKILL_DURATION,
+	MF_NOCASHSHOP,
+	MF_NORODEX,
 #ifdef Pandas_MapFlag_Mobinfo
 	MF_MOBINFO,
 #endif // Pandas_MapFlag_Mobinfo

@@ -169,6 +169,10 @@
 #ifdef Pandas_NpcExpress_MOBDROPITEM
 	export_constant(NPCX_MOBDROPITEM);	// mobdropitem_express_name	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+	export_constant(NPCX_PCATTACK);	// pcattack_express_name	// OnPCAttackExpress		// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
 #endif // Pandas_ScriptCommands
 
@@ -661,6 +665,8 @@
 	export_constant(MF_PRIVATEAIRSHIP_SOURCE);
 	export_constant(MF_PRIVATEAIRSHIP_DESTINATION);
 	export_constant(MF_SKILL_DURATION);
+	export_constant(MF_NOCASHSHOP);
+	export_constant(MF_NORODEX);
 
 #ifdef Pandas_MapFlag_Mobinfo
 	export_constant(MF_MOBINFO);
@@ -1036,13 +1042,23 @@
 	export_constant2("bCritDefRate",SP_CRIT_DEF_RATE);
 	export_constant2("bMagicSubDefEle", SP_MAGIC_SUBDEF_ELE);
 	export_constant2("bReduceDamageReturn",SP_REDUCE_DAMAGE_RETURN);
+	export_constant2("bAddItemSPHealRate", SP_ADD_ITEM_SPHEAL_RATE);
+	export_constant2("bAddItemGroupSPHealRate", SP_ADD_ITEMGROUP_SPHEAL_RATE);
 
 #ifdef Pandas_Bonuses
 
 #ifdef Pandas_Bonus_bNoFieldGemStone
-	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+	// 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	export_constant2("bNoFieldGemStone", SP_PANDAS_NOFIELDGEMSTONE);
 #endif // Pandas_Bonus_bNoFieldGemStone
+#ifdef Pandas_Bonus_bRebirthWithHeal
+	// 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
+	export_constant2("bRebirthWithHeal", SP_PANDAS_REBIRTHWITHHEAL);
+#endif // Pandas_Bonus_bRebirthWithHeal
+#ifdef Pandas_Bonus_bAddSkillRange
+	// 增加 sk 技能 n 格攻击距离
+	export_constant2("bAddSkillRange", SP_PANDAS_ADDSKILLRANGE);
+#endif // Pandas_Bonus_bAddSkillRange
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses
@@ -1920,6 +1936,9 @@
 	export_constant(SC_PACKING_ENVELOPE9);
 	export_constant(SC_PACKING_ENVELOPE10);
 	export_constant(SC_SOULATTACK);
+	export_constant(SC_WIDEWEB);
+	export_constant(SC_BURNT);
+	export_constant(SC_CHILL);
 #ifdef RENEWAL
 	export_constant(SC_EXTREMITYFIST2);
 #endif
@@ -4135,6 +4154,7 @@
 	export_constant(AI_LEGION);
 	export_constant(AI_FAW);
 	export_constant(AI_GUILD);
+	export_constant(AI_WAVEMODE);
 
 	/* battle flags */
 	export_constant(BF_NONE);
@@ -4730,6 +4750,7 @@
 	export_constant(UMOB_ROBE);
 	export_constant(UMOB_BODY2);
 	export_constant(UMOB_GROUP_ID);
+	export_constant(UMOB_IGNORE_CELL_STACK_LIMIT);
 
 	/* unit control - homunculus */
 	export_constant(UHOM_SIZE);
@@ -8563,6 +8584,12 @@
 	export_constant(REFINE_TYPE_WEAPON);
 	export_constant(REFINE_TYPE_SHADOW_ARMOR);
 	export_constant(REFINE_TYPE_SHADOW_WEAPON);
+
+	/* autospell flags */
+	export_constant(AUTOSPELL_FORCE_SELF);
+	export_constant(AUTOSPELL_FORCE_TARGET);
+	export_constant(AUTOSPELL_FORCE_RANDOM_LEVEL);
+	export_constant(AUTOSPELL_FORCE_ALL);
 
 #ifdef Pandas_BattleRecord
 	export_constant(BRT_DMG_RECEIVE);

@@ -1757,8 +1757,28 @@ NPC名称:
 各参数的详细说明请直接参考 doc/script_commands.txt 中 bonus_script 的说明.
 
 返回值:
-	执行失败则返回 0, 执行成功则返回该效果脚本示例的唯一编号
-	编号可以用于 bonus_script_remove 等拓展指令
+	执行成功则返回该 bonus_script 实例的唯一编号,
+	执行失败, 或者 bonus_script 在没有指定 2048 强制覆盖标记的情况下已存在则返回 0.
+	此处的唯一编号可以用于 bonus_script_remove 等拓展指令.
+
+注意事项:
+	正常情况下连续执行两次相同的 bonus_script 只有第一次能获得编号, 如:
+
+		// 第一次, .@bonusid 将返回有效的唯一编号
+		.@bonusid = bonus_script("{ bonus bStr,5; }",60);
+		
+		// 第二次, 没有特殊指定强制覆盖标记, 虽然时间会重置, 但返回值将依然是 0
+		.@bonusid = bonus_script("{ bonus bStr,5; }",60);
+
+	bonus_script 的 <标记> 允许您设定 2048 来强制重复 bonus_script 脚本, 如:
+	
+		// 第一次, .@bonusid 将返回有效的唯一编号, 比如: 644245094400002
+		.@bonusid = bonus_script("{ bonus bStr,5; }",60,2048);
+	
+		// 第二次, .@bonusid 也会返回有效的唯一编号, 但将于第一次创建时的编号不同, 比如: 644245094400003
+		.@bonusid = bonus_script("{ bonus bStr,5; }",60,2048);
+		
+		在这种情况下, 两次创建的 bonus_script 将同时生效, 在它们同时生效期间角色的 STR 将会是 +10
 
 --------------------------------------------------------------
 

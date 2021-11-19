@@ -212,10 +212,19 @@ struct weapon_data {
 	std::vector<s_addrace2> addrace3;
 };
 
+enum e_autospell_flags{
+	AUTOSPELL_FORCE_SELF = 0x0,
+	AUTOSPELL_FORCE_TARGET = 0x1,
+	AUTOSPELL_FORCE_RANDOM_LEVEL = 0x2,
+	AUTOSPELL_FORCE_ALL = 0x3
+};
+
 /// AutoSpell bonus struct
 struct s_autospell {
-	short id, lv, rate, flag;
-	unsigned short card_id;
+	uint16 id, lv, trigger_skill;
+	short rate, battle_flag;
+	t_itemid card_id;
+	uint8 flag;
 	bool lock;  // bAutoSpellOnSkill: blocks autospell from triggering again, while being executed
 };
 
@@ -538,7 +547,10 @@ struct map_session_data {
 	std::vector<s_addeffect> addeff, addeff_atked;
 	std::vector<s_addeffectonskill> addeff_onskill;
 	std::vector<s_item_bonus> skillatk, skillusesprate, skillusesp, skillheal, skillheal2, skillblown, skillcastrate, skillfixcastrate, subskill, skillcooldown, skillfixcast,
-		skillvarcast, skilldelay, itemhealrate, add_def, add_mdef, add_mdmg, reseff, itemgrouphealrate;
+		skillvarcast, skilldelay, itemhealrate, add_def, add_mdef, add_mdmg, reseff, itemgrouphealrate, itemsphealrate, itemgroupsphealrate;
+#ifdef Pandas_Bonus_bAddSkillRange
+	std::vector<s_item_bonus> addskillrange;
+#endif // Pandas_Bonus_bAddSkillRange
 	std::vector<s_add_drop> add_drop;
 	std::vector<s_addele2> subele2;
 	std::vector<s_vanish_bonus> sp_vanish, hp_vanish;
@@ -587,6 +599,7 @@ struct map_session_data {
 		int classchange; // [Valaris]
 		int speed_rate, speed_add_rate, aspd_add;
 		int itemhealrate2; // [Epoque] Increase heal rate of all healing items.
+		int itemsphealrate2;
 		int shieldmdef;//royal guard's
 		unsigned int setitem_hash, setitem_hash2; //Split in 2 because shift operations only work on int ranges. [Skotlex]
 
@@ -604,6 +617,10 @@ struct map_session_data {
 		uint8 absorb_dmg_maxhp; // [Cydh]
 		short critical_rangeatk;
 		short weapon_atk_rate, weapon_matk_rate;
+#ifdef Pandas_Bonus_bRebirthWithHeal
+		int rebirth_rate, rebirth_heal_percent_hp, rebirth_heal_percent_sp;
+#endif // Pandas_Bonus_bRebirthWithHeal
+		// PYHELP - BONUS - INSERT POINT - <Section 5>
 	} bonus;
 	// zeroed vars end here.
 
@@ -643,6 +660,9 @@ struct map_session_data {
 	bool party_creating; // whether the char is requesting party creation
 	bool party_joining; // whether the char is accepting party invitation
 	int party_invite, party_invite_account; // for handling party invitation (holds party id and account id)
+#ifdef Pandas_PacketFunction_PartyJoinRequest
+	int party_applicant, party_applicant_char;
+#endif // Pandas_PacketFunction_PartyJoinRequest
 	int adopt_invite; // Adoption
 
 	struct guild *guild; // [Ind] speed everything up
@@ -1413,6 +1433,9 @@ void pc_checkitem(struct map_session_data*);
 void pc_check_available_item(struct map_session_data *sd, uint8 type);
 int pc_useitem(struct map_session_data*,int);
 
+#ifdef Pandas_Bonus_bAddSkillRange
+int pc_addskillrange_bonus(struct map_session_data* sd, uint16 skill_id);
+#endif // Pandas_Bonus_bAddSkillRange
 int pc_skillatk_bonus(struct map_session_data *sd, uint16 skill_id);
 int pc_sub_skillatk_bonus(struct map_session_data *sd, uint16 skill_id);
 int pc_skillheal_bonus(struct map_session_data *sd, uint16 skill_id);
@@ -1597,8 +1620,8 @@ bool pc_bonus_script_exists(struct map_session_data* sd, uint64 bonus_id);
 
 void pc_cell_basilica(struct map_session_data *sd);
 
-short pc_get_itemgroup_bonus(struct map_session_data* sd, t_itemid nameid);
-short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id);
+short pc_get_itemgroup_bonus(struct map_session_data* sd, t_itemid nameid, std::vector<s_item_bonus>& bonuses);
+short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id, std::vector<s_item_bonus>& bonuses);
 
 #ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 bool pc_is_same_equip_index(enum equip_index eqi, short *equip_index, short index);

@@ -131,6 +131,7 @@ bool process( const std::string& type, uint32 version, const std::vector<std::st
 		const std::string to = path + "/" + (rename.size() > 0 ? rename : name) + ".yml";
 
 		if( fileExists( from ) ){
+#ifndef CONVERT_ALL
 			if( !askConfirmation( "Found the file \"%s\", which requires migration to yml.\nDo you want to convert it now? (Y/N)\n", from.c_str() ) ){
 				continue;
 			}
@@ -140,6 +141,9 @@ bool process( const std::string& type, uint32 version, const std::vector<std::st
 					continue;
 				}
 			}
+#else
+			ShowMessage( "Found the file \"%s\", which requires migration to yml.\n", from.c_str() );
+#endif
 
 			ShowNotice("Conversion process has begun.\n");
 
@@ -300,14 +304,14 @@ int do_init( int argc, char** argv ){
 	}
 
 	item_txt_data(path_db_mode, path_db);
-	if (!process("ITEM_DB", 1, { path_db_mode }, "item_db", [](const std::string& path, const std::string& name_ext) -> bool {
+	if (!process("ITEM_DB", 2, { path_db_mode }, "item_db", [](const std::string& path, const std::string& name_ext) -> bool {
 		return itemdb_read_db((path + name_ext).c_str());
 	})) {
 		return 0;
 	}
 
 	item_txt_data(path_db_import, path_db_import);
-	if (!process("ITEM_DB", 1, { path_db_import }, "item_db", [](const std::string& path, const std::string& name_ext) -> bool {
+	if (!process("ITEM_DB", 2, { path_db_import }, "item_db", [](const std::string& path, const std::string& name_ext) -> bool {
 		return itemdb_read_db((path + name_ext).c_str());
 	})) {
 		return 0;
