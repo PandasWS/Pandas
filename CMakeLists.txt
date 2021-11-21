@@ -155,6 +155,17 @@ if( PACKETVER )
 	message( STATUS	"Detecting PACKETVER define is actived with value : ${PACKETVER}")
 endif()
 
+
+#
+# PACKETVER_RE
+#
+set( PACKETVER_RE CACHE STRING "Sets the PACKETVER_RE define of the servers. (see src/config/packets.hpp)" )
+if( PACKETVER_RE )
+	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -DPACKETVER_RE" )
+	message( STATUS	"Detecting PACKETVER_RE define is actived.")
+endif()
+
+
 #
 # Find git
 #
