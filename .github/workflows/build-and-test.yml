@@ -73,13 +73,27 @@ jobs:
             3rdparty/boost/bin.v2/
             3rdparty/boost/stage/
             3rdparty/boost/b2
-          key: ${{ runner.os }}-${{ env.cache-name }}-gcc${{ matrix.compiler_version }}-${{ hashFiles('3rdparty/boost/bootstrap.sh') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-gcc${{ matrix.compiler_version }}-${{ matrix.build_type }}-${{ hashFiles('3rdparty/boost/bootstrap.sh') }}
 
       - name: Build boost c++ libraries
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
           cd 3rdparty/boost/
           ./bootstrap.sh && ./b2
+
+      - name: Generate ccache hash info
+        run: |
+          echo "${{ runner.os }}" >> .CCACHE_HASHFILE
+          echo "clang${{ matrix.compiler_version }}" >> .CCACHE_HASHFILE
+          echo "${{ matrix.build_type }}" >> .CCACHE_HASHFILE
+          echo "${{ matrix.configure_flags }}" >> .CCACHE_HASHFILE
+          echo "${{ matrix.packetver }}" >> .CCACHE_HASHFILE
+          cat .CCACHE_HASHFILE
+
+      - name: Setup ccache to speedup compilation
+        uses: hendrikmuhs/ccache-action@v1.0.5
+        with:
+          key: ${{ hashFiles('.CCACHE_HASHFILE') }}
 
       - name: Build Pandas
         run: |
@@ -148,13 +162,27 @@ jobs:
             3rdparty/boost/bin.v2/
             3rdparty/boost/stage/
             3rdparty/boost/b2
-          key: ${{ runner.os }}-${{ env.cache-name }}-clang${{ matrix.compiler_version }}-${{ hashFiles('3rdparty/boost/bootstrap.sh') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-clang${{ matrix.compiler_version }}-${{ matrix.build_type }}-${{ hashFiles('3rdparty/boost/bootstrap.sh') }}
 
       - name: Build boost c++ libraries
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
           cd 3rdparty/boost/
           ./bootstrap.sh && ./b2
+
+      - name: Generate ccache hash info
+        run: |
+          echo "${{ runner.os }}" >> .CCACHE_HASHFILE
+          echo "clang${{ matrix.compiler_version }}" >> .CCACHE_HASHFILE
+          echo "${{ matrix.build_type }}" >> .CCACHE_HASHFILE
+          echo "${{ matrix.configure_flags }}" >> .CCACHE_HASHFILE
+          echo "${{ matrix.packetver }}" >> .CCACHE_HASHFILE
+          cat .CCACHE_HASHFILE
+
+      - name: Setup ccache to speedup compilation
+        uses: hendrikmuhs/ccache-action@v1.0.5
+        with:
+          key: ${{ hashFiles('.CCACHE_HASHFILE') }}
 
       - name: Build Pandas
         run: |
@@ -174,7 +202,7 @@ jobs:
           ./map-server --run-once
 
   windows:
-    name: Windows - VS
+    name: VS2019
     runs-on: windows-2019
 
     strategy:
