@@ -1046,8 +1046,10 @@ void initChangeTables(void)
 	set_sc( NPC_WIDEHELLDIGNITY	, SC_HELLPOWER		, EFST_HELLPOWER		, SCB_NONE );
 	set_sc( NPC_INVINCIBLE		, SC_INVINCIBLE		, EFST_INVINCIBLE		, SCB_SPEED );
 	set_sc( NPC_INVINCIBLEOFF	, SC_INVINCIBLEOFF	, EFST_BLANK		, SCB_SPEED );
+	add_sc( NPC_MILLENNIUMSHIELD	, SC_MILLENNIUMSHIELD		  );
 	set_sc( NPC_COMET			, SC_BURNING		, EFST_BURNT		, SCB_MDEF );
 	set_sc_with_vfx( NPC_MAXPAIN	,	 SC_MAXPAIN	, EFST_MAXPAIN	, SCB_NONE );
+	add_sc( NPC_STORMGUST2		, SC_FREEZE		);
 	add_sc( NPC_JACKFROST        , SC_FREEZE		  );
 	add_sc( NPC_ELECTRICWALK	, SC_PROPERTYWALK		);
 	add_sc( NPC_FIREWALK		, SC_PROPERTYWALK		);
@@ -1055,6 +1057,10 @@ void initChangeTables(void)
 	set_sc( NPC_HALLUCINATIONWALK	, SC_NPC_HALLUCINATIONWALK	, EFST_NPC_HALLUCINATIONWALK	, SCB_FLEE );
 	set_sc( NPC_WIDEWEB           , SC_WIDEWEB           , EFST_WIDEWEB               , SCB_FLEE );
 	set_sc_with_vfx( NPC_FIRESTORM, SC_BURNT             , EFST_BURNT                 , SCB_NONE );
+	add_sc( NPC_SR_CURSEDCIRCLE	, SC_CURSEDCIRCLE_TARGET		);
+	add_sc( NPC_MAGMA_ERUPTION	, SC_STUN			);
+	// add_sc( NPC_MAGMA_ERUPTION_DOTDAMAGE, SC_BURNING	);	// No data. Hidden status ?
+	set_sc( NPC_MANDRAGORA			, SC_MANDRAGORA		, EFST_MANDRAGORA			, SCB_INT );
 
 	set_sc( CASH_BLESSING		, SC_BLESSING		, EFST_BLESSING		, SCB_STR|SCB_INT|SCB_DEX );
 	set_sc( CASH_INCAGI		, SC_INCREASEAGI	, EFST_INC_AGI, SCB_AGI|SCB_SPEED );
@@ -2945,7 +2951,7 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
 			return false;
 		if(!skill_id && tsc->data[SC_TRICKDEAD])
 			return false;
-		if((skill_id == WZ_STORMGUST || skill_id == WZ_FROSTNOVA || skill_id == NJ_HYOUSYOURAKU)
+		if((skill_id == WZ_STORMGUST || skill_id == WZ_FROSTNOVA || skill_id == NJ_HYOUSYOURAKU || skill_id == NPC_STORMGUST2)
 			&& tsc->data[SC_FREEZE])
 			return false;
 		if(skill_id == PR_LEXAETERNA && (tsc->data[SC_FREEZE] || (tsc->data[SC_STONE] && tsc->opt1 == OPT1_STONE)))
@@ -3068,17 +3074,21 @@ int status_check_visibility(struct block_list *src, struct block_list *target)
  */
 int status_base_amotion_pc(struct map_session_data* sd, struct status_data* status)
 {
+	std::shared_ptr<s_job_info> job = job_db.find(sd->status.class_);
+
+	if (job == nullptr)
+		return 2000;
+
 	int amotion;
-	int classidx = pc_class2idx(sd->status.class_);
 #ifdef RENEWAL_ASPD
 	int16 skill_lv, val = 0;
 	float temp_aspd = 0;
 
-	amotion = job_info[classidx].aspd_base[sd->weapontype1]; // Single weapon
+	amotion = job->aspd_base[sd->weapontype1]; // Single weapon
 	if (sd->status.shield)
-		amotion += job_info[classidx].aspd_base[MAX_WEAPON_TYPE];
+		amotion += job->aspd_base[MAX_WEAPON_TYPE];
 	else if (sd->weapontype2 != W_FIST && sd->equip_index[EQI_HAND_R] != sd->equip_index[EQI_HAND_L])
-		amotion += job_info[classidx].aspd_base[sd->weapontype2] / 4; // Dual-wield
+		amotion += job->aspd_base[sd->weapontype2] / 4; // Dual-wield
 
 	switch(sd->status.weapon) {
 		case W_BOW:
@@ -3116,8 +3126,8 @@ int status_base_amotion_pc(struct map_session_data* sd, struct status_data* stat
 
 	// Base weapon delay
 	amotion = (sd->status.weapon < MAX_WEAPON_TYPE)
-	 ? (job_info[classidx].aspd_base[sd->status.weapon]) // Single weapon
-	 : (job_info[classidx].aspd_base[sd->weapontype1] + job_info[classidx].aspd_base[sd->weapontype2]) * 7 / 10; // Dual-wield
+	 ? (job->aspd_base[sd->status.weapon]) // Single weapon
+	 : (job->aspd_base[sd->weapontype1] + job->aspd_base[sd->weapontype2]) * 7 / 10; // Dual-wield
 
 	// Percentual delay reduction from stats
 	amotion -= amotion * (4 * status->agi + status->dex) / 1000;
@@ -4082,18 +4092,18 @@ static int status_get_spbonus_item(block_list *bl) {
  * @return max The max value of HP or SP
  */
 static unsigned int status_calc_maxhpsp_pc(struct map_session_data* sd, unsigned int stat, bool isHP) {
-	double dmax = 0;
-	uint16 idx, level, job_id;
-
 	nullpo_ret(sd);
 
-	job_id = pc_mapid2jobid(sd->class_,sd->status.sex);
-	idx = pc_class2idx(job_id);
-	level = umax(sd->status.base_level,1);
+	double dmax = 0;
+	uint32 level = umax(sd->status.base_level,1);
+	std::shared_ptr<s_job_info> job = job_db.find(pc_mapid2jobid(sd->class_, sd->status.sex));
+
+	if (job == nullptr)
+		return 1;
 
 	if (isHP) { //Calculates MaxHP
 		double equip_bonus = 0, item_bonus = 0;
-		dmax = job_info[idx].base_hp[level-1] * (1 + (umax(stat,1) * 0.01)) * ((sd->class_&JOBL_UPPER)?1.25:(pc_is_taekwon_ranker(sd))?3:1);
+		dmax = job->base_hp[level-1] * (1 + (umax(stat,1) * 0.01)) * ((sd->class_&JOBL_UPPER)?1.25:(pc_is_taekwon_ranker(sd))?3:1);
 		dmax += status_get_hpbonus(&sd->bl,STATUS_BONUS_FIX);
 		equip_bonus = (dmax * status_get_hpbonus_equip(sd) / 100);
 		item_bonus = (dmax * status_get_hpbonus_item(&sd->bl) / 100);
@@ -4102,7 +4112,7 @@ static unsigned int status_calc_maxhpsp_pc(struct map_session_data* sd, unsigned
 	}
 	else { //Calculates MaxSP
 		double equip_bonus = 0, item_bonus = 0;
-		dmax = job_info[idx].base_sp[level-1] * (1 + (umax(stat,1) * 0.01)) * ((sd->class_&JOBL_UPPER)?1.25:(pc_is_taekwon_ranker(sd))?3:1);
+		dmax = job->base_sp[level-1] * (1 + (umax(stat,1) * 0.01)) * ((sd->class_&JOBL_UPPER)?1.25:(pc_is_taekwon_ranker(sd))?3:1);
 		dmax += status_get_spbonus(&sd->bl,STATUS_BONUS_FIX);
 		equip_bonus = (dmax * status_get_spbonus_equip(sd) / 100);
 		item_bonus = (dmax * status_get_spbonus_item(&sd->bl) / 100);
@@ -4158,11 +4168,11 @@ bool status_calc_weight(struct map_session_data *sd, enum e_status_calc_weight_o
 	b_max_weight = sd->max_weight; // Store max weight for later comparison
 	b_weight = sd->weight; // Store current weight for later comparison
 #ifndef Pandas_Extreme_Computing
-	sd->max_weight = job_info[pc_class2idx(sd->status.class_)].max_weight_base + sd->status.str * 300; // Recalculate max weight
+	sd->max_weight = job_db.get_maxWeight(pc_mapid2jobid(sd->class_, sd->status.sex)) + sd->status.str * 300; // Recalculate max weight
 #else
 	// 客户端能展现最大的负重数值是 0x7FFFFFFF (2147483647)
 	// 由于解除了 str 的上限, 这里可能会爆掉, 因此额外做一些防止溢出的规避措施
-	sd->max_weight = cap_value(job_info[pc_class2idx(sd->status.class_)].max_weight_base + sd->status.str * 300, 0, PEC_MAX_WEIGHT);
+	sd->max_weight = cap_value(job_db.get_maxWeight(pc_mapid2jobid(sd->class_, sd->status.sex)) + sd->status.str * 300, 0, PEC_MAX_WEIGHT);
 #endif // Pandas_Extreme_Computing
 
 	if (flag&CALCWT_ITEM) {
@@ -4786,18 +4796,23 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 // ----- STATS CALCULATION -----
 
 	// Job bonuses
-	index = pc_class2idx(sd->status.class_);
-	for(i=0;i<(int)sd->status.job_level && i<MAX_LEVEL;i++) {
-		if(!job_info[index].job_bonus[i])
-			continue;
-		switch(job_info[index].job_bonus[i]) {
-			case 1: base_status->str++; break;
-			case 2: base_status->agi++; break;
-			case 3: base_status->vit++; break;
-			case 4: base_status->int_++; break;
-			case 5: base_status->dex++; break;
-			case 6: base_status->luk++; break;
-		}
+	std::shared_ptr<s_job_info> job_info = job_db.find( pc_mapid2jobid( sd->class_, sd->status.sex ) );
+
+	if( job_info != nullptr ){
+		const auto& bonus = job_info->job_bonus[sd->status.job_level-1];
+
+		base_status->str += bonus[PARAM_STR];
+		base_status->agi += bonus[PARAM_AGI];
+		base_status->vit += bonus[PARAM_VIT];
+		base_status->int_ += bonus[PARAM_INT];
+		base_status->dex += bonus[PARAM_DEX];
+		base_status->luk += bonus[PARAM_LUK];
+		base_status->pow += bonus[PARAM_POW];
+		base_status->sta += bonus[PARAM_STA];
+		base_status->wis += bonus[PARAM_WIS];
+		base_status->spl += bonus[PARAM_SPL];
+		base_status->con += bonus[PARAM_CON];
+		base_status->crt += bonus[PARAM_CRT];
 	}
 
 	// If a Super Novice has never died and is at least joblv 70, he gets all stats +10

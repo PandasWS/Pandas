@@ -439,10 +439,6 @@
 // ============================================================================
 
 #ifdef Pandas_PacketFunction
-	// 是否实现 0xb0d 封包发送函数 [Sola丶小克]
-	// 该封包用于告诉客户端移除指定单位的特效, 实现特性的精细化控制
-	#define Pandas_PacketFunction_RemoveSpecialEffect
-
 	// 是否实现冒险家中介所相关的封包处理函数 [Sola丶小克]
 	// 用于响应客户端中冒险者中介所的加入队伍请求, 包含了队长进行确认的相关逻辑
 	#if PACKETVER >= 20200300
@@ -683,17 +679,11 @@
 	// 是否启用角色光环机制 [Sola丶小克]
 	// 此选项依赖以下拓展, 任意一个不成立则将会 undef 此选项的定义
 	// - Pandas_Struct_Unit_CommonData_Aura
-	// - Pandas_PacketFunction_RemoveSpecialEffect (特定客户端版本下依赖)
 	#define Pandas_Aura_Mechanism
 
 	#ifndef Pandas_Struct_Unit_CommonData_Aura
 		#undef Pandas_Aura_Mechanism
 	#endif // Pandas_Struct_Unit_CommonData_Aura
-	#if PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
-		#ifndef Pandas_PacketFunction_RemoveSpecialEffect
-			#undef Pandas_Aura_Mechanism
-		#endif // Pandas_PacketFunction_RemoveSpecialEffect
-	#endif // PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
 
 	// 优化对极端计算的支持 (AKA: 变态服拓展包) [Sola丶小克]
 	// 主要用来解决因为 rAthena 主要定位于仿官服带来的各种数值计算的限制
