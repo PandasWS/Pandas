@@ -178,7 +178,7 @@ void aura_effects_clear(struct block_list* bl) {
 	if (!ucd) return;
 
 	for (auto &it : ucd->aura.effects) {
-		clif_removespecialeffect(bl, it->effect_id, AREA);
+		clif_specialeffect_remove(bl, it->effect_id, AREA, bl);
 		if (it->replay_tid != INVALID_TIMER) {
 			delete_timer(it->replay_tid, aura_effects_timer);
 			it->replay_tid = INVALID_TIMER;
