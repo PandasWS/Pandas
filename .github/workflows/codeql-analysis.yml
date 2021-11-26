@@ -6,8 +6,13 @@ jobs:
   analyze-cpp:
     name: Analyze - C++
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
     strategy:
+      fail-fast: false
       matrix:
         compiler_version: [9]
         build_type: ['Debug'] # 'RelWithDebInfo'
@@ -18,7 +23,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        fetch-depth: 2
+        fetch-depth: 1
 
     - name: Preparing dependencies
       run: |
@@ -66,12 +71,16 @@ jobs:
   analyze-python:
     name: Analyze - Python
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        fetch-depth: 2
+        fetch-depth: 1
 
     - name: Install pipenv
       run: pipx install pipenv
@@ -100,3 +109,4 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
+
