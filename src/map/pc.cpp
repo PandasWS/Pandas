@@ -6481,7 +6481,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 	nullpo_retr(SETPOS_OK,sd);
 
 #ifdef Pandas_Crashfix_PC_Setpos_With_Invaild_Player
-	if (!sd->fd)
+	if (sd->bl.type != BL_PC || sd->bl.id != sd->status.account_id)
 		return SETPOS_OK;
 #endif // Pandas_Crashfix_PC_Setpos_With_Invaild_Player
 
