@@ -1000,6 +1000,16 @@
 	// 但是释放后没有将对应的指针设为 NULL. 导致上述重现步骤中 script_free_state 函数针对 st->script->local.vars 
 	// 和 st->script->local.arrays 的空指针判断被绕过, 继而触发崩溃
 	#define Pandas_Crashfix_ScriptFreeCode_SetPointerNull
+
+	// 修正 pc_setpos 在特殊操作情况下可能会导致崩溃的问题 [Sola丶小克]
+	// 
+	// 重现方法:
+	// - 构造一个 NPC, 对话开始时 sleep 5000 然后用 atcommand 指令调用 @warp
+	// - 玩家与其对话然后立刻下线, 时间到之后会触发 warp 指令并导致崩溃
+	// 
+	// 因为触发 atcommand 的时候角色已经下线, 因此 atcommand_sub 会生成一个 dummy_sd 来替代,
+	// 而 dummy_sd 并非真实存在的 sd 对象, 最后会导致地图服务器崩溃
+	#define Pandas_Crashfix_PC_Setpos_With_Invaild_Player
 #endif // Pandas_Crashfix
 
 // ============================================================================
