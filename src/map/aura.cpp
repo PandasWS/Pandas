@@ -158,6 +158,11 @@ TIMER_FUNC(aura_effects_timer) {
 //************************************ 
 bool aura_need_hiding(struct block_list* bl) {
 	if (!bl) return true;
+
+	// 宠物没有 status_change, 当前也没有什么技能或者状态可以隐藏宠物,
+	// 因此如果是宠物的话, 就默认为无需隐藏.
+	if (bl->type == BL_PET) return false;
+
 	struct status_change* sc = status_get_sc(bl);
 	if (!sc) return true;
 	return status_ishiding(bl) || status_isinvisible(bl) || sc->data[SC_CAMOUFLAGE];
@@ -248,9 +253,10 @@ void aura_refresh_client(struct block_list* bl) {
 		break;
 	}
 	case BL_MOB:
-		// 若是魔物的话, 可以用 clif_clearunit_area 直接发 CLR_TRICKDEAD 清理缓存
-		// 而不是和 else 分支一样广播 clif_outsight 封包
-		// 这样魔物移动过程中发生光环替换的时候, 才不会有明显的消失后再出现的效果
+	case BL_PET:
+		// 若是魔物或宠物的话则使用 clif_clearunit_area 直接发 CLR_TRICKDEAD 清理缓存,
+		// 而不是和 else 分支一样广播 clif_outsight 封包,
+		// 否则单位在移动过程中发生光环替换的时候会有明显的消失后再出现的效果.
 		if (mapdata && mapdata->users) {
 			clif_clearunit_area(bl, CLR_TRICKDEAD);
 			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
