@@ -114,21 +114,3 @@ bool hasCallfunc(std::string script) {
 	return isRegexMatched(R"(.*?callfunc(\s.*|\(\s*)\"(.*?)\".*?)", script);
 }
 
-#ifdef Pandas_MapFlag_NoMail
-//************************************
-// Method:		mapflag_helper_nomail
-// Description:	玩家的所在的地图是否启用了 nomail 地图标记
-// Parameter:	struct map_session_data * sd
-// Returns:		bool 是否禁用邮件系统
-//************************************
-bool mapflag_helper_nomail(struct map_session_data *sd) {
-	nullpo_retr(false, sd);
-
-	if (sd && map_getmapflag(sd->bl.m, MF_NOMAIL)) {
-		clif_displaymessage(sd->fd, msg_txt_cn(sd, 95));
-		return true;
-	}
-
-	return false;
-}
-#endif // Pandas_MapFlag_NoMail

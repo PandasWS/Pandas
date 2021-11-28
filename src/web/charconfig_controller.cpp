@@ -13,6 +13,8 @@
 #include "sqllock.hpp"
 #include "web.hpp"
 
+#ifndef Pandas_WebServer_Rewrite_Controller_HandlerFunc
+
 HANDLER_FUNC(charconfig_save) {
 	if (!isAuthorized(req, false)) {
 		res.status = 400;
@@ -33,7 +35,7 @@ HANDLER_FUNC(charconfig_save) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
 			char_configs_table)
@@ -109,7 +111,7 @@ HANDLER_FUNC(charconfig_load) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
 			char_configs_table)
@@ -152,3 +154,165 @@ HANDLER_FUNC(charconfig_load) {
 	databuf[sizeof(databuf) - 1] = 0;
 	res.set_content(databuf, "application/json");
 }
+
+#else
+
+using namespace nlohmann;
+
+#define SUCCESS_RET 1
+#define FAILURE_RET 3
+#define REQUIRE_FIELD_EXISTS(x) REQUIRE_FIELD_EXISTS_T(x)
+
+HANDLER_FUNC(charconfig_save) {
+	if (!isAuthorized(req, false)) {
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
+		return;
+	}
+
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("GID");
+	REQUIRE_FIELD_EXISTS("WorldName");
+	REQUIRE_FIELD_EXISTS("data");
+	
+	auto account_id = GET_NUMBER_FIELD("AID", 0);
+	auto char_id = GET_NUMBER_FIELD("GID", 0);
+	auto world_name = GET_STRING_FIELD("WorldName", "");
+	auto data = GET_STRING_FIELD("data", "");
+
+	if (!isVaildCharacter(account_id, char_id)) {
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
+		return;
+	}
+
+	SQLLock weblock(WEB_SQL_LOCK);
+	weblock.lock();
+	auto handle = weblock.getHandle();
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
+	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+		"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
+		char_configs_table)
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
+		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+	) {
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
+		RETURN_STMT_FAILURE(stmt, weblock);
+	}
+
+	// 客户端只会回传被修改过的那部分数据, 没有修改过的不会发送给服务端
+	// 完整的数据是服务端记录的内容 + 本次客户端回传的内容, 因此需要先读取服务端保存的内容然后再进行合并存档
+
+	char databuf[10000] = { 0 };
+
+	if (SQL_SUCCESS == SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
+		&& SQL_SUCCESS == SqlStmt_NextRow(stmt)
+		) {
+		databuf[sizeof(databuf) - 1] = 0;
+
+		// 能执行到这里说明数据库中已经有 data 数据, 并且已经被成功读取到 databuf 缓冲区
+		// 接下来以 databuf 的内容为基础, 用 data 的内容作为补丁进行合并
+
+		if (strlen(databuf) != 0) {
+			json data_from_db = json::parse(A2UWE(databuf));
+			json data_from_client = json::parse(req.get_file_value("data").content);
+
+			data_from_db.merge_patch_v2(data_from_client, false);
+			data = U2AWE(data_from_db.dump(3));
+		}
+	}
+
+	if (SqlStmt_NumRows(stmt) <= 0) {
+		if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+			"INSERT INTO `%s` (`account_id`, `char_id`, `world_name`, `data`) VALUES (?, ?, ?, ?)",
+			char_configs_table)
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
+			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		) {
+			make_response(res, FAILURE_RET, "An error occurred while inserting data.");
+			RETURN_STMT_FAILURE(stmt, weblock);
+		}
+	} else {
+		if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+			"UPDATE `%s` SET `data` = ? WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?)",
+			char_configs_table)
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &account_id, sizeof(account_id))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_INT, &char_id, sizeof(char_id))
+			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
+			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		) {
+			make_response(res, FAILURE_RET, "An error occurred while updating data.");
+			RETURN_STMT_FAILURE(stmt, weblock);
+		}
+	}
+
+	make_response(res, SUCCESS_RET);
+	RETURN_STMT_SUCCESS(stmt, weblock);
+}
+
+HANDLER_FUNC(charconfig_load) {
+	if (!isAuthorized(req, false)) {
+		make_response(res, FAILURE_RET, "Authorization verification failure.");
+		return;
+	}
+
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("GID");
+	REQUIRE_FIELD_EXISTS("WorldName");
+
+	auto account_id = GET_NUMBER_FIELD("AID", 0);
+	auto char_id = GET_NUMBER_FIELD("GID", 0);
+	auto world_name = GET_STRING_FIELD("WorldName", "");
+
+	if (!isVaildCharacter(account_id, char_id)) {
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
+		return;
+	}
+
+	SQLLock weblock(WEB_SQL_LOCK);
+	weblock.lock();
+	auto handle = weblock.getHandle();
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
+	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+		"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
+		char_configs_table)
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
+		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+	) {
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
+		RETURN_STMT_FAILURE(stmt, weblock);
+	}
+
+	if (SqlStmt_NumRows(stmt) <= 0) {
+		//ShowDebug("[AccountID: %d, World: \"%s\"] Not found in table, sending new info.\n", account_id, U2ACE(req.get_file_value("WorldName").content).c_str());
+		make_response(res, SUCCESS_RET);
+		RETURN_STMT_SUCCESS(stmt, weblock);
+	}
+
+	char databuf[10000] = { 0 };
+
+	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
+	) {
+		make_response(res, FAILURE_RET, "An error occurred while binding column.");
+		RETURN_STMT_FAILURE(stmt, weblock);
+	}
+
+	databuf[sizeof(databuf) - 1] = 0;
+
+	json response = {};
+	response = json::parse(A2UWE(databuf));
+	response["Type"] = SUCCESS_RET;
+	make_response(res, response);
+	RETURN_STMT_SUCCESS(stmt, weblock);
+}
+
+#endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc

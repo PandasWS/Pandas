@@ -5,6 +5,7 @@
 #define WEB_HPP
 
 #include <string>
+#include <httplib.h>
 
 #include "../common/cbasetypes.hpp"
 #include "../common/core.hpp" // CORE_ST_LAST
@@ -12,6 +13,32 @@
 #include "../common/timer.hpp"
 #include "../config/core.hpp"
 
+#include "../common/utf8.hpp"
+#include "../../3rdparty/nlohmann_json/json.hpp"
+
+#ifdef Pandas_WebServer_Database_EncodingAdaptive
+	// Utf8 to Ansi with Web Encoding
+	#define U2AWE(x) PandasUtf8::utf8ToAnsi(x, !stricmp(web_connection_encoding, "latin1") ? character_codepage : web_connection_encoding)
+	// Ansi to Utf8 with Web Encoding
+	#define A2UWE(x) PandasUtf8::ansiToUtf8(x, !stricmp(web_connection_encoding, "latin1") ? character_codepage : web_connection_encoding)
+#else
+	// Utf8 to Ansi with Web Encoding
+	#define U2AWE(x) x
+	// Ansi to Utf8 with Web Encoding
+	#define A2UWE(x) x
+#endif // Pandas_WebServer_Database_EncodingAdaptive
+
+#ifdef Pandas_WebServer_Console_EncodingAdaptive
+	// Utf8 to Ansi with Console Encoding
+	#define U2ACE(x) PandasUtf8::utf8ToAnsi(x)
+	// Ansi to Utf8 with Console Encoding
+	#define A2UCE(x) PandasUtf8::ansiToUtf8(x)
+#else
+	// Utf8 to Ansi with Console Encoding
+	#define U2ACE(x) x
+	// Ansi to Utf8 with Console Encoding
+	#define A2UCE(x) x
+#endif // Pandas_WebServer_Console_EncodingAdaptive
 
 enum E_WEBSERVER_ST {
 	WEBSERVER_ST_RUNNING = CORE_ST_LAST,
@@ -38,8 +65,20 @@ extern char login_table[32];
 extern char guild_emblems_table[32];
 extern char user_configs_table[32];
 extern char char_configs_table[32];
+#ifdef Pandas_WebServer_Implement_MerchantStore
+extern char merchant_configs_table[32];
+#endif // Pandas_WebServer_Implement_MerchantStore
+#ifdef Pandas_WebServer_Implement_PartyRecruitment
+extern char recruitment_table[32];
+extern char party_table[32];
+#endif // Pandas_WebServer_Implement_PartyRecruitment
 extern char guild_db_table[32];
 extern char char_db_table[32];
+
+#ifdef Pandas_WebServer_Database_EncodingAdaptive
+extern char web_connection_encoding[32];
+extern char character_codepage[32];
+#endif // Pandas_WebServer_Database_EncodingAdaptive
 
 #define msg_config_read(cfgName) web_msg_config_read(cfgName)
 #define msg_txt(msg_number) web_msg_txt(msg_number)

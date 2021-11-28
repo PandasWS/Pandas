@@ -155,8 +155,6 @@ typedef uint32 t_itemid;
 #define MIN_STAR 0
 #define MAX_STAR 3
 
-#define MAX_STATUS_TYPE 5
-
 const t_itemid WEDDING_RING_M = 2634;
 const t_itemid WEDDING_RING_F = 2635;
 
@@ -649,6 +647,7 @@ struct mmo_charstatus {
 	char name[NAME_LENGTH];
 	unsigned int base_level,job_level;
 	pec_ushort str,agi,vit,int_,dex,luk;
+	pec_ushort pow,sta,wis,spl,con,crt;
 	unsigned char slot,sex;
 
 	uint32 mapip;

@@ -1483,6 +1483,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcExpress_MOBDROPITEM
 	NPCX_MOBDROPITEM,	// mobdropitem_express_name	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+	NPCX_PCATTACK,	// pcattack_express_name	// OnPCAttackExpress		// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX

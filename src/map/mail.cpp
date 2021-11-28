@@ -201,23 +201,21 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 
 			// Check if it exceeds the total weight
 			if( battle_config.mail_attachment_weight ){
-#ifndef Pandas_Fix_Mail_Attachment_Weight_Defects
-				for( j = 0; j < i; j++ ){
-#else
-				for (j = 0; j <= i; j++) {
+				// Sum up all items to get the current total weight
+				for( j = 0; j < MAIL_MAX_ITEM; j++ ){
+#ifdef Pandas_Fix_Mail_ItemAttachment_Check
 					if (sd->mail.item[j].nameid == 0) {
 						continue;
 					}
 
-#endif // Pandas_Fix_Mail_Attachment_Weight_Defects
-#ifdef Pandas_Crashfix_Prevent_NullPointer
 					if (!sd->inventory_data[sd->mail.item[j].index]) {
 						return MAIL_ATTACH_ERROR;
 					}
-#endif // Pandas_Crashfix_Prevent_NullPointer
+#endif // Pandas_Fix_Mail_ItemAttachment_Check
 					total += sd->mail.item[j].amount * ( sd->inventory_data[sd->mail.item[j].index]->weight / 10 );
 				}
 
+				// Add the newly added weight to the current total
 				total += amount * sd->inventory_data[idx]->weight / 10;
 
 				if( total > battle_config.mail_attachment_weight ){
@@ -237,23 +235,21 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 
 			// Check if it exceeds the total weight
 			if( battle_config.mail_attachment_weight ){
-#ifndef Pandas_Fix_Mail_Attachment_Weight_Defects
+				// Only need to sum up all entries until the new entry
 				for( j = 0; j < i; j++ ){
-#else
-				for (j = 0; j <= i; j++) {
+#ifdef Pandas_Fix_Mail_ItemAttachment_Check
 					if (sd->mail.item[j].nameid == 0) {
 						continue;
 					}
 
-#endif // Pandas_Fix_Mail_Attachment_Weight_Defects
-#ifdef Pandas_Crashfix_Prevent_NullPointer
 					if (!sd->inventory_data[sd->mail.item[j].index]) {
 						return MAIL_ATTACH_ERROR;
 					}
-#endif // Pandas_Crashfix_Prevent_NullPointer
+#endif // Pandas_Fix_Mail_ItemAttachment_Check
 					total += sd->mail.item[j].amount * ( sd->inventory_data[sd->mail.item[j].index]->weight / 10 );
 				}
 
+				// Add the newly added weight to the current total
 				total += amount * sd->inventory_data[idx]->weight / 10;
 
 				if( total > battle_config.mail_attachment_weight ){
@@ -436,8 +432,9 @@ int mail_openmail(struct map_session_data *sd)
 		return 0;
 
 #ifdef Pandas_MapFlag_NoMail
-	if (mapflag_helper_nomail(sd))
+	if (mail_invalid_operation(sd)) {
 		return 0;
+	}
 #endif // Pandas_MapFlag_NoMail
 
 	clif_Mail_window(sd->fd, 0);
@@ -473,15 +470,27 @@ bool mail_invalid_operation(struct map_session_data *sd)
 	if (!sd) return false;
 #endif // Pandas_Crashfix_FunctionParams_Verify
 
+#ifdef Pandas_MapFlag_NoMail
+	if (map_getmapflag(sd->bl.m, MF_NOMAIL)) {
+		clif_displaymessage(sd->fd, msg_txt_cn(sd, 95));
+		return true;
+	}
+#endif // Pandas_MapFlag_NoMail
+
 #if PACKETVER < 20150513
 	if( !map_getmapflag(sd->bl.m, MF_TOWN) && !pc_can_use_command(sd, "mail", COMMAND_ATCOMMAND) )
 	{
 		ShowWarning("clif_parse_Mail: char '%s' trying to do invalid mail operations.\n", sd->status.name);
 		return true;
 	}
-#endif
+#else
+	if( map_getmapflag( sd->bl.m, MF_NORODEX ) ){
+		clif_displaymessage( sd->fd, msg_txt( sd, 796 ) ); // You cannot use RODEX on this map.
+		return true;
+	}
 
 	return false;
+#endif
 }
 
 /**

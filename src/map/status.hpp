@@ -1023,6 +1023,10 @@ enum sc_type : int16 {
 
 	SC_SOULATTACK,
 
+	SC_WIDEWEB,
+	SC_BURNT,
+	SC_CHILL,
+
 #ifdef RENEWAL
 	SC_EXTREMITYFIST2, //! NOTE: This SC should be right before SC_MAX, so it doesn't disturb if RENEWAL is disabled
 #endif
@@ -2654,6 +2658,8 @@ struct status_data {
 		class_; /// see enum e_classAE
 
 	struct weapon_atk rhw, lhw; //Right Hand/Left Hand Weapon.
+
+	pec_ushort pow, sta, wis, spl, con, crt;
 };
 
 ///Additional regen data that only players have.

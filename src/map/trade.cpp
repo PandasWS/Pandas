@@ -48,7 +48,11 @@ void trade_traderequest(struct map_session_data *sd, struct map_session_data *ta
 	}
 
 	if (!battle_config.invite_request_check) {
+#ifndef Pandas_PacketFunction_PartyJoinRequest
 		if (target_sd->guild_invite > 0 || target_sd->party_invite > 0 || target_sd->adopt_invite) {
+#else
+		if (target_sd->guild_invite > 0 || target_sd->party_invite > 0 || target_sd->adopt_invite || target_sd->party_applicant) {
+#endif // Pandas_PacketFunction_PartyJoinRequest
 			clif_tradestart(sd, 2);
 			return;
 		}

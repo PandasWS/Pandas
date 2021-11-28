@@ -106,9 +106,11 @@ def insert_for_normal_mapflag(inject, options):
         inject.insert(InjectPoint.ATCOMMAND_MAPINFO, [
             '#ifdef %s' % define,
             '\tif (map_getmapflag(m_id, %s)) {' % constant,
-            '\t\tsprintf(atcmd_output, "%s {shortname}: %d |", atcmd_output, map_getmapflag_param(m_id, {constant}, {default_val}));'.format(
+            '\t\tchar mes[256] = { 0 };',
+            '\t\tsnprintf(mes, sizeof(mes), " {shortname}: %d |", map_getmapflag_param(m_id, {constant}, {default_val}));'.format(
                 shortname = define.replace('Pandas_MapFlag_', ''), constant = constant, default_val = default_val
             ),
+            '\t\tstrcat(atcmd_output, mes);',
             '\t}',
             '#endif // %s' % define
         ])

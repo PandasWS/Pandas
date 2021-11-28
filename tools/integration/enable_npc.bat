@@ -3,7 +3,7 @@
 setlocal enabledelayedexpansion
 
 rem switch to the npc folder
-cd ..\..\npc\
+cd npc\
 
 rem store the output destination
 set OUT=%CD%\scripts_custom.conf
