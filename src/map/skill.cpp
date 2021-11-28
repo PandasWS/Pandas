@@ -19141,6 +19141,15 @@ int skill_delunit(struct skill_unit* unit)
 				struct status_change *tsc = status_get_sc( map_id2bl(group->val2));
 				if( tsc && tsc->data[SC__MANHOLE] )
 					tsc->data[SC__MANHOLE]->val4 = 0; // Remove the Unit ID
+
+#ifdef Pandas_BattleConfig_Remove_Manhole_With_Status
+				if (tsc && tsc->data[SC__MANHOLE] && battle_config.remove_manhole_with_status) {
+					struct block_list* bl = map_id2bl(group->val2);
+					if (bl) {
+						status_change_end(bl, SC__MANHOLE, INVALID_TIMER);
+					}
+				}
+#endif // Pandas_BattleConfig_Remove_Manhole_With_Status
 			}
 			break;
 	}

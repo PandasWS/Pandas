@@ -355,6 +355,10 @@
 	// 是否启用 dead_area_size 配置选项及其功能 [Sola丶小克]
 	// 此选项用于设置魔物死亡封包将会发送给周围多少个格的玩家
 	#define Pandas_BattleConfig_Dead_Area_Size
+
+	// 是否启用 remove_manhole_with_status 配置选项及其功能 [Sola丶小克]
+	// 此选项用于设置当"人孔/黑洞陷阱"地面陷阱被移除的时候是否同时使被捕获的玩家脱困
+	#define Pandas_BattleConfig_Remove_Manhole_With_Status
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
