@@ -16298,19 +16298,6 @@ void clif_parse_HomAttack(int fd,struct map_session_data *sd)
 		bl = &sd->md->bl;
 	else return;
 
-#ifdef Pandas_MapFlag_NoAttack
-	if (sd->hd && map_getmapflag(sd->hd->bl.m, MF_NOATTACK)) {
-		if ((map_getmapflag_param(sd->hd->bl.m, MF_NOATTACK, 0) & BL_HOM) == BL_HOM)
-			return;
-	}
-#endif // Pandas_MapFlag_NoAttack
-#ifdef Pandas_MapFlag_NoAttack
-	if (sd->md && map_getmapflag(sd->md->bl.m, MF_NOATTACK)) {
-		if ((map_getmapflag_param(sd->md->bl.m, MF_NOATTACK, 0) & BL_MER) == BL_MER)
-			return;
-	}
-#endif // Pandas_MapFlag_NoAttack
-
 	unit_stop_attack(bl);
 	unit_attack(bl, target_id, action_type != 0);
 }
