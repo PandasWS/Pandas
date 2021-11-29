@@ -760,6 +760,10 @@
 	export_constant(MF_NOATTACK);
 #endif // Pandas_MapFlag_NoAttack
 
+#ifdef Pandas_MapFlag_NoAttack2
+	export_constant(MF_NOATTACK2);
+#endif // Pandas_MapFlag_NoAttack2
+
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
 	/* setcell types */

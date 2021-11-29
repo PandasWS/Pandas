@@ -4596,6 +4596,13 @@ ACMD_FUNC(mapinfo) {
 	if (map_getmapflag(m_id, MF_NOATTACK))
 		strcat(atcmd_output, " NoAttack |");
 #endif // Pandas_MapFlag_NoAttack
+#ifdef Pandas_MapFlag_NoAttack2
+	if (map_getmapflag(m_id, MF_NOATTACK2)) {
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " NoAttack2: %d |", map_getmapflag_param(m_id, MF_NOATTACK2, 0));
+		strcat(atcmd_output, mes);
+	}
+#endif // Pandas_MapFlag_NoAttack2
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
@@ -8776,6 +8783,10 @@ ACMD_FUNC(mapflag) {
 #ifdef Pandas_MapFlag_MaxASPD
 			disabled_mf.insert(disabled_mf.begin(), MF_MAXASPD);
 #endif // Pandas_MapFlag_MaxASPD
+
+#ifdef Pandas_MapFlag_NoAttack2
+			disabled_mf.insert(disabled_mf.begin(), MF_NOATTACK2);
+#endif // Pandas_MapFlag_NoAttack2
 
 			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
 
