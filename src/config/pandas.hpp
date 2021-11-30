@@ -1293,6 +1293,13 @@
 		// 事件类型: Filter / 事件名称: OnPCPartyLeaveFilter
 		// 常量名称: NPCF_PARTYLEAVE / 变量名称: partyleave_filter_name
 		#define Pandas_NpcFilter_PARTYLEAVE
+
+		// 当玩家丢弃道具时触发过滤器 [人鱼姬的思念]
+		// 事件类型: Filter / 事件名称: OnPCDropItemFilter
+		// 常量名称: NPCF_DROP_ITEM / 变量名称: drop_item_filter_name
+		#define Pandas_NpcFilter_DROP_ITEM
+
+
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 

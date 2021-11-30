@@ -1419,6 +1419,10 @@ enum npce_event : uint8 {
 #endif // Pandas_NpcFilter_PARTYLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
+#ifdef Pandas_NpcFilter_DROP_ITEM
+	NPCF_DROP_ITEM,	// use_item_filter_name	// OnPCUseItemFilter		// 当玩家丢弃道具时触发过滤器 [人鱼姬的思念]
+#endif // Pandas_NpcFilter_DROP_ITEM
+
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/

@@ -365,6 +365,10 @@ struct Script_Config script_config = {
 #endif // Pandas_NpcFilter_PARTYLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
+#ifdef Pandas_NpcFilter_DROP_ITEM
+	"OnPCDropItemFilter",	// NPCF_USE_ITEM		// use_item_filter_name	// 当玩家丢弃道具时触发过滤器 [人鱼姬的思念]
+#endif // Pandas_NpcFilter_DROP_ITEM
+
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/

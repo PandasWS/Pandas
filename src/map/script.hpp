@@ -241,6 +241,11 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_PARTYLEAVE
 	const char* partyleave_filter_name;	// NPCF_PARTYLEAVE	// OnPCPartyLeaveFilter	// 当玩家准备离开队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYLEAVE
+
+#ifdef Pandas_NpcFilter_DROP_ITEM
+	const char* drop_item_filter_name;	// NPCF_USE_ITEM	// OnPCUseItemFilter	// 当玩家丢弃道具时触发过滤器 [人鱼姬的思念]
+#endif // Pandas_NpcFilter_DROP_ITEM
+
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/

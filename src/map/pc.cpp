@@ -5554,6 +5554,14 @@ bool pc_dropitem(struct map_session_data *sd,int n,int amount)
 	if(amount <= 0)
 		return false;
 
+#ifdef Pandas_NpcFilter_DROP_ITEM
+	pc_setreg(sd, add_str("@drop_idx"), n);
+	pc_setreg(sd, add_str("@drop_itemid"), sd->inventory.u.items_inventory[n].nameid);
+	pc_setreg(sd, add_str("@drop_amount"), amount);
+	if (npc_script_filter(sd, NPCF_DROP_ITEM))
+		return false;
+#endif // Pandas_NpcFilter_DROP_ITEM
+
 	if(sd->inventory.u.items_inventory[n].nameid == 0 ||
 		sd->inventory.u.items_inventory[n].amount <= 0 ||
 		sd->inventory.u.items_inventory[n].amount < amount ||
