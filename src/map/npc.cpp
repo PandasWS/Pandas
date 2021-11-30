@@ -5232,7 +5232,7 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #endif // Pandas_NpcFilter_PARTYLEAVE
 
 #ifdef Pandas_NpcFilter_DROP_ITEM
-	NPCF_DROP_ITEM,	// use_item_filter_name	// OnPCUseItemFilter		// 当玩家丢弃道具时触发过滤器 [人鱼姬的思念]
+		NPCF_DROP_ITEM,	// use_item_filter_name	// OnPCUseItemFilter		// 当玩家丢弃道具时触发过滤器 [人鱼姬的思念]
 #endif // Pandas_NpcFilter_DROP_ITEM
 
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>

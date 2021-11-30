@@ -5548,12 +5548,6 @@ bool pc_dropitem(struct map_session_data *sd,int n,int amount)
 {
 	nullpo_retr(1, sd);
 
-	if(n < 0 || n >= P_MAX_INVENTORY(sd))
-		return false;
-
-	if(amount <= 0)
-		return false;
-
 #ifdef Pandas_NpcFilter_DROP_ITEM
 	pc_setreg(sd, add_str("@drop_idx"), n);
 	pc_setreg(sd, add_str("@drop_itemid"), sd->inventory.u.items_inventory[n].nameid);
@@ -5561,6 +5555,14 @@ bool pc_dropitem(struct map_session_data *sd,int n,int amount)
 	if (npc_script_filter(sd, NPCF_DROP_ITEM))
 		return false;
 #endif // Pandas_NpcFilter_DROP_ITEM
+
+	if(n < 0 || n >= P_MAX_INVENTORY(sd))
+		return false;
+
+	if(amount <= 0)
+		return false;
+
+
 
 	if(sd->inventory.u.items_inventory[n].nameid == 0 ||
 		sd->inventory.u.items_inventory[n].amount <= 0 ||
@@ -5584,6 +5586,9 @@ bool pc_dropitem(struct map_session_data *sd,int n,int amount)
 		clif_displaymessage (sd->fd, msg_txt(sd,263));
 		return false;
 	}
+
+
+
 
 #ifndef Pandas_Fix_Item_Trade_FloorDropable
 	if (!map_addflooritem(&sd->inventory.u.items_inventory[n], amount, sd->bl.m, sd->bl.x, sd->bl.y, 0, 0, 0, 2, 0))
