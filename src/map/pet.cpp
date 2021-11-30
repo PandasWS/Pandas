@@ -1808,6 +1808,7 @@ static int pet_ai_sub_hard(struct pet_data *pd, struct map_session_data *sd, t_t
 
 			return 0;
 		}
+
 		//Continuous attack.
 		unit_attack(&pd->bl, pd->target_id, 1);
 	} else { // Item Targeted, attempt loot
