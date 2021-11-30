@@ -2408,7 +2408,24 @@ int unit_attack(struct block_list *src,int target_id,int continuous)
 	struct unit_data  *ud;
 	int range;
 
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	nullpo_ret(src);
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	nullpo_ret(ud = unit_bl2ud(src));
+
+#ifdef Pandas_MapFlag_NoAttack
+	if (src && map_getmapflag(src->m, MF_NOATTACK))
+		return 1;
+#endif // Pandas_MapFlag_NoAttack
+
+#ifdef Pandas_MapFlag_NoAttack2
+	if (src && map_getmapflag(src->m, MF_NOATTACK2)) {
+		if ((map_getmapflag_param(src->m, MF_NOATTACK2, 0) & src->type) == src->type) {
+			return 1;
+		}
+	}
+#endif // Pandas_MapFlag_NoAttack2
 
 	target = map_id2bl(target_id);
 	if( target == NULL || status_isdead(target) ) {
