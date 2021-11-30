@@ -1298,8 +1298,6 @@
 		// 事件类型: Filter / 事件名称: OnPCDropItemFilter
 		// 常量名称: NPCF_DROP_ITEM / 变量名称: drop_item_filter_name
 		#define Pandas_NpcFilter_DROP_ITEM
-
-
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
