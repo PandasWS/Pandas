@@ -524,6 +524,8 @@ struct Battle_Config
 	int max_third_trans_parameter;
 	int max_extended_parameter;
 	int max_summoner_parameter;
+	int max_fourth_parameter;
+	int max_fourth_trait;
 	int max_third_aspd;
 	int max_summoner_aspd;
 	int vcast_stat_scale;
@@ -759,11 +761,14 @@ struct Battle_Config
 	int batrec_autoenabled_unit;			// 有哪些单位默认开启战斗记录 [Sola丶小克]
 #endif // Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
 #ifdef Pandas_BattleConfig_Repeat_ClearUnit_Interval
-	int repeat_clearunit_interval;
+	int repeat_clearunit_interval;			// 重发魔物死亡封包的间隔时间 [Sola丶小克]
 #endif // Pandas_BattleConfig_Repeat_ClearUnit_Interval
 #ifdef Pandas_BattleConfig_Dead_Area_Size
-	int dead_area_size;
+	int dead_area_size;						// 魔物死亡封包将会发送给周围多少个格的玩家 [Sola丶小克]
 #endif // Pandas_BattleConfig_Dead_Area_Size
+#ifdef Pandas_BattleConfig_Remove_Manhole_With_Status
+	int remove_manhole_with_status;			// 当"人孔/黑洞陷阱"地面陷阱被移除的时候, 是否同时使被捕获的玩家立即脱困 [Sola丶小克]
+#endif // Pandas_BattleConfig_Remove_Manhole_With_Status
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

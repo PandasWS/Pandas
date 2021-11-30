@@ -10126,39 +10126,27 @@ void clif_specialeffect_value(struct block_list* bl, int effect_id, int num, sen
 	}
 }
 
-#ifdef Pandas_PacketFunction_RemoveSpecialEffect
-void clif_removespecialeffect(struct block_list* bl, int effect_id, send_target target) {
-#if PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
-	nullpo_retv(bl);
+void clif_specialeffect_remove(struct block_list* bl_src, int effect, enum send_target e_target, struct block_list* bl_target)
+{
+#if PACKETVER >= 20181002
+	nullpo_retv( bl_src );
+	nullpo_retv( bl_target );
 
-	PACKET_ZC_REMOVE_EFFECT packet = { 0 };
-	packet.packetType = 0xb0d;
-	packet.aid = bl->id;
-	packet.effectId = effect_id;
+	struct PACKET_ZC_REMOVE_EFFECT p = {};
 
-	clif_send(&packet, sizeof(packet), bl, target);
+	p.packetType = HEADER_ZC_REMOVE_EFFECT;
+	p.aid = bl_src->id;
+	p.effectId = effect;
 
-	if (disguised(bl)) {
-		packet.aid = disguised_bl_id(bl->id);
-		clif_send(&packet, sizeof(packet), bl, SELF);
+	clif_send( &p, sizeof( struct PACKET_ZC_REMOVE_EFFECT ), bl_target, e_target );
+
+	if( disguised(bl_src) )
+	{
+		p.aid = disguised_bl_id( bl_src->id );
+		clif_send( &p, sizeof( struct PACKET_ZC_REMOVE_EFFECT ), bl_src, SELF );
 	}
-#endif // PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
+#endif
 }
-
-void clif_removespecialeffect_single(struct block_list* bl, int effect_id, struct block_list* to_target) {
-#if PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
-	nullpo_retv(bl);
-	nullpo_retv(to_target);
-
-	PACKET_ZC_REMOVE_EFFECT packet = { 0 };
-	packet.packetType = 0xb0d;
-	packet.aid = bl->id;
-	packet.effectId = effect_id;
-
-	clif_send(&packet, sizeof(packet), to_target, SELF);
-#endif // PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
-}
-#endif // Pandas_PacketFunction_RemoveSpecialEffect
 
 /// Monster/NPC color chat [SnakeDrak] (ZC_NPC_CHAT).
 /// 02c1 <packet len>.W <id>.L <color>.L <message>.?B

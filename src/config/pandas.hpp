@@ -70,7 +70,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.7.0"
+	#define Pandas_Version "1.1.8.1"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -355,6 +355,10 @@
 	// 是否启用 dead_area_size 配置选项及其功能 [Sola丶小克]
 	// 此选项用于设置魔物死亡封包将会发送给周围多少个格的玩家
 	#define Pandas_BattleConfig_Dead_Area_Size
+
+	// 是否启用 remove_manhole_with_status 配置选项及其功能 [Sola丶小克]
+	// 此选项用于设置当"人孔/黑洞陷阱"地面陷阱被移除的时候是否同时使被捕获的玩家脱困
+	#define Pandas_BattleConfig_Remove_Manhole_With_Status
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
@@ -439,10 +443,6 @@
 // ============================================================================
 
 #ifdef Pandas_PacketFunction
-	// 是否实现 0xb0d 封包发送函数 [Sola丶小克]
-	// 该封包用于告诉客户端移除指定单位的特效, 实现特性的精细化控制
-	#define Pandas_PacketFunction_RemoveSpecialEffect
-
 	// 是否实现冒险家中介所相关的封包处理函数 [Sola丶小克]
 	// 用于响应客户端中冒险者中介所的加入队伍请求, 包含了队长进行确认的相关逻辑
 	#if PACKETVER >= 20200300
@@ -683,17 +683,11 @@
 	// 是否启用角色光环机制 [Sola丶小克]
 	// 此选项依赖以下拓展, 任意一个不成立则将会 undef 此选项的定义
 	// - Pandas_Struct_Unit_CommonData_Aura
-	// - Pandas_PacketFunction_RemoveSpecialEffect (特定客户端版本下依赖)
 	#define Pandas_Aura_Mechanism
 
 	#ifndef Pandas_Struct_Unit_CommonData_Aura
 		#undef Pandas_Aura_Mechanism
 	#endif // Pandas_Struct_Unit_CommonData_Aura
-	#if PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
-		#ifndef Pandas_PacketFunction_RemoveSpecialEffect
-			#undef Pandas_Aura_Mechanism
-		#endif // Pandas_PacketFunction_RemoveSpecialEffect
-	#endif // PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002
 
 	// 优化对极端计算的支持 (AKA: 变态服拓展包) [Sola丶小克]
 	// 主要用来解决因为 rAthena 主要定位于仿官服带来的各种数值计算的限制
@@ -1010,6 +1004,16 @@
 	// 但是释放后没有将对应的指针设为 NULL. 导致上述重现步骤中 script_free_state 函数针对 st->script->local.vars 
 	// 和 st->script->local.arrays 的空指针判断被绕过, 继而触发崩溃
 	#define Pandas_Crashfix_ScriptFreeCode_SetPointerNull
+
+	// 修正 pc_setpos 在特殊操作情况下可能会导致崩溃的问题 [Sola丶小克]
+	// 
+	// 重现方法:
+	// - 构造一个 NPC, 对话开始时 sleep 5000 然后用 atcommand 指令调用 @warp
+	// - 玩家与其对话然后立刻下线, 时间到之后会触发 warp 指令并导致崩溃
+	// 
+	// 因为触发 atcommand 的时候角色已经下线, 因此 atcommand_sub 会生成一个 dummy_sd 来替代,
+	// 而 dummy_sd 并非真实存在的 sd 对象, 最后会导致地图服务器崩溃
+	#define Pandas_Crashfix_PC_Setpos_With_Invaild_Player
 #endif // Pandas_Crashfix
 
 // ============================================================================

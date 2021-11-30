@@ -8,8 +8,8 @@
 
 <div align="center">
   <!-- Build Status -->
-  <a href="https://ci.appveyor.com/project/PandasWS/Pandas/branch/master">
-    <img alt="Build Status" src="https://img.shields.io/appveyor/build/PandasWS/Pandas/master?style=flat-square">
+  <a href="https://github.com/PandasWS/Pandas/actions/workflows/build-and-test.yml">
+    <img alt="Build Status" src="https://img.shields.io/github/workflow/status/PandasWS/Pandas/Build%20And%20Test?style=flat-square">
   </a>
 
   <!-- LGTM Alerts -->
