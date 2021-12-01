@@ -4187,6 +4187,10 @@ void clif_initialstatus(struct map_session_data *sd) {
 	clif_updatestatus(sd, SP_DEF2);
 	clif_updatestatus(sd, SP_MDEF1);
 	clif_updatestatus(sd, SP_MDEF2);
+	clif_updatestatus(sd, SP_HIT);
+	clif_updatestatus(sd, SP_CRITICAL);
+	clif_updatestatus(sd, SP_FLEE1);
+	clif_updatestatus(sd, SP_FLEE2);
 #endif // Pandas_Extreme_Computing
 }
 
