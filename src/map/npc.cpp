@@ -21,7 +21,6 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "chat.hpp"
@@ -460,88 +459,81 @@ static int npc_cloaked_sub(struct block_list *bl, va_list ap)
 /*==========================================
  * Disable / Enable NPC
  *------------------------------------------*/
-bool npc_enable_target(const char* name, uint32 char_id, int flag)
+bool npc_enable_target(npc_data& nd, uint32 char_id, e_npcv_status flag)
 {
-	struct npc_data* nd = npc_name2id(name);
-
-	if (!nd) {
-		ShowError("npc_enable: Attempted to %s a non-existing NPC '%s' (flag=%d).\n", (flag&11) ? "show" : "hide", name, flag);
-		return false;
-	}
-
-	if (char_id > 0 && (flag & 24)) {
+	if (char_id > 0 && (flag & NPCVIEW_CLOAK)) {
 		map_session_data *sd = map_charid2sd(char_id);
 	
 		if (!sd) {
-			ShowError("npc_enable: Attempted to %s a NPC '%s' on an invalid target %d.\n", (flag & 8) ? "show" : "hide", name, char_id);
+			ShowError("npc_enable: Attempted to %s a NPC '%s' on an invalid target %d.\n", (flag & NPCVIEW_VISIBLE) ? "show" : "hide", nd.name, char_id);
 			return false;
 		}
 
-		unsigned int option = nd->sc.option;
-		if (flag&8)
-			nd->sc.option &= ~OPTION_CLOAK;
+		unsigned int option = nd.sc.option;
+		if (flag & NPCVIEW_CLOAKOFF)
+			nd.sc.option &= ~OPTION_CLOAK;
 		else
-			nd->sc.option |= OPTION_CLOAK;
+			nd.sc.option |= OPTION_CLOAK;
 
-		auto it = std::find(sd->cloaked_npc.begin(), sd->cloaked_npc.end(), nd->bl.id);
+		auto it = std::find(sd->cloaked_npc.begin(), sd->cloaked_npc.end(), nd.bl.id);
 	
-		if (it == sd->cloaked_npc.end() && option != nd->sc.option)
-			sd->cloaked_npc.push_back(nd->bl.id);
-		else if (it != sd->cloaked_npc.end() && option == nd->sc.option)
+		if (it == sd->cloaked_npc.end() && option != nd.sc.option)
+			sd->cloaked_npc.push_back(nd.bl.id);
+		else if (it != sd->cloaked_npc.end() && option == nd.sc.option)
 			sd->cloaked_npc.erase(it);
 	
-		if (nd->class_ != JT_WARPNPC && nd->class_ != JT_GUILD_FLAG)
-			clif_changeoption_target(&nd->bl, &sd->bl);
+		if (nd.class_ != JT_WARPNPC && nd.class_ != JT_GUILD_FLAG)
+			clif_changeoption_target(&nd.bl, &sd->bl);
 		else {
-			if (nd->sc.option&(OPTION_HIDE|OPTION_INVISIBLE|OPTION_CLOAK))
-				clif_clearunit_single(nd->bl.id, CLR_OUTSIGHT, sd->fd);
+			if (nd.sc.option&(OPTION_HIDE|OPTION_INVISIBLE|OPTION_CLOAK))
+				clif_clearunit_single(nd.bl.id, CLR_OUTSIGHT, sd->fd);
 			else
-				clif_spawn(&nd->bl);
+				clif_spawn(&nd.bl);
 		}
-		nd->sc.option = option;
+		nd.sc.option = option;
 	}
 	else {
-		if (flag&1) {
-			nd->sc.option &= ~OPTION_INVISIBLE;
-			clif_spawn(&nd->bl);
+		if (flag & NPCVIEW_ENABLE) {
+			nd.sc.option &= ~OPTION_INVISIBLE;
+			clif_spawn(&nd.bl);
 		}
-		else if (flag&2)
-			nd->sc.option &= ~OPTION_HIDE;
-		else if (flag&4)
-			nd->sc.option |= OPTION_HIDE;
-		else if (flag&8)
-			nd->sc.option &= ~OPTION_CLOAK;
-		else if (flag&16)
-			nd->sc.option |= OPTION_CLOAK;
+		else if (flag & NPCVIEW_HIDEOFF)
+			nd.sc.option &= ~OPTION_HIDE;
+		else if (flag & NPCVIEW_HIDEON)
+			nd.sc.option |= OPTION_HIDE;
+		else if (flag & NPCVIEW_CLOAKOFF)
+			nd.sc.option &= ~OPTION_CLOAK;
+		else if (flag & NPCVIEW_CLOAKON)
+			nd.sc.option |= OPTION_CLOAK;
 		else {	//Can't change the view_data to invisible class because the view_data for all npcs is shared! [Skotlex]
-			nd->sc.option |= OPTION_INVISIBLE;
-			clif_clearunit_area(&nd->bl,CLR_OUTSIGHT);  // Hack to trick maya purple card [Xazax]
+			nd.sc.option |= OPTION_INVISIBLE;
+			clif_clearunit_area(&nd.bl,CLR_OUTSIGHT);  // Hack to trick maya purple card [Xazax]
 		}
-		if (nd->class_ != JT_WARPNPC && nd->class_ != JT_GUILD_FLAG)	//Client won't display option changes for these classes [Toms]
-			clif_changeoption(&nd->bl);
+		if (nd.class_ != JT_WARPNPC && nd.class_ != JT_GUILD_FLAG)	//Client won't display option changes for these classes [Toms]
+			clif_changeoption(&nd.bl);
 		else {
-			if (nd->sc.option&(OPTION_HIDE|OPTION_INVISIBLE|OPTION_CLOAK))
-				clif_clearunit_area(&nd->bl,CLR_OUTSIGHT);
+			if (nd.sc.option&(OPTION_HIDE|OPTION_INVISIBLE|OPTION_CLOAK))
+				clif_clearunit_area(&nd.bl,CLR_OUTSIGHT);
 			else
-				clif_spawn(&nd->bl);
+				clif_spawn(&nd.bl);
 		}
-		map_foreachinmap(npc_cloaked_sub, nd->bl.m, BL_PC, nd->bl.id);	// Because npc option has been updated we remove the npc id from sd->cloaked_npc
+		map_foreachinmap(npc_cloaked_sub, nd.bl.m, BL_PC, nd.bl.id);	// Because npc option has been updated we remove the npc id from sd->cloaked_npc
 	}
 
-	if (flag&11) {	// check if player standing on a OnTouchArea
+	if (flag & NPCVIEW_VISIBLE) {	// check if player standing on a OnTouchArea
 		int xs = -1, ys = -1;
-		switch (nd->subtype) {
+		switch (nd.subtype) {
 		case NPCTYPE_SCRIPT:
-			xs = nd->u.scr.xs;
-			ys = nd->u.scr.ys;
+			xs = nd.u.scr.xs;
+			ys = nd.u.scr.ys;
 			break;
 		case NPCTYPE_WARP:
-			xs = nd->u.warp.xs;
-			ys = nd->u.warp.ys;
+			xs = nd.u.warp.xs;
+			ys = nd.u.warp.ys;
 			break;
 		}
 		if (xs > -1 && ys > -1)
-			map_foreachinallarea( npc_enable_sub, nd->bl.m, nd->bl.x-xs, nd->bl.y-ys, nd->bl.x+xs, nd->bl.y+ys, BL_PC, nd );
+			map_foreachinallarea( npc_enable_sub, nd.bl.m, nd.bl.x-xs, nd.bl.y-ys, nd.bl.x+xs, nd.bl.y+ys, BL_PC, &nd );
 	}
 
 	return true;
@@ -2260,9 +2252,9 @@ uint8 npc_buylist(struct map_session_data* sd, uint16 n, struct s_npc_buy_list *
 	double z;
 	int i,j,k,w,skill,new_;
 #ifndef Pandas_FuncExtend_Increase_Inventory
-	uint8 market_index[MAX_INVENTORY];
+	uint8 market_index[G_MAX_INVENTORY];
 #else
-	int market_index[MAX_INVENTORY];
+	int market_index[G_MAX_INVENTORY];
 #endif // Pandas_FuncExtend_Increase_Inventory
 
 	nullpo_retr(3, sd);
@@ -3022,8 +3014,13 @@ int npc_parseview(const char* w4, const char* start, const char* buffer, const c
 
 		// Check if constant exists and get its value.
 		if(!script_get_constant(viewid, &val_tmp)) {
-			ShowWarning("npc_parseview: Invalid NPC constant '%s' specified in file '%s', line'%d'. Defaulting to INVISIBLE. \n", viewid, filepath, strline(buffer,start-buffer));
-			val = JT_INVISIBLE;
+			std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname(viewid);
+			if (mob != nullptr)
+				val = static_cast<int>(mob->vd.class_);
+			else {
+				ShowWarning("npc_parseview: Invalid NPC constant '%s' specified in file '%s', line'%d'. Defaulting to INVISIBLE. \n", viewid, filepath, strline(buffer,start-buffer));
+				val = JT_INVISIBLE;
+			}
 		} else
 			val = static_cast<int>(val_tmp);
 	}
@@ -4890,6 +4887,19 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 		}
 #endif // Pandas_MapFlag_MaxASPD
 
+#ifdef Pandas_MapFlag_NoAttack2
+		case MF_NOATTACK2: {
+			// 若脚本中 mapflag 指定的数值无效或为默认值: 0, 则立刻关闭这个地图标记
+			union u_mapflag_args args = {};
+
+			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 0 || !state)
+				map_setmapflag(m, mapflag, false);
+			else
+				map_setmapflag_sub(m, mapflag, true, &args);
+			break;
+		}
+#endif // Pandas_MapFlag_NoAttack2
+
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 7>
 
 		// All others do not need special treatment
@@ -5136,6 +5146,10 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_MOBDROPITEM
 		NPCX_MOBDROPITEM,	// mobdropitem_express_name	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+		NPCX_PCATTACK,	// pcattack_express_name	// OnPCAttackExpress		// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -5191,7 +5205,7 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #endif // Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
-		NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+		NPCF_CHANGETITLE,	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -5206,9 +5220,29 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 		NPCF_ONECLICK_IDENTIFY,	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
+#ifdef Pandas_NpcFilter_GUILDCREATE
+		NPCF_GUILDCREATE,	// guildcreate_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+		NPCF_GUILDJOIN,	// guildjoin_filter_name	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-		NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家离开公会(无论是自愿还是被踢), 触发此过滤器 [聽風]
+		NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDLEAVE
+
+#ifdef Pandas_NpcFilter_PARTYCREATE
+		NPCF_PARTYCREATE,	// partycreate_filter_name	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYCREATE
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+		NPCF_PARTYJOIN,	// partyjoin_filter_name	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYJOIN
+
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+		NPCF_PARTYLEAVE,	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYLEAVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -5367,7 +5401,7 @@ const char *npc_get_script_event_name(int npce_index)
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
 	case NPCF_CHANGETITLE:
-		return script_config.changetitle_filter_name;	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+		return script_config.changetitle_filter_name;	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -5385,10 +5419,35 @@ const char *npc_get_script_event_name(int npce_index)
 		return script_config.oneclick_identify_filter_name;	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	case NPCF_GUILDCREATE:
+		return script_config.guildcreate_filter_name;	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+	case NPCF_GUILDJOIN:
+		return script_config.guildjoin_filter_name;	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
 #ifdef Pandas_NpcFilter_GUILDLEAVE
 	case NPCF_GUILDLEAVE:
-		return script_config.guildleave_filter_name;	// OnPCGuildLeaveFilter		// 当玩家离开公会(无论是自愿还是被踢), 触发此过滤器 [聽風]
+		return script_config.guildleave_filter_name;	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDLEAVE
+
+#ifdef Pandas_NpcFilter_PARTYCREATE
+	case NPCF_PARTYCREATE:
+		return script_config.partycreate_filter_name;	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYCREATE
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	case NPCF_PARTYJOIN:
+		return script_config.partyjoin_filter_name;	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYJOIN
+
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+	case NPCF_PARTYLEAVE:
+		return script_config.partyleave_filter_name;	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -5469,6 +5528,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_MOBDROPITEM:
 		return script_config.mobdropitem_express_name;	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+	case NPCX_PCATTACK:
+		return script_config.pcattack_express_name;	// OnPCAttackExpress		// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:

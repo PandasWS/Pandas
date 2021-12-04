@@ -203,7 +203,7 @@ struct Script_Config {
 #endif // Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
-	const char* changetitle_filter_name;	// NPCF_CHANGETITLE	// OnPCChangeTitleFilter	// 当玩家试图变更称号时将触发此过滤器
+	const char* changetitle_filter_name;	// NPCF_CHANGETITLE	// OnPCChangeTitleFilter	// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -218,9 +218,29 @@ struct Script_Config {
 	const char* oneclick_identify_filter_name;	// NPCF_ONECLICK_IDENTIFY	// OnPCUseOCIdentifyFilter	// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	const char* guildcreate_filter_name;	// NPCF_GUILDCREATE	// OnPCGuildCreateFilter	// 当玩家准备创建公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+	const char* guildjoin_filter_name;	// NPCF_GUILDJOIN	// OnPCGuildJoinFilter	// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-	const char* guildleave_filter_name;	// NPCF_GUILDLEAVE	// OnPCGuildLeaveFilter	// 当玩家离开公会(无论是自愿还是被踢), 触发此过滤器 [聽風]
+	const char* guildleave_filter_name;	// NPCF_GUILDLEAVE	// OnPCGuildLeaveFilter	// 当玩家准备离开公会时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDLEAVE
+
+#ifdef Pandas_NpcFilter_PARTYCREATE
+	const char* partycreate_filter_name;	// NPCF_PARTYCREATE	// OnPCPartyCreateFilter	// 当玩家准备创建队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYCREATE
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	const char* partyjoin_filter_name;	// NPCF_PARTYJOIN	// OnPCPartyJoinFilter	// 当玩家即将加入队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYJOIN
+
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+	const char* partyleave_filter_name;	// NPCF_PARTYLEAVE	// OnPCPartyLeaveFilter	// 当玩家准备离开队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/
@@ -287,6 +307,10 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_MOBDROPITEM
 	const char* mobdropitem_express_name;	// NPCX_MOBDROPITEM	// OnMobDropItemExpress	// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+	const char* pcattack_express_name;	// NPCX_PCATTACK	// OnPCAttackExpress	// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related
@@ -565,6 +589,63 @@ enum e_questinfo_markcolor : uint8 {
 	#define FW_HEAVY            900
 #endif
 
+#ifdef Pandas_ScriptCommand_GetSkillInfo
+enum skillinfo_types {
+	SKI_CASTTYPE = 1,
+	SKI_NAME,
+	SKI_DESCRIPTION,
+	SKI_MAXLEVEL_IN_SKILLTREE,
+	SKI_SKILLTYPE,
+	SKI_HIT,
+	SKI_TARGETTYPE,
+	SKI_ELEMENT,
+	SKI_DAMAGEFLAGS,
+	SKI_MAXLEVEL,
+	SKI_RANGE,
+	SKI_SPLASHAREA,
+	SKI_HITCOUNT,
+	SKI_CASTTIME,
+	SKI_FIXEDCASTTIME,
+	SKI_AFTERCASTACTDELAY,
+	SKI_AFTERCASTWALKDELAY,
+	SKI_DURATION1,
+	SKI_DURATION2,
+	SKI_CASTTIMEFLAGS,
+	SKI_CASTDELAYFLAGS,
+	SKI_CASTDEFENSEREDUCTION,
+	SKI_FLAGS,
+	SKI_CASTCANCEL,
+	SKI_ACTIVEINSTANCE,
+	SKI_KNOCKBACK,
+	SKI_COOLDOWN,
+	SKI_NONEARNPC_TYPE,
+	SKI_NONEARNPC_ADDITIONALRANGE,
+	SKI_COPYFLAGS_SKILL,
+	SKI_COPYFLAGS_REMOVEREQUIREMENT,
+	SKI_UNIT_ID,
+	SKI_UNIT_ALTERNATEID,
+	SKI_UNIT_LAYOUT,
+	SKI_UNIT_RANGE,
+	SKI_UNIT_INTERVAL,
+	SKI_UNIT_TARGET,
+	SKI_UNIT_FLAG,
+	SKI_REQUIRES_HPCOST,
+	SKI_REQUIRES_SPCOST,
+	SKI_REQUIRES_MAXHPTRIGGER,
+	SKI_REQUIRES_HPRATECOST,
+	SKI_REQUIRES_SPRATECOST,
+	SKI_REQUIRES_ZENYCOST,
+	SKI_REQUIRES_WEAPON,
+	SKI_REQUIRES_AMMO,
+	SKI_REQUIRES_AMMOAMOUNT,
+	SKI_REQUIRES_STATE,
+	SKI_REQUIRES_STATUS,
+	SKI_REQUIRES_SPHERECOST,
+	SKI_REQUIRES_ITEMCOST,
+	SKI_REQUIRES_EQUIPMENT,
+};
+#endif // Pandas_ScriptCommand_GetSkillInfo
+
 enum unitdata_mobtypes {
 	UMOB_SIZE = 0,
 	UMOB_LEVEL,
@@ -619,6 +700,7 @@ enum unitdata_mobtypes {
 	UMOB_ROBE,
 	UMOB_BODY2,
 	UMOB_GROUP_ID,
+	UMOB_IGNORE_CELL_STACK_LIMIT,
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 	UMOB_AURA,
 #endif // Pandas_Struct_Unit_CommonData_Aura
@@ -2217,7 +2299,8 @@ enum e_iteminfo : uint8 {
 	ITEMINFO_EQUIPLEVELMAX,
 	ITEMINFO_MAGICATTACK,
 	ITEMINFO_ID,
-	ITEMINFO_AEGISNAME	// 18
+	ITEMINFO_AEGISNAME,	// 18
+	ITEMINFO_ARMORLEVEL,
 };
 
 class ConstantDatabase : public YamlDatabase {

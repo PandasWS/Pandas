@@ -11,8 +11,6 @@
 #include "showmsg.hpp"
 #include "strlib.hpp"
 
-#include "../common/utf8_defines.hpp"  // PandasWS
-
 #ifndef Pandas_Message_Conf
 // 当禁用 Pandas_Message_Conf 的时候
 // 能够显示出对应的警告信息出来, 告诉用户原因同时避免编译错误 [Sola丶小克]
@@ -74,11 +72,11 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 			_msg_config_read(w2,size,msg_table);
 #ifdef Pandas_Adaptive_Importing_Message_Database
 		else if (strcmpi(w1, "import_chs") == 0) {
-			if (PandasUtf8::systemLanguage == PandasUtf8::SYSTEM_LANGUAGE_CHS)
+			if (PandasUtf8::systemLanguage == PandasUtf8::PANDAS_LANGUAGE_CHS)
 				_msg_config_read(w2, size, msg_table);
 		}
 		else if (strcmpi(w1, "import_cht") == 0) {
-			if (PandasUtf8::systemLanguage == PandasUtf8::SYSTEM_LANGUAGE_CHT)
+			if (PandasUtf8::systemLanguage == PandasUtf8::PANDAS_LANGUAGE_CHT)
 				_msg_config_read(w2, size, msg_table);
 		}
 #endif // Pandas_Adaptive_Importing_Message_Database

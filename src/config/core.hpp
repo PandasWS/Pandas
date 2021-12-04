@@ -9,6 +9,20 @@
  * For detailed guidance on these check http://rathena.org/wiki/SRC/config/
  **/
 
+// -----------------------------------------------------------------
+// 熊猫模拟器定义的部分头文件 - 开始
+// -----------------------------------------------------------------
+
+#include "../config/pandas.hpp"
+
+#include "../common/assistant.hpp"
+#include "../common/performance.hpp"
+#include "../common/utf8_defines.hpp"
+
+// -----------------------------------------------------------------
+// 熊猫模拟器定义的部分头文件 - 结束
+// -----------------------------------------------------------------
+
 #include "../custom/defines_pre.hpp"
 
 /// Max number of items on @autolootid list
@@ -43,7 +57,7 @@
 /// Uncomment to enable real-time server stats (in and out data and ram usage).
 //#define SHOW_SERVER_STATS
 
-/// Uncomment to enable the job base HP/SP table (job_basehpsp_db.txt)
+/// Comment to disable the job base HP/SP/AP table (job_basepoints.yml)
 #define HP_SP_TABLES
 
 /// Uncomment to enable VIP system.

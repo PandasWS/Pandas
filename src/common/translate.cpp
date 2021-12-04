@@ -29,8 +29,8 @@ const std::string TranslateDB::getDefaultLocation() {
 	std::string postfix;
 
 	switch (PandasUtf8::systemLanguage) {
-	case PandasUtf8::SYSTEM_LANGUAGE_CHS: postfix = "cn"; break;
-	case PandasUtf8::SYSTEM_LANGUAGE_CHT: postfix = "tw"; break;
+	case PandasUtf8::PANDAS_LANGUAGE_CHS: postfix = "cn"; break;
+	case PandasUtf8::PANDAS_LANGUAGE_CHT: postfix = "tw"; break;
 	}
 
 	if (postfix.empty()) return "";
@@ -53,20 +53,15 @@ void TranslateDB::showStatus() {
 	std::string szLocation = this->getCurrentFile();
 	if (szLocation.empty()) {
 		// 若系统语言是英文, 那么就不打印与终端翻译机制相关的信息
-		if (PandasUtf8::systemLanguage == PandasUtf8::SYSTEM_LANGUAGE_ENG) return;
+		if (PandasUtf8::systemLanguage == PandasUtf8::PANDAS_LANGUAGE_ENG) {
+			return;
+		}
 
 		ShowInfo("Console translation system was deactivated.\n");
 	}
 	else {
 		ShowInfo("Console translation initialized: " CL_WHITE "'%s'" CL_RESET ".\n", szLocation.c_str());
 	}
-
-#ifdef _WIN32
-	ShowInfo("Diagnostic information: System Codepage = %d | UILanguage = 0x%04X | Console Codepage = %d\n", GetACP(), GetUserDefaultUILanguage(), GetConsoleOutputCP());
-#else
-	setlocale(LC_ALL, "");
-	ShowInfo("Diagnostic information: Langinfo: %s | Locale: %s\n", nl_langinfo(CODESET), setlocale(LC_CTYPE, NULL));
-#endif // _WIN32
 }
 
 //************************************

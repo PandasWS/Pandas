@@ -182,6 +182,25 @@ enum e_party_invite_reply {
 	PARTY_REPLY_INVALID_MAPPROPERTY_ME, ///< return=9 : !TODO "Cannot join a party in this map" -> MsgStringTable[1871] (since 20110205)
 };
 
+#ifdef Pandas_PacketFunction_PartyJoinRequest
+enum e_party_join_reply {
+	PARTY_JOIN_REPLY_ACCEPTED = 0,					///< result=0 : "{party_name} party leader has approved you to join the party." -> MsgStringTable[3499]
+	PARTY_JOIN_REPLY_REJECTED,						///< result=1 : "{party_name} party leader has rejected you from joining the party." -> MsgStringTable[3500]
+	PARTY_JOIN_REPLY_FULL,							///< result=2 : "Party number exceeded." -> MsgStringTable[3498]
+	PARTY_JOIN_REPLY_LEADER_INVALID_MAPPROPERTY,	///< result=3 : "The party master cannot accept the request." -> MsgStringTable[3443]
+	PARTY_JOIN_REPLY_MEMBER_INVALID_MAPPROPERTY,	///< result=4 : "The current requestor is in an area where you can not join the party." -> MsgStringTable[3497]
+	PARTY_JOIN_REPLY_CHARACTER_NOTFOUND,			///< result=5 : "The character could not be found." -> MsgStringTable[3493]
+	PARTY_JOIN_REPLY_CHARACTER_NOTFOUND_SAME,		///< result=6 : "The character could not be found." -> MsgStringTable[3493]
+	PARTY_JOIN_REPLY_MEMBER_JOIN_OTHER_PARTY,		///< result=7 : "{player_name} is already in the party." -> MsgStringTable[3501]
+	PARTY_JOIN_REPLY_AUTO_REJECTED_NOTIFY,			///< result=8 : "Since you can not receive party request, {player_name}'s party invitation has been rejected." -> MsgStringTable[3504]
+	PARTY_JOIN_REPLY_LEADER_OFFLINE,				///< result=9 : "Unable to find applicable party." -> MsgStringTable[3495]
+	PARTY_JOIN_REPLY_PARTY_NOT_EXISTS,				///< result=10: "No party can be found." -> MsgStringTable[3444]
+	PARTY_JOIN_REPLY_JOBLEAVEL_TO_LOW,				///< result=11: "You can not join the party because your job level is low." -> MsgStringTable[3496]
+	PARTY_JOIN_REPLY_DUAL,							///< result=12: "Character in the same account already joined." -> MsgStringTable[609]
+	PARTY_JOIN_REPLY_NOW_LOGGING_OUT,				///< result=13: "Now Logging Out." -> MsgStringTable[1817]
+};
+#endif // Pandas_PacketFunction_PartyJoinRequest
+
 /// Enum for Convex Mirror (SC_BOSSMAPINFO)
 enum e_bossmap_info {
 	BOSS_INFO_NOT = 0,
@@ -905,6 +924,7 @@ void clif_send_petdata(struct map_session_data* sd, struct pet_data* pd, int typ
 #define clif_pet_performance(pd, param) clif_send_petdata(NULL, pd, 4, param)
 void clif_pet_emotion(struct pet_data *pd,int param);
 void clif_pet_food(struct map_session_data *sd,int foodid,int fail);
+void clif_pet_autofeed_status(struct map_session_data* sd, bool force);
 
 //friends list
 int clif_friendslist_toggle_sub(struct map_session_data *sd,va_list ap);
@@ -914,14 +934,10 @@ void clif_friendslist_reqack(struct map_session_data *sd, struct map_session_dat
 void clif_weather(int16 m); // [Valaris]
 void clif_specialeffect(struct block_list* bl, int type, enum send_target target); // special effects [Valaris]
 void clif_specialeffect_single(struct block_list* bl, int type, int fd);
+void clif_specialeffect_remove(struct block_list* bl_src, int effect, enum send_target e_target, struct block_list* bl_target);
 void clif_messagecolor_target(struct block_list *bl, unsigned long color, const char *msg, bool rgb2bgr, enum send_target type, struct map_session_data *sd);
 #define clif_messagecolor(bl, color, msg, rgb2bgr, type) clif_messagecolor_target(bl, color, msg, rgb2bgr, type, NULL) // Mob/Npc color talk [SnakeDrak]
 void clif_specialeffect_value(struct block_list* bl, int effect_id, int num, send_target target);
-
-#ifdef Pandas_PacketFunction_RemoveSpecialEffect
-void clif_removespecialeffect(struct block_list* bl, int effect_id, send_target target);
-void clif_removespecialeffect_single(struct block_list* bl, int effect_id, struct block_list* to_target);
-#endif // Pandas_PacketFunction_RemoveSpecialEffect
 
 void clif_GM_kickack(struct map_session_data *sd, int id);
 void clif_GM_kick(struct map_session_data *sd,struct map_session_data *tsd);
@@ -1193,5 +1209,10 @@ void clif_change_title_ack(struct map_session_data* sd, unsigned char result, un
 #ifdef Pandas_Aura_Mechanism
 void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_when_hidden, enum e_aura_special flag);
 #endif // Pandas_Aura_Mechanism
+
+#ifdef Pandas_PacketFunction_PartyJoinRequest
+void clif_party_join_reply(struct map_session_data* sd, const char* player_name, const char* party_name, enum e_party_join_reply reply);
+void clif_party_join_ask_approval(struct map_session_data* sd, struct map_session_data* applicant_sd);
+#endif // Pandas_PacketFunction_PartyJoinRequest
 
 #endif /* CLIF_HPP */
