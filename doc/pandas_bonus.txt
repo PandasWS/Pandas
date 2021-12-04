@@ -23,7 +23,7 @@ bonus3 bRebirthWithHeal,r,h,s;
 
 参数说明:
 	r/100%		复活机率, 填写 10000 则表示 100% 复活
-				最终生效值的有效区间 0 ~ 10000
+				最终触发机率若小于 0 则永不触发, 最大值为 10000
 				可被叠加, 支持负数, 若传递负数则表示扣减.
 
 	h%			复活时恢复的 HP 百分比
@@ -65,13 +65,85 @@ bonus2 bAddSkillRange,sk,n;
 
 * bonus4 bStatusAddDamage,sc,n,r,bf;
 
-当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n
+攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/10% 的概率使伤害增加 n [聽風]
+
+参数说明:
+	sc			SC 状态编号, 支持常量
+
+				例如: 加速术状态的常量是 SC_INCREASEAGI
+	
+	n			增加的伤害值
+				可被叠加, 支持负数, 若传递负数则表示扣减.
+
+	r/100%		触发机率,填写 10000 则表示 100% 触发
+				最终触发机率若小于 0 则永不触发, 最大值为 10000
+				可被叠加, 支持负数, 若传递负数则表示扣减.
+
+	bf			能触发加成的攻击类型
+				此项定义与 doc/item_bonus.txt 的 Trigger criteria (bf) 一致
+
+注意事项:
+	此效果调整器每个角色最多只能定义 50 条.
+	若希望普通攻击和技能攻击都有效, 应该使用 BF_NORMAL| BF_SKILL
+	多条规则之间的触发概率各自判定.
+
+规则合并:
+
+	若多条规则中 sc + bf 完全一致, 则不会消耗规则数量, 例如:
+
+		// 对方拥有加速术状态时使用普通攻击有 2% 概率增加 1000 点伤害
+		bonus4 bStatusAddDamage,SC_INCREASEAGI,1000,20,BF_NORMAL;
+
+		// 对方拥有加速术状态时使用普通攻击有 5% 概率增加 10000 点伤害
+		bonus4 bStatusAddDamage,SC_INCREASEAGI,10000,50,BF_NORMAL;
+	
+	这两条规则的 sc 都是 SC_INCREASEAGI, bf 都是 BF_NORMAL, 因此会被合并.
+	最终效果与下面这一条等价:
+
+		// 对方拥有加速术状态时使用普通攻击有 7% 概率增加 11000 点伤害
+		bonus4 bStatusAddDamage,SC_INCREASEAGI,11000,70,BF_NORMAL;
 
 --------------------------------------------------------------
 
 * bonus4 bStatusAddDamageRate,sc,n,r,bf;
 
-当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n%
+攻击拥有 sc 状态的目标时, 使用 bf 攻击时有 r/10% 的概率使伤害增加 n% [聽風]
+
+参数说明:
+	sc			SC 状态编号, 支持常量
+
+				例如: 加速术状态的常量是 SC_INCREASEAGI
+	
+	n%			增加的伤害百分比
+				最终生效的百分比最小值为 -100, 最大值为 2 的 31 次方
+				可被叠加, 支持负数, 若传递负数则表示扣减.
+
+	r/100%		触发机率,填写 10000 则表示 100% 触发
+				最终触发机率若小于 0 则永不触发, 最大值为 10000
+				可被叠加, 支持负数, 若传递负数则表示扣减.
+
+	bf			能触发加成的攻击类型
+				此项定义与 doc/item_bonus.txt 的 Trigger criteria (bf) 一致
+
+注意事项:
+	此效果调整器每个角色最多只能定义 50 条.
+	若希望普通攻击和技能攻击都有效, 应该使用 BF_NORMAL| BF_SKILL
+	多条规则之间的触发概率各自判定.
+
+规则合并:
+
+	若多条规则中 sc + bf 完全一致, 则不会消耗规则数量, 例如:
+
+		// 对方拥有加速术状态时使用普通攻击有 2% 概率增加 10% 的伤害
+		bonus4 bStatusAddDamageRate,SC_INCREASEAGI,10,20,BF_NORMAL;
+
+		// 对方拥有加速术状态时使用普通攻击有 5% 概率增加 20% 的伤害
+		bonus4 bStatusAddDamageRate,SC_INCREASEAGI,20,50,BF_NORMAL;
+	
+	这两条规则的 sc 都是 SC_INCREASEAGI, bf 都是 BF_NORMAL, 因此会被合并.
+	最终效果与下面这一条等价:
+
+		// 对方拥有加速术状态时使用普通攻击有 7% 概率增加 30% 的伤害
+		bonus4 bStatusAddDamageRate,SC_INCREASEAGI,30,70,BF_NORMAL;
 
 --------------------------------------------------------------
-

@@ -8022,37 +8022,49 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	}
 
 #ifdef Pandas_Bonus_bStatusAddDamage
-	if (tsc) {
-		for (int i = 0; i < SC_MAX; i++) {
-			if (sd->addstatusdamage[i].addsc && tsc->data[i]) {
-				if (wd.flag&sd->addstatusdamage[i].bf) {
-					if (rnd()%1000 < sd->addstatusdamage[i].rate) {
-						wd.damage += sd->addstatusdamage[i].n;
-					}
-				}
+	if (sd && src && src->type == BL_PC && tsc) {
+		for (auto& it : sd->status_damage_adjust) {
+			if (!tsc->data[it.type])
+				continue;
+
+			if (!(((it.battle_flag) & wd.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & wd.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & wd.flag) & BF_SKILLMASK))
+				continue;
+
+			if (rnd() % 10000 < it.rate) {
+				wd.damage += it.val;
 			}
 		}
+		damage = wd.damage + wd.damage2;
 	}
 #endif // Pandas_Bonus_bStatusAddDamage
 
 #ifdef Pandas_Bonus_bStatusAddDamageRate
-	if (tsc) {
-		int64 add_damage = wd.damage;
-		for (int i = 0; i < SC_MAX; i++) {
-			if (sd->addstatusdamagerate[i].addsc && tsc->data[i]) {
-				if (wd.flag&sd->addstatusdamagerate[i].bf) {
-					if (rnd() % 1000 < sd->addstatusdamagerate[i].rate) {
-						wd.damage += add_damage / 100 * sd->addstatusdamagerate[i].n;
-					}
-				}
+	if (sd && src && src->type == BL_PC && tsc) {
+		int total_rate = 100;
+		for (auto& it : sd->status_damagerate_adjust) {
+			if (!tsc->data[it.type])
+				continue;
+
+			if (!(((it.battle_flag) & wd.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & wd.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & wd.flag) & BF_SKILLMASK))
+				continue;
+
+			if (rnd() % 10000 < it.rate) {
+				total_rate += it.val;
 			}
 		}
+
+		if (total_rate != 100) {
+			total_rate = cap_value(total_rate, -100, INT_MAX);
+			wd.damage += (int64)(wd.damage / 100.0 * total_rate);
+		}
+
+		damage = wd.damage + wd.damage2;
 	}
 #endif // Pandas_Bonus_bStatusAddDamageRate
-
-#if defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
-	damage = wd.damage + wd.damage2;
-#endif // Pandas_Bonus_bStatusAddDamage || Pandas_Bonus_bStatusAddDamageRate
 
 #ifdef Pandas_NpcExpress_PCATTACK
 	if (src && target && damage > 0) {

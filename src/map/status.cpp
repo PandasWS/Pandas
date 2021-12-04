@@ -4423,6 +4423,12 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		clif_skillinfo(sd, it, 0);
 	}
 #endif // Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus_bStatusAddDamage
+	sd->status_damage_adjust.clear();
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	sd->status_damagerate_adjust.clear();
+#endif // Pandas_Bonus_bStatusAddDamageRate
 
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	sd->pandas.multi_catch_target_class.clear();
@@ -4440,12 +4446,6 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		+ sizeof(sd->norecover_state_race)
 		+ sizeof(sd->hp_vanish_race)
 		+ sizeof(sd->sp_vanish_race)
-#ifdef Pandas_Bonus_bStatusAddDamage
-		+ sizeof(sd->addstatusdamage)
-#endif // Pandas_Bonus_bStatusAddDamage
-#ifdef Pandas_Bonus_bStatusAddDamageRate
-		+ sizeof(sd->addstatusdamagerate)
-#endif // Pandas_Bonus_bStatusAddDamageRate
 	);
 
 	memset(&sd->bonus, 0, sizeof(sd->bonus));

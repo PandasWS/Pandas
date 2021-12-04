@@ -193,6 +193,14 @@ extern unsigned int equip_bitmask[EQI_MAX];
 
 #define equip_index_check(i) ( (i) >= EQI_ACC_L && (i) < EQI_MAX )
 
+#if defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+struct s_sc_damage {
+	sc_type type;
+	short rate, battle_flag;
+	int val;
+};
+#endif // defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+
 /// Miscellaneous item bonus struct
 struct s_item_bonus {
 	uint16 id;
@@ -589,6 +597,13 @@ struct map_session_data {
 	std::vector<s_addrace2> subrace3;
 	std::vector<std::shared_ptr<s_autobonus>> autobonus, autobonus2, autobonus3; //Auto script on attack, when attacked, on skill usage
 
+#ifdef Pandas_Bonus_bStatusAddDamage
+	std::vector<s_sc_damage> status_damage_adjust;
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	std::vector<s_sc_damage> status_damagerate_adjust;
+#endif // Pandas_Bonus_bStatusAddDamageRate
+
 	// zeroed structures start here
 	struct s_regen {
 		short value;
@@ -604,16 +619,7 @@ struct map_session_data {
 			per;	///< % HP/SP vanished/gained
 	} hp_vanish_race[RC_MAX], sp_vanish_race[RC_MAX];
 	// zeroed structures end here
-#ifdef Pandas_Bonus_bStatusAddDamage
-	struct {
-		int addsc, n, rate, bf;
-	} addstatusdamage[SC_MAX];
-#endif // Pandas_Bonus_bStatusAddDamage
-#ifdef Pandas_Bonus_bStatusAddDamageRate
-	struct {
-		int addsc, n, rate, bf;
-	} addstatusdamagerate[SC_MAX];
-#endif // Pandas_Bonus_bStatusAddDamageRate
+
 	// zeroed vars start here.
 	struct s_bonus {
 		int hp, sp;

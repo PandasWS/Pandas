@@ -3589,36 +3589,51 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 
 	//combo handling
 	skill_combo(src,dsrc,bl,skill_id,skill_lv,tick);
+
 #ifdef Pandas_Bonus_bStatusAddDamage
-	if (tsc) {
-		for (int i = 0; i < SC_MAX; i++) {
-			if (sd->addstatusdamage[i].addsc && tsc->data[i]) {
-				if (dmg.flag&sd->addstatusdamage[i].bf) {
-					if (rnd() % 1000 < sd->addstatusdamage[i].rate) {
-						dmg.damage += sd->addstatusdamage[i].n;
-					}
-				}
+	if (sd && src && src->type == BL_PC && tsc) {
+		for (auto& it : sd->status_damage_adjust) {
+			if (!tsc->data[it.type])
+				continue;
+
+			if (!(((it.battle_flag) & dmg.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & dmg.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & dmg.flag) & BF_SKILLMASK))
+				continue;
+
+			if (rnd() % 10000 < it.rate) {
+				dmg.damage += it.val;
 			}
 		}
+		damage = dmg.damage + dmg.damage2;
 	}
 #endif // Pandas_Bonus_bStatusAddDamage
+
 #ifdef Pandas_Bonus_bStatusAddDamageRate
-	if (tsc) {
-		int64 add_damage = dmg.damage;
-		for (int i = 0; i < SC_MAX; i++) {
-			if (sd->addstatusdamagerate[i].addsc && tsc->data[i]) {
-				if (dmg.flag&sd->addstatusdamagerate[i].bf) {
-					if (rnd() % 1000 < sd->addstatusdamagerate[i].rate) {
-						dmg.damage += add_damage / 100 * sd->addstatusdamagerate[i].n;
-					}
-				}
+	if (sd && src && src->type == BL_PC && tsc) {
+		int total_rate = 100;
+		for (auto& it : sd->status_damagerate_adjust) {
+			if (!tsc->data[it.type])
+				continue;
+
+			if (!(((it.battle_flag) & dmg.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & dmg.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & dmg.flag) & BF_SKILLMASK))
+				continue;
+
+			if (rnd() % 10000 < it.rate) {
+				total_rate += it.val;
 			}
 		}
+
+		if (total_rate != 100) {
+			total_rate = cap_value(total_rate, -100, INT_MAX);
+			dmg.damage += (int64)(dmg.damage / 100.0 * total_rate);
+		}
+
+		damage = dmg.damage + dmg.damage2;
 	}
 #endif // Pandas_Bonus_bStatusAddDamageRate
-#if defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
-	damage = dmg.damage + dmg.damage2;
-#endif // Pandas_Bonus_bStatusAddDamage || Pandas_Bonus_bStatusAddDamageRate
 
 #ifdef Pandas_NpcExpress_PCATTACK
 	if (src && bl && damage > 0) {

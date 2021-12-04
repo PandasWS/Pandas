@@ -2777,6 +2777,50 @@ static void pc_bonus_addeff_onskill(std::vector<s_addeffectonskill> &effect, enu
 	effect.push_back(entry);
 }
 
+#if defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+static void pc_bonus_status_damage(std::vector<s_sc_damage>& dmgrule, enum sc_type sc, short rate, short battle_flag, int val)
+{
+	if (dmgrule.size() == MAX_PC_BONUS) {
+		ShowWarning("pc_bonus_status_damage: Reached max (%d) number of add status damage rule per character!\n", MAX_PC_BONUS);
+		return;
+	}
+
+	if (!rate)
+		return;
+
+	if (!(battle_flag & BF_RANGEMASK))
+		battle_flag |= BF_SHORT | BF_LONG; //No range defined? Use both.
+	if (!(battle_flag & BF_WEAPONMASK))
+		battle_flag |= BF_WEAPON; //No attack type defined? Use weapon.
+	if (!(battle_flag & BF_SKILLMASK)) {
+		if (battle_flag & (BF_MAGIC | BF_MISC))
+			battle_flag |= BF_SKILL; //These two would never trigger without BF_SKILL
+		if (battle_flag & BF_WEAPON)
+			battle_flag |= BF_NORMAL; //By default autospells should only trigger on normal weapon attacks.
+	}
+
+	for (auto& it : dmgrule) {
+		if (it.type == sc && it.battle_flag == battle_flag) {
+			it.rate = cap_value(it.rate + rate, -10000, 10000);
+			it.val += val;
+			return;
+		}
+	}
+
+	struct s_sc_damage entry = {};
+
+	if (rate < -10000 || rate > 10000)
+		ShowWarning("pc_bonus_status_damage: bonus rate %d exceeds -10000~10000 range, capping.\n", rate);
+
+	entry.type = sc;
+	entry.rate = cap_value(rate, -10000, 10000);
+	entry.battle_flag = battle_flag;
+	entry.val = val;
+
+	dmgrule.push_back(entry);
+}
+#endif // defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+
 /**
  * Adjust/add drop rate modifier for player
  * @param drop: Player's sd->add_drop (struct s_add_drop)
@@ -4795,23 +4839,15 @@ void pc_bonus4(struct map_session_data *sd,int type,int type2,int type3,int type
 
 #ifdef Pandas_Bonus_bStatusAddDamage
 	case SP_PANDAS_STATUSADDDAMAGE: // bonus4 bStatusAddDamage,sc,n,r,bf;
-		if (sd->state.lr_flag == 2)
-			break;
-		sd->addstatusdamage[type2].addsc = type2;
-		sd->addstatusdamage[type2].n += type3;
-		sd->addstatusdamage[type2].rate += type4;
-		sd->addstatusdamage[type2].bf = val;
+		if (sd->state.lr_flag != 2)
+			pc_bonus_status_damage(sd->status_damage_adjust, (sc_type)type2, type4, val, type3);
 		break;
 #endif // Pandas_Bonus_bStatusAddDamage
 
 #ifdef Pandas_Bonus_bStatusAddDamageRate
 	case SP_PANDAS_STATUSADDDAMAGERATE: // bonus4 bStatusAddDamageRate,sc,n,r,bf;
-		if (sd->state.lr_flag == 2)
-			break;
-		sd->addstatusdamage[type2].addsc = type2;
-		sd->addstatusdamage[type2].n += type3;
-		sd->addstatusdamage[type2].rate += type4;
-		sd->addstatusdamage[type2].bf = val;
+		if (sd->state.lr_flag != 2)
+			pc_bonus_status_damage(sd->status_damagerate_adjust, (sc_type)type2, type4, val, type3);
 		break;
 #endif // Pandas_Bonus_bStatusAddDamageRate
 		// PYHELP - BONUS - INSERT POINT - <Section 9>
