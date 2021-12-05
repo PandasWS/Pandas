@@ -17081,6 +17081,17 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 
 	std::shared_ptr<s_skill_db> skill = skill_db.find(skill_id);
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+	int noreq_opt = 0;
+
+	for (auto& it : sd->skillnorequire) {
+		if (it.id != skill_id)
+			continue;
+		noreq_opt = it.val;
+		break;
+	}
+#endif // Pandas_Bonus_bSkillNoRequire
+
 	req.hp = skill->require.hp[skill_lv - 1];
 	hp_rate = skill->require.hp_rate[skill_lv - 1];
 	if(hp_rate > 0)
@@ -17098,6 +17109,20 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 		req.sp += (status->max_sp * (-sp_rate))/100;
 	if( sd->dsprate != 100 )
 		req.sp = req.sp * sd->dsprate / 100;
+
+#ifdef Pandas_Bonus_bSkillNoRequire
+	// 若指定忽略 SKILL_REQ_HPRATECOST / SKILL_REQ_SPRATECOST 条件
+	// 那么下面的代码将回滚 req.hp 和 req.sp 来覆盖掉 hp_rate 和 sp_rate 做出的调整
+	if ((noreq_opt & SKILL_REQ_HPRATECOST)) {
+		req.hp = skill->require.hp[skill_lv - 1];
+	}
+
+	if ((noreq_opt & SKILL_REQ_SPRATECOST)) {
+		req.sp = skill->require.sp[skill_lv - 1];
+		if ((sd->skill_id_old == BD_ENCORE) && skill_id == sd->skill_id_dance)
+			req.sp /= 2;
+	}
+#endif // Pandas_Bonus_bSkillNoRequire
 
 	for (auto &it : sd->skillusesprate) {
 		if (it.id == skill_id) {
@@ -17397,49 +17422,40 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 	}
 
 #ifdef Pandas_Bonus_bSkillNoRequire
-	int req_opt = 0;
-
-	for (auto& it : sd->skillnorequire) {
-		if (it.id != skill_id)
-			continue;
-		req_opt = it.val;
-		break;
-	}
-
 	// 以下这部分代码直接从上面这一段代码中拷贝下来使用
 	// 若未来 rAthena 有更新的话两部分最好都同时更新, 以便使 bSkillNoRequire 能支持新选项
 
-	if (req_opt & SKILL_REQ_HPCOST)
+	if (noreq_opt & SKILL_REQ_HPCOST)
 		req.hp = 0;
-	if (req_opt & SKILL_REQ_MAXHPTRIGGER)
+	if (noreq_opt & SKILL_REQ_MAXHPTRIGGER)
 		req.mhp = 0;
-	if (req_opt & SKILL_REQ_SPCOST)
+	if (noreq_opt & SKILL_REQ_SPCOST)
 		req.sp = 0;
-	if (req_opt & SKILL_REQ_HPRATECOST)
+	if (noreq_opt & SKILL_REQ_HPRATECOST)
 		req.hp_rate = 0;
-	if (req_opt & SKILL_REQ_SPRATECOST)
+	if (noreq_opt & SKILL_REQ_SPRATECOST)
 		req.sp_rate = 0;
-	if (req_opt & SKILL_REQ_ZENYCOST)
+	if (noreq_opt & SKILL_REQ_ZENYCOST)
 		req.zeny = 0;
-	if (req_opt & SKILL_REQ_WEAPON)
+	if (noreq_opt & SKILL_REQ_WEAPON)
 		req.weapon = 0;
-	if (req_opt & SKILL_REQ_AMMO) {
+	if (noreq_opt & SKILL_REQ_AMMO) {
 		req.ammo = 0;
 		req.ammo_qty = 0;
 	}
-	if (req_opt & SKILL_REQ_STATE)
+	if (noreq_opt & SKILL_REQ_STATE)
 		req.state = ST_NONE;
-	if (req_opt & SKILL_REQ_STATUS) {
+	if (noreq_opt & SKILL_REQ_STATUS) {
 		req.status.clear();
 		req.status.shrink_to_fit();
 	}
-	if (req_opt & SKILL_REQ_SPIRITSPHERECOST)
+	if (noreq_opt & SKILL_REQ_SPIRITSPHERECOST)
 		req.spiritball = 0;
-	if (req_opt & SKILL_REQ_ITEMCOST) {
+	if (noreq_opt & SKILL_REQ_ITEMCOST) {
 		memset(req.itemid, 0, sizeof(req.itemid));
 		memset(req.amount, 0, sizeof(req.amount));
 	}
-	if (req_opt & SKILL_REQ_EQUIPMENT) {
+	if (noreq_opt & SKILL_REQ_EQUIPMENT) {
 		req.eqItem.clear();
 		req.eqItem.shrink_to_fit();
 	}
