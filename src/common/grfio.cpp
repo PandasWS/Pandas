@@ -13,9 +13,6 @@
 #include "strlib.hpp"
 #include "utils.hpp"
 
-#include "../custom/defines_core.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
-
 //----------------------------
 //	file entry table struct
 //----------------------------

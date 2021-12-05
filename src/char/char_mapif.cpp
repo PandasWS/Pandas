@@ -1094,8 +1094,8 @@ int chmapif_parse_reqauth(int fd, int id){
 			// 
 			// 这里发送的是针对离线挂店角色的对应封包, 离线挂店角色没有 mac 和 lan 地址,
 			// 因此这里直接将两个字段填充为空值
-			memcpy(WFIFOP(fd,25), "", MACADDRESS_LENGTH);
-			memcpy(WFIFOP(fd,25 + MACADDRESS_LENGTH), "", IP4ADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 25), "", MACADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 25 + MACADDRESS_LENGTH), "", IP4ADDRESS_LENGTH);
 			memcpy(WFIFOP(fd,25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH), cd, sizeof(struct mmo_charstatus));
 #endif // Pandas_Extract_SSOPacket_MacAddress
 			WFIFOSET(fd, WFIFOW(fd,2));
@@ -1134,8 +1134,8 @@ int chmapif_parse_reqauth(int fd, int id){
 #else
 			// 在发送 struct mmo_charstatus 内容之前, 插入两个定长字段的值
 			// 此处将 char-server 记录的当前玩家的 mac 和 lan 地址发送给 map-server 中 0x2afd 封包的处理函数
-			memcpy(WFIFOP(fd,25), node->mac_address, MACADDRESS_LENGTH);
-			memcpy(WFIFOP(fd,25 + MACADDRESS_LENGTH), node->lan_address, IP4ADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 25), node->mac_address, MACADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 25 + MACADDRESS_LENGTH), node->lan_address, IP4ADDRESS_LENGTH);
 			memcpy(WFIFOP(fd,25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH), cd, sizeof(struct mmo_charstatus));
 #endif // Pandas_Extract_SSOPacket_MacAddress
 			WFIFOSET(fd, WFIFOW(fd,2));

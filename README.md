@@ -8,8 +8,8 @@
 
 <div align="center">
   <!-- Build Status -->
-  <a href="https://ci.appveyor.com/project/PandasWS/Pandas/branch/master">
-    <img alt="Build Status" src="https://img.shields.io/appveyor/build/PandasWS/Pandas/master?style=flat-square">
+  <a href="https://github.com/PandasWS/Pandas/actions/workflows/build-and-test.yml">
+    <img alt="Build Status" src="https://img.shields.io/github/workflow/status/PandasWS/Pandas/Build%20And%20Test?style=flat-square">
   </a>
 
   <!-- LGTM Alerts -->
@@ -310,7 +310,7 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 ### 活跃贡献者
 特别感谢近期活跃的贡献者，排名不分先后 ( 通常后加入的写最前面 )
 
-[Renee]、[NIFL]、[人鱼姬的思念]、[♬喵了个咪]、[文威]
+[聽風]、[Renee]、[NIFL]、[人鱼姬的思念]、[♬喵了个咪]、[文威]
 
 ## 许可协议
 版权所有 © 熊猫模拟器开发团队 - 授权许可协议 [GNU General Public License v3.0](LICENSE)

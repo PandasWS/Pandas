@@ -8,15 +8,6 @@ rem modified by lighta
 set SOURCE_DIR=%~dp0
 cd %SOURCE_DIR%
 
-REM Determine the working mode of the program based on the batch filename
-if "%~nx0" == "pre-renewal.bat" (
-    set "server_mode=prere"
-) else if "%~nx0" == "renewal.bat" (
-    set "server_mode=re"
-) else (
-    set "server_mode=unknow"
-)
-
 if ["%~1"]==[""] (
  REM this is for backward compatibility
  set "target=watch"
@@ -107,19 +98,19 @@ goto :EOF
 REM start sub targets
 :startLogin
 call :getLoginStatus
-if "%login_running%" == "false" ( start cmd /k tools\batches\logserv.bat %restart_mode% %server_mode%
+if "%login_running%" == "false" ( start cmd /k tools\batches\logserv.bat %restart_mode%
 ) else echo "Login serv is already running pid=%LoginServPID%" 
 goto :EOF
 
 :startChar
 call :getCharStatus
-if "%char_running%" == "false" ( start cmd /k tools\batches\charserv.bat %restart_mode% %server_mode%
+if "%char_running%" == "false" ( start cmd /k tools\batches\charserv.bat %restart_mode%
 ) else echo "Char serv is already running, pid=%CharServPID%" 
 goto :EOF
 
 :startMap
 call :getMapStatus
-if "%map_running%" == "false" ( start cmd /k tools\batches\mapserv.bat %restart_mode% %server_mode%
+if "%map_running%" == "false" ( start cmd /k tools\batches\mapserv.bat %restart_mode%
 ) else echo "Map serv is already running, pid=%MapServPID%" 
 goto :EOF  
 

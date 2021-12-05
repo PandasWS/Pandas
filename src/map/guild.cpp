@@ -513,7 +513,13 @@ int guild_create(struct map_session_data *sd, const char *name) {
 		clif_guild_created(sd,3);
 		return 0;
 	}
-
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	if (sd) {
+		pc_setregstr(sd, add_str("@create_guild_name$"), name);
+		if (npc_script_filter(sd, NPCF_GUILDCREATE))
+			return 0;
+	}
+#endif // Pandas_NpcFilter_GUILDCREATE
 	guild_makemember(&m,sd);
 	m.position=0;
 	intif_guild_create(name,&m);
@@ -745,7 +751,11 @@ int guild_invite(struct map_session_data *sd, struct map_session_data *tsd) {
 		return 0; //Invite permission.
 
 	if(!battle_config.invite_request_check) {
+#ifndef Pandas_PacketFunction_PartyJoinRequest
 	if (tsd->party_invite > 0 || tsd->trade_partner || tsd->adopt_invite) { //checking if there no other invitation pending
+#else
+	if (tsd->party_invite > 0 || tsd->trade_partner || tsd->adopt_invite || tsd->party_applicant) {
+#endif // Pandas_PacketFunction_PartyJoinRequest
 			clif_guild_inviteack(sd,0);
 			return 0;
 		}
@@ -820,7 +830,18 @@ int guild_reply_invite(struct map_session_data* sd, int guild_id, int flag) {
 			if( tsd ) clif_guild_inviteack(tsd,3);
 			return 0;
 		}
-
+#ifdef Pandas_NpcFilter_GUILDJOIN
+		if (sd && tsd) {
+			pc_setreg(sd, add_str("@join_guild_id"), guild_id);
+			pc_setreg(sd, add_str("@join_guild_aid"), tsd->status.account_id);
+			if (npc_script_filter(sd, NPCF_GUILDJOIN)) {
+				sd->guild_invite = 0;
+				sd->guild_invite_account = 0;
+				if ( tsd ) clif_guild_inviteack(tsd, 1);
+				return 0;
+			}
+		}
+#endif // Pandas_NpcFilter_GUILDJOIN
 		guild_makemember(&m,sd);
 		intif_guild_addmember(guild_id, &m);
 		//TODO: send a minimap update to this player
@@ -939,7 +960,17 @@ int guild_leave(struct map_session_data* sd, int guild_id, uint32 account_id, ui
 		sd->status.char_id!=char_id || sd->status.guild_id!=guild_id ||
 		map_flag_gvg2(sd->bl.m))
 		return 0;
-
+#ifdef Pandas_NpcFilter_GUILDLEAVE
+	if (g && sd) {
+		pc_setreg(sd, add_str("@left_guild_id"), g->guild_id);
+		pc_setregstr(sd, add_str("@left_guild_name$"), g->name);
+		pc_setreg(sd, add_str("@left_guild_kick"), 0);
+		pc_setreg(sd, add_str("@left_guild_aid"), sd->status.account_id);
+		if (npc_script_filter(sd, NPCF_GUILDLEAVE)) {
+			return 0;
+		}
+	}
+#endif // Pandas_NpcFilter_GUILDLEAVE
 	guild_trade_bound_cancel(sd);
 	intif_guild_leave(sd->status.guild_id, sd->status.account_id, sd->status.char_id,0,mes);
 	return 0;
@@ -974,6 +1005,17 @@ int guild_expulsion(struct map_session_data* sd, int guild_id, uint32 account_id
 
 	// find the member and perform expulsion
 	i = guild_getindex(g, account_id, char_id);
+#ifdef Pandas_NpcFilter_GUILDLEAVE
+	if (g && sd) {
+		pc_setreg(sd, add_str("@left_guild_id"), g->guild_id);
+		pc_setregstr(sd, add_str("@left_guild_name$"), g->name);
+		pc_setreg(sd, add_str("@left_guild_kick"), 1);
+		pc_setreg(sd, add_str("@left_guild_aid"), g->member[i].account_id);
+		if (npc_script_filter(sd, NPCF_GUILDLEAVE)) {
+			return 0;
+		}
+	}
+#endif // Pandas_NpcFilter_GUILDLEAVE
 	if( i != -1 && strcmp(g->member[i].name,g->master) != 0 ) { //Can't expel the GL!
 		if (tsd)
 			guild_trade_bound_cancel(tsd);
@@ -1072,7 +1114,7 @@ int guild_member_withdraw(int guild_id, uint32 account_id, uint32 char_id, int f
 void guild_retrieveitembound(uint32 char_id, uint32 account_id, int guild_id) {
 	TBL_PC *sd = map_charid2sd(char_id);
 	if (sd) { //Character is online
-		int idxlist[MAX_INVENTORY];
+		int idxlist[G_MAX_INVENTORY];
 		int j;
 		j = pc_bound_chk(sd,BOUND_GUILD,idxlist);
 		if (j) {
@@ -1537,13 +1579,15 @@ int guild_skillupack(int guild_id,uint16 skill_id,uint32 account_id) {
 }
 
 void guild_guildaura_refresh(struct map_session_data *sd, uint16 skill_id, uint16 skill_lv) {
-	struct skill_unit_group* group = NULL;
-	sc_type type = status_skill2sc(skill_id);
 	if( !(battle_config.guild_aura&(is_agit_start()?2:1)) &&
 			!(battle_config.guild_aura&(map_flag_gvg2(sd->bl.m)?8:4)) )
 		return;
 	if( !skill_lv )
 		return;
+
+	std::shared_ptr<s_skill_unit_group> group;
+	sc_type type = status_skill2sc(skill_id);
+
 	if( sd->sc.data[type] && (group = skill_id2group(sd->sc.data[type]->val4)) ) {
 		skill_delunitgroup(group);
 		status_change_end(&sd->bl,type,INVALID_TIMER);
@@ -2045,7 +2089,7 @@ int guild_break(struct map_session_data *sd,char *name) {
 	int i;
 #ifdef BOUND_ITEMS
 	int j;
-	int idxlist[MAX_INVENTORY];
+	int idxlist[G_MAX_INVENTORY];
 #endif
 
 	nullpo_ret(sd);
@@ -2072,24 +2116,22 @@ int guild_break(struct map_session_data *sd,char *name) {
 
 	/* Regardless of char server allowing it, we clear the guild master's auras */
 	if ((ud = unit_bl2ud(&sd->bl))) {
-		int count = 0;
-		struct skill_unit_group *group[4];
+		std::vector<std::shared_ptr<s_skill_unit_group>> group;
 
-		for(i = 0; i < MAX_SKILLUNITGROUP && ud->skillunit[i]; i++) {
-			switch(ud->skillunit[i]->skill_id) {
+		for (const auto su : ud->skillunits) {
+			switch (su->skill_id) {
 				case GD_LEADERSHIP:
 				case GD_GLORYWOUNDS:
 				case GD_SOULCOLD:
 				case GD_HAWKEYES:
-					if(count == 4)
-						ShowWarning("guild_break: '%s' got more than 4 guild aura instances! (%d)\n",sd->status.name,ud->skillunit[i]->skill_id);
-					else
-						group[count++] = ud->skillunit[i];
+					group.push_back(su);
 					break;
 			}
 		}
-		for (i = 0; i < count; i++)
-			skill_delunitgroup(group[i]);
+
+		for (auto it = group.begin(); it != group.end(); it++) {
+			skill_delunitgroup(*it);
+		}
 	}
 
 #ifdef BOUND_ITEMS

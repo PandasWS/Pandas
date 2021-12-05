@@ -157,6 +157,38 @@ enum npc_timeout_type {
 	NPCT_WAIT  = 2,
 };
 
+/// Enum of Player's Parameter
+enum e_params {
+	PARAM_STR = 0,
+	PARAM_AGI,
+	PARAM_VIT,
+	PARAM_INT,
+	PARAM_DEX,
+	PARAM_LUK,
+	PARAM_POW,
+	PARAM_STA,
+	PARAM_WIS,
+	PARAM_SPL,
+	PARAM_CON,
+	PARAM_CRT,
+	PARAM_MAX
+};
+
+static const char* parameter_names[PARAM_MAX] = {
+	"Str",
+	"Agi",
+	"Vit",
+	"Int",
+	"Dex",
+	"Luk",
+	"Pow",
+	"Sta",
+	"Wis",
+	"Spl",
+	"Con",
+	"Crt"
+};
+
 extern unsigned int equip_bitmask[EQI_MAX];
 
 #define equip_index_check(i) ( (i) >= EQI_ACC_L && (i) < EQI_MAX )
@@ -212,10 +244,19 @@ struct weapon_data {
 	std::vector<s_addrace2> addrace3;
 };
 
+enum e_autospell_flags{
+	AUTOSPELL_FORCE_SELF = 0x0,
+	AUTOSPELL_FORCE_TARGET = 0x1,
+	AUTOSPELL_FORCE_RANDOM_LEVEL = 0x2,
+	AUTOSPELL_FORCE_ALL = 0x3
+};
+
 /// AutoSpell bonus struct
 struct s_autospell {
-	short id, lv, rate, flag;
-	unsigned short card_id;
+	uint16 id, lv, trigger_skill;
+	short rate, battle_flag;
+	t_itemid card_id;
+	uint8 flag;
 	bool lock;  // bAutoSpellOnSkill: blocks autospell from triggering again, while being executed
 };
 
@@ -260,6 +301,8 @@ struct s_autobonus {
 	char *bonus_script, *other_script;
 	int active;
 	unsigned int pos;
+
+	~s_autobonus();
 };
 
 /// Timed bonus 'bonus_script' struct [Cydh]
@@ -364,7 +407,6 @@ struct map_session_data {
 		t_itemid autolootid[AUTOLOOTITEM_SIZE]; // [Zephyrus]
 		unsigned short autoloottype;
 		unsigned int autolooting : 1; //performance-saver, autolooting state for @alootid
-		unsigned int autobonus; //flag to indicate if an autobonus is activated. [Inkfish]
 		unsigned int gmaster_flag : 1;
 		unsigned int prevend : 1;//used to flag wheather you've spent 40sp to open the vending or not.
 		unsigned int warping : 1;//states whether you're in the middle of a warp processing
@@ -406,7 +448,7 @@ struct map_session_data {
 		// PYHELP - BONUS - INSERT POINT - <Section 4>
 	} special_state;
 	uint32 login_id1, login_id2;
-	unsigned short class_;	//This is the internal job ID used by the map server to simplify comparisons/queries/etc. [Skotlex]
+	uint64 class_;	//This is the internal job ID used by the map server to simplify comparisons/queries/etc. [Skotlex]
 	int group_id, group_pos, group_level;
 	unsigned int permissions;/* group permissions */
 	int count_rewarp; //count how many time we being rewarped
@@ -419,7 +461,7 @@ struct map_session_data {
 	struct s_storage inventory;
 	struct s_storage cart;
 
-	struct item_data* inventory_data[MAX_INVENTORY]; // direct pointers to itemdb entries (faster than doing item_id lookups)
+	struct item_data* inventory_data[G_MAX_INVENTORY]; // direct pointers to itemdb entries (faster than doing item_id lookups)
 	short equip_index[EQI_MAX];
 	short equip_switch_index[EQI_MAX];
 	unsigned int weight,max_weight,add_max_weight;
@@ -491,7 +533,7 @@ struct map_session_data {
 
 	// here start arrays to be globally zeroed at the beginning of status_calc_pc()
 	struct s_indexed_bonus {
-		int param_bonus[6], param_equip[6]; //Stores card/equipment bonuses.
+		int param_bonus[PARAM_MAX], param_equip[PARAM_MAX]; //Stores card/equipment bonuses.
 		int subele[ELE_MAX];
 		int subele_script[ELE_MAX];
 		int subdefele[ELE_MAX];
@@ -537,12 +579,15 @@ struct map_session_data {
 	std::vector<s_addeffect> addeff, addeff_atked;
 	std::vector<s_addeffectonskill> addeff_onskill;
 	std::vector<s_item_bonus> skillatk, skillusesprate, skillusesp, skillheal, skillheal2, skillblown, skillcastrate, skillfixcastrate, subskill, skillcooldown, skillfixcast,
-		skillvarcast, skilldelay, itemhealrate, add_def, add_mdef, add_mdmg, reseff, itemgrouphealrate, skillnorequire_sk;
+		skillvarcast, skilldelay, itemhealrate, add_def, add_mdef, add_mdmg, reseff, itemgrouphealrate, itemsphealrate, itemgroupsphealrate, skillnorequire_sk;
+#ifdef Pandas_Bonus_bAddSkillRange
+	std::vector<s_item_bonus> addskillrange;
+#endif // Pandas_Bonus_bAddSkillRange
 	std::vector<s_add_drop> add_drop;
 	std::vector<s_addele2> subele2;
 	std::vector<s_vanish_bonus> sp_vanish, hp_vanish;
 	std::vector<s_addrace2> subrace3;
-	std::vector<s_autobonus> autobonus, autobonus2, autobonus3; //Auto script on attack, when attacked, on skill usage
+	std::vector<std::shared_ptr<s_autobonus>> autobonus, autobonus2, autobonus3; //Auto script on attack, when attacked, on skill usage
 
 	// zeroed structures start here
 	struct s_regen {
@@ -586,6 +631,7 @@ struct map_session_data {
 		int classchange; // [Valaris]
 		int speed_rate, speed_add_rate, aspd_add;
 		int itemhealrate2; // [Epoque] Increase heal rate of all healing items.
+		int itemsphealrate2;
 		int shieldmdef;//royal guard's
 		unsigned int setitem_hash, setitem_hash2; //Split in 2 because shift operations only work on int ranges. [Skotlex]
 
@@ -596,17 +642,21 @@ struct map_session_data {
 		unsigned short unbreakable;	// chance to prevent ANY equipment breaking [celest]
 		unsigned short unbreakable_equip; //100% break resistance on certain equipment
 		unsigned short unstripable_equip;
-		int fixcastrate, varcastrate; // n/100
+		int fixcastrate, varcastrate, delayrate; // n/100
 		int add_fixcast, add_varcast; // in milliseconds
 		int ematk; // matk bonus from equipment
 		int eatk; // atk bonus from equipment
 		uint8 absorb_dmg_maxhp; // [Cydh]
 		short critical_rangeatk;
 		short weapon_atk_rate, weapon_matk_rate;
+#ifdef Pandas_Bonus_bRebirthWithHeal
+		int rebirth_rate, rebirth_heal_percent_hp, rebirth_heal_percent_sp;
+#endif // Pandas_Bonus_bRebirthWithHeal
+		// PYHELP - BONUS - INSERT POINT - <Section 5>
 	} bonus;
 	// zeroed vars end here.
 
-	int castrate,delayrate,hprate,sprate,dsprate;
+	int castrate,hprate,sprate,dsprate;
 	int hprecov_rate,sprecov_rate;
 	int matk_rate;
 	int critical_rate,hit_rate,flee_rate,flee2_rate,def_rate,def2_rate,mdef_rate,mdef2_rate;
@@ -642,6 +692,9 @@ struct map_session_data {
 	bool party_creating; // whether the char is requesting party creation
 	bool party_joining; // whether the char is accepting party invitation
 	int party_invite, party_invite_account; // for handling party invitation (holds party id and account id)
+#ifdef Pandas_PacketFunction_PartyJoinRequest
+	int party_applicant, party_applicant_char;
+#endif // Pandas_PacketFunction_PartyJoinRequest
 	int adopt_invite; // Adoption
 
 	struct guild *guild; // [Ind] speed everything up
@@ -686,8 +739,8 @@ struct map_session_data {
 	int eventtimer[MAX_EVENTTIMER];
 	unsigned short eventcount; // [celest]
 
-	unsigned char change_level_2nd; // job level when changing from 1st to 2nd class [jobchange_level in global_reg_value]
-	unsigned char change_level_3rd; // job level when changing from 2nd to 3rd class [jobchange_level_3rd in global_reg_value]
+	uint16 change_level_2nd; // job level when changing from 1st to 2nd class [jobchange_level in global_reg_value]
+	uint16 change_level_3rd; // job level when changing from 2nd to 3rd class [jobchange_level_3rd in global_reg_value]
 
 	char fakename[NAME_LENGTH]; // fake names [Valaris]
 
@@ -945,6 +998,7 @@ enum weapon_type : uint8 {
 	W_DOUBLE_DA, // dagger + axe
 	W_DOUBLE_SA, // sword + axe
 	MAX_WEAPON_TYPE_ALL,
+	W_SHIELD = MAX_WEAPON_TYPE,
 };
 
 #define WEAPON_TYPE_ALL ((1<<MAX_WEAPON_TYPE)-1)
@@ -1027,26 +1081,38 @@ public:
 };
 
 struct s_job_info {
-	unsigned int base_hp[MAX_LEVEL], base_sp[MAX_LEVEL]; //Storage for the first calculation with hp/sp factor and multiplicator
-	int hp_factor, hp_multiplicator, sp_factor;
-	int max_weight_base;
-	char job_bonus[MAX_LEVEL];
-#ifdef RENEWAL_ASPD
-	int aspd_base[MAX_WEAPON_TYPE+1];
-#else
-	int aspd_base[MAX_WEAPON_TYPE];	//[blackhole89]
-#endif
-	t_exp exp_table[2][MAX_LEVEL];
-	uint32 max_level[2];
-	struct s_params {
-		pec_ushort str, agi, vit, int_, dex, luk;
-	} max_param;
+	std::vector<uint32> base_hp, base_sp, base_ap; //Storage for the first calculation with hp/sp/ap factor and multiplicator
+	uint32 hp_factor, hp_multiplicator, sp_factor, max_weight_base;
+	std::vector<std::array<uint16,PARAM_MAX>> job_bonus;
+	std::vector<int16> aspd_base;
+	t_exp base_exp[MAX_LEVEL], job_exp[MAX_LEVEL];
+	uint16 max_base_level, max_job_level;
+	pec_ushort max_param[PARAM_MAX];
 	struct s_job_noenter_map {
 		uint32 zone;
 		uint8 group_lv;
 	} noenter_map;
 };
-extern struct s_job_info job_info[CLASS_COUNT];
+
+class JobDatabase : public TypesafeCachedYamlDatabase<uint16, s_job_info> {
+public:
+	JobDatabase() : TypesafeCachedYamlDatabase("JOB_STATS", 1) {
+
+	}
+
+	const std::string getDefaultLocation();
+	uint64 parseBodyNode(const YAML::Node &node);
+	void loadingFinished();
+
+	// Extras
+	uint32 get_maxBaseLv(uint16 job_id);
+	uint32 get_maxJobLv(uint16 job_id);
+	t_exp get_baseExp(uint16 job_id, uint32 level);
+	t_exp get_jobExp(uint16 job_id, uint32 level);
+	int32 get_maxWeight(uint16 job_id);
+};
+
+extern JobDatabase job_db;
 
 #define EQP_WEAPON EQP_HAND_R
 #define EQP_SHIELD EQP_HAND_L
@@ -1105,17 +1171,7 @@ static inline bool pc_hasprogress(struct map_session_data *sd, enum e_wip_block 
 	return sd == NULL || (sd->state.workinprogress&progress) == progress;
 }
 
-/// Enum of Player's Parameter
-enum e_params {
-	PARAM_STR = 0,
-	PARAM_AGI,
-	PARAM_VIT,
-	PARAM_INT,
-	PARAM_DEX,
-	PARAM_LUK,
-	PARAM_MAX
-};
-pec_ushort pc_maxparameter(struct map_session_data *sd, enum e_params param);
+pec_ushort pc_maxparameter(struct map_session_data *sd, e_params param);
 short pc_maxaspd(struct map_session_data *sd);
 
 /**
@@ -1241,7 +1297,6 @@ enum e_summoner_power_type {
 };
 
 void pc_set_reg_load(bool val);
-int pc_split_atoi(char* str, int* val, char sep, int max);
 int pc_class2idx(int class_);
 int pc_get_group_level(struct map_session_data *sd);
 int pc_get_group_id(struct map_session_data *sd);
@@ -1286,7 +1341,7 @@ TIMER_FUNC(pc_global_expiration_timer);
 void pc_expire_check(struct map_session_data *sd);
 
 void pc_calc_skilltree(struct map_session_data *sd);
-int pc_calc_skilltree_normalize_job(struct map_session_data *sd);
+uint64 pc_calc_skilltree_normalize_job(struct map_session_data *sd);
 void pc_clean_skilltree(struct map_session_data *sd);
 
 #define pc_checkoverhp(sd) ((sd)->battle_status.hp == (sd)->battle_status.max_hp)
@@ -1345,10 +1400,10 @@ bool pc_adoption(struct map_session_data *p1_sd, struct map_session_data *p2_sd,
 
 void pc_updateweightstatus(struct map_session_data *sd);
 
-bool pc_addautobonus(std::vector<s_autobonus> &bonus, const char *script, short rate, unsigned int dur, uint16 atk_type, const char *o_script, unsigned int pos, bool onskill);
-void pc_exeautobonus(struct map_session_data* sd, std::vector<s_autobonus> *bonus, struct s_autobonus *autobonus);
+bool pc_addautobonus(std::vector<std::shared_ptr<s_autobonus>> &bonus, const char *script, short rate, unsigned int dur, uint16 atk_type, const char *o_script, unsigned int pos, bool onskill);
+void pc_exeautobonus(struct map_session_data &sd, std::vector<std::shared_ptr<s_autobonus>> *bonus, std::shared_ptr<s_autobonus> autobonus);
 TIMER_FUNC(pc_endautobonus);
-void pc_delautobonus(struct map_session_data* sd, std::vector<s_autobonus> &bonus, bool restore);
+void pc_delautobonus(struct map_session_data &sd, std::vector<std::shared_ptr<s_autobonus>> &bonus, bool restore);
 
 void pc_bonus(struct map_session_data *sd, int type, int val);
 void pc_bonus2(struct map_session_data *sd, int type, int type2, int val);
@@ -1393,6 +1448,8 @@ int pc_need_status_point(struct map_session_data *,int,int);
 int pc_maxparameterincrease(struct map_session_data*,int);
 bool pc_statusup(struct map_session_data*,int,int);
 int pc_statusup2(struct map_session_data*,int,int);
+int pc_getstat(map_session_data *sd, int type);
+int pc_setstat(struct map_session_data* sd, int type, int val);
 void pc_skillup(struct map_session_data*,uint16 skill_id);
 int pc_allskillup(struct map_session_data*);
 int pc_resetlvl(struct map_session_data*,int type);
@@ -1412,6 +1469,9 @@ void pc_checkitem(struct map_session_data*);
 void pc_check_available_item(struct map_session_data *sd, uint8 type);
 int pc_useitem(struct map_session_data*,int);
 
+#ifdef Pandas_Bonus_bAddSkillRange
+int pc_addskillrange_bonus(struct map_session_data* sd, uint16 skill_id);
+#endif // Pandas_Bonus_bAddSkillRange
 int pc_skillatk_bonus(struct map_session_data *sd, uint16 skill_id);
 int pc_sub_skillatk_bonus(struct map_session_data *sd, uint16 skill_id);
 int pc_skillheal_bonus(struct map_session_data *sd, uint16 skill_id);
@@ -1488,8 +1548,8 @@ bool pc_setstand(struct map_session_data *sd, bool force);
 bool pc_candrop(struct map_session_data *sd,struct item *item);
 bool pc_can_attack(struct map_session_data *sd, int target_id);
 
-int pc_jobid2mapid(unsigned short b_class);	// Skotlex
-int pc_mapid2jobid(unsigned short class_, int sex);	// Skotlex
+uint64 pc_jobid2mapid(unsigned short b_class);	// Skotlex
+int pc_mapid2jobid(uint64 class_, int sex);	// Skotlex
 
 const char * job_name(int class_);
 
@@ -1596,8 +1656,8 @@ bool pc_bonus_script_exists(struct map_session_data* sd, uint64 bonus_id);
 
 void pc_cell_basilica(struct map_session_data *sd);
 
-short pc_get_itemgroup_bonus(struct map_session_data* sd, t_itemid nameid);
-short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id);
+short pc_get_itemgroup_bonus(struct map_session_data* sd, t_itemid nameid, std::vector<s_item_bonus>& bonuses);
+short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id, std::vector<s_item_bonus>& bonuses);
 
 #ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 bool pc_is_same_equip_index(enum equip_index eqi, short *equip_index, short index);

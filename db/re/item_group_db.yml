@@ -32,6 +32,7 @@
 #          Duration            Makes the item a rental item which will expire within the given amount in minutes. Not intended for use with stackable items. (Default: 0)
 #          Announced           If player obtains this item it will be broadcasted to the server. (Default: false)
 #          UniqueId            Makes the given item(s) have a Unique ID. (Default: UniqueId from item_db)
+#          Stacked             Whether stackable items are given stacked or not. (Default: true)
 #          Named               Inscribes the item with the obtainer's name. (Default: false)
 #          Bound               Binds the obtained item. (Default: None)
 #          Clear               Remove the given item. (Optional)
@@ -890,6 +891,7 @@ Body:
           - Item: Aquarius_Diadem_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: ARCHER_CARD_BOX
     SubGroups:
       - SubGroup: 0
@@ -948,6 +950,7 @@ Body:
           - Item: Aries_Scroll_
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: ASGARD_SCROLL
     SubGroups:
       - SubGroup: 1
@@ -4028,6 +4031,7 @@ Body:
           - Item: Capricon_Di_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: CAPRI_CROWN_SCROLL
     SubGroups:
       - SubGroup: 1
@@ -4084,6 +4088,7 @@ Body:
           - Item: Capri_Crown_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: CARACAS_RING_BOX
     SubGroups:
       - SubGroup: 0
@@ -5852,9 +5857,7 @@ Body:
           - Item: Malang_Sp_Can
             Rate: 800
           - Item: Egrade_Coin
-            Rate: 50
-          - Item: Egrade_Coin
-            Rate: 150
+            Rate: 200
       - SubGroup: 3
         List:
           - Item: Malang_Sp_Can
@@ -6704,7 +6707,7 @@ Body:
             Rate: 156
           - Item: LexAeternaStone_Middle
             Rate: 156
-          - Item: BlueAuraEffect_Middle
+          - Item: ShadowEffect_Middle
             Rate: 156
           - Item: ATKStone_Middle
             Rate: 234
@@ -8195,6 +8198,7 @@ Body:
           - Item: Energetic_Pisces_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: ENERGETIC_PISCES_SCROLL
     SubGroups:
       - SubGroup: 1
@@ -9185,6 +9189,7 @@ Body:
           - Item: Gemi_Crown_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: GEMI_DIADEM_SCROLL
     SubGroups:
       - SubGroup: 1
@@ -9225,6 +9230,7 @@ Body:
           - Item: Gemi_Diadem_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: GEMSTONE
     SubGroups:
       - SubGroup: 1
@@ -12497,6 +12503,7 @@ Body:
           - Item: Lovely_Aquarius_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: LOVELY_AQUARIUS_SCROLL
     SubGroups:
       - SubGroup: 1
@@ -15619,6 +15626,7 @@ Body:
           - Item: Pisces_Diadem_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: PISCES_DIADEM_SCROLL
     SubGroups:
       - SubGroup: 1
@@ -16373,9 +16381,6 @@ Body:
           - Item: Blacksmith_Blessing
             Rate: 580
             Amount: 4
-          - Item: Blacksmith_Blessing
-            Rate: 1500
-            Amount: 2
           - Item: Unbreak_Weap_Box
             Rate: 2500
           - Item: Unbreak_Def_Box
@@ -16438,6 +16443,7 @@ Body:
           - Item: Sagittarius_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: SAGITTAR_DIADEM_SCROLL
     SubGroups:
       - SubGroup: 1
@@ -16489,6 +16495,7 @@ Body:
           - Item: Sagittar_Diadem_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: SAHKKAT_BOX
     SubGroups:
       - SubGroup: 0
@@ -19249,6 +19256,7 @@ Body:
           - Item: Taurus_Crown_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: TAURUS_DIADEM_SCROLL
     SubGroups:
       - SubGroup: 1
@@ -19293,6 +19301,7 @@ Body:
           - Item: Taurus_Diadem_Scroll
             Amount: 10
             UniqueId: true
+            Stacked: false
   - Group: TCG_CARD_SCROLL
     SubGroups:
       - SubGroup: 0
@@ -19550,6 +19559,8 @@ Body:
           - Item: E_Token_Of_Siegfried
             Rate: 1
           - Item: Token_Of_Siegfried
+            Rate: 1
+          - Item: DF_Token_Of_Siegfried
             Rate: 1
   - Group: TRESURE_BOX_WOE
     SubGroups:
@@ -20276,8 +20287,6 @@ Body:
             Amount: 10
           - Item: Golden_Treasure_Box
             Amount: 11
-          - Item: Red_Booster
-            Amount: 10
           - Item: Sealed_Pharaoh_Scroll
   - Group: UNLIMITED_BOX_II_10
     SubGroups:
@@ -23456,4 +23465,254 @@ Body:
             Rate: 300
             Amount: 1
             Announced: true
+  - Group: HAPPY_BOX_J
+    SubGroups:
+      - SubGroup: 1
+        List:
+          - Item: High_Weapon_Box
+            Rate: 1
+          - Item: C_Afro_Wig_Red
+            Rate: 1
+          - Item: Happy_Pierrot_Mask
+            Rate: 1
+          - Item: Old_Violet_Box
+            Rate: 3
+          - Item: Emperium
+            Rate: 4
+          - Item: Karvodailnirol
+            Rate: 5
+          - Item: Savage_Meat
+            Rate: 5
+          - Item: Gun_Powder
+            Rate: 10
+          - Item: Beef_Head_Meat
+            Rate: 10
+          - Item: Petti_Tail
+            Rate: 10
+          - Item: Drocera_Tentacle
+            Rate: 15
+          - Item: Fire_Bottle
+            Rate: 15
+          - Item: Coating_Bottle
+            Rate: 15
+          - Item: Witherless_Rose
+            Rate: 20
+          - Item: Alchol
+            Rate: 20
+          - Item: Cold_Ice
+            Rate: 20
+          - Item: Ice_Crystal
+            Rate: 20
+          - Item: Frozen_Rose
+            Rate: 30
+          - Item: Wolf_Blood
+            Rate: 30
+          - Item: Ice_Fragment
+            Rate: 30
+          - Item: Acid_Bottle
+            Rate: 30
+          - Item: Gift_Box
+            Rate: 35
+          - Item: MenEater_Plant_Bottle
+            Rate: 40
+          - Item: Str_Dish06
+            Rate: 40
+          - Item: Vit_Dish06
+            Rate: 40
+          - Item: Agi_Dish06
+            Rate: 40
+          - Item: Royal_Jelly
+            Rate: 80
+          - Item: Int_Dish03
+            Rate: 100
+          - Item: Dex_Dish03
+            Rate: 100
+          - Item: Luk_Dish03
+            Rate: 100
+          - Item: Honey
+            Rate: 130
+  - Group: CLASS_SHADOW_CUBE
+    SubGroups:
+      - SubGroup: 1
+        List:
+          - Item: S_Ninja_Shield
+            Rate: 58
+          - Item: S_Taekwon_Shield
+            Rate: 58
+          - Item: S_DoramPhysical_Shield
+            Rate: 58
+          - Item: S_DoramMagical_Shield
+            Rate: 58
+          - Item: S_Rebellion_Armor
+            Rate: 58
+          - Item: S_Kagerou_Armor
+            Rate: 58
+          - Item: S_Oboro_Armor
+            Rate: 58
+          - Item: S_Rebellion_Shoes
+            Rate: 58
+          - Item: S_Kagerou_Shoes
+            Rate: 58
+          - Item: S_Oboro_Shoes
+            Rate: 58
+          - Item: S_DoramPhysical_Armor
+            Rate: 58
+          - Item: S_DoramPhysical_Shoes
+            Rate: 58
+          - Item: S_DoramMagical_Armor
+            Rate: 58
+          - Item: S_DoramMagical_Shoes
+            Rate: 58
+          - Item: S_Star_Emperor_Armor
+            Rate: 58
+          - Item: S_Star_Emperor_Shoes
+            Rate: 58
+          - Item: S_Soul_Reaper_Armor
+            Rate: 58
+          - Item: S_Soul_Reaper_Shoes
+            Rate: 58
+          - Item: S_Bard_Shoes
+            Rate: 59
+          - Item: S_Dancer_Shoes
+            Rate: 59
+          - Item: S_Bard_Armor
+            Rate: 59
+          - Item: S_Dancer_Armor
+            Rate: 59
+          - Item: S_SuperNovice_Weapon
+            Rate: 59
+          - Item: S_Gunslinger_Weapon
+            Rate: 59
+          - Item: S_Taekwon_Weapon
+            Rate: 59
+          - Item: S_Ninja_Weapon
+            Rate: 59
+          - Item: S_DoramMagical_Weapon
+            Rate: 59
+          - Item: S_DoramPhysical_Weapon
+            Rate: 59
+          - Item: S_Minstrel_Weapon
+            Rate: 59
+          - Item: S_Wanderer_Weapon
+            Rate: 59
+          - Item: S_Minstrel_Shield
+            Rate: 59
+          - Item: S_Wanderer_Shield
+            Rate: 59
+          - Item: S_SuperNovice_Shield
+            Rate: 59
+          - Item: S_Gunslinger_Shield
+            Rate: 59
+          - Item: S_Knight_Shoes
+            Rate: 118
+          - Item: S_Crusader_Shoes
+            Rate: 118
+          - Item: S_Blacksmith_Shoes
+            Rate: 118
+          - Item: S_Alchemist_Shoes
+            Rate: 118
+          - Item: S_Priest_Shoes
+            Rate: 118
+          - Item: S_Monk_Shoes
+            Rate: 118
+          - Item: S_Assassin_Shoes
+            Rate: 118
+          - Item: S_Rogue_Shoes
+            Rate: 118
+          - Item: S_Wizard_Shoes
+            Rate: 118
+          - Item: S_Sage_Shoes
+            Rate: 118
+          - Item: S_Hunter_Shoes
+            Rate: 118
+          - Item: S_Knight_Armor
+            Rate: 118
+          - Item: S_Crusader_Armor
+            Rate: 118
+          - Item: S_Blacksmith_Armor
+            Rate: 118
+          - Item: S_Alchemist_Armor
+            Rate: 118
+          - Item: S_Priest_Armor
+            Rate: 118
+          - Item: S_Monk_Armor
+            Rate: 118
+          - Item: S_Assassin_Armor
+            Rate: 118
+          - Item: S_Rogue_Armor
+            Rate: 118
+          - Item: S_Wizard_Armor
+            Rate: 118
+          - Item: S_Sage_Armor
+            Rate: 118
+          - Item: S_Hunter_Armor
+            Rate: 118
+          - Item: S_Runeknight_Weapon
+            Rate: 118
+          - Item: S_Royalguard_Weapon
+            Rate: 118
+          - Item: S_Mechanic_weapon
+            Rate: 118
+          - Item: S_Genetic_Weapon
+            Rate: 118
+          - Item: S_Archbishop_Weapon
+            Rate: 118
+          - Item: S_Sura_weapon
+            Rate: 118
+          - Item: S_Guillotine_Weapon
+            Rate: 118
+          - Item: S_Shadowchaser_Weapon
+            Rate: 118
+          - Item: S_Warlock_Weapon
+            Rate: 118
+          - Item: S_Sorcerer_Weapon
+            Rate: 118
+          - Item: S_Ranger_Weapon
+            Rate: 118
+          - Item: S_Runeknight_Shield
+            Rate: 118
+          - Item: S_Royalguard_Shield
+            Rate: 118
+          - Item: S_Mechanic_Shield
+            Rate: 118
+          - Item: S_Genetic_Shield
+            Rate: 118
+          - Item: S_Archbishop_Shield
+            Rate: 118
+          - Item: S_Sura_Shield
+            Rate: 118
+          - Item: S_Guillotine_Shield
+            Rate: 118
+          - Item: S_Shadowchaser_Shield
+            Rate: 118
+          - Item: S_Warlock_Shield
+            Rate: 118
+          - Item: S_Sorcerer_Shield
+            Rate: 118
+          - Item: S_Ranger_Shield
+            Rate: 118
+          - Item: S_Swordman_earring
+            Rate: 235
+          - Item: S_Merchant_earring
+            Rate: 235
+          - Item: S_Acolyte_earring
+            Rate: 235
+          - Item: S_Magician_earring
+            Rate: 235
+          - Item: S_Swordman_Pendant
+            Rate: 235
+          - Item: S_Merchant_Pendant
+            Rate: 235
+          - Item: S_Acolyte_Pendant
+            Rate: 235
+          - Item: S_Thief_Pendant
+            Rate: 235
+          - Item: S_Magician_Pendant
+            Rate: 235
+          - Item: S_Archer_Pendant
+            Rate: 235
+          - Item: S_Thief_earring
+            Rate: 235
+          - Item: S_Archer_earring
+            Rate: 235
 

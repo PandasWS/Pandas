@@ -50,6 +50,8 @@ product_files = [
     'char-server.pdb',
     'map-server.exe',
     'map-server.pdb',
+    'web-server.exe',
+    'web-server.pdb',
     'yaml2sql.exe',
     'yaml2sql.pdb',
     'csv2yaml.exe',

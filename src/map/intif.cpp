@@ -3492,7 +3492,7 @@ static bool intif_parse_StorageReceived(int fd)
 	switch (type) {
 		case TABLE_INVENTORY: {
 #ifdef BOUND_ITEMS
-			int j, idxlist[MAX_INVENTORY];
+			int j, idxlist[G_MAX_INVENTORY];
 #endif
 			pc_setinventorydata(sd);
 			pc_setequipindex(sd);
