@@ -127,7 +127,4 @@ bonus2 bSkillNoRequire,sk,n;
 	bonus2 bSkillNoRequire,"ALL_RESURRECTION",SKILL_REQ_ITEMCOST;	// 移除道具条件
 	bonus2 bSkillNoRequire,"ALL_RESURRECTION",SKILL_REQ_SPCOST;	// 移除 SP 条件
 
-注意事项:
-	bonus2 bSkillNoRequire 只能用于解除指定条件, 无法用来恢复指定条件.
-
 --------------------------------------------------------------
