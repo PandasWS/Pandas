@@ -571,10 +571,10 @@ enum _sp {
 		SP_PANDAS_ADDSKILLRANGE,	// 调整器名称: bAddSkillRange / 说明: 增加 sk 技能 n 格攻击距离
 	#endif // Pandas_Bonus_bAddSkillRange
 	#ifdef Pandas_Bonus_bStatusAddDamage
-		SP_PANDAS_STATUSADDDAMAGE,	// 调整器名称: bStatusAddDamage / 说明: 当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n [聽風]
+		SP_PANDAS_STATUSADDDAMAGE,	// 调整器名称: bStatusAddDamage / 说明: 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
 	#endif // Pandas_Bonus_bStatusAddDamage
 	#ifdef Pandas_Bonus_bStatusAddDamageRate
-		SP_PANDAS_STATUSADDDAMAGERATE,	// 调整器名称: bStatusAddDamageRate / 说明: 当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n% [聽風]
+		SP_PANDAS_STATUSADDDAMAGERATE,	// 调整器名称: bStatusAddDamageRate / 说明: 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
 	#endif // Pandas_Bonus_bStatusAddDamageRate
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,

@@ -1084,11 +1084,11 @@
 	export_constant2("bAddSkillRange", SP_PANDAS_ADDSKILLRANGE);
 #endif // Pandas_Bonus_bAddSkillRange
 #ifdef Pandas_Bonus_bStatusAddDamage
-	// 当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n [聽風]
+	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
 	export_constant2("bStatusAddDamage", SP_PANDAS_STATUSADDDAMAGE);
 #endif // Pandas_Bonus_bStatusAddDamage
 #ifdef Pandas_Bonus_bStatusAddDamageRate
-	// 当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n% [聽風]
+	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
 	export_constant2("bStatusAddDamageRate", SP_PANDAS_STATUSADDDAMAGERATE);
 #endif // Pandas_Bonus_bStatusAddDamageRate
 	// PYHELP - BONUS - INSERT POINT - <Section 3>

@@ -65,7 +65,7 @@ bonus2 bAddSkillRange,sk,n;
 
 * bonus4 bStatusAddDamage,sc,n,r,bf;
 
-攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/10% 的概率使伤害增加 n [聽風]
+攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n [聽風]
 
 参数说明:
 	sc			SC 状态编号, 支持常量
@@ -81,11 +81,6 @@ bonus2 bAddSkillRange,sk,n;
 
 	bf			能触发加成的攻击类型
 				此项定义与 doc/item_bonus.txt 的 Trigger criteria (bf) 一致
-
-注意事项:
-	此效果调整器每个角色最多只能定义 50 条.
-	若希望普通攻击和技能攻击都有效, 应该使用 BF_NORMAL| BF_SKILL
-	多条规则之间的触发概率各自判定.
 
 规则合并:
 
@@ -103,11 +98,16 @@ bonus2 bAddSkillRange,sk,n;
 		// 对方拥有加速术状态时使用普通攻击有 7% 概率增加 11000 点伤害
 		bonus4 bStatusAddDamage,SC_INCREASEAGI,11000,70,BF_NORMAL;
 
+注意事项:
+	此效果调整器每个角色最多只能定义 50 条.
+	若希望普通攻击和技能攻击都有效, 应该使用 BF_NORMAL| BF_SKILL
+	多条规则之间的触发概率各自判定.
+
 --------------------------------------------------------------
 
 * bonus4 bStatusAddDamageRate,sc,n,r,bf;
 
-攻击拥有 sc 状态的目标时, 使用 bf 攻击时有 r/10% 的概率使伤害增加 n% [聽風]
+攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n% [聽風]
 
 参数说明:
 	sc			SC 状态编号, 支持常量
@@ -125,11 +125,6 @@ bonus2 bAddSkillRange,sk,n;
 	bf			能触发加成的攻击类型
 				此项定义与 doc/item_bonus.txt 的 Trigger criteria (bf) 一致
 
-注意事项:
-	此效果调整器每个角色最多只能定义 50 条.
-	若希望普通攻击和技能攻击都有效, 应该使用 BF_NORMAL| BF_SKILL
-	多条规则之间的触发概率各自判定.
-
 规则合并:
 
 	若多条规则中 sc + bf 完全一致, 则不会消耗规则数量, 例如:
@@ -145,5 +140,10 @@ bonus2 bAddSkillRange,sk,n;
 
 		// 对方拥有加速术状态时使用普通攻击有 7% 概率增加 30% 的伤害
 		bonus4 bStatusAddDamageRate,SC_INCREASEAGI,30,70,BF_NORMAL;
+
+注意事项:
+	此效果调整器每个角色最多只能定义 50 条.
+	若希望普通攻击和技能攻击都有效, 应该使用 BF_NORMAL| BF_SKILL
+	多条规则之间的触发概率各自判定.
 
 --------------------------------------------------------------

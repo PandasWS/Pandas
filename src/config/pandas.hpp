@@ -1567,14 +1567,14 @@
 	#define Pandas_Bonus_bAddSkillRange
 
 	// 是否启用 bStatusAddDamage 效果调整器 [聽風]
-	// 当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n
+	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
 	// 常量名称: SP_PANDAS_STATUSADDDAMAGE / 调整器名称: bStatusAddDamage
 	// 变量位置: map_session_data / 变量名称: status_damage_adjust
 	// 使用原型: bonus4 bStatusAddDamage,sc,n,r,bf;
 	#define Pandas_Bonus_bStatusAddDamage
 
 	// 是否启用 bStatusAddDamageRate 效果调整器 [聽風]
-	// 当对方拥有 sc 状态的时候, 使用 bf 攻击时有 r/10% 的概率伤害增加 n%
+	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
 	// 常量名称: SP_PANDAS_STATUSADDDAMAGERATE / 调整器名称: bStatusAddDamageRate
 	// 变量位置: map_session_data / 变量名称: status_damagerate_adjust
 	// 使用原型: bonus4 bStatusAddDamageRate,sc,n,r,bf;
