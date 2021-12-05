@@ -585,7 +585,7 @@ struct map_session_data {
 #endif // Pandas_Bonus_bAddSkillRange
 #ifdef Pandas_Bonus_bSkillNoRequire
 	std::vector<s_item_bonus> skillnorequire;
-#endif // Pandas_Bonus_
+#endif // Pandas_Bonus_bSkillNoRequire
 	std::vector<s_add_drop> add_drop;
 	std::vector<s_addele2> subele2;
 	std::vector<s_vanish_bonus> sp_vanish, hp_vanish;
