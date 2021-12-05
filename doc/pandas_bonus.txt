@@ -99,7 +99,7 @@ bonus2 bAddSkillRange,sk,n;
 		bonus4 bStatusAddDamage,SC_INCREASEAGI,11000,70,BF_NORMAL;
 
 注意事项:
-	此效果调整器每个角色最多只能定义 50 条.
+	此效果调整器每个角色最多只能定义 50 条 (源码中可通过 MAX_PC_BONUS 修改).
 	若希望普通攻击和技能攻击都有效, 应该使用 BF_NORMAL| BF_SKILL
 	多条规则之间的触发概率各自判定.
 
@@ -142,7 +142,7 @@ bonus2 bAddSkillRange,sk,n;
 		bonus4 bStatusAddDamageRate,SC_INCREASEAGI,30,70,BF_NORMAL;
 
 注意事项:
-	此效果调整器每个角色最多只能定义 50 条.
+	此效果调整器每个角色最多只能定义 50 条 (源码中可通过 MAX_PC_BONUS 修改).
 	若希望普通攻击和技能攻击都有效, 应该使用 BF_NORMAL| BF_SKILL
 	多条规则之间的触发概率各自判定.
 
