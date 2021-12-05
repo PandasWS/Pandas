@@ -70,9 +70,9 @@ bonus2 bSkillNoRequire,sk,n;
 参数说明:
 	sk			技能编号或者使用双引号括起来的技能常量名
 
-				增加"狂击"技能 1 格攻击距离, 可以有以下两种写法:
-				bonus2 bAddSkillRange,5,1;
-				bonus2 bAddSkillRange,"SM_BASH",1;
+				使"狂击"不再需要消耗 SP, 可以有以下两种写法:
+				bonus2 bSkillNoRequire,5,SKILL_REQ_SPCOST;
+				bonus2 bSkillNoRequire,"SM_BASH",SKILL_REQ_SPCOST;
 
 	n			需要移除的施法条件
 
