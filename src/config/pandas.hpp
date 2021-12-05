@@ -1567,11 +1567,11 @@
 	#define Pandas_Bonus_bAddSkillRange
 
 	// 是否启用 Pandas_Bonus_bSkillNoRequire 效果调整器 [聽風]
-	// 移除技能 sk 的需求条件, bitmask 为 掩码类型(可叠加) [聽風]
+	// 解除 sk 技能中由 n 指定的前置施法条件限制
 	// 常量名称: SP_PANDAS_SKILLNOREQUIRE / 调整器名称: bSkillNoRequire
-	// 变量位置: s_item_bonus / 变量名称: skillnorequire_sk
-	// 使用原型: bonus2 bSkillNoRequire,sk,bitmask;
-#define Pandas_Bonus_bSkillNoRequire
+	// 变量位置: map_session_data / 变量名称: skillnorequire
+	// 使用原型: bonus2 bSkillNoRequire,sk,n;
+	#define Pandas_Bonus_bSkillNoRequire
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 

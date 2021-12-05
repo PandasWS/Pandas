@@ -1084,7 +1084,7 @@
 	export_constant2("bAddSkillRange", SP_PANDAS_ADDSKILLRANGE);
 #endif // Pandas_Bonus_bAddSkillRange
 #ifdef Pandas_Bonus_bSkillNoRequire
-	// 移除技能 sk 的需求条件, bitmask 为 掩码类型(可叠加) [聽風]
+	// 解除 sk 技能中由 n 指定的前置施法条件限制
 	export_constant2("bSkillNoRequire", SP_PANDAS_SKILLNOREQUIRE);
 #endif // Pandas_Bonus_bSkillNoRequire
 	// PYHELP - BONUS - INSERT POINT - <Section 3>

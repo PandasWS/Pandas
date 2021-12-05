@@ -63,25 +63,71 @@ bonus2 bAddSkillRange,sk,n;
 
 --------------------------------------------------------------
 
-* bonus2 bSkillNoRequire,sk,bitmask;
+bonus2 bSkillNoRequire,sk,n;
 
-移除技能 sk 的需求条件, bitmask 为 掩码类型(可叠加) [聽風]
+解除 sk 技能中由 n 指定的前置施法条件限制 [聽風]
 
-移除 'skill_db.yml' 中 Requires项的技能指定需求:
-	   1 = HpCost			施放技能时需要的HP
-	   2 = SpCost			施放技能时需要的SP
-	   4 = HpRateCost		施放技能时需要的HP百分比
-	   8 = SpRateCost		施放技能时需要的SP百分比
-	  16 = MaxHpTrigger		施放技能时需要的最大HP
-	  32 = ZenyCost			施放技能时需要的Zeny
-	  64 = Weapon			施放技能时需要的武器
-	 128 = Ammo				施放技能时需要的子弹/箭矢（填了这个时，256 可以不需要）
-	 256 = AmmoAmount		施放技能时需要的子弹/箭矢 数量（单填这个时，还是需要身上有至少一个道具）
-	 512 = State			施放技能时需要的特殊状态（如骑鸟、骑龙、猎鹰、手推车、水、负重、太阳、月亮、星星等状态）
-	1024 = Status			施放技能时需要的SC_Buff状态（如爆气、手推车加速、隐匿、剧毒武器、回旋刀刃等技能前置状态）
-	2048 = SpiritSphereCost	施放技能时需要的气球/硬币数量
-	4096 = ItemCost			施放技能时需要的道具
-	8192 = Equipment		施放技能时需要的装备
-	
+参数说明:
+	sk			技能编号或者使用双引号括起来的技能常量名
+
+				增加"狂击"技能 1 格攻击距离, 可以有以下两种写法:
+				bonus2 bAddSkillRange,5,1;
+				bonus2 bAddSkillRange,"SM_BASH",1;
+
+	n			需要移除的施法条件
+
+				支持的常量:					十六进制值:
+				SKILL_REQ_HPCOST			0x1
+				移除施法时需要的 HP 条件
+
+				SKILL_REQ_SPCOST			0x2
+				移除施法时需要的 SP 条件
+
+				SKILL_REQ_HPRATECOST		0x4
+				移除施法时需要的 HP 百分比条件
+
+				SKILL_REQ_SPRATECOST		0x8
+				移除施法时需要的 SP 百分比条件
+
+				SKILL_REQ_MAXHPTRIGGER		0x10
+				移除施法时需要的最大 HP 条件
+
+				SKILL_REQ_ZENYCOST			0x20
+				移除施法时需要的 Zeny 条件
+
+				SKILL_REQ_WEAPON			0x40
+				移除施法时需要的武器条件
+
+				SKILL_REQ_AMMO				0x80
+				移除施法时需要的子弹条件 (如: 箭矢、子弹、短刀、加农炮弹等)
+
+				SKILL_REQ_STATE				0x100
+				移除施法时需要的特殊状态条件 (如: 骑鸟、骑龙、猎鹰、手推车等)
+
+				SKILL_REQ_STATUS			0x200
+				移除施法时需要的 SC 状态条件 (如: 手推车加速、隐匿等)
+
+				SKILL_REQ_SPIRITSPHERECOST	0x400
+				移除施法时需要的灵气弹条件
+
+				SKILL_REQ_ITEMCOST			0x800
+				移除施法时需要的道具条件 (如: 各种魔力矿石等, 具体定义在 skill_db)
+
+				SKILL_REQ_EQUIPMENT			0x1000
+				移除施法时需要的装备条件
+
+使用例子:
+	// 使金币攻击不再需要消耗金币
+	bonus2 bSkillNoRequire,"MC_MAMMONITE",SKILL_REQ_ZENYCOST;
+
+	// 使复活术不再需要消耗蓝色魔力矿石和 SP (写法一: 直接位运算)
+	bonus2 bSkillNoRequire,"ALL_RESURRECTION",SKILL_REQ_ITEMCOST|SKILL_REQ_SPCOST;
+
+	// 使复活术不再需要消耗蓝色魔力矿石和 SP (写法二: 拆成两条规则)
+	bonus2 bSkillNoRequire,"ALL_RESURRECTION",SKILL_REQ_ITEMCOST;	// 移除道具条件
+	bonus2 bSkillNoRequire,"ALL_RESURRECTION",SKILL_REQ_SPCOST;	// 移除 SP 条件
+
+注意事项:
+	bonus2 bSkillNoRequire 只能用于解除指定条件, 无法用来恢复指定条件.
+
 --------------------------------------------------------------
-

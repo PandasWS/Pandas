@@ -579,10 +579,13 @@ struct map_session_data {
 	std::vector<s_addeffect> addeff, addeff_atked;
 	std::vector<s_addeffectonskill> addeff_onskill;
 	std::vector<s_item_bonus> skillatk, skillusesprate, skillusesp, skillheal, skillheal2, skillblown, skillcastrate, skillfixcastrate, subskill, skillcooldown, skillfixcast,
-		skillvarcast, skilldelay, itemhealrate, add_def, add_mdef, add_mdmg, reseff, itemgrouphealrate, itemsphealrate, itemgroupsphealrate, skillnorequire_sk;
+		skillvarcast, skilldelay, itemhealrate, add_def, add_mdef, add_mdmg, reseff, itemgrouphealrate, itemsphealrate, itemgroupsphealrate;
 #ifdef Pandas_Bonus_bAddSkillRange
 	std::vector<s_item_bonus> addskillrange;
 #endif // Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus_bSkillNoRequire
+	std::vector<s_item_bonus> skillnorequire;
+#endif // Pandas_Bonus_
 	std::vector<s_add_drop> add_drop;
 	std::vector<s_addele2> subele2;
 	std::vector<s_vanish_bonus> sp_vanish, hp_vanish;
