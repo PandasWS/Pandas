@@ -87,16 +87,16 @@ bonus2 bAddSkillRange,sk,n;
 	若多条规则中 sc + bf 完全一致, 则不会消耗规则数量, 例如:
 
 		// 对方拥有加速术状态时使用普通攻击有 2% 概率增加 1000 点伤害
-		bonus4 bStatusAddDamage,SC_INCREASEAGI,1000,20,BF_NORMAL;
+		bonus4 bStatusAddDamage,SC_INCREASEAGI,1000,200,BF_NORMAL;
 
 		// 对方拥有加速术状态时使用普通攻击有 5% 概率增加 10000 点伤害
-		bonus4 bStatusAddDamage,SC_INCREASEAGI,10000,50,BF_NORMAL;
+		bonus4 bStatusAddDamage,SC_INCREASEAGI,10000,500,BF_NORMAL;
 	
 	这两条规则的 sc 都是 SC_INCREASEAGI, bf 都是 BF_NORMAL, 因此会被合并.
 	最终效果与下面这一条等价:
 
 		// 对方拥有加速术状态时使用普通攻击有 7% 概率增加 11000 点伤害
-		bonus4 bStatusAddDamage,SC_INCREASEAGI,11000,70,BF_NORMAL;
+		bonus4 bStatusAddDamage,SC_INCREASEAGI,11000,700,BF_NORMAL;
 
 注意事项:
 	此效果调整器每个角色最多只能定义 50 条 (源码中可通过 MAX_PC_BONUS 修改).
@@ -130,16 +130,16 @@ bonus2 bAddSkillRange,sk,n;
 	若多条规则中 sc + bf 完全一致, 则不会消耗规则数量, 例如:
 
 		// 对方拥有加速术状态时使用普通攻击有 2% 概率增加 10% 的伤害
-		bonus4 bStatusAddDamageRate,SC_INCREASEAGI,10,20,BF_NORMAL;
+		bonus4 bStatusAddDamageRate,SC_INCREASEAGI,10,200,BF_NORMAL;
 
 		// 对方拥有加速术状态时使用普通攻击有 5% 概率增加 20% 的伤害
-		bonus4 bStatusAddDamageRate,SC_INCREASEAGI,20,50,BF_NORMAL;
+		bonus4 bStatusAddDamageRate,SC_INCREASEAGI,20,500,BF_NORMAL;
 	
 	这两条规则的 sc 都是 SC_INCREASEAGI, bf 都是 BF_NORMAL, 因此会被合并.
 	最终效果与下面这一条等价:
 
 		// 对方拥有加速术状态时使用普通攻击有 7% 概率增加 30% 的伤害
-		bonus4 bStatusAddDamageRate,SC_INCREASEAGI,30,70,BF_NORMAL;
+		bonus4 bStatusAddDamageRate,SC_INCREASEAGI,30,700,BF_NORMAL;
 
 注意事项:
 	此效果调整器每个角色最多只能定义 50 条 (源码中可通过 MAX_PC_BONUS 修改).
