@@ -5172,6 +5172,14 @@ void clif_getareachar_unit( struct map_session_data* sd,struct block_list *bl ){
 	if (clif_npc_mayapurple(bl))
 		return;
 
+#ifdef Pandas_Aura_Mechanism
+	if (sd && bl->type == BL_NPC) {
+		if (std::find(sd->cloaked_npc.begin(), sd->cloaked_npc.end(), bl->id) != sd->cloaked_npc.end()) {
+			return;
+		}
+	}
+#endif // Pandas_Aura_Mechanism
+
 	ud = unit_bl2ud(bl);
 
 	if( ud && ud->walktimer != INVALID_TIMER ){
