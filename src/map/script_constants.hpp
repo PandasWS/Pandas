@@ -8354,6 +8354,11 @@
 	export_constant(SKILL_REQ_ITEMCOST);
 	export_constant(SKILL_REQ_EQUIPMENT);
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+	export_constant(SKILL_REQ_AMMO_COUNT);
+	export_constant(SKILL_REQ_PRODUCTMAT_COUNT);
+#endif // Pandas_Bonus_bSkillNoRequire
+
 	/* skill require state */
 	export_constant(ST_NONE);
 	export_constant(ST_HIDDEN);

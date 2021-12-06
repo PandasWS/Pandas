@@ -17459,6 +17459,11 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 		req.eqItem.clear();
 		req.eqItem.shrink_to_fit();
 	}
+
+	// 接下来是熊猫自定义的特殊选项
+	if (noreq_opt & SKILL_REQ_AMMO_COUNT) {
+		req.ammo_qty = 0;
+	}
 #endif // Pandas_Bonus_bSkillNoRequire
 
 	return req;
@@ -20184,6 +20189,23 @@ short skill_can_produce_mix(struct map_session_data *sd, t_itemid nameid, int tr
 		}
 	}
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+	int noreq_opt = 0;
+	uint16 req_skill = skill_produce_db[i].req_skill;
+
+	if (req_skill == GC_RESEARCHNEWPOISON)
+		req_skill = GC_CREATENEWPOISON;
+
+	if (req_skill) {
+		for (auto& it : sd->skillnorequire) {
+			if (it.id != req_skill)
+				continue;
+			noreq_opt = it.val;
+			break;
+		}
+	}
+#endif // Pandas_Bonus_bSkillNoRequire
+
 	// Check on player's inventory
 	for (j = 0; j < MAX_PRODUCE_RESOURCE; j++) {
 		t_itemid nameid_produce;
@@ -20199,8 +20221,13 @@ short skill_can_produce_mix(struct map_session_data *sd, t_itemid nameid, int tr
 			for (idx = 0, amt = 0; idx < P_MAX_INVENTORY(sd); idx++)
 				if (sd->inventory.u.items_inventory[idx].nameid == nameid_produce)
 					amt += sd->inventory.u.items_inventory[idx].amount;
+#ifndef Pandas_Bonus_bSkillNoRequire
 			if (amt < qty * skill_produce_db[i].mat_amount[j])
 				return 0;
+#else
+			if (amt < qty * skill_produce_db[i].mat_amount[j] && !(noreq_opt & SKILL_REQ_PRODUCTMAT_COUNT))
+				return 0;
+#endif // Pandas_Bonus_bSkillNoRequire
 		}
 	}
 	return i + 1;
@@ -20272,6 +20299,19 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, t_itemid na
 		}
 	}
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+	int noreq_opt = 0;
+
+	if (skill_id) {
+		for (auto& it : sd->skillnorequire) {
+			if (it.id != skill_id)
+				continue;
+			noreq_opt = it.val;
+			break;
+		}
+	}
+#endif // Pandas_Bonus_bSkillNoRequire
+
 	for (i = 0; i < MAX_PRODUCE_RESOURCE; i++) {
 		short x, j;
 		t_itemid id;
@@ -20286,6 +20326,12 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, t_itemid na
 			j = pc_search_inventory(sd,id);
 
 			if (j >= 0) {
+#ifdef Pandas_Bonus_bSkillNoRequire
+				if (noreq_opt & SKILL_REQ_PRODUCTMAT_COUNT) {
+					x = 0;
+					continue;
+				}
+#endif // Pandas_Bonus_bSkillNoRequire
 				y = sd->inventory.u.items_inventory[j].amount;
 				if (y > x)
 					y = x;

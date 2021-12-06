@@ -116,6 +116,12 @@ bonus2 bSkillNoRequire,sk,n;
 				SKILL_REQ_EQUIPMENT			0x1000
 				移除施法时需要的装备条件
 
+				SKILL_REQ_AMMO_COUNT		0x10000
+				移除施法时需要的子弹数量条件 (但至少需要持有 1 颗要求的子弹, 不会消耗)
+
+				SKILL_REQ_PRODUCTMAT_COUNT	0x20000
+				移除 produce_db 数据库中材料道具的数量条件 (但至少每种材料需要持有 1 个, 不会消耗)
+
 使用例子:
 	// 使金币攻击不再需要消耗金币
 	bonus2 bSkillNoRequire,"MC_MAMMONITE",SKILL_REQ_ZENYCOST;
@@ -126,5 +132,25 @@ bonus2 bSkillNoRequire,sk,n;
 	// 使复活术不再需要消耗蓝色魔力矿石和 SP (写法二: 拆成两条规则)
 	bonus2 bSkillNoRequire,"ALL_RESURRECTION",SKILL_REQ_ITEMCOST;	// 移除道具条件
 	bonus2 bSkillNoRequire,"ALL_RESURRECTION",SKILL_REQ_SPCOST;	// 移除 SP 条件
+
+注意事项:
+	部分技能比如 AB_ANCILLA (辅助者 / 安希拉) ,
+	它在 skill_db 中配置的 ItemCost 并没有指出需要的蓝色魔力矿石数量,
+	若解除 SKILL_REQ_ITEMCOST 会发现依然会消耗蓝色魔力矿石.
+
+	这是因为该技能最终使用的 produce_db 数据库的材料要求作为扣减依据而并非 ItemCost,
+	你可以选择使用 SKILL_REQ_PRODUCTMAT_COUNT 选项解除材料的数量限制, 魔力矿石就不会被消耗了.
+
+	出于策划合理性考虑, 我们暂时并没有提供解除材料要求的选项, 否则玩家使用被解除材料限制的技能,
+	将可以无中生有的、无限的制造道具. 若你有需要可以在社区反馈.
+
+	类似的技能于 2021年12月6日 检查有以下几个: (列表未来不定期更新, 不一定可靠)
+
+	- AL_HOLYWATER / 天使之泪 / 天使之淚
+	- ASC_CDP / 毒液制作 / 毒液製作
+	- AM_TWILIGHT1 / 宽广配药 1 / 寬廣配藥 1
+	- AM_TWILIGHT2 / 宽广配药 2 / 寬廣配藥 2
+	- AM_TWILIGHT3 / 宽广配药 3 / 寬廣配藥 3
+	- AB_ANCILLA / 辅助者 / 安希拉
 
 --------------------------------------------------------------
