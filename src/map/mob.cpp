@@ -676,7 +676,7 @@ struct mob_data *mob_once_spawn_sub(struct block_list *bl, int16 m, int16 x, int
 	return mob_spawn_dataset(&data);
 }
 
-
+#ifdef Pandas_ScriptCommand_boss_monster
 struct mob_data *mob_once_spawn_sub_boss(struct block_list* bl, int16 m, int16 x, int16 y, const char* mobname, int mob_id, const char* event, unsigned int size, enum mob_ai ai)
 {
 	struct spawn_data data;
@@ -716,7 +716,7 @@ struct mob_data *mob_once_spawn_sub_boss(struct block_list* bl, int16 m, int16 x
 
 	return mob_spawn_dataset(&data);
 }
-
+#endif // Pandas_ScriptCommand_boss_monster
 /*==========================================
  * Spawn a single mob on the specified coordinates.
  *------------------------------------------*/
@@ -770,9 +770,7 @@ int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y, const
 }
 
 
-/*==========================================
- * Spawn a single mob on the specified coordinates.
- *------------------------------------------*/
+#ifdef Pandas_ScriptCommand_boss_monster
 int mob_once_spawn_boss(struct map_session_data* sd, int16 m, int16 x, int16 y, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai)
 {
 	struct mob_data* md = nullptr;
@@ -821,7 +819,7 @@ int mob_once_spawn_boss(struct map_session_data* sd, int16 m, int16 x, int16 y, 
 
 	return (md) ? md->bl.id : 0; // id of last spawned mob
 }
-
+#endif // Pandas_ScriptCommand_boss_monster
 /*==========================================
  * Spawn mobs in the specified area.
  *------------------------------------------*/
