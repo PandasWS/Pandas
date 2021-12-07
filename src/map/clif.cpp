@@ -4187,6 +4187,10 @@ void clif_initialstatus(struct map_session_data *sd) {
 	clif_updatestatus(sd, SP_DEF2);
 	clif_updatestatus(sd, SP_MDEF1);
 	clif_updatestatus(sd, SP_MDEF2);
+	clif_updatestatus(sd, SP_HIT);
+	clif_updatestatus(sd, SP_CRITICAL);
+	clif_updatestatus(sd, SP_FLEE1);
+	clif_updatestatus(sd, SP_FLEE2);
 #endif // Pandas_Extreme_Computing
 }
 
@@ -5167,6 +5171,14 @@ void clif_getareachar_unit( struct map_session_data* sd,struct block_list *bl ){
 	// Hide NPC from Maya Purple card
 	if (clif_npc_mayapurple(bl))
 		return;
+
+#ifdef Pandas_Aura_Mechanism
+	if (sd && bl->type == BL_NPC) {
+		if (std::find(sd->cloaked_npc.begin(), sd->cloaked_npc.end(), bl->id) != sd->cloaked_npc.end()) {
+			return;
+		}
+	}
+#endif // Pandas_Aura_Mechanism
 
 	ud = unit_bl2ud(bl);
 
