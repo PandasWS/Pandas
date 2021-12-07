@@ -476,8 +476,11 @@ void mob_set_dynamic_viewdata( struct mob_data* md );
 void mob_free_dynamic_viewdata( struct mob_data* md );
 
 struct mob_data *mob_once_spawn_sub(struct block_list *bl, int16 m, int16 x, int16 y, const char *mobname, int mob_id, const char *event, unsigned int size, enum mob_ai ai);
+struct mob_data *mob_once_spawn_sub_boss(struct block_list* bl, int16 m, int16 x, int16 y, const char* mobname, int mob_id, const char* event, unsigned int size, enum mob_ai ai);
 
 int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y,
+	const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai);
+int mob_once_spawn_boss(struct map_session_data* sd, int16 m, int16 x, int16 y,
 	const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai);
 
 int mob_once_spawn_area(struct map_session_data* sd, int16 m,

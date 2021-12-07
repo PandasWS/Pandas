@@ -11443,6 +11443,69 @@ BUILDIN_FUNC(monster)
 }
 
 /*==========================================
+ * Spawn a monster:
+ * *monster "<map name>",<x>,<y>,"<name to show>",<mob id>,<amount>{,"<event label>",<size>,<ai>};
+ *------------------------------------------*/
+BUILDIN_FUNC(boss_monster)
+{
+	const char* mapn = script_getstr(st, 2);
+	int x = script_getnum(st, 3);
+	int y = script_getnum(st, 4);
+	const char* str = script_getstr(st, 5);
+	int class_ = script_getnum(st, 6);
+	int amount = script_getnum(st, 7);
+	const char* event = "";
+	unsigned int size = SZ_SMALL;
+	enum mob_ai ai = AI_NONE;
+
+	struct map_session_data* sd;
+	int16 m;
+	int i;
+
+	if (script_hasdata(st, 8)) {
+		event = script_getstr(st, 8);
+		check_event(st, event);
+	}
+
+	if (script_hasdata(st, 9)) {
+		size = script_getnum(st, 9);
+		if (size > SZ_BIG) {
+			ShowWarning("buildin_monster: Attempted to spawn non-existing size %d for monster class %d\n", size, class_);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	if (script_hasdata(st, 10)) {
+		ai = static_cast<enum mob_ai>(script_getnum(st, 10));
+		if (ai >= AI_MAX) {
+			ShowWarning("buildin_monster: Attempted to spawn non-existing ai %d for monster class %d\n", ai, class_);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	if (class_ >= 0 && !mobdb_checkid(class_)) {
+		ShowWarning("buildin_monster: Attempted to spawn non-existing monster class %d\n", class_);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	sd = map_id2sd(st->rid);
+
+	if (sd && strcmp(mapn, "this") == 0)
+		m = sd->bl.m;
+	else
+		m = map_mapname2mapid(mapn);
+
+	for (i = 0; i < amount; i++) { //not optimised
+		int mobid = mob_once_spawn_boss(sd, m, x, y, str, class_, 1, event, size, ai);
+
+		if (mobid)
+			mapreg_setreg(reference_uid(add_str("$@mobid"), i), mobid);
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/*==========================================
  * Request List of Monster Drops
  *------------------------------------------*/
 BUILDIN_FUNC(getmobdrops)
@@ -31199,6 +31262,8 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetSkillInfo
 	BUILDIN_DEF(getskillinfo, "iv??"),					// 获取指定技能在技能数据库中所配置的各项信息 [聽風]
 #endif // Pandas_ScriptCommand_GetSkillInfo
+
+		BUILDIN_DEF(boss_monster, "siisii???"),
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"

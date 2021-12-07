@@ -676,6 +676,47 @@ struct mob_data *mob_once_spawn_sub(struct block_list *bl, int16 m, int16 x, int
 	return mob_spawn_dataset(&data);
 }
 
+
+struct mob_data *mob_once_spawn_sub_boss(struct block_list* bl, int16 m, int16 x, int16 y, const char* mobname, int mob_id, const char* event, unsigned int size, enum mob_ai ai)
+{
+	struct spawn_data data;
+
+	memset(&data, 0, sizeof(struct spawn_data)); //why ? this might screw attribute object and cause leak..
+	data.m = m;
+	data.num = 1;
+	data.id = mob_id;
+	data.state.size = size;
+	data.state.ai = ai;
+	data.state.boss = 1;
+	if (mobname)
+		safestrncpy(data.name, mobname, sizeof(data.name));
+	else
+		if (battle_config.override_mob_names == 1)
+			strcpy(data.name, "--en--");
+		else
+			strcpy(data.name, "--ja--");
+
+	if (event)
+		safestrncpy(data.eventname, event, sizeof(data.eventname));
+
+	// Locate spot next to player.
+	if (bl && (x < 0 || y < 0))
+		map_search_freecell(bl, m, &x, &y, 1, 1, 0);
+
+	struct map_data* mapdata = map_getmapdata(m);
+	// if none found, pick random position on map
+	if (x <= 0 || x >= mapdata->xs || y <= 0 || y >= mapdata->ys)
+		map_search_freecell(NULL, m, &x, &y, -1, -1, 1);
+
+	data.x = x;
+	data.y = y;
+
+	if (!mob_parse_dataset(&data))
+		return nullptr;
+
+	return mob_spawn_dataset(&data);
+}
+
 /*==========================================
  * Spawn a single mob on the specified coordinates.
  *------------------------------------------*/
@@ -723,6 +764,59 @@ int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y, const
 			//Behold Aegis's masterful decisions yet again...
 			//"I understand the "Aggressive" part, but the "Can Move" and "Can Attack" is just stupid" - Poki#3
 			sc_start4(NULL,&md->bl, SC_MODECHANGE, 100, 1, 0, MD_AGGRESSIVE|MD_CANATTACK|MD_CANMOVE|MD_ANGRY, 0, 60000);
+	}
+
+	return (md) ? md->bl.id : 0; // id of last spawned mob
+}
+
+
+/*==========================================
+ * Spawn a single mob on the specified coordinates.
+ *------------------------------------------*/
+int mob_once_spawn_boss(struct map_session_data* sd, int16 m, int16 x, int16 y, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai)
+{
+	struct mob_data* md = nullptr;
+	int count, lv;
+
+	if (m < 0 || amount <= 0)
+		return 0; // invalid input
+
+	lv = (sd) ? sd->status.base_level : 255;
+
+	for (count = 0; count < amount; count++)
+	{
+		int c = (mob_id >= 0) ? mob_id : mob_get_random_id(-mob_id - 1, (battle_config.random_monster_checklv) ? static_cast<e_random_monster_flags>(RMF_DB_RATE | RMF_CHECK_MOB_LV) : RMF_DB_RATE, lv);
+		md = mob_once_spawn_sub_boss((sd) ? &sd->bl : NULL, m, x, y, mobname, c, event, size, ai);
+
+		if (!md)
+			continue;
+
+		if (mob_id == MOBID_EMPERIUM)
+		{
+			std::shared_ptr<guild_castle> gc = castle_db.mapindex2gc(map_getmapdata(m)->index);
+			struct guild* g = (gc) ? guild_search(gc->guild_id) : nullptr;
+			if (gc)
+			{
+				md->guardian_data = (struct guardian_data*)aCalloc(1, sizeof(struct guardian_data));
+				md->guardian_data->castle = gc;
+				md->guardian_data->number = MAX_GUARDIANS;
+				md->guardian_data->guild_id = gc->guild_id;
+				if (g)
+				{
+					md->guardian_data->emblem_id = g->emblem_id;
+					memcpy(md->guardian_data->guild_name, g->name, NAME_LENGTH);
+				}
+				else if (gc->guild_id) //Guild not yet available, retry in 5.
+					add_timer(gettick() + 5000, mob_spawn_guardian_sub, md->bl.id, md->guardian_data->guild_id);
+			}
+		}	// end addition [Valaris]
+
+		mob_spawn(md);
+
+		if (mob_id < 0 && battle_config.dead_branch_active)
+			//Behold Aegis's masterful decisions yet again...
+			//"I understand the "Aggressive" part, but the "Can Move" and "Can Attack" is just stupid" - Poki#3
+			sc_start4(NULL, &md->bl, SC_MODECHANGE, 100, 1, 0, MD_AGGRESSIVE | MD_CANATTACK | MD_CANMOVE | MD_ANGRY, 0, 60000);
 	}
 
 	return (md) ? md->bl.id : 0; // id of last spawned mob
