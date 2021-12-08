@@ -17081,6 +17081,17 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 
 	std::shared_ptr<s_skill_db> skill = skill_db.find(skill_id);
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+	int noreq_opt = 0;
+
+	for (auto& it : sd->skillnorequire) {
+		if (it.id != skill_id)
+			continue;
+		noreq_opt = it.val;
+		break;
+	}
+#endif // Pandas_Bonus_bSkillNoRequire
+
 	req.hp = skill->require.hp[skill_lv - 1];
 	hp_rate = skill->require.hp_rate[skill_lv - 1];
 	if(hp_rate > 0)
@@ -17098,6 +17109,20 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 		req.sp += (status->max_sp * (-sp_rate))/100;
 	if( sd->dsprate != 100 )
 		req.sp = req.sp * sd->dsprate / 100;
+
+#ifdef Pandas_Bonus_bSkillNoRequire
+	// 若指定忽略 SKILL_REQ_HPRATECOST / SKILL_REQ_SPRATECOST 条件
+	// 那么下面的代码将回滚 req.hp 和 req.sp 来覆盖掉 hp_rate 和 sp_rate 做出的调整
+	if ((noreq_opt & SKILL_REQ_HPRATECOST)) {
+		req.hp = skill->require.hp[skill_lv - 1];
+	}
+
+	if ((noreq_opt & SKILL_REQ_SPRATECOST)) {
+		req.sp = skill->require.sp[skill_lv - 1];
+		if ((sd->skill_id_old == BD_ENCORE) && skill_id == sd->skill_id_dance)
+			req.sp /= 2;
+	}
+#endif // Pandas_Bonus_bSkillNoRequire
 
 	for (auto &it : sd->skillusesprate) {
 		if (it.id == skill_id) {
@@ -17395,6 +17420,51 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 			req.eqItem.shrink_to_fit();
 		}
 	}
+
+#ifdef Pandas_Bonus_bSkillNoRequire
+	// 以下这部分代码直接从上面这一段代码中拷贝下来使用
+	// 若未来 rAthena 有更新的话两部分最好都同时更新, 以便使 bSkillNoRequire 能支持新选项
+
+	if (noreq_opt & SKILL_REQ_HPCOST)
+		req.hp = 0;
+	if (noreq_opt & SKILL_REQ_MAXHPTRIGGER)
+		req.mhp = 0;
+	if (noreq_opt & SKILL_REQ_SPCOST)
+		req.sp = 0;
+	if (noreq_opt & SKILL_REQ_HPRATECOST)
+		req.hp_rate = 0;
+	if (noreq_opt & SKILL_REQ_SPRATECOST)
+		req.sp_rate = 0;
+	if (noreq_opt & SKILL_REQ_ZENYCOST)
+		req.zeny = 0;
+	if (noreq_opt & SKILL_REQ_WEAPON)
+		req.weapon = 0;
+	if (noreq_opt & SKILL_REQ_AMMO) {
+		req.ammo = 0;
+		req.ammo_qty = 0;
+	}
+	if (noreq_opt & SKILL_REQ_STATE)
+		req.state = ST_NONE;
+	if (noreq_opt & SKILL_REQ_STATUS) {
+		req.status.clear();
+		req.status.shrink_to_fit();
+	}
+	if (noreq_opt & SKILL_REQ_SPIRITSPHERECOST)
+		req.spiritball = 0;
+	if (noreq_opt & SKILL_REQ_ITEMCOST) {
+		memset(req.itemid, 0, sizeof(req.itemid));
+		memset(req.amount, 0, sizeof(req.amount));
+	}
+	if (noreq_opt & SKILL_REQ_EQUIPMENT) {
+		req.eqItem.clear();
+		req.eqItem.shrink_to_fit();
+	}
+
+	// 接下来是熊猫自定义的特殊选项
+	if (noreq_opt & SKILL_REQ_AMMO_COUNT) {
+		req.ammo_qty = 0;
+	}
+#endif // Pandas_Bonus_bSkillNoRequire
 
 	return req;
 }
@@ -20119,6 +20189,23 @@ short skill_can_produce_mix(struct map_session_data *sd, t_itemid nameid, int tr
 		}
 	}
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+	int noreq_opt = 0;
+	uint16 req_skill = skill_produce_db[i].req_skill;
+
+	if (req_skill == GC_RESEARCHNEWPOISON)
+		req_skill = GC_CREATENEWPOISON;
+
+	if (req_skill) {
+		for (auto& it : sd->skillnorequire) {
+			if (it.id != req_skill)
+				continue;
+			noreq_opt = it.val;
+			break;
+		}
+	}
+#endif // Pandas_Bonus_bSkillNoRequire
+
 	// Check on player's inventory
 	for (j = 0; j < MAX_PRODUCE_RESOURCE; j++) {
 		t_itemid nameid_produce;
@@ -20134,8 +20221,13 @@ short skill_can_produce_mix(struct map_session_data *sd, t_itemid nameid, int tr
 			for (idx = 0, amt = 0; idx < P_MAX_INVENTORY(sd); idx++)
 				if (sd->inventory.u.items_inventory[idx].nameid == nameid_produce)
 					amt += sd->inventory.u.items_inventory[idx].amount;
+#ifndef Pandas_Bonus_bSkillNoRequire
 			if (amt < qty * skill_produce_db[i].mat_amount[j])
 				return 0;
+#else
+			if (amt < qty * skill_produce_db[i].mat_amount[j] && !(noreq_opt & SKILL_REQ_PRODUCTMAT_COUNT))
+				return 0;
+#endif // Pandas_Bonus_bSkillNoRequire
 		}
 	}
 	return i + 1;
@@ -20207,6 +20299,19 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, t_itemid na
 		}
 	}
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+	int noreq_opt = 0;
+
+	if (skill_id) {
+		for (auto& it : sd->skillnorequire) {
+			if (it.id != skill_id)
+				continue;
+			noreq_opt = it.val;
+			break;
+		}
+	}
+#endif // Pandas_Bonus_bSkillNoRequire
+
 	for (i = 0; i < MAX_PRODUCE_RESOURCE; i++) {
 		short x, j;
 		t_itemid id;
@@ -20221,6 +20326,12 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, t_itemid na
 			j = pc_search_inventory(sd,id);
 
 			if (j >= 0) {
+#ifdef Pandas_Bonus_bSkillNoRequire
+				if (noreq_opt & SKILL_REQ_PRODUCTMAT_COUNT) {
+					x = 0;
+					continue;
+				}
+#endif // Pandas_Bonus_bSkillNoRequire
 				y = sd->inventory.u.items_inventory[j].amount;
 				if (y > x)
 					y = x;
