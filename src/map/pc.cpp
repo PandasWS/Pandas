@@ -3216,6 +3216,39 @@ static void pc_bonus_itembonus(std::vector<s_item_bonus> &bonus, uint16 id, int 
 	bonus.push_back(entry);
 }
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+//************************************
+// Method:      pc_bonus_itembonus_swtich
+// Description: 按位运算开关类型的 s_item_bonus 处理函数
+// Access:      public static 
+// Parameter:   std::vector<s_item_bonus> & bonus
+// Parameter:   uint16 id
+// Parameter:   int val
+// Parameter:   bool switch_on
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/12/05 19:42
+//************************************ 
+static void pc_bonus_itembonus_swtich(std::vector<s_item_bonus>& bonus, uint16 id, int val, bool switch_on)
+{
+	for (auto& it : bonus) {
+		if (it.id != id)
+			continue;
+
+		if (switch_on)
+			it.val |= val;
+		else
+			it.val &= ~val;
+		return;
+	}
+
+	struct s_item_bonus entry = {};
+	entry.id = id;
+	if (switch_on)
+		entry.val |= val;
+	bonus.push_back(entry);
+}
+#endif // Pandas_Bonus_bSkillNoRequire
+
 /**
  * Remove HP/SP to player when attacking
  * @param bonus: Bonus array
@@ -4578,6 +4611,20 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 		pc_bonus_itembonus(sd->addskillrange, type2, val, false);
 		break;
 #endif // Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus_bSkillNoRequire
+	case SP_PANDAS_SKILLNOREQUIRE: // bonus2 bSkillNoRequire,sk,n;
+		if (sd->state.lr_flag == 2) {
+			break;
+		}
+
+		if (sd->skillnorequire.size() == MAX_PC_BONUS) {
+			ShowWarning("pc_bonus2: SP_PANDAS_ADDSKILLRANGE: Reached max (%d) number of skills per character, bonus skill %d (+%d%%) lost.\n", MAX_PC_BONUS, type2, val);
+			break;
+		}
+
+		pc_bonus_itembonus_swtich(sd->skillnorequire, type2, val, true);
+		break;
+#endif // Pandas_Bonus_bSkillNoRequire
 		// PYHELP - BONUS - INSERT POINT - <Section 7>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC

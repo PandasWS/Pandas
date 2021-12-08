@@ -1083,6 +1083,10 @@
 	// 增加 sk 技能 n 格攻击距离
 	export_constant2("bAddSkillRange", SP_PANDAS_ADDSKILLRANGE);
 #endif // Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus_bSkillNoRequire
+	// 解除 sk 技能中由 n 指定的前置施法条件限制
+	export_constant2("bSkillNoRequire", SP_PANDAS_SKILLNOREQUIRE);
+#endif // Pandas_Bonus_bSkillNoRequire
 #ifdef Pandas_Bonus_bStatusAddDamage
 	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
 	export_constant2("bStatusAddDamage", SP_PANDAS_STATUSADDDAMAGE);
@@ -8357,6 +8361,11 @@
 	export_constant(SKILL_REQ_SPIRITSPHERECOST);
 	export_constant(SKILL_REQ_ITEMCOST);
 	export_constant(SKILL_REQ_EQUIPMENT);
+
+#ifdef Pandas_Bonus_bSkillNoRequire
+	export_constant(SKILL_REQ_AMMO_COUNT);
+	export_constant(SKILL_REQ_PRODUCTMAT_COUNT);
+#endif // Pandas_Bonus_bSkillNoRequire
 
 	/* skill require state */
 	export_constant(ST_NONE);

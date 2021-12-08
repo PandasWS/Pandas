@@ -4430,6 +4430,10 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	sd->status_damagerate_adjust.clear();
 #endif // Pandas_Bonus_bStatusAddDamageRate
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+	sd->skillnorequire.clear();
+#endif // Pandas_Bonus_bSkillNoRequire
+
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	sd->pandas.multi_catch_target_class.clear();
 #endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
