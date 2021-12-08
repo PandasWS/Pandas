@@ -4423,6 +4423,12 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		clif_skillinfo(sd, it, 0);
 	}
 #endif // Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus_bStatusAddDamage
+	sd->status_damage_adjust.clear();
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	sd->status_damagerate_adjust.clear();
+#endif // Pandas_Bonus_bStatusAddDamageRate
 
 #ifdef Pandas_Bonus_bSkillNoRequire
 	sd->skillnorequire.clear();

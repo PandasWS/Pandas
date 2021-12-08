@@ -1087,6 +1087,14 @@
 	// 解除 sk 技能中由 n 指定的前置施法条件限制
 	export_constant2("bSkillNoRequire", SP_PANDAS_SKILLNOREQUIRE);
 #endif // Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus_bStatusAddDamage
+	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
+	export_constant2("bStatusAddDamage", SP_PANDAS_STATUSADDDAMAGE);
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
+	export_constant2("bStatusAddDamageRate", SP_PANDAS_STATUSADDDAMAGERATE);
+#endif // Pandas_Bonus_bStatusAddDamageRate
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses

@@ -573,6 +573,12 @@ enum _sp {
 	#ifdef Pandas_Bonus_bSkillNoRequire
 		SP_PANDAS_SKILLNOREQUIRE,	// 调整器名称: bSkillNoRequire / 说明: 解除 sk 技能中由 n 指定的前置施法条件限制
 	#endif // Pandas_Bonus_bSkillNoRequire
+	#ifdef Pandas_Bonus_bStatusAddDamage
+		SP_PANDAS_STATUSADDDAMAGE,	// 调整器名称: bStatusAddDamage / 说明: 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
+	#endif // Pandas_Bonus_bStatusAddDamage
+	#ifdef Pandas_Bonus_bStatusAddDamageRate
+		SP_PANDAS_STATUSADDDAMAGERATE,	// 调整器名称: bStatusAddDamageRate / 说明: 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
+	#endif // Pandas_Bonus_bStatusAddDamageRate
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses
