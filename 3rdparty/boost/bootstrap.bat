@@ -58,6 +58,11 @@ ECHO. >> project-config.jam
 ECHO option.set keep-going : false ; >> project-config.jam
 ECHO. >> project-config.jam
 
+REM ========== Pandas Requires Components ==========
+ECHO libraries =  --with-regex --with-filesystem --with-locale --with-date_time --with-serialization ; >> project-config.jam
+ECHO. >> project-config.jam
+REM ================================================
+
 ECHO.
 ECHO Bootstrapping is done. To build, run:
 ECHO.
@@ -83,6 +88,14 @@ ECHO.
 ECHO     - Boost.Build documentation:
 ECHO     http://www.boost.org/build/
 ECHO.
+
+REM ======== Auto use b2 to build libraries ========
+ECHO.
+ECHO Start Building Components...
+cmd /c b2 link=static runtime-link=static define="_ITERATOR_DEBUG_LEVEL=0"
+ECHO The requires components was building finish, please check it.
+ECHO.
+REM ================================================
 
 goto :end
 

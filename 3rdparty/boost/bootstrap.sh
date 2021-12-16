@@ -16,7 +16,11 @@ PREFIX=/usr/local
 EPREFIX=
 LIBDIR=
 INCLUDEDIR=
-LIBS=""
+# =================================================================
+# Pandas only requires the following modules
+# =================================================================
+LIBS="--with-regex --with-filesystem --with-locale --with-date_time --with-serialization"
+# =================================================================
 PYTHON=python
 PYTHON_VERSION=
 PYTHON_ROOT=
