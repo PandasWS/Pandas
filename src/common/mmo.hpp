@@ -5,6 +5,9 @@
 #define MMO_HPP
 
 #include <time.h>
+#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
+#include <map>
+#endif // Pandas_Struct_Unit_CommonData_BattleRecord
 
 #include "../config/core.hpp"
 
