@@ -63,6 +63,16 @@ product_files = [
 # 配置能支持的 Visual Studio 相关信息
 vs_configure = [
     {
+        'name' : 'Visual Studio 2022',
+        'reg_root' : winreg.HKEY_LOCAL_MACHINE,
+        'reg_subkey' : r'SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{tag}',
+        'reg_key' : 'InstallLocation',
+        'vcvarsall' : r'VC\Auxiliary\Build\vcvarsall.bat',
+        'tag_location' : os.path.expandvars(r'%appdata%/Microsoft/VisualStudio'),
+        'tag_pattern' : r'17.0_(.*)',
+        'tag_group_id' : 0
+    },
+    {
         'name' : 'Visual Studio 2019',
         'reg_root' : winreg.HKEY_LOCAL_MACHINE,
         'reg_subkey' : r'SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{tag}',
@@ -185,6 +195,7 @@ def clean_environment():
     Common.glob_delete(slndir('login-server*'))
     Common.glob_delete(slndir('char-server*'))
     Common.glob_delete(slndir('map-server*'))
+    Common.glob_delete(slndir('web-server*'))
     Common.glob_delete(slndir('csv2yaml*'))
     Common.glob_delete(slndir('mapcache*'))
     Common.glob_delete(slndir('yaml2sql*'))
@@ -331,7 +342,7 @@ def main():
     # 判断本机是否安装了支持的 Visual Studio
     detected_vs, vs_name = detect_vs()
     if not detected_vs:
-        Message.ShowError('无法检测到合适的 Visual Studio 版本 (2015 或 2017)')
+        Message.ShowError('无法检测到合适的 Visual Studio 版本 (2015,2017,2019,2022)')
         Common.exit_with_pause(-1)
     else:
         Message.ShowStatus('检测到已安装: %s 应可正常编译' % vs_name)
