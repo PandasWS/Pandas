@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Non-standard containers</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../container.html" title="Chapter&#160;9.&#160;Boost.Container">
+<link rel="up" href="../container.html" title="Chapter 9. Boost.Container">
 <link rel="prev" href="exception_handling.html" title="Boost.Container and C++ exceptions">
 <link rel="next" href="extended_functionality.html" title="Extended functionality: Basic extensions">
 </head>
@@ -31,6 +31,7 @@
 <dt><span class="section"><a href="non_standard_containers.html#container.non_standard_containers.stable_vector"><span class="emphasis"><em>stable_vector</em></span></a></span></dt>
 <dt><span class="section"><a href="non_standard_containers.html#container.non_standard_containers.flat_xxx"><span class="emphasis"><em>flat_(multi)map/set</em></span>
       associative containers</a></span></dt>
+<dt><span class="section"><a href="non_standard_containers.html#container.non_standard_containers.devector"><span class="emphasis"><em>devector</em></span></a></span></dt>
 <dt><span class="section"><a href="non_standard_containers.html#container.non_standard_containers.slist"><span class="emphasis"><em>slist</em></span></a></span></dt>
 <dt><span class="section"><a href="non_standard_containers.html#container.non_standard_containers.static_vector"><span class="emphasis"><em>static_vector</em></span></a></span></dt>
 <dt><span class="section"><a href="non_standard_containers.html#container.non_standard_containers.small_vector"><span class="emphasis"><em>small_vector</em></span></a></span></dt>
@@ -41,7 +42,7 @@
 </h3></div></div></div>
 <p>
         This useful, fully STL-compliant stable container <a href="http://bannalia.blogspot.com/2008/09/introducing-stablevector.html" target="_top">designed
-        by Joaqu&#237;n M. L&#243;pez Mu&#241;oz</a> is an hybrid between <code class="computeroutput"><span class="identifier">vector</span></code> and <code class="computeroutput"><span class="identifier">list</span></code>,
+        by Joaquín M. López Muñoz</a> is an hybrid between <code class="computeroutput"><span class="identifier">vector</span></code> and <code class="computeroutput"><span class="identifier">list</span></code>,
         providing most of the features of <code class="computeroutput"><span class="identifier">vector</span></code>
         except <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/lwg-defects.html#69" target="_top">element
         contiguity</a>.
@@ -122,7 +123,7 @@
         exception safety guarantees than in vector:
       </p>
 <div class="table">
-<a name="container.non_standard_containers.stable_vector.stable_vector_req"></a><p class="title"><b>Table&#160;9.1.&#160;Exception safety</b></p>
+<a name="container.non_standard_containers.stable_vector.stable_vector_req"></a><p class="title"><b>Table 9.1. Exception safety</b></p>
 <div class="table-contents"><table class="table" summary="Exception safety">
 <colgroup>
 <col>
@@ -192,14 +193,14 @@
         v with n elements of type T is
       </p>
 <p>
-        m<sub>v</sub> = c&#8729;e,
+        m<sub>v</sub> = c∙e,
       </p>
 <p>
         where c is <code class="computeroutput"><span class="identifier">v</span><span class="special">.</span><span class="identifier">capacity</span><span class="special">()</span></code>
         and e is <code class="computeroutput"><span class="keyword">sizeof</span><span class="special">(</span><span class="identifier">T</span><span class="special">)</span></code>. c can
         be as low as n if the user has explicitly reserved the exact capacity required;
         otherwise, the average value c for a growing <code class="computeroutput"><span class="identifier">vector</span></code>
-        oscillates between 1.25&#8729;n and 1.5&#8729;n for typical resizing policies.
+        oscillates between 1.25∙n and 1.5∙n for typical resizing policies.
         For <code class="computeroutput"><span class="identifier">stable_vector</span></code>, the memory
         usage is
       </p>
@@ -213,7 +214,7 @@
         that
       </p>
 <p>
-        m<sub>sv</sub>/m<sub>v</sub> &#8771; (fp + e + p)/fe.
+        m<sub>sv</sub>/m<sub>v</sub> ≃ (fp + e + p)/fe.
       </p>
 <p>
         So, <code class="computeroutput"><span class="identifier">stable_vector</span></code> uses less
@@ -240,7 +241,7 @@
         can actually be less than required by vector.
       </p>
 <p>
-        <span class="emphasis"><em>Note: Text and explanations taken from <a href="http://bannalia.blogspot.com/2008/09/introducing-stablevector.html" target="_top">Joaqu&#237;n's
+        <span class="emphasis"><em>Note: Text and explanations taken from <a href="http://bannalia.blogspot.com/2008/09/introducing-stablevector.html" target="_top">Joaquín's
         blog</a></em></span>
       </p>
 </div>
@@ -256,37 +257,37 @@
         12:4, April 2000) was enlightening:
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>Red-black trees aren't the only way to organize data that
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>Red-black trees aren't the only way to organize data that
         permits lookup in logarithmic time. One of the basic algorithms of computer
         science is binary search, which works by successively dividing a range in
         half. Binary search is log N and it doesn't require any fancy data structures,
         just a sorted collection of elements. (...) You can use whatever data structure
         is convenient, so long as it provides STL iterator; usually it's easiest
-        to use a C array, or a vector.</em></span></span>&#8221;</span>
+        to use a C array, or a vector.</em></span></span>”</span>
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>Both std::lower_bound and set::find take time proportional
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>Both std::lower_bound and set::find take time proportional
         to log N, but the constants of proportionality are very different. Using
         g++ (...) it takes X seconds to perform a million lookups in a sorted vector&lt;double&gt;
         of a million elements, and almost twice as long (...) using a set. Moreover,
         the set uses almost three times as much memory (48 million bytes) as the
-        vector (16.8 million).</em></span></span>&#8221;</span>
+        vector (16.8 million).</em></span></span>”</span>
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>Using a sorted vector instead of a set gives you faster
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>Using a sorted vector instead of a set gives you faster
         lookup and much faster iteration, but at the cost of slower insertion. Insertion
         into a set, using set::insert, is proportional to log N, but insertion into
         a sorted vector, (...) , is proportional to N. Whenever you insert something
         into a vector, vector::insert has to make room by shifting all of the elements
         that follow it. On average, if you're equally likely to insert a new element
-        anywhere, you'll be shifting N/2 elements.</em></span></span>&#8221;</span>
+        anywhere, you'll be shifting N/2 elements.</em></span></span>”</span>
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>It may sometimes be convenient to bundle all of this together
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>It may sometimes be convenient to bundle all of this together
         into a small container adaptor. This class does not satisfy the requirements
         of a Standard Associative Container, since the complexity of insert is O(N)
         rather than O(log N), but otherwise it is almost a drop-in replacement for
-        set.</em></span></span>&#8221;</span>
+        set.</em></span></span>”</span>
       </p>
 <p>
         Following Matt Austern's indications, Andrei Alexandrescu's <a href="http://www.bestwebbuys.com/Modern-C-Design-Generic-Programming-and-Design-Patterns-Applied-ISBN-9780201704310?isrc=-rd" target="_top">Modern
@@ -295,7 +296,7 @@
         <a href="http://loki-lib.sourceforge.net/" target="_top">Loki</a> library:
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>It seems as if we're better off with a sorted vector. The
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>It seems as if we're better off with a sorted vector. The
         disadvantages of a sorted vector are linear-time insertions and linear-time
         deletions (...). In exchange, a vector offers about twice the lookup speed
         and a much smaller working set (...). Loki saves the trouble of maintaining
@@ -304,7 +305,7 @@
         functions), implemented on top of std::vector. AssocVector differs from a
         map in the behavior of its erase functions (AssocVector::erase invalidates
         all iterators into the object) and in the complexity guarantees of insert
-        and erase (linear as opposed to constant). </em></span></span>&#8221;</span>
+        and erase (linear as opposed to constant). </em></span></span>”</span>
       </p>
 <p>
         <span class="bold"><strong>Boost.Container</strong></span> <code class="computeroutput"><span class="identifier">flat_</span><span class="special">[</span><span class="identifier">multi</span><span class="special">]</span><span class="identifier">map</span><span class="special">/</span><span class="identifier">set</span></code> containers are ordered, vector-like
@@ -347,6 +348,31 @@
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
+<a name="container.non_standard_containers.devector"></a><a class="link" href="non_standard_containers.html#container.non_standard_containers.devector" title="devector"><span class="emphasis"><em>devector</em></span></a>
+</h3></div></div></div>
+<p>
+        <code class="computeroutput"><span class="identifier">devector</span></code> is a hybrid of the
+        standard vector and deque containers originally written by Thaler Benedek.
+        It offers cheap (amortized constant time) insertion at both the front and
+        back ends, while also providing the regular features of <code class="computeroutput"><span class="identifier">vector</span></code>,
+        in particular the contiguous underlying memory.
+      </p>
+<p>
+        Unlike <code class="computeroutput"><span class="identifier">vector</span></code>, devector can
+        have free capacity both before and after the elements. This enables efficient
+        implementation of methods that modify the devector at the front. In general,
+        <code class="computeroutput"><span class="identifier">devector</span></code>'s available methods
+        are a superset of those of <code class="computeroutput"><span class="identifier">vector</span></code>
+        with identical behaviour, barring a couple of iterator invalidation guarantees
+        that differ.
+      </p>
+<p>
+        The overhead for devector is one extra <code class="computeroutput"><span class="identifier">size_t</span></code>
+        per container: Usually sizeof(devector) == 4*sizeof(T*).
+      </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
 <a name="container.non_standard_containers.slist"></a><a class="link" href="non_standard_containers.html#container.non_standard_containers.slist" title="slist"><span class="emphasis"><em>slist</em></span></a>
 </h3></div></div></div>
 <p>
@@ -359,7 +385,7 @@
         documentation</a>:
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>An <code class="computeroutput"><span class="identifier">slist</span></code>
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>An <code class="computeroutput"><span class="identifier">slist</span></code>
         is a singly linked list: a list where each element is linked to the next
         element, but not to the previous element. That is, it is a Sequence that
         supports forward but not backward traversal, and (amortized) constant time
@@ -370,19 +396,19 @@
         (that is, slist&lt;T&gt;::iterator might have a different predecessor or
         successor after a list operation than it did before), but the iterators themselves
         will not be invalidated or made to point to different elements unless that
-        invalidation or mutation is explicit.</em></span></span>&#8221;</span>
+        invalidation or mutation is explicit.</em></span></span>”</span>
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>The main difference between <code class="computeroutput"><span class="identifier">slist</span></code>
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>The main difference between <code class="computeroutput"><span class="identifier">slist</span></code>
         and list is that list's iterators are bidirectional iterators, while slist's
         iterators are forward iterators. This means that <code class="computeroutput"><span class="identifier">slist</span></code>
         is less versatile than list; frequently, however, bidirectional iterators
         are unnecessary. You should usually use <code class="computeroutput"><span class="identifier">slist</span></code>
         unless you actually need the extra functionality of list, because singly
-        linked lists are smaller and faster than double linked lists.</em></span></span>&#8221;</span>
+        linked lists are smaller and faster than double linked lists.</em></span></span>”</span>
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>Important performance note: like every other Sequence,
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>Important performance note: like every other Sequence,
         <code class="computeroutput"><span class="identifier">slist</span></code> defines the member
         functions insert and erase. Using these member functions carelessly, however,
         can result in disastrously slow programs. The problem is that insert's first
@@ -392,15 +418,15 @@
         but for <code class="computeroutput"><span class="identifier">slist</span></code> it must find
         that iterator by traversing the list from the beginning up to pos. In other
         words: insert and erase are slow operations anywhere but near the beginning
-        of the slist.</em></span></span>&#8221;</span>
+        of the slist.</em></span></span>”</span>
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>Slist provides the member functions insert_after and erase_after,
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>Slist provides the member functions insert_after and erase_after,
         which are constant time operations: you should always use insert_after and
         erase_after whenever possible. If you find that insert_after and erase_after
         aren't adequate for your needs, and that you often need to use insert and
         erase in the middle of the list, then you should probably use list instead
-        of slist.</em></span></span>&#8221;</span>
+        of slist.</em></span></span>”</span>
       </p>
 <p>
         <span class="bold"><strong>Boost.Container</strong></span> updates the classic <code class="computeroutput"><span class="identifier">slist</span></code> container with C++11 features like
@@ -494,7 +520,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2018 Ion Gaztanaga<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2018 Ion Gaztanaga<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

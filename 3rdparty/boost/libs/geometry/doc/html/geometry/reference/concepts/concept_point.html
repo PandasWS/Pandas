@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Point Concept</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../concepts.html" title="Concepts">
 <link rel="prev" href="../concepts.html" title="Concepts">
 <link rel="next" href="concept_linestring.html" title="Linestring Concept">
@@ -87,6 +87,36 @@
 </ul></div>
 <h6>
 <a name="geometry.reference.concepts.concept_point.h2"></a>
+          <span class="phrase"><a name="geometry.reference.concepts.concept_point.example"></a></span><a class="link" href="concept_point.html#geometry.reference.concepts.concept_point.example">Example</a>
+        </h6>
+<p>
+          While you can <code class="computeroutput"><span class="preprocessor">#include</span> <span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">geometries</span><span class="special">/</span><span class="identifier">adapted</span><span class="special">/</span><span class="identifier">std_array</span><span class="special">.</span><span class="identifier">hpp</span></code> to use <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">array</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;</span></code>
+          to model the Point concept, the following code spells it out in detail,
+          as you might use for your own point types:
+</p>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">geometry</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">traits</span>
+<span class="special">{</span>
+
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">D</span><span class="special">&gt;</span> <span class="keyword">struct</span> <span class="identifier">tag</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">array</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;&gt;</span> <span class="special">{</span> <span class="keyword">using</span> <span class="identifier">type</span> <span class="special">=</span> <span class="identifier">point_tag</span><span class="special">;</span> <span class="special">};</span>
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">D</span><span class="special">&gt;</span> <span class="keyword">struct</span> <span class="identifier">dimension</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">array</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;&gt;</span> <span class="special">:</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">mpl</span><span class="special">::</span><span class="identifier">int_</span><span class="special">&lt;</span><span class="identifier">D</span><span class="special">&gt;</span> <span class="special">{};</span>
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">D</span><span class="special">&gt;</span> <span class="keyword">struct</span> <span class="identifier">coordinate_type</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">array</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;&gt;</span> <span class="special">{</span> <span class="keyword">using</span> <span class="identifier">type</span> <span class="special">=</span> <span class="identifier">T</span><span class="special">;</span> <span class="special">};</span>
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">D</span><span class="special">&gt;</span> <span class="keyword">struct</span> <span class="identifier">coordinate_system</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">array</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;&gt;</span> <span class="special">{</span> <span class="keyword">using</span> <span class="identifier">type</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">cs</span><span class="special">::</span><span class="identifier">cartesian</span><span class="special">;</span> <span class="special">};</span>
+
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">D</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">Index</span><span class="special">&gt;</span>
+<span class="keyword">struct</span> <span class="identifier">access</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">array</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;,</span> <span class="identifier">Index</span><span class="special">&gt;</span> <span class="special">{</span>
+    <span class="keyword">static_assert</span><span class="special">(</span><span class="identifier">Index</span> <span class="special">&lt;</span> <span class="identifier">D</span><span class="special">,</span> <span class="string">"Out of range"</span><span class="special">);</span>
+    <span class="keyword">using</span> <span class="identifier">Point</span> <span class="special">=</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">array</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;;</span>
+    <span class="keyword">using</span> <span class="identifier">CoordinateType</span> <span class="special">=</span> <span class="keyword">typename</span> <span class="identifier">coordinate_type</span><span class="special">&lt;</span><span class="identifier">Point</span><span class="special">&gt;::</span><span class="identifier">type</span><span class="special">;</span>
+    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="identifier">CoordinateType</span> <span class="identifier">get</span><span class="special">(</span><span class="identifier">Point</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">p</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">return</span> <span class="identifier">p</span><span class="special">[</span><span class="identifier">Index</span><span class="special">];</span> <span class="special">}</span>
+    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="identifier">set</span><span class="special">(</span><span class="identifier">Point</span><span class="special">&amp;</span> <span class="identifier">p</span><span class="special">,</span> <span class="identifier">CoordinateType</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">value</span><span class="special">)</span> <span class="special">{</span> <span class="identifier">p</span><span class="special">[</span><span class="identifier">Index</span><span class="special">]</span> <span class="special">=</span> <span class="identifier">value</span><span class="special">;</span> <span class="special">}</span>
+<span class="special">};</span>
+
+<span class="special">}}}</span> <span class="comment">// namespace boost::geometry::traits</span>
+</pre>
+<p>
+        </p>
+<h6>
+<a name="geometry.reference.concepts.concept_point.h3"></a>
           <span class="phrase"><a name="geometry.reference.concepts.concept_point.available_models"></a></span><a class="link" href="concept_point.html#geometry.reference.concepts.concept_point.available_models">Available
           Models</a>
         </h6>
@@ -126,8 +156,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

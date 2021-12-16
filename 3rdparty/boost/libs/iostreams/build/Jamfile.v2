@@ -79,9 +79,15 @@ else
 if $(NO_COMPRESSION) != 1 && $(NO_LZMA) != 1
 {
     using lzma ;
+
+    exe has_lzma_cputhreads : ../build/has_lzma_cputhreads.cpp /lzma//lzma ;
+    explicit has_lzma_cputhreads ;
+
     lzma-requirements =
         [ ac.check-library /lzma//lzma : <library>/lzma//lzma
-          <source>lzma.cpp ] ;
+          <source>lzma.cpp ]
+        [ check-target-builds has_lzma_cputhreads
+            : : <define>BOOST_IOSTREAMS_LZMA_NO_MULTITHREADED=1 ] ;
 }
 else
 {

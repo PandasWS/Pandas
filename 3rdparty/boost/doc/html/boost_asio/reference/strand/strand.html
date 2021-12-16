@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>strand::strand</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -31,21 +31,24 @@
 Default constructor.
         </p>
 <pre class="programlisting"><a class="link" href="strand/overload1.html" title="strand::strand (1 of 6 overloads)">strand</a>();
-  <span class="emphasis"><em>&#187; <a class="link" href="strand/overload1.html" title="strand::strand (1 of 6 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="strand/overload1.html" title="strand::strand (1 of 6 overloads)">more...</a></em></span>
 </pre>
 <p>
           Construct a strand for the specified executor.
         </p>
-<pre class="programlisting">explicit <a class="link" href="strand/overload2.html" title="strand::strand (2 of 6 overloads)">strand</a>(
-    const Executor &amp; e);
-  <span class="emphasis"><em>&#187; <a class="link" href="strand/overload2.html" title="strand::strand (2 of 6 overloads)">more...</a></em></span>
+<pre class="programlisting">template&lt;
+    typename <a class="link" href="../Executor1.html" title="Executor requirements">Executor1</a>&gt;
+explicit <a class="link" href="strand/overload2.html" title="strand::strand (2 of 6 overloads)">strand</a>(
+    const Executor1 &amp; e,
+    typename constraint&lt; conditional&lt; !is_same&lt; Executor1, strand &gt;::value, is_convertible&lt; Executor1, Executor &gt;, false_type &gt;::type::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="strand/overload2.html" title="strand::strand (2 of 6 overloads)">more...</a></em></span>
 </pre>
 <p>
           Copy constructor.
         </p>
 <pre class="programlisting"><a class="link" href="strand/overload3.html" title="strand::strand (3 of 6 overloads)">strand</a>(
     const strand &amp; other);
-  <span class="emphasis"><em>&#187; <a class="link" href="strand/overload3.html" title="strand::strand (3 of 6 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="strand/overload3.html" title="strand::strand (3 of 6 overloads)">more...</a></em></span>
 </pre>
 <p>
           Converting constructor.
@@ -54,14 +57,14 @@ Default constructor.
     class <a class="link" href="../Executor1.html" title="Executor requirements">OtherExecutor</a>&gt;
 <a class="link" href="strand/overload4.html" title="strand::strand (4 of 6 overloads)">strand</a>(
     const strand&lt; OtherExecutor &gt; &amp; other);
-  <span class="emphasis"><em>&#187; <a class="link" href="strand/overload4.html" title="strand::strand (4 of 6 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="strand/overload4.html" title="strand::strand (4 of 6 overloads)">more...</a></em></span>
 </pre>
 <p>
           Move constructor.
         </p>
 <pre class="programlisting"><a class="link" href="strand/overload5.html" title="strand::strand (5 of 6 overloads)">strand</a>(
     strand &amp;&amp; other);
-  <span class="emphasis"><em>&#187; <a class="link" href="strand/overload5.html" title="strand::strand (5 of 6 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="strand/overload5.html" title="strand::strand (5 of 6 overloads)">more...</a></em></span>
 </pre>
 <p>
           Converting move constructor.
@@ -70,12 +73,13 @@ Default constructor.
     class <a class="link" href="../Executor1.html" title="Executor requirements">OtherExecutor</a>&gt;
 <a class="link" href="strand/overload6.html" title="strand::strand (6 of 6 overloads)">strand</a>(
     strand&lt; OtherExecutor &gt; &amp;&amp; other);
-  <span class="emphasis"><em>&#187; <a class="link" href="strand/overload6.html" title="strand::strand (6 of 6 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="strand/overload6.html" title="strand::strand (6 of 6 overloads)">more...</a></em></span>
 </pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>async_write</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -38,13 +38,13 @@ The <code class="computeroutput">async_write</code> function
 <pre class="programlisting">template&lt;
     typename <a class="link" href="AsyncWriteStream.html" title="Buffer-oriented asynchronous write stream requirements">AsyncWriteStream</a>,
     typename <a class="link" href="ConstBufferSequence.html" title="Constant buffer sequence requirements">ConstBufferSequence</a>,
-    typename <a class="link" href="WriteHandler.html" title="Write handler requirements">WriteHandler</a>&gt;
+    typename <a class="link" href="WriteHandler.html" title="Write handler requirements">WriteHandler</a> = <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>&gt;
 <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.automatic_deduction_of_initiating_function_return_type"><span class="emphasis"><em>DEDUCED</em></span></a> <a class="link" href="async_write/overload1.html" title="async_write (1 of 8 overloads)">async_write</a>(
     AsyncWriteStream &amp; s,
     const ConstBufferSequence &amp; buffers,
-    WriteHandler &amp;&amp; handler,
-    typename enable_if&lt; is_const_buffer_sequence&lt; ConstBufferSequence &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="async_write/overload1.html" title="async_write (1 of 8 overloads)">more...</a></em></span>
+    WriteHandler &amp;&amp; handler = <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>,
+    typename constraint&lt; is_const_buffer_sequence&lt; ConstBufferSequence &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="async_write/overload1.html" title="async_write (1 of 8 overloads)">more...</a></em></span>
 </pre>
 <p>
         Start an asynchronous operation to write a certain amount of data to a stream.
@@ -59,8 +59,8 @@ The <code class="computeroutput">async_write</code> function
     const ConstBufferSequence &amp; buffers,
     CompletionCondition completion_condition,
     WriteHandler &amp;&amp; handler,
-    typename enable_if&lt; is_const_buffer_sequence&lt; ConstBufferSequence &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="async_write/overload2.html" title="async_write (2 of 8 overloads)">more...</a></em></span>
+    typename constraint&lt; is_const_buffer_sequence&lt; ConstBufferSequence &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="async_write/overload2.html" title="async_write (2 of 8 overloads)">more...</a></em></span>
 </pre>
 <p>
         Start an asynchronous operation to write all of the supplied data to a stream.
@@ -68,13 +68,14 @@ The <code class="computeroutput">async_write</code> function
 <pre class="programlisting">template&lt;
     typename <a class="link" href="AsyncWriteStream.html" title="Buffer-oriented asynchronous write stream requirements">AsyncWriteStream</a>,
     typename <a class="link" href="DynamicBuffer_v1.html" title="Dynamic buffer requirements (version 1)">DynamicBuffer_v1</a>,
-    typename <a class="link" href="WriteHandler.html" title="Write handler requirements">WriteHandler</a>&gt;
+    typename <a class="link" href="WriteHandler.html" title="Write handler requirements">WriteHandler</a> = <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>&gt;
 <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.automatic_deduction_of_initiating_function_return_type"><span class="emphasis"><em>DEDUCED</em></span></a> <a class="link" href="async_write/overload3.html" title="async_write (3 of 8 overloads)">async_write</a>(
     AsyncWriteStream &amp; s,
     DynamicBuffer_v1 &amp;&amp; buffers,
-    WriteHandler &amp;&amp; handler,
-    typename enable_if&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &amp;&amp;!is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="async_write/overload3.html" title="async_write (3 of 8 overloads)">more...</a></em></span>
+    WriteHandler &amp;&amp; handler = <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>,
+    typename constraint&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="async_write/overload3.html" title="async_write (3 of 8 overloads)">more...</a></em></span>
 </pre>
 <p>
         Start an asynchronous operation to write a certain amount of data to a stream.
@@ -89,8 +90,9 @@ The <code class="computeroutput">async_write</code> function
     DynamicBuffer_v1 &amp;&amp; buffers,
     CompletionCondition completion_condition,
     WriteHandler &amp;&amp; handler,
-    typename enable_if&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &amp;&amp;!is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="async_write/overload4.html" title="async_write (4 of 8 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="async_write/overload4.html" title="async_write (4 of 8 overloads)">more...</a></em></span>
 </pre>
 <p>
         Start an asynchronous operation to write all of the supplied data to a stream.
@@ -98,12 +100,12 @@ The <code class="computeroutput">async_write</code> function
 <pre class="programlisting">template&lt;
     typename <a class="link" href="AsyncWriteStream.html" title="Buffer-oriented asynchronous write stream requirements">AsyncWriteStream</a>,
     typename Allocator,
-    typename <a class="link" href="WriteHandler.html" title="Write handler requirements">WriteHandler</a>&gt;
+    typename <a class="link" href="WriteHandler.html" title="Write handler requirements">WriteHandler</a> = <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>&gt;
 <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.automatic_deduction_of_initiating_function_return_type"><span class="emphasis"><em>DEDUCED</em></span></a> <a class="link" href="async_write/overload5.html" title="async_write (5 of 8 overloads)">async_write</a>(
     AsyncWriteStream &amp; s,
     basic_streambuf&lt; Allocator &gt; &amp; b,
-    WriteHandler &amp;&amp; handler);
-  <span class="emphasis"><em>&#187; <a class="link" href="async_write/overload5.html" title="async_write (5 of 8 overloads)">more...</a></em></span>
+    WriteHandler &amp;&amp; handler = <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>);
+  <span class="emphasis"><em>» <a class="link" href="async_write/overload5.html" title="async_write (5 of 8 overloads)">more...</a></em></span>
 </pre>
 <p>
         Start an asynchronous operation to write a certain amount of data to a stream.
@@ -118,7 +120,7 @@ The <code class="computeroutput">async_write</code> function
     basic_streambuf&lt; Allocator &gt; &amp; b,
     CompletionCondition completion_condition,
     WriteHandler &amp;&amp; handler);
-  <span class="emphasis"><em>&#187; <a class="link" href="async_write/overload6.html" title="async_write (6 of 8 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="async_write/overload6.html" title="async_write (6 of 8 overloads)">more...</a></em></span>
 </pre>
 <p>
         Start an asynchronous operation to write all of the supplied data to a stream.
@@ -126,13 +128,13 @@ The <code class="computeroutput">async_write</code> function
 <pre class="programlisting">template&lt;
     typename <a class="link" href="AsyncWriteStream.html" title="Buffer-oriented asynchronous write stream requirements">AsyncWriteStream</a>,
     typename <a class="link" href="DynamicBuffer_v2.html" title="Dynamic buffer requirements (version 2)">DynamicBuffer_v2</a>,
-    typename <a class="link" href="WriteHandler.html" title="Write handler requirements">WriteHandler</a>&gt;
+    typename <a class="link" href="WriteHandler.html" title="Write handler requirements">WriteHandler</a> = <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>&gt;
 <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.automatic_deduction_of_initiating_function_return_type"><span class="emphasis"><em>DEDUCED</em></span></a> <a class="link" href="async_write/overload7.html" title="async_write (7 of 8 overloads)">async_write</a>(
     AsyncWriteStream &amp; s,
     DynamicBuffer_v2 buffers,
-    WriteHandler &amp;&amp; handler,
-    typename enable_if&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="async_write/overload7.html" title="async_write (7 of 8 overloads)">more...</a></em></span>
+    WriteHandler &amp;&amp; handler = <a class="link" href="asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>,
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="async_write/overload7.html" title="async_write (7 of 8 overloads)">more...</a></em></span>
 </pre>
 <p>
         Start an asynchronous operation to write a certain amount of data to a stream.
@@ -147,8 +149,8 @@ The <code class="computeroutput">async_write</code> function
     DynamicBuffer_v2 buffers,
     CompletionCondition completion_condition,
     WriteHandler &amp;&amp; handler,
-    typename enable_if&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="async_write/overload8.html" title="async_write (8 of 8 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="async_write/overload8.html" title="async_write (8 of 8 overloads)">more...</a></em></span>
 </pre>
 <h5>
 <a name="boost_asio.reference.async_write.h0"></a>
@@ -163,7 +165,8 @@ The <code class="computeroutput">async_write</code> function
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

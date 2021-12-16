@@ -45,11 +45,8 @@ The [@http://en.wikipedia.org/wiki/Triangular_distribution triangular distributi
 is a distribution with the
 [@http://en.wikipedia.org/wiki/Probability_density_function probability density function]:
 
-__spaces f(x) =
-
-* 2(x-a)/(b-a) (c-a) for a <= x <= c
-
-* 2(b-x)/(b-a)(b-c) for c < x <= b
+[expression f(x) = 2(x-a)/(b-a) (c-a) [sixemspace]  for a <= x <= c]
+[expression f(x) = 2(b-x)/(b-a) (b-c) [sixemspace] for c < x <= b]
 
 Parameter ['a] (lower) can be any finite value.
 Parameter ['b] (upper) can be any finite value > a (lower).
@@ -162,7 +159,7 @@ Some 'known good' test values were obtained using __WolframAlpha.
 
 [h4 References]
 
-* [@http://en.wikipedia.org/wiki/Triangular_distribution Wikpedia triangular distribution]
+* [@http://en.wikipedia.org/wiki/Triangular_distribution Wikipedia triangular distribution]
 * [@http://mathworld.wolfram.com/TriangularDistribution.html Weisstein, Eric W. "Triangular Distribution." From MathWorld--A Wolfram Web Resource.]
 * Evans, M.; Hastings, N.; and Peacock, B. "Triangular Distribution." Ch. 40 in Statistical Distributions, 3rd ed. New York: Wiley, pp. 187-188, 2000, ISBN - 0471371246.
 * [@http://www.measurement.sk/2002/S1/Wimmer2.pdf Gejza Wimmer, Viktor Witkovsky and Tomas Duby,

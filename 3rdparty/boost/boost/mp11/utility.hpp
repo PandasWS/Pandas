@@ -1,7 +1,7 @@
 #ifndef BOOST_MP11_UTILITY_HPP_INCLUDED
 #define BOOST_MP11_UTILITY_HPP_INCLUDED
 
-// Copyright 2015, 2017, 2019 Peter Dimov.
+// Copyright 2015-2020 Peter Dimov.
 //
 // Distributed under the Boost Software License, Version 1.0.
 //
@@ -9,6 +9,10 @@
 // http://www.boost.org/LICENSE_1_0.txt
 
 #include <boost/mp11/integral.hpp>
+#include <boost/mp11/detail/mp_list.hpp>
+#include <boost/mp11/detail/mp_fold.hpp>
+#include <boost/mp11/detail/mp_front.hpp>
+#include <boost/mp11/detail/mp_rename.hpp>
 #include <boost/mp11/detail/config.hpp>
 
 namespace boost
@@ -219,9 +223,6 @@ template<class Q, class... T> using mp_invoke_q = typename Q::template fn<T...>;
 
 #endif
 
-// old name for mp_invoke_q retained for compatibility, but deprecated
-template<class Q, class... T> using mp_invoke BOOST_MP11_DEPRECATED("please use mp_invoke_q") = mp_invoke_q<Q, T...>;
-
 // mp_not_fn<P>
 template<template<class...> class P> struct mp_not_fn
 {
@@ -229,6 +230,28 @@ template<template<class...> class P> struct mp_not_fn
 };
 
 template<class Q> using mp_not_fn_q = mp_not_fn<Q::template fn>;
+
+// mp_compose
+namespace detail
+{
+
+template<class L, class Q> using mp_compose_helper = mp_list< mp_apply_q<Q, L> >;
+
+} // namespace detail
+
+#if !BOOST_MP11_WORKAROUND( BOOST_MP11_MSVC, < 1900 )
+
+template<template<class...> class... F> struct mp_compose
+{
+    template<class... T> using fn = mp_front< mp_fold<mp_list<mp_quote<F>...>, mp_list<T...>, detail::mp_compose_helper> >;
+};
+
+#endif
+
+template<class... Q> struct mp_compose_q
+{
+    template<class... T> using fn = mp_front< mp_fold<mp_list<Q...>, mp_list<T...>, detail::mp_compose_helper> >;
+};
 
 } // namespace mp11
 } // namespace boost

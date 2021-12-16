@@ -1,5 +1,5 @@
 /* Unit testing for outcomes
-(C) 2013-2019 Niall Douglas <http://www.nedproductions.biz/> (3 commits)
+(C) 2013-2021 Niall Douglas <http://www.nedproductions.biz/> (3 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -27,12 +27,12 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/outcome/outcome.hpp>
+#include <boost/outcome.hpp>
 #include <boost/outcome/try.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_monitor.hpp>
 
-BOOST_OUTCOME_AUTO_TEST_CASE(issues_65_outcome, "BOOST_OUTCOME_TRY does not preserve the exception_ptr")
+BOOST_OUTCOME_AUTO_TEST_CASE(issues_0065_outcome, "BOOST_OUTCOME_TRY does not preserve the exception_ptr")
 {
 #ifndef BOOST_NO_EXCEPTIONS
   using namespace BOOST_OUTCOME_V2_NAMESPACE;
@@ -47,7 +47,7 @@ BOOST_OUTCOME_AUTO_TEST_CASE(issues_65_outcome, "BOOST_OUTCOME_TRY does not pres
         return boost::current_exception();
       }
     };
-    BOOST_OUTCOME_TRY(ans, (f()));
+    BOOST_OUTCOME_TRY(auto &&ans, (f()));
     return ans;
   };
   outcome<int> o = g();

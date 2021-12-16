@@ -12,8 +12,8 @@
 <typedef name="result_type"><type>MLCG1::result_type</type></typedef>
 <data-member name="has_fixed_range" specifiers="static"><type>const bool</type></data-member>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the generator can produce </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the generator can produce </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the generator can produce </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the generator can produce </para></description></method>
 </method-group>
 <method-group name="public member functions">
 <method name="seed"><type>void</type><description><para>Seeds an <computeroutput><classname alt="boost::random::additive_combine_engine">additive_combine_engine</classname></computeroutput> using the default seeds of the two base generators. </para></description></method>
@@ -389,8 +389,8 @@
           <template-type-parameter name="It"/>
         </template><parameter name="first"><paramtype>It &amp;</paramtype></parameter><parameter name="last"><paramtype>It</paramtype></parameter><description><para>Creates a new <classname alt="boost::random::discard_block_engine">discard_block_engine</classname>  and seeds the underlying generator with first and last. </para></description></constructor>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the generator can produce. This is the same as the minimum of the underlying generator. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the generator can produce. This is the same as the maximum of the underlying generator. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the generator can produce. This is the same as the minimum of the underlying generator. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the generator can produce. This is the same as the maximum of the underlying generator. </para></description></method>
 </method-group>
 <method-group name="friend functions">
 <method name="operator&lt;&lt;"><type>friend std::basic_ostream&lt; CharT, Traits &gt; &amp;</type><template>
@@ -1032,8 +1032,8 @@ References:<orderedlist>
 <typedef name="base_result_type"><type>Engine::result_type</type></typedef>
 <data-member name="has_fixed_range" specifiers="static"><type>const bool</type></data-member>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
 </method-group>
 <method-group name="public member functions">
 <method name="seed"><type>void</type><description><para>Seeds an <computeroutput><classname alt="boost::random::independent_bits_engine">independent_bits_engine</classname></computeroutput> using the default seed of the base generator. </para></description></method>
@@ -1092,8 +1092,8 @@ References:<orderedlist>
 <data-member name="modulus" specifiers="static"><type>const result_type</type></data-member>
 <data-member name="default_seed" specifiers="static"><type>const IntType</type></data-member>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type></method>
-<method name="max" specifiers="static"><type>result_type</type></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type></method>
 </method-group>
 <method-group name="public member functions">
 <method name="seed"><type>void</type><description><para>Calls seed(default_seed) </para></description></method>
@@ -1174,8 +1174,8 @@ References:<orderedlist>
           <template-type-parameter name="It"/>
         </template><parameter name="first"><paramtype>It &amp;</paramtype></parameter><parameter name="last"><paramtype>It</paramtype></parameter></constructor>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the upper bound of the generators outputs. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the upper bound of the generators outputs. </para></description></method>
 </method-group>
 <method-group name="friend functions">
 <method name="operator&lt;&lt;"><type>friend std::basic_ostream&lt; CharT, Traits &gt; &amp;</type><template>
@@ -1201,8 +1201,8 @@ References:<orderedlist>
 <data-member name="short_lag" specifiers="static"><type>const unsigned int</type></data-member>
 <data-member name="default_seed" specifiers="static"><type>const UIntType</type></data-member>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
 </method-group>
 <method-group name="public member functions">
 <method name="seed"><type>void</type><description><para>Calls <computeroutput>seed(default_seed)</computeroutput>. </para></description></method>
@@ -1348,8 +1348,8 @@ References:<orderedlist>
           <template-type-parameter name="It"/>
         </template><parameter name="first"><paramtype>It &amp;</paramtype></parameter><parameter name="last"><paramtype>It</paramtype></parameter><description><para>Constructs a <computeroutput><classname alt="boost::random::linear_congruential_engine">linear_congruential_engine</classname></computeroutput> and seeds it with values taken from the itrator range [first, last) and adjusts first to point to the element after the last one used. If there are not enough elements, throws <computeroutput>std::invalid_argument</computeroutput>.</para><para>first and last must be input iterators. </para></description></constructor>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the <computeroutput><classname alt="boost::random::linear_congruential_engine">linear_congruential_engine</classname></computeroutput> can produce. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the <computeroutput><classname alt="boost::random::linear_congruential_engine">linear_congruential_engine</classname></computeroutput> can produce. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the <computeroutput><classname alt="boost::random::linear_congruential_engine">linear_congruential_engine</classname></computeroutput> can produce. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the <computeroutput><classname alt="boost::random::linear_congruential_engine">linear_congruential_engine</classname></computeroutput> can produce. </para></description></method>
 </method-group>
 <method-group name="friend functions">
 <method name="operator&lt;&lt;"><type>friend std::basic_ostream&lt; CharT, Traits &gt; &amp;</type><template>
@@ -1364,8 +1364,8 @@ References:<orderedlist>
 </class><class name="rand48"><description><para>Class <computeroutput><classname alt="boost::random::rand48">rand48</classname></computeroutput> models a <link linkend="boost_random.reference.concepts.pseudo_random_number_generator">pseudo-random number generator</link> . It uses the linear congruential algorithm with the parameters a = 0x5DEECE66D, c = 0xB, m = 2**48. It delivers identical results to the <computeroutput>lrand48()</computeroutput> function available on some systems (assuming lcong48 has not been called).</para><para>It is only available on systems where <computeroutput>uint64_t</computeroutput> is provided as an integral type, so that for example static in-class constants and/or enum definitions with large <computeroutput>uint64_t</computeroutput> numbers work. </para></description><typedef name="result_type"><type>boost::uint32_t</type></typedef>
 <data-member name="has_fixed_range" specifiers="static"><type>const bool</type></data-member>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>uint32_t</type><description><para>Returns the smallest value that the generator can produce </para></description></method>
-<method name="max" specifiers="static"><type>uint32_t</type><description><para>Returns the largest value that the generator can produce </para></description></method>
+<method name="min" specifiers="static"><type>constexpr uint32_t</type><description><para>Returns the smallest value that the generator can produce </para></description></method>
+<method name="max" specifiers="static"><type>constexpr uint32_t</type><description><para>Returns the largest value that the generator can produce </para></description></method>
 </method-group>
 <method-group name="public member functions">
 <method name="seed"><type>void</type><description><para>Seeds the generator with the default seed. </para></description></method>
@@ -1425,8 +1425,8 @@ References:<orderedlist>
 <data-member name="step_size" specifiers="static"><type>const int</type></data-member>
 <data-member name="default_seed" specifiers="static"><type>const UIntType</type></data-member>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
 </method-group>
 <method-group name="public member functions">
 <method name="seed"><type>void</type><description><para>Seeds a <computeroutput><classname alt="boost::random::linear_feedback_shift_engine">linear_feedback_shift_engine</classname></computeroutput> with the default seed. </para></description></method>
@@ -1594,8 +1594,8 @@ References:<orderedlist>
           <template-type-parameter name="SeedSeq"/>
         </template><parameter name="seq"><paramtype>SeedSeq &amp;</paramtype></parameter><description><para>Constructs a <classname alt="boost::random::mersenne_twister_engine">mersenne_twister_engine</classname> and calls <computeroutput>seed(gen)</computeroutput>.</para><para> <note><para>  The copy constructor will always be preferred over the templated constructor.  </para></note>  </para></description></constructor>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
 </method-group>
 <method-group name="friend functions">
 <method name="operator&lt;&lt;"><type>friend std::basic_ostream&lt; CharT, Traits &gt; &amp;</type><template>
@@ -1618,6 +1618,73 @@ References:<orderedlist>
 </namespace>
 </namespace>
 <macro name="BOOST_RANDOM_MERSENNE_TWISTER_DISCARD_THRESHOLD"/>
+</header>
+<header name="boost/random/mixmax.hpp">
+<namespace name="boost">
+<namespace name="random">
+<class name="mixmax_engine"><template>
+      <template-nontype-parameter name="Ndim"><type>int</type></template-nontype-parameter>
+      <template-nontype-parameter name="SPECIALMUL"><type>unsigned int</type></template-nontype-parameter>
+      <template-nontype-parameter name="SPECIAL"><type>boost::int64_t</type></template-nontype-parameter>
+    </template><description><para>Instantiations of class template <classname alt="boost::random::mixmax_engine">mixmax_engine</classname> model,  <link linkend="boost_random.reference.concepts.pseudo_random_number_generator">pseudo-random number generator</link>  . It uses the MIXMAX generator algorithms from:</para><para> <blockquote><para>  G.K.Savvidy and N.G.Ter-Arutyunian, On the Monte Carlo simulation of physical systems, J.Comput.Phys. 97, 566 (1991); Preprint EPI-865-16-86, Yerevan, Jan. 1986 <ulink url="http://dx.doi.org/10.1016/0021-9991(91)90015-D">http://dx.doi.org/10.1016/0021-9991(91)90015-D</ulink></para>
+<para>K.Savvidy The MIXMAX random number generator Comp. Phys. Commun. 196 (2015), pp 161–165 <ulink url="http://dx.doi.org/10.1016/j.cpc.2015.06.003">http://dx.doi.org/10.1016/j.cpc.2015.06.003</ulink></para>
+<para>K.Savvidy and G.Savvidy Spectrum and Entropy of C-systems. MIXMAX random number generator Chaos, Solitons &amp; Fractals, Volume 91, (2016) pp. 33–38 <ulink url="http://dx.doi.org/10.1016/j.chaos.2016.05.003">http://dx.doi.org/10.1016/j.chaos.2016.05.003</ulink>  </para></blockquote> </para><para>The generator crucially depends on the choice of the parameters. The valid sets of parameters are from the published papers above. </para></description><struct name="rng_state_st"><data-member name="V"><type>boost::array&lt; boost::uint64_t, Ndim &gt;</type></data-member>
+<data-member name="sumtot"><type>boost::uint64_t</type></data-member>
+<data-member name="counter"><type>int</type></data-member>
+</struct><typedef name="result_type"><type>boost::uint64_t</type></typedef>
+<data-member name="mixmax_min" specifiers="static"><type>const boost::uint64_t</type></data-member>
+<data-member name="mixmax_max" specifiers="static"><type>const boost::uint64_t</type></data-member>
+<data-member name="has_fixed_range" specifiers="static"><type>const bool</type></data-member>
+<data-member name="N" specifiers="static"><type>const int</type><purpose>The main internal parameter, size of the defining MIXMAX matrix. </purpose></data-member>
+<method-group name="public member functions">
+<method name="min"><type>BOOST_STATIC_CONSTEXPR result_type</type></method>
+<method name="max"><type>BOOST_STATIC_CONSTEXPR result_type</type></method>
+<method name="seed"><type>void</type><parameter name="seedval"><paramtype>boost::uint64_t</paramtype><default>default_seed</default></parameter><purpose>seed with one 64-bit seed </purpose></method>
+<method name="seed"><type>void</type><template>
+          <template-type-parameter name="It"/>
+        </template><parameter name="first"><paramtype>It &amp;</paramtype></parameter><parameter name="last"><paramtype>It</paramtype></parameter><description><para>Sets the state of the generator using values from an iterator range. </para></description></method>
+<method name="seed"><type>void</type><template>
+          <template-type-parameter name="SeeqSeq"/>
+        </template><parameter name="seq"><paramtype>SeeqSeq &amp;</paramtype></parameter><description><para>Sets the state of the generator using values from a <classname alt="boost::random::seed_seq">seed_seq</classname>. </para></description></method>
+<method name="operator()"><type>boost::uint64_t</type><description><para>return one uint64 between min=0 and max=2^61-1 </para></description></method>
+<method name="generate"><type>void</type><template>
+          <template-type-parameter name="Iter"/>
+        </template><parameter name="first"><paramtype>Iter</paramtype></parameter><parameter name="last"><paramtype>Iter</paramtype></parameter><description><para>Fills a range with random values </para></description></method>
+<method name="discard"><type>void</type><parameter name="nsteps"><paramtype>boost::uint64_t</paramtype></parameter><purpose>discard n steps, required in boost::random </purpose></method>
+</method-group>
+<constructor specifiers="explicit"><purpose>Constructor, unit vector as initial state, acted on by A^2^512. </purpose></constructor>
+<constructor specifiers="explicit"><parameter name=""><paramtype>boost::uint64_t</paramtype></parameter><purpose>Constructor, one 64-bit seed. </purpose><description><para>&lt; constructor, one uint64_t seed, random numbers are statistically independent from any two distinct seeds, e.g. consecutive seeds are ok </para></description></constructor>
+<constructor specifiers="explicit"><parameter name="clusterID"><paramtype>uint32_t</paramtype></parameter><parameter name="machineID"><paramtype>uint32_t</paramtype></parameter><parameter name="runID"><paramtype>uint32_t</paramtype></parameter><parameter name="streamID"><paramtype>uint32_t</paramtype></parameter><purpose>Constructor, four 32-bit seeds for 128-bit seeding flexibility. </purpose></constructor>
+<constructor><template>
+          <template-type-parameter name="It"/>
+        </template><parameter name="first"><paramtype>It &amp;</paramtype></parameter><parameter name="last"><paramtype>It</paramtype></parameter></constructor>
+<constructor specifiers="explicit"><template>
+          <template-type-parameter name="SeedSeq"/>
+        </template><parameter name="seq"><paramtype>SeedSeq &amp;</paramtype></parameter></constructor>
+<method-group name="friend functions">
+<method name="operator&lt;&lt;"><type>friend std::basic_ostream&lt; CharT, Traits &gt; &amp;</type><template>
+          <template-type-parameter name="CharT"/>
+          <template-type-parameter name="Traits"/>
+        </template><parameter name="ost"><paramtype>std::basic_ostream&lt; CharT, Traits &gt; &amp;</paramtype></parameter><parameter name="me"><paramtype>const <classname>mixmax_engine</classname> &amp;</paramtype></parameter><description><para>save the state of the RNG to a stream </para></description></method>
+<method name="operator&gt;&gt;"><type>friend std::basic_istream&lt; CharT, Traits &gt; &amp;</type><template>
+          <template-type-parameter name="CharT"/>
+          <template-type-parameter name="Traits"/>
+        </template><parameter name="in"><paramtype>std::basic_istream&lt; CharT, Traits &gt; &amp;</paramtype></parameter><parameter name="me"><paramtype><classname>mixmax_engine</classname> &amp;</paramtype></parameter><description><para>read the state of the RNG from a stream </para></description></method>
+</method-group>
+<method-group name="private member functions">
+<method name="MOD_MERSENNE"><type>boost::uint64_t</type><parameter name="k"><paramtype>boost::uint64_t</paramtype></parameter></method>
+<method name="MULWU"><type>boost::uint64_t</type><parameter name="k"><paramtype>boost::uint64_t</paramtype></parameter></method>
+<method name="seed_vielbein"><type>void</type><parameter name="X"><paramtype>rng_state_t *</paramtype></parameter><parameter name="i"><paramtype>unsigned int</paramtype></parameter></method>
+<method name="seed_uniquestream"><type>void</type><parameter name="Xin"><paramtype>rng_state_t *</paramtype></parameter><parameter name="clusterID"><paramtype>uint32_t</paramtype></parameter><parameter name="machineID"><paramtype>uint32_t</paramtype></parameter><parameter name="runID"><paramtype>uint32_t</paramtype></parameter><parameter name="streamID"><paramtype>uint32_t</paramtype></parameter></method>
+<method name="iterate_raw_vec"><type>boost::uint64_t</type><parameter name="Y"><paramtype>boost::uint64_t *</paramtype></parameter><parameter name="sumtotOld"><paramtype>boost::uint64_t</paramtype></parameter></method>
+<method name="apply_bigskip"><type>boost::uint64_t</type><parameter name="Vout"><paramtype>boost::uint64_t *</paramtype></parameter><parameter name="Vin"><paramtype>boost::uint64_t *</paramtype></parameter><parameter name="clusterID"><paramtype>uint32_t</paramtype></parameter><parameter name="machineID"><paramtype>uint32_t</paramtype></parameter><parameter name="runID"><paramtype>uint32_t</paramtype></parameter><parameter name="streamID"><paramtype>uint32_t</paramtype></parameter></method>
+<method name="modadd"><type>boost::uint64_t</type><parameter name="foo"><paramtype>boost::uint64_t</paramtype></parameter><parameter name="bar"><paramtype>boost::uint64_t</paramtype></parameter></method>
+<method name="fmodmulM61"><type>boost::uint64_t</type><parameter name="cum"><paramtype>boost::uint64_t</paramtype></parameter><parameter name="s"><paramtype>boost::uint64_t</paramtype></parameter><parameter name="a"><paramtype>boost::uint64_t</paramtype></parameter></method>
+</method-group>
+</class><typedef name="mixmax"><description><para>Instantiation with a valid parameter set. </para></description><type><classname>mixmax_engine</classname>&lt; 17, 36, 0 &gt;</type></typedef>
+
+</namespace>
+</namespace>
 </header>
 <header name="boost/random/negative_binomial_distribution.hpp">
 <namespace name="boost">
@@ -2107,8 +2174,8 @@ piecewise_constant_distribution&lt;&gt; dist(
 </para><para>The measurement error is estimated at +/- 1 usec. </para></description><typedef name="result_type"><type>unsigned int</type></typedef>
 <data-member name="has_fixed_range" specifiers="static"><type>const bool</type></data-member>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the <classname alt="boost::random::random_device">random_device</classname> can produce. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the <classname alt="boost::random::random_device">random_device</classname> can produce. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the <classname alt="boost::random::random_device">random_device</classname> can produce. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the <classname alt="boost::random::random_device">random_device</classname> can produce. </para></description></method>
 </method-group>
 <method-group name="public member functions">
 <method name="entropy" cv="const"><type>double</type><description><para>Returns: An entropy estimate for the random numbers returned by operator(), in the range min() to log2( max()+1). A deterministic random number generator (e.g. a pseudo-random number engine) has entropy 0.</para><para>Throws: Nothing. </para></description></method>
@@ -2245,8 +2312,8 @@ piecewise_constant_distribution&lt;&gt; dist(
           <template-type-parameter name="It"/>
         </template><parameter name="first"><paramtype>It &amp;</paramtype></parameter><parameter name="last"><paramtype>It</paramtype></parameter></constructor>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
 </method-group>
 <method-group name="friend functions">
 <method name="operator&lt;&lt;"><type>friend std::basic_ostream&lt; CharT, Traits &gt; &amp;</type><template>
@@ -2420,8 +2487,8 @@ Data on the primitive binary polynomials <computeroutput>a</computeroutput> and 
           <template-type-parameter name="It"/>
         </template><parameter name="first"><paramtype>It &amp;</paramtype></parameter><parameter name="last"><paramtype>It</paramtype></parameter><description><para>Creates a new <classname alt="boost::random::subtract_with_carry_01_engine">subtract_with_carry_01_engine</classname> and seeds it with values from a range. Advances first to point one past the last consumed value. If the range does not contain enough elements to fill the entire state, throws <computeroutput>std::invalid_argument</computeroutput>. </para></description></constructor>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
 </method-group>
 <method-group name="friend functions">
 <method name="operator&lt;&lt;"><type>friend std::basic_ostream&lt; CharT, Traits &gt; &amp;</type><template>
@@ -2471,8 +2538,8 @@ Data on the primitive binary polynomials <computeroutput>a</computeroutput> and 
           <template-type-parameter name="It"/>
         </template><parameter name="first"><paramtype>It &amp;</paramtype></parameter><parameter name="last"><paramtype>It</paramtype></parameter><description><para>Constructs a new <computeroutput><classname alt="boost::random::subtract_with_carry_engine">subtract_with_carry_engine</classname></computeroutput> and seeds it with values from a range. first is updated to point one past the last value consumed. If there are not enough elements in the range to fill the entire state of the generator, throws <computeroutput>std::invalid_argument</computeroutput>. </para></description></constructor>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
 </method-group>
 <method-group name="friend functions">
 <method name="operator&lt;&lt;"><type>friend std::basic_ostream&lt; CharT, Traits &gt; &amp;</type><template>
@@ -2504,9 +2571,9 @@ Data on the primitive binary polynomials <computeroutput>a</computeroutput> and 
 <namespace name="traits">
 <struct name="is_integral"><template>
       <template-type-parameter name="T"/>
-    </template><inherit access="public">mpl::bool_&lt; boost::is_integral&lt; T &gt;::value||(std::numeric_limits&lt; T &gt;::is_integer)&gt;</inherit><purpose>Traits class that indicates whether type T is an integer. </purpose></struct><struct name="is_signed"><template>
+    </template><inherit access="public">integral_constant&lt; bool, boost::is_integral&lt; T &gt;::value||(std::numeric_limits&lt; T &gt;::is_integer)&gt;</inherit><purpose>Traits class that indicates whether type T is an integer. </purpose></struct><struct name="is_signed"><template>
       <template-type-parameter name="T"/>
-    </template><inherit access="public">mpl::bool_&lt; boost::is_signed&lt; T &gt;::value||(std::numeric_limits&lt; T &gt;::is_specialized &amp;&amp;std::numeric_limits&lt; T &gt;::is_integer &amp;&amp;std::numeric_limits&lt; T &gt;::is_signed)&gt;</inherit><purpose>Traits class that indicates whether type T is a signed integer. </purpose></struct><struct name="make_unsigned"><template>
+    </template><inherit access="public">integral_constant&lt; bool, boost::is_signed&lt; T &gt;::value||(std::numeric_limits&lt; T &gt;::is_specialized &amp;&amp;std::numeric_limits&lt; T &gt;::is_integer &amp;&amp;std::numeric_limits&lt; T &gt;::is_signed)&gt;</inherit><purpose>Traits class that indicates whether type T is a signed integer. </purpose></struct><struct name="make_unsigned"><template>
       <template-type-parameter name="T"/>
     </template><purpose>Converts the argument type T to an unsigned type. </purpose><description><para>This trait has a single member <computeroutput>type</computeroutput> which is the unsigned type corresponding to T. Note that if T is signed, then member <computeroutput>type</computeroutput> <emphasis>should define a type with one more bit precision than T</emphasis>. For built-in types this trait defaults to <computeroutput>boost::make_unsigned&lt;T&gt;::type</computeroutput>. For user defined types it simply asserts that the argument type T is an unsigned integer (using std::numeric_limits). User defined specializations may be provided for other cases. </para></description></struct><struct name="make_unsigned_or_unbounded"><template>
       <template-type-parameter name="T"/>
@@ -2948,8 +3015,8 @@ Data on the primitive binary polynomials <computeroutput>a</computeroutput> and 
           <template-type-parameter name="It"/>
         </template><parameter name="first"><paramtype>It &amp;</paramtype></parameter><parameter name="last"><paramtype>It</paramtype></parameter><description><para>Constructs a <computeroutput><classname alt="boost::random::xor_combine_engine">xor_combine_engine</classname></computeroutput>, seeding both base generators with values from the iterator range [first, last) and changes first to point to the element after the last one used. If there are not enough elements in the range to seed both generators, throws <computeroutput>std::invalid_argument</computeroutput>. </para></description></constructor>
 <method-group name="public static functions">
-<method name="min" specifiers="static"><type>result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
-<method name="max" specifiers="static"><type>result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
+<method name="min" specifiers="static"><type>constexpr result_type</type><description><para>Returns the smallest value that the generator can produce. </para></description></method>
+<method name="max" specifiers="static"><type>constexpr result_type</type><description><para>Returns the largest value that the generator can produce. </para></description></method>
 </method-group>
 <method-group name="friend functions">
 <method name="operator&lt;&lt;"><type>friend std::basic_ostream&lt; CharT, Traits &gt; &amp;</type><template>

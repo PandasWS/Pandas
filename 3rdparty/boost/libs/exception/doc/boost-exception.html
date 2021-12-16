@@ -12,13 +12,14 @@
 <div class="body-2">
 <div>
 <div id="boost_logo">
-<a href="http://www.boost.org"><img style="border:0" src="../../../boost.png" alt="Boost" width="277" height="86"/></a>
+<a href="http://www.boost.org"><img style="border:0" src="boost.png" alt="Boost" width="277" height="86"/></a>
 </div>
 <h1>Boost Exception</h1>
 </div>
 <!-- Copyright (c) 2006-2009 Emil Dotchevski and Reverge Studios, Inc. -->
 <!-- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
+<p><b style="color:red"><u>NOTE</u>:</b> When targeting C++11 or newer and Boost 1.75 or newer is available, it is recommended to use <a href="https://www.boost.org/doc/libs/release/libs/leaf/doc/html/index.html">Boost LEAF</a> instead of Boost Exception. LEAF serves a similar purpose but it has a more elegant interface, it is more efficient, and works with or without exception handling -- yet understands Boost Exception error information for compatibility with legacy source code. This <a href="https://www.boost.org/doc/libs/release/libs/leaf/doc/html/index.html#boost_exception">overview</a> explains the differences between the two APIs (Boost Exception is <u>not</u> deprecated and will continue to be supported, including C++03 compatibility).</p>
 <div class="RenoIncludeDIV"><h2>Introduction</h2>
 <p>The purpose of Boost Exception is to ease the design of exception class hierarchies and to help write exception handling and error reporting code.</p>
 <p>It supports transporting of arbitrary data to the catch site, which is otherwise tricky due to the no-throw requirements (15.5.1) for exception types. Data can be added to any exception object, either directly in the throw-expression (15.1), or at a later time as the exception object propagates up the call stack.</p>

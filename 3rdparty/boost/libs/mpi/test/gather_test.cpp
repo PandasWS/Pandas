@@ -148,7 +148,7 @@ struct string_list_generator
   }
 };
 
-BOOST_AUTO_TEST_CASE(gather)
+BOOST_AUTO_TEST_CASE(gather_check)
 {
   boost::mpi::environment env;
   communicator comm;

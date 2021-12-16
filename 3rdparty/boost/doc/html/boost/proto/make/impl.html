@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Struct template impl</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -59,8 +59,8 @@
               </p>
 <p>
                 If <code class="computeroutput">T</code> is an <a class="link" href="../../../ObjectTransform.html" title="Concept ObjectTransform">ObjectTransform</a> of the form
-                <code class="computeroutput">Object(A<sub>0</sub>,&#8230;A<sub>n</sub>)</code> or
-                <code class="computeroutput">Object(A<sub>0</sub>,&#8230;A<sub>n</sub> ...)</code>,
+                <code class="computeroutput">Object(A<sub>0</sub>,…A<sub>n</sub>)</code> or
+                <code class="computeroutput">Object(A<sub>0</sub>,…A<sub>n</sub> ...)</code>,
                 then let <code class="computeroutput">O</code> be the return type
                 <code class="computeroutput">Object</code>. Otherwise, let <code class="computeroutput">O</code>
                 be <code class="computeroutput">T</code>. The <code class="computeroutput">result_type</code> typedef is
@@ -79,7 +79,7 @@
                     </p></li>
 <li class="listitem">
                     If <code class="computeroutput">O</code> is a template like
-                    <code class="computeroutput"><a class="link" href="../noinvoke.html" title="Struct template noinvoke">proto::noinvoke</a>&lt;S&lt;X<sub>0</sub>,&#8230;X<sub>n</sub>&gt; &gt;</code>,
+                    <code class="computeroutput"><a class="link" href="../noinvoke.html" title="Struct template noinvoke">proto::noinvoke</a>&lt;S&lt;X<sub>0</sub>,…X<sub>n</sub>&gt; &gt;</code>,
                     then the result type is calculated as follows:
                     <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; ">
 <li class="listitem"><p>
@@ -98,14 +98,14 @@
 <li class="listitem"><p>
                           The result type is
                           <code class="computeroutput">
-                            S&lt;X<sub>0</sub>',&#8230;X<sub>n</sub>'&gt;
+                            S&lt;X<sub>0</sub>',…X<sub>n</sub>'&gt;
                           </code>.
                         </p></li>
 </ul></div>
 </li>
 <li class="listitem">
                     If <code class="computeroutput">O</code> is a template like
-                    <code class="computeroutput">S&lt;X<sub>0</sub>,&#8230;X<sub>n</sub>&gt;</code>,
+                    <code class="computeroutput">S&lt;X<sub>0</sub>,…X<sub>n</sub>&gt;</code>,
                     then the result type is calculated as follows:
                     <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; ">
 <li class="listitem"><p>
@@ -122,17 +122,17 @@
 <li class="listitem"><p>
                           If any substitutions took place in the above step and
                           <code class="computeroutput">
-                            S&lt;X<sub>0</sub>',&#8230;X<sub>n</sub>'&gt;
+                            S&lt;X<sub>0</sub>',…X<sub>n</sub>'&gt;
                           </code> has a nested
                           <code class="computeroutput">type</code> typedef, the result type is
                           <code class="computeroutput">
-                            S&lt;X<sub>0</sub>',&#8230;X<sub>n</sub>'&gt;::type
+                            S&lt;X<sub>0</sub>',…X<sub>n</sub>'&gt;::type
                           </code>.
                         </p></li>
 <li class="listitem"><p>
                           Otherwise, the result type is
                           <code class="computeroutput">
-                            S&lt;X<sub>0</sub>',&#8230;X<sub>n</sub>'&gt;
+                            S&lt;X<sub>0</sub>',…X<sub>n</sub>'&gt;
                           </code>.
                         </p></li>
 </ul></div>
@@ -171,7 +171,7 @@
 <li class="listitem">
 <p>
                         If <code class="computeroutput">T</code> is of the form
-                        <code class="computeroutput">O(A<sub>0</sub>,&#8230;A<sub>n</sub>)</code>, then:
+                        <code class="computeroutput">O(A<sub>0</sub>,…A<sub>n</sub>)</code>, then:
                       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; ">
 <li class="listitem">
@@ -183,7 +183,7 @@
                             </p>
 <pre class="programlisting">result_type that = {
   <code class="computeroutput"><a class="link" href="../when.html" title="Struct template when">proto::when</a></code>&lt;<code class="computeroutput"><a class="link" href="../_.html" title="Struct _">_</a></code>, A<sub>0</sub>&gt;()(expr, state, data),
-  &#8230;
+  …
   <code class="computeroutput"><a class="link" href="../when.html" title="Struct template when">proto::when</a></code>&lt;<code class="computeroutput"><a class="link" href="../_.html" title="Struct _">_</a></code>, A<sub>n</sub>&gt;()(expr, state, data)
 };</pre>
 <p>
@@ -196,7 +196,7 @@
                             </p>
 <pre class="programlisting">result_type that(
   <code class="computeroutput"><a class="link" href="../when.html" title="Struct template when">proto::when</a></code>&lt;<code class="computeroutput"><a class="link" href="../_.html" title="Struct _">_</a></code>, A<sub>0</sub>&gt;()(expr, state, data),
-  &#8230;
+  …
   <code class="computeroutput"><a class="link" href="../when.html" title="Struct template when">proto::when</a></code>&lt;<code class="computeroutput"><a class="link" href="../_.html" title="Struct _">_</a></code>, A<sub>n</sub>&gt;()(expr, state, data)
 );</pre>
 <p>
@@ -207,8 +207,8 @@
 <li class="listitem">
 <p>
                         If <code class="computeroutput">T</code> is of the form
-                        <code class="computeroutput">O(A<sub>0</sub>,&#8230;A<sub>n</sub> ...)</code>,
-                        then let <code class="computeroutput">T'</code> be <code class="computeroutput">O(A<sub>0</sub>,&#8230;A<sub>n-1</sub>, <em class="replaceable"><code>S</code></em>)</code>,
+                        <code class="computeroutput">O(A<sub>0</sub>,…A<sub>n</sub> ...)</code>,
+                        then let <code class="computeroutput">T'</code> be <code class="computeroutput">O(A<sub>0</sub>,…A<sub>n-1</sub>, <em class="replaceable"><code>S</code></em>)</code>,
                         where <em class="replaceable"><code>S</code></em> is a type sequence computed from the unpacking expression <code class="computeroutput">A<sub>n</sub></code>
                         as described in the reference for <code class="computeroutput"><code class="computeroutput"><a class="link" href="../pack.html" title="Struct pack">proto::pack</a></code></code>. Then, return:
                         </p>
@@ -233,7 +233,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2008 Eric Niebler<p>
+<td align="right"><div class="copyright-footer">Copyright © 2008 Eric Niebler<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

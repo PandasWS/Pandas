@@ -56,7 +56,9 @@
     --long_long:                 enable long long support if C++ mode
     --variadics:                 enable variadics and placemarkers in C++ mode
     --c99:                       enable C99 mode (implies variadics and placemarkers)
-    --c++11                      enable C++11 mode (implies --variadics and --long_long)
+    --c++11:                     enable C++11 mode (implies --variadics and --long_long)
+    --c++20:                     enable C++20 mode (adds __VA_OPT__ to variadics)
+                                                   (implies --variadics and --long_long)
     -l [ --listincludes ] arg:   list included file to a file [arg] or to stdout [-]
     -m [ --macronames ] arg:     list names of all defined macros to a file [arg] or 
                                  to stdout [-]
@@ -165,10 +167,13 @@
 </blockquote>
 <p dir="ltr">-t [--traceto] path</p>
 <blockquote> 
-  <p dir="ltr">Enable the tracing facility build into the <tt>Wave</tt> library. 
+  <p dir="ltr">Enable the tracing facility built into the <tt>Wave</tt> library.
     The path specifies the filename to use for the output of the generated trace 
     log. If the filename given equals to <tt>'-'</tt> (without the quotes), the 
     trace log is put into the standard error stream (stderr).</p>
+  <p dir="ltr">Tracing is only performed for portions of the input where it has been
+    explicitly enabled via the <tt>#pragma wave trace(enable)</tt> or <tt>_Pragma("wave trace(enable)")</tt> directive.
+    See <a href="supported_pragmas.html">here</a> for more details.</p>
 </blockquote>
 <p dir="ltr">--timer</p>
 <blockquote>
@@ -298,7 +303,7 @@ is now disabled by default because it may cause a potential security threat. The
 <font size="2">Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) </font> </p>
 <span class="updated"></span>
 <p class="copyright"><span class="updated">Last updated: 
-  <!-- #BeginDate format:fcAm1m -->Sunday, January 9, 2011  16:12<!-- #EndDate -->
+  <!-- #BeginDate format:fcAm1m -->Sunday, February 16, 2020  15:05<!-- #EndDate -->
 </span></p>
 </body>
 </html>

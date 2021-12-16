@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>ssl::context</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -26,6 +26,9 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.ssl__context"></a><a class="link" href="ssl__context.html" title="ssl::context">ssl::context</a>
 </h3></div></div></div>
+<p>
+        <a class="indexterm" name="boost_asio.indexterm.ssl__context"></a>
+      </p>
 <pre class="programlisting">class context :
   public ssl::context_base,
   noncopyable
@@ -177,12 +180,13 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__context/context.html" title="ssl::context::context"><span class="bold"><strong>context</strong></span></a>
+                  <a class="link" href="ssl__context/context.html" title="ssl::context::context"><span class="bold"><strong>context</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
-                  Constructor. <br> <span class="silver"> &#8212;</span><br> Move-construct a context from another.
+                  Constructor. <br> <span class="silver"> —</span><br> Construct to take ownership of a native
+                  handle. <br> <span class="silver"> —</span><br> Move-construct a context from another.
                 </p>
               </td>
 </tr>
@@ -419,7 +423,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__context/_context.html" title="ssl::context::~context"><span class="bold"><strong>~context</strong></span></a>
+                  <a class="link" href="ssl__context/_context.html" title="ssl::context::~context"><span class="bold"><strong>~context</strong></span></a> <span class="silver">[destructor]</span>
                 </p>
               </td>
 <td>
@@ -456,7 +460,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__context/default_workarounds.html" title="ssl::context::default_workarounds"><span class="bold"><strong>default_workarounds</strong></span></a>
+                  <a class="link" href="ssl__context/default_workarounds.html" title="ssl::context::default_workarounds"><span class="bold"><strong>default_workarounds</strong></span></a> <span class="silver">[static]</span>
                 </p>
               </td>
 <td>
@@ -468,7 +472,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__context/no_compression.html" title="ssl::context::no_compression"><span class="bold"><strong>no_compression</strong></span></a>
+                  <a class="link" href="ssl__context/no_compression.html" title="ssl::context::no_compression"><span class="bold"><strong>no_compression</strong></span></a> <span class="silver">[static]</span>
                 </p>
               </td>
 <td>
@@ -480,7 +484,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__context/no_sslv2.html" title="ssl::context::no_sslv2"><span class="bold"><strong>no_sslv2</strong></span></a>
+                  <a class="link" href="ssl__context/no_sslv2.html" title="ssl::context::no_sslv2"><span class="bold"><strong>no_sslv2</strong></span></a> <span class="silver">[static]</span>
                 </p>
               </td>
 <td>
@@ -492,7 +496,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__context/no_sslv3.html" title="ssl::context::no_sslv3"><span class="bold"><strong>no_sslv3</strong></span></a>
+                  <a class="link" href="ssl__context/no_sslv3.html" title="ssl::context::no_sslv3"><span class="bold"><strong>no_sslv3</strong></span></a> <span class="silver">[static]</span>
                 </p>
               </td>
 <td>
@@ -504,7 +508,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__context/no_tlsv1.html" title="ssl::context::no_tlsv1"><span class="bold"><strong>no_tlsv1</strong></span></a>
+                  <a class="link" href="ssl__context/no_tlsv1.html" title="ssl::context::no_tlsv1"><span class="bold"><strong>no_tlsv1</strong></span></a> <span class="silver">[static]</span>
                 </p>
               </td>
 <td>
@@ -516,7 +520,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__context/no_tlsv1_1.html" title="ssl::context::no_tlsv1_1"><span class="bold"><strong>no_tlsv1_1</strong></span></a>
+                  <a class="link" href="ssl__context/no_tlsv1_1.html" title="ssl::context::no_tlsv1_1"><span class="bold"><strong>no_tlsv1_1</strong></span></a> <span class="silver">[static]</span>
                 </p>
               </td>
 <td>
@@ -528,7 +532,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__context/no_tlsv1_2.html" title="ssl::context::no_tlsv1_2"><span class="bold"><strong>no_tlsv1_2</strong></span></a>
+                  <a class="link" href="ssl__context/no_tlsv1_2.html" title="ssl::context::no_tlsv1_2"><span class="bold"><strong>no_tlsv1_2</strong></span></a> <span class="silver">[static]</span>
                 </p>
               </td>
 <td>
@@ -540,7 +544,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__context/no_tlsv1_3.html" title="ssl::context::no_tlsv1_3"><span class="bold"><strong>no_tlsv1_3</strong></span></a>
+                  <a class="link" href="ssl__context/no_tlsv1_3.html" title="ssl::context::no_tlsv1_3"><span class="bold"><strong>no_tlsv1_3</strong></span></a> <span class="silver">[static]</span>
                 </p>
               </td>
 <td>
@@ -552,7 +556,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__context/single_dh_use.html" title="ssl::context::single_dh_use"><span class="bold"><strong>single_dh_use</strong></span></a>
+                  <a class="link" href="ssl__context/single_dh_use.html" title="ssl::context::single_dh_use"><span class="bold"><strong>single_dh_use</strong></span></a> <span class="silver">[static]</span>
                 </p>
               </td>
 <td>
@@ -576,7 +580,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

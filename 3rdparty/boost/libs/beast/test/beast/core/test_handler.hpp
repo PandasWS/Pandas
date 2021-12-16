@@ -57,7 +57,7 @@ class simple_executor
     std::size_t id_;
 
 public:
-    simple_executor()
+    simple_executor() noexcept
         : id_([]
         {
             static std::size_t n = 0;
@@ -66,12 +66,19 @@ public:
     {
     }
 
+#if defined(BOOST_ASIO_NO_TS_EXECUTORS)
+    void* query(net::execution::context_t) const { return nullptr; }
+    template<class F>
+    void execute(F&&) const {}
+    simple_executor prefer(net::execution::outstanding_work_t::tracked_t) const { return *this; }
+#else
     void* context() { return nullptr; }
     void on_work_started() {}
     void on_work_finished() {}
     template<class F> void dispatch(F&&) {}
     template<class F> void post(F&&) {}
     template<class F> void defer(F&&) {}
+#endif
 
     friend
     bool operator==(
@@ -89,6 +96,10 @@ public:
         return lhs.id_ != rhs.id_;
     }
 };
+
+#if defined(BOOST_ASIO_NO_TS_EXECUTORS)
+BOOST_STATIC_ASSERT(net::execution::is_executor<simple_executor>::value);
+#endif
 
 // A move-only handler
 struct move_only_handler
@@ -116,6 +127,7 @@ struct legacy_handler
     void
     test(F const& f)
     {
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
         {
             bool hook_invoked = false;
             bool lambda_invoked = false;
@@ -150,6 +162,7 @@ struct legacy_handler
             asio_handler_is_continuation(&h);
             BEAST_EXPECT(hook_invoked);
         }
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
     }
 };
 
@@ -204,8 +217,8 @@ struct associated_allocator<
     using type = std::allocator<int>;
 
     static type get(
-        boost::beast::legacy_handler const& h,
-        Allocator const& a = Allocator()) noexcept
+        boost::beast::legacy_handler const&,
+        Allocator const& = Allocator()) noexcept
     {
         return type{};
     }

@@ -17,7 +17,7 @@ This example shows how to use barycentric rational interpolation, using Walter K
 In this paper, Kohn needs to repeatedly solve an ODE (the radial Schrodinger equation) given a potential
 which is only known at non-equally samples data.
 
-If he'd only had the barycentric rational interpolant of boost::math!
+If he'd only had the barycentric rational interpolant of Boost.Math!
 
 References: Kohn, W., and N. Rostoker. "Solution of the Schrodinger equation in periodic lattices with an application to metallic lithium." Physical Review 94.5 (1954): 1111.
 */
@@ -81,7 +81,7 @@ int main()
     //->
 
     // Now we want to interpolate this potential at any r:
-    boost::math::barycentric_rational<double> b(r.data(), mrV.data(), r.size());
+    boost::math::interpolators::barycentric_rational<double> b(r.data(), mrV.data(), r.size());
 
     for (size_t i = 1; i < 8; ++i)
     {

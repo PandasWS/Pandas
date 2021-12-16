@@ -20,7 +20,7 @@
 #include <boost/move/detail/to_raw_pointer.hpp>
 
 #include <boost/static_assert.hpp>
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 namespace boost{
 namespace intrusive{

@@ -17,8 +17,8 @@ class day_value_policies
 {
 public:
   typedef unsigned int value_type;
-  static unsigned int min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; };
-  static unsigned int max BOOST_PREVENT_MACRO_SUBSTITUTION () { return 31;};
+  static BOOST_CXX14_CONSTEXPR unsigned int min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; };
+  static BOOST_CXX14_CONSTEXPR unsigned int max BOOST_PREVENT_MACRO_SUBSTITUTION () { return 31;};
   static void on_error(unsigned int&, unsigned int, boost::CV::violation_enum)
   {
     throw bad_day();
@@ -41,14 +41,21 @@ int main()
   unsigned int i = cv1; 
   check("test conversion", i == cv1);
 
+#ifdef BOOST_NO_CXX14_CONSTEXPR
+  check("constexpr not configured", true);
+#else  
+  //check constexpr case
+  constexpr constrained_value<day_value_policies> cv3(1);
+  static_assert(cv3 == 1, "constexpr construction/conversion");
+  check("constexpr constrained value construct and equal", true);
+#endif
 
   try {
     constrained_value<one_to_ten_range_policy> cv3(11);
     std::cout << "Not Reachable: " << cv3 << " ";
     check("got range exception max", false);
   }
-  catch(range_error& e) {
-    e = e; // removes compiler warning
+  catch(range_error&) {
     check("got range exception max", true);
   }
 
@@ -57,8 +64,7 @@ int main()
     std::cout << "Not Reachable: " << cv3 << " ";
     check("got range exception min", false);
   }
-  catch(range_error& e) {
-    e = e; // removes compiler warning
+  catch(range_error&) {
     check("got range exception min", true);
   }
 
@@ -67,8 +73,7 @@ int main()
     cv4 = 12;
     check("range exception on assign", false);
   }
-  catch(range_error& e) {
-    e = e; // removes compiler warning
+  catch(range_error&) {
     check("range exception on assign", true);
   }
 

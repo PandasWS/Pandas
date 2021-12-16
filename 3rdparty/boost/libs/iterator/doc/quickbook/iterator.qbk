@@ -1,4 +1,3 @@
-
 [library Boost.Iterator
     [/ version 1.0.1]
     [quickbook 1.6]
@@ -31,6 +30,7 @@
 
 [def _iterator_           [@../../../iterator/doc/index.html Boost.Iterator]]
 [def _concept_check_      [@../../../concept_check/index.html Boost.ConceptCheck]]
+[template example_link[name descr]'''<ulink url="../../example/'''[name]'''">'''[descr]'''</ulink>''']
 
 [template sub[x]'''<subscript>'''[x]'''</subscript>''']
 
@@ -305,4 +305,3 @@ library you see today.
    Patterns, C++ Report, February 1995, pp. 24-27.]
 
 [endsect]
-

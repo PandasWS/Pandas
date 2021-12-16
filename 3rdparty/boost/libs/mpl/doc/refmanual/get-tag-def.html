@@ -75,12 +75,12 @@ such that for any type <tt class="literal"><span class="pre">x</span></tt> <tt c
 <pre class="last literal-block">
 namespace boost { namespace mpl {</pre>
     <pre class="last literal-block">
-template<typename T>&lt;class T&gt;
+template&lt;class T&gt;
 struct get_##name {
 	typedef typename T::name type;
 };</pre>
     <pre class="last literal-block">
-}}<typename T>
+}}
 </pre>
 </td>
 </tr>
@@ -103,13 +103,13 @@ struct test_type_get_tag_def
 
 }}
 
-typedef boost::mpl::get_a_tag&lt;<test_type_get_tag_def>test_type_get_tag_def&gt;::type   got_the_tag;
+typedef boost::mpl::get_a_tag&lt;test_type_get_tag_def&gt;::type   got_the_tag;
 
 </pre>
 </div>
 <div class="section" id="id1335">
 <h3><a class="subsection-title" href="#see-also" name="see-also">See also</a></h3>
-<p><a class="reference internal" href="./macros.html">Macros</a>, <a class="reference internal" href="./has-xxx-trait-named-def.html">BOOST_MPL_HAS_XXX_TRAIT_NAMED_DEF</a>
+<p><a class="reference internal" href="./macros.html">Macros</a>, <a class="reference internal" href="./has-xxx-trait-named-def.html">BOOST_MPL_HAS_XXX_TRAIT_NAMED_DEF</a></p>
 <!-- Macros/Introspection/BOOST_MPL_GET_TAG_DEF -->
 </div>
 </div>

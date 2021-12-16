@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Tuning</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Fiber">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Fiber">
+<link rel="home" href="../index.html" title="Chapter 1. Fiber">
+<link rel="up" href="../index.html" title="Chapter 1. Fiber">
 <link rel="prev" href="performance.html" title="Performance">
 <link rel="next" href="custom.html" title="Customization">
 </head>
@@ -33,7 +33,7 @@
     </h4>
 <p>
       With <a class="link" href="overview.html#cross_thread_sync"><code class="computeroutput"><span class="identifier">BOOST_FIBERS_NO_ATOMICS</span></code></a>
-      defined at the compiler&#8217;s command line, synchronization between fibers (in different
+      defined at the compiler’s command line, synchronization between fibers (in different
       threads) is disabled. This is acceptable if the application is single threaded
       and/or fibers are not synchronized between threads.
     </p>
@@ -47,9 +47,9 @@
       environment, especially for <span class="bold"><strong>Boost.Fiber</strong></span> where
       fiber stacks are allocated on the heap. The default user-level memory allocator
       (UMA) of glibc is ptmalloc2 but it can be replaced by another UMA that fit
-      better for the concret work-load For instance Google&#8217;s <a href="http://goog-perftools.sourceforge.net/doc/tcmalloc.html" target="_top">TCmalloc</a>
+      better for the concret work-load For instance Google’s <a href="http://goog-perftools.sourceforge.net/doc/tcmalloc.html" target="_top">TCmalloc</a>
       enables a better performance at the <span class="emphasis"><em>skynet</em></span> microbenchmark
-      than glibc&#8217;s default memory allocator.
+      than glibc’s default memory allocator.
     </p>
 <h4>
 <a name="fiber.tuning.h2"></a>
@@ -141,8 +141,8 @@
       The macro BOOST_FIBERS_RETRY_THRESHOLD determines how many times the CPU iterates
       in the spin-wait loop before yielding the thread or blocking in futex-wait.
       The spinlock tracks how many times the thread failed to acquire the lock. The
-      higher the contention, the longer the thread should back-off. A <span class="quote">&#8220;<span class="quote">Binary
-      Exponential Backoff</span>&#8221;</span> algorithm together with a randomized contention
+      higher the contention, the longer the thread should back-off. A <span class="quote">“<span class="quote">Binary
+      Exponential Backoff</span>”</span> algorithm together with a randomized contention
       window is utilized for this purpose. BOOST_FIBERS_CONTENTION_WINDOW_THRESHOLD
       determines the upper limit of the contention window (expressed as the exponent
       for basis of two).
@@ -195,7 +195,7 @@
       <span class="phrase"><a name="fiber.tuning.parameters"></a></span><a class="link" href="tuning.html#fiber.tuning.parameters">Parameters</a>
     </h4>
 <div class="table">
-<a name="fiber.tuning.parameters_that_migh_be_defiend_at_compiler_s_command_line"></a><p class="title"><b>Table&#160;1.5.&#160;Parameters that migh be defiend at compiler's command line</b></p>
+<a name="fiber.tuning.parameters_that_migh_be_defiend_at_compiler_s_command_line"></a><p class="title"><b>Table 1.5. Parameters that migh be defiend at compiler's command line</b></p>
 <div class="table-contents"><table class="table" summary="Parameters that migh be defiend at compiler's command line">
 <colgroup>
 <col>
@@ -502,7 +502,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2013 Oliver Kowalke<p>
+<td align="right"><div class="copyright-footer">Copyright © 2013 Oliver Kowalke<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

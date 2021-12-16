@@ -229,6 +229,11 @@ int bcp_implementation::run()
       }
       ++i;
    }
+   while (!m_pending_paths.empty())
+   {
+      add_path(m_pending_paths.front());
+      m_pending_paths.pop();
+   }
    //
    // now perform output:
    //

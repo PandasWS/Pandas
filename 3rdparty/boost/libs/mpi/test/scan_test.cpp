@@ -85,7 +85,8 @@ scan_test(const communicator& comm, Generator generator,
 
   value_type result_value;
   scan(comm, value, result_value, op);
-  BOOST_CHECK(scan(comm, value, op) == result_value);
+  value_type scan_result = scan(comm, value, op);
+  BOOST_CHECK(scan_result == result_value);
 
   // Compute expected result
   std::vector<value_type> generated_values;
@@ -193,7 +194,7 @@ struct is_commutative<std::plus<wrapped_int>, wrapped_int>
 
 } } // end namespace boost::mpi
 
-BOOST_AUTO_TEST_CASE(scan)
+BOOST_AUTO_TEST_CASE(scan_check)
 {
   using namespace boost::mpi;
   environment env;

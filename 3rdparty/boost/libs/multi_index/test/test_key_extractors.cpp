@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for key extractors.
  *
- * Copyright 2003-2019 Joaquin M Lopez Munoz.
+ * Copyright 2003-2020 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -46,6 +46,8 @@ struct test_class
 
   test_class(int i=0):int_member(i),int_cmember(i){}
   test_class(int i,int j):int_member(i),int_cmember(j){}
+  test_class(const test_class& x):
+    int_member(x.int_member),int_cmember(x.int_cmember){}
 
   test_class& operator=(const test_class& x)
   {

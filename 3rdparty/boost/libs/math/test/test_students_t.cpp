@@ -20,7 +20,7 @@
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp> // Boost.Test
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <boost/math/concepts/real_concept.hpp> // for real_concept
 #include <boost/math/tools/test.hpp> // for real_concept
@@ -265,7 +265,7 @@ void test_spots(RealType)
       // Some special tests to exercise the double-precision approximations
       // to the quantile:
       //
-      // tolerance is 50 eps expressed as a persent:
+      // tolerance is 50 eps expressed as a percent:
       //
       tolerance = boost::math::tools::epsilon<RealType>() * 5000;
       BOOST_CHECK_CLOSE(boost::math::quantile(
@@ -381,6 +381,13 @@ void test_spots(RealType)
                boost::math::quantile(
                   students_t_distribution<RealType>(static_cast<RealType>(0x0fffffff)), static_cast<RealType>(0.25f))), 
             static_cast<RealType>(0.25f), tolerance);
+         //
+         // Bug cases:
+         //
+         if (std::numeric_limits<RealType>::is_specialized && std::numeric_limits<RealType>::has_denorm)
+         {
+            BOOST_CHECK_THROW(boost::math::quantile(students_t_distribution<RealType>((std::numeric_limits<RealType>::min)() / 2), static_cast<RealType>(0.0025f)), std::overflow_error);
+         }
       }
 
   // Student's t pdf tests.
@@ -450,6 +457,13 @@ void test_spots(RealType)
     BOOST_CHECK_CLOSE(
        kurtosis_excess(dist)
        , static_cast<RealType>(1.5), tol2);
+
+    using std::log;
+    using std::sqrt;
+    RealType expected_entropy = (RealType(9)/2)*(boost::math::digamma(RealType(9)/2) - boost::math::digamma(RealType(4))) + log(sqrt(RealType(8))*boost::math::beta(RealType(4), RealType(1)/2));
+    BOOST_CHECK_CLOSE(
+       entropy(dist)
+       , expected_entropy, 300*tol2);
 
     // Parameter estimation. These results are close to but
     // not identical to those reported on the NIST website at
@@ -741,7 +755,7 @@ BOOST_AUTO_TEST_CASE( test_main )
   test_spots(0.0); // Test double. OK at decdigits 7, tolerance = 1e07 %
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
   test_spots(0.0L); // Test long double.
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
   test_spots(boost::math::concepts::real_concept(0.)); // Test real concept.
 #endif
 #else

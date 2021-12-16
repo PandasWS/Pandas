@@ -18,7 +18,7 @@
 #include <iostream>
 #include <typeinfo>
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 // we have to turn off these warnings otherwise we get swamped by the things:
 #pragma option -w-8008 -w-8066
 #endif

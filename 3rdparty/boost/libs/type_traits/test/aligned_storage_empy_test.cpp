@@ -27,7 +27,7 @@ namespace
     
     template< unsigned N, unsigned Alignment >
     struct alignment_implementation2 : 
-#ifndef __BORLANDC__
+#ifndef BOOST_BORLANDC
        private 
 #else
        public

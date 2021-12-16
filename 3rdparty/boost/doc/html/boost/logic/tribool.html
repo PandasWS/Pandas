@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class tribool</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,7 +27,7 @@
 <a name="boost.logic.tribool"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Class tribool</span></h2>
-<p>boost::logic::tribool &#8212; A 3-state boolean type. </p>
+<p>boost::logic::tribool — A 3-state boolean type. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../tribool/reference.html#header.boost.logic.tribool_hpp" title="Header &lt;boost/logic/tribool.hpp&gt;">boost/logic/tribool.hpp</a>&gt;
@@ -37,12 +37,12 @@
 <span class="keyword">public</span><span class="special">:</span>
   <span class="keyword">enum</span> <a class="link" href="tribool/value_t.html" title="Type value_t">value_t</a><span class="special">;</span>
   <span class="comment">// <a class="link" href="tribool.html#boost.logic.triboolconstruct-copy-destruct">construct/copy/destruct</a></span>
-  <a class="link" href="tribool.html#idm46312399674576-bb"><span class="identifier">tribool</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span>
-  <a class="link" href="tribool.html#idm46312399609760-bb"><span class="identifier">tribool</span></a><span class="special">(</span><span class="keyword">bool</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span>
-  <a class="link" href="tribool.html#idm46312399606528-bb"><span class="identifier">tribool</span></a><span class="special">(</span><span class="identifier">indeterminate_keyword_t</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span>
+  <a class="link" href="tribool.html#idm184-bb"><span class="identifier">tribool</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span>
+  <a class="link" href="tribool.html#idm190-bb"><span class="identifier">tribool</span></a><span class="special">(</span><span class="keyword">bool</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span>
+  <a class="link" href="tribool.html#idm200-bb"><span class="identifier">tribool</span></a><span class="special">(</span><span class="identifier">indeterminate_keyword_t</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="tribool.html#idm46312399678464-bb">public member functions</a></span>
-  <span class="keyword">explicit</span> <span class="identifier">BOOST_CONSTEXPR</span> <a class="link" href="tribool.html#idm46312399677904-bb"><span class="keyword">operator</span> <span class="keyword">bool</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="tribool.html#idm174-bb">public member functions</a></span>
+  <span class="keyword">explicit</span> <span class="identifier">BOOST_CONSTEXPR</span> <a class="link" href="tribool.html#idm175-bb"><span class="keyword">operator</span> <span class="keyword">bool</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
 
   <span class="comment">// public data members</span>
   <span class="keyword">enum</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">logic</span><span class="special">::</span><span class="identifier">tribool</span><span class="special">::</span><span class="identifier">value_t</span> <span class="identifier">value</span><span class="special">;</span>
@@ -57,7 +57,7 @@
        construct/copy/destruct</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><a name="idm46312399674576-bb"></a><span class="identifier">tribool</span><span class="special">(</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="idm184-bb"></a><span class="identifier">tribool</span><span class="special">(</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
 <p>Construct a new 3-state boolean value with the value 'false'.</p>
 <p>
 </p>
@@ -73,7 +73,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="idm46312399609760-bb"></a><span class="identifier">tribool</span><span class="special">(</span><span class="keyword">bool</span> initial_value<span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="idm190-bb"></a><span class="identifier">tribool</span><span class="special">(</span><span class="keyword">bool</span> initial_value<span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
 <p>Construct a new 3-state boolean value with the given boolean value, which may be <code class="computeroutput">true</code> or <code class="computeroutput">false</code>.</p>
 <p>
 </p>
@@ -89,7 +89,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="idm46312399606528-bb"></a><span class="identifier">tribool</span><span class="special">(</span><span class="identifier">indeterminate_keyword_t</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="idm200-bb"></a><span class="identifier">tribool</span><span class="special">(</span><span class="identifier">indeterminate_keyword_t</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
 <p>Construct a new 3-state boolean value with an indeterminate value.</p>
 <p>
 </p>
@@ -108,9 +108,9 @@
 </div>
 <div class="refsect2">
 <a name="id-1.3.24.5.2.4.4.4"></a><h3>
-<a name="idm46312399678464-bb"></a><code class="computeroutput">tribool</code> public member functions</h3>
+<a name="idm174-bb"></a><code class="computeroutput">tribool</code> public member functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
-<pre class="literallayout"><span class="keyword">explicit</span> <span class="identifier">BOOST_CONSTEXPR</span> <a name="idm46312399677904-bb"></a><span class="keyword">operator</span> <span class="keyword">bool</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">explicit</span> <span class="identifier">BOOST_CONSTEXPR</span> <a name="idm175-bb"></a><span class="keyword">operator</span> <span class="keyword">bool</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
 <p>Use a 3-state boolean in a boolean context. Will evaluate true in a boolean context only when the 3-state boolean is definitely true.</p>
 <p>
 
@@ -137,7 +137,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2004 Douglas Gregor<p>Use, modification and distribution is subject to the Boost
+<td align="right"><div class="copyright-footer">Copyright © 2002-2004 Douglas Gregor<p>Use, modification and distribution is subject to the Boost
     Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>

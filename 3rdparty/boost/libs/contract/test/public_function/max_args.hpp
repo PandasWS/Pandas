@@ -16,10 +16,19 @@
 #include <boost/preprocessor/control/expr_iif.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/stringize.hpp>
+#include <boost/config.hpp>
 #include <boost/detail/lightweight_test.hpp>
 #include <sstream>
 
 boost::contract::test::detail::oteststream out;
+
+#if defined(BOOST_GCC)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-parameter" // aN from macros.
+#elif defined(BOOST_CLANG)
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wunused-parameter" // aN from macros.
+#endif
         
 #define BOOST_CONTRACT_TEST_MAX_ARGS_PARAM_COMMA_(z, n, unused) \
     int BOOST_PP_CAT(a, n) ,
@@ -111,6 +120,12 @@ struct a
     BOOST_PP_REPEAT(BOOST_PP_INC(BOOST_CONTRACT_MAX_ARGS),
             BOOST_CONTRACT_TEST_MAX_ARGS_A_F_, ~)
 };
+
+#if defined(BOOST_GCC)
+    #pragma GCC diagnostic pop
+#elif defined(BOOST_CLANG)
+    #pragma clang diagnostic pop
+#endif
 
 int main() {
     std::ostringstream ok;

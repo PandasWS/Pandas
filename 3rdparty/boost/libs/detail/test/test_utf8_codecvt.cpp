@@ -19,6 +19,10 @@
 #include <boost/config.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 
+#if !defined(BOOST_NO_EXCEPTIONS)
+#include <exception>
+#endif
+
 #define BOOST_UTF8_BEGIN_NAMESPACE namespace boost { namespace detail {
 #define BOOST_UTF8_END_NAMESPACE } }
 #include <boost/detail/utf8_codecvt_facet.hpp>
@@ -46,6 +50,9 @@ namespace std{
 #endif
 
 #include <boost/core/lightweight_test.hpp>
+
+// Directory of the test executable
+std::string executable_dir;
 
 template<std::size_t s>
 struct test_data
@@ -134,7 +141,7 @@ test_main(int /* argc */, char * /* argv */[]) {
     // Send our test UTF-8 data to file
     {
         std::ofstream ofs;
-        ofs.open("test.dat");
+        ofs.open((executable_dir + "test.dat").c_str());
         std::copy(
             td::utf8_encoding,
             td::utf8_encoding + sizeof(td::utf8_encoding) / sizeof(unsigned char),
@@ -147,7 +154,7 @@ test_main(int /* argc */, char * /* argv */[]) {
     {
         std::wifstream ifs;
         ifs.imbue(utf8_locale);
-        ifs.open("test.dat");
+        ifs.open((executable_dir + "test.dat").c_str());
 
         std::wint_t item = 0;
         // note can't use normal vector from iterator constructor because
@@ -169,7 +176,7 @@ test_main(int /* argc */, char * /* argv */[]) {
     {
         std::wofstream ofs;
         ofs.imbue(utf8_locale);
-        ofs.open("test2.dat");
+        ofs.open((executable_dir + "test2.dat").c_str());
         std::copy(
             from_file.begin(),
             from_file.end(),
@@ -182,21 +189,21 @@ test_main(int /* argc */, char * /* argv */[]) {
         typedef std::istream_iterator<utf8_t> is_iter;
         is_iter end_iter;
 
-        std::ifstream ifs1("test.dat");
+        std::ifstream ifs1((executable_dir + "test.dat").c_str());
         is_iter it1(ifs1);
         std::vector<utf8_t> data1;
         std::copy(it1, end_iter, std::back_inserter(data1));
 
-        std::ifstream ifs2("test2.dat");
+        std::ifstream ifs2((executable_dir + "test2.dat").c_str());
         is_iter it2(ifs2);
         std::vector<utf8_t> data2;
         std::copy(it2, end_iter, std::back_inserter(data2));
 
-        BOOST_TEST(data1 == data2);
+        BOOST_TEST_ALL_EQ(data1.begin(), data1.end(), data2.begin(), data2.end());
     }
 
     // some libraries have trouble that only shows up with longer strings
-    
+
     const wchar_t * test3_data = L"\
     <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
     <!DOCTYPE boost_serialization>\
@@ -224,13 +231,13 @@ test_main(int /* argc */, char * /* argv */[]) {
     </a>\
     </boost_serialization>\
     ";
-    
+
     // Send the UCS4_data back out, converting to UTF-8
     std::size_t l = std::wcslen(test3_data);
     {
         std::wofstream ofs;
         ofs.imbue(utf8_locale);
-        ofs.open("test3.dat");
+        ofs.open((executable_dir + "test3.dat").c_str());
         std::copy(
             test3_data,
             test3_data + l,
@@ -242,7 +249,7 @@ test_main(int /* argc */, char * /* argv */[]) {
     {
         std::wifstream ifs;
         ifs.imbue(utf8_locale);
-        ifs.open("test3.dat");
+        ifs.open((executable_dir + "test3.dat").c_str());
         ifs >> std::noskipws;
         BOOST_TEST(
             std::equal(
@@ -278,25 +285,32 @@ test_main(int /* argc */, char * /* argv */[]) {
 }
 
 int
-main(int argc, char * argv[]){
+main(int argc, char * argv[]) {
+    if (argc > 0) {
+        // We need to save the path to executable to create test files in the same directory.
+        // This allows running different configurations of the test (release/debug, different C++ versions, etc.) in parallel.
+        std::string exec_name = argv[0];
+        std::string::size_type last_dir_sep_pos = exec_name.find_last_of("/\\");
+        if (last_dir_sep_pos != std::string::npos)
+            executable_dir = exec_name.substr(0, last_dir_sep_pos + 1); // include the trailing directory separator
+    }
 
     int retval = 1;
     BOOST_TRY{
         retval = test_main(argc, argv);
     }
-    #ifndef BOOST_NO_EXCEPTION_STD_NAMESPACE
-        BOOST_CATCH(const std::exception & e){
-            BOOST_ERROR(e.what());
-        }
-    #endif
+#ifndef BOOST_NO_EXCEPTION_STD_NAMESPACE
+    BOOST_CATCH(const std::exception & e){
+        BOOST_ERROR(e.what());
+    }
+#endif
     BOOST_CATCH(...){
         BOOST_ERROR("failed with uncaught exception:");
     }
     BOOST_CATCH_END
 
     int error_count = boost::report_errors();
-    if(error_count > 0)
+    if (error_count > 0)
         retval = error_count;
     return retval;
 }
-

@@ -87,20 +87,20 @@ As explained in the boost installation instructions, running the bootstrap  (`./
 
   using mpi ;
 
-Alternatively, you can provided explicitly the list of Boost libraries you want to build.
-Please refer to the `--help` option` of the `bootstrap` script.
+Alternatively, you can explicitly provide the list of Boost libraries you want to build.
+Please refer to the `--help` option of the `bootstrap` script.
 
 [endsect:bootstrap]
 [section:setup Setting up your MPI Implementation]
 
 First, you need to scan the =include/boost/mpi/config.hpp= file and check if some 
-settings needs to be modified for your MPI implementation or preferences. 
+settings need to be modified for your MPI implementation or preferences. 
 
 In particular, the [macroref BOOST_MPI_HOMOGENEOUS] macro, that you will need to comment out 
-if you plan to run on an heterogeneous set of machines. See the [link mpi.tutorial.performance_optimizations.homogeneous_machines optimization] notes below.
+if you plan to run on a heterogeneous set of machines. See the [link mpi.tutorial.performance_optimizations.homogeneous_machines optimization] notes below.
 
-Most MPI implementations requires specific compilation and link options. 
-In order to mask theses details to the user, most MPI implementations provides 
+Most MPI implementations require specific compilation and link options. 
+In order to mask theses details to the user, most MPI implementations provide
 wrappers which silently pass those options to the compiler.
 
 Depending on your MPI implementation, some work might be needed to tell Boost which 
@@ -134,13 +134,13 @@ using mpi : /opt/mpi/bullxmpi/1.2.8.3/bin/mpicc ;
 ]
 
 [warning
-Boost.MPI only uses the C interface, so specifying the C wrapper should be enough. But some implementations will insist on using the C++ bindings.
+Boost.MPI only uses the C interface, so specifying the C wrapper should be enough. But some implementations will insist on importing the C++ bindings.
 ]
 
 * [*Your wrapper is really eccentric or does not exist]
 
-You will need to provide the compilation and link options through de second parameter using 'jam' directives.
-The following type configuration used to be required for some specific Intel MPI implementation:
+With some implementations, or with some specific integration[footnote Some HPC cluster will insist that the users uss theirs own in house interface to the MPI system.] you will need to provide the compilation and link options through de second parameter using 'jam' directives.
+The following type configuration used to be required for some specific Intel MPI implementation (in such a case, the name of the wrapper can be left blank):
 
 [pre
 using mpi : mpiicc : 
@@ -154,7 +154,7 @@ using mpi : mpiicc :
       <find-shared-library>rt ;
 ]
 
-As a convenience, MPI wrappers usually have an options that provide the required informations, and, it usually starts with `--show`. You can use those to find out the the requested jam directive:
+As a convenience, MPI wrappers usually have an option that provides the required informations, which usually starts with `--show`. You can use those to find out the requested jam directive:
 [pre
 $ mpiicc -show
 icc -I/softs/...\/include ... -L/softs/...\/lib ... -Xlinker -rpath -Xlinker \/softs/...\/lib .... -lmpi -ldl -lrt -lpthread
@@ -236,13 +236,13 @@ normally would for MPI programs, but remember to link against the
 
 [pre
 mpic++ -I/path/to/boost/mpi my_application.cpp -Llibdir \
-  -lboost_mpi-gcc-mt-1_35 -lboost_serialization-gcc-d-1_35.a
+  -lboost_mpi -lboost_serialization
 ]
 
 If you plan to use the [link mpi.python Python bindings] for
 Boost.MPI in conjunction with the C++ Boost.MPI, you will also need to
 link against the boost_mpi_python library, e.g., by adding
-`-lboost_mpi_python-gcc-mt-1_35` to your link command. This step will
+`-lboost_mpi_python-gcc` to your link command. This step will
 only be necessary if you intend to [link mpi.python.user_data
 register C++ types] or use the [link
 mpi.python.skeleton_content skeleton/content mechanism] from

@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for safe_mode.
  *
- * Copyright 2003-2018 Joaquin M Lopez Munoz.
+ * Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -11,6 +11,8 @@
 #include "test_safe_mode.hpp"
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
+#include <boost/move/core.hpp>
+#include <boost/move/utility_core.hpp>
 #include "pre_multi_index.hpp"
 #include "employee.hpp"
 #include "pair_of_ints.hpp"
@@ -37,9 +39,11 @@ static void local_test_safe_mode(
   BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(Policy))
 {
   typedef typename Policy::container      container;
+  typedef typename Policy::allocator_type allocator_type;
   typedef typename Policy::index_type     index_type;
   typedef typename index_type::value_type value_type;
   typedef typename index_type::iterator   iterator;
+  typedef typename index_type::node_type  node_type;
 
   container   c,c2;
   index_type& i=Policy::index_from_container(c);
@@ -193,6 +197,21 @@ static void local_test_safe_mode(
     value_type e=*it2;
   CATCH_SAFE_MODE(safe_mode::invalid_iterator)
 
+  TRY_SAFE_MODE
+    iterator   it=Policy::insert(i,Policy::another_value());
+    node_type  nh=i.extract(it);
+    value_type e=*it;
+    (void)nh;
+  CATCH_SAFE_MODE(safe_mode::invalid_iterator)
+
+  TRY_SAFE_MODE
+    iterator    it=Policy::insert(i,Policy::another_value());
+    node_type   nh=i.extract(it);
+    container   c3(c2,allocator_type(-1));
+    index_type& i3=Policy::index_from_container(c3);
+    Policy::insert(i3,boost::move(nh));
+  CATCH_SAFE_MODE(safe_mode::unequal_allocators)
+
   /* testcase for bug reported at
    * http://lists.boost.org/boost-users/2006/02/17230.php
    */
@@ -307,7 +326,7 @@ static void local_test_safe_mode_with_rearrange()
 
   TRY_SAFE_MODE
     i.splice(i.begin(),i);
-  CATCH_SAFE_MODE(safe_mode::same_container)
+  CATCH_SAFE_MODE(safe_mode::inside_range)
 
   TRY_SAFE_MODE
     iterator it;
@@ -327,6 +346,7 @@ template<typename MultiIndexContainer,int N>
 struct index_policy_base
 {
   typedef MultiIndexContainer                   container;
+  typedef typename container::allocator_type    allocator_type;
   typedef typename nth_index<container,N>::type index_type;
 
   static index_type& index_from_container(container& c){return get<N>(c);}
@@ -342,6 +362,7 @@ struct key_based_index_policy_base:
   typedef typename super::index_type      index_type;
   typedef typename index_type::value_type value_type;
   typedef typename index_type::iterator   iterator;
+  typedef typename index_type::node_type  node_type;
 
   static iterator insert(index_type& i,const value_type& v)
   {
@@ -351,6 +372,11 @@ struct key_based_index_policy_base:
   static iterator insert(index_type& i,iterator it,const value_type& v)
   {
     return i.insert(it,v);
+  }
+
+  static void insert(index_type& i,BOOST_RV_REF(node_type) nh)
+  {
+    i.insert(boost::move(nh));
   }
 };
 
@@ -364,6 +390,7 @@ struct non_key_based_index_policy_base:
   typedef typename super::index_type      index_type;
   typedef typename index_type::value_type value_type;
   typedef typename index_type::iterator   iterator;
+  typedef typename index_type::node_type  node_type;
 
   static iterator insert(index_type& i,const value_type& v)
   {
@@ -373,6 +400,11 @@ struct non_key_based_index_policy_base:
   static iterator insert(index_type& i,iterator it,const value_type& v)
   {
     return i.insert(it,v).first;
+  }
+
+  static void insert(index_type& i,BOOST_RV_REF(node_type) nh)
+  {
+    i.insert(i.end(),boost::move(nh));
   }
 };
 

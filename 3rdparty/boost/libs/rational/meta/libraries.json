@@ -10,5 +10,6 @@
     ],
     "maintainers": [
         "Jonathan Turkanis <turkanis -at- coderage.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

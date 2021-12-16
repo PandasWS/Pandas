@@ -10,10 +10,12 @@
 #include <cctype>
 #include <set>
 #include <stack>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/spirit/include/classic_core.hpp>
 #include <boost/spirit/include/phoenix1_operators.hpp>
 #include <boost/spirit/include/phoenix1_primitives.hpp>
+
+using namespace boost::placeholders;
 
 namespace quickbook
 {

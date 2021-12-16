@@ -11,8 +11,8 @@
     <a accesskey="u" href="../../../tutorial/advanced/interop.html"><img src="../../../images/up.png" alt="Up"></a>
     <a accesskey="h" href="../../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="../../../tutorial/advanced/interop/app-map-filelib.html"><img src="../../../images/next.png" alt="Next"></a></div><div id="content">
   <div class="titlepage"><div><div><h1 style="clear: both">Mapping the HTTP library into the Application <code>2/2</code></h1></div></div></div>
-  <p>If you remember the tutorial section on the <a href="../value-or-error"><code>ValueOrError</code> Concept</a>,
-this is an example of how to implement a custom <code>ValueOrError</code> Concept converter
+  <p>If you remember the tutorial section on the <a href="../value-or-error"><code>value_or_error</code> Concept</a>,
+this is an example of how to implement a custom <code>value_or_error</code> Concept converter
 in Outcome:</p>
 
 <div class="code-snippet"><div class="highlight"><pre class="chroma"><code class="language-c++" data-lang="c++"><span class="c1">// Inject custom ValueOrError conversion
@@ -45,14 +45,14 @@ in Outcome:</p>
   <span class="p">};</span>
 <span class="p">}</span>  <span class="c1">// namespace convert
 </span><span class="c1"></span><span class="n">BOOST_OUTCOME_V2_NAMESPACE_END</span>
-</code></pre></div><a href="https://github.com/boostorg/outcome/tree/master/doc/src/snippets/finale.cpp#L250" class="code-snippet-url" target="_blank">View this code on Github</a></div>
+</code></pre></div><a href="https://github.com/boostorg/outcome/tree/master/doc/src/snippets/finale.cpp#L257" class="code-snippet-url" target="_blank">View this code on Github</a></div>
 
 
 <p>The first thing that you should note is that these custom converters must be injected
 directly into the <code>BOOST_OUTCOME_V2_NAMESPACE::convert</code> namespace, and they must partially
 or completely specialise <a href="../../../reference/converters/value_or_error.html" class="api-reference"><code>value_or_error&lt;T, U&gt;</code></a>
 . Here we specialise the
-converter for <code>ValueOrError</code> conversions from <code>httplib::result&lt;U&gt;</code> to <code>app::outcome&lt;T&gt;</code>
+converter for <code>value_or_error</code> conversions from <code>httplib::result&lt;U&gt;</code> to <code>app::outcome&lt;T&gt;</code>
 i.e. from our third party HTTP library&rsquo;s error type into our application&rsquo;s <code>outcome</code>
 type (which is unique to our application, as we hard code an <code>app</code>-local error type).</p>
 
@@ -62,11 +62,11 @@ converter<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup>. In 
 <code>outcome</code> inputs, so we mark these booleans as <code>true</code>.</p>
 
 <p>The third thing to note is the requirements on <code>operator()</code>. If the requirements are
-not met, the <code>ValueOrError</code> converting constructor in <code>basic_result</code> and <code>basic_outcome</code>
+not met, the <code>value_or_error</code> converting constructor in <code>basic_result</code> and <code>basic_outcome</code>
 disables. Note the requirement that the decayed <code>operator()</code> input <code>X</code> matches
 <code>httplib::result&lt;U&gt;</code>, and that <code>T</code> is constructible from <code>U</code>. This means that the
-<a href="../../../reference/types/basic_result/explicit_valueorerror_converting_constructor.html" class="api-reference"><code>explicit basic_result(ValueOrError&lt;T, E&gt; &amp;&amp;)</code></a>
- and <a href="../../../reference/types/basic_outcome/explicit_valueorerror_converting_constructor.html" class="api-reference"><code>explicit basic_outcome(ValueOrError&lt;T, E&gt; &amp;&amp;)</code></a>
+<a href="../../../reference/types/basic_result/explicit_valueorerror_converting_constructor.html" class="api-reference"><code>explicit basic_result(concepts::value_or_error&lt;T, E&gt; &amp;&amp;)</code></a>
+ and <a href="../../../reference/types/basic_outcome/explicit_valueorerror_converting_constructor.html" class="api-reference"><code>explicit basic_outcome(concepts::value_or_error&lt;T, E&gt; &amp;&amp;)</code></a>
 
 constructors are available if, and only if, the input type is a <code>httplib::result&lt;U&gt;</code>,
 and the result&rsquo;s value type is constructible from the input&rsquo;s value type.</p>
@@ -85,7 +85,7 @@ to type erase the <code>httplib::failure</code> into an <code>app::httplib_error
 </div>
 
 
-        </div><p><small>Last revised: February 11, 2019 at 13:38:04 UTC</small></p>
+        </div><p><small>Last revised: December 15, 2020 at 12:22:39 UTC</small></p>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="../../../tutorial/advanced/interop/app-map-httplib1.html"><img src="../../../images/prev.png" alt="Prev"></a>

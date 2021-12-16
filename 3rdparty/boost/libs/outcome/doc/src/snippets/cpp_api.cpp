@@ -1,5 +1,5 @@
 /* Example of Outcome used with C APIs
-(C) 2017-2019 Niall Douglas <http://www.nedproductions.biz/> (2 commits)
+(C) 2017-2021 Niall Douglas <http://www.nedproductions.biz/> (2 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003

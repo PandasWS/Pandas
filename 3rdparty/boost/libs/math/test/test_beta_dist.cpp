@@ -11,7 +11,7 @@
 // Basic sanity tests for the beta Distribution.
 
 // http://members.aol.com/iandjmsmith/BETAEX.HTM  beta distribution calculator
-// Appreas to be a 64-bit calculator showing 17 decimal digit (last is noisy).
+// Appears to be a 64-bit calculator showing 17 decimal digit (last is noisy).
 // Similar to mathCAD?
 
 // http://www.nuhertz.com/statmat/distributions.html#Beta
@@ -42,7 +42,7 @@ using boost::math::beta;
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp> // for test_main
-#include <boost/test/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE_FRACTION
+#include <boost/test/tools/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE_FRACTION
 
 #include "test_out_of_range.hpp"
 
@@ -197,11 +197,11 @@ void test_spots(RealType)
   BOOST_CHECK_EQUAL( // a = b = 1 is uniform distribution.
      pdf(beta_distribution<RealType>(static_cast<RealType>(1), static_cast<RealType>(1)),
      static_cast<RealType>(1)),  // x
-     static_cast<RealType>(1));
+     static_cast<RealType>(0));
   BOOST_CHECK_EQUAL(
      pdf(beta_distribution<RealType>(static_cast<RealType>(1), static_cast<RealType>(1)),
      static_cast<RealType>(0)),  // x
-     static_cast<RealType>(1));
+     static_cast<RealType>(0));
   BOOST_CHECK_CLOSE_FRACTION(
      pdf(beta_distribution<RealType>(static_cast<RealType>(1), static_cast<RealType>(1)),
      static_cast<RealType>(0.5)),  // x
@@ -561,8 +561,8 @@ BOOST_AUTO_TEST_CASE( test_main )
    beta_distribution<> mybetaH3(0.5, 3.); //
 
    // Check a few values using double.
-   BOOST_CHECK_EQUAL(pdf(mybeta11, 1), 1); // is uniform unity over 0 to 1,
-   BOOST_CHECK_EQUAL(pdf(mybeta11, 0), 1); // including zero and unity.
+   BOOST_CHECK_EQUAL(pdf(mybeta11, 1), 0);   // is uniform unity over (0, 1) 
+   BOOST_CHECK_EQUAL(pdf(mybeta11, 0), 0);   // https://www.wolframalpha.com/input/?i=beta+distribution+pdf+alpha+%3D+1%2C+beta+%3D+1
    // Although these next three have an exact result, internally they're
    // *not* treated as special cases, and may be out by a couple of eps:
    BOOST_CHECK_CLOSE_FRACTION(pdf(mybeta11, 0.5), 1.0, 5*std::numeric_limits<double>::epsilon());
@@ -627,7 +627,7 @@ BOOST_AUTO_TEST_CASE( test_main )
    test_spots(0.0); // Test double.
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
    test_spots(0.0L); // Test long double.
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
    test_spots(boost::math::concepts::real_concept(0.)); // Test real concept.
 #endif
 #endif

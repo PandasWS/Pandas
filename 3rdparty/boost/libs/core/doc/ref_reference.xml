@@ -32,6 +32,13 @@
 <constructor cv="= delete"><parameter name="t"><paramtype>T &amp;&amp;</paramtype></parameter><description><para><para>Construction from a temporary object is disabled. </para>
 
 </para></description></constructor>
+<constructor><template>
+          <template-type-parameter name="Y"/>
+        </template><parameter name="r"><paramtype><classname>reference_wrapper</classname>&lt; Y &gt;</paramtype></parameter><parameter name=""><paramtype><emphasis>unspecified</emphasis></paramtype><default><emphasis>unspecified</emphasis></default></parameter><description><para>Constructs a <computeroutput><classname alt="boost::reference_wrapper">reference_wrapper</classname></computeroutput> object that stores the reference stored in the compatible <computeroutput><classname alt="boost::reference_wrapper">reference_wrapper</classname></computeroutput> <computeroutput>r</computeroutput>.</para><para><para>Only enabled when <computeroutput>Y*</computeroutput> is convertible to <computeroutput>T*</computeroutput>. </para>
+
+<para>Does not throw. </para>
+
+</para></description></constructor>
 </class><struct name="unwrap_reference"><template>
       <template-type-parameter name="T"/>
     </template><purpose>Find the type in a <computeroutput><classname alt="boost::reference_wrapper">reference_wrapper</classname></computeroutput>. </purpose><description><para>The <computeroutput>typedef</computeroutput> type is <computeroutput>T::type</computeroutput> if <computeroutput>T</computeroutput> is a <computeroutput><classname alt="boost::reference_wrapper">reference_wrapper</classname></computeroutput>, <computeroutput>T</computeroutput> otherwise. </para></description><typedef name="type"><type>T</type></typedef>

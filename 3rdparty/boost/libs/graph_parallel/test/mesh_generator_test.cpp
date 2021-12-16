@@ -11,7 +11,7 @@
 #include <boost/config.hpp>
 #include <boost/throw_exception.hpp>
 #include <boost/graph/mesh_graph_generator.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/graph/distributed/adjacency_list.hpp>
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include <boost/graph/distributed/graphviz.hpp>
@@ -20,7 +20,7 @@
 #include <sstream>
 #include <iomanip>
 #include <string>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #ifdef BOOST_NO_EXCEPTIONS
 void
@@ -97,7 +97,7 @@ template<typename F>
 inline generator_iterator<F> make_generator_iterator(const F& f)
 { return generator_iterator<F>(f); }
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   mpi::environment env(argc, argv);
 
@@ -129,5 +129,5 @@ int test_main(int argc, char* argv[])
   if ( emit_dot_file )
     write_graphviz("mesh.dot", g);
 
-  return 0;
+  return boost::report_errors();
 }

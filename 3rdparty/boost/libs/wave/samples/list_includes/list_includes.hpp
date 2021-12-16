@@ -11,12 +11,12 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(LIST_INCLUDES_HPP_843DB412_3AA8_4BCF_8081_AA4A5FDE0BE7_INCLUDED)
-#define LIST_INCLUDES_HPP_843DB412_3AA8_4BCF_8081_AA4A5FDE0BE7_INCLUDED
+#if !defined(BOOST_LIST_INCLUDES_HPP_843DB412_3AA8_4BCF_8081_AA4A5FDE0BE7_INCLUDED)
+#define BOOST_LIST_INCLUDES_HPP_843DB412_3AA8_4BCF_8081_AA4A5FDE0BE7_INCLUDED
 
 ///////////////////////////////////////////////////////////////////////////////
 //  include often used files from the stdlib
-#include <iostream>
+#include <iosfwd>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -39,4 +39,4 @@
 #include <boost/assert.hpp>
 #include <boost/pool/pool_alloc.hpp>
 
-#endif // !defined(LIST_INCLUDES_HPP_843DB412_3AA8_4BCF_8081_AA4A5FDE0BE7_INCLUDED)
+#endif // !defined(BOOST_LIST_INCLUDES_HPP_843DB412_3AA8_4BCF_8081_AA4A5FDE0BE7_INCLUDED)

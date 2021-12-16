@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <exception>
+#include <boost/math/tools/assert.hpp>
 
 int main()
 {
@@ -61,9 +62,9 @@ int main()
 //[arcsine_snip_8
   using boost::math::arcsine_distribution;
 
-  arcsine_distribution<> as(2, 5); // Cconstructs a double arcsine distribution.
-  assert(as.x_min() == 2.);  // as.x_min() returns 2.
-  assert(as.x_max() == 5.);   // as.x_max()  returns 5.
+  arcsine_distribution<> as(2, 5); // Constructs a double arcsine distribution.
+  BOOST_MATH_ASSERT(as.x_min() == 2.);  // as.x_min() returns 2.
+  BOOST_MATH_ASSERT(as.x_max() == 5.);   // as.x_max()  returns 5.
 //] [/arcsine_snip_8]
 }
     return 0;

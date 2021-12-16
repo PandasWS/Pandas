@@ -19,7 +19,7 @@
 Construct a geometry. 
 
 [heading Synopsis]
-``template<typename Geometry, typename Type>
+``template<typename Geometry, typename Type, std::enable_if_t<! traits::make< Geometry >::is_specialized, int >>
 Geometry make(Type const & c1, Type const & c2)``
 
 [heading Parameters]
@@ -27,6 +27,7 @@ Geometry make(Type const & c1, Type const & c2)``
 [table
 [[Type] [Concept] [Name] [Description] ]
 [[Geometry] [Any type fulfilling a Geometry Concept ] [ - ] [Must be specified]]
+[[std::enable_if_t<! traits::make< Geometry >::is_specialized, int >] [] [ - ] [Must be specified]]
 [[Type const &] [numerical type (int, double, ttmath, ...) to specify the coordinates ] [c1] [First coordinate (usually x-coordinate) ]]
 [[Type const &] [numerical type (int, double, ttmath, ...) to specify the coordinates ] [c2] [Second coordinate (usually y-coordinate) ]]
 ]
@@ -60,7 +61,7 @@ Or
 Construct a geometry. 
 
 [heading Synopsis]
-``template<typename Geometry, typename Type>
+``template<typename Geometry, typename Type, std::enable_if_t<! traits::make< Geometry >::is_specialized, int >>
 Geometry make(Type const & c1, Type const & c2, Type const & c3)``
 
 [heading Parameters]
@@ -68,6 +69,7 @@ Geometry make(Type const & c1, Type const & c2, Type const & c3)``
 [table
 [[Type] [Concept] [Name] [Description] ]
 [[Geometry] [Any type fulfilling a Geometry Concept ] [ - ] [Must be specified]]
+[[std::enable_if_t<! traits::make< Geometry >::is_specialized, int >] [] [ - ] [Must be specified]]
 [[Type const &] [numerical type (int, double, ttmath, ...) to specify the coordinates ] [c1] [First coordinate (usually x-coordinate) ]]
 [[Type const &] [numerical type (int, double, ttmath, ...) to specify the coordinates ] [c2] [Second coordinate (usually y-coordinate) ]]
 [[Type const &] [numerical type (int, double, ttmath, ...) to specify the coordinates ] [c3] [Third coordinate (usually z-coordinate) ]]

@@ -18,27 +18,27 @@
 	<a href="../reference/functions/hooks/spare_storage.html" ><code>uint16_t spare_storage(const basic_result|basic_outcome *) noexcept</code></a>
 <p>Returns the sixteen bits of spare storage in the specified result or outcome.</p><li>
 	<a href="../reference/functions/hooks/hook_outcome_construction.html" ><code>void hook_outcome_construction(T *, U &amp;&amp;) noexcept</code></a>
-<p>ADL discovered free function hook invoked by the implicit constructors of <code>basic_outcome</code>.</p><li>
+<p>(Until v2.2.0) ADL discovered free function hook invoked by the implicit constructors of <code>basic_outcome</code>.</p><li>
 	<a href="../reference/functions/hooks/hook_outcome_construction2.html" ><code>void hook_outcome_construction(T *, U &amp;&amp;, V &amp;&amp;) noexcept</code></a>
-<p>ADL discovered free function hook invoked by the implicit constructors of <code>basic_outcome</code>.</p><li>
+<p>(Until v2.2.0) ADL discovered free function hook invoked by the implicit constructors of <code>basic_outcome</code>.</p><li>
 	<a href="../reference/functions/hooks/hook_outcome_copy_construction.html" ><code>void hook_outcome_copy_construction(T *, U &amp;&amp;) noexcept</code></a>
-<p>ADL discovered free function hook invoked by the converting copy constructors of <code>basic_outcome</code>.</p><li>
+<p>(Until v2.2.0) ADL discovered free function hook invoked by the converting copy constructors of <code>basic_outcome</code>.</p><li>
 	<a href="../reference/functions/hooks/hook_outcome_copy_construction2.html" ><code>void hook_outcome_copy_construction(T *, U &amp;&amp;, V &amp;&amp;) noexcept</code></a>
-<p>ADL discovered free function hook invoked by the converting copy constructors of <code>basic_outcome</code>.</p><li>
+<p>(Until v2.2.0) ADL discovered free function hook invoked by the converting copy constructors of <code>basic_outcome</code>.</p><li>
 	<a href="../reference/functions/hooks/hook_outcome_in_place_construction.html" ><code>void hook_outcome_in_place_construction(T *, in_place_type_t&lt;U&gt;, Args &amp;&amp;...) noexcept</code></a>
-<p>ADL discovered free function hook invoked by the in-place constructors of <code>basic_outcome</code>.</p><li>
+<p>(Until v2.2.0) ADL discovered free function hook invoked by the in-place constructors of <code>basic_outcome</code>.</p><li>
 	<a href="../reference/functions/hooks/hook_outcome_move_construction.html" ><code>void hook_outcome_move_construction(T *, U &amp;&amp;) noexcept</code></a>
-<p>ADL discovered free function hook invoked by the converting move constructors of <code>basic_outcome</code>.</p><li>
+<p>(Until v2.2.0) ADL discovered free function hook invoked by the converting move constructors of <code>basic_outcome</code>.</p><li>
 	<a href="../reference/functions/hooks/hook_outcome_move_construction2.html" ><code>void hook_outcome_move_construction(T *, U &amp;&amp;, V &amp;&amp;) noexcept</code></a>
-<p>ADL discovered free function hook invoked by the converting move constructors of <code>basic_outcome</code>.</p><li>
+<p>(Until v2.2.0) ADL discovered free function hook invoked by the converting move constructors of <code>basic_outcome</code>.</p><li>
 	<a href="../reference/functions/hooks/hook_result_construction.html" ><code>void hook_result_construction(T *, U &amp;&amp;) noexcept</code></a>
-<p>ADL discovered free function hook invoked by the implicit constructors of <code>basic_result</code>.</p><li>
+<p>(Until v2.2.0) ADL discovered free function hook invoked by the implicit constructors of <code>basic_result</code>.</p><li>
 	<a href="../reference/functions/hooks/hook_result_copy_construction.html" ><code>void hook_result_copy_construction(T *, U &amp;&amp;) noexcept</code></a>
-<p>ADL discovered free function hook invoked by the converting copy constructors of <code>basic_result</code>.</p><li>
+<p>(Until v2.2.0) ADL discovered free function hook invoked by the converting copy constructors of <code>basic_result</code>.</p><li>
 	<a href="../reference/functions/hooks/hook_result_in_place_construction.html" ><code>void hook_result_in_place_construction(T *, in_place_type_t&lt;U&gt;, Args &amp;&amp;...) noexcept</code></a>
-<p>ADL discovered free function hook invoked by the in-place constructors of <code>basic_result</code>.</p><li>
+<p>(Until v2.2.0) ADL discovered free function hook invoked by the in-place constructors of <code>basic_result</code>.</p><li>
 	<a href="../reference/functions/hooks/hook_result_move_construction.html" ><code>void hook_result_move_construction(T *, U &amp;&amp;) noexcept</code></a>
-<p>ADL discovered free function hook invoked by the converting move constructors of <code>basic_result</code>.</p><li>
+<p>(Until v2.2.0) ADL discovered free function hook invoked by the converting move constructors of <code>basic_result</code>.</p><li>
 	<a href="../reference/functions/hooks/override_outcome_exception.html" ><code>void override_outcome_exception(basic_outcome&lt;T, EC, EP, NoValuePolicy&gt; *, U &amp;&amp;) noexcept</code></a>
 <p>Overrides the exception to something other than what was constructed.</p><li>
 	<a href="../reference/functions/hooks/set_spare_storage.html" ><code>void set_spare_storage(basic_result|basic_outcome *, uint16_t) noexcept</code></a>
@@ -66,7 +66,7 @@
 	<a href="../reference/functions/policy/exception_ptr.html" ><code>decltype(auto) exception_ptr(T &amp;&amp;)</code></a>
 <p>Extracts a <code>boost::exception_ptr</code> or <code>std::exception_ptr</code> from the input via ADL discovery of a suitable <code>make_exception_ptr(T)</code> function.</p><li>
 	<a href="../reference/functions/policy/outcome_throw_as_system_error_with_payload_boost_enum.html" ><code>void outcome_throw_as_system_error_with_payload(BoostErrorCodeEnum &amp;&amp;)</code></a>
-<p>Specialisation of <code>outcome_throw_as_system_error_with_payload()</code> for input types where <code>boost::system::errc::is_error_code_enum&lt;BoostErrorCodeEnum&gt;</code> or <code>boost::system::errc::is_error_condition_enum&lt;BoostErrorCodeEnum&gt;</code> is true.</p><li>
+<p>Specialisation of <code>outcome_throw_as_system_error_with_payload()</code> for input types where <code>boost::system::is_error_code_enum&lt;BoostErrorCodeEnum&gt;</code> or <code>boost::system::is_error_condition_enum&lt;BoostErrorCodeEnum&gt;</code> is true.</p><li>
 	<a href="../reference/functions/policy/outcome_throw_as_system_error_with_payload_std_enum.html" ><code>void outcome_throw_as_system_error_with_payload(ErrorCodeEnum &amp;&amp;)</code></a>
 <p>Specialisation of <code>outcome_throw_as_system_error_with_payload()</code> for input types where <code>std::is_error_code_enum&lt;ErrorCodeEnum&gt;</code> or <code>std::is_error_condition_enum&lt;ErrorCodeEnum&gt;</code> is true.</p><li>
 	<a href="../reference/functions/policy/outcome_throw_as_system_error_with_payload_boost_error_code.html" ><code>void outcome_throw_as_system_error_with_payload(const boost::system::error_code &amp;)</code></a>
@@ -75,7 +75,7 @@
 <p>Specialisation of <code>outcome_throw_as_system_error_with_payload()</code> for <code>std::error_code</code>.</p></li></ol><li>
 	<a href="../reference/functions/failure.html" ><code>auto failure(T &amp;&amp;, ...)</code></a>
 <p>Returns appropriate type sugar for constructing an unsuccessful result or outcome.</p><li>
-	<a href="../reference/functions/success.html" ><code>auto success(T &amp;&amp;)</code></a>
+	<a href="../reference/functions/success.html" ><code>auto success(T &amp;&amp;, ...)</code></a>
 <p>Returns appropriate type sugar for constructing a successful result or outcome.</p><li>
 	<a href="../reference/functions/try_operation_has_value.html" ><code>bool try_operation_has_value(X)</code></a>
 <p>Default implementation of <code>try_operation_has_value(X)</code> ADL customisation point for <code>BOOST_OUTCOME_TRY</code>.</p><li>

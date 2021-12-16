@@ -8,9 +8,11 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/config.hpp>
+
+using namespace boost::placeholders;
 
 #if defined(BOOST_NO_CXX11_NOEXCEPT)
 

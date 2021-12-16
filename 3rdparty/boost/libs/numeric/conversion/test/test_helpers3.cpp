@@ -69,51 +69,22 @@ void test_conv_base( Instance const& conv )
   {
     result_type result = converter::convert(source);
 
-    if ( conv.post == c_converted )
+    if (BOOST_TEST_EQ(conv.post, c_converted))
     {
-      BOOST_CHECK_MESSAGE( result == conv.result,
-                           conv.to_string() <<  printable(source) << ")= " << printable(result) << ". Expected:" << printable(conv.result)
-                         ) ;
-    }
-    else
-    {
-      BOOST_ERROR( conv.to_string() << printable(source) << ") = " << printable(result)
-                   << ". Expected:" << ( conv.post == c_neg_overflow ? " negative_overflow" : "positive_overflow" )
-                 ) ;
+      BOOST_TEST_EQ(result, conv.result);
     }
   }
   catch ( boost::numeric::negative_overflow const& )
-  {
-    if ( conv.post == c_neg_overflow )
-    {
-      BOOST_CHECK_MESSAGE( true, conv.to_string() << printable(source) << ") = negative_overflow, as expected" ) ;
-    }
-    else
-    {
-      BOOST_ERROR( conv.to_string() << printable(source) << ") = negative_overflow. Expected:" <<  printable(conv.result) ) ;
-    }
+  { 
+    BOOST_TEST_EQ(conv.post, c_neg_overflow);
   }
   catch ( boost::numeric::positive_overflow const& )
   {
-    if ( conv.post == c_pos_overflow )
-    {
-      BOOST_CHECK_MESSAGE( true, conv.to_string() << printable(source) << ") = positive_overflow, as expected" ) ;
-    }
-    else
-    {
-      BOOST_ERROR( conv.to_string() << printable(source) << ") = positive_overflow. Expected:" <<  printable(conv.result) ) ;
-    }
+    BOOST_TEST_EQ(conv.post, c_pos_overflow);
   }
   catch ( boost::numeric::bad_numeric_cast const& )
   {
-    if ( conv.post == c_overflow )
-    {
-      BOOST_CHECK_MESSAGE( true, conv.to_string() << printable(source) << ") = bad_numeric_cast, as expected" ) ;
-    }
-    else
-    {
-      BOOST_ERROR( conv.to_string() << printable(source) << ") = bad_numeric_cast. Expected:" <<  printable(conv.result) ) ;
-    }
+    BOOST_TEST_EQ(conv.post, c_overflow);
   }
 }
 

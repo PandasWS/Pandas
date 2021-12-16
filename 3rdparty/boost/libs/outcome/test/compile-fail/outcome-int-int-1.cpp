@@ -22,12 +22,13 @@ Distributed under the Boost Software License, Version 1.0.
 http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include "../../include/boost/outcome/outcome.hpp"
+#include "../../include/boost/outcome.hpp"
 
 int main()
 {
   using namespace BOOST_OUTCOME_V2_NAMESPACE;
   // Must not be possible to initialise an outcome with same R, S and P types
   outcome<int, int, int> m(5);
+  (void) m;
   return 0;
 }

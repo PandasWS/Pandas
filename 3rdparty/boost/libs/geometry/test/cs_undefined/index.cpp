@@ -1,6 +1,6 @@
 // Boost.Geometry
 
-// Copyright (c) 2019, Oracle and/or its affiliates.
+// Copyright (c) 2019-2021, Oracle and/or its affiliates.
 
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
@@ -11,12 +11,17 @@
 
 // These includes are required for the following code to compile.
 // This is probably wrong.
+#include <boost/geometry/algorithms/comparable_distance.hpp>
 #include <boost/geometry/algorithms/covered_by.hpp>
 #include <boost/geometry/algorithms/disjoint.hpp>
 #include <boost/geometry/algorithms/equals.hpp>
 #include <boost/geometry/algorithms/intersects.hpp>
 
 #include <boost/geometry/index/rtree.hpp>
+
+#include <boost/geometry/strategies/index/cartesian.hpp>
+#include <boost/geometry/strategies/index/geographic.hpp>
+#include <boost/geometry/strategies/index/spherical.hpp>
 
 #include <vector>
 
@@ -67,35 +72,35 @@ int test_main(int, char*[])
 {
     geom g;
 
-    rtree_test(g.pt, bgi::parameters<bgi::linear<4>, bg::strategy::index::cartesian<> >());
-    rtree_test(g.pt, bgi::parameters<bgi::quadratic<4>, bg::strategy::index::cartesian<> >());
-    rtree_test(g.pt, bgi::parameters<bgi::rstar<4>, bg::strategy::index::cartesian<> >());
-    rtree_test(g.b, bgi::parameters<bgi::linear<4>, bg::strategy::index::cartesian<> >());
-    rtree_test(g.b, bgi::parameters<bgi::quadratic<4>, bg::strategy::index::cartesian<> >());
-    rtree_test(g.b, bgi::parameters<bgi::rstar<4>, bg::strategy::index::cartesian<> >());
-    rtree_test(g.s, bgi::parameters<bgi::linear<4>, bg::strategy::index::cartesian<> >());
-    rtree_test(g.s, bgi::parameters<bgi::quadratic<4>, bg::strategy::index::cartesian<> >());
-    rtree_test(g.s, bgi::parameters<bgi::rstar<4>, bg::strategy::index::cartesian<> >());
+    rtree_test(g.pt, bgi::parameters<bgi::linear<4>, bg::strategies::index::cartesian<> >());
+    rtree_test(g.pt, bgi::parameters<bgi::quadratic<4>, bg::strategies::index::cartesian<> >());
+    rtree_test(g.pt, bgi::parameters<bgi::rstar<4>, bg::strategies::index::cartesian<> >());
+    rtree_test(g.b, bgi::parameters<bgi::linear<4>, bg::strategies::index::cartesian<> >());
+    rtree_test(g.b, bgi::parameters<bgi::quadratic<4>, bg::strategies::index::cartesian<> >());
+    rtree_test(g.b, bgi::parameters<bgi::rstar<4>, bg::strategies::index::cartesian<> >());
+    rtree_test(g.s, bgi::parameters<bgi::linear<4>, bg::strategies::index::cartesian<> >());
+    rtree_test(g.s, bgi::parameters<bgi::quadratic<4>, bg::strategies::index::cartesian<> >());
+    rtree_test(g.s, bgi::parameters<bgi::rstar<4>, bg::strategies::index::cartesian<> >());
 
-    rtree_test(g.pt, bgi::parameters<bgi::linear<4>, bg::strategy::index::spherical<> >());
-    rtree_test(g.pt, bgi::parameters<bgi::quadratic<4>, bg::strategy::index::spherical<> >());
-    rtree_test(g.pt, bgi::parameters<bgi::rstar<4>, bg::strategy::index::spherical<> >());
-    rtree_test(g.b, bgi::parameters<bgi::linear<4>, bg::strategy::index::spherical<> >());
-    rtree_test(g.b, bgi::parameters<bgi::quadratic<4>, bg::strategy::index::spherical<> >());
-    rtree_test(g.b, bgi::parameters<bgi::rstar<4>, bg::strategy::index::spherical<> >());
-    rtree_test(g.s, bgi::parameters<bgi::linear<4>, bg::strategy::index::spherical<> >());
-    rtree_test(g.s, bgi::parameters<bgi::quadratic<4>, bg::strategy::index::spherical<> >());
-    rtree_test(g.s, bgi::parameters<bgi::rstar<4>, bg::strategy::index::spherical<> >());
+    rtree_test(g.pt, bgi::parameters<bgi::linear<4>, bg::strategies::index::spherical<> >());
+    rtree_test(g.pt, bgi::parameters<bgi::quadratic<4>, bg::strategies::index::spherical<> >());
+    rtree_test(g.pt, bgi::parameters<bgi::rstar<4>, bg::strategies::index::spherical<> >());
+    rtree_test(g.b, bgi::parameters<bgi::linear<4>, bg::strategies::index::spherical<> >());
+    rtree_test(g.b, bgi::parameters<bgi::quadratic<4>, bg::strategies::index::spherical<> >());
+    rtree_test(g.b, bgi::parameters<bgi::rstar<4>, bg::strategies::index::spherical<> >());
+    rtree_test(g.s, bgi::parameters<bgi::linear<4>, bg::strategies::index::spherical<> >());
+    rtree_test(g.s, bgi::parameters<bgi::quadratic<4>, bg::strategies::index::spherical<> >());
+    rtree_test(g.s, bgi::parameters<bgi::rstar<4>, bg::strategies::index::spherical<> >());
 
-    rtree_test(g.pt, bgi::parameters<bgi::linear<4>, bg::strategy::index::geographic<> >());
-    rtree_test(g.pt, bgi::parameters<bgi::quadratic<4>, bg::strategy::index::geographic<> >());
-    rtree_test(g.pt, bgi::parameters<bgi::rstar<4>, bg::strategy::index::geographic<> >());
-    rtree_test(g.b, bgi::parameters<bgi::linear<4>, bg::strategy::index::geographic<> >());
-    rtree_test(g.b, bgi::parameters<bgi::quadratic<4>, bg::strategy::index::geographic<> >());
-    rtree_test(g.b, bgi::parameters<bgi::rstar<4>, bg::strategy::index::geographic<> >());
-    rtree_test(g.s, bgi::parameters<bgi::linear<4>, bg::strategy::index::geographic<> >());
-    rtree_test(g.s, bgi::parameters<bgi::quadratic<4>, bg::strategy::index::geographic<> >());
-    rtree_test(g.s, bgi::parameters<bgi::rstar<4>, bg::strategy::index::geographic<> >());
+    rtree_test(g.pt, bgi::parameters<bgi::linear<4>, bg::strategies::index::geographic<> >());
+    rtree_test(g.pt, bgi::parameters<bgi::quadratic<4>, bg::strategies::index::geographic<> >());
+    rtree_test(g.pt, bgi::parameters<bgi::rstar<4>, bg::strategies::index::geographic<> >());
+    rtree_test(g.b, bgi::parameters<bgi::linear<4>, bg::strategies::index::geographic<> >());
+    rtree_test(g.b, bgi::parameters<bgi::quadratic<4>, bg::strategies::index::geographic<> >());
+    rtree_test(g.b, bgi::parameters<bgi::rstar<4>, bg::strategies::index::geographic<> >());
+    rtree_test(g.s, bgi::parameters<bgi::linear<4>, bg::strategies::index::geographic<> >());
+    rtree_test(g.s, bgi::parameters<bgi::quadratic<4>, bg::strategies::index::geographic<> >());
+    rtree_test(g.s, bgi::parameters<bgi::rstar<4>, bg::strategies::index::geographic<> >());
 
     return 0;
 }

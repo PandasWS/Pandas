@@ -21,7 +21,7 @@ int main()
 
     boost::function_requires< boost_concepts::ReadableIteratorConcept<iter> >();
     boost::function_requires< boost_concepts::RandomAccessTraversalConcept<iter> >();
-  } 
+  }
   {
     typedef boost::iterator_archetype<
         int
@@ -32,7 +32,7 @@ int main()
     boost::function_requires< boost_concepts::ReadableIteratorConcept<iter> >();
     boost::function_requires< boost_concepts::WritableIteratorConcept<iter> >();
     boost::function_requires< boost_concepts::RandomAccessTraversalConcept<iter> >();
-  } 
+  }
   {
     typedef boost::iterator_archetype<
         const int // I don't like adding const to Value. It is redundant. -JGS
@@ -43,7 +43,7 @@ int main()
     boost::function_requires< boost_concepts::ReadableIteratorConcept<iter> >();
     boost::function_requires< boost_concepts::LvalueIteratorConcept<iter> >();
     boost::function_requires< boost_concepts::RandomAccessTraversalConcept<iter> >();
-  } 
+  }
   {
     typedef boost::iterator_archetype<
         int
@@ -54,7 +54,7 @@ int main()
     boost::function_requires< boost_concepts::WritableIteratorConcept<iter> >();
     boost::function_requires< boost_concepts::LvalueIteratorConcept<iter> >();
     boost::function_requires< boost_concepts::RandomAccessTraversalConcept<iter> >();
-  } 
+  }
 
   return boost::exit_success;
 }

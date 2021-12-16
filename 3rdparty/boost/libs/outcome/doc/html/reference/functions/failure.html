@@ -14,7 +14,7 @@
   <p>Returns appropriate type sugar for constructing an unsuccessful result or outcome, usually <a href="../../reference/types/failure_type.html" class="api-reference"><code>failure_type&lt;EC, EP = void&gt;</code></a>
  with a decayed <code>T</code>.</p>
 
-<p>Two default overloads are provided, one taking a single parameter returning <code>failure_type&lt;std::decay_t&lt;T&gt;&gt;</code>, the other taking two parameters returning <code>failure_type&lt;std::decay_t&lt;T&gt;, std::decay_t&lt;U&gt;&gt;</code>. Both overloads perfectly forward their inputs.</p>
+<p>Two default overloads are provided, one taking a single required parameter with optional spare storage value parameter returning <code>failure_type&lt;std::decay_t&lt;T&gt;&gt;</code>, the other taking two required parameters with optional spare storage value parameter returning <code>failure_type&lt;std::decay_t&lt;T&gt;, std::decay_t&lt;U&gt;&gt;</code>. Both overloads perfectly forward their inputs.</p>
 
 <p>Note that <code>failure()</code> overloads are permitted by Outcome to return something other than <code>failure_type</code>. For example, <code>basic_result</code>&rsquo;s <a href="../../reference/types/basic_result/as_failure_lvalue.html" class="api-reference"><code>auto as_failure() const &amp;</code></a>
  returns whatever type <code>failure()</code> returns, and <a href="../../reference/macros/try.html" class="api-reference"><code>BOOST_OUTCOME_TRY(var, expr)</code></a>
@@ -29,7 +29,7 @@
 <p><em>Header</em>: <code>&lt;boost/outcome/success_failure.hpp&gt;</code></p>
 
 
-        </div><p><small>Last revised: February 01, 2019 at 23:42:52 UTC</small></p>
+        </div><p><small>Last revised: February 23, 2021 at 17:37:27 UTC</small></p>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="../../reference/functions/policy/outcome_throw_as_system_error_with_payload_std_error_code.html"><img src="../../images/prev.png" alt="Prev"></a>

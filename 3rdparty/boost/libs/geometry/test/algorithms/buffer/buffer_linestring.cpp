@@ -3,8 +3,8 @@
 
 // Copyright (c) 2012-2019 Barend Gehrels, Amsterdam, the Netherlands.
 
-// This file was modified by Oracle on 2016.
-// Modifications copyright (c) 2016, Oracle and/or its affiliates.
+// This file was modified by Oracle on 2016-2021.
+// Modifications copyright (c) 2016-2021, Oracle and/or its affiliates.
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Use, modification and distribution is subject to the Boost Software License,
@@ -107,12 +107,14 @@ static std::string const mysql_25662426 = "LINESTRING(170 4756, 168 4756, 168 47
 static std::string const mysql_25662426a = "LINESTRING(170 4756, 168 4756, 168 4759, 168 4764, 171 4764, 171 4750)";
 
 static std::string const issue_596 = "LINESTRING(292979.660 6688731.370, 292979.600 6688733.420, 292979.540 6688735.440, 292979.540 6688735.500)";
+static std::string const issue_803 = "LINESTRING(2773.6899360413681 -17.493356405074767,2767.9084041267429 -9.0288291122330797,2765.7403296587586 -1.6929054585683376,2765.3273630934282 6.6613381477509392e-16,2762.8495637014462 10.157432751410026,2759.9587977441333 24.829280059133669,2756.3453402974928 38.372523727680374,2752.0091913615238 45.708447381345117)";
 
 template <bool Clockwise, typename P>
 void test_all()
 {
     typedef bg::model::linestring<P> linestring;
     typedef bg::model::polygon<P, Clockwise> polygon;
+    typedef typename bg::coordinate_type<P>::type coor_type;
 
     bg::strategy::buffer::join_miter join_miter;
     bg::strategy::buffer::join_round join_round(100);
@@ -123,6 +125,11 @@ void test_all()
     // For testing MySQL issues, which uses 32 by default
     bg::strategy::buffer::end_round end_round32(32);
     bg::strategy::buffer::join_round join_round32(32);
+
+    ut_settings const settings;
+    ut_settings const specific_settings
+            = BOOST_GEOMETRY_CONDITION((std::is_same<coor_type, long double>::value))
+              ? ut_settings(0.02) : settings;
 
     // Simplex (join-type is not relevant)
     test_one<linestring, polygon>("simplex", simplex, join_miter, end_flat, 19.209, 1.5);
@@ -136,23 +143,23 @@ void test_all()
     test_one<linestring, polygon>("simplex_vertical32", simplex_vertical, join_round32, end_round32, 5.12145, 1);
     test_one<linestring, polygon>("simplex_horizontal32", simplex_horizontal, join_round32, end_round32, 5.12145, 1);
 
-    test_one<linestring, polygon>("simplex_asym_neg", simplex, join_miter, end_flat, 3.202, +1.5, ut_settings(), -1.0);
-    test_one<linestring, polygon>("simplex_asym_pos", simplex, join_miter, end_flat, 3.202, -1.0, ut_settings(), +1.5);
+    test_one<linestring, polygon>("simplex_asym_neg", simplex, join_miter, end_flat, 3.2016, +1.5, settings, -1.0);
+    test_one<linestring, polygon>("simplex_asym_pos", simplex, join_miter, end_flat, 3.2016, -1.0, settings, +1.5);
     // Do not work yet:
-    //    test_one<linestring, polygon>("simplex_asym_neg", simplex, join_miter, end_round, 3.202, +1.5, ut_settings(), -1.0);
-    //    test_one<linestring, polygon>("simplex_asym_pos", simplex, join_miter, end_round, 3.202, -1.0, ut_settings(), +1.5);
+    //    test_one<linestring, polygon>("simplex_asym_neg", simplex, join_miter, end_round, 3.202, +1.5, settings, -1.0);
+    //    test_one<linestring, polygon>("simplex_asym_pos", simplex, join_miter, end_round, 3.202, -1.0, settings, +1.5);
 
     // Generates (initially) a reversed polygon, with a negative area, which is reversed afterwards in assign_parents
-    test_one<linestring, polygon>("simplex_asym_neg_rev", simplex, join_miter, end_flat, 3.202, +1.0, ut_settings(), -1.5);
-    test_one<linestring, polygon>("simplex_asym_pos_rev", simplex, join_miter, end_flat, 3.202, -1.5, ut_settings(), +1.0);
+    test_one<linestring, polygon>("simplex_asym_neg_rev", simplex, join_miter, end_flat, 3.2016, +1.0, settings, -1.5);
+    test_one<linestring, polygon>("simplex_asym_pos_rev", simplex, join_miter, end_flat, 3.2016, -1.5, settings, +1.0);
 
     test_one<linestring, polygon>("straight", straight, join_round, end_flat, 38.4187, 1.5);
     test_one<linestring, polygon>("straight", straight, join_miter, end_flat, 38.4187, 1.5);
 
     // One bend/two bends (tests join-type)
-    test_one<linestring, polygon>("one_bend", one_bend, join_round, end_flat, 28.488, 1.5);
+    test_one<linestring, polygon>("one_bend", one_bend, join_round, end_flat, 28.496, 1.5);
     test_one<linestring, polygon>("one_bend", one_bend, join_miter, end_flat, 28.696, 1.5);
-    test_one<linestring, polygon>("one_bend", one_bend, join_round_by_divide, end_flat, 28.488, 1.5);
+    test_one<linestring, polygon>("one_bend", one_bend, join_round_by_divide, end_flat, 28.497, 1.5);
 
     test_one<linestring, polygon>("one_bend", one_bend, join_round, end_round, 35.5603, 1.5);
     test_one<linestring, polygon>("one_bend", one_bend, join_miter, end_round, 35.7601, 1.5);
@@ -161,30 +168,30 @@ void test_all()
     test_one<linestring, polygon>("two_bends", two_bends, join_round, end_flat, 39.235, 1.5);
     test_one<linestring, polygon>("two_bends", two_bends, join_round_by_divide, end_flat, 39.235, 1.5);
     test_one<linestring, polygon>("two_bends", two_bends, join_miter, end_flat, 39.513, 1.5);
-    test_one<linestring, polygon>("two_bends_left", two_bends, join_round, end_flat, 20.028, 1.5, ut_settings(), 0.0);
-    test_one<linestring, polygon>("two_bends_left", two_bends, join_miter, end_flat, 20.225, 1.5, ut_settings(), 0.0);
-    test_one<linestring, polygon>("two_bends_right", two_bends, join_round, end_flat, 19.211, 0.0, ut_settings(), 1.5);
-    test_one<linestring, polygon>("two_bends_right", two_bends, join_miter, end_flat, 19.288, 0.0, ut_settings(), 1.5);
+    test_one<linestring, polygon>("two_bends_left", two_bends, join_round, end_flat, 20.025, 1.5, settings, 0.0);
+    test_one<linestring, polygon>("two_bends_left", two_bends, join_miter, end_flat, 20.225, 1.5, settings, 0.0);
+    test_one<linestring, polygon>("two_bends_right", two_bends, join_round, end_flat, 19.211, 0.0, settings, 1.5);
+    test_one<linestring, polygon>("two_bends_right", two_bends, join_miter, end_flat, 19.288, 0.0, settings, 1.5);
 
     test_one<linestring, polygon>("bend_near_start1", bend_near_start1, join_round, end_flat, 109.2625, 9.0);
     test_one<linestring, polygon>("bend_near_start2", bend_near_start2, join_round, end_flat, 142.8709, 9.0);
 
     // Next (and all similar cases) which a offsetted-one-sided buffer has to be fixed. TODO
-    //test_one<linestring, polygon>("two_bends_neg", two_bends, join_miter, end_flat, 99, +1.5, ut_settings(), -1.0);
-    //test_one<linestring, polygon>("two_bends_pos", two_bends, join_miter, end_flat, 99, -1.5, ut_settings(), +1.0);
-    //test_one<linestring,  polygon>("two_bends_neg", two_bends, join_round, end_flat,99, +1.5, ut_settings(), -1.0);
-    //test_one<linestring, polygon>("two_bends_pos", two_bends, join_round, end_flat, 99, -1.5, ut_settings(), +1.0);
+    //test_one<linestring, polygon>("two_bends_neg", two_bends, join_miter, end_flat, 99, +1.5, settings, -1.0);
+    //test_one<linestring, polygon>("two_bends_pos", two_bends, join_miter, end_flat, 99, -1.5, settings, +1.0);
+    //test_one<linestring,  polygon>("two_bends_neg", two_bends, join_round, end_flat,99, +1.5, settings, -1.0);
+    //test_one<linestring, polygon>("two_bends_pos", two_bends, join_round, end_flat, 99, -1.5, settings, +1.0);
 
     test_one<linestring, polygon>("overlapping150", overlapping, join_round, end_flat, 65.6786, 1.5);
     test_one<linestring, polygon>("overlapping150", overlapping, join_miter, end_flat, 68.140, 1.5);
 
     // Different cases with intersection points on flat and (left/right from line itself)
-    test_one<linestring, polygon>("overlapping_asym_150_010", overlapping, join_round, end_flat, 48.308, 1.5, ut_settings(), 0.25);
-    test_one<linestring, polygon>("overlapping_asym_150_010", overlapping, join_miter, end_flat, 50.770, 1.5, ut_settings(), 0.25);
-    test_one<linestring, polygon>("overlapping_asym_150_075", overlapping, join_round, end_flat, 58.506, 1.5, ut_settings(), 0.75);
-    test_one<linestring, polygon>("overlapping_asym_150_075", overlapping, join_miter, end_flat, 60.985, 1.5, ut_settings(), 0.75);
-    test_one<linestring, polygon>("overlapping_asym_150_100", overlapping, join_round, end_flat, 62.514, 1.5, ut_settings(), 1.0);
-    test_one<linestring, polygon>("overlapping_asym_150_100", overlapping, join_miter, end_flat, 64.984, 1.5, ut_settings(), 1.0);
+    test_one<linestring, polygon>("overlapping_asym_150_010", overlapping, join_round, end_flat, 48.308, 1.5, settings, 0.25);
+    test_one<linestring, polygon>("overlapping_asym_150_010", overlapping, join_miter, end_flat, 50.770, 1.5, settings, 0.25);
+    test_one<linestring, polygon>("overlapping_asym_150_075", overlapping, join_round, end_flat, 58.506, 1.5, settings, 0.75);
+    test_one<linestring, polygon>("overlapping_asym_150_075", overlapping, join_miter, end_flat, 60.985, 1.5, settings, 0.75);
+    test_one<linestring, polygon>("overlapping_asym_150_100", overlapping, join_round, end_flat, 62.514, 1.5, settings, 1.0);
+    test_one<linestring, polygon>("overlapping_asym_150_100", overlapping, join_miter, end_flat, 64.984, 1.5, settings, 1.0);
 
     // Having flat end
     test_one<linestring, polygon>("for_collinear", for_collinear, join_round, end_flat, 68.561, 2.0);
@@ -194,19 +201,19 @@ void test_all()
     test_one<linestring, polygon>("for_collinear2", for_collinear2, join_miter, end_flat, 78.0, 2.0);
 #endif
 
-    test_one<linestring, polygon>("curve", curve, join_round, end_flat, 58.1944, 5.0, ut_settings(), 3.0);
-    test_one<linestring, polygon>("curve", curve, join_miter, end_flat, 58.7371, 5.0, ut_settings(), 3.0);
+    test_one<linestring, polygon>("curve", curve, join_round, end_flat, 58.1944, 5.0, settings, 3.0);
+    test_one<linestring, polygon>("curve", curve, join_miter, end_flat, 58.7371, 5.0, settings, 3.0);
 
     test_one<linestring, polygon>("tripod", tripod, join_miter, end_flat, 74.25, 3.0);
     test_one<linestring, polygon>("tripod", tripod, join_miter, end_round, 116.6336, 3.0);
 
-    test_one<linestring, polygon>("chained2", chained2, join_round, end_flat, 11.3137, 2.5, ut_settings(), 1.5);
-    test_one<linestring, polygon>("chained3", chained3, join_round, end_flat, 16.9706, 2.5, ut_settings(), 1.5);
-    test_one<linestring, polygon>("chained4", chained4, join_round, end_flat, 22.6274, 2.5, ut_settings(), 1.5);
+    test_one<linestring, polygon>("chained2", chained2, join_round, end_flat, 11.3137, 2.5, settings, 1.5);
+    test_one<linestring, polygon>("chained3", chained3, join_round, end_flat, 16.9706, 2.5, settings, 1.5);
+    test_one<linestring, polygon>("chained4", chained4, join_round, end_flat, 22.6274, 2.5, settings, 1.5);
 
-    test_one<linestring, polygon>("field_sprayer1", field_sprayer1, join_round, end_flat, 324.3550, 16.5, ut_settings(), 6.5);
-    test_one<linestring, polygon>("field_sprayer1", field_sprayer1, join_round, end_round, 718.761877, 16.5, ut_settings(), 6.5);
-    test_one<linestring, polygon>("field_sprayer1", field_sprayer1, join_miter, end_round, 718.939628, 16.5, ut_settings(), 6.5);
+    test_one<linestring, polygon>("field_sprayer1", field_sprayer1, join_round, end_flat, 324.3550, 16.5, settings, 6.5);
+    test_one<linestring, polygon>("field_sprayer1", field_sprayer1, join_round, end_round, {718.686, 718.762}, 16.5, settings, 6.5);
+    test_one<linestring, polygon>("field_sprayer1", field_sprayer1, join_miter, end_round, {718.845, 718.940}, 16.5, settings, 6.5);
 
     test_one<linestring, polygon>("degenerate0", degenerate0, join_round, end_round, 0.0, 3.0);
     test_one<linestring, polygon>("degenerate1", degenerate1, join_round, end_round, 28.25, 3.0);
@@ -244,16 +251,18 @@ void test_all()
 
         // Testing the asymmetric end caps with odd number of points
         double const d15 = 1.5;
-        test_one<linestring, polygon>("mysql_report_2015_03_02c_asym1", mysql_report_2015_03_02c, join_round(7), end_round(7), 39.714, d10, ut_settings(), d15);
-        test_one<linestring, polygon>("mysql_report_2015_03_02c_asym2", mysql_report_2015_03_02c, join_round(7), end_round(7), 46.116, d15, ut_settings(), d10);
+        test_one<linestring, polygon>("mysql_report_2015_03_02c_asym1", mysql_report_2015_03_02c, join_round(7), end_round(7), 39.714, d10, settings, d15);
+        test_one<linestring, polygon>("mysql_report_2015_03_02c_asym2", mysql_report_2015_03_02c, join_round(7), end_round(7), 46.116, d15, settings, d10);
 
         double const d100 = 10;
         test_one<linestring, polygon>("mysql_report_2015_04_01", mysql_report_2015_04_01, join_round(32), end_round(32), 632.234, d100);
     }
 
+    if (! BOOST_GEOMETRY_CONDITION((std::is_same<coor_type, float>::value)))
     {
-        // Check on validity, with high precision because areas are all very small
-        ut_settings settings(1.0e-10, true);
+        ut_settings settings;
+        settings.tolerance = 0.1;
+        settings.use_ln_area = true;
 
         test_one<linestring, polygon>("aimes120", aimes120, join_miter, end_flat, 1.62669948622351512e-08, 0.000018, settings);
         test_one<linestring, polygon>("aimes120", aimes120, join_round, end_round, 1.72842078427493107e-08, 0.000018, settings);
@@ -292,16 +301,24 @@ void test_all()
         test_one<linestring, polygon>("issue_596", issue_596, join_miter, end_round(12), 0.12462807, 0.015);
     }
 
+    {
+        using bg::strategy::buffer::join_round;
+        using bg::strategy::buffer::end_round;
+        test_one<linestring, polygon>("issue_803", issue_803, join_miter, end_round(36), 1664.3714, 10.0);
+        test_one<linestring, polygon>("issue_803", issue_803, join_round(36), end_round(36), 1664.0528, 10.0);
+    }
+
     test_one<linestring, polygon>("mysql_report_2015_06_11",
             mysql_report_2015_06_11, join_round32, end_round32,
             27862.733459829971,
             5.9518403867035365);
 
-#if defined(BOOST_GEOMETRY_TEST_FAILURES)
-    test_one<linestring, polygon>("mysql_report_2015_09_08a", mysql_report_2015_09_08a, join_round32, end_round32, 0.0, 1.0);
-    test_one<linestring, polygon>("mysql_report_2015_09_08b", mysql_report_2015_09_08b, join_round32, end_round32, 0.0, 1099511627778.0);
-    test_one<linestring, polygon>("mysql_report_2015_09_08c", mysql_report_2015_09_08c, join_round32, end_round32, 0.0, 0xbe);
-#endif
+    if (BOOST_GEOMETRY_CONDITION((std::is_same<coor_type, double>::value)))
+    {
+        test_one<linestring, polygon>("mysql_report_2015_09_08a", mysql_report_2015_09_08a, join_round32, end_round32, 0.0, 1.0);
+        test_one<linestring, polygon>("mysql_report_2015_09_08b", mysql_report_2015_09_08b, join_round32, end_round32, 0.0, 1099511627778.0);
+        test_one<linestring, polygon>("mysql_report_2015_09_08c", mysql_report_2015_09_08c, join_round32, end_round32, 0.0, 0xbe);
+    }
 
     test_one<linestring, polygon>("mysql_23023665_1", mysql_23023665, join_round32, end_flat, 459.1051, 10);
     test_one<linestring, polygon>("mysql_23023665_2", mysql_23023665, join_round32, end_flat, 6877.7097, 50);
@@ -310,7 +327,10 @@ void test_all()
 
     // Test behaviour with different buffer sizes, generating internally turns on different locations
     test_one<linestring, polygon>("mysql_25662426a_05", mysql_25662426a, join_round32, end_round32, 27.6156, 0.5);
+#if defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
+    // Fails without rescaling
     test_one<linestring, polygon>("mysql_25662426a_1", mysql_25662426a, join_round32, end_round32, 54.9018, 1.0);
+#endif
     test_one<linestring, polygon>("mysql_25662426a_2", mysql_25662426a, join_round32, end_round32, 103.6072, 2.0);
     test_one<linestring, polygon>("mysql_25662426a_3", mysql_25662426a, join_round32, end_round32, 152.1163, 3.0);
     test_one<linestring, polygon>("mysql_25662426a_4", mysql_25662426a, join_round32, end_round32, 206.4831, 4.0);
@@ -323,30 +343,63 @@ void test_all()
     test_one<linestring, polygon>("mysql_25662426a_3", mysql_25662426a, join_round32, end_flat, 138.0697, 3.0);
     test_one<linestring, polygon>("mysql_25662426a_4", mysql_25662426a, join_round32, end_flat, 181.5115, 4.0);
     test_one<linestring, polygon>("mysql_25662426a_5", mysql_25662426a, join_round32, end_flat, 227.8325, 5.0);
-    test_one<linestring, polygon>("mysql_25662426a_10", mysql_25662426a, join_round32, end_flat, 534.1084, 10.0);
+    test_one<linestring, polygon>("mysql_25662426a_10", mysql_25662426a, join_round32, end_flat, 534.1083, 10.0, specific_settings);
 
-#if defined(BOOST_GEOMETRY_TEST_FAILURES)
+    // Asymmetric buffers
+    // Mostly left
+    test_one<linestring, polygon>("mysql_25662426a_mostly_left_05", mysql_25662426a, join_round32, end_round32, 15.6638, 0.5, settings, 0.05);
+    test_one<linestring, polygon>("mysql_25662426a_mostly_left_1", mysql_25662426a, join_round32, end_round32, 32.9553, 1.0, settings, 0.1);
+    test_one<linestring, polygon>("mysql_25662426a_mostly_left_2", mysql_25662426a, join_round32, end_round32, 72.1159, 2.0, settings, 0.2);
+    test_one<linestring, polygon>("mysql_25662426a_mostly_left_3", mysql_25662426a, join_round32, end_round32, 116.3802, 3.0, settings, 0.3);
+    test_one<linestring, polygon>("mysql_25662426a_mostly_left_4", mysql_25662426a, join_round32, end_round32, 165.9298, 4.0, specific_settings, 0.4);
+    test_one<linestring, polygon>("mysql_25662426a_mostly_left_5", mysql_25662426a, join_round32, end_round32, 220.8054, 5.0, specific_settings, 0.5);
+    test_one<linestring, polygon>("mysql_25662426a_mostly_left_10", mysql_25662426a, join_round32, end_round32, 577.3742, 10.0, specific_settings, 1.0);
+
+    // Mostly right
+    test_one<linestring, polygon>("mysql_25662426a_mostly_right_05", mysql_25662426a, join_round32, end_round32, 14.3419, 0.05, settings, 0.5);
+#if defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
+    // Fails without rescaling
+    test_one<linestring, polygon>("mysql_25662426a_mostly_right_1", mysql_25662426a, join_round32, end_round32, 27.1955, 0.1, settings, 1.0);
+#endif
+    test_one<linestring, polygon>("mysql_25662426a_mostly_right_2", mysql_25662426a, join_round32, end_round32, 43.1821, 0.2, settings, 2.0);
+    test_one<linestring, polygon>("mysql_25662426a_mostly_right_3", mysql_25662426a, join_round32, end_round32, 54.4337, 0.3, settings, 3.0);
+    test_one<linestring, polygon>("mysql_25662426a_mostly_right_4", mysql_25662426a, join_round32, end_round32, 75.6376, 0.4, settings, 4.0);
+    test_one<linestring, polygon>("mysql_25662426a_mostly_right_5", mysql_25662426a, join_round32, end_round32, 102.6952, 0.5, settings, 5.0);
+    test_one<linestring, polygon>("mysql_25662426a_mostly_right_10", mysql_25662426a, join_round32, end_round32, 260.1850, 1.0, settings, 10.0);
+
     // Left
-    test_one<linestring, polygon>("mysql_25662426a_1", mysql_25662426a, join_round32, end_round32, 54.9018, 1.0, ut_settings(), 0.0);
-    test_one<linestring, polygon>("mysql_25662426a_2", mysql_25662426a, join_round32, end_round32, 103.6072, 2.0, ut_settings(), 0.0);
-    test_one<linestring, polygon>("mysql_25662426a_3", mysql_25662426a, join_round32, end_round32, 152.1163, 3.0, ut_settings(), 0.0);
-    test_one<linestring, polygon>("mysql_25662426a_4", mysql_25662426a, join_round32, end_round32, 206.4831, 4.0, ut_settings(), 0.0);
-    test_one<linestring, polygon>("mysql_25662426a_5", mysql_25662426a, join_round32, end_round32, 266.8505, 5.0, ut_settings(), 0.0);
-    test_one<linestring, polygon>("mysql_25662426a_10", mysql_25662426a, join_round32, end_round32, 660.7355, 10.0, ut_settings(), 0.0);
+    test_one<linestring, polygon>("mysql_25662426a_left_05", mysql_25662426a, join_round32, end_round32, 14.2803, 0.5, settings, 0.0);
+    test_one<linestring, polygon>("mysql_25662426a_left_1", mysql_25662426a, join_round32, end_round32, 30.1214, 1.0, settings, 0.0);
+    test_one<linestring, polygon>("mysql_25662426a_left_2", mysql_25662426a, join_round32, end_round32, 66.4858, 2.0, ut_settings(0.01, false), 0.0); // It has a self touching point
+    test_one<linestring, polygon>("mysql_25662426a_left_3", mysql_25662426a, join_round32, end_round32, 108.3305, 3.0, settings, 0.0);
+    test_one<linestring, polygon>("mysql_25662426a_left_4", mysql_25662426a, join_round32, end_round32, 155.5128, 4.0, specific_settings, 0.0);
+    test_one<linestring, polygon>("mysql_25662426a_left_5", mysql_25662426a, join_round32, end_round32, 208.1289, 5.0, specific_settings, 0.0);
+    test_one<linestring, polygon>("mysql_25662426a_left_10", mysql_25662426a, join_round32, end_round32, 554.8818, 10.0, specific_settings, 0.0);
 
     // Right
-    test_one<linestring, polygon>("mysql_25662426a_1", mysql_25662426a, join_round32, end_round32, 54.9018, 0.0, ut_settings(), 1.0);
-    test_one<linestring, polygon>("mysql_25662426a_2", mysql_25662426a, join_round32, end_round32, 103.6072, 0.0, ut_settings(), 2.0);
-    test_one<linestring, polygon>("mysql_25662426a_3", mysql_25662426a, join_round32, end_round32, 152.1163, 0.0, ut_settings(), 3.0);
-    test_one<linestring, polygon>("mysql_25662426a_4", mysql_25662426a, join_round32, end_round32, 206.4831, 0.0, ut_settings(), 4.0);
-    test_one<linestring, polygon>("mysql_25662426a_5", mysql_25662426a, join_round32, end_round32, 266.8505, 0.0, ut_settings(), 5.0);
-    test_one<linestring, polygon>("mysql_25662426a_10", mysql_25662426a, join_round32, end_round32, 660.7355, 0.0, ut_settings(), 10.0);
-#endif
+    test_one<linestring, polygon>("mysql_25662426a_right_05", mysql_25662426a, join_round32, end_round32, 12.9451, 0.0, settings, 0.5);
+    test_one<linestring, polygon>("mysql_25662426a_right_1", mysql_25662426a, join_round32, end_round32, 24.3902, 0.0, settings, 1.0);
+    test_one<linestring, polygon>("mysql_25662426a_right_2", mysql_25662426a, join_round32, end_round32, 37.5607, 0.0, settings, 2.0);
+    test_one<linestring, polygon>("mysql_25662426a_right_3", mysql_25662426a, join_round32, end_round32, 46.2741, 0.0, settings, 3.0);
+    test_one<linestring, polygon>("mysql_25662426a_right_4", mysql_25662426a, join_round32, end_round32, 70.2429, 0.0, settings, 4.0);
+    test_one<linestring, polygon>("mysql_25662426a_right_5", mysql_25662426a, join_round32, end_round32, 95.7545, 0.0, settings, 5.0);
+    test_one<linestring, polygon>("mysql_25662426a_right_10", mysql_25662426a, join_round32, end_round32, 244.5337, 0.0, settings, 10.0);
+
+    // Flat end for one-sided buffer
+    test_one<linestring, polygon>("mysql_25662426a_left_05", mysql_25662426a, join_round32, end_flat, 14.0853, 0.5, settings, 0.0);
+    test_one<linestring, polygon>("mysql_25662426a_right_05", mysql_25662426a, join_round32, end_flat, 12.7500, 0.0, settings, 0.5);
+    test_one<linestring, polygon>("mysql_25662426a_left_25", mysql_25662426a, join_round32, end_flat, 82.1318, 2.5, settings, 0.0);
+    test_one<linestring, polygon>("mysql_25662426a_right_25", mysql_25662426a, join_round32, end_flat, 39.0000, 0.0, settings, 2.5);
 }
 
 template <bool Clockwise, typename P>
 void test_invalid()
 {
+    typedef typename bg::coordinate_type<P>::type coor_type;
+    if (! BOOST_GEOMETRY_CONDITION((std::is_same<coor_type, double>::value)))
+    {
+        return;
+    }
     typedef bg::model::linestring<P> linestring;
     typedef bg::model::polygon<P, Clockwise> polygon;
 
@@ -365,18 +418,26 @@ void test_invalid()
     test_one<linestring, polygon>("mysql_report_2015_04_10g", mysql_report_2015_04_10g, join_round32, end_round32, 86527.871, 100.0);
 }
 
-#ifdef HAVE_TTMATH
-#include <ttmath_stub.hpp>
-#endif
-
 
 int test_main(int, char* [])
 {
-    test_all<true, bg::model::point<double, 2, bg::cs::cartesian> >();
-    test_all<false, bg::model::point<double, 2, bg::cs::cartesian> >();
-    //test_all<bg::model::point<tt, 2, bg::cs::cartesian> >();
+    BoostGeometryWriteTestConfiguration();
 
-    test_invalid<true, bg::model::point<double, 2, bg::cs::cartesian> >();
-//    test_invalid<true, bg::model::point<long double, 2, bg::cs::cartesian> >();
+    test_all<true, bg::model::point<default_test_type, 2, bg::cs::cartesian> >();
+
+#if ! defined(BOOST_GEOMETRY_TEST_ONLY_ONE_ORDER)
+    test_all<false, bg::model::point<default_test_type, 2, bg::cs::cartesian> >();
+#endif
+
+    test_invalid<true, bg::model::point<default_test_type, 2, bg::cs::cartesian> >();
+
+#if ! defined(BOOST_GEOMETRY_TEST_ONLY_ONE_TYPE)
+    test_invalid<true, bg::model::point<long double, 2, bg::cs::cartesian> >();
+#endif
+
+#if defined(BOOST_GEOMETRY_TEST_FAILURES)
+    BoostGeometryWriteExpectedFailures(2, 4, 11, 3);
+#endif
+
     return 0;
 }

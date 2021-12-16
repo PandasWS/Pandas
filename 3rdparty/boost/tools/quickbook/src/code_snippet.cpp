@@ -7,7 +7,7 @@
     http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/spirit/include/classic_actor.hpp>
 #include <boost/spirit/include/classic_confix.hpp>
@@ -19,6 +19,8 @@
 #include "stream.hpp"
 #include "template_stack.hpp"
 #include "values.hpp"
+
+using namespace boost::placeholders;
 
 namespace quickbook
 {

@@ -22,14 +22,12 @@
 #include <boost/python/stl_iterator.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/mpi.hpp>
+#include <boost/shared_ptr.hpp>
 #include "request_with_value.hpp"
 
 using namespace std;
 using namespace boost::python;
 using namespace boost::mpi;
-
-
-
 
 namespace
 {
@@ -57,17 +55,14 @@ namespace
 
 
 
-
   typedef std::vector<python::request_with_value> request_list;
   typedef py_call_output_iterator<status, request_list::iterator> 
     status_value_iterator;
 
 
-
-
-  std::auto_ptr<request_list> make_request_list_from_py_list(object iterable)
+  boost::shared_ptr<request_list> make_request_list_from_py_list(object iterable)
   {
-    std::auto_ptr<request_list> result(new request_list);
+    boost::shared_ptr<request_list> result(new request_list);
     std::copy(
         stl_input_iterator<python::request_with_value>(iterable),
         stl_input_iterator<python::request_with_value>(),

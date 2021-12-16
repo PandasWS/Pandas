@@ -6,7 +6,8 @@
 
 # Test scatter() collective.
 
-import boost.parallel.mpi as mpi
+from __future__ import print_function
+import mpi
 from generators import *
 
 def scatter_test(comm, generator, kind, root):
@@ -23,7 +24,7 @@ def scatter_test(comm, generator, kind, root):
         
     assert result == generator(comm.rank)
 
-    if comm.rank == root: print "OK."
+    if comm.rank == root: print ("OK.")
     return
 
 scatter_test(mpi.world, int_generator, "integers", 0)

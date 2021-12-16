@@ -1,12 +1,12 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Handler Tracking</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../../../boost_asio.html" title="Boost.Asio">
 <link rel="up" href="../core.html" title="Core Concepts and Functionality">
-<link rel="prev" href="allocation.html" title="Custom Memory Allocation">
+<link rel="prev" href="cancellation.html" title="Per-Operation Cancellation">
 <link rel="next" href="concurrency_hint.html" title="Concurrency Hints">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -20,7 +20,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="allocation.html"><img src="../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../core.html"><img src="../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../../boost_asio.html"><img src="../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="concurrency_hint.html"><img src="../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="cancellation.html"><img src="../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../core.html"><img src="../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../../boost_asio.html"><img src="../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="concurrency_hint.html"><img src="../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
@@ -39,30 +39,31 @@
           are. As an illustration, here is the output when you run the HTTP Server
           example, handle a single request, then shut down via Ctrl+C:
         </p>
-<pre class="programlisting">@asio|1512254357.979980|0*1|signal_set@0x7ffeaaaa20d8.async_wait
-@asio|1512254357.980127|0*2|socket@0x7ffeaaaa20f8.async_accept
-@asio|1512254357.980150|.2|non_blocking_accept,ec=asio.system:11
-@asio|1512254357.980162|0|resolver@0x7ffeaaaa1fd8.cancel
-@asio|1512254368.457147|.2|non_blocking_accept,ec=system:0
-@asio|1512254368.457193|&gt;2|ec=system:0
-@asio|1512254368.457219|2*3|socket@0x55cf39f0a238.async_receive
-@asio|1512254368.457244|.3|non_blocking_recv,ec=system:0,bytes_transferred=141
-@asio|1512254368.457275|2*4|socket@0x7ffeaaaa20f8.async_accept
-@asio|1512254368.457293|.4|non_blocking_accept,ec=asio.system:11
-@asio|1512254368.457301|&lt;2|
-@asio|1512254368.457310|&gt;3|ec=system:0,bytes_transferred=141
-@asio|1512254368.457441|3*5|socket@0x55cf39f0a238.async_send
-@asio|1512254368.457502|.5|non_blocking_send,ec=system:0,bytes_transferred=156
-@asio|1512254368.457511|&lt;3|
-@asio|1512254368.457519|&gt;5|ec=system:0,bytes_transferred=156
-@asio|1512254368.457544|5|socket@0x55cf39f0a238.close
-@asio|1512254368.457559|&lt;5|
-@asio|1512254371.385106|&gt;1|ec=system:0,signal_number=2
-@asio|1512254371.385130|1|socket@0x7ffeaaaa20f8.close
-@asio|1512254371.385163|&lt;1|
-@asio|1512254371.385175|&gt;4|ec=asio.system:125
-@asio|1512254371.385182|&lt;4|
-@asio|1512254371.385202|0|signal_set@0x7ffeaaaa20d8.cancel
+<pre class="programlisting">@asio|1589424178.741850|0*1|signal_set@0x7ffee977d878.async_wait
+@asio|1589424178.742593|0*2|socket@0x7ffee977d8a8.async_accept
+@asio|1589424178.742619|.2|non_blocking_accept,ec=asio.system:11
+@asio|1589424178.742625|0|resolver@0x7ffee977d760.cancel
+@asio|1589424195.830382|.2|non_blocking_accept,ec=system:0
+@asio|1589424195.830413|&gt;2|ec=system:0
+@asio|1589424195.830473|2*3|socket@0x7fa71d808230.async_receive
+@asio|1589424195.830496|.3|non_blocking_recv,ec=system:0,bytes_transferred=151
+@asio|1589424195.830503|2*4|socket@0x7ffee977d8a8.async_accept
+@asio|1589424195.830507|.4|non_blocking_accept,ec=asio.system:11
+@asio|1589424195.830510|&lt;2|
+@asio|1589424195.830529|&gt;3|ec=system:0,bytes_transferred=151
+@asio|1589424195.831143|3^5|in 'async_write' (./../../../boost/asio/impl/write.hpp:330)
+@asio|1589424195.831143|3*5|socket@0x7fa71d808230.async_send
+@asio|1589424195.831186|.5|non_blocking_send,ec=system:0,bytes_transferred=1090
+@asio|1589424195.831194|&lt;3|
+@asio|1589424195.831218|&gt;5|ec=system:0,bytes_transferred=1090
+@asio|1589424195.831263|5|socket@0x7fa71d808230.close
+@asio|1589424195.831298|&lt;5|
+@asio|1589424199.793770|&gt;1|ec=system:0,signal_number=2
+@asio|1589424199.793781|1|socket@0x7ffee977d8a8.close
+@asio|1589424199.793809|&lt;1|
+@asio|1589424199.793840|&gt;4|ec=asio.system:125
+@asio|1589424199.793854|&lt;4|
+@asio|1589424199.793883|0|signal_set@0x7ffee977d878.cancel
 </pre>
 <p>
           Each line is of the form:
@@ -103,6 +104,13 @@
                 invoked. This is usually the case for any unfinished asynchronous
                 operations when the <code class="computeroutput">io_context</code> is destroyed.
               </p></dd>
+<dt><span class="term">n^m</span></dt>
+<dd><p>
+                The handler number <code class="computeroutput">n</code> is about to create a new asynchronous
+                operation with completion handler number <code class="computeroutput">m</code>. The <code class="computeroutput">&lt;description&gt;</code>
+                contains source location information to help identify where in the
+                program the asynchronous operation is being started.
+              </p></dd>
 <dt><span class="term">n*m</span></dt>
 <dd><p>
                 The handler number <code class="computeroutput">n</code> created a new asynchronous operation
@@ -140,6 +148,58 @@
         </p>
 <h6>
 <a name="boost_asio.overview.core.handler_tracking.h0"></a>
+          <span class="phrase"><a name="boost_asio.overview.core.handler_tracking.adding_location_information"></a></span><a class="link" href="handler_tracking.html#boost_asio.overview.core.handler_tracking.adding_location_information">Adding
+          Location Information</a>
+        </h6>
+<p>
+          Programs may augment the handler tracking output's location information
+          by using the macro <code class="computeroutput"><span class="identifier">BOOST_ASIO_HANDLER_LOCATION</span></code>
+          in the source code. For example:
+        </p>
+<pre class="programlisting"><span class="preprocessor">#define</span> <span class="identifier">HANDLER_LOCATION</span> <span class="special">\</span>
+  <span class="identifier">BOOST_ASIO_HANDLER_LOCATION</span><span class="special">((</span><span class="identifier">__FILE__</span><span class="special">,</span> <span class="identifier">__LINE__</span><span class="special">,</span> <span class="identifier">__func__</span><span class="special">))</span>
+
+<span class="comment">// ...</span>
+
+<span class="keyword">void</span> <span class="identifier">do_read</span><span class="special">()</span>
+<span class="special">{</span>
+  <span class="identifier">HANDLER_LOCATION</span><span class="special">;</span>
+
+  <span class="keyword">auto</span> <span class="identifier">self</span><span class="special">(</span><span class="identifier">shared_from_this</span><span class="special">());</span>
+  <span class="identifier">socket_</span><span class="special">.</span><span class="identifier">async_read_some</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">asio</span><span class="special">::</span><span class="identifier">buffer</span><span class="special">(</span><span class="identifier">data_</span><span class="special">,</span> <span class="identifier">max_length</span><span class="special">),</span>
+      <span class="special">[</span><span class="keyword">this</span><span class="special">,</span> <span class="identifier">self</span><span class="special">](</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">system</span><span class="special">::</span><span class="identifier">error_code</span> <span class="identifier">ec</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">length</span><span class="special">)</span>
+      <span class="special">{</span>
+        <span class="identifier">HANDLER_LOCATION</span><span class="special">;</span>
+
+        <span class="keyword">if</span> <span class="special">(!</span><span class="identifier">ec</span><span class="special">)</span>
+        <span class="special">{</span>
+          <span class="identifier">do_write</span><span class="special">(</span><span class="identifier">length</span><span class="special">);</span>
+        <span class="special">}</span>
+      <span class="special">});</span>
+<span class="special">}</span>
+</pre>
+<p>
+          With the additional location information available, the handler tracking
+          output may include a call stack of source locations:
+        </p>
+<pre class="programlisting">@asio|1589423304.861944|&gt;7|ec=system:0,bytes_transferred=5
+@asio|1589423304.861952|7^8|in 'async_write' (./../../../boost/asio/impl/write.hpp:330)
+@asio|1589423304.861952|7^8|called from 'do_write' (handler_tracking/async_tcp_echo_server.cpp:62)
+@asio|1589423304.861952|7^8|called from 'operator()' (handler_tracking/async_tcp_echo_server.cpp:51)
+@asio|1589423304.861952|7*8|socket@0x7ff61c008230.async_send
+@asio|1589423304.861975|.8|non_blocking_send,ec=system:0,bytes_transferred=5
+@asio|1589423304.861980|&lt;7|
+</pre>
+<p>
+          Furthermore, if <code class="computeroutput">std::source_location</code> or <code class="computeroutput">std::experimental::source_location</code>
+          are available, the <a class="link" href="../../reference/use_awaitable_t.html" title="use_awaitable_t"><code class="computeroutput">use_awaitable_t</code></a>
+          token (when default-constructed or used as a default completion token)
+          will also cause handler tracking to output a source location for each newly
+          created asynchronous operation. A <code class="computeroutput">use_awaitable_t</code> object may
+          also be explicitly constructed with location information.
+        </p>
+<h6>
+<a name="boost_asio.overview.core.handler_tracking.h1"></a>
           <span class="phrase"><a name="boost_asio.overview.core.handler_tracking.visual_representations"></a></span><a class="link" href="handler_tracking.html#boost_asio.overview.core.handler_tracking.visual_representations">Visual
           Representations</a>
         </h6>
@@ -149,7 +209,7 @@
           tool <code class="literal">dot</code>).
         </p>
 <h6>
-<a name="boost_asio.overview.core.handler_tracking.h1"></a>
+<a name="boost_asio.overview.core.handler_tracking.h2"></a>
           <span class="phrase"><a name="boost_asio.overview.core.handler_tracking.custom_tracking"></a></span><a class="link" href="handler_tracking.html#boost_asio.overview.core.handler_tracking.custom_tracking">Custom
           Tracking</a>
         </h6>
@@ -216,6 +276,21 @@
 <td>
                   <p>
                     An expression that is used to initialise the tracking mechanism.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <code class="computeroutput"><span class="identifier">BOOST_ASIO_HANDLER_LOCATION</span><span class="special">(</span><span class="identifier">args</span><span class="special">)</span></code>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    A variable declaration that is used to define a source code location.
+                    <code class="computeroutput"><span class="identifier">args</span></code> is a parenthesised
+                    function argument list containing the file name, line number,
+                    and function name.
                   </p>
                 </td>
 </tr>
@@ -398,17 +473,18 @@
 </tbody>
 </table></div>
 <h6>
-<a name="boost_asio.overview.core.handler_tracking.h2"></a>
+<a name="boost_asio.overview.core.handler_tracking.h3"></a>
           <span class="phrase"><a name="boost_asio.overview.core.handler_tracking.see_also"></a></span><a class="link" href="handler_tracking.html#boost_asio.overview.core.handler_tracking.see_also">See Also</a>
         </h6>
 <p>
-          <a class="link" href="../../examples/cpp11_examples.html#boost_asio.examples.cpp11_examples.handler_tracking">Custom
-          handler tracking example</a>.
+          <a class="link" href="../../examples/cpp11_examples.html#boost_asio.examples.cpp11_examples.handler_tracking">Handler
+          tracking examples</a>.
         </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>
@@ -416,7 +492,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="allocation.html"><img src="../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../core.html"><img src="../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../../boost_asio.html"><img src="../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="concurrency_hint.html"><img src="../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="cancellation.html"><img src="../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../core.html"><img src="../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../../boost_asio.html"><img src="../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="concurrency_hint.html"><img src="../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

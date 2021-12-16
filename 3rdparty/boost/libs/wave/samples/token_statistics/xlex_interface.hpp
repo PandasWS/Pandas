@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(XLEX_INTERFACE_HPP)
-#define XLEX_INTERFACE_HPP
+#if !defined(BOOST_XLEX_INTERFACE_HPP)
+#define BOOST_XLEX_INTERFACE_HPP
 
 #include <boost/wave/language_support.hpp>
 #include <boost/wave/util/file_position.hpp>
@@ -86,4 +86,4 @@ struct xlex_input_interface
 }   // namespace wave
 }   // namespace boost 
 
-#endif // !defined(XLEX_INTERFACE_HPP)
+#endif // !defined(BOOST_XLEX_INTERFACE_HPP)

@@ -36,6 +36,8 @@
 // Include the default context trace policies
 #include <boost/wave/preprocessing_hooks.hpp>
 
+#include <iostream>
+
 ///////////////////////////////////////////////////////////////////////////////
 //  include lexer specifics, import lexer names
 #if BOOST_WAVE_SEPARATE_LEXER_INSTANTIATION == 0
@@ -109,16 +111,10 @@ struct trace_include_files
     :   files(files_), include_depth(0) 
     {}
     
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    void 
-    opened_include_file(string const &relname, string const &filename, 
-        std::size_t /*include_depth*/, bool is_system_include) 
-#else
     template <typename ContextT>
     void 
     opened_include_file(ContextT const& ctx, std::string const& relname, 
         std::string const& filename, bool is_system_include) 
-#endif
     {
         set<string>::iterator it = files.find(filename);
         if (it == files.end()) {
@@ -132,12 +128,8 @@ struct trace_include_files
         ++include_depth;
     }
 
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    void returning_from_include_file() 
-#else
     template <typename ContextT>
     void returning_from_include_file(ContextT const& ctx) 
-#endif
     {
         --include_depth;
     }

@@ -1,5 +1,5 @@
 /* Unit testing for outcomes
-(C) 2013-2019 Niall Douglas <http://www.nedproductions.biz/> (7 commits)
+(C) 2013-2021 Niall Douglas <http://www.nedproductions.biz/> (7 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -31,7 +31,7 @@ DEALINGS IN THE SOFTWARE.
 #pragma warning(disable : 4702)  // unreachable code
 #endif
 
-#include <boost/outcome/outcome.hpp>
+#include <boost/outcome.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_monitor.hpp>
 

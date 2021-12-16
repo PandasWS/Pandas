@@ -13,7 +13,8 @@ int main()
   // You can always instantiate without compiler errors
   
   TheTIntFunction<AType,void,boost::mpl::vector<long,double> > aVar;
-  Pickedname<AnotherType,AType,boost::mpl::vector<long,long> > aVar3;
+  Pickedname<AnotherType,AType,boost::mpl::vector<long,long> > aVar2;
+  TheTIntFunction<AnotherType,AType,boost::mpl::vector<long,double>,boost::function_types::cv_qualified> aVar3;
   
   // Compile time asserts
   

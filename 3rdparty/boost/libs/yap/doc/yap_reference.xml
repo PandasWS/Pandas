@@ -8,7 +8,7 @@
 </para>
 </para></description><data-member name="expr"><type>Expr</type></data-member>
 <method-group name="public member functions">
-<method name="operator()"><type>decltype(auto)</type><template>
+<method name="operator()"><type>decltype(auto) constexpr</type><template>
           <template-nontype-parameter name="U"><type>typename...</type></template-nontype-parameter>
         </template><parameter name="u"><paramtype>U &amp;&amp;...</paramtype></parameter></method>
 </method-group>
@@ -46,10 +46,10 @@
 
 
 
-<function name="deref"><type>decltype(auto)</type><template>
+<function name="deref"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="Expr"/>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><description><para>"Dereferences" a reference-expression, forwarding its referent to the caller. </para></description></function>
-<function name="value"><type>decltype(auto)</type><template>
+<function name="value"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="T"/>
         </template><parameter name="x"><paramtype>T &amp;&amp;</paramtype></parameter><description><para>Forwards the sole element of <emphasis>x</emphasis> to the caller, possibly calling <computeroutput>deref()</computeroutput> first if <emphasis>x</emphasis> is a reference expression, or forwards <emphasis>x</emphasis> to the caller unchanged.</para><para>More formally:</para><para><itemizedlist>
 <listitem><para>If <emphasis>x</emphasis> is not an expression, <emphasis>x</emphasis> is forwarded to the caller.</para>
@@ -58,53 +58,53 @@
 </listitem><listitem><para>Otherwise, <emphasis>x</emphasis> is forwarded to the caller. </para>
 </listitem></itemizedlist>
 </para></description></function>
-<function name="get"><type>decltype(auto)</type><template>
+<function name="get"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="Expr"/>
           <template-type-parameter name="I"/>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><parameter name="i"><paramtype>I const &amp;</paramtype></parameter><description><para>Forwards the <emphasis>i</emphasis>-th element of <emphasis>expr</emphasis> to the caller. If <emphasis>expr</emphasis> is a reference expression, the result is <computeroutput>get(deref(expr), i)</computeroutput>.</para><para><note><para><computeroutput>get()</computeroutput> is only valid if <emphasis>Expr</emphasis> is an expression. </para>
 </note>
 </para></description></function>
-<function name="get_c"><type>decltype(auto)</type><template>
+<function name="get_c"><type>decltype(auto) constexpr</type><template>
           <template-nontype-parameter name="I"><type>long long</type></template-nontype-parameter>
           <template-type-parameter name="Expr"/>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><description><para>Returns <computeroutput>get(expr, boost::hana::llong_c&lt;I&gt;)</computeroutput>. </para></description></function>
-<function name="left"><type>decltype(auto)</type><template>
+<function name="left"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="Expr"/>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><description><para>Returns the left operand in a binary operator expression.</para><para>Equivalent to <computeroutput>get(expr, 0_c)</computeroutput>.</para><para><note><para><computeroutput>left()</computeroutput> is only valid if <emphasis>Expr</emphasis> is a binary operator expression. </para>
 </note>
 </para></description></function>
-<function name="right"><type>decltype(auto)</type><template>
+<function name="right"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="Expr"/>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><description><para>Returns the right operand in a binary operator expression.</para><para>Equivalent to <computeroutput>get(expr, 1_c)</computeroutput>.</para><para><note><para><computeroutput>right()</computeroutput> is only valid if <emphasis>Expr</emphasis> is a binary operator expression. </para>
 </note>
 </para></description></function>
-<function name="cond"><type>decltype(auto)</type><template>
+<function name="cond"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="Expr"/>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><description><para>Returns the condition expression in an if_else expression.</para><para>Equivalent to <computeroutput>get(expr, 0_c)</computeroutput>.</para><para><note><para><computeroutput>cond()</computeroutput> is only valid if <emphasis>Expr</emphasis> is an <computeroutput>expr_kind::if_else</computeroutput> expression. </para>
 </note>
 </para></description></function>
-<function name="then"><type>decltype(auto)</type><template>
+<function name="then"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="Expr"/>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><description><para>Returns the then-expression in an if_else expression.</para><para>Equivalent to <computeroutput>get(expr, 1_c)</computeroutput>.</para><para><note><para><computeroutput>then()</computeroutput> is only valid if <emphasis>Expr</emphasis> is an <computeroutput>expr_kind::if_else</computeroutput> expression. </para>
 </note>
 </para></description></function>
-<function name="else_"><type>decltype(auto)</type><template>
+<function name="else_"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="Expr"/>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><description><para>Returns the else-expression in an if_else expression.</para><para>Equivalent to <computeroutput>get(expr, 2_c)</computeroutput>.</para><para><note><para><computeroutput>else_()</computeroutput> is only valid if <emphasis>Expr</emphasis> is an <computeroutput>expr_kind::if_else</computeroutput> expression. </para>
 </note>
 </para></description></function>
-<function name="callable"><type>decltype(auto)</type><template>
+<function name="callable"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="Expr"/>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><description><para>Returns the callable in a call expression.</para><para>Equivalent to <computeroutput>get(expr, 0)</computeroutput>.</para><para><note><para><computeroutput>callable()</computeroutput> is only valid if <emphasis>Expr</emphasis> is an <computeroutput>expr_kind::call</computeroutput> expression. </para>
 </note>
 </para></description></function>
-<function name="argument"><type>decltype(auto)</type><template>
+<function name="argument"><type>decltype(auto) constexpr</type><template>
           <template-nontype-parameter name="I"><type>long long</type></template-nontype-parameter>
           <template-type-parameter name="Expr"/>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><parameter name="i"><paramtype>hana::llong&lt; I &gt;</paramtype></parameter><description><para>Returns the <emphasis>i-th</emphasis> argument expression in a call expression.</para><para>Equivalent to <computeroutput>get(expr, i + 1)</computeroutput>.</para><para><note><para><computeroutput>argument()</computeroutput> is only valid if <emphasis>Expr</emphasis> is an <computeroutput>expr_kind::call</computeroutput> expression. </para>
 </note>
 </para></description></function>
-<function name="make_expression"><type>auto</type><template>
+<function name="make_expression"><type>constexpr auto</type><template>
           <template-nontype-parameter name="ExprTemplate"><type>template&lt; expr_kind, class &gt; class</type></template-nontype-parameter>
           <template-nontype-parameter name="Kind"><type>expr_kind</type></template-nontype-parameter>
           <template-nontype-parameter name="T"><type>typename...</type></template-nontype-parameter>
@@ -115,13 +115,13 @@
 </para><para><note><para><computeroutput>make_expression()</computeroutput> is only valid if the number of parameters passed is appropriate for <emphasis>Kind</emphasis>. </para>
 </note>
 </para></description></function>
-<function name="make_terminal"><type>auto</type><template>
+<function name="make_terminal"><type>constexpr auto</type><template>
           <template-nontype-parameter name="ExprTemplate"><type>template&lt; expr_kind, class &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="T"/>
         </template><parameter name="t"><paramtype>T &amp;&amp;</paramtype></parameter><description><para>Makes a new terminal expression instantiated from the expression template <emphasis>ExprTemplate</emphasis>, with the given value as its sole element.</para><para><note><para><computeroutput>make_terminal()</computeroutput> is only valid if <emphasis>T</emphasis> is <emphasis role="bold">not</emphasis> an expression. </para>
 </note>
 </para></description></function>
-<function name="as_expr"><type>decltype(auto)</type><template>
+<function name="as_expr"><type>decltype(auto) constexpr</type><template>
           <template-nontype-parameter name="ExprTemplate"><type>template&lt; expr_kind, class &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="T"/>
         </template><parameter name="t"><paramtype>T &amp;&amp;</paramtype></parameter><description><para>Returns an expression formed from <emphasis>t</emphasis> as follows:</para><para><itemizedlist>
@@ -129,24 +129,24 @@
 </listitem><listitem><para>Otherwise, <emphasis>t</emphasis> is wrapped in a terminal expression. </para>
 </listitem></itemizedlist>
 </para></description></function>
-<function name="make_expression_function"><type>auto</type><template>
+<function name="make_expression_function"><type>constexpr auto</type><template>
           <template-type-parameter name="Expr"/>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><description><para>Returns a callable object that <emphasis>expr</emphasis> has been forwarded into. This is useful for using expressions as function objects.</para><para>Lvalue expressions are stored in the result by reference; rvalue expressions are moved into the result.</para><para><note><para><computeroutput>make_expression_function()</computeroutput> is only valid if <emphasis>Expr</emphasis> is an expression. </para>
 </note>
 </para></description></function>
-<function name="replacements"><type>auto</type><template>
+<function name="replacements"><type>constexpr auto</type><template>
           <template-nontype-parameter name="T"><type>typename...</type></template-nontype-parameter>
         </template><parameter name="t"><paramtype>T &amp;&amp;...</paramtype></parameter><description><para>Returns a transform object that replaces placeholders within an expression with the given values. </para></description></function>
-<function name="replace_placeholders"><type>decltype(auto)</type><template>
+<function name="replace_placeholders"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="Expr"/>
           <template-nontype-parameter name="T"><type>typename...</type></template-nontype-parameter>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><parameter name="t"><paramtype>T &amp;&amp;...</paramtype></parameter><description><para>Returns <emphasis>expr</emphasis> with the placeholders replaced by YAP terminals containing the given values.</para><para><note><para><computeroutput>replace_placeholders(expr, t...)</computeroutput> is only valid if <emphasis>expr</emphasis> is an expression, and <computeroutput>max_p &lt;= sizeof...(t)</computeroutput>, where <computeroutput>max_p</computeroutput> is the maximum placeholder index in <emphasis>expr</emphasis>. </para>
 </note>
 </para></description></function>
-<function name="evaluation"><type>auto</type><template>
+<function name="evaluation"><type>constexpr auto</type><template>
           <template-nontype-parameter name="T"><type>typename...</type></template-nontype-parameter>
         </template><parameter name="t"><paramtype>T &amp;&amp;...</paramtype></parameter><description><para>Returns a transform object that evaluates an expression using the built-in semantics. The transform replaces any placeholders with the given values. </para></description></function>
-<function name="evaluate"><type>decltype(auto)</type><template>
+<function name="evaluate"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="Expr"/>
           <template-nontype-parameter name="T"><type>typename...</type></template-nontype-parameter>
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><parameter name="t"><paramtype>T &amp;&amp;...</paramtype></parameter><description><para>Evaluates <emphasis>expr</emphasis> using the built-in semantics, replacing any placeholders with the given values.</para><para><note><para><computeroutput>evaluate(expr)</computeroutput> is only valid if <emphasis>expr</emphasis> is an expression. </para>
@@ -159,7 +159,7 @@
         </template><parameter name="expr"><paramtype>Expr &amp;&amp;</paramtype></parameter><parameter name="transform"><paramtype>Transform &amp;&amp;</paramtype></parameter><parameter name="transforms"><paramtype>Transforms &amp;&amp;...</paramtype></parameter><description><para>Returns the result of transforming (all or part of) <emphasis>expr</emphasis> using whatever overloads of <computeroutput>Transform::operator()</computeroutput> match <emphasis>expr</emphasis>.</para><para><note><para>Transformations can do anything: they may have side effects; they may mutate values; they may mutate types; and they may do any combination of these. </para>
 </note>
 </para></description></function>
-<function name="transform_strict"><type>decltype(auto)</type><template>
+<function name="transform_strict"><type>decltype(auto) constexpr</type><template>
           <template-type-parameter name="Expr"/>
           <template-type-parameter name="Transform"/>
           <template-nontype-parameter name="Transforms"><type>typename...</type></template-nontype-parameter>
@@ -498,7 +498,7 @@ return_type f () &amp;&amp;;
 <header name="boost/yap/print.hpp">
 <namespace name="boost">
 <namespace name="yap">
-<function name="op_string"><type>char const  *</type><parameter name="kind"><paramtype>expr_kind</paramtype></parameter><description><para>Returns the <computeroutput>char const *</computeroutput> string for the spelling of the C++ operator associated with <emphasis>kind</emphasis>. It returns the special values "ref" and "term" for the non-operator kinds <computeroutput>expr_kind::expr_ref</computeroutput> amd <computeroutput>expr_kind::terminal</computeroutput>, respectively. </para></description></function>
+<function name="op_string"><type>constexpr char const  *</type><parameter name="kind"><paramtype>expr_kind</paramtype></parameter><description><para>Returns the <computeroutput>char const *</computeroutput> string for the spelling of the C++ operator associated with <emphasis>kind</emphasis>. It returns the special values "ref" and "term" for the non-operator kinds <computeroutput>expr_kind::expr_ref</computeroutput> amd <computeroutput>expr_kind::terminal</computeroutput>, respectively. </para></description></function>
 <function name="print"><type>std::ostream &amp;</type><template>
           <template-type-parameter name="Expr"/>
         </template><parameter name="os"><paramtype>std::ostream &amp;</paramtype></parameter><parameter name="expr"><paramtype>Expr const &amp;</paramtype></parameter><description><para>Prints expression <emphasis>expr</emphasis> to stream <emphasis>os</emphasis>. Returns <emphasis>os</emphasis>. </para></description></function>

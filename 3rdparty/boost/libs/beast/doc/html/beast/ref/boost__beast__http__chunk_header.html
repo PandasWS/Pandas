@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>http::chunk_header</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Beast">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Beast">
 <link rel="up" href="../ref.html" title="This Page Intentionally Left Blank 2/2">
-<link rel="prev" href="boost__beast__http__chunk_extensions.html" title="http::chunk_extensions">
-<link rel="next" href="boost__beast__http__chunk_header/begin.html" title="http::chunk_header::begin">
+<link rel="prev" href="boost__beast__http__chunk_crlf/end.html" title="http::chunk_crlf::end">
+<link rel="next" href="boost__beast__http__chunk_header/value_type.html" title="http::chunk_header::value_type">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,7 +20,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__http__chunk_extensions.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__chunk_header/begin.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__http__chunk_crlf/end.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__chunk_header/value_type.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
@@ -63,24 +63,24 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__chunk_header/const_iterator.html" title="http::chunk_header::const_iterator"><span class="bold"><strong>const_iterator</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__chunk_header/const_iterator.html" title="http::chunk_header::const_iterator">const_iterator</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Required for ConstBufferSequence
+                  Required for <span class="emphasis"><em>ConstBufferSequence</em></span>
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__chunk_header/value_type.html" title="http::chunk_header::value_type"><span class="bold"><strong>value_type</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__chunk_header/value_type.html" title="http::chunk_header::value_type">value_type</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Required for ConstBufferSequence
+                  Required for <span class="emphasis"><em>ConstBufferSequence</em></span>
                 </p>
               </td>
 </tr>
@@ -112,39 +112,37 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__chunk_header/begin.html" title="http::chunk_header::begin"><span class="bold"><strong>begin</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__chunk_header/begin.html" title="http::chunk_header::begin">begin</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Required for ConstBufferSequence
-                </p>
-              </td>
-</tr>
-<tr>
-<td>
-                <p>
-                  <a class="link" href="boost__beast__http__chunk_header/chunk_header.html" title="http::chunk_header::chunk_header"><span class="bold"><strong>chunk_header</strong></span></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  Constructor.
-                </p>
-                <p>
-                  Required for ConstBufferSequence
+                  Required for <span class="emphasis"><em>ConstBufferSequence</em></span>
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__chunk_header/end.html" title="http::chunk_header::end"><span class="bold"><strong>end</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__chunk_header/chunk_header.html" title="http::chunk_header::chunk_header">chunk_header</a> <span class="silver">[constructor]</span></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Required for ConstBufferSequence
+                  Constructor. <br> <span class="silver">—</span><br> Required
+                  for <span class="emphasis"><em>ConstBufferSequence</em></span>
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__chunk_header/end.html" title="http::chunk_header::end">end</a></strong></span>
+                </p>
+              </td>
+<td>
+                <p>
+                  Required for <span class="emphasis"><em>ConstBufferSequence</em></span>
                 </p>
               </td>
 </tr>
@@ -169,8 +167,11 @@
         CRLF (<code class="computeroutput"><span class="string">"\r\n"</span></code>). This
         class allows the caller to emit piecewise chunk bodies, by first serializing
         the chunk header using this class and then serializing the chunk body in
-        a series of one or more calls to a stream write operation. To use this class,
-        pass an instance of it to a stream algorithm as the buffer sequence:
+        a series of one or more calls to a stream write operation.
+      </p>
+<p>
+        To use this class, pass an instance of it to a stream algorithm as the buffer
+        sequence:
       </p>
 <pre class="programlisting"><span class="comment">// writes "400;x\r\n"</span>
 <span class="identifier">net</span><span class="special">::</span><span class="identifier">write</span><span class="special">(</span><span class="identifier">stream</span><span class="special">,</span> <span class="identifier">chunk_header</span><span class="special">{</span><span class="number">1024</span><span class="special">,</span> <span class="string">"x"</span><span class="special">});</span>
@@ -183,13 +184,10 @@
 <p>
         <a href="https://tools.ietf.org/html/rfc7230#section-4.1" target="_top">https://tools.ietf.org/html/rfc7230#section-4.1</a>
       </p>
-<p>
-        Convenience header <code class="literal">&lt;<a href="../../../../../../boost/beast/http.hpp" target="_top">boost/beast/http.hpp</a>&gt;</code>
-      </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2016-2019 Vinnie
+<td align="right"><div class="copyright-footer">Copyright © 2016-2019 Vinnie
       Falco<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
@@ -198,7 +196,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__http__chunk_extensions.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__chunk_header/begin.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__http__chunk_crlf/end.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__chunk_header/value_type.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

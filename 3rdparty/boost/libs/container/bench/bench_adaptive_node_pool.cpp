@@ -29,10 +29,11 @@
 #include <cstddef>   //std::size_t
 #include <cassert>   //assert
 
-#include <boost/timer/timer.hpp>
-using boost::timer::cpu_timer;
-using boost::timer::cpu_times;
-using boost::timer::nanosecond_type;
+#include <boost/move/detail/nsec_clock.hpp>
+
+using boost::move_detail::cpu_timer;
+using boost::move_detail::cpu_times;
+using boost::move_detail::nanosecond_type;
 
 namespace bc = boost::container;
 
@@ -193,17 +194,17 @@ void list_test_template(std::size_t num_iterations, std::size_t num_elements, bo
                   << ";"
                   << num_elements
                   << ";"
-                  << float(tinsert)/(num_iterations*num_elements)
+                  << float(tinsert)/float(num_iterations*num_elements)
                   << ";"
                   << (unsigned int)insert_stats.system_bytes
                   << ";"
-                  << float(insert_stats.system_bytes)/(num_iterations*num_elements*sizeof_node)*100.0-100.0
+                  << float(insert_stats.system_bytes)/float(num_iterations*num_elements*sizeof_node)*100.0-100.0
                   << ";"
                   << (unsigned int)insert_inuse
                   << ";"
-                  << (float(insert_inuse)/(num_iterations*num_elements*sizeof_node)*100.0)-100.0
+                  << (float(insert_inuse)/float(num_iterations*num_elements*sizeof_node)*100.0)-100.0
                   << ";";
-   std::cout   << float(terase)/(num_iterations*num_elements)
+   std::cout   << float(terase)/float(num_iterations*num_elements)
                << ";"
                << (unsigned int)erase_stats.system_bytes
                << ";"
@@ -214,11 +215,11 @@ void list_test_template(std::size_t num_iterations, std::size_t num_elements, bo
       std::cout << std::endl
                << "Allocator: " << get_allocator_name<Allocator>::get()
                << std::endl
-               << "  allocation/deallocation(ns): " << float(tinsert)/(num_iterations*num_elements) <<  '\t' << float(terase)/(num_iterations*num_elements)
+               << "  allocation/deallocation(ns): " << float(tinsert)/float(num_iterations*num_elements) <<  '\t' << float(terase)/float(num_iterations*num_elements)
                << std::endl
-               << "  Sys MB(overh.)/Inuse MB(overh.): " << (float)insert_stats.system_bytes/(1024*1024) << "(" << float(insert_stats.system_bytes)/(num_iterations*num_elements*sizeof_node)*100.0-100.0 << "%)"
+               << "  Sys MB(overh.)/Inuse MB(overh.): " << (float)insert_stats.system_bytes/(1024*1024) << "(" << float(insert_stats.system_bytes)/float(num_iterations*num_elements*sizeof_node)*100.0-100.0 << "%)"
                << " / "
-               << (float)insert_inuse/(1024*1024) << "(" << (float(insert_inuse)/(num_iterations*num_elements*sizeof_node)*100.0)-100.0 << "%)"
+               << (float)insert_inuse/(1024*1024) << "(" << (float(insert_inuse)/float(num_iterations*num_elements*sizeof_node)*100.0)-100.0 << "%)"
                << std::endl
                << "  system MB/inuse bytes after:    " << (float)erase_stats.system_bytes/(1024*1024) << '\t' << bc::dlmalloc_in_use_memory()
                << std::endl  << std::endl;

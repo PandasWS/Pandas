@@ -5,7 +5,7 @@
   http://www.boost.org/LICENSE_1_0.txt).
 ]
 
-[section:vmd_assert Testing for equality and inequality]
+[section:vmd_equality Testing for equality and inequality]
 
 VMD allows the programmer to test generically for the equality or inequality
 of any value which VMD can parse. This includes emptiness, identifiers, numbers, 

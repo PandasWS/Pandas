@@ -25,7 +25,7 @@ struct __declspec(align(64)) a64 { char m[64]; };
 struct __declspec(align(128)) a128 { char m[128]; };
 #endif
 
-#ifdef __CLR_VER
+#ifdef _MANAGED
 #pragma warning(disable:4793)  // vaarg function
 #endif
 

@@ -1,12 +1,12 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Definitions</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Boost.NumericConversion">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Boost.NumericConversion">
-<link rel="prev" href="../index.html" title="Chapter&#160;1.&#160;Boost.NumericConversion">
+<link rel="home" href="../index.html" title="Chapter 1. Boost.NumericConversion">
+<link rel="up" href="../index.html" title="Chapter 1. Boost.NumericConversion">
+<link rel="prev" href="../index.html" title="Chapter 1. Boost.NumericConversion">
 <link rel="next" href="converter___function_object.html" title="converter&lt;&gt; function object">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -70,13 +70,13 @@
 </h3></div></div></div>
 <p>
         As defined by the <span class="underline">C++ Object Model</span>
-        (&#167;1.7) the <span class="underline">storage</span> or memory on which
+        (§1.7) the <span class="underline">storage</span> or memory on which
         a C++ program runs is a contiguous sequence of <span class="underline">bytes</span>
         where each byte is a contiguous sequence of bits.
       </p>
 <p>
-        An <span class="underline">object</span> is a region of storage (&#167;1.8)
-        and has a type (&#167;3.9).
+        An <span class="underline">object</span> is a region of storage (§1.8)
+        and has a type (§3.9).
       </p>
 <p>
         A <span class="underline">type</span> is a discrete set of values.
@@ -84,13 +84,13 @@
 <p>
         An object of type <code class="computeroutput"><span class="identifier">T</span></code> has an
         <span class="underline">object representation</span> which is the
-        sequence of bytes stored in the object (&#167;3.9/4)
+        sequence of bytes stored in the object (§3.9/4)
       </p>
 <p>
         An object of type <code class="computeroutput"><span class="identifier">T</span></code> has a
         <span class="underline">value representation</span> which is the set
         of bits that determine the <span class="emphasis"><em>value</em></span> of an object of that
-        type (&#167;3.9/4). For <span class="underline">POD</span> types (&#167;3.9/10),
+        type (§3.9/4). For <span class="underline">POD</span> types (§3.9/10),
         this bitset is given by the object representation, but not all the bits in
         the storage need to participate in the value representation (except for character
         types): for example, some bits might be used for padding or there may be
@@ -105,7 +105,7 @@
       </p>
 <p>
         An <span class="bold"><strong>abstract value</strong></span> (untyped) is the conceptual
-        information that is represented in a type (i.e. the number &#960;).
+        information that is represented in a type (i.e. the number π).
       </p>
 <p>
         The <span class="bold"><strong>intrinsic value</strong></span> of an object is the
@@ -129,7 +129,7 @@
         of <code class="computeroutput"><span class="identifier">V</span></code> in the type <code class="computeroutput"><span class="identifier">T</span></code>.
       </p>
 <p>
-        For example, the abstract value &#960; can be represented in the type <code class="computeroutput"><span class="keyword">double</span></code> as the <code class="computeroutput"><span class="keyword">double</span>
+        For example, the abstract value π can be represented in the type <code class="computeroutput"><span class="keyword">double</span></code> as the <code class="computeroutput"><span class="keyword">double</span>
         <span class="identifier">value</span> <span class="identifier">M_PI</span></code>
         and in the type <code class="computeroutput"><span class="keyword">int</span></code> as the
         <code class="computeroutput"><span class="keyword">int</span> <span class="identifier">value</span>
@@ -167,13 +167,13 @@
 </h3></div></div></div>
 <p>
         The C++ language defines <span class="underline">fundamental types</span>
-        (&#167;3.9.1). The following subsets of the fundamental types are intended to
+        (§3.9.1). The following subsets of the fundamental types are intended to
         represent <span class="emphasis"><em>numbers</em></span>:
       </p>
 <div class="variablelist">
 <p class="title"><b></b></p>
 <dl class="variablelist">
-<dt><span class="term"><span class="underline">signed integer types</span> (&#167;3.9.1/2):</span></dt>
+<dt><span class="term"><span class="underline">signed integer types</span> (§3.9.1/2):</span></dt>
 <dd><p>
               <code class="computeroutput"><span class="special">{</span><span class="keyword">signed</span>
               <span class="keyword">char</span><span class="special">,</span>
@@ -182,7 +182,7 @@
               <span class="keyword">signed</span> <span class="keyword">int</span><span class="special">,</span> <span class="keyword">signed</span> <span class="keyword">long</span> <span class="keyword">int</span><span class="special">}</span></code> Can be used to represent general integer
               numbers (both negative and positive).
             </p></dd>
-<dt><span class="term"><span class="underline">unsigned integer types</span> (&#167;3.9.1/3):</span></dt>
+<dt><span class="term"><span class="underline">unsigned integer types</span> (§3.9.1/3):</span></dt>
 <dd><p>
               <code class="computeroutput"><span class="special">{</span><span class="keyword">unsigned</span>
               <span class="keyword">char</span><span class="special">,</span>
@@ -192,17 +192,17 @@
               <span class="keyword">long</span> <span class="keyword">int</span><span class="special">}</span></code> Can be used to represent positive
               integer numbers with modulo-arithmetic.
             </p></dd>
-<dt><span class="term"><span class="underline">floating-point types</span> (&#167;3.9.1/8):</span></dt>
+<dt><span class="term"><span class="underline">floating-point types</span> (§3.9.1/8):</span></dt>
 <dd><p>
               <code class="computeroutput"><span class="special">{</span><span class="keyword">float</span><span class="special">,</span><span class="keyword">double</span><span class="special">,</span><span class="keyword">long</span> <span class="keyword">double</span><span class="special">}</span></code>
               Can be used to represent real numbers.
             </p></dd>
-<dt><span class="term"><span class="underline">integral or integer types</span> (&#167;3.9.1/7):</span></dt>
+<dt><span class="term"><span class="underline">integral or integer types</span> (§3.9.1/7):</span></dt>
 <dd><p>
               <code class="computeroutput"><span class="special">{{</span><span class="keyword">signed</span>
               <span class="identifier">integers</span><span class="special">},{</span><span class="keyword">unsigned</span> <span class="identifier">integers</span><span class="special">},</span> <span class="keyword">bool</span><span class="special">,</span> <span class="keyword">char</span> <span class="keyword">and</span> <span class="keyword">wchar_t</span><span class="special">}</span></code>
             </p></dd>
-<dt><span class="term"><span class="underline">arithmetic types</span> (&#167;3.9.1/8):</span></dt>
+<dt><span class="term"><span class="underline">arithmetic types</span> (§3.9.1/8):</span></dt>
 <dd><p>
               <code class="computeroutput"><span class="special">{{</span><span class="identifier">integer</span>
               <span class="identifier">types</span><span class="special">},{</span><span class="identifier">floating</span> <span class="identifier">types</span><span class="special">}}</span></code>
@@ -228,7 +228,7 @@
       </p>
 <p>
         Another consequence of this is that the range for signed X is always a smaller
-        subset of the range of unsigned X, as required by &#167;3.9.1/3.
+        subset of the range of unsigned X, as required by §3.9.1/3.
       </p>
 <div class="note"><table border="0" summary="Note">
 <tr>
@@ -693,11 +693,11 @@
 </h3></div></div></div>
 <p>
         The C++ language defines <span class="underline">Standard Conversions</span>
-        (&#167;4) some of which are conversions between arithmetic types.
+        (§4) some of which are conversions between arithmetic types.
       </p>
 <p>
-        These are <span class="underline">Integral promotions</span> (&#167;4.5),
-        <span class="underline">Integral conversions</span> (&#167;4.7), <span class="underline">Floating point promotions</span> (&#167;4.6), <span class="underline">Floating point conversions</span> (&#167;4.8) and <span class="underline">Floating-integral conversions</span> (&#167;4.9).
+        These are <span class="underline">Integral promotions</span> (§4.5),
+        <span class="underline">Integral conversions</span> (§4.7), <span class="underline">Floating point promotions</span> (§4.6), <span class="underline">Floating point conversions</span> (§4.8) and <span class="underline">Floating-integral conversions</span> (§4.9).
       </p>
 <p>
         In the sequel, integral and floating point promotions are called <span class="bold"><strong>arithmetic promotions</strong></span>, and these plus integral, floating-point
@@ -762,7 +762,7 @@
             in <code class="computeroutput"><span class="identifier">T</span></code>, the conversion
             has <span class="underline">undefined behavior</span> (unless
             <code class="computeroutput"><span class="identifier">T</span></code> is <code class="computeroutput"><span class="keyword">bool</span></code>,
-            see &#167;4.12).
+            see §4.12).
           </li></ul></div>
 <p>
         Integer to Floating conversions are always defined.
@@ -925,7 +925,7 @@
 <p>
         A C++ implementation is required to have <code class="computeroutput"><span class="identifier">UINT_MAX</span>
         <span class="special">&gt;</span> <span class="identifier">INT_MAX</span></code>
-        (&#167;3.9/3), so:
+        (§3.9/3), so:
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
@@ -959,7 +959,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2004-2007 Fernando
+<td align="right"><div class="copyright-footer">Copyright © 2004-2007 Fernando
       Luis Cacciola Carballal<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

@@ -25,6 +25,8 @@ BOOST_TTI_HAS_TEMPLATE(TemplateNotExist,int,class,template <class> class ATempla
 BOOST_TTI_TRAIT_HAS_TEMPLATE(WrongParametersForMP,ManyParameters,class,class,int,class,template <class,class> class,class,long)
 BOOST_TTI_TRAIT_HAS_TEMPLATE(WrongParameters2ForMP,ManyParameters,class,long,int,class,template <class> class,class,long)
 
+BOOST_TTI_HAS_TEMPLATE(NestedMemberTemplate,int,class,long)
+
 #endif // BOOST_PP_VARIADICS
 
 #endif // TEST_VM_HAS_TEMPLATE_CHECK_PARAMS_HPP

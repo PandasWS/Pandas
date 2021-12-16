@@ -5,6 +5,10 @@
 // Copyright (c) 2008-2012 Bruno Lalande, Paris, France.
 // Copyright (c) 2009-2012 Mateusz Loskot, London, UK.
 
+// This file was modified by Oracle on 2020-2021.
+// Modifications copyright (c) 2020-2021, Oracle and/or its affiliates.
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
+
 // Parts of Boost.Geometry are redesigned from Geodan's Geographic Library
 // (geolib/GGL), copyright (c) 1995-2010 Geodan, Amsterdam, the Netherlands.
 
@@ -34,6 +38,10 @@
 #  include <boost/geometry/algorithms/centroid.hpp>
 #endif
 
+// TEMP
+#include <boost/geometry/strategies/cartesian.hpp>
+
+
 template <int DimensionCount, typename Geometry>
 void test_sectionalize_part()
 {
@@ -43,7 +51,7 @@ void test_sectionalize_part()
     typedef bg::sections<box_type, DimensionCount> sections_type;
     typedef typename boost::range_value<sections_type>::type section_type;
 
-    typedef boost::mpl::vector_c<std::size_t, 0> dimension_list;
+    typedef std::integer_sequence<std::size_t, 0> dimension_list;
 
     typedef bg::detail::sectionalize::sectionalize_part
         <
@@ -53,18 +61,23 @@ void test_sectionalize_part()
     sections_type sections;
     section_type section;
 
-
     Geometry geometry;
     geometry.push_back(bg::make<point_type>(1, 1));
 
     bg::detail::no_rescale_policy rescale_policy;
+    typename bg::strategies::relate::services::default_strategy
+        <
+            Geometry, Geometry
+        >::type strategy;
 
     bg::ring_identifier ring_id;
-    sectionalize_part::apply(sections, geometry.begin(), geometry.end(), rescale_policy, ring_id, 10);
+    sectionalize_part::apply(sections, geometry.begin(), geometry.end(),
+                             rescale_policy, strategy, ring_id, 10);
     // There should not yet be anything generated, because it is only ONE point
 
     geometry.push_back(bg::make<point_type>(2, 2));
-    sectionalize_part::apply(sections, geometry.begin(), geometry.end(), rescale_policy, ring_id, 10);
+    sectionalize_part::apply(sections, geometry.begin(), geometry.end(),
+                             rescale_policy, strategy, ring_id, 10);
 }
 
 
@@ -75,8 +88,7 @@ void test_sectionalize(std::string const& caseid, G const& g, std::size_t sectio
 {
     boost::ignore_unused(caseid);
 
-    static const std::size_t dimension_count = boost::mpl::size<DimensionVector>::value;
-
+    static const std::size_t dimension_count = bg::util::sequence_size<DimensionVector>::value;
 
     typedef typename bg::point_type<G>::type point;
     typedef bg::model::box<point> box;
@@ -90,7 +102,7 @@ void test_sectionalize(std::string const& caseid, G const& g, std::size_t sectio
 
     // Check if sections are consecutive and consistent
     int previous_index = -1;
-    BOOST_FOREACH(typename sections::value_type const& sec, s)
+    for (typename sections::value_type const& sec : s)
     {
         if (sec.begin_index > 0)
         {
@@ -203,8 +215,8 @@ void test_sectionalize(std::string const& caseid, std::string const& wkt,
     G g;
     bg::read_wkt(wkt, g);
 
-    typedef boost::mpl::vector_c<std::size_t, 0, 1> dim2;
-    typedef boost::mpl::vector_c<std::size_t, 0> dim1;
+    typedef std::integer_sequence<std::size_t, 0, 1> dim2;
+    typedef std::integer_sequence<std::size_t, 0> dim1;
 
     test_sectionalize<dim2, Reverse>(caseid + "_d2", g, count2, s2, d2, max_count);
     test_sectionalize<dim1, Reverse>(caseid + "_d1", g, count1, s1, d1, max_count);
@@ -302,7 +314,7 @@ void test_all()
         31, "", "", 100);
 
     {
-        typedef boost::mpl::vector_c<std::size_t, 1> only_y_dim;
+        typedef std::integer_sequence<std::size_t, 1> only_y_dim;
         bg::model::polygon<P> pol;
         bg::read_wkt(vertical, pol);
         test_sectionalize<only_y_dim, false>("vertical_y", pol, 22, "", "", 100);
@@ -327,7 +339,7 @@ void test_large_integers()
     bg::read_wkt(polygon_li, int_poly);
     bg::read_wkt(polygon_li, double_poly);
 
-    typedef boost::mpl::vector_c<std::size_t, 0> dimensions;
+    typedef std::integer_sequence<std::size_t, 0> dimensions;
     bg::sections<bg::model::box<int_point_type>, 1> int_sections;
     bg::sections<bg::model::box<double_point_type>, 1> double_sections;
 

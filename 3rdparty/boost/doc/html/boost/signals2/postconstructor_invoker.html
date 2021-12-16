@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class postconstructor_invoker</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,7 +27,7 @@
 <a name="boost.signals2.postconstructor_invoker"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Class postconstructor_invoker</span></h2>
-<p>boost::signals2::postconstructor_invoker &#8212; Pass arguments to and run postconstructors for objects created with <a class="link" href="deconstruct.html" title="Function deconstruct">deconstruct()</a>.</p>
+<p>boost::signals2::postconstructor_invoker — Pass arguments to and run postconstructors for objects created with <a class="link" href="deconstruct.html" title="Function deconstruct">deconstruct()</a>.</p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../signals2/reference.html#header.boost.signals2.deconstruct_hpp" title="Header &lt;boost/signals2/deconstruct.hpp&gt;">boost/signals2/deconstruct.hpp</a>&gt;
@@ -50,10 +50,10 @@
 <p>
             Objects of type <code class="computeroutput">postconstructor_invoker</code> are returned by calls to the
             <a class="link" href="deconstruct.html" title="Function deconstruct">deconstruct()</a> factory function.  These objects are intended
-            to either be immediately assigned to a shared_ptr (in which case the
+            to either be immediately assigned to a <a class="link" href="../shared_ptr.html" title="Class template shared_ptr">shared_ptr</a> (in which case the
             class' conversion operator will perform the conversion by calling the
             <a class="link" href="postconstructor_invoker.html#id-1_3_37_6_3_3_1_3_1_2-bb">postconstruct</a> with no arguments), or to be converted
-            to shared_ptr explicitly by the user calling one of
+            to <a class="link" href="../shared_ptr.html" title="Class template shared_ptr">shared_ptr</a> explicitly by the user calling one of
             the <a class="link" href="postconstructor_invoker.html#id-1_3_37_6_3_3_1_3_1_2-bb">postconstruct</a> methods.
           </p>
 <div class="refsect2">
@@ -76,11 +76,11 @@
   <span class="keyword">const</span> <span class="identifier">shared_ptr</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;</span> <span class="special">&amp;</span> <a name="id-1_3_37_6_3_3_1_3_1_2_4-bb"></a><span class="identifier">postconstruct</span><span class="special">(</span><span class="identifier">A1</span> a1<span class="special">,</span> <span class="identifier">A1</span> a2<span class="special">,</span> <span class="special">...</span><span class="special">,</span> <span class="identifier">A1</span> aN<span class="special">)</span><span class="special">;</span></pre>
 <p>
               The <code class="computeroutput">postconstruct</code> methods make an unqualified call to
-              <code class="computeroutput">adl_postconstruct()</code> and then return the <code class="computeroutput">shared_ptr</code>
+              <code class="computeroutput">adl_postconstruct()</code> and then return the <code class="computeroutput"><a class="link" href="../shared_ptr.html" title="Class template shared_ptr">shared_ptr</a></code>
               which was wrapped inside the <code class="computeroutput">postconstructor_invoker</code>
               object by <code class="computeroutput"><a class="link" href="deconstruct.html" title="Function deconstruct">deconstruct()</a></code>.
               The first two arguments passed to the
-              <code class="computeroutput">adl_postconstruct()</code> call are always the <code class="computeroutput">shared_ptr</code>
+              <code class="computeroutput">adl_postconstruct()</code> call are always the <code class="computeroutput"><a class="link" href="../shared_ptr.html" title="Class template shared_ptr">shared_ptr</a></code>
               owning the object created by <code class="computeroutput"><a class="link" href="deconstruct.html" title="Function deconstruct">deconstruct()</a></code>,
               followed by a ordinary pointer to the same object.  As a convenience,
               the ordinary pointer
@@ -97,7 +97,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2004 Douglas Gregor<br>Copyright &#169; 2007-2009 Frank Mori Hess<p>Distributed under the Boost
+<td align="right"><div class="copyright-footer">Copyright © 2001-2004 Douglas Gregor<br>Copyright © 2007-2009 Frank Mori Hess<p>Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>

@@ -82,7 +82,12 @@ BOOST_AUTO_TEST_CASE(non_blocking)
     fmt << "S" << i;
     strings[i] = fmt.str();
   }
-  
+
+  std::vector<int> empty;
+
+  BOOST_CHECK(test(world, empty, false, true));
+  BOOST_CHECK(test(world, empty, false, false));
+
   BOOST_CHECK(test(world, integers, true,  true));
   BOOST_CHECK(test(world, integers, true,  false));
   BOOST_CHECK(test(world, strings, true,  true));

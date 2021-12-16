@@ -31,7 +31,7 @@ BOOST_CHECK_INTEGRAL_CONSTANT(::tt::is_member_pointer<foo0_t>::value, false);
 #ifdef BOOST_TT_TEST_MS_FUNC_SIGS
 typedef void (__stdcall test_abc1::*scall_proc)();
 BOOST_CHECK_INTEGRAL_CONSTANT(::tt::is_member_pointer<scall_proc>::value, true);
-#ifndef __CLR_VER
+#ifndef _MANAGED
 typedef void (__fastcall test_abc1::*fcall_proc)(int);
 BOOST_CHECK_INTEGRAL_CONSTANT(::tt::is_member_pointer<fcall_proc>::value, true);
 #endif

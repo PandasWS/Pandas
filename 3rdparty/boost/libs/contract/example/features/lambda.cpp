@@ -25,7 +25,7 @@ int main() {
             boost::contract::check c = boost::contract::function()
                 .precondition([&] {
                     BOOST_CONTRACT_ASSERT(
-                            total + x <= std::numeric_limits<int>::max());
+                            total < std::numeric_limits<int>::max() - x);
                 })
                 .postcondition([&] {
                     BOOST_CONTRACT_ASSERT(total == *old_total + x);

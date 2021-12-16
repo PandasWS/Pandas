@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Local Time</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../date_time.html" title="Chapter&#160;13.&#160;Boost.Date_Time">
+<link rel="up" href="../date_time.html" title="Chapter 13. Boost.Date_Time">
 <link rel="prev" href="posix_time.html" title="Posix Time">
 <link rel="next" href="date_time_io.html" title="Date Time Input/Output">
 </head>
@@ -213,17 +213,17 @@ std::string to_posix_string();</pre></td>
     A posix_time_zone is unique in that the object is created from a Posix time zone string (IEEE Std 1003.1). A POSIX time zone string takes the form of:
     </p>
 <div class="literallayout"><p><br>
-&#160;&#160;&#160;&#160;&#160;&#160;"std&#160;offset&#160;dst&#160;[offset],start[/time],end[/time]"&#160;(w/no&#160;spaces).</p></div>
+      "std offset dst [offset],start[/time],end[/time]" (w/no spaces).</p></div>
 <p>'std' specifies the abbrev of the time zone. 'offset' is the offset from UTC. 'dst' specifies the abbrev of the time zone during daylight savings time. The second offset is how many hours changed during DST. 'start' and 'end' are the dates when DST goes into (and out of) effect. 'offset' takes the form of:
     </p>
 <div class="literallayout"><p><br>
-&#160;&#160;&#160;&#160;&#160;&#160;[+|-]hh[:mm[:ss]]&#160;{h=0-23,&#160;m/s=0-59}</p></div>
+      [+|-]hh[:mm[:ss]] {h=0-23, m/s=0-59}</p></div>
 <p>'time' and 'offset' take the same form. 'start' and 'end' can be one of three forms:
     </p>
 <div class="literallayout"><p><br>
-&#160;&#160;&#160;&#160;&#160;&#160;Mm.w.d&#160;{month=1-12,&#160;week=1-5&#160;(5&#160;is&#160;always&#160;last),&#160;day=0-6}<br>
-&#160;&#160;&#160;&#160;&#160;&#160;Jn&#160;{n=1-365&#160;Feb29&#160;is&#160;never&#160;counted}<br>
-&#160;&#160;&#160;&#160;&#160;&#160;n&#160;{n=0-365&#160;Feb29&#160;is&#160;counted&#160;in&#160;leap&#160;years}</p></div>
+      Mm.w.d {month=1-12, week=1-5 (5 is always last), day=0-6}<br>
+      Jn {n=1-365 Feb29 is never counted}<br>
+      n {n=0-365 Feb29 is counted in leap years}</p></div>
 <p>
   </p>
 <p>
@@ -244,24 +244,24 @@ std::string to_posix_string();</pre></td>
     Some examples are:
     </p>
 <div class="literallayout"><p><br>
-&#160;&#160;&#160;&#160;&#160;&#160;"PST-8PDT01:00:00,M4.1.0/02:00:00,M10.1.0/02:00:00"<br>
-&#160;&#160;&#160;&#160;&#160;&#160;"PST-8PDT,M4.1.0,M10.1.0"</p></div>
+      "PST-8PDT01:00:00,M4.1.0/02:00:00,M10.1.0/02:00:00"<br>
+      "PST-8PDT,M4.1.0,M10.1.0"</p></div>
 <p>These two are actually the same specification (defaults were used in the second string). This zone lies eight hours west of GMT and makes a one hour shift forward during daylight savings time. Daylight savings for this zone starts on the first Sunday of April at 2am, and ends on the first Sunday of October at 2am.
     </p>
 <div class="literallayout"><p><br>
-&#160;&#160;&#160;&#160;&#160;&#160;"MST-7"</p></div>
+      "MST-7"</p></div>
 <p>This zone is as simple as it gets. This zone lies seven hours west of GMT and has no daylight savings.
     </p>
 <div class="literallayout"><p><br>
-&#160;&#160;&#160;&#160;&#160;&#160;"EST10EDT,M10.5.0,M3.5.0/03"</p></div>
+      "EST10EDT,M10.5.0,M3.5.0/03"</p></div>
 <p>This string describes the time zone for Sydney Australia. It lies ten hours east of GMT and makes a one hour shift forward during daylight savings. Being located in the southern hemisphere, daylight savings begins on the last Sunday in October at 2am and ends on the last Sunday in March at 3am.
     </p>
 <div class="literallayout"><p><br>
-&#160;&#160;&#160;&#160;&#160;&#160;"FST+3FDT02:00,J60/00,J304/02"</p></div>
+      "FST+3FDT02:00,J60/00,J304/02"</p></div>
 <p>This specification describes a fictitious zone that lies three hours east of GMT. It makes a two hour shift forward for daylight savings which begins on March 1st at midnight, and ends on October 31st at 2am. The 'J' designation in the start/end specs signifies that counting starts at one and February 29th is never counted.
     </p>
 <div class="literallayout"><p><br>
-&#160;&#160;&#160;&#160;&#160;&#160;"FST+3FDT,59,304"</p></div>
+      "FST+3FDT,59,304"</p></div>
 <p>This specification is significant because of the '59'. The lack of 'J' for the start and end dates, indicates that the Julian day-count begins at zero and ends at 365. If you do the math, you'll see that allows for a total of 366 days. This is fine in leap years, but in non-leap years '59' (Feb-29) does not exist. This will construct a valid posix_time_zone object but an exception will be thrown if the date of '59' is accessed in a non-leap year. Ex:
     </p>
 <pre class="programlisting">posix_time_zone leap_day(std::string("FST+3FDT,59,304"));
@@ -521,18 +521,18 @@ not processed by the tz_database.
     Each record (line) must have eleven fields. Some of those fields can be empty. Every field (even empty ones) must be enclosed in double-quotes.
     </p>
 <div class="literallayout"><p><br>
-&#160;&#160;&#160;&#160;&#160;&#160;Ex:<br>
-&#160;&#160;&#160;&#160;&#160;&#160;"America/Phoenix"&#160;&lt;-&#160;string&#160;enclosed&#160;in&#160;quotes<br>
-&#160;&#160;&#160;&#160;&#160;&#160;""&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;-&#160;empty&#160;field<br>
-&#160;&#160;&#160;&#160;</p></div>
+      Ex:<br>
+      "America/Phoenix" &lt;- string enclosed in quotes<br>
+      ""                &lt;- empty field<br>
+    </p></div>
 <p>
   </p>
 <p>
     Some fields represent a length of time. The format of these fields must be:
     </p>
 <div class="literallayout"><p><br>
-&#160;&#160;&#160;&#160;&#160;&#160;"{+|-}hh:mm[:ss]"&#160;&lt;-&#160;length-of-time&#160;format<br>
-&#160;&#160;&#160;&#160;</p></div>
+      "{+|-}hh:mm[:ss]" &lt;- length-of-time format<br>
+    </p></div>
 <p>
     Where the plus or minus is mandatory and the seconds are optional.
   </p>
@@ -1159,7 +1159,7 @@ local_date_time nadt(pos_infin);</pre>
 <td rowspan="2" valign="top"><pre class="screen">bool is_dst()</pre></td>
 <td>Determines if time value is in DST for associated zone.</td>
 </tr>
-<tr><td>&#160;</td></tr>
+<tr><td> </td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">ptime utc_time()</pre></td>
 <td>Converts the local time value to a UTC value.</td>
@@ -1331,7 +1331,7 @@ tm ldt_tm = to_tm(ldt);
    tm_hour =&gt; 6
    tm_min  =&gt; 0
    tm_sec  =&gt; 0
-   tm_isddst =&gt; 1 */</pre>
+   tm_isdst =&gt; 1 */</pre>
 	  </td></tr>
 </tbody>
 </table></div>
@@ -1637,7 +1637,7 @@ mar_mst.shift(hours(48));
 <td rowspan="2" valign="top"><pre class="screen">operator&lt;=, operator&gt;=</pre></td>
 <td>Defined in terms of the other operators.</td>
 </tr>
-<tr><td>&#160;</td></tr>
+<tr><td> </td></tr>
 </tbody>
 </table></div>
 <p>
@@ -1646,7 +1646,7 @@ mar_mst.shift(hours(48));
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2005 CrystalClear Software, Inc<p>Subject to the Boost Software License, Version 1.0. (See accompanying file
+<td align="right"><div class="copyright-footer">Copyright © 2001-2005 CrystalClear Software, Inc<p>Subject to the Boost Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>
 </tr></table>

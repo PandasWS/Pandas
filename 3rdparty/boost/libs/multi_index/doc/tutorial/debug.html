@@ -125,7 +125,8 @@ is one value of the <code>safe_mode::error_code</code> enumeration:
   <span class=identifier>invalid_range</span><span class=special>,</span>                <span class=comment>// last not reachable from first</span>
   <span class=identifier>inside_range</span><span class=special>,</span>                 <span class=comment>// iterator lies within a range (and it mustn't)</span>
   <span class=identifier>out_of_bounds</span><span class=special>,</span>                <span class=comment>// move attempted beyond container limits</span>
-  <span class=identifier>same_container</span>                <span class=comment>// containers ought to be different</span>
+  <span class=identifier>same_container</span><span class=special>,</span>               <span class=comment>// containers ought to be different</span>
+  <span class=identifier>unequal_allocators</span>            <span class=comment>// allocators ought to be equal</span>
 <span class=special>};</span>
 
 <span class=special>}</span> <span class=comment>// namespace multi_index::safe_mode</span>
@@ -239,9 +240,9 @@ Techniques
 
 <br>
 
-<p>Revised July 07th 2017</p>
+<p>Revised May 9th 2020</p>
 
-<p>&copy; Copyright 2003-2017 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

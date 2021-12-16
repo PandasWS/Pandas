@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Macro BOOST_VMD_ASSERT_IS_TYPE</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="index.html" title="Chapter&#160;1.&#160;The Variadic Macro Data Library 1.9">
+<link rel="home" href="index.html" title="Chapter 1. The Variadic Macro Data Library 1.10">
 <link rel="up" href="header/boost/vmd/assert_is_type_hpp.html" title="Header &lt;boost/vmd/assert_is_type.hpp&gt;">
 <link rel="prev" href="header/boost/vmd/assert_is_type_hpp.html" title="Header &lt;boost/vmd/assert_is_type.hpp&gt;">
 <link rel="next" href="BOOST_VMD_ASSERT_IS_TYPE_D.html" title="Macro BOOST_VMD_ASSERT_IS_TYPE_D">
@@ -26,34 +26,37 @@
 <a name="BOOST_VMD_ASSERT_IS_TYPE"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Macro BOOST_VMD_ASSERT_IS_TYPE</span></h2>
-<p>BOOST_VMD_ASSERT_IS_TYPE &#8212; Asserts that the sequence is a VMD type. </p>
+<p>BOOST_VMD_ASSERT_IS_TYPE — Asserts that the sequence is a VMD type. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="header/boost/vmd/assert_is_type_hpp.html" title="Header &lt;boost/vmd/assert_is_type.hpp&gt;">boost/vmd/assert_is_type.hpp</a>&gt;
 
 </span>BOOST_VMD_ASSERT_IS_TYPE(sequence)</pre></div>
 <div class="refsect1">
-<a name="idm45028682023248"></a><h2>Description</h2>
+<a name="idm12573"></a><h2>Description</h2>
 <p>The macro checks that the sequence is a VMD type. If it is not a VMD type, it forces a compiler error.</p>
 <p>The macro normally checks for a VMD type only in debug mode. However an end-user can force the macro to check or not check by defining the macro BOOST_VMD_ASSERT_DATA to 1 or 0 respectively.</p>
 <p>sequence = a possible VMD type.</p>
-<p>returns = Normally the macro returns nothing.       If the sequence is a VMD type, nothing is 
-      output.
+<pre class="programlisting"><span class="identifier">returns</span> <span class="special">=</span> <span class="identifier">Normally</span> <span class="identifier">the</span> <span class="identifier">macro</span> <span class="identifier">returns</span> <span class="identifier">nothing</span><span class="special">.</span> 
 
-      For VC++, because there is no sure way of forcing  
-      a compiler error from within a macro without producing
-      output, if the sequence is not a VMD type the 
-      macro forces a compiler error by outputting invalid C++.
-
-      For all other compilers a compiler error is forced 
-      without producing output if the sequence is not a 
-      VMD type.
- </p>
+          <span class="identifier">If</span> <span class="identifier">the</span> <span class="identifier">sequence</span> <span class="identifier">is</span> <span class="identifier">a</span> <span class="identifier">VMD</span> <span class="identifier">type</span><span class="special">,</span> <span class="identifier">nothing</span> <span class="identifier">is</span> 
+          <span class="identifier">output</span><span class="special">.</span>
+          
+          <span class="identifier">For</span> <span class="identifier">VC</span><span class="special">++</span><span class="special">,</span> <span class="identifier">because</span> <span class="identifier">there</span> <span class="identifier">is</span> <span class="identifier">no</span> <span class="identifier">sure</span> <span class="identifier">way</span> <span class="identifier">of</span> <span class="identifier">forcing</span>  
+          <span class="identifier">a</span> <span class="identifier">compiler</span> <span class="identifier">error</span> <span class="identifier">from</span> <span class="identifier">within</span> <span class="identifier">a</span> <span class="identifier">macro</span> <span class="identifier">without</span> <span class="identifier">producing</span>
+          <span class="identifier">output</span><span class="special">,</span> <span class="keyword">if</span> <span class="identifier">the</span> <span class="identifier">sequence</span> <span class="identifier">is</span> <span class="identifier">not</span> <span class="identifier">a</span> <span class="identifier">VMD</span> <span class="identifier">type</span> <span class="identifier">the</span> 
+          <span class="identifier">macro</span> <span class="identifier">forces</span> <span class="identifier">a</span> <span class="identifier">compiler</span> <span class="identifier">error</span> <span class="identifier">by</span> <span class="identifier">outputting</span> <span class="identifier">invalid</span> <span class="identifier">C</span><span class="special">++</span><span class="special">.</span>
+          
+          <span class="identifier">For</span> <span class="identifier">all</span> <span class="identifier">other</span> <span class="identifier">compilers</span> <span class="identifier">a</span> <span class="identifier">compiler</span> <span class="identifier">error</span> <span class="identifier">is</span> <span class="identifier">forced</span> 
+          <span class="identifier">without</span> <span class="identifier">producing</span> <span class="identifier">output</span> <span class="keyword">if</span> <span class="identifier">the</span> <span class="identifier">sequence</span> <span class="identifier">is</span> <span class="identifier">not</span> <span class="identifier">a</span> 
+          <span class="identifier">VMD</span> <span class="identifier">type</span><span class="special">.</span>
+</pre>
+<p> </p>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2010-2017 Tropic Software
+<td align="right"><div class="copyright-footer">Copyright © 2010-2017 Tropic Software
       East Inc</div></td>
 </tr></table>
 <hr>

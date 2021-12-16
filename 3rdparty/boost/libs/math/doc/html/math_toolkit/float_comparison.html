@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Floating-point Comparison</title>
 <link rel="stylesheet" href="../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Math Toolkit 2.10.0">
-<link rel="up" href="../utils.html" title="Chapter&#160;2.&#160;Floating Point Utilities">
+<link rel="home" href="../index.html" title="Math Toolkit 3.1.0">
+<link rel="up" href="../utils.html" title="Chapter 2. Floating Point Utilities">
 <link rel="prev" href="next_float/ulp.html" title="Obtaining the Size of a Unit In the Last Place - ULP">
 <link rel="next" href="cond.html" title="Condition Numbers">
 </head>
@@ -33,9 +33,9 @@
 <p>
       Unlike integral values that are exact, all floating-point operations will potentially
       produce an inexact result that will be rounded to the nearest available binary
-      representation. Even apparently inocuous operations such as assigning 0.1 to
-      a double produces an inexact result (as this decimal number has no exact binary
-      representation).
+      representation. Even apparently innocuous operations such as assigning 0.1
+      to a double produces an inexact result (as this decimal number has no exact
+      binary representation).
     </p>
 <p>
       Floating-point computations also involve rounding so that some 'computational
@@ -68,7 +68,7 @@
           Floating-Point_Comparison guide</a>
         </li>
 <li class="listitem">
-          <a href="../../../../../libs/test/doc/html/boost_test/users_guide/testing_tools/testing_floating_points.html" target="_top">Boost.Test
+          <a href="https://www.boost.org/doc/libs/release/libs/test/doc/html/boost_test/testing_tools/extended_comparison/floating_point.html" target="_top">Boost.Test
           Floating-Point_Comparison</a>
         </li>
 </ul></div>
@@ -124,7 +124,9 @@
       returns the relative distance/error <span class="emphasis"><em>E</em></span> between two values
       as defined by:
     </p>
-<pre class="programlisting">E = fabs((a - b) / min(a,b))</pre>
+<div class="blockquote"><blockquote class="blockquote"><p>
+        <span class="serif_italic">E = fabs((a - b) / min(a,b))</span>
+      </p></blockquote></div>
 <p>
       The function <code class="computeroutput"><span class="identifier">epsilon_difference</span></code>
       is a convenience function that returns <code class="computeroutput"><span class="identifier">relative_difference</span><span class="special">(</span><span class="identifier">a</span><span class="special">,</span>
@@ -202,7 +204,7 @@
 </tr>
 <tr><td align="left" valign="top"><p>
         Older compilers can use this formula to calculate <code class="computeroutput"><span class="identifier">max_digits10</span></code>
-        from <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">FPT</span><span class="special">&gt;::</span><span class="identifier">digits10</span></code>: &#8192;&#8192; <code class="computeroutput"><span class="keyword">int</span>
+        from <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">FPT</span><span class="special">&gt;::</span><span class="identifier">digits10</span></code>:    <code class="computeroutput"><span class="keyword">int</span>
         <span class="identifier">max_digits10</span> <span class="special">=</span>
         <span class="number">2</span> <span class="special">+</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">FPT</span><span class="special">&gt;::</span><span class="identifier">digits10</span>
         <span class="special">*</span> <span class="number">3010</span><span class="special">/</span><span class="number">10000</span><span class="special">;</span></code>
@@ -371,7 +373,7 @@ epsilon_difference = 0.000000000</pre>
 <span class="special">}</span>
 </pre>
 <p>
-      This function has multiple roots, some of which are quite predicable in that
+      This function has multiple roots, some of which are quite predictable in that
       both <code class="computeroutput"><span class="identifier">sin</span><span class="special">(</span><span class="identifier">x</span><span class="special">)</span></code> and <code class="computeroutput"><span class="identifier">sin</span><span class="special">(</span><span class="number">4</span><span class="identifier">x</span><span class="special">)</span></code> are zero
       together. Others occur because the values returned from those two functions
       precisely cancel out. At such points the relative difference between the true
@@ -395,11 +397,11 @@ epsilon_difference = 0.000000000</pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

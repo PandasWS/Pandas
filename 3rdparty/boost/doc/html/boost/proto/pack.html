@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Struct pack</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,7 +27,7 @@
 <a name="boost.proto.pack"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Struct pack</span></h2>
-<p>boost::proto::pack &#8212; To turn an expression into a pseudo-parameter pack containing the
+<p>boost::proto::pack — To turn an expression into a pseudo-parameter pack containing the
         expression's children, for the purpose of expanding the pack expression within
         a <a class="link" href="../../CallableTransform.html" title="Concept CallableTransform">CallableTransform</a> or
         <a class="link" href="../../ObjectTransform.html" title="Concept ObjectTransform">ObjectTransform</a>.</p>
@@ -105,9 +105,9 @@
 <p>
             Composite transforms (either <a class="link" href="../../CallableTransform.html" title="Concept CallableTransform">CallableTransform</a>s or
             <a class="link" href="../../ObjectTransform.html" title="Concept ObjectTransform">ObjectTransform</a>s) usually have the form
-            <code class="computeroutput">X(A<sub>0</sub>,&#8230;A<sub>n</sub>)</code>.
+            <code class="computeroutput">X(A<sub>0</sub>,…A<sub>n</sub>)</code>.
             However, when the argument list in a composite transform is terminated with a C-style
-            vararg ellipsis as in <code class="computeroutput">X(A<sub>0</sub>,&#8230;A<sub>n</sub> ...)</code>,
+            vararg ellipsis as in <code class="computeroutput">X(A<sub>0</sub>,…A<sub>n</sub> ...)</code>,
             the final argument <code class="computeroutput">A<sub>n</sub></code> is treated
             as an <span class="emphasis"><em>unpacking pattern</em></span>.
           </p>
@@ -119,9 +119,9 @@
             when the unpacking pattern is expanded.
           </p>
 <p>
-            A composite transform like <code class="computeroutput">X(A<sub>0</sub>,&#8230;A<sub>n</sub> ...)</code>,
+            A composite transform like <code class="computeroutput">X(A<sub>0</sub>,…A<sub>n</sub> ...)</code>,
             when evaluated against a given expression <em class="replaceable"><code>E</code></em>, state and data, is evaluated as if it were
-            <code class="computeroutput">X(A<sub>0</sub>,&#8230;A<sub>n-1</sub>,<em class="replaceable"><code>S</code></em>)</code>
+            <code class="computeroutput">X(A<sub>0</sub>,…A<sub>n-1</sub>,<em class="replaceable"><code>S</code></em>)</code>
             where <em class="replaceable"><code>S</code></em> is a type sequence computed as follows:
           </p>
 <p>
@@ -135,7 +135,7 @@
               </li>
 <li class="listitem">
                 If the expression <em class="replaceable"><code>E</code></em> is a non-terminal, <em class="replaceable"><code>S</code></em> is the sequence
-                <code class="computeroutput"><em class="replaceable"><code>SUB</code></em>(A<sub>n</sub>, <a class="link" href="_child_c.html" title="Struct template _child_c">proto::_child_c</a>&lt;0&gt;),&#8230;
+                <code class="computeroutput"><em class="replaceable"><code>SUB</code></em>(A<sub>n</sub>, <a class="link" href="_child_c.html" title="Struct template _child_c">proto::_child_c</a>&lt;0&gt;),…
                 <em class="replaceable"><code>SUB</code></em>(A<sub>n</sub>, <a class="link" href="_child_c.html" title="Struct template _child_c">proto::_child_c</a>&lt;<em class="replaceable"><code>M</code></em>-1&gt;)</code>, where
                 <em class="replaceable"><code>M</code></em> is the arity of the expression <em class="replaceable"><code>E</code></em>.
               </li>
@@ -146,7 +146,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2008 Eric Niebler<p>
+<td align="right"><div class="copyright-footer">Copyright © 2008 Eric Niebler<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

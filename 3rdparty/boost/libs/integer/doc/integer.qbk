@@ -5,7 +5,7 @@
     [license
         Distributed under the Boost Software License, Version 1.0.
         (See accompanying file LICENSE_1_0.txt or copy at
-        [@http://www.boost.org/LICENSE_1_0.txt])
+        [@https://www.boost.org/LICENSE_1_0.txt])
     ]
     [authors [Dawes, Beman], [Walker, Daryle], [Prota, Gennaro], [Maddock, John]]
     [/last-revision $Date: 2008-02-21 12:58:15 +0000 (Thu, 21 Feb 2008) $]
@@ -366,10 +366,10 @@ in [@../../../../boost/cstdint.hpp <boost/cstdint.hpp>].
 [section Credits]
 
 The author of most of the Boost integer type choosing templates is
-[@http://www.boost.org/people/beman_dawes.html Beman Dawes].
-He gives thanks to Valentin Bonnard and [@http://www.boost.org/people/kevlin_henney.htm Kevlin Henney]
+[@https://www.boost.org/people/beman_dawes.html Beman Dawes].
+He gives thanks to Valentin Bonnard and [@https://www.boost.org/people/kevlin_henney.htm Kevlin Henney]
 for sharing their designs for similar templates.
-[@http://www.boost.org/people/daryle_walker.html Daryle Walker] designed the value-based sized templates.
+[@https://www.boost.org/people/daryle_walker.html Daryle Walker] designed the value-based sized templates.
 
 [endsect]
 [endsect]
@@ -511,7 +511,7 @@ This prevents contamination of values by the higher, unused bits.
 
 [section Credits]
 
-The author of the Boost bit mask class templates is [@http://www.boost.org/people/daryle_walker.html Daryle Walker].
+The author of the Boost bit mask class templates is [@https://www.boost.org/people/daryle_walker.html Daryle Walker].
 
 [endsect]
 [endsect]
@@ -583,7 +583,7 @@ could be used in generic programming, which requires the position to be availabl
 [section Credits]
 
 The original version of the Boost binary logarithm class template was
-written by [@http://www.boost.org/people/daryle_walker.html Daryle Walker] and then
+written by [@https://www.boost.org/people/daryle_walker.html Daryle Walker] and then
 enhanced by Giovanni Bajo with support for compilers without partial template specialization.
 The current version was suggested, together with a reference implementation, by Vesa Karvonen.
 Gennaro Prota wrote the actual source file.
@@ -679,7 +679,7 @@ Sometimes the minimum or maximum of several values needs to be found for later c
 
 [section Credits]
 
-The author of the Boost compile-time extrema class templates is [@http://www.boost.org/people/daryle_walker.html Daryle Walker].
+The author of the Boost compile-time extrema class templates is [@https://www.boost.org/people/daryle_walker.html Daryle Walker].
 
 [endsect]
 [endsect]

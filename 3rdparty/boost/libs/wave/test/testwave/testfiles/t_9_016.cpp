@@ -23,6 +23,9 @@ EXPAND(#) define later
 //H 10: t_9_016.cpp(11): #define
 //H 08: t_9_016.cpp(11): inclusion=
 //H 10: t_9_016.cpp(12): #   include 
+//H 01: <built-in>(1): __FILE__
+//H 02: "$P(t_9_016.cpp)"
+//H 03: "$P(t_9_016.cpp)"
 //H 04: "$P(t_9_016.cpp)"
 //H 05: $B(t_9_016.cpp) ($B(t_9_016.cpp))
 //H 10: t_9_016.cpp(10): #if

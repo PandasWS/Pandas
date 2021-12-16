@@ -11,7 +11,7 @@
 #include <boost/numeric/interval/checking.hpp>
 #include <boost/numeric/interval/compare.hpp>
 #include <boost/numeric/interval/policies.hpp>
-#include <boost/test/test_tools.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include "bugs.hpp"
 
 struct empty_class {};
@@ -23,4 +23,4 @@ typedef boost::numeric::interval_lib::policies
 typedef boost::numeric::interval<int, my_policies> I;
 
 #define BOOST_C_EXN(e) \
-  BOOST_CHECK_THROW(e, boost::numeric::interval_lib::comparison_error)
+  BOOST_TEST_THROWS(e, boost::numeric::interval_lib::comparison_error)

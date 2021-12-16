@@ -29,7 +29,7 @@ void offset(T& x, int count) {
 // Copyable type but...
 class w {
 public:
-    w(w const&) { /* Some very expensive copy here operation here... */ }
+    w(w const&) { /* Some very expensive copy operation here... */ }
 
     /* ... */
 //]

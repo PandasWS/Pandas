@@ -328,7 +328,7 @@ The following code snippet
 
 [code_bimap_and_boost_typeof_not_using_auto]
 
-can be rewrited as
+can be rewritten as
 
 [code_bimap_and_boost_typeof_using_auto]
 

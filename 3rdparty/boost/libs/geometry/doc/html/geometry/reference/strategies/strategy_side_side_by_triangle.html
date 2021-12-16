@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>strategy::side::side_by_triangle</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../strategies.html" title="Strategies">
 <link rel="prev" href="strategy_line_interpolate_spherical.html" title="strategy::line_interpolate::spherical">
 <link rel="next" href="strategy_side_side_by_cross_track.html" title="strategy::side::side_by_cross_track">
@@ -27,7 +27,7 @@
 <a name="geometry.reference.strategies.strategy_side_side_by_triangle"></a><a class="link" href="strategy_side_side_by_triangle.html" title="strategy::side::side_by_triangle">strategy::side::side_by_triangle</a>
 </h4></div></div></div>
 <p>
-          <a class="indexterm" name="idm45133026417392"></a><a class="indexterm" name="idm45133026416704"></a><a class="indexterm" name="idm45133026416016"></a>
+          <a class="indexterm" name="idm97029"></a><a class="indexterm" name="idm97031"></a><a class="indexterm" name="idm97033"></a>
 Check at which side of a segment a point lies: left of segment (&gt; 0),
           right of segment (&lt; 0), on segment (0)
         </p>
@@ -132,51 +132,6 @@ Check at which side of a segment a point lies: left of segment (&gt; 0),
 <td>
                   <p>
 </p>
-<pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">envelope_strategy_type</span> <span class="identifier">get_envelope_strategy</span><span class="special">()</span></pre>
-<p>
-                  </p>
-                </td>
-<td>
-                </td>
-<td>
-                </td>
-<td>
-                </td>
-</tr>
-<tr>
-<td>
-                  <p>
-</p>
-<pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">disjoint_strategy_type</span> <span class="identifier">get_disjoint_strategy</span><span class="special">()</span></pre>
-<p>
-                  </p>
-                </td>
-<td>
-                </td>
-<td>
-                </td>
-<td>
-                </td>
-</tr>
-<tr>
-<td>
-                  <p>
-</p>
-<pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">equals_point_point_strategy_type</span> <span class="identifier">get_equals_point_point_strategy</span><span class="special">()</span></pre>
-<p>
-                  </p>
-                </td>
-<td>
-                </td>
-<td>
-                </td>
-<td>
-                </td>
-</tr>
-<tr>
-<td>
-                  <p>
-</p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">CoordinateType</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">PromotedType</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">P1</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">P2</span><span class="special">,</span>
          <span class="keyword">typename</span> <span class="identifier">P</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">EpsPolicy</span><span class="special">&gt;</span>
 <span class="identifier">PromotedType</span> <span class="identifier">side_value</span><span class="special">(</span><span class="identifier">P1</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">p1</span><span class="special">,</span> <span class="identifier">P2</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">p2</span><span class="special">,</span> <span class="identifier">P</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">p</span><span class="special">,</span>
@@ -261,13 +216,13 @@ Check at which side of a segment a point lies: left of segment (&gt; 0),
           <span class="phrase"><a name="geometry.reference.strategies.strategy_side_side_by_triangle.header"></a></span><a class="link" href="strategy_side_side_by_triangle.html#geometry.reference.strategies.strategy_side_side_by_triangle.header">Header</a>
         </h6>
 <p>
-          <code class="computeroutput"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">strategies</span><span class="special">/</span><span class="identifier">cartesian</span><span class="special">/</span><span class="identifier">side_by_triangle</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>
+          <code class="computeroutput"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">strategy</span><span class="special">/</span><span class="identifier">cartesian</span><span class="special">/</span><span class="identifier">side_by_triangle</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>
         </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

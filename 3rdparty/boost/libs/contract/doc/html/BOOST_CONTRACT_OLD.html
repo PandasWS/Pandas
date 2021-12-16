@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Macro BOOST_CONTRACT_OLD</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="index.html" title="Chapter&#160;1.&#160;Boost.Contract 1.0.0">
+<link rel="home" href="index.html" title="Chapter 1. Boost.Contract 1.0.0">
 <link rel="up" href="reference.html#header.boost.contract_macro_hpp" title="Header &lt;boost/contract_macro.hpp&gt;">
 <link rel="prev" href="BOOST_CONTRACT_EXCEPT.html" title="Macro BOOST_CONTRACT_EXCEPT">
 <link rel="next" href="BOOST_CONTRACT_OLD_PTR.html" title="Macro BOOST_CONTRACT_OLD_PTR">
@@ -26,14 +26,14 @@
 <a name="BOOST_CONTRACT_OLD"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Macro BOOST_CONTRACT_OLD</span></h2>
-<p>BOOST_CONTRACT_OLD &#8212; Program old value copies at body that can be completely disabled at compile-time. </p>
+<p>BOOST_CONTRACT_OLD — Program old value copies at body that can be completely disabled at compile-time. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="reference.html#header.boost.contract_macro_hpp" title="Header &lt;boost/contract_macro.hpp&gt;">boost/contract_macro.hpp</a>&gt;
 
 </span>BOOST_CONTRACT_OLD(...)</pre></div>
 <div class="refsect1">
-<a name="idm45190699900192"></a><h2>Description</h2>
+<a name="idm44715"></a><h2>Description</h2>
 <p><code class="computeroutput">BOOST_CONTRACT_OLD(f)</code> expands to code equivalent to the following (note that no code is generated when <code class="computeroutput"><a class="link" href="BOOST_CONTRACT_NO_OLDS.html" title="Macro BOOST_CONTRACT_NO_OLDS">BOOST_CONTRACT_NO_OLDS</a></code> is defined):</p>
 <pre class="programlisting"><span class="preprocessor">#ifndef</span> <span class="identifier">BOOST_CONTRACT_NO_OLDS</span>
     <span class="special">.</span><span class="identifier">old</span><span class="special">(</span><span class="identifier">f</span><span class="special">)</span>
@@ -45,8 +45,8 @@
 </p>
 <p><span class="bold"><strong>See Also:</strong></span></p>
 <p> <a class="link" href="boost_contract/extras.html#boost_contract.extras.disable_contract_compilation__macro_interface_" title="Disable Contract Compilation (Macro Interface)">
-        Disable Contract Compilation</a>,  <a class="link" href="boost_contract/advanced.html#boost_contract.advanced.old_value_copies_at_body" title="Old Value Copies at Body">
-        Old Value Copies at Body</a> </p>
+        Disable Contract Compilation</a>,  <a class="link" href="boost_contract/advanced.html#boost_contract.advanced.old_values_copied_at_body" title="Old Values Copied at Body">
+        Old Values Copied at Body</a> </p>
 <p>
 </p>
 <p>
@@ -55,7 +55,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2008-2018 Lorenzo Caminiti<p>
+<td align="right"><div class="copyright-footer">Copyright © 2008-2019 Lorenzo Caminiti<p>
         Distributed under the Boost Software License, Version 1.0 (see accompanying
         file LICENSE_1_0.txt or a copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

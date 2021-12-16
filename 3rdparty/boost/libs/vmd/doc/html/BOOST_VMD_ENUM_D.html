@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Macro BOOST_VMD_ENUM_D</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="index.html" title="Chapter&#160;1.&#160;The Variadic Macro Data Library 1.9">
+<link rel="home" href="index.html" title="Chapter 1. The Variadic Macro Data Library 1.10">
 <link rel="up" href="header/boost/vmd/enum_hpp.html" title="Header &lt;boost/vmd/enum.hpp&gt;">
 <link rel="prev" href="BOOST_VMD_ENUM.html" title="Macro BOOST_VMD_ENUM">
 <link rel="next" href="header/boost/vmd/equal_hpp.html" title="Header &lt;boost/vmd/equal.hpp&gt;">
@@ -26,15 +26,16 @@
 <a name="BOOST_VMD_ENUM_D"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Macro BOOST_VMD_ENUM_D</span></h2>
-<p>BOOST_VMD_ENUM_D &#8212; Converts a sequence to comma-separated elements which are the elements of the sequence. Re-entrant version. </p>
+<p>BOOST_VMD_ENUM_D — Converts a sequence to comma-separated elements which are the elements of the sequence. Re-entrant version. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="header/boost/vmd/enum_hpp.html" title="Header &lt;boost/vmd/enum.hpp&gt;">boost/vmd/enum.hpp</a>&gt;
 
 </span>BOOST_VMD_ENUM_D(d, ...)</pre></div>
 <div class="refsect1">
-<a name="idm45028681945936"></a><h2>Description</h2>
-<p>d = The next available BOOST_PP_WHILE iteration. ... = Variadic parameters.</p>
+<a name="idm13980"></a><h2>Description</h2>
+<p>d = The next available BOOST_PP_WHILE iteration. <br>
+ ... = Variadic parameters.</p>
 <p>The first variadic parameter is required and is the sequence to convert.</p>
 <p>Further optional variadic parameters can be return type parameters. Return type parameters allow each element in the sequence to be converted to a two-element tuple where the first tuple element is the type and the second tuple element is the element data.</p>
 <p>The BOOST_VMD_RETURN_NO_TYPE, the default, does not return the type as part of each converted element but just the data. All of the rest return the type and data as the two-element tuple. If BOOST_VMD_RETURN_TYPE is specified the specific type of the element is returned in the tuple. If BOOST_VMD_RETURN_TYPE_ARRAY is specified an array type is returned if the element is an array, else a tuple type is returned if the element is a tuple, else the actual type is returned for non-tuple data. If BOOST_VMD_RETURN_TYPE_LIST is specified a list type is returned if the element is a list, else a tuple type is returned if the element is a tuple, else the actual type is returned for non-tuple data. If BOOST_VMD_RETURN_TYPE_TUPLE is specified a tuple type is returned for all tuple-like data, else the actual type is returned for non-tuple data. If more than one return type optional parameter is specified the last one specified determines the return type.</p>
@@ -43,7 +44,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2010-2017 Tropic Software
+<td align="right"><div class="copyright-footer">Copyright © 2010-2017 Tropic Software
       East Inc</div></td>
 </tr></table>
 <hr>

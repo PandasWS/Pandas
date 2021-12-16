@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class template node_handle_map</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,7 +27,7 @@
 <a name="boost.unordered.node_handle_map"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Class template node_handle_map</span></h2>
-<p>boost::unordered::node_handle_map &#8212; 
+<p>boost::unordered::node_handle_map — 
               An object that owns a single element extracted from an
               <a class="link" href="../unordered_map.html" title="Class template unordered_map">unordered_map</a> or an
               <a class="link" href="../unordered_multimap.html" title="Class template unordered_multimap">unordered_multimap</a>, that
@@ -50,42 +50,42 @@
   <span class="keyword">typedef</span> <span class="keyword">typename</span> <span class="identifier">Container</span><span class="special">::</span><span class="identifier">allocator_type</span><span class="special">&gt;</span> <a name="boost.unordered.node_handle_map.allocator_type"></a><span class="identifier">allocator_type</span><span class="special">;</span>
 
   <span class="comment">// <a class="link" href="node_handle_map.html#boost.unordered.node_handle_mapconstruct-copy-destruct">construct/copy/destruct</a></span>
-  <span class="keyword">constexpr</span> <a class="link" href="node_handle_map.html#id-1_3_45_10_2_1_3_1_6-bb"><span class="identifier">node_handle_map</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span>
-  <a class="link" href="node_handle_map.html#id-1_3_45_10_2_1_3_1_8-bb"><span class="identifier">node_handle_map</span></a><span class="special">(</span><span class="identifier">node_handle_map</span> <span class="special">&amp;&amp;</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span>
-  <a class="link" href="node_handle_map.html#id-1_3_45_10_2_1_3_1_7-bb"><span class="special">~</span><span class="identifier">node_handle_map</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">node_handle_map</span><span class="special">&amp;</span> <a class="link" href="node_handle_map.html#id-1_3_45_10_2_1_3_1_9-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><span class="identifier">node_handle_map</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">key_type</span><span class="special">&amp;</span> <a class="link" href="node_handle_map.html#id-1_3_45_10_2_1_3_1_10-bb"><span class="identifier">key</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">mapped_type</span><span class="special">&amp;</span> <a class="link" href="node_handle_map.html#id-1_3_45_10_2_1_3_1_11-bb"><span class="identifier">mapped</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">allocator_type</span> <a class="link" href="node_handle_map.html#id-1_3_45_10_2_1_3_1_12-bb"><span class="identifier">get_allocator</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="keyword">explicit</span>  <a class="link" href="node_handle_map.html#id-1_3_45_10_2_1_3_1_13-bb"><span class="keyword">operator</span> <span class="keyword">bool</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
-  <span class="keyword">bool</span> <a class="link" href="node_handle_map.html#id-1_3_45_10_2_1_3_1_14-bb"><span class="identifier">empty</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="node_handle_map.html#id-1_3_45_10_2_1_3_1_15-bb"><span class="identifier">swap</span></a><span class="special">(</span><span class="identifier">node_handle_map</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">(</span><span class="identifier">ator_traits</span><span class="special">::</span><span class="identifier">propagate_on_container_swap</span><span class="special">::</span><span class="identifier">value</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">constexpr</span> <a class="link" href="node_handle_map.html#id-1_3_46_10_2_1_3_1_6-bb"><span class="identifier">node_handle_map</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span>
+  <a class="link" href="node_handle_map.html#id-1_3_46_10_2_1_3_1_8-bb"><span class="identifier">node_handle_map</span></a><span class="special">(</span><span class="identifier">node_handle_map</span> <span class="special">&amp;&amp;</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span>
+  <a class="link" href="node_handle_map.html#id-1_3_46_10_2_1_3_1_7-bb"><span class="special">~</span><span class="identifier">node_handle_map</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">node_handle_map</span><span class="special">&amp;</span> <a class="link" href="node_handle_map.html#id-1_3_46_10_2_1_3_1_9-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><span class="identifier">node_handle_map</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">key_type</span><span class="special">&amp;</span> <a class="link" href="node_handle_map.html#id-1_3_46_10_2_1_3_1_10-bb"><span class="identifier">key</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">mapped_type</span><span class="special">&amp;</span> <a class="link" href="node_handle_map.html#id-1_3_46_10_2_1_3_1_11-bb"><span class="identifier">mapped</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">allocator_type</span> <a class="link" href="node_handle_map.html#id-1_3_46_10_2_1_3_1_12-bb"><span class="identifier">get_allocator</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="keyword">explicit</span>  <a class="link" href="node_handle_map.html#id-1_3_46_10_2_1_3_1_13-bb"><span class="keyword">operator</span> <span class="keyword">bool</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
+  <span class="keyword">bool</span> <a class="link" href="node_handle_map.html#id-1_3_46_10_2_1_3_1_14-bb"><span class="identifier">empty</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="node_handle_map.html#id-1_3_46_10_2_1_3_1_15-bb"><span class="identifier">swap</span></a><span class="special">(</span><span class="identifier">node_handle_map</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">(</span><span class="identifier">ator_traits</span><span class="special">::</span><span class="identifier">propagate_on_container_swap</span><span class="special">::</span><span class="identifier">value</span><span class="special">)</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span>
 
-<span class="comment">// <a class="link" href="node_handle_map.html#id-1_3_45_10_2_1_3_1_16-bb">swap</a></span>
+<span class="comment">// <a class="link" href="node_handle_map.html#id-1_3_46_10_2_1_3_1_16-bb">swap</a></span>
 <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> ImplementationDefined<span class="special">&gt;</span> 
   <span class="keyword">void</span> <a class="link" href="node_handle_map.html#boost.unordered.node_handle_map.swap"><span class="identifier">swap</span></a><span class="special">(</span><span class="identifier">node_handle_map</span><span class="special">&lt;</span><span class="identifier">ImplementationDefined</span><span class="special">&gt;</span><span class="special">&amp;</span><span class="special">,</span> 
             <span class="identifier">node_handle_map</span><span class="special">&lt;</span><span class="identifier">ImplementationDefined</span><span class="special">&gt;</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="id-1.3.45.10.3.3.4"></a><h2>Description</h2>
+<a name="id-1.3.46.10.3.3.4"></a><h2>Description</h2>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.3.4.2"></a><h3>
+<a name="id-1.3.46.10.3.3.4.2"></a><h3>
 <a name="boost.unordered.node_handle_mapconstruct-copy-destruct"></a><code class="computeroutput">node_handle_map</code> 
         public
        construct/copy/destruct</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
-<li class="listitem"><pre class="literallayout"><span class="keyword">constexpr</span> <a name="id-1_3_45_10_2_1_3_1_6-bb"></a><span class="identifier">node_handle_map</span><span class="special">(</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"><a name="id-1_3_45_10_2_1_3_1_8-bb"></a><span class="identifier">node_handle_map</span><span class="special">(</span><span class="identifier">node_handle_map</span> <span class="special">&amp;&amp;</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"><a name="id-1_3_45_10_2_1_3_1_7-bb"></a><span class="special">~</span><span class="identifier">node_handle_map</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><span class="keyword">constexpr</span> <a name="id-1_3_46_10_2_1_3_1_6-bb"></a><span class="identifier">node_handle_map</span><span class="special">(</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><a name="id-1_3_46_10_2_1_3_1_8-bb"></a><span class="identifier">node_handle_map</span><span class="special">(</span><span class="identifier">node_handle_map</span> <span class="special">&amp;&amp;</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><a name="id-1_3_46_10_2_1_3_1_7-bb"></a><span class="special">~</span><span class="identifier">node_handle_map</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre></li>
 </ol></div>
 </div>
-<pre class="literallayout"><span class="identifier">node_handle_map</span><span class="special">&amp;</span> <a name="id-1_3_45_10_2_1_3_1_9-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><span class="identifier">node_handle_map</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span></pre>
-<pre class="literallayout"><span class="identifier">key_type</span><span class="special">&amp;</span> <a name="id-1_3_45_10_2_1_3_1_10-bb"></a><span class="identifier">key</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
-<pre class="literallayout"><span class="identifier">mapped_type</span><span class="special">&amp;</span> <a name="id-1_3_45_10_2_1_3_1_11-bb"></a><span class="identifier">mapped</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
-<pre class="literallayout"><span class="identifier">allocator_type</span> <a name="id-1_3_45_10_2_1_3_1_12-bb"></a><span class="identifier">get_allocator</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
-<pre class="literallayout"><span class="keyword">explicit</span>  <a name="id-1_3_45_10_2_1_3_1_13-bb"></a><span class="keyword">operator</span> <span class="keyword">bool</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
-<pre class="literallayout"><span class="keyword">bool</span> <a name="id-1_3_45_10_2_1_3_1_14-bb"></a><span class="identifier">empty</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
-<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_45_10_2_1_3_1_15-bb"></a><span class="identifier">swap</span><span class="special">(</span><span class="identifier">node_handle_map</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">(</span><span class="identifier">ator_traits</span><span class="special">::</span><span class="identifier">propagate_on_container_swap</span><span class="special">::</span><span class="identifier">value</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">node_handle_map</span><span class="special">&amp;</span> <a name="id-1_3_46_10_2_1_3_1_9-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><span class="identifier">node_handle_map</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">key_type</span><span class="special">&amp;</span> <a name="id-1_3_46_10_2_1_3_1_10-bb"></a><span class="identifier">key</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">mapped_type</span><span class="special">&amp;</span> <a name="id-1_3_46_10_2_1_3_1_11-bb"></a><span class="identifier">mapped</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">allocator_type</span> <a name="id-1_3_46_10_2_1_3_1_12-bb"></a><span class="identifier">get_allocator</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">explicit</span>  <a name="id-1_3_46_10_2_1_3_1_13-bb"></a><span class="keyword">operator</span> <span class="keyword">bool</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">bool</span> <a name="id-1_3_46_10_2_1_3_1_14-bb"></a><span class="identifier">empty</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_46_10_2_1_3_1_15-bb"></a><span class="identifier">swap</span><span class="special">(</span><span class="identifier">node_handle_map</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">(</span><span class="identifier">ator_traits</span><span class="special">::</span><span class="identifier">propagate_on_container_swap</span><span class="special">::</span><span class="identifier">value</span><span class="special">)</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -100,8 +100,8 @@
 </tr></tbody>
 </table></div>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.3.4.11"></a><h3>
-<a name="id-1_3_45_10_2_1_3_1_16-bb"></a><code class="computeroutput">node_handle_map</code> swap</h3>
+<a name="id-1.3.46.10.3.3.4.11"></a><h3>
+<a name="id-1_3_46_10_2_1_3_1_16-bb"></a><code class="computeroutput">node_handle_map</code> swap</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> ImplementationDefined<span class="special">&gt;</span> 
   <span class="keyword">void</span> <a name="boost.unordered.node_handle_map.swap"></a><span class="identifier">swap</span><span class="special">(</span><span class="identifier">node_handle_map</span><span class="special">&lt;</span><span class="identifier">ImplementationDefined</span><span class="special">&gt;</span><span class="special">&amp;</span> x<span class="special">,</span> 
@@ -122,7 +122,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003, 2004 Jeremy B. Maitin-Shepard<br>Copyright &#169; 2005-2008 Daniel
+<td align="right"><div class="copyright-footer">Copyright © 2003, 2004 Jeremy B. Maitin-Shepard<br>Copyright © 2005-2008 Daniel
       James<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

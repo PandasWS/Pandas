@@ -7,10 +7,8 @@
 #
 #  Authors: Andreas Kloeckner
 
-
-
-
-import boost.mpi as mpi
+from __future__ import print_function
+import mpi
 import random
 import sys
 
@@ -52,7 +50,7 @@ class TagGroupListener:
 
 def rank0():
     sent_histories = (mpi.size-1)*15
-    print "sending %d packets on their way" % sent_histories
+    print ("sending %d packets on their way" % sent_histories)
     send_reqs = mpi.RequestList()
     for i in range(sent_histories):
         dest = random.randrange(1, mpi.size)
@@ -77,25 +75,25 @@ def rank0():
         status, data = tgl.wait()
 
         if status.tag == TAG_DATA:
-            #print "received completed history %s from %d" % (data, status.source)
+            #print ("received completed history %s from %d" % (data, status.source))
             completed_histories.append(data)
             if len(completed_histories) == sent_histories:
-                print "all histories received, exiting"
+                print ("all histories received, exiting")
                 for rank in range(1, mpi.size):
                     mpi.world.send(rank, TAG_TERMINATE, None)
         elif status.tag == TAG_PROGRESS_REPORT:
             progress_reports[len(data)] = progress_reports.get(len(data), 0) + 1
         elif status.tag == TAG_DEBUG:
-            print "[DBG %d] %s" % (status.source, data)
+            print ("[DBG %d] %s" % (status.source, data))
         elif status.tag == TAG_TERMINATE:
             dead_kids.append(status.source)
         else:
-            print "unexpected tag %d from %d" % (status.tag, status.source)
+            print ("unexpected tag %d from %d" % (status.tag, status.source))
 
         if is_complete():
             break
 
-    print "OK"
+    print ("OK")
 
 def comm_rank():
     while True:
@@ -113,7 +111,7 @@ def comm_rank():
             mpi.world.send(0, TAG_TERMINATE, 0)
             break
         else:
-            print "[DIRECTDBG %d] unexpected tag %d from %d" % (mpi.rank, status.tag, status.source)
+            print ("[DIRECTDBG %d] unexpected tag %d from %d" % (mpi.rank, status.tag, status.source))
 
 
 def main():

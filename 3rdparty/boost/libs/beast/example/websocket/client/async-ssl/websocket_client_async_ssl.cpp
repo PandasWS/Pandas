@@ -101,7 +101,7 @@ public:
     }
 
     void
-    on_connect(beast::error_code ec, tcp::resolver::results_type::endpoint_type)
+    on_connect(beast::error_code ec, tcp::resolver::results_type::endpoint_type ep)
     {
         if(ec)
             return fail(ec, "connect");
@@ -109,6 +109,21 @@ public:
         // Set a timeout on the operation
         beast::get_lowest_layer(ws_).expires_after(std::chrono::seconds(30));
 
+        // Set SNI Hostname (many hosts need this to handshake successfully)
+        if(! SSL_set_tlsext_host_name(
+                ws_.next_layer().native_handle(),
+                host_.c_str()))
+        {
+            ec = beast::error_code(static_cast<int>(::ERR_get_error()),
+                net::error::get_ssl_category());
+            return fail(ec, "connect");
+        }
+
+        // Update the host_ string. This will provide the value of the
+        // Host HTTP header during the WebSocket handshake.
+        // See https://tools.ietf.org/html/rfc7230#section-5.4
+        host_ += ':' + std::to_string(ep.port());
+        
         // Perform the SSL handshake
         ws_.next_layer().async_handshake(
             ssl::stream_base::client,

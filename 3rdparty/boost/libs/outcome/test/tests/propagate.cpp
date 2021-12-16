@@ -1,5 +1,5 @@
 /* Unit testing for outcomes
-(C) 2013-2019 Niall Douglas <http://www.nedproductions.biz/> (7 commits)
+(C) 2013-2021 Niall Douglas <http://www.nedproductions.biz/> (7 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -27,7 +27,7 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/outcome/outcome.hpp>
+#include <boost/outcome.hpp>
 #include <boost/outcome/try.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_monitor.hpp>
@@ -66,7 +66,7 @@ BOOST_OUTCOME_AUTO_TEST_CASE(works_outcome_propagate, "Tests that the outcome pr
   {
     auto t0 = [&](int a) { return result<long>(a); };
     auto t1 = [&](int a) -> result<std::string> {
-      BOOST_OUTCOME_TRY(f, (t0(a)));
+      BOOST_OUTCOME_TRY(auto &&f, (t0(a)));
       return std::to_string(f);
     };
     BOOST_CHECK(t1(5).value() == "5");
@@ -74,7 +74,7 @@ BOOST_OUTCOME_AUTO_TEST_CASE(works_outcome_propagate, "Tests that the outcome pr
   {
     auto t0 = [&](int a) { return result<long>(a); };
     auto t1 = [&](int a) -> outcome<std::string> {
-      BOOST_OUTCOME_TRY(f, (t0(a)));
+      BOOST_OUTCOME_TRY(auto &&f, (t0(a)));
       return std::to_string(f);
     };
     BOOST_CHECK(t1(5).value() == "5");

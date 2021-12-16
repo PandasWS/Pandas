@@ -1,5 +1,5 @@
 /* Unit testing for outcomes
-(C) 2013-2019 Niall Douglas <http://www.nedproductions.biz/> (4 commits)
+(C) 2013-2021 Niall Douglas <http://www.nedproductions.biz/> (4 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -31,7 +31,7 @@ DEALINGS IN THE SOFTWARE.
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_monitor.hpp>
 
-BOOST_OUTCOME_AUTO_TEST_CASE(issues_71_outcome, "Implicit construction is over eager")
+BOOST_OUTCOME_AUTO_TEST_CASE(issues_0071_outcome, "Implicit construction is over eager")
 {
   using namespace BOOST_OUTCOME_V2_NAMESPACE;
   struct udt

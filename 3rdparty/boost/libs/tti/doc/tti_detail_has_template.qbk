@@ -27,7 +27,7 @@ template of this form which could be successfully introspected would be:
 
 The second is to find a class template with specific template parameters. 
 In this form both the name of the class template and the template parameters 
-are passed to the macro. 
+are passed to the macro.
 
 We will call this form of the macro the `specific parameters` form. An example 
 of a class template of this form which could be successfully introspected would be:
@@ -36,11 +36,12 @@ of a class template of this form which could be successfully introspected would 
  
 When using the specific form of the macro, there are two things which 
 need to be understood when passing the template parameters to the macro.
-First, the actual names of the template parameters passed are irrelevant.
-They can be left out completely or be different from the names in the 
+First, the type of the template parameters is relevant but the actual names
+of the template parameters passed are irrelevant. The actual names can be
+left out completely or be different from the names in the 
 nested class template itself. Second, the use of 'typename' or 'class',
-when referring to a template type parameter, is completely interchangeable,
-as it is in the actual class template itself.
+when referring to the type of a template parameter, is completely
+interchangeable, as it is in the actual class template itself.
  
 [heading Variadic and non-variadic macro usage]
  
@@ -50,7 +51,7 @@ supporting variadic macros or not supporting variadic macros.
 The programmer can always tell whether or not the compiler 
 supports variadic macros by checking the value of the macro 
 BOOST_PP_VARIADIC after including the necessary header file 
-`boost/tti/has_template.hpp` in order to use the BOOST_TTI_TEMPLATE
+`boost/tti/has_template.hpp` in order to use the BOOST_TTI_HAS_TEMPLATE
 macro. A value of 1 indicates the compiler supports variadic macros
 while a value of 0 indicates the compiler does not support variadic 
 macros.
@@ -74,7 +75,7 @@ The second macro parameter, when using the `specific parameters` form of the
 macro, is the template parameters in the form of a Boost preprocessor library 
 array data type. When using the `template type parameters` form of the macro
 the second macro parameter is BOOST_PP_NIL. If the second parameter is neither
-a Boost preprocessor library array data type or BOOS_PP_NIL you will get a 
+a Boost preprocessor library array data type or BOOST_PP_NIL you will get a 
 compiler error if your compiler only supports non-variadic macros.
 
 The non-variadic macro form for introspecting the class templates above 

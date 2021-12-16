@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Rationale</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Fiber">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Fiber">
+<link rel="home" href="../index.html" title="Chapter 1. Fiber">
+<link rel="up" href="../index.html" title="Chapter 1. Fiber">
 <link rel="prev" href="custom.html" title="Customization">
 <link rel="next" href="acknowledgements.html" title="Acknowledgments">
 </head>
@@ -32,7 +32,7 @@
       defines</a>
     </h4>
 <div class="table">
-<a name="fiber.rationale.preopcessor_defines"></a><p class="title"><b>Table&#160;1.6.&#160;preopcessor defines</b></p>
+<a name="fiber.rationale.preopcessor_defines"></a><p class="title"><b>Table 1.6. preopcessor defines</b></p>
 <div class="table-contents"><table class="table" summary="preopcessor defines">
 <colgroup>
 <col>
@@ -166,7 +166,7 @@
 <p>
       <a class="link" href="synchronization/conditions.html#class_condition_variable"><code class="computeroutput">condition_variable</code></a> is not subject to spurious wakeup.
       Nonetheless it is prudent to test the business-logic condition in a <code class="computeroutput"><span class="identifier">wait</span><span class="special">()</span></code> loop
-      &#8212; or, equivalently, use one of the <code class="computeroutput"><span class="identifier">wait</span><span class="special">(</span> <span class="identifier">lock</span><span class="special">,</span>
+      — or, equivalently, use one of the <code class="computeroutput"><span class="identifier">wait</span><span class="special">(</span> <span class="identifier">lock</span><span class="special">,</span>
       <span class="identifier">predicate</span> <span class="special">)</span></code>
       overloads.
     </p>
@@ -197,11 +197,11 @@
       for Boost.Asio</a>
     </h4>
 <p>
-      Support for <a href="http://www.boost.org/doc/libs/release/libs/asio/index.html" target="_top">Boost.Asio</a>&#8217;s
+      Support for <a href="http://www.boost.org/doc/libs/release/libs/asio/index.html" target="_top">Boost.Asio</a>’s
       <span class="emphasis"><em>async-result</em></span> is not part of the official API. However,
       to integrate with a <a href="http://www.boost.org/doc/libs/release/doc/html/boost_asio/reference/io_service.html" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">asio</span><span class="special">::</span><span class="identifier">io_service</span></code></a>,
       see <a class="link" href="integration.html#integration">Sharing a Thread with Another Main Loop</a>.
-      To interface smoothly with an arbitrary Asio async I/O operation, see <a class="link" href="callbacks/then_there_s____boost_asio__.html#callbacks_asio">Then There&#8217;s Boost.Asio</a>.
+      To interface smoothly with an arbitrary Asio async I/O operation, see <a class="link" href="callbacks/then_there_s____boost_asio__.html#callbacks_asio">Then There’s Boost.Asio</a>.
     </p>
 <h4>
 <a name="fiber.rationale.h7"></a>
@@ -227,13 +227,13 @@
         Distinguishing coroutines and fibers'</a>
       </p></div>
 <div id="ftn.fiber.rationale.f1" class="footnote"><p><a href="#fiber.rationale.f1" class="para"><sup class="para">[13] </sup></a>
-        David R. Butenhof <span class="quote">&#8220;<span class="quote">Programming with POSIX Threads</span>&#8221;</span>
+        David R. Butenhof <span class="quote">“<span class="quote">Programming with POSIX Threads</span>”</span>
       </p></div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2013 Oliver Kowalke<p>
+<td align="right"><div class="copyright-footer">Copyright © 2013 Oliver Kowalke<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

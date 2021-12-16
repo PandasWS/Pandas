@@ -25,7 +25,7 @@ struct is_multikey_true
 {
    typedef char yes_type;
    template<bool IsMultikey>
-   struct two { yes_type _[1+IsMultikey]; };
+   struct two { yes_type _[1u+unsigned(IsMultikey)]; };
    template <class U> static yes_type           test(...);
    template <class U> static two<U::is_multikey>test(int);
    static const bool value = sizeof(test<T>(0)) != sizeof(yes_type);

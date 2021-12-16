@@ -1,5 +1,5 @@
 [/
-              Copyright Andrey Semashev 2007 - 2017.
+              Copyright Andrey Semashev 2007 - 2020.
      Distributed under the Boost Software License, Version 1.0.
         (See accompanying file LICENSE_1_0.txt or copy at
               http://www.boost.org/LICENSE_1_0.txt)
@@ -117,9 +117,25 @@
 
 [template class_log_dump_manip[][classref boost::log::dump_manip dump_manip]]
 
+[template boost_log_utility_manipulators_optional_hpp[][headerref boost/log/utility/manipulators/optional.hpp]]
+
+[template class_log_optional_manipulator[][classref boost::log::optional_manipulator optional_manipulator]]
+
+[template boost_log_utility_manipulators_range_hpp[][headerref boost/log/utility/manipulators/range.hpp]]
+
+[template class_log_range_manipulator[][classref boost::log::range_manipulator range_manipulator]]
+
 [template boost_log_utility_manipulators_to_log_hpp[][headerref boost/log/utility/manipulators/to_log.hpp]]
 
 [template class_log_to_log_manip[][classref boost::log::to_log_manip to_log_manip]]
+
+[template boost_log_utility_manipulators_tuple_hpp[][headerref boost/log/utility/manipulators/tuple.hpp]]
+
+[template class_log_tuple_manipulator[][classref boost::log::tuple_manipulator tuple_manipulator]]
+
+[template class_log_tuple_manipulator_output_visitor[][classref boost::log::tuple_manipulator::output_visitor output_visitor]]
+
+[template class_log_output_visitor[][classref boost::log::output_visitor output_visitor]]
 
 [template boost_log_utility_once_block_hpp[][headerref boost/log/utility/once_block.hpp]]
 
@@ -214,6 +230,10 @@
 [template boost_log_utility_unique_identifier_name_hpp[][headerref boost/log/utility/unique_identifier_name.hpp]]
 
 [template boost_log_utility_unused_variable_hpp[][headerref boost/log/utility/unused_variable.hpp]]
+
+[template boost_log_utility_use_std_allocator_hpp[][headerref boost/log/utility/use_std_allocator.hpp]]
+
+[template class_log_use_std_allocator[][classref boost::log::use_std_allocator use_std_allocator]]
 
 [template boost_log_utility_value_ref_hpp[][headerref boost/log/utility/value_ref.hpp]]
 

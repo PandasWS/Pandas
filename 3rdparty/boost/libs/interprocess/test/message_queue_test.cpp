@@ -8,7 +8,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/ipc/message_queue.hpp>
 #include <boost/interprocess/managed_external_buffer.hpp>
 #include <boost/interprocess/managed_heap_memory.hpp>
@@ -26,10 +25,11 @@
 #include <memory>
 #include <iostream>
 #include <vector>
-#include <stdexcept>
+#include <exception>
 #include <limits>
 
 #include "get_process_id_name.hpp"
+#include "named_creation_template.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -153,14 +153,14 @@ bool test_serialize_db()
          return false;
 
       //Fill map1 until is full
-      try{
+      BOOST_TRY{
          std::size_t i = 0;
          while(1){
             (*map1)[i] = i;
             ++i;
          }
       }
-      catch(boost::interprocess::bad_alloc &){}
+      BOOST_CATCH(boost::interprocess::bad_alloc &){} BOOST_CATCH_END
 
       //Data control data sending through the message queue
       std::size_t sent = 0;
@@ -289,12 +289,12 @@ static const int MULTI_NUM_MSG_PER_SENDER = 10000;
 //Message queue message capacity
 static const int MULTI_QUEUE_SIZE = (MULTI_NUM_MSG_PER_SENDER - 1)/MULTI_NUM_MSG_PER_SENDER + 1;
 //We'll launch MULTI_THREAD_COUNT senders and MULTI_THREAD_COUNT receivers
-static const int MULTI_THREAD_COUNT = 10;
+static const std::size_t MULTI_THREAD_COUNT = 10;
 
 static void multisend()
 {
    char buff;
-   for (int i = 0; i < MULTI_NUM_MSG_PER_SENDER; i++) {
+   for (std::size_t i = 0; i < MULTI_NUM_MSG_PER_SENDER; i++) {
       global_queue->send(&buff, 1, 0);
    }
    global_queue->send(&buff, 0, 0);
@@ -320,7 +320,7 @@ bool test_multi_sender_receiver()
 {
    bool ret = true;
    //std::cout << "Testing multi-sender / multi-receiver " << std::endl;
-   try {
+   BOOST_TRY {
       boost::interprocess::message_queue::remove(test::get_process_id_name());
       boost::interprocess::message_queue mq
          (boost::interprocess::open_or_create, test::get_process_id_name(), MULTI_QUEUE_SIZE, 1);
@@ -328,49 +328,109 @@ bool test_multi_sender_receiver()
       std::vector<boost::interprocess::ipcdetail::OS_thread_t> threads(MULTI_THREAD_COUNT*2);
 
       //Launch senders receiver thread
-      for (int i = 0; i < MULTI_THREAD_COUNT; i++) {
+      for (std::size_t i = 0; i < MULTI_THREAD_COUNT; i++) {
          boost::interprocess::ipcdetail::thread_launch
             (threads[i], &multisend);
       }
 
-      for (int i = 0; i < MULTI_THREAD_COUNT; i++) {
+      for (std::size_t i = 0; i < MULTI_THREAD_COUNT; i++) {
          boost::interprocess::ipcdetail::thread_launch
             (threads[MULTI_THREAD_COUNT+i], &multireceive);
       }
 
-      for (int i = 0; i < MULTI_THREAD_COUNT*2; i++) {
+      for (std::size_t i = 0; i < MULTI_THREAD_COUNT*2; i++) {
          boost::interprocess::ipcdetail::thread_join(threads[i]);
          //std::cout << "Joined thread " << i << std::endl;
       }
    }
-   catch (std::exception &e) {
+   BOOST_CATCH(std::exception &e) {
       std::cout << "error " << e.what() << std::endl;
       ret = false;
-   }
+   } BOOST_CATCH_END
    boost::interprocess::message_queue::remove(test::get_process_id_name());
    return ret;
 }
 
+class msg_queue_named_test_wrapper
+   : public test::named_sync_deleter<message_queue>, public message_queue
+{
+   public:
+
+   msg_queue_named_test_wrapper(create_only_t)
+      :  message_queue(create_only, test::get_process_id_name(), 10, 10)
+   {}
+
+   msg_queue_named_test_wrapper(open_only_t)
+      :  message_queue(open_only, test::get_process_id_name())
+   {}
+
+   msg_queue_named_test_wrapper(open_or_create_t)
+      :  message_queue(open_or_create, test::get_process_id_name(), 10, 10)
+   {}
+
+   ~msg_queue_named_test_wrapper()
+   {}
+};
+
+#if defined(BOOST_INTERPROCESS_WCHAR_NAMED_RESOURCES)
+
+class msg_queue_named_test_wrapper_w
+   : public test::named_sync_deleter_w<message_queue>, public message_queue
+{
+   public:
+
+   template <class CharT>
+   msg_queue_named_test_wrapper_w(create_only_t)
+      :  message_queue(create_only, test::get_process_id_wname(), 10, 10)
+   {}
+
+   msg_queue_named_test_wrapper_w(open_only_t)
+      :  message_queue(open_only, test::get_process_id_wname())
+   {}
+
+   msg_queue_named_test_wrapper_w(open_or_create_t)
+      :  message_queue(open_or_create, test::get_process_id_wname(), 10, 10)
+   {}
+
+   ~msg_queue_named_test_wrapper_w()
+   {}
+};
+
+#endif   //defined(BOOST_INTERPROCESS_WCHAR_NAMED_RESOURCES)
+
 
 int main ()
 {
-   if(!test_priority_order()){
-      return 1;
-   }
+   int ret = 0;
+   BOOST_TRY{
+      message_queue::remove(test::get_process_id_name());
+      test::test_named_creation<msg_queue_named_test_wrapper>();
+      #if defined(BOOST_INTERPROCESS_WCHAR_NAMED_RESOURCES)
+      test::test_named_creation<msg_queue_named_test_wrapper>();
+      #endif
 
-   if(!test_serialize_db()){
-      return 1;
-   }
+      if(!test_priority_order()){
+         return 1;
+      }
 
-   if(!test_buffer_overflow()){
-      return 1;
-   }
+      if(!test_serialize_db()){
+         return 1;
+      }
 
-   if(!test_multi_sender_receiver()){
-      return 1;
-   }
+      if(!test_buffer_overflow()){
+         return 1;
+      }
 
-   return 0;
+      if(!test_multi_sender_receiver()){
+         return 1;
+      }
+   }
+   BOOST_CATCH(std::exception &ex) {
+      std::cout << ex.what() << std::endl;
+      ret = 1;
+   } BOOST_CATCH_END
+   
+   message_queue::remove(test::get_process_id_name());
+   return ret;
 }
 
-#include <boost/interprocess/detail/config_end.hpp>

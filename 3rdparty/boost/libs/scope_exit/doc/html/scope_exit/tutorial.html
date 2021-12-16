@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Tutorial</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">
+<link rel="home" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">
+<link rel="up" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">
 <link rel="prev" href="getting_started.html" title="Getting Started">
 <link rel="next" href="alternatives.html" title="Annex: Alternatives">
 </head>
@@ -88,8 +88,8 @@
 <p>
       </p>
 <p>
-        The block below point <code class="literal">(1)</code> is a <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
-        declaration. Unlike point <code class="literal">(1)</code>, an execution of the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> body will be delayed until the
+        The block below point <code class="literal">(1)</code> is a <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+        declaration. Unlike point <code class="literal">(1)</code>, an execution of the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> body will be delayed until the
         end of the current scope. In this case it will be executed either after point
         <code class="literal">(4)</code> or on any exception. (On various versions of the GCC
         compiler, it is necessary to use <code class="computeroutput">BOOST_SCOPE_EXIT_TPL</code>
@@ -97,7 +97,7 @@
         within templates, see later in this section for details.)
       </p>
 <p>
-        The <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> declaration starts
+        The <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> declaration starts
         with the <code class="computeroutput">BOOST_SCOPE_EXIT</code> macro
         invocation which accepts a comma-separated list of captured variables (a
         <a href="http://www.boost.org/libs/preprocessor" target="_top">Boost.Preprocessor</a>
@@ -105,8 +105,8 @@
         and for backward compatibility with older versions of this library, see the
         <a class="link" href="no_variadic_macros.html" title="Annex: No Variadic Macros">No Variadic Macros</a> section).
         If a capture starts with the ampersand sign <code class="computeroutput"><span class="special">&amp;</span></code>,
-        a reference to the captured variable will be available inside the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
-        body; otherwise, a copy of the variable will be made after the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+        a reference to the captured variable will be available inside the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+        body; otherwise, a copy of the variable will be made after the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
         declaration at point <code class="literal">(1)</code> and only the copy will be available
         inside the body (in this case, the captured variable's type must be <a href="http://www.boost.org/doc/libs/release/doc/html/CopyConstructible.html" target="_top"><code class="computeroutput"><span class="identifier">CopyConstructible</span></code></a>).
       </p>
@@ -120,10 +120,10 @@
         by value is sometimes useful as well.
       </p>
 <p>
-        Finally, the end of the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+        Finally, the end of the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
         body must be marked by the <code class="computeroutput">BOOST_SCOPE_EXIT_END</code>
         macro which must follow the closing curly bracket <code class="computeroutput"><span class="special">}</span></code>
-        of the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> body.
+        of the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> body.
       </p>
 <div class="important"><table border="0" summary="Important">
 <tr>
@@ -132,9 +132,9 @@
 </tr>
 <tr><td align="left" valign="top"><p>
           In order to comply with the <a href="http://www.stlport.org/doc/exception_safety.html" target="_top">STL
-          exception safety requirements</a>, the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+          exception safety requirements</a>, the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
           body must never throw (because the library implementation executes the
-          body within a destructor call). This is true for all <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+          body within a destructor call). This is true for all <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
           macros (including <code class="computeroutput">BOOST_SCOPE_EXIT_TPL</code>
           and <code class="computeroutput">BOOST_SCOPE_EXIT_ALL</code>
           seen below) on both C++03 and C++11.
@@ -147,10 +147,10 @@
         and increment it to cancel all rollback actions associated with those changes.
         If we pass a current value of <code class="computeroutput"><span class="identifier">evolution_</span></code>
         stored in the <code class="computeroutput"><span class="identifier">checkpoint</span></code>
-        variable by value, it remains unchanged within the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+        variable by value, it remains unchanged within the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
         body so we can compare it with the final value of <code class="computeroutput"><span class="identifier">evolution_</span></code>.
         If the latter was not incremented since we saved it, the rollback action
-        inside the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> body should
+        inside the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> body should
         be executed. For example (see also <a href="../../../test/world_checkpoint.cpp" target="_top"><code class="literal">world_checkpoint.cpp</code></a>):
       </p>
 <p>
@@ -187,8 +187,8 @@
 <p>
       </p>
 <p>
-        When multiple <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> blocks are
-        declared within the same enclosing scope, the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+        When multiple <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> blocks are
+        declared within the same enclosing scope, the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
         bodies are executed in the reversed order of their declarations.
       </p>
 </div>
@@ -198,7 +198,7 @@
       The Object <code class="computeroutput"><span class="keyword">this</span></code></a>
 </h3></div></div></div>
 <p>
-        Within a member function, it is also possible to capture the object <code class="computeroutput"><span class="keyword">this</span></code>. However, the special symbol <code class="computeroutput"><span class="identifier">this_</span></code> must be used instead of <code class="computeroutput"><span class="keyword">this</span></code> in the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+        Within a member function, it is also possible to capture the object <code class="computeroutput"><span class="keyword">this</span></code>. However, the special symbol <code class="computeroutput"><span class="identifier">this_</span></code> must be used instead of <code class="computeroutput"><span class="keyword">this</span></code> in the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
         declaration and body to capture and access the object. For example (see also
         <a href="../../../test/world_this.cpp" target="_top"><code class="literal">world_this.cpp</code></a>):
       </p>
@@ -223,12 +223,12 @@
       No Variable</a>
 </h3></div></div></div>
 <p>
-        A <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> declaration can also
+        A <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> declaration can also
         capture no variable. In this case, the list of captured variables is replaced
         by the <code class="computeroutput"><span class="keyword">void</span></code> keyword (similarly
         to the C++ syntax that allows to declare a function with no parameter using
         <code class="literal"><span class="emphasis"><em>result-type function-name</em></span></code><code class="computeroutput"><span class="special">(</span><span class="keyword">void</span><span class="special">)</span></code>).
-        <a href="#ftn.scope_exit.tutorial.capturing_no_variable.f0" class="footnote" name="scope_exit.tutorial.capturing_no_variable.f0"><sup class="footnote">[3]</sup></a> For example, this can be useful when the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+        <a href="#ftn.scope_exit.tutorial.capturing_no_variable.f0" class="footnote" name="scope_exit.tutorial.capturing_no_variable.f0"><sup class="footnote">[3]</sup></a> For example, this can be useful when the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
         body only needs to access global variables (see also <a href="../../../test/world_void.cpp" target="_top"><code class="literal">world_void.cpp</code></a>):
       </p>
 <p>
@@ -315,12 +315,12 @@
 <p>
       </p>
 <p>
-        The first <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> declaration captures
+        The first <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a> declaration captures
         all variables in scope by reference but the variable <code class="computeroutput"><span class="identifier">checkpoint</span></code>
         and the object <code class="computeroutput"><span class="keyword">this</span></code> which are
         explicitly captured by value (in particular, <code class="computeroutput"><span class="identifier">p</span></code>
         and <code class="computeroutput"><span class="identifier">persons_</span></code> are implicitly
-        captured by reference here). The second <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+        captured by reference here). The second <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
         declaration instead captures all variables in scope by value but <code class="computeroutput"><span class="identifier">p</span></code> which is explicitly captured by reference
         (in particular, <code class="computeroutput"><span class="identifier">checkpoint</span></code>,
         <code class="computeroutput"><span class="identifier">prev_id</span></code>, and <code class="computeroutput"><span class="keyword">this</span></code> are implicitly captured by value here).
@@ -501,7 +501,7 @@
 <br><hr style="width:100; text-align:left;margin-left: 0">
 <div id="ftn.scope_exit.tutorial.capturing_no_variable.f0" class="footnote"><p><a href="#scope_exit.tutorial.capturing_no_variable.f0" class="para"><sup class="para">[3] </sup></a>
           <span class="bold"><strong>Rationale.</strong></span> Unfortunately, it is not possible
-          to simply invoke the <a class="link" href="../index.html" title="Chapter&#160;1.&#160;Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
+          to simply invoke the <a class="link" href="../index.html" title="Chapter 1. Boost.ScopeExit 1.1.0">Boost.ScopeExit</a>
           macro with no parameters as in <code class="computeroutput"><span class="identifier">BOOST_SCOPE_EXIT</span><span class="special">()</span></code> because the C++ preprocessor cannot detect
           emptiness of a macro parameter when the parameter can start with a non-alphanumeric
           symbol (which is the case when capturing a variable by reference <code class="computeroutput"><span class="special">&amp;</span><span class="identifier">variable</span></code>).
@@ -563,7 +563,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2012 Alexander Nasonov, Lorenzo Caminiti<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2012 Alexander Nasonov, Lorenzo Caminiti<p>
         Distributed under the Boost Software License, Version 1.0 (see accompanying
         file LICENSE_1_0.txt or a copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -81,6 +81,7 @@ test-suite range :
     [ range-test adaptor_test/type_erased_forward ]
     [ range-test adaptor_test/type_erased_bidirectional ]
     [ range-test adaptor_test/type_erased_random_access ]
+    [ range-test adaptor_test/type_erased_transformed ]
     [ range-test adaptor_test/uniqued ]
     [ range-test adaptor_test/adjacent_filtered_example ]
     [ range-test adaptor_test/copied_example ]

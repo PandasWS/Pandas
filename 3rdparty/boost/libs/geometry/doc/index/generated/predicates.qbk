@@ -12,7 +12,7 @@
 [[[link group__predicates_1ga4a6d33e6f61ad5bff3bdee50a972d54b `overlaps(Geometry const &)`]][Generate [^[link group__predicates_1ga4a6d33e6f61ad5bff3bdee50a972d54b overlaps()]] predicate. ]]
 [[[link group__predicates_1gaabce901b82af2aab10ebbd0dda12f4d5 `within(Geometry const &)`]][Generate [^[link group__predicates_1gaabce901b82af2aab10ebbd0dda12f4d5 within()]] predicate. ]]
 [[[link group__predicates_1ga3213772dd3e54ad03340c2ca66b4f58c `satisfies(UnaryPredicate const &)`]][Generate [link group__predicates_1ga3213772dd3e54ad03340c2ca66b4f58c satisfies()] predicate. ]]
-[[[link group__predicates_1ga8772d9d3e5b12b3292f7d94d47310e3e `nearest(Geometry const &, unsigned)`]][Generate [link group__predicates_1ga8772d9d3e5b12b3292f7d94d47310e3e nearest()] predicate. ]]
+[[[link group__predicates_1ga476c3b5d51e60d5c8e1e743340cb2b2b `nearest(Geometry const &, std::size_t)`]][Generate [link group__predicates_1ga476c3b5d51e60d5c8e1e743340cb2b2b nearest()] predicate. ]]
 ]
 
 [#group__predicates_1gac52a6557110425d4ece53fbd6f9ff866]
@@ -290,23 +290,23 @@ std::back_inserter(result));
 
 [endsect]
 
-[#group__predicates_1ga8772d9d3e5b12b3292f7d94d47310e3e]
-[section nearest(Geometry const &, unsigned)]
+[#group__predicates_1ga476c3b5d51e60d5c8e1e743340cb2b2b]
+[section nearest(Geometry const &, std::size_t)]
 '''<indexterm><primary>nearest</primary></indexterm>'''
-Generate [link group__predicates_1ga8772d9d3e5b12b3292f7d94d47310e3e nearest()] predicate. 
+Generate [link group__predicates_1ga476c3b5d51e60d5c8e1e743340cb2b2b nearest()] predicate. 
 
 [heading Description]
-When nearest predicate is passed to the query, k-nearest neighbour search will be performed. [^[link group__predicates_1ga8772d9d3e5b12b3292f7d94d47310e3e nearest()]] predicate takes a [^`Geometry`] from which distances to [^`Values`] are calculated and the maximum number of [^`Values`] that should be returned. Internally boost::geometry::comparable_distance() is used to perform the calculation.[heading Synopsis]
+When nearest predicate is passed to the query, k-nearest neighbour search will be performed. [^[link group__predicates_1ga476c3b5d51e60d5c8e1e743340cb2b2b nearest()]] predicate takes a [^`Geometry`] from which distances to [^`Values`] are calculated and the maximum number of [^`Values`] that should be returned. Internally boost::geometry::comparable_distance() is used to perform the calculation.[heading Synopsis]
 [pre
 `template<``typename Geometry``>`
-/unspecified/ `nearest``(``Geometry const &` `geometry``,` `unsigned` `k``)`
+/unspecified/ `nearest``(``Geometry const &` `geometry``,` `std::size_t` `k``)`
 ]
 
 [heading Parameter(s)]
 [table 
 [[Type][Name][Description]]
 [[`Geometry const &`][ `geometry` ][The geometry from which distance is calculated. ]]
-[[`unsigned`][ `k` ][The maximum number of values to return. ]]
+[[`std::size_t`][ `k` ][The maximum number of values to return. ]]
 ]
 [heading Example]
 
@@ -317,7 +317,7 @@ bgi::query(spatial_index, bgi::nearest(box, 5), std::back_inserter(result));
 ``
 
 
-[warning Only one [^[link group__predicates_1ga8772d9d3e5b12b3292f7d94d47310e3e nearest()]] predicate may be used in a query.]
+[warning Only one [^[link group__predicates_1ga476c3b5d51e60d5c8e1e743340cb2b2b nearest()]] predicate may be used in a query.]
 
 [endsect]
 

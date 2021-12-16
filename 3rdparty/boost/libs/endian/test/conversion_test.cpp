@@ -7,14 +7,24 @@
 
 //--------------------------------------------------------------------------------------//
 
+#if defined(_MSC_VER)
+# pragma warning( disable: 4127 ) // conditional expression is constant
+# if _MSC_VER < 1500
+#   pragma warning( disable: 4267 ) // '+=': possible loss of data
+# endif
+#endif
+
 #include <boost/endian/detail/disable_warnings.hpp>
 
 #include <boost/endian/conversion.hpp>
-#include <boost/detail/lightweight_main.hpp>
 #include <boost/core/lightweight_test.hpp>
+#include <boost/type_traits/is_integral.hpp>
+#include <boost/type_traits/make_unsigned.hpp>
+#include <boost/static_assert.hpp>
 #include <iostream>
 #include <cstring>
 #include <algorithm>
+#include <cstddef>
 
 namespace be = boost::endian;
 using std::cout;
@@ -38,63 +48,43 @@ template <class T> inline T std_endian_reverse(T x) BOOST_NOEXCEPT
 namespace
 {
 
-  //  values for tests
+    //  values for tests
 
-  void native_value(int8_t& x) {x = static_cast<int8_t>(0xF0U);}
-  void native_value(uint8_t& x) {x = static_cast<uint8_t>(0xF0U);}
-# if BOOST_ENDIAN_BIG_BYTE
-  void big_value(int8_t& x) {x = static_cast<int8_t>(0xF0U);}
-  void big_value(uint8_t& x) {x = static_cast<uint8_t>(0xF0U);}
-  void little_value(int8_t& x) {x = static_cast<int8_t>(0xF0U);}
-  void little_value(uint8_t& x) {x = static_cast<uint8_t>(0xF0U);}
-# else
-  void big_value(int8_t& x) {x = static_cast<int8_t>(0xF0U);}
-  void big_value(uint8_t& x) {x = static_cast<uint8_t>(0xF0U);}
-  void little_value(int8_t& x) {x = static_cast<int8_t>(0xF0U);}
-  void little_value(uint8_t& x) {x = static_cast<uint8_t>(0xF0U);}
-# endif
+    static unsigned char const test_value_bytes[] = { 0xF1, 0x02, 0xE3, 0x04, 0xD5, 0x06, 0xC7, 0x08 };
 
-  void native_value(int16_t& x) {x = static_cast<int16_t>(0xF102U);}
-  void native_value(uint16_t& x) {x = static_cast<uint16_t>(0xF102U);}
-# if BOOST_ENDIAN_BIG_BYTE
-  void big_value(int16_t& x) {x = static_cast<int16_t>(0xF102U);}
-  void big_value(uint16_t& x) {x = static_cast<uint16_t>(0xF102U);}
-  void little_value(int16_t& x) {x = static_cast<int16_t>(0x02F1U);}
-  void little_value(uint16_t& x) {x = static_cast<uint16_t>(0x02F1U);}
-# else
-  void big_value(int16_t& x) {x = static_cast<int16_t>(0x02F1U);}
-  void big_value(uint16_t& x) {x = static_cast<uint16_t>(0x02F1U);}
-  void little_value(int16_t& x) {x = static_cast<int16_t>(0xF102U);}
-  void little_value(uint16_t& x) {x = static_cast<uint16_t>(0xF102U);}
-# endif
+    template<class T> void native_value( T& x )
+    {
+        BOOST_STATIC_ASSERT( boost::is_integral<T>::value && sizeof( T ) <= 8 );
+        std::memcpy( &x, test_value_bytes, sizeof( x ) );
+    }
 
-  void native_value(int32_t& x) {x = static_cast<int32_t>(0xF1E21304UL);}
-  void native_value(uint32_t& x) {x = static_cast<uint32_t>(0xF1E21304UL);}
-# if BOOST_ENDIAN_BIG_BYTE
-  void big_value(int32_t& x) {x = static_cast<int32_t>(0xF1E21304UL);}
-  void big_value(uint32_t& x) {x = static_cast<uint32_t>(0xF1E21304UL);}
-  void little_value(int32_t& x) {x = static_cast<int32_t>(0x0413E2F1UL);}
-  void little_value(uint32_t& x) {x = static_cast<uint32_t>(0x0413E2F1UL);}
-# else
-  void big_value(int32_t& x) {x = static_cast<int32_t>(0x0413E2F1UL);}
-  void big_value(uint32_t& x) {x = static_cast<uint32_t>(0x0413E2F1UL);}
-  void little_value(int32_t& x) {x = static_cast<int32_t>(0xF1E21304UL);}
-  void little_value(uint32_t& x) {x = static_cast<uint32_t>(0xF1E21304UL);}
-# endif
+    template<class T> void little_value( T& x )
+    {
+        BOOST_STATIC_ASSERT( boost::is_integral<T>::value && sizeof( T ) <= 8 );
 
-  void native_value(int64_t& x) {x = static_cast<int64_t>(0xF1E2D3C444231201ULL);}
-  void native_value(uint64_t& x) {x = static_cast<uint64_t>(0xF1E2D3C444231201ULL);}
-# if BOOST_ENDIAN_BIG_BYTE
-  void big_value(int64_t& x) {x = static_cast<int64_t>(0xF1E2D3C444231201ULL);}
-  void big_value(uint64_t& x) {x = static_cast<uint64_t>(0xF1E2D3C444231201ULL);}
-  void little_value(int64_t& x) {x = static_cast<int64_t>(0x01122344C4D3E2F1ULL);}
-  void little_value(uint64_t& x) {x = static_cast<uint64_t>(0x01122344C4D3E2F1ULL);}
-# else
-  void big_value(int64_t& x) {x = static_cast<int64_t>(0x01122344C4D3E2F1ULL);}
-  void big_value(uint64_t& x) {x = static_cast<uint64_t>(0x01122344C4D3E2F1ULL);}
-  void little_value(int64_t& x) {x = static_cast<int64_t>(0xF1E2D3C444231201ULL);}
-  void little_value(uint64_t& x) {x = static_cast<uint64_t>(0xF1E2D3C444231201ULL);}
-# endif
+        typedef typename boost::make_unsigned<T>::type U;
+
+        x = 0;
+
+        for( std::size_t i = 0; i < sizeof( x ); ++i )
+        {
+            x += static_cast<U>( test_value_bytes[ i ] ) << ( 8 * i );
+        }
+    }
+
+    template<class T> void big_value( T& x )
+    {
+        BOOST_STATIC_ASSERT( boost::is_integral<T>::value && sizeof( T ) <= 8 );
+
+        typedef typename boost::make_unsigned<T>::type U;
+
+        x = 0;
+
+        for( std::size_t i = 0; i < sizeof( x ); ++i )
+        {
+            x += static_cast<U>( test_value_bytes[ i ] ) << ( 8 * ( sizeof( x ) - i - 1 ) );
+        }
+    }
 
   template <class T>
   void test()
@@ -108,13 +98,16 @@ namespace
 
     //  validate the values used by the tests below
 
-# if BOOST_ENDIAN_BIG_BYTE
-    BOOST_TEST_EQ(native, big);
-    BOOST_TEST_EQ(::std_endian_reverse(native), little);
-# else
-    BOOST_TEST_EQ(::std_endian_reverse(native), big);
-    BOOST_TEST_EQ(native, little);
-# endif
+    if( be::order::native == be::order::big )
+    {
+        BOOST_TEST_EQ(native, big);
+        BOOST_TEST_EQ(::std_endian_reverse(native), little);
+    }
+    else
+    {
+        BOOST_TEST_EQ(::std_endian_reverse(native), big);
+        BOOST_TEST_EQ(native, little);
+    }
 
     //  value-by-value tests
 
@@ -338,6 +331,19 @@ namespace
 
 int cpp_main(int, char * [])
 {
+  if( be::order::native == be::order::little )
+  {
+    cout << "Little endian" << endl;
+  }
+  else if( be::order::native == be::order::big )
+  {
+    cout << "Big endian" << endl;
+  }
+  else
+  {
+    cout << "Unknown endian" << endl;
+  }
+
   cout << "byte swap intrinsics: " BOOST_ENDIAN_INTRINSIC_MSG << endl;
 
   //std::cerr << std::hex;
@@ -374,6 +380,19 @@ int cpp_main(int, char * [])
 #endif
 
   return ::boost::report_errors();
+}
+
+int main( int argc, char* argv[] )
+{
+    try
+    {
+        return cpp_main( argc, argv );
+    }
+    catch( std::exception const & x )
+    {
+        BOOST_ERROR( x.what() );
+        return boost::report_errors();
+    }
 }
 
 #include <boost/endian/detail/disable_warnings_pop.hpp>

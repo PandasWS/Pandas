@@ -9,7 +9,7 @@
 #include <boost/throw_exception.hpp>
 #include <boost/graph/distributed/adjacency_list.hpp>
 #include <boost/graph/distributed/mpi_process_group.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/random/linear_congruential.hpp>
 #include <boost/graph/erdos_renyi_generator.hpp>
 #include <boost/lexical_cast.hpp>
@@ -28,7 +28,7 @@ boost::throw_exception(std::exception const& ex)
 #endif
 
 
-int test_main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   boost::mpi::environment env(argc, argv);
 
@@ -92,8 +92,8 @@ int test_main(int argc, char** argv)
       if ((int)require_response_gen() % 100 < immediate_response_percent) {
         // Send out-of-band to require a response 
         std::pair<graph_traits<Graph>::edge_descriptor, bool> result(lazy);
-        BOOST_CHECK(source(result.first, g2) == vertex(first->first, g2));
-        BOOST_CHECK(target(result.first, g2) == vertex(first->second, g2));
+        BOOST_TEST(source(result.first, g2) == vertex(first->first, g2));
+        BOOST_TEST(target(result.first, g2) == vertex(first->second, g2));
       }
     }
   }
@@ -182,8 +182,8 @@ int test_main(int argc, char** argv)
       if ((int)require_response_gen() % 100 < immediate_response_percent) {
         // Send out-of-band to require a response 
         std::pair<graph_traits<Graph>::edge_descriptor, bool> result(lazy);
-        BOOST_CHECK(source(result.first, g3) == vertex(first->first, g3));
-        BOOST_CHECK(target(result.first, g3) == vertex(first->second, g3));
+        BOOST_TEST(source(result.first, g3) == vertex(first->first, g3));
+        BOOST_TEST(target(result.first, g3) == vertex(first->second, g3));
       }
     }
   }
@@ -241,5 +241,5 @@ int test_main(int argc, char** argv)
     std::cout.flush();
   }
 
-  return 0;
+  return boost::report_errors();
 }

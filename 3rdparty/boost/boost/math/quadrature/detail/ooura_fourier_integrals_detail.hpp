@@ -6,14 +6,18 @@
 #ifndef BOOST_MATH_QUADRATURE_DETAIL_OOURA_FOURIER_INTEGRALS_DETAIL_HPP
 #define BOOST_MATH_QUADRATURE_DETAIL_OOURA_FOURIER_INTEGRALS_DETAIL_HPP
 #include <utility> // for std::pair.
-#include <mutex>
-#include <atomic>
 #include <vector>
 #include <iostream>
 #include <boost/math/special_functions/expm1.hpp>
 #include <boost/math/special_functions/sin_pi.hpp>
 #include <boost/math/special_functions/cos_pi.hpp>
 #include <boost/math/constants/constants.hpp>
+#include <boost/math/tools/config.hpp>
+
+#ifdef BOOST_HAS_THREADS
+#include <mutex>
+#include <atomic>
+#endif
 
 namespace boost { namespace math { namespace quadrature { namespace detail {
 
@@ -60,12 +64,12 @@ std::pair<Real, Real> ooura_sin_node_and_weight(long n, Real h, Real alpha)
 
     if (n == 0) {
         // Equation 44 of https://arxiv.org/pdf/0911.4796.pdf
-				// Fourier Transform of the Stretched Exponential Function: Analytic Error Bounds,
-				// Double Exponential Transform, and Open-Source Implementation,
-				// Joachim Wuttke, 
-				// The C library libkww provides functions to compute the Kohlrausch-Williams-Watts function, 
-				// the Laplace-Fourier transform of the stretched (or compressed) exponential function exp(-t^beta)
-				// for exponent beta between 0.1 and 1.9 with sixteen decimal digits accuracy.
+        // Fourier Transform of the Stretched Exponential Function: Analytic Error Bounds,
+        // Double Exponential Transform, and Open-Source Implementation,
+        // Joachim Wuttke, 
+        // The C library libkww provides functions to compute the Kohlrausch-Williams-Watts function, 
+        // the Laplace-Fourier transform of the stretched (or compressed) exponential function exp(-t^beta)
+        // for exponent beta between 0.1 and 1.9 with sixteen decimal digits accuracy.
 
         Real eta_prime_0 = Real(2) + alpha + Real(1)/Real(4);
         Real node = pi<Real>()/(eta_prime_0*h);
@@ -148,9 +152,9 @@ std::pair<Real, Real> ooura_cos_node_and_weight(long n, Real h, Real alpha)
     Real phi_prime = -(expm1_meta + x*exp_meta*eta_prime)/(expm1_meta*expm1_meta);
 
     // Takuya Ooura and Masatake Mori,
-		// Journal of Computational and Applied Mathematics, 112 (1999) 229-241.
-		// A robust double exponential formula for Fourier-type integrals.
-		// Equation 4.6
+    // Journal of Computational and Applied Mathematics, 112 (1999) 229-241.
+    // A robust double exponential formula for Fourier-type integrals.
+    // Equation 4.6
     Real s = pi<Real>();
     Real arg;
     if (eta < -1) {
@@ -175,8 +179,8 @@ class ooura_fourier_sin_detail {
 public:
     ooura_fourier_sin_detail(const Real relative_error_goal, size_t levels) {
 #ifdef BOOST_MATH_INSTRUMENT_OOURA
-			std::cout << "ooura_fourier_sin with relative error goal " << relative_error_goal 
-				<< " & " << levels << " levels." << std::endl;
+      std::cout << "ooura_fourier_sin with relative error goal " << relative_error_goal 
+        << " & " << levels << " levels." << std::endl;
 #endif // BOOST_MATH_INSTRUMENT_OOURA
         if (relative_error_goal < std::numeric_limits<Real>::epsilon() * 2) {
             throw std::domain_error("The relative error goal cannot be smaller than the unit roundoff.");
@@ -245,9 +249,9 @@ public:
             print_ooura_estimate(i, I0, I1, omega);
 #endif
             Real absolute_error_estimate = abs(I0-I1);
-            Real scale = max(abs(I0), abs(I1));
+            Real scale = (max)(abs(I0), abs(I1));
             if (!isnan(I1) && absolute_error_estimate <= rel_err_goal_*scale) {
-                starting_level_ = max(long(i) - 1, long(0));
+                starting_level_ = (max)(long(i) - 1, long(0));
                 return {I0/omega, absolute_error_estimate/scale};
             }
             I1 = I0;
@@ -273,12 +277,12 @@ public:
             }
             Real I0 = estimate_integral(f, omega, ii);
             Real absolute_error_estimate = abs(I0-I1);
-            Real scale = max(abs(I0), abs(I1));
+            Real scale = (max)(abs(I0), abs(I1));
 #ifdef BOOST_MATH_INSTRUMENT_OOURA
             print_ooura_estimate(ii, I0, I1, omega);
 #endif
             if (absolute_error_estimate <= rel_err_goal_*scale) {
-                starting_level_ = max(long(ii) - 1, long(0));
+                starting_level_ = (max)(long(ii) - 1, long(0));
                 return {I0/omega, absolute_error_estimate/scale};
             }
             I1 = I0;
@@ -378,8 +382,10 @@ private:
         lnode_row.shrink_to_fit();
         lweight_row.shrink_to_fit();
 
+        #ifdef BOOST_HAS_THREADS
         // std::scoped_lock once C++17 is more common?
         std::lock_guard<std::mutex> lock(node_weight_mutex_);
+        #endif 
         // Another thread might have already finished this calculation and appended it to the nodes/weights:
         if (current_num_levels == big_nodes_.size()) {
             big_nodes_.push_back(bnode_row);
@@ -413,7 +419,9 @@ private:
         return I0;
     }
 
+    #ifdef BOOST_HAS_THREADS
     std::mutex node_weight_mutex_;
+    #endif
     // Nodes for n >= 0, giving t_n = pi*phi(nh)/h. Generally t_n >> 1.
     std::vector<std::vector<Real>> big_nodes_;
     // The term bweights_ will indicate that these are weights corresponding
@@ -424,7 +432,12 @@ private:
     std::vector<std::vector<Real>> little_nodes_;
     std::vector<std::vector<Real>> lweights_;
     Real rel_err_goal_;
+
+    #ifdef BOOST_HAS_THREADS
     std::atomic<long> starting_level_;
+    #else
+    long starting_level_;
+    #endif
     size_t requested_levels_;
 };
 
@@ -433,9 +446,9 @@ class ooura_fourier_cos_detail {
 public:
     ooura_fourier_cos_detail(const Real relative_error_goal, size_t levels) {
 #ifdef BOOST_MATH_INSTRUMENT_OOURA
-			std::cout << "ooura_fourier_cos with relative error goal " << relative_error_goal
-				<< " & " << levels << " levels." << std::endl;
-			std::cout << "epsilon for type = " << std::numeric_limits<Real>::epsilon() << std::endl;
+      std::cout << "ooura_fourier_cos with relative error goal " << relative_error_goal
+        << " & " << levels << " levels." << std::endl;
+      std::cout << "epsilon for type = " << std::numeric_limits<Real>::epsilon() << std::endl;
 #endif // BOOST_MATH_INSTRUMENT_OOURA
         if (relative_error_goal < std::numeric_limits<Real>::epsilon() * 2) {
             throw std::domain_error("The relative error goal cannot be smaller than the unit roundoff!");
@@ -488,9 +501,9 @@ public:
             print_ooura_estimate(i, I0, I1, omega);
 #endif
             absolute_error_estimate = abs(I0-I1);
-            scale = max(abs(I0), abs(I1));
+            scale = (max)(abs(I0), abs(I1));
             if (!isnan(I1) && absolute_error_estimate <= rel_err_goal_*scale) {
-                starting_level_ = max(long(i) - 1, long(0));
+                starting_level_ = (max)(long(i) - 1, long(0));
                 return {I0/omega, absolute_error_estimate/scale};
             }
             I1 = I0;
@@ -513,9 +526,9 @@ public:
             print_ooura_estimate(ii, I0, I1, omega);
 #endif
             absolute_error_estimate = abs(I0-I1);
-            scale = max(abs(I0), abs(I1));
+            scale = (max)(abs(I0), abs(I1));
             if (absolute_error_estimate <= rel_err_goal_*scale) {
-                starting_level_ = max(long(ii) - 1, long(0));
+                starting_level_ = (max)(long(ii) - 1, long(0));
                 return {I0/omega, absolute_error_estimate/scale};
             }
             I1 = I0;
@@ -606,7 +619,10 @@ private:
         lnode_row.shrink_to_fit();
         lweight_row.shrink_to_fit();
 
+        #ifdef BOOST_HAS_THREADS
         std::lock_guard<std::mutex> lock(node_weight_mutex_);
+        #endif
+
         // Another thread might have already finished this calculation and appended it to the nodes/weights:
         if (current_num_levels == big_nodes_.size()) {
             big_nodes_.push_back(bnode_row);
@@ -635,14 +651,23 @@ private:
         return I0;
     }
 
+    #ifdef BOOST_HAS_THREADS
     std::mutex node_weight_mutex_;
+    #endif 
+
     std::vector<std::vector<Real>> big_nodes_;
     std::vector<std::vector<Real>> bweights_;
 
     std::vector<std::vector<Real>> little_nodes_;
     std::vector<std::vector<Real>> lweights_;
     Real rel_err_goal_;
+
+    #ifdef BOOST_HAS_THREADS
     std::atomic<long> starting_level_;
+    #else
+    long starting_level_;
+    #endif
+
     size_t requested_levels_;
 };
 

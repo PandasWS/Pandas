@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/detail/lightweight_test.hpp>
 #include <boost/spirit/home/x3.hpp>
 #include <boost/fusion/include/vector.hpp>
 
@@ -55,6 +54,8 @@ main()
     using boost::spirit::x3::lit;
     //~ using boost::spirit::x3::_1;
     using boost::spirit::x3::lexeme;
+
+    BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(+char_);
 
     {
         BOOST_TEST(test("aaaaaaaa", +char_));

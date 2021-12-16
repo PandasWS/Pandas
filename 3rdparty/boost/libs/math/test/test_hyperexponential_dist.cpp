@@ -15,11 +15,12 @@
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <cstddef>
 #include <iostream>
 #include <vector>
+#include <tuple>
 
 #define BOOST_MATH_HYPEREXP_CHECK_CLOSE_COLLECTIONS(T, actual, expected, tol) \
     do {                                                                      \
@@ -34,15 +35,15 @@
     } while(false)
 
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
-typedef boost::mpl::list<float, double, long double, boost::math::concepts::real_concept> test_types;
+using test_types = std::tuple<float, double, long double, boost::math::concepts::real_concept>;
 #else
-typedef boost::mpl::list<float, double> test_types;
+using test_types = std::tuple<float, double>;
 #endif
 
 template <typename RealT>
 RealT make_tolerance()
 {
-    // Tolerance is 100eps expressed as a persentage (as required by Boost.Build):
+    // Tolerance is 100eps expressed as a percentage (as required by Boost.Build):
     return boost::math::tools::epsilon<RealT>() * 100 * 100;
 }
 
@@ -385,4 +386,22 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(error_cases, RealT, test_types)
    BOOST_MATH_CHECK_THROW(dist_t(probs2, rates), std::domain_error);
    BOOST_MATH_CHECK_THROW(dist_t(probs.begin(), probs.begin(), rates.begin(), rates.begin()), std::domain_error);
    BOOST_MATH_CHECK_THROW(dist_t(rates.begin(), rates.begin()), std::domain_error);
+
+   // Test C++20 ranges (Currently only GCC10 has full support to P0896R4)
+   #if (__cplusplus > 202000L || _MSVC_LANG > 202000L) && __has_include(<ranges>) && __GNUC__ >= 10
+   // Support for ranges is broken using gcc 11.1
+   #if __GNUC__ != 11
+   #include <ranges>
+   #include <array>
+
+   std::array<RealT, 2> probs_array {1,2};
+   std::array<RealT, 3> rates_array {1,2,3};
+   BOOST_MATH_CHECK_THROW(dist_t(std::ranges::begin(probs_array), std::ranges::end(probs_array), std::ranges::begin(rates_array), std::ranges::end(rates_array)), std::domain_error);
+
+   const auto probs_range = probs_array | std::ranges::views::all;
+   const auto rates_range = rates_array | std::ranges::views::all;
+
+   BOOST_MATH_CHECK_THROW(dist_t(probs_range, rates_range), std::domain_error);
+   #endif
+   #endif
 }

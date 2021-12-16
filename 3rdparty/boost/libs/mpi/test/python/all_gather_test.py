@@ -6,7 +6,8 @@
 
 # Test all_gather() collective.
 
-import boost.parallel.mpi as mpi
+from __future__ import print_function
+import mpi
 from generators import *
 
 def all_gather_test(comm, generator, kind):
@@ -15,7 +16,7 @@ def all_gather_test(comm, generator, kind):
     result = mpi.all_gather(comm, my_value)
     for p in range(0, comm.size):
         assert result[p] == generator(p)
-    if comm.rank == 0: print "OK."
+    if comm.rank == 0: print( "OK.")
        
     return
 

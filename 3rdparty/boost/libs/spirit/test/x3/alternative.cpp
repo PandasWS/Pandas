@@ -5,7 +5,6 @@
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
-#include <boost/detail/lightweight_test.hpp>
 #include <boost/spirit/home/x3.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/variant.hpp>
@@ -41,8 +40,6 @@ struct undefined {};
 struct stationary : boost::noncopyable
 {
     explicit stationary(int i) : val{i} {}
-    // TODO: fix unneeded self move in alternative
-    stationary& operator=(stationary&&) { std::abort(); }
     stationary& operator=(int i) { val = i; return *this; }
 
     int val;
@@ -64,6 +61,7 @@ main()
     using boost::spirit::x3::omit;
     using boost::spirit::x3::eps;
 
+    BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(char_ | char_);
 
     {
         BOOST_TEST((test("a", char_ | char_)));
@@ -241,12 +239,61 @@ main()
         BOOST_TEST(boost::get<char>(&boost::fusion::front(attr_)) == nullptr);
     }
 
-    { // ensure no unneded synthesization, copying and moving occured
+    { // ensure no unneeded synthesization, copying and moving occurred
         auto p = '{' >> int_ >> '}';
 
         stationary st { 0 };
         BOOST_TEST(test_attr("{42}", p | eps | p, st));
         BOOST_TEST_EQ(st.val, 42);
+    }
+
+    { // attributeless parsers must not insert values
+        std::vector<int> v;
+        BOOST_TEST(test_attr("1 2 3 - 5 - - 7 -", (int_ | '-') % ' ', v));
+        BOOST_TEST_EQ(v.size(), 5)
+            && BOOST_TEST_EQ(v[0], 1)
+            && BOOST_TEST_EQ(v[1], 2)
+            && BOOST_TEST_EQ(v[2], 3)
+            && BOOST_TEST_EQ(v[3], 5)
+            && BOOST_TEST_EQ(v[4], 7)
+            ;
+    }
+
+    { // regressing test for #603
+        using boost::spirit::x3::attr;
+        struct X {};
+        std::vector<boost::variant<std::string, int, X>> v;
+        BOOST_TEST(test_attr("xx42x9y", *(int_ | +char_('x') | 'y' >> attr(X{})), v));
+        BOOST_TEST_EQ(v.size(), 5);
+    }
+
+    { // sequence parser in alternative into container
+        std::string s;
+        BOOST_TEST(test_attr("abcbbcd",
+            *(char_('a') >> *(*char_('b') >> char_('c')) | char_('d')), s));
+        BOOST_TEST_EQ(s, "abcbbcd");
+    }
+
+    { // conversion between alternatives
+        struct X {};
+        struct Y {};
+        struct Z {};
+        boost::variant<X, Y, Z> v;
+        boost::variant<Y, X> x{X{}};
+        v = x; // boost::variant supports that convertion
+        auto const p = 'x' >> attr(x) | 'z' >> attr(Z{});
+        BOOST_TEST(test_attr("z", p, v));
+        BOOST_TEST(boost::get<Z>(&v) != nullptr);
+        BOOST_TEST(test_attr("x", p, v));
+        BOOST_TEST(boost::get<X>(&v) != nullptr);
+    }
+
+    { // regression test for #679
+        using Qaz = std::vector<boost::variant<int>>;
+        using Foo = std::vector<boost::variant<Qaz, int>>;
+        using Bar = std::vector<boost::variant<Foo, int>>;
+        Bar x;
+        BOOST_TEST(test_attr("abaabb", +('a' >> attr(Foo{}) | 'b' >> attr(int{})), x));
     }
 
     return boost::report_errors();

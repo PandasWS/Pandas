@@ -11,7 +11,7 @@
 
 #include <boost/detail/workaround.hpp>
 
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
 #  pragma warn -8091 // suppress warning in Boost.Test
 #  pragma warn -8057 // unused argument argc/argv in Boost.Test
 #endif
@@ -35,7 +35,7 @@ void check_array()
 
  
 // BOOST_RANGE_NO_STATIC_ASSERT 
-#if !defined( __BORLANDC__ )
+#if !defined( BOOST_BORLANDC )
 #else
     BOOST_STATIC_ASSERT(( is_same< range_value<array_t>::type, int >::value ));
     BOOST_STATIC_ASSERT(( is_same< range_iterator<array_t>::type, int* >::value ));

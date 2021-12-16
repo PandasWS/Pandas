@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>strand::strand (2 of 6 overloads)</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -30,13 +30,17 @@
 <p>
             Construct a strand for the specified executor.
           </p>
-<pre class="programlisting">strand(
-    const Executor &amp; e);
+<pre class="programlisting">template&lt;
+    typename <a class="link" href="../../Executor1.html" title="Executor requirements">Executor1</a>&gt;
+strand(
+    const Executor1 &amp; e,
+    typename constraint&lt; conditional&lt; !is_same&lt; Executor1, strand &gt;::value, is_convertible&lt; Executor1, Executor &gt;, false_type &gt;::type::value &gt;::type  = 0);
 </pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

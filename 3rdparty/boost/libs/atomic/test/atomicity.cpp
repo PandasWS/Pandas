@@ -26,52 +26,50 @@
 
 #include <boost/atomic.hpp>
 
+#include <cstddef>
 #include <algorithm>
+#include <boost/config.hpp>
 #include <boost/ref.hpp>
-#include <boost/bind.hpp>
 #include <boost/function.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/thread_time.hpp>
-#include <boost/thread/locks.hpp>
+#include <boost/thread/lock_guard.hpp>
+#include <boost/thread/lock_types.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/core/lightweight_test.hpp>
 
 /* helper class to let two instances of a function race against each
 other, with configurable timeout and early abort on detection of error */
-class concurrent_runner {
+class concurrent_runner
+{
 public:
     /* concurrently run the function in two threads, until either timeout
     or one of the functions returns "false"; returns true if timeout
     was reached, or false if early abort and updates timeout accordingly */
-    static bool
-    execute(
-        const boost::function<bool(size_t)> & fn,
-        boost::posix_time::time_duration & timeout)
+    static bool execute(const boost::function<bool(std::size_t)> & fn, boost::posix_time::time_duration & timeout)
     {
         concurrent_runner runner(fn);
         runner.wait_finish(timeout);
         return !runner.failure();
     }
 
-
-    concurrent_runner(
-        const boost::function<bool(size_t)> & fn)
-        : finished_(false), failure_(false)
+    concurrent_runner(const boost::function<bool(std::size_t)> & fn) :
+        finished_(false), failure_(false)
     {
         boost::thread(boost::bind(&concurrent_runner::thread_function, this, fn, 0)).swap(first_thread_);
         boost::thread(boost::bind(&concurrent_runner::thread_function, this, fn, 1)).swap(second_thread_);
     }
 
-    void
-    wait_finish(boost::posix_time::time_duration & timeout)
+    void wait_finish(boost::posix_time::time_duration & timeout)
     {
         boost::system_time start = boost::get_system_time();
         boost::system_time end = start + timeout;
 
         {
-            boost::mutex::scoped_lock guard(m_);
+            boost::unique_lock< boost::mutex > guard(m_);
             while (boost::get_system_time() < end && !finished())
                 c_.timed_wait(guard, end);
         }
@@ -86,22 +84,24 @@ public:
             timeout = duration;
     }
 
-    bool
-    finished(void) const throw() {
+    bool finished(void) const BOOST_NOEXCEPT_OR_NOTHROW
+    {
         return finished_.load(boost::memory_order_relaxed);
     }
 
-    bool
-    failure(void) const throw() {
+    bool failure(void) const BOOST_NOEXCEPT_OR_NOTHROW
+    {
         return failure_;
     }
+
 private:
-    void
-    thread_function(boost::function<bool(size_t)> function, size_t instance)
+    void thread_function(boost::function<bool(std::size_t)> function, std::size_t instance)
     {
-        while (!finished()) {
-            if (!function(instance)) {
-                boost::mutex::scoped_lock guard(m_);
+        while (!finished())
+        {
+            if (!function(instance))
+            {
+                boost::lock_guard< boost::mutex > guard(m_);
                 failure_ = true;
                 finished_.store(true, boost::memory_order_relaxed);
                 c_.notify_all();
@@ -110,7 +110,7 @@ private:
         }
     }
 
-
+private:
     boost::mutex m_;
     boost::condition_variable c_;
 
@@ -121,12 +121,12 @@ private:
     boost::thread second_thread_;
 };
 
-bool
-racy_add(volatile unsigned int & value, size_t instance)
+bool racy_add(volatile unsigned int & value, std::size_t instance)
 {
-    size_t shift = instance * 8;
+    std::size_t shift = instance * 8;
     unsigned int mask = 0xff << shift;
-    for (size_t n = 0; n < 255; n++) {
+    for (std::size_t n = 0; n < 255; ++n)
+    {
         unsigned int tmp = value;
         value = tmp + (1 << shift);
 
@@ -143,22 +143,23 @@ racy_add(volatile unsigned int & value, size_t instance)
 }
 
 /* compute estimate for average time between races being observable, in usecs */
-static double
-estimate_avg_race_time(void)
+double estimate_avg_race_time(void)
 {
     double sum = 0.0;
 
     /* take 10 samples */
-    for (size_t n = 0; n < 10; n++) {
+    for (std::size_t n = 0; n < 10; ++n)
+    {
         boost::posix_time::time_duration timeout(0, 0, 10);
 
         volatile unsigned int value(0);
         bool success = concurrent_runner::execute(
-            boost::bind(racy_add, boost::ref(value), _1),
+            boost::bind(racy_add, boost::ref(value), boost::placeholders::_1),
             timeout
         );
 
-        if (success) {
+        if (success)
+        {
             BOOST_ERROR("Failed to establish baseline time for reproducing race condition");
         }
 
@@ -175,63 +176,66 @@ estimate_avg_race_time(void)
     return avg_race_time_995;
 }
 
-template<typename value_type, size_t shift_>
-bool
-test_arithmetic(boost::atomic<value_type> & shared_value, size_t instance)
+template<typename value_type, std::size_t shift_>
+bool test_arithmetic(boost::atomic<value_type> & shared_value, std::size_t instance)
 {
-    size_t shift = instance * 8;
+    std::size_t shift = instance * 8;
     value_type mask = 0xff << shift;
     value_type increment = 1 << shift;
 
     value_type expected = 0;
 
-    for (size_t n = 0; n < 255; n++) {
+    for (std::size_t n = 0; n < 255; ++n)
+    {
         value_type tmp = shared_value.fetch_add(increment, boost::memory_order_relaxed);
         if ( (tmp & mask) != (expected << shift) )
             return false;
-        expected ++;
+        ++expected;
     }
-    for (size_t n = 0; n < 255; n++) {
+    for (std::size_t n = 0; n < 255; ++n)
+    {
         value_type tmp = shared_value.fetch_sub(increment, boost::memory_order_relaxed);
         if ( (tmp & mask) != (expected << shift) )
             return false;
-        expected --;
+        --expected;
     }
 
     return true;
 }
 
-template<typename value_type, size_t shift_>
-bool
-test_bitops(boost::atomic<value_type> & shared_value, size_t instance)
+template<typename value_type, std::size_t shift_>
+bool test_bitops(boost::atomic<value_type> & shared_value, std::size_t instance)
 {
-    size_t shift = instance * 8;
+    std::size_t shift = instance * 8;
     value_type mask = 0xff << shift;
 
     value_type expected = 0;
 
-    for (size_t k = 0; k < 8; k++) {
-        value_type mod = 1 << k;
+    for (std::size_t k = 0; k < 8; ++k)
+    {
+        value_type mod = 1u << k;
         value_type tmp = shared_value.fetch_or(mod << shift, boost::memory_order_relaxed);
         if ( (tmp & mask) != (expected << shift))
             return false;
         expected = expected | mod;
     }
-    for (size_t k = 0; k < 8; k++) {
-        value_type tmp = shared_value.fetch_and( ~ (1 << (shift + k)), boost::memory_order_relaxed);
+    for (std::size_t k = 0; k < 8; ++k)
+    {
+        value_type tmp = shared_value.fetch_and(~(1u << (shift + k)), boost::memory_order_relaxed);
         if ( (tmp & mask) != (expected << shift))
             return false;
-        expected = expected & ~(1<<k);
+        expected = expected & ~(1u << k);
     }
-    for (size_t k = 0; k < 8; k++) {
-        value_type mod = 255 ^ (1 << k);
+    for (std::size_t k = 0; k < 8; ++k)
+    {
+        value_type mod = 255u ^ (1u << k);
         value_type tmp = shared_value.fetch_xor(mod << shift, boost::memory_order_relaxed);
         if ( (tmp & mask) != (expected << shift))
             return false;
         expected = expected ^ mod;
     }
 
-    value_type tmp = shared_value.fetch_and( ~mask, boost::memory_order_relaxed);
+    value_type tmp = shared_value.fetch_and(~mask, boost::memory_order_relaxed);
     if ( (tmp & mask) != (expected << shift) )
         return false;
 
@@ -240,8 +244,6 @@ test_bitops(boost::atomic<value_type> & shared_value, size_t instance)
 
 int main(int, char *[])
 {
-    boost::posix_time::time_duration reciprocal_lambda;
-
     double avg_race_time = estimate_avg_race_time();
 
     /* 5.298 = 0.995 quantile of exponential distribution */
@@ -255,7 +257,7 @@ int main(int, char *[])
         boost::posix_time::time_duration tmp(timeout * 2);
 
         bool success = concurrent_runner::execute(
-            boost::bind(test_arithmetic<unsigned int, 0>, boost::ref(value), _1),
+            boost::bind(test_arithmetic<unsigned int, 0>, boost::ref(value), boost::placeholders::_1),
             tmp
         );
 
@@ -270,7 +272,7 @@ int main(int, char *[])
         boost::posix_time::time_duration tmp(timeout * 3);
 
         bool success = concurrent_runner::execute(
-            boost::bind(test_bitops<unsigned int, 0>, boost::ref(value), _1),
+            boost::bind(test_bitops<unsigned int, 0>, boost::ref(value), boost::placeholders::_1),
             tmp
         );
 

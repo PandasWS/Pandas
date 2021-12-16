@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Boost Pool Interfaces - What interfaces are provided and when to use each one.</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -84,14 +84,14 @@
         versus unordered</a>
       </h6>
 <p>
-        An ordered pool maintains it's free list in order of the address of each
-        free block - this is the most efficient way if you're likely to allocate
-        arrays of objects. However, freeing an object can be O(N) in the number of
-        currently free blocks which can be prohibitively expensive in some situations.
+        An ordered pool maintains its free list in order of the address of each free
+        block - this is the most efficient way if you're likely to allocate arrays
+        of objects. However, freeing an object can be O(N) in the number of currently
+        free blocks which can be prohibitively expensive in some situations.
       </p>
 <p>
-        An unordered pool does not maintain it's free list in any particular order,
-        as a result allocation and freeing single objects is very fast, but allocating
+        An unordered pool does not maintain its free list in any particular order,
+        as a result allocating and freeing single objects is very fast, but allocating
         arrays may be slow (and in particular the pool may not be aware that it contains
         enough free memory for the allocation request, and unnecessarily allocate
         more memory).
@@ -281,10 +281,11 @@
             for details.
           </p>
 <p>
-            <span class="bold"><strong>Example:</strong></span> struct X { ... }; // has destructor
-            with side-effects.
+            <span class="bold"><strong>Example:</strong></span>
           </p>
-<pre class="programlisting"><span class="keyword">void</span> <span class="identifier">func</span><span class="special">()</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">X</span> <span class="special">{</span> <span class="special">...</span> <span class="special">};</span> <span class="comment">// has destructor with side-effects.</span>
+
+<span class="keyword">void</span> <span class="identifier">func</span><span class="special">()</span>
 <span class="special">{</span>
   <span class="identifier">boost</span><span class="special">::</span><span class="identifier">object_pool</span><span class="special">&lt;</span><span class="identifier">X</span><span class="special">&gt;</span> <span class="identifier">p</span><span class="special">;</span>
   <span class="keyword">for</span> <span class="special">(</span><span class="keyword">int</span> <span class="identifier">i</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span> <span class="identifier">i</span> <span class="special">&lt;</span> <span class="number">10000</span><span class="special">;</span> <span class="special">++</span><span class="identifier">i</span><span class="special">)</span>
@@ -397,9 +398,11 @@
             from the system. See User Allocators for details.
           </p>
 <p>
-            <span class="bold"><strong>Example:</strong></span> struct MyPoolTag { };
+            <span class="bold"><strong>Example:</strong></span>
           </p>
-<pre class="programlisting"><span class="keyword">typedef</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">singleton_pool</span><span class="special">&lt;</span><span class="identifier">MyPoolTag</span><span class="special">,</span> <span class="keyword">sizeof</span><span class="special">(</span><span class="keyword">int</span><span class="special">)&gt;</span> <span class="identifier">my_pool</span><span class="special">;</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">MyPoolTag</span> <span class="special">{</span> <span class="special">};</span>
+
+<span class="keyword">typedef</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">singleton_pool</span><span class="special">&lt;</span><span class="identifier">MyPoolTag</span><span class="special">,</span> <span class="keyword">sizeof</span><span class="special">(</span><span class="keyword">int</span><span class="special">)&gt;</span> <span class="identifier">my_pool</span><span class="special">;</span>
 <span class="keyword">void</span> <span class="identifier">func</span><span class="special">()</span>
 <span class="special">{</span>
   <span class="keyword">for</span> <span class="special">(</span><span class="keyword">int</span> <span class="identifier">i</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span> <span class="identifier">i</span> <span class="special">&lt;</span> <span class="number">10000</span><span class="special">;</span> <span class="special">++</span><span class="identifier">i</span><span class="special">)</span>
@@ -562,7 +565,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2000-2006 Stephen Cleary<br>Copyright &#169; 2011 Paul A. Bristow<p>
+<td align="right"><div class="copyright-footer">Copyright © 2000-2006 Stephen Cleary<br>Copyright © 2011 Paul A. Bristow<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -16,7 +16,7 @@
 #include<cmath>
 
 
-#include "boost/test/included/test_exec_monitor.hpp"
+#include <boost/core/lightweight_test.hpp>
 
 #include "boost/numeric/conversion/cast.hpp"
 
@@ -58,13 +58,13 @@ void simplest_case()
   //
   // conversion_traits<>::udt_builtin_mixture works out of the box as long as boost::is_arithmetic<UDT> yields false
   //
-  BOOST_CHECK( (conversion_traits<double,Double>::udt_builtin_mixture::value == udt_to_builtin) ) ;
-  BOOST_CHECK( (conversion_traits<Double,double>::udt_builtin_mixture::value == builtin_to_udt) ) ;
-  BOOST_CHECK( (conversion_traits<Double,Double>::udt_builtin_mixture::value == udt_to_udt    ) ) ;
+  BOOST_TEST( (conversion_traits<double,Double>::udt_builtin_mixture::value == udt_to_builtin) ) ;
+  BOOST_TEST( (conversion_traits<Double,double>::udt_builtin_mixture::value == builtin_to_udt) ) ;
+  BOOST_TEST( (conversion_traits<Double,Double>::udt_builtin_mixture::value == udt_to_udt    ) ) ;
 
   // BY DEFINITION, a conversion from UDT to Builtin is subranged. No attempt is made to actually compare ranges.
-  BOOST_CHECK( (conversion_traits<double,Double>::subranged::value) == true  ) ;
-  BOOST_CHECK( (conversion_traits<Double,double>::subranged::value) == false ) ;
+  BOOST_TEST( (conversion_traits<double,Double>::subranged::value) == true  ) ;
+  BOOST_TEST( (conversion_traits<Double,double>::subranged::value) == false ) ;
 
 
 
@@ -72,18 +72,18 @@ void simplest_case()
   // Conversions to/from FLOATING types, if already supported by an UDT
   // are also supported out-of-the-box by converter<> in its default configuration.
   //
-  BOOST_CHECK( numeric_cast<double>(Dv) == static_cast<double>(Dv) ) ;
-  BOOST_CHECK( numeric_cast<Double>(dv) == static_cast<Double>(dv) ) ;
+  BOOST_TEST( numeric_cast<double>(Dv) == static_cast<double>(Dv) ) ;
+  BOOST_TEST( numeric_cast<Double>(dv) == static_cast<Double>(dv) ) ;
 
-  BOOST_CHECK( numeric_cast<float> (Dv) == static_cast<float> (Dv) ) ;
-  BOOST_CHECK( numeric_cast<Double>(fv) == static_cast<Double>(fv) ) ;
+  BOOST_TEST( numeric_cast<float> (Dv) == static_cast<float> (Dv) ) ;
+  BOOST_TEST( numeric_cast<Double>(fv) == static_cast<Double>(fv) ) ;
 
 
   //
   // Range checking is disabled by default if an UDT is either the source or target of the conversion.
   //
-  BOOST_CHECK( (converter<float,double>::out_of_range(dv) == cPosOverflow) );
-  BOOST_CHECK( (converter<float,Double>::out_of_range(Dv) == cInRange) );
+  BOOST_TEST( (converter<float,double>::out_of_range(dv) == cPosOverflow) );
+  BOOST_TEST( (converter<float,Double>::out_of_range(Dv) == cInRange) );
 
 }
 
@@ -110,7 +110,7 @@ Double ceil  ( Double v ) { return Double(std::ceil (v.mV)) ; }
 
 void rounding()
 {
-  BOOST_CHECK( numeric_cast<int>(Dv) == static_cast<int>(Dv) ) ;
+  BOOST_TEST( numeric_cast<int>(Dv) == static_cast<int>(Dv) ) ;
 }
 
 
@@ -135,7 +135,7 @@ void custom_rounding()
                    >
                    DoubleToIntConverter ;
 
-   BOOST_CHECK( DoubleToIntConverter::convert(Dv) == static_cast<int>(Dv) ) ;
+   BOOST_TEST( DoubleToIntConverter::convert(Dv) == static_cast<int>(Dv) ) ;
 }
 
 //
@@ -187,8 +187,8 @@ void custom_raw_converter()
   Int   i (12);
   Float fi(12);
 
-  BOOST_CHECK(numeric_cast<Int>  (f).mV == i .mV ) ;
-  BOOST_CHECK(numeric_cast<Float>(i).mV == fi.mV ) ;
+  BOOST_TEST(numeric_cast<Int>  (f).mV == i .mV ) ;
+  BOOST_TEST(numeric_cast<Float>(i).mV == fi.mV ) ;
 }
 
 //
@@ -219,10 +219,10 @@ void custom_raw_converter2()
                    >
                    Float2IntConverter ;
 
-  BOOST_CHECK(Float2IntConverter::convert(f).mV == i .mV ) ;
+  BOOST_TEST(Float2IntConverter::convert(f).mV == i .mV ) ;
 }
 
-int test_main( int, char* [] )
+int main()
 {
   cout << setprecision( numeric_limits<long double>::digits10 ) ;
 
@@ -232,7 +232,7 @@ int test_main( int, char* [] )
   custom_raw_converter();
   custom_raw_converter2();
 
-  return 0;
+  return boost::report_errors();
 }
 
 

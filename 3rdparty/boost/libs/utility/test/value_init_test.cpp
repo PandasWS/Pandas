@@ -17,11 +17,12 @@
 
 #include "boost/utility/value_init.hpp"
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 #pragma hdrstop
 #endif
 
 #include <boost/core/lightweight_test.hpp>
+#include <boost/config/workaround.hpp>
 
 //
 // Sample POD type
@@ -217,8 +218,8 @@ void check_initialized_value ( T const& y )
   BOOST_TEST ( y == initializedValue ) ;
 }
 
-#ifdef  __BORLANDC__
-#if __BORLANDC__ == 0x582
+#ifdef  BOOST_BORLANDC
+#if BOOST_BORLANDC == 0x582
 void check_initialized_value( NonPOD const& )
 {
   // The initialized_value check is skipped for Borland 5.82

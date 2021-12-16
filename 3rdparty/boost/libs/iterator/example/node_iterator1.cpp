@@ -15,11 +15,11 @@ int main()
 #if defined(BOOST_NO_CXX11_SMART_PTR)
 
     std::auto_ptr<node<int> > nodes(new node<int>(42));
-    
+
 #else
 
     std::unique_ptr<node<int> > nodes(new node<int>(42));
-    
+
 #endif
 
     nodes->append(new node<std::string>(" is greater than "));
@@ -30,7 +30,7 @@ int main()
       , std::ostream_iterator<node_base>(std::cout, " ")
     );
     std::cout << std::endl;
-    
+
     std::for_each(
         node_iterator(nodes.get()), node_iterator()
       , std::mem_fun_ref(&node_base::double_me)

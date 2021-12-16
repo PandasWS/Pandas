@@ -147,8 +147,12 @@ int test_main( int , char* [] )
 {
     test_all<bg::model::point<double, 2, bg::cs::spherical_equatorial<bg::degree> > >();
 
-#if defined(HAVE_TTMATH)
-    test_cs<bg::model::point<ttmath_big, 2, bg::cs::spherical_equatorial<bg::degree> > >();
+    // TODO: the polar version needs several traits more, for example in cs_tag,
+    // to compile properly.
+    //test_all<bg::model::point<double, 2, bg::cs::polar<bg::degree> > >();
+
+#if defined(BOOST_GEOMETRY_TEST_FAILURES)
+    test_all<bg::model::point<double, 2, bg::cs::geographic<bg::degree> > >();
 #endif
 
     return 0;

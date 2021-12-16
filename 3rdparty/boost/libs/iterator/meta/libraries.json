@@ -14,5 +14,6 @@
         "David Abrahams <dave -at- boost-consulting.com>",
         "Thomas Witt <witt - at - acm.org>",
         "Jeffrey Lee Hellrung Jr. <jeffrey.hellrung -at- gmail.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

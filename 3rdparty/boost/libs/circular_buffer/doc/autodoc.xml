@@ -16,16 +16,16 @@
 <formalpara><title>Default Alloc</title><para>std::allocator&lt;T&gt;</para>
 </formalpara>
 For detailed documentation of the <classname alt="boost::circular_buffer">circular_buffer</classname> visit: <ulink url="http://www.boost.org/libs/circular_buffer/doc/circular_buffer.html">http://www.boost.org/libs/circular_buffer/doc/circular_buffer.html</ulink> </para></description><typedef name="this_type"><purpose>The type of this <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><type><classname>circular_buffer</classname>&lt; T, Alloc &gt;</type></typedef>
-<typedef name="value_type"><purpose>The type of elements stored in the <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><type>cb_details::allocator_traits&lt; Alloc &gt;::value_type</type></typedef>
-<typedef name="pointer"><purpose>A pointer to an element. </purpose><type>cb_details::allocator_traits&lt; Alloc &gt;::pointer</type></typedef>
-<typedef name="const_pointer"><purpose>A const pointer to the element. </purpose><type>cb_details::allocator_traits&lt; Alloc &gt;::const_pointer</type></typedef>
+<typedef name="value_type"><purpose>The type of elements stored in the <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><type>Alloc::value_type</type></typedef>
+<typedef name="pointer"><purpose>A pointer to an element. </purpose><type>allocator_pointer&lt; Alloc &gt;::type</type></typedef>
+<typedef name="const_pointer"><purpose>A const pointer to the element. </purpose><type>allocator_const_pointer&lt; Alloc &gt;::type</type></typedef>
 <typedef name="reference"><purpose>A reference to an element. </purpose><type>value_type &amp;</type></typedef>
 <typedef name="const_reference"><purpose>A const reference to an element. </purpose><type>const value_type &amp;</type></typedef>
-<typedef name="difference_type"><purpose>The distance type. </purpose><description><para>(A signed integral type used to represent the distance between two iterators.) </para></description><type>cb_details::allocator_traits&lt; Alloc &gt;::difference_type</type></typedef>
-<typedef name="size_type"><purpose>The size type. </purpose><description><para>(An unsigned integral type that can represent any non-negative value of the container's distance type.) </para></description><type>cb_details::allocator_traits&lt; Alloc &gt;::size_type</type></typedef>
+<typedef name="difference_type"><purpose>The distance type. </purpose><description><para>(A signed integral type used to represent the distance between two iterators.) </para></description><type>allocator_difference_type&lt; Alloc &gt;::type</type></typedef>
+<typedef name="size_type"><purpose>The size type. </purpose><description><para>(An unsigned integral type that can represent any non-negative value of the container's distance type.) </para></description><type>allocator_size_type&lt; Alloc &gt;::type</type></typedef>
 <typedef name="allocator_type"><purpose>The type of an allocator used in the <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><type>Alloc</type></typedef>
-<typedef name="const_iterator"><purpose>A const (random access) iterator used to iterate through the <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><type>cb_details::iterator&lt; <classname>circular_buffer</classname>&lt; T, Alloc &gt;, cb_details::const_traits&lt; cb_details::allocator_traits&lt; Alloc &gt; &gt; &gt;</type></typedef>
-<typedef name="iterator"><purpose>A (random access) iterator used to iterate through the <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><type>cb_details::iterator&lt; <classname>circular_buffer</classname>&lt; T, Alloc &gt;, cb_details::nonconst_traits&lt; cb_details::allocator_traits&lt; Alloc &gt; &gt; &gt;</type></typedef>
+<typedef name="const_iterator"><purpose>A const (random access) iterator used to iterate through the <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><type>cb_details::iterator&lt; <classname>circular_buffer</classname>&lt; T, Alloc &gt;, cb_details::const_traits&lt; Alloc &gt; &gt;</type></typedef>
+<typedef name="iterator"><purpose>A (random access) iterator used to iterate through the <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><type>cb_details::iterator&lt; <classname>circular_buffer</classname>&lt; T, Alloc &gt;, cb_details::nonconst_traits&lt; Alloc &gt; &gt;</type></typedef>
 <typedef name="const_reverse_iterator"><purpose>A const iterator used to iterate backwards through a <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><type>std::reverse_iterator&lt; const_iterator &gt;</type></typedef>
 <typedef name="reverse_iterator"><purpose>An iterator used to iterate backwards through a <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><type>std::reverse_iterator&lt; iterator &gt;</type></typedef>
 <typedef name="array_range"><purpose>An array range. </purpose><description><para>(A typedef for the <ulink url="https://www.boost.org/sgi/stl/pair.html"><computeroutput>std::pair</computeroutput></ulink> where its first element is a pointer to a beginning of an array and its second element represents a size of the array.) </para></description><type>std::pair&lt; pointer, size_type &gt;</type></typedef>
@@ -96,6 +96,7 @@ For detailed documentation of the <classname alt="boost::circular_buffer">circul
 </para>
 </para></description><returns><para>A const random access iterator pointing to the first element of the <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. If the <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput> is empty it returns an iterator equal to the one returned by <computeroutput>end() const</computeroutput>. </para>
 </returns><throws><simpara><classname>Nothing.</classname> </simpara></throws></method>
+<method name="cbegin" cv="const noexcept"><type>const_iterator</type></method>
 <method name="end" cv="const noexcept"><type>const_iterator</type><purpose>Get the const iterator pointing to the end of the <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><description><para>
 
 <formalpara><title>Exception Safety</title><para>No-throw. </para>
@@ -108,6 +109,7 @@ For detailed documentation of the <classname alt="boost::circular_buffer">circul
 </para>
 </para></description><returns><para>A const random access iterator pointing to the element "one behind" the last element of the <computeroutput> <classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. If the <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput> is empty it returns an iterator equal to the one returned by <computeroutput>begin() const</computeroutput> const. </para>
 </returns><throws><simpara><classname>Nothing.</classname> </simpara></throws></method>
+<method name="cend" cv="const noexcept"><type>const_iterator</type></method>
 <method name="rbegin" cv="noexcept"><type>reverse_iterator</type><purpose>Get the iterator pointing to the beginning of the "reversed" <computeroutput><classname alt="boost::circular_buffer">circular_buffer</classname></computeroutput>. </purpose><description><para>
 
 <formalpara><title>Exception Safety</title><para>No-throw. </para>

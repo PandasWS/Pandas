@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Bibliography</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -55,7 +55,7 @@
           <span class="phrase"><a name="sort.single_thread.spreadsort.bibliog.introsort"></a></span><a class="link" href="bibliog.html#sort.single_thread.spreadsort.bibliog.introsort">Introsort</a>
         </h5>
 <p>
-          A high-speed comparison-based sorting algorithm that takes <span class="emphasis"><em>&#119926;(N
+          A high-speed comparison-based sorting algorithm that takes <span class="emphasis"><em>𝑶(N
           * log(N))</em></span> time. See <a href="http://en.wikipedia.org/wiki/Introsort" target="_top">introsort</a>
           and Musser, David R. (1997). "Introspective Sorting and Selection
           Algorithms", Software: Practice and Experience (Wiley) 27 (8), pp
@@ -68,7 +68,7 @@
           Flag Sort</a>
         </h5>
 <p>
-          A high-speed hybrid string sorting algorithm that <code class="literal"><code class="computeroutput"><a class="link" href="../../../boost/sort/spreadsort/string_s_idm45140262524848.html" title="Function template string_sort">string_sort</a></code></code>
+          A high-speed hybrid string sorting algorithm that <code class="literal"><code class="computeroutput"><a class="link" href="../../../boost/sort/spreadsort/string_sort_idm2523.html" title="Function template string_sort">string_sort</a></code></code>
           is partially based upon. See <a href="http://en.wikipedia.org/wiki/American_flag_sort" target="_top">American
           flag sort</a> and Peter M. McIlroy, Keith Bostic, M. Douglas McIlroy.
           Engineering Radix Sort, Computing Systems 1993.
@@ -80,7 +80,7 @@
         </h5>
 <p>
           ARL (Adaptive Left Radix) is a hybrid cache-friendly integer sorting algorithm
-          with comparable speed on random data to <code class="literal"><code class="computeroutput"><a class="link" href="../../../boost/sort/spreadsort/integer__idm45140262757216.html" title="Function template integer_sort">integer_sort</a></code></code>,
+          with comparable speed on random data to <code class="literal"><code class="computeroutput"><a class="link" href="../../../boost/sort/spreadsort/integer_sort_idm1895.html" title="Function template integer_sort">integer_sort</a></code></code>,
           but does not have the optimizations for worst-case performance, causing
           it to perform poorly on certain types of unevenly distributed data.
         </p>
@@ -95,8 +95,8 @@
           Spreadsort</a>
         </h5>
 <p>
-          The algorithm that <code class="literal"><code class="computeroutput"><a class="link" href="../../../boost/sort/spreadsort/integer__idm45140262757216.html" title="Function template integer_sort">integer_sort</a></code></code>
-          was originally based on. <code class="literal"><code class="computeroutput"><a class="link" href="../../../boost/sort/spreadsort/integer__idm45140262757216.html" title="Function template integer_sort">integer_sort</a></code></code>
+          The algorithm that <code class="literal"><code class="computeroutput"><a class="link" href="../../../boost/sort/spreadsort/integer_sort_idm1895.html" title="Function template integer_sort">integer_sort</a></code></code>
+          was originally based on. <code class="literal"><code class="computeroutput"><a class="link" href="../../../boost/sort/spreadsort/integer_sort_idm1895.html" title="Function template integer_sort">integer_sort</a></code></code>
           uses a smaller number of key bits at a time for better cache efficiency
           than the method described in the paper. The importance of cache efficiency
           grew as CPU clock speeds increased while main memory latency stagnated.
@@ -108,7 +108,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2014-2017 Steven
+<td align="right"><div class="copyright-footer">Copyright © 2014-2017 Steven
       Ross, Francisco Tapia, Orson Peters<p>
         Distributed under the <a href="http://boost.org/LICENSE_1_0.txt" target="_top">Boost
         Software License, Version 1.0</a>.

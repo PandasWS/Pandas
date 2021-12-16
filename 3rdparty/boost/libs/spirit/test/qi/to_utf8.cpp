@@ -7,12 +7,16 @@
 #include <boost/core/lightweight_test.hpp>
 #include <boost/spirit/home/support/utf8.hpp>
 
+#if defined(_MSC_VER) && _MSC_VER < 1700
+# pragma warning(disable: 4428) // universal-character-name encountered in source
+#endif
+
 int main()
 {
     using boost::spirit::to_utf8;
 
-    // Assume wchar_t is 16-bit on Windows and 32-bit on Unix
-#if defined(_WIN32) || defined(__CYGWIN__)
+    // Assume wchar_t content is UTF-16 on MSVC, or mingw/wineg++ with -fshort-wchar
+#if defined(_MSC_VER) || defined(__SIZEOF_WCHAR_T__) && __SIZEOF_WCHAR_T__ == 2
     BOOST_TEST_CSTR_EQ("\xEF\xBF\xA1", to_utf8(L'\uFFE1').c_str());
 #else
     BOOST_TEST_CSTR_EQ("\xF0\x9F\xA7\x90", to_utf8(L'\U0001F9D0').c_str());

@@ -12,7 +12,6 @@ exe preprocess_pragma_output
     :   ../preprocess_pragma_output.cpp 
         /boost/wave//boost_wave
         /boost/thread//boost_thread
-        /boost/date_time//boost_date_time
         /boost/filesystem//boost_filesystem
         /boost/system//boost_system
     :

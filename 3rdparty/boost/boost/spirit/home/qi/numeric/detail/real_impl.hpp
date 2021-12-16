@@ -6,8 +6,8 @@
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
-#if !defined(SPIRIT_REAL_IMPL_APRIL_18_2006_0901AM)
-#define SPIRIT_REAL_IMPL_APRIL_18_2006_0901AM
+#ifndef BOOST_SPIRIT_QI_NUMERIC_DETAIL_REAL_IMPL_HPP
+#define BOOST_SPIRIT_QI_NUMERIC_DETAIL_REAL_IMPL_HPP
 
 #if defined(_MSC_VER)
 #pragma once
@@ -19,9 +19,10 @@
 #include <boost/spirit/home/support/unused.hpp>
 #include <boost/spirit/home/qi/detail/attributes.hpp>
 #include <boost/spirit/home/support/detail/pow10.hpp>
-#include <boost/spirit/home/support/detail/sign.hpp>
 #include <boost/integer.hpp>
 #include <boost/assert.hpp>
+
+#include <boost/core/cmath.hpp>
 
 #if BOOST_WORKAROUND(BOOST_MSVC, >= 1400)
 # pragma warning(push)
@@ -121,19 +122,19 @@ namespace boost { namespace spirit { namespace traits
     inline float
     negate(bool neg, float n)
     {
-        return neg ? spirit::detail::changesign(n) : n;
+        return neg ? (core::copysign)(n, -1.f) : n;
     }
 
     inline double
     negate(bool neg, double n)
     {
-        return neg ? spirit::detail::changesign(n) : n;
+        return neg ? (core::copysign)(n, -1.) : n;
     }
 
     inline long double
     negate(bool neg, long double n)
     {
-        return neg ? spirit::detail::changesign(n) : n;
+        return neg ? (core::copysign)(n, static_cast<long double>(-1)) : n;
     }
 
     template <typename T>
@@ -171,7 +172,7 @@ namespace boost { namespace spirit { namespace qi  { namespace detail
     {
         template <typename Iterator>
         static std::size_t
-        ignore_excess_digits(Iterator& first, Iterator const& last, mpl::false_)
+        ignore_excess_digits(Iterator& /* first */, Iterator const& /* last */, mpl::false_)
         {
             return 0;
         }

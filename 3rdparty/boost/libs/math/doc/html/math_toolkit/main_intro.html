@@ -1,12 +1,12 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>About the Math Toolkit</title>
 <link rel="stylesheet" href="../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Math Toolkit 2.10.0">
-<link rel="up" href="../overview.html" title="Chapter&#160;1.&#160;Overview">
-<link rel="prev" href="../overview.html" title="Chapter&#160;1.&#160;Overview">
+<link rel="home" href="../index.html" title="Math Toolkit 3.1.0">
+<link rel="up" href="../overview.html" title="Chapter 1. Overview">
+<link rel="prev" href="../overview.html" title="Chapter 1. Overview">
 <link rel="next" href="navigation.html" title="Navigation">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -36,8 +36,10 @@
     </h5>
 <p>
       Utility functions for dealing with floating-point arithmetic, includes functions
-      for floating point classification (fpclassify, isnan, isinf etc), sign manipulation,
-      rounding, comparison, and computing the distance between floating point numbers.
+      for floating point classification (<code class="computeroutput"><span class="identifier">fpclassify</span></code>,
+      <code class="computeroutput"><span class="identifier">isnan</span></code>, <code class="computeroutput"><span class="identifier">isinf</span></code>
+      etc), sign manipulation, rounding, comparison, and computing the distance between
+      floating point numbers.
     </p>
 <h5>
 <a name="math_toolkit.main_intro.h1"></a>
@@ -45,8 +47,8 @@
       Width Floating-Point Types</a>
     </h5>
 <p>
-      A set of typedefs similar to those provided by <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">cstdint</span><span class="special">&gt;</span></code>
-      but for floating-point types.
+      A set of <code class="computeroutput"><span class="keyword">typedef</span></code>s similar to those
+      provided by <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">cstdint</span><span class="special">&gt;</span></code> but for floating-point types.
     </p>
 <h5>
 <a name="math_toolkit.main_intro.h2"></a>
@@ -54,8 +56,8 @@
       Constants</a>
     </h5>
 <p>
-      A wide range of constants ranging from various multiples of &#960;, fractions, through
-      to euler's constant etc.
+      A wide range of high-precision constants ranging from various multiples of
+      π, fractions, through to Euler's constant etc.
     </p>
 <p>
       These are of course usable from template code, or as non-templates with a simplified
@@ -67,7 +69,7 @@
       Distributions</a>
     </h5>
 <p>
-      Provides a reasonably comprehensive set of <a class="link" href="../dist.html" title="Chapter&#160;5.&#160;Statistical Distributions and Functions">statistical
+      Provides a reasonably comprehensive set of <a class="link" href="../dist.html" title="Chapter 5. Statistical Distributions and Functions">statistical
       distributions</a>, upon which higher level statistical tests can be built.
     </p>
 <p>
@@ -92,7 +94,7 @@
       Special Functions</a>
     </h5>
 <p>
-      Provides a small number of high quality <a class="link" href="../special.html" title="Chapter&#160;7.&#160;Special Functions">special functions</a>,
+      Provides a small number of high quality <a class="link" href="../special.html" title="Chapter 8. Special Functions">special functions</a>,
       initially these were concentrated on functions used in statistical applications
       along with those in the <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1836.pdf" target="_top">Technical
       Report on C++ Library Extensions</a>.
@@ -102,7 +104,7 @@
       along with the incomplete gamma and beta functions (four variants of each)
       and all the possible inverses of these, plus digamma, various factorial functions,
       Bessel functions, elliptic integrals, sinus cardinals (along with their hyperbolic
-      variants), inverse hyperbolic functions, Legrendre/Laguerre/Hermite polynomials
+      variants), inverse hyperbolic functions, Legendre/Laguerre/Hermite polynomials
       and various special power and logarithmic functions.
     </p>
 <p>
@@ -142,16 +144,17 @@
       <span class="phrase"><a name="math_toolkit.main_intro.interpolation"></a></span><a class="link" href="main_intro.html#math_toolkit.main_intro.interpolation">Interpolation</a>
     </h5>
 <p>
-      Function interpolation via Barycentric or cubic B_spline approximations.
+      Function interpolation via Barycentric or cubic B_spline approximations. Smoothing.
     </p>
 <h5>
 <a name="math_toolkit.main_intro.h8"></a>
-      <span class="phrase"><a name="math_toolkit.main_intro.numerical_integration_and_differ"></a></span><a class="link" href="main_intro.html#math_toolkit.main_intro.numerical_integration_and_differ">Numerical
-      Integration and Differentiation</a>
+      <span class="phrase"><a name="math_toolkit.main_intro.numerical_integration_quadrature"></a></span><a class="link" href="main_intro.html#math_toolkit.main_intro.numerical_integration_quadrature">Numerical
+      Integration (Quadrature) and Differentiation</a>
     </h5>
 <p>
       A reasonably comprehensive set of routines for integration (trapezoidal, Gauss-Legendre,
-      Gauss-Kronrod and double-exponential) and differentiation.
+      Gauss-Kronrod and double-exponential) and differentiation. (See also automatic
+      differentiation).
     </p>
 <p>
       The integration routines are all usable for functions returning complex results
@@ -163,16 +166,25 @@
       and Octonions</a>
     </h5>
 <p>
-      Quaternion and Octonians as class templates similar to <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">complex</span></code>.
+      Quaternions and Octonians as class templates similar to <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">complex</span></code>.
+    </p>
+<h5>
+<a name="math_toolkit.main_intro.h10"></a>
+      <span class="phrase"><a name="math_toolkit.main_intro.automatic_differentiation"></a></span><a class="link" href="main_intro.html#math_toolkit.main_intro.automatic_differentiation">Automatic
+      Differentiation</a>
+    </h5>
+<p>
+      Autodiff is a header-only C++ library that facilitates the automaticdifferentiation
+      (forward mode) of mathematical functions of single and multiple variables.
     </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

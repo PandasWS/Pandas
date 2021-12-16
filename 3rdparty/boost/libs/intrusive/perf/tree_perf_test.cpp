@@ -90,7 +90,7 @@ void test_insertion(Container &c, const char *ContainerName, InsertionType inser
    typedef typename Container::size_type  size_type;
    typedef typename Container::value_type value_type;
    ptime tini, tend;
-   std::vector<Container::value_type> values(NumElem);
+   std::vector<value_type> values(NumElem);
    {
       fill_vector(values, insertion_type);
       //Insert

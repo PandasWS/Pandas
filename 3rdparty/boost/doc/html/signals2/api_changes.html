@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Signals2 API Changes</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../signals2.html" title="Chapter&#160;36.&#160;Boost.Signals2">
+<link rel="up" href="../signals2.html" title="Chapter 36. Boost.Signals2">
 <link rel="prev" href="rationale.html" title="Design Rationale">
 <link rel="next" href="tests.html" title="Testsuite">
 </head>
@@ -72,7 +72,7 @@
 <li class="listitem">
 <p>
           Automatic connection management is now achieved through the use of
-          <code class="computeroutput">shared_ptr</code>/<code class="computeroutput">weak_ptr</code>
+          <code class="computeroutput"><a class="link" href="../boost/shared_ptr.html" title="Class template shared_ptr">shared_ptr</a></code>/<code class="computeroutput">weak_ptr</code>
           and <code class="computeroutput"><a class="link" href="../boost/signals2/slot.html#id-1_3_37_6_12_5_1_1_17_1-bb">signals2::slot::track</a></code>(), as described in the
           <a class="link" href="tutorial.html#signals2.tutorial.connection-management" title="Automatic Connection Management (Intermediate)">tutorial</a>.
           However, the old (thread-unsafe) Boost.Signals scheme of automatic connection management
@@ -88,7 +88,7 @@
         </p>
 </li>
 <li class="listitem">
-<p>Support for postconstructors (and predestructors) on objects managed by <code class="computeroutput">shared_ptr</code>
+<p>Support for postconstructors (and predestructors) on objects managed by <code class="computeroutput"><a class="link" href="../boost/shared_ptr.html" title="Class template shared_ptr">shared_ptr</a></code>
           has been added with
           the <code class="computeroutput"><a class="link" href="../boost/signals2/deconstruct.html" title="Function deconstruct">deconstruct</a></code> factory function.
           This was motivated by the importance of
@@ -106,7 +106,7 @@
           wish to use the new automatic connection management scheme.  You could then
           move the connection creation from the constructor to to the an
           <code class="computeroutput">adl_postconstruct</code> function, where
-          a reference to the owning <code class="computeroutput">shared_ptr</code> is available for
+          a reference to the owning <code class="computeroutput"><a class="link" href="../boost/shared_ptr.html" title="Class template shared_ptr">shared_ptr</a></code> is available for
           passing to <code class="computeroutput"><a class="link" href="../boost/signals2/slot.html#id-1_3_37_6_12_5_1_1_17_1-bb">signals2::slot::track</a></code>.
           The <code class="computeroutput"><a class="link" href="../boost/signals2/deconstruct.html" title="Function deconstruct">deconstruct</a></code> function would be used create objects
           of the class and run their associated <code class="computeroutput">adl_postconstruct</code> function.
@@ -272,7 +272,7 @@
 <a name="signals2.api_history.1-45"></a>Version 1.45</h4></div></div></div>
 <p>
         Version 1.45 added <code class="computeroutput"><a class="link" href="../boost/signals2/slot.html#id-1_3_37_6_12_5_1_1_17_2-bb">slot::track_foreign</a></code>().  This method allows tracking
-        of objects owned by <code class="computeroutput">shared_ptr</code> classes other than <code class="computeroutput">boost::shared_ptr</code>,
+        of objects owned by <code class="computeroutput">shared_ptr</code> classes other than <code class="computeroutput"><a class="link" href="../boost/shared_ptr.html" title="Class template shared_ptr">boost::shared_ptr</a></code>,
         for example <code class="computeroutput">std::shared_ptr</code>.
       </p>
 </div>
@@ -334,7 +334,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"><p><small>Last revised: June 12, 2007 at 14:01:23 -0400</small></p></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2004 Douglas Gregor<br>Copyright &#169; 2007-2009 Frank Mori Hess<p>Distributed under the Boost
+<td align="right"><div class="copyright-footer">Copyright © 2001-2004 Douglas Gregor<br>Copyright © 2007-2009 Frank Mori Hess<p>Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>

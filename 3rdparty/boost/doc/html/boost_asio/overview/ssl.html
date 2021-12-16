@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>SSL</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -109,11 +109,11 @@ ssl::stream&lt;ip::tcp::socket&amp;&gt; ssl_sock(sock, ctx);
 </ul></div>
 <p>
         To simplify use cases where certificates are verified according to the rules
-        in RFC 2818 (certificate verification for HTTPS), Boost.Asio provides a reusable
-        verification callback as a function object:
+        in RFC 6125 (identity verification in the context of Transport Layer Security),
+        Boost.Asio provides a reusable verification callback as a function object:
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
-            <a class="link" href="../reference/ssl__rfc2818_verification.html" title="ssl::rfc2818_verification">ssl::rfc2818_verification</a>
+            <a class="link" href="../reference/ssl__host_name_verification.html" title="ssl::host_name_verification">ssl::host_name_verification</a>
           </li></ul></div>
 <p>
         The following example shows verification of a remote host's certificate according
@@ -139,7 +139,7 @@ sock.lowest_layer().set_option(tcp::no_delay(true));
 // Perform SSL handshake and verify the remote host's
 // certificate.
 sock.set_verify_mode(ssl::verify_peer);
-sock.set_verify_callback(ssl::rfc2818_verification("host.name"));
+sock.set_verify_callback(ssl::host_name_verification("host.name"));
 sock.handshake(ssl_socket::client);
 
 // ... read and write as normal ...
@@ -162,7 +162,7 @@ sock.handshake(ssl_socket::client);
         Also</a>
       </h5>
 <p>
-        <a class="link" href="../reference/ssl__context.html" title="ssl::context">ssl::context</a>, <a class="link" href="../reference/ssl__rfc2818_verification.html" title="ssl::rfc2818_verification">ssl::rfc2818_verification</a>,
+        <a class="link" href="../reference/ssl__context.html" title="ssl::context">ssl::context</a>, <a class="link" href="../reference/ssl__host_name_verification.html" title="ssl::host_name_verification">ssl::host_name_verification</a>,
         <a class="link" href="../reference/ssl__stream.html" title="ssl::stream">ssl::stream</a>, <a class="link" href="../examples/cpp03_examples.html#boost_asio.examples.cpp03_examples.ssl">SSL example (C++03)</a>,
         <a class="link" href="../examples/cpp11_examples.html#boost_asio.examples.cpp11_examples.ssl">SSL example (C++11)</a>.
       </p>
@@ -180,7 +180,8 @@ sock.handshake(ssl_socket::client);
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

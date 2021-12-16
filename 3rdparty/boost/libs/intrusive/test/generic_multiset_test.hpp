@@ -10,10 +10,11 @@
 // See http://www.boost.org/libs/intrusive for documentation.
 //
 /////////////////////////////////////////////////////////////////////////////
-#include <boost/container/vector.hpp>
 #include <boost/intrusive/detail/config_begin.hpp>
+
+#include <boost/container/vector.hpp>
 #include "common_functors.hpp"
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/intrusive/options.hpp>
 #include <boost/intrusive/detail/iterator.hpp>
 #include "test_macros.hpp"
@@ -44,7 +45,7 @@ void test_generic_multiset<ContainerDefiner>::test_all ()
 {
    static const int random_init[6] = { 3, 2, 4, 1, 5, 2 };
    value_cont_type values (6);
-   for (int i = 0; i < 6; ++i)
+   for (std::size_t i = 0u; i < 6u; ++i)
       (&values[i])->value_ = random_init[i];
    typedef typename ContainerDefiner::template container
       <>::type multiset_type;
@@ -75,13 +76,13 @@ template<class ContainerDefiner>
 void test_generic_multiset<ContainerDefiner>::test_impl()
 {
    value_cont_type values (5);
-   for (int i = 0; i < 5; ++i)
-      (&values[i])->value_ = i;
+   for (std::size_t i = 0u; i < 5u; ++i)
+      (&values[i])->value_ = (int)i;
    typedef typename ContainerDefiner::template container
       <>::type multiset_type;
 
    multiset_type testset;
-   for (int i = 0; i < 5; ++i)
+   for (std::size_t i = 0; i < 5u; ++i)
       testset.insert (values[i]);
 
    testset.erase (testset.iterator_to (values[0]));

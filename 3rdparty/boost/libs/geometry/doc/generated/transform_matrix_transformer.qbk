@@ -19,11 +19,12 @@
 Affine transformation strategy in Cartesian system. 
 
 [heading Description]
-The strategy serves as a generic definition of affine transformation matrix and procedure of application it to given point. 
+The strategy serves as a generic definition of an affine transformation matrix and procedure for applying it to a given point. 
 
 [heading Synopsis]
 ``template<typename CalculationType, std::size_t Dimension1, std::size_t Dimension2>
 class strategy::transform::matrix_transformer
+      : public strategy::transform::detail::matrix_transformer::matrix_transformer< CalculationType, Dimension1, Dimension2 >
 {
   // ...
 };
@@ -35,6 +36,24 @@ class strategy::transform::matrix_transformer
 [[typename CalculationType] []]
 [[std::size_t Dimension1] [number of dimensions to transform from ]]
 [[std::size_t Dimension2] [number of dimensions to transform to ]]
+]
+
+[heading Constructor(s)]
+[table
+[[Function] [Description] [Parameters] ]
+[[``template<typename Matrix>
+matrix_transformer(Matrix const & matrix)``
+
+] [] [[* Matrix const &]: ['matrix]:  
+
+
+
+]]
+[[``matrix_transformer()``
+
+] [] [
+
+]]
 ]
 
 [heading Header]

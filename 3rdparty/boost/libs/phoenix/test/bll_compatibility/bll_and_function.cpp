@@ -11,7 +11,7 @@
 
 // test using BLL and boost::function
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
 
 #include "boost/lambda/lambda.hpp"
 
@@ -32,12 +32,12 @@ void test_function() {
   boost::function<int (int, int)> f;
   f = _1 + _2;
 
- BOOST_CHECK(f(1, 2)== 3);
+ BOOST_TEST_EQ(f(1, 2), 3);
 
  int i=1; int j=2;
  boost::function<int& (int&, int)> g = _1 += _2;
  g(i, j);
- BOOST_CHECK(i==3);
+ BOOST_TEST_EQ(i, 3);
 
 
 
@@ -45,7 +45,7 @@ void test_function() {
   *sum = 0;
   boost::function<int& (int)> counter = *sum += _1;
   counter(5); // ok, sum* = 5;
-  BOOST_CHECK(*sum == 5);
+  BOOST_TEST_EQ(*sum, 5);
   delete sum; 
   
   // The next statement would lead to a dangling reference
@@ -54,15 +54,9 @@ void test_function() {
 }
 
 
-int test_main(int, char *[]) {
-
+int main()
+{
   test_function();
 
-  return 0;
+  return boost::report_errors();
 }
-
-
-
-
-
-

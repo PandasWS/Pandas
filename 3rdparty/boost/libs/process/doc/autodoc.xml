@@ -104,10 +104,10 @@ on_exit(function);
 </formalpara>
 <programlisting language="c++">io_context ios;
 
-child c("ls", on_exit=[](int exit, const std::error_code&amp; ec_in){});
+child c("ls", ios, on_exit=[](int exit, const std::error_code&amp; ec_in){});
 
 std::future&lt;int&gt; exit_code;
-chlid c2("ls", on_exit=exit_code);
+chlid c2("ls", ios, on_exit=exit_code);
 </programlisting></para><para><note><para>The handler is not invoked when the launch fails. </para>
 </note>
 <warning><para>When used ignore_error it might get invoked on error. </para>
@@ -134,6 +134,7 @@ chlid c2("ls", on_exit=exit_code);
 </note>
 </para></description><type>platform_specific</type></typedef>
 <typedef name="handle_type"><description><para>Typedef for the handle representation of boost.asio. </para></description><type>platform_specific</type></typedef>
+<typedef name="executor_type"><type>handle_type::executor_type</type></typedef>
 <method-group name="public member functions">
 <method name="conversion-operator" cv="const" specifiers="explicit"><type>basic_pipe&lt; CharT, Traits &gt;</type><template>
           <template-type-parameter name="CharT"/>

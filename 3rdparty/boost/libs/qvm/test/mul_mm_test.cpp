@@ -3,20 +3,25 @@
 //Distributed under the Boost Software License, Version 1.0. (See accompanying
 //file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/qvm/mat_operations.hpp>
-#include <boost/qvm/mat.hpp>
+#ifdef BOOST_QVM_TEST_SINGLE_HEADER
+#   include BOOST_QVM_TEST_SINGLE_HEADER
+#else
+#   include <boost/qvm/mat_operations.hpp>
+#   include <boost/qvm/mat.hpp>
+#endif
+
 #include "test_qvm_matrix.hpp"
 #include "gold.hpp"
 
 namespace
     {
-    template <int R,int CR,int C>
+    template <int R,int Q,int C>
     void
     test()
         {
         using namespace boost::qvm::sfinae;
-        test_qvm::matrix<M1,R,CR> const x(42,1);
-        test_qvm::matrix<M2,CR,C> const y(42,1);
+        test_qvm::matrix<M1,R,Q> const x(42,1);
+        test_qvm::matrix<M2,Q,C> const y(42,1);
             {
             test_qvm::matrix<M3,R,C> r=x*y;
             test_qvm::multiply_m(r.b,x.b,y.b);

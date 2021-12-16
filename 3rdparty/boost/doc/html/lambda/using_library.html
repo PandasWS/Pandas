@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Using the library</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../lambda.html" title="Chapter&#160;20.&#160;Boost.Lambda">
+<link rel="up" href="../lambda.html" title="Chapter 20. Boost.Lambda">
 <link rel="prev" href="s03.html" title="Introduction">
 <link rel="next" href="le_in_details.html" title="Lambda expressions in details">
 </head>
@@ -113,7 +113,7 @@ The BLL provides functions <code class="literal">constant</code> and <code class
 for_each(vp.begin(), vp.end(), cout &lt;&lt; constant('\n') &lt;&lt; *_1);
 </pre>
 <p>
-These functions are described more thoroughly in <a class="xref" href="le_in_details.html#lambda.delaying_constants_and_variables" title="Delaying constants and variables">the section called &#8220;Delaying constants and variables&#8221;</a>
+These functions are described more thoroughly in <a class="xref" href="le_in_details.html#lambda.delaying_constants_and_variables" title="Delaying constants and variables">the section called “Delaying constants and variables”</a>
 
 </p>
 </div>
@@ -150,8 +150,8 @@ These functions are described more thoroughly in <a class="xref" href="le_in_det
       </p>
 <p>
 	There are two alternative solutions to this. 
-	The first is to extend the BLL type deduction system to cover your own types (see <a class="xref" href="extending.html" title="Extending return type deduction system">the section called &#8220;Extending return type deduction system&#8221;</a>). 
-	The second is to use a special lambda expression (<code class="literal">ret</code>) which defines the return type in place (see <a class="xref" href="le_in_details.html#lambda.overriding_deduced_return_type" title="Overriding the deduced return type">the section called &#8220;Overriding the deduced return type&#8221;</a>):
+	The first is to extend the BLL type deduction system to cover your own types (see <a class="xref" href="extending.html" title="Extending return type deduction system">the section called “Extending return type deduction system”</a>). 
+	The second is to use a special lambda expression (<code class="literal">ret</code>) which defines the return type in place (see <a class="xref" href="le_in_details.html#lambda.overriding_deduced_return_type" title="Overriding the deduced return type">the section called “Overriding the deduced return type”</a>):
 
 	</p>
 <pre class="programlisting">A a; B b; ret&lt;C&gt;(_1 + _2)(a, b);</pre>
@@ -184,7 +184,7 @@ int i = 1; int j = 2;
 	Since the lambda functors are most often called inside STL-algorithms, 
 	the arguments originate from dereferencing iterators and the dereferencing operators seldom return rvalues.
 	And for the cases where they do, there are workarounds discussed in 
-<a class="xref" href="le_in_details.html#lambda.rvalues_as_actual_arguments" title="Rvalues as actual arguments to lambda functors">the section called &#8220;Rvalues as actual arguments to lambda functors&#8221;</a>.
+<a class="xref" href="le_in_details.html#lambda.rvalues_as_actual_arguments" title="Rvalues as actual arguments to lambda functors">the section called “Rvalues as actual arguments to lambda functors”</a>.
 
 
       </p>
@@ -264,7 +264,7 @@ exist for historical reasons,
 and <code class="literal">ref</code> can always
 be replaced with <code class="literal">var</code>, and <code class="literal">cref</code> with
 <code class="literal">constant_ref</code>. 
-See <a class="xref" href="le_in_details.html#lambda.delaying_constants_and_variables" title="Delaying constants and variables">the section called &#8220;Delaying constants and variables&#8221;</a> for details.
+See <a class="xref" href="le_in_details.html#lambda.delaying_constants_and_variables" title="Delaying constants and variables">the section called “Delaying constants and variables”</a> for details.
 The <code class="literal">ref</code> and <code class="literal">cref</code> functions are
 general purpose utility functions in Boost, and hence defined directly
 in the <code class="literal">boost</code> namespace.
@@ -319,7 +319,7 @@ Nevertheless, it is straightforward to provide another function template with th
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 1999-2004 Jaakko J&#228;rvi, Gary Powell<p>Use, modification and distribution is subject to the Boost
+<td align="right"><div class="copyright-footer">Copyright © 1999-2004 Jaakko Järvi, Gary Powell<p>Use, modification and distribution is subject to the Boost
     Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>

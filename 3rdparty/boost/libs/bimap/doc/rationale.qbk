@@ -206,7 +206,7 @@ iterators instead of the originals. For example, if you have a
 `std::set<int*>`, you can build other container that behaves exactly as a
 `std::set<int>` using `set_adaptor` and [^iterator_adaptor]. The combined use
 of this two tools is very powerful. A [^container_adaptor] can take classes
-that do not fulfil all the requirements of the adapted container. The
+that do not fulfill all the requirements of the adapted container. The
 new container must define these missing functions.
 
 [endsect]

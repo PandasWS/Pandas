@@ -12,5 +12,6 @@
     "maintainers": [
         "Samuel Krempp <krempp -at- crans.ens-cachan.fr>",
         "James E. King III <jking -at- apache.org>"
-    ]
+    ],
+    "cxxstd": "03"
 }

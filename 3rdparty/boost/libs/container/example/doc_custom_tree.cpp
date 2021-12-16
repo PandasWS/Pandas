@@ -7,8 +7,6 @@
 // See http://www.boost.org/libs/container for documentation.
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <boost/container/detail/config_begin.hpp>
-#include <boost/container/detail/workaround.hpp>
 //[doc_custom_tree
 #include <boost/container/set.hpp>
 
@@ -40,13 +38,13 @@ int main ()
    //
 
    //AVLTree based set container
-   typedef set<int, std::less<int>, std::allocator<int>, AVLTree> AvlSet;
+   typedef set<int, std::less<int>, new_allocator<int>, AVLTree> AvlSet;
 
    //AVLTree based set container without size optimization
-   typedef set<int, std::less<int>, std::allocator<int>, AVLTreeNoSizeOpt> AvlSetNoSizeOpt;
+   typedef set<int, std::less<int>, new_allocator<int>, AVLTreeNoSizeOpt> AvlSetNoSizeOpt;
 
    //Splay tree based multiset container
-   typedef multiset<int, std::less<int>, std::allocator<int>, SplayTree> SplayMultiset;
+   typedef multiset<int, std::less<int>, new_allocator<int>, SplayTree> SplayMultiset;
 
    //Use them
    //
@@ -66,4 +64,3 @@ int main ()
    return 0;
 }
 //]
-#include <boost/container/detail/config_end.hpp>

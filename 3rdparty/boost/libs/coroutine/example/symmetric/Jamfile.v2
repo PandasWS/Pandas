@@ -14,14 +14,14 @@ import modules ;
 import os ;
 import toolset ;
 
-project boost/coroutine/example
+project boost/coroutine/example/symmetric
     : requirements
       <library>/boost/context//boost_context
       <library>/boost/coroutine//boost_coroutine
       <library>/boost/program_options//boost_program_options
       <library>/boost/random//boost_random
-      <toolset>gcc,<segmented-stacks>on:<cxxflags>-fsplit-stack
-      <toolset>gcc,<segmented-stacks>on:<cxxflags>-DBOOST_USE_SEGMENTED_STACKS
+      <target-os>linux,<toolset>gcc,<segmented-stacks>on:<cxxflags>-fsplit-stack
+      <target-os>linux,<toolset>gcc,<segmented-stacks>on:<cxxflags>-DBOOST_USE_SEGMENTED_STACKS
       <toolset>clang,<segmented-stacks>on:<cxxflags>-fsplit-stack
       <toolset>clang,<segmented-stacks>on:<cxxflags>-DBOOST_USE_SEGMENTED_STACKS
       <link>static

@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Lambda expressions in details</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../lambda.html" title="Chapter&#160;20.&#160;Boost.Lambda">
+<link rel="up" href="../lambda.html" title="Chapter 20. Boost.Lambda">
 <link rel="prev" href="using_library.html" title="Using the library">
 <link rel="next" href="extending.html" title="Extending return type deduction system">
 </head>
@@ -96,15 +96,15 @@ _1(i, j, k)        // returns i, discards j and k
 <p>
 
 See
-<a class="xref" href="s10.html#lambda.why_weak_arity" title="Lambda functor arity">the section called &#8220;
+<a class="xref" href="s10.html#lambda.why_weak_arity" title="Lambda functor arity">the section called “
 Lambda functor arity
-&#8221;</a> for the design rationale behind this
+”</a> for the design rationale behind this
 functionality.
 
 </p>
 <p>
 In addition to these three placeholder types, there is also a fourth placeholder type <code class="literal">placeholderE_type</code>.
-The use of this placeholder is defined in <a class="xref" href="le_in_details.html#lambda.exceptions" title="Exceptions">the section called &#8220;Exceptions&#8221;</a> describing exception handling in lambda expressions. 
+The use of this placeholder is defined in <a class="xref" href="le_in_details.html#lambda.exceptions" title="Exceptions">the section called “Exceptions”</a> describing exception handling in lambda expressions. 
 </p>
 <p>When an actual argument is supplied for a placeholder, the parameter passing mode is always by reference. 
 This means that any side-effects to the placeholder are reflected to the actual argument. 
@@ -167,7 +167,7 @@ i = _1;      // not ok. i is not a lambda expression
 </pre>
 <p>
 
-There is a simple solution around this limitation, described in <a class="xref" href="le_in_details.html#lambda.delaying_constants_and_variables" title="Delaying constants and variables">the section called &#8220;Delaying constants and variables&#8221;</a>.
+There is a simple solution around this limitation, described in <a class="xref" href="le_in_details.html#lambda.delaying_constants_and_variables" title="Delaying constants and variables">the section called “Delaying constants and variables”</a>.
 In short, 
 the left hand argument can be explicitly turned into a lambda functor by wrapping it with a special <code class="literal">var</code> function:
 </p>
@@ -195,7 +195,7 @@ bool flag = true; int i = 0;
 <div class="titlepage"><div><div><h4 class="title">
 <a name="lambda.comma_operator"></a>Comma operator</h4></div></div></div>
 <p>
-Comma operator is the <span class="quote">&#8220;<span class="quote">statement separator</span>&#8221;</span> in lambda expressions. 
+Comma operator is the <span class="quote">“<span class="quote">statement separator</span>”</span> in lambda expressions. 
 Since comma is also the separator between arguments in a function call, extra parenthesis are sometimes needed:
 
 </p>
@@ -303,7 +303,7 @@ Basically, the
 <span class="emphasis"><em><code class="literal">bind-argument-list</code></em></span> must be a valid argument list for the target function, except that any argument can be replaced with a placeholder, or more generally, with a lambda expression. 
 Note that also the target function can be a lambda expression.
 
-The result of a bind expression is either a nullary, unary, binary or 3-ary function object depending on the use of placeholders in the <span class="emphasis"><em><code class="literal">bind-argument-list</code></em></span> (see <a class="xref" href="le_in_details.html#lambda.placeholders" title="Placeholders">the section called &#8220;Placeholders&#8221;</a>).
+The result of a bind expression is either a nullary, unary, binary or 3-ary function object depending on the use of placeholders in the <span class="emphasis"><em><code class="literal">bind-argument-list</code></em></span> (see <a class="xref" href="le_in_details.html#lambda.placeholders" title="Placeholders">the section called “Placeholders”</a>).
 </p>
 <p>
 The return type of the lambda functor created by the bind expression can be given as an explicitly specified template parameter, as in the following example:
@@ -391,7 +391,7 @@ find_if(pointers.begin(), pointers.end(), bind(&amp;A::foo, _1, 1));
 <p>
 Even though the interfaces are the same, there are important semantic differences between using a pointer or a reference as the object argument.
 The differences stem from the way <code class="literal">bind</code>-functions take their parameters, and how the bound parameters are stored within the lambda functor.
-The object argument has the same parameter passing and storing mechanism as any other bind argument slot (see <a class="xref" href="using_library.html#lambda.storing_bound_arguments" title="Storing bound arguments in lambda functions">the section called &#8220;Storing bound arguments in lambda functions&#8221;</a>); it is passed as a const reference and stored as a const copy in the lambda functor.
+The object argument has the same parameter passing and storing mechanism as any other bind argument slot (see <a class="xref" href="using_library.html#lambda.storing_bound_arguments" title="Storing bound arguments in lambda functions">the section called “Storing bound arguments in lambda functions”</a>); it is passed as a const reference and stored as a const copy in the lambda functor.
 This creates some asymmetry between the lambda functor and the original member function, and between seemingly similar lambda functors. For example:
 </p>
 <pre class="programlisting">
@@ -680,7 +680,7 @@ ret&lt;D&gt;( - ret&lt;C&gt;(_1 + _2))(a, b); // ok
 </pre>
 <p>
 </p>
-<p>If you find yourself using  <code class="literal">ret</code> repeatedly with the same types, it is worth while extending the return type deduction (see <a class="xref" href="extending.html" title="Extending return type deduction system">the section called &#8220;Extending return type deduction system&#8221;</a>).
+<p>If you find yourself using  <code class="literal">ret</code> repeatedly with the same types, it is worth while extending the return type deduction (see <a class="xref" href="extending.html" title="Extending return type deduction system">the section called “Extending return type deduction system”</a>).
 </p>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
@@ -716,7 +716,7 @@ bind&lt;int&gt;(f, 1);       // ok
 
 The lambda functors created with 
 <code class="literal">ret&lt;<em class="parameter"><code>T</code></em>&gt;(bind(<em class="parameter"><code>arg-list</code></em>))</code> and 
-<code class="literal">bind&lt;<em class="parameter"><code>T</code></em>&gt;(<em class="parameter"><code>arg-list</code></em>)</code> have the exact same functionality &#8212;
+<code class="literal">bind&lt;<em class="parameter"><code>T</code></em>&gt;(<em class="parameter"><code>arg-list</code></em>)</code> have the exact same functionality —
 apart from the fact that for some nullary lambda functors the former does not work while the latter does. 
 </p>
 </div>
@@ -824,11 +824,11 @@ for_each(a.begin(),a.end(), cout &lt;&lt; space &lt;&lt; _1);
 <div class="titlepage"><div><div><h4 class="title">
 <a name="id-1.3.21.7.7.6"></a>About assignment and subscript operators</h4></div></div></div>
 <p>
-As described in <a class="xref" href="le_in_details.html#lambda.assignment_and_subscript" title="Assignment and subscript operators">the section called &#8220;Assignment and subscript operators&#8221;</a>, assignment and subscripting operators are always defined as member functions.
+As described in <a class="xref" href="le_in_details.html#lambda.assignment_and_subscript" title="Assignment and subscript operators">the section called “Assignment and subscript operators”</a>, assignment and subscripting operators are always defined as member functions.
 This means, that for expressions of the form
 <code class="literal">x = y</code> or <code class="literal">x[y]</code> to be interpreted as lambda expressions, the left-hand operand <code class="literal">x</code> must be a lambda expression. 
 Consequently, it is sometimes necessary to use <code class="literal">var</code> for this purpose.
-We repeat the example from <a class="xref" href="le_in_details.html#lambda.assignment_and_subscript" title="Assignment and subscript operators">the section called &#8220;Assignment and subscript operators&#8221;</a>:
+We repeat the example from <a class="xref" href="le_in_details.html#lambda.assignment_and_subscript" title="Assignment and subscript operators">the section called “Assignment and subscript operators”</a>:
 
 </p>
 <pre class="programlisting">
@@ -976,7 +976,7 @@ The <code class="literal">switch_statement</code> function is specialized for up
 
 </p>
 <p>
-As a concrete example, the following code iterates over some container <code class="literal">v</code> and ouptuts <span class="quote">&#8220;<span class="quote">zero</span>&#8221;</span> for each <code class="literal">0</code>, <span class="quote">&#8220;<span class="quote">one</span>&#8221;</span> for each <code class="literal">1</code>, and <span class="quote">&#8220;<span class="quote">other: <em class="parameter"><code>n</code></em></span>&#8221;</span> for any other value <em class="parameter"><code>n</code></em>.
+As a concrete example, the following code iterates over some container <code class="literal">v</code> and ouptuts <span class="quote">“<span class="quote">zero</span>”</span> for each <code class="literal">0</code>, <span class="quote">“<span class="quote">one</span>”</span> for each <code class="literal">1</code>, and <span class="quote">“<span class="quote">other: <em class="parameter"><code>n</code></em></span>”</span> for any other value <em class="parameter"><code>n</code></em>.
 Note that another lambda expression is sequenced after the <code class="literal">switch_statement</code> to output a line break after each element:
 
 </p>
@@ -1048,7 +1048,7 @@ or to
 </p>
 <p>
 
-The <a class="xref" href="le_in_details.html#ex:exceptions" title="Example&#160;20.1.&#160;Throwing and handling exceptions in lambda expressions.">Example&#160;20.1, &#8220;Throwing and handling exceptions in lambda expressions.&#8221;</a> demonstrates the use of the BLL 
+The <a class="xref" href="le_in_details.html#ex:exceptions" title="Example 20.1. Throwing and handling exceptions in lambda expressions.">Example 20.1, “Throwing and handling exceptions in lambda expressions.”</a> demonstrates the use of the BLL 
 exception handling tools. 
 The first handler catches exceptions of type <code class="literal">foo_exception</code>. 
 Note the use of <code class="literal">_1</code> placeholder in the body of the handler.
@@ -1077,14 +1077,14 @@ The last line of the second handler constructs a new exception object and
 throws that with <code class="literal">throw exception</code>. 
 
 Constructing and destructing objects within lambda expressions is 
-explained in <a class="xref" href="le_in_details.html#lambda.construction_and_destruction" title="Construction and destruction">the section called &#8220;Construction and destruction&#8221;</a>
+explained in <a class="xref" href="le_in_details.html#lambda.construction_and_destruction" title="Construction and destruction">the section called “Construction and destruction”</a>
 </p>
 <p>
 Finally, the third handler (<code class="literal">catch_all</code>) demonstrates 
 rethrowing exceptions.
 </p>
 <div class="example">
-<a name="ex:exceptions"></a><p class="title"><b>Example&#160;20.1.&#160;Throwing and handling exceptions in lambda expressions.</b></p>
+<a name="ex:exceptions"></a><p class="title"><b>Example 20.1. Throwing and handling exceptions in lambda expressions.</b></p>
 <div class="example-contents"><pre class="programlisting">
 for_each(
   a.begin(), a.end(),
@@ -1169,14 +1169,14 @@ transform(x.begin(), x.end(), y.begin(), back_inserter(v),
 </pre>
 <p>
 
-<a class="xref" href="le_in_details.html#table:constructor_destructor_fos" title="Table&#160;20.1.&#160;Construction and destruction related function objects.">Table&#160;20.1, &#8220;Construction and destruction related function objects.&#8221;</a> lists all the function 
+<a class="xref" href="le_in_details.html#table:constructor_destructor_fos" title="Table 20.1. Construction and destruction related function objects.">Table 20.1, “Construction and destruction related function objects.”</a> lists all the function 
 objects related to creating and destroying objects,
  showing the expression to create and call the function object, 
 and the effect of evaluating that expression.
 
 </p>
 <div class="table">
-<a name="table:constructor_destructor_fos"></a><p class="title"><b>Table&#160;20.1.&#160;Construction and destruction related function objects.</b></p>
+<a name="table:constructor_destructor_fos"></a><p class="title"><b>Table 20.1. Construction and destruction related function objects.</b></p>
 <div class="table-contents"><table class="table" summary="Construction and destruction related function objects.">
 <colgroup>
 <col>
@@ -1417,7 +1417,7 @@ and thus finally 13.
 <p>
 Primary motivation for including <code class="literal">protect</code> into the library, 
 was to allow nested STL algorithm invocations 
-(<a class="xref" href="le_in_details.html#lambda.nested_stl_algorithms" title="Nesting STL algorithm invocations">the section called &#8220;Nesting STL algorithm invocations&#8221;</a>).
+(<a class="xref" href="le_in_details.html#lambda.nested_stl_algorithms" title="Nesting STL algorithm invocations">the section called “Nesting STL algorithm invocations”</a>).
 </p>
 </div>
 </div>
@@ -1432,7 +1432,7 @@ or there can be no side-effects to the actual arguments.
 There are ways around this limitation.
 
 We repeat the example from section 
-<a class="xref" href="using_library.html#lambda.actual_arguments_to_lambda_functors" title="About actual arguments to lambda functors">the section called &#8220;About actual arguments to lambda functors&#8221;</a> and list the 
+<a class="xref" href="using_library.html#lambda.actual_arguments_to_lambda_functors" title="About actual arguments to lambda functors">the section called “About actual arguments to lambda functors”</a> and list the 
 different solutions:
 
 </p>
@@ -1673,7 +1673,7 @@ std::for_each(a.begin(), a.end(),
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 1999-2004 Jaakko J&#228;rvi, Gary Powell<p>Use, modification and distribution is subject to the Boost
+<td align="right"><div class="copyright-footer">Copyright © 1999-2004 Jaakko Järvi, Gary Powell<p>Use, modification and distribution is subject to the Boost
     Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>

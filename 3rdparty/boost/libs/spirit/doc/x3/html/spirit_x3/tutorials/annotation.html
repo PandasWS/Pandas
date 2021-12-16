@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Annotations - Decorating the ASTs</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Spirit X3 3.0.4">
+<link rel="home" href="../../index.html" title="Spirit X3 3.10">
 <link rel="up" href="../tutorials.html" title="Tutorials">
 <link rel="prev" href="minimal.html" title="X3 Program Structure">
 <link rel="next" href="rexpr.html" title="RExpressions - Recursive ASTs!">
@@ -279,7 +279,7 @@
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-            On success: After a rule sucessfully parses an input.
+            On success: After a rule successfully parses an input.
           </li>
 <li class="listitem">
             On Error: After a rule fails to parse.
@@ -407,7 +407,7 @@
       </p>
 <p>
         The main parse function accepts an input, a std::string and a reference to
-        a position_cache, and retuns an AST: <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">client</span><span class="special">::</span><span class="identifier">ast</span><span class="special">::</span><span class="identifier">employee</span><span class="special">&gt;</span></code>.
+        a position_cache, and returns an AST: <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">client</span><span class="special">::</span><span class="identifier">ast</span><span class="special">::</span><span class="identifier">employee</span><span class="special">&gt;</span></code>.
       </p>
 <p>
         Inside the parse function, we first create an AST where parsed data will
@@ -497,7 +497,7 @@
 </pre>
 <p>
         <code class="computeroutput"><span class="identifier">pos</span></code> is an iterator range
-        that contians iterators to the start and end of <code class="computeroutput"><span class="identifier">ast</span><span class="special">[</span><span class="number">1</span><span class="special">]</span></code>
+        that contains iterators to the start and end of <code class="computeroutput"><span class="identifier">ast</span><span class="special">[</span><span class="number">1</span><span class="special">]</span></code>
         in the input stream.
       </p>
 <h5>
@@ -514,7 +514,7 @@
 <pre class="programlisting"><span class="keyword">using</span> <span class="identifier">phrase_context_type</span> <span class="special">=</span> <span class="identifier">x3</span><span class="special">::</span><span class="identifier">phrase_parse_context</span><span class="special">&lt;</span><span class="identifier">x3</span><span class="special">::</span><span class="identifier">ascii</span><span class="special">::</span><span class="identifier">space_type</span><span class="special">&gt;::</span><span class="identifier">type</span><span class="special">;</span>
 
 <span class="keyword">typedef</span> <span class="identifier">x3</span><span class="special">::</span><span class="identifier">context</span><span class="special">&lt;</span>
-    <span class="identifier">error_handler_tag</span>
+    <span class="identifier">position_cache_tag</span>
   <span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">reference_wrapper</span><span class="special">&lt;</span><span class="identifier">position_cache</span><span class="special">&gt;</span>
   <span class="special">,</span> <span class="identifier">phrase_context_type</span><span class="special">&gt;</span>
 <span class="identifier">context_type</span><span class="special">;</span>
@@ -522,7 +522,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2018 Joel de Guzman,
+<td align="right"><div class="copyright-footer">Copyright © 2001-2018 Joel de Guzman,
       Hartmut Kaiser<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

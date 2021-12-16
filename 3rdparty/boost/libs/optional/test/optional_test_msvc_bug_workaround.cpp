@@ -12,7 +12,7 @@
 #define BOOST_OPTIONAL_CONFIG_NO_RVALUE_REFERENCES
 #include "boost/optional/optional.hpp"
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 #pragma hdrstop
 #endif
 

@@ -1,11 +1,19 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
-// Unit Test
+// Robustness Test
 
-// Copyright (c) 2011-2012 Barend Gehrels, Amsterdam, the Netherlands.
+// Copyright (c) 2011-2021 Barend Gehrels, Amsterdam, the Netherlands.
 
 // Use, modification and distribution is subject to the Boost Software License,
 // Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
+
+#define BOOST_GEOMETRY_NO_BOOST_TEST
+#define BOOST_GEOMETRY_NO_ROBUSTNESS
+#define BOOST_GEOMETRY_TEST_ONLY_ONE_TYPE
+
+// NOTE: there is no randomness here. Count is to measure performance
+
+#include <test_overlay_p_q.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -13,18 +21,11 @@
 #include <iomanip>
 #include <string>
 
-#define BOOST_GEOMETRY_REPORT_OVERLAY_ERROR
-#define BOOST_GEOMETRY_NO_BOOST_TEST
-//#define BOOST_GEOMETRY_TIME_OVERLAY
-
-#include <test_overlay_p_q.hpp>
-
 #include <boost/program_options.hpp>
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/uniform_real.hpp>
 #include <boost/random/variate_generator.hpp>
-#include <boost/timer.hpp>
 
 
 template <typename MultiPolygon>
@@ -46,9 +47,8 @@ inline void make_polygon(MultiPolygon& mp, int count_x, int count_y, int index, 
 }
 
 
-
 template <typename MultiPolygon>
-void test_intersects(int count_x, int count_y, int width_x, p_q_settings const& settings)
+void test_intersects(int index, int count_x, int count_y, int width_x, p_q_settings const& settings)
 {
     MultiPolygon mp;
 
@@ -67,6 +67,10 @@ void test_intersects(int count_x, int count_y, int width_x, p_q_settings const& 
         std::ostringstream filename;
         filename << "intersects_"
             << string_from_type<coordinate_type>::name()
+            << "_" << index
+            << "_" << count_x
+            << "_" << count_y
+            << "_" << width_x
             << ".svg";
 
         std::ofstream svg(filename.str().c_str());
@@ -81,7 +85,7 @@ void test_intersects(int count_x, int count_y, int width_x, p_q_settings const& 
 template <typename T, bool Clockwise, bool Closed>
 void test_all(int count, int count_x, int count_y, int width_x, p_q_settings const& settings)
 {
-    boost::timer t;
+    auto const t0 = std::chrono::high_resolution_clock::now();
 
     typedef bg::model::polygon
         <
@@ -95,15 +99,18 @@ void test_all(int count, int count_x, int count_y, int width_x, p_q_settings con
 
     for(int i = 0; i < count; i++)
     {
-        test_intersects<multi_polygon>(count_x, count_y, width_x, settings);
+        test_intersects<multi_polygon>(i, count_x, count_y, width_x, settings);
     }
+    auto const t = std::chrono::high_resolution_clock::now();
+    auto const elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(t - t0).count();
     std::cout
         << " type: " << string_from_type<T>::name()
-        << " time: " << t.elapsed()  << std::endl;
+        << " time: " << elapsed_ms / 1000.0 << std::endl;
 }
 
 int main(int argc, char** argv)
 {
+    BoostGeometryWriteTestConfiguration();
     try
     {
         namespace po = boost::program_options;
@@ -123,8 +130,10 @@ int main(int argc, char** argv)
             ("count_x", po::value<int>(&count_x)->default_value(10), "Triangle count in x-direction")
             ("count_y", po::value<int>(&count_y)->default_value(10), "Triangle count in y-direction")
             ("width_x", po::value<int>(&width_x)->default_value(7), "Width of triangle in x-direction")
+#if ! defined(BOOST_GEOMETRY_TEST_ONLY_ONE_TYPE)
             ("ccw", po::value<bool>(&ccw)->default_value(false), "Counter clockwise polygons")
             ("open", po::value<bool>(&open)->default_value(false), "Open polygons")
+#endif
             ("wkt", po::value<bool>(&settings.wkt)->default_value(false), "Create a WKT of the inputs, for all tests")
             ("svg", po::value<bool>(&settings.svg)->default_value(false), "Create a SVG for all tests")
         ;
@@ -139,26 +148,24 @@ int main(int argc, char** argv)
             return 1;
         }
 
+#if ! defined(BOOST_GEOMETRY_TEST_ONLY_ONE_TYPE)
         if (ccw && open)
         {
-            test_all<double, false, false>(count, count_x, count_y, width_x, settings);
+            test_all<default_test_type, false, false>(count, count_x, count_y, width_x, settings);
         }
         else if (ccw)
         {
-            test_all<double, false, true>(count, count_x, count_y, width_x, settings);
+            test_all<default_test_type, false, true>(count, count_x, count_y, width_x, settings);
         }
         else if (open)
         {
-            test_all<double, true, false>(count, count_x, count_y, width_x, settings);
+            test_all<default_test_type, true, false>(count, count_x, count_y, width_x, settings);
         }
         else
-        {
-            test_all<double, true, true>(count, count_x, count_y, width_x, settings);
-        }
-
-#if defined(HAVE_TTMATH)
-        // test_all<ttmath_big, true, true>(seed, count, max, svg, level);
 #endif
+        {
+            test_all<default_test_type, true, true>(count, count_x, count_y, width_x, settings);
+        }
     }
     catch(std::exception const& e)
     {

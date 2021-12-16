@@ -1,12 +1,12 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>basic_signal_set</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../../boost_asio.html" title="Boost.Asio">
 <link rel="up" href="../reference.html" title="Reference">
-<link rel="prev" href="basic_serial_port/_basic_serial_port.html" title="basic_serial_port::~basic_serial_port">
+<link rel="prev" href="basic_serial_port__rebind_executor/other.html" title="basic_serial_port::rebind_executor::other">
 <link rel="next" href="basic_signal_set/add.html" title="basic_signal_set::add">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -20,17 +20,20 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="basic_serial_port/_basic_serial_port.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="basic_signal_set/add.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="basic_serial_port__rebind_executor/other.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="basic_signal_set/add.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.basic_signal_set"></a><a class="link" href="basic_signal_set.html" title="basic_signal_set">basic_signal_set</a>
 </h3></div></div></div>
 <p>
+        <a class="indexterm" name="boost_asio.indexterm.basic_signal_set"></a>
+      </p>
+<p>
         Provides signal functionality.
       </p>
 <pre class="programlisting">template&lt;
-    typename <a class="link" href="Executor1.html" title="Executor requirements">Executor</a> = executor&gt;
+    typename <a class="link" href="Executor1.html" title="Executor requirements">Executor</a> = any_io_executor&gt;
 class basic_signal_set
 </pre>
 <h5>
@@ -54,7 +57,20 @@ class basic_signal_set
                 </p>
               </th>
 </tr></thead>
-<tbody><tr>
+<tbody>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="basic_signal_set__rebind_executor.html" title="basic_signal_set::rebind_executor"><span class="bold"><strong>rebind_executor</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Rebinds the signal set type to another executor.
+                </p>
+              </td>
+</tr>
+<tr>
 <td>
                 <p>
                   <a class="link" href="basic_signal_set/executor_type.html" title="basic_signal_set::executor_type"><span class="bold"><strong>executor_type</strong></span></a>
@@ -65,7 +81,8 @@ class basic_signal_set
                   The type of the executor associated with the object.
                 </p>
               </td>
-</tr></tbody>
+</tr>
+</tbody>
 </table></div>
 <h5>
 <a name="boost_asio.reference.basic_signal_set.h1"></a>
@@ -116,14 +133,14 @@ class basic_signal_set
 <tr>
 <td>
                 <p>
-                  <a class="link" href="basic_signal_set/basic_signal_set.html" title="basic_signal_set::basic_signal_set"><span class="bold"><strong>basic_signal_set</strong></span></a>
+                  <a class="link" href="basic_signal_set/basic_signal_set.html" title="basic_signal_set::basic_signal_set"><span class="bold"><strong>basic_signal_set</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
-                  Construct a signal set without adding any signals. <br> <span class="silver"> &#8212;</span><br>
-                  Construct a signal set and add one signal. <br> <span class="silver"> &#8212;</span><br> Construct
-                  a signal set and add two signals. <br> <span class="silver"> &#8212;</span><br> Construct a signal
+                  Construct a signal set without adding any signals. <br> <span class="silver"> —</span><br>
+                  Construct a signal set and add one signal. <br> <span class="silver"> —</span><br> Construct
+                  a signal set and add two signals. <br> <span class="silver"> —</span><br> Construct a signal
                   set and add three signals.
                 </p>
               </td>
@@ -179,7 +196,7 @@ class basic_signal_set
 <tr>
 <td>
                 <p>
-                  <a class="link" href="basic_signal_set/_basic_signal_set.html" title="basic_signal_set::~basic_signal_set"><span class="bold"><strong>~basic_signal_set</strong></span></a>
+                  <a class="link" href="basic_signal_set/_basic_signal_set.html" title="basic_signal_set::~basic_signal_set"><span class="bold"><strong>~basic_signal_set</strong></span></a> <span class="silver">[destructor]</span>
                 </p>
               </td>
 <td>
@@ -287,7 +304,8 @@ signals.async_wait(handler);
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>
@@ -295,7 +313,7 @@ signals.async_wait(handler);
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="basic_serial_port/_basic_serial_port.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="basic_signal_set/add.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="basic_serial_port__rebind_executor/other.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="basic_signal_set/add.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

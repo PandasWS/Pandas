@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>basic_socket_acceptor::accept</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -36,8 +36,8 @@ Accept
     typename <a class="link" href="../Executor1.html" title="Executor requirements">Executor1</a>&gt;
 void <a class="link" href="accept/overload1.html" title="basic_socket_acceptor::accept (1 of 16 overloads)">accept</a>(
     basic_socket&lt; Protocol1, Executor1 &gt; &amp; peer,
-    typename enable_if&lt; is_convertible&lt; Protocol, Protocol1 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload1.html" title="basic_socket_acceptor::accept (1 of 16 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; Protocol, Protocol1 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="accept/overload1.html" title="basic_socket_acceptor::accept (1 of 16 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="../Protocol.html" title="Protocol requirements">Protocol1</a>,
@@ -45,8 +45,8 @@ template&lt;
 void <a class="link" href="accept/overload2.html" title="basic_socket_acceptor::accept (2 of 16 overloads)">accept</a>(
     basic_socket&lt; Protocol1, Executor1 &gt; &amp; peer,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_convertible&lt; Protocol, Protocol1 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload2.html" title="basic_socket_acceptor::accept (2 of 16 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; Protocol, Protocol1 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="accept/overload2.html" title="basic_socket_acceptor::accept (2 of 16 overloads)">more...</a></em></span>
 </pre>
 <p>
           Accept a new connection and obtain the endpoint of the peer.
@@ -56,7 +56,7 @@ void <a class="link" href="accept/overload2.html" title="basic_socket_acceptor::
 void <a class="link" href="accept/overload3.html" title="basic_socket_acceptor::accept (3 of 16 overloads)">accept</a>(
     basic_socket&lt; protocol_type, Executor1 &gt; &amp; peer,
     endpoint_type &amp; peer_endpoint);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload3.html" title="basic_socket_acceptor::accept (3 of 16 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="accept/overload3.html" title="basic_socket_acceptor::accept (3 of 16 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="../Executor1.html" title="Executor requirements">Executor1</a>&gt;
@@ -64,69 +64,69 @@ void <a class="link" href="accept/overload4.html" title="basic_socket_acceptor::
     basic_socket&lt; protocol_type, Executor1 &gt; &amp; peer,
     endpoint_type &amp; peer_endpoint,
     boost::system::error_code &amp; ec);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload4.html" title="basic_socket_acceptor::accept (4 of 16 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="accept/overload4.html" title="basic_socket_acceptor::accept (4 of 16 overloads)">more...</a></em></span>
 
-Protocol::socket <a class="link" href="accept/overload5.html" title="basic_socket_acceptor::accept (5 of 16 overloads)">accept</a>();
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload5.html" title="basic_socket_acceptor::accept (5 of 16 overloads)">more...</a></em></span>
+Protocol::socket::template rebind_executor&lt; executor_type &gt;::other <a class="link" href="accept/overload5.html" title="basic_socket_acceptor::accept (5 of 16 overloads)">accept</a>();
+  <span class="emphasis"><em>» <a class="link" href="accept/overload5.html" title="basic_socket_acceptor::accept (5 of 16 overloads)">more...</a></em></span>
 
-Protocol::socket <a class="link" href="accept/overload6.html" title="basic_socket_acceptor::accept (6 of 16 overloads)">accept</a>(
+Protocol::socket::template rebind_executor&lt; executor_type &gt;::other <a class="link" href="accept/overload6.html" title="basic_socket_acceptor::accept (6 of 16 overloads)">accept</a>(
     boost::system::error_code &amp; ec);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload6.html" title="basic_socket_acceptor::accept (6 of 16 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="accept/overload6.html" title="basic_socket_acceptor::accept (6 of 16 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="../Executor1.html" title="Executor requirements">Executor1</a>&gt;
 Protocol::socket::template rebind_executor&lt; Executor1 &gt;::other <a class="link" href="accept/overload7.html" title="basic_socket_acceptor::accept (7 of 16 overloads)">accept</a>(
     const Executor1 &amp; ex,
-    typename enable_if&lt; is_executor&lt; Executor1 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload7.html" title="basic_socket_acceptor::accept (7 of 16 overloads)">more...</a></em></span>
+    typename constraint&lt; is_executor&lt; Executor1 &gt;::value||execution::is_executor&lt; Executor1 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="accept/overload7.html" title="basic_socket_acceptor::accept (7 of 16 overloads)">more...</a></em></span>
 
 template&lt;
     typename ExecutionContext&gt;
 Protocol::socket::template rebind_executor&lt; typename ExecutionContext::executor_type &gt;::other <a class="link" href="accept/overload8.html" title="basic_socket_acceptor::accept (8 of 16 overloads)">accept</a>(
     ExecutionContext &amp; context,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload8.html" title="basic_socket_acceptor::accept (8 of 16 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="accept/overload8.html" title="basic_socket_acceptor::accept (8 of 16 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="../Executor1.html" title="Executor requirements">Executor1</a>&gt;
 Protocol::socket::template rebind_executor&lt; Executor1 &gt;::other <a class="link" href="accept/overload9.html" title="basic_socket_acceptor::accept (9 of 16 overloads)">accept</a>(
     const Executor1 &amp; ex,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_executor&lt; Executor1 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload9.html" title="basic_socket_acceptor::accept (9 of 16 overloads)">more...</a></em></span>
+    typename constraint&lt; is_executor&lt; Executor1 &gt;::value||execution::is_executor&lt; Executor1 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="accept/overload9.html" title="basic_socket_acceptor::accept (9 of 16 overloads)">more...</a></em></span>
 
 template&lt;
     typename ExecutionContext&gt;
 Protocol::socket::template rebind_executor&lt; typename ExecutionContext::executor_type &gt;::other <a class="link" href="accept/overload10.html" title="basic_socket_acceptor::accept (10 of 16 overloads)">accept</a>(
     ExecutionContext &amp; context,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload10.html" title="basic_socket_acceptor::accept (10 of 16 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="accept/overload10.html" title="basic_socket_acceptor::accept (10 of 16 overloads)">more...</a></em></span>
 
-Protocol::socket <a class="link" href="accept/overload11.html" title="basic_socket_acceptor::accept (11 of 16 overloads)">accept</a>(
+Protocol::socket::template rebind_executor&lt; executor_type &gt;::other <a class="link" href="accept/overload11.html" title="basic_socket_acceptor::accept (11 of 16 overloads)">accept</a>(
     endpoint_type &amp; peer_endpoint);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload11.html" title="basic_socket_acceptor::accept (11 of 16 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="accept/overload11.html" title="basic_socket_acceptor::accept (11 of 16 overloads)">more...</a></em></span>
 
-Protocol::socket <a class="link" href="accept/overload12.html" title="basic_socket_acceptor::accept (12 of 16 overloads)">accept</a>(
+Protocol::socket::template rebind_executor&lt; executor_type &gt;::other <a class="link" href="accept/overload12.html" title="basic_socket_acceptor::accept (12 of 16 overloads)">accept</a>(
     endpoint_type &amp; peer_endpoint,
     boost::system::error_code &amp; ec);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload12.html" title="basic_socket_acceptor::accept (12 of 16 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="accept/overload12.html" title="basic_socket_acceptor::accept (12 of 16 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="../Executor1.html" title="Executor requirements">Executor1</a>&gt;
 Protocol::socket::template rebind_executor&lt; Executor1 &gt;::other <a class="link" href="accept/overload13.html" title="basic_socket_acceptor::accept (13 of 16 overloads)">accept</a>(
     const Executor1 &amp; ex,
     endpoint_type &amp; peer_endpoint,
-    typename enable_if&lt; is_executor&lt; Executor1 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload13.html" title="basic_socket_acceptor::accept (13 of 16 overloads)">more...</a></em></span>
+    typename constraint&lt; is_executor&lt; Executor1 &gt;::value||execution::is_executor&lt; Executor1 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="accept/overload13.html" title="basic_socket_acceptor::accept (13 of 16 overloads)">more...</a></em></span>
 
 template&lt;
     typename ExecutionContext&gt;
 Protocol::socket::template rebind_executor&lt; typename ExecutionContext::executor_type &gt;::other <a class="link" href="accept/overload14.html" title="basic_socket_acceptor::accept (14 of 16 overloads)">accept</a>(
     ExecutionContext &amp; context,
     endpoint_type &amp; peer_endpoint,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload14.html" title="basic_socket_acceptor::accept (14 of 16 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="accept/overload14.html" title="basic_socket_acceptor::accept (14 of 16 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="../Executor1.html" title="Executor requirements">Executor1</a>&gt;
@@ -134,8 +134,8 @@ Protocol::socket::template rebind_executor&lt; Executor1 &gt;::other <a class="l
     const executor_type &amp; ex,
     endpoint_type &amp; peer_endpoint,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_executor&lt; Executor1 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload15.html" title="basic_socket_acceptor::accept (15 of 16 overloads)">more...</a></em></span>
+    typename constraint&lt; is_executor&lt; Executor1 &gt;::value||execution::is_executor&lt; Executor1 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="accept/overload15.html" title="basic_socket_acceptor::accept (15 of 16 overloads)">more...</a></em></span>
 
 template&lt;
     typename ExecutionContext&gt;
@@ -143,13 +143,14 @@ Protocol::socket::template rebind_executor&lt; typename ExecutionContext::execut
     ExecutionContext &amp; context,
     endpoint_type &amp; peer_endpoint,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="accept/overload16.html" title="basic_socket_acceptor::accept (16 of 16 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="accept/overload16.html" title="basic_socket_acceptor::accept (16 of 16 overloads)">more...</a></em></span>
 </pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

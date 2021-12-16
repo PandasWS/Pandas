@@ -72,6 +72,24 @@ template<class T> T const test_value<T, 8>::w1;
 template<class T> T const test_value<T, 8>::v2;
 template<class T> T const test_value<T, 8>::w2;
 
+#if defined(BOOST_HAS_INT128)
+
+template<class T> struct test_value<T, 16>
+{
+    static const T v1 = static_cast<T>( 0x1F2E3D4C5B6A7988ull ) << 64 | static_cast<T>( 0xF1E2D3C4B5A69780ull );
+    static const T w1 = static_cast<T>( 0x8097A6B5C4D3E2F1ull ) << 64 | static_cast<T>( 0x88796A5B4C3D2E1Full );
+
+    static const T v2 = static_cast<T>( 0xF1E2D3C4B5A69788ull ) << 64 | static_cast<T>( 0x1F2E3D4C5B6A7980ull );
+    static const T w2 = static_cast<T>( 0x80796A5B4C3D2E1Full ) << 64 | static_cast<T>( 0x8897A6B5C4D3E2F1ull );
+};
+
+template<class T> T const test_value<T, 16>::v1;
+template<class T> T const test_value<T, 16>::w1;
+template<class T> T const test_value<T, 16>::v2;
+template<class T> T const test_value<T, 16>::w2;
+
+#endif // #if defined(BOOST_HAS_INT128)
+
 template<class T> void test()
 {
     using boost::endian::endian_reverse;
@@ -114,6 +132,48 @@ template<class T> void test()
     }
 }
 
+template<class T> void test_np()
+{
+    using boost::endian::endian_reverse;
+    using boost::endian::endian_reverse_inplace;
+
+    {
+        T t1 = test_value<T>::v1;
+
+        T t2 = endian_reverse( t1 );
+        BOOST_TEST( t2 == test_value<T>::w1 );
+
+        T t3 = endian_reverse( t2 );
+        BOOST_TEST( t3 == t1 );
+
+        T t4 = t1;
+
+        endian_reverse_inplace( t4 );
+        BOOST_TEST( t4 == test_value<T>::w1 );
+
+        endian_reverse_inplace( t4 );
+        BOOST_TEST( t4 == t1 );
+    }
+
+    {
+        T t1 = test_value<T>::v2;
+
+        T t2 = endian_reverse( t1 );
+        BOOST_TEST( t2 == test_value<T>::w2 );
+
+        T t3 = endian_reverse( t2 );
+        BOOST_TEST( t3 == t1 );
+
+        T t4 = t1;
+
+        endian_reverse_inplace( t4 );
+        BOOST_TEST( t4 == test_value<T>::w2 );
+
+        endian_reverse_inplace( t4 );
+        BOOST_TEST( t4 == t1 );
+    }
+}
+
 int main()
 {
     test<boost::int8_t>();
@@ -150,6 +210,13 @@ int main()
 
 #if !defined(BOOST_NO_CXX11_CHAR32_T)
     test<char32_t>();
+#endif
+
+#if defined(BOOST_HAS_INT128)
+
+    test_np<boost::int128_type>();
+    test_np<boost::uint128_type>();
+
 #endif
 
     return boost::report_errors();

@@ -26,10 +26,12 @@ int main()
 # endif
 #endif
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/function.hpp>
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <memory>
+
+using namespace boost::placeholders;
 
 //
 

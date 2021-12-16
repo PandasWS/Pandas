@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Macro BOOST_VMD_EQUAL</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="index.html" title="Chapter&#160;1.&#160;The Variadic Macro Data Library 1.9">
+<link rel="home" href="index.html" title="Chapter 1. The Variadic Macro Data Library 1.10">
 <link rel="up" href="header/boost/vmd/equal_hpp.html" title="Header &lt;boost/vmd/equal.hpp&gt;">
 <link rel="prev" href="header/boost/vmd/equal_hpp.html" title="Header &lt;boost/vmd/equal.hpp&gt;">
 <link rel="next" href="BOOST_VMD_EQUAL_D.html" title="Macro BOOST_VMD_EQUAL_D">
@@ -26,15 +26,16 @@
 <a name="BOOST_VMD_EQUAL"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Macro BOOST_VMD_EQUAL</span></h2>
-<p>BOOST_VMD_EQUAL &#8212; Tests any two sequences for equality. </p>
+<p>BOOST_VMD_EQUAL — Tests any two sequences for equality. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="header/boost/vmd/equal_hpp.html" title="Header &lt;boost/vmd/equal.hpp&gt;">boost/vmd/equal.hpp</a>&gt;
 
 </span>BOOST_VMD_EQUAL(sequence, ...)</pre></div>
 <div class="refsect1">
-<a name="idm45028681933728"></a><h2>Description</h2>
-<p>sequence = First sequence. ... = variadic parameters, maximum of 2.</p>
+<a name="idm14005"></a><h2>Description</h2>
+<p>sequence = First sequence. <br>
+ ... = variadic parameters, maximum of 2.</p>
 <p>The first variadic parameter is required and is the second sequence to test. The optional second variadic parameter is a VMD type as a filter.</p>
 <p>The macro tests any two sequences for equality. For sequences to be equal the VMD types of each sequence must be equal and the individual elements of the sequence must be equal. For Boost PP composite types the macro tests that the composite types have the same size and then tests that each element of the composite type is equal. This means that all elements of a composite type must be a VMD type in order to use this macro successfully.</p>
 <p>The single optional parameter is a filter. The filter is a VMD type which specifies that both sequences to test must be of that VMD type, as well as being equal to each other, for the test to succeed.</p>
@@ -43,7 +44,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2010-2017 Tropic Software
+<td align="right"><div class="copyright-footer">Copyright © 2010-2017 Tropic Software
       East Inc</div></td>
 </tr></table>
 <hr>

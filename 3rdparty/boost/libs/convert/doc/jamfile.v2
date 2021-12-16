@@ -1,11 +1,12 @@
 # Convert documentation Jamfile
 
-#  Copyright (c) Vladimir Batov 2009-2014
+#  Copyright (c) Vladimir Batov 2009-2020
 #  Distributed under the Boost Software License, Version 1.0.
 #  See copy at http://www.boost.org/LICENSE_1_0.txt.
 
 using quickbook ;
 using doxygen ;
+using boostbook ;
 
 path-constant here : . ; # convenient to refer to files in the same directory as this jamfile.v2
 path-constant boost-images : ../../../doc/src/images ;
@@ -35,7 +36,7 @@ else
 
 doxygen convert_reference
   :
-    [ glob $(here)/../include/boost/convert.hpp $(here)/../include/boost/make_default.hpp $(here)/../include/boost/convert/*.hpp ]
+    [ glob $(here)/../../../boost/convert.hpp $(here)/../../../boost/make_default.hpp $(here)/../../../boost/convert/*.hpp ]
   :
     <doxygen:param>PROJECT_NAME="CONVERT"
     <doxygen:param>PROJECT_NUMBER=3

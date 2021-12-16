@@ -8,7 +8,7 @@
 
 //  VC++ 8.0 warns on usage of certain Standard Library and API functions that
 //  can be cause buffer overruns or other possible security issues if misused.
-//  See http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
+//  See https://web.archive.org/web/20071014014301/http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
 //  But the wording of the warning is misleading and unsettling, there are no
 //  portable alternative functions, and VC++ 8.0's own libraries use the
 //  functions in question. So turn off the warnings.
@@ -17,15 +17,15 @@
 
 #include <boost/config.hpp>
 
-// Boost.Test
-#include <boost/test/minimal.hpp>
+#include <boost/core/ignore_unused.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include <boost/config.hpp>
 
 #include <algorithm>
 
 #include <boost/range/functions.hpp>
-#include <boost/range/metafunctions.hpp>
+#include <boost/range/const_iterator.hpp>
 
 #include <boost/bimap/bimap.hpp>
 #include <boost/bimap/multiset_of.hpp>
@@ -51,7 +51,7 @@ struct do_something_with_a_pair
     template< class Pair >
     void operator()(const Pair & p)
     {
-        BOOST_CHECK( p.first && p.second );
+        BOOST_TEST( p.first && p.second );
     }
 };
 
@@ -80,9 +80,9 @@ int test_bimap_range()
     {
 
     bm_type::left_range_type r = bm.left.range( 2.0 < _key, _key < 4.0 );
-    BOOST_CHECK( ! boost::empty(r) );
-    BOOST_CHECK( boost::begin(r) == bm.left.upper_bound(2.0) );
-    BOOST_CHECK( boost::end(r)   == bm.left.lower_bound(4.0) );
+    BOOST_TEST( ! boost::empty(r) );
+    BOOST_TEST( boost::begin(r) == bm.left.upper_bound(2.0) );
+    BOOST_TEST( boost::end(r)   == bm.left.lower_bound(4.0) );
 
     }
 
@@ -90,9 +90,9 @@ int test_bimap_range()
     {
 
     bm_type::right_range_type r = bm.right.range( 2 <= _key, _key <= 3 );
-    BOOST_CHECK( ! boost::empty(r) );
-    BOOST_CHECK( boost::begin(r) == bm.right.lower_bound(2) );
-    BOOST_CHECK( boost::end(r)   == bm.right.upper_bound(3) );
+    BOOST_TEST( ! boost::empty(r) );
+    BOOST_TEST( boost::begin(r) == bm.right.lower_bound(2) );
+    BOOST_TEST( boost::end(r)   == bm.right.upper_bound(3) );
 
     }
 
@@ -101,7 +101,8 @@ int test_bimap_range()
 
     bm_type:: left_const_range_type lr = bm. left.range( unbounded, _key < 4.0 );
     bm_type::right_const_range_type rr = bm.right.range( 2 < _key ,  unbounded );
-
+    boost::ignore_unused(lr);
+    boost::ignore_unused(rr);
     }
 
     const bm_type & cbm = bm;
@@ -109,8 +110,8 @@ int test_bimap_range()
     // left const range
     {
     bm_type:: left_const_range_type r = cbm.left.range( unbounded, unbounded );
-    BOOST_CHECK( ! boost::empty(r) );
-    BOOST_CHECK( boost::begin(r) == cbm.left.begin() );
+    BOOST_TEST( ! boost::empty(r) );
+    BOOST_TEST( boost::begin(r) == cbm.left.begin() );
 
     }
 
@@ -118,7 +119,7 @@ int test_bimap_range()
     {
 
     bm_type::right_const_range_type r = cbm.right.range( 1 < _key, _key < 1 );
-    BOOST_CHECK( boost::empty(r) );
+    BOOST_TEST( boost::empty(r) );
 
     }
 
@@ -126,9 +127,9 @@ int test_bimap_range()
 }
 //]
 
-int test_main( int, char* [] )
+int main()
 {
     test_bimap_range();
-    return 0;
+    return boost::report_errors();
 }
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class communicator</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,7 +27,7 @@
 <a name="boost.mpi.communicator"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Class communicator</span></h2>
-<p>boost::mpi::communicator &#8212; A communicator that permits communication and synchronization among a set of processes. </p>
+<p>boost::mpi::communicator — A communicator that permits communication and synchronization among a set of processes. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../mpi/reference.html#header.boost.mpi.communicator_hpp" title="Header &lt;boost/mpi/communicator.hpp&gt;">boost/mpi/communicator.hpp</a>&gt;
@@ -575,7 +575,7 @@
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> T<span class="special">&gt;</span> 
   <a class="link" href="status.html" title="Class status">status</a> <a name="id-1_3_27_7_6_2_1_1_3_15-bb"></a><span class="identifier">sendrecv</span><span class="special">(</span><span class="keyword">int</span> dest<span class="special">,</span> <span class="keyword">int</span> stag<span class="special">,</span> <span class="keyword">const</span> <span class="identifier">T</span> <span class="special">&amp;</span> sval<span class="special">,</span> <span class="keyword">int</span> src<span class="special">,</span> <span class="keyword">int</span> rtag<span class="special">,</span> 
-                  <span class="identifier">T</span> <span class="special">&amp;</span> rval<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>Send a message to remote process nd receive another message from another process. </li>
+                  <span class="identifier">T</span> <span class="special">&amp;</span> rval<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>Send a message to remote process and receive another message from another process. </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> T<span class="special">&gt;</span> <a class="link" href="request.html" title="Class request">request</a> <a name="id-1_3_27_7_6_2_1_1_3_16-bb"></a><span class="identifier">isend</span><span class="special">(</span><span class="keyword">int</span> dest<span class="special">,</span> <span class="keyword">int</span> tag<span class="special">,</span> <span class="keyword">const</span> <span class="identifier">T</span> <span class="special">&amp;</span> value<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>Send a message to a remote process without blocking. <p>The <code class="computeroutput">isend</code> method is functionality identical to the <code class="computeroutput">send</code> method and transmits data in the same way, except that <code class="computeroutput">isend</code> will not block while waiting for the data to be transmitted. Instead, a request object will be immediately returned, allowing one to query the status of the communication or wait until it has completed.</p>
 <p>
@@ -1130,7 +1130,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2005-2007 Douglas Gregor,
+<td align="right"><div class="copyright-footer">Copyright © 2005-2007 Douglas Gregor,
       Matthias Troyer, Trustees of Indiana University<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at &lt;ulink url="http://www.boost.org/LICENSE_1_0.txt"&gt;

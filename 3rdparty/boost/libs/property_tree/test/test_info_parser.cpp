@@ -229,14 +229,14 @@ void test_info_parser()
         Ptree pt, default_pt;
         pt.put_value(1);
         default_pt.put_value(2);
-        BOOST_CHECK(pt != default_pt);
+        BOOST_TEST(pt != default_pt);
         read_info("nonexisting file.nonexisting file", pt, default_pt);
-        BOOST_CHECK(pt == default_pt);
+        BOOST_TEST(pt == default_pt);
     }
 
 }
 
-int test_main(int argc, char *argv[])
+int main()
 {
     using namespace boost::property_tree;
     test_info_parser<ptree>();
@@ -245,5 +245,5 @@ int test_main(int argc, char *argv[])
     test_info_parser<wptree>();
     test_info_parser<wiptree>();
 #endif
-    return 0;
+    return boost::report_errors();
 }

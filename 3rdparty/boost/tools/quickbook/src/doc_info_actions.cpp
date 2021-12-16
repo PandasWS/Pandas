@@ -10,7 +10,7 @@
 =============================================================================*/
 #include <sstream>
 #include <boost/algorithm/string/join.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/filesystem/operations.hpp>
 #include "doc_info_tags.hpp"
 #include "document_state.hpp"
@@ -21,6 +21,8 @@
 #include "state.hpp"
 #include "stream.hpp"
 #include "utils.hpp"
+
+using namespace boost::placeholders;
 
 namespace quickbook
 {

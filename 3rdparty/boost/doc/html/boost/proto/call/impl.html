@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Struct template impl</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -120,12 +120,12 @@
 <li class="listitem">
 <p>
                       If <code class="computeroutput">T</code> is of the form
-                      <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,&#8230;A<sub>n</sub>)</code>, then
+                      <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,…A<sub>n</sub>)</code>, then
                       <code class="computeroutput">result_type</code> is:
                       </p>
 <pre class="programlisting"><span class="keyword">typename</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">result_of</span><span class="special">&lt;</span><span class="identifier">PolymorphicFunctionObject</span><span class="special">(</span>
   <span class="keyword">typename</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">result_of</span><span class="special">&lt;</span><a class="link" href="../when.html" title="Struct template when">when</a><span class="special">&lt;</span><a class="link" href="../_.html" title="Struct _">_</a><span class="special">,</span><span class="identifier">A</span><sub><span class="number">0</span></sub><span class="special">&gt;</span><span class="special">(</span><span class="identifier">Expr</span><span class="special">,</span> <span class="identifier">State</span><span class="special">,</span> <span class="identifier">Data</span><span class="special">)</span><span class="special">&gt;</span><span class="special">::</span><span class="identifier">type</span><span class="special">,</span>
-  &#8230;
+  …
   <span class="keyword">typename</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">result_of</span><span class="special">&lt;</span><a class="link" href="../when.html" title="Struct template when">when</a><span class="special">&lt;</span><a class="link" href="../_.html" title="Struct _">_</a><span class="special">,</span><span class="identifier">A</span><sub><span class="identifier">n</span></sub><span class="special">&gt;</span><span class="special">(</span><span class="identifier">Expr</span><span class="special">,</span> <span class="identifier">State</span><span class="special">,</span> <span class="identifier">Data</span><span class="special">)</span><span class="special">&gt;</span><span class="special">::</span><span class="identifier">type</span>
 <span class="special">&gt;</span><span class="special">::</span><span class="identifier">type</span></pre>
 <p>
@@ -134,8 +134,8 @@
 <li class="listitem">
 <p>
                       If <code class="computeroutput">T</code> is of the form
-                      <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,&#8230;A<sub>n</sub> ...)</code>, then
-                      let <code class="computeroutput">T'</code> be <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,&#8230;A<sub>n-1</sub>, <em class="replaceable"><code>S</code></em>)</code>,
+                      <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,…A<sub>n</sub> ...)</code>, then
+                      let <code class="computeroutput">T'</code> be <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,…A<sub>n-1</sub>, <em class="replaceable"><code>S</code></em>)</code>,
                       where <em class="replaceable"><code>S</code></em> is a type sequence computed from the unpacking expression <code class="computeroutput">A<sub>n</sub></code>
                       as described in the reference for <code class="computeroutput"><a class="link" href="../pack.html" title="Struct pack">proto::pack</a></code>.
                       Then, <code class="computeroutput">result_type</code> is:
@@ -222,7 +222,7 @@
 <li class="listitem">
 <p>
                         If <code class="computeroutput">T</code> is of the form
-                        <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,&#8230;A<sub>n</sub>)</code>, then
+                        <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,…A<sub>n</sub>)</code>, then
                         return:
                         </p>
 <pre class="programlisting">PolymorphicFunctionObject()(
@@ -236,8 +236,8 @@
 <li class="listitem">
 <p>
                       If <code class="computeroutput">T</code> is of the form
-                      <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,&#8230;A<sub>n</sub> ...)</code>, then
-                      let <code class="computeroutput">T'</code> be <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,&#8230;A<sub>n-1</sub>, <em class="replaceable"><code>S</code></em>)</code>,
+                      <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,…A<sub>n</sub> ...)</code>, then
+                      let <code class="computeroutput">T'</code> be <code class="computeroutput"><a class="link" href="../../../PolymorphicFunctionObject.html" title="Concept PolymorphicFunctionObject">PolymorphicFunctionObject</a>(A<sub>0</sub>,…A<sub>n-1</sub>, <em class="replaceable"><code>S</code></em>)</code>,
                       where <em class="replaceable"><code>S</code></em> is a type sequence computed from the unpacking expression <code class="computeroutput">A<sub>n</sub></code>
                       as described in the reference for <code class="computeroutput"><code class="computeroutput"><a class="link" href="../pack.html" title="Struct pack">proto::pack</a></code></code>.
                       Then, return:
@@ -255,7 +255,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2008 Eric Niebler<p>
+<td align="right"><div class="copyright-footer">Copyright © 2008 Eric Niebler<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

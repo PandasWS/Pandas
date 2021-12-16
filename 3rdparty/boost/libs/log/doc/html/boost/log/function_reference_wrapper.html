@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Struct template function_reference_wrapper</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Log v2">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Log v2">
 <link rel="up" href="../../utilities.html#header.boost.log.utility.functional.fun_ref_hpp" title="Header &lt;boost/log/utility/functional/fun_ref.hpp&gt;">
 <link rel="prev" href="ends_with_fun.html" title="Struct ends_with_fun">
 <link rel="next" href="fun_ref.html" title="Function template fun_ref">
@@ -19,7 +19,7 @@
 <a name="boost.log.function_reference_wrapper"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Struct template function_reference_wrapper</span></h2>
-<p>boost::log::function_reference_wrapper &#8212; Reference wrapper for function objects. </p>
+<p>boost::log::function_reference_wrapper — Reference wrapper for function objects. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../utilities.html#header.boost.log.utility.functional.fun_ref_hpp" title="Header &lt;boost/log/utility/functional/fun_ref.hpp&gt;">boost/log/utility/functional/fun_ref.hpp</a>&gt;
@@ -30,35 +30,35 @@
   <span class="keyword">typedef</span> <span class="identifier">FunT</span><span class="special">::</span><span class="identifier">result_type</span> <a name="boost.log.function_reference_wrapper.result_type"></a><span class="identifier">result_type</span><span class="special">;</span>
 
   <span class="comment">// <a class="link" href="function_reference_wrapper.html#boost.log.function_reference_wrapperconstruct-copy-destruct">construct/copy/destruct</a></span>
-  <span class="keyword">explicit</span> <a class="link" href="function_reference_wrapper.html#idm45349308277536-bb"><span class="identifier">function_reference_wrapper</span></a><span class="special">(</span><span class="identifier">FunT</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">explicit</span> <a class="link" href="function_reference_wrapper.html#idm35631-bb"><span class="identifier">function_reference_wrapper</span></a><span class="special">(</span><span class="identifier">FunT</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="function_reference_wrapper.html#idm45349308282320-bb">public member functions</a></span>
-  <span class="identifier">result_type</span> <a class="link" href="function_reference_wrapper.html#idm45349308281760-bb"><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span><span class="special">...</span> ArgsT<span class="special">&gt;</span> <span class="identifier">result_type</span> <a class="link" href="function_reference_wrapper.html#idm45349308280640-bb"><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span></a><span class="special">(</span><span class="identifier">ArgsT</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">...</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="function_reference_wrapper.html#idm35621-bb">public member functions</a></span>
+  <span class="identifier">result_type</span> <a class="link" href="function_reference_wrapper.html#idm35622-bb"><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span><span class="special">...</span> ArgsT<span class="special">&gt;</span> <span class="identifier">result_type</span> <a class="link" href="function_reference_wrapper.html#idm35624-bb"><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span></a><span class="special">(</span><span class="identifier">ArgsT</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">...</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="idm46415095920880"></a><h2>Description</h2>
+<a name="idm78127"></a><h2>Description</h2>
 <div class="refsect2">
-<a name="idm46415095920464"></a><h3>
+<a name="idm78129"></a><h3>
 <a name="boost.log.function_reference_wrapperconstruct-copy-destruct"></a><code class="computeroutput">function_reference_wrapper</code> 
         public
        construct/copy/destruct</h3>
-<div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><pre class="literallayout"><span class="keyword">explicit</span> <a name="idm45349308277536-bb"></a><span class="identifier">function_reference_wrapper</span><span class="special">(</span><span class="identifier">FunT</span> <span class="special">&amp;</span> fun<span class="special">)</span><span class="special">;</span></pre></li></ol></div>
+<div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><pre class="literallayout"><span class="keyword">explicit</span> <a name="idm35631-bb"></a><span class="identifier">function_reference_wrapper</span><span class="special">(</span><span class="identifier">FunT</span> <span class="special">&amp;</span> fun<span class="special">)</span><span class="special">;</span></pre></li></ol></div>
 </div>
 <div class="refsect2">
-<a name="idm46415095912368"></a><h3>
-<a name="idm45349308282320-bb"></a><code class="computeroutput">function_reference_wrapper</code> public member functions</h3>
+<a name="idm78145"></a><h3>
+<a name="idm35621-bb"></a><code class="computeroutput">function_reference_wrapper</code> public member functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
-<li class="listitem"><pre class="literallayout"><span class="identifier">result_type</span> <a name="idm45349308281760-bb"></a><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><span class="identifier">result_type</span> <a name="idm35622-bb"></a><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
 <li class="listitem"><pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span><span class="special">...</span> ArgsT<span class="special">&gt;</span> 
-  <span class="identifier">result_type</span> <a name="idm45349308280640-bb"></a><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span><span class="special">(</span><span class="identifier">ArgsT</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">...</span> args<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
+  <span class="identifier">result_type</span> <a name="idm35624-bb"></a><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span><span class="special">(</span><span class="identifier">ArgsT</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">...</span> args<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
 </ol></div>
 </div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2007-2016 Andrey Semashev<p>
+<td align="right"><div class="copyright-footer">Copyright © 2007-2021 Andrey Semashev<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>).
       </p>

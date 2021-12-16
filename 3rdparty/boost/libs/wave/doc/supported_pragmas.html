@@ -42,14 +42,14 @@
 <pre>    #pragma wave trace(enable)  </pre>
 <p>and </p>
 <pre>    _Pragma(&quot;wave trace(enable)&quot;)</pre>
-<p>All <tt>Wave</tt> specific pragma's must have the general form <tt>'wave option[(value)]'</tt>, 
+<p>All <tt>Wave</tt> specific pragmas must have the general form <tt>'wave option[(value)]'</tt>,
   where <tt>'wave'</tt> is the specific keyword (which may be configured through the <tt>BOOST_WAVE_PRAGMA_KEYWORD</tt> compile time constant, see <a href="compiletime_config.html">here</a> for more information), <tt>'option'</tt> is the concrete 
   pragma functionality to trigger and <tt>'value'</tt> is an optional value to 
   be supplied to the <tt>'option'</tt> functionality. The following table lists 
-  all possible pragma functions supported by the <tt>Wave</tt> library. For all recognised pragmas of this general form the interpret_pragma hook function from inside the <a href="class_reference_ctxpolicy.html">preprocessing_hooks</a> policy are called, so that the user of the library is responsible for the correct interpretation of these pragma's. </p>
+  all possible pragma functions supported by the <tt>Wave</tt> library. For all recognised pragmas of this general form the interpret_pragma hook function from inside the <a href="class_reference_ctxpolicy.html">preprocessing_hooks</a> policy are called, so that the user of the library is responsible for the correct interpretation of these pragmas. </p>
 <table width="77%" border="0" align="center">
   <tr> 
-    <td colspan="3"> <p class="table_title">Supported pragma's</p></td>
+    <td colspan="3"> <p class="table_title">Supported pragmas</p></td>
   </tr>
   <tr> 
     <td> <p class="toc_title" width="36%">pragma option</p></td>
@@ -110,8 +110,8 @@
     <p>The pragma values <tt>push</tt> and <tt>pop</tt> may be used for all of the options (<tt>line</tt>, <tt>preserve</tt> and <tt>output</tt>) to store and restore the current value of the corresponding option. </p></td>
   </tr>
 </table>
-<p>All pragma's not listed here but flagged as <tt>'wave'</tt> are currently reported as 
-  errors. The handling of all remaining pragma's depends on the compilation constant 
+<p>All pragmas not listed here but flagged as <tt>'wave'</tt> are currently reported as
+  errors. The handling of all remaining pragmas depends on the compilation constant
   <code><tt>BOOST_WAVE_RETURN_PRAGMA_DIRECTIVES</tt></code>, which allows to specify, 
   if those pragmas are left unchanged in the output stream or not. Please note, 
   that the operator _Pragma variant is always subject to full preprocessing, before 
@@ -119,7 +119,7 @@
   only, if the <code><tt>BOOST_WAVE_PREPROCESS_PRAGMA_BODY</tt></code> compilation constant 
   was specified during compilation. For more information about the possible compilation 
   constants look <a href="compiletime_config.html">here</a>.</p>
-<p>It is fairly easy to implement your own <span class="preprocessor">#pragma&nbsp;wave&nbsp;...</span> directives. All you have to do is to implement your own <tt>interpret_pragma</tt> preprocessing hook function (see <a href="class_reference_ctxpolicy.html#interpret_pragma">here</a>) which should handle the additional directives. For an example of how to do it, you may have a look at the Wave driver application, which implements all of the pragma's listed above  with the help of a supplied <tt>interpret_pragma</tt> function (for instance the  <span class="preprocessor">#pragma wave timer()</span> directive). </p>
+<p>It is fairly easy to implement your own <span class="preprocessor">#pragma&nbsp;wave&nbsp;...</span> directives. All you have to do is to implement your own <tt>interpret_pragma</tt> preprocessing hook function (see <a href="class_reference_ctxpolicy.html#interpret_pragma">here</a>) which should handle the additional directives. For an example of how to do it, you may have a look at the Wave driver application, which implements all of the pragmas listed above  with the help of a supplied <tt>interpret_pragma</tt> function (for instance the  <span class="preprocessor">#pragma wave timer()</span> directive). </p>
 <table border="0">
   <tr> 
     <td width="10"></td>

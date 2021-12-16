@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Release Notes</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../intrusive.html" title="Chapter&#160;19.&#160;Boost.Intrusive">
+<link rel="up" href="../intrusive.html" title="Chapter 19. Boost.Intrusive">
 <link rel="prev" href="performance.html" title="Performance">
 <link rel="next" href="references.html" title="References">
 </head>
@@ -28,6 +28,14 @@
 <a name="intrusive.release_notes"></a><a class="link" href="release_notes.html" title="Release Notes">Release Notes</a>
 </h2></div></div></div>
 <div class="toc"><dl class="toc">
+<dt><span class="section"><a href="release_notes.html#intrusive.release_notes.release_notes_boost_1_77_00">Boost
+      1.77 Release</a></span></dt>
+<dt><span class="section"><a href="release_notes.html#intrusive.release_notes.release_notes_boost_1_76_00">Boost
+      1.76 Release</a></span></dt>
+<dt><span class="section"><a href="release_notes.html#intrusive.release_notes.release_notes_boost_1_75_00">Boost
+      1.75 Release</a></span></dt>
+<dt><span class="section"><a href="release_notes.html#intrusive.release_notes.release_notes_boost_1_73_00">Boost
+      1.73 Release</a></span></dt>
 <dt><span class="section"><a href="release_notes.html#intrusive.release_notes.release_notes_boost_1_71_00">Boost
       1.71 Release</a></span></dt>
 <dt><span class="section"><a href="release_notes.html#intrusive.release_notes.release_notes_boost_1_70_00">Boost
@@ -81,6 +89,109 @@
 <dt><span class="section"><a href="release_notes.html#intrusive.release_notes.release_notes_boost_1_36_00">Boost
       1.36 Release</a></span></dt>
 </dl></div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="intrusive.release_notes.release_notes_boost_1_77_00"></a><a class="link" href="release_notes.html#intrusive.release_notes.release_notes_boost_1_77_00" title="Boost 1.77 Release">Boost
+      1.77 Release</a>
+</h3></div></div></div>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+            Added <code class="computeroutput"><span class="keyword">noexcept</span></code> support to
+            the library to obtain better performance and diagnostics.
+          </li>
+<li class="listitem">
+            Fixed bugs:
+            <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; ">
+<li class="listitem">
+                  <a href="https://github.com/boostorg/intrusive/pull/57" target="_top">GitHub
+                  #57: <span class="emphasis"><em>UB: comparing unrelated pointers</em></span></a>
+                </li>
+<li class="listitem">
+                  <a href="https://github.com/boostorg/intrusive/issues/59" target="_top">GitHub
+                  #59: <span class="emphasis"><em>Add noexcept support to the library</em></span></a>
+                </li>
+<li class="listitem">
+                  <a href="https://github.com/boostorg/intrusive/issues/60" target="_top">GitHub
+                  #60: <span class="emphasis"><em>Licensing question for math.hpp</em></span></a>
+                </li>
+<li class="listitem">
+                  <a href="https://github.com/boostorg/intrusive/pull/61" target="_top">GitHub
+                  #61: <span class="emphasis"><em>Fix bstree_algorithms&lt;&gt;::swap_nodes</em></span></a>
+                </li>
+<li class="listitem">
+                  <a href="https://github.com/boostorg/intrusive/issues/63" target="_top">GitHub
+                  #63: <span class="emphasis"><em>nop splice removes element</em></span></a>
+                </li>
+</ul></div>
+          </li>
+</ul></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="intrusive.release_notes.release_notes_boost_1_76_00"></a><a class="link" href="release_notes.html#intrusive.release_notes.release_notes_boost_1_76_00" title="Boost 1.76 Release">Boost
+      1.76 Release</a>
+</h3></div></div></div>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+            Reduced compile-time dependencies:
+            <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; ">
+<li class="listitem">
+                  <code class="computeroutput"><span class="identifier">linear_slist_algorithms</span></code>
+                  use a simple node_ptr instead of std::pair on return.
+                </li>
+<li class="listitem">
+                  <code class="computeroutput"><span class="identifier">list</span></code>/<code class="computeroutput"><span class="identifier">slist</span></code> use <code class="computeroutput"><span class="keyword">operator</span>
+                  <span class="special">&lt;</span></code>/<code class="computeroutput"><span class="keyword">operator</span>
+                  <span class="special">==</span></code> instead of <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">equal_to</span></code>/<code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span></code>.
+                </li>
+</ul></div>
+          </li>
+<li class="listitem">
+            Fixed bugs:
+            <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem">
+                  <a href="https://github.com/boostorg/intrusive/issues/54" target="_top">GitHub
+                  #54: <span class="emphasis"><em>set.rbegin() looks like O(log(N))</em></span></a>
+                </li></ul></div>
+          </li>
+</ul></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="intrusive.release_notes.release_notes_boost_1_75_00"></a><a class="link" href="release_notes.html#intrusive.release_notes.release_notes_boost_1_75_00" title="Boost 1.75 Release">Boost
+      1.75 Release</a>
+</h3></div></div></div>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+            Fixed bugs:
+            <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; ">
+<li class="listitem">
+                  <a href="https://github.com/boostorg/intrusive/pull/48" target="_top">GitHub
+                  #48: <span class="emphasis"><em>MSVC "assignment within conditional" warning
+                  fix</em></span></a>
+                </li>
+<li class="listitem">
+                  <a href="https://github.com/boostorg/intrusive/pull/49" target="_top">GitHub
+                  #49: <span class="emphasis"><em>Fix empty control statement warnings</em></span></a>
+                </li>
+<li class="listitem">
+                  <a href="https://github.com/boostorg/intrusive/issues/52" target="_top">GitHub
+                  #52: <span class="emphasis"><em>Invalid casting in BOOST_INTRUSIVE_BSR_INTRINSIC</em></span></a>
+                </li>
+</ul></div>
+          </li></ul></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="intrusive.release_notes.release_notes_boost_1_73_00"></a><a class="link" href="release_notes.html#intrusive.release_notes.release_notes_boost_1_73_00" title="Boost 1.73 Release">Boost
+      1.73 Release</a>
+</h3></div></div></div>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+            Fixed bugs:
+            <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem">
+                  <a href="https://github.com/boostorg/intrusive/issues/46" target="_top">GitHub
+                  #46: <span class="emphasis"><em>UB due to union based type punning</em></span></a>
+                </li></ul></div>
+          </li></ul></div>
+</div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="intrusive.release_notes.release_notes_boost_1_71_00"></a><a class="link" href="release_notes.html#intrusive.release_notes.release_notes_boost_1_71_00" title="Boost 1.71 Release">Boost
@@ -758,7 +869,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2005 Olaf Krzikalla<br>Copyright &#169; 2006-2015 Ion Gaztanaga<p>
+<td align="right"><div class="copyright-footer">Copyright © 2005 Olaf Krzikalla<br>Copyright © 2006-2015 Ion Gaztanaga<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

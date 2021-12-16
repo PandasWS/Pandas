@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>basic_socket_acceptor::async_accept (3 of 8 overloads)</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -31,9 +31,9 @@
             Start an asynchronous accept.
           </p>
 <pre class="programlisting">template&lt;
-    typename <a class="link" href="../../MoveAcceptHandler.html" title="Move accept handler requirements">MoveAcceptHandler</a>&gt;
+    typename <a class="link" href="../../MoveAcceptHandler.html" title="Move accept handler requirements">MoveAcceptHandler</a> = <a class="link" href="../../asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>&gt;
 <a class="link" href="../../asynchronous_operations.html#boost_asio.reference.asynchronous_operations.automatic_deduction_of_initiating_function_return_type"><span class="emphasis"><em>DEDUCED</em></span></a> async_accept(
-    MoveAcceptHandler &amp;&amp; handler);
+    MoveAcceptHandler &amp;&amp; handler = <a class="link" href="../../asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>);
 </pre>
 <p>
             This function is used to asynchronously accept a new connection. The
@@ -58,8 +58,11 @@
                   of the handler must be:
 </p>
 <pre class="programlisting">void handler(
-  const boost::system::error_code&amp; error, // Result of operation.
-  typename Protocol::socket peer // On success, the newly accepted socket.
+  // Result of operation.
+  const boost::system::error_code&amp; error,
+  // On success, the newly accepted socket.
+  typename Protocol::socket::template
+    rebind_executor&lt;executor_type&gt;::other peer
 );
 </pre>
 <p>
@@ -90,10 +93,32 @@ boost::asio::ip::tcp::acceptor acceptor(my_context);
 ...
 acceptor.async_accept(accept_handler);
 </pre>
+<h6>
+<a name="boost_asio.reference.basic_socket_acceptor.async_accept.overload3.h2"></a>
+            <span class="phrase"><a name="boost_asio.reference.basic_socket_acceptor.async_accept.overload3.per_operation_cancellation"></a></span><a class="link" href="overload3.html#boost_asio.reference.basic_socket_acceptor.async_accept.overload3.per_operation_cancellation">Per-Operation
+            Cancellation</a>
+          </h6>
+<p>
+            On POSIX or Windows operating systems, this asynchronous operation supports
+            cancellation for the following <a class="link" href="../../cancellation_type.html" title="cancellation_type"><code class="computeroutput">cancellation_type</code></a>
+            values:
+          </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+                <code class="computeroutput">cancellation_type::terminal</code>
+              </li>
+<li class="listitem">
+                <code class="computeroutput">cancellation_type::partial</code>
+              </li>
+<li class="listitem">
+                <code class="computeroutput">cancellation_type::total</code>
+              </li>
+</ul></div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

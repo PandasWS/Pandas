@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Hypergeometric Distribution</title>
 <link rel="stylesheet" href="../../../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Math Toolkit 2.10.0">
+<link rel="home" href="../../../index.html" title="Math Toolkit 3.1.0">
 <link rel="up" href="../dists.html" title="Distributions">
 <link rel="prev" href="hyperexponential_dist.html" title="Hyperexponential Distribution">
 <link rel="next" href="inverse_chi_squared_dist.html" title="Inverse Chi Squared Distribution">
@@ -31,7 +31,7 @@
 <pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span> <span class="special">=</span> <span class="keyword">double</span><span class="special">,</span>
-          <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter&#160;19.&#160;Policies: Controlling Precision, Error Handling etc">Policy</a>   <span class="special">=</span> <a class="link" href="../../pol_ref/pol_ref_ref.html" title="Policy Class Reference">policies::policy&lt;&gt;</a> <span class="special">&gt;</span>
+          <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter 21. Policies: Controlling Precision, Error Handling etc">Policy</a>   <span class="special">=</span> <a class="link" href="../../pol_ref/pol_ref_ref.html" title="Policy Class Reference">policies::policy&lt;&gt;</a> <span class="special">&gt;</span>
 <span class="keyword">class</span> <span class="identifier">hypergeometric_distribution</span><span class="special">;</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">Policy</span><span class="special">&gt;</span>
@@ -41,7 +41,7 @@
    <span class="keyword">typedef</span> <span class="identifier">RealType</span> <span class="identifier">value_type</span><span class="special">;</span>
    <span class="keyword">typedef</span> <span class="identifier">Policy</span>   <span class="identifier">policy_type</span><span class="special">;</span>
    <span class="comment">// Construct:</span>
-   <span class="identifier">hypergeometric_distribution</span><span class="special">(</span><span class="keyword">unsigned</span> <span class="identifier">r</span><span class="special">,</span> <span class="keyword">unsigned</span> <span class="identifier">n</span><span class="special">,</span> <span class="keyword">unsigned</span> <span class="identifier">N</span><span class="special">);</span>
+   <span class="identifier">hypergeometric_distribution</span><span class="special">(</span><span class="keyword">unsigned</span> <span class="identifier">r</span><span class="special">,</span> <span class="keyword">unsigned</span> <span class="identifier">n</span><span class="special">,</span> <span class="keyword">unsigned</span> <span class="identifier">N</span><span class="special">);</span> <span class="comment">// r=defective/failures/success, n=trials/draws, N=total population.</span>
    <span class="comment">// Accessors:</span>
    <span class="keyword">unsigned</span> <span class="identifier">total</span><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
    <span class="keyword">unsigned</span> <span class="identifier">defective</span><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
@@ -85,18 +85,20 @@
           of "defective" items changes, while keeping the population and
           sample sizes constant:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/hypergeometric_pdf_1.svg" align="middle"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../graphs/hypergeometric_pdf_1.svg" align="middle"></span>
+
+          </p></blockquote></div>
 <p>
           Note that since the distribution is symmetrical in parameters <span class="emphasis"><em>n</em></span>
           and <span class="emphasis"><em>r</em></span>, if we change the sample size and keep the population
           and proportion "defective" the same then we obtain basically
           the same graphs:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/hypergeometric_pdf_2.svg" align="middle"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../graphs/hypergeometric_pdf_2.svg" align="middle"></span>
+
+          </p></blockquote></div>
 <h5>
 <a name="math_toolkit.dist_ref.dists.hypergeometric_dist.h0"></a>
           <span class="phrase"><a name="math_toolkit.dist_ref.dists.hypergeometric_dist.member_functions"></a></span><a class="link" href="hypergeometric_dist.html#math_toolkit.dist_ref.dists.hypergeometric_dist.member_functions">Member
@@ -126,6 +128,18 @@
           Returns the number of objects <span class="emphasis"><em>n</em></span> which are sampled
           from the population <span class="emphasis"><em>N</em></span>.
         </p>
+<div class="warning"><table border="0" summary="Warning">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="../../../../../../../doc/src/images/warning.png"></td>
+<th align="left">Warning</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+            Both naming/symbol and order of parameters is confusing with no two implementations
+            the same! See Wolfram Mathematica <a href="https://mathworld.wolfram.com/HypergeometricDistribution.html" target="_top">Hypergeometric
+            Distribution</a> and Wikipedia <a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution" target="_top">Hypergeometric
+            Distribution</a> and Python <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.hypergeom.html#scipy.stats.hypergeom" target="_top">scipy.stats.hypergeom</a>.
+          </p></td></tr>
+</table></div>
 <h5>
 <a name="math_toolkit.dist_ref.dists.hypergeometric_dist.h1"></a>
           <span class="phrase"><a name="math_toolkit.dist_ref.dists.hypergeometric_dist.non_member_accessors"></a></span><a class="link" href="hypergeometric_dist.html#math_toolkit.dist_ref.dists.hypergeometric_dist.non_member_accessors">Non-member
@@ -175,7 +189,7 @@
           </p>
 <p>
             However, note that the implementation method of the quantile function
-            always returns an integral value, therefore attempting to use a <a class="link" href="../../../policy.html" title="Chapter&#160;19.&#160;Policies: Controlling Precision, Error Handling etc">Policy</a> that requires (or produces) a real valued
+            always returns an integral value, therefore attempting to use a <a class="link" href="../../../policy.html" title="Chapter 21. Policies: Controlling Precision, Error Handling etc">Policy</a> that requires (or produces) a real valued
             result will result in a compile time error.
           </p>
 </td></tr>
@@ -216,7 +230,10 @@
           We also sanity check our implementation against some spot values computed
           using the online calculator here <a href="http://stattrek.com/Tables/Hypergeometric.aspx" target="_top">http://stattrek.com/Tables/Hypergeometric.aspx</a>.
           Finally we test accuracy against some high precision test data using this
-          implementation and NTL::RR.
+          implementation and NTL::RR. Spot test values for moments (mean to kurtosis)
+          are from Mathematica <a href="https://mathworld.wolfram.com/HypergeometricDistribution.html" target="_top">Hypergeometric
+          Distribution</a> and agree with an implementation of Wikipedia <a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution" target="_top">Hypergeometric
+          Distribution</a> and Python <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.hypergeom.html#scipy.stats.hypergeom" target="_top">scipy.stats.hypergeom</a>.
         </p>
 <h5>
 <a name="math_toolkit.dist_ref.dists.hypergeometric_dist.h4"></a>
@@ -225,9 +242,10 @@
 <p>
           The PDF can be calculated directly using the formula:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric1.svg"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric1.svg"></span>
+
+          </p></blockquote></div>
 <p>
           However, this can only be used directly when the largest of the factorials
           is guaranteed not to overflow the floating point representation used. This
@@ -243,23 +261,26 @@
           Pages 33-43 is used. The method relies on the fact that there is an easy
           method for factorising a factorial into the product of prime numbers:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric2.svg"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric2.svg"></span>
+
+          </p></blockquote></div>
 <p>
           Where p<sub>i</sub> is the i'th prime number, and e<sub>i</sub> is a small positive integer or
           zero, which can be calculated via:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric3.svg"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric3.svg"></span>
+
+          </p></blockquote></div>
 <p>
           Further we can combine the factorials in the expression for the PDF to
           yield the PDF directly as the product of prime numbers:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric4.svg"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric4.svg"></span>
+
+          </p></blockquote></div>
 <p>
           With this time the exponents e<sub>i</sub> being either positive, negative or zero.
           Indeed such a degree of cancellation occurs in the calculation of the e<sub>i</sub> that
@@ -293,15 +314,16 @@
           log<sub>10</sub>N decimal digits during the calculation in the worst case.
         </p>
 <p>
-          The CDF and its complement is calculated by directly summing the PDF's.
+          The CDF and its complement is calculated by directly summing the PDFs.
           We start by deciding whether the CDF, or its complement, is likely to be
           the smaller of the two and then calculate the PDF at <span class="emphasis"><em>k</em></span>
           (or <span class="emphasis"><em>k+1</em></span> if we're calculating the complement) and calculate
           successive PDF values via the recurrence relations:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric5.svg"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric5.svg"></span>
+
+          </p></blockquote></div>
 <p>
           Until we either reach the end of the distributions domain, or the next
           PDF value to be summed would be too small to affect the result.
@@ -316,17 +338,18 @@
           The median is simply the quantile at 0.5, and the remaining properties
           are calculated via:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric6.svg"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../equations/hypergeometric6.svg"></span>
+
+          </p></blockquote></div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

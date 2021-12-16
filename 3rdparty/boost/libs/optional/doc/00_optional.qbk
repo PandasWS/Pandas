@@ -2,7 +2,7 @@
     [quickbook 1.4]
     [authors [Cacciola Carballal, Fernando Luis]]
     [copyright 2003-2007 Fernando Luis Cacciola Carballal]
-    [copyright 2014-2018 Andrzej Krzemie&#324;ski]
+    [copyright 2014-2021 Andrzej Krzemie&#324;ski]
     [category miscellaneous]
     [id optional]
     [dirname optional]
@@ -61,7 +61,7 @@ Suppose we want to read a parameter form a config file which represents some int
 This is how you solve it with `boost::optional`:
 
     #include <boost/optional.hpp>
-    
+
     boost::optional<int> getConfigParam(std::string name);  // return either an int or a `not-an-int`
 
     int main()
@@ -71,7 +71,7 @@ This is how you solve it with `boost::optional`:
       else
         runWithNoMax();
     }
- 
+
 [endsect]
 
 [include 01_quick_start.qbk]
@@ -102,5 +102,3 @@ This is how you solve it with `boost::optional`:
 [include 90_dependencies.qbk]
 [include 91_relnotes.qbk]
 [include 92_acknowledgments.qbk]
-
-

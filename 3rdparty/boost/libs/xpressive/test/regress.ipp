@@ -376,7 +376,7 @@ void run_test_impl(xpr_test_case<Char> const &test)
 //   run the current test
 void run_test()
 {
-    #ifdef BOOST_XPRESSIVE_TEST_WREGEX
+    #if defined(BOOST_XPRESSIVE_TEST_WREGEX) && !defined(BOOST_XPRESSIVE_NO_WREGEX)
     xpr_test_case<wchar_t> wtest = ::widen(test);
     run_test_impl(wtest);
     #else

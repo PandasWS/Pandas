@@ -192,8 +192,8 @@ void test()
    reset_counters();
    {
       bml::unique_ptr<A[]> p(bml::make_unique<A[]>(10));
-      BOOST_TEST(A::count == 10);
-      for(int i = 0; i != 10; ++i){
+      BOOST_TEST(A::count == 10u);
+      for(std::size_t i = 0; i != 10u; ++i){
          BOOST_TEST(p[i].a == 999);
          BOOST_TEST(p[i].b == 1000);
          BOOST_TEST(p[i].c == 1001);
@@ -202,8 +202,8 @@ void test()
    BOOST_TEST(A::count == 0);
    {
       bml::unique_ptr<A[]> p(bml::make_unique_nothrow<A[]>(10));
-      BOOST_TEST(A::count == 10);
-      for(int i = 0; i != 10; ++i){
+      BOOST_TEST(A::count == 10u);
+      for(std::size_t i = 0; i != 10u; ++i){
          BOOST_TEST(p[i].a == 999);
          BOOST_TEST(p[i].b == 1000);
          BOOST_TEST(p[i].c == 1001);
@@ -213,14 +213,14 @@ void test()
    reset_counters();
    {
       bml::unique_ptr<default_init[]> p(bml::make_unique_definit<default_init[]>(10));
-      for(unsigned i = 0; i != 10; ++i){
+      for(std::size_t i = 0; i != 10u; ++i){
          BOOST_TEST(0 == volatile_memcmp(&p[i], ee_patternbuf, sizeof(ee_patternbuf)));
       }
    }
    reset_counters();
    {
       bml::unique_ptr<default_init[]> p(bml::make_unique_nothrow_definit<default_init[]>(10));
-      for(unsigned i = 0; i != 10; ++i){
+      for(std::size_t i = 0; i != 10u; ++i){
          BOOST_TEST(0 == volatile_memcmp(&p[i], cc_patternbuf, sizeof(cc_patternbuf)));
       }
    }

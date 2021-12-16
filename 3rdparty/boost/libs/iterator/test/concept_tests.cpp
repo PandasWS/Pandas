@@ -71,7 +71,7 @@ main()
   boost::iterator_traversal<new_iterator>::type tc;
   boost::random_access_traversal_tag derived = tc;
   (void)derived;
-  
+
   boost::function_requires<
     boost_concepts::WritableIteratorConcept<int*> >();
   boost::function_requires<

@@ -22,7 +22,7 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/tracking.hpp>
 
-#include <fstream>
+#include <sstream>
 
 namespace msm = boost::msm;
 namespace mpl = boost::mpl;
@@ -232,7 +232,7 @@ namespace
         BOOST_CHECK_MESSAGE(p.get_state<player_::Open&>().entry_counter == 1,"Open entry not called correctly");
 
         // test the serialization
-        std::ofstream ofs("fsm.txt");
+        std::ostringstream ofs;
         // save fsm to archive (current state is Open)
         {
             boost::archive::text_oarchive oa(ofs);
@@ -243,7 +243,7 @@ namespace
         player p2;
         {
             // create and open an archive for input
-            std::ifstream ifs("fsm.txt");
+            std::istringstream ifs(ofs.str());
             boost::archive::text_iarchive ia(ifs);
             // read class state from archive
             ia >> p2;

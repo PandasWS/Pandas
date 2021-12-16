@@ -8,7 +8,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 #include <boost/interprocess/sync/interprocess_condition.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
@@ -26,7 +25,7 @@ using namespace boost::interprocess;
 int main ()
 {
    #if defined(BOOST_INTERPROCESS_WINDOWS)
-      if(!test::do_test_condition<ipcdetail::windows_condition, ipcdetail::windows_mutex>())
+      if(!test::do_test_condition<ipcdetail::winapi_condition, ipcdetail::winapi_mutex>())
          return 1;
       if(!test::do_test_condition<ipcdetail::spin_condition, ipcdetail::spin_mutex>())
          return 1;
@@ -36,5 +35,3 @@ int main ()
 
    return 0;
 }
-
-#include <boost/interprocess/detail/config_end.hpp>

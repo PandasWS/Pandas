@@ -15,7 +15,7 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 
-#include "boost/test/minimal.hpp"
+#include <boost/core/lightweight_test.hpp>
 
 #  if SCHAR_MAX == LONG_MAX
 #      error "This test program doesn't work if SCHAR_MAX == LONG_MAX"
@@ -24,7 +24,7 @@
 using namespace boost;
 using std::cout;
 
-int test_main( int argc, char * argv[] )
+int main()
 {
 
 #   ifdef NDEBUG
@@ -47,51 +47,34 @@ int test_main( int argc, char * argv[] )
     c = large_value;  // see if compiler generates warning
 
     c = numeric_cast<signed char>( small_value );
-    BOOST_CHECK( c == 1 );
+    BOOST_TEST( c == 1 );
     c = 0;
     c = numeric_cast<signed char>( small_value );
-    BOOST_CHECK( c == 1 );
+    BOOST_TEST( c == 1 );
     c = 0;
     c = numeric_cast<signed char>( small_negative_value );
-    BOOST_CHECK( c == -1 );
+    BOOST_TEST( c == -1 );
 
     // These tests courtesy of Joe R NWP Swatosh<joe.r.swatosh@usace.army.mil>
-    BOOST_CHECK( 0.0f == numeric_cast<float>( 0.0 ) );
-    BOOST_CHECK( 0.0 == numeric_cast<double>( 0.0 ) );
+    BOOST_TEST( 0.0f == numeric_cast<float>( 0.0 ) );
+    BOOST_TEST( 0.0 == numeric_cast<double>( 0.0 ) );
 
     //  tests which should result in errors being detected
 
-    bool caught_exception = false;
-    try { c = numeric_cast<signed char>( large_value ); }
-    catch ( numeric::bad_numeric_cast )
-        { cout<<"caught bad_numeric_cast #1\n"; caught_exception = true; }
-    BOOST_CHECK ( caught_exception );
+    BOOST_TEST_THROWS( numeric_cast<signed char>(large_value),
+        numeric::bad_numeric_cast );
 
-    caught_exception = false;
-    try { c = numeric_cast<signed char>( large_negative_value ); }
-    catch ( numeric::bad_numeric_cast )
-        { cout<<"caught bad_numeric_cast #2\n"; caught_exception = true; }
-    BOOST_CHECK ( caught_exception );
+    BOOST_TEST_THROWS( numeric_cast<signed char>(large_negative_value),
+        numeric::bad_numeric_cast );
 
-    unsigned long ul;
-    caught_exception = false;
-    try { ul = numeric_cast<unsigned long>( large_negative_value ); }
-    catch ( numeric::bad_numeric_cast )
-        { cout<<"caught bad_numeric_cast #3\n"; caught_exception = true; }
-    BOOST_CHECK ( caught_exception );
+    BOOST_TEST_THROWS( numeric_cast<signed char>(large_negative_value),
+        numeric::bad_numeric_cast );
 
-    caught_exception = false;
-    try { ul = numeric_cast<unsigned long>( small_negative_value ); }
-    catch ( numeric::bad_numeric_cast )
-        { cout<<"caught bad_numeric_cast #4\n"; caught_exception = true; }
-    BOOST_CHECK ( caught_exception );
+    BOOST_TEST_THROWS( numeric_cast<unsigned long>(small_negative_value),
+        numeric::bad_numeric_cast );
 
-    caught_exception = false;
-    try { numeric_cast<int>( DBL_MAX ); }
-    catch ( numeric::bad_numeric_cast )
-        { cout<<"caught bad_numeric_cast #5\n"; caught_exception = true; }
-    BOOST_CHECK ( caught_exception );
+    BOOST_TEST_THROWS( numeric_cast<int>(DBL_MAX), numeric::bad_numeric_cast );
 
-    return 0 ;
+    return boost::report_errors() ;
 
 }   // main

@@ -8,7 +8,7 @@
 
 //  VC++ 8.0 warns on usage of certain Standard Library and API functions that
 //  can be cause buffer overruns or other possible security issues if misused.
-//  See http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
+//  See https://web.archive.org/web/20071014014301/http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
 //  But the wording of the warning is misleading and unsettling, there are no
 //  portable alternative functions, and VC++ 8.0's own libraries use the
 //  functions in question. So turn off the warnings.
@@ -17,8 +17,7 @@
 
 #include <boost/config.hpp>
 
-// Boost.Test
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 // Boost.MPL
 #include <boost/mpl/list.hpp>
@@ -77,27 +76,27 @@ void test_mutant_basic()
     {
         MutantData m(value_a,value_b);
 
-        BOOST_CHECK( sizeof( MutantData ) == sizeof( StdPairView ) );
+        BOOST_TEST( sizeof( MutantData ) == sizeof( StdPairView ) );
 
-        BOOST_CHECK( mutate<StdPairView>(m).first  == value_a );
-        BOOST_CHECK( mutate<StdPairView>(m).second == value_b );
-        BOOST_CHECK( mutate<ReverseStdPairView>(m).first  == value_b );
-        BOOST_CHECK( mutate<ReverseStdPairView>(m).second == value_a );
+        BOOST_TEST( mutate<StdPairView>(m).first  == value_a );
+        BOOST_TEST( mutate<StdPairView>(m).second == value_b );
+        BOOST_TEST( mutate<ReverseStdPairView>(m).first  == value_b );
+        BOOST_TEST( mutate<ReverseStdPairView>(m).second == value_a );
 
         ReverseStdPairView & rpair = mutate<ReverseStdPairView>(m);
         rpair.first = value_b;
         rpair.second = value_a;
 
-        BOOST_CHECK( mutate<StdPairView>(m).first  == value_a );
-        BOOST_CHECK( mutate<StdPairView>(m).second == value_b );
+        BOOST_TEST( mutate<StdPairView>(m).first  == value_a );
+        BOOST_TEST( mutate<StdPairView>(m).second == value_b );
 
-        BOOST_CHECK( &mutate<StdPairView>(m).first  == &m.a );
-        BOOST_CHECK( &mutate<StdPairView>(m).second == &m.b );
+        BOOST_TEST( &mutate<StdPairView>(m).first  == &m.a );
+        BOOST_TEST( &mutate<StdPairView>(m).second == &m.b );
     }
 }
 
-int test_main( int, char* [] )
+int main()
 {
     test_mutant_basic();
-    return 0;
+    return boost::report_errors();
 }

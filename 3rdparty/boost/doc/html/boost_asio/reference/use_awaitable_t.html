@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>use_awaitable_t</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../../boost_asio.html" title="Boost.Asio">
 <link rel="up" href="../reference.html" title="Reference">
 <link rel="prev" href="use_awaitable.html" title="use_awaitable">
-<link rel="next" href="use_awaitable_t/use_awaitable_t.html" title="use_awaitable_t::use_awaitable_t">
+<link rel="next" href="use_awaitable_t/as_default_on.html" title="use_awaitable_t::as_default_on">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,22 +20,25 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="use_awaitable.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="use_awaitable_t/use_awaitable_t.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="use_awaitable.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="use_awaitable_t/as_default_on.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.use_awaitable_t"></a><a class="link" href="use_awaitable_t.html" title="use_awaitable_t">use_awaitable_t</a>
 </h3></div></div></div>
 <p>
+        <a class="indexterm" name="boost_asio.indexterm.use_awaitable_t"></a>
+      </p>
+<p>
         A completion token that represents the currently executing coroutine.
       </p>
 <pre class="programlisting">template&lt;
-    typename <a class="link" href="Executor1.html" title="Executor requirements">Executor</a> = executor&gt;
+    typename <a class="link" href="Executor1.html" title="Executor requirements">Executor</a> = any_io_executor&gt;
 struct use_awaitable_t
 </pre>
 <h5>
 <a name="boost_asio.reference.use_awaitable_t.h0"></a>
-        <span class="phrase"><a name="boost_asio.reference.use_awaitable_t.member_functions"></a></span><a class="link" href="use_awaitable_t.html#boost_asio.reference.use_awaitable_t.member_functions">Member Functions</a>
+        <span class="phrase"><a name="boost_asio.reference.use_awaitable_t.types"></a></span><a class="link" href="use_awaitable_t.html#boost_asio.reference.use_awaitable_t.types">Types</a>
       </h5>
 <div class="informaltable"><table class="table">
 <colgroup>
@@ -57,12 +60,66 @@ struct use_awaitable_t
 <tbody><tr>
 <td>
                 <p>
-                  <a class="link" href="use_awaitable_t/use_awaitable_t.html" title="use_awaitable_t::use_awaitable_t"><span class="bold"><strong>use_awaitable_t</strong></span></a>
+                  <a class="link" href="use_awaitable_t__executor_with_default.html" title="use_awaitable_t::executor_with_default"><span class="bold"><strong>executor_with_default</strong></span></a>
                 </p>
               </td>
 <td>
+                <p>
+                  Adapts an executor to add the use_awaitable_t completion token
+                  as the default.
+                </p>
               </td>
 </tr></tbody>
+</table></div>
+<h5>
+<a name="boost_asio.reference.use_awaitable_t.h1"></a>
+        <span class="phrase"><a name="boost_asio.reference.use_awaitable_t.member_functions"></a></span><a class="link" href="use_awaitable_t.html#boost_asio.reference.use_awaitable_t.member_functions">Member Functions</a>
+      </h5>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Name
+                </p>
+              </th>
+<th>
+                <p>
+                  Description
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="use_awaitable_t/as_default_on.html" title="use_awaitable_t::as_default_on"><span class="bold"><strong>as_default_on</strong></span></a> <span class="silver">[static]</span>
+                </p>
+              </td>
+<td>
+                <p>
+                  Function helper to adapt an I/O object to use use_awaitable_t as
+                  its default completion token type.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="use_awaitable_t/use_awaitable_t.html" title="use_awaitable_t::use_awaitable_t"><span class="bold"><strong>use_awaitable_t</strong></span></a> <span class="silver">[constructor]</span>
+                </p>
+              </td>
+<td>
+                <p>
+                  Default constructor. <br> <span class="silver"> —</span><br> Constructor used to specify
+                  file name, line, and function name.
+                </p>
+              </td>
+</tr>
+</tbody>
 </table></div>
 <p>
         The <code class="computeroutput">use_awaitable_t</code> class, with its value <code class="computeroutput">use_awaitable</code>,
@@ -82,7 +139,7 @@ struct use_awaitable_t
         is returned.
       </p>
 <h5>
-<a name="boost_asio.reference.use_awaitable_t.h1"></a>
+<a name="boost_asio.reference.use_awaitable_t.h2"></a>
         <span class="phrase"><a name="boost_asio.reference.use_awaitable_t.requirements"></a></span><a class="link" href="use_awaitable_t.html#boost_asio.reference.use_awaitable_t.requirements">Requirements</a>
       </h5>
 <p>
@@ -94,7 +151,8 @@ struct use_awaitable_t
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>
@@ -102,7 +160,7 @@ struct use_awaitable_t
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="use_awaitable.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="use_awaitable_t/use_awaitable_t.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="use_awaitable.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="use_awaitable_t/as_default_on.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

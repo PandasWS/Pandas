@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Concept ForwardIterator</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -29,7 +29,7 @@
 <p>ForwardIterator</p>
 </div>
 <div class="refsect1">
-<a name="idm46002291865712"></a><h2>Description</h2>
+<a name="idm544"></a><h2>Description</h2>
 <p>A forward iterator is an iterator that can read through a sequence of
   values.  It is multi-pass (old values of the iterator can be
   re-used), and can be either mutable (data pointed to by it can be
@@ -40,14 +40,14 @@
   incrementable).</p>
 </div>
 <div class="refsect1">
-<a name="idm46002291863936"></a><h2>Refinement of</h2>
+<a name="idm548"></a><h2>Refinement of</h2>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem"><p><a class="link" href="InputIterator.html" title="Concept InputIterator">InputIterator</a></p></li>
 <li class="listitem"><p><a class="link" href="OutputIterator.html" title="Concept OutputIterator">OutputIterator</a></p></li>
 </ul></div>
 </div>
 <div class="refsect1">
-<a name="idm46002291861920"></a><h2>Associated types</h2>
+<a name="idm557"></a><h2>Associated types</h2>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
 <p><span class="bold"><strong>value_type</strong></span></p>
@@ -62,7 +62,7 @@
 </ul></div>
 </div>
 <div class="refsect1">
-<a name="idm46002291857776"></a><h2>Notation</h2>
+<a name="idm570"></a><h2>Notation</h2>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term">Iter</span></dt>
 <dd>A type playing the role of iterator-type in the <a class="link" href="ForwardIterator.html" title="Concept ForwardIterator">ForwardIterator</a> concept.</dd>
@@ -75,7 +75,7 @@
 </dl></div>
 </div>
 <div class="refsect1">
-<a name="idm46002291853696"></a><h2>Type expressions</h2>
+<a name="idm590"></a><h2>Type expressions</h2>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term">Category tag</span></dt>
 <dd><p><span class="type">category</span> must be
@@ -84,7 +84,7 @@
 </dl></div>
 </div>
 <div class="refsect1">
-<a name="idm46002291851776"></a><h2>Valid expressions</h2>
+<a name="idm599"></a><h2>Valid expressions</h2>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col>
@@ -109,8 +109,8 @@
 <td><p><span class="type">const-if-not-mutable value_type &amp;</span></p></td>
 <td><p><code class="computeroutput">i</code> is incrementable (not
     off-the-end)</p></td>
-<td>&#160;</td>
-<td>&#160;</td>
+<td> </td>
+<td> </td>
 </tr>
 <tr>
 <td><p>Member access</p></td>
@@ -118,8 +118,8 @@
 <td><p><span class="type">const-if-not-mutable value_type *</span></p></td>
 <td><p><code class="computeroutput">i</code> is incrementable (not
     off-the-end)</p></td>
-<td>&#160;</td>
-<td>&#160;</td>
+<td> </td>
+<td> </td>
 </tr>
 <tr>
 <td><p>Preincrement</p></td>
@@ -127,8 +127,8 @@
 <td><p><span class="type">Iter &amp;</span></p></td>
 <td><p><code class="computeroutput">i</code> is incrementable (not
     off-the-end)</p></td>
-<td>&#160;</td>
-<td>&#160;</td>
+<td> </td>
+<td> </td>
 </tr>
 <tr>
 <td><p>Postincrement</p></td>
@@ -144,13 +144,13 @@
 </table></div>
 </div>
 <div class="refsect1">
-<a name="idm46002291837152"></a><h2>Complexity</h2>
+<a name="idm668"></a><h2>Complexity</h2>
 <p>
   All iterator operations must take amortized constant time.
   </p>
 </div>
 <div class="refsect1">
-<a name="idm46002291836512"></a><h2>Invariants</h2>
+<a name="idm671"></a><h2>Invariants</h2>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term">Predecrement must return object</span></dt>
 <dd><p>
@@ -163,20 +163,20 @@
 </dl></div>
 </div>
 <div class="refsect1">
-<a name="idm46002291832592"></a><h2>Models</h2>
+<a name="idm685"></a><h2>Models</h2>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem"><span class="simplelist"><span class="type">T *</span></span></li>
 <li class="listitem"><span class="simplelist"><span class="type">std::hash_set&lt;T&gt;::iterator</span></span></li>
 </ul></div>
 </div>
 <div class="refsect1">
-<a name="idm46002291830320"></a><h2>See also</h2>
+<a name="idm696"></a><h2>See also</h2>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a class="link" href="BidirectionalIterator.html" title="Concept BidirectionalIterator">BidirectionalIterator</a></p></li></ul></div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001, 2002 Indiana University<br>Copyright &#169; 2000, 2001 University of Notre Dame du Lac<br>Copyright &#169; 2000 Jeremy Siek, Lie-Quan Lee, Andrew Lumsdaine<br>Copyright &#169; 1996-1999 Silicon Graphics Computer Systems, Inc.<br>Copyright &#169; 1994 Hewlett-Packard Company<p>Distributed under the Boost Software License, Version 1.0.
+<td align="right"><div class="copyright-footer">Copyright © 2001, 2002 Indiana University<br>Copyright © 2000, 2001 University of Notre Dame du Lac<br>Copyright © 2000 Jeremy Siek, Lie-Quan Lee, Andrew Lumsdaine<br>Copyright © 1996-1999 Silicon Graphics Computer Systems, Inc.<br>Copyright © 1994 Hewlett-Packard Company<p>Distributed under the Boost Software License, Version 1.0.
       (See accompanying file <code class="filename">LICENSE_1_0.txt</code> or copy at 
       <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

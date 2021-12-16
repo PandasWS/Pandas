@@ -12,5 +12,6 @@
     "maintainers": [
         "Neil Groves <neilgroves -at- googlemail.com>",
         "Nathan Ridge <zeratul976 -at- hotmail.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

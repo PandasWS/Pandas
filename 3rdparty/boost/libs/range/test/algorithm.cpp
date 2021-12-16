@@ -35,9 +35,8 @@
 #endif
 
 #include <boost/assign.hpp>
-#include <boost/config.hpp>    
+#include <boost/config.hpp>
 #include <boost/array.hpp>
-#include <boost/bind.hpp>
 #include <boost/range/numeric.hpp>
 #include <boost/range/algorithm.hpp>
 #include <boost/range/value_type.hpp>

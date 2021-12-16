@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>make_work_guard</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -35,22 +35,24 @@ Create an <a class="link" href="executor_work_guard.html" title="executor_work_g
     typename <a class="link" href="Executor1.html" title="Executor requirements">Executor</a>&gt;
 executor_work_guard&lt; Executor &gt; <a class="link" href="make_work_guard/overload1.html" title="make_work_guard (1 of 5 overloads)">make_work_guard</a>(
     const Executor &amp; ex,
-    typename enable_if&lt; is_executor&lt; Executor &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="make_work_guard/overload1.html" title="make_work_guard (1 of 5 overloads)">more...</a></em></span>
+    typename constraint&lt; is_executor&lt; Executor &gt;::value||execution::is_executor&lt; Executor &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="make_work_guard/overload1.html" title="make_work_guard (1 of 5 overloads)">more...</a></em></span>
 
 template&lt;
     typename ExecutionContext&gt;
 executor_work_guard&lt; typename ExecutionContext::executor_type &gt; <a class="link" href="make_work_guard/overload2.html" title="make_work_guard (2 of 5 overloads)">make_work_guard</a>(
     ExecutionContext &amp; ctx,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="make_work_guard/overload2.html" title="make_work_guard (2 of 5 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="make_work_guard/overload2.html" title="make_work_guard (2 of 5 overloads)">more...</a></em></span>
 
 template&lt;
     typename T&gt;
 executor_work_guard&lt; typename associated_executor&lt; T &gt;::type &gt; <a class="link" href="make_work_guard/overload3.html" title="make_work_guard (3 of 5 overloads)">make_work_guard</a>(
     const T &amp; t,
-    typename enable_if&lt;!is_executor&lt; T &gt;::value &amp;&amp;!is_convertible&lt; T &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="make_work_guard/overload3.html" title="make_work_guard (3 of 5 overloads)">more...</a></em></span>
+    typename constraint&lt; !is_executor&lt; T &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !execution::is_executor&lt; T &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_convertible&lt; T &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="make_work_guard/overload3.html" title="make_work_guard (3 of 5 overloads)">more...</a></em></span>
 
 template&lt;
     typename T,
@@ -58,8 +60,8 @@ template&lt;
 executor_work_guard&lt; typename associated_executor&lt; T, Executor &gt;::type &gt; <a class="link" href="make_work_guard/overload4.html" title="make_work_guard (4 of 5 overloads)">make_work_guard</a>(
     const T &amp; t,
     const Executor &amp; ex,
-    typename enable_if&lt; is_executor&lt; Executor &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="make_work_guard/overload4.html" title="make_work_guard (4 of 5 overloads)">more...</a></em></span>
+    typename constraint&lt; is_executor&lt; Executor &gt;::value||execution::is_executor&lt; Executor &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="make_work_guard/overload4.html" title="make_work_guard (4 of 5 overloads)">more...</a></em></span>
 
 template&lt;
     typename T,
@@ -67,8 +69,11 @@ template&lt;
 executor_work_guard&lt; typename associated_executor&lt; T, typename ExecutionContext::executor_type &gt;::type &gt; <a class="link" href="make_work_guard/overload5.html" title="make_work_guard (5 of 5 overloads)">make_work_guard</a>(
     const T &amp; t,
     ExecutionContext &amp; ctx,
-    typename enable_if&lt;!is_executor&lt; T &gt;::value &amp;&amp;!is_convertible&lt; T &amp;, execution_context &amp; &gt;::value &amp;&amp;is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="make_work_guard/overload5.html" title="make_work_guard (5 of 5 overloads)">more...</a></em></span>
+    typename constraint&lt; !is_executor&lt; T &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !execution::is_executor&lt; T &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_convertible&lt; T &amp;, execution_context &amp; &gt;::value &gt;::type  = 0,
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="make_work_guard/overload5.html" title="make_work_guard (5 of 5 overloads)">more...</a></em></span>
 </pre>
 <h5>
 <a name="boost_asio.reference.make_work_guard.h0"></a>
@@ -83,7 +88,8 @@ executor_work_guard&lt; typename associated_executor&lt; T, typename ExecutionCo
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

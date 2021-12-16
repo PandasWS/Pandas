@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>basic_raw_socket::async_send_to (1 of 2 overloads)</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -32,11 +32,11 @@
           </p>
 <pre class="programlisting">template&lt;
     typename <a class="link" href="../../ConstBufferSequence.html" title="Constant buffer sequence requirements">ConstBufferSequence</a>,
-    typename <a class="link" href="../../WriteHandler.html" title="Write handler requirements">WriteHandler</a>&gt;
+    typename <a class="link" href="../../WriteHandler.html" title="Write handler requirements">WriteHandler</a> = <a class="link" href="../../asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>&gt;
 <a class="link" href="../../asynchronous_operations.html#boost_asio.reference.asynchronous_operations.automatic_deduction_of_initiating_function_return_type"><span class="emphasis"><em>DEDUCED</em></span></a> async_send_to(
     const ConstBufferSequence &amp; buffers,
     const endpoint_type &amp; destination,
-    WriteHandler &amp;&amp; handler);
+    WriteHandler &amp;&amp; handler = <a class="link" href="../../asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>);
 </pre>
 <p>
             This function is used to asynchronously send raw data to the specified
@@ -100,10 +100,32 @@ socket.async_send_to(
             documentation for information on sending multiple buffers in one go,
             and how to use it with arrays, boost::array or std::vector.
           </p>
+<h6>
+<a name="boost_asio.reference.basic_raw_socket.async_send_to.overload1.h2"></a>
+            <span class="phrase"><a name="boost_asio.reference.basic_raw_socket.async_send_to.overload1.per_operation_cancellation"></a></span><a class="link" href="overload1.html#boost_asio.reference.basic_raw_socket.async_send_to.overload1.per_operation_cancellation">Per-Operation
+            Cancellation</a>
+          </h6>
+<p>
+            On POSIX or Windows operating systems, this asynchronous operation supports
+            cancellation for the following <a class="link" href="../../cancellation_type.html" title="cancellation_type"><code class="computeroutput">cancellation_type</code></a>
+            values:
+          </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+                <code class="computeroutput">cancellation_type::terminal</code>
+              </li>
+<li class="listitem">
+                <code class="computeroutput">cancellation_type::partial</code>
+              </li>
+<li class="listitem">
+                <code class="computeroutput">cancellation_type::total</code>
+              </li>
+</ul></div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -18,20 +18,22 @@
 #include <boost/container/vector.hpp>  //boost::container::vector
 
 #include <boost/config.hpp>
+#include <cstdlib>
 
 #include <boost/move/unique_ptr.hpp>
-#include <boost/timer/timer.hpp>
+#include <boost/move/detail/nsec_clock.hpp>
 
 #include "order_type.hpp"
 #include "random_shuffle.hpp"
 
-using boost::timer::cpu_timer;
-using boost::timer::cpu_times;
-using boost::timer::nanosecond_type;
+using boost::move_detail::cpu_timer;
+using boost::move_detail::nanosecond_type;
 
 void print_stats(const char *str, boost::ulong_long_type element_count)
 {
-   std::printf("%sCmp:%8.04f Cpy:%9.04f\n", str, double(order_perf_type::num_compare)/element_count, double(order_perf_type::num_copy)/element_count );
+   std::printf( "%sCmp:%8.04f Cpy:%9.04f\n", str
+              , double(order_perf_type::num_compare)/double(element_count)
+              , double(order_perf_type::num_copy)/double(element_count));
 }
 
 #include <boost/move/algo/adaptive_merge.hpp>
@@ -172,7 +174,7 @@ bool measure_algo(T *elements, std::size_t element_count, std::size_t split_pos,
    nanosecond_type new_clock = timer.elapsed().wall;
 
    //std::cout << "Cmp:" << order_perf_type::num_compare << " Cpy:" << order_perf_type::num_copy;   //for old compilers without ll size argument
-   std::printf("Cmp:%8.04f Cpy:%9.04f", double(order_perf_type::num_compare)/element_count, double(order_perf_type::num_copy)/element_count );
+   std::printf("Cmp:%8.04f Cpy:%9.04f", double(order_perf_type::num_compare)/double(element_count), double(order_perf_type::num_copy)/double(element_count) );
 
    double time = double(new_clock);
 
@@ -255,9 +257,8 @@ bool measure_all(std::size_t L, std::size_t NK)
    elements = original_elements;
    res = res && measure_algo(elements.data(), L, split_pos,StdInplaceMerge, prev_clock);
    //
-
-   if(!res)
-      throw int(0);
+   if (!res)
+      std::abort();
    return res;
 }
 
@@ -267,7 +268,6 @@ bool measure_all(std::size_t L, std::size_t NK)
 
 int main()
 {
-   try{
    #ifndef BENCH_SORT_UNIQUE_VALUES
    measure_all<order_perf_type>(101,1);
    measure_all<order_perf_type>(101,5);
@@ -324,11 +324,6 @@ int main()
    measure_all<order_perf_type>(10000001,0);
    #endif   //#ifndef BENCH_MERGE_SHORT
    #endif   //#ifdef NDEBUG
-   }
-   catch(...)
-   {
-      return 1;
-   }
 
    return 0;
 }

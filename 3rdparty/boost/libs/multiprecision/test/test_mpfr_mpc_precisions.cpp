@@ -9,7 +9,7 @@
 // in ACM TOMS, {VOL 37, ISSUE 4, (February 2011)} (C) ACM, 2011. http://doi.acm.org/10.1145/1916461.1916469
 
 #ifdef _MSC_VER
-#  define _SCL_SECURE_NO_WARNINGS
+#define _SCL_SECURE_NO_WARNINGS
 #endif
 
 #include <boost/detail/lightweight_test.hpp>
@@ -41,7 +41,6 @@ int main()
       b = a;
       BOOST_CHECK_EQUAL(b.precision(), a.precision());
    }
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
    {
       // test assignment from rvalue:
       mpfr_float b(2);
@@ -49,20 +48,17 @@ int main()
       b = make_rvalue_copy(a);
       BOOST_CHECK_EQUAL(b.precision(), a.precision());
    }
-#endif
    mpfr_float::default_precision(20);
    {
       // test construct from lvalue:
       mpfr_float b(a);
       BOOST_CHECK_EQUAL(b.precision(), 100);
    }
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
    {
       // test construct from rvalue:
       mpfr_float b(make_rvalue_copy(a));
       BOOST_CHECK_EQUAL(b.precision(), 100);
    }
-#endif
    mpc_complex::default_precision(100);
    mpc_complex ca("0.1");
    BOOST_CHECK_EQUAL(ca.precision(), 100);
@@ -74,7 +70,6 @@ int main()
       b = ca;
       BOOST_CHECK_EQUAL(b.precision(), ca.precision());
    }
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
    {
       // test assignment from rvalue:
       mpc_complex b(2);
@@ -82,19 +77,16 @@ int main()
       b = make_rvalue_copy(ca);
       BOOST_CHECK_EQUAL(b.precision(), ca.precision());
    }
-#endif
    {
       // test construct from lvalue:
       mpc_complex b(ca);
       BOOST_CHECK_EQUAL(b.precision(), ca.precision());
    }
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
    {
       // test construct from rvalue:
       mpc_complex b(make_rvalue_copy(ca));
       BOOST_CHECK_EQUAL(b.precision(), ca.precision());
    }
-#endif
    // real and imaginary:
    BOOST_CHECK_EQUAL(ca.real().precision(), 100);
    BOOST_CHECK_EQUAL(ca.imag().precision(), 100);
@@ -127,10 +119,10 @@ int main()
       mpc_complex c(ca.backend().data());
       BOOST_CHECK_EQUAL(c.precision(), 100);
       mpc_complex_100 c100(2);
-      mpc_complex d(c100);
+      mpc_complex     d(c100);
       BOOST_CHECK_EQUAL(d.precision(), 100);
       mpfr_float_100 f100(2);
-      mpc_complex e(f100);
+      mpc_complex    e(f100);
       BOOST_CHECK_EQUAL(d.precision(), 100);
    }
    //
@@ -149,7 +141,7 @@ int main()
       mpc_complex c(2, 3, 100);
       BOOST_CHECK_EQUAL(c.precision(), 100);
       mpfr_float_50 x(2), y(3);
-      mpc_complex z(x, y, 100);
+      mpc_complex   z(x, y, 100);
       BOOST_CHECK_EQUAL(c.precision(), 100);
    }
    //
@@ -172,28 +164,27 @@ int main()
       mpc_complex::default_precision(1000);
       mpfr_float::default_precision(1000);
       mpc_complex a("1.324719827394086120398419082734980126734089612309871092830981236748901273498071240986123094861246981263481263489016238947147129807419028748901273409127349087124612576129076541203975704195690418570914657910465091256016501650916509165097164509164509761409561097561097650791650971465097165097162059761209561029756019265019726509126509172650971625097162450971309756104975610274650917825018740981274098127409182375701465172340923847120836540491320467127043127893281461230951097260126309812374091265091824981231236409851274",
-         "-0.80743891267394610982659071452346156102764312401571972642394120395608291471029347812645125986123123904123471209381289471230512983491286102875870192091283712396550981723409812740981263471230498715096104897123094710923879065981740928740981271801391209238470129560941870129387409812883437894183883841283700483832883218128438938184289148239164079329657861209381892037483468937489237419236509823723705612893489712412306531274812364980127304981648712483248732");
+                    "-0.80743891267394610982659071452346156102764312401571972642394120395608291471029347812645125986123123904123471209381289471230512983491286102875870192091283712396550981723409812740981263471230498715096104897123094710923879065981740928740981271801391209238470129560941870129387409812883437894183883841283700483832883218128438938184289148239164079329657861209381892037483468937489237419236509823723705612893489712412306531274812364980127304981648712483248732");
       mpc_complex::default_precision(40);
       mpfr_float::default_precision(40);
       BOOST_CHECK_EQUAL(a, a);
    }
-
 
    //
    // string_view with explicit precision:
    //
 #ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
    {
-      std::string s("222");
+      std::string      s("222");
       std::string_view v(s.c_str(), 1);
-      mpfr_float f(v, 100);
+      mpfr_float       f(v, 100);
       BOOST_CHECK_EQUAL(f, 2);
       BOOST_CHECK_EQUAL(f.precision(), 100);
    }
    {
-      std::string x("222"), y("333");
+      std::string      x("222"), y("333");
       std::string_view vx(x.c_str(), 1), vy(y.c_str(), 1);
-      mpc_complex c(vx, vy, 100);
+      mpc_complex      c(vx, vy, 100);
       BOOST_CHECK_EQUAL(c.real(), 2);
       BOOST_CHECK_EQUAL(c.imag(), 3);
       BOOST_CHECK_EQUAL(c.precision(), 100);
@@ -214,8 +205,8 @@ int main()
    }
    // Swap:
    {
-      mpfr_float x(2, 100);  // 100 digits precision.
-      mpfr_float y(3, 50);   // 50 digits precision.
+      mpfr_float x(2, 100); // 100 digits precision.
+      mpfr_float y(3, 50);  // 50 digits precision.
       swap(x, y);
       BOOST_CHECK_EQUAL(x, 3);
       BOOST_CHECK_EQUAL(y, 2);
@@ -226,15 +217,13 @@ int main()
       BOOST_CHECK_EQUAL(y, 3);
       BOOST_CHECK_EQUAL(x.precision(), 100);
       BOOST_CHECK_EQUAL(y.precision(), 50);
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
       x = std::move(mpfr_float(y));
       BOOST_CHECK_EQUAL(x, y);
       BOOST_CHECK_EQUAL(x.precision(), y.precision());
-#endif
    }
    {
-      mpc_complex x(2, 3, 100);  // 100 digits precision.
-      mpc_complex y(3, 4, 50);   // 50 digits precision.
+      mpc_complex x(2, 3, 100); // 100 digits precision.
+      mpc_complex y(3, 4, 50);  // 50 digits precision.
       swap(x, y);
       BOOST_CHECK_EQUAL(x.real(), 3);
       BOOST_CHECK_EQUAL(x.imag(), 4);
@@ -249,11 +238,9 @@ int main()
       BOOST_CHECK_EQUAL(y.imag(), 4);
       BOOST_CHECK_EQUAL(x.precision(), 100);
       BOOST_CHECK_EQUAL(y.precision(), 50);
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
       x = std::move(mpc_complex(y));
       BOOST_CHECK_EQUAL(x, y);
       BOOST_CHECK_EQUAL(x.precision(), y.precision());
-#endif
    }
    {
       mpfr_float c(4), d(8), e(9), f;
@@ -302,4 +289,3 @@ int main()
 
    return boost::report_errors();
 }
-

@@ -125,7 +125,7 @@ synopsis</a>
   <span class=keyword>typename</span> <span class=identifier>ElemType</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>Traits</span><span class=special>,</span> 
   <span class=keyword>typename</span> <span class=identifier>T</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>Arg1</span><span class=special>,...,</span><span class=keyword>typename</span> <span class=identifier>Arg5</span>
 <span class=special>&gt;</span>
-<span class=keyword>inline</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>basic_ostream</span><span class=special>&lt;</span><span class=identifier>ElemType</span><span class=special>,</span><span class=identifier>Traits</span><span class=special>&gt;&amp;</span> <span class=keyword>operator</span><span class=special>&gt;&gt;(</span>
+<span class=keyword>inline</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>basic_istream</span><span class=special>&lt;</span><span class=identifier>ElemType</span><span class=special>,</span><span class=identifier>Traits</span><span class=special>&gt;&amp;</span> <span class=keyword>operator</span><span class=special>&gt;&gt;(</span>
   <span class=identifier>std</span><span class=special>::</span><span class=identifier>basic_istream</span><span class=special>&lt;</span><span class=identifier>ElemType</span><span class=special>,</span><span class=identifier>Traits</span><span class=special>&gt;&amp;</span> <span class=identifier>in</span><span class=special>,</span>
   <span class=identifier>flyweight</span><span class=special>&lt;</span><span class=identifier>T</span><span class=special>,</span><span class=identifier>Arg1</span><span class=special>,...,</span><span class=identifier>Arg5</span><span class=special>&gt;&amp;</span> <span class=identifier>x</span><span class=special>);</span>
 
@@ -650,7 +650,7 @@ inline std::basic_ostream&lt;ElemType,Traits&gt;&amp; operator&lt;&lt;(<br>
 &nbsp;&nbsp;typename ElemType,typename Traits, <br>
 &nbsp;&nbsp;typename T,typename Arg1,...,typename Arg5<br>
 &gt;<br>
-inline std::basic_ostream&lt;ElemType,Traits&gt;&amp; operator&gt;&gt;(<br>
+inline std::basic_istream&lt;ElemType,Traits&gt;&amp; operator&gt;&gt;(<br>
 &nbsp;&nbsp;std::basic_istream&lt;ElemType,Traits&gt;&amp; in,<br>
 &nbsp;&nbsp;flyweight&lt;T,Arg1,...,Arg5&gt;&amp; x);</code>
 
@@ -784,9 +784,9 @@ Key-value flyweights
 
 <br>
 
-<p>Revised April 24th 2019</p>
+<p>Revised March 15th 2020</p>
 
-<p>&copy; Copyright 2006-2019 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2006-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

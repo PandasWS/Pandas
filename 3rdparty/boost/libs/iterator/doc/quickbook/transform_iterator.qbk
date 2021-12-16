@@ -1,4 +1,3 @@
-
 [section:transform Transform Iterator]
 
 The transform iterator adapts an iterator by modifying the
@@ -14,37 +13,38 @@ generate iterators that multiply (or add to) the value returned by
 dereferencing the iterator. It would be cooler to use lambda library
 in this example.
 
-	int x[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
-	const int N = sizeof(x)/sizeof(int);
-	
-	typedef boost::binder1st< std::multiplies<int> > Function;
-	typedef boost::transform_iterator<Function, int*> doubling_iterator;
-	
-	doubling_iterator i(x, boost::bind1st(std::multiplies<int>(), 2)),
-	  i_end(x + N, boost::bind1st(std::multiplies<int>(), 2));
-	
-	std::cout << "multiplying the array by 2:" << std::endl;
-	while (i != i_end)
-	  std::cout << *i++ << " ";
-	std::cout << std::endl;
-	
-	std::cout << "adding 4 to each element in the array:" << std::endl;
-	std::copy(boost::make_transform_iterator(x, boost::bind1st(std::plus<int>(), 4)),
-	     boost::make_transform_iterator(x + N, boost::bind1st(std::plus<int>(), 4)),
-	     std::ostream_iterator<int>(std::cout, " "));
-	std::cout << std::endl;
+  int x[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+  const int N = sizeof(x)/sizeof(int);
+
+  typedef boost::binder1st< std::multiplies<int> > Function;
+  typedef boost::transform_iterator<Function, int*> doubling_iterator;
+
+  doubling_iterator i(x, boost::bind1st(std::multiplies<int>(), 2)),
+    i_end(x + N, boost::bind1st(std::multiplies<int>(), 2));
+
+  std::cout << "multiplying the array by 2:" << std::endl;
+  while (i != i_end)
+    std::cout << *i++ << " ";
+  std::cout << std::endl;
+
+  std::cout << "adding 4 to each element in the array:" << std::endl;
+  std::copy(boost::make_transform_iterator(x, boost::bind1st(std::plus<int>(), 4)),
+    boost::make_transform_iterator(x + N, boost::bind1st(std::plus<int>(), 4)),
+    std::ostream_iterator<int>(std::cout, " "));
+  std::cout << std::endl;
 
 
 The output is:
 
-	multiplying the array by 2:
-	2 4 6 8 10 12 14 16 
-	adding 4 to each element in the array:
-	5 6 7 8 9 10 11 12
+[pre
+multiplying the array by 2:
+2 4 6 8 10 12 14 16
+adding 4 to each element in the array:
+5 6 7 8 9 10 11 12
+]
 
-
-The source code for this example can be found 
-[@../example/transform_iterator_example.cpp here].
+The source code for this example can be found
+[example_link transform_iterator_example.cpp..here].
 
 [h2 Reference]
 
@@ -52,8 +52,8 @@ The source code for this example can be found
 [h3 Synopsis]
 
   template <class UnaryFunction,
-            class Iterator, 
-            class Reference = use_default, 
+            class Iterator,
+            class Reference = use_default,
             class Value = use_default>
   class transform_iterator
   {
@@ -116,7 +116,7 @@ where the type of `f(*i)` must be
 `result_of<const UnaryFunction(iterator_traits<Iterator>::reference)>::type`.
 
 
-The argument `Iterator` shall model Readable Iterator.  
+The argument `Iterator` shall model Readable Iterator.
 
 
 [h3 Concepts]
@@ -126,11 +126,11 @@ The resulting `transform_iterator` models the most refined of the
 following that is also modeled by `Iterator`.
 
 
-* Writable Lvalue Iterator if `transform_iterator::reference` is a non-const reference. 
+* Writable Lvalue Iterator if `transform_iterator::reference` is a non-const reference.
 
 * Readable Lvalue Iterator if `transform_iterator::reference` is a const reference.
 
-* Readable Iterator otherwise. 
+* Readable Iterator otherwise.
 
 
 The `transform_iterator` models the most refined standard traversal
@@ -143,11 +143,11 @@ the `Iterator` argument models.
 
 
 [table Category
-	[[If `Iterator` models][then `transform_iterator` models]]
-	[[Single Pass Iterator][Input Iterator]]
-	[[Forward Traversal Iterator][Forward Iterator]]
-	[[Bidirectional Traversal Iterator][Bidirectional Iterator]]
-	[[Random Access Traversal Iterator][Random Access Iterator]]
+[[If `Iterator` models][then `transform_iterator` models]]
+[[Single Pass Iterator][Input Iterator]]
+[[Forward Traversal Iterator][Forward Iterator]]
+[[Bidirectional Traversal Iterator][Bidirectional Iterator]]
+[[Random Access Traversal Iterator][Random Access Iterator]]
 ]
 
 If `transform_iterator` models Writable Lvalue Iterator then it is a
@@ -177,7 +177,7 @@ operations:
   template<class F2, class I2, class R2, class V2>
   transform_iterator(
         transform_iterator<F2, I2, R2, V2> const& t
-      , typename enable_if_convertible<I2, Iterator>::type* = 0	   // exposition only
+      , typename enable_if_convertible<I2, Iterator>::type* = 0      // exposition only
       , typename enable_if_convertible<F2, UnaryFunction>::type* = 0 // exposition only
   );
 

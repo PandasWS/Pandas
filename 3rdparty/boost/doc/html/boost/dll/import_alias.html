@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Function import_alias</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
 <link rel="up" href="../../boost_dll/reference.html#header.boost.dll.import_hpp" title="Header &lt;boost/dll/import.hpp&gt;">
-<link rel="prev" href="import.html" title="Function import">
+<link rel="prev" href="import_symbol.html" title="Function import_symbol">
 <link rel="next" href="experimental/imported_class.html" title="Class template imported_class">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -21,7 +21,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="import.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../../boost_dll/reference.html#header.boost.dll.import_hpp"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="experimental/imported_class.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="import_symbol.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../../boost_dll/reference.html#header.boost.dll.import_hpp"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="experimental/imported_class.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="refentry">
 <a name="boost.dll.import_alias"></a><div class="titlepage"></div>
@@ -54,7 +54,7 @@
 <a name="id-1.3.15.8.3.2.5.4"></a><h2>Description</h2>
 <p>Returns callable object or boost::shared_ptr&lt;T&gt; that holds the symbol imported from the loaded library. Returned value refcounts usage of the loaded shared library, so that it won't get unload until all copies of return value are not destroyed.</p>
 <p>This call will succeed if call to <a class="link" href="shared_library.html" title="Class shared_library">boost::dll::shared_library</a><code class="computeroutput">::has(const char* )</code> function with the same symbol name returned <code class="computeroutput">true</code>.</p>
-<p>For importing symbols by <span class="bold"><strong>non</strong></span> <span class="bold"><strong>alias</strong></span> names use <a class="link" href="import.html" title="Function import">boost::dll::import</a> method.</p>
+<p>For importing symbols by <span class="bold"><strong>non</strong></span> <span class="bold"><strong>alias</strong></span> names use <a class="link" href="../../">boost::dll::import</a> method.</p>
 <p><span class="bold"><strong>Examples:</strong></span> </p>
 <pre class="programlisting"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span><span class="special">&gt;</span> <span class="identifier">f</span> <span class="special">=</span> <span class="identifier">import_alias</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span><span class="special">&gt;</span><span class="special">(</span><span class="string">"test_lib.so"</span><span class="special">,</span> <span class="string">"integer_func_alias_name"</span><span class="special">)</span><span class="special">;</span>
 
@@ -111,7 +111,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2014 Renato Tegon Forti, Antony Polukhin<br>Copyright &#169; 2015 Antony Polukhin<br>Copyright &#169; 2016 Antony Polukhin, Klemens Morgenstern<br>Copyright &#169; 2017-2019 Antony Polukhin<p>
+<td align="right"><div class="copyright-footer">Copyright © 2014 Renato Tegon Forti, Antony Polukhin<br>Copyright © 2015 Antony Polukhin<br>Copyright © 2016 Antony Polukhin, Klemens Morgenstern<br>Copyright © 2017-2021 Antony Polukhin<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
       </p>
@@ -119,7 +119,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="import.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../../boost_dll/reference.html#header.boost.dll.import_hpp"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="experimental/imported_class.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="import_symbol.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../../boost_dll/reference.html#header.boost.dll.import_hpp"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="experimental/imported_class.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

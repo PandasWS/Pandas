@@ -1,84 +1,95 @@
-/*=============================================================================
-    Copyright (c) 2007 Tobias Schwinger
-  
-    Use modification and distribution are subject to the Boost Software 
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt).
-==============================================================================*/
+/*
+Copyright 2007 Tobias Schwinger
 
+Copyright 2019 Glen Joseph Fernandes
+(glenjofe@gmail.com)
+
+Distributed under the Boost Software License, Version 1.0.
+(http://www.boost.org/LICENSE_1_0.txt)
+*/
 #include <boost/functional/factory.hpp>
 #include <boost/core/lightweight_test.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
 
-#include <cstddef>
-#include <memory>
-#include <boost/shared_ptr.hpp>
+class sum  {
+public:
+    sum(int a, int b)
+        : value_(a + b) { }
 
-#ifdef BOOST_MSVC
-// none of the deprecated members of std::allocate are used here
-# pragma warning(disable:4996) // Various members of std::allocator are deprecated in C++17
-#endif
-
-using std::size_t;
-
-class sum 
-{
-    int val_sum;
-  public:
-    sum(int a, int b) : val_sum(a + b) { }
-
-    operator int() const { return this->val_sum; }
-};
-
-template< typename T >
-class counting_allocator : public std::allocator<T>
-{
-  public:
-    counting_allocator()
-    { }
-
-    template< typename OtherT >
-    struct rebind { typedef counting_allocator<OtherT> other; };
-
-    template< typename OtherT >
-    counting_allocator(counting_allocator<OtherT> const& that)
-    { }
-
-    static size_t n_allocated;
-    T* allocate(size_t n, void const* hint = 0l)
-    {
-        n_allocated += 1;
-        return std::allocator<T>::allocate(n,hint);
+    int get() const {
+        return value_;
     }
 
-    static size_t n_deallocated;
-    void deallocate(T* ptr, size_t n)
-    {
-        n_deallocated += 1;
-        return std::allocator<T>::deallocate(ptr,n);
+private:
+    int value_;
+};
+
+template<class T>
+class creator {
+public:
+    static int count;
+
+    typedef T value_type;
+    typedef T* pointer;
+
+    template<class U>
+    struct rebind {
+        typedef creator<U> other;
+    };
+
+    creator() { }
+
+    template<class U>
+    creator(const creator<U>&) { }
+
+    T* allocate(std::size_t size) {
+        ++count;
+        return static_cast<T*>(::operator new(sizeof(T) * size));
+    }
+
+    void deallocate(T* ptr, std::size_t) {
+        --count;
+        ::operator delete(ptr);
     }
 };
-template< typename T > size_t counting_allocator<T>::n_allocated = 0;
-template< typename T > size_t counting_allocator<T>::n_deallocated = 0;
+
+template<class T>
+int creator<T>::count = 0;
+
+template<class T, class U>
+inline bool
+operator==(const creator<T>&, const creator<U>&)
+{
+    return true;
+}
+
+template<class T, class U>
+inline bool
+operator!=(const creator<T>&, const creator<U>&)
+{
+    return false;
+}
 
 int main()
 {
-    int one = 1, two = 2;
+    int a = 1;
+    int b = 2;
     {
-      boost::shared_ptr<sum> instance(
-          boost::factory< boost::shared_ptr<sum>, counting_allocator<void>, 
-              boost::factory_alloc_for_pointee_and_deleter >()(one,two) );
-      BOOST_TEST(*instance == 3);
+        boost::shared_ptr<sum> s(boost::factory<boost::shared_ptr<sum>,
+            creator<void>,
+            boost::factory_alloc_for_pointee_and_deleter>()(a, b));
+        BOOST_TEST(creator<sum>::count == 1);
+        BOOST_TEST(s->get() == 3);
     }
-    BOOST_TEST(counting_allocator<sum>::n_allocated == 1); 
-    BOOST_TEST(counting_allocator<sum>::n_deallocated == 1);
+    BOOST_TEST(creator<sum>::count == 0);
     {
-      boost::shared_ptr<sum> instance(
-          boost::factory< boost::shared_ptr<sum>, counting_allocator<void>,
-              boost::factory_passes_alloc_to_smart_pointer >()(one,two) );
-      BOOST_TEST(*instance == 3);
+        boost::shared_ptr<sum> s(boost::factory<boost::shared_ptr<sum>,
+            creator<void>,
+            boost::factory_passes_alloc_to_smart_pointer>()(a, b));
+        BOOST_TEST(creator<sum>::count == 1);
+        BOOST_TEST(s->get() == 3);
     }
-    BOOST_TEST(counting_allocator<sum>::n_allocated == 2); 
-    BOOST_TEST(counting_allocator<sum>::n_deallocated == 2);
+    BOOST_TEST(creator<sum>::count == 0);
     return boost::report_errors();
 }
 

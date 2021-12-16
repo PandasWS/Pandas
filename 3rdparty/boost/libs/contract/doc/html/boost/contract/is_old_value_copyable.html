@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Struct template is_old_value_copyable</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Contract 1.0.0">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Contract 1.0.0">
 <link rel="up" href="../../reference.html#header.boost.contract.old_hpp" title="Header &lt;boost/contract/old.hpp&gt;">
 <link rel="prev" href="function.html" title="Function function">
 <link rel="next" href="old_pointer.html" title="Class old_pointer">
@@ -26,7 +26,7 @@
 <a name="boost.contract.is_old_value_copyable"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Struct template is_old_value_copyable</span></h2>
-<p>boost::contract::is_old_value_copyable &#8212; Trait to check if an old value type can be copied or not. </p>
+<p>boost::contract::is_old_value_copyable — Trait to check if an old value type can be copied or not. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../reference.html#header.boost.contract.old_hpp" title="Header &lt;boost/contract/old.hpp&gt;">boost/contract/old.hpp</a>&gt;
@@ -35,16 +35,16 @@
 <span class="keyword">struct</span> <a class="link" href="is_old_value_copyable.html" title="Struct template is_old_value_copyable">is_old_value_copyable</a> <span class="special">:</span> <span class="keyword">public</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">is_copy_constructible</span><span class="special">&lt;</span> <span class="identifier">T</span> <span class="special">&gt;</span> <span class="special">{</span>
 <span class="special">}</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="idm45190701680400"></a><h2>Description</h2>
-<p>By default, this unary boolean meta-function is equivalent to <code class="computeroutput">boost::is_copy_constructible&lt;T&gt;</code> but programmers can chose to specialize it for user-defined types (in general some kind of specialization is needed on compilers that do not support C++11, see <a href="http://www.boost.org/doc/libs/release/libs/type_traits/doc/html/boost_typetraits/reference/is_copy_constructible.html" target="_top"><code class="computeroutput">boost::is_copy_constructible</code></a>):</p>
-<pre class="programlisting"><span class="keyword">class</span> <span class="identifier">u</span><span class="special">;</span> <span class="comment">// Some user-defined type.</span>
+<a name="idm41328"></a><h2>Description</h2>
+<p>By default, this unary boolean meta-function is equivalent to <code class="computeroutput">boost::is_copy_constructible&lt;T&gt;</code> but programmers can chose to specialize it for user-defined types (in general some kind of specialization is also needed on compilers that do not support C++11, see <a href="http://www.boost.org/doc/libs/release/libs/type_traits/doc/html/boost_typetraits/reference/is_copy_constructible.html" target="_top"><code class="computeroutput">boost::is_copy_constructible</code></a>):</p>
+<pre class="programlisting"><span class="keyword">class</span> <span class="identifier">u</span><span class="special">;</span> <span class="comment">// Some user-defined type for which old values shall not be copied.</span>
 
 <span class="keyword">namespace</span> <span class="identifier">boost</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">contract</span> <span class="special">{</span>
-    <span class="keyword">template</span><span class="special">&lt;</span><span class="special">&gt;</span> <span class="comment">// Specialization.</span>
+    <span class="keyword">template</span><span class="special">&lt;</span><span class="special">&gt;</span> <span class="comment">// Specialization to not copy old values of type `u`.</span>
     <span class="keyword">struct</span> <span class="identifier">is_old_value_copyable</span><span class="special">&lt;</span><span class="identifier">u</span><span class="special">&gt;</span> <span class="special">:</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">false_type</span> <span class="special">{</span><span class="special">}</span><span class="special">;</span>
 <span class="special">}</span> <span class="special">}</span> <span class="comment">// namespace</span>
 </pre>
-<p>In summary, a given old value type <code class="computeroutput">T</code> is copied only if <code class="computeroutput">boost::contract::is_old_value_copyable&lt;T&gt;::value</code> is <code class="computeroutput">true</code>. Copyable old value types are always copied using <code class="computeroutput">boost::contract::old_value_copy&lt;T&gt;</code>. Non-copyable old value types generate a compile-time error when <code class="computeroutput">boost::contract::old_ptr&lt;T&gt;</code> is dereferenced, but instead leave <code class="computeroutput">boost::contract::old_ptr_if_copyable&lt;T&gt;</code> always null (without generating compile-time errors).</p>
+<p>A given old value type <code class="computeroutput">T</code> is copied only if <code class="computeroutput">boost::contract::is_old_value_copyable&lt;T&gt;::value</code> is <code class="computeroutput">true</code>. A copyable old value type <code class="computeroutput">V</code> is always copied using <code class="computeroutput">boost::contract::old_value_copy&lt;V&gt;</code>. A non-copyable old value type <code class="computeroutput">W</code> generates a compile-time error when <code class="computeroutput">boost::contract::old_ptr&lt;W&gt;</code> is dereferenced, but instead leaves <code class="computeroutput">boost::contract::old_ptr_if_copyable&lt;W&gt;</code> always null (without generating compile-time errors).</p>
 <p><span class="bold"><strong>See Also:</strong></span></p>
 <p> <a class="link" href="../../boost_contract/extras.html#boost_contract.extras.old_value_requirements__templates_" title="Old Value Requirements (Templates)">
         Old Value Requirements</a> </p>
@@ -56,7 +56,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2008-2018 Lorenzo Caminiti<p>
+<td align="right"><div class="copyright-footer">Copyright © 2008-2019 Lorenzo Caminiti<p>
         Distributed under the Boost Software License, Version 1.0 (see accompanying
         file LICENSE_1_0.txt or a copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

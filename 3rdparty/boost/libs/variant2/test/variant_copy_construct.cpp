@@ -9,6 +9,8 @@
 #include <boost/variant2/variant.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/core/lightweight_test_trait.hpp>
+#include <boost/config.hpp>
+#include <boost/config/workaround.hpp>
 #include <type_traits>
 #include <utility>
 #include <string>
@@ -48,12 +50,21 @@ struct Y
     Y( Y const& ) = delete;
 };
 
+struct D
+{
+    ~D() {}
+};
+
+inline bool operator==( D, D ) { return true; }
+
 template<class V> static void test( V const & v )
 {
     V v2( v );
 
     BOOST_TEST_EQ( v.index(), v2.index() );
     BOOST_TEST( v == v2 );
+
+    BOOST_TEST_TRAIT_TRUE((std::is_copy_constructible<V>));
 }
 
 int main()
@@ -114,6 +125,12 @@ int main()
 
         test( v );
     }
+
+#if !BOOST_WORKAROUND( __GNUC__, < 5 )
+
+    test( variant<D>() );
+
+#endif
 
     {
         BOOST_TEST_TRAIT_TRUE((std::is_nothrow_copy_constructible<variant<int>>));

@@ -1,5 +1,5 @@
 /* Unit testing for outcomes
-(C) 2013-2019 Niall Douglas <http://www.nedproductions.biz/> (1 commit)
+(C) 2013-2021 Niall Douglas <http://www.nedproductions.biz/> (1 commit)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -27,11 +27,11 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/outcome/outcome.hpp>
+#include <boost/outcome.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_monitor.hpp>
 
-BOOST_OUTCOME_AUTO_TEST_CASE(issues_189_test, "result<void, int>.value() compiles without tripping fail_to_compile_observers")
+BOOST_OUTCOME_AUTO_TEST_CASE(issues_0182_test, "result<void, int>.value() compiles without tripping fail_to_compile_observers")
 {
   namespace outcome = BOOST_OUTCOME_V2_NAMESPACE;
   static_assert(!outcome::trait::is_error_code_available<int>::value, "int is clearly not a source for make_error_code()");

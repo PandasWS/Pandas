@@ -18,9 +18,13 @@ int main()
 
 #else
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <functional>
+
+using namespace boost::placeholders;
+
+//
 
 namespace std
 {

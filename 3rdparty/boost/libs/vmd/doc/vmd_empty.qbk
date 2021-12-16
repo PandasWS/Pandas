@@ -11,7 +11,10 @@
 
 It is possible to pass an empty argument to a macro.
 The official terminology for this in the C++ standard is an argument 
-"consisting of no preprocessing tokens".
+"consisting of no preprocessing tokens". Passing an empty argument
+to a macro is officially part of the C++11 standard, but a number
+of compilers also support passing an empty argument to a macro in
+C++98/C++03 mode, when not in strict compliance to the standard.
 
 Let us consider a number of cases without worrying too much
 what the macro output represents.
@@ -68,8 +71,10 @@ Please notice that this different from
 
  VMACRO(somedata)
  
-which is not valid C++ since something must be passed for the variadic argument.
-Similar one could invoke the macro as
+which is not valid C++, prior to C++20, since something must be passed for the variadic argument.
+In C++20 the above invocation is valid and is exactly the same as in our previous example of
+'VMACRO(somedata,)' where one passes empty data as the variadic macro data. Similarly one could
+invoke the macro as
 
  VMACRO(somedata,vdata1,,vdata3)
  
@@ -137,19 +142,17 @@ that data was indeed empty.
 [heading Testing for empty data]
 
 Currently Boost PP has an undocumented macro for testing whether 
-a parameter is empty of not, written without the use of variadic 
-macros. The macro is called BOOST_PP_IS_EMPTY. The macro is by its nature flawed,
+a parameter is empty of not. The macro is called BOOST_PP_IS_EMPTY. The macro is by its nature flawed,
 since there is no generalized way of determining whether or not a 
-parameter is empty using the C++ preprocessor. But the macro will 
-work given input limited in various ways or if the input is actually empty.
+parameter is empty using the C++ preprocessor prior to C++20. But the macro will 
+work correctly with almost all non-empty input or if the input is actually empty.
 
-Paul Mensonides, the developer of Boost PP and the BOOST_PP_IS_EMPTY macro 
-in that library, also wrote a better macro using variadic 
-macros, for determining whether or not a parameter is empty or not, which
-he published on the Internet in response to a discussion about emptiness.
-This macro is also not perfect, since there is no perfect solution, 
-but will work correctly with almost all input. I have adapted his code
-for the VMD and developed my own very slightly different code.
+Paul Mensonides, the developer of Boost PP,
+wrote the code for the BOOST_PP_IS_EMPTY macro,
+for determining whether or not a parameter is empty or not using variadic macros, which
+he originally published on the Internet in response to a discussion about emptiness.
+I have adapted his code for the Boost PP library and
+for VMD developed my own very slightly different code based on his original example.
 
 The macro is called [macroref BOOST_VMD_IS_EMPTY] and will return 1 if its input 
 is empty or 0 if its input is not empty. The macro
@@ -158,8 +161,8 @@ is a variadic macro which make take any input
 
 [heading Macro Flaw with a standard C++ compiler]
 
-The one situation where the macro always does not work properly is if its input resolves 
-to a function-like macro name or a sequence of preprocessor tokens ending with 
+The one situation prior to C++20 where the macro does not work properly is if
+its input resolves to a function-like macro name or a sequence of preprocessor tokens ending with 
 a function-like macro name and the function-like macro takes two or more parameters.
 
 Here is a simple example:
@@ -197,7 +200,7 @@ passed is empty. An example of this would be:
 When nothing is passed to FMACRO undefined behavior will occur since attempting to concatenate
 '+' to ' C' is UB in C++ preprocessor terms.
 
-So for a standard conforming compiler we have essentially a single corner case where
+So for a standard conforming compiler, prior to C++20, we have essentially two corner cases where
 the BOOST_VMD_IS_EMPTY does not work and, when it does not work it, produces a
 compiler error rather than an incorrect result. Essentially what is desired for maximum 
 safety is that we never pass input ending with the name of a function-like macro name when
@@ -205,12 +208,12 @@ testing for emptiness.
 
 [heading Macro Flaw with Visual C++]
 
-The VC++ preprocessor is not a standard C++ conforming preprocessor in at least two 
+The VC++ default preprocessor is not a standard C++ conforming preprocessor in at least two 
 relevant situations to our discussion of emptiness. These situations combine to create 
 a single corner case which causes the BOOST_VMD_IS_EMPTY macro to not work properly 
-using VC++ when the input resolves to a function-like macro name.
+using VC++ with its default preprocessor when the input resolves to a function-like macro name.
 
-The first situation, related to our discussion of emptiness, where the VC++ preprocessor
+The first situation, related to our discussion of emptiness, where the VC++ default preprocessor
 is not a standard C++ conforming preprocessor is that if a macro taking 'n' number of parameters is invoked 
 with 0 to 'n-1' parameters, the compiler does not give an error, but only a warning.
 
@@ -219,14 +222,14 @@ with 0 to 'n-1' parameters, the compiler does not give an error, but only a warn
  FMACRO(1)
  
 should give a compiler error, as it does when using a C++ standard-conforming  
-compiler, but when invoked using VC++ it only gives a warning
+compiler, but when invoked using VC++ with its default preprocessor it only gives a warning
 and VC++ continues macro substitution with 'y' as a placemarker preprocessing token.
 This non-standard conforming action actually eliminates the case where BOOST_VMD_IS_EMPTY
 does not work properly with a standard C++ conforming compiler. But of course it has the
 potential of producing incorrect output in other macro processing situations unrelated
 to the BOOST_VMD_IS_EMPTY invocation, where a compiler error should occur.
 
-A second general situation, related to our discussion of emptiness, where the VC++ preprocessor
+A second general situation, related to our discussion of emptiness, where the VC++ default preprocessor
 is not a standard C++ conforming preprocessor is that the expansion of a macro works incorrectly 
 when the expanded macro is a function-like macro name followed by a function-like macro invocation, 
 in which case the macro re-expansion is erroneously done more than once. This latter case can be 
@@ -242,7 +245,7 @@ seen by this example:
  
  FMACRO3()
  
- but in VC++ it expands to:
+ but in VC++ with its default preprocessor it expands to:
  
  1
 
@@ -253,7 +256,7 @@ where after initially expanding the macro to:
 VC++ erroneously rescans the sequence of preprocessing tokens more than once rather than 
 rescan just one more time for more macro names.
 
-What these two particular preprocessor flaws in the VC++ compiler mean is that although
+What these two particular preprocessor flaws in the VC++ compiler with its default preprocessor mean is that although
 BOOST_VMD_IS_EMPTY does not fail with a compiler error in the same case as with 
 a standard C++ conforming compiler given previously, it fails by giving
 the wrong result in another situation. 
@@ -277,21 +280,76 @@ Here is an example of the failure:
  BOOST_VMD_IS_EMPTY(FMACRO5) // erroneously returns 1, instead of 0
  BOOST_VMD_IS_EMPTY(FMACRO6) // erroneously returns 1, instead of generating a preprocessing error
  
-As with a standard C++ conforming compiler, we have a rare corner case where
+As with a standard C++ conforming compiler prior to C++20, we have a rare corner case where
 the BOOST_VMD_IS_EMPTY will not work properly, but unfortunately in this very
-similar but even rarer corner case with VC++, we will silently get an incorrect result
+similar but even rarer corner case with VC++ with its default preprocessor, we will silently get an incorrect result
 rather than a compiler error.
 
-I want to reiterate that there is no perfect solution in C++ to the detection of 
-emptiness even for a C++ compiler whose preprocessor is completely conformant, which 
-VC++ obviously is not.
+I want to reiterate that for all compilers prior to C++20 there is no perfect solution
+in C++ to the detection of emptiness even for a C++ compiler whose preprocessor is completely
+conformant, which VC++ with its default preprocessor obviously is not.
+
+[heading Testing emptiness in C++20 mode]
+
+A few compilers can currently operate in C++20 mode, by which I mean that you
+can pass a compiler flag when compiling with such a compiler which enforces the
+upcoming C++20 standard. One of the features of the C++20 standard is the
+addition of a preprocessor construct called __VA_OPT__. Because of the
+specification of how the __VA_OPT__ construct works in C++20, it is now possible
+to have the BOOST_VMD_IS_EMPTY macro work perfectly to test for emptiness without
+any of the flaws that exist in the macro for levels of the C++ standard before
+C++20. But the macro will only do a 100% reliable test for emptiness when the
+compiler is compiling in C++20 mode. For all levels of the C++ standard before
+C++20, such as C++98, C++03, C++11, C++14, and C++17, the testing for emptiness
+has the corner cases which prevent it from wroking perfectly which have already
+been discussed.
+
+Furthermore in C++20 mode it is possible that a compiler still does not yet
+support the __VA_OPT__ construct, even though it is part of the C++20 standard.
+Luckily it is possible to test whether or not a compiler supports the __VA_OPT__
+construct in C++20 mode, and the macro implementation of BOOST_VMD_IS_EMPTY
+does that before using the construct to provide a perfectly reliable
+implementation for testing emptiness.
+
+The result of all this is that when a compiler is compiling source using
+the C++20 standard, and supports the C++20 __VA_OPT__ preprocessor construct,
+the implementation provides a completely reliable way of testing for emptiness
+using the BOOST_VMD_IS_EMPTY macro. Otherwise the BOOST_VMD_IS_EMPTY macro
+has the corner cases previously discussed which make the macro less than
+100% reliable in testing for emptiness. The good news of course is that
+more compilers will be implementaing the C++20 standard and more C++
+programmers will be using the C++20 standard to compile their code.
+
+The programmer may know whether the compiler is being used in C++20 mode
+from the command line parameters he passes to the compiler, and the programmer
+may know whether the compiler in C++20 mode supports the __VA_OPT__ construct
+of C++20 from the compiler's documentation. But from the preprocessor programming
+perspective it would be good to find out using a macro whether or not C++20 mode
+with the __VA_OPT__ construct is being used so that the BOOST_VMD_IS_EMPTY
+macro can be considered completely reliable in testing for emptiness. Such a macro
+does already exist in the Boost Preprocessor library, and it is called BOOST_PP_VARIADIC_HAS_OPT.
+You can read the documentation for this macro in the Boost Preprocessor library
+documentation, but I will give a quick rundown of how this works here. The macro
+is a function-like macro taking no parameters and returns 1 if the compiler
+is in C++20 mode and __VA_OPT__ is supported, otherwise returns 0. The header
+file needed to invoke the macro as BOOST_PP_VARIADIC_HAS_OPT() is included as:
+
+ #include <boost/preprocessor/variadic/has_opt.hpp>
+ 
+The programmer does not have to be compiling in C++20 mode to invoke the
+BOOST_PP_VARIADIC_HAS_OPT macro. When the programmer is not in C++20 mode invoking
+the macro always returns 0. When the programmer is in C++20 mode invoking
+the macro returns 1 when the __VA_OPT__ construct is supported and returns 0
+when the __VA_OPT__ construct is not supported. It does this latter step through
+clever preprocessor programming.
 
 [heading Macro Flaw conclusion]
 
-With all of the above mentioned, the case(s) where BOOST_VMD_IS_EMPTY will work 
-incorrectly are very small, even with the erroneous VC++ preprocessor, 
+With all of the above mentioned, the cases where BOOST_VMD_IS_EMPTY will work 
+incorrectly are very small, even with the erroneous VC++ default preprocessor, 
 and I consider the macro worthwhile to use since it works correctly with the vast 
-majority of possible preprocessor input.
+majority of possible preprocessor input, and always works correctly in C++20
+mode with __VA_OPT__ preprocessor support.
 
 The case where it will not work, with both a C++ standard conforming preprocessor or
 with Visual C++, occurs when the name of a function-like macro is part of the input
@@ -299,11 +357,11 @@ to BOOST_VMD_IS_EMPTY. Obviously the macro should be used by the preprocessor
 metaprogrammer when the possible input to it is constrained to eliminate the erroneous
 case.
 
-Furthermore, since emptiness can correctly be tested for in nearly every situation, the
+Since emptiness can correctly be tested for in nearly every situation, the
 BOOST_VMD_IS_EMPTY macro can be used internally when the preprocessor metaprogrammer wants to return data
 from a macro and all or part of that data could be empty.
 
-Therefore I believe the BOOST_VMD_IS_EMPTY macro is quite useful, despite the corner case flaw
+Therefore I believe the BOOST_VMD_IS_EMPTY macro is quite useful, despite the corner case flaws
 which makes it imperfect. Consequently I believe that the preprocessor metaprogrammer
 can use the concept of empty preprocessor data in the design of his own macros.
 
@@ -311,7 +369,7 @@ can use the concept of empty preprocessor data in the design of his own macros.
 
 The macro BOOST_VMD_IS_EMPTY is used internally throughout VMD and macro programmers 
 may find this macro useful in their own programming efforts despite the slight flaw 
-in the way that it works.
+in the way that it works in pre C++20 mode.
 
 You can use the general header file:
 

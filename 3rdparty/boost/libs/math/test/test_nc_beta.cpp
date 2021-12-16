@@ -30,7 +30,7 @@
 #include <boost/test/unit_test.hpp> // for test_main
 #include <boost/test/results_collector.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE
+#include <boost/test/tools/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE
 
 #include "functor.hpp"
 #include "handle_test_result.hpp"
@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE( test_main )
 #ifdef TEST_LDOUBLE
    test_spots(0.0L); // Test long double.
 #endif
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
 #ifdef TEST_REAL_CONCEPT
    test_spots(boost::math::concepts::real_concept(0.)); // Test real concept.
 #endif
@@ -289,7 +289,7 @@ BOOST_AUTO_TEST_CASE( test_main )
 #ifdef TEST_LDOUBLE
    test_accuracy(0.0L, "long double"); // Test long double.
 #endif
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
 #ifdef TEST_REAL_CONCEPT
    test_accuracy(boost::math::concepts::real_concept(0.), "real_concept"); // Test real concept.
 #endif

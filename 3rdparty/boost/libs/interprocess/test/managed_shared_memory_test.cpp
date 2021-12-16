@@ -8,7 +8,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
 #include <boost/interprocess/containers/vector.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
@@ -18,10 +17,39 @@
 
 using namespace boost::interprocess;
 
-int main ()
+template <class CharT>
+struct filename_traits;
+
+template <>
+struct filename_traits<char>
+{
+
+   static const char* get()
+   {  return test::get_process_id_name();  }
+
+   static std::string filename;
+};
+
+#ifdef BOOST_INTERPROCESS_WCHAR_NAMED_RESOURCES
+
+template <>
+struct filename_traits<wchar_t>
+{
+
+   static const wchar_t* get()
+   {  return test::get_process_id_wname();  }
+
+   static std::wstring filename;
+};
+
+#endif   //#ifdef BOOST_INTERPROCESS_WCHAR_NAMED_RESOURCES
+
+
+template<class CharT>
+int test_managed_shared_memory()
 {
    const int ShmemSize          = 65536;
-   const char *const ShmemName = test::get_process_id_name();
+   const CharT *const ShmemName = filename_traits<CharT>::get();
 
    //STL compatible allocator object for memory-mapped shmem
    typedef allocator<int, managed_shared_memory::segment_manager>
@@ -34,19 +62,19 @@ int main ()
       shared_memory_object::remove(ShmemName);
 
       const int max              = 100;
-      void *array[max];
+      void *array[std::size_t(max)];
       //Named allocate capable shared memory allocator
       managed_shared_memory shmem(create_only, ShmemName, ShmemSize);
 
-      int i;
+      std::size_t i;
       //Let's allocate some memory
       for(i = 0; i < max; ++i){
-         array[i] = shmem.allocate(i+1);
+         array[std::ptrdiff_t(i)] = shmem.allocate(i+1u);
       }
 
       //Deallocate allocated memory
       for(i = 0; i < max; ++i){
-         shmem.deallocate(array[i]);
+         shmem.deallocate(array[std::ptrdiff_t(i)]);
       }
    }
 
@@ -55,7 +83,14 @@ int main ()
       shared_memory_object::remove(ShmemName);
 
       //Named allocate capable memory mapped shmem managed memory class
-      managed_shared_memory shmem(create_only, ShmemName, ShmemSize);
+      managed_shared_memory tmp(create_only, ShmemName, ShmemSize);
+   }
+   {
+      //Remove the shmem it is already created
+      shared_memory_object::remove(ShmemName);
+
+      //Now re-create it with create or open
+      managed_shared_memory shmem(open_or_create, ShmemName, ShmemSize);
 
       //Construct the STL-like allocator with the segment manager
       const allocator_int_t myallocator (shmem.get_segment_manager());
@@ -112,9 +147,18 @@ int main ()
          if(!shmem_vect)
             return -1;
       }
+      {
+         //Map preexisting shmem again in memory
+         managed_shared_memory shmem(open_or_create, ShmemName, ShmemSize);
+
+         //Check vector is still there
+         MyVect *shmem_vect = shmem.find<MyVect>("MyVector").first;
+         if(!shmem_vect)
+            return -1;
+      }
    }
    {
-      //Map preexisting shmem again in copy-on-write
+      //Map preexisting shmem again in read-only
       managed_shared_memory shmem(open_read_only, ShmemName);
 
       //Check vector is still there
@@ -213,4 +257,14 @@ int main ()
    return 0;
 }
 
-#include <boost/interprocess/detail/config_end.hpp>
+int main ()
+{
+   int r;
+   r = test_managed_shared_memory<char>();
+   if(r) return r;
+   #ifdef BOOST_INTERPROCESS_WCHAR_NAMED_RESOURCES
+   r = test_managed_shared_memory<wchar_t>();
+   if(r) return r;
+   #endif
+   return 0;
+}

@@ -1,5 +1,5 @@
 /* Documentation snippet
-(C) 2017-2019 Niall Douglas <http://www.nedproductions.biz/> (5 commits) and Andrzej Krzemienski <akrzemi1@gmail.com> (1 commit)
+(C) 2017-2021 Niall Douglas <http://www.nedproductions.biz/> (5 commits) and Andrzej Krzemienski <akrzemi1@gmail.com> (1 commit)
 File Created: Mar 2017
 
 
@@ -78,14 +78,14 @@ template <typename T, typename EC, typename EP> struct throwing_policy : outcome
       if(base::_has_exception(std::forward<Impl>(self)))
         std::rethrow_exception(base::_exception<T, EC, EP, throwing_policy>(std::forward<Impl>(self)));
       else
-        base::_ub(std::forward<Impl>(self));
+        base::_make_ub(std::forward<Impl>(self));
     }
   }
 
   template <class Impl> static constexpr void wide_exception_check(Impl &&self)
   {
     if(!base::_has_exception(std::forward<Impl>(self)))
-      base::_ub(std::forward<Impl>(self));
+      base::_make_ub(std::forward<Impl>(self));
   }
 };
 //! [throwing_policy]

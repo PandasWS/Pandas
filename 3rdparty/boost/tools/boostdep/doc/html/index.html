@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Boostdep</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
@@ -22,8 +22,7 @@
 <div>
 <div><h2 class="title">
 <a name="boostdep"></a>Boostdep</h2></div>
-<div><p class="copyright">Copyright &#169; 2014-2017 Peter
-      Dimov</p></div>
+<div><p class="copyright">Copyright © 2014-2020 Peter Dimov</p></div>
 <div><div class="legalnotice">
 <a name="boostdep.legal"></a><p>
         Distributed under the <a href="http://boost.org/LICENSE_1_0.txt" target="_top">Boost
@@ -67,6 +66,7 @@
 <dt><span class="section"><a href="index.html#boostdep.reference.cmake">--cmake</a></span></dt>
 <dt><span class="section"><a href="index.html#boostdep.reference.pkgconfig">--pkgconfig</a></span></dt>
 <dt><span class="section"><a href="index.html#boostdep.reference.subset_for">--subset-for</a></span></dt>
+<dt><span class="section"><a href="index.html#boostdep.reference.brief">--brief</a></span></dt>
 <dt><span class="section"><a href="index.html#boostdep.reference.boost_root">--boost-root</a></span></dt>
 <dt><span class="section"><a href="index.html#boostdep.reference.track_sources">--track-sources</a></span></dt>
 <dt><span class="section"><a href="index.html#boostdep.reference.track_tests">--track-tests</a></span></dt>
@@ -341,6 +341,7 @@ nothing added to commit but untracked files present (use "git add" to track)
     boostdep --cmake &lt;module&gt;
     boostdep --pkgconfig &lt;module&gt; &lt;version&gt; [&lt;var&gt;=&lt;value&gt;] [&lt;var&gt;=&lt;value&gt;]...
     boostdep [options] --subset-for &lt;directory&gt;
+    boostdep --brief &lt;module&gt;
 
     [options]: [--boost-root &lt;path-to-boost&gt;]
                [--[no-]track-sources] [--[no-]track-tests]
@@ -604,6 +605,7 @@ FOR /f %%i IN (%OUTDIR%\list-modules.txt) DO %BOOSTDEP% --html-title "Dependency
 <dt><span class="section"><a href="index.html#boostdep.reference.cmake">--cmake</a></span></dt>
 <dt><span class="section"><a href="index.html#boostdep.reference.pkgconfig">--pkgconfig</a></span></dt>
 <dt><span class="section"><a href="index.html#boostdep.reference.subset_for">--subset-for</a></span></dt>
+<dt><span class="section"><a href="index.html#boostdep.reference.brief">--brief</a></span></dt>
 <dt><span class="section"><a href="index.html#boostdep.reference.boost_root">--boost-root</a></span></dt>
 <dt><span class="section"><a href="index.html#boostdep.reference.track_sources">--track-sources</a></span></dt>
 <dt><span class="section"><a href="index.html#boostdep.reference.track_tests">--track-tests</a></span></dt>
@@ -723,7 +725,7 @@ align -&gt; assert config core static_assert throw_exception
           <span class="bold"><strong><span class="emphasis"><em>accumulators</em></span></strong></span>
         </p>
 <p>
-          &#8674; array assert circular_buffer concept_check config core fusion
+          ⇢ array assert circular_buffer concept_check config core fusion
           iterator mpl numeric~conversion numeric~ublas parameter preprocessor range
           static_assert throw_exception tuple type_traits typeof
         </p>
@@ -881,10 +883,8 @@ align -&gt; assert config core static_assert throw_exception
 <a name="boostdep.reference.cmake"></a><a class="link" href="index.html#boostdep.reference.cmake" title="--cmake">--cmake</a>
 </h3></div></div></div>
 <p>
-        <code class="literal">boostdep --cmake <span class="emphasis"><em>module</em></span></code> lists the
-        dependencies of <span class="emphasis"><em>module</em></span> in a <code class="literal">cmake</code>-friendly
-        form. This is typically used to generate a <code class="literal">dependencies.cmake</code>
-        file.
+        <code class="literal">boostdep --cmake <span class="emphasis"><em>module</em></span></code> generates
+        a <code class="literal">CMakeLists.txt</code> file for <span class="emphasis"><em>module</em></span>.
       </p>
 </div>
 <div class="section">
@@ -917,6 +917,18 @@ align -&gt; assert config core static_assert throw_exception
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
+<a name="boostdep.reference.brief"></a><a class="link" href="index.html#boostdep.reference.brief" title="--brief">--brief</a>
+</h3></div></div></div>
+<p>
+        <code class="literal">boostdep --brief <span class="emphasis"><em>module</em></span></code> generates
+        a brief dependency report for <span class="emphasis"><em>module</em></span>. All the primary
+        and secondary dependencies are listed, one per line.
+      </p>
+<pre class="programlisting">dist/bin/boostdep --brief filesystem
+</pre>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
 <a name="boostdep.reference.boost_root"></a><a class="link" href="index.html#boostdep.reference.boost_root" title="--boost-root">--boost-root</a>
 </h3></div></div></div>
 <p>
@@ -935,8 +947,9 @@ align -&gt; assert config core static_assert throw_exception
 </h3></div></div></div>
 <p>
         The <code class="literal">--track-sources</code> option instructs <span class="emphasis"><em>Boostdep</em></span>
-        to scan the <code class="literal">src</code> library subdirectory for <code class="computeroutput"><span class="preprocessor">#include</span></code> directives. By default, only
-        the <code class="literal">include</code> subdirectory is scanned.
+        to scan the <code class="literal">src</code> library subdirectory for <code class="computeroutput"><span class="preprocessor">#include</span></code> directives. If not enabled,
+        only the <code class="literal">include</code> subdirectory is scanned. This option
+        on by default in 1.77 and later, and can be turned off with <code class="literal">--no-track-sources</code>.
       </p>
 </div>
 <div class="section">
@@ -945,8 +958,8 @@ align -&gt; assert config core static_assert throw_exception
 </h3></div></div></div>
 <p>
         The <code class="literal">--track-tests</code> option instructs <span class="emphasis"><em>Boostdep</em></span>
-        to scan the <code class="literal">test</code> library subdirectory for <code class="computeroutput"><span class="preprocessor">#include</span></code> directives. By default, only
-        the <code class="literal">include</code> subdirectory is scanned.
+        to scan the <code class="literal">test</code> library subdirectory for <code class="computeroutput"><span class="preprocessor">#include</span></code> directives. By default, the
+        <code class="literal">test</code> subdirectory is not scanned.
       </p>
 </div>
 <div class="section">
@@ -1000,7 +1013,7 @@ align -&gt; assert config core static_assert throw_exception
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><p><small>Last revised: October 16, 2018 at 01:13:33 GMT</small></p></td>
+<td align="left"><p><small>Last revised: June 11, 2021 at 17:53:49 GMT</small></p></td>
 <td align="right"><div class="copyright-footer"></div></td>
 </tr></table>
 <hr>

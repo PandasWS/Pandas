@@ -6,7 +6,7 @@
  / file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  /]
 [section INI Parser]
-[def __ini__ [@http://en.wikipedia.org/wiki/INI INI format]]
+[def __ini__ [@https://en.wikipedia.org/wiki/INI_file INI format]]
 The __ini__ was once widely used in the world of Windows. It is now deprecated,
 but is still used by a surprisingly large number of applications. The reason is
 probably its simplicity, plus that Microsoft recommends using the registry as

@@ -12,6 +12,7 @@
 
 #include "boost/fiber/exceptions.hpp"
 #include "boost/fiber/scheduler.hpp"
+#include "boost/fiber/waker.hpp"
 
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
@@ -30,15 +31,13 @@ mutex::lock() {
             throw lock_error{
                     std::make_error_code( std::errc::resource_deadlock_would_occur),
                     "boost fiber: a deadlock is detected" };
-        } else if ( nullptr == owner_) {
+        }
+        if ( nullptr == owner_) {
             owner_ = active_ctx;
             return;
         }
-        BOOST_ASSERT( ! active_ctx->wait_is_linked() );
-        active_ctx->wait_link( wait_queue_);
-        // suspend this fiber
-        active_ctx->suspend( lk);
-        BOOST_ASSERT( ! active_ctx->wait_is_linked() );
+
+        wait_queue_.suspend_and_wait( lk, active_ctx);
     }
 }
 
@@ -50,7 +49,8 @@ mutex::try_lock() {
         throw lock_error{
                 std::make_error_code( std::errc::resource_deadlock_would_occur),
                 "boost fiber: a deadlock is detected" };
-    } else if ( nullptr == owner_) {
+    }
+    if ( nullptr == owner_) {
         owner_ = active_ctx;
     }
     lk.unlock();
@@ -69,11 +69,8 @@ mutex::unlock() {
                 "boost fiber: no  privilege to perform the operation" };
     }
     owner_ = nullptr;
-    if ( ! wait_queue_.empty() ) {
-        context * ctx = & wait_queue_.front();
-        wait_queue_.pop_front();
-        active_ctx->schedule( ctx);
-    }
+
+    wait_queue_.notify_one();
 }
 
 }}

@@ -4,12 +4,9 @@
 
 import testing ;
 
-test-suite tokenizer
-:   [ run examples.cpp
-        /boost/test//boost_test_exec_monitor/<link>static ]
-    [ run simple_example_1.cpp ]
-    [ run simple_example_2.cpp ]
-    [ run simple_example_3.cpp ]
-    [ run simple_example_4.cpp ]
-    [ run simple_example_5.cpp ]
-    ;
+run examples.cpp ;
+run simple_example_1.cpp ;
+run simple_example_2.cpp ;
+run simple_example_3.cpp ;
+run simple_example_4.cpp ;
+run simple_example_5.cpp ;

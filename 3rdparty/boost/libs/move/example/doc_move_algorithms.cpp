@@ -9,8 +9,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <boost/move/detail/config_begin.hpp>
-
 //[move_algorithms_example
 #include "movable.hpp"
 #include <boost/move/algorithm.hpp>
@@ -43,4 +41,3 @@ int main()
 }
 //]
 
-#include <boost/move/detail/config_end.hpp>

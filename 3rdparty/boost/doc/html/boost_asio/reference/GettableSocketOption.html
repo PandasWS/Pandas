@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Gettable socket option requirements</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -39,7 +39,7 @@
         that is convertible to <code class="computeroutput">size_t</code> and denotes a size in bytes.
       </p>
 <div class="table">
-<a name="boost_asio.reference.GettableSocketOption.t0"></a><p class="title"><b>Table&#160;17.&#160;GettableSocketOption requirements for extensible implementations</b></p>
+<a name="boost_asio.reference.GettableSocketOption.t0"></a><p class="title"><b>Table 20. GettableSocketOption requirements for extensible implementations</b></p>
 <div class="table-contents"><table class="table" summary="GettableSocketOption requirements for extensible implementations">
 <colgroup>
 <col>
@@ -78,7 +78,7 @@
 <td>
                 <p>
                   Returns a value suitable for passing as the <span class="emphasis"><em>level</em></span>
-                  argument to <span class="emphasis"><em>POSIX</em></span> <a href="http://www.opengroup.org/onlinepubs/000095399/functions/getsockopt.html" target="_top"><code class="computeroutput"><span class="identifier">getsockopt</span><span class="special">()</span></code></a>
+                  argument to <span class="emphasis"><em>POSIX</em></span> <a href="http://www.opengroup.org/onlinepubs/9699919799/functions/getsockopt.html" target="_top"><code class="computeroutput"><span class="identifier">getsockopt</span><span class="special">()</span></code></a>
                   (or equivalent).
                 </p>
               </td>
@@ -97,7 +97,7 @@
 <td>
                 <p>
                   Returns a value suitable for passing as the <span class="emphasis"><em>option_name</em></span>
-                  argument to <span class="emphasis"><em>POSIX</em></span> <a href="http://www.opengroup.org/onlinepubs/000095399/functions/getsockopt.html" target="_top"><code class="computeroutput"><span class="identifier">getsockopt</span><span class="special">()</span></code></a>
+                  argument to <span class="emphasis"><em>POSIX</em></span> <a href="http://www.opengroup.org/onlinepubs/9699919799/functions/getsockopt.html" target="_top"><code class="computeroutput"><span class="identifier">getsockopt</span><span class="special">()</span></code></a>
                   (or equivalent).
                 </p>
               </td>
@@ -116,7 +116,7 @@
 <td>
                 <p>
                   Returns a pointer suitable for passing as the <span class="emphasis"><em>option_value</em></span>
-                  argument to <span class="emphasis"><em>POSIX</em></span> <a href="http://www.opengroup.org/onlinepubs/000095399/functions/getsockopt.html" target="_top"><code class="computeroutput"><span class="identifier">getsockopt</span><span class="special">()</span></code></a>
+                  argument to <span class="emphasis"><em>POSIX</em></span> <a href="http://www.opengroup.org/onlinepubs/9699919799/functions/getsockopt.html" target="_top"><code class="computeroutput"><span class="identifier">getsockopt</span><span class="special">()</span></code></a>
                   (or equivalent).
                 </p>
               </td>
@@ -135,7 +135,7 @@
 <td>
                 <p>
                   Returns a value suitable for passing as the <span class="emphasis"><em>option_len</em></span>
-                  argument to <span class="emphasis"><em>POSIX</em></span> <a href="http://www.opengroup.org/onlinepubs/000095399/functions/getsockopt.html" target="_top"><code class="computeroutput"><span class="identifier">getsockopt</span><span class="special">()</span></code></a>
+                  argument to <span class="emphasis"><em>POSIX</em></span> <a href="http://www.opengroup.org/onlinepubs/9699919799/functions/getsockopt.html" target="_top"><code class="computeroutput"><span class="identifier">getsockopt</span><span class="special">()</span></code></a>
                   (or equivalent), after appropriate integer conversion has been
                   performed.
                 </p>
@@ -153,7 +153,7 @@
                 <p>
                   post: <code class="computeroutput">b.size(p) == s</code>.<br> Passed the value contained
                   in the <span class="emphasis"><em>option_len</em></span> argument to <span class="emphasis"><em>POSIX</em></span>
-                  <a href="http://www.opengroup.org/onlinepubs/000095399/functions/getsockopt.html" target="_top"><code class="computeroutput"><span class="identifier">getsockopt</span><span class="special">()</span></code></a>
+                  <a href="http://www.opengroup.org/onlinepubs/9699919799/functions/getsockopt.html" target="_top"><code class="computeroutput"><span class="identifier">getsockopt</span><span class="special">()</span></code></a>
                   (or equivalent) after successful completion of the function. Permitted
                   to throw an exception if the socket option object <code class="computeroutput">b</code>
                   does not support the specified size.
@@ -167,7 +167,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

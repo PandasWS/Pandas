@@ -14,7 +14,6 @@
 // we basically need to include every std lib header we use, otherwise
 // our poisoned macros can break legit std lib code.
 //
-#include <boost/config.hpp>
 #include <valarray>
 #include <complex>
 #include <iosfwd>
@@ -39,18 +38,10 @@
 #include <memory>
 #include <cerrno>
 #include <functional>
-#ifndef BOOST_NO_CXX11_HDR_FUTURE
 #include <future>
-#endif
-#ifndef BOOST_NO_CXX11_HDR_THREAD
 #include <thread>
-#endif
-#ifndef BOOST_NO_CXX11_HDR_RANDOM
 #include <random>
-#endif
-#ifndef BOOST_NO_CXX11_HDR_CHRONO
 #include <chrono>
-#endif
 #include <map>
 
 //
@@ -58,6 +49,12 @@
 // as it needs to be able to use them!
 //
 #include <boost/math/special_functions/fpclassify.hpp>
+//
+// lexical_cast uses macro unsafe isinf etc, so we have to include this as well:
+//
+#ifndef BOOST_MATH_STANDALONE
+#include <boost/lexical_cast.hpp>
+#endif
 
 //
 // Poison all the function-like macros in C99 so if we accidentally call them

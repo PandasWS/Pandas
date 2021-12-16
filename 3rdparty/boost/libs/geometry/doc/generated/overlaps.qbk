@@ -82,6 +82,9 @@ Or
 `#include <boost/geometry/algorithms/overlaps.hpp>`
 
 [include reference/algorithms/overlaps.qbk]
+[heading Examples]
+[overlaps]
+[overlaps_output]
 
 
 [endsect]

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Buffer-oriented asynchronous random-access read device requirements</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -36,7 +36,7 @@
         requirements.
       </p>
 <div class="table">
-<a name="boost_asio.reference.AsyncRandomAccessReadDevice.t0"></a><p class="title"><b>Table&#160;2.&#160;Buffer-oriented asynchronous random-access read device requirements</b></p>
+<a name="boost_asio.reference.AsyncRandomAccessReadDevice.t0"></a><p class="title"><b>Table 4. Buffer-oriented asynchronous random-access read device requirements</b></p>
 <div class="table-contents"><table class="table" summary="Buffer-oriented asynchronous random-access read device requirements">
 <colgroup>
 <col>
@@ -104,8 +104,8 @@
                   or more copies of <code class="computeroutput">mb</code> until such time as the read operation
                   no longer requires access to the memory specified by the buffers
                   in the sequence. The program must ensure the memory is valid until:<br>
-                  <br> &#8212; the last copy of <code class="computeroutput">mb</code> is destroyed, or<br>
-                  <br> &#8212; the handler for the asynchronous read operation is invoked,<br>
+                  <br> — the last copy of <code class="computeroutput">mb</code> is destroyed, or<br>
+                  <br> — the handler for the asynchronous read operation is invoked,<br>
                   <br> whichever comes first.<br> <br> If the total size of
                   all buffers in the sequence <code class="computeroutput">mb</code> is <code class="computeroutput">0</code>,
                   the asynchronous read operation shall complete immediately and
@@ -121,7 +121,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

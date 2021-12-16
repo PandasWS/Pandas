@@ -25,7 +25,7 @@ protected:
     // protected and overriding public functions: Both must use virtual_
     // (otherwise C++ won't override because mismatching parameters), but
     // overridden protected does not use public_function.
-    virtual void f(boost::contract::virtual_* v = 0) {
+    virtual void f(boost::contract::virtual_* /* v */ = 0) {
         boost::contract::check c = boost::contract::function()
             .precondition([] { out << "b::f::pre" << std::endl; })
             .old([] { out << "b::f::old" << std::endl; })

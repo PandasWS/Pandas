@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>FAQ</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Beast">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Beast">
 <link rel="up" href="../design_choices.html" title="Design Choices">
 <link rel="prev" href="comparison_to_zaphoyd_studios_we.html" title="Comparison to Zaphoyd Studios WebSocket++">
 <link rel="next" href="../moved1.html" title="Release Notes (Moved)">
@@ -293,12 +293,40 @@
               for user-defined next layer types.
             </p>
 </dd>
+<dt><span class="term"> Windows and OpenSSL: How do I install and build with OpenSSL on
+          Microsoft Windows? </span></dt>
+<dd>
+<p>
+              An easy method is to use command-line package installers chocolatey
+              or scoop. Examples: "choco install -y openssl --x86 --version
+              1.1.1.700" or "scoop install openssl@1.1.1g -a 32bit -g"
+            </p>
+<p>
+              If you've installed OpenSSL to a directory with spaces in the name,
+              it's often preferable to create a symbolic link so that you may use
+              a simpler path, such as:
+            </p>
+<p>
+              mklink /D "OpenSSL" "Program Files (x86)\OpenSSL-Win32"
+            </p>
+<p>
+              Set the environment variable OPENSSL_ROOT to the location of the new
+              install:
+            </p>
+<p>
+              set OPENSSL_ROOT=C:/OpenSSL
+            </p>
+<p>
+              Then, proceed to build. Refer to beast/.dockers/windows-vs-32/Dockerfile
+              for an example of building the test cases with OpenSSL.
+            </p>
+</dd>
 </dl>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2016-2019 Vinnie
+<td align="right"><div class="copyright-footer">Copyright © 2016-2019 Vinnie
       Falco<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

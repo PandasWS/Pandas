@@ -39,6 +39,22 @@ class svg_mapper
 [table
 [[Function] [Description] [Parameters] ]
 [[``svg_mapper(std::ostream & stream, SvgCoordinateType width, SvgCoordinateType height,
+            calculation_type scale, std::string const & width_height = "width=\"100%\" height=\"100%\"")``
+
+] [Constructor, initializing the SVG map. Opens and initializes the SVG. Should be called explicitly. ] [[* std::ostream &]: ['stream]:  Output stream, should be a stream already open 
+
+[* SvgCoordinateType]: ['width]:  Width of the SVG map (in SVG pixels) 
+
+[* SvgCoordinateType]: ['height]:  Height of the SVG map (in SVG pixels) 
+
+[* calculation_type]: ['scale]:  Scale factor of the automatically determined bounding box. If the factor is less than 1.0, there will be a margin around the geometries. A factor of 0.95 is often a convenient margin. If the factor is more than 1.0, the SVG map is zoomed and not all geometries will be visible. 
+
+[* std::string const &]: ['width_height]:  Optional information to increase width and/or height 
+
+
+
+]]
+[[``svg_mapper(std::ostream & stream, SvgCoordinateType width, SvgCoordinateType height,
             std::string const & width_height = "width=\"100%\" height=\"100%\"")``
 
 ] [Constructor, initializing the SVG map. Opens and initializes the SVG. Should be called explicitly. ] [[* std::ostream &]: ['stream]:  Output stream, should be a stream already open 

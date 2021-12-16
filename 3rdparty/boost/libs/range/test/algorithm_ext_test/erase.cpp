@@ -112,6 +112,64 @@ namespace
         test_remove_erase_if_impl<std::list<int> >();
     }
 
+    template< class Container >
+    void test_unique_erase_impl()
+    {
+        Container source;
+        source.push_back(1);
+        source.push_back(1);
+        source.push_back(1);
+        source.push_back(2);
+        source.push_back(3);
+        source.push_back(3);
+
+        Container reference;
+        reference.push_back(1);
+        reference.push_back(2);
+        reference.push_back(3);
+
+        boost::unique_erase(source);
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( reference.begin(), reference.end(),
+            source.begin(), source.end() );
+    }
+
+    void test_unique_erase()
+    {
+        test_unique_erase_impl<std::vector<int> >();
+        test_unique_erase_impl<std::list<int> >();
+    }
+
+    struct distance_smaller_2
+    {
+        typedef bool result_type;
+        typedef int argument_type;
+        bool operator()(int x, int y) const { return std::abs(x - y) < 2; }
+    };
+
+    template< class Container >
+    void test_unique_erase_pred_impl()
+    {
+        Container source;
+        for (int i = 0; i < 10; ++i)
+            source.push_back(i);
+
+        Container reference;
+        for (int i = 0; i < 10; i += 2)
+            reference.push_back(i);
+
+
+        boost::unique_erase(source, distance_smaller_2());
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( reference.begin(), reference.end(),
+            source.begin(), source.end() );
+    }
+
+    void test_unique_erase_pred()
+    {
+        test_unique_erase_pred_impl<std::vector<int> >();
+        test_unique_erase_pred_impl<std::list<int> >();
+    }
 }
 
 boost::unit_test::test_suite*
@@ -123,6 +181,8 @@ init_unit_test_suite(int argc, char* argv[])
     test->add( BOOST_TEST_CASE( &test_erase ) );
     test->add( BOOST_TEST_CASE( &test_remove_erase ) );
     test->add( BOOST_TEST_CASE( &test_remove_erase_if ) );
+    test->add( BOOST_TEST_CASE( &test_unique_erase ) );
+    test->add( BOOST_TEST_CASE( &test_unique_erase_pred ) );
 
     return test;
 }

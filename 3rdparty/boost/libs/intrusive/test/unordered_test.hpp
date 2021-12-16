@@ -15,7 +15,7 @@
 #include <vector>
 #include <algorithm> //std::sort
 #include <set>
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include "test_macros.hpp"
 #include "test_container.hpp"
@@ -72,8 +72,8 @@ void test_unordered<ContainerDefiner>::test_all (value_cont_type& values)
    }
    {
       value_cont_type vals(BucketSize);
-      for (int i = 0; i < (int)BucketSize; ++i)
-         (&vals[i])->value_ = i;
+      for (std::size_t i = 0; i < BucketSize; ++i)
+         (&vals[i])->value_ = (int)i;
       typename unordered_type::bucket_type buckets [BucketSize];
       unordered_type testset(bucket_traits(
          pointer_traits<bucket_ptr>::pointer_to(buckets[0]), BucketSize));
@@ -99,14 +99,14 @@ void test_unordered<ContainerDefiner>::test_impl()
    typedef typename unordered_type::bucket_ptr    bucket_ptr;
 
    value_cont_type values (5);
-   for (int i = 0; i < 5; ++i)
-      values[i].value_ = i;
+   for (std::size_t i = 0u; i < 5u; ++i)
+      values[i].value_ = (int)i;
 
    typename unordered_type::bucket_type buckets [BucketSize];
    unordered_type testset(bucket_traits(
       pointer_traits<bucket_ptr>::pointer_to(buckets[0]), BucketSize));
 
-   for (int i = 0; i < 5; ++i)
+   for (std::size_t i = 0u; i < 5u; ++i)
       testset.insert (values[i]);
 
    testset.erase (testset.iterator_to (values[0]));
@@ -309,11 +309,11 @@ void test_unordered<ContainerDefiner>::test_insert(value_cont_type& values, deta
       {
          //Now erase just one per loop
          const int random_init[] = { 3, 2, 4, 1, 5, 2, 2 };
-         const unsigned int random_size = sizeof(random_init)/sizeof(random_init[0]);
+         const std::size_t random_size = sizeof(random_init)/sizeof(random_init[0]);
          typename unordered_type::bucket_type single_bucket[1];
-         for(unsigned int i = 0, max = random_size; i != max; ++i){
+         for(std::size_t i = 0u, max = random_size; i != max; ++i){
             value_cont_type data (random_size);
-            for (unsigned int j = 0; j < random_size; ++j)
+            for (std::size_t j = 0; j < random_size; ++j)
                data[j].value_ = random_init[j];
             unordered_type testset_new(bucket_traits(
                pointer_traits<bucket_ptr>::pointer_to(single_bucket[0]), 1));
@@ -324,22 +324,22 @@ void test_unordered<ContainerDefiner>::test_insert(value_cont_type& values, deta
       }
    }
    {
-      const unsigned int LoadFactor    = 3;
-      const unsigned int NumIterations = BucketSize*LoadFactor;
+      const std::size_t LoadFactor    = 3;
+      const std::size_t NumIterations = BucketSize*LoadFactor;
       value_cont_type random_init(NumIterations);//Preserve memory
       value_cont_type set_tester;
       set_tester.reserve(NumIterations);
 
       //Initialize values
-      for (unsigned int i = 0; i < NumIterations; ++i){
-         random_init[i].value_ = i*2;//(i/LoadFactor)*LoadFactor;
+      for (std::size_t i = 0u; i < NumIterations; ++i){
+         random_init[i].value_ = (int)i*2;//(i/LoadFactor)*LoadFactor;
       }
 
       typename unordered_type::bucket_type buckets [BucketSize];
       bucket_traits btraits(pointer_traits<bucket_ptr>::pointer_to(buckets[0]), BucketSize);
 
-      for(unsigned int initial_pos = 0; initial_pos != (NumIterations+1); ++initial_pos){
-         for(unsigned int final_pos = initial_pos; final_pos != (NumIterations+1); ++final_pos){
+      for(std::size_t initial_pos = 0; initial_pos != (NumIterations+1u); ++initial_pos){
+         for(std::size_t final_pos = initial_pos; final_pos != (NumIterations+1); ++final_pos){
 
             //Create intrusive container inserting values
             unordered_type testset
@@ -351,16 +351,16 @@ void test_unordered<ContainerDefiner>::test_insert(value_cont_type& values, deta
 
             //Obtain the iterator range to erase
             iterator it_beg_pos = testset.begin();
-            for(unsigned int it_beg_pos_num = 0; it_beg_pos_num != initial_pos; ++it_beg_pos_num){
+            for(std::size_t it_beg_pos_num = 0; it_beg_pos_num != initial_pos; ++it_beg_pos_num){
                ++it_beg_pos;
             }
             iterator it_end_pos(it_beg_pos);
-            for(unsigned int it_end_pos_num = 0; it_end_pos_num != (final_pos - initial_pos); ++it_end_pos_num){
+            for(std::size_t it_end_pos_num = 0; it_end_pos_num != (final_pos - initial_pos); ++it_end_pos_num){
                ++it_end_pos;
             }
 
             //Erase the same values in both the intrusive and original vector
-            std::size_t erased_cnt = boost::intrusive::iterator_distance(it_beg_pos, it_end_pos);
+            std::size_t erased_cnt = boost::intrusive::iterator_udistance(it_beg_pos, it_end_pos);
 
             //Erase values from the intrusive container
             testset.erase(it_beg_pos, it_end_pos);

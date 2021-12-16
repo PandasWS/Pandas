@@ -67,36 +67,43 @@ void expected_results()
          "[^|]*",                          // stdlib
          "[^|]*",                          // platform
          largest_type,                     // test type(s)
-         "[^|]*Medium.*",                   // test data group
-         ".*", 200000, 7000);                 // test function
+         "[^|]*Medium.*",                  // test data group
+         ".*", 200000, 7000);              // test function
+      add_expected_result(
+         "[^|]*",                          // compiler
+         "[^|]*",                          // stdlib
+         "[^|]*",                          // platform
+         "real_concept",                   // test type(s)
+         "[^|]*Large.*",                   // test data group
+         ".*", 300000, 10000);             // test function
       add_expected_result(
          "[^|]*",                          // compiler
          "[^|]*",                          // stdlib
          "[^|]*",                          // platform
          largest_type,                     // test type(s)
-         "[^|]*Large.*",                          // test data group
-         ".*", 80000, 5000);                  // test function
+         "[^|]*Large.*",                   // test data group
+         ".*", 80000, 5000);               // test function
       add_expected_result(
          "[^|]*",                          // compiler
          "[^|]*",                          // stdlib
          "[^|]*",                          // platform
          largest_type,                     // test type(s)
-         "[^|]*Integer.*",                          // test data group
-         ".*", 30000, 1500);                  // test function
+         "[^|]*Integer.*",                 // test data group
+         ".*", 30000, 1500);               // test function
       add_expected_result(
          "[^|]*",                          // compiler
          "[^|]*",                          // stdlib
          "[^|]*",                          // platform
-         "double",                     // test type(s)
+         "double",                         // test type(s)
          "[^|]*Large.*",                   // test data group
          ".*", 3300, 200);                 // test function
       add_expected_result(
          "[^|]*",                          // compiler
          "[^|]*",                          // stdlib
          "[^|]*",                          // platform
-         "double",                     // test type(s)
-         "[^|]*",                   // test data group
-         ".*", 200, 50);                 // test function
+         "double",                         // test type(s)
+         "[^|]*",                          // test data group
+         ".*", 200, 50);                   // test function
    }
 
    // catch all default is 2eps for all types:
@@ -106,7 +113,7 @@ void expected_results()
       "[^|]*",                          // platform
       "real_concept",                   // test type(s)
       "[^|]*large.*",                   // test data group
-      ".*", 200000, 6000);                 // test function
+      ".*", 200000, 6000);              // test function
    add_expected_result(
       "[^|]*",                          // compiler
       "[^|]*",                          // stdlib
@@ -146,7 +153,7 @@ BOOST_AUTO_TEST_CASE( test_main )
 #ifdef TEST_LDOUBLE
    test_spots(0.0L);
 #endif
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
 #ifdef TEST_REAL_CONCEPT
    test_spots(boost::math::concepts::real_concept(0.1));
 #endif

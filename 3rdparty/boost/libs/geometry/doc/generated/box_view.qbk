@@ -27,7 +27,6 @@ Adapts a box to the Boost.Range concept, enabling the user to iterating box corn
 [heading Synopsis]
 ``template<typename Box, bool Clockwise>
 struct box_view
-      : public detail::points_view< geometry::point_type< Box >::type, 5 >
 {
   // ...
 };
@@ -50,6 +49,27 @@ struct box_view
 
 
 ]]
+]
+
+[heading Member Function(s)]
+[table
+[[Function] [Description] [Parameters]  [Returns]]
+[[``const_iterator begin()``
+
+] [] [
+
+][
+
+]
+]
+[[``const_iterator end()``
+
+] [] [
+
+][
+
+]
+]
 ]
 
 [heading Header]

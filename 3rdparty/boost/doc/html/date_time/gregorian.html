@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Gregorian</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../date_time.html" title="Chapter&#160;13.&#160;Boost.Date_Time">
+<link rel="up" href="../date_time.html" title="Chapter 13. Boost.Date_Time">
 <link rel="prev" href="examples/general_usage_examples.html" title="General Usage Examples">
 <link rel="next" href="posix_time.html" title="Posix Time">
 </head>
@@ -66,24 +66,24 @@
 <tbody>
 <tr>
 <td valign="top"><div class="literallayout"><p><br>
-<a class="link" href="examples.html#date_time.examples.days_alive" title="Days Alive">Days&#160;Alive</a>&#160;&#160;&#160;<br>
-<a class="link" href="examples.html#date_time.examples.days_between_new_year" title="Days Between New Years">Days&#160;Between&#160;New&#160;Years</a></p></div></td>
+<a class="link" href="examples.html#date_time.examples.days_alive" title="Days Alive">Days Alive</a>   <br>
+<a class="link" href="examples.html#date_time.examples.days_between_new_year" title="Days Between New Years">Days Between New Years</a></p></div></td>
 <td>Simple date arithmetic. Retrieve current day from clock.</td>
 </tr>
 <tr>
-<td valign="top"><div class="literallayout"><p><a class="link" href="examples.html#date_time.examples.dates_as_strings" title="Dates as Strings">Dates&#160;as&#160;strings</a></p></div></td>
+<td valign="top"><div class="literallayout"><p><a class="link" href="examples.html#date_time.examples.dates_as_strings" title="Dates as Strings">Dates as strings</a></p></div></td>
 <td>Simple parsing and formatting of dates from/to strings</td>
 </tr>
 <tr>
-<td valign="top"><div class="literallayout"><p><a class="link" href="examples.html#date_time.examples.date_period_calc" title="Date Period Calculations">Date&#160;Period&#160;Calculations</a></p></div></td>
+<td valign="top"><div class="literallayout"><p><a class="link" href="examples.html#date_time.examples.date_period_calc" title="Date Period Calculations">Date Period Calculations</a></p></div></td>
 <td>See if a date is in a set of date periods (eg: is it a holiday/weekend)</td>
 </tr>
 <tr>
-<td valign="top"><div class="literallayout"><p><a class="link" href="examples.html#date_time.examples.print_month" title="Print Month">Print&#160;a&#160;month</a></p></div></td>
+<td valign="top"><div class="literallayout"><p><a class="link" href="examples.html#date_time.examples.print_month" title="Print Month">Print a month</a></p></div></td>
 <td>Small utility program which prints out all the days in a month from command line. Need to know if 1999-Jan-1 was a Friday or a Saturday? This program shows how to do it.</td>
 </tr>
 <tr>
-<td valign="top"><div class="literallayout"><p><a class="link" href="examples.html#date_time.examples.print_holidays" title="Print Holidays">Print&#160;Holidays</a></p></div></td>
+<td valign="top"><div class="literallayout"><p><a class="link" href="examples.html#date_time.examples.print_holidays" title="Print Holidays">Print Holidays</a></p></div></td>
 <td>Uses date generators to convert abstract specification into concrete set of dates.</td>
 </tr>
 </tbody>
@@ -485,7 +485,7 @@ tm d_tm = to_tm(d);
    tm_hour =&gt; 0
    tm_min  =&gt; 0
    tm_sec  =&gt; 0
-   tm_isddst =&gt; -1 */</pre>
+   tm_isdst =&gt; -1 */</pre>
 	  </td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">date date_from_tm(tm datetm)</pre></td>
@@ -1425,20 +1425,21 @@ or
 <tr><td>See also <a class="link" href="gregorian.html#date_time.gregorian.date_class" title="Date">gregorian::date</a> day_of_week</td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">static date_int_type day_number(ymd_type)</pre></td>
-<td> Convert a ymd_type into a day number. The day number is an absolute number of days since the epoch start.</td>
+<td> Convert a ymd_type into a day number. The day number mapping is implementation defined, however the library implements the 1400-01-01 epoch as follows <pre class="screen"> date(gregorian_calendar::epoch()).day_number() == 2232400</pre>
+</td>
 </tr>
-<tr><td>&#160;</td></tr>
+<tr><td> </td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">static short end_of_month_day(year_type,
                               month_type)</pre></td>
 <td>Given a year and month determine the last day of the month.</td>
 </tr>
-<tr><td>&#160;</td></tr>
+<tr><td> </td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">static ymd_type from_day_number(date_int_type)</pre></td>
 <td> Convert a day number to a ymd struct.</td>
 </tr>
-<tr><td>&#160;</td></tr>
+<tr><td> </td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">static bool is_leap_year(year_type)</pre></td>
 <td>Returns true if specified year is a leap year.</td>
@@ -1451,7 +1452,7 @@ or
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2005 CrystalClear Software, Inc<p>Subject to the Boost Software License, Version 1.0. (See accompanying file
+<td align="right"><div class="copyright-footer">Copyright © 2001-2005 CrystalClear Software, Inc<p>Subject to the Boost Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>
 </tr></table>

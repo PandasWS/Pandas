@@ -38,7 +38,8 @@ test-suite "bimap_test"
     # Test bimap container
     [ run test_bimap_ordered.cpp                                              ]
     [ run test_bimap_unordered.cpp                                            ]
-    [ run test_bimap_sequenced.cpp                                            ]
+    [ run test_bimap_sequenced.cpp : : :
+          <toolset>gcc-4.4.7,<variant>release:<build>no                       ]
     [ run test_bimap_unconstrained.cpp                                        ]
     [ run test_bimap_assign.cpp                                               ]
     [ run test_bimap_property_map.cpp                                         ]
@@ -73,7 +74,9 @@ test-suite "bimap_and_boost"
     [ run     ../example/bimap_and_boost/foreach.cpp                          ]
     [ run     ../example/bimap_and_boost/lambda.cpp                           ]
     [ run     ../example/bimap_and_boost/assign.cpp                           ]
-    [ run     ../example/bimap_and_boost/xpressive.cpp                        ]
+    [ run     ../example/bimap_and_boost/xpressive.cpp : : :
+        <toolset>gcc-10,<cxxstd>03:<build>no
+        <toolset>gcc-11,<cxxstd>03:<build>no                                  ]
     [ run     ../example/bimap_and_boost/typeof.cpp                           ]
     [ compile ../example/bimap_and_boost/serialization.cpp
                     /boost/serialization//boost_serialization                 ]

@@ -39,22 +39,6 @@ class strategy::distance::projected_point
 [heading Member Function(s)]
 [table
 [[Function] [Description] [Parameters]  [Returns]]
-[[``relate_segment_segment_strategy_type get_relate_segment_segment_strategy()``
-
-] [] [
-
-][
-
-]
-]
-[[``point_in_geometry_strategy_type get_point_in_geometry_strategy()``
-
-] [] [
-
-][
-
-]
-]
 [[``template<typename Point, typename PointOfSegment>
 calculation_type< Point, PointOfSegment >::type apply(Point const & p, PointOfSegment const & p1, PointOfSegment const & p2)``
 

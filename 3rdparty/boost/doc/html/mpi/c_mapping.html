@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Mapping from C MPI to Boost.MPI</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../mpi.html" title="Chapter&#160;26.&#160;Boost.MPI">
+<link rel="up" href="../mpi.html" title="Chapter 26. Boost.MPI">
 <link rel="prev" href="tutorial.html" title="Tutorial">
 <link rel="next" href="reference.html" title="Reference">
 </head>
@@ -33,8 +33,14 @@
       that are already familiar with the C or Fortran interfaces to MPI, or for porting
       existing parallel programs to Boost.MPI.
     </p>
+<p>
+      Note that this is not a perfect one to one mapping, the Boost.MPI will sometime
+      use function from the C API in a way that is transparent for the end user.
+      For example, <a href="http://www.mpi-forum.org/docs/mpi-1.1/mpi-11-html/node50.html#Node50" target="_top"><code class="computeroutput"><span class="identifier">MPI_Probe</span> <span class="keyword">and</span> <span class="identifier">friends</span></code></a> can be used to implement
+      asynchronous send/recv.
+    </p>
 <div class="table">
-<a name="mpi.c_mapping.point_to_point_communication"></a><p class="title"><b>Table&#160;26.1.&#160;Point-to-point communication</b></p>
+<a name="mpi.c_mapping.point_to_point_communication"></a><p class="title"><b>Table 26.1. Point-to-point communication</b></p>
 <div class="table-contents"><table class="table" summary="Point-to-point communication">
 <colgroup>
 <col>
@@ -325,7 +331,7 @@
             </td>
 <td>
               <p>
-                unsupported
+                <code class="computeroutput"><a class="link" href="../boost/mpi/communicator.html#id-1_3_27_7_6_2_1_1_3_15-bb">communicator::sendrecv</a></code>
               </p>
             </td>
 </tr>
@@ -518,7 +524,7 @@
       constants.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.datatypes"></a><p class="title"><b>Table&#160;26.2.&#160;Datatypes</b></p>
+<a name="mpi.c_mapping.datatypes"></a><p class="title"><b>Table 26.2. Datatypes</b></p>
 <div class="table-contents"><table class="table" summary="Datatypes">
 <colgroup>
 <col>
@@ -817,7 +823,7 @@
       the user, many of these operations are called internally by Boost.MPI.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.derived_datatypes"></a><p class="title"><b>Table&#160;26.3.&#160;Derived datatypes</b></p>
+<a name="mpi.c_mapping.derived_datatypes"></a><p class="title"><b>Table 26.3. Derived datatypes</b></p>
 <div class="table-contents"><table class="table" summary="Derived datatypes">
 <colgroup>
 <col>
@@ -1029,7 +1035,7 @@
       can be used to pack or unpack a contiguous buffer using MPI's facilities.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.packing_and_unpacking"></a><p class="title"><b>Table&#160;26.4.&#160;Packing and unpacking</b></p>
+<a name="mpi.c_mapping.packing_and_unpacking"></a><p class="title"><b>Table 26.4. Packing and unpacking</b></p>
 <div class="table-contents"><table class="table" summary="Packing and unpacking">
 <colgroup>
 <col>
@@ -1093,7 +1099,7 @@
       be invoked when it is possible (and efficient) to do so.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.collectives"></a><p class="title"><b>Table&#160;26.5.&#160;Collectives</b></p>
+<a name="mpi.c_mapping.collectives"></a><p class="title"><b>Table 26.5. Collectives</b></p>
 <div class="table-contents"><table class="table" summary="Collectives">
 <colgroup>
 <col>
@@ -1307,7 +1313,7 @@
       reduction operations can be mapped between the C MPI and Boost.MPI.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.reduction_operations"></a><p class="title"><b>Table&#160;26.6.&#160;Reduction operations</b></p>
+<a name="mpi.c_mapping.reduction_operations"></a><p class="title"><b>Table 26.6. Reduction operations</b></p>
 <div class="table-contents"><table class="table" summary="Reduction operations">
 <colgroup>
 <col>
@@ -1505,7 +1511,7 @@
       class in Boost.MPI.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.predefined_communicators"></a><p class="title"><b>Table&#160;26.7.&#160;Predefined communicators</b></p>
+<a name="mpi.c_mapping.predefined_communicators"></a><p class="title"><b>Table 26.7. Predefined communicators</b></p>
 <div class="table-contents"><table class="table" summary="Predefined communicators">
 <colgroup>
 <col>
@@ -1569,7 +1575,7 @@
       Boost.MPI supports groups of processes through its <code class="computeroutput"><a class="link" href="../boost/mpi/group.html" title="Class group">group</a></code> class.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.group_operations_and_constants"></a><p class="title"><b>Table&#160;26.8.&#160;Group operations and constants</b></p>
+<a name="mpi.c_mapping.group_operations_and_constants"></a><p class="title"><b>Table 26.8. Group operations and constants</b></p>
 <div class="table-contents"><table class="table" summary="Group operations and constants">
 <colgroup>
 <col>
@@ -1799,7 +1805,7 @@
       Boost.MPI provides manipulation of communicators through the <code class="computeroutput"><a class="link" href="../boost/mpi/communicator.html" title="Class communicator">communicator</a></code> class.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.communicator_operations"></a><p class="title"><b>Table&#160;26.9.&#160;Communicator operations</b></p>
+<a name="mpi.c_mapping.communicator_operations"></a><p class="title"><b>Table 26.9. Communicator operations</b></p>
 <div class="table-contents"><table class="table" summary="Communicator operations">
 <colgroup>
 <col>
@@ -1912,7 +1918,7 @@
       class.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.inter_communicator_operations"></a><p class="title"><b>Table&#160;26.10.&#160;Inter-communicator operations</b></p>
+<a name="mpi.c_mapping.inter_communicator_operations"></a><p class="title"><b>Table 26.10. Inter-communicator operations</b></p>
 <div class="table-contents"><table class="table" summary="Inter-communicator operations">
 <colgroup>
 <col>
@@ -2000,7 +2006,7 @@
       Boost.MPI currently provides no support for attribute caching.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.attributes_and_caching"></a><p class="title"><b>Table&#160;26.11.&#160;Attributes and caching</b></p>
+<a name="mpi.c_mapping.attributes_and_caching"></a><p class="title"><b>Table 26.11. Attributes and caching</b></p>
 <div class="table-contents"><table class="table" summary="Attributes and caching">
 <colgroup>
 <col>
@@ -2151,7 +2157,7 @@
       be viewed as a BGL graph for use in existing, generic graph algorithms.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.process_topologies"></a><p class="title"><b>Table&#160;26.12.&#160;Process topologies</b></p>
+<a name="mpi.c_mapping.process_topologies"></a><p class="title"><b>Table 26.12. Process topologies</b></p>
 <div class="table-contents"><table class="table" summary="Process topologies">
 <colgroup>
 <col>
@@ -2352,7 +2358,7 @@
             </td>
 <td>
               <p>
-                unsupported
+                <code class="computeroutput"><a class="link" href="../boost/mpi/cartesian_communicator.html#id-1_3_27_7_3_2_1_1_4_3-bb">cartesian_communicator::shifted_ranks </a></code>
               </p>
             </td>
 </tr>
@@ -2400,7 +2406,7 @@
       Boost.MPI supports environmental inquires through the <code class="computeroutput"><a class="link" href="../boost/mpi/environment.html" title="Class environment">environment</a></code> class.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.environmental_inquiries"></a><p class="title"><b>Table&#160;26.13.&#160;Environmental inquiries</b></p>
+<a name="mpi.c_mapping.environmental_inquiries"></a><p class="title"><b>Table 26.13. Environmental inquiries</b></p>
 <div class="table-contents"><table class="table" summary="Environmental inquiries">
 <colgroup>
 <col>
@@ -2475,7 +2481,7 @@
       class.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.error_handling"></a><p class="title"><b>Table&#160;26.14.&#160;Error handling</b></p>
+<a name="mpi.c_mapping.error_handling"></a><p class="title"><b>Table 26.14. Error handling</b></p>
 <div class="table-contents"><table class="table" summary="Error handling">
 <colgroup>
 <col>
@@ -2599,7 +2605,7 @@
       Timer library</a>.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.timing_facilities"></a><p class="title"><b>Table&#160;26.15.&#160;Timing facilities</b></p>
+<a name="mpi.c_mapping.timing_facilities"></a><p class="title"><b>Table 26.15. Timing facilities</b></p>
 <div class="table-contents"><table class="table" summary="Timing facilities">
 <colgroup>
 <col>
@@ -2664,7 +2670,7 @@
       class.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.startup_shutdown_facilities"></a><p class="title"><b>Table&#160;26.16.&#160;Startup/shutdown facilities</b></p>
+<a name="mpi.c_mapping.startup_shutdown_facilities"></a><p class="title"><b>Table 26.16. Startup/shutdown facilities</b></p>
 <div class="table-contents"><table class="table" summary="Startup/shutdown facilities">
 <colgroup>
 <col>
@@ -2741,7 +2747,7 @@
       1.1.
     </p>
 <div class="table">
-<a name="mpi.c_mapping.profiling_interface"></a><p class="title"><b>Table&#160;26.17.&#160;Profiling interface</b></p>
+<a name="mpi.c_mapping.profiling_interface"></a><p class="title"><b>Table 26.17. Profiling interface</b></p>
 <div class="table-contents"><table class="table" summary="Profiling interface">
 <colgroup>
 <col>
@@ -2792,7 +2798,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2005-2007 Douglas Gregor,
+<td align="right"><div class="copyright-footer">Copyright © 2005-2007 Douglas Gregor,
       Matthias Troyer, Trustees of Indiana University<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at &lt;ulink url="http://www.boost.org/LICENSE_1_0.txt"&gt;

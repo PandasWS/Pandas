@@ -4,8 +4,8 @@
 // Copyright (c) 2017 Barend Gehrels, Amsterdam, the Netherlands.
 // Copyright (c) 2017 Adam Wulkiewicz, Lodz, Poland.
 
-// This file was modified by Oracle on 2017.
-// Modifications copyright (c) 2017, Oracle and/or its affiliates.
+// This file was modified by Oracle on 2017-2021.
+// Modifications copyright (c) 2017-2021, Oracle and/or its affiliates.
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Use, modification and distribution is subject to the Boost Software License,
@@ -14,18 +14,13 @@
 
 #include <geometry_test_common.hpp>
 
-#include <boost/geometry/algorithms/detail/overlay/sort_by_side.hpp>
-
-#include <boost/geometry/strategies/strategies.hpp>  // for equals/within
+#include <boost/geometry/algorithms/correct.hpp>
 #include <boost/geometry/algorithms/detail/overlay/get_turns.hpp>
 #include <boost/geometry/algorithms/detail/overlay/debug_turn_info.hpp>
-#include <boost/geometry/algorithms/correct.hpp>
+#include <boost/geometry/algorithms/detail/overlay/sort_by_side.hpp>
 #include <boost/geometry/algorithms/equals.hpp>
-#include <boost/geometry/io/wkt/wkt.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
-
-#include <boost/assign/list_of.hpp>
-#include <boost/foreach.hpp>
+#include <boost/geometry/io/wkt/wkt.hpp>
 
 #if defined(TEST_WITH_SVG)
 #include "debug_sort_by_side_svg.hpp"
@@ -40,7 +35,7 @@ std::string as_string(std::vector<T> const& v)
 {
     std::stringstream out;
     bool first = true;
-    BOOST_FOREACH(T const& value, v)
+    for (T const& value : v)
     {
         out << (first ? "[" : " , ") << value;
         first = false;
@@ -74,7 +69,7 @@ std::vector<std::size_t> apply_get_turns(std::string const& case_id,
     typedef bg::detail::overlay::turn_info
     <
         point_type,
-        typename bg::segment_ratio_type<point_type, RobustPolicy>::type
+        typename bg::detail::segment_ratio_type<point_type, RobustPolicy>::type
     > turn_info;
     typedef std::deque<turn_info> turn_container_type;
 
@@ -90,14 +85,14 @@ std::vector<std::size_t> apply_get_turns(std::string const& case_id,
 
     // Define sorter, sorting counter-clockwise such that polygons are on the
     // right side
-    typedef typename Strategy::side_strategy_type side_strategy;
+    typedef decltype(strategy.side()) side_strategy;
     typedef bg::detail::overlay::sort_by_side::side_sorter
         <
             false, false, overlay_union,
             point_type, side_strategy, std::less<int>
         > sbs_type;
 
-    sbs_type sbs(strategy.get_side_strategy());
+    sbs_type sbs(strategy.side());
 
     std::cout << "Case: " << case_id << std::endl;
 
@@ -120,7 +115,7 @@ std::vector<std::size_t> apply_get_turns(std::string const& case_id,
                     has_origin = true;
                 }
 
-                sbs.add(turn.operations[i], turn_index, i,
+                sbs.add(turn, turn.operations[i], turn_index, i,
                         geometry1, geometry2, is_origin);
 
             }
@@ -256,9 +251,9 @@ void test_basic(std::string const& case_id,
     rescale_policy_type robust_policy
         = bg::get_rescale_policy<rescale_policy_type>(g1, g2);
 
-    typedef typename bg::strategy::intersection::services::default_strategy
+    typedef typename bg::strategies::relate::services::default_strategy
         <
-            typename bg::cs_tag<point_type>::type
+            multi_polygon, multi_polygon
         >::type strategy_type;
 
     strategy_type strategy;
@@ -268,8 +263,6 @@ void test_basic(std::string const& case_id,
         expected_open_count, expected_max_rank, expected_right_count);
 }
 
-using boost::assign::list_of;
-
 template <typename T>
 void test_all()
 {
@@ -277,67 +270,67 @@ void test_all()
       "MULTIPOLYGON(((0 2,1 2,1 1,0 1,0 2)))",
       "MULTIPOLYGON(((1 0,1 1,2 1,2 0,1, 0)))",
       "POINT(1 1)", "POINT(1 0)",
-      2, 3, list_of(-1)(1)(-1)(1));
+      2, 3, {-1, 1, -1, 1});
 
     test_basic<T>("dup1",
       "MULTIPOLYGON(((0 2,1 2,1 1,0 1,0 2)))",
       "MULTIPOLYGON(((1 0,1 1,2 1,2 0,1, 0)),((0 2,1 2,1 1,0 1,0 2)))",
       "POINT(1 1)", "POINT(1 0)",
-      2, 3, list_of(-1)(1)(-1)(2));
+      2, 3, {-1, 1, -1, 2});
 
     test_basic<T>("dup2",
       "MULTIPOLYGON(((0 2,1 2,1 1,0 1,0 2)),((1 0,1 1,2 1,2 0,1, 0)))",
       "MULTIPOLYGON(((1 0,1 1,2 1,2 0,1, 0)))",
       "POINT(1 1)", "POINT(1 0)",
-      2, 3, list_of(-1)(2)(-1)(1));
+      2, 3, {-1, 2, -1, 1});
 
     test_basic<T>("dup3",
       "MULTIPOLYGON(((0 2,1 2,1 1,0 1,0 2)),((1 0,1 1,2 1,2 0,1, 0)))",
       "MULTIPOLYGON(((1 0,1 1,2 1,2 0,1, 0)),((0 2,1 2,1 1,0 1,0 2)))",
       "POINT(1 1)", "POINT(1 0)",
-      2, 3, list_of(-1)(2)(-1)(2));
+      2, 3, {-1, 2, -1, 2});
 
     test_basic<T>("threequart1",
       "MULTIPOLYGON(((0 2,1 2,1 1,0 1,0 2)),((1 0,1 1,2 1,2 0,1, 0)))",
       "MULTIPOLYGON(((1 2,2 2,2 1,1 1,1 2)))",
       "POINT(1 1)", "POINT(1 0)",
-      1, 3, list_of(-1)(1)(1)(1));
+      1, 3, {-1, 1, 1, 1});
 
     test_basic<T>("threequart2",
       "MULTIPOLYGON(((0 2,1 2,1 1,0 1,0 2)),((1 0,1 1,2 1,2 0,1, 0)))",
       "MULTIPOLYGON(((1 2,2 2,2 1,1 1,1 2)),((2 0,1 0,1 1,2 0)))",
       "POINT(1 1)", "POINT(1 0)",
-      1, 4, list_of(-1)(2)(1)(1)(1));
+      1, 4, {-1, 2, 1, 1, 1});
 
     test_basic<T>("threequart3",
       "MULTIPOLYGON(((0 2,1 2,1 1,0 1,0 2)),((1 0,1 1,2 1,2 0,1, 0)))",
       "MULTIPOLYGON(((1 2,2 2,2 1,1 1,1 2)),((2 0,1 0,1 1,2 0)),((0 1,0 2,1 1,0 1)))",
       "POINT(1 1)", "POINT(1 0)",
-      1, 5, list_of(-1)(2)(1)(1)(-1)(2));
+      1, 5, {-1, 2, 1, 1, -1, 2});
 
     test_basic<T>("full1",
       "MULTIPOLYGON(((0 2,1 2,1 1,0 1,0 2)),((1 0,1 1,2 1,2 0,1, 0)))",
       "MULTIPOLYGON(((1 2,2 2,2 1,1 1,1 2)),((0 0,0 1,1 1,1 0,0 0)))",
       "POINT(1 1)", "POINT(1 0)",
-      0, 3, list_of(1)(1)(1)(1));
+      0, 3, {1, 1, 1, 1});
 
     test_basic<T>("hole1",
       "MULTIPOLYGON(((0 0,0 3,2 3,2 2,3 2,3 0,0 0),(1 1,2 1,2 2,1 2,1 1)),((4 2,3 2,3 3,4 3,4 2)))",
       "MULTIPOLYGON(((1 0,1 1,2 1,2 2,1 2,1 4,4 4,4 0,1, 0),(3 2,3 3,2 3,2 2,3 2)))",
       "POINT(1 2)", "POINT(2 2)",
-      1, 2, list_of(-1)(2)(1));
+      1, 2, {-1, 2, 1});
 
     test_basic<T>("hole2",
       "MULTIPOLYGON(((0 0,0 3,2 3,2 2,3 2,3 0,0 0),(1 1,2 1,2 2,1 2,1 1)),((4 2,3 2,3 3,4 3,4 2)))",
       "MULTIPOLYGON(((1 0,1 1,2 1,2 2,1 2,1 4,4 4,4 0,1, 0),(3 2,3 3,2 3,2 2,3 2)))",
       "POINT(2 2)", "POINT(2 1)",
-      2, 3, list_of(-1)(2)(-1)(2));
+      2, 3, {-1, 2, -1, 2});
 
     test_basic<T>("hole3",
       "MULTIPOLYGON(((0 0,0 3,2 3,2 2,3 2,3 0,0 0),(1 1,2 1,2 2,1 2,1 1)),((4 2,3 2,3 3,4 3,4 2)))",
       "MULTIPOLYGON(((1 0,1 1,2 1,2 2,1 2,1 4,4 4,4 0,1, 0),(3 2,3 3,2 3,2 2,3 2)))",
       "POINT(3 2)", "POINT(2 2)",
-      1, 3, list_of(-1)(2)(-1)(2));
+      1, 3, {-1, 2, -1, 2});
 }
 
 

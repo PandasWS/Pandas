@@ -1,9 +1,9 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 // Unit Test
 
-// Copyright (c) 2017, 2018 Oracle and/or its affiliates.
-
+// Copyright (c) 2017-2021 Oracle and/or its affiliates.
 // Contributed and/or modified by Vissarion Fysikopoulos, on behalf of Oracle
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Licensed under the Boost Software License version 1.0.
 // http://www.boost.org/users/license.html
@@ -12,12 +12,7 @@
 #define BOOST_TEST_MODULE test_distance_geographic_areal_areal
 #endif
 
-#include <boost/range.hpp>
-#include <boost/type_traits/is_same.hpp>
-
 #include <boost/test/included/unit_test.hpp>
-#include <boost/geometry/util/condition.hpp>
-#include <boost/geometry/strategies/strategies.hpp>
 
 #include "test_distance_geo_common.hpp"
 #include "test_empty_geometry.hpp"
@@ -935,6 +930,7 @@ BOOST_AUTO_TEST_CASE( test_all_areal_areal )
     test_all_ar_ar<geo_point>(vincenty_pp(), vincenty_ps(), vincenty_bb(), vincenty_sb());
     test_all_ar_ar<geo_point>(thomas_pp(), thomas_ps(), thomas_bb(), thomas_sb());
     test_all_ar_ar<geo_point>(andoyer_pp(), andoyer_ps(), andoyer_bb(), andoyer_sb());
+    //test_all_ar_ar<geo_point>(karney_pp(), karney_ps(), karney_bb(), karney_sb());
 
     // test with different spheroid
     stype spheroid(6372000, 6370000);

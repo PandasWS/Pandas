@@ -16,13 +16,15 @@
 
 using namespace boost::property_tree;
 
-// Process settings using empty ptree trick. Note that it is considerably simpler 
+  static ptree dflt;
+
+    // Process settings using empty ptree trick. Note that it is considerably simpler
 // than version which does not use the "trick"
 void process_settings(const std::string &filename)
 {
     ptree pt;
-    read_info(filename, pt);    
-    const ptree &settings = pt.get_child("settings", empty_ptree<ptree>());
+    read_info(filename, pt);
+    const ptree &settings = pt.get_child("settings", dflt);
     std::cout << "\n    Processing " << filename << std::endl;
     std::cout << "        Setting 1 is " << settings.get("setting1", 0) << std::endl;
     std::cout << "        Setting 2 is " << settings.get("setting2", 0.0) << std::endl;
