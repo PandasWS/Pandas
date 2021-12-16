@@ -27,7 +27,6 @@ jobs:
 
     - name: Preparing dependencies
       run: |
-        ./tools/integration/retry.sh sudo apt-get install mysql-client -y
         ./tools/integration/retry.sh sudo apt-get install libmysqlclient-dev zlib1g-dev libpcre3-dev -y
 
     - name: Setup gcc compiler
