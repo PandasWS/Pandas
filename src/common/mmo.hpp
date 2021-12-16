@@ -5,15 +5,16 @@
 #define MMO_HPP
 
 #include <time.h>
-#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
-#include <map>
-#endif // Pandas_Struct_Unit_CommonData_BattleRecord
 
 #include "../config/core.hpp"
 
 #include "cbasetypes.hpp"
 #include "db.hpp"
 #include "timer.hpp" // t_tick
+
+#ifdef Pandas_Struct_Unit_CommonData_BattleRecord
+#include <map>
+#endif // Pandas_Struct_Unit_CommonData_BattleRecord
 
 #ifndef PACKETVER
 	#error Please define PACKETVER in src/config/packets.hpp
