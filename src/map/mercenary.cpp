@@ -422,6 +422,21 @@ bool mercenary_recv_data(struct s_mercenary *merc, bool flag)
 		clif_mercenary_skillblock(sd);
 	}
 
+#ifdef Pandas_NpcExpress_MER_CALL
+	if (sd && md && merc) {
+		pc_setreg(sd, add_str("@mer_gid"), md->bl.id);
+		pc_setreg(sd, add_str("@mer_classid"), md->db->class_);
+		pc_setreg(sd, add_str("@mer_lifetime"), merc->life_time);
+
+		pc_setreg(sd, add_str("@mer_mapid"), (md ? md->bl.m : -1));
+		pc_setregstr(sd, add_str("@mer_mapname$"), (md ? map[md->bl.m].name : ""));
+		pc_setreg(sd, add_str("@mer_x"), (md ? md->bl.x : 0));
+		pc_setreg(sd, add_str("@mer_y"), (md ? md->bl.y : 0));
+
+		npc_script_event(sd, NPCX_MER_CALL);
+	}
+#endif // Pandas_NpcExpress_MER_CALL
+
 	return true;
 }
 

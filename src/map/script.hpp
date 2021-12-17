@@ -311,6 +311,10 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_PCATTACK
 	const char* pcattack_express_name;	// NPCX_PCATTACK	// OnPCAttackExpress	// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
 #endif // Pandas_NpcExpress_PCATTACK
+
+#ifdef Pandas_NpcExpress_MER_CALL
+	const char* mer_call_express_name;	// NPCX_MER_CALL	// OnPCMerCallExpress	// 当玩家成功召唤出佣兵时触发实时事件
+#endif // Pandas_NpcExpress_MER_CALL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related
