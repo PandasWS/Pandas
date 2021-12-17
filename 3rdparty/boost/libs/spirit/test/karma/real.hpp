@@ -9,10 +9,7 @@
 #if !defined(BOOST_SPIRIT_TEST_REAL_NUMERICS_HPP)
 #define BOOST_SPIRIT_TEST_REAL_NUMERICS_HPP
 
-#include <boost/version.hpp>
-#include <boost/config/warning_disable.hpp>
-#include <boost/detail/lightweight_test.hpp>
-#include <boost/math/concepts/real_concept.hpp>
+#include <boost/spirit/include/karma_real.hpp>
 
 #include <boost/spirit/include/karma_char.hpp>
 #include <boost/spirit/include/karma_numeric.hpp>
@@ -21,6 +18,12 @@
 
 #include <boost/limits.hpp>
 #include "test.hpp"
+
+#ifndef BOOST_NO_CXX11_SFINAE_EXPR
+# include <boost/math/concepts/real_concept.hpp>
+#else
+# define BOOST_SPIRIT_NO_MATH_REAL_CONCEPT
+#endif
 
 using namespace spirit_test;
 

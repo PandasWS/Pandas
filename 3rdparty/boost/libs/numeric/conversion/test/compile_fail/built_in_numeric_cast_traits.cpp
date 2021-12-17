@@ -16,7 +16,6 @@
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
 #include <boost/preprocessor/seq/size.hpp>
-#include <boost/test/minimal.hpp>
 
 //! Generate default traits for the specified source and target.
 #define BOOST_NUMERIC_CONVERSION_GENERATE_CAST_TRAITS(r, state)    \
@@ -108,12 +107,6 @@ namespace boost { namespace numeric {
     )
 #endif
 }}//namespace boost::numeric;
-
-int test_main( int argc, char * argv[] )
-{
-    //! This test should not compile.
-    return 1;
-}
 
 #undef BOOST_NUMERIC_CONVERSION_GENERATE_BUILTIN_CAST_TRAITS
 #undef BOOST_NUMERIC_CONVERSION_GENERATE_CAST_TARGET_STEP

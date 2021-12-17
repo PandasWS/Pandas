@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>system_executor</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../../boost_asio.html" title="Boost.Asio">
 <link rel="up" href="../reference.html" title="Reference">
 <link rel="prev" href="system_context/_system_context.html" title="system_context::~system_context">
-<link rel="next" href="system_executor/context.html" title="system_executor::context">
+<link rel="next" href="system_timer.html" title="system_timer">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,16 +20,18 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="system_context/_system_context.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="system_executor/context.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="system_context/_system_context.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="system_timer.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.system_executor"></a><a class="link" href="system_executor.html" title="system_executor">system_executor</a>
 </h3></div></div></div>
 <p>
-        An executor that uses arbitrary threads.
+        <a class="indexterm" name="boost_asio.indexterm.system_executor"></a> 
+An executor that uses
+        arbitrary threads.
       </p>
-<pre class="programlisting">class system_executor
+<pre class="programlisting">typedef basic_system_executor&lt; execution::blocking_t::possibly_t, execution::relationship_t::fork_t, std::allocator&lt; void &gt; &gt; system_executor;
 </pre>
 <h5>
 <a name="boost_asio.reference.system_executor.h0"></a>
@@ -56,7 +58,19 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="system_executor/context.html" title="system_executor::context"><span class="bold"><strong>context</strong></span></a>
+                  <a class="link" href="basic_system_executor/basic_system_executor.html" title="basic_system_executor::basic_system_executor"><span class="bold"><strong>basic_system_executor</strong></span></a> <span class="silver">[constructor]</span>
+                </p>
+              </td>
+<td>
+                <p>
+                  Default constructor.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="basic_system_executor/context.html" title="basic_system_executor::context"><span class="bold"><strong>context</strong></span></a>
                 </p>
               </td>
 <td>
@@ -68,7 +82,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="system_executor/defer.html" title="system_executor::defer"><span class="bold"><strong>defer</strong></span></a>
+                  <a class="link" href="basic_system_executor/defer.html" title="basic_system_executor::defer"><span class="bold"><strong>defer</strong></span></a>
                 </p>
               </td>
 <td>
@@ -80,7 +94,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="system_executor/dispatch.html" title="system_executor::dispatch"><span class="bold"><strong>dispatch</strong></span></a>
+                  <a class="link" href="basic_system_executor/dispatch.html" title="basic_system_executor::dispatch"><span class="bold"><strong>dispatch</strong></span></a>
                 </p>
               </td>
 <td>
@@ -92,7 +106,19 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="system_executor/on_work_finished.html" title="system_executor::on_work_finished"><span class="bold"><strong>on_work_finished</strong></span></a>
+                  <a class="link" href="basic_system_executor/execute.html" title="basic_system_executor::execute"><span class="bold"><strong>execute</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Execution function.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="basic_system_executor/on_work_finished.html" title="basic_system_executor::on_work_finished"><span class="bold"><strong>on_work_finished</strong></span></a>
                 </p>
               </td>
 <td>
@@ -104,7 +130,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="system_executor/on_work_started.html" title="system_executor::on_work_started"><span class="bold"><strong>on_work_started</strong></span></a>
+                  <a class="link" href="basic_system_executor/on_work_started.html" title="basic_system_executor::on_work_started"><span class="bold"><strong>on_work_started</strong></span></a>
                 </p>
               </td>
 <td>
@@ -116,12 +142,59 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="system_executor/post.html" title="system_executor::post"><span class="bold"><strong>post</strong></span></a>
+                  <a class="link" href="basic_system_executor/post.html" title="basic_system_executor::post"><span class="bold"><strong>post</strong></span></a>
                 </p>
               </td>
 <td>
                 <p>
                   Request the system executor to invoke the given function object.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="basic_system_executor/query.html" title="basic_system_executor::query"><span class="bold"><strong>query</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Query the current value of the allocator property. <br> <span class="silver"> —</span><br>
+                  Query the occupancy (recommended number of work items) for the
+                  system context.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="basic_system_executor/query__static.html" title="basic_system_executor::query"><span class="bold"><strong>query</strong></span></a> <span class="silver">[static]</span>
+                </p>
+              </td>
+<td>
+                <p>
+                  Query the current value of the mapping property. <br> <span class="silver"> —</span><br>
+                  Query the current value of the context property. <br> <span class="silver"> —</span><br>
+                  Query the current value of the blocking property. <br> <span class="silver"> —</span><br>
+                  Query the current value of the relationship property.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="basic_system_executor/require.html" title="basic_system_executor::require"><span class="bold"><strong>require</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Obtain an executor with the blocking.possibly property. <br>
+                  <span class="silver"> —</span><br> Obtain an executor with the blocking.always property. <br>
+                  <span class="silver"> —</span><br> Obtain an executor with the blocking.never property. <br>
+                  <span class="silver"> —</span><br> Obtain an executor with the relationship.continuation property.
+                  <br> <span class="silver"> —</span><br> Obtain an executor with the relationship.fork property.
+                  <br> <span class="silver"> —</span><br> Obtain an executor with the specified allocator property.
+                  <br> <span class="silver"> —</span><br> Obtain an executor with the default allocator property.
                 </p>
               </td>
 </tr>
@@ -152,7 +225,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="system_executor/operator_not__eq_.html" title="system_executor::operator!="><span class="bold"><strong>operator!=</strong></span></a>
+                  <a class="link" href="basic_system_executor/operator_not__eq_.html" title="basic_system_executor::operator!="><span class="bold"><strong>operator!=</strong></span></a>
                 </p>
               </td>
 <td>
@@ -164,7 +237,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="system_executor/operator_eq__eq_.html" title="system_executor::operator=="><span class="bold"><strong>operator==</strong></span></a>
+                  <a class="link" href="basic_system_executor/operator_eq__eq_.html" title="basic_system_executor::operator=="><span class="bold"><strong>operator==</strong></span></a>
                 </p>
               </td>
 <td>
@@ -177,9 +250,17 @@
 </table></div>
 <p>
         The system executor represents an execution context where functions are permitted
-        to run on arbitrary threads. The <code class="computeroutput">post()</code> and <code class="computeroutput">defer()</code>
-        functions schedule the function to run on an unspecified system thread pool,
-        and <code class="computeroutput">dispatch()</code> invokes the function immediately.
+        to run on arbitrary threads. When the blocking.never property is established,
+        the system executor will schedule the function to run on an unspecified system
+        thread pool. When either blocking.possibly or blocking.always is established,
+        the executor invokes the function immediately.
+      </p>
+<p>
+        The system executor represents an execution context where functions are permitted
+        to run on arbitrary threads. When the blocking.never property is established,
+        the system executor will schedule the function to run on an unspecified system
+        thread pool. When either blocking.possibly or blocking.always is established,
+        the executor invokes the function immediately.
       </p>
 <h5>
 <a name="boost_asio.reference.system_executor.h2"></a>
@@ -194,7 +275,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>
@@ -202,7 +284,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="system_context/_system_context.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="system_executor/context.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="system_context/_system_context.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="system_timer.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

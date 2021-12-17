@@ -11,6 +11,10 @@
 #pragma GCC diagnostic ignored "-Wunused-function"
 #endif
 
+// It would be nice to get rid of the unnamed namespace here,
+// but for now we just turn off inspection reporting :(
+// boostinspect:nounnamed
+
 // test with one template parameter
 #define TEST_T(TYPE,RESULT) BOOST_CHECK_INTEGRAL_CONSTANT((::boost::BOOST_TT_TRAIT_NAME<TYPE>::value), RESULT)
 // test with one template parameter plus return value

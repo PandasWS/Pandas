@@ -20,7 +20,7 @@
 	<a href="../../reference/functions/policy/exception_ptr.html" ><code>decltype(auto) exception_ptr(T &amp;&amp;)</code></a>
 <p>Extracts a <code>boost::exception_ptr</code> or <code>std::exception_ptr</code> from the input via ADL discovery of a suitable <code>make_exception_ptr(T)</code> function.</p><li>
 	<a href="../../reference/functions/policy/outcome_throw_as_system_error_with_payload_boost_enum.html" ><code>void outcome_throw_as_system_error_with_payload(BoostErrorCodeEnum &amp;&amp;)</code></a>
-<p>Specialisation of <code>outcome_throw_as_system_error_with_payload()</code> for input types where <code>boost::system::errc::is_error_code_enum&lt;BoostErrorCodeEnum&gt;</code> or <code>boost::system::errc::is_error_condition_enum&lt;BoostErrorCodeEnum&gt;</code> is true.</p><li>
+<p>Specialisation of <code>outcome_throw_as_system_error_with_payload()</code> for input types where <code>boost::system::is_error_code_enum&lt;BoostErrorCodeEnum&gt;</code> or <code>boost::system::is_error_condition_enum&lt;BoostErrorCodeEnum&gt;</code> is true.</p><li>
 	<a href="../../reference/functions/policy/outcome_throw_as_system_error_with_payload_std_enum.html" ><code>void outcome_throw_as_system_error_with_payload(ErrorCodeEnum &amp;&amp;)</code></a>
 <p>Specialisation of <code>outcome_throw_as_system_error_with_payload()</code> for input types where <code>std::is_error_code_enum&lt;ErrorCodeEnum&gt;</code> or <code>std::is_error_condition_enum&lt;ErrorCodeEnum&gt;</code> is true.</p><li>
 	<a href="../../reference/functions/policy/outcome_throw_as_system_error_with_payload_boost_error_code.html" ><code>void outcome_throw_as_system_error_with_payload(const boost::system::error_code &amp;)</code></a>

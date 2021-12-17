@@ -21,7 +21,7 @@
 #include <boost/python/detail/none.hpp>
 #include <boost/mpl/vector/vector10.hpp>
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 #include <algorithm>
 #include <cstring>
@@ -107,7 +107,7 @@ function::function(
     PyObject* p = this;
     if (Py_TYPE(&function_type) == 0)
     {
-        Py_TYPE(&function_type) = &PyType_Type;
+        Py_SET_TYPE(&function_type, &PyType_Type);
         ::PyType_Ready(&function_type);
     }
     

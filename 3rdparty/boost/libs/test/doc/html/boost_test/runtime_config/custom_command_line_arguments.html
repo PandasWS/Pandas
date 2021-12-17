@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Custom command line arguments</title>
 <link rel="stylesheet" href="../../boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -46,12 +46,13 @@
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-            instanciating an object used in test cases and which is dependant on
+            instantiating an object used in test cases and which is dependant on
             parameters external to the test-module: the name of the graphic card,
-            the credentials for a database connexion, etc. The rest of the test module
-            would check that the functions in test are not sensitive to this type
-            of parametrization. One can also imagine running this same test module
-            with different parameters (different graphic cards...) in a batched manner,
+            the credentials for a database connection, etc. The rest of the test
+            module would check that the functions in test are not sensitive to this
+            type of parametrization. One can also imagine running this same test
+            module with different parameters (different graphic cards...) in a batched
+            manner,
           </li>
 <li class="listitem">
             modifying the test tree by adding or parametrizing test cases: the arguments
@@ -162,7 +163,7 @@
         Another possibility for consuming the custom command line arguments would
         be from within a <a class="link" href="../tests_organization/fixtures/global.html" title="Global fixture">global
         fixture</a>. This is especially useful when external parameters are needed
-        for instanciating global objects used in the test module.
+        for instantiating global objects used in the test module.
       </p>
 <p>
         The usage is the same as for test cases. The following example runs the test
@@ -299,9 +300,9 @@
               </td></tr></tbody>
 </table></div>
 <p>
-        The above example instanciates a specific device through the <code class="computeroutput"><span class="identifier">DeviceInterface</span><span class="special">::</span><span class="identifier">factory</span></code> member function. The name of the
-        device to instanciate is passed via the command line argument <code class="computeroutput"><span class="special">--</span><span class="identifier">device</span><span class="special">-</span><span class="identifier">name</span></code>,
-        and the instanciated device is available through the global object <code class="computeroutput"><span class="identifier">CommandLineDeviceInit</span><span class="special">::</span><span class="identifier">device</span></code>. The module requires <code class="computeroutput"><span class="number">3</span></code> arguments on the command line:
+        The above example instantiates a specific device through the <code class="computeroutput"><span class="identifier">DeviceInterface</span><span class="special">::</span><span class="identifier">factory</span></code> member function. The name of the
+        device to instantiate is passed via the command line argument <code class="computeroutput"><span class="special">--</span><span class="identifier">device</span><span class="special">-</span><span class="identifier">name</span></code>,
+        and the instantiated device is available through the global object <code class="computeroutput"><span class="identifier">CommandLineDeviceInit</span><span class="special">::</span><span class="identifier">device</span></code>. The module requires <code class="computeroutput"><span class="number">3</span></code> arguments on the command line:
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
@@ -314,7 +315,7 @@
           </li>
 <li class="listitem">
             <code class="computeroutput"><span class="identifier">framework</span><span class="special">::</span><span class="identifier">master_test_suite</span><span class="special">().</span><span class="identifier">argv</span><span class="special">[</span><span class="number">2</span><span class="special">]</span></code> should
-            be the name of the device to instanciate
+            be the name of the device to instantiate
           </li>
 </ul></div>
 <p>
@@ -684,7 +685,7 @@
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
             Using <code class="computeroutput"><span class="identifier">make_delayed</span></code>, the
-            tests generated from a dataset are instanciated during the framework
+            tests generated from a dataset are instantiated during the framework
             setup. This let the dataset generator access the <code class="computeroutput"><span class="identifier">argc</span></code>
             and <code class="computeroutput"><span class="identifier">argv</span></code> of the master
             test suite.
@@ -707,7 +708,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2018 Boost.Test contributors<p>
+<td align="right"><div class="copyright-footer">Copyright © 2001-2020 Boost.Test contributors<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

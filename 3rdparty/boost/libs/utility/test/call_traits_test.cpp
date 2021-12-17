@@ -376,7 +376,7 @@ void call_traits_test<T, true>::assert_construct(typename boost::call_traits<T>:
    reference r = t;
    const_reference cr = t;
    reference r2 = r;
-   #ifndef __BORLANDC__
+   #ifndef BOOST_BORLANDC
    // C++ Builder buglet:
    const_reference cr2 = r;
    #endif
@@ -393,7 +393,7 @@ void call_traits_test<T, true>::assert_construct(typename boost::call_traits<T>:
    unused_variable(v3);
    unused_variable(v4);
    unused_variable(v5);
-#ifndef __BORLANDC__
+#ifndef BOOST_BORLANDC
    unused_variable(r2);
    unused_variable(cr2);
 #endif

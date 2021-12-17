@@ -5,8 +5,8 @@
 // Copyright (c) 2008-2016 Bruno Lalande, Paris, France.
 // Copyright (c) 2009-2016 Mateusz Loskot, London, UK.
 
-// This file was modified by Oracle on 2016,2017.
-// Modifications copyright (c) 2016-2017, Oracle and/or its affiliates.
+// This file was modified by Oracle on 2016-2021.
+// Modifications copyright (c) 2016-2021, Oracle and/or its affiliates.
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Parts of Boost.Geometry are redesigned from Geodan's Geographic Library
@@ -30,6 +30,10 @@
     (test_one<Polygon, Polygon, Polygon>) \
     ( #caseid, caseid[0], caseid[1], clips, holes, points, area)
 
+#define TEST_UNION_WITH(caseid, clips, holes, points, area) \
+    (test_one<Polygon, Polygon, Polygon>) \
+    ( #caseid, caseid[0], caseid[1], clips, holes, points, area, settings)
+
 #define TEST_UNION_REV(caseid, clips, holes, points, area) \
     (test_one<Polygon, Polygon, Polygon>) \
     ( #caseid "_rev", caseid[1], caseid[0], clips, holes, points, area)
@@ -39,6 +43,12 @@ template <typename Ring, typename Polygon>
 void test_areal()
 {
     typedef typename bg::coordinate_type<Polygon>::type ct;
+
+    ut_settings ignore_validity_for_float;
+    if (BOOST_GEOMETRY_CONDITION((std::is_same<ct, float>::value)) )
+    {
+        ignore_validity_for_float.set_test_validity(false);
+    }
 
     test_one<Polygon, Polygon, Polygon>("simplex_normal",
         simplex_normal[0], simplex_normal[1],
@@ -54,10 +64,9 @@ void test_areal()
     test_one<Polygon, Polygon, Polygon>("star_ring", example_star, example_ring,
         1, 0, 23, 5.67017141);
 
-    // This sample was selected because of the border case, and ttmath generates one point more.
+    // This sample was selected because of the border case.
     test_one<Polygon, Polygon, Polygon>("star_poly", example_star, example_polygon,
-        1, 1,
-        if_typed_tt<ct>(28, 27), 5.647949);
+        1, 1, -1, 5.647949);
 
     // Pseudo-box as Polygon
     // (note, internally, the intersection points is different, so yes,
@@ -153,7 +162,7 @@ void test_areal()
 
     test_one<Polygon, Polygon, Polygon>("distance_zero",
         distance_zero[0], distance_zero[1],
-        1, 0, 8, 9.0098387);
+        1, 0, -1, 9.0098387);
 
     test_one<Polygon, Polygon, Polygon>("wrapped_a",
         wrapped[0], wrapped[1],
@@ -274,11 +283,13 @@ void test_areal()
     TEST_UNION(case_precision_17, 1, 1, -1, 73.0);
     TEST_UNION(case_precision_18, 1, 1, -1, 73.0);
     TEST_UNION(case_precision_19, 1, 1, -1, 73.0);
-#if defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
     TEST_UNION(case_precision_20, 1, 0, -1, 22.0);
-#endif
     TEST_UNION(case_precision_21, 1, 0, -1, 22.0);
     TEST_UNION(case_precision_22, 1, 1, -1, 73.0);
+    TEST_UNION(case_precision_23, 1, 1, -1, 73.0);
+    TEST_UNION(case_precision_24, 1, 0, -1, 22.0);
+    TEST_UNION(case_precision_25, 1, 0, -1, 22.0);
+    TEST_UNION(case_precision_26, 1, 1, -1, 73.0);
 
     TEST_UNION_REV(case_precision_1, 1, 0, -1, 22.0);
     TEST_UNION_REV(case_precision_2, 1, 0, -1, 22.0);
@@ -299,11 +310,13 @@ void test_areal()
     TEST_UNION_REV(case_precision_17, 1, 1, -1, 73.0);
     TEST_UNION_REV(case_precision_18, 1, 1, -1, 73.0);
     TEST_UNION_REV(case_precision_19, 1, 1, -1, 73.0);
-#if defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
     TEST_UNION_REV(case_precision_20, 1, 0, -1, 22.0);
-#endif
     TEST_UNION_REV(case_precision_21, 1, 0, -1, 22.0);
     TEST_UNION_REV(case_precision_22, 1, 1, -1, 73.0);
+    TEST_UNION_REV(case_precision_23, 1, 1, -1, 73.0);
+    TEST_UNION_REV(case_precision_24, 1, 0, -1, 22.0);
+    TEST_UNION_REV(case_precision_25, 1, 0, -1, 22.0);
+    TEST_UNION_REV(case_precision_26, 1, 1, -1, 73.0);
 
     /*
     test_one<Polygon, Polygon, Polygon>(102,
@@ -354,29 +367,19 @@ void test_areal()
         ggl_list_20110716_enrico[0], ggl_list_20110716_enrico[1],
         1, 1, 15, 129904.197692871);
 
-#if defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
-    test_one<Polygon, Polygon, Polygon>("ggl_list_20110820_christophe",
-        ggl_list_20110820_christophe[0], ggl_list_20110820_christophe[1],
-        -1, // Either 1 or 2, depending if the intersection/turn point (eps.region) is missed
-        0,
-        if_typed_tt<ct>(9, 8),
-        67.3550722317627);
-#endif
-
     {
         ut_settings settings;
-        settings.percentage = 0.1;
-        settings.test_validity = BG_IF_RESCALED(true, false);
+        settings.set_test_validity(BG_IF_RESCALED(true, BG_IF_TEST_FAILURES));
+        TEST_UNION_WITH(ggl_list_20110820_christophe, count_set(1, 2), 0, -1, 67.3550722317627);
+    }
 
-        test_one<Polygon, Polygon, Polygon>("isovist",
-            isovist1[0], isovist1[1],
-            1,
-            0,
-            -1,
-            313.36036462, settings);
-
+    {
         // SQL Server gives: 313.360374193241
         // PostGIS gives:    313.360364623393
+        // Without rescaling, it is creates an invalidity for double
+        ut_settings settings;
+        settings.set_test_validity(BG_IF_RESCALED(true, false));
+        TEST_UNION_WITH(isovist, 1, 0, -1, 313.36036462);
     }
 
     TEST_UNION(ggl_list_20190307_matthieu_1, 1, 1, -1, 0.83773);
@@ -394,50 +397,31 @@ void test_areal()
     // It is in two points 0.37 off (logical for an int).
     // Because of the width of the polygon (400000 meter)
     // this causes a substantial difference.
+    TEST_UNION(ticket_5103, 1, 0, 25, 2515271327070.5);
 
-    test_one<Polygon, Polygon, Polygon>("ticket_5103",
-                ticket_5103[0], ticket_5103[1],
-                1, 0, 25, 2515271327070.5);
+    TEST_UNION(ticket_8310a, 1, 0, -1, 10.5000019595);
+    TEST_UNION(ticket_8310b, 1, 0, -1, 10.5000019595);
+    TEST_UNION(ticket_8310c, 1, 0, -1, 10.5000019595);
+    TEST_UNION_REV(ticket_8310a, 1, 0, -1, 10.5000019595);
+    TEST_UNION_REV(ticket_8310b, 1, 0, -1, 10.5000019595);
+    TEST_UNION_REV(ticket_8310c, 1, 0, -1, 10.5000019595);
 
-    TEST_UNION(ticket_8310a, 1, 0, 5, 10.5000019595);
-    TEST_UNION(ticket_8310b, 1, 0, 5, 10.5000019595);
-    TEST_UNION(ticket_8310c, 1, 0, 5, 10.5000019595);
-    TEST_UNION_REV(ticket_8310a, 1, 0, 5, 10.5000019595);
-    TEST_UNION_REV(ticket_8310b, 1, 0, 5, 10.5000019595);
-    TEST_UNION_REV(ticket_8310c, 1, 0, 5, 10.5000019595);
+    TEST_UNION(ticket_9081_15, 1, 0, -1, 0.0403425433);
 
-    test_one<Polygon, Polygon, Polygon>("ticket_9081_15",
-            ticket_9081_15[0], ticket_9081_15[1],
-            1, 0, -1, 0.0403425433);
+    TEST_UNION(ticket_9563, 1, 0, -1, 150.0);
 
-    {
-        ut_settings settings;
-        settings.test_validity = BG_IF_RESCALED(true, false);
-        test_one<Polygon, Polygon, Polygon>("ticket_9563", ticket_9563[0], ticket_9563[1],
-                1, 0, 13, 150.0, settings);
-    }
-
-    // Float result is OK but a bit larger
-    test_one<Polygon, Polygon, Polygon>("ticket_9756", ticket_9756[0], ticket_9756[1],
-            1, 0, 10, if_typed<ct, float>(1291.5469, 1289.08374));
+    TEST_UNION(ticket_9756, 1, 0, 10, expectation_limits(1289.0835, 1290.40625));
 
     // Can generate one polygon, or two splitted, both is OK
-#if ! defined(BOOST_GEOMETRY_USE_KRAMER_RULE)
-    TEST_UNION(ticket_10108_a, 2, 0, 8, 0.0435229);
-    TEST_UNION(ticket_10108_b, 1, 0, 10, 2424.3449);
-#else
-    TEST_UNION(ticket_10108_a,  BG_IF_RESCALED(2, 1), 0, 8, 0.0435229);
-    TEST_UNION(ticket_10108_b,  BG_IF_RESCALED(1, 2), 0, 10, 2424.3449);
-#endif
+    TEST_UNION(ticket_10108_a, count_set(1, 2), 0, 8, 0.0435229);
+    TEST_UNION(ticket_10108_b, count_set(1, 2), 0, 10, 2424.3449);
 
-    test_one<Polygon, Polygon, Polygon>("ticket_10866", ticket_10866[0], ticket_10866[1],
-            1, 0, 14, if_typed<ct, float>(332752493.0, 332760303.5));
+    TEST_UNION(ticket_10866, 1, 0, 14, 332760303.5);
 
-    test_one<Polygon, Polygon, Polygon>("ticket_11725", ticket_11725[0], ticket_11725[1],
-            1, 1, 10, 7.5);
+    TEST_UNION(ticket_11725, 1, 1, 10, 7.5);
 
-#if ! defined(BOOST_GEOMETRY_USE_RESCALING)
-    // With rescaling an extra overlapping polygon is generated
+#if ! defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
+    // With rescaling an extra overlapping polygon is generated, which is wrong
     TEST_UNION(issue_548, 1, 0, -1, 617382720000);
 #endif
 
@@ -446,20 +430,29 @@ void test_areal()
     TEST_UNION_REV(issue_566_a, 1, 0, -1, 214.3728);
     TEST_UNION_REV(issue_566_b, 1, 0, -1, 214.3728);
 
+#if ! defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
     {
-        ut_settings ignore_validity;
-        ignore_validity.test_validity = false;
-        ignore_validity.percentage = 0.01;
-        test_one<Polygon, Polygon, Polygon>("geos_1", geos_1[0], geos_1[1],
-                1, 0, -1, 3461.3203125,
-                ignore_validity);
+        // With rescaling, the input (was already an output of a previous step)
+        // is somehow considered as invalid. Output is also invalid.
+        // Without rescaling, the same input is considered as valid
+        ut_settings settings;
+        settings.ignore_validity_on_invalid_input = false;
+        TEST_UNION_WITH(issue_690, 2, 0, -1, 25492.0505);
     }
-    test_one<Polygon, Polygon, Polygon>("geos_2", geos_2[0], geos_2[1],
-            1, 0, -1, 350.55102539);
-    test_one<Polygon, Polygon, Polygon>("geos_3", geos_3[0], geos_3[1],
-            1, 0, -1, 29391548.4998779);
-    test_one<Polygon, Polygon, Polygon>("geos_4", geos_4[0], geos_4[1],
-            1, 0, -1, 2304.4163115);
+#endif
+
+    TEST_UNION(issue_838, 1, 0, -1, expectation_limits(1.3333, 1.33785));
+    TEST_UNION_REV(issue_838, 1, 0, -1, expectation_limits(1.3333, 1.33785));
+
+    {
+        // Rescaling produces an invalid result
+        ut_settings settings;
+        settings.set_test_validity(BG_IF_RESCALED(false, true));
+        TEST_UNION_WITH(geos_1, 1, 0, -1, expectation_limits(3458.0, 3461.3203125));
+    }
+    TEST_UNION(geos_2, 1, 0, -1, expectation_limits(349.0625, 350.55102539));
+    TEST_UNION(geos_3, 1, 0, -1, 29391548.4998779);
+    TEST_UNION(geos_4, 1, 0, -1, 2304.4163115);
 
     // Robustness issues, followed out buffer-robustness-tests, test them also reverse
     {
@@ -471,7 +464,7 @@ void test_areal()
         test_one<Polygon, Polygon, Polygon>("buffer_rt_a_rev", buffer_rt_a[1], buffer_rt_a[0],
                     1, 0, -1, 19.28, settings);
     }
-#if defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
+#if ! defined(BOOST_GEOMETRY_EXCLUDE)
     test_one<Polygon, Polygon, Polygon>("buffer_rt_f", buffer_rt_f[0], buffer_rt_f[1],
                 1, 0, -1, 4.60853);
     test_one<Polygon, Polygon, Polygon>("buffer_rt_f_rev", buffer_rt_f[1], buffer_rt_f[0],
@@ -481,13 +474,10 @@ void test_areal()
                 1, 0, -1, 16.571);
     test_one<Polygon, Polygon, Polygon>("buffer_rt_g_rev", buffer_rt_g[1], buffer_rt_g[0],
                 1, 0, -1, 16.571);
-#if defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
     test_one<Polygon, Polygon, Polygon>("buffer_rt_i", buffer_rt_i[0], buffer_rt_i[1],
                 1, 0, -1, 13.6569);
-#endif
     test_one<Polygon, Polygon, Polygon>("buffer_rt_i_rev", buffer_rt_i[1], buffer_rt_i[0],
                     1, 0, -1, 13.6569);
-
     test_one<Polygon, Polygon, Polygon>("buffer_rt_j", buffer_rt_j[0], buffer_rt_j[1],
                 1, 0, -1, 16.5711);
     test_one<Polygon, Polygon, Polygon>("buffer_rt_j_rev", buffer_rt_j[1], buffer_rt_j[0],
@@ -499,35 +489,33 @@ void test_areal()
                 1, 0, -1, 19.3995);
 
     test_one<Polygon, Polygon, Polygon>("buffer_rt_m1", buffer_rt_m1[0], buffer_rt_m1[1],
-                1, 0, 9, 19.4852);
+                1, 0, -1, 19.4852);
     test_one<Polygon, Polygon, Polygon>("buffer_rt_m1_rev", buffer_rt_m1[1], buffer_rt_m1[0],
-                1, 0, 9, 19.4852);
+                1, 0, -1, 19.4852);
 
     test_one<Polygon, Polygon, Polygon>("buffer_rt_m2", buffer_rt_m2[0], buffer_rt_m2[1],
                 1, 0, -1, 21.4853);
     test_one<Polygon, Polygon, Polygon>("buffer_rt_m2_rev", buffer_rt_m2[1], buffer_rt_m2[0],
-                1, 0, 15, 21.4853);
+                1, 0, -1, 21.4853);
 
     test_one<Polygon, Polygon, Polygon>("buffer_rt_q", buffer_rt_q[0], buffer_rt_q[1],
                 1, 0, -1, 18.5710);
     test_one<Polygon, Polygon, Polygon>("buffer_rt_q_rev", buffer_rt_q[1], buffer_rt_q[0],
                 1, 0, -1, 18.5710);
-#if defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
     test_one<Polygon, Polygon, Polygon>("buffer_rt_r", buffer_rt_r[0], buffer_rt_r[1],
                 1, 0, -1, 21.07612);
     test_one<Polygon, Polygon, Polygon>("buffer_rt_r_rev", buffer_rt_r[1], buffer_rt_r[0],
                 1, 0, -1, 21.07612);
-#endif
     test_one<Polygon, Polygon, Polygon>("buffer_rt_t", buffer_rt_t[0], buffer_rt_t[1],
                 1, 0, -1, 15.6569);
     test_one<Polygon, Polygon, Polygon>("buffer_rt_t_rev", buffer_rt_t[1], buffer_rt_t[0],
-                1, 0, -1, 15.6569);
+                1, 0, -1, 15.6569, ignore_validity_for_float);
 
     test_one<Polygon, Polygon, Polygon>("buffer_mp1", buffer_mp1[0], buffer_mp1[1],
-                1, 0, if_typed_tt<ct>(93, 91), 22.815);
+                1, 0, -1, 22.815);
 
     test_one<Polygon, Polygon, Polygon>("buffer_mp2", buffer_mp2[0], buffer_mp2[1],
-                1, BG_IF_RESCALED(1, 0), 217, 36.752837);
+                1, -1, 217, 36.752837);
 
     test_one<Polygon, Polygon, Polygon>("mysql_21964079_1",
         mysql_21964079_1[0], mysql_21964079_1[1],
@@ -610,17 +598,17 @@ void test_all()
 
 int test_main(int, char* [])
 {
-    test_all<bg::model::d2::point_xy<double> >();
+    BoostGeometryWriteTestConfiguration();
+    test_all<bg::model::d2::point_xy<default_test_type>>();
 
 #if ! defined(BOOST_GEOMETRY_TEST_ONLY_ONE_TYPE)
-
-    test_all<bg::model::d2::point_xy<float> >();
-    test_all<bg::model::d2::point_xy<long double> >();
-
-#if defined(HAVE_TTMATH)
-    std::cout << "Testing TTMATH" << std::endl;
-    test_all<bg::model::d2::point_xy<ttmath_big> >();
+    test_all<bg::model::d2::point_xy<float>>();
+    test_all<bg::model::d2::point_xy<long double>>();
+    test_all<bg::model::d2::point_xy<mp_test_type>>();
 #endif
+
+#if defined(BOOST_GEOMETRY_TEST_FAILURES)
+    BoostGeometryWriteExpectedFailures(4, 1, 2, 0);
 #endif
 
     return 0;

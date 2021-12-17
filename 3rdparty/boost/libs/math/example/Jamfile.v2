@@ -39,6 +39,7 @@ project
       <include>../../..
       <include>../include_private
       <exception-handling>off:<source>../test//no_eh
+      [ requires cxx11_noexcept cxx11_rvalue_references sfinae_expr cxx11_auto_declarations cxx11_lambdas cxx11_unified_initialization_syntax cxx11_hdr_tuple cxx11_hdr_initializer_list cxx11_hdr_chrono cxx11_thread_local cxx11_constexpr cxx11_nullptr cxx11_numeric_limits cxx11_decltype cxx11_hdr_array cxx11_hdr_atomic cxx11_hdr_type_traits cxx11_allocator cxx11_explicit_conversion_operators ]
     ;
 
 test-suite examples :
@@ -73,6 +74,8 @@ test-suite examples :
    [ run hyperexponential_more_snips.cpp  ]
    [ run inverse_chi_squared_example.cpp  ]
    [ run legendre_stieltjes_example.cpp : : : [ requires cxx11_auto_declarations cxx11_defaulted_functions cxx11_lambdas ]  ]
+   [ run airy_ulps_plot.cpp : : : [ requires cxx17_std_apply cxx17_if_constexpr ]  ]
+   [ run agm_example.cpp  : : : [ check-target-builds ../config//has_float128 "GCC libquadmath and __float128 support" : <linkflags>-lquadmath ] [ requires cxx17_std_apply cxx17_if_constexpr ] ]
    #[ # run inverse_chi_squared_find_df_example.cpp  ]
    #[ run lambert_w_basic_example.cpp ]
    [ run lambert_w_basic_example.cpp  : : : [ requires cxx11_numeric_limits ] ]
@@ -115,7 +118,7 @@ test-suite examples :
    [ run policy_ref_snip10.cpp  ]
    [ run policy_ref_snip11.cpp  ]
    [ run policy_ref_snip12.cpp  ]
-   [ run policy_ref_snip13.cpp : : : <exception-handling>off:<build>no  ]
+   [ run policy_ref_snip13.cpp : : : <exception-handling>off:<build>no  ]  # Fails clang-win - thrown exception from no Cauchy mean.
    [ run policy_ref_snip2.cpp  ]
    [ run policy_ref_snip3.cpp : : : <exception-handling>off:<build>no  ]
    [ run policy_ref_snip4.cpp  ]
@@ -136,7 +139,7 @@ test-suite examples :
 
    [ run barycentric_interpolation_example.cpp : : : [ requires cxx11_smart_ptr cxx11_function_template_default_args cxx11_unified_initialization_syntax cxx11_defaulted_functions cxx11_allocator cxx11_auto_declarations cxx11_lambdas ]  ]
    [ run barycentric_interpolation_example_2.cpp : : : [ requires cxx11_smart_ptr cxx11_function_template_default_args cxx11_unified_initialization_syntax cxx11_defaulted_functions cxx11_allocator cxx11_auto_declarations cxx11_lambdas ]  ]
-   [ run cubic_b_spline_example.cpp : : : [ requires cxx11_smart_ptr cxx11_hdr_random cxx11_defaulted_functions ]  ]
+   [ run cardinal_cubic_b_spline_example.cpp : : : [ requires cxx11_smart_ptr cxx11_hdr_random cxx11_defaulted_functions ]  ]
    [ compile naive_monte_carlo_example.cpp : [ requires cxx11_auto_declarations cxx11_lambdas cxx11_unified_initialization_syntax cxx11_hdr_thread cxx11_hdr_atomic cxx11_decltype cxx11_hdr_future cxx11_hdr_chrono cxx11_hdr_random cxx11_allocator ] ]  # requires user input, can't run it, take a long time too!
    [ run catmull_rom_example.cpp : : : [ requires cxx17_if_constexpr cxx11_auto_declarations cxx17_std_apply ] ] # Actually the C++17 features used is std::size, not if constexpr; looks like there isn't yet a test for it.
    [ run autodiff_black_scholes_brief.cpp : : : [ requires cxx11_inline_namespaces ] ]
@@ -144,10 +147,10 @@ test-suite examples :
    [ run autodiff_fourth_power.cpp : : : [ requires cxx11_inline_namespaces ] ]
    [ run autodiff_mixed_partials.cpp : : : [ requires cxx11_inline_namespaces ] ]
    [ run autodiff_multiprecision.cpp : : : [ requires cxx11_inline_namespaces ] ]
-   [ run ooura_fourier_integrals_example.cpp : : : [ requires cxx11_lambdas cxx11_inline_namespaces cxx11_auto_declarations ] ]
-   [ run ooura_fourier_integrals_cosine_example.cpp : : : [ requires cxx11_inline_namespaces cxx11_auto_declarations cxx17_std_apply ] ]
-   [ run ooura_fourier_integrals_multiprecision_example.cpp : : : [ check-target-builds ../config//has_float128 "GCC libquadmath and __float128 support" : <linkflags>-lquadmath ] [ requires cxx11_inline_namespaces cxx11_auto_declarations cxx17_std_apply ] ]
-
+   [ run ooura_fourier_integrals_example.cpp : : : [ requires cxx11_hdr_mutex cxx11_lambdas cxx11_inline_namespaces cxx11_auto_declarations ] ]
+   [ run ooura_fourier_integrals_cosine_example.cpp : : : [ requires cxx11_hdr_mutex cxx11_inline_namespaces cxx11_auto_declarations cxx17_std_apply ] ]
+   [ run ooura_fourier_integrals_multiprecision_example.cpp : : : [ check-target-builds ../config//has_float128 "GCC libquadmath and __float128 support" : <linkflags>-lquadmath ] [ requires cxx11_hdr_mutex cxx11_inline_namespaces cxx11_auto_declarations cxx17_std_apply ] ]
+   [ run reciprocal_fibonacci_constant.cpp : : : [ check-target-builds ../config//has_mpfr "MPFR Support" : <linkflags>"-lmpfr -lgmp" : <build>no ] ]
 ;
 
 run root_elliptic_finding.cpp /boost/timer : : : release <link>static  [ requires cxx11_unified_initialization_syntax cxx11_defaulted_functions ] <target-os>freebsd:<linkflags>"-lrt" <target-os>linux:<linkflags>"-lrt -lpthread" ;

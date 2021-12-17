@@ -1,5 +1,9 @@
-Boost Math Library [![Build Status](https://travis-ci.org/boostorg/math.svg?branch=develop)](https://travis-ci.org/boostorg/math)
+Boost Math Library 
+[![Build Status](https://drone.cpp.al/api/badges/boostorg/math/status.svg)](https://drone.cpp.al/boostorg/math)[![Build Status](https://github.com/boostorg/math/workflows/CI/badge.svg?branch=develop)](https://github.com/boostorg/math/actions)
 ==================
+
+>ANNOUNCEMENT: Support for C++03 is now deprecated in this library and will be supported in existing features
+>only until March 2021.  New features will require *at least* C++11, as will existing features from next year.
 
 This library is divided into several interconnected parts:
 
@@ -9,7 +13,7 @@ Utility functions for dealing with floating point arithmetic, includes functions
 
 ### Specific Width Floating Point Types
 
-A set of typedefs similar to those provided by <cstdint> but for floating point types.
+A set of typedefs similar to those provided by `<cstdint>` but for floating point types.
 
 ### Mathematical Constants
 
@@ -29,7 +33,7 @@ A comprehensive tutorial is provided, along with a series of worked examples ill
 
 Provides a small number of high quality special functions; initially these were concentrated on functions used in statistical applications along with those in the Technical Report on C++ Library Extensions.
 
-The function families currently implemented are the gamma, beta & error functions along with the incomplete gamma and beta functions (four variants of each) and all the possible inverses of these, plus the digamma, various factorial functions, Bessel functions, elliptic integrals, sinus cardinals (along with their hyperbolic variants), inverse hyperbolic functions, Legrendre/Laguerre/Hermite/Chebyshev polynomials and various special power and logarithmic functions.
+The function families currently implemented are the gamma, beta & error functions along with the incomplete gamma and beta functions (four variants of each) and all the possible inverses of these, plus the digamma, various factorial functions, Bessel functions, elliptic integrals, hypergeometrics, sinus cardinals (along with their hyperbolic variants), inverse hyperbolic functions, Legrendre/Laguerre/Hermite/Chebyshev polynomials and various special power and logarithmic functions.
 
 All the implementations are fully generic and support the use of arbitrary "real-number" types, including Boost.Multiprecision, although they are optimised for use with types with known significand (or mantissa) sizes: typically float, double or long double.
 
@@ -47,30 +51,44 @@ Tools for manipulating polynomials and for efficient evaluation of rationals or 
 
 ### Interpolation
 
-Function interpolation via barycentric rational interpolation, compactly supported cubic B-splines, and the Chebyshev transform.
+Function interpolation via barycentric rational interpolation, compactly supported quadratic, cubic, and quintic B-splines, the Chebyshev transform, trigonometric polynomials, Makima, pchip, cubic Hermite splines, and bilinear interpolation.
 
 ### Numerical Integration and Differentiation
 
-A reasonably comprehensive set of routines for integration (trapezoidal, Gauss-Legendre, Gauss-Kronrod, Gauss-Chebyshev, double-exponential, and Monte-Carlo) and differentiation (Chebyshev transform, finite difference, and the complex step derivative).
+A reasonably comprehensive set of routines for integration (trapezoidal, Gauss-Legendre, Gauss-Kronrod, Gauss-Chebyshev, double-exponential, and Monte-Carlo) and differentiation (Chebyshev transform, finite difference, the complex step derivative, and forward-mode automatic differentiation).
 
 The integration routines are usable for functions returning complex results - and hence can be used for computation of  contour integrals.
 
 ### Quaternions and Octonions
 
-Quaternion and Octonians as class templates similar to std::complex.
+Quaternion and Octonians are class templates similar to std::complex.
 
 The full documentation is available on [boost.org](http://www.boost.org/doc/libs/release/libs/math).
 
+### Standalone Mode (Beta)
+
+Defining BOOST_MATH_STANDALONE allows Boost.Math to be used without any Boost dependencies. Some functionality is reduced in this mode. A static_assert message will alert you if a particular feature has been disabled by standalone mode.
+
+## Supported Compilers ##
+
+The following compilers are tested with the CI system, and are known to work. Starting with Boost 1.76 (April 2021 Release) a compiler that is fully compliant with C++11 is required to use Boost.Math.
+
+* g++ 5 or later
+* clang++ 5 or later
+* Visual Studio 2015 (14.0) or later
+
+## Build Status ##
+
 |                  |  Master  |   Develop   |
 |------------------|----------|-------------|
-| Travis           | [![Build Status](https://travis-ci.org/boostorg/math.svg?branch=master)](https://travis-ci.org/boostorg/math)  |  [![Build Status](https://travis-ci.org/boostorg/math.svg)](https://travis-ci.org/boostorg/math) |
-| Appveyor         | [![Build status](https://ci.appveyor.com/api/projects/status/cnugjx9dt7cou7nj/branch/master?svg=true)](https://ci.appveyor.com/project/jzmaddock/math/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/cnugjx9dt7cou7nj/branch/develop?svg=true)](https://ci.appveyor.com/project/jzmaddock/math/branch/develop)  |
+| Github Actions | [![Build Status](https://github.com/boostorg/math/workflows/CI/badge.svg?branch=master)](https://github.com/boostorg/math/actions) | [![Build Status](https://github.com/boostorg/math/workflows/CI/badge.svg?branch=develop)](https://github.com/boostorg/math/actions) |
+|Drone | [![Build Status](https://drone.cpp.al/api/badges/boostorg/math/status.svg?ref=refs/heads/master)](https://drone.cpp.al/boostorg/math) | [![Build Status](https://drone.cpp.al/api/badges/boostorg/math/status.svg)](https://drone.cpp.al/boostorg/math) |
 
 
 
 ## Support, bugs and feature requests ##
 
-Bugs and feature requests can be reported through the [Gitub issue tracker](https://github.com/boostorg/math/issues)
+Bugs and feature requests can be reported through the [GitHub issue tracker](https://github.com/boostorg/math/issues)
 (see [open issues](https://github.com/boostorg/math/issues) and
 [closed issues](https://github.com/boostorg/math/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed)).
 
@@ -97,7 +115,16 @@ You can either run all the tests listed in `Jamfile.v2` or run a single test:
     test$ ../../../b2 static_assert_test     <- single test
     test$ # A more advanced syntax, demoing various options for building the tests:
     test$ ../../../b2 -a -j2 -q --reconfigure toolset=clang cxxflags="--std=c++14 -fsanitize=address -fsanitize=undefined" linkflags="-fsanitize=undefined -fsanitize=address"
-    
+
+### Continuous Integration ###
+The default action for a PR or commit to a PR is for CI to run the full complement of tests. The following can be appended to the end of a commit message to modify behavior:
+
+    * [ci skip] to skip all tests
+    * [linux] to test using GCC Versions 5-10 and Clang Versions 5-10 on Ubuntu LTS versions 16.04-20.04.
+    * [apple] to test Apple Clang on the latest version of MacOS.
+    * [windows] to test MSVC-14.0, MSVC-14.2 and mingw on the latest version of Windows.
+    * [standalone] to run standalone mode compile tests
+     
 ### Building documentation ###
 
 Full instructions can be found [here](https://svn.boost.org/trac10/wiki/BoostDocs/GettingStarted), but to reiterate slightly:

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>posix::basic_stream_descriptor::basic_stream_descriptor</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -33,14 +33,14 @@ Construct
         </p>
 <pre class="programlisting">explicit <a class="link" href="basic_stream_descriptor/overload1.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (1 of 5 overloads)">basic_stream_descriptor</a>(
     const executor_type &amp; ex);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_stream_descriptor/overload1.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (1 of 5 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="basic_stream_descriptor/overload1.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (1 of 5 overloads)">more...</a></em></span>
 
 template&lt;
     typename ExecutionContext&gt;
 explicit <a class="link" href="basic_stream_descriptor/overload2.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (2 of 5 overloads)">basic_stream_descriptor</a>(
     ExecutionContext &amp; context,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_stream_descriptor/overload2.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (2 of 5 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value, defaulted_constraint &gt;::type  = defaulted_constraint());
+  <span class="emphasis"><em>» <a class="link" href="basic_stream_descriptor/overload2.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (2 of 5 overloads)">more...</a></em></span>
 </pre>
 <p>
           Construct a stream descriptor on an existing native descriptor.
@@ -48,27 +48,28 @@ explicit <a class="link" href="basic_stream_descriptor/overload2.html" title="po
 <pre class="programlisting"><a class="link" href="basic_stream_descriptor/overload3.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (3 of 5 overloads)">basic_stream_descriptor</a>(
     const executor_type &amp; ex,
     const native_handle_type &amp; native_descriptor);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_stream_descriptor/overload3.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (3 of 5 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="basic_stream_descriptor/overload3.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (3 of 5 overloads)">more...</a></em></span>
 
 template&lt;
     typename ExecutionContext&gt;
 <a class="link" href="basic_stream_descriptor/overload4.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (4 of 5 overloads)">basic_stream_descriptor</a>(
     ExecutionContext &amp; context,
     const native_handle_type &amp; native_descriptor,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_stream_descriptor/overload4.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (4 of 5 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="basic_stream_descriptor/overload4.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (4 of 5 overloads)">more...</a></em></span>
 </pre>
 <p>
           Move-construct a stream descriptor from another.
         </p>
 <pre class="programlisting"><a class="link" href="basic_stream_descriptor/overload5.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (5 of 5 overloads)">basic_stream_descriptor</a>(
     basic_stream_descriptor &amp;&amp; other);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_stream_descriptor/overload5.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (5 of 5 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="basic_stream_descriptor/overload5.html" title="posix::basic_stream_descriptor::basic_stream_descriptor (5 of 5 overloads)">more...</a></em></span>
 </pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -1,10 +1,11 @@
-# Copyright 2018 Peter Dimov
+# Copyright 2018-2020 Peter Dimov
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
 
 import modules ;
 import boostcpp ;
 import package ;
+import path ;
 
 # includedir
 
@@ -75,4 +76,29 @@ rule header-subdir
     }
 
     return $(r) ;
+}
+
+# stagedir
+
+rule stagedir
+{
+    return [ path.make [ modules.peek boostcpp : BOOST_STAGE_LOCATE ] ] ;
+}
+
+# stage-libdir
+
+rule stage-libdir
+{
+    local ld = [ MATCH --stage-libdir=(.*) : [ modules.peek : ARGV ] ] ;
+
+    if $(ld)
+    {
+        ld = [ path.root [ path.make $(ld) ] [ path.pwd ] ] ;
+        return $(ld) ;
+    }
+    else
+    {
+        local stagedir = [ stagedir ] ;
+        return $(stagedir)/lib ;
+    }
 }

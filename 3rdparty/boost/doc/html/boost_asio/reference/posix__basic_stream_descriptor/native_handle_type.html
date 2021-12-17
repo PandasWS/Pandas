@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>posix::basic_stream_descriptor::native_handle_type</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -55,6 +55,18 @@ The
                 </th>
 </tr></thead>
 <tbody>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="../posix__basic_descriptor__rebind_executor.html" title="posix::basic_descriptor::rebind_executor"><span class="bold"><strong>rebind_executor</strong></span></a>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Rebinds the descriptor type to another executor.
+                  </p>
+                </td>
+</tr>
 <tr>
 <td>
                   <p>
@@ -169,13 +181,13 @@ The
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../posix__basic_descriptor/basic_descriptor.html" title="posix::basic_descriptor::basic_descriptor"><span class="bold"><strong>basic_descriptor</strong></span></a>
+                    <a class="link" href="../posix__basic_descriptor/basic_descriptor.html" title="posix::basic_descriptor::basic_descriptor"><span class="bold"><strong>basic_descriptor</strong></span></a> <span class="silver">[constructor]</span>
                   </p>
                 </td>
 <td>
                   <p>
-                    Construct a descriptor without opening it. <br> <span class="silver"> &#8212;</span><br> Construct
-                    a descriptor on an existing native descriptor. <br> <span class="silver"> &#8212;</span><br>
+                    Construct a descriptor without opening it. <br> <span class="silver"> —</span><br> Construct
+                    a descriptor on an existing native descriptor. <br> <span class="silver"> —</span><br>
                     Move-construct a descriptor from another.
                   </p>
                 </td>
@@ -248,7 +260,7 @@ The
                 </td>
 <td>
                   <p>
-                    Get a reference to the lowest layer. <br> <span class="silver"> &#8212;</span><br> Get a const
+                    Get a reference to the lowest layer. <br> <span class="silver"> —</span><br> Get a const
                     reference to the lowest layer.
                   </p>
                 </td>
@@ -274,7 +286,7 @@ The
 <td>
                   <p>
                     Gets the non-blocking mode of the native descriptor implementation.
-                    <br> <span class="silver"> &#8212;</span><br> Sets the non-blocking mode of the native descriptor
+                    <br> <span class="silver"> —</span><br> Sets the non-blocking mode of the native descriptor
                     implementation.
                   </p>
                 </td>
@@ -287,7 +299,7 @@ The
                 </td>
 <td>
                   <p>
-                    Gets the non-blocking mode of the descriptor. <br> <span class="silver"> &#8212;</span><br> Sets
+                    Gets the non-blocking mode of the descriptor. <br> <span class="silver"> —</span><br> Sets
                     the non-blocking mode of the descriptor.
                   </p>
                 </td>
@@ -356,7 +368,7 @@ The
 <tbody><tr>
 <td>
                   <p>
-                    <a class="link" href="../posix__basic_descriptor/_basic_descriptor.html" title="posix::basic_descriptor::~basic_descriptor"><span class="bold"><strong>~basic_descriptor</strong></span></a>
+                    <a class="link" href="../posix__basic_descriptor/_basic_descriptor.html" title="posix::basic_descriptor::~basic_descriptor"><span class="bold"><strong>~basic_descriptor</strong></span></a> <span class="silver">[destructor]</span>
                   </p>
                 </td>
 <td>
@@ -366,44 +378,12 @@ The
                 </td>
 </tr></tbody>
 </table></div>
-<h6>
-<a name="boost_asio.reference.posix__basic_stream_descriptor.native_handle_type.h3"></a>
-          <span class="phrase"><a name="boost_asio.reference.posix__basic_stream_descriptor.native_handle_type.protected_data_members"></a></span><a class="link" href="native_handle_type.html#boost_asio.reference.posix__basic_stream_descriptor.native_handle_type.protected_data_members">Protected
-          Data Members</a>
-        </h6>
-<div class="informaltable"><table class="table">
-<colgroup>
-<col>
-<col>
-</colgroup>
-<thead><tr>
-<th>
-                  <p>
-                    Name
-                  </p>
-                </th>
-<th>
-                  <p>
-                    Description
-                  </p>
-                </th>
-</tr></thead>
-<tbody><tr>
-<td>
-                  <p>
-                    <a class="link" href="../posix__basic_descriptor/impl_.html" title="posix::basic_descriptor::impl_"><span class="bold"><strong>impl_</strong></span></a>
-                  </p>
-                </td>
-<td>
-                </td>
-</tr></tbody>
-</table></div>
 <p>
           The <a class="link" href="../posix__basic_descriptor.html" title="posix::basic_descriptor"><code class="computeroutput">posix::basic_descriptor</code></a>
           class template provides the ability to wrap a POSIX descriptor.
         </p>
 <h6>
-<a name="boost_asio.reference.posix__basic_stream_descriptor.native_handle_type.h4"></a>
+<a name="boost_asio.reference.posix__basic_stream_descriptor.native_handle_type.h3"></a>
           <span class="phrase"><a name="boost_asio.reference.posix__basic_stream_descriptor.native_handle_type.thread_safety"></a></span><a class="link" href="native_handle_type.html#boost_asio.reference.posix__basic_stream_descriptor.native_handle_type.thread_safety">Thread
           Safety</a>
         </h6>
@@ -414,7 +394,7 @@ The
           <span class="emphasis"><em>Shared</em></span> <span class="emphasis"><em>objects:</em></span> Unsafe.
         </p>
 <h6>
-<a name="boost_asio.reference.posix__basic_stream_descriptor.native_handle_type.h5"></a>
+<a name="boost_asio.reference.posix__basic_stream_descriptor.native_handle_type.h4"></a>
           <span class="phrase"><a name="boost_asio.reference.posix__basic_stream_descriptor.native_handle_type.requirements"></a></span><a class="link" href="native_handle_type.html#boost_asio.reference.posix__basic_stream_descriptor.native_handle_type.requirements">Requirements</a>
         </h6>
 <p>
@@ -426,7 +406,8 @@ The
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

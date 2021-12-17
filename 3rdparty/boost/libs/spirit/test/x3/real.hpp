@@ -10,15 +10,13 @@
 #define BOOST_SPIRIT_TEST_X3_REAL_HPP
 
 #include <climits>
-#include <boost/math/concepts/real_concept.hpp>
-#include <boost/detail/lightweight_test.hpp>
 #include <boost/spirit/home/x3/char.hpp>
 #include <boost/spirit/home/x3/numeric.hpp>
 #include <boost/spirit/home/x3/operator.hpp>
-#include <boost/math/special_functions/fpclassify.hpp>
-#include <boost/math/special_functions/sign.hpp>
 
 #include "test.hpp"
+
+#include <boost/type_traits/type_identity.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 //  These policies can be used to parse thousand separated
@@ -93,11 +91,13 @@ struct no_leading_dot_policy : boost::spirit::x3::real_policies<T>
     static bool const allow_leading_dot = false;
 };
 
-template <typename T, typename T2>
-bool
-compare(T n, T2 expected)
+template <typename T>
+bool compare(T n, boost::type_identity_t<T> expected)
 {
-    T const eps = std::pow(10.0, -std::numeric_limits<T>::digits10);
+    using std::abs;
+    using std::log10;
+    using std::pow;
+    T const eps = pow(T(10), -std::numeric_limits<T>::digits10 + log10(abs(expected)));
     T delta = n - expected;
     return (delta >= -eps) && (delta <= eps);
 }

@@ -209,7 +209,7 @@ the traits class `construction_traits`:
    template <class T, class Policy>
    struct construction_traits
    {
-      typedef mpl::int_<N> type;
+      typedef std::integral_constant<int, N> type;
    };
 
    }}} // namespaces
@@ -240,7 +240,7 @@ mechanism.  We can achieve this by specialising the class template `boost::math:
    struct constant_pi<mpfr_class>
    {
       template<int N>
-      static mpfr_class get(const mpl::int_<N>&)
+      static mpfr_class get(const std::integral_constant<int, N>&)
       {
          // The template param N is one of the values in the table above,
          // we can either handle all cases in one as is the case here,
@@ -302,21 +302,23 @@ This section lists the mathematical constants, their use(s) (and sometimes ratio
 [[three_quarters] [3/4] [0.75] [] ]
 
 [[[*two and related]] [] [] [] ]
-[[root_two] [[radic]2] [1.41421] [] ]
+[[root_two] [[radic]2] [1.41421] [Equivalent to POSIX constant M_SQRT2] ]
 [[root_three] [[radic]3] [1.73205] [] ]
 [[half_root_two] [[radic]2 /2] [0.707106] [] ]
-[[ln_two] [ln(2)] [0.693147] [] ]
-[[ln_ten] [ln(10)] [2.30258] [] ]
+[[ln_two] [ln(2)] [0.693147] [Equivalent to POSIX constant M_LN2] ]
+[[ln_ten] [ln(10)] [2.30258] [Equivalent to POSIX constant M_LN10] ]
 [[ln_ln_two] [ln(ln(2))] [-0.366512] [Gumbel distribution median] ]
 [[root_ln_four] [[radic]ln(4)] [1.177410] [] ]
-[[one_div_root_two] [1/[radic]2] [0.707106] [] ]
+[[one_div_root_two] [1/[radic]2] [0.707106] [Equivalent to POSIX constant M_SQRT1_2] ]
 
 [[[*[pi] and related]] [] [] [] ]
-[[pi] [pi] [3.14159] [Ubiquitous. Archimedes constant [@http://en.wikipedia.org/wiki/Pi [pi]]]]
-[[half_pi] [[pi]/2] [1.570796] [] ]
+[[pi] [[pi]] [3.14159] [Ubiquitous. Archimedes constant [@http://en.wikipedia.org/wiki/Pi [pi]].  Equivalent to POSIX constant M_PI]]
+[[half_pi] [[pi]/2] [1.570796] [Equivalent to POSIX constant M_PI2] ]
 [[third_pi] [[pi]/3] [1.04719] [] ]
+[[quarter_pi] [[pi]/4] [0.78539816] [Equivalent to POSIX constant M_PI_4] ]
 [[sixth_pi] [[pi]/6] [0.523598] [] ]
 [[two_pi] [2[pi]] [6.28318] [Many uses, most simply, circumference of a circle]]
+[[tau] [[tau]] [6.28318] [@https://en.wikipedia.org/wiki/Turn_(angle)#Tau_proposals Many uses, most simply, circumference of a circle. Equal to two_pi.]]
 [[two_thirds_pi] [2/3 [pi]] [2.09439] [[@http://en.wikipedia.org/wiki/Sphere#Volume_of_a_sphere volume of a hemi-sphere] = 4/3 [pi] r[cubed]]]
 [[three_quarters_pi] [3/4 [pi]] [2.35619] [ = 3/4 [pi] ]]
 [[four_thirds_pi] [4/3 [pi]] [4.18879] [[@http://en.wikipedia.org/wiki/Sphere#Volume_of_a_sphere volume of a sphere] = 4/3 [pi] r[cubed]]]
@@ -324,7 +326,10 @@ This section lists the mathematical constants, their use(s) (and sometimes ratio
 [[root_pi] [[radic][pi]][1.77245] [Widely used]]
 [[root_half_pi] [[radic] [pi]/2] [1.25331] [Widely used]]
 [[root_two_pi][[radic] [pi]*2] [2.50662] [Widely used]]
+[[one_div_pi] [1/[pi]] [0.31830988] [Equivalent to POSIX constant M_1_PI] ]
+[[two_div_pi] [2/[pi]] [0.63661977] [Equivalent to POSIX constant M_2_PI] ]
 [[one_div_root_pi] [1/[radic][pi]] [0.564189] [] ]
+[[two_div_root_pi] [2/[radic][pi]] [1.128379] [Equivalent to POSIX constant M_2_SQRTPI] ]
 [[one_div_root_two_pi] [1/[radic](2[pi])] [0.398942] [] ]
 [[root_one_div_pi] [[radic](1/[pi]] [0.564189] [] ]
 [[pi_minus_three] [[pi]-3] [0.141593] [] ]
@@ -338,12 +343,13 @@ This section lists the mathematical constants, their use(s) (and sometimes ratio
 [[one_div_cbrt_pi] [1/[radic][super 3] [pi]] [0.682784] [] ]
 
 [[[*Euler's e and related]] [] [] [] ]
-[[e] [e] [2.71828] [[@http://en.wikipedia.org/wiki/E_(mathematical_constant) Euler's constant e]] ]
+[[e] [e] [2.71828] [[@http://en.wikipedia.org/wiki/E_(mathematical_constant) Euler's constant e], equivalent to POSIX constant M_E] ]
 [[exp_minus_half] [e [super -1/2]] [0.606530] [] ]
 [[e_pow_pi] [e [super [pi]]] [23.14069] [] ]
 [[root_e] [[radic] e] [1.64872] [] ]
-[[log10_e] [log10(e)] [0.434294] [] ]
+[[log10_e] [log10(e)] [0.434294] [Equivalent to POSIX constant M_LOG10E] ]
 [[one_div_log10_e] [1/log10(e)] [2.30258] [] ]
+[[log2_e] [log[sub 2](e)] [1.442695] [This is the same as 1/ln(2) and is equivalent to POSIX constant M_LOG2E] ]
 
 [[[*Trigonometric]] [] [] [] ]
 [[degree] [radians = [pi] / 180] [0.017453] [] ]
@@ -374,7 +380,12 @@ This section lists the mathematical constants, their use(s) (and sometimes ratio
 [[rayleigh_skewness] [2[radic][pi]([pi]-3)/(4 - [pi])[super 3/2]] [0.631110] [Rayleigh distribution skewness] ]
 [[rayleigh_kurtosis_excess] [-(6[pi][super 2]-24[pi]+16)/(4-[pi])[super 2]] [0.245089] [[@http://en.wikipedia.org/wiki/Rayleigh_distribution Rayleigh distribution kurtosis excess]] ]
 [[rayleigh_kurtosis] [3+(6[pi][super 2]-24[pi]+16)/(4-[pi])[super 2]] [3.245089] [Rayleigh distribution kurtosis] ]
-
+[[first_feigenbaum] [] [4.6692016] [[@https://en.wikipedia.org/wiki/Feigenbaum_constants First Feigenbaum constant]] ]
+[[plastic] [Real solution of x[super 3] = x + 1] [1.324717957] [[@https://en.wikipedia.org/wiki/Plastic_number Plastic constant]] ]
+[[gauss] [Reciprocal of agm(1, [radic]2)] [0.8346268] [[@https://en.wikipedia.org/wiki/Gauss%27s_constant Gauss's constant]] ]
+[[dottie] [Solution of cos(x) = x] [0.739085] [[@https://en.wikipedia.org/wiki/Dottie_number Dottie's number]] ]
+[[reciprocal_fibonacci] [Sum of reciprocals of Fibonacci numbers] [3.359885666] [[@https://en.wikipedia.org/wiki/Reciprocal_Fibonacci_constant Reciprocal Fibonacci constant]] ]
+[[laplace_limit] [] [.6627434193] [[@https://en.wikipedia.org/wiki/Laplace_limit Laplace Limit]] ]
 ] [/table]
 
 
@@ -403,7 +414,7 @@ The function should look like this:
 
   template <class Real>
   template <int N>
-  Real constant_my_constant<Real>::compute(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(mpl::int_<N>))
+  Real constant_my_constant<Real>::compute(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC((std::integral_constant<int, N>)))
   {
     int required_precision = N ? N : tools::digits<Real>();
     Real result = /* value computed to required_precision bits */ ;
@@ -425,7 +436,7 @@ For example, to calculate [pi]/2, add to `boost/math/constants/calculate_constan
 
   template <class T>
   template<int N>
-  inline T constant_half_pi<T>::compute(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(mpl::int_<N>))
+  inline T constant_half_pi<T>::compute(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC((std::integral_constant<int, N>)))
   {
      BOOST_MATH_STD_USING
      return pi<T, policies::policy<policies::digits2<N> > >() / static_cast<T>(2);
@@ -454,10 +465,8 @@ Failing to do this will result in surprising compile errors:
 ``
 ]
 
-2. [*You will need an arbitrary precision type to use to calculate the value]. This library
-currently supports either `cpp_float`, `NTL::RR` or `mpfr_class` used via the bindings in `boost/math/bindings`.
-The default is to use `NTL::RR` unless you define an alternate macro, for example,
-`USE_MPFR` or `USE_CPP_FLOAT` at the start of your program.
+2. [*You will need an arbitrary precision type to use to calculate the value].
+Boost.Multiprecision has a large number of arbitrary precision floating point types to aid with this.
 
 3. It is necessary to link to the Boost.Regex library,
 and probably to your chosen arbitrary precision type library.
@@ -559,7 +568,7 @@ especially when trig and other functions are called.
 for example, using [@http://oeis.org/ The On-Line Encyclopedia of Integer Sequences (OEIS)]
 again using at least 35 decimal digits strings.
 
-# Comparison with independely calculated values using arbitrary precision tools like
+# Comparison with independently calculated values using arbitrary precision tools like
 [@http://www.wolfram.com/mathematica/ Mathematica], again using at least 35 decimal digits literal strings.
 
 [warning We have not yet been able to [*check] that
@@ -624,22 +633,9 @@ Apart from the built-in floating-point types `float`, `double`, `long double`,
 there are several arbitrary precision floating-point classes available,
 but most are not licensed for commercial use.
 
-[h5  Boost.Multiprecision by Christopher Kormanyos]
+[h5  Boost.Multiprecision by Christopher Kormanyos and John Maddock]
 
-This work is based on an earlier work called e-float:
-Algorithm 910: A Portable C++ Multiple-Precision System for Special-Function Calculations,
-in ACM TOMS, {VOL 37, ISSUE 4, (February 2011)} (C) ACM, 2011.
-[@http://doi.acm.org/10.1145/1916461.1916469]
-[@https://svn.boost.org/svn/boost/sandbox/e_float/ e_float]
-but is now re-factored and available under the Boost license in the Boost-sandbox at
-[@https://svn.boost.org/svn/boost/sandbox/multiprecision/ multiprecision]
-where it is being refined and prepared for review.
-
-[h5 Boost.cpp_float by John Maddock using Expression Templates]
-
-[@https://svn.boost.org/svn/boost/sandbox/big_number/ Big Number]
-which is a reworking of [@https://svn.boost.org/svn/boost/sandbox/e_float/ e_float]
-by Christopher Kormanyos to use expression templates for faster execution.
+This is a well-maintained and fully featured library which provides numerous high-precision types, as well as wrappers to other popular libraries like MPFR.
 
 [h5 NTL class quad_float]
 
@@ -692,12 +688,12 @@ and are [*not licensed for commercial use].
 
 A review concluded that the way in which the constants were presented did not meet many peoples needs.
 None of the methods proposed met many users' essential requirement to allow writing simply `pi` rather than `pi()`.
-Many science and engineering equations look difficult to read when because function call brackets can be confused
+Many science and engineering equations look difficult to read because function call brackets can be confused
 with the many other brackets often needed.  All the methods then proposed of avoiding the brackets failed to meet all needs,
 often on grounds of complexity and lack of applicability to various realistic scenarios.
 
 So the simple namespace method, proposed on its own, but rejected at the first review,
-has been added to allow users to have convenient access to float, double and long double values,
+has been added to allow users to have convenient access to `float`, `double` and `long double` values,
 but combined with template struct and functions to allow simultaneous use
 with other non-built-in floating-point types.
 
@@ -717,8 +713,8 @@ from Simon Plouffe's web based collection [@http://pi.lacim.uqam.ca/eng/].
 # Checks using  printed text optically scanned values and converted from:
 D. E. Knuth, Art of Computer Programming, Appendix A, Table 1, Vol 1, ISBN 0 201 89683 4 (1997)
 # M. Abrahamovitz & I. E. Stegun, National Bureau of Standards, Handbook of Mathematical Functions,
-a reference source for formulae now superceded by
-# Frank W. Olver, Daniel W. Lozier, Ronald F. Boisvert, Charles W. Clark, NIST Handbook of Mathemetical Functions, Cambridge University Press, ISBN 978-0-521-14063-8, 2010.
+a reference source for formulae now superseded by
+# Frank W. Olver, Daniel W. Lozier, Ronald F. Boisvert, Charles W. Clark, NIST Handbook of Mathematical Functions, Cambridge University Press, ISBN 978-0-521-14063-8, 2010.
 # John F Hart, Computer Approximations, Kreiger (1978) ISBN 0 88275 642 7.
 # Some values from Cephes Mathematical Library, Stephen L. Moshier
 and CALC100 100 decimal digit Complex Variable Calculator Program, a DOS utility.
@@ -726,11 +722,11 @@ and CALC100 100 decimal digit Complex Variable Calculator Program, a DOS utility
 
 [h4 Where are Physical Constants?]
 
-Not here in this Boost.Math collection, because physical constants:
+Not here, because physical constants:
 
-* Are measurements, not truely constants.
-* Are not truly constant and keeping changing as mensuration technology improves.
-* Have a instrinsic uncertainty.
+* Are measurements, not truly constants.
+* Are not truly constant and keeping changing as metrology improves.
+* Have intrinsic uncertainty.
 * Mathematical constants are stored and represented at varying precision, but should never be inaccurate.
 
 Some physical constants may be available in Boost.Units.

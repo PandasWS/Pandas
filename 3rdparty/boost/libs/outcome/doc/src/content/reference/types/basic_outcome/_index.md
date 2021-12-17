@@ -3,12 +3,12 @@ title = "`basic_outcome<T, EC, EP, NoValuePolicy>`"
 description = "A type carrying one of (i) a successful `T` (ii) a disappointment `EC` (iii) a failure `EP` (iv) both a disappointment `EC` and a failure `EP`, with `NoValuePolicy` specifying what to do if one tries to read state which isn't there."
 +++
 
-A type carrying one of (i) a successful `T` (ii) a disappointment `EC` (iii) a failure `EP` (iv) both a disappointment `EC` and a failure `EP`, with `NoValuePolicy` specifying what to do if one tries to read state which isn't there. Any one, two, or all of `T`, `EC` and `EP` can be `void` to indicate no value for that state is present. Detectable using {{% api "is_basic_outcome<T>" %}}.
+A type carrying one of (i) a successful `T` (ii) a disappointment `EC` (iii) a failure `EP` (iv) both a disappointment `EC` and a failure `EP`, with `NoValuePolicy` specifying what to do if one tries to read state which isn't there, and enabling injection of hooks to trap when lifecycle events occur. Any one, two, or all of `T`, `EC` and `EP` can be `void` to indicate no value for that state is present. Detectable using {{% api "is_basic_outcome<T>" %}}.
 
 *Requires*: Concept requirements if C++ 20, else static asserted:
 
 - That trait {{% api "type_can_be_used_in_basic_result<R>" %}} is true for `T`, `EC` and `EP`.
-- That either `EC` is `void` or `DefaultConstructible`.
+- That either `EC` is `void` or `DefaultConstructible` (Outcome v2.1 and earlier only).
 - That either `EP` is `void` or `DefaultConstructible`.
 
 *Namespace*: `BOOST_OUTCOME_V2_NAMESPACE`
@@ -60,6 +60,7 @@ an exception perhaps carrying a custom payload.
 - `value_type` is `T`.
 - `error_type` is `EC`.
 - `exception_type` is `EP`.
+- `no_value_policy_type` is `NoValuePolicy`.
 - `value_type_if_enabled` is `T` if construction from `T` is available, else it is a usefully named unusable internal type.
 - `error_type_if_enabled` is `EC` if construction from `EC` is available, else it is a usefully named unusable internal type.
 - `exception_type_if_enabled` is `EP` if construction from `EP` is available, else it is a usefully named unusable internal type.
@@ -130,7 +131,16 @@ an exception perhaps carrying a custom payload.
     2. `basic_outcome<A, B, C, D>` is not this `basic_outcome` type.
     3. `A` is `void` OR `value_type` is explicitly constructible from `A`.
     4. `B` is `void` OR `error_type` is explicitly constructible from `B`.
-    4. `C` is `void` OR `exception_type` is explicitly constructible from `C`.
+    5. `C` is `void` OR `exception_type` is explicitly constructible from `C`.
+
+- `predicate::enable_make_error_code_compatible_conversion<A, B, C, D>` is constexpr boolean true if:
+    1. `predicate::constructors_enabled` is true.
+    2. `basic_outcome<A, B, C, D>` is not this `basic_outcome` type.
+    3. Trait {{% api "is_error_code_available<T>" %}} is true for decayed `error_type`.
+    4. `predicate::enable_compatible_conversion<A, B, C, D>` is not true.
+    5. `A` is `void` OR `value_type` is explicitly constructible from `A`.
+    6. `error_type` is explicitly constructible from `make_error_code(B)`.
+    7. `C` is `void` OR `exception_type` is explicitly constructible from `C`.
 
 - `predicate::enable_inplace_value_constructor<Args...>` is constexpr boolean true if:
     1. `predicate::constructors_enabled` is true.
@@ -158,6 +168,7 @@ an exception perhaps carrying a custom payload.
 - `MoveAssignable`, if all of `value_type`, `error_type` and `exception_type` implement move constructors and move assignment.
 - `CopyAssignable`, if all of `value_type`, `error_type` and `exception_type` implement copy constructors and copy assignment.
 - `Destructible`.
+- `Swappable`, with the strong rather than weak guarantee. See {{% api "void swap(basic_outcome &)" %}} for more information.
 - `TriviallyCopyable`, if all of `value_type`, `error_type` and `exception_type` are trivially copyable.
 - `TrivialType`, if all of `value_type`, `error_type` and `exception_type` are trivial types.
 - `LiteralType`, if all of `value_type`, `error_type` and `exception_type` are literal types.
@@ -166,7 +177,22 @@ However all of the three major compilers MSVC, GCC and clang implement C layout 
 
     ```c++
     struct outcome_layout {
-      struct result_layout {
+      struct trivially_copyable_result_layout {
+        union {
+          value_type value;
+          error_type error;
+        };
+        unsigned int flags;
+      };
+      exception_type exception;
+    };
+    ```
+
+    ... if both `value_type` and `error_type` are `TriviallyCopyable`, otherwise:
+
+    ```c++
+    struct outcome_layout {
+      struct non_trivially_copyable_result_layout {
         value_type value;
         unsigned int flags;
         error_type error;
@@ -178,7 +204,6 @@ However all of the three major compilers MSVC, GCC and clang implement C layout 
 works fine from C on MSVC, GCC and clang.
 - `EqualityComparable`, if all of `value_type`, `error_type` and `exception_type` implement equality comparisons with one another.
 - ~~`LessThanComparable`~~, not implemented due to availability of implicit conversions from `value_type`, `error_type` and `exception_type`, this can cause major surprise (i.e. hard to diagnose bugs), so we don't implement these at all.
-~ `Swappable`
 - ~~`Hash`~~, not implemented as a generic implementation of a unique hash for non-valued items which are unequal would require a dependency on RTTI being enabled.
 
 Thus `basic_outcome` meets the `Regular` concept if all of `value_type`, `error_type` and `exception_type` are `Regular`, except for the lack of a default constructor. Often where one needs a default constructor, wrapping `basic_outcome` into {{% api "std::optional<T>" %}} will suffice.

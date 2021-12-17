@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Python Debugging Builds</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="Boost.Python">
-<link rel="up" href="../building.html" title="Chapter&#160;2.&#160;Building and Testing">
+<link rel="up" href="../building.html" title="Chapter 2. Building and Testing">
 <link rel="prev" href="include_issues.html" title="#include Issues">
 <link rel="next" href="testing_boost_python.html" title="Testing Boost.Python">
 </head>
@@ -20,7 +20,7 @@
 <a name="building.python_debugging_builds"></a><a class="link" href="python_debugging_builds.html" title="Python Debugging Builds">Python Debugging Builds</a>
 </h3></div></div></div>
 <p>
-        Python can be built in a special &#8220;python debugging&#8221; configuration that
+        Python can be built in a special “python debugging” configuration that
         adds extra checks and instrumentation that can be very useful for developers
         of extension modules. The data structures used by the debugging configuration
         contain additional members, so <span class="bold"><strong>a Python executable
@@ -28,7 +28,7 @@
         or library compiled without it, and vice-versa.</strong></span>
       </p>
 <p>
-        Since pre-built &#8220;python debugging&#8221; versions of the Python executable
+        Since pre-built “python debugging” versions of the Python executable
         and libraries are not supplied with most distributions of Python, <a href="#ftn.building.python_debugging_builds.f0" class="footnote" name="building.python_debugging_builds.f0"><sup class="footnote">[5]</sup></a> and we didn't want to force our users to build them, Boost.Build
         does not automatically enable python debugging in its <code class="computeroutput"><span class="identifier">debug</span></code>
         build variant (which is the default). Instead there is a special build property
@@ -46,7 +46,7 @@
         present, Boost.Python temporarily undefines <code class="computeroutput"><span class="identifier">_DEBUG</span></code>
         when <code class="computeroutput"><span class="identifier">Python</span><span class="special">.</span><span class="identifier">h</span></code> is #included from <code class="computeroutput"><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">detail</span><span class="special">/</span><span class="identifier">wrap_python</span><span class="special">.</span><span class="identifier">hpp</span></code> -
         unless <code class="computeroutput"><span class="identifier">BOOST_DEBUG_PYTHON</span></code>
-        is defined. The upshot is that if you want &#8220;python debugging&#8221;and you
+        is defined. The upshot is that if you want “python debugging”and you
         aren't using Boost.Build, you should make sure <code class="computeroutput"><span class="identifier">BOOST_DEBUG_PYTHON</span></code>
         is defined, or python debugging will be suppressed.
       </p>
@@ -63,8 +63,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2015 David
-      Abrahams, Stefan Seefeld<br>Copyright &#169; 2002-2015 David Abrahams, Stefan Seefeld<p>
+<td align="right"><div class="copyright-footer">Copyright © 2002-2015 David
+      Abrahams, Stefan Seefeld<br>Copyright © 2002-2015 David Abrahams, Stefan Seefeld<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -3,14 +3,13 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/config/warning_disable.hpp>
-#include <boost/detail/lightweight_test.hpp>
-
 #include <boost/spirit/include/karma_binary.hpp>
-#include <boost/spirit/include/karma_generate.hpp>
 
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/spirit/include/karma_generate.hpp>
+#include <boost/spirit/include/karma_phoenix_attributes.hpp>
+
+#include <boost/phoenix/core.hpp>
+#include <boost/phoenix/operator.hpp>
 
 #include <boost/predef/other/endian.h>
 
@@ -65,8 +64,6 @@ main()
 #endif
     }
 
-// we support Phoenix attributes only starting with V2.2
-#if SPIRIT_VERSION >= 0x2020
     {   // test Phoenix expression attributes, only supported if 
         // karma_phoenix_attributes.hpp is included
         namespace phoenix = boost::phoenix;
@@ -162,7 +159,6 @@ main()
 
 #endif
     }
-#endif
 
     return boost::report_errors();
 }

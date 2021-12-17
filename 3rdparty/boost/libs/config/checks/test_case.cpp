@@ -1,6 +1,6 @@
-//  This file was automatically generated on Sun Apr 21 09:13:03 2019
+//  This file was automatically generated on Tue Aug 17 16:27:31 2021
 //  by libs/config/tools/generate.cpp
-//  Copyright John Maddock 2002-4.
+//  Copyright John Maddock 2002-21.
 //  Use, modification and distribution are subject to the 
 //  Boost Software License, Version 1.0. (See accompanying file 
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -276,6 +276,16 @@
 #     error "Defect macro BOOST_NO_CWCTYPE is defined."
 #  endif
 #endif
+#ifdef TEST_BOOST_NO_CXX03
+#  ifdef BOOST_NO_CXX03
+#     error "Defect macro BOOST_NO_CXX03 is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX11
+#  ifdef BOOST_NO_CXX11
+#     error "Defect macro BOOST_NO_CXX11 is defined."
+#  endif
+#endif
 #ifdef TEST_BOOST_NO_CXX11_ADDRESSOF
 #  ifdef BOOST_NO_CXX11_ADDRESSOF
 #     error "Defect macro BOOST_NO_CXX11_ADDRESSOF is defined."
@@ -299,6 +309,11 @@
 #ifdef TEST_BOOST_NO_CXX11_DEFAULTED_MOVES
 #  ifdef BOOST_NO_CXX11_DEFAULTED_MOVES
 #     error "Defect macro BOOST_NO_CXX11_DEFAULTED_MOVES is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX11_HDR_EXCEPTION
+#  ifdef BOOST_NO_CXX11_HDR_EXCEPTION
+#     error "Defect macro BOOST_NO_CXX11_HDR_EXCEPTION is defined."
 #  endif
 #endif
 #ifdef TEST_BOOST_NO_CXX11_FINAL
@@ -416,6 +431,11 @@
 #     error "Defect macro BOOST_NO_CXX11_NUMERIC_LIMITS is defined."
 #  endif
 #endif
+#ifdef TEST_BOOST_NO_CXX11_OVERRIDE
+#  ifdef BOOST_NO_CXX11_OVERRIDE
+#     error "Defect macro BOOST_NO_CXX11_OVERRIDE is defined."
+#  endif
+#endif
 #ifdef TEST_BOOST_NO_CXX11_POINTER_TRAITS
 #  ifdef BOOST_NO_CXX11_POINTER_TRAITS
 #     error "Defect macro BOOST_NO_CXX11_POINTER_TRAITS is defined."
@@ -451,9 +471,19 @@
 #     error "Defect macro BOOST_NO_CXX11_TRAILING_RESULT_TYPES is defined."
 #  endif
 #endif
+#ifdef TEST_BOOST_NO_CXX11_UNRESTRICTED_UNION
+#  ifdef BOOST_NO_CXX11_UNRESTRICTED_UNION
+#     error "Defect macro BOOST_NO_CXX11_UNRESTRICTED_UNION is defined."
+#  endif
+#endif
 #ifdef TEST_BOOST_NO_CXX11_USER_DEFINED_LITERALS
 #  ifdef BOOST_NO_CXX11_USER_DEFINED_LITERALS
 #     error "Defect macro BOOST_NO_CXX11_USER_DEFINED_LITERALS is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX14
+#  ifdef BOOST_NO_CXX14
+#     error "Defect macro BOOST_NO_CXX14 is defined."
 #  endif
 #endif
 #ifdef TEST_BOOST_NO_CXX14_BINARY_LITERALS
@@ -511,9 +541,39 @@
 #     error "Defect macro BOOST_NO_CXX14_VARIABLE_TEMPLATES is defined."
 #  endif
 #endif
+#ifdef TEST_BOOST_NO_CXX17
+#  ifdef BOOST_NO_CXX17
+#     error "Defect macro BOOST_NO_CXX17 is defined."
+#  endif
+#endif
 #ifdef TEST_BOOST_NO_CXX17_FOLD_EXPRESSIONS
 #  ifdef BOOST_NO_CXX17_FOLD_EXPRESSIONS
 #     error "Defect macro BOOST_NO_CXX17_FOLD_EXPRESSIONS is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX17_HDR_ANY
+#  ifdef BOOST_NO_CXX17_HDR_ANY
+#     error "Defect macro BOOST_NO_CXX17_HDR_ANY is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX17_HDR_CHARCONV
+#  ifdef BOOST_NO_CXX17_HDR_CHARCONV
+#     error "Defect macro BOOST_NO_CXX17_HDR_CHARCONV is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX17_HDR_EXECUTION
+#  ifdef BOOST_NO_CXX17_HDR_EXECUTION
+#     error "Defect macro BOOST_NO_CXX17_HDR_EXECUTION is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX17_HDR_FILESYSTEM
+#  ifdef BOOST_NO_CXX17_HDR_FILESYSTEM
+#     error "Defect macro BOOST_NO_CXX17_HDR_FILESYSTEM is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX17_HDR_MEMORY_RESOURCE
+#  ifdef BOOST_NO_CXX17_HDR_MEMORY_RESOURCE
+#     error "Defect macro BOOST_NO_CXX17_HDR_MEMORY_RESOURCE is defined."
 #  endif
 #endif
 #ifdef TEST_BOOST_NO_CXX17_HDR_OPTIONAL
@@ -559,6 +619,76 @@
 #ifdef TEST_BOOST_NO_CXX17_STRUCTURED_BINDINGS
 #  ifdef BOOST_NO_CXX17_STRUCTURED_BINDINGS
 #     error "Defect macro BOOST_NO_CXX17_STRUCTURED_BINDINGS is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_BARRIER
+#  ifdef BOOST_NO_CXX20_HDR_BARRIER
+#     error "Defect macro BOOST_NO_CXX20_HDR_BARRIER is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_BIT
+#  ifdef BOOST_NO_CXX20_HDR_BIT
+#     error "Defect macro BOOST_NO_CXX20_HDR_BIT is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_COMPARE
+#  ifdef BOOST_NO_CXX20_HDR_COMPARE
+#     error "Defect macro BOOST_NO_CXX20_HDR_COMPARE is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_CONCEPTS
+#  ifdef BOOST_NO_CXX20_HDR_CONCEPTS
+#     error "Defect macro BOOST_NO_CXX20_HDR_CONCEPTS is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_COROUTINE
+#  ifdef BOOST_NO_CXX20_HDR_COROUTINE
+#     error "Defect macro BOOST_NO_CXX20_HDR_COROUTINE is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_FORMAT
+#  ifdef BOOST_NO_CXX20_HDR_FORMAT
+#     error "Defect macro BOOST_NO_CXX20_HDR_FORMAT is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_LATCH
+#  ifdef BOOST_NO_CXX20_HDR_LATCH
+#     error "Defect macro BOOST_NO_CXX20_HDR_LATCH is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_NUMBERS
+#  ifdef BOOST_NO_CXX20_HDR_NUMBERS
+#     error "Defect macro BOOST_NO_CXX20_HDR_NUMBERS is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_RANGES
+#  ifdef BOOST_NO_CXX20_HDR_RANGES
+#     error "Defect macro BOOST_NO_CXX20_HDR_RANGES is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_SEMAPHORE
+#  ifdef BOOST_NO_CXX20_HDR_SEMAPHORE
+#     error "Defect macro BOOST_NO_CXX20_HDR_SEMAPHORE is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_SOURCE_LOCATION
+#  ifdef BOOST_NO_CXX20_HDR_SOURCE_LOCATION
+#     error "Defect macro BOOST_NO_CXX20_HDR_SOURCE_LOCATION is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_SPAN
+#  ifdef BOOST_NO_CXX20_HDR_SPAN
+#     error "Defect macro BOOST_NO_CXX20_HDR_SPAN is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_STOP_TOKEN
+#  ifdef BOOST_NO_CXX20_HDR_STOP_TOKEN
+#     error "Defect macro BOOST_NO_CXX20_HDR_STOP_TOKEN is defined."
+#  endif
+#endif
+#ifdef TEST_BOOST_NO_CXX20_HDR_SYNCSTREAM
+#  ifdef BOOST_NO_CXX20_HDR_SYNCSTREAM
+#     error "Defect macro BOOST_NO_CXX20_HDR_SYNCSTREAM is defined."
 #  endif
 #endif
 #ifdef TEST_BOOST_NO_CXX98_BINDERS

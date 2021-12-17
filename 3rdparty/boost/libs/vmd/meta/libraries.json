@@ -10,5 +10,6 @@
     ],
     "maintainers": [
         "Edward Diener <eld -at- tropicsoft.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

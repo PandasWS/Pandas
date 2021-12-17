@@ -6,7 +6,8 @@
 
 # Test reduce() collective.
 
-import boost.parallel.mpi as mpi
+from __future__ import print_function
+import mpi
 from generators import *
 
 def reduce_test(comm, generator, kind, op, op_kind, root):
@@ -19,7 +20,7 @@ def reduce_test(comm, generator, kind, op, op_kind, root):
         for p in range(1, comm.size):
             expected_result = op(expected_result, generator(p))
         assert result == expected_result
-        print "OK."
+        print ("OK.")
     else:
         assert result == None
     return

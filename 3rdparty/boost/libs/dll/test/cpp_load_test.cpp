@@ -1,4 +1,5 @@
 // Copyright 2016 Klemens Morgenstern
+// Copyright 2019-2021 Antony Polukhin
 //
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt
@@ -6,13 +7,18 @@
 
 // For more information, see http://www.boost.org
 
+#include <boost/config.hpp>
 #include <boost/predef.h>
+
+#if (__cplusplus >= 201103L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 201103L)
+// Make sure that it at least compiles
+#  include <boost/dll/smart_library.hpp>
+#endif
 
 #if (__cplusplus >= 201402L) || (BOOST_COMP_MSVC >= BOOST_VERSION_NUMBER(14,0,0))
 
 #include "../example/b2_workarounds.hpp"
 
-#include <boost/dll/smart_library.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/variant.hpp>
@@ -38,10 +44,12 @@ int main(int argc, char* argv[])
 
     auto& unscoped_var = sm.get_variable<int>("unscoped_var");
     BOOST_TEST(unscoped_var == 42);
+    BOOST_TEST(unscoped_var == get<int>(sm, "unscoped_var"));
+    BOOST_TEST(&unscoped_var == &get<int>(sm, "unscoped_var"));
+
     std::cerr << 2 << ' ';
     auto& unscoped_c_var = sm.get_variable<const double>("unscoped_c_var");
     BOOST_TEST(unscoped_c_var == 1.234);
-
     std::cerr << 3 << ' ';
     auto& sp_variable = sm.get_variable<double>("some_space::variable");
     BOOST_TEST(sp_variable == 0.2);
@@ -61,6 +69,7 @@ int main(int argc, char* argv[])
     BOOST_TEST(ovl1 != nullptr);
     BOOST_TEST(ovl2 != nullptr);
     BOOST_TEST(reinterpret_cast<void*>(ovl1) != reinterpret_cast<void*>(ovl2));
+    BOOST_TEST(ovl1 == get<void(int)>(sm, "overloaded"));
     std::cerr << 8 << ' ';
     ovl1(12);
     BOOST_TEST(unscoped_var == 12);
@@ -69,6 +78,8 @@ int main(int argc, char* argv[])
     std::cerr << 9 << ' ';
 
 
+// TODO: ms.get_name on Clang has space after comma `boost::variant<double, int>`
+#if !(defined(BOOST_TRAVISCI_BUILD) && defined(_MSC_VER) && defined(BOOST_CLANG))
     auto var1 = sm.get_function<void(boost::variant<int, double> &)>("use_variant");
     auto var2 = sm.get_function<void(boost::variant<double, int> &)>("use_variant");
     std::cerr << 10 << ' ';
@@ -99,6 +110,7 @@ int main(int argc, char* argv[])
          boost::apply_visitor(vis2, v2);
 
     }
+#endif
     std::cerr << 12 << ' ';
     /* now test the class stuff */
 
@@ -195,8 +207,7 @@ int main(int argc, char* argv[])
     dtor.call_standard(&oc);                BOOST_TEST(this_dll == this_exe);
     BOOST_TEST(static_val == 0);
 
-// TODO: FIX!
-#ifndef BOOST_TRAVISCI_BUILD
+#ifndef BOOST_NO_RTTI
     const auto& ti = sm.get_type_info<override_class>();
     BOOST_TEST(ti.name() != nullptr);
 #endif

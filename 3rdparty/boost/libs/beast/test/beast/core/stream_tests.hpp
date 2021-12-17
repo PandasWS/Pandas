@@ -14,7 +14,6 @@
 #include <boost/beast/core/error.hpp>
 #include <boost/beast/core/stream_traits.hpp>
 #include <boost/asio/buffer.hpp>
-#include <boost/asio/spawn.hpp>
 #include <boost/asio/use_future.hpp>
 
 namespace boost {
@@ -67,9 +66,11 @@ test_async_read_stream()
 
     BOOST_ASSERT(is_async_read_stream<AsyncReadStream>::value);
     BEAST_EXPECT(&AsyncReadStream::get_executor);
-    BEAST_EXPECT((&AsyncReadStream::template async_read_some<net::mutable_buffer, handler>));
-    BEAST_EXPECT((&AsyncReadStream::template async_read_some<net::mutable_buffer, net::use_future_t<>>));
-    BEAST_EXPECT((&AsyncReadStream::template async_read_some<net::mutable_buffer, net::yield_context>));
+
+    // VFALCO These stopped working because of enable_if as the last parameter
+    //BEAST_EXPECT((&AsyncReadStream::template async_read_some<net::mutable_buffer, handler>));
+    //BEAST_EXPECT((&AsyncReadStream::template async_read_some<net::mutable_buffer, net::use_future_t<>>));
+    //BEAST_EXPECT((&AsyncReadStream::template async_read_some<net::mutable_buffer, net::yield_context>));
 }
 
 template<class AsyncWriteStream>
@@ -85,9 +86,10 @@ test_async_write_stream()
 
     BOOST_ASSERT(is_async_write_stream<AsyncWriteStream>::value);
     BEAST_EXPECT(&AsyncWriteStream::get_executor);
-    BEAST_EXPECT((&AsyncWriteStream::template async_write_some<net::const_buffer, handler>));
-    BEAST_EXPECT((&AsyncWriteStream::template async_write_some<net::const_buffer, net::use_future_t<>>));
-    BEAST_EXPECT((&AsyncWriteStream::template async_write_some<net::const_buffer, net::yield_context>));
+    // VFALCO These stopped working because of enable_if as the last parameter
+    //BEAST_EXPECT((&AsyncWriteStream::template async_write_some<net::const_buffer, handler>));
+    //BEAST_EXPECT((&AsyncWriteStream::template async_write_some<net::const_buffer, net::use_future_t<>>));
+    //BEAST_EXPECT((&AsyncWriteStream::template async_write_some<net::const_buffer, net::yield_context>));
 }
 
 template<class AsyncStream>

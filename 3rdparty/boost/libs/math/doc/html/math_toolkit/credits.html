@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Credits and Acknowledgements</title>
 <link rel="stylesheet" href="../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Math Toolkit 2.10.0">
-<link rel="up" href="../status.html" title="Chapter&#160;22.&#160;Library Status">
+<link rel="home" href="../index.html" title="Math Toolkit 3.1.0">
+<link rel="up" href="../status.html" title="Chapter 24. Library Status">
 <link rel="prev" href="issues.html" title="Known Issues, and TODO List">
-<link rel="next" href="../indexes.html" title="Chapter&#160;23.&#160;Indexes">
+<link rel="next" href="../indexes.html" title="Chapter 25. Indexes">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -26,6 +26,16 @@
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="math_toolkit.credits"></a><a class="link" href="credits.html" title="Credits and Acknowledgements">Credits and Acknowledgements</a>
 </h2></div></div></div>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../../../doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+        This section should be read with the 'What's New' section that gives much
+        detail on changes for each release.
+      </p></td></tr>
+</table></div>
 <p>
       Hubert Holin started the Boost.Math library. The Quaternions, Octonions, inverse
       hyperbolic functions, and the sinus cardinal functions are his.
@@ -56,7 +66,7 @@
       code.
     </p>
 <p>
-      Johan R&#229;de wrote the optimised floating-point classification and manipulation
+      Johan Råde wrote the optimised floating-point classification and manipulation
       code, and nonfinite facets to permit C99 output of infinities and NaNs. (nonfinite
       facets were not added until Boost 1.47 but had been in use with Boost.Spirit).
       This library was based on a suggestion from Robert Ramey, author of Boost.Serialization.
@@ -69,7 +79,7 @@
       no longer necessary to use a globale C99 facet to handle nonfinites.
     </p>
 <p>
-      H&#229;kan Ard&#246;, Boris Gubenko, John Maddock, Markus Sch&#246;pflin and Olivier Verdier
+      Håkan Ardö, Boris Gubenko, John Maddock, Markus Schöpflin and Olivier Verdier
       tested the floating-point library and Martin Bonner, Peter Dimov and John Maddock
       provided valuable advice.
     </p>
@@ -168,16 +178,24 @@
     </p>
 <p>
       These also promise to help improve algorithms for computation of quantile of
-      several disitributions, especially for parallel computation using GPUs.
+      several distributions, especially for parallel computation using GPUs.
+    </p>
+<p>
+      Nicolas Thompson added much code to handle quadrature and interpolation and
+      more statistical tools.
+    </p>
+<p>
+      Matthew Pulver provided the automatic differentiation section for inclusion
+      in Boost.Math.
     </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

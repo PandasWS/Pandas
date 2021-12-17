@@ -1,4 +1,3 @@
-
 [section:adaptor Iterator Adaptor]
 
 The `iterator_adaptor` class template adapts some `Base` [#base]_
@@ -47,7 +46,7 @@ that assumption.
     , class Reference           = use_default
     , class Difference = use_default
   >
-  class iterator_adaptor 
+  class iterator_adaptor
     : public iterator_facade<Derived, *V'*, *C'*, *R'*, *D'*> // see details
   {
       friend class iterator_core_access;
@@ -60,21 +59,21 @@ that assumption.
       typedef iterator_adaptor iterator_adaptor\_;
       Base const& base_reference() const;
       Base& base_reference();
-   private: // Core iterator interface for iterator_facade.  
+   private: // Core iterator interface for iterator_facade.
       typename iterator_adaptor::reference dereference() const;
 
       template <
-      class OtherDerived, class OtherIterator, class V, class C, class R, class D
-      >   
+          class OtherDerived, class OtherIterator, class V, class C, class R, class D
+      >
       bool equal(iterator_adaptor<OtherDerived, OtherIterator, V, C, R, D> const& x) const;
-  
+
       void advance(typename iterator_adaptor::difference_type n);
       void increment();
       void decrement();
 
       template <
           class OtherDerived, class OtherIterator, class V, class C, class R, class D
-      >   
+      >
       typename iterator_adaptor::difference_type distance_to(
           iterator_adaptor<OtherDerived, OtherIterator, V, C, R, D> const& y) const;
 
@@ -133,7 +132,7 @@ above are defined as follows:
   iterator_adaptor();
 
 [*Requires:] The `Base` type must be Default Constructible.[br]
-[*Returns:] An instance of `iterator_adaptor` with 
+[*Returns:] An instance of `iterator_adaptor` with
     `m_iterator` default constructed.
 
 
@@ -167,7 +166,7 @@ above are defined as follows:
 
   template <
   class OtherDerived, class OtherIterator, class V, class C, class R, class D
-  >   
+  >
   bool equal(iterator_adaptor<OtherDerived, OtherIterator, V, C, R, D> const& x) const;
 
 [*Returns:] `m_iterator == x.base()`
@@ -188,7 +187,7 @@ above are defined as follows:
 
   template <
       class OtherDerived, class OtherIterator, class V, class C, class R, class D
-  >   
+  >
   typename iterator_adaptor::difference_type distance_to(
       iterator_adaptor<OtherDerived, OtherIterator, V, C, R, D> const& y) const;
 
@@ -229,7 +228,7 @@ operations on the underlying pointer, via the `node_iterator`\ 's
 |dereference_and_equal|_).  The only real behavioral difference
 between `node_base*` and `node_iterator` can be observed when
 they are incremented: `node_iterator` follows the
-`m_next` pointer, while `node_base*` just applies an address offset.   
+`m_next` pointer, while `node_base*` just applies an address offset.
 
 .. |dereference_and_equal| replace:: `dereference` and `equal` member functions
 .. _dereference_and_equal: iterator_facade.html#implementing-the-core-operations
@@ -287,8 +286,8 @@ this technique is known not to work with Borland C++ 5.6.4 and
 Metrowerks CodeWarrior versions prior to 9.0]
 
 You can see an example program that exercises this version of the
-node iterators 
-[@../example/node_iterator3.cpp `here`].
+node iterators
+[example_link node_iterator3.cpp..here].
 
 
 In the case of `node_iter`, it's not very compelling to pass
@@ -306,7 +305,7 @@ types to its `Base` saves the implementor of
 
    std::iterator_traits<Iterator>::*some-associated-type*
 
-at least four times.  
+at least four times.
 
 We urge you to review the documentation and implementations of
 |reverse_iterator|_ and the other Boost `specialized iterator

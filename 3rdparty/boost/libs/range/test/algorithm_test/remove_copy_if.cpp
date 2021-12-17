@@ -14,7 +14,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <boost/assign.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <algorithm>
 #include <functional>
 #include <list>
@@ -64,6 +64,8 @@ namespace
     template< class Container >
     void test_remove_copy_if_( const Container& c, int to_remove )
     {
+        using namespace boost::placeholders;
+
         test_remove_copy_if_impl(c, boost::bind(std::equal_to<int>(), _1, to_remove));
         test_remove_copy_if_impl(c, boost::bind(std::not_equal_to<int>(), _1, to_remove));
     }

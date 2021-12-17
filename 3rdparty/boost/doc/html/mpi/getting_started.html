@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Getting started</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../mpi.html" title="Chapter&#160;26.&#160;Boost.MPI">
-<link rel="prev" href="../mpi.html" title="Chapter&#160;26.&#160;Boost.MPI">
+<link rel="up" href="../mpi.html" title="Chapter 26. Boost.MPI">
+<link rel="prev" href="../mpi.html" title="Chapter 26. Boost.MPI">
 <link rel="next" href="tutorial.html" title="Tutorial">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -153,9 +153,9 @@ lamhalt
 <pre class="programlisting"><span class="keyword">using</span> <span class="identifier">mpi</span> <span class="special">;</span>
 </pre>
 <p>
-          Alternatively, you can provided explicitly the list of Boost libraries
-          you want to build. Please refer to the <code class="computeroutput"><span class="special">--</span><span class="identifier">help</span></code> option<code class="computeroutput"> <span class="identifier">of</span>
-          <span class="identifier">the</span> </code>bootstrap` script.
+          Alternatively, you can explicitly provide the list of Boost libraries you
+          want to build. Please refer to the <code class="computeroutput"><span class="special">--</span><span class="identifier">help</span></code> option of the <code class="computeroutput"><span class="identifier">bootstrap</span></code>
+          script.
         </p>
 </div>
 <div class="section">
@@ -167,18 +167,18 @@ lamhalt
           shooting</a></span></dt></dl></div>
 <p>
           First, you need to scan the <code class="literal">include/boost/mpi/config.hpp</code>
-          file and check if some settings needs to be modified for your MPI implementation
+          file and check if some settings need to be modified for your MPI implementation
           or preferences.
         </p>
 <p>
           In particular, the <code class="computeroutput"><a class="link" href="../BOOST_MPI_HOMOGENEOUS.html" title="Macro BOOST_MPI_HOMOGENEOUS">BOOST_MPI_HOMOGENEOUS</a></code>
-          macro, that you will need to comment out if you plan to run on an heterogeneous
+          macro, that you will need to comment out if you plan to run on a heterogeneous
           set of machines. See the <a class="link" href="tutorial.html#mpi.tutorial.performance_optimizations.homogeneous_machines" title="Homogeneous Machines">optimization</a>
           notes below.
         </p>
 <p>
-          Most MPI implementations requires specific compilation and link options.
-          In order to mask theses details to the user, most MPI implementations provides
+          Most MPI implementations require specific compilation and link options.
+          In order to mask theses details to the user, most MPI implementations provide
           wrappers which silently pass those options to the compiler.
         </p>
 <p>
@@ -227,7 +227,8 @@ lamhalt
 </tr>
 <tr><td align="left" valign="top"><p>
               Boost.MPI only uses the C interface, so specifying the C wrapper should
-              be enough. But some implementations will insist on using the C++ bindings.
+              be enough. But some implementations will insist on importing the C++
+              bindings.
             </p></td></tr>
 </table></div>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
@@ -235,9 +236,10 @@ lamhalt
                 exist</strong></span>
               </li></ul></div>
 <p>
-            You will need to provide the compilation and link options through de
-            second parameter using 'jam' directives. The following type configuration
-            used to be required for some specific Intel MPI implementation:
+            With some implementations, or with some specific integration<a href="#ftn.mpi.getting_started.config.setup.troubleshooting.f0" class="footnote" name="mpi.getting_started.config.setup.troubleshooting.f0"><sup class="footnote">[10]</sup></a> you will need to provide the compilation and link options
+            through de second parameter using 'jam' directives. The following type
+            configuration used to be required for some specific Intel MPI implementation
+            (in such a case, the name of the wrapper can be left blank):
           </p>
 <pre class="programlisting">using mpi : mpiicc :
       &lt;library-path&gt;/softs/intel/impi/5.0.1.035/intel64/lib
@@ -250,9 +252,9 @@ lamhalt
       &lt;find-shared-library&gt;rt ;
 </pre>
 <p>
-            As a convenience, MPI wrappers usually have an options that provide the
-            required informations, and, it usually starts with <code class="computeroutput"><span class="special">--</span><span class="identifier">show</span></code>. You can use those to find out
-            the the requested jam directive:
+            As a convenience, MPI wrappers usually have an option that provides the
+            required informations, which usually starts with <code class="computeroutput"><span class="special">--</span><span class="identifier">show</span></code>. You can use those to find out
+            the requested jam directive:
           </p>
 <pre class="programlisting">$ mpiicc -show
 icc -I/softs/.../include ... -L/softs/.../lib ... -Xlinker -rpath -Xlinker /softs/.../lib .... -lmpi -ldl -lrt -lpthread
@@ -353,21 +355,27 @@ $./b2 install
         e.g.,
       </p>
 <pre class="programlisting">mpic++ -I/path/to/boost/mpi my_application.cpp -Llibdir \
-  -lboost_mpi-gcc-mt-1_35 -lboost_serialization-gcc-d-1_35.a
+  -lboost_mpi -lboost_serialization
 </pre>
 <p>
         If you plan to use the <a class="link" href="python.html" title="Python Bindings">Python bindings</a>
         for Boost.MPI in conjunction with the C++ Boost.MPI, you will also need to
-        link against the boost_mpi_python library, e.g., by adding <code class="computeroutput"><span class="special">-</span><span class="identifier">lboost_mpi_python</span><span class="special">-</span><span class="identifier">gcc</span><span class="special">-</span><span class="identifier">mt</span><span class="special">-</span><span class="number">1</span><span class="identifier">_35</span></code> to your link command. This step will
-        only be necessary if you intend to <a class="link" href="python.html#mpi.python.user_data" title="Transmitting User-Defined Data">register
-        C++ types</a> or use the <a class="link" href="python.html#mpi.python.skeleton_content" title="Skeleton/Content Mechanism">skeleton/content
-        mechanism</a> from within Python.
+        link against the boost_mpi_python library, e.g., by adding <code class="computeroutput"><span class="special">-</span><span class="identifier">lboost_mpi_python</span><span class="special">-</span><span class="identifier">gcc</span></code> to
+        your link command. This step will only be necessary if you intend to <a class="link" href="python.html#mpi.python.user_data" title="Transmitting User-Defined Data">register C++ types</a> or use the <a class="link" href="python.html#mpi.python.skeleton_content" title="Skeleton/Content Mechanism">skeleton/content mechanism</a> from
+        within Python.
       </p>
+</div>
+<div class="footnotes">
+<br><hr style="width:100; text-align:left;margin-left: 0">
+<div id="ftn.mpi.getting_started.config.setup.troubleshooting.f0" class="footnote"><p><a href="#mpi.getting_started.config.setup.troubleshooting.f0" class="para"><sup class="para">[10] </sup></a>
+              Some HPC cluster will insist that the users uss theirs own in house
+              interface to the MPI system.
+            </p></div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2005-2007 Douglas Gregor,
+<td align="right"><div class="copyright-footer">Copyright © 2005-2007 Douglas Gregor,
       Matthias Troyer, Trustees of Indiana University<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at &lt;ulink url="http://www.boost.org/LICENSE_1_0.txt"&gt;

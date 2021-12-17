@@ -8,7 +8,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 template<class T> void value();
 

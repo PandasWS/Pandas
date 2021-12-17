@@ -1,6 +1,6 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 
-// Copyright (c) 2012-2019 Barend Gehrels, Amsterdam, the Netherlands.
+// Copyright (c) 2012-2020 Barend Gehrels, Amsterdam, the Netherlands.
 
 // Use, modification and distribution is subject to the Boost Software License,
 // Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
@@ -9,10 +9,9 @@
 #ifndef BOOST_GEOMETRY_ALGORITHMS_DETAIL_BUFFER_LINE_LINE_INTERSECTION_HPP
 #define BOOST_GEOMETRY_ALGORITHMS_DETAIL_BUFFER_LINE_LINE_INTERSECTION_HPP
 
-
+#include <boost/geometry/algorithms/detail/make/make.hpp>
+#include <boost/geometry/arithmetic/infinite_line_functions.hpp>
 #include <boost/geometry/util/math.hpp>
-#include <boost/geometry/strategies/buffer.hpp>
-#include <boost/geometry/algorithms/detail/buffer/parallel_continue.hpp>
 
 namespace boost { namespace geometry
 {
@@ -22,55 +21,91 @@ namespace boost { namespace geometry
 namespace detail { namespace buffer
 {
 
-
-// TODO: once change this to proper strategy
-// It is different from current segment intersection because these are not segments but lines
-// If we have the Line concept, we can create a strategy
-// Assumes a convex corner
 struct line_line_intersection
 {
+    template <typename Point>
+    static Point between_point(Point const& a, Point const& b)
+    {
+        Point result;
+        geometry::set<0>(result, (geometry::get<0>(a) + geometry::get<0>(b)) / 2.0);
+        geometry::set<1>(result, (geometry::get<1>(a) + geometry::get<1>(b)) / 2.0);
+        return result;
+    }
 
     template <typename Point>
-    static inline strategy::buffer::join_selector apply(Point const& pi, Point const& pj,
-        Point const& qi, Point const& qj, Point& ip)
+    static bool
+    apply(Point const& pi, Point const& pj, Point const& qi, Point const& qj,
+          Point const& vertex, bool equidistant, Point& ip)
     {
-        typedef typename coordinate_type<Point>::type ct;
+        // Calculates ip (below) by either intersecting p (pi, pj)
+        // with q (qi, qj) or by taking a point between pj and qi (b) and
+        // intersecting r (b, v), where v is the original vertex, with p (or q).
+        // The reason for dual approach: p might be nearly collinear with q,
+        // and in that case the intersection points can lose precision
+        // (or be plainly wrong).
+        // Therefore it takes the most precise option (this is usually p, r)
+        //
+        //             /qj                     |
+        //            /                        |
+        //           /      /                  |
+        //          /      /                   |
+        //         /      /                    |
+        //        /qi    /                     |
+        //              /                      |
+        //   ip *  + b * v                     |
+        //              \                      |
+        //        \pj    \                     |
+        //         \      \                    |
+        //          \      \                   |
+        //           \      \                  |
+        //            \pi    \                 |
+        //
+        // If generated sides along the segments can have an adapted distance,
+        // in a custom strategy, then the calculation of the point in between
+        // might be incorrect and the optimization is not used.
 
-        // Construct lines in general form (ax + by + c = 0),
-        // (will be replaced by a general_form structure in a next PR)
-        ct const pa = get<1>(pi) - get<1>(pj);
-        ct const pb = get<0>(pj) - get<0>(pi);
-        ct const pc = -pa * get<0>(pi) - pb * get<1>(pi);
+        using ct = typename coordinate_type<Point>::type;
 
-        ct const qa = get<1>(qi) - get<1>(qj);
-        ct const qb = get<0>(qj) - get<0>(qi);
-        ct const qc = -qa * get<0>(qi) - qb * get<1>(qi);
+        auto const p = detail::make::make_infinite_line<ct>(pi, pj);
+        auto const q = detail::make::make_infinite_line<ct>(qi, qj);
 
-        ct const denominator = pb * qa - pa * qb;
+        using line = decltype(p);
+        using arithmetic::determinant;
+        using arithmetic::assign_intersection_point;
 
-        // Even if the corner was checked before (so it is convex now), that
-        // was done on the original geometry. This function runs on the buffered
-        // geometries, where sides are generated and might be slightly off. In
-        // Floating Point, that slightly might just exceed the limit and we have
-        // to check it again.
+        // The denominator is the determinant of (a,b) values of lines p q
+        // | pa pa |
+        // | qb qb |
+        auto const denominator_pq = determinant<line, &line::a, &line::b>(p, q);
+        constexpr decltype(denominator_pq) const zero = 0;
 
-        // For round joins, it will not be used at all.
-        // For miter joins, there is a miter limit
-        // If segments are parallel/collinear we must be distinguish two cases:
-        // they continue each other, or they form a spike
-        ct const zero = ct();
-        if (math::equals(denominator, zero))
+        if (equidistant)
         {
-            return parallel_continue(qb, -qa, pb, -pa)
-                ? strategy::buffer::join_continue
-                : strategy::buffer::join_spike
-                ;
+            auto const between = between_point(pj, qi);
+            auto const r = detail::make::make_infinite_line<ct>(vertex, between);
+            auto const denominator_pr = determinant<line, &line::a, &line::b>(p, r);
+
+            if (math::equals(denominator_pq, zero)
+                && math::equals(denominator_pr, zero))
+            {
+                // Degenerate case (for example when length results in <inf>)
+                return false;
+            }
+
+            ip = geometry::math::abs(denominator_pq) > geometry::math::abs(denominator_pr)
+                 ? assign_intersection_point<Point>(p, q, denominator_pq)
+                 : assign_intersection_point<Point>(p, r, denominator_pr);
+        }
+        else
+        {
+            if (math::equals(denominator_pq, zero))
+            {
+                return false;
+            }
+            ip = assign_intersection_point<Point>(p, q, denominator_pq);
         }
 
-        set<0>(ip, (pc * qb - pb * qc) / denominator);
-        set<1>(ip, (pa * qc - pc * qa) / denominator);
-
-        return strategy::buffer::join_convex;
+        return true;
     }
 };
 

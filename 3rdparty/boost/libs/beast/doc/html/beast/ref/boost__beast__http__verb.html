@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>http::verb</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Beast">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Beast">
 <link rel="up" href="../ref.html" title="This Page Intentionally Left Blank 2/2">
-<link rel="prev" href="boost__beast__http__vector_body/writer.html" title="http::vector_body::writer">
-<link rel="next" href="boost__beast__http__write.html" title="http::write">
+<link rel="prev" href="boost__beast__allocate_stable.html" title="allocate_stable">
+<link rel="next" href="boost__beast__http__status.html" title="http::status">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,15 +20,17 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__http__vector_body/writer.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__write.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__allocate_stable.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__status.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="beast.ref.boost__beast__http__verb"></a><a class="link" href="boost__beast__http__verb.html" title="http::verb">http::verb</a>
 </h4></div></div></div>
 <p>
-        <a class="indexterm" name="idm45720528308496"></a>
-HTTP request method verbs.
+        <a class="indexterm" name="idm74129"></a>
+      </p>
+<p>
+        HTTP request method verbs.
       </p>
 <h5>
 <a name="beast.ref.boost__beast__http__verb.h0"></a>
@@ -39,43 +41,6 @@ HTTP request method verbs.
       </p>
 <pre class="programlisting"><span class="keyword">enum</span> <span class="identifier">verb</span>
 </pre>
-<p>
-        <a class="indexterm" name="idm45720528300544"></a>
- <a class="indexterm" name="idm45720528299440"></a>
- <a class="indexterm" name="idm45720528298336"></a>
- <a class="indexterm" name="idm45720528297264"></a>
- <a class="indexterm" name="idm45720528296160"></a>
- <a class="indexterm" name="idm45720528295056"></a>
- <a class="indexterm" name="idm45720528293984"></a>
- <a class="indexterm" name="idm45720528292880"></a>
- <a class="indexterm" name="idm45720528291776"></a>
- <a class="indexterm" name="idm45720528290672"></a>
- <a class="indexterm" name="idm45720528289568"></a>
- <a class="indexterm" name="idm45720528288464"></a>
- <a class="indexterm" name="idm45720528287360"></a>
- <a class="indexterm" name="idm45720528286256"></a>
- <a class="indexterm" name="idm45720528285152"></a>
- <a class="indexterm" name="idm45720528284048"></a>
- <a class="indexterm" name="idm45720528282944"></a>
- <a class="indexterm" name="idm45720528281840"></a>
- <a class="indexterm" name="idm45720528280736"></a>
- <a class="indexterm" name="idm45720528279632"></a>
- <a class="indexterm" name="idm45720528278528"></a>
- <a class="indexterm" name="idm45720528277408"></a>
- <a class="indexterm" name="idm45720528276304"></a>
- <a class="indexterm" name="idm45720528275200"></a>
- <a class="indexterm" name="idm45720528274096"></a>
- <a class="indexterm" name="idm45720528272992"></a>
- <a class="indexterm" name="idm45720528271888"></a>
- <a class="indexterm" name="idm45720528270784"></a>
- <a class="indexterm" name="idm45720528269680"></a>
- <a class="indexterm" name="idm45720528268576"></a>
- <a class="indexterm" name="idm45720528267472"></a>
- <a class="indexterm" name="idm45720528266368"></a>
- <a class="indexterm" name="idm45720528265264"></a>
- <a class="indexterm" name="idm45720528264160"></a>
-
-      </p>
 <h5>
 <a name="beast.ref.boost__beast__http__verb.h1"></a>
         <span class="phrase"><a name="beast.ref.boost__beast__http__verb.values"></a></span><a class="link" href="boost__beast__http__verb.html#beast.ref.boost__beast__http__verb.values">Values</a>
@@ -101,7 +66,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">unknown</code>
+                  <code class="computeroutput"><span class="identifier">unknown</span></code>
                 </p>
               </td>
 <td>
@@ -118,7 +83,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">delete_</code>
+                  <code class="computeroutput"><span class="identifier">delete_</span></code>
                 </p>
               </td>
 <td>
@@ -130,7 +95,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">get</code>
+                  <code class="computeroutput"><span class="identifier">get</span></code>
                 </p>
               </td>
 <td>
@@ -146,7 +111,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">head</code>
+                  <code class="computeroutput"><span class="identifier">head</span></code>
                 </p>
               </td>
 <td>
@@ -163,7 +128,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">post</code>
+                  <code class="computeroutput"><span class="identifier">post</span></code>
                 </p>
               </td>
 <td>
@@ -183,7 +148,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">put</code>
+                  <code class="computeroutput"><span class="identifier">put</span></code>
                 </p>
               </td>
 <td>
@@ -201,7 +166,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">connect</code>
+                  <code class="computeroutput"><span class="identifier">connect</span></code>
                 </p>
               </td>
 <td>
@@ -218,7 +183,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">options</code>
+                  <code class="computeroutput"><span class="identifier">options</span></code>
                 </p>
               </td>
 <td>
@@ -235,7 +200,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">trace</code>
+                  <code class="computeroutput"><span class="identifier">trace</span></code>
                 </p>
               </td>
 <td>
@@ -249,7 +214,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">copy</code>
+                  <code class="computeroutput"><span class="identifier">copy</span></code>
                 </p>
               </td>
 <td>
@@ -258,7 +223,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">lock</code>
+                  <code class="computeroutput"><span class="identifier">lock</span></code>
                 </p>
               </td>
 <td>
@@ -267,7 +232,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">mkcol</code>
+                  <code class="computeroutput"><span class="identifier">mkcol</span></code>
                 </p>
               </td>
 <td>
@@ -276,7 +241,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">move</code>
+                  <code class="computeroutput"><span class="identifier">move</span></code>
                 </p>
               </td>
 <td>
@@ -285,7 +250,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">propfind</code>
+                  <code class="computeroutput"><span class="identifier">propfind</span></code>
                 </p>
               </td>
 <td>
@@ -294,7 +259,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">proppatch</code>
+                  <code class="computeroutput"><span class="identifier">proppatch</span></code>
                 </p>
               </td>
 <td>
@@ -303,7 +268,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">search</code>
+                  <code class="computeroutput"><span class="identifier">search</span></code>
                 </p>
               </td>
 <td>
@@ -312,7 +277,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">unlock</code>
+                  <code class="computeroutput"><span class="identifier">unlock</span></code>
                 </p>
               </td>
 <td>
@@ -321,7 +286,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bind</code>
+                  <code class="computeroutput"><span class="identifier">bind</span></code>
                 </p>
               </td>
 <td>
@@ -330,7 +295,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">rebind</code>
+                  <code class="computeroutput"><span class="identifier">rebind</span></code>
                 </p>
               </td>
 <td>
@@ -339,7 +304,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">unbind</code>
+                  <code class="computeroutput"><span class="identifier">unbind</span></code>
                 </p>
               </td>
 <td>
@@ -348,7 +313,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">acl</code>
+                  <code class="computeroutput"><span class="identifier">acl</span></code>
                 </p>
               </td>
 <td>
@@ -357,7 +322,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">report</code>
+                  <code class="computeroutput"><span class="identifier">report</span></code>
                 </p>
               </td>
 <td>
@@ -366,7 +331,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">mkactivity</code>
+                  <code class="computeroutput"><span class="identifier">mkactivity</span></code>
                 </p>
               </td>
 <td>
@@ -375,7 +340,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">checkout</code>
+                  <code class="computeroutput"><span class="identifier">checkout</span></code>
                 </p>
               </td>
 <td>
@@ -384,7 +349,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">merge</code>
+                  <code class="computeroutput"><span class="identifier">merge</span></code>
                 </p>
               </td>
 <td>
@@ -393,7 +358,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">msearch</code>
+                  <code class="computeroutput"><span class="identifier">msearch</span></code>
                 </p>
               </td>
 <td>
@@ -402,7 +367,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">notify</code>
+                  <code class="computeroutput"><span class="identifier">notify</span></code>
                 </p>
               </td>
 <td>
@@ -411,7 +376,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">subscribe</code>
+                  <code class="computeroutput"><span class="identifier">subscribe</span></code>
                 </p>
               </td>
 <td>
@@ -420,7 +385,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">unsubscribe</code>
+                  <code class="computeroutput"><span class="identifier">unsubscribe</span></code>
                 </p>
               </td>
 <td>
@@ -429,7 +394,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">patch</code>
+                  <code class="computeroutput"><span class="identifier">patch</span></code>
                 </p>
               </td>
 <td>
@@ -438,7 +403,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">purge</code>
+                  <code class="computeroutput"><span class="identifier">purge</span></code>
                 </p>
               </td>
 <td>
@@ -447,7 +412,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">mkcalendar</code>
+                  <code class="computeroutput"><span class="identifier">mkcalendar</span></code>
                 </p>
               </td>
 <td>
@@ -456,7 +421,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">link</code>
+                  <code class="computeroutput"><span class="identifier">link</span></code>
                 </p>
               </td>
 <td>
@@ -465,7 +430,7 @@ HTTP request method verbs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">unlink</code>
+                  <code class="computeroutput"><span class="identifier">unlink</span></code>
                 </p>
               </td>
 <td>
@@ -481,13 +446,10 @@ HTTP request method verbs.
         Each verb corresponds to a particular method string used in HTTP request
         messages.
       </p>
-<p>
-        Convenience header <code class="literal">&lt;<a href="../../../../../../boost/beast/http.hpp" target="_top">boost/beast/http.hpp</a>&gt;</code>
-      </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2016-2019 Vinnie
+<td align="right"><div class="copyright-footer">Copyright © 2016-2019 Vinnie
       Falco<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
@@ -496,7 +458,7 @@ HTTP request method verbs.
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__http__vector_body/writer.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__write.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__allocate_stable.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__status.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

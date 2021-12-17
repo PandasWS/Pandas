@@ -14,6 +14,5 @@ exe lexed_tokens
         /boost/filesystem//boost_filesystem
         /boost/system//boost_system
         /boost/thread//boost_thread
-        /boost/date_time//boost_date_time
     ;  
 

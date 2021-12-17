@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Details</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../date_time.html" title="Chapter&#160;13.&#160;Boost.Date_Time">
+<link rel="up" href="../date_time.html" title="Chapter 13. Boost.Date_Time">
 <link rel="prev" href="serialization.html" title="Serialization">
 <link rel="next" href="examples.html" title="Examples">
 </head>
@@ -121,21 +121,21 @@ Timeperiod shift Duration          --&gt; Timeperiod
     </p>
 <pre class="programlisting">
   Timepoint(NADT) + Duration --&gt; Timepoint(NADT)
-  Timepoint(&#8734;) + Duration    --&gt; Timepoint(&#8734;)
-  Timepoint + Duration(&#8734;)    --&gt; Timepoint(&#8734;)
-  Timepoint - Duration(&#8734;)    --&gt; Timepoint(-&#8734;)
+  Timepoint(∞) + Duration    --&gt; Timepoint(∞)
+  Timepoint + Duration(∞)    --&gt; Timepoint(∞)
+  Timepoint - Duration(∞)    --&gt; Timepoint(-∞)
     </pre>
 <p>
     When performing operations on both positive and negative infinities, the library will produce results consistent with the following. 
     </p>
 <pre class="programlisting">
-  Timepoint(+&#8734;) + Duration(-&#8734;) --&gt; NADT
-  Duration(+&#8734;) + Duration(-&#8734;)  --&gt; NADT
-  Duration(&#177;&#8734;) * Zero          --&gt; NADT
+  Timepoint(+∞) + Duration(-∞) --&gt; NADT
+  Duration(+∞) + Duration(-∞)  --&gt; NADT
+  Duration(±∞) * Zero          --&gt; NADT
   
-  Duration(&#8734;) * Integer(Not Zero) --&gt; Duration(&#8734;)
-  Duration(+&#8734;) * -Integer         --&gt; Duration(-&#8734;)
-  Duration(&#8734;) / Integer           --&gt; Duration(&#8734;)
+  Duration(∞) * Integer(Not Zero) --&gt; Duration(∞)
+  Duration(+∞) * -Integer         --&gt; Duration(-∞)
+  Duration(∞) / Integer           --&gt; Duration(∞)
     </pre>
 <p>
   </p>
@@ -453,7 +453,7 @@ Timeperiod shift Duration          --&gt; Timeperiod
 </li>
 <li class="listitem" style="list-style-type: disc">
 <a href="http://emr.cs.iit.edu/home/reingold/calendar-book/second-edition/" target="_top">Calendrical Calculations</a> book by Reingold &amp; Dershowitz</li>
-<li class="listitem" style="list-style-type: disc"><a href="http://www.tondering.dk/claus/calendar.html" target="_top">Calendar FAQ by Claus T&#248;ndering</a></li>
+<li class="listitem" style="list-style-type: disc"><a href="http://www.tondering.dk/claus/calendar.html" target="_top">Calendar FAQ by Claus Tøndering</a></li>
 <li class="listitem" style="list-style-type: disc">Calendar zone <a href="http://www.calendarzone.com" target="_top">http://www.calendarzone.com</a>
 </li>
 <li class="listitem" style="list-style-type: disc"><a href="http://www.w3.org/TR/xmlschema-2/#dateTime" target="_top">XML schema for date time</a></li>
@@ -744,7 +744,95 @@ Timeperiod shift Duration          --&gt; Timeperiod
 <div class="titlepage"><div><div><h3 class="title">
 <a name="date_time.changes"></a>Change History</h3></div></div></div>
 <h4>
-<a name="id-1.3.14.13.9.2"></a>Changes from Boost 1.41 to 1.44 (date_time 1.08 to 1.09)</h4>
+<a name="id-1.3.14.13.9.2"></a>Changes from Boost 1.73 to 1.74 </h4>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Bug-Fix</td>
+<td>
+	    Fix constrained_value::assign to be constexpr so ptime and date construction are constexpr. See: 
+            <a href="https://github.com/boostorg/date_time/pull/161" target="_top">pull 161</a> and
+	    <a href="https://github.com/boostorg/date_time/pull/162" target="_top">pull 161</a>.
+          </td>
+</tr>
+<tr>
+<td>Bug-Fix</td>
+<td>
+	    Suppress MSVC CRT deprecations on Clang. See:
+	    <a href="https://github.com/boostorg/date_time/pull/160" target="_top">pull 160</a>.
+          </td>
+</tr>
+</tbody>
+</table></div>
+<h4>
+<a name="id-1.3.14.13.9.4"></a>Changes from Boost 1.72 to 1.73 </h4>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Enhancement</td>
+<td>
+            Make date_time all inline. Users no longer need to link the library for any library functions.
+            Note that an empty stub library is maintained for backward compatibility. Resolves: 
+            (<a href="https://github.com/boostorg/date_time/issues/134" target="_top">github issue #134</a>) and
+            (<a href="https://github.com/boostorg/date_time/issues/85" target="_top">github issue #85</a>).
+
+Remove the link library to resolve linking/visibility concerns
+          </td>
+</tr>
+<tr>
+<td>Enhancement</td>
+<td>
+            Support for constexpr has been added when in c++14 mode and above. For example:
+              <code class="computeroutput">
+              constexpr microseconds ms(1000);
+              static_assert(ms.total_microseconds() == 1000, "constexpr total_microseconds");
+              </code>
+            (<a href="https://github.com/boostorg/date_time/issues/123" target="_top">github issue #123</a>).
+          </td>
+</tr>
+<tr>
+<td>Enhancement</td>
+<td>
+            C++20 ambiguous comparison operator warning with clang 10 
+            (<a href="https://github.com/boostorg/date_time/issues/132" target="_top">github issue #132</a>).
+          </td>
+</tr>
+<tr>
+<td>Cleanup</td>
+<td>
+            Deprecated support for legacy io and USE_DATE_TIME_PRE_1_33_FACET_IO macro 
+            (<a href="https://github.com/boostorg/date_time/issues/61" target="_top">github issue #61</a>).
+          </td>
+</tr>
+<tr>
+<td>Bug Fix</td>
+<td>
+            Documentation clarifications for gettimeofday, day_number, and from_iso_extended_string.
+            <a href="https://github.com/boostorg/date_time/issues/127" target="_top">github issue #127</a>  
+            <a href="https://github.com/boostorg/date_time/issues/125" target="_top">github issue #125</a>, and
+            <a href="https://github.com/boostorg/date_time/issues/116" target="_top">github issue #116</a>
+          </td>
+</tr>
+</tbody>
+</table></div>
+<h4>
+<a name="id-1.3.14.13.9.6"></a>Changes from Boost 1.41 to 1.44 (date_time 1.08 to 1.09)</h4>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col>
@@ -764,7 +852,7 @@ Timeperiod shift Duration          --&gt; Timeperiod
 </tr></tbody>
 </table></div>
 <h4>
-<a name="id-1.3.14.13.9.4"></a>Changes from Boost 1.40 to 1.41 (date_time 1.07 to 1.08)</h4>
+<a name="id-1.3.14.13.9.8"></a>Changes from Boost 1.40 to 1.41 (date_time 1.07 to 1.08)</h4>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col>
@@ -796,7 +884,7 @@ Timeperiod shift Duration          --&gt; Timeperiod
 </tbody>
 </table></div>
 <h4>
-<a name="id-1.3.14.13.9.6"></a>Changes from Boost 1.38 to 1.40 (date_time 1.06 to 1.07)</h4>
+<a name="id-1.3.14.13.9.10"></a>Changes from Boost 1.38 to 1.40 (date_time 1.06 to 1.07)</h4>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col>
@@ -817,7 +905,7 @@ Timeperiod shift Duration          --&gt; Timeperiod
 </tr></tbody>
 </table></div>
 <h4>
-<a name="id-1.3.14.13.9.8"></a>Changes from Boost 1.34 to 1.38 (date_time 1.05 to 1.06)</h4>
+<a name="id-1.3.14.13.9.12"></a>Changes from Boost 1.34 to 1.38 (date_time 1.05 to 1.06)</h4>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col>
@@ -931,7 +1019,7 @@ Timeperiod shift Duration          --&gt; Timeperiod
 </tbody>
 </table></div>
 <h4>
-<a name="id-1.3.14.13.9.10"></a>Changes from Boost 1.33 to 1.34 (date_time 1.04 to 1.05)</h4>
+<a name="id-1.3.14.13.9.14"></a>Changes from Boost 1.33 to 1.34 (date_time 1.04 to 1.05)</h4>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col>
@@ -1019,7 +1107,7 @@ Timeperiod shift Duration          --&gt; Timeperiod
 </tbody>
 </table></div>
 <h4>
-<a name="id-1.3.14.13.9.12"></a>Changes from Boost 1.32 to 1.33 (date_time 1.03 to 1.04)</h4>
+<a name="id-1.3.14.13.9.16"></a>Changes from Boost 1.32 to 1.33 (date_time 1.03 to 1.04)</h4>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col>
@@ -1159,7 +1247,7 @@ void save_to(archive_type&amp; ar,
 </tbody>
 </table></div>
 <h4>
-<a name="id-1.3.14.13.9.14"></a>Changes from Boost 1.31 to 1.32 (date_time 1.02 to 1.03)</h4>
+<a name="id-1.3.14.13.9.18"></a>Changes from Boost 1.31 to 1.32 (date_time 1.02 to 1.03)</h4>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col>
@@ -1354,7 +1442,7 @@ ws &gt;&gt; d; //Feb 29th, 2000</pre>
 </tbody>
 </table></div>
 <h4>
-<a name="id-1.3.14.13.9.16"></a>Changes from Boost 1.30 to 1.31 (date_time 1.01 to 1.02)</h4>
+<a name="id-1.3.14.13.9.20"></a>Changes from Boost 1.30 to 1.31 (date_time 1.01 to 1.02)</h4>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col>
@@ -1443,7 +1531,7 @@ td = -td; //-5 hours</pre>
 </tbody>
 </table></div>
 <h4>
-<a name="id-1.3.14.13.9.18"></a>Changes from Boost 1.29 to 1.30 (date_time 1.00 to 1.01)</h4>
+<a name="id-1.3.14.13.9.22"></a>Changes from Boost 1.29 to 1.30 (date_time 1.00 to 1.01)</h4>
 <p>
     Notice: The interface to the partial_date class (see <a class="link" href="gregorian.html#date_time.gregorian.date_algorithms" title="Date Generators/Algorithms">date_algorithms</a>) was changed. The order of construction parameters was changed which will cause some code to fail execution. This change was made to facilitate more generic local time adjustment code. Thus instead of specifying partial_date pd(Dec,25) the code needs to be changed to partial_date pd(25, Dec);
   </p>
@@ -1514,7 +1602,7 @@ td = -td; //-5 hours</pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2005 CrystalClear Software, Inc<p>Subject to the Boost Software License, Version 1.0. (See accompanying file
+<td align="right"><div class="copyright-footer">Copyright © 2001-2005 CrystalClear Software, Inc<p>Subject to the Boost Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>
 </tr></table>

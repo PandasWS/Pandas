@@ -11,7 +11,7 @@
 */
 
 #include <list>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/foreach.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,16 +46,16 @@ std::list<int> const &my_const_list = my_list;
 ///////////////////////////////////////////////////////////////////////////////
 // test_main
 //   
-int test_main( int, char*[] )
+int main()
 {
     boost::mpl::false_ *p = BOOST_FOREACH_IS_LIGHTWEIGHT_PROXY(my_list);
     (void)p;
 
     // non-const containers by value
-    BOOST_CHECK(sequence_equal_byval_n_r(my_list, "\5\4\3\2\1"));
+    BOOST_TEST(sequence_equal_byval_n_r(my_list, "\5\4\3\2\1"));
 
     // const containers by value
-    BOOST_CHECK(sequence_equal_byval_c_r(my_const_list, "\5\4\3\2\1"));
+    BOOST_TEST(sequence_equal_byval_c_r(my_const_list, "\5\4\3\2\1"));
 
-    return 0;
+    return boost::report_errors();
 }

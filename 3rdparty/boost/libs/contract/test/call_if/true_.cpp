@@ -12,6 +12,7 @@
 #include <boost/type_traits/has_equal_to.hpp>
 #include <boost/detail/lightweight_test.hpp>
 #include <sstream>
+#include <ios>
 
 boost::contract::test::detail::oteststream out;
 
@@ -28,6 +29,8 @@ struct x {}; // Doest not have operator==.
 
 int main() {
     std::ostringstream ok;
+    ok << std::boolalpha;
+    out << std::boolalpha;
     x x1, x2;;
     
     out.str("");

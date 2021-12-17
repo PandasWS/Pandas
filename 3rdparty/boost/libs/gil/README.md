@@ -10,16 +10,11 @@
 [![Conan](https://img.shields.io/badge/on-conan-blue.svg)](https://bintray.com/bincrafters/public-conan/boost_gil%3Abincrafters)
 [![Vcpkg](https://img.shields.io/badge/on-vcpkg-blue.svg)](https://github.com/Microsoft/vcpkg/tree/master/ports/boost-gil)
 
-   <br />  | AppVeyor        | Azure Pipelines | Travis CI       | CircleCI        | Regression
------------|-----------------|-----------------|-----------------|-----------------|------------
-**develop**| [![AppVeyor](https://ci.appveyor.com/api/projects/status/w4k19d8io2af168h/branch/develop?svg=true)](https://ci.appveyor.com/project/stefanseefeld/gil/branch/develop) | [![Azure](https://dev.azure.com/boostorg/gil/_apis/build/status/boostorg.gil?branchName=develop)](https://dev.azure.com/boostorg/gil/_build/latest?definitionId=4?branchName=develop) | [![Travis](https://travis-ci.org/boostorg/gil.svg?branch=develop)](https://travis-ci.org/boostorg/gil) | [![CircleCI](https://circleci.com/gh/boostorg/gil/tree/develop.svg?style=shield)](https://circleci.com/gh/boostorg/workflows/gil/tree/develop) | [![gil](https://img.shields.io/badge/gil-develop-blue.svg)](http://www.boost.org/development/tests/develop/developer/gil.html)
-**master** | [![AppVeyor](https://ci.appveyor.com/api/projects/status/w4k19d8io2af168h?svg=true)](https://ci.appveyor.com/project/stefanseefeld/gil/branch/master) | [![Azure](https://dev.azure.com/boostorg/gil/_apis/build/status/boostorg.gil?branchName=master)](https://dev.azure.com/boostorg/gil/_build/latest?definitionId=4?branchName=master) | [![Travis](https://travis-ci.org/boostorg/gil.svg?branch=master)](https://travis-ci.org/boostorg/gil) | [![CircleCI](https://circleci.com/gh/boostorg/gil/tree/master.svg?style=shield)](https://circleci.com/gh/boostorg/workflows/gil/tree/master) | [![gil](https://img.shields.io/badge/gil-master-blue.svg)](http://www.boost.org/development/tests/master/developer/gil.html)
- msvc++    | VS2017 | VS2017, VS2015 |   |   |
- clang     |   | Xcode 9.4.1 | 3.9, 5.0, Xcode 9.4.1 | 3.9, 4.0, 5.0 |
- gcc       |   | 5.4, 8.1 | 5.5, 6.5, 7.4 | 4.8-9, 5.1-5, 6.1-4, 7.1-3, 8.2 |
- C++       | 14 | 11, 14, 17 | 11 | 11 |
- <br />    | Boost.Build, CMake | CMake, Boost 1.68 | Boost.Build, UBSan | Boost.Build |
-
+Documentation | GitHub Actions | Azure Pipelines | CircleCI        | Regression
+--------------|----------------|-----------------|-----------------|------------
+[![develop](https://img.shields.io/badge/doc-develop-blue.svg)](https://boostorg.github.io/gil/develop/) | [![GitHub Actions](https://github.com/boostorg/gil/workflows/CI/badge.svg?branch=develop)](https://github.com/boostorg/gil/actions?query=branch:develop) | [![AppVeyor](https://ci.appveyor.com/api/projects/status/w4k19d8io2af168h/branch/develop?svg=true)](https://ci.appveyor.com/project/stefanseefeld/gil/branch/develop) | [![Azure](https://dev.azure.com/boostorg/gil/_apis/build/status/boostorg.gil?branchName=develop)](https://dev.azure.com/boostorg/gil/_build/latest?definitionId=7&branchName=develop) | [![CircleCI](https://circleci.com/gh/boostorg/gil/tree/develop.svg?style=shield)](https://circleci.com/gh/boostorg/workflows/gil/tree/develop) | [![gil](https://img.shields.io/badge/gil-develop-blue.svg)](http://www.boost.org/development/tests/develop/developer/gil.html)
+[![master](https://img.shields.io/badge/doc-master-blue.svg)](https://boostorg.github.io/gil/) | [![GitHub Actions](https://github.com/boostorg/gil/workflows/CI/badge.svg?branch=master)](https://github.com/boostorg/gil/actions?query=branch:master) | [![AppVeyor](https://ci.appveyor.com/api/projects/status/w4k19d8io2af168h?svg=true)](https://ci.appveyor.com/project/stefanseefeld/gil/branch/master) | [![Azure](https://dev.azure.com/boostorg/gil/_apis/build/status/boostorg.gil?branchName=master)](https://dev.azure.com/boostorg/gil/_build/latest?definitionId=7&branchName=master) | [![CircleCI](https://circleci.com/gh/boostorg/gil/tree/master.svg?style=shield)](https://circleci.com/gh/boostorg/workflows/gil/tree/master) | [![gil](https://img.shields.io/badge/gil-master-blue.svg)](http://www.boost.org/development/tests/master/developer/gil.html)
+ 
 # Boost.GIL
 
 - [Introduction](#introduction)
@@ -34,19 +29,26 @@
 
 Boost.GIL is a part of the [Boost C++ Libraries](http://github.com/boostorg).
 
-The Boost Generic Image Library (GIL) is a C++ library that abstracts image
+The Boost Generic Image Library (GIL) is a **C++11** library that abstracts image
 representations from algorithms and allows writing code that can work on a
 variety of images with performance similar to hand-writing for a specific image type.
 
 ## Documentation
 
-- Latest release: https://boost.org/libs/gil
-- Development: http://boostorg.github.io/gil/
+- [Latest release](https://boost.org/libs/gil)
+- [Branch master](http://boostorg.github.io/gil/) (latest release with minor changes)
+- [Branch develop](http://boostorg.github.io/gil/develop/)
+
+See [RELEASES.md](RELEASES.md) for release notes.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for instructions about how to build and
-run tests, examples.
+run tests and examples using Boost.Build or CMake.
 
-See [example/README.md](example/README.md) for available GIL examples.
+See [example/README.md](example/README.md) for GIL usage examples.
+
+See [example/b2/README.md](example/b2/README.md) for Boost.Build configuration examples.
+
+See [example/cmake/README.md](example/cmake/README.md) for CMake configuration examples.
 
 ## Requirements
 
@@ -54,33 +56,38 @@ See [example/README.md](example/README.md) for available GIL examples.
 
 The Boost Generic Image Library (GIL) requires:
 
-- C++11 compiler
+- C++11 compiler (GCC 4.9, clang 3.3, MSVC++ 14.0 (1900) or any later version)
 - Boost header-only libraries
 
 Optionally, in order to build and run tests and examples:
 
 - Boost.Filesystem
 - Boost.Test
+- Headers and libraries of libjpeg, libpng, libtiff, libraw for the I/O extension and some of examples.
 
 ## Branches
 
 The official repository contains the following branches:
 
-* [**master**](https://github.com/boostorg/gil/tree/master) This
+- [**master**](https://github.com/boostorg/gil/tree/master) This
   holds the most recent snapshot with code that is known to be stable.
 
-* [**develop**](https://github.com/boostorg/gil/tree/develop) This
+- [**develop**](https://github.com/boostorg/gil/tree/develop) This
   holds the most recent snapshot. It may contain unstable code.
 
 ## Community
 
 There is number of communication channels to ask questions and discuss Boost.GIL issues:
 
-- Mailing list [boost-gil](https://lists.boost.org/mailman/listinfo.cgi/boost-gil) ([archive](https://lists.boost.org/boost-gil/)) as well as official Boost lists, [boost-users](https://lists.boost.org/mailman/listinfo.cgi/boost-users) and
-[boost](https://lists.boost.org/mailman/listinfo.cgi/boost).
-- Gitter chat room [boostorg//gil](https://gitter.im/boostorg/gil).
-- [cpplang.slack.com](https://cpplang.slack.com) chat rooms [#boost_user](https://cpplang.slack.com/messages/CEWTCFDN0/) and [#boost](https://cpplang.slack.com/messages/C27KZLB0X/).
-- IRC channel [#boost](irc://chat.freenode.net/#osgeo-geos) on FreeNode.
+- Mailing lists ([Boost discussion policy](https://www.boost.org/more/discussion_policy.html))
+    - [boost-gil](https://lists.boost.org/mailman/listinfo.cgi/boost-gil) (*recommended*) official Boost.GIL mailing list ([archive](https://lists.boost.org/boost-gil/))
+    - [boost-users](https://lists.boost.org/mailman/listinfo.cgi/boost-users) for all Boost users
+    - [boost](https://lists.boost.org/mailman/listinfo.cgi/boost) for all Boost developers
+- Slack at [cpplang.slack.com](https://cppalliance.org/slack/) with Boost channels:
+    - [\#boost-gil](https://cpplang.slack.com/archives/CSVT0STV2) (*recommended*) official Boost.GIL channel
+    - [\#boost-user](https://cpplang.slack.com/messages/CEWTCFDN0/) for all Boost users
+    - [\#boost](https://cpplang.slack.com/messages/C27KZLB0X/) for all Boost developers
+- Gitter room [boostorg/gil](https://gitter.im/boostorg/gil) (old real-time chat space)
 - You can also ask questions via GitHub issue.
 
 ## Contributing (We Need Your Help!)
@@ -98,7 +105,7 @@ with solving reported issues, especially those labelled with:
 
 - [status/need-help](https://github.com/boostorg/gil/labels/status%2Fneed-help)
 - [status/need-feedback](https://github.com/boostorg/gil/labels/status%2Fneed-feedback)
-- [need-minimal-example ](https://github.com/boostorg/gil/labels/status%2Fneed-minimal-example)
+- [need-minimal-example](https://github.com/boostorg/gil/labels/status%2Fneed-minimal-example)
 
 Any feedback from users and developers, even simple questions about how things work
 or why they were done a certain way, carries value and can be used to improve the library.

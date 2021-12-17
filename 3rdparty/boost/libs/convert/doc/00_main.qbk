@@ -1,5 +1,5 @@
 [/==============================================================================
-    Copyright (C) 2009-2016 Vladimir Batov
+    Copyright (C) 2009-2020 Vladimir Batov
 
     Use, modification and distribution is subject to the Boost Software
     License, Version 1.0. (See a copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -10,7 +10,7 @@
     [version 2.0]
     [id convert]
     [dirname convert]
-    [copyright 2009-2016 Vladimir Batov]
+    [copyright 2009-2020 Vladimir Batov]
     [purpose Conversions Beyond boost::lexical_cast]
     [category generic]
     [authors [Batov, Vladimir]]
@@ -20,6 +20,8 @@
         See copy at [@http://www.boost.org/LICENSE_1_0.txt].
     ]
 ]
+
+[important Requires C++11 and up.]
 
 [import ../test/test.hpp]
 [import ../example/stream.cpp]

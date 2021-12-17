@@ -9,7 +9,7 @@
  */
 
 #include <boost/numeric/interval.hpp>
-#include <boost/test/test_tools.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/config.hpp>
 #include "bugs.hpp"
 
@@ -25,9 +25,11 @@ void test_unary() {
     I rI = F::f_I(a);
     T rT1 = F::f_T(a.lower()), rT2 = F::f_T(a.upper()),
       rT3 = F::f_T(median(a));
-    BOOST_REQUIRE(in(rT1, rI));
-    BOOST_REQUIRE(in(rT2, rI));
-    BOOST_REQUIRE(in(rT3, rI));
+    if (!BOOST_TEST(in(rT1, rI)) ||
+        !BOOST_TEST(in(rT2, rI)) ||
+        !BOOST_TEST(in(rT3, rI))) {
+      return;
+    }
   }
 }
 
@@ -43,18 +45,20 @@ void test_binary() {
       I rTI1 = F::f_TI(al, b), rTI2 = F::f_TI(au, b);
       I rTT1 = F::f_TT(al, bl), rTT2 = F::f_TT(al, bu);
       I rTT3 = F::f_TT(au, bl), rTT4 = F::f_TT(au, bu);
-      BOOST_REQUIRE(subset(rTT1, rIT1));
-      BOOST_REQUIRE(subset(rTT3, rIT1));
-      BOOST_REQUIRE(subset(rTT2, rIT2));
-      BOOST_REQUIRE(subset(rTT4, rIT2));
-      BOOST_REQUIRE(subset(rTT1, rTI1));
-      BOOST_REQUIRE(subset(rTT2, rTI1));
-      BOOST_REQUIRE(subset(rTT3, rTI2));
-      BOOST_REQUIRE(subset(rTT4, rTI2));
-      BOOST_REQUIRE(subset(rIT1, rII));
-      BOOST_REQUIRE(subset(rIT2, rII));
-      BOOST_REQUIRE(subset(rTI1, rII));
-      BOOST_REQUIRE(subset(rTI2, rII));
+      if (!BOOST_TEST(subset(rTT1, rIT1)) ||
+          !BOOST_TEST(subset(rTT3, rIT1)) ||
+          !BOOST_TEST(subset(rTT2, rIT2)) ||
+          !BOOST_TEST(subset(rTT4, rIT2)) ||
+          !BOOST_TEST(subset(rTT1, rTI1)) ||
+          !BOOST_TEST(subset(rTT2, rTI1)) ||
+          !BOOST_TEST(subset(rTT3, rTI2)) ||
+          !BOOST_TEST(subset(rTT4, rTI2)) ||
+          !BOOST_TEST(subset(rIT1, rII)) ||
+          !BOOST_TEST(subset(rIT2, rII)) ||
+          !BOOST_TEST(subset(rTI1, rII)) ||
+          !BOOST_TEST(subset(rTI2, rII))) {
+        return;
+      }
     }
   }
 }
@@ -80,10 +84,10 @@ new_unary_bunch(bunch_abs, abs, true);
 
 template<class T>
 void test_all_unaries() {
-  BOOST_TEST_CHECKPOINT("pos");  test_unary<T, bunch_pos<T> >();
-  BOOST_TEST_CHECKPOINT("neg");  test_unary<T, bunch_neg<T> >();
-  BOOST_TEST_CHECKPOINT("sqrt"); test_unary<T, bunch_sqrt<T> >();
-  BOOST_TEST_CHECKPOINT("abs");  test_unary<T, bunch_abs<T> >();
+  test_unary<T, bunch_pos<T> >();
+  test_unary<T, bunch_neg<T> >();
+  test_unary<T, bunch_sqrt<T> >();
+  test_unary<T, bunch_abs<T> >();
 }
 
 #define new_binary_bunch(name, op, val) \
@@ -105,24 +109,21 @@ new_binary_bunch(div, /, !zero_in(b));
 
 template<class T>
 void test_all_binaries() {
-  BOOST_TEST_CHECKPOINT("add"); test_binary<T, bunch_add<T> >();
-  BOOST_TEST_CHECKPOINT("sub"); test_binary<T, bunch_sub<T> >();
-  BOOST_TEST_CHECKPOINT("mul"); test_binary<T, bunch_mul<T> >();
-  BOOST_TEST_CHECKPOINT("div"); test_binary<T, bunch_div<T> >();
+  test_binary<T, bunch_add<T> >();
+  test_binary<T, bunch_sub<T> >();
+  test_binary<T, bunch_mul<T> >();
+  test_binary<T, bunch_div<T> >();
 }
 
-int test_main(int, char *[]) {
-  BOOST_TEST_CHECKPOINT("float tests");
+int main() {
   test_all_unaries<float> ();
   test_all_binaries<float> ();
-  BOOST_TEST_CHECKPOINT("double tests");
   test_all_unaries<double>();
   test_all_binaries<double>();
-  //BOOST_TEST_CHECKPOINT("long double tests");
   //test_all_unaries<long double>();
   //test_all_binaries<long double>();
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_warnings();
 # endif
-  return 0;
+  return boost::report_errors();
 }

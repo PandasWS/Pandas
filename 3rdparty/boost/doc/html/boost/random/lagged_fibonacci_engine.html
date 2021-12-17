@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class template lagged_fibonacci_engine</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -45,8 +45,8 @@
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> It<span class="special">&gt;</span> <a class="link" href="lagged_fibonacci_engine.html#id-1_3_35_5_6_21_1_1_2_14-bb"><span class="identifier">lagged_fibonacci_engine</span></a><span class="special">(</span><span class="identifier">It</span> <span class="special">&amp;</span><span class="special">,</span> <span class="identifier">It</span><span class="special">)</span><span class="special">;</span>
 
   <span class="comment">// <a class="link" href="lagged_fibonacci_engine.html#id-1_3_35_5_6_21_1_1_2_9-bb">public static functions</a></span>
-  <span class="keyword">static</span> <span class="identifier">result_type</span> <a class="link" href="lagged_fibonacci_engine.html#id-1_3_35_5_6_21_1_1_2_9_1-bb"><span class="identifier">min</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">static</span> <span class="identifier">result_type</span> <a class="link" href="lagged_fibonacci_engine.html#id-1_3_35_5_6_21_1_1_2_9_2-bb"><span class="identifier">max</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="identifier">result_type</span> <a class="link" href="lagged_fibonacci_engine.html#id-1_3_35_5_6_21_1_1_2_9_1-bb"><span class="identifier">min</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="identifier">result_type</span> <a class="link" href="lagged_fibonacci_engine.html#id-1_3_35_5_6_21_1_1_2_9_2-bb"><span class="identifier">max</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
 
   <span class="comment">// <a class="link" href="lagged_fibonacci_engine.html#id-1_3_35_5_6_21_1_1_2_10-bb">public member functions</a></span>
   <span class="keyword">void</span> <a class="link" href="lagged_fibonacci_engine.html#id-1_3_35_5_6_21_1_1_2_10_1-bb"><span class="identifier">seed</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
@@ -110,11 +110,11 @@
 <a name="id-1_3_35_5_6_21_1_1_2_9-bb"></a><code class="computeroutput">lagged_fibonacci_engine</code> public static functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">static</span> <span class="identifier">result_type</span> <a name="id-1_3_35_5_6_21_1_1_2_9_1-bb"></a><span class="identifier">min</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="identifier">result_type</span> <a name="id-1_3_35_5_6_21_1_1_2_9_1-bb"></a><span class="identifier">min</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
 <p>Returns the smallest value that the generator can produce. </p>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">static</span> <span class="identifier">result_type</span> <a name="id-1_3_35_5_6_21_1_1_2_9_2-bb"></a><span class="identifier">max</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="identifier">result_type</span> <a name="id-1_3_35_5_6_21_1_1_2_9_2-bb"></a><span class="identifier">max</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
 <p>Returns the largest value that the generator can produce. </p>
 </li>
 </ol></div>
@@ -187,7 +187,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2000-2005 Jens Maurer<br>Copyright &#169; 2009, 2010 Steven Watanabe<p>
+<td align="right"><div class="copyright-footer">Copyright © 2000-2005 Jens Maurer<br>Copyright © 2009, 2010 Steven Watanabe<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

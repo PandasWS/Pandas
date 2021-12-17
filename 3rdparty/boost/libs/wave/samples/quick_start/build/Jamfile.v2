@@ -13,6 +13,6 @@ exe quick_start
         /boost/wave//boost_wave
         /boost/system//boost_system
         /boost/thread//boost_thread
-        /boost/date_time//boost_date_time
+        /boost/filesystem//boost_filesystem
     ;  
 

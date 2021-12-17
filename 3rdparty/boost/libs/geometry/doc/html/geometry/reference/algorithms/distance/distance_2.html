@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>distance</title>
 <link rel="stylesheet" href="../../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../distance.html" title="distance">
 <link rel="prev" href="distance_3_with_strategy.html" title="distance (with strategy)">
 <link rel="next" href="../envelope.html" title="envelope">
@@ -27,7 +27,7 @@
 <a name="geometry.reference.algorithms.distance.distance_2"></a><a class="link" href="distance_2.html" title="distance">distance</a>
 </h5></div></div></div>
 <p>
-            <a class="indexterm" name="idm45133055638304"></a>
+            <a class="indexterm" name="idm40504"></a>
 Calculate the distance between two geometries.
           </p>
 <h6>
@@ -45,7 +45,7 @@ Calculate the distance between two geometries.
 <p>
 </p>
 <pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">Geometry1</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">Geometry2</span><span class="special">&gt;</span>
-<span class="identifier">default_distance_result</span><span class="special">&lt;</span><span class="identifier">Geometry1</span><span class="special">,</span> <span class="identifier">Geometry2</span><span class="special">&gt;::</span><span class="identifier">type</span> <span class="identifier">distance</span><span class="special">(</span><span class="identifier">Geometry1</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">geometry1</span><span class="special">,</span> <span class="identifier">Geometry2</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">geometry2</span><span class="special">)</span></pre>
+<span class="keyword">auto</span> <span class="identifier">distance</span><span class="special">(</span><span class="identifier">Geometry1</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">geometry1</span><span class="special">,</span> <span class="identifier">Geometry2</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">geometry2</span><span class="special">)</span></pre>
 <p>
           </p>
 <h6>
@@ -879,8 +879,8 @@ Point-MultiPoint: 2.23607
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

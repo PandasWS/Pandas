@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Design Overview</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../variant.html" title="Chapter&#160;45.&#160;Boost.Variant">
+<link rel="up" href="../variant.html" title="Chapter 46. Boost.Variant">
 <link rel="prev" href="../boost/visitor_ptr.html" title="Function template visitor_ptr">
 <link rel="next" href="misc.html" title="Miscellaneous Notes">
 </head>
@@ -168,7 +168,7 @@
         incurred. Though some optimizations could be applied in special cases
         to eliminate the need for double storage -- for certain bounded types
         or in some cases entirely (see
-        <a class="xref" href="design.html#variant.design.never-empty.optimizations" title="Enabling Optimizations">the section called &#8220;Enabling Optimizations&#8221;</a> for more
+        <a class="xref" href="design.html#variant.design.never-empty.optimizations" title="Enabling Optimizations">the section called “Enabling Optimizations”</a> for more
         details) -- many users on the Boost mailing list strongly objected to
         the use of double storage. In particular, it was noted that the
         overhead of double storage would be at play at all times -- even if
@@ -237,19 +237,19 @@
         may be some users for which heap allocation must be avoided at all
         costs; for other users, any allocation may need to occur via a
         user-supplied allocator. These issues will be addressed in the future
-        (see <a class="xref" href="design.html#variant.design.never-empty.roadmap" title="Future Direction: Policy-based Implementation">the section called &#8220;Future Direction: Policy-based Implementation&#8221;</a>). For now,
+        (see <a class="xref" href="design.html#variant.design.never-empty.roadmap" title="Future Direction: Policy-based Implementation">the section called “Future Direction: Policy-based Implementation”</a>). For now,
         though, the library treats storage of its content as an implementation
         detail. Nonetheless, as described in the next section, there
         <span class="emphasis"><em>are</em></span> certain things the user can do to ensure the
         greatest efficiency for <code class="computeroutput">variant</code> instances (see
-        <a class="xref" href="design.html#variant.design.never-empty.optimizations" title="Enabling Optimizations">the section called &#8220;Enabling Optimizations&#8221;</a> for
+        <a class="xref" href="design.html#variant.design.never-empty.optimizations" title="Enabling Optimizations">the section called “Enabling Optimizations”</a> for
         details).</p>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="variant.design.never-empty.optimizations"></a>Enabling Optimizations</h4></div></div></div>
 <p>As described in
-        <a class="xref" href="design.html#variant.design.never-empty.problem" title="The Implementation Problem">the section called &#8220;The Implementation Problem&#8221;</a>, the central
+        <a class="xref" href="design.html#variant.design.never-empty.problem" title="The Implementation Problem">the section called “The Implementation Problem”</a>, the central
         difficulty in implementing the never-empty guarantee is the
         possibility of failed copy-construction during <code class="computeroutput">variant</code>
         assignment. Yet types with nothrow copy constructors clearly never
@@ -312,7 +312,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2002, 2003 Eric Friedman, Itay Maman<br>Copyright &#169; 2014-2019 Antony Polukhin<p>Distributed under the Boost Software License, Version 1.0.
+<td align="right"><div class="copyright-footer">Copyright © 2002, 2003 Eric Friedman, Itay Maman<br>Copyright © 2014-2021 Antony Polukhin<p>Distributed under the Boost Software License, Version 1.0.
     (See accompanying file <code class="filename">LICENSE_1_0.txt</code> or copy at 
     <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
     </p>

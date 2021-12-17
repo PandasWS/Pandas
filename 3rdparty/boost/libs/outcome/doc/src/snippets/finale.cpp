@@ -1,5 +1,5 @@
 /* Example of how to marshall Outcomes at namespace boundaries
-(C) 2017-2019 Niall Douglas <http://www.nedproductions.biz/> (11 commits)
+(C) 2017-2021 Niall Douglas <http://www.nedproductions.biz/> (11 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -28,13 +28,20 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include "../../../include/boost/outcome.hpp"
-#if __has_include("../../../../quickcpplib/include/string_view.hpp")
-#include "../../../../quickcpplib/include/string_view.hpp"
+#if __has_include("quickcpplib/string_view.hpp")
+#include "quickcpplib/string_view.hpp"
 #else
-#include "../../../include/boost/outcome/quickcpplib/include/string_view.hpp"
+#include "../../../include/boost/outcome/quickcpplib/include/quickcpplib/string_view.hpp"
 #endif
 #include <cstring>  // for memcpy
+
+#if __has_include(<filesystem>) && (__cplusplus >= 201700 || _HAS_CXX17)
+#include <filesystem>
+namespace filesystem = std::filesystem;
+#else
 #include <experimental/filesystem>
+namespace filesystem = std::experimental::filesystem;
+#endif
 
 //! [httplib]
 // This is some standalone library implementing high level HTTP
@@ -90,8 +97,8 @@ namespace httplib
 namespace filelib
 {
   using QUICKCPPLIB_NAMESPACE::string_view::string_view;
-  using std::experimental::filesystem::filesystem_error;
-  using std::experimental::filesystem::path;
+  using filesystem::filesystem_error;
+  using filesystem::path;
 }  // namespace filelib
 
 namespace app
@@ -386,7 +393,7 @@ namespace app
     // that into a httplib_error exception type which is stored as an exception ptr. The
     // TRY operation below will return that exception ptr to be rethrown in the caller.
     // Otherwise the fetched data is returned in a std::string data.
-    BOOST_OUTCOME_TRY(data, ext(httplib::get("http://www.nedproductions.biz/")));
+    BOOST_OUTCOME_TRY(auto data, ext(httplib::get("http://www.nedproductions.biz/")));
     string_view data_view(data);
 
     // HTML tidy the fetched data. If the C library fails due to an error corresponding to
@@ -396,11 +403,11 @@ namespace app
     // TRY operation below will return that exception ptr to be rethrown in the caller.
     // Otherwise the tidied data is returned into holdmem, with the string view updated to
     // point at the tidied data.
-    BOOST_OUTCOME_TRY(holdmem, ext(tidy_html(data_view)));
+    BOOST_OUTCOME_TRY(auto holdmem, ext(tidy_html(data_view)));
 
     // Write the tidied data to some file. If the write fails, synthesise a filesystem_error
     // exception ptr exactly as if one called filelib::write_file(data_view).value().
-    BOOST_OUTCOME_TRY(written, ext(filelib::write_file(data_view)));
+    BOOST_OUTCOME_TRY(auto written, ext(filelib::write_file(data_view)));
     return success();
   }
 }  // namespace app

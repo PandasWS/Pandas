@@ -11,7 +11,7 @@
 
 #include "boost/optional/optional.hpp"
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 #pragma hdrstop
 #endif
 
@@ -93,7 +93,9 @@ template <typename T>
 void test_all_const_cases()
 {
   test_converting_ctor<T>();
+#ifndef BOOST_OPTIONAL_CONFIG_NO_PROPER_CONVERT_FROM_CONST_INT
   test_converting_ctor<const T>();
+#endif
   test_converting_ctor_for_noconst_const<T>();
 }
 

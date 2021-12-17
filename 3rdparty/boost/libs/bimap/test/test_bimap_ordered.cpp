@@ -8,7 +8,7 @@
 
 //  VC++ 8.0 warns on usage of certain Standard Library and API functions that
 //  can be cause buffer overruns or other possible security issues if misused.
-//  See http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
+//  See https://web.archive.org/web/20071014014301/http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
 //  But the wording of the warning is misleading and unsettling, there are no
 //  portable alternative functions, and VC++ 8.0's own libraries use the
 //  functions in question. So turn off the warnings.
@@ -19,8 +19,7 @@
 
 #define BOOST_BIMAP_DISABLE_SERIALIZATION
 
-// Boost.Test
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 // std
 #include <set>
@@ -131,46 +130,46 @@ void test_bimap()
 
         bimap_type b2( b1 );
 
-        BOOST_CHECK(     b1 == b2   );
-        BOOST_CHECK( ! ( b1 != b2 ) );
-        BOOST_CHECK(     b1 <= b2   );
-        BOOST_CHECK(     b1 >= b2   );
-        BOOST_CHECK( ! ( b1 <  b2 ) );
-        BOOST_CHECK( ! ( b1 >  b2 ) );
+        BOOST_TEST(     b1 == b2   );
+        BOOST_TEST( ! ( b1 != b2 ) );
+        BOOST_TEST(     b1 <= b2   );
+        BOOST_TEST(     b1 >= b2   );
+        BOOST_TEST( ! ( b1 <  b2 ) );
+        BOOST_TEST( ! ( b1 >  b2 ) );
 
         b1.insert( bimap_type::value_type(2,"two") );
 
         b2 = b1;
-        BOOST_CHECK( b2 == b1 );
+        BOOST_TEST( b2 == b1 );
 
         b1.insert( bimap_type::value_type(3,"three") );
 
         b2.left = b1.left;
-        BOOST_CHECK( b2 == b1 );
+        BOOST_TEST( b2 == b1 );
 
         b1.insert( bimap_type::value_type(4,"four") );
 
         b2.right = b1.right;
-        BOOST_CHECK( b2 == b1 );
+        BOOST_TEST( b2 == b1 );
 
         b1.clear();
         b2.swap(b1);
-        BOOST_CHECK( b2.empty() && !b1.empty() );
+        BOOST_TEST( b2.empty() && !b1.empty() );
 
         b1.left.swap( b2.left );
-        BOOST_CHECK( b1.empty() && !b2.empty() );
+        BOOST_TEST( b1.empty() && !b2.empty() );
 
         b1.right.swap( b2.right );
-        BOOST_CHECK( b2.empty() && !b1.empty() );
+        BOOST_TEST( b2.empty() && !b1.empty() );
     }
     //--------------------------------------------------------------------
 
 }
 
 
-int test_main( int, char* [] )
+int main()
 {
     test_bimap();
-    return 0;
+    return boost::report_errors();
 }
 

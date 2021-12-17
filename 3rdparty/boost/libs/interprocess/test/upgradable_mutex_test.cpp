@@ -8,14 +8,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <boost/interprocess/detail/config_begin.hpp>
 #include "mutex_test_template.hpp"
 #include "sharable_mutex_test_template.hpp"
 #include <boost/interprocess/sync/interprocess_upgradable_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/sharable_lock.hpp>
 #include <boost/interprocess/sync/upgradable_lock.hpp>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
 #include "util.hpp"
 
 int main ()
@@ -68,17 +66,15 @@ int main ()
          e_lock = boost::move(moved);
       }
       {
-         boost::posix_time::ptime t = test::delay(100);
          upgradable_lock<Mutex>  u_lock(mut);
          //This calls timed_unlock_upgradable_and_lock()
-         scoped_lock<Mutex>      e_lock(boost::move(u_lock), t);
+         scoped_lock<Mutex>      e_lock(boost::move(u_lock), test::boost_systemclock_delay(10));
       }
       {
-         boost::posix_time::ptime t = test::delay(100);
          upgradable_lock<Mutex>  u_lock(mut);
          //This calls timed_unlock_upgradable_and_lock()
          scoped_lock<Mutex>      e_lock(mut2);
-         scoped_lock<Mutex>      moved(boost::move(u_lock), t);
+         scoped_lock<Mutex>      moved(boost::move(u_lock), test::ptime_delay(10));
          e_lock = boost::move(moved);
       }
       {
@@ -169,5 +165,3 @@ int main ()
 
    return 0;
 }
-
-#include <boost/interprocess/detail/config_end.hpp>

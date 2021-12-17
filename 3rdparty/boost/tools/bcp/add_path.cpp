@@ -75,7 +75,7 @@ void bcp_implementation::add_directory(const fs::path& p)
       if(!m_dependencies.count(np)) 
       {
          m_dependencies[np] = p; // set up dependency tree
-         add_path(np);
+         add_pending_path(np);
       }
       ++i;
    }
@@ -181,7 +181,7 @@ void bcp_implementation::add_file(const fs::path& p)
             if(!m_dependencies.count(dep)) 
             {
                m_dependencies[dep] = p; // set up dependency tree
-               add_path(dep);
+               add_pending_path(dep);
             }
          }
          ++i;
@@ -193,6 +193,12 @@ void bcp_implementation::add_file(const fs::path& p)
    //
 static const std::pair<fs::path, fs::path>
    specials[] = {
+      std::pair<fs::path, fs::path>("tools/build/src/kernel/modules.jam", "libs/predef/check"),
+      std::pair<fs::path, fs::path>("tools/build/src/kernel/modules.jam", "libs/predef/tools"),
+      std::pair<fs::path, fs::path>("tools/build/src/kernel/modules.jam", "tools/boost_install/boost-install.jam"),
+      std::pair<fs::path, fs::path>("tools/build/src/kernel/modules.jam", "tools/boost_install/boost-install-dirs.jam"),
+      std::pair<fs::path, fs::path>("tools/build/src/kernel/modules.jam", "tools/boost_install/Jamfile"),
+      std::pair<fs::path, fs::path>("tools/build/src/kernel/modules.jam", "libs/headers"),
       std::pair<fs::path, fs::path>("libs/test/build/Jamfile.v2", "libs/timer/src"),
       std::pair<fs::path, fs::path>("libs/test/build/Jamfile.v2", "libs/timer/build"),
       std::pair<fs::path, fs::path>("boost/atomic/capabilities.hpp", "boost/atomic/detail"),
@@ -228,10 +234,12 @@ static const std::pair<fs::path, fs::path>
       std::pair<fs::path, fs::path>("boost/config.hpp", "boost/config"),
       std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "libs/config/checks"),
       std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "libs/config/test"),
-      std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "Jamrules"),
-      std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "project-root.jam"),
+      std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "libs/headers/build"),
+      std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "tools/boost_install/BoostConfig.cmake"),
+      std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "tools/boost_install/BoostDetectToolset.cmake"),
+      std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "tools/boost_install/boost-install.jam"),
+      std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "tools/boost_install/boost-install-dirs.jam"),
       std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "boost-build.jam"),
-      std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "Jamfile.v2"),
       std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "boostcpp.jam"),
       std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "bootstrap.bat"),
       std::pair<fs::path, fs::path>("tools/build/boost-build.jam", "bootstrap.sh"),
@@ -259,6 +267,8 @@ static const std::pair<fs::path, fs::path>
       std::pair<fs::path, fs::path>("libs/graph/src/python/visitor.hpp", "libs/graph/src/python"),
       std::pair<fs::path, fs::path>("boost/test/detail/config.hpp", "libs/test/src"),
       std::pair<fs::path, fs::path>("boost/test/detail/config.hpp", "libs/test/build"),
+      std::pair<fs::path, fs::path>("boost/test/detail/config.hpp", "libs/predef/build.jam"),
+      std::pair<fs::path, fs::path>("boost/test/detail/config.hpp", "libs/predef/check"),
       std::pair<fs::path, fs::path>("boost/typeof.hpp", "boost/typeof/incr_registration_group.hpp"),
       std::pair<fs::path, fs::path>("boost/function_types/detail/pp_loop.hpp", "boost/function_types/detail/pp_cc_loop"),
       std::pair<fs::path, fs::path>("boost/function_types/components.hpp", "boost/function_types/detail/components_impl"),
@@ -269,6 +279,10 @@ static const std::pair<fs::path, fs::path>
       std::pair<fs::path, fs::path>("boost/preprocessor/slot/counter.hpp", "boost/preprocessor/slot/detail/counter.hpp"),
       std::pair<fs::path, fs::path>("boost/graph/distributed/detail/tag_allocator.hpp", "libs/graph_parallel"),
       std::pair<fs::path, fs::path>("boost/graph/distributed/mpi_process_group.hpp", "libs/graph_parallel"),
+      std::pair<fs::path, fs::path>("libs/coroutine/build/Jamfile.v2", "libs/context/src"),
+      std::pair<fs::path, fs::path>("libs/coroutine/build/Jamfile.v2", "libs/context/build"),
+      std::pair<fs::path, fs::path>("libs/fiber/build/Jamfile.v2", "libs/context/src"),
+      std::pair<fs::path, fs::path>("libs/fiber/build/Jamfile.v2", "libs/context/build"),
    };
 
    for(unsigned int n = 0; n < (sizeof(specials)/sizeof(specials[0])); ++n)
@@ -278,7 +292,7 @@ static const std::pair<fs::path, fs::path>
          if(!m_dependencies.count(specials[n].second)) 
          {
             m_dependencies[specials[n].second] = p; // set up dependency tree
-            add_path(specials[n].second);
+            add_pending_path(specials[n].second);
          }
       }
    }
@@ -331,7 +345,7 @@ void bcp_implementation::add_file_dependencies(const fs::path& p, bool scanfile)
             if(!m_dependencies.count(p.branch_path() / include_file)) 
             {
                m_dependencies[p.branch_path() / include_file] = p;
-               add_path(p.branch_path() / include_file);
+               add_pending_path(p.branch_path() / include_file);
             }
          }
          else if(fs::exists(m_boost_path / include_file))
@@ -339,7 +353,7 @@ void bcp_implementation::add_file_dependencies(const fs::path& p, bool scanfile)
             if(!m_dependencies.count(include_file)) 
             {
                m_dependencies[include_file] = p;
-               add_path(include_file);
+               add_pending_path(include_file);
             }
          }
          ++i;
@@ -381,7 +395,7 @@ void bcp_implementation::add_file_dependencies(const fs::path& p, bool scanfile)
          if(!m_dependencies.count(p.branch_path() / include_file)) 
          {
             m_dependencies[p.branch_path() / include_file] = p;
-            add_path(p.branch_path() / include_file);
+            add_pending_path(p.branch_path() / include_file);
          }
       }
       else if(fs::exists(m_boost_path / include_file))
@@ -389,7 +403,7 @@ void bcp_implementation::add_file_dependencies(const fs::path& p, bool scanfile)
          if(!m_dependencies.count(include_file)) 
          {
             m_dependencies[include_file] = p;
-            add_path(include_file);
+            add_pending_path(include_file);
          }
       }
       else

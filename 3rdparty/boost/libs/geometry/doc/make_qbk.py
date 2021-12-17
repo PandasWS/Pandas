@@ -6,7 +6,7 @@
 #  Copyright (c) 2009-2012 Mateusz Loskot (mateusz@loskot.net), London, UK
 #  Copyright (c) 2017 Adam Wulkiewicz, Lodz, Poland
 #
-#  Copyright (c) 2018, Oracle and/or its affiliates.
+#  Copyright (c) 2018-2021, Oracle and/or its affiliates.
 #  Contributed and/or modified by Vissarion Fysikopoulos, on behalf of Oracle
 #  Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 #  Use, modification and distribution is subject to the Boost Software License,
@@ -96,7 +96,7 @@ def cs_to_quickbook(section):
 call_doxygen()
 
 algorithms = ["append", "assign", "make", "clear"
-    , "area", "buffer", "centroid", "convert", "correct", "covered_by"
+    , "area", "azimuth", "buffer", "centroid", "convert", "correct", "covered_by"
     , "convex_hull", "crosses", "densify", "difference"
     , "discrete_frechet_distance", "discrete_hausdorff_distance", "disjoint"
     , "distance", "envelope", "equals", "expand", "for_each", "is_empty"
@@ -105,6 +105,8 @@ algorithms = ["append", "assign", "make", "clear"
     , "num_points", "num_segments", "overlaps", "perimeter", "relate"
     , "relation", "reverse","simplify", "sym_difference", "touches"
     , "transform", "union", "unique", "within"]
+
+arithmetic = ["cross_product"]
 
 access_functions = ["get", "set", "exterior_ring", "interior_rings"
     , "num_points", "num_interior_rings", "num_geometries"]
@@ -135,7 +137,6 @@ strategies = ["area::cartesian", "area::spherical", "area::geographic"
     , "buffer::side_straight"
     , "buffer::geographic_point_circle"
     , "centroid::bashein_detmer", "centroid::average"
-    , "convex_hull::graham_andrew"
     , "densify::cartesian", "densify::geographic", "densify::spherical"
     , "distance::pythagoras", "distance::pythagoras_box_box"
     , "distance::pythagoras_point_box", "distance::haversine"
@@ -190,6 +191,7 @@ for i in views:
     
 
 model_to_quickbook2("d2_1_1point__xy", "point_xy")
+model_to_quickbook2("d3_1_1point__xyz", "point_xyz")
 
 group_to_quickbook("arithmetic")
 group_to_quickbook("dsv")

@@ -8,7 +8,7 @@
 [library Boost.TypeTraits
     [quickbook 1.5]
     [copyright 2000 2011 Adobe Systems Inc, David Abrahams, Frederic Bron,
-    Steve Cleary, Beman Dawes, Aleksey Gurtovoy, Howard Hinnant, Jesse Jones,
+    Steve Cleary, Beman Dawes, Glen Fernandes, Aleksey Gurtovoy, Howard Hinnant, Jesse Jones,
     Mat Marcus, Itay Maman, John Maddock, Alexander Nasonov, Thorsten Ottosen,
     Roman Perepelitsa, Robert Ramey, Jeremy Siek, Robert Stewart and Steven Watanabe]
     [purpose Meta-programming support library]
@@ -55,6 +55,8 @@
 [def __is_unbounded_array [link boost_typetraits.reference.is_unbounded_array is_unbounded_array]]
 [def __is_union [link boost_typetraits.reference.is_union is_union]]
 [def __is_class [link boost_typetraits.reference.is_class is_class]]
+[def __is_scoped_enum [link boost_typetraits.reference.is_scoped_enum is_scoped_enum]]
+[def __is_unscoped_enum [link boost_typetraits.reference.is_unscoped_enum is_unscoped_enum]]
 [def __is_enum [link boost_typetraits.reference.is_enum is_enum]]
 [def __is_enum [link boost_typetraits.reference.is_enum is_enum]]
 [def __is_function [link boost_typetraits.reference.is_function is_function]]
@@ -85,6 +87,7 @@
 [def __is_signed [link boost_typetraits.reference.is_signed is_signed]]
 [def __is_unsigned [link boost_typetraits.reference.is_unsigned is_unsigned]]
 [def __has_virtual_destructor [link boost_typetraits.reference.has_virtual_destructor has_virtual_destructor]]
+[def __is_trivially_copyable [link boost_typetraits.reference.is_trivially_copyable is_trivially_copyable]]
 [def __is_pod [link boost_typetraits.reference.is_pod is_pod]]
 [def __is_final [link boost_typetraits.reference.is_final is_final]]
 [def __has_trivial_constructor [link boost_typetraits.reference.has_trivial_constructor has_trivial_constructor]]
@@ -129,6 +132,9 @@
 [def __add_cv [link boost_typetraits.reference.add_cv add_cv]]
 [def __common_type [link boost_typetraits.reference.common_type common_type]]
 [def __conditional [link boost_typetraits.reference.conditional conditional]]
+[def __conjunction [link boost_typetraits.reference.conjunction conjunction]]
+[def __disjunction [link boost_typetraits.reference.disjunction disjunction]]
+[def __negation [link boost_typetraits.reference.negation negation]]
 
 [def __type_with_alignment [link boost_typetraits.reference.type_with_alignment type_with_alignment]]
 [def __aligned_storage [link boost_typetraits.reference.aligned_storage aligned_storage]]
@@ -307,6 +313,7 @@ that is the result of the transformation.
 [include aligned_storage.qbk]
 [include alignment_of.qbk]
 [include conditional.qbk]
+[include conjunction.qbk]
 [include common_type.qbk]
 [include copy_cv.qbk]
 [include copy_cv_ref.qbk]
@@ -315,6 +322,7 @@ that is the result of the transformation.
 [include declval.qbk]
 [include detected.qbk]
 [include detected_or.qbk]
+[include disjunction.qbk]
 [include enable_if.qbk]
 [include extent.qbk]
 [include floating_point_promotion.qbk]
@@ -429,10 +437,13 @@ See __has_trivial_constructor.
 [include is_rvalue_reference.qbk]
 [include is_same.qbk]
 [include is_scalar.qbk]
+[include is_scoped_enum.qbk]
 [include is_signed.qbk]
 [include is_stateless.qbk]
+[include is_trivially_copyable.qbk]
 [include is_unbounded_array.qbk]
 [include is_union.qbk]
+[include is_unscoped_enum.qbk]
 [include is_unsigned.qbk]
 [include is_virtual_base_of.qbk]
 [include is_void.qbk]
@@ -441,6 +452,7 @@ See __has_trivial_constructor.
 [include make_signed.qbk]
 [include make_unsigned.qbk]
 [include make_void.qbk]
+[include negation.qbk]
 [include nonesuch.qbk]
 
 [include promote.qbk]

@@ -990,9 +990,15 @@ auto d = xrange(param);
           <template-nontype-parameter name="Args"><type>class ...</type></template-nontype-parameter>
         </template><parameter name="args"><paramtype>Args &amp;&amp;...</paramtype></parameter><purpose>Variadic template initialization. </purpose></constructor>
 </class><class-specialization name="init_list"><template>
-    </template><specialization><template-arg>bool</template-arg></specialization><purpose>Specialization of <classname alt="boost::unit_test::data::monomorphic::init_list">init_list</classname> for type bool. </purpose><enum name="@5"><enumvalue name="arity"><default>= 1</default></enumvalue></enum>
+    </template><specialization><template-arg>bool</template-arg></specialization><purpose>Specialization of <classname alt="boost::unit_test::data::monomorphic::init_list">init_list</classname> for type bool. </purpose><struct name="non_proxy_iterator"><data-member name="iterator"><type>std::vector&lt; bool &gt;::const_iterator</type></data-member>
+<method-group name="public member functions">
+<method name="operator *" cv="const"><type>bool</type></method>
+<method name="operator++"><type>non_proxy_iterator &amp;</type></method>
+</method-group>
+<constructor><parameter name="it"><paramtype>std::vector&lt; bool &gt;::const_iterator &amp;&amp;</paramtype></parameter></constructor>
+</struct><enum name="@5"><enumvalue name="arity"><default>= 1</default></enumvalue></enum>
 <typedef name="sample"><type>bool</type></typedef>
-<typedef name="iterator"><type>std::vector&lt; bool &gt;::const_iterator</type></typedef>
+<typedef name="iterator"><type>non_proxy_iterator</type></typedef>
 <method-group name="public member functions">
 <method name="size" cv="const"><type><classname>data::size_t</classname></type><purpose>dataset interface </purpose></method>
 <method name="begin" cv="const"><type>iterator</type></method>
@@ -1617,7 +1623,7 @@ auto d = xrange(param);
 The implementation decides what is a system_fatal_error and what is just a system_exception. Fatal errors are so likely to have corrupted machine state (like a stack overflow or addressing exception) that it is unreasonable to continue execution.</para><para><note><para>(2) These errors include Unix signals and Windows structured exceptions. They are often initiated by hardware traps. </para>
 </note>
 </para></description></enum>
-</class><class name="execution_monitor"><purpose>Function execution monitor. </purpose><description><para>This class is used to uniformly detect and report an occurrence of several types of signals and exceptions, reducing various errors to a uniform <classname alt="boost::execution_exception">execution_exception</classname> that is returned to a caller.</para><para>The executiom_monitor behavior can be customized through a set of public parameters (properties) associated with the <classname alt="boost::execution_monitor">execution_monitor</classname> instance. All parameters are implemented as public unit_test::readwrite_property data members of the class <classname alt="boost::execution_monitor">execution_monitor</classname>. </para></description><data-member name="p_catch_system_errors"><type>unit_test::readwrite_property&lt; bool &gt;</type><purpose>Should monitor catch system errors. </purpose><description><para>The <emphasis>p_catch_system_errors</emphasis> property is a boolean flag (default value is true) specifying whether or not <classname alt="boost::execution_monitor">execution_monitor</classname> should trap system errors/system level exceptions/signals, which would cause program to crash in a regular case (without <classname alt="boost::execution_monitor">execution_monitor</classname>). Set this property to false, for example, if you wish to force coredump file creation. The Unit Test Framework provides a runtime parameter <computeroutput>--catch_system_errors=yes</computeroutput> to alter the behavior in monitored test cases. </para></description></data-member>
+</class><class name="execution_monitor"><purpose>Function execution monitor. </purpose><description><para>This class is used to uniformly detect and report an occurrence of several types of signals and exceptions, reducing various errors to a uniform <classname alt="boost::execution_exception">execution_exception</classname> that is returned to a caller.</para><para>The <classname alt="boost::execution_monitor">execution_monitor</classname> behavior can be customized through a set of public parameters (properties) associated with the <classname alt="boost::execution_monitor">execution_monitor</classname> instance. All parameters are implemented as public unit_test::readwrite_property data members of the class <classname alt="boost::execution_monitor">execution_monitor</classname>. </para></description><data-member name="p_catch_system_errors"><type>unit_test::readwrite_property&lt; bool &gt;</type><purpose>Should monitor catch system errors. </purpose><description><para>The <emphasis>p_catch_system_errors</emphasis> property is a boolean flag (default value is true) specifying whether or not <classname alt="boost::execution_monitor">execution_monitor</classname> should trap system errors/system level exceptions/signals, which would cause program to crash in a regular case (without <classname alt="boost::execution_monitor">execution_monitor</classname>). Set this property to false, for example, if you wish to force coredump file creation. The Unit Test Framework provides a runtime parameter <computeroutput>--catch_system_errors=yes</computeroutput> to alter the behavior in monitored test cases. </para></description></data-member>
 <data-member name="p_auto_start_dbg"><type>unit_test::readwrite_property&lt; bool &gt;</type><purpose>Should monitor try to attach debugger in case of caught system error. </purpose><description><para>The <emphasis>p_auto_start_dbg</emphasis> property is a boolean flag (default value is false) specifying whether or not <classname alt="boost::execution_monitor">execution_monitor</classname> should try to attach debugger in case system error is caught. </para></description></data-member>
 <data-member name="p_timeout"><type>unit_test::readwrite_property&lt; unsigned long int &gt;</type><purpose>Specifies the seconds that elapse before a timer_error occurs. </purpose><description><para>The <emphasis>p_timeout</emphasis> property is an integer timeout (in microseconds) for monitored function execution. Use this parameter to monitor code with possible deadlocks or infinite loops. This feature is only available for some operating systems (not yet Microsoft Windows). </para></description></data-member>
 <data-member name="p_use_alt_stack"><type>unit_test::readwrite_property&lt; bool &gt;</type><purpose>Should monitor use alternative stack for the signal catching. </purpose><description><para>The <emphasis>p_use_alt_stack</emphasis> property is a boolean flag (default value is false) specifying whether or not <classname alt="boost::execution_monitor">execution_monitor</classname> should use an alternative stack for the sigaction based signal catching. When enabled the signals are delivered to the <classname alt="boost::execution_monitor">execution_monitor</classname> on a stack different from current execution stack, which is safer in case if it is corrupted by monitored function. For more details on alternative stack handling see appropriate manuals. </para></description></data-member>
@@ -1631,7 +1637,7 @@ The implementation decides what is a system_fatal_error and what is just a syste
 </para>
 </para></description><returns><para>value returned by function call F(). </para>
 </returns></method>
-<method name="vexecute"><type>void</type><parameter name="F"><paramtype>boost::function&lt; void()&gt; const &amp;</paramtype><description><para>Function to monitor </para></description></parameter><purpose>Execution monitor entry point for functions returning void. </purpose><description><para>This method is semantically identical to execution_monitor::execute, but des't produce any result code. 
+<method name="vexecute"><type>void</type><parameter name="F"><paramtype>boost::function&lt; void()&gt; const &amp;</paramtype><description><para>Function to monitor </para></description></parameter><purpose>Execution monitor entry point for functions returning void. </purpose><description><para>This method is semantically identical to execution_monitor::execute, but doesn't produce any result code. 
 <para><emphasis role="bold">See Also:</emphasis><para>execute </para>
 </para>
 </para></description></method>
@@ -2063,7 +2069,7 @@ em.register_exception_translator&lt;MyException&gt;( myExceptTr );
 <class name="results_collector_t"><inherit access="public">boost::unit_test::test_observer</inherit><purpose>Collects and combines the test results. </purpose><description><para>This class collects and combines the results of the test unit during the execution of the test tree. The results_collector_t::results() function combines the test results on a subtree of the test tree.</para><para><para><emphasis role="bold">See Also:</emphasis><para><classname alt="boost::unit_test::test_observer">boost::unit_test::test_observer</classname> </para>
 </para>
 </para></description><method-group name="public member functions">
-<method name="test_start" specifiers="virtual"><type>void</type><parameter name=""><paramtype>counter_t</paramtype></parameter><purpose>Called before the framework starts executing the test cases. </purpose><description><para>
+<method name="test_start" specifiers="virtual"><type>void</type><parameter name=""><paramtype>counter_t</paramtype></parameter><parameter name=""><paramtype>test_unit_id</paramtype></parameter><purpose>Called before the framework starts executing the test cases. </purpose><description><para>
 </para></description></method>
 <method name="test_unit_start" specifiers="virtual"><type>void</type><parameter name=""><paramtype><classname>test_unit</classname> const &amp;</paramtype></parameter><purpose>Called before the framework starts executing a test unit. </purpose><description><para>
 </para></description></method>
@@ -2114,7 +2120,7 @@ em.register_exception_translator&lt;MyException&gt;( myExceptTr );
 <method name="result_code" cv="const"><type>int</type><purpose>Produces result code for the test unit execution. </purpose><description><para>This methhod return one of the result codes defined in <computeroutput>boost/cstdlib.hpp</computeroutput> 
 </para></description><returns><para><itemizedlist>
 <listitem><para><computeroutput>boost::exit_success</computeroutput> on success,</para>
-</listitem><listitem><para><computeroutput>boost::exit_exception_failure</computeroutput> in case test unit was aborted for any reason (incuding uncaught exception)</para>
+</listitem><listitem><para><computeroutput>boost::exit_exception_failure</computeroutput> in case test unit was aborted for any reason (including uncaught exception)</para>
 </listitem><listitem><para>and <computeroutput>boost::exit_test_failure</computeroutput> otherwise </para>
 </listitem></itemizedlist>
 </para>
@@ -2202,13 +2208,19 @@ em.register_exception_translator&lt;MyException&gt;( myExceptTr );
 
 
 
+
+
+
 </namespace>
 </namespace>
 </header>
 <header name="boost/test/tools/detail/bitwise_manip.hpp">
 <para>Bitwise comparison manipulator implementation. </para><namespace name="boost">
 <namespace name="test_tools">
-<struct name="bitwise"><purpose>Bitwise comparison manipulator. </purpose></struct><function name="operator&lt;&lt;"><type>int</type><parameter name=""><paramtype>unit_test::lazy_ostream const &amp;</paramtype></parameter><parameter name=""><paramtype><classname>bitwise</classname></paramtype></parameter></function>
+<struct name="bitwise"><purpose>Bitwise comparison manipulator This is a terminal for the expression. </purpose></struct><function name="operator&lt;&lt;"><type>unit_test::lazy_ostream &amp;</type><parameter name="o"><paramtype>unit_test::lazy_ostream &amp;</paramtype></parameter><parameter name=""><paramtype><classname>bitwise</classname></paramtype></parameter></function>
+<function name="operator&lt;&lt;"><type>std::ostream &amp;</type><parameter name="o"><paramtype>std::ostream &amp;</paramtype></parameter><parameter name=""><paramtype><classname>bitwise</classname></paramtype></parameter></function>
+
+
 
 
 
@@ -2220,8 +2232,11 @@ em.register_exception_translator&lt;MyException&gt;( myExceptTr );
 <header name="boost/test/tools/detail/lexicographic_manip.hpp">
 <para>Lexicographic comparison manipulator implementation. </para><namespace name="boost">
 <namespace name="test_tools">
-<struct name="lexicographic"><purpose>Lexicographic comparison manipulator, for containers. </purpose></struct>
-<function name="operator&lt;&lt;"><type>int</type><parameter name=""><paramtype>unit_test::lazy_ostream const &amp;</paramtype></parameter><parameter name=""><paramtype><classname>lexicographic</classname></paramtype></parameter></function>
+<struct name="lexicographic"><purpose>Lexicographic comparison manipulator, for containers This is a terminal that involves evaluation of the expression. </purpose></struct>
+
+<function name="operator&lt;&lt;"><type>unit_test::lazy_ostream &amp;</type><parameter name="o"><paramtype>unit_test::lazy_ostream &amp;</paramtype></parameter><parameter name=""><paramtype><classname>lexicographic</classname></paramtype></parameter></function>
+<function name="operator&lt;&lt;"><type>std::ostream &amp;</type><parameter name="o"><paramtype>std::ostream &amp;</paramtype></parameter><parameter name=""><paramtype><classname>lexicographic</classname></paramtype></parameter></function>
+
 
 
 
@@ -2232,9 +2247,12 @@ em.register_exception_translator&lt;MyException&gt;( myExceptTr );
 <header name="boost/test/tools/detail/per_element_manip.hpp">
 <para>Per element comparison manipulator implementation. </para><namespace name="boost">
 <namespace name="test_tools">
-<struct name="per_element"><purpose>Per element comparison manipulator, for containers. </purpose></struct>
+<struct name="per_element"><purpose>Per element comparison manipulator, for containers This is a terminal that involves evaluation of the expression. </purpose></struct>
 
-<function name="operator&lt;&lt;"><type>int</type><parameter name=""><paramtype>unit_test::lazy_ostream const &amp;</paramtype></parameter><parameter name=""><paramtype><classname>per_element</classname></paramtype></parameter></function>
+
+
+<function name="operator&lt;&lt;"><type>unit_test::lazy_ostream &amp;</type><parameter name="o"><paramtype>unit_test::lazy_ostream &amp;</paramtype></parameter><parameter name=""><paramtype><classname>per_element</classname></paramtype></parameter></function>
+<function name="operator&lt;&lt;"><type>std::ostream &amp;</type><parameter name="o"><paramtype>std::ostream &amp;</paramtype></parameter><parameter name=""><paramtype><classname>per_element</classname></paramtype></parameter></function>
 
 
 
@@ -2244,6 +2262,9 @@ em.register_exception_translator&lt;MyException&gt;( myExceptTr );
 <header name="boost/test/tools/detail/tolerance_manip.hpp">
 <para>Floating point comparison tolerance manipulators. </para><para>This file defines several manipulators for floating point comparison. These manipulators are intended to be used with BOOST_TEST. </para><namespace name="boost">
 <namespace name="test_tools">
+
+
+
 
 
 
@@ -2355,6 +2376,9 @@ What is reported by <computeroutput>tested_rel_diff</computeroutput> in case of 
 
 
 
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -2362,7 +2386,7 @@ What is reported by <computeroutput>tested_rel_diff</computeroutput> in case of 
 <para>defines abstract interface for test observer </para><namespace name="boost">
 <namespace name="unit_test">
 <class name="test_observer"><purpose>Generic test observer interface. </purpose><description><para>This interface is used by observers in order to receive notifications from the Boost.Test framework on the current execution state.</para><para>Several observers can be running at the same time, and it is not unusual to have interactions among them. The test_observer::priority member function allows the specification of a particular order among them (lowest priority executed first, except specified otherwise). </para></description><method-group name="public member functions">
-<method name="test_start" specifiers="virtual"><type>void</type><parameter name=""><paramtype>counter_t</paramtype></parameter><purpose>Called before the framework starts executing the test cases. </purpose><description><para>
+<method name="test_start" specifiers="virtual"><type>void</type><parameter name=""><paramtype>counter_t</paramtype></parameter><parameter name=""><paramtype>test_unit_id</paramtype></parameter><purpose>Called before the framework starts executing the test cases. </purpose><description><para>
 </para></description></method>
 <method name="test_finish" specifiers="virtual"><type>void</type><purpose>Called after the framework ends executing the test cases. </purpose><description><para><note><para>The call is made with a reversed priority order. </para>
 </note>
@@ -2662,7 +2686,6 @@ What is reported by <computeroutput>tested_rel_diff</computeroutput> in case of 
 
 </namespace>
 </namespace>
-<macro name="BOOST_LIB_NAME"/>
 </header>
 <header name="boost/test/unit_test_log.hpp">
 <para>defines singleton class unit_test_log and all manipulators. unit_test_log has output stream like interface. It's implementation is completely hidden with pimple idiom </para><namespace name="boost">
@@ -2687,7 +2710,7 @@ Users/developers willing to implement their own formatter need to:<itemizedlist>
 </para>
 </para>
 </para></description><method-group name="public member functions">
-<method name="test_start" specifiers="virtual"><type>void</type><parameter name=""><paramtype>counter_t</paramtype></parameter><purpose>Called before the framework starts executing the test cases. </purpose><description><para>
+<method name="test_start" specifiers="virtual"><type>void</type><parameter name=""><paramtype>counter_t</paramtype></parameter><parameter name=""><paramtype>test_unit_id</paramtype></parameter><purpose>Called before the framework starts executing the test cases. </purpose><description><para>
 </para></description></method>
 <method name="test_finish" specifiers="virtual"><type>void</type><purpose>Called after the framework ends executing the test cases. </purpose><description><para><note><para>The call is made with a reversed priority order. </para>
 </note>
@@ -2719,12 +2742,16 @@ Users/developers willing to implement their own formatter need to:<itemizedlist>
 <formalpara><title>Since Boost 1.67 </title><para/>
 </formalpara>
 </para></description></method>
-<method name="set_threshold_level"><type>void</type><parameter name=""><paramtype>log_level</paramtype></parameter><purpose>Sets the threshold level for all loggers/formatters. </purpose><description><para>This will override the log level of all loggers, whether enabled or not. </para></description></method>
-<method name="set_threshold_level"><type>void</type><parameter name=""><paramtype>output_format</paramtype></parameter><parameter name=""><paramtype>log_level</paramtype></parameter><purpose>Sets the threshold/log level of a specific format. </purpose><description><para><note><para>Has no effect if the specified format is not found </para>
+<method name="set_threshold_level"><type>log_level</type><parameter name=""><paramtype>log_level</paramtype></parameter><purpose>Sets the threshold level for all loggers/formatters. </purpose><description><para>This will override the log level of all loggers, whether enabled or not. 
+</para></description><returns><para>the minimum of the previous log level of all formatters (new in Boost 1.73) </para>
+</returns></method>
+<method name="set_threshold_level"><type>log_level</type><parameter name=""><paramtype>output_format</paramtype></parameter><parameter name=""><paramtype>log_level</paramtype></parameter><purpose>Sets the threshold/log level of a specific format. </purpose><description><para><note><para>Has no effect if the specified format is not found </para>
 </note>
-<formalpara><title>Since Boost 1.62 </title><para/>
+<formalpara><title>Since Boost 1.62</title><para/>
 </formalpara>
-</para></description></method>
+
+</para></description><returns><para>the previous log level of the corresponding formatter (new in Boost 1.73) </para>
+</returns></method>
 <method name="add_format"><type>void</type><parameter name=""><paramtype>output_format</paramtype></parameter><purpose>Add a format to the set of loggers. </purpose><description><para>Adding a logger means that the specified logger is enabled. The log level is managed by the formatter itself and specifies what events are forwarded to the underlying formatter. <formalpara><title>Since Boost 1.62 </title><para/>
 </formalpara>
 </para></description></method>
@@ -2734,7 +2761,7 @@ Users/developers willing to implement their own formatter need to:<itemizedlist>
 </formalpara>
 </para></description><returns><para>the logger/formatter instance, or <computeroutput/>(unit_test_log_formatter*)0 if the format is not found. </para>
 </returns></method>
-<method name="set_formatter"><type>void</type><parameter name=""><paramtype><classname>unit_test_log_formatter</classname> *</paramtype></parameter><purpose>Sets the logger instance. </purpose><description><para>The specified logger becomes the unique active one. The custom log formatter has the format <computeroutput>OF_CUSTOM_LOGGER</computeroutput>. If such a format exists already, its formatter gets replaced by the one given in argument.</para><para>The log level and output stream of the new formatter are taken from the currently active logger. In case several loggers are active, the order of priority is CUSTOM, HRF, XML, and JUNIT. If (unit_test_log_formatter*)0 is given as argument, the custom logger (if any) is removed.</para><para><note><para>The ownership of the pointer is transfered to the Boost.Test framework. This call is equivalent to<itemizedlist>
+<method name="set_formatter"><type>void</type><parameter name=""><paramtype><classname>unit_test_log_formatter</classname> *</paramtype></parameter><purpose>Sets the logger instance. </purpose><description><para>The specified logger becomes the unique active one. The custom log formatter has the format <computeroutput>OF_CUSTOM_LOGGER</computeroutput>. If such a format exists already, its formatter gets replaced by the one given in argument.</para><para>The log level and output stream of the new formatter are taken from the currently active logger. In case several loggers are active, the order of priority is CUSTOM, HRF, XML, and JUNIT. If (unit_test_log_formatter*)0 is given as argument, the custom logger (if any) is removed.</para><para><note><para>The ownership of the pointer is transferred to the Boost.Test framework. This call is equivalent to<itemizedlist>
 <listitem><para>a call to <computeroutput>add_formatter</computeroutput> </para>
 </listitem><listitem><para>a call to <computeroutput>set_format(OF_CUSTOM_LOGGER)</computeroutput> </para>
 </listitem><listitem><para>a configuration of the newly added logger with a previously configured stream and log level. </para>
@@ -2742,7 +2769,7 @@ Users/developers willing to implement their own formatter need to:<itemizedlist>
 </para>
 </note>
 </para></description></method>
-<method name="add_formatter"><type>void</type><parameter name="the_formatter"><paramtype><classname>unit_test_log_formatter</classname> *</paramtype></parameter><purpose>Adds a custom log formatter to the set of formatters. </purpose><description><para>The specified logger is added with the format <computeroutput>OF_CUSTOM_LOGGER</computeroutput>, such that it can be futher selected or its stream/log level can be specified. If there is already a custom logger (with <computeroutput>OF_CUSTOM_LOGGER</computeroutput>), then the existing one gets replaced by the one given in argument. The provided logger is added with an enabled state. If (unit_test_log_formatter*)0 is given as argument, the custom logger (if any) is removed and no other action is performed.</para><para><note><para>The ownership of the pointer is transfered to the Boost.Test framework. </para>
+<method name="add_formatter"><type>void</type><parameter name="the_formatter"><paramtype><classname>unit_test_log_formatter</classname> *</paramtype></parameter><purpose>Adds a custom log formatter to the set of formatters. </purpose><description><para>The specified logger is added with the format <computeroutput>OF_CUSTOM_LOGGER</computeroutput>, such that it can be futher selected or its stream/log level can be specified. If there is already a custom logger (with <computeroutput>OF_CUSTOM_LOGGER</computeroutput>), then the existing one gets replaced by the one given in argument. The provided logger is added with an enabled state. If (unit_test_log_formatter*)0 is given as argument, the custom logger (if any) is removed and no other action is performed.</para><para><note><para>The ownership of the pointer is transferred to the Boost.Test framework. </para>
 </note>
 <formalpara><title>Since Boost 1.62 </title><para/>
 </formalpara>
@@ -2754,13 +2781,9 @@ Users/developers willing to implement their own formatter need to:<itemizedlist>
 <method name="operator&lt;&lt;"><type><classname>unit_test_log_t</classname> &amp;</type><parameter name=""><paramtype>const_string</paramtype></parameter></method>
 <method name="operator&lt;&lt;"><type><classname>unit_test_log_t</classname> &amp;</type><parameter name=""><paramtype>lazy_ostream const &amp;</paramtype></parameter></method>
 <method name="operator()"><type><emphasis>unspecified</emphasis></type><parameter name=""><paramtype>log_level</paramtype></parameter></method>
+<method name="configure"><type>void</type><purpose>Prepares internal states after log levels, streams and format has been set up. </purpose></method>
 <method name="test_unit_skipped" specifiers="virtual"><type>void</type><parameter name=""><paramtype><classname>test_unit</classname> const &amp;</paramtype></parameter><purpose>backward compatibility </purpose></method>
 <method name="assertion_result" specifiers="virtual"><type>void</type><parameter name=""><paramtype>unit_test::assertion_result</paramtype></parameter></method>
-</method-group>
-<method-group name="private member functions">
-<method name="log_entry_start"><type>bool</type><parameter name="log_format"><paramtype>output_format</paramtype></parameter></method>
-<method name="log_entry_context"><type>void</type><parameter name="l"><paramtype>log_level</paramtype></parameter></method>
-<method name="clear_entry_context"><type>void</type></method>
 </method-group>
 </class><namespace name="log">
 <struct name="begin"><data-member name="m_file_name"><type>const_string</type></data-member>

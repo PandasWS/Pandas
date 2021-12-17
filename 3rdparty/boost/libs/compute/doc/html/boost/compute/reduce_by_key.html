@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Function reduce_by_key</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Compute">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Compute">
 <link rel="up" href="../../boost_compute/reference.html#header.boost.compute.algorithm.reduce_by_key_hpp" title="Header &lt;boost/compute/algorithm/reduce_by_key.hpp&gt;">
 <link rel="prev" href="reduce.html" title="Function reduce">
 <link rel="next" href="remove.html" title="Function template remove">
@@ -60,7 +60,7 @@
                 <span class="identifier">OutputValueIterator</span> values_result<span class="special">,</span> 
                 <span class="identifier">command_queue</span> <span class="special">&amp;</span> queue <span class="special">=</span> <span class="identifier">system</span><span class="special">::</span><span class="identifier">default_queue</span><span class="special">(</span><span class="special">)</span><span class="special">)</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="idm45023638279488"></a><h2>Description</h2>
+<a name="idm9954"></a><h2>Description</h2>
 <p>The <code class="computeroutput">reduce_by_key()</code> algorithm performs reduction for each contiguous subsequence of values determinate by equivalent keys.</p>
 <p>Returns a pair of iterators at the end of the ranges [<code class="computeroutput">keys_result</code>, keys_result_last) and [<code class="computeroutput">values_result</code>, <code class="computeroutput">values_result_last</code>).</p>
 <p>If no function is specified, <code class="computeroutput">plus</code> will be used. If no predicate is specified, <code class="computeroutput">equal_to</code> will be used.</p>
@@ -129,7 +129,7 @@ The <code class="computeroutput">reduce_by_key()</code> algorithm assumes that t
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2013, 2014 Kyle Lutz<p>
+<td align="right"><div class="copyright-footer">Copyright © 2013, 2014 Kyle Lutz<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -8,6 +8,10 @@
 #include <boost/throw_exception.hpp>
 #include <cstdlib>
 
+#if defined(_MSC_VER)
+# pragma warning(disable: 4702) // unreachable code
+#endif
+
 class my_exception: public std::exception {};
 
 int main()

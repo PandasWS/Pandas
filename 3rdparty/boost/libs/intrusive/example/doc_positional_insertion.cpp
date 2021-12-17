@@ -40,21 +40,21 @@ int main()
       //as multiset's comparison predicate, so we can just push back
       //all elements, which is more efficient than normal insertion
       multiset<MyClass> mset;
-      for(int i = 0; i < 100; ++i)  mset.push_back(values[i]);
+      for(std::size_t i = 0; i != 100u; ++i)  mset.push_back(values[i]);
 
       //Now check orderd invariant
       multiset<MyClass>::const_iterator next(mset.cbegin()), it(next++);
-      for(int i = 0; i < 99; ++i, ++it, ++next) assert(*it < *next);
+      for(std::size_t i = 0; i < 99u; ++i, ++it, ++next) assert(*it < *next);
    }
    {  //Now the correct order for the set is the reverse order
       //so let's push front all elements
       multiset<MyClass, compare< std::greater<MyClass> > > mset;
-      for(int i = 0; i < 100; ++i)  mset.push_front(values[i]);
+      for(std::size_t i = 0; i < 100u; ++i)  mset.push_front(values[i]);
 
       //Now check orderd invariant
       multiset<MyClass, compare< std::greater<MyClass> > >::
          const_iterator next(mset.cbegin()), it(next++);
-      for(int i = 0; i < 99; ++i, ++it, ++next) assert(*it > *next);
+      for(std::size_t i = 0; i < 99u; ++i, ++it, ++next) assert(*it > *next);
    }
    {  //Now push the first and the last and insert the rest
       //before the last position using "insert_before"
@@ -62,7 +62,7 @@ int main()
       mset.insert_before(mset.begin(), values[0]);
       multiset<MyClass>::const_iterator pos =
          mset.insert_before(mset.end(), values[99]);
-      for(int i = 1; i < 99; ++i)  mset.insert_before(pos, values[i]);
+      for(std::size_t i = 1; i < 99u; ++i)  mset.insert_before(pos, values[i]);
 
       //Now check orderd invariant
       multiset<MyClass>::const_iterator next(mset.cbegin()), it(next++);

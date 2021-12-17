@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Design Overview</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -65,8 +65,8 @@
           <code class="computeroutput"><span class="identifier">npos</span></code>, -1, etc... This is
           equivalent to adding the special value to the set of possible values of
           a given type. This super set of <code class="computeroutput"><span class="identifier">T</span></code>
-          plus some <span class="emphasis"><em>nil_t</em></span>&#8212;where <code class="computeroutput"><span class="identifier">nil_t</span></code>
-          is some stateless POD&#8212;can be modeled in modern languages as a <span class="bold"><strong>discriminated union</strong></span> of T and nil_t. Discriminated
+          plus some <span class="emphasis"><em>nil_t</em></span>—where <code class="computeroutput"><span class="identifier">nil_t</span></code>
+          is some stateless POD—can be modeled in modern languages as a <span class="bold"><strong>discriminated union</strong></span> of T and nil_t. Discriminated
           unions are often called <span class="emphasis"><em>variants</em></span>. A variant has a
           <span class="emphasis"><em>current type</em></span>, which in our case is either <code class="computeroutput"><span class="identifier">T</span></code> or <code class="computeroutput"><span class="identifier">nil_t</span></code>.
           Using the <a href="../../../../../variant/index.html" target="_top">Boost.Variant</a>
@@ -100,8 +100,8 @@
         </p>
 <p>
           In any event, both the discriminated-union or the single-element container
-          models serve as a conceptual ground for a class representing optional&#8212;i.e.
-          possibly uninitialized&#8212;objects. For instance, these models show the
+          models serve as a conceptual ground for a class representing optional—i.e.
+          possibly uninitialized—objects. For instance, these models show the
           <span class="emphasis"><em>exact</em></span> semantics required for a wrapper of optional
           values:
         </p>
@@ -170,7 +170,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2007 Fernando Luis Cacciola Carballal<br>Copyright &#169; 2014-2018 Andrzej Krzemie&#324;ski<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2007 Fernando Luis Cacciola Carballal<br>Copyright © 2014-2021 Andrzej Krzemieński<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

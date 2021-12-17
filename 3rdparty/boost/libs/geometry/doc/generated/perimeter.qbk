@@ -47,6 +47,9 @@ Or
 `#include <boost/geometry/algorithms/perimeter.hpp>`
 
 [include reference/algorithms/perimeter.qbk]
+[heading Example]
+[perimeter]
+[perimeter_output]
 
 
 [endsect]

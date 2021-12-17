@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(IDL_LEX_INTERFACE_HPP_INCLUDED)
-#define IDL_LEX_INTERFACE_HPP_INCLUDED
+#if !defined(BOOST_IDL_LEX_INTERFACE_HPP_INCLUDED)
+#define BOOST_IDL_LEX_INTERFACE_HPP_INCLUDED
 
 #include <boost/wave/util/file_position.hpp>
 #include <boost/wave/language_support.hpp>
@@ -75,4 +75,4 @@ struct lex_input_interface_generator
 }   // namespace wave
 }   // namespace boost 
 
-#endif // !defined(IDL_LEX_INTERFACE_HPP_INCLUDED)
+#endif // !defined(BOOST_IDL_LEX_INTERFACE_HPP_INCLUDED)

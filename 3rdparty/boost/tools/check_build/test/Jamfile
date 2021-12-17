@@ -11,6 +11,8 @@ import virtual-target ;
 import testing ;
 import ac ;
 
+project : requirements -<link>static ; # from tools/Jamfile
+
 if "--debug-check-build" in [ modules.peek : ARGV ]
 {
     .info-enabled = 1 ;
@@ -52,7 +54,7 @@ rule alias-sources-impl ( project name : property-set : sources * )
 
     for local t in $(target-graph)
     {
-        if [ $(t).root ] && ! ( $(t) in $(sources) )
+        if [ $(t).root ] && ! ( $(t) in $(sources) ) && ( [ $(t).type ] = STATIC_LIB || [ $(t).type ] = SHARED_LIB )
         {
             result += $(t) ;
         }
@@ -73,24 +75,17 @@ path-constant ROOT : ../../.. ;
 for local lib in $(all-libraries)
 {
     local path = [ NORMALIZE_PATH /$(ROOT)/libs/$(lib)/build ] ;
-    local project = [ project.load $(path) ] ;
-    local pt = [ project.target $(project) ] ;
-    local mt = [ $(pt).main-target stage ] ;
-
-    if $(mt)
-    {
-        generate library-$(lib) : $(path)//stage : <generating-rule>@alias-sources-impl ;
-    }
-    else
-    {
-        .info "library-$(lib):" ;
-        .info "   (no stage target, using '$(path)')" ;
-
-        alias library-$(lib) : $(path) ;
-    }
+    generate library-$(lib) : $(path)//stage : <generating-rule>@alias-sources-impl ;
 }
 
 for local lib in $(all-libraries)
 {
-    run main.cpp : : : [ ac.check-library library-$(lib) : <library>library-$(lib) : <build>no ] : $(lib) ;
+    local python-dep ;
+
+    if $(lib) in python mpi graph_parallel
+    {
+        python-dep = /python//python ;
+    }
+
+    run main.cpp : : : [ ac.check-library library-$(lib) : <library>library-$(lib) <library>$(python-dep) : <build>no ] : $(lib) ;
 }

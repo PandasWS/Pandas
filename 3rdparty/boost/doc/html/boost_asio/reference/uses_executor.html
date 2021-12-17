@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>uses_executor</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,6 +27,9 @@
 <a name="boost_asio.reference.uses_executor"></a><a class="link" href="uses_executor.html" title="uses_executor">uses_executor</a>
 </h3></div></div></div>
 <p>
+        <a class="indexterm" name="boost_asio.indexterm.uses_executor"></a>
+      </p>
+<p>
         The <a class="link" href="uses_executor.html" title="uses_executor"><code class="computeroutput">uses_executor</code></a>
         trait detects whether a type T has an associated executor that is convertible
         from type Executor.
@@ -34,13 +37,14 @@
 <pre class="programlisting">template&lt;
     typename T,
     typename <a class="link" href="Executor1.html" title="Executor requirements">Executor</a>&gt;
-struct uses_executor
+struct uses_executor :
+  public false_type
 </pre>
 <p>
         Meets the BinaryTypeTrait requirements. The Asio library provides a definition
-        that is derived from false_type. A program may specialize this template to
-        derive from true_type for a user-defined type T that can be constructed with
-        an executor, where the first argument of a constructor has type <a class="link" href="executor_arg_t.html" title="executor_arg_t"><code class="computeroutput">executor_arg_t</code></a>
+        that is derived from <code class="computeroutput">false_type</code>. A program may specialize this
+        template to derive from true_type for a user-defined type T that can be constructed
+        with an executor, where the first argument of a constructor has type <a class="link" href="executor_arg_t.html" title="executor_arg_t"><code class="computeroutput">executor_arg_t</code></a>
         and the second argument is convertible from type Executor.
       </p>
 <h5>
@@ -56,7 +60,8 @@ struct uses_executor
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

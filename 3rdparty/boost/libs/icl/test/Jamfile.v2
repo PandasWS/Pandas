@@ -9,7 +9,6 @@ import feature ;
 project
     : requirements
       <library>/boost/test//boost_unit_test_framework
-      <library>/boost/date_time//boost_date_time
       <library>/boost/chrono//boost_chrono
       <link>static
       <include>../../..

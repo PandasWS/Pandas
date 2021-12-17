@@ -12,7 +12,8 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
+#define BOOST_CHECK BOOST_TEST
 
 
 #include "boost/lambda/lambda.hpp"
@@ -182,11 +183,10 @@ void test_overloaded_pointer_to_member()
 }
 
 
-int test_main(int, char *[]) {
+int main() {
 
   pointer_to_data_member_tests();
   pointer_to_member_function_tests();
   test_overloaded_pointer_to_member();
-  return 0;
+  return boost::report_errors();
 }
-

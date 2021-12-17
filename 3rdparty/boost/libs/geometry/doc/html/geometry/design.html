@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Design Rationale</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Geometry">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../index.html" title="Chapter 1. Geometry">
+<link rel="up" href="../index.html" title="Chapter 1. Geometry">
 <link rel="prev" href="compilation.html" title="Compilation">
 <link rel="next" href="quickstart.html" title="Quick Start">
 </head>
@@ -306,7 +306,7 @@
       we only modify the <code class="computeroutput"><span class="identifier">pythagoras</span></code>
       computation class. It should return the coordinate type of its input. But,
       it has two input, possibly different, point types. They might also differ in
-      their coordinate types. Not that that is very likely, but we&#8217;re designing
+      their coordinate types. Not that that is very likely, but we’re designing
       a generic library and we should handle those strange cases. We have to choose
       one of the coordinate types and of course we select the one with the highest
       precision. This is not worked out here, it would be too long, and it is not
@@ -341,7 +341,7 @@
       coordinate type. There are still some tweaks but they will be worked out later.
       Now we will see how we calculate the distance between a point and a polygon,
       or between a point and a line-segment. These formulae are more complex, and
-      the influence on design is even larger. We don&#8217;t want to add a function with
+      the influence on design is even larger. We don’t want to add a function with
       another name:
     </p>
 <pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">P</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">S</span><span class="special">&gt;</span>
@@ -545,7 +545,7 @@
       Coordinate system is similar to coordinate type, a meta-function, calling a
       dispatch function to have it for any geometry-type, forwarding to its point
       specialization, and finally calling a traits class, defining a typedef type
-      with a coordinate system. We don&#8217;t show that all here again. We only show
+      with a coordinate system. We don’t show that all here again. We only show
       the definition of a few coordinate systems:
     </p>
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">cartesian</span> <span class="special">{};</span>
@@ -849,8 +849,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

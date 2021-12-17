@@ -5,10 +5,11 @@
 
 #include <boost/config.hpp>
 #include <boost/logic/tribool.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
+#include <boost/static_assert.hpp>
 #include <iostream>
 
-int test_main(int, char*[])
+int main()
 {
   using namespace boost::logic;
 
@@ -22,122 +23,122 @@ int test_main(int, char*[])
   //       and that is tested in the compile-fail/implicit.cpp file
   // so we check the conversion to ensure it is sane
   bool bx = x;
-  BOOST_CHECK(bx == false);
+  BOOST_TEST(bx == false);
   bool by = y;
-  BOOST_CHECK(by == true);
+  BOOST_TEST(by == true);
   bool bz = z;
-  BOOST_CHECK(bz == false);
+  BOOST_TEST(bz == false);
 #endif
 
-  BOOST_CHECK(!x);
-  BOOST_CHECK(x == false);
-  BOOST_CHECK(false == x);
-  BOOST_CHECK(x != true);
-  BOOST_CHECK(true != x);
-  BOOST_CHECK(indeterminate(x == indeterminate));
-  BOOST_CHECK(indeterminate(indeterminate == x));
-  BOOST_CHECK(indeterminate(x != indeterminate));
-  BOOST_CHECK(indeterminate(indeterminate != x));
-  BOOST_CHECK(x == x);
-  BOOST_CHECK(!(x != x));
-  BOOST_CHECK(!(x && true));
-  BOOST_CHECK(!(true && x));
-  BOOST_CHECK(x || true);
-  BOOST_CHECK(true || x);
+  BOOST_TEST(!x);
+  BOOST_TEST(x == false);
+  BOOST_TEST(false == x);
+  BOOST_TEST(x != true);
+  BOOST_TEST(true != x);
+  BOOST_TEST(indeterminate(x == indeterminate));
+  BOOST_TEST(indeterminate(indeterminate == x));
+  BOOST_TEST(indeterminate(x != indeterminate));
+  BOOST_TEST(indeterminate(indeterminate != x));
+  BOOST_TEST(x == x);
+  BOOST_TEST(!(x != x));
+  BOOST_TEST(!(x && true));
+  BOOST_TEST(!(true && x));
+  BOOST_TEST(x || true);
+  BOOST_TEST(true || x);
 
-  BOOST_CHECK(y);
-  BOOST_CHECK(y == true);
-  BOOST_CHECK(true == y);
-  BOOST_CHECK(y != false);
-  BOOST_CHECK(false != y);
-  BOOST_CHECK(indeterminate(y == indeterminate));
-  BOOST_CHECK(indeterminate(indeterminate == y));
-  BOOST_CHECK(indeterminate(y != indeterminate));
-  BOOST_CHECK(indeterminate(indeterminate != y));
-  BOOST_CHECK(y == y);
-  BOOST_CHECK(!(y != y));
+  BOOST_TEST(y);
+  BOOST_TEST(y == true);
+  BOOST_TEST(true == y);
+  BOOST_TEST(y != false);
+  BOOST_TEST(false != y);
+  BOOST_TEST(indeterminate(y == indeterminate));
+  BOOST_TEST(indeterminate(indeterminate == y));
+  BOOST_TEST(indeterminate(y != indeterminate));
+  BOOST_TEST(indeterminate(indeterminate != y));
+  BOOST_TEST(y == y);
+  BOOST_TEST(!(y != y));
 
-  BOOST_CHECK(indeterminate(z || !z));
-  BOOST_CHECK(indeterminate(z == true));
-  BOOST_CHECK(indeterminate(true == z));
-  BOOST_CHECK(indeterminate(z == false));
-  BOOST_CHECK(indeterminate(false == z));
-  BOOST_CHECK(indeterminate(z == indeterminate));
-  BOOST_CHECK(indeterminate(indeterminate == z));
-  BOOST_CHECK(indeterminate(z != indeterminate));
-  BOOST_CHECK(indeterminate(indeterminate != z));
-  BOOST_CHECK(indeterminate(z == z));
-  BOOST_CHECK(indeterminate(z != z));
+  BOOST_TEST(indeterminate(z || !z));
+  BOOST_TEST(indeterminate(z == true));
+  BOOST_TEST(indeterminate(true == z));
+  BOOST_TEST(indeterminate(z == false));
+  BOOST_TEST(indeterminate(false == z));
+  BOOST_TEST(indeterminate(z == indeterminate));
+  BOOST_TEST(indeterminate(indeterminate == z));
+  BOOST_TEST(indeterminate(z != indeterminate));
+  BOOST_TEST(indeterminate(indeterminate != z));
+  BOOST_TEST(indeterminate(z == z));
+  BOOST_TEST(indeterminate(z != z));
 
-  BOOST_CHECK(!(x == y));
-  BOOST_CHECK(x != y);
-  BOOST_CHECK(indeterminate(x == z));
-  BOOST_CHECK(indeterminate(x != z));
-  BOOST_CHECK(indeterminate(y == z));
-  BOOST_CHECK(indeterminate(y != z));
+  BOOST_TEST(!(x == y));
+  BOOST_TEST(x != y);
+  BOOST_TEST(indeterminate(x == z));
+  BOOST_TEST(indeterminate(x != z));
+  BOOST_TEST(indeterminate(y == z));
+  BOOST_TEST(indeterminate(y != z));
 
-  BOOST_CHECK(!(x && y));
-  BOOST_CHECK(x || y);
-  BOOST_CHECK(!(x && z));
-  BOOST_CHECK(indeterminate(y && z));
-  BOOST_CHECK(indeterminate(z && z));
-  BOOST_CHECK(indeterminate(z || z));
-  BOOST_CHECK(indeterminate(x || z));
-  BOOST_CHECK(y || z);
+  BOOST_TEST(!(x && y));
+  BOOST_TEST(x || y);
+  BOOST_TEST(!(x && z));
+  BOOST_TEST(indeterminate(y && z));
+  BOOST_TEST(indeterminate(z && z));
+  BOOST_TEST(indeterminate(z || z));
+  BOOST_TEST(indeterminate(x || z));
+  BOOST_TEST(y || z);
 
-  BOOST_CHECK(indeterminate(y && indeterminate));
-  BOOST_CHECK(indeterminate(indeterminate && y));
-  BOOST_CHECK(!(x && indeterminate));
-  BOOST_CHECK(!(indeterminate && x));
+  BOOST_TEST(indeterminate(y && indeterminate));
+  BOOST_TEST(indeterminate(indeterminate && y));
+  BOOST_TEST(!(x && indeterminate));
+  BOOST_TEST(!(indeterminate && x));
 
-  BOOST_CHECK(indeterminate || y);
-  BOOST_CHECK(y || indeterminate);
-  BOOST_CHECK(indeterminate(x || indeterminate));
-  BOOST_CHECK(indeterminate(indeterminate || x));
+  BOOST_TEST(indeterminate || y);
+  BOOST_TEST(y || indeterminate);
+  BOOST_TEST(indeterminate(x || indeterminate));
+  BOOST_TEST(indeterminate(indeterminate || x));
 
   // Test the if (z) ... else (!z) ... else ... idiom
   if (z) {
-    BOOST_CHECK(false);
+    BOOST_TEST(false);
   }
   else if (!z) {
-    BOOST_CHECK(false);
+    BOOST_TEST(false);
   }
   else {
-    BOOST_CHECK(true);
+    BOOST_TEST(true);
   }
 
   z = true;
   if (z) {
-    BOOST_CHECK(true);
+    BOOST_TEST(true);
   }
   else if (!z) {
-    BOOST_CHECK(false);
+    BOOST_TEST(false);
   }
   else {
-    BOOST_CHECK(false);
+    BOOST_TEST(false);
   }
 
   z = false;
   if (z) {
-    BOOST_CHECK(false);
+    BOOST_TEST(false);
   }
   else if (!z) {
-    BOOST_CHECK(true);
+    BOOST_TEST(true);
   }
   else {
-    BOOST_CHECK(false);
+    BOOST_TEST(false);
   }
 
 #if !defined(BOOST_NO_CXX11_CONSTEXPR) 
   constexpr bool res_ors = indeterminate(false || tribool(false) || false || indeterminate); // true
-  BOOST_CHECK(res_ors);
+  BOOST_TEST(res_ors);
   char array_ors[res_ors ? 2 : 3];
-  BOOST_CHECK(sizeof(array_ors) / sizeof(char) == 2);
+  BOOST_TEST(sizeof(array_ors) / sizeof(char) == 2);
 
   constexpr bool res_ands = !indeterminate(!(true && tribool(true) && true && indeterminate)); // false
-  BOOST_CHECK(!res_ands);
+  BOOST_TEST(!res_ands);
   char array_ands[res_ands ? 2 : 3];
-  BOOST_CHECK(sizeof(array_ands) / sizeof(char) == 3);
+  BOOST_TEST(sizeof(array_ands) / sizeof(char) == 3);
 
   constexpr bool res_safe_bool = static_cast<bool>( tribool(true) );
   BOOST_STATIC_ASSERT(res_safe_bool);
@@ -149,6 +150,5 @@ int test_main(int, char*[])
 # endif
 #endif
 
-  std::cout << "no errors detected\n";
-  return 0;
+  return boost::report_errors();
 }

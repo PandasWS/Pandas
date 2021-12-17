@@ -6,19 +6,15 @@ Distributed under the Boost Software License, Version 1.0.
 ////
 
 [#choosing]
-# Choosing Approach
+# Choosing between Conversion Functions, Buffer Types, and Arithmetic Types
 :idprefix: choosing_
 
-## Introduction
-
-Deciding which is the best endianness approach (conversion functions, buffer
+NOTE: Deciding which is the best endianness approach (conversion functions, buffer
 types, or arithmetic types) for a particular application involves complex
 engineering trade-offs. It is hard to assess those trade-offs without some
 understanding of the different interfaces, so you might want to read the
 <<conversion,conversion functions>>, <<buffers,buffer types>>, and
-<<arithmetic,arithmetic types>> pages before diving into this page.
-
-## Choosing between conversion functions, buffer types, and arithmetic types
+<<arithmetic,arithmetic types>> pages before proceeding.
 
 The best approach to endianness for a particular application depends on the
 interaction between the application's needs and the characteristics of each of
@@ -30,7 +26,7 @@ invest the time to study engineering trade-offs, use
 maintain. Use the _<<choosing_anticipating_need,anticipating need>>_ design
 pattern locally around performance hot spots like lengthy loops, if needed.
 
-### Background
+## Background
 
 A dealing with endianness usually implies a program portability or a data
 portability requirement, and often both. That means real programs dealing with
@@ -39,13 +35,13 @@ written as multiple functions spread across multiple translation units. They
 would involve interfaces that can not be altered as they are supplied by
 third-parties or the standard library.
 
-### Characteristics
+## Characteristics
 
 The characteristics that differentiate the three approaches to endianness are
 the endianness invariants, conversion explicitness, arithmetic operations, sizes
 available, and alignment requirements.
 
-#### Endianness invariants
+### Endianness invariants
 
 *Endian conversion functions* use objects of the ordinary {cpp} arithmetic types
 like `int` or `unsigned short` to hold values. That breaks the implicit
@@ -121,7 +117,7 @@ write(data);
 
 A later maintainer can add `third_party::func(data.v3)` and it will just-work.
 
-#### Conversion explicitness
+### Conversion explicitness
 
 *Endian conversion functions* and *buffer types* never perform implicit
 conversions. This gives users explicit control of when conversion occurs, and
@@ -131,7 +127,7 @@ may help avoid unnecessary conversions.
 very easy to use, but can result in unnecessary conversions. Failure to hoist
 conversions out of inner loops can bring a performance penalty.
 
-#### Arithmetic operations
+### Arithmetic operations
 
 *Endian conversion functions* do not supply arithmetic operations, but this is
 not a concern since this approach uses ordinary {cpp} arithmetic types to hold
@@ -153,7 +149,7 @@ That's sufficient for many applications.
 integers. For an application where memory use or I/O speed is the limiting
 factor, using sizes tailored to application needs can be useful.
 
-#### Alignments
+### Alignments
 
 *Endianness conversion functions* only support aligned integer and
 floating-point types. That's sufficient for most applications.
@@ -180,7 +176,7 @@ struct S {
 };
 ```
 
-### Design patterns
+## Design patterns
 
 Applications often traffic in endian data as records or packets containing
 multiple endian data elements. For simplicity, we will just call them records.
@@ -189,7 +185,7 @@ If desired endianness differs from native endianness, a conversion has to be
 performed. When should that conversion occur? Three design patterns have
 evolved.
 
-#### Convert only as needed (i.e. lazy)
+### Convert only as needed (i.e. lazy)
 
 This pattern defers conversion to the point in the code where the data
 element is actually used.
@@ -198,7 +194,7 @@ This pattern is appropriate when which endian element is actually used varies
 greatly according to record content or other circumstances
 
 [#choosing_anticipating_need]
-#### Convert in anticipation of need
+### Convert in anticipation of need
 
 This pattern performs conversion to native endianness in anticipation of use,
 such as immediately after reading records. If needed, conversion to the output
@@ -213,7 +209,7 @@ from native to the desired output endianness.
 This pattern is appropriate when all endian elements in a record are typically
 used regardless of record content or other circumstances.
 
-#### Convert only as needed, except locally in anticipation of need
+### Convert only as needed, except locally in anticipation of need
 
 This pattern in general defers conversion but for specific local needs does
 anticipatory conversion. Although particularly appropriate when coupled with the
@@ -264,9 +260,9 @@ cost might be significant if the loop is repeated enough times. On the other
 hand, the program may be so dominated by I/O time that even a lengthy loop will
 be immaterial.
 
-### Use case examples
+## Use case examples
 
-#### Porting endian unaware codebase
+### Porting endian unaware codebase
 
 An existing codebase runs on  big endian systems. It does not currently deal
 with endianness. The codebase needs to be modified so it can run on little
@@ -279,7 +275,7 @@ needs. A relatively small number of header files dealing with binary I/O layouts
 need to change types. For example, `short` or `int16_t` would change to
 `big_int16_t`. No changes are required for `.cpp` files.
 
-#### Porting endian aware codebase
+### Porting endian aware codebase
 
 An existing codebase runs on little-endian Linux systems. It already deals with
 endianness via
@@ -293,7 +289,7 @@ just mechanically changes the calls to `htobe32`, etc. to
 `boost::endian::native_to_big`, etc. and replaces `<endian.h>` with
 `<boost/endian/conversion.hpp>`.
 
-#### Reliability and arithmetic-speed
+### Reliability and arithmetic-speed
 
 A new, complex, multi-threaded application is to be developed that must run
 on little endian machines, but do big endian network I/O. The developers believe
@@ -304,7 +300,7 @@ slow conversions if full-blown endian arithmetic types are used.
 
 The <<buffers,endian buffers>> approach is made-to-order for this use case.
 
-#### Reliability and ease-of-use
+### Reliability and ease-of-use
 
 A new, complex, multi-threaded application is to be developed that must run on
 little endian machines, but do big endian network I/O. The developers believe

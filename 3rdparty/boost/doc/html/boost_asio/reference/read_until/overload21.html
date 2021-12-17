@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>read_until (21 of 24 overloads)</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -38,7 +38,7 @@ std::size_t read_until(
     SyncReadStream &amp; s,
     DynamicBuffer_v2 buffers,
     const boost::regex &amp; expr,
-    typename enable_if&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
 </pre>
 <p>
           This function is used to read data into the specified dynamic buffer sequence
@@ -123,7 +123,7 @@ std::size_t read_until(
           encountered:
         </p>
 <pre class="programlisting">std::string data;
-std::string n = boost::asio::read_until(s,
+std::size_t n = boost::asio::read_until(s,
     boost::asio::dynamic_buffer(data), boost::regex("\r\n"));
 std::string line = data.substr(0, n);
 data.erase(0, n);
@@ -153,7 +153,8 @@ data.erase(0, n);
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

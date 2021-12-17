@@ -198,6 +198,29 @@ lexem const lexems[] =
     { "#region", boost::wave::T_MSEXT_PP_REGION },
     { "#endregion", boost::wave::T_MSEXT_PP_ENDREGION },
 #endif // BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
+#if BOOST_WAVE_SUPPORT_CPP0X != 0
+    { "R\"foo(string literal)foo\"", boost::wave::T_RAWSTRINGLIT },
+    { "alignas", boost::wave::T_ALIGNAS },
+    { "alignof", boost::wave::T_ALIGNOF },
+    { "char16_t", boost::wave::T_CHAR16_T },
+    { "char32_t", boost::wave::T_CHAR32_T },
+    { "constexpr", boost::wave::T_CONSTEXPR },
+    { "decltype", boost::wave::T_DECLTYPE },
+    { "noexcept", boost::wave::T_NOEXCEPT },
+    { "nullptr", boost::wave::T_NULLPTR },
+    { "thread_local", boost::wave::T_THREADLOCAL },
+#endif // BOOST_WAVE_SUPPORT_CPP0X != 0
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+    { "char8_t", boost::wave::T_CHAR8_T },
+    { "concept", boost::wave::T_CONCEPT },
+    { "consteval", boost::wave::T_CONSTEVAL },
+    { "constinit", boost::wave::T_CONSTINIT },
+    { "co_await", boost::wave::T_CO_AWAIT },
+    { "co_return", boost::wave::T_CO_RETURN },
+    { "co_yield", boost::wave::T_CO_YIELD },
+    { "requires", boost::wave::T_REQUIRES },
+    { "<=>", boost::wave::T_SPACESHIP },
+#endif
     { "#define", boost::wave::T_PP_DEFINE },
     { "#ifdef", boost::wave::T_PP_IFDEF },
     { "#ifndef", boost::wave::T_PP_IFNDEF },
@@ -228,7 +251,6 @@ lexem const lexems[] =
     { "1.1e1fl", boost::wave::T_FLOATLIT },
     { "1.e1LF", boost::wave::T_FLOATLIT },
     { "1234LL", boost::wave::T_LONGINTLIT },
-    { "1234Ll", boost::wave::T_LONGINTLIT },
     { "1234ll", boost::wave::T_LONGINTLIT },
     { "1234llu", boost::wave::T_LONGINTLIT },
     { "1234ull", boost::wave::T_LONGINTLIT },

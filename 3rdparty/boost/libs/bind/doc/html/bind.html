@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-<title>Chapter&#160;1.&#160;Boost.Bind</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chapter 1. Boost.Bind</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="bind.html" title="Chapter&#160;1.&#160;Boost.Bind">
+<link rel="home" href="bind.html" title="Chapter 1. Boost.Bind">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,9 +20,9 @@
 <div class="chapter">
 <div class="titlepage"><div>
 <div><h2 class="title">
-<a name="bind"></a>Chapter&#160;1.&#160;Boost.Bind</h2></div>
-<div><p class="copyright">Copyright &#169; 2001, 2002 Peter Dimov and Multi Media Ltd.</p></div>
-<div><p class="copyright">Copyright &#169; 2003-2008 Peter Dimov</p></div>
+<a name="bind"></a>Chapter 1. Boost.Bind</h2></div>
+<div><p class="copyright">Copyright © 2001, 2002 Peter Dimov and Multi Media Ltd.</p></div>
+<div><p class="copyright">Copyright © 2003-2008 Peter Dimov</p></div>
 <div><div class="legalnotice">
 <a name="bind.legal"></a><p>
         Distributed under the <a href="http://boost.org/LICENSE_1_0.txt" target="_top">Boost
@@ -916,7 +916,7 @@
 <p>
         The <code class="computeroutput"><span class="identifier">make_adaptable</span></code> function
         is defined in <a href="../../../../boost/bind/make_adaptable.hpp" target="_top"><code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">/</span><span class="identifier">make_adaptable</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code></a>,
-        which must be included explicitly in addition to <a href="../../../../boost/bind.hpp" target="_top"><code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code></a>:
+        which must be included explicitly in addition to <a href="../../../../boost/bind/bind.hpp" target="_top"><code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code></a>:
       </p>
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">/</span><span class="identifier">make_adaptable</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 
@@ -974,7 +974,7 @@
       specific: <code class="computeroutput"><span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">bind</span><span class="special">;</span></code></a>
 </h3></div></div></div>
 <p>
-        On MSVC (up to version 7.0), when <code class="computeroutput"><span class="identifier">boostbind</span></code>
+        On MSVC (up to version 7.0), when <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">bind</span></code>
         is brought into scope with an using declaration:
       </p>
 <pre class="programlisting"><span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">bind</span><span class="special">;</span>
@@ -1101,7 +1101,7 @@
 <a name="bind.interface.common_definitions"></a><a class="link" href="bind.html#bind.interface.common_definitions" title="Common definitions">Common definitions</a>
 </h3></div></div></div>
 <p>
-        The function &#956;<code class="computeroutput"><span class="special">(</span><span class="identifier">x</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span>
+        The function μ<code class="computeroutput"><span class="special">(</span><span class="identifier">x</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span>
         <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>, where <code class="computeroutput"><span class="identifier">m</span></code>
         is a nonnegative integer, is defined as:
       </p>
@@ -1131,8 +1131,8 @@
 </pre>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-            <span class="emphasis"><em>Returns:</em></span> A function object &#955; such that the
-            expression &#955;<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
+            <span class="emphasis"><em>Returns:</em></span> A function object λ such that the
+            expression λ<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
             is equivalent to <code class="computeroutput"><span class="identifier">f</span><span class="special">()</span></code>,
             implicitly converted to <code class="computeroutput"><span class="identifier">R</span></code>.
           </li>
@@ -1160,8 +1160,8 @@
 </pre>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-            <span class="emphasis"><em>Returns:</em></span> A function object &#955; such that the
-            expression &#955;<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
+            <span class="emphasis"><em>Returns:</em></span> A function object λ such that the
+            expression λ<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
             is equivalent to <code class="computeroutput"><span class="identifier">f</span><span class="special">()</span></code>.
           </li>
 <li class="listitem">
@@ -1172,9 +1172,9 @@
 </pre>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-            <span class="emphasis"><em>Returns:</em></span> A function object &#955; such that the
-            expression &#955;<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
-            is equivalent to <code class="computeroutput"><span class="identifier">f</span><span class="special">(</span></code>&#956;<code class="computeroutput"><span class="special">(</span><span class="identifier">a1</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">))</span></code>,
+            <span class="emphasis"><em>Returns:</em></span> A function object λ such that the
+            expression λ<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
+            is equivalent to <code class="computeroutput"><span class="identifier">f</span><span class="special">(</span></code>μ<code class="computeroutput"><span class="special">(</span><span class="identifier">a1</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">))</span></code>,
             implicitly converted to <code class="computeroutput"><span class="identifier">R</span></code>.
           </li>
 <li class="listitem">
@@ -1203,9 +1203,9 @@
 </pre>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-            <span class="emphasis"><em>Returns:</em></span> A function object &#955; such that the
-            expression &#955;<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
-            is equivalent to <code class="computeroutput"><span class="identifier">f</span><span class="special">(</span></code>&#956;<code class="computeroutput"><span class="special">(</span><span class="identifier">a1</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">))</span></code>.
+            <span class="emphasis"><em>Returns:</em></span> A function object λ such that the
+            expression λ<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
+            is equivalent to <code class="computeroutput"><span class="identifier">f</span><span class="special">(</span></code>μ<code class="computeroutput"><span class="special">(</span><span class="identifier">a1</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">))</span></code>.
           </li>
 <li class="listitem">
             <span class="emphasis"><em>Throws:</em></span> Nothing unless the copy constructor of
@@ -1231,9 +1231,9 @@
 </pre>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-            <span class="emphasis"><em>Returns:</em></span> A function object &#955; such that the
-            expression &#955;<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
-            is equivalent to <code class="computeroutput"><span class="identifier">f</span><span class="special">(</span></code>&#956;<code class="computeroutput"><span class="special">(</span><span class="identifier">a1</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">),</span> </code>&#956;<code class="computeroutput"><span class="special">(</span><span class="identifier">a2</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">))</span></code>,
+            <span class="emphasis"><em>Returns:</em></span> A function object λ such that the
+            expression λ<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
+            is equivalent to <code class="computeroutput"><span class="identifier">f</span><span class="special">(</span></code>μ<code class="computeroutput"><span class="special">(</span><span class="identifier">a1</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">),</span> </code>μ<code class="computeroutput"><span class="special">(</span><span class="identifier">a2</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">))</span></code>,
             implicitly converted to <code class="computeroutput"><span class="identifier">R</span></code>.
           </li>
 <li class="listitem">
@@ -1263,9 +1263,9 @@
 </pre>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-            <span class="emphasis"><em>Returns:</em></span> A function object &#955; such that the
-            expression &#955;<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
-            is equivalent to <code class="computeroutput"><span class="identifier">f</span><span class="special">(</span></code>&#956;<code class="computeroutput"><span class="special">(</span><span class="identifier">a1</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">),</span> </code>&#956;<code class="computeroutput"><span class="special">(</span><span class="identifier">a2</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">))</span></code>.
+            <span class="emphasis"><em>Returns:</em></span> A function object λ such that the
+            expression λ<code class="computeroutput"><span class="special">(</span><span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">)</span></code>
+            is equivalent to <code class="computeroutput"><span class="identifier">f</span><span class="special">(</span></code>μ<code class="computeroutput"><span class="special">(</span><span class="identifier">a1</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">),</span> </code>μ<code class="computeroutput"><span class="special">(</span><span class="identifier">a2</span><span class="special">,</span> <span class="identifier">v1</span><span class="special">,</span> <span class="identifier">v2</span><span class="special">,</span> <span class="special">...,</span> <span class="identifier">vm</span><span class="special">))</span></code>.
           </li>
 <li class="listitem">
             <span class="emphasis"><em>Throws:</em></span> Nothing unless the copy constructors of
@@ -1305,8 +1305,8 @@
 </h3></div></div></div>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-            <a href="../../../../boost/bind.hpp" target="_top">boost/bind.hpp</a> (main
-            header)
+            <a href="../../../../boost/bind/bind.hpp" target="_top">boost/bind/bind.hpp</a>
+            (main header)
           </li>
 <li class="listitem">
             <a href="../../../../boost/bind/bind_cc.hpp" target="_top">boost/bind/bind_cc.hpp</a>
@@ -1427,29 +1427,29 @@
 <p>
         To use <code class="computeroutput"><span class="identifier">bind</span></code> with <code class="computeroutput"><span class="identifier">__stdcall</span></code> functions, <code class="computeroutput"><span class="preprocessor">#define</span></code>
         the macro <code class="computeroutput"><span class="identifier">BOOST_BIND_ENABLE_STDCALL</span></code>
-        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
+        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
       </p>
 <p>
         To use <code class="computeroutput"><span class="identifier">bind</span></code> with <code class="computeroutput"><span class="identifier">__stdcall</span></code> member functions, <code class="computeroutput"><span class="preprocessor">#define</span></code> the macro <code class="computeroutput"><span class="identifier">BOOST_MEM_FN_ENABLE_STDCALL</span></code>
-        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
+        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
       </p>
 <p>
         To use <code class="computeroutput"><span class="identifier">bind</span></code> with <code class="computeroutput"><span class="identifier">__fastcall</span></code> functions, <code class="computeroutput"><span class="preprocessor">#define</span></code>
         the macro <code class="computeroutput"><span class="identifier">BOOST_BIND_ENABLE_FASTCALL</span></code>
-        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
+        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
       </p>
 <p>
         To use <code class="computeroutput"><span class="identifier">bind</span></code> with <code class="computeroutput"><span class="identifier">__fastcall</span></code> member functions, <code class="computeroutput"><span class="preprocessor">#define</span></code> the macro <code class="computeroutput"><span class="identifier">BOOST_MEM_FN_ENABLE_FASTCALL</span></code>
-        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
+        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
       </p>
 <p>
         To use <code class="computeroutput"><span class="identifier">bind</span></code> with <code class="computeroutput"><span class="identifier">pascal</span></code> functions, <code class="computeroutput"><span class="preprocessor">#define</span></code>
         the macro <code class="computeroutput"><span class="identifier">BOOST_BIND_ENABLE_PASCAL</span></code>
-        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
+        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
       </p>
 <p>
         To use <code class="computeroutput"><span class="identifier">bind</span></code> with <code class="computeroutput"><span class="identifier">__cdecl</span></code> member functions, <code class="computeroutput"><span class="preprocessor">#define</span></code> the macro <code class="computeroutput"><span class="identifier">BOOST_MEM_FN_ENABLE_CDECL</span></code>
-        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
+        before including <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">bind</span><span class="special">/</span><span class="identifier">bind</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>.
       </p>
 <p>
         <span class="bold"><strong>It is best to define these macros in the project options,
@@ -1492,11 +1492,11 @@
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
           The <a href="http://staff.cs.utu.fi/BL/" target="_top">Binder Library</a> by Jaakko
-          J&#228;rvi;
+          Järvi;
         </li>
 <li class="listitem">
           The <a href="../../../../libs/lambda/index.html" target="_top">Lambda Library</a> (now
-          part of Boost) by Jaakko J&#228;rvi and Gary Powell (the successor to the
+          part of Boost) by Jaakko Järvi and Gary Powell (the successor to the
           Binder Library);
         </li>
 <li class="listitem">
@@ -1519,7 +1519,7 @@
     </p>
 <p>
       The precise semantics of <code class="computeroutput"><span class="identifier">bind</span></code>
-      were refined in discussions with Jaakko J&#228;rvi.
+      were refined in discussions with Jaakko Järvi.
     </p>
 <p>
       Dave Abrahams fixed a MSVC-specific conflict between <code class="computeroutput"><span class="identifier">bind</span></code>
@@ -1538,12 +1538,12 @@
       syntax was inspired by a discussion with Dave Abrahams and Joel de Guzman.
     </p>
 <p>
-      This documentation was ported to Quickbook by Agust&#237;n Berg&#233;.
+      This documentation was ported to Quickbook by Agustín Bergé.
     </p>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><p><small>Last revised: August 14, 2019 at 12:08:03 GMT</small></p></td>
+<td align="left"><p><small>Last revised: December 02, 2021 at 06:55:22 GMT</small></p></td>
 <td align="right"><div class="copyright-footer"></div></td>
 </tr></table>
 <hr>

@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Macro BOOST_CONTRACT_CHECK_AUDIT</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="index.html" title="Chapter&#160;1.&#160;Boost.Contract 1.0.0">
+<link rel="home" href="index.html" title="Chapter 1. Boost.Contract 1.0.0">
 <link rel="up" href="reference.html#header.boost.contract.core.check_macro_hpp" title="Header &lt;boost/contract/core/check_macro.hpp&gt;">
 <link rel="prev" href="BOOST_CONTRACT_CHECK.html" title="Macro BOOST_CONTRACT_CHECK">
 <link rel="next" href="BOOST_CONTRACT_CHECK_AXIOM.html" title="Macro BOOST_CONTRACT_CHECK_AXIOM">
@@ -26,15 +26,15 @@
 <a name="BOOST_CONTRACT_CHECK_AUDIT"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Macro BOOST_CONTRACT_CHECK_AUDIT</span></h2>
-<p>BOOST_CONTRACT_CHECK_AUDIT &#8212; Preferred way to assert implementation check conditions that are computationally expensive, at least compared to the cost of executing the function body. </p>
+<p>BOOST_CONTRACT_CHECK_AUDIT — Preferred way to assert implementation check conditions that are computationally expensive, at least compared to the computational cost of executing the function body. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="reference.html#header.boost.contract.core.check_macro_hpp" title="Header &lt;boost/contract/core/check_macro.hpp&gt;">boost/contract/core/check_macro.hpp</a>&gt;
 
 </span>BOOST_CONTRACT_CHECK_AUDIT(cond)</pre></div>
 <div class="refsect1">
-<a name="idm45190703948032"></a><h2>Description</h2>
-<p>The specified condition will always be compiled and validated syntactically, but it will not be evaluated at run-time unless  <code class="computeroutput"><a class="link" href="BOOST_CONTRACT_AUDITS.html" title="Macro BOOST_CONTRACT_AUDITS">BOOST_CONTRACT_AUDITS</a></code> is defined (undefined by default). This macro is defined by code equivalent to:</p>
+<a name="idm36822"></a><h2>Description</h2>
+<p>The specified condition will always be compiled and validated syntactically, but it will not be checked at run-time unless  <code class="computeroutput"><a class="link" href="BOOST_CONTRACT_AUDITS.html" title="Macro BOOST_CONTRACT_AUDITS">BOOST_CONTRACT_AUDITS</a></code> is defined (undefined by default). This macro is defined by code equivalent to:</p>
 <pre class="programlisting"><span class="preprocessor">#ifdef</span> <span class="identifier">BOOST_CONTRACT_AUDITS</span>
     <span class="preprocessor">#define</span> <span class="identifier">BOOST_CONTRACT_CHECK_AUDIT</span><span class="special">(</span><span class="identifier">cond</span><span class="special">)</span> \
         <span class="identifier">BOOST_CONTRACT_CHECK</span><span class="special">(</span><span class="identifier">cond</span><span class="special">)</span>
@@ -65,7 +65,7 @@
 </colgroup>
 <tbody><tr>
 <td><p><span class="term"><code class="computeroutput">cond</code></span></p></td>
-<td><p>Boolean condition to check within implementation code (function body, etc.). (This is not a variadic macro parameter so any comma it might contain must be protected by round parenthesis, <code class="computeroutput">BOOST_CONTRACT_CHECK_AUDIT((cond))</code> will always work.) </p></td>
+<td><p>Boolean condition to check within implementation code (function body, etc.). (This is not a variadic macro parameter so any comma it might contain must be protected by round parenthesis and <code class="computeroutput">BOOST_CONTRACT_CHECK_AUDIT((cond))</code> will always work.) </p></td>
 </tr></tbody>
 </table></div></td>
 </tr></tbody>
@@ -74,7 +74,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2008-2018 Lorenzo Caminiti<p>
+<td align="right"><div class="copyright-footer">Copyright © 2008-2019 Lorenzo Caminiti<p>
         Distributed under the Boost Software License, Version 1.0 (see accompanying
         file LICENSE_1_0.txt or a copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

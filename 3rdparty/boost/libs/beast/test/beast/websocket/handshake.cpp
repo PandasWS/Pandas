@@ -18,6 +18,9 @@
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/strand.hpp>
 #include <thread>
+#if BOOST_ASIO_HAS_CO_AWAIT
+#include <boost/asio/use_awaitable.hpp>
+#endif
 
 namespace boost {
 namespace beast {
@@ -697,13 +700,29 @@ public:
             test::connect(ws1.next_layer(), ws2.next_layer());
 
             ws2.set_option(stream_base::decorator(make_big));
-            error_code ec;
             ws2.async_accept(test::success_handler());
             ws1.async_handshake("test", "/", test::success_handler());
             ioc.run();
             ioc.restart();
         }
     }
+
+#if BOOST_ASIO_HAS_CO_AWAIT
+    void testAwaitableCompiles(
+        stream<test::stream>& s,
+        std::string host,
+        std::string port,
+        response_type& resp)
+    {
+        static_assert(std::is_same_v<
+            net::awaitable<void>, decltype(
+            s.async_handshake(host, port, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<void>, decltype(
+            s.async_handshake(resp, host, port, net::use_awaitable))>);
+    }
+#endif
 
     void
     run() override
@@ -715,6 +734,9 @@ public:
         testMoveOnly();
         testAsync();
         testIssue1460();
+#if BOOST_ASIO_HAS_CO_AWAIT
+        boost::ignore_unused(&handshake_test::testAwaitableCompiles);
+#endif
     }
 };
 

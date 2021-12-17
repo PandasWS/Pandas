@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Concepts</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../process.html" title="Chapter&#160;30.&#160;Boost.Process">
-<link rel="prev" href="../process.html" title="Chapter&#160;30.&#160;Boost.Process">
+<link rel="up" href="../process.html" title="Chapter 30. Boost.Process">
+<link rel="prev" href="../process.html" title="Chapter 30. Boost.Process">
 <link rel="next" href="tutorial.html" title="Tutorial">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -69,16 +69,16 @@
         to be broken when the child process exits.
       </p>
 <p>
-        Though please note, that if the the same thread reads and write to a pipe,
-        it will only talk to itself.
+        Though please note, that if the same thread reads and writes to a pipe, it
+        will only talk to itself.
       </p>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="boost_process.concepts.pipes.anonymous"></a><a class="link" href="concepts.html#boost_process.concepts.pipes.anonymous" title="Anonymous Pipes">Anonymous Pipes</a>
 </h4></div></div></div>
 <p>
-          The usual type of pipes, are the anonymous ones. Since the have no name,
-          a handle to them can only be obtained from duplicating either handle.
+          The most common pipes are anonymous. Since they have no name, a handle
+          to them can only be obtained from duplicating either handle.
         </p>
 <p>
           In this library the following functions are used for the creation of unnamed
@@ -136,7 +136,7 @@
         resources.
       </p>
 <p>
-        Every process is identified by a unique number<a href="#ftn.boost_process.concepts.process.f0" class="footnote" name="boost_process.concepts.process.f0"><sup class="footnote">[26]</sup></a>, called the process identification digit, <code class="computeroutput"><span class="identifier">pid</span></code>.
+        Every process is identified by a unique number<a href="#ftn.boost_process.concepts.process.f0" class="footnote" name="boost_process.concepts.process.f0"><sup class="footnote">[28]</sup></a>, called the process identification digit, <code class="computeroutput"><span class="identifier">pid</span></code>.
       </p>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
@@ -145,8 +145,8 @@
 <p>
           A process will return an integer value indicating whether it was successful.
           On posix there are more codes associated with that, but not so on windows.
-          Therefore there is not such encoding currently in the library. However
-          an exit code of zero means the process was successful, while one different
+          Therefore there is no such encoding currently in the library. However an
+          exit code of zero means the process was successful, while one different
           than zero indicates an error.
         </p>
 </div>
@@ -156,7 +156,7 @@
 </h4></div></div></div>
 <p>
           Processes can also be forced to exit. There are two ways to do this, signal
-          the process to so and wait, and just terminate the process without conditions.
+          the process to do so and wait, and just terminate the process without conditions.
         </p>
 <p>
           Usually the first approach is to signal an exit request, but windows -
@@ -179,15 +179,15 @@
 </div>
 <div class="footnotes">
 <br><hr style="width:100; text-align:left;margin-left: 0">
-<div id="ftn.boost_process.concepts.process.f0" class="footnote"><p><a href="#boost_process.concepts.process.f0" class="para"><sup class="para">[26] </sup></a>
+<div id="ftn.boost_process.concepts.process.f0" class="footnote"><p><a href="#boost_process.concepts.process.f0" class="para"><sup class="para">[28] </sup></a>
           it is unique as long as the process is active
         </p></div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
-      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright &#169; 2016 Klemens D. Morgenstern<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
+      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright © 2016 Klemens D. Morgenstern<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
       </p>

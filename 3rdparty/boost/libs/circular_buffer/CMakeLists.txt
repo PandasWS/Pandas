@@ -4,9 +4,9 @@
 # Distributed under the Boost Software License, Version 1.0.
 # (http://www.boost.org/LICENSE_1_0.txt)
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5...3.20)
 
-project(BoostCircularBuffer LANGUAGES CXX)
+project(boost_circular_buffer VERSION "${BOOST_SUPERPROJECT_VERSION}" LANGUAGES CXX)
 
 add_library(boost_circular_buffer INTERFACE)
 
@@ -22,4 +22,5 @@ target_link_libraries(boost_circular_buffer INTERFACE
     Boost::move
     Boost::static_assert
     Boost::throw_exception
-    Boost::type_traits)
+    Boost::type_traits
+)

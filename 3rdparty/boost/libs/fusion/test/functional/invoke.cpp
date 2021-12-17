@@ -388,7 +388,8 @@ void test_sequence_n(Sequence & seq, mpl::int_<0>)
     BOOST_TEST(that.data == (fusion::invoke(& members::data, fusion::join(sv_ref_ctx,seq)) = that.data));
     BOOST_TEST(that.data == (fusion::invoke(& members::data, fusion::join(sv_ptr_ctx,seq)) = that.data));
     BOOST_TEST(that.data == (fusion::invoke(& members::data, fusion::join(sv_spt_ctx,seq)) = that.data));
-    BOOST_TEST(that.data == fusion::invoke(& members::data, fusion::join(sv_obj_c_ctx,seq)));
+    // disabling this test, since it tries to return local address which is undefined behavior
+    //~ BOOST_TEST(that.data == fusion::invoke(& members::data, fusion::join(sv_obj_c_ctx,seq)));
     BOOST_TEST(that.data == fusion::invoke(& members::data, fusion::join(sv_ref_c_ctx,seq)));
     BOOST_TEST(that.data == fusion::invoke(& members::data, fusion::join(sv_ptr_c_ctx,seq)));
     BOOST_TEST(that.data == fusion::invoke(& members::data, fusion::join(sv_spt_c_ctx,seq)));
@@ -398,7 +399,8 @@ void test_sequence_n(Sequence & seq, mpl::int_<0>)
     BOOST_TEST(that.data == (fusion::invoke(& members::data, fusion::join(sv_ref_d_ctx,seq)) = that.data));
     BOOST_TEST(that.data == (fusion::invoke(& members::data, fusion::join(sv_ptr_d_ctx,seq)) = that.data));
     BOOST_TEST(that.data == (fusion::invoke(& members::data, fusion::join(sv_spt_d_ctx,seq)) = that.data));
-    BOOST_TEST(that.data == fusion::invoke(& members::data, fusion::join(sv_obj_c_d_ctx,seq)));
+    // disabling this test, since it tries to return local address which is undefined behavior
+    //~ BOOST_TEST(that.data == fusion::invoke(& members::data, fusion::join(sv_obj_c_d_ctx,seq)));
     BOOST_TEST(that.data == fusion::invoke(& members::data, fusion::join(sv_ref_c_d_ctx,seq)));
     BOOST_TEST(that.data == fusion::invoke(& members::data, fusion::join(sv_ptr_c_d_ctx,seq)));
     BOOST_TEST(that.data == fusion::invoke(& members::data, fusion::join(sv_spt_c_d_ctx,seq)));

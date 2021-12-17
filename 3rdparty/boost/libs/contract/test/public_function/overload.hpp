@@ -21,7 +21,7 @@ struct b {
     static void static_invariant() { out << "b::static_inv" << std::endl; }
     void invariant() const { out << "b::inv" << std::endl; }
 
-    virtual void f(int x, boost::contract::virtual_* v = 0) {
+    virtual void f(int /* x */, boost::contract::virtual_* v = 0) {
         boost::contract::check c = boost::contract::public_function(v, this)
             .precondition([] { out << "b::f(int)::pre" << std::endl; })
             .old([] { out << "b::f(int)::old" << std::endl; })
@@ -30,7 +30,7 @@ struct b {
         out << "b::f(int)::body" << std::endl;
     }
     
-    virtual void f(char const* x, boost::contract::virtual_* v = 0) {
+    virtual void f(char const* /* x */, boost::contract::virtual_* v = 0) {
         boost::contract::check c = boost::contract::public_function(v, this)
             .precondition([] { out << "b::f(char const*)::pre" << std::endl; })
             .old([] { out << "b::f(char const*)::old" << std::endl; })
@@ -40,7 +40,7 @@ struct b {
         out << "b::f(char const*)::body" << std::endl;
     }
 
-    virtual void f(int x, int y, boost::contract::virtual_* v = 0) {
+    virtual void f(int /* x */, int /* y */, boost::contract::virtual_* v = 0) {
         boost::contract::check c = boost::contract::public_function(v, this)
             .precondition([] { out << "b::f(int, int)::pre" << std::endl; })
             .old([] { out << "b::f(int, int)::old" << std::endl; })
@@ -58,7 +58,7 @@ struct b {
         out << "b::f()::body" << std::endl;
     }
     
-    void f(int x[2][3], boost::contract::virtual_* v = 0) {
+    void f(int /* x */[2][3], boost::contract::virtual_* v = 0) {
         boost::contract::check c = boost::contract::public_function(v, this)
             .precondition([] { out << "b::f(int[2][3])::pre" << std::endl; })
             .old([] { out << "b::f(int[2][3])::old" << std::endl; })
@@ -67,7 +67,7 @@ struct b {
         out << "b::f(int[2][3])::body" << std::endl;
     }
     
-    void f(void (*x)(int), boost::contract::virtual_* v = 0) {
+    void f(void (* /* x */)(int), boost::contract::virtual_* v = 0) {
         boost::contract::check c = boost::contract::public_function(v, this)
             .precondition(
                     [] { out << "b::f(void (*)(int))::pre" << std::endl; })
@@ -136,7 +136,7 @@ struct a
 
     // Test overload via template argument type.
     template<typename T>
-    void f(T x) { // Template cannot be virtual (or override) in C++.
+    void f(T /* x */) { // Template cannot be virtual (or override) in C++.
         boost::contract::check c = boost::contract::public_function(this)
             .precondition([] { out << "a::f(T)::pre" << std::endl; })
             .old([] { out << "a::f(T)::old" << std::endl; })
@@ -169,7 +169,7 @@ struct a
         out << "a::f()::body" << std::endl;
     }
 
-    virtual f0_ptr f(bool x, boost::contract::virtual_* v = 0)
+    virtual f0_ptr f(bool /* x */, boost::contract::virtual_* v = 0)
             /* not an override */ {
         f0_ptr f0 = static_cast<f0_ptr>(&a::f);
         // Test this and public_function call in func above both take same 3

@@ -18,7 +18,7 @@
 #include <boost/math/concepts/real_concept.hpp> // for real_concept
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp> // Boost.Test
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <boost/math/distributions/triangular.hpp>
 using boost::math::triangular_distribution;
@@ -479,6 +479,9 @@ void test_spots(RealType)
     BOOST_CHECK_CLOSE_FRACTION(
       kurtosis_excess(tridef), static_cast<RealType>(-0.6), tolerance); // Constant value of -3/5 for all distributions.
 
+    BOOST_CHECK_CLOSE_FRACTION(
+      entropy(tridef), static_cast<RealType>(1)/2, tolerance);
+
   {
     triangular_distribution<RealType> tri01(0, 1, 1); //  Asymmetric 0, 1, 1 distribution.
     RealType x = static_cast<RealType>(0.5);
@@ -722,7 +725,7 @@ BOOST_AUTO_TEST_CASE( test_main )
   test_spots(0.0); // Test double. OK at decdigits 7, tolerance = 1e07 %
   #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
     test_spots(0.0L); // Test long double.
-  #if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x0582))
+  #if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x0582))
     test_spots(boost::math::concepts::real_concept(0.)); // Test real concept.
   #endif
   #else

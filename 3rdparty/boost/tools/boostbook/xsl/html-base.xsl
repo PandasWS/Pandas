@@ -37,6 +37,8 @@
              select="'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'"/>
   <!--See usage below for explanation of this param-->
   <xsl:param name="boost.noexpand.chapter.toc" select="0"/>
+  <!-- Currently just adds a viewport meta tag -->
+  <xsl:param name="boost.mobile" select="0"/>
 
   <xsl:param name="admon.style"/>
   <xsl:param name="admon.graphics">1</xsl:param>
@@ -52,7 +54,7 @@
   <xsl:param name="generate.section.toc.level" select="3"/>
   <xsl:param name="doc.standalone">false</xsl:param>
   <xsl:param name="chunker.output.indent">yes</xsl:param>
-  <xsl:param name="chunker.output.encoding">US-ASCII</xsl:param>
+  <xsl:param name="chunker.output.encoding">UTF-8</xsl:param>
   <xsl:param name="chunk.quietly" select="not(number($boostbook.verbose))"/>
   <xsl:param name="toc.max.depth">2</xsl:param>
   <xsl:param name="callout.graphics.number.limit">15</xsl:param>
@@ -312,8 +314,11 @@ set       toc,title
         <script type="text/javascript" src="{$boost.mathjax.script}"/>
       </xsl:if>
     </xsl:if>
+    <xsl:if test="$boost.mobile = 1">
+      <meta name="viewport" content="width=device-width"/>
+    </xsl:if>
   </xsl:template>
-  
+
   <xsl:template match="inlinemediaobject">
     <xsl:choose>
       <xsl:when test="$boost.mathjax = 1 and textobject[@role='tex']">

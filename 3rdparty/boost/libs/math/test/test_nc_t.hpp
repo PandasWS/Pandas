@@ -7,7 +7,7 @@
 #include <boost/math/concepts/real_concept.hpp>
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/math/distributions/non_central_t.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
 #include <boost/array.hpp>
@@ -204,7 +204,7 @@ void test_spots(RealType)
    // Computing discrete mixtures of continuous
    // distributions: noncentral chisquare, noncentral t
    // and the distribution of the square of the sample
-   // multiple correlation coeficient.
+   // multiple correlation coefficient.
    // Denise Benton, K. Krishnamoorthy.
    // Computational Statistics & Data Analysis 43 (2003) 249 - 267
    //
@@ -494,7 +494,7 @@ void test_big_df(RealType)
 
       RealType tolerance = 10 * boost::math::tools::epsilon<RealType>(); // static_cast<RealType>(1e-14); //
       std::cout.precision(17); // Note: need to reset after calling BOOST_CHECK_s
-      // due to buglet in Boost.test that fails to restore precision corrrectly.
+      // due to buglet in Boost.test that fails to restore precision correctly.
 
       // Test for large degrees of freedom when should be same as normal.
       RealType inf =

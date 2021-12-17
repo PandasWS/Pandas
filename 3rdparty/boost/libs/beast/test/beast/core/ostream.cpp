@@ -57,7 +57,11 @@ public:
                 os << '*';
                 fail("missing exception", __FILE__, __LINE__);
             }
-            catch(std::ios_base::failure const&)
+            // We used to catch std::ios_base::failure which is strictly correct
+            // however there is a rare historic ABI bug when stdlibc++ and the
+            // program are compiled with different ABIs.
+            // see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
+            catch(std::exception&)
             {
                 pass();
             }
@@ -65,6 +69,31 @@ public:
             {
                 fail("wrong exception", __FILE__, __LINE__);
             }
+        }
+
+        // flush
+        {
+            // Issue #1853
+            flat_static_buffer<16> b;
+            auto half_view = string_view(s.data(), 8);
+            {
+                auto os = ostream(b);
+                os << half_view;
+                os.flush();
+            }
+            BEAST_EXPECT(buffers_to_string(b.data()) == half_view);
+        }
+
+        {
+            flat_static_buffer<16> b;
+            {
+                auto os = ostream(b);
+                os << string_view(s.data(), 8);
+                os.flush();
+                os << string_view(s.data() + 8, 8);
+                os.flush();
+            }
+            BEAST_EXPECT(buffers_to_string(b.data()) == s);
         }
     }
 

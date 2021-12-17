@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Main features</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../container.html" title="Chapter&#160;9.&#160;Boost.Container">
-<link rel="prev" href="../container.html" title="Chapter&#160;9.&#160;Boost.Container">
+<link rel="up" href="../container.html" title="Chapter 9. Boost.Container">
+<link rel="prev" href="../container.html" title="Chapter 9. Boost.Container">
 <link rel="next" href="exception_handling.html" title="Boost.Container and C++ exceptions">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -192,14 +192,14 @@
         Librarian: Containers of Incomplete Types</strong></span></a>):
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>Unlike most of my columns, this one is about something you
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>Unlike most of my columns, this one is about something you
         can't do with the C++ Standard library: put incomplete types in one of the
         standard containers. This column explains why you might want to do this,
         why the standardization committee banned it even though they knew it was
-        useful, and what you might be able to do to get around the restriction.</em></span></span>&#8221;</span>
+        useful, and what you might be able to do to get around the restriction.</em></span></span>”</span>
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>In 1997, shortly before the C++ Standard was completed,
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>In 1997, shortly before the C++ Standard was completed,
         the standardization committee received a query: Is it possible to create
         standard containers with incomplete types? It took a while for the committee
         to understand the question. What would such a thing even mean, and why on
@@ -208,10 +208,10 @@
         ahead to the end, the answer is "no.") But the question is much
         more interesting than the answer: it points to a useful, and insufficiently
         discussed, programming technique. The standard library doesn't directly support
-        that technique, but the two can be made to coexist.</em></span></span>&#8221;</span>
+        that technique, but the two can be made to coexist.</em></span></span>”</span>
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>In a future revision of C++, it might make sense to relax
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>In a future revision of C++, it might make sense to relax
         the restriction on instantiating standard library templates with incomplete
         types. Clearly, the general prohibition should stay in place - instantiating
         templates with incomplete types is a delicate business, and there are too
@@ -221,19 +221,19 @@
         standard container class where there are good reasons to instantiate it with
         an incomplete type and where Standard Library implementors want to make it
         work. As of today, in fact, implementors would have to go out of their way
-        to prohibit it!</em></span></span>&#8221;</span>
+        to prohibit it!</em></span></span>”</span>
       </p>
 <p>
-        C++11 standard is also cautious about incomplete types and STL: <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>17.6.4.8
+        C++11 standard is also cautious about incomplete types and STL: <span class="quote">“<span class="quote"><span class="emphasis"><em>17.6.4.8
         Other functions (...) 2. the effects are undefined in the following cases:
         (...) In particular - if an incomplete type (3.9) is used as a template argument
         when instantiating a template component, unless specifically allowed for
-        that component</em></span></span>&#8221;</span>.
+        that component</em></span></span>”</span>.
       </p>
 <p>
         Finally C++17 added support for incomplete types in <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span></code>,
         <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">list</span></code> and <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">forward_list</span></code>
-        (see <a href="https://wg21.link/n4569" target="_top"><span class="emphasis"><em>N4569: Minimal incomplete
+        (see <a href="https://wg21.link/n4510" target="_top"><span class="emphasis"><em>N4510: Minimal incomplete
         type support for standard containers, revision 4</em></span></a> for details),
         but no other containers like <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">set</span><span class="special">/</span><span class="identifier">map</span><span class="special">/</span><span class="identifier">unordered_set</span><span class="special">/</span><span class="identifier">unordered_map</span></code>,
       </p>
@@ -496,7 +496,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2018 Ion Gaztanaga<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2018 Ion Gaztanaga<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

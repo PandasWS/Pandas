@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for range().
  *
- * Copyright 2003-2015 Joaquin M Lopez Munoz.
+ * Copyright 2003-2020 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -12,7 +12,7 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/detail/lightweight_test.hpp>
 #include "pre_multi_index.hpp"
 #include <boost/multi_index_container.hpp>
@@ -39,10 +39,10 @@ typedef int_set::iterator int_set_iterator;
 #define CHECK_VOID_RANGE(p) BOOST_TEST((p).first==(p).second)
 
 #undef BIND1ST
-#define BIND1ST(f,x) ::boost::bind(f,x,::boost::arg<1>())
+#define BIND1ST(f,x) ::boost::bind<bool>(f,x,::boost::arg<1>())
 
 #undef BIND2ND
-#define BIND2ND(f,x) ::boost::bind(f,::boost::arg<1>(),x)
+#define BIND2ND(f,x) ::boost::bind<bool>(f,::boost::arg<1>(),x)
 
 void test_range()
 {

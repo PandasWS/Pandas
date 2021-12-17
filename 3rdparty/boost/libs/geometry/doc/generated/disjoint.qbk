@@ -82,6 +82,9 @@ Or
 `#include <boost/geometry/algorithms/disjoint.hpp>`
 
 [include reference/algorithms/disjoint.qbk]
+[heading Examples]
+[disjoint]
+[disjoint_output]
 
 
 [endsect]

@@ -181,16 +181,16 @@ or include the specific header:
 
 [heading Using BOOST_VMD_EMPTY and BOOST_VMD_IDENTITY with VC++]
 
-Unfortunately the Visual C++ preprocessor has a problem when a macro
+Unfortunately the Visual C++ default preprocessor has a problem when a macro
 expands to something followed by a variadic macro which expands to nothing.
 This is the case when using BOOST_VMD_EMPTY following some non-empty expansion, 
-or the equivalent use of BOOST_VMD_IDENTITY. As strange as it sounds this VC++
+or the equivalent use of BOOST_VMD_IDENTITY. As strange as it sounds this VC++ default
 preprocessor problem is normally solved by concatenating the result using BOOST_PP_CAT
 with an empty value. But then again the many non-standard behaviors of VC++
-are difficult to understand or even track. 
+with its default preprocessor are difficult to understand or even track. 
 
 In order to make this technique transparent when used with a C++ standard
-conforming preprocessor or VC++ non-standard preprocessor you can use the 
+conforming preprocessor or the VC++ non-standard default preprocessor you can use the 
 BOOST_VMD_IDENTITY_RESULT macro passing to it a single parameter which is a result 
 returned from a macro which uses BOOST_VMD_IDENTITY ( or its equivalent 
 'value BOOST_VMD_EMPTY' usage ).
@@ -224,7 +224,7 @@ and usage is:
      MACRO_CHOICE(parameter1,parameter2)
      
 Using BOOST_VMD_EMPTY and BOOST_VMD_IDENTITY in this way will ensure they can be used
-without preprocessing problems with either VC++ or any C++ standard conforming preprocessor.
+without preprocessing problems with either VC++ with its default preprocessor or any C++ standard conforming preprocessor.
 
 [heading Usage for BOOST_VMD_IDENTITY_RESULT]
 

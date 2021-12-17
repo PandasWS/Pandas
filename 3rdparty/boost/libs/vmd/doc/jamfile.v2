@@ -29,8 +29,6 @@ project vmd_doc : requirements
 
 doxygen vmd_reference
   :
-    $(here)/../../../boost/vmd/array/to_seq.hpp
-    $(here)/../../../boost/vmd/array/to_tuple.hpp
     $(here)/../../../boost/vmd/assert.hpp
     $(here)/../../../boost/vmd/assert_is_array.hpp
     $(here)/../../../boost/vmd/assert_is_empty.hpp
@@ -50,6 +48,7 @@ doxygen vmd_reference
     $(here)/../../../boost/vmd/is_empty.hpp
     $(here)/../../../boost/vmd/is_empty_array.hpp
     $(here)/../../../boost/vmd/is_empty_list.hpp
+    $(here)/../../../boost/vmd/is_general_identifier.hpp
     $(here)/../../../boost/vmd/is_identifier.hpp
     $(here)/../../../boost/vmd/is_list.hpp
     $(here)/../../../boost/vmd/is_multi.hpp
@@ -59,9 +58,16 @@ doxygen vmd_reference
     $(here)/../../../boost/vmd/is_tuple.hpp
     $(here)/../../../boost/vmd/is_type.hpp
     $(here)/../../../boost/vmd/is_unary.hpp
+    $(here)/../../../boost/vmd/not_equal.hpp
+    $(here)/../../../boost/vmd/size.hpp
+    $(here)/../../../boost/vmd/to_array.hpp
+    $(here)/../../../boost/vmd/to_list.hpp
+    $(here)/../../../boost/vmd/to_seq.hpp
+    $(here)/../../../boost/vmd/to_tuple.hpp
+    $(here)/../../../boost/vmd/array/to_seq.hpp
+    $(here)/../../../boost/vmd/array/to_tuple.hpp
     $(here)/../../../boost/vmd/list/to_seq.hpp
     $(here)/../../../boost/vmd/list/to_tuple.hpp
-    $(here)/../../../boost/vmd/not_equal.hpp
     $(here)/../../../boost/vmd/seq/is_vmd_seq.hpp
     $(here)/../../../boost/vmd/seq/pop_back.hpp
     $(here)/../../../boost/vmd/seq/pop_front.hpp
@@ -72,11 +78,6 @@ doxygen vmd_reference
     $(here)/../../../boost/vmd/seq/to_array.hpp
     $(here)/../../../boost/vmd/seq/to_list.hpp
     $(here)/../../../boost/vmd/seq/to_tuple.hpp
-    $(here)/../../../boost/vmd/size.hpp
-    $(here)/../../../boost/vmd/to_array.hpp
-    $(here)/../../../boost/vmd/to_list.hpp
-    $(here)/../../../boost/vmd/to_seq.hpp
-    $(here)/../../../boost/vmd/to_tuple.hpp
     $(here)/../../../boost/vmd/tuple/is_vmd_tuple.hpp
     $(here)/../../../boost/vmd/tuple/pop_back.hpp
     $(here)/../../../boost/vmd/tuple/pop_front.hpp
@@ -109,6 +110,7 @@ boostbook standalone
   :
      vmd
   :
+  <flags>"--maxdepth 100000"
   <xsl:param>boost.root="../../../.."
   <xsl:param>chunk.section.depth=8  # How far down we chunk nested sections, basically all of them.
   <xsl:param>toc.section.depth=8  # How far down sections get TOCs.

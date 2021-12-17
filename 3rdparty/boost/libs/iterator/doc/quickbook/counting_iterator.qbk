@@ -1,4 +1,3 @@
-
 [section:counting Counting Iterator]
 
 A `counting_iterator` adapts an object by adding an `operator*` that
@@ -18,28 +17,30 @@ into the first array via indirection through the second array.
     std::vector<int> numbers;
     typedef std::vector<int>::iterator n_iter;
     std::copy(boost::counting_iterator<int>(0),
-             boost::counting_iterator<int>(N),
-             std::back_inserter(numbers));
+              boost::counting_iterator<int>(N),
+              std::back_inserter(numbers));
 
     std::vector<std::vector<int>::iterator> pointers;
     std::copy(boost::make_counting_iterator(numbers.begin()),
-	      boost::make_counting_iterator(numbers.end()),
-	      std::back_inserter(pointers));
+        boost::make_counting_iterator(numbers.end()),
+        std::back_inserter(pointers));
 
-    std::cout << "indirectly printing out the numbers from 0 to " 
-	      << N << std::endl;
+    std::cout << "indirectly printing out the numbers from 0 to "
+        << N << std::endl;
     std::copy(boost::make_indirect_iterator(pointers.begin()),
-	      boost::make_indirect_iterator(pointers.end()),
-	      std::ostream_iterator<int>(std::cout, " "));
+        boost::make_indirect_iterator(pointers.end()),
+        std::ostream_iterator<int>(std::cout, " "));
     std::cout << std::endl;
 
 
 The output is:
 
-    indirectly printing out the numbers from 0 to 7
-    0 1 2 3 4 5 6 
+[pre
+indirectly printing out the numbers from 0 to 7
+0 1 2 3 4 5 6
+]
 
-The source code for this example can be found [@../example/counting_iterator_example.cpp here].
+The source code for this example can be found [example_link counting_iterator_example.cpp..here].
 
 [h2 Reference]
 
@@ -86,9 +87,9 @@ algorithm:
            random_access_traversal_tag, Incrementable, const Incrementable&)
    else
        return |iterator-category|_\ (
-            iterator_traversal<Incrementable>::type, 
+            iterator_traversal<Incrementable>::type,
             Incrementable, const Incrementable&)
-        
+
 [blurb *Note:* implementers are encouraged to provide an implementation of
   `operator-` and a `difference_type` that avoids overflows in
   the cases where `std::numeric_limits<Incrementable>::is_specialized`
@@ -181,7 +182,7 @@ operations.
   counting_iterator& operator--();
 
 [*Effects: ] `--m_inc`[br]
-[*Returns: ] `*this`  
+[*Returns: ] `*this`
 
 
   Incrementable const& base() const;

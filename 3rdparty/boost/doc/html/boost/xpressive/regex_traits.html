@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Struct template regex_traits</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -35,27 +35,27 @@
 </span><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Char<span class="special">,</span> <span class="keyword">typename</span> Impl<span class="special">&gt;</span> 
 <span class="keyword">struct</span> <a class="link" href="regex_traits.html" title="Struct template regex_traits">regex_traits</a> <span class="special">:</span> <span class="keyword">public</span> <span class="identifier">Impl</span> <span class="special">{</span>
   <span class="comment">// <a class="link" href="regex_traits.html#boost.xpressive.regex_traitsconstruct-copy-destruct">construct/copy/destruct</a></span>
-  <a class="link" href="regex_traits.html#id-1_3_47_5_18_2_1_15_5-bb"><span class="identifier">regex_traits</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">explicit</span> <a class="link" href="regex_traits.html#id-1_3_47_5_18_2_1_15_6-bb"><span class="identifier">regex_traits</span></a><span class="special">(</span><span class="identifier">locale_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="regex_traits.html#id-1_3_48_5_18_2_1_15_5-bb"><span class="identifier">regex_traits</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">explicit</span> <a class="link" href="regex_traits.html#id-1_3_48_5_18_2_1_15_6-bb"><span class="identifier">regex_traits</span></a><span class="special">(</span><span class="identifier">locale_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="id-1.3.47.5.19.25.4"></a><h2>Description</h2>
+<a name="id-1.3.48.5.19.25.4"></a><h2>Description</h2>
 <p>Thin wrapper around the default <a class="link" href="regex_traits.html" title="Struct template regex_traits">regex_traits</a> implementation, either <a class="link" href="cpp_regex_traits.html" title="Struct template cpp_regex_traits">cpp_regex_traits</a> or <a class="link" href="c_regex_traits.html" title="Struct template c_regex_traits">c_regex_traits</a> </p>
 <div class="refsect2">
-<a name="id-1.3.47.5.19.25.4.3"></a><h3>
+<a name="id-1.3.48.5.19.25.4.3"></a><h3>
 <a name="boost.xpressive.regex_traitsconstruct-copy-destruct"></a><code class="computeroutput">regex_traits</code> 
         public
        construct/copy/destruct</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
-<li class="listitem"><pre class="literallayout"><a name="id-1_3_47_5_18_2_1_15_5-bb"></a><span class="identifier">regex_traits</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"><span class="keyword">explicit</span> <a name="id-1_3_47_5_18_2_1_15_6-bb"></a><span class="identifier">regex_traits</span><span class="special">(</span><span class="identifier">locale_type</span> <span class="keyword">const</span> <span class="special">&amp;</span> loc<span class="special">)</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><a name="id-1_3_48_5_18_2_1_15_5-bb"></a><span class="identifier">regex_traits</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><span class="keyword">explicit</span> <a name="id-1_3_48_5_18_2_1_15_6-bb"></a><span class="identifier">regex_traits</span><span class="special">(</span><span class="identifier">locale_type</span> <span class="keyword">const</span> <span class="special">&amp;</span> loc<span class="special">)</span><span class="special">;</span></pre></li>
 </ol></div>
 </div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2007 Eric Niebler<p>
+<td align="right"><div class="copyright-footer">Copyright © 2007 Eric Niebler<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

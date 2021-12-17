@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>read_until</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -43,8 +43,9 @@ std::size_t <a class="link" href="read_until/overload1.html" title="read_until (
     SyncReadStream &amp; s,
     DynamicBuffer_v1 &amp;&amp; buffers,
     char delim,
-    typename enable_if&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &amp;&amp;!is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload1.html" title="read_until (1 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload1.html" title="read_until (1 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -54,8 +55,9 @@ std::size_t <a class="link" href="read_until/overload2.html" title="read_until (
     DynamicBuffer_v1 &amp;&amp; buffers,
     char delim,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &amp;&amp;!is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload2.html" title="read_until (2 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload2.html" title="read_until (2 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -64,8 +66,9 @@ std::size_t <a class="link" href="read_until/overload3.html" title="read_until (
     SyncReadStream &amp; s,
     DynamicBuffer_v1 &amp;&amp; buffers,
     string_view delim,
-    typename enable_if&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &amp;&amp;!is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload3.html" title="read_until (3 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload3.html" title="read_until (3 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -75,8 +78,9 @@ std::size_t <a class="link" href="read_until/overload4.html" title="read_until (
     DynamicBuffer_v1 &amp;&amp; buffers,
     string_view delim,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &amp;&amp;!is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload4.html" title="read_until (4 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload4.html" title="read_until (4 of 24 overloads)">more...</a></em></span>
 </pre>
 <p>
         Read data into a dynamic buffer sequence until some part of the data it contains
@@ -89,8 +93,9 @@ std::size_t <a class="link" href="read_until/overload5.html" title="read_until (
     SyncReadStream &amp; s,
     DynamicBuffer_v1 &amp;&amp; buffers,
     const boost::regex &amp; expr,
-    typename enable_if&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &amp;&amp;!is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload5.html" title="read_until (5 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload5.html" title="read_until (5 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -100,8 +105,9 @@ std::size_t <a class="link" href="read_until/overload6.html" title="read_until (
     DynamicBuffer_v1 &amp;&amp; buffers,
     const boost::regex &amp; expr,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &amp;&amp;!is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload6.html" title="read_until (6 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload6.html" title="read_until (6 of 24 overloads)">more...</a></em></span>
 </pre>
 <p>
         Read data into a dynamic buffer sequence until a function object indicates
@@ -115,8 +121,10 @@ std::size_t <a class="link" href="read_until/overload7.html" title="read_until (
     SyncReadStream &amp; s,
     DynamicBuffer_v1 &amp;&amp; buffers,
     MatchCondition match_condition,
-    typename enable_if&lt; is_match_condition&lt; MatchCondition &gt;::value &amp;&amp;is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &amp;&amp;!is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload7.html" title="read_until (7 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_match_condition&lt; MatchCondition &gt;::value &gt;::type  = 0,
+    typename constraint&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload7.html" title="read_until (7 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -127,8 +135,10 @@ std::size_t <a class="link" href="read_until/overload8.html" title="read_until (
     DynamicBuffer_v1 &amp;&amp; buffers,
     MatchCondition match_condition,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_match_condition&lt; MatchCondition &gt;::value &amp;&amp;is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &amp;&amp;!is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload8.html" title="read_until (8 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_match_condition&lt; MatchCondition &gt;::value &gt;::type  = 0,
+    typename constraint&lt; is_dynamic_buffer_v1&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0,
+    typename constraint&lt; !is_dynamic_buffer_v2&lt; typename decay&lt; DynamicBuffer_v1 &gt;::type &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload8.html" title="read_until (8 of 24 overloads)">more...</a></em></span>
 </pre>
 <p>
         Read data into a streambuf until it contains a specified delimiter.
@@ -140,7 +150,7 @@ std::size_t <a class="link" href="read_until/overload9.html" title="read_until (
     SyncReadStream &amp; s,
     boost::asio::basic_streambuf&lt; Allocator &gt; &amp; b,
     char delim);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload9.html" title="read_until (9 of 24 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload9.html" title="read_until (9 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -150,7 +160,7 @@ std::size_t <a class="link" href="read_until/overload10.html" title="read_until 
     boost::asio::basic_streambuf&lt; Allocator &gt; &amp; b,
     char delim,
     boost::system::error_code &amp; ec);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload10.html" title="read_until (10 of 24 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload10.html" title="read_until (10 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -159,7 +169,7 @@ std::size_t <a class="link" href="read_until/overload11.html" title="read_until 
     SyncReadStream &amp; s,
     boost::asio::basic_streambuf&lt; Allocator &gt; &amp; b,
     string_view delim);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload11.html" title="read_until (11 of 24 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload11.html" title="read_until (11 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -169,7 +179,7 @@ std::size_t <a class="link" href="read_until/overload12.html" title="read_until 
     boost::asio::basic_streambuf&lt; Allocator &gt; &amp; b,
     string_view delim,
     boost::system::error_code &amp; ec);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload12.html" title="read_until (12 of 24 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload12.html" title="read_until (12 of 24 overloads)">more...</a></em></span>
 </pre>
 <p>
         Read data into a streambuf until some part of the data it contains matches
@@ -182,7 +192,7 @@ std::size_t <a class="link" href="read_until/overload13.html" title="read_until 
     SyncReadStream &amp; s,
     boost::asio::basic_streambuf&lt; Allocator &gt; &amp; b,
     const boost::regex &amp; expr);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload13.html" title="read_until (13 of 24 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload13.html" title="read_until (13 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -192,7 +202,7 @@ std::size_t <a class="link" href="read_until/overload14.html" title="read_until 
     boost::asio::basic_streambuf&lt; Allocator &gt; &amp; b,
     const boost::regex &amp; expr,
     boost::system::error_code &amp; ec);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload14.html" title="read_until (14 of 24 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload14.html" title="read_until (14 of 24 overloads)">more...</a></em></span>
 </pre>
 <p>
         Read data into a streambuf until a function object indicates a match.
@@ -205,8 +215,8 @@ std::size_t <a class="link" href="read_until/overload15.html" title="read_until 
     SyncReadStream &amp; s,
     boost::asio::basic_streambuf&lt; Allocator &gt; &amp; b,
     MatchCondition match_condition,
-    typename enable_if&lt; is_match_condition&lt; MatchCondition &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload15.html" title="read_until (15 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_match_condition&lt; MatchCondition &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload15.html" title="read_until (15 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -217,8 +227,8 @@ std::size_t <a class="link" href="read_until/overload16.html" title="read_until 
     boost::asio::basic_streambuf&lt; Allocator &gt; &amp; b,
     MatchCondition match_condition,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_match_condition&lt; MatchCondition &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload16.html" title="read_until (16 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_match_condition&lt; MatchCondition &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload16.html" title="read_until (16 of 24 overloads)">more...</a></em></span>
 </pre>
 <p>
         Read data into a dynamic buffer sequence until it contains a specified delimiter.
@@ -230,8 +240,8 @@ std::size_t <a class="link" href="read_until/overload17.html" title="read_until 
     SyncReadStream &amp; s,
     DynamicBuffer_v2 buffers,
     char delim,
-    typename enable_if&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload17.html" title="read_until (17 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload17.html" title="read_until (17 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -241,8 +251,8 @@ std::size_t <a class="link" href="read_until/overload18.html" title="read_until 
     DynamicBuffer_v2 buffers,
     char delim,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload18.html" title="read_until (18 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload18.html" title="read_until (18 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -251,8 +261,8 @@ std::size_t <a class="link" href="read_until/overload19.html" title="read_until 
     SyncReadStream &amp; s,
     DynamicBuffer_v2 buffers,
     string_view delim,
-    typename enable_if&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload19.html" title="read_until (19 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload19.html" title="read_until (19 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -262,8 +272,8 @@ std::size_t <a class="link" href="read_until/overload20.html" title="read_until 
     DynamicBuffer_v2 buffers,
     string_view delim,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload20.html" title="read_until (20 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload20.html" title="read_until (20 of 24 overloads)">more...</a></em></span>
 </pre>
 <p>
         Read data into a dynamic buffer sequence until some part of the data it contains
@@ -276,8 +286,8 @@ std::size_t <a class="link" href="read_until/overload21.html" title="read_until 
     SyncReadStream &amp; s,
     DynamicBuffer_v2 buffers,
     const boost::regex &amp; expr,
-    typename enable_if&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload21.html" title="read_until (21 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload21.html" title="read_until (21 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -287,8 +297,8 @@ std::size_t <a class="link" href="read_until/overload22.html" title="read_until 
     DynamicBuffer_v2 buffers,
     const boost::regex &amp; expr,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload22.html" title="read_until (22 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload22.html" title="read_until (22 of 24 overloads)">more...</a></em></span>
 </pre>
 <p>
         Read data into a dynamic buffer sequence until a function object indicates
@@ -302,8 +312,9 @@ std::size_t <a class="link" href="read_until/overload23.html" title="read_until 
     SyncReadStream &amp; s,
     DynamicBuffer_v2 buffers,
     MatchCondition match_condition,
-    typename enable_if&lt; is_match_condition&lt; MatchCondition &gt;::value &amp;&amp;is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload23.html" title="read_until (23 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_match_condition&lt; MatchCondition &gt;::value &gt;::type  = 0,
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload23.html" title="read_until (23 of 24 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="SyncReadStream.html" title="Buffer-oriented synchronous read stream requirements">SyncReadStream</a>,
@@ -314,8 +325,9 @@ std::size_t <a class="link" href="read_until/overload24.html" title="read_until 
     DynamicBuffer_v2 buffers,
     MatchCondition match_condition,
     boost::system::error_code &amp; ec,
-    typename enable_if&lt; is_match_condition&lt; MatchCondition &gt;::value &amp;&amp;is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="read_until/overload24.html" title="read_until (24 of 24 overloads)">more...</a></em></span>
+    typename constraint&lt; is_match_condition&lt; MatchCondition &gt;::value &gt;::type  = 0,
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="read_until/overload24.html" title="read_until (24 of 24 overloads)">more...</a></em></span>
 </pre>
 <h5>
 <a name="boost_asio.reference.read_until.h0"></a>
@@ -330,7 +342,8 @@ std::size_t <a class="link" href="read_until/overload24.html" title="read_until 
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

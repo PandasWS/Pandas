@@ -232,7 +232,7 @@ constexpr T base_value(const T & t){
     return t;
 }
 
-template<typename R, R Min, R Max, typename T, typename E>
+template<typename R, R Min, R Max, typename E>
 struct validate_detail {
 
     constexpr static const interval<checked_result<R>> t_interval{
@@ -729,7 +729,7 @@ int main(){
 
 #include <iostream>
 #include <boost/safe_numerics/safe_integer.hpp>
-#include <boost/safe_numerics/automatic.hpp>
+//#include <boost/safe_numerics/automatic.hpp>
 
 using namespace boost::safe_numerics;
 
@@ -753,6 +753,200 @@ int main(){
 
     return 0;
 }
+
+#include <cstdint>
+#include <boost/safe_numerics/safe_integer_range.hpp>
+#include <boost/safe_numerics/safe_integer_literal.hpp>
+
+template <uintmax_t Min, uintmax_t Max>
+using urange = boost::safe_numerics::safe_unsigned_range<
+    Min,
+    Max,
+    boost::safe_numerics::native,
+    boost::safe_numerics::strict_trap_policy
+>;
+
+template <uintmax_t N>
+using ulit = boost::safe_numerics::safe_unsigned_literal<
+    N,
+    boost::safe_numerics::native,
+    boost::safe_numerics::strict_trap_policy
+>;
+
+int main(){
+    urange<0,4095> x = ulit<0>(); // 12 bits
+    urange<0, 69615> y = x * ulit<17>(); // no error - resulting value
+        // cannot exceed  69615
+    auto z = y / ulit<17>() ; //Boom, compile-time error
+    return z;
+}
+
 #endif
 
-int main(){}
+#if 0
+#include <boost/safe_numerics/safe_integer_range.hpp>
+
+int main(){
+    using namespace boost::safe_numerics;
+    safe_unsigned_range<0, 36> a = 30;
+    return 0;
+}
+
+#endif
+
+#if 0
+#include <iostream>
+#include <functional>
+#include <boost/safe_numerics/safe_integer_range.hpp>
+#include <boost/safe_numerics/interval.hpp> // print variable range
+#include <boost/safe_numerics/native.hpp> // native promotion policy
+#include <boost/safe_numerics/exception.hpp> // safe_numerics_error
+#include <boost/safe_numerics/exception_policies.hpp>
+
+// log an exception condition but continue processing as though nothing has happened
+// this would emulate the behavior of an unsafe type.
+struct log_runtime_exception {
+    log_runtime_exception() = default;
+    void operator () (
+        const boost::safe_numerics::safe_numerics_error & e,
+        const char * message
+    ){
+        std::cout
+            << "Caught system_error with code "
+            << boost::safe_numerics::literal_string(e)
+            << " and message " << message << '\n';
+    }
+};
+
+// logging policy
+// log arithmetic errors but ignore them and continue to execute
+// implementation defined and undefined behavior is just executed
+// without logging.
+
+using logging_exception_policy = boost::safe_numerics::exception_policy<
+    log_runtime_exception,  // arithmetic error
+    log_runtime_exception,  // implementation defined behavior
+    log_runtime_exception,  // undefined behavior
+    log_runtime_exception   // uninitialized value
+>;
+
+template<unsigned int Min, unsigned int Max>
+using sur = boost::safe_numerics::safe_unsigned_range<
+    Min, // min value in range
+    Max, // max value in range
+    boost::safe_numerics::native, // promotion policy
+    logging_exception_policy // exception policy
+>;
+
+template<int Min, int Max>
+using ssr = boost::safe_numerics::safe_signed_range<
+    Min, // min value in range
+    Max, // max value in range
+    boost::safe_numerics::native, // promotion policy
+    logging_exception_policy // exception policy
+>;
+
+int main() {
+    const sur<1910, 2099> test0 = 7; // note logged exception - value undefined
+    std::cout << "test0 = " << test0 << '\n';
+    const ssr<1910, 2099> test1 = 7; // note logged exception - value undefined
+    std::cout << "test1 = " << test1 << '\n';
+    const sur<0, 2> test2 = 7;       // note logged exception - value undefined
+    std::cout << "test2 = " << test2 << '\n';
+    const sur<1910, 2099> test3;     // unitialized value
+    std::cout << "test3 = " << test3 << '\n';
+    sur<1910, 2099> test4 = 2000;   // OK value
+    std::cout << "test4 = " << test4 << boost::safe_numerics::make_interval(test4) << '\n';
+    return 0;
+}
+
+#endif
+
+#if 0
+#include <iostream>
+#include <boost/safe_numerics/safe_integer.hpp>
+
+using boost::safe_numerics::safe;
+
+int main(){
+    safe<safe<int>> r {};
+    //safe<int> r {};
+    std::cout << r << std::endl;
+    return 0;
+}
+
+#endif
+
+#if 0
+
+#include <iostream>
+#include <sstream>
+#include <boost/safe_numerics/safe_integer.hpp>
+
+int main(){
+    try {
+      boost::safe_numerics::safe<unsigned> u;
+      std::istringstream is{"-1"};
+      is >> u;
+      std::cout << u << std::endl;
+    }
+    catch (std::exception const& e)
+    {
+      std::cerr << "ERR: " << e.what() << std::endl;
+    }
+    return 0;
+}
+
+
+#endif
+
+#if 0
+#include <cstdint>
+#include <iostream>
+#include <utility> // declval
+#include <boost/safe_numerics/cpp.hpp>
+#include <boost/safe_numerics/exception.hpp>
+#include <boost/safe_numerics/exception_policies.hpp>
+#include <boost/safe_numerics/safe_integer_range.hpp>
+#include <boost/safe_numerics/safe_integer_literal.hpp>
+
+// generate runtime errors if operation could fail
+using exception_policy = boost::safe_numerics::default_exception_policy;
+
+using pic16_promotion = boost::safe_numerics::cpp<
+    8,  // char      8 bits
+    16, // short     16 bits
+    16, // int       16 bits
+    16, // long      16 bits
+    32  // long long 32 bits
+>;
+
+// generate compile time errors if operation could fail
+using trap_policy = boost::safe_numerics::loose_exception_policy;
+#define literal(n) (make_safe_literal(n, pic16_promotion, void))
+
+using phase_ix_t = boost::safe_numerics::safe_signed_range<
+    0,
+    3,
+    pic16_promotion,
+    trap_policy
+>;
+phase_ix_t phase = 3;
+
+int main() {
+    try{
+        std::uint8_t CCP2CON = phase << make_safe_literal(8, pic16_promotion, void);
+        //std::uint8_t CCP2CON = phase >> make_safe_literal(8, pic16_promotion, void);
+    }
+    catch(...){
+        std::cout << "program exception\n";
+    }
+    return 0;
+}
+#endif
+
+// #include <boost/safe_numerics/safe_integer.hpp>
+
+// boost::safe_numerics::safe<boost::safe_numerics::safe<int>> y;
+
+int main() {}

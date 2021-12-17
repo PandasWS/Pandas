@@ -15,5 +15,6 @@
         "Joel de Guzman <djowel -at- gmail.com>",
         "Thomas Heller <thom.heller -at- gmail.com>",
         "John Fletcher <J.P.Fletcher -at- aston.ac.uk>"
-    ]
+    ],
+    "cxxstd": "03"
 }

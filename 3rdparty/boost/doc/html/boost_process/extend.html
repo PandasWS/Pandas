@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Extensions</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../process.html" title="Chapter&#160;30.&#160;Boost.Process">
+<link rel="up" href="../process.html" title="Chapter 30. Boost.Process">
 <link rel="prev" href="design.html" title="Design Rationale">
 <link rel="next" href="faq.html" title="Frequently Asked Questions">
 </head>
@@ -45,9 +45,9 @@
     </p>
 <p>
       What this means is, that a custom initializer can be implemented, a reference
-      to which can be passed to one of the launching functions. If a class inherits
+      which can be passed to one of the launching functions. If a class inherits
       <code class="computeroutput"><a class="link" href="../boost/process/extend/handler.html" title="Struct handler">boost::process::extend::handler</a></code>
-      it will be regarded as a initializer and thus directly put into the sequence
+      it will be regarded as an initializer and thus directly put into the sequence
       the executor gets passed.
     </p>
 <div class="section">
@@ -56,7 +56,7 @@
 </h3></div></div></div>
 <p>
         The executor calls different handlers of the initializers during the process
-        launch. The basic structure is consists of three functions, as given below:
+        launch. The basic structure consists of three functions, as given below:
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
@@ -109,7 +109,7 @@
 <p>
       </p>
 <p>
-        Considering that lambda can also capture values, data can easily be shared
+        Considering that lambdas can also capture values, data can easily be shared
         between handlers.
       </p>
 <p>
@@ -173,7 +173,7 @@
         </p></td></tr>
 </table></div>
 <p>
-        Every handler not implemented dafaults to <code class="computeroutput"><a class="link" href="../boost/process/extend/handler.html" title="Struct handler">handler</a></code>,
+        Every handler not implemented defaults to <code class="computeroutput"><a class="link" href="../boost/process/extend/handler.html" title="Struct handler">handler</a></code>,
         where an empty handler is defined for each event.
       </p>
 </div>
@@ -191,7 +191,7 @@
 </p>
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">async_foo</span> <span class="special">:</span> <code class="computeroutput"><a class="link" href="../boost/process/extend/handler.html" title="Struct handler">handler</a></code><span class="special">,</span> <code class="computeroutput"><a class="link" href="../boost/process/extend/require_io_context.html" title="Struct require_io_context">ex::require_io_context</a></code>
 <span class="special">{</span>
-    <span class="identifier">tempalte</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">Executor</span><span class="special">&gt;</span>
+    <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">Executor</span><span class="special">&gt;</span>
     <span class="keyword">void</span> <span class="identifier">on_setup</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span> <span class="identifier">exec</span><span class="special">)</span>
     <span class="special">{</span>
         <a href="http://www.boost.org/doc/libs/release/doc/html/boost_asio/reference/io_context.html" target="_top">boost::asio::io_context</a> <span class="special">&amp;</span> <span class="identifier">ios</span> <span class="special">=</span> <code class="computeroutput"><a class="link" href="../boost/process/extend/get_io_context.html" title="Function template get_io_context">ex::get_io_context</a></code><span class="special">(</span><span class="identifier">exec</span><span class="special">.</span><span class="identifier">seq</span><span class="special">);</span> <span class="comment">//gives us a reference and a compiler error if not present.</span>
@@ -275,11 +275,11 @@
 </h3></div></div></div>
 <p>
         If an error occurs in the initializers it shall be told to the executor and
-        not handles directly. This is because the behaviour can be changed through
-        arguments passed to the launching function. Hence the the executor has the
-        function <code class="computeroutput"><span class="identifier">set_error</span></code>, which
-        takes an <a href="http://en.cppreference.com/w/cpp/error/error_code" target="_top">std::error_code</a>
-        and a string. Depending on the cofiguration of the executor, this may either
+        not handled directly. This is because the behaviour can be changed through
+        arguments passed to the launching function. Hence the executor has the function
+        <code class="computeroutput"><span class="identifier">set_error</span></code>, which takes an
+        <a href="http://en.cppreference.com/w/cpp/error/error_code" target="_top">std::error_code</a>
+        and a string. Depending on the configuration of the executor, this may either
         throw, set an internal <code class="computeroutput"><span class="identifier">error_code</span></code>,
         or do nothing.
       </p>
@@ -357,9 +357,9 @@
 <p>
       </p>
 <p>
-        So given our example, the definitions with the non-native exectur are still
+        So given our example, the definitions with the non-native executor are still
         a template so that they will not be evaluated if not used. Hence this provides
-        a way to implement systems-specific code without using the preprocessor.
+        a way to implement system-specific code without using the preprocessor.
       </p>
 <div class="note"><table border="0" summary="Note">
 <tr>
@@ -378,8 +378,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
-      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright &#169; 2016 Klemens D. Morgenstern<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
+      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright © 2016 Klemens D. Morgenstern<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
       </p>

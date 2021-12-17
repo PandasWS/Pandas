@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class template constant</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Chapter&#160;1.&#160;Boost.Log v2">
+<link rel="home" href="../../../index.html" title="Chapter 1. Boost.Log v2">
 <link rel="up" href="../../../attributes.html#header.boost.log.attributes.constant_hpp" title="Header &lt;boost/log/attributes/constant.hpp&gt;">
 <link rel="prev" href="basic_clock/impl.html" title="Struct impl">
 <link rel="next" href="constant/impl.html" title="Class impl">
@@ -19,7 +19,7 @@
 <a name="boost.log.attributes.constant"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Class template constant</span></h2>
-<p>boost::log::attributes::constant &#8212; A class of an attribute that holds a single constant value. </p>
+<p>boost::log::attributes::constant — A class of an attribute that holds a single constant value. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../../attributes.html#header.boost.log.attributes.constant_hpp" title="Header &lt;boost/log/attributes/constant.hpp&gt;">boost/log/attributes/constant.hpp</a>&gt;
@@ -37,46 +37,46 @@
   <span class="keyword">class</span> <a class="link" href="constant/impl.html" title="Class impl">impl</a> <span class="special">:</span> <span class="keyword">public</span> <span class="identifier">attribute_value_impl</span><span class="special">&lt;</span> <span class="identifier">value_type</span> <span class="special">&gt;</span> <span class="special">{</span>
   <span class="keyword">public</span><span class="special">:</span>
     <span class="comment">// <a class="link" href="constant/impl.html#boost.log.attributes.constant.implconstruct-copy-destruct">construct/copy/destruct</a></span>
-    <span class="keyword">explicit</span> <a class="link" href="constant/impl.html#idm45349313259904-bb"><span class="identifier">impl</span></a><span class="special">(</span><span class="identifier">value_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-    <span class="keyword">explicit</span> <a class="link" href="constant/impl.html#idm45349313258208-bb"><span class="identifier">impl</span></a><span class="special">(</span><span class="identifier">value_type</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+    <span class="keyword">explicit</span> <a class="link" href="constant/impl.html#idm24754-bb"><span class="identifier">impl</span></a><span class="special">(</span><span class="identifier">value_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+    <span class="keyword">explicit</span> <a class="link" href="constant/impl.html#idm24759-bb"><span class="identifier">impl</span></a><span class="special">(</span><span class="identifier">value_type</span> <span class="special">&amp;&amp;</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">is_nothrow_move_constructible</span><span class="special">&lt;</span> <span class="identifier">value_type</span> <span class="special">&gt;</span><span class="special">::</span><span class="identifier">value</span><span class="special">)</span><span class="special">)</span><span class="special">;</span>
   <span class="special">}</span><span class="special">;</span>
 
   <span class="comment">// <a class="link" href="constant.html#boost.log.attributes.constantconstruct-copy-destruct">construct/copy/destruct</a></span>
-  <span class="keyword">explicit</span> <a class="link" href="constant.html#idm45349313252528-bb"><span class="identifier">constant</span></a><span class="special">(</span><span class="identifier">value_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">explicit</span> <a class="link" href="constant.html#idm45349313250832-bb"><span class="identifier">constant</span></a><span class="special">(</span><span class="identifier">value_type</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">explicit</span> <a class="link" href="constant.html#idm45349313249136-bb"><span class="identifier">constant</span></a><span class="special">(</span><a class="link" href="cast_source.html" title="Class cast_source">cast_source</a> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">explicit</span> <a class="link" href="constant.html#idm24774-bb"><span class="identifier">constant</span></a><span class="special">(</span><span class="identifier">value_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">explicit</span> <a class="link" href="constant.html#idm24779-bb"><span class="identifier">constant</span></a><span class="special">(</span><span class="identifier">value_type</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">explicit</span> <a class="link" href="constant.html#idm24784-bb"><span class="identifier">constant</span></a><span class="special">(</span><a class="link" href="cast_source.html" title="Class cast_source">cast_source</a> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="constant.html#idm45349313255376-bb">public member functions</a></span>
-  <span class="identifier">value_type</span> <span class="keyword">const</span>  <span class="special">&amp;</span> <a class="link" href="constant.html#idm45349313254816-bb"><span class="identifier">get</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="constant.html#idm24767-bb">public member functions</a></span>
+  <span class="identifier">value_type</span> <span class="keyword">const</span>  <span class="special">&amp;</span> <a class="link" href="constant.html#idm24768-bb"><span class="identifier">get</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="idm46415121473232"></a><h2>Description</h2>
+<a name="idm31594"></a><h2>Description</h2>
 <p>The constant is a simplest and one of the most frequently used types of attributes. It stores a constant value, which it eventually returns as its value each time requested. </p>
 <div class="refsect2">
-<a name="idm46415121472368"></a><h3>
+<a name="idm31597"></a><h3>
 <a name="boost.log.attributes.constantconstruct-copy-destruct"></a><code class="computeroutput">constant</code> 
         public
        construct/copy/destruct</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">explicit</span> <a name="idm45349313252528-bb"></a><span class="identifier">constant</span><span class="special">(</span><span class="identifier">value_type</span> <span class="keyword">const</span> <span class="special">&amp;</span> value<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">explicit</span> <a name="idm24774-bb"></a><span class="identifier">constant</span><span class="special">(</span><span class="identifier">value_type</span> <span class="keyword">const</span> <span class="special">&amp;</span> value<span class="special">)</span><span class="special">;</span></pre>
 <p>Constructor with the stored value initialization </p>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">explicit</span> <a name="idm45349313250832-bb"></a><span class="identifier">constant</span><span class="special">(</span><span class="identifier">value_type</span> <span class="special">&amp;&amp;</span> value<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">explicit</span> <a name="idm24779-bb"></a><span class="identifier">constant</span><span class="special">(</span><span class="identifier">value_type</span> <span class="special">&amp;&amp;</span> value<span class="special">)</span><span class="special">;</span></pre>
 <p>Constructor with the stored value initialization </p>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">explicit</span> <a name="idm45349313249136-bb"></a><span class="identifier">constant</span><span class="special">(</span><a class="link" href="cast_source.html" title="Class cast_source">cast_source</a> <span class="keyword">const</span> <span class="special">&amp;</span> source<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">explicit</span> <a name="idm24784-bb"></a><span class="identifier">constant</span><span class="special">(</span><a class="link" href="cast_source.html" title="Class cast_source">cast_source</a> <span class="keyword">const</span> <span class="special">&amp;</span> source<span class="special">)</span><span class="special">;</span></pre>
 <p>Constructor for casting support </p>
 </li>
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="idm46415121450416"></a><h3>
-<a name="idm45349313255376-bb"></a><code class="computeroutput">constant</code> public member functions</h3>
+<a name="idm31640"></a><h3>
+<a name="idm24767-bb"></a><code class="computeroutput">constant</code> public member functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
-<pre class="literallayout"><span class="identifier">value_type</span> <span class="keyword">const</span>  <span class="special">&amp;</span> <a name="idm45349313254816-bb"></a><span class="identifier">get</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">value_type</span> <span class="keyword">const</span>  <span class="special">&amp;</span> <a name="idm24768-bb"></a><span class="identifier">get</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <p>
 </p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -95,7 +95,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2007-2016 Andrey Semashev<p>
+<td align="right"><div class="copyright-footer">Copyright © 2007-2021 Andrey Semashev<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>).
       </p>

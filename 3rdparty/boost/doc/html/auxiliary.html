@@ -1,14 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Auxiliary Components</title>
 <link rel="stylesheet" href="../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="multi_array.html" title="Chapter&#160;27.&#160;Boost.MultiArray Reference Manual">
+<link rel="up" href="multi_array.html" title="Chapter 27. Boost.MultiArray Reference Manual">
 <link rel="prev" href="array_types.html" title="Array Components">
-<link rel="next" href="poly_collection.html" title="Chapter&#160;28.&#160;Boost.PolyCollection">
+<link rel="next" href="boost_pfr.html" title="Chapter 28. Boost.PFR 2.0">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -21,7 +21,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="array_types.html"><img src="../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="multi_array.html"><img src="../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="poly_collection.html"><img src="../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="array_types.html"><img src="../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="multi_array.html"><img src="../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost_pfr.html"><img src="../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="sect1">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
@@ -76,7 +76,7 @@ intervals.  They provide shape and index base information to
 aggregate to an array constructor (see
 <code class="computeroutput">extent_gen</code> for more details).
 </p>
-<p><b>Synopsis.&#160;</b></p>
+<p><b>Synopsis. </b></p>
 <pre class="programlisting">
 class extent_range {
 public:
@@ -93,8 +93,8 @@ public:
   index finish();
   size_type size();
 };</pre>
-<p><b>Model Of.&#160;</b>DefaultConstructible,CopyConstructible</p>
-<p><b>Methods and Types.&#160;</b></p>
+<p><b>Model Of. </b>DefaultConstructible,CopyConstructible</p>
+<p><b>Methods and Types. </b></p>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term"><code class="function">extent_range(index start, index finish)</code></span></dt>
 <dd><p>  This constructor defines the half open interval
@@ -136,7 +136,7 @@ a similar <code class="computeroutput">multi_array</code> would be declared:
 <pre class="programlisting">multi_array&lt;int,3&gt; A(extents[3][4][5]).</pre>
 <p>
 </p>
-<p><b>Synopsis.&#160;</b></p>
+<p><b>Synopsis. </b></p>
 <pre class="programlisting">
 template &lt;std::size_t NumRanges&gt;
 class *implementation_defined* {
@@ -152,7 +152,7 @@ public:
 
 typedef *implementation_defined*&lt;0&gt; extent_gen;
 </pre>
-<p><b>Methods and Types.&#160;</b></p>
+<p><b>Methods and Types. </b></p>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term"><code class="function">template gen_type&lt;Ranges&gt;::type</code></span></dt>
 <dd><p>This type generator is used to specify the result of 
@@ -466,11 +466,11 @@ including multi_array.hpp in an application.
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2002 The Trustees of Indiana University</div></td>
+<td align="right"><div class="copyright-footer">Copyright © 2002 The Trustees of Indiana University</div></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="array_types.html"><img src="../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="multi_array.html"><img src="../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="poly_collection.html"><img src="../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="array_types.html"><img src="../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="multi_array.html"><img src="../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost_pfr.html"><img src="../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

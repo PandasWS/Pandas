@@ -5,9 +5,11 @@
 
 #define BOOST_MATH_ASSERT_UNDEFINED_POLICY false
 
+#include <boost/math/tools/config.hpp>
+
+#ifndef BOOST_MATH_NO_DISTRIBUTION_CONCEPT_TESTS
 #include <boost/math/distributions.hpp>
 #include <boost/math/concepts/distributions.hpp>
-
 
 template <class RealType>
 void instantiate(RealType)
@@ -33,6 +35,7 @@ void instantiate(RealType)
    function_requires<DistributionConcept<inverse_chi_squared_distribution<RealType, custom_policy> > >();
    function_requires<DistributionConcept<inverse_gamma_distribution<RealType, custom_policy> > >();
    function_requires<DistributionConcept<inverse_gaussian_distribution<RealType, custom_policy> > >();
+   function_requires<DistributionConcept<kolmogorov_smirnov_distribution<RealType, custom_policy> > >();
    function_requires<DistributionConcept<laplace_distribution<RealType, custom_policy> > >();
    function_requires<DistributionConcept<logistic_distribution<RealType, custom_policy> > >();
    function_requires<DistributionConcept<lognormal_distribution<RealType, custom_policy> > >();
@@ -52,6 +55,12 @@ void instantiate(RealType)
    function_requires<DistributionConcept<weibull_distribution<RealType, custom_policy> > >();
 }
 
+#else // Standalone mode
+
+template <typename T>
+void instantiate(T) {}
+
+#endif 
 
 int main()
 {

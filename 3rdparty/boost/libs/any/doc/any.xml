@@ -15,7 +15,7 @@
     </copyright>
 
     <copyright>
-      <year>2013-2019</year>
+      <year>2013-2021</year>
       <holder>Antony Polukhin</holder>
     </copyright>
 
@@ -237,7 +237,8 @@ public:
       indirection.</para>
 
       <para>The specific requirements on value types to be used in an
-      <code><classname alt="boost::any">any</classname></code>
+      <code><classname>boost::any</classname></code> and
+      <code><classname>boost::anys::basic_any</classname></code>
       are:</para>
 
       <itemizedlist spacing="compact">
@@ -254,19 +255,6 @@ public:
 
     <header name="boost/any.hpp">
       <namespace name="boost">
-        <class name="bad_any_cast">
-          <inherit access="public">
-            <classname>std::bad_cast</classname>
-          </inherit>
-          <purpose>The exception thrown in the event of a failed
-          <code><functionname>any_cast</functionname></code> of an
-          <code><classname>any</classname></code> value.</purpose>
-
-          <method name="what" specifiers="virtual" cv="const">
-            <type>const char *</type>
-          </method>
-        </class>
-
         <class name="any">
           <purpose>A class whose instances can hold instances of any
           type that satisfies <link
@@ -306,7 +294,7 @@ public:
             <postconditions><simpara><code>other-&gt;<methodname>empty</methodname>()</code></simpara></postconditions>
             <throws><simpara>Nothing.</simpara></throws>
           </constructor>
-          
+
           <constructor>
             <template>
               <template-type-parameter name="ValueType"/>
@@ -325,7 +313,7 @@ public:
             or any exceptions arising from the copy constructor of the
             contained type.</simpara></throws>
           </constructor>
-          
+
           <constructor>
             <template>
               <template-type-parameter name="ValueType"/>
@@ -342,7 +330,7 @@ public:
 
             <precondition>C++11 compatible compiler.</precondition>
             <throws><simpara><code><classname>std::bad_alloc</classname></code>
-            or any exceptions arising from the copy constructor of the
+            or any exceptions arising from the move or copy constructor of the
             contained type.</simpara></throws>
           </constructor>
 
@@ -370,7 +358,7 @@ public:
             contained type. Assignment satisfies the strong guarantee
             of exception safety.</simpara></throws>
           </copy-assignment>
-          
+
           <copy-assignment>
             <type><classname>any</classname> &amp;</type>
 
@@ -433,7 +421,7 @@ public:
             contained type. Assignment satisfies the strong guarantee
             of exception safety.</simpara></throws>
           </copy-assignment>
-          
+
           <method-group name="modifiers">
             <method name="swap">
               <type><classname>any</classname> &amp;</type>
@@ -458,13 +446,13 @@ public:
 
               <returns><simpara><code>true</code> if instance is
               empty, otherwise <code>false</code>.</simpara></returns>
-              
+
               <throws><simpara>Nothing.</simpara></throws>
             </method>
 
             <method name="type" cv="const">
               <type>const <classname>std::type_info</classname> &amp;</type>
-              
+
               <returns><simpara>the <code>typeid</code> of the
               contained value if instance is non-empty, otherwise
               <code>typeid(void)</code>.</simpara></returns>
@@ -475,7 +463,7 @@ public:
             </method>
           </method-group>
         </class>
-        
+
         <function name="swap">
           <type>void</type>
           <parameter name="lhs">
@@ -497,9 +485,9 @@ public:
             <template>
               <template-type-parameter name="T"/>
             </template>
-            
+
             <type>T</type>
-            
+
             <parameter name="operand">
               <paramtype><classname>any</classname> &amp;</paramtype>
             </parameter>
@@ -521,38 +509,38 @@ public:
             <template>
               <template-type-parameter name="T"/>
             </template>
-            
+
             <type>T</type>
-            
+
             <parameter name="operand">
               <paramtype>const <classname>any</classname> &amp;</paramtype>
             </parameter>
           </signature>
-          
+
           <signature>
             <template>
               <template-type-parameter name="ValueType"/>
             </template>
-            
+
             <type>const ValueType *</type>
-            
+
             <parameter name="operand">
               <paramtype>const <classname>any</classname> *</paramtype>
             </parameter>
           </signature>
-          
+
           <signature>
             <template>
               <template-type-parameter name="ValueType"/>
             </template>
-            
+
             <type>ValueType *</type>
-            
+
             <parameter name="operand">
               <paramtype><classname>any</classname> *</paramtype>
             </parameter>
           </signature>
-          
+
           <purpose><simpara>Custom keyword cast for extracting a value
           of a given type from an
           <code><classname>any</classname></code>.</simpara></purpose>
@@ -573,6 +561,378 @@ public:
 
         </overloaded-function>
       </namespace>
+    </header>
+
+    <header name="boost/any/bad_any_cast.hpp">
+      <namespace name="boost">
+        <class name="bad_any_cast">
+          <inherit access="public">
+            <classname>std::bad_cast</classname>
+          </inherit>
+          <purpose>The exception thrown in the event of a failed
+          <code><functionname>any_cast</functionname></code> of an
+          <code><classname>any</classname></code> value.</purpose>
+
+          <method name="what" specifiers="virtual" cv="const">
+            <type>const char *</type>
+          </method>
+        </class>
+      </namespace>
+    </header>
+
+    <header name="boost/any/basic_any.hpp">
+      <namespace name="boost"><namespace name="anys">
+        <class name="basic_any">
+          <purpose>A class with customizable Small Object Optimization whose instances can hold instances of any
+          type that satisfies <link
+          linkend="any.ValueType">ValueType</link>
+          requirements. Use <code><classname>boost::any</classname></code> instead if not sure.</purpose>
+
+          <description>
+              <para><code><classname>boost::anys::basic_any</classname></code> is the drop-in replacement for
+              <code><classname>boost::any</classname></code> that provides controll over Small Object
+              Optimization via <code>OptimizeForSize</code> and <code>OptimizeForAlignment</code> template
+              parameters.</para>
+
+              <para>There are certain applications that require <code><classname>boost::any</classname></code>
+              functionality, do know the typical/maximal size of the stored object and wish to avoid dynamic memory
+              allocation overhead. For the convenience such applications may create a typedef for <code>basic_any</code>
+              with the <code>OptimizeForSize</code> and <code>OptimizeForAlignment</code> template parameters set to
+              typical/maximal size and alignment of types respectively. Memory allocation would be avoided
+              for storing nothrow move constructible types with size and alignment less than or
+              equal to the <code>OptimizeForSize</code> and <code>OptimizeForAlignment</code> values.</para>
+
+              <para>Otherwise just use <code><classname>boost::any</classname></code>.</para>
+          </description>
+
+          <template>
+            <template-nontype-parameter name="OptimizeForSize">
+              <type>std::size_t</type>
+            </template-nontype-parameter>
+            <template-nontype-parameter name="OptimizeForAlignment">
+              <type>std::size_t</type>
+            </template-nontype-parameter>
+          </template>
+
+          <constructor>
+            <postconditions><simpara><code>this-&gt;<methodname>empty</methodname>()</code></simpara></postconditions>
+          </constructor>
+
+          <constructor>
+            <parameter name="other">
+              <paramtype>const <classname>basic_any</classname> &amp;</paramtype>
+            </parameter>
+
+            <effects><simpara> Copy constructor that copies content of
+            <code>other</code> into new instance, so that any content
+            is equivalent in both type and value to the content of
+            <code>other</code>, or empty if <code>other</code> is
+            empty. </simpara></effects>
+
+            <throws><simpara>May fail with a
+            <code><classname>std::bad_alloc</classname></code>
+            exception or any exceptions arising from the copy
+            constructor of the contained type.</simpara></throws>
+          </constructor>
+          <constructor>
+            <parameter name="other">
+              <paramtype><classname>basic_any</classname> &amp;&amp;</paramtype>
+            </parameter>
+
+            <effects><simpara> Move constructor that moves content of
+            <code>other</code> into new instance and leaves <code>other</code>
+            empty. </simpara></effects>
+            <precondition>C++11 compatible compiler.</precondition>
+            <postconditions><simpara><code>other-&gt;<methodname>empty</methodname>()</code></simpara></postconditions>
+            <throws><simpara>Nothing.</simpara></throws>
+          </constructor>
+
+          <constructor>
+            <template>
+              <template-type-parameter name="ValueType"/>
+            </template>
+
+            <parameter name="value">
+              <paramtype>const ValueType &amp;</paramtype>
+            </parameter>
+
+            <effects><simpara>Makes a copy of <code>value</code>, so
+            that the initial content of the new instance is equivalent
+            in both type and value to
+            <code>value</code>.</simpara>
+
+            <simpara>Does not dynamically allocate if <code>ValueType</code> is nothrow
+            move constructible and <code>sizeof(value) &lt;= OptimizeForSize
+            &amp;&amp; alignof(value) &lt;=OptimizeForAlignment</code>.</simpara>
+            </effects>
+
+            <throws><simpara><code><classname>std::bad_alloc</classname></code>
+            or any exceptions arising from the copy constructor of the
+            contained type.</simpara></throws>
+          </constructor>
+
+          <constructor>
+            <template>
+              <template-type-parameter name="ValueType"/>
+            </template>
+
+            <parameter name="value">
+              <paramtype>ValueType &amp;&amp;</paramtype>
+            </parameter>
+
+            <effects><simpara>Forwards <code>value</code>, so
+            that the initial content of the new instance is equivalent
+            in both type and value to
+            <code>value</code> before the forward.</simpara>
+
+            <simpara>Does not dynamically allocate if <code>ValueType</code> is nothrow
+            move constructible and <code>sizeof(value) &lt;= OptimizeForSize
+            &amp;&amp; alignof(value) &lt;=OptimizeForAlignment</code>.</simpara>
+            </effects>
+
+            <precondition>C++11 compatible compiler.</precondition>
+            <throws><simpara><code><classname>std::bad_alloc</classname></code>
+            or any exceptions arising from the move or copy constructor of the
+            contained type.</simpara></throws>
+          </constructor>
+
+          <destructor>
+            <effects><simpara>Releases any and all resources used in
+            management of instance.</simpara></effects>
+            <throws><simpara>Nothing.</simpara></throws>
+          </destructor>
+
+          <copy-assignment>
+            <type><classname>basic_any</classname> &amp;</type>
+
+            <parameter name="rhs">
+              <paramtype>const <classname>basic_any</classname> &amp;</paramtype>
+            </parameter>
+
+            <effects><simpara>Copies content of <code>rhs</code> into
+            current instance, discarding previous content, so that the
+            new content is equivalent in both type and value to the
+            content of <code>rhs</code>, or empty if
+            <code>rhs.<methodname>empty</methodname>()</code>.</simpara></effects>
+
+            <throws><simpara><code><classname>std::bad_alloc</classname></code>
+            or any exceptions arising from the copy constructor of the
+            contained type. Assignment satisfies the strong guarantee
+            of exception safety.</simpara></throws>
+          </copy-assignment>
+
+          <copy-assignment>
+            <type><classname>basic_any</classname> &amp;</type>
+
+            <parameter name="rhs">
+              <paramtype><classname>basic_any</classname> &amp;&amp;</paramtype>
+            </parameter>
+
+            <effects><simpara>Moves content of <code>rhs</code> into
+            current instance, discarding previous content, so that the
+            new content is equivalent in both type and value to the
+            content of <code>rhs</code> before move, or empty if
+            <code>rhs.<methodname>empty</methodname>()</code>.</simpara></effects>
+
+            <precondition>C++11 compatible compiler.</precondition>
+            <postconditions><simpara><code>rhs-&gt;<methodname>empty</methodname>()</code></simpara></postconditions>
+            <throws><simpara>Nothing.</simpara></throws>
+          </copy-assignment>
+
+          <copy-assignment>
+             <template>
+              <template-type-parameter name="ValueType"/>
+            </template>
+
+            <type><classname>basic_any</classname> &amp;</type>
+
+            <parameter name="rhs">
+              <paramtype>const ValueType &amp;</paramtype>
+            </parameter>
+
+            <effects><simpara>Makes a copy of <code>rhs</code>,
+            discarding previous content, so that the new content of is
+            equivalent in both type and value to
+            <code>rhs</code>.</simpara>
+
+            <simpara>Does not dynamically allocate if <code>ValueType</code> is nothrow
+            move constructible and <code>sizeof(value) &lt;= OptimizeForSize
+            &amp;&amp; alignof(value) &lt;=OptimizeForAlignment</code>.</simpara>
+            </effects>
+
+            <throws><simpara><code><classname>std::bad_alloc</classname></code>
+            or any exceptions arising from the copy constructor of the
+            contained type. Assignment satisfies the strong guarantee
+            of exception safety.</simpara></throws>
+          </copy-assignment>
+
+          <copy-assignment>
+             <template>
+              <template-type-parameter name="ValueType"/>
+            </template>
+
+            <type><classname>basic_any</classname> &amp;</type>
+
+            <parameter name="rhs">
+              <paramtype>ValueType &amp;&amp;</paramtype>
+            </parameter>
+
+            <effects><simpara>Forwards <code>rhs</code>,
+            discarding previous content, so that the new content of is
+            equivalent in both type and value to
+            <code>rhs</code> before forward.</simpara>
+
+            <simpara>Does not dynamically allocate if <code>ValueType</code> is nothrow
+            move constructible and <code>sizeof(value) &lt;= OptimizeForSize
+            &amp;&amp; alignof(value) &lt;=OptimizeForAlignment</code>.</simpara>
+            </effects>
+
+            <precondition>C++11 compatible compiler.</precondition>
+            <throws><simpara><code><classname>std::bad_alloc</classname></code>
+            or any exceptions arising from the move or copy constructor of the
+            contained type. Assignment satisfies the strong guarantee
+            of exception safety.</simpara></throws>
+          </copy-assignment>
+
+          <method-group name="modifiers">
+            <method name="swap">
+              <type><classname>basic_any</classname> &amp;</type>
+
+              <parameter name="rhs">
+                <paramtype><classname>basic_any</classname> &amp;</paramtype>
+              </parameter>
+
+              <effects><simpara>Exchange of the contents of
+              <code>*this</code> and
+              <code>rhs</code>.</simpara></effects>
+
+              <returns><simpara><code>*this</code></simpara></returns>
+
+              <throws><simpara>Nothing.</simpara></throws>
+            </method>
+          </method-group>
+
+          <method-group name="queries">
+            <method name="empty" cv="const">
+              <type>bool</type>
+
+              <returns><simpara><code>true</code> if instance is
+              empty, otherwise <code>false</code>.</simpara></returns>
+
+              <throws><simpara>Nothing.</simpara></throws>
+            </method>
+
+            <method name="type" cv="const">
+              <type>const <classname>std::type_info</classname> &amp;</type>
+
+              <returns><simpara>the <code>typeid</code> of the
+              contained value if instance is non-empty, otherwise
+              <code>typeid(void)</code>.</simpara></returns>
+
+              <notes><simpara>Useful for querying against types known
+              either at compile time or only at
+              runtime.</simpara></notes>
+            </method>
+          </method-group>
+        </class>
+
+        <function name="swap">
+          <type>void</type>
+          <parameter name="lhs">
+            <paramtype><classname>basic_any</classname> &amp;</paramtype>
+          </parameter>
+          <parameter name="rhs">
+              <paramtype><classname>basic_any</classname> &amp;</paramtype>
+          </parameter>
+
+            <effects><simpara>Exchange of the contents of
+            <code>lhs</code> and
+            <code>rhs</code>.</simpara></effects>
+
+            <throws><simpara>Nothing.</simpara></throws>
+        </function>
+
+        <overloaded-function name="any_cast">
+          <signature>
+            <template>
+              <template-type-parameter name="T"/>
+            </template>
+
+            <type>T</type>
+
+            <parameter name="operand">
+              <paramtype><classname>basic_any</classname> &amp;</paramtype>
+            </parameter>
+          </signature>
+
+          <signature>
+            <template>
+              <template-type-parameter name="T"/>
+            </template>
+
+            <type>T</type>
+
+            <parameter name="operand">
+              <paramtype><classname>basic_any</classname> &amp;&amp;</paramtype>
+            </parameter>
+          </signature>
+
+          <signature>
+            <template>
+              <template-type-parameter name="T"/>
+            </template>
+
+            <type>T</type>
+
+            <parameter name="operand">
+              <paramtype>const <classname>basic_any</classname> &amp;</paramtype>
+            </parameter>
+          </signature>
+
+          <signature>
+            <template>
+              <template-type-parameter name="ValueType"/>
+            </template>
+
+            <type>const ValueType *</type>
+
+            <parameter name="operand">
+              <paramtype>const <classname>basic_any</classname> *</paramtype>
+            </parameter>
+          </signature>
+
+          <signature>
+            <template>
+              <template-type-parameter name="ValueType"/>
+            </template>
+
+            <type>ValueType *</type>
+
+            <parameter name="operand">
+              <paramtype><classname>basic_any</classname> *</paramtype>
+            </parameter>
+          </signature>
+
+          <purpose><simpara>Custom keyword cast for extracting a value
+          of a given type from an
+          <code><classname>basic_any</classname></code>. Also available from <code>boost</code> namespace.</simpara></purpose>
+
+          <returns><simpara> If passed a pointer, it returns a
+          similarly qualified pointer to the value content if
+	  successful, otherwise null is returned.
+	  If T is ValueType, it returns a copy of the held value, otherwise, if T is a reference
+	  to (possibly const qualified) ValueType, it returns a reference to the held
+	  value.</simpara></returns>
+
+          <throws><simpara>Overloads taking an
+          <code><classname>basic_any</classname></code> pointer do not
+          throw; overloads taking an
+          <code><classname>basic_any</classname></code> value or reference
+          throw <code><classname>bad_any_cast</classname></code> if
+          unsuccessful.</simpara></throws>
+
+        </overloaded-function>
+      </namespace></namespace>
     </header>
   </library-reference>
 

@@ -8,7 +8,7 @@
 // See http://www.boost.org/libs/move for documentation.
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <boost/move/detail/config_begin.hpp>
+
 #include <boost/move/algorithm.hpp>
 #include <boost/container/vector.hpp>
 #include "../example/movable.hpp"
@@ -54,5 +54,3 @@ int main()
 
    return 0;
 }
-
-#include <boost/move/detail/config_end.hpp>

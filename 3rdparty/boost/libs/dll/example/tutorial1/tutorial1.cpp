@@ -1,5 +1,5 @@
 // Copyright 2014 Renato Tegon Forti, Antony Polukhin.
-// Copyright 2015-2019 Antony Polukhin.
+// Copyright 2015-2021 Antony Polukhin.
 //
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt
@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
     boost::shared_ptr<my_plugin_api> plugin;            // variable to hold a pointer to plugin variable
     std::cout << "Loading the plugin" << std::endl;
      
-    plugin = dll::import<my_plugin_api>(          // type of imported symbol is located between `<` and `>`
+    plugin = dll::import_symbol<my_plugin_api>(         // type of imported symbol is located between `<` and `>`
         lib_path / "my_plugin_sum",                     // path to the library and library name
         "plugin",                                       // name of the symbol to import
         dll::load_mode::append_decorations              // makes `libmy_plugin_sum.so` or `my_plugin_sum.dll` from `my_plugin_sum`

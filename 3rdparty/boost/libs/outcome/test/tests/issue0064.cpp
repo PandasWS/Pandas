@@ -1,5 +1,5 @@
 /* Unit testing for outcomes
-(C) 2013-2019 Niall Douglas <http://www.nedproductions.biz/> (4 commits)
+(C) 2013-2021 Niall Douglas <http://www.nedproductions.biz/> (4 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -28,12 +28,12 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <boost/outcome/iostream_support.hpp>
-#include <boost/outcome/outcome.hpp>
+#include <boost/outcome.hpp>
 #include <boost/outcome/try.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_monitor.hpp>
 
-BOOST_OUTCOME_AUTO_TEST_CASE(issues_64_outcome, "BOOST_OUTCOME_TRY on excepted outcome is propagating a null error rather than just an exception")
+BOOST_OUTCOME_AUTO_TEST_CASE(issues_0064_outcome, "BOOST_OUTCOME_TRY on excepted outcome is propagating a null error rather than just an exception")
 {
 #ifndef BOOST_NO_EXCEPTIONS
   using namespace BOOST_OUTCOME_V2_NAMESPACE;

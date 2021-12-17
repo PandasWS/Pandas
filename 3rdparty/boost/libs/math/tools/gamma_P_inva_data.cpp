@@ -3,17 +3,17 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include "mp_t.hpp"
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/lexical_cast.hpp>
 #include <fstream>
 #include <boost/math/tools/test_data.hpp>
-#include "mp_t.hpp"
 
 using namespace boost::math::tools;
 
 //
-// Force trunctation to float precision of input values:
+// Force truncation to float precision of input values:
 // we must ensure that the input values are exactly representable
 // in whatever type we are testing, or the output values will all
 // be thrown off:

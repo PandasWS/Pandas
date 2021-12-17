@@ -11,7 +11,7 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/mpl/assert.hpp>
@@ -252,29 +252,30 @@ typename boost::result_of<F(A, B, C)>::type apply3(F f, A a, B b, C c) {
 
 using namespace boost::lambda;
 
-int test_main(int, char *[]) {
-    BOOST_CHECK(boost::lambda::bind(with_result_type())() == 0);
-    BOOST_CHECK(boost::lambda::bind(with_result_type(), 1)() == 1);
-    BOOST_CHECK(boost::lambda::bind(with_result_type(), 1, 2)() == 2);
-    BOOST_CHECK(boost::lambda::bind(with_result_type(), 1, 2, 3)() == 3);
-    BOOST_CHECK(boost::lambda::bind(with_result_type(), 1, 2, 3, 4)() == 4);
-    BOOST_CHECK(boost::lambda::bind(with_result_type(), 1, 2, 3, 4, 5)() == 5);
-    BOOST_CHECK(boost::lambda::bind(with_result_type(), 1, 2, 3, 4, 5, 6)() == 6);
-    BOOST_CHECK(boost::lambda::bind(with_result_type(), 1, 2, 3, 4, 5, 6, 7)() == 7);
-    BOOST_CHECK(boost::lambda::bind(with_result_type(), 1, 2, 3, 4, 5, 6, 7, 8)() == 8);
-    BOOST_CHECK(boost::lambda::bind(with_result_type(), 1, 2, 3, 4, 5, 6, 7, 8, 9)() == 9);
+int main()
+{
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_type())(), 0);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_type(), 1)(), 1);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_type(), 1, 2)(), 2);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_type(), 1, 2, 3)(), 3);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_type(), 1, 2, 3, 4)(), 4);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_type(), 1, 2, 3, 4, 5)(), 5);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_type(), 1, 2, 3, 4, 5, 6)(), 6);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_type(), 1, 2, 3, 4, 5, 6, 7)(), 7);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_type(), 1, 2, 3, 4, 5, 6, 7, 8)(), 8);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_type(), 1, 2, 3, 4, 5, 6, 7, 8, 9)(), 9);
     
     // Nullary result_of fails
-    //BOOST_CHECK(boost::lambda::bind(with_result_template_value())() == 0);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_value(), 1)() == 1);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_value(), 1, 2)() == 2);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_value(), 1, 2, 3)() == 3);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4)() == 4);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4, 5)() == 5);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4, 5, 6)() == 6);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4, 5, 6, 7)() == 7);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4, 5, 6, 7, 8)() == 8);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4, 5, 6, 7, 8, 9)() == 9);
+    //BOOST_TEST_EQ(boost::lambda::bind(with_result_template_value())(), 0);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_value(), 1)(), 1);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_value(), 1, 2)(), 2);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_value(), 1, 2, 3)(), 3);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4)(), 4);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4, 5)(), 5);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4, 5, 6)(), 6);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4, 5, 6, 7)(), 7);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4, 5, 6, 7, 8)(), 8);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_value(), 1, 2, 3, 4, 5, 6, 7, 8, 9)(), 9);
 
     int one = 1,
         two = 2,
@@ -287,28 +288,28 @@ int test_main(int, char *[]) {
         nine = 9;
 
     // Nullary result_of fails
-    //BOOST_CHECK(boost::lambda::bind(with_result_template_reference())() == 0);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_reference(), var(one))() == 1);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_reference(), var(one), var(two))() == 2);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three))() == 3);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four))() == 4);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four), var(five))() == 5);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four), var(five), var(six))() == 6);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four), var(five), var(six), var(seven))() == 7);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four), var(five), var(six), var(seven), var(eight))() == 8);
-    BOOST_CHECK(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four), var(five), var(six), var(seven), var(eight), var(nine))() == 9);
+    //BOOST_TEST_EQ(boost::lambda::bind(with_result_template_reference())(), 0);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_reference(), var(one))(), 1);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_reference(), var(one), var(two))(), 2);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three))(), 3);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four))(), 4);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four), var(five))(), 5);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four), var(five), var(six))(), 6);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four), var(five), var(six), var(seven))(), 7);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four), var(five), var(six), var(seven), var(eight))(), 8);
+    BOOST_TEST_EQ(boost::lambda::bind(with_result_template_reference(), var(one), var(two), var(three), var(four), var(five), var(six), var(seven), var(eight), var(nine))(), 9);
 
     // Check using result_of with lambda functors
-    //BOOST_CHECK(apply0(constant(0)) == 0);
-    BOOST_CHECK(apply1<int>(_1, one) == 1);
-    BOOST_CHECK(apply1<int&>(_1, one) == 1);
-    BOOST_CHECK(apply1<const int&>(_1, one) == 1);
-    BOOST_CHECK((apply2<int, int>(_1 + _2, one, two) == 3));
-    BOOST_CHECK((apply2<int&, int&>(_1 + _2, one, two) == 3));
-    BOOST_CHECK((apply2<const int&, const int&>(_1 + _2, one, two) == 3));
-    BOOST_CHECK((apply3<int, int, int>(_1 + _2 + _3, one, two, three) == 6));
-    BOOST_CHECK((apply3<int&, int&, int&>(_1 + _2 + _3, one, two, three) == 6));
-    BOOST_CHECK((apply3<const int&, const int&, const int&>(_1 + _2 + _3, one, two, three) == 6));
+    //BOOST_TEST_EQ(apply0(constant(0)), 0);
+    BOOST_TEST_EQ(apply1<int>(_1, one), 1);
+    BOOST_TEST_EQ(apply1<int&>(_1, one), 1);
+    BOOST_TEST_EQ(apply1<const int&>(_1, one), 1);
+    BOOST_TEST_EQ((apply2<int, int>(_1 + _2, one, two)), 3);
+    BOOST_TEST_EQ((apply2<int&, int&>(_1 + _2, one, two)), 3);
+    BOOST_TEST_EQ((apply2<const int&, const int&>(_1 + _2, one, two)), 3);
+    BOOST_TEST_EQ((apply3<int, int, int>(_1 + _2 + _3, one, two, three)), 6);
+    BOOST_TEST_EQ((apply3<int&, int&, int&>(_1 + _2 + _3, one, two, three)), 6);
+    BOOST_TEST_EQ((apply3<const int&, const int&, const int&>(_1 + _2 + _3, one, two, three)), 6);
 
-    return 0;
+    return boost::report_errors();
 }

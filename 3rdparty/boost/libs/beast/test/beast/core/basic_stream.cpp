@@ -30,20 +30,15 @@
 #include <array>
 #include <thread>
 
+#if BOOST_ASIO_HAS_CO_AWAIT
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#endif
+
+
 namespace boost {
 namespace beast {
-
-#if 0
-template class basic_stream<
-    net::ip::tcp,
-    net::executor,
-    unlimited_rate_policy>;
-
-template class basic_stream<
-    net::ip::tcp,
-    net::executor,
-    simple_rate_policy>;
-#endif
 
 namespace {
 
@@ -258,7 +253,7 @@ private:
     {
         string_view s_;
         net::ip::tcp::socket socket_;
-        
+
     public:
         session(
             string_view s,
@@ -324,8 +319,8 @@ class basic_stream_test
 {
 public:
     using tcp = net::ip::tcp;
-    using strand = net::io_context::strand;
     using executor = net::io_context::executor_type;
+    using strand = net::strand<executor>;
 
     //--------------------------------------------------------------------------
 
@@ -365,46 +360,22 @@ public:
         // net::io_context::strand
 
         {
-            auto ex = strand{ioc};
+            auto ex = net::make_strand(ioc);
             basic_stream<tcp, strand> s1(ex);
             basic_stream<tcp, strand> s2(ex, tcp::v4());
             basic_stream<tcp, strand> s3(std::move(s1));
-        #if 0
-            s2.socket() = net::basic_stream_socket<
-                tcp, strand>(ioc);
-        #endif
             BEAST_EXPECT(s1.get_executor() == ex);
             BEAST_EXPECT(s2.get_executor() == ex);
             BEAST_EXPECT(s3.get_executor() == ex);
 
-#if 0
-            BEAST_EXPECT((! static_cast<
-                basic_stream<tcp, strand> const&>(
-                    s2).socket().is_open()));
-#endif
-
             test_sync_stream<
                 basic_stream<
-                    tcp, net::io_context::strand>>();
+                    tcp, strand>>();
 
             test_async_stream<
                 basic_stream<
-                    tcp, net::io_context::strand>>();
+                    tcp, strand>>();
         }
-
-        // construction from existing socket
-
-#if 0
-        {
-            tcp::socket sock(ioc);
-            basic_stream<tcp, executor> stream(std::move(sock));
-        }
-
-        {
-            tcp::socket sock(ioc);
-            basic_stream<tcp, strand> stream(std::move(sock));
-        }
-#endif
 
         // layers
 
@@ -1219,6 +1190,7 @@ public:
     {
         return {};
     }
+
     void process_http_1 (tcp_stream& stream, net::yield_context yield)
     {
         flat_buffer buffer;
@@ -1260,6 +1232,169 @@ public:
     //--------------------------------------------------------------------------
 
     void
+    testIssue1589()
+    {
+        net::io_context ioc;
+
+        // the timer needlessly used polymorphic executor
+        basic_stream<
+            net::ip::tcp,
+            net::io_context::executor_type>{ioc};
+
+        // make sure strands work
+        basic_stream<
+            net::ip::tcp,
+            net::strand<
+                net::io_context::executor_type>>{
+                    net::make_strand(ioc)};
+
+        // address the problem in the issue
+        {
+            net::basic_stream_socket<
+                net::ip::tcp,
+                net::strand<
+                    net::io_context::executor_type>
+                        > sock(net::make_strand(ioc));
+            basic_stream<
+                net::ip::tcp,
+                net::strand<
+                    net::io_context::executor_type>,
+                unlimited_rate_policy> stream(std::move(sock));
+            BOOST_STATIC_ASSERT(
+                std::is_convertible<
+                    decltype(sock)::executor_type,
+                    decltype(stream)::executor_type>::value);
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+#if BOOST_ASIO_HAS_CO_AWAIT
+    void testAwaitableCompilation(
+        basic_stream<net::ip::tcp>& stream,
+        net::mutable_buffer outbuf,
+        net::const_buffer inbuf,
+        net::ip::tcp::resolver::results_type resolve_results)
+    {
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+                stream.async_read_some(outbuf, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+                stream.async_write_some(inbuf, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<net::ip::tcp::resolver::results_type::const_iterator>, decltype(
+                stream.async_connect(
+                    resolve_results.begin(),
+                    resolve_results.end(),
+                    net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<net::ip::tcp::endpoint>, decltype(
+            stream.async_connect(
+                resolve_results,
+                net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<void>, decltype(
+            stream.async_connect(
+                resolve_results.begin()->endpoint(),
+                net::use_awaitable))>);
+
+        auto comparison_function = [](error_code&, net::ip::tcp::endpoint) { return true; };
+
+        static_assert(std::is_same_v<
+            net::awaitable<net::ip::tcp::resolver::results_type::const_iterator>, decltype(
+            stream.async_connect(
+                resolve_results.begin(),
+                resolve_results.end(),
+                comparison_function,
+                net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<net::ip::tcp::endpoint>, decltype(
+            stream.async_connect(
+                resolve_results,
+                comparison_function,
+                net::use_awaitable))>);
+    }
+#endif
+
+    void
+    testConnectionConditionArgs(
+        basic_stream<net::ip::tcp> &stream,
+        net::ip::tcp::resolver::results_type const &results)
+    {
+        struct condition
+        {
+            bool
+            operator()(const error_code &,
+                net::ip::tcp::endpoint const &) const;
+        };
+
+        {
+            struct handler
+            {
+                void
+                operator()(error_code const &,
+                           net::ip::tcp::resolver::results_type::const_iterator) const;
+            };
+
+            static_assert(std::is_void<decltype(
+            stream.async_connect(
+                results.begin(),
+                results.end(),
+                condition(),
+                handler()))>::value, "");
+        }
+
+        {
+            struct handler
+            {
+                void
+                operator()(error_code const &,
+                           net::ip::tcp::endpoint const &);
+            };
+
+            static_assert(std::is_void<decltype(
+            stream.async_connect(
+                results,
+                condition(),
+                handler()))>::value, "");
+        };
+    }
+
+    void
+    testIssue2065()
+    {
+        using stream_type = basic_stream<tcp,
+            net::io_context::executor_type>;
+
+        char buf[4];
+        net::io_context ioc;
+        std::memset(buf, 0, sizeof(buf));
+        net::mutable_buffer mb(buf, sizeof(buf));
+        auto const ep = net::ip::tcp::endpoint(
+            net::ip::make_address("127.0.0.1"), 0);
+
+            // async_read_some
+
+        {
+            // success
+            test_server srv("*", ep, log);
+            stream_type s(ioc);
+            s.socket().connect(srv.local_endpoint());
+            s.expires_never();
+            s.async_read_some(mb, handler({}, 1));
+            s.async_read_some(net::buffer(buf, 0), handler({}, 0));
+            ioc.run();
+            ioc.restart();
+        }
+    }
+
+    void
     run()
     {
         testSpecialMembers();
@@ -1268,6 +1403,14 @@ public:
         testConnect();
         testMembers();
         testJavadocs();
+        testIssue1589();
+
+#if BOOST_ASIO_HAS_CO_AWAIT
+        // test for compilation success only
+        boost::ignore_unused(&basic_stream_test::testAwaitableCompilation);
+#endif
+        boost::ignore_unused(&basic_stream_test::testConnectionConditionArgs);
+        testIssue2065();
     }
 };
 

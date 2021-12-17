@@ -1383,7 +1383,7 @@ All the mutex types from [*Boost.Interprocess] implement the following operation
 
 [*Throws:] *interprocess_exception* on error.
 
-[blurb ['[*bool timed_lock(const boost::posix_time::ptime &abs_time)]]]
+[blurb ['[*template<class TimePoint> bool timed_lock(const TimePoint &abs_time)]]]
 
 [*Effects:] The calling thread will try to obtain exclusive ownership of the mutex if it can do so in until the specified time is reached. If the mutex supports recursive locking, the mutex must be unlocked the same number of times it is locked.
 
@@ -1399,8 +1399,8 @@ All the mutex types from [*Boost.Interprocess] implement the following operation
 
 [*Throws:] An exception derived from *interprocess_exception* on error.
 
-[important `boost::posix_time::ptime` absolute time points used by Boost.Interprocess synchronization mechanisms
-are UTC time points, not local time points]
+[important Boost.Interprocess timed synchronization mechanisms support several timepoints: `boost::posix_time::ptime` absolute UTC time points,
+    `boost::chrono` and `std::chrono` timepoints. Additionally Interprocess' mutexes meet standard C++ `TimedLockable` requirements for std-compatibility]
 
 [endsect]
 
@@ -1499,8 +1499,8 @@ try_lock, timed_lock a mutex or not to lock it at all.
 For more information, check the
 [classref boost::interprocess::scoped_lock scoped_lock's reference].
 
-[important `boost::posix_time::ptime` absolute time points used by Boost.Interprocess synchronization mechanisms
-are UTC time points, not local time points]
+[important Boost.Interprocess timed synchronization operations support several timepoints: `boost::posix_time::ptime` absolute UTC time points,
+    `boost::chrono` and `std::chrono` timepoints]
 
 [endsect]
 
@@ -1605,7 +1605,7 @@ Boost.Interprocess offers the following condition types:
 
    #include <boost/interprocess/sync/named_condition_any.hpp>
 
-* [classref boost::interprocess::named_condition named_condition]: A named
+* [classref boost::interprocess::named_condition_any named_condition_any]: A named
   condition variable to be used with any lock type.
 
 Named conditions are similar to anonymous conditions, but they are used in
@@ -1857,7 +1857,7 @@ If it has to wait, returns false.
 
 [*Throws:] *interprocess_exception* on error.
 
-[blurb ['[*bool timed_lock(const boost::posix_time::ptime &abs_time)]]]
+[blurb ['[*template<class TimePoint> bool timed_lock(const TimePoint &abs_time)]]]
 
 [*Effects:]
 The calling thread tries to acquire exclusive ownership of the mutex
@@ -1902,7 +1902,7 @@ If it has to wait, returns false.
 
 [*Throws:] *interprocess_exception* on error.
 
-[blurb ['[*bool timed_lock_sharable(const boost::posix_time::ptime &abs_time)]]]
+[blurb ['[*template <class TimePoint> bool timed_lock_sharable(const TimePoint &abs_time)]]]
 
 [*Effects:]
 The calling thread tries to acquire sharable ownership of the mutex
@@ -1947,7 +1947,7 @@ If it has to wait, returns false.
 
 [*Throws:] *interprocess_exception* on error.
 
-[blurb ['[*bool timed_lock_upgradable(const boost::posix_time::ptime &abs_time)]]]
+[blurb ['[*template <class TimePoint> bool timed_lock_upgradable(const TimePoint &abs_time)]]]
 
 [*Effects:]
 The calling thread tries to acquire upgradable ownership of the mutex
@@ -2019,7 +2019,9 @@ it will maintain upgradable ownership.
 [*Returns:] If acquires exclusive ownership, returns true. Otherwise
 returns false.
 
-[*Throws:] An exception derived from *interprocess_exception* on error.[blurb ['[*bool timed_unlock_upgradable_and_lock(const boost::posix_time::ptime &abs_time)]]]
+[*Throws:] An exception derived from *interprocess_exception* on error.
+
+[blurb ['[*template <class TimePoint> bool timed_unlock_upgradable_and_lock(const TimePoint &abs_time)]]]
 
 [*Precondition:] The thread must have upgradable ownership of the mutex.
 
@@ -2042,7 +2044,9 @@ but it will maintain sharable ownership.
 [*Returns:] If acquires exclusive ownership, returns true. Otherwise
 returns false.
 
-[*Throws:] An exception derived from *interprocess_exception* on error.[blurb ['[*bool try_unlock_sharable_and_lock_upgradable()]]]
+[*Throws:] An exception derived from *interprocess_exception* on error.
+
+[blurb ['[*bool try_unlock_sharable_and_lock_upgradable()]]]
 
 [*Precondition:] The thread must have sharable ownership of the mutex.
 
@@ -2055,8 +2059,8 @@ returns false.
 
 [*Throws:] An exception derived from *interprocess_exception* on error.
 
-[important `boost::posix_time::ptime` absolute time points used by Boost.Interprocess synchronization mechanisms
-are UTC time points, not local time points]
+[important Boost.Interprocess timed synchronization mechanisms support several timepoints: `boost::posix_time::ptime` absolute UTC time points,
+    `boost::chrono` and `std::chrono` timepoints.]
 
 [endsect]
 
@@ -2095,6 +2099,8 @@ Boost.Interprocess offers the following upgradable mutex types:
 
 * [classref boost::interprocess::named_upgradable_mutex named_upgradable_mutex]: A non-recursive,
   named upgradable mutex.
+
+[important Interprocess shared mutexes meet standard C++ `SharedTimedMutex` requirements for std-compatibility]
 
 [endsect]
 
@@ -2234,8 +2240,8 @@ upgradable mutex is always unlocked when an exception occurs.
 [classref boost::interprocess::sharable_lock sharable_lock] offer
 more features and operations, see their reference for more informations
 
-[important `boost::posix_time::ptime` absolute time points used by Boost.Interprocess synchronization mechanisms
-are UTC time points, not local time points]
+[important Boost.Interprocess timed synchronization mechanisms support several timepoints: `boost::posix_time::ptime` absolute UTC time points,
+    `boost::chrono` and `std::chrono` timepoints.]
 
 [endsect]
 
@@ -2302,13 +2308,13 @@ we should call to unlock it:
 
 [c++]
 
-   try{
+   BOOST_TRY{
       //Mutex operations
    }
-   catch(...){
+   BOOST_CATCH(...){
       //What should we call? "unlock()" or "unlock_sharable()"
       //Is the mutex locked?
-   }
+   } BOOST_CATCH_END
 
 We can use [*lock transfer] to simplify all this management:
 
@@ -2380,10 +2386,11 @@ is permitted:
       scoped_lock<Mutex>      e_lock(move(u_lock, try_to_lock));
    }
    {
-      boost::posix_time::ptime t = test::delay(100);
+      using namespace boost::posix_time;
       upgradable_lock<Mutex>  u_lock(mut);
+      ptime t = boost::date_time::microsec_clock<ptime>::universal_time() + milliseconds(100);
       //This calls timed_unlock_upgradable_and_lock()
-      scoped_lock<Mutex>      e_lock(move(u_lock));
+      scoped_lock<Mutex>      e_lock(move(u_lock), t);
    }
    {
       sharable_lock<Mutex>    s_lock(mut);
@@ -2391,8 +2398,8 @@ is permitted:
       scoped_lock<Mutex>      e_lock(move(s_lock, try_to_lock));
    }
 
-[important `boost::posix_time::ptime` absolute time points used by Boost.Interprocess synchronization mechanisms
-are UTC time points, not local time points]
+[important Boost.Interprocess timed synchronization mechanisms support several timepoints: `boost::posix_time::ptime` absolute UTC time points,
+    `boost::chrono` and `std::chrono` timepoints.]
 
 [endsect]
 
@@ -2586,9 +2593,13 @@ Generally speaking, we can have two file locking capabilities:
    that the operation can be performed according to the acquired lock. Reads and writes
    block until the lock is released.
 
-[*Boost.Interprocess] implements [*advisory blocking] because of portability reasons.
-This means that every process accessing to a file concurrently, must cooperate using
-file locks to synchronize the access.
+[*Boost.Interprocess] uses the widely used native capability in each OS, which means:
+
+*   On Unix systems the widly available and tested POSIX `fcntl`-based advisory locking
+    is used. Moreover, [@https://man7.org/linux/man-pages/man2/fcntl.2.html some mandatory locking
+    implementations (e.g. Linux) are not reliable].
+
+*   On Windows systems native Mandatory Locking (using `FileLockEx`) is used.
 
 In some systems file locking can be even further refined, leading to [*record locking],
 where a user can specify a [*byte range] within the file where the lock is applied.
@@ -2653,7 +2664,7 @@ If it has to wait, returns false.
 
 [*Throws:] *interprocess_exception* on error.
 
-[blurb ['[*bool timed_lock(const boost::posix_time::ptime &abs_time)]]]
+[blurb ['[*template <class TimePoint> bool timed_lock(const TimePoint &abs_time)]]]
 
 [*Effects:]
 The calling thread tries to acquire exclusive ownership of the file lock
@@ -2694,7 +2705,7 @@ If it has to wait, returns false.
 
 [*Throws:] *interprocess_exception* on error.
 
-[blurb ['[*bool timed_lock_sharable(const boost::posix_time::ptime &abs_time)]]]
+[blurb ['[*template <class TimePoint> bool timed_lock_sharable(const TimePoint &abs_time)]]]
 
 [*Effects:]
 The calling thread tries to acquire sharable ownership of the file lock
@@ -2717,8 +2728,8 @@ returns false.
 For more file locking methods, please
 [classref boost::interprocess::file_lock file_lock reference].
 
-[important `boost::posix_time::ptime` absolute time points used by Boost.Interprocess synchronization mechanisms
-are UTC time points, not local time points]
+[important Boost.Interprocess timed synchronization mechanisms support several timepoints: `boost::posix_time::ptime` absolute UTC time points,
+    `boost::chrono` and `std::chrono` timepoints.]
 
 [endsect]
 
@@ -4278,6 +4289,10 @@ be also useful to build small databases for embedded systems limiting the size o
 the used memory to a predefined memory chunk, instead of letting the database
 fragment the heap memory.
 
+[*Note:] The external memory supplied by the user shall be aligned to the maximum value between 
+`alignof(max_align_t)` and the alignment of the strictest over-aligned type to be built inside
+that memory.
+
 [endsect]
 
 [section:managed_heap_memory Managed Heap Memory: Boost.Interprocess machinery in heap memory]
@@ -4344,6 +4359,18 @@ Otherwise, the result is undefined. Here is an example:
 
 [import ../example/doc_managed_heap_memory.cpp]
 [doc_managed_heap_memory]
+
+[*Note:] Heap memory is not guaranteed to be compatible with over-aligned types so it is
+not supported to use memory allocation algorithms or construct objects that need over-aligned memory:
+
+[c++]
+
+    // 64 byte aligned memory might not be supported
+    typedef basic_managed_heap_memory<
+        char,
+        rbtree_best_fit<mutex_family, offset_ptr<void, long, unsigned long, 64>, 64>,
+        iset_index
+    > managed_heap_with_overalignment_t;
 
 [endsect]
 
@@ -5293,7 +5320,7 @@ the performance of this algorithm suffers when the memory is fragmented. This
 algorithm has linear allocation and deallocation time, so when the number
 of allocations is high, the user should use a more performance-friendly algorithm.
 
-In most 32 systems, with 8 byte alignment, "basic_size" is 8 bytes.
+In most 32 bit systems, with 8 byte alignment, "basic_size" is 8 bytes.
 This means that an allocation request of 1 byte leads to
 the creation of a 16 byte block, where 8 bytes are available to the user.
 The allocation of 8 bytes leads also to the same 16 byte block.
@@ -5330,7 +5357,7 @@ segments and big number of allocations. To form a block a minimum memory size is
 the sum of the doubly linked list and the red-black tree control data.
 The size of a block is measured in multiples of the most restrictive alignment value.
 
-In most 32 systems with 8 byte alignment the minimum size of a block is 24 byte.
+In most 32 bit systems with 8 byte alignment the minimum size of a block is 24 byte.
 When a block is allocated the control data related to the red black tree
 is overwritten by the user (because it's only needed for free blocks).
 
@@ -6637,24 +6664,19 @@ want [*Boost.Interprocess] to initialize the COM library with another model, def
 
 Shared memory (`shared_memory_object`) is implemented in Windows using memory mapped files, placed in a
 shared directory in the shared documents folder (`SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders\Common AppData`).
-This directory name is the last bootup time obtained via COM calls (if `BOOST_INTERPROCESS_BOOTSTAMP_IS_LASTBOOTUPTIME`) defined
-or searching the system log for a startup event (the default implementation), so that each bootup shared memory is created in a new
-folder obtaining kernel persistence shared memory.
+This directory name is the last bootup time obtained via Registry values of the Session Manager. This behaviour is the default
+since Boost 1.74.
 
-If using `BOOST_INTERPROCESS_BOOTSTAMP_IS_LASTBOOTUPTIME`, due to COM implementation related errors,
-in Boost 1.48 & Boost 1.49 the bootup-time folder was dumped and files
-were directly created in shared documents folder, reverting to filesystem persistence shared memory. Boost 1.50 fixed those issues
-and recovered bootup time directory and kernel persistence. If you need to reproduce Boost 1.48 & Boost 1.49 behaviour to communicate
-with applications compiled with that version, comment `#define BOOST_INTERPROCESS_HAS_KERNEL_BOOTTIME` directive
-in the Windows configuration part of `boost/interprocess/detail/workaround.hpp`.
+Old [*Boost.Interprocess] versions (until Boost 1.48 ) used COM calls (via macro `BOOST_INTERPROCESS_BOOTSTAMP_IS_LASTBOOTUPTIME`)
+but that timestamp was unreliable in Virtual Machines and time adjustements. Next versions until (Boost 1.74) used EventLog startup event
+as timestamp, but several users discovered this event could be absent in the Event Log if the system was up for a long time. You
+can force this Event Log based timestamp defining BOOST_INTERPROCESS_BOOTSTAMP_IS_EVENTLOG_BASED.
 
-If using the default implementation, (`BOOST_INTERPROCESS_BOOTSTAMP_IS_LASTBOOTUPTIME` undefined) and the Startup Event is not
-found, this might be due to some buggy software that floods or erases the event log.
-
-In any error case (shared documents folder is not defined or bootup time could not be obtained, the library throws an error. You still
+In any error case (shared documents folder is not defined or bootup time could not be obtained), the library throws an error. You still
 can use [*Boost.Interprocess] defining your own directory as the shared directory. When your shared directory is a compile-time constant,
-define `BOOST_INTERPROCESS_SHARED_DIR_PATH` when using the library and that path will be used to place shared memory files. When you have 
-to determine the shared directory at runtime, define `BOOST_INTERPROCESS_SHARED_DIR_FUNC` and implement the function 
+define `BOOST_INTERPROCESS_SHARED_DIR_PATH` (and BOOST_INTERPROCESS_SHARED_DIR_WPATH in Windows systems) when using the library and that
+path will be used to place shared memory files. When you have to determine the shared directory at runtime,
+define `BOOST_INTERPROCESS_SHARED_DIR_FUNC` and implement the following functions
 
 [c++]
 
@@ -6662,6 +6684,8 @@ to determine the shared directory at runtime, define `BOOST_INTERPROCESS_SHARED_
        namespace interprocess { 
            namespace ipcdetail {
                void get_shared_dir(std::string &shared_dir);
+               //wstring overload is only needed for Windows systems
+               void get_shared_dir(std::wstring &shared_dir);
            }
        }
    }
@@ -6722,6 +6746,24 @@ change this overcommit behaviour.
 
 [endsect]
 
+[section:notes_freebsd Notes for FreeBSD users]
+
+[section:notes_freebsd_umtx_vnode_persistent Process-shared synchronization primitives and ['kern.ipc.umtx_vnode_persistent]]
+
+Starting from FreeBSD 11, declares the macro _POSIX_THREAD_PROCESS_SHARED. However, the default behavior is different from the one on Linux.
+If you want to use this feature, according to the man page of libthr(3), you should check sysctl's ['kern.ipc.umtx_vnode_persistent]:
+
+* ['kern.ipc.umtx_vnode_persistent]: By default, a shared lock backed by a mapped file in memory is automatically destroyed on the last
+   unmap of the corresponding file's page, which is allowed by POSIX. Setting the sysctl to 1 makes such a shared lock object persist until
+   the vnode is recycled by the Virtual File System. Note that in case file is not opened and not mapped, the kernel might recycle it at
+   any moment, making this sysctl less useful than it sounds.
+
+If you want mapped files to remain useful after the last handle is closed, set this variable to 1.
+
+[endsect]
+
+[endsect]
+
 [section:thanks_to Thanks to...]
 
 Many people have contributed with ideas and revisions, so this is the place to
@@ -6762,6 +6804,112 @@ thank them:
 [endsect]
 
 [section:release_notes Release Notes]
+
+[section:release_notes_boost_1_78_00 Boost 1.78 Release]
+
+*  Mutexes and condition variables now additionally offer a standard C++-like interface to allow reusing code that
+   is already working with standard thread utilities. E.g.: mutexes meet `TimedLockable` requirements and condition
+   variables implement `wait_until/wait_for` operations.
+
+*  Timeout support for managed memory segments: there are situations with concurrent creation and opening situations, half-initialized
+   tries, corruption, etc. where the implementation has to loop, retrying the operation or just waiting another process to complete
+   the initialization. This can lead to deadlocks, so the implementation was refactored to include retry and timeout limits.
+
+   *    BOOST_INTERPROCESS_MANAGED_OPEN_OR_CREATE_INITIALIZE_MAX_TRIES (20 by default) limits the amount of times the implementation
+        will try to perform the following steps:
+        *   Try to create the resource (shared memory, mapped file, ...) and receive an "already existing" error
+        *   Then try to open the resource but obtaining an "non existing resource" error.
+
+   *    BOOST_INTERPROCESS_MANAGED_OPEN_OR_CREATE_INITIALIZE_TIMEOUT_SEC (300 by default) limits the amount of times the implementation
+        will wait another thread to initialize (truncate the file/shared memory, initialize managed headers...) the resource while
+        trying to open it concurrently.
+
+    *   BOOST_INTERPROCESS_MANAGED_OPEN_OR_CREATE_INITIALIZE_MAX_TRIES/BOOST_INTERPROCESS_MANAGED_OPEN_OR_CREATE_INITIALIZE_TIMEOUT_SEC
+        can be defined by the user before including Boost.Interprocess headers to tune the default values.
+
+*  Fixed bugs:
+   * [@https://github.com/boostorg/interprocess/pull/65     GitHub #65 (['"Robustness of the interprocess mutex"])].
+   * [@https://github.com/boostorg/interprocess/pull/67     GitHub #67 (['"Changed to use posix robust mutex"])].
+   * [@https://github.com/boostorg/interprocess/pull/103    GitHub #103 (['"Use interprocess headers without exception handling"])].
+   * [@https://github.com/boostorg/interprocess/issues/128  GitHub #128 (['"Infinite loop in managed_open_or_create_impl.hpp"])].
+   * [@https://github.com/boostorg/interprocess/issues/130  GitHub #130 (['"infinite loop in managed_open_or_create_impl.hpp if filesize is 0"])].
+   * [@https://github.com/boostorg/interprocess/issues/142  GitHub #142 (['"File lock documentation about advisory locking is inaccurate on Windows"])].
+   * [@https://github.com/boostorg/interprocess/issues/149  GitHub #149 (['"interprocess_condition_any::timed_wait update"])].
+   * [@https://github.com/boostorg/interprocess/issues/145  GitHub #145 (['"1.76 now requires unicode paths on windows"])].
+   * [@https://github.com/boostorg/interprocess/issues/154  GitHub #154 (['"shared_memory_object::truncate() fails on AIX"])].
+   * [@https://github.com/boostorg/interprocess/pull/155    GitHub #155 (['"properly initilize enable_shared_from_this if the type is const"])].
+   * [@https://github.com/boostorg/interprocess/issues/157  GitHub #157 (['"Set sticky bit on shared interprocess folder"])].
+   * [@https://github.com/boostorg/interprocess/pull/158    GitHub #158 (['"atomic.hpp: adapt headers to AIX assembler"])].
+
+[endsect]
+
+
+[section:release_notes_boost_1_77_00 Boost 1.77 Release]
+
+*  Interprocess no longer depends on Boost.DateTime. Instead, all timed
+   functions were templated to take a TimePoint. This time point can be `boost::date_time::ptime`,
+   `std::time_point` or `boost::chrono::time_point`.
+
+*  Fixed bugs:
+   * [@https://github.com/boostorg/interprocess/issues/50  GitHub #50 (['"64-byte alignment causes assertion in rbtree_best_fit"])].
+
+[endsect]
+
+[section:release_notes_boost_1_76_00 Boost 1.76 Release]
+
+*  Added `wchar_t` API support for named resources in operating systems that offer native wide character API (e.g. Windows).
+    The following classes were updated with `wchar_t` name support:
+    * `file_mapping`
+    * `managed_mapped_file`
+    * `managed_shared_memory`
+    * `managed_windows_shared_memory`
+    * `shared_memory_object`
+    * `windows_shared_memory_object`
+    * `file_lock`
+    * `named_condition`
+    * `named_condition_any`
+    * `named_mutex`
+    * `named_recursive_mutex`
+    * `named_semaphore`
+    * `named_sharable_mutex`
+    * `named_upgradable_mutex`
+    * `message_queue`
+
+*  Added `BOOST_INTERPROCESS_FORCE_NATIVE_EMULATION` macro option to disable the use of generic emulation code for process
+   shared synchronization primitives instead of native POSIX or Winapi functions.
+
+*  Fixed bugs:
+   * [@https://github.com/boostorg/interprocess/issues/76  GitHub #76  (['"Cygwin compilation errors"])].
+   * [@https://github.com/boostorg/interprocess/pull/83    GitHub #83  (['"Add BOOST_INTERPROCESS_FORCE_NATIVE_EMULATION option"])].
+   * [@https://github.com/boostorg/interprocess/pull/92    GitHub #92  (['"bufferstream: Correct MSVC compilation warning"])].
+   * [@https://github.com/boostorg/interprocess/pull/106   GitHub #106 (['"Use fallocate on truncate_file"])].
+   * [@https://github.com/boostorg/interprocess/issues/120 GitHub #120 (['"segment_manager customization"])].
+   * [@https://github.com/boostorg/interprocess/issues/122 GitHub #122 (['"Mark constructors/assignment/swap noexcept where possible"])].
+   * [@https://github.com/boostorg/interprocess/issues/126 GitHub #126 (['"_ReadWriteBarrier is deprecated warning when compiling with clang-cl.exe"])].
+
+[endsect]
+
+[section:release_notes_boost_1_75_00 Boost 1.75 Release]
+
+*  Fixed bugs:
+   * [@https://github.com/boostorg/interprocess/issues/127 GitHub #127 (['"static assertion failure with boost interprocess 1.74 and basic_managed_shared_memory"])].
+
+[endsect]
+
+[section:release_notes_boost_1_74_00 Boost 1.74 Release]
+
+* [*ABI breaking]: Option `BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED` is now the default value.
+  You can obtain the pre-Boost 1.73 behaviour defining `BOOST_INTERPROCESS_BOOTSTAMP_IS_EVENTLOG_BASED`.
+  The old and broken pre-Boost 1.54 behaviour (`BOOST_INTERPROCESS_BOOTSTAMP_IS_LASTBOOTUPTIME`) is no
+  longer available.
+
+*  Fixed bugs:
+   * [@https://github.com/boostorg/interprocess/issues/89 GitHub #89 (['"priv_size_from_mapping_size() calculates wrong value"])].
+   * [@https://github.com/boostorg/interprocess/issues/99 GitHub #99 (['"Error in win32_api.hpp"])].
+   * [@https://github.com/boostorg/interprocess/issues/105 GitHub #105 (['"Build failure with clang on Windows"])].
+   * [@https://github.com/boostorg/interprocess/pull/119 GitHub #119 (['"Fix mingw compile error"])].
+
+[endsect]
 
 [section:release_notes_boost_1_71_00 Boost 1.71 Release]
 

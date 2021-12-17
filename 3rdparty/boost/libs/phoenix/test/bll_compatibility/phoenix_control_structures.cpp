@@ -12,7 +12,7 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
 
 #include "boost/lambda/lambda.hpp"
 #include "boost/lambda/if.hpp"
@@ -36,8 +36,8 @@ using namespace std;
 //  If-else, while, do-while, for statements
 
 
-int test_main(int, char *[]) {
-
+int main()
+{
     vector<int> v;
     v.clear();
     v.push_back(1);
@@ -60,7 +60,7 @@ int test_main(int, char *[]) {
         ]
     );
 
-    BOOST_CHECK(sum == 4+5+6+7+8);
+    BOOST_TEST_EQ(sum, 4+5+6+7+8);
 
     int gt = 0, eq = 0, lt = 0;
     //////////////////////////////////
@@ -82,9 +82,9 @@ int test_main(int, char *[]) {
         ]
     );
 
-    BOOST_CHECK(lt==4);
-    BOOST_CHECK(eq==1);
-    BOOST_CHECK(gt==5);
+    BOOST_TEST_EQ(lt, 4);
+    BOOST_TEST_EQ(eq, 1);
+    BOOST_TEST_EQ(gt, 5);
 
     vector<int> t = v;
 
@@ -101,8 +101,8 @@ int test_main(int, char *[]) {
         )
     );
     
-    BOOST_CHECK(counta == 55);
-    BOOST_CHECK(countb == 10);
+    BOOST_TEST_EQ(counta, 55);
+    BOOST_TEST_EQ(countb, 10);
 
 
     v = t;
@@ -120,8 +120,8 @@ int test_main(int, char *[]) {
         )
     );
 
-    BOOST_CHECK(counta == (2+11)*10/2);
-    BOOST_CHECK(countb == 10);
+    BOOST_TEST_EQ(counta, (2+11)*10/2);
+    BOOST_TEST_EQ(countb, 10);
 
 
     v = t;
@@ -138,11 +138,11 @@ int test_main(int, char *[]) {
         )
     );
 
-    BOOST_CHECK(counta == (1+10)*10/2);
-    BOOST_CHECK(countb == 10);
+    BOOST_TEST_EQ(counta, (1+10)*10/2);
+    BOOST_TEST_EQ(countb, 10);
 
     v = t;
 
-    return 0;
+    return boost::report_errors();
 }
 

@@ -18,7 +18,7 @@
 #include <vector>
 #include <algorithm> //std::sort
 #include <set>
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include "test_macros.hpp"
 #include "test_container.hpp"
@@ -75,7 +75,7 @@ class test_main_template<VoidPointer, ConstantTimeSize, DefaultHolder, Map, Base
       static const int random_init[6] = { 3, 2, 4, 1, 5, 2 };
       typedef typename ValueContainer< value_type >::type value_cont_type;
       value_cont_type data (6);
-      for (int i = 0; i < 6; ++i)
+      for (std::size_t i = 0u; i < 6u; ++i)
          data[i].value_ = random_init[i];
 
       typedef testvalue_traits< unordered_hooks<VoidPointer> > testval_traits_t;
@@ -102,7 +102,7 @@ class test_main_template<VoidPointer, ConstantTimeSize, DefaultHolder, Map, Memb
       static const int random_init[6] = { 3, 2, 4, 1, 5, 2 };
       typedef typename ValueContainer< value_type >::type value_cont_type;
       value_cont_type data (6);
-      for (int i = 0; i < 6; ++i)
+      for (std::size_t i = 0u; i < 6u; ++i)
          data[i].value_ = random_init[i];
 
       typedef testvalue_traits< unordered_hooks<VoidPointer> > testval_traits_t;
@@ -130,7 +130,7 @@ class test_main_template<VoidPointer, ConstantTimeSize, DefaultHolder, Map, NonM
       static const int random_init[6] = { 3, 2, 4, 1, 5, 2 };
       typedef typename ValueContainer< value_type >::type value_cont_type;
       value_cont_type data (6);
-      for (int i = 0; i < 6; ++i)
+      for (std::size_t i = 0; i < 6u; ++i)
          data[i].value_ = random_init[i];
 
       typedef testvalue_traits< unordered_hooks<VoidPointer> > testval_traits_t;

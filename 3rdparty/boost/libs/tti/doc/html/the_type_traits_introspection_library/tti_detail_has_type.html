@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Introspecting an inner type</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;The Type Traits Introspection Library">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;The Type Traits Introspection Library">
+<link rel="home" href="../index.html" title="Chapter 1. The Type Traits Introspection Library">
+<link rel="up" href="../index.html" title="Chapter 1. The Type Traits Introspection Library">
 <link rel="prev" href="tti_detail.html" title="Macro Metafunctions">
 <link rel="next" href="tti_detail_has_template.html" title="Introspecting an inner class template">
 </head>
@@ -27,9 +27,13 @@
 <a name="the_type_traits_introspection_library.tti_detail_has_type"></a><a class="link" href="tti_detail_has_type.html" title="Introspecting an inner type">Introspecting
     an inner type</a>
 </h2></div></div></div>
+<div class="toc"><dl class="toc"><dt><span class="section"><a href="tti_detail_has_type.html#the_type_traits_introspection_library.tti_detail_has_type.tti_detail_has_specific_type">Introspecting
+      a specific user-defined type</a></span></dt></dl></div>
 <p>
       The TTI macro <code class="computeroutput"><a class="link" href="../BOOST_TTI_HAS_TYPE.html" title="Macro BOOST_TTI_HAS_TYPE">BOOST_TTI_HAS_TYPE</a></code>
-      introspects a nested type of a class.
+      introspects a nested type of a class. The type it introspects may be a typedef
+      or, in C++11 on up, a type alias. Or the type may be the user-defined types
+      of a class/struct, enumeration, or union.
     </p>
 <p>
       The BOOST_TTI_HAS_TYPE macro takes a single parameter which is the name of
@@ -40,8 +44,8 @@
       The main purpose of the generated metafunction is to check for the existence
       by name of the inner type. The metafunction can also be used to invoke an MPL
       lambda expression which is passed the inner type. One of the most common usages
-      of the added functionality is to check whether or not the inner type is a typedef
-      for another type.
+      of the added functionality is to check whether or not the inner type is an
+      alias for another type, either through a typedef or a type alias.
     </p>
 <p>
       The metafunction is invoked by passing it the enclosing type to introspect.
@@ -57,9 +61,10 @@
 <p>
       If a second optional type is passed, this type must be an MPL lambda expression
       and the expression will be invoked only if the inner type exists. In that case
-      the metafunction returns true or false depending on whether the lambda expression
-      returns true or false. If the inner type does not exist, the lambda expression,
-      even if specified, is never invoked and the metafunction returns false.
+      the metafunction returns true or false depending on whether the MPL lambda
+      expression returns true or false. If the inner type does not exist, the MPL
+      lambda expression, even if specified, is never invoked and the metafunction
+      returns false.
     </p>
 <h4>
 <a name="the_type_traits_introspection_library.tti_detail_has_type.h0"></a>
@@ -145,19 +150,20 @@
       allows us to pass a metafunction to other metafunctions. The metafunction we
       pass can be in the form of a placeholder expression or a metafunction class.
       In our case the metafunction passed to our has_type_'name_of_inner_type' metafunction
-      as a lambda expression must return a boolean constant expression.
+      as an MPL lambda expression must return a boolean constant expression.
     </p>
 <h4>
 <a name="the_type_traits_introspection_library.tti_detail_has_type.h4"></a>
-      <span class="phrase"><a name="the_type_traits_introspection_library.tti_detail_has_type.example___using_a_lambda_expression_with_a_placeholder_expression"></a></span><a class="link" href="tti_detail_has_type.html#the_type_traits_introspection_library.tti_detail_has_type.example___using_a_lambda_expression_with_a_placeholder_expression">Example
-      - using a lambda expression with a placeholder expression</a>
+      <span class="phrase"><a name="the_type_traits_introspection_library.tti_detail_has_type.example___using_an_mpl_lambda_expression_with_a_placeholder_expression"></a></span><a class="link" href="tti_detail_has_type.html#the_type_traits_introspection_library.tti_detail_has_type.example___using_an_mpl_lambda_expression_with_a_placeholder_expression">Example
+      - using an MPL lambda expression with a placeholder expression</a>
     </h4>
 <p>
-      We will first illustrate the use of a lambda expression in the form of a placeholder
-      expression being passed as the second template parameter to our has_type_'name_of_inner_type'
-      metafunction. A popular and simple placeholder expression we can use is 'boost::is_same&lt;_1,SomeType&gt;'
-      to check if the inner type found is a particular type. This is particularly
-      useful when the inner type is a typedef for some other type.
+      We will first illustrate the use of an MPL lambda expression in the form of
+      a placeholder expression being passed as the second template parameter to our
+      has_type_'name_of_inner_type' metafunction. A popular and simple placeholder
+      expression we can use is 'boost::is_same&lt;_1,SomeType&gt;' to check if the
+      inner type found is a particular type. This is particularly useful when the
+      inner type is a typedef for some other type.
     </p>
 <p>
       First we include some more header files and a using declaration for convenience.
@@ -177,12 +183,12 @@
 </pre>
 <h4>
 <a name="the_type_traits_introspection_library.tti_detail_has_type.h5"></a>
-      <span class="phrase"><a name="the_type_traits_introspection_library.tti_detail_has_type.example___using_a_lambda_expression_with_a_metafunction_class"></a></span><a class="link" href="tti_detail_has_type.html#the_type_traits_introspection_library.tti_detail_has_type.example___using_a_lambda_expression_with_a_metafunction_class">Example
-      - using a lambda expression with a metafunction class</a>
+      <span class="phrase"><a name="the_type_traits_introspection_library.tti_detail_has_type.example___using_an_mpl_lambda_expression_with_a_metafunction_class"></a></span><a class="link" href="tti_detail_has_type.html#the_type_traits_introspection_library.tti_detail_has_type.example___using_an_mpl_lambda_expression_with_a_metafunction_class">Example
+      - using an MPL lambda expression with a metafunction class</a>
     </h4>
 <p>
-      We will next illustrate the use of a lambda expression in the form of a metafunction
-      class being passed as the second template parameter to our has_type_'name_of_inner_type'
+      We will next illustrate the use of an MPL lambda expression in the form of
+      a metafunction class being passed as the second template parameter to our has_type_'name_of_inner_type'
       metafunction.
     </p>
 <p>
@@ -230,10 +236,127 @@
       but add different lambda expressions to inspect that inner type for whatever
       we want to find out about it using the same metafunction.
     </p>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="the_type_traits_introspection_library.tti_detail_has_type.tti_detail_has_specific_type"></a><a class="link" href="tti_detail_has_type.html#the_type_traits_introspection_library.tti_detail_has_type.tti_detail_has_specific_type" title="Introspecting a specific user-defined type">Introspecting
+      a specific user-defined type</a>
+</h3></div></div></div>
+<p>
+        Just as you use tti to look for a general type within some enclosing class,
+        struct, or union, you can also look for a specific user-defined inner type.
+        The only difference in this functionality is that the macros and default
+        names for the generated metafunction change for each specific user-defined
+        type. Otherwise the remaining functionality works exactly the way which was
+        described in the previous topics when looking for a general inner type, including
+        the optional use of an MPL lambda expression if the specific inner type is
+        found.
+      </p>
+<p>
+        The specific inner types, their macros, and default generated metafunction
+        names are given in the following table:
+      </p>
+<div class="table">
+<a name="the_type_traits_introspection_library.tti_detail_has_type.tti_detail_has_specific_type.tbspinner"></a><p class="title"><b>Table 1.3. TTI Specific Inner Types</b></p>
+<div class="table-contents"><table class="table" summary="TTI Specific Inner Types">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Inner Element
+                </p>
+              </th>
+<th>
+                <p>
+                  Simple Macro
+                </p>
+              </th>
+<th>
+                <p>
+                  Default Template Name
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  Class or Struct
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><a class="link" href="../BOOST_TTI_HAS_CLASS.html" title="Macro BOOST_TTI_HAS_CLASS">BOOST_TTI_HAS_CLASS</a></code>(name)
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">has_class_</span><span class="char">'name'</span></code>
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Enumeration
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><a class="link" href="../BOOST_TTI_HAS_ENUM.html" title="Macro BOOST_TTI_HAS_ENUM">BOOST_TTI_HAS_ENUM</a></code>(name)
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">has_enum_</span><span class="char">'name'</span></code>
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Union
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><a class="link" href="../BOOST_TTI_HAS_UNION.html" title="Macro BOOST_TTI_HAS_UNION">BOOST_TTI_HAS_UNION</a></code>(name)
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">has_union_</span><span class="char">'name'</span></code>
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><p>
+        As with the general type you can also use the complex macros form of BOOST_TTI_TRAIT_HAS_CLASS(trait,name),
+        BOOST_TTI_TRAIT_HAS_ENUM(trait,name), and BOOST_TTI_TRAIT_HAS_UNION(trait,name)
+        respectively to directly generate the metafunction name.
+      </p>
+<p>
+        If you introspect for a specific user-defined type with a given name, and
+        some other type with that given name is found, the metafunction will return
+        the expected value of 'false', but no compiler error will result.
+      </p>
+<p>
+        In all other respects using these macros/metafunctions for specific inner
+        user-defined types will work in exactly the same way as has been explained
+        for searching for a general inner type. The specific inner type functionality
+        gives the end-user a finer grained introspection facility than looking for
+        a general type within an enclosing user-defined type.
+      </p>
+</div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2011-2013 Tropic Software
+<td align="right"><div class="copyright-footer">Copyright © 2011-2013 Tropic Software
       East Inc<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

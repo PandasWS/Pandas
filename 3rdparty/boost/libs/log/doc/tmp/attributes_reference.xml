@@ -538,7 +538,7 @@ The header contains an implementation of a basic attribute value implementation 
 </returns></method>
 </method-group>
 <constructor specifiers="explicit"><parameter name="v"><paramtype>value_type const &amp;</paramtype></parameter><description><para>Constructor with initialization of the stored value </para></description></constructor>
-<constructor specifiers="explicit"><parameter name="v"><paramtype>value_type &amp;&amp;</paramtype></parameter><description><para>Constructor with initialization of the stored value </para></description></constructor>
+<constructor specifiers="explicit" cv="noexcept(boost::is_nothrow_move_constructible&lt; value_type &gt;::value))"><parameter name="v"><paramtype>value_type &amp;&amp;</paramtype></parameter><description><para>Constructor with initialization of the stored value </para></description></constructor>
 </class>
 
 
@@ -804,7 +804,7 @@ The header contains implementation of a constant attribute. </para><namespace na
     </template><inherit access="public">attribute</inherit><purpose>A class of an attribute that holds a single constant value. </purpose><description><para>The constant is a simplest and one of the most frequently used types of attributes. It stores a constant value, which it eventually returns as its value each time requested. </para></description><class name="impl"><inherit access="public">attribute_value_impl&lt; value_type &gt;</inherit><purpose>Factory implementation. </purpose><method-group name="public member functions">
 </method-group>
 <constructor specifiers="explicit"><parameter name="value"><paramtype>value_type const &amp;</paramtype></parameter><description><para>Constructor with the stored value initialization </para></description></constructor>
-<constructor specifiers="explicit"><parameter name="value"><paramtype>value_type &amp;&amp;</paramtype></parameter><description><para>Constructor with the stored value initialization </para></description></constructor>
+<constructor specifiers="explicit" cv="noexcept(boost::is_nothrow_move_constructible&lt; value_type &gt;::value))"><parameter name="value"><paramtype>value_type &amp;&amp;</paramtype></parameter><description><para>Constructor with the stored value initialization </para></description></constructor>
 </class><typedef name="value_type"><purpose>Attribute value type. </purpose><type>T</type></typedef>
 <method-group name="public member functions">
 <method name="get" cv="const"><type>value_type const  &amp;</type><description><para>
@@ -1441,7 +1441,7 @@ The header contains implementation of named scope container and an attribute tha
 <namespace name="attributes">
 <class name="named_scope"><inherit access="public">attribute</inherit><purpose>A class of an attribute that holds stack of named scopes of the current thread. </purpose><description><para>The basic_named_scope attribute is essentially a hook to the thread-specific instance of scope list. This means that the attribute will generate different values if get_value is called in different threads. The attribute generates value with stored type <computeroutput>basic_named_scope_list&lt; CharT &gt;</computeroutput>.</para><para>The attribute class can also be used to gain access to the scope stack instance, e.g. to get its copy or to push or pop a scope entry. However, it is highly not recommended to maintain scope list manually. Use <computeroutput>BOOST_LOG_NAMED_SCOPE</computeroutput> or <computeroutput>BOOST_LOG_FUNCTION</computeroutput> macros instead. </para></description><struct name="sentry"><purpose>Sentry object class to automatically push and pop scopes. </purpose><method-group name="public member functions">
 </method-group>
-<constructor cv="noexcept"><parameter name="sn"><paramtype>string_literal const &amp;</paramtype><description><para>Scope name. </para></description></parameter><parameter name="fn"><paramtype>string_literal const &amp;</paramtype><description><para>File name, in which the scope is located. </para></description></parameter><parameter name="ln"><paramtype>unsigned int</paramtype><description><para>Line number in the file. </para></description></parameter><parameter name="t"><paramtype>scope_entry::scope_name_type</paramtype><default>scope_entry::general</default></parameter><description><para>Constructor. Pushes the specified scope to the end of the thread-local list of scopes.</para><para>
+<constructor cv="noexcept"><parameter name="sn"><paramtype>string_literal const &amp;</paramtype><description><para>Scope name. </para></description></parameter><parameter name="fn"><paramtype>string_literal const &amp;</paramtype><description><para>File name, in which the scope is located. </para></description></parameter><parameter name="ln"><paramtype>unsigned int</paramtype><description><para>Line number in the file. </para></description></parameter><parameter name="t"><paramtype>scope_entry::scope_name_type</paramtype><default>scope_entry::general</default><description><para>Scope name type. </para></description></parameter><description><para>Constructor. Pushes the specified scope to the end of the thread-local list of scopes.</para><para>
 </para></description></constructor>
 <destructor><description><para>Destructor. Removes the last pushed scope from the thread-local list of scopes. </para></description></destructor>
 <constructor cv="= delete"><parameter name=""><paramtype><classname>sentry</classname> const &amp;</paramtype></parameter></constructor>
@@ -1472,13 +1472,13 @@ The header contains implementation of named scope container and an attribute tha
 <emphasis role="bold">Throws:</emphasis> Nothing. </para></description><postconditions><para><computeroutput>scope_name == sn &amp;&amp; file_name == fn &amp;&amp; line == ln</computeroutput></para>
 </postconditions></constructor>
 </struct><class name="named_scope_list"><purpose>The class implements the list of scopes. </purpose><description><para>The scope list provides a read-only access to a doubly-linked list of scopes. </para></description><typedef name="allocator_type"><purpose>Allocator type. </purpose><type>std::allocator&lt; <classname>named_scope_entry</classname> &gt;</type></typedef>
-<typedef name="value_type"><type>allocator_type::value_type</type></typedef>
-<typedef name="reference"><type>allocator_type::reference</type></typedef>
-<typedef name="const_reference"><type>allocator_type::const_reference</type></typedef>
-<typedef name="pointer"><type>allocator_type::pointer</type></typedef>
-<typedef name="const_pointer"><type>allocator_type::const_pointer</type></typedef>
-<typedef name="size_type"><type>allocator_type::size_type</type></typedef>
-<typedef name="difference_type"><type>allocator_type::difference_type</type></typedef>
+<typedef name="value_type"><type><emphasis>unspecified</emphasis></type></typedef>
+<typedef name="size_type"><type><emphasis>unspecified</emphasis></type></typedef>
+<typedef name="difference_type"><type><emphasis>unspecified</emphasis></type></typedef>
+<typedef name="pointer"><type><emphasis>unspecified</emphasis></type></typedef>
+<typedef name="const_pointer"><type><emphasis>unspecified</emphasis></type></typedef>
+<typedef name="reference"><type>value_type &amp;</type></typedef>
+<typedef name="const_reference"><type>value_type const  &amp;</type></typedef>
 <typedef name="const_iterator"><description><para>A constant iterator to the sequence of scopes. Complies to bidirectional iterator requirements. </para></description><type>implementation_defined</type></typedef>
 <typedef name="iterator"><description><para>An iterator to the sequence of scopes. Complies to bidirectional iterator requirements. </para></description><type>implementation_defined</type></typedef>
 <typedef name="const_reverse_iterator"><description><para>A constant reverse iterator to the sequence of scopes. Complies to bidirectional iterator requirements. </para></description><type>implementation_defined</type></typedef>

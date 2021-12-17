@@ -4,9 +4,7 @@
 #include <boost/property_tree/json_parser/detail/standard_callbacks.hpp>
 #include "prefixing_callbacks.hpp"
 
-#define BOOST_TEST_NO_MAIN
-#include <boost/test/unit_test.hpp>
-#include <boost/test/parameterized_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/range/iterator_range.hpp>
@@ -14,6 +12,7 @@
 #include <cassert>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 
 using namespace boost::property_tree;
 
@@ -126,105 +125,125 @@ struct prefixing_parser
 #define BOM_N "\xef\xbb\xbf"
 #define BOM_W L"\xfeff"
 
-namespace boost { namespace test_tools { namespace tt_detail {
-    template<>
-    struct print_log_value<std::wstring> {
-        void operator()(std::ostream& os, const std::wstring& s) {
-            print_log_value<const wchar_t*>()(os, s.c_str());
-        }
-    };
-}}}
-BOOST_TEST_DONT_PRINT_LOG_VALUE(ptree::iterator)
-BOOST_TEST_DONT_PRINT_LOG_VALUE(ptree::const_iterator)
-BOOST_TEST_DONT_PRINT_LOG_VALUE(wptree::iterator)
-BOOST_TEST_DONT_PRINT_LOG_VALUE(wptree::const_iterator)
-
-BOOST_AUTO_TEST_CASE(null_parse_result_is_input) {
+static void
+test_null_parse_result_is_input()
+{
     std::string parsed;
     standard_parser<char> p;
-    BOOST_REQUIRE(p.parse_null("null", parsed));
-    BOOST_CHECK_EQUAL("null", parsed);
+    BOOST_TEST(p.parse_null("null", parsed));
+    BOOST_TEST_EQ("null", parsed);
 }
 
-BOOST_AUTO_TEST_CASE(uses_traits_from_null)
+static void
+test_uses_traits_from_null()
 {
     std::string parsed;
     prefixing_parser<char> p;
-    BOOST_REQUIRE(p.parse_null("null", parsed));
-    BOOST_CHECK_EQUAL("_:null", parsed);
+    BOOST_TEST(p.parse_null("null", parsed));
+    BOOST_TEST_EQ("_:null", parsed);
 }
 
-BOOST_AUTO_TEST_CASE(null_parse_skips_bom) {
+static void
+test_null_parse_skips_bom()
+{
     std::string parsed;
     standard_parser<char> p;
-    BOOST_REQUIRE(p.parse_null(BOM_N "null", parsed));
-    BOOST_CHECK_EQUAL("null", parsed);
+    BOOST_TEST(p.parse_null(BOM_N "null", parsed));
+    BOOST_TEST_EQ("null", parsed);
 }
 
-BOOST_AUTO_TEST_CASE(null_parse_result_is_input_w) {
+static void
+test_null_parse_result_is_input_w()
+{
     std::wstring parsed;
     standard_parser<wchar_t> p;
-    BOOST_REQUIRE(p.parse_null(L"null", parsed));
-    BOOST_CHECK_EQUAL(L"null", parsed);
+    BOOST_TEST(p.parse_null(L"null", parsed));
+    BOOST_TEST(parsed == L"null");
 }
 
-BOOST_AUTO_TEST_CASE(uses_traits_from_null_w)
+static void
+test_uses_traits_from_null_w()
 {
     std::wstring parsed;
     prefixing_parser<wchar_t> p;
-    BOOST_REQUIRE(p.parse_null(L"null", parsed));
-    BOOST_CHECK_EQUAL(L"_:null", parsed);
+    BOOST_TEST(p.parse_null(L"null", parsed));
+    BOOST_TEST(parsed == L"_:null");
 }
 
-BOOST_AUTO_TEST_CASE(null_parse_skips_bom_w) {
+static void
+test_null_parse_skips_bom_w()
+{
     std::wstring parsed;
     standard_parser<wchar_t> p;
-    BOOST_REQUIRE(p.parse_null(BOM_W L"null", parsed));
-    BOOST_CHECK_EQUAL(L"null", parsed);
+    BOOST_TEST(p.parse_null(BOM_W L"null", parsed));
+    BOOST_TEST(parsed == L"null");
 }
 
-void boolean_parse_result_is_input_n(const char* param) {
-    std::string parsed;
-    standard_parser<char> p;
-    BOOST_REQUIRE(p.parse_boolean(param, parsed));
-    BOOST_CHECK_EQUAL(param, parsed);
+template<std::size_t N>
+static void
+test_boolean_parse_result_is_input_n(const std::string (&param)[N])
+{
+    for(std::size_t i = 0 ; i < N ; ++i)
+    {
+        std::string parsed;
+        standard_parser<char> p;
+        BOOST_TEST(p.parse_boolean(param[i], parsed));
+        BOOST_TEST_EQ(param[i], parsed);
+    }
 }
 
-const char* const booleans_n[] = { "true", "false" };
+const std::string
+booleans_n[] = { "true", "false" };
 
-BOOST_AUTO_TEST_CASE(uses_traits_from_boolean_n)
+static void
+test_uses_traits_from_boolean_n()
 {
     std::string parsed;
     prefixing_parser<char> p;
-    BOOST_REQUIRE(p.parse_boolean("true", parsed));
-    BOOST_CHECK_EQUAL("b:true", parsed);
+    BOOST_TEST(p.parse_boolean("true", parsed));
+    BOOST_TEST_EQ("b:true", parsed);
 }
 
-void boolean_parse_result_is_input_w(const wchar_t* param) {
-    std::wstring parsed;
-    standard_parser<wchar_t> p;
-    BOOST_REQUIRE(p.parse_boolean(param, parsed));
-    BOOST_CHECK_EQUAL(param, parsed);
+template<std::size_t N>
+static void
+test_boolean_parse_result_is_input_w(const std::wstring (&param)[N])
+{
+    for(std::size_t i = 0 ; i < N ; ++i)
+    {
+        std::wstring parsed;
+        standard_parser<wchar_t> p;
+        BOOST_TEST(p.parse_boolean(param[i], parsed));
+        BOOST_TEST(param[i] == parsed);
+    }
 }
 
-const wchar_t* const booleans_w[] = { L"true", L"false" };
+const std::wstring
+booleans_w[] = { L"true", L"false" };
 
-BOOST_AUTO_TEST_CASE(uses_traits_from_boolean_w)
+static void
+test_uses_traits_from_boolean_w()
 {
     std::wstring parsed;
     prefixing_parser<wchar_t> p;
-    BOOST_REQUIRE(p.parse_boolean(L"true", parsed));
-    BOOST_CHECK_EQUAL(L"b:true", parsed);
+    BOOST_TEST(p.parse_boolean(L"true", parsed));
+    BOOST_TEST(parsed == L"b:true");
 }
 
-void number_parse_result_is_input_n(const char* param) {
-    std::string parsed;
-    standard_parser<char> p;
-    BOOST_REQUIRE(p.parse_number(param, parsed));
-    BOOST_CHECK_EQUAL(param, parsed);
+template<std::size_t N>
+static void
+test_number_parse_result_is_input_n(std::string const (&param)[N])
+{
+    for(std::size_t i = 0 ; i < N ; ++i)
+    {
+        std::string parsed;
+        standard_parser<char> p;
+        BOOST_TEST(p.parse_number(param[i], parsed));
+        BOOST_TEST_EQ(param[i], parsed);
+    }
 }
 
-const char* const numbers_n[] = {
+std::string const
+numbers_n[] = {
     "0",
     "-0",
     "1824",
@@ -235,22 +254,29 @@ const char* const numbers_n[] = {
     "1.1e134"
 };
 
-BOOST_AUTO_TEST_CASE(uses_traits_from_number_n)
+static void
+test_uses_traits_from_number_n()
 {
     std::string parsed;
     prefixing_parser<char> p;
-    BOOST_REQUIRE(p.parse_number("12345", parsed));
-    BOOST_CHECK_EQUAL("n:12345", parsed);
+    BOOST_TEST(p.parse_number("12345", parsed));
+    BOOST_TEST_EQ("n:12345", parsed);
 }
 
-void number_parse_result_is_input_w(const wchar_t* param) {
-    std::wstring parsed;
-    standard_parser<wchar_t> p;
-    BOOST_REQUIRE(p.parse_number(param, parsed));
-    BOOST_CHECK_EQUAL(param, parsed);
+template<std::size_t N>
+static void
+test_number_parse_result_is_input_w(const std::wstring (&param)[N])
+{
+    for(std::size_t i = 0 ; i < N ; ++i)
+    {
+        std::wstring parsed;
+        standard_parser<wchar_t> p;
+        BOOST_TEST(p.parse_number(param[i], parsed));
+        BOOST_TEST(parsed == param[i]);
+    }
 }
 
-const wchar_t* const numbers_w[] = {
+std::wstring const numbers_w[] = {
     L"0",
     L"-0",
     L"1824",
@@ -261,12 +287,13 @@ const wchar_t* const numbers_w[] = {
     L"1.1e134"
 };
 
-BOOST_AUTO_TEST_CASE(uses_traits_from_number_w)
+static void
+test_uses_traits_from_number_w()
 {
     std::wstring parsed;
     prefixing_parser<wchar_t> p;
-    BOOST_REQUIRE(p.parse_number(L"12345", parsed));
-    BOOST_CHECK_EQUAL(L"n:12345", parsed);
+    BOOST_TEST(p.parse_number(L"12345", parsed));
+    BOOST_TEST(parsed == L"n:12345");
 }
 
 struct string_input_n {
@@ -274,11 +301,16 @@ struct string_input_n {
     const char* expected;
 };
 
-void string_parsed_correctly_n(string_input_n param) {
-    std::string parsed;
-    standard_parser<char> p;
-    BOOST_REQUIRE(p.parse_string(param.encoded, parsed));
-    BOOST_CHECK_EQUAL(param.expected, parsed);
+template<std::size_t N>
+void test_string_parsed_correctly_n(string_input_n const (&param)[N])
+{
+    for(std::size_t i = 0 ; i < N ; ++i)
+    {
+        std::string parsed;
+        standard_parser<char> p;
+        BOOST_TEST(p.parse_string(param[i].encoded, parsed));
+        BOOST_TEST_EQ(param[i].expected, parsed);
+    }
 }
 
 const string_input_n strings_n[] = {
@@ -297,12 +329,13 @@ const string_input_n strings_n[] = {
     {"\xef\xbb\xbf\"\"", ""} // BOM
 };
 
-BOOST_AUTO_TEST_CASE(uses_string_callbacks)
+static void
+test_uses_string_callbacks()
 {
     std::string parsed;
     prefixing_parser<char> p;
-    BOOST_REQUIRE(p.parse_string("\"a\"", parsed));
-    BOOST_CHECK_EQUAL("s:a", parsed);
+    BOOST_TEST(p.parse_string("\"a\"", parsed));
+    BOOST_TEST_EQ("s:a", parsed);
 }
 
 struct string_input_w {
@@ -310,11 +343,17 @@ struct string_input_w {
     const wchar_t* expected;
 };
 
-void string_parsed_correctly_w(string_input_w param) {
-    std::wstring parsed;
-    standard_parser<wchar_t> p;
-    BOOST_REQUIRE(p.parse_string(param.encoded, parsed));
-    BOOST_CHECK_EQUAL(param.expected, parsed);
+template<std::size_t N>
+void
+test_string_parsed_correctly_w(string_input_w const (&param)[N])
+{
+    for(std::size_t i = 0 ; i < N ; ++i)
+    {
+        std::wstring parsed;
+        standard_parser<wchar_t> p;
+        if(BOOST_TEST(p.parse_string(param[i].encoded, parsed)))
+            BOOST_TEST(param[i].expected == parsed);
+    }
 }
 
 const string_input_w strings_w[] = {
@@ -332,137 +371,165 @@ const string_input_w strings_w[] = {
     {L"\xfeff\"\"", L""} // BOM
 };
 
-BOOST_AUTO_TEST_CASE(empty_array) {
+static void 
+test_empty_array()
+{
     ptree tree;
     standard_parser<char> p;
     const char* input = " [ ]";
-    BOOST_REQUIRE(p.parse_array(input, tree));
-    BOOST_CHECK_EQUAL("", tree.data());
-    BOOST_CHECK_EQUAL(0u, tree.size());
+    BOOST_TEST(p.parse_array(input, tree));
+    BOOST_TEST_EQ("", tree.data());
+    BOOST_TEST_EQ(0u, tree.size());
 }
 
-BOOST_AUTO_TEST_CASE(array_gets_tagged) {
+static void
+test_array_gets_tagged()
+{
     wptree tree;
     prefixing_parser<wchar_t> p;
     const wchar_t* input = L" [ ]";
-    BOOST_REQUIRE(p.parse_array(input, tree));
-    BOOST_CHECK_EQUAL(L"a:", tree.data());
-    BOOST_CHECK_EQUAL(0u, tree.size());
+    BOOST_TEST(p.parse_array(input, tree));
+    BOOST_TEST(tree.data() == L"a:");
+    BOOST_TEST_EQ(0u, tree.size());
 }
 
-BOOST_AUTO_TEST_CASE(array_with_values) {
+static void
+test_array_with_values()
+{
     wptree tree;
     standard_parser<wchar_t> p;
     const wchar_t* input = L"[\n"
 L"      123, \"abc\" ,true ,\n"
 L"      null\n"
 L"  ]";
-    BOOST_REQUIRE(p.parse_array(input, tree));
-    BOOST_REQUIRE_EQUAL(4u, tree.size());
+    if(!BOOST_TEST(p.parse_array(input, tree))) 
+        return;
+    if(!BOOST_TEST_EQ(4u, tree.size()))
+        return;
     wptree::iterator it = tree.begin();
-    BOOST_CHECK_EQUAL(L"", it->first);
-    BOOST_CHECK_EQUAL(L"123", it->second.data());
+    BOOST_TEST(it->first == L"");
+    BOOST_TEST(it->second.data() == L"123");
     ++it;
-    BOOST_CHECK_EQUAL(L"", it->first);
-    BOOST_CHECK_EQUAL(L"abc", it->second.data());
+    BOOST_TEST(it->first == L"");
+    BOOST_TEST(it->second.data() == L"abc");
     ++it;
-    BOOST_CHECK_EQUAL(L"", it->first);
-    BOOST_CHECK_EQUAL(L"true", it->second.data());
+    BOOST_TEST(it->first == L"");
+    BOOST_TEST(it->second.data() == L"true");
     ++it;
-    BOOST_CHECK_EQUAL(L"", it->first);
-    BOOST_CHECK_EQUAL(L"null", it->second.data());
+    BOOST_TEST(it->first == L"");
+    BOOST_TEST(it->second.data() == L"null");
     ++it;
-    BOOST_CHECK_EQUAL(tree.end(), it);
+    BOOST_TEST(tree.end() == it);
 }
 
-BOOST_AUTO_TEST_CASE(array_values_get_tagged) {
+static void
+test_array_values_get_tagged()
+{
     ptree tree;
     prefixing_parser<char> p;
     const char* input = "[\n"
 "       123, \"abc\" ,true ,\n"
 "       null\n"
 "   ]";
-    BOOST_REQUIRE(p.parse_array(input, tree));
-    BOOST_REQUIRE_EQUAL(4u, tree.size());
-    BOOST_CHECK_EQUAL("a:", tree.data());
-    ptree::iterator it = tree.begin();
-    BOOST_CHECK_EQUAL("", it->first);
-    BOOST_CHECK_EQUAL("n:123", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL("", it->first);
-    BOOST_CHECK_EQUAL("s:abc", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL("", it->first);
-    BOOST_CHECK_EQUAL("b:true", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL("", it->first);
-    BOOST_CHECK_EQUAL("_:null", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL(tree.end(), it);
+    if(BOOST_TEST(p.parse_array(input, tree)))
+        if(BOOST_TEST_EQ(4u, tree.size()))
+        {
+            BOOST_TEST_EQ("a:", tree.data());
+            ptree::iterator it = tree.begin();
+            BOOST_TEST_EQ("", it->first);
+            BOOST_TEST_EQ("n:123", it->second.data());
+            ++it;
+            BOOST_TEST_EQ("", it->first);
+            BOOST_TEST_EQ("s:abc", it->second.data());
+            ++it;
+            BOOST_TEST_EQ("", it->first);
+            BOOST_TEST_EQ("b:true", it->second.data());
+            ++it;
+            BOOST_TEST_EQ("", it->first);
+            BOOST_TEST_EQ("_:null", it->second.data());
+            ++it;
+            BOOST_TEST(tree.end() == it);
+        }
 }
 
-BOOST_AUTO_TEST_CASE(nested_array) {
+static void
+test_nested_array()
+{
     ptree tree;
     standard_parser<char> p;
     const char* input = "[[1,2],3,[4,5]]";
-    BOOST_REQUIRE(p.parse_array(input, tree));
-    BOOST_REQUIRE_EQUAL(3u, tree.size());
+    if(!BOOST_TEST(p.parse_array(input, tree)))
+        return;
+    if(!BOOST_TEST_EQ(3u, tree.size()))
+        return;
     ptree::iterator it = tree.begin();
-    BOOST_CHECK_EQUAL("", it->first);
+    BOOST_TEST_EQ("", it->first);
     {
         ptree& sub = it->second;
-        BOOST_CHECK_EQUAL("", sub.data());
-        BOOST_REQUIRE_EQUAL(2u, sub.size());
+        BOOST_TEST_EQ("", sub.data());
+        if(!BOOST_TEST_EQ(2u, sub.size()))
+            return;
         ptree::iterator iit = sub.begin();
-        BOOST_CHECK_EQUAL("", iit->first);
-        BOOST_CHECK_EQUAL("1", iit->second.data());
+        BOOST_TEST_EQ("", iit->first);
+        BOOST_TEST_EQ("1", iit->second.data());
         ++iit;
-        BOOST_CHECK_EQUAL("", iit->first);
-        BOOST_CHECK_EQUAL("2", iit->second.data());
+        BOOST_TEST_EQ("", iit->first);
+        BOOST_TEST_EQ("2", iit->second.data());
         ++iit;
-        BOOST_CHECK_EQUAL(sub.end(), iit);
+        BOOST_TEST(sub.end() == iit);
     }
     ++it;
-    BOOST_CHECK_EQUAL("", it->first);
-    BOOST_CHECK_EQUAL("3", it->second.data());
+    BOOST_TEST_EQ("", it->first);
+    BOOST_TEST_EQ("3", it->second.data());
     ++it;
-    BOOST_CHECK_EQUAL("", it->first);
+    BOOST_TEST_EQ("", it->first);
     {
         ptree& sub = it->second;
-        BOOST_CHECK_EQUAL("", sub.data());
-        BOOST_REQUIRE_EQUAL(2u, sub.size());
+        BOOST_TEST_EQ("", sub.data());
+        if(!BOOST_TEST_EQ(2u, sub.size()))
+            return;
         ptree::iterator iit = sub.begin();
-        BOOST_CHECK_EQUAL("", iit->first);
-        BOOST_CHECK_EQUAL("4", iit->second.data());
+        BOOST_TEST_EQ("", iit->first);
+        BOOST_TEST_EQ("4", iit->second.data());
         ++iit;
-        BOOST_CHECK_EQUAL("", iit->first);
-        BOOST_CHECK_EQUAL("5", iit->second.data());
+        BOOST_TEST_EQ("", iit->first);
+        BOOST_TEST_EQ("5", iit->second.data());
         ++iit;
-        BOOST_CHECK_EQUAL(sub.end(), iit);
+        BOOST_TEST(sub.end() == iit);
     }
     ++it;
-    BOOST_CHECK_EQUAL(tree.end(), it);
+    BOOST_TEST(tree.end() == it);
 }
 
-BOOST_AUTO_TEST_CASE(empty_object) {
+static void
+test_empty_object()
+{
     ptree tree;
     standard_parser<char> p;
     const char* input = " { }";
-    BOOST_REQUIRE(p.parse_object(input, tree));
-    BOOST_CHECK_EQUAL("", tree.data());
-    BOOST_CHECK_EQUAL(0u, tree.size());
+    if(BOOST_TEST(p.parse_object(input, tree)))
+    {
+        BOOST_TEST_EQ("", tree.data());
+        BOOST_TEST_EQ(0u, tree.size());
+    }
 }
 
-BOOST_AUTO_TEST_CASE(object_gets_tagged) {
+static void
+test_object_gets_tagged()
+{
     wptree tree;
     prefixing_parser<wchar_t> p;
     const wchar_t* input = L" { }";
-    BOOST_REQUIRE(p.parse_object(input, tree));
-    BOOST_CHECK_EQUAL(L"o:", tree.data());
-    BOOST_CHECK_EQUAL(0u, tree.size());
+    if(BOOST_TEST(p.parse_object(input, tree)))
+    {
+        BOOST_TEST(tree.data() == L"o:");
+        BOOST_TEST_EQ(0u, tree.size());
+    }
 }
 
-BOOST_AUTO_TEST_CASE(object_with_values) {
+static void
+test_object_with_values()
+{
     wptree tree;
     standard_parser<wchar_t> p;
     const wchar_t* input = L"{\n"
@@ -470,180 +537,210 @@ L"      \"1\":123, \"2\"\n"
 L"            :\"abc\" ,\"3\": true ,\n"
 L"      \"4\"   : null\n"
 L"  }";
-    BOOST_REQUIRE(p.parse_object(input, tree));
-    BOOST_REQUIRE_EQUAL(4u, tree.size());
-    wptree::iterator it = tree.begin();
-    BOOST_CHECK_EQUAL(L"1", it->first);
-    BOOST_CHECK_EQUAL(L"123", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL(L"2", it->first);
-    BOOST_CHECK_EQUAL(L"abc", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL(L"3", it->first);
-    BOOST_CHECK_EQUAL(L"true", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL(L"4", it->first);
-    BOOST_CHECK_EQUAL(L"null", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL(tree.end(), it);
+    if(BOOST_TEST(p.parse_object(input, tree)))
+        if(BOOST_TEST_EQ(4u, tree.size()))
+        {
+            wptree::iterator it = tree.begin();
+            BOOST_TEST(it->first == L"1");
+            BOOST_TEST(it->second.data() == L"123");
+            ++it;
+            BOOST_TEST(it->first == L"2");
+            BOOST_TEST(it->second.data() == L"abc");
+            ++it;
+            BOOST_TEST(it->first == L"3");
+            BOOST_TEST(it->second.data() == L"true");
+            ++it;
+            BOOST_TEST(it->first == L"4");
+            BOOST_TEST(it->second.data() == L"null");
+            ++it;
+            BOOST_TEST(tree.end() == it);
+        }
 }
 
-BOOST_AUTO_TEST_CASE(object_values_get_tagged) {
+static void
+test_object_values_get_tagged()
+{
     ptree tree;
     prefixing_parser<char> p;
     const char* input = "{\n"
         "\"1\": 123, \"2\": \"abc\" ,\"3\": true ,\n"
         "\"4\": null\n"
     "}";
-    BOOST_REQUIRE(p.parse_object(input, tree));
-    BOOST_REQUIRE_EQUAL(4u, tree.size());
-    BOOST_CHECK_EQUAL("o:", tree.data());
-    ptree::iterator it = tree.begin();
-    BOOST_CHECK_EQUAL("1", it->first);
-    BOOST_CHECK_EQUAL("n:123", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL("2", it->first);
-    BOOST_CHECK_EQUAL("s:abc", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL("3", it->first);
-    BOOST_CHECK_EQUAL("b:true", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL("4", it->first);
-    BOOST_CHECK_EQUAL("_:null", it->second.data());
-    ++it;
-    BOOST_CHECK_EQUAL(tree.end(), it);
+    if(BOOST_TEST(p.parse_object(input, tree)))
+        if(BOOST_TEST_EQ(4u, tree.size()))
+        {
+            BOOST_TEST_EQ("o:", tree.data());
+            ptree::iterator it = tree.begin();
+            BOOST_TEST_EQ("1", it->first);
+            BOOST_TEST_EQ("n:123", it->second.data());
+            ++it;
+            BOOST_TEST_EQ("2", it->first);
+            BOOST_TEST_EQ("s:abc", it->second.data());
+            ++it;
+            BOOST_TEST_EQ("3", it->first);
+            BOOST_TEST_EQ("b:true", it->second.data());
+            ++it;
+            BOOST_TEST_EQ("4", it->first);
+            BOOST_TEST_EQ("_:null", it->second.data());
+            ++it;
+            BOOST_TEST(tree.end() == it);
+        }
 }
 
-BOOST_AUTO_TEST_CASE(nested_object) {
+static void
+test_nested_object()
+{
     ptree tree;
     standard_parser<char> p;
     const char* input = "{\"a\":{\"b\":1,\"c\":2},\"d\":3,\"e\":{\"f\":4,\"g\":5}}";
-    BOOST_REQUIRE(p.parse_object(input, tree));
-    BOOST_REQUIRE_EQUAL(3u, tree.size());
+    if(!BOOST_TEST(p.parse_object(input, tree)))
+        return;
+    if(!BOOST_TEST_EQ(3u, tree.size()))
+        return;
     ptree::iterator it = tree.begin();
-    BOOST_CHECK_EQUAL("a", it->first);
+    BOOST_TEST_EQ("a", it->first);
     {
         ptree& sub = it->second;
-        BOOST_CHECK_EQUAL("", sub.data());
-        BOOST_REQUIRE_EQUAL(2u, sub.size());
+        BOOST_TEST_EQ("", sub.data());
+        if(!BOOST_TEST_EQ(2u, sub.size()))
+            return;
         ptree::iterator iit = sub.begin();
-        BOOST_CHECK_EQUAL("b", iit->first);
-        BOOST_CHECK_EQUAL("1", iit->second.data());
+        BOOST_TEST_EQ("b", iit->first);
+        BOOST_TEST_EQ("1", iit->second.data());
         ++iit;
-        BOOST_CHECK_EQUAL("c", iit->first);
-        BOOST_CHECK_EQUAL("2", iit->second.data());
+        BOOST_TEST_EQ("c", iit->first);
+        BOOST_TEST_EQ("2", iit->second.data());
         ++iit;
-        BOOST_CHECK_EQUAL(sub.end(), iit);
+        BOOST_TEST(sub.end() == iit);
     }
     ++it;
-    BOOST_CHECK_EQUAL("d", it->first);
-    BOOST_CHECK_EQUAL("3", it->second.data());
+    BOOST_TEST_EQ("d", it->first);
+    BOOST_TEST_EQ("3", it->second.data());
     ++it;
-    BOOST_CHECK_EQUAL("e", it->first);
+    BOOST_TEST_EQ("e", it->first);
     {
         ptree& sub = it->second;
-        BOOST_CHECK_EQUAL("", sub.data());
-        BOOST_REQUIRE_EQUAL(2u, sub.size());
+        BOOST_TEST_EQ("", sub.data());
+        if(!BOOST_TEST_EQ(2u, sub.size()))
+            return;
         ptree::iterator iit = sub.begin();
-        BOOST_CHECK_EQUAL("f", iit->first);
-        BOOST_CHECK_EQUAL("4", iit->second.data());
+        BOOST_TEST_EQ("f", iit->first);
+        BOOST_TEST_EQ("4", iit->second.data());
         ++iit;
-        BOOST_CHECK_EQUAL("g", iit->first);
-        BOOST_CHECK_EQUAL("5", iit->second.data());
+        BOOST_TEST_EQ("g", iit->first);
+        BOOST_TEST_EQ("5", iit->second.data());
         ++iit;
-        BOOST_CHECK_EQUAL(sub.end(), iit);
+        BOOST_TEST(sub.end() == iit);
     }
     ++it;
-    BOOST_CHECK_EQUAL(tree.end(), it);
+    BOOST_TEST(tree.end() == it);
 }
 
-BOOST_AUTO_TEST_CASE(array_in_object) {
+static void
+test_array_in_object()
+{
     ptree tree;
     standard_parser<char> p;
     const char* input = "{\"a\":[1,2],\"b\":3,\"c\":[4,5]}";
-    BOOST_REQUIRE(p.parse_object(input, tree));
-    BOOST_REQUIRE_EQUAL(3u, tree.size());
+    if(!BOOST_TEST(p.parse_object(input, tree)))
+        return;
+    if(!BOOST_TEST_EQ(3u, tree.size()))
+        return;
     ptree::iterator it = tree.begin();
-    BOOST_CHECK_EQUAL("a", it->first);
+    BOOST_TEST_EQ("a", it->first);
     {
         ptree& sub = it->second;
-        BOOST_CHECK_EQUAL("", sub.data());
-        BOOST_REQUIRE_EQUAL(2u, sub.size());
-        ptree::iterator iit = sub.begin();
-        BOOST_CHECK_EQUAL("", iit->first);
-        BOOST_CHECK_EQUAL("1", iit->second.data());
-        ++iit;
-        BOOST_CHECK_EQUAL("", iit->first);
-        BOOST_CHECK_EQUAL("2", iit->second.data());
-        ++iit;
-        BOOST_CHECK_EQUAL(sub.end(), iit);
+        BOOST_TEST_EQ("", sub.data());
+        if(BOOST_TEST_EQ(2u, sub.size()))
+        {
+            ptree::iterator iit = sub.begin();
+            BOOST_TEST_EQ("", iit->first);
+            BOOST_TEST_EQ("1", iit->second.data());
+            ++iit;
+            BOOST_TEST_EQ("", iit->first);
+            BOOST_TEST_EQ("2", iit->second.data());
+            ++iit;
+            BOOST_TEST(sub.end() == iit);
+        }
     }
     ++it;
-    BOOST_CHECK_EQUAL("b", it->first);
-    BOOST_CHECK_EQUAL("3", it->second.data());
+    BOOST_TEST_EQ("b", it->first);
+    BOOST_TEST_EQ("3", it->second.data());
     ++it;
-    BOOST_CHECK_EQUAL("c", it->first);
+    BOOST_TEST_EQ("c", it->first);
     {
         ptree& sub = it->second;
-        BOOST_CHECK_EQUAL("", sub.data());
-        BOOST_REQUIRE_EQUAL(2u, sub.size());
-        ptree::iterator iit = sub.begin();
-        BOOST_CHECK_EQUAL("", iit->first);
-        BOOST_CHECK_EQUAL("4", iit->second.data());
-        ++iit;
-        BOOST_CHECK_EQUAL("", iit->first);
-        BOOST_CHECK_EQUAL("5", iit->second.data());
-        ++iit;
-        BOOST_CHECK_EQUAL(sub.end(), iit);
+        BOOST_TEST_EQ("", sub.data());
+        if(BOOST_TEST_EQ(2u, sub.size()))
+        {
+            ptree::iterator iit = sub.begin();
+            BOOST_TEST_EQ("", iit->first);
+            BOOST_TEST_EQ("4", iit->second.data());
+            ++iit;
+            BOOST_TEST_EQ("", iit->first);
+            BOOST_TEST_EQ("5", iit->second.data());
+            ++iit;
+            BOOST_TEST(sub.end() == iit);
+        }
     }
     ++it;
-    BOOST_CHECK_EQUAL(tree.end(), it);
+    BOOST_TEST(tree.end() == it);
 }
 
-BOOST_AUTO_TEST_CASE(object_in_array) {
+static void
+test_object_in_array()
+{
     ptree tree;
     standard_parser<char> p;
     const char* input = "[{\"a\":1,\"b\":2},3,{\"c\":4,\"d\":5}]";
-    BOOST_REQUIRE(p.parse_array(input, tree));
-    BOOST_REQUIRE_EQUAL(3u, tree.size());
+    if(!BOOST_TEST(p.parse_array(input, tree)))
+        return;
+    if(!BOOST_TEST_EQ(3u, tree.size()))
+        return;
     ptree::iterator it = tree.begin();
-    BOOST_CHECK_EQUAL("", it->first);
+    BOOST_TEST_EQ("", it->first);
     {
         ptree& sub = it->second;
-        BOOST_CHECK_EQUAL("", sub.data());
-        BOOST_REQUIRE_EQUAL(2u, sub.size());
-        ptree::iterator iit = sub.begin();
-        BOOST_CHECK_EQUAL("a", iit->first);
-        BOOST_CHECK_EQUAL("1", iit->second.data());
-        ++iit;
-        BOOST_CHECK_EQUAL("b", iit->first);
-        BOOST_CHECK_EQUAL("2", iit->second.data());
-        ++iit;
-        BOOST_CHECK_EQUAL(sub.end(), iit);
+        BOOST_TEST_EQ("", sub.data());
+        if(BOOST_TEST_EQ(2u, sub.size()))
+        {
+            ptree::iterator iit = sub.begin();
+            BOOST_TEST_EQ("a", iit->first);
+            BOOST_TEST_EQ("1", iit->second.data());
+            ++iit;
+            BOOST_TEST_EQ("b", iit->first);
+            BOOST_TEST_EQ("2", iit->second.data());
+            ++iit;
+            BOOST_TEST(sub.end() == iit);
+        }
     }
     ++it;
-    BOOST_CHECK_EQUAL("", it->first);
-    BOOST_CHECK_EQUAL("3", it->second.data());
+    BOOST_TEST_EQ("", it->first);
+    BOOST_TEST_EQ("3", it->second.data());
     ++it;
-    BOOST_CHECK_EQUAL("", it->first);
+    BOOST_TEST_EQ("", it->first);
     {
         ptree& sub = it->second;
-        BOOST_CHECK_EQUAL("", sub.data());
-        BOOST_REQUIRE_EQUAL(2u, sub.size());
-        ptree::iterator iit = sub.begin();
-        BOOST_CHECK_EQUAL("c", iit->first);
-        BOOST_CHECK_EQUAL("4", iit->second.data());
-        ++iit;
-        BOOST_CHECK_EQUAL("d", iit->first);
-        BOOST_CHECK_EQUAL("5", iit->second.data());
-        ++iit;
-        BOOST_CHECK_EQUAL(sub.end(), iit);
+        BOOST_TEST_EQ("", sub.data());
+        if(BOOST_TEST_EQ(2u, sub.size()))
+        {
+            ptree::iterator iit = sub.begin();
+            BOOST_TEST_EQ("c", iit->first);
+            BOOST_TEST_EQ("4", iit->second.data());
+            ++iit;
+            BOOST_TEST_EQ("d", iit->first);
+            BOOST_TEST_EQ("5", iit->second.data());
+            ++iit;
+            BOOST_TEST(sub.end() == iit);
+        }
     }
     ++it;
-    BOOST_CHECK_EQUAL(tree.end(), it);
+    BOOST_TEST(tree.end() == it);
 }
 
-BOOST_AUTO_TEST_CASE(parser_works_with_input_iterators) {
+static void
+test_parser_works_with_input_iterators()
+{
     const char* input = " {\n"
 "       \"1\":123, \"2\"\n"
 "            :\"abc\" ,\"3\": true ,\n"
@@ -664,39 +761,41 @@ BOOST_AUTO_TEST_CASE(parser_works_with_input_iterators) {
     p.parse_value();
 
     const ptree& tree = callbacks.output();
-    BOOST_REQUIRE_EQUAL(5u, tree.size());
+    if(!BOOST_TEST_EQ(5u, tree.size()))
+        return;
     ptree::const_iterator it = tree.begin();
-    BOOST_CHECK_EQUAL("1", it->first);
-    BOOST_CHECK_EQUAL("123", it->second.data());
+    BOOST_TEST_EQ("1", it->first);
+    BOOST_TEST_EQ("123", it->second.data());
     ++it;
-    BOOST_CHECK_EQUAL("2", it->first);
-    BOOST_CHECK_EQUAL("abc", it->second.data());
+    BOOST_TEST_EQ("2", it->first);
+    BOOST_TEST_EQ("abc", it->second.data());
     ++it;
-    BOOST_CHECK_EQUAL("3", it->first);
-    BOOST_CHECK_EQUAL("true", it->second.data());
+    BOOST_TEST_EQ("3", it->first);
+    BOOST_TEST_EQ("true", it->second.data());
     ++it;
-    BOOST_CHECK_EQUAL("4", it->first);
-    BOOST_CHECK_EQUAL("null", it->second.data());
+    BOOST_TEST_EQ("4", it->first);
+    BOOST_TEST_EQ("null", it->second.data());
     ++it;
-    BOOST_CHECK_EQUAL("5", it->first);
+    BOOST_TEST_EQ("5", it->first);
     {
         const ptree& sub = it->second;
-        BOOST_CHECK_EQUAL("", sub.data());
-        BOOST_REQUIRE_EQUAL(3u, sub.size());
+        BOOST_TEST_EQ("", sub.data());
+        if(!BOOST_TEST_EQ(3u, sub.size()))
+            return;
         ptree::const_iterator iit = sub.begin();
-        BOOST_CHECK_EQUAL("", iit->first);
-        BOOST_CHECK_EQUAL("1", iit->second.data());
+        BOOST_TEST_EQ("", iit->first);
+        BOOST_TEST_EQ("1", iit->second.data());
         ++iit;
-        BOOST_CHECK_EQUAL("", iit->first);
-        BOOST_CHECK_EQUAL("23", iit->second.data());
+        BOOST_TEST_EQ("", iit->first);
+        BOOST_TEST_EQ("23", iit->second.data());
         ++iit;
-        BOOST_CHECK_EQUAL("", iit->first);
-        BOOST_CHECK_EQUAL("456", iit->second.data());
+        BOOST_TEST_EQ("", iit->first);
+        BOOST_TEST_EQ("456", iit->second.data());
         ++iit;
-        BOOST_CHECK_EQUAL(sub.end(), iit);
+        BOOST_TEST(sub.end() == iit);
     }
     ++it;
-    BOOST_CHECK_EQUAL(tree.end(), it);
+    BOOST_TEST(tree.end() == it);
 }
 
 struct bad_parse_n {
@@ -704,19 +803,28 @@ struct bad_parse_n {
     const char* message_substring;
 };
 
-void parse_error_thrown_with_message_n(bad_parse_n param) {
-    try {
-        standard_parser<char> p;
-        ptree dummy;
-        p.parse_value(param.json, dummy);
-        BOOST_FAIL("expected exception");
-    } catch (json_parser::json_parser_error& e) {
-        std::string message = e.message();
-        BOOST_CHECK_MESSAGE(message.find(param.message_substring) !=
-                                std::string::npos,
-                            "bad error message on input '" << param.json
-                                << "', need: '" << param.message_substring
-                                << "' but found '" << message << "'");
+template<std::size_t N>
+void test_parse_error_thrown_with_message_n(bad_parse_n const (&param)[N])
+{
+    for(std::size_t i = 0 ; i < N ; ++i)
+    {
+        try {
+            standard_parser<char> p;
+            ptree dummy;
+            p.parse_value(param[i].json, dummy);
+            BOOST_ERROR("expected exception");
+        } catch (json_parser::json_parser_error& e) {
+            std::string message = e.message();
+            if(message.find(param[i].message_substring) ==
+                                    std::string::npos)
+            {
+                std::ostringstream ss;
+                ss << "bad error message on input '" << param[i].json
+                    << "', need: '" << param[i].message_substring
+                    << "' but found '" << message << "'";
+                BOOST_ERROR(ss.str().c_str());
+            }
+        }
     }
 }
 
@@ -812,23 +920,53 @@ struct bad_parse_w {
     const char* message_substring;
 };
 
-void parse_error_thrown_with_message_w(bad_parse_w param) {
-    try {
-        standard_parser<wchar_t> p;
-        wptree dummy;
-        p.parse_value(param.json, dummy);
-        BOOST_FAIL("expected exception");
-    } catch (json_parser::json_parser_error& e) {
-        std::string message = e.message();
-        BOOST_CHECK_MESSAGE(message.find(param.message_substring) !=
-                                std::string::npos,
-                            "bad error message on input '" << param.json
-                                << "', need: '" << param.message_substring
-                                << "' but found '" << message << "'");
+struct do_narrow
+{
+    char operator()(std::wstring::value_type w) const
+    {
+        unsigned long u = static_cast<unsigned long>(w);
+        if (u < 32 || u > 126)
+            return '?';
+        else
+            return static_cast<char>(u);
+    }
+};
+static std::string
+make_narrow(std::wstring const& in)
+{
+    std::string result(in.size(), ' ');
+    std::transform(in.begin(), in.end(), result.begin(), do_narrow());
+    return result;
+}
+
+template<std::size_t N>
+void
+test_parse_error_thrown_with_message_w(bad_parse_w const (&param)[N])
+{
+    for(std::size_t i = 0 ; i < N ; ++i)
+    {
+        try {
+            standard_parser<wchar_t> p;
+            wptree dummy;
+            p.parse_value(param[i].json, dummy);
+            BOOST_ERROR("expected exception");
+        } catch (json_parser::json_parser_error& e) {
+            std::string message = e.message();
+            if (message.find(param[i].message_substring) ==
+                                    std::string::npos)
+            {
+                std::ostringstream ss;
+                ss << "bad error message on input '" << make_narrow(param[i].json)
+                                    << "', need: '" << param[i].message_substring
+                                    << "' but found '" << message << "'";
+                BOOST_ERROR(ss.str().c_str());
+            }
+        }
     }
 }
 
-const bad_parse_w errors_w[] = {
+const bad_parse_w
+errors_w[] = {
     {L"", "expected value"},
     {L"(", "expected value"},
 
@@ -911,15 +1049,45 @@ const bad_parse_w errors_w[] = {
     {L"{\"\":0,}", "expected key string"},
 };
 
-template <typename T, std::size_t N>
-std::size_t arraysize(T(&)[N]) { return N; }
+int main()
+{
+    test_null_parse_result_is_input();
+    test_uses_traits_from_null();
+    test_null_parse_skips_bom();
+    test_null_parse_result_is_input_w();
+    test_null_parse_skips_bom_w();
+    test_uses_traits_from_boolean_n();
+    test_uses_traits_from_boolean_w();
+    test_boolean_parse_result_is_input_n(booleans_n);
+    test_boolean_parse_result_is_input_w(booleans_w);
+    test_number_parse_result_is_input_n(numbers_n);
+    test_number_parse_result_is_input_w(numbers_w);
+    test_uses_traits_from_number_n();
+    test_string_parsed_correctly_n(strings_n);
+    test_string_parsed_correctly_w(strings_w);
+    test_parse_error_thrown_with_message_n(errors_n);
+    test_parse_error_thrown_with_message_w(errors_w);
+    test_uses_string_callbacks();
+    test_empty_array();
+    test_array_with_values();
+    test_array_values_get_tagged();
+    test_nested_array();
+    test_empty_object();
+    test_object_gets_tagged();
+    test_object_with_values();
+    test_object_values_get_tagged();
+    test_nested_object();
+    test_array_in_object();
+    test_object_in_array();
+    test_parser_works_with_input_iterators();
+    test_uses_traits_from_null_w();
+    test_uses_traits_from_number_w();
+    test_array_gets_tagged();
+    return boost::report_errors();
+}
 
-#define ARRAY_TEST_CASE(fn, a) \
-    BOOST_PARAM_TEST_CASE(fn, (a), (a) + arraysize((a)))
-
-using namespace boost::unit_test;
-
-test_suite* init_unit_test_suite(int, char*[]) 
+/*
+test_suite* init_unit_test_suite(int, char*[])
 {
     master_test_suite_t& ts = boost::unit_test::framework::master_test_suite();
     ts.add(ARRAY_TEST_CASE(boolean_parse_result_is_input_n, booleans_n));
@@ -933,3 +1101,4 @@ test_suite* init_unit_test_suite(int, char*[])
 
     return 0;
 }
+*/

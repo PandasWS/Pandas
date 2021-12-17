@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Solar system</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Numeric.Odeint">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Numeric.Odeint">
 <link rel="up" href="../tutorial.html" title="Tutorial">
 <link rel="prev" href="harmonic_oscillator.html" title="Harmonic oscillator">
 <link rel="next" href="chaotic_systems_and_lyapunov_exponents.html" title="Chaotic systems and Lyapunov exponents">
@@ -50,49 +50,49 @@
           can be written as
         </p>
 <p>
-          <span class="emphasis"><em>F<sub>&#8203;ij</sub> = -&#947; m<sub>&#8203;i</sub> m<sub>&#8203;j</sub> ( q<sub>&#8203;i</sub> - q<sub>&#8203;j</sub> ) / | q<sub>&#8203;i</sub> - q<sub>&#8203;j</sub> | <sup>3</sup></em></span>
+          <span class="emphasis"><em>F<sub>​ij</sub> = -γ m<sub>​i</sub> m<sub>​j</sub> ( q<sub>​i</sub> - q<sub>​j</sub> ) / | q<sub>​i</sub> - q<sub>​j</sub> | <sup>3</sup></em></span>
         </p>
 <p>
-          where <span class="emphasis"><em>&#947;</em></span> is the gravitational constant, <span class="emphasis"><em>m<sub>&#8203;i</sub></em></span>
-          and <span class="emphasis"><em>m<sub>&#8203;j</sub></em></span> are the masses and <span class="emphasis"><em>q<sub>&#8203;i</sub></em></span>
-          and <span class="emphasis"><em>q<sub>&#8203;j</sub></em></span> are the locations of the two objects. The equations
+          where <span class="emphasis"><em>γ</em></span> is the gravitational constant, <span class="emphasis"><em>m<sub>​i</sub></em></span>
+          and <span class="emphasis"><em>m<sub>​j</sub></em></span> are the masses and <span class="emphasis"><em>q<sub>​i</sub></em></span>
+          and <span class="emphasis"><em>q<sub>​j</sub></em></span> are the locations of the two objects. The equations
           of motion are then
         </p>
 <p>
-          <span class="emphasis"><em>dq<sub>&#8203;i</sub> / dt = p<sub>&#8203;i</sub></em></span>
+          <span class="emphasis"><em>dq<sub>​i</sub> / dt = p<sub>​i</sub></em></span>
         </p>
 <p>
-          <span class="emphasis"><em>dp<sub>&#8203;i</sub> / dt = 1 / m<sub>&#8203;i</sub> &#931;<sub>&#8203;ji</sub> F<sub>&#8203;ij</sub></em></span>
+          <span class="emphasis"><em>dp<sub>​i</sub> / dt = 1 / m<sub>​i</sub> Σ<sub>​ji</sub> F<sub>​ij</sub></em></span>
         </p>
 <p>
-          where <span class="emphasis"><em>p<sub>&#8203;i</sub></em></span> is the momenta of object <span class="emphasis"><em>i</em></span>.
+          where <span class="emphasis"><em>p<sub>​i</sub></em></span> is the momenta of object <span class="emphasis"><em>i</em></span>.
           The equations of motion can also be derived from the Hamiltonian
         </p>
 <p>
-          <span class="emphasis"><em>H = &#931;<sub>&#8203;i</sub> p<sub>&#8203;i</sub><sup>2</sup> / ( 2 m<sub>&#8203;i</sub> ) + &#931;<sub>&#8203;j</sub> V( q<sub>&#8203;i</sub> , q<sub>&#8203;j</sub> )</em></span>
+          <span class="emphasis"><em>H = Σ<sub>​i</sub> p<sub>​i</sub><sup>2</sup> / ( 2 m<sub>​i</sub> ) + Σ<sub>​j</sub> V( q<sub>​i</sub> , q<sub>​j</sub> )</em></span>
         </p>
 <p>
-          with the interaction potential <span class="emphasis"><em>V(q<sub>&#8203;i</sub>,q<sub>&#8203;j</sub>)</em></span>. The Hamiltonian
+          with the interaction potential <span class="emphasis"><em>V(q<sub>​i</sub>,q<sub>​j</sub>)</em></span>. The Hamiltonian
           equations give the equations of motion
         </p>
 <p>
-          <span class="emphasis"><em>dq<sub>&#8203;i</sub> / dt = dH / dp<sub>&#8203;i</sub></em></span>
+          <span class="emphasis"><em>dq<sub>​i</sub> / dt = dH / dp<sub>​i</sub></em></span>
         </p>
 <p>
-          <span class="emphasis"><em>dp<sub>&#8203;i</sub> / dt = -dH / dq<sub>&#8203;i</sub></em></span>
+          <span class="emphasis"><em>dp<sub>​i</sub> / dt = -dH / dq<sub>​i</sub></em></span>
         </p>
 <p>
           In time independent Hamiltonian system the energy and the phase space volume
           are conserved and special integration methods have to be applied in order
           to ensure these conservation laws. The odeint library provides classes
           for separable Hamiltonian systems, which can be written in the form <span class="emphasis"><em>H
-          = &#931;
-p<sub>&#8203;i</sub><sup>2</sup> / (2m<sub>&#8203;i</sub>) + H<sub>&#8203;q</sub>(q)</em></span>, where <span class="emphasis"><em>H<sub>&#8203;q</sub>(q)</em></span> only
+          = Σ
+p<sub>​i</sub><sup>2</sup> / (2m<sub>​i</sub>) + H<sub>​q</sub>(q)</em></span>, where <span class="emphasis"><em>H<sub>​q</sub>(q)</em></span> only
           depends on the coordinates. Although this functional form might look a
           bit arbitrary, it covers nearly all classical mechanical systems with inertia
           and without dissipation, or where the equations of motion can be written
-          in the form <span class="emphasis"><em>dq<sub>&#8203;i</sub> / dt = p<sub>&#8203;i</sub></em></span> / m<sub>&#8203;i</sub> , <span class="emphasis"><em>dp<sub>&#8203;i</sub> / dt =
-          f( q<sub>&#8203;i</sub> )</em></span>.
+          in the form <span class="emphasis"><em>dq<sub>​i</sub> / dt = p<sub>​i</sub></em></span> / m<sub>​i</sub> , <span class="emphasis"><em>dp<sub>​i</sub> / dt =
+          f( q<sub>​i</sub> )</em></span>.
         </p>
 <div class="note"><table border="0" summary="Note">
 <tr>
@@ -303,7 +303,7 @@ p<sub>&#8203;i</sub><sup>2</sup> / (2m<sub>&#8203;i</sub>) + H<sub>&#8203;q</sub
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2015 Karsten Ahnert and Mario Mulansky<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2015 Karsten Ahnert and Mario Mulansky<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

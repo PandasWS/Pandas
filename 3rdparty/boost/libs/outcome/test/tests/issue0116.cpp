@@ -1,5 +1,5 @@
 /* Unit testing for outcomes
-(C) 2013-2019 Niall Douglas <http://www.nedproductions.biz/> (2 commits)
+(C) 2013-2021 Niall Douglas <http://www.nedproductions.biz/> (2 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -27,11 +27,11 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/outcome/outcome.hpp>
+#include <boost/outcome.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_monitor.hpp>
 
-BOOST_OUTCOME_AUTO_TEST_CASE(issues_116_outcome, "Bad implementation of outcome::operator==")
+BOOST_OUTCOME_AUTO_TEST_CASE(issues_0116_outcome, "Bad implementation of outcome::operator==")
 {
   namespace out = BOOST_OUTCOME_V2_NAMESPACE;
 

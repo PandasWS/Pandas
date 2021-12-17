@@ -1,12 +1,12 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>basic_waitable_timer</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../../boost_asio.html" title="Boost.Asio">
 <link rel="up" href="../reference.html" title="Reference">
-<link rel="prev" href="basic_streambuf_ref/size.html" title="basic_streambuf_ref::size">
+<link rel="prev" href="basic_system_executor/require/overload7.html" title="basic_system_executor::require (7 of 7 overloads)">
 <link rel="next" href="basic_waitable_timer/async_wait.html" title="basic_waitable_timer::async_wait">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -20,12 +20,15 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="basic_streambuf_ref/size.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="basic_waitable_timer/async_wait.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="basic_system_executor/require/overload7.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="basic_waitable_timer/async_wait.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.basic_waitable_timer"></a><a class="link" href="basic_waitable_timer.html" title="basic_waitable_timer">basic_waitable_timer</a>
 </h3></div></div></div>
+<p>
+        <a class="indexterm" name="boost_asio.indexterm.basic_waitable_timer"></a>
+      </p>
 <p>
         Provides waitable timer functionality.
       </p>
@@ -57,6 +60,18 @@ class basic_waitable_timer
               </th>
 </tr></thead>
 <tbody>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="basic_waitable_timer__rebind_executor.html" title="basic_waitable_timer::rebind_executor"><span class="bold"><strong>rebind_executor</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Rebinds the timer type to another executor.
+                </p>
+              </td>
+</tr>
 <tr>
 <td>
                 <p>
@@ -157,14 +172,14 @@ class basic_waitable_timer
 <tr>
 <td>
                 <p>
-                  <a class="link" href="basic_waitable_timer/basic_waitable_timer.html" title="basic_waitable_timer::basic_waitable_timer"><span class="bold"><strong>basic_waitable_timer</strong></span></a>
+                  <a class="link" href="basic_waitable_timer/basic_waitable_timer.html" title="basic_waitable_timer::basic_waitable_timer"><span class="bold"><strong>basic_waitable_timer</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
-                  Constructor. <br> <span class="silver"> &#8212;</span><br> Constructor to set a particular expiry
-                  time as an absolute time. <br> <span class="silver"> &#8212;</span><br> Constructor to set a particular
-                  expiry time relative to now. <br> <span class="silver"> &#8212;</span><br> Move-construct a basic_waitable_timer
+                  Constructor. <br> <span class="silver"> —</span><br> Constructor to set a particular expiry
+                  time as an absolute time. <br> <span class="silver"> —</span><br> Constructor to set a particular
+                  expiry time relative to now. <br> <span class="silver"> —</span><br> Move-construct a basic_waitable_timer
                   from another.
                 </p>
               </td>
@@ -178,7 +193,7 @@ class basic_waitable_timer
 <td>
                 <p>
                   Cancel any asynchronous operations that are waiting on the timer.
-                  <br> <span class="silver"> &#8212;</span><br> (Deprecated: Use non-error_code overload.) Cancel
+                  <br> <span class="silver"> —</span><br> (Deprecated: Use non-error_code overload.) Cancel
                   any asynchronous operations that are waiting on the timer.
                 </p>
               </td>
@@ -192,7 +207,7 @@ class basic_waitable_timer
 <td>
                 <p>
                   Cancels one asynchronous operation that is waiting on the timer.
-                  <br> <span class="silver"> &#8212;</span><br> (Deprecated: Use non-error_code overload.) Cancels
+                  <br> <span class="silver"> —</span><br> (Deprecated: Use non-error_code overload.) Cancels
                   one asynchronous operation that is waiting on the timer.
                 </p>
               </td>
@@ -218,8 +233,8 @@ class basic_waitable_timer
 <td>
                 <p>
                   (Deprecated: Use expiry().) Get the timer's expiry time as an absolute
-                  time. <br> <span class="silver"> &#8212;</span><br> Set the timer's expiry time as an absolute
-                  time. <br> <span class="silver"> &#8212;</span><br> (Deprecated: Use non-error_code overload.)
+                  time. <br> <span class="silver"> —</span><br> Set the timer's expiry time as an absolute
+                  time. <br> <span class="silver"> —</span><br> (Deprecated: Use non-error_code overload.)
                   Set the timer's expiry time as an absolute time.
                 </p>
               </td>
@@ -233,7 +248,7 @@ class basic_waitable_timer
 <td>
                 <p>
                   (Deprecated: Use expiry().) Get the timer's expiry time relative
-                  to now. <br> <span class="silver"> &#8212;</span><br> (Deprecated: Use expires_after().) Set the
+                  to now. <br> <span class="silver"> —</span><br> (Deprecated: Use expires_after().) Set the
                   timer's expiry time relative to now.
                 </p>
               </td>
@@ -289,7 +304,7 @@ class basic_waitable_timer
 <tr>
 <td>
                 <p>
-                  <a class="link" href="basic_waitable_timer/_basic_waitable_timer.html" title="basic_waitable_timer::~basic_waitable_timer"><span class="bold"><strong>~basic_waitable_timer</strong></span></a>
+                  <a class="link" href="basic_waitable_timer/_basic_waitable_timer.html" title="basic_waitable_timer::~basic_waitable_timer"><span class="bold"><strong>~basic_waitable_timer</strong></span></a> <span class="silver">[destructor]</span>
                 </p>
               </td>
 <td>
@@ -429,7 +444,8 @@ void on_timeout(const boost::system::error_code&amp; e)
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>
@@ -437,7 +453,7 @@ void on_timeout(const boost::system::error_code&amp; e)
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="basic_streambuf_ref/size.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="basic_waitable_timer/async_wait.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="basic_system_executor/require/overload7.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="basic_waitable_timer/async_wait.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

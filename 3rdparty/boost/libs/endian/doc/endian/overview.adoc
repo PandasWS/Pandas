@@ -83,7 +83,8 @@ Boost.Endian provides three different approaches to dealing with endianness. All
 three approaches support integers and user-define types (UDTs).
 
 Each approach has a long history of successful use, and each approach has use
-cases where it is preferred to the other approaches.
+cases where it is preferred to the other approaches. See
+<<choosing,Choosing between Conversion Functions, Buffer Types, and Arithmetic Types>>.
 
 <<conversion,Endian conversion functions>>::
 The application uses the built-in integer types to hold values, and calls the
@@ -112,10 +113,6 @@ be used directly in generic code of for less common use cases.
 Boost Endian is a header-only library. {cpp}11 features affecting interfaces,
 such as `noexcept`, are  used only if available. See
 <<overview_cpp03_support,{cpp}03 support for {cpp}11 features>> for details.
-
-## Choosing between conversion functions, buffer types, and arithmetic types
-
-This section has been moved to its own <<choosing,Choosing the Approach>> page.
 
 [#overview_intrinsics]
 ## Built-in support for Intrinsics
@@ -260,6 +257,28 @@ Iterations: 10'000'000'000, Intrinsics: `<cstdlib>` `_byteswap_ushort`, etc.
 |64-bit aligned little endian |3.35 s |2.73 s
 |===
 
+[#overview_cpp03_support]
+## {cpp}03 support for {cpp}11 features
+
+[%header,cols=2*]
+|===
+|{cpp}11 Feature
+|Action with {cpp}03 Compilers
+|Scoped enums
+|Uses header
+http://www.boost.org/libs/core/doc/html/core/scoped_enum.html[boost/core/scoped_enum.hpp]
+to emulate {cpp}11 scoped enums.
+|`noexcept`
+|Uses `BOOST_NOEXCEPT` macro, which is defined as null for compilers not
+supporting this {cpp}11 feature.
+|{cpp}11 PODs
+(http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2342.htm[N2342])
+|Takes advantage of {cpp}03 compilers that relax {cpp}03 POD rules, but see
+Limitations <<buffers_limitations,here>> and <<arithmetic_limitations,here>>.
+Also see macros for explicit POD control <<buffers_compilation,here>> and
+<<arithmetic_compilation,here>>
+|===
+
 [#overview_faq]
 ## Overall FAQ
 
@@ -326,11 +345,11 @@ the same code being generated for either types.
 
 What are the limitations of integer support?::
 Tests have only been performed on machines that  use two's complement
-arithmetic. The Endian conversion functions only support 16, 32, and 64-bit
+arithmetic. The Endian conversion functions only support 8, 16, 32, and 64-bit
 aligned integers. The endian types only support 8, 16, 24, 32, 40, 48, 56, and
 64-bit unaligned integers, and 8, 16, 32, and 64-bit aligned integers.
 
-Why is there no floating point support?::
+Is there floating point support?::
 An attempt was made to support four-byte ``float``s and eight-byte
 ``double``s, limited to
 http://en.wikipedia.org/wiki/IEEE_floating_point[IEEE 754] (also known as
@@ -338,116 +357,10 @@ ISO/IEC/IEEE 60559) floating point and further limited to systems where floating
 point endianness does not differ from integer endianness. Even with those
 limitations, support for floating point types was not reliable and was removed.
 For example, simply reversing the endianness of a floating point number can
-result in a signaling-NAN. For all practical purposes, binary serialization and
-endianness for integers are one and the same problem. That is not true for
-floating point numbers, so binary serialization interfaces and formats for
-floating point does not fit well in an endian-based library.
-
-## History
-
-### Changes requested by formal review
-
-The library was reworked from top to bottom to accommodate changes requested
-during the formal review. See <<appendix_mini_review_topics,Mini-Review>>
-page for details.
-
-### Other changes since formal review
-
-* Header `boost/endian/endian.hpp` has been renamed to
-`boost/endian/arithmetic.hpp`. Headers
-`boost/endian/conversion.hpp` and `boost/endian/buffers.hpp` have been added.
-Infrastructure file names were changed accordingly.
-* The endian arithmetic type aliases have been renamed, using a naming pattern
-that is consistent for both integer and floating point, and a consistent set of
-aliases supplied for the endian buffer types.
-* The unaligned-type alias names still have the `_t` suffix, but the
-aligned-type alias names now have an `_at` suffix.
-* `endian_reverse()` overloads for `int8_t` and `uint8_t` have been added for
-improved generality. (Pierre Talbot)
-* Overloads of `endian_reverse_inplace()` have been replaced with a single
-`endian_reverse_inplace()` template. (Pierre Talbot)
-* For X86 and X64 architectures, which permit unaligned loads and stores,
-unaligned little endian buffer and arithmetic types use regular loads and
-stores when the size is exact. This makes unaligned little endian buffer and
-arithmetic types significantly more efficient on these architectures. (Jeremy
-Maitin-Shepard)
-* {cpp}11 features affecting interfaces, such as `noexcept`, are now used.
-{cpp}03 compilers are still supported.
-* Acknowledgements have been updated.
-
-## Compatibility with interim releases
-
-Prior to the official Boost release, class template `endian_arithmetic` has been
-used for a decade or more with the same functionality but under the name
-`endian`. Other names also changed in the official release. If the macro
-`BOOST_ENDIAN_DEPRECATED_NAMES` is defined, those old now deprecated names are
-still supported. However, the class template `endian` name is only provided for
-compilers supporting {cpp}11 template aliases. For {cpp}03 compilers, the name
-will have to be changed to `endian_arithmetic`.
-
-To support backward header compatibility, deprecated header
-`boost/endian/endian.hpp` forwards to `boost/endian/arithmetic.hpp`. It requires
-`BOOST_ENDIAN_DEPRECATED_NAMES` be defined. It should only be used while
-transitioning to the official Boost release of the library as it will be removed
-in some future release.
-
-[#overview_cpp03_support]
-## {cpp}03 support for {cpp}11 features
-
-[%header,cols=2*]
-|===
-|{cpp}11 Feature
-|Action with {cpp}03 Compilers
-|Scoped enums
-|Uses header
-http://www.boost.org/libs/core/doc/html/core/scoped_enum.html[boost/core/scoped_enum.hpp]
-to emulate {cpp}11 scoped enums.
-|`noexcept`
-|Uses `BOOST_NOEXCEPT` macro, which is defined as null for compilers not
-supporting this {cpp}11 feature.
-|{cpp}11 PODs
-(http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2342.htm[N2342])
-|Takes advantage of {cpp}03 compilers that relax {cpp}03 POD rules, but see
-Limitations <<buffers_limitations,here>> and <<arithmetic_limitations,here>>.
-Also see macros for explicit POD control <<buffers_compilation,here>> and
-<<arithmetic_compilation,here>>
-|===
-
-## Future directions
-
-Standardization.::
-The plan is to submit Boost.Endian to the {cpp} standards committee for possible
-inclusion in a Technical Specification or the {cpp} standard itself.
-
-Specializations for `numeric_limits`.::
-Roger Leigh requested that all `boost::endian` types provide `numeric_limits`
-specializations.
-See https://github.com/boostorg/endian/issues/4[GitHub issue 4].
-
-Character buffer support.::
-Peter Dimov pointed out during the mini-review that getting and setting basic
-arithmetic types (or `<cstdint>` equivalents) from/to an offset into an array of
-unsigned char is a common need. See
-http://lists.boost.org/Archives/boost/2015/01/219574.php[Boost.Endian
-mini-review posting].
-
-Out-of-range detection.::
-Peter Dimov pointed suggested during the mini-review that throwing an exception
-on buffer values being out-of-range might be desirable. See the end of
-http://lists.boost.org/Archives/boost/2015/01/219659.php[this posting] and
-subsequent replies.
-
-## Acknowledgements
-
-Comments and suggestions were received from Adder, Benaka Moorthi, Christopher
-Kohlhoff, Cliff Green, Daniel James, Dave Handley, Gennaro Proto, Giovanni Piero
-Deretta, Gordon Woodhull, dizzy, Hartmut Kaiser, Howard Hinnant, Jason Newton,
-Jeff Flinn, Jeremy Maitin-Shepard, John Filo, John Maddock, Kim Barrett, Marsh
-Ray, Martin Bonner, Mathias Gaunard, Matias Capeletto, Neil Mayhew, Nevin Liber,
-Olaf van der Spek, Paul Bristow, Peter Dimov, Pierre Talbot, Phil Endecott,
-Philip Bennefall, Pyry Jahkola, Rene Rivera, Robert Stewart, Roger Leigh, Roland
-Schwarz, Scott McMurray, Sebastian Redl, Tim Blechmann, Tim Moore, tymofey,
-Tomas Puverle, Vincente Botet, Yuval Ronen and Vitaly Budovsk. Apologies if
-anyone has been missed.
-
-The documentation was converted into Asciidoc format by Glen Fernandes.
+result in a signaling-NAN.
++
+Support for `float` and `double` has since been reinstated for `endian_buffer`,
+`endian_arithmetic` and the conversion functions that reverse endianness in place.
+The conversion functions that take and return by value still do not support floating
+point due to the above issues; reversing the bytes of a floating point number
+does not necessarily produce another valid floating point number.

@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 //
 // Copyright (c) 2003 Eric Friedman, Itay Maman
-// Copyright (c) 2014-2019 Antony Polukhin
+// Copyright (c) 2014-2021 Antony Polukhin
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -21,7 +21,7 @@
 #include <vector>
 
 #include "boost/detail/workaround.hpp"
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x0551))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x0551))
 #    pragma warn -lvc // temporary used for parameter warning
 #endif
 

@@ -12,7 +12,6 @@
 #include <iomanip>
 #include <fstream>
 #include <string>
-#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Include Wave itself

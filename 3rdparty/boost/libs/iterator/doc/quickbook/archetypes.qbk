@@ -1,4 +1,3 @@
-
 [section:archetypes Iterator Archetypes]
 
 The `iterator_archetype` class constructs a minimal implementation of
@@ -41,23 +40,23 @@ The access category types provided correspond to the following
 standard iterator access concept combinations:
 
     readable_iterator_t :=
-  
+
       Readable Iterator
 
     writable_iterator_t :=
-  
+
       Writeable Iterator
 
     readable_writable_iterator_t :=
-  
+
       Readable Iterator & Writeable Iterator & Swappable Iterator
 
     readable_lvalue_iterator_t :=
-  
+
       Readable Iterator & Lvalue Iterator
 
     writeable_lvalue_iterator_t :=
-  
+
       Readable Iterator & Writeable Iterator & Swappable Iterator & Lvalue Iterator
 
 [h3 Traits]
@@ -66,25 +65,25 @@ The nested trait types are defined as follows:
 
 
    if (AccessCategory == readable_iterator_t)
-     
+
      value_type = Value
      reference  = Value
      pointer    = Value*
 
    else if (AccessCategory == writable_iterator_t)
- 
+
      value_type = void
      reference  = void
      pointer    = void
 
    else if (AccessCategory == readable_writable_iterator_t)
- 
+
      value_type = Value
 
      reference :=
 
        A type X that is convertible to Value for which the following
-       expression is valid. Given an object x of type X and v of type 
+       expression is valid. Given an object x of type X and v of type
        Value.
 
        x = v
@@ -92,13 +91,13 @@ The nested trait types are defined as follows:
      pointer    = Value*
 
    else if (AccessCategory == readable_lvalue_iterator_t)
-     
+
      value_type = Value
      reference  = Value const&
      pointer    = Value const*
 
    else if (AccessCategory == writable_lvalue_iterator_t)
-     
+
      value_type = Value
      reference  = Value&
      pointer    = Value*
@@ -108,11 +107,11 @@ The nested trait types are defined as follows:
      difference_type := ptrdiff_t
 
    else
-  
+
      difference_type := unspecified type
 
-   
-   iterator_category := 
+
+   iterator_category :=
 
      A type X satisfying the following two constraints:
 
@@ -155,6 +154,5 @@ the iterator concept specified by `AccessCategory` and
 `AccessCategory` and `TraversalCategory`
 arguments. `iterator_archetype` does not model any other access
 concepts or any more derived traversal concepts.
-
 
 [endsect]

@@ -81,7 +81,7 @@ class node_allocator
    typedef std::ptrdiff_t                       difference_type;
 
    typedef boost::container::dtl::
-      version_type<self_t, Version>             version;
+      version_type<self_t, (unsigned int) Version>             version;
 
    #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
    typedef boost::container::dtl::
@@ -141,7 +141,7 @@ class node_allocator
    {  return size_type(-1)/sizeof(T);   }
 
    //!Allocate memory for an array of count elements.
-   //!Throws std::bad_alloc if there is no enough memory
+   //!Throws bad_alloc if there is no enough memory
    pointer allocate(size_type count, const void * = 0)
    {
       if(BOOST_UNLIKELY(count > this->max_size()))
@@ -258,7 +258,7 @@ class node_allocator
       BOOST_STATIC_ASSERT(( Version > 1 ));
       dlmalloc_memchain ch;
       BOOST_CONTAINER_MEMCHAIN_INIT(&ch);
-      if(BOOST_UNLIKELY(!dlmalloc_multialloc_nodes(n_elements, elem_size*sizeof(T), DL_MULTIALLOC_DEFAULT_CONTIGUOUS, &ch))){
+      if(BOOST_UNLIKELY(!dlmalloc_multialloc_nodes(n_elements, elem_size*sizeof(T), BOOST_CONTAINER_DL_MULTIALLOC_DEFAULT_CONTIGUOUS, &ch))){
          boost::container::throw_bad_alloc();
       }
       chain.incorporate_after( chain.before_begin()
@@ -273,7 +273,7 @@ class node_allocator
    {
       BOOST_STATIC_ASSERT(( Version > 1 ));
       dlmalloc_memchain ch;
-      dlmalloc_multialloc_arrays(n_elements, elem_sizes, sizeof(T), DL_MULTIALLOC_DEFAULT_CONTIGUOUS, &ch);
+      dlmalloc_multialloc_arrays(n_elements, elem_sizes, sizeof(T), BOOST_CONTAINER_DL_MULTIALLOC_DEFAULT_CONTIGUOUS, &ch);
       if(BOOST_UNLIKELY(BOOST_CONTAINER_MEMCHAIN_EMPTY(&ch))){
          boost::container::throw_bad_alloc();
       }

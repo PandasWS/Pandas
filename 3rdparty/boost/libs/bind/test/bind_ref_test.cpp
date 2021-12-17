@@ -8,9 +8,13 @@
 //  http://www.boost.org/LICENSE_1_0.txt
 //
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/ref.hpp>
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
+
+using namespace boost::placeholders;
+
+//
 
 struct X
 {

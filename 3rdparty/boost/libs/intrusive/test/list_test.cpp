@@ -17,7 +17,7 @@
 #include "smart_ptr.hpp"
 #include "common_functors.hpp"
 #include <vector>
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include "test_macros.hpp"
 #include "test_container.hpp"
 #include <typeinfo>
@@ -239,28 +239,28 @@ void test_list< ListType, ValueContainer >
    ::test_shift(ValueContainer& values)
 {
    list_type testlist;
-   const int num_values = (int)values.size();
+   const std::size_t num_values = values.size();
    std::vector<int> expected_values(num_values);
 
-   for(int s = 1; s <= num_values; ++s){
+   for(std::size_t s = 1u; s <= num_values; ++s){
       expected_values.resize(s);
       //Shift forward all possible positions 3 times
-      for(int i = 0; i < s*3; ++i){
-         testlist.insert(testlist.begin(), values.begin(), values.begin() + s);
+      for(std::size_t i = 0u; i < s*3u; ++i){
+         testlist.insert(testlist.begin(), values.begin(), values.begin() + std::ptrdiff_t(s));
          testlist.shift_forward(i);
-         for(int j = 0; j < s; ++j){
-            expected_values[(j + s - i%s) % s] = (j + 1);
+         for(std::size_t j = 0u; j < s; ++j){
+            expected_values[(j + s - i%s) % s] = int(j + 1u);
          }
          TEST_INTRUSIVE_SEQUENCE_EXPECTED(expected_values, testlist.begin());
          testlist.clear();
       }
 
       //Shift backwards all possible positions
-      for(int i = 0; i < s*3; ++i){
-         testlist.insert(testlist.begin(), values.begin(), values.begin() + s);
+      for(std::size_t i = 0u; i < s*3u; ++i){
+         testlist.insert(testlist.begin(), values.begin(), values.begin() + std::ptrdiff_t(s));
          testlist.shift_backwards(i);
-         for(int j = 0; j < s; ++j){
-            expected_values[(j + i) % s] = (j + 1);
+         for(std::size_t j = 0u; j < s; ++j){
+            expected_values[(j + i) % s] = int(j + 1);
          }
          TEST_INTRUSIVE_SEQUENCE_EXPECTED(expected_values, testlist.begin());
          testlist.clear();
@@ -273,7 +273,7 @@ template < class ListType, typename ValueContainer >
 void test_list< ListType, ValueContainer >
    ::test_swap(ValueContainer& values)
 {
-   {
+   {  //splice between two lists
       list_type testlist1 (values.begin(), values.begin() + 2);
       list_type testlist2;
       testlist2.insert (testlist2.end(), values.begin() + 2, values.begin() + 5);
@@ -308,6 +308,41 @@ void test_list< ListType, ValueContainer >
       BOOST_TEST (testlist1.size() == 1);
       BOOST_TEST (&testlist1.front() == &values[3]);
    }
+
+   {  //splice in the same list
+      list_type testlist1 (values.begin(), values.begin() + 5);
+
+      {  int init_values [] = { 1, 2, 3, 4, 5 };
+         TEST_INTRUSIVE_SEQUENCE( init_values, testlist1.begin() );  }
+
+      //nop 1
+      testlist1.splice (testlist1.begin(), testlist1, testlist1.begin(), ++testlist1.begin());
+      {  int init_values [] = { 1, 2, 3, 4, 5 };
+         TEST_INTRUSIVE_SEQUENCE( init_values, testlist1.begin() );  }
+
+      //nop 2
+      testlist1.splice (++testlist1.begin(), testlist1, testlist1.begin(), ++testlist1.begin());
+      {  int init_values [] = { 1, 2, 3, 4, 5 };
+         TEST_INTRUSIVE_SEQUENCE( init_values, testlist1.begin() );  }
+
+      //nop 3
+      testlist1.splice (testlist1.begin(), testlist1, ++testlist1.begin(), ++testlist1.begin());
+      {  int init_values [] = { 1, 2, 3, 4, 5 };
+         TEST_INTRUSIVE_SEQUENCE( init_values, testlist1.begin() );  }
+
+      testlist1.splice (testlist1.begin(), testlist1, ++testlist1.begin(), ++++testlist1.begin());
+      {  int init_values [] = { 2, 1, 3, 4, 5 };
+         TEST_INTRUSIVE_SEQUENCE( init_values, testlist1.begin() );  }
+
+      testlist1.splice (testlist1.begin(), testlist1, ++testlist1.begin(), ++++++testlist1.begin());
+      {  int init_values [] = { 1, 3, 2, 4, 5 };
+         TEST_INTRUSIVE_SEQUENCE( init_values, testlist1.begin() );  }
+
+      testlist1.splice (++++++++testlist1.begin(), testlist1, testlist1.begin(), ++++testlist1.begin());
+      {  int init_values [] = { 2, 4, 1, 3, 5 };
+         TEST_INTRUSIVE_SEQUENCE( init_values, testlist1.begin() );  }
+   }
+
    {
       list_type testlist1 (values.begin(), values.begin() + 2);
       list_type testlist2 (values.begin() + 3, values.begin() + 5);
@@ -349,7 +384,7 @@ template < class ListType, typename ValueContainer >
 void test_list< ListType, ValueContainer >
    ::test_container_from_end(ValueContainer& values, detail::true_type)
 {
-   list_type testlist1 (values.begin(), values.begin() + values.size());
+   list_type testlist1 (values.begin(), values.begin() + std::ptrdiff_t(values.size()));
    BOOST_TEST (testlist1 == list_type::container_from_end_iterator(testlist1.end()));
    BOOST_TEST (testlist1 == list_type::container_from_end_iterator(testlist1.cend()));
 }
@@ -358,7 +393,7 @@ template < class ListType, typename ValueContainer >
 void test_list< ListType, ValueContainer >
    ::test_clone(ValueContainer& values)
 {
-      list_type testlist1 (values.begin(), values.begin() + values.size());
+      list_type testlist1 (values.begin(), values.begin() + std::ptrdiff_t(values.size()));
       list_type testlist2;
 
       testlist2.clone_from(testlist1, test::new_cloner<value_type>(), test::delete_disposer<value_type>());
@@ -399,8 +434,8 @@ class test_main_template
    {
       typedef testvalue< hooks<VoidPointer> > value_type;
       std::vector<value_type> data (5);
-      for (int i = 0; i < 5; ++i)
-         data[i].value_ = i + 1;
+      for (std::size_t i = 0u; i < 5u; ++i)
+         data[i].value_ = (int)i + 1;
 
       make_and_test_list < typename detail::get_base_value_traits <
                               value_type,
@@ -440,8 +475,8 @@ class test_main_template< VoidPointer, false, Default_Holder >
    {
       typedef testvalue< hooks<VoidPointer> > value_type;
       std::vector<value_type> data (5);
-      for (int i = 0; i < 5; ++i)
-         data[i].value_ = i + 1;
+      for (std::size_t i = 0; i < 5u; ++i)
+         data[i].value_ = (int)i + 1;
 
       make_and_test_list < typename detail::get_base_value_traits <
                               value_type,
@@ -479,10 +514,10 @@ struct test_main_template_bptr
 
       {
           bounded_reference_cont< value_type > ref_cont;
-          for (int i = 0; i < 5; ++i)
+          for (std::size_t i = 0; i < 5u; ++i)
           {
               node_ptr tmp = allocator.allocate(1);
-              new (tmp.raw()) value_type(i + 1);
+              new (tmp.raw()) value_type((int)i + 1);
               ref_cont.push_back(*tmp);
           }
 

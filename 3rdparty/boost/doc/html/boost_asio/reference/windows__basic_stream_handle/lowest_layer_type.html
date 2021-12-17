@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>windows::basic_stream_handle::lowest_layer_type</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -58,6 +58,18 @@ An
                 </th>
 </tr></thead>
 <tbody>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="../windows__basic_overlapped_handle__rebind_executor.html" title="windows::basic_overlapped_handle::rebind_executor"><span class="bold"><strong>rebind_executor</strong></span></a>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Rebinds the handle type to another executor.
+                  </p>
+                </td>
+</tr>
 <tr>
 <td>
                   <p>
@@ -134,14 +146,14 @@ An
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../windows__basic_overlapped_handle/basic_overlapped_handle.html" title="windows::basic_overlapped_handle::basic_overlapped_handle"><span class="bold"><strong>basic_overlapped_handle</strong></span></a>
+                    <a class="link" href="../windows__basic_overlapped_handle/basic_overlapped_handle.html" title="windows::basic_overlapped_handle::basic_overlapped_handle"><span class="bold"><strong>basic_overlapped_handle</strong></span></a> <span class="silver">[constructor]</span>
                   </p>
                 </td>
 <td>
                   <p>
-                    Construct an overlapped handle without opening it. <br> <span class="silver"> &#8212;</span><br>
+                    Construct an overlapped handle without opening it. <br> <span class="silver"> —</span><br>
                     Construct an overlapped handle on an existing native handle.
-                    <br> <span class="silver"> &#8212;</span><br> Move-construct an overlapped handle from another.
+                    <br> <span class="silver"> —</span><br> Move-construct an overlapped handle from another.
                   </p>
                 </td>
 </tr>
@@ -201,7 +213,7 @@ An
                 </td>
 <td>
                   <p>
-                    Get a reference to the lowest layer. <br> <span class="silver"> &#8212;</span><br> Get a const
+                    Get a reference to the lowest layer. <br> <span class="silver"> —</span><br> Get a const
                     reference to the lowest layer.
                   </p>
                 </td>
@@ -257,7 +269,7 @@ An
 <tbody><tr>
 <td>
                   <p>
-                    <a class="link" href="../windows__basic_overlapped_handle/_basic_overlapped_handle.html" title="windows::basic_overlapped_handle::~basic_overlapped_handle"><span class="bold"><strong>~basic_overlapped_handle</strong></span></a>
+                    <a class="link" href="../windows__basic_overlapped_handle/_basic_overlapped_handle.html" title="windows::basic_overlapped_handle::~basic_overlapped_handle"><span class="bold"><strong>~basic_overlapped_handle</strong></span></a> <span class="silver">[destructor]</span>
                   </p>
                 </td>
 <td>
@@ -267,45 +279,13 @@ An
                 </td>
 </tr></tbody>
 </table></div>
-<h6>
-<a name="boost_asio.reference.windows__basic_stream_handle.lowest_layer_type.h3"></a>
-          <span class="phrase"><a name="boost_asio.reference.windows__basic_stream_handle.lowest_layer_type.protected_data_members"></a></span><a class="link" href="lowest_layer_type.html#boost_asio.reference.windows__basic_stream_handle.lowest_layer_type.protected_data_members">Protected
-          Data Members</a>
-        </h6>
-<div class="informaltable"><table class="table">
-<colgroup>
-<col>
-<col>
-</colgroup>
-<thead><tr>
-<th>
-                  <p>
-                    Name
-                  </p>
-                </th>
-<th>
-                  <p>
-                    Description
-                  </p>
-                </th>
-</tr></thead>
-<tbody><tr>
-<td>
-                  <p>
-                    <a class="link" href="../windows__basic_overlapped_handle/impl_.html" title="windows::basic_overlapped_handle::impl_"><span class="bold"><strong>impl_</strong></span></a>
-                  </p>
-                </td>
-<td>
-                </td>
-</tr></tbody>
-</table></div>
 <p>
           The <a class="link" href="../windows__overlapped_handle.html" title="windows::overlapped_handle"><code class="computeroutput">windows::overlapped_handle</code></a>
           class provides the ability to wrap a Windows handle. The underlying object
           referred to by the handle must support overlapped I/O.
         </p>
 <h6>
-<a name="boost_asio.reference.windows__basic_stream_handle.lowest_layer_type.h4"></a>
+<a name="boost_asio.reference.windows__basic_stream_handle.lowest_layer_type.h3"></a>
           <span class="phrase"><a name="boost_asio.reference.windows__basic_stream_handle.lowest_layer_type.thread_safety"></a></span><a class="link" href="lowest_layer_type.html#boost_asio.reference.windows__basic_stream_handle.lowest_layer_type.thread_safety">Thread
           Safety</a>
         </h6>
@@ -316,7 +296,7 @@ An
           <span class="emphasis"><em>Shared</em></span> <span class="emphasis"><em>objects:</em></span> Unsafe.
         </p>
 <h6>
-<a name="boost_asio.reference.windows__basic_stream_handle.lowest_layer_type.h5"></a>
+<a name="boost_asio.reference.windows__basic_stream_handle.lowest_layer_type.h4"></a>
           <span class="phrase"><a name="boost_asio.reference.windows__basic_stream_handle.lowest_layer_type.requirements"></a></span><a class="link" href="lowest_layer_type.html#boost_asio.reference.windows__basic_stream_handle.lowest_layer_type.requirements">Requirements</a>
         </h6>
 <p>
@@ -328,7 +308,8 @@ An
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

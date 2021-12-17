@@ -15,8 +15,26 @@
 <ol class="children children-li"><li>
 	<a href="../reference/macros/template.html" >Constrained template macros</a><li>
 	<a href="../reference/macros/version.html" >Version macros</a><li>
+	<a href="../reference/macros/co_try.html" ><code>BOOST_OUTCOME_CO_TRY(var, expr)</code></a>
+<p>Evaluate within a coroutine an expression which results in an understood type, assigning <code>T</code> to a decl called <code>var</code> if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/co_tryv.html" ><code>BOOST_OUTCOME_CO_TRYV(expr)/BOOST_OUTCOME_CO_TRY(expr)</code></a>
+<p>Evaluate from within a coroutine an expression which results in an understood type, continuing execution if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/co_tryv2.html" ><code>BOOST_OUTCOME_CO_TRYV2(spec, expr)</code></a>
+<p>Evaluate an expression which results in an understood type, continuing execution if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/co_tryv2_failure_likely.html" ><code>BOOST_OUTCOME_CO_TRYV2_FAILURE_LIKELY(spec, expr)</code></a>
+<p>Evaluate an expression which results in an understood type, continuing execution if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/co_tryv_failure_likely.html" ><code>BOOST_OUTCOME_CO_TRYV_FAILURE_LIKELY(expr)/BOOST_OUTCOME_CO_TRY_FAILURE_LIKELY(expr)</code></a>
+<p>Evaluate from within a coroutine an expression which results in an understood type, continuing execution if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/co_tryx.html" ><code>BOOST_OUTCOME_CO_TRYX(expr)</code></a>
+<p>Evaluate from within a coroutine an expression which results in an understood type, emitting the <code>T</code> if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/co_tryx_failure_likely.html" ><code>BOOST_OUTCOME_CO_TRYX_FAILURE_LIKELY(expr)</code></a>
+<p>Evaluate from within a coroutine an expression which results in an understood type, emitting the <code>T</code> if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/co_try_failure_likely.html" ><code>BOOST_OUTCOME_CO_TRY_FAILURE_LIKELY(var, expr)</code></a>
+<p>Evaluate within a coroutine an expression which results in an understood type, assigning <code>T</code> to a decl called <code>var</code> if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
 	<a href="../reference/macros/disable_execinfo.html" ><code>BOOST_OUTCOME_DISABLE_EXECINFO</code></a>
 <p>If defined, disables the use of the <code>&lt;execinfo.h&gt;</code> header (or the win32 emulation).</p><li>
+	<a href="../reference/macros/enable_legacy_support_for.html" ><code>BOOST_OUTCOME_ENABLE_LEGACY_SUPPORT_FOR</code></a>
+<p>Enables backwards features and naming compatibility for earlier versions of Outcome.</p><li>
 	<a href="../reference/macros/nodiscard.html" ><code>BOOST_OUTCOME_NODISCARD</code></a>
 <p>How to tell the compiler than the return value of a function should not be discarded without examining it.</p><li>
 	<a href="../reference/macros/requires.html" ><code>BOOST_OUTCOME_REQUIRES(...)</code></a>
@@ -28,11 +46,21 @@
 	<a href="../reference/macros/throw_exception.html" ><code>BOOST_OUTCOME_THROW_EXCEPTION(expr)</code></a>
 <p>How to throw a C++ exception, or equivalent thereof.</p><li>
 	<a href="../reference/macros/try.html" ><code>BOOST_OUTCOME_TRY(var, expr)</code></a>
-<p>Evaluate an expression which results in an understood type, assigning <code>T</code> to a variable called <code>var</code> if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+<p>Evaluate an expression which results in an understood type, assigning <code>T</code> to a decl called <code>var</code> if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
 	<a href="../reference/macros/tryv.html" ><code>BOOST_OUTCOME_TRYV(expr)/BOOST_OUTCOME_TRY(expr)</code></a>
+<p>Evaluate an expression which results in an understood type, continuing execution if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/tryv2.html" ><code>BOOST_OUTCOME_TRYV2(spec, expr)</code></a>
+<p>Evaluate an expression which results in an understood type, continuing execution if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/tryv2_failure_likely.html" ><code>BOOST_OUTCOME_TRYV2_FAILURE_LIKELY(spec, expr)</code></a>
+<p>Evaluate an expression which results in an understood type, continuing execution if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/tryv_failure_likely.html" ><code>BOOST_OUTCOME_TRYV_FAILURE_LIKELY(expr)/BOOST_OUTCOME_TRY_FAILURE_LIKELY(expr)</code></a>
 <p>Evaluate an expression which results in an understood type, continuing execution if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
 	<a href="../reference/macros/tryx.html" ><code>BOOST_OUTCOME_TRYX(expr)</code></a>
 <p>Evaluate an expression which results in an understood type, emitting the <code>T</code> if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/tryx_failure_likely.html" ><code>BOOST_OUTCOME_TRYX_FAILURE_LIKELY(expr)</code></a>
+<p>Evaluate an expression which results in an understood type, emitting the <code>T</code> if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
+	<a href="../reference/macros/try_failure_likely.html" ><code>BOOST_OUTCOME_TRY_FAILURE_LIKELY(var, expr)</code></a>
+<p>Evaluate an expression which results in an understood type, assigning <code>T</code> to a decl called <code>var</code> if successful, immediately returning <code>try_operation_return_as(X)</code> from the calling function if unsuccessful.</p><li>
 	<a href="../reference/macros/in_place_type.html" ><code>BOOST_OUTCOME_USE_STD_IN_PLACE_TYPE</code></a>
 <p>How to implement <code>in_place_type_t&lt;T&gt;</code> and <code>in_place_type&lt;T&gt;</code>.</p><li>
 	<a href="../reference/macros/is_nothrow_swappable.html" ><code>BOOST_OUTCOME_USE_STD_IS_NOTHROW_SWAPPABLE</code></a>

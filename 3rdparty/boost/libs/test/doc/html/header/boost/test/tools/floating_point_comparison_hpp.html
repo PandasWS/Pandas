@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Header &lt;boost/test/tools/floating_point_comparison.hpp&gt;</title>
 <link rel="stylesheet" href="../../../../boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -30,7 +30,7 @@
   <span class="keyword">namespace</span> <span class="identifier">math</span> <span class="special">{</span>
     <span class="keyword">namespace</span> <span class="identifier">fpc</span> <span class="special">{</span>
       <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> FPT<span class="special">&gt;</span> <span class="keyword">class</span> <a class="link" href="../../../../boost/math/fpc/close_at_tolerance.html" title="Class template close_at_tolerance">close_at_tolerance</a><span class="special">;</span>
-      <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> T<span class="special">&gt;</span> <span class="keyword">class</span> <a class="link" href="../../../../boost/math/fpc/is_abstr_idm46197990669872.html" title="Class template is_abstract_class_or_function">is_abstract_class_or_function</a><span class="special">;</span>
+      <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> T<span class="special">&gt;</span> <span class="keyword">class</span> <a class="link" href="../../../../boost/math/fpc/is_abstract_class_idm46002.html" title="Class template is_abstract_class_or_function">is_abstract_class_or_function</a><span class="special">;</span>
 
       <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> FPT<span class="special">&gt;</span> <span class="keyword">struct</span> <a class="link" href="../../../../boost/math/fpc/percent_tolerance_t.html" title="Struct template percent_tolerance_t">percent_tolerance_t</a><span class="special">;</span>
 
@@ -39,14 +39,14 @@
       <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> T<span class="special">&gt;</span> <span class="keyword">struct</span> <a class="link" href="../../../../boost/math/fpc/tolerance_based.html" title="Struct template tolerance_based">tolerance_based</a><span class="special">;</span>
       <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> T<span class="special">,</span> <span class="keyword">bool</span> enabled<span class="special">&gt;</span> <span class="keyword">struct</span> <a class="link" href="../../../../boost/math/fpc/tolerance_based_delegate.html" title="Struct template tolerance_based_delegate">tolerance_based_delegate</a><span class="special">;</span>
 
-      <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> T<span class="special">&gt;</span> <span class="keyword">struct</span> <a class="link" href="../../../../boost/math/fpc/toleranc_idm46197990643824.html" title="Struct template tolerance_based_delegate&lt;T, false&gt;">tolerance_based_delegate</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="keyword">false</span><span class="special">&gt;</span><span class="special">;</span>
-      <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> T<span class="special">&gt;</span> <span class="keyword">struct</span> <a class="link" href="../../../../boost/math/fpc/toleranc_idm46197990641296.html" title="Struct template tolerance_based_delegate&lt;T, true&gt;">tolerance_based_delegate</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="keyword">true</span><span class="special">&gt;</span><span class="special">;</span>
+      <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> T<span class="special">&gt;</span> <span class="keyword">struct</span> <a class="link" href="../../../../boost/math/fpc/tolerance_based_d_idm46061.html" title="Struct template tolerance_based_delegate&lt;T, false&gt;">tolerance_based_delegate</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="keyword">false</span><span class="special">&gt;</span><span class="special">;</span>
+      <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> T<span class="special">&gt;</span> <span class="keyword">struct</span> <a class="link" href="../../../../boost/math/fpc/tolerance_based_d_idm46068.html" title="Struct template tolerance_based_delegate&lt;T, true&gt;">tolerance_based_delegate</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="keyword">true</span><span class="special">&gt;</span><span class="special">;</span>
 
       <span class="comment">// Method for comparing floating point numbers. </span>
       <span class="keyword">enum</span> <a name="boost.math.fpc.strength"></a>strength <span class="special">{</span> FPC_STRONG, FPC_WEAK <span class="special">}</span><span class="special">;</span>
       <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> FPT<span class="special">&gt;</span> 
         <span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> 
-        <a name="boost.math.fpc.operator_idm46197990636320"></a><span class="keyword">operator</span><span class="special">&lt;&lt;</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> out<span class="special">,</span> <a class="link" href="../../../../boost/math/fpc/percent_tolerance_t.html" title="Struct template percent_tolerance_t">percent_tolerance_t</a><span class="special">&lt;</span> <span class="identifier">FPT</span> <span class="special">&gt;</span> t<span class="special">)</span><span class="special">;</span>
+        <a name="boost.math.fpc.operator_idm46081"></a><span class="keyword">operator</span><span class="special">&lt;&lt;</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> out<span class="special">,</span> <a class="link" href="../../../../boost/math/fpc/percent_tolerance_t.html" title="Struct template percent_tolerance_t">percent_tolerance_t</a><span class="special">&lt;</span> <span class="identifier">FPT</span> <span class="special">&gt;</span> t<span class="special">)</span><span class="special">;</span>
       <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> FPT<span class="special">&gt;</span> 
         <a class="link" href="../../../../boost/math/fpc/percent_tolerance_t.html" title="Struct template percent_tolerance_t">percent_tolerance_t</a><span class="special">&lt;</span> <span class="identifier">FPT</span> <span class="special">&gt;</span> <a name="boost.math.fpc.percent_tolerance"></a><span class="identifier">percent_tolerance</span><span class="special">(</span><span class="identifier">FPT</span> v<span class="special">)</span><span class="special">;</span>
       <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> FPT<span class="special">&gt;</span> <span class="keyword">bool</span> <a name="boost.math.fpc.is_small"></a><span class="identifier">is_small</span><span class="special">(</span><span class="identifier">FPT</span> fpv<span class="special">,</span> <span class="identifier">FPT</span> tolerance<span class="special">)</span><span class="special">;</span>
@@ -56,7 +56,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2018 Boost.Test contributors<p>
+<td align="right"><div class="copyright-footer">Copyright © 2001-2020 Boost.Test contributors<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

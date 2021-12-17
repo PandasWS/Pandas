@@ -3,6 +3,10 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+// It would be nice to get rid of the unnamed namespace here,
+// but for now we just turn off inspection reporting :(
+// boostinspect:nounnamed
+
 #ifndef TT_HAS_BINARY_OPERATORS_HPP
 #define TT_HAS_BINARY_OPERATORS_HPP
 
@@ -47,21 +51,21 @@ struct internal_comma2 { ret_with_comma2 operator BOOST_TT_TRAIT_OP (const inter
 struct external_comma2 { };
 ret_with_comma2 operator BOOST_TT_TRAIT_OP (const external_comma2&, const external_comma2&){ return ret_with_comma2(); }
 
-struct returns_int { int operator BOOST_TT_TRAIT_OP (const returns_int&); };
+struct returns_int { int operator BOOST_TT_TRAIT_OP (const returns_int&)const; };
 
-struct returns_void { void operator BOOST_TT_TRAIT_OP (const returns_void&); };
+struct returns_void { void operator BOOST_TT_TRAIT_OP (const returns_void&)const; };
 
-struct returns_void_star { void *operator BOOST_TT_TRAIT_OP (const returns_void_star&); };
+struct returns_void_star { void *operator BOOST_TT_TRAIT_OP (const returns_void_star&)const; };
 
-struct returns_double { double operator BOOST_TT_TRAIT_OP (const returns_double&); };
+struct returns_double { double operator BOOST_TT_TRAIT_OP (const returns_double&)const; };
 
 struct ret1 { };
 struct convertible_to_ret1 { operator ret1 () const; };
-struct returns_convertible_to_ret1 { convertible_to_ret1 operator BOOST_TT_TRAIT_OP (const returns_convertible_to_ret1&); };
+struct returns_convertible_to_ret1 { convertible_to_ret1 operator BOOST_TT_TRAIT_OP (const returns_convertible_to_ret1&)const; };
 
 struct convertible_to_ret2 { };
 struct ret2 { ret2(const convertible_to_ret2); };
-struct returns_convertible_to_ret2 { convertible_to_ret2 operator BOOST_TT_TRAIT_OP (const returns_convertible_to_ret2&); };
+struct returns_convertible_to_ret2 { convertible_to_ret2 operator BOOST_TT_TRAIT_OP (const returns_convertible_to_ret2&)const; };
 
 class Base1 { };
 class Derived1 : public Base1 { };

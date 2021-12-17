@@ -11,7 +11,7 @@
 
 [section Files]
 
-* [@../../../../boost/bind.hpp boost/bind.hpp] (main header)
+* [@../../../../boost/bind/bind.hpp boost/bind/bind.hpp] (main header)
 * [@../../../../boost/bind/bind_cc.hpp boost/bind/bind_cc.hpp] (used by `bind.hpp`, do not include directly)
 * [@../../../../boost/bind/bind_mf_cc.hpp boost/bind/bind_mf_cc.hpp] (used by `bind.hpp`, do not include directly)
 * [@../../../../boost/bind/bind_template.hpp boost/bind/bind_template.hpp] (used by `bind.hpp`, do not include directly)
@@ -58,22 +58,22 @@ calling convention known as `__stdcall`. Borland VCL components use
 `__fastcall`. Mac toolbox functions use a `pascal` calling convention.
 
 To use `bind` with `__stdcall` functions, `#define` the macro
-`BOOST_BIND_ENABLE_STDCALL` before including `<boost/bind.hpp>`.
+`BOOST_BIND_ENABLE_STDCALL` before including `<boost/bind/bind.hpp>`.
 
 To use `bind` with `__stdcall` member functions, `#define` the macro
-`BOOST_MEM_FN_ENABLE_STDCALL` before including `<boost/bind.hpp>`.
+`BOOST_MEM_FN_ENABLE_STDCALL` before including `<boost/bind/bind.hpp>`.
 
 To use `bind` with `__fastcall` functions, `#define` the macro
-`BOOST_BIND_ENABLE_FASTCALL` before including `<boost/bind.hpp>`.
+`BOOST_BIND_ENABLE_FASTCALL` before including `<boost/bind/bind.hpp>`.
 
 To use `bind` with `__fastcall` member functions, `#define` the macro
-`BOOST_MEM_FN_ENABLE_FASTCALL` before including `<boost/bind.hpp>`.
+`BOOST_MEM_FN_ENABLE_FASTCALL` before including `<boost/bind/bind.hpp>`.
 
 To use `bind` with `pascal` functions, `#define` the macro
-`BOOST_BIND_ENABLE_PASCAL` before including `<boost/bind.hpp>`.
+`BOOST_BIND_ENABLE_PASCAL` before including `<boost/bind/bind.hpp>`.
 
 To use `bind` with `__cdecl` member functions, `#define` the macro
-`BOOST_MEM_FN_ENABLE_CDECL` before including `<boost/bind.hpp>`.
+`BOOST_MEM_FN_ENABLE_CDECL` before including `<boost/bind/bind.hpp>`.
 
 [*It is best to define these macros in the project options, via `-D` on the
 command line, or as the first line in the translation unit (.cpp file) where

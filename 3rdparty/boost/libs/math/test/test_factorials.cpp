@@ -16,7 +16,7 @@
 #include <boost/math/concepts/real_concept.hpp>
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/math/special_functions/factorials.hpp>
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/tools/stats.hpp>
@@ -44,6 +44,7 @@ T naive_falling_factorial(T x, unsigned n)
 template <class T>
 void test_spots(T)
 {
+   using std::ldexp;
    //
    // Basic sanity checks.
    //

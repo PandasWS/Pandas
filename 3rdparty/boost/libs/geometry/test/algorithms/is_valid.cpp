@@ -1,7 +1,7 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 // Unit Test
 
-// Copyright (c) 2014-2018, Oracle and/or its affiliates.
+// Copyright (c) 2014-2021, Oracle and/or its affiliates.
 
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
@@ -19,12 +19,15 @@
 #include <boost/test/included/unit_test.hpp>
 
 #include "test_is_valid.hpp"
+#include "overlay/overlay_cases.hpp"
 
 #include <boost/geometry/core/coordinate_type.hpp>
 
 #include <boost/geometry/algorithms/correct.hpp>
 #include <boost/geometry/algorithms/intersection.hpp>
 #include <boost/geometry/algorithms/reverse.hpp>
+
+#include <boost/geometry/geometries/geometry_collection.hpp>
 
 BOOST_AUTO_TEST_CASE( test_is_valid_point )
 {
@@ -784,6 +787,7 @@ inline void test_open_polygons()
          false);
 }
 
+
 template <typename Point>
 inline void test_doc_example_polygon()
 {
@@ -794,13 +798,16 @@ inline void test_doc_example_polygon()
     std::cout << "************************************" << std::endl;
 #endif
 
-    typedef bg::model::polygon<Point> CCW_CG;
+    typedef bg::model::polygon<Point> ClockwiseClosedPolygon;
     typedef validity_tester_areal<true> tester;
-    typedef test_valid<tester, CCW_CG> test;
+    typedef test_valid<tester, ClockwiseClosedPolygon> test;
 
     test::apply("pg-doc",
                 "POLYGON((0 0,0 10,10 10,10 0,0 0),(0 0,9 1,9 2,0 0),(0 0,2 9,1 9,0 0),(2 9,9 2,9 9,2 9))",
                 false);
+
+    // Containing a self touching point, which should be valid
+    test::apply("ggl_list_20190307_matthieu_2", ggl_list_20190307_matthieu_2[1], true);
 }
 
 BOOST_AUTO_TEST_CASE( test_is_valid_polygon )
@@ -1408,4 +1415,41 @@ BOOST_AUTO_TEST_CASE( test_is_valid_variant )
     test::apply("v03", vg, true);
     vg = invalid_polygon;
     test::apply("v04", vg, false);
+}
+
+BOOST_AUTO_TEST_CASE( test_is_valid_geometry_collection )
+{
+#ifdef BOOST_GEOMETRY_TEST_DEBUG
+    std::cout << std::endl << std::endl;
+    std::cout << "************************************" << std::endl;
+    std::cout << " is_valid: geometry collection" << std::endl;
+    std::cout << "************************************" << std::endl;
+#endif
+
+    using polygon_type = bg::model::polygon<point_type>; // cw, closed
+    using variant_type = boost::variant
+        <
+            linestring_type, multi_linestring_type, polygon_type
+        >;
+    using gc_type = bg::model::geometry_collection<variant_type>;
+
+    typedef test_valid_variant<gc_type> test;
+
+    gc_type gc;
+
+    linestring_type valid_linestring =
+        from_wkt<linestring_type>("LINESTRING(0 0,1 0)");
+    multi_linestring_type invalid_multi_linestring =
+        from_wkt<multi_linestring_type>("MULTILINESTRING((0 0,1 0),(0 0))");
+    polygon_type valid_polygon =
+        from_wkt<polygon_type>("POLYGON((0 0,1 1,1 0,0 0))");
+    polygon_type invalid_polygon =
+        from_wkt<polygon_type>("POLYGON((0 0,2 2,2 0,1 0))");
+
+    gc = {valid_linestring, valid_polygon};
+    test::apply("gc01", gc, true);
+    gc = {invalid_multi_linestring, valid_polygon};
+    test::apply("gc02", gc, false);
+    gc = {valid_linestring, invalid_polygon};
+    test::apply("gc03", gc, false);
 }

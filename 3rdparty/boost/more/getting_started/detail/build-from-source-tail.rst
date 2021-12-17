@@ -68,6 +68,6 @@ If it seems like the build system can't find your compiler and/or
 linker, consider setting up a ``user-config.jam`` file as described
 `here`__.  If that isn't your problem or the ``user-config.jam`` file
 doesn't work for you, please address questions about configuring Boost
-for your compiler to the `Boost.Build mailing list`_.
+for your compiler to the `Boost Users' mailing list`_.
 
-__ http://www.boost.org/build/doc/html/bbv2/overview/configuration.html
+__ ../../tools/build/doc/html/index.html#bbv2.overview.configuration

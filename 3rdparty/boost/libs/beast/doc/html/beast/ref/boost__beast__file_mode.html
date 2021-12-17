@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>file_mode</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Beast">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Beast">
 <link rel="up" href="../ref.html" title="This Page Intentionally Left Blank 2/2">
-<link rel="prev" href="boost__beast__file/write.html" title="file::write">
-<link rel="next" href="boost__beast__file_posix.html" title="file_posix">
+<link rel="prev" href="boost__beast__role_type.html" title="role_type">
+<link rel="next" href="boost__beast__errc.html" title="errc">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,15 +20,17 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__file/write.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__file_posix.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__role_type.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__errc.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="beast.ref.boost__beast__file_mode"></a><a class="link" href="boost__beast__file_mode.html" title="file_mode">file_mode</a>
 </h4></div></div></div>
 <p>
-        <a class="indexterm" name="idm45720549632800"></a>
-File open modes.
+        <a class="indexterm" name="idm66821"></a>
+      </p>
+<p>
+        File open modes.
       </p>
 <h5>
 <a name="beast.ref.boost__beast__file_mode.h0"></a>
@@ -39,16 +41,6 @@ File open modes.
       </p>
 <pre class="programlisting"><span class="keyword">enum</span> <span class="identifier">file_mode</span>
 </pre>
-<p>
-        <a class="indexterm" name="idm45720549624864"></a>
- <a class="indexterm" name="idm45720549623712"></a>
- <a class="indexterm" name="idm45720549622608"></a>
- <a class="indexterm" name="idm45720549621504"></a>
- <a class="indexterm" name="idm45720549620400"></a>
- <a class="indexterm" name="idm45720549619296"></a>
- <a class="indexterm" name="idm45720549618192"></a>
-
-      </p>
 <h5>
 <a name="beast.ref.boost__beast__file_mode.h1"></a>
         <span class="phrase"><a name="beast.ref.boost__beast__file_mode.values"></a></span><a class="link" href="boost__beast__file_mode.html#beast.ref.boost__beast__file_mode.values">Values</a>
@@ -74,7 +66,7 @@ File open modes.
 <tr>
 <td>
                 <p>
-                  <code class="literal">read</code>
+                  <code class="computeroutput"><span class="identifier">read</span></code>
                 </p>
               </td>
 <td>
@@ -86,7 +78,7 @@ File open modes.
 <tr>
 <td>
                 <p>
-                  <code class="literal">scan</code>
+                  <code class="computeroutput"><span class="identifier">scan</span></code>
                 </p>
               </td>
 <td>
@@ -98,7 +90,7 @@ File open modes.
 <tr>
 <td>
                 <p>
-                  <code class="literal">write</code>
+                  <code class="computeroutput"><span class="identifier">write</span></code>
                 </p>
               </td>
 <td>
@@ -116,7 +108,7 @@ File open modes.
 <tr>
 <td>
                 <p>
-                  <code class="literal">write_new</code>
+                  <code class="computeroutput"><span class="identifier">write_new</span></code>
                 </p>
               </td>
 <td>
@@ -134,7 +126,7 @@ File open modes.
 <tr>
 <td>
                 <p>
-                  <code class="literal">write_existing</code>
+                  <code class="computeroutput"><span class="identifier">write_existing</span></code>
                 </p>
               </td>
 <td>
@@ -149,7 +141,7 @@ File open modes.
 <tr>
 <td>
                 <p>
-                  <code class="literal">append</code>
+                  <code class="computeroutput"><span class="identifier">append</span></code>
                 </p>
               </td>
 <td>
@@ -171,7 +163,7 @@ File open modes.
 <tr>
 <td>
                 <p>
-                  <code class="literal">append_existing</code>
+                  <code class="computeroutput"><span class="identifier">append_existing</span></code>
                 </p>
               </td>
 <td>
@@ -205,13 +197,10 @@ File open modes.
 <p>
         <a class="link" href="boost__beast__file_stdio.html" title="file_stdio"><code class="computeroutput"><span class="identifier">file_stdio</span></code></a>
       </p>
-<p>
-        Convenience header <code class="literal">&lt;<a href="../../../../../../boost/beast/core.hpp" target="_top">boost/beast/core.hpp</a>&gt;</code>
-      </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2016-2019 Vinnie
+<td align="right"><div class="copyright-footer">Copyright © 2016-2019 Vinnie
       Falco<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
@@ -220,7 +209,7 @@ File open modes.
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__file/write.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__file_posix.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__role_type.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__errc.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

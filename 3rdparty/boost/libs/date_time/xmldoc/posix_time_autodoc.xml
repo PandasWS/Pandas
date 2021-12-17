@@ -44,6 +44,7 @@
 
 
 
+
 <function name="from_time_t"><type><classname>ptime</classname></type><parameter name="t"><paramtype>std::time_t</paramtype></parameter><purpose>Function that converts a time_t into a ptime. </purpose></function>
 <function name="to_time_t"><type>std::time_t</type><parameter name="pt"><paramtype><classname>ptime</classname></paramtype></parameter><purpose>Function that converts a ptime into a time_t. </purpose></function>
 <function name="to_tm"><type>std::tm</type><parameter name="t"><paramtype>const <classname>boost::posix_time::ptime</classname> &amp;</paramtype></parameter><purpose>Convert a time to a tm structure truncating any fractional seconds. </purpose></function>
@@ -97,14 +98,15 @@
 
 
 
-<function name="operator+"><type><classname>ptime</classname></type><parameter name="t"><paramtype>const <classname>ptime</classname> &amp;</paramtype></parameter><parameter name="m"><paramtype>const boost::gregorian::months &amp;</paramtype></parameter><description><para>Adds a months object and a ptime. Result will be same day-of-month as ptime unless original day was the last day of month. see date_time::months_duration for more details </para></description></function>
-<function name="operator+="><type><classname>ptime</classname></type><parameter name="t"><paramtype><classname>ptime</classname> &amp;</paramtype></parameter><parameter name="m"><paramtype>const boost::gregorian::months &amp;</paramtype></parameter><description><para>Adds a months object to a ptime. Result will be same day-of-month as ptime unless original day was the last day of month. see date_time::months_duration for more details </para></description></function>
-<function name="operator-"><type><classname>ptime</classname></type><parameter name="t"><paramtype>const <classname>ptime</classname> &amp;</paramtype></parameter><parameter name="m"><paramtype>const boost::gregorian::months &amp;</paramtype></parameter><description><para>Subtracts a months object and a ptime. Result will be same day-of-month as ptime unless original day was the last day of month. see date_time::months_duration for more details </para></description></function>
-<function name="operator-="><type><classname>ptime</classname></type><parameter name="t"><paramtype><classname>ptime</classname> &amp;</paramtype></parameter><parameter name="m"><paramtype>const boost::gregorian::months &amp;</paramtype></parameter><description><para>Subtracts a months object from a ptime. Result will be same day-of-month as ptime unless original day was the last day of month. see date_time::months_duration for more details </para></description></function>
-<function name="operator+"><type><classname>ptime</classname></type><parameter name="t"><paramtype>const <classname>ptime</classname> &amp;</paramtype></parameter><parameter name="y"><paramtype>const boost::gregorian::years &amp;</paramtype></parameter><description><para>Adds a years object and a ptime. Result will be same month and day-of-month as ptime unless original day was the last day of month. see date_time::years_duration for more details </para></description></function>
-<function name="operator+="><type><classname>ptime</classname></type><parameter name="t"><paramtype><classname>ptime</classname> &amp;</paramtype></parameter><parameter name="y"><paramtype>const boost::gregorian::years &amp;</paramtype></parameter><description><para>Adds a years object to a ptime. Result will be same month and day-of-month as ptime unless original day was the last day of month. see date_time::years_duration for more details </para></description></function>
-<function name="operator-"><type><classname>ptime</classname></type><parameter name="t"><paramtype>const <classname>ptime</classname> &amp;</paramtype></parameter><parameter name="y"><paramtype>const boost::gregorian::years &amp;</paramtype></parameter><description><para>Subtracts a years object and a ptime. Result will be same month and day-of-month as ptime unless original day was the last day of month. see date_time::years_duration for more details </para></description></function>
-<function name="operator-="><type><classname>ptime</classname></type><parameter name="t"><paramtype><classname>ptime</classname> &amp;</paramtype></parameter><parameter name="y"><paramtype>const boost::gregorian::years &amp;</paramtype></parameter><description><para>Subtracts a years object from a ptime. Result will be same month and day-of-month as ptime unless original day was the last day of month. see date_time::years_duration for more details </para></description></function>
+
+<function name="operator+"><type>BOOST_CXX14_CONSTEXPR <classname>ptime</classname></type><parameter name="t"><paramtype>const <classname>ptime</classname> &amp;</paramtype></parameter><parameter name="m"><paramtype>const boost::gregorian::months &amp;</paramtype></parameter><description><para>Adds a months object and a ptime. Result will be same day-of-month as ptime unless original day was the last day of month. see date_time::months_duration for more details </para></description></function>
+<function name="operator+="><type>BOOST_CXX14_CONSTEXPR <classname>ptime</classname></type><parameter name="t"><paramtype><classname>ptime</classname> &amp;</paramtype></parameter><parameter name="m"><paramtype>const boost::gregorian::months &amp;</paramtype></parameter><description><para>Adds a months object to a ptime. Result will be same day-of-month as ptime unless original day was the last day of month. see date_time::months_duration for more details </para></description></function>
+<function name="operator-"><type>BOOST_CXX14_CONSTEXPR <classname>ptime</classname></type><parameter name="t"><paramtype>const <classname>ptime</classname> &amp;</paramtype></parameter><parameter name="m"><paramtype>const boost::gregorian::months &amp;</paramtype></parameter><description><para>Subtracts a months object and a ptime. Result will be same day-of-month as ptime unless original day was the last day of month. see date_time::months_duration for more details </para></description></function>
+<function name="operator-="><type>BOOST_CXX14_CONSTEXPR <classname>ptime</classname></type><parameter name="t"><paramtype><classname>ptime</classname> &amp;</paramtype></parameter><parameter name="m"><paramtype>const boost::gregorian::months &amp;</paramtype></parameter><description><para>Subtracts a months object from a ptime. Result will be same day-of-month as ptime unless original day was the last day of month. see date_time::months_duration for more details </para></description></function>
+<function name="operator+"><type>BOOST_CXX14_CONSTEXPR <classname>ptime</classname></type><parameter name="t"><paramtype>const <classname>ptime</classname> &amp;</paramtype></parameter><parameter name="y"><paramtype>const boost::gregorian::years &amp;</paramtype></parameter><description><para>Adds a years object and a ptime. Result will be same month and day-of-month as ptime unless original day was the last day of month. see date_time::years_duration for more details </para></description></function>
+<function name="operator+="><type>BOOST_CXX14_CONSTEXPR <classname>ptime</classname></type><parameter name="t"><paramtype><classname>ptime</classname> &amp;</paramtype></parameter><parameter name="y"><paramtype>const boost::gregorian::years &amp;</paramtype></parameter><description><para>Adds a years object to a ptime. Result will be same month and day-of-month as ptime unless original day was the last day of month. see date_time::years_duration for more details </para></description></function>
+<function name="operator-"><type>BOOST_CXX14_CONSTEXPR <classname>ptime</classname></type><parameter name="t"><paramtype>const <classname>ptime</classname> &amp;</paramtype></parameter><parameter name="y"><paramtype>const boost::gregorian::years &amp;</paramtype></parameter><description><para>Subtracts a years object and a ptime. Result will be same month and day-of-month as ptime unless original day was the last day of month. see date_time::years_duration for more details </para></description></function>
+<function name="operator-="><type>BOOST_CXX14_CONSTEXPR <classname>ptime</classname></type><parameter name="t"><paramtype><classname>ptime</classname> &amp;</paramtype></parameter><parameter name="y"><paramtype>const boost::gregorian::years &amp;</paramtype></parameter><description><para>Subtracts a years object from a ptime. Result will be same month and day-of-month as ptime unless original day was the last day of month. see date_time::years_duration for more details </para></description></function>
 
 
 
@@ -143,10 +145,10 @@
 <data-member name="day"><type>date_type</type></data-member>
 <data-member name="time_of_day"><type><classname>time_duration_type</classname></type></data-member>
 <method-group name="public member functions">
-<method name="is_special" cv="const"><type>bool</type></method>
-<method name="is_pos_infinity" cv="const"><type>bool</type></method>
-<method name="is_neg_infinity" cv="const"><type>bool</type></method>
-<method name="is_not_a_date_time" cv="const"><type>bool</type></method>
+<method name="is_special" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type></method>
+<method name="is_pos_infinity" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type></method>
+<method name="is_neg_infinity" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type></method>
+<method name="is_not_a_date_time" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type></method>
 </method-group>
 <constructor><parameter name="d"><paramtype>date_type</paramtype></parameter><parameter name="tod"><paramtype><classname>time_duration_type</classname></paramtype></parameter></constructor>
 </struct><class name="time_duration"><inherit access="public">date_time::time_duration&lt; time_duration, time_res_traits &gt;</inherit><purpose>Base time duration type. </purpose><typedef name="rep_type"><type>time_res_traits</type></typedef>
@@ -166,6 +168,7 @@
 </method-group>
 <constructor specifiers="explicit"><parameter name="tick_count"><paramtype>impl_type</paramtype></parameter></constructor>
 </class><typedef name="time_res_traits"><type>date_time::time_resolution_traits&lt; boost::date_time::time_resolution_traits_adapted64_impl, boost::date_time::nano, 1000000000, 9 &gt;</type></typedef>
+
 
 
 
@@ -289,6 +292,7 @@
 
 
 
+
 </namespace>
 </namespace>
 </header>
@@ -299,6 +303,7 @@
 <typedef name="time_facet"><type>boost::date_time::time_facet&lt; <classname>ptime</classname>, char &gt;</type></typedef>
 <typedef name="wtime_input_facet"><type>boost::date_time::time_input_facet&lt; <classname>ptime</classname>, wchar_t &gt;</type></typedef>
 <typedef name="time_input_facet"><type>boost::date_time::time_input_facet&lt; <classname>ptime</classname>, char &gt;</type></typedef>
+
 
 
 
@@ -371,6 +376,7 @@
 <header name="boost/date_time/posix_time/posix_time_legacy_io.hpp">
 <namespace name="boost">
 <namespace name="posix_time">
+
 
 
 
@@ -490,6 +496,7 @@
 
 
 
+
 </namespace>
 </namespace>
 </header>
@@ -501,6 +508,7 @@
 <typedef name="microsec_clock"><purpose>A time clock that has a resolution of one microsecond. </purpose><type>date_time::microsec_clock&lt; <classname>ptime</classname> &gt;</type></typedef>
 <typedef name="no_dst"><purpose>Define a dst null dst rule for the posix_time system. </purpose><type>date_time::null_dst_rules&lt; ptime::date_type, <classname>time_duration</classname> &gt;</type></typedef>
 <typedef name="us_dst"><purpose>Define US dst rule calculator for the posix_time system. </purpose><type>date_time::us_dst_rules&lt; ptime::date_type, <classname>time_duration</classname> &gt;</type></typedef>
+
 
 
 
@@ -588,6 +596,7 @@
 
 
 
+<function name="operator=="><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="lhs"><paramtype>const <classname>ptime</classname> &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const <classname>ptime</classname> &amp;</paramtype></parameter></function>
 
 
 
@@ -680,6 +689,7 @@
 
 
 
+
 </namespace>
 </namespace>
 </header>
@@ -734,6 +744,7 @@
 
 
 
+
 </namespace>
 </namespace>
 </header>
@@ -744,6 +755,7 @@
 <function name="time_from_string"><type><classname>ptime</classname></type><parameter name="s"><paramtype>const std::string &amp;</paramtype></parameter></function>
 <function name="from_iso_string"><type><classname>ptime</classname></type><parameter name="s"><paramtype>const std::string &amp;</paramtype></parameter></function>
 <function name="from_iso_extended_string"><type><classname>ptime</classname></type><parameter name="s"><paramtype>const std::string &amp;</paramtype></parameter></function>
+
 
 
 
@@ -843,9 +855,46 @@
 
 
 
+
 </namespace>
 </namespace>
 </header>
 <header name="boost/date_time/posix_time/time_serialize.hpp">
+<namespace name="boost">
+<namespace name="serialization">
+<struct name="version"><template>
+      <template-type-parameter name="T"/>
+    </template></struct><struct-specialization name="version"><template>
+    </template><specialization><template-arg>boost::posix_time::time_duration</template-arg></specialization><inherit access="public">integral_constant&lt; int, BOOST_DATE_TIME_POSIX_TIME_DURATION_VERSION &gt;</inherit></struct-specialization><function name="BOOST_DATE_TIME_SPLIT_FREE"><type/><parameter name=""><paramtype><classname>boost::posix_time::ptime</classname></paramtype></parameter><description><para>time_duration objects are broken down into 4 parts for serialization: types are hour_type, min_type, sec_type, and fractional_seconds_type as defined in the time_duration class </para></description></function>
+<function name="save"><type>void</type><template>
+          <template-type-parameter name="Archive"/>
+        </template><parameter name="ar"><paramtype>Archive &amp;</paramtype></parameter><parameter name="td"><paramtype>const <classname>posix_time::time_duration</classname> &amp;</paramtype></parameter><parameter name="version"><paramtype>unsigned int</paramtype></parameter></function>
+<function name="load_td"><type>void</type><template>
+          <template-type-parameter name="TimeResTraitsSize"/>
+          <template-type-parameter name="Archive"/>
+        </template><parameter name="ar"><paramtype>Archive &amp;</paramtype></parameter><parameter name="td"><paramtype><classname>posix_time::time_duration</classname> &amp;</paramtype></parameter><purpose>Function to load <classname alt="boost::posix_time::time_duration">posix_time::time_duration</classname> objects using serialization lib. </purpose><description><para>time_duration objects are broken down into 4 parts for serialization: types are hour_type, min_type, sec_type, and fractional_seconds_type as defined in the time_duration class </para></description></function>
+<function name="load"><type>void</type><template>
+          <template-type-parameter name="Archive"/>
+        </template><parameter name="ar"><paramtype>Archive &amp;</paramtype></parameter><parameter name="td"><paramtype><classname>posix_time::time_duration</classname> &amp;</paramtype></parameter><parameter name="version"><paramtype>unsigned int</paramtype></parameter></function>
+<function name="save"><type>void</type><template>
+          <template-type-parameter name="Archive"/>
+        </template><parameter name="ar"><paramtype>Archive &amp;</paramtype></parameter><parameter name="pt"><paramtype>const <classname>posix_time::ptime</classname> &amp;</paramtype></parameter><parameter name=""><paramtype>unsigned int</paramtype></parameter><purpose>Function to save <classname alt="boost::posix_time::ptime">posix_time::ptime</classname> objects using serialization lib. </purpose><description><para>ptime objects are broken down into 2 parts for serialization: a date object and a time_duration onject </para></description></function>
+<function name="load"><type>void</type><template>
+          <template-type-parameter name="Archive"/>
+        </template><parameter name="ar"><paramtype>Archive &amp;</paramtype></parameter><parameter name="pt"><paramtype><classname>posix_time::ptime</classname> &amp;</paramtype></parameter><parameter name=""><paramtype>unsigned int</paramtype></parameter><purpose>Function to load <classname alt="boost::posix_time::ptime">posix_time::ptime</classname> objects using serialization lib. </purpose><description><para>ptime objects are broken down into 2 parts for serialization: a date object and a time_duration onject </para></description></function>
+<function name="load_construct_data"><type>void</type><template>
+          <template-type-parameter name="Archive"/>
+        </template><parameter name=""><paramtype>Archive &amp;</paramtype></parameter><parameter name="pt"><paramtype><classname>posix_time::ptime</classname> *</paramtype></parameter><parameter name=""><paramtype>const unsigned int</paramtype></parameter><purpose>override needed b/c no default constructor </purpose></function>
+<function name="save"><type>void</type><template>
+          <template-type-parameter name="Archive"/>
+        </template><parameter name="ar"><paramtype>Archive &amp;</paramtype></parameter><parameter name="tp"><paramtype>const posix_time::time_period &amp;</paramtype></parameter><parameter name=""><paramtype>unsigned int</paramtype></parameter><purpose>Function to save posix_time::time_period objects using serialization lib. </purpose><description><para>time_period objects are broken down into 2 parts for serialization: a begining ptime object and an ending ptime object </para></description></function>
+<function name="load"><type>void</type><template>
+          <template-type-parameter name="Archive"/>
+        </template><parameter name="ar"><paramtype>Archive &amp;</paramtype></parameter><parameter name="tp"><paramtype>boost::posix_time::time_period &amp;</paramtype></parameter><parameter name=""><paramtype>unsigned int</paramtype></parameter><purpose>Function to load posix_time::time_period objects using serialization lib. </purpose><description><para>time_period objects are broken down into 2 parts for serialization: a begining ptime object and an ending ptime object </para></description></function>
+<function name="load_construct_data"><type>void</type><template>
+          <template-type-parameter name="Archive"/>
+        </template><parameter name=""><paramtype>Archive &amp;</paramtype></parameter><parameter name="tp"><paramtype>boost::posix_time::time_period *</paramtype></parameter><parameter name=""><paramtype>const unsigned int</paramtype></parameter><purpose>override needed b/c no default constructor </purpose></function>
+</namespace>
+</namespace>
 </header>
 </library-reference>

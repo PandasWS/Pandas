@@ -19,7 +19,6 @@
 #include <boost/wave/token_ids.hpp>
 
 #include <boost/wave/cpplexer/cpp_lex_token.hpp>
-#include "xlex_iterator.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 //  The following file needs to be included only once throughout the whole

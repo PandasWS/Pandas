@@ -210,6 +210,20 @@ void bcp_implementation::add_dependent_lib(const std::string& libname, const fs:
                   //add_path(fs::path("tools/build"));
                }
             }
+            if(fs::exists(m_boost_path / "libs" / libname / "config"))
+            {
+               if(!m_dependencies.count(fs::path("libs") / libname / "config")) 
+               {
+                  m_dependencies[fs::path("libs") / libname / "config"] = p; // set up dependency tree
+                  add_path(fs::path("libs") / libname / "config");
+                  //m_dependencies[fs::path("boost-build.jam")] = p;
+                  //add_path(fs::path("boost-build.jam"));
+                  m_dependencies[fs::path("Jamroot")] = p;
+                  add_path(fs::path("Jamroot"));
+                  //m_dependencies[fs::path("tools/build")] = p;
+                  //add_path(fs::path("tools/build"));
+               }
+            }
          }
       }
    }

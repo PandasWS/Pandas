@@ -8,7 +8,7 @@
 
 //  VC++ 8.0 warns on usage of certain Standard Library and API functions that
 //  can be cause buffer overruns or other possible security issues if misused.
-//  See http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
+//  See https://web.archive.org/web/20071014014301/http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
 //  But the wording of the warning is misleading and unsettling, there are no
 //  portable alternative functions, and VC++ 8.0's own libraries use the
 //  functions in question. So turn off the warnings.
@@ -19,8 +19,7 @@
 
 #define BOOST_BIMAP_DISABLE_SERIALIZATION
 
-// Boost.Test
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 // std
 #include <set>
@@ -50,17 +49,17 @@ void test_list_operations(Container & b, Container& c, const Data & d)
     c.clear() ;
     c.assign(d.begin(),d.end());
         
-    BOOST_CHECK( std::equal( c.begin(), c.end(), d.begin() ) );
+    BOOST_TEST( std::equal( c.begin(), c.end(), d.begin() ) );
     c.reverse();
-    BOOST_CHECK( std::equal( c.begin(), c.end(), d.rbegin() ) );
+    BOOST_TEST( std::equal( c.begin(), c.end(), d.rbegin() ) );
 
     c.sort();
-    BOOST_CHECK( std::equal( c.begin(), c.end(), d.begin() ) );
+    BOOST_TEST( std::equal( c.begin(), c.end(), d.begin() ) );
 
     c.push_front( *d.begin() );
-    BOOST_CHECK( c.size() == d.size()+1 );
+    BOOST_TEST( c.size() == d.size()+1 );
     c.unique();
-    BOOST_CHECK( c.size() == d.size() );
+    BOOST_TEST( c.size() == d.size() );
  
     c.relocate( c.begin(), ++c.begin() );
     c.relocate( c.end(), c.begin(), ++c.begin() );
@@ -71,23 +70,23 @@ void test_list_operations(Container & b, Container& c, const Data & d)
     c.assign(d.begin(),d.end());
     b.splice(b.begin(),c);
 
-    BOOST_CHECK( c.size() == 0 );
-    BOOST_CHECK( b.size() == d.size() );
+    BOOST_TEST( c.size() == 0 );
+    BOOST_TEST( b.size() == d.size() );
 
     c.splice(c.begin(),b,++b.begin());
 
-    BOOST_CHECK( c.size() == 1 );
+    BOOST_TEST( c.size() == 1 );
 
     c.splice(c.begin(),b,b.begin(),b.end());
 
-    BOOST_CHECK( b.size() == 0 );
+    BOOST_TEST( b.size() == 0 );
 
     b.assign(d.begin(),d.end());
     c.assign(d.begin(),d.end());
     b.sort();
     c.sort();
     b.merge(c);
-    BOOST_CHECK( b.size() == 2*d.size() );
+    BOOST_TEST( b.size() == 2*d.size() );
  
     b.unique();
 }
@@ -271,9 +270,9 @@ void test_bimap()
 }
 
 
-int test_main( int, char* [] )
+int main()
 {
     test_bimap();
-    return 0;
+    return boost::report_errors();
 }
 

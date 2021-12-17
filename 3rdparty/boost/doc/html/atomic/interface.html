@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Programming interfaces</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../atomic.html" title="Chapter&#160;6.&#160;Boost.Atomic">
+<link rel="up" href="../atomic.html" title="Chapter 6. Boost.Atomic">
 <link rel="prev" href="thread_coordination.html" title="Thread coordination using Boost.Atomic">
 <link rel="next" href="usage_examples.html" title="Usage examples">
 </head>
@@ -32,6 +32,11 @@
 <dt><span class="section"><a href="interface.html#atomic.interface.interface_memory_order">Memory order</a></span></dt>
 <dt><span class="section"><a href="interface.html#atomic.interface.interface_atomic_flag">Atomic flags</a></span></dt>
 <dt><span class="section"><a href="interface.html#atomic.interface.interface_atomic_object">Atomic objects</a></span></dt>
+<dt><span class="section"><a href="interface.html#atomic.interface.interface_atomic_ref">Atomic references</a></span></dt>
+<dt><span class="section"><a href="interface.html#atomic.interface.interface_wait_notify_ops">Waiting and
+      notifying operations</a></span></dt>
+<dt><span class="section"><a href="interface.html#atomic.interface.interface_ipc">Atomic types for inter-process
+      communication</a></span></dt>
 <dt><span class="section"><a href="interface.html#atomic.interface.interface_fences">Fences</a></span></dt>
 <dt><span class="section"><a href="interface.html#atomic.interface.feature_macros">Feature testing macros</a></span></dt>
 </dl></div>
@@ -42,9 +47,9 @@
 <p>
         The library contains header-only and compiled parts. The library is header-only
         for lock-free cases but requires a separate binary to implement the lock-based
-        emulation. Users are able to detect whether linking to the compiled part
-        is required by checking the <a class="link" href="interface.html#atomic.interface.feature_macros" title="Feature testing macros">feature
-        macros</a>.
+        emulation and waiting and notifying operations on some platforms. Users are
+        able to detect whether linking to the compiled part is required by checking
+        the <a class="link" href="interface.html#atomic.interface.feature_macros" title="Feature testing macros">feature macros</a>.
       </p>
 <p>
         The following macros affect library behavior:
@@ -67,6 +72,22 @@
               </th>
 </tr></thead>
 <tbody>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_ATOMIC_LOCK_POOL_SIZE_LOG2</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Binary logarithm of the number of locks in the internal lock pool
+                  used by <span class="bold"><strong>Boost.Atomic</strong></span> to implement
+                  lock-based atomic operations and waiting and notifying operations
+                  on some platforms. Must be an integer in range from 0 to 16, the
+                  default value is 8. Only has effect when building <span class="bold"><strong>Boost.Atomic</strong></span>.
+                </p>
+              </td>
+</tr>
 <tr>
 <td>
                 <p>
@@ -103,27 +124,6 @@
                   this instruction, so running the code that uses 128-bit atomics
                   on such CPUs will result in crashes, unless this macro is defined.
                   Note that the macro does not affect GCC and compatible compilers
-                  because the library infers this information from the compiler-defined
-                  macros.
-                </p>
-              </td>
-</tr>
-<tr>
-<td>
-                <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_ATOMIC_NO_MFENCE</span></code>
-                </p>
-              </td>
-<td>
-                <p>
-                  Affects 32-bit x86 Oracle Studio builds. When defined, the library
-                  assumes the target CPU does not support <code class="computeroutput"><span class="identifier">mfence</span></code>
-                  instruction used to implement thread fences. This instruction was
-                  added with SSE2 instruction set extension, which was available
-                  in CPUs since Intel Pentium 4. The library does not perform runtime
-                  detection of this instruction, so running the library code on older
-                  CPUs will result in crashes, unless this macro is defined. Note
-                  that the macro does not affect MSVC, GCC and compatible compilers
                   because the library infers this information from the compiler-defined
                   macros.
                 </p>
@@ -285,10 +285,13 @@
 <td>
                 <p>
                   Perform <code class="computeroutput"><span class="identifier">consume</span></code>
-                  operation. More relaxed (and on some architectures more efficient)
-                  than <code class="computeroutput"><span class="identifier">memory_order_acquire</span></code>
+                  operation. More relaxed (and on some architectures potentially
+                  more efficient) than <code class="computeroutput"><span class="identifier">memory_order_acquire</span></code>
                   as it only affects succeeding operations that are computationally-dependent
-                  on the value retrieved from an atomic variable.
+                  on the value retrieved from an atomic variable. Currently equivalent
+                  to <code class="computeroutput"><span class="identifier">memory_order_acquire</span></code>
+                  on all supported architectures (see <a class="link" href="limitations.html" title="Limitations">Limitations</a>
+                  section for an explanation).
                 </p>
               </td>
 </tr>
@@ -466,6 +469,50 @@
 <tr>
 <td>
                 <p>
+                  <code class="computeroutput"><span class="keyword">bool</span> <span class="identifier">is_lock_free</span><span class="special">()</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Checks if the atomic flag is lock-free; the returned value is consistent
+                  with the <code class="computeroutput"><span class="identifier">is_always_lock_free</span></code>
+                  static constant, see below.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="keyword">bool</span> <span class="identifier">has_native_wait_notify</span><span class="special">()</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Indicates if the target platform natively supports waiting and
+                  notifying operations for this object. Returns <code class="computeroutput"><span class="keyword">true</span></code>
+                  if <code class="computeroutput"><span class="identifier">always_has_native_wait_notify</span></code>
+                  is <code class="computeroutput"><span class="keyword">true</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="keyword">bool</span> <span class="identifier">test</span><span class="special">(</span><span class="identifier">memory_order</span>
+                  <span class="identifier">order</span><span class="special">)</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Returns <code class="computeroutput"><span class="keyword">true</span></code> if the
+                  flag is in the set state and <code class="computeroutput"><span class="keyword">false</span></code>
+                  otherwise.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   <code class="computeroutput"><span class="keyword">bool</span> <span class="identifier">test_and_set</span><span class="special">(</span><span class="identifier">memory_order</span>
                   <span class="identifier">order</span><span class="special">)</span></code>
                 </p>
@@ -473,7 +520,7 @@
 <td>
                 <p>
                   Sets the atomic flag to the set state; returns <code class="computeroutput"><span class="keyword">true</span></code>
-                  if the flag had been set prior to the operation
+                  if the flag had been set prior to the operation.
                 </p>
               </td>
 </tr>
@@ -486,7 +533,76 @@
               </td>
 <td>
                 <p>
-                  Sets the atomic flag to the clear state
+                  Sets the atomic flag to the clear state.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="keyword">bool</span> <span class="identifier">wait</span><span class="special">(</span><span class="keyword">bool</span>
+                  <span class="identifier">old_val</span><span class="special">,</span>
+                  <span class="identifier">memory_order</span> <span class="identifier">order</span><span class="special">)</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Potentially blocks the calling thread until unblocked by a notifying
+                  operation and <code class="computeroutput"><span class="identifier">test</span><span class="special">(</span><span class="identifier">order</span><span class="special">)</span></code> returns value other than <code class="computeroutput"><span class="identifier">old_val</span></code>. Returns the result of
+                  <code class="computeroutput"><span class="identifier">test</span><span class="special">(</span><span class="identifier">order</span><span class="special">)</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="keyword">void</span> <span class="identifier">notify_one</span><span class="special">()</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Unblocks at least one thread blocked in a waiting operation on
+                  this atomic object.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="keyword">void</span> <span class="identifier">notify_all</span><span class="special">()</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Unblocks all threads blocked in waiting operations on this atomic
+                  object.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="keyword">static</span> <span class="keyword">constexpr</span>
+                  <span class="keyword">bool</span> <span class="identifier">is_always_lock_free</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  This static boolean constant indicates if any atomic flag is lock-free
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="keyword">static</span> <span class="keyword">constexpr</span>
+                  <span class="keyword">bool</span> <span class="identifier">always_has_native_wait_notify</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Indicates if the target platform always natively supports waiting
+                  and notifying operations.
                 </p>
               </td>
 </tr>
@@ -496,10 +612,17 @@
         <code class="computeroutput"><span class="identifier">order</span></code> always has <code class="computeroutput"><span class="identifier">memory_order_seq_cst</span></code> as default parameter.
       </p>
 <p>
-        Note that the default constructor <code class="computeroutput"><span class="identifier">atomic_flag</span><span class="special">()</span></code> is unlike <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">atomic_flag</span></code>,
-        which leaves the default-constructed object uninitialized. This potentially
-        requires dynamic initialization during the program startup to perform the
-        object initialization, which makes it unsafe to create global <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_flag</span></code> objects that can be used before
+        Waiting and notifying operations are described in detail in <a class="link" href="interface.html#atomic.interface.interface_wait_notify_ops" title="Waiting and notifying operations">this</a>
+        section.
+      </p>
+<p>
+        Note that the default constructor <code class="computeroutput"><span class="identifier">atomic_flag</span><span class="special">()</span></code> is unlike C++11 <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">atomic_flag</span></code>,
+        which leaves the default-constructed object uninitialized. C++20 changes
+        <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">atomic_flag</span></code> default constructor to initialize
+        the flag to the clear state, similar to <span class="bold"><strong>Boost.Atomic</strong></span>.
+        This potentially requires dynamic initialization during the program startup
+        to perform the object initialization, which makes it unsafe to create global
+        <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_flag</span></code> objects that can be used before
         entring <code class="computeroutput"><span class="identifier">main</span><span class="special">()</span></code>.
         Some compilers though (especially those supporting C++11 <code class="computeroutput"><span class="keyword">constexpr</span></code>)
         may be smart enough to perform flag initialization statically (which is,
@@ -556,9 +679,9 @@
 <p>
         <code class="literal">boost::atomic&lt;<span class="emphasis"><em>T</em></span>&gt;</code> provides methods
         for atomically accessing variables of a suitable type <code class="literal"><span class="emphasis"><em>T</em></span></code>.
-        The type is suitable if it is <span class="emphasis"><em>trivially copyable</em></span> (3.9/9
-        [basic.types]). Following are examples of the types compatible with this
-        requirement:
+        The type is suitable if it is <a href="https://en.cppreference.com/w/cpp/named_req/TriviallyCopyable" target="_top"><span class="emphasis"><em>trivially
+        copyable</em></span></a> (3.9/9 [basic.types]). Following are examples
+        of the types compatible with this requirement:
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
@@ -567,16 +690,49 @@
 <li class="listitem">
             a <code class="literal">class</code> or <code class="literal">struct</code> that has no non-trivial
             copy or move constructors or assignment operators, has a trivial destructor,
-            and that is comparable via <code class="literal">memcmp</code>.
+            and that is comparable via <code class="literal">memcmp</code> while disregarding
+            any padding bits (but see below).
           </li>
 </ul></div>
 <p>
         Note that classes with virtual functions or virtual base classes do not satisfy
-        the requirements. Also be warned that structures with "padding"
-        between data members may compare non-equal via <code class="literal">memcmp</code>
-        even though all members are equal. This may also be the case with some floating
-        point types, which include padding bits themselves.
+        the requirements.
       </p>
+<p>
+        Also be warned that the support for types with padding bits is largely dependent
+        on compiler offering a way to set the padding bits to a known state (e.g.
+        zero). Such feature is typically present in compilers supporting C++20. When
+        this feature is not supported by the compiler, <code class="computeroutput"><span class="identifier">BOOST_ATOMIC_NO_CLEAR_PADDING</span></code>
+        capability macro is defined and types with padding bits may compare non-equal
+        via <code class="literal">memcmp</code> even though all members are equal. This may
+        also be the case with some floating point types, which include padding bits
+        themselves. In this case, <span class="bold"><strong>Boost.Atomic</strong></span> attempts
+        to support some floating point types where the location of the padding bits
+        is known (one notable example is <a href="https://en.wikipedia.org/wiki/Extended_precision#x86_extended_precision_format" target="_top">80-bit
+        extended precision</a> <code class="computeroutput"><span class="keyword">long</span> <span class="keyword">double</span></code> type on x86 targets), but otherwise
+        types with padding bits are not supported.
+      </p>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+          Even on compilers that support clearing the padding bits, unions with padding
+          may not work as expected. Compiler behavior varies with respect to unions.
+          In particular, gcc 11 clears bytes that constitute padding across all union
+          members (which is what is required by C++20 in [atomics.types.operations]/28)
+          and MSVC 19.27 <a href="https://developercommunity.visualstudio.com/t/__builtin_zero_non_value_bits-does-not-c/1551510" target="_top">does
+          not clear any padding at all</a>. Also, consider that some bits of
+          the union representation may constitute padding in one member of the union
+          but contribute to value of another. Current compilers cannot reliably track
+          the active member of a union and therefore cannot implement a reasonable
+          behavior with respect to clearing those bits. As a result, padding bits
+          of the currently active union member may be left uninitialized, which will
+          prevent atomic operations from working reliably. The C++20 standard explicitly
+          allows <code class="computeroutput"><span class="identifier">compare_exchange_</span><span class="special">*</span></code> operations to always fail in this case.
+        </p></td></tr>
+</table></div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="atomic.interface.interface_atomic_object.interface_atomic_generic"></a><a class="link" href="interface.html#atomic.interface.interface_atomic_object.interface_atomic_generic" title="boost::atomic&lt;T&gt; template class"><code class="literal">boost::atomic&lt;<span class="emphasis"><em>T</em></span>&gt;</code>
@@ -611,7 +767,7 @@
                 </td>
 <td>
                   <p>
-                    Initialize to an unspecified value
+                    Initialize to a value of <code class="computeroutput"><span class="identifier">T</span><span class="special">()</span></code>. See the discussion below.
                   </p>
                 </td>
 </tr>
@@ -637,7 +793,35 @@
                   <p>
                     Checks if the atomic object is lock-free; the returned value
                     is consistent with the <code class="computeroutput"><span class="identifier">is_always_lock_free</span></code>
-                    static constant, see below
+                    static constant, see below.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <code class="computeroutput"><span class="keyword">bool</span> <span class="identifier">has_native_wait_notify</span><span class="special">()</span></code>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Indicates if the target platform natively supports waiting and
+                    notifying operations for this object. Returns <code class="computeroutput"><span class="keyword">true</span></code>
+                    if <code class="computeroutput"><span class="identifier">always_has_native_wait_notify</span></code>
+                    is <code class="computeroutput"><span class="keyword">true</span></code>.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <code class="computeroutput"><span class="identifier">T</span><span class="special">&amp;</span>
+                    <span class="identifier">value</span><span class="special">()</span></code>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Returns a reference to the value stored in the atomic object.
                   </p>
                 </td>
 </tr>
@@ -766,8 +950,50 @@
 <tr>
 <td>
                   <p>
-                    <code class="computeroutput"><span class="keyword">static</span> <span class="keyword">bool</span>
-                    <span class="identifier">is_always_lock_free</span></code>
+                    <code class="computeroutput"><span class="identifier">T</span> <span class="identifier">wait</span><span class="special">(</span><span class="identifier">T</span>
+                    <span class="identifier">old_val</span><span class="special">,</span>
+                    <span class="identifier">memory_order</span> <span class="identifier">order</span><span class="special">)</span></code>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Potentially blocks the calling thread until unblocked by a notifying
+                    operation and <code class="computeroutput"><span class="identifier">load</span><span class="special">(</span><span class="identifier">order</span><span class="special">)</span></code> returns value other than <code class="computeroutput"><span class="identifier">old_val</span></code>. Returns the result
+                    of <code class="computeroutput"><span class="identifier">load</span><span class="special">(</span><span class="identifier">order</span><span class="special">)</span></code>.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <code class="computeroutput"><span class="keyword">void</span> <span class="identifier">notify_one</span><span class="special">()</span></code>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Unblocks at least one thread blocked in a waiting operation on
+                    this atomic object.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <code class="computeroutput"><span class="keyword">void</span> <span class="identifier">notify_all</span><span class="special">()</span></code>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Unblocks all threads blocked in waiting operations on this atomic
+                    object.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <code class="computeroutput"><span class="keyword">static</span> <span class="keyword">constexpr</span>
+                    <span class="keyword">bool</span> <span class="identifier">is_always_lock_free</span></code>
                   </p>
                 </td>
 <td>
@@ -777,11 +1003,63 @@
                   </p>
                 </td>
 </tr>
+<tr>
+<td>
+                  <p>
+                    <code class="computeroutput"><span class="keyword">static</span> <span class="keyword">constexpr</span>
+                    <span class="keyword">bool</span> <span class="identifier">always_has_native_wait_notify</span></code>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Indicates if the target platform always natively supports waiting
+                    and notifying operations.
+                  </p>
+                </td>
+</tr>
 </tbody>
 </table></div>
 <p>
           <code class="computeroutput"><span class="identifier">order</span></code> always has <code class="computeroutput"><span class="identifier">memory_order_seq_cst</span></code> as default parameter.
         </p>
+<p>
+          The default constructor of <code class="literal">boost::atomic&lt;<span class="emphasis"><em>T</em></span>&gt;</code>
+          is different from C++11 <code class="literal">std::atomic&lt;<span class="emphasis"><em>T</em></span>&gt;</code>
+          and is in line with C++20. In C++11 (and older <span class="bold"><strong>Boost.Atomic</strong></span>
+          releases), the default constructor performed default initialization of
+          the contained object of type <code class="literal"><span class="emphasis"><em>T</em></span></code>,
+          which results in unspecified value if <code class="literal"><span class="emphasis"><em>T</em></span></code>
+          does not have a user-defined constructor. C++20 and the current <span class="bold"><strong>Boost.Atomic</strong></span> version performs value initialization,
+          which means zero initialization in this case.
+        </p>
+<p>
+          Waiting and notifying operations are described in detail in <a class="link" href="interface.html#atomic.interface.interface_wait_notify_ops" title="Waiting and notifying operations">this</a>
+          section.
+        </p>
+<p>
+          The <code class="computeroutput"><span class="identifier">value</span></code> operation is
+          a <span class="bold"><strong>Boost.Atomic</strong></span> extension. The returned
+          reference can be used to invoke external operations on the atomic value,
+          which are not part of <span class="bold"><strong>Boost.Atomic</strong></span> but
+          are compatible with it on the target architecture. The primary example
+          of such is <code class="computeroutput"><span class="identifier">futex</span></code> and similar
+          operations available on some systems. The returned reference must not be
+          used for reading or modifying the value of the atomic object in non-atomic
+          manner, or to construct <a class="link" href="interface.html#atomic.interface.interface_atomic_ref" title="Atomic references">atomic
+          references</a>. Doing so does not guarantee atomicity or memory ordering.
+        </p>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+            Even if <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic</span></code> for a given type is lock-free,
+            an atomic reference for that type may not be. Therefore, <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic</span></code> and <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code>
+            operating on the same object may use different thread synchronization
+            primitives incompatible with each other.
+          </p></td></tr>
+</table></div>
 <p>
           The <code class="computeroutput"><span class="identifier">compare_exchange_weak</span></code>/<code class="computeroutput"><span class="identifier">compare_exchange_strong</span></code> variants taking
           four parameters differ from the three parameter variants in that they allow
@@ -1333,17 +1611,12 @@
 <th align="left">Note</th>
 </tr>
 <tr><td align="left" valign="top"><p>
-            In Boost.Atomic 1.66 the <code class="literal"><span class="emphasis"><em>op</em></span>_and_test</code>
+            In <span class="bold"><strong>Boost.Atomic</strong></span> 1.66 the <code class="literal"><span class="emphasis"><em>op</em></span>_and_test</code>
             operations returned the opposite value (i.e. <code class="computeroutput"><span class="keyword">true</span></code>
             if the result is zero). This was changed to the current behavior in 1.67
-            for consistency with other operations in Boost.Atomic, as well as with
-            conventions taken in the C++ standard library. Boost.Atomic 1.66 was
-            the only release shipped with the old behavior. Users upgrading from
-            Boost 1.66 to a later release can define <code class="computeroutput"><span class="identifier">BOOST_ATOMIC_HIGHLIGHT_OP_AND_TEST</span></code>
-            macro when building their code to generate deprecation warnings on the
-            <code class="literal"><span class="emphasis"><em>op</em></span>_and_test</code> function calls (the
-            functions are not actually deprecated though; this is just a way to highlight
-            their use).
+            for consistency with other operations in <span class="bold"><strong>Boost.Atomic</strong></span>,
+            as well as with conventions taken in the C++ standard library. <span class="bold"><strong>Boost.Atomic</strong></span> 1.66 was the only release shipped
+            with the old behavior.
           </p></td></tr>
 </table></div>
 <p>
@@ -1588,15 +1861,20 @@
           values like NaN and signed zero is also different from normal C++.
         </p>
 <p>
-          Another source of the problem is padding bits that are added to some floating
-          point types for alignment. One widespread example of that is Intel x87
-          extended double format, which is typically stored as 80 bits of value padded
-          with 16 or 48 unused bits. These padding bits are often uninitialized and
-          contain garbage, which makes two equal numbers have different binary representation.
-          The library attempts to account for the known such cases, but in general
-          it is possible that some platforms are not covered. Note that the C++ standard
-          makes no guarantees about reliability of <code class="computeroutput"><span class="identifier">compare_exchange</span><span class="special">*</span></code> operations in the face of padding or trap
-          bits.
+          Another source of the problem may be the padding bits that are added to
+          some floating point types for alignment. One widespread example of that
+          is Intel x87 <a href="https://en.wikipedia.org/wiki/Extended_precision#x86_extended_precision_format" target="_top">80-bit
+          extended precision</a> <code class="computeroutput"><span class="keyword">long</span>
+          <span class="keyword">double</span></code> format, which is typically
+          stored as 80 bits of value padded with 16 or 48 unused bits. These padding
+          bits are often uninitialized and contain garbage, which makes two equal
+          numbers have different binary representation. This problem is solved if
+          the compiler provides a way to reliably clear the padding bits before operation.
+          Otherwise, the library attempts to account for the known such cases, but
+          in general it is possible that some platforms are not covered. The library
+          defines <code class="computeroutput"><span class="identifier">BOOST_ATOMIC_NO_CLEAR_PADDING</span></code>
+          capability macro to indicate that general support for types with padding
+          bits is not available.
         </p>
 </div>
 <div class="section">
@@ -1795,7 +2073,7 @@
         convenience typedefs</a>
 </h4></div></div></div>
 <p>
-          For convenience, several shorthand typedefs of <code class="literal">boost::atomic&lt;<span class="emphasis"><em>T</em></span>&gt;</code>
+          For convenience, the following shorthand typedefs of <code class="literal">boost::atomic&lt;<span class="emphasis"><em>T</em></span>&gt;</code>
           are provided:
         </p>
 <pre class="programlisting"><span class="keyword">typedef</span> <span class="identifier">atomic</span><span class="special">&lt;</span> <span class="keyword">char</span> <span class="special">&gt;</span> <span class="identifier">atomic_char</span><span class="special">;</span>
@@ -1813,6 +2091,7 @@
 <span class="keyword">typedef</span> <span class="identifier">atomic</span><span class="special">&lt;</span> <span class="keyword">void</span><span class="special">*</span> <span class="special">&gt;</span> <span class="identifier">atomic_address</span><span class="special">;</span>
 <span class="keyword">typedef</span> <span class="identifier">atomic</span><span class="special">&lt;</span> <span class="keyword">bool</span> <span class="special">&gt;</span> <span class="identifier">atomic_bool</span><span class="special">;</span>
 <span class="keyword">typedef</span> <span class="identifier">atomic</span><span class="special">&lt;</span> <span class="keyword">wchar_t</span> <span class="special">&gt;</span> <span class="identifier">atomic_wchar_t</span><span class="special">;</span>
+<span class="keyword">typedef</span> <span class="identifier">atomic</span><span class="special">&lt;</span> <span class="identifier">char8_t</span> <span class="special">&gt;</span> <span class="identifier">atomic_char8_t</span><span class="special">;</span>
 <span class="keyword">typedef</span> <span class="identifier">atomic</span><span class="special">&lt;</span> <span class="keyword">char16_t</span> <span class="special">&gt;</span> <span class="identifier">atomic_char16_t</span><span class="special">;</span>
 <span class="keyword">typedef</span> <span class="identifier">atomic</span><span class="special">&lt;</span> <span class="keyword">char32_t</span> <span class="special">&gt;</span> <span class="identifier">atomic_char32_t</span><span class="special">;</span>
 
@@ -1849,11 +2128,467 @@
 
 <span class="keyword">typedef</span> <span class="identifier">atomic</span><span class="special">&lt;</span> <span class="identifier">intptr_t</span> <span class="special">&gt;</span> <span class="identifier">atomic_intptr_t</span><span class="special">;</span>
 <span class="keyword">typedef</span> <span class="identifier">atomic</span><span class="special">&lt;</span> <span class="identifier">uintptr_t</span> <span class="special">&gt;</span> <span class="identifier">atomic_uintptr_t</span><span class="special">;</span>
+
+<span class="keyword">typedef</span> <span class="identifier">atomic</span><span class="special">&lt;</span> <span class="keyword">unsigned</span> <span class="identifier">integral</span> <span class="special">&gt;</span> <span class="identifier">atomic_unsigned_lock_free</span><span class="special">;</span>
+<span class="keyword">typedef</span> <span class="identifier">atomic</span><span class="special">&lt;</span> <span class="keyword">signed</span> <span class="identifier">integral</span> <span class="special">&gt;</span> <span class="identifier">atomic_signed_lock_free</span><span class="special">;</span>
 </pre>
 <p>
-          The typedefs are provided only if the corresponding type is available.
+          The typedefs are provided only if the corresponding value type is available.
+        </p>
+<p>
+          The <code class="computeroutput"><span class="identifier">atomic_unsigned_lock_free</span></code>
+          and <code class="computeroutput"><span class="identifier">atomic_signed_lock_free</span></code>
+          types, if defined, indicate the atomic object type for an unsigned or signed
+          integer, respectively, that is lock-free and that preferably has native
+          support for <a class="link" href="interface.html#atomic.interface.interface_wait_notify_ops" title="Waiting and notifying operations">waiting
+          and notifying operations</a>.
         </p>
 </div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="atomic.interface.interface_atomic_ref"></a><a class="link" href="interface.html#atomic.interface.interface_atomic_ref" title="Atomic references">Atomic references</a>
+</h3></div></div></div>
+<div class="toc"><dl class="toc"><dt><span class="section"><a href="interface.html#atomic.interface.interface_atomic_ref.caveats">Caveats</a></span></dt></dl></div>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">atomic</span><span class="special">/</span><span class="identifier">atomic_ref</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+</pre>
+<p>
+        <code class="literal">boost::atomic_ref&lt;<span class="emphasis"><em>T</em></span>&gt;</code> also provides
+        methods for atomically accessing external variables of type <code class="literal"><span class="emphasis"><em>T</em></span></code>.
+        The requirements on the type <code class="literal"><span class="emphasis"><em>T</em></span></code> are
+        the same as those imposed by <a class="link" href="interface.html#atomic.interface.interface_atomic_object" title="Atomic objects"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic</span></code></a>. Unlike <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic</span></code>,
+        <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code> does not store the value internally
+        and only refers to an external object of type <code class="literal"><span class="emphasis"><em>T</em></span></code>.
+      </p>
+<p>
+        There are certain requirements on the objects compatible with <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code>:
+      </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+            The referenced object lifetime must not end before the last <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code> referencing the object is
+            destroyed.
+          </li>
+<li class="listitem">
+            The referenced object must have alignment not less than indicated by
+            the <code class="literal">boost::atomic_ref&lt;<span class="emphasis"><em>T</em></span>&gt;::required_alignment</code>
+            constant. That constant may be larger than the natural alignment of type
+            <code class="literal"><span class="emphasis"><em>T</em></span></code>. In <span class="bold"><strong>Boost.Atomic</strong></span>,
+            <code class="computeroutput"><span class="identifier">required_alignment</span></code> indicates
+            the alignment at which operations on the object are lock-free; otherwise,
+            if lock-free operations are not possible, <code class="computeroutput"><span class="identifier">required_alignment</span></code>
+            shall not be less than the natural alignment of <code class="literal"><span class="emphasis"><em>T</em></span></code>.
+          </li>
+<li class="listitem">
+            The referenced object must not be a <a href="https://en.cppreference.com/w/cpp/language/object#Subobjects" target="_top"><span class="emphasis"><em>potentially
+            overlapping object</em></span></a>. It must be the <span class="emphasis"><em>most
+            derived object</em></span> (that is it must not be a base class subobject
+            of an object of a derived class) and it must not be marked with the
+            <code class="computeroutput"><span class="special">[[</span><span class="identifier">no_unique_address</span><span class="special">]]</span></code> attribute.
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">Base</span>
+<span class="special">{</span>
+    <span class="keyword">short</span> <span class="identifier">a</span><span class="special">;</span>
+    <span class="keyword">char</span> <span class="identifier">b</span><span class="special">;</span>
+<span class="special">};</span>
+
+<span class="keyword">struct</span> <span class="identifier">Derived</span> <span class="special">:</span> <span class="keyword">public</span> <span class="identifier">Base</span>
+<span class="special">{</span>
+    <span class="keyword">char</span> <span class="identifier">c</span><span class="special">;</span>
+<span class="special">};</span>
+
+<span class="identifier">Derived</span> <span class="identifier">x</span><span class="special">;</span>
+<span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">&gt;</span> <span class="identifier">ref</span><span class="special">(</span><span class="identifier">x</span><span class="special">);</span> <span class="comment">// bad</span>
+</pre>
+            In the above example, <code class="computeroutput"><span class="identifier">ref</span></code>
+            may silently corrupt the value of <code class="computeroutput"><span class="identifier">x</span><span class="special">.</span><span class="identifier">c</span></code>
+            because it may reside in the trailing padding of the <code class="computeroutput"><span class="identifier">Base</span></code>
+            base class subobject of <code class="computeroutput"><span class="identifier">x</span></code>.
+          </li>
+<li class="listitem">
+            The referenced object must not reside in read-only memory. Even for non-modifying
+            operations, like <code class="computeroutput"><span class="identifier">load</span><span class="special">()</span></code>, <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code>
+            may issue read-modify-write CPU instructions that require write access.
+          </li>
+<li class="listitem">
+            While at least one <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code>
+            referencing an object exists, that object must not be accessed by any
+            other means, other than through <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code>.
+          </li>
+</ul></div>
+<p>
+        Multiple <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code> referencing the same object
+        are allowed, and operations through any such reference are atomic and ordered
+        with regard to each other, according to the memory order arguments. <code class="literal">boost::atomic_ref&lt;<span class="emphasis"><em>T</em></span>&gt;</code>
+        supports the same set of properties and operations as <code class="literal">boost::atomic&lt;<span class="emphasis"><em>T</em></span>&gt;</code>,
+        depending on the type <code class="literal"><span class="emphasis"><em>T</em></span></code>, with the
+        following exceptions:
+      </p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Syntax
+                </p>
+              </th>
+<th>
+                <p>
+                  Description
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">atomic_ref</span><span class="special">()</span>
+                  <span class="special">=</span> <span class="keyword">delete</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">atomic_ref</span></code> is not
+                  default-constructible.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">atomic_ref</span><span class="special">(</span><span class="identifier">T</span><span class="special">&amp;</span>
+                  <span class="identifier">object</span><span class="special">)</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Creates an atomic reference, referring to <code class="computeroutput"><span class="identifier">object</span></code>.
+                  May modify the object representation (see caveats below).
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">atomic_ref</span><span class="special">(</span><span class="identifier">atomic_ref</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">that</span><span class="special">)</span> <span class="keyword">noexcept</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Creates an atomic reference, referencing the object referred to
+                  by <code class="computeroutput"><span class="identifier">that</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="keyword">static</span> <span class="keyword">constexpr</span>
+                  <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">required_alignment</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  A constant, indicating required alignment of objects of type <code class="literal"><span class="emphasis"><em>T</em></span></code>
+                  so that they are compatible with <code class="computeroutput"><span class="identifier">atomic_ref</span></code>.
+                  Shall not be less than <code class="literal">alignof(<span class="emphasis"><em>T</em></span>)</code>.
+                  In <span class="bold"><strong>Boost.Atomic</strong></span>, indicates the
+                  alignment required by lock-free operations on the referenced object,
+                  if lock-free operations are possible.
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+<p>
+        Note that <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code> cannot be changed to refer to
+        a different object after construction. Assigning to <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code>
+        will invoke an atomic operation of storing the new value to the referenced
+        object.
+      </p>
+<p>
+        For convenience, a factory function <code class="computeroutput"><span class="identifier">make_atomic_ref</span><span class="special">(</span><span class="identifier">T</span><span class="special">&amp;</span>
+        <span class="identifier">object</span><span class="special">)</span></code>
+        is provided, which returns an <code class="computeroutput"><span class="identifier">atomic_ref</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;</span></code>
+        referencing <code class="computeroutput"><span class="identifier">object</span></code>. Additionally,
+        for C++17 and later compilers, template deduction guides are provided so
+        that the template parameter <span class="emphasis"><em>T</em></span> can be deduced from the
+        constructor argument:
+      </p>
+<p>
+</p>
+<pre class="programlisting"><span class="keyword">int</span> <span class="identifier">object</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span>
+<span class="identifier">atomic_ref</span> <span class="identifier">ref</span><span class="special">(</span><span class="identifier">object</span><span class="special">);</span> <span class="comment">// C++17: ref is atomic_ref&lt;int&gt;</span>
+</pre>
+<p>
+      </p>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="atomic.interface.interface_atomic_ref.caveats"></a><a class="link" href="interface.html#atomic.interface.interface_atomic_ref.caveats" title="Caveats">Caveats</a>
+</h4></div></div></div>
+<p>
+          There are a several disadvantages of using <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code>
+          compared to <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic</span></code>.
+        </p>
+<p>
+          First, the user is required to maintain proper alignment of the referenced
+          objects. This means that the user has to plan beforehand which variables
+          will require atomic access in the program. In C++11 and later, the user
+          can ensure the required alignment by applying <code class="computeroutput"><span class="keyword">alignas</span></code>
+          specifier:
+        </p>
+<pre class="programlisting"><span class="keyword">alignas</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;::</span><span class="identifier">required_alignment</span><span class="special">)</span>
+<span class="keyword">int</span> <span class="identifier">atomic_int</span><span class="special">;</span>
+</pre>
+<p>
+          On compilers that don't support <code class="computeroutput"><span class="keyword">alignas</span></code>
+          users have to use compiler-specific attributes or manual padding to achieve
+          the required alignment. <a href="https://www.boost.org/doc/libs/release/libs/config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_allow_use_of_c__11_features_with_c__03_compilers" target="_top"><code class="computeroutput"><span class="identifier">BOOST_ALIGNMENT</span></code></a> macro from <span class="bold"><strong>Boost.Config</strong></span> may be useful.
+        </p>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+            Do not rely on compilers to enforce the natural alignment for fundamental
+            types, and that the default alignment will satisfy the <code class="computeroutput"><span class="identifier">atomic_ref</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">required_alignment</span></code> constraint. There
+            are real world cases when the default alignment is below the required
+            alignment for atomic references. For example, on 32-bit x86 targets it
+            is common that 64-bit integers and floating point numbers have alignment
+            of 4, which is not high enough for <code class="computeroutput"><span class="identifier">atomic_ref</span></code>.
+            Users must always explicitly ensure the referenced objects are aligned
+            to <code class="computeroutput"><span class="identifier">atomic_ref</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">required_alignment</span></code>.
+          </p></td></tr>
+</table></div>
+<p>
+          Next, some types may have padding bits, which are bits of object representation
+          that do not contribute to the object value. Typically, padding bits are
+          used for alignment purposes. Padding bits pose a problem for <span class="bold"><strong>Boost.Atomic</strong></span> because they can break binary comparison
+          of object (as if by <code class="computeroutput"><span class="identifier">memcmp</span></code>),
+          which is used in <code class="computeroutput"><span class="identifier">compare_exchange_weak</span></code>/<code class="computeroutput"><span class="identifier">compare_exchange_strong</span></code> operations.
+          <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic</span></code> manages the internal object representation
+          and, with proper support of the compiler, it is able to initialize the
+          padding bits so that binary comparison yields the expected result. This
+          is not possible with <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code>
+          because the referenced object is initialized by external means and any
+          particular content in the padding bits cannot be guaranteed. This requires
+          <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code> to initialize padding bits
+          of the referenced object on construction. As a result, <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code>
+          construction can be relatively expensive and may potentially disrupt atomic
+          operations that are being performed on the same object through other atomic
+          references. It is recommended to avoid constructing <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code>
+          in tight loops or hot paths.
+        </p>
+<p>
+          Finally, target platform may not have the necessary means to implement
+          atomic operations on objects of some sizes. For example, on many hardware
+          architectures atomic operations on the following structure are not possible:
+        </p>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">rgb</span>
+<span class="special">{</span>
+    <span class="keyword">unsigned</span> <span class="keyword">char</span> <span class="identifier">r</span><span class="special">,</span> <span class="identifier">g</span><span class="special">,</span> <span class="identifier">b</span><span class="special">;</span> <span class="comment">// 3 bytes</span>
+<span class="special">};</span>
+</pre>
+<p>
+          <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic</span><span class="special">&lt;</span><span class="identifier">rgb</span><span class="special">&gt;</span></code>
+          is able to implement lock-free operations if the target CPU supports 32-bit
+          atomic instructions by padding <code class="computeroutput"><span class="identifier">rgb</span></code>
+          structure internally to the size of 4 bytes. This is not possible for
+          <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span><span class="special">&lt;</span><span class="identifier">rgb</span><span class="special">&gt;</span></code>,
+          as it has to operate on external objects. Thus, <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span><span class="special">&lt;</span><span class="identifier">rgb</span><span class="special">&gt;</span></code> will not provide lock-free operations
+          and will resort to locking.
+        </p>
+<p>
+          In general, it is advised to use <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic</span></code>
+          wherever possible, as it is easier to use and is more efficient. Use <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_ref</span></code> only when you absolutely have
+          to.
+        </p>
+</div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="atomic.interface.interface_wait_notify_ops"></a><a class="link" href="interface.html#atomic.interface.interface_wait_notify_ops" title="Waiting and notifying operations">Waiting and
+      notifying operations</a>
+</h3></div></div></div>
+<p>
+        <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_flag</span></code>, <code class="literal">boost::atomic&lt;<span class="emphasis"><em>T</em></span>&gt;</code>
+        and <code class="literal">boost::atomic_ref&lt;<span class="emphasis"><em>T</em></span>&gt;</code> support
+        <span class="emphasis"><em>waiting</em></span> and <span class="emphasis"><em>notifying</em></span> operations
+        that were introduced in C++20. Waiting operations have the following forms:
+      </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+            <code class="literal"><span class="emphasis"><em>T</em></span> wait(<span class="emphasis"><em>T</em></span> old_val,
+            memory_order order)</code> (where <span class="emphasis"><em>T</em></span> is <code class="computeroutput"><span class="keyword">bool</span></code> for <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_flag</span></code>)
+          </li></ul></div>
+<p>
+        Here, <code class="computeroutput"><span class="identifier">order</span></code> must not be
+        <code class="computeroutput"><span class="identifier">memory_order_release</span></code> or
+        <code class="computeroutput"><span class="identifier">memory_order_acq_rel</span></code>. Note
+        that unlike C++20, the <code class="computeroutput"><span class="identifier">wait</span></code>
+        operation returns <span class="emphasis"><em>T</em></span> instead of <code class="computeroutput"><span class="keyword">void</span></code>.
+        This is a <span class="bold"><strong>Boost.Atomic</strong></span> extension.
+      </p>
+<p>
+        The waiting operation performs the following steps repeatedly:
+      </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+            Loads the current value <code class="computeroutput"><span class="identifier">new_val</span></code>
+            of the atomic object using the memory ordering constraint <code class="computeroutput"><span class="identifier">order</span></code>.
+          </li>
+<li class="listitem">
+            If the <code class="computeroutput"><span class="identifier">new_val</span></code> representation
+            is different from <code class="computeroutput"><span class="identifier">old_val</span></code>
+            (i.e. when compared as if by <code class="computeroutput"><span class="identifier">memcmp</span></code>),
+            returns <code class="computeroutput"><span class="identifier">new_val</span></code>.
+          </li>
+<li class="listitem">
+            Blocks the calling thread until unblocked by a notifying operation or
+            spuriously.
+          </li>
+</ul></div>
+<p>
+        Note that a waiting operation is allowed to return spuriously, i.e. without
+        a corresponding notifying operation. It is also allowed to <span class="emphasis"><em>not</em></span>
+        return if the atomic object value is different from <code class="computeroutput"><span class="identifier">old_val</span></code>
+        only momentarily (this is known as <a href="https://en.wikipedia.org/wiki/ABA_problem" target="_top">ABA
+        problem</a>).
+      </p>
+<p>
+        Notifying operations have the following forms:
+      </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+            <code class="computeroutput"><span class="keyword">void</span> <span class="identifier">notify_one</span><span class="special">()</span></code>
+          </li>
+<li class="listitem">
+            <code class="computeroutput"><span class="keyword">void</span> <span class="identifier">notify_all</span><span class="special">()</span></code>
+          </li>
+</ul></div>
+<p>
+        The <code class="computeroutput"><span class="identifier">notify_one</span></code> operation
+        unblocks at least one thread blocked in the waiting operation on the same
+        atomic object, and <code class="computeroutput"><span class="identifier">notify_all</span></code>
+        unblocks all such threads. Notifying operations do not enforce memory ordering
+        and should normally be preceeded with a store operation or a fence with the
+        appropriate memory ordering constraint.
+      </p>
+<p>
+        Waiting and notifying operations require special support from the operating
+        system, which may not be universally available. Whether the operating system
+        natively supports these operations is indicated by the <code class="computeroutput"><span class="identifier">always_has_native_wait_notify</span></code>
+        static constant and <code class="computeroutput"><span class="identifier">has_native_wait_notify</span><span class="special">()</span></code> member function of a given atomic type.
+      </p>
+<p>
+        Even for atomic objects that support lock-free operations (as indicated by
+        the <code class="computeroutput"><span class="identifier">is_always_lock_free</span></code> property
+        or the corresponding <a class="link" href="interface.html#atomic.interface.feature_macros" title="Feature testing macros">macro</a>),
+        the waiting and notifying operations may involve locking and require linking
+        with <span class="bold"><strong>Boost.Atomic</strong></span> compiled library.
+      </p>
+<p>
+        Waiting and notifying operations are not address-free, meaning that the implementation
+        may use process-local state and process-local addresses of the atomic objects
+        to implement the operations. In particular, this means these operations cannot
+        be used for communication between processes (when the atomic object is located
+        in shared memory) or when the atomic object is mapped at different memory
+        addresses in the same process.
+      </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="atomic.interface.interface_ipc"></a><a class="link" href="interface.html#atomic.interface.interface_ipc" title="Atomic types for inter-process communication">Atomic types for inter-process
+      communication</a>
+</h3></div></div></div>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">atomic</span><span class="special">/</span><span class="identifier">ipc_atomic</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">atomic</span><span class="special">/</span><span class="identifier">ipc_atomic_ref</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">atomic</span><span class="special">/</span><span class="identifier">ipc_atomic_flag</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+</pre>
+<p>
+        <span class="bold"><strong>Boost.Atomic</strong></span> provides a dedicated set of
+        types for inter-process communication: <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">ipc_atomic_flag</span></code>,
+        <code class="literal">boost::ipc_atomic&lt;<span class="emphasis"><em>T</em></span>&gt;</code> and <code class="literal">boost::ipc_atomic_ref&lt;<span class="emphasis"><em>T</em></span>&gt;</code>.
+        Collectively, these types are called inter-process communication atomic types
+        or IPC atomic types, and their counterparts without the <code class="computeroutput"><span class="identifier">ipc_</span></code>
+        prefix - non-IPC atomic types.
+      </p>
+<p>
+        Each of the IPC atomic types have the same requirements on their value types
+        and provide the same set of operations and properties as its non-IPC counterpart.
+        All operations have the same signature, requirements and effects, with the
+        following amendments:
+      </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+            All operations, except constructors, destructors, <code class="computeroutput"><span class="identifier">is_lock_free</span><span class="special">()</span></code> and <code class="computeroutput"><span class="identifier">has_native_wait_notify</span><span class="special">()</span></code> have an additional precondition that
+            <code class="computeroutput"><span class="identifier">is_lock_free</span><span class="special">()</span></code>
+            returns <code class="computeroutput"><span class="keyword">true</span></code> for this atomic
+            object. (Implementation note: The current implementation detects availability
+            of atomic instructions at compile time, and the code that does not fulfill
+            this requirement will fail to compile.)
+          </li>
+<li class="listitem">
+            The <code class="computeroutput"><span class="identifier">has_native_wait_notify</span><span class="special">()</span></code> method and <code class="computeroutput"><span class="identifier">always_has_native_wait_notify</span></code>
+            static constant indicate whether the operating system has native support
+            for inter-process waiting and notifying operations. This may be different
+            from non-IPC atomic types as the OS may have different capabilities for
+            inter-thread and inter-process communication.
+          </li>
+<li class="listitem">
+            All operations on objects of IPC atomic types are address-free, which
+            allows to place such objects (in case of <code class="literal">boost::ipc_atomic_ref&lt;<span class="emphasis"><em>T</em></span>&gt;</code>
+            - objects referenced by <code class="computeroutput"><span class="identifier">ipc_atomic_ref</span></code>)
+            in memory regions shared between processes or mapped at different addresses
+            in the same process.
+          </li>
+</ul></div>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+          Operations on lock-free non-IPC atomic objects, except <a class="link" href="interface.html#atomic.interface.interface_wait_notify_ops" title="Waiting and notifying operations">waiting
+          and notifying operations</a>, are also address-free, so <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">atomic_flag</span></code>, <code class="literal">boost::atomic&lt;<span class="emphasis"><em>T</em></span>&gt;</code>
+          and <code class="literal">boost::atomic_ref&lt;<span class="emphasis"><em>T</em></span>&gt;</code>
+          could also be used for inter-process communication. However, the user must
+          ensure that the given atomic object indeed supports lock-free operations.
+          Failing to do this could result in a misbehaving program. IPC atomic types
+          enforce this requirement and add support for address-free waiting and notifying
+          operations.
+        </p></td></tr>
+</table></div>
+<p>
+        It should be noted that some operations on IPC atomic types may be more expensive
+        than the non-IPC ones. This primarily concerns waiting and notifying operations,
+        as the operating system may have to perform conversion of the process-mapped
+        addresses of atomic objects to physical addresses. Also, when native support
+        for inter-process waiting and notifying operations is not present (as indicated
+        by <code class="computeroutput"><span class="identifier">has_native_wait_notify</span><span class="special">()</span></code>), waiting operations are emulated with
+        a busy loop, which can affect performance and power consumption of the system.
+        Native support for waiting and notifying operations can also be detected
+        using <a class="link" href="interface.html#atomic.interface.feature_macros" title="Feature testing macros">capability macros</a>.
+      </p>
+<p>
+        Users must not create and use IPC and non-IPC atomic references on the same
+        referenced object at the same time. IPC and non-IPC atomic references are
+        not required to communicate with each other. For example, a waiting operation
+        on a non-IPC atomic reference may not be interrupted by a notifying operation
+        on an IPC atomic reference referencing the same object.
+      </p>
+<p>
+        Additionally, users must not create IPC atomics on the stack and, possibly,
+        other non-shared memory. Waiting and notifying operations may not behave
+        as intended on some systems if the atomic object is placed in an unsupported
+        memory type. For example, on Mac OS notifying operations are known to fail
+        spuriously if the IPC atomic is on the stack. Use regular atomic objects
+        in process-local memory. Users should also avoid modifying properties of
+        the memory while IPC atomic operations are running. For example, resizing
+        the shared memory segment while threads are blocked on a waiting operation
+        may prevent subsequent notifying operations from waking up the blocked threads.
+      </p>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
@@ -1861,6 +2596,10 @@
 </h3></div></div></div>
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">atomic</span><span class="special">/</span><span class="identifier">fences</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 </pre>
+<p>
+        <a class="link" href="thread_coordination.html#atomic.thread_coordination.fences" title="Fences">Fences</a> are implemented
+        with the following operations:
+      </p>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col>
@@ -1901,13 +2640,20 @@
               </td>
 <td>
                 <p>
-                  Issue fence for coordination with signal handler (only in same
-                  thread).
+                  Issue fence for coordination with a signal handler (only in the
+                  same thread).
                 </p>
               </td>
 </tr>
 </tbody>
 </table></div>
+<p>
+        Note that <code class="computeroutput"><span class="identifier">atomic_signal_fence</span></code>
+        does not implement thread synchronization and only acts as a barrier to prevent
+        code reordering by the compiler (but not by CPU). The <code class="computeroutput"><span class="identifier">order</span></code>
+        argument here specifies the direction, in which the fence prevents the compiler
+        to reorder code.
+      </p>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
@@ -1976,6 +2722,19 @@
 <td>
                 <p>
                   Indicate whether <code class="computeroutput"><span class="identifier">atomic</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&gt;</span></code> (including signed/unsigned
+                  variants) is lock-free
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_ATOMIC_CHAR8_T_LOCK_FREE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Indicate whether <code class="computeroutput"><span class="identifier">atomic</span><span class="special">&lt;</span><span class="identifier">char8_t</span><span class="special">&gt;</span></code> (including signed/unsigned
                   variants) is lock-free
                 </p>
               </td>
@@ -2117,7 +2876,8 @@
 <p>
         In addition to these standard macros, <span class="bold"><strong>Boost.Atomic</strong></span>
         also defines a number of extension macros, which can also be useful. Like
-        the standard ones, these macros are defined to values <code class="computeroutput"><span class="number">0</span></code>,
+        the standard ones, the <code class="computeroutput"><span class="special">*</span><span class="identifier">_LOCK_FREE</span></code>
+        macros below are defined to values <code class="computeroutput"><span class="number">0</span></code>,
         <code class="computeroutput"><span class="number">1</span></code> and <code class="computeroutput"><span class="number">2</span></code>
         to indicate whether the corresponding operations are lock-free or not.
       </p>
@@ -2214,12 +2974,26 @@
                 </p>
               </td>
 </tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_ATOMIC_NO_CLEAR_PADDING</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Defined if the implementation does not support operating on types
+                  with internal padding bits. This macro is typically defined for
+                  compilers that don't support C++20.
+                </p>
+              </td>
+</tr>
 </tbody>
 </table></div>
 <p>
-        In the table above, <code class="computeroutput"><span class="identifier">intN_type</span></code>
-        is a type that fits storage of contiguous <code class="computeroutput"><span class="identifier">N</span></code>
-        bits, suitably aligned for atomic operations.
+        In the table above, <code class="literal">int<span class="emphasis"><em>N</em></span>_type</code> is
+        a type that fits storage of contiguous <span class="emphasis"><em>N</em></span> bits, suitably
+        aligned for atomic operations.
       </p>
 <p>
         For floating-point types the following macros are similarly defined:
@@ -2286,11 +3060,27 @@
         These macros are not defined when support for floating point types is disabled
         by user.
       </p>
+<p>
+        For any of the <code class="literal">BOOST_ATOMIC_<span class="emphasis"><em>X</em></span>_LOCK_FREE</code>
+        macro described above, two additional macros named <code class="literal">BOOST_ATOMIC_HAS_NATIVE_<span class="emphasis"><em>X</em></span>_WAIT_NOTIFY</code>
+        and <code class="literal">BOOST_ATOMIC_HAS_NATIVE_<span class="emphasis"><em>X</em></span>_IPC_WAIT_NOTIFY</code>
+        are defined. The former indicates whether <a class="link" href="interface.html#atomic.interface.interface_wait_notify_ops" title="Waiting and notifying operations">waiting
+        and notifying operations</a> are supported natively for non-IPC atomic
+        types of a given type, and the latter does the same for <a class="link" href="interface.html#atomic.interface.interface_ipc" title="Atomic types for inter-process communication">IPC
+        atomic types</a>. The macros take values of <code class="computeroutput"><span class="number">0</span></code>,
+        <code class="computeroutput"><span class="number">1</span></code> or <code class="computeroutput"><span class="number">2</span></code>,
+        where <code class="computeroutput"><span class="number">0</span></code> indicates that native
+        operations are not available, <code class="computeroutput"><span class="number">1</span></code>
+        means the operations may be available (which is determined at run time) and
+        <code class="computeroutput"><span class="number">2</span></code> means always available. Note
+        that the lock-free and native waiting/notifying operations macros for a given
+        type may have different values.
+      </p>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2011 Helge Bahmann<br>Copyright &#169; 2012 Tim Blechmann<br>Copyright &#169; 2013, 2017, 2018 Andrey Semashev<p>
+<td align="right"><div class="copyright-footer">Copyright © 2011 Helge Bahmann<br>Copyright © 2012 Tim Blechmann<br>Copyright © 2013, 2017, 2018, 2020, 2021 Andrey Semashev<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

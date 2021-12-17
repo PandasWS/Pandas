@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Internal Support Code</title>
-<link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
+<link rel="stylesheet" href="../../multiprecision.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Multiprecision">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Multiprecision">
 <link rel="up" href="../ref.html" title="Reference">
 <link rel="prev" href="cpp_dec_ref.html" title="cpp_dec_float">
 <link rel="next" href="backendconc.html" title="Backend Requirements">
@@ -41,11 +41,6 @@
 <p>
         Inherits from <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">integral_constant</span><span class="special">&lt;</span><span class="keyword">bool</span><span class="special">,</span><span class="keyword">true</span><span class="special">&gt;</span></code> if type <code class="computeroutput"><span class="identifier">From</span></code>
         has an explicit conversion from <code class="computeroutput"><span class="identifier">To</span></code>.
-      </p>
-<p>
-        For compilers that support C++11 SFINAE-expressions this trait should "just
-        work". Otherwise it inherits from <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">is_convertible</span><span class="special">&lt;</span><span class="identifier">From</span><span class="special">,</span> <span class="identifier">To</span><span class="special">&gt;::</span><span class="identifier">type</span></code>, and will need to be specialised for
-        Backends that have constructors marked as <code class="computeroutput"><span class="keyword">explicit</span></code>.
       </p>
 <pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">From</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">To</span><span class="special">&gt;</span>
 <span class="keyword">struct</span> <span class="identifier">is_lossy_conversion</span>
@@ -92,16 +87,17 @@
 <span class="identifier">is_unsigned_number</span><span class="special">;</span>
 </pre>
 <p>
-        These two traits inherit from either <code class="computeroutput"><span class="identifier">mpl</span><span class="special">::</span><span class="identifier">true_</span></code>
-        or <code class="computeroutput"><span class="identifier">mpl</span><span class="special">::</span><span class="identifier">false_</span></code>, by default types are assumed to
-        be signed unless <code class="computeroutput"><span class="identifier">is_unsigned_number</span></code>
+        These two traits inherit from either <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">integral_constant</span><span class="special">&lt;</span><span class="keyword">bool</span><span class="special">,</span>
+        <span class="keyword">true</span><span class="special">&gt;</span></code>
+        or <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">integral_constant</span><span class="special">&lt;</span><span class="keyword">bool</span><span class="special">,</span> <span class="keyword">false</span><span class="special">&gt;</span></code>, by default types are assumed to be signed
+        unless <code class="computeroutput"><span class="identifier">is_unsigned_number</span></code>
         is specialized for that type.
       </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2019 John Maddock
-      and Christopher Kormanyos<p>
+<td align="right"><div class="copyright-footer">Copyright © 2002-2020 John
+      Maddock and Christopher Kormanyos<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

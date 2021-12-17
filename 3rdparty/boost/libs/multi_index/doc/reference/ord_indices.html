@@ -42,6 +42,7 @@ Ranked indices
         <ul>
           <li><a href="#complexity_signature">Complexity signature</a></li>
           <li><a href="#instantiation_types">Instantiation types</a></li>
+          <li><a href="#types">Nested types</a></li>
           <li><a href="#constructors">Constructors, copy and assignment</a></li>
           <li><a href="#iterators">Iterators</a></li>
           <li><a href="#modifiers">Modifiers</a></li>
@@ -196,8 +197,12 @@ Except where noted or if the corresponding interface does not exist,
 ordered indices (both unique and non-unique) satisfy the C++ requirements
 for associative containers at <b>[associative.reqmts]</b>
 (supporting unique and equivalent keys, respectively.)
-Accordingly, validity of iterators and references to elements is
-preserved. We only provide descriptions of those types and operations that 
+Iterators (including to the end of the index) and pointers and references to an element
+remain valid during the lifetime of the associated container (which can change
+upon swapping), or until the referred-to element is erased or extracted;
+pointers and references to an extracted element, but not so for iterators,
+become valid again once the element is re-inserted.
+We only provide descriptions of those types and operations that 
 do not exactly conform to or are not mandated by the standard requirements.
 </p>
 
@@ -237,6 +242,8 @@ do not exactly conform to or are not mandated by the standard requirements.
     std::reverse_iterator&lt;iterator&gt;</b>                  <span class=identifier>reverse_iterator</span><span class=special>;</span>
   <span class=keyword>typedef</span> <b>equivalent to
     std::reverse_iterator&lt;const_iterator&gt;</b>            <span class=identifier>const_reverse_iterator</span><span class=special>;</span>
+  <span class=keyword>typedef</span> <b>same as owning container                   </b><span class=identifier>node_type</span><span class=special>;</span>
+  <span class=keyword>typedef</span> <b>following [container.insert.return] spec   </b><span class=identifier>insert_return_type</span><span class=special>;</span>
 
   <span class=comment>// construct/copy/destroy:</span>
 
@@ -282,6 +289,11 @@ do not exactly conform to or are not mandated by the standard requirements.
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>InputIterator</span><span class=special>&gt;</span>
   <span class=keyword>void</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>InputIterator</span> <span class=identifier>first</span><span class=special>,</span><span class=identifier>InputIterator</span> <span class=identifier>last</span><span class=special>);</span>
   <span class=keyword>void</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>initializer_list</span><span class=special>&lt;</span><span class=identifier>value_type</span><span class=special>&gt;</span> <span class=identifier>list</span><span class=special>);</span>
+  <span class=identifier>insert_return_type</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>node_type</span><span class=special>&amp;&amp;</span> <span class=identifier>nh</span><span class=special>);</span>
+  <span class=identifier>iterator</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>const_iterator</span> <span class=identifier>position</span><span class=special>,</span><span class=identifier>node_type</span><span class=special>&amp;&amp;</span> <span class=identifier>nh</span><span class=special>);</span>
+
+  <span class=identifier>node_type</span> <span class=identifier>extract</span><span class=special>(</span><span class=identifier>const_iterator</span> <span class=identifier>position</span><span class=special>);</span>
+  <span class=identifier>node_type</span> <span class=identifier>extract</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>key_type</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>);</span>
 
   <span class=identifier>iterator</span>  <span class=identifier>erase</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>position</span><span class=special>);</span>
   <span class=identifier>size_type</span> <span class=identifier>erase</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>key_type</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>);</span>
@@ -299,6 +311,16 @@ do not exactly conform to or are not mandated by the standard requirements.
   <span class=keyword>void</span> <span class=identifier>swap</span><span class=special>(</span><b>index class name</b><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>);</span>
   <span class=keyword>void</span> <span class=identifier>clear</span><span class=special>()</span><span class=keyword>noexcept</span><span class=special>;</span>
 
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span> <span class=keyword>void</span> <span class=identifier>merge</span><span class=special>(</span><span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>);</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span>
+  <span class=identifier>std</span><span class=special>::</span><span class=identifier>pair</span><span class=special>&lt;</span><span class=identifier>iterator</span><span class=special>,</span><span class=keyword>bool</span><span class=special>&gt;</span> <span class=identifier>merge</span><span class=special>(</span>
+    <span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>i</span><span class=special>);</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span>
+  <span class=keyword>void</span> <span class=identifier>merge</span><span class=special>(</span>
+    <span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>,</span>
+    <span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>first</span><span class=special>,</span>
+    <span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>last</span><span class=special>);</span>
+      
   <span class=comment>// observers:</span>
 
   <span class=identifier>key_from_value</span> <span class=identifier>key_extractor</span><span class=special>()</span><span class=keyword>const</span><span class=special>;</span>
@@ -317,6 +339,11 @@ do not exactly conform to or are not mandated by the standard requirements.
   <span class=identifier>size_type</span> <span class=identifier>count</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>CompatibleCompare</span><span class=special>&gt;</span>
   <span class=identifier>size_type</span> <span class=identifier>count</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>const</span> <span class=identifier>CompatibleCompare</span><span class=special>&amp;</span> <span class=identifier>comp</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
+
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>&gt;</span>
+  <span class=keyword>bool</span> <span class=identifier>contains</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>CompatibleCompare</span><span class=special>&gt;</span>
+  <span class=keyword>bool</span> <span class=identifier>contains</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>const</span> <span class=identifier>CompatibleCompare</span><span class=special>&amp;</span> <span class=identifier>comp</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
 
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>&gt;</span>
   <span class=identifier>iterator</span> <span class=identifier>lower_bound</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
@@ -448,6 +475,16 @@ must be a model of <a href="key_extraction.html#key_extractors">
 <code>CopyConstructible</code> binary predicate inducing a strict weak order
 on elements of <code>KeyFromValue::result_type</code>.
 </p>
+
+<h4><a name="types">Nested types</a></h4>
+
+<code>iterator<br>
+const_iterator</code>
+
+<blockquote>
+These types depend only on <code>node_type</code> and the position of
+the index in the <code>multi_index_container</code>.
+</blockquote>
 
 <h4><a name="constructors">Constructors, copy and assignment</a></h4>
 
@@ -635,10 +672,89 @@ to which this index belongs if
 </pre></blockquote>
 </blockquote>
 
+<code>insert_return_type insert(node_type&amp;&amp; nh);</code>
+
+<blockquote>
+<b>Requires:</b> <code>nh.empty() || get_allocator()==nh.get_allocator()</code>.<br>
+<b>Effects:</b> Does nothing if <code>nh</code> is empty; otherwise,
+inserts the node owned by <code>nh</code> into the
+<code>multi_index_container</code> to which the index belongs if
+<ul>
+  <li>the index is non-unique OR no other element exists with
+    equivalent key,</li>
+  <li>AND insertion is allowed by all other indices of the
+    <code>multi_index_container</code>.</li>
+</ul>
+<b>Postconditions:</b> <code>nh</code> is empty.<br>
+<b>Returns:</b> A value <code>p</code> of type <code>insert_return_type</code>.
+If <code>nh</code> is empty, <code>p.position</code> is <code>end()</code>,
+<code>p.inserted</code> is <code>false</code> and <code>p.node</code> is empty;
+on successful insertion, <code>p.position</code> points to the element inserted,
+<code>p.inserted</code> is <code>true</code> and <code>p.node</code>
+is empty;
+if the insertion failed, <code>p.position</code> points to an element that caused
+the insertion to be banned, <code>p.inserted</code> is <code>false</code> and
+<code>p.node</code> owns the original node.
+Note that more than one element can be causing insertion not to be allowed.<br>
+<b>Complexity:</b> <code>O(I(n))</code>.<br>
+<b>Exception safety:</b> Strong. If an exception
+is thrown, <code>nh</code> is not changed.<br>
+</blockquote>
+
+<code>iterator insert(const_iterator position,node_type&amp;&amp; nh);</code>
+
+<blockquote>
+<b>Requires:</b> <code>nh.empty() || get_allocator()==nh.get_allocator()</code>.
+ <code>position</code> is a valid iterator of the index.<br>
+<b>Effects:</b> Does nothing if <code>nh</code> is empty; otherwise,
+inserts the node owned by <code>nh</code> into the
+<code>multi_index_container</code> to which the index belongs if
+<ul>
+  <li>the index is non-unique OR no other element exists with
+    equivalent key,</li>
+  <li>AND insertion is allowed by all other indices of the
+    <code>multi_index_container</code>.</li>
+</ul>
+<code>position</code> is used as a hint to improve the efficiency of the
+operation. If successful, insertion happens as close as possible to the
+location just prior to <code>position</code>.<br>
+<b>Postconditions:</b> <code>nh</code> is empty if insertion succeeds,
+and is not changed otherwise.<br>
+<b>Returns:</b> <code>end()</code> if <code>nh</code> is empty.
+On successful insertion, an iterator to the newly inserted
+element; otherwise, an iterator to an element that caused the insertion to be
+banned. Note that more than one element can be causing insertion not to be
+allowed.<br>
+<b>Complexity:</b> <code>O(H(n))</code>.<br>
+<b>Exception safety:</b> Strong. If an exception
+is thrown, <code>nh</code> is not changed.<br>
+</blockquote>
+
+<code>node_type extract(const_iterator position);</code>
+
+<blockquote>
+<b>Requires:</b> <code>position</code> is a valid dereferenceable iterator
+of the index.<br>
+<b>Effects:</b> Extracts the node of the element pointed to by <code>position</code>.<br>
+<b>Returns:</b> A node handle owning the extracted node.<br>
+<b>Complexity:</b> <code>O(D(n))</code>.<br>
+<b>Exception safety:</b> <code>nothrow</code>.<br>
+</blockquote>
+
+<code>node_type extract(const key_type&amp; x);</code>
+
+<blockquote>
+<b>Effects:</b> Extracts the node of the first element
+with key equivalent to <code>x</code>, if there is any.<br>
+<b>Returns:</b> A node handle owning the extracted node, or empty otherwise.<br>
+<b>Complexity:</b> <code>O(log(n) + D(n))</code>.<br>
+<b>Exception safety:</b> Strong.<br>
+</blockquote>
+    
 <code>iterator erase(iterator position);</code>
 
 <blockquote>
-<b>Requires:</b> <code>position</code> is a valid dereferenceable  iterator
+<b>Requires:</b> <code>position</code> is a valid dereferenceable iterator
 of the index.<br>
 <b>Effects:</b> Deletes the element pointed to by <code>position</code>.<br>
 <b>Returns:</b> An iterator pointing to the element immediately following
@@ -816,6 +932,89 @@ with <code>mod'</code> and <code>back</code> defined in such a way that
 <code>key</code> is the internal <code>KeyFromValue</code> object of the index.
 </blockquote>
 
+<a name="merge"><code>template&lt;typename Index&gt; void merge(Index&amp;&amp; x);</code></a>
+
+<blockquote>
+<b>Requires:</b> <code>x</code> is a non-const reference to an index of a
+<a href="multi_index_container.html#node_type">node-compatible</a>
+<code>multi_index_container</code>. <code>get_allocator()==x.get_allocator()</code>.<br>
+<b>Effects:</b> 
+<blockquote><pre>
+<span class=identifier>merge</span><span class=special>(</span><span class=identifier>x</span><span class=special>,</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>begin</span><span class=special>(),</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>end</span><span class=special>());</span>
+</pre></blockquote>
+</blockquote>
+
+<code>
+template&lt;typename Index&gt; std::pair&lt;iterator,bool&gt; merge(<br>
+&nbsp;&nbsp;Index&amp;&amp; x,typename std::remove_reference_t&lt;Index&gt;::const_iterator i);
+</code>
+
+<blockquote>
+<b>Requires:</b> <code>x</code> is a non-const reference to an index of a
+<a href="multi_index_container.html#node_type">node-compatible</a>
+<code>multi_index_container</code>. <code>get_allocator()==x.get_allocator()</code>.
+<code>i</code> is a valid dereferenceable iterator of <code>x</code>.<br>
+<b>Effects:</b> Does nothing if the source and destination containers are the same;
+otherwise, transfers the node of the element referred to by <code>i</code> into the
+<code>multi_index_container</code> to which the destination index belongs if
+<ul>
+  <li>the index is non-unique OR no other element exists with
+    equivalent key,</li>
+  <li>AND insertion is allowed by all other indices of the
+    <code>multi_index_container</code>.</li>
+</ul>
+Note that no element is copied or destroyed in the process.<br>
+<b>Postconditions:</b> If transfer succeeds, for any index in the source container
+having the same <code>iterator</code>/<code>const_iterator</code> types as the corresponding
+index in the destination container, iterators referring to <code>*i</code>
+remain valid and behave as iterators of the destination index.<br>
+<b>Returns:</b> The return value is a pair <code>p</code>. <code>p.second</code>
+is <code>true</code> if and only if transfer took place or the source and destination
+containers are the same. If <code>p.second</code> is <code>true</code>,
+<code>p.first</code> points to <code>*i</code>; otherwise, <code>p.first</code>
+points to an element that caused the insertion to be banned. Note that more than
+one element can be causing insertion not to be allowed.<br>
+<b>Complexity:</b> If the source and destination containers are the same,
+constant; otherwise, <code>O(I(n)+D(x.size()))</code>.<br>
+<b>Exception safety:</b> If the source and destination containers are the same,
+<code>nothrow</code>; otherwise strong.
+</blockquote>
+
+<code>
+template&lt;typename Index&gt; void merge(<br>
+&nbsp;&nbsp;Index&amp;&amp; x,<br>
+&nbsp;&nbsp;typename std::remove_reference_t&lt;Index&gt;::const_iterator first,<br>
+&nbsp;&nbsp;typename std::remove_reference_t&lt;Index&gt;::const_iterator last);
+</code>
+
+<blockquote>
+<b>Requires:</b> <code>x</code> is a non-const reference to an index of a
+<a href="multi_index_container.html#node_type">node-compatible</a>
+<code>multi_index_container</code>. <code>get_allocator()==x.get_allocator()</code>.
+[<code>first</code>,<code>last</code>) is a valid range of <code>x</code>.<br>
+<b>Effects:</b> Does nothing if the source and destination containers are the same;
+otherwise, for each node in [<code>first</code>,<code>last</code>), in this order,
+the node is transferred to the <code>multi_index_container</code> to which the
+destination index belongs if
+<ul>
+  <li>the index is non-unique OR no other element exists with
+    equivalent key,</li>
+  <li>AND insertion is allowed by all other indices of the
+    <code>multi_index_container</code>.</li>
+</ul>
+Note that no element is copied or destroyed in the process.<br>
+<b>Postconditions:</b> For any index in the source container having the same
+<code>iterator</code>/<code>const_iterator</code> types as the corresponding
+index in the destination container, iterators referring to the transferred elements
+remain valid and behave as iterators of the destination index.<br>
+<b>Complexity:</b> If the source and destination containers are the same,
+constant; otherwise, <code>O(m*(I(n+m)+D(x.size())))</code>, where
+<code>m</code> is the number of elements in [<code>first</code>,
+<code>last</code>).<br>
+<b>Exception safety:</b> If the source and destination containers are the same,
+<code>nothrow</code>; otherwise basic.
+</blockquote>
+
 <h4><a name="observers">Observers</a></h4>
 
 <p>Apart from standard <code>key_comp</code> and <code>value_comp</code>,
@@ -905,8 +1104,8 @@ is a compatible extension of <code>key_compare</code>.<br>
 <b>Complexity:</b> <code>O(log(n))</code>.<br>
 </blockquote>
 
-<code>template&lt;typename CompatibleKey> size_type<br>
-count(const CompatibleKey&amp; x)const;
+<code>template&lt;typename CompatibleKey><br>
+size_type count(const CompatibleKey&amp; x)const;
 </code>
 
 <blockquote>
@@ -925,6 +1124,28 @@ size_type count(const CompatibleKey&amp; x,const CompatibleCompare&amp; comp)con
 is a compatible extension of <code>key_compare</code>.<br>
 <b>Effects:</b> Returns the number of elements with key equivalent to <code>x</code>.<br>
 <b>Complexity:</b> <code>O(log(n) + count(x,comp))</code>.<br>
+</blockquote>
+
+<code>template&lt;typename CompatibleKey><br>
+bool contains(const CompatibleKey&amp; x)const;
+</code>
+
+<blockquote>
+<b>Requires:</b> <code>CompatibleKey</code> is a compatible key of
+<code>key_compare</code>.<br>
+<b>Effects:</b> Returns <code>true</code> iff there is some element with key equivalent to <code>x</code>.<br>
+<b>Complexity:</b> <code>O(log(n))</code>.<br>
+</blockquote>
+
+<code>template&lt;typename CompatibleKey,typename CompatibleCompare><br>
+bool contains(const CompatibleKey&amp; x,const CompatibleCompare&amp; comp)const;
+</code>
+
+<blockquote>
+<b>Requires:</b> (<code>CompatibleKey</code>, <code>CompatibleCompare</code>)
+is a compatible extension of <code>key_compare</code>.<br>
+<b>Effects:</b> Returns <code>true</code> iff there is some element with key equivalent to <code>x</code>.<br>
+<b>Complexity:</b> <code>O(log(n))</code>.<br>
 </blockquote>
 
 <code>template&lt;typename CompatibleKey><br>
@@ -1120,9 +1341,9 @@ Ranked indices
 
 <br>
 
-<p>Revised August 24th 2017</p>
+<p>Revised August 30th 2021</p>
 
-<p>&copy; Copyright 2003-2017 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2021 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

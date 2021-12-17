@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>windows::overlapped_ptr::overlapped_ptr</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -32,7 +32,7 @@ Construct
           an empty <a class="link" href="../windows__overlapped_ptr.html" title="windows::overlapped_ptr"><code class="computeroutput">windows::overlapped_ptr</code></a>.
         </p>
 <pre class="programlisting"><a class="link" href="overlapped_ptr/overload1.html" title="windows::overlapped_ptr::overlapped_ptr (1 of 3 overloads)">overlapped_ptr</a>();
-  <span class="emphasis"><em>&#187; <a class="link" href="overlapped_ptr/overload1.html" title="windows::overlapped_ptr::overlapped_ptr (1 of 3 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="overlapped_ptr/overload1.html" title="windows::overlapped_ptr::overlapped_ptr (1 of 3 overloads)">more...</a></em></span>
 </pre>
 <p>
           Construct an <a class="link" href="../windows__overlapped_ptr.html" title="windows::overlapped_ptr"><code class="computeroutput">windows::overlapped_ptr</code></a>
@@ -44,8 +44,8 @@ Construct
 explicit <a class="link" href="overlapped_ptr/overload2.html" title="windows::overlapped_ptr::overlapped_ptr (2 of 3 overloads)">overlapped_ptr</a>(
     ExecutionContext &amp; context,
     Handler &amp;&amp; handler,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="overlapped_ptr/overload2.html" title="windows::overlapped_ptr::overlapped_ptr (2 of 3 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="overlapped_ptr/overload2.html" title="windows::overlapped_ptr::overlapped_ptr (2 of 3 overloads)">more...</a></em></span>
 
 template&lt;
     typename <a class="link" href="../Executor1.html" title="Executor requirements">Executor</a>,
@@ -53,13 +53,14 @@ template&lt;
 explicit <a class="link" href="overlapped_ptr/overload3.html" title="windows::overlapped_ptr::overlapped_ptr (3 of 3 overloads)">overlapped_ptr</a>(
     const Executor &amp; ex,
     Handler &amp;&amp; handler,
-    typename enable_if&lt; is_executor&lt; Executor &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="overlapped_ptr/overload3.html" title="windows::overlapped_ptr::overlapped_ptr (3 of 3 overloads)">more...</a></em></span>
+    typename constraint&lt; execution::is_executor&lt; Executor &gt;::value||is_executor&lt; Executor &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="overlapped_ptr/overload3.html" title="windows::overlapped_ptr::overlapped_ptr (3 of 3 overloads)">more...</a></em></span>
 </pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

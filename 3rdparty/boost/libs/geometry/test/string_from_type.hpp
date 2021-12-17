@@ -4,10 +4,10 @@
 // Copyright (c) 2008-2015 Bruno Lalande, Paris, France.
 // Copyright (c) 2009-2015 Mateusz Loskot, London, UK.
 
-// This file was modified by Oracle on 2015.
-// Modifications copyright (c) 2015, Oracle and/or its affiliates.
-
+// This file was modified by Oracle on 2015-2021.
+// Modifications copyright (c) 2015-2021, Oracle and/or its affiliates.
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Parts of Boost.Geometry are redesigned from Geodan's Geographic Library
 // (geolib/GGL), copyright (c) 1995-2010 Geodan, Amsterdam, the Netherlands.
@@ -21,26 +21,11 @@
 
 #include <string>
 
-#if defined(HAVE_TTMATH)
-#  include <boost/geometry/extensions/contrib/ttmath_stub.hpp>
-#endif
-
-#if defined(HAVE_CLN) || defined(HAVE_GMP)
-#  include <boost/numeric_adaptor/numeric_adaptor.hpp>
-#endif
-
-
-#if defined(HAVE_GMP)
-#  include <boost/numeric_adaptor/gmp_value_type.hpp>
-#endif
-#if defined(HAVE_CLN)
-#  include <boost/numeric_adaptor/cln_value_type.hpp>
-#endif
-
-
+#include <boost/multiprecision/cpp_bin_float.hpp>
 
 template <typename T>
-struct string_from_type {};
+struct string_from_type
+{ static std::string name() { return "?"; }  };
 
 template <> struct string_from_type<void>
 { static std::string name() { return "v"; }  };
@@ -63,11 +48,13 @@ template <> struct string_from_type<int>
 template <> struct string_from_type<long>
 { static std::string name() { return "l"; }  };
 
-#if defined(BOOST_HAS_LONG_LONG)
+template <typename Backend>
+struct string_from_type<boost::multiprecision::number<Backend>>
+{ static std::string name() { return "m"; }  };
+
 // this is what g++ and clang++ use
-template <> struct string_from_type<boost::long_long_type>
+template <> struct string_from_type<long long>
 { static std::string name() { return "x"; }  };
-#endif
 
 #if defined(BOOST_HAS_INT128)
 // this is what g++ and clang++ use
@@ -75,26 +62,9 @@ template <> struct string_from_type<boost::int128_type>
 { static std::string name() { return "n"; }  };
 #endif
 
-#if defined(HAVE_TTMATH)
-    template <> struct string_from_type<ttmath_big>
-    { static std::string name() { return "t"; }  };
-#endif
-
 #if defined(BOOST_RATIONAL_HPP)
 template <typename T> struct string_from_type<boost::rational<T> >
 { static std::string name() { return "r"; }  };
 #endif
-
-
-#if defined(HAVE_GMP)
-template <> struct string_from_type<boost::numeric_adaptor::gmp_value_type>
-{ static std::string name() { return "g"; }  };
-#endif
-
-#if defined(HAVE_CLN)
-template <> struct string_from_type<boost::numeric_adaptor::cln_value_type>
-{ static std::string name() { return "c"; }  };
-#endif
-
 
 #endif // GEOMETRY_TEST_STRING_FROM_TYPE_HPP

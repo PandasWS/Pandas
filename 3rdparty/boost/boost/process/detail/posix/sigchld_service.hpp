@@ -20,7 +20,7 @@ namespace boost { namespace process { namespace detail { namespace posix {
 
 class sigchld_service : public boost::asio::detail::service_base<sigchld_service>
 {
-    boost::asio::io_context::strand _strand{get_io_context()};
+    boost::asio::strand<boost::asio::io_context::executor_type> _strand{get_io_context().get_executor()};
     boost::asio::signal_set _signal_set{get_io_context(), SIGCHLD};
 
     std::vector<std::pair<::pid_t, std::function<void(int, std::error_code)>>> _receivers;
@@ -48,9 +48,22 @@ public:
                     int status;
                     auto pid_res = ::waitpid(pid, &status, WNOHANG);
                     if (pid_res < 0)
-                        h(-1, get_last_error());
+                    {
+                        auto ec = get_last_error();
+                        boost::asio::post(
+                                _strand,
+                                [pid_res, ec, h]
+                                {
+                                    h(pid_res, ec);
+                                });
+                    }
                     else if ((pid_res == pid) && (WIFEXITED(status) || WIFSIGNALED(status)))
-                        h(status, {}); //successfully exited already
+                        boost::asio::post(
+                                _strand,
+                                [status, h]
+                                {
+                                    h(status, {}); //successfully exited already
+                                });
                     else //still running
                     {
                         if (_receivers.empty())

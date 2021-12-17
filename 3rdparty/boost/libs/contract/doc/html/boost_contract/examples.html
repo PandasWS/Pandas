@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Examples</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Boost.Contract 1.0.0">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Boost.Contract 1.0.0">
+<link rel="home" href="../index.html" title="Chapter 1. Boost.Contract 1.0.0">
+<link rel="up" href="../index.html" title="Chapter 1. Boost.Contract 1.0.0">
 <link rel="prev" href="extras.html" title="Extras">
 <link rel="next" href="../reference.html" title="Reference">
 </head>
@@ -83,26 +83,26 @@
         practices, not optimized for execution speed, not complete, and they might
         be more relevant in the context of programming languages different from C++.
         Nevertheless, programmers are encouraged to review these examples to see
-        a few diverse usages of this library that might be relevant to their needs.
+        a few diverse uses of this library that might be relevant to their needs.
       </p></td></tr>
 </table></div>
 <p>
-      Sources of the listed examples:
+      The examples in this sections are taken from the following sources:
     </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-          <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>: Examples from the proposal
-          to add contract programming to C++11 (unfortunately, this proposal was
-          never accepted into the standard).
+          <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>: Examples from a detailed and
+          complete proposal to add contract programming to C++11 (unfortunately,
+          this proposal was never accepted into the standard).
         </li>
 <li class="listitem">
           <a class="link" href="bibliography.html#Meyer97_anchor">[Meyer97]</a>: Examples from the Eiffel
-          programming language and reprogrammed using this library for C++.
+          programming language (reprogrammed here in C++ using this library).
         </li>
 <li class="listitem">
           <a class="link" href="bibliography.html#Mitchell02_anchor">[Mitchell02]</a>: Additional examples
-          from the Eiffel programming language and reprogrammed using this library
-          for C++.
+          from the Eiffel programming language (reprogrammed here in C++ using this
+          library).
         </li>
 <li class="listitem">
           <a class="link" href="bibliography.html#Cline90_anchor">[Cline90]</a>: Examples from a very early
@@ -111,7 +111,7 @@
         </li>
 </ul></div>
 <p>
-      A few notable examples:
+      The following are some examples of particular interest:
     </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
@@ -135,6 +135,12 @@
           with A++ syntax.
         </li>
 </ul></div>
+<p>
+      Most of the examples listed here use old values and class invariants which
+      are instead not supported by <a class="link" href="bibliography.html#P0380_anchor">[P0380]</a>. Therefore,
+      there is not meaningful example here that can be directly implemented and compared
+      using <a class="link" href="bibliography.html#P0380_anchor">[P0380]</a> syntax.
+    </p>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_contract.examples.__n1962___vector__contracts_for_stl_vector_and_comparison_with___n1962___proposed_syntax"></a><a name="N1962_vector_anchor"></a>[N1962] Vector: Contracts for STL
@@ -145,7 +151,9 @@
         <span class="keyword">constexpr</span></code>, the following example using
         this library can be simplified removing <code class="computeroutput"><a class="link" href="../boost/contract/condition_if.html" title="Function template condition_if">boost::contract::condition_if</a></code>
         and related functor templates such as <code class="computeroutput"><span class="identifier">all_of_equal_to</span></code>,
-        etc. (making it more similar to the pseudo-code on the right-hand side).
+        etc., making it more similar to the pseudo-code on the right-hand side (see
+        <a class="link" href="extras.html#boost_contract.extras.assertion_requirements__templates_" title="Assertion Requirements (Templates)">Assertion
+        Requirements</a>).
       </p>
 <div class="informaltable"><table class="table">
 <colgroup>
@@ -4890,7 +4898,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2008-2018 Lorenzo Caminiti<p>
+<td align="right"><div class="copyright-footer">Copyright © 2008-2019 Lorenzo Caminiti<p>
         Distributed under the Boost Software License, Version 1.0 (see accompanying
         file LICENSE_1_0.txt or a copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

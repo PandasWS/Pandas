@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Memory allocation algorithms</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../interprocess.html" title="Chapter&#160;18.&#160;Boost.Interprocess">
+<link rel="up" href="../interprocess.html" title="Chapter 18. Boost.Interprocess">
 <link rel="prev" href="allocators_containers.html" title="Allocators, containers and memory allocation algorithms">
 <link rel="next" href="streams.html" title="Direct iostream formatting: vectorstream and bufferstream">
 </head>
@@ -93,9 +93,9 @@
         of allocations is high, the user should use a more performance-friendly algorithm.
       </p>
 <p>
-        In most 32 systems, with 8 byte alignment, "basic_size" is 8 bytes.
-        This means that an allocation request of 1 byte leads to the creation of
-        a 16 byte block, where 8 bytes are available to the user. The allocation
+        In most 32 bit systems, with 8 byte alignment, "basic_size" is
+        8 bytes. This means that an allocation request of 1 byte leads to the creation
+        of a 16 byte block, where 8 bytes are available to the user. The allocation
         of 8 bytes leads also to the same 16 byte block.
       </p>
 </div>
@@ -134,9 +134,10 @@
         restrictive alignment value.
       </p>
 <p>
-        In most 32 systems with 8 byte alignment the minimum size of a block is 24
-        byte. When a block is allocated the control data related to the red black
-        tree is overwritten by the user (because it's only needed for free blocks).
+        In most 32 bit systems with 8 byte alignment the minimum size of a block
+        is 24 byte. When a block is allocated the control data related to the red
+        black tree is overwritten by the user (because it's only needed for free
+        blocks).
       </p>
 <p>
         In those systems a 1 byte allocation request means that:
@@ -160,7 +161,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2005-2015 Ion Gaztanaga<p>
+<td align="right"><div class="copyright-footer">Copyright © 2005-2015 Ion Gaztanaga<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

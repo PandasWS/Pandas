@@ -115,7 +115,7 @@ This header includes other Boost.Log headers with all sinks. </para></header>
 This header defines tools for trivial logging support </para><namespace name="boost">
 <namespace name="log">
 <namespace name="trivial">
-<struct name="logger"><purpose>Trivial logger tag. </purpose><description><para>This tag can be used to acquire the logger that is used with lrivial logging macros. This may be useful when the logger is used with other macros which require a logger. </para></description><typedef name="logger_type"><purpose>Logger type. </purpose><type>trivial::logger_type</type></typedef>
+<struct name="logger"><purpose>Trivial logger tag. </purpose><description><para>This tag can be used to acquire the logger that is used with trivial logging macros. This may be useful when the logger is used with other macros which require a logger. </para></description><typedef name="logger_type"><purpose>Logger type. </purpose><type>trivial::logger_type</type></typedef>
 <method-group name="public static functions">
 <method name="get" specifiers="static"><type>logger_type &amp;</type><description><para>Returns a reference to the trivial logger instance </para></description></method>
 </method-group>

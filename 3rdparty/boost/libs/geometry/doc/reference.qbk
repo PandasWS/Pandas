@@ -6,8 +6,8 @@
   Copyright (c) 2009-2017 Bruno Lalande, Paris, France.
   Copyright (c) 2013-2017 Adam Wulkiewicz, Lodz, Poland.
 
-  This file was modified by Oracle on 2014, 2017, 2018.
-  Modifications copyright (c) 2014-2018, Oracle and/or its affiliates.
+  This file was modified by Oracle on 2014-2021.
+  Modifications copyright (c) 2014-2021, Oracle and/or its affiliates.
 
   Contributed and/or modified by Vissarion Fysikopoulos, on behalf of Oracle
   Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
@@ -80,6 +80,10 @@
 
 [include generated/append.qbk]
 
+[section:azimuth azimuth]
+[include generated/azimuth.qbk]
+[endsect]
+
 [section:buffer buffer]
 [include generated/buffer.qbk]
 [endsect]
@@ -90,7 +94,10 @@
 
 [include generated/clear.qbk]
 [include generated/convert.qbk]
+
+[section:convex_hull convex_hull]
 [include generated/convex_hull.qbk]
+[endsect]
 
 [section:correct correct]
 [include generated/correct.qbk]
@@ -312,6 +319,7 @@
 
 [include generated/point.qbk]
 [include generated/point_xy.qbk]
+[include generated/point_xyz.qbk]
 [include generated/linestring.qbk]
 [include generated/polygon.qbk]
 [include generated/multi_point.qbk]
@@ -371,7 +379,6 @@
 [include generated/buffer_side_straight.qbk]
 [include generated/centroid_average.qbk]
 [include generated/centroid_bashein_detmer.qbk]
-[include generated/convex_hull_graham_andrew.qbk]
 [include generated/densify_cartesian.qbk]
 [include generated/densify_geographic.qbk]
 [include generated/densify_spherical.qbk]

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class assertion_result</title>
 <link rel="stylesheet" href="../../boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -26,7 +26,7 @@
 <a name="boost.test_tools.assertion_result"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Class assertion_result</span></h2>
-<p>boost::test_tools::assertion_result &#8212; Type used for storing the result of an assertion. </p>
+<p>boost::test_tools::assertion_result — Type used for storing the result of an assertion. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../header/boost/test/tools/assertion_result_hpp.html" title="Header &lt;boost/test/tools/assertion_result.hpp&gt;">boost/test/tools/assertion_result.hpp</a>&gt;
@@ -38,53 +38,53 @@
 
   <span class="keyword">struct</span> <a class="link" href="assertion_result/dummy.html" title="Struct dummy">dummy</a> <span class="special">{</span>
 
-    <span class="comment">// <a class="link" href="assertion_result/dummy.html#idm46197990733152-bb">public member functions</a></span>
-    <span class="keyword">void</span> <a class="link" href="assertion_result/dummy.html#idm46197990732592-bb"><span class="identifier">nonnull</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+    <span class="comment">// <a class="link" href="assertion_result/dummy.html#idm45827-bb">public member functions</a></span>
+    <span class="keyword">void</span> <a class="link" href="assertion_result/dummy.html#idm45828-bb"><span class="identifier">nonnull</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
   <span class="special">}</span><span class="special">;</span>
   <span class="comment">// <a class="link" href="assertion_result.html#boost.test_tools.assertion_resultconstruct-copy-destruct">construct/copy/destruct</a></span>
-  <a class="link" href="assertion_result.html#idm46197990723024-bb"><span class="identifier">assertion_result</span></a><span class="special">(</span><span class="keyword">bool</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> BoolConvertable<span class="special">&gt;</span> <a class="link" href="assertion_result.html#idm46197990722048-bb"><span class="identifier">assertion_result</span></a><span class="special">(</span><span class="identifier">BoolConvertable</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="assertion_result.html#idm46197990720224-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><span class="keyword">bool</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="assertion_result.html#idm45848-bb"><span class="identifier">assertion_result</span></a><span class="special">(</span><span class="keyword">bool</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> BoolConvertable<span class="special">&gt;</span> <a class="link" href="assertion_result.html#idm45851-bb"><span class="identifier">assertion_result</span></a><span class="special">(</span><span class="identifier">BoolConvertable</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="assertion_result.html#idm45856-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><span class="keyword">bool</span><span class="special">)</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="assertion_result.html#idm46197990731584-bb">public member functions</a></span>
-  <span class="keyword">bool</span> <a class="link" href="assertion_result.html#idm46197990731024-bb"><span class="keyword">operator</span><span class="special">!</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <a class="link" href="assertion_result.html#idm46197990729904-bb"><span class="keyword">operator</span> <span class="identifier">safe_bool</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-   <a class="link" href="assertion_result.html#idm46197990728784-bb"><span class="identifier">BOOST_READONLY_PROPERTY</span></a><span class="special">(</span><span class="keyword">bool</span><span class="special">,</span> <span class="special">(</span><a class="link" href="assertion_result.html" title="Class assertion_result">assertion_result</a><span class="special">)</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">bool</span> <a class="link" href="assertion_result.html#idm46197990726272-bb"><span class="identifier">has_empty_message</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">wrap_stringstream</span> <span class="special">&amp;</span> <a class="link" href="assertion_result.html#idm46197990725152-bb"><span class="identifier">message</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">const_string</span> <a class="link" href="assertion_result.html#idm46197990724304-bb"><span class="identifier">message</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="assertion_result.html#idm45830-bb">public member functions</a></span>
+  <span class="keyword">bool</span> <a class="link" href="assertion_result.html#idm45831-bb"><span class="keyword">operator</span><span class="special">!</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <a class="link" href="assertion_result.html#idm45833-bb"><span class="keyword">operator</span> <span class="identifier">safe_bool</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+   <a class="link" href="assertion_result.html#idm45835-bb"><span class="identifier">BOOST_READONLY_PROPERTY</span></a><span class="special">(</span><span class="keyword">bool</span><span class="special">,</span> <span class="special">(</span><a class="link" href="assertion_result.html" title="Class assertion_result">assertion_result</a><span class="special">)</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">bool</span> <a class="link" href="assertion_result.html#idm45842-bb"><span class="identifier">has_empty_message</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">wrap_stringstream</span> <span class="special">&amp;</span> <a class="link" href="assertion_result.html#idm45844-bb"><span class="identifier">message</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">const_string</span> <a class="link" href="assertion_result.html#idm45846-bb"><span class="identifier">message</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="idm46032251474352"></a><h2>Description</h2>
+<a name="idm56145"></a><h2>Description</h2>
 <div class="refsect2">
-<a name="idm46032251473936"></a><h3>
+<a name="idm56147"></a><h3>
 <a name="boost.test_tools.assertion_resultconstruct-copy-destruct"></a><code class="computeroutput">assertion_result</code> 
         public
        construct/copy/destruct</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
-<li class="listitem"><pre class="literallayout"><a name="idm46197990723024-bb"></a><span class="identifier">assertion_result</span><span class="special">(</span><span class="keyword">bool</span> pv_<span class="special">)</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><a name="idm45848-bb"></a><span class="identifier">assertion_result</span><span class="special">(</span><span class="keyword">bool</span> pv_<span class="special">)</span><span class="special">;</span></pre></li>
 <li class="listitem"><pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> BoolConvertable<span class="special">&gt;</span> 
-  <a name="idm46197990722048-bb"></a><span class="identifier">assertion_result</span><span class="special">(</span><span class="identifier">BoolConvertable</span> <span class="keyword">const</span> <span class="special">&amp;</span> pv_<span class="special">)</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"><span class="keyword">void</span> <a name="idm46197990720224-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><span class="keyword">bool</span> pv_<span class="special">)</span><span class="special">;</span></pre></li>
+  <a name="idm45851-bb"></a><span class="identifier">assertion_result</span><span class="special">(</span><span class="identifier">BoolConvertable</span> <span class="keyword">const</span> <span class="special">&amp;</span> pv_<span class="special">)</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><span class="keyword">void</span> <a name="idm45856-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><span class="keyword">bool</span> pv_<span class="special">)</span><span class="special">;</span></pre></li>
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="idm46032251453712"></a><h3>
-<a name="idm46197990731584-bb"></a><code class="computeroutput">assertion_result</code> public member functions</h3>
+<a name="idm56187"></a><h3>
+<a name="idm45830-bb"></a><code class="computeroutput">assertion_result</code> public member functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
-<li class="listitem"><pre class="literallayout"><span class="keyword">bool</span> <a name="idm46197990731024-bb"></a><span class="keyword">operator</span><span class="special">!</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"><a name="idm46197990729904-bb"></a><span class="keyword">operator</span> <span class="identifier">safe_bool</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"> <a name="idm46197990728784-bb"></a><span class="identifier">BOOST_READONLY_PROPERTY</span><span class="special">(</span><span class="keyword">bool</span><span class="special">,</span> <span class="special">(</span><a class="link" href="assertion_result.html" title="Class assertion_result">assertion_result</a><span class="special">)</span><span class="special">)</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"><span class="keyword">bool</span> <a name="idm46197990726272-bb"></a><span class="identifier">has_empty_message</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"><span class="identifier">wrap_stringstream</span> <span class="special">&amp;</span> <a name="idm46197990725152-bb"></a><span class="identifier">message</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"><span class="identifier">const_string</span> <a name="idm46197990724304-bb"></a><span class="identifier">message</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><span class="keyword">bool</span> <a name="idm45831-bb"></a><span class="keyword">operator</span><span class="special">!</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><a name="idm45833-bb"></a><span class="keyword">operator</span> <span class="identifier">safe_bool</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"> <a name="idm45835-bb"></a><span class="identifier">BOOST_READONLY_PROPERTY</span><span class="special">(</span><span class="keyword">bool</span><span class="special">,</span> <span class="special">(</span><a class="link" href="assertion_result.html" title="Class assertion_result">assertion_result</a><span class="special">)</span><span class="special">)</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><span class="keyword">bool</span> <a name="idm45842-bb"></a><span class="identifier">has_empty_message</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><span class="identifier">wrap_stringstream</span> <span class="special">&amp;</span> <a name="idm45844-bb"></a><span class="identifier">message</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><span class="identifier">const_string</span> <a name="idm45846-bb"></a><span class="identifier">message</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
 </ol></div>
 </div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2018 Boost.Test contributors<p>
+<td align="right"><div class="copyright-footer">Copyright © 2001-2020 Boost.Test contributors<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

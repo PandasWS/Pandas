@@ -15,7 +15,7 @@
 #include <boost/graph/parallel/distribution.hpp>
 #include <iostream>
 #include <cassert>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #ifdef BOOST_NO_EXCEPTIONS
 void
@@ -49,15 +49,15 @@ void test_bidirectional_graph()
   Vertex u = *vi++;
   Vertex v = *vi++;
   Vertex w = *vi++;
-  BOOST_CHECK(vi == vertices(g).second);
+  BOOST_TEST(vi == vertices(g).second);
   
-  BOOST_CHECK((process_id(g.process_group()) == 0 && out_degree(u, g) == 1)
+  BOOST_TEST((process_id(g.process_group()) == 0 && out_degree(u, g) == 1)
              || (process_id(g.process_group()) == 1 && in_degree(u, g) == 1));
   
-  BOOST_CHECK((process_id(g.process_group()) == 0 && out_degree(v, g) == 1)
+  BOOST_TEST((process_id(g.process_group()) == 0 && out_degree(v, g) == 1)
              || (process_id(g.process_group()) == 1 && in_degree(v, g) == 1));
 
-  BOOST_CHECK((process_id(g.process_group()) == 0 && out_degree(w, g) == 1)
+  BOOST_TEST((process_id(g.process_group()) == 0 && out_degree(w, g) == 1)
              || (process_id(g.process_group()) == 1 && in_degree(w, g) == 1));
 
   // Remove edges
@@ -71,13 +71,13 @@ void test_bidirectional_graph()
   
   synchronize(g);
 
-  BOOST_CHECK(num_edges(g) == 0);
-  BOOST_CHECK(out_degree(u, g) == 0);
-  BOOST_CHECK(out_degree(v, g) == 0);
-  BOOST_CHECK(out_degree(w, g) == 0);
-  BOOST_CHECK(in_degree(u, g) == 0);
-  BOOST_CHECK(in_degree(v, g) == 0);
-  BOOST_CHECK(in_degree(w, g) == 0);
+  BOOST_TEST(num_edges(g) == 0);
+  BOOST_TEST(out_degree(u, g) == 0);
+  BOOST_TEST(out_degree(v, g) == 0);
+  BOOST_TEST(out_degree(w, g) == 0);
+  BOOST_TEST(in_degree(u, g) == 0);
+  BOOST_TEST(in_degree(v, g) == 0);
+  BOOST_TEST(in_degree(w, g) == 0);
 
   if (process_id(g.process_group()) == 0) std::cerr << "OK.\n";
 }
@@ -103,18 +103,18 @@ void test_undirected_graph()
   Vertex u = *vi++;
   Vertex v = *vi++;
   Vertex w = *vi++;
-  BOOST_CHECK(vi == vertices(g).second);  
-  BOOST_CHECK(degree(u, g) == 1);
-  BOOST_CHECK(degree(v, g) == 1);
-  BOOST_CHECK(degree(w, g) == 1);
+  BOOST_TEST(vi == vertices(g).second);
+  BOOST_TEST(degree(u, g) == 1);
+  BOOST_TEST(degree(v, g) == 1);
+  BOOST_TEST(degree(w, g) == 1);
   
   // Remove edges
   if (process_id(g.process_group()) == 0) {
-    BOOST_CHECK(num_edges(g) == 3);
+    BOOST_TEST(num_edges(g) == 3);
     remove_edge(*out_edges(u, g).first, g);
     remove_edge(*out_edges(w, g).first, g);
   } else {
-    BOOST_CHECK(num_edges(g) == 0);
+    BOOST_TEST(num_edges(g) == 0);
     remove_edge(*in_edges(v, g).first, g);
     remove_edge(*in_edges(w, g).first, g);
   }
@@ -130,17 +130,17 @@ void test_undirected_graph()
               << ")\n";
   }
 
-  BOOST_CHECK(num_edges(g) == 0);
-  BOOST_CHECK(degree(u, g) == 0);
-  BOOST_CHECK(degree(v, g) == 0);
-  BOOST_CHECK(degree(w, g) == 0);
+  BOOST_TEST(num_edges(g) == 0);
+  BOOST_TEST(degree(u, g) == 0);
+  BOOST_TEST(degree(v, g) == 0);
+  BOOST_TEST(degree(w, g) == 0);
   if (process_id(g.process_group()) == 0) std::cerr << "OK.\n";
 }
 
-int test_main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   boost::mpi::environment env(argc, argv);
   test_bidirectional_graph();
   test_undirected_graph();
-  return 0;
+  return boost::report_errors();
 }

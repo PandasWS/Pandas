@@ -4,6 +4,13 @@
 //file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #define BOOST_EXCEPTION_DISABLE
+
+#include <boost/config.hpp>
+
+#if defined( BOOST_NO_EXCEPTIONS )
+#   error This program requires exception handling.
+#endif
+
 #include <boost/throw_exception.hpp>
 #include <boost/detail/lightweight_test.hpp>
 

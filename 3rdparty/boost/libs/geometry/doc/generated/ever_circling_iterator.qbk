@@ -36,6 +36,11 @@ struct ever_circling_iterator
 [heading Constructor(s)]
 [table
 [[Function] [Description] [Parameters] ]
+[[``ever_circling_iterator()``
+
+] [] [
+
+]]
 [[``ever_circling_iterator(Iterator begin, Iterator end, bool skip_first = false)``
 
 ] [] [[* Iterator]: ['begin]:  
@@ -57,6 +62,14 @@ struct ever_circling_iterator
 [* Iterator]: ['start]:  
 
 [* bool]: ['skip_first]:  
+
+
+
+]]
+[[``template<typename OtherIterator, std::enable_if_t< std::is_convertible< OtherIterator, Iterator >::value, int >>
+ever_circling_iterator(ever_circling_iterator< OtherIterator > const & other)``
+
+] [] [[* ever_circling_iterator< OtherIterator > const &]: ['other]:  
 
 
 

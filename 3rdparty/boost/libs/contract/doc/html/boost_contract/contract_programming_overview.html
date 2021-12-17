@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Contract Programming Overview</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Boost.Contract 1.0.0">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Boost.Contract 1.0.0">
+<link rel="home" href="../index.html" title="Chapter 1. Boost.Contract 1.0.0">
+<link rel="up" href="../index.html" title="Chapter 1. Boost.Contract 1.0.0">
 <link rel="prev" href="getting_started.html" title="Getting Started">
 <link rel="next" href="tutorial.html" title="Tutorial">
 </head>
@@ -48,11 +48,11 @@
       Summary</a></span></dt>
 </dl></div>
 <div class="blockquote"><blockquote class="blockquote"><p>
-        <span class="emphasis"><em><span class="quote">&#8220;<span class="quote">It is absurd to make elaborate security checks on debugging
+        <span class="emphasis"><em><span class="quote">“<span class="quote">It is absurd to make elaborate security checks on debugging
         runs, when no trust is put in the results, and then remove them in production
         runs, when an erroneous result could be expensive or disastrous. What would
         we think of a sailing enthusiast who wears his life-jacket when training
-        on dry land but takes it off as soon as he goes to sea?</span>&#8221;</span></em></span>
+        on dry land but takes it off as soon as he goes to sea?</span>”</span></em></span>
       </p></blockquote></div>
 <div class="blockquote"><blockquote class="blockquote"><p>
         <span class="emphasis"><em>-- Charles Antony Richard Hoare (see <a class="link" href="bibliography.html#Hoare73_anchor">[Hoare73]</a>)</em></span>
@@ -60,7 +60,7 @@
 <p>
       This section gives an overview of contract programming (see <a class="link" href="bibliography.html#Meyer97_anchor">[Meyer97]</a>,
       <a class="link" href="bibliography.html#Mitchell02_anchor">[Mitchell02]</a>, and <a class="link" href="bibliography.html#N1613_anchor">[N1613]</a>
-      for more detailed introductions to contract programming). Readers that already
+      for more extensive introductions to contract programming). Readers that already
       have a basic understanding of contract programming can skip this section and
       maybe come back to it after reading the <a class="link" href="tutorial.html" title="Tutorial">Tutorial</a>.
     </p>
@@ -74,8 +74,8 @@
         programming. It is assumed that programmes understand the benefits and trade-offs
         associated with contract programming and they have already decided to use
         this methodology in their code. Then, this library aims to be the best and
-        more complete contract programming library for C++ (without using preprocessors
-        and other tools external to the C++ preprocessor and language itself).
+        more complete contract programming library for C++ (without using programs
+        and tools external to the C++ language and its preprocessor).
       </p></td></tr>
 </table></div>
 <div class="section">
@@ -91,11 +91,13 @@
             programmers expect to be true when a function is called (e.g., to check
             constraints on function arguments). Operations that logically have no
             preconditions (i.e., that are always well-defined for the entire domain
-            of their inputs) are often referred to as having a <span class="emphasis"><em>wide contract</em></span>.
-            This is in contrast to operations that have preconditions which are often
+            of their inputs) are also referred to as having a <span class="emphasis"><em>wide contract</em></span>.
+            This is in contrast to operations that have preconditions which are also
             referred to as having a <span class="emphasis"><em>narrow contract</em></span> (note that
-            operations with truly narrow contracts are expected to also never throw
-            exceptions). <a href="#ftn.boost_contract.contract_programming_overview.assertions.f0" class="footnote" name="boost_contract.contract_programming_overview.assertions.f0"><sup class="footnote">[7]</sup></a>
+            operations with truly narrow contracts are also expected to never throw
+            exceptions because the implementation body of these operations is always
+            expected to succeed after its preconditions are checked to be true).
+            <a href="#ftn.boost_contract.contract_programming_overview.assertions.f0" class="footnote" name="boost_contract.contract_programming_overview.assertions.f0"><sup class="footnote">[6]</sup></a>
           </li>
 <li class="listitem">
             <span class="emphasis"><em>Postconditions</em></span>: These are logical conditions that
@@ -103,13 +105,14 @@
             an exception (e.g., to check the result and any side effect that a function
             might have). Postconditions can access the function return value (for
             non-void functions) and also <span class="emphasis"><em>old values</em></span> (which are
-            the values that expressions had before the function body was executed).
+            the values that expressions had before the function implementation was
+            executed).
           </li>
 <li class="listitem">
             <span class="emphasis"><em>Exception guarantees</em></span>: These are logical conditions
             that programmers except to be true when a function exits throwing an
             exception. Exception guarantees can access old values (but not the function
-            return value). <a href="#ftn.boost_contract.contract_programming_overview.assertions.f1" class="footnote" name="boost_contract.contract_programming_overview.assertions.f1"><sup class="footnote">[8]</sup></a>
+            return value). <a href="#ftn.boost_contract.contract_programming_overview.assertions.f1" class="footnote" name="boost_contract.contract_programming_overview.assertions.f1"><sup class="footnote">[7]</sup></a>
           </li>
 <li class="listitem">
             <span class="emphasis"><em>Class invariants</em></span>: These are logical conditions that
@@ -119,11 +122,11 @@
             (and also after the destructor is executed but only when the destructor
             throws an exception). Class invariants define valid states for all objects
             of a given class. It is possible to specify a different set of class
-            invariants for volatile public functions, namely volatile class invariants.
-            It is also possible to specify <span class="emphasis"><em>static class invariants</em></span>
-            which are excepted to be true before and after the execution of any constructor,
-            destructor (even if it does not throw an exception), and public function
-            (even if static). <a href="#ftn.boost_contract.contract_programming_overview.assertions.f2" class="footnote" name="boost_contract.contract_programming_overview.assertions.f2"><sup class="footnote">[9]</sup></a>
+            invariants for volatile public functions, namely <span class="emphasis"><em>volatile class
+            invariants</em></span>. It is also possible to specify <span class="emphasis"><em>static
+            class invariants</em></span> which are excepted to be true before and
+            after the execution of any constructor, destructor (even if it does not
+            throw an exception), and public function (even if static). <a href="#ftn.boost_contract.contract_programming_overview.assertions.f2" class="footnote" name="boost_contract.contract_programming_overview.assertions.f2"><sup class="footnote">[8]</sup></a>
           </li>
 <li class="listitem">
             <span class="emphasis"><em>Subcontracting</em></span>: This indicates that preconditions
@@ -135,11 +138,16 @@
           </li>
 </ul></div>
 <p>
+        The actual function implementation code, that remains outside of these contract
+        assertions, is often referred to as the <span class="emphasis"><em>function body</em></span>
+        in contract programming.
+      </p>
+<p>
         Class invariants can also be used to specify <span class="emphasis"><em>basic</em></span> exception
         safety guarantees for an object (because they are checked at exit of public
-        functions even when those throw exceptions), while contract assertions for
-        exception guarantees can be used to specify <span class="emphasis"><em>strong</em></span> exception
-        safety guarantees for given operations on the same object.
+        functions even when those throw exceptions). Contract assertions for exception
+        guarantees can be used to specify <span class="emphasis"><em>strong</em></span> exception safety
+        guarantees for a given operation on the same object.
       </p>
 <p>
         It is also a common requirement for contract programming to automatically
@@ -157,9 +165,9 @@
           variable needs to be used by this library implementation. This library
           will automatically protect such a global variable from race conditions
           in multi-threated programs, but this will effectively introduce a global
-          lock in the program (the <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231644144.html" title="Macro BOOST_CONTRACT_DISABLE_THREADS">BOOST_CONTRACT_DISABLE_THREADS</a></code>
+          lock in the program (the <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_DI_idm34640.html" title="Macro BOOST_CONTRACT_DISABLE_THREADS">BOOST_CONTRACT_DISABLE_THREADS</a></code>
           macro can be defined to disable this global lock but at the risk of incurring
-          in race conditions). <a href="#ftn.boost_contract.contract_programming_overview.assertions.f3" class="footnote" name="boost_contract.contract_programming_overview.assertions.f3"><sup class="footnote">[10]</sup></a>
+          in race conditions). <a href="#ftn.boost_contract.contract_programming_overview.assertions.f3" class="footnote" name="boost_contract.contract_programming_overview.assertions.f3"><sup class="footnote">[9]</sup></a>
         </p></td></tr>
 </table></div>
 <p>
@@ -177,7 +185,8 @@
         Assertions</a>
       </h5>
 <p>
-        A limited form of contract programming is the use of the C-style <code class="computeroutput"><span class="identifier">assert</span></code> macro. Using <code class="computeroutput"><span class="identifier">assert</span></code>
+        A limited form of contract programming (typically some form of precondition
+        and basic postcondition checking) can be achieved using the C-style <code class="computeroutput"><span class="identifier">assert</span></code> macro. Using <code class="computeroutput"><span class="identifier">assert</span></code>
         is common practice for many programmers but it suffers of the following limitations:
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
@@ -187,11 +196,17 @@
             postconditions can usually be disabled trusting the correctness of the
             implementation while preconditions might still need to remain enabled
             because of possible changes in the calling code (e.g., postconditions
-            of a given library could be disabled after testing while its preconditions
-            can be kept enabled given the library cannot predict changes in the user
-            code that will be calling the library). Using <code class="computeroutput"><span class="identifier">assert</span></code>
+            of a given library could be disabled after testing while keeping the
+            library preconditions enabled given that future changes in the user code
+            that calls the library cannot be anticipated). Using <code class="computeroutput"><span class="identifier">assert</span></code>
             it is not possible to selectively disable only postconditions and all
             assertions must be disabled at once.
+          </li>
+<li class="listitem">
+            <code class="computeroutput"><span class="identifier">assert</span></code> requires to manually
+            program extra code to correctly check postconditions (specifically to
+            handle functions with multiple return statements, to not check postconditions
+            when functions throw exceptions, and to implement old values).
           </li>
 <li class="listitem">
             <code class="computeroutput"><span class="identifier">assert</span></code> requires to manually
@@ -211,7 +226,7 @@
           </li>
 </ul></div>
 <p>
-        Contract programming does not suffers of these limitations.
+        Contract programming does not suffer of these limitations.
       </p>
 </div>
 <div class="section">
@@ -225,11 +240,14 @@
       </h5>
 <p>
         The main use of contract programming is to improve software quality. <a class="link" href="bibliography.html#Meyer97_anchor">[Meyer97]</a> discusses how contract programming
-        can be used as the basic tool to write <span class="quote">&#8220;<span class="quote">correct</span>&#8221;</span> software.
+        can be used as the basic tool to write <span class="quote">“<span class="quote">correct</span>”</span> software.
         <a class="link" href="bibliography.html#Stroustrup94_anchor">[Stroustrup94]</a> discusses the key
         importance of class invariants plus advantages and disadvantages of preconditions
-        and postconditions. The following is a short summary of benefits associated
-        with contract programming inspired mainly by <a class="link" href="bibliography.html#N1613_anchor">[N1613]</a>:
+        and postconditions.
+      </p>
+<p>
+        The following is a short summary of benefits associated with contract programming
+        inspired mainly by <a class="link" href="bibliography.html#N1613_anchor">[N1613]</a>:
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
@@ -267,30 +285,30 @@
           </li>
 <li class="listitem">
             Easier debugging: Contract programming can provide a powerful debugging
-            facility because, if contracts are well written, bugs will cause contract
+            facility because, if contracts are well-written, bugs will cause contract
             assertions to fail exactly where the problem first occurs instead than
             at some later stage of the program execution in an apparently unrelated
             (and often hard to debug) manner. Note that a precondition failure points
             to a bug in the function caller, a postcondition failure points instead
-            to a bug in the function implementation. <a href="#ftn.boost_contract.contract_programming_overview.benefits_and_costs.f0" class="footnote" name="boost_contract.contract_programming_overview.benefits_and_costs.f0"><sup class="footnote">[11]</sup></a>
+            to a bug in the function implementation. <a href="#ftn.boost_contract.contract_programming_overview.benefits_and_costs.f0" class="footnote" name="boost_contract.contract_programming_overview.benefits_and_costs.f0"><sup class="footnote">[10]</sup></a>
           </li>
 <li class="listitem">
             Easier testing: Contract programming facilitates testing because a contract
             naturally specifies what a test should check. For example, preconditions
             of a function state which inputs cause the function to fail and postconditions
             state which outputs are produced by the function on successful exit (contract
-            programming should be seen as a tool to complement, but obviously not
-            to replace, testing).
+            programming should be seen as a tool to complement and guide, but obviously
+            not to replace, testing).
           </li>
 <li class="listitem">
             Formal design: Contract programming can serve to reduce the gap between
             designers and programmers by providing a precise and unambiguous specification
-            language in terms of the contract assertions. Moreover, contracts can
-            make code reviews easier by clarifying some of the semantics and usage
-            of the code.
+            language in terms of contract assertions. Moreover, contracts can make
+            code reviews easier by clarifying some of the semantics and usage of
+            the code.
           </li>
 <li class="listitem">
-            Formalized inheritance: Contract programming formalizes the virtual function
+            Formalize inheritance: Contract programming formalizes the virtual function
             overriding mechanism using subcontracting as justified by the <a href="http://en.wikipedia.org/wiki/Liskov_substitution_principle" target="_top">substitution
             principle</a>. This keeps the base class programmers in control as
             overriding functions always have to fully satisfy the contracts of their
@@ -306,15 +324,14 @@
 <p>
         Of course, not all formal contract specifications can be asserted in C++.
         For example, in C++ is it not possible to assert the validity of an iterator
-        range in the general case because the only way to check if two iterators
-        form a valid range is to keep incrementing the first iterator until we reach
-        the second iterator. However, in case the iterator range is invalid, such
-        a code would render undefined behaviour or run forever instead of failing
-        an assertion. Nevertheless, a large amount of contract assertions can be
-        successfully programmed in C++ as illustrated by the numerous examples in
-        this documentation and from the literature (for example see how much of STL
-        <a class="link" href="examples.html#N1962_vector_anchor"><code class="computeroutput"><span class="identifier">vector</span></code></a>
-        contract assertions can actually be programmed in C++ using this library).
+        range in the general case (because the only way to check if two iterators
+        form a valid range is to keep incrementing the first iterator until it reaches
+        the second iterator, but if the iterator range is invalid then such a code
+        would render undefined behaviour or run forever instead of failing an assertion).
+        Nevertheless, a large amount of contract assertions can be successfully programmed
+        in C++ as illustrated by the numerous examples in this documentation and
+        from the literature (for example see how much of STL <a class="link" href="examples.html#N1962_vector_anchor"><code class="computeroutput"><span class="identifier">vector</span></code></a> contract assertions can actually
+        be programmed in C++ using this library).
       </p>
 <h5>
 <a name="boost_contract.contract_programming_overview.benefits_and_costs.h1"></a>
@@ -341,7 +358,8 @@
           </li>
 <li class="listitem">
             Call additional functors that check preconditions, postconditions, exception
-            guarantees, class invariants, etc. (especially for subcontracting).
+            guarantees, class invariants, etc. (these can add up to many extra calls
+            especially when using subcontracting).
           </li>
 </ul></div>
 <div class="note"><table border="0" summary="Note">
@@ -365,7 +383,7 @@
         To mitigate the run-time performance impact, programmers can selectively
         disable run-time checking of some of the contract assertions. Programmers
         will have to decide based on the performance trade-offs required by their
-        applications, but a reasonable approach often is to (see <a class="link" href="extras.html#boost_contract.extras.disable_contract_checking" title="Disable Contract Checking">Disable
+        specific applications, but a reasonable approach often is to (see <a class="link" href="extras.html#boost_contract.extras.disable_contract_checking" title="Disable Contract Checking">Disable
         Contract Checking</a>):
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
@@ -385,7 +403,7 @@
 <p>
         This approach is usually reasonable because in well-tested production code,
         validating the function body implementation using postconditions is rarely
-        needed since the function has shown itself to be <span class="quote">&#8220;<span class="quote">correct</span>&#8221;</span> during
+        needed since the function has shown itself to be <span class="quote">“<span class="quote">correct</span>”</span> during
         testing. On the other hand, checking function arguments using preconditions
         is always needed because of changes that can be made to the calling code
         (without having to necessarily re-test and re-release the called code). Furthermore,
@@ -440,7 +458,7 @@
         Therefore, calls to private and protected functions with contracts execute
         the same steps as the ones indicated above for non-member functions (checking
         only preconditions and postconditions, without checking class invariants
-        and subcontracting).
+        and without subcontracting).
       </p>
 </div>
 <div class="section">
@@ -455,7 +473,7 @@
       </h5>
 <p>
         Let's consider a public function in a derived class that overrides public
-        virtual functions declared its public base classes (because of C++ multiple
+        virtual functions declared by its public base classes (because of C++ multiple
         inheritance, the function could override from more than one of its base classes).
         We refer to the function in the derived class as the <span class="emphasis"><em>overriding
         function</em></span>, and to the set of base classes containing all the <span class="emphasis"><em>overridden
@@ -463,20 +481,22 @@
       </p>
 <p>
         When subcontracting, overridden functions are searched (at compile-time)
-        deeply in the public branches of the inheritance tree (i.e., not just the
-        derived class's direct public parents are inspected, but also all its public
-        grandparents, etc.). In case of multiple inheritance this search also extends
-        widely to all multiple public base classes following their order of declaration
-        in the derived class inheritance list (as usual in C++, this search could
-        result in multiple overridden functions and therefore in subcontracting from
-        multiple public base classes). Note that only public base classes are considered
-        for subcontracting because private and protected base classes are not accessible
-        to the user at the calling site where the <a href="http://en.wikipedia.org/wiki/Liskov_substitution_principle" target="_top">substitution
+        deeply in all public branches of the inheritance tree (i.e., not just the
+        derived class' direct public parents are inspected, but also all its public
+        grandparents, etc.). In case of multiple inheritance, this search also extends
+        (at compile-time) widely to all public trees of the multiple inheritance
+        forest (multiple public base classes are searched following their order of
+        declaration in the derived class' inheritance list). As usual with C++ multiple
+        inheritance, this search could result in multiple overridden functions and
+        therefore in subcontracting from multiple public base classes. Note that
+        only public base classes are considered for subcontracting because private
+        and protected base classes are not accessible to the user at the calling
+        site where the <a href="http://en.wikipedia.org/wiki/Liskov_substitution_principle" target="_top">substitution
         principle</a> applies.
       </p>
 <p>
         A call to the overriding public function with a contract executes the following
-        steps (see <code class="computeroutput"><a class="link" href="../boost/contract/public_f_idm45848230802272.html" title="Function template public_function">boost::contract::public_function</a></code>):
+        steps (see <code class="computeroutput"><a class="link" href="../boost/contract/public_function_idm36700.html" title="Function template public_function">boost::contract::public_function</a></code>):
       </p>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
@@ -557,9 +577,10 @@
 <p>
           As indicated by the steps above and in accordance with the <a href="http://en.wikipedia.org/wiki/Liskov_substitution_principle" target="_top">substitution
           principle</a>, subcontracting checks preconditions in <a class="link" href="contract_programming_overview.html#or_anchor"><code class="literal"><span class="emphasis"><em>OR</em></span></code></a>
-          while class invariants, postconditions, and exceptions guarantees in <a class="link" href="contract_programming_overview.html#and_anchor"><code class="literal"><span class="emphasis"><em>AND</em></span></code></a>
+          while class invariants, postconditions, and exceptions guarantees are checked
+          in <a class="link" href="contract_programming_overview.html#and_anchor"><code class="literal"><span class="emphasis"><em>AND</em></span></code></a>
           with preconditions, class invariants, postconditions, and exceptions guarantees
-          of base classes.
+          of base classes respectively.
         </p>
 </td></tr>
 </table></div>
@@ -570,8 +591,8 @@
       </h5>
 <p>
         A call to a non-static public function with a contract (that does not override
-        functions from any of the public base classes) executes the following steps
-        (see <code class="computeroutput"><a class="link" href="../boost/contract/public_f_idm45848230802272.html" title="Function template public_function">boost::contract::public_function</a></code>):
+        functions from any of its public base classes) executes the following steps
+        (see <code class="computeroutput"><a class="link" href="../boost/contract/public_function_idm36700.html" title="Function template public_function">boost::contract::public_function</a></code>):
       </p>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
@@ -618,7 +639,7 @@
       </h5>
 <p>
         A call to a static public function with a contract executes the following
-        steps (see <code class="computeroutput"><a class="link" href="../boost/contract/public_f_idm45848230802272.html" title="Function template public_function">boost::contract::public_function</a></code>):
+        steps (see <code class="computeroutput"><a class="link" href="../boost/contract/public_function_idm36700.html" title="Function template public_function">boost::contract::public_function</a></code>):
       </p>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
@@ -626,7 +647,7 @@
             none of the invariants from base classes).
           </li>
 <li class="listitem">
-            Check function preconditions (but none of the preconditions from function
+            Check function preconditions (but none of the preconditions from functions
             in base classes).
           </li>
 <li class="listitem">
@@ -702,17 +723,17 @@
                 </li>
 <li class="listitem">
                   Check constructor postconditions (but these cannot access the object
-                  old value <code class="literal"><span class="emphasis"><em>oldof</em></span></code><code class="computeroutput"><span class="special">(*</span><span class="keyword">this</span><span class="special">)</span></code> because there was no object before
-                  the execution of the constructor body).
+                  old value <code class="literal"><span class="emphasis"><em>oldof</em></span></code><code class="computeroutput"><span class="special">(*</span><span class="keyword">this</span><span class="special">)</span></code> because the object was not constructed
+                  before the execution of the constructor body).
                 </li>
 </ol></div>
           </li>
 <li class="listitem">
             Else, check constructor exception guarantees (but these cannot access
-            the object old value <code class="literal"><span class="emphasis"><em>oldof</em></span></code><code class="computeroutput"><span class="special">(*</span><span class="keyword">this</span><span class="special">)</span></code> because there was no object before the
-            execution of the constructor body, plus they can only access class static
-            members because the object was not successfully constructed upon the
-            constructor body throwing an exception).
+            the object old value <code class="literal"><span class="emphasis"><em>oldof</em></span></code><code class="computeroutput"><span class="special">(*</span><span class="keyword">this</span><span class="special">)</span></code> because the object was not constructed
+            before the execution of the constructor body, plus they can only access
+            class' static members because the object has not been successfully constructed
+            given the constructor body threw an exception in this case).
           </li>
 </ol></div>
 <p>
@@ -754,9 +775,9 @@
             If the body did not throw an exception:
             <div class="orderedlist"><ol class="orderedlist" type="a">
 <li class="listitem">
-                  Check destructor postconditions (but these can only access class
-                  static members and the object old value <code class="literal"><span class="emphasis"><em>oldof</em></span></code><code class="computeroutput"><span class="special">(*</span><span class="keyword">this</span><span class="special">)</span></code> because there is no object after
-                  successful execution of the destructor body). <a href="#ftn.boost_contract.contract_programming_overview.destructor_calls.f0" class="footnote" name="boost_contract.contract_programming_overview.destructor_calls.f0"><sup class="footnote">[12]</sup></a>
+                  Check destructor postconditions (but these can only access class'
+                  static members and the object old value <code class="literal"><span class="emphasis"><em>oldof</em></span></code><code class="computeroutput"><span class="special">(*</span><span class="keyword">this</span><span class="special">)</span></code> because the object has been destroyed
+                  after successful execution of the destructor body). <a href="#ftn.boost_contract.contract_programming_overview.destructor_calls.f0" class="footnote" name="boost_contract.contract_programming_overview.destructor_calls.f0"><sup class="footnote">[11]</sup></a>
                 </li>
 <li class="listitem">
                   Destroy any base class (public or not) according with C++ destruction
@@ -770,7 +791,8 @@
             exceptions in C++):
             <div class="orderedlist"><ol class="orderedlist" type="a">
 <li class="listitem">
-                  Check non-static class invariants (because the object was not successfully
+                  Check non-static <a class="link" href="contract_programming_overview.html#and_anchor"><code class="literal"><span class="emphasis"><em>AND</em></span></code></a>
+                  volatile class invariants (because the object was not successfully
                   destructed so it still exists and should satisfy its invariants).
                 </li>
 <li class="listitem">
@@ -815,14 +837,14 @@
       </p>
 <p>
         Whenever possible (e.g., class invariants and postcondition old values),
-        this library automatically enforces this constant-correctness constraint
+        this library automatically enforces this <span class="emphasis"><em>constant-correctness constraint</em></span>
         at compile-time using <code class="computeroutput"><span class="keyword">const</span></code>.
         However, this library cannot automatically enforce this constraint in all
         cases (for preconditions and postconditions of mutable member functions,
         for global variables, etc.). See <a class="link" href="extras.html#boost_contract.extras.no_lambda_functions__no_c__11_" title="No Lambda Functions (No C++11)">No
-        Lambda Functions</a> for ways of using this library that enforces the
-        constant-correctness constraint at compile-time (but at the cost of significant
-        boiler-plate code to be programmed manually so not recommended in general).
+        Lambda Functions</a> for ways of using this library that enforce the constant-correctness
+        constraint at compile-time (but at the cost of significant boiler-plate code
+        to be programmed manually so not recommended in general).
       </p>
 <div class="note"><table border="0" summary="Note">
 <tr>
@@ -831,7 +853,7 @@
 </tr>
 <tr><td align="left" valign="top"><p>
           In general, it is the responsibility of the programmers to code assertions
-          that only check, and do not change, program variables. <a href="#ftn.boost_contract.contract_programming_overview.constant_correctness.f0" class="footnote" name="boost_contract.contract_programming_overview.constant_correctness.f0"><sup class="footnote">[13]</sup></a>
+          that only check, and do not change, program variables. <a href="#ftn.boost_contract.contract_programming_overview.constant_correctness.f0" class="footnote" name="boost_contract.contract_programming_overview.constant_correctness.f0"><sup class="footnote">[12]</sup></a>
         </p></td></tr>
 </table></div>
 </div>
@@ -841,7 +863,7 @@
       vs. Implementation</a>
 </h3></div></div></div>
 <p>
-        Contracts are part of the program specifications and not of its implementation.
+        Contracts are part of the program specification and not of its implementation.
         Therefore, contracts should ideally be programmed within C++ declarations,
         and not within definitions.
       </p>
@@ -853,8 +875,7 @@
         be programmed at the very top of the function definition). See <a class="link" href="extras.html#boost_contract.extras.separate_body_implementation" title="Separate Body Implementation">Separate
         Body Implementation</a> for ways of using this library to program contract
         specifications outside of the body implementation (but at the cost of writing
-        one extra function for any given function, for applications where this requirement
-        is truly important).
+        one extra function for any given function so not recommended in general).
       </p>
 <p>
         Furthermore, contracts are most useful when they assert conditions only using
@@ -867,12 +888,12 @@
         that the caller was made unable to fully check the preconditions in the first
         place). However, given that C++ provides programmers ways around access level
         restrictions (<code class="computeroutput"><span class="keyword">friend</span></code>, function
-        pointers, etc.), this library leaves it up to the programmers to make sure
-        that only public members are used in contract assertions (especially in preconditions).
+        pointers, etc.), this library leaves it up to programmers to make sure that
+        only public members are used in contract assertions (especially in preconditions).
         (<a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> follows the same approach not
         restricting contracts to only use public members, Eiffel instead generates
         a compile-time error if preconditions are asserted using non-public members.)
-        <a href="#ftn.boost_contract.contract_programming_overview.specifications_vs__implementation.f0" class="footnote" name="boost_contract.contract_programming_overview.specifications_vs__implementation.f0"><sup class="footnote">[14]</sup></a>
+        <a href="#ftn.boost_contract.contract_programming_overview.specifications_vs__implementation.f0" class="footnote" name="boost_contract.contract_programming_overview.specifications_vs__implementation.f0"><sup class="footnote">[13]</sup></a>
       </p>
 </div>
 <div class="section">
@@ -884,6 +905,7 @@
         If preconditions, postconditions, exception guarantees, or class invariants
         are either checked to be false or their evaluation throws an exception at
         run-time then this library will call specific <span class="emphasis"><em>failure handler functions</em></span>.
+        <a href="#ftn.boost_contract.contract_programming_overview.on_contract_failures.f0" class="footnote" name="boost_contract.contract_programming_overview.on_contract_failures.f0"><sup class="footnote">[14]</sup></a>
       </p>
 <p>
         By default, these failure handler functions print a message to the standard
@@ -896,7 +918,7 @@
         etc. programmers can define their own failure handler functions that can
         take any user-specified action (throw an exception, exit the program with
         an error code, etc., see <a class="link" href="advanced.html#boost_contract.advanced.throw_on_failures__and__noexcept__" title="Throw on Failures (and noexcept)">Throw
-        on Failures</a>). <a href="#ftn.boost_contract.contract_programming_overview.on_contract_failures.f0" class="footnote" name="boost_contract.contract_programming_overview.on_contract_failures.f0"><sup class="footnote">[15]</sup></a>
+        on Failures</a>). <a href="#ftn.boost_contract.contract_programming_overview.on_contract_failures.f1" class="footnote" name="boost_contract.contract_programming_overview.on_contract_failures.f1"><sup class="footnote">[15]</sup></a>
       </p>
 <div class="note"><table border="0" summary="Note">
 <tr>
@@ -911,10 +933,11 @@
           but in general destructors should not throw in C++ (to comply with STL
           exception safety, C++11 implicit <code class="computeroutput"><span class="keyword">noexcept</span></code>
           declarations for destructors, etc.). Furthermore, programming a failure
-          handler that throws for exception guarantees will throw an exception (the
-          one reporting the contract failure) while there is already an active exception
-          (the one that caused the exception guarantees to be checked in the first
-          place), and this will force C++ to terminate the program anyway.
+          handler that throws on exception guarantee failures results in throwing
+          an exception (the one reporting the contract failure) while there is already
+          an active exception (the one that caused the exception guarantees to be
+          checked in the first place), and this will force C++ to terminate the program
+          anyway.
         </p></td></tr>
 </table></div>
 <p>
@@ -936,14 +959,19 @@
 <p>
         The contract programming features supported by this library are largely based
         on <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> and on the Eiffel programming
-        language. The following table compares contract programming features among
-        this library, <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> (unfortunately
-        the C++ standard committee rejected this proposal commenting on a lack of
-        interest in adding contract programming to C++ at that time, even if <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> itself is sound), a more recent proposal
-        <a class="link" href="bibliography.html#P0380_anchor">[P0380]</a> (which has gain some traction
-        within the C++ standard committee but unfortunately only supports preconditions
-        and postconditions, while does not support class invariants, old values,
-        and subcontracting), the Eiffel and D programming languages:
+        language.
+      </p>
+<p>
+        The following table compares contract programming features among this library,
+        <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> (unfortunately the C++ standard
+        committee rejected this proposal commenting on a lack of interest in adding
+        contract programming to C++ at that time, even if <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>
+        itself is sound), a more recent proposal <a class="link" href="bibliography.html#P0380_anchor">[P0380]</a>
+        (which was accepted in the C++20 standard but unfortunately only supports
+        preconditions and postconditions, while does not support class invariants,
+        old values, and subcontracting), the Eiffel and D programming languages.
+        Some of the items listed in this summary table will become clear in detail
+        after reading the remaining sections of this documentation.
       </p>
 <div class="informaltable"><table class="table">
 <colgroup>
@@ -973,8 +1001,7 @@
               </th>
 <th>
                 <p>
-                  <a class="link" href="bibliography.html#P0380_anchor">[P0380]</a> Proposal (being considered
-                  for C++2x)
+                  C++20 (see <a class="link" href="bibliography.html#P0380_anchor">[P0380]</a>)
                 </p>
               </th>
 <th>
@@ -1002,8 +1029,8 @@
                   <code class="computeroutput"><span class="identifier">invariant</span></code>, <code class="computeroutput"><span class="identifier">static_invariant</span></code>, and <code class="computeroutput"><span class="identifier">base_types</span></code>. The last three specifiers
                   appear in user code so their names can be referred to or changed
                   using <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_INVARIANT.html" title="Macro BOOST_CONTRACT_INVARIANT">BOOST_CONTRACT_INVARIANT</a></code>,
-                  <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848230544288.html" title="Macro BOOST_CONTRACT_STATIC_INVARIANT">BOOST_CONTRACT_STATIC_INVARIANT</a></code>,
-                  and <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231632688.html" title="Macro BOOST_CONTRACT_BASES_TYPEDEF">BOOST_CONTRACT_BASES_TYPEDEF</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_ST_idm37315.html" title="Macro BOOST_CONTRACT_STATIC_INVARIANT">BOOST_CONTRACT_STATIC_INVARIANT</a></code>,
+                  and <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_BA_idm34666.html" title="Macro BOOST_CONTRACT_BASES_TYPEDEF">BOOST_CONTRACT_BASES_TYPEDEF</a></code>
                   macros respectively to avoid name clashes.
                 </p>
               </td>
@@ -1114,11 +1141,12 @@
                   Yes, <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_OLDOF.html" title="Macro BOOST_CONTRACT_OLDOF">BOOST_CONTRACT_OLDOF</a></code>
                   macro and <code class="computeroutput"><a class="link" href="../boost/contract/old_ptr.html" title="Class template old_ptr">boost::contract::old_ptr</a></code>
                   (but copied before preconditions unless <code class="computeroutput"><span class="special">.</span><span class="identifier">old</span><span class="special">(...)</span></code>
-                  is used as shown in <a class="link" href="advanced.html#boost_contract.advanced.old_value_copies_at_body" title="Old Value Copies at Body">Old
-                  Value Copies at Body</a>). For templates, <code class="computeroutput"><a class="link" href="../boost/contract/old_ptr_if_copyable.html" title="Class template old_ptr_if_copyable">boost::contract::old_ptr_if_copyable</a></code>
+                  is used as shown in <a class="link" href="advanced.html#boost_contract.advanced.old_values_copied_at_body" title="Old Values Copied at Body">Old
+                  Values Copied at Body</a>). For templates, <code class="computeroutput"><a class="link" href="../boost/contract/old_ptr_if_copyable.html" title="Class template old_ptr_if_copyable">boost::contract::old_ptr_if_copyable</a></code>
                   skips old value copies for non-copyable types and <code class="computeroutput"><a class="link" href="../boost/contract/condition_if.html" title="Function template condition_if">boost::contract::condition_if</a></code>
                   skips old value copies selectively based on old expression type
-                  requirements.
+                  requirements (on compilers that do not support <code class="computeroutput"><span class="keyword">if</span>
+                  <span class="keyword">constexpr</span></code>).
                 </p>
               </td>
 <td>
@@ -1199,7 +1227,7 @@
                   Yes, also supports subcontracting for multiple inheritance (<code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_BASE_TYPES.html" title="Macro BOOST_CONTRACT_BASE_TYPES">BOOST_CONTRACT_BASE_TYPES</a></code>,
                   <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_OVERRIDE.html" title="Macro BOOST_CONTRACT_OVERRIDE">BOOST_CONTRACT_OVERRIDE</a></code>,
                   and <code class="computeroutput"><a class="link" href="../boost/contract/virtual_.html" title="Class virtual_">boost::contract::virtual_</a></code>
-                  are used for declaring base classes, overrides and virtual public
+                  are used to declare base classes, overrides and virtual public
                   functions respectively).
                 </p>
               </td>
@@ -1281,8 +1309,9 @@
               </td>
 <td>
                 <p>
-                  No, assertions only (in addition only public members can be used
-                  in preconditions).
+                  No, assertions only (in addition contracts of public, protected,
+                  and private members can only use other public, public/protected,
+                  and public/protected/private members respectively).
                 </p>
               </td>
 <td>
@@ -1317,7 +1346,7 @@
               </td>
 <td>
                 <p>
-                  Yes.
+                  Yes (side effects in contracts lead to undefined behaviour).
                 </p>
               </td>
 <td>
@@ -1405,10 +1434,11 @@
               </td>
 <td>
                 <p>
-                  Yes, but use <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231586080.html" title="Macro BOOST_CONTRACT_PRECONDITIONS_DISABLE_NO_ASSERTION">BOOST_CONTRACT_PRECONDITIONS_DISABLE_NO_ASSERTION</a></code>
-                  to disable no assertion while checking preconditions (see <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231580272.html" title="Macro BOOST_CONTRACT_ALL_DISABLE_NO_ASSERTION">BOOST_CONTRACT_ALL_DISABLE_NO_ASSERTION</a></code>).
+                  Yes, but use <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_PR_idm34776.html" title="Macro BOOST_CONTRACT_PRECONDITIONS_DISABLE_NO_ASSERTION">BOOST_CONTRACT_PRECONDITIONS_DISABLE_NO_ASSERTION</a></code>
+                  to disable no assertion while checking preconditions (see also
+                  <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_AL_idm34788.html" title="Macro BOOST_CONTRACT_ALL_DISABLE_NO_ASSERTION">BOOST_CONTRACT_ALL_DISABLE_NO_ASSERTION</a></code>).
                   <a href="#ftn.boost_contract.contract_programming_overview.feature_summary.f1" class="footnote" name="boost_contract.contract_programming_overview.feature_summary.f1"><sup class="footnote">[b]</sup></a> (In multi-threaded programs this introduces a global
-                  lock, see <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231644144.html" title="Macro BOOST_CONTRACT_DISABLE_THREADS">BOOST_CONTRACT_DISABLE_THREADS</a></code>.)
+                  lock, see <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_DI_idm34640.html" title="Macro BOOST_CONTRACT_DISABLE_THREADS">BOOST_CONTRACT_DISABLE_THREADS</a></code>.)
                 </p>
               </td>
 <td>
@@ -1474,13 +1504,13 @@
 <td>
                 <p>
                   Yes, contract checking can be skipped at run-time by defining combinations
-                  of the <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231563328.html" title="Macro BOOST_CONTRACT_NO_PRECONDITIONS">BOOST_CONTRACT_NO_PRECONDITIONS</a></code>,
-                  <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231556960.html" title="Macro BOOST_CONTRACT_NO_POSTCONDITIONS">BOOST_CONTRACT_NO_POSTCONDITIONS</a></code>,
-                  <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231522992.html" title="Macro BOOST_CONTRACT_NO_INVARIANTS">BOOST_CONTRACT_NO_INVARIANTS</a></code>,
-                  <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231538224.html" title="Macro BOOST_CONTRACT_NO_ENTRY_INVARIANTS">BOOST_CONTRACT_NO_ENTRY_INVARIANTS</a></code>,
-                  and <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231530608.html" title="Macro BOOST_CONTRACT_NO_EXIT_INVARIANTS">BOOST_CONTRACT_NO_EXIT_INVARIANTS</a></code>
+                  of the <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_NO_idm34826.html" title="Macro BOOST_CONTRACT_NO_PRECONDITIONS">BOOST_CONTRACT_NO_PRECONDITIONS</a></code>,
+                  <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_NO_idm34839.html" title="Macro BOOST_CONTRACT_NO_POSTCONDITIONS">BOOST_CONTRACT_NO_POSTCONDITIONS</a></code>,
+                  <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_NO_idm34911.html" title="Macro BOOST_CONTRACT_NO_INVARIANTS">BOOST_CONTRACT_NO_INVARIANTS</a></code>,
+                  <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_NO_idm34879.html" title="Macro BOOST_CONTRACT_NO_ENTRY_INVARIANTS">BOOST_CONTRACT_NO_ENTRY_INVARIANTS</a></code>,
+                  and <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_NO_idm34895.html" title="Macro BOOST_CONTRACT_NO_EXIT_INVARIANTS">BOOST_CONTRACT_NO_EXIT_INVARIANTS</a></code>
                   macros (completely removing contract code from compiled object
-                  code is possible but requires using macros shown in <a class="link" href="extras.html#boost_contract.extras.disable_contract_compilation__macro_interface_" title="Disable Contract Compilation (Macro Interface)">Disable
+                  code is also possible but requires using macros as shown in <a class="link" href="extras.html#boost_contract.extras.disable_contract_compilation__macro_interface_" title="Disable Contract Compilation (Macro Interface)">Disable
                   Contract Compilation</a>).
                 </p>
               </td>
@@ -1557,27 +1587,32 @@
                     two base class functions in <a class="link" href="contract_programming_overview.html#or_anchor"><code class="literal"><span class="emphasis"><em>OR</em></span></code></a>
                     (so even in <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> preconditions
                     can indirectly subcontract when multiple inheritance is used).
-                    The authors of this library found that confusing about <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>. Furthermore, subcontracting
-                    preconditions is soundly defined by the <a href="http://en.wikipedia.org/wiki/Liskov_substitution_principle" target="_top">substitution
+                    Furthermore, subcontracting preconditions is soundly defined
+                    by the <a href="http://en.wikipedia.org/wiki/Liskov_substitution_principle" target="_top">substitution
                     principle</a> so this library allows to subcontract preconditions
                     as Eiffel does (users can always avoid using this feature if
                     they have no need for it). (This is essentially the only feature
-                    on which this library deliberately differ from <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>.)
+                    on which this library deliberately differs from <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>.)
                   </p></div>
 <div id="ftn.boost_contract.contract_programming_overview.feature_summary.f1" class="footnote"><p><a href="#boost_contract.contract_programming_overview.feature_summary.f1" class="para"><sup class="para">[b] </sup></a>
-                    <span class="bold"><strong>Rationale:</strong></span> Theoretically, it
-                    can be shown that an incorrect argument might be passed to the
-                    function body when assertion checking is disabled while checking
-                    preconditions (see <a href="http://lists.boost.org/Archives/boost/2010/04/164862.php" target="_top">Re:
-                    [boost] [contract] diff n1962</a>). However, that possibility
-                    is limited to contract checking when an incorrect argument will
-                    simply fail the contract and call the related contract failure
-                    handler as expected anyway. In any case, because of that <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> does not disable any assertion
-                    while checking preconditions. That makes it possible to have
-                    infinite recursion while checking preconditions so Eiffel disables
-                    assertion checking also while checking preconditions. Therefore,
-                    this library by default disables assertion checking also while
-                    checking preconditions, but it also provides the <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231586080.html" title="Macro BOOST_CONTRACT_PRECONDITIONS_DISABLE_NO_ASSERTION">BOOST_CONTRACT_PRECONDITIONS_DISABLE_NO_ASSERTION</a></code>
+                    <span class="bold"><strong>Rationale:</strong></span> Technically, it can
+                    be shown that an invalid argument can reach the function body
+                    when assertion checking is disabled while checking preconditions
+                    (that is why <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> does
+                    not disable any assertion while checking preconditions, see
+                    <a href="http://lists.boost.org/Archives/boost/2010/04/164862.php" target="_top">Re:
+                    [boost] [contract] diff n1962</a>). However, this can only
+                    happen while checking contracts when an invalid argument passed
+                    to the body, which should results in the body either throwing
+                    an exception or returning an incorrect result, will in turn fail
+                    the contract assertion being checked by the caller of the body
+                    and invoke the related contract failure handler as desired in
+                    the first place. Furthermore, not disabling assertions while
+                    checking preconditions (like <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>
+                    does) makes it possible to have infinite recursion while checking
+                    preconditions. Therefore, this library by default disables assertion
+                    checking also while checking preconditions (like Eiffel does),
+                    but it also provides the <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_PR_idm34776.html" title="Macro BOOST_CONTRACT_PRECONDITIONS_DISABLE_NO_ASSERTION">BOOST_CONTRACT_PRECONDITIONS_DISABLE_NO_ASSERTION</a></code>
                     configuration macro so users can change this behaviour to match
                     <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> if needed.
                   </p></div>
@@ -1587,7 +1622,7 @@
                     automatically used to disable checking of class invariants within
                     nested member function calls (similarly to Eiffel). This feature
                     was required by older revisions of <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>
-                    but it is no longer required in <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>
+                    but it is no longer required by <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>
                     (because it seems to be motivated purely by optimization reasons
                     while similar performances can be achieved by disabling invariants
                     for release builds). Furthermore, in multi-threaded programs
@@ -1602,8 +1637,8 @@
         contract programming for C++ (but usually for only a limited set of features,
         or using preprocessing tools other than the C++ preprocessor and external
         to the language itself) and for other languages (see <a class="link" href="bibliography.html" title="Bibliography">Bibliography</a>
-        for a complete list of all the references consulted during the design and
-        development of this library):
+        for a complete list of all references consulted during the design and development
+        of this library):
       </p>
 <div class="informaltable"><table class="table">
 <colgroup>
@@ -1870,7 +1905,7 @@
 <p>
         To the best knowledge of the authors, this the only library that fully supports
         all contract programming features for C++ (without using preprocessing tools
-        external to the language itself):
+        external to the language itself). In general:
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
@@ -1878,17 +1913,17 @@
             (e.g., using some kind of RAII object).
           </li>
 <li class="listitem">
-            Implementing postcondition old values is also not too difficult usually
-            requiring programmers to copy old values into local variables, but it
+            Implementing postcondition old values is also not too difficult (usually
+            requiring programmers to copy old values into local variables), but it
             is already somewhat more difficult to ensure such copies are not performed
             when postconditions are disabled. <a href="#ftn.boost_contract.contract_programming_overview.feature_summary.f4" class="footnote" name="boost_contract.contract_programming_overview.feature_summary.f4"><sup class="footnote">[16]</sup></a>
           </li>
 <li class="listitem">
             Implementing class invariants is more involved (especially if done automatically,
             without requiring programmers to manually invoke extra functions to check
-            the invariants). <a href="#ftn.boost_contract.contract_programming_overview.feature_summary.f5" class="footnote" name="boost_contract.contract_programming_overview.feature_summary.f5"><sup class="footnote">[17]</sup></a> All references reviewed by the authors seem to not consider
-            static and volatile functions not supporting static and volatile invariants
-            respectively.
+            the invariants). <a href="#ftn.boost_contract.contract_programming_overview.feature_summary.f5" class="footnote" name="boost_contract.contract_programming_overview.feature_summary.f5"><sup class="footnote">[17]</sup></a> In addition, all references reviewed by the authors seem
+            to not consider static and volatile functions not supporting static and
+            volatile invariants respectively.
           </li>
 <li class="listitem">
             Implementing subcontracting involves a significant amount of complexity
@@ -1902,36 +1937,36 @@
 </div>
 <div class="footnotes">
 <br><hr style="width:100; text-align:left;margin-left: 0">
-<div id="ftn.boost_contract.contract_programming_overview.assertions.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.assertions.f0" class="para"><sup class="para">[7] </sup></a>
+<div id="ftn.boost_contract.contract_programming_overview.assertions.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.assertions.f0" class="para"><sup class="para">[6] </sup></a>
               The nomenclature of wide and narrow contracts has gained some popularity
               in recent years in the C++ community (appearing in a number of more
               recent proposals to add contract programming to the C++ standard, see
               <a class="link" href="bibliography.html" title="Bibliography">Bibliography</a>). This
               nomenclature is perfectly reasonable but it is not often used in this
-              document just because the authors generally prefer to explicitly mention
+              document just because the authors usually prefer to explicitly say
               "this operation has no preconditions..." or "this operation
-              has preconditions...".
+              has preconditions..." (this is just a matter of taste).
             </p></div>
-<div id="ftn.boost_contract.contract_programming_overview.assertions.f1" class="footnote"><p><a href="#boost_contract.contract_programming_overview.assertions.f1" class="para"><sup class="para">[8] </sup></a>
+<div id="ftn.boost_contract.contract_programming_overview.assertions.f1" class="footnote"><p><a href="#boost_contract.contract_programming_overview.assertions.f1" class="para"><sup class="para">[7] </sup></a>
               <span class="bold"><strong>Rationale:</strong></span> Contract assertions for
-              exception guarantees were first introduced by this library (even if
-              exception safety guarantees have long been part of C++ STL documentation).
-              Contract assertions for exception safety guarantees are not part of
-              <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> or other references listed
-              in the <a class="link" href="bibliography.html" title="Bibliography">Bibliography</a>.
+              exception guarantees were first introduced by this library, they are
+              not part of <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> or other references
+              listed in the <a class="link" href="bibliography.html" title="Bibliography">Bibliography</a>
+              (even if exception safety guarantees have long been part of C++ STL
+              documentation).
             </p></div>
-<div id="ftn.boost_contract.contract_programming_overview.assertions.f2" class="footnote"><p><a href="#boost_contract.contract_programming_overview.assertions.f2" class="para"><sup class="para">[9] </sup></a>
+<div id="ftn.boost_contract.contract_programming_overview.assertions.f2" class="footnote"><p><a href="#boost_contract.contract_programming_overview.assertions.f2" class="para"><sup class="para">[8] </sup></a>
               <span class="bold"><strong>Rationale:</strong></span> Static and volatile class
-              invariants were first introduced by this library to reflect the fact
-              that C++ supports both static and volatile public functions. Static
-              and volatile class invariants are not part of <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>
-              or other references listed in the <a class="link" href="bibliography.html" title="Bibliography">Bibliography</a>.
+              invariants were first introduced by this library (simply to reflect
+              the fact that C++ supports also static and volatile public functions),
+              they are not part of <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a> or
+              other references listed in the <a class="link" href="bibliography.html" title="Bibliography">Bibliography</a>.
             </p></div>
-<div id="ftn.boost_contract.contract_programming_overview.assertions.f3" class="footnote"><p><a href="#boost_contract.contract_programming_overview.assertions.f3" class="para"><sup class="para">[10] </sup></a>
-            <span class="bold"><strong>Rationale:</strong></span> <code class="computeroutput"><a class="link" href="../BOOST_CO_idm45848231644144.html" title="Macro BOOST_CONTRACT_DISABLE_THREADS">BOOST_CONTRACT_DISABLE_THREADS</a></code>
+<div id="ftn.boost_contract.contract_programming_overview.assertions.f3" class="footnote"><p><a href="#boost_contract.contract_programming_overview.assertions.f3" class="para"><sup class="para">[9] </sup></a>
+            <span class="bold"><strong>Rationale:</strong></span> <code class="computeroutput"><a class="link" href="../BOOST_CONTRACT_DI_idm34640.html" title="Macro BOOST_CONTRACT_DISABLE_THREADS">BOOST_CONTRACT_DISABLE_THREADS</a></code>
             is named after <code class="computeroutput"><span class="identifier">BOOST_DISABLE_THREADS</span></code>.
           </p></div>
-<div id="ftn.boost_contract.contract_programming_overview.benefits_and_costs.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.benefits_and_costs.f0" class="para"><sup class="para">[11] </sup></a>
+<div id="ftn.boost_contract.contract_programming_overview.benefits_and_costs.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.benefits_and_costs.f0" class="para"><sup class="para">[10] </sup></a>
               Of course, if contracts are ill-written then contract programming is
               of little use. However, it is less likely to have a bug in both the
               function body and the contract than in the function body alone. For
@@ -1946,7 +1981,7 @@
               general lower than the probability that the mistake is made only once
               (in either the body <span class="emphasis"><em>or</em></span> the contract).
             </p></div>
-<div id="ftn.boost_contract.contract_programming_overview.destructor_calls.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.destructor_calls.f0" class="para"><sup class="para">[12] </sup></a>
+<div id="ftn.boost_contract.contract_programming_overview.destructor_calls.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.destructor_calls.f0" class="para"><sup class="para">[11] </sup></a>
                     <span class="bold"><strong>Rationale:</strong></span> Postconditions for
                     destructors are not part of <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>
                     or other references listed in the <a class="link" href="bibliography.html" title="Bibliography">Bibliography</a>
@@ -1960,18 +1995,25 @@
                     static data member is decreased by <code class="computeroutput"><span class="number">1</span></code>
                     because the object has been destructed).
                   </p></div>
-<div id="ftn.boost_contract.contract_programming_overview.constant_correctness.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.constant_correctness.f0" class="para"><sup class="para">[13] </sup></a>
+<div id="ftn.boost_contract.contract_programming_overview.constant_correctness.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.constant_correctness.f0" class="para"><sup class="para">[12] </sup></a>
             Note that this is true when using C-style <code class="computeroutput"><span class="identifier">assert</span></code>
             as well.
           </p></div>
-<div id="ftn.boost_contract.contract_programming_overview.specifications_vs__implementation.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.specifications_vs__implementation.f0" class="para"><sup class="para">[14] </sup></a>
-          <span class="bold"><strong>Rationale:</strong></span> If C++ <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#45" target="_top">defect
+<div id="ftn.boost_contract.contract_programming_overview.specifications_vs__implementation.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.specifications_vs__implementation.f0" class="para"><sup class="para">[13] </sup></a>
+          <span class="bold"><strong>Rationale:</strong></span> Out of curiosity, if C++ <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#45" target="_top">defect
           45</a> had not been fixed, this library could have been implemented
           to generate a compile-time error when precondition assertions use non-public
-          members more similarly to Eiffel's implementation (but not necessary the
-          best approach for C++).
+          members more similarly to Eiffel's implementation (but still, not necessary
+          the best approach for C++).
         </p></div>
-<div id="ftn.boost_contract.contract_programming_overview.on_contract_failures.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.on_contract_failures.f0" class="para"><sup class="para">[15] </sup></a>
+<div id="ftn.boost_contract.contract_programming_overview.on_contract_failures.f0" class="footnote"><p><a href="#boost_contract.contract_programming_overview.on_contract_failures.f0" class="para"><sup class="para">[14] </sup></a>
+          <span class="bold"><strong>Rationale:</strong></span> If the evaluation of a contract
+          assertion throws an exception, the assertion cannot be checked to be true
+          so the only safe thing to assume is that the assertion failed (indeed the
+          contract assertion checking failed) and call the contract failure handler
+          in this case also.
+        </p></div>
+<div id="ftn.boost_contract.contract_programming_overview.on_contract_failures.f1" class="footnote"><p><a href="#boost_contract.contract_programming_overview.on_contract_failures.f1" class="para"><sup class="para">[15] </sup></a>
           <span class="bold"><strong>Rationale:</strong></span> This customizable failure handling
           mechanism is similar to the one used by C++ <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">terminate</span></code>
           and also to the one proposed in <a class="link" href="bibliography.html#N1962_anchor">[N1962]</a>.
@@ -1979,19 +2021,28 @@
 <div id="ftn.boost_contract.contract_programming_overview.feature_summary.f4" class="footnote">
 <p><a href="#boost_contract.contract_programming_overview.feature_summary.f4" class="para"><sup class="para">[16] </sup></a>
               For example, the following pseudocode attempts to emulate old values
-              using <a class="link" href="bibliography.html#P0380_anchor">[P0380]</a> (<code class="computeroutput"><span class="identifier">scope_exit</span></code>
-              here is an RAII object that executes the nullary functor passed to
-              its constructor when it is destroyed):
+              in <a class="link" href="bibliography.html#P0380_anchor">[P0380]</a>:
 </p>
-<pre class="programlisting"><span class="keyword">void</span> <span class="identifier">fswap</span><span class="special">(</span><span class="identifier">file</span><span class="special">&amp;</span> <span class="identifier">x</span><span class="special">,</span> <span class="identifier">file</span><span class="special">&amp;</span> <span class="identifier">y</span><span class="special">)</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">scope_exit</span> <span class="special">{</span> <span class="comment">// RAII.</span>
+    <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">F</span><span class="special">&gt;</span>
+    <span class="keyword">explicit</span> <span class="identifier">scope_exit</span><span class="special">(</span><span class="identifier">F</span> <span class="identifier">f</span><span class="special">)</span> <span class="special">:</span> <span class="identifier">f_</span><span class="special">(</span><span class="identifier">f</span><span class="special">)</span> <span class="special">{}</span>
+    <span class="special">~</span><span class="identifier">scope_exit</span><span class="special">()</span> <span class="special">{</span> <span class="identifier">f_</span><span class="special">();</span> <span class="special">}</span>
+
+    <span class="identifier">scope_exit</span><span class="special">(</span><span class="identifier">scope_exit</span> <span class="keyword">const</span><span class="special">&amp;)</span> <span class="special">=</span> <span class="keyword">delete</span><span class="special">;</span>
+    <span class="identifier">scope_exit</span><span class="special">&amp;</span> <span class="keyword">operator</span><span class="special">=(</span><span class="identifier">scope_exit</span> <span class="keyword">const</span><span class="special">&amp;)</span> <span class="special">=</span> <span class="keyword">delete</span><span class="special">;</span>
+<span class="keyword">private</span><span class="special">:</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span><span class="keyword">void</span> <span class="special">()&gt;</span> <span class="identifier">f_</span><span class="special">;</span>
+<span class="special">};</span>
+
+<span class="keyword">void</span> <span class="identifier">fswap</span><span class="special">(</span><span class="identifier">file</span><span class="special">&amp;</span> <span class="identifier">x</span><span class="special">,</span> <span class="identifier">file</span><span class="special">&amp;</span> <span class="identifier">y</span><span class="special">)</span>
     <span class="special">[[</span><span class="identifier">expects</span><span class="special">:</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">closed</span><span class="special">()]]</span>
-    <span class="special">[[</span><span class="identifier">excepts</span><span class="special">:</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">closed</span><span class="special">()]]</span>
-    <span class="comment">// Postconditions in function definition below to emulate old values.</span>
+    <span class="special">[[</span><span class="identifier">expects</span><span class="special">:</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">closed</span><span class="special">()]]</span>
+    <span class="comment">// Cannot use [[ensures]] for postconditions so to emulate old values.</span>
 <span class="special">{</span>
     <span class="identifier">file</span> <span class="identifier">old_x</span> <span class="special">=</span> <span class="identifier">x</span><span class="special">;</span> <span class="comment">// Emulate old values with local copies (not disabled).</span>
     <span class="identifier">file</span> <span class="identifier">old_y</span> <span class="special">=</span> <span class="identifier">y</span><span class="special">;</span>
     <span class="identifier">scope_exit</span> <span class="identifier">ensures</span><span class="special">([&amp;]</span> <span class="special">{</span> <span class="comment">// Check after local objects destroyed.</span>
-        <span class="keyword">if</span><span class="special">(!</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">uncaught_exception</span><span class="special">())</span> <span class="special">{</span> <span class="comment">// Check only if no throw.</span>
+        <span class="keyword">if</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">uncaught_exceptions</span><span class="special">()</span> <span class="special">==</span> <span class="number">0</span><span class="special">)</span> <span class="special">{</span> <span class="comment">// Check only if no throw.</span>
             <span class="special">[[</span><span class="identifier">assert</span><span class="special">:</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">closed</span><span class="special">()]]</span>
             <span class="special">[[</span><span class="identifier">assert</span><span class="special">:</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">closed</span><span class="special">()]]</span>
             <span class="special">[[</span><span class="identifier">assert</span><span class="special">:</span> <span class="identifier">x</span> <span class="special">==</span> <span class="identifier">old_y</span><span class="special">]]</span>
@@ -2003,13 +2054,13 @@
     <span class="identifier">scope_exit</span> <span class="identifier">close_x</span><span class="special">([&amp;]</span> <span class="special">{</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">close</span><span class="special">();</span> <span class="special">});</span>
     <span class="identifier">y</span><span class="special">.</span><span class="identifier">open</span><span class="special">();</span>
     <span class="identifier">scope_exit</span> <span class="identifier">close_y</span><span class="special">([&amp;]</span> <span class="special">{</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">close</span><span class="special">();</span> <span class="special">});</span>
-    <span class="identifier">file</span> <span class="identifier">t</span> <span class="special">=</span> <span class="identifier">file</span><span class="special">::</span><span class="identifier">temp</span><span class="special">();</span>
-    <span class="identifier">t</span><span class="special">.</span><span class="identifier">open</span><span class="special">;</span>
-    <span class="identifier">scope_exit</span> <span class="identifier">close_t</span><span class="special">([&amp;]</span> <span class="special">{</span> <span class="identifier">t</span><span class="special">.</span><span class="identifier">close</span><span class="special">();</span> <span class="special">});</span>
+    <span class="identifier">file</span> <span class="identifier">z</span> <span class="special">=</span> <span class="identifier">file</span><span class="special">::</span><span class="identifier">temp</span><span class="special">();</span>
+    <span class="identifier">z</span><span class="special">.</span><span class="identifier">open</span><span class="special">;</span>
+    <span class="identifier">scope_exit</span> <span class="identifier">close_z</span><span class="special">([&amp;]</span> <span class="special">{</span> <span class="identifier">z</span><span class="special">.</span><span class="identifier">close</span><span class="special">();</span> <span class="special">});</span>
 
-    <span class="identifier">x</span><span class="special">.</span><span class="identifier">mv</span><span class="special">(</span><span class="identifier">t</span><span class="special">);</span>
+    <span class="identifier">x</span><span class="special">.</span><span class="identifier">mv</span><span class="special">(</span><span class="identifier">z</span><span class="special">);</span>
     <span class="identifier">y</span><span class="special">.</span><span class="identifier">mv</span><span class="special">(</span><span class="identifier">x</span><span class="special">);</span>
-    <span class="identifier">t</span><span class="special">.</span><span class="identifier">mv</span><span class="special">(</span><span class="identifier">y</span><span class="special">);</span>
+    <span class="identifier">z</span><span class="special">.</span><span class="identifier">mv</span><span class="special">(</span><span class="identifier">y</span><span class="special">);</span>
 <span class="special">}</span>
 </pre>
 <p>
@@ -2018,13 +2069,14 @@
               other local objects have been destroyed (because some of these destructors
               contribute to establishing the postconditions). Still, it never disables
               old value copies (not even if postconditions are disabled in release
-              builds).
+              builds, this would require adding even more boiler-plate code using
+              <code class="computeroutput"><span class="preprocessor">#ifdef</span></code>, etc.).
             </p>
 </div>
 <div id="ftn.boost_contract.contract_programming_overview.feature_summary.f5" class="footnote">
 <p><a href="#boost_contract.contract_programming_overview.feature_summary.f5" class="para"><sup class="para">[17] </sup></a>
               For example, the following pseudocode attempts to emulation of class
-              invariants using <a class="link" href="bibliography.html#P0380_anchor">[P0380]</a>:
+              invariants in <a class="link" href="bibliography.html#P0380_anchor">[P0380]</a>:
 </p>
 <pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="keyword">class</span> <span class="identifier">vector</span> <span class="special">{</span>
@@ -2079,7 +2131,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2008-2018 Lorenzo Caminiti<p>
+<td align="right"><div class="copyright-footer">Copyright © 2008-2019 Lorenzo Caminiti<p>
         Distributed under the Boost Software License, Version 1.0 (see accompanying
         file LICENSE_1_0.txt or a copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

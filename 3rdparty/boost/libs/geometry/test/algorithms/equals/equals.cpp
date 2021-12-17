@@ -3,9 +3,8 @@
 // Copyright (c) 2007-2012 Barend Gehrels, Amsterdam, the Netherlands.
 // Copyright (c) 2017 Adam Wulkiewicz, Lodz, Poland.
 
-// This file was modified by Oracle on 2013, 2014.
-// Modifications copyright (c) 2013-2014 Oracle and/or its affiliates.
-
+// This file was modified by Oracle on 2013-2021.
+// Modifications copyright (c) 2013-2021 Oracle and/or its affiliates.
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Use, modification and distribution is subject to the Boost Software License,
@@ -13,8 +12,6 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include "test_equals.hpp"
-
-#include <boost/type_traits/is_floating_point.hpp>
 
 #include <boost/geometry/geometries/geometries.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
@@ -59,7 +56,8 @@ void test_segment_segment()
 template <typename P>
 void test_linestring_linestring()
 {
-    typedef bgm::linestring<P> ls;
+    using coord_t = typename bg::coordinate_type<P>::type;
+    using ls = bgm::linestring<P>;
 
     test_geometry<ls, ls>("ls2d_1", "LINESTRING(1 1, 3 3)", "LINESTRING(3 3, 1 1)", true);
     test_geometry<ls, ls>("ls2d_2", "LINESTRING(1 1, 3 3, 2 5)", "LINESTRING(1 1, 2 2, 3 3, 2 5)", true);
@@ -82,8 +80,7 @@ void test_linestring_linestring()
     test_geometry<ls, ls>("ls2d_overl_ring2", "LINESTRING(0 0,5 0,5 5,0 5,0 0)", "LINESTRING(5 5,5 0,0 0,0 5,5 5,5 0)", true);
 
     // https://svn.boost.org/trac/boost/ticket/10904
-    if ( BOOST_GEOMETRY_CONDITION(
-            boost::is_floating_point<typename bg::coordinate_type<ls>::type>::value ) )
+    if ( BOOST_GEOMETRY_CONDITION(std::is_floating_point<coord_t>::value) )
     {
         test_geometry<ls, ls>("ls2d_small1",
                               "LINESTRING(5.6956521739130430148634331999347 -0.60869565217391330413931882503675,5.5 -0.50000000000000066613381477509392)",
@@ -209,8 +206,15 @@ void test_all()
     // Unequal (but same area)
     test_geometry<ring, ring>("poly_uneq", case_p1, "POLYGON((1 1,1 3,3 3,1 1))", false);
 
+    // Note that POLYGON((0 0,0 4,4 4,0 0),(1 1,2 1,2 2,1 2,1 1))
+    // below is invalid. equals() returns different result than
+    // relate() with equals mask in this case because for areal
+    // geometries different algorithms is used, i.e. collect_vectors.
+
     // One having hole
-    test_geometry<polygon, polygon>("poly_hole", "POLYGON((0 0,0 4,4 4,0 0))", "POLYGON((0 0,0 4,4 4,0 0),(1 1,2 1,2 2,1 2,1 1))", false);
+    test_geometry<polygon, polygon>("poly_hole",
+            "POLYGON((0 0,0 4,4 4,0 0))",
+            "POLYGON((0 0,0 4,4 4,0 0),(1 1,2 1,2 2,1 2,1 1))", false);
 
     // Both having holes
     test_geometry<polygon, polygon>("poly_holes",
@@ -303,16 +307,9 @@ void verify()
 int test_main( int , char* [] )
 {
     //verify<double>();
-#if defined(HAVE_TTMATH)
-    verify<ttmath_big>();
-#endif
 
     test_all<bg::model::d2::point_xy<int> >();
     test_all<bg::model::d2::point_xy<double> >();
-
-#if defined(HAVE_TTMATH)
-    test_all<bg::model::d2::point_xy<ttmath_big> >();
-#endif
 
     return 0;
 }

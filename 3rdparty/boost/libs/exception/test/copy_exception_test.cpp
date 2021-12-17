@@ -3,6 +3,12 @@
 //Distributed under the Boost Software License, Version 1.0. (See accompanying
 //file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <boost/config.hpp>
+
+#if defined( BOOST_NO_EXCEPTIONS )
+#   error This program requires exception handling.
+#endif
+
 #include <boost/exception_ptr.hpp>
 #include <boost/exception/get_error_info.hpp>
 #include <boost/thread.hpp>
@@ -10,6 +16,8 @@
 #include <boost/detail/lightweight_test.hpp>
 
 typedef boost::error_info<struct tag_answer,int> answer;
+
+int const thread_count = 100;
 
 boost::detail::atomic_count exc_count(0);
 
@@ -39,20 +47,21 @@ err:
     err & operator=( err const & );
     };
 
+
 class
 future
     {
     public:
 
-    future ():
-        ready_ (false)
+    future():
+        ready_(false)
         {
         }
 
     void
     set_exception( boost::exception_ptr const & e )
         {
-        boost::unique_lock<boost::mutex> lck (mux_);
+        boost::unique_lock<boost::mutex> lck(mux_);
         exc_ = e;
         ready_ = true;
         cond_.notify_all();
@@ -61,10 +70,10 @@ future
     void
     get_exception() const
         {
-        boost::unique_lock<boost::mutex> lck (mux_);
-        while (! ready_)
-            cond_.wait (lck);
-        rethrow_exception (exc_);
+        boost::unique_lock<boost::mutex> lck(mux_);
+        while( !ready_ )
+            cond_.wait(lck);
+        rethrow_exception(exc_);
         }
 
     private:
@@ -78,17 +87,17 @@ future
 void
 producer( future & f )
     {
-    f.set_exception (boost::copy_exception (err () << answer(42)));
+    f.set_exception(boost::copy_exception(err() << answer(42)));
     }
 
 void
 consumer()
     {
     future f;
-    boost::thread thr (boost::bind (&producer, boost::ref (f)));
+    boost::thread thr(boost::bind(&producer, boost::ref(f)));
     try
         {
-        f.get_exception ();
+        f.get_exception();
         }
     catch(
     err & e )
@@ -102,7 +111,7 @@ consumer()
 void
 consume()
     {
-    for( int i=0; i!=100; ++i )
+    for( int i=0; i!=thread_count; ++i )
         consumer();
     }
 
@@ -110,15 +119,15 @@ void
 thread_test()
     {
     boost::thread_group grp;
-    for( int i=0; i!=50; ++i )
+    for( int i=0; i!=thread_count; ++i )
         grp.create_thread(&consume);
-    grp.join_all ();
+    grp.join_all();
     }
 
 void
 simple_test()
     {
-    boost::exception_ptr p = boost::copy_exception(err());
+    boost::exception_ptr p = boost::copy_exception(err() << answer(42));
     try
         {
         rethrow_exception(p);

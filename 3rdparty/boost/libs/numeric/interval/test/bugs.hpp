@@ -14,7 +14,7 @@
 // Borland compiler complains about unused variables a bit easily and
 // incorrectly
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 namespace detail {
 
   template <class T> inline void ignore_unused_variable_warning(const T&) { }
@@ -34,7 +34,7 @@ namespace detail {
 
 // Some compilers are broken with respect to name resolution
 
-#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP) || defined( __BORLANDC__)
+#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP) || defined( BOOST_BORLANDC)
 
 using namespace boost;
 using namespace numeric;

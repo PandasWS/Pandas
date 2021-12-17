@@ -17,6 +17,8 @@ int main()
   BOOST_TEST(!BOOST_TTI_HAS_TEMPLATE_GEN(SomeMemberTemplate)<AnotherType>::value);
   BOOST_TEST(!ATemplateWithParms<AnotherType>::value);
   BOOST_TEST(BOOST_TTI_HAS_TEMPLATE_GEN(SimpleTMP)<AnotherType>::value);
+  
+  BOOST_TEST(BOOST_TTI_HAS_TEMPLATE_GEN(UnionMemberTemplate)<AnotherType::AnotherUnion>::value);
 
   // Passing non-class enclosing type will return false
   

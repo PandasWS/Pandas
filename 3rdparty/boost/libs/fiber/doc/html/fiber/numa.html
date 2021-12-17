@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>NUMA</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Fiber">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Fiber">
+<link rel="home" href="../index.html" title="Chapter 1. Fiber">
+<link rel="up" href="../index.html" title="Chapter 1. Fiber">
 <link rel="prev" href="speculation.html" title="Specualtive execution">
 <link rel="next" href="gpu_computing.html" title="GPU computing">
 </head>
@@ -76,7 +76,7 @@
       </p></td></tr>
 </table></div>
 <div class="table">
-<a name="fiber.numa.supported_functionality_operating_systems"></a><p class="title"><b>Table&#160;1.1.&#160;Supported functionality/operating systems</b></p>
+<a name="fiber.numa.supported_functionality_operating_systems"></a><p class="title"><b>Table 1.1. Supported functionality/operating systems</b></p>
 <div class="table-contents"><table class="table" summary="Supported functionality/operating systems">
 <colgroup>
 <col>
@@ -319,7 +319,7 @@
     </p>
 <pre class="programlisting"><span class="keyword">void</span> <span class="identifier">thread</span><span class="special">(</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">uint32_t</span> <span class="identifier">cpu_id</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">uint32_t</span> <span class="identifier">node_id</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">fibers</span><span class="special">::</span><span class="identifier">numa</span><span class="special">::</span><span class="identifier">node</span> <span class="special">&gt;</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">topo</span><span class="special">)</span> <span class="special">{</span>
     <span class="comment">// thread registers itself at work-stealing scheduler</span>
-    <span class="identifier">boost</span><span class="special">::</span><span class="identifier">fibers</span><span class="special">::</span><span class="identifier">use_scheduling_algorithm</span><span class="special">&lt;</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">fibers</span><span class="special">::</span><span class="identifier">algo</span><span class="special">::</span><span class="identifier">numa</span><span class="special">::</span><span class="identifier">work_stealing</span> <span class="special">&gt;(</span> <span class="identifier">cpu_id</span><span class="special">,</span> <span class="identifier">node_id</span><span class="special">,</span> <span class="identifier">topo</span><span class="special">);</span>
+    <span class="identifier">boost</span><span class="special">::</span><span class="identifier">fibers</span><span class="special">::</span><span class="identifier">use_scheduling_algorithm</span><span class="special">&lt;</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">fibers</span><span class="special">::</span><span class="identifier">numa</span><span class="special">::</span><span class="identifier">algo</span><span class="special">::</span><span class="identifier">work_stealing</span> <span class="special">&gt;(</span> <span class="identifier">cpu_id</span><span class="special">,</span> <span class="identifier">node_id</span><span class="special">,</span> <span class="identifier">topo</span><span class="special">);</span>
     <span class="special">...</span>
 <span class="special">}</span>
 
@@ -341,7 +341,7 @@
     <span class="special">}</span>
 <span class="special">}</span>
 <span class="comment">// start-thread registers itself on work-stealing scheduler</span>
-<span class="identifier">boost</span><span class="special">::</span><span class="identifier">fibers</span><span class="special">::</span><span class="identifier">use_scheduling_algorithm</span><span class="special">&lt;</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">fibers</span><span class="special">::</span><span class="identifier">algo</span><span class="special">::</span><span class="identifier">numa</span><span class="special">::</span><span class="identifier">work_stealing</span> <span class="special">&gt;(</span> <span class="identifier">start_cpu_id</span><span class="special">,</span> <span class="identifier">node</span><span class="special">.</span><span class="identifier">id</span><span class="special">,</span> <span class="identifier">topo</span><span class="special">);</span>
+<span class="identifier">boost</span><span class="special">::</span><span class="identifier">fibers</span><span class="special">::</span><span class="identifier">use_scheduling_algorithm</span><span class="special">&lt;</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">fibers</span><span class="special">::</span><span class="identifier">numa</span><span class="special">::</span><span class="identifier">algo</span><span class="special">::</span><span class="identifier">work_stealing</span> <span class="special">&gt;(</span> <span class="identifier">start_cpu_id</span><span class="special">,</span> <span class="identifier">node</span><span class="special">.</span><span class="identifier">id</span><span class="special">,</span> <span class="identifier">topo</span><span class="special">);</span>
 <span class="special">...</span>
 </pre>
 <p>
@@ -822,7 +822,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2013 Oliver Kowalke<p>
+<td align="right"><div class="copyright-footer">Copyright © 2013 Oliver Kowalke<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -25,11 +25,11 @@
 #include <boost/preprocessor/enum_params.hpp>
 #include <boost/preprocessor/facilities/intercept.hpp>
 
-#define TEST_N_ARY(unused1, N, unused2) \
+#define TEST_N_ARY(z, N, unused2) \
     static_assert_< \
         apply< \
-            and_<BOOST_PP_ENUM_PARAMS(N, _ BOOST_PP_INTERCEPT)>, \
-            BOOST_PP_ENUM_PARAMS(N, true_ BOOST_PP_INTERCEPT) \
+            and_<BOOST_PP_ENUM_PARAMS_Z(z, N, _ BOOST_PP_INTERCEPT)>, \
+            BOOST_PP_ENUM_PARAMS_Z(z, N, true_ BOOST_PP_INTERCEPT) \
         > \
     >(); \
 /**/

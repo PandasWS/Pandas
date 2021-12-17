@@ -179,16 +179,16 @@
       <template-type-parameter name="value_policies"/>
     </template><purpose>A template to specify a constrained basic value type. </purpose><description><para>This template provides a quick way to generate an integer type with a constrained range. The type provides for the ability to specify the min, max, and and error handling policy.</para><para><emphasis role="bold">value policies</emphasis> A class that provides the range limits via the min and max functions as well as a function on_error that determines how errors are handled. A common strategy would be to assert or throw and exception. The on_error is passed both the current value and the new value that is in error. </para></description><typedef name="value_type"><type>value_policies::value_type</type></typedef>
 <method-group name="public member functions">
-<method name="conversion-operator" cv="const"><type>value_type</type><purpose>Coerce into the representation type. </purpose></method>
+<method name="operator value_type" cv="const"><type>BOOST_CXX14_CONSTEXPR</type><purpose>Coerce into the representation type. </purpose></method>
 </method-group>
 <constructor><parameter name="value"><paramtype>value_type</paramtype></parameter></constructor>
-<copy-assignment><type><classname>constrained_value</classname> &amp;</type><parameter name="v"><paramtype>value_type</paramtype></parameter></copy-assignment>
+<copy-assignment><type>BOOST_CXX14_CONSTEXPR <classname>constrained_value</classname> &amp;</type><parameter name="v"><paramtype>value_type</paramtype></parameter></copy-assignment>
 <method-group name="public static functions">
-<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type>value_type max</type><purpose>Return the max allowed value (traits method) </purpose></method>
-<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type>value_type min</type><purpose>Return the min allowed value (traits method) </purpose></method>
+<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type>BOOST_CONSTEXPR value_type max</type><purpose>Return the max allowed value (traits method) </purpose></method>
+<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type>BOOST_CONSTEXPR value_type min</type><purpose>Return the min allowed value (traits method) </purpose></method>
 </method-group>
 <method-group name="private member functions">
-<method name="assign"><type>void</type><parameter name="value"><paramtype>value_type</paramtype></parameter></method>
+<method name="assign"><type>BOOST_CXX14_CONSTEXPR void</type><parameter name="value"><paramtype>value_type</paramtype></parameter></method>
 </method-group>
 </class><class name="simple_exception_policy"><template>
       <template-type-parameter name="rep_type"/>
@@ -200,8 +200,8 @@
 </method-group>
 </struct><typedef name="value_type"><type>rep_type</type></typedef>
 <method-group name="public static functions">
-<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type>rep_type min</type></method>
-<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type>rep_type max</type></method>
+<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type>BOOST_CONSTEXPR rep_type min</type></method>
+<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type>BOOST_CONSTEXPR rep_type max</type></method>
 <method name="on_error" specifiers="static"><type>void</type><parameter name=""><paramtype>rep_type</paramtype></parameter><parameter name=""><paramtype>rep_type</paramtype></parameter><parameter name=""><paramtype>violation_enum</paramtype></parameter></method>
 </method-group>
 </class><enum name="violation_enum"><enumvalue name="min_violation"/><enumvalue name="max_violation"/><purpose>Represent a min or max violation type. </purpose></enum>
@@ -227,25 +227,25 @@
 <typedef name="date_int_type"><type>calendar::date_int_type</type></typedef>
 <typedef name="day_of_week_type"><type>calendar::day_of_week_type</type></typedef>
 <method-group name="public member functions">
-<method name="year" cv="const"><type>year_type</type></method>
-<method name="month" cv="const"><type>month_type</type></method>
-<method name="day" cv="const"><type>day_type</type></method>
-<method name="day_of_week" cv="const"><type>day_of_week_type</type></method>
-<method name="year_month_day" cv="const"><type>ymd_type</type></method>
-<method name="operator&lt;" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const date_type &amp;</paramtype></parameter></method>
-<method name="operator==" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const date_type &amp;</paramtype></parameter></method>
-<method name="is_special" cv="const"><type>bool</type><purpose>check to see if date is a special value </purpose></method>
-<method name="is_not_a_date" cv="const"><type>bool</type><purpose>check to see if date is not a value </purpose></method>
-<method name="is_infinity" cv="const"><type>bool</type><purpose>check to see if date is one of the infinity values </purpose></method>
-<method name="is_pos_infinity" cv="const"><type>bool</type><purpose>check to see if date is greater than all possible dates </purpose></method>
-<method name="is_neg_infinity" cv="const"><type>bool</type><purpose>check to see if date is greater than all possible dates </purpose></method>
-<method name="as_special" cv="const"><type>special_values</type><purpose>return as a special value or a not_special if a normal date </purpose></method>
-<method name="operator-" cv="const"><type>duration_type</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
-<method name="operator-" cv="const"><type>date_type</type><parameter name="dd"><paramtype>const duration_type &amp;</paramtype></parameter></method>
-<method name="operator-="><type>date_type</type><parameter name="dd"><paramtype>const duration_type &amp;</paramtype></parameter></method>
-<method name="day_count" cv="const"><type>date_rep_type</type></method>
-<method name="operator+" cv="const"><type>date_type</type><parameter name="dd"><paramtype>const duration_type &amp;</paramtype></parameter></method>
-<method name="operator+="><type>date_type</type><parameter name="dd"><paramtype>const duration_type &amp;</paramtype></parameter></method>
+<method name="year" cv="const"><type>BOOST_CXX14_CONSTEXPR year_type</type></method>
+<method name="month" cv="const"><type>BOOST_CXX14_CONSTEXPR month_type</type></method>
+<method name="day" cv="const"><type>BOOST_CXX14_CONSTEXPR day_type</type></method>
+<method name="day_of_week" cv="const"><type>BOOST_CXX14_CONSTEXPR day_of_week_type</type></method>
+<method name="year_month_day" cv="const"><type>BOOST_CXX14_CONSTEXPR ymd_type</type></method>
+<method name="operator&lt;" cv="const"><type>BOOST_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const date_type &amp;</paramtype></parameter></method>
+<method name="operator==" cv="const"><type>BOOST_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const date_type &amp;</paramtype></parameter></method>
+<method name="is_special" cv="const"><type>BOOST_CONSTEXPR bool</type><purpose>check to see if date is a special value </purpose></method>
+<method name="is_not_a_date" cv="const"><type>BOOST_CONSTEXPR bool</type><purpose>check to see if date is not a value </purpose></method>
+<method name="is_infinity" cv="const"><type>BOOST_CONSTEXPR bool</type><purpose>check to see if date is one of the infinity values </purpose></method>
+<method name="is_pos_infinity" cv="const"><type>BOOST_CONSTEXPR bool</type><purpose>check to see if date is greater than all possible dates </purpose></method>
+<method name="is_neg_infinity" cv="const"><type>BOOST_CONSTEXPR bool</type><purpose>check to see if date is greater than all possible dates </purpose></method>
+<method name="as_special" cv="const"><type>BOOST_CXX14_CONSTEXPR special_values</type><purpose>return as a special value or a not_special if a normal date </purpose></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR duration_type</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR date_type</type><parameter name="dd"><paramtype>const duration_type &amp;</paramtype></parameter></method>
+<method name="operator-="><type>BOOST_CXX14_CONSTEXPR date_type</type><parameter name="dd"><paramtype>const duration_type &amp;</paramtype></parameter></method>
+<method name="day_count" cv="const"><type>BOOST_CONSTEXPR date_rep_type</type></method>
+<method name="operator+" cv="const"><type>BOOST_CXX14_CONSTEXPR date_type</type><parameter name="dd"><paramtype>const duration_type &amp;</paramtype></parameter></method>
+<method name="operator+="><type>BOOST_CXX14_CONSTEXPR date_type</type><parameter name="dd"><paramtype>const duration_type &amp;</paramtype></parameter></method>
 </method-group>
 <constructor><parameter name="y"><paramtype>year_type</paramtype></parameter><parameter name="m"><paramtype>month_type</paramtype></parameter><parameter name="d"><paramtype>day_type</paramtype></parameter></constructor>
 <constructor><parameter name="ymd"><paramtype>const ymd_type &amp;</paramtype></parameter></constructor>
@@ -390,33 +390,32 @@
     </template><inherit access="private">boost::less_than_comparable1&lt; date_duration&lt; duration_rep_traits &gt;, boost::equality_comparable1&lt; date_duration&lt; duration_rep_traits &gt;, boost::addable1&lt; date_duration&lt; duration_rep_traits &gt;, boost::subtractable1&lt; date_duration&lt; duration_rep_traits &gt;, boost::dividable2&lt; date_duration&lt; duration_rep_traits &gt;, int &gt; &gt; &gt; &gt; &gt;</inherit><purpose>Duration type with date level resolution. </purpose><typedef name="duration_rep_type"><type>duration_rep_traits::int_type</type></typedef>
 <typedef name="duration_rep"><type>duration_rep_traits::impl_type</type></typedef>
 <method-group name="public member functions">
-<method name="get_rep" cv="const"><type>duration_rep</type><purpose>returns days_ as it's instantiated type - used for streaming </purpose></method>
-<method name="as_special" cv="const"><type>special_values</type></method>
-<method name="is_special" cv="const"><type>bool</type></method>
-<method name="days" cv="const"><type>duration_rep_type</type><purpose>returns days as value, not object. </purpose></method>
-<method name="operator==" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>date_duration</classname> &amp;</paramtype></parameter><purpose>Equality. </purpose></method>
-<method name="operator&lt;" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>date_duration</classname> &amp;</paramtype></parameter><purpose>Less. </purpose></method>
-<method name="operator-="><type><classname>date_duration</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>date_duration</classname> &amp;</paramtype></parameter><purpose>Subtract another duration – result is signed. </purpose></method>
-<method name="operator+="><type><classname>date_duration</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>date_duration</classname> &amp;</paramtype></parameter><purpose>Add a duration – result is signed. </purpose></method>
-<method name="operator-" cv="const"><type><classname>date_duration</classname></type><purpose>unary- Allows for dd = -date_duration(2); -&gt; dd == -2 </purpose></method>
-<method name="operator/="><type><classname>date_duration</classname> &amp;</type><parameter name="divisor"><paramtype>int</paramtype></parameter><purpose>Division operations on a duration with an integer. </purpose></method>
-<method name="is_negative" cv="const"><type>bool</type><purpose>return sign information </purpose></method>
+<method name="get_rep" cv="const"><type>BOOST_CXX14_CONSTEXPR duration_rep</type><purpose>returns days_ as it's instantiated type - used for streaming </purpose></method>
+<method name="as_special" cv="const"><type>BOOST_CXX14_CONSTEXPR special_values</type></method>
+<method name="is_special" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type></method>
+<method name="days" cv="const"><type>BOOST_CXX14_CONSTEXPR duration_rep_type</type><purpose>returns days as value, not object. </purpose></method>
+<method name="operator==" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>date_duration</classname> &amp;</paramtype></parameter><purpose>Equality. </purpose></method>
+<method name="operator&lt;" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>date_duration</classname> &amp;</paramtype></parameter><purpose>Less. </purpose></method>
+<method name="operator-="><type>BOOST_CXX14_CONSTEXPR <classname>date_duration</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>date_duration</classname> &amp;</paramtype></parameter><purpose>Subtract another duration – result is signed. </purpose></method>
+<method name="operator+="><type>BOOST_CXX14_CONSTEXPR <classname>date_duration</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>date_duration</classname> &amp;</paramtype></parameter><purpose>Add a duration – result is signed. </purpose></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>date_duration</classname></type><purpose>unary- Allows for dd = -date_duration(2); -&gt; dd == -2 </purpose></method>
+<method name="operator/="><type>BOOST_CXX14_CONSTEXPR <classname>date_duration</classname> &amp;</type><parameter name="divisor"><paramtype>int</paramtype></parameter><purpose>Division operations on a duration with an integer. </purpose></method>
+<method name="is_negative" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>return sign information </purpose></method>
 </method-group>
 <constructor specifiers="explicit"><parameter name="day_count"><paramtype>duration_rep</paramtype></parameter><purpose>Construct from a day count. </purpose></constructor>
 <constructor><parameter name="sv"><paramtype>special_values</paramtype></parameter><description><para>construct from special_values - only works when instantiated with <classname alt="boost::date_time::duration_traits_adapted">duration_traits_adapted</classname> </para></description></constructor>
-<constructor><parameter name="other"><paramtype>const <classname>date_duration</classname>&lt; duration_rep_traits &gt; &amp;</paramtype></parameter><purpose>Construct from another <classname alt="boost::date_time::date_duration">date_duration</classname> (Copy Constructor) </purpose></constructor>
 <method-group name="public static functions">
-<method name="unit" specifiers="static"><type><classname>date_duration</classname></type><purpose>Returns the smallest duration – used by to calculate 'end'. </purpose></method>
+<method name="unit" specifiers="static"><type>BOOST_CXX14_CONSTEXPR <classname>date_duration</classname></type><purpose>Returns the smallest duration – used by to calculate 'end'. </purpose></method>
 </method-group>
 </class><struct name="duration_traits_adapted"><description><para>Struct for instantiating <classname alt="boost::date_time::date_duration">date_duration</classname> <emphasis role="bold">WITH</emphasis> special values functionality. Allows for transparent implementation of either date_duration&lt;long&gt; or <classname alt="boost::date_time::date_duration">date_duration</classname>&lt;int_adapter&lt;long&gt; &gt; </para></description><typedef name="int_type"><type>long</type></typedef>
 <typedef name="impl_type"><type><classname>boost::date_time::int_adapter</classname>&lt; long &gt;</type></typedef>
 <method-group name="public static functions">
-<method name="as_number" specifiers="static"><type>int_type</type><parameter name="i"><paramtype><classname>impl_type</classname></paramtype></parameter></method>
+<method name="as_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR int_type</type><parameter name="i"><paramtype><classname>impl_type</classname></paramtype></parameter></method>
 </method-group>
 </struct><struct name="duration_traits_long"><description><para>Struct for instantiating <classname alt="boost::date_time::date_duration">date_duration</classname> with <emphasis role="bold">NO</emphasis> special values functionality. Allows for transparent implementation of either date_duration&lt;long&gt; or <classname alt="boost::date_time::date_duration">date_duration</classname>&lt;int_adapter&lt;long&gt; &gt; </para></description><typedef name="int_type"><type>long</type></typedef>
 <typedef name="impl_type"><type>long</type></typedef>
 <method-group name="public static functions">
-<method name="as_number" specifiers="static"><type>int_type</type><parameter name="i"><paramtype>impl_type</paramtype></parameter></method>
+<method name="as_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR int_type</type><parameter name="i"><paramtype>impl_type</paramtype></parameter></method>
 </method-group>
 </struct>
 
@@ -462,22 +461,22 @@
     </template><purpose>additional duration type that represents a logical month </purpose><description><para>A logical month enables things like: "date(2002,Mar,2) + months(2) -&gt; 
 2002-May2". If the date is a last day-of-the-month, the result will also be a last-day-of-the-month. </para></description><method-group name="public member functions">
 <method name="number_of_months" cv="const"><type>int_rep</type></method>
-<method name="get_neg_offset" cv="const"><type>duration_type</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter><purpose>returns a negative duration </purpose></method>
-<method name="get_offset" cv="const"><type>duration_type</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
-<method name="operator==" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator!=" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator+" cv="const"><type><classname>months_type</classname></type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator+="><type><classname>months_type</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator-" cv="const"><type><classname>months_type</classname></type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator-="><type><classname>months_type</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator *" cv="const"><type><classname>months_type</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
-<method name="operator *="><type><classname>months_type</classname> &amp;</type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
-<method name="operator/" cv="const"><type><classname>months_type</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
-<method name="operator/="><type><classname>months_type</classname> &amp;</type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
-<method name="operator+" cv="const"><type><classname>months_type</classname></type><parameter name="y"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator+="><type><classname>months_type</classname> &amp;</type><parameter name="y"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator-" cv="const"><type><classname>months_type</classname></type><parameter name="y"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator-="><type><classname>months_type</classname> &amp;</type><parameter name="y"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
+<method name="get_neg_offset" cv="const"><type>BOOST_CXX14_CONSTEXPR duration_type</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter><purpose>returns a negative duration </purpose></method>
+<method name="get_offset" cv="const"><type>BOOST_CXX14_CONSTEXPR duration_type</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
+<method name="operator==" cv="const"><type>BOOST_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator!=" cv="const"><type>BOOST_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator+" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname></type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator+="><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname></type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator-="><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator *" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
+<method name="operator *="><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname> &amp;</type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
+<method name="operator/" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
+<method name="operator/="><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname> &amp;</type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
+<method name="operator+" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname></type><parameter name="y"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator+="><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname> &amp;</type><parameter name="y"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname></type><parameter name="y"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator-="><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname> &amp;</type><parameter name="y"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
 </method-group>
 <constructor><parameter name="num"><paramtype>int_rep</paramtype></parameter></constructor>
 <constructor><parameter name="sv"><paramtype>special_values</paramtype></parameter></constructor>
@@ -491,21 +490,21 @@
       <template-type-parameter name="base_config"/>
     </template><purpose>additional duration type that represents a logical year </purpose><description><para>A logical year enables things like: "date(2002,Mar,2) + years(2) -&gt; 
 2004-Mar-2". If the date is a last day-of-the-month, the result will also be a last-day-of-the-month (ie date(2001-Feb-28) + years(3) -&gt; 2004-Feb-29). </para></description><method-group name="public member functions">
-<method name="number_of_years" cv="const"><type>int_rep</type></method>
-<method name="get_neg_offset" cv="const"><type>duration_type</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter><purpose>returns a negative duration </purpose></method>
-<method name="get_offset" cv="const"><type>duration_type</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
-<method name="operator==" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
+<method name="number_of_years" cv="const"><type>BOOST_CXX14_CONSTEXPR int_rep</type></method>
+<method name="get_neg_offset" cv="const"><type>BOOST_CXX14_CONSTEXPR duration_type</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter><purpose>returns a negative duration </purpose></method>
+<method name="get_offset" cv="const"><type>BOOST_CXX14_CONSTEXPR duration_type</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
+<method name="operator==" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
 <method name="operator!=" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator+" cv="const"><type><classname>years_type</classname></type><parameter name="rhs"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator+="><type><classname>years_type</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator-" cv="const"><type><classname>years_type</classname></type><parameter name="rhs"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator-="><type><classname>years_type</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator *" cv="const"><type><classname>years_type</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
-<method name="operator *="><type><classname>years_type</classname> &amp;</type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
-<method name="operator/" cv="const"><type><classname>years_type</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
-<method name="operator/="><type><classname>years_type</classname> &amp;</type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
-<method name="operator+" cv="const"><type><classname>months_type</classname></type><parameter name="m"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
-<method name="operator-" cv="const"><type><classname>months_type</classname></type><parameter name="m"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator+" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>years_type</classname></type><parameter name="rhs"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator+="><type>BOOST_CXX14_CONSTEXPR <classname>years_type</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>years_type</classname></type><parameter name="rhs"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator-="><type>BOOST_CXX14_CONSTEXPR <classname>years_type</classname> &amp;</type><parameter name="rhs"><paramtype>const <classname>years_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator *" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>years_type</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
+<method name="operator *="><type>BOOST_CXX14_CONSTEXPR <classname>years_type</classname> &amp;</type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
+<method name="operator/" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>years_type</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
+<method name="operator/="><type>BOOST_CXX14_CONSTEXPR <classname>years_type</classname> &amp;</type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
+<method name="operator+" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname></type><parameter name="m"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>months_type</classname></type><parameter name="m"><paramtype>const <classname>months_type</classname> &amp;</paramtype></parameter></method>
 </method-group>
 <constructor><parameter name="num"><paramtype>int_rep</paramtype></parameter></constructor>
 <constructor><parameter name="sv"><paramtype>special_values</paramtype></parameter></constructor>
@@ -1237,7 +1236,7 @@ fkbf.get_date(date(2002,Feb,1));
 </para></description></constructor>
 </class><class name="nth_kday_of_month"><template>
       <template-type-parameter name="date_type"/>
-    </template><inherit access="public">boost::date_time::year_based_generator&lt; date_type &gt;</inherit><purpose>Useful generator functor for finding holidays. </purpose><description><para>Based on the idea in Cal. Calc. for finding holidays that are the 'first Monday of September'. When instantiated with 'fifth' kday of month, the result will be the last kday of month which can be the fourth or fifth depending on the structure of the month.</para><para>The algorithm here basically guesses for the first day of the month. Then finds the first day of the correct type. That is, if the first of the month is a Tuesday and it needs Wenesday then we simply increment by a day and then we can add the length of a week until we get to the 'nth kday'. There are probably more efficient algorithms based on using a mod 7, but this one works reasonably well for basic applications. </para></description><enum name="week_num"><enumvalue name="first"><default>=1</default></enumvalue><enumvalue name="second"/><enumvalue name="third"/><enumvalue name="fourth"/><enumvalue name="fifth"/></enum>
+    </template><inherit access="public">boost::date_time::year_based_generator&lt; date_type &gt;</inherit><purpose>Useful generator functor for finding holidays. </purpose><description><para>Based on the idea in Cal. Calc. for finding holidays that are the 'first Monday of September'. When instantiated with 'fifth' kday of month, the result will be the last kday of month which can be the fourth or fifth depending on the structure of the month.</para><para>The algorithm here basically guesses for the first day of the month. Then finds the first day of the correct type. That is, if the first of the month is a Tuesday and it needs Wednesday then we simply increment by a day and then we can add the length of a week until we get to the 'nth kday'. There are probably more efficient algorithms based on using a mod 7, but this one works reasonably well for basic applications. </para></description><enum name="week_num"><enumvalue name="first"><default>=1</default></enumvalue><enumvalue name="second"/><enumvalue name="third"/><enumvalue name="fourth"/><enumvalue name="fifth"/></enum>
 <typedef name="calendar_type"><type>date_type::calendar_type</type></typedef>
 <typedef name="day_of_week_type"><type>calendar_type::day_of_week_type</type></typedef>
 <typedef name="month_type"><type>calendar_type::month_type</type></typedef>
@@ -1317,7 +1316,7 @@ pg.get_date(2000); // returns 2000-2-29
 
 
 
-<function name="nth_as_str"><type>BOOST_DATE_TIME_DECL const char *</type><parameter name="n"><paramtype>int</paramtype></parameter><purpose>Returns nth arg as string. 1 -&gt; "first", 2 -&gt; "second", max is 5. </purpose></function>
+<function name="nth_as_str"><type>const char *</type><parameter name="ele"><paramtype>int</paramtype></parameter><purpose>Returns nth arg as string. 1 -&gt; "first", 2 -&gt; "second", max is 5. </purpose></function>
 <function name="days_until_weekday"><type>date_type::duration_type</type><template>
           <template-type-parameter name="date_type"/>
           <template-type-parameter name="weekday_type"/>
@@ -1361,14 +1360,14 @@ pg.get_date(2000); // returns 2000-2-29
 <method name="operator--"><type><classname>date_itr_base</classname> &amp;</type></method>
 <method name="get_offset" cv="const = 0" specifiers="virtual"><type>duration_type</type><parameter name="current"><paramtype>const date_type &amp;</paramtype></parameter></method>
 <method name="get_neg_offset" cv="const = 0" specifiers="virtual"><type>duration_type</type><parameter name="current"><paramtype>const date_type &amp;</paramtype></parameter></method>
-<method name="operator *"><type>date_type</type></method>
-<method name="operator-&gt;"><type>date_type *</type></method>
-<method name="operator&lt;"><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
-<method name="operator&lt;="><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
-<method name="operator&gt;"><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
-<method name="operator&gt;="><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
-<method name="operator=="><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
-<method name="operator!="><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
+<method name="operator *" cv="const"><type>const date_type &amp;</type></method>
+<method name="operator-&gt;" cv="const"><type>const date_type *</type></method>
+<method name="operator&lt;" cv="const"><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
+<method name="operator&lt;=" cv="const"><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
+<method name="operator&gt;" cv="const"><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
+<method name="operator&gt;=" cv="const"><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
+<method name="operator==" cv="const"><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
+<method name="operator!=" cv="const"><type>bool</type><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter></method>
 </method-group>
 <constructor><parameter name="d"><paramtype>date_type</paramtype></parameter></constructor>
 <destructor/>
@@ -1544,13 +1543,11 @@ pg.get_date(2000); // returns 2000-2-29
 
 
 
+
 <function name="convert_to_lower"><type>std::string</type><parameter name="inp"><paramtype>std::string</paramtype></parameter><purpose>A function to replace the std::transform( , , ,tolower) construct. </purpose><description><para>This function simply takes a string, and changes all the characters in that string to lowercase (according to the default system locale). In the event that a compiler does not support locales, the old C style tolower() is used. </para></description></function>
 <function name="month_str_to_ushort"><type>unsigned short</type><template>
           <template-type-parameter name="month_type"/>
         </template><parameter name="s"><paramtype>std::string const &amp;</paramtype></parameter><purpose>Helper function for parse_date. </purpose></function>
-<function name="find_match"><type>short</type><template>
-          <template-type-parameter name="charT"/>
-        </template><parameter name="short_names"><paramtype>const charT *const *</paramtype></parameter><parameter name="long_names"><paramtype>const charT *const *</paramtype></parameter><parameter name="size"><paramtype>short</paramtype></parameter><parameter name="s"><paramtype>const std::basic_string&lt; charT &gt; &amp;</paramtype></parameter><purpose>Find index of a string in either of 2 arrays. </purpose><description><para>find_match searches both arrays for a match to 's'. Both arrays must contain 'size' elements. The index of the match is returned. If no match is found, 'size' is returned. Ex. "Jan" returns 0, "Dec" returns 11, "Tue" returns 2. 'size' can be sent in with: (greg_month::max)() (which 12), (greg_weekday::max)() + 1 (which is 7) or date_time::NumSpecialValues </para></description></function>
 <function name="parse_date"><type>date_type</type><template>
           <template-type-parameter name="date_type"/>
         </template><parameter name="s"><paramtype>const std::string &amp;</paramtype></parameter><parameter name="order_spec"><paramtype>int</paramtype><default>ymd_order_iso</default></parameter><purpose>Generic function to parse a delimited date (eg: 2002-02-10) </purpose><description><para>Accepted formats are: "2003-02-10" or " 2003-Feb-10" or "2003-Feburary-10" The order in which the Month, Day, &amp; Year appear in the argument string can be accomodated by passing in the appropriate ymd_order_spec </para></description></function>
@@ -1609,7 +1606,7 @@ pg.get_date(2000); // returns 2000-2-29
     </template><purpose>Dynamic class used to caluclate dst transition information. </purpose><typedef name="time_duration_type"><type>time_duration_type_</type></typedef>
 <typedef name="date_type"><type>date_type_</type></typedef>
 <method-group name="public static functions">
-<method name="process_local_dst_start_day" specifiers="static"><type>time_is_dst_result</type><parameter name="time_of_day"><paramtype>const time_duration_type &amp;</paramtype><description><para>Time offset in the day for the local time </para></description></parameter><parameter name="dst_start_offset_minutes"><paramtype>unsigned int</paramtype><description><para>Local day offset for start of dst </para></description></parameter><parameter name="dst_length_minutes"><paramtype>long</paramtype><description><para>Number of minutes to adjust clock forward </para></description></parameter><purpose>Check the local time offset when on dst start day. </purpose><description><para>On this dst transition, the time label between the transition boundary and the boudary + the offset are invalid times. If before the boundary then still not in dst.</para><para>
+<method name="process_local_dst_start_day" specifiers="static"><type>time_is_dst_result</type><parameter name="time_of_day"><paramtype>const time_duration_type &amp;</paramtype><description><para>Time offset in the day for the local time </para></description></parameter><parameter name="dst_start_offset_minutes"><paramtype>unsigned int</paramtype><description><para>Local day offset for start of dst </para></description></parameter><parameter name="dst_length_minutes"><paramtype>long</paramtype><description><para>Number of minutes to adjust clock forward </para></description></parameter><purpose>Check the local time offset when on dst start day. </purpose><description><para>On this dst transition, the time label between the transition boundary and the boudary + the offset are invalid times. If before the boundary then still not in dst. 
 
 </para></description></method>
 <method name="process_local_dst_end_day" specifiers="static"><type>time_is_dst_result</type><parameter name="time_of_day"><paramtype>const time_duration_type &amp;</paramtype><description><para>Time offset in the day for the local time </para></description></parameter><parameter name="dst_end_offset_minutes"><paramtype>unsigned int</paramtype><description><para>Local time of day for end of dst </para></description></parameter><parameter name="dst_length_minutes"><paramtype>long</paramtype></parameter><purpose>Check the local time offset when on the last day of dst. </purpose><description><para>This is the calculation for the DST end day. On that day times prior to the conversion time - dst_length (1 am in US) are still in dst. Times between the above and the switch time are ambiguous. Times after the start_offset are not in dst. 
@@ -1775,12 +1772,53 @@ pg.get_date(2000); // returns 2000-2-29
 
 
 
+
 <function name="time_from_ftime"><type>TimeT</type><template>
           <template-type-parameter name="TimeT"/>
           <template-type-parameter name="FileTimeT"/>
         </template><parameter name="ft"><paramtype>const FileTimeT &amp;</paramtype></parameter><purpose>Create a time object from an initialized FILETIME struct. </purpose><description><para>Create a time object from an initialized FILETIME struct. A FILETIME struct holds 100-nanosecond units (0.0000001). When built with microsecond resolution the file_time's sub second value will be truncated. Nanosecond resolution has no truncation.</para><para><note><para>The function is templated on the FILETIME type, so that it can be used with both native FILETIME and the ad-hoc boost::detail::winapi::FILETIME_ type. </para>
 </note>
 </para></description></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</namespace>
+</header>
+<header name="boost/date_time/find_match.hpp">
+<namespace name="boost">
+<namespace name="date_time">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="find_match"><type>short</type><template>
+          <template-type-parameter name="charT"/>
+        </template><parameter name="short_names"><paramtype>const charT *const *</paramtype></parameter><parameter name="long_names"><paramtype>const charT *const *</paramtype></parameter><parameter name="size"><paramtype>short</paramtype></parameter><parameter name="s"><paramtype>const std::basic_string&lt; charT &gt; &amp;</paramtype></parameter><purpose>Find index of a string in either of 2 arrays. </purpose><description><para>find_match searches both arrays for a match to 's'. Both arrays must contain 'size' elements. The index of the match is returned. If no match is found, 'size' is returned. Ex. "Jan" returns 0, "Dec" returns 11, "Tue" returns 2. 'size' can be sent in with: (greg_month::max)() (which 12), (greg_weekday::max)() + 1 (which is 7) or date_time::NumSpecialValues </para></description></function>
 
 
 
@@ -1915,18 +1953,18 @@ pg.get_date(2000); // returns 2000-2-29
 <typedef name="year_type"><purpose>Type to hold a stand alone year value (eg: 2002) </purpose><type>ymd_type::year_type</type></typedef>
 <typedef name="date_int_type"><purpose>Define the integer type to use for internal calculations. </purpose><type>date_int_type_</type></typedef>
 <method-group name="public static functions">
-<method name="day_of_week" specifiers="static"><type>unsigned short</type><parameter name="ymd"><paramtype>const ymd_type &amp;</paramtype></parameter></method>
-<method name="week_number" specifiers="static"><type>int</type><parameter name="ymd"><paramtype>const ymd_type &amp;</paramtype></parameter></method>
-<method name="day_number" specifiers="static"><type>date_int_type</type><parameter name="ymd"><paramtype>const ymd_type &amp;</paramtype></parameter></method>
-<method name="julian_day_number" specifiers="static"><type>date_int_type</type><parameter name="ymd"><paramtype>const ymd_type &amp;</paramtype></parameter></method>
-<method name="modjulian_day_number" specifiers="static"><type>date_int_type</type><parameter name="ymd"><paramtype>const ymd_type &amp;</paramtype></parameter></method>
-<method name="from_day_number" specifiers="static"><type>ymd_type</type><parameter name=""><paramtype>date_int_type</paramtype></parameter></method>
-<method name="from_julian_day_number" specifiers="static"><type>ymd_type</type><parameter name=""><paramtype>date_int_type</paramtype></parameter></method>
-<method name="from_modjulian_day_number" specifiers="static"><type>ymd_type</type><parameter name=""><paramtype>date_int_type</paramtype></parameter></method>
-<method name="is_leap_year" specifiers="static"><type>bool</type><parameter name=""><paramtype>year_type</paramtype></parameter></method>
-<method name="end_of_month_day" specifiers="static"><type>unsigned short</type><parameter name="y"><paramtype>year_type</paramtype></parameter><parameter name="m"><paramtype>month_type</paramtype></parameter></method>
-<method name="epoch" specifiers="static"><type>ymd_type</type></method>
-<method name="days_in_week" specifiers="static"><type>unsigned short</type></method>
+<method name="day_of_week" specifiers="static"><type>BOOST_CXX14_CONSTEXPR unsigned short</type><parameter name="ymd"><paramtype>const ymd_type &amp;</paramtype></parameter></method>
+<method name="week_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR int</type><parameter name="ymd"><paramtype>const ymd_type &amp;</paramtype></parameter></method>
+<method name="day_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR date_int_type</type><parameter name="ymd"><paramtype>const ymd_type &amp;</paramtype></parameter></method>
+<method name="julian_day_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR date_int_type</type><parameter name="ymd"><paramtype>const ymd_type &amp;</paramtype></parameter></method>
+<method name="modjulian_day_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR date_int_type</type><parameter name="ymd"><paramtype>const ymd_type &amp;</paramtype></parameter></method>
+<method name="from_day_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR ymd_type</type><parameter name=""><paramtype>date_int_type</paramtype></parameter></method>
+<method name="from_julian_day_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR ymd_type</type><parameter name=""><paramtype>date_int_type</paramtype></parameter></method>
+<method name="from_modjulian_day_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR ymd_type</type><parameter name=""><paramtype>date_int_type</paramtype></parameter></method>
+<method name="is_leap_year" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name=""><paramtype>year_type</paramtype></parameter></method>
+<method name="end_of_month_day" specifiers="static"><type>BOOST_CXX14_CONSTEXPR unsigned short</type><parameter name="y"><paramtype>year_type</paramtype></parameter><parameter name="m"><paramtype>month_type</paramtype></parameter></method>
+<method name="epoch" specifiers="static"><type>BOOST_CXX14_CONSTEXPR ymd_type</type></method>
+<method name="days_in_week" specifiers="static"><type>BOOST_CXX14_CONSTEXPR unsigned short</type></method>
 </method-group>
 </class>
 
@@ -1977,55 +2015,55 @@ pg.get_date(2000); // returns 2000-2-29
  infinity  *  infinity  == infinity 
 </programlisting> </para></description><typedef name="int_type"><type>int_type_</type></typedef>
 <method-group name="public member functions">
-<method name="is_infinity" cv="const"><type>bool</type></method>
-<method name="is_pos_infinity" cv="const"><type>bool</type></method>
-<method name="is_neg_infinity" cv="const"><type>bool</type></method>
-<method name="is_nan" cv="const"><type>bool</type></method>
-<method name="is_special" cv="const"><type>bool</type></method>
-<method name="operator==" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
-<method name="operator==" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const int &amp;</paramtype></parameter></method>
-<method name="operator!=" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
-<method name="operator!=" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const int &amp;</paramtype></parameter></method>
-<method name="operator&lt;" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
-<method name="operator&lt;" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const int &amp;</paramtype></parameter></method>
-<method name="operator&gt;" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
-<method name="as_number" cv="const"><type>int_type</type></method>
-<method name="as_special" cv="const"><type>special_values</type><purpose>Returns either special value type or is_not_special. </purpose></method>
-<method name="operator+" cv="const"><type><classname>int_adapter</classname></type><template>
+<method name="is_infinity" cv="const"><type>BOOST_CONSTEXPR bool</type></method>
+<method name="is_pos_infinity" cv="const"><type>BOOST_CONSTEXPR bool</type></method>
+<method name="is_neg_infinity" cv="const"><type>BOOST_CONSTEXPR bool</type></method>
+<method name="is_nan" cv="const"><type>BOOST_CONSTEXPR bool</type></method>
+<method name="is_special" cv="const"><type>BOOST_CONSTEXPR bool</type></method>
+<method name="operator==" cv="const"><type>BOOST_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
+<method name="operator==" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const int &amp;</paramtype></parameter></method>
+<method name="operator!=" cv="const"><type>BOOST_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
+<method name="operator!=" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const int &amp;</paramtype></parameter></method>
+<method name="operator&lt;" cv="const"><type>BOOST_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
+<method name="operator&lt;" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const int &amp;</paramtype></parameter></method>
+<method name="operator&gt;" cv="const"><type>BOOST_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
+<method name="as_number" cv="const"><type>BOOST_CONSTEXPR int_type</type></method>
+<method name="as_special" cv="const"><type>BOOST_CONSTEXPR special_values</type><purpose>Returns either special value type or is_not_special. </purpose></method>
+<method name="operator+" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><template>
           <template-type-parameter name="rhs_type"/>
         </template><parameter name="rhs"><paramtype>const <classname>int_adapter</classname>&lt; rhs_type &gt; &amp;</paramtype></parameter><description><para>Operator allows for adding dissimilar <classname alt="boost::date_time::int_adapter">int_adapter</classname> types. The return type will match that of the the calling object's type </para></description></method>
-<method name="operator+" cv="const"><type><classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
-<method name="operator-" cv="const"><type><classname>int_adapter</classname></type><template>
+<method name="operator+" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><template>
           <template-type-parameter name="rhs_type"/>
         </template><parameter name="rhs"><paramtype>const <classname>int_adapter</classname>&lt; rhs_type &gt; &amp;</paramtype></parameter><description><para>Operator allows for subtracting dissimilar <classname alt="boost::date_time::int_adapter">int_adapter</classname> types. The return type will match that of the the calling object's type </para></description></method>
-<method name="operator-" cv="const"><type><classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
-<method name="operator *" cv="const"><type><classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
-<method name="operator *" cv="const"><type><classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int</paramtype></parameter><description><para>Provided for cases when automatic conversion from 'int' to '<classname alt="boost::date_time::int_adapter">int_adapter</classname>' causes incorrect results. </para></description></method>
-<method name="operator/" cv="const"><type><classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
-<method name="operator/" cv="const"><type><classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int</paramtype></parameter><description><para>Provided for cases when automatic conversion from 'int' to '<classname alt="boost::date_time::int_adapter">int_adapter</classname>' causes incorrect results. </para></description></method>
-<method name="operator%" cv="const"><type><classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
-<method name="operator%" cv="const"><type><classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int</paramtype></parameter><description><para>Provided for cases when automatic conversion from 'int' to '<classname alt="boost::date_time::int_adapter">int_adapter</classname>' causes incorrect results. </para></description></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int_type</paramtype></parameter></method>
+<method name="operator *" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
+<method name="operator *" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int</paramtype></parameter><description><para>Provided for cases when automatic conversion from 'int' to '<classname alt="boost::date_time::int_adapter">int_adapter</classname>' causes incorrect results. </para></description></method>
+<method name="operator/" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
+<method name="operator/" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int</paramtype></parameter><description><para>Provided for cases when automatic conversion from 'int' to '<classname alt="boost::date_time::int_adapter">int_adapter</classname>' causes incorrect results. </para></description></method>
+<method name="operator%" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter></method>
+<method name="operator%" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int</paramtype></parameter><description><para>Provided for cases when automatic conversion from 'int' to '<classname alt="boost::date_time::int_adapter">int_adapter</classname>' causes incorrect results. </para></description></method>
 </method-group>
 <constructor><parameter name="v"><paramtype>int_type</paramtype></parameter></constructor>
 <method-group name="public static functions">
-<method name="has_infinity" specifiers="static"><type>bool</type></method>
-<method name="pos_infinity" specifiers="static"><type>const <classname>int_adapter</classname></type></method>
-<method name="neg_infinity" specifiers="static"><type>const <classname>int_adapter</classname></type></method>
-<method name="not_a_number" specifiers="static"><type>const <classname>int_adapter</classname></type></method>
-<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type><classname>int_adapter</classname> max</type></method>
-<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type><classname>int_adapter</classname> min</type></method>
-<method name="from_special" specifiers="static"><type><classname>int_adapter</classname></type><parameter name="sv"><paramtype>special_values</paramtype></parameter></method>
-<method name="is_inf" specifiers="static"><type>bool</type><parameter name="v"><paramtype>int_type</paramtype></parameter></method>
-<method name="is_neg_inf" specifiers="static"><type>bool</type><parameter name="v"><paramtype>int_type</paramtype></parameter></method>
-<method name="is_pos_inf" specifiers="static"><type>bool</type><parameter name="v"><paramtype>int_type</paramtype></parameter></method>
-<method name="is_not_a_number" specifiers="static"><type>bool</type><parameter name="v"><paramtype>int_type</paramtype></parameter></method>
-<method name="to_special" specifiers="static"><type>special_values</type><parameter name="v"><paramtype>int_type</paramtype></parameter><purpose>Returns either special value type or is_not_special. </purpose></method>
-<method name="maxcount" specifiers="static"><type>int_type</type></method>
+<method name="has_infinity" specifiers="static"><type>BOOST_CONSTEXPR bool</type></method>
+<method name="pos_infinity" specifiers="static"><type>BOOST_CONSTEXPR <classname>int_adapter</classname></type></method>
+<method name="neg_infinity" specifiers="static"><type>BOOST_CONSTEXPR <classname>int_adapter</classname></type></method>
+<method name="not_a_number" specifiers="static"><type>BOOST_CONSTEXPR <classname>int_adapter</classname></type></method>
+<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type>BOOST_CONSTEXPR <classname>int_adapter</classname> max</type></method>
+<method name="BOOST_PREVENT_MACRO_SUBSTITUTION" specifiers="static"><type>BOOST_CONSTEXPR <classname>int_adapter</classname> min</type></method>
+<method name="from_special" specifiers="static"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><parameter name="sv"><paramtype>special_values</paramtype></parameter></method>
+<method name="is_inf" specifiers="static"><type>BOOST_CONSTEXPR bool</type><parameter name="v"><paramtype>int_type</paramtype></parameter></method>
+<method name="is_neg_inf" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="v"><paramtype>int_type</paramtype></parameter></method>
+<method name="is_pos_inf" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="v"><paramtype>int_type</paramtype></parameter></method>
+<method name="is_not_a_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="v"><paramtype>int_type</paramtype></parameter></method>
+<method name="to_special" specifiers="static"><type>BOOST_CXX14_CONSTEXPR special_values</type><parameter name="v"><paramtype>int_type</paramtype></parameter><purpose>Returns either special value type or is_not_special. </purpose></method>
+<method name="maxcount" specifiers="static"><type>BOOST_CONSTEXPR int_type</type></method>
 </method-group>
 <method-group name="private member functions">
-<method name="compare" cv="const"><type>int</type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter><purpose>returns -1, 0, 1, or 2 if 'this' is &lt;, ==, &gt;, or 'nan comparison' rhs </purpose></method>
-<method name="mult_div_specials" cv="const"><type><classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter><purpose>Assumes at least 'this' or 'rhs' is a special value. </purpose></method>
-<method name="mult_div_specials" cv="const"><type><classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int &amp;</paramtype></parameter><purpose>Assumes 'this' is a special value. </purpose></method>
+<method name="compare" cv="const"><type>BOOST_CXX14_CONSTEXPR int</type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter><purpose>returns -1, 0, 1, or 2 if 'this' is &lt;, ==, &gt;, or 'nan comparison' rhs </purpose></method>
+<method name="mult_div_specials" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const <classname>int_adapter</classname> &amp;</paramtype></parameter><purpose>Assumes at least 'this' or 'rhs' is a special value. </purpose></method>
+<method name="mult_div_specials" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>int_adapter</classname></type><parameter name="rhs"><paramtype>const int &amp;</paramtype></parameter><purpose>Assumes 'this' is a special value. </purpose></method>
 </method-group>
 </class>
 
@@ -2486,30 +2524,30 @@ if (us_dst::local_is_dst(t.date(), t.time_of_day())
     </template><inherit access="private">boost::less_than_comparable&lt; period&lt; point_rep, duration_rep &gt;, boost::equality_comparable&lt; period&lt; point_rep, duration_rep &gt; &gt; &gt;</inherit><purpose>Provides generalized period type useful in date-time systems. </purpose><description><para>This template uses a class to represent a time point within the period and another class to represent a duration. As a result, this class is not appropriate for use when the number and duration representation are the same (eg: in the regular number domain).</para><para>A period can be specified by providing either the begining point and a duration or the begining point and the end point( end is NOT part of the period but 1 unit past it. A period will be "invalid" if either end_point &lt;= begin_point or the given duration is &lt;= 0. Any valid period will return false for is_null().</para><para>Zero length periods are also considered invalid. Zero length periods are periods where the begining and end points are the same, or, the given duration is zero. For a zero length period, the last point will be one unit less than the begining point.</para><para>In the case that the begin and last are the same, the period has a length of one unit.</para><para>The best way to handle periods is usually to provide a begining point and a duration. So, day1 + 7 days is a week period which includes all of the first day and 6 more days (eg: Sun to Sat). </para></description><typedef name="point_type"><type>point_rep</type></typedef>
 <typedef name="duration_type"><type>duration_rep</type></typedef>
 <method-group name="public member functions">
-<method name="begin" cv="const"><type>point_rep</type><purpose>Return the first element in the period. </purpose></method>
-<method name="end" cv="const"><type>point_rep</type><purpose>Return one past the last element. </purpose></method>
-<method name="last" cv="const"><type>point_rep</type><purpose>Return the last item in the period. </purpose></method>
-<method name="length" cv="const"><type>duration_rep</type><purpose>Return the length of the period. </purpose></method>
-<method name="is_null" cv="const"><type>bool</type><purpose>True if period is ill formed (length is zero or less) </purpose></method>
-<method name="operator==" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>Equality operator. </purpose></method>
-<method name="operator&lt;" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>Strict as defined by rhs.last &lt;= lhs.last. </purpose></method>
-<method name="shift"><type>void</type><parameter name="d"><paramtype>const duration_rep &amp;</paramtype></parameter><purpose>Shift the start and end by the specified amount. </purpose></method>
-<method name="expand"><type>void</type><parameter name="d"><paramtype>const duration_rep &amp;</paramtype></parameter><description><para>Expands the size of the period by the duration on both ends.</para><para>So before expand <programlisting language="c++">        [-------]
+<method name="begin" cv="const"><type>BOOST_CXX14_CONSTEXPR point_rep</type><purpose>Return the first element in the period. </purpose></method>
+<method name="end" cv="const"><type>BOOST_CXX14_CONSTEXPR point_rep</type><purpose>Return one past the last element. </purpose></method>
+<method name="last" cv="const"><type>BOOST_CXX14_CONSTEXPR point_rep</type><purpose>Return the last item in the period. </purpose></method>
+<method name="length" cv="const"><type>BOOST_CXX14_CONSTEXPR duration_rep</type><purpose>Return the length of the period. </purpose></method>
+<method name="is_null" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>True if period is ill formed (length is zero or less) </purpose></method>
+<method name="operator==" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>Equality operator. </purpose></method>
+<method name="operator&lt;" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>Strict as defined by rhs.last &lt;= lhs.last. </purpose></method>
+<method name="shift"><type>BOOST_CXX14_CONSTEXPR void</type><parameter name="d"><paramtype>const duration_rep &amp;</paramtype></parameter><purpose>Shift the start and end by the specified amount. </purpose></method>
+<method name="expand"><type>BOOST_CXX14_CONSTEXPR void</type><parameter name="d"><paramtype>const duration_rep &amp;</paramtype></parameter><description><para>Expands the size of the period by the duration on both ends.</para><para>So before expand <programlisting language="c++">        [-------]
 ^   ^   ^   ^   ^   ^  ^
 1   2   3   4   5   6  7
 </programlisting> After expand(2) <programlisting language="c++">[----------------------]
 ^   ^   ^   ^   ^   ^  ^
 1   2   3   4   5   6  7
 </programlisting> </para></description></method>
-<method name="contains" cv="const"><type>bool</type><parameter name="point"><paramtype>const point_rep &amp;</paramtype></parameter><purpose>True if the point is inside the period, zero length periods contain no points. </purpose></method>
-<method name="contains" cv="const"><type>bool</type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>True if this period fully contains (or equals) the other period. </purpose></method>
-<method name="intersects" cv="const"><type>bool</type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>True if the periods overlap in any way. </purpose></method>
-<method name="is_adjacent" cv="const"><type>bool</type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>True if periods are next to each other without a gap. </purpose></method>
-<method name="is_before" cv="const"><type>bool</type><parameter name="point"><paramtype>const point_rep &amp;</paramtype></parameter><purpose>True if all of the period is prior to the passed point or end &lt;= t. </purpose></method>
-<method name="is_after" cv="const"><type>bool</type><parameter name="point"><paramtype>const point_rep &amp;</paramtype></parameter><purpose>True if all of the period is prior or t &lt; start. </purpose></method>
-<method name="intersection" cv="const"><type><classname>period</classname></type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>Returns the period of intersection or invalid range no intersection. </purpose></method>
-<method name="merge" cv="const"><type><classname>period</classname></type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>Returns the union of intersecting periods – or null period. </purpose></method>
-<method name="span" cv="const"><type><classname>period</classname></type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>Combine two periods with earliest start and latest end. </purpose><description><para>Combines two periods and any gap between them such that start = min(p1.start, p2.start) end = max(p1.end , p2.end) <programlisting language="c++">       [---p1---)
+<method name="contains" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="point"><paramtype>const point_rep &amp;</paramtype></parameter><purpose>True if the point is inside the period, zero length periods contain no points. </purpose></method>
+<method name="contains" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>True if this period fully contains (or equals) the other period. </purpose></method>
+<method name="intersects" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>True if the periods overlap in any way. </purpose></method>
+<method name="is_adjacent" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>True if periods are next to each other without a gap. </purpose></method>
+<method name="is_before" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="point"><paramtype>const point_rep &amp;</paramtype></parameter><purpose>True if all of the period is prior to the passed point or end &lt;= t. </purpose></method>
+<method name="is_after" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="point"><paramtype>const point_rep &amp;</paramtype></parameter><purpose>True if all of the period is prior or t &lt; start. </purpose></method>
+<method name="intersection" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>period</classname></type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>Returns the period of intersection or invalid range no intersection. </purpose></method>
+<method name="merge" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>period</classname></type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>Returns the union of intersecting periods – or null period. </purpose></method>
+<method name="span" cv="const"><type>BOOST_CXX14_CONSTEXPR <classname>period</classname></type><parameter name="other"><paramtype>const <classname>period</classname> &amp;</paramtype></parameter><purpose>Combine two periods with earliest start and latest end. </purpose><description><para>Combines two periods and any gap between them such that start = min(p1.start, p2.start) end = max(p1.end , p2.end) <programlisting language="c++">       [---p1---)
                       [---p2---)
 result:
        [-----------p3----------) 
@@ -2681,7 +2719,6 @@ result:
 </programlisting> </para></description></method>
 </method-group>
 <constructor><parameter name="range_opt"><paramtype>period_range_option</paramtype><default>AS_CLOSED_RANGE</default></parameter><parameter name="period_separator"><paramtype>const char_type *const</paramtype><default>default_period_separator</default></parameter><parameter name="period_start_delimeter"><paramtype>const char_type *const</paramtype><default>default_period_start_delimeter</default></parameter><parameter name="period_open_range_end_delimeter"><paramtype>const char_type *const</paramtype><default>default_period_open_range_end_delimeter</default></parameter><parameter name="period_closed_range_end_delimeter"><paramtype>const char_type *const</paramtype><default>default_period_closed_range_end_delimeter</default></parameter><purpose>Constructor that sets up period parser options. </purpose></constructor>
-<constructor><parameter name="p_parser"><paramtype>const <classname>period_parser</classname>&lt; date_type, CharT &gt; &amp;</paramtype></parameter></constructor>
 <method-group name="private member functions">
 <method name="consume_delim" cv="const"><type>void</type><parameter name="sitr"><paramtype>stream_itr_type &amp;</paramtype></parameter><parameter name="stream_end"><paramtype>stream_itr_type &amp;</paramtype></parameter><parameter name="delim"><paramtype>const string_type &amp;</paramtype></parameter><purpose>throws ios_base::failure if delimiter and parsed data do not match </purpose></method>
 </method-group>
@@ -2852,7 +2889,6 @@ special_value_formatter svf(&amp;special_value_names[0], &amp;special_value_name
 <constructor><purpose>Creates a <classname alt="boost::date_time::special_values_parser">special_values_parser</classname> with the default set of "sv_strings". </purpose></constructor>
 <constructor><parameter name="nadt_str"><paramtype>const string_type &amp;</paramtype></parameter><parameter name="neg_inf_str"><paramtype>const string_type &amp;</paramtype></parameter><parameter name="pos_inf_str"><paramtype>const string_type &amp;</paramtype></parameter><parameter name="min_dt_str"><paramtype>const string_type &amp;</paramtype></parameter><parameter name="max_dt_str"><paramtype>const string_type &amp;</paramtype></parameter><purpose>Creates a <classname alt="boost::date_time::special_values_parser">special_values_parser</classname> using a user defined set of element strings. </purpose></constructor>
 <constructor><parameter name="beg"><paramtype>typename collection_type::iterator</paramtype></parameter><parameter name="end"><paramtype>typename collection_type::iterator</paramtype></parameter></constructor>
-<constructor><parameter name="svp"><paramtype>const <classname>special_values_parser</classname>&lt; date_type, charT &gt; &amp;</paramtype></parameter></constructor>
 <method-group name="public static functions">
 <method name="likely" specifiers="static"><type>bool</type><parameter name="str"><paramtype>const string_type &amp;</paramtype><description><para>the string to check </para></description></parameter><description><para>The parser is expensive to create, and not thread-safe so it cannot be static therefore given a string, determine if it is likely to be a special value. A negative response is a definite no, whereas a positive is only likely and match() should be called and return value checked. 
 
@@ -3075,27 +3111,27 @@ special_value_formatter svf(&amp;special_value_names[0], &amp;special_value_name
 <typedef name="date_duration_type"><type>time_system::date_duration_type</type></typedef>
 <typedef name="time_duration_type"><type>time_system::time_duration_type</type></typedef>
 <method-group name="public member functions">
-<method name="date" cv="const"><type>date_type</type></method>
-<method name="time_of_day" cv="const"><type>time_duration_type</type></method>
+<method name="date" cv="const"><type>BOOST_CXX14_CONSTEXPR date_type</type></method>
+<method name="time_of_day" cv="const"><type>BOOST_CXX14_CONSTEXPR time_duration_type</type></method>
 <method name="zone_name" cv="const"><type>std::string</type><parameter name=""><paramtype>bool</paramtype><default>false</default></parameter><description><para>Optional bool parameter will return time zone as an offset (ie "+07:00"). Empty string is returned for classes that do not use a time_zone </para></description></method>
 <method name="zone_abbrev" cv="const"><type>std::string</type><parameter name=""><paramtype>bool</paramtype><default>false</default></parameter><description><para>Optional bool parameter will return time zone as an offset (ie "+07:00"). Empty string is returned for classes that do not use a time_zone </para></description></method>
 <method name="zone_as_posix_string" cv="const"><type>std::string</type><purpose>An empty string is returned for classes that do not use a time_zone. </purpose></method>
-<method name="is_not_a_date_time" cv="const"><type>bool</type><purpose>check to see if date is not a value </purpose></method>
-<method name="is_infinity" cv="const"><type>bool</type><purpose>check to see if date is one of the infinity values </purpose></method>
-<method name="is_pos_infinity" cv="const"><type>bool</type><purpose>check to see if date is greater than all possible dates </purpose></method>
-<method name="is_neg_infinity" cv="const"><type>bool</type><purpose>check to see if date is greater than all possible dates </purpose></method>
-<method name="is_special" cv="const"><type>bool</type><purpose>check to see if time is a special value </purpose></method>
-<method name="operator==" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const time_type &amp;</paramtype></parameter><purpose>Equality operator – others generated by boost::equality_comparable. </purpose></method>
-<method name="operator&lt;" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const time_type &amp;</paramtype></parameter><purpose>Equality operator – others generated by boost::less_than_comparable. </purpose></method>
-<method name="operator-" cv="const"><type>time_duration_type</type><parameter name="rhs"><paramtype>const time_type &amp;</paramtype></parameter><purpose>difference between two times </purpose></method>
-<method name="operator+" cv="const"><type>time_type</type><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter><purpose>add date durations </purpose></method>
-<method name="operator+="><type>time_type</type><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
-<method name="operator-" cv="const"><type>time_type</type><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter><purpose>subtract date durations </purpose></method>
-<method name="operator-="><type>time_type</type><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
-<method name="operator+" cv="const"><type>time_type</type><parameter name="td"><paramtype>const time_duration_type &amp;</paramtype></parameter><purpose>add time durations </purpose></method>
-<method name="operator+="><type>time_type</type><parameter name="td"><paramtype>const time_duration_type &amp;</paramtype></parameter></method>
-<method name="operator-" cv="const"><type>time_type</type><parameter name="rhs"><paramtype>const time_duration_type &amp;</paramtype></parameter><purpose>subtract time durations </purpose></method>
-<method name="operator-="><type>time_type</type><parameter name="td"><paramtype>const time_duration_type &amp;</paramtype></parameter></method>
+<method name="is_not_a_date_time" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>check to see if date is not a value </purpose></method>
+<method name="is_infinity" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>check to see if date is one of the infinity values </purpose></method>
+<method name="is_pos_infinity" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>check to see if date is greater than all possible dates </purpose></method>
+<method name="is_neg_infinity" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>check to see if date is greater than all possible dates </purpose></method>
+<method name="is_special" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>check to see if time is a special value </purpose></method>
+<method name="operator==" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const time_type &amp;</paramtype></parameter><purpose>Equality operator – others generated by boost::equality_comparable. </purpose></method>
+<method name="operator&lt;" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const time_type &amp;</paramtype></parameter><purpose>Equality operator – others generated by boost::less_than_comparable. </purpose></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR time_duration_type</type><parameter name="rhs"><paramtype>const time_type &amp;</paramtype></parameter><purpose>difference between two times </purpose></method>
+<method name="operator+" cv="const"><type>BOOST_CXX14_CONSTEXPR time_type</type><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter><purpose>add date durations </purpose></method>
+<method name="operator+="><type>BOOST_CXX14_CONSTEXPR time_type</type><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR time_type</type><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter><purpose>subtract date durations </purpose></method>
+<method name="operator-="><type>BOOST_CXX14_CONSTEXPR time_type</type><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
+<method name="operator+" cv="const"><type>BOOST_CXX14_CONSTEXPR time_type</type><parameter name="td"><paramtype>const time_duration_type &amp;</paramtype></parameter><purpose>add time durations </purpose></method>
+<method name="operator+="><type>BOOST_CXX14_CONSTEXPR time_type</type><parameter name="td"><paramtype>const time_duration_type &amp;</paramtype></parameter></method>
+<method name="operator-" cv="const"><type>BOOST_CXX14_CONSTEXPR time_type</type><parameter name="rhs"><paramtype>const time_duration_type &amp;</paramtype></parameter><purpose>subtract time durations </purpose></method>
+<method name="operator-="><type>BOOST_CXX14_CONSTEXPR time_type</type><parameter name="td"><paramtype>const time_duration_type &amp;</paramtype></parameter></method>
 </method-group>
 <constructor><parameter name="day"><paramtype>const date_type &amp;</paramtype></parameter><parameter name="td"><paramtype>const time_duration_type &amp;</paramtype></parameter><parameter name="dst"><paramtype>dst_flags</paramtype><default>not_dst</default></parameter></constructor>
 <constructor><parameter name="sv"><paramtype>special_values</paramtype></parameter></constructor>
@@ -3262,43 +3298,45 @@ special_value_formatter svf(&amp;special_value_names[0], &amp;special_value_name
 <typedef name="tick_type"><type>rep_type::tick_type</type></typedef>
 <typedef name="impl_type"><type>rep_type::impl_type</type></typedef>
 <method-group name="public member functions">
-<method name="hours" cv="const"><type>hour_type</type><purpose>Returns number of hours in the duration. </purpose></method>
-<method name="minutes" cv="const"><type>min_type</type><purpose>Returns normalized number of minutes. </purpose></method>
-<method name="seconds" cv="const"><type>sec_type</type><purpose>Returns normalized number of seconds (0..60) </purpose></method>
-<method name="total_seconds" cv="const"><type>sec_type</type><purpose>Returns total number of seconds truncating any fractional seconds. </purpose></method>
-<method name="total_milliseconds" cv="const"><type>tick_type</type><purpose>Returns total number of milliseconds truncating any fractional seconds. </purpose></method>
-<method name="total_nanoseconds" cv="const"><type>tick_type</type><purpose>Returns total number of nanoseconds truncating any sub millisecond values. </purpose></method>
-<method name="total_microseconds" cv="const"><type>tick_type</type><purpose>Returns total number of microseconds truncating any sub microsecond values. </purpose></method>
-<method name="fractional_seconds" cv="const"><type>fractional_seconds_type</type><purpose>Returns count of fractional seconds at given resolution. </purpose></method>
-<method name="invert_sign" cv="const"><type>duration_type</type></method>
-<method name="is_negative" cv="const"><type>bool</type></method>
-<method name="operator&lt;" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>time_duration</classname> &amp;</paramtype></parameter></method>
-<method name="operator==" cv="const"><type>bool</type><parameter name="rhs"><paramtype>const <classname>time_duration</classname> &amp;</paramtype></parameter></method>
-<method name="operator-" cv="const"><type>duration_type</type><purpose>unary- Allows for <classname alt="boost::date_time::time_duration">time_duration</classname> td = -td1 </purpose></method>
-<method name="operator-" cv="const"><type>duration_type</type><parameter name="d"><paramtype>const duration_type &amp;</paramtype></parameter></method>
-<method name="operator+" cv="const"><type>duration_type</type><parameter name="d"><paramtype>const duration_type &amp;</paramtype></parameter></method>
-<method name="operator/" cv="const"><type>duration_type</type><parameter name="divisor"><paramtype>int</paramtype></parameter></method>
-<method name="operator-="><type>duration_type</type><parameter name="d"><paramtype>const duration_type &amp;</paramtype></parameter></method>
-<method name="operator+="><type>duration_type</type><parameter name="d"><paramtype>const duration_type &amp;</paramtype></parameter></method>
-<method name="operator/="><type>duration_type</type><parameter name="divisor"><paramtype>int</paramtype></parameter><purpose>Division operations on a duration with an integer. </purpose></method>
-<method name="operator *" cv="const"><type>duration_type</type><parameter name="rhs"><paramtype>int</paramtype></parameter><purpose>Multiplication operations an a duration with an integer. </purpose></method>
-<method name="operator *="><type>duration_type</type><parameter name="divisor"><paramtype>int</paramtype></parameter></method>
-<method name="ticks" cv="const"><type>tick_type</type></method>
-<method name="is_special" cv="const"><type>bool</type><purpose>Is ticks_ a special value? </purpose></method>
-<method name="is_pos_infinity" cv="const"><type>bool</type><purpose>Is duration pos-infinity. </purpose></method>
-<method name="is_neg_infinity" cv="const"><type>bool</type><purpose>Is duration neg-infinity. </purpose></method>
-<method name="is_not_a_date_time" cv="const"><type>bool</type><purpose>Is duration not-a-date-time. </purpose></method>
-<method name="get_rep" cv="const"><type>impl_type</type><purpose>Used for special_values output. </purpose></method>
+<method name="hours" cv="const"><type>BOOST_CXX14_CONSTEXPR hour_type</type><purpose>Returns number of hours in the duration. </purpose></method>
+<method name="minutes" cv="const"><type>BOOST_CXX14_CONSTEXPR min_type</type><purpose>Returns normalized number of minutes. </purpose></method>
+<method name="seconds" cv="const"><type>BOOST_CXX14_CONSTEXPR sec_type</type><purpose>Returns normalized number of seconds (0..60) </purpose></method>
+<method name="total_seconds" cv="const"><type>BOOST_CXX14_CONSTEXPR sec_type</type><purpose>Returns total number of seconds truncating any fractional seconds. </purpose></method>
+<method name="total_milliseconds" cv="const"><type>BOOST_CXX14_CONSTEXPR tick_type</type><purpose>Returns total number of milliseconds truncating any fractional seconds. </purpose></method>
+<method name="total_nanoseconds" cv="const"><type>BOOST_CXX14_CONSTEXPR tick_type</type><purpose>Returns total number of nanoseconds truncating any sub millisecond values. </purpose></method>
+<method name="total_microseconds" cv="const"><type>BOOST_CXX14_CONSTEXPR tick_type</type><purpose>Returns total number of microseconds truncating any sub microsecond values. </purpose></method>
+<method name="fractional_seconds" cv="const"><type>BOOST_CXX14_CONSTEXPR fractional_seconds_type</type><purpose>Returns count of fractional seconds at given resolution. </purpose></method>
+<method name="invert_sign" cv="const"><type>BOOST_CXX14_CONSTEXPR duration_type</type></method>
+<method name="abs" cv="const"><type>BOOST_CXX14_CONSTEXPR duration_type</type></method>
+<method name="is_negative" cv="const"><type>BOOST_CONSTEXPR bool</type></method>
+<method name="is_zero" cv="const"><type>BOOST_CONSTEXPR bool</type></method>
+<method name="is_positive" cv="const"><type>BOOST_CONSTEXPR bool</type></method>
+<method name="operator&lt;" cv="const"><type>BOOST_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>time_duration</classname> &amp;</paramtype></parameter></method>
+<method name="operator==" cv="const"><type>BOOST_CONSTEXPR bool</type><parameter name="rhs"><paramtype>const <classname>time_duration</classname> &amp;</paramtype></parameter></method>
+<method name="operator-" cv="const"><type>BOOST_CONSTEXPR duration_type</type><purpose>unary- Allows for <classname alt="boost::date_time::time_duration">time_duration</classname> td = -td1 </purpose></method>
+<method name="operator-" cv="const"><type>BOOST_CONSTEXPR duration_type</type><parameter name="d"><paramtype>const duration_type &amp;</paramtype></parameter></method>
+<method name="operator+" cv="const"><type>BOOST_CONSTEXPR duration_type</type><parameter name="d"><paramtype>const duration_type &amp;</paramtype></parameter></method>
+<method name="operator/" cv="const"><type>BOOST_CONSTEXPR duration_type</type><parameter name="divisor"><paramtype>int</paramtype></parameter></method>
+<method name="operator-="><type>BOOST_CXX14_CONSTEXPR duration_type</type><parameter name="d"><paramtype>const duration_type &amp;</paramtype></parameter></method>
+<method name="operator+="><type>BOOST_CXX14_CONSTEXPR duration_type</type><parameter name="d"><paramtype>const duration_type &amp;</paramtype></parameter></method>
+<method name="operator/="><type>BOOST_CXX14_CONSTEXPR duration_type</type><parameter name="divisor"><paramtype>int</paramtype></parameter><purpose>Division operations on a duration with an integer. </purpose></method>
+<method name="operator *" cv="const"><type>BOOST_CXX14_CONSTEXPR duration_type</type><parameter name="rhs"><paramtype>int</paramtype></parameter><purpose>Multiplication operations an a duration with an integer. </purpose></method>
+<method name="operator *="><type>BOOST_CXX14_CONSTEXPR duration_type</type><parameter name="divisor"><paramtype>int</paramtype></parameter></method>
+<method name="ticks" cv="const"><type>BOOST_CXX14_CONSTEXPR tick_type</type></method>
+<method name="is_special" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>Is ticks_ a special value? </purpose></method>
+<method name="is_pos_infinity" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>Is duration pos-infinity. </purpose></method>
+<method name="is_neg_infinity" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>Is duration neg-infinity. </purpose></method>
+<method name="is_not_a_date_time" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>Is duration not-a-date-time. </purpose></method>
+<method name="get_rep" cv="const"><type>BOOST_CONSTEXPR impl_type</type><purpose>Used for special_values output. </purpose></method>
 </method-group>
 <constructor/>
 <constructor><parameter name="hours_in"><paramtype>hour_type</paramtype></parameter><parameter name="minutes_in"><paramtype>min_type</paramtype></parameter><parameter name="seconds_in"><paramtype>sec_type</paramtype><default>0</default></parameter><parameter name="frac_sec_in"><paramtype>fractional_seconds_type</paramtype><default>0</default></parameter></constructor>
-<constructor><parameter name="other"><paramtype>const <classname>time_duration</classname>&lt; T, rep_type &gt; &amp;</paramtype></parameter><purpose>Construct from another <classname alt="boost::date_time::time_duration">time_duration</classname> (Copy constructor) </purpose></constructor>
 <constructor><parameter name="sv"><paramtype>special_values</paramtype></parameter><purpose>Construct from special_values. </purpose></constructor>
 <method-group name="public static functions">
-<method name="unit" specifiers="static"><type>duration_type</type><purpose>Returns smallest representable duration. </purpose></method>
-<method name="ticks_per_second" specifiers="static"><type>tick_type</type><purpose>Return the number of ticks in a second. </purpose></method>
-<method name="resolution" specifiers="static"><type>time_resolutions</type><purpose>Provide the resolution of this duration type. </purpose></method>
-<method name="num_fractional_digits" specifiers="static"><type>unsigned short</type><purpose>Returns number of possible digits in fractional seconds. </purpose></method>
+<method name="unit" specifiers="static"><type>BOOST_CXX14_CONSTEXPR duration_type</type><purpose>Returns smallest representable duration. </purpose></method>
+<method name="ticks_per_second" specifiers="static"><type>BOOST_CXX14_CONSTEXPR tick_type</type><purpose>Return the number of ticks in a second. </purpose></method>
+<method name="resolution" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_resolutions</type><purpose>Provide the resolution of this duration type. </purpose></method>
+<method name="num_fractional_digits" specifiers="static"><type>BOOST_CXX14_CONSTEXPR unsigned short</type><purpose>Returns number of possible digits in fractional seconds. </purpose></method>
 </method-group>
 <method-group name="protected member functions">
 </method-group>
@@ -3604,14 +3642,14 @@ special_value_formatter svf(&amp;special_value_names[0], &amp;special_value_name
 <method-group name="public member functions">
 <method name="operator++"><type><classname>time_itr</classname> &amp;</type></method>
 <method name="operator--"><type><classname>time_itr</classname> &amp;</type></method>
-<method name="operator *"><type>time_type</type></method>
-<method name="operator-&gt;"><type>time_type *</type></method>
-<method name="operator&lt;"><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
-<method name="operator&lt;="><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
-<method name="operator!="><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
-<method name="operator=="><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
-<method name="operator&gt;"><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
-<method name="operator&gt;="><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
+<method name="operator *" cv="const"><type>const time_type &amp;</type></method>
+<method name="operator-&gt;" cv="const"><type>const time_type *</type></method>
+<method name="operator&lt;" cv="const"><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
+<method name="operator&lt;=" cv="const"><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
+<method name="operator!=" cv="const"><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
+<method name="operator==" cv="const"><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
+<method name="operator&gt;" cv="const"><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
+<method name="operator&gt;=" cv="const"><type>bool</type><parameter name="t"><paramtype>const time_type &amp;</paramtype></parameter></method>
 </method-group>
 <constructor><parameter name="t"><paramtype>time_type</paramtype></parameter><parameter name="d"><paramtype>time_duration_type</paramtype></parameter></constructor>
 </class>
@@ -3720,12 +3758,12 @@ special_value_formatter svf(&amp;special_value_names[0], &amp;special_value_name
 <typedef name="min_type"><type>var_type</type></typedef>
 <typedef name="sec_type"><type>var_type</type></typedef>
 <method-group name="public static functions">
-<method name="as_number" specifiers="static"><type>fractional_seconds_type</type><parameter name="i"><paramtype>impl_type</paramtype></parameter></method>
-<method name="is_adapted" specifiers="static"><type>bool</type></method>
-<method name="resolution" specifiers="static"><type>time_resolutions</type></method>
-<method name="num_fractional_digits" specifiers="static"><type>unsigned short</type></method>
-<method name="res_adjust" specifiers="static"><type>fractional_seconds_type</type></method>
-<method name="to_tick_count" specifiers="static"><type>tick_type</type><parameter name="hours"><paramtype>hour_type</paramtype></parameter><parameter name="minutes"><paramtype>min_type</paramtype></parameter><parameter name="seconds"><paramtype>sec_type</paramtype></parameter><parameter name="fs"><paramtype>fractional_seconds_type</paramtype></parameter><purpose>Any negative argument results in a negative tick_count. </purpose></method>
+<method name="as_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR fractional_seconds_type</type><parameter name="i"><paramtype>impl_type</paramtype></parameter></method>
+<method name="is_adapted" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type></method>
+<method name="resolution" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_resolutions</type></method>
+<method name="num_fractional_digits" specifiers="static"><type>BOOST_CXX14_CONSTEXPR unsigned short</type></method>
+<method name="res_adjust" specifiers="static"><type>BOOST_CXX14_CONSTEXPR fractional_seconds_type</type></method>
+<method name="to_tick_count" specifiers="static"><type>BOOST_CXX14_CONSTEXPR tick_type</type><parameter name="hours"><paramtype>hour_type</paramtype></parameter><parameter name="minutes"><paramtype>min_type</paramtype></parameter><parameter name="seconds"><paramtype>sec_type</paramtype></parameter><parameter name="fs"><paramtype>fractional_seconds_type</paramtype></parameter><purpose>Any negative argument results in a negative tick_count. </purpose></method>
 </method-group>
 <method-group name="public member functions">
 <method name="BOOST_STATIC_CONSTANT"><type/><parameter name=""><paramtype>boost::int64_t</paramtype></parameter><parameter name=""><paramtype>ticks_per_second</paramtype><default>resolution_adjust</default></parameter></method>
@@ -3734,31 +3772,31 @@ special_value_formatter svf(&amp;special_value_names[0], &amp;special_value_name
 </class><struct name="time_resolution_traits_adapted32_impl"><purpose>traits struct for <classname alt="boost::date_time::time_resolution_traits">time_resolution_traits</classname> implementation type </purpose><typedef name="int_type"><type>boost::int32_t</type></typedef>
 <typedef name="impl_type"><type><classname>boost::date_time::int_adapter</classname>&lt; boost::int32_t &gt;</type></typedef>
 <method-group name="public static functions">
-<method name="as_number" specifiers="static"><type>int_type</type><parameter name="i"><paramtype><classname>impl_type</classname></paramtype></parameter></method>
-<method name="is_adapted" specifiers="static"><type>bool</type><purpose>Used to determine if implemented type is <classname alt="boost::date_time::int_adapter">int_adapter</classname> or int. </purpose></method>
+<method name="as_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR int_type</type><parameter name="i"><paramtype><classname>impl_type</classname></paramtype></parameter></method>
+<method name="is_adapted" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>Used to determine if implemented type is <classname alt="boost::date_time::int_adapter">int_adapter</classname> or int. </purpose></method>
 </method-group>
 </struct><struct name="time_resolution_traits_adapted64_impl"><purpose>traits struct for <classname alt="boost::date_time::time_resolution_traits">time_resolution_traits</classname> implementation type </purpose><typedef name="int_type"><type>boost::int64_t</type></typedef>
 <typedef name="impl_type"><type><classname>boost::date_time::int_adapter</classname>&lt; boost::int64_t &gt;</type></typedef>
 <method-group name="public static functions">
-<method name="as_number" specifiers="static"><type>int_type</type><parameter name="i"><paramtype><classname>impl_type</classname></paramtype></parameter></method>
-<method name="is_adapted" specifiers="static"><type>bool</type><purpose>Used to determine if implemented type is <classname alt="boost::date_time::int_adapter">int_adapter</classname> or int. </purpose></method>
+<method name="as_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR int_type</type><parameter name="i"><paramtype><classname>impl_type</classname></paramtype></parameter></method>
+<method name="is_adapted" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>Used to determine if implemented type is <classname alt="boost::date_time::int_adapter">int_adapter</classname> or int. </purpose></method>
 </method-group>
 </struct><struct name="time_resolution_traits_bi32_impl"><purpose>traits struct for <classname alt="boost::date_time::time_resolution_traits">time_resolution_traits</classname> implementation type </purpose><typedef name="int_type"><type>boost::int32_t</type></typedef>
 <typedef name="impl_type"><type>boost::int32_t</type></typedef>
 <method-group name="public static functions">
-<method name="as_number" specifiers="static"><type>int_type</type><parameter name="i"><paramtype>impl_type</paramtype></parameter></method>
-<method name="is_adapted" specifiers="static"><type>bool</type><purpose>Used to determine if implemented type is <classname alt="boost::date_time::int_adapter">int_adapter</classname> or int. </purpose></method>
+<method name="as_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR int_type</type><parameter name="i"><paramtype>impl_type</paramtype></parameter></method>
+<method name="is_adapted" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>Used to determine if implemented type is <classname alt="boost::date_time::int_adapter">int_adapter</classname> or int. </purpose></method>
 </method-group>
 </struct><struct name="time_resolution_traits_bi64_impl"><purpose>traits struct for <classname alt="boost::date_time::time_resolution_traits">time_resolution_traits</classname> implementation type </purpose><typedef name="int_type"><type>boost::int64_t</type></typedef>
 <typedef name="impl_type"><type>boost::int64_t</type></typedef>
 <method-group name="public static functions">
-<method name="as_number" specifiers="static"><type>int_type</type><parameter name="i"><paramtype>impl_type</paramtype></parameter></method>
-<method name="is_adapted" specifiers="static"><type>bool</type><purpose>Used to determine if implemented type is <classname alt="boost::date_time::int_adapter">int_adapter</classname> or int. </purpose></method>
+<method name="as_number" specifiers="static"><type>BOOST_CXX14_CONSTEXPR int_type</type><parameter name="i"><paramtype>impl_type</paramtype></parameter></method>
+<method name="is_adapted" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type><purpose>Used to determine if implemented type is <classname alt="boost::date_time::int_adapter">int_adapter</classname> or int. </purpose></method>
 </method-group>
 </struct><typedef name="milli_res"><type><classname>time_resolution_traits</classname>&lt; <classname>time_resolution_traits_adapted32_impl</classname>, milli, 1000, 3 &gt;</type></typedef>
 <typedef name="micro_res"><type><classname>time_resolution_traits</classname>&lt; <classname>time_resolution_traits_adapted64_impl</classname>, micro, 1000000, 6 &gt;</type></typedef>
 <typedef name="nano_res"><type><classname>time_resolution_traits</classname>&lt; <classname>time_resolution_traits_adapted64_impl</classname>, nano, 1000000000, 9 &gt;</type></typedef>
-<function name="absolute_value"><type>T</type><template>
+<function name="absolute_value"><type>BOOST_CXX14_CONSTEXPR T</type><template>
           <template-type-parameter name="T"/>
         </template><parameter name="x"><paramtype>T</paramtype></parameter><purpose>Simple function to calculate absolute value of a numeric type. </purpose></function>
 
@@ -3810,21 +3848,21 @@ special_value_formatter svf(&amp;special_value_names[0], &amp;special_value_name
 <typedef name="time_duration_type"><type>config::time_duration_type</type></typedef>
 <typedef name="resolution_traits"><type>config::resolution_traits</type></typedef>
 <method-group name="public member functions">
-<method name="date" cv="const"><type>date_type</type></method>
-<method name="day_count" cv="const"><type>unsigned long</type></method>
-<method name="time_count" cv="const"><type>int_type</type></method>
-<method name="tod" cv="const"><type>int_type</type></method>
-<method name="is_pos_infinity" cv="const"><type>bool</type></method>
-<method name="is_neg_infinity" cv="const"><type>bool</type></method>
-<method name="is_not_a_date_time" cv="const"><type>bool</type></method>
-<method name="is_special" cv="const"><type>bool</type></method>
-<method name="get_rep" cv="const"><type>impl_type</type></method>
+<method name="date" cv="const"><type>BOOST_CXX14_CONSTEXPR date_type</type></method>
+<method name="day_count" cv="const"><type>BOOST_CXX14_CONSTEXPR unsigned long</type></method>
+<method name="time_count" cv="const"><type>BOOST_CXX14_CONSTEXPR int_type</type></method>
+<method name="tod" cv="const"><type>BOOST_CXX14_CONSTEXPR int_type</type></method>
+<method name="is_pos_infinity" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type></method>
+<method name="is_neg_infinity" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type></method>
+<method name="is_not_a_date_time" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type></method>
+<method name="is_special" cv="const"><type>BOOST_CXX14_CONSTEXPR bool</type></method>
+<method name="get_rep" cv="const"><type>BOOST_CXX14_CONSTEXPR impl_type</type></method>
 </method-group>
 <constructor><parameter name="d"><paramtype>const date_type &amp;</paramtype></parameter><parameter name="time_of_day"><paramtype>const time_duration_type &amp;</paramtype></parameter></constructor>
 <constructor specifiers="explicit"><parameter name="count"><paramtype>int_type</paramtype></parameter></constructor>
 <constructor specifiers="explicit"><parameter name="count"><paramtype>impl_type</paramtype></parameter></constructor>
 <method-group name="public static functions">
-<method name="frac_sec_per_day" specifiers="static"><type>int_type</type></method>
+<method name="frac_sec_per_day" specifiers="static"><type>BOOST_CXX14_CONSTEXPR int_type</type></method>
 </method-group>
 </struct><class name="counted_time_system"><template>
       <template-type-parameter name="time_rep"/>
@@ -3835,21 +3873,21 @@ special_value_formatter svf(&amp;special_value_names[0], &amp;special_value_name
 <typedef name="date_type"><type>time_rep_type::date_type</type></typedef>
 <typedef name="date_duration_type"><type>time_rep_type::date_duration_type</type></typedef>
 <method-group name="public static functions">
-<method name="unused_var" specifiers="static"><type>void</type><template>
+<method name="unused_var" specifiers="static"><type>BOOST_CXX14_CONSTEXPR void</type><template>
           <template-type-parameter name="T"/>
         </template><parameter name=""><paramtype>const T &amp;</paramtype></parameter></method>
-<method name="get_time_rep" specifiers="static"><type>time_rep_type</type><parameter name="day"><paramtype>const date_type &amp;</paramtype></parameter><parameter name="tod"><paramtype>const time_duration_type &amp;</paramtype></parameter><parameter name="dst"><paramtype>date_time::dst_flags</paramtype><default>not_dst</default></parameter></method>
-<method name="get_time_rep" specifiers="static"><type>time_rep_type</type><parameter name="sv"><paramtype>special_values</paramtype></parameter></method>
-<method name="get_date" specifiers="static"><type>date_type</type><parameter name="val"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
-<method name="get_time_of_day" specifiers="static"><type>time_duration_type</type><parameter name="val"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
+<method name="get_time_rep" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="day"><paramtype>const date_type &amp;</paramtype></parameter><parameter name="tod"><paramtype>const time_duration_type &amp;</paramtype></parameter><parameter name="dst"><paramtype>date_time::dst_flags</paramtype><default>not_dst</default></parameter></method>
+<method name="get_time_rep" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="sv"><paramtype>special_values</paramtype></parameter></method>
+<method name="get_date" specifiers="static"><type>BOOST_CXX14_CONSTEXPR date_type</type><parameter name="val"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
+<method name="get_time_of_day" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_duration_type</type><parameter name="val"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
 <method name="zone_name" specifiers="static"><type>std::string</type><parameter name=""><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
-<method name="is_equal" specifiers="static"><type>bool</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
-<method name="is_less" specifiers="static"><type>bool</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
-<method name="add_days" specifiers="static"><type>time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
-<method name="subtract_days" specifiers="static"><type>time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
-<method name="subtract_time_duration" specifiers="static"><type>time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="td"><paramtype>const time_duration_type &amp;</paramtype></parameter></method>
-<method name="add_time_duration" specifiers="static"><type>time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="td"><paramtype>time_duration_type</paramtype></parameter></method>
-<method name="subtract_times" specifiers="static"><type>time_duration_type</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
+<method name="is_equal" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
+<method name="is_less" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
+<method name="add_days" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
+<method name="subtract_days" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
+<method name="subtract_time_duration" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="td"><paramtype>const time_duration_type &amp;</paramtype></parameter></method>
+<method name="add_time_duration" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="td"><paramtype>time_duration_type</paramtype></parameter></method>
+<method name="subtract_times" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_duration_type</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
 </method-group>
 </class>
 
@@ -3906,18 +3944,18 @@ special_value_formatter svf(&amp;special_value_names[0], &amp;special_value_name
 <method name="BOOST_STATIC_CONSTANT"><type/><parameter name=""><paramtype>int_type</paramtype></parameter><parameter name=""><paramtype>ticks_per_day</paramtype><default>INT64_C(86400) *config::tick_per_second</default></parameter></method>
 </method-group>
 <method-group name="public static functions">
-<method name="get_time_rep" specifiers="static"><type>time_rep_type</type><parameter name="sv"><paramtype>special_values</paramtype></parameter></method>
-<method name="get_time_rep" specifiers="static"><type>time_rep_type</type><parameter name="day"><paramtype>const date_type &amp;</paramtype></parameter><parameter name="tod"><paramtype>const time_duration_type &amp;</paramtype></parameter><parameter name=""><paramtype>date_time::dst_flags</paramtype><default>not_dst</default></parameter></method>
-<method name="get_date" specifiers="static"><type>date_type</type><parameter name="val"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
-<method name="get_time_of_day" specifiers="static"><type>time_duration_type</type><parameter name="val"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
+<method name="get_time_rep" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="sv"><paramtype>special_values</paramtype></parameter></method>
+<method name="get_time_rep" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="day"><paramtype>const date_type &amp;</paramtype></parameter><parameter name="tod"><paramtype>const time_duration_type &amp;</paramtype></parameter><parameter name=""><paramtype>date_time::dst_flags</paramtype><default>not_dst</default></parameter></method>
+<method name="get_date" specifiers="static"><type>BOOST_CONSTEXPR date_type</type><parameter name="val"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
+<method name="get_time_of_day" specifiers="static"><type>BOOST_CONSTEXPR time_duration_type</type><parameter name="val"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
 <method name="zone_name" specifiers="static"><type>std::string</type><parameter name=""><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
-<method name="is_equal" specifiers="static"><type>bool</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
-<method name="is_less" specifiers="static"><type>bool</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
-<method name="add_days" specifiers="static"><type>time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
-<method name="subtract_days" specifiers="static"><type>time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
-<method name="subtract_time_duration" specifiers="static"><type>time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="td"><paramtype>const time_duration_type &amp;</paramtype></parameter></method>
-<method name="add_time_duration" specifiers="static"><type>time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="td"><paramtype>time_duration_type</paramtype></parameter></method>
-<method name="subtract_times" specifiers="static"><type>time_duration_type</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
+<method name="is_equal" specifiers="static"><type>BOOST_CONSTEXPR bool</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
+<method name="is_less" specifiers="static"><type>BOOST_CXX14_CONSTEXPR bool</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
+<method name="add_days" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
+<method name="subtract_days" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="dd"><paramtype>const date_duration_type &amp;</paramtype></parameter></method>
+<method name="subtract_time_duration" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="td"><paramtype>const time_duration_type &amp;</paramtype></parameter></method>
+<method name="add_time_duration" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_rep_type</type><parameter name="base"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="td"><paramtype>time_duration_type</paramtype></parameter></method>
+<method name="subtract_times" specifiers="static"><type>BOOST_CXX14_CONSTEXPR time_duration_type</type><parameter name="lhs"><paramtype>const time_rep_type &amp;</paramtype></parameter><parameter name="rhs"><paramtype>const time_rep_type &amp;</paramtype></parameter></method>
 </method-group>
 </class>
 
@@ -4168,21 +4206,21 @@ cout &lt;&lt; ny_time.to_short_string() &lt;&lt; endl;
       <template-nontype-parameter name="wrap_val"><type>int_type_</type></template-nontype-parameter>
     </template><purpose>A wrapping integer used to support time durations (WARNING: only instantiate with a signed type) </purpose><description><para>In composite date and time types this type is used to wrap at the day boundary. Ex: A wrapping_int&lt;short, 10&gt; will roll over after nine, and roll under below zero. This gives a range of [0,9]</para><para>NOTE: it is strongly recommended that <classname alt="boost::date_time::wrapping_int2">wrapping_int2</classname> be used instead of <classname alt="boost::date_time::wrapping_int">wrapping_int</classname> as <classname alt="boost::date_time::wrapping_int">wrapping_int</classname> is to be depricated at some point soon.</para><para>Also Note that warnings will occur if instantiated with an unsigned type. Only a signed type should be used! </para></description><typedef name="int_type"><type>int_type_</type></typedef>
 <method-group name="public static functions">
-<method name="wrap_value" specifiers="static"><type>int_type</type></method>
+<method name="wrap_value" specifiers="static"><type>BOOST_CONSTEXPR int_type</type></method>
 </method-group>
 <method-group name="public member functions">
-<method name="as_int" cv="const"><type>int_type</type><purpose>Explicit converion method. </purpose></method>
-<method name="conversion-operator" cv="const"><type>int_type</type></method>
-<method name="add"><type>IntT</type><template>
+<method name="as_int" cv="const"><type>BOOST_CONSTEXPR int_type</type><purpose>Explicit converion method. </purpose></method>
+<method name="operator int_type" cv="const"><type>BOOST_CONSTEXPR</type></method>
+<method name="add"><type>BOOST_CXX14_CONSTEXPR IntT</type><template>
           <template-type-parameter name="IntT"/>
         </template><parameter name="v"><paramtype>IntT</paramtype></parameter><purpose>Add, return number of wraps performed. </purpose><description><para>The sign of the returned value will indicate which direction the wraps went. Ex: add a negative number and wrapping under could occur, this would be indicated by a negative return value. If wrapping over took place, a positive value would be returned </para></description></method>
-<method name="subtract"><type>IntT</type><template>
+<method name="subtract"><type>BOOST_CXX14_CONSTEXPR IntT</type><template>
           <template-type-parameter name="IntT"/>
         </template><parameter name="v"><paramtype>IntT</paramtype></parameter><purpose>Subtract will return '+d' if wrapping under took place ('d' is the number of wraps) </purpose><description><para>The sign of the returned value will indicate which direction the wraps went (positive indicates wrap under, negative indicates wrap over). Ex: subtract a negative number and wrapping over could occur, this would be indicated by a negative return value. If wrapping under took place, a positive value would be returned. </para></description></method>
 </method-group>
 <constructor><parameter name="v"><paramtype>int_type</paramtype></parameter><purpose>Add, return true if wrapped. </purpose></constructor>
 <method-group name="private member functions">
-<method name="calculate_wrap"><type>IntT</type><template>
+<method name="calculate_wrap"><type>BOOST_CXX14_CONSTEXPR IntT</type><template>
           <template-type-parameter name="IntT"/>
         </template><parameter name="wrap"><paramtype>IntT</paramtype></parameter></method>
 </method-group>
@@ -4192,22 +4230,22 @@ cout &lt;&lt; ny_time.to_short_string() &lt;&lt; endl;
       <template-nontype-parameter name="wrap_max"><type>int_type_</type></template-nontype-parameter>
     </template><purpose>A wrapping integer used to wrap around at the top (WARNING: only instantiate with a signed type) </purpose><description><para>Bad name, quick impl to fix a bug – fix later!! This allows the wrap to restart at a value other than 0. </para></description><typedef name="int_type"><type>int_type_</type></typedef>
 <method-group name="public static functions">
-<method name="wrap_value" specifiers="static"><type>int_type</type></method>
-<method name="min_value" specifiers="static"><type>int_type</type></method>
+<method name="wrap_value" specifiers="static"><type>BOOST_CONSTEXPR int_type</type></method>
+<method name="min_value" specifiers="static"><type>BOOST_CONSTEXPR int_type</type></method>
 </method-group>
 <method-group name="public member functions">
-<method name="as_int" cv="const"><type>int_type</type><purpose>Explicit converion method. </purpose></method>
-<method name="conversion-operator" cv="const"><type>int_type</type></method>
-<method name="add"><type>IntT</type><template>
+<method name="as_int" cv="const"><type>BOOST_CONSTEXPR int_type</type><purpose>Explicit converion method. </purpose></method>
+<method name="operator int_type" cv="const"><type>BOOST_CONSTEXPR</type></method>
+<method name="add"><type>BOOST_CXX14_CONSTEXPR IntT</type><template>
           <template-type-parameter name="IntT"/>
         </template><parameter name="v"><paramtype>IntT</paramtype></parameter><purpose>Add, return number of wraps performed. </purpose><description><para>The sign of the returned value will indicate which direction the wraps went. Ex: add a negative number and wrapping under could occur, this would be indicated by a negative return value. If wrapping over took place, a positive value would be returned </para></description></method>
-<method name="subtract"><type>IntT</type><template>
+<method name="subtract"><type>BOOST_CXX14_CONSTEXPR IntT</type><template>
           <template-type-parameter name="IntT"/>
         </template><parameter name="v"><paramtype>IntT</paramtype></parameter><purpose>Subtract will return '-d' if wrapping under took place ('d' is the number of wraps) </purpose><description><para>The sign of the returned value will indicate which direction the wraps went. Ex: subtract a negative number and wrapping over could occur, this would be indicated by a positive return value. If wrapping under took place, a negative value would be returned </para></description></method>
 </method-group>
 <constructor><parameter name="v"><paramtype>int_type</paramtype></parameter><description><para>If initializing value is out of range of [wrap_min, wrap_max], value will be initialized to closest of min or max </para></description></constructor>
 <method-group name="private member functions">
-<method name="calculate_wrap"><type>IntT</type><template>
+<method name="calculate_wrap"><type>BOOST_CXX14_CONSTEXPR IntT</type><template>
           <template-type-parameter name="IntT"/>
         </template><parameter name="wrap"><paramtype>IntT</paramtype></parameter></method>
 </method-group>

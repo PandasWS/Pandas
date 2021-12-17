@@ -10,7 +10,6 @@
 // Test that header file is self-contained.
 #include <boost/beast/http/write.hpp>
 
-#include <boost/beast/http/buffer_body.hpp>
 #include <boost/beast/http/empty_body.hpp>
 #include <boost/beast/http/fields.hpp>
 #include <boost/beast/http/message.hpp>
@@ -19,6 +18,7 @@
 #include <boost/beast/core/buffers_to_string.hpp>
 #include <boost/beast/core/error.hpp>
 #include <boost/beast/core/multi_buffer.hpp>
+#include <boost/beast/core/static_string.hpp>
 #include <boost/beast/_experimental/test/stream.hpp>
 #include <boost/beast/test/yield_to.hpp>
 #include <boost/beast/_experimental/unit_test/suite.hpp>
@@ -27,6 +27,9 @@
 #include <boost/asio/strand.hpp>
 #include <sstream>
 #include <string>
+#if BOOST_ASIO_HAS_CO_AWAIT
+#include <boost/asio/use_awaitable.hpp>
+#endif
 
 namespace boost {
 namespace beast {
@@ -640,7 +643,7 @@ public:
             m.method(verb::get);
             m.version(11);
             m.target("/");
-            m.set("Content-Length", 5);
+            m.set("Content-Length", to_static_string(5));
             m.body() = "*****";
             async_write(ts, m, handler{});
             BEAST_EXPECT(handler::count() > 0);
@@ -663,7 +666,7 @@ public:
                 m.method(verb::get);
                 m.version(11);
                 m.target("/");
-                m.set("Content-Length", 5);
+                m.set("Content-Length", to_static_string(5));
                 m.body() = "*****";
                 async_write(ts, m, handler{});
                 BEAST_EXPECT(handler::count() > 0);
@@ -995,6 +998,59 @@ public:
         }
     }
 
+#if BOOST_ASIO_HAS_CO_AWAIT
+    void testAwaitableCompiles(
+        test::stream& stream,
+        serializer<true, string_body>& request_serializer,
+        request<string_body>& req,
+        request<string_body> const& creq,
+        serializer<false, string_body>& response_serializer,
+        response<string_body>& resp,
+        response<string_body> const& cresp)
+    {
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            http::async_write(stream, request_serializer, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            http::async_write(stream, response_serializer, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            http::async_write(stream, req, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            http::async_write(stream, creq, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            http::async_write(stream, resp, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            http::async_write(stream, cresp, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            http::async_write_some(stream, request_serializer, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            http::async_write_some(stream, response_serializer, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            http::async_write_header(stream, request_serializer, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            http::async_write_header(stream, response_serializer, net::use_awaitable))>);
+    }
+#endif
+
+
     void
     run() override
     {
@@ -1018,6 +1074,9 @@ public:
             });
         testAsioHandlerInvoke();
         testBodyWriters();
+#if BOOST_ASIO_HAS_CO_AWAIT
+        boost::ignore_unused(&write_test::testAwaitableCompiles);
+#endif
     }
 };
 

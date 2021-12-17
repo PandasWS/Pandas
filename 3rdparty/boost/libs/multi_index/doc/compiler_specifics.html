@@ -37,6 +37,7 @@ We list some of the possible limitations along with suitable workarounds when av
 
 <ul>
   <li><a href="#move">Move semantics</a></li>
+  <li><a href="#allocator_awareness">Allocator awareness</a></li>
   <li><a href="#emplace">Emplace functions</a></li>
   <li><a href="#initializer_list">Initializer lists</a></li>
   <li><a href="#tuple">Tuples</a></li>
@@ -57,6 +58,17 @@ to support compilers without rvalue references. In such scenarios, taking
 advantage of <code>multi_index_container&lt;Value&gt;</code> capabilities for
 increased efficiency in insertion and handling of moveable-only elements will
 require that <code>Value</code> be suitably instrumented.
+</p>
+
+<h2><a name="allocator_awareness">Allocator awareness</a></h2>
+
+<p>
+In pre-C++11 compilers or defective environments without proper
+<a href="https://en.cppreference.com/w/cpp/named_req/AllocatorAwareContainer">allocator
+awareness</a> machinery (basically, <code>std::allocator_traits</code>),
+Boost.MultiIndex behaves as if
+<code>std::allocator_traits&lt;allocator_type>::propagate_on_container_*::value</code>
+were <code>false</code> for all allocators.
 </p>
 
 <h2><a name="emplace">Emplace functions</a></h2>
@@ -377,9 +389,9 @@ Performance
 
 <br>
 
-<p>Revised August 20th 2014</p>
+<p>Revised January 25th 2020</p>
 
-<p>&copy; Copyright 2003-2014 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

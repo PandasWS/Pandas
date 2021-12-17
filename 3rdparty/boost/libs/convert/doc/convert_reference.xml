@@ -9,27 +9,29 @@
     </template><typedef name="this_type"><type><classname>reference</classname></type></typedef>
 <method-group name="public member functions">
 <method name="value_or"><type><classname>this_type</classname> &amp;</type><parameter name="fallback"><paramtype>TypeOut const &amp;</paramtype></parameter></method>
-<method name="operator()"><type>TypeOut</type><parameter name="value_in"><paramtype>TypeIn const &amp;</paramtype></parameter></method>
+<method name="operator()" cv="const"><type>TypeOut</type><parameter name="value_in"><paramtype>TypeIn const &amp;</paramtype></parameter></method>
 </method-group>
 <constructor><parameter name="cnv"><paramtype>Converter const &amp;</paramtype></parameter></constructor>
+<constructor><parameter name="cnv"><paramtype>Converter &amp;&amp;</paramtype></parameter></constructor>
 </struct><struct-specialization name="reference"><template>
       <template-type-parameter name="Converter"/>
       <template-type-parameter name="TypeOut"/>
     </template><specialization><template-arg>Converter</template-arg><template-arg>TypeOut</template-arg><template-arg>void</template-arg></specialization><typedef name="this_type"><type><classname>reference</classname></type></typedef>
 <method-group name="public member functions">
 <method name="value_or"><type><classname>this_type</classname> &amp;</type><parameter name="fallback"><paramtype>TypeOut const &amp;</paramtype></parameter></method>
-<method name="operator()"><type>TypeOut</type><template>
+<method name="operator()" cv="const"><type>TypeOut</type><template>
           <template-type-parameter name="TypeIn"/>
         </template><parameter name="value_in"><paramtype>TypeIn const &amp;</paramtype></parameter></method>
 </method-group>
 <constructor><parameter name="cnv"><paramtype>Converter const &amp;</paramtype></parameter></constructor>
+<constructor><parameter name="cnv"><paramtype>Converter &amp;&amp;</paramtype></parameter></constructor>
 </struct-specialization><function name="apply"><type><classname>reference</classname>&lt; Converter, TypeOut, TypeIn &gt;</type><template>
           <template-type-parameter name="TypeOut"/>
           <template-type-parameter name="TypeIn"/>
           <template-type-parameter name="Converter"/>
-        </template><parameter name="cnv"><paramtype>Converter const &amp;</paramtype></parameter><purpose>Boost.Convert deployment interface with algorithms. </purpose><description><para>For example, <programlisting language="c++">boost::array&lt;char const*, 3&gt; strs = {{ " 5", "0XF", "not an int" }};
-std::vector&lt;int&gt;             ints;
-boost::cnv::cstream           cnv;
+        </template><parameter name="cnv"><paramtype>Converter const &amp;</paramtype></parameter><purpose>Boost.Convert deployment interface with algorithms. </purpose><description><para>For example, <programlisting language="c++">std::array&lt;char const*, 3&gt; strs = {{ " 5", "0XF", "not an int" }};
+std::vector&lt;int&gt;           ints;
+boost::cnv::cstream         cnv;
 
 cnv(std::hex)(std::skipws);
 
@@ -37,7 +39,7 @@ std::transform(
     strs.begin(),
     strs.end(),
     std::back_inserter(ints),
-    boost::cnv::apply&lt;int&gt;(boost::cref(cnv)).value_or(-1));
+    boost::cnv::apply&lt;int&gt;(std::cref(cnv)).value_or(-1));
 </programlisting> </para></description></function>
 <function name="apply"><type><classname>reference</classname>&lt; Converter, TypeOut, void &gt;</type><template>
           <template-type-parameter name="TypeOut"/>
@@ -72,13 +74,13 @@ boost::optional&lt;string&gt; s = boost::convert&lt;string&gt;(123.456);
           <template-type-parameter name="TypeIn"/>
           <template-type-parameter name="Converter"/>
         </template><parameter name="value_in"><paramtype>TypeIn const &amp;</paramtype></parameter><parameter name="converter"><paramtype>Converter const &amp;</paramtype></parameter><parameter name=""><paramtype><emphasis>unspecified</emphasis></paramtype></parameter><purpose>Boost.Convert non-optional deployment interface. </purpose></function>
-<function name="convert"><type>enable_if&lt; is_convertible&lt; Fallback, TypeOut &gt;, TypeOut &gt;::type</type><template>
+<function name="convert"><type>std::enable_if&lt; is_convertible&lt; Fallback, TypeOut &gt;::value, TypeOut &gt;::type</type><template>
           <template-type-parameter name="TypeOut"/>
           <template-type-parameter name="TypeIn"/>
           <template-type-parameter name="Converter"/>
           <template-type-parameter name="Fallback"/>
         </template><parameter name="value_in"><paramtype>TypeIn const &amp;</paramtype></parameter><parameter name="converter"><paramtype>Converter const &amp;</paramtype></parameter><parameter name="fallback"><paramtype>Fallback const &amp;</paramtype></parameter></function>
-<function name="convert"><type>enable_if&lt; cnv::is_fun&lt; Fallback, TypeOut &gt;, TypeOut &gt;::type</type><template>
+<function name="convert"><type>std::enable_if&lt; cnv::is_fun&lt; Fallback, TypeOut &gt;::value, TypeOut &gt;::type</type><template>
           <template-type-parameter name="TypeOut"/>
           <template-type-parameter name="TypeIn"/>
           <template-type-parameter name="Converter"/>
@@ -131,13 +133,9 @@ boost::optional&lt;string&gt; s = boost::convert&lt;string&gt;(123.456);
 <method name="BOOST_CNV_STRING_TO" cv="const"><type/><parameter name="s"><paramtype>string_type const &amp;</paramtype></parameter><parameter name="r"><paramtype>optional&lt; flt_type &gt; &amp;</paramtype></parameter></method>
 <method name="BOOST_CNV_STRING_TO" cv="const"><type/><parameter name="s"><paramtype>string_type const &amp;</paramtype></parameter><parameter name="r"><paramtype>optional&lt; dbl_type &gt; &amp;</paramtype></parameter></method>
 <method name="BOOST_CNV_STRING_TO" cv="const"><type/><parameter name="s"><paramtype>string_type const &amp;</paramtype></parameter><parameter name="r"><paramtype>optional&lt; ldbl_type &gt; &amp;</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>base</paramtype></parameter><parameter name=""><paramtype>cnv::base</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>adjust</paramtype></parameter><parameter name=""><paramtype>cnv::adjust</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>precision</paramtype></parameter><parameter name=""><paramtype>int</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>uppercase</paramtype></parameter><parameter name=""><paramtype>bool</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>skipws</paramtype></parameter><parameter name=""><paramtype>bool</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>width</paramtype></parameter><parameter name=""><paramtype>int</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>fill</paramtype></parameter><parameter name=""><paramtype>char</paramtype></parameter></method>
+<method name="operator()"><type>derived_type &amp;</type><template>
+          <template-type-parameter name="argument_pack"/>
+        </template><parameter name="arg"><paramtype>argument_pack const &amp;</paramtype></parameter></method>
 </method-group>
 <method-group name="protected member functions">
 <method name="str_to_" cv="const"><type>void</type><template>
@@ -150,6 +148,17 @@ boost::optional&lt;string&gt; s = boost::convert&lt;string&gt;(123.456);
         </template><parameter name="value_in"><paramtype>in_type</paramtype></parameter><parameter name="result_out"><paramtype>optional&lt; string_type &gt; &amp;</paramtype></parameter></method>
 <method name="dncast" cv="const"><type>derived_type const  &amp;</type></method>
 <method name="dncast"><type>derived_type &amp;</type></method>
+<method name="set_"><type>void</type><template>
+          <template-type-parameter name="argument_pack"/>
+          <template-type-parameter name="keyword_tag"/>
+        </template><parameter name=""><paramtype>argument_pack const &amp;</paramtype></parameter><parameter name=""><paramtype>keyword_tag</paramtype></parameter><parameter name=""><paramtype>mpl::false_</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>base</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>adjust</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>precision</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>uppercase</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>skipws</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>width</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>fill</paramtype></parameter></method>
 </method-group>
 <constructor/>
 </struct>
@@ -164,7 +173,8 @@ boost::optional&lt;string&gt; s = boost::convert&lt;string&gt;(123.456);
 </namespace>
 <macro name="BOOST_CNV_TO_STRING"/>
 <macro name="BOOST_CNV_STRING_TO"/>
-<macro name="BOOST_CNV_PARAM" kind="functionlike"><macro-parameter name="param_name"/><macro-parameter name="param_type"/></macro>
+<macro name="BOOST_CNV_PARAM_SET" kind="functionlike"><macro-parameter name="param_name"/></macro>
+<macro name="BOOST_CNV_PARAM_TRY" kind="functionlike"><macro-parameter name="param_name"/></macro>
 </header>
 <header name="boost/convert/lexical_cast.hpp">
 <namespace name="boost">
@@ -272,7 +282,7 @@ boost::optional&lt;string&gt; s = boost::convert&lt;string&gt;(123.456);
 <namespace name="cnv">
 <struct name="basic_stream"><template>
       <template-type-parameter name="Char"/>
-    </template><inherit access="public">noncopyable</inherit><struct name="ibuffer_type"><inherit access="public">buffer_type</inherit><method-group name="public member functions">
+    </template><struct name="ibuffer_type"><inherit access="public">buffer_type</inherit><method-group name="public member functions">
 </method-group>
 <constructor><parameter name="beg"><paramtype>char_type const *</paramtype></parameter><parameter name="sz"><paramtype>std::size_t</paramtype></parameter></constructor>
 </struct><struct name="obuffer_type"><inherit access="public">buffer_type</inherit></struct><typedef name="char_type"><type>Char</type></typedef>
@@ -291,20 +301,14 @@ boost::optional&lt;string&gt; s = boost::convert&lt;string&gt;(123.456);
 <method name="operator()" cv="const"><type>void</type><template>
           <template-type-parameter name="type"/>
         </template><parameter name="s"><paramtype>stdstr_type const &amp;</paramtype></parameter><parameter name="r"><paramtype>optional&lt; type &gt; &amp;</paramtype></parameter></method>
-<method name="operator()"><type><classname>this_type</classname> &amp;</type><template>
+<method name="operator()"><type>boost::disable_if&lt; boost::parameter::is_argument_pack&lt; manipulator &gt;, <classname>this_type</classname> &amp; &gt;::type</type><template>
           <template-type-parameter name="manipulator"/>
         </template><parameter name="m"><paramtype>manipulator</paramtype></parameter></method>
 <method name="operator()"><type><classname>this_type</classname> &amp;</type><parameter name="m"><paramtype>manipulator_type</paramtype></parameter></method>
 <method name="operator()"><type><classname>this_type</classname> &amp;</type><parameter name="l"><paramtype>std::locale const &amp;</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>locale</paramtype></parameter><parameter name=""><paramtype>std::locale</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>precision</paramtype></parameter><parameter name=""><paramtype>int</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>width</paramtype></parameter><parameter name=""><paramtype>int</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>fill</paramtype></parameter><parameter name=""><paramtype>char</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>uppercase</paramtype></parameter><parameter name=""><paramtype>bool</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>skipws</paramtype></parameter><parameter name=""><paramtype>bool</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>adjust</paramtype></parameter><parameter name=""><paramtype>boost::cnv::adjust</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>base</paramtype></parameter><parameter name=""><paramtype>boost::cnv::base</paramtype></parameter></method>
-<method name="BOOST_CNV_PARAM"><type/><parameter name=""><paramtype>notation</paramtype></parameter><parameter name=""><paramtype>boost::cnv::notation</paramtype></parameter></method>
+<method name="operator()"><type>std::enable_if&lt; boost::parameter::is_argument_pack&lt; argument_pack &gt;::value, <classname>this_type</classname> &amp; &gt;::type</type><template>
+          <template-type-parameter name="argument_pack"/>
+        </template><parameter name="arg"><paramtype>argument_pack const &amp;</paramtype></parameter></method>
 <method name="to_str" cv="const"><type>void</type><template>
           <template-type-parameter name="string_type"/>
           <template-type-parameter name="in_type"/>
@@ -316,7 +320,22 @@ boost::optional&lt;string&gt; s = boost::convert&lt;string&gt;(123.456);
 </method-group>
 <constructor/>
 <constructor><parameter name="other"><paramtype><classname>this_type</classname> &amp;&amp;</paramtype></parameter></constructor>
+<constructor cv="= delete"><parameter name=""><paramtype><classname>this_type</classname> const &amp;</paramtype></parameter></constructor>
+<copy-assignment cv="= delete"><type><classname>this_type</classname> &amp;</type><parameter name=""><paramtype><classname>this_type</classname> const &amp;</paramtype></parameter></copy-assignment>
 <method-group name="private member functions">
+<method name="set_"><type>void</type><template>
+          <template-type-parameter name="argument_pack"/>
+          <template-type-parameter name="keyword_tag"/>
+        </template><parameter name=""><paramtype>argument_pack const &amp;</paramtype></parameter><parameter name=""><paramtype>keyword_tag</paramtype></parameter><parameter name=""><paramtype>mpl::false_</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>locale</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>precision</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>width</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>fill</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>uppercase</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>skipws</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>adjust</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>base</paramtype></parameter></method>
+<method name="BOOST_CNV_PARAM_SET"><type/><parameter name=""><paramtype>notation</paramtype></parameter></method>
 <method name="str_to" cv="const"><type>void</type><template>
           <template-type-parameter name="string_type"/>
           <template-type-parameter name="out_type"/>
@@ -339,7 +358,8 @@ boost::optional&lt;string&gt; s = boost::convert&lt;string&gt;(123.456);
 
 </namespace>
 <macro name="BOOST_CNV_STRING_ENABLE"/>
-<macro name="BOOST_CNV_PARAM" kind="functionlike"><macro-parameter name="PARAM_NAME"/><macro-parameter name="PARAM_TYPE"/></macro>
+<macro name="BOOST_CNV_PARAM_SET" kind="functionlike"><macro-parameter name="param_name"/></macro>
+<macro name="BOOST_CNV_PARAM_TRY" kind="functionlike"><macro-parameter name="param_name"/></macro>
 </header>
 <header name="boost/convert/strtol.hpp">
 <namespace name="boost">

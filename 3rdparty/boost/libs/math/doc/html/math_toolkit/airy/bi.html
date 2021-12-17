@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Airy Bi Function</title>
 <link rel="stylesheet" href="../../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Math Toolkit 2.10.0">
+<link rel="home" href="../../index.html" title="Math Toolkit 3.1.0">
 <link rel="up" href="../airy.html" title="Airy Functions">
 <link rel="prev" href="ai.html" title="Airy Ai Function">
 <link rel="next" href="aip.html" title="Airy Ai' Function">
@@ -50,13 +50,14 @@
         The function <a class="link" href="bi.html" title="Airy Bi Function">airy_bi</a> calculates
         the Airy function Bi which is the second solution to the differential equation:
       </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+          <span class="inlinemediaobject"><img src="../../../equations/airy.svg"></span>
+
+        </p></blockquote></div>
 <p>
-        <span class="inlinemediaobject"><img src="../../../equations/airy.svg"></span>
-      </p>
-<p>
-        The final <a class="link" href="../../policy.html" title="Chapter&#160;19.&#160;Policies: Controlling Precision, Error Handling etc">Policy</a> argument is optional and can
+        The final <a class="link" href="../../policy.html" title="Chapter 21. Policies: Controlling Precision, Error Handling etc">Policy</a> argument is optional and can
         be used to control the behaviour of the function: how it handles errors,
-        what level of precision to use etc. Refer to the <a class="link" href="../../policy.html" title="Chapter&#160;19.&#160;Policies: Controlling Precision, Error Handling etc">policy
+        what level of precision to use etc. Refer to the <a class="link" href="../../policy.html" title="Chapter 21. Policies: Controlling Precision, Error Handling etc">policy
         documentation for more details</a>.
       </p>
 <p>
@@ -64,9 +65,10 @@
         changes: for negative <span class="emphasis"><em>x</em></span> the function is cyclic, while
         for positive <span class="emphasis"><em>x</em></span> the value tends to infinity:
       </p>
-<p>
-        <span class="inlinemediaobject"><img src="../../../graphs/airy_bi.svg" align="middle"></span>
-      </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+          <span class="inlinemediaobject"><img src="../../../graphs/airy_bi.svg" align="middle"></span>
+
+        </p></blockquote></div>
 <h5>
 <a name="math_toolkit.airy.bi.h2"></a>
         <span class="phrase"><a name="math_toolkit.airy.bi.accuracy"></a></span><a class="link" href="bi.html#math_toolkit.airy.bi.accuracy">Accuracy</a>
@@ -76,13 +78,14 @@
         - refer to those functions for detailed accuracy information.
       </p>
 <p>
-        In general though, the relative error is low (less than 100 &#949;) for <span class="emphasis"><em>x
+        In general though, the relative error is low (less than 100 ε) for <span class="emphasis"><em>x
         &gt; 0</em></span> while only the absolute error is low for <span class="emphasis"><em>x &lt;
         0</em></span> as the following error plot illustrate:
       </p>
-<p>
-        <span class="inlinemediaobject"><img src="../../../graphs/bi__double.svg" align="middle"></span>
-      </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+          <span class="inlinemediaobject"><img src="../../../graphs/bi__double.svg" align="middle"></span>
+
+        </p></blockquote></div>
 <h5>
 <a name="math_toolkit.airy.bi.h3"></a>
         <span class="phrase"><a name="math_toolkit.airy.bi.testing"></a></span><a class="link" href="bi.html#math_toolkit.airy.bi.testing">Testing</a>
@@ -98,17 +101,18 @@
 <p>
         This function is implemented in terms of the Bessel functions using the relations:
       </p>
-<p>
-        <span class="inlinemediaobject"><img src="../../../equations/airy_bi.svg"></span>
-      </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+          <span class="inlinemediaobject"><img src="../../../equations/airy_bi.svg"></span>
+
+        </p></blockquote></div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -8,7 +8,7 @@
    25 August 2005 : Initial version.
 */
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/foreach.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -30,16 +30,16 @@ int const (&my_const_array)[5] = my_array;
 ///////////////////////////////////////////////////////////////////////////////
 // test_main
 //   
-int test_main( int, char*[] )
+int main()
 {
     boost::mpl::false_ *p = BOOST_FOREACH_IS_LIGHTWEIGHT_PROXY(my_array);
     (void)p;
 
     // non-const containers by value
-    BOOST_CHECK(sequence_equal_byval_n_r(my_array, "\5\4\3\2\1"));
+    BOOST_TEST(sequence_equal_byval_n_r(my_array, "\5\4\3\2\1"));
 
     // const containers by value
-    BOOST_CHECK(sequence_equal_byval_c_r(my_const_array, "\5\4\3\2\1"));
+    BOOST_TEST(sequence_equal_byval_c_r(my_const_array, "\5\4\3\2\1"));
 
-    return 0;
+    return boost::report_errors();
 }

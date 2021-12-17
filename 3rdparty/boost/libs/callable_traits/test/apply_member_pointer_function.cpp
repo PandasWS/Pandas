@@ -1,5 +1,5 @@
 /*<-
-Copyright (c) 2016 Barrett Adair
+Copyright (c) 2016-2017 Barrett Adair
 
 Distributed under the Boost Software License, Version 1.0.
 (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
@@ -62,8 +62,8 @@ int main() {
     test_case<int(int) volatile RREF TX_SAFE,      int(foo::*)(int) volatile RREF TX_SAFE      >();
 #endif
 
-//MSVC doesn't like varargs on abominable functions
-#ifndef BOOST_CLBL_TRTS_MSVC
+//old MSVC doesn't like varargs on abominable functions
+#ifndef BOOST_CLBL_TRTS_OLD_MSVC
 
     test_case<int(...),                            int(foo::*)(...)                            >();
 
@@ -109,6 +109,6 @@ int main() {
     test_case<int(int, ...) volatile RREF,         int(foo::*)(int, ...) volatile RREF         >();
     test_case<int(int, ...) volatile RREF TX_SAFE, int(foo::*)(int, ...) volatile RREF TX_SAFE >();
 #endif //#ifndef BOOST_CLBL_TRTS_DISABLE_ABOMINABLE_FUNCTIONS
-#endif //#ifndef BOOST_CLBL_TRTS_MSVC
+#endif //#ifndef BOOST_CLBL_TRTS_OLD_MSVC
 
 }

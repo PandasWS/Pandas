@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Release Notes</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -28,6 +28,51 @@
 </h2></div></div></div>
 <h4>
 <a name="boost_optional.relnotes.h0"></a>
+      <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_76"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_76">Boost
+      Release 1.76</a>
+    </h4>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          Fixed MSVC warning C4702.
+        </li></ul></div>
+<h4>
+<a name="boost_optional.relnotes.h1"></a>
+      <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_75"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_75">Boost
+      Release 1.75</a>
+    </h4>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">none</span></code> is <code class="computeroutput"><span class="keyword">constexpr</span></code>-declared.
+        </li>
+<li class="listitem">
+          Fixed <a href="https://github.com/boostorg/optional/issues/78" target="_top">issue
+          #78</a>.
+        </li>
+</ul></div>
+<h4>
+<a name="boost_optional.relnotes.h2"></a>
+      <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_73"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_73">Boost
+      Release 1.73</a>
+    </h4>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Fixed <a href="https://github.com/boostorg/optional/issues/78" target="_top">issue
+          #78</a>.
+        </li>
+<li class="listitem">
+          <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">none</span></code> is now declared as an inline variable
+          (on compilers that support it): there is only one instance of <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">none</span></code> across all translation units.
+        </li>
+<li class="listitem">
+          Fixed a number of compilation errors in GCC 4.4.7 in <code class="computeroutput"><span class="identifier">optional</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;</span></code> for trivial <code class="computeroutput"><span class="identifier">T</span></code>s.
+          Thanks to Robert Leahy for the fix. For details see <a href="https://github.com/boostorg/optional/pull/80" target="_top">pr
+          #78</a>.
+        </li>
+<li class="listitem">
+          Now surpressing warning <code class="computeroutput"><span class="special">-</span><span class="identifier">Wweak</span><span class="special">-</span><span class="identifier">vtables</span></code>.
+        </li>
+</ul></div>
+<h4>
+<a name="boost_optional.relnotes.h3"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_69"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_69">Boost
       Release 1.69</a>
     </h4>
@@ -45,7 +90,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="boost_optional.relnotes.h1"></a>
+<a name="boost_optional.relnotes.h4"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_68"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_68">Boost
       Release 1.68</a>
     </h4>
@@ -62,7 +107,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="boost_optional.relnotes.h2"></a>
+<a name="boost_optional.relnotes.h5"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_67"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_67">Boost
       Release 1.67</a>
     </h4>
@@ -76,7 +121,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="boost_optional.relnotes.h3"></a>
+<a name="boost_optional.relnotes.h6"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_66"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_66">Boost
       Release 1.66</a>
     </h4>
@@ -94,7 +139,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="boost_optional.relnotes.h4"></a>
+<a name="boost_optional.relnotes.h7"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_63"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_63">Boost
       Release 1.63</a>
     </h4>
@@ -118,7 +163,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="boost_optional.relnotes.h5"></a>
+<a name="boost_optional.relnotes.h8"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_62"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_62">Boost
       Release 1.62</a>
     </h4>
@@ -126,7 +171,7 @@
           Fixed <a href="https://svn.boost.org/trac/boost/ticket/12179" target="_top">Trac #12179</a>.
         </li></ul></div>
 <h4>
-<a name="boost_optional.relnotes.h6"></a>
+<a name="boost_optional.relnotes.h9"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_61"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_61">Boost
       Release 1.61</a>
     </h4>
@@ -169,7 +214,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="boost_optional.relnotes.h7"></a>
+<a name="boost_optional.relnotes.h10"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_60"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_60">Boost
       Release 1.60</a>
     </h4>
@@ -180,7 +225,7 @@
           #11203</a>.
         </li></ul></div>
 <h4>
-<a name="boost_optional.relnotes.h8"></a>
+<a name="boost_optional.relnotes.h11"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_59"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_59">Boost
       Release 1.59</a>
     </h4>
@@ -194,7 +239,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="boost_optional.relnotes.h9"></a>
+<a name="boost_optional.relnotes.h12"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_58"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_58">Boost
       Release 1.58</a>
     </h4>
@@ -230,7 +275,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="boost_optional.relnotes.h10"></a>
+<a name="boost_optional.relnotes.h13"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_57"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_57">Boost
       Release 1.57</a>
     </h4>
@@ -240,7 +285,7 @@
           to fix C++03 compile error on <code class="computeroutput"><span class="identifier">logic_error</span><span class="special">(</span><span class="string">"..."</span><span class="special">)</span></code>"</em></span>.
         </li></ul></div>
 <h4>
-<a name="boost_optional.relnotes.h11"></a>
+<a name="boost_optional.relnotes.h14"></a>
       <span class="phrase"><a name="boost_optional.relnotes.boost_release_1_56"></a></span><a class="link" href="relnotes.html#boost_optional.relnotes.boost_release_1_56">Boost
       Release 1.56</a>
     </h4>
@@ -297,7 +342,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2007 Fernando Luis Cacciola Carballal<br>Copyright &#169; 2014-2018 Andrzej Krzemie&#324;ski<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2007 Fernando Luis Cacciola Carballal<br>Copyright © 2014-2021 Andrzej Krzemieński<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

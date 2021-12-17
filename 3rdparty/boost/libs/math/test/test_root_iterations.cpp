@@ -3,13 +3,11 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pch.hpp>
-
-#ifndef BOOST_NO_CXX11_HDR_TUPLE
+#include "pch.hpp"
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/math/tools/roots.hpp>
 #include <boost/test/results_collector.hpp>
 #include <boost/test/unit_test.hpp>
@@ -37,7 +35,7 @@ private:
 
 // Using 1st derivative only Newton-Raphson
 struct cbrt_functor_deriv
-{ // Functor also returning 1st derviative.
+{ // Functor also returning 1st derivative.
    cbrt_functor_deriv(double const& to_find_root_of) : a(to_find_root_of)
    { // Constructor stores value a to find root of,
       // for example: calling cbrt_functor_deriv<double>(x) to use to get cube root of x.
@@ -152,7 +150,7 @@ BOOST_AUTO_TEST_CASE( test_main )
    int newton_limits = static_cast<int>(std::numeric_limits<double>::digits * 0.6);
 
    double arg = 1e-50;
-   boost::uintmax_t iters;
+   std::uintmax_t iters;
    double guess;
    double dr;
 
@@ -301,7 +299,11 @@ BOOST_AUTO_TEST_CASE( test_main )
          result = ibeta_small_data[i][2];
          dr = boost::math::tools::halley_iterate(ibeta_roots_3<double, boost::math::policies::policy<> >(ibeta_small_data[i][0], ibeta_small_data[i][1], ibeta_small_data[i][5]), 0.5, 0.0, 1.0, 53, iters);
          BOOST_CHECK_CLOSE_FRACTION(dr, result, std::numeric_limits<double>::epsilon() * 200);
+#ifdef __PPC__
+         BOOST_CHECK_LE(iters, 55);
+#else
          BOOST_CHECK_LE(iters, 40);
+#endif
       }
       else if (1 == ibeta_small_data[i][5])
       {
@@ -318,8 +320,3 @@ BOOST_AUTO_TEST_CASE( test_main )
 
 }
 
-#else
-
-int main() { return 0; }
-
-#endif

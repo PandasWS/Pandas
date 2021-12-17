@@ -7,9 +7,10 @@
 #define BOOST_MATH_TOOLS_NORMS_HPP
 #include <algorithm>
 #include <iterator>
-#include <boost/type_traits/is_complex.hpp>
-#include <boost/assert.hpp>
-#include <boost/multiprecision/detail/number_base.hpp>
+#include <complex>
+#include <cmath>
+#include <boost/math/tools/assert.hpp>
+#include <boost/math/tools/complex.hpp>
 
 
 namespace boost::math::tools {
@@ -20,7 +21,7 @@ auto total_variation(ForwardIterator first, ForwardIterator last)
 {
     using T = typename std::iterator_traits<ForwardIterator>::value_type;
     using std::abs;
-    BOOST_ASSERT_MSG(first != last && std::next(first) != last, "At least two samples are required to compute the total variation.");
+    BOOST_MATH_ASSERT_MSG(first != last && std::next(first) != last, "At least two samples are required to compute the total variation.");
     auto it = first;
     if constexpr (std::is_unsigned<T>::value)
     {
@@ -75,11 +76,10 @@ inline auto total_variation(Container const & v)
 template<class ForwardIterator>
 auto sup_norm(ForwardIterator first, ForwardIterator last)
 {
-    BOOST_ASSERT_MSG(first != last, "At least one value is required to compute the sup norm.");
+    BOOST_MATH_ASSERT_MSG(first != last, "At least one value is required to compute the sup norm.");
     using T = typename std::iterator_traits<ForwardIterator>::value_type;
     using std::abs;
-    if constexpr (boost::is_complex<T>::value ||
-                  boost::multiprecision::number_category<T>::value == boost::multiprecision::number_kind_complex)
+    if constexpr (boost::math::tools::is_complex_type<T>::value)
     {
         auto it = std::max_element(first, last, [](T a, T b) { return abs(b) > abs(a); });
         return abs(*it);
@@ -159,8 +159,8 @@ auto l2_norm(ForwardIterator first, ForwardIterator last)
     using std::norm;
     using std::sqrt;
     using std::is_floating_point;
-    if constexpr (boost::is_complex<T>::value ||
-                  boost::multiprecision::number_category<T>::value == boost::multiprecision::number_kind_complex)
+    using std::isfinite;
+    if constexpr (boost::math::tools::is_complex_type<T>::value)
     {
         typedef typename T::value_type Real;
         Real l2 = 0;
@@ -182,7 +182,7 @@ auto l2_norm(ForwardIterator first, ForwardIterator last)
         return result;
     }
     else if constexpr (is_floating_point<T>::value ||
-                       boost::multiprecision::number_category<T>::value == boost::multiprecision::number_kind_floating_point)
+                       std::numeric_limits<T>::max_exponent)
     {
         T l2 = 0;
         for (auto it = first; it != last; ++it)
@@ -193,7 +193,7 @@ auto l2_norm(ForwardIterator first, ForwardIterator last)
         // Higham, Accuracy and Stability of Numerical Algorithms,
         // Problem 27.5 presents a different algorithm to deal with overflow.
         // The algorithm used here takes 3 passes *if* there is overflow.
-        // Higham's algorithm is 1 pass, but more requires operations than the no oveflow case.
+        // Higham's algorithm is 1 pass, but more requires operations than the no overflow case.
         // I'm operating under the assumption that overflow is rare since the dynamic range of floating point numbers is huge.
         if (!isfinite(result))
         {
@@ -277,8 +277,7 @@ auto lp_norm(ForwardIterator first, ForwardIterator last, unsigned p)
     using std::is_floating_point;
     using std::isfinite;
     using RealOrComplex = typename std::iterator_traits<ForwardIterator>::value_type;
-    if constexpr (boost::is_complex<RealOrComplex>::value ||
-                  boost::multiprecision::number_category<RealOrComplex>::value == boost::multiprecision::number_kind_complex)
+    if constexpr (boost::math::tools::is_complex_type<RealOrComplex>::value)
     {
         using std::norm;
         using Real = typename RealOrComplex::value_type;
@@ -301,10 +300,9 @@ auto lp_norm(ForwardIterator first, ForwardIterator last, unsigned p)
         }
         return result;
     }
-    else if constexpr (is_floating_point<RealOrComplex>::value ||
-                       boost::multiprecision::number_category<RealOrComplex>::value == boost::multiprecision::number_kind_floating_point)
+    else if constexpr (is_floating_point<RealOrComplex>::value || std::numeric_limits<RealOrComplex>::max_exponent)
     {
-        BOOST_ASSERT_MSG(p >= 0, "For p < 0, the lp norm is not a norm");
+        BOOST_MATH_ASSERT_MSG(p >= 0, "For p < 0, the lp norm is not a norm");
         RealOrComplex lp = 0;
 
         for (auto it = first; it != last; ++it)
@@ -368,8 +366,7 @@ auto lp_distance(ForwardIterator first1, ForwardIterator last1, ForwardIterator 
     auto it1 = first1;
     auto it2 = first2;
 
-    if constexpr (boost::is_complex<RealOrComplex>::value ||
-                  boost::multiprecision::number_category<RealOrComplex>::value == boost::multiprecision::number_kind_complex)
+    if constexpr (boost::math::tools::is_complex_type<RealOrComplex>::value)
     {
         using Real = typename RealOrComplex::value_type;
         using std::norm;
@@ -381,8 +378,7 @@ auto lp_distance(ForwardIterator first1, ForwardIterator last1, ForwardIterator 
         }
         return pow(dist, Real(1)/Real(p));
     }
-    else if constexpr (is_floating_point<RealOrComplex>::value ||
-                       boost::multiprecision::number_category<RealOrComplex>::value == boost::multiprecision::number_kind_floating_point)
+    else if constexpr (is_floating_point<RealOrComplex>::value || std::numeric_limits<RealOrComplex>::max_exponent)
     {
         RealOrComplex dist = 0;
         while(it1 != last1)
@@ -424,8 +420,7 @@ auto l1_distance(ForwardIterator first1, ForwardIterator last1, ForwardIterator 
     using T = typename std::iterator_traits<ForwardIterator>::value_type;
     auto it1 = first1;
     auto it2 = first2;
-    if constexpr (boost::is_complex<T>::value ||
-                  boost::multiprecision::number_category<T>::value == boost::multiprecision::number_kind_complex)
+    if constexpr (boost::math::tools::is_complex_type<T>::value)
     {
         using Real = typename T::value_type;
         Real sum = 0;
@@ -434,8 +429,7 @@ auto l1_distance(ForwardIterator first1, ForwardIterator last1, ForwardIterator 
         }
         return sum;
     }
-    else if constexpr (is_floating_point<T>::value ||
-                       boost::multiprecision::number_category<T>::value == boost::multiprecision::number_kind_floating_point)
+    else if constexpr (is_floating_point<T>::value || std::numeric_limits<T>::max_exponent)
     {
         T sum = 0;
         while (it1 != last1)
@@ -475,7 +469,7 @@ auto l1_distance(ForwardIterator first1, ForwardIterator last1, ForwardIterator 
     }
     else
     {
-        BOOST_ASSERT_MSG(false, "Could not recognize type.");
+        BOOST_MATH_ASSERT_MSG(false, "Could not recognize type.");
     }
 
 }
@@ -484,7 +478,7 @@ template<class Container>
 auto l1_distance(Container const & v, Container const & w)
 {
     using std::size;
-    BOOST_ASSERT_MSG(size(v) == size(w),
+    BOOST_MATH_ASSERT_MSG(size(v) == size(w),
                      "L1 distance requires both containers to have the same number of elements");
     return l1_distance(v.cbegin(), v.cend(), w.begin());
 }
@@ -500,8 +494,7 @@ auto l2_distance(ForwardIterator first1, ForwardIterator last1, ForwardIterator 
     using T = typename std::iterator_traits<ForwardIterator>::value_type;
     auto it1 = first1;
     auto it2 = first2;
-    if constexpr (boost::is_complex<T>::value ||
-                  boost::multiprecision::number_category<T>::value == boost::multiprecision::number_kind_complex)
+    if constexpr (boost::math::tools::is_complex_type<T>::value)
     {
         using Real = typename T::value_type;
         Real sum = 0;
@@ -510,8 +503,7 @@ auto l2_distance(ForwardIterator first1, ForwardIterator last1, ForwardIterator 
         }
         return sqrt(sum);
     }
-    else if constexpr (is_floating_point<T>::value ||
-                       boost::multiprecision::number_category<T>::value == boost::multiprecision::number_kind_floating_point)
+    else if constexpr (is_floating_point<T>::value || std::numeric_limits<T>::max_exponent)
     {
         T sum = 0;
         while (it1 != last1)
@@ -559,7 +551,7 @@ template<class Container>
 auto l2_distance(Container const & v, Container const & w)
 {
     using std::size;
-    BOOST_ASSERT_MSG(size(v) == size(w),
+    BOOST_MATH_ASSERT_MSG(size(v) == size(w),
                      "L2 distance requires both containers to have the same number of elements");
     return l2_distance(v.cbegin(), v.cend(), w.begin());
 }
@@ -575,8 +567,7 @@ auto sup_distance(ForwardIterator first1, ForwardIterator last1, ForwardIterator
     using T = typename std::iterator_traits<ForwardIterator>::value_type;
     auto it1 = first1;
     auto it2 = first2;
-    if constexpr (boost::is_complex<T>::value ||
-                  boost::multiprecision::number_category<T>::value == boost::multiprecision::number_kind_complex)
+    if constexpr (boost::math::tools::is_complex_type<T>::value)
     {
         using Real = typename T::value_type;
         Real sup_sq = 0;
@@ -588,8 +579,7 @@ auto sup_distance(ForwardIterator first1, ForwardIterator last1, ForwardIterator
         }
         return sqrt(sup_sq);
     }
-    else if constexpr (is_floating_point<T>::value ||
-                       boost::multiprecision::number_category<T>::value == boost::multiprecision::number_kind_floating_point)
+    else if constexpr (is_floating_point<T>::value || std::numeric_limits<T>::max_exponent)
     {
         T sup = 0;
         while (it1 != last1)
@@ -630,7 +620,7 @@ template<class Container>
 auto sup_distance(Container const & v, Container const & w)
 {
     using std::size;
-    BOOST_ASSERT_MSG(size(v) == size(w),
+    BOOST_MATH_ASSERT_MSG(size(v) == size(w),
                      "sup distance requires both containers to have the same number of elements");
     return sup_distance(v.cbegin(), v.cend(), w.begin());
 }

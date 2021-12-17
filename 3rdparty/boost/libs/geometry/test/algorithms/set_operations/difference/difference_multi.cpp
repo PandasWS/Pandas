@@ -30,7 +30,7 @@
                 clips3, -1, area1 + area2)
 
 #define TEST_DIFFERENCE_IGNORE(caseid, clips1, area1, clips2, area2, clips3) \
-    { ut_settings ignore_validity; ignore_validity.test_validity = false; \
+    { ut_settings ignore_validity; ignore_validity.set_test_validity(false); \
     (test_one<Polygon, MultiPolygon, MultiPolygon>) \
     ( #caseid, caseid[0], caseid[1], clips1, -1, area1, clips2, -1, area2, \
                 clips3, -1, area1 + area2, ignore_validity); }
@@ -148,36 +148,77 @@ void test_areal()
     {
         ut_settings settings;
         settings.percentage = 0.001;
-        settings.test_validity = BG_IF_RESCALED(true, false);
+        settings.set_test_validity(BG_IF_RESCALED(true, false));
         TEST_DIFFERENCE_WITH(0, 1, ggl_list_20120221_volker, 2, 7962.66, 2, 2775258.93, 4);
     }
 
+#if ! defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
     {
-        // With rescaling, A is invalid (this is a robustness problem) and the other
-        // output is discarded because of zero (rescaled) area
-        // POSTGIS areas: 3.75893745345145, 2.5810000723917e-15
+        // 1: Very small sliver for B (discarded when rescaling)
+        // 2: sym difference is not considered as valid (without rescaling
+        //    this is a false negative)
+        // 3: with rescaling A is considered as invalid (robustness problem)
         ut_settings settings;
-        settings.sym_difference = false; // Validity problem in sym difference
-#if defined(BOOST_GEOMETRY_USE_RESCALING)
-        settings.test_validity = false; // Invalid output in A
-        TEST_DIFFERENCE_WITH(0, 1, bug_21155501, 1, 3.758937, 0, 0.0, 2);
-#else
-        TEST_DIFFERENCE_WITH(0, 1, bug_21155501, 1, 3.758937, 1, 1.7763568394002505e-15, 2);
-#endif
+        settings.validity_of_sym = BG_IF_RESCALED(false, true);
+        settings.validity_false_negative_sym = true;
+        TEST_DIFFERENCE_WITH(0, 1, bug_21155501,
+                             (count_set(1, 4)), expectation_limits(3.75893, 3.75894),
+                             (count_set(1, 4)), (expectation_limits(1.776357e-15, 7.661281e-15)),
+                             (count_set(2, 5)));
     }
+#endif
 
 #if defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
     {
-        // Without rescaling, this one misses one of the output polygons
         // With rescaling, it is complete but invalid
+        // Without rescaling, one ring is missing (for a and s)
         ut_settings settings;
-        settings.percentage = 0.001;
-        settings.test_validity = false;
-        TEST_DIFFERENCE_WITH(0, 1, ticket_9081, 2, 0.0907392476356186, 4, 0.126018011439877, 4);
+        settings.set_test_validity(BG_IF_RESCALED(false, true));
+        settings.validity_of_sym = BG_IF_RESCALED(false, true);
+        TEST_DIFFERENCE_WITH(0, 1, ticket_9081,
+                             2, 0.0907392476356186,
+                             4, 0.126018011439877,
+                             count_set(3, 4));
     }
 #endif
 
     TEST_DIFFERENCE(ticket_12503, 46, 920.625, 4, 7.625, 50);
+
+    {
+        // Reported issues going wrong with rescaling (except for 630b)
+        ut_settings settings;
+        settings.percentage = 0.001;
+
+#if ! defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
+        TEST_DIFFERENCE_WITH(0, 1, issue_630_a, 0, expectation_limits(0.0), 1, (expectation_limits(2.023, 2.2004)), 1);
+#endif
+
+        TEST_DIFFERENCE_WITH(0, 1, issue_630_b, 1, 0.0056089, 2, 1.498976, 3);
+
+#if ! defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
+        TEST_DIFFERENCE_WITH(0, 1, issue_630_c, 0, 0, 1, 1.493367, 1);
+#endif
+
+#if ! defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
+        // Symmetrical difference fails without get_clusters
+        settings.sym_difference = BG_IF_TEST_FAILURES;
+        TEST_DIFFERENCE_WITH(0, 1, issue_643, 1, expectation_limits(76.5385), optional(), optional_sliver(1.0e-6), 1);
+#endif
+    }
+
+    // Cases below go (or went) wrong in either a ( [0] - [1] ) or b ( [1] - [0] )
+    // Requires reversal of isolation in ii turns. There should be 3 rings.
+    TEST_DIFFERENCE(issue_869_a, 3, 3600, 0, 0, 3); // a went wrong
+
+    TEST_DIFFERENCE(issue_888_34, 22, 0.2506824, 6, 0.0253798, 28); // a went wrong
+    TEST_DIFFERENCE(issue_888_37, 15, 0.0451408, 65, 0.3014843, 80); // b went wrong
+
+    {
+        ut_settings settings;
+        settings.validity_false_negative_a = true;
+        settings.validity_false_negative_sym = true;
+        TEST_DIFFERENCE_WITH(0, 1, issue_888_53, 117, 0.2973268, 17, 0.0525798, 134);
+    }
 
     // Areas and #clips correspond with POSTGIS (except sym case)
     test_one<Polygon, MultiPolygon, MultiPolygon>("case_101_multi",
@@ -317,7 +358,8 @@ void test_areal()
     TEST_DIFFERENCE(case_recursive_boxes_60, 6, 5.25, 7, 5.25, 11);
     TEST_DIFFERENCE(case_recursive_boxes_61, 2, 1.5, 6, 2.0, 7);
 #if defined(BOOST_GEOMETRY_TEST_FAILURES)
-    // Misses one triangle
+    // Misses one triangle, should be fixed in traversal.
+    // It is not related to rescaling.
     TEST_DIFFERENCE(case_recursive_boxes_62, 5, 5.0, 11, 5.75, 12);
 #endif
 
@@ -340,14 +382,14 @@ void test_areal()
     TEST_DIFFERENCE(case_recursive_boxes_79, 2, 1.25, 6, 4.5, 8);
 
     // one polygon is divided into two, for same reason as union creates a small
-    // interior ring there
-    TEST_DIFFERENCE(case_recursive_boxes_80, 1, 0.5, 2, 0.75, BG_IF_RESCALED(3, 2));
+    // interior ring there, which is acceptable
+    TEST_DIFFERENCE(case_recursive_boxes_80, 1, 0.5, 2, 0.75, count_set(2, 3));
 
     TEST_DIFFERENCE(case_recursive_boxes_81, 3, 5.0, 6, 6.75, 6);
     TEST_DIFFERENCE(case_recursive_boxes_82, 5, 7.25, 7, 4.5, 8);
     TEST_DIFFERENCE(case_recursive_boxes_83, 9, 5.25, 8, 5.25, 12);
     TEST_DIFFERENCE(case_recursive_boxes_84, 4, 8.0, 7, 9.0, 4);
-#if ! defined(BOOST_GEOMETRY_USE_RESCALING)
+#if ! defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
     TEST_DIFFERENCE(case_recursive_boxes_85, 4, 4.0, 7, 3.75, 9);
 #endif
 
@@ -356,26 +398,24 @@ void test_areal()
     TEST_DIFFERENCE(case_recursive_boxes_88, 3, 4.75, 5, 6.75, 4);
 
     // Output of A can be 0 or 1 polygons (with a very small area)
-    TEST_DIFFERENCE(case_precision_m1, -1, 0.0, 1, 57.0, -1);
+    TEST_DIFFERENCE(case_precision_m1, optional(), expectation_limits(0.0, 5.0e-7), 1, 57.0, count_set(1, 2));
     // Output of A can be 1 or 2 polygons (one with a very small area)
-    TEST_DIFFERENCE(case_precision_m2, -1, 1.0, 1, 57.75, -1);
+    TEST_DIFFERENCE(case_precision_m2, count_set(1, 2), 1.0, 1, 57.75, count_set(2, 3));
 
     {
-        ut_settings sym_settings;
-    #if ! defined(BOOST_GEOMETRY_USE_RESCALING)
-        sym_settings.sym_difference = false;
-    #endif
+        ut_settings settings;
+        settings.sym_difference = BG_IF_RESCALED(true, BG_IF_TEST_FAILURES);
         test_one<Polygon, MultiPolygon, MultiPolygon>("mysql_21965285_b",
             mysql_21965285_b[0],
             mysql_21965285_b[1],
             2, -1, 183.71376870369406,
             2, -1, 131.21376870369406,
-            sym_settings);
+            settings);
     }
 
     TEST_DIFFERENCE(mysql_regression_1_65_2017_08_31,
-                    BG_IF_RESCALED(1, 0), BG_IF_RESCALED(4.30697514e-7, 0),
-                    3, 152.0642, BG_IF_RESCALED(4, 3));
+                    optional(), optional_sliver(1e-6),
+                    3, 152.064185, count_set(3, 4));
 }
 
 
@@ -397,9 +437,13 @@ void test_specific_areal()
         // Spikes in a-b and b-a, failure in symmetric difference
         ut_settings settings;
         settings.sym_difference = false;
-        settings.test_validity = false;
+        settings.set_test_validity(false);
 
-        TEST_DIFFERENCE_WITH(0, 1, ticket_11674, 3, 9105781.5, 5, 119059.5, -1);
+        TEST_DIFFERENCE_WITH(0, 1, ticket_11674,
+                             count_set(3, 4),
+                             expectation_limits(9105473, 9105782),
+                             5,
+                             expectation_limits(119059, 119424), ignore_count());
     }
 
     {
@@ -409,8 +453,14 @@ void test_specific_areal()
         ut_settings settings;
         settings.remove_spikes = true;
 
-        TEST_DIFFERENCE_WITH(0, 1, ticket_12751, 1, 2781965.0, 1, 597.0, 2);
-        TEST_DIFFERENCE_WITH(2, 3, ticket_12751, 2, 2537992.5, 2, 294963.5, 3);
+        TEST_DIFFERENCE_WITH(0, 1, ticket_12751, 1,
+                             expectation_limits(2781964, 2782115), 1,
+                             expectation_limits(597.0, 598.0), 2);
+
+        TEST_DIFFERENCE_WITH(2, 3, ticket_12751,
+                             2, expectation_limits(2537992, 2538306),
+                             2, expectation_limits(294736, 294964),
+                             3);
     }
 
     {
@@ -419,25 +469,37 @@ void test_specific_areal()
         ut_settings settings;
         settings.remove_spikes = true;
         settings.sym_difference = false;
-        TEST_DIFFERENCE_WITH(0, 1, ticket_12752, 3, 2776692.0, 3, 7893.0, 2);
+        TEST_DIFFERENCE_WITH(0, 1, ticket_12752,
+                             count_set(2, 3), expectation_limits(2776656, 2776693),
+                             3, expectation_limits(7710, 7894),
+                             2);
     }
 
     {
-        std::string a_min_b =
-            TEST_DIFFERENCE(ticket_10661, 2, 1441632.5, 2, 13167454, 4);
+        const std::string a_min_b =
+            test_one<Polygon, MultiPolygon, MultiPolygon>("ticket_10661",
+                          ticket_10661[0], ticket_10661[1],
+                          2, -1, expectation_limits(1441632, 1441855),
+                          2, -1, expectation_limits(13167454, 13182415),
+                          count_set(3, 4));
 
         test_one<Polygon, MultiPolygon, MultiPolygon>("ticket_10661_2",
             a_min_b, ticket_10661[2],
             1, 8, 825192.0,
-            1, 10, 27226370.5,
-            1, -1, 825192.0 + 27226370.5);
+            1, 10, expectation_limits(27226148, 27842812),
+            count_set(1, 2));
     }
 
     {
         ut_settings settings;
         settings.sym_difference = false;
-        TEST_DIFFERENCE_WITH(0, 1, ticket_9942, 4, 7427727.5, 4, 131506, 4);
-        TEST_DIFFERENCE_WITH(0, 1, ticket_9942a, 2, 412676.5, 2, 76779.5, 4);
+
+        TEST_DIFFERENCE_WITH(0, 1, ticket_9942, 4,
+                             expectation_limits(7427727, 7428108), 4,
+                             expectation_limits(130083, 131823), 4);
+        TEST_DIFFERENCE_WITH(0, 1, ticket_9942a, 2,
+                             expectation_limits(412676, 413469), 2,
+                             expectation_limits(76779, 77038), 4);
     }
 }
 
@@ -452,18 +514,19 @@ void test_specific()
 
 int test_main(int, char* [])
 {
-    test_all<bg::model::d2::point_xy<double > >();
+    BoostGeometryWriteTestConfiguration();
+    test_all<bg::model::d2::point_xy<default_test_type> >();
 
     test_specific<bg::model::d2::point_xy<int>, false, false>();
 
 #if ! defined(BOOST_GEOMETRY_TEST_ONLY_ONE_TYPE)
     test_all<bg::model::d2::point_xy<float> >();
-
-#if defined(HAVE_TTMATH)
-    std::cout << "Testing TTMATH" << std::endl;
-    test_all<bg::model::d2::point_xy<ttmath_big> >();
 #endif
 
+#if defined(BOOST_GEOMETRY_TEST_FAILURES)
+    // Not yet fully tested for float.
+    // The difference algorithm can generate (additional) slivers
+    BoostGeometryWriteExpectedFailures(24, 11, 21, 7);
 #endif
 
     return 0;

@@ -16,6 +16,67 @@
 
 [#config_defects]
 
+[section Broad C++ Standard Level Checks]
+
+These are for the times when you just want to check "does this compiler conform to C++11" or some such.
+
+[h4 C++ Standard Level]
+
+The macro `BOOST_CXX_VERSION` is set to the C++ standard version - it has the same value as `__cplusplus` if `__cplusplus` is set to a 
+sensible value, otherwise the current C++ standard level in effect (for example for MSVC this is set to the value of `_MSVC_LANG`).
+
+Available standard values are:
+
+[table
+[[standard][value]]
+[[2003][199711L]]
+[[2011][201103L]]
+[[2014][201402L]]
+[[2017][201703L]]
+[[2020][202002L]]
+]
+
+You should use this macro as a basic sanity check that the compiler is minimally at the required standard level - there may still be
+bugs, unimplemented features, and\/or missing headers.  The individual feature checks should be used for those.
+
+[h4 Strict Standard Level Checks]
+
+The following macros:
+
+   BOOST_NO_CXX03
+   BOOST_NO_CXX11
+   BOOST_NO_CXX14
+   BOOST_NO_CXX17
+
+Are set if [*any] of our defect macros are set for that standard level, [/plus all older levels].
+
+Note that these are therefore very strict checks and as a result, other than very recent gcc/clang releases, many compilers
+will end up defining /all/ of these macros: even when `BOOST_CXX_VERSION` indicates a much more recent standard is in effect.
+
+[h4 Strict Standard Check Headers]
+
+The following headers:
+
+   #include <boost/config/assert_cxx03.hpp>
+   #include <boost/config/assert_cxx11.hpp>
+   #include <boost/config/assert_cxx14.hpp>
+   #include <boost/config/assert_cxx17.hpp>
+
+Can be used to assert that none of our defect macros are set for that standard (or any older standards).
+
+The headers will provide a slightly more useful error message than just checking on `BOOST_NO_CXX03` for example, as they
+will indicate which defect macro produced the error.
+
+As noted abovem these are very strict checks, and therefore other than recent gcc/clang releases, many compilers will genrate
+a `#error` on including /any/ of these headers.
+
+[h4 SD6 Feature Test Macros]
+
+Note that none of the above checks take into account any standard library SD6 feature test macros, as doing so would require `#include`ing almost the whole
+standard library.
+
+[endsect]
+
 [section Macros that describe C++03 defects]
 
 The following macros all describe features that are required by the C++03 standard,
@@ -367,7 +428,7 @@ The platform has the POSIX API `gettimeofday`.
 ]]
 [[`BOOST_HAS_HASH`][Standard library][
 The C++ implementation provides the (SGI) hash_set and hash_map classes.
-When defined, `BOOST_HASH_SET_HEADER` and `BOOST_HASH_LIST_HEADER` will contain
+When defined, `BOOST_HASH_SET_HEADER` and `BOOST_HASH_MAP_HEADER` will contain
 the names of the header needed to access hash_set and hash_map;
 `BOOST_STD_EXTENSION_NAMESPACE` will provide the namespace in which the two
 class templates reside.
@@ -645,8 +706,10 @@ default template arguments for function templates.
 [[`BOOST_NO_CXX11_HDR_ATOMIC`][The standard library does not provide header <atomic>.]]
 [[`BOOST_NO_CXX11_HDR_ARRAY`][The standard library does not provide header <array>.]]
 [[`BOOST_NO_CXX11_HDR_CHRONO`][The standard library does not provide header <chrono>.]]
-[[`BOOST_NO_CXX11_HDR_CODECVT`][The standard library does not provide header <codecvt>.]]
+[[`BOOST_NO_CXX11_HDR_CODECVT`][The standard library does not provide header <codecvt>.  Note that this header 
+                  is deprecated post C++17, and therefore the macro may be set as a result of the feature being deliberately removed.]]
 [[`BOOST_NO_CXX11_HDR_CONDITION_VARIABLE`][The standard library does not provide header <condition_variable>.]]
+[[`BOOST_NO_CXX11_HDR_EXCEPTION`][The standard library does not provide a C++11 compatible version of <exception>.]]
 [[`BOOST_NO_CXX11_HDR_FORWARD_LIST`][The standard library does not provide header <forward_list>.]]
 [[`BOOST_NO_CXX11_HDR_FUNCTIONAL`][The standard library does not provide a C++11 compatible version of <functional>.]]
 [[`BOOST_NO_CXX11_HDR_FUTURE`][The standard library does not provide header <future>.]]
@@ -683,6 +746,8 @@ compilers implementing an early draft of the C++11 standard (in particular, inco
 ]]
 [[`BOOST_NO_CXX11_NUMERIC_LIMITS`][The standard library `<limits>` header does
 not support the C++11 version of `numeric_limits`. 
+]]
+[[`BOOST_NO_CXX11_OVERRIDE`][The compiler does not support `override`.
 ]]
 [[`BOOST_NO_CXX11_POINTER_TRAITS`][The standard library does not provide a
 C++11 version of `std::pointer_traits` in <memory>.]]
@@ -726,6 +791,10 @@ Unicode (`u8`, `u`, `U`) literals.
 ]]
 [[`BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX`][The compiler does not support
 the [@http://en.wikipedia.org/wiki/C%2B%2B0x#Uniform_initialization C++11 Unified Initialization Syntax].
+]]
+[[`BOOST_NO_CXX11_UNRESTRICTED_UNION`][The compiler does not support an unrestricted union. This is
+a union that may contain static data as well as user-defined member data with non-trivial special
+member functions.
 ]]
 [[`BOOST_NO_CXX11_USER_DEFINED_LITERALS`][The compiler does not support user defined literals. 
 ]]
@@ -787,6 +856,10 @@ with:
 ``
   static BOOST_CONSTEXPR_OR_CONST UIntType xor_mask = a;
 ``
+]]
+[[`BOOST_OVERRIDE`][
+If `BOOST_NO_CXX11_OVERRIDE` is not defined (i.e. C++11 compliant compilers),
+expands to `override` keyword, otherwise expands to nothing.
 ]]
 [[`BOOST_STATIC_CONSTEXPR`][
 This is a shortcut for `static BOOST_CONSTEXPR_OR_CONST`. For example, when defining const expr variables replace:
@@ -880,6 +953,10 @@ If `BOOST_NO_CXX11_NOEXCEPT` is not defined (i.e. C++11 compliant compilers) the
 ``
 ]
 ]]
+[[`BOOST_FINAL`][
+If `BOOST_NO_CXX11_FINAL` is not defined (i.e. C++11 compliant compilers), expands to `final` keyword,
+otherwise expands to nothing.
+]]
 [[`BOOST_MSVC_ENABLE_2012_NOV_CTP`][
 For Microsoft Visual C++ 2012, enable the C++11 features supplied by the
 November 2012 Community Technology Preview. These features are not automatically
@@ -935,7 +1012,7 @@ provide compliant C++14 support.
 
 [table
 [[Macro ][ Description ]]
-[[`BOOST_CXX14_CONSTEXPR`][This macro works similar to BOOST_CONSTEXPR, but expands to `constexpr` only if the C++14 "relaxed" `constexpr` is available.]]
+[[`BOOST_CXX14_CONSTEXPR`][This macro works similar to `BOOST_CONSTEXPR`, but expands to `constexpr` only if the C++14 "relaxed" `constexpr` is available.]]
 ]
 
 [endsect]
@@ -947,13 +1024,60 @@ that are not yet supported by a particular compiler or library.
 
 [table
 [[Macro ][Description ]]
+[[`BOOST_NO_CXX17_HDR_ANY`][The compiler does not support the header `<any>`.]]
+[[`BOOST_NO_CXX17_HDR_CHARCONV`][The compiler does not support the header `<charconv>`.]]
+[[`BOOST_NO_CXX17_HDR_EXECUTION`][The compiler does not support the header `<execution>`.]]
+[[`BOOST_NO_CXX17_HDR_FILESYSTEM`][The compiler does not support the header `<filesystem>`.]]
+[[`BOOST_NO_CXX17_HDR_MEMORY_RESOURCE`][The compiler does not support the header `<memory_resource>`.]]
 [[`BOOST_NO_CXX17_HDR_OPTIONAL`][The compiler does not support the header `<optional>`.]]
-[[`BOOST_NO_CXX17_HDR_VARIANT`][The compiler does not support the header `<variant>`.]]
 [[`BOOST_NO_CXX17_HDR_STRING_VIEW`][The compiler does not support the header `<string_view>`.]]
+[[`BOOST_NO_CXX17_HDR_VARIANT`][The compiler does not support the header `<variant>`.]]
 [[`BOOST_NO_CXX17_STD_APPLY`][The compiler does not support `std::apply()`.]]
 [[`BOOST_NO_CXX17_STD_INVOKE`][The compiler does not support `std::invoke()`.]]
 [[`BOOST_NO_CXX17_ITERATOR_TRAITS`][The compiler does not support SFINAE-friendly `std::iterator_traits`.]]
 [[`BOOST_NO_CXX17_IF_CONSTEXPR`][The compiler does not support `if constexpr`.]]
+[[`BOOST_NO_CXX17_INLINE_VARIABLES`][The compiler does not support `inline` variables.]]
+]
+
+[endsect]
+
+[#config_17_for_14]
+
+[section Macros that allow use of C++17 features with C++14 or earlier compilers]
+
+The following macros allow use of C++17 features even with compilers that do not yet
+provide compliant C++17 support.
+
+[table
+[[Macro ][ Description ]]
+[[`BOOST_INLINE_VARIABLE`][This macro expands to `inline` on compilers that support C++17 inline variables and to nothing otherwise. Users may need to check for `BOOST_NO_CXX17_INLINE_VARIABLES` for further adjustments to the code.]]
+[[`BOOST_IF_CONSTEXPR`][Expands to `if constexpr` when supported, or `if` otherwise.]]
+[[`BOOST_INLINE_CONSTEXPR`][This is a shortcut for `BOOST_INLINE_VARIABLE BOOST_CONSTEXPR_OR_CONST`.]]
+]
+
+[endsect]
+
+[section Macros that describe C++20 features not supported]
+
+The following macros describe features in the 2020 ISO C++ standard, formerly known as C++2a,
+that are not yet supported by a particular compiler or library.
+
+[table
+[[Macro ][Description ]]
+[[`BOOST_NO_CXX20_HDR_BARRIER`][The compiler does not support the header `<barrier>`.]]
+[[`BOOST_NO_CXX20_HDR_FORMAT`][The compiler does not support the header `<format>`.]]
+[[`BOOST_NO_CXX20_HDR_SOURCE_LOCATION`][The compiler does not support the header `<format>`.]]
+[[`BOOST_NO_CXX20_HDR_BIT`][The compiler does not support the header `<bit>`.]]
+[[`BOOST_NO_CXX20_HDR_LATCH`][The compiler does not support the header `<latch>`.]]
+[[`BOOST_NO_CXX20_HDR_SPAN`][The compiler does not support the header `<span>`.]]
+[[`BOOST_NO_CXX20_HDR_COMPARE`][The compiler does not support the header `<compare>`.]]
+[[`BOOST_NO_CXX20_HDR_NUMBERS`][The compiler does not support the header `<numbers>`.]]
+[[`BOOST_NO_CXX20_HDR_STOP_TOKEN`][The compiler does not support the header `<stop_token>`.]]
+[[`BOOST_NO_CXX20_HDR_CONCEPTS`][The compiler does not support the header `<concepts>`.]]
+[[`BOOST_NO_CXX20_HDR_RANGES`][The compiler does not support the header `<range>`.]]
+[[`BOOST_NO_CXX20_HDR_SYNCSTREAM`][The compiler does not support the header `<syncstream>`.]]
+[[`BOOST_NO_CXX20_HDR_COROUTINE`][The compiler does not support the header `<coroutine>`.]]
+[[`BOOST_NO_CXX20_HDR_SEMAPHORE`][The compiler does not support the header `<semaphore>`.]]
 ]
 
 [endsect]
@@ -968,6 +1092,8 @@ The following macros describe features which were required by one version of the
 [[`BOOST_NO_AUTO_PTR`][The standard library no longer supports `std::auto_ptr`. It was deprecated in C++11 and is removed from C++14.]]
 [[`BOOST_NO_CXX98_FUNCTION_BASE`][The standard library no longer supports `std::unary_function` and `std::binary_function`. They were deprecated in C++11 and is removed from C++14.]]
 [[`BOOST_NO_CXX98_BINDERS`][The standard library no longer supports `std::bind1st`, `std::bind2nd`, `std::ptr_fun` and `std::mem_fun`. They were deprecated in C++11 and is removed from C++14.]]
+[[`BOOST_NO_CXX11_ATOMIC_SMART_PTR`][The standard library no longer supports atomic overloads for `std::shared_ptr`: use `std::atomic<shared_ptr<T>>` instead.]]
+[[`BOOST_NO_CXX11_HDR_CODECVT`][The standard library no longer supports `<codecvt>`, there is as yet no replacement.]]
 ]
 
 [endsect]
@@ -1357,6 +1483,24 @@ compiler version macro.
 [[`BOOST_CLANG`][`<boost/config.hpp>`][
 Defined to 1 if the compiler is the Clang compiler.
 ]]
+[[`BOOST_CLANG_VERSION`][`<boost/config.hpp>`][
+Defined to the version of the Clang compiler, usually
+`__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__`. On
+Apple Clang, has a best-effort value reflecting the upstream version, rather
+than the Apple version.
+]]
+[[`BOOST_BORLANDC`][`<boost/config.hpp>`][
+Defined to the value of __BORLANDC__ if the compiler is the Embarcadero
+non-clang based compiler.
+]]
+[[`BOOST_CODEGEARC`][`<boost/config.hpp>`][
+Defined to the value of __CODEGEARC__ if the compiler is the Embarcadero
+non-clang based compiler.
+]]
+[[`BOOST_EMBTC`][`<boost/config.hpp>`][
+Defined to the value of __CODEGEARC__ if the compiler is the Embarcadero
+clang based compiler.
+]]
 [[`BOOST_WINDOWS`][`<boost/config.hpp>`][
 Defined if the Windows platform API is available.
 ]]
@@ -1379,6 +1523,11 @@ library in use. Mainly for debugging the configuration.
 [[`BOOST_PLATFORM`][`<boost/config.hpp>`][
 Defined as a string describing the name of the platform. Mainly for debugging
 the configuration.
+]]
+[[`BOOST_LIBSTDCXX_VERSION`][`<boost/config.hpp>`][
+Defined if the libstdc++ standard library is in use.
+Has the value of normalised 5 digit integer of the form VVMMM where
+VV is the major version number, MM is the minor version number.
 ]]
 ]
 

@@ -133,6 +133,13 @@ There are two types of options allowed, ones that control general operation and 
 
 [endsect]
 
+[section:exit Exit Status]
+
+Exit status return 0 if no checks failed, 1 if at least one check failed,
+2 for other types of errors (such as an invalid command line).
+
+[endsect]
+
 [section:checks Checks]
 
 [endsect]

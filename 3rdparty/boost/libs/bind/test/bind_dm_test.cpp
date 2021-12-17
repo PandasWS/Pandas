@@ -17,19 +17,12 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
+#include <boost/core/lightweight_test.hpp>
 
-#if defined(BOOST_MSVC) && (BOOST_MSVC < 1300)
-#pragma warning(push, 3)
-#endif
+using namespace boost::placeholders;
 
-#include <iostream>
-
-#if defined(BOOST_MSVC) && (BOOST_MSVC < 1300)
-#pragma warning(pop)
-#endif
-
-#include <boost/detail/lightweight_test.hpp>
+//
 
 struct X
 {

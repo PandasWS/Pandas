@@ -55,7 +55,7 @@ int main()
     ones ones_generator;
     vector<int> values(10);
     generate(values.begin(), values.end(), ones());
-    
+
     vector<int> generated;
     copy(
         boost::make_function_input_iterator(ones_generator, 0),

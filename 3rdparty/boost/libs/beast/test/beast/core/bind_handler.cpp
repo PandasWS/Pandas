@@ -80,8 +80,24 @@ public:
     class test_executor
     {
         bind_handler_test& s_;
-        net::io_context::executor_type ex_;
 
+#if defined(BOOST_ASIO_NO_TS_EXECUTORS)
+        net::any_io_executor ex_;
+
+        // Storing the blocking property as a member is not strictly necessary,
+        // as we could simply forward the calls
+        //   require(ex_, blocking.possibly)
+        // and
+        //   require(ex_, blocking.never)
+        // to the underlying executor, and then
+        //   query(ex_, blocking)
+        // when required. This forwarding approach is used here for the
+        // outstanding_work property.
+        net::execution::blocking_t blocking_;
+
+#else  // defined(BOOST_ASIO_NO_TS_EXECUTORS)
+        net::io_context::executor_type ex_;
+#endif // defined(BOOST_ASIO_NO_TS_EXECUTORS)
     public:
         test_executor(
             test_executor const&) = default;
@@ -91,6 +107,9 @@ public:
             net::io_context& ioc)
             : s_(s)
             , ex_(ioc.get_executor())
+#if defined(BOOST_ASIO_NO_TS_EXECUTORS)
+            , blocking_(net::execution::blocking.possibly)
+#endif
         {
         }
 
@@ -106,31 +125,113 @@ public:
             return ex_ != other.ex_;
         }
 
-        net::io_context&
+#if defined(BOOST_ASIO_NO_TS_EXECUTORS)
+
+        net::execution_context&
+        query(
+            net::execution::context_t c) const noexcept
+        {
+            return net::query(ex_, c);
+        }
+
+        net::execution::blocking_t
+        query(
+            net::execution::blocking_t) const noexcept
+        {
+            return blocking_;
+        }
+
+        net::execution::outstanding_work_t
+        query(
+            net::execution::outstanding_work_t w) const noexcept
+        {
+            return net::query(ex_, w);
+        }
+
+        test_executor
+        require(
+            net::execution::blocking_t::possibly_t b) const
+        {
+            test_executor new_ex(*this);
+            new_ex.blocking_ = b;
+            return new_ex;
+        }
+
+        test_executor
+        require(
+            net::execution::blocking_t::never_t b) const
+        {
+            test_executor new_ex(*this);
+            new_ex.blocking_ = b;
+            return new_ex;
+        }
+
+        test_executor prefer(net::execution::outstanding_work_t::untracked_t w) const
+        {
+            test_executor new_ex(*this);
+            new_ex.ex_ = net::prefer(ex_, w);
+            return new_ex;
+        }
+
+        test_executor prefer(net::execution::outstanding_work_t::tracked_t w) const
+        {
+            test_executor new_ex(*this);
+            new_ex.ex_ = net::prefer(ex_, w);
+            return new_ex;
+        }
+
+        template<class F>
+        void execute(F&& f) const
+        {
+            if (blocking_ == net::execution::blocking.possibly)
+            {
+                s_.on_invoke();
+                net::execution::execute(ex_, std::forward<F>(f));
+            }
+            else
+            {
+                // shouldn't be called since the enclosing
+                // networking wrapper only uses dispatch
+                BEAST_FAIL();
+            }
+        }
+#endif
+#if !defined(BOOST_ASIO_NO_TS_EXECUTORS)
+        net::execution_context&
         context() const noexcept
         {
             return ex_.context();
         }
 
-        void on_work_started() const noexcept
+        void
+        on_work_started() const noexcept
         {
             ex_.on_work_started();
         }
 
-        void on_work_finished() const noexcept
+        void
+        on_work_finished() const noexcept
         {
             ex_.on_work_finished();
         }
 
         template<class F, class Alloc>
-        void dispatch(F&& f, Alloc const& a)
+        void
+        dispatch(F&& f, Alloc const& a)
         {
             s_.on_invoke();
-            ex_.dispatch(std::forward<F>(f), a);
+            net::execution::execute(
+                net::prefer(ex_,
+                    net::execution::blocking.possibly,
+                    net::execution::allocator(a)),
+                std::forward<F>(f));
+            // previously equivalent to
+            // ex_.dispatch(std::forward<F>(f), a);
         }
 
         template<class F, class Alloc>
-        void post(F&& f, Alloc const& a)
+        void
+        post(F&& f, Alloc const& a)
         {
             // shouldn't be called since the enclosing
             // networking wrapper only uses dispatch
@@ -138,13 +239,21 @@ public:
         }
 
         template<class F, class Alloc>
-        void defer(F&& f, Alloc const& a)
+        void
+        defer(F&& f, Alloc const& a)
         {
             // shouldn't be called since the enclosing
             // networking wrapper only uses dispatch
             BEAST_FAIL();
         }
+#endif // !defined(BOOST_ASIO_NO_TS_EXECUTORS)
     };
+
+#if defined(BOOST_ASIO_NO_TS_EXECUTORS)
+    BOOST_STATIC_ASSERT(net::execution::is_executor<test_executor>::value);
+#else
+    BOOST_STATIC_ASSERT(net::is_executor<test_executor>::value);
+#endif
 
     class test_cb
     {

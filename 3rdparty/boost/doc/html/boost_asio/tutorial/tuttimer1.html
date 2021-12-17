@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Timer.1 - Using a timer synchronously</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -42,9 +42,12 @@
 #include &lt;boost/asio.hpp&gt;
 </pre>
 <p>
-        All programs that use asio need to have at least one <a class="link" href="../reference/io_context.html" title="io_context">io_context</a>
-        object. This class provides access to I/O functionality. We declare an object
-        of this type first thing in the main function.
+        All programs that use asio need to have at least one I/O execution context,
+        such as an <a class="link" href="../reference/io_context.html" title="io_context">io_context</a>
+        or <a class="link" href="../reference/thread_pool.html" title="thread_pool">thread_pool</a> object.
+        An I/O execution context provides access to I/O functionality. We declare
+        an object of type <a class="link" href="../reference/io_context.html" title="io_context">io_context</a>
+        first thing in the main function.
       </p>
 <pre class="programlisting">int main()
 {
@@ -94,7 +97,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

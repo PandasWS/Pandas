@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Concurrency Hints</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -76,6 +76,11 @@
                     consequence that the new handler is held back until the currently
                     executing handler finishes).
                   </p>
+                  <p>
+                    The <code class="computeroutput"><span class="identifier">io_context</span></code>
+                    still provides full thread safety, and distinct I/O objects may
+                    be used from any thread.
+                  </p>
                 </td>
 </tr>
 <tr>
@@ -90,15 +95,15 @@
                     and reactor I/O. This hint has the following restrictions:
                   </p>
                   <p>
-                    &#8212; Care must be taken to ensure that all operations on the <code class="computeroutput"><span class="identifier">io_context</span></code> and any of its associated
+                    — Care must be taken to ensure that all operations on the <code class="computeroutput"><span class="identifier">io_context</span></code> and any of its associated
                     I/O objects (such as sockets and timers) occur in only one thread
                     at a time.
                   </p>
                   <p>
-                    &#8212; Asynchronous resolve operations fail with <code class="computeroutput"><span class="identifier">operation_not_supported</span></code>.
+                    — Asynchronous resolve operations fail with <code class="computeroutput"><span class="identifier">operation_not_supported</span></code>.
                   </p>
                   <p>
-                    &#8212; If a <code class="computeroutput"><span class="identifier">signal_set</span></code>
+                    — If a <code class="computeroutput"><span class="identifier">signal_set</span></code>
                     is used with the <code class="computeroutput"><span class="identifier">io_context</span></code>,
                     <code class="computeroutput"><span class="identifier">signal_set</span></code> objects
                     cannot be used with any other io_context in the program.
@@ -117,9 +122,12 @@
                     I/O. This hint has the following restrictions:
                   </p>
                   <p>
-                    &#8212; Care must be taken to ensure that run functions on the <code class="computeroutput"><span class="identifier">io_context</span></code>, and all operations
-                    on the context's associated I/O objects (such as sockets and
-                    timers), occur in only one thread at a time.
+                    — Care must be taken to ensure that the <span class="emphasis"><em>run functions</em></span>
+                    on the <code class="computeroutput"><span class="identifier">io_context</span></code>
+                    (i.e. <code class="computeroutput"><span class="identifier">run</span></code>, <code class="computeroutput"><span class="identifier">run_for</span></code>, <code class="computeroutput"><span class="identifier">run_until</span></code>,
+                    <code class="computeroutput"><span class="identifier">run_one</span></code>, <code class="computeroutput"><span class="identifier">run_one_for</span></code>, <code class="computeroutput"><span class="identifier">run_one_until</span></code>, <code class="computeroutput"><span class="identifier">poll</span></code>, and <code class="computeroutput"><span class="identifier">poll_one</span></code>),
+                    and all operations on the context's associated I/O objects (such
+                    as sockets and timers), occur in only one thread at a time.
                   </p>
                 </td>
 </tr>
@@ -161,7 +169,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

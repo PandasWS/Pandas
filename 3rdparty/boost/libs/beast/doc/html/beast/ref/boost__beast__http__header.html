@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>http::header</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Beast">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Beast">
 <link rel="up" href="../ref.html" title="This Page Intentionally Left Blank 2/2">
-<link rel="prev" href="boost__beast__http__file_body.html" title="http::file_body">
-<link rel="next" href="boost__beast__http__header/fields_type.html" title="http::header::fields_type">
+<link rel="prev" href="boost__beast__test__handler/operator_lp__rp_/overload3.html" title="test::handler::operator() (3 of 3 overloads)">
+<link rel="next" href="boost__beast__http__header/is_request.html" title="http::header::is_request">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,7 +20,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__http__file_body.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__header/fields_type.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__test__handler/operator_lp__rp_/overload3.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__header/is_request.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
@@ -38,7 +38,7 @@
       </p>
 <pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span>
     <span class="keyword">bool</span> <span class="identifier">isRequest</span><span class="special">,</span>
-    <span class="keyword">class</span> <a class="link" href="../concepts/Fields.html" title="Fields"><span class="emphasis"><em>Fields</em></span></a> <span class="special">=</span> <span class="identifier">fields</span><span class="special">&gt;</span>
+    <span class="keyword">class</span> <a class="link" href="../concepts/Fields.html" title="Fields"><span class="emphasis"><em>Fields</em></span></a> <span class="special">=</span> <a class="link" href="boost__beast__http__fields.html" title="http::fields">fields</a><span class="special">&gt;</span>
 <span class="keyword">class</span> <span class="identifier">header</span> <span class="special">:</span>
     <span class="keyword">public</span> <span class="identifier">Fields</span>
 </pre>
@@ -67,7 +67,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__header/fields_type.html" title="http::header::fields_type"><span class="bold"><strong>fields_type</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__header/fields_type.html" title="http::header::fields_type">fields_type</a></strong></span>
                 </p>
               </td>
 <td>
@@ -79,7 +79,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__header/is_request.html" title="http::header::is_request"><span class="bold"><strong>is_request</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__header/is_request.html" title="http::header::is_request">is_request</a></strong></span>
                 </p>
               </td>
 <td>
@@ -115,7 +115,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__header/header.html" title="http::header::header"><span class="bold"><strong>header</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__header/header.html" title="http::header::header">header</a> <span class="silver">[constructor]</span></strong></span>
                 </p>
               </td>
 <td>
@@ -127,14 +127,12 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__header/method.html" title="http::header::method"><span class="bold"><strong>method</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__header/method.html" title="http::header::method">method</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Return the request-method verb.
-                </p>
-                <p>
+                  Return the request-method verb. <br> <span class="silver">—</span><br>
                   Set the request-method.
                 </p>
               </td>
@@ -142,19 +140,20 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__header/method_string.html" title="http::header::method_string"><span class="bold"><strong>method_string</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__header/method_string.html" title="http::header::method_string">method_string</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Return the request-method as a string.
+                  Return the request-method as a string. <br> <span class="silver">—</span><br>
+                  Set the request-method.
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__header/operator_eq_.html" title="http::header::operator="><span class="bold"><strong>operator=</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__header/operator_eq_.html" title="http::header::operator=">operator=</a></strong></span>
                 </p>
               </td>
 <td>
@@ -166,14 +165,12 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__header/reason.html" title="http::header::reason"><span class="bold"><strong>reason</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__header/reason.html" title="http::header::reason">reason</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Return the response reason-phrase.
-                </p>
-                <p>
+                  Return the response reason-phrase. <br> <span class="silver">—</span><br>
                   Set the response reason-phrase (deprecated)
                 </p>
               </td>
@@ -181,17 +178,13 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__header/result.html" title="http::header::result"><span class="bold"><strong>result</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__header/result.html" title="http::header::result">result</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  The response status-code result.
-                </p>
-                <p>
-                  Set the response status-code.
-                </p>
-                <p>
+                  The response status-code result. <br> <span class="silver">—</span><br>
+                  Set the response status-code. <br> <span class="silver">—</span><br>
                   Set the response status-code as an integer.
                 </p>
               </td>
@@ -199,7 +192,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__header/result_int.html" title="http::header::result_int"><span class="bold"><strong>result_int</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__header/result_int.html" title="http::header::result_int">result_int</a></strong></span>
                 </p>
               </td>
 <td>
@@ -211,14 +204,12 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__header/target.html" title="http::header::target"><span class="bold"><strong>target</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__header/target.html" title="http::header::target">target</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Returns the request-target string.
-                </p>
-                <p>
+                  Returns the request-target string. <br> <span class="silver">—</span><br>
                   Set the request-target string.
                 </p>
               </td>
@@ -226,14 +217,12 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__header/version.html" title="http::header::version"><span class="bold"><strong>version</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__header/version.html" title="http::header::version">version</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Return the HTTP-version.
-                </p>
-                <p>
+                  Return the HTTP-version. <br> <span class="silver">—</span><br>
                   Set the HTTP-version.
                 </p>
               </td>
@@ -249,18 +238,15 @@
         template type. To understand all of the members of this class it is necessary
         to view the declaration for the <code class="computeroutput"><span class="identifier">Fields</span></code>
         type. When using the default fields container, those declarations are in
-        <a class="link" href="boost__beast__http__fields.html" title="http::fields"><code class="computeroutput"><span class="identifier">http</span><span class="special">::</span><span class="identifier">fields</span></code></a>.
+        <a class="link" href="boost__beast__http__fields.html" title="http::fields"><code class="computeroutput"><span class="identifier">fields</span></code></a>.
         Newly constructed header objects have version set to HTTP/1.1. Newly constructed
-        response objects also have result code set to <a class="link" href="boost__beast__http__status.html" title="http::status"><code class="computeroutput"><span class="identifier">http</span><span class="special">::</span><span class="identifier">ok</span></code></a>. A <code class="computeroutput"><span class="identifier">header</span></code>
+        response objects also have result code set to <a class="link" href="boost__beast__http__status.html" title="http::status"><code class="computeroutput"><span class="identifier">status</span><span class="special">::</span><span class="identifier">ok</span></code></a>. A <code class="computeroutput"><span class="identifier">header</span></code>
         includes the start-line and header-fields.
-      </p>
-<p>
-        Convenience header <code class="literal">&lt;<a href="../../../../../../boost/beast/http.hpp" target="_top">boost/beast/http.hpp</a>&gt;</code>
       </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2016-2019 Vinnie
+<td align="right"><div class="copyright-footer">Copyright © 2016-2019 Vinnie
       Falco<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
@@ -269,7 +255,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__http__file_body.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__header/fields_type.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__test__handler/operator_lp__rp_/overload3.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__header/is_request.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

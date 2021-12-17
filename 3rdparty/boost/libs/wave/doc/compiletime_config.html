@@ -88,6 +88,16 @@
     <td class="table_cells"><code>BOOST_WAVE_SUPPORT_CPP0X</code></td>
     <td class="table_cells"><p>If defined, then the preprocessor library supports 
         C++0x keywords and C++0x specific features, such as variadics, placemarkers, extended character and string literals. This implies the definitions of the <code>BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS</code> constant.</p></td>
+  </tr>  <tr>
+    <td class="table_cells"><code>BOOST_WAVE_SUPPORT_CPP1Z</code></td>
+    <td class="table_cells"><p>If defined, then the preprocessor library supports
+        C++17 keywords - currently just <code>__has_include</code>. It implies <code>BOOST_WAVE_SUPPORT_CPP0X</code>.</p></td>
+  </tr>
+  </tr>  <tr>
+    <td class="table_cells"><code>BOOST_WAVE_SUPPORT_CPP2A</code></td>
+    <td class="table_cells"><p>If defined, then the preprocessor library supports
+        C++20 keywords, specifically <code>__VA_OPT__</code>. It implies <code>BOOST_WAVE_SUPPORT_CPP1Z</code>.</p></td>
+  </tr>
   </tr>  <tr> 
     <td class="table_cells"><code>BOOST_WAVE_MAX_INCLUDE_LEVEL_DEPTH</code></td>
     <td class="table_cells"><p>If defined, it will determine the initial maximal 
@@ -114,12 +124,8 @@
   </tr>
   <tr>
     <td class="table_cells"><code>BOOST_WAVE_PRAGMA_KEYWORD</code></td>
-    <td class="table_cells"><p>If this is defined to a string literal it will be used as the pragma keyword recogniyed by the library as specific Wave pragma's. This constant defaults to <span class="literal">&quot;wave&quot;</span>, i.e. the library recognizes all      <span class="preprocessor">#pragma wave option [(argument)]</span>  directives and dispatches the handling to the interpret_pragma() preprocessing hook function (see: <a href="class_reference_ctxpolicy.html">Preprocessing Hooks</a>). The arguments part of the  pragma is optional.<br>
+    <td class="table_cells"><p>If this is defined to a string literal it will be used as the pragma keyword recogniyed by the library as specific Wave pragmas. This constant defaults to <span class="literal">&quot;wave&quot;</span>, i.e. the library recognizes all      <span class="preprocessor">#pragma wave option [(argument)]</span>  directives and dispatches the handling to the interpret_pragma() preprocessing hook function (see: <a href="class_reference_ctxpolicy.html">Preprocessing Hooks</a>). The arguments part of the  pragma is optional.<br>
       </p>    </td>
-  </tr>
-  <tr>
-    <td class="table_cells"><code>BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS</code></td>
-    <td class="table_cells"><p>If defined to something not equal to zero (<span class="literal">'0'</span>) Wave will be compiled to use the depreciated preprocessing hooks. The interface of the preprocessing hooks has been changed after the Boost V1.34.x releases. This constant allows to compile applications using the older interface. </p></td>
   </tr>
   <tr>
     <td class="table_cells"><code>BOOST_WAVE_SUPPORT_LONGLONG_INTEGER_LITERALS</code></td>
@@ -142,7 +148,7 @@ even if these do not have the <span class="literal">'ll'</span> suffix.</p>
             <p>This preprocessor constant allows to configer whether the Wave library will be built
                 with threading support enabled or not. This value (if defined) should be set to
                 zero ('0') if threading needs to be disabled and to a numerical value not equal
-                to zero, if threading should be enabled explicitely.
+                to zero, if threading should be enabled explicitly.
             </p>
             <p>
                 If this constant is not defined, the Wave library will be built using the threading
@@ -152,7 +158,7 @@ even if these do not have the <span class="literal">'ll'</span> suffix.</p>
     </tr>
 </table>
 <P dir="ltr"><b><a name="using_custom_lexer"></a>Using a different token type or lexer type in conjunction with Wave </b></P>
-<P dir="ltr">It is possible to use the <tt>Wave</tt> library while using your own token and/or lexer types. This may be achieved by providing your lexer type as the second template parameter while instantiating the <tt>boost::wave::context&lt;&gt;</tt> object. The token type used by the library is derived from the <tt>token_type</tt> typedef to be provided by the lexer type. If you want to provide your own token type only, you may use the <tt>boost::wave::lex_iterator&lt;&gt;</tt> type contained with the library. This type needs to be parametrized with the token type to use. </P>
+<P dir="ltr">It is possible to use the <tt>Wave</tt> library while using your own token and/or lexer types. This may be achieved by providing your lexer type as the second template parameter while instantiating the <tt>boost::wave::context&lt;&gt;</tt> object. The token type used by the library is derived from the <tt>token_type</tt> typedef to be provided by the lexer type. If you want to provide your own token type only, you may use the <tt>boost::wave::lex_iterator&lt;&gt;</tt> type contained with the library. This type needs to be parameterized with the token type to use. </P>
 <P dir="ltr">The <tt>Wave</tt> library contains several samples illustrating these possibilities. The <tt>cpp_tokens</tt> sample shows the usage of a custom lexer and a custom token types. The lexer type used is functionally fully compatible to the <tt>re2c</tt> <a href="references.html#re2c">[3]</a> based lexer used by default. It is implemented based on the <tt>SLex</tt> <a href="references.html#slex">[5]</a> lexer example written by Dan Nuffer. The token type used therein is functionally equivalent to the default token type except for an additional <tt>operator&lt;&lt;</tt> used for dumping the information carried by the token.</P>
 <P dir="ltr"><b><a name="compilation_models"></a>Separation and inclusion compilation 
   models</b></P>
@@ -174,7 +180,7 @@ even if these do not have the <span class="literal">'ll'</span> suffix.</p>
   the compilation of the C++ lexer and the separation of the compilation of the 
   different Spirit grammars used. To use these separations you will have to define 
   two preprocessor constants while compiling the whole application and you will 
-  have to explicitely instantiate some helper templates. The following tables 
+  have to explicitly instantiate some helper templates. The following tables
   shows these constants in detail.</P>
 <table width="90%" border="0" align="center">
   <tr> 
@@ -232,8 +238,10 @@ even if these do not have the <span class="literal">'ll'</span> suffix.</p>
   included as an acompanion sample to the C++ preprocessor iterator library. The 
   corresponding files are named obviously <span class="string">&quot;instantiate_...something.cpp&quot;</span>, 
   where the <span class="string">'...somthing'</span> is a hint, which grammars 
-  are explicitely instantiated inside. By using the separation model the compilation 
+  are explicitly instantiated inside. By using the separation model the compilation
   times required to build the <tt>Wave</tt> example are dropped by up to 90%.</p>
+<P dir="ltr"><b><a name="compiler_requirements"></a>Compiler Requirements</b></P>
+<p>Beginning with version 1.77, Wave will require building with C++11 features, and will no longer support the use of older compilers. However, Wave will continue to <em>emulate</em> the features of older preprocessors indefinitely.<p>
 <table border="0">
   <tr> 
     <td width="10"></td>

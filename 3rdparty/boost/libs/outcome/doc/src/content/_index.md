@@ -2,9 +2,15 @@
 title = "Home"
 +++
 
-# Outcome 2.1 library
+# Outcome 2.2 library
 
 {{% boost-copyright %}}
+
+{{% notice note %}}
+At the end of December 2020, Outcome v2.2 replaced v2.1 in develop branch. This is a breaking
+change and all Outcome v2.1 code will need to be upgraded using [the v2.1 => v2.2 upgrade guide]({{% relref "/changelog/upgrade_v21_v22" %}}). See also
+[the list of v2.2 major changes]({{% relref "/changelog/v22" %}}).
+{{% /notice %}}
 
 Outcome is a set of tools for reporting and handling function failures in contexts where *directly* using C++ exception handling is unsuitable. Such contexts include:
 
@@ -33,6 +39,10 @@ Outcome addresses failure handling through returning a special type from functio
 Particular care has been taken to ensure that Outcome has the lowest possible impact on build times,
 thus making it suitable for use in the global headers of really large codebases. Storage layout is
 guaranteed and is C-compatible for `result<T, E>`[^1], thus making Outcome based code long term ABI-stable.
+
+Fully deterministic all-`noexcept` C++ Coroutine support in Outcome is particularly strong, and we
+supply Outcome-optimising {{< api "eager<T>/atomic_eager<T>" >}} and {{< api "lazy<T>/atomic_lazy<T>" >}}
+awaitables which work for any user type.
 
 ## Sample usage
 

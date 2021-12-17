@@ -9,7 +9,7 @@
 */
 
 #include <list>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/foreach.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,19 +44,19 @@ std::list<int> const &my_const_list = my_list;
 ///////////////////////////////////////////////////////////////////////////////
 // test_main
 //   
-int test_main( int, char*[] )
+int main()
 {
     // non-const containers by reference
-    BOOST_CHECK(sequence_equal_byref_n_r(my_list, "\5\4\3\2\1"));
+    BOOST_TEST(sequence_equal_byref_n_r(my_list, "\5\4\3\2\1"));
 
     // const containers by reference
-    BOOST_CHECK(sequence_equal_byref_c_r(my_const_list, "\5\4\3\2\1"));
+    BOOST_TEST(sequence_equal_byref_c_r(my_const_list, "\5\4\3\2\1"));
 
     // mutate the mutable collections
     mutate_foreach_byref_r(my_list);
 
     // compare the mutated collections to the actual results
-    BOOST_CHECK(sequence_equal_byref_n_r(my_list, "\6\5\4\3\2"));
+    BOOST_TEST(sequence_equal_byref_n_r(my_list, "\6\5\4\3\2"));
 
-    return 0;
+    return boost::report_errors();
 }

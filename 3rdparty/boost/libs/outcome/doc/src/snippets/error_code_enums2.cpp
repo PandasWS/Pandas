@@ -1,5 +1,5 @@
 /* Example of Outcome used with error code enums
-(C) 2017-2019 Niall Douglas <http://www.nedproductions.biz/> (3 commits)
+(C) 2017-2021 Niall Douglas <http://www.nedproductions.biz/> (3 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -134,7 +134,7 @@ result<udt> boo()
 }
 result<udt> foo()
 {
-  BOOST_OUTCOME_TRY(v, (boo()));
+  BOOST_OUTCOME_TRY(auto v, (boo()));
   return udt{5};  // emplace construct udt with 5
 }
 //! [usage3]

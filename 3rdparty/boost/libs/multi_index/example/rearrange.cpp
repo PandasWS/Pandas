@@ -1,6 +1,6 @@
 /* Boost.MultiIndex example of use of rearrange facilities.
  *
- * Copyright 2003-2015 Joaquin M Lopez Munoz.
+ * Copyright 2003-2020 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -14,7 +14,6 @@
 #endif
 
 #include <boost/config.hpp>
-#include <boost/detail/iterator.hpp>
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/random_access_index.hpp>
 #include <boost/random/binomial_distribution.hpp>
@@ -140,11 +139,11 @@ void riffle_shuffle(
 {
   static boost::mt19937 rnd_gen;
 
-  typedef typename boost::detail::iterator_traits<
-    RandomAccessIterator>::difference_type         difference_type;
+  typedef typename std::iterator_traits<
+    RandomAccessIterator>::difference_type difference_type;
   typedef boost::binomial_distribution<
-    difference_type>                               rnd_cut_select_type;
-  typedef boost::uniform_real<>                    rnd_deck_select_type;
+    difference_type>                       rnd_cut_select_type;
+  typedef boost::uniform_real<>            rnd_deck_select_type;
 
   rnd_cut_select_type  cut_select(last-first);
   RandomAccessIterator middle=first+cut_select(rnd_gen);

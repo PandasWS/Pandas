@@ -234,9 +234,11 @@ void specific() {
    BOOST_CHECK_INTEGRAL_CONSTANT((::boost::BOOST_TT_TRAIT_NAME< std::istream, char&, std::istream& >::value), 1);
    BOOST_CHECK_INTEGRAL_CONSTANT((::boost::BOOST_TT_TRAIT_NAME< std::istream, signed char&, std::istream& >::value), 1);
    BOOST_CHECK_INTEGRAL_CONSTANT((::boost::BOOST_TT_TRAIT_NAME< std::istream, unsigned char&, std::istream& >::value), 1);
+#if !(defined(_LIBCPP_VERSION) && (_LIBCPP_VERSION >= 9000)) && !defined(_HAS_CXX20)
    BOOST_CHECK_INTEGRAL_CONSTANT((::boost::BOOST_TT_TRAIT_NAME< std::istream, char*, std::istream& >::value), 1);
    BOOST_CHECK_INTEGRAL_CONSTANT((::boost::BOOST_TT_TRAIT_NAME< std::istream, signed char*, std::istream& >::value), 1);
    BOOST_CHECK_INTEGRAL_CONSTANT((::boost::BOOST_TT_TRAIT_NAME< std::istream, unsigned char*, std::istream& >::value), 1);
+#endif
    BOOST_CHECK_INTEGRAL_CONSTANT((::boost::BOOST_TT_TRAIT_NAME< std::istream, std::string&, std::istream& >::value), 1);
 }
 

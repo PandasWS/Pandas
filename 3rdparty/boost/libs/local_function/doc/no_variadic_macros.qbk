@@ -39,7 +39,6 @@ For reference, the following is a list of most of the examples presented in this
 
 [table
     [ [Files] ]
-    [ [[@../../test/add_classifiers_seq.cpp =add_classifiers_seq.cpp=]] ]
     [ [[@../../test/add_default_seq.cpp =add_default_seq.cpp=]] ]
     [ [[@../../test/add_except_seq.cpp =add_except_seq.cpp=]] ]
     [ [[@../../test/add_inline_seq.cpp =add_inline_seq.cpp=]] ]

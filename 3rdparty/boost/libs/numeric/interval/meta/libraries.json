@@ -15,5 +15,6 @@
         "Sylvain Pion <Sylvain.Pion -at- sophia.inria.fr>",
         "Herve Bronnimann <hbr -at- poly.edu>",
         "Guillaume Melquiond <guillaume.melquiond -at- ens-lyon.fr>"
-    ]
+    ],
+    "cxxstd": "03"
 }

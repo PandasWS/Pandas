@@ -2,7 +2,7 @@
 
 # Copyright John Maddock 2005. Use, modification, and distribution are
 # subject to the Boost Software License, Version 1.0. (See accompanying
-# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+# file LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt)
 
 using quickbook ;
 
@@ -25,8 +25,8 @@ boostbook standalone
         # How far down we go with TOC's
         <xsl:param>generate.section.toc.level=4
         # Path for links to Boost:
-        <xsl:param>boost.root=../../../..
-        
+        <xsl:param>"boost.root=../../../.."
+
         # PDF Options:
         # TOC Generation: this is needed for FOP-0.9 and later:
         <xsl:param>fop1.extensions=0
@@ -46,8 +46,8 @@ boostbook standalone
         # default pnd graphics are awful in PDF form,
         # better use SVG's instead:
         <format>pdf:<xsl:param>admon.graphics.extension=".svg"
-        <format>pdf:<xsl:param>admon.graphics.path=$(boost-images)/
-        <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/libs/regex/doc/html
+        <format>pdf:<xsl:param>"admon.graphics.path=$(boost-images)/"
+        <format>pdf:<xsl:param>"boost.url.prefix=https://www.boost.org/doc/libs/release/libs/integer/doc/html"
     ;
 
 install pdfinstall : standalone/<format>pdf : <location>. <install-type>PDF ;

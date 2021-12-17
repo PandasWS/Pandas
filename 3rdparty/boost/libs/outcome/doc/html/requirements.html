@@ -22,10 +22,13 @@ point releases of these compiler-platform combinations or better:</p>
 <li>XCode 9 [MacOS]</li>
 </ul>
 
-<p>It is worth turning on C++ 17 if you can, as there are many usability and
-performance improvements. If your compiler implements the Concepts TS, it
-is worth turning support on. Support is automatically
-detected and used.</p>
+<p>For non-Windows non-POSIX platforms (typically embedded systems), Outcome
+is usable in its Outcome.Experimental form with the macro <code>BOOST_OUTCOME_SYSTEM_ERROR2_NOT_POSIX</code>
+defined.</p>
+
+<p>It is worth turning on C++ 17 or C++ 20 if you can, as there are many usability and
+performance improvements. Any Concepts TS or Coroutines TS implemented
+by your compiler is automatically detected and used.</p>
 
 <p>Partially working compilers (this was last updated January 2019):</p>
 
@@ -58,7 +61,7 @@ not implement enough of the C++ 14 standard library for Outcome to compile.</li>
 
 
 
-        </div><p><small>Last revised: June 20, 2019 at 22:20:02 &#43;0100</small></p>
+        </div><p><small>Last revised: February 25, 2020 at 11:15:13 UTC</small></p>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="./index.html"><img src="./images/prev.png" alt="Prev"></a>

@@ -3,12 +3,18 @@
 //Distributed under the Boost Software License, Version 1.0. (See accompanying
 //file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <boost/config.hpp>
+
+#if defined( BOOST_NO_EXCEPTIONS )
+#   error This program requires exception handling.
+#endif
+
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/exception/info.hpp>
 #include <boost/detail/lightweight_test.hpp>
 #include <boost/detail/workaround.hpp>
 
-#if BOOST_WORKAROUND(__CODEGEARC__, BOOST_TESTED_AT(0x610))
+#if BOOST_WORKAROUND(BOOST_CODEGEARC, BOOST_TESTED_AT(0x610))
 struct test_tag1 {};
 struct test_tag2 {};
 #endif

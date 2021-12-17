@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class template typed_value</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -96,7 +96,7 @@
 </li>
 <li class="listitem">
 <pre class="literallayout"><a class="link" href="typed_value.html" title="Class template typed_value">typed_value</a> <span class="special">*</span> <a name="id-1_3_32_9_10_1_1_1_5_5-bb"></a><span class="identifier">implicit_value</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">T</span> <span class="special">&amp;</span> v<span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="special">&amp;</span> textual<span class="special">)</span><span class="special">;</span></pre>
-<p>Specifies an implicit value, which will be used if the option is given, but without an adjacent value. Using this implies that an explicit value is optional, but if given, must be strictly adjacent to the option, i.e.: '-ovalue' or '&#8211;option=value'. Giving '-o' or '&#8211;option' will cause the implicit value to be applied. Unlike the above overload, the type 'T' need not provide operator&lt;&lt; for ostream, but textual representation of default value must be provided by the user. </p>
+<p>Specifies an implicit value, which will be used if the option is given, but without an adjacent value. Using this implies that an explicit value is optional, but if given, must be strictly adjacent to the option, i.e.: '-ovalue' or '–option=value'. Giving '-o' or '–option' will cause the implicit value to be applied. Unlike the above overload, the type 'T' need not provide operator&lt;&lt; for ostream, but textual representation of default value must be provided by the user. </p>
 </li>
 <li class="listitem">
 <pre class="literallayout"><a class="link" href="typed_value.html" title="Class template typed_value">typed_value</a> <span class="special">*</span> <a name="id-1_3_32_9_10_1_1_1_5_6-bb"></a><span class="identifier">notifier</span><span class="special">(</span><span class="identifier">function1</span><span class="special">&lt;</span> <span class="keyword">void</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">T</span> <span class="special">&amp;</span> <span class="special">&gt;</span> f<span class="special">)</span><span class="special">;</span></pre>
@@ -143,7 +143,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2004 Vladimir Prus<p>Distributed under the Boost Software License, Version 1.0.
+<td align="right"><div class="copyright-footer">Copyright © 2002-2004 Vladimir Prus<p>Distributed under the Boost Software License, Version 1.0.
       (See accompanying file <code class="filename">LICENSE_1_0.txt</code> or copy at 
       <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

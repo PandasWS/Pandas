@@ -13,7 +13,8 @@
 
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
+#define BOOST_CHECK BOOST_TEST
 
 #include "boost/lambda/lambda.hpp"
 
@@ -408,7 +409,7 @@ void pointer_arithmetic() {
 
 }
 
-int test_main(int, char *[]) {
+int main() {
 
   arithmetic_operators();
   bitwise_operators();
@@ -421,11 +422,5 @@ int test_main(int, char *[]) {
   comma();
   pointer_arithmetic();
   cout_tests();
-  return 0;
+  return boost::report_errors();
 }
-
-
-
-
-
-

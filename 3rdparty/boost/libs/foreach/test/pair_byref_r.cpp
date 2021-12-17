@@ -9,7 +9,7 @@
    25 August 2005 : Initial version.
 */
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/foreach.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -32,19 +32,19 @@ std::pair<int const*,int const*> const my_const_pair(my_array,my_array+5);
 ///////////////////////////////////////////////////////////////////////////////
 // test_main
 //   
-int test_main( int, char*[] )
+int main()
 {
     // non-const containers by reference
-    BOOST_CHECK(sequence_equal_byref_n_r(my_pair, "\5\4\3\2\1"));
+    BOOST_TEST(sequence_equal_byref_n_r(my_pair, "\5\4\3\2\1"));
 
     // const containers by reference
-    BOOST_CHECK(sequence_equal_byref_c_r(my_const_pair, "\5\4\3\2\1"));
+    BOOST_TEST(sequence_equal_byref_c_r(my_const_pair, "\5\4\3\2\1"));
 
     // mutate the mutable collections
     mutate_foreach_byref_r(my_pair);
 
     // compare the mutated collections to the actual results
-    BOOST_CHECK(sequence_equal_byref_n_r(my_pair, "\6\5\4\3\2"));
+    BOOST_TEST(sequence_equal_byref_n_r(my_pair, "\6\5\4\3\2"));
 
-    return 0;
+    return boost::report_errors();
 }

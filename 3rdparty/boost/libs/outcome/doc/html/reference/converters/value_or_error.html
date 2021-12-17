@@ -11,10 +11,10 @@
     <a accesskey="u" href="../../reference/converters.html"><img src="../../images/up.png" alt="Up"></a>
     <a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../../reference/traits.html"><img src="../../images/next.png" alt="Next"></a></div><div id="content">
   <div class="titlepage"><div><div><h1 style="clear: both"><code>value_or_error&lt;T, U&gt;</code></h1></div></div></div>
-  <p>A customisable converter of <a href="../../reference/concepts/valueorerror.html" class="api-reference"><code>ValueOrError&lt;T, E&gt;</code></a>
+  <p>A customisable converter of <a href="../../reference/types/basic_result/explicit_valueorerror_converting_constructor.html" class="api-reference"><code>concepts::value_or_error&lt;T, E&gt;</code></a>
  concept matching types. It must have the following form:</p>
 <div class="highlight"><pre class="chroma"><code class="language-c++" data-lang="c++"><span class="c1">// `T` will be the destination basic_result or basic_outcome.
-</span><span class="c1">// `U` will be the decayed form of the `ValueOrError&lt;T, E&gt;` concept matching input type.
+</span><span class="c1">// `U` will be the decayed form of the `value_or_error&lt;T, E&gt;` concept matching input type.
 </span><span class="c1"></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span><span class="err"> </span><span class="nc">T</span><span class="o">&gt;</span> <span class="k">struct</span> <span class="n">value_or_error</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">U</span><span class="o">&gt;</span>
 <span class="p">{</span>
   <span class="c1">// False to indicate that this converter wants `basic_result`/`basic_outcome` to reject all other `basic_result`
@@ -28,7 +28,7 @@
 </code></pre></div>
 <p><em>Overridable</em>: By template specialisation into the <code>convert</code> namespace.</p>
 
-<p><em>Default</em>: If decayed <code>X</code> is same as <code>U</code>, concept <code>ValueOrError&lt;U&gt;</code> matches, <code>X::value_type</code> is <code>void</code> or is explicitly constructible to <code>T::value_type</code>, and <code>X::error_type</code> is <code>void</code> or is explicitly constructible to <code>T::error_type</code>, then <code>operator()(X &amp;&amp;)</code> is made available.</p>
+<p><em>Default</em>: If decayed <code>X</code> is same as <code>U</code>, concept <code>value_or_error&lt;U&gt;</code> matches, <code>X::value_type</code> is <code>void</code> or is explicitly constructible to <code>T::value_type</code>, and <code>X::error_type</code> is <code>void</code> or is explicitly constructible to <code>T::error_type</code>, then <code>operator()(X &amp;&amp;)</code> is made available.</p>
 
 <p><code>operator()(X &amp;&amp;v)</code> tests if <code>v.has_value()</code> is true, if so then a <code>T</code> with successful value is returned, else a <code>T</code> with unsuccessful value. If the input type was <code>void</code>, a default constructed value is used for either, else a move/copy construction from the source is performed.</p>
 
@@ -37,7 +37,7 @@
 <p><em>Header</em>: <code>&lt;boost/outcome/convert.hpp&gt;</code></p>
 
 
-        </div><p><small>Last revised: December 15, 2018 at 17:49:37 UTC</small></p>
+        </div><p><small>Last revised: December 15, 2020 at 12:22:39 UTC</small></p>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="../../reference/converters.html"><img src="../../images/prev.png" alt="Prev"></a>

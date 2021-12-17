@@ -19,7 +19,7 @@
 // In a sequence of Bernoulli trials or events
 // (independent, yes or no, succeed or fail) with success_fraction probability p,
 // negative_binomial is the probability that k or fewer failures
-// preceed the r th trial's success.
+// precede the r th trial's success.
 // random variable k is the number of failures (NOT the probability).
 
 // Negative_binomial distribution is a discrete probability distribution.
@@ -27,7 +27,7 @@
 // (like others including the binomial, Poisson & Bernoulli)
 // is strictly defined as a discrete function: only integral values of k are envisaged.
 // However because of the method of calculation using a continuous gamma function,
-// it is convenient to treat it as if a continous function,
+// it is convenient to treat it as if a continuous function,
 // and permit non-integral values of k.
 
 // However, by default the policy is to use discrete_quantile_policy.
@@ -51,11 +51,6 @@
 #include <boost/math/special_functions/fpclassify.hpp> // isnan.
 #include <boost/math/tools/roots.hpp> // for root finding.
 #include <boost/math/distributions/detail/inv_discrete_quantile.hpp>
-
-#include <boost/type_traits/is_floating_point.hpp>
-#include <boost/type_traits/is_integral.hpp>
-#include <boost/type_traits/is_same.hpp>
-#include <boost/mpl/if.hpp>
 
 #include <limits> // using std::numeric_limits;
 #include <utility>
@@ -492,7 +487,7 @@ namespace boost
       //
       // Max iterations permitted:
       //
-      boost::uintmax_t max_iter = policies::get_max_root_iterations<Policy>();
+      std::uintmax_t max_iter = policies::get_max_root_iterations<Policy>();
       typedef typename Policy::discrete_quantile_type discrete_type;
       return detail::inverse_discrete_quantile(
          dist,
@@ -579,7 +574,7 @@ namespace boost
        //
        // Max iterations permitted:
        //
-       boost::uintmax_t max_iter = policies::get_max_root_iterations<Policy>();
+       std::uintmax_t max_iter = policies::get_max_root_iterations<Policy>();
        typedef typename Policy::discrete_quantile_type discrete_type;
        return detail::inverse_discrete_quantile(
           dist,

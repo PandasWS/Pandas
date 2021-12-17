@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>ssl::context::context</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../../../boost_asio.html" title="Boost.Asio">
 <link rel="up" href="../ssl__context.html" title="ssl::context">
 <link rel="prev" href="clear_options/overload2.html" title="ssl::context::clear_options (2 of 2 overloads)">
-<link rel="next" href="context/overload1.html" title="ssl::context::context (1 of 2 overloads)">
+<link rel="next" href="context/overload1.html" title="ssl::context::context (1 of 3 overloads)">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -30,21 +30,29 @@
           <a class="indexterm" name="boost_asio.indexterm.ssl__context.context"></a> 
 Constructor.
         </p>
-<pre class="programlisting">explicit <a class="link" href="context/overload1.html" title="ssl::context::context (1 of 2 overloads)">context</a>(
+<pre class="programlisting">explicit <a class="link" href="context/overload1.html" title="ssl::context::context (1 of 3 overloads)">context</a>(
     method m);
-  <span class="emphasis"><em>&#187; <a class="link" href="context/overload1.html" title="ssl::context::context (1 of 2 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="context/overload1.html" title="ssl::context::context (1 of 3 overloads)">more...</a></em></span>
+</pre>
+<p>
+          Construct to take ownership of a native handle.
+        </p>
+<pre class="programlisting">explicit <a class="link" href="context/overload2.html" title="ssl::context::context (2 of 3 overloads)">context</a>(
+    native_handle_type native_handle);
+  <span class="emphasis"><em>» <a class="link" href="context/overload2.html" title="ssl::context::context (2 of 3 overloads)">more...</a></em></span>
 </pre>
 <p>
           Move-construct a context from another.
         </p>
-<pre class="programlisting"><a class="link" href="context/overload2.html" title="ssl::context::context (2 of 2 overloads)">context</a>(
+<pre class="programlisting"><a class="link" href="context/overload3.html" title="ssl::context::context (3 of 3 overloads)">context</a>(
     context &amp;&amp; other);
-  <span class="emphasis"><em>&#187; <a class="link" href="context/overload2.html" title="ssl::context::context (2 of 2 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="context/overload3.html" title="ssl::context::context (3 of 3 overloads)">more...</a></em></span>
 </pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

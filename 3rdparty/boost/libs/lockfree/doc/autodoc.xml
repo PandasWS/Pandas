@@ -34,16 +34,7 @@
 </listitem><listitem><para>T must have a trivial assignment operator</para>
 </listitem><listitem><para>T must have a trivial destructor </para>
 </listitem></itemizedlist>
-</para></description><constructor><parameter name=""><paramtype>void</paramtype></parameter><purpose>Construct queue. </purpose></constructor>
-<constructor specifiers="explicit"><template>
-          <template-type-parameter name="U"/>
-        </template><parameter name="alloc"><paramtype><emphasis>unspecified</emphasis></paramtype></parameter></constructor>
-<constructor specifiers="explicit"><parameter name="alloc"><paramtype>allocator const &amp;</paramtype></parameter></constructor>
-<constructor specifiers="explicit"><parameter name="n"><paramtype>size_type</paramtype></parameter><purpose>Construct queue, allocate n nodes for the freelist. </purpose></constructor>
-<constructor><template>
-          <template-type-parameter name="U"/>
-        </template><parameter name="n"><paramtype>size_type</paramtype></parameter><parameter name="alloc"><paramtype><emphasis>unspecified</emphasis></paramtype></parameter></constructor>
-<typedef name="value_type"><type>T</type></typedef>
+</para></description><typedef name="value_type"><type>T</type></typedef>
 <typedef name="allocator"><type>implementation_defined::allocator</type></typedef>
 <typedef name="size_type"><type>implementation_defined::size_type</type></typedef>
 <method-group name="public member functions">
@@ -147,6 +138,25 @@
 </para></description><returns><para>number of elements that are consumed</para>
 </returns></method>
 </method-group>
+<constructor><parameter name=""><paramtype>void</paramtype></parameter><description><para>Construct a fixed-sized queue</para><para>
+</para></description><requires><para>Must specify a capacity&lt;&gt; argument </para>
+</requires></constructor>
+<constructor specifiers="explicit"><template>
+          <template-type-parameter name="U"/>
+        </template><parameter name="alloc"><paramtype>typename boost::allocator_rebind&lt; node_allocator, U &gt;::type const &amp;</paramtype></parameter><description><para>Construct a fixed-sized queue with a custom allocator</para><para>
+</para></description><requires><para>Must specify a capacity&lt;&gt; argument </para>
+</requires></constructor>
+<constructor specifiers="explicit"><parameter name="alloc"><paramtype>allocator const &amp;</paramtype></parameter><description><para>Construct a fixed-sized queue with a custom allocator</para><para>
+</para></description><requires><para>Must specify a capacity&lt;&gt; argument </para>
+</requires></constructor>
+<constructor specifiers="explicit"><parameter name="n"><paramtype>size_type</paramtype></parameter><description><para>Construct a variable-sized queue</para><para>Allocate n nodes initially for the freelist</para><para>
+</para></description><requires><para>Must <emphasis role="bold">not</emphasis> specify a capacity&lt;&gt; argument </para>
+</requires></constructor>
+<constructor><template>
+          <template-type-parameter name="U"/>
+        </template><parameter name="n"><paramtype>size_type</paramtype></parameter><parameter name="alloc"><paramtype>typename boost::allocator_rebind&lt; node_allocator, U &gt;::type const &amp;</paramtype></parameter><description><para>Construct a variable-sized queue with a custom allocator</para><para>Allocate n nodes initially for the freelist</para><para>
+</para></description><requires><para>Must <emphasis role="bold">not</emphasis> specify a capacity&lt;&gt; argument </para>
+</requires></constructor>
 <destructor><parameter name=""><paramtype>void</paramtype></parameter><description><para>Destroys queue, free all nodes from freelist. </para></description></destructor>
 </class></namespace>
 </namespace>
@@ -173,21 +183,7 @@
       <template-nontype-parameter name="Options"><type>typename ...</type></template-nontype-parameter>
     </template><typedef name="allocator"><type>allocator_arg</type></typedef>
 <typedef name="size_type"><type>std::size_t</type></typedef>
-</struct><constructor><parameter name=""><paramtype>void</paramtype></parameter><description><para>Constructs a <classname alt="boost::lockfree::spsc_queue">spsc_queue</classname></para><para>
-</para></description><requires><para><classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> must be configured to be sized at compile-time </para>
-</requires></constructor>
-<constructor specifiers="explicit"><template>
-          <template-type-parameter name="U"/>
-        </template><parameter name=""><paramtype><emphasis>unspecified</emphasis></paramtype></parameter></constructor>
-<constructor specifiers="explicit"><parameter name=""><paramtype>allocator const &amp;</paramtype></parameter></constructor>
-<constructor specifiers="explicit"><parameter name="element_count"><paramtype>size_type</paramtype></parameter><description><para>Constructs a <classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> for element_count elements</para><para>
-</para></description><requires><para><classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> must be configured to be sized at run-time </para>
-</requires></constructor>
-<constructor><template>
-          <template-type-parameter name="U"/>
-        </template><parameter name="element_count"><paramtype>size_type</paramtype></parameter><parameter name="alloc"><paramtype><emphasis>unspecified</emphasis></paramtype></parameter></constructor>
-<constructor><parameter name="element_count"><paramtype>size_type</paramtype></parameter><parameter name="alloc"><paramtype>allocator_arg const &amp;</paramtype></parameter></constructor>
-<typedef name="value_type"><type>T</type></typedef>
+</struct><typedef name="value_type"><type>T</type></typedef>
 <typedef name="allocator"><type>implementation_defined::allocator</type></typedef>
 <typedef name="size_type"><type>implementation_defined::size_type</type></typedef>
 <method-group name="public member functions">
@@ -330,6 +326,32 @@
 </note>
 </para></description></method>
 </method-group>
+<constructor><parameter name=""><paramtype>void</paramtype></parameter><description><para>Constructs a <classname alt="boost::lockfree::spsc_queue">spsc_queue</classname></para><para>
+</para></description><requires><para><classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> must be configured to be sized at compile-time </para>
+</requires></constructor>
+<constructor specifiers="explicit"><template>
+          <template-type-parameter name="U"/>
+        </template><parameter name=""><paramtype>typename boost::allocator_rebind&lt; allocator, U &gt;::type const &amp;</paramtype></parameter><description><para>Constructs a <classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> with a custom allocator</para><para>
+<note><para>This is just for API compatibility: an allocator isn't actually needed </para>
+</note>
+</para></description><requires><para><classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> must be configured to be sized at compile-time</para>
+</requires></constructor>
+<constructor specifiers="explicit"><parameter name=""><paramtype>allocator const &amp;</paramtype></parameter><description><para>Constructs a <classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> with a custom allocator</para><para>
+<note><para>This is just for API compatibility: an allocator isn't actually needed </para>
+</note>
+</para></description><requires><para><classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> must be configured to be sized at compile-time</para>
+</requires></constructor>
+<constructor specifiers="explicit"><parameter name="element_count"><paramtype>size_type</paramtype></parameter><description><para>Constructs a <classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> for element_count elements</para><para>
+</para></description><requires><para><classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> must be configured to be sized at run-time </para>
+</requires></constructor>
+<constructor><template>
+          <template-type-parameter name="U"/>
+        </template><parameter name="element_count"><paramtype>size_type</paramtype></parameter><parameter name="alloc"><paramtype>typename boost::allocator_rebind&lt; allocator, U &gt;::type const &amp;</paramtype></parameter><description><para>Constructs a <classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> for element_count elements with a custom allocator</para><para>
+</para></description><requires><para><classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> must be configured to be sized at run-time </para>
+</requires></constructor>
+<constructor><parameter name="element_count"><paramtype>size_type</paramtype></parameter><parameter name="alloc"><paramtype>allocator_arg const &amp;</paramtype></parameter><description><para>Constructs a <classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> for element_count elements with a custom allocator</para><para>
+</para></description><requires><para><classname alt="boost::lockfree::spsc_queue">spsc_queue</classname> must be configured to be sized at run-time </para>
+</requires></constructor>
 </class></namespace>
 </namespace>
 </header>
@@ -368,16 +390,7 @@
 <method-group name="public member functions">
 </method-group>
 <constructor><parameter name="val"><paramtype>T const &amp;</paramtype></parameter></constructor>
-</struct><constructor><parameter name=""><paramtype>void</paramtype></parameter><purpose>Construct stack. </purpose></constructor>
-<constructor specifiers="explicit"><template>
-          <template-type-parameter name="U"/>
-        </template><parameter name="alloc"><paramtype><emphasis>unspecified</emphasis></paramtype></parameter></constructor>
-<constructor specifiers="explicit"><parameter name="alloc"><paramtype>allocator const &amp;</paramtype></parameter></constructor>
-<constructor specifiers="explicit"><parameter name="n"><paramtype>size_type</paramtype></parameter><purpose>Construct stack, allocate n nodes for the freelist. </purpose></constructor>
-<constructor><template>
-          <template-type-parameter name="U"/>
-        </template><parameter name="n"><paramtype>size_type</paramtype></parameter><parameter name="alloc"><paramtype><emphasis>unspecified</emphasis></paramtype></parameter></constructor>
-<method-group name="private member functions">
+</struct><method-group name="private member functions">
 <method name="BOOST_STATIC_ASSERT"><type/><parameter name=""><paramtype>boost::is_copy_constructible&lt; T &gt;::value</paramtype></parameter></method>
 <method name="BOOST_STATIC_ASSERT"><type/><parameter name=""><paramtype>(mpl::if_c&lt; has_capacity, mpl::bool_&lt; <classname>capacity</classname> - 1&lt; boost::integer_traits&lt; boost::uint16_t &gt;::const_max &gt;, mpl::true_ &gt;::type::value)</paramtype></parameter></method>
 <method name="BOOST_DELETED_FUNCTION"><type/><parameter name=""><paramtype><classname>stack</classname>(<classname>stack</classname> const &amp;)</paramtype></parameter></method>
@@ -412,6 +425,25 @@
           <template-type-parameter name="ConstIterator"/>
         </template><parameter name="begin"><paramtype>ConstIterator</paramtype></parameter><parameter name="end"><paramtype>ConstIterator</paramtype></parameter></method>
 </method-group>
+<constructor><parameter name=""><paramtype>void</paramtype></parameter><description><para>Construct a fixed-sized stack</para><para>
+</para></description><requires><para>Must specify a capacity&lt;&gt; argument </para>
+</requires></constructor>
+<constructor specifiers="explicit"><template>
+          <template-type-parameter name="U"/>
+        </template><parameter name="alloc"><paramtype>typename boost::allocator_rebind&lt; node_allocator, U &gt;::type const &amp;</paramtype></parameter><description><para>Construct a fixed-sized stack with a custom allocator</para><para>
+</para></description><requires><para>Must specify a capacity&lt;&gt; argument </para>
+</requires></constructor>
+<constructor specifiers="explicit"><parameter name="alloc"><paramtype>allocator const &amp;</paramtype></parameter><description><para>Construct a fixed-sized stack with a custom allocator</para><para>
+</para></description><requires><para>Must specify a capacity&lt;&gt; argument </para>
+</requires></constructor>
+<constructor specifiers="explicit"><parameter name="n"><paramtype>size_type</paramtype></parameter><description><para>Construct a variable-sized stack</para><para>Allocate n nodes initially for the freelist</para><para>
+</para></description><requires><para>Must <emphasis role="bold">not</emphasis> specify a capacity&lt;&gt; argument </para>
+</requires></constructor>
+<constructor><template>
+          <template-type-parameter name="U"/>
+        </template><parameter name="n"><paramtype>size_type</paramtype></parameter><parameter name="alloc"><paramtype>typename boost::allocator_rebind&lt; node_allocator, U &gt;::type const &amp;</paramtype></parameter><description><para>Construct a variable-sized stack with a custom allocator</para><para>Allocate n nodes initially for the freelist</para><para>
+</para></description><requires><para>Must <emphasis role="bold">not</emphasis> specify a capacity&lt;&gt; argument </para>
+</requires></constructor>
 <destructor><parameter name=""><paramtype>void</paramtype></parameter><description><para>Destroys stack, free all nodes from freelist.</para><para><note><para>not thread-safe </para>
 </note>
 </para></description></destructor>

@@ -1,4 +1,4 @@
-// Copyright Antony Polukhin, 2013-2019.
+// Copyright Antony Polukhin, 2013-2021.
 
 // Distributed under the Boost Software License, Version 1.0.
 // (See the accompanying file LICENSE_1_0.txt
@@ -15,7 +15,7 @@
     each element of the sequence into string and appends that string to the result.
 
     Example is based on the example from the [@http://www.packtpub.com/boost-cplusplus-application-development-cookbook/book Boost C++ Application Development Cookbook]
-    by Antony Polukhin, ISBN 9781849514880.
+    by Antony Polukhin, ISBN 9781849514880. Russian translation: [@https://dmkpress.com/catalog/computer/programming/c/978-5-97060-868-5/ ISBN: 9785970608685].
 
     Step 1: Making a functor that converts any type to a string and remembers result:
 */
@@ -47,16 +47,21 @@ std::string stringize(const Sequence& seq) {
 }
 
 //` Step 3: Using the `stringize` with different types:
-#include <cassert>
 #include <boost/fusion/adapted/boost_tuple.hpp>
 #include <boost/fusion/adapted/std_pair.hpp>
 
 int main() {
     boost::tuple<char, int, char, int> decim('-', 10, 'e', 5);
-    assert(stringize(decim) == "-10e5");
+    if (stringize(decim) != "-10e5") {
+        return 1;
+    }
 
     std::pair<int, std::string> value_and_type(270, "Kelvin");
-    assert(stringize(value_and_type) == "270Kelvin");
+    if (stringize(value_and_type) != "270Kelvin") {
+        return 2;
+    }
+
+    return 0;
 }
 
 //] [/lexical_cast_stringize]

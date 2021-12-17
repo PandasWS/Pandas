@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>RExpressions - Recursive ASTs!</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Spirit X3 3.0.4">
+<link rel="home" href="../../index.html" title="Spirit X3 3.10">
 <link rel="up" href="../tutorials.html" title="Tutorials">
 <link rel="prev" href="annotation.html" title="Annotations - Decorating the ASTs">
 <link rel="next" href="error_handling.html" title="Error Handling">
@@ -188,7 +188,7 @@
 <span class="special">};</span>
 </pre>
 <p>
-        Traversing the AST is a recursive excercise. <code class="computeroutput"><span class="identifier">rexpr_printer</span></code>
+        Traversing the AST is a recursive exercise. <code class="computeroutput"><span class="identifier">rexpr_printer</span></code>
         is a function object and the main entry point is <code class="computeroutput"><span class="keyword">void</span>
         <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">rexpr</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">ast</span><span class="special">)</span></code>. Notice how it recursively calls an instance
         of itself for each of the key value pairs, using <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">apply_visitor</span></code>.
@@ -284,7 +284,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2018 Joel de Guzman,
+<td align="right"><div class="copyright-footer">Copyright © 2001-2018 Joel de Guzman,
       Hartmut Kaiser<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

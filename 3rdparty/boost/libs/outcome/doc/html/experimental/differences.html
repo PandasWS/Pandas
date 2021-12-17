@@ -88,13 +88,13 @@ and so on, thus eliminating ambiguity.</p></li>
 <hr />
 
 <ol>
-<li id="fn:1"><a href="http://wg21.link/P1029">Move relocating is not in the standard, nor has been reviewed by WG21 yet</a>. It is defined to be a type whose move constructor <code>memcpy()</code>&rsquo;s the bits from source to destination, followed by <code>memcpy()</code> of the bits of a default constructed instance to source, and with a programmer-given guarantee that the destructor, when called on a default constructed instance, has no observable side effects. A surprising number of standard library types can meet this definition of move relocating, including <code>std::vector&lt;T&gt;</code>, <code>std::shared_ptr&lt;T&gt;</code>, and <code>std::exception_ptr</code>.
+<li id="fn:1"><a href="http://wg21.link/P1029">Move relocating is not in the standard, it is currently within WG21 Evolution Working Group Incubator</a>. It is defined to be a type whose move constructor <code>memcpy()</code>&rsquo;s the bits from source to destination, followed by <code>memcpy()</code> of the bits of a default constructed instance to source, and with a programmer-given guarantee that the destructor, when called on a default constructed instance, has no observable side effects. A surprising number of standard library types can meet this definition of move relocating, including <code>std::vector&lt;T&gt;</code>, <code>std::shared_ptr&lt;T&gt;</code>, and <code>std::exception_ptr</code>.
  <a class="footnote-return" href="#fnref:1"><sup>[return]</sup></a></li>
 </ol>
 </div>
 
 
-        </div><p><small>Last revised: February 05, 2019 at 17:14:18 UTC</small></p>
+        </div><p><small>Last revised: December 16, 2020 at 14:14:42 UTC</small></p>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="../experimental/map.html"><img src="../images/prev.png" alt="Prev"></a>

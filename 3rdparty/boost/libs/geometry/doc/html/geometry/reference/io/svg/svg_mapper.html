@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>svg_mapper</title>
 <link rel="stylesheet" href="../../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../svg.html" title="SVG (Scalable Vector Graphics)">
 <link rel="prev" href="svg.html" title="svg">
 <link rel="next" href="../../iterators.html" title="Iterators">
@@ -27,7 +27,7 @@
 <a name="geometry.reference.io.svg.svg_mapper"></a><a class="link" href="svg_mapper.html" title="svg_mapper">svg_mapper</a>
 </h5></div></div></div>
 <p>
-            <a class="indexterm" name="idm45133038847440"></a>
+            <a class="indexterm" name="idm73852"></a>
 Helper class to create SVG maps.
           </p>
 <h6>
@@ -154,6 +154,49 @@ Helper class to create SVG maps.
                   </th>
 </tr></thead>
 <tbody>
+<tr>
+<td>
+                    <p>
+</p>
+<pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">svg_mapper</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> <span class="identifier">stream</span><span class="special">,</span> <span class="identifier">SvgCoordinateType</span> <span class="identifier">width</span><span class="special">,</span> <span class="identifier">SvgCoordinateType</span> <span class="identifier">height</span><span class="special">,</span>
+            <span class="identifier">calculation_type</span> <span class="identifier">scale</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">width_height</span> <span class="special">=</span> <span class="string">"width=\"100%\" height=\"100%\""</span><span class="special">)</span></pre>
+<p>
+                    </p>
+                  </td>
+<td>
+                    <p>
+                      Constructor, initializing the SVG map. Opens and initializes
+                      the SVG. Should be called explicitly.
+                    </p>
+                  </td>
+<td>
+                    <p>
+                      <span class="bold"><strong>std::ostream &amp;</strong></span>: <span class="emphasis"><em>stream</em></span>:
+                      Output stream, should be a stream already open
+                    </p>
+                    <p>
+                      <span class="bold"><strong>SvgCoordinateType</strong></span>: <span class="emphasis"><em>width</em></span>:
+                      Width of the SVG map (in SVG pixels)
+                    </p>
+                    <p>
+                      <span class="bold"><strong>SvgCoordinateType</strong></span>: <span class="emphasis"><em>height</em></span>:
+                      Height of the SVG map (in SVG pixels)
+                    </p>
+                    <p>
+                      <span class="bold"><strong>calculation_type</strong></span>: <span class="emphasis"><em>scale</em></span>:
+                      Scale factor of the automatically determined bounding box.
+                      If the factor is less than 1.0, there will be a margin around
+                      the geometries. A factor of 0.95 is often a convenient margin.
+                      If the factor is more than 1.0, the SVG map is zoomed and not
+                      all geometries will be visible.
+                    </p>
+                    <p>
+                      <span class="bold"><strong>std::string const &amp;</strong></span>:
+                      <span class="emphasis"><em>width_height</em></span>: Optional information to
+                      increase width and/or height
+                    </p>
+                  </td>
+</tr>
 <tr>
 <td>
                     <p>
@@ -399,7 +442,7 @@ Helper class to create SVG maps.
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">ofstream</span> <span class="identifier">svg</span><span class="special">(</span><span class="string">"my_map.svg"</span><span class="special">);</span>
     <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">svg_mapper</span><span class="special">&lt;</span><span class="identifier">point_type</span><span class="special">&gt;</span> <span class="identifier">mapper</span><span class="special">(</span><span class="identifier">svg</span><span class="special">,</span> <span class="number">400</span><span class="special">,</span> <span class="number">400</span><span class="special">);</span>
 
-    <span class="comment">// Add geometries such that all these geometries fit on the map</span>
+    <span class="comment">// Add geometries such that all these geometries fit exactly on the map</span>
     <span class="identifier">mapper</span><span class="special">.</span><span class="identifier">add</span><span class="special">(</span><span class="identifier">a</span><span class="special">);</span>
     <span class="identifier">mapper</span><span class="special">.</span><span class="identifier">add</span><span class="special">(</span><span class="identifier">b</span><span class="special">);</span>
     <span class="identifier">mapper</span><span class="special">.</span><span class="identifier">add</span><span class="special">(</span><span class="identifier">c</span><span class="special">);</span>
@@ -425,6 +468,74 @@ Helper class to create SVG maps.
           </p>
 <h6>
 <a name="geometry.reference.io.svg.svg_mapper.h6"></a>
+            <span class="phrase"><a name="geometry.reference.io.svg.svg_mapper.example_with_arrows_and_groups"></a></span><a class="link" href="svg_mapper.html#geometry.reference.io.svg.svg_mapper.example_with_arrows_and_groups">Example
+            with arrows and groups</a>
+          </h6>
+<p>
+            Shows the usage of svg_mapper with arrows, groups and a larger margin
+          </p>
+<p>
+</p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">iostream</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">fstream</span><span class="special">&gt;</span>
+
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">geometries</span><span class="special">/</span><span class="identifier">point_xy</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="keyword">int</span> <span class="identifier">main</span><span class="special">()</span>
+<span class="special">{</span>
+    <span class="comment">// Specify the basic type</span>
+    <span class="keyword">using</span> <span class="identifier">point_type</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">d2</span><span class="special">::</span><span class="identifier">point_xy</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;;</span>
+
+    <span class="comment">// Declare linestrings and set their values</span>
+    <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">linestring</span><span class="special">&lt;</span><span class="identifier">point_type</span><span class="special">&gt;</span> <span class="identifier">a</span><span class="special">,</span> <span class="identifier">b</span><span class="special">,</span> <span class="identifier">c</span><span class="special">;</span>
+    <span class="identifier">a</span><span class="special">.</span><span class="identifier">push_back</span><span class="special">({</span><span class="number">1</span><span class="special">,</span> <span class="number">0</span><span class="special">});</span>
+    <span class="identifier">a</span><span class="special">.</span><span class="identifier">push_back</span><span class="special">({</span><span class="number">3</span><span class="special">,</span> <span class="number">3</span><span class="special">});</span>
+
+    <span class="identifier">b</span><span class="special">.</span><span class="identifier">push_back</span><span class="special">({</span><span class="number">5</span><span class="special">,</span> <span class="number">0</span><span class="special">});</span>
+    <span class="identifier">b</span><span class="special">.</span><span class="identifier">push_back</span><span class="special">({</span><span class="number">3</span><span class="special">,</span> <span class="number">2</span><span class="special">});</span>
+
+    <span class="identifier">c</span><span class="special">.</span><span class="identifier">push_back</span><span class="special">({</span><span class="number">4</span><span class="special">,</span> <span class="number">5</span><span class="special">});</span>
+    <span class="identifier">c</span><span class="special">.</span><span class="identifier">push_back</span><span class="special">({</span><span class="number">3</span><span class="special">,</span> <span class="number">4</span><span class="special">});</span>
+
+    <span class="comment">// Declare a stream and an SVG mapper</span>
+    <span class="comment">// The factor of 0.95 zooms out to give a convenient margin</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">ofstream</span> <span class="identifier">svg</span><span class="special">(</span><span class="string">"my_map.svg"</span><span class="special">);</span>
+    <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">svg_mapper</span><span class="special">&lt;</span><span class="identifier">point_type</span><span class="special">&gt;</span> <span class="identifier">mapper</span><span class="special">(</span><span class="identifier">svg</span><span class="special">,</span> <span class="number">400</span><span class="special">,</span> <span class="number">400</span><span class="special">,</span> <span class="number">0.95</span><span class="special">);</span>
+
+    <span class="comment">// Write a marker definition.</span>
+    <span class="identifier">svg</span> <span class="special">&lt;&lt;</span> <span class="string">"&lt;defs&gt;"</span><span class="special">;</span>
+    <span class="identifier">svg</span> <span class="special">&lt;&lt;</span> <span class="string">"&lt;marker id=\"arrowhead\" markerWidth=\"5\" markerHeight=\"3.5\""</span>
+           <span class="string">" refX=\"0\" refY=\"1.75\" orient=\"auto\"&gt;"</span>
+           <span class="string">" &lt;polygon points=\"0 0, 5 1.75, 0 3.5\"/&gt;&lt;/marker&gt;"</span><span class="special">;</span>
+    <span class="identifier">svg</span> <span class="special">&lt;&lt;</span> <span class="string">"&lt;/defs&gt;"</span><span class="special">;</span>
+
+    <span class="comment">// Add geometries such that all these geometries fit exactly on the map</span>
+    <span class="identifier">mapper</span><span class="special">.</span><span class="identifier">add</span><span class="special">(</span><span class="identifier">a</span><span class="special">);</span>
+    <span class="identifier">mapper</span><span class="special">.</span><span class="identifier">add</span><span class="special">(</span><span class="identifier">b</span><span class="special">);</span>
+    <span class="identifier">mapper</span><span class="special">.</span><span class="identifier">add</span><span class="special">(</span><span class="identifier">c</span><span class="special">);</span>
+
+    <span class="comment">// Group the first two geometries</span>
+    <span class="identifier">svg</span> <span class="special">&lt;&lt;</span> <span class="string">"&lt;g&gt;"</span><span class="special">;</span>
+    <span class="identifier">mapper</span><span class="special">.</span><span class="identifier">map</span><span class="special">(</span><span class="identifier">a</span><span class="special">,</span> <span class="string">"opacity:0.5;stroke-width:1;stroke:gray;marker-end:url(#arrowhead)"</span><span class="special">);</span>
+    <span class="identifier">mapper</span><span class="special">.</span><span class="identifier">map</span><span class="special">(</span><span class="identifier">b</span><span class="special">,</span> <span class="string">"opacity:0.5;stroke-width:3;stroke:gray;marker-end:url(#arrowhead)"</span><span class="special">);</span>
+    <span class="identifier">svg</span> <span class="special">&lt;&lt;</span> <span class="string">"&lt;/g&gt;"</span><span class="special">;</span>
+
+    <span class="identifier">mapper</span><span class="special">.</span><span class="identifier">map</span><span class="special">(</span><span class="identifier">c</span><span class="special">,</span> <span class="string">"opacity:0.5;stroke-width:5;stroke:red;marker-end:url(#arrowhead)"</span><span class="special">);</span>
+
+    <span class="keyword">return</span> <span class="number">0</span><span class="special">;</span>
+<span class="special">}</span>
+</pre>
+<p>
+          </p>
+<p>
+            Output:
+          </p>
+<p>
+            <span class="inlinemediaobject"><img src="../../../../img/io/svg_mapper_custom.png" alt="svg_mapper_custom"></span>
+          </p>
+<h6>
+<a name="geometry.reference.io.svg.svg_mapper.h7"></a>
             <span class="phrase"><a name="geometry.reference.io.svg.svg_mapper.see_also"></a></span><a class="link" href="svg_mapper.html#geometry.reference.io.svg.svg_mapper.see_also">See
             also</a>
           </h6>
@@ -434,8 +545,8 @@ Helper class to create SVG maps.
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

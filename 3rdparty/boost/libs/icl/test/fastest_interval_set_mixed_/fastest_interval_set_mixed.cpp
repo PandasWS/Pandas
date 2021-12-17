@@ -1,4 +1,4 @@
-/*-----------------------------------------------------------------------------+    
+/*-----------------------------------------------------------------------------+
 Copyright (c) 2008-2009: Joachim Faulhaber
 +------------------------------------------------------------------------------+
    Distributed under the Boost Software License, Version 1.0.
@@ -24,7 +24,16 @@ using namespace boost;
 using namespace unit_test;
 using namespace boost::icl;
 
+#ifdef BOOST_CLANG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wself-assign-overloaded"
+#endif
+
 #include "../test_interval_set_mixed.hpp"
+
+#ifdef BOOST_CLANG
+#pragma clang diagnostic pop
+#endif
 
 BOOST_AUTO_TEST_CASE
 (fastest_icl_interval_set_mixed_ctor_4_ordered_types)

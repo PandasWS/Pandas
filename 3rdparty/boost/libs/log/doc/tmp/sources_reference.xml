@@ -13,6 +13,7 @@ The header contains implementation of a base class for loggers. Convenience macr
       <template-type-parameter name="ThreadingModelT"/>
       <template-type-parameter name="FeaturesT"/>
     </template><purpose>A composite logger that inherits a number of features. </purpose><description><para>The composite logger is a helper class that simplifies feature composition into the final logger. The user's logger class is expected to derive from the composite logger class, instantiated with the character type, the user's logger class, the threading model and the list of the required features. The former three parameters are passed to the <computeroutput><classname alt="boost::log::sources::basic_logger">basic_logger</classname></computeroutput> class template. The feature list must be an MPL type sequence, where each element is a unary MPL metafunction class, that upon applying on its argument results in a logging feature class that derives from the argument. Every logger feature provided by the library can participate in the feature list. </para></description><typedef name="threading_model"><purpose>Threading model being used. </purpose><type>base_type::threading_model</type></typedef>
+<typedef name="swap_lock"><purpose>Lock requirement for the swap_unlocked method. </purpose><type>base_type::swap_lock</type></typedef>
 <method-group name="public member functions">
 <method name="add_attribute"><type>std::pair&lt; attribute_set::iterator, bool &gt;</type><parameter name="name"><paramtype>attribute_name const &amp;</paramtype><description><para>The attribute name. </para></description></parameter><parameter name="attr"><paramtype>attribute const &amp;</paramtype><description><para>The attribute factory. </para></description></parameter><description><para>The method adds an attribute to the source-specific attribute set. The attribute will be implicitly added to every log record made with the current logger.</para><para>
 
@@ -45,7 +46,7 @@ The header contains implementation of a base class for loggers. Convenience macr
 </method-group>
 <constructor><description><para>Default constructor (default-constructs all features) </para></description></constructor>
 <constructor><parameter name="that"><paramtype><classname>basic_composite_logger</classname> const &amp;</paramtype></parameter><description><para>Copy constructor </para></description></constructor>
-<constructor><parameter name="that"><paramtype>logger_base &amp;&amp;</paramtype></parameter><description><para>Move constructor </para></description></constructor>
+<constructor cv="noexcept(boost::is_nothrow_move_constructible&lt; base_type &gt;::value))"><parameter name="that"><paramtype>logger_base &amp;&amp;</paramtype></parameter><description><para>Move constructor </para></description></constructor>
 <constructor specifiers="explicit"><template>
           <template-type-parameter name="ArgsT"/>
         </template><parameter name="args"><paramtype>ArgsT const &amp;</paramtype></parameter><description><para>Constructor with named parameters </para></description></constructor>
@@ -72,7 +73,7 @@ The header contains implementation of a base class for loggers. Convenience macr
 </method-group>
 <constructor/>
 <constructor><parameter name="that"><paramtype><classname>basic_composite_logger</classname> const &amp;</paramtype></parameter></constructor>
-<constructor><parameter name="that"><paramtype><classname>logger_base</classname> &amp;&amp;</paramtype></parameter></constructor>
+<constructor cv="noexcept(boost::is_nothrow_move_constructible&lt; base_type &gt;::value))"><parameter name="that"><paramtype><classname>logger_base</classname> &amp;&amp;</paramtype></parameter></constructor>
 <constructor specifiers="explicit"><template>
           <template-type-parameter name="ArgsT"/>
         </template><parameter name="args"><paramtype>ArgsT const &amp;</paramtype></parameter></constructor>
@@ -109,7 +110,7 @@ The logger implements fundamental facilities of loggers, such as storing source-
 </note>
 
 </para></description></constructor>
-<constructor><parameter name="that"><paramtype><classname>basic_logger</classname> &amp;&amp;</paramtype><description><para>Source logger </para></description></parameter><description><para>Move constructor. Moves all attributes from the source logger.</para><para><note><para>Not thread-safe. The source logger must be locked in the final class before copying.</para>
+<constructor cv="noexcept(boost::is_nothrow_move_constructible&lt; threading_model &gt;::value &amp;&amp;boost::is_nothrow_move_constructible&lt; core_ptr &gt;::value &amp;&amp;boost::is_nothrow_move_constructible&lt; attribute_set &gt;::value))"><parameter name="that"><paramtype><classname>basic_logger</classname> &amp;&amp;</paramtype><description><para>Source logger </para></description></parameter><description><para>Move constructor. Moves all attributes from the source logger.</para><para><note><para>Not thread-safe. The source logger must be locked in the final class before copying.</para>
 </note>
 
 </para></description></constructor>
@@ -120,10 +121,10 @@ The logger implements fundamental facilities of loggers, such as storing source-
 <method name="core" cv="const"><type>core_ptr const  &amp;</type><description><para>An accessor to the logging system pointer </para></description></method>
 <method name="attributes"><type>attribute_set &amp;</type><description><para>An accessor to the logger attributes </para></description></method>
 <method name="attributes" cv="const"><type>attribute_set const  &amp;</type><description><para>An accessor to the logger attributes </para></description></method>
-<method name="get_threading_model"><type>threading_model &amp;</type><description><para>An accessor to the threading model base </para></description></method>
-<method name="get_threading_model" cv="const"><type>threading_model const  &amp;</type><description><para>An accessor to the threading model base </para></description></method>
-<method name="final_this"><type>final_type *</type><description><para>An accessor to the final logger </para></description></method>
-<method name="final_this" cv="const"><type>final_type const  *</type><description><para>An accessor to the final logger </para></description></method>
+<method name="get_threading_model" cv="noexcept"><type>threading_model &amp;</type><description><para>An accessor to the threading model base </para></description></method>
+<method name="get_threading_model" cv="const noexcept"><type>threading_model const  &amp;</type><description><para>An accessor to the threading model base </para></description></method>
+<method name="final_this" cv="noexcept"><type>final_type *</type><description><para>An accessor to the final logger </para></description></method>
+<method name="final_this" cv="const noexcept"><type>final_type const  *</type><description><para>An accessor to the final logger </para></description></method>
 <method name="swap_unlocked"><type>void</type><parameter name="that"><paramtype><classname>basic_logger</classname> &amp;</paramtype></parameter><description><para>Unlocked <computeroutput>swap</computeroutput> </para></description></method>
 <method name="add_attribute_unlocked"><type>std::pair&lt; attribute_set::iterator, bool &gt;</type><parameter name="name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="attr"><paramtype>attribute const &amp;</paramtype></parameter><description><para>Unlocked <computeroutput>add_attribute</computeroutput> </para></description></method>
 <method name="remove_attribute_unlocked"><type>void</type><parameter name="it"><paramtype>attribute_set::iterator</paramtype></parameter><description><para>Unlocked <computeroutput>remove_attribute</computeroutput> </para></description></method>
@@ -137,7 +138,9 @@ The logger implements fundamental facilities of loggers, such as storing source-
 <method name="set_attributes_unlocked"><type>void</type><parameter name="attrs"><paramtype>attribute_set const &amp;</paramtype></parameter><description><para>Unlocked <computeroutput>set_attributes</computeroutput> </para></description></method>
 </method-group>
 <copy-assignment cv="= delete"><type><classname>basic_logger</classname> &amp;</type><parameter name=""><paramtype><classname>basic_logger</classname> const &amp;</paramtype></parameter><purpose>Assignment is closed (should be implemented through copy and swap in the final class) </purpose></copy-assignment>
-</class><function name="swap"><type>void</type><template>
+</class>
+
+<function name="swap"><type>void</type><template>
           <template-type-parameter name="CharT"/>
           <template-type-parameter name="FinalT"/>
           <template-type-parameter name="ThreadingModelT"/>
@@ -199,7 +202,7 @@ The header contains implementation of a channel support feature. </para><namespa
 </method-group>
 <constructor><description><para>Default constructor. The constructed logger has the default-constructed channel name. </para></description></constructor>
 <constructor><parameter name="that"><paramtype><classname>basic_channel_logger</classname> const &amp;</paramtype></parameter><description><para>Copy constructor </para></description></constructor>
-<constructor><parameter name="that"><paramtype><classname>basic_channel_logger</classname> &amp;&amp;</paramtype></parameter><description><para>Move constructor </para></description></constructor>
+<constructor cv="noexcept(boost::is_nothrow_move_constructible&lt; base_type &gt;::value &amp;&amp;boost::is_nothrow_move_constructible&lt; channel_attribute &gt;::value))"><parameter name="that"><paramtype><classname>basic_channel_logger</classname> &amp;&amp;</paramtype></parameter><description><para>Move constructor </para></description></constructor>
 <constructor specifiers="explicit"><template>
           <template-type-parameter name="ArgsT"/>
         </template><parameter name="args"><paramtype>ArgsT const &amp;</paramtype><description><para>A set of named arguments. The following arguments are supported: <itemizedlist>
@@ -230,6 +233,8 @@ The header contains implementation of a channel support feature. </para><namespa
       <template-type-parameter name="BaseT"/>
     </template><typedef name="type"><type><classname>basic_channel_logger</classname>&lt; BaseT, ChannelT &gt;</type></typedef>
 </struct></struct>
+
+
 </namespace>
 
 
@@ -299,6 +304,8 @@ The header contains implementation of a logger with channel support. </para><nam
 </para></description></constructor>
 <copy-assignment><type><classname>wchannel_logger_mt</classname> &amp;</type><parameter name="that"><paramtype><classname>wchannel_logger_mt</classname> const &amp;</paramtype></parameter><description><para>Assignment operator</para><para>Swaps two loggers </para></description></copy-assignment>
 </class>
+
+
 </namespace>
 
 
@@ -339,7 +346,7 @@ The header contains implementation of an exception handler support feature. </pa
 </method-group>
 <constructor><description><para>Default constructor. The constructed logger does not have an exception handler. </para></description></constructor>
 <constructor><parameter name="that"><paramtype><classname>basic_exception_handler_logger</classname> const &amp;</paramtype></parameter><description><para>Copy constructor </para></description></constructor>
-<constructor><parameter name="that"><paramtype><classname>basic_exception_handler_logger</classname> &amp;&amp;</paramtype></parameter><description><para>Move constructor </para></description></constructor>
+<constructor cv="noexcept(boost::is_nothrow_move_constructible&lt; base_type &gt;::value &amp;&amp;boost::is_nothrow_move_constructible&lt; exception_handler_type &gt;::value))"><parameter name="that"><paramtype><classname>basic_exception_handler_logger</classname> &amp;&amp;</paramtype></parameter><description><para>Move constructor </para></description></constructor>
 <constructor specifiers="explicit"><template>
           <template-type-parameter name="ArgsT"/>
         </template><parameter name="args"><paramtype>ArgsT const &amp;</paramtype></parameter><description><para>Constructor with arguments. Passes arguments to other features. </para></description></constructor>
@@ -354,6 +361,8 @@ The header contains implementation of an exception handler support feature. </pa
       <template-type-parameter name="BaseT"/>
     </template><typedef name="type"><type><classname>basic_exception_handler_logger</classname>&lt; BaseT &gt;</type></typedef>
 </struct></struct>
+
+
 </namespace>
 
 
@@ -375,6 +384,8 @@ The header contains definition of a features list class template. </para><namesp
 <struct name="features"><template>
       <template-nontype-parameter name="FeaturesT"><type>typename...</type></template-nontype-parameter>
     </template><purpose>A type sequence of logger features. </purpose><description><para>This class template can be used to specify logger features in a <computeroutput><classname alt="boost::log::sources::basic_composite_logger">basic_composite_logger</classname></computeroutput> instantiation. </para></description></struct>
+
+
 </namespace>
 
 
@@ -393,6 +404,8 @@ The header contains definition of a features list class template. </para><namesp
 The header contains implementation of facilities to declare global loggers. </para><namespace name="boost">
 <namespace name="log">
 <namespace name="sources">
+
+
 
 </namespace>
 
@@ -420,6 +433,8 @@ The header contains implementation of a simplistic logger with no features. </pa
 <namespace name="log">
 <namespace name="sources">
 <class name="logger"><inherit access="public">basic_composite_logger&lt; char, logger, single_thread_model, features&lt; &gt; &gt;</inherit><purpose>Narrow-char logger. Functionally equivalent to <computeroutput><classname alt="boost::log::sources::basic_logger">basic_logger</classname></computeroutput>. </purpose><description><para>See <computeroutput><classname alt="boost::log::sources::basic_logger">basic_logger</classname></computeroutput> class template for a more detailed description. </para></description></class><class name="logger_mt"><purpose>Narrow-char thread-safe logger. Functionally equivalent to <computeroutput><classname alt="boost::log::sources::basic_logger">basic_logger</classname></computeroutput>. </purpose><description><para>See <computeroutput><classname alt="boost::log::sources::basic_logger">basic_logger</classname></computeroutput> class template for a more detailed description. </para></description></class><class name="wlogger"><inherit access="public">basic_composite_logger&lt; wchar_t, wlogger, single_thread_model, features&lt; &gt; &gt;</inherit><purpose>Wide-char logger. Functionally equivalent to <computeroutput><classname alt="boost::log::sources::basic_logger">basic_logger</classname></computeroutput>. </purpose><description><para>See <computeroutput><classname alt="boost::log::sources::basic_logger">basic_logger</classname></computeroutput> class template for a more detailed description. </para></description></class><class name="wlogger_mt"><purpose>Wide-char thread-safe logger. Functionally equivalent to <computeroutput><classname alt="boost::log::sources::basic_logger">basic_logger</classname></computeroutput>. </purpose><description><para>See <computeroutput><classname alt="boost::log::sources::basic_logger">basic_logger</classname></computeroutput> class template for a more detailed description. </para></description></class>
+
+
 </namespace>
 
 
@@ -587,6 +602,8 @@ The header contains implementation of a logger with severity level and channel s
         </template><parameter name="args"><paramtype>ArgsT... const &amp;</paramtype></parameter><description><para>Constructor with named arguments </para></description></constructor>
 <copy-assignment><type><classname>wseverity_channel_logger_mt</classname> &amp;</type><parameter name="that"><paramtype><classname>wseverity_channel_logger_mt</classname> const &amp;</paramtype></parameter><description><para>Assignment operator</para><para>Swaps two loggers </para></description></copy-assignment>
 </class>
+
+
 </namespace>
 
 
@@ -622,7 +639,7 @@ The header contains implementation of a severity level support feature. </para><
 </method-group>
 <constructor><description><para>Default constructor. The constructed logger will have a severity attribute registered. The default level for log records will be 0. </para></description></constructor>
 <constructor><parameter name="that"><paramtype><classname>basic_severity_logger</classname> const &amp;</paramtype></parameter><description><para>Copy constructor </para></description></constructor>
-<constructor><parameter name="that"><paramtype><classname>basic_severity_logger</classname> &amp;&amp;</paramtype></parameter><description><para>Move constructor </para></description></constructor>
+<constructor cv="noexcept(boost::is_nothrow_move_constructible&lt; base_type &gt;::value &amp;&amp;boost::is_nothrow_move_constructible&lt; severity_level &gt;::value &amp;&amp;boost::is_nothrow_move_constructible&lt; severity_attribute &gt;::value))"><parameter name="that"><paramtype><classname>basic_severity_logger</classname> &amp;&amp;</paramtype></parameter><description><para>Move constructor </para></description></constructor>
 <constructor specifiers="explicit"><template>
           <template-type-parameter name="ArgsT"/>
         </template><parameter name="args"><paramtype>ArgsT const &amp;</paramtype><description><para>A set of named arguments. The following arguments are supported: <itemizedlist>
@@ -644,6 +661,8 @@ The header contains implementation of a severity level support feature. </para><
       <template-type-parameter name="BaseT"/>
     </template><typedef name="type"><type><classname>basic_severity_logger</classname>&lt; BaseT, LevelT &gt;</type></typedef>
 </struct></struct>
+
+
 </namespace>
 
 
@@ -713,6 +732,8 @@ The header contains implementation of a logger with severity level support. </pa
 </para></description></constructor>
 <copy-assignment><type><classname>wseverity_logger_mt</classname> &amp;</type><parameter name="that"><paramtype><classname>wseverity_logger_mt</classname> const &amp;</paramtype></parameter><description><para>Assignment operator</para><para>Swaps two loggers </para></description></copy-assignment>
 </class>
+
+
 </namespace>
 
 
@@ -739,54 +760,60 @@ The header contains definition of threading models that can be used in loggers. 
 <method name="timed_lock_shared" cv="const"><type>bool</type><template>
           <template-type-parameter name="TimeT"/>
         </template><parameter name="t"><paramtype>TimeT const &amp;</paramtype></parameter></method>
-<method name="unlock_shared" cv="const"><type>void</type></method>
+<method name="unlock_shared" cv="const noexcept"><type>void</type></method>
 <method name="lock" cv="const"><type>void</type></method>
 <method name="try_lock" cv="const"><type>bool</type></method>
 <method name="timed_lock" cv="const"><type>bool</type><template>
           <template-type-parameter name="TimeT"/>
         </template><parameter name="t"><paramtype>TimeT const &amp;</paramtype></parameter></method>
-<method name="unlock" cv="const"><type>void</type></method>
+<method name="unlock" cv="const noexcept"><type>void</type></method>
 <method name="lock_upgrade" cv="const"><type>void</type></method>
 <method name="try_lock_upgrade" cv="const"><type>bool</type></method>
 <method name="timed_lock_upgrade" cv="const"><type>bool</type><template>
           <template-type-parameter name="TimeT"/>
         </template><parameter name="t"><paramtype>TimeT const &amp;</paramtype></parameter></method>
-<method name="unlock_upgrade" cv="const"><type>void</type></method>
+<method name="unlock_upgrade" cv="const noexcept"><type>void</type></method>
 <method name="unlock_upgrade_and_lock" cv="const"><type>void</type></method>
 <method name="unlock_and_lock_upgrade" cv="const"><type>void</type></method>
 <method name="unlock_and_lock_shared" cv="const"><type>void</type></method>
 <method name="unlock_upgrade_and_lock_shared" cv="const"><type>void</type></method>
-<method name="swap"><type>void</type><parameter name=""><paramtype><classname>multi_thread_model</classname> &amp;</paramtype></parameter></method>
+<method name="swap" cv="noexcept"><type>void</type><parameter name=""><paramtype><classname>multi_thread_model</classname> &amp;</paramtype></parameter></method>
 </method-group>
-<constructor/>
-<constructor><parameter name=""><paramtype><classname>multi_thread_model</classname> const &amp;</paramtype></parameter></constructor>
-<copy-assignment><type><classname>multi_thread_model</classname> &amp;</type><parameter name=""><paramtype><classname>multi_thread_model</classname> const &amp;</paramtype></parameter></copy-assignment>
+<constructor cv="noexcept(boost::has_nothrow_constructor&lt; MutexT &gt;::value))"/>
+<constructor cv="noexcept(boost::has_nothrow_constructor&lt; MutexT &gt;::value))"><parameter name=""><paramtype><classname>multi_thread_model</classname> const &amp;</paramtype></parameter></constructor>
+<copy-assignment cv="noexcept"><type><classname>multi_thread_model</classname> &amp;</type><parameter name=""><paramtype><classname>multi_thread_model</classname> const &amp;</paramtype></parameter></copy-assignment>
+<constructor cv="noexcept(boost::has_nothrow_constructor&lt; MutexT &gt;::value))"><parameter name=""><paramtype><classname>multi_thread_model</classname> &amp;&amp;</paramtype></parameter></constructor>
+<copy-assignment cv="noexcept"><type><classname>multi_thread_model</classname> &amp;</type><parameter name=""><paramtype><classname>multi_thread_model</classname> &amp;&amp;</paramtype></parameter></copy-assignment>
 </struct><struct name="single_thread_model"><purpose>Single thread locking model. </purpose><method-group name="public member functions">
-<method name="lock_shared" cv="const"><type>void</type></method>
-<method name="try_lock_shared" cv="const"><type>bool</type></method>
-<method name="timed_lock_shared" cv="const"><type>bool</type><template>
+<method name="lock_shared" cv="const noexcept"><type>void</type></method>
+<method name="try_lock_shared" cv="const noexcept"><type>bool</type></method>
+<method name="timed_lock_shared" cv="const noexcept"><type>bool</type><template>
           <template-type-parameter name="TimeT"/>
         </template><parameter name=""><paramtype>TimeT const &amp;</paramtype></parameter></method>
-<method name="unlock_shared" cv="const"><type>void</type></method>
-<method name="lock" cv="const"><type>void</type></method>
-<method name="try_lock" cv="const"><type>bool</type></method>
-<method name="timed_lock" cv="const"><type>bool</type><template>
+<method name="unlock_shared" cv="const noexcept"><type>void</type></method>
+<method name="lock" cv="const noexcept"><type>void</type></method>
+<method name="try_lock" cv="const noexcept"><type>bool</type></method>
+<method name="timed_lock" cv="const noexcept"><type>bool</type><template>
           <template-type-parameter name="TimeT"/>
         </template><parameter name=""><paramtype>TimeT const &amp;</paramtype></parameter></method>
-<method name="unlock" cv="const"><type>void</type></method>
-<method name="lock_upgrade" cv="const"><type>void</type></method>
-<method name="try_lock_upgrade" cv="const"><type>bool</type></method>
-<method name="timed_lock_upgrade" cv="const"><type>bool</type><template>
+<method name="unlock" cv="const noexcept"><type>void</type></method>
+<method name="lock_upgrade" cv="const noexcept"><type>void</type></method>
+<method name="try_lock_upgrade" cv="const noexcept"><type>bool</type></method>
+<method name="timed_lock_upgrade" cv="const noexcept"><type>bool</type><template>
           <template-type-parameter name="TimeT"/>
         </template><parameter name=""><paramtype>TimeT const &amp;</paramtype></parameter></method>
-<method name="unlock_upgrade" cv="const"><type>void</type></method>
-<method name="unlock_upgrade_and_lock" cv="const"><type>void</type></method>
-<method name="unlock_and_lock_upgrade" cv="const"><type>void</type></method>
-<method name="unlock_and_lock_shared" cv="const"><type>void</type></method>
-<method name="unlock_upgrade_and_lock_shared" cv="const"><type>void</type></method>
-<method name="swap"><type>void</type><parameter name=""><paramtype><classname>single_thread_model</classname> &amp;</paramtype></parameter></method>
+<method name="unlock_upgrade" cv="const noexcept"><type>void</type></method>
+<method name="unlock_upgrade_and_lock" cv="const noexcept"><type>void</type></method>
+<method name="unlock_and_lock_upgrade" cv="const noexcept"><type>void</type></method>
+<method name="unlock_and_lock_shared" cv="const noexcept"><type>void</type></method>
+<method name="unlock_upgrade_and_lock_shared" cv="const noexcept"><type>void</type></method>
+<method name="swap" cv="noexcept"><type>void</type><parameter name=""><paramtype><classname>single_thread_model</classname> &amp;</paramtype></parameter></method>
 </method-group>
-</struct>
+</struct><function name="swap"><type>void</type><parameter name=""><paramtype><classname>single_thread_model</classname> &amp;</paramtype></parameter><parameter name=""><paramtype><classname>single_thread_model</classname> &amp;</paramtype></parameter></function>
+<function name="swap"><type>void</type><template>
+          <template-type-parameter name="MutexT"/>
+        </template><parameter name=""><paramtype><classname>multi_thread_model</classname>&lt; MutexT &gt; &amp;</paramtype></parameter><parameter name=""><paramtype><classname>multi_thread_model</classname>&lt; MutexT &gt; &amp;</paramtype></parameter></function>
+
 </namespace>
 
 

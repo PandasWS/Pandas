@@ -42,6 +42,7 @@ Hashed indices
         <ul>
           <li><a href="#complexity_signature">Complexity signature</a></li>
           <li><a href="#instantiation_types">Instantiation types</a></li>
+          <li><a href="#types">Nested types</a></li>
           <li><a href="#rank_operations">Rank operations</a></li>
           <li><a href="#serialization">Serialization</a></li>
         </ul>
@@ -305,6 +306,11 @@ indices, bearing in mind the occasional differences in complexity.
   <span class=identifier>size_type</span> <span class=identifier>count</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>const</span> <span class=identifier>CompatibleCompare</span><span class=special>&amp;</span> <span class=identifier>comp</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
 
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>&gt;</span>
+  <span class=keyword>bool</span> <span class=identifier>contains</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>CompatibleCompare</span><span class=special>&gt;</span>
+  <span class=keyword>bool</span> <span class=identifier>contains</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>const</span> <span class=identifier>CompatibleCompare</span><span class=special>&amp;</span> <span class=identifier>comp</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
+
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>&gt;</span>
   <span class=identifier>iterator</span> <span class=identifier>lower_bound</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>CompatibleCompare</span><span class=special>&gt;</span>
   <span class=identifier>iterator</span> <span class=identifier>lower_bound</span><span class=special>(</span>
@@ -467,6 +473,16 @@ following types:
 These types are subject to the same requirements as specified for
 <a href="ord_indices.html#instantiation_types">ordered indices</a>.
 </p>
+
+<h4><a name="types">Nested types</a></h4>
+
+<code>iterator<br>
+const_iterator</code>
+
+<blockquote>
+These types depend only on <code>node_type</code> and the position of
+the index in the <code>multi_index_container</code>.
+</blockquote>
 
 <h4><a name="rank_operations">Rank operations</a></h4>
 
@@ -632,9 +648,9 @@ Hashed indices
 
 <br>
 
-<p>Revised May 4th 2015</p>
+<p>Revised August 30th 2021</p>
 
-<p>&copy; Copyright 2003-2015 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2021 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

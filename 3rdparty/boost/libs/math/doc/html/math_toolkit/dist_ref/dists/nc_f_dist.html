@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Noncentral F Distribution</title>
 <link rel="stylesheet" href="../../../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Math Toolkit 2.10.0">
+<link rel="home" href="../../../index.html" title="Math Toolkit 3.1.0">
 <link rel="up" href="../dists.html" title="Distributions">
 <link rel="prev" href="nc_chi_squared_dist.html" title="Noncentral Chi-Squared Distribution">
 <link rel="next" href="nc_t_dist.html" title="Noncentral T Distribution">
@@ -31,12 +31,12 @@
 <pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span> <span class="special">=</span> <span class="keyword">double</span><span class="special">,</span>
-          <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter&#160;19.&#160;Policies: Controlling Precision, Error Handling etc">Policy</a>   <span class="special">=</span> <a class="link" href="../../pol_ref/pol_ref_ref.html" title="Policy Class Reference">policies::policy&lt;&gt;</a> <span class="special">&gt;</span>
+          <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter 21. Policies: Controlling Precision, Error Handling etc">Policy</a>   <span class="special">=</span> <a class="link" href="../../pol_ref/pol_ref_ref.html" title="Policy Class Reference">policies::policy&lt;&gt;</a> <span class="special">&gt;</span>
 <span class="keyword">class</span> <span class="identifier">non_central_f_distribution</span><span class="special">;</span>
 
 <span class="keyword">typedef</span> <span class="identifier">non_central_f_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">non_central_f</span><span class="special">;</span>
 
-<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span><span class="special">,</span> <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter&#160;19.&#160;Policies: Controlling Precision, Error Handling etc">Policy</a><span class="special">&gt;</span>
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span><span class="special">,</span> <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter 21. Policies: Controlling Precision, Error Handling etc">Policy</a><span class="special">&gt;</span>
 <span class="keyword">class</span> <span class="identifier">non_central_f_distribution</span>
 <span class="special">{</span>
 <span class="keyword">public</span><span class="special">:</span>
@@ -60,33 +60,39 @@
           The noncentral F distribution is a generalization of the <a class="link" href="f_dist.html" title="F Distribution">Fisher
           F Distribution</a>. It is defined as the ratio
         </p>
-<pre class="programlisting"><span class="identifier">F</span> <span class="special">=</span> <span class="special">(</span><span class="identifier">X</span><span class="special">/</span><span class="identifier">v1</span><span class="special">)</span> <span class="special">/</span> <span class="special">(</span><span class="identifier">Y</span><span class="special">/</span><span class="identifier">v2</span><span class="special">)</span>
-</pre>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="serif_italic">F = (X/v1) / (Y/v2)</span>
+          </p></blockquote></div>
 <p>
-          where X is a noncentral &#967;<sup>2</sup>
+          where X is a noncentral χ<sup>2</sup>
 random variable with <span class="emphasis"><em>v1</em></span> degrees
-          of freedom and non-centrality parameter &#955;, and Y is a central &#967;<sup>2</sup> random variable
+          of freedom and non-centrality parameter λ, and Y is a central χ<sup>2</sup> random variable
           with <span class="emphasis"><em>v2</em></span> degrees of freedom.
         </p>
 <p>
           This gives the following PDF:
         </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../equations/nc_f_ref1.svg"></span>
+
+          </p></blockquote></div>
 <p>
-          <span class="inlinemediaobject"><img src="../../../../equations/nc_f_ref1.svg"></span>
+          where <span class="emphasis"><em>L<sub>a</sub><sup>b</sup>(c)</em></span> is a generalised Laguerre polynomial
+          and <span class="emphasis"><em>B(a,b)</em></span> is the <a class="link" href="../../sf_beta/beta_function.html" title="Beta">beta</a>
+          function, or
         </p>
-<p>
-          where L<sub>a</sub><sup>b</sup>(c) is a generalised Laguerre polynomial and B(a,b) is the <a class="link" href="../../sf_beta/beta_function.html" title="Beta">beta</a> function, or
-        </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../equations/nc_f_ref2.svg"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../equations/nc_f_ref2.svg"></span>
+
+          </p></blockquote></div>
 <p>
           The following graph illustrates how the distribution changes for different
-          values of &#955;:
+          values of λ:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/nc_f_pdf.svg" align="middle"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../graphs/nc_f_pdf.svg" align="middle"></span>
+
+          </p></blockquote></div>
 <h5>
 <a name="math_toolkit.dist_ref.dists.nc_f_dist.h0"></a>
           <span class="phrase"><a name="math_toolkit.dist_ref.dists.nc_f_dist.member_functions"></a></span><a class="link" href="nc_f_dist.html#math_toolkit.dist_ref.dists.nc_f_dist.member_functions">Member
@@ -99,7 +105,8 @@ random variable with <span class="emphasis"><em>v1</em></span> degrees
           and <span class="emphasis"><em>v2</em></span> and non-centrality parameter <span class="emphasis"><em>lambda</em></span>.
         </p>
 <p>
-          Requires v1 &gt; 0, v2 &gt; 0 and lambda &gt;= 0, otherwise calls <a class="link" href="../../error_handling.html#math_toolkit.error_handling.domain_error">domain_error</a>.
+          Requires <span class="emphasis"><em>v1</em></span> &gt; 0, <span class="emphasis"><em>v2</em></span> &gt; 0
+          and lambda &gt;= 0, otherwise calls <a class="link" href="../../error_handling.html#math_toolkit.error_handling.domain_error">domain_error</a>.
         </p>
 <pre class="programlisting"><span class="identifier">RealType</span> <span class="identifier">degrees_of_freedom1</span><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 </pre>
@@ -137,7 +144,7 @@ random variable with <span class="emphasis"><em>v1</em></span> degrees
           <a class="link" href="../nmp.html#math_toolkit.dist_ref.nmp.range">range</a> and <a class="link" href="../nmp.html#math_toolkit.dist_ref.nmp.support">support</a>.
         </p>
 <p>
-          The domain of the random variable is [0, +&#8734;].
+          The domain of the random variable is [0, +∞].
         </p>
 <h5>
 <a name="math_toolkit.dist_ref.dists.nc_f_dist.h2"></a>
@@ -163,7 +170,7 @@ random variable with <span class="emphasis"><em>v1</em></span> degrees
 <p>
           In the following table <span class="emphasis"><em>v1</em></span> and <span class="emphasis"><em>v2</em></span>
           are the first and second degrees of freedom parameters of the distribution,
-          &#955;
+          λ
 is the non-centrality parameter, <span class="emphasis"><em>x</em></span> is the random variate,
           <span class="emphasis"><em>p</em></span> is the probability, and <span class="emphasis"><em>q = 1-p</em></span>.
         </p>
@@ -196,13 +203,15 @@ is the non-centrality parameter, <span class="emphasis"><em>x</em></span> is the
                     Implemented in terms of the non-central beta PDF using the relation:
                   </p>
                   <p>
-                    f(x;v1,v2;&#955;) = (v1/v2) / ((1+y)*(1+y)) * g(y/(1+y);v1/2,v2/2;&#955;)
+                    <span class="serif_italic">f(x;v1,v2;λ) = (v1/v2) / ((1+y)*(1+y))
+                    * g(y/(1+y);v1/2,v2/2;λ)</span>
                   </p>
                   <p>
-                    where g(x; a, b; &#955;) is the non central beta PDF, and:
+                    where <span class="serif_italic">g(x; a, b; λ)</span> is the
+                    non central beta PDF, and:
                   </p>
                   <p>
-                    y = x * v1 / v2
+                    <span class="serif_italic">y = x * v1 / v2</span>
                   </p>
                 </td>
 </tr>
@@ -217,13 +226,14 @@ is the non-centrality parameter, <span class="emphasis"><em>x</em></span> is the
                     Using the relation:
                   </p>
                   <p>
-                    p = B<sub>y</sub>(v1/2, v2/2; &#955;)
+                    <span class="serif_italic">p = B<sub>y</sub>(v1/2, v2/2; λ)</span>
                   </p>
                   <p>
-                    where B<sub>x</sub>(a, b; &#955;) is the noncentral beta distribution CDF and
+                    where <span class="serif_italic">B<sub>x</sub>(a, b; λ)</span> is the
+                    noncentral beta distribution CDF and
                   </p>
                   <p>
-                    y = x * v1 / v2
+                    <span class="serif_italic">y = x * v1 / v2</span>
                   </p>
                 </td>
 </tr>
@@ -238,14 +248,14 @@ is the non-centrality parameter, <span class="emphasis"><em>x</em></span> is the
                     Using the relation:
                   </p>
                   <p>
-                    q = 1 - B<sub>y</sub>(v1/2, v2/2; &#955;)
+                    <span class="serif_italic">q = 1 - B<sub>y</sub>(v1/2, v2/2; λ)</span>
                   </p>
                   <p>
-                    where 1 - B<sub>x</sub>(a, b; &#955;) is the complement of the noncentral beta
-                    distribution CDF and
+                    where <span class="serif_italic">1 - B<sub>x</sub>(a, b; λ)</span> is
+                    the complement of the noncentral beta distribution CDF and
                   </p>
                   <p>
-                    y = x * v1 / v2
+                    <span class="serif_italic">y = x * v1 / v2</span>
                   </p>
                 </td>
 </tr>
@@ -260,19 +270,19 @@ is the non-centrality parameter, <span class="emphasis"><em>x</em></span> is the
                     Using the relation:
                   </p>
                   <p>
-                    x = (bx / (1-bx)) * (v1 / v2)
+                    <span class="serif_italic">x = (bx / (1-bx)) * (v1 / v2)</span>
                   </p>
                   <p>
                     where
                   </p>
                   <p>
-                    bx = Q<sub>p</sub><sup>-1</sup>(v1/2, v2/2; &#955;)
+                    <span class="serif_italic">bx = Q<sub>p</sub><sup>-1</sup>(v1/2, v2/2; λ)</span>
                   </p>
                   <p>
                     and
                   </p>
                   <p>
-                    Q<sub>p</sub><sup>-1</sup>(v1/2, v2/2; &#955;)
+                    <span class="serif_italic">Q<sub>p</sub><sup>-1</sup>(v1/2, v2/2; λ)</span>
                   </p>
                   <p>
                     is the noncentral beta quantile.
@@ -293,19 +303,19 @@ is the non-centrality parameter, <span class="emphasis"><em>x</em></span> is the
                     Using the relation:
                   </p>
                   <p>
-                    x = (bx / (1-bx)) * (v1 / v2)
+                    <span class="serif_italic">x = (bx / (1-bx)) * (v1 / v2)</span>
                   </p>
                   <p>
                     where
                   </p>
                   <p>
-                    bx = QC<sub>q</sub><sup>-1</sup>(v1/2, v2/2; &#955;)
+                    <span class="serif_italic">bx = QC<sub>q</sub><sup>-1</sup>(v1/2, v2/2; λ)</span>
                   </p>
                   <p>
                     and
                   </p>
                   <p>
-                    QC<sub>q</sub><sup>-1</sup>(v1/2, v2/2; &#955;)
+                    <span class="serif_italic">QC<sub>q</sub><sup>-1</sup>(v1/2, v2/2; λ)</span>
                   </p>
                   <p>
                     is the noncentral beta quantile from the complement.
@@ -320,7 +330,7 @@ is the non-centrality parameter, <span class="emphasis"><em>x</em></span> is the
                 </td>
 <td>
                   <p>
-                    v2 * (v1 + l) / (v1 * (v2 - 2))
+                    <span class="serif_italic">v2 * (v1 + l) / (v1 * (v2 - 2))</span>
                   </p>
                 </td>
 </tr>
@@ -393,11 +403,11 @@ is the non-centrality parameter, <span class="emphasis"><em>x</em></span> is the
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

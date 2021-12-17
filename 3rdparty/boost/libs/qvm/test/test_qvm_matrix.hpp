@@ -3,8 +3,8 @@
 //Distributed under the Boost Software License, Version 1.0. (See accompanying
 //file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef UUID_9C471450B3A611DEAF56C1F155D89593
-#define UUID_9C471450B3A611DEAF56C1F155D89593
+#ifndef BOOST_QVM_9C471450B3A611DEAF56C1F155D89593
+#define BOOST_QVM_9C471450B3A611DEAF56C1F155D89593
 
 #include <boost/qvm/mat_traits_defaults.hpp>
 #include <boost/qvm/deduce_mat.hpp>
@@ -38,12 +38,8 @@ test_qvm
         }
     }
 
-namespace
-boost
-    {
-    namespace
-    qvm
-        {
+namespace boost { namespace qvm {
+
         template <class Tag,int Rows,int Cols,class T>
         struct
         mat_traits< test_qvm::matrix<Tag,Rows,Cols,T> >:

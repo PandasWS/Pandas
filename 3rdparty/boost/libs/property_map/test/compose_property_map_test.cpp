@@ -8,7 +8,7 @@
 #include <boost/property_map/compose_property_map.hpp>
 
 #include <boost/property_map/function_property_map.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 void concept_checks()
 {
@@ -63,11 +63,11 @@ void pointer_pmap_check()
     boost::compose_property_map<double*, const int*> cpm(v, idx);
 
     for (int i = 0; i < 5; ++i) {
-        BOOST_CHECK(get(cpm, i) == static_cast<double>(i));
+        BOOST_TEST(get(cpm, i) == static_cast<double>(i));
         ++cpm[i];
-        BOOST_CHECK(cpm[i] == static_cast<double>(i + 1));
+        BOOST_TEST(cpm[i] == static_cast<double>(i + 1));
         put(cpm, i, 42.);
-        BOOST_CHECK(cpm[i] == 42.);
+        BOOST_TEST(cpm[i] == 42.);
     }
 }
 
@@ -87,15 +87,15 @@ void readable_pmap_checks()
             cpm(modulo_add_one(5), modulo_add_one(5));
 
     for (int i = 0; i < 10; ++i)
-        BOOST_CHECK(get(cpm, i) == (i + 2) % 5);
+        BOOST_TEST(get(cpm, i) == (i + 2) % 5);
 }
 
 int
-test_main(int, char**)
+main()
 {
     concept_checks();
     pointer_pmap_check();
     readable_pmap_checks();
 
-    return 0;
+    return boost::report_errors();
 }

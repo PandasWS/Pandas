@@ -28,7 +28,7 @@ to represent macros as a language closer to C++ with VMD.
 What is important when designing a macro in which you parse input to decide which type
 of data the invoker is passing to your macro is that you are aware of the constraints
 when parsing a data type. As an example if you design a macro where some input can either
-be a number, an identifier, or some other data type top-level input then attempting 
+be a number, an identifier, or some other data type top-level input, then attempting 
 to parse the data to see if it is a number or identifier could fail with a preprocessor
 error and nullify your design if the data is not a VMD data type. So designing a macro with 
 data types in mind often means restricting data to parseable top-level types.

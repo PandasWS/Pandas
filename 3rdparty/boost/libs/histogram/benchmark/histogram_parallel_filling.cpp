@@ -5,7 +5,7 @@
 // or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <benchmark/benchmark.h>
-#include <boost/histogram/accumulators/thread_safe.hpp>
+#include <boost/histogram/accumulators/count.hpp>
 #include <boost/histogram/axis/regular.hpp>
 #include <boost/histogram/histogram.hpp>
 #include <boost/histogram/make_histogram.hpp>
@@ -18,10 +18,10 @@
 #include <vector>
 #include "../test/throw_exception.hpp"
 
-#include <boost/assert.hpp>
+#include <cassert>
 struct assert_check {
   assert_check() {
-    BOOST_ASSERT(false); // don't run with asserts enabled
+    assert(false); // don't run with asserts enabled
   }
 } _;
 
@@ -29,7 +29,7 @@ using namespace boost::histogram;
 using namespace std::chrono_literals;
 
 using DS = dense_storage<unsigned>;
-using DSTS = dense_storage<accumulators::thread_safe<unsigned>>;
+using DSTS = dense_storage<accumulators::count<unsigned, true>>;
 
 static void NoThreads(benchmark::State& state) {
   std::default_random_engine gen(1);

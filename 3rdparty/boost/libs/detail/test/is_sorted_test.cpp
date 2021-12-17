@@ -5,11 +5,11 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ==============================================================================*/
 
+#include <boost/detail/is_sorted.hpp>
 #include <iostream>
 #include <boost/config.hpp>
 #include <boost/array.hpp>
-#include <boost/detail/is_sorted.hpp>
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 template<class T>
 struct tracking_less {

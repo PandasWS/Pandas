@@ -174,9 +174,9 @@ involves having the manufactures stored in a separate
 
 <span class=keyword>struct</span> <span class=identifier>car_model</span>
 <span class=special>{</span>
-  <span class=identifier>std</span><span class=special>::</span><span class=identifier>string</span>       <span class=identifier>model</span><span class=special>;</span>
-  <span class=identifier>car_manufacturer</span><span class=special>*</span> <span class=identifier>manufacturer</span><span class=special>;</span>
-  <span class=keyword>int</span>               <span class=identifier>price</span><span class=special>;</span>
+  <span class=identifier>std</span><span class=special>::</span><span class=identifier>string</span>             <span class=identifier>model</span><span class=special>;</span>
+  <span class=keyword>const</span> <span class=identifier>car_manufacturer</span><span class=special>*</span> <span class=identifier>manufacturer</span><span class=special>;</span>
+  <span class=keyword>int</span>                     <span class=identifier>price</span><span class=special>;</span>
 <span class=special>};</span>
 </pre></blockquote>
 
@@ -222,7 +222,7 @@ of its associated <code>car_manufacturer</code> can be accomplished with
 <blockquote><pre>
 <span class=identifier>key_from_key</span><span class=special>&lt;</span>
   <span class=identifier>member</span><span class=special>&lt;</span><span class=identifier>car_manufacturer</span><span class=special>,</span><span class=keyword>const</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>string</span><span class=special>,&amp;</span><span class=identifier>car_manufacturer</span><span class=special>::</span><span class=identifier>name</span><span class=special>&gt;,</span>
-  <span class=identifier>member</span><span class=special>&lt;</span><span class=identifier>car_model</span><span class=special>,</span><span class=keyword>const</span> <span class=identifier>car_manufacturer</span> <span class=special>*,</span><span class=identifier>car_model</span><span class=special>::</span><span class=identifier>manufacturer</span><span class=special>&gt;</span>
+  <span class=identifier>member</span><span class=special>&lt;</span><span class=identifier>car_model</span><span class=special>,</span><span class=keyword>const</span> <span class=identifier>car_manufacturer</span> <span class=special>*,&amp;</span><span class=identifier>car_model</span><span class=special>::</span><span class=identifier>manufacturer</span><span class=special>&gt;</span>
 <span class=special>&gt;</span>
 </pre></blockquote>
 
@@ -450,9 +450,9 @@ Tests
 
 <br>
 
-<p>Revised May 26th 2009</p>
+<p>Revised November 18th 2019</p>
 
-<p>&copy; Copyright 2003-2009 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2019 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

@@ -15,10 +15,9 @@
 // Defining any of E1 to E5 or E7 to E11 opens some illegal code that 
 // should cause the compliation to fail.
 
-#define BOOST_INCLUDE_MAIN  // for testing, include rather than link
-#include <boost/test/test_tools.hpp>    // see "Header Implementation Option"
-
 #include "boost/tuple/tuple.hpp"
+
+#include "boost/core/lightweight_test.hpp"
 
 #include <string>
 #include <utility>
@@ -149,7 +148,7 @@ void foo7() {
 
 // --------------------------------
 // ----------------------------
-int test_main(int, char *[]) {
+int main() {
 
   foo1();
   foo2();
@@ -159,5 +158,5 @@ int test_main(int, char *[]) {
 
   foo7();
 
-  return 0;
+  return boost::report_errors();
 }

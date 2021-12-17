@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Ownership smart pointers</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../interprocess.html" title="Chapter&#160;18.&#160;Boost.Interprocess">
+<link rel="up" href="../interprocess.html" title="Chapter 18. Boost.Interprocess">
 <link rel="prev" href="streams.html" title="Direct iostream formatting: vectorstream and bufferstream">
 <link rel="next" href="architecture.html" title="Architecture and internals">
 </head>
@@ -287,7 +287,7 @@
       <span class="comment">//we destroy the object automatically</span>
       <span class="identifier">my_deleter</span><span class="special">&lt;</span><span class="identifier">my_class</span><span class="special">&gt;</span> <span class="identifier">d</span><span class="special">(</span><span class="identifier">shmem</span><span class="special">.</span><span class="identifier">get_segment_manager</span><span class="special">());</span>
 
-      <span class="keyword">try</span><span class="special">{</span>
+      <span class="identifier">BOOST_TRY</span><span class="special">{</span>
          <span class="identifier">scoped_ptr</span><span class="special">&lt;</span><span class="identifier">my_class</span><span class="special">,</span> <span class="identifier">my_deleter</span><span class="special">&lt;</span><span class="identifier">my_class</span><span class="special">&gt;</span> <span class="special">&gt;</span> <span class="identifier">s_ptr</span><span class="special">(</span><span class="identifier">my_object</span><span class="special">,</span> <span class="identifier">d</span><span class="special">);</span>
          <span class="comment">//Let's emulate a exception capable operation</span>
          <span class="comment">//In the second try, throw an exception</span>
@@ -299,7 +299,7 @@
          <span class="comment">//to avoid destruction</span>
          <span class="identifier">s_ptr</span><span class="special">.</span><span class="identifier">release</span><span class="special">();</span>
       <span class="special">}</span>
-      <span class="keyword">catch</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">my_exception</span> <span class="special">&amp;){}</span>
+      <span class="identifier">BOOST_CATCH</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">my_exception</span> <span class="special">&amp;){}</span> <span class="identifier">BOOST_CATCH_END</span>
       <span class="comment">//Here, scoped_ptr is destroyed</span>
       <span class="comment">//so it we haven't thrown an exception</span>
       <span class="comment">//the object should be there, otherwise, destroyed</span>
@@ -442,7 +442,7 @@
 <p>
         To simplify this usage, <code class="computeroutput"><a class="link" href="../boost/interprocess/shared_ptr.html" title="Class template shared_ptr">boost::interprocess::shared_ptr</a></code>
         header offers a shared pointer definition helper class (<code class="computeroutput"><a class="link" href="../boost/interprocess/managed_shared_ptr.html" title="Struct template managed_shared_ptr">managed_shared_ptr</a></code>)
-        and a function (<code class="computeroutput"><a class="link" href="../boost/interprocess/make_man_idm46224652826400.html" title="Function template make_managed_shared_ptr">make_managed_shared_ptr</a></code>)
+        and a function (<code class="computeroutput"><a class="link" href="../boost/interprocess/make_managed_shar_idm29615.html" title="Function template make_managed_shared_ptr">make_managed_shared_ptr</a></code>)
         to easily construct a shared pointer from a type allocated in a managed segment
         with an allocator that will allocate the reference count also in the managed
         segment and a deleter that will erase the object from the segment.
@@ -790,7 +790,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2005-2015 Ion Gaztanaga<p>
+<td align="right"><div class="copyright-footer">Copyright © 2005-2015 Ion Gaztanaga<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -154,6 +154,12 @@ template <> struct stream_as<signed char>  {
     typedef unsigned char t1; typedef unsigned t2;
 };
 
+// C++20 ostream has deleted operator<< for wchar_t
+template <> struct stream_as<wchar_t> {
+    typedef unsigned int t1;
+    typedef unsigned int t2;
+};
+
 #if defined(BOOST_MSVC_STD_ITERATOR) // No intmax streaming built-in
 
 // With this library implementation, __int64 and __uint64 get streamed as strings

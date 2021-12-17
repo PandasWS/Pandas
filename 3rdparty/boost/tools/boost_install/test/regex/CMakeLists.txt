@@ -4,13 +4,23 @@
 
 cmake_minimum_required(VERSION 3.5)
 
+if(POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)
+endif()
+
 project(CmakeConfigRegexTest LANGUAGES CXX)
 
 include(${CMAKE_CURRENT_LIST_DIR}/../BoostVersion.cmake)
 
+set(BOOST_HINTS)
+
+if(USE_STAGED_BOOST)
+  set(BOOST_HINTS HINTS ../../../../stage)
+endif()
+
 if(USE_BOOST_PACKAGE)
 
-  find_package(Boost ${BOOST_VERSION} EXACT REQUIRED COMPONENTS regex)
+  find_package(Boost ${BOOST_VERSION} EXACT REQUIRED COMPONENTS regex ${BOOST_HINTS})
 
   # Using `include_directories`, `link_directories`, `link_libraries`
   # is bad practice, done here for testing purposes. The right, "modern
@@ -22,7 +32,7 @@ if(USE_BOOST_PACKAGE)
 
 else()
 
-  find_package(boost_regex ${BOOST_VERSION} EXACT CONFIG REQUIRED)
+  find_package(boost_regex ${BOOST_VERSION} EXACT CONFIG REQUIRED ${BOOST_HINTS})
 
 endif()
 

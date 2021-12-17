@@ -1,4 +1,6 @@
-Build and tests passing: Linux [![Build Status](https://travis-ci.org/boostorg/outcome.svg?branch=master)](https://travis-ci.org/boostorg/outcome)
+Build and tests passing: POSIX [![Build Status](https://drone.cpp.al/api/badges/boostorg/outcome/status.svg)](https://drone.cpp.al/boostorg/outcome)
+
+Boost's regression test matrix and history: https://www.boost.org/development/tests/develop/developer/outcome.html
 
 Documentation generated from the master branch shown below (may be newer than boost.org's): http://boostorg.github.io/outcome
 

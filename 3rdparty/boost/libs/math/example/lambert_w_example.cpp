@@ -8,6 +8,8 @@
 // using algorithm of Thomas Luu.
 // https://svn.boost.org/trac/boost/ticket/11027
 
+#ifndef BOOST_MATH_STANDALONE
+
 #include <boost/config.hpp> // for BOOST_PLATFORM, BOOST_COMPILER,  BOOST_STDLIB ...
 #include <boost/version.hpp>   // for BOOST_MSVC versions.
 #include <boost/cstdint.hpp>
@@ -100,7 +102,7 @@ int main()
     std::cout << "Lambert W (" << x << ") = " << lambert_w(x) << std::endl; // 0.567143
     // This 'golden ratio' for exponentials is http://mathworld.wolfram.com/OmegaConstant.html
     // since exp[-W(1)] = W(1)
-    // A030178		Decimal expansion of LambertW(1): the solution to x*exp(x)
+    // A030178    Decimal expansion of LambertW(1): the solution to x*exp(x)
     // = 0.5671432904097838729999686622103555497538157871865125081351310792230457930866
       // http://oeis.org/A030178
 
@@ -167,7 +169,7 @@ int main()
     std::cout << "Lambert W (" << x << ") = " << lambert_w(x) << std::endl; // 0.0
     std::cout << " 1 - sqrt(eps) = " << static_cast<double>(1) - sqrt(std::numeric_limits<double>::epsilon()) << std::endl;
     x = -exp_minus_one<double>();
-    // N[lambert_w[-0.36787944117144233],17] == -1.000000000000000 + 6.7595465843924897×10^-9 i
+    // N[lambert_w[-0.36787944117144233],17] == -1.000000000000000 + 6.7595465843924897*10^-9i
     std::cout << "Lambert W (" << x << ") = " << lambert_w(x) << std::endl; // 0.0
     // At Singularity - 0.36787944117144233 == -0.36787944117144233 returned - 1.0000000000000000
     // Lambert W(-0.36787944117144233) = -1.0000000000000000
@@ -237,3 +239,5 @@ int main()
 
 //] [/lambert_w_output_1]
    */
+
+#endif // BOOST_MATH_STANDALONE

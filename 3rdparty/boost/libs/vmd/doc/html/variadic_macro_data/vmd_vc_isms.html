@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Visual C++ gotchas in VMD</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;The Variadic Macro Data Library 1.9">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;The Variadic Macro Data Library 1.9">
+<link rel="home" href="../index.html" title="Chapter 1. The Variadic Macro Data Library 1.10">
+<link rel="up" href="../index.html" title="Chapter 1. The Variadic Macro Data Library 1.10">
 <link rel="prev" href="vmd_dynamic_typing.html" title="Input as dynamic types">
 <link rel="next" href="vmd_conv.html" title="Version 1.7 to 1.8 conversion">
 </head>
@@ -29,16 +29,17 @@
 </h2></div></div></div>
 <p>
       I have discussed throughout the documentation areas of VMD which need to be
-      considered when using Microsoft's Visual C++ compilers. The VMD library supports
-      VC++ versions 8 through the latest 14. These correspond to Visual Studio 2005
-      through the current Visual Studio 2015.
+      considered when using Microsoft's Visual C++ compilers with its default preprocessor.
+      The VMD library supports VC++ versions 8 through the latest 14.2. These correspond
+      to Visual Studio 2005 through the current Visual Studio 2019.
     </p>
 <p>
       I will give here fairly briefly the VC++ quirks which should be taken into
       account when using VMD. These quirks exist because the VC++ compiler does not
-      have a C++ standard conforming preprocessor. More specifically the VC++ compiler
-      does not follow all of the rules correctly for expanding a macro when a macro
-      is invoked. Here is a list for things to consider when using VMD with VC++:
+      have a C++ standard conforming preprocessor with its default preprocessor.
+      More specifically the VC++ compiler does not follow all of the rules correctly
+      for expanding a macro when a macro is invoked. Here is a list for things to
+      consider when using VMD with VC++ and its default preprocessor:
     </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
@@ -70,10 +71,15 @@
           might be used as the compiler.
         </li>
 </ul></div>
+<p>
+      When using VC++ with its new standard conforming preprocessor, which as of
+      now is not its default preprocessor in Visual Studio 2019, none of these problems
+      manifest themselves.
+    </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2010-2017 Tropic Software
+<td align="right"><div class="copyright-footer">Copyright © 2010-2017 Tropic Software
       East Inc</div></td>
 </tr></table>
 <hr>

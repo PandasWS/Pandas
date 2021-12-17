@@ -18,6 +18,10 @@
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/strand.hpp>
 
+#if BOOST_ASIO_HAS_CO_AWAIT
+#include <boost/asio/use_awaitable.hpp>
+#endif
+
 namespace boost {
 namespace beast {
 namespace websocket {
@@ -374,7 +378,7 @@ public:
             using socket_type =
                 net::basic_stream_socket<
                     net::ip::tcp,
-                    net::executor>;
+                    net::any_io_executor>;
             net::io_context ioc;
             stream<socket_type> ws1(ioc);
             stream<socket_type> ws2(ioc);
@@ -483,12 +487,30 @@ public:
         }
     };
 
+#if BOOST_ASIO_HAS_CO_AWAIT
+    void testAwaitableCompiles(
+        stream<test::stream>& s,
+        ping_data& pdat)
+    {
+        static_assert(std::is_same_v<
+            net::awaitable<void>, decltype(
+            s.async_ping(pdat, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<void>, decltype(
+            s.async_pong(pdat, net::use_awaitable))>);
+    }
+#endif
+
     void
     run() override
     {
         testPing();
         testSuspend();
         testMoveOnly();
+#if BOOST_ASIO_HAS_CO_AWAIT
+        boost::ignore_unused(&ping_test::testAwaitableCompiles);
+#endif
     }
 };
 

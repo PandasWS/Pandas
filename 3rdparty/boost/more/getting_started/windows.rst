@@ -183,7 +183,7 @@ command invokes Boost.Build to build the separately-compiled Boost
 libraries. Please consult the `Boost.Build documentation`__ for a list
 of allowed options.
 
-__ http://www.boost.org/build/doc/html/bbv2/overview/invocation.html
+__ ../../tools/build/doc/html/index.html#bbv2.overview.invocation
 
 Or, Build Binaries From Source
 ------------------------------
@@ -208,7 +208,7 @@ Be sure to read `this note`__ about the appearance of ``^``,
 
 The option “\ **--build-type=complete**\ ” causes Boost.Build to build
 all supported variants of the libraries.  For instructions on how to
-build only specific variants, please ask on the `Boost.Build mailing
+build only specific variants, please ask on the `Boost Users' mailing
 list`_.
 
 __ continuation_

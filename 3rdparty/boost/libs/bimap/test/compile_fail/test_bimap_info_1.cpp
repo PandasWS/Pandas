@@ -8,7 +8,7 @@
 
 //  VC++ 8.0 warns on usage of certain Standard Library and API functions that
 //  can be cause buffer overruns or other possible security issues if misused.
-//  See http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
+//  See https://web.archive.org/web/20071014014301/http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
 //  But the wording of the warning is misleading and unsettling, there are no
 //  portable alternative functions, and VC++ 8.0's own libraries use the
 //  functions in question. So turn off the warnings.
@@ -16,9 +16,6 @@
 #define _SCL_SECURE_NO_DEPRECATE
 
 #include <boost/config.hpp>
-
-// Boost.Test
-#include <boost/test/minimal.hpp>
 
 // Boost.Bimap
 #include <boost/bimap/bimap.hpp>
@@ -39,11 +36,3 @@ void test_bimap_info_1()
         cbm.begin()->info = 10;
     }
 }
-
-
-int test_main( int, char* [] )
-{
-    test_bimap_info_1();
-    return 0;
-}
-

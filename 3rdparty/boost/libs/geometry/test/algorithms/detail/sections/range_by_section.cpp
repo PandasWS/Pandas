@@ -3,11 +3,15 @@
 
 // Copyright (c) 2010-2012 Barend Gehrels, Amsterdam, the Netherlands.
 
+// This file was modified by Oracle on 2020-2021.
+// Modifications copyright (c) 2020-2021, Oracle and/or its affiliates.
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
+
 // Use, modification and distribution is subject to the Boost Software License,
 // Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#include <iostream>
+
 #include <string>
 
 #define BOOST_GEOMETRY_UNIT_TEST_SECTIONALIZE
@@ -16,11 +20,13 @@
 
 #include <boost/geometry/algorithms/detail/sections/sectionalize.hpp>
 #include <boost/geometry/algorithms/detail/sections/range_by_section.hpp>
-#include <boost/geometry/views/detail/range_type.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/io/wkt/wkt.hpp>
 #include <boost/geometry/util/condition.hpp>
+
+// TEMP
+#include <boost/geometry/strategies/cartesian.hpp>
 
 
 template <int DimensionCount, bool Reverse, typename Geometry>
@@ -30,7 +36,7 @@ void test_sectionalize(std::string const /*caseid*/, Geometry const& geometry, s
     typedef bg::model::box<point> box;
     typedef bg::sections<box, DimensionCount> sections;
 
-    typedef boost::mpl::vector_c<std::size_t, 0> dim2;
+    typedef std::integer_sequence<std::size_t, 0> dim2;
 
     sections s;
     bg::sectionalize<Reverse, dim2>(geometry, bg::detail::no_rescale_policy(), s);
@@ -39,7 +45,7 @@ void test_sectionalize(std::string const /*caseid*/, Geometry const& geometry, s
 
     typedef typename bg::closeable_view
         <
-            typename bg::detail::range_type<Geometry>::type const,
+            typename bg::ring_type<Geometry>::type const,
             bg::closure<Geometry>::value
         >::type cview_type;
     typedef typename bg::reversible_view
@@ -52,7 +58,7 @@ void test_sectionalize(std::string const /*caseid*/, Geometry const& geometry, s
             view_type const
         >::type range_iterator;
 
-    BOOST_FOREACH(typename sections::value_type const& sec, s)
+    for (typename sections::value_type const& sec : s)
     {
         cview_type cview(bg::range_by_section(geometry, sec));
         view_type view(cview);

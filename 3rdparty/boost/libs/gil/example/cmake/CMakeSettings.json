@@ -5,7 +5,19 @@
   },
   "environments": [
     { "BuildDir": "${workspaceRoot}\\_build" },
-    { "InstallDir": "${workspaceRoot}\\_install" }
+    { "InstallDir": "${workspaceRoot}\\_install" },
+    { "DEFAULT_BUILD_TESTING": "OFF" },
+    { "DEFAULT_Boost_ADDITIONAL_VERSIONS": "1.74;1.73;1.72;1.71" },
+    { "DEFAULT_Boost_COMPILER": "-vc142;-vc141" },
+    { "DEFAULT_Boost_DEBUG": "ON" },
+    { "DEFAULT_GIL_BUILD_EXAMPLES": "ON" },
+    { "DEFAULT_GIL_BUILD_HEADER_TESTS": "OFF" },
+    { "DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE": "ON" },
+    { "DEFAULT_GIL_ENABLE_EXT_IO": "ON" },
+    { "DEFAULT_GIL_ENABLE_EXT_NUMERIC": "ON" },
+    { "DEFAULT_GIL_ENABLE_EXT_TOOLBOX": "ON" },
+    { "DEFAULT_GIL_USE_CONAN": "ON" },
+    { "DEFAULT_GIL_USE_CLANG_TIDY": "OFF" }
   ],
   "configurations": [
     {
@@ -19,14 +31,19 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
         { "name": "Boost_ARCHITECTURE", "value": "-x64" },
-        { "name": "GIL_ENABLE_EXT_IO", "value": "OFF" },
-        { "name": "GIL_ENABLE_EXT_NUMERIC", "value": "OFF" },
-        { "name": "GIL_ENABLE_EXT_TOOLBOX", "value": "OFF" },
-        { "name": "GIL_BUILD_EXAMPLES", "value": "OFF" },
-        { "name": "GIL_BUILD_HEADERS_TESTS", "value": "OFF" },
-        { "name": "GIL_DOWNLOAD_FINDBOOST", "value": "ON" },
-        { "name": "GIL_USE_CONAN", "value": "ON" }
+        { "name": "Boost_COMPILER", "value": "${env.DEFAULT_Boost_COMPILER}" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "${env.DEFAULT_GIL_USE_CONAN}" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
       ]
     },
     {
@@ -40,14 +57,19 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
         { "name": "Boost_ARCHITECTURE", "value": "-x64" },
-        { "name": "GIL_ENABLE_EXT_IO", "value": "OFF" },
-        { "name": "GIL_ENABLE_EXT_NUMERIC", "value": "OFF" },
-        { "name": "GIL_ENABLE_EXT_TOOLBOX", "value": "OFF" },
-        { "name": "GIL_BUILD_EXAMPLES", "value": "OFF" },
-        { "name": "GIL_BUILD_HEADERS_TESTS", "value": "OFF" },
-        { "name": "GIL_DOWNLOAD_FINDBOOST", "value": "ON" },
-        { "name": "GIL_USE_CONAN", "value": "ON" }
+        { "name": "Boost_COMPILER", "value": "${env.DEFAULT_Boost_COMPILER}" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "${env.DEFAULT_GIL_USE_CONAN}" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
       ]
     },
     {
@@ -61,13 +83,19 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "GIL_ENABLE_EXT_IO", "value": "OFF" },
-        { "name": "GIL_ENABLE_EXT_NUMERIC", "value": "OFF" },
-        { "name": "GIL_ENABLE_EXT_TOOLBOX", "value": "OFF" },
-        { "name": "GIL_BUILD_EXAMPLES", "value": "OFF" },
-        { "name": "GIL_BUILD_HEADERS_TESTS", "value": "OFF" },
-        { "name": "GIL_DOWNLOAD_FINDBOOST", "value": "ON" },
-        { "name": "GIL_USE_CONAN", "value": "ON" }
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
+        { "name": "Boost_ARCHITECTURE", "value": "-x32" },
+        { "name": "Boost_COMPILER", "value": "-vc142;-vc141" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "ON" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "ON" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "ON" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "ON" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "ON" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "ON" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "ON" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "OFF" }
       ]
     },
     {
@@ -81,17 +109,123 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "GIL_ENABLE_EXT_IO", "value": "OFF" },
-        { "name": "GIL_ENABLE_EXT_NUMERIC", "value": "OFF" },
-        { "name": "GIL_ENABLE_EXT_TOOLBOX", "value": "OFF" },
-        { "name": "GIL_BUILD_EXAMPLES", "value": "OFF" },
-        { "name": "GIL_BUILD_HEADERS_TESTS", "value": "OFF" },
-        { "name": "GIL_DOWNLOAD_FINDBOOST", "value": "ON" },
-        { "name": "GIL_USE_CONAN", "value": "ON" }
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
+        { "name": "Boost_ARCHITECTURE", "value": "-x32" },
+        { "name": "Boost_COMPILER", "value": "${env.DEFAULT_Boost_COMPILER}" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "${env.DEFAULT_GIL_USE_CONAN}" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
       ]
     },
     {
-      "name": "x64-Debug",
+      "name": "x64-Debug-VS2019",
+      "generator": "Visual Studio 16 2019 Win64",
+      "configurationType": "Debug",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
+        { "name": "Boost_ARCHITECTURE", "value": "-x64" },
+        { "name": "Boost_COMPILER", "value": "${env.DEFAULT_Boost_COMPILER}" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "${env.DEFAULT_GIL_USE_CONAN}" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
+      ]
+    },
+    {
+      "name": "x64-Release-VS2019",
+      "generator": "Visual Studio 16 2019 Win64",
+      "configurationType": "Release",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
+        { "name": "Boost_ARCHITECTURE", "value": "-x64" },
+        { "name": "Boost_COMPILER", "value": "-vc142" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "${env.DEFAULT_GIL_USE_CONAN}" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
+      ]
+    },
+    {
+      "name": "x86-Debug-VS2019",
+      "generator": "Visual Studio 16 2019",
+      "configurationType": "Debug",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
+        { "name": "Boost_ARCHITECTURE", "value": "-x32" },
+        { "name": "Boost_COMPILER", "value": "-vc142" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "${env.DEFAULT_GIL_USE_CONAN}" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
+      ]
+    },
+    {
+      "name": "x86-Release-VS2019",
+      "generator": "Visual Studio 16 2019",
+      "configurationType": "Release",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
+        { "name": "Boost_ARCHITECTURE", "value": "-x32" },
+        { "name": "Boost_COMPILER", "value": "-vc142" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "${env.DEFAULT_GIL_USE_CONAN}" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
+      ]
+    },
+    {
+      "name": "x64-Debug-VS2017",
       "generator": "Visual Studio 15 2017 Win64",
       "configurationType": "Debug",
       "buildRoot": "${env.BuildDir}\\${name}",
@@ -100,11 +234,23 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_TOOLCHAIN_FILE", "value": "C:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake" }
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
+        { "name": "Boost_ARCHITECTURE", "value": "-x64" },
+        { "name": "Boost_COMPILER", "value": "-vc141" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "${env.DEFAULT_GIL_USE_CONAN}" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
       ]
     },
     {
-      "name": "x64-Release",
+      "name": "x64-Release-VS2017",
       "generator": "Visual Studio 15 2017 Win64",
       "configurationType": "Release",
       "buildRoot": "${env.BuildDir}\\${name}",
@@ -113,11 +259,20 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_TOOLCHAIN_FILE", "value": "C:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake" }
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "CMAKE_TOOLCHAIN_FILE", "value": "C:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "OFF" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
       ]
     },
     {
-      "name": "x86-Debug",
+      "name": "x86-Debug-VS2017",
       "generator": "Visual Studio 15 2017",
       "configurationType": "Debug",
       "buildRoot": "${env.BuildDir}\\${name}",
@@ -126,11 +281,20 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_TOOLCHAIN_FILE", "value": "C:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake" }
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "CMAKE_TOOLCHAIN_FILE", "value": "C:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "OFF" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
       ]
     },
     {
-      "name": "x86-Release",
+      "name": "x86-Release-VS2017",
       "generator": "Visual Studio 15 2017",
       "configurationType": "Release",
       "buildRoot": "${env.BuildDir}\\${name}",
@@ -139,7 +303,130 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_TOOLCHAIN_FILE", "value": "C:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake" }
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "CMAKE_TOOLCHAIN_FILE", "value": "C:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "OFF" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
+      ]
+    },
+    {
+      "name": "WSL-Debug-GCC",
+      "generator": "Unix Makefiles",
+      "configurationType": "Debug",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeExecutable": "/usr/bin/cmake",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "linux_x64" ],
+      "intelliSenseMode": "linux-gcc-x64",
+      "wslPath": "${defaultWSLPath}",
+      "addressSanitizerRuntimeFlags": "detect_leaks=0",
+      "variables": [
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
+        { "name": "Boost_ARCHITECTURE", "value": "-x64" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "OFF" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
+      ]
+    },
+    {
+      "name": "WSL-Release-GCC",
+      "generator": "Unix Makefiles",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeExecutable": "/usr/bin/cmake",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "linux_x64" ],
+      "intelliSenseMode": "linux-gcc-x64",
+      "wslPath": "${defaultWSLPath}",
+      "addressSanitizerRuntimeFlags": "detect_leaks=0",
+      "variables": [
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
+        { "name": "Boost_ARCHITECTURE", "value": "-x64" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "OFF" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
+      ]
+    },
+    {
+      "name": "WSL-Debug-clang",
+      "generator": "Unix Makefiles",
+      "configurationType": "Debug",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeExecutable": "/usr/bin/cmake",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "linux_clang_x64" ],
+      "wslPath": "${defaultWSLPath}",
+      "addressSanitizerRuntimeFlags": "detect_leaks=0",
+      "variables": [
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
+        { "name": "Boost_ARCHITECTURE", "value": "-x64" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "OFF" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
+      ]
+    },
+    {
+      "name": "WSL-Release-clang",
+      "generator": "Unix Makefiles",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeExecutable": "/usr/bin/cmake",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "linux_clang_x64" ],
+      "wslPath": "${defaultWSLPath}",
+      "addressSanitizerRuntimeFlags": "detect_leaks=0",
+      "variables": [
+        { "name": "BUILD_TESTING", "value": "${env.DEFAULT_BUILD_TESTING}"},
+        { "name": "Boost_ADDITIONAL_VERSIONS", "value": "${env.DEFAULT_Boost_ADDITIONAL_VERSIONS}" },
+        { "name": "Boost_ARCHITECTURE", "value": "-x64" },
+        { "name": "Boost_DEBUG", "value": "${env.DEFAULT_Boost_DEBUG}" },
+        { "name": "BOOST_GIL_BUILD_EXAMPLES", "value": "${env.DEFAULT_GIL_BUILD_EXAMPLES}" },
+        { "name": "BOOST_GIL_BUILD_HEADER_TESTS", "value": "${env.DEFAULT_GIL_BUILD_HEADER_TESTS}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_DYNAMIC_IMAGE", "value": "${env.DEFAULT_GIL_ENABLE_EXT_DYNAMIC_IMAGE}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_IO", "value": "${env.DEFAULT_GIL_ENABLE_EXT_IO}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_NUMERIC", "value": "${env.DEFAULT_GIL_ENABLE_EXT_NUMERIC}" },
+        { "name": "BOOST_GIL_ENABLE_EXT_TOOLBOX", "value": "${env.DEFAULT_GIL_ENABLE_EXT_TOOLBOX}" },
+        { "name": "BOOST_GIL_USE_CONAN", "value": "OFF" },
+        { "name": "BOOST_GIL_USE_CLANG_TIDY", "value": "${env.DEFAULT_GIL_USE_CLANG_TIDY}" }
       ]
     }
   ]

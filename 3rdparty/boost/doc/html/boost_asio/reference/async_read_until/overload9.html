@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>async_read_until (9 of 12 overloads)</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -34,13 +34,13 @@
 <pre class="programlisting">template&lt;
     typename <a class="link" href="../AsyncReadStream.html" title="Buffer-oriented asynchronous read stream requirements">AsyncReadStream</a>,
     typename <a class="link" href="../DynamicBuffer_v2.html" title="Dynamic buffer requirements (version 2)">DynamicBuffer_v2</a>,
-    typename <a class="link" href="../ReadHandler.html" title="Read handler requirements">ReadHandler</a>&gt;
+    typename <a class="link" href="../ReadHandler.html" title="Read handler requirements">ReadHandler</a> = <a class="link" href="../asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>&gt;
 <a class="link" href="../asynchronous_operations.html#boost_asio.reference.asynchronous_operations.automatic_deduction_of_initiating_function_return_type"><span class="emphasis"><em>DEDUCED</em></span></a> async_read_until(
     AsyncReadStream &amp; s,
     DynamicBuffer_v2 buffers,
     char delim,
-    ReadHandler &amp;&amp; handler,
-    typename enable_if&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type *  = 0);
+    ReadHandler &amp;&amp; handler = <a class="link" href="../asynchronous_operations.html#boost_asio.reference.asynchronous_operations.default_completion_tokens"><span class="emphasis"><em>DEFAULT</em></span></a>,
+    typename constraint&lt; is_dynamic_buffer_v2&lt; DynamicBuffer_v2 &gt;::value &gt;::type  = 0);
 </pre>
 <p>
           This function is used to asynchronously read data into the specified dynamic
@@ -170,10 +170,32 @@ boost::asio::async_read_until(s, data, '\n', handler);
           This data may be the start of a new line, to be extracted by a subsequent
           <code class="computeroutput">async_read_until</code> operation.
         </p>
+<h6>
+<a name="boost_asio.reference.async_read_until.overload9.h3"></a>
+          <span class="phrase"><a name="boost_asio.reference.async_read_until.overload9.per_operation_cancellation"></a></span><a class="link" href="overload9.html#boost_asio.reference.async_read_until.overload9.per_operation_cancellation">Per-Operation
+          Cancellation</a>
+        </h6>
+<p>
+          This asynchronous operation supports cancellation for the following <a class="link" href="../cancellation_type.html" title="cancellation_type"><code class="computeroutput">cancellation_type</code></a>
+          values:
+        </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+              <code class="computeroutput">cancellation_type::terminal</code>
+            </li>
+<li class="listitem">
+              <code class="computeroutput">cancellation_type::partial</code>
+            </li>
+</ul></div>
+<p>
+          if they are also supported by the <code class="computeroutput">AsyncReadStream</code> type's
+          <code class="computeroutput">async_read_some</code> operation.
+        </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -3286,7 +3286,7 @@ was dropped.
 <abbrev>SGI02</abbrev>
 <title>The SGI Standard Template Library</title>
 <pubdate>2002</pubdate>
-<bibliomisc><ulink url="http://www.sgi.com/tech/stl/">www.sgi.com/tech/stl/</ulink></bibliomisc>
+<bibliomisc><ulink url="https://www.boost.org/sgi/stl/">www.boost.org/sgi/stl/</ulink></bibliomisc>
 
 </biblioentry>
     

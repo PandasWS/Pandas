@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>async_completion::completion_handler_type</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -31,7 +31,7 @@
 The
           real handler type to be used for the asynchronous operation.
         </p>
-<pre class="programlisting">typedef boost::asio::async_result&lt; typename decay&lt; CompletionToken &gt;::type, Signature &gt;::completion_handler_type completion_handler_type;
+<pre class="programlisting">typedef boost::asio::async_result&lt; typename decay&lt; CompletionToken &gt;::type, Signatures... &gt;::completion_handler_type completion_handler_type;
 </pre>
 <h6>
 <a name="boost_asio.reference.async_completion.completion_handler_type.h0"></a>
@@ -107,7 +107,7 @@ The
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../async_result/async_result.html" title="async_result::async_result"><span class="bold"><strong>async_result</strong></span></a>
+                    <a class="link" href="../async_result/async_result.html" title="async_result::async_result"><span class="bold"><strong>async_result</strong></span></a> <span class="silver">[constructor]</span>
                   </p>
                 </td>
 <td>
@@ -131,7 +131,7 @@ The
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../async_result/initiate.html" title="async_result::initiate"><span class="bold"><strong>initiate</strong></span></a>
+                    <a class="link" href="../async_result/initiate.html" title="async_result::initiate"><span class="bold"><strong>initiate</strong></span></a> <span class="silver">[static]</span>
                   </p>
                 </td>
 <td>
@@ -181,7 +181,8 @@ The
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>
