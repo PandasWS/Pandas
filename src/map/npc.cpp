@@ -5151,6 +5151,10 @@ bool npc_event_is_express(enum npce_event eventtype) {
 		NPCX_PCATTACK,	// pcattack_express_name	// OnPCAttackExpress		// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
 #endif // Pandas_NpcExpress_PCATTACK
 
+#ifdef Pandas_NpcExpress_MER_CALL
+		NPCX_MER_CALL,	// mer_call_express_name	// OnPCMerCallExpress		// 当玩家成功召唤出佣兵时触发实时事件
+#endif // Pandas_NpcExpress_MER_CALL
+
 #ifdef Pandas_NpcExpress_MER_LEAVE
 		NPCX_MER_LEAVE,	// mer_leave_express_name	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
 #endif // Pandas_NpcExpress_MER_LEAVE
@@ -5537,6 +5541,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_PCATTACK:
 		return script_config.pcattack_express_name;	// OnPCAttackExpress		// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
 #endif // Pandas_NpcExpress_PCATTACK
+
+#ifdef Pandas_NpcExpress_MER_CALL
+	case NPCX_MER_CALL:
+		return script_config.mer_call_express_name;	// OnPCMerCallExpress		// 当玩家成功召唤出佣兵时触发实时事件
+#endif // Pandas_NpcExpress_MER_CALL
 
 #ifdef Pandas_NpcExpress_MER_LEAVE
 	case NPCX_MER_LEAVE:
