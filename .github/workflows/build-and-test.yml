@@ -22,6 +22,7 @@ env:
   DB_NAME: ragnarok
   DB_USER: ragnarok
   DB_PASS: ragnarok
+  CACHE_VERSION: "2021-12-18"
 
 jobs:
   ubuntu-gcc:
@@ -64,6 +65,18 @@ jobs:
         with:
           version: ${{ matrix.compiler_version }}
 
+      - name: Generate cache hash information
+        run: |
+          echo "$(cat /proc/version)" >> .CACHE_HASHFILE
+          echo "gcc${{ matrix.compiler_version }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.build_type }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.configure_flags }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.packetver }}" >> .CACHE_HASHFILE
+          echo "${{ hashFiles('3rdparty/boost/bootstrap.sh') }}" >> .CACHE_HASHFILE
+          echo "${{ hashFiles('3rdparty/boost/Jamroot') }}" >> .CACHE_HASHFILE
+          echo "${{ env.CACHE_VERSION }}" >> .CACHE_HASHFILE
+          cat .CACHE_HASHFILE
+
       - name: Cache boost c++ libraries
         uses: actions/cache@v2
         id: cache-boost
@@ -74,7 +87,7 @@ jobs:
             3rdparty/boost/bin.v2/
             3rdparty/boost/stage/
             3rdparty/boost/b2
-          key: ${{ runner.os }}-${{ env.cache-name }}-gcc${{ matrix.compiler_version }}-${{ matrix.build_type }}-${{ hashFiles('3rdparty/boost/bootstrap.sh') }}
+          key: ${{ env.cache-name }}-${{ hashFiles('.CACHE_HASHFILE') }}
 
       - name: Build boost c++ libraries
         if: steps.cache-boost.outputs.cache-hit != 'true'
@@ -82,19 +95,10 @@ jobs:
           cd 3rdparty/boost/
           ./bootstrap.sh && ./b2
 
-      - name: Generate ccache hash info
-        run: |
-          echo "${{ runner.os }}" >> .CCACHE_HASHFILE
-          echo "clang${{ matrix.compiler_version }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.build_type }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.configure_flags }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.packetver }}" >> .CCACHE_HASHFILE
-          cat .CCACHE_HASHFILE
-
       - name: Setup ccache to speedup compilation
         uses: hendrikmuhs/ccache-action@v1.0.5
         with:
-          key: ${{ hashFiles('.CCACHE_HASHFILE') }}
+          key: ${{ hashFiles('.CACHE_HASHFILE') }}
 
       - name: Build Pandas
         run: |
@@ -153,6 +157,18 @@ jobs:
         with:
           version: ${{ matrix.compiler_version }}
 
+      - name: Generate cache hash information
+        run: |
+          echo "$(cat /proc/version)" >> .CACHE_HASHFILE
+          echo "clang${{ matrix.compiler_version }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.build_type }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.configure_flags }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.packetver }}" >> .CACHE_HASHFILE
+          echo "${{ hashFiles('3rdparty/boost/bootstrap.sh') }}" >> .CACHE_HASHFILE
+          echo "${{ hashFiles('3rdparty/boost/Jamroot') }}" >> .CACHE_HASHFILE
+          echo "${{ env.CACHE_VERSION }}" >> .CACHE_HASHFILE
+          cat .CACHE_HASHFILE
+
       - name: Cache boost c++ libraries
         uses: actions/cache@v2
         id: cache-boost
@@ -163,7 +179,7 @@ jobs:
             3rdparty/boost/bin.v2/
             3rdparty/boost/stage/
             3rdparty/boost/b2
-          key: ${{ runner.os }}-${{ env.cache-name }}-clang${{ matrix.compiler_version }}-${{ matrix.build_type }}-${{ hashFiles('3rdparty/boost/bootstrap.sh') }}
+          key: ${{ env.cache-name }}-${{ hashFiles('.CACHE_HASHFILE') }}
 
       - name: Build boost c++ libraries
         if: steps.cache-boost.outputs.cache-hit != 'true'
@@ -171,19 +187,10 @@ jobs:
           cd 3rdparty/boost/
           ./bootstrap.sh && ./b2
 
-      - name: Generate ccache hash info
-        run: |
-          echo "${{ runner.os }}" >> .CCACHE_HASHFILE
-          echo "clang${{ matrix.compiler_version }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.build_type }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.configure_flags }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.packetver }}" >> .CCACHE_HASHFILE
-          cat .CCACHE_HASHFILE
-
       - name: Setup ccache to speedup compilation
         uses: hendrikmuhs/ccache-action@v1.0.5
         with:
-          key: ${{ hashFiles('.CCACHE_HASHFILE') }}
+          key: ${{ hashFiles('.CACHE_HASHFILE') }}
 
       - name: Build Pandas
         run: |
@@ -226,6 +233,18 @@ jobs:
       - name: Setup msbuild compiler
         uses: microsoft/setup-msbuild@v1.1
 
+      - name: Generate cache hash information
+        run: |
+          echo "${{ runner.os }}" >> .CACHE_HASHFILE
+          msbuild --version --nologo >> .CACHE_HASHFILE
+          echo "${{ matrix.configuration }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.define_constants }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.packetver }}" >> .CACHE_HASHFILE
+          echo "${{ hashFiles('3rdparty/boost/bootstrap.sh') }}" >> .CACHE_HASHFILE
+          echo "${{ hashFiles('3rdparty/boost/Jamroot') }}" >> .CACHE_HASHFILE
+          echo "${{ env.CACHE_VERSION }}" >> .CACHE_HASHFILE
+          cat .CACHE_HASHFILE
+
       - name: Cache boost c++ libraries
         uses: actions/cache@v2
         id: cache-boost
@@ -236,7 +255,7 @@ jobs:
             3rdparty/boost/bin.v2/
             3rdparty/boost/stage/
             3rdparty/boost/b2.exe
-          key: ${{ runner.os }}-${{ env.cache-name }}-msbuild-${{ hashFiles('3rdparty/boost/bootstrap.bat') }}
+          key: ${{ env.cache-name }}-${{ hashFiles('.CACHE_HASHFILE') }}
 
       - name: Build boost c++ libraries
         if: steps.cache-boost.outputs.cache-hit != 'true'
