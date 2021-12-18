@@ -315,6 +315,10 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_MER_CALL
 	const char* mer_call_express_name;	// NPCX_MER_CALL	// OnPCMerCallExpress	// 当玩家成功召唤出佣兵时触发实时事件
 #endif // Pandas_NpcExpress_MER_CALL
+
+#ifdef Pandas_NpcExpress_MER_LEAVE
+	const char* mer_leave_express_name;	// NPCX_MER_LEAVE	// OnPCMerLeaveExpress	// 当佣兵离开玩家时触发实时事件
+#endif // Pandas_NpcExpress_MER_LEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related

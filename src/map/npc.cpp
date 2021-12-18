@@ -5154,6 +5154,10 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_MER_CALL
 		NPCX_MER_CALL,	// mer_call_express_name	// OnPCMerCallExpress		// 当玩家成功召唤出佣兵时触发实时事件
 #endif // Pandas_NpcExpress_MER_CALL
+
+#ifdef Pandas_NpcExpress_MER_LEAVE
+		NPCX_MER_LEAVE,	// mer_leave_express_name	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
+#endif // Pandas_NpcExpress_MER_LEAVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -5542,6 +5546,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_MER_CALL:
 		return script_config.mer_call_express_name;	// OnPCMerCallExpress		// 当玩家成功召唤出佣兵时触发实时事件
 #endif // Pandas_NpcExpress_MER_CALL
+
+#ifdef Pandas_NpcExpress_MER_LEAVE
+	case NPCX_MER_LEAVE:
+		return script_config.mer_leave_express_name;	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
+#endif // Pandas_NpcExpress_MER_LEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:

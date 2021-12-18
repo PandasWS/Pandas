@@ -177,6 +177,10 @@
 #ifdef Pandas_NpcExpress_MER_CALL
 	export_constant(NPCX_MER_CALL);	// mer_call_express_name	// OnPCMerCallExpress		// 当玩家成功召唤出佣兵时触发实时事件
 #endif // Pandas_NpcExpress_MER_CALL
+
+#ifdef Pandas_NpcExpress_MER_LEAVE
+	export_constant(NPCX_MER_LEAVE);	// mer_leave_express_name	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
+#endif // Pandas_NpcExpress_MER_LEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
 #endif // Pandas_ScriptCommands
 
