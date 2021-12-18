@@ -1387,6 +1387,11 @@
 		// 事件类型: Express / 事件名称: OnPCAttackExpress
 		// 常量名称: NPCX_PCATTACK / 变量名称: pcattack_express_name
 		#define Pandas_NpcExpress_PCATTACK
+
+		// 当玩家成功召唤出佣兵时触发实时事件 [HongShin]
+		// 事件类型: Express / 事件名称: OnPCMerCallExpress
+		// 常量名称: NPCX_MER_CALL / 变量名称: mer_call_express_name
+		#define Pandas_NpcExpress_MER_CALL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	
