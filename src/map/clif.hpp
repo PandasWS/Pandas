@@ -1016,6 +1016,9 @@ void clif_Auction_close(int fd, unsigned char flag);
 void clif_parse_Auction_cancelreg(int fd, struct map_session_data *sd);
 
 void clif_bossmapinfo(struct map_session_data *sd, struct mob_data *md, enum e_bossmap_info flag);
+#ifdef Pandas_ScriptCommand_BossMonster
+void clif_bossmapinfo_clear(struct map_session_data* sd);
+#endif // Pandas_ScriptCommand_BossMonster
 void clif_cashshop_show(struct map_session_data *sd, struct npc_data *nd);
 
 // ADOPTION

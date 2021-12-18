@@ -18224,7 +18224,8 @@ void clif_parse_Adopt_reply(int fd, struct map_session_data *sd){
 void clif_bossmapinfo(struct map_session_data *sd, struct mob_data *md, enum e_bossmap_info flag)
 {
 #ifdef Pandas_Crashfix_BossMapinfo
-	if (!sd || !md) return;
+	if (!sd) return;
+	if (flag != BOSS_INFO_NOT && !md) return;
 #endif // Pandas_Crashfix_BossMapinfo
 
 	int fd = sd->fd;
@@ -18274,6 +18275,31 @@ void clif_bossmapinfo(struct map_session_data *sd, struct mob_data *md, enum e_b
 
 	WFIFOSET(fd,70);
 }
+
+#ifdef Pandas_ScriptCommand_BossMonster
+//************************************
+// Method:      clif_bossmapinfo_clear
+// Description: 没有任何提示的情况下清除指定玩家的小地图 BOSS 标识
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/12/18 23:46
+//************************************ 
+void clif_bossmapinfo_clear(struct map_session_data* sd)
+{
+	if (!sd) return;
+
+	int fd = sd->fd;
+
+	WFIFOHEAD(fd, 70);
+	memset(WFIFOP(fd, 0), 0, 70);
+	WFIFOW(fd, 0) = 0x293;
+	WFIFOB(fd, 2) = BOSS_INFO_ALIVE;
+	WFIFOL(fd, 3) = -1;
+	WFIFOL(fd, 7) = -1;
+	WFIFOSET(fd, 70);
+}
+#endif // Pandas_ScriptCommand_BossMonster
 
 
 /// Requesting equip of a player (CZ_EQUIPWIN_MICROSCOPE).
