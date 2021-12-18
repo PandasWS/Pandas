@@ -5251,6 +5251,10 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_PARTYLEAVE
 		NPCF_PARTYLEAVE,	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYLEAVE
+
+#ifdef Pandas_NpcFilter_DROPITEM
+		NPCF_DROPITEM,	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
+#endif // Pandas_NpcFilter_DROPITEM
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -5456,6 +5460,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_PARTYLEAVE:
 		return script_config.partyleave_filter_name;	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYLEAVE
+
+#ifdef Pandas_NpcFilter_DROPITEM
+	case NPCF_DROPITEM:
+		return script_config.dropitem_filter_name;	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
+#endif // Pandas_NpcFilter_DROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
