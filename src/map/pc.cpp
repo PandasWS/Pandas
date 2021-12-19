@@ -2802,7 +2802,7 @@ static void pc_bonus_status_damage(std::vector<s_sc_damage>& dmgrule, enum sc_ty
 	for (auto& it : dmgrule) {
 		if (it.type == sc && it.battle_flag == battle_flag) {
 			it.rate = cap_value(it.rate + rate, -10000, 10000);
-			it.val += val;
+			it.val = rathena::util::safe_addition_cap(it.val, val, INT_MAX);
 			return;
 		}
 	}

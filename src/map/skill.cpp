@@ -3602,7 +3602,7 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 				continue;
 
 			if (rnd() % 10000 < it.rate) {
-				dmg.damage += it.val;
+				dmg.damage = rathena::util::safe_addition_cap(dmg.damage, (int64)it.val, INT64_MAX);
 			}
 		}
 		damage = dmg.damage + dmg.damage2;
@@ -3622,7 +3622,7 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 				continue;
 
 			if (rnd() % 10000 < it.rate) {
-				total_rate += it.val;
+				total_rate = rathena::util::safe_addition_cap(total_rate, it.val, INT_MAX);
 			}
 		}
 
