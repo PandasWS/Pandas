@@ -636,7 +636,11 @@ bool mob_ksprotected (struct block_list *src, struct block_list *target)
 	return false;
 }
 
+#ifndef Pandas_FuncDefine_Mob_Once_Spawn_Sub
 struct mob_data *mob_once_spawn_sub(struct block_list *bl, int16 m, int16 x, int16 y, const char *mobname, int mob_id, const char *event, unsigned int size, enum mob_ai ai)
+#else
+struct mob_data* mob_once_spawn_sub(struct block_list* bl, int16 m, int16 x, int16 y, const char* mobname, int mob_id, const char* event, unsigned int size, enum mob_ai ai, uint16 spawn_flag)
+#endif // Pandas_FuncDefine_Mob_Once_Spawn_Sub
 {
 	struct spawn_data data;
 
@@ -646,6 +650,9 @@ struct mob_data *mob_once_spawn_sub(struct block_list *bl, int16 m, int16 x, int
 	data.id = mob_id;
 	data.state.size = size;
 	data.state.ai = ai;
+#ifdef Pandas_FuncDefine_Mob_Once_Spawn_Sub
+	data.state.boss = (spawn_flag & 1);
+#endif // Pandas_FuncDefine_Mob_Once_Spawn_Sub
 
 	if (mobname)
 		safestrncpy(data.name, mobname, sizeof(data.name));
@@ -679,7 +686,11 @@ struct mob_data *mob_once_spawn_sub(struct block_list *bl, int16 m, int16 x, int
 /*==========================================
  * Spawn a single mob on the specified coordinates.
  *------------------------------------------*/
+#ifndef Pandas_FuncDefine_Mob_Once_Spawn
 int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai)
+#else
+int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai, uint16 spawn_flag)
+#endif // Pandas_FuncDefine_Mob_Once_Spawn
 {
 	struct mob_data* md = nullptr;
 	int count, lv;
@@ -692,7 +703,11 @@ int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y, const
 	for (count = 0; count < amount; count++)
 	{
 		int c = (mob_id >= 0) ? mob_id : mob_get_random_id(-mob_id - 1, (battle_config.random_monster_checklv) ? static_cast<e_random_monster_flags>(RMF_DB_RATE|RMF_CHECK_MOB_LV) : RMF_DB_RATE, lv);
+#ifndef Pandas_FuncDefine_Mob_Once_Spawn
 		md = mob_once_spawn_sub((sd) ? &sd->bl : NULL, m, x, y, mobname, c, event, size, ai);
+#else
+		md = mob_once_spawn_sub((sd) ? &sd->bl : NULL, m, x, y, mobname, c, event, size, ai, spawn_flag);
+#endif // Pandas_FuncDefine_Mob_Once_Spawn
 
 		if (!md)
 			continue;

@@ -436,6 +436,21 @@
 	// 调整 mob.cpp 的 mob_getdroprate 函数增加 md 参数 [Sola丶小克]
 	// 新增的 md 参数用于在 mob_getdroprate 进行掉率计算时能根据魔物实例进行必要调整
 	#define Pandas_FuncParams_Mob_GetDroprate
+
+	// 在 mob.cpp 中的 mob_once_spawn_sub 增加 spawn_flag 参数 [Sola丶小克]
+	// 新增的 spawn_flag 参数可以用来控制召唤出来的魔物是不是 BOSS (可以被 BOSS 雷达探测)
+	#define Pandas_FuncDefine_Mob_Once_Spawn_Sub
+
+	// 在 mob.cpp 中的 mob_once_spawn 增加 spawn_flag 参数 [Sola丶小克]
+	// 新增的 spawn_flag 参数可以用来控制召唤出来的魔物是不是 BOSS (可以被 BOSS 雷达探测)
+	// 此选项依赖 Pandas_FuncDefine_Mob_Once_Spawn_Sub 的拓展
+	#ifdef Pandas_FuncDefine_Mob_Once_Spawn_Sub
+		#define Pandas_FuncDefine_Mob_Once_Spawn
+	#endif // Pandas_FuncDefine_Mob_Once_Spawn_Sub
+
+	// 在 map.cpp 中的 map_getmob_boss 增加 alive_first 参数 [Sola丶小克]
+	// 新增的 alive_first 参数可以指定优先返回存活着的 BOSS 魔物
+	#define Pandas_FuncDefine_Mob_Getmob_Boss
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -1946,6 +1961,13 @@
 	// 是否启用 getskillinfo 脚本指令 [聽風]
 	// 该指令用于获取指定技能在技能数据库中所配置的各项信息
 	#define Pandas_ScriptCommand_GetSkillInfo
+
+	// 是否启用 boss_monster 脚本指令 [人鱼姬的思念]
+	// 该指令用于召唤魔物并使之能被 BOSS 雷达探测 (哪怕被召唤魔物本身不是 BOSS)
+	// 此选项依赖 Pandas_FuncDefine_Mob_Once_Spawn 的拓展
+	#ifdef Pandas_FuncDefine_Mob_Once_Spawn
+		#define Pandas_ScriptCommand_BossMonster
+	#endif // Pandas_FuncDefine_Mob_Once_Spawn
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
