@@ -29,7 +29,7 @@ Boost.MultiIndex
 using namespace boost::multi_index;
 namespace bl = boost::lambda;
 
-// word_counter keeps the ocurrences of words inserted. A hashed
+// word_counter keeps the occurrences of words inserted. A hashed
 // index allows for fast checking of preexisting entries.
 
 struct word_counter_entry

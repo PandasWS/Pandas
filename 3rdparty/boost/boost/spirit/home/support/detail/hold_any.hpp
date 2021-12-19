@@ -27,10 +27,10 @@
 #include <boost/assert.hpp>
 #include <boost/core/typeinfo.hpp>
 
-#include <stdexcept>
-#include <typeinfo>
 #include <algorithm>
 #include <iosfwd>
+#include <stdexcept>
+#include <typeinfo>
 
 ///////////////////////////////////////////////////////////////////////////////
 #if BOOST_WORKAROUND(BOOST_MSVC, >= 1400)
@@ -49,7 +49,10 @@ namespace boost { namespace spirit
           : from(src.name()), to(dest.name())
         {}
 
-        virtual const char* what() const BOOST_NOEXCEPT_OR_NOTHROW { return "bad any cast"; }
+        const char* what() const BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE
+        { 
+            return "bad any cast";
+        }
 
         const char* from;
         const char* to;
@@ -130,32 +133,32 @@ namespace boost { namespace spirit
                 static void static_delete(void** x)
                 {
                     // destruct and free memory
-                    delete (*reinterpret_cast<T**>(x));
+                    delete static_cast<T*>(*x);
                 }
                 static void destruct(void** x)
                 {
                     // destruct only, we'll reuse memory
-                    (*reinterpret_cast<T**>(x))->~T();
+                    static_cast<T*>(*x)->~T();
                 }
                 static void clone(void* const* src, void** dest)
                 {
-                    *dest = new T(**reinterpret_cast<T* const*>(src));
+                    *dest = new T(*static_cast<T const*>(*src));
                 }
                 static void move(void* const* src, void** dest)
                 {
-                    **reinterpret_cast<T**>(dest) =
-                        **reinterpret_cast<T* const*>(src);
+                    *static_cast<T*>(*dest) =
+                        *static_cast<T const*>(*src);
                 }
                 static std::basic_istream<Char>&
                 stream_in(std::basic_istream<Char>& i, void** obj)
                 {
-                    i >> **reinterpret_cast<T**>(obj);
+                    i >> *static_cast<T*>(*obj);
                     return i;
                 }
                 static std::basic_ostream<Char>&
                 stream_out(std::basic_ostream<Char>& o, void* const* obj)
                 {
-                    o << **reinterpret_cast<T* const*>(obj);
+                    o << *static_cast<T const*>(*obj);
                     return o;
                 }
             };

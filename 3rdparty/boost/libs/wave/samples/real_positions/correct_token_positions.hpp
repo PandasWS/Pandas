@@ -8,8 +8,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(CORRECT_TOKEN_POSITIONS_HK_061106_INCLUDED)
-#define CORRECT_TOKEN_POSITIONS_HK_061106_INCLUDED
+#if !defined(BOOST_CORRECT_TOKEN_POSITIONS_HK_061106_INCLUDED)
+#define BOOST_CORRECT_TOKEN_POSITIONS_HK_061106_INCLUDED
 
 #include <boost/iterator/transform_iterator.hpp>
 

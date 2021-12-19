@@ -14,7 +14,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <boost/assign.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/range/algorithm_ext.hpp>
 
 #include <algorithm>
@@ -140,6 +140,7 @@ namespace boost
         void transformed_bind()
         {
             using namespace boost::adaptors;
+            using namespace boost::placeholders;
 
             std::vector<foo_bind> input(5);
             std::vector<int> output;

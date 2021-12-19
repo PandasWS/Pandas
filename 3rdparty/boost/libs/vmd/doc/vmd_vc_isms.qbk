@@ -8,16 +8,16 @@
 [section:vmd_vc_isms Visual C++ gotchas in VMD]
 
 I have discussed throughout the documentation areas of VMD which need to be
-considered when using Microsoft's Visual C++ compilers. The VMD library
-supports VC++ versions 8 through the latest 14. These correspond to
-Visual Studio 2005 through the current Visual Studio 2015.
+considered when using Microsoft's Visual C++ compilers with its default preprocessor. The VMD library
+supports VC++ versions 8 through the latest 14.2. These correspond to
+Visual Studio 2005 through the current Visual Studio 2019.
 
 I will give here fairly briefly the VC++ quirks which should be taken
-into account when using VMD. These quirks exist because the VC++ compiler
-does not have a C++ standard conforming preprocessor. More specifically
-the VC++ compiler does not follow all of the rules correctly for expanding 
+into account when using VMD. These quirks exist because the VC++ compiler 
+does not have a C++ standard conforming preprocessor with its default preprocessor.
+More specifically the VC++ compiler does not follow all of the rules correctly for expanding 
 a macro when a macro is invoked. Here is a list for things to consider
-when using VMD with VC++:
+when using VMD with VC++ and its default preprocessor:
 
 * The BOOST_VMD_IS_EMPTY macro will expand erroneously to 1 if the input resolves
 to a function-like macro name, which when it is called with an empty parameter
@@ -40,5 +40,9 @@ transparently.
 
 * Avoid using an empty parenthesis to pass no data as a tuple or seq if VC++8 might
 be used as the compiler.
+
+When using VC++ with its new standard conforming preprocessor, which as of now
+is not its default preprocessor in Visual Studio 2019, none of these problems
+manifest themselves.
 
 [endsect]

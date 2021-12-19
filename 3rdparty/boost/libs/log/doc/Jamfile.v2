@@ -48,6 +48,7 @@ local doxygen_params =
                         BOOST_LOG_NO_VTABLE= \\
                         BOOST_SYMBOL_VISIBLE= \\
                         BOOST_FORCEINLINE=inline \\
+                        BOOST_INLINE_VARIABLE=inline \\
                         BOOST_STATIC_ASSERT(x)= \\
                         BOOST_STATIC_ASSERT_MSG(x,y)= \\
                         BOOST_STATIC_CONSTANT(x,y)=\"static constexpr x y\" \\
@@ -150,7 +151,6 @@ rule gen-references ( target : source : properties * )
 }
 actions gen-references
 {
-#    echo "*** Executing " $(NAME:E=xsltproc) -o "$(TARGET)" "$(STYLESHEET)" "$(>)"
     $(NAME:E=xsltproc) -o "$(TARGET)" "$(STYLESHEET)" "$(>)"
 }
 
@@ -262,16 +262,16 @@ boostbook log
     :
         log_doc
     :
-        <dependency>html/images/log
-        <xsl:param>boost.root=../../../..
-        <xsl:param>boost.libraries=../../../libs/libraries.htm
-        <xsl:param>nav.layout=none
-        <xsl:param>boost.image=Boost
-        <xsl:param>navig.graphics=1
-        <xsl:param>chunk.section.depth=2
-        <xsl:param>boost.compact.function=0
-        <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/libs/log/doc/html
-        <format>pdf:<xsl:param>img.src.path=$(images_location)/
+        <dependency>"html/images/log"
+        <xsl:param>"boost.root=../../../.."
+        <xsl:param>"boost.libraries=../../../libs/libraries.htm"
+        <xsl:param>"nav.layout=none"
+        <xsl:param>"boost.image=Boost"
+        <xsl:param>"navig.graphics=1"
+        <xsl:param>"chunk.section.depth=2"
+        <xsl:param>"boost.compact.function=0"
+        <format>pdf:<xsl:param>"boost.url.prefix=http://www.boost.org/doc/libs/release/libs/log/doc/html"
+        <format>pdf:<xsl:param>"img.src.path=$(images_location)/"
     ;
 
 install html/images/log : [ glob *.png ] ;

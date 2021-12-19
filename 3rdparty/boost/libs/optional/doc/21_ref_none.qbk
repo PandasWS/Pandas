@@ -17,8 +17,8 @@ namespace boost {
 
 class none_t {/* see below */};
 
-const none_t none (/* see below */); 
-    
+inline constexpr none_t none (/* see below */);
+
 } // namespace boost
 ```
 

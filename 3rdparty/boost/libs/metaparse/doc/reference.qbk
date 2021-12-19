@@ -176,6 +176,7 @@ choosing among the `fold*` parsers.
 * [link string string]
 * [link string_tag string_tag]
 * [link BOOST_METAPARSE_STRING BOOST_METAPARSE_STRING]
+* [link BOOST_METAPARSE_STRING_VALUE BOOST_METAPARSE_STRING_VALUE]
 
 [endsect]
 
@@ -256,6 +257,7 @@ classes.
 [include always.qbk]
 [include BOOST_METAPARSE_DEFINE_ERROR.qbk]
 [include BOOST_METAPARSE_STRING.qbk]
+[include BOOST_METAPARSE_STRING_VALUE.qbk]
 [include BOOST_METAPARSE_VERSION.qbk]
 [include boxed_value.qbk]
 [include build_parser.qbk]

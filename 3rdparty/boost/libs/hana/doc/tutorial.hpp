@@ -52,13 +52,7 @@ have a couple of options:
 Hana is included in the [Boost][] distribution starting from Boost 1.61.0, so
 installing that will give you access to Hana.
 
-2. __Use Homebrew__\n
-On Mac OS, Hana can be installed with [Homebrew][]:
-@code{.sh}
-brew install hana
-@endcode
-
-3. __Install manually__\n
+2. __Install manually__\n
 You can download the code from the official GitHub [repository][Hana.repository]
 and install the library manually by issuing the following commands from the root
 of the project (requires [CMake][]):
@@ -78,22 +72,18 @@ If you just want to contribute to Hana, you can see how to best setup your
 environment for development in the [README][Hana.hacking].
 
 @note
-- Both the manual installation and the Homebrew installation will also install
-a `HanaConfig.cmake` file for use with CMake and a `hana.pc` file for use with
-[pkg-config][].
-
-- Do not mix a standalone installation of Hana (i.e. Hana not installed through
-  Boost) with a full installation of Boost. The Hana provided within Boost and
-  the standalone one may clash, and you won't know which version is used where.
-  This is asking for trouble.
+Do not mix a standalone installation of Hana (i.e. Hana not installed through
+Boost) with a full installation of Boost. The Hana provided within Boost and
+the standalone one may clash, and you won't know which version is used where.
+This is asking for trouble.
 
 @subsection tutorial-installation-cmake Note for CMake users
 
-If you use [CMake][], depending on Hana has never been so easy. When installed,
-Hana creates a `HanaConfig.cmake` file that exports the `hana` interface library
-target with all the required settings. All you need is to install Hana (through
-Homebrew or manually), use `find_package(Hana)`, and then link your own targets
-against the `hana` target. Here is a minimal example of doing this:
+If you use [CMake][], depending on Hana has never been so easy. When installed
+manually, Hana creates a `HanaConfig.cmake` file that exports the `hana`
+interface library target with all the required settings. All you need is to
+install Hana manually with CMake, use `find_package(Hana)`, and then link your
+own targets against the `hana` target. Here is a minimal example of doing this:
 
 @snippet example/cmake_integration/CMakeLists.txt snip
 
@@ -114,14 +104,14 @@ installed.
 @subsection tutorial-installation-requirements Compiler requirements
 
 The library relies on a C++14 compiler and standard library, but nothing else
-is required. Here is a table of the current C++14 compilers/toolchains with
-comments regarding support for Hana:
+is required. However, we only guarantee support for the compilers listed
+below, which are tested on an ongoing basis:
 
 Compiler/Toolchain | Status
 ------------------ | ------
-Clang >= 3.5.0     | Fully working; tested on each push to GitHub
-Xcode >= 8.3       | Fully working; tested on each push to GitHub
-GCC >= 6.0.0       | Fully working; tested on each push to GitHub
+Clang >= 7         | Fully working; tested on each push to GitHub
+Xcode >= 11        | Fully working; tested on each push to GitHub
+GCC >= 8           | Fully working; tested on each push to GitHub
 VS2017 >= Update 7 | Fully working; tested on each push to GitHub
 
 More specifically, Hana requires a compiler/standard library supporting the
@@ -132,7 +122,9 @@ following C++14 features (non-exhaustively):
 - Automatically deduced return type
 - All the C++14 type traits from the `<type_traits>` header
 
-More information for specific platforms is available on [the wiki][Hana.wiki].
+Using a compiler not listed above may work, but support for such compilers is
+not guaranteed. More information for specific platforms is available on
+[the wiki][Hana.wiki].
 
 
 
@@ -204,7 +196,7 @@ constexpr int factorial(int n) {
 }
 
 template <typename T, std::size_t N, typename F>
-  constexpr std::array<std::result_of_t<F(T)>, N>
+  constexpr std::array<std::invoke_result_t<F, T>, N>
 transform(std::array<T, N> array, F f) {
   // ...
 }
@@ -2428,13 +2420,15 @@ for `Constant` and `IntegralConstant`.
 Hana's algorithms are `constexpr` function objects instead of being template
 functions. This allows passing them to higher-order algorithms, which is very
 useful. However, since those function objects are defined at namespace scope
-in the header files, this causes each translation unit to see a different
-algorithm object. Hence, the address of an algorithm function object is not
-guaranteed to be unique across translation units, which can cause an ODR
-violation if one relies on such an address. So, in short, do not rely on the
-uniqueness of the address of any global object provided by Hana, which does
-not make sense in the general case anyway because such objects are `constexpr`.
-See [issue #76](https://github.com/boostorg/hana/issues/76) for more information.
+in the header files, we require support for C++17 inline variables in order to
+avoid ODR violations (by means of the same object being defined twice in
+different translation units). When compiling in C++14 mode, where inline
+variables are not available, each translation unit will see a different
+algorithm object, so the address of an algorithm function object is not
+guaranteed to be unique across translation units. This is technically an ODR
+violation, but it shouldn't bite you unless you rely on the addresses being
+the same. So, in short, do not rely on the uniqueness of the address of any
+global object provided by Hana if you are compiling in C++14 mode.
 
 
 
@@ -3584,41 +3578,41 @@ in pseudo-code, the actual implementation sometimes being slightly hard to
 understand. This section defines terms used in the reference and in the
 pseudo-code used to describe some functions.
 
-@anchor tutorial-glossary-forwarded
-#### `forwarded(x)`
-Means that the object is forwarded optimally. This means that if `x` is a
-parameter, it is `std::forward`ed, and if it is a captured variable, it is
-moved from whenever the enclosing lambda is an rvalue.
+- @anchor tutorial-glossary-forwarded `forwarded(x)`
 
-Also note that when `x` can be moved from, the statement `return forwarded(x);`
-in a function with `decltype(auto)` does not mean that an rvalue reference to
-`x` will be returned, which would create a dangling reference. Rather, it
-means that `x` is returned by value, the value being constructed with the
-`std::forward`ed `x`.
+  Means that the object is forwarded optimally. This means that if `x` is a
+  parameter, it is `std::forward`ed, and if it is a captured variable, it is
+  moved from whenever the enclosing lambda is an rvalue.
 
-@anchor tutorial-glossary-perfect_capture
-#### `perfect-capture`
-This is used in lambdas to signify that the captured variables are
-initialized using perfect forwarding, as if `[x(forwarded(x))...]() { }`
-had been used.
+  Also note that when `x` can be moved from, the statement `return forwarded(x);`
+  in a function with `decltype(auto)` does not mean that an rvalue reference to
+  `x` will be returned, which would create a dangling reference. Rather, it
+  means that `x` is returned by value, the value being constructed with the
+  `std::forward`ed `x`.
 
-@anchor tutorial-glossary-tag_dispatched
-#### `tag-dispatched`
-This means that the documented function uses [tag dispatching]
-(@ref tutorial-core-tag_dispatching), and hence the exact
-implementation depends on the model of the concept associated
-to the function.
+- @anchor tutorial-glossary-perfect_capture `perfect-capture`
 
-@anchor tutorial-glossary-implementation_defined
-#### `implementation-defined`
-This expresses the fact that the exact implementation of an entity (usually a
-type) should not be relied upon by users. In particular, this means that one
-can not assume anything beyond what is written explicitly in the documentation.
-Usually, the concepts satisfied by an implementation-defined entity will be
-documented, because one could otherwise do nothing with it. Concretely,
-assuming too much about an implementation-defined entity will probably
-not kill you, but it will very probably break your code when you update
-to a newer version of Hana.
+  This is used in lambdas to signify that the captured variables are
+  initialized using perfect forwarding, as if `[x(forwarded(x))...]() { }`
+  had been used.
+
+- @anchor tutorial-glossary-tag_dispatched `tag-dispatched`
+
+  This means that the documented function uses [tag dispatching]
+  (@ref tutorial-core-tag_dispatching), and hence the exact
+  implementation depends on the model of the concept associated
+  to the function.
+
+- @anchor tutorial-glossary-implementation_defined `implementation-defined`
+
+  This expresses the fact that the exact implementation of an entity (usually a
+  type) should not be relied upon by users. In particular, this means that one
+  can not assume anything beyond what is written explicitly in the documentation.
+  Usually, the concepts satisfied by an implementation-defined entity will be
+  documented, because one could otherwise do nothing with it. Concretely,
+  assuming too much about an implementation-defined entity will probably
+  not kill you, but it will very probably break your code when you update
+  to a newer version of Hana.
 
 
 

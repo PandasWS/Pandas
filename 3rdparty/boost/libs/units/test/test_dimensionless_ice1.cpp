@@ -17,10 +17,3 @@ void foo()
     BOOST_CONSTEXPR_OR_CONST boost::units::quantity<boost::units::si::dimensionless> d = boost::units::quantity< boost::units::si::dimensionless >();
     boost::ignore_unused(d);
 }
-
-#include <boost/test/test_tools.hpp>
-
-int main()
-{
-  BOOST_CHECK( 1 == 2 );
-}

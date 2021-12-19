@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Roman Numerals</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Spirit X3 3.0.4">
+<link rel="home" href="../../index.html" title="Spirit X3 3.10">
 <link rel="up" href="../tutorials.html" title="Tutorials">
 <link rel="prev" href="number_list_attribute___one_more__with_style.html" title="Number List Attribute - one more, with style">
 <link rel="next" href="employee.html" title="Employee - Parsing into structs">
@@ -239,24 +239,9 @@
 </pre>
 <p>
         Behind the scenes, what's actually happening is that we are defining a <code class="computeroutput"><span class="identifier">parse_rule</span></code> function in the client namespace
-        that tells X3 how to invoke the rule. For example, given a rule named <code class="computeroutput"><span class="identifier">my_rule</span></code> and a corresponding definition
-        named <code class="computeroutput"><span class="identifier">my_rule_def</span></code>, <code class="computeroutput"><span class="identifier">BOOST_SPIRIT_DEFINE</span><span class="special">(</span><span class="identifier">my_rule</span><span class="special">)</span></code>
-        expands to this code:
-      </p>
-<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">Iterator</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">Context</span><span class="special">&gt;</span>
-<span class="keyword">inline</span> <span class="keyword">bool</span> <span class="identifier">parse_rule</span><span class="special">(</span>
-    <span class="keyword">decltype</span><span class="special">(</span><span class="identifier">my_rule</span><span class="special">)</span>
-  <span class="special">,</span> <span class="identifier">Iterator</span><span class="special">&amp;</span> <span class="identifier">first</span><span class="special">,</span> <span class="identifier">Iterator</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">last</span>
-  <span class="special">,</span> <span class="identifier">Context</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">context</span><span class="special">,</span> <span class="keyword">decltype</span><span class="special">(</span><span class="identifier">my_rule</span><span class="special">)::</span><span class="identifier">attribute_type</span><span class="special">&amp;</span> <span class="identifier">attr</span><span class="special">)</span>
-<span class="special">{</span>
-    <span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">spirit</span><span class="special">::</span><span class="identifier">x3</span><span class="special">::</span><span class="identifier">unused</span><span class="special">;</span>
-    <span class="keyword">static</span> <span class="keyword">auto</span> <span class="keyword">const</span> <span class="identifier">def_</span> <span class="special">=</span> <span class="identifier">my_rule_def</span><span class="special">;</span>
-    <span class="keyword">return</span> <span class="identifier">def_</span><span class="special">.</span><span class="identifier">parse</span><span class="special">(</span><span class="identifier">first</span><span class="special">,</span> <span class="identifier">last</span><span class="special">,</span> <span class="identifier">context</span><span class="special">,</span> <span class="identifier">unused</span><span class="special">,</span> <span class="identifier">attr</span><span class="special">);</span>
-<span class="special">}</span>
-</pre>
-<p>
-        And so for each rule defined using <code class="computeroutput"><span class="identifier">BOOST_SPIRIT_DEFINE</span></code>,
-        there is an overloaded <code class="computeroutput"><span class="identifier">parse_rule</span></code>
+        that tells X3 how to invoke the rule. And so for each rule defined using
+        <code class="computeroutput"><span class="identifier">BOOST_SPIRIT_DEFINE</span></code>, there
+        is an overloaded <code class="computeroutput"><span class="identifier">parse_rule</span></code>
         function. At parse time, Spirit X3 recursively calls the appropriate <code class="computeroutput"><span class="identifier">parse_rule</span></code> function.
       </p>
 <div class="note"><table border="0" summary="Note">
@@ -379,7 +364,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2018 Joel de Guzman,
+<td align="right"><div class="copyright-footer">Copyright © 2001-2018 Joel de Guzman,
       Hartmut Kaiser<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

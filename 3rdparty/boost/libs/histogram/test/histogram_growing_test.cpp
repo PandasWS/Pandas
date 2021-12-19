@@ -12,9 +12,9 @@
 #include <boost/histogram/ostream.hpp>
 #include <string>
 #include <utility>
+#include "std_ostream.hpp"
 #include "throw_exception.hpp"
 #include "utility_histogram.hpp"
-#include "std_ostream.hpp"
 
 using namespace boost::histogram;
 
@@ -34,7 +34,7 @@ public:
     const auto x = std::get<0>(xy);
     const auto y = std::get<1>(xy);
     const auto r = std::sqrt(x * x + y * y);
-    return std::min(static_cast<axis::index_type>(r), size());
+    return (std::min)(static_cast<axis::index_type>(r), size());
   }
 
   auto update(std::tuple<double, double> xy) {

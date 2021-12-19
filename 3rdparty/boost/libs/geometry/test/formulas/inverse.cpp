@@ -1,9 +1,13 @@
 // Boost.Geometry
 // Unit Test
 
-// Copyright (c) 2016-2017 Oracle and/or its affiliates.
+// Copyright (c) 2016-2019 Oracle and/or its affiliates.
 
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
+
+// Copyright (c) 2018 Adeel Ahmad, Islamabad, Pakistan.
+
+// Contributed and/or modified by Adeel Ahmad, as part of Google Summer of Code 2018 program
 
 // Use, modification and distribution is subject to the Boost Software License,
 // Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
@@ -20,28 +24,6 @@
 #include <boost/geometry/formulas/andoyer_inverse.hpp>
 
 #include <boost/geometry/srs/spheroid.hpp>
-
-void check_inverse(std::string const& name,
-                   expected_results const& results,
-                   bg::formula::result_inverse<double> const& result,
-                   expected_result const& expected,
-                   expected_result const& reference,
-                   double reference_error)
-{
-    std::stringstream ss;
-    ss << "(" << results.p1.lon << " " << results.p1.lat << ")->(" << results.p2.lon << " " << results.p2.lat << ")";
-
-    check_one(name + "_d  " + ss.str(),
-              result.distance, expected.distance, reference.distance, reference_error);
-    check_one(name + "_a  " + ss.str(),
-              result.azimuth, expected.azimuth, reference.azimuth, reference_error, true);
-    check_one(name + "_ra " + ss.str(),
-              result.reverse_azimuth, expected.reverse_azimuth, reference.reverse_azimuth, reference_error, true);
-    check_one(name + "_rl " + ss.str(),
-              result.reduced_length, expected.reduced_length, reference.reduced_length, reference_error);
-    check_one(name + "_gs " + ss.str(),
-              result.geodesic_scale, expected.geodesic_scale, reference.geodesic_scale, reference_error);
-}
 
 void test_all(expected_results const& results)
 {

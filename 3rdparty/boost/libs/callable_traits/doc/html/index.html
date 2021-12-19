@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>CallableTraits</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -26,7 +26,7 @@
 <div><div class="authorgroup"><div class="author"><h3 class="author">
 <span class="firstname">Barrett</span> <span class="surname">Adair</span>
 </h3></div></div></div>
-<div><p class="copyright">Copyright &#169; 2016-2018 Barrett Adair</p></div>
+<div><p class="copyright">Copyright © 2016-2021 Barrett Adair</p></div>
 <div><div class="legalnotice">
 <a name="callable_traits.legal"></a><p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -162,10 +162,10 @@
 </h3></div></div></div>
 <div class="blockquote"><blockquote class="blockquote">
 <p>
-          <span class="bold"><strong><span class="emphasis"><em><span class="quote">&#8220;<span class="quote">Don't try to write helper code to
+          <span class="bold"><strong><span class="emphasis"><em><span class="quote">“<span class="quote">Don't try to write helper code to
           detect PMFs/PMDs and dispatch on them -- it is an <span class="underline">absolute
           nightmare</span>. PMF types are the worst types by far in the core
-          language.</span>&#8221;</span></em></span></strong></span>
+          language.</span>”</span></em></span></strong></span>
         </p>
 <p>
           -- Stephan T. Lavavej, CppCon 2015, <a href="https://www.youtube.com/watch?v=zt7ThwVfap0&amp;t=11m40s" target="_top">"functional:
@@ -344,17 +344,14 @@
 </h3></div></div></div>
 <p>
         <code class="literal">Boost.CallableTraits</code> supports on GCC 4.7.4+, Clang 3.5.2+,
-        XCode 6.4+, and Visual Studio 2015+. Continuous integration is managed on
-        <a href="https://ci.appveyor.com/project/boostorg/callable-traits" target="_top">Appveyor</a>
-        for Visual Studio, and on <a href="https://travis-ci.org/boostorg/callable_traits/builds" target="_top">Travis</a>
-        for everything else. The Intel C++ Compiler is not officially supported yet,
-        although the 2017 version for Linux does pass a handful of test cases.
+        XCode 6.4+, and Visual Studio 2015+. The Intel C++ Compiler is not officially
+        supported, although the 2017 version for Linux does pass a handful of test
+        cases.
       </p>
 <div class="table">
-<a name="callable_traits.introduction.compatibility.gcc_support"></a><p class="title"><b>Table&#160;1.&#160;GCC Support</b></p>
+<a name="callable_traits.introduction.compatibility.gcc_support"></a><p class="title"><b>Table 1. GCC Support</b></p>
 <div class="table-contents"><table class="table" summary="GCC Support">
 <colgroup>
-<col>
 <col>
 <col>
 <col>
@@ -371,12 +368,7 @@
               </th>
 <th>
                 <p>
-                  GCC 8.2.0
-                </p>
-              </th>
-<th>
-                <p>
-                  GCC 7.3.0
+                  GCC 7.3.0 and later
                 </p>
               </th>
 <th>
@@ -434,11 +426,6 @@
               </td>
 <td>
                 <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
                   <span class="gold">c++11</span> (no abominables)
                 </p>
               </td>
@@ -452,11 +439,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_add_member_cv" title="add_member_cv"><code class="literal">add_member_cv</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -518,11 +500,6 @@
               </td>
 <td>
                 <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
                   <span class="red">static_assert fails on instantiation</span>
                 </p>
               </td>
@@ -536,11 +513,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_add_member_rvalue_reference" title="add_member_rvalue_reference"><code class="literal">add_member_rvalue_reference</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -602,11 +574,6 @@
               </td>
 <td>
                 <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
                   <span class="gold">c++11</span> (no abominables)
                 </p>
               </td>
@@ -620,11 +587,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_add_noexcept" title="add_noexcept"><code class="literal">add_noexcept</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++17</span>
                 </p>
               </td>
 <td>
@@ -662,11 +624,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_add_transaction_safe" title="add_transaction_safe"><code class="literal">add_transaction_safe</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="gold">c++17</span> (requires -fgnu-tm)
                 </p>
               </td>
 <td>
@@ -736,21 +693,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_apply_member_pointer" title="apply_member_pointer"><code class="literal">apply_member_pointer</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -820,21 +767,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_args" title="args"><code class="literal">args</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -904,11 +841,6 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
@@ -946,21 +878,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_has_member_qualifiers" title="has_member_qualifiers"><code class="literal">has_member_qualifiers</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -1030,21 +952,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_has_void_return" title="has_void_return"><code class="literal">has_void_return</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -1106,11 +1018,6 @@
               </td>
 <td>
                 <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
                   <span class="gold">c++11</span> (no abominables)
                 </p>
               </td>
@@ -1124,11 +1031,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_is_cv_member" title="is_cv_member"><code class="literal">is_cv_member</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -1190,11 +1092,6 @@
               </td>
 <td>
                 <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
                   unknown
                 </p>
               </td>
@@ -1232,11 +1129,6 @@
               </td>
 <td>
                 <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
                   <span class="gold">c++11</span> (always false)
                 </p>
               </td>
@@ -1250,11 +1142,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_is_noexcept" title="is_noexcept"><code class="literal">is_noexcept</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++17</span>
                 </p>
               </td>
 <td>
@@ -1316,11 +1203,6 @@
               </td>
 <td>
                 <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
                   <span class="gold">c++11</span> (always false)
                 </p>
               </td>
@@ -1334,11 +1216,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_is_rvalue_reference_member" title="is_rvalue_reference_member"><code class="literal">is_rvalue_reference_member</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -1390,11 +1267,6 @@
               </td>
 <td>
                 <p>
-                  <span class="gold">c++17</span> (requires -fgnu-tm)
-                </p>
-              </td>
-<td>
-                <p>
                   <span class="gold">c++11</span> (always false)
                 </p>
               </td>
@@ -1418,11 +1290,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_is_volatile_member" title="is_volatile_member"><code class="literal">is_volatile_member</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -1492,21 +1359,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_remove_member_const" title="remove_member_const"><code class="literal">remove_member_const</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -1568,11 +1425,6 @@
               </td>
 <td>
                 <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
                   <span class="gold">c++11</span> (no abominables)
                 </p>
               </td>
@@ -1586,11 +1438,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_remove_member_reference" title="remove_member_reference"><code class="literal">remove_member_reference</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -1652,11 +1499,6 @@
               </td>
 <td>
                 <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
                   <span class="gold">c++11</span> (no abominables)
                 </p>
               </td>
@@ -1670,11 +1512,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_remove_noexcept" title="remove_noexcept"><code class="literal">remove_noexcept</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++17</span>
                 </p>
               </td>
 <td>
@@ -1712,11 +1549,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_remove_transaction_safe" title="remove_transaction_safe"><code class="literal">remove_transaction_safe</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="gold">c++17</span> (requires -fgnu-tm)
                 </p>
               </td>
 <td>
@@ -1786,11 +1618,6 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
@@ -1828,22 +1655,14 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 </tbody>
 </table></div>
 </div>
 <br class="table-break"><div class="table">
-<a name="callable_traits.introduction.compatibility.llvm_clang_support"></a><p class="title"><b>Table&#160;2.&#160;LLVM/Clang Support</b></p>
+<a name="callable_traits.introduction.compatibility.llvm_clang_support"></a><p class="title"><b>Table 2. LLVM/Clang Support</b></p>
 <div class="table-contents"><table class="table" summary="LLVM/Clang Support">
 <colgroup>
-<col>
-<col>
-<col>
 <col>
 <col>
 <col>
@@ -1859,22 +1678,7 @@
               </th>
 <th>
                 <p>
-                  Clang 7.0.1
-                </p>
-              </th>
-<th>
-                <p>
-                  Clang 6.0.0
-                </p>
-              </th>
-<th>
-                <p>
-                  Clang 5.0.1
-                </p>
-              </th>
-<th>
-                <p>
-                  Clang 4.0.0
+                  Clang 4.0.0 and later
                 </p>
               </th>
 <th>
@@ -1930,41 +1734,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_add_member_cv" title="add_member_cv"><code class="literal">add_member_cv</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -2024,41 +1798,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_add_member_rvalue_reference" title="add_member_rvalue_reference"><code class="literal">add_member_rvalue_reference</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -2118,41 +1862,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_add_noexcept" title="add_noexcept"><code class="literal">add_noexcept</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++17</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++17</span>
                 </p>
               </td>
 <td>
@@ -2189,22 +1903,7 @@
               </td>
 <td>
                 <p>
-                  unknown
-                </p>
-              </td>
-<td>
-                <p>
-                  unknown
-                </p>
-              </td>
-<td>
-                <p>
-                  unknown
-                </p>
-              </td>
-<td>
-                <p>
-                  unknown
+                  <span class="red">static_assert fails on instantiation</span>
                 </p>
               </td>
 <td>
@@ -2232,21 +1931,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_add_varargs" title="add_varargs"><code class="literal">add_varargs</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -2306,41 +1990,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_apply_return" title="apply_return"><code class="literal">apply_return</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -2400,41 +2054,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_class_of" title="class_of"><code class="literal">class_of</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -2494,41 +2118,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_has_member_qualifiers" title="has_member_qualifiers"><code class="literal">has_member_qualifiers</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -2588,41 +2182,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_has_void_return" title="has_void_return"><code class="literal">has_void_return</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -2682,41 +2246,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_is_cv_member" title="is_cv_member"><code class="literal">is_cv_member</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -2776,21 +2310,6 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
@@ -2823,41 +2342,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_is_noexcept" title="is_noexcept"><code class="literal">is_noexcept</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++17</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++17</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++17</span>
                 </p>
               </td>
 <td>
@@ -2917,41 +2406,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_is_rvalue_reference_member" title="is_rvalue_reference_member"><code class="literal">is_rvalue_reference_member</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -2988,22 +2447,7 @@
               </td>
 <td>
                 <p>
-                  unknown
-                </p>
-              </td>
-<td>
-                <p>
-                  unknown
-                </p>
-              </td>
-<td>
-                <p>
-                  unknown
-                </p>
-              </td>
-<td>
-                <p>
-                  unknown
+                  <span class="gold">c++11</span> (always false)
                 </p>
               </td>
 <td>
@@ -3031,21 +2475,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_is_volatile_member" title="is_volatile_member"><code class="literal">is_volatile_member</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -3105,41 +2534,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_remove_member_const" title="remove_member_const"><code class="literal">remove_member_const</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -3199,41 +2598,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_remove_member_reference" title="remove_member_reference"><code class="literal">remove_member_reference</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -3293,41 +2662,11 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 <tr>
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_remove_noexcept" title="remove_noexcept"><code class="literal">remove_noexcept</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++17</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++17</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++17</span>
                 </p>
               </td>
 <td>
@@ -3364,22 +2703,7 @@
               </td>
 <td>
                 <p>
-                  unknown
-                </p>
-              </td>
-<td>
-                <p>
-                  unknown
-                </p>
-              </td>
-<td>
-                <p>
-                  unknown
-                </p>
-              </td>
-<td>
-                <p>
-                  unknown
+                  <span class="gold">c++11</span> (no effect)
                 </p>
               </td>
 <td>
@@ -3407,21 +2731,6 @@
 <td>
                 <p>
                   <a class="link" href="callable_traits/reference.html#callable_traits.reference.ref_remove_varargs" title="remove_varargs"><code class="literal">remove_varargs</code></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
                 </p>
               </td>
 <td>
@@ -3481,27 +2790,12 @@
                   <span class="green">c++11</span>
                 </p>
               </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
-<td>
-                <p>
-                  <span class="green">c++11</span>
-                </p>
-              </td>
 </tr>
 </tbody>
 </table></div>
 </div>
 <br class="table-break"><div class="table">
-<a name="callable_traits.introduction.compatibility.xcode_appleclang_support"></a><p class="title"><b>Table&#160;3.&#160;XCode/AppleClang Support</b></p>
+<a name="callable_traits.introduction.compatibility.xcode_appleclang_support"></a><p class="title"><b>Table 3. XCode/AppleClang Support</b></p>
 <div class="table-contents"><table class="table" summary="XCode/AppleClang Support">
 <colgroup>
 <col>
@@ -3519,7 +2813,7 @@
               </th>
 <th>
                 <p>
-                  XCode 8
+                  XCode 8 and later
                 </p>
               </th>
 <th>
@@ -4636,7 +3930,7 @@
 </table></div>
 </div>
 <br class="table-break"><div class="table">
-<a name="callable_traits.introduction.compatibility.visual_studio_support"></a><p class="title"><b>Table&#160;4.&#160;Visual Studio Support</b></p>
+<a name="callable_traits.introduction.compatibility.visual_studio_support"></a><p class="title"><b>Table 4. Visual Studio Support</b></p>
 <div class="table-contents"><table class="table" summary="Visual Studio Support">
 <colgroup>
 <col>

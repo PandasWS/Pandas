@@ -63,9 +63,9 @@ std::ostream& operator<<(std::ostream& out, level l)
 } // namespace threading
 
 #ifdef BOOST_MPI_HAS_NOARG_INITIALIZATION
-environment::environment(bool abort_on_exception)
+environment::environment(bool abrt)
   : i_initialized(false),
-    abort_on_exception(abort_on_exception)
+    abort_on_exception(abrt)
 {
   if (!initialized()) {
     BOOST_MPI_CHECK_RESULT(MPI_Init, (0, 0));
@@ -79,9 +79,9 @@ environment::environment(bool abort_on_exception)
 #endif
 }
 
-environment::environment(threading::level mt_level, bool abort_on_exception)
+environment::environment(threading::level mt_level, bool abrt)
   : i_initialized(false),
-    abort_on_exception(abort_on_exception)
+    abort_on_exception(abrt)
 {
   // It is not clear that we can pass null in MPI_Init_thread.
   int dummy_thread_level = 0;
@@ -99,9 +99,9 @@ environment::environment(threading::level mt_level, bool abort_on_exception)
 }
 #endif
 
-environment::environment(int& argc, char** &argv, bool abort_on_exception)
+environment::environment(int& argc, char** &argv, bool abrt)
   : i_initialized(false),
-    abort_on_exception(abort_on_exception)
+    abort_on_exception(abrt)
 {
   if (!initialized()) {
     BOOST_MPI_CHECK_RESULT(MPI_Init, (&argc, &argv));
@@ -116,9 +116,9 @@ environment::environment(int& argc, char** &argv, bool abort_on_exception)
 }
 
 environment::environment(int& argc, char** &argv, threading::level mt_level,
-                         bool abort_on_exception)
+                         bool abrt)
   : i_initialized(false),
-    abort_on_exception(abort_on_exception)
+    abort_on_exception(abrt)
 {
   // It is not clear that we can pass null in MPI_Init_thread.
   int dummy_thread_level = 0;

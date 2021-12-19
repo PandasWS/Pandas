@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Changelog</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Boost.Log v2">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Boost.Log v2">
+<link rel="home" href="../index.html" title="Chapter 1. Boost.Log v2">
+<link rel="up" href="../index.html" title="Chapter 1. Boost.Log v2">
 <link rel="prev" href="../boost/log/current_scope.html" title="Function current_scope">
 <link rel="next" href="todo.html" title="TODO in future releases">
 </head>
@@ -21,6 +21,236 @@
 </h2></div></div></div>
 <h4>
 <a name="log.changelog.h0"></a>
+      <span class="phrase"><a name="log.changelog.2_23__boost_1_78"></a></span><a class="link" href="changelog.html#log.changelog.2_23__boost_1_78">2.23,
+      Boost 1.78</a>
+    </h4>
+<p>
+      <span class="bold"><strong>General changes:</strong></span>
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Updated detection of <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">codecvt</span></code>
+          specializations for <code class="computeroutput"><span class="keyword">char16_t</span></code>
+          and <code class="computeroutput"><span class="keyword">char32_t</span></code> for compatibility
+          with C++17 and later. (<a href="https://github.com/boostorg/log/pull/159" target="_top">PR#159</a>)
+        </li>
+<li class="listitem">
+          Added support for C++17 <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">byte</span></code>
+          type to receive methods of the <a class="link" href="detailed/utilities.html#log.detailed.utilities.ipc.reliable_message_queue" title="Reliable message queue">inter-process
+          message queue</a>.
+        </li>
+<li class="listitem">
+          On Windows, when building the library for Windows 8 or later, the library
+          will use <code class="computeroutput"><span class="identifier">nt62</span></code> tag in the
+          version namespace to denote the target OS ABI. For example, the version
+          namespace could be named as <code class="computeroutput"><span class="identifier">v2_mt_nt62</span></code>.
+          This name will be part of all symbols exported by the library. Use the
+          <code class="computeroutput"><span class="identifier">BOOST_USE_WINAPI_VERSION</span></code>
+          macro consistenly when building Boost and your code to request the minimum
+          target Windows version.
+        </li>
+<li class="listitem">
+          Improved performance of SSSE3 and AVX2 implementations of the <a class="link" href="detailed/utilities.html#log.detailed.utilities.manipulators.dump" title="Binary dump manipulator"><code class="computeroutput"><span class="identifier">dump</span></code></a> stream manipulator.
+        </li>
+<li class="listitem">
+          Added support for CMake build system. Only library build is supported at
+          this moment, Boost.Build is still used for running tests.
+        </li>
+</ul></div>
+<p>
+      <span class="bold"><strong>Bug fixes:</strong></span>
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Fixed a race condition on POSIX systems in <a class="link" href="detailed/utilities.html#log.detailed.utilities.ipc.reliable_message_queue" title="Reliable message queue"><code class="computeroutput"><span class="identifier">reliable_message_queue</span><span class="special">::</span><span class="identifier">open_or_create</span></code></a> or the equivalent
+          constructor. Multiple threads or processes calling <code class="computeroutput"><span class="identifier">open_or_create</span></code>
+          concurrently with sending or receiving messages from the same queue could
+          end up corrupting the queue contents and potentially crashing the process.
+          (<a href="https://github.com/boostorg/log/issues/162" target="_top">GH#162</a>)
+        </li>
+<li class="listitem">
+          Added a workaround for <code class="computeroutput"><span class="identifier">b2</span> <span class="identifier">install</span></code> failing on Windows because of
+          missing <code class="computeroutput"><span class="identifier">boost_log_setup</span></code>
+          library if <code class="computeroutput"><span class="identifier">BOOST_LOG_WITHOUT_SETTINGS_PARSERS</span></code>
+          is defined. (<a href="https://github.com/boostorg/log/issues/164" target="_top">GH#164</a>)
+        </li>
+</ul></div>
+<h4>
+<a name="log.changelog.h1"></a>
+      <span class="phrase"><a name="log.changelog.2_22__boost_1_77"></a></span><a class="link" href="changelog.html#log.changelog.2_22__boost_1_77">2.22,
+      Boost 1.77</a>
+    </h4>
+<p>
+      <span class="bold"><strong>Bug fixes:</strong></span>
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Fixed compilation on Linux for riscv32 target. (<a href="https://github.com/boostorg/log/pull/150" target="_top">PR#150</a>)
+        </li>
+<li class="listitem">
+          Setting <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">ios_base</span><span class="special">::</span><span class="identifier">app</span></code> file open mode in <a class="link" href="detailed/sink_backends.html#log.detailed.sink_backends.text_file" title="Text file backend"><code class="computeroutput"><span class="identifier">text_file_backend</span></code></a> now also implies
+          <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">ios_base</span><span class="special">::</span><span class="identifier">ate</span></code>. This fixes incorrect accounting
+          for the initial size of the log file opened for appending. (<a href="https://github.com/boostorg/log/issues/151" target="_top">GH#151</a>)
+        </li>
+</ul></div>
+<h4>
+<a name="log.changelog.h2"></a>
+      <span class="phrase"><a name="log.changelog.2_21__boost_1_76"></a></span><a class="link" href="changelog.html#log.changelog.2_21__boost_1_76">2.21,
+      Boost 1.76</a>
+    </h4>
+<p>
+      <span class="bold"><strong>Bug fixes:</strong></span>
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Corrected a formal race condition in the thread-safe log record queue implementation
+          used in the <code class="computeroutput"><span class="identifier">unbounded_fifo_queue</span></code>
+          policy of the <code class="computeroutput"><a class="link" href="../boost/log/sinks/asynchronous_sink.html" title="Class template asynchronous_sink">asynchronous_sink</a></code>
+          frontend. The race could be detected by TSAN, but it was not a real problem
+          on most current CPU architectures and compilers. (<a href="https://github.com/boostorg/log/issues/139" target="_top">GH#139</a>)
+        </li>
+<li class="listitem">
+          When copying a logger with a channel attribute (e.g. <code class="computeroutput"><span class="identifier">channel_logger</span></code>),
+          the channel attribute is now deep-copied from the original logger. This
+          means that modifying the channel in the new logger will no longer affect
+          the original logger.
+        </li>
+<li class="listitem">
+          Replaced the use of <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator</span><span class="special">&lt;</span><span class="keyword">void</span><span class="special">&gt;</span></code> in template parameters with a new tag
+          type <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">log</span><span class="special">::</span><span class="identifier">use_std_allocator</span></code> to silence libc++ warnings
+          about the former being deprecated in C++17 and later. The tag indicates
+          that the instantiated template should be using a specialization of <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator</span></code> internally to allocate dynamic
+          memory, so the change has no functional effect. (<a href="https://github.com/boostorg/log/issues/141" target="_top">GH#141</a>)
+        </li>
+<li class="listitem">
+          Boost.Log no longer defines <code class="computeroutput"><span class="identifier">__MSVCRT_VERSION__</span></code>
+          macro on MinGW and MinGW-w64. This macro is used to select the target C
+          runtime library. Defining this macro caused incompatibility with UCRT,
+          which is available as an option in recent MinGW-w64. (<a href="https://github.com/boostorg/log/pull/149" target="_top">PR#149</a>)
+        </li>
+</ul></div>
+<h4>
+<a name="log.changelog.h3"></a>
+      <span class="phrase"><a name="log.changelog.2_20__boost_1_75"></a></span><a class="link" href="changelog.html#log.changelog.2_20__boost_1_75">2.20,
+      Boost 1.75</a>
+    </h4>
+<p>
+      <span class="bold"><strong>Bug fixes:</strong></span>
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Corrected the file counter that would be used in <a class="link" href="detailed/sink_backends.html#log.detailed.sink_backends.text_file" title="Text file backend"><code class="computeroutput"><span class="identifier">text_file_backend</span></code></a> when generating
+          the target file name (based on the pattern set by <code class="computeroutput"><span class="identifier">set_target_file_name_pattern</span></code>
+          method) when the log file is rotated. The backend used to use the next
+          value of file counter, which could cause some counter values to be skipped
+          on application restarts. (<a href="https://github.com/boostorg/log/issues/125" target="_top">GH#125</a>)
+        </li>
+<li class="listitem">
+          Replaced a volatile version counter in <code class="computeroutput"><span class="identifier">basic_sink_frontend</span></code>
+          with an atomic. This should silence clang-cl warnings about deprecated
+          uses of <code class="computeroutput"><span class="keyword">volatile</span></code>. (<a href="https://github.com/boostorg/log/issues/128" target="_top">GH#128</a>)
+        </li>
+<li class="listitem">
+          In the <code class="computeroutput"><a class="link" href="../boost/log/sinks/asynchronous_sink.html" title="Class template asynchronous_sink">asynchronous_sink</a></code>
+          frontend, resolved a possible conflict between <code class="computeroutput"><span class="identifier">flush</span></code>
+          and <code class="computeroutput"><span class="identifier">run</span></code> methods, if <code class="computeroutput"><span class="identifier">run</span></code> is called from a user's thread instead
+          of the internal dedicated thread spawned by the frontend. <code class="computeroutput"><span class="identifier">run</span></code> and <code class="computeroutput"><span class="identifier">feed_records</span></code>
+          methods will wait for <code class="computeroutput"><span class="identifier">flush</span></code>
+          to complete, if one is in progress. Additionally, <code class="computeroutput"><span class="identifier">stop</span></code>
+          now explicitly doesn't wait for the ongoing record feeding operation to
+          complete. (<a href="https://github.com/boostorg/log/issues/131" target="_top">GH#131</a>)
+        </li>
+</ul></div>
+<h4>
+<a name="log.changelog.h4"></a>
+      <span class="phrase"><a name="log.changelog.2_19__boost_1_74"></a></span><a class="link" href="changelog.html#log.changelog.2_19__boost_1_74">2.19,
+      Boost 1.74</a>
+    </h4>
+<p>
+      <span class="bold"><strong>Bug fixes:</strong></span>
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          The <a class="link" href="detailed/sink_backends.html#log.detailed.sink_backends.syslog" title="Syslog backend">syslog</a> sink
+          backend now verifies the IP version of the local and target addresses set
+          by user. The addresses must have the same IP version as was specified in
+          the <code class="computeroutput"><span class="identifier">ip_version</span></code> named parameter
+          on the sink backend construction (by default, IPv4 is assumed). When an
+          address is obtained as a result of host name resolution, only addresses
+          with matching IP version are considered. (<a href="https://github.com/boostorg/log/issues/119" target="_top">GH#119</a>)
+        </li></ul></div>
+<p>
+      <span class="bold"><strong>New Features:</strong></span>
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Move constructors and assignment operators of various components were marked
+          <code class="computeroutput"><span class="keyword">noexcept</span></code>.
+        </li>
+<li class="listitem">
+          Added a new <a class="link" href="detailed/utilities.html#log.detailed.utilities.manipulators.range" title="Range manipulator"><code class="computeroutput"><span class="identifier">range_manip</span></code></a> stream manipulator
+          that can be used for outputting elements of a range, optionally separated
+          by a delimiter.
+        </li>
+<li class="listitem">
+          Added a new <a class="link" href="detailed/utilities.html#log.detailed.utilities.manipulators.tuple" title="Tuple manipulator"><code class="computeroutput"><span class="identifier">tuple_manip</span></code></a> stream manipulator
+          that can be used for outputting elements of a tuple or any other heterogeneous
+          sequence, optionally separated by a delimiter.
+        </li>
+<li class="listitem">
+          Added a new <a class="link" href="detailed/utilities.html#log.detailed.utilities.manipulators.optional" title="Optional manipulator"><code class="computeroutput"><span class="identifier">optional_manip</span></code></a> stream manipulator
+          that can be used for outputting optionally present values.
+        </li>
+</ul></div>
+<h4>
+<a name="log.changelog.h5"></a>
+      <span class="phrase"><a name="log.changelog.2_18__boost_1_73"></a></span><a class="link" href="changelog.html#log.changelog.2_18__boost_1_73">2.18,
+      Boost 1.73</a>
+    </h4>
+<p>
+      <span class="bold"><strong>New Features:</strong></span>
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Default sink used in trivial logging, when no sinks are registered in the
+          logging core, now automatically flushes output after each log record. (<a href="https://github.com/boostorg/log/issues/103" target="_top">GH#103</a>)
+        </li>
+<li class="listitem">
+          <code class="computeroutput"><span class="identifier">core</span><span class="special">::</span><span class="identifier">flush</span></code> now performs a flush on the default
+          sink used for trivial logging, when no sinks are registered.
+        </li>
+</ul></div>
+<p>
+      <span class="bold"><strong>Bug fixes:</strong></span>
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Added a workaround for some syslog API implementations (e.g. glibc), which
+          do not save the application identification string in <code class="computeroutput"><span class="identifier">openlog</span></code>
+          call. Such implementations could access already freed memory on each <code class="computeroutput"><span class="identifier">syslog</span></code> call, resulting in undefined behavior.
+          (<a href="https://github.com/boostorg/log/issues/97" target="_top">GH#97</a>)
+        </li>
+<li class="listitem">
+          Fixed that log file rotation on a specific day of month (e.g. <code class="computeroutput"><span class="identifier">rotation_at_time_point</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">gregorian</span><span class="special">::</span><span class="identifier">greg_day</span><span class="special">(</span><span class="number">1</span><span class="special">))</span></code>) could
+          be silently ignored and not happen. (<a href="https://github.com/boostorg/log/issues/98" target="_top">GH#98</a>)
+        </li>
+<li class="listitem">
+          Fixed that <a class="link" href="detailed/sink_backends.html#log.detailed.sink_backends.text_file" title="Text file backend"><code class="computeroutput"><span class="identifier">text_file_backend</span></code></a><code class="computeroutput"><span class="special">::</span><span class="identifier">rotate_file</span></code>
+          could throw if there were no log records written yet and target file name
+          pattern was set. The method would attempt to rename a missing file, which
+          would result in an exception. Note that <code class="computeroutput"><span class="identifier">rotate_file</span></code>
+          may still throw because of a missing log file, if the file being rotated
+          is removed by a third party.
+        </li>
+<li class="listitem">
+          Ported various components of the library to <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator_traits</span></code>
+          to improve compatibility with C++20 allocators.
+        </li>
+<li class="listitem">
+          Fixed compilation errors when building in MSYS2 Cygwin environment. (<a href="https://github.com/boostorg/log/issues/102" target="_top">GH#102</a>)
+        </li>
+</ul></div>
+<h4>
+<a name="log.changelog.h6"></a>
       <span class="phrase"><a name="log.changelog.2_17__boost_1_71"></a></span><a class="link" href="changelog.html#log.changelog.2_17__boost_1_71">2.17,
       Boost 1.71</a>
     </h4>
@@ -84,7 +314,7 @@
           and <code class="computeroutput"><span class="identifier">format</span></code> named parameters
           to sink constructors and <a class="link" href="detailed/utilities.html#log.detailed.utilities.setup.convenience" title="Convenience functions">convenience
           functions</a> for initializing sinks. For example, it is now possible
-          to specify C++11 lambda functions directly in these parameters. ( <a href="https://github.com/boostorg/log/issues/63" target="_top">GH#63</a>)
+          to specify C++11 lambda functions directly in these parameters. (<a href="https://github.com/boostorg/log/issues/63" target="_top">GH#63</a>)
         </li>
 <li class="listitem">
           In the default filter and formatter factories used in <a class="link" href="detailed/utilities.html#log.detailed.utilities.setup.filter_formatter" title="Filter and formatter parsers">filter
@@ -109,7 +339,7 @@
           (for example, a file counter), the <code class="computeroutput"><span class="identifier">scan_for_files</span></code>
           method would not find files matching that pattern in the target storage,
           leaving them unmanaged. In particular, such files would not be deleted
-          to free target storage. ( <a href="https://github.com/boostorg/log/issues/78" target="_top">GH#78</a>)
+          to free target storage. (<a href="https://github.com/boostorg/log/issues/78" target="_top">GH#78</a>)
         </li>
 <li class="listitem">
           Updated <code class="computeroutput"><a class="link" href="../boost/log/basic_formatting_ostream.html" title="Class template basic_formatting_ostream">basic_formatting_ostream</a></code>
@@ -117,11 +347,11 @@
           to make it possible to overload stream output operators for pointers to
           user-defined types. User-defined <code class="computeroutput"><span class="keyword">operator</span><span class="special">&lt;&lt;</span></code> overloads taking <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">basic_ostream</span></code> and a pointer argument
           should now be picked up by the compiler when the pointer is being written
-          to one of Boost.Log streams. ( <a href="https://github.com/boostorg/log/issues/84" target="_top">GH#84</a>)
+          to one of Boost.Log streams. (<a href="https://github.com/boostorg/log/issues/84" target="_top">GH#84</a>)
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h1"></a>
+<a name="log.changelog.h7"></a>
       <span class="phrase"><a name="log.changelog.2_16__boost_1_70"></a></span><a class="link" href="changelog.html#log.changelog.2_16__boost_1_70">2.16,
       Boost 1.70</a>
     </h4>
@@ -145,7 +375,7 @@
           so that different rotated files don't conflict in the target storage.
         </li></ul></div>
 <h4>
-<a name="log.changelog.h2"></a>
+<a name="log.changelog.h8"></a>
       <span class="phrase"><a name="log.changelog.2_15__boost_1_69"></a></span><a class="link" href="changelog.html#log.changelog.2_15__boost_1_69">2.15,
       Boost 1.69</a>
     </h4>
@@ -154,7 +384,7 @@
     </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
           Updated syslog sink backend to avoid using deprecated <a href="http://www.boost.org/doc/libs/release/doc/html/boost_asio.html" target="_top">Boost.ASIO</a>
-          interfaces. ( <a href="https://github.com/boostorg/log/issues/59" target="_top">GH#59</a>)
+          interfaces. (<a href="https://github.com/boostorg/log/issues/59" target="_top">GH#59</a>)
         </li></ul></div>
 <p>
       <span class="bold"><strong>Bug fixes:</strong></span>
@@ -171,7 +401,7 @@
           to write log files into directories different from the target storage directory.
         </li></ul></div>
 <h4>
-<a name="log.changelog.h3"></a>
+<a name="log.changelog.h9"></a>
       <span class="phrase"><a name="log.changelog.2_14__boost_1_68"></a></span><a class="link" href="changelog.html#log.changelog.2_14__boost_1_68">2.14,
       Boost 1.68</a>
     </h4>
@@ -179,10 +409,10 @@
       <span class="bold"><strong>General changes:</strong></span>
     </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
-          Improved support for VxWorks. ( <a href="https://github.com/boostorg/log/pull/39" target="_top">PR#39</a>)
+          Improved support for VxWorks. (<a href="https://github.com/boostorg/log/pull/39" target="_top">PR#39</a>)
         </li></ul></div>
 <h4>
-<a name="log.changelog.h4"></a>
+<a name="log.changelog.h10"></a>
       <span class="phrase"><a name="log.changelog.2_13__boost_1_67"></a></span><a class="link" href="changelog.html#log.changelog.2_13__boost_1_67">2.13,
       Boost 1.67</a>
     </h4>
@@ -202,7 +432,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h5"></a>
+<a name="log.changelog.h11"></a>
       <span class="phrase"><a name="log.changelog.2_12__boost_1_66"></a></span><a class="link" href="changelog.html#log.changelog.2_12__boost_1_66">2.12,
       Boost 1.66</a>
     </h4>
@@ -216,7 +446,7 @@
           named log files in the target directory after the user's application restart.
         </li></ul></div>
 <h4>
-<a name="log.changelog.h6"></a>
+<a name="log.changelog.h12"></a>
       <span class="phrase"><a name="log.changelog.2_11__boost_1_65"></a></span><a class="link" href="changelog.html#log.changelog.2_11__boost_1_65">2.11,
       Boost 1.65</a>
     </h4>
@@ -229,7 +459,7 @@
           Solaris.
         </li></ul></div>
 <h4>
-<a name="log.changelog.h7"></a>
+<a name="log.changelog.h13"></a>
       <span class="phrase"><a name="log.changelog.2_10__boost_1_63"></a></span><a class="link" href="changelog.html#log.changelog.2_10__boost_1_63">2.10,
       Boost 1.63</a>
     </h4>
@@ -267,10 +497,10 @@
 <li class="listitem">
           Streaming operators now take scalar types and enums by value. This allows
           to output static constants and bitfields directly into formatting stream
-          and record stream. ( <a href="https://svn.boost.org/trac/boost/ticket/11998" target="_top">#11998</a>)
+          and record stream. (<a href="https://svn.boost.org/trac/boost/ticket/11998" target="_top">#11998</a>)
         </li>
 <li class="listitem">
-          Fixed auto-detection of native syslog API. ( <a href="https://svn.boost.org/trac/boost/ticket/12600" target="_top">#12600</a>)
+          Fixed auto-detection of native syslog API. (<a href="https://svn.boost.org/trac/boost/ticket/12600" target="_top">#12600</a>)
         </li>
 <li class="listitem">
           In UDP socket based syslog backend implementation, changed the syslog message
@@ -282,7 +512,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h8"></a>
+<a name="log.changelog.h14"></a>
       <span class="phrase"><a name="log.changelog.2_9__boost_1_62"></a></span><a class="link" href="changelog.html#log.changelog.2_9__boost_1_62">2.9,
       Boost 1.62</a>
     </h4>
@@ -310,10 +540,10 @@
     </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
           Fixed that logging streams could retain formatting settings across different
-          log records. ( <a href="https://svn.boost.org/trac/boost/ticket/12178" target="_top">#12178</a>)
+          log records. (<a href="https://svn.boost.org/trac/boost/ticket/12178" target="_top">#12178</a>)
         </li></ul></div>
 <h4>
-<a name="log.changelog.h9"></a>
+<a name="log.changelog.h15"></a>
       <span class="phrase"><a name="log.changelog.2_8__boost_1_61"></a></span><a class="link" href="changelog.html#log.changelog.2_8__boost_1_61">2.8,
       Boost 1.61</a>
     </h4>
@@ -332,7 +562,7 @@
           Added support for limiting the number of stored log files in the target
           directory of the file collector. The limit can be specified in the <code class="computeroutput"><span class="identifier">max_files</span></code> named parameter to the <code class="computeroutput"><span class="identifier">make_collector</span></code> or <code class="computeroutput"><span class="identifier">add_file_log</span></code>
           calls or as the "MaxFiles" parameter for the sink in the settings
-          file. Thanks to Erich Keane for the patch. ( <a href="https://svn.boost.org/trac/boost/ticket/8746" target="_top">#8746</a>)
+          file. Thanks to Erich Keane for the patch. (<a href="https://svn.boost.org/trac/boost/ticket/8746" target="_top">#8746</a>)
         </li>
 </ul></div>
 <p>
@@ -347,11 +577,11 @@
         </li>
 <li class="listitem">
           Added a workaround for MSVC-10 and 11 generating broken code for formatters
-          in some cases. ( <a href="https://svn.boost.org/trac/boost/ticket/12025" target="_top">#12025</a>)
+          in some cases. (<a href="https://svn.boost.org/trac/boost/ticket/12025" target="_top">#12025</a>)
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h10"></a>
+<a name="log.changelog.h16"></a>
       <span class="phrase"><a name="log.changelog.2_7__boost_1_60"></a></span><a class="link" href="changelog.html#log.changelog.2_7__boost_1_60">2.7,
       Boost 1.60</a>
     </h4>
@@ -384,22 +614,22 @@
     </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-          Fixed compilation for Android using Google NDK. ( <a href="https://svn.boost.org/trac/boost/ticket/11559" target="_top">#11559</a>)
+          Fixed compilation for Android using Google NDK. (<a href="https://svn.boost.org/trac/boost/ticket/11559" target="_top">#11559</a>)
         </li>
 <li class="listitem">
           Fixed compilation of some logging statements, where the first object to
           be put into stream is not directly supported by <code class="computeroutput"><span class="identifier">formatting_ostream</span></code>.
-          ( <a href="https://svn.boost.org/trac/boost/ticket/11549" target="_top">#11549</a>)
+          (<a href="https://svn.boost.org/trac/boost/ticket/11549" target="_top">#11549</a>)
         </li>
 <li class="listitem">
           Added a workaround for Solaris Studio 12.4, which should fix the compilation
           of <code class="computeroutput"><span class="identifier">formatting_ostream</span></code>.
-          ( <a href="https://svn.boost.org/trac/boost/ticket/11545" target="_top">#11545</a>)
+          (<a href="https://svn.boost.org/trac/boost/ticket/11545" target="_top">#11545</a>)
         </li>
 <li class="listitem">
           Fixed compilation when native <code class="computeroutput"><span class="keyword">wchar_t</span></code>
           type is disabled. Added a note of discouragement to the <a class="link" href="installation/config.html" title="Configuring and building the library">configuration</a>
-          section. ( <a href="https://svn.boost.org/trac/boost/ticket/11541" target="_top">#11541</a>)
+          section. (<a href="https://svn.boost.org/trac/boost/ticket/11541" target="_top">#11541</a>)
         </li>
 <li class="listitem">
           Fixed exporting symbols from the <code class="computeroutput"><span class="identifier">boost_log_setup</span></code>
@@ -415,11 +645,11 @@
 <li class="listitem">
           Added a workaround for incorrect file name generation in <a class="link" href="detailed/sink_backends.html#log.detailed.sink_backends.text_file" title="Text file backend">text
           file sink backend</a>, when the file name contains date/time placeholders.
-          ( <a href="https://svn.boost.org/trac/boost/ticket/11691" target="_top">#11691</a>)
+          (<a href="https://svn.boost.org/trac/boost/ticket/11691" target="_top">#11691</a>)
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h11"></a>
+<a name="log.changelog.h17"></a>
       <span class="phrase"><a name="log.changelog.2_6__boost_1_59"></a></span><a class="link" href="changelog.html#log.changelog.2_6__boost_1_59">2.6,
       Boost 1.59</a>
     </h4>
@@ -477,20 +707,19 @@
           <code class="computeroutput"><span class="identifier">boost</span><span class="special">/</span><span class="identifier">log</span><span class="special">/</span><span class="identifier">utility</span><span class="special">/</span><span class="identifier">explicit_operator_bool</span><span class="special">.</span><span class="identifier">hpp</span></code>, <code class="computeroutput"><span class="identifier">boost</span><span class="special">/</span><span class="identifier">log</span><span class="special">/</span><span class="identifier">utility</span><span class="special">/</span><span class="identifier">empty_deleter</span><span class="special">.</span><span class="identifier">hpp</span></code>.
         </li>
 <li class="listitem">
-          Added support for building the library for OpenBSD. ( <a href="https://svn.boost.org/trac/boost/ticket/11446" target="_top">#11446</a>)
+          Added support for building the library for OpenBSD. (<a href="https://svn.boost.org/trac/boost/ticket/11446" target="_top">#11446</a>)
         </li>
 <li class="listitem">
           Improved internal implementation of the event synchronization primitive
           used for asynchronous logging. The updated implementation relies on <a href="http://www.boost.org/doc/libs/release/doc/html/atomic.html" target="_top">Boost.Atomic</a>
           for atomic operations which provides better portability. On Linux the implementation
-          uses futexes directly. ( <a href="https://svn.boost.org/trac/boost/ticket/11398" target="_top">#11398</a>)
+          uses futexes directly. (<a href="https://svn.boost.org/trac/boost/ticket/11398" target="_top">#11398</a>)
         </li>
 <li class="listitem">
           Changed the format of dates produced by the default formatter constructed
           from strings (e.g. when initializing the library from a config file). The
           new format displays months as numbers instead of abbreviated names. This
-          allows for easier log record ordering when post-processing log files. (
-          <a href="https://svn.boost.org/trac/boost/ticket/8839" target="_top">#8839</a>)
+          allows for easier log record ordering when post-processing log files. (<a href="https://svn.boost.org/trac/boost/ticket/8839" target="_top">#8839</a>)
         </li>
 </ul></div>
 <p>
@@ -502,14 +731,14 @@
           constructor in some cases. The inserted elements could have made some previously
           inserted elements not findable. The constructor from <code class="computeroutput"><span class="identifier">attribute_set</span></code>s
           could leave some of the attribute values acquired from attributes not findable.
-          ( <a href="https://svn.boost.org/trac/boost/ticket/11190" target="_top">#11190</a>)
+          (<a href="https://svn.boost.org/trac/boost/ticket/11190" target="_top">#11190</a>)
         </li>
 <li class="listitem">
-          Added missing function template exports. ( <a href="https://svn.boost.org/trac/boost/ticket/11495" target="_top">#11495</a>)
+          Added missing function template exports. (<a href="https://svn.boost.org/trac/boost/ticket/11495" target="_top">#11495</a>)
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h12"></a>
+<a name="log.changelog.h18"></a>
       <span class="phrase"><a name="log.changelog.2_5__boost_1_58"></a></span><a class="link" href="changelog.html#log.changelog.2_5__boost_1_58">2.5,
       Boost 1.58</a>
     </h4>
@@ -524,7 +753,7 @@
         </li>
 <li class="listitem">
           Fixed process id formatting. Process ids could have misplaced filler zeros.
-          ( <a href="https://svn.boost.org/trac/boost/ticket/10926" target="_top">#10926</a>)
+          (<a href="https://svn.boost.org/trac/boost/ticket/10926" target="_top">#10926</a>)
         </li>
 <li class="listitem">
           Fixed build failure on GNU Hurd.
@@ -533,19 +762,19 @@
           Fixed incorrect behavior of <a class="link" href="detailed/sink_backends.html#log.detailed.sink_backends.text_file" title="Text file backend">text
           file sink backend</a> in case if free space on the file system gets
           exhausted. The sink will no longer create lots of empty files in attempt
-          to recover. ( <a href="https://svn.boost.org/trac/boost/ticket/11016" target="_top">#11016</a>)
+          to recover. (<a href="https://svn.boost.org/trac/boost/ticket/11016" target="_top">#11016</a>)
         </li>
 <li class="listitem">
           Fixed incorrect behavior of <code class="computeroutput"><span class="identifier">attribute_set</span><span class="special">::</span><span class="identifier">insert</span><span class="special">()</span></code> in some cases. The inserted elements
-          could have made some previously inserted elements not findable. ( <a href="https://svn.boost.org/trac/boost/ticket/11106" target="_top">#11106</a>)
+          could have made some previously inserted elements not findable. (<a href="https://svn.boost.org/trac/boost/ticket/11106" target="_top">#11106</a>)
         </li>
 <li class="listitem">
           Fixed incorrect behavior of <code class="computeroutput"><span class="identifier">attribute_value_set</span><span class="special">::</span><span class="identifier">size</span><span class="special">()</span></code> if a large number of attribute values
-          are inserted into the set. ( <a href="https://svn.boost.org/trac/boost/ticket/11148" target="_top">#11148</a>)
+          are inserted into the set. (<a href="https://svn.boost.org/trac/boost/ticket/11148" target="_top">#11148</a>)
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h13"></a>
+<a name="log.changelog.h19"></a>
       <span class="phrase"><a name="log.changelog.2_4__boost_1_57"></a></span><a class="link" href="changelog.html#log.changelog.2_4__boost_1_57">2.4,
       Boost 1.57</a>
     </h4>
@@ -561,15 +790,15 @@
           The exceptions thrown by asynchronous sinks created as a result of <a class="link" href="detailed/utilities.html#log.detailed.utilities.setup.settings" title="Library initialization from a settings container">initialization from settings</a>
           are now silently suppressed instead of terminating the application. If
           special error handling is needed, it is recommended to <a class="link" href="extension/settings.html#log.extension.settings.sinks" title="Adding support for user-defined sinks">register
-          a user-defined sink factory</a>. ( <a href="https://svn.boost.org/trac/boost/ticket/10638" target="_top">#10638</a>)
+          a user-defined sink factory</a>. (<a href="https://svn.boost.org/trac/boost/ticket/10638" target="_top">#10638</a>)
         </li>
 <li class="listitem">
           Corrected syslog message composition on MSVC, if message length exceeds
-          1025 bytes. ( <a href="https://svn.boost.org/trac/boost/ticket/10700" target="_top">#10700</a>)
+          1025 bytes. (<a href="https://svn.boost.org/trac/boost/ticket/10700" target="_top">#10700</a>)
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h14"></a>
+<a name="log.changelog.h20"></a>
       <span class="phrase"><a name="log.changelog.2_3__boost_1_56"></a></span><a class="link" href="changelog.html#log.changelog.2_3__boost_1_56">2.3,
       Boost 1.56</a>
     </h4>
@@ -590,18 +819,18 @@
         </li>
 <li class="listitem">
           Added operators for non-const object output to <code class="computeroutput"><a class="link" href="../boost/log/basic_formatting_ostream.html" title="Class template basic_formatting_ostream">basic_formatting_ostream</a></code>.
-          ( <a href="https://svn.boost.org/trac/boost/ticket/9389" target="_top">#9389</a>)
+          (<a href="https://svn.boost.org/trac/boost/ticket/9389" target="_top">#9389</a>)
         </li>
 <li class="listitem">
           Added new format flags "%c", "%C" and "%F"
           to the <a class="link" href="detailed/expressions.html#log.detailed.expressions.formatters.named_scope" title="Named scope formatter">named
           scope formatter</a>. The new flags allow putting function names and
-          source file names of named scopes into the formatted strings. ( <a href="https://svn.boost.org/trac/boost/ticket/9263" target="_top">#9263</a>)
+          source file names of named scopes into the formatted strings. (<a href="https://svn.boost.org/trac/boost/ticket/9263" target="_top">#9263</a>)
         </li>
 <li class="listitem">
           Added support for incomplete and empty markers to the <a class="link" href="detailed/expressions.html#log.detailed.expressions.formatters.named_scope" title="Named scope formatter">named
           scope formatter</a>. The markers can be used to customize the scope
-          list presentation when the list is empty or limited by the <code class="computeroutput"><span class="identifier">depth</span></code> named parameter. ( <a href="https://svn.boost.org/trac/boost/ticket/9123" target="_top">#9123</a>)
+          list presentation when the list is empty or limited by the <code class="computeroutput"><span class="identifier">depth</span></code> named parameter. (<a href="https://svn.boost.org/trac/boost/ticket/9123" target="_top">#9123</a>)
         </li>
 <li class="listitem">
           The default presentation for incomplete named scope lists has changed.
@@ -660,12 +889,11 @@
         </li>
 <li class="listitem">
           Added a workaround for MSVC bug that caused the <a class="link" href="detailed/utilities.html#log.detailed.utilities.manipulators.add_value" title="Attribute value attaching manipulator"><code class="computeroutput"><span class="identifier">add_value</span></code></a> manipulator produce
-          garbage attribute values when using with immediate integer constants. (
-          <a href="https://svn.boost.org/trac/boost/ticket/9320" target="_top">#9320</a>)
+          garbage attribute values when using with immediate integer constants. (<a href="https://svn.boost.org/trac/boost/ticket/9320" target="_top">#9320</a>)
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h15"></a>
+<a name="log.changelog.h21"></a>
       <span class="phrase"><a name="log.changelog.2_2__boost_1_55"></a></span><a class="link" href="changelog.html#log.changelog.2_2__boost_1_55">2.2,
       Boost 1.55</a>
     </h4>
@@ -728,7 +956,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h16"></a>
+<a name="log.changelog.h22"></a>
       <span class="phrase"><a name="log.changelog.2_1__boost_1_54"></a></span><a class="link" href="changelog.html#log.changelog.2_1__boost_1_54">2.1,
       Boost 1.54</a>
     </h4>
@@ -775,7 +1003,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h17"></a>
+<a name="log.changelog.h23"></a>
       <span class="phrase"><a name="log.changelog.2_0__13_april_2013"></a></span><a class="link" href="changelog.html#log.changelog.2_0__13_april_2013">2.0,
       13 April 2013</a>
     </h4>
@@ -1150,7 +1378,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h18"></a>
+<a name="log.changelog.h24"></a>
       <span class="phrase"><a name="log.changelog.1_1__02_december_2011"></a></span><a class="link" href="changelog.html#log.changelog.1_1__02_december_2011">1.1,
       02 December 2011</a>
     </h4>
@@ -1170,7 +1398,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h19"></a>
+<a name="log.changelog.h25"></a>
       <span class="phrase"><a name="log.changelog.1_0__09_may_2010"></a></span><a class="link" href="changelog.html#log.changelog.1_0__09_may_2010">1.0,
       09 May 2010</a>
     </h4>
@@ -1210,7 +1438,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h20"></a>
+<a name="log.changelog.h26"></a>
       <span class="phrase"><a name="log.changelog.release_candidate_4__08_jan_2010"></a></span><a class="link" href="changelog.html#log.changelog.release_candidate_4__08_jan_2010">Release
       Candidate 4, 08 Jan 2010</a>
     </h4>
@@ -1305,7 +1533,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h21"></a>
+<a name="log.changelog.h27"></a>
       <span class="phrase"><a name="log.changelog.release_candidate_3__08_feb_2009"></a></span><a class="link" href="changelog.html#log.changelog.release_candidate_3__08_feb_2009">Release
       Candidate 3, 08 Feb 2009</a>
     </h4>
@@ -1339,7 +1567,7 @@
         </li>
 </ul></div>
 <h4>
-<a name="log.changelog.h22"></a>
+<a name="log.changelog.h28"></a>
       <span class="phrase"><a name="log.changelog.release_candidate_2"></a></span><a class="link" href="changelog.html#log.changelog.release_candidate_2">Release
       Candidate 2</a>
     </h4>
@@ -1349,7 +1577,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2007-2016 Andrey Semashev<p>
+<td align="right"><div class="copyright-footer">Copyright © 2007-2021 Andrey Semashev<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>).
       </p>

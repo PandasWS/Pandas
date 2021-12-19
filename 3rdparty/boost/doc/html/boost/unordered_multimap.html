@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class template unordered_multimap</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,7 +27,7 @@
 <a name="boost.unordered_multimap"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Class template unordered_multimap</span></h2>
-<p>boost::unordered_multimap &#8212; 
+<p>boost::unordered_multimap — 
             An unordered associative container that associates keys with another value. The same key can be stored multiple times.
           </p>
 </div>
@@ -59,120 +59,120 @@
   <span class="keyword">typedef</span> <span class="emphasis"><em><span class="identifier">implementation</span><span class="special">-</span><span class="identifier">defined</span></em></span>                 <a class="link" href="unordered_multimap.html#boost.unordered_multimap.node_type"><span class="identifier">node_type</span></a><span class="special">;</span>           
 
   <span class="comment">// <a class="link" href="unordered_multimap.html#boost.unordered_multimapconstruct-copy-destruct">construct/copy/destruct</a></span>
-  <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_21-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">explicit</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_22-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">,</span> <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">hasher</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
+  <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_21-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">explicit</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_22-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">,</span> <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">hasher</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
                               <span class="identifier">key_equal</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">key_equal</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
                               <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">allocator_type</span><span class="special">(</span><span class="special">)</span><span class="special">)</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <a class="link" href="../InputIterator.html" title="Concept InputIterator">InputIterator</a><span class="special">&gt;</span> 
-    <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_23-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">InputIterator</span><span class="special">,</span> 
+    <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_23-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">InputIterator</span><span class="special">,</span> 
                        <span class="identifier">size_type</span> <span class="special">=</span> <span class="emphasis"><em><span class="identifier">implementation</span><span class="special">-</span><span class="identifier">defined</span></em></span><span class="special">,</span> 
                        <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">hasher</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
                        <span class="identifier">key_equal</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">key_equal</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
                        <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">allocator_type</span><span class="special">(</span><span class="special">)</span><span class="special">)</span><span class="special">;</span>
-  <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_24-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_25-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">explicit</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_26-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_27-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> <span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_28-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span><span class="special">,</span> <span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_29-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span><span class="special">,</span> 
+  <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_24-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_25-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">explicit</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_26-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_27-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> <span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_28-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span><span class="special">,</span> <span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_29-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span><span class="special">,</span> 
                      <span class="identifier">size_type</span> <span class="special">=</span> <span class="emphasis"><em><span class="identifier">implementation</span><span class="special">-</span><span class="identifier">defined</span></em></span><span class="special">,</span> 
                      <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">hasher</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
                      <span class="identifier">key_equal</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">key_equal</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
                      <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">allocator_type</span><span class="special">(</span><span class="special">)</span><span class="special">)</span><span class="special">;</span>
-  <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_30-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">,</span> <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_31-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">,</span> <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_30-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">,</span> <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_31-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">,</span> <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <a class="link" href="../InputIterator.html" title="Concept InputIterator">InputIterator</a><span class="special">&gt;</span> 
-    <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_32-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">size_type</span><span class="special">,</span> 
+    <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_32-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">size_type</span><span class="special">,</span> 
                        <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <a class="link" href="../InputIterator.html" title="Concept InputIterator">InputIterator</a><span class="special">&gt;</span> 
-    <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_33-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">size_type</span><span class="special">,</span> <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> 
+    <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_33-bb"><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">size_type</span><span class="special">,</span> <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> 
                        <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_34-bb"><span class="special">~</span><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_35-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_36-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_37-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">allocator_type</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_38-bb"><span class="identifier">get_allocator</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_34-bb"><span class="special">~</span><span class="identifier">unordered_multimap</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_35-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_36-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_37-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">allocator_type</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_38-bb"><span class="identifier">get_allocator</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_39-bb">size and capacity</a></span>
-  <span class="keyword">bool</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_39_1-bb"><span class="identifier">empty</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_39_2-bb"><span class="identifier">size</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_39_3-bb"><span class="identifier">max_size</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_39-bb">size and capacity</a></span>
+  <span class="keyword">bool</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_39_1-bb"><span class="identifier">empty</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_39_2-bb"><span class="identifier">size</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_39_3-bb"><span class="identifier">max_size</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_40-bb">iterators</a></span>
-  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_40_1_1-bb"><span class="identifier">begin</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">const_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_40_1_2-bb"><span class="identifier">begin</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_40_2_1-bb"><span class="identifier">end</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">const_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_40_2_2-bb"><span class="identifier">end</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">const_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_40_3-bb"><span class="identifier">cbegin</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">const_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_40_4-bb"><span class="identifier">cend</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_40-bb">iterators</a></span>
+  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_40_1_1-bb"><span class="identifier">begin</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">const_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_40_1_2-bb"><span class="identifier">begin</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_40_2_1-bb"><span class="identifier">end</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">const_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_40_2_2-bb"><span class="identifier">end</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">const_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_40_3-bb"><span class="identifier">cbegin</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">const_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_40_4-bb"><span class="identifier">cend</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41-bb">modifiers</a></span>
-  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span><span class="special">...</span> Args<span class="special">&gt;</span> <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_1-bb"><span class="identifier">emplace</span></a><span class="special">(</span><span class="identifier">Args</span><span class="special">&amp;&amp;</span><span class="special">...</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span><span class="special">...</span> Args<span class="special">&gt;</span> <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_2-bb"><span class="identifier">emplace_hint</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">Args</span><span class="special">&amp;&amp;</span><span class="special">...</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_3-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">value_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_4-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">value_type</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_5-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">value_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_6-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">value_type</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <a class="link" href="../InputIterator.html" title="Concept InputIterator">InputIterator</a><span class="special">&gt;</span> <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_7-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">InputIterator</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_8-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_9-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">node_type</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_10-bb"><span class="identifier">extract</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">node_type</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_11-bb"><span class="identifier">extract</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_12-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">node_type</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_13-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">node_type</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_14-bb"><span class="identifier">erase</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_15-bb"><span class="identifier">erase</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_16-bb"><span class="identifier">erase</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">const_iterator</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_17-bb"><span class="identifier">quick_erase</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_18-bb"><span class="identifier">erase_return_void</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_19-bb"><span class="identifier">clear</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_20-bb"><span class="identifier">swap</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41-bb">modifiers</a></span>
+  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span><span class="special">...</span> Args<span class="special">&gt;</span> <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_1-bb"><span class="identifier">emplace</span></a><span class="special">(</span><span class="identifier">Args</span><span class="special">&amp;&amp;</span><span class="special">...</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span><span class="special">...</span> Args<span class="special">&gt;</span> <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_2-bb"><span class="identifier">emplace_hint</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">Args</span><span class="special">&amp;&amp;</span><span class="special">...</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_3-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">value_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_4-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">value_type</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_5-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">value_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_6-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">value_type</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <a class="link" href="../InputIterator.html" title="Concept InputIterator">InputIterator</a><span class="special">&gt;</span> <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_7-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">InputIterator</span><span class="special">,</span> <span class="identifier">InputIterator</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_8-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_9-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">node_type</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_10-bb"><span class="identifier">extract</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">node_type</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_11-bb"><span class="identifier">extract</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_12-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">node_type</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_13-bb"><span class="identifier">insert</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">node_type</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_14-bb"><span class="identifier">erase</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_15-bb"><span class="identifier">erase</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_16-bb"><span class="identifier">erase</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">const_iterator</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_17-bb"><span class="identifier">quick_erase</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_18-bb"><span class="identifier">erase_return_void</span></a><span class="special">(</span><span class="identifier">const_iterator</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_19-bb"><span class="identifier">clear</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_20-bb"><span class="identifier">swap</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> H2<span class="special">,</span> <span class="keyword">typename</span> P2<span class="special">&gt;</span> 
-     <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_21-bb"><span class="identifier">merge</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">H2</span><span class="special">,</span> <span class="identifier">P2</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+     <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_21-bb"><span class="identifier">merge</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">H2</span><span class="special">,</span> <span class="identifier">P2</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> H2<span class="special">,</span> <span class="keyword">typename</span> P2<span class="special">&gt;</span> 
-     <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_41_22-bb"><span class="identifier">merge</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">H2</span><span class="special">,</span> <span class="identifier">P2</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+     <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_41_22-bb"><span class="identifier">merge</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">H2</span><span class="special">,</span> <span class="identifier">P2</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span><span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_42-bb">observers</a></span>
-  <span class="identifier">hasher</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_42_1-bb"><span class="identifier">hash_function</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">key_equal</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_42_2-bb"><span class="identifier">key_eq</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_42-bb">observers</a></span>
+  <span class="identifier">hasher</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_42_1-bb"><span class="identifier">hash_function</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">key_equal</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_42_2-bb"><span class="identifier">key_eq</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_43-bb">lookup</a></span>
-  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_43_1_1-bb"><span class="identifier">find</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">const_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_43_1_2-bb"><span class="identifier">find</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_43-bb">lookup</a></span>
+  <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_43_1_1-bb"><span class="identifier">find</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">const_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_43_1_2-bb"><span class="identifier">find</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> CompatibleKey<span class="special">,</span> <span class="keyword">typename</span> CompatibleHash<span class="special">,</span> 
            <span class="keyword">typename</span> CompatiblePredicate<span class="special">&gt;</span> 
-    <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_43_1_3-bb"><span class="identifier">find</span></a><span class="special">(</span><span class="identifier">CompatibleKey</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> <span class="identifier">CompatibleHash</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> 
+    <span class="identifier">iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_43_1_3-bb"><span class="identifier">find</span></a><span class="special">(</span><span class="identifier">CompatibleKey</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> <span class="identifier">CompatibleHash</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> 
                   <span class="identifier">CompatiblePredicate</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> CompatibleKey<span class="special">,</span> <span class="keyword">typename</span> CompatibleHash<span class="special">,</span> 
            <span class="keyword">typename</span> CompatiblePredicate<span class="special">&gt;</span> 
     <span class="identifier">const_iterator</span> 
-    <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_43_1_4-bb"><span class="identifier">find</span></a><span class="special">(</span><span class="identifier">CompatibleKey</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> <span class="identifier">CompatibleHash</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> 
+    <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_43_1_4-bb"><span class="identifier">find</span></a><span class="special">(</span><span class="identifier">CompatibleKey</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> <span class="identifier">CompatibleHash</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> 
          <span class="identifier">CompatiblePredicate</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_43_2-bb"><span class="identifier">count</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">iterator</span><span class="special">,</span> <span class="identifier">iterator</span><span class="special">&gt;</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_43_3_1-bb"><span class="identifier">equal_range</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">const_iterator</span><span class="special">&gt;</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_43_3_2-bb"><span class="identifier">equal_range</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_43_2-bb"><span class="identifier">count</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">iterator</span><span class="special">,</span> <span class="identifier">iterator</span><span class="special">&gt;</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_43_3_1-bb"><span class="identifier">equal_range</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">const_iterator</span><span class="special">&gt;</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_43_3_2-bb"><span class="identifier">equal_range</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44-bb">bucket interface</a></span>
-  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44_1-bb"><span class="identifier">bucket_count</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44_2-bb"><span class="identifier">max_bucket_count</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44_3-bb"><span class="identifier">bucket_size</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44_4-bb"><span class="identifier">bucket</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44_5_1-bb"><span class="identifier">begin</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">const_local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44_5_2-bb"><span class="identifier">begin</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44_6_1-bb"><span class="identifier">end</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">const_local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44_6_2-bb"><span class="identifier">end</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">const_local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44_7-bb"><span class="identifier">cbegin</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">const_local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44_8-bb"><span class="identifier">cend</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44-bb">bucket interface</a></span>
+  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44_1-bb"><span class="identifier">bucket_count</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44_2-bb"><span class="identifier">max_bucket_count</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44_3-bb"><span class="identifier">bucket_size</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">size_type</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44_4-bb"><span class="identifier">bucket</span></a><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44_5_1-bb"><span class="identifier">begin</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">const_local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44_5_2-bb"><span class="identifier">begin</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44_6_1-bb"><span class="identifier">end</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">const_local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44_6_2-bb"><span class="identifier">end</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">const_local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44_7-bb"><span class="identifier">cbegin</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">const_local_iterator</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44_8-bb"><span class="identifier">cend</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_45-bb">hash policy</a></span>
-  <span class="keyword">float</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_45_1-bb"><span class="identifier">load_factor</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="keyword">float</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_45_2-bb"><span class="identifier">max_load_factor</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_45_3-bb"><span class="identifier">max_load_factor</span></a><span class="special">(</span><span class="keyword">float</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_45_4-bb"><span class="identifier">rehash</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_45_5-bb"><span class="identifier">reserve</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_45-bb">hash policy</a></span>
+  <span class="keyword">float</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_45_1-bb"><span class="identifier">load_factor</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="keyword">float</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_45_2-bb"><span class="identifier">max_load_factor</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_45_3-bb"><span class="identifier">max_load_factor</span></a><span class="special">(</span><span class="keyword">float</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_45_4-bb"><span class="identifier">rehash</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_45_5-bb"><span class="identifier">reserve</span></a><span class="special">(</span><span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span>
 
-<span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_46-bb">Equality Comparisons</a></span>
+<span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_46-bb">Equality Comparisons</a></span>
 <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Key<span class="special">,</span> <span class="keyword">typename</span> Mapped<span class="special">,</span> <span class="keyword">typename</span> Hash<span class="special">,</span> <span class="keyword">typename</span> Pred<span class="special">,</span> 
          <span class="keyword">typename</span> Alloc<span class="special">&gt;</span> 
   <span class="keyword">bool</span> <a class="link" href="unordered_multimap.html#boost.unordered_multimap.operator=="><span class="keyword">operator</span><span class="special">==</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">Hash</span><span class="special">,</span> <span class="identifier">Pred</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> 
@@ -182,13 +182,13 @@
   <span class="keyword">bool</span> <a class="link" href="unordered_multimap.html#boost.unordered_multimap.operator!="><span class="keyword">operator</span><span class="special">!=</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">Hash</span><span class="special">,</span> <span class="identifier">Pred</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">,</span> 
                   <span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">Hash</span><span class="special">,</span> <span class="identifier">Pred</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
 
-<span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_47-bb">swap</a></span>
+<span class="comment">// <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_47-bb">swap</a></span>
 <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Key<span class="special">,</span> <span class="keyword">typename</span> Mapped<span class="special">,</span> <span class="keyword">typename</span> Hash<span class="special">,</span> <span class="keyword">typename</span> Pred<span class="special">,</span> 
          <span class="keyword">typename</span> Alloc<span class="special">&gt;</span> 
   <span class="keyword">void</span> <a class="link" href="unordered_multimap.html#boost.unordered_multimap.swap"><span class="identifier">swap</span></a><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">Hash</span><span class="special">,</span> <span class="identifier">Pred</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span><span class="special">&amp;</span><span class="special">,</span> 
             <span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">Hash</span><span class="special">,</span> <span class="identifier">Pred</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="id-1.3.45.10.3.5.4"></a><h2>Description</h2>
+<a name="id-1.3.46.10.3.5.4"></a><h2>Description</h2>
 <p><span class="bold"><strong>Template Parameters</strong></span>
               </p>
 <div class="informaltable"><table class="table">
@@ -230,7 +230,7 @@
 <p>The elements are organized into buckets. Keys with the same hash code are stored in the same bucket and elements with equivalent keys are stored next to each other.</p>
 <p>The number of buckets can be automatically increased by a call to insert, or as the result of calling rehash.</p>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.5.4.5"></a><h3>
+<a name="id-1.3.46.10.3.5.4.5"></a><h3>
 <a name="boost.unordered_multimaptypes"></a><code class="computeroutput">unordered_multimap</code> 
         public
        types</h3>
@@ -296,13 +296,13 @@
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.5.4.6"></a><h3>
+<a name="id-1.3.46.10.3.5.4.6"></a><h3>
 <a name="boost.unordered_multimapconstruct-copy-destruct"></a><code class="computeroutput">unordered_multimap</code> 
         public
        construct/copy/destruct</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_21-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_21-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
 <p>Constructs an empty container using hasher() as the hash function, key_equal() as the key equality predicate, allocator_type() as the allocator and a maximum load factor of 1.0.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -312,7 +312,7 @@
 <tbody>
 <tr>
 <td><p><span class="term">Postconditions:</span></p></td>
-<td><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_39_2-bb">size</a>() == 0</code></td>
+<td><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_39_2-bb">size</a>() == 0</code></td>
 </tr>
 <tr>
 <td><p><span class="term">Requires:</span></p></td>
@@ -324,7 +324,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">explicit</span> <a name="id-1_3_45_10_2_1_2_22-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">,</span> <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span> hf <span class="special">=</span> <span class="identifier">hasher</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
+<pre class="literallayout"><span class="keyword">explicit</span> <a name="id-1_3_46_10_2_1_2_22-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">,</span> <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span> hf <span class="special">=</span> <span class="identifier">hasher</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
                             <span class="identifier">key_equal</span> <span class="keyword">const</span><span class="special">&amp;</span> eq <span class="special">=</span> <span class="identifier">key_equal</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
                             <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span> a <span class="special">=</span> <span class="identifier">allocator_type</span><span class="special">(</span><span class="special">)</span><span class="special">)</span><span class="special">;</span></pre>
 <p>Constructs an empty container with at least n buckets, using hf as the hash function, eq as the key equality predicate, a as the allocator and a maximum load factor of 1.0.</p>
@@ -336,7 +336,7 @@
 <tbody>
 <tr>
 <td><p><span class="term">Postconditions:</span></p></td>
-<td><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_39_2-bb">size</a>() == 0</code></td>
+<td><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_39_2-bb">size</a>() == 0</code></td>
 </tr>
 <tr>
 <td><p><span class="term">Requires:</span></p></td>
@@ -349,7 +349,7 @@
 </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <a class="link" href="../InputIterator.html" title="Concept InputIterator">InputIterator</a><span class="special">&gt;</span> 
-  <a name="id-1_3_45_10_2_1_2_23-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">InputIterator</span> f<span class="special">,</span> <span class="identifier">InputIterator</span> l<span class="special">,</span> 
+  <a name="id-1_3_46_10_2_1_2_23-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">InputIterator</span> f<span class="special">,</span> <span class="identifier">InputIterator</span> l<span class="special">,</span> 
                      <span class="identifier">size_type</span> n <span class="special">=</span> <span class="emphasis"><em><span class="identifier">implementation</span><span class="special">-</span><span class="identifier">defined</span></em></span><span class="special">,</span> 
                      <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span> hf <span class="special">=</span> <span class="identifier">hasher</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
                      <span class="identifier">key_equal</span> <span class="keyword">const</span><span class="special">&amp;</span> eq <span class="special">=</span> <span class="identifier">key_equal</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
@@ -374,7 +374,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_24-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_24-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span></pre>
 <p>The copy constructor. Copies the contained elements, hash function, predicate, maximum load factor and allocator.</p>
 <p>If <code class="computeroutput">Allocator::select_on_container_copy_construction</code>
               exists and has the right signature, the allocator will be
@@ -391,7 +391,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_25-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_25-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span></pre>
 <p>The move constructor.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -422,15 +422,15 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">explicit</span> <a name="id-1_3_45_10_2_1_2_26-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">explicit</span> <a name="id-1_3_46_10_2_1_2_26-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
 <p>Constructs an empty container, using allocator <code class="computeroutput">a</code>.</p>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_27-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span> x<span class="special">,</span> <span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_27-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span> x<span class="special">,</span> <span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
 <p>Constructs an container, copying <code class="computeroutput">x</code>'s contained elements, hash function, predicate, maximum load factor, but using allocator <code class="computeroutput">a</code>.</p>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_28-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span> x<span class="special">,</span> <span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_28-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span> x<span class="special">,</span> <span class="identifier">Allocator</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
 <p>Construct a container moving <code class="computeroutput">x</code>'s contained elements, and having the hash function, predicate and maximum load factor, but using allocate <code class="computeroutput">a</code>.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -452,7 +452,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_29-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span> il<span class="special">,</span> 
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_29-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span> il<span class="special">,</span> 
                    <span class="identifier">size_type</span> n <span class="special">=</span> <span class="emphasis"><em><span class="identifier">implementation</span><span class="special">-</span><span class="identifier">defined</span></em></span><span class="special">,</span> 
                    <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span> hf <span class="special">=</span> <span class="identifier">hasher</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
                    <span class="identifier">key_equal</span> <span class="keyword">const</span><span class="special">&amp;</span> eq <span class="special">=</span> <span class="identifier">key_equal</span><span class="special">(</span><span class="special">)</span><span class="special">,</span> 
@@ -477,7 +477,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_30-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">,</span> <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_30-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">,</span> <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
 <p>Constructs an empty container with at least <code class="computeroutput">n</code> buckets,
               using <code class="computeroutput">hf</code> as the hash function,
               the default hash function and key equality predicate,
@@ -490,7 +490,7 @@
 <tbody>
 <tr>
 <td><p><span class="term">Postconditions:</span></p></td>
-<td><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_39_2-bb">size</a>() == 0</code></td>
+<td><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_39_2-bb">size</a>() == 0</code></td>
 </tr>
 <tr>
 <td><p><span class="term">Requires:</span></p></td>
@@ -501,7 +501,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_31-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">,</span> <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span> hf<span class="special">,</span> <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_31-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">,</span> <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span> hf<span class="special">,</span> <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
 <p>Constructs an empty container with at least <code class="computeroutput">n</code> buckets,
               using <code class="computeroutput">hf</code> as the hash function,
               the default key equality predicate,
@@ -514,7 +514,7 @@
 <tbody>
 <tr>
 <td><p><span class="term">Postconditions:</span></p></td>
-<td><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_39_2-bb">size</a>() == 0</code></td>
+<td><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_39_2-bb">size</a>() == 0</code></td>
 </tr>
 <tr>
 <td><p><span class="term">Requires:</span></p></td>
@@ -526,7 +526,7 @@
 </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <a class="link" href="../InputIterator.html" title="Concept InputIterator">InputIterator</a><span class="special">&gt;</span> 
-  <a name="id-1_3_45_10_2_1_2_32-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">InputIterator</span> f<span class="special">,</span> <span class="identifier">InputIterator</span> l<span class="special">,</span> <span class="identifier">size_type</span> n<span class="special">,</span> 
+  <a name="id-1_3_46_10_2_1_2_32-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">InputIterator</span> f<span class="special">,</span> <span class="identifier">InputIterator</span> l<span class="special">,</span> <span class="identifier">size_type</span> n<span class="special">,</span> 
                      <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
 <p>Constructs an empty container with at least <code class="computeroutput">n</code> buckets,
               using  <code class="computeroutput">a</code> as the allocator, with the
@@ -548,7 +548,7 @@
 </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <a class="link" href="../InputIterator.html" title="Concept InputIterator">InputIterator</a><span class="special">&gt;</span> 
-  <a name="id-1_3_45_10_2_1_2_33-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">InputIterator</span> f<span class="special">,</span> <span class="identifier">InputIterator</span> l<span class="special">,</span> <span class="identifier">size_type</span> n<span class="special">,</span> 
+  <a name="id-1_3_46_10_2_1_2_33-bb"></a><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="identifier">InputIterator</span> f<span class="special">,</span> <span class="identifier">InputIterator</span> l<span class="special">,</span> <span class="identifier">size_type</span> n<span class="special">,</span> 
                      <span class="identifier">hasher</span> <span class="keyword">const</span><span class="special">&amp;</span> hf<span class="special">,</span> <span class="identifier">allocator_type</span> <span class="keyword">const</span><span class="special">&amp;</span> a<span class="special">)</span><span class="special">;</span></pre>
 <p>Constructs an empty container with at least <code class="computeroutput">n</code> buckets,
               using <code class="computeroutput">hf</code> as the hash function,
@@ -570,7 +570,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_34-bb"></a><span class="special">~</span><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_34-bb"></a><span class="special">~</span><span class="identifier">unordered_multimap</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -584,7 +584,7 @@
 </li>
 </ol></div>
 </div>
-<pre class="literallayout"><span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a name="id-1_3_45_10_2_1_2_35-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a name="id-1_3_46_10_2_1_2_35-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="keyword">const</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span></pre>
 <p>The assignment operator. Copies the contained elements, hash function, predicate and maximum load factor but not the allocator.</p>
 <p>If <code class="computeroutput">Alloc::propagate_on_container_copy_assignment</code>
               exists and <code class="computeroutput">Alloc::propagate_on_container_copy_assignment::value
@@ -601,7 +601,7 @@
 <td><p><code class="computeroutput">value_type</code> is copy constructible</p></td>
 </tr></tbody>
 </table></div>
-<pre class="literallayout"><span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a name="id-1_3_45_10_2_1_2_36-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a name="id-1_3_46_10_2_1_2_36-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><span class="identifier">unordered_multimap</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span></pre>
 <p>The move assignment operator.</p>
 <p>If <code class="computeroutput">Alloc::propagate_on_container_move_assignment</code>
               exists and <code class="computeroutput">Alloc::propagate_on_container_move_assignment::value
@@ -630,7 +630,7 @@
 </tr>
 </tbody>
 </table></div>
-<pre class="literallayout"><span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a name="id-1_3_45_10_2_1_2_37-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">unordered_multimap</span><span class="special">&amp;</span> <a name="id-1_3_46_10_2_1_2_37-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span><span class="special">)</span><span class="special">;</span></pre>
 <p>Assign from values in initializer list. All existing elements are either overwritten by the new elements or destroyed.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -645,13 +645,13 @@
               </p></td>
 </tr></tbody>
 </table></div>
-<pre class="literallayout"><span class="identifier">allocator_type</span> <a name="id-1_3_45_10_2_1_2_38-bb"></a><span class="identifier">get_allocator</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">allocator_type</span> <a name="id-1_3_46_10_2_1_2_38-bb"></a><span class="identifier">get_allocator</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.5.4.19"></a><h3>
-<a name="id-1_3_45_10_2_1_2_39-bb"></a><code class="computeroutput">unordered_multimap</code> size and capacity</h3>
+<a name="id-1.3.46.10.3.5.4.19"></a><h3>
+<a name="id-1_3_46_10_2_1_2_39-bb"></a><code class="computeroutput">unordered_multimap</code> size and capacity</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">bool</span> <a name="id-1_3_45_10_2_1_2_39_1-bb"></a><span class="identifier">empty</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">bool</span> <a name="id-1_3_46_10_2_1_2_39_1-bb"></a><span class="identifier">empty</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -659,12 +659,12 @@
 </colgroup>
 <tbody><tr>
 <td><p><span class="term">Returns:</span></p></td>
-<td><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_39_2-bb">size</a>() == 0</code></td>
+<td><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_39_2-bb">size</a>() == 0</code></td>
 </tr></tbody>
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_45_10_2_1_2_39_2-bb"></a><span class="identifier">size</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_46_10_2_1_2_39_2-bb"></a><span class="identifier">size</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -672,12 +672,12 @@
 </colgroup>
 <tbody><tr>
 <td><p><span class="term">Returns:</span></p></td>
-<td><code class="computeroutput">std::distance(<a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_40_1-bb">begin</a>(), <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_40_2-bb">end</a>())</code></td>
+<td><code class="computeroutput">std::distance(<a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_40_1-bb">begin</a>(), <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_40_2-bb">end</a>())</code></td>
 </tr></tbody>
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_45_10_2_1_2_39_3-bb"></a><span class="identifier">max_size</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_46_10_2_1_2_39_3-bb"></a><span class="identifier">max_size</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -686,7 +686,7 @@
 <tbody><tr>
 <td><p><span class="term">Returns:</span></p></td>
 <td>
-<code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_39_2-bb">size</a>()</code> of the largest possible container.
+<code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_39_2-bb">size</a>()</code> of the largest possible container.
               </td>
 </tr></tbody>
 </table></div>
@@ -694,12 +694,12 @@
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.5.4.20"></a><h3>
-<a name="id-1_3_45_10_2_1_2_40-bb"></a><code class="computeroutput">unordered_multimap</code> iterators</h3>
+<a name="id-1.3.46.10.3.5.4.20"></a><h3>
+<a name="id-1_3_46_10_2_1_2_40-bb"></a><code class="computeroutput">unordered_multimap</code> iterators</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_40_1-bb"></a><span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_40_1_1-bb"></a><span class="identifier">begin</span><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-<span class="identifier">const_iterator</span> <a name="id-1_3_45_10_2_1_2_40_1_2-bb"></a><span class="identifier">begin</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_40_1-bb"></a><span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_40_1_1-bb"></a><span class="identifier">begin</span><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+<span class="identifier">const_iterator</span> <a name="id-1_3_46_10_2_1_2_40_1_2-bb"></a><span class="identifier">begin</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -713,8 +713,8 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_40_2-bb"></a><span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_40_2_1-bb"></a><span class="identifier">end</span><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-<span class="identifier">const_iterator</span> <a name="id-1_3_45_10_2_1_2_40_2_2-bb"></a><span class="identifier">end</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_40_2-bb"></a><span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_40_2_1-bb"></a><span class="identifier">end</span><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+<span class="identifier">const_iterator</span> <a name="id-1_3_46_10_2_1_2_40_2_2-bb"></a><span class="identifier">end</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -728,7 +728,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">const_iterator</span> <a name="id-1_3_45_10_2_1_2_40_3-bb"></a><span class="identifier">cbegin</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">const_iterator</span> <a name="id-1_3_46_10_2_1_2_40_3-bb"></a><span class="identifier">cbegin</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -742,7 +742,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">const_iterator</span> <a name="id-1_3_45_10_2_1_2_40_4-bb"></a><span class="identifier">cend</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">const_iterator</span> <a name="id-1_3_46_10_2_1_2_40_4-bb"></a><span class="identifier">cend</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -758,11 +758,11 @@
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.5.4.21"></a><h3>
-<a name="id-1_3_45_10_2_1_2_41-bb"></a><code class="computeroutput">unordered_multimap</code> modifiers</h3>
+<a name="id-1.3.46.10.3.5.4.21"></a><h3>
+<a name="id-1_3_46_10_2_1_2_41-bb"></a><code class="computeroutput">unordered_multimap</code> modifiers</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span><span class="special">...</span> Args<span class="special">&gt;</span> <span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_41_1-bb"></a><span class="identifier">emplace</span><span class="special">(</span><span class="identifier">Args</span><span class="special">&amp;&amp;</span><span class="special">...</span> args<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span><span class="special">...</span> Args<span class="special">&gt;</span> <span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_41_1-bb"></a><span class="identifier">emplace</span><span class="special">(</span><span class="identifier">Args</span><span class="special">&amp;&amp;</span><span class="special">...</span> args<span class="special">)</span><span class="special">;</span></pre>
 <p>Inserts an object, constructed with the arguments <code class="computeroutput">args</code>, in the container.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -802,7 +802,7 @@
 </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span><span class="special">...</span> Args<span class="special">&gt;</span> 
-  <span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_41_2-bb"></a><span class="identifier">emplace_hint</span><span class="special">(</span><span class="identifier">const_iterator</span> hint<span class="special">,</span> <span class="identifier">Args</span><span class="special">&amp;&amp;</span><span class="special">...</span> args<span class="special">)</span><span class="special">;</span></pre>
+  <span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_41_2-bb"></a><span class="identifier">emplace_hint</span><span class="special">(</span><span class="identifier">const_iterator</span> hint<span class="special">,</span> <span class="identifier">Args</span><span class="special">&amp;&amp;</span><span class="special">...</span> args<span class="special">)</span><span class="special">;</span></pre>
 <p>Inserts an object, constructed with the arguments <code class="computeroutput">args</code>, in the container.</p>
 <p><code class="computeroutput">hint</code> is a suggestion to where the element should be inserted.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -843,7 +843,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_41_3-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">value_type</span> <span class="keyword">const</span><span class="special">&amp;</span> obj<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_41_3-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">value_type</span> <span class="keyword">const</span><span class="special">&amp;</span> obj<span class="special">)</span><span class="special">;</span></pre>
 <p>Inserts <code class="computeroutput">obj</code> in the container.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -874,7 +874,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_41_4-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">value_type</span><span class="special">&amp;&amp;</span> obj<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_41_4-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">value_type</span><span class="special">&amp;&amp;</span> obj<span class="special">)</span><span class="special">;</span></pre>
 <p>Inserts <code class="computeroutput">obj</code> in the container.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -905,7 +905,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_41_5-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">const_iterator</span> hint<span class="special">,</span> <span class="identifier">value_type</span> <span class="keyword">const</span><span class="special">&amp;</span> obj<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_41_5-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">const_iterator</span> hint<span class="special">,</span> <span class="identifier">value_type</span> <span class="keyword">const</span><span class="special">&amp;</span> obj<span class="special">)</span><span class="special">;</span></pre>
 <p>Inserts <code class="computeroutput">obj</code> in the container.</p>
 <p>hint is a suggestion to where the element should be inserted.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -938,7 +938,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_41_6-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">const_iterator</span> hint<span class="special">,</span> <span class="identifier">value_type</span><span class="special">&amp;&amp;</span> obj<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_41_6-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">const_iterator</span> hint<span class="special">,</span> <span class="identifier">value_type</span><span class="special">&amp;&amp;</span> obj<span class="special">)</span><span class="special">;</span></pre>
 <p>Inserts <code class="computeroutput">obj</code> in the container.</p>
 <p>hint is a suggestion to where the element should be inserted.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -972,7 +972,7 @@
 </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <a class="link" href="../InputIterator.html" title="Concept InputIterator">InputIterator</a><span class="special">&gt;</span> 
-  <span class="keyword">void</span> <a name="id-1_3_45_10_2_1_2_41_7-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">InputIterator</span> first<span class="special">,</span> <span class="identifier">InputIterator</span> last<span class="special">)</span><span class="special">;</span></pre>
+  <span class="keyword">void</span> <a name="id-1_3_46_10_2_1_2_41_7-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">InputIterator</span> first<span class="special">,</span> <span class="identifier">InputIterator</span> last<span class="special">)</span><span class="special">;</span></pre>
 <p>Inserts a range of elements into the container.
                 </p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -1001,7 +1001,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_45_10_2_1_2_41_8-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span> il<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_46_10_2_1_2_41_8-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span> il<span class="special">)</span><span class="special">;</span></pre>
 <p>Inserts a range of elements into the container.
                                 </p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -1030,7 +1030,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_45_10_2_1_2_41_9-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span> il<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_46_10_2_1_2_41_9-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">initializer_list</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span> il<span class="special">)</span><span class="special">;</span></pre>
 <p>Inserts a range of elements into the container. Elements are inserted if and only if there is no element in the container with an equivalent key.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -1058,7 +1058,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">node_type</span> <a name="id-1_3_45_10_2_1_2_41_10-bb"></a><span class="identifier">extract</span><span class="special">(</span><span class="identifier">const_iterator</span> position<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">node_type</span> <a name="id-1_3_46_10_2_1_2_41_10-bb"></a><span class="identifier">extract</span><span class="special">(</span><span class="identifier">const_iterator</span> position<span class="special">)</span><span class="special">;</span></pre>
 <p>Removes the element pointed to by <code class="computeroutput">position</code>.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -1081,7 +1081,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">node_type</span> <a name="id-1_3_45_10_2_1_2_41_11-bb"></a><span class="identifier">extract</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">node_type</span> <a name="id-1_3_46_10_2_1_2_41_11-bb"></a><span class="identifier">extract</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span><span class="special">;</span></pre>
 <p>Removes an element with key equivalent to <code class="computeroutput">k</code>.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -1108,7 +1108,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_41_12-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">node_type</span><span class="special">&amp;&amp;</span> nh<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_41_12-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">node_type</span><span class="special">&amp;&amp;</span> nh<span class="special">)</span><span class="special">;</span></pre>
 <p>If <code class="computeroutput">nh</code> is empty, has no affect.</p>
 <p>Otherwise inserts the element owned by <code class="computeroutput">nh</code></p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -1145,7 +1145,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_41_13-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">const_iterator</span> hint<span class="special">,</span> <span class="identifier">node_type</span><span class="special">&amp;&amp;</span> nh<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_41_13-bb"></a><span class="identifier">insert</span><span class="special">(</span><span class="identifier">const_iterator</span> hint<span class="special">,</span> <span class="identifier">node_type</span><span class="special">&amp;&amp;</span> nh<span class="special">)</span><span class="special">;</span></pre>
 <p>If <code class="computeroutput">nh</code> is empty, has no affect.</p>
 <p>Otherwise inserts the element owned by <code class="computeroutput">nh</code></p>
 <p>hint is a suggestion to where the element should be inserted.</p>
@@ -1184,7 +1184,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_41_14-bb"></a><span class="identifier">erase</span><span class="special">(</span><span class="identifier">const_iterator</span> position<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_41_14-bb"></a><span class="identifier">erase</span><span class="special">(</span><span class="identifier">const_iterator</span> position<span class="special">)</span><span class="special">;</span></pre>
 <p>Erase the element pointed to by <code class="computeroutput">position</code>.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -1213,7 +1213,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_45_10_2_1_2_41_15-bb"></a><span class="identifier">erase</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_46_10_2_1_2_41_15-bb"></a><span class="identifier">erase</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span><span class="special">;</span></pre>
 <p>Erase all elements with key equivalent to <code class="computeroutput">k</code>.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -1233,7 +1233,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_41_16-bb"></a><span class="identifier">erase</span><span class="special">(</span><span class="identifier">const_iterator</span> first<span class="special">,</span> <span class="identifier">const_iterator</span> last<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_41_16-bb"></a><span class="identifier">erase</span><span class="special">(</span><span class="identifier">const_iterator</span> first<span class="special">,</span> <span class="identifier">const_iterator</span> last<span class="special">)</span><span class="special">;</span></pre>
 <p>Erases the elements in the range from <code class="computeroutput">first</code> to <code class="computeroutput">last</code>.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -1256,7 +1256,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_45_10_2_1_2_41_17-bb"></a><span class="identifier">quick_erase</span><span class="special">(</span><span class="identifier">const_iterator</span> position<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_46_10_2_1_2_41_17-bb"></a><span class="identifier">quick_erase</span><span class="special">(</span><span class="identifier">const_iterator</span> position<span class="special">)</span><span class="special">;</span></pre>
 <p>Erase the element pointed to by <code class="computeroutput">position</code>.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -1284,7 +1284,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_45_10_2_1_2_41_18-bb"></a><span class="identifier">erase_return_void</span><span class="special">(</span><span class="identifier">const_iterator</span> position<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_46_10_2_1_2_41_18-bb"></a><span class="identifier">erase_return_void</span><span class="special">(</span><span class="identifier">const_iterator</span> position<span class="special">)</span><span class="special">;</span></pre>
 <p>Erase the element pointed to by <code class="computeroutput">position</code>.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -1312,7 +1312,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_45_10_2_1_2_41_19-bb"></a><span class="identifier">clear</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_46_10_2_1_2_41_19-bb"></a><span class="identifier">clear</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
 <p>Erases all elements in the container.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -1322,7 +1322,7 @@
 <tbody>
 <tr>
 <td><p><span class="term">Postconditions:</span></p></td>
-<td><p><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_39_2-bb">size</a>() == 0</code></p></td>
+<td><p><code class="computeroutput"><a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_39_2-bb">size</a>() == 0</code></p></td>
 </tr>
 <tr>
 <td><p><span class="term">Throws:</span></p></td>
@@ -1332,7 +1332,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_45_10_2_1_2_41_20-bb"></a><span class="identifier">swap</span><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_46_10_2_1_2_41_20-bb"></a><span class="identifier">swap</span><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&amp;</span><span class="special">)</span><span class="special">;</span></pre>
 <p>Swaps the contents of the container with the parameter.</p>
 <p>If <code class="computeroutput">Allocator::propagate_on_container_swap</code> is declared and
                   <code class="computeroutput">Allocator::propagate_on_container_swap::value</code> is true then the
@@ -1358,7 +1358,7 @@
 </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> H2<span class="special">,</span> <span class="keyword">typename</span> P2<span class="special">&gt;</span> 
-   <a name="id-1_3_45_10_2_1_2_41_21-bb"></a><span class="identifier">merge</span><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">H2</span><span class="special">,</span> <span class="identifier">P2</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span><span class="special">&amp;</span> source<span class="special">)</span><span class="special">;</span></pre>
+   <a name="id-1_3_46_10_2_1_2_41_21-bb"></a><span class="identifier">merge</span><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">H2</span><span class="special">,</span> <span class="identifier">P2</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span><span class="special">&amp;</span> source<span class="special">)</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1372,7 +1372,7 @@
 </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> H2<span class="special">,</span> <span class="keyword">typename</span> P2<span class="special">&gt;</span> 
-   <a name="id-1_3_45_10_2_1_2_41_22-bb"></a><span class="identifier">merge</span><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">H2</span><span class="special">,</span> <span class="identifier">P2</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span><span class="special">&amp;&amp;</span> source<span class="special">)</span><span class="special">;</span></pre>
+   <a name="id-1_3_46_10_2_1_2_41_22-bb"></a><span class="identifier">merge</span><span class="special">(</span><span class="identifier">unordered_multimap</span><span class="special">&lt;</span><span class="identifier">Key</span><span class="special">,</span> <span class="identifier">Mapped</span><span class="special">,</span> <span class="identifier">H2</span><span class="special">,</span> <span class="identifier">P2</span><span class="special">,</span> <span class="identifier">Alloc</span><span class="special">&gt;</span><span class="special">&amp;&amp;</span> source<span class="special">)</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1387,11 +1387,11 @@
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.5.4.22"></a><h3>
-<a name="id-1_3_45_10_2_1_2_42-bb"></a><code class="computeroutput">unordered_multimap</code> observers</h3>
+<a name="id-1.3.46.10.3.5.4.22"></a><h3>
+<a name="id-1_3_46_10_2_1_2_42-bb"></a><code class="computeroutput">unordered_multimap</code> observers</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">hasher</span> <a name="id-1_3_45_10_2_1_2_42_1-bb"></a><span class="identifier">hash_function</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">hasher</span> <a name="id-1_3_46_10_2_1_2_42_1-bb"></a><span class="identifier">hash_function</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1405,7 +1405,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">key_equal</span> <a name="id-1_3_45_10_2_1_2_42_2-bb"></a><span class="identifier">key_eq</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">key_equal</span> <a name="id-1_3_46_10_2_1_2_42_2-bb"></a><span class="identifier">key_eq</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1421,20 +1421,20 @@
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.5.4.23"></a><h3>
-<a name="id-1_3_45_10_2_1_2_43-bb"></a><code class="computeroutput">unordered_multimap</code> lookup</h3>
+<a name="id-1.3.46.10.3.5.4.23"></a><h3>
+<a name="id-1_3_46_10_2_1_2_43-bb"></a><code class="computeroutput">unordered_multimap</code> lookup</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_43_1-bb"></a><span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_43_1_1-bb"></a><span class="identifier">find</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span><span class="special">;</span>
-<span class="identifier">const_iterator</span> <a name="id-1_3_45_10_2_1_2_43_1_2-bb"></a><span class="identifier">find</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_43_1-bb"></a><span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_43_1_1-bb"></a><span class="identifier">find</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span><span class="special">;</span>
+<span class="identifier">const_iterator</span> <a name="id-1_3_46_10_2_1_2_43_1_2-bb"></a><span class="identifier">find</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> CompatibleKey<span class="special">,</span> <span class="keyword">typename</span> CompatibleHash<span class="special">,</span> 
          <span class="keyword">typename</span> CompatiblePredicate<span class="special">&gt;</span> 
-  <span class="identifier">iterator</span> <a name="id-1_3_45_10_2_1_2_43_1_3-bb"></a><span class="identifier">find</span><span class="special">(</span><span class="identifier">CompatibleKey</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">,</span> <span class="identifier">CompatibleHash</span> <span class="keyword">const</span><span class="special">&amp;</span> hash<span class="special">,</span> 
+  <span class="identifier">iterator</span> <a name="id-1_3_46_10_2_1_2_43_1_3-bb"></a><span class="identifier">find</span><span class="special">(</span><span class="identifier">CompatibleKey</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">,</span> <span class="identifier">CompatibleHash</span> <span class="keyword">const</span><span class="special">&amp;</span> hash<span class="special">,</span> 
                 <span class="identifier">CompatiblePredicate</span> <span class="keyword">const</span><span class="special">&amp;</span> eq<span class="special">)</span><span class="special">;</span>
 <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> CompatibleKey<span class="special">,</span> <span class="keyword">typename</span> CompatibleHash<span class="special">,</span> 
          <span class="keyword">typename</span> CompatiblePredicate<span class="special">&gt;</span> 
   <span class="identifier">const_iterator</span> 
-  <a name="id-1_3_45_10_2_1_2_43_1_4-bb"></a><span class="identifier">find</span><span class="special">(</span><span class="identifier">CompatibleKey</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">,</span> <span class="identifier">CompatibleHash</span> <span class="keyword">const</span><span class="special">&amp;</span> hash<span class="special">,</span> 
+  <a name="id-1_3_46_10_2_1_2_43_1_4-bb"></a><span class="identifier">find</span><span class="special">(</span><span class="identifier">CompatibleKey</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">,</span> <span class="identifier">CompatibleHash</span> <span class="keyword">const</span><span class="special">&amp;</span> hash<span class="special">,</span> 
        <span class="identifier">CompatiblePredicate</span> <span class="keyword">const</span><span class="special">&amp;</span> eq<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -1459,7 +1459,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_45_10_2_1_2_43_2-bb"></a><span class="identifier">count</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_46_10_2_1_2_43_2-bb"></a><span class="identifier">count</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1472,8 +1472,8 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_43_3-bb"></a><span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">iterator</span><span class="special">,</span> <span class="identifier">iterator</span><span class="special">&gt;</span> <a name="id-1_3_45_10_2_1_2_43_3_1-bb"></a><span class="identifier">equal_range</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span><span class="special">;</span>
-<span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">const_iterator</span><span class="special">&gt;</span> <a name="id-1_3_45_10_2_1_2_43_3_2-bb"></a><span class="identifier">equal_range</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_43_3-bb"></a><span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">iterator</span><span class="special">,</span> <span class="identifier">iterator</span><span class="special">&gt;</span> <a name="id-1_3_46_10_2_1_2_43_3_1-bb"></a><span class="identifier">equal_range</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span><span class="special">;</span>
+<span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">const_iterator</span><span class="special">,</span> <span class="identifier">const_iterator</span><span class="special">&gt;</span> <a name="id-1_3_46_10_2_1_2_43_3_2-bb"></a><span class="identifier">equal_range</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1491,11 +1491,11 @@
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.5.4.24"></a><h3>
-<a name="id-1_3_45_10_2_1_2_44-bb"></a><code class="computeroutput">unordered_multimap</code> bucket interface</h3>
+<a name="id-1.3.46.10.3.5.4.24"></a><h3>
+<a name="id-1_3_46_10_2_1_2_44-bb"></a><code class="computeroutput">unordered_multimap</code> bucket interface</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_45_10_2_1_2_44_1-bb"></a><span class="identifier">bucket_count</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_46_10_2_1_2_44_1-bb"></a><span class="identifier">bucket_count</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1508,7 +1508,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_45_10_2_1_2_44_2-bb"></a><span class="identifier">max_bucket_count</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_46_10_2_1_2_44_2-bb"></a><span class="identifier">max_bucket_count</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1521,7 +1521,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_45_10_2_1_2_44_3-bb"></a><span class="identifier">bucket_size</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_46_10_2_1_2_44_3-bb"></a><span class="identifier">bucket_size</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1530,7 +1530,7 @@
 <tbody>
 <tr>
 <td><p><span class="term">Requires:</span></p></td>
-<td><p><code class="computeroutput">n &lt; <a class="link" href="unordered_multimap.html#id-1_3_45_10_2_1_2_44_1-bb">bucket_count</a>()</code></p></td>
+<td><p><code class="computeroutput">n &lt; <a class="link" href="unordered_multimap.html#id-1_3_46_10_2_1_2_44_1-bb">bucket_count</a>()</code></p></td>
 </tr>
 <tr>
 <td><p><span class="term">Returns:</span></p></td>
@@ -1540,7 +1540,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_45_10_2_1_2_44_4-bb"></a><span class="identifier">bucket</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">size_type</span> <a name="id-1_3_46_10_2_1_2_44_4-bb"></a><span class="identifier">bucket</span><span class="special">(</span><span class="identifier">key_type</span> <span class="keyword">const</span><span class="special">&amp;</span> k<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1559,8 +1559,8 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_44_5-bb"></a><span class="identifier">local_iterator</span> <a name="id-1_3_45_10_2_1_2_44_5_1-bb"></a><span class="identifier">begin</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span><span class="special">;</span>
-<span class="identifier">const_local_iterator</span> <a name="id-1_3_45_10_2_1_2_44_5_2-bb"></a><span class="identifier">begin</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_44_5-bb"></a><span class="identifier">local_iterator</span> <a name="id-1_3_46_10_2_1_2_44_5_1-bb"></a><span class="identifier">begin</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span><span class="special">;</span>
+<span class="identifier">const_local_iterator</span> <a name="id-1_3_46_10_2_1_2_44_5_2-bb"></a><span class="identifier">begin</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1579,8 +1579,8 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><a name="id-1_3_45_10_2_1_2_44_6-bb"></a><span class="identifier">local_iterator</span> <a name="id-1_3_45_10_2_1_2_44_6_1-bb"></a><span class="identifier">end</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span><span class="special">;</span>
-<span class="identifier">const_local_iterator</span> <a name="id-1_3_45_10_2_1_2_44_6_2-bb"></a><span class="identifier">end</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><a name="id-1_3_46_10_2_1_2_44_6-bb"></a><span class="identifier">local_iterator</span> <a name="id-1_3_46_10_2_1_2_44_6_1-bb"></a><span class="identifier">end</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span><span class="special">;</span>
+<span class="identifier">const_local_iterator</span> <a name="id-1_3_46_10_2_1_2_44_6_2-bb"></a><span class="identifier">end</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1599,7 +1599,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">const_local_iterator</span> <a name="id-1_3_45_10_2_1_2_44_7-bb"></a><span class="identifier">cbegin</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">const_local_iterator</span> <a name="id-1_3_46_10_2_1_2_44_7-bb"></a><span class="identifier">cbegin</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1618,7 +1618,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">const_local_iterator</span> <a name="id-1_3_45_10_2_1_2_44_8-bb"></a><span class="identifier">cend</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">const_local_iterator</span> <a name="id-1_3_46_10_2_1_2_44_8-bb"></a><span class="identifier">cend</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1639,11 +1639,11 @@
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.5.4.25"></a><h3>
-<a name="id-1_3_45_10_2_1_2_45-bb"></a><code class="computeroutput">unordered_multimap</code> hash policy</h3>
+<a name="id-1.3.46.10.3.5.4.25"></a><h3>
+<a name="id-1_3_46_10_2_1_2_45-bb"></a><code class="computeroutput">unordered_multimap</code> hash policy</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">float</span> <a name="id-1_3_45_10_2_1_2_45_1-bb"></a><span class="identifier">load_factor</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">float</span> <a name="id-1_3_46_10_2_1_2_45_1-bb"></a><span class="identifier">load_factor</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1656,7 +1656,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">float</span> <a name="id-1_3_45_10_2_1_2_45_2-bb"></a><span class="identifier">max_load_factor</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">float</span> <a name="id-1_3_46_10_2_1_2_45_2-bb"></a><span class="identifier">max_load_factor</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1669,7 +1669,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_45_10_2_1_2_45_3-bb"></a><span class="identifier">max_load_factor</span><span class="special">(</span><span class="keyword">float</span> z<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_46_10_2_1_2_45_3-bb"></a><span class="identifier">max_load_factor</span><span class="special">(</span><span class="keyword">float</span> z<span class="special">)</span><span class="special">;</span></pre>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
 <col align="left" valign="top">
@@ -1682,7 +1682,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_45_10_2_1_2_45_4-bb"></a><span class="identifier">rehash</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_46_10_2_1_2_45_4-bb"></a><span class="identifier">rehash</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span><span class="special">;</span></pre>
 <p>Changes the number of buckets so that there at least <code class="computeroutput">n</code> buckets, and so that the load factor is less than the maximum load factor.</p>
 <p>Invalidates iterators, and changes the order of elements. Pointers and references to elements are not invalidated.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -1697,7 +1697,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_45_10_2_1_2_45_5-bb"></a><span class="identifier">reserve</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="id-1_3_46_10_2_1_2_45_5-bb"></a><span class="identifier">reserve</span><span class="special">(</span><span class="identifier">size_type</span> n<span class="special">)</span><span class="special">;</span></pre>
 <p>Invalidates iterators, and changes the order of elements. Pointers and references to elements are not invalidated.</p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -1713,8 +1713,8 @@
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.5.4.26"></a><h3>
-<a name="id-1_3_45_10_2_1_2_46-bb"></a><code class="computeroutput">unordered_multimap</code> Equality Comparisons</h3>
+<a name="id-1.3.46.10.3.5.4.26"></a><h3>
+<a name="id-1_3_46_10_2_1_2_46-bb"></a><code class="computeroutput">unordered_multimap</code> Equality Comparisons</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Key<span class="special">,</span> <span class="keyword">typename</span> Mapped<span class="special">,</span> <span class="keyword">typename</span> Hash<span class="special">,</span> <span class="keyword">typename</span> Pred<span class="special">,</span> 
@@ -1773,8 +1773,8 @@
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="id-1.3.45.10.3.5.4.27"></a><h3>
-<a name="id-1_3_45_10_2_1_2_47-bb"></a><code class="computeroutput">unordered_multimap</code> swap</h3>
+<a name="id-1.3.46.10.3.5.4.27"></a><h3>
+<a name="id-1_3_46_10_2_1_2_47-bb"></a><code class="computeroutput">unordered_multimap</code> swap</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Key<span class="special">,</span> <span class="keyword">typename</span> Mapped<span class="special">,</span> <span class="keyword">typename</span> Hash<span class="special">,</span> <span class="keyword">typename</span> Pred<span class="special">,</span> 
          <span class="keyword">typename</span> Alloc<span class="special">&gt;</span> 
@@ -1812,7 +1812,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003, 2004 Jeremy B. Maitin-Shepard<br>Copyright &#169; 2005-2008 Daniel
+<td align="right"><div class="copyright-footer">Copyright © 2003, 2004 Jeremy B. Maitin-Shepard<br>Copyright © 2005-2008 Daniel
       James<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

@@ -116,8 +116,8 @@ int logchrif_parse_reqauth(int fd, int id,char* ip){
 #else
 			// 在 rAthena 官方发送的封包基础上, 多发送两个定长的字符串字段
 			// 此处将 login-server 记录的当前玩家的 mac 和 lan 地址发送给 char-server 中 0x2713 封包的处理函数
-			memcpy(WFIFOP(fd,21), node->mac_address, MACADDRESS_LENGTH);
-			memcpy(WFIFOP(fd,21 + MACADDRESS_LENGTH), node->lan_address, IP4ADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 21), node->mac_address, MACADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 21 + MACADDRESS_LENGTH), node->lan_address, IP4ADDRESS_LENGTH);
 			WFIFOSET(fd,21 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
 #endif // Pandas_Extract_SSOPacket_MacAddress
 
@@ -145,8 +145,8 @@ int logchrif_parse_reqauth(int fd, int id,char* ip){
 			// 在 rAthena 官方发送的封包基础上, 多发送两个定长的字符串字段
 			// 这里发送的是验证被拒绝时的响应包, 此时没有办法读取到正确的 MAC 地址, 直接返回空
 			// 此处将 login-server 记录的当前玩家的 mac 和 lan 地址发送给 char-server 中 0x2713 封包的处理函数
-			memcpy(WFIFOP(fd,21), "", MACADDRESS_LENGTH);
-			memcpy(WFIFOP(fd,21 + MACADDRESS_LENGTH), "", IP4ADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 21), "", MACADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(fd, 21 + MACADDRESS_LENGTH), "", IP4ADDRESS_LENGTH);
 			WFIFOSET(fd,21 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
 #endif // Pandas_Extract_SSOPacket_MacAddress
 		}
@@ -320,7 +320,7 @@ int logchrif_parse_reqchangemail(int fd, int id, char* ip){
 			safestrncpy(acc.email, new_email, 40);
 			ShowNotice("Char-server '%s': Modify an e-mail on an account (@email GM command) (account: %d (%s), new e-mail: %s, ip: %s).\n", ch_server[id].name, account_id, acc.userid, new_email, ip);
 			// Save
-			accounts->save(accounts, &acc);
+			accounts->save(accounts, &acc, false);
 		}
 	}
 	return 1;
@@ -355,7 +355,7 @@ int logchrif_parse_requpdaccstate(int fd, int id, char* ip){
 
 			acc.state = state;
 			// Save
-			accounts->save(accounts, &acc);
+			accounts->save(accounts, &acc, false);
 
 			// notify other servers
 			if (state != 0){
@@ -421,7 +421,7 @@ int logchrif_parse_reqbanacc(int fd, int id, char* ip){
 				acc.unban_time = timestamp;
 
 				// Save
-				accounts->save(accounts, &acc);
+				accounts->save(accounts, &acc, false);
 
 				WBUFW(buf,0) = 0x2731;
 				WBUFL(buf,2) = account_id;
@@ -467,7 +467,7 @@ int logchrif_parse_reqchgsex(int fd, int id, char* ip){
 
 			acc.sex = sex;
 			// Save
-			accounts->save(accounts, &acc);
+			accounts->save(accounts, &acc, false);
 
 			// announce to other servers
 			WBUFW(buf,0) = 0x2723;
@@ -527,7 +527,7 @@ int logchrif_parse_requnbanacc(int fd, int id, char* ip){
 		else{
 			ShowNotice("Char-server '%s': UnBan request (account: %d, ip: %s).\n", ch_server[id].name, account_id, ip);
 			acc.unban_time = 0;
-			accounts->save(accounts, &acc);
+			accounts->save(accounts, &acc, false);
 		}
 	}
 	return 1;
@@ -649,7 +649,7 @@ int logchrif_parse_updpincode(int fd){
 		if( accounts->load_num(accounts, &acc, RFIFOL(fd,4) ) ){
 			strncpy( acc.pincode, RFIFOCP(fd,8), PINCODE_LENGTH+1 );
 			acc.pincode_change = time( NULL );
-			accounts->save(accounts, &acc);
+			accounts->save(accounts, &acc, false);
 		}
 		RFIFOSKIP(fd,8 + PINCODE_LENGTH+1);
 	}
@@ -733,7 +733,7 @@ int logchrif_parse_reqvipdata(int fd) {
 				acc.char_slots = login_config.char_per_account;
 			}
 			acc.vip_time = vip_time;
-			accounts->save(accounts,&acc);
+			accounts->save(accounts,&acc, false);
 			if( flag&1 )
 				logchrif_sendvipdata(fd,&acc,((isvip)?0x1:0)|((flag&0x8)?0x4:0),mapfd);
 		}

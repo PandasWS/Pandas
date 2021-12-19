@@ -1,5 +1,5 @@
 /* Example of Outcome used with void
-(C) 2017-2019 Niall Douglas <http://www.nedproductions.biz/> (1 commit)
+(C) 2017-2021 Niall Douglas <http://www.nedproductions.biz/> (1 commit)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003

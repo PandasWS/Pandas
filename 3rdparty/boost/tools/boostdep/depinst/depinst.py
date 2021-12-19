@@ -3,7 +3,7 @@
 # depinst.py - installs the dependencies needed to test
 #              a Boost library
 #
-# Copyright 2016-2019 Peter Dimov
+# Copyright 2016-2020 Peter Dimov
 #
 # Distributed under the Boost Software License, Version 1.0.
 # See accompanying file LICENSE_1_0.txt or copy at
@@ -191,7 +191,10 @@ def install_modules( modules, git_args ):
     command += ' update --init ' + git_args + ' ' + ' '.join( modules )
 
     vprint( 1, 'Executing:', command )
-    os.system( command );
+    r = os.system( command );
+
+    if r != 0:
+        raise Exception( "The command '%s' failed with exit code %d" % (command, r) )
 
 
 def install_module_dependencies( deps, x, gm, git_args ):
@@ -226,6 +229,7 @@ if( __name__ == "__main__" ):
     parser.add_argument( '-N', '--ignore', help="exclude top-level dependency even when found in scan; can be repeated", metavar='LIB', action='append', default=[] )
     parser.add_argument( '-I', '--include', help="additional subdirectory to scan; can be repeated", metavar='DIR', action='append', default=[] )
     parser.add_argument( '-g', '--git_args', help="additional arguments to `git submodule update`", default='', action='store' )
+    parser.add_argument( '-u', '--update', help='update <library> before scanning', action='store_true' )
     parser.add_argument( 'library', help="name of library to scan ('libs/' will be prepended)" )
 
     args = parser.parse_args()
@@ -242,9 +246,12 @@ if( __name__ == "__main__" ):
     gm = read_gitmodules()
     vprint( 2, '.gitmodules:', gm )
 
-    essentials = [ 'config', 'headers', '../tools/boost_install', '../tools/build' ]
+    essentials = [ 'config', 'headers', '../tools/boost_install', '../tools/build', '../tools/cmake' ]
 
     essentials = [ e for e in essentials if os.path.exists( 'libs/' + e ) ]
+
+    if args.update:
+        essentials.append( args.library )
 
     install_modules( essentials, args.git_args )
 

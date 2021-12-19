@@ -4,7 +4,6 @@
 
 .. _Boost.Chrono: ../../libs/chrono/index.html
 .. _Boost.Context: ../../libs/context/index.html
-.. _Boost.DateTime: ../../libs/date_time/index.html
 .. _Boost.Exception: ../../libs/exception/index.html
 .. _Boost.Filesystem: ../../libs/filesystem/index.html
 .. _Boost.Graph: ../../libs/graph/index.html
@@ -19,7 +18,6 @@
 .. _Boost.Random: ../../libs/random/index.html
 .. _Boost.Regex: ../../libs/regex/index.html
 .. _Boost.Serialization: ../../libs/serialization/index.html
-.. _Boost.Signals: ../../libs/signals/index.html
 .. _Boost.System: ../../libs/system/index.html
 .. _Boost.Test: ../../libs/test/index.html
 .. _Boost.Thread: ../../libs/thread/index.html

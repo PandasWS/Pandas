@@ -1,3 +1,9 @@
+//  Copyright (c) 2018 Robert Ramey
+//
+// Distributed under the Boost Software License, Version 1.0. (See
+// accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
 #include <iostream>
 #include <limits>
 
@@ -27,14 +33,15 @@ int main(int, const char *[]){
     >;
 
     // use rationals created with safe_t
-    const safe_rational sc {1, INT_MAX};
+    const safe_rational sc {1, std::numeric_limits<int>::max()};
+
     std::cout << "c = " << sc << std::endl;
     const safe_rational sd {1, 2};
     std::cout << "d = " << sd << std::endl;
     std::cout << "c * d = ";
     try {
         // multiply them. This will overflow
-        std::cout << sc * sd << std::endl;
+        std::cout << (sc * sd) << std::endl;
     }
     catch (std::exception const& e) {
         // catch exception due to multiplication overflow

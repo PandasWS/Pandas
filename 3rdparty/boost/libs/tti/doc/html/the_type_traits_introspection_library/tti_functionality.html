@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>General Functionality</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;The Type Traits Introspection Library">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;The Type Traits Introspection Library">
+<link rel="home" href="../index.html" title="Chapter 1. The Type Traits Introspection Library">
+<link rel="up" href="../index.html" title="Chapter 1. The Type Traits Introspection Library">
 <link rel="prev" href="tti_terminology.html" title="Terminology">
 <link rel="next" href="tti_detail.html" title="Macro Metafunctions">
 </head>
@@ -42,11 +42,27 @@
           possibility for that nested type.
         </li>
 <li class="listitem">
+          Does it have a particular user-defined nested type (struct/class, union,
+          or enumaeration) with a particular name ?
+        </li>
+<li class="listitem">
+          Does it have a particular user-defined nested type with a particular name
+          which fulfills some other possibility for that nested type.
+        </li>
+<li class="listitem">
           Does it have a nested class template with a particular name ?
         </li>
 <li class="listitem">
           Does it have a nested class template with a particular name and a particular
           signature ?
+        </li>
+<li class="listitem">
+          Does it have a nested member function template with a particular name and
+          a particular instantiated signature ?
+        </li>
+<li class="listitem">
+          Does it have a nested static function template with a particular name and
+          a particular instantiated signature ?
         </li>
 <li class="listitem">
           Does it have a member function with a particular name and a particular
@@ -214,10 +230,10 @@
         of inner element of a particular name.
       </p>
 <p>
-        As one example of this let's consider two different types called 'AType'
-        and 'BType', for each of which we want to determine whether an inner type
-        called 'InnerType' exists. For both these types we need only generate a single
-        macro metafunction in the current scope by using:
+        As one example of this let's consider two different user-defined types called
+        'AType' and 'BType', for each of which we want to determine whether an inner
+        type called 'InnerType' exists. For both these types we need only generate
+        a single macro metafunction in the current scope by using:
       </p>
 <pre class="programlisting"><span class="identifier">BOOST_TTI_HAS_TYPE</span><span class="special">(</span><span class="identifier">InnerType</span><span class="special">)</span>
 </pre>
@@ -240,12 +256,12 @@
           </li>
 </ol></div>
 <p>
-        As another example of metafunction reuse let's consider a single type, called
-        'CType', for which we want to determine if it has either of two overloaded
-        member functions with the same name of 'AMemberFunction' but with the different
-        function signatures of 'int (int)' and 'double (long)'. For both these member
-        functions we need only generate a single macro metafunction in the current
-        scope by using:
+        As another example of metafunction reuse let's consider a single user-defined
+        type, called 'CType', for which we want to determine if it has either of
+        two overloaded member functions with the same name of 'AMemberFunction' but
+        with the different function signatures of 'int (int)' and 'double (long)'.
+        For both these member functions we need only generate a single macro metafunction
+        in the current scope by using:
       </p>
 <pre class="programlisting"><span class="identifier">BOOST_TTI_HAS_MEMBER_FUNCTION</span><span class="special">(</span><span class="identifier">AMemberFunction</span><span class="special">)</span>
 </pre>
@@ -297,9 +313,9 @@
 <p>
         Because of ODR, and the way that the simple macro form metafunction name
         is directly dependent on the inner element and name of the element being
-        introspected, it is the responsibility of the programmer using the TTI macros
-        to generate metafunctions to avoid ODR within a module ( application or library
-        ). There are a few general methods for doing this:
+        introspected, it is the responsibility of the programmer, using the TTI macros
+        to generate metafunctions, to avoid ODR within a module ( application or
+        library ). There are a few general methods for doing this:
       </p>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
@@ -333,7 +349,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2011-2013 Tropic Software
+<td align="right"><div class="copyright-footer">Copyright © 2011-2013 Tropic Software
       East Inc<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

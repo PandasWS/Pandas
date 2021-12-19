@@ -811,7 +811,7 @@ the untagged version structures.
 
 
 
-[table Equivalence of expresions using user defined names
+[table Equivalence of expressions using user defined names
 [[Untagged version]               [Tagged version]                     ]
 [[`bm.left`]                      [`bm.by<Left>()`]                    ]
 [[`bm.right`]                     [`bm.by<Right>()`]                   ]

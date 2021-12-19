@@ -4,8 +4,8 @@
 // Copyright (c) 2008-2012 Bruno Lalande, Paris, France.
 // Copyright (c) 2009-2012 Mateusz Loskot, London, UK.
 
-// This file was modified by Oracle on 2014, 2016, 2017, 2018.
-// Modifications copyright (c) 2014-2018 Oracle and/or its affiliates.
+// This file was modified by Oracle on 2014, 2016-2020.
+// Modifications copyright (c) 2014-2020 Oracle and/or its affiliates.
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Parts of Boost.Geometry are redesigned from Geodan's Geographic Library
@@ -171,7 +171,7 @@ void check_geometry_range(Geometry1 const& g1,
     typedef bg::detail::no_rescale_policy robust_policy_type;
     typedef typename bg::point_type<Geometry2>::type point_type;
 
-    typedef typename bg::segment_ratio_type
+    typedef typename bg::detail::segment_ratio_type
         <
             point_type, robust_policy_type
         >::type segment_ratio_type;
@@ -259,9 +259,9 @@ void check_geometry_range(Geometry1 const& g1,
                           std::string const& wkt2,
                           Expected const& expected)
 {
-    typename bg::strategy::intersection::services::default_strategy
+    typename bg::strategies::relate::services::default_strategy
         <
-            typename bg::cs_tag<Geometry1>::type
+            Geometry1, Geometry2
         >::type strategy;
 
     check_geometry_range(g1, g2, wkt1, wkt2, expected, strategy);

@@ -5,7 +5,7 @@
 # See: http://www.boost.org/doc/libs/release/libs/contract/doc/html/index.html
 
 import ../build/boost_contract_build ;
-import config : requires ;
+import ../../config/checks/config : requires ;
 
 test-suite constructor :
     [ boost_contract_build.subdir-run-cxx11 constructor : smoke ]
@@ -414,7 +414,7 @@ test-suite specify :
     [ boost_contract_build.subdir-compile-fail-cxx11 specify : old_pre_error ]
     
     [ boost_contract_build.subdir-run-cxx11 specify : missing_check :
-        <define>BOOST_CONTRACT_ON_MISSING_CHECK_DECL=\"{\ throw\ err();\ }\"
+        <define>BOOST_CONTRACT_ON_MISSING_CHECK_DECL=\"\{\ throw\ err()\;\ \}\"
     ]
 
     [ boost_contract_build.subdir-compile-fail specify : auto_error :

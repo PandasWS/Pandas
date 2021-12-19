@@ -12,7 +12,7 @@
 #include <boost/test/unit_test.hpp> // Boost.Test
 #include <boost/test/results_collector.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <iostream>
    using std::cout;
@@ -76,7 +76,7 @@ void test_spots(RealType /*T*/, const char* /*type_name*/)
       BOOST_CHECK_EQUAL((boost::math::copysign)(c, a), RealType(-1));
       BOOST_CHECK_EQUAL((boost::math::changesign)(a), -a);
    }
-#if !defined(__SUNPRO_CC) && !defined(BOOST_INTEL)
+#if !defined(__SUNPRO_CC) && !defined(__INTEL_COMPILER)
    if(std::numeric_limits<RealType>::has_quiet_NaN)
    {
       a = std::numeric_limits<RealType>::quiet_NaN();

@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Posix Time</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../date_time.html" title="Chapter&#160;13.&#160;Boost.Date_Time">
+<link rel="up" href="../date_time.html" title="Chapter 13. Boost.Date_Time">
 <link rel="prev" href="gregorian.html" title="Gregorian">
 <link rel="next" href="local_time.html" title="Local Time">
 </head>
@@ -188,6 +188,12 @@ ptime t(time_from_string(ts))</pre></td></tr>
 </tr>
 <tr><td><pre class="screen">std::string ts("20020131T235959");
 ptime t(from_iso_string(ts))</pre></td></tr>
+<tr>
+<td rowspan="2" valign="top"><pre class="screen">ptime from_iso_extended_string(std::string)</pre></td>
+<td>From delimited iso form string.</td>
+</tr>
+<tr><td><pre class="screen">std::string ts("2020-01-31T23:59:59.123");
+ptime t(from_iso_extended_string(ts))</pre></td></tr>
 </tbody>
 </table></div>
 <p>
@@ -221,12 +227,12 @@ ptime t(from_iso_string(ts))</pre></td></tr>
 <tr><td><pre class="screen">ptime t(second_clock::universal_time())</pre></td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">ptime microsec_clock::local_time()</pre></td>
-<td>Get the local time using a sub second resolution clock.  On Unix systems this is implemented using GetTimeOfDay.  On most Win32 platforms it is implemented using ftime.  Win32 systems often do not achieve microsecond resolution via this API.  If higher resolution is critical to your application test your platform to see the achieved resolution.</td>
+<td>Get the local time using a sub second resolution clock.  On Unix systems this is implemented using gettimeofday.  On most Win32 platforms it is implemented using ftime.  Win32 systems often do not achieve microsecond resolution via this API.  If higher resolution is critical to your application test your platform to see the achieved resolution.</td>
 </tr>
 <tr><td><pre class="screen">ptime t(microsec_clock::local_time());</pre></td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">ptime microsec_clock::universal_time()</pre></td>
-<td>Get the UTC time using a sub second resolution clock.  On Unix systems this is implemented using GetTimeOfDay.  On most Win32 platforms it is implemented using ftime.  Win32 systems often do not achieve microsecond resolution via this API.  If higher resolution is critical to your application test your platform to see the achieved resolution.</td>
+<td>Get the UTC time using a sub second resolution clock.  On Unix systems this is implemented using gettimeofday.  On most Win32 platforms it is implemented using ftime.  Win32 systems often do not achieve microsecond resolution via this API.  If higher resolution is critical to your application test your platform to see the achieved resolution.</td>
 </tr>
 <tr><td><pre class="screen">ptime t(microsec_clock::universal_time());</pre></td></tr>
 </tbody>
@@ -494,7 +500,7 @@ tm pt_tm = to_tm(pt);
    tm_hour =&gt; 1
    tm_min  =&gt; 2
    tm_sec  =&gt; 3
-   tm_isddst =&gt; -1 */</pre>
+   tm_isdst =&gt; -1 */</pre>
 	  </td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">ptime ptime_from_tm(tm timetm)</pre></td>
@@ -526,7 +532,7 @@ tm td_tm = to_tm(td);
    tm_hour =&gt; 1
    tm_min  =&gt; 2
    tm_sec  =&gt; 3
-   tm_isddst =&gt; -1 */</pre>
+   tm_isdst =&gt; -1 */</pre>
 	  </td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">ptime from_time_t(std::time_t)</pre></td>
@@ -776,7 +782,7 @@ time_duration neg_td(-1,2,3);
 td.minutes(); // --&gt; 2
 neg_td.minutes(); // --&gt; -2</pre></td></tr>
 <tr>
-<td rowspan="2" valign="top"><pre class="screen">boost::int64_t seconds()</pre></td>
+<td rowspan="2" valign="top"><pre class="screen">boost::int64_t seconds() const</pre></td>
 <td>Get the normalized number of second +/-(0..59) (will give unpredictable results if calling <code class="computeroutput">time_duration</code> is a <code class="computeroutput">special_value</code>).</td>
 </tr>
 <tr><td><pre class="screen">time_duration td(1,2,3); 
@@ -784,7 +790,7 @@ time_duration neg_td(-1,2,3);
 td.seconds(); // --&gt; 3
 neg_td.seconds(); // --&gt; -3</pre></td></tr>
 <tr>
-<td rowspan="2" valign="top"><pre class="screen">boost::int64_t total_seconds()</pre></td>
+<td rowspan="2" valign="top"><pre class="screen">boost::int64_t total_seconds() const</pre></td>
 <td>Get the total number of seconds truncating any fractional seconds (will give unpredictable results if calling <code class="computeroutput">time_duration</code> is a <code class="computeroutput">special_value</code>).</td>
 </tr>
 <tr><td>
@@ -793,7 +799,7 @@ td.total_seconds();
 // --&gt; (1*3600) + (2*60) + 3 == 3723</pre>
 	    </td></tr>
 <tr>
-<td rowspan="2" valign="top"><pre class="screen">boost::int64_t total_milliseconds()</pre></td>
+<td rowspan="2" valign="top"><pre class="screen">boost::int64_t total_milliseconds() const</pre></td>
 <td>Get the total number of milliseconds truncating any remaining digits (will give unpredictable results if calling <code class="computeroutput">time_duration</code> is a <code class="computeroutput">special_value</code>).</td>
 </tr>
 <tr><td>
@@ -804,7 +810,7 @@ td.total_milliseconds();
 // (3723 * 1000) + 123 == 3723123</pre>
 	    </td></tr>
 <tr>
-<td rowspan="2" valign="top"><pre class="screen">boost::int64_t total_microseconds()</pre></td>
+<td rowspan="2" valign="top"><pre class="screen">boost::int64_t total_microseconds() const</pre></td>
 <td>Get the total number of microseconds truncating any remaining digits (will give unpredictable results if calling <code class="computeroutput">time_duration</code> is a <code class="computeroutput">special_value</code>).</td>
 </tr>
 <tr><td>
@@ -815,7 +821,7 @@ td.total_microseconds();
 // (3723 * 1000000) + 123456 == 3723123456</pre>
 	    </td></tr>
 <tr>
-<td rowspan="2" valign="top"><pre class="screen">boost::int64_t total_nanoseconds()</pre></td>
+<td rowspan="2" valign="top"><pre class="screen">boost::int64_t total_nanoseconds() const</pre></td>
 <td>Get the total number of nanoseconds truncating any remaining digits (will give unpredictable results if calling <code class="computeroutput">time_duration</code> is a <code class="computeroutput">special_value</code>).</td>
 </tr>
 <tr><td>
@@ -827,80 +833,138 @@ td.total_nanoseconds();
 //                              == 3723123456789</pre>
 	    </td></tr>
 <tr>
-<td rowspan="2" valign="top"><pre class="screen">boost::int64_t fractional_seconds()</pre></td>
+<td rowspan="2" valign="top"><pre class="screen">boost::int64_t fractional_seconds() const</pre></td>
 <td>Get the number of fractional seconds (will give unpredictable results if calling <code class="computeroutput">time_duration</code> is a <code class="computeroutput">special_value</code>).</td>
 </tr>
 <tr><td><pre class="screen">time_duration td(1,2,3, 1000);
 td.fractional_seconds(); // --&gt; 1000</pre></td></tr>
 <tr>
-<td rowspan="2" valign="top"><pre class="screen">bool is_negative()</pre></td>
-<td>True if duration is negative.</td>
+<td rowspan="2" valign="top"><pre class="screen">bool is_negative() const</pre></td>
+<td>True if and only if duration is negative.</td>
 </tr>
 <tr><td><pre class="screen">time_duration td(-1,0,0); 
 td.is_negative(); // --&gt; true</pre></td></tr>
 <tr>
-<td rowspan="2" valign="top"><pre class="screen">time_duration invert_sign()</pre></td>
-<td>Generate a new duration with the sign inverted/</td>
+<td rowspan="2" valign="top"><pre class="screen">bool is_zero() const</pre></td>
+<td>True if and only if duration is zero.</td>
 </tr>
-<tr><td><pre class="screen">time_duration td(-1,0,0); 
+<tr><td><pre class="screen">time_duration td(0,0,0);
+td.is_zero(); // --&gt; true</pre></td></tr>
+<tr>
+<td rowspan="2" valign="top"><pre class="screen">bool is_positive() const</pre></td>
+<td>True if and only if duration is positive.</td>
+</tr>
+<tr><td><pre class="screen">time_duration td(1,0,0);
+td.is_positive(); // --&gt; true</pre></td></tr>
+<tr>
+<td rowspan="2" valign="top"><pre class="screen">time_duration invert_sign() const</pre></td>
+<td>Generate a new duration with the sign inverted.</td>
+</tr>
+<tr><td><pre class="screen">time_duration td(-1,0,0);
 td.invert_sign(); // --&gt; 01:00:00</pre></td></tr>
 <tr>
-<td rowspan="2" valign="top"><pre class="screen">date_time::time_resolutions resolution()</pre></td>
+<td rowspan="2" valign="top"><pre class="screen">time_duration abs() const</pre></td>
+<td>Generate a new duration with the absolute value of the time duration.</td>
+</tr>
+<tr>
+<td><pre class="screen">time_duration td(-1,0,0);
+td.abs(); // --&gt; 01:00:00</pre></td>
+<td><pre class="screen">time_duration td(+1,0,0);
+td.abs(); // --&gt; 01:00:00</pre></td>
+</tr>
+<tr>
+<td rowspan="2" valign="top"><pre class="screen">date_time::time_resolutions time_duration::resolution()</pre></td>
 <td>Describes the resolution capability of the time_duration class. time_resolutions is an enum of resolution possibilities ranging from seconds to nanoseconds.</td>
+<td class="auto-generated"> </td>
 </tr>
-<tr><td><pre class="screen">time_duration::resolution() --&gt; nano</pre></td></tr>
 <tr>
-<td rowspan="2" valign="top"><pre class="screen">time_duration::num_fractional_digits()</pre></td>
-<td>Returns an unsigned short holding the number of fractional digits the time resolution has.</td>
+<td><pre class="screen">time_duration::resolution() --&gt; nano</pre></td>
+<td class="auto-generated"> </td>
 </tr>
-<tr><td><pre class="screen">unsigned short secs;
+<tr>
+<td rowspan="2" valign="top"><pre class="screen">unsigned short time_duration::num_fractional_digits()</pre></td>
+<td>Returns the number of fractional digits the time resolution has.</td>
+<td class="auto-generated"> </td>
+</tr>
+<tr>
+<td><pre class="screen">unsigned short secs;
 secs = time_duration::num_fractional_digits();
-// 9 for nano, 6 for micro, etc.</pre></td></tr>
-<tr>
-<td rowspan="2" valign="top"><pre class="screen">time_duration::ticks_per_second()</pre></td>
-<td>Return the number of ticks in a second.  For example, if the duration supports nanoseconds then the returned result will be 1,000,000,000 (1e+9).</td>
+// 9 for nano, 6 for micro, etc.</pre></td>
+<td class="auto-generated"> </td>
 </tr>
-<tr><td><pre class="screen">std::cout &lt;&lt; time_duration::ticks_per_second();</pre></td></tr>
+<tr>
+<td rowspan="2" valign="top"><pre class="screen">boost::int64_t time_duration::ticks_per_second()</pre></td>
+<td>Return the number of ticks in a second.  For example, if the duration supports nanoseconds then the returned result will be 1,000,000,000 (1e+9).</td>
+<td class="auto-generated"> </td>
+</tr>
+<tr>
+<td><pre class="screen">std::cout &lt;&lt; time_duration::ticks_per_second();</pre></td>
+<td class="auto-generated"> </td>
+</tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">boost::int64_t ticks()</pre></td>
 <td>Return the raw count of the duration type (will give unpredictable results if calling <code class="computeroutput">time_duration</code> is a <code class="computeroutput">special_value</code>).</td>
+<td class="auto-generated"> </td>
 </tr>
-<tr><td><pre class="screen">time_duration td(0,0,0, 1000);
-td.ticks() // --&gt; 1000</pre></td></tr>
 <tr>
-<td rowspan="2" valign="top"><pre class="screen">time_duration unit()</pre></td>
-<td>Return smallest possible unit of duration type (1 nanosecond).</td>
+<td><pre class="screen">time_duration td(0,0,0, 1000);
+td.ticks() // --&gt; 1000</pre></td>
+<td class="auto-generated"> </td>
 </tr>
-<tr><td><pre class="screen">time_duration::unit() --&gt; time_duration(0,0,0,1)</pre></td></tr>
+<tr>
+<td rowspan="2" valign="top"><pre class="screen">time_duration time_duration::unit()</pre></td>
+<td>Return smallest possible unit of duration type (1 nanosecond).</td>
+<td class="auto-generated"> </td>
+</tr>
+<tr>
+<td><pre class="screen">time_duration::unit() --&gt; time_duration(0,0,0,1)</pre></td>
+<td class="auto-generated"> </td>
+</tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">bool is_neg_infinity() const</pre></td>
 <td>Returns true if time_duration is negative infinity</td>
+<td class="auto-generated"> </td>
 </tr>
-<tr><td><pre class="screen">time_duration td(neg_infin);
-td.is_neg_infinity(); // --&gt; true</pre></td></tr>
+<tr>
+<td><pre class="screen">time_duration td(neg_infin);
+td.is_neg_infinity(); // --&gt; true</pre></td>
+<td class="auto-generated"> </td>
+</tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">bool is_pos_infinity() const</pre></td>
 <td>Returns true if time_duration is positive infinity</td>
+<td class="auto-generated"> </td>
 </tr>
-<tr><td><pre class="screen">time_duration td(pos_infin); 
-td.is_pos_infinity(); // --&gt; true</pre></td></tr>
+<tr>
+<td><pre class="screen">time_duration td(pos_infin); 
+td.is_pos_infinity(); // --&gt; true</pre></td>
+<td class="auto-generated"> </td>
+</tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">bool is_not_a_date_time() const</pre></td>
 <td>Returns true if value is not a time</td>
+<td class="auto-generated"> </td>
 </tr>
-<tr><td><pre class="screen">time_duration td(not_a_date_time);
-td.is_not_a_date_time(); // --&gt; true</pre></td></tr>
+<tr>
+<td><pre class="screen">time_duration td(not_a_date_time);
+td.is_not_a_date_time(); // --&gt; true</pre></td>
+<td class="auto-generated"> </td>
+</tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">bool is_special() const</pre></td>
 <td>Returns true if time_duration is any <code class="computeroutput">special_value</code>
 </td>
+<td class="auto-generated"> </td>
 </tr>
-<tr><td><pre class="screen">time_duration td(pos_infin); 
+<tr>
+<td><pre class="screen">time_duration td(pos_infin); 
 time_duration td2(not_a_date_time); 
 time_duration td3(2,5,10);
 td.is_special(); // --&gt; true
 td2.is_special(); // --&gt; true
-td3.is_special(); // --&gt; false</pre></td></tr>
+td3.is_special(); // --&gt; false</pre></td>
+<td class="auto-generated"> </td>
+</tr>
 </tbody>
 </table></div>
 <p>
@@ -1038,7 +1102,7 @@ tm td_tm = to_tm(td);
    tm_hour =&gt; 1
    tm_min  =&gt; 2
    tm_sec  =&gt; 3
-   tm_isddst =&gt; -1 */</pre>
+   tm_isdst =&gt; -1 */</pre>
 	  </td></tr>
 </tbody>
 </table></div>
@@ -1274,17 +1338,17 @@ tp2.intersects(tp1); // --&gt; true</pre>
 <td rowspan="2" valign="top"><pre class="screen">time_period intersection(time_period)</pre></td>
 <td>Calculate the intersection of 2 periods. Null if no intersection.</td>
 </tr>
-<tr><td>&#160;</td></tr>
+<tr><td> </td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">time_period merge(time_period)</pre></td>
 <td>Returns union of two periods. Null if no intersection.</td>
 </tr>
-<tr><td>&#160;</td></tr>
+<tr><td> </td></tr>
 <tr>
 <td rowspan="2" valign="top"><pre class="screen">time_period span(time_period)</pre></td>
 <td>Combines two periods and any gap between them such that begin = min(p1.begin, p2.begin) and end = max(p1.end , p2.end).</td>
 </tr>
-<tr><td>&#160;</td></tr>
+<tr><td> </td></tr>
 </tbody>
 </table></div>
 <p>
@@ -1366,7 +1430,7 @@ tp2.intersects(tp1); // --&gt; true</pre>
 <td rowspan="2" valign="top"><pre class="screen">operator&lt;=, operator&gt;=</pre></td>
 <td>Defined in terms of the other operators.</td>
 </tr>
-<tr><td>&#160;</td></tr>
+<tr><td> </td></tr>
 </tbody>
 </table></div>
 <p>
@@ -1512,7 +1576,7 @@ time_iterator titr(start_time, td);
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2005 CrystalClear Software, Inc<p>Subject to the Boost Software License, Version 1.0. (See accompanying file
+<td align="right"><div class="copyright-footer">Copyright © 2001-2005 CrystalClear Software, Inc<p>Subject to the Boost Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>
 </tr></table>

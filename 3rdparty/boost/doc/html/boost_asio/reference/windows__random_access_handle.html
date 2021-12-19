@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>windows::random_access_handle</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -55,6 +55,18 @@ Typedef
               </th>
 </tr></thead>
 <tbody>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="windows__basic_random_access_handle__rebind_executor.html" title="windows::basic_random_access_handle::rebind_executor"><span class="bold"><strong>rebind_executor</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Rebinds the handle type to another executor.
+                </p>
+              </td>
+</tr>
 <tr>
 <td>
                 <p>
@@ -155,14 +167,14 @@ Typedef
 <tr>
 <td>
                 <p>
-                  <a class="link" href="windows__basic_random_access_handle/basic_random_access_handle.html" title="windows::basic_random_access_handle::basic_random_access_handle"><span class="bold"><strong>basic_random_access_handle</strong></span></a>
+                  <a class="link" href="windows__basic_random_access_handle/basic_random_access_handle.html" title="windows::basic_random_access_handle::basic_random_access_handle"><span class="bold"><strong>basic_random_access_handle</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
-                  Construct a random-access handle without opening it. <br> <span class="silver"> &#8212;</span><br>
+                  Construct a random-access handle without opening it. <br> <span class="silver"> —</span><br>
                   Construct a random-access handle on an existing native handle.
-                  <br> <span class="silver"> &#8212;</span><br> Move-construct a random-access handle from another.
+                  <br> <span class="silver"> —</span><br> Move-construct a random-access handle from another.
                 </p>
               </td>
 </tr>
@@ -222,7 +234,7 @@ Typedef
               </td>
 <td>
                 <p>
-                  Get a reference to the lowest layer. <br> <span class="silver"> &#8212;</span><br> Get a const
+                  Get a reference to the lowest layer. <br> <span class="silver"> —</span><br> Get a const
                   reference to the lowest layer.
                 </p>
               </td>
@@ -277,44 +289,12 @@ Typedef
 </tr>
 </tbody>
 </table></div>
-<h5>
-<a name="boost_asio.reference.windows__random_access_handle.h2"></a>
-        <span class="phrase"><a name="boost_asio.reference.windows__random_access_handle.protected_data_members"></a></span><a class="link" href="windows__random_access_handle.html#boost_asio.reference.windows__random_access_handle.protected_data_members">Protected
-        Data Members</a>
-      </h5>
-<div class="informaltable"><table class="table">
-<colgroup>
-<col>
-<col>
-</colgroup>
-<thead><tr>
-<th>
-                <p>
-                  Name
-                </p>
-              </th>
-<th>
-                <p>
-                  Description
-                </p>
-              </th>
-</tr></thead>
-<tbody><tr>
-<td>
-                <p>
-                  <a class="link" href="windows__basic_random_access_handle/impl_.html" title="windows::basic_random_access_handle::impl_"><span class="bold"><strong>impl_</strong></span></a>
-                </p>
-              </td>
-<td>
-              </td>
-</tr></tbody>
-</table></div>
 <p>
         The <a class="link" href="windows__basic_random_access_handle.html" title="windows::basic_random_access_handle"><code class="computeroutput">windows::basic_random_access_handle</code></a>
         class provides asynchronous and blocking random-access handle functionality.
       </p>
 <h5>
-<a name="boost_asio.reference.windows__random_access_handle.h3"></a>
+<a name="boost_asio.reference.windows__random_access_handle.h2"></a>
         <span class="phrase"><a name="boost_asio.reference.windows__random_access_handle.thread_safety"></a></span><a class="link" href="windows__random_access_handle.html#boost_asio.reference.windows__random_access_handle.thread_safety">Thread
         Safety</a>
       </h5>
@@ -325,7 +305,7 @@ Typedef
         <span class="emphasis"><em>Shared</em></span> <span class="emphasis"><em>objects:</em></span> Unsafe.
       </p>
 <h5>
-<a name="boost_asio.reference.windows__random_access_handle.h4"></a>
+<a name="boost_asio.reference.windows__random_access_handle.h3"></a>
         <span class="phrase"><a name="boost_asio.reference.windows__random_access_handle.requirements"></a></span><a class="link" href="windows__random_access_handle.html#boost_asio.reference.windows__random_access_handle.requirements">Requirements</a>
       </h5>
 <p>
@@ -337,7 +317,8 @@ Typedef
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

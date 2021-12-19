@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Computing the Fifth Root</title>
 <link rel="stylesheet" href="../../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Math Toolkit 2.10.0">
+<link rel="home" href="../../index.html" title="Math Toolkit 3.1.0">
 <link rel="up" href="../root_finding_examples.html" title="Examples of Root-Finding (with and without derivatives)">
 <link rel="prev" href="lambda.html" title="Using C++11 Lambda's">
 <link rel="next" href="multiprecision_root.html" title="Root-finding using Boost.Multiprecision">
@@ -34,9 +34,9 @@
 <p>
         The equation we want to solve is :
       </p>
-<p>
-        &#8192;&#8192;<span class="emphasis"><em>f</em></span>(x) = <span class="emphasis"><em>x<sup>5</sup> -a</em></span>
-      </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+          <span class="serif_italic"><span class="emphasis"><em>f</em></span>(x) = <span class="emphasis"><em>x<sup>5</sup> -a</em></span></span>
+        </p></blockquote></div>
 <p>
         If your differentiation is a little rusty (or you are faced with an function
         whose complexity makes differentiation daunting), then you can get help,
@@ -44,7 +44,7 @@
         site.</a>
       </p>
 <p>
-        For example, entering the commmand: <code class="computeroutput"><span class="identifier">differentiate</span>
+        For example, entering the command: <code class="computeroutput"><span class="identifier">differentiate</span>
         <span class="identifier">x</span> <span class="special">^</span> <span class="number">5</span></code>
       </p>
 <p>
@@ -89,14 +89,14 @@
         root</a>).
       </p>
 <p>
-        The 1st and 2nd derivatives of x<sup>5</sup> are:
+        The 1st and 2nd derivatives of <span class="emphasis"><em>x<sup>5</sup></em></span> are:
       </p>
-<p>
-        &#8192;&#8192;<span class="emphasis"><em>f</em></span>'(x) = 5x<sup>4</sup>
-      </p>
-<p>
-        &#8192;&#8192;<span class="emphasis"><em>f</em></span>''(x) = 20x<sup>3</sup>
-      </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+          <span class="serif_italic"><span class="emphasis"><em>f'(x) = 5x<sup>4</sup></em></span></span>
+        </p></blockquote></div>
+<div class="blockquote"><blockquote class="blockquote"><p>
+          <span class="serif_italic"><span class="emphasis"><em>f''(x) = 20x<sup>3</sup></em></span></span>
+        </p></blockquote></div>
 <p>
         Using these expressions for the derivatives, the functor is:
       </p>
@@ -136,8 +136,8 @@
   <span class="identifier">T</span> <span class="identifier">max</span> <span class="special">=</span> <span class="identifier">ldexp</span><span class="special">(</span><span class="number">2.</span><span class="special">,</span> <span class="identifier">exponent</span> <span class="special">/</span> <span class="number">5</span><span class="special">);</span>      <span class="comment">// Maximum possible value is twice our guess.</span>
   <span class="comment">// Stop when slightly more than one of the digits are correct:</span>
   <span class="keyword">const</span> <span class="keyword">int</span> <span class="identifier">digits</span> <span class="special">=</span> <span class="keyword">static_cast</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">digits</span> <span class="special">*</span> <span class="number">0.4</span><span class="special">);</span>
-  <span class="keyword">const</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">maxit</span> <span class="special">=</span> <span class="number">50</span><span class="special">;</span>
-  <span class="identifier">boost</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">it</span> <span class="special">=</span> <span class="identifier">maxit</span><span class="special">;</span>
+  <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">maxit</span> <span class="special">=</span> <span class="number">50</span><span class="special">;</span>
+  <span class="identifier">std</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">it</span> <span class="special">=</span> <span class="identifier">maxit</span><span class="special">;</span>
   <span class="identifier">T</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">halley_iterate</span><span class="special">(</span><span class="identifier">fifth_functor_2deriv</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;(</span><span class="identifier">x</span><span class="special">),</span> <span class="identifier">guess</span><span class="special">,</span> <span class="identifier">min</span><span class="special">,</span> <span class="identifier">max</span><span class="special">,</span> <span class="identifier">digits</span><span class="special">,</span> <span class="identifier">it</span><span class="special">);</span>
   <span class="keyword">return</span> <span class="identifier">result</span><span class="special">;</span>
 <span class="special">}</span>
@@ -149,11 +149,11 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

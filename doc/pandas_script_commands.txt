@@ -1757,8 +1757,28 @@ NPC名称:
 各参数的详细说明请直接参考 doc/script_commands.txt 中 bonus_script 的说明.
 
 返回值:
-	执行失败则返回 0, 执行成功则返回该效果脚本示例的唯一编号
-	编号可以用于 bonus_script_remove 等拓展指令
+	执行成功则返回该 bonus_script 实例的唯一编号,
+	执行失败, 或者 bonus_script 在没有指定 2048 强制覆盖标记的情况下已存在则返回 0.
+	此处的唯一编号可以用于 bonus_script_remove 等拓展指令.
+
+注意事项:
+	正常情况下连续执行两次相同的 bonus_script 只有第一次能获得编号, 如:
+
+		// 第一次, .@bonusid 将返回有效的唯一编号
+		.@bonusid = bonus_script("{ bonus bStr,5; }",60);
+		
+		// 第二次, 没有特殊指定强制覆盖标记, 虽然时间会重置, 但返回值将依然是 0
+		.@bonusid = bonus_script("{ bonus bStr,5; }",60);
+
+	bonus_script 的 <标记> 允许您设定 2048 来强制重复 bonus_script 脚本, 如:
+	
+		// 第一次, .@bonusid 将返回有效的唯一编号, 比如: 644245094400002
+		.@bonusid = bonus_script("{ bonus bStr,5; }",60,2048);
+	
+		// 第二次, .@bonusid 也会返回有效的唯一编号, 但将于第一次创建时的编号不同, 比如: 644245094400003
+		.@bonusid = bonus_script("{ bonus bStr,5; }",60,2048);
+		
+		在这种情况下, 两次创建的 bonus_script 将同时生效, 在它们同时生效期间角色的 STR 将会是 +10
 
 --------------------------------------------------------------
 
@@ -2141,5 +2161,672 @@ NPC名称:
 	getcalendartime(19, 00); 				// 获取下次 19:00 的时间戳
 	getcalendartime(19, 00, 6); 			// 获取下次 6 号 19:00 的时间戳
 	getcalendartime(19, 10, -1, MONDAY);	// 获取下次 周一 19:10 的时间戳
+
+--------------------------------------------------------------
+
+*getskillinfo <查询的信息类型>,<技能编号>{,<技能等级>{,<角色编号>}};
+*getskillinfo <查询的信息类型>,<"技能名称">{,<技能等级>{,<角色编号>}};
+
+获取指定技能在技能数据库中所配置的各项信息
+
+查询的信息类型:
+	SKI_CASTTYPE
+		技能施法类型
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中提供的 TargetType 进行计算得出
+		
+		可能的返回值:
+		----------------
+		CAST_GROUND				/// 地面技能
+		CAST_DAMAGE				/// 伤害技能
+		CAST_NODAMAGE			/// 无伤害技能
+		
+	SKI_NAME
+		技能名称
+		
+		返回值为字符串类型
+		该字段的值来自 skill_db.yml 中的 Name 字段
+		通常技能名称是英文常量, 比如狂击的技能名称是 SM_BASH
+		
+	SKI_DESCRIPTION
+		技能描述
+		
+		返回值为字符串类型
+		该字段的值来自 skill_db.yml 中的 Description 字段
+		通常技能描述是游戏里的技能名称, 比如: 狂击
+		
+	SKI_MAXLEVEL_IN_SKILLTREE
+		指定职业的技能树中该技能的最大等级
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入要查询的职业代码
+		该字段的值来自 skill_tree.txt 中不同职业对被查询技能所设置的最大技能等级
+		
+	SKI_SKILLTYPE
+		技能伤害类型
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Type 字段
+		
+		可能的返回值:
+		----------------
+		BF_WEAPON				/// 物理攻击类型
+		BF_MAGIC				/// 魔法攻击类型
+		BF_MISC					/// 其他类型
+		
+	SKI_HIT
+		技能命中类型
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Hit 字段
+		
+		可能的返回值:
+		----------------
+		DMG_SINGLE				/// (skill?)
+		DMG_MULTI_HIT			/// multi-hit damage
+		
+	SKI_TARGETTYPE
+		技能目标类型
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 TargetType 字段
+		
+		可能的返回值:
+		----------------
+		INF_PASSIVE_SKILL		/// 
+		INF_ATTACK_SKILL		/// 
+		INF_GROUND_SKILL		/// 
+		INF_SELF_SKILL			/// 
+		INF_SUPPORT_SKILL		///
+		INF_TRAP_SKILL			///
+		
+	SKI_ELEMENT
+		技能属性
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Element 字段
+		
+		可能的返回值:
+		----------------
+		ELE_NEUTRAL				/// 无属性 / 自然属性
+		ELE_WATER				/// 水属性
+		ELE_EARTH				/// 地属性
+		ELE_FIRE				/// 火属性
+		ELE_WIND				/// 风属性
+		ELE_POISON				/// 毒属性
+		ELE_HOLY				/// 圣属性
+		ELE_DARK				/// 暗属性
+		ELE_GHOST				/// 幽灵属性
+		ELE_UNDEAD				/// 不死属性
+		ELE_WEAPON				/// 使用武器的属性
+		ELE_ENDOWED				/// ??? 谁有了解的翻译一下
+		ELE_RANDOM				/// 随机属性
+		
+	SKI_DAMAGEFLAGS
+		技能伤害的修正标记
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组名称为: @skill_damage_flags[]
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的数组名称为: $@skill_damage_flags[]
+		该字段的值来自 skill_db.yml 中的 DamageFlags 字段
+		
+		返回值数组中保存是该技能激活的伤害修正标记
+		
+		可能的返回值:
+		----------------
+		NK_SPLASH				/// 
+		NK_SPLASHSPLIT			/// 
+		NK_IGNOREATKCARD		/// 
+		NK_IGNOREELEMENT		/// 
+		NK_IGNOREDEFENSE		/// 
+		NK_IGNOREFLEE			/// 
+		NK_IGNOREDEFCARD		/// 
+		NK_CRITICAL				/// 
+		NK_IGNORELONGCARD		/// 
+		
+	SKI_MAXLEVEL
+		技能最大等级
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 MaxLevel 字段
+		
+	SKI_RANGE
+		技能有效范围 / 攻击距离
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Range 字段
+		
+	SKI_SPLASHAREA
+		技能溅射范围
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 SplashArea 字段
+		
+	SKI_HITCOUNT
+		技能打击段数
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 HitCount 字段
+		
+	SKI_CASTTIME
+		技能可变咏唱时间 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 CastTime 字段
+		
+	SKI_FIXEDCASTTIME
+		技能固定咏唱时间 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 FixedCastTime 字段
+		
+		仅复兴后版本中拥有固定咏唱时间这个设定, 复兴前版本中该类查询返回值强制为 -1
+		
+	SKI_AFTERCASTACTDELAY
+		技能咏唱完毕后的动作延迟时间, 别名: 技能公共延迟 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 AfterCastActDelay 字段
+		
+	SKI_AFTERCASTWALKDELAY
+		技能咏唱完毕后的移动僵直时间, 别名: 技能攻击僵直 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 AfterCastWalkDelay 字段
+		
+	SKI_DURATION1
+		技能时间配置字段 1 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Duration1 字段
+		
+		不同的技能对该字段的使用方式不同, 因此没有明确的作用说明
+		例如: 复兴后的 SM_ENDURE 技能在 Duration1 中配置的值被用作 "霸体" 的效果时长
+		
+	SKI_DURATION2
+		技能时间配置字段 2 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Duration2 字段
+		
+		不同的技能对该字段的使用方式不同, 因此没有明确的作用说明
+		例如: 复兴后的 PR_LEXDIVINA 技能在 Duration2 中配置的值被用作 "沉默之术" 的效果时长
+		
+	SKI_CASTTIMEFLAGS
+		技能咏唱时间的修正标记
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CastTimeFlags 字段
+		
+		可能的返回值:
+		----------------
+		SKILL_CAST_IGNOREDEX		/// 标记位, 无视 DEX 带来的修正影响
+		SKILL_CAST_IGNORESTATUS		/// 标记位, 无视角色状态 (StatusChange / 简称 SC) 的修正影响
+		SKILL_CAST_IGNOREITEMBONUS	/// 标记位, 无视 bonus 效果调整器的修正影响
+		
+	SKI_CASTDELAYFLAGS
+		技能延迟时间的修正标记
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CastDelayFlags 字段
+		
+		可能的返回值:
+		----------------
+		SKILL_CAST_IGNOREDEX		/// 标记位, 无视 DEX 带来的修正影响
+		SKILL_CAST_IGNORESTATUS		/// 标记位, 无视角色状态 (StatusChange / 简称 SC) 的修正影响
+		SKILL_CAST_IGNOREITEMBONUS	/// 标记位, 无视 bonus 效果调整器的修正影响
+		
+	SKI_CASTDEFENSEREDUCTION
+		技能在咏唱期间造成施法者的防御降低倍率
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CastDefenseReduction 字段
+		
+	SKI_FLAGS
+		技能特殊标记
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组名称为: @skill_flags[]
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的数组名称为: $@skill_flags[]
+		该字段的值来自 skill_db.yml 中的 Flags 字段
+		
+		返回值数组中保存是该技能的特殊标记
+		
+		可能的返回值:
+		----------------
+		INF2_ISQUEST				/// 这是任务技能
+		INF2_ISNPC					/// 
+		INF2_ISWEDDING				/// 这是结婚后才能拥有的技能
+		INF2_ISSPIRIT				/// 
+		INF2_ISGUILD				/// 这是公会技能
+		INF2_ISSONG					/// 
+		INF2_ISENSEMBLE				/// 
+		INF2_ISTRAP					/// 这是陷阱技能
+		INF2_TARGETSELF				/// 
+		INF2_NOTARGETSELF			/// 
+		INF2_PARTYONLY				/// 只能对队伍中的成员使用
+		INF2_GUILDONLY				/// 只能对公会中的成员使用
+		INF2_NOTARGETENEMY			/// 
+		INF2_ISAUTOSHADOWSPELL		/// 
+		INF2_ISCHORUS				/// 
+		INF2_IGNOREBGREDUCTION		/// 
+		INF2_IGNOREGVGREDUCTION		/// 
+		INF2_DISABLENEARNPC			/// 靠近部分 NPC 时禁止使用此技能
+		INF2_TARGETTRAP				/// 
+		INF2_IGNORELANDPROTECTOR	/// 
+		INF2_ALLOWWHENHIDDEN		/// 
+		INF2_ALLOWWHENPERFORMING	/// 
+		INF2_TARGETEMPERIUM			/// 
+		INF2_IGNOREKAGEHUMI			/// 
+		INF2_ALTERRANGEVULTURE		/// 
+		INF2_ALTERRANGESNAKEEYE		/// 
+		INF2_ALTERRANGESHADOWJUMP	/// 
+		INF2_ALTERRANGERADIUS		/// 
+		INF2_ALTERRANGERESEARCHTRAP	/// 
+		INF2_IGNOREHOVERING			/// 
+		INF2_ALLOWONWARG			/// 
+		INF2_ALLOWONMADO			/// 
+		INF2_TARGETMANHOLE			/// 
+		INF2_TARGETHIDDEN			/// 
+		INF2_INCREASEDANCEWITHWUGDAMAGE		/// 
+		INF2_IGNOREWUGBITE			/// 
+		INF2_IGNOREAUTOGUARD		/// 
+		INF2_IGNORECICADA			/// 
+		INF2_SHOWSCALE				/// 
+		
+	SKI_CASTCANCEL
+		技能在咏唱期间是否会被打断
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CastCancel 字段
+		
+	SKI_ACTIVEINSTANCE
+		技能同时存在的个数上限, 通常作用于地面技能
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 ActiveInstance 字段
+		
+	SKI_KNOCKBACK
+		技能击退距离
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Knockback 字段
+		
+	SKI_COOLDOWN
+		技能可以被再次使用的冷却时间 (单位为毫秒)
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Cooldown 字段
+		
+	SKI_NONEARNPC_TYPE
+		技能不可在哪些 NPC 附近使用
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 NoNearNPC 节点的 Type 字段
+		
+		该选项的两种情况生效:
+			当 Flags 中设定了 DisableNearNpc 时生效
+			当 Unit->Flag 中设定了 NoFootSet 时生效
+		
+		可能的返回值:
+		----------------
+		SKILL_NONEAR_WARPPORTAL		/// 标记位, 不能靠近传送点附近
+		SKILL_NONEAR_SHOP			/// 标记位, 不能靠近商店附近
+		SKILL_NONEAR_NPC			/// 标记位, 不能靠近 NPC 附近
+		SKILL_NONEAR_TOMB			/// 标记位, 不能靠近 MVP 坟墓附近
+		
+	SKI_NONEARNPC_ADDITIONALRANGE
+		技能不可靠近的 NPC 额外距离要求
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 NoNearNPC 节点的 AdditionalRange 字段
+		
+	SKI_COPYFLAGS_SKILL
+		技能是否能被复制
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CopyFlags 节点的 Skill 字段
+		
+		可能的返回值:
+		----------------
+		0							/// 不可被复制
+		SKILL_COPY_PLAGIARISM		/// 标记位, 可以被"抄袭"技能 (RG_PLAGIARISM) 复制
+		SKILL_COPY_REPRODUCE		/// 标记位, 可以被"复制"技能 (SC_REPRODUCE) 复制
+		
+	SKI_COPYFLAGS_REMOVEREQUIREMENT
+		技能被复制后, 抄袭者进行施法时是否忽略部分条件
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 CopyFlags 节点的 RemoveRequirement 字段
+		
+		可能的返回值:
+		----------------
+		SKILL_REQ_HPCOST			/// 标记位, 无需扣减指定点数的 HP
+		SKILL_REQ_SPCOST			/// 标记位, 无需扣减指定点数的 SP
+		SKILL_REQ_HPRATECOST		/// 标记位, 无需扣减指定百分比的 HP
+		SKILL_REQ_SPRATECOST		/// 标记位, 无需扣减指定百分比的 SP
+		SKILL_REQ_MAXHPTRIGGER		/// 标记位, 无需检查至少要有百分之多少 HP 才能施法
+		SKILL_REQ_ZENYCOST			/// 标记位, 无需扣减指定数量的 Zeny
+		SKILL_REQ_WEAPON			/// 标记位, 无需检查武器符合特定类型
+		SKILL_REQ_AMMO				/// 标记位, 无需检查弹药符合特定类型
+		SKILL_REQ_STATE				/// 标记位, 无需检查场景类型
+		SKILL_REQ_STATUS			/// 标记位, 无需检查角色状态类型
+		SKILL_REQ_SPIRITSPHERECOST	/// 标记位, 无需检查灵气弹数量
+		SKILL_REQ_ITEMCOST			/// 标记位, 无需检查特定物品消耗品
+		SKILL_REQ_EQUIPMENT			/// 标记位, 无需检查是否穿戴特定装备
+		
+	SKI_UNIT_ID
+		技能绑定的首选 Unit 子单位编号
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Id 字段
+		
+	SKI_UNIT_ALTERNATEID
+		技能绑定的备选 Unit 子单位编号
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 AlternateId 字段
+		
+	SKI_UNIT_LAYOUT
+		技能绑定的 Unit 子单位布局
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Layout 字段
+		
+	SKI_UNIT_RANGE
+		技能绑定的 Unit 子单位作用距离
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Range 字段
+		
+	SKI_UNIT_INTERVAL
+		技能绑定的 Unit 子单位间隔时间 (单位为毫秒)
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Interval 字段
+		
+	SKI_UNIT_TARGET
+		技能绑定的 Unit 子单位作用目标
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Target 字段
+		
+		可能的返回值:
+		----------------
+		BCT_SELF					/// 自己
+		BCT_ENEMY					/// 敌人
+		BCT_PARTY					/// 队伍成员
+		BCT_GUILDALLY				/// 同盟成员, 不含公会成员
+		BCT_NEUTRAL					/// 自然目标
+		BCT_SAMEGUILD				/// 公会成员, 不含同盟成员
+		
+	SKI_UNIT_FLAG
+		技能绑定的 Unit 子单位特殊标记
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组名称为: @skill_unit_flag[]
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的数组名称为: $@skill_unit_flag[]
+		该字段的值来自 skill_db.yml 中的 Unit 节点的 Flag 字段
+		
+		可能的返回值:
+		----------------
+		UF_NOENEMY					/// If 'defunit_not_enemy' is set, the target is changed to 'friend'
+		UF_NOREITERATION			/// Spell cannot be stacked
+		UF_NOFOOTSET				/// Spell cannot be cast near/on targets
+		UF_NOOVERLAP				/// Spell effects do not overlap
+		UF_PATHCHECK				/// Only cells with a shootable path will be placed
+		UF_NOPC						/// May not target players
+		UF_NOMOB					/// May not target mobs
+		UF_SKILL					/// May target skills
+		UF_DANCE					/// Dance
+		UF_ENSEMBLE					/// Duet
+		UF_SONG						/// Song
+		UF_DUALMODE					/// Spells should trigger both ontimer and onplace/onout/onleft effects.
+		UF_NOKNOCKBACK				/// Skill unit cannot be knocked back
+		UF_RANGEDSINGLEUNIT			/// hack for ranged layout, only display center
+		UF_CRAZYWEEDIMMUNE			/// Immune to Crazy Weed removal
+		UF_REMOVEDBYFIRERAIN		/// removed by Fire Rain
+		UF_KNOCKBACKGROUP			/// knockback skill unit with its group instead of single unit
+		UF_HIDDENTRAP				/// Hidden trap [Cydh]
+		
+	SKI_REQUIRES_HPCOST
+		技能施法条件 - 需要扣减多少点 HP 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 HpCost 字段
+		
+	SKI_REQUIRES_SPCOST
+		技能施法条件 - 需要扣减多少点 SP 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 SpCost 字段
+		
+	SKI_REQUIRES_MAXHPTRIGGER
+		技能施法条件 - 需要至少剩余百分之多少的 HP 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 MaxHpTrigger 字段
+		
+	SKI_REQUIRES_HPRATECOST
+		技能施法条件 - 需要扣减百分之多少的 HP 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 HpRateCost 字段
+		
+	SKI_REQUIRES_SPRATECOST
+		技能施法条件 - 需要扣减百分之多少的 SP 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 SpRateCost 字段
+		
+	SKI_REQUIRES_ZENYCOST
+		技能施法条件 - 需要扣减多少 Zeny 才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 ZenyCost 字段
+		
+	SKI_REQUIRES_WEAPON
+		技能施法条件 - 至少需要装备符合任意一个类型的武器才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 Weapon 字段
+		
+		可能的返回值:
+		----------------
+		0							/// 任何武器
+		W_DAGGER					/// 短剑
+		W_1HSWORD					/// 单手剑
+		W_2HSWORD					/// 双手剑
+		W_1HSPEAR					/// 单手矛/枪/戟
+		W_2HSPEAR					/// 双手矛/枪/戟
+		W_1HAXE						/// 单手斧
+		W_2HAXE						/// 双手斧
+		W_MACE						/// 单手钝器
+		W_2HMACE					/// 双手钝器
+		W_STAFF						/// 单手杖
+		W_2HSTAFF					/// 双手杖
+		W_BOW						/// 弓
+		W_KNUCKLE					/// 拳套
+		W_MUSICAL					/// 乐器
+		W_WHIP						/// 鞭子
+		W_BOOK						/// 书
+		W_KATAR						/// 拳刃
+		W_REVOLVER					/// 左轮手枪
+		W_RIFLE						/// 来复枪
+		W_GATLING					/// 格林机关枪
+		W_SHOTGUN					/// 散弹枪
+		W_GRENADE					/// 榴弹枪
+		W_HUUMA						/// 风魔
+		MAX_WEAPON_TYPE				/// 该值减去 1 等于最大的武器类型值 (遍历用)
+		
+		例子:
+		----------------
+		(返回值 & (1 << W_DAGGER)) == (1 << W_DAGGER) 成立则表示穿戴短剑才能施法
+		
+	SKI_REQUIRES_AMMO
+		技能施法条件 - 需要装备哪种类型的弹药才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 Ammo 字段
+		
+		可能的返回值:
+		----------------
+		0							/// 任何弹药
+		AMMO_ARROW					/// 箭矢
+		AMMO_DAGGER					/// 短刀
+		AMMO_BULLET					/// 子弹
+		AMMO_SHELL					/// 炮弹
+		AMMO_GRENADE				/// 榴弹
+		AMMO_SHURIKEN				/// 手里剑
+		AMMO_KUNAI					/// 苦无
+		AMMO_CANNONBALL				/// 加农炮弹
+		AMMO_THROWWEAPON			/// 投掷物品
+		MAX_AMMO_TYPE				/// 该值减去 1 等于最大的弹药类型值 (遍历用)
+		
+		例子:
+		----------------
+		(返回值 & (1 << AMMO_ARROW)) == (1 << AMMO_ARROW) 成立则表示使用箭矢作为弹药才能施法
+		
+	SKI_REQUIRES_AMMOAMOUNT
+		技能施法条件 - 需要多少个指定的弹药才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 AmmoAmount 字段
+		
+	SKI_REQUIRES_STATE
+		技能施法条件 - 必须在哪些特殊的环境状态下才能施法
+		
+		返回值为数值类型
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 State 字段
+		
+		可能的返回值:
+		----------------
+		ST_NONE,					/// 
+		ST_HIDDEN,					/// 
+		ST_RIDING,					/// 乘骑状态
+		ST_FALCON,					/// 猎鹰状态
+		ST_CART,					/// 有手推车状态
+		ST_SHIELD,					/// 
+		ST_RECOVER_WEIGHT_RATE,		/// 
+		ST_MOVE_ENABLE,				/// 
+		ST_WATER,					/// 站在水面上
+		ST_RIDINGDRAGON,			/// 
+		ST_WUG,						/// 
+		ST_RIDINGWUG,				/// 
+		ST_MADO,					/// 魔导机甲状态
+		ST_ELEMENTALSPIRIT,			/// 
+		ST_ELEMENTALSPIRIT2,		/// 
+		ST_PECO,					/// 
+		ST_SUNSTANCE,				/// 
+		ST_MOONSTANCE,				/// 
+		ST_STARSTANCE,				/// 
+		ST_UNIVERSESTANCE			/// 
+		
+	SKI_REQUIRES_STATUS
+		技能施法条件 - 必须在哪些特殊的角色状态下才能施法
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组名称为: @skill_requires_status[]
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的数组名称为: $@skill_requires_status[]
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 Status 字段
+		
+		返回值数组中保存是角色状态编号
+		备注: StatusChange / 简称 SC / 就是用 sc_start 可以启动的那些状态
+		
+		例子:
+		----------------
+		.@len = getskillinfo(SKI_REQUIRES_STATUS,"MO_EXTREMITYFIST");
+		dispbottom "MO_EXTREMITYFIST 要求角色有以下编号的状态才能使用:";
+		for (.@i = 0; .@i < .@len; .@i++) {
+			dispbottom sprintf("第 %d 个状态: 状态编号 %d", .@i, @skill_requires_status[.@i]);
+		}
+		
+	SKI_REQUIRES_SPHERECOST
+		技能施法条件 - 必须拥有多少个灵气弹才能施法
+		
+		返回值为数值类型
+		需要在 <技能等级> 字段中传入技能等级
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 SphereCost 字段
+		
+	SKI_REQUIRES_ITEMCOST
+		技能施法条件 - 至少持有特定全部物品道具才能施法
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组共有两个:
+			@skill_requires_itemid[]	保存道具编号
+			@skill_requires_amount[]	保存所需的道具数量
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的两个数组名称为:
+			$@skill_requires_itemid[]	保存道具编号
+			$@skill_requires_amount[]	保存所需的道具数量
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 ItemCost 字段
+		
+		例子:
+		----------------
+		.@len = getskillinfo(SKI_REQUIRES_ITEMCOST,"KO_MAKIBISHI");
+		dispbottom "KO_MAKIBISHI 要求身上有[以下全部]道具才能使用:";
+		for (.@i = 0; .@i < .@len; .@i++) {
+			dispbottom sprintf("第 %d 个道具: 物品编号 %d x %d 个", .@i, @skill_requires_itemid[.@i], @skill_requires_amount[.@i]);
+		}
+		
+	SKI_REQUIRES_EQUIPMENT
+		技能施法条件 - 至少需要装备任意一件特定道具才能施法
+		
+		返回值为数值类型, 返回的是数组长度
+		用于承接返回值的数组名称为: @skill_requires_equipment[]
+		若在不关联任何玩家的情况下执行, 则用于承接返回值的数组名称为: $@skill_requires_equipment[]
+		该字段的值来自 skill_db.yml 中的 Requires 节点的 Equipment 字段
+		
+		返回值数组中保存是装备的道具编号
+		
+		例子:
+		----------------
+		.@len = getskillinfo(SKI_REQUIRES_EQUIPMENT,"RL_P_ALTER");
+		dispbottom "RL_P_ALTER 要求穿戴[以下任意一件]装备才能使用:";
+		for (.@i = 0; .@i < .@len; .@i++) {
+			dispbottom sprintf("第 %d 件装备: 物品编号 %d", .@i, @skill_requires_equipment[.@i]);
+		}
+		
+技能编号:
+	传入需要查询的技能编号 (定义在 skill_db 中每个技能的 Id 字段)
+	例如: 剑士狂击技能的技能编号是 5
+
+技能名称:
+	传入需要查询的技能名称 (定义在 skill_db 中每个技能的 Name 字段)
+	例如: 剑士狂击技能的名称是 SM_BASH (字符串类型)
+
+技能等级:
+	在绝大多数情况下这个参数用来填写要查询的技能等级
+	部分查询类型中 <技能等级> 可能会被用作传递其他信息, 例如: SKI_MAXLEVEL_IN_SKILLTREE
+
+返回值:
+	根据 <查询的信息类型> 的不同, 返回值的含义会有差异
+	具体返回值细节已经在上文中每个不同的 <查询的信息类型> 说明中定义
+	
+	若传递的 <查询的信息类型>, <技能编号>, <"技能名称"> 无效, 则将报错并返回 -1
 
 --------------------------------------------------------------

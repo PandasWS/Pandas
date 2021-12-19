@@ -1,5 +1,5 @@
-//
 // Copyright Klemens Morgenstern, 2012-2015.
+// Copyright 2019-2021 Antony Polukhin.
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -31,26 +31,26 @@ struct my_template {};
 template<typename T>
 void compare()
 {
-	typedef boost::typeindex::ctti_type_index ctti;
-	typedef boost::typeindex::stl_type_index stl;
-	BOOST_TEST_EQ(
-		ctti::type_id<int>().pretty_name(),
-		stl::type_id<int>().pretty_name()
-	);
+    typedef boost::typeindex::ctti_type_index ctti;
+    typedef boost::typeindex::stl_type_index stl;
+    BOOST_TEST_EQ(
+        ctti::type_id<int>().pretty_name(),
+        stl::type_id<int>().pretty_name()
+    );
 }
 
 
 int main()
 {
-	compare<void>();
-	compare<int>();
-	compare<double*>();
-	compare<const double&>();
-	compare<my_namespace1::my_class>();
+    compare<void>();
+    compare<int>();
+    compare<double*>();
+    compare<const double&>();
+    compare<my_namespace1::my_class>();
 
-	compare<my_namespace3::my_template<
-			my_namespace1::my_class,
-			my_namespace2::my_class> >();
+    compare<my_namespace3::my_template<
+            my_namespace1::my_class,
+            my_namespace2::my_class> >();
 
 
     return boost::report_errors();
@@ -60,7 +60,7 @@ int main()
 
 int main()
 {
-	return 0;
+    return 0;
 }
 
 #endif

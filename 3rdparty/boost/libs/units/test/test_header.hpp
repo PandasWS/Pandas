@@ -24,7 +24,7 @@ Output:
 #ifndef BOOST_UNITS_TEST_HEADER_HPP
 #define BOOST_UNITS_TEST_HEADER_HPP
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include <boost/units/base_dimension.hpp>
 #include <boost/units/derived_dimension.hpp>
@@ -38,7 +38,7 @@ Output:
 #include <boost/units/physical_dimensions/mass.hpp>
 #include <boost/units/physical_dimensions/time.hpp>
 
-#define BOOST_UNITS_CHECK_CLOSE(a, b) (BOOST_CHECK((std::abs((a) - (b)) < .0000001)))
+#define BOOST_UNITS_CHECK_CLOSE(a, b) BOOST_TEST(std::abs((a) - (b)) < .0000001)
 
 namespace boost {
 

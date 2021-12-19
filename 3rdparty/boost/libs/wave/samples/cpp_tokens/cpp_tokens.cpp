@@ -30,6 +30,8 @@
 #include "slex/cpp_slex_lexer.hpp"
 #endif // !defined(BOOST_WAVE_SEPARATE_LEXER_INSTANTIATION)
 
+#include <iostream>
+
 ///////////////////////////////////////////////////////////////////////////////
 //  import required names
 using namespace boost::spirit::classic;

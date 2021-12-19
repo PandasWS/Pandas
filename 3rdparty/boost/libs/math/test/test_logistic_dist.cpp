@@ -23,7 +23,7 @@
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp> // Boost.Test
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include "test_out_of_range.hpp"
 
 #include <iostream>
@@ -225,7 +225,7 @@ void test_spots(RealType T)
    // Things that are errors:
    // 1. Domain errors for scale and location.
    // 2. x being NAN.
-   // 3. Probabilies being outside (0,1).
+   // 3. Probabilities being outside (0,1).
    check_out_of_range<logistic_distribution<RealType> >(0, 1);
    if(std::numeric_limits<RealType>::has_infinity)
    {
@@ -349,6 +349,13 @@ void test_spots(RealType T)
       static_cast<RealType>(1.2L),              // probability
       tolerance);
 
+   BOOST_CHECK_CLOSE(
+      ::boost::math::entropy(
+      logistic_distribution<RealType>(2,1)
+      ),
+      static_cast<RealType>(2),
+      tolerance);
+
 } // template <class RealType>void test_spots(RealType)
 
 
@@ -364,7 +371,7 @@ BOOST_AUTO_TEST_CASE( test_main )
   test_spots(0.0); // Test double. OK at decdigits 7, tolerance = 1e07 %
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
   test_spots(0.0L); // Test long double.
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
   test_spots(boost::math::concepts::real_concept(0.)); // Test real concept.
 #endif
 #else

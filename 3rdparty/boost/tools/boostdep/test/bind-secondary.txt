@@ -2,4 +2,6 @@ Secondary dependencies for bind:
 
 core:
     adds assert
+    adds static_assert
+    adds throw_exception
 

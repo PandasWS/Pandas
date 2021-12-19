@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>boost/python/call_method.hpp</title>
 <link rel="stylesheet" href="../../boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="Boost.Python Reference Manual">
-<link rel="up" href="../function_invocation_and_creation.html" title="Chapter&#160;4.&#160;Function Invocation and Creation">
+<link rel="up" href="../function_invocation_and_creation.html" title="Chapter 4. Function Invocation and Creation">
 <link rel="prev" href="boost_python_call_hpp.html" title="boost/python/call.hpp">
 <link rel="next" href="boost_python_data_members_hpp.html" title="boost/python/data_members.hpp">
 </head>
@@ -81,6 +81,8 @@
         </p>
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">module</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="keyword">class</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">call_method</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">def</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">utility</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">cstring</span><span class="special">&gt;</span>
 
@@ -89,7 +91,7 @@
 <span class="special">{</span>
  <span class="keyword">public</span><span class="special">:</span>
    <span class="keyword">virtual</span> <span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="identifier">class_name</span><span class="special">()</span> <span class="keyword">const</span> <span class="special">{</span> <span class="keyword">return</span> <span class="string">"Base"</span><span class="special">;</span> <span class="special">}</span>
-   <span class="keyword">virtual</span> <span class="special">~</span><span class="identifier">Base</span><span class="special">();</span>
+   <span class="keyword">virtual</span> <span class="special">~</span><span class="identifier">Base</span><span class="special">()</span> <span class="special">{};</span>
 <span class="special">};</span>
 
 <span class="keyword">bool</span> <span class="identifier">is_base</span><span class="special">(</span><span class="identifier">Base</span><span class="special">*</span> <span class="identifier">b</span><span class="special">)</span>
@@ -117,7 +119,7 @@
 <span class="special">{</span>
     <span class="identifier">def</span><span class="special">(</span><span class="string">"is_base"</span><span class="special">,</span> <span class="identifier">is_base</span><span class="special">);</span>
 
-    <span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">,</span><span class="identifier">Base_callback</span><span class="special">,</span> <span class="identifier">noncopyable</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span>
+    <span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">,</span><span class="identifier">Base_callback</span><span class="special">,</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">noncopyable</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span>
         <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"class_name"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Base_callback</span><span class="special">::</span><span class="identifier">Base_name</span><span class="special">)</span>
         <span class="special">;</span>
 
@@ -142,7 +144,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+<td align="right"><div class="copyright-footer">Copyright © 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
       </p>

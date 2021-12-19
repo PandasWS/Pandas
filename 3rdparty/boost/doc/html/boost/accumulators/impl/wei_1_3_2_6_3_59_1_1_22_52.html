@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Struct template weighted_tail_variate_means_impl</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,7 +27,7 @@
 <a name="boost.accumulators.impl.wei_1_3_2_6_3_59_1_1_22_52"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Struct template weighted_tail_variate_means_impl</span></h2>
-<p>boost::accumulators::impl::weighted_tail_variate_means_impl &#8212; Estimation of the absolute and relative weighted tail variate means (for both left and right tails) </p>
+<p>boost::accumulators::impl::weighted_tail_variate_means_impl — Estimation of the absolute and relative weighted tail variate means (for both left and right tails) </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../../accumulators/reference.html#header.boost.accumulators.statistics_fwd_hpp" title="Header &lt;boost/accumulators/statistics_fwd.hpp&gt;">boost/accumulators/statistics_fwd.hpp</a>&gt;
@@ -46,34 +46,34 @@
 <a name="id-1.3.2.6.3.57.56.4"></a><h2>Description</h2>
 <p>For all <span class="inlinemediaobject"><img src="../../../images/accumulators//form_9.png"></span>-th variates associated to the</p>
 <div class="equation">
-<a name="id-1.3.2.6.3.57.56.4.3.1"></a><p class="title"><b>Equation&#160;1.45.&#160;</b></p>
+<a name="id-1.3.2.6.3.57.56.4.3.1"></a><p class="title"><b>Equation 1.45. </b></p>
 <div class="equation-contents"><div class="mediaobject" align="center"><img src="../../../images/accumulators//form_10.png" align="middle"></div></div>
 </div>
 <p><br class="equation-break"></p>
 <p>smallest samples (left tail) or the weighted mean of the</p>
 <div class="equation">
-<a name="id-1.3.2.6.3.57.56.4.5.1"></a><p class="title"><b>Equation&#160;1.46.&#160;</b></p>
+<a name="id-1.3.2.6.3.57.56.4.5.1"></a><p class="title"><b>Equation 1.46. </b></p>
 <div class="equation-contents"><div class="mediaobject" align="center"><img src="../../../images/accumulators//form_11.png" align="middle"></div></div>
 </div>
 <p><br class="equation-break"></p>
 <p>largest samples (right tail), the absolute weighted tail means <span class="inlinemediaobject"><img src="../../../images/accumulators//form_12.png"></span> are computed and returned as an iterator range. Alternatively, the relative weighted tail means <span class="inlinemediaobject"><img src="../../../images/accumulators//form_13.png"></span> are returned, which are the absolute weighted tail means normalized with the weighted (non-coherent) sample tail mean <span class="inlinemediaobject"><img src="../../../images/accumulators//form_14.png"></span>.</p>
 <div class="equation">
-<a name="id-1.3.2.6.3.57.56.4.7.1"></a><p class="title"><b>Equation&#160;1.47.&#160;</b></p>
+<a name="id-1.3.2.6.3.57.56.4.7.1"></a><p class="title"><b>Equation 1.47. </b></p>
 <div class="equation-contents"><div class="mediaobject" align="center"><img src="../../../images/accumulators//form_15.png" align="middle"></div></div>
 </div>
 <p><br class="equation-break"></p>
 <div class="equation">
-<a name="id-1.3.2.6.3.57.56.4.8.1"></a><p class="title"><b>Equation&#160;1.48.&#160;</b></p>
+<a name="id-1.3.2.6.3.57.56.4.8.1"></a><p class="title"><b>Equation 1.48. </b></p>
 <div class="equation-contents"><div class="mediaobject" align="center"><img src="../../../images/accumulators//form_16.png" align="middle"></div></div>
 </div>
 <p><br class="equation-break"></p>
 <div class="equation">
-<a name="id-1.3.2.6.3.57.56.4.9.1"></a><p class="title"><b>Equation&#160;1.49.&#160;</b></p>
+<a name="id-1.3.2.6.3.57.56.4.9.1"></a><p class="title"><b>Equation 1.49. </b></p>
 <div class="equation-contents"><div class="mediaobject" align="center"><img src="../../../images/accumulators//form_17.png" align="middle"></div></div>
 </div>
 <p><br class="equation-break"></p>
 <div class="equation">
-<a name="id-1.3.2.6.3.57.56.4.10.1"></a><p class="title"><b>Equation&#160;1.50.&#160;</b></p>
+<a name="id-1.3.2.6.3.57.56.4.10.1"></a><p class="title"><b>Equation 1.50. </b></p>
 <div class="equation-contents"><div class="mediaobject" align="center"><img src="../../../images/accumulators//form_18.png" align="middle"></div></div>
 </div>
 <p><br class="equation-break"> </p>
@@ -97,7 +97,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2005, 2006 Eric Niebler<p>
+<td align="right"><div class="copyright-footer">Copyright © 2005, 2006 Eric Niebler<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

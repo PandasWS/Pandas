@@ -11,7 +11,7 @@
 #include<boost/token_iterator.hpp>
 #include<string>
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 // compiler bug fix:
 template class boost::token_iterator_generator<boost::offset_separator>::type;
 #endif

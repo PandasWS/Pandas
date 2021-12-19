@@ -148,8 +148,10 @@ See <ulink url="boost_typeindex/rtti_emulation_limitations.html">RTTI emulation 
 <header name="boost/type_index/runtime_cast.hpp">
 <para>Contains the basic utilities necessary to fully emulate dynamic_cast for language level constructs (raw pointers and references). </para><para>boost::typeindex::runtime_cast is a drop in replacement for dynamic_cast that can be used in situations where traditional rtti is either unavailable or undesirable. </para></header>
 <header name="boost/type_index/runtime_cast/boost_shared_ptr_cast.hpp">
-<para>Contains the overload of boost::typeindex::runtime_pointer_cast for boost::shared_ptr types. </para><namespace name="boost">
-<namespace name="typeindex">
+<para>Contains the overload of boost::typeindex::runtime_pointer_cast for <classname alt="boost::shared_ptr">boost::shared_ptr</classname> types. </para><namespace name="boost">
+<class name="shared_ptr"><template>
+      <template-type-parameter name="T"/>
+    </template></class><namespace name="typeindex">
 
 
 
@@ -166,10 +168,10 @@ See <ulink url="boost_typeindex/rtti_emulation_limitations.html">RTTI emulation 
 
 
 
-<function name="runtime_pointer_cast"><type>boost::shared_ptr&lt; T &gt;</type><template>
+<function name="runtime_pointer_cast"><type><classname>boost::shared_ptr</classname>&lt; T &gt;</type><template>
           <template-type-parameter name="T"><purpose><para>The desired target type to return a pointer of. </para></purpose></template-type-parameter>
           <template-type-parameter name="U"><purpose><para>A complete class type of the source instance pointed to from u. </para></purpose></template-type-parameter>
-        </template><parameter name="u"><paramtype>boost::shared_ptr&lt; U &gt; const &amp;</paramtype></parameter><purpose>Creates a new instance of std::shared_ptr whose stored pointer is obtained from u's stored pointer using a runtime_cast. </purpose><description><para>The new shared_ptr will share ownership with u, except that it is empty if the runtime_cast performed by runtime_pointer_cast returns a null pointer. 
+        </template><parameter name="u"><paramtype><classname>boost::shared_ptr</classname>&lt; U &gt; const &amp;</paramtype></parameter><purpose>Creates a new instance of std::shared_ptr whose stored pointer is obtained from u's stored pointer using a runtime_cast. </purpose><description><para>The new <classname alt="boost::shared_ptr">shared_ptr</classname> will share ownership with u, except that it is empty if the runtime_cast performed by runtime_pointer_cast returns a null pointer. 
 
 </para></description><returns><para>If there exists a valid conversion from U* to T*, returns a boost::shared_ptr&lt;T&gt; that points to an address suitably offset from u. If no such conversion exists, returns boost::shared_ptr&lt;T&gt;(); </para>
 </returns></function>
@@ -348,7 +350,7 @@ if(derived2* pb2 = boost::typeindex::runtime_cast&lt;derived2*&gt;(pb1))
 <function name="runtime_pointer_cast"><type>std::shared_ptr&lt; T &gt;</type><template>
           <template-type-parameter name="T"><purpose><para>The desired target type to return a pointer of. </para></purpose></template-type-parameter>
           <template-type-parameter name="U"><purpose><para>A complete class type of the source instance pointed to from u. </para></purpose></template-type-parameter>
-        </template><parameter name="u"><paramtype>std::shared_ptr&lt; U &gt; const &amp;</paramtype></parameter><purpose>Creates a new instance of std::shared_ptr whose stored pointer is obtained from u's stored pointer using a runtime_cast. </purpose><description><para>The new shared_ptr will share ownership with u, except that it is empty if the runtime_cast performed by runtime_pointer_cast returns a null pointer. 
+        </template><parameter name="u"><paramtype>std::shared_ptr&lt; U &gt; const &amp;</paramtype></parameter><purpose>Creates a new instance of std::shared_ptr whose stored pointer is obtained from u's stored pointer using a runtime_cast. </purpose><description><para>The new <classname alt="boost::shared_ptr">shared_ptr</classname> will share ownership with u, except that it is empty if the runtime_cast performed by runtime_pointer_cast returns a null pointer. 
 
 </para></description><returns><para>If there exists a valid conversion from U* to T*, returns a std::shared_ptr&lt;T&gt; that points to an address suitably offset from u. If no such conversion exists, returns std::shared_ptr&lt;T&gt;(); </para>
 </returns></function>

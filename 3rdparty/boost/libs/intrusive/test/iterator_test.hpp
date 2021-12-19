@@ -258,10 +258,11 @@ template<class C, class I>
 void test_iterator_random_functions(C const &c, I const b, I const e)
 {
    typedef typename C::size_type size_type;
+   typedef typename C::difference_type difference_type;
    {
       I it = b;
-      for(size_type i = 0, m = c.size(); i != m; ++i, ++it){
-         BOOST_TEST(i == size_type(it - b));
+      for(difference_type i = 0, m = difference_type(c.size()); i != m; ++i, ++it){
+         BOOST_TEST(i == it - b);
          BOOST_TEST(b[i] == *it);
          BOOST_TEST(&b[i] == &*it);
          BOOST_TEST((b + i) == it);

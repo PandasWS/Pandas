@@ -27,7 +27,7 @@ int main() {
     *el_it = std::distance(elements.begin(), el_it);
 
   index_type indices( index_size );
-  for(index_type::iterator i_it = indices.begin() ; i_it != indices.end() ; ++i_it ) 
+  for(index_type::iterator i_it = indices.begin() ; i_it != indices.end() ; ++i_it )
     *i_it = element_range_size - index_size + std::distance(indices.begin(), i_it);
   std::reverse( indices.begin(), indices.end() );
 

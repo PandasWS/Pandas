@@ -13,7 +13,7 @@
 #include <boost/intrusive/slist.hpp>
 #include <boost/intrusive/set.hpp>
 #include <boost/intrusive/unordered_set.hpp>
-#include <boost/functional/hash.hpp>
+#include <boost/container_hash/hash.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
 #include <vector>
 

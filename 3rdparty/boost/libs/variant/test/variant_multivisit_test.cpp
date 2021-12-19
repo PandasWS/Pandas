@@ -3,7 +3,7 @@
 // See http://www.boost.org for updates, documentation, and revision history.
 //-----------------------------------------------------------------------------
 //
-// Copyright (c) 2013-2019 Antony Polukhin
+// Copyright (c) 2013-2021 Antony Polukhin
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -25,7 +25,7 @@ struct my_noncopyable : boost::noncopyable {
 typedef boost::variant<my_noncopyable, int>         variant_noncopy_t;
 
 
-typedef boost::variant<char, unsigned char, signed char, unsigned short, int, unsigned int>         variant6_t;
+typedef boost::variant<char, unsigned char, signed char, unsigned short, int>         variant5_t;
 
 struct test_visitor: boost::static_visitor<> {
     // operators that shall not be called
@@ -107,25 +107,24 @@ int main()
 {
     test_visitor v;
 
-    variant6_t v_array6[6];
-    v_array6[0] = char(0);
-    v_array6[1] = static_cast<unsigned char>(1);
-    v_array6[2] = static_cast<signed char>(2);
-    v_array6[3] = static_cast<unsigned short>(3);
-    v_array6[4] = static_cast<int>(4);
-    v_array6[5] = static_cast<unsigned int>(5);
+    variant5_t v_array5[5];
+    v_array5[0] = char(0);
+    v_array5[1] = static_cast<unsigned char>(1);
+    v_array5[2] = static_cast<signed char>(2);
+    v_array5[3] = static_cast<unsigned short>(3);
+    v_array5[4] = static_cast<int>(4);
 
-    boost::apply_visitor(v, v_array6[0], v_array6[1], v_array6[2]);
-    boost::apply_visitor(test_visitor(), v_array6[0], v_array6[1], v_array6[2]);
+    boost::apply_visitor(v, v_array5[0], v_array5[1], v_array5[2]);
+    boost::apply_visitor(test_visitor(), v_array5[0], v_array5[1], v_array5[2]);
 
 // Following test also pass, but requires many Gigabytes of RAM for compilation and compile for about 15 minutes
 //#define BOOST_VARIANT_MULTIVISITORS_TEST_VERY_EXTREME
 #ifdef BOOST_VARIANT_MULTIVISITORS_TEST_VERY_EXTREME    
-    boost::apply_visitor(v, v_array6[0], v_array6[1], v_array6[2], v_array6[3]);
-    boost::apply_visitor(test_visitor(), v_array6[0], v_array6[1], v_array6[2], v_array6[3]);
+    boost::apply_visitor(v, v_array5[0], v_array5[1], v_array5[2], v_array5[3]);
+    boost::apply_visitor(test_visitor(), v_array5[0], v_array5[1], v_array5[2], v_array5[3]);
 
-    boost::apply_visitor(v, v_array6[0], v_array6[1], v_array6[2], v_array6[3], v_array6[4]);
-    boost::apply_visitor(test_visitor(), v_array6[0], v_array6[1], v_array6[2], v_array6[3], v_array6[4]);
+    boost::apply_visitor(v, v_array5[0], v_array5[1], v_array5[2], v_array5[3], v_array5[4]);
+    boost::apply_visitor(test_visitor(), v_array5[0], v_array5[1], v_array5[2], v_array5[3], v_array5[4]);
 #endif
 
     bool_like_t v0(1), v1(true), v2(1.0);

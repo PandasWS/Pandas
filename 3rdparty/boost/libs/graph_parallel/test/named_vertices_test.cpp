@@ -10,7 +10,7 @@
 #include <boost/graph/distributed/adjacency_list.hpp>
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include <boost/graph/iteration_macros.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <string>
 #include <iostream>
 
@@ -67,7 +67,7 @@ typedef boost::adjacency_list<vecS, distributedS<mpi_process_group, vecS>,
                        bidirectionalS, City> RoadMap;
 typedef graph_traits<RoadMap>::vertex_descriptor Vertex;
 
-int test_main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   boost::mpi::environment env(argc, argv);
 
@@ -86,9 +86,9 @@ int test_main(int argc, char** argv)
     std::cout << rank << ": " << map[city].name << ", population " 
               << map[city].population << std::endl;
 
-  BOOST_CHECK(*find_vertex("Bloomington", map) == bloomington);
-  BOOST_CHECK(*find_vertex("Indianapolis", map) == indianapolis);
-  BOOST_CHECK(*find_vertex("Chicago", map) == chicago);
+  BOOST_TEST(*find_vertex("Bloomington", map) == bloomington);
+  BOOST_TEST(*find_vertex("Indianapolis", map) == indianapolis);
+  BOOST_TEST(*find_vertex("Chicago", map) == chicago);
 
   if (i_am_root) {
     add_edge(bloomington, "Indianapolis", map);
@@ -113,9 +113,9 @@ int test_main(int argc, char** argv)
   Vertex cincinnati = *find_vertex("Cincinnati", map);
   if (get(vertex_owner, map, cincinnati) 
         == process_id(map.process_group()))
-    BOOST_CHECK(map[cincinnati].population == -1);
+    BOOST_TEST(map[cincinnati].population == -1);
 
   synchronize(map);
 
-  return 0;
+  return boost::report_errors();
 }

@@ -1,9 +1,9 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 
-// Copyright (c) 2015 Barend Gehrels, Amsterdam, the Netherlands.
+// Copyright (c) 2015-2020 Barend Gehrels, Amsterdam, the Netherlands.
 
-// This file was modified by Oracle on 2015, 2017, 2019.
-// Modifications copyright (c) 2015-2019 Oracle and/or its affiliates.
+// This file was modified by Oracle on 2015-2020.
+// Modifications copyright (c) 2015-2020 Oracle and/or its affiliates.
 
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
@@ -12,16 +12,19 @@
 // Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_GEOMETRY_ALGORITHMS_DETAIL_DIRECITON_CODE_HPP
-#define BOOST_GEOMETRY_ALGORITHMS_DETAIL_DIRECITON_CODE_HPP
+#ifndef BOOST_GEOMETRY_ALGORITHMS_DETAIL_DIRECTION_CODE_HPP
+#define BOOST_GEOMETRY_ALGORITHMS_DETAIL_DIRECTION_CODE_HPP
 
+
+#include <type_traits>
 
 #include <boost/geometry/core/access.hpp>
+#include <boost/geometry/core/static_assert.hpp>
+#include <boost/geometry/arithmetic/infinite_line_functions.hpp>
+#include <boost/geometry/algorithms/detail/make/make.hpp>
 #include <boost/geometry/util/math.hpp>
 #include <boost/geometry/util/select_coordinate_type.hpp>
 #include <boost/geometry/util/normalize_spheroidal_coordinates.hpp>
-
-#include <boost/mpl/assert.hpp>
 
 
 namespace boost { namespace geometry
@@ -32,24 +35,12 @@ namespace boost { namespace geometry
 namespace detail
 {
 
-
-// TODO: remove
-template <std::size_t Index, typename Point1, typename Point2>
-inline int sign_of_difference(Point1 const& point1, Point2 const& point2)
-{
-    return
-        math::equals(geometry::get<Index>(point1), geometry::get<Index>(point2))
-        ?
-        0
-        :
-        (geometry::get<Index>(point1) > geometry::get<Index>(point2) ? 1 : -1);
-}
-
-
 template <typename CSTag>
 struct direction_code_impl
 {
-    BOOST_MPL_ASSERT_MSG((false), NOT_IMPLEMENTED_FOR_THIS_CS, (CSTag));
+    BOOST_GEOMETRY_STATIC_ASSERT_FALSE(
+        "Not implemented for this coordinate system.",
+        CSTag);
 };
 
 template <>
@@ -57,42 +48,39 @@ struct direction_code_impl<cartesian_tag>
 {
     template <typename Point1, typename Point2>
     static inline int apply(Point1 const& segment_a, Point1 const& segment_b,
-                            Point2 const& p)
+                            Point2 const& point)
     {
         typedef typename geometry::select_coordinate_type
             <
                 Point1, Point2
             >::type calc_t;
 
-        if ( (math::equals(geometry::get<0>(segment_b), geometry::get<0>(segment_a))
-           && math::equals(geometry::get<1>(segment_b), geometry::get<1>(segment_a)))
-          || (math::equals(geometry::get<0>(segment_b), geometry::get<0>(p))
-           && math::equals(geometry::get<1>(segment_b), geometry::get<1>(p))) )
+        typedef model::infinite_line<calc_t> line_type;
+
+        // Situation and construction of perpendicular line
+        //
+        //     P1     a--------------->b   P2
+        //                             |
+        //                             |
+        //                             v
+        //
+        // P1 is located right of the (directional) perpendicular line
+        // and therefore gets a negative side_value, and returns -1.
+        // P2 is to the left of the perpendicular line and returns 1.
+        // If the specified point is located on top of b, it returns 0.
+
+        line_type const line
+            = detail::make::make_perpendicular_line<calc_t>(segment_a,
+                segment_b, segment_b);
+
+        if (arithmetic::is_degenerate(line))
         {
             return 0;
         }
 
-        calc_t x1 = geometry::get<0>(segment_b) - geometry::get<0>(segment_a);
-        calc_t y1 = geometry::get<1>(segment_b) - geometry::get<1>(segment_a);
-        calc_t x2 = geometry::get<0>(segment_b) - geometry::get<0>(p);
-        calc_t y2 = geometry::get<1>(segment_b) - geometry::get<1>(p);
-
-        calc_t ax = (std::min)(math::abs(x1), math::abs(x2));
-        calc_t ay = (std::min)(math::abs(y1), math::abs(y2));
-
-        int s1 = 0, s2 = 0;
-        if (ax >= ay)
-        {
-            s1 = x1 > 0 ? 1 : -1;
-            s2 = x2 > 0 ? 1 : -1;
-        }
-        else
-        {
-            s1 = y1 > 0 ? 1 : -1;
-            s2 = y2 > 0 ? 1 : -1;
-        }
-
-        return s1 == s2 ? -1 : 1;
+        calc_t const sv = arithmetic::side_value(line, point);
+        static calc_t const zero = 0;
+        return sv == zero ? 0 : sv > zero ? 1 : -1;
     }
 };
 
@@ -107,9 +95,10 @@ struct direction_code_impl<spherical_equatorial_tag>
         typedef typename coordinate_type<Point2>::type coord2_t;
         typedef typename cs_angular_units<Point1>::type units_t;
         typedef typename cs_angular_units<Point2>::type units2_t;
-        BOOST_MPL_ASSERT_MSG((boost::is_same<units_t, units2_t>::value),
-                             NOT_IMPLEMENTED_FOR_DIFFERENT_UNITS,
-                             (units_t, units2_t));
+        BOOST_GEOMETRY_STATIC_ASSERT(
+            (std::is_same<units_t, units2_t>::value),
+            "Not implemented for different units.",
+            units_t, units2_t);
 
         typedef typename geometry::select_coordinate_type <Point1, Point2>::type calc_t;
         typedef math::detail::constants_on_spheroid<coord1_t, units_t> constants1;
@@ -239,16 +228,16 @@ struct direction_code_impl<spherical_tag>
     {
         return direction_code_impl
             <
-                typename boost::mpl::if_c
+                std::conditional_t
                     <
-                        boost::is_same
+                        std::is_same
                             <
                                 typename geometry::cs_tag<Point1>::type,
                                 spherical_polar_tag
                             >::value,
                         spherical_polar_tag,
                         spherical_equatorial_tag
-                    >::type
+                    >
             >::apply(segment_a, segment_b, p);
     }
 };
@@ -277,4 +266,4 @@ inline int direction_code(Point1 const& segment_a, Point1 const& segment_b,
 
 }} // namespace boost::geometry
 
-#endif // BOOST_GEOMETRY_ALGORITHMS_DETAIL_DIRECITON_CODE_HPP
+#endif // BOOST_GEOMETRY_ALGORITHMS_DETAIL_DIRECTION_CODE_HPP

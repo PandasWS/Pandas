@@ -179,7 +179,7 @@ namespace any_tests // memory tracking (enabled if test new and delete linked in
         }
 
     private: // structors (default dtor is fine)
-    
+
         allocations()
           : alloc_count(0), dealloc_count(0)
         {
@@ -223,7 +223,7 @@ namespace any_tests // tester is the driver class for a sequence of tests
         tester &operator=(const tester &);
 
     };
-    
+
 #if defined(__GNUC__) && defined(__SGI_STL_PORT) && (__GNUC__ < 3)
     // function scope using declarations don't work:
     using namespace std;

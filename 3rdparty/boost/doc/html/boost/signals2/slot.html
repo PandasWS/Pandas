@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class template slot</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,7 +27,7 @@
 <a name="boost.signals2.slot"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Class template slot</span></h2>
-<p>boost::signals2::slot &#8212; Pass slots as function arguments, and associate tracked objects with a slot.</p>
+<p>boost::signals2::slot — Pass slots as function arguments, and associate tracked objects with a slot.</p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../signals2/reference.html#header.boost.signals2.slot_hpp" title="Header &lt;boost/signals2/slot.hpp&gt;">boost/signals2/slot.hpp</a>&gt;
@@ -235,7 +235,7 @@
                 tracked objects expire, then subsequent attempts to call the slot's <code class="computeroutput">operator()</code>
                 or <code class="computeroutput">lock()</code> methods will throw an <a class="link" href="expired_slot.html" title="Class expired_slot">signals2::expired_slot</a> exception.
               </p>
-<p>When tracking a signal, a shared_ptr
+<p>When tracking a signal, a <a class="link" href="../shared_ptr.html" title="Class template shared_ptr">shared_ptr</a>
                 internal to the signal class is used for tracking.  The signal does not
                 need to be owned by an external <code class="computeroutput">shared_ptr</code>.
               </p>
@@ -272,7 +272,7 @@
 <td>
 <p>
                 The <code class="computeroutput">track_foreign</code>() method behaves similarly to calling the <a class="link" href="slot.html#id-1_3_37_6_12_5_1_1_17_1-bb">track</a>() method
-                with a boost::shared_ptr or boost::weak_ptr argument.
+                with a <a class="link" href="../shared_ptr.html" title="Class template shared_ptr">boost::shared_ptr</a> or boost::weak_ptr argument.
                 However, <code class="computeroutput">track_foreign</code> is more flexible in that it will accept <code class="computeroutput">shared_ptr</code>
                 or <code class="computeroutput">weak_ptr</code> classes from outside of boost (most significantly <code class="computeroutput">std::shared_ptr</code>
                 or <code class="computeroutput">std::weak_ptr</code>).
@@ -327,7 +327,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2004 Douglas Gregor<br>Copyright &#169; 2007-2009 Frank Mori Hess<p>Distributed under the Boost
+<td align="right"><div class="copyright-footer">Copyright © 2001-2004 Douglas Gregor<br>Copyright © 2007-2009 Frank Mori Hess<p>Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>

@@ -9,6 +9,7 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
+#include <boost/bind/bind.hpp>
 #include <boost/iterator/indirect_iterator.hpp>
 
 int main(int, char*[])
@@ -20,13 +21,13 @@ int main(int, char*[])
     pointers_to_chars[i] = &characters[i];
 
   // Example of using indirect_iterator
-  
+
   boost::indirect_iterator<char**, char>
     indirect_first(pointers_to_chars), indirect_last(pointers_to_chars + N);
 
   std::copy(indirect_first, indirect_last, std::ostream_iterator<char>(std::cout, ","));
   std::cout << std::endl;
-  
+
 
   // Example of making mutable and constant indirect iterators
 
@@ -41,19 +42,19 @@ int main(int, char*[])
     const_indirect_last(pointers_to_chars + N);
 
   std::transform(const_indirect_first, const_indirect_last,
-                 mutable_indirect_first, std::bind1st(std::plus<char>(), 1));
+                 mutable_indirect_first, boost::bind(std::plus<char>(), 1, boost::placeholders::_1));
 
   std::copy(mutable_indirect_first, mutable_indirect_last,
             std::ostream_iterator<char>(std::cout, ","));
   std::cout << std::endl;
 
-  
+
   // Example of using make_indirect_iterator()
 
-  std::copy(boost::make_indirect_iterator(pointers_to_chars), 
+  std::copy(boost::make_indirect_iterator(pointers_to_chars),
             boost::make_indirect_iterator(pointers_to_chars + N),
             std::ostream_iterator<char>(std::cout, ","));
   std::cout << std::endl;
-  
+
   return 0;
 }

@@ -120,7 +120,7 @@ tag type
 .. |keyword object| replace:: `keyword object`_
 
 keyword object
-    An instance of |keyword|_ ``<T>`` for some |tag type| ``T``.
+    An instance of |keyword|_\ ``<T>`` for some |tag type| ``T``.
 
 .. _tagged reference:
 .. |tagged reference| replace:: `tagged reference`_
@@ -176,19 +176,9 @@ An |ArgumentPack| is a collection of |tagged reference|\ s to the actual
 arguments passed to a function.  Every |ArgumentPack| is also a valid `MPL
 Forward Sequence`_ and `MPL Associative Sequence`_ consisting of the |keyword
 tag type|\ s in its |tagged reference|\ s.  If |BOOST_PARAMETER_CAN_USE_MP11|
-is defined, then every |ArgumentPack| is also a valid `Boost.MP11`_ map whose
+is defined, then every |ArgumentPack| is also a valid |Boost_MP11|_ map whose
 keys are |keyword tag type|\ s.  The |singular_cpp|_, |compose_cpp|_, and
 |mpl_cpp|_ test programs demonstrate this functionality.
-
-.. _`MPL Forward Sequence`: ../../../mpl/doc/refmanual/forward-sequence.html
-.. _`MPL Associative Sequence`: ../../../mpl/doc/refmanual/associative-sequence.html
-.. _`Boost.MP11`: ../../../mp11/doc/html/mp11.html
-.. |singular_cpp| replace:: singular.cpp
-.. _singular_cpp: ../../test/singular.cpp
-.. |compose_cpp| replace:: compose.cpp
-.. _compose_cpp: ../../test/compose.cpp
-.. |mpl_cpp| replace:: mpl.cpp
-.. _mpl_cpp: ../../test/mpl.cpp
 
 Requirements
 ............
@@ -199,49 +189,48 @@ In the table below,
 * ``x`` is an instance of ``A``
 * ``u`` is a |keyword object| of type ``K``
 * ``v`` is a |tagged default| with |tag type| ``L`` and *value* of type ``D``
-* ``w`` is a |tagged lazy default| with |tag type| ``M`` and *value* of type
-    ``E const``
-* ``z`` is an |ArgumentPack| containing a single element (as created by
-    |keyword|_\ ``<…>::operator=``)
+* ``w`` is a |tagged lazy default| with |tag type| ``M`` and *value* of type ``E const``
+* ``z`` is an |ArgumentPack| containing a single element (as created by |keyword|_\ ``<…>::operator=``)
 
 Any exceptions thrown from the invocation of ``w``\ 's *value*
 will be propagated to the caller.
 
 .. table:: |ArgumentPack| requirements
 
-+------------+-------------------+----------------+--------------------------+
-| Expression | Type              | Requirements   | Semantics/Notes          |
-+============+===================+================+==========================+
-|  ``x[u]``  | ``binding<``      | ``x`` contains | Returns *b*\ 's *value*  |
-|            |     ``A, K``      | an element *b* | (by reference).          |
-|            | ``>::type``       | whose |kw|_ is |                          |
-|            |                   | ``K``          |                          |
-+------------+-------------------+----------------+--------------------------+
-|  ``x[u]``  | ``binding<``      | *none*         | If ``x`` contains an     |
-|            |     ``A, L, D``   |                | element *b* whose |kw|_  |
-|            | ``>::type``       |                | is the same as           |
-|            |                   |                | ``u``\ 's, returns       |
-|            |                   |                | *b*\ 's *value* (by      |
-|            |                   |                | reference).  Otherwise,  |
-|            |                   |                | returns ``u``\ 's        |
-|            |                   |                | *value*.                 |
-+------------+-------------------+----------------+--------------------------+
-|  ``x[w]``  | ``lazy_binding<`` | *none*         | If ``x`` contains an     |
-|            |     ``A, M, E``   |                | element *b* whose |kw|_  |
-|            | ``>::type``       |                | is the same as           |
-|            |                   |                | ``w``\ 's, returns       |
-|            |                   |                | *b*\ 's *value* (by      |
-|            |                   |                | reference).  Otherwise,  |
-|            |                   |                | invokes ``w``\ 's        |
-|            |                   |                | *value* and returns the  |
-|            |                   |                | result.                  |
-+------------+-------------------+----------------+--------------------------+
-|  ``x, z``  | Model of          | *none*         | Returns an               |
-|            | |ArgumentPack|    |                | |ArgumentPack|_          |
-|            |                   |                | containing all the       |
-|            |                   |                | elements of both ``x``   |
-|            |                   |                | and ``z``.               |
-+------------+-------------------+----------------+--------------------------+
+    +------------+---------------------------------+----------------+----------------------+
+    | Expression | Type                            | Requirements   | Semantics/Notes      |
+    +============+=================================+================+======================+
+    |  ``x[u]``  | ``binding<A, K>::type``         | ``x`` contains | Returns *b*\ 's      |
+    |            |                                 | an element *b* | *value* (by          |
+    |            |                                 | whose |kw|_ is | reference).          |
+    |            |                                 | ``K``          |                      |
+    +------------+---------------------------------+----------------+----------------------+
+    |  ``x[u]``  | ``binding<A, L, D>::type``      | *none*         | If ``x`` contains an |
+    |            |                                 |                | element *b* whose    |
+    |            |                                 |                | |kw|_ is the same as |
+    |            |                                 |                | ``u``\ 's, returns   |
+    |            |                                 |                | *b*\ 's *value* (by  |
+    |            |                                 |                | reference).          |
+    |            |                                 |                | Otherwise, returns   |
+    |            |                                 |                | ``u``\ 's *value*.   |
+    +------------+---------------------------------+----------------+----------------------+
+    |  ``x[w]``  | ``lazy_binding<A, M, E>::type`` | *none*         | If ``x`` contains an |
+    |            |                                 |                | element *b* whose    |
+    |            |                                 |                | |kw|_ is the same as |
+    |            |                                 |                | ``w``\ 's, returns   |
+    |            |                                 |                | *b*\ 's *value* (by  |
+    |            |                                 |                | reference).          |
+    |            |                                 |                | Otherwise, invokes   |
+    |            |                                 |                | ``w``\ 's *value*    |
+    |            |                                 |                | and returns the      |
+    |            |                                 |                | result.              |
+    +------------+---------------------------------+----------------+----------------------+
+    |  ``x, z``  | Model of |ArgumentPack|_        | *none*         | Returns an           |
+    |            |                                 |                | |ArgumentPack|_      |
+    |            |                                 |                | containing all the   |
+    |            |                                 |                | elements of both     |
+    |            |                                 |                | ``x`` and ``z``.     |
+    +------------+---------------------------------+----------------+----------------------+
 
 .. _parameterspec:
 
@@ -264,18 +253,18 @@ condition for satisfaction by an actual argument type. In each row,
 
 .. table:: |ParameterSpec| allowed forms and conditions of satisfaction
 
-+------------------------+----------+----------------------------------------+
-| Type                   | ``A``    | Condition ``A`` must satisfy           |
-|                        | required |                                        |
-+========================+==========+========================================+
-| ``K``                  | no       |       *n/a*                            |
-+------------------------+----------+----------------------------------------+
-| |optional|_\ ``<K,F>`` | no       | ``mpl::apply2<F,A,P>::type::value`` is |
-|                        |          | ``true``.                              |
-+------------------------+----------+----------------------------------------+
-| |required|_\ ``<K,F>`` | yes      | ``mpl::apply2<F,A,P>::type::value`` is |
-|                        |          | ``true``.                              |
-+------------------------+----------+----------------------------------------+
+    +------------------------+----------+----------------------------------------+
+    | Type                   | ``A``    | Condition ``A`` must satisfy           |
+    |                        | required |                                        |
+    +========================+==========+========================================+
+    | ``K``                  | no       |       *n/a*                            |
+    +------------------------+----------+----------------------------------------+
+    | |optional|_\ ``<K,F>`` | no       | ``mpl::apply2<F,A,P>::type::value`` is |
+    |                        |          | ``true``.                              |
+    +------------------------+----------+----------------------------------------+
+    | |required|_\ ``<K,F>`` | yes      | ``mpl::apply2<F,A,P>::type::value`` is |
+    |                        |          | ``true``.                              |
+    +------------------------+----------+----------------------------------------+
 
 The information in a |ParameterSpec| is used to `limit`__ the arguments that
 will be matched by `forwarding functions`_.  
@@ -297,9 +286,7 @@ Class Templates
 
 The type of every |keyword object| is a specialization of |keyword|.
 
-:Defined in: `boost/parameter/keyword.hpp`__
-
-__ ../../../../boost/parameter/keyword.hpp
+:Defined in: |keyword_header|_
 
 .. parsed-literal::
 
@@ -309,237 +296,231 @@ __ ../../../../boost/parameter/keyword.hpp
         typedef Tag tag;
 
         template <typename T>
-        constexpr typename boost::`enable_if`_<
-            typename boost::mpl::`eval_if_`_<
-                boost::`is_scalar`_<T>
-              , boost::mpl::`true_`_
-              , boost::mpl::`eval_if_`_<
-                    boost::`is_same`_<
-                        typename Tag::qualifier
+        constexpr typename |boost_enable_if|_\<
+            typename |mpl_eval_if|_\<
+                |boost_is_scalar|_\<T>
+              , |mpl_true|_\  // Enable this overload for scalar types.
+              , |mpl_eval_if|_\<
+                    |boost_is_same|_\<
+                        typename Tag\:\:qualifier
                       , boost::parameter::in_reference
                     >
-                  , boost::mpl::`true_`_
-                  , boost::mpl::`if_`_<
-                        boost::`is_same`_<
-                            typename Tag::qualifier
+                  , |mpl_true|_\  // Enable this overload for "in" references.
+                  , |mpl_if|_\<
+                        |boost_is_same|_\<
+                            typename Tag\:\:qualifier
                           , boost::parameter::forward_reference
                         >
-                      , boost::mpl::`true_`_
-                      , boost::mpl::`false_`_
+                      , |mpl_true|_\  // Enable this overload for "forward" references.
+                      , |mpl_false|_\  // Disable this overload for all other reference categories.
                     >
                 >
             >::type
           , |ArgumentPack|_
         >::type
-            `operator=`_\(T const& value) const;
+            |assignment operator|_\(T const& value) const;
 
         template <typename T>
-        constexpr typename boost::`enable_if`_<
-            typename boost::mpl::`eval_if_`_<
-                typename boost::mpl::`eval_if_`_<
-                    boost::`is_same`_<
-                        typename Tag::qualifier
+        constexpr typename |boost_enable_if|_\<
+            typename |mpl_eval_if|_\<
+                typename |mpl_eval_if|_\<
+                    |boost_is_same|_\<
+                        typename Tag\:\:qualifier
                       , boost::parameter::out_reference
                     >
-                  , boost::mpl::`true_`_
-                  , boost::mpl::`if_`_<
-                        boost::`is_same`_<
-                            typename Tag::qualifier
+                  , |mpl_true|_\  // The reference category is "out".
+                  , |mpl_if|_\<
+                        |boost_is_same|_\<
+                            typename Tag\:\:qualifier
                           , boost::parameter::forward_reference
                         >
-                      , boost::mpl::`true_`_
-                      , boost::mpl::`false_`_
+                      , |mpl_true|_\  // The reference category is "forward".
+                      , |mpl_false|_\  // The reference category is neither "out" nor "forward".
                     >
                 >::type
-              , boost::mpl::`if_`_<
-                    boost::`is_const`_<T>
-                  , boost::mpl::`false_`_
-                  , boost::mpl::`true_`_
+              , |mpl_if|_\<
+                    |boost_is_const|_\<T>
+                  , |mpl_false|_\  // Disable this overload for reference-to-const types.
+                  , |mpl_true|_\  // Enable this overload for referece-to-mutable types.
                 >
-              , boost::mpl::`false_`_
+              , |mpl_false|_\  // Disable this overload for references neither "out" nor "forward".
             >::type
           , |ArgumentPack|_
         >::type
-            `operator=`_\(T& value) const;
+            |assignment operator|_\(T& value) const;
 
         template <typename T>
-        constexpr typename boost::`enable_if`_<
-            typename boost::mpl::`eval_if_`_<
-                boost::`is_scalar`_<T>
-              , boost::mpl::`false_`_
-              , boost::mpl::`eval_if_`_<
-                    boost::`is_same`_<
-                        typename Tag::qualifier
+        constexpr typename |boost_enable_if|_\<
+            typename |mpl_eval_if|_\<
+                |boost_is_scalar|_\<T>
+              , |mpl_false|_\  // Disable this overload for scalar types.
+              , |mpl_eval_if|_\<
+                    |boost_is_same|_\<
+                        typename Tag\:\:qualifier
                       , boost::parameter::in_reference
                     >
-                  , boost::mpl::`true_`_
-                  , boost::mpl::`if_`_<
-                        boost::`is_same`_<
-                            typename Tag::qualifier
+                  , |mpl_true|_\  // Enable this overload for "in" references.
+                  , |mpl_if|_\<
+                        |boost_is_same|_\<
+                            typename Tag\:\:qualifier
                           , boost::parameter::forward_reference
                         >
-                      , boost::mpl::`true_`_
-                      , boost::mpl::`false_`_
+                      , |mpl_true|_\  // Enable this overload for "forward" references.
+                      , |mpl_false|_\  // Disable this overload for all other reference categories.
                     >
                 >
             >::type
           , |ArgumentPack|_
         >::type
-            `operator=`_\(T const&& value) const;
+            |assignment operator|_\(T const&& value) const;
 
         template <typename T>
-        constexpr typename boost::`enable_if`_<
-            typename boost::mpl::`eval_if_`_<
-                boost::`is_scalar`_<T>
-              , boost::mpl::`false_`_
-              , boost::mpl::`eval_if_`_<
-                    boost::`is_same`_<
-                        typename Tag::qualifier
+        constexpr typename |boost_enable_if|_\<
+            typename |mpl_eval_if|_\<
+                |boost_is_scalar|_\<T>
+              , |mpl_false|_\  // Disable this overload for scalar types.
+              , |mpl_eval_if|_\<
+                    |boost_is_same|_\<
+                        typename Tag\:\:qualifier
                       , boost::parameter::consume_reference
                     >
-                  , boost::mpl::`true_`_
-                  , boost::mpl::`if_`_<
-                        boost::`is_same`_<
-                            typename Tag::qualifier
+                  , |mpl_true|_\  // Enable this overload for "consume" references.
+                  , |mpl_if|_\<
+                        |boost_is_same|_\<
+                            typename Tag\:\:qualifier
                           , boost::parameter::forward_reference
                         >
-                      , boost::mpl::`true_`_
-                      , boost::mpl::`false_`_
+                      , |mpl_true|_\  // Enable this overload for "forward" references.
+                      , |mpl_false|_\  // Disable this overload for all other reference categories.
                     >
                 >
             >::type
           , |ArgumentPack|_
         >::type
-            `operator=`_\(T&& value) const;
+            |assignment operator|_\(T&& value) const;
 
         template <typename T>
-        constexpr typename boost::`enable_if`_<
-            typename boost::mpl::`eval_if_`_<
-                boost::`is_scalar`_<T>
-              , boost::mpl::`true_`_
-              , boost::mpl::`eval_if_`_<
-                    boost::`is_same`_<
-                        typename Tag::qualifier
+        constexpr typename |boost_enable_if|_\<
+            typename |mpl_eval_if|_\<
+                |boost_is_scalar|_\<T>
+              , |mpl_true|_\  // Enable this overload for scalar types.
+              , |mpl_eval_if|_\<
+                    |boost_is_same|_\<
+                        typename Tag\:\:qualifier
                       , boost::parameter::in_reference
                     >
-                  , boost::mpl::`true_`_
-                  , boost::mpl::`if_`_<
-                        boost::`is_same`_<
-                            typename Tag::qualifier
+                  , |mpl_true|_\  // Enable this overload for "in" references.
+                  , |mpl_if|_\<
+                        |boost_is_same|_\<
+                            typename Tag\:\:qualifier
                           , boost::parameter::forward_reference
                         >
-                      , boost::mpl::`true_`_
-                      , boost::mpl::`false_`_
+                      , |mpl_true|_\  // Enable this overload for "forward" references.
+                      , |mpl_false|_\  // Disable this overload for all other reference categories.
                     >
                 >
             >::type
           , *tagged default*
         >::type
-            `operator|`_\(T const& x) const;
+            |bitwise or operator|_\(T const& x) const;
 
         template <typename T>
-        constexpr typename boost::`enable_if`_<
-            typename boost::mpl::`eval_if_`_<
-                typename boost::mpl::`eval_if_`_<
-                    boost::`is_same`_<
-                        typename Tag::qualifier
+        constexpr typename |boost_enable_if|_\<
+            typename |mpl_eval_if|_\<
+                typename |mpl_eval_if|_\<
+                    |boost_is_same|_\<
+                        typename Tag\:\:qualifier
                       , boost::parameter::out_reference
                     >
-                  , boost::mpl::`true_`_
-                  , boost::mpl::`if_`_<
-                        boost::`is_same`_<
-                            typename Tag::qualifier
+                  , |mpl_true|_\  // The reference category is "out".
+                  , |mpl_if|_\<
+                        |boost_is_same|_\<
+                            typename Tag\:\:qualifier
                           , boost::parameter::forward_reference
                         >
-                      , boost::mpl::`true_`_
-                      , boost::mpl::`false_`_
+                      , |mpl_true|_\  // The reference category is "forward".
+                      , |mpl_false|_\  // The reference category is neither "out" nor "forward".
                     >
                 >::type
-              , boost::mpl::`if_`_<
-                    boost::`is_const`_<T>
-                  , boost::mpl::`false_`_
-                  , boost::mpl::`true_`_
+              , |mpl_if|_\<
+                    |boost_is_const|_\<T>
+                  , |mpl_false|_\  // Disable this overload for reference-to-const types.
+                  , |mpl_true|_\  // Enable this overload for referece-to-mutable types.
                 >
-              , boost::mpl::`false_`_
+              , |mpl_false|_\  // Disable this overload for references neither "out" nor "forward".
             >::type
           , *tagged default*
         >::type
-            `operator|`_\(T& x) const;
+            |bitwise or operator|_\(T& x) const;
 
         template <typename T>
-        constexpr typename boost::`enable_if`_<
-            typename boost::mpl::`eval_if_`_<
-                boost::`is_scalar`_<T>
-              , boost::mpl::`true_`_
-              , boost::mpl::`eval_if_`_<
-                    boost::`is_same`_<
-                        typename Tag::qualifier
+        constexpr typename |boost_enable_if|_\<
+            typename |mpl_eval_if|_\<
+                |boost_is_scalar|_\<T>
+              , |mpl_false|_\  // Disable this overload for scalar types.
+              , |mpl_eval_if|_\<
+                    |boost_is_same|_\<
+                        typename Tag\:\:qualifier
                       , boost::parameter::in_reference
                     >
-                  , boost::mpl::`true_`_
-                  , boost::mpl::`if_`_<
-                        boost::`is_same`_<
-                            typename Tag::qualifier
+                  , |mpl_true|_\  // Enable this overload for "in" references.
+                  , |mpl_if|_\<
+                        |boost_is_same|_\<
+                            typename Tag\:\:qualifier
                           , boost::parameter::forward_reference
                         >
-                      , boost::mpl::`true_`_
-                      , boost::mpl::`false_`_
+                      , |mpl_true|_\  // Enable this overload for "forward" references.
+                      , |mpl_false|_\  // Disable this overload for all other reference categories.
                     >
                 >
             >::type
           , *tagged default*
         >::type
-            `operator|`_\(T const&& x) const;
+            |bitwise or operator|_\(T const&& x) const;
 
         template <typename T>
-        constexpr typename boost::`enable_if`_<
-            typename boost::mpl::`eval_if_`_<
-                boost::`is_scalar`_<T>
-              , boost::mpl::`false_`_
-              , boost::mpl::`eval_if_`_<
-                    boost::`is_same`_<
-                        typename Tag::qualifier
+        constexpr typename |boost_enable_if|_\<
+            typename |mpl_eval_if|_\<
+                |boost_is_scalar|_\<T>
+              , |mpl_false|_\  // Disable this overload for scalar types.
+              , |mpl_eval_if|_\<
+                    |boost_is_same|_\<
+                        typename Tag\:\:qualifier
                       , boost::parameter::consume_reference
                     >
-                  , boost::mpl::`true_`_
-                  , boost::mpl::`if_`_<
-                        boost::`is_same`_<
-                            typename Tag::qualifier
+                  , |mpl_true|_\  // Enable this overload for "consume" references.
+                  , |mpl_if|_\<
+                        |boost_is_same|_\<
+                            typename Tag\:\:qualifier
                           , boost::parameter::forward_reference
                         >
-                      , boost::mpl::`true_`_
-                      , boost::mpl::`false_`_
+                      , |mpl_true|_\  // Enable this overload for "forward" references.
+                      , |mpl_false|_\  // Disable this overload for all other reference categories.
                     >
                 >
             >::type
           , *tagged default*
         >::type constexpr
-            `operator|`_\(T&& value) const;
+            |bitwise or operator|_\(T&& value) const;
 
         template <typename F>
-        constexpr *tagged lazy default* `operator||`_\(F const&) const;
+        constexpr *tagged lazy default* |logical or operator|_\(F const&) const;
 
         template <typename F>
-        constexpr *tagged lazy default* `operator||`_\(F&) const;
+        constexpr *tagged lazy default* |logical or operator|_\(F&) const;
 
         static keyword<Tag> const& instance;
 
         static keyword<Tag>& get_\();
     };
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`eval_if`: ../../../mpl/doc/refmanual/eval-if.html
-.. _`false_`: ../../../mpl/doc/refmanual/bool.html
-.. _`if_`: ../../../mpl/doc/refmanual/if.html
-.. _`is_const`: ../../../type_traits/doc/html/boost_typetraits/is_const.html
-.. _`is_same`: ../../../type_traits/doc/html/boost_typetraits/is_same.html
-.. _`is_scalar`: ../../../type_traits/doc/html/boost_typetraits/is_scalar.html
-.. _`true_`: ../../../mpl/doc/refmanual/bool.html
-
-.. |operator=| replace:: ``operator=``
-.. _operator=:
+.. |assignment operator| replace:: ``operator=``
+.. _assignment operator:
 
 ``operator=``
+
+:Synopsis:
+
 .. parsed-literal::
 
     template <typename T>
@@ -556,28 +537,28 @@ __ ../../../../boost/parameter/keyword.hpp
 
 :Requires: one of the following:
 
-\*. The nested ``qualifier`` type of ``Tag`` must be ``forward_reference``.
-
-\*. To use the ``const`` lvalue reference overload, ``T`` must be scalar, or
-the nested ``qualifier`` type of ``Tag`` must be ``in_reference``.
-
-\*. To use the mutable lvalue reference overload, the nested ``qualifier``
-type of ``Tag`` must be ``out_reference`` or ``in_out_reference``, and ``T``
-must not be ``const``-qualified.
-
-\*. To use the ``const`` rvalue reference overload for non-scalar ``T``, the
-nested ``qualifier`` type of ``Tag`` must be ``in_reference``.
-
-\*. To use the mutable rvalue reference overload for non-scalar ``T``, the
-nested ``qualifier`` type of ``Tag`` must be ``consume_reference`` or
-``move_from_reference``.
+*   The nested ``qualifier`` type of ``Tag`` must be ``forward_reference``.
+*   To use the ``const`` lvalue reference overload, ``T`` must be scalar, or
+    the nested ``qualifier`` type of ``Tag`` must be ``in_reference``.
+*   To use the mutable lvalue reference overload, the nested ``qualifier``
+    type of ``Tag`` must be ``out_reference`` or ``in_out_reference``, and
+    ``T`` must not be ``const``-qualified.
+*   To use the ``const`` rvalue reference overload for non-scalar ``T``, the
+    nested ``qualifier`` type of ``Tag`` must be ``in_reference``.
+*   To use the mutable rvalue reference overload for non-scalar ``T``, the
+    nested ``qualifier`` type of ``Tag`` must be ``consume_reference`` or
+    ``move_from_reference``.
 
 :Returns: an |ArgumentPack|_  containing a single |tagged reference| to
-``value`` with |kw|_ ``Tag`` 
+    ``value`` with |kw|_ ``Tag`` 
 
-.. _operator|:
+.. |bitwise or operator| replace:: ``operator|``
+.. _bitwise or operator:
 
 ``operator|``
+
+:Synopsis:
+
 .. parsed-literal::
 
     template <typename T>
@@ -594,27 +575,27 @@ nested ``qualifier`` type of ``Tag`` must be ``consume_reference`` or
 
 :Requires: one of the following:
 
-\*. The nested ``qualifier`` type of ``Tag`` must be ``forward_reference``.
-
-\*. To use the ``const`` lvalue reference overload, ``T`` must be scalar, or
-the nested ``qualifier`` type of ``Tag`` must be ``in_reference``.
-
-\*. To use the mutable lvalue reference overload, the nested ``qualifier``
-type of ``Tag`` must be ``out_reference`` or ``in_out_reference``, and ``T``
-must not be ``const``-qualified.
-
-\*. To use the ``const`` rvalue reference overload for non-scalar ``T``, the
-nested ``qualifier`` type of ``Tag`` must be ``in_reference``.
-
-\*. To use the mutable rvalue reference overload for non-scalar ``T``, the
-nested ``qualifier`` type of ``Tag`` must be ``consume_reference`` or
-``move_from_reference``.
+*   The nested ``qualifier`` type of ``Tag`` must be ``forward_reference``.
+*   To use the ``const`` lvalue reference overload, ``T`` must be scalar, or
+    the nested ``qualifier`` type of ``Tag`` must be ``in_reference``.
+*   To use the mutable lvalue reference overload, the nested ``qualifier``
+    type of ``Tag`` must be ``out_reference`` or ``in_out_reference``, and
+    ``T`` must not be ``const``-qualified.
+*   To use the ``const`` rvalue reference overload for non-scalar ``T``, the
+    nested ``qualifier`` type of ``Tag`` must be ``in_reference``.
+*   To use the mutable rvalue reference overload for non-scalar ``T``, the
+    nested ``qualifier`` type of ``Tag`` must be ``consume_reference`` or
+    ``move_from_reference``.
 
 :Returns: a |tagged default| with *value* ``x`` and |kw|_ ``Tag``.
 
-.. _operator||:
+.. |logical or operator| replace:: ``operator||``
+.. _logical or operator:
 
 ``operator||``
+
+:Synopsis:
+
 .. parsed-literal::
 
     template <typename F>
@@ -623,27 +604,33 @@ nested ``qualifier`` type of ``Tag`` must be ``consume_reference`` or
     template <typename F>
     constexpr *tagged lazy default* operator||(F& g) const;
 
-:Requires: ``g()`` must be valid, with type ``boost::``\ |result_of|_\
-``<F()>::type``.  [#no_result_of]_
+:Requires: ``g()`` must be valid, with type
+    |boost_result_of|_\ ``<F()>::type``.  [#no_result_of]_
 
 :Returns: a |tagged lazy default| with *value* ``g`` and |kw|_ ``Tag``.
 
 .. _instance:
 
 ``instance``
+
+:Synopsis:
+
 .. parsed-literal::
 
     static keyword<Tag> const& instance;
 
 :Returns: a “singleton instance”: the same object will be returned on each
-invocation of ``instance``.
+    invocation of ``instance``.
 
 :Thread Safety:
-``instance`` can be accessed from multiple threads simultaneously.
+    ``instance`` can be accessed from multiple threads simultaneously.
 
 .. _get:
 
 ``get``
+
+:Synopsis:
+
 .. parsed-literal::
 
     static keyword<Tag>& get\();
@@ -653,7 +640,7 @@ invocation of ``instance``.
     This function has been deprecated in favor of ``instance``.
 
 :Returns: a “singleton instance”: the same object will be returned on each
-invocation of ``get()``.
+    invocation of ``get()``.
 
 :Thread Safety: ``get()`` can be called from multiple threads simultaneously.
 
@@ -664,12 +651,10 @@ invocation of ``get()``.
 --------------------
 
 This class template encapsulates a named template parameter.  Every type
-generated by the |BOOST_PARAMETER_TEMPLATE_KEYWORD| macro is a specialization
+generated by the |BOOST_PARAMETER_TEMPLATE_KEYWORD|_ macro is a specialization
 of |template_keyword|.
 
-:Defined in: `boost/parameter/template_keyword.hpp`__
-
-__ ../../../../boost/parameter/template_keyword.hpp
+:Defined in: |template_keyword_header|_
 
 .. parsed-literal::
 
@@ -683,8 +668,8 @@ __ ../../../../boost/parameter/template_keyword.hpp
 
 The |ntp_cpp|_ test program demonstrates proper usage of this class template.
 
-.. |ntp_cpp| replace:: test/ntp.cpp
-.. _ntp_cpp: ../../test/ntp.cpp
+.. |parameters| replace:: ``parameters``
+.. _parameters:
 
 ``parameters``
 --------------
@@ -695,9 +680,7 @@ tagged according to the corresponding template argument to ``parameters``.
 
 .. _forwarding function: `forwarding functions`_
 
-:Defined in: `boost/parameter/parameters.hpp`__
-
-__ ../../../../boost/parameter/parameters.hpp
+:Defined in: |parameters_header|_
 
 .. parsed-literal::
 
@@ -705,17 +688,17 @@ __ ../../../../boost/parameter/parameters.hpp
     struct parameters
     {
         template <typename ...Args>
-        struct `match`_
+        struct |match|_
         {
             typedef … type;
         };
 
         template <typename ...Args>
-        |ArgumentPack|_ `operator()`_\(Args&&... args) const;
+        |ArgumentPack|_ |function call operator|_\(Args&&... args) const;
     };
 
 :Requires: Each element in the ``PSpec`` parameter pack must be a model of
-|ParameterSpec|_.
+    |ParameterSpec|_.
 
 .. Note::
 
@@ -726,12 +709,12 @@ __ ../../../../boost/parameter/parameters.hpp
     | *parameter specs* in the ``PSpec`` parameter pack
     | ``R`` ## *i* is the |intended argument type| of ``A`` ## *i*
     |
-    | if ``A`` ## *i* is a result type of ``keyword<T>::`` |operator=|_
+    | if ``A`` ## *i* is a result type of ``keyword<T>::`` |assignment operator|_
     | then 
     |     ``K`` ## *i* is ``T``
     | else
     |     if some ``A`` ## *j* where *j* ≤ *i* is a result type of
-    |     ``keyword<T>::`` |operator=|_
+    |     ``keyword<T>::`` |assignment operator|_
     |     *or* some ``P`` ## *j* in *j* ≤ *i* is **deduced**
     |     then
     |         if some *parameter spec* ``d`` ## *j* in ``D`` ## *i*
@@ -742,15 +725,16 @@ __ ../../../../boost/parameter/parameters.hpp
     |     else
     |         ``K`` ## *i* is the |keyword tag type| of ``P`` ## *i*.
 
+.. |match| replace:: ``match``
 .. _match:
 
 ``match``
-    A |Metafunction|_ used to remove a `forwarding function`_ from overload
+    A `Metafunction`_ used to remove a `forwarding function`_ from overload
     resolution.
 
 :Returns: if all elements in ``Params...`` are *satisfied* (see below), then
-``parameters<Params...>``.  Otherwise, ``match<Args...>::type`` is not
-defined.
+    ``parameters<Params...>``.  Otherwise, ``match<Args...>::type`` is not
+    defined.
 
 Each element ``P`` in ``Params...`` is **satisfied** if either:
 
@@ -764,9 +748,12 @@ Each element ``P`` in ``Params...`` is **satisfied** if either:
     - ``X`` is some ``K`` ## *i*, **and**
     - ``mpl::apply<F,R`` ## *i* ``>::type::value`` is ``true``
 
-.. _operator():
+.. |function call operator| replace:: ``operator()``
+.. _function call operator:
 
 ``operator()``
+
+:Synopsis:
 
 .. parsed-literal::
 
@@ -796,13 +783,6 @@ These templates describe the requirements on a function parameter.
 
 Both headers are included by: |preprocessor_header|_
 
-.. |optional_header| replace:: boost/parameter/optional.hpp
-.. _optional_header: ../../../../boost/parameter/optional.hpp
-.. |required_header| replace:: boost/parameter/required.hpp
-.. _required_header: ../../../../boost/parameter/required.hpp
-.. |preprocessor_header| replace:: boost/parameter/preprocessor.hpp
-.. _preprocessor_header: ../../../../boost/parameter/preprocessor.hpp
-
 :Specializations model: |ParameterSpec|_
 
 .. parsed-literal::
@@ -815,12 +795,12 @@ Both headers are included by: |preprocessor_header|_
 
 The default value of ``Predicate`` is an unspecified `MPL Binary Metafunction
 Class`_ that returns ``mpl::true_`` for any argument.  If
-|BOOST_PARAMETER_CAN_USE_MP11| is defined, then the default value of
-``Predicate`` is also a `Boost.MP11`-style quoted metafunction that returns
+|BOOST_PARAMETER_CAN_USE_MP11|_ is defined, then the default value of
+``Predicate`` is also a |Boost_MP11|_-style quoted metafunction that returns
 ``mp11::mp_true`` for any argument.
 
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boost.MP11`: ../../../mp11/doc/html/mp11.html
+.. |deduced| replace:: ``deduced``
+.. _deduced:
 
 ``deduced``
 -----------
@@ -830,11 +810,6 @@ This template is used to wrap the *keyword tag* argument to
 
 :Defined in: |deduced_header|_
 :Included by: |preprocessor_header|_
-
-.. |deduced_header| replace:: boost/parameter/deduced.hpp
-.. _deduced_header: ../../../../boost/parameter/deduced.hpp
-.. |preprocessor_header| replace:: boost/parameter/preprocessor.hpp
-.. _preprocessor_header: ../../../../boost/parameter/preprocessor.hpp
 
 .. parsed-literal::
 
@@ -848,8 +823,11 @@ This template is used to wrap the *keyword tag* argument to
 Metafunctions
 =============
 
-A |Metafunction|_ is conceptually a function that operates on, and returns,
+A `Metafunction`_ is conceptually a function that operates on, and returns,
 C++ types.
+
+.. |binding| replace:: ``binding``
+.. _binding:
 
 ``binding``
 -----------
@@ -857,9 +835,7 @@ C++ types.
 Returns the result type of indexing an argument pack with a
 |keyword tag type| or with a |tagged default|.
 
-:Defined in: `boost/parameter/binding.hpp`__
-
-__ ../../../../boost/parameter/binding.hpp
+:Defined in: |binding_header|_
 
 .. parsed-literal::
 
@@ -872,8 +848,11 @@ __ ../../../../boost/parameter/binding.hpp
 :Requires: ``A`` must be a model of |ArgumentPack|_.
 
 :Returns: the reference type of the |tagged reference| in ``A`` having
-|keyword tag type| ``K``, if any.  If no such |tagged reference| exists,
-returns ``D``.
+    |keyword tag type| ``K``, if any.  If no such |tagged reference| exists,
+    returns ``D``.
+
+.. |lazy_binding| replace:: ``lazy_binding``
+.. _lazy_binding:
 
 ``lazy_binding``
 ----------------
@@ -881,9 +860,7 @@ returns ``D``.
 Returns the result type of indexing an argument pack with a
 |tagged lazy default|.
 
-:Defined in: `boost/parameter/binding.hpp`__
-
-__ ../../../../boost/parameter/binding.hpp
+:Defined in: |binding_header|_
 
 .. parsed-literal::
 
@@ -896,8 +873,11 @@ __ ../../../../boost/parameter/binding.hpp
 :Requires: ``A`` must be a model of |ArgumentPack|_.
 
 :Returns: the reference type of the |tagged reference| in ``A`` having
-|keyword tag type| ``K``, if any.  If no such |tagged reference| exists,
-returns ``boost::``\ |result_of|_\ ``<F()>::type``. [#no_result_of]_
+    |keyword tag type| ``K``, if any.  If no such |tagged reference| exists,
+    returns |boost_result_of|_\ ``<F()>::type``. [#no_result_of]_
+
+.. |value_type| replace:: ``value_type``
+.. _value_type:
 
 ``value_type``
 --------------
@@ -905,9 +885,7 @@ returns ``boost::``\ |result_of|_\ ``<F()>::type``. [#no_result_of]_
 Returns the result type of indexing an argument pack with a
 |keyword tag type| or with a |tagged default|.
 
-:Defined in: `boost/parameter/value_type.hpp`__
-
-__ ../../../../boost/parameter/value_type.hpp
+:Defined in: |value_type_header|_
 
 .. parsed-literal::
 
@@ -920,16 +898,19 @@ __ ../../../../boost/parameter/value_type.hpp
 :Requires: ``A`` must be a model of |ArgumentPack|_.
 
 :Returns: the (possibly const-qualified) type of the |tagged reference| in
-``A`` having |keyword tag type| ``K``, if any.  If no such |tagged reference|
-exists, returns ``D``.  Equivalent to::
+    ``A`` having |keyword tag type| ``K``, if any.  If no such
+    |tagged reference| exists, returns ``D``.  Equivalent to:
 
-    typename boost::`remove_reference`_<
-        typename |binding|_<A, K, D>::type
-    >::type
+    .. parsed-literal::
 
-… when ``D`` is not a reference type.
+        typename |boost_remove_reference|_\<
+            typename |binding|_\<A, K, D>::type
+        >::type
 
-.. _remove_reference: ../../../type_traits/doc/html/boost_typetraits/remove_reference.html
+    … when ``D`` is not a reference type.
+
+.. |lazy_value_type| replace:: ``lazy_value_type``
+.. _lazy_value_type:
 
 ``lazy_value_type``
 -------------------
@@ -937,9 +918,7 @@ exists, returns ``D``.  Equivalent to::
 Returns the result type of indexing an argument pack with a
 |tagged lazy default|.
 
-:Defined in: `boost/parameter/value_type.hpp`__
-
-__ ../../../../boost/parameter/value_type.hpp
+:Defined in: |value_type_header|_
 
 .. parsed-literal::
 
@@ -952,28 +931,33 @@ __ ../../../../boost/parameter/value_type.hpp
 :Requires: ``A`` must be a model of |ArgumentPack|_.
 
 :Returns: the (possibly const-qualified) type of the |tagged reference| in
-``A`` having |keyword tag type| ``K``, if any.  If no such |tagged reference|
-exists, returns ``boost::``\ |result_of|_\ ``<F()>::type``. [#no_result_of]_
+    ``A`` having |keyword tag type| ``K``, if any.  If no such
+    |tagged reference| exists, returns
+    |boost_result_of|_\ ``<F()>::type``. [#no_result_of]_
+
+.. |are_tagged_arguments| replace:: ``are_tagged_arguments``
+.. _are_tagged_arguments:
 
 ``are_tagged_arguments``
 ------------------------
 
-:Defined in: `boost/parameter/are_tagged_arguments.hpp`__
-
-__ ../../../../boost/parameter/are_tagged_arguments.hpp
+:Defined in: |are_tagged_arguments_header|_
 
 .. parsed-literal::
 
     template <typename T0, typename ...Pack>
-    struct are_tagged_arguments  // : mpl::true_ or mpl::false_
+    struct are_tagged_arguments
+        // : |mpl_true|_\  if T0 and all elements in Pack are
+        // tagged reference types, |mpl_false|_\  otherwise.
     {
     };
 
 :Returns:
-``mpl::true_`` if ``T0`` and all elements in parameter pack ``Pack`` are
-|tagged reference| types, ``mpl::false_`` otherwise.
+    ``mpl::true_`` if ``T0`` and all elements in parameter pack ``Pack`` are
+    |tagged reference| types, ``mpl::false_`` otherwise.
 
 :Example usage:
+
 When implementing a Boost.Parameter-enabled constructor for a container that
 conforms to the C++ standard, one needs to remember that the standard requires
 the presence of other constructors that are typically defined as templates,
@@ -991,13 +975,13 @@ define the range constructor.
         };
 
      public:
-        |BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR|_(frontend, (B))
+        |BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR|_\(frontend, (B))
 
         template <typename Iterator>
         frontend(
             Iterator itr
           , Iterator itr_end
-          , typename boost::`disable_if`_<
+          , typename |boost_disable_if|_\<
                 are_tagged_arguments<Iterator>
               , _enabler
             >::type = _enabler()
@@ -1006,34 +990,36 @@ define the range constructor.
         }
     };
 
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
+.. |is_argument_pack| replace:: ``is_argument_pack``
+.. _is_argument_pack:
 
 ``is_argument_pack``
 --------------------
 
-:Defined in: `boost/parameter/is_argument_pack.hpp`__
-
-__ ../../../../boost/parameter/is_argument_pack.hpp
+:Defined in: |is_argument_pack_header|_
 
 .. parsed-literal::
 
     template <typename T>
-    struct is_argument_pack  // : mpl::true_ or mpl::false_
+    struct is_argument_pack
+        // : |mpl_true|_\  if T is a model of |ArgumentPack|_\,
+        // |mpl_false|_\  otherwise.
     {
     };
 
 :Returns:
-``mpl::true_`` if ``T`` is a model of |ArgumentPack|_, ``mpl::false_``
-otherwise.
+    ``mpl::true_`` if ``T`` is a model of |ArgumentPack|_, ``mpl::false_``
+    otherwise.
 
 :Example usage:
+
 To avoid overload ambiguities between a constructor that takes in an
-|ArgumentPack|_ and a templated conversion constructor, use this metafunction
-in conjunction with ``enable_if``.
+|ArgumentPack|_ and a templated conversion constructor, use this
+metafunction in conjunction with ``enable_if``.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_(a0)
+    |BOOST_PARAMETER_NAME|_\(a0)
 
     template <typename T>
     class backend0
@@ -1048,7 +1034,7 @@ in conjunction with ``enable_if``.
         template <typename ArgPack>
         explicit backend0(
             ArgPack const& args
-          , typename boost::`enable_if`_<
+          , typename |boost_enable_if|_\<
                 is_argument_pack<ArgPack>
               , _enabler
             >::type = _enabler()
@@ -1059,8 +1045,8 @@ in conjunction with ``enable_if``.
         template <typename U>
         backend0(
             backend0<U> const& copy
-          , typename boost::`enable_if`_<
-                boost::`is_convertible`_<U,T>
+          , typename |boost_enable_if|_\<
+                |boost_is_convertible|_\<U,T>
               , _enabler
             >::type = _enabler()
         ) : a0(copy.get_a0())
@@ -1073,23 +1059,22 @@ in conjunction with ``enable_if``.
         }
     };
 
-.. _`is_convertible`: ../../../type_traits/doc/html/boost_typetraits/is_convertible.html
+.. |result_of_compose| replace:: ``result_of::compose``
+.. _result_of_compose:
 
 ``result_of::compose``
 ----------------------
 
 Returns the result type of the |compose|_ function.
 
-:Defined in: `boost/parameter/compose.hpp`__
-
-__ ../../../../boost/parameter/compose.hpp
+:Defined in: |compose_header|_
 
 .. parsed-literal::
 
     template <typename ...TaggedArgs>
     struct compose
-      : boost::`enable_if`_<
-            |are_tagged_arguments|_<T0,Pack...>
+      : |boost_enable_if|_\<
+            |are_tagged_arguments|_\<T0,Pack...>
           , |ArgumentPack|_
         >
     {
@@ -1102,7 +1087,7 @@ __ ../../../../boost/parameter/compose.hpp
     };
 
 :Requires: All elements in ``TaggedArgs`` must be |tagged reference| types, if
-specified.
+    specified.
 
 :Returns: the result type of the |compose|_ function.
 
@@ -1111,44 +1096,46 @@ specified.
 Function Templates
 ==================
 
+.. |compose| replace:: ``compose``
+.. _compose:
+
 ``compose``
 -----------
 
-:Defined in: `boost/parameter/compose.hpp`__
-
-__ ../../../../boost/parameter/compose.hpp
+:Defined in: |compose_header|_
 
 .. parsed-literal::
 
     template <typename ...Pack>
-    constexpr typename |result_of::compose|_<Pack...>::type
+    constexpr typename |result_of_compose|_\<Pack...>::type
         compose(Pack const&... args);
 
 This function facilitates easier variadic argument composition.  It is used by
-the |BOOST_PARAMETER_NO_SPEC_FUNCTION|,
-|BOOST_PARAMETER_NO_SPEC_MEMBER_FUNCTION|,
-|BOOST_PARAMETER_NO_SPEC_CONST_MEMBER_FUNCTION|,
-|BOOST_PARAMETER_NO_SPEC_FUNCTION_CALL_OPERATOR|,
-|BOOST_PARAMETER_NO_SPEC_CONST_FUNCTION_CALL_OPERATOR|,
-|BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR|, and
-|BOOST_PARAMETER_NO_SPEC_NO_BASE_CONSTRUCTOR| code generation macros.  You can
-use it to write your own code generation macros if the ones provided by this
-library do not suffice.
+the |BOOST_PARAMETER_NO_SPEC_FUNCTION|_,
+|BOOST_PARAMETER_NO_SPEC_MEMBER_FUNCTION|_,
+|BOOST_PARAMETER_NO_SPEC_CONST_MEMBER_FUNCTION|_,
+|BOOST_PARAMETER_NO_SPEC_FUNCTION_CALL_OPERATOR|_,
+|BOOST_PARAMETER_NO_SPEC_CONST_FUNCTION_CALL_OPERATOR|_,
+|BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR|_, and
+|BOOST_PARAMETER_NO_SPEC_NO_BASE_CONSTRUCTOR|_ code generation macros.  You
+can use it to write your own code generation macros if the ones provided by
+this library do not suffice.
 
 Unlike the |tagged reference| comma operator, the ``compose()`` function is
 variadic, as mentioned before.  However, the |tagged reference| comma operator
 can be invoked indefinitely and therefore does not limit the size of the
 resulting |ArgumentPack|, while the ``compose()`` function cannot take in more
-than |BOOST_PARAMETER_COMPOSE_MAX_ARITY| arguments for compilers that do not
+than |BOOST_PARAMETER_COMPOSE_MAX_ARITY|_ arguments for compilers that do not
 support perfect forwarding.
 
 :Requires: All elements in ``args`` must be |tagged reference| objects, if
-specified.
+    specified.
 
 :Returns: an |ArgumentPack|_ containing all elements in ``args``, if
-specified; an empty |ArgumentPack|_ otherwise.
+    specified; an empty |ArgumentPack|_ otherwise.
 
 :Example usage:
+
 .. parsed-literal::
 
     BOOST_PARAMETER_NAME(index)
@@ -1167,9 +1154,6 @@ specified; an empty |ArgumentPack|_ otherwise.
 
 The |compose_cpp|_ test program shows more examples using this function.
 
-.. |compose_cpp| replace:: compose.cpp
-.. _compose_cpp: ../../test/compose.cpp
-
 //////////////////////////////////////////////////////////////////////////////
 
 Code Generation Macros
@@ -1178,52 +1162,54 @@ Code Generation Macros
 Macros in this section can be used to ease the writing of code
 using the Parameter library by eliminating repetitive boilerplate.
 
+.. |BOOST_PARAMETER_FUNCTION| replace:: ``BOOST_PARAMETER_FUNCTION``
+.. _BOOST_PARAMETER_FUNCTION:
+
 ``BOOST_PARAMETER_FUNCTION(result, name, tag_namespace, arguments)``
 --------------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor.hpp`__
-
-__ ../../../../boost/parameter/preprocessor.hpp
+:Defined in: |preprocessor_header|_
 
 Generates a function that can take in positional arguments, composed
 arguments, named arguments, and deduced arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -1238,25 +1224,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -1271,10 +1257,10 @@ is bound, as will be shown later.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw) consume(rr))
 
 Use the macro as a substitute for a normal function header.  Enclose the
 return type ``bool`` in parentheses.  For each parameter, also enclose the
@@ -1293,12 +1279,12 @@ second method doesn't require ``std::forward`` to preserve value categories.
     BOOST_PARAMETER_FUNCTION((bool), evaluate, kw,
         (deduced
             (required
-                (lrc, (std::`bitset`_<1>))
-                (lr, (std::`bitset`_<2>))
+                (lrc, (|std_bitset|_\<1>))
+                (lr, (|std_bitset|_\<2>))
             )
             (optional
-                (rrc, (std::`bitset`_<3>), rvalue_const_bitset<2>())
-                (rr, (std::`bitset`_<4>), rvalue_bitset<3>())
+                (rrc, (|std_bitset|_\<3>), rvalue_const_bitset<2>())
+                (rr, (|std_bitset|_\<4>), rvalue_bitset<3>())
             )
         )
     )
@@ -1313,7 +1299,7 @@ second method doesn't require ``std::forward`` to preserve value categories.
         );
         BOOST_TEST_EQ(
             passed_by_rvalue_reference_to_const
-          , U::evaluate_category<2>(std::`forward`_<rrc0_type>(rrc0))
+          , U::evaluate_category<2>(|std_forward|_\<rrc0_type>(rrc0))
         );
         BOOST_TEST_EQ(
             passed_by_rvalue_reference
@@ -1370,27 +1356,22 @@ function calls are also legal.
       , lvalue_const_bitset<0>()
     );
 
-The |preprocessor|_, |preprocessor_deduced|_, and |preprocessor_eval_cat|_
-test programs demonstrate proper usage of this macro.
+The |preprocessor_cpp|_, |preprocessor_deduced_cpp|_, and
+|preprocessor_eval_cat_cpp|_ test programs demonstrate proper usage of this
+macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. |preprocessor| replace:: preprocessor.cpp
-.. _preprocessor: ../../test/preprocessor.cpp
-.. |preprocessor_deduced| replace:: preprocessor_deduced.cpp
-.. _preprocessor_deduced: ../../test/preprocessor_deduced.cpp
-.. |preprocessor_eval_cat| replace:: preprocessor_eval_category.cpp
-.. _preprocessor_eval_cat: ../../test/preprocessor_eval_category.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function.
-\*. ``name`` is the base name of the function; it determines the name of the
-generated forwarding functions.
-\*. ``tag_namespace`` is the namespace in which the keywords used by the
-function resides.
-\*. ``arguments`` is a `Boost.Preprocessor`_ `sequence`_ of
-*argument-specifiers*, as defined below.
+*   ``result`` is the parenthesized return type of the function.
+*   ``name`` is the base name of the function; it determines the name of the
+    generated forwarding functions.
+*   ``tag_namespace`` is the namespace in which the keywords used by the
+    function resides.
+*   ``arguments`` is a |Boost_Preprocessor|_ `sequence`_ of
+    *argument-specifiers*, as defined below.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 .. parsed-literal::
 
     argument-specifiers ::= *specifier-group0* {*specifier-group0*\ }
@@ -1426,41 +1407,39 @@ function resides.
         ( '**(**' *type-name* '**)**' ) |
         '**\***'
 
-\*. ``argument-name`` is any valid C++ identifier.
-\*. ``default-value`` is any valid C++ expression; if necessary, user code can
-compute it in terms of ``previous-name ## _type``, where ``previous-name`` is
-the ``argument-name`` in a previous ``specifier-group0`` or
-``specifier-group1``.  *This expression will be invoked exactly once.*
-\*. ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
-be the type of the corresponding ``argument-name``, whose second argument will
-be the entire |ArgumentPack|_, and whose return type is a `Boolean Integral
-Constant`_; however, user code *cannot* compute ``mfc`` in terms of
-``previous-name ## _type``.
-\*. ``type-name`` is either the name of a **target type** or an `MPL Binary
-Metafunction Class`_ whose first argument will be the type of the
-corresponding ``argument-name``, whose second argument will be the entire
-|ArgumentPack|_, and whose return type is the **target type**.  If
-``restriction`` uses this form, then the type of the generated name
-``argument-name ## _type`` will be computed in terms of the **target type**,
-and the generated reference ``argument-name`` (but not its corresponding entry
-in ``args``) will be cast to that type.
+*   ``argument-name`` is any valid C++ identifier.
+*   ``default-value`` is any valid C++ expression; if necessary, user code can
+    compute it in terms of ``previous-name ## _type``, where ``previous-name``
+    is the ``argument-name`` in a previous ``specifier-group0`` or
+    ``specifier-group1``.  *This expression will be invoked exactly once.*
+*   ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
+    be the type of the corresponding ``argument-name``, whose second argument
+    will be the entire |ArgumentPack|_, and whose return type is a `Boolean
+    Integral Constant`_; however, user code *cannot* compute ``mfc`` in terms
+    of ``previous-name ## _type``.
+*   ``type-name`` is either the name of a **target type** or an `MPL Binary
+    Metafunction Class`_ whose first argument will be the type of the
+    corresponding ``argument-name``, whose second argument will be the entire
+    |ArgumentPack|_, and whose return type is the **target type**.  If
+    ``restriction`` uses this form, then the type of the generated name
+    ``argument-name ## _type`` will be computed in terms of the **target
+    type**, and the generated reference ``argument-name`` (but not its
+    corresponding entry in ``args``) will be cast to that type.
 
-.. _`Boost.Preprocessor`: ../../../preprocessor/doc/index.html
-.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+**Approximate expansion:**
 
-Approximate expansion:
-**Where**:
+Where:
 
 * ``n`` denotes the *minimum* arity, as determined from ``arguments``.
 * ``m`` denotes the *maximum* arity, as determined from ``arguments``.
 
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename Args>
     using boost_param_result\_ ## __LINE__ ## **name** = **result**;
 
@@ -1472,7 +1451,7 @@ Approximate expansion:
     };
 
     struct boost_param_params\_ ## __LINE__ ## **name**
-      : |parameters|_<
+      : |parameters|_\<
             *list of parameter specifications, based on arguments*
         >
     {
@@ -1495,9 +1474,9 @@ Approximate expansion:
     {
         return boost_param_impl ## __LINE__ ## **name**\ (
             boost_param_parameters\_ ## __LINE__ ## **name**\ ()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **n**>(a ## **n**)
+              , |std_forward|_\<A ## **n**>(a ## **n**)
             )
         );
     }
@@ -1514,9 +1493,9 @@ Approximate expansion:
     {
         return boost_param_impl ## __LINE__ ## **name**\ (
             boost_param_parameters\_ ## __LINE__ ## **name**\ ()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **m**>(a ## **m**)
+              , |std_forward|_\<A ## **m**>(a ## **m**)
             )
         );
     }
@@ -1530,7 +1509,7 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_0boost\_ ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
@@ -1548,7 +1527,7 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_0boost\_ ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
@@ -1563,18 +1542,18 @@ Approximate expansion:
             static_cast<
                 typename boost_param_result\_ ## __LINE__ ## **name**\ <
                     Args
-                >::type(\*)()
-            >(`nullptr`_)
+                >::type(*)()
+            >(|std_nullptr|_\)
           , args
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of required parameter* ## **0**
                 >::type
             >(args[ *keyword object of required parameter* ## **0**])
           , …
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of required parameter* ## **n**
                 >::type
@@ -1591,7 +1570,7 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_0boost\_ ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
@@ -1599,19 +1578,19 @@ Approximate expansion:
         )
     {
         return boost_param_dispatch_0boost\_ ## __LINE__ ## **name**\ (
-            static_cast<ResultType(\*)()>(`nullptr`_)
+            static_cast<ResultType(*)()>(|std_nullptr|_\)
           , (args, *keyword object of optional parameter* ## **n + 1** =
                 *default value of optional parameter* ## **n + 1**
             )
-          , std::`forward`_<*argument name* ## **0** ## _type>(
+          , |std_forward|_\<*argument name* ## **0** ## _type>(
                 *argument name* ## **0**
             )
           , …
-          , std::`forward`_<*argument name* ## **n** ## _type>(
+          , |std_forward|_\<*argument name* ## **n** ## _type>(
                 *argument name* ## **n**
             )
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of optional parameter* ## **n + 1**
                 >::type
@@ -1630,71 +1609,61 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_0boost\_ ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
           , *argument name* ## **m** ## _type&& *argument name* ## **m**
         )
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
-.. _`nullptr`: http\://en.cppreference.com/w/cpp/language/nullptr
+.. |BOOST_PARAMETER_MEMBER_FUNCTION| replace:: ``BOOST_PARAMETER_MEMBER_FUNCTION``
+.. _BOOST_PARAMETER_MEMBER_FUNCTION:
 
 ``BOOST_PARAMETER_MEMBER_FUNCTION(result, name, tag_namespace, arguments)``
 ---------------------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor.hpp`__
-
-__ ../../../../boost/parameter/preprocessor.hpp
+:Defined in: |preprocessor_header|_
 
 Generates a member function that can take in positional arguments, composed
 arguments, named arguments, and deduced arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -1709,25 +1678,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -1742,10 +1711,10 @@ is bound, as will be shown later.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw) consume(rr))
 
 Use the macro as a substitute for a normal ``static`` member function
 header.  Enclose the return type ``bool`` in parentheses.  For each parameter,
@@ -1766,12 +1735,12 @@ second method doesn't require ``std::forward`` to preserve value categories.
         BOOST_PARAMETER_MEMBER_FUNCTION((bool), static evaluate, kw,
             (deduced
                 (required
-                    (lrc, (std::`bitset`_<1>))
-                    (lr, (std::`bitset`_<2>))
+                    (lrc, (|std_bitset|_\<1>))
+                    (lr, (|std_bitset|_\<2>))
                 )
                 (optional
-                    (rrc, (std::`bitset`_<3>), rvalue_const_bitset<2>())
-                    (rr, (std::`bitset`_<4>), rvalue_bitset<3>())
+                    (rrc, (|std_bitset|_\<3>), rvalue_const_bitset<2>())
+                    (rr, (|std_bitset|_\<4>), rvalue_bitset<3>())
                 )
             )
         )
@@ -1786,7 +1755,7 @@ second method doesn't require ``std::forward`` to preserve value categories.
             );
             BOOST_TEST_EQ(
                 passed_by_rvalue_reference_to_const
-              , U::evaluate_category<2>(std::`forward`_<rrc0_type>(rrc0))
+              , U::evaluate_category<2>(|std_forward|_\<rrc0_type>(rrc0))
             );
             BOOST_TEST_EQ(
                 passed_by_rvalue_reference
@@ -1844,27 +1813,23 @@ function calls are also legal.
       , lvalue_const_bitset<0>()
     );
 
-The |preprocessor|_ and |preprocessor_eval_cat|_ test programs demonstrate
-proper usage of this macro.
+The |preprocessor_cpp|_ and |preprocessor_eval_cat_cpp|_ test programs
+demonstrate proper usage of this macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. |preprocessor| replace:: preprocessor.cpp
-.. _preprocessor: ../../test/preprocessor.cpp
-.. |preprocessor_eval_cat| replace:: preprocessor_eval_category.cpp
-.. _preprocessor_eval_cat: ../../test/preprocessor_eval_category.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function.
-\*. ``name`` is the base name of the function; it determines the name of the
-generated forwarding functions.  ``name`` may be qualified by the ``static``
-keyword to declare the member function and its helpers as not associated with
-any object of the enclosing type.
-\*. ``tag_namespace`` is the namespace in which the keywords used by the
-function resides.
-\*. ``arguments`` is a `Boost.Preprocessor`_ `sequence`_ of
-*argument-specifiers*, as defined below.
+*   ``result`` is the parenthesized return type of the function.
+*   ``name`` is the base name of the function; it determines the name of the
+    generated forwarding functions.  ``name`` may be qualified by the
+    ``static`` keyword to declare the member function and its helpers as not
+    associated with any object of the enclosing type.
+*   ``tag_namespace`` is the namespace in which the keywords used by the
+    function resides.
+*   ``arguments`` is a |Boost_Preprocessor|_ `sequence`_ of
+    *argument-specifiers*, as defined below.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 .. parsed-literal::
 
     argument-specifiers ::= *specifier-group0* {*specifier-group0*\ }
@@ -1900,41 +1865,39 @@ function resides.
         ( '**(**' *type-name* '**)**' ) |
         '**\***'
 
-\*. ``argument-name`` is any valid C++ identifier.
-\*. ``default-value`` is any valid C++ expression; if necessary, user code can
-compute it in terms of ``previous-name ## _type``, where ``previous-name`` is
-the ``argument-name`` in a previous ``specifier-group0`` or
-``specifier-group1``.  *This expression will be invoked exactly once.*
-\*. ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
-be the type of the corresponding ``argument-name``, whose second argument will
-be the entire |ArgumentPack|_, and whose return type is a `Boolean Integral
-Constant`_; however, user code *cannot* compute ``mfc`` in terms of
-``previous-name ## _type``.
-\*. ``type-name`` is either the name of a **target type** or an `MPL Binary
-Metafunction Class`_ whose first argument will be the type of the
-corresponding ``argument-name``, whose second argument will be the entire
-|ArgumentPack|_, and whose return type is the **target type**.  If
-``restriction`` uses this form, then the type of the generated name
-``argument-name ## _type`` will be computed in terms of the **target type**,
-and the generated reference ``argument-name`` (but not its corresponding entry
-in ``args``) will be cast to that type.
+*   ``argument-name`` is any valid C++ identifier.
+*   ``default-value`` is any valid C++ expression; if necessary, user code can
+    compute it in terms of ``previous-name ## _type``, where ``previous-name``
+    is the ``argument-name`` in a previous ``specifier-group0`` or
+    ``specifier-group1``.  *This expression will be invoked exactly once.*
+*   ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
+    be the type of the corresponding ``argument-name``, whose second argument
+    will be the entire |ArgumentPack|_, and whose return type is a `Boolean
+    Integral Constant`_; however, user code *cannot* compute ``mfc`` in terms
+    of ``previous-name ## _type``.
+*   ``type-name`` is either the name of a **target type** or an `MPL Binary
+    Metafunction Class`_ whose first argument will be the type of the
+    corresponding ``argument-name``, whose second argument will be the entire
+    |ArgumentPack|_, and whose return type is the **target type**.  If
+    ``restriction`` uses this form, then the type of the generated name
+    ``argument-name ## _type`` will be computed in terms of the **target
+    type**, and the generated reference ``argument-name`` (but not its
+    corresponding entry in ``args``) will be cast to that type.
 
-.. _`Boost.Preprocessor`: ../../../preprocessor/doc/index.html
-.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+**Approximate expansion:**
 
-Approximate expansion:
-**Where**:
+Where:
 
 * ``n`` denotes the *minimum* arity, as determined from ``arguments``.
 * ``m`` denotes the *maximum* arity, as determined from ``arguments``.
 
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename Args>
     using boost_param_result\_ ## __LINE__ ## **name** = **result**;
 
@@ -1946,7 +1909,7 @@ Approximate expansion:
     };
 
     struct boost_param_params\_ ## __LINE__ ## **name**
-      : |parameters|_<
+      : |parameters|_\<
             *list of parameter specifications, based on arguments*
         >
     {
@@ -1965,9 +1928,9 @@ Approximate expansion:
     {
         return this->boost_param_impl ## __LINE__ ## **name**\ (
             boost_param_parameters\_ ## __LINE__ ## **name**\ ()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **n**>(a ## **n**)
+              , |std_forward|_\<A ## **n**>(a ## **n**)
             )
         );
     }
@@ -1984,9 +1947,9 @@ Approximate expansion:
     {
         return this->boost_param_impl ## __LINE__ ## **name**\ (
             boost_param_parameters\_ ## __LINE__ ## **name**\ ()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **m**>(a ## **m**)
+              , |std_forward|_\<A ## **m**>(a ## **m**)
             )
         );
     }
@@ -1999,18 +1962,18 @@ Approximate expansion:
             static_cast<
                 typename boost_param_result\_ ## __LINE__ ## **name**\ <
                     Args
-                >::type(\*)()
-            >(`nullptr`_)
+                >::type(*)()
+            >(|std_nullptr|_\)
           , args
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of required parameter* ## **0**
                 >::type
             >(args[ *keyword object of required parameter* ## **0**])
           , …
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of required parameter* ## **n**
                 >::type
@@ -2027,7 +1990,7 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_0boost\_ ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
@@ -2035,19 +1998,19 @@ Approximate expansion:
         )
     {
         return this->boost_param_dispatch_0boost\_ ## __LINE__ ## **name**\ (
-            static_cast<ResultType(\*)()>(`nullptr`_)
+            static_cast<ResultType(*)()>(|std_nullptr|_\)
           , (args, *keyword object of optional parameter* ## **n + 1** =
                 *default value of optional parameter* ## **n + 1**
             )
-          , std::`forward`_<*argument name* ## **0** ## _type>(
+          , |std_forward|_\<*argument name* ## **0** ## _type>(
                 *argument name* ## **0**
             )
           , …
-          , std::`forward`_<*argument name* ## **n** ## _type>(
+          , |std_forward|_\<*argument name* ## **n** ## _type>(
                 *argument name* ## **n**
             )
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of optional parameter* ## **n + 1**
                 >::type
@@ -2066,71 +2029,61 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_0boost\_ ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
           , *argument name* ## **m** ## _type&& *argument name* ## **m**
         )
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
-.. _`nullptr`: http\://en.cppreference.com/w/cpp/language/nullptr
+.. |BOOST_PARAMETER_CONST_MEMBER_FUNCTION| replace:: ``BOOST_PARAMETER_CONST_MEMBER_FUNCTION``
+.. _BOOST_PARAMETER_CONST_MEMBER_FUNCTION:
 
 ``BOOST_PARAMETER_CONST_MEMBER_FUNCTION(result, name, tag_ns, arguments)``
 --------------------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor.hpp`__
-
-__ ../../../../boost/parameter/preprocessor.hpp
+:Defined in: |preprocessor_header|_
 
 Generates a member function that can take in positional arguments, composed
 arguments, named arguments, and deduced arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -2145,25 +2098,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -2178,10 +2131,10 @@ is bound, as will be shown later.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw) consume(rr))
 
 Use the macro as a substitute for a normal ``const`` member function
 header.  Enclose the return type ``bool`` in parentheses.  For each parameter,
@@ -2206,12 +2159,12 @@ second method doesn't require ``std::forward`` to preserve value categories.
         BOOST_PARAMETER_CONST_MEMBER_FUNCTION((bool), evaluate, kw,
             (deduced
                 (required
-                    (lrc, (std::`bitset`_<1>))
-                    (lr, (std::`bitset`_<2>))
+                    (lrc, (|std_bitset|_\<1>))
+                    (lr, (|std_bitset|_\<2>))
                 )
                 (optional
-                    (rrc, (std::`bitset`_<3>), rvalue_const_bitset<2>())
-                    (rr, (std::`bitset`_<4>), rvalue_bitset<3>())
+                    (rrc, (|std_bitset|_\<3>), rvalue_const_bitset<2>())
+                    (rr, (|std_bitset|_\<4>), rvalue_bitset<3>())
                 )
             )
         )
@@ -2226,7 +2179,7 @@ second method doesn't require ``std::forward`` to preserve value categories.
             );
             BOOST_TEST_EQ(
                 passed_by_rvalue_reference_to_const
-              , U::evaluate_category<2>(std::`forward`_<rrc0_type>(rrc0))
+              , U::evaluate_category<2>(|std_forward|_\<rrc0_type>(rrc0))
             );
             BOOST_TEST_EQ(
                 passed_by_rvalue_reference
@@ -2285,22 +2238,20 @@ function calls are also legal.
       , lvalue_const_bitset<0>()
     );
 
-The |preprocessor|_ test program demonstrates proper usage of this macro.
+The |preprocessor_cpp|_ test program demonstrates proper usage of this macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. |preprocessor| replace:: preprocessor.cpp
-.. _preprocessor: ../../test/preprocessor.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function.
-\*. ``name`` is the base name of the function; it determines the name of the
-generated forwarding functions.
-\*. ``tag_namespace`` is the namespace in which the keywords used by the
-function resides.
-\*. ``arguments`` is a `Boost.Preprocessor`_ `sequence`_ of
-*argument-specifiers*, as defined below.
+*   ``result`` is the parenthesized return type of the function.
+*   ``name`` is the base name of the function; it determines the name of the
+    generated forwarding functions.
+*   ``tag_namespace`` is the namespace in which the keywords used by the
+    function resides.
+*   ``arguments`` is a |Boost_Preprocessor|_ `sequence`_ of
+    *argument-specifiers*, as defined below.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 .. parsed-literal::
 
     argument-specifiers ::= *specifier-group0* {*specifier-group0*\ }
@@ -2336,41 +2287,39 @@ function resides.
         ( '**(**' *type-name* '**)**' ) |
         '**\***'
 
-\*. ``argument-name`` is any valid C++ identifier.
-\*. ``default-value`` is any valid C++ expression; if necessary, user code can
-compute it in terms of ``previous-name ## _type``, where ``previous-name`` is
-the ``argument-name`` in a previous ``specifier-group0`` or
-``specifier-group1``.  *This expression will be invoked exactly once.*
-\*. ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
-be the type of the corresponding ``argument-name``, whose second argument will
-be the entire |ArgumentPack|_, and whose return type is a `Boolean Integral
-Constant`_; however, user code *cannot* compute ``mfc`` in terms of
-``previous-name ## _type``.
-\*. ``type-name`` is either the name of a **target type** or an `MPL Binary
-Metafunction Class`_ whose first argument will be the type of the
-corresponding ``argument-name``, whose second argument will be the entire
-|ArgumentPack|_, and whose return type is the **target type**.  If
-``restriction`` uses this form, then the type of the generated name
-``argument-name ## _type`` will be computed in terms of the **target type**,
-and the generated reference ``argument-name`` (but not its corresponding entry
-in ``args``) will be cast to that type.
+*   ``argument-name`` is any valid C++ identifier.
+*   ``default-value`` is any valid C++ expression; if necessary, user code can
+    compute it in terms of ``previous-name ## _type``, where ``previous-name``
+    is the ``argument-name`` in a previous ``specifier-group0`` or
+    ``specifier-group1``.  *This expression will be invoked exactly once.*
+*   ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
+    be the type of the corresponding ``argument-name``, whose second argument
+    will be the entire |ArgumentPack|_, and whose return type is a `Boolean
+    Integral Constant`_; however, user code *cannot* compute ``mfc`` in terms
+    of ``previous-name ## _type``.
+*   ``type-name`` is either the name of a **target type** or an `MPL Binary
+    Metafunction Class`_ whose first argument will be the type of the
+    corresponding ``argument-name``, whose second argument will be the entire
+    |ArgumentPack|_, and whose return type is the **target type**.  If
+    ``restriction`` uses this form, then the type of the generated name
+    ``argument-name ## _type`` will be computed in terms of the **target
+    type**, and the generated reference ``argument-name`` (but not its
+    corresponding entry in ``args``) will be cast to that type.
 
-.. _`Boost.Preprocessor`: ../../../preprocessor/doc/index.html
-.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+**Approximate expansion:**
 
-Approximate expansion:
-**Where**:
+Where:
 
 * ``n`` denotes the *minimum* arity, as determined from ``arguments``.
 * ``m`` denotes the *maximum* arity, as determined from ``arguments``.
 
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename Args>
     using boost_param_result_const\_ ## __LINE__ ## **name** = **result**;
 
@@ -2382,7 +2331,7 @@ Approximate expansion:
     };
 
     struct boost_param_params_const\_ ## __LINE__ ## **name**
-      : |parameters|_<
+      : |parameters|_\<
             *list of parameter specifications, based on arguments*
         >
     {
@@ -2401,9 +2350,9 @@ Approximate expansion:
     {
         return this->boost_param_impl_const ## __LINE__ ## **name**\ (
             boost_param_parameters_const\_ ## __LINE__ ## **name**\ (
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **n**>(a ## **n**)
+              , |std_forward|_\<A ## **n**>(a ## **n**)
             )
         );
     }
@@ -2420,9 +2369,9 @@ Approximate expansion:
     {
         return this->boost_param_impl_const ## __LINE__ ## **name**\ (
             boost_param_parameters_const\_ ## __LINE__ ## **name**\ ()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **m**>(a ## **m**)
+              , |std_forward|_\<A ## **m**>(a ## **m**)
             )
         );
     }
@@ -2436,18 +2385,18 @@ Approximate expansion:
             static_cast<
                 typename boost_param_result_const\_ ## __LINE__ ## **name**\ <
                     Args
-                >::type(\*)()
-            >(`nullptr`_)
+                >::type(*)()
+            >(|std_nullptr|_\)
           , args
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of required parameter* ## **0**
                 >::type
             >(args[ *keyword object of required parameter* ## **0**])
           , …
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of required parameter* ## **n**
                 >::type
@@ -2464,7 +2413,7 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_const_0boost\_ ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
@@ -2473,19 +2422,19 @@ Approximate expansion:
     {
         return this->
         boost_param_dispatch_const_0boost\_ ## __LINE__ ## **name**\ (
-            static_cast<ResultType(\*)()>(`nullptr`_)
+            static_cast<ResultType(*)()>(|std_nullptr|_\)
           , (args, *keyword object of optional parameter* ## **n + 1** =
                 *default value of optional parameter* ## **n + 1**
             )
-          , std::`forward`_<*argument name* ## **0** ## _type>(
+          , |std_forward|_\<*argument name* ## **0** ## _type>(
                 *argument name* ## **0**
             )
           , …
-          , std::`forward`_<*argument name* ## **n** ## _type>(
+          , |std_forward|_\<*argument name* ## **n** ## _type>(
                 *argument name* ## **n**
             )
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of optional parameter* ## **n + 1**
                 >::type
@@ -2504,44 +2453,34 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_const_0boost\_ ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
           , *argument name* ## **m** ## _type&& *argument name* ## **m**
         ) const
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
-.. _`nullptr`: http\://en.cppreference.com/w/cpp/language/nullptr
+.. |BOOST_PARAMETER_FUNCTION_CALL_OPERATOR| replace:: ``BOOST_PARAMETER_FUNCTION_CALL_OPERATOR``
+.. _BOOST_PARAMETER_FUNCTION_CALL_OPERATOR:
 
 ``BOOST_PARAMETER_FUNCTION_CALL_OPERATOR(result, tag_namespace, arguments)``
 ----------------------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor.hpp`__
-
-__ ../../../../boost/parameter/preprocessor.hpp
+:Defined in: |preprocessor_header|_
 
 Generates a function call operator that can take in positional arguments,
 composed arguments, named arguments, and deduced arguments.
 
 :Example usage:
+
 Define the named parameters that will comprise the argument specification that
 this macro will use.  Ensure that all their tag types are in the same
 namespace, which is ``tag`` by default.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_(y)
-    |BOOST_PARAMETER_NAME|_(z)
+    |BOOST_PARAMETER_NAME|_\(y)
+    |BOOST_PARAMETER_NAME|_\(z)
 
 Use the macro as a substitute for a normal function call operator
 header.  Enclose the return type in parentheses.  For each parameter, also
@@ -2555,10 +2494,10 @@ Boost.Parameter-enabled function call operator overloads.
     class char_reader
     {
         int index;
-        char const\* key;
+        char const* key;
 
      public:
-        explicit char_reader(char const\* k) : index(0), key(k)
+        explicit char_reader(char const* k) : index(0), key(k)
         {
         }
 
@@ -2566,7 +2505,7 @@ Boost.Parameter-enabled function call operator overloads.
             (deduced
                 (required
                     (y, (int))
-                    (z, (char const\*))
+                    (z, (char const*))
                 )
             )
         )
@@ -2575,11 +2514,11 @@ Boost.Parameter-enabled function call operator overloads.
             this->key = z;
         }
 
-        |BOOST_PARAMETER_CONST_FUNCTION_CALL_OPERATOR|_((char), tag,
+        |BOOST_PARAMETER_CONST_FUNCTION_CALL_OPERATOR|_\((char), tag,
             (deduced
                 (required
                     (y, (bool))
-                    (z, (std::`map`_<char const\*,std::`string`_>))
+                    (z, (|std_map|_\<char const*, |std_string|_\>))
                 )
             )
         )
@@ -2595,11 +2534,11 @@ passed in determine which function call operator overload gets invoked.
 
 .. parsed-literal::
 
-    char const\* keys[] = {"foo", "bar", "baz"};
-    std::`map`_<char const\*,std::`string`_> k2s;
-    k2s[keys[0]] = std::`string`_("qux");
-    k2s[keys[1]] = std::`string`_("wmb");
-    k2s[keys[2]] = std::`string`_("zxc");
+    char const* keys[] = {"foo", "bar", "baz"};
+    |std_map|_\<char const*, |std_string|_\> k2s;
+    k2s[keys[0]] = |std_string|_\("qux");
+    k2s[keys[1]] = |std_string|_\("wmb");
+    k2s[keys[2]] = |std_string|_\("zxc");
     char_reader r(keys[0]);
 
     // positional arguments
@@ -2616,24 +2555,19 @@ passed in determine which function call operator overload gets invoked.
     BOOST_TEST_EQ('c', (r(k2s, true)));
     BOOST_TEST_EQ('z', (r(k2s, false)));
 
-The |preprocessor|_ and |preprocessor_deduced|_ test programs demonstrate
-proper usage of this macro.
+The |preprocessor_cpp|_ and |preprocessor_deduced_cpp|_ test programs
+demonstrate proper usage of this macro.
 
-.. _`map`: http\://en.cppreference.com/w/cpp/container/map
-.. _`string`: http\://en.cppreference.com/w/cpp/string/basic_string
-.. |preprocessor| replace:: preprocessor.cpp
-.. _preprocessor: ../../test/preprocessor.cpp
-.. |preprocessor_deduced| replace:: preprocessor_deduced.cpp
-.. _preprocessor_deduced: ../../test/preprocessor_deduced.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function call operator.
-\*. ``tag_namespace`` is the namespace in which the keywords used by the
-function call operator resides.
-\*. ``arguments`` is a `Boost.Preprocessor`_ `sequence`_ of
-*argument-specifiers*, as defined below.
+*   ``result`` is the parenthesized return type of the function call operator.
+*   ``tag_namespace`` is the namespace in which the keywords used by the
+    function call operator resides.
+*   ``arguments`` is a |Boost_Preprocessor|_ `sequence`_ of
+    *argument-specifiers*, as defined below.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 .. parsed-literal::
 
     argument-specifiers ::= *specifier-group0* {*specifier-group0*\ }
@@ -2669,41 +2603,39 @@ function call operator resides.
         ( '**(**' *type-name* '**)**' ) |
         '**\***'
 
-\*. ``argument-name`` is any valid C++ identifier.
-\*. ``default-value`` is any valid C++ expression; if necessary, user code can
-compute it in terms of ``previous-name ## _type``, where ``previous-name`` is
-the ``argument-name`` in a previous ``specifier-group0`` or
-``specifier-group1``.  *This expression will be invoked exactly once.*
-\*. ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
-be the type of the corresponding ``argument-name``, whose second argument will
-be the entire |ArgumentPack|_, and whose return type is a `Boolean Integral
-Constant`_; however, user code *cannot* compute ``mfc`` in terms of
-``previous-name ## _type``.
-\*. ``type-name`` is either the name of a **target type** or an `MPL Binary
-Metafunction Class`_ whose first argument will be the type of the
-corresponding ``argument-name``, whose second argument will be the entire
-|ArgumentPack|_, and whose return type is the **target type**.  If
-``restriction`` uses this form, then the type of the generated name
-``argument-name ## _type`` will be computed in terms of the **target type**,
-and the generated reference ``argument-name`` (but not its corresponding entry
-in ``args``) will be cast to that type.
+*   ``argument-name`` is any valid C++ identifier.
+*   ``default-value`` is any valid C++ expression; if necessary, user code can
+    compute it in terms of ``previous-name ## _type``, where ``previous-name``
+    is the ``argument-name`` in a previous ``specifier-group0`` or
+    ``specifier-group1``.  *This expression will be invoked exactly once.*
+*   ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
+    be the type of the corresponding ``argument-name``, whose second argument
+    will be the entire |ArgumentPack|_, and whose return type is a `Boolean
+    Integral Constant`_; however, user code *cannot* compute ``mfc`` in terms
+    of ``previous-name ## _type``.
+*   ``type-name`` is either the name of a **target type** or an `MPL Binary
+    Metafunction Class`_ whose first argument will be the type of the
+    corresponding ``argument-name``, whose second argument will be the entire
+    |ArgumentPack|_, and whose return type is the **target type**.  If
+    ``restriction`` uses this form, then the type of the generated name
+    ``argument-name ## _type`` will be computed in terms of the **target
+    type**, and the generated reference ``argument-name`` (but not its
+    corresponding entry in ``args``) will be cast to that type.
 
-.. _`Boost.Preprocessor`: ../../../preprocessor/doc/index.html
-.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+**Approximate expansion:**
 
-Approximate expansion:
-**Where**:
+Where:
 
 * ``n`` denotes the *minimum* arity, as determined from ``arguments``.
 * ``m`` denotes the *maximum* arity, as determined from ``arguments``.
 
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename Args>
     using boost_param_result\_ ## __LINE__ ## operator = **result**;
 
@@ -2715,7 +2647,7 @@ Approximate expansion:
     };
 
     struct boost_param_params\_ ## __LINE__ ## operator
-      : |parameters|_<
+      : |parameters|_\<
             *list of parameter specifications, based on arguments*
         >
     {
@@ -2734,9 +2666,9 @@ Approximate expansion:
     {
         return this->boost_param_impl ## __LINE__ ## operator(
             boost_param_parameters\_ ## __LINE__ ## operator()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **n**>(a ## **n**)
+              , |std_forward|_\<A ## **n**>(a ## **n**)
             )
         );
     }
@@ -2753,9 +2685,9 @@ Approximate expansion:
     {
         return this->boost_param_impl ## __LINE__ ## operator(
             boost_param_parameters\_ ## __LINE__ ## operator()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **m**>(a ## **m**)
+              , |std_forward|_\<A ## **m**>(a ## **m**)
             )
         );
     }
@@ -2768,18 +2700,18 @@ Approximate expansion:
             static_cast<
                 typename boost_param_result\_ ## __LINE__ ## operator<
                     Args
-                >::type(\*)()
-            >(`nullptr`_)
+                >::type(*)()
+            >(|std_nullptr|_\)
           , args
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of required parameter* ## **0**
                 >::type
             >(args[ *keyword object of required parameter* ## **0**])
           , …
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of required parameter* ## **n**
                 >::type
@@ -2796,7 +2728,7 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_0boost\_ ## __LINE__ ## operator(
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
@@ -2804,19 +2736,19 @@ Approximate expansion:
         )
     {
         return this->boost_param_dispatch_0boost\_ ## __LINE__ ## operator(
-            static_cast<ResultType(\*)()>(`nullptr`_)
+            static_cast<ResultType(*)()>(|std_nullptr|_\)
           , (args, *keyword object of optional parameter* ## **n + 1** =
                 *default value of optional parameter* ## **n + 1**
             )
-          , std::`forward`_<*argument name* ## **0** ## _type>(
+          , |std_forward|_\<*argument name* ## **0** ## _type>(
                 *argument name* ## **0**
             )
           , …
-          , std::`forward`_<*argument name* ## **n** ## _type>(
+          , |std_forward|_\<*argument name* ## **n** ## _type>(
                 *argument name* ## **n**
             )
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of optional parameter* ## **n + 1**
                 >::type
@@ -2835,71 +2767,61 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_0boost\_ ## __LINE__ ## operator(
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
           , *argument name* ## **m** ## _type&& *argument name* ## **m**
         )
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
-.. _`nullptr`: http\://en.cppreference.com/w/cpp/language/nullptr
+.. |BOOST_PARAMETER_CONST_FUNCTION_CALL_OPERATOR| replace:: ``BOOST_PARAMETER_CONST_FUNCTION_CALL_OPERATOR``
+.. _BOOST_PARAMETER_CONST_FUNCTION_CALL_OPERATOR:
 
 ``BOOST_PARAMETER_CONST_FUNCTION_CALL_OPERATOR(result, tag_ns, arguments)``
 ---------------------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor.hpp`__
-
-__ ../../../../boost/parameter/preprocessor.hpp
+:Defined in: |preprocessor_header|_
 
 Generates a function call operator that can take in positional arguments,
 composed arguments, named arguments, and deduced arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -2914,25 +2836,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -2947,10 +2869,10 @@ is bound, as will be shown later.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw) consume(rr))
 
 Use the macro as a substitute for a normal ``const`` function call operator
 header.  Enclose the return type ``bool`` in parentheses.  For each parameter,
@@ -2975,12 +2897,12 @@ second method doesn't require ``std::forward`` to preserve value categories.
         BOOST_PARAMETER_CONST_FUNCTION_CALL_OPERATOR((bool), kw,
             (deduced
                 (required
-                    (lrc, (std::`bitset`_<1>))
-                    (lr, (std::`bitset`_<2>))
+                    (lrc, (|std_bitset|_\<1>))
+                    (lr, (|std_bitset|_\<2>))
                 )
                 (optional
-                    (rrc, (std::`bitset`_<3>), rvalue_const_bitset<2>())
-                    (rr, (std::`bitset`_<4>), rvalue_bitset<3>())
+                    (rrc, (|std_bitset|_\<3>), rvalue_const_bitset<2>())
+                    (rr, (|std_bitset|_\<4>), rvalue_bitset<3>())
                 )
             )
         )
@@ -2995,7 +2917,7 @@ second method doesn't require ``std::forward`` to preserve value categories.
             );
             BOOST_TEST_EQ(
                 passed_by_rvalue_reference_to_const
-              , U::evaluate_category<2>(std::`forward`_<rrc0_type>(rrc0))
+              , U::evaluate_category<2>(|std_forward|_\<rrc0_type>(rrc0))
             );
             BOOST_TEST_EQ(
                 passed_by_rvalue_reference
@@ -3054,26 +2976,20 @@ function calls are also legal.
       , lvalue_const_bitset<0>()
     );
 
-The |preprocessor|_, |preprocessor_deduced|_, and |preprocessor_eval_cat_8|_
-test programs demonstrate proper usage of this macro.
+The |preprocessor_cpp|_, |preprocessor_deduced_cpp|_, and
+|preprocessor_eval_cat_8_cpp|_ test programs demonstrate proper usage of this
+macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
-.. |preprocessor| replace:: preprocessor.cpp
-.. _preprocessor: ../../test/preprocessor.cpp
-.. |preprocessor_deduced| replace:: preprocessor_deduced.cpp
-.. _preprocessor_deduced: ../../test/preprocessor_deduced.cpp
-.. |preprocessor_eval_cat_8| replace:: preprocessor_eval_cat_8.cpp
-.. _preprocessor_eval_cat_8: ../../test/preprocessor_eval_cat_8.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function call operator.
-\*. ``tag_namespace`` is the namespace in which the keywords used by the
-function call operator resides.
-\*. ``arguments`` is a `Boost.Preprocessor`_ `sequence`_ of
-*argument-specifiers*, as defined below.
+*   ``result`` is the parenthesized return type of the function call operator.
+*   ``tag_namespace`` is the namespace in which the keywords used by the
+    function call operator resides.
+*   ``arguments`` is a |Boost_Preprocessor|_ `sequence`_ of
+    *argument-specifiers*, as defined below.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 .. parsed-literal::
 
     argument-specifiers ::= *specifier-group0* {*specifier-group0*\ }
@@ -3109,41 +3025,39 @@ function call operator resides.
         ( '**(**' *type-name* '**)**' ) |
         '**\***'
 
-\*. ``argument-name`` is any valid C++ identifier.
-\*. ``default-value`` is any valid C++ expression; if necessary, user code can
-compute it in terms of ``previous-name ## _type``, where ``previous-name`` is
-the ``argument-name`` in a previous ``specifier-group0`` or
-``specifier-group1``.  *This expression will be invoked exactly once.*
-\*. ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
-be the type of the corresponding ``argument-name``, whose second argument will
-be the entire |ArgumentPack|_, and whose return type is a `Boolean Integral
-Constant`_; however, user code *cannot* compute ``mfc`` in terms of
-``previous-name ## _type``.
-\*. ``type-name`` is either the name of a **target type** or an `MPL Binary
-Metafunction Class`_ whose first argument will be the type of the
-corresponding ``argument-name``, whose second argument will be the entire
-|ArgumentPack|_, and whose return type is the **target type**.  If
-``restriction`` uses this form, then the type of the generated name
-``argument-name ## _type`` will be computed in terms of the **target type**,
-and the generated reference ``argument-name`` (but not its corresponding entry
-in ``args``) will be cast to that type.
+*   ``argument-name`` is any valid C++ identifier.
+*   ``default-value`` is any valid C++ expression; if necessary, user code can
+    compute it in terms of ``previous-name ## _type``, where ``previous-name``
+    is the ``argument-name`` in a previous ``specifier-group0`` or
+    ``specifier-group1``.  *This expression will be invoked exactly once.*
+*   ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
+    be the type of the corresponding ``argument-name``, whose second argument
+    will be the entire |ArgumentPack|_, and whose return type is a `Boolean
+    Integral Constant`_; however, user code *cannot* compute ``mfc`` in terms
+    of ``previous-name ## _type``.
+*   ``type-name`` is either the name of a **target type** or an `MPL Binary
+    Metafunction Class`_ whose first argument will be the type of the
+    corresponding ``argument-name``, whose second argument will be the entire
+    |ArgumentPack|_, and whose return type is the **target type**.  If
+    ``restriction`` uses this form, then the type of the generated name
+    ``argument-name ## _type`` will be computed in terms of the **target
+    type**, and the generated reference ``argument-name`` (but not its
+    corresponding entry in ``args``) will be cast to that type.
 
-.. _`Boost.Preprocessor`: ../../../preprocessor/doc/index.html
-.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+**Approximate expansion:**
 
-Approximate expansion:
-**Where**:
+Where:
 
 * ``n`` denotes the *minimum* arity, as determined from ``arguments``.
 * ``m`` denotes the *maximum* arity, as determined from ``arguments``.
 
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename Args>
     using boost_param_result_const\_ ## __LINE__ ## operator = **result**;
 
@@ -3155,7 +3069,7 @@ Approximate expansion:
     };
 
     struct boost_param_params_const\_ ## __LINE__ ## operator
-      : |parameters|_<
+      : |parameters|_\<
             *list of parameter specifications, based on arguments*
         >
     {
@@ -3174,9 +3088,9 @@ Approximate expansion:
     {
         return this->boost_param_impl_const ## __LINE__ ## operator(
             boost_param_parameters_const\_ ## __LINE__ ## operator()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **n**>(a ## **n**)
+              , |std_forward|_\<A ## **n**>(a ## **n**)
             )
         );
     }
@@ -3193,9 +3107,9 @@ Approximate expansion:
     {
         return this->boost_param_impl_const ## __LINE__ ## operator(
             boost_param_parameters_const\_ ## __LINE__ ## operator()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **m**>(a ## **m**)
+              , |std_forward|_\<A ## **m**>(a ## **m**)
             )
         );
     }
@@ -3209,18 +3123,18 @@ Approximate expansion:
             static_cast<
                 typename boost_param_result_const\_ ## __LINE__ ## operator<
                     Args
-                >::type(\*)()
-            >(`nullptr`_)
+                >::type(*)()
+            >(|std_nullptr|_\)
           , args
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of required parameter* ## **0**
                 >::type
             >(args[ *keyword object of required parameter* ## **0**])
           , …
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of required parameter* ## **n**
                 >::type
@@ -3237,7 +3151,7 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_const_0boost\_ ## __LINE__ ## operator(
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
@@ -3246,19 +3160,19 @@ Approximate expansion:
     {
         return this->
         boost_param_dispatch_const_0boost\_ ## __LINE__ ## operator(
-            static_cast<ResultType(\*)()>(`nullptr`_)
+            static_cast<ResultType(*)()>(|std_nullptr|_\)
           , (args, *keyword object of optional parameter* ## **n + 1** =
                 *default value of optional parameter* ## **n + 1**
             )
-          , std::`forward`_<*argument name* ## **0** ## _type>(
+          , |std_forward|_\<*argument name* ## **0** ## _type>(
                 *argument name* ## **0**
             )
           , …
-          , std::`forward`_<*argument name* ## **n** ## _type>(
+          , |std_forward|_\<*argument name* ## **n** ## _type>(
                 *argument name* ## **n**
             )
-          , std::`forward`_<
-                typename |value_type|_<
+          , |std_forward|_\<
+                typename |value_type|_\<
                     Args
                   , *keyword tag type of optional parameter* ## **n + 1**
                 >::type
@@ -3277,44 +3191,34 @@ Approximate expansion:
     >
     ResultType
         boost_param_dispatch_const_0boost\_ ## __LINE__ ## operator(
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
           , *argument name* ## **0** ## _type&& *argument name* ## **0**
           , …
           , *argument name* ## **m** ## _type&& *argument name* ## **m**
         ) const
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
-.. _`nullptr`: http\://en.cppreference.com/w/cpp/language/nullptr
+.. |BOOST_PARAMETER_CONSTRUCTOR| replace:: ``BOOST_PARAMETER_CONSTRUCTOR``
+.. _BOOST_PARAMETER_CONSTRUCTOR:
 
 ``BOOST_PARAMETER_CONSTRUCTOR(cls, impl, tag_namespace, arguments)``
 --------------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor.hpp`__
-
-__ ../../../../boost/parameter/preprocessor.hpp
+:Defined in: |preprocessor_header|_
 
 Generates a constructor that can take in positional arguments, composed
 arguments, named arguments, and deduced arguments.
 
 :Example usage:
+
 Define the named parameters that will comprise the argument specification that
 this macro will use.  Ensure that all their tag types are in the same
 namespace, which is ``tag`` by default.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_(y)
-    |BOOST_PARAMETER_NAME|_(z)
+    |BOOST_PARAMETER_NAME|_\(y)
+    |BOOST_PARAMETER_NAME|_\(z)
 
 In the base class, implement a delegate constructor template that takes in an
 |ArgumentPack|_.  You must pass the identifiers with leading underscores to
@@ -3325,7 +3229,7 @@ In the base class, implement a delegate constructor template that takes in an
     class char_read_base
     {
         int index;
-        char const\* key;
+        char const* key;
 
      public:
         template <typename Args>
@@ -3334,11 +3238,11 @@ In the base class, implement a delegate constructor template that takes in an
         {
         }
 
-        |BOOST_PARAMETER_CONST_FUNCTION_CALL_OPERATOR|_((char), tag,
+        |BOOST_PARAMETER_CONST_FUNCTION_CALL_OPERATOR|_\((char), tag,
             (deduced
                 (required
                     (y, (bool))
-                    (z, (std::`map`_<char const\*,std::`string`_>))
+                    (z, (|std_map|_\<char const*, |std_string|_\>))
                 )
             )
         )
@@ -3363,7 +3267,7 @@ value types are mutually exclusive, you can wrap the parameters in a
             (deduced
                 (required
                     (y, (int))
-                    (z, (char const\*))
+                    (z, (char const*))
                 )
             )
         )
@@ -3373,11 +3277,11 @@ The following ``char_reader`` constructor calls are legal.
 
 .. parsed-literal::
 
-    char const\* keys[] = {"foo", "bar", "baz"};
-    std::`map`_<char const\*,std::`string`_> k2s;
-    k2s[keys[0]] = std::`string`_("qux");
-    k2s[keys[1]] = std::`string`_("wmb");
-    k2s[keys[2]] = std::`string`_("zxc");
+    char const* keys[] = {"foo", "bar", "baz"};
+    |std_map|_\<char const*, |std_string|_\> k2s;
+    k2s[keys[0]] = |std_string|_\("qux");
+    k2s[keys[1]] = |std_string|_\("wmb");
+    k2s[keys[2]] = |std_string|_\("zxc");
 
     // positional arguments
     char_reader r0(0, keys[0]);
@@ -3394,26 +3298,19 @@ The following ``char_reader`` constructor calls are legal.
     BOOST_TEST_EQ('c', (r2(k2s, true)));
     BOOST_TEST_EQ('z', (r2(k2s, false)));
 
-The |preprocessor|_ and |preprocessor_deduced|_ test programs demonstrate
-proper usage of this macro.
+The |preprocessor_cpp|_ and |preprocessor_deduced_cpp|_ test programs
+demonstrate proper usage of this macro.
 
-.. _`map`: http\://en.cppreference.com/w/cpp/container/map
-.. _`string`: http\://en.cppreference.com/w/cpp/string/basic_string
-.. |preprocessor| replace:: preprocessor.cpp
-.. _preprocessor: ../../test/preprocessor.cpp
-.. |preprocessor_deduced| replace:: preprocessor_deduced.cpp
-.. _preprocessor_deduced: ../../test/preprocessor_deduced.cpp
-.. |preprocessor_eval_cat| replace:: preprocessor_eval_category.cpp
-.. _preprocessor_eval_cat: ../../test/preprocessor_eval_category.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``cls`` is the name of the enclosing class.
-\*. ``impl`` is the parenthesized implementation base class for ``cls``.
-\*. ``tag_namespace`` is the namespace in which the keywords used by the
-constructor resides.
-\*. ``arguments`` is a list of *argument-specifiers*, as defined below.
+*   ``cls`` is the name of the enclosing class.
+*   ``impl`` is the parenthesized implementation base class for ``cls``.
+*   ``tag_namespace`` is the namespace in which the keywords used by the
+    constructor resides.
+*   ``arguments`` is a list of *argument-specifiers*, as defined below.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 .. parsed-literal::
 
     argument-specifiers ::= *specifier-group0* {*specifier-group0*\ }
@@ -3444,28 +3341,24 @@ constructor resides.
         ( '**(**' *type-name* '**)**' ) |
         '**\***'
 
-\*. ``argument-name`` is any valid C++ identifier.
-\*. ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
-be the type of the corresponding ``argument-name``, whose second argument will
-be the entire |ArgumentPack|_, and whose return type is a `Boolean Integral
-Constant`_; however, user code *cannot* compute ``mfc`` in terms of
-``previous-name ## _type``.
-\*. ``type-name`` is either the name of a **target type** or an `MPL Binary
-Metafunction Class`_ whose first argument will be the type of the
-corresponding ``argument-name``, whose second argument will be the entire
-|ArgumentPack|_, and whose return type is the **target type**.
+*   ``argument-name`` is any valid C++ identifier.
+*   ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
+    be the type of the corresponding ``argument-name``, whose second argument
+    will be the entire |ArgumentPack|_, and whose return type is a `Boolean
+    Integral Constant`_; however, user code *cannot* compute ``mfc`` in terms
+    of ``previous-name ## _type``.
+*   ``type-name`` is either the name of a **target type** or an `MPL Binary
+    Metafunction Class`_ whose first argument will be the type of the
+    corresponding ``argument-name``, whose second argument will be the entire
+    |ArgumentPack|_, and whose return type is the **target type**.
 
 Note that *specifier* does not include *default-value*.  It is up to the
 delegate constructor in ``impl`` to determine the default value of all
 optional arguments.
 
-.. _`Boost.Preprocessor`: ../../../preprocessor/doc/index.html
-.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+**Approximate expansion:**
 
-Approximate expansion:
-**Where**:
+Where:
 
 * ``n`` denotes the *minimum* arity, as determined from ``arguments``.
 * ``m`` denotes the *maximum* arity, as determined from ``arguments``.
@@ -3473,7 +3366,7 @@ Approximate expansion:
 .. parsed-literal::
 
     struct boost_param_params\_ ## __LINE__ ## ctor
-      : |parameters|_<
+      : |parameters|_\<
             *list of parameter specifications, based on arguments*
         >
     {
@@ -3486,9 +3379,9 @@ Approximate expansion:
     **cls**\ (A0&& a0, …, A ## **n** && a ## **n**)
       : **impl**\ (
             constructor_parameters ## __LINE__(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **n**>(a ## **n**)
+              , |std_forward|_\<A ## **n**>(a ## **n**)
             )
         )
     {
@@ -3500,62 +3393,62 @@ Approximate expansion:
     **cls**\ (A0&& a0, …, A ## **m** && a ## **m**)
       : **impl**\ (
             constructor_parameters ## __LINE__(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **m**>(a ## **m**)
+              , |std_forward|_\<A ## **m**>(a ## **m**)
             )
         )
     {
     }
 
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
+.. |BOOST_PARAMETER_BASIC_FUNCTION| replace:: ``BOOST_PARAMETER_BASIC_FUNCTION``
+.. _BOOST_PARAMETER_BASIC_FUNCTION:
 
 ``BOOST_PARAMETER_BASIC_FUNCTION(result, name, tag_namespace, arguments)``
 --------------------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor.hpp`__
-
-__ ../../../../boost/parameter/preprocessor.hpp
+:Defined in: |preprocessor_header|_
 
 Generates a function that can take in positional arguments, composed
 arguments, named arguments, and deduced arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -3570,25 +3463,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -3603,10 +3496,10 @@ is bound, as will be shown later.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw) consume(rr))
 
 Use the macro as a substitute for a normal function header.  Enclose the
 return type ``bool`` in parentheses.  For each parameter, also enclose the
@@ -3625,12 +3518,12 @@ preserve value categories.
     BOOST_PARAMETER_BASIC_FUNCTION((bool), evaluate, kw,
         (deduced
             (required
-                (lrc, (std::`bitset`_<1>))
-                (lr, (std::`bitset`_<2>))
+                (lrc, (|std_bitset|_\<1>))
+                (lr, (|std_bitset|_\<2>))
             )
             (optional
-                (rrc, (std::`bitset`_<3>))
-                (rr, (std::`bitset`_<4>))
+                (rrc, (|std_bitset|_\<3>))
+                (rr, (|std_bitset|_\<4>))
             )
         )
     )
@@ -3704,22 +3597,20 @@ function calls are also legal.
       , lvalue_const_bitset<0>()
     );
 
-The |preprocessor|_ test program demonstrates proper usage of this macro.
+The |preprocessor_cpp|_ test program demonstrates proper usage of this macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. |preprocessor| replace:: preprocessor.cpp
-.. _preprocessor: ../../test/preprocessor.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function.
-\*. ``name`` is the base name of the function; it determines the name of the
-generated forwarding functions.
-\*. ``tag_namespace`` is the namespace in which the keywords used by the
-function resides.
-\*. ``arguments`` is a `Boost.Preprocessor`_ `sequence`_ of
-*argument-specifiers*, as defined below.
+*   ``result`` is the parenthesized return type of the function.
+*   ``name`` is the base name of the function; it determines the name of the
+    generated forwarding functions.
+*   ``tag_namespace`` is the namespace in which the keywords used by the
+    function resides.
+*   ``arguments`` is a |Boost_Preprocessor|_ `sequence`_ of
+    *argument-specifiers*, as defined below.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 .. parsed-literal::
 
     argument-specifiers ::= *specifier-group0* {*specifier-group0*\ }
@@ -3750,36 +3641,34 @@ function resides.
         ( '**(**' *type-name* '**)**' ) |
         '**\***'
 
-\*. ``argument-name`` is any valid C++ identifier.
-\*. ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
-be the type of the corresponding ``argument-name``, whose second argument will
-be the entire |ArgumentPack|_, and whose return type is a `Boolean Integral
-Constant`_; however, user code *cannot* compute ``mfc`` in terms of
-``previous-name ## _type``.
-\*. ``type-name`` is either the name of a **target type** or an `MPL Binary
-Metafunction Class`_ whose first argument will be the type of the
-corresponding ``argument-name``, whose second argument will be the entire
-|ArgumentPack|_, and whose return type is the **target type**.
+*   ``argument-name`` is any valid C++ identifier.
+*   ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
+    be the type of the corresponding ``argument-name``, whose second argument
+    will be the entire |ArgumentPack|_, and whose return type is a `Boolean
+    Integral Constant`_; however, user code *cannot* compute ``mfc`` in terms
+    of ``previous-name ## _type``.
+*   ``type-name`` is either the name of a **target type** or an `MPL Binary
+    Metafunction Class`_ whose first argument will be the type of the
+    corresponding ``argument-name``, whose second argument will be the entire
+    |ArgumentPack|_, and whose return type is the **target type**.
 
 Note that *specifier* does not include *default-value*.  It is up to the
 function body to determine the default value of all optional arguments.
 
-.. _`Boost.Preprocessor`: ../../../preprocessor/doc/index.html
-.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+**Approximate expansion:**
 
-Approximate expansion:
-**Where**:
+Where:
 
 * ``n`` denotes the *minimum* arity, as determined from ``arguments``.
 * ``m`` denotes the *maximum* arity, as determined from ``arguments``.
 
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename Args>
     using boost_param_result\_ ## __LINE__ ## **name** = **result**;
 
@@ -3791,7 +3680,7 @@ Approximate expansion:
     };
 
     struct boost_param_params\_ ## __LINE__ ## **name**
-      : |parameters|_<
+      : |parameters|_\<
             *list of parameter specifications, based on arguments*
         >
     {
@@ -3814,9 +3703,9 @@ Approximate expansion:
     {
         return boost_param_impl ## __LINE__ ## **name**\ (
             boost_param_parameters\_ ## __LINE__ ## **name**\ ()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **n**>(a ## **n**)
+              , |std_forward|_\<A ## **n**>(a ## **n**)
             )
         );
     }
@@ -3833,9 +3722,9 @@ Approximate expansion:
     {
         return boost_param_impl ## __LINE__ ## **name**\ (
             boost_param_parameters\_ ## __LINE__ ## **name**\ ()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **m**>(a ## **m**)
+              , |std_forward|_\<A ## **m**>(a ## **m**)
             )
         );
     }
@@ -3847,63 +3736,54 @@ Approximate expansion:
 Only the |ArgumentPack|_ type ``Args`` and its object instance ``args`` are
 available for use within the function body.
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
+.. |BOOST_PARAMETER_BASIC_MEMBER_FUNCTION| replace:: ``BOOST_PARAMETER_BASIC_MEMBER_FUNCTION``
+.. _BOOST_PARAMETER_BASIC_MEMBER_FUNCTION:
 
 ``BOOST_PARAMETER_BASIC_MEMBER_FUNCTION(result, name, tag_ns, arguments)``
 --------------------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor.hpp`__
-
-__ ../../../../boost/parameter/preprocessor.hpp
+:Defined in: |preprocessor_header|_
 
 Generates a member function that can take in positional arguments, composed
 arguments, named arguments, and deduced arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -3918,25 +3798,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -3951,10 +3831,10 @@ is bound, as will be shown later.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw) consume(rr))
 
 Use the macro as a substitute for a normal ``static`` member function
 header.  Enclose the return type ``bool`` in parentheses.  For each parameter,
@@ -3975,12 +3855,12 @@ preserve value categories.
         BOOST_PARAMETER_BASIC_MEMBER_FUNCTION((bool), static evaluate, kw,
             (deduced
                 (required
-                    (lrc, (std::`bitset`_<1>))
-                    (lr, (std::`bitset`_<2>))
+                    (lrc, (|std_bitset|_\<1>))
+                    (lr, (|std_bitset|_\<2>))
                 )
                 (optional
-                    (rrc, (std::`bitset`_<3>))
-                    (rr, (std::`bitset`_<4>))
+                    (rrc, (|std_bitset|_\<3>))
+                    (rr, (|std_bitset|_\<4>))
                 )
             )
         )
@@ -4057,25 +3937,22 @@ function calls are also legal.
       , lvalue_const_bitset<0>()
     );
 
-The |preprocessor|_ test program demonstrates proper usage of this macro.
+The |preprocessor_cpp|_ test program demonstrates proper usage of this macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
-.. |preprocessor| replace:: preprocessor.cpp
-.. _preprocessor: ../../test/preprocessor.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function.
-\*. ``name`` is the base name of the function; it determines the name of the
-generated forwarding functions.  ``name`` may be qualified by the ``static``
-keyword to declare the member function and its helpers as not associated with
-any object of the enclosing type.
-\*. ``tag_namespace`` is the namespace in which the keywords used by the
-function resides.
-\*. ``arguments`` is a `Boost.Preprocessor`_ `sequence`_ of
-*argument-specifiers*, as defined below.
+*   ``result`` is the parenthesized return type of the function.
+*   ``name`` is the base name of the function; it determines the name of the
+    generated forwarding functions.  ``name`` may be qualified by the
+    ``static`` keyword to declare the member function and its helpers as not
+    associated with any object of the enclosing type.
+*   ``tag_namespace`` is the namespace in which the keywords used by the
+    function resides.
+*   ``arguments`` is a |Boost_Preprocessor|_ `sequence`_ of
+    *argument-specifiers*, as defined below.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 .. parsed-literal::
 
     argument-specifiers ::= *specifier-group0* {*specifier-group0*\ }
@@ -4106,36 +3983,34 @@ function resides.
         ( '**(**' *type-name* '**)**' ) |
         '**\***'
 
-\*. ``argument-name`` is any valid C++ identifier.
-\*. ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
-be the type of the corresponding ``argument-name``, whose second argument will
-be the entire |ArgumentPack|_, and whose return type is a `Boolean Integral
-Constant`_; however, user code *cannot* compute ``mfc`` in terms of
-``previous-name ## _type``.
-\*. ``type-name`` is either the name of a **target type** or an `MPL Binary
-Metafunction Class`_ whose first argument will be the type of the
-corresponding ``argument-name``, whose second argument will be the entire
-|ArgumentPack|_, and whose return type is the **target type**.
+*   ``argument-name`` is any valid C++ identifier.
+*   ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
+    be the type of the corresponding ``argument-name``, whose second argument
+    will be the entire |ArgumentPack|_, and whose return type is a `Boolean
+    Integral Constant`_; however, user code *cannot* compute ``mfc`` in terms
+    of ``previous-name ## _type``.
+*   ``type-name`` is either the name of a **target type** or an `MPL Binary
+    Metafunction Class`_ whose first argument will be the type of the
+    corresponding ``argument-name``, whose second argument will be the entire
+    |ArgumentPack|_, and whose return type is the **target type**.
 
 Note that *specifier* does not include *default-value*.  It is up to the
 function body to determine the default value of all optional arguments.
 
-.. _`Boost.Preprocessor`: ../../../preprocessor/doc/index.html
-.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+**Approximate expansion:**
 
-Approximate expansion:
-**Where**:
+Where:
 
 * ``n`` denotes the *minimum* arity, as determined from ``arguments``.
 * ``m`` denotes the *maximum* arity, as determined from ``arguments``.
 
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename Args>
     using boost_param_result\_ ## __LINE__ ## **name** = **result**;
 
@@ -4147,7 +4022,7 @@ Approximate expansion:
     };
 
     struct boost_param_params\_ ## __LINE__ ## **name**
-      : |parameters|_<
+      : |parameters|_\<
             *list of parameter specifications, based on arguments*
         >
     {
@@ -4166,9 +4041,9 @@ Approximate expansion:
     {
         return this->boost_param_impl ## **name**\ (
             boost_param_parameters\_ ## __LINE__ ## **name**\ ()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **n**>(a ## **n**)
+              , |std_forward|_\<A ## **n**>(a ## **n**)
             )
         );
     }
@@ -4185,9 +4060,9 @@ Approximate expansion:
     {
         return this->boost_param_impl ## **name**\ (
             boost_param_parameters\_ ## __LINE__ ## **name**\ ()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **m**>(a ## **m**)
+              , |std_forward|_\<A ## **m**>(a ## **m**)
             )
         );
     }
@@ -4199,63 +4074,54 @@ Approximate expansion:
 Only the |ArgumentPack|_ type ``Args`` and its object instance ``args`` are
 available for use within the function body.
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
+.. |BOOST_PARAMETER_BASIC_CONST_MEMBER_FUNCTION| replace:: ``BOOST_PARAMETER_BASIC_CONST_MEMBER_FUNCTION``
+.. _BOOST_PARAMETER_BASIC_CONST_MEMBER_FUNCTION:
 
 ``BOOST_PARAMETER_BASIC_CONST_MEMBER_FUNCTION(result, name, tag_ns, args)``
 ---------------------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor.hpp`__
-
-__ ../../../../boost/parameter/preprocessor.hpp
+:Defined in: |preprocessor_header|_
 
 Generates a member function that can take in positional arguments, composed
 arguments, named arguments, and deduced arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -4270,25 +4136,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -4303,10 +4169,10 @@ is bound, as will be shown later.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw) consume(rr))
 
 Use the macro as a substitute for a normal ``const`` member function
 header.  Enclose the return type ``bool`` in parentheses.  For each parameter,
@@ -4331,12 +4197,12 @@ preserve value categories.
         BOOST_PARAMETER_BASIC_CONST_MEMBER_FUNCTION((bool), evaluate, kw,
             (deduced
                 (required
-                    (lrc, (std::`bitset`_<1>))
-                    (lr, (std::`bitset`_<2>))
+                    (lrc, (|std_bitset|_\<1>))
+                    (lr, (|std_bitset|_\<2>))
                 )
                 (optional
-                    (rrc, (std::`bitset`_<3>))
-                    (rr, (std::`bitset`_<4>))
+                    (rrc, (|std_bitset|_\<3>))
+                    (rr, (|std_bitset|_\<4>))
                 )
             )
         )
@@ -4414,23 +4280,20 @@ function calls are also legal.
       , lvalue_const_bitset<0>()
     );
 
-The |preprocessor|_ test program demonstrates proper usage of this macro.
+The |preprocessor_cpp|_ test program demonstrates proper usage of this macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
-.. |preprocessor| replace:: preprocessor.cpp
-.. _preprocessor: ../../test/preprocessor.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function.
-\*. ``name`` is the base name of the function; it determines the name of the
-generated forwarding functions.
-\*. ``tag_namespace`` is the namespace in which the keywords used by the
-function resides.
-\*. ``arguments`` is a `Boost.Preprocessor`_ `sequence`_ of
-*argument-specifiers*, as defined below.
+*   ``result`` is the parenthesized return type of the function.
+*   ``name`` is the base name of the function; it determines the name of the
+    generated forwarding functions.
+*   ``tag_namespace`` is the namespace in which the keywords used by the
+    function resides.
+*   ``arguments`` is a |Boost_Preprocessor|_ `sequence`_ of
+    *argument-specifiers*, as defined below.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 .. parsed-literal::
 
     argument-specifiers ::= *specifier-group0* {*specifier-group0*\ }
@@ -4461,36 +4324,34 @@ function resides.
         ( '**(**' *type-name* '**)**' ) |
         '**\***'
 
-\*. ``argument-name`` is any valid C++ identifier.
-\*. ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
-be the type of the corresponding ``argument-name``, whose second argument will
-be the entire |ArgumentPack|_, and whose return type is a `Boolean Integral
-Constant`_; however, user code *cannot* compute ``mfc`` in terms of
-``previous-name ## _type``.
-\*. ``type-name`` is either the name of a **target type** or an `MPL Binary
-Metafunction Class`_ whose first argument will be the type of the
-corresponding ``argument-name``, whose second argument will be the entire
-|ArgumentPack|_, and whose return type is the **target type**.
+*   ``argument-name`` is any valid C++ identifier.
+*   ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
+    be the type of the corresponding ``argument-name``, whose second argument
+    will be the entire |ArgumentPack|_, and whose return type is a `Boolean
+    Integral Constant`_; however, user code *cannot* compute ``mfc`` in terms
+    of ``previous-name ## _type``.
+*   ``type-name`` is either the name of a **target type** or an `MPL Binary
+    Metafunction Class`_ whose first argument will be the type of the
+    corresponding ``argument-name``, whose second argument will be the entire
+    |ArgumentPack|_, and whose return type is the **target type**.
 
 Note that *specifier* does not include *default-value*.  It is up to the
 function body to determine the default value of all optional arguments.
 
-.. _`Boost.Preprocessor`: ../../../preprocessor/doc/index.html
-.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+**Approximate expansion:**
 
-Approximate expansion:
-**Where**:
+Where:
 
 * ``n`` denotes the *minimum* arity, as determined from ``arguments``.
 * ``m`` denotes the *maximum* arity, as determined from ``arguments``.
 
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename Args>
     using boost_param_result_const\_ ## __LINE__ ## **name** = **result**;
 
@@ -4502,7 +4363,7 @@ Approximate expansion:
     };
 
     struct boost_param_params_const\_ ## __LINE__ ## **name**
-      : |parameters|_<
+      : |parameters|_\<
             *list of parameter specifications, based on arguments*
         >
     {
@@ -4521,9 +4382,9 @@ Approximate expansion:
     {
         return this->boost_param_impl_const ## __LINE__ ## **name**\ (
             boost_param_parameters_const\_ ## __LINE__ ## **name**\ ()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **n**>(a ## **n**)
+              , |std_forward|_\<A ## **n**>(a ## **n**)
             )
         );
     }
@@ -4540,9 +4401,9 @@ Approximate expansion:
     {
         return this->boost_param_impl_const ## __LINE__ ## **name**\ (
             boost_param_parameters_const\_ ## __LINE__ ## **name**\ ()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **m**>(a ## **m**)
+              , |std_forward|_\<A ## **m**>(a ## **m**)
             )
         );
     }
@@ -4554,36 +4415,27 @@ Approximate expansion:
 Only the |ArgumentPack|_ type ``Args`` and its object instance ``args`` are
 available for use within the function body.
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
+.. |BOOST_PARAMETER_BASIC_FUNCTION_CALL_OPERATOR| replace:: ``BOOST_PARAMETER_BASIC_FUNCTION_CALL_OPERATOR``
+.. _BOOST_PARAMETER_BASIC_FUNCTION_CALL_OPERATOR:
 
 ``BOOST_PARAMETER_BASIC_FUNCTION_CALL_OPERATOR(result, tag_ns, arguments)``
 ---------------------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor.hpp`__
-
-__ ../../../../boost/parameter/preprocessor.hpp
+:Defined in: |preprocessor_header|_
 
 Generates a function call operator that can take in positional arguments,
 composed arguments, named arguments, and deduced arguments.
 
 :Example usage:
+
 Define the named parameters that will comprise the argument specification that
 this macro will use.  Ensure that all their tag types are in the same
 namespace, which is ``tag`` by default.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_(y)
-    |BOOST_PARAMETER_NAME|_(z)
+    |BOOST_PARAMETER_NAME|_\(y)
+    |BOOST_PARAMETER_NAME|_\(z)
 
 Use the macro as a substitute for a normal function call operator
 header.  Enclose the return type in parentheses.  For each parameter, also
@@ -4597,10 +4449,10 @@ Boost.Parameter-enabled function call operator overloads.
     class char_reader
     {
         int index;
-        char const\* key;
+        char const* key;
 
      public:
-        explicit char_reader(char const\* k) : index(0), key(k)
+        explicit char_reader(char const* k) : index(0), key(k)
         {
         }
 
@@ -4608,7 +4460,7 @@ Boost.Parameter-enabled function call operator overloads.
             (deduced
                 (required
                     (y, (int))
-                    (z, (char const\*))
+                    (z, (char const*))
                 )
             )
         )
@@ -4617,11 +4469,11 @@ Boost.Parameter-enabled function call operator overloads.
             this->key = args[_z];
         }
 
-        |BOOST_PARAMETER_BASIC_CONST_FUNCTION_CALL_OPERATOR|_((char), tag,
+        |BOOST_PARAMETER_BASIC_CONST_FUNCTION_CALL_OPERATOR|_\((char), tag,
             (deduced
                 (required
                     (y, (bool))
-                    (z, (std::`map`_<char const*,std::`string`_>))
+                    (z, (|std_map|_\<char const*, |std_string|_\>))
                 )
             )
         )
@@ -4638,10 +4490,10 @@ passed in determine which function call operator overload gets invoked.
 .. parsed-literal::
 
     char const* keys[] = {"foo", "bar", "baz"};
-    std::`map`_<char const*,std::`string`_> k2s;
-    k2s[keys[0]] = std::`string`_("qux");
-    k2s[keys[1]] = std::`string`_("wmb");
-    k2s[keys[2]] = std::`string`_("zxc");
+    |std_map|_\<char const*, |std_string|_\> k2s;
+    k2s[keys[0]] = |std_string|_\("qux");
+    k2s[keys[1]] = |std_string|_\("wmb");
+    k2s[keys[2]] = |std_string|_\("zxc");
     char_reader r(keys[0]);
 
     // positional arguments
@@ -4658,21 +4510,18 @@ passed in determine which function call operator overload gets invoked.
     BOOST_TEST_EQ('c', (r(k2s, true)));
     BOOST_TEST_EQ('z', (r(k2s, false)));
 
-The |preprocessor|_ test program demonstrates proper usage of this macro.
+The |preprocessor_cpp|_ test program demonstrates proper usage of this macro.
 
-.. _`map`: http\://en.cppreference.com/w/cpp/container/map
-.. _`string`: http\://en.cppreference.com/w/cpp/string/basic_string
-.. |preprocessor| replace:: preprocessor.cpp
-.. _preprocessor: ../../test/preprocessor.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function call operator.
-\*. ``tag_namespace`` is the namespace in which the keywords used by the
-function call operator resides.
-\*. ``arguments`` is a `Boost.Preprocessor`_ `sequence`_ of
-*argument-specifiers*, as defined below.
+*   ``result`` is the parenthesized return type of the function call operator.
+*   ``tag_namespace`` is the namespace in which the keywords used by the
+    function call operator resides.
+*   ``arguments`` is a |Boost_Preprocessor|_ `sequence`_ of
+    *argument-specifiers*, as defined below.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 .. parsed-literal::
 
     argument-specifiers ::= *specifier-group0* {*specifier-group0*\ }
@@ -4703,36 +4552,34 @@ function call operator resides.
         ( '**(**' *type-name* '**)**' ) |
         '**\***'
 
-\*. ``argument-name`` is any valid C++ identifier.
-\*. ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
-be the type of the corresponding ``argument-name``, whose second argument will
-be the entire |ArgumentPack|_, and whose return type is a `Boolean Integral
-Constant`_; however, user code *cannot* compute ``mfc`` in terms of
-``previous-name ## _type``.
-\*. ``type-name`` is either the name of a **target type** or an `MPL Binary
-Metafunction Class`_ whose first argument will be the type of the
-corresponding ``argument-name``, whose second argument will be the entire
-|ArgumentPack|_, and whose return type is the **target type**.
+*   ``argument-name`` is any valid C++ identifier.
+*   ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
+    be the type of the corresponding ``argument-name``, whose second argument
+    will be the entire |ArgumentPack|_, and whose return type is a `Boolean
+    Integral Constant`_; however, user code *cannot* compute ``mfc`` in terms
+    of ``previous-name ## _type``.
+*   ``type-name`` is either the name of a **target type** or an `MPL Binary
+    Metafunction Class`_ whose first argument will be the type of the
+    corresponding ``argument-name``, whose second argument will be the entire
+    |ArgumentPack|_, and whose return type is the **target type**.
 
 Note that *specifier* does not include *default-value*.  It is up to the
 function body to determine the default value of all optional arguments.
 
-.. _`Boost.Preprocessor`: ../../../preprocessor/doc/index.html
-.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+**Approximate expansion:**
 
-Approximate expansion:
-**Where**:
+Where:
 
 * ``n`` denotes the *minimum* arity, as determined from ``arguments``.
 * ``m`` denotes the *maximum* arity, as determined from ``arguments``.
 
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename Args>
     using boost_param_result\_ ## __LINE__ ## operator = **result**;
 
@@ -4744,7 +4591,7 @@ Approximate expansion:
     };
 
     struct boost_param_params\_ ## __LINE__ ## operator
-      : |parameters|_<
+      : |parameters|_\<
             *list of parameter specifications, based on arguments*
         >
     {
@@ -4763,9 +4610,9 @@ Approximate expansion:
     {
         return this->boost_param_impl ## __LINE__ ## operator(
             boost_param_parameters\_ ## __LINE__ ## operator()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **n**>(a ## **n**)
+              , |std_forward|_\<A ## **n**>(a ## **n**)
             )
         );
     }
@@ -4782,9 +4629,9 @@ Approximate expansion:
     {
         return this->boost_param_impl ## __LINE__ ## operator(
             boost_param_parameters\_ ## __LINE__ ## operator()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **m**>(a ## **m**)
+              , |std_forward|_\<A ## **m**>(a ## **m**)
             )
         );
     }
@@ -4796,63 +4643,54 @@ Approximate expansion:
 Only the |ArgumentPack|_ type ``Args`` and its object instance ``args`` are
 available for use within the function call operator body.
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
+.. |BOOST_PARAMETER_BASIC_CONST_FUNCTION_CALL_OPERATOR| replace:: ``BOOST_PARAMETER_BASIC_CONST_FUNCTION_CALL_OPERATOR``
+.. _BOOST_PARAMETER_BASIC_CONST_FUNCTION_CALL_OPERATOR:
 
 ``BOOST_PARAMETER_BASIC_CONST_FUNCTION_CALL_OPERATOR(result, tag_ns, args)``
 ----------------------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor.hpp`__
-
-__ ../../../../boost/parameter/preprocessor.hpp
+:Defined in: |preprocessor_header|_
 
 Generates a function call operator that can take in positional arguments,
 composed arguments, named arguments, and deduced arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -4867,25 +4705,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -4900,10 +4738,10 @@ is bound, as will be shown later.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw) consume(rr))
 
 Use the macro as a substitute for a normal ``const`` function call operator
 header.  Enclose the return type ``bool`` in parentheses.  For each parameter,
@@ -4928,12 +4766,12 @@ preserve value categories.
         BOOST_PARAMETER_BASIC_CONST_FUNCTION_CALL_OPERATOR((bool), kw,
             (deduced
                 (required
-                    (lrc, (std::`bitset`_<1>))
-                    (lr, (std::`bitset`_<2>))
+                    (lrc, (|std_bitset|_\<1>))
+                    (lr, (|std_bitset|_\<2>))
                 )
                 (optional
-                    (rrc, (std::`bitset`_<3>))
-                    (rr, (std::`bitset`_<4>))
+                    (rrc, (|std_bitset|_\<3>))
+                    (rr, (|std_bitset|_\<4>))
                 )
             )
         )
@@ -5011,20 +4849,18 @@ function calls are also legal.
       , lvalue_const_bitset<0>()
     );
 
-The |preprocessor|_ test program demonstrates proper usage of this macro.
+The |preprocessor_cpp|_ test program demonstrates proper usage of this macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. |preprocessor| replace:: preprocessor.cpp
-.. _preprocessor: ../../test/preprocessor.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function call operator.
-\*. ``tag_namespace`` is the namespace in which the keywords used by the
-function call operator resides.
-\*. ``arguments`` is a `Boost.Preprocessor`_ `sequence`_ of
-*argument-specifiers*, as defined below.
+*   ``result`` is the parenthesized return type of the function call operator.
+*   ``tag_namespace`` is the namespace in which the keywords used by the
+    function call operator resides.
+*   ``arguments`` is a |Boost_Preprocessor|_ `sequence`_ of
+    *argument-specifiers*, as defined below.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 .. parsed-literal::
 
     argument-specifiers ::= *specifier-group0* {*specifier-group0*\ }
@@ -5055,36 +4891,34 @@ function call operator resides.
         ( '**(**' *type-name* '**)**' ) |
         '**\***'
 
-\*. ``argument-name`` is any valid C++ identifier.
-\*. ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
-be the type of the corresponding ``argument-name``, whose second argument will
-be the entire |ArgumentPack|_, and whose return type is a `Boolean Integral
-Constant`_; however, user code *cannot* compute ``mfc`` in terms of
-``previous-name ## _type``.
-\*. ``type-name`` is either the name of a **target type** or an `MPL Binary
-Metafunction Class`_ whose first argument will be the type of the
-corresponding ``argument-name``, whose second argument will be the entire
-|ArgumentPack|_, and whose return type is the **target type**.
+*   ``argument-name`` is any valid C++ identifier.
+*   ``mfc`` is an `MPL Binary Metafunction Class`_ whose first argument will
+    be the type of the corresponding ``argument-name``, whose second argument
+    will be the entire |ArgumentPack|_, and whose return type is a `Boolean
+    Integral Constant`_; however, user code *cannot* compute ``mfc`` in terms
+    of ``previous-name ## _type``.
+*   ``type-name`` is either the name of a **target type** or an `MPL Binary
+    Metafunction Class`_ whose first argument will be the type of the
+    corresponding ``argument-name``, whose second argument will be the entire
+    |ArgumentPack|_, and whose return type is the **target type**.
 
 Note that *specifier* does not include *default-value*.  It is up to the
 function body to determine the default value of all optional arguments.
 
-.. _`Boost.Preprocessor`: ../../../preprocessor/doc/index.html
-.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
-.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
-.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+**Approximate expansion:**
 
-Approximate expansion:
-**Where**:
+Where:
 
 * ``n`` denotes the *minimum* arity, as determined from ``arguments``.
 * ``m`` denotes the *maximum* arity, as determined from ``arguments``.
 
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename Args>
     using boost_param_result_const\_ ## __LINE__ ## operator = **result**;
 
@@ -5096,7 +4930,7 @@ Approximate expansion:
     };
 
     struct boost_param_params_const\_ ## __LINE__ ## operator
-      : |parameters|_<
+      : |parameters|_\<
             *list of parameter specifications, based on arguments*
         >
     {
@@ -5115,9 +4949,9 @@ Approximate expansion:
     {
         return this->boost_param_impl_const ## __LINE__ ## operator(
             boost_param_parameters_const\_ ## __LINE__ ## operator()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **n**>(a ## **n**)
+              , |std_forward|_\<A ## **n**>(a ## **n**)
             )
         );
     }
@@ -5134,9 +4968,9 @@ Approximate expansion:
     {
         return this->boost_param_impl_const ## __LINE__ ## operator(
             boost_param_parameters_const\_ ## __LINE__ ## operator()(
-                std::`forward`_<A0>(a0)
+                |std_forward|_\<A0>(a0)
               , …
-              , std::`forward`_<A ## **m**>(a ## **m**)
+              , |std_forward|_\<A ## **m**>(a ## **m**)
             )
         );
     }
@@ -5148,62 +4982,53 @@ Approximate expansion:
 Only the |ArgumentPack|_ type ``Args`` and its object instance ``args`` are
 available for use within the function call operator body.
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
+.. |BOOST_PARAMETER_NO_SPEC_FUNCTION| replace:: ``BOOST_PARAMETER_NO_SPEC_FUNCTION``
+.. _BOOST_PARAMETER_NO_SPEC_FUNCTION:
 
 ``BOOST_PARAMETER_NO_SPEC_FUNCTION(result, name)``
 --------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor_no_spec.hpp`__
-
-__ ../../../../boost/parameter/preprocessor_no_spec.hpp
+:Defined in: |preprocessor_no_spec_header|_
 
 Generates a function that can take in named arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -5218,25 +5043,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -5247,10 +5072,10 @@ their tags need to be in the same namespace.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw0) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw1) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw2) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw3) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw0) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw1) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw2) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw3) consume(rr))
 
 Use the macro as a substitute for a variadic function header.  Enclose the
 return type ``bool`` in parentheses.
@@ -5296,27 +5121,28 @@ To invoke the function, bind all its arguments to named parameters.
       , _lrc0 = lvalue_const_bitset<0>()
     );
 
-The |preproc_eval_cat_no_spec|_ test program demonstrates proper usage of
+The |preproc_eval_cat_no_spec_cpp|_ test program demonstrates proper usage of
 this macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. |preproc_eval_cat_no_spec| replace:: preprocessor_eval_cat_no_spec.cpp
-.. _preproc_eval_cat_no_spec: ../../test/preprocessor_eval_cat_no_spec.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function.
-\*. ``name`` is the base name of the function; it determines the name of the
-generated implementation function.
+*   ``result`` is the parenthesized return type of the function.
+*   ``name`` is the base name of the function; it determines the name of the
+    generated implementation function.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 None.
 
-Approximate expansion:
+**Approximate expansion:**
+
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename TaggedArg0, typename ...TaggedArgs>
     using boost_param_no_spec_result\_ ## __LINE__ ## **name** = **result**;
 
@@ -5330,13 +5156,13 @@ Approximate expansion:
     template <typename ResultType, typename Args>
     ResultType
         boost_param_no_spec_impl ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
         );
 
     template <typename TaggedArg0, typename ...TaggedArgs>
-    inline typename boost::`lazy_enable_if`_<
-        |are_tagged_arguments|_<TaggedArg0,TaggedArgs...>
+    inline typename |boost_lazy_enable_if|_\<
+        |are_tagged_arguments|_\<TaggedArg0,TaggedArgs...>
       , boost_param_no_spec_result\_ ## __LINE__ ## **name**\ <
             TaggedArg0
           , TaggedArgs...
@@ -5350,43 +5176,34 @@ Approximate expansion:
                 boost_param_no_spec_result\_ ## __LINE__ ## **name**\ <
                     TaggedArg0
                   , TaggedArgs...
-                >::type(\*)()
-            >(`nullptr`_)
-          , |compose|_(arg0, args...)
+                >::type(*)()
+            >(|std_nullptr|_\)
+          , |compose|_\(arg0, args...)
         );
     }
 
     template <typename ResultType, typename Args>
     ResultType
         boost_param_no_spec_impl ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
         )
 
 Only the |ArgumentPack|_ type ``Args`` and its object instance ``args`` are
 available for use within the function body.
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`nullptr`: http\://en.cppreference.com/w/cpp/language/nullptr
+.. |BOOST_PARAMETER_NO_SPEC_MEMBER_FUNCTION| replace:: ``BOOST_PARAMETER_NO_SPEC_MEMBER_FUNCTION``
+.. _BOOST_PARAMETER_NO_SPEC_MEMBER_FUNCTION:
 
 ``BOOST_PARAMETER_NO_SPEC_MEMBER_FUNCTION(result, name)``
 ---------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor_no_spec.hpp`__
-
-__ ../../../../boost/parameter/preprocessor_no_spec.hpp
+:Defined in: |preprocessor_no_spec_header|_
 
 Generates a member function that can take in named arguments.
 
 :Example usage:
+
 When designing a front-end class template whose back-end is configurable via
 parameterized inheritance, it can be useful to omit argument specifiers from
 a named-parameter member function so that the delegate member functions of the
@@ -5412,9 +5229,9 @@ of their tags need to be in the same namespace.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_(a0)
-    |BOOST_PARAMETER_NAME|_(a1)
-    |BOOST_PARAMETER_NAME|_(a2)
+    |BOOST_PARAMETER_NAME|_\(a0)
+    |BOOST_PARAMETER_NAME|_\(a1)
+    |BOOST_PARAMETER_NAME|_\(a2)
 
 For this example, each of the back-end class templates requires its own
 parameter to be present in the argument pack.  In practice, such parameters
@@ -5499,12 +5316,12 @@ the other back-ends can be chained together in different orders.
 
 .. parsed-literal::
 
-    char const\* p = "foo";
+    char const* p = "foo";
     frontend<
-        backend2<backend1<backend0<char const\*>, char>, int>
+        backend2<backend1<backend0<char const*>, char>, int>
     > composed_obj0;
     frontend<
-        backend1<backend2<backend0<char const\*>, int>, char>
+        backend1<backend2<backend0<char const*>, int>, char>
     > composed_obj1;
     composed_obj0.initialize(_a2 = 4, _a1 = ' ', _a0 = p);
     composed_obj1.initialize(_a0 = p, _a1 = ' ', _a2 = 4);
@@ -5512,30 +5329,30 @@ the other back-ends can be chained together in different orders.
     BOOST_TEST_EQ(composed_obj0.get_a1(), composed_obj1.get_a1());
     BOOST_TEST_EQ(composed_obj0.get_a2(), composed_obj1.get_a2());
 
-The |parameterized_inheritance|_ and |preproc_eval_cat_no_spec|_ test programs
-demonstrate proper usage of this macro.
+The |parameterized_inheritance_cpp|_ and |preproc_eval_cat_no_spec_cpp|_ test
+programs demonstrate proper usage of this macro.
 
-.. |parameterized_inheritance| replace:: parameterized_inheritance.cpp
-.. _parameterized_inheritance: ../../test/parameterized_inheritance.cpp
-.. |preproc_eval_cat_no_spec| replace:: preprocessor_eval_cat_no_spec.cpp
-.. _preproc_eval_cat_no_spec: ../../test/preprocessor_eval_cat_no_spec.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function.
-\*. ``name`` is the base name of the function; it determines the name of the
-generated implementation function.  ``name`` may be qualified by the
-``static`` keyword to declare the member function and its helpers as not
-associated with any object of the enclosing type.
+*   ``result`` is the parenthesized return type of the function.
+*   ``name`` is the base name of the function; it determines the name of the
+    generated implementation function.  ``name`` may be qualified by the
+    ``static`` keyword to declare the member function and its helpers as not
+    associated with any object of the enclosing type.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 None.
 
-Approximate expansion:
+**Approximate expansion:**
+
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename TaggedArg0, typename ...TaggedArgs>
     using boost_param_no_spec_result\_ ## __LINE__ ## **name** = **result**;
 
@@ -5547,8 +5364,8 @@ Approximate expansion:
     };
 
     template <typename TaggedArg0, typename ...TaggedArgs>
-    inline typename boost::`lazy_enable_if`_<
-        |are_tagged_arguments|_<TaggedArg0,TaggedArgs...>
+    inline typename |boost_lazy_enable_if|_\<
+        |are_tagged_arguments|_\<TaggedArg0,TaggedArgs...>
       , boost_param_no_spec_result\_ ## __LINE__ ## **name**\ <
             TaggedArg0
           , TaggedArgs...
@@ -5562,78 +5379,69 @@ Approximate expansion:
                 boost_param_no_spec_result\_ ## __LINE__ ## **name**\ <
                     TaggedArg0
                   , TaggedArgs...
-                >::type(\*)()
-            >(`nullptr`_)
-          , |compose|_(arg0, args...)
+                >::type(*)()
+            >(|std_nullptr|_\)
+          , |compose|_\(arg0, args...)
         );
     }
 
     template <typename ResultType, typename Args>
     ResultType
         boost_param_no_spec_impl ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
         )
 
 Only the |ArgumentPack|_ type ``Args`` and its object instance ``args`` are
 available for use within the function body.
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`nullptr`: http\://en.cppreference.com/w/cpp/language/nullptr
+.. |BOOST_PARAMETER_NO_SPEC_CONST_MEMBER_FUNCTION| replace:: ``BOOST_PARAMETER_NO_SPEC_CONST_MEMBER_FUNCTION``
+.. _BOOST_PARAMETER_NO_SPEC_CONST_MEMBER_FUNCTION:
 
 ``BOOST_PARAMETER_NO_SPEC_CONST_MEMBER_FUNCTION(result, name)``
 ---------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor_no_spec.hpp`__
-
-__ ../../../../boost/parameter/preprocessor_no_spec.hpp
+:Defined in: |preprocessor_no_spec_header|_
 
 Generates a member function that can take in named arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -5648,25 +5456,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -5677,10 +5485,10 @@ of their tags need to be in the same namespace.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw0) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw1) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw2) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw3) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw0) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw1) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw2) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw3) consume(rr))
 
 Use the macro as a substitute for a variadic function header.  Enclose the
 return type ``bool`` in parentheses.  The macro will qualify the function with
@@ -5737,27 +5545,28 @@ To invoke the member function, bind all its arguments to named parameters.
       , _lrc0 = lvalue_const_bitset<0>()
     );
 
-The |preproc_eval_cat_no_spec|_ test program demonstrates proper usage of this
-macro.
+The |preproc_eval_cat_no_spec_cpp|_ test program demonstrates proper usage of
+this macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. |preproc_eval_cat_no_spec| replace:: preprocessor_eval_cat_no_spec.cpp
-.. _preproc_eval_cat_no_spec: ../../test/preprocessor_eval_cat_no_spec.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function.
-\*. ``name`` is the base name of the function; it determines the name of the
-generated implementation function.
+*   ``result`` is the parenthesized return type of the function.
+*   ``name`` is the base name of the function; it determines the name of the
+    generated implementation function.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 None.
 
-Approximate expansion:
+**Approximate expansion:**
+
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename TaggedArg0, typename ...TaggedArgs>
     using boost_param_no_spec_result_const\_ ## __LINE__ ## **name** = **result**;
 
@@ -5769,8 +5578,8 @@ Approximate expansion:
     };
 
     template <typename TaggedArg0, typename ...TaggedArgs>
-    inline typename boost::`lazy_enable_if`_<
-        |are_tagged_arguments|_<TaggedArg0,TaggedArgs...>
+    inline typename |boost_lazy_enable_if|_\<
+        |are_tagged_arguments|_\<TaggedArg0,TaggedArgs...>
       , boost_param_no_spec_result_const\_ ## __LINE__ ## **name**\ <
             TaggedArg0
           , TaggedArgs...
@@ -5784,43 +5593,34 @@ Approximate expansion:
                 boost_param_no_spec_result_const\_ ## __LINE__ ## **name**\ <
                     TaggedArg0
                   , TaggedArgs...
-                >::type(\*)()
-            >(`nullptr`_)
-          , |compose|_(arg0, args...)
+                >::type(*)()
+            >(|std_nullptr|_\)
+          , |compose|_\(arg0, args...)
         );
     }
 
     template <typename ResultType, typename Args>
     ResultType
         boost_param_no_spec_impl_const ## __LINE__ ## **name**\ (
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
         ) const
 
 Only the |ArgumentPack|_ type ``Args`` and its object instance ``args`` are
 available for use within the function body.
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`nullptr`: http\://en.cppreference.com/w/cpp/language/nullptr
+.. |BOOST_PARAMETER_NO_SPEC_FUNCTION_CALL_OPERATOR| replace:: ``BOOST_PARAMETER_NO_SPEC_FUNCTION_CALL_OPERATOR``
+.. _BOOST_PARAMETER_NO_SPEC_FUNCTION_CALL_OPERATOR:
 
 ``BOOST_PARAMETER_NO_SPEC_FUNCTION_CALL_OPERATOR(result)``
 ----------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor_no_spec.hpp`__
-
-__ ../../../../boost/parameter/preprocessor_no_spec.hpp
+:Defined in: |preprocessor_no_spec_header|_
 
 Generates a function call operator that can take in named arguments.
 
 :Example usage:
+
 When designing a front-end class template whose back-end is configurable via
 parameterized inheritance, it can be useful to omit argument specifiers from
 a named-parameter function call operator so that the delegate member functions
@@ -5846,9 +5646,9 @@ however, none of their tags need to be in the same namespace.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_(a0)
-    |BOOST_PARAMETER_NAME|_(a1)
-    |BOOST_PARAMETER_NAME|_(a2)
+    |BOOST_PARAMETER_NAME|_\(a0)
+    |BOOST_PARAMETER_NAME|_\(a1)
+    |BOOST_PARAMETER_NAME|_\(a2)
 
 For this example, each of the back-end class templates requires its own
 parameter to be present in the argument pack.  In practice, such parameters
@@ -5933,12 +5733,12 @@ the other back-ends can be chained together in different orders.
 
 .. parsed-literal::
 
-    char const\* p = "foo";
+    char const* p = "foo";
     frontend<
-        backend2<backend1<backend0<char const\*>, char>, int>
+        backend2<backend1<backend0<char const*>, char>, int>
     > composed_obj0;
     frontend<
-        backend1<backend2<backend0<char const\*>, int>, char>
+        backend1<backend2<backend0<char const*>, int>, char>
     > composed_obj1;
     composed_obj0(_a2 = 4, _a1 = ' ', _a0 = p);
     composed_obj1(_a0 = p, _a1 = ' ', _a2 = 4);
@@ -5946,26 +5746,26 @@ the other back-ends can be chained together in different orders.
     BOOST_TEST_EQ(composed_obj0.get_a1(), composed_obj1.get_a1());
     BOOST_TEST_EQ(composed_obj0.get_a2(), composed_obj1.get_a2());
 
-The |parameterized_inheritance|_ and |preproc_eval_cat_no_spec|_ test programs
-demonstrate proper usage of this macro.
+The |parameterized_inheritance_cpp|_ and |preproc_eval_cat_no_spec_cpp|_ test
+programs demonstrate proper usage of this macro.
 
-.. |parameterized_inheritance| replace:: parameterized_inheritance.cpp
-.. _parameterized_inheritance: ../../test/parameterized_inheritance.cpp
-.. |preproc_eval_cat_no_spec| replace:: preprocessor_eval_cat_no_spec.cpp
-.. _preproc_eval_cat_no_spec: ../../test/preprocessor_eval_cat_no_spec.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function call operator.
+*   ``result`` is the parenthesized return type of the function call operator.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 None.
 
-Approximate expansion:
+**Approximate expansion:**
+
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename TaggedArg0, typename ...TaggedArgs>
     using boost_param_no_spec_result\_ ## __LINE__ ## operator = **result**;
 
@@ -5977,8 +5777,8 @@ Approximate expansion:
     };
 
     template <typename TaggedArg0, typename ...TaggedArgs>
-    inline typename boost::`lazy_enable_if`_<
-        |are_tagged_arguments|_<TaggedArg0,TaggedArgs...>
+    inline typename |boost_lazy_enable_if|_\<
+        |are_tagged_arguments|_\<TaggedArg0,TaggedArgs...>
       , boost_param_no_spec_result\_ ## __LINE__ ## operator<
             TaggedArg0
           , TaggedArgs...
@@ -5992,78 +5792,69 @@ Approximate expansion:
                 boost_param_no_spec_result\_ ## __LINE__ ## operator<
                     TaggedArg0
                   , TaggedArgs...
-                >::type(\*)()
-            >(`nullptr`_)
-          , |compose|_(arg0, args...)
+                >::type(*)()
+            >(|std_nullptr|_\)
+          , |compose|_\(arg0, args...)
         );
     }
 
     template <typename ResultType, typename Args>
     ResultType
         boost_param_no_spec_impl ## __LINE__ ## operator(
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
         )
 
 Only the |ArgumentPack|_ type ``Args`` and its object instance ``args`` are
 available for use within the function body.
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`nullptr`: http\://en.cppreference.com/w/cpp/language/nullptr
+.. |BOOST_PARAMETER_NO_SPEC_CONST_FUNCTION_CALL_OPERATOR| replace:: ``BOOST_PARAMETER_NO_SPEC_CONST_FUNCTION_CALL_OPERATOR``
+.. _BOOST_PARAMETER_NO_SPEC_CONST_FUNCTION_CALL_OPERATOR:
 
 ``BOOST_PARAMETER_NO_SPEC_CONST_FUNCTION_CALL_OPERATOR(result)``
 ----------------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor_no_spec.hpp`__
-
-__ ../../../../boost/parameter/preprocessor_no_spec.hpp
+:Defined in: |preprocessor_no_spec_header|_
 
 Generates a function call operator that can take in named arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -6078,25 +5869,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -6107,10 +5898,10 @@ however, none of their tags need to be in the same namespace.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw0) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw1) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw2) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw3) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw0) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw1) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw2) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw3) consume(rr))
 
 Use the macro as a substitute for a variadic function call operator
 header.  Enclose the return type ``bool`` in parentheses.  The macro will
@@ -6168,25 +5959,26 @@ parameters.
       , _lrc0 = lvalue_const_bitset<0>()
     );
 
-The |preproc_eval_cat_no_spec|_ test program demonstrates proper usage of this
+The |preproc_eval_cat_no_spec_cpp|_ test program demonstrates proper usage of this
 macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. |preproc_eval_cat_no_spec| replace:: preprocessor_eval_cat_no_spec.cpp
-.. _preproc_eval_cat_no_spec: ../../test/preprocessor_eval_cat_no_spec.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``result`` is the parenthesized return type of the function call operator.
+*   ``result`` is the parenthesized return type of the function call operator.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 None.
 
-Approximate expansion:
+**Approximate expansion:**
+
 .. parsed-literal::
 
-    // If **result** is a template instantiation of `enable_if`_, `enable_if_c`_,
-    // `lazy_enable_if`_, `lazy_enable_if_c`_, `disable_if`_, `disable_if_c`_,
-    // `lazy_disable_if`_, `lazy_disable_if_c`_, or `std_enable_if`_:
+    // If **result** is a template instantiation of |boost_enable_if|_\,
+    // |boost_enable_if_c|_\, |boost_lazy_enable_if|_\,
+    // |boost_lazy_enable_if_c|_\, |boost_disable_if|_\, |boost_disable_if_c|_\,
+    // |boost_lazy_disable_if|_\, |boost_lazy_disable_if_c|_\, or
+    // |std_enable_if|_\:
     template <typename TaggedArg0, typename ...TaggedArgs>
     using boost_param_no_spec_result_const\_ ## __LINE__ ## operator = **result**;
 
@@ -6198,8 +5990,8 @@ Approximate expansion:
     };
 
     template <typename TaggedArg0, typename ...TaggedArgs>
-    inline typename boost::`lazy_enable_if`_<
-        |are_tagged_arguments|_<TaggedArg0,TaggedArgs...>
+    inline typename |boost_lazy_enable_if|_\<
+        |are_tagged_arguments|_\<TaggedArg0,TaggedArgs...>
       , boost_param_no_spec_result_const\_ ## __LINE__ ## operator<
             TaggedArg0
           , TaggedArgs...
@@ -6216,43 +6008,34 @@ Approximate expansion:
                 boost_param_no_spec_result_const\_ ## __LINE__ ## operator<
                     TaggedArg0
                   , TaggedArgs...
-                >::type(\*)()
-            >(`nullptr`_)
-          , |compose|_(arg0, args...)
+                >::type(*)()
+            >(|std_nullptr|_\)
+          , |compose|_\(arg0, args...)
         );
     }
 
     template <typename ResultType, typename Args>
     ResultType
         boost_param_no_spec_impl_const ## __LINE__ ## operator(
-            (ResultType(\*)())
+            (ResultType(*)())
           , Args const& args
         ) const
 
 Only the |ArgumentPack|_ type ``Args`` and its object instance ``args`` are
 available for use within the function body.
 
-.. _`enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_enable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if`: ../../../core/doc/html/core/enable_if.html
-.. _`lazy_disable_if_c`: ../../../core/doc/html/core/enable_if.html
-.. _`std_enable_if`: http\://en.cppreference.com/w/cpp/types/enable_if
-.. _`nullptr`: http\://en.cppreference.com/w/cpp/language/nullptr
+.. |BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR| replace:: ``BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR``
+.. _BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR:
 
 ``BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR(cls, impl)``
 --------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor_no_spec.hpp`__
-
-__ ../../../../boost/parameter/preprocessor_no_spec.hpp
+:Defined in: |preprocessor_no_spec_header|_
 
 Generates a constructor that can take in named arguments.
 
 :Example usage:
+
 When designing a front-end class template whose back-end is configurable via
 parameterized inheritance, it can be useful to omit argument specifiers from
 a named-parameter constructor so that the delegate constructors of the
@@ -6271,9 +6054,9 @@ their tags need to be in the same namespace.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_(a0)
-    |BOOST_PARAMETER_NAME|_(a1)
-    |BOOST_PARAMETER_NAME|_(a2)
+    |BOOST_PARAMETER_NAME|_\(a0)
+    |BOOST_PARAMETER_NAME|_\(a1)
+    |BOOST_PARAMETER_NAME|_\(a2)
 
 For this example, each of the back-end class templates requires its own
 parameter to be present in the argument pack.  In practice, such parameters
@@ -6294,8 +6077,8 @@ should be optional, with default values.
         template <typename ArgPack>
         explicit backend0(
             ArgPack const& args
-          , typename boost::`enable_if`_<
-                |is_argument_pack|_<ArgPack>
+          , typename |boost_enable_if|_\<
+                |is_argument_pack|_\<ArgPack>
               , _enabler
             >::type = _enabler()
         ) : a0(args[_a0])
@@ -6317,8 +6100,8 @@ should be optional, with default values.
         template <typename ArgPack>
         explicit backend1(
             ArgPack const& args
-          , typename boost::`enable_if`_<
-                |is_argument_pack|_<ArgPack>
+          , typename |boost_enable_if|_\<
+                |is_argument_pack|_\<ArgPack>
               , _enabler
             >::type = _enabler()
         ) : B(args), a1(args[_a1])
@@ -6340,8 +6123,8 @@ should be optional, with default values.
         template <typename ArgPack>
         explicit backend2(
             ArgPack const& args
-          , typename boost::`enable_if`_<
-                |is_argument_pack|_<ArgPack>
+          , typename |boost_enable_if|_\<
+                |is_argument_pack|_\<ArgPack>
               , _enabler
             >::type = _enabler()
         ) : B(args), a2(args[_a2])
@@ -6360,94 +6143,94 @@ the other back-ends can be chained together in different orders.
 
 .. parsed-literal::
 
-    char const\* p = "foo";
+    char const* p = "foo";
     frontend<
-        backend2<backend1<backend0<char const\*>, char>, int>
+        backend2<backend1<backend0<char const*>, char>, int>
     > composed_obj0(_a2 = 4, _a1 = ' ', _a0 = p);
     frontend<
-        backend1<backend2<backend0<char const\*>, int>, char>
+        backend1<backend2<backend0<char const*>, int>, char>
     > composed_obj1(_a0 = p, _a1 = ' ', _a2 = 4);
     BOOST_TEST_EQ(composed_obj0.get_a0(), composed_obj1.get_a0());
     BOOST_TEST_EQ(composed_obj0.get_a1(), composed_obj1.get_a1());
     BOOST_TEST_EQ(composed_obj0.get_a2(), composed_obj1.get_a2());
 
-The |parameterized_inheritance|_ and |preproc_eval_cat_no_spec|_ test programs
-demonstrate proper usage of this macro.
+The |parameterized_inheritance_cpp|_ and |preproc_eval_cat_no_spec_cpp|_ test
+programs demonstrate proper usage of this macro.
 
-.. |parameterized_inheritance| replace:: parameterized_inheritance.cpp
-.. _parameterized_inheritance: ../../test/parameterized_inheritance.cpp
-.. |preproc_eval_cat_no_spec| replace:: preprocessor_eval_cat_no_spec.cpp
-.. _preproc_eval_cat_no_spec: ../../test/preprocessor_eval_cat_no_spec.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``cls`` is the name of the enclosing class.
-\*. ``impl`` is the parenthesized implementation base class for ``cls``.
+*   ``cls`` is the name of the enclosing class.
+*   ``impl`` is the parenthesized implementation base class for ``cls``.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 None.
 
-Approximate expansion:
+**Approximate expansion:**
+
 .. parsed-literal::
 
     template <
         typename TaggedArg0
       , typename ...TaggedArgs
-      , typename = typename boost::`enable_if`_<
-            |are_tagged_arguments|_<TaggedArg0,TaggedArgs...>
+      , typename = typename |boost_enable_if|_\<
+            |are_tagged_arguments|_\<TaggedArg0,TaggedArgs...>
         >::type
     >
     inline explicit **cls**\ (
         TaggedArg0 const& arg0
       , TaggedArgs const&... args
-    ) : **impl**\ (|compose|_(arg0, args...))
+    ) : **impl**\ (|compose|_\(arg0, args...))
     {
     }
+
+.. |BOOST_PARAMETER_NO_SPEC_NO_BASE_CONSTRUCTOR| replace:: ``BOOST_PARAMETER_NO_SPEC_NO_BASE_CONSTRUCTOR``
+.. _BOOST_PARAMETER_NO_SPEC_NO_BASE_CONSTRUCTOR:
 
 ``BOOST_PARAMETER_NO_SPEC_NO_BASE_CONSTRUCTOR(cls, impl)``
 ----------------------------------------------------------
 
-:Defined in: `boost/parameter/preprocessor_no_spec.hpp`__
-
-__ ../../../../boost/parameter/preprocessor_no_spec.hpp
+:Defined in: |preprocessor_no_spec_header|_
 
 Generates a constructor that can take in named arguments.
 
 :Example usage:
+
 The return type of each of the following function templates falls under a
 different value category.
 
 .. parsed-literal::
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> rvalue_bitset()
+    |std_bitset|_\<N + 1> rvalue_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const rvalue_const_bitset()
+    |std_bitset|_\<N + 1> const rvalue_const_bitset()
     {
-        return std::`bitset`_<N + 1>();
+        return |std_bitset|_\<N + 1>();
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1>& lvalue_bitset()
+    |std_bitset|_\<N + 1>& lvalue_bitset()
     {
-        static std::`bitset`_<N + 1> lset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> lset = |std_bitset|_\<N + 1>();
         return lset;
     }
 
     template <std::size_t N>
-    std::`bitset`_<N + 1> const& lvalue_const_bitset()
+    |std_bitset|_\<N + 1> const& lvalue_const_bitset()
     {
-        static std::`bitset`_<N + 1> const clset = std::`bitset`_<N + 1>();
+        static |std_bitset|_\<N + 1> const clset = |std_bitset|_\<N + 1>();
         return clset;
     }
 
 The ``U::evaluate_category`` static member function template has a simple job:
 to return the correct value category when passed in an object returned by one
 of the functions defined above.  Assume that
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined.
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined.
 
 .. parsed-literal::
 
@@ -6462,25 +6245,25 @@ of the functions defined above.  Assume that
     struct U
     {
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&)
         {
             return passed_by_lvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&)
         {
             return passed_by_lvalue_reference;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1> const&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1> const&&)
         {
             return passed_by_rvalue_reference_to_const;
         }
 
         template <std::size_t N>
-        static invoked evaluate_category(std::`bitset`_<N + 1>&&)
+        static invoked evaluate_category(|std_bitset|_\<N + 1>&&)
         {
             return passed_by_rvalue_reference;
         }
@@ -6491,12 +6274,12 @@ their tags need to be in the same namespace.
 
 .. parsed-literal::
 
-    |BOOST_PARAMETER_NAME|_((_lrc, kw0) in(lrc))
-    |BOOST_PARAMETER_NAME|_((_lr, kw1) in_out(lr))
-    |BOOST_PARAMETER_NAME|_((_rrc, kw2) in(rrc))
-    |BOOST_PARAMETER_NAME|_((_rr, kw3) consume(rr))
+    |BOOST_PARAMETER_NAME|_\((_lrc, kw0) in(lrc))
+    |BOOST_PARAMETER_NAME|_\((_lr, kw1) in_out(lr))
+    |BOOST_PARAMETER_NAME|_\((_rrc, kw2) in(rrc))
+    |BOOST_PARAMETER_NAME|_\((_rr, kw3) consume(rr))
 
-Unlike |BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR|, this macro doesn't require a
+Unlike |BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR|_, this macro doesn't require a
 base class, only a delegate function to which the generated constructor can
 pass its |ArgumentPack|_.
 
@@ -6550,29 +6333,28 @@ To invoke the constructor, bind all its arguments to named parameters.
       , _lrc0 = lvalue_const_bitset<0>()
     );
 
-The |preproc_eval_cat_no_spec|_ test program demonstrates proper usage of this
-macro.
+The |preproc_eval_cat_no_spec_cpp|_ test program demonstrates proper usage of
+this macro.
 
-.. _`bitset`: http\://en.cppreference.com/w/cpp/utility/bitset
-.. |preproc_eval_cat_no_spec| replace:: preprocessor_eval_cat_no_spec.cpp
-.. _preproc_eval_cat_no_spec: ../../test/preprocessor_eval_cat_no_spec.cpp
+**Macro parameters:**
 
-:Macro parameters:
-\*. ``cls`` is the name of the enclosing class.
-\*. ``func`` is a function that takes in the |ArgumentPack|_ that the
-generated constructor passes on.
+*   ``cls`` is the name of the enclosing class.
+*   ``func`` is a function that takes in the |ArgumentPack|_ that the
+    generated constructor passes on.
 
-:Argument specifiers syntax:
+**Argument specifiers syntax:**
+
 None.
 
-Approximate expansion:
+**Approximate expansion:**
+
 .. parsed-literal::
 
     template <
         typename TaggedArg0
       , typename ...TaggedArgs
-      , typename = typename boost::`enable_if`_<
-            |are_tagged_arguments|_<TaggedArg0,TaggedArgs...>
+      , typename = typename |boost_enable_if|_\<
+            |are_tagged_arguments|_\<TaggedArg0,TaggedArgs...>
         >::type
     >
     inline explicit **cls**\ (
@@ -6580,15 +6362,16 @@ Approximate expansion:
       , TaggedArgs const&... args
     )
     {
-        **func**\ (|compose|_(arg0, args...));
+        **func**\ (|compose|_\(arg0, args...));
     }
+
+.. |BOOST_PARAMETER_NAME| replace:: ``BOOST_PARAMETER_NAME``
+.. _BOOST_PARAMETER_NAME:
 
 ``BOOST_PARAMETER_NAME(name)``
 ------------------------------
 
-:Defined in: `boost/parameter/name.hpp`__
-
-__ ../../../../boost/parameter/name.hpp
+:Defined in: |name_header|_
 
 Declares a tag-type and keyword object.
 
@@ -6601,9 +6384,8 @@ Declares a tag-type and keyword object.
 **then**
 
 :Requires: *qualifier* is either ``in``, ``out``, ``in_out``, ``consume``,
-``move_from``, or ``forward``.
-
-Expands to:
+    ``move_from``, or ``forward``.
+:Expands to:
 
 .. parsed-literal::
 
@@ -6611,7 +6393,7 @@ Expands to:
 
         struct *tag-name*
         {
-            static constexpr char const\* keyword_name()
+            static constexpr char const* keyword_name()
             {
                 return ## *tag-name*;
             }
@@ -6624,18 +6406,18 @@ Expands to:
             // |BOOST_PARAMETER_CAN_USE_MP11|_ is defined.
 
             template <typename ArgumentPack>
-            using binding_fn = typename |binding|_<
+            using binding_fn = typename |binding|_\<
                 ArgumentPack
               , *tag-name*
             >::type;
 
             template <typename ArgumentPack>
-            using fn = typename |value_type|_<ArgumentPack, *tag-name*>::type;
+            using fn = typename |value_type|_\<ArgumentPack, *tag-name*>::type;
         };
     }
 
-    |keyword|_<*tag-namespace*::*tag-name*> const& *object-name*
-        = |keyword|_<*tag-namespace*::*tag-name*>::instance;
+    |keyword|_\<*tag-namespace*::*tag-name*> const& *object-name*
+        = |keyword|_\<*tag-namespace*::*tag-name*>::instance;
 
 **Else If** *name* is of the form:
 
@@ -6660,9 +6442,8 @@ Treats *name* as if it were of the form:
 **then**
 
 :Requires: *qualifier* is either ``in``, ``out``, ``in_out``, ``consume``,
-``move_from``, or ``forward``.
-
-Expands to:
+    ``move_from``, or ``forward``.
+:Expands to:
 
 .. parsed-literal::
 
@@ -6670,7 +6451,7 @@ Expands to:
 
         struct *tag-name*
         {
-            static constexpr char const\* keyword_name()
+            static constexpr char const* keyword_name()
             {
                 return ## *tag-name*;
             }
@@ -6683,18 +6464,18 @@ Expands to:
             // |BOOST_PARAMETER_CAN_USE_MP11|_ is defined.
 
             template <typename ArgumentPack>
-            using binding_fn = typename |binding|_<
+            using binding_fn = typename |binding|_\<
                 ArgumentPack
               , *tag-name*
             >::type;
 
             template <typename ArgumentPack>
-            using fn = typename |value_type|_<ArgumentPack, *tag-name*>::type;
+            using fn = typename |value_type|_\<ArgumentPack, *tag-name*>::type;
         };
     }
 
-    |keyword|_<tag::*tag-name*> const& _ ## *tag-name*
-        = |keyword|_<tag::*tag-name*>::instance;
+    |keyword|_\<tag::*tag-name*> const& _ ## *tag-name*
+        = |keyword|_\<tag::*tag-name*>::instance;
 
 **Else**
 
@@ -6704,12 +6485,13 @@ Treats *name* as if it were of the form:
 
     forward(*tag-name*)
 
+.. |BOOST_PARAMETER_NESTED_KEYWORD| replace:: ``BOOST_PARAMETER_NESTED_KEYWORD``
+.. _BOOST_PARAMETER_NESTED_KEYWORD:
+
 ``BOOST_PARAMETER_NESTED_KEYWORD(tag_namespace, name, alias)``
-------------------------------------------
+--------------------------------------------------------------
 
-:Defined in: `boost/parameter/nested_keyword.hpp`__
-
-__ ../../../../boost/parameter/nested_keyword.hpp
+:Defined in: |nested_keyword_header|_
 
 Declares a tag-type, a keyword object, and an alias for that object nested in
 the tag-type.
@@ -6723,9 +6505,9 @@ the tag-type.
 **then**
 
 :Requires: *qualifier* is either ``in``, ``out``, ``in_out``, ``consume``,
-``move_from``, or ``forward``.
+    ``move_from``, or ``forward``.
 
-Expands to:
+:Expands to:
 
 .. parsed-literal::
 
@@ -6733,7 +6515,7 @@ Expands to:
 
         struct *tag-name*
         {
-            static constexpr char const\* keyword_name()
+            static constexpr char const* keyword_name()
             {
                 return ## *tag-name* ## _;
             }
@@ -6741,27 +6523,27 @@ Expands to:
             typedef *unspecified* _;
             typedef *unspecified* _1;
             typedef boost::parameter::*qualifier* ## _reference qualifier;
-            static |keyword|_<*tag-name*> const& *alias*;
+            static |keyword|_\<*tag-name*> const& *alias*;
 
             // The following definitions are available only when
             // |BOOST_PARAMETER_CAN_USE_MP11|_ is defined.
 
             template <typename ArgumentPack>
-            using binding_fn = typename |binding|_<
+            using binding_fn = typename |binding|_\<
                 ArgumentPack
               , *tag-name*
             >::type;
 
             template <typename ArgumentPack>
-            using fn = typename |value_type|_<ArgumentPack, *tag-name*>::type;
+            using fn = typename |value_type|_\<ArgumentPack, *tag-name*>::type;
         };
 
-        |keyword|_<*tag-name*> const& tag::*tag-name*::*alias*
-            = |keyword|_<*tag-name*>::instance;
+        |keyword|_\<*tag-name*> const& tag::*tag-name*::*alias*
+            = |keyword|_\<*tag-name*>::instance;
     }
 
-    |keyword|_<tag::*tag-name*> const& tag::*tag-name*::*name*
-        = |keyword|_<tag::*tag-name*>::instance;
+    |keyword|_\<tag::*tag-name*> const& tag::*tag-name*::*name*
+        = |keyword|_\<tag::*tag-name*>::instance;
 
 **Else**
 
@@ -6771,18 +6553,15 @@ Treats *name* as if it were of the form:
 
     forward(*tag-name*)
 
+.. |BOOST_PARAMETER_TEMPLATE_KEYWORD| replace:: ``BOOST_PARAMETER_TEMPLATE_KEYWORD``
+.. _BOOST_PARAMETER_TEMPLATE_KEYWORD:
+
 ``BOOST_PARAMETER_TEMPLATE_KEYWORD(name)``
 ------------------------------------------
 
 :Defined in: |template_keyword_header|_
 :Included by: |name_header|_
-
-.. |template_keyword_header| replace:: boost/parameter/template_keyword.hpp
-.. _template_keyword_header: ../../../../boost/parameter/template_keyword.hpp
-.. |name_header| replace:: boost/parameter/name.hpp
-.. _name_header: ../../../../boost/parameter/name.hpp
-
-Expands to:
+:Expands to:
 
 .. parsed-literal::
 
@@ -6792,15 +6571,15 @@ Expands to:
     }
 
     template <typename T>
-    struct *name* : |template_keyword|_<tag:: *name*, T>
+    struct *name* : |template_keyword|_\<tag:: *name*, T>
     {
     };
 
 The |function_type_tpl_param_cpp|_ test program demonstrates proper usage of
 this macro.
 
-.. |function_type_tpl_param_cpp| replace:: function_type_tpl_param.cpp
-.. _function_type_tpl_param_cpp: ../../test/function_type_tpl_param.cpp
+.. |BOOST_PARAMETER_FUN| replace:: ``BOOST_PARAMETER_FUN``
+.. _BOOST_PARAMETER_FUN:
 
 ``BOOST_PARAMETER_FUN(r, n, l, h, p)``
 --------------------------------------
@@ -6815,14 +6594,10 @@ Generates a sequence of `forwarding function`_ templates named
 and using ``p`` to control overload resolution and assign tags to
 positional arguments.
 
-:Defined in: `boost/parameter/macros.hpp`__
-
-__ ../../../../boost/parameter/macros.hpp
-
+:Defined in: |macros_header|_
 :Requires: ``l`` and ``h`` are nonnegative integer tokens
-such that ``l`` < ``h``
-
-Expands to:
+    such that ``l`` < ``h``
+:Expands to:
 
 .. parsed-literal::
 
@@ -6835,10 +6610,10 @@ Expands to:
     {
         return **name**\ _with_named_params(
             **p**\ (
-                std::`forward`_<A1>(a1)
-              , std::`forward`_<A2>(a2)
+                |std_forward|_\<A1>(a1)
+              , |std_forward|_\<A2>(a2)
               , …
-              , std::`forward`_<A ## **l**>(a ## **l**)
+              , |std_forward|_\<A ## **l**>(a ## **l**)
             )
         );
     }
@@ -6848,25 +6623,25 @@ Expands to:
       , typename A2
       , …
       , typename A ## **l**
-      , typename A ## BOOST_PP_INC_\ (**l**)
+      , typename A ## |BOOST_PP_INC|_\ (**l**)
     >
     r
         name(
             A1 && a1, A2 && a2, …, A ## **l** && a ## **l**
-          , A ## BOOST_PP_INC_\ (**l**) const& a ## BOOST_PP_INC_\ (**l**)
+          , A ## |BOOST_PP_INC|_\ (**l**) const& a ## |BOOST_PP_INC|_\ (**l**)
           , typename **p**::match<
-                A1, A2, …, A ## **l**, A ## BOOST_PP_INC_\ (**l**)
+                A1, A2, …, A ## **l**, A ## |BOOST_PP_INC|_\ (**l**)
             >::type p = **p**\ ()
         )
     {
         return **name**\ _with_named_params(
             **p**\ (
-                std::`forward`_<A1>(a1)
-              , std::`forward`_<A2>(a2)
+                |std_forward|_\<A1>(a1)
+              , |std_forward|_\<A2>(a2)
               , …
-              , std::`forward`_<A ## **l**>(a ## **l**)
-              , std::`forward`_<A ## `BOOST_PP_INC`_\ (**l**)>(
-                    a ## `BOOST_PP_INC`_\ (**l**)
+              , |std_forward|_\<A ## **l**>(a ## **l**)
+              , |std_forward|_\<A ## |BOOST_PP_INC|_\ (**l**)>(
+                    a ## |BOOST_PP_INC|_\ (**l**)
                 )
             )
         );
@@ -6883,10 +6658,10 @@ Expands to:
     {
         return **name**\ _with_named_params(
             **p**\ (
-                std::`forward`_<A1>(a1)
-              , std::`forward`_<A2>(a2)
+                |std_forward|_\<A1>(a1)
+              , |std_forward|_\<A2>(a2)
               , …
-              , std::`forward`_<A ## **h**>(a ## **h**)
+              , |std_forward|_\<A ## **h**>(a ## **h**)
             )
         );
     }
@@ -6894,12 +6669,8 @@ Expands to:
 The |macros_cpp|_ and |macros_eval_cat_cpp|_ test programs demonstrate proper
 usage of this macro.
 
-.. _`BOOST_PP_INC`: ../../../preprocessor/doc/ref/inc.html
-.. _`forward`: http\://en.cppreference.com/w/cpp/utility/forward
-.. |macros_cpp| replace:: macros.cpp
-.. _macros_cpp: ../../test/macros.cpp
-.. |macros_eval_cat_cpp| replace:: macros_eval_category.cpp
-.. _macros_eval_cat_cpp: ../../test/macros_eval_category.cpp
+.. |BOOST_PARAMETER_KEYWORD| replace:: ``BOOST_PARAMETER_KEYWORD``
+.. _BOOST_PARAMETER_KEYWORD:
 
 ``BOOST_PARAMETER_KEYWORD(n, k)``
 ---------------------------------
@@ -6913,11 +6684,8 @@ Generates the declaration of a |keyword tag type| named ``k`` in
 namespace ``n`` and a corresponding |keyword object| definition in
 the enclosing namespace.
 
-:Defined in: `boost/parameter/keyword.hpp`__
-
-__ ../../../../boost/parameter/keyword.hpp
-
-Expands to:
+:Defined in: |keyword_header|_
+:Expands to:
 
 .. parsed-literal::
 
@@ -6925,7 +6693,7 @@ Expands to:
 
         struct **k**
         {
-            static constexpr char const\* keyword_name()
+            static constexpr char const* keyword_name()
             {
                 return ## *k*;
             }
@@ -6938,20 +6706,20 @@ Expands to:
             // |BOOST_PARAMETER_CAN_USE_MP11|_ is defined.
 
             template <typename ArgumentPack>
-            using binding_fn = typename |binding|_<
+            using binding_fn = typename |binding|_\<
                 ArgumentPack
               , *k*
             >::type;
 
             template <typename ArgumentPack>
-            using fn = typename |value_type|_<ArgumentPack, *k*>::type;
+            using fn = typename |value_type|_\<ArgumentPack, *k*>::type;
         };
     }
 
     namespace { 
 
-        |keyword|_<*n*::**k**> const& **k**
-            = |keyword|_<*n*::**k**>::instance;
+        |keyword|_\<*n*::**k**> const& **k**
+            = |keyword|_\<*n*::**k**>::instance;
     }
 
 ``BOOST_PARAMETER_MATCH(p, a, x)``
@@ -6959,10 +6727,7 @@ Expands to:
 
 Generates a defaulted parameter declaration for a `forwarding function`_.
 
-:Defined in: `boost/parameter/match.hpp`__
-
-__ ../../../../boost/parameter/match.hpp
-
+:Defined in: |match_header|_
 :Requires: ``a`` is a `Boost.Preprocessor sequence`__ of the form
 
 .. parsed-literal::
@@ -6971,7 +6736,7 @@ __ ../../../../boost/parameter/match.hpp
 
 __ ../../../preprocessor/doc/data.html
 
-Expands to:
+:Expands to:
 
 .. parsed-literal::
 
@@ -6981,36 +6746,26 @@ Expands to:
 Configuration Macros
 ====================
 
+.. |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| replace:: ``BOOST_PARAMETER_HAS_PERFECT_FORWARDING``
+.. _BOOST_PARAMETER_HAS_PERFECT_FORWARDING:
+
 ``BOOST_PARAMETER_HAS_PERFECT_FORWARDING``
 ------------------------------------------
 
 Determines whether or not the library supports perfect forwarding, or the
 preservation of parameter value categories.  Users can manually disable this
-macro by ``#defining`` the |BOOST_PARAMETER_DISABLE_PERFECT_FORWARDING|
+macro by ``#defining`` the |BOOST_PARAMETER_DISABLE_PERFECT_FORWARDING|_
 macro.  Otherwise, the library will ``#define`` this macro if and only if it
 is not already defined, and if the configuration macros
 |BOOST_NO_FUNCTION_TEMPLATE_ORDERING|_, |BOOST_NO_SFINAE|_,
 |BOOST_NO_CXX11_RVALUE_REFERENCES|_, |BOOST_NO_CXX11_VARIADIC_TEMPLATES|_, and
 |BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS|_ are not already defined by
-`Boost.Config`_.
+|Boost_Config|_.
 
-.. |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| replace:: ``BOOST_PARAMETER_HAS_PERFECT_FORWARDING``
+:Defined in: |config_header|_
+
 .. |BOOST_PARAMETER_DISABLE_PERFECT_FORWARDING| replace:: ``BOOST_PARAMETER_DISABLE_PERFECT_FORWARDING``
-.. |BOOST_NO_FUNCTION_TEMPLATE_ORDERING| replace:: ``BOOST_NO_FUNCTION_TEMPLATE_ORDERING``
-.. _BOOST_NO_FUNCTION_TEMPLATE_ORDERING: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_SFINAE| replace:: ``BOOST_NO_SFINAE``
-.. _BOOST_NO_SFINAE: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_RVALUE_REFERENCES| replace:: ``BOOST_NO_CXX11_RVALUE_REFERENCES``
-.. _BOOST_NO_CXX11_RVALUE_REFERENCES: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_VARIADIC_TEMPLATES| replace:: ``BOOST_NO_CXX11_VARIADIC_TEMPLATES``
-.. _BOOST_NO_CXX11_VARIADIC_TEMPLATES: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS| replace:: ``BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS``
-.. _BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. _`Boost.Config`: ../../../config/doc/html/index.html
-
-:Defined in: `boost/parameter/config.hpp`__
-
-__ ../../../../boost/parameter/config.hpp
+.. _BOOST_PARAMETER_DISABLE_PERFECT_FORWARDING:
 
 ``BOOST_PARAMETER_DISABLE_PERFECT_FORWARDING``
 ----------------------------------------------
@@ -7018,89 +6773,63 @@ __ ../../../../boost/parameter/config.hpp
 It may be necessary to test user code in case perfect forwarding support is
 unavailable.  Users can ``#define`` this macro either in their project
 settings or before including any library header files.  Doing so will leave
-both |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| and
-|BOOST_PARAMETER_CAN_USE_MP11| undefined.
+both |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ and
+|BOOST_PARAMETER_CAN_USE_MP11|_ undefined.
 
-.. |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| replace:: ``BOOST_PARAMETER_HAS_PERFECT_FORWARDING``
 .. |BOOST_PARAMETER_CAN_USE_MP11| replace:: ``BOOST_PARAMETER_CAN_USE_MP11``
+.. _BOOST_PARAMETER_CAN_USE_MP11:
 
 ``BOOST_PARAMETER_CAN_USE_MP11``
 --------------------------------
 
-Determines whether or not the library can use `Boost.MP11`_, a C++11
-metaprogramming library, and therefore determines whether or not the library
-defines the |are_tagged_arguments_mp11| and |is_argument_pack_mp11|
-metafunctions.  Users can manually disable this macro by ``#defining`` the
-|BOOST_PARAMETER_DISABLE_MP11_USAGE| macro or the
-|BOOST_PARAMETER_DISABLE_PERFECT_FORWARDING| macro.  Otherwise, the library
+Determines whether or not the library can use |Boost_MP11|_, a C++11
+metaprogramming library.  Users can manually disable this macro by
+``#defining`` the |BOOST_PARAMETER_DISABLE_MP11_USAGE|_ macro or the
+|BOOST_PARAMETER_DISABLE_PERFECT_FORWARDING|_ macro.  Otherwise, the library
 will ``#define`` this macro if and only if it is not already defined, if
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is defined, and if the configuration
+|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is defined, and if the configuration
 macros |BOOST_NO_CXX11_CONSTEXPR|_, |BOOST_NO_CXX11_DECLTYPE_N3276|_,
 |BOOST_NO_CXX11_AUTO_DECLARATIONS|_, |BOOST_NO_CXX11_TEMPLATE_ALIASES|_,
 |BOOST_NO_CXX11_STATIC_ASSERT|_, |BOOST_NO_CXX11_HDR_TYPE_TRAITS|_,
 |BOOST_NO_CXX11_HDR_INITIALIZER_LIST|_, and |BOOST_NO_CXX11_HDR_TUPLE|_
-are not already defined by `Boost.Config`_.
+are not already defined by |Boost_Config|_.
 
 .. Admonition:: Usage Note
 
-`Boost.MP11`_ and `Boost.MPL`_ are **not** mutually exclusive.  It's perfectly
-acceptable to specify deduced parameters using both quoted metafunctions and
-metafunction classes, for example.  See |evaluate_category_cpp|_.
+    |Boost_MP11|_ and |Boost_MPL|_ are **not** mutually exclusive.  It's
+    perfectly acceptable to specify deduced parameters using both quoted
+    metafunctions and metafunction classes, for example.  See
+    |evaluate_category_cpp|_.
 
-.. |BOOST_PARAMETER_CAN_USE_MP11| replace:: ``BOOST_PARAMETER_CAN_USE_MP11``
-.. |BOOST_PARAMETER_DISABLE_MP11_USAGE| replace:: ``BOOST_PARAMETER_DISABLE_MP11_USAGE``
-.. |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| replace:: ``BOOST_PARAMETER_HAS_PERFECT_FORWARDING``
-.. |BOOST_PARAMETER_DISABLE_PERFECT_FORWARDING| replace:: ``BOOST_PARAMETER_DISABLE_PERFECT_FORWARDING``
-.. |BOOST_NO_CXX11_CONSTEXPR| replace:: ``BOOST_NO_CXX11_CONSTEXPR``
-.. _BOOST_NO_CXX11_CONSTEXPR: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_DECLTYPE_N3276| replace:: ``BOOST_NO_CXX11_DECLTYPE_N3276``
-.. _BOOST_NO_CXX11_DECLTYPE_N3276: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_AUTO_DECLARATIONS| replace:: ``BOOST_NO_CXX11_AUTO_DECLARATIONS``
-.. _BOOST_NO_CXX11_AUTO_DECLARATIONS: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_AUTO_DECLARATIONS| replace:: ``BOOST_NO_CXX11_AUTO_DECLARATIONS``
-.. _BOOST_NO_CXX11_AUTO_DECLARATIONS: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_STATIC_ASSERT| replace:: ``BOOST_NO_CXX11_STATIC_ASSERT``
-.. _BOOST_NO_CXX11_STATIC_ASSERT: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_HDR_TYPE_TRAITS| replace:: ``BOOST_NO_CXX11_HDR_TYPE_TRAITS``
-.. _BOOST_NO_CXX11_HDR_TYPE_TRAITS: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_HDR_INITIALIZER_LIST| replace:: ``BOOST_NO_CXX11_HDR_INITIALIZER_LIST``
-.. _BOOST_NO_CXX11_HDR_INITIALIZER_LIST: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_HDR_TUPLE| replace:: ``BOOST_NO_CXX11_HDR_TUPLE``
-.. _BOOST_NO_CXX11_HDR_TUPLE: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. _`Boost.MP11`: ../../../mp11/doc/html/mp11.html
-.. _`Boost.Config`: ../../../config/doc/html/index.html
-.. |evaluate_category_cpp| replace:: evaluate_category.cpp
-.. _evaluate_category_cpp: ../../test/evaluate_category.cpp
-
-:Defined in: `boost/parameter/config.hpp`__
-
-__ ../../../../boost/parameter/config.hpp
-
+:Defined in: |config_header|_
 :Example usage:
-Given the following definitions::
 
-    |BOOST_PARAMETER_NAME|_(x)
+Given the following definitions:
+
+.. parsed-literal::
+
+    |BOOST_PARAMETER_NAME|_\(x)
 
     template <typename A0>
-    typename boost::`enable_if`_<std::`is_same`_<int,A0>,int>::type
+    typename |boost_enable_if|_\<|std_is_same|_\<int,A0>,int>::type
         sfinae(A0 const& a0)
     {
         return 0;
     }
 
-.. _`is_same`: http\://en.cppreference.com/w/cpp/types/is_same
+|Boost_MP11|_ allows deduced parameters to be defined more succinctly:
 
-`Boost.MP11`_ allows deduced parameters to be defined more succinctly::
+.. parsed-literal::
 
     template <typename T, typename Args>
-    using predicate = std::`is_convertible`_<T,char const\*>;
+    using predicate = |std_is_convertible|_\<T,char const*>;
 
-    |BOOST_PARAMETER_FUNCTION|_((int), sfinae, tag,
+    |BOOST_PARAMETER_FUNCTION|_\((int), sfinae, tag,
         (deduced
             (optional
                 (x
-                  , \*(boost::mp11::mp_quote<predicate>)
-                  , static_cast<char const\*>(`nullptr`_)
+                  , \*(|mp11_quote|_\<predicate>)
+                  , static_cast<char const*>(|std_nullptr|_\)
                 )
             )
         )
@@ -7109,29 +6838,29 @@ Given the following definitions::
         return 1;
     }
 
-.. _`is_convertible`: http\://en.cppreference.com/w/cpp/types/is_convertible
+Without |Boost_MP11|_, deduced parameter definitions tend to be more verbose:
 
-Without `Boost.MP11`_, deduced parameter definitions tend to be more verbose::
+.. parsed-literal::
 
     struct predicate
     {
         template <typename T, typename Args>
         struct apply
-          : boost::mpl::if_<
-                boost::`is_convertible`_<T,char const\*>
-              , boost::mpl::true_
-              , boost::mpl::false_
+          : |mpl_if|_\<
+                |boost_is_convertible|_\<T,char const*>
+              , |mpl_true|_\   // Still have to convert to a
+              , |mpl_false|_\  // `Boolean Integral Constant`_.
             >
         {
         };
     };
 
-    |BOOST_PARAMETER_FUNCTION|_((int), sfinae, tag,
+    |BOOST_PARAMETER_FUNCTION|_\((int), sfinae, tag,
         (deduced
             (optional
                 (x
                   , \*(predicate)
-                  , static_cast<char const\*>(`nullptr`_)
+                  , static_cast<char const*>(|std_nullptr|_\)
                 )
             )
         )
@@ -7140,19 +6869,20 @@ Without `Boost.MP11`_, deduced parameter definitions tend to be more verbose::
         return 1;
     }
 
-.. _`is_convertible`: ../../../type_traits/doc/html/boost_typetraits/is_convertible.html
-.. _`nullptr`: http\://en.cppreference.com/w/cpp/language/nullptr
+Either way, the following assertions will succeed:
 
-Either way, the following assertions will succeed::
+.. parsed-literal::
 
     assert(1 == sfinae());
     assert(1 == sfinae("foo"));
     assert(0 == sfinae(1));
 
-As another example, given the following declarations and definitions::
+As another example, given the following declarations and definitions:
 
-    |BOOST_PARAMETER_NAME|_(x)
-    |BOOST_PARAMETER_NAME|_(y)
+.. parsed-literal::
+
+    |BOOST_PARAMETER_NAME|_\(x)
+    |BOOST_PARAMETER_NAME|_\(y)
 
     template <typename E, typename Args>
     void check0(E const& e, Args const& args);
@@ -7163,8 +6893,10 @@ As another example, given the following declarations and definitions::
         check0(e, P()(args...));
     }
 
-Argument packs qualify as `Boost.MP11`_-style lists containing
-|keyword tag type|\ s::
+Argument packs qualify as |Boost_MP11|_-style lists containing
+|keyword tag type|\ s:
+
+.. parsed-literal::
 
     template <typename Args>
     struct some_functor
@@ -7172,7 +6904,7 @@ Argument packs qualify as `Boost.MP11`_-style lists containing
         template <typename K>
         void operator()(K&&) const
         {
-            // K is one of tag::x, tag::y, etc.
+            // K is one of tag\:\:x, tag\:\:y, etc.
         }
     };
 
@@ -7186,48 +6918,50 @@ The first check determines whether or not the argument type of ``_y`` is the
 same as the reference type of ``_x``, while the second check determines
 whether or not the argument type of ``_y`` is convertible to the value type of
 ``_x``.  Here, it's possible to access the reference and value result types of
-indexing an argument pack a little more directly::
+indexing an argument pack a little more directly:
 
-    // Use mp_bind on tag::x::binding_fn to access the reference type of _x.
-    // Here, boost::mp11::_1 will be bound to the argument type of _y.
-    // Regardless, boost::mp11::_2 will be bound to the argument pack type.
+.. parsed-literal::
+
+    // Use mp_bind on tag\:\:x\:\:binding_fn to access the reference type of _x.
     check<
-        |parameters|_<
-            tag::x
-          , |optional|_<
-                |deduced|_<tag::y>
-              , boost::mp11::mp_bind<
-                    std::`is_same`_
-                  , boost::mp11::_1
-                  , boost::mp11::mp_bind<
-                        tag::x::binding_fn
-                      , boost::mp11::_2
+        |parameters|_\<
+            tag\:\:x
+          , |optional|_\<
+                |deduced|_\<tag\:\:y>
+              , |mp11_bind|_\<
+                    |std_is_same|_\  // |boost_is_same|_, standard version.
+                  , |mp11_1|_\  // will be bound to the argument type of _y.
+                  , |mp11_bind|_\<
+                        tag\:\:x\:\:binding_fn
+                      , |mp11_2|_\  // will be bound to the argument pack type.
                     >
                 >
             >
         >
     >((_x = 0, _y = 1), 0, 1);
 
-    // Use mp_bind_q on tag::x to access the value type of _x.
+    // Use mp_bind_q on tag\:\:x to access the value type of _x.
     check<
-        |parameters|_<
-            tag::x
-          , |optional|_<
-                |deduced|_<tag::y>
-              , boost::mp11::mp_bind<
-                    std::`is_convertible`_
-                  , boost::mp11::_1
-                  , boost::mp11::mp_bind_q<tag::x,boost::mp11::_2>
+        |parameters|_\<
+            tag\:\:x
+          , |optional|_\<
+                |deduced|_\<tag\:\:y>
+              , |mp11_bind|_\<
+                    |std_is_convertible|_\  // |boost_is_convertible|_, standard version.
+                  , |mp11_1|_\  // will be bound to the argument type of _y.
+                  , |mp11_bind_q|_\<
+                        tag\:\:x
+                      , |mp11_2|_\  // will be bound to the argument pack type.
+                    >
                 >
             >
         >
     >((_x = 0U, _y = 1U), 0U, 1U);
 
-.. _`is_convertible`: http\://en.cppreference.com/w/cpp/types/is_convertible
-.. _`is_same`: http\://en.cppreference.com/w/cpp/types/is_same
+Argument packs still qualify as |Boost_MPL|_-style lists containing
+|keyword tag type|\ s:
 
-Argument packs still qualify as `Boost.MPL`_-style lists containing
-|keyword tag type|\ s::
+.. parsed-literal::
 
     template <typename Args>
     struct some_functor
@@ -7235,7 +6969,7 @@ Argument packs still qualify as `Boost.MPL`_-style lists containing
         template <typename K>
         void operator()(K) const
         {
-            // K is one of tag::x, tag::y, etc.
+            // K is one of tag\:\:x, tag\:\:y, etc.
         }
     };
 
@@ -7245,181 +6979,131 @@ Argument packs still qualify as `Boost.MPL`_-style lists containing
         boost::mpl::for_each<E>(some_functor<Args>());
     }
 
-However, without `Boost.MP11`_, the corresponding checks become a little more
-verbose::
+However, without |Boost_MP11|_, the corresponding checks become a little more
+verbose:
+
+.. parsed-literal::
 
     check<
-        |parameters|_<
-            tag::x
-          , |optional|_<
-                |deduced|_<tag::y>
-              , boost::mpl::if_<
-                    boost::`is_same`_<
-                        boost::`add_lvalue_reference`_<boost::mpl::_1>
-                      , |binding|_<boost::mpl::_2,tag::x>
+        |parameters|_\<
+            tag\:\:x
+          , |optional|_\<
+                |deduced|_\<tag\:\:y>
+              , |mpl_if|_\<
+                    |boost_is_same|_\<
+                        |boost_add_lvalue_reference|_\<|mp11_1|_\>
+                      , |binding|_\<|mp11_2|_\, tag\:\:x>
                     >
-                  , boost::mpl::true_
-                  , boost::mpl::false_
+                  , |mpl_true|_\   // Still have to convert to a
+                  , |mpl_false|_\  // `Boolean Integral Constant`_.
                 >
             >
         >
     >((_x = 0, _y = 1), 0, 1);
 
-    // Use tag::x::_ or tag::x::_1 to access the value type of _x.
+    // Use tag\:\:x\:\:_ or tag\:\:x\:\:_1 to access the value type of _x.
     check<
-        |parameters|_<
-            tag::x
-          , |optional|_<
-                |deduced|_<tag::y>
-              , boost::mpl::if_<
-                    boost::`is_convertible`_<boost::mpl::_1,tag::x::_1>
-                  , boost::mpl::true_
-                  , boost::mpl::false_
+        |parameters|_\<
+            tag\:\:x
+          , |optional|_\<
+                |deduced|_\<tag\:\:y>
+              , |mpl_if|_\<
+                    |boost_is_convertible|_\<|mp11_1|_\, tag\:\:x\:\:_1>
+                  , |mpl_true|_\   // Still have to convert to a
+                  , |mpl_false|_\  // `Boolean Integral Constant`_.
                 >
             >
         >
     >((_x = 0U, _y = 1U), 0U, 1U);
 
-.. _`add_lvalue_reference`: ../../../type_traits/doc/html/boost_typetraits/add_lvalue_reference.html
-.. _`is_convertible`: ../../../type_traits/doc/html/boost_typetraits/is_convertible.html
-.. _`is_same`: ../../../type_traits/doc/html/boost_typetraits/is_same.html
-
 The |singular_cpp|_, |compose_cpp|_, |optional_deduced_sfinae_cpp|_, and
 |deduced_dep_pred_cpp|_ test programs demonstrate proper usage of this
 macro.
 
-.. _`Boost.MP11`: ../../../mp11/doc/html/mp11.html
-.. _`Boost.MPL`: ../../../mpl/doc/index.html
-.. |singular_cpp| replace:: singular.cpp
-.. _singular_cpp: ../../test/singular.cpp
-.. |compose_cpp| replace:: compose.cpp
-.. _compose_cpp: ../../test/compose.cpp
-.. |optional_deduced_sfinae_cpp| replace:: optional_deduced_sfinae.cpp
-.. _optional_deduced_sfinae_cpp: ../../test/optional_deduced_sfinae.cpp
-.. |deduced_dep_pred_cpp| replace:: deduced_dependent_predicate.cpp
-.. _deduced_dep_pred_cpp: ../../test/deduced_dependent_predicate.cpp
+.. |BOOST_PARAMETER_DISABLE_MP11_USAGE| replace:: ``BOOST_PARAMETER_DISABLE_MP11_USAGE``
+.. _BOOST_PARAMETER_DISABLE_MP11_USAGE:
 
 ``BOOST_PARAMETER_DISABLE_MP11_USAGE``
 --------------------------------------
 
-It may be necessary to disable usage of `Boost.MP11`_ for compilers that
+It may be necessary to disable usage of |Boost_MP11|_ for compilers that
 cannot support it.  Users can ``#define`` this macro either in their project
 settings or before including any library header files.  Doing so will leave
-|BOOST_PARAMETER_CAN_USE_MP11| undefined and the |are_tagged_arguments_mp11|
-and |is_argument_pack_mp11| metafunctions unavailable.
+|BOOST_PARAMETER_CAN_USE_MP11|_ undefined.
 
-.. |BOOST_PARAMETER_CAN_USE_MP11| replace:: ``BOOST_PARAMETER_CAN_USE_MP11``
-.. _`Boost.MP11`: ../../../mp11/doc/html/mp11.html
+.. |BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE| replace:: ``BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE``
+.. _BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE:
 
 ``BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE``
 -----------------------------------------
 
-If |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is ``#defined``, then determines
+If |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is ``#defined``, then determines
 the `MPL Variadic Sequence`_ underlying the nested ``parameter_spec`` type of
 |parameters|.  If the user does not manually ``#define`` this macro, then the
-library will ``#define`` it as |boost_mp11_list|_ if
-|BOOST_PARAMETER_CAN_USE_MP11| is defined, |boost_fusion_list|_ if
-|BOOST_FUSION_HAS_VARIADIC_LIST|_ is defined (by `Boost.Fusion`_),
-|boost_fusion_deque|_ if |BOOST_FUSION_HAS_VARIADIC_DEQUE|_ is defined
-(by `Boost.Fusion`_), or |boost_mpl_vector|_ otherwise.
+library will ``#define`` it as |mp11_list|_ if
+|BOOST_PARAMETER_CAN_USE_MP11|_ is defined, |fusion_list|_ if
+|BOOST_FUSION_HAS_VARIADIC_LIST|_ is defined (by |Boost_Fusion|_),
+|fusion_deque|_ if |BOOST_FUSION_HAS_VARIADIC_DEQUE|_ is defined
+(by |Boost_Fusion|_), or |mpl_vector|_ otherwise.
 
 :Example:
 
 .. parsed-literal::
 
-#define BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE |boost_fusion_vector|_
+    #define BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE |fusion_vector|_
 
-.. |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| replace:: ``BOOST_PARAMETER_HAS_PERFECT_FORWARDING``
-.. |BOOST_PARAMETER_CAN_USE_MP11| replace:: ``BOOST_PARAMETER_CAN_USE_MP11``
-.. |BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE| replace:: ``BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE``
-.. _`MPL Variadic Sequence`: ../../../mpl/doc/refmanual/variadic-sequence.html
-.. _`Boost.Fusion`: ../../../fusion/doc/html/index.html
-.. |boost_mp11_list| replace:: ``boost\:\:mp11\:\:mp_list``
-.. _boost_mp11_list: ../../../mp11/doc/html/mp11.html
-.. |BOOST_FUSION_HAS_VARIADIC_LIST| replace:: ``BOOST_FUSION_HAS_VARIADIC_LIST``
-.. _BOOST_FUSION_HAS_VARIADIC_LIST: ../../../../boost/fusion/container/list/list_fwd.hpp
-.. |boost_fusion_list| replace:: ``boost\:\:fusion\:\:list``
-.. _boost_fusion_list: ../../../fusion/doc/html/fusion/container/list.html
-.. |BOOST_FUSION_HAS_VARIADIC_DEQUE| replace:: ``BOOST_FUSION_HAS_VARIADIC_DEQUE``
-.. _BOOST_FUSION_HAS_VARIADIC_DEQUE: ../../../../boost/fusion/container/deque/deque_fwd.hpp
-.. |boost_fusion_deque| replace:: ``boost\:\:fusion\:\:deque``
-.. _boost_fusion_deque: ../../../fusion/doc/html/fusion/container/deque.html
-.. |boost_fusion_vector| replace:: ``boost\:\:fusion\:\:vector``
-.. _boost_fusion_vector: ../../../fusion/doc/html/fusion/container/vector.html
-.. |boost_mpl_vector| replace:: ``boost\:\:mpl\:\:vector``
-.. _boost_mpl_vector: ../../../mpl/doc/refmanual/vector.html
+:Defined in: |parameters_header|_
 
-:Defined in: `boost/parameter/parameters.hpp`__
-
-__ ../../../../boost/parameter/parameters.hpp
+.. |BOOST_PARAMETER_MAX_ARITY| replace:: ``BOOST_PARAMETER_MAX_ARITY``
+.. _BOOST_PARAMETER_MAX_ARITY:
 
 ``BOOST_PARAMETER_MAX_ARITY``
 -----------------------------
 
-If |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is ``#defined``, then:
+If |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is ``#defined``, then:
 
-\*. If the `MPL Variadic Sequence`_ underlying the nested ``parameter_spec``
-type of |parameters| does not have a size limit--which is the case with
-|boost_mp11_list|_, |boost_fusion_list|_, and |boost_fusion_deque|_, but not
-|boost_mpl_vector|_--then this macro can be safely ignored.  User code that
-manually defines |BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE| should also manually
-define this macro to the size limit of the sequence if it has one.
+*   If the `MPL Variadic Sequence`_ underlying the nested ``parameter_spec``
+    type of |parameters| does not have a size limit--which is the case with
+    |mp11_list|_, |fusion_list|_, and |fusion_deque|_, but not
+    |mpl_vector|_--then this macro can be safely ignored.  User code that
+    manually defines |BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE|_ should also
+    manually define this macro to the size limit of the sequence if it has
+    one.
 
-If |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is **not** ``#defined``, then:
+If |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is **not** ``#defined``, then:
 
-\*. Mutable references must be wrapped by |boost_ref|_ or |std_ref|_ if passed
-by position to Boost.Parameter-enabled functions with arity greater than or
-equal to ``BOOST_PARAMETER_EXPONENTIAL_OVERLOAD_THRESHOLD_ARITY``.
+*   Mutable references must be wrapped by |boost_ref|_ or |std_ref|_ if passed
+    by position to Boost.Parameter-enabled functions with arity greater than
+    or equal to |BOOST_PARAMETER_EXPONENTIAL_OVERLOAD_THRESHOLD_ARITY|_.
 
-.. |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| replace:: ``BOOST_PARAMETER_HAS_PERFECT_FORWARDING``
-.. |BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE| replace:: ``BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE``
-.. |BOOST_PARAMETER_MAX_ARITY| replace:: ``BOOST_PARAMETER_MAX_ARITY``
-.. _`MPL Variadic Sequence`: ../../../mpl/doc/refmanual/variadic-sequence.html
-.. |boost_mp11_list| replace:: ``boost\:\:mp11\:\:mp_list``
-.. _boost_mp11_list: ../../../mp11/doc/html/mp11.html
-.. |boost_fusion_list| replace:: ``boost\:\:fusion\:\:list``
-.. _boost_fusion_list: ../../../fusion/doc/html/fusion/container/list.html
-.. |boost_fusion_deque| replace:: ``boost\:\:fusion\:\:deque``
-.. _boost_fusion_deque: ../../../fusion/doc/html/fusion/container/deque.html
-.. |boost_mpl_vector| replace:: ``boost\:\:mpl\:\:vector``
-.. _boost_mpl_vector: ../../../mpl/doc/refmanual/vector.html
-.. |boost_ref| replace:: ``boost\:\:ref``
-.. _boost_ref: ../../../core/doc/html/core/ref.html
-.. |std_ref| replace:: ``std\:\:ref``
-.. _std_ref: http://en.cppreference.com/w/cpp/utility/functional/ref
-
-:Defined in: `boost/parameter/config.hpp`__
-
-__ ../../../../boost/parameter/config.hpp
-
-:Default Value: |BOOST_MPL_LIMIT_VECTOR_SIZE|_ (defined by `Boost.MPL`_) if
-perfect forwarding is supported, ``8`` otherwise.
+:Defined in: |config_header|_
+:Default Value: |BOOST_MPL_LIMIT_VECTOR_SIZE|_ (defined by |Boost_MPL|_) if
+    perfect forwarding is supported, ``8`` otherwise.
 :Minimum Value: ``2``
-:Maximum Value: |BOOST_PARAMETER_COMPOSE_MAX_ARITY|
+:Maximum Value: |BOOST_PARAMETER_COMPOSE_MAX_ARITY|_
 
-.. |BOOST_MPL_LIMIT_VECTOR_SIZE| replace:: ``BOOST_MPL_LIMIT_VECTOR_SIZE``
-.. _BOOST_MPL_LIMIT_VECTOR_SIZE: ../../../mpl/doc/refmanual/limit-vector-size.html
-.. _`Boost.MPL`: ../../../mpl/doc/index.html
+.. |BOOST_PARAMETER_COMPOSE_MAX_ARITY| replace:: ``BOOST_PARAMETER_COMPOSE_MAX_ARITY``
+.. _BOOST_PARAMETER_COMPOSE_MAX_ARITY:
 
 ``BOOST_PARAMETER_COMPOSE_MAX_ARITY``
 -------------------------------------
 
-If |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| is **not** ``#defined``, then
+If |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is **not** ``#defined``, then
 determines the maximum number of arguments supported by the |compose| function
-and by the |BOOST_PARAMETER_NO_SPEC_FUNCTION|,
-|BOOST_PARAMETER_NO_SPEC_MEMBER_FUNCTION|,
-|BOOST_PARAMETER_NO_SPEC_CONST_MEMBER_FUNCTION|,
-|BOOST_PARAMETER_NO_SPEC_FUNCTION_CALL_OPERATOR|,
-|BOOST_PARAMETER_NO_SPEC_CONST_FUNCTION_CALL_OPERATOR|,
-|BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR|, and
-|BOOST_PARAMETER_NO_SPEC_NO_BASE_CONSTRUCTOR| code generation macros.
+and by the |BOOST_PARAMETER_NO_SPEC_FUNCTION|_,
+|BOOST_PARAMETER_NO_SPEC_MEMBER_FUNCTION|_,
+|BOOST_PARAMETER_NO_SPEC_CONST_MEMBER_FUNCTION|_,
+|BOOST_PARAMETER_NO_SPEC_FUNCTION_CALL_OPERATOR|_,
+|BOOST_PARAMETER_NO_SPEC_CONST_FUNCTION_CALL_OPERATOR|_,
+|BOOST_PARAMETER_NO_SPEC_CONSTRUCTOR|_, and
+|BOOST_PARAMETER_NO_SPEC_NO_BASE_CONSTRUCTOR|_ code generation macros.
 
-:Defined in: `boost/parameter/config.hpp`__
-
-__ ../../../../boost/parameter/config.hpp
-
+:Defined in: |config_header|_
 :Default Value: ``20`` for a few older compilers, ``64`` otherwise
 :Minimum Value: ``2``
+
+.. |BOOST_PARAMETER_EXPONENTIAL_OVERLOAD_THRESHOLD_ARITY| replace:: ``BOOST_PARAMETER_EXPONENTIAL_OVERLOAD_THRESHOLD_ARITY``
+.. _BOOST_PARAMETER_EXPONENTIAL_OVERLOAD_THRESHOLD_ARITY:
 
 ``BOOST_PARAMETER_EXPONENTIAL_OVERLOAD_THRESHOLD_ARITY``
 --------------------------------------------------------
@@ -7428,117 +7112,70 @@ If this library does **not** support perfect forwarding, determines the number
 of arguments less than which |parameters| generates an exponential number of
 function call operator overloads, and greater than or equal to which
 |parameters| does not.  Will only be ``#defined`` by the library if it is
-not already ``#defined`` and ``BOOST_PARAMETER_HAS_PERFECT_FORWARDING`` is
+not already ``#defined`` and |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ is
 **not** ``#defined``.
 
-.. |BOOST_PARAMETER_EXPONENTIAL_OVERLOAD_THRESHOLD_ARITY| replace:: ``BOOST_PARAMETER_EXPONENTIAL_OVERLOAD_THRESHOLD_ARITY``
-
-:Defined in: `boost/parameter/config.hpp`__
-
-__ ../../../../boost/parameter/config.hpp
-
+:Defined in: |config_header|_
 :Default Value: ``0``
 :Minimum Value: ``0``
 
 ...Outside Of This Library
 --------------------------
 
-#. If `Boost.Config`_ defines the macro
-|BOOST_NO_FUNCTION_TEMPLATE_ORDERING|_, then the macros
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| and |BOOST_PARAMETER_CAN_USE_MP11|
-will be left undefined; otherwise, the code generation macros would not work
-correctly.
-
-#. If `Boost.Config`_ defines the macro |BOOST_NO_SFINAE|_, then the macros
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| and |BOOST_PARAMETER_CAN_USE_MP11|
-will be left undefined; otherwise, keyword types generated by
-|BOOST_PARAMETER_NAME| and |BOOST_PARAMETER_NESTED_KEYWORD| would not work
-correctly.
-
-#. If `Boost.Config`_ defines the macro |BOOST_NO_CXX11_RVALUE_REFERENCES|_,
-then the macros |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| and
-|BOOST_PARAMETER_CAN_USE_MP11| will be left undefined.
-
-#. If `Boost.Config`_ defines the macro |BOOST_NO_CXX11_VARIADIC_TEMPLATES|_,
-then the macros |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| and
-|BOOST_PARAMETER_CAN_USE_MP11| will be left undefined.
-
-#. If `Boost.Config`_ defines the macro
-|BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS|_, then the macros
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING| and |BOOST_PARAMETER_CAN_USE_MP11|
-will be left undefined.
-
-#. If `Boost.Config`_ defines the macro |BOOST_NO_CXX11_CONSTEXPR|_, then the
-macro |BOOST_PARAMETER_CAN_USE_MP11| will be left undefined.
-
-#. If `Boost.Config`_ defines the macro |BOOST_NO_CXX11_DECLTYPE_N3276|_, then
-the macro |BOOST_PARAMETER_CAN_USE_MP11| will be left undefined.
-
-#. If `Boost.Config`_ defines the macro |BOOST_NO_CXX11_AUTO_DECLARATIONS|_,
-then the macro |BOOST_PARAMETER_CAN_USE_MP11| will be left undefined.
-
-#. If `Boost.Config`_ defines the macro |BOOST_NO_CXX11_TEMPLATE_ALIASES|_,
-then the macro |BOOST_PARAMETER_CAN_USE_MP11| will be left undefined.
-
-#. If `Boost.Config`_ defines the macro |BOOST_NO_CXX11_STATIC_ASSERT|_, then
-the macro |BOOST_PARAMETER_CAN_USE_MP11| will be left undefined.
-
-#. If `Boost.Config`_ defines the macro |BOOST_NO_CXX11_HDR_TYPE_TRAITS|_,
-then the macro |BOOST_PARAMETER_CAN_USE_MP11| will be left undefined.
-
-#. If `Boost.Config`_ defines the macro
-|BOOST_NO_CXX11_HDR_INITIALIZER_LIST|_, then the macro
-|BOOST_PARAMETER_CAN_USE_MP11| will be left undefined.
-
-#. If `Boost.Config`_ defines the macro |BOOST_NO_CXX11_HDR_TUPLE|_, then the
-macro |BOOST_PARAMETER_CAN_USE_MP11| will be left undefined.
-
-#. If `Boost.Fusion`_ defines the macro |BOOST_FUSION_HAS_VARIADIC_LIST|_,
-if this library defines the macro |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|,
-and if |BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE| is left undefined, then the
-`MPL Variadic Sequence`_ underlying the nested ``parameter_spec`` type of
-|parameters| will be |boost_fusion_list|_.
-
-#. If `Boost.Fusion`_ defines the macro |BOOST_FUSION_HAS_VARIADIC_DEQUE|_,
-if this library defines the macro |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|,
-and if |BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE| is left undefined, then the
-`MPL Variadic Sequence`_ underlying the nested ``parameter_spec`` type of
-|parameters| will be |boost_fusion_deque|_.
-
-#. The value that `Boost.MPL`_ defines the macro
-|BOOST_MPL_LIMIT_VECTOR_SIZE|_ as will be the value that this library defines
-the macro |BOOST_PARAMETER_MAX_ARITY| as if this library defines the macro
-|BOOST_PARAMETER_HAS_PERFECT_FORWARDING|.
-
-.. |BOOST_PARAMETER_HAS_PERFECT_FORWARDING| replace:: ``BOOST_PARAMETER_HAS_PERFECT_FORWARDING``
-.. |BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE| replace:: ``BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE``
-.. |BOOST_PARAMETER_MAX_ARITY| replace:: ``BOOST_PARAMETER_MAX_ARITY``
-.. |BOOST_PARAMETER_NAME| replace:: ``BOOST_PARAMETER_NAME``
-.. |BOOST_PARAMETER_NESTED_KEYWORD| replace:: ``BOOST_PARAMETER_NESTED_KEYWORD``
-.. |BOOST_NO_FUNCTION_TEMPLATE_ORDERING| replace:: ``BOOST_NO_FUNCTION_TEMPLATE_ORDERING``
-.. _BOOST_NO_FUNCTION_TEMPLATE_ORDERING: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_SFINAE| replace:: ``BOOST_NO_SFINAE``
-.. _BOOST_NO_SFINAE: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_RVALUE_REFERENCES| replace:: ``BOOST_NO_CXX11_RVALUE_REFERENCES``
-.. _BOOST_NO_CXX11_RVALUE_REFERENCES: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_VARIADIC_TEMPLATES| replace:: ``BOOST_NO_CXX11_VARIADIC_TEMPLATES``
-.. _BOOST_NO_CXX11_VARIADIC_TEMPLATES: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS| replace:: ``BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS``
-.. _BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS: ../../../config/doc/html/boost_config/boost_macro_reference.html
-.. |BOOST_FUSION_HAS_VARIADIC_LIST| replace:: ``BOOST_FUSION_HAS_VARIADIC_LIST``
-.. _BOOST_FUSION_HAS_VARIADIC_LIST: ../../../../boost/fusion/container/list/list_fwd.hpp
-.. |BOOST_FUSION_HAS_VARIADIC_DEQUE| replace:: ``BOOST_FUSION_HAS_VARIADIC_DEQUE``
-.. _BOOST_FUSION_HAS_VARIADIC_DEQUE: ../../../../boost/fusion/container/deque/deque_fwd.hpp
-.. |BOOST_MPL_LIMIT_VECTOR_SIZE| replace:: ``BOOST_MPL_LIMIT_VECTOR_SIZE``
-.. _BOOST_MPL_LIMIT_VECTOR_SIZE: ../../../mpl/doc/refmanual/limit-vector-size.html
-.. |boost_fusion_list| replace:: ``boost\:\:fusion\:\:list``
-.. _boost_fusion_list: ../../../fusion/doc/html/fusion/container/list.html
-.. |boost_fusion_deque| replace:: ``boost\:\:fusion\:\:deque``
-.. _boost_fusion_deque: ../../../fusion/doc/html/fusion/container/deque.html
-.. _`Boost.Config`: ../../../config/doc/html/index.html
-.. _`Boost.Fusion`: ../../../fusion/doc/html/index.html
-.. _`Boost.MPL`: ../../../mpl/doc/index.html
-.. _`MPL Variadic Sequence`: ../../../mpl/doc/refmanual/variadic-sequence.html
+#.  If |Boost_Config|_ defines the macro
+    |BOOST_NO_FUNCTION_TEMPLATE_ORDERING|_, then the macros
+    |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ and
+    |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined; otherwise, the
+    code generation macros would not work correctly.
+#.  If |Boost_Config|_ defines the macro |BOOST_NO_SFINAE|_, then the macros
+    |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ and
+    |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined; otherwise, keyword
+    types generated by |BOOST_PARAMETER_NAME|_ and
+    |BOOST_PARAMETER_NESTED_KEYWORD|_ would not work correctly.
+#.  If |Boost_Config|_ defines the macro
+    |BOOST_NO_CXX11_RVALUE_REFERENCES|_, then the macros
+    |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ and
+    |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined.
+#.  If |Boost_Config|_ defines the macro |BOOST_NO_CXX11_VARIADIC_TEMPLATES|_,
+    then the macros |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ and
+    |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined.
+#.  If |Boost_Config|_ defines the macro
+    |BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS|_, then the macros
+    |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_ and
+    |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined.
+#.  If |Boost_Config|_ defines the macro |BOOST_NO_CXX11_CONSTEXPR|_, then the
+    macro |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined.
+#.  If |Boost_Config|_ defines the macro |BOOST_NO_CXX11_DECLTYPE_N3276|_,
+    then the macro |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined.
+#.  If |Boost_Config|_ defines the macro |BOOST_NO_CXX11_AUTO_DECLARATIONS|_,
+    then the macro |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined.
+#.  If |Boost_Config|_ defines the macro |BOOST_NO_CXX11_TEMPLATE_ALIASES|_,
+    then the macro |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined.
+#.  If |Boost_Config|_ defines the macro |BOOST_NO_CXX11_STATIC_ASSERT|_, then
+    the macro |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined.
+#.  If |Boost_Config|_ defines the macro |BOOST_NO_CXX11_HDR_TYPE_TRAITS|_,
+    then the macro |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined.
+#.  If |Boost_Config|_ defines the macro
+    |BOOST_NO_CXX11_HDR_INITIALIZER_LIST|_, then the macro
+    |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined.
+#.  If |Boost_Config|_ defines the macro |BOOST_NO_CXX11_HDR_TUPLE|_, then the
+    macro |BOOST_PARAMETER_CAN_USE_MP11|_ will be left undefined.
+#.  If |Boost_Fusion|_ defines the macro |BOOST_FUSION_HAS_VARIADIC_LIST|_,
+    if this library defines the macro
+    |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_, and if
+    |BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE|_ is left undefined, then the
+    `MPL Variadic Sequence`_ underlying the nested ``parameter_spec`` type of
+    |parameters| will be |fusion_list|_.
+#.  If |Boost_Fusion|_ defines the macro |BOOST_FUSION_HAS_VARIADIC_DEQUE|_,
+    if this library defines the macro
+    |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_, and if
+    |BOOST_PARAMETER_VARIADIC_MPL_SEQUENCE|_ is left undefined, then the
+    `MPL Variadic Sequence`_ underlying the nested ``parameter_spec`` type of
+    |parameters| will be |fusion_deque|_.
+#.  The value that |Boost_MPL|_ defines the macro
+    |BOOST_MPL_LIMIT_VECTOR_SIZE|_ as will be the value that this library
+    defines the macro |BOOST_PARAMETER_MAX_ARITY|_ as if this library defines
+    the macro |BOOST_PARAMETER_HAS_PERFECT_FORWARDING|_.
 
 Tutorial
 ========
@@ -7557,12 +7194,205 @@ __ index.html#tutorial
     where it could make a difference. 
 
 .. [#no_result_of] Where |BOOST_NO_RESULT_OF|_ is ``#defined``,
-    ``boost::``\ |result_of|_\ ``<F()>::type`` is replaced by
-    ``F::result_type``.
+    |boost_result_of|_\ ``<F()>::type`` is replaced by ``F::result_type``.
 
-.. |result_of| replace:: ``result_of``
-.. _result_of: ../../../utility/utility.htm#result_of
-
+.. |std_nullptr| replace:: std::nullptr
+.. _std_nullptr: http://en.cppreference.com/w/cpp/language/nullptr
+.. |std_forward| replace:: std::forward
+.. _std_forward: http://en.cppreference.com/w/cpp/utility/forward
+.. |std_enable_if| replace:: std::enable_if
+.. _std_enable_if: http://en.cppreference.com/w/cpp/types/enable_if
+.. |std_is_convertible| replace:: std::is_convertible
+.. _std_is_convertible: http://en.cppreference.com/w/cpp/types/is_convertible
+.. |std_is_same| replace:: std::is_same
+.. _std_is_same: http://en.cppreference.com/w/cpp/types/is_same
+.. |std_ref| replace:: ``std::ref``
+.. _std_ref: http://en.cppreference.com/w/cpp/utility/functional/ref
+.. |std_map| replace:: std::map
+.. _std_map: http://en.cppreference.com/w/cpp/container/map
+.. |std_string| replace:: std::string
+.. _std_string: http://en.cppreference.com/w/cpp/string/basic_string
+.. |std_bitset| replace:: std::bitset
+.. _std_bitset: http://en.cppreference.com/w/cpp/utility/bitset
+.. |Boost_Config| replace:: Boost.Config
+.. _Boost_Config: ../../../config/doc/html/index.html
+.. |BOOST_NO_FUNCTION_TEMPLATE_ORDERING| replace:: ``BOOST_NO_FUNCTION_TEMPLATE_ORDERING``
+.. _BOOST_NO_FUNCTION_TEMPLATE_ORDERING: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__03_defects
+.. |BOOST_NO_SFINAE| replace:: ``BOOST_NO_SFINAE``
+.. _BOOST_NO_SFINAE: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__03_defects
+.. |BOOST_NO_CXX11_AUTO_DECLARATIONS| replace:: ``BOOST_NO_CXX11_AUTO_DECLARATIONS``
+.. _BOOST_NO_CXX11_AUTO_DECLARATIONS: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported
+.. |BOOST_NO_CXX11_CONSTEXPR| replace:: ``BOOST_NO_CXX11_CONSTEXPR``
+.. _BOOST_NO_CXX11_CONSTEXPR: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported
+.. |BOOST_NO_CXX11_DECLTYPE_N3276| replace:: ``BOOST_NO_CXX11_DECLTYPE_N3276``
+.. _BOOST_NO_CXX11_DECLTYPE_N3276: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported
+.. |BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS| replace:: ``BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS``
+.. _BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported
+.. |BOOST_NO_CXX11_HDR_INITIALIZER_LIST| replace:: ``BOOST_NO_CXX11_HDR_INITIALIZER_LIST``
+.. _BOOST_NO_CXX11_HDR_INITIALIZER_LIST: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported
+.. |BOOST_NO_CXX11_HDR_TUPLE| replace:: ``BOOST_NO_CXX11_HDR_TUPLE``
+.. _BOOST_NO_CXX11_HDR_TUPLE: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported
+.. |BOOST_NO_CXX11_HDR_TYPE_TRAITS| replace:: ``BOOST_NO_CXX11_HDR_TYPE_TRAITS``
+.. _BOOST_NO_CXX11_HDR_TYPE_TRAITS: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported
+.. |BOOST_NO_CXX11_RVALUE_REFERENCES| replace:: ``BOOST_NO_CXX11_RVALUE_REFERENCES``
+.. _BOOST_NO_CXX11_RVALUE_REFERENCES: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported
+.. |BOOST_NO_CXX11_STATIC_ASSERT| replace:: ``BOOST_NO_CXX11_STATIC_ASSERT``
+.. _BOOST_NO_CXX11_STATIC_ASSERT: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported
+.. |BOOST_NO_CXX11_TEMPLATE_ALIASES| replace:: ``BOOST_NO_CXX11_TEMPLATE_ALIASES``
+.. _BOOST_NO_CXX11_TEMPLATE_ALIASES: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported
+.. |BOOST_NO_CXX11_VARIADIC_TEMPLATES| replace:: ``BOOST_NO_CXX11_VARIADIC_TEMPLATES``
+.. _BOOST_NO_CXX11_VARIADIC_TEMPLATES: ../../../config/doc/html/boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported
+.. |Boost_Preprocessor| replace:: Boost.Preprocessor
+.. _Boost_Preprocessor: ../../../preprocessor/doc/index.html
+.. _`sequence`: ../../../preprocessor/doc/data/sequences.html
+.. |BOOST_PP_INC| replace:: BOOST_PP_INC
+.. _BOOST_PP_INC: ../../../preprocessor/doc/ref/inc.html
+.. |boost_enable_if| replace:: boost::enable_if
+.. _boost_enable_if: ../../../core/doc/html/core/enable_if.html
+.. |boost_enable_if_c| replace:: boost::enable_if_c
+.. _boost_enable_if_c: ../../../core/doc/html/core/enable_if.html
+.. |boost_lazy_enable_if| replace:: boost::lazy_enable_if
+.. _boost_lazy_enable_if: ../../../core/doc/html/core/enable_if.html
+.. |boost_lazy_enable_if_c| replace:: boost::lazy_enable_if_c
+.. _boost_lazy_enable_if_c: ../../../core/doc/html/core/enable_if.html
+.. |boost_disable_if| replace:: boost::disable_if
+.. _boost_disable_if: ../../../core/doc/html/core/enable_if.html
+.. |boost_disable_if_c| replace:: boost::disable_if_c
+.. _boost_disable_if_c: ../../../core/doc/html/core/enable_if.html
+.. |boost_lazy_disable_if| replace:: boost::lazy_disable_if
+.. _boost_lazy_disable_if: ../../../core/doc/html/core/enable_if.html
+.. |boost_lazy_disable_if_c| replace:: boost::lazy_disable_if_c
+.. _boost_lazy_disable_if_c: ../../../core/doc/html/core/enable_if.html
+.. |boost_ref| replace:: ``boost::ref``
+.. _boost_ref: ../../../core/doc/html/core/ref.html
 .. |BOOST_NO_RESULT_OF| replace:: ``BOOST_NO_RESULT_OF``
 .. _BOOST_NO_RESULT_OF: ../../../utility/utility.htm#BOOST_NO_RESULT_OF
+.. |boost_result_of| replace:: ``boost::result_of``
+.. _boost_result_of: ../../../utility/utility.htm#result_of
+.. |boost_is_const| replace:: boost::is_const
+.. _boost_is_const: ../../../type_traits/doc/html/boost_typetraits/is_const.html
+.. |boost_is_convertible| replace:: boost::is_convertible
+.. _boost_is_convertible: ../../../type_traits/doc/html/boost_typetraits/is_convertible.html
+.. |boost_is_same| replace:: boost::is_same
+.. _boost_is_same: ../../../type_traits/doc/html/boost_typetraits/is_same.html
+.. |boost_is_scalar| replace:: boost::is_scalar
+.. _boost_is_scalar: ../../../type_traits/doc/html/boost_typetraits/is_scalar.html
+.. |boost_add_lvalue_reference| replace:: boost::add_lvalue_reference
+.. _boost_add_lvalue_reference: ../../../type_traits/doc/html/boost_typetraits/add_lvalue_reference.html
+.. |boost_remove_reference| replace:: boost::remove_reference
+.. _boost_remove_reference: ../../../type_traits/doc/html/boost_typetraits/remove_reference.html
+.. |Boost_MPL| replace:: Boost.MPL
+.. _Boost_MPL: ../../../mpl/doc/index.html
+.. _`Metafunction`: ../../../mpl/doc/refmanual/metafunction.html
+.. _`Boolean Integral Constant`: ../../../mpl/doc/refmanual/integral-constant.html
+.. _`MPL Binary Metafunction Class`: ../../../mpl/doc/refmanual/metafunction-class.html
+.. _`MPL Forward Sequence`: ../../../mpl/doc/refmanual/forward-sequence.html
+.. _`MPL Associative Sequence`: ../../../mpl/doc/refmanual/associative-sequence.html
+.. _`MPL Variadic Sequence`: ../../../mpl/doc/refmanual/variadic-sequence.html
+.. |BOOST_MPL_LIMIT_VECTOR_SIZE| replace:: ``BOOST_MPL_LIMIT_VECTOR_SIZE``
+.. _BOOST_MPL_LIMIT_VECTOR_SIZE: ../../../mpl/doc/refmanual/limit-vector-size.html
+.. |mpl_eval_if| replace:: boost::mpl::eval_if
+.. _mpl_eval_if: ../../../mpl/doc/refmanual/eval-if.html
+.. |mpl_true| replace:: mpl::true\_
+.. _mpl_true: ../../../mpl/doc/refmanual/bool.html
+.. |mpl_false| replace:: mpl::false\_
+.. _mpl_false: ../../../mpl/doc/refmanual/bool.html
+.. |mpl_if| replace:: mpl::if\_
+.. _mpl_if: ../../../mpl/doc/refmanual/if.html
+.. |mpl_vector| replace:: ``boost::mpl::vector``
+.. _mpl_vector: ../../../mpl/doc/refmanual/vector.html
+.. |Boost_MP11| replace:: Boost.MP11
+.. _Boost_MP11: ../../../mp11/doc/html/mp11.html
+.. |mp11_quote| replace:: boost::mp11::mp_quote
+.. _mp11_quote: ../../../mp11/doc/html/mp11.html#mp_quotef
+.. |mp11_1| replace:: boost::mp11::_1
+.. _mp11_1: ../../../mp11/doc/html/mp11.html#1_9
+.. |mp11_2| replace:: boost::mp11::_2
+.. _mp11_2: ../../../mp11/doc/html/mp11.html#1_9
+.. |mp11_bind| replace:: boost::mp11::mp_bind
+.. _mp11_bind: ../../../mp11/doc/html/mp11.html#mp_bindf_t
+.. |mp11_bind_q| replace:: boost::mp11::mp_bind_q
+.. _mp11_bind_q: ../../../mp11/doc/html/mp11.html#mp_bind_qq_t
+.. |mp11_list| replace:: ``boost::mp11::mp_list``
+.. _mp11_list: ../../../mp11/doc/html/mp11.html#mp_listt
+.. |Boost_Fusion| replace:: Boost.Fusion
+.. _Boost_Fusion: ../../../fusion/doc/html/index.html
+.. |BOOST_FUSION_HAS_VARIADIC_DEQUE| replace:: ``BOOST_FUSION_HAS_VARIADIC_DEQUE``
+.. _BOOST_FUSION_HAS_VARIADIC_DEQUE: ../../../../boost/fusion/container/deque/deque_fwd.hpp
+.. |BOOST_FUSION_HAS_VARIADIC_LIST| replace:: ``BOOST_FUSION_HAS_VARIADIC_LIST``
+.. _BOOST_FUSION_HAS_VARIADIC_LIST: ../../../../boost/fusion/container/list/list_fwd.hpp
+.. |fusion_vector| replace:: ``boost::fusion::vector``
+.. _fusion_vector: ../../../fusion/doc/html/fusion/container/vector.html
+.. |fusion_deque| replace:: ``boost::fusion::deque``
+.. _fusion_deque: ../../../fusion/doc/html/fusion/container/deque.html
+.. |fusion_list| replace:: ``boost::fusion::list``
+.. _fusion_list: ../../../fusion/doc/html/fusion/container/list.html
+.. |config_header| replace:: boost/parameter/config.hpp
+.. _config_header: ../../../../boost/parameter/config.hpp
+.. |binding_header| replace:: boost/parameter/binding.hpp
+.. _binding_header: ../../../../boost/parameter/binding.hpp
+.. |value_type_header| replace:: boost/parameter/value_type.hpp
+.. _value_type_header: ../../../../boost/parameter/value_type.hpp
+.. |are_tagged_arguments_header| replace:: boost/parameter/are_tagged_arguments.hpp
+.. _are_tagged_arguments_header: ../../../../boost/parameter/are_tagged_arguments.hpp
+.. |is_argument_pack_header| replace:: boost/parameter/is_argument_pack.hpp
+.. _is_argument_pack_header: ../../../../boost/parameter/is_argument_pack.hpp
+.. |template_keyword_header| replace:: boost/parameter/template_keyword.hpp
+.. _template_keyword_header: ../../../../boost/parameter/template_keyword.hpp
+.. |keyword_header| replace:: boost/parameter/keyword.hpp
+.. _keyword_header: ../../../../boost/parameter/keyword.hpp
+.. |name_header| replace:: boost/parameter/name.hpp
+.. _name_header: ../../../../boost/parameter/name.hpp
+.. |nested_keyword_header| replace:: boost/parameter/nested_keyword.hpp
+.. _nested_keyword_header: ../../../../boost/parameter/nested_keyword.hpp
+.. |compose_header| replace:: boost/parameter/compose.hpp
+.. _compose_header: ../../../../boost/parameter/compose.hpp
+.. |preprocessor_no_spec_header| replace:: boost/parameter/preprocessor_no_spec.hpp
+.. _preprocessor_no_spec_header: ../../../../boost/parameter/preprocessor_no_spec.hpp
+.. |required_header| replace:: boost/parameter/required.hpp
+.. _required_header: ../../../../boost/parameter/required.hpp
+.. |optional_header| replace:: boost/parameter/optional.hpp
+.. _optional_header: ../../../../boost/parameter/optional.hpp
+.. |deduced_header| replace:: boost/parameter/deduced.hpp
+.. _deduced_header: ../../../../boost/parameter/deduced.hpp
+.. |parameters_header| replace:: boost/parameter/parameters.hpp
+.. _parameters_header: ../../../../boost/parameter/parameters.hpp
+.. |match_header| replace:: boost/parameter/match.hpp
+.. _match_header: ../../../../boost/parameter/match.hpp
+.. |macros_header| replace:: boost/parameter/macros.hpp
+.. _macros_header: ../../../../boost/parameter/macros.hpp
+.. |preprocessor_header| replace:: boost/parameter/preprocessor.hpp
+.. _preprocessor_header: ../../../../boost/parameter/preprocessor.hpp
+.. |function_type_tpl_param_cpp| replace:: function_type_tpl_param.cpp
+.. _function_type_tpl_param_cpp: ../../test/function_type_tpl_param.cpp
+.. |ntp_cpp| replace:: test/ntp.cpp
+.. _ntp_cpp: ../../test/ntp.cpp
+.. |singular_cpp| replace:: singular.cpp
+.. _singular_cpp: ../../test/singular.cpp
+.. |compose_cpp| replace:: compose.cpp
+.. _compose_cpp: ../../test/compose.cpp
+.. |evaluate_category_cpp| replace:: evaluate_category.cpp
+.. _evaluate_category_cpp: ../../test/evaluate_category.cpp
+.. |parameterized_inheritance_cpp| replace:: parameterized_inheritance.cpp
+.. _parameterized_inheritance_cpp: ../../test/parameterized_inheritance.cpp
+.. |preproc_eval_cat_no_spec_cpp| replace:: preprocessor_eval_cat_no_spec.cpp
+.. _preproc_eval_cat_no_spec_cpp: ../../test/preprocessor_eval_cat_no_spec.cpp
+.. |preprocessor_eval_cat_cpp| replace:: preprocessor_eval_category.cpp
+.. _preprocessor_eval_cat_cpp: ../../test/preprocessor_eval_category.cpp
+.. |preprocessor_eval_cat_8_cpp| replace:: preprocessor_eval_cat_8.cpp
+.. _preprocessor_eval_cat_8_cpp: ../../test/preprocessor_eval_cat_8.cpp
+.. |optional_deduced_sfinae_cpp| replace:: optional_deduced_sfinae.cpp
+.. _optional_deduced_sfinae_cpp: ../../test/optional_deduced_sfinae.cpp
+.. |mpl_cpp| replace:: mpl.cpp
+.. _mpl_cpp: ../../test/mpl.cpp
+.. |preprocessor_cpp| replace:: preprocessor.cpp
+.. _preprocessor_cpp: ../../test/preprocessor.cpp
+.. |preprocessor_deduced_cpp| replace:: preprocessor_deduced.cpp
+.. _preprocessor_deduced_cpp: ../../test/preprocessor_deduced.cpp
+.. |deduced_dep_pred_cpp| replace:: deduced_dependent_predicate.cpp
+.. _deduced_dep_pred_cpp: ../../test/deduced_dependent_predicate.cpp
+.. |macros_eval_cat_cpp| replace:: macros_eval_category.cpp
+.. _macros_eval_cat_cpp: ../../test/macros_eval_category.cpp
+.. |macros_cpp| replace:: macros.cpp
+.. _macros_cpp: ../../test/macros.cpp
 

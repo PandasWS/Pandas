@@ -28,8 +28,8 @@ template <typename T>
 using basic_set_t = std::unordered_set<T, hash>;
 
 using value_t = boost::make_recursive_variant<
-		int_t,
-		basic_set_t<boost::recursive_variant_>
+    int_t,
+    basic_set_t<boost::recursive_variant_>
 >::type;
 
 using set_t = basic_set_t<value_t>;

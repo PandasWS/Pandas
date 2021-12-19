@@ -13,7 +13,7 @@
     </author>
 
     <copyright>
-      <year>2012-2018</year>
+      <year>2012-2021</year>
 
       <holder>Robert Ramey</holder>
     </copyright>
@@ -57,9 +57,6 @@
                 xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
     <xi:include href="integer_concept.xml" xpointer="element(/1)"
-                xmlns:xi="http://www.w3.org/2001/XInclude"/>
-
-    <xi:include href="safe_numeric_concept.xml" xpointer="element(/1)"
                 xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
     <xi:include href="promotion_policy_concept.xml" xpointer="element(/1)"
@@ -291,10 +288,11 @@
     <filename><ulink
     url="../../test/test_performance.cpp">test_performance.cpp</ulink></filename>.
     This runs a test from the Boost Multiprecision library to count prime
-    numbers and uses on integer arithmetic. We've run the tests with
-    <code>unsigned</code> integers and with <code>safe&lt;unsigned&gt;</code>
-    on two different compilers.. No other change was made to the program. We
-    list the results without further comment.</para>
+    numbers and makes extensive usage of integer arithmetic. We've run the
+    tests with <code>unsigned</code> integers and with
+    <code>safe&lt;unsigned&gt;</code> on two different compilers.. No other
+    change was made to the program. We list the results without further
+    comment.</para>
 
     <screen>g++ (GCC) 6.2.0
 Testing type unsigned:

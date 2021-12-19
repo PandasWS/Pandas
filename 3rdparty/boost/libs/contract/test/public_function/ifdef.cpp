@@ -88,7 +88,7 @@ int main() {
     a aa;
     out.str("");
     aa.f(123);
-    ok.str(); ok
+    ok.str(""); ok
         #ifndef BOOST_CONTRACT_NO_ENTRY_INVARIANTS
             << "b::static_inv" << std::endl
             << "b::inv" << std::endl

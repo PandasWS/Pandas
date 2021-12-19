@@ -16,7 +16,7 @@
 
 #include <boost/graph/distributed/mpi_process_group.hpp>
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/random.hpp>
 #include <boost/property_map/parallel/distributed_property_map.hpp>
 #include <boost/graph/distributed/graphviz.hpp>
@@ -747,7 +747,7 @@ void usage()
 }
 
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   mpi::environment env(argc, argv);
 
@@ -883,5 +883,5 @@ int test_main(int argc, char* argv[])
                           rmat_a, rmat_b, rmat_c, rmat_d, rmat_unique_edge_distribution_tag());
   }
 
-  return 0;
+  return boost::report_errors();
 }

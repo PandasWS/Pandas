@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Stack allocation</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Coroutine2">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Coroutine2">
+<link rel="home" href="../index.html" title="Chapter 1. Coroutine2">
+<link rel="up" href="../index.html" title="Chapter 1. Coroutine2">
 <link rel="prev" href="coroutine/implementations__fcontext_t__ucontext_t_and_winfiber.html" title="Implementations: fcontext_t, ucontext_t and WinFiber">
 <link rel="next" href="stack/protected_fixedsize.html" title="Class protected_fixedsize">
 </head>
@@ -35,6 +35,7 @@
 <dt><span class="section"><a href="stack/stack_traits.html">Class <span class="emphasis"><em>stack_traits</em></span></a></span></dt>
 <dt><span class="section"><a href="stack/stack_context.html">Class <span class="emphasis"><em>stack_context</em></span></a></span></dt>
 <dt><span class="section"><a href="stack/valgrind.html">Support for valgrind</a></span></dt>
+<dt><span class="section"><a href="stack/sanitizers.html">Support for sanitizers</a></span></dt>
 </dl></div>
 <p>
       The memory used by the stack is allocated/deallocated via a <span class="emphasis"><em>stack-allocator</em></span>
@@ -171,7 +172,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2014 Oliver Kowalke<p>
+<td align="right"><div class="copyright-footer">Copyright © 2014 Oliver Kowalke<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

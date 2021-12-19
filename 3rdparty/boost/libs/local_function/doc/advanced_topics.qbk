@@ -354,10 +354,6 @@ The `register` storage classifier is specified as:
 
 	register ``/parameter-type parameter-name/``
 
-For example (see also [@../../test/add_classifiers.cpp =add_classifiers.cpp=]):
-
-[add_classifiers]
-
 [endsect]
 
 [section Same Line Expansions]

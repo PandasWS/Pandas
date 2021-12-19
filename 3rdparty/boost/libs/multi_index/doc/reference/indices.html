@@ -156,16 +156,16 @@ with <code>N</code> indices labelled <code>0</code>,...,<code>N-1</code>
 whose complexity signatures are
 (<code>c<sub>i</sub></code>,<code>i<sub>i</sub></code>,<code>h<sub>i</sub></code>,<code>d<sub>i</sub></code>,<code>r<sub>i</sub></code>,<code>m<sub>i</sub></code>);
 the insertion of an element in such a container is then of complexity
-<code>O(i<sub>0</sub>(n)+···+i<sub>N-1</sub>(n))</code> where <code>n</code>
+<code>O(i<sub>0</sub>(n)+&middot;&middot;&middot;+i<sub>N-1</sub>(n))</code> where <code>n</code>
 is the number of elements. To abbreviate notation, we adopt the
 following definitions:
 <ul>
-  <li><code>C(n)=c<sub>0</sub>(n)+···+c<sub>N-1</sub>(n)</code>,</li>
-  <li><code>I(n)=i<sub>0</sub>(n)+···+i<sub>N-1</sub>(n)</code>,</li>
-  <li><code>H(n)=h<sub>0</sub>(n)+···+h<sub>N-1</sub>(n)</code>,</li>
-  <li><code>D(n)=d<sub>0</sub>(n)+···+d<sub>N-1</sub>(n)</code>,</li>
-  <li><code>R(n)=r<sub>0</sub>(n)+···+r<sub>N-1</sub>(n)</code>,</li>
-  <li><code>M(n)=m<sub>0</sub>(n)+···+m<sub>N-1</sub>(n)</code>.</li>
+  <li><code>C(n)=c<sub>0</sub>(n)+&middot;&middot;&middot;+c<sub>N-1</sub>(n)</code>,</li>
+  <li><code>I(n)=i<sub>0</sub>(n)+&middot;&middot;&middot;+i<sub>N-1</sub>(n)</code>,</li>
+  <li><code>H(n)=h<sub>0</sub>(n)+&middot;&middot;&middot;+h<sub>N-1</sub>(n)</code>,</li>
+  <li><code>D(n)=d<sub>0</sub>(n)+&middot;&middot;&middot;+d<sub>N-1</sub>(n)</code>,</li>
+  <li><code>R(n)=r<sub>0</sub>(n)+&middot;&middot;&middot;+r<sub>N-1</sub>(n)</code>,</li>
+  <li><code>M(n)=m<sub>0</sub>(n)+&middot;&middot;&middot;+m<sub>N-1</sub>(n)</code>.</li>
 </ul>
 For instance, consider a <code>multi_index_container</code> with two ordered indices,
 for which <code>i(n)=log(n)</code>, and a sequenced index with <code>i(n)=1</code>
@@ -386,9 +386,9 @@ Ordered indices
 
 <br>
 
-<p>Revised April 19th 2015</p>
+<p>Revised January 9th 2020</p>
 
-<p>&copy; Copyright 2003-2015 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

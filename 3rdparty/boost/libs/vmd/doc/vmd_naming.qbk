@@ -18,7 +18,7 @@ in this library or Boost PP. These names and their data types are:
 # LIST       = Boost PP list data type.
 # SEQ        = Boost PP seq data type.
 # IDENTIFIER = A VMD identifier
-# NUMBER     = A VMD number
+# NUMBER     = A VMD number, which is a Boost PP number with some enhancements
 # TYPE       = A VMD type
 
 I have used most of these names in order to mimic the naming of Boost PP 

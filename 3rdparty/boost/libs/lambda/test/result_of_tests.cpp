@@ -11,7 +11,9 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
+#define BOOST_CHECK BOOST_TEST
+
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/mpl/assert.hpp>
@@ -252,7 +254,7 @@ typename boost::result_of<F(A, B, C)>::type apply3(F f, A a, B b, C c) {
 
 using namespace boost::lambda;
 
-int test_main(int, char *[]) {
+int main() {
     BOOST_CHECK(boost::lambda::bind(with_result_type())() == 0);
     BOOST_CHECK(boost::lambda::bind(with_result_type(), 1)() == 1);
     BOOST_CHECK(boost::lambda::bind(with_result_type(), 1, 2)() == 2);
@@ -300,7 +302,8 @@ int test_main(int, char *[]) {
 
     // Check using result_of with lambda functors
     BOOST_CHECK(apply0(constant(0)) == 0);
-    BOOST_CHECK(apply1<int>(_1, one) == 1);
+    // returns local address and leads to undefined behavior
+    //~ BOOST_CHECK(apply1<int>(_1, one) == 1);
     BOOST_CHECK(apply1<int&>(_1, one) == 1);
     BOOST_CHECK(apply1<const int&>(_1, one) == 1);
     BOOST_CHECK((apply2<int, int>(_1 + _2, one, two) == 3));
@@ -310,5 +313,5 @@ int test_main(int, char *[]) {
     BOOST_CHECK((apply3<int&, int&, int&>(_1 + _2 + _3, one, two, three) == 6));
     BOOST_CHECK((apply3<const int&, const int&, const int&>(_1 + _2 + _3, one, two, three) == 6));
 
-    return 0;
+    return boost::report_errors();
 }

@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Array Components</title>
 <link rel="stylesheet" href="../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="multi_array.html" title="Chapter&#160;27.&#160;Boost.MultiArray Reference Manual">
+<link rel="up" href="multi_array.html" title="Chapter 27. Boost.MultiArray Reference Manual">
 <link rel="prev" href="MultiArray.html" title="MultiArray Concept">
 <link rel="next" href="auxiliary.html" title="Auxiliary Components">
 </head>
@@ -49,7 +49,7 @@ properties, including the array shape and index bases, can be altered.
 Functionality the classes have in common is described
 below.
 </p>
-<p><b>Note: Preconditions, Effects, and Implementation.&#160;</b>
+<p><b>Note: Preconditions, Effects, and Implementation. </b>
 Throughout the following sections, small pieces of C++ code are
 used to specify constraints such as preconditions, effects, and
 postconditions.  These do not necessarily describe the underlying
@@ -61,7 +61,7 @@ preconditions results in undefined behavior. Not all effects
 snippets for effects intend to capture the essence of the described
 operation. 
 </p>
-<p><b>Queries.&#160;</b></p>
+<p><b>Queries. </b></p>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term"><pre class="programlisting">element* data();
 const element* data() const;</pre></span></dt>
@@ -92,7 +92,7 @@ version of this function. (Required by MultiArray)
 <code class="literal">multi_array</code>. (Required by MultiArray)
 </p></dd>
 </dl></div>
-<p><b>Comparators.&#160;</b></p>
+<p><b>Comparators. </b></p>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term"><pre class="programlisting">
 bool operator==(const *array-type*&amp; rhs);
@@ -106,13 +106,13 @@ bool operator&lt;=(const *array-type*&amp; rhs);</pre></span></dt>
 the value types of the two arrays.
 (Required by MultiArray)
 </p>
-<p><b>Preconditions.&#160;</b><code class="literal">element</code> must support the
+<p><b>Preconditions. </b><code class="literal">element</code> must support the
 comparator corresponding to that called on
 <code class="literal">multi_array</code>.</p>
-<p><b>Complexity.&#160;</b>O(<code class="literal">num_elements()</code>).</p>
+<p><b>Complexity. </b>O(<code class="literal">num_elements()</code>).</p>
 </dd>
 </dl></div>
-<p><b>Modifiers.&#160;</b></p>
+<p><b>Modifiers. </b></p>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term">
 <pre class="programlisting">
@@ -127,15 +127,15 @@ void reshape(const SizeList&amp; sizes)
 number of elements and the index bases remain the same, but the number
 of values at each level of the nested container hierarchy may
 change.</p>
-<p><b><code class="literal">SizeList</code> Requirements.&#160;</b><code class="literal">SizeList</code> must model
+<p><b><code class="literal">SizeList</code> Requirements. </b><code class="literal">SizeList</code> must model
 <a href="../../utility/Collection.html" target="_top">Collection</a>.</p>
-<p><b>Preconditions.&#160;</b>
+<p><b>Preconditions. </b>
 </p>
 <pre class="programlisting">
 std::accumulate(sizes.begin(),sizes.end(),size_type(1),std::times&lt;size_type&gt;()) == this-&gt;num_elements();
 sizes.size() == NumDims;
 </pre>
-<p><b>Postconditions.&#160;</b>
+<p><b>Postconditions. </b>
 <code class="literal">std::equal(sizes.begin(),sizes.end(),this-&gt;shape) == true;</code>
 </p>
 </dd>
@@ -150,10 +150,10 @@ void reindex(const BaseList&amp; values);
 <dd>
 <p>This changes the index bases of the <code class="literal">multi_array</code> to
 correspond to the the values in <code class="literal">values</code>.</p>
-<p><b><code class="literal">BaseList</code> Requirements.&#160;</b><code class="literal">BaseList</code> must model
+<p><b><code class="literal">BaseList</code> Requirements. </b><code class="literal">BaseList</code> must model
 <a href="../../utility/Collection.html" target="_top">Collection</a>.</p>
-<p><b>Preconditions.&#160;</b><code class="literal">values.size() == NumDims;</code></p>
-<p><b>Postconditions.&#160;</b><code class="literal">std::equal(values.begin(),values.end(),this-&gt;index_bases());
+<p><b>Preconditions. </b><code class="literal">values.size() == NumDims;</code></p>
+<p><b>Postconditions. </b><code class="literal">std::equal(values.begin(),values.end(),this-&gt;index_bases());
 </code></p>
 </dd>
 <dt><span class="term">
@@ -166,7 +166,7 @@ void reindex(index value);
 <dd>
 <p>This changes the index bases of all dimensions of the
 <code class="literal">multi_array</code> to <code class="literal">value</code>.</p>
-<p><b>Postconditions.&#160;</b>
+<p><b>Postconditions. </b>
 </p>
 <pre class="programlisting">
 
@@ -193,12 +193,12 @@ will remain fixed for the duration of a
 be changed. A <code class="literal">multi_array</code> manages its data elements
 using a replaceable allocator.
 </p>
-<p><b>Model Of.&#160;</b>
+<p><b>Model Of. </b>
 <a class="link" href="MultiArray.html" title="MultiArray Concept">MultiArray</a>,
 <a href="../../../libs/utility/CopyConstructible.html" target="_top">CopyConstructible</a>. Depending on the element type, 
 it may also model <a href="https://www.boost.org/sgi/stl/EqualityComparable.html" target="_top">EqualityComparable</a> and <a href="https://www.boost.org/sgi/stl/LessThanComparable.html" target="_top">LessThanComparable</a>. 
 </p>
-<p><b>Synopsis.&#160;</b></p>
+<p><b>Synopsis. </b></p>
 <pre class="programlisting">
 
 namespace boost {
@@ -326,7 +326,7 @@ public:
 };
 
 </pre>
-<p><b>Constructors.&#160;</b></p>
+<p><b>Constructors. </b></p>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term"><pre class="programlisting">template &lt;typename ExtentList&gt;
 explicit multi_array(const ExtentList&amp; sizes,
@@ -342,10 +342,10 @@ specifies the storage order or layout in memory of the array
 dimensions.  <code class="literal">alloc</code> is used to
 allocate the contained elements.
 </p>
-<p><b><code class="literal">ExtentList</code> Requirements.&#160;</b>
+<p><b><code class="literal">ExtentList</code> Requirements. </b>
 <code class="literal">ExtentList</code> must model <a href="../../utility/Collection.html" target="_top">Collection</a>.
 </p>
-<p><b>Preconditions.&#160;</b><code class="literal">sizes.size() == NumDims;</code></p>
+<p><b>Preconditions. </b><code class="literal">sizes.size() == NumDims;</code></p>
 </dd>
 <dt><span class="term">
 <pre class="programlisting">explicit multi_array(extent_gen::gen_type&lt;NumDims&gt;::type ranges,
@@ -382,7 +382,7 @@ multi_array(const array_view&lt;NumDims&gt;::type&amp; x,
 <p>These constructors all constructs a <code class="literal">multi_array</code> and 
 perform a deep copy of <code class="literal">x</code>. 
 </p>
-<p><b>Complexity.&#160;</b> This performs O(<code class="literal">x.num_elements()</code>) calls to
+<p><b>Complexity. </b> This performs O(<code class="literal">x.num_elements()</code>) calls to
 <code class="literal">element</code>'s copy 
 constructor.
 </p>
@@ -393,7 +393,7 @@ multi_array();
 <dd><p>This constructs a <code class="literal">multi_array</code> whose shape is (0,...,0) and contains no elements.
 </p></dd>
 </dl></div>
-<p><b>Note on Constructors.&#160;</b>
+<p><b>Note on Constructors. </b>
 The  <code class="literal">multi_array</code> construction expressions,
 </p>
 <pre class="programlisting">
@@ -409,7 +409,7 @@ and
 <p>
 are equivalent.
 </p>
-<p><b>Modifiers.&#160;</b></p>
+<p><b>Modifiers. </b></p>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term"><pre class="programlisting">
 multi_array&amp; operator=(const multi_array&amp; x);
@@ -419,18 +419,18 @@ template &lt;class Array&gt; multi_array&amp; operator=(const Array&amp; x);
 <dd>
 <p>This performs an element-wise copy of <code class="literal">x</code>
 into the current <code class="literal">multi_array</code>.</p>
-<p><b><code class="literal">Array</code> Requirements.&#160;</b><code class="literal">Array</code> must model MultiArray. 
+<p><b><code class="literal">Array</code> Requirements. </b><code class="literal">Array</code> must model MultiArray. 
 </p>
-<p><b>Preconditions.&#160;</b>
+<p><b>Preconditions. </b>
 </p>
 <pre class="programlisting">std::equal(this-&gt;shape(),this-&gt;shape()+this-&gt;num_dimensions(),
 x.shape());</pre>
-<p><b>Postconditions.&#160;</b>
+<p><b>Postconditions. </b>
 </p>
 <pre class="programlisting">(*.this) == x;</pre>
 <p>
 </p>
-<p><b>Complexity.&#160;</b>The assignment operators perform 
+<p><b>Complexity. </b>The assignment operators perform 
 O(<code class="literal">x.num_elements()</code>) calls to <code class="literal">element</code>'s 
 copy constructor.</p>
 </dd>
@@ -446,9 +446,9 @@ void assign(InputIterator begin, InputIterator end);
 <code class="literal">[begin,end)</code> into the array.  It is equivalent to 
 <code class="literal">std::copy(begin,end,this-&gt;data())</code>.
 </p>
-<p><b>Preconditions.&#160;</b><code class="literal">std::distance(begin,end) == this-&gt;num_elements();</code>
+<p><b>Preconditions. </b><code class="literal">std::distance(begin,end) == this-&gt;num_elements();</code>
 </p>
-<p><b>Complexity.&#160;</b>
+<p><b>Complexity. </b>
 The <code class="literal">assign</code> member function performs
 O(<code class="literal">this-&gt;num_elements()</code>) calls to
 <code class="literal">ValueType</code>'s copy constructor.
@@ -470,7 +470,7 @@ created by resizing the array are initialized with the
 <code class="literal">element</code> default constructor.
 </p></dd>
 </dl></div>
-<p><b>Queries.&#160;</b></p>
+<p><b>Queries. </b></p>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term"><pre class="programlisting">
 storage_order_type&amp; storage_order() const;
@@ -491,7 +491,7 @@ block of elements.  <code class="literal">multi_array_ref</code> exports the
 same interface as <code class="literal">multi_array</code>, with the exception
 of the constructors.
 </p>
-<p><b>Model Of.&#160;</b>
+<p><b>Model Of. </b>
 <code class="literal">multi_array_ref</code> models 
 <a class="link" href="MultiArray.html" title="MultiArray Concept">MultiArray</a>,
 <a href="../../../libs/utility/CopyConstructible.html" target="_top">CopyConstructible</a>.
@@ -500,7 +500,7 @@ and depending on the element type, it may also model
 Detailed descriptions are provided here only for operations that are
 not described in the <code class="literal">multi_array</code> reference.
 </p>
-<p><b>Synopsis.&#160;</b></p>
+<p><b>Synopsis. </b></p>
 <pre class="programlisting">
 
 namespace boost {
@@ -605,7 +605,7 @@ public:
 };
 
 </pre>
-<p><b>Constructors.&#160;</b></p>
+<p><b>Constructors. </b></p>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term"><pre class="programlisting">template &lt;typename ExtentList&gt;
 explicit multi_array_ref(element* data, 
@@ -622,10 +622,10 @@ specifies the storage order or layout in memory of the array
 dimensions.  <code class="literal">alloc</code> is used to
 allocate the contained elements.
 </p>
-<p><b><code class="literal">ExtentList</code> Requirements.&#160;</b>
+<p><b><code class="literal">ExtentList</code> Requirements. </b>
 <code class="literal">ExtentList</code> must model <a href="../../utility/Collection.html" target="_top">Collection</a>.
 </p>
-<p><b>Preconditions.&#160;</b><code class="literal">sizes.size() == NumDims;</code></p>
+<p><b>Preconditions. </b><code class="literal">sizes.size() == NumDims;</code></p>
 </dd>
 <dt><span class="term">
 <pre class="programlisting">explicit multi_array_ref(element* data,
@@ -647,12 +647,12 @@ multi_array_ref(const multi_array_ref&amp; x);
 <dd>
 <p>This constructs a shallow copy of <code class="literal">x</code>.
 </p>
-<p><b>Complexity.&#160;</b> Constant time (for contrast, compare this to
+<p><b>Complexity. </b> Constant time (for contrast, compare this to
 the <code class="literal">multi_array</code> class copy constructor.
 </p>
 </dd>
 </dl></div>
-<p><b>Modifiers.&#160;</b></p>
+<p><b>Modifiers. </b></p>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term"><pre class="programlisting">
 multi_array_ref&amp; operator=(const multi_array_ref&amp; x);
@@ -662,18 +662,18 @@ template &lt;class Array&gt; multi_array_ref&amp; operator=(const Array&amp; x);
 <dd>
 <p>This performs an element-wise copy of <code class="literal">x</code>
 into the current <code class="literal">multi_array_ref</code>.</p>
-<p><b><code class="literal">Array</code> Requirements.&#160;</b><code class="literal">Array</code> must model MultiArray. 
+<p><b><code class="literal">Array</code> Requirements. </b><code class="literal">Array</code> must model MultiArray. 
 </p>
-<p><b>Preconditions.&#160;</b>
+<p><b>Preconditions. </b>
 </p>
 <pre class="programlisting">std::equal(this-&gt;shape(),this-&gt;shape()+this-&gt;num_dimensions(),
 x.shape());</pre>
-<p><b>Postconditions.&#160;</b>
+<p><b>Postconditions. </b>
 </p>
 <pre class="programlisting">(*.this) == x;</pre>
 <p>
 </p>
-<p><b>Complexity.&#160;</b>The assignment operators perform 
+<p><b>Complexity. </b>The assignment operators perform 
 O(<code class="literal">x.num_elements()</code>) calls to <code class="literal">element</code>'s 
 copy constructor.</p>
 </dd>
@@ -690,7 +690,7 @@ block of elements.  <code class="literal">const_multi_array_ref</code> exports t
 same interface as <code class="literal">multi_array</code>, with the exception
 of the constructors.
 </p>
-<p><b>Model Of.&#160;</b>
+<p><b>Model Of. </b>
 <code class="literal">const_multi_array_ref</code> models
 <a class="link" href="MultiArray.html" title="MultiArray Concept">MultiArray</a>,
 <a href="../../../libs/utility/CopyConstructible.html" target="_top">CopyConstructible</a>.
@@ -700,7 +700,7 @@ and depending on the element type, it may also model
 Detailed descriptions are provided here only for operations that are
 not described in the <code class="literal">multi_array</code> reference.
 </p>
-<p><b>Synopsis.&#160;</b></p>
+<p><b>Synopsis. </b></p>
 <pre class="programlisting">
 
 namespace boost {
@@ -788,7 +788,7 @@ public:
 };
 
 </pre>
-<p><b>Constructors.&#160;</b></p>
+<p><b>Constructors. </b></p>
 <div class="variablelist"><dl class="variablelist">
 <dt><span class="term"><pre class="programlisting">template &lt;typename ExtentList&gt;
 explicit const_multi_array_ref(TPtr data, 
@@ -803,17 +803,17 @@ constructed <code class="literal">const_multi_array_ref</code>.  <code class="li
 specifies the storage order or layout in memory of the array
 dimensions.
 </p>
-<p><b><code class="literal">ExtentList</code> Requirements.&#160;</b>
+<p><b><code class="literal">ExtentList</code> Requirements. </b>
 <code class="literal">ExtentList</code> must model <a href="../../utility/Collection.html" target="_top">Collection</a>.
 </p>
-<p><b>Preconditions.&#160;</b><code class="literal">sizes.size() == NumDims;</code></p>
+<p><b>Preconditions. </b><code class="literal">sizes.size() == NumDims;</code></p>
 </dd>
 <dt><span class="term">
 <pre class="programlisting">explicit const_multi_array_ref(TPtr data,
                      extent_gen::gen_type&lt;NumDims&gt;::type ranges,
                      const storage_order&amp; store = c_storage_order());
 </pre></span></dt>
-<dd><p><b>Effects.&#160;</b>
+<dd><p><b>Effects. </b>
 This constructs a <code class="literal">const_multi_array_ref</code> using the specified
     parameters.  <code class="literal">ranges</code> specifies the shape and
 index bases of the constructed const_multi_array_ref. It is the result of 
@@ -825,14 +825,14 @@ dimensions.
 <dt><span class="term"><pre class="programlisting">
 const_multi_array_ref(const const_multi_array_ref&amp; x);
 </pre></span></dt>
-<dd><p><b>Effects.&#160;</b>This constructs a shallow copy of <code class="literal">x</code>.
+<dd><p><b>Effects. </b>This constructs a shallow copy of <code class="literal">x</code>.
 </p></dd>
 </dl></div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2002 The Trustees of Indiana University</div></td>
+<td align="right"><div class="copyright-footer">Copyright © 2002 The Trustees of Indiana University</div></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

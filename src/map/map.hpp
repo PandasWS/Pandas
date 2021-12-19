@@ -85,6 +85,7 @@ void map_msg_reload(void);
 #define JOBL_UPPER 0x1000 //4096
 #define JOBL_BABY 0x2000  //8192
 #define JOBL_THIRD 0x4000 //16384
+#define JOBL_FOURTH 0x8000 //32768
 
 //for filtering and quick checking.
 #define MAPID_BASEMASK 0x00ff
@@ -236,6 +237,20 @@ enum e_mapid : uint64{
 	MAPID_BABY_GENETIC,
 	MAPID_BABY_SHADOW_CHASER,
 	MAPID_BABY_SOUL_REAPER,
+//4-1 Jobs
+	MAPID_DRAGON_KNIGHT = JOBL_FOURTH|JOBL_THIRD|JOBL_UPPER|MAPID_KNIGHT,
+	MAPID_ARCH_MAGE,
+	MAPID_WINDHAWK,
+	MAPID_CARDINAL,
+	MAPID_MEISTER,
+	MAPID_SHADOW_CROSS,
+//4-2 Jobs
+	MAPID_IMPERIAL_GUARD = JOBL_FOURTH|JOBL_THIRD|JOBL_UPPER|MAPID_CRUSADER,
+	MAPID_ELEMENTAL_MASTER,
+	MAPID_TROUBADOURTROUVERE,
+	MAPID_INQUISITOR,
+	MAPID_BIOLO,
+	MAPID_ABYSS_CHASER,
 // Additional constants
 	MAPID_ALL = UINT64_MAX
 };
@@ -397,6 +412,7 @@ enum mob_ai {
 	AI_LEGION,
 	AI_FAW,
 	AI_GUILD,
+	AI_WAVEMODE,
 	AI_MAX
 };
 
@@ -478,6 +494,12 @@ enum _sp {
 	// Mercenaries
 	SP_MERCFLEE=165, SP_MERCKILLS=189, SP_MERCFAITH=190,
 
+	// 4th jobs
+	SP_POW=219, SP_STA, SP_WIS, SP_SPL, SP_CON, SP_CRT,	// 219-224
+	SP_PATK, SP_SMATK, SP_RES, SP_MRES, SP_HPLUS, SP_CRATE,	// 225-230
+	SP_TRAITPOINT, SP_AP, SP_MAXAP,	// 231-233
+	SP_UPOW=247, SP_USTA, SP_UWIS, SP_USPL, SP_UCON, SP_UCRT,	// 247-252
+
 	// original 1000-
 	SP_ATTACKRANGE=1000,	SP_ATKELE,SP_DEFELE,	// 1000-1002
 	SP_CASTRATE, SP_MAXHPRATE, SP_MAXSPRATE, SP_SPRATE, // 1003-1006
@@ -531,9 +553,8 @@ enum _sp {
 	SP_WEAPON_ATK_RATE, SP_WEAPON_MATK_RATE, SP_DROP_ADDRACE, SP_DROP_ADDCLASS, SP_NO_MADO_FUEL, // 2083-2087
 	SP_IGNORE_DEF_CLASS_RATE, SP_REGEN_PERCENT_HP, SP_REGEN_PERCENT_SP, SP_SKILL_DELAY, SP_NO_WALK_DELAY, //2088-2092
 	SP_LONG_SP_GAIN_VALUE, SP_LONG_HP_GAIN_VALUE, SP_SHORT_ATK_RATE, SP_MAGIC_SUBSIZE, SP_CRIT_DEF_RATE, // 2093-2097
-	SP_MAGIC_SUBDEF_ELE, SP_REDUCE_DAMAGE_RETURN // 2098-2099
+	SP_MAGIC_SUBDEF_ELE, SP_REDUCE_DAMAGE_RETURN, SP_ADD_ITEM_SPHEAL_RATE, SP_ADD_ITEMGROUP_SPHEAL_RATE, // 2098-2101
 #ifdef Pandas_ScriptParams_ReadParam
-	,
 	SP_EXTEND_UNUSED = 3100,
 	SP_STR_ALL, SP_AGI_ALL, SP_VIT_ALL, SP_INT_ALL, SP_DEX_ALL, SP_LUK_ALL,	// 3101-3106
 #endif // Pandas_ScriptParams_ReadParam
@@ -541,8 +562,23 @@ enum _sp {
 #ifdef Pandas_Bonuses
 	SP_PANDAS_EXTEND_BONUS_START = 3500,
 	#ifdef Pandas_Bonus_bNoFieldGemStone
-		SP_PANDAS_NOFIELDGEMSTONE,	// 调整器名称: bNoFieldGemStone / 说明: 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+		SP_PANDAS_NOFIELDGEMSTONE,	// 调整器名称: bNoFieldGemStone / 说明: 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	#endif // Pandas_Bonus_bNoFieldGemStone
+	#ifdef Pandas_Bonus_bRebirthWithHeal
+		SP_PANDAS_REBIRTHWITHHEAL,	// 调整器名称: bRebirthWithHeal / 说明: 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
+	#endif // Pandas_Bonus_bRebirthWithHeal
+	#ifdef Pandas_Bonus_bAddSkillRange
+		SP_PANDAS_ADDSKILLRANGE,	// 调整器名称: bAddSkillRange / 说明: 增加 sk 技能 n 格攻击距离
+	#endif // Pandas_Bonus_bAddSkillRange
+	#ifdef Pandas_Bonus_bSkillNoRequire
+		SP_PANDAS_SKILLNOREQUIRE,	// 调整器名称: bSkillNoRequire / 说明: 解除 sk 技能中由 n 指定的前置施法条件限制
+	#endif // Pandas_Bonus_bSkillNoRequire
+	#ifdef Pandas_Bonus_bStatusAddDamage
+		SP_PANDAS_STATUSADDDAMAGE,	// 调整器名称: bStatusAddDamage / 说明: 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
+	#endif // Pandas_Bonus_bStatusAddDamage
+	#ifdef Pandas_Bonus_bStatusAddDamageRate
+		SP_PANDAS_STATUSADDDAMAGERATE,	// 调整器名称: bStatusAddDamageRate / 说明: 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
+	#endif // Pandas_Bonus_bStatusAddDamageRate
 	#ifdef Pandas_Bonus_bFinalAddRace
 		SP_PANDAS_FINALADDRACE,	// 调整器名称: bFinalAddRace / 说明: 使用 bf 攻击时, 增加 r 种族 x% 的伤害(在最终伤害上全段修正) [聽風]
 	#endif // Pandas_Bonus_bFinalAddRace
@@ -645,6 +681,8 @@ enum e_mapflag : int16 {
 	MF_PRIVATEAIRSHIP_SOURCE,
 	MF_PRIVATEAIRSHIP_DESTINATION,
 	MF_SKILL_DURATION,
+	MF_NOCASHSHOP,
+	MF_NORODEX,
 #ifdef Pandas_MapFlag_Mobinfo
 	MF_MOBINFO,
 #endif // Pandas_MapFlag_Mobinfo
@@ -699,6 +737,24 @@ enum e_mapflag : int16 {
 #ifdef Pandas_MapFlag_MaxASPD
 	MF_MAXASPD,
 #endif // Pandas_MapFlag_MaxASPD
+#ifdef Pandas_MapFlag_NoSlave
+	MF_NOSLAVE,
+#endif // Pandas_MapFlag_NoSlave
+#ifdef Pandas_MapFlag_NoBank
+	MF_NOBANK,
+#endif // Pandas_MapFlag_NoBank
+#ifdef Pandas_MapFlag_NoUseItem
+	MF_NOUSEITEM,
+#endif // Pandas_MapFlag_NoUseItem
+#ifdef Pandas_MapFlag_HideDamage
+	MF_HIDEDAMAGE,
+#endif // Pandas_MapFlag_HideDamage
+#ifdef Pandas_MapFlag_NoAttack
+	MF_NOATTACK,
+#endif // Pandas_MapFlag_NoAttack
+#ifdef Pandas_MapFlag_NoAttack2
+	MF_NOATTACK2,
+#endif // Pandas_MapFlag_NoAttack2
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 2>
 	MF_MAX
 };

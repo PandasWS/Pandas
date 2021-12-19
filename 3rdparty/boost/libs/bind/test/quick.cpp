@@ -1,5 +1,5 @@
 //
-// quick.cpp - a quick test for boost/bind.hpp
+// quick.cpp - a quick test for boost/bind/bind.hpp
 //
 // Copyright 2017 Peter Dimov
 //
@@ -9,8 +9,12 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/core/lightweight_test.hpp>
+
+using namespace boost::placeholders;
+
+//
 
 int f( int a, int b, int c )
 {

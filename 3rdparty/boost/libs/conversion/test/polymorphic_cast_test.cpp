@@ -172,20 +172,23 @@ static void test_polymorphic_pointer_cast()
 
 static void test_polymorphic_downcast()
 {
-    Base * base = new Derived;
+    Base *base_pointer = new Derived;
 
-    Derived * derived = boost::polymorphic_downcast<Derived*>( base );
+    // test raw pointer cast
+    Derived *derived_pointer = boost::polymorphic_downcast<Derived *>(base_pointer);
 
-    BOOST_TEST( derived != 0 );
+    BOOST_TEST(derived_pointer != 0);
 
-    if( derived != 0 )
+    if (derived_pointer != 0)
     {
-        BOOST_TEST_EQ( derived->kind(), "Derived" );
+        BOOST_TEST_EQ(derived_pointer->kind(), "Derived");
     }
 
-    // polymorphic_downcast can't do crosscasts
+    // test reference cast
+    Derived& derived_ref = boost::polymorphic_downcast<Derived&>(*base_pointer);
+    BOOST_TEST_EQ(derived_ref.kind(), "Derived");
 
-    delete base;
+    delete base_pointer;
 }
 
 static void test_polymorphic_pointer_downcast_builtin()
@@ -278,17 +281,32 @@ static void test_polymorphic_pointer_cast_fail()
 
 static void test_polymorphic_downcast_fail()
 {
-    Base * base = new Base;
+    Base * base_pointer = new Base;
 
-    int old_count = assertion_failed_count;
-    expect_assertion = true;
+    {
+        // test raw pointer cast
 
-    BOOST_TEST_THROWS( boost::polymorphic_downcast<Derived*>( base ), expected_assertion ); // should assert
+        int old_count = assertion_failed_count;
+        expect_assertion = true;
 
-    BOOST_TEST_EQ( assertion_failed_count, old_count + 1 );
-    expect_assertion = false;
+        BOOST_TEST_THROWS(boost::polymorphic_downcast<Derived *>(base_pointer), expected_assertion); // should assert
 
-    delete base;
+        BOOST_TEST_EQ(assertion_failed_count, old_count + 1);
+        expect_assertion = false;
+    }
+    {
+        // test reference cast
+
+        int old_count = assertion_failed_count;
+        expect_assertion = true;
+
+        BOOST_TEST_THROWS(boost::polymorphic_downcast<Derived &>(*base_pointer), expected_assertion); // should assert
+
+        BOOST_TEST_EQ(assertion_failed_count, old_count + 1);
+        expect_assertion = false;
+    }
+
+    delete base_pointer;
 }
 
 static void test_polymorphic_pointer_downcast_builtin_fail()

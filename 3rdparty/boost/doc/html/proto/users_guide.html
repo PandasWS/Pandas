@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Users' Guide</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../proto.html" title="Chapter&#160;33.&#160;Boost.Proto">
-<link rel="prev" href="../proto.html" title="Chapter&#160;33.&#160;Boost.Proto">
+<link rel="up" href="../proto.html" title="Chapter 33. Boost.Proto">
+<link rel="prev" href="../proto.html" title="Chapter 33. Boost.Proto">
 <link rel="next" href="reference.html" title="Reference">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -244,7 +244,7 @@
           The following table summarizes the discussion above:
         </p>
 <div class="table">
-<a name="boost_proto.users_guide.getting_started.naming.t0"></a><p class="title"><b>Table&#160;33.1.&#160;Proto Naming Conventions</b></p>
+<a name="boost_proto.users_guide.getting_started.naming.t0"></a><p class="title"><b>Table 33.1. Proto Naming Conventions</b></p>
 <div class="table-contents"><table class="table" summary="Proto Naming Conventions">
 <colgroup>
 <col>
@@ -1467,7 +1467,7 @@
             and a brief description of each.
           </p>
 <div class="table">
-<a name="boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.extends.t0"></a><p class="title"><b>Table&#160;33.2.&#160;Expression Extension Macros</b></p>
+<a name="boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.extends.t0"></a><p class="title"><b>Table 33.2. Expression Extension Macros</b></p>
 <div class="table-contents"><table class="table" summary="Expression Extension Macros">
 <colgroup>
 <col>
@@ -1845,7 +1845,7 @@
             is already a Proto expression or not. The object <code class="computeroutput"><span class="identifier">l</span></code>
             is guaranteed to be a valid Proto expression. If <code class="computeroutput"><span class="identifier">x</span></code>
             is a non-Proto object, it is turned into a terminal expression that holds
-            <code class="computeroutput"><span class="identifier">x</span></code> <span class="emphasis"><em>by value</em></span>.<a href="#ftn.boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.per_domain_as_child.f0" class="footnote" name="boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.per_domain_as_child.f0"><sup class="footnote">[32]</sup></a> If <code class="computeroutput"><span class="identifier">x</span></code> is a
+            <code class="computeroutput"><span class="identifier">x</span></code> <span class="emphasis"><em>by value</em></span>.<a href="#ftn.boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.per_domain_as_child.f0" class="footnote" name="boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.per_domain_as_child.f0"><sup class="footnote">[34]</sup></a> If <code class="computeroutput"><span class="identifier">x</span></code> is a
             Proto object already, <code class="computeroutput"><a class="link" href="../boost/proto/as_expr.html" title="Function as_expr">proto::as_expr()</a></code>
             returns it <span class="emphasis"><em>by value</em></span> unmodified.
           </p>
@@ -1871,7 +1871,7 @@
             The table below summarizes the above description.
           </p>
 <div class="table">
-<a name="boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.per_domain_as_child.t0"></a><p class="title"><b>Table&#160;33.3.&#160;proto::as_expr() vs. proto::as_child()</b></p>
+<a name="boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.per_domain_as_child.t0"></a><p class="title"><b>Table 33.3. proto::as_expr() vs. proto::as_child()</b></p>
 <div class="table-contents"><table class="table" summary="proto::as_expr() vs. proto::as_child()">
 <colgroup>
 <col>
@@ -2219,7 +2219,7 @@
               If you are wondering what the purpose of <code class="computeroutput"><span class="identifier">proto</span><span class="special">::</span><span class="identifier">_</span></code>
               is in the definition of <code class="computeroutput"><span class="identifier">phoenix_domain</span></code>
               above, recall that the second template parameter to <code class="computeroutput"><a class="link" href="../boost/proto/domain.html" title="Struct template domain">proto::domain&lt;&gt;</a></code>
-              is the domain's grammar. <span class="quote">&#8220;<span class="quote"><code class="computeroutput"><span class="identifier">proto</span><span class="special">::</span><span class="identifier">_</span></code></span>&#8221;</span>
+              is the domain's grammar. <span class="quote">“<span class="quote"><code class="computeroutput"><span class="identifier">proto</span><span class="special">::</span><span class="identifier">_</span></code></span>”</span>
               is the default and signifies that the domain places no restrictions
               on the expressions that are valid within it.
             </p></td></tr>
@@ -2285,7 +2285,7 @@
             have a kind of implicit conversion to expressions every other domain
             type. What's more, you can define your domain to be a sub-domain of the
             default domain. In so doing, you give expressions in your domain conversions
-            to expressions in every other domain. This is like a <span class="quote">&#8220;<span class="quote">free love</span>&#8221;</span>
+            to expressions in every other domain. This is like a <span class="quote">“<span class="quote">free love</span>”</span>
             domain, because it will freely mix with all other domains.
           </p>
 <p>
@@ -2331,7 +2331,7 @@
         </p>
 <p>
           Let's say, for instance, that you have the following types and that you
-          can't modify then to make them <span class="quote">&#8220;<span class="quote">native</span>&#8221;</span> Proto terminal types.
+          can't modify then to make them <span class="quote">“<span class="quote">native</span>”</span> Proto terminal types.
         </p>
 <pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">math</span>
 <span class="special">{</span>
@@ -2808,7 +2808,7 @@
           The following table summarizes the above paragraph.
         </p>
 <div class="table">
-<a name="boost_proto.users_guide.intermediate_form.left_right_child.t0"></a><p class="title"><b>Table&#160;33.4.&#160;Accessing Value Types</b></p>
+<a name="boost_proto.users_guide.intermediate_form.left_right_child.t0"></a><p class="title"><b>Table 33.4. Accessing Value Types</b></p>
 <div class="table-contents"><table class="table" summary="Accessing Value Types">
 <colgroup>
 <col>
@@ -2973,7 +2973,7 @@
           metafunction.
         </p>
 <div class="table">
-<a name="boost_proto.users_guide.intermediate_form.left_right_child.t1"></a><p class="title"><b>Table&#160;33.5.&#160;Accessing Child Types</b></p>
+<a name="boost_proto.users_guide.intermediate_form.left_right_child.t1"></a><p class="title"><b>Table 33.5. Accessing Child Types</b></p>
 <div class="table-contents"><table class="table" summary="Accessing Child Types">
 <colgroup>
 <col>
@@ -3250,7 +3250,7 @@
           usable as grammars for matching such nodes, as well as pass-through transforms.
         </p>
 <div class="table">
-<a name="boost_proto.users_guide.intermediate_form.tags_and_metafunctions.t0"></a><p class="title"><b>Table&#160;33.6.&#160;Operators, Tags and Metafunctions</b></p>
+<a name="boost_proto.users_guide.intermediate_form.tags_and_metafunctions.t0"></a><p class="title"><b>Table 33.6. Operators, Tags and Metafunctions</b></p>
 <div class="table-contents"><table class="table" summary="Operators, Tags and Metafunctions">
 <colgroup>
 <col>
@@ -4384,7 +4384,7 @@ Input!
             and references.
           </p>
 <div class="table">
-<a name="boost_proto.users_guide.intermediate_form.expression_introspection.fuzzy_and_exact_matches_of_terminals.t0"></a><p class="title"><b>Table&#160;33.7.&#160;proto::matches&lt;&gt; and Reference / CV-Qualification of Terminals</b></p>
+<a name="boost_proto.users_guide.intermediate_form.expression_introspection.fuzzy_and_exact_matches_of_terminals.t0"></a><p class="title"><b>Table 33.7. proto::matches&lt;&gt; and Reference / CV-Qualification of Terminals</b></p>
 <div class="table-contents"><table class="table" summary="proto::matches&lt;&gt; and Reference / CV-Qualification of Terminals">
 <colgroup>
 <col>
@@ -4993,10 +4993,10 @@ Input!
 </tr>
 <tr><td align="left" valign="top">
 <p>
-              You might think that this is a backwards way of doing things. <span class="quote">&#8220;<span class="quote">If
+              You might think that this is a backwards way of doing things. <span class="quote">“<span class="quote">If
               Proto let me select which operators to overload, my users wouldn't
               be able to create invalid expressions in the first place, and I wouldn't
-              need a grammar at all!</span>&#8221;</span> That may be true, but there are reasons
+              need a grammar at all!</span>”</span> That may be true, but there are reasons
               for preferring to do things this way.
             </p>
 <p>
@@ -5785,7 +5785,7 @@ j = 11
         Transformation: Semantic Actions</a>
 </h4></div></div></div>
 <div class="toc"><dl class="toc">
-<dt><span class="section"><a href="users_guide.html#boost_proto.users_guide.back_end.expression_transformation.__activating__your_grammars"><span class="quote">&#8220;<span class="quote">Activating</span>&#8221;</span>
+<dt><span class="section"><a href="users_guide.html#boost_proto.users_guide.back_end.expression_transformation.__activating__your_grammars"><span class="quote">“<span class="quote">Activating</span>”</span>
           Your Grammars</a></span></dt>
 <dt><span class="section"><a href="users_guide.html#boost_proto.users_guide.back_end.expression_transformation.handling_alternation_and_recursion">Handling
           Alternation and Recursion</a></span></dt>
@@ -5829,7 +5829,7 @@ j = 11
         </p>
 <div class="section">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="boost_proto.users_guide.back_end.expression_transformation.__activating__your_grammars"></a><a class="link" href="users_guide.html#boost_proto.users_guide.back_end.expression_transformation.__activating__your_grammars" title="&#8220;Activating&#8221; Your Grammars"><span class="quote">&#8220;<span class="quote">Activating</span>&#8221;</span>
+<a name="boost_proto.users_guide.back_end.expression_transformation.__activating__your_grammars"></a><a class="link" href="users_guide.html#boost_proto.users_guide.back_end.expression_transformation.__activating__your_grammars" title="“Activating” Your Grammars"><span class="quote">“<span class="quote">Activating</span>”</span>
           Your Grammars</a>
 </h5></div></div></div>
 <p>
@@ -6231,7 +6231,7 @@ j = 11
             these 5 constituents.
           </p>
 <div class="table">
-<a name="boost_proto.users_guide.back_end.expression_transformation.example__calculator_arity.t0"></a><p class="title"><b>Table&#160;33.8.&#160;Calculator Sub-Expression Arities</b></p>
+<a name="boost_proto.users_guide.back_end.expression_transformation.example__calculator_arity.t0"></a><p class="title"><b>Table 33.8. Calculator Sub-Expression Arities</b></p>
 <div class="table-contents"><table class="table" summary="Calculator Sub-Expression Arities">
 <colgroup>
 <col>
@@ -6458,7 +6458,7 @@ j = 11
 </pre>
 <p>
             ... they will get a compile-time error message on the line with the assertion
-            that reads something like this<a href="#ftn.boost_proto.users_guide.back_end.expression_transformation.example__calculator_arity.f0" class="footnote" name="boost_proto.users_guide.back_end.expression_transformation.example__calculator_arity.f0"><sup class="footnote">[33]</sup></a>:
+            that reads something like this<a href="#ftn.boost_proto.users_guide.back_end.expression_transformation.example__calculator_arity.f0" class="footnote" name="boost_proto.users_guide.back_end.expression_transformation.example__calculator_arity.f0"><sup class="footnote">[35]</sup></a>:
           </p>
 <pre class="programlisting">c:\boost\org\trunk\libs\proto\scratch\main.cpp(97) : error C2664: 'boost::mpl::asse
 rtion_failed' : cannot convert parameter 1 from 'boost::mpl::failed ************boo
@@ -6889,7 +6889,7 @@ terminal(1)</pre>
             The same is true for any primitive transform. The following are all equivalent:
           </p>
 <div class="table">
-<a name="boost_proto.users_guide.back_end.expression_transformation.implicit_params.t0"></a><p class="title"><b>Table&#160;33.9.&#160;Implicit Parameters to Primitive Transforms</b></p>
+<a name="boost_proto.users_guide.back_end.expression_transformation.implicit_params.t0"></a><p class="title"><b>Table 33.9. Implicit Parameters to Primitive Transforms</b></p>
 <div class="table-contents"><table class="table" summary="Implicit Parameters to Primitive Transforms">
 <colgroup><col></colgroup>
 <thead><tr><th>
@@ -6980,7 +6980,7 @@ terminal(1)</pre>
             these two transforms are equivalent. Can you see why?
           </p>
 <div class="table">
-<a name="boost_proto.users_guide.back_end.expression_transformation.implicit_params.t1"></a><p class="title"><b>Table&#160;33.10.&#160;Two Equivalent Transforms</b></p>
+<a name="boost_proto.users_guide.back_end.expression_transformation.implicit_params.t1"></a><p class="title"><b>Table 33.10. Two Equivalent Transforms</b></p>
 <div class="table-contents"><table class="table" summary="Two Equivalent Transforms">
 <colgroup>
 <col>
@@ -7647,7 +7647,7 @@ terminal(1)</pre>
             transforms:
           </p>
 <div class="table">
-<a name="boost_proto.users_guide.back_end.expression_transformation.canned_transforms.t0"></a><p class="title"><b>Table&#160;33.11.&#160;Class Templates With Pass-Through Transforms</b></p>
+<a name="boost_proto.users_guide.back_end.expression_transformation.canned_transforms.t0"></a><p class="title"><b>Table 33.11. Class Templates With Pass-Through Transforms</b></p>
 <div class="table-contents"><table class="table" summary="Class Templates With Pass-Through Transforms">
 <colgroup><col></colgroup>
 <thead><tr><th>
@@ -8067,7 +8067,7 @@ minus(
             generally useful. They are specified in the table below:
           </p>
 <div class="table">
-<a name="boost_proto.users_guide.back_end.expression_transformation.primitives.t0"></a><p class="title"><b>Table&#160;33.12.&#160;proto::transform_impl&lt;Expr, State, Data&gt; typedefs</b></p>
+<a name="boost_proto.users_guide.back_end.expression_transformation.primitives.t0"></a><p class="title"><b>Table 33.12. proto::transform_impl&lt;Expr, State, Data&gt; typedefs</b></p>
 <div class="table-contents"><table class="table" summary="proto::transform_impl&lt;Expr, State, Data&gt; typedefs">
 <colgroup>
 <col>
@@ -11033,12 +11033,12 @@ minus(
 </div>
 <div class="footnotes">
 <br><hr style="width:100; text-align:left;margin-left: 0">
-<div id="ftn.boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.per_domain_as_child.f0" class="footnote"><p><a href="#boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.per_domain_as_child.f0" class="para"><sup class="para">[32] </sup></a>
+<div id="ftn.boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.per_domain_as_child.f0" class="footnote"><p><a href="#boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.per_domain_as_child.f0" class="para"><sup class="para">[34] </sup></a>
               It's not always possible to hold something by value. By default, <code class="computeroutput"><a class="link" href="../boost/proto/as_expr.html" title="Function as_expr">proto::as_expr()</a></code> makes an exception
               for functions, abstract types, and iostreams (types derived from <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">ios_base</span></code>). These objects are held
               by reference. All others are held by value, even arrays.
             </p></div>
-<div id="ftn.boost_proto.users_guide.back_end.expression_transformation.example__calculator_arity.f0" class="footnote"><p><a href="#boost_proto.users_guide.back_end.expression_transformation.example__calculator_arity.f0" class="para"><sup class="para">[33] </sup></a>
+<div id="ftn.boost_proto.users_guide.back_end.expression_transformation.example__calculator_arity.f0" class="footnote"><p><a href="#boost_proto.users_guide.back_end.expression_transformation.example__calculator_arity.f0" class="para"><sup class="para">[35] </sup></a>
               This error message was generated with Microsoft Visual C++ 9.0. Different
               compilers will emit different messages with varying degrees of readability.
             </p></div>
@@ -11046,7 +11046,7 @@ minus(
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2008 Eric Niebler<p>
+<td align="right"><div class="copyright-footer">Copyright © 2008 Eric Niebler<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -1,3 +1,10 @@
+[/
+            Copyright Hans Dembinski 2018 - 2019.
+   Distributed under the Boost Software License, Version 1.0.
+      (See accompanying file LICENSE_1_0.txt or copy at
+            https://www.boost.org/LICENSE_1_0.txt)
+]
+
 [section:getting_started Getting started]
 
 Here are some commented examples to copy-paste from, this should allow you to kick off a project with Boost.Histogram. If you prefer a traditional structured exposition, go to the [link histogram.guide user guide].
@@ -30,7 +37,7 @@ The axis configuration is passed to `make_histogram` as a `std::vector<axis::var
 Run-time configurable histograms are a slower than their compile-time brethren, but still pretty fast.
 
 [note
-If you know already at compile-time, that you will only use one axis type, `axis::regular<>` for example, but not how many per histogram, then you can also pass a `std::vector<axis::regular<>>` to `make_histogram`. You get almost the same speed as in the very first case, where both the axis configuration was fully known at compile-time.
+If you know already at compile-time that you will only use one axis type, `axis::regular<>` for example, but not how many per histogram, then you can also pass a `std::vector<axis::regular<>>` to `make_histogram`. You get almost the same speed as in the very first case, where both the axis configuration was fully known at compile-time.
 ]
 
 [note
@@ -50,10 +57,19 @@ The library was designed to be very flexible and modular. The modularity is used
 
 [section Standard library algorithms]
 
-The library was designed to work well with the C++ standard library. Here is an example on how to get the maximum highest count in a 3d histogram with `std::max_element`.
+The library was designed to work well with the C++ standard library. Here is an example on how to get the most common color from an image, using a 3d histogram and `std::max_element`.
 
 [import ../examples/getting_started_listing_04.cpp]
 [getting_started_listing_04]
+
+[endsect]
+
+[section Making classes that hold histograms]
+
+The histograms get their great flexibility and performance from being templated, but this can make the types a bit cumbersome to write. Often it is possible to use `auto` to let the compiler deduce the type, but when you want to store histograms in a class, you need to write the type explicitly. The next example shows how this works. 
+
+[import ../examples/getting_started_listing_05.cpp]
+[getting_started_listing_05]
 
 [endsect]
 

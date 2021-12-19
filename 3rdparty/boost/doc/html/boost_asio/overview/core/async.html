@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>The Proactor Design Pattern: Concurrency Without Threads</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -50,14 +50,14 @@
           <span class="bold"><strong>Proactor design pattern (adapted from [POSA2])</strong></span>
         </p>
 <p>
-          &#8212; Asynchronous Operation
+          — Asynchronous Operation
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Defines an operation that is executed asynchronously, such as an asynchronous
             read or write on a socket.
           </p></blockquote></div>
 <p>
-          &#8212; Asynchronous Operation Processor
+          — Asynchronous Operation Processor
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Executes asynchronous operations and queues events on a completion event
@@ -66,28 +66,28 @@
             are asynchronous operation processors.
           </p></blockquote></div>
 <p>
-          &#8212; Completion Event Queue
+          — Completion Event Queue
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Buffers completion events until they are dequeued by an asynchronous
             event demultiplexer.
           </p></blockquote></div>
 <p>
-          &#8212; Completion Handler
+          — Completion Handler
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Processes the result of an asynchronous operation. These are function
             objects, often created using <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">bind</span></code>.
           </p></blockquote></div>
 <p>
-          &#8212; Asynchronous Event Demultiplexer
+          — Asynchronous Event Demultiplexer
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Blocks waiting for events to occur on the completion event queue, and
             returns a completed event to its caller.
           </p></blockquote></div>
 <p>
-          &#8212; Proactor
+          — Proactor
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Calls the asynchronous event demultiplexer to dequeue events, and dispatches
@@ -95,7 +95,7 @@
             with the event. This abstraction is represented by the <code class="computeroutput"><span class="identifier">io_context</span></code> class.
           </p></blockquote></div>
 <p>
-          &#8212; Initiator
+          — Initiator
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Application-specific code that starts asynchronous operations. The initiator
@@ -115,7 +115,7 @@
           corresponds to the Proactor design pattern as follows:
         </p>
 <p>
-          &#8212; Asynchronous Operation Processor
+          — Asynchronous Operation Processor
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             A reactor implemented using <code class="computeroutput"><span class="identifier">select</span></code>,
@@ -125,13 +125,13 @@
             on the completion event queue.
           </p></blockquote></div>
 <p>
-          &#8212; Completion Event Queue
+          — Completion Event Queue
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             A linked list of completion handlers (i.e. function objects).
           </p></blockquote></div>
 <p>
-          &#8212; Asynchronous Event Demultiplexer
+          — Asynchronous Event Demultiplexer
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             This is implemented by waiting on an event or condition variable until
@@ -149,21 +149,21 @@
           as follows:
         </p>
 <p>
-          &#8212; Asynchronous Operation Processor
+          — Asynchronous Operation Processor
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             This is implemented by the operating system. Operations are initiated
             by calling an overlapped function such as <code class="computeroutput"><span class="identifier">AcceptEx</span></code>.
           </p></blockquote></div>
 <p>
-          &#8212; Completion Event Queue
+          — Completion Event Queue
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             This is implemented by the operating system, and is associated with an
             I/O completion port. There is one I/O completion port for each <code class="computeroutput"><span class="identifier">io_context</span></code> instance.
           </p></blockquote></div>
 <p>
-          &#8212; Asynchronous Event Demultiplexer
+          — Asynchronous Event Demultiplexer
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Called by Boost.Asio to dequeue events and their associated completion
@@ -174,7 +174,7 @@
           <span class="phrase"><a name="boost_asio.overview.core.async.advantages"></a></span><a class="link" href="async.html#boost_asio.overview.core.async.advantages">Advantages</a>
         </h6>
 <p>
-          &#8212; Portability.
+          — Portability.
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Many operating systems offer a native asynchronous I/O API (such as overlapped
@@ -186,7 +186,7 @@
             <code class="computeroutput"><span class="identifier">select</span><span class="special">()</span></code>.
           </p></blockquote></div>
 <p>
-          &#8212; Decoupling threading from concurrency.
+          — Decoupling threading from concurrency.
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Long-duration operations are performed asynchronously by the implementation
@@ -194,19 +194,19 @@
             spawn many threads in order to increase concurrency.
           </p></blockquote></div>
 <p>
-          &#8212; Performance and scalability.
+          — Performance and scalability.
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Implementation strategies such as thread-per-connection (which a synchronous-only
             approach would require) can degrade system performance, due to increased
             context switching, synchronisation and data movement among CPUs. With
             asynchronous operations it is possible to avoid the cost of context switching
-            by minimising the number of operating system threads &#8212; typically a limited
-            resource &#8212; and only activating the logical threads of control that have
+            by minimising the number of operating system threads — typically a limited
+            resource — and only activating the logical threads of control that have
             events to process.
           </p></blockquote></div>
 <p>
-          &#8212; Simplified application synchronisation.
+          — Simplified application synchronisation.
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Asynchronous operation completion handlers can be written as though they
@@ -214,7 +214,7 @@
             be developed with little or no concern for synchronisation issues.
           </p></blockquote></div>
 <p>
-          &#8212; Function composition.
+          — Function composition.
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Function composition refers to the implementation of functions to provide
@@ -246,7 +246,7 @@
           <span class="phrase"><a name="boost_asio.overview.core.async.disadvantages"></a></span><a class="link" href="async.html#boost_asio.overview.core.async.disadvantages">Disadvantages</a>
         </h6>
 <p>
-          &#8212; Program complexity.
+          — Program complexity.
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             It is more difficult to develop applications using asynchronous mechanisms
@@ -255,7 +255,7 @@
             flow of control.
           </p></blockquote></div>
 <p>
-          &#8212; Memory usage.
+          — Memory usage.
         </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
             Buffer space must be committed for the duration of a read or write operation,
@@ -274,7 +274,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -1,5 +1,5 @@
 [/
-  Copyright 2015-2017 Peter Dimov
+  Copyright 2015-2020 Peter Dimov
 
   Distributed under the Boost Software License, Version 1.0.
 
@@ -10,7 +10,7 @@
 [article Boostdep
   [quickbook 1.6]
   [id boostdep]
-  [copyright 2014-2017 Peter Dimov]
+  [copyright 2014-2020 Peter Dimov]
   [license Distributed under the
     [@http://boost.org/LICENSE_1_0.txt Boost Software License, Version 1.0].
   ]
@@ -251,6 +251,7 @@ Usage:
     boostdep --cmake <module>
     boostdep --pkgconfig <module> <version> \[<var>=<value>\] \[<var>=<value>\]...
     boostdep \[options\] --subset-for <directory>
+    boostdep --brief <module>
 
     \[options\]: \[--boost-root <path-to-boost>\]
                \[--\[no-\]track-sources\] \[--\[no-\]track-tests\]
@@ -690,7 +691,7 @@ dist/bin/boostdep --test filesystem
 
 [section --cmake]
 
-[^boostdep --cmake /module/] lists the dependencies of /module/ in a =cmake=-friendly form. This is typically used to generate a =dependencies.cmake= file.
+[^boostdep --cmake /module/] generates a =CMakeLists.txt= file for /module/.
 
 [endsect]
 
@@ -716,6 +717,16 @@ dist/bin/boostdep --subset-for d:\my_app
 
 [endsect]
 
+[section --brief]
+
+[^boostdep --brief /module/] generates a brief dependency report for /module/. All the primary and secondary dependencies are listed, one per line.
+
+[pre
+dist/bin/boostdep --brief filesystem
+]
+
+[endsect]
+
 [section --boost-root]
 
 [^--boost-root /path-to-boost/] instructs /Boostdep/ to look for the Boost root directory at /path-to-boost/. If this option
@@ -727,15 +738,15 @@ Boost root.
 
 [section --track-sources]
 
-The =--track-sources= option instructs /Boostdep/ to scan the =src= library subdirectory for `#include` directives. By default,
-only the =include= subdirectory is scanned.
+The =--track-sources= option instructs /Boostdep/ to scan the =src= library subdirectory for `#include` directives. If not enabled,
+only the =include= subdirectory is scanned. This option on by default in 1.77 and later, and can be turned off with =--no-track-sources=.
 
 [endsect]
 
 [section --track-tests]
 
 The =--track-tests= option instructs /Boostdep/ to scan the =test= library subdirectory for `#include` directives. By default,
-only the =include= subdirectory is scanned.
+the =test= subdirectory is not scanned.
 
 [endsect]
 

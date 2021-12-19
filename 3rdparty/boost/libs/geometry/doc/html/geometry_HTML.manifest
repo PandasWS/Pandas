@@ -86,6 +86,9 @@ geometry/reference/algorithms/assign/assign_values_4_3_coordinate_values.html
 geometry/reference/algorithms/assign/assign_values_5_4_coordinate_values.html
 geometry/reference/algorithms/assign/assign_zero.html
 geometry/reference/algorithms/append.html
+geometry/reference/algorithms/azimuth.html
+geometry/reference/algorithms/azimuth/azimuth_2.html
+geometry/reference/algorithms/azimuth/azimuth_3_with_strategy.html
 geometry/reference/algorithms/buffer.html
 geometry/reference/algorithms/buffer/buffer_4.html
 geometry/reference/algorithms/buffer/buffer_7_with_strategies.html
@@ -98,6 +101,8 @@ geometry/reference/algorithms/centroid/return_centroid_2_with_strategy.html
 geometry/reference/algorithms/clear.html
 geometry/reference/algorithms/convert.html
 geometry/reference/algorithms/convex_hull.html
+geometry/reference/algorithms/convex_hull/convex_hull_3_with_strategy.html
+geometry/reference/algorithms/convex_hull/convex_hull_2.html
 geometry/reference/algorithms/correct.html
 geometry/reference/algorithms/correct/correct_1.html
 geometry/reference/algorithms/correct/correct_2_with_strategy.html
@@ -272,7 +277,9 @@ geometry/reference/io.html
 geometry/reference/io/dsv.html
 geometry/reference/io/dsv/dsv.html
 geometry/reference/io/wkt.html
+geometry/reference/io/wkt/from_wkt.html
 geometry/reference/io/wkt/read_wkt.html
+geometry/reference/io/wkt/to_wkt.html
 geometry/reference/io/wkt/wkt.html
 geometry/reference/io/svg.html
 geometry/reference/io/svg/svg.html
@@ -283,6 +290,7 @@ geometry/reference/iterators/ever_circling_iterator.html
 geometry/reference/models.html
 geometry/reference/models/model_point.html
 geometry/reference/models/model_d2_point_xy.html
+geometry/reference/models/model_d3_point_xyz.html
 geometry/reference/models/model_linestring.html
 geometry/reference/models/model_polygon.html
 geometry/reference/models/model_multi_point.html
@@ -295,9 +303,15 @@ geometry/reference/models/model_referring_segment.html
 geometry/reference/spatial_indexes.html
 geometry/reference/spatial_indexes/boost__geometry__index__rtree.html
 geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree__.html
-geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_parameters_type_const____indexable_getter_const____value_equal_const____allocator_type_const___.html
+geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_par_cr_ind_cr_val_cr_all_cr.html
 geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_iterator__iterator_.html
 geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_range_const___.html
+geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_ite_ite_par_cr_ind_cr_val_cr_all_cr_pac_cr.html
+geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_ran_cr_par_cr_ind_cr_val_cr_all_cr_pac_cr.html
+geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_iterator__iterator__allocator_type_const___.html
+geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_range_const____allocator_type_const___.html
+geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_ite_ite_all_cr_pac_cr.html
+geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_ran_cr_all_cr_pac_cr.html
 geometry/reference/spatial_indexes/boost__geometry__index__rtree/_rtree__.html
 geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_rtree_const___.html
 geometry/reference/spatial_indexes/boost__geometry__index__rtree/rtree_rtree_const____allocator_type_const___.html
@@ -366,7 +380,7 @@ geometry/reference/spatial_indexes/group__predicates/intersects_geometry_const__
 geometry/reference/spatial_indexes/group__predicates/overlaps_geometry_const___.html
 geometry/reference/spatial_indexes/group__predicates/within_geometry_const___.html
 geometry/reference/spatial_indexes/group__predicates/satisfies_unarypredicate_const___.html
-geometry/reference/spatial_indexes/group__predicates/nearest_geometry_const____unsigned_.html
+geometry/reference/spatial_indexes/group__predicates/nearest_geometry_const____std__size_t_.html
 geometry/reference/srs.html
 geometry/reference/srs/srs_spheroid.html
 geometry/reference/strategies.html
@@ -385,7 +399,6 @@ geometry/reference/strategies/strategy_buffer_geographic_point_circle.html
 geometry/reference/strategies/strategy_buffer_side_straight.html
 geometry/reference/strategies/strategy_centroid_average.html
 geometry/reference/strategies/strategy_centroid_bashein_detmer.html
-geometry/reference/strategies/strategy_convex_hull_graham_andrew.html
 geometry/reference/strategies/strategy_densify_cartesian.html
 geometry/reference/strategies/strategy_densify_geographic.html
 geometry/reference/strategies/strategy_densify_spherical.html

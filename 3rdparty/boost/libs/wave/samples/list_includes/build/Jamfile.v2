@@ -14,6 +14,7 @@ SOURCES =
         ../instantiate_cpp_grammar 
         ../instantiate_cpp_literalgrs
         ../instantiate_defined_grammar
+        ../instantiate_has_include_grammar
         ../instantiate_lexertl_lexer 
     ;
 
@@ -21,11 +22,10 @@ exe list_includes
     :
         $(SOURCES)
         /boost/wave//boost_wave
-        /boost/program_options//boost_program_options     
+        /boost/program_options//boost_program_options/<link>static
         /boost/filesystem//boost_filesystem     
         /boost/system//boost_system     
         /boost/thread//boost_thread
-        /boost/date_time//boost_date_time
     ;
 
 for local source in $(SOURCES)

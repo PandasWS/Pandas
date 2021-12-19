@@ -16,5 +16,6 @@
         "Joel de Guzman <joel -at- boost-consulting.com>",
         "Dan Marsden <danmarsden -at- yahoo.co.uk>",
         "Tobias Schwinger <tschwinger -at- isonews2.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

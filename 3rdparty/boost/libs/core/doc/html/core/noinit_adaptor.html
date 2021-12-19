@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>noinit_adaptor</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Boost.Core">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Boost.Core">
+<link rel="home" href="../index.html" title="Chapter 1. Boost.Core">
+<link rel="up" href="../index.html" title="Chapter 1. Boost.Core">
 <link rel="prev" href="no_exceptions_support.html" title="no_exceptions_support">
 <link rel="next" href="noncopyable.html" title="noncopyable">
 </head>
@@ -33,7 +33,7 @@
 </dl></div>
 <div class="simplesect">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="idm45226784529472"></a>Authors</h3></div></div></div>
+<a name="idm8087"></a>Authors</h3></div></div></div>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
           Glen Fernandes
         </li></ul></div>
@@ -99,8 +99,7 @@
     <span class="special">:</span> <span class="identifier">A</span> <span class="special">{</span>
     <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">U</span><span class="special">&gt;</span>
     <span class="keyword">struct</span> <span class="identifier">rebind</span> <span class="special">{</span>
-        <span class="keyword">typedef</span> <span class="identifier">noinit_adaptor</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator_traits</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">&gt;::</span><span class="keyword">template</span>
-            <span class="identifier">rebind_alloc</span><span class="special">&lt;</span><span class="identifier">U</span><span class="special">&gt;</span> <span class="special">&gt;</span> <span class="identifier">other</span><span class="special">;</span>
+        <span class="keyword">typedef</span> <span class="identifier">noinit_adaptor</span><span class="special">&lt;</span><span class="identifier">allocator_rebind_t</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">,</span> <span class="identifier">U</span><span class="special">&gt;</span> <span class="special">&gt;</span> <span class="identifier">other</span><span class="special">;</span>
     <span class="special">};</span>
 
     <span class="identifier">noinit_adaptor</span><span class="special">()</span> <span class="keyword">noexcept</span><span class="special">;</span>
@@ -113,9 +112,6 @@
 
     <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">U</span><span class="special">&gt;</span>
     <span class="keyword">void</span> <span class="identifier">construct</span><span class="special">(</span><span class="identifier">U</span><span class="special">*</span> <span class="identifier">p</span><span class="special">);</span>
-
-    <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">U</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">V</span><span class="special">,</span> <span class="keyword">class</span><span class="special">...</span> <span class="identifier">Args</span><span class="special">&gt;</span>
-    <span class="keyword">void</span> <span class="identifier">construct</span><span class="special">(</span><span class="identifier">U</span><span class="special">*</span> <span class="identifier">p</span><span class="special">,</span> <span class="identifier">V</span><span class="special">&amp;&amp;</span> <span class="identifier">v</span><span class="special">,</span> <span class="identifier">Args</span><span class="special">&amp;&amp;...</span> <span class="identifier">args</span><span class="special">);</span>
 
     <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">U</span><span class="special">&gt;</span>
     <span class="keyword">void</span> <span class="identifier">destroy</span><span class="special">(</span><span class="identifier">U</span><span class="special">*</span> <span class="identifier">p</span><span class="special">);</span>
@@ -182,7 +178,7 @@
 <dd><p>
                       Initializes the <code class="computeroutput"><span class="identifier">A</span></code>
                       base class with <code class="computeroutput"><span class="keyword">static_cast</span><span class="special">&lt;</span><span class="keyword">const</span>
-                      <span class="identifier">U</span><span class="special">&amp;&gt;(</span><span class="identifier">u</span><span class="special">)</span></code>.
+                      <span class="identifier">A</span><span class="special">&amp;&gt;(</span><span class="identifier">u</span><span class="special">)</span></code>.
                     </p></dd>
 </dl>
 </div></dd>
@@ -204,17 +200,6 @@
 <dt><span class="term">Effects</span></dt>
 <dd><p>
                       <code class="computeroutput"><span class="special">::</span><span class="keyword">new</span><span class="special">((</span><span class="keyword">void</span><span class="special">*)</span><span class="identifier">p</span><span class="special">)</span> <span class="identifier">U</span></code>.
-                    </p></dd>
-</dl>
-</div></dd>
-<dt><span class="term"><code class="computeroutput"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">U</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">V</span><span class="special">,</span> <span class="keyword">class</span><span class="special">...</span> <span class="identifier">Args</span><span class="special">&gt;</span>
-            <span class="keyword">void</span> <span class="identifier">construct</span><span class="special">(</span><span class="identifier">U</span><span class="special">*</span> <span class="identifier">p</span><span class="special">,</span> <span class="identifier">V</span><span class="special">&amp;&amp;</span> <span class="identifier">v</span><span class="special">,</span> <span class="identifier">Args</span><span class="special">&amp;&amp;...</span> <span class="identifier">args</span><span class="special">);</span></code></span></dt>
-<dd><div class="variablelist">
-<p class="title"><b></b></p>
-<dl class="variablelist">
-<dt><span class="term">Effects</span></dt>
-<dd><p>
-                      <code class="computeroutput"><span class="special">::</span><span class="keyword">new</span><span class="special">(</span><span class="keyword">void</span><span class="special">*)</span><span class="identifier">p</span><span class="special">)</span> <span class="identifier">U</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">forward</span><span class="special">&lt;</span><span class="identifier">V</span><span class="special">&gt;(</span><span class="identifier">v</span><span class="special">),</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">forward</span><span class="special">&lt;</span><span class="identifier">Args</span><span class="special">&gt;(</span><span class="identifier">args</span><span class="special">)...)</span></code>.
                     </p></dd>
 </dl>
 </div></dd>
@@ -294,7 +279,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2014 Peter Dimov<br>Copyright &#169; 2014 Glen Fernandes<br>Copyright &#169; 2014 Andrey Semashev<p>
+<td align="right"><div class="copyright-footer">Copyright © 2014 Peter Dimov<br>Copyright © 2014 Glen Fernandes<br>Copyright © 2014 Andrey Semashev<p>
         Distributed under the <a href="http://boost.org/LICENSE_1_0.txt" target="_top">Boost
         Software License, Version 1.0</a>.
       </p>

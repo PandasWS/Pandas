@@ -14,7 +14,7 @@
 #define XLEX_ITERATOR_HPP
 
 #include <string>
-#include <iostream>
+#include <iosfwd>
 
 #include <boost/assert.hpp>
 #include <boost/shared_ptr.hpp>

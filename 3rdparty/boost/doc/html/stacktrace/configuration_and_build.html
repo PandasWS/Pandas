@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Configuration and Build</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../stacktrace.html" title="Chapter&#160;37.&#160;Boost.Stacktrace 1.0">
+<link rel="up" href="../stacktrace.html" title="Chapter 37. Boost.Stacktrace 1.0">
 <link rel="prev" href="getting_started.html" title="Getting Started">
 <link rel="next" href="acknowledgements.html" title="Acknowledgements">
 </head>
@@ -27,15 +27,19 @@
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="stacktrace.configuration_and_build"></a><a class="link" href="configuration_and_build.html" title="Configuration and Build">Configuration and Build</a>
 </h2></div></div></div>
-<div class="toc"><dl class="toc"><dt><span class="section"><a href="configuration_and_build.html#stacktrace.configuration_and_build.mingw_and_mingw_w64_specific_not">MinGW
-      and MinGW-w64 specific notes</a></span></dt></dl></div>
+<div class="toc"><dl class="toc">
+<dt><span class="section"><a href="configuration_and_build.html#stacktrace.configuration_and_build.mingw_and_mingw_w64_specific_not">MinGW
+      and MinGW-w64 specific notes</a></span></dt>
+<dt><span class="section"><a href="configuration_and_build.html#stacktrace.configuration_and_build.windows_deployment_and_symbol_fi">Windows
+      deployment and symbol files</a></span></dt>
+</dl></div>
 <p>
       By default Boost.Stacktrace is a header-only library, but you may change that
       and use the following macros to improve build times or to be able to tune library
       without recompiling your project:
     </p>
 <div class="table">
-<a name="stacktrace.configuration_and_build.linkmacro"></a><p class="title"><b>Table&#160;37.1.&#160;Link macros</b></p>
+<a name="stacktrace.configuration_and_build.linkmacro"></a><p class="title"><b>Table 37.1. Link macros</b></p>
 <div class="table-contents"><table class="table" summary="Link macros">
 <colgroup>
 <col>
@@ -89,7 +93,7 @@
       from above is defined, you have to manually link with one of the libraries:
     </p>
 <div class="table">
-<a name="stacktrace.configuration_and_build.libconfig"></a><p class="title"><b>Table&#160;37.2.&#160;Config</b></p>
+<a name="stacktrace.configuration_and_build.libconfig"></a><p class="title"><b>Table 37.2. Config</b></p>
 <div class="table-contents"><table class="table" summary="Config">
 <colgroup>
 <col>
@@ -446,11 +450,37 @@
           </li>
 </ul></div>
 </div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="stacktrace.configuration_and_build.windows_deployment_and_symbol_fi"></a><a class="link" href="configuration_and_build.html#stacktrace.configuration_and_build.windows_deployment_and_symbol_fi" title="Windows deployment and symbol files">Windows
+      deployment and symbol files</a>
+</h3></div></div></div>
+<p>
+        Function names may not be resolved after deployment of your application to
+        a different system.
+      </p>
+<p>
+        There are multiple ways to deal with that issue if you distribute PDB files
+        along with your application:
+      </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+            Link your application and shared libraries with a properly set <code class="computeroutput"><span class="special">/</span><span class="identifier">PDBALTPATH</span></code>
+            flag, for example <code class="computeroutput"><span class="special">/</span><span class="identifier">PDBALTPATH</span><span class="special">:%</span><span class="identifier">_PDB</span><span class="special">%</span></code>. See <a href="https://docs.microsoft.com/en-us/cpp/build/reference/pdbaltpath-use-alternate-pdb-path" target="_top">official
+            documentation for more info</a>.
+          </li>
+<li class="listitem">
+            Set the <code class="computeroutput"><span class="identifier">_NT_ALT_SYMBOL_PATH</span></code>
+            or <code class="computeroutput"><span class="identifier">_NT_SYMBOL_PATH</span></code> environment
+            variables of the target system to the path of the PDBs. See <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/symbol-path#controlling-the-symbol-path" target="_top">official
+            documentation for more info</a>.
+          </li>
+</ul></div>
+</div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2016-2019 Antony
-      Polukhin<p>
+<td align="right"><div class="copyright-footer">Copyright © 2016-2021 Antony Polukhin<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

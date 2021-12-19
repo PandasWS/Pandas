@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Reference</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../process.html" title="Chapter&#160;30.&#160;Boost.Process">
+<link rel="up" href="../process.html" title="Chapter 30. Boost.Process">
 <link rel="prev" href="../boost_process/faq.html" title="Frequently Asked Questions">
 <link rel="next" href="../boost/process/args.html" title="Global args">
 </head>
@@ -321,7 +321,7 @@ Please refer to the <a class="link" href="../boost_process/extend.html" title="E
 </pre>
 <p>
 </p>
-<p><b>File I/O.&#160;</b></p>
+<p><b>File I/O. </b></p>
 <p>
 The library allows full redirection of streams to files as shown below.</p>
 <pre class="programlisting"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">filesystem</span><span class="special">::</span><span class="identifier">path</span> <span class="identifier">log</span>    <span class="special">=</span> <span class="string">"my_log_file.txt"</span><span class="special">;</span>
@@ -329,7 +329,7 @@ The library allows full redirection of streams to files as shown below.</p>
 <span class="identifier">boost</span><span class="special">::</span><span class="identifier">filesystem</span><span class="special">::</span><span class="identifier">path</span> <span class="identifier">output</span> <span class="special">=</span> <span class="string">"output.txt"</span><span class="special">;</span>
 <span class="identifier">system</span><span class="special">(</span><span class="string">"my_prog"</span><span class="special">,</span> <span class="identifier">std_out</span><span class="special">&gt;</span><span class="identifier">output</span><span class="special">,</span> <span class="identifier">std_in</span><span class="special">&lt;</span><span class="identifier">input</span><span class="special">,</span> <span class="identifier">std_err</span><span class="special">&gt;</span><span class="identifier">log</span><span class="special">)</span><span class="special">;</span>
 </pre>
-<p><b>Synchronous Pipe I/O.&#160;</b></p>
+<p><b>Synchronous Pipe I/O. </b></p>
 <p>
 Another way is to communicate through pipes.</p>
 <pre class="programlisting"><span class="identifier">pstream</span> <span class="identifier">str</span><span class="special">;</span>
@@ -343,7 +343,7 @@ Another way is to communicate through pipes.</p>
 <span class="identifier">child</span> <span class="identifier">c1</span><span class="special">(</span><span class="string">"nm"</span><span class="special">,</span> <span class="string">"a.out"</span><span class="special">,</span> <span class="identifier">std_out</span><span class="special">&gt;</span><span class="identifier">p</span><span class="special">)</span><span class="special">;</span>
 <span class="identifier">child</span> <span class="identifier">c2</span><span class="special">(</span><span class="string">"c++filt"</span><span class="special">,</span> <span class="identifier">std_in</span><span class="special">&lt;</span><span class="identifier">p</span><span class="special">)</span><span class="special">;</span>
 </pre>
-<p><b>Asynchronous I/O.&#160;</b></p>
+<p><b>Asynchronous I/O. </b></p>
 <p>
 Utilizing <code class="computeroutput">boost.asio</code> asynchronous I/O is provided.</p>
 <pre class="programlisting"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">asio</span><span class="special">::</span><span class="identifier">io_context</span> <span class="identifier">ios</span><span class="special">;</span>
@@ -361,12 +361,12 @@ Utilizing <code class="computeroutput">boost.asio</code> asynchronous I/O is pro
 </table></div>
 <p>
 </p>
-<p><b>Closing.&#160;</b></p>
+<p><b>Closing. </b></p>
 <p>
 Stream can be closed, so nothing can be read or written.</p>
 <pre class="programlisting"><span class="identifier">system</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="identifier">std_in</span><span class="special">.</span><span class="identifier">close</span><span class="special">(</span><span class="special">)</span><span class="special">)</span><span class="special">;</span>
 </pre>
-<p><b>Null.&#160;</b></p>
+<p><b>Null. </b></p>
 <p>
 Streams can be redirected to null, which means, that written date will be discarded and read data will only contain <code class="computeroutput">EOF</code>.</p>
 <pre class="programlisting"><span class="identifier">system</span><span class="special">(</span><span class="string">"b2"</span><span class="special">,</span> <span class="identifier">std_out</span> <span class="special">&gt;</span> <span class="identifier">null</span><span class="special">)</span><span class="special">;</span>
@@ -549,8 +549,8 @@ Streams can be redirected to null, which means, that written date will be discar
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
-      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright &#169; 2016 Klemens D. Morgenstern<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
+      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright © 2016 Klemens D. Morgenstern<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
       </p>

@@ -29,8 +29,8 @@
 #include <iterator>
 #include <algorithm>
 #include <stdexcept>
-#include <boost/ref.hpp>
-#include <boost/bind.hpp>
+#include <boost/core/ref.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/smart_ptr/make_shared_object.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -39,6 +39,8 @@
 #include <boost/type_traits/is_same.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/system/system_error.hpp>
+#include <boost/filesystem/directory.hpp>
+#include <boost/filesystem/exception.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -570,18 +572,18 @@ BOOST_LOG_ANONYMOUS_NAMESPACE {
             {
                 // Both counter and date/time placeholder in the pattern
                 file_name_generator = boost::bind(date_and_time_formatter(),
-                    boost::bind(file_counter_formatter(counter_pos, width), name_pattern, _1), _1);
+                    boost::bind(file_counter_formatter(counter_pos, width), name_pattern, boost::placeholders::_1), boost::placeholders::_1);
             }
             else
             {
                 // Only date/time placeholders in the pattern
-                file_name_generator = boost::bind(date_and_time_formatter(), name_pattern, _1);
+                file_name_generator = boost::bind(date_and_time_formatter(), name_pattern, boost::placeholders::_1);
             }
         }
         else if (counter_found)
         {
             // Only counter placeholder in the pattern
-            file_name_generator = boost::bind(file_counter_formatter(counter_pos, width), name_pattern, _1);
+            file_name_generator = boost::bind(file_counter_formatter(counter_pos, width), name_pattern, boost::placeholders::_1);
         }
         else
         {
@@ -657,14 +659,14 @@ BOOST_LOG_ANONYMOUS_NAMESPACE {
             uintmax_t max_files);
 
         //! Destructor
-        ~file_collector();
+        ~file_collector() BOOST_OVERRIDE;
 
         //! The function stores the specified file in the storage
-        void store_file(filesystem::path const& file_name);
+        void store_file(filesystem::path const& file_name) BOOST_OVERRIDE;
 
         //! Scans the target directory for the files that have already been stored
         uintmax_t scan_for_files(
-            file::scan_method method, filesystem::path const& pattern, unsigned int* counter);
+            file::scan_method method, filesystem::path const& pattern, unsigned int* counter) BOOST_OVERRIDE;
 
         //! The function updates storage restrictions
         void update(uintmax_t max_size, uintmax_t min_free_space, uintmax_t max_files);
@@ -771,8 +773,8 @@ BOOST_LOG_ANONYMOUS_NAMESPACE {
         info.m_TimeStamp = filesystem::last_write_time(src_path);
         info.m_Size = filesystem::file_size(src_path);
 
-        filesystem::path file_name_path = src_path.filename();
-        path_string_type file_name = file_name_path.native();
+        const filesystem::path file_name_path = src_path.filename();
+        path_string_type const& file_name = file_name_path.native();
         info.m_Path = m_StorageDir / file_name_path;
 
         // Check if the file is already in the target directory
@@ -860,7 +862,7 @@ BOOST_LOG_ANONYMOUS_NAMESPACE {
                     if (m_MinFreeSpace)
                         free_space = filesystem::space(m_StorageDir).available;
                     m_TotalSize -= old_info.m_Size;
-                    m_Files.erase(it++);
+                    it = m_Files.erase(it);
                 }
                 catch (system::system_error&)
                 {
@@ -872,7 +874,7 @@ BOOST_LOG_ANONYMOUS_NAMESPACE {
             {
                 // If it's not a file or is absent, just remove it from the list
                 m_TotalSize -= old_info.m_Size;
-                m_Files.erase(it++);
+                it = m_Files.erase(it);
             }
         }
 
@@ -935,7 +937,7 @@ BOOST_LOG_ANONYMOUS_NAMESPACE {
                             }
                         };
                         if (std::find_if(m_Files.begin(), m_Files.end(),
-                            boost::bind(&local::equivalent, boost::cref(info.m_Path), _1)) == m_Files.end())
+                            boost::bind(&local::equivalent, boost::cref(info.m_Path), boost::placeholders::_1)) == m_Files.end())
                         {
                             // Check that the file name matches the pattern
                             unsigned int file_number = 0;
@@ -960,7 +962,7 @@ BOOST_LOG_ANONYMOUS_NAMESPACE {
                 // Sort files chronologically
                 m_Files.splice(m_Files.end(), files);
                 m_TotalSize += total_size;
-                m_Files.sort(boost::bind(&file_info::m_TimeStamp, _1) < boost::bind(&file_info::m_TimeStamp, _2));
+                m_Files.sort(boost::bind(&file_info::m_TimeStamp, boost::placeholders::_1) < boost::bind(&file_info::m_TimeStamp, boost::placeholders::_2));
             }
         }
 
@@ -985,7 +987,7 @@ BOOST_LOG_ANONYMOUS_NAMESPACE {
         BOOST_LOG_EXPR_IF_MT(lock_guard< mutex > lock(m_Mutex);)
 
         file_collectors::iterator it = std::find_if(m_Collectors.begin(), m_Collectors.end(),
-            boost::bind(&file_collector::is_governed, _1, boost::cref(target_dir)));
+            boost::bind(&file_collector::is_governed, boost::placeholders::_1, boost::cref(target_dir)));
         shared_ptr< file_collector > p;
         if (it != m_Collectors.end()) try
         {
@@ -1061,8 +1063,8 @@ BOOST_LOG_API rotation_at_time_point::rotation_at_time_point(
     unsigned char minute,
     unsigned char second
 ) :
-    m_DayKind(not_specified),
     m_Day(0),
+    m_DayKind(not_specified),
     m_Hour(hour),
     m_Minute(minute),
     m_Second(second),
@@ -1078,8 +1080,8 @@ BOOST_LOG_API rotation_at_time_point::rotation_at_time_point(
     unsigned char minute,
     unsigned char second
 ) :
-    m_DayKind(weekday),
     m_Day(static_cast< unsigned char >(wday)),
+    m_DayKind(weekday),
     m_Hour(hour),
     m_Minute(minute),
     m_Second(second),
@@ -1095,8 +1097,8 @@ BOOST_LOG_API rotation_at_time_point::rotation_at_time_point(
     unsigned char minute,
     unsigned char second
 ) :
-    m_DayKind(monthday),
     m_Day(static_cast< unsigned char >(mday.as_number())),
+    m_DayKind(monthday),
     m_Hour(hour),
     m_Minute(minute),
     m_Second(second),
@@ -1122,7 +1124,7 @@ BOOST_LOG_API bool rotation_at_time_point::operator()() const
     }
 
     const bool time_of_day_passed = rotation_time.total_seconds() <= m_Previous.time_of_day().total_seconds();
-    switch (m_DayKind)
+    switch (static_cast< day_kind >(m_DayKind))
     {
     case not_specified:
         {
@@ -1343,7 +1345,7 @@ BOOST_LOG_API void text_file_backend::consume(record_view const& rec, string_typ
     {
         // The file stream is not operational. One possible reason is that there is no more free space
         // on the file system. In this case it is possible that this log record will fail to be written as well,
-        // leaving the newly creted file empty. Eventually this results in lots of empty log files.
+        // leaving the newly created file empty. Eventually this results in lots of empty log files.
         // We should take precautions to avoid this. https://svn.boost.org/trac/boost/ticket/11016
         prev_file_name = m_pImpl->m_FileName;
         close_file();
@@ -1482,26 +1484,26 @@ BOOST_LOG_API void text_file_backend::rotate_file()
     filesystem::path prev_file_name = m_pImpl->m_FileName;
     close_file();
 
-    if (!!m_pImpl->m_TargetFileNameGenerator)
+    // Check if the file has been created in the first place
+    system::error_code ec;
+    filesystem::file_status status = filesystem::status(prev_file_name, ec);
+    if (status.type() == filesystem::regular_file)
     {
-        filesystem::path new_file_name;
-        new_file_name = m_pImpl->m_TargetStorageDir / m_pImpl->m_TargetFileNameGenerator(m_pImpl->m_FileCounter);
-
-        if (new_file_name != prev_file_name)
+        if (!!m_pImpl->m_TargetFileNameGenerator)
         {
-            filesystem::create_directories(new_file_name.parent_path());
-            move_file(prev_file_name, new_file_name);
+            // File counter was incremented when the file was opened, we have to use the same counter value we used to generate the original filename
+            filesystem::path new_file_name = m_pImpl->m_TargetStorageDir / m_pImpl->m_TargetFileNameGenerator(m_pImpl->m_FileCounter - 1u);
 
-            prev_file_name.swap(new_file_name);
+            if (new_file_name != prev_file_name)
+            {
+                filesystem::create_directories(new_file_name.parent_path());
+                move_file(prev_file_name, new_file_name);
+
+                prev_file_name.swap(new_file_name);
+            }
         }
-    }
 
-    if (!!m_pImpl->m_pFileCollector)
-    {
-        // Check if the file has not been deleted by another process
-        system::error_code ec;
-        filesystem::file_status status = filesystem::status(prev_file_name, ec);
-        if (status.type() == filesystem::regular_file)
+        if (!!m_pImpl->m_pFileCollector)
             m_pImpl->m_pFileCollector->store_file(prev_file_name);
     }
 }
@@ -1511,7 +1513,9 @@ BOOST_LOG_API void text_file_backend::set_open_mode(std::ios_base::openmode mode
 {
     mode |= std::ios_base::out;
     mode &= ~std::ios_base::in;
-    if ((mode & (std::ios_base::trunc | std::ios_base::app)) == 0)
+    if ((mode & std::ios_base::app) != 0)
+        mode |= std::ios_base::ate; // we need to seek to end after opening the file to obtain its size
+    else
         mode |= std::ios_base::trunc;
     m_pImpl->m_FileOpenMode = mode;
 }

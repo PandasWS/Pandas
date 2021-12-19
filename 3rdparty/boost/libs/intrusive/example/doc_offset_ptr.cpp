@@ -68,8 +68,8 @@ int main()
 {
    //Now create an intrusive list in shared memory:
    //nodes and the container itself must be created in shared memory
-   const int MaxElem    = 100;
-   const int ShmSize    = 50000;
+   const std::size_t MaxElem    = 100;
+   const std::size_t ShmSize    = 50000;
    const char *ShmName  = get_shared_memory_name();
    {
       //Erase all old shared memory
@@ -88,7 +88,7 @@ int main()
       pshm_vect->resize(MaxElem);
 
       //Initialize all the nodes
-      for(int i = 0; i < MaxElem; ++i)    (*pshm_vect)[i].set(i);
+      for(std::size_t i = 0; i < MaxElem; ++i)    (*pshm_vect)[i].set((int)i);
 
       //Now create the shared memory intrusive list
       intrusive_list_t *plist = shm.construct<intrusive_list_t>(ip::anonymous_instance)();

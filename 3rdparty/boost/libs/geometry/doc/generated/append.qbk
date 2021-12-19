@@ -20,8 +20,8 @@ Appends one or more points to a linestring, ring, polygon, multi-geometry.
 
 [heading Synopsis]
 ``template<typename Geometry, typename RangeOrPoint>
-void append(Geometry & geometry, RangeOrPoint const & range_or_point, int ring_index = -1,
-            int multi_index = 0)``
+void append(Geometry & geometry, RangeOrPoint const & range_or_point, signed_size_type ring_index = -1,
+            signed_size_type multi_index = 0)``
 
 [heading Parameters]
 
@@ -29,8 +29,8 @@ void append(Geometry & geometry, RangeOrPoint const & range_or_point, int ring_i
 [[Type] [Concept] [Name] [Description] ]
 [[Geometry &] [Any type fulfilling a Geometry Concept ] [geometry] [A model of the specified concept ]]
 [[RangeOrPoint const &] [Either a range or a point, fullfilling Boost.Range concept or Boost.Geometry Point Concept ] [range_or_point] [The point or range to add ]]
-[[int] [] [ring_index] [The index of the ring in case of a polygon: exterior ring (-1, the default) or interior ring index ]]
-[[int] [] [multi_index] [The index of the geometry to which the points are appended]]
+[[signed_size_type] [] [ring_index] [The index of the ring in case of a polygon: exterior ring (-1, the default) or interior ring index ]]
+[[signed_size_type] [] [multi_index] [The index of the geometry to which the points are appended]]
 ]
 
 

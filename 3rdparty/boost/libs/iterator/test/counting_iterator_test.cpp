@@ -17,7 +17,7 @@
 
 #include <boost/config.hpp>
 
-#ifdef __BORLANDC__     // Borland mis-detects our custom iterators
+#ifdef BOOST_BORLANDC     // Borland mis-detects our custom iterators
 # pragma warn -8091     // template argument ForwardIterator passed to '...' is a output iterator
 # pragma warn -8071     // Conversion may lose significant digits (due to counting_iterator<char> += n).
 #endif
@@ -26,13 +26,11 @@
 # pragma warning(disable:4786) // identifier truncated in debug info
 #endif
 
-#include <boost/detail/iterator.hpp>
 #include <boost/iterator/counting_iterator.hpp>
 #include <boost/iterator/new_iterator_tests.hpp>
 
 #include <boost/next_prior.hpp>
 #include <boost/mpl/if.hpp>
-#include <boost/detail/iterator.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/limits.hpp>
 
@@ -40,12 +38,12 @@
 #include <climits>
 #include <iterator>
 #include <stdlib.h>
-#ifndef __BORLANDC__
+#ifndef BOOST_BORLANDC
 # include <boost/tuple/tuple.hpp>
-#endif 
+#endif
 #include <vector>
 #include <list>
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #ifndef BOOST_NO_SLIST
 # ifdef BOOST_SLIST_HEADER
 #   include BOOST_SLIST_HEADER
@@ -88,19 +86,19 @@ void category_test(
     std::random_access_iterator_tag)
 {
     typedef typename
-        boost::detail::iterator_traits<CountingIterator>::difference_type
+        std::iterator_traits<CountingIterator>::difference_type
         difference_type;
-    difference_type distance = boost::detail::distance(start, finish);
+    difference_type distance = std::distance(start, finish);
 
     // Pick a random position internal to the range
     difference_type offset = (unsigned)rand() % distance;
-    
+
 #ifdef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
     BOOST_TEST(offset >= 0);
-#else 
+#else
     assert_nonnegative<difference_type>::test(offset);
 #endif
-    
+
     CountingIterator internal = start;
     std::advance(internal, offset);
 
@@ -111,8 +109,8 @@ void category_test(
     std::pair<CountingIterator,CountingIterator> xy(
         std::equal_range(start, finish, *internal));
     CountingIterator x = xy.first, y = xy.second;
-    
-    BOOST_TEST(boost::detail::distance(x, y) == 1);
+
+    BOOST_TEST(std::distance(x, y) == 1);
 
     // Show that values outside the range can't be found
     BOOST_TEST(!std::binary_search(start, boost::prior(finish), *finish));
@@ -122,7 +120,7 @@ void category_test(
     std::vector<value_type> v;
     for (value_type z = *start; !(z == *finish); ++z)
         v.push_back(z);
-    
+
     // Note that this test requires a that the first argument is
     // dereferenceable /and/ a valid iterator prior to the first argument
     boost::random_access_iterator_test(start, v.size(), v.begin());
@@ -200,11 +198,11 @@ void test_container(Container* = 0)  // default arg works around MSVC bug
     Container c(1 + (unsigned)rand() % 1673);
 
     const typename Container::iterator start = c.begin();
-    
+
     // back off by 1 to leave room for dereferenceable value at the end
     typename Container::iterator finish = start;
     std::advance(finish, c.size() - 1);
-    
+
     test(start, finish);
 
     typedef typename Container::const_iterator const_iterator;
@@ -283,14 +281,14 @@ int main()
     test_integer3<long, std::random_access_iterator_tag, int>();
     test_integer<my_int2>();
     test_integer<my_int3>();
-    
+
    // Some tests on container iterators, to prove we handle a few different categories
     test_container<std::vector<int> >();
     test_container<std::list<int> >();
 # ifndef BOOST_NO_SLIST
     test_container<BOOST_STD_EXTENSION_NAMESPACE::slist<int> >();
 # endif
-    
+
     // Also prove that we can handle raw pointers.
     int array[2000];
     test(boost::make_counting_iterator(array), boost::make_counting_iterator(array+2000-1));

@@ -27,7 +27,7 @@
 #include <boost/math/concepts/real_concept.hpp> // for real_concept
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp> // Boost.Test
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <boost/math/distributions/normal.hpp>
     using boost::math::normal_distribution;
@@ -269,14 +269,19 @@ void test_spots(RealType)
     BOOST_CHECK_CLOSE(
        skewness(dist)
        , static_cast<RealType>(0), tol2);
-    // kertosis:
+    // kurtosis:
     BOOST_CHECK_CLOSE(
        kurtosis(dist)
        , static_cast<RealType>(3), tol2);
-    // kertosis excess:
+    // kurtosis excess:
     BOOST_CHECK_CLOSE(
        kurtosis_excess(dist)
        , static_cast<RealType>(0), tol2);
+
+    RealType expected_entropy = log(boost::math::constants::two_pi<RealType>()*boost::math::constants::e<RealType>()*9)/2;
+    BOOST_CHECK_CLOSE(
+       entropy(dist)
+       ,expected_entropy, tol2);
 
     normal_distribution<RealType> norm01(0, 1); // Test default (0, 1)
     BOOST_CHECK_CLOSE(
@@ -324,7 +329,7 @@ BOOST_AUTO_TEST_CASE( test_main )
   test_spots(0.0); // Test double. OK at decdigits 7, tolerance = 1e07 %
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
   test_spots(0.0L); // Test long double.
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x0582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x0582))
   test_spots(boost::math::concepts::real_concept(0.)); // Test real concept.
 #endif
 #else

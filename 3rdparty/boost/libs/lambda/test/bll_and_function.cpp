@@ -11,7 +11,8 @@
 
 // test using BLL and boost::function
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
+#define BOOST_CHECK BOOST_TEST
 
 #include "boost/lambda/lambda.hpp"
 
@@ -54,15 +55,9 @@ void test_function() {
 }
 
 
-int test_main(int, char *[]) {
+int main() {
 
   test_function();
 
-  return 0;
+  return boost::report_errors();
 }
-
-
-
-
-
-

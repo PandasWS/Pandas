@@ -13,7 +13,8 @@
 #include <algorithm> // for std::swap
 #include <sstream>
 #include <iostream>
-#include <assert.h>
+
+#include <boost/assert.hpp>
 
 #include "class_a.h"
 
@@ -22,7 +23,7 @@ using namespace std;
 
 class_a::~class_a()
 {
-   assert(self_p_ == this);
+   BOOST_ASSERT(self_p_ == this);
 }
 
 class_a::class_a(int n)

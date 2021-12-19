@@ -4,8 +4,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BASICS_050424_HPP
-#define BASICS_050424_HPP
+#ifndef BOOST_PARAMETER_TEST_BASICS_HPP
+#define BOOST_PARAMETER_TEST_BASICS_HPP
 
 #include <boost/parameter.hpp>
 

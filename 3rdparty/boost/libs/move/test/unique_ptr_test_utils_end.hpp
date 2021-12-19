@@ -30,7 +30,7 @@ struct I
 int I::count = 0;
 
 I* get() {return new I;}
-I* get_array(int i) {return new I[i];}
+I* get_array(std::size_t i) {return new I[i];}
 
 void check(int i)
 {

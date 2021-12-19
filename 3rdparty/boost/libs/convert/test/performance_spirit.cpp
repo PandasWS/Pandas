@@ -1,5 +1,5 @@
 // Boost.Convert test and usage example
-// Copyright (c) 2009-2016 Vladimir Batov.
+// Copyright (c) 2009-2020 Vladimir Batov.
 // Use, modification and distribution are subject to the Boost Software License,
 // Version 1.0. See http://www.boost.org/LICENSE_1_0.txt.
 
@@ -13,19 +13,15 @@
 int main(int, char const* []) { return 0; }
 #else
 
+#include "./prepare.hpp"
 #include <boost/convert.hpp>
 #include <boost/convert/spirit.hpp>
 #include <boost/convert/strtol.hpp>
 #include <boost/convert/lexical_cast.hpp>
-#include "./prepare.hpp"
 
-//#define main() old_str_to_int_test_spirit()
-//#include <libs/spirit/optimization/qi/int_parser.cpp>
 #include <libs/spirit/workbench/measure.hpp>
-#include <string>
-#include <vector>
-#include <cstdlib>
 #include <boost/spirit/include/qi.hpp>
+#include <vector>
 
 namespace
 {

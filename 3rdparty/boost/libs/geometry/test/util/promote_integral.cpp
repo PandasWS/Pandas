@@ -1,9 +1,9 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 // Unit Test
 
-// Copyright (c) 2015, Oracle and/or its affiliates.
-
+// Copyright (c) 2015-2021, Oracle and/or its affiliates.
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Licensed under the Boost Software License version 1.0.
 // http://www.boost.org/users/license.html
@@ -23,8 +23,6 @@
 #include <boost/test/included/unit_test.hpp>
 
 #include <boost/config.hpp>
-#include <boost/type_traits/is_same.hpp>
-#include <boost/type_traits/is_unsigned.hpp>
 
 #include <geometry_test_common.hpp>
 
@@ -83,8 +81,8 @@ namespace bg = boost::geometry;
 template
 <
     typename T,
-    bool Signed = boost::is_fundamental<T>::type::value
-    && ! boost::is_unsigned<T>::type::value
+    bool Signed = std::is_fundamental<T>::value
+    && ! std::is_unsigned<T>::value
 >
 struct absolute_value
 {
@@ -109,7 +107,7 @@ template
 <
     typename Integral,
     typename Promoted,
-    bool Signed = ! boost::is_unsigned<Promoted>::type::value
+    bool Signed = ! std::is_unsigned<Promoted>::value
 >
 struct test_max_values
 {
@@ -154,9 +152,9 @@ struct test_max_values<Integral, Promoted, false>
 template
 <
     typename T,
-    bool IsFundamental = boost::is_fundamental<T>::type::value
+    bool IsFundamental = std::is_fundamental<T>::value
 >
-struct bit_size_impl : boost::mpl::size_t<0>
+struct bit_size_impl : std::integral_constant<std::size_t, 0>
 {};
 
 template <typename T>
@@ -198,10 +196,10 @@ struct test_promote_integral
                 Type, PromoteUnsignedToUnsigned
             >::type promoted_integral_type;
 
-        bool const same_types = boost::is_same
+        bool const same_types = std::is_same
             <
                 promoted_integral_type, ExpectedPromotedType
-            >::type::value;
+            >::value;
 
         BOOST_CHECK_MESSAGE(same_types,
                             "case ID: " << case_id
@@ -211,10 +209,10 @@ struct test_promote_integral
                             << "; expected: "
                             << typeid(ExpectedPromotedType).name());
 
-        if (BOOST_GEOMETRY_CONDITION((! boost::is_same
+        if (BOOST_GEOMETRY_CONDITION((! std::is_same
                 <
                     Type, promoted_integral_type
-                >::type::value)))
+                >::value)))
         {
             test_max_values<Type, promoted_integral_type>::apply();
         }
@@ -253,7 +251,7 @@ template
 <
     typename T,
     bool PromoteUnsignedToUnsigned = false,
-    bool IsSigned = ! boost::is_unsigned<T>::type::value
+    bool IsSigned = ! std::is_unsigned<T>::value
 >
 struct test_promotion
 {
@@ -291,12 +289,10 @@ struct test_promotion
         {
             tester::template apply<T, long>(case_id);
         }
-#if defined(BOOST_HAS_LONG_LONG)
-        else if (bit_size<boost::long_long_type>() >= min_size)
+        else if (bit_size<long long>() >= min_size)
         {
-            tester::template apply<T, boost::long_long_type>(case_id);
+            tester::template apply<T, long long>(case_id);
         }
-#endif
 #if defined(BOOST_HAS_INT128) && defined(BOOST_GEOMETRY_ENABLE_INT128)
         else if (bit_size<boost::int128_type>() >= min_size)
         {
@@ -361,12 +357,10 @@ struct test_promotion<T, true, false>
         {
             tester::apply<T, std::size_t>(case_id);
         }
-#if defined(BOOST_HAS_LONG_LONG)
-        else if (bit_size<boost::ulong_long_type>() >= min_size)
+        else if (bit_size<unsigned long long>() >= min_size)
         {
-            tester::template apply<T, boost::ulong_long_type>(case_id);
+            tester::template apply<T, unsigned long long>(case_id);
         }
-#endif
 #if defined(BOOST_HAS_INT128) && defined(BOOST_GEOMETRY_ENABLE_INT128)
         else if (bit_size<boost::uint128_type>() >= min_size)
         {
@@ -439,15 +433,13 @@ BOOST_AUTO_TEST_CASE( test_std_size_t )
     test_promotion<std::size_t, true>::apply("size_t");
 }
 
-#ifdef BOOST_HAS_LONG_LONG
 BOOST_AUTO_TEST_CASE( test_long_long )
 {
-    test_promotion<boost::long_long_type>::apply("long long");
-    test_promotion<boost::long_long_type, true>::apply("long long");
-    test_promotion<boost::ulong_long_type>::apply("ulong long");
-    test_promotion<boost::ulong_long_type, true>::apply("ulong long");
+    test_promotion<long long>::apply("long long");
+    test_promotion<long long, true>::apply("long long");
+    test_promotion<unsigned long long>::apply("ulong long");
+    test_promotion<unsigned long long, true>::apply("ulong long");
 }
-#endif
 
 #if defined(BOOST_HAS_INT128) && defined(BOOST_GEOMETRY_ENABLE_INT128)
 BOOST_AUTO_TEST_CASE( test_int128 )
@@ -539,9 +531,4 @@ BOOST_AUTO_TEST_CASE( test_floating_point )
     tester2::apply<float, float>("fp-f");
     tester2::apply<double, double>("fp-d");
     tester2::apply<long double, long double>("fp-ld");
-
-#ifdef HAVE_TTMATH
-    tester1::apply<ttmath_big, ttmath_big>("fp-tt");
-    tester2::apply<ttmath_big, ttmath_big>("fp-tt");
-#endif
 }

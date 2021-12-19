@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>X3 Program Structure</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Spirit X3 3.0.4">
+<link rel="home" href="../../index.html" title="Spirit X3 3.10">
 <link rel="up" href="../tutorials.html" title="Tutorials">
 <link rel="prev" href="employee.html" title="Employee - Parsing into structs">
 <link rel="next" href="annotation.html" title="Annotations - Decorating the ASTs">
@@ -219,14 +219,8 @@
         we use <code class="computeroutput"><span class="identifier">BOOST_SPIRIT_DECLARE</span></code>
         for the <span class="bold"><strong>top</strong></span> rule. Behind the scenes, what's
         actually happening is that we are declaring a <code class="computeroutput"><span class="identifier">parse_rule</span></code>
-        function in the client namespace. For example, given a rule named <code class="computeroutput"><span class="identifier">my_rule</span></code>, <code class="computeroutput"><span class="identifier">BOOST_SPIRIT_DECLARE</span><span class="special">(</span><span class="identifier">my_rule</span><span class="special">)</span></code> expands to this code:
+        function in the client namespace.
       </p>
-<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">Iterator</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">Context</span><span class="special">&gt;</span>
-<span class="keyword">bool</span> <span class="identifier">parse_rule</span><span class="special">(</span>
-    <span class="keyword">decltype</span><span class="special">(</span><span class="identifier">my_rule</span><span class="special">)</span>
-  <span class="special">,</span> <span class="identifier">Iterator</span><span class="special">&amp;</span> <span class="identifier">first</span><span class="special">,</span> <span class="identifier">Iterator</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">last</span>
-  <span class="special">,</span> <span class="identifier">Context</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">context</span><span class="special">,</span> <span class="keyword">decltype</span><span class="special">(</span><span class="identifier">my_rule</span><span class="special">)::</span><span class="identifier">attribute_type</span><span class="special">&amp;</span> <span class="identifier">attr</span><span class="special">);</span>
-</pre>
 <p>
         If you went back and reviewed <a class="link" href="roman.html#__tutorial_spirit_define__">BOOST_SPIRIT_DEFINE</a>,
         you'll see why it is exactly what we need to use for header files. <code class="computeroutput"><span class="identifier">BOOST_SPIRIT_DECLARE</span></code> generates function
@@ -421,7 +415,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2018 Joel de Guzman,
+<td align="right"><div class="copyright-footer">Copyright © 2001-2018 Joel de Guzman,
       Hartmut Kaiser<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

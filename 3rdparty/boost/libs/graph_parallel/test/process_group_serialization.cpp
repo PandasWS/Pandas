@@ -16,7 +16,7 @@
 #include <boost/throw_exception.hpp>
 #include <boost/serialization/list.hpp>
 #include <boost/graph/distributed/mpi_process_group.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #ifdef BOOST_NO_EXCEPTIONS
 void
@@ -29,7 +29,7 @@ boost::throw_exception(std::exception const& ex)
 
 using boost::graph::distributed::mpi_process_group;
 
-int test_main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   boost::mpi::environment env(argc, argv);
 
@@ -47,12 +47,12 @@ int test_main(int argc, char** argv)
   if (process_id(pg) == 1) {
     int value;
     receive(pg, 0, 0, value);
-    BOOST_CHECK(seventeen == value);
+    BOOST_TEST(seventeen == value);
 
     std::list<int> values;
     receive(pg, 0, 1, values);
-    BOOST_CHECK(seventeens == values);
+    BOOST_TEST(seventeens == values);
   }
 
-  return 0;
+  return boost::report_errors();
 }

@@ -8,6 +8,7 @@
 // For more information, see http://www.boost.org/libs/range/
 //
 
+#define BOOST_ALLOW_DEPRECATED_HEADERS
 #include <boost/range/const_reverse_iterator.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>

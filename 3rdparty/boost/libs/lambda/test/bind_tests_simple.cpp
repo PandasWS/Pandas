@@ -12,7 +12,8 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
+#define BOOST_CHECK BOOST_TEST
 
 #include "boost/lambda/bind.hpp"
 
@@ -97,7 +98,7 @@ void test_data_members()
   BOOST_CHECK(b.i == 1);
 }
 
-int test_main(int, char *[]) {
+int main() {
 
   int i = 1; int j = 2; int k = 3;
   int result;
@@ -183,5 +184,5 @@ int test_main(int, char *[]) {
   test_member_functions();
 
 
-  return 0;
+  return boost::report_errors();
 }

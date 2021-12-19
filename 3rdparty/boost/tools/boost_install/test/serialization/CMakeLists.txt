@@ -4,18 +4,28 @@
 
 cmake_minimum_required(VERSION 3.5)
 
+if(POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)
+endif()
+
 project(CmakeConfigSerializationTest LANGUAGES CXX)
 
 include(${CMAKE_CURRENT_LIST_DIR}/../BoostVersion.cmake)
 
+set(BOOST_HINTS)
+
+if(USE_STAGED_BOOST)
+  set(BOOST_HINTS HINTS ../../../../stage)
+endif()
+
 if(USE_BOOST_PACKAGE)
 
-  find_package(Boost ${BOOST_VERSION} EXACT REQUIRED COMPONENTS serialization wserialization)
+  find_package(Boost ${BOOST_VERSION} EXACT REQUIRED COMPONENTS serialization wserialization ${BOOST_HINTS})
 
 else()
 
-  find_package(boost_serialization ${BOOST_VERSION} EXACT CONFIG REQUIRED)
-  find_package(boost_wserialization ${BOOST_VERSION} EXACT CONFIG REQUIRED)
+  find_package(boost_serialization ${BOOST_VERSION} EXACT CONFIG REQUIRED ${BOOST_HINTS})
+  find_package(boost_wserialization ${BOOST_VERSION} EXACT CONFIG REQUIRED ${BOOST_HINTS})
 
 endif()
 

@@ -112,6 +112,11 @@ namespace boost {
 
     template<class Y> bool owner_before( weak_ptr<Y> const & r ) const noexcept;
     template<class Y> bool owner_before( shared_ptr<Y> const & r ) const noexcept;
+
+    template<class Y> bool owner_equals( weak_ptr<Y> const & r ) const noexcept;
+    template<class Y> bool owner_equals( shared_ptr<Y> const & r ) const noexcept;
+
+    std::size_t owner_hash_value() const noexcept;
   };
 
   template<class T, class U>
@@ -185,7 +190,8 @@ NOTE: These constructors are an extension, not present in `std::weak_ptr`.
 [none]
 * {blank}
 +
-Effects:: Destroys this `weak_ptr` but has no effect on the object its stored pointer points to.
+Effects::
+  Destroys this `weak_ptr` but has no effect on the object its stored pointer points to.
 
 ### assignment
 ```
@@ -214,7 +220,8 @@ long use_count() const noexcept;
 [none]
 * {blank}
 +
-Returns:: 0 if `*this` is empty; otherwise, the number of `shared_ptr` objects that share ownership with `*this`.
+Returns::
+  0 if `*this` is empty; otherwise, the number of `shared_ptr` objects that share ownership with `*this`.
 
 ### expired
 ```
@@ -223,7 +230,8 @@ bool expired() const noexcept;
 [none]
 * {blank}
 +
-Returns:: `use_count() == 0`.
+Returns::
+  `use_count() == 0`.
 
 ### empty
 ```
@@ -243,7 +251,8 @@ shared_ptr<T> lock() const noexcept;
 [none]
 * {blank}
 +
-Returns:: `expired()? shared_ptr<T>(): shared_ptr<T>(*this)`.
+Returns::
+  `expired()? shared_ptr<T>(): shared_ptr<T>(*this)`.
 
 ### reset
 ```
@@ -252,7 +261,8 @@ void reset() noexcept;
 [none]
 * {blank}
 +
-Effects:: Equivalent to `weak_ptr().swap(*this)`.
+Effects::
+  Equivalent to `weak_ptr().swap(*this)`.
 
 ### swap
 ```
@@ -261,8 +271,10 @@ void swap(weak_ptr & b) noexcept;
 [none]
 * {blank}
 +
-Effects:: Exchanges the contents of the two smart pointers.
+Effects::
+  Exchanges the contents of the two smart pointers.
 
+### owner_before
 ```
 template<class Y> bool owner_before( weak_ptr<Y> const & r ) const noexcept;
 ```
@@ -272,7 +284,32 @@ template<class Y> bool owner_before( shared_ptr<Y> const & r ) const noexcept;
 [none]
 * {blank}
 +
-Returns:: See the description of `operator<`.
+Returns::
+  See the description of `operator<`.
+
+### owner_equals
+```
+template<class Y> bool owner_equals( weak_ptr<Y> const & r ) const noexcept;
+```
+```
+template<class Y> bool owner_equals( shared_ptr<Y> const & r ) const noexcept;
+```
+[none]
+* {blank}
++
+Returns::
+  `true` if and only if `*this` and `r` share ownership or are both empty.
+
+### owner_hash_value
+```
+std::size_t owner_hash_value() const noexcept;
+```
+[none]
+* {blank}
++
+Returns::
+  An unspecified hash value such that two instances that share ownership
+  have the same hash value.
 
 ## Free Functions
 
@@ -298,7 +335,8 @@ template<class T> void swap(weak_ptr<T> & a, weak_ptr<T> & b) noexcept;
 [none]
 * {blank}
 +
-Effects:: Equivalent to `a.swap(b)`.
+Effects::
+  Equivalent to `a.swap(b)`.
 
 ## Frequently Asked Questions
 

@@ -17,12 +17,12 @@
 #define BOOST_LIB_DIAGNOSTIC "on" // Report library file details.
 #include <boost/test/included/unit_test.hpp> // Boost.Test
 // #include <boost/test/unit_test.hpp> // Boost.Test
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <boost/array.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/type_traits/is_constructible.hpp>
-#include <boost/math/special_functions/fpclassify.hpp> // isnan, ifinite.
+#include <boost/math/special_functions/fpclassify.hpp> // isnan, isfinite.
 #include <boost/math/special_functions/next.hpp> // float_next, float_prior
 using boost::math::float_next;
 using boost::math::float_prior;
@@ -256,7 +256,9 @@ Real x;
   }
     */
 
+#ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
   test_integrals<long double>();
+#endif
   }
   catch (std::exception& ex)
   {

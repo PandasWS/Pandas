@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>F Distribution Examples</title>
 <link rel="stylesheet" href="../../../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Math Toolkit 2.10.0">
+<link rel="home" href="../../../index.html" title="Math Toolkit 3.1.0">
 <link rel="up" href="../weg.html" title="Worked Examples">
 <link rel="prev" href="cs_eg/chi_sq_size.html" title="Estimating the Required Sample Sizes for a Chi-Square Test for the Standard Deviation">
 <link rel="next" href="binom_eg.html" title="Binomial Distribution Examples">
@@ -79,9 +79,9 @@
           The test statistic for an F-test is simply the ratio of the square of the
           two standard deviations:
         </p>
-<p>
-          F = s<sub>1</sub><sup>2</sup> / s<sub>2</sub><sup>2</sup>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="serif_italic">F = s<sub>1</sub><sup>2</sup> / s<sub>2</sub><sup>2</sup></span>
+          </p></blockquote></div>
 <p>
           where s<sub>1</sub> is the standard deviation of the first sample and s<sub>2</sub>
 is the standard
@@ -179,14 +179,14 @@ is the standard
           The upper and lower critical values can be computed using the quantile
           function:
         </p>
-<p>
-          F<sub>(1-alpha; N1-1, N2-1)</sub> = <code class="computeroutput"><span class="identifier">quantile</span><span class="special">(</span><span class="identifier">fisher_f</span><span class="special">(</span><span class="identifier">N1</span><span class="special">-</span><span class="number">1</span><span class="special">,</span> <span class="identifier">N2</span><span class="special">-</span><span class="number">1</span><span class="special">),</span>
-          <span class="identifier">alpha</span><span class="special">)</span></code>
-        </p>
-<p>
-          F<sub>(alpha; N1-1, N2-1)</sub> = <code class="computeroutput"><span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">fisher_f</span><span class="special">(</span><span class="identifier">N1</span><span class="special">-</span><span class="number">1</span><span class="special">,</span> <span class="identifier">N2</span><span class="special">-</span><span class="number">1</span><span class="special">),</span>
-          <span class="identifier">alpha</span><span class="special">))</span></code>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="serif_italic">F<sub>(1-alpha; N1-1, N2-1)</sub> = <code class="computeroutput"><span class="identifier">quantile</span><span class="special">(</span><span class="identifier">fisher_f</span><span class="special">(</span><span class="identifier">N1</span><span class="special">-</span><span class="number">1</span><span class="special">,</span>
+            <span class="identifier">N2</span><span class="special">-</span><span class="number">1</span><span class="special">),</span> <span class="identifier">alpha</span><span class="special">)</span></code></span>
+          </p></blockquote></div>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="serif_italic">F<sub>(alpha; N1-1, N2-1)</sub> = <code class="computeroutput"><span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">fisher_f</span><span class="special">(</span><span class="identifier">N1</span><span class="special">-</span><span class="number">1</span><span class="special">,</span>
+            <span class="identifier">N2</span><span class="special">-</span><span class="number">1</span><span class="special">),</span> <span class="identifier">alpha</span><span class="special">))</span></code></span>
+          </p></blockquote></div>
 <p>
           In our example program we need both upper and lower critical values for
           alpha and for alpha/2:
@@ -312,11 +312,11 @@ Standard deviation 1 is greater than standard deviation 2 ACCEPTED
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

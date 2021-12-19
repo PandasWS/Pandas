@@ -10,7 +10,7 @@ inline unsigned long long rand_15_bit()
 {
    //Many rand implementation only use 15 bits
    //so make sure we have only 15 bits
-   return (unsigned long long)((std::rand()) & 0x7fffu);
+   return (unsigned long long)((std::rand()) & 0x7fff);
 }
 
 inline unsigned long long ullrand()
@@ -23,10 +23,9 @@ inline unsigned long long ullrand()
 template< class RandomIt >
 void random_shuffle( RandomIt first, RandomIt last )
 {
-   typedef typename boost::movelib::iterator_traits<RandomIt>::difference_type difference_type;
-   difference_type n = last - first;
-   for (difference_type i = n-1; i > 0; --i) {
-      difference_type j = ullrand() % (i+1);
+   std::size_t n = std::size_t (last - first);
+   for (std::size_t i = n-1; i > 0; --i) {
+      std::size_t j = static_cast<std::size_t >(ullrand() % (unsigned long long)(i+1));
       if(j != i) {
          boost::adl_move_swap(first[i], first[j]);
       }

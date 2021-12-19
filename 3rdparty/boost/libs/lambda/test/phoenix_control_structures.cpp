@@ -12,7 +12,8 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
+#define BOOST_CHECK BOOST_TEST
 
 #include "boost/lambda/lambda.hpp"
 #include "boost/lambda/if.hpp"
@@ -36,7 +37,7 @@ using namespace std;
 //  If-else, while, do-while, for statements
 
 
-int test_main(int, char *[]) {
+int main() {
 
     vector<int> v;
     v.clear();
@@ -143,6 +144,5 @@ int test_main(int, char *[]) {
 
     v = t;
 
-    return 0;
+    return boost::report_errors();
 }
-

@@ -8,7 +8,7 @@
 
 //  VC++ 8.0 warns on usage of certain Standard Library and API functions that
 //  can be cause buffer overruns or other possible security issues if misused.
-//  See http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
+//  See https://web.archive.org/web/20071014014301/http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
 //  But the wording of the warning is misleading and unsettling, there are no
 //  portable alternative functions, and VC++ 8.0's own libraries use the
 //  functions in question. So turn off the warnings.
@@ -17,8 +17,7 @@
 
 #include <boost/config.hpp>
 
-// Boost.Test
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include <boost/static_assert.hpp>
 
@@ -75,34 +74,34 @@ void test_function()
     typedef tagged< data, tag_a > data_a;
     typedef tagged< data, tag_b > data_b;
 
-    BOOST_CHECK(( is_same< data_a::value_type   , data  >::value ));
-    BOOST_CHECK(( is_same< data_a::tag          , tag_a >::value ));
+    BOOST_TEST(( is_same< data_a::value_type   , data  >::value ));
+    BOOST_TEST(( is_same< data_a::tag          , tag_a >::value ));
 
-    BOOST_CHECK((
+    BOOST_TEST((
         is_same< overwrite_tagged < data_a, tag_b >::type, data_b >::value
     ));
-    BOOST_CHECK((
+    BOOST_TEST((
         is_same< default_tagged   < data_a, tag_b >::type, data_a >::value
     ));
-    BOOST_CHECK(( 
+    BOOST_TEST((
         is_same< default_tagged   < data  , tag_b >::type, data_b >::value
     ));
 
-    BOOST_CHECK(( is_tagged< data   >::value == false ));
-    BOOST_CHECK(( is_tagged< data_a >::value == true  ));
+    BOOST_TEST(( is_tagged< data   >::value == false ));
+    BOOST_TEST(( is_tagged< data_a >::value == true  ));
 
-    BOOST_CHECK(( is_same< value_type_of<data_a>::type, data  >::value ));
-    BOOST_CHECK(( is_same< tag_of       <data_a>::type, tag_a >::value ));
+    BOOST_TEST(( is_same< value_type_of<data_a>::type, data  >::value ));
+    BOOST_TEST(( is_same< tag_of       <data_a>::type, tag_a >::value ));
 
 }
 
-int test_main( int, char* [] )
+int main()
 {
     test_function();
 
     // Test metanfunctions
     BOOST_BIMAP_CALL_TEST_STATIC_FUNCTION( test_metafunctions );
 
-    return 0;
+    return boost::report_errors();
 }
 

@@ -2269,7 +2269,7 @@ The header contains implementation of a minimal severity per channel filter. </p
       <template-type-parameter name="SeverityFallbackT"><default>fallback_to_none</default></template-type-parameter>
       <template-type-parameter name="ChannelOrderT"><default>less</default></template-type-parameter>
       <template-type-parameter name="SeverityCompareT"><default>greater_equal</default></template-type-parameter>
-      <template-type-parameter name="AllocatorT"><default>std::allocator&lt; void &gt;</default></template-type-parameter>
+      <template-type-parameter name="AllocatorT"><default>use_std_allocator</default></template-type-parameter>
       <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type><default>phoenix::actor</default></template-nontype-parameter>
     </template><inherit access="public">ActorT&lt; channel_severity_filter_terminal&lt; ChannelT, SeverityT, ChannelFallbackT, SeverityFallbackT, ChannelOrderT, SeverityCompareT, AllocatorT &gt; &gt;</inherit><class name="subscript_result"><purpose>An auxiliary pseudo-reference to implement insertion through subscript operator. </purpose><method-group name="public member functions">
 </method-group>
@@ -2295,7 +2295,7 @@ The header contains implementation of a minimal severity per channel filter. </p
       <template-type-parameter name="SeverityFallbackT"><default>fallback_to_none</default></template-type-parameter>
       <template-type-parameter name="ChannelOrderT"><default>less</default></template-type-parameter>
       <template-type-parameter name="SeverityCompareT"><default>greater_equal</default></template-type-parameter>
-      <template-type-parameter name="AllocatorT"><default>std::allocator&lt; void &gt;</default></template-type-parameter>
+      <template-type-parameter name="AllocatorT"><default>use_std_allocator</default></template-type-parameter>
     </template><struct name="channel_visitor"><template>
       <template-type-parameter name="ArgT"/>
     </template><purpose>Channel visitor. </purpose><typedef name="result_type"><type>void</type></typedef>
@@ -2346,31 +2346,31 @@ The header contains implementation of a minimal severity per channel filter. </p
 <overloaded-function name="channel_severity_filter"><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT &gt;</type><template>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="SeverityT"/>
-        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, SeverityT, fallback_to_none, fallback_to_none, less, greater_equal, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, SeverityT, fallback_to_none, fallback_to_none, less, greater_equal, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="SeverityT"/>
           <template-type-parameter name="ChannelDescriptorT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
-        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, less, greater_equal, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, less, greater_equal, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="SeverityDescriptorT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
-        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, less, greater_equal, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, less, greater_equal, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelDescriptorT"/>
           <template-type-parameter name="SeverityDescriptorT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
-        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, fallback_to_none, less, greater_equal, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, fallback_to_none, less, greater_equal, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="SeverityT"/>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="ChannelFallbackT"/>
           <template-type-parameter name="ChannelTagT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
-        </template><parameter name="channel_placeholder"><paramtype><classname>attribute_actor</classname>&lt; ChannelT, ChannelFallbackT, ChannelTagT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, fallback_to_none, SeverityFallbackT, less, greater_equal, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_placeholder"><paramtype><classname>attribute_actor</classname>&lt; ChannelT, ChannelFallbackT, ChannelTagT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, fallback_to_none, SeverityFallbackT, less, greater_equal, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="SeverityT"/>
           <template-type-parameter name="SeverityFallbackT"/>
           <template-type-parameter name="SeverityTagT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
-        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_placeholder"><paramtype><classname>attribute_actor</classname>&lt; SeverityT, SeverityFallbackT, SeverityTagT, ActorT &gt; const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, SeverityFallbackT, less, greater_equal, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_placeholder"><paramtype><classname>attribute_actor</classname>&lt; SeverityT, SeverityFallbackT, SeverityTagT, ActorT &gt; const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, SeverityFallbackT, less, greater_equal, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="ChannelFallbackT"/>
           <template-type-parameter name="ChannelTagT"/>
@@ -2382,36 +2382,36 @@ The header contains implementation of a minimal severity per channel filter. </p
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="SeverityT"/>
           <template-type-parameter name="SeverityCompareT"/>
-        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, SeverityT, fallback_to_none, fallback_to_none, less, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, SeverityT, fallback_to_none, fallback_to_none, less, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="SeverityT"/>
           <template-type-parameter name="ChannelDescriptorT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="SeverityCompareT"/>
-        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, less, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, less, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="SeverityDescriptorT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="SeverityCompareT"/>
-        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, less, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, less, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelDescriptorT"/>
           <template-type-parameter name="SeverityDescriptorT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="SeverityCompareT"/>
-        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, fallback_to_none, less, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, fallback_to_none, less, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="SeverityT"/>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="ChannelFallbackT"/>
           <template-type-parameter name="ChannelTagT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="SeverityCompareT"/>
-        </template><parameter name="channel_placeholder"><paramtype><classname>attribute_actor</classname>&lt; ChannelT, ChannelFallbackT, ChannelTagT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, fallback_to_none, SeverityFallbackT, less, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_placeholder"><paramtype><classname>attribute_actor</classname>&lt; ChannelT, ChannelFallbackT, ChannelTagT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, fallback_to_none, SeverityFallbackT, less, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="SeverityT"/>
           <template-type-parameter name="SeverityFallbackT"/>
           <template-type-parameter name="SeverityTagT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="SeverityCompareT"/>
-        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_placeholder"><paramtype><classname>attribute_actor</classname>&lt; SeverityT, SeverityFallbackT, SeverityTagT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, SeverityFallbackT, less, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_placeholder"><paramtype><classname>attribute_actor</classname>&lt; SeverityT, SeverityFallbackT, SeverityTagT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, SeverityFallbackT, less, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="ChannelFallbackT"/>
           <template-type-parameter name="ChannelTagT"/>
@@ -2425,25 +2425,25 @@ The header contains implementation of a minimal severity per channel filter. </p
           <template-type-parameter name="SeverityT"/>
           <template-type-parameter name="SeverityCompareT"/>
           <template-type-parameter name="ChannelOrderT"/>
-        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, SeverityT, fallback_to_none, fallback_to_none, ChannelOrderT, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, SeverityT, fallback_to_none, fallback_to_none, ChannelOrderT, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="SeverityT"/>
           <template-type-parameter name="ChannelDescriptorT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="SeverityCompareT"/>
           <template-type-parameter name="ChannelOrderT"/>
-        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, ChannelOrderT, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, ChannelOrderT, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="SeverityDescriptorT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="SeverityCompareT"/>
           <template-type-parameter name="ChannelOrderT"/>
-        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, ChannelOrderT, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; typename ChannelDescriptorT::value_type, typename SeverityDescriptorT::value_type, fallback_to_none, fallback_to_none, ChannelOrderT, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelDescriptorT"/>
           <template-type-parameter name="SeverityDescriptorT"/>
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="SeverityCompareT"/>
           <template-type-parameter name="ChannelOrderT"/>
-        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, fallback_to_none, ChannelOrderT, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_keyword"><paramtype><classname>attribute_keyword</classname>&lt; ChannelDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_keyword"><paramtype><classname>attribute_keyword</classname>&lt; SeverityDescriptorT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, fallback_to_none, ChannelOrderT, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="SeverityT"/>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="ChannelFallbackT"/>
@@ -2451,7 +2451,7 @@ The header contains implementation of a minimal severity per channel filter. </p
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="SeverityCompareT"/>
           <template-type-parameter name="ChannelOrderT"/>
-        </template><parameter name="channel_placeholder"><paramtype><classname>attribute_actor</classname>&lt; ChannelT, ChannelFallbackT, ChannelTagT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, fallback_to_none, SeverityFallbackT, ChannelOrderT, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_placeholder"><paramtype><classname>attribute_actor</classname>&lt; ChannelT, ChannelFallbackT, ChannelTagT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, fallback_to_none, SeverityFallbackT, ChannelOrderT, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="SeverityT"/>
           <template-type-parameter name="SeverityFallbackT"/>
@@ -2459,7 +2459,7 @@ The header contains implementation of a minimal severity per channel filter. </p
           <template-nontype-parameter name="ActorT"><type>template&lt; typename &gt; class</type></template-nontype-parameter>
           <template-type-parameter name="SeverityCompareT"/>
           <template-type-parameter name="ChannelOrderT"/>
-        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_placeholder"><paramtype><classname>attribute_actor</classname>&lt; SeverityT, SeverityFallbackT, SeverityTagT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, SeverityFallbackT, ChannelOrderT, SeverityCompareT, std::allocator&lt; void &gt;, ActorT &gt;</type><template>
+        </template><parameter name="channel_name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="severity_placeholder"><paramtype><classname>attribute_actor</classname>&lt; SeverityT, SeverityFallbackT, SeverityTagT, ActorT &gt; const &amp;</paramtype></parameter><parameter name="severity_compare"><paramtype>SeverityCompareT const &amp;</paramtype></parameter><parameter name="channel_order"><paramtype>ChannelOrderT const &amp;</paramtype></parameter></signature><signature><type>channel_severity_filter_actor&lt; ChannelT, SeverityT, ChannelFallbackT, SeverityFallbackT, ChannelOrderT, SeverityCompareT, use_std_allocator, ActorT &gt;</type><template>
           <template-type-parameter name="ChannelT"/>
           <template-type-parameter name="ChannelFallbackT"/>
           <template-type-parameter name="ChannelTagT"/>
@@ -3049,6 +3049,7 @@ The header contains implementation of a <computeroutput>matches</computeroutput>
 
 </namespace>
 </namespace>
+<macro name="BOOST_LOG_AUX_FORCEINLINE_MSVC_BUG982738"/>
 </header>
 <header name="boost/log/expressions/record.hpp">
 <para><para>Andrey Semashev </para>

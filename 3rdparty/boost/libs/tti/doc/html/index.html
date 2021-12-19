@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-<title>Chapter&#160;1.&#160;The Type Traits Introspection Library</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chapter 1. The Type Traits Introspection Library</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="index.html" title="Chapter&#160;1.&#160;The Type Traits Introspection Library">
+<link rel="home" href="index.html" title="Chapter 1. The Type Traits Introspection Library">
 <link rel="next" href="the_type_traits_introspection_library/tti_reason.html" title="Why the TTI Library ?">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -21,11 +21,11 @@
 <div class="chapter">
 <div class="titlepage"><div>
 <div><h2 class="title">
-<a name="tti"></a>Chapter&#160;1.&#160;The Type Traits Introspection Library</h2></div>
+<a name="tti"></a>Chapter 1. The Type Traits Introspection Library</h2></div>
 <div><div class="author"><h3 class="author">
 <span class="firstname">Edward</span> <span class="surname">Diener</span>
 </h3></div></div>
-<div><p class="copyright">Copyright &#169; 2011-2013 Tropic Software
+<div><p class="copyright">Copyright © 2011-2013 Tropic Software
       East Inc</p></div>
 <div><div class="legalnotice">
 <a name="tti.legal"></a><p>
@@ -51,6 +51,8 @@
     Metafunctions</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_type.html">Introspecting
     an inner type</a></span></dt>
+<dd><dl><dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_type.html#the_type_traits_introspection_library.tti_detail_has_type.tti_detail_has_specific_type">Introspecting
+      a specific user-defined type</a></span></dt></dl></dd>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_template.html">Introspecting
     an inner class template</a></span></dt>
 <dd><dl>
@@ -59,18 +61,26 @@
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_template/tti_detail_has_template_metafunction.html">Using
       the has_template_(xxx) metafunction</a></span></dt>
 </dl></dd>
+<dt><span class="section"><a href="the_type_traits_introspection_library/tti_function_templates.html">Introspecting
+    function templates technique</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_member_data.html">Introspecting
     member data</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_member_function.html">Introspecting
     member function</a></span></dt>
+<dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_member_function_template.html">Introspecting
+    member function template</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_static_member_data.html">Introspecting
     static member data</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_static_member_function.html">Introspecting
     static member function</a></span></dt>
+<dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_static_member_function_template.html">Introspecting
+    static member function template</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_data.html">Introspecting
-    inner data</a></span></dt>
+    data</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_function.html">Introspecting
-    an inner function</a></span></dt>
+    function</a></span></dt>
+<dt><span class="section"><a href="the_type_traits_introspection_library/tti_detail_has_function_template.html">Introspecting
+    function template</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_nested_type.html">Nested
     Types</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_func_sig.html">Nested
@@ -78,46 +88,68 @@
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_enclosing_type.html">Enclosing
     Type</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_usingMM.html">An example
-    using the Macro Metafunctions</a></span></dt>
-<dt><span class="section"><a href="the_type_traits_introspection_library/tti_func_templates.html">Introspecting
-    Function Templates</a></span></dt>
+    using the macro metafunctions</a></span></dt>
 <dt><span class="section"><a href="reference.html">Reference</a></span></dt>
 <dd><dl>
-<dt><span class="section"><a href="reference.html#header.boost.tti.gen.has_data_gen_hpp">Header &lt;boost/tti/gen/has_data_gen.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="reference.html#header.boost.tti.gen.has_class_gen_hpp">Header &lt;boost/tti/gen/has_class_gen.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/gen/has_data_gen_hpp.html">Header &lt;boost/tti/gen/has_data_gen.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/gen/has_enum_gen_hpp.html">Header &lt;boost/tti/gen/has_enum_gen.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/gen/has_function_gen_hpp.html">Header &lt;boost/tti/gen/has_function_gen.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/gen/has_function_template_gen_hpp.html">Header &lt;boost/tti/gen/has_function_template_gen.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/gen/has_member_data_gen_hpp.html">Header &lt;boost/tti/gen/has_member_data_gen.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/gen/has_member_function_gen_hpp.html">Header &lt;boost/tti/gen/has_member_function_gen.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/gen/has_member_function_template_gen_hpp.html">Header &lt;boost/tti/gen/has_member_function_template_gen.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/gen/has_static_member_data_gen_hpp.html">Header &lt;boost/tti/gen/has_static_member_data_gen.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/gen/has_static_member_function_gen_hpp.html">Header &lt;boost/tti/gen/has_static_member_function_gen.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/gen/has_static_member_function_template_gen_hpp.html">Header &lt;boost/tti/gen/has_static_member_function_template_gen.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/gen/has_template_gen_hpp.html">Header &lt;boost/tti/gen/has_template_gen.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/gen/has_type_gen_hpp.html">Header &lt;boost/tti/gen/has_type_gen.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/gen/has_union_gen_hpp.html">Header &lt;boost/tti/gen/has_union_gen.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/gen/member_type_gen_hpp.html">Header &lt;boost/tti/gen/member_type_gen.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/gen/namespace_gen_hpp.html">Header &lt;boost/tti/gen/namespace_gen.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/has_class_hpp.html">Header &lt;boost/tti/has_class.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/has_data_hpp.html">Header &lt;boost/tti/has_data.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/has_enum_hpp.html">Header &lt;boost/tti/has_enum.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/has_function_hpp.html">Header &lt;boost/tti/has_function.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/has_function_template_hpp.html">Header &lt;boost/tti/has_function_template.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/has_member_data_hpp.html">Header &lt;boost/tti/has_member_data.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/has_member_function_hpp.html">Header &lt;boost/tti/has_member_function.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/has_member_function_template_hpp.html">Header &lt;boost/tti/has_member_function_template.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/has_static_member_data_hpp.html">Header &lt;boost/tti/has_static_member_data.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/has_static_member_function_hpp.html">Header &lt;boost/tti/has_static_member_function.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/has_static_member_function_template_hpp.html">Header &lt;boost/tti/has_static_member_function_template.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/has_template_hpp.html">Header &lt;boost/tti/has_template.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/has_type_hpp.html">Header &lt;boost/tti/has_type.hpp&gt;</a></span></dt>
+<dd><dl></dl></dd>
+<dt><span class="section"><a href="header/boost/tti/has_union_hpp.html">Header &lt;boost/tti/has_union.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
 <dt><span class="section"><a href="header/boost/tti/member_type_hpp.html">Header &lt;boost/tti/member_type.hpp&gt;</a></span></dt>
 <dd><dl></dl></dd>
@@ -127,7 +159,7 @@
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_history.html">History</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_todo.html">ToDo</a></span></dt>
 <dt><span class="section"><a href="the_type_traits_introspection_library/tti_acknowledgments.html">Acknowledgments</a></span></dt>
-<dt><span class="section"><a href="index/s24.html">Index</a></span></dt>
+<dt><span class="section"><a href="index/s27.html">Index</a></span></dt>
 </dl>
 </div>
 <div class="section">
@@ -183,12 +215,14 @@
           Each macro takes the name of the type's element and generates a metafunction
           which can be subsequently invoked to determine whether or not the element
           exists within the type. These generated metafunctions will be called "macro
-          metafunctions" in the documentation.
+          metafunctions" in the documentation. The type to be introspected can
+          be a class, struct, or union.
         </li>
 <li class="listitem">
-          Provide the means to create a typedef for a type which may not exist. This
-          typedef type can be used as a type in the metafunctions of the library
-          without producing compile-time errors.
+          Provide the means to create a typedef for a type which may not exist. If
+          the type does not exist an empty marker type is returned as the typedef
+          type. This typedef type can be used as a type in the metafunctions of the
+          library without producing compile-time errors.
         </li>
 </ul></div>
 <p>
@@ -212,7 +246,7 @@
       Files</a>
 </h3></div></div></div>
 <p>
-        There are is a single header file, <code class="computeroutput"><span class="identifier">boost</span><span class="special">/</span><span class="identifier">tti</span><span class="special">/</span><span class="identifier">tti</span><span class="special">.</span><span class="identifier">hpp</span></code>,
+        There is a single header file, <code class="computeroutput"><span class="identifier">boost</span><span class="special">/</span><span class="identifier">tti</span><span class="special">/</span><span class="identifier">tti</span><span class="special">.</span><span class="identifier">hpp</span></code>,
         which includes all the header files in the library.
       </p>
 <p>
@@ -221,7 +255,7 @@
         the nested elements to be introspected. These header files are:
       </p>
 <div class="table">
-<a name="the_type_traits_introspection_library.tti_intro.tti_headers.tbhfiles"></a><p class="title"><b>Table&#160;1.1.&#160;TTI Header Files</b></p>
+<a name="the_type_traits_introspection_library.tti_intro.tti_headers.tbhfiles"></a><p class="title"><b>Table 1.1. TTI Header Files</b></p>
 <div class="table-contents"><table class="table" summary="TTI Header Files">
 <colgroup>
 <col>
@@ -249,6 +283,42 @@
 <td>
                 <p>
                   <code class="computeroutput"><a class="link" href="header/boost/tti/has_type_hpp.html" title="Header &lt;boost/tti/has_type.hpp&gt;">has_type.hpp</a></code>
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Class/Struct
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><a class="link" href="header/boost/tti/has_class_hpp.html" title="Header &lt;boost/tti/has_class.hpp&gt;">has_class.hpp</a></code>
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Enumeration
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><a class="link" href="header/boost/tti/has_enum_hpp.html" title="Header &lt;boost/tti/has_enum.hpp&gt;">has_enum.hpp</a></code>
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Union
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><a class="link" href="header/boost/tti/has_union_hpp.html" title="Header &lt;boost/tti/has_union.hpp&gt;">has_union.hpp</a></code>
                 </p>
               </td>
 </tr>
@@ -291,6 +361,18 @@
 <tr>
 <td>
                 <p>
+                  Member function template
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><a class="link" href="header/boost/tti/has_member_function_template_hpp.html" title="Header &lt;boost/tti/has_member_function_template.hpp&gt;">has_member_function_template.hpp</a></code>
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   Static member data
                 </p>
               </td>
@@ -309,6 +391,18 @@
 <td>
                 <p>
                   <code class="computeroutput"><a class="link" href="header/boost/tti/has_static_member_function_hpp.html" title="Header &lt;boost/tti/has_static_member_function.hpp&gt;">has_static_member_function.hpp</a></code>
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Static member function template
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><a class="link" href="header/boost/tti/has_static_member_function_template_hpp.html" title="Header &lt;boost/tti/has_static_member_function_template.hpp&gt;">has_static_member_function_template.hpp</a></code>
                 </p>
               </td>
 </tr>
@@ -339,6 +433,18 @@
 <tr>
 <td>
                 <p>
+                  Function template
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><a class="link" href="header/boost/tti/has_function_template_hpp.html" title="Header &lt;boost/tti/has_function_template.hpp&gt;">has_function_template.hpp</a></code>
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   Member Type Creation
                 </p>
               </td>
@@ -356,7 +462,7 @@
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><p><small>Last revised: August 14, 2019 at 12:05:44 GMT</small></p></td>
+<td align="left"><p><small>Last revised: December 02, 2021 at 06:50:04 GMT</small></p></td>
 <td align="right"><div class="copyright-footer"></div></td>
 </tr></table>
 <hr>

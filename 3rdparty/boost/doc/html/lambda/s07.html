@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Practical considerations</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../lambda.html" title="Chapter&#160;20.&#160;Boost.Lambda">
+<link rel="up" href="../lambda.html" title="Chapter 20. Boost.Lambda">
 <link rel="prev" href="extending.html" title="Extending return type deduction system">
 <link rel="next" href="s08.html" title="Relation to other Boost libraries">
 </head>
@@ -54,7 +54,7 @@ reading the argument from one <code class="literal">std::vector&lt;int&gt;</code
 and placing the result into another.
 The length of the vectors was 100 elements.
 The running times are listed in 
-<a class="xref" href="s07.html#table:increasing_arithmetic_test" title="Table&#160;20.3.&#160;Test 1">Table&#160;20.3, &#8220;Test 1&#8221;</a>.
+<a class="xref" href="s07.html#table:increasing_arithmetic_test" title="Table 20.3. Test 1">Table 20.3, “Test 1”</a>.
 
 We can observe that there is no significant difference between the
 two approaches.
@@ -65,12 +65,12 @@ perform an operation to each element in a 100-element long vector.
 This time the element type of the vectors was <code class="literal">double</code>
 and we started with very simple arithmetic expressions and moved to 
 more complex ones.
-The running times are listed in <a class="xref" href="s07.html#table:ll_vs_stl_test" title="Table&#160;20.4.&#160;Test 2">Table&#160;20.4, &#8220;Test 2&#8221;</a>.
+The running times are listed in <a class="xref" href="s07.html#table:ll_vs_stl_test" title="Table 20.4. Test 2">Table 20.4, “Test 2”</a>.
 
 Here, we also included classic STL style unnamed functions into tests.
 We do not show these expressions, as they get rather complex. 
 For example, the
-last expression in <a class="xref" href="s07.html#table:ll_vs_stl_test" title="Table&#160;20.4.&#160;Test 2">Table&#160;20.4, &#8220;Test 2&#8221;</a> written with
+last expression in <a class="xref" href="s07.html#table:ll_vs_stl_test" title="Table 20.4. Test 2">Table 20.4, “Test 2”</a> written with
 classic STL tools contains 7 calls to <code class="literal">compose2</code>, 
 8 calls to <code class="literal">bind1st</code>
 and altogether 14 constructor invocations for creating 
@@ -102,7 +102,7 @@ this for some seemingly simple expressions.
 
 </p>
 <div class="table">
-<a name="table:increasing_arithmetic_test"></a><p class="title"><b>Table&#160;20.3.&#160;Test 1</b></p>
+<a name="table:increasing_arithmetic_test"></a><p class="title"><b>Table 20.3. Test 1</b></p>
 <div class="table-contents">
 <div class="caption">CPU time of expressions with integer multiplication written as a lambda expression and as a traditional hand-coded function object class. 
 The running times are expressed in arbitrary units.</div>
@@ -152,7 +152,7 @@ The running times are expressed in arbitrary units.</div>
 <p>
 </p>
 <div class="table">
-<a name="table:ll_vs_stl_test"></a><p class="title"><b>Table&#160;20.4.&#160;Test 2</b></p>
+<a name="table:ll_vs_stl_test"></a><p class="title"><b>Table 20.4. Test 2</b></p>
 <div class="table-contents">
 <div class="caption">CPU time of arithmetic expressions written as lambda 
 expressions, as classic STL unnamed functions (using <code class="literal">compose2</code>, <code class="literal">bind1st</code> etc.) and as traditional hand-coded function object classes. 
@@ -212,7 +212,7 @@ The running times are expressed in arbitrary units.</div>
 </p>
 <p>Some additional performance testing with an earlier version of the
 library is described
-<a class="xref" href="../lambda.html#cit:jarvi:00" title="The Lambda Library : Lambda Abstraction in C++">[<abbr class="abbrev">J&#228;r00</abbr>]</a>.
+<a class="xref" href="../lambda.html#cit:jarvi:00" title="The Lambda Library : Lambda Abstraction in C++">[<abbr class="abbrev">Jär00</abbr>]</a>.
 </p>
 </div>
 <div class="section">
@@ -330,7 +330,7 @@ Contains tests for using <code class="literal">boost::function</code> together w
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 1999-2004 Jaakko J&#228;rvi, Gary Powell<p>Use, modification and distribution is subject to the Boost
+<td align="right"><div class="copyright-footer">Copyright © 1999-2004 Jaakko Järvi, Gary Powell<p>Use, modification and distribution is subject to the Boost
     Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>

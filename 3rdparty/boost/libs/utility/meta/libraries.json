@@ -13,7 +13,8 @@
             "Memory",
             "Miscellaneous",
             "Patterns"
-        ]
+        ],
+        "cxxstd": "03"
     },
     {
         "key": "utility/call_traits",
@@ -25,7 +26,8 @@
         "documentation": "call_traits.htm",
         "category": [
             "Generic"
-        ]
+        ],
+        "cxxstd": "03"
     },
     {
         "key": "utility/compressed_pair",
@@ -38,7 +40,8 @@
         "category": [
             "Data",
             "Patterns"
-        ]
+        ],
+        "cxxstd": "03"
     },
     {
         "key": "utility/identity_type",
@@ -53,7 +56,8 @@
         ],
         "maintainers": [
             "Lorenzo Caminiti <lorcaminiti -at- gmail.com>"
-        ]
+        ],
+        "cxxstd": "03"
     },
     {
         "key": "utility/in_place_factories",
@@ -65,7 +69,8 @@
         "documentation": "in_place_factories.html",
         "category": [
             "Generic"
-        ]
+        ],
+        "cxxstd": "03"
     },
     {
         "key": "utility/operators",
@@ -83,20 +88,8 @@
         ],
         "maintainers": [
             "Daniel Frey <d.frey -at- gmx.de>"
-        ]
-    },
-    {
-        "key": "utility/ostream_string",
-        "name": "ostream_string",
-        "description": "String formatted output function.",
-        "documentation": "doc/html/ostream_string.html",
-        "category": [
-            "IO"
         ],
-        "authors": "Glen Fernandes",
-        "maintainers": [
-            "Glen Fernandes <glenjofe -at- gmail.com>"
-        ]
+        "cxxstd": "03"
     },
     {
         "key": "utility/result_of",
@@ -109,7 +102,8 @@
         "authors": "",
         "maintainers": [
             "Daniel Walker <daniel.j.walker -at- gmail.com>"
-        ]
+        ],
+        "cxxstd": "03"
     },
     {
         "key": "utility/string_ref",
@@ -122,7 +116,8 @@
         "authors": "Marshall Clow",
         "maintainers": [
             "Marshall Clow <marshall -at- idio.com>"
-        ]
+        ],
+        "cxxstd": "03"
     },
     {
         "key": "utility/value_initialized",
@@ -134,6 +129,7 @@
         "documentation": "value_init.htm",
         "category": [
             "Miscellaneous"
-        ]
+        ],
+        "cxxstd": "03"
     }
 ]

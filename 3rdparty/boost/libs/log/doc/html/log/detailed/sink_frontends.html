@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Sink frontends</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Log v2">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Log v2">
 <link rel="up" href="../detailed.html" title="Detailed features description">
 <link rel="prev" href="sources.html" title="Logging sources">
 <link rel="next" href="sink_backends.html" title="Sink backends">
@@ -656,8 +656,8 @@
     <span class="comment">// Wrap it into the frontend and register in the core</span>
     <span class="identifier">boost</span><span class="special">::</span><span class="identifier">shared_ptr</span><span class="special">&lt;</span> <span class="identifier">sink_t</span> <span class="special">&gt;</span> <span class="identifier">sink</span><span class="special">(</span><span class="keyword">new</span> <span class="identifier">sink_t</span><span class="special">(</span>
         <span class="identifier">backend</span><span class="special">,</span>                                                                 <a class="co" name="log.detailed.sink_frontends.async.c14" href="sink_frontends.html#log.detailed.sink_frontends.async.c15"><img src="../../../../../../doc/src/images/callouts/5.png" alt="5" border="0"></a>
-        <span class="identifier">keywords</span><span class="special">::</span><span class="identifier">order</span> <span class="special">=</span>
-            <span class="identifier">logging</span><span class="special">::</span><span class="identifier">make_attr_ordering</span><span class="special">(</span><span class="string">"LineID"</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span> <span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="special">&gt;()),</span>  <a class="co" name="log.detailed.sink_frontends.async.c16" href="sink_frontends.html#log.detailed.sink_frontends.async.c17"><img src="../../../../../../doc/src/images/callouts/6.png" alt="6" border="0"></a>
+        <span class="identifier">keywords</span><span class="special">::</span><span class="identifier">order</span> <span class="special">=</span> <span class="identifier">logging</span><span class="special">::</span><span class="identifier">make_attr_ordering</span><span class="special">&lt;</span> <span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="special">&gt;(</span>           <a class="co" name="log.detailed.sink_frontends.async.c16" href="sink_frontends.html#log.detailed.sink_frontends.async.c17"><img src="../../../../../../doc/src/images/callouts/6.png" alt="6" border="0"></a>
+            <span class="string">"LineID"</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span> <span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="special">&gt;()),</span>
         <span class="identifier">keywords</span><span class="special">::</span><span class="identifier">ordering_window</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">posix_time</span><span class="special">::</span><span class="identifier">seconds</span><span class="special">(</span><span class="number">1</span><span class="special">)</span>                <a class="co" name="log.detailed.sink_frontends.async.c18" href="sink_frontends.html#log.detailed.sink_frontends.async.c19"><img src="../../../../../../doc/src/images/callouts/7.png" alt="7" border="0"></a>
     <span class="special">));</span>
     <span class="identifier">core</span><span class="special">-&gt;</span><span class="identifier">add_sink</span><span class="special">(</span><span class="identifier">sink</span><span class="special">);</span>
@@ -770,7 +770,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2007-2016 Andrey Semashev<p>
+<td align="right"><div class="copyright-footer">Copyright © 2007-2021 Andrey Semashev<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>).
       </p>

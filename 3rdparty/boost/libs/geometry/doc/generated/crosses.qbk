@@ -82,6 +82,9 @@ Or
 `#include <boost/geometry/algorithms/crosses.hpp>`
 
 [include reference/algorithms/crosses.qbk]
+[heading Examples]
+[crosses]
+[crosses_output]
 
 
 [endsect]

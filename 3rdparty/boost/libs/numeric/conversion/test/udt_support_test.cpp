@@ -14,7 +14,7 @@
 
 #include "boost/numeric/conversion/converter.hpp"
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 #pragma hdrstop
 #endif
 
@@ -292,14 +292,14 @@ void test_udt_conversions_with_custom_range_checking()
 }
 
 
-int test_main( int, char* [] )
+int main()
 {
   cout << setprecision( numeric_limits<long double>::digits10 ) ;
 
   test_udt_conversions_with_defaults();
   test_udt_conversions_with_custom_range_checking();
 
-  return 0;
+  return boost::report_errors();
 }
 
 

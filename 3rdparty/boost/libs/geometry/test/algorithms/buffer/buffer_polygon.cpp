@@ -3,8 +3,8 @@
 
 // Copyright (c) 2012-2019 Barend Gehrels, Amsterdam, the Netherlands.
 
-// This file was modified by Oracle on 2016, 2019.
-// Modifications copyright (c) 2016, Oracle and/or its affiliates.
+// This file was modified by Oracle on 2016-2021.
+// Modifications copyright (c) 2016-2021, Oracle and/or its affiliates.
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Use, modification and distribution is subject to the Boost Software License,
@@ -110,6 +110,10 @@ static std::string const parcel3_bend // of parcel_3 - clipped
 static std::string const italy_part1
     = "POLYGON ((1660000 5190000 , 1651702.9375 5167014.5, 1650311.34375 5167763.53125, 1643318.59375 5172188.15625, 1642488.03125 5172636.75, 1640818.25 5173802.75, 1640107.03125 5174511.21875, 1638931.9375 5176054.03125, 1638684.5625 5177095.75, 1660000 5190000))";
 
+// Did have a self-intersection without pretraverse
+static std::string const italy_part2
+    = "POLYGON ((1792367.255086994031444 4724456.568442338146269,1909252.60910044144839 4777690.547005645930767,1817506.869651311077178 4621340.239452145062387,1740727.367822392610833 4604255.192098897881806,1783739.994550514500588 4682197.288425728678703,1786152.065277023706585 4682158.049781472422183,1788625.584362450055778 4681761.819279043003917,1790914.090454180026427 4681245.758200471289456,1792150.627357912017033 4680453.383482984267175,1792707.3361313669011 4680334.832171658985317,1795490.546040181070566 4681008.495863274671137,1800252.571217337390408 4684615.251035280525684,1800994.404303982388228 4685209.840326445177197,1801272.925669946707785 4685567.095846899785101,1802819.153397066518664 4688660.170577370561659,1804117.69525716942735 4692190.08131886087358,1804426.829483100911602 4693301.616071742959321,1805323.730620422400534 4697309.691134516149759,1805601.80670842458494 4699214.415976728312671,1805725.371343206381425 4702868.090166873298585,1805880.439393880078569 4708906.485807630233467,1805725.371343206381425 4710575.432937441393733,1805509.300211574882269 4710973.931955102831125,1805200.165985643398017 4711211.894124387763441,1802726.090302763739601 4711926.958936070092022,1799170.100488863186911 4713835.571500253863633,1798026.070081980666146 4714671.060250979848206,1792367.255086994031444 4724456.568442338146269))";
+
 // Did have a self-intersection for first flat/convex solution
 static std::string const nl_part1
     = "POLYGON ((471871.966884626832325 6683515.683521211147308,470695.876464393688366 6681756.129975977353752,469211.542374156008009 6679924.978601523675025,464542.357652322971262 6674631.078279769048095,463243.59315323777264 6673494.345109832473099,459502.033748187706806 6670774.304660517722368,452204.484529234410729 6666030.372161027044058,439990.287360413349234 6659313.515823394991457,434547.988775020290632 6657783.034025833010674,433867.715366783668287 6657685.311832630075514,433063.65468478546245 6657783.034025833010674,423725.285241116478574 6659758.338574352674186,422581.143514745577704 6660350.880751021206379,422333.791606202081311 6660844.461689073592424,421993.599242338153999 6662622.453031159006059,421993.599242338153999 6663363.130126810632646,422612.090333183819894 6667314.244697011075914,422241.062470370030496 6667759.324870104901493,421096.80942450783914 6668303.522556710988283,408449.802075482031796 6673245.655735924839973,401646.845354124438018 6675273.665065255947411,400842.895991614612285 6675372.844085373915732,400255.351719210040756 6675224.699206517077982,392370.258227849320974 6672455.311684883199632,391968.283546594379004 6672009.975794731639326,391875.554410762328189 6671219.573235900141299,391937.336728153284639 6670527.121663697995245,392122.906319305824582 6669933.841785561293364,392339.311409408226609 6667957.501854715868831,392308.475910458364524 6665733.178529324010015,391937.336728153284639 6665289.631341196596622,387793.802641845482867 6664449.731981083750725,385814.7647345236619 6664202.740090588107705,384268.648326894966885 6664300.5401631873101,382846.319193030707538 6664646.406163938343525,382289.610419573145919 6664943.560305980034173,377186.502322628628463 6668957.888622742146254,376352.608017096004914 6669834.728738470934331,376197.985244384559337 6670428.001423852518201,375548.658654586179182 6676313.056885857135057,375243.086652359867003 6687692.866469252854586,379228.324422756850254 6689778.692146780900657,391782.713955441897269 6694388.125634397380054,393885.427817036863416 6694487.537080916576087,395215.139134563156404 6694091.147844122722745,405171.999669074953999 6689084.665672835893929,414263.128523688821588 6684478.40333267301321,415778.298112876422238 6683439.398042757064104,416396.677884233708028 6683192.009851422160864,419025.042381353967357 6682597.809754087589681,429909.63955213711597 6681508.792763692326844,430497.183824544539675 6681656.873437026515603,440979.806314075656701 6686955.330480101518333,467325.344922157470137 6687797.546342735178769,468129.294284664443694 6687698.216345063410699,468747.785375512961764 6687450.699095219373703,469211.542374156008009 6687054.651439971290529,469489.952420631831046 6686707.835750493220985,471871.966884626832325 6683515.683521211147308))";
@@ -195,6 +199,13 @@ static std::string const mysql_report_2015_07_05_5_wi
 class buffer_custom_side_strategy
 {
 public :
+
+    static bool equidistant()
+    {
+        // There is an adapted distance
+        return false;
+    }
+
     template
     <
         typename Point,
@@ -208,12 +219,11 @@ public :
                 OutputRange& output_range)
     {
         // Generate a block along (left or right of) the segment
-
-        double const dx = bg::get<0>(input_p2) - bg::get<0>(input_p1);
-        double const dy = bg::get<1>(input_p2) - bg::get<1>(input_p1);
+        auto const dx = bg::get<0>(input_p2) - bg::get<0>(input_p1);
+        auto const dy = bg::get<1>(input_p2) - bg::get<1>(input_p1);
 
         // For normalization [0,1] (=dot product d.d, sqrt)
-        double const length = bg::math::sqrt(dx * dx + dy * dy);
+        auto const length = bg::math::sqrt(dx * dx + dy * dy);
 
         if (bg::math::equals(length, 0))
         {
@@ -221,9 +231,9 @@ public :
         }
 
         // Generate the perpendicular p, to the left (ccw), and use an adapted distance
-        double const d = 1.1 * distance.apply(input_p1, input_p2, side);
-        double const px = d * -dy / length;
-        double const py = d * dx / length;
+        auto const d = 1.1 * distance.apply(input_p1, input_p2, side);
+        auto const px = d * -dy / length;
+        auto const py = d * dx / length;
 
         output_range.resize(2);
 
@@ -241,6 +251,7 @@ template <bool Clockwise, typename P>
 void test_all()
 {
     typedef bg::model::polygon<P, Clockwise, true> polygon_type;
+    typedef typename bg::coordinate_type<P>::type coor_type;
 
     bg::strategy::buffer::join_miter join_miter(10.0);
     bg::strategy::buffer::join_round join_round(100);
@@ -322,14 +333,14 @@ void test_all()
 
     // Indentation - deflated
     test_one<polygon_type, polygon_type>("indentation4", indentation, join_miter, end_flat, 6.991, -0.4);
-    test_one<polygon_type, polygon_type>("indentation4", indentation, join_round, end_flat, 7.255, -0.4);
-    test_one<polygon_type, polygon_type>("indentation8", indentation, join_miter, end_flat, 1.369, -0.8);
-    test_one<polygon_type, polygon_type>("indentation8", indentation, join_round, end_flat, 1.374, -0.8);
+    test_one<polygon_type, polygon_type>("indentation4", indentation, join_round, end_flat, 7.25306, -0.4);
+    test_one<polygon_type, polygon_type>("indentation8", indentation, join_miter, end_flat, 1.36942, -0.8);
+    test_one<polygon_type, polygon_type>("indentation8", indentation, join_round, end_flat, 1.37289, -0.8);
     test_one<polygon_type, polygon_type>("indentation12", indentation, join_miter, end_flat, 0, -1.2);
     test_one<polygon_type, polygon_type>("indentation12", indentation, join_round, end_flat, 0, -1.2);
 
     test_one<polygon_type, polygon_type>("donut_simplex6", donut_simplex, join_miter, end_flat, 53.648, 0.6);
-    test_one<polygon_type, polygon_type>("donut_simplex6", donut_simplex, join_round, end_flat, 52.820, 0.6);
+    test_one<polygon_type, polygon_type>("donut_simplex6", donut_simplex, join_round, end_flat, 52.826, 0.6);
     test_one<polygon_type, polygon_type>("donut_simplex8", donut_simplex, join_miter, end_flat, 61.132, 0.8);
     test_one<polygon_type, polygon_type>("donut_simplex8", donut_simplex, join_round, end_flat, 59.6713, 0.8);
     test_one<polygon_type, polygon_type>("donut_simplex10", donut_simplex, join_miter, end_flat, 68.670, 1.0);
@@ -356,9 +367,9 @@ void test_all()
     test_one<polygon_type, polygon_type>("donut_diamond3", donut_diamond, join_miter, end_flat, 17.7084, -3.0);
 
     test_one<polygon_type, polygon_type>("arrow4", arrow, join_miter, end_flat, 28.265, 0.4);
-    test_one<polygon_type, polygon_type>("arrow4", arrow, join_round, end_flat, 27.039, 0.4);
+    test_one<polygon_type, polygon_type>("arrow4", arrow, join_round, end_flat, 27.043, 0.4);
     test_one<polygon_type, polygon_type>("arrow5", arrow, join_miter, end_flat, 31.500, 0.5);
-    test_one<polygon_type, polygon_type>("arrow5", arrow, join_round, end_flat, 29.621, 0.5);
+    test_one<polygon_type, polygon_type>("arrow5", arrow, join_round, end_flat, 29.628, 0.5);
     test_one<polygon_type, polygon_type>("arrow6", arrow, join_miter, end_flat, 34.903, 0.6);
     test_one<polygon_type, polygon_type>("arrow6", arrow, join_round, end_flat, 32.268, 0.6);
 
@@ -374,9 +385,7 @@ void test_all()
     test_one<polygon_type, polygon_type>("snake4", snake, join_miter, end_flat, 64.44, 0.4);
     test_one<polygon_type, polygon_type>("snake5", snake, join_miter, end_flat, 72, 0.5);
     test_one<polygon_type, polygon_type>("snake6", snake, join_miter, end_flat, 75.44, 0.6);
-#if defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
     test_one<polygon_type, polygon_type>("snake16", snake, join_miter, end_flat, 114.24, 1.6);
-#endif
 
     test_one<polygon_type, polygon_type>("funnelgate2", funnelgate, join_miter, end_flat, 120.982, 2.0);
     test_one<polygon_type, polygon_type>("funnelgate3", funnelgate, join_miter, end_flat, 13.0*13.0, 3.0);
@@ -472,38 +481,34 @@ void test_all()
         }
     }
 
-    {
-        ut_settings settings;
-        settings.use_ln_area = true;
-        test_one<polygon_type, polygon_type>("county1", county1, join_round, end_flat, 0.00114, 0.01, settings);
-        test_one<polygon_type, polygon_type>("county1", county1, join_miter, end_flat, 0.00133, 0.01, settings);
-        test_one<polygon_type, polygon_type>("county1", county1, join_round, end_flat, 3.94411e-05, -0.003, settings);
-        test_one<polygon_type, polygon_type>("county1", county1, join_miter, end_flat, 3.94301e-05, -0.003, settings);
-    }
+    test_one<polygon_type, polygon_type>("county1", county1, join_round, end_flat, {0.00114, 0.00115}, 0.01);
+    test_one<polygon_type, polygon_type>("county1", county1, join_miter, end_flat, {0.00132, 0.00133}, 0.01);
+    test_one<polygon_type, polygon_type>("county1", county1, join_round, end_flat, {3.944e-05, 3.947e-5}, -0.003);
+    test_one<polygon_type, polygon_type>("county1", county1, join_miter, end_flat, {3.943e-05, 3.946e-5}, -0.003);
 
     test_one<polygon_type, polygon_type>("parcel1_10", parcel1, join_round, end_flat, 7571.405, 10.0);
-    test_one<polygon_type, polygon_type>("parcel1_10", parcel1, join_miter, end_flat, 8207.453, 10.0);
+    test_one<polygon_type, polygon_type>("parcel1_10", parcel1, join_miter, end_flat, {8207, 8217}, 10.0);
     test_one<polygon_type, polygon_type>("parcel1_20", parcel1, join_round, end_flat, 11648.111, 20.0);
-    test_one<polygon_type, polygon_type>("parcel1_20", parcel1, join_miter, end_flat, 14184.022, 20.0);
-    test_one<polygon_type, polygon_type>("parcel1_30", parcel1, join_round, end_flat, 16350.488, 30.0);
-    test_one<polygon_type, polygon_type>("parcel1_30", parcel1, join_miter, end_flat, 22417.799, 30.0);
+    test_one<polygon_type, polygon_type>("parcel1_20", parcel1, join_miter, end_flat, {14184, 14195}, 20.0);
+    test_one<polygon_type, polygon_type>("parcel1_30", parcel1, join_round, end_flat, {16345, 16351}, 30.0);
+    test_one<polygon_type, polygon_type>("parcel1_30", parcel1, join_miter, end_flat, {22072, 22418}, 30.0);
 
-    test_one<polygon_type, polygon_type>("parcel2_10", parcel2, join_round, end_flat, 5000.867, 10.0);
-    test_one<polygon_type, polygon_type>("parcel2_10", parcel2, join_miter, end_flat, 5091.122, 10.0);
-    test_one<polygon_type, polygon_type>("parcel2_20", parcel2, join_round, end_flat, 9049.673, 20.0);
-    test_one<polygon_type, polygon_type>("parcel2_20", parcel2, join_miter, end_flat, 9410.691, 20.0);
-    test_one<polygon_type, polygon_type>("parcel2_30", parcel2, join_round, end_flat, 13726.528, 30.0);
-    test_one<polygon_type, polygon_type>("parcel2_30", parcel2, join_miter, end_flat, 14535.232, 30.0);
+    test_one<polygon_type, polygon_type>("parcel2_10", parcel2, join_round, end_flat, {5000, 5004}, 10.0);
+    test_one<polygon_type, polygon_type>("parcel2_10", parcel2, join_miter, end_flat, {5091, 5094}, 10.0);
+    test_one<polygon_type, polygon_type>("parcel2_20", parcel2, join_round, end_flat, {9049, 9052}, 20.0);
+    test_one<polygon_type, polygon_type>("parcel2_20", parcel2, join_miter, end_flat, {9410, 9415}, 20.0);
+    test_one<polygon_type, polygon_type>("parcel2_30", parcel2, join_round, end_flat, {13726, 13731}, 30.0);
+    test_one<polygon_type, polygon_type>("parcel2_30", parcel2, join_miter, end_flat, {14535, 14543}, 30.0);
 
-    test_one<polygon_type, polygon_type>("parcel3_10", parcel3, join_round, end_flat, 19993.007, 10.0);
-    test_one<polygon_type, polygon_type>("parcel3_10", parcel3, join_miter, end_flat, 20024.558, 10.0, ut_settings(0.05)); // MSVC 14 reports 20024.51456, so we increase the tolerance
-    test_one<polygon_type, polygon_type>("parcel3_20", parcel3, join_round, end_flat, 34505.837, 20.0);
-    test_one<polygon_type, polygon_type>("parcel3_20", parcel3, join_miter, end_flat, 34633.261, 20.0);
+    test_one<polygon_type, polygon_type>("parcel3_10", parcel3, join_round, end_flat, {19993, 19994}, 10.0);
+    test_one<polygon_type, polygon_type>("parcel3_10", parcel3, join_miter, end_flat, {20024, 20025}, 10.0);
+    test_one<polygon_type, polygon_type>("parcel3_20", parcel3, join_round, end_flat, {34505, 34510}, 20.0);
+    test_one<polygon_type, polygon_type>("parcel3_20", parcel3, join_miter, end_flat, {34633, 34653}, 20.0);
     test_one<polygon_type, polygon_type>("parcel3_30", parcel3, join_round, end_flat, 45262.452, 30.0);
-    test_one<polygon_type, polygon_type>("parcel3_30", parcel3, join_miter, end_flat, 45567.388, 30.0);
+    test_one<polygon_type, polygon_type>("parcel3_30", parcel3, join_miter, end_flat, {45567, 45575}, 30.0);
 
-    test_one<polygon_type, polygon_type>("parcel3_bend_5", parcel3_bend, join_round, end_flat, 155.634, 5.0);
-    test_one<polygon_type, polygon_type>("parcel3_bend_10", parcel3_bend, join_round, end_flat, 458.454, 10.0);
+    test_one<polygon_type, polygon_type>("parcel3_bend_5", parcel3_bend, join_round, end_flat, {155.54, 155.64}, 5.0);
+    test_one<polygon_type, polygon_type>("parcel3_bend_10", parcel3_bend, join_round, end_flat, {458.3, 458.5}, 10.0);
 
     // These cases differ a bit based on point order, because piece generation is different in one corner. Tolerance is increased
     test_one<polygon_type, polygon_type>("parcel3_bend_15", parcel3_bend, join_round, end_flat, 918.06, 15.0, ut_settings(0.25));
@@ -512,33 +517,35 @@ void test_all()
     // Parcel - deflated
     test_one<polygon_type, polygon_type>("parcel1_10", parcel1, join_round, end_flat, 1571.9024, -10.0);
     test_one<polygon_type, polygon_type>("parcel1_10", parcel1, join_miter, end_flat, 1473.7325, -10.0);
-    test_one<polygon_type, polygon_type>("parcel1_20", parcel1, join_round, end_flat, 209.3579, -20.0);
+    test_one<polygon_type, polygon_type>("parcel1_20", parcel1, join_round, end_flat, {209.35, 209.97}, -20.0);
     test_one<polygon_type, polygon_type>("parcel1_20", parcel1, join_miter, end_flat, 188.4224, -20.0);
 
     test_one<polygon_type, polygon_type>("nl_part1_2", nl_part1,
-        join_round, end_flat,  BG_IF_RESCALED(1848737356.991, 1848737292.653), -0.2 * 1000.0);
+        join_round, end_flat,  {1848737292, 1848737357}, -0.2 * 1000.0);
     test_one<polygon_type, polygon_type>("nl_part1_5", nl_part1,
-        join_round, end_flat,  BG_IF_RESCALED(1775953811.679, 1775953824.799), -0.5 * 1000.0);
+        join_round, end_flat,  {1775953811, 1775953825}, -0.5 * 1000.0);
 
     test_one<polygon_type, polygon_type>("italy_part1_30", italy_part1,
-        join_round, end_flat,  BG_IF_RESCALED(5015638814.956, 5015638827.704), 30.0 * 1000.0);
+        join_round, end_flat,  {5015638814, 5015638828}, 30.0 * 1000.0);
     test_one<polygon_type, polygon_type>("italy_part1_50", italy_part1,
-        join_round, end_flat, BG_IF_RESCALED(11363180044.822, 11363180033.564), 50.0 * 1000.0);
-    test_one<polygon_type, polygon_type>("italy_part1_60", italy_part1, join_round, end_flat, 15479097108.720, 60.0 * 1000.0);
+        join_round, end_flat, {11363180033, 11363180045}, 50.0 * 1000.0);
+    test_one<polygon_type, polygon_type>("italy_part1_60", italy_part1,
+        join_round, end_flat, 15479097108.720, 60.0 * 1000.0);
 
+    test_one<polygon_type, polygon_type>("italy_part2_5", italy_part2,
+        join_round, end_flat, {12496082120, 12496082124}, 5 * 1000.0);
+
+    if (! BOOST_GEOMETRY_CONDITION((std::is_same<coor_type, float>::value)))
     {
         ut_settings settings;
-        settings.test_validity = false;
+        settings.set_test_validity(false);
 
         // Tickets
         test_one<polygon_type, polygon_type>("ticket_10398_1_5", ticket_10398_1, join_miter, end_flat, 494.7192, 0.5, settings);
         test_one<polygon_type, polygon_type>("ticket_10398_1_25", ticket_10398_1, join_miter, end_flat, 697.7798, 2.5, settings);
-        {
-            // qcc-arm reports 1470.79863681712281
-            ut_settings specific = settings;
-            specific.tolerance = 0.02;
-            test_one<polygon_type, polygon_type>("ticket_10398_1_84", ticket_10398_1, join_miter, end_flat, 1470.8096, 8.4, specific);
-        }
+
+        // qcc-arm reports 1470.79863681712281
+        test_one<polygon_type, polygon_type>("ticket_10398_1_84", ticket_10398_1, join_miter, end_flat, {1470.79, 1470.81}, 8.4, settings);
 
         test_one<polygon_type, polygon_type>("ticket_10398_2_45", ticket_10398_2, join_miter, end_flat, 535.4780, 4.5, settings);
         test_one<polygon_type, polygon_type>("ticket_10398_2_62", ticket_10398_2, join_miter, end_flat, 705.2046, 6.2, settings);
@@ -558,12 +565,13 @@ void test_all()
         // Larger distance, resulting in only one circle. Not solved yet in non-rescaled mode.
         test_one<polygon_type, polygon_type>("ticket_11580_237", ticket_11580, join_miter, end_flat, 999.999, 2.37, settings);
     #endif
+
+        // Tickets - deflated
+        test_one<polygon_type, polygon_type>("ticket_10398_1_5", ticket_10398_1, join_miter, end_flat, 404.3936, -0.5);
+        test_one<polygon_type, polygon_type>("ticket_10398_1_25", ticket_10398_1, join_miter, end_flat, 246.7329, -2.5);
     }
 
-    // Tickets - deflated
-    test_one<polygon_type, polygon_type>("ticket_10398_1_5", ticket_10398_1, join_miter, end_flat, 404.3936, -0.5);
-    test_one<polygon_type, polygon_type>("ticket_10398_1_25", ticket_10398_1, join_miter, end_flat, 246.7329, -2.5);
-
+    if (! BOOST_GEOMETRY_CONDITION((std::is_same<coor_type, float>::value)))
     {
         // Test issue 369 as reported (1.15e-3) and some variants
         // Use high tolerance because output areas are very small
@@ -582,11 +590,12 @@ void test_all()
         test_one<polygon_type, polygon_type>("issue_369_1000", issue_369, jr, er, 7.881e-10, distance / 1000.0, specific);
     }
 
+    if (! BOOST_GEOMETRY_CONDITION((std::is_same<coor_type, float>::value)))
     {
         // Test issue 555 as reported (-0.000001) and some variants
         bg::strategy::buffer::join_round jr(180);
         bg::strategy::buffer::end_round er(180);
-#if ! defined(BOOST_GEOMETRY_USE_RESCALING)
+#if ! defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
         // With rescaling the interior ring is missing
         test_one<polygon_type, polygon_type>("issue_555", issue_555, jr, er, 4520.7942, -0.000001);
 #endif
@@ -630,10 +639,12 @@ void test_all()
             mysql_report_2015_02_17_3,
             join_round32, end_round32, 64.0, -1.0);
 
+        if (BOOST_GEOMETRY_CONDITION((std::is_same<coor_type, double>::value)))
         {
             // These extreme testcases, containing huge coordinate differences
             // and huge buffer distances, are to verify assertions.
             // No assertions should be raised.
+            // They are only tested for double (also because these WKT's are not supported for float)
 
             // The buffers themselves are most often wrong. Versions
             // without interior rings might be smaller (or have no output)
@@ -824,22 +835,24 @@ void test_mixed()
             simplex, join_round, end_flat, 47.4831, 1.5);
 }
 
-#ifdef HAVE_TTMATH
-#include <ttmath_stub.hpp>
-#endif
-
 int test_main(int, char* [])
 {
-    typedef bg::model::point<double, 2, bg::cs::cartesian> dpoint;
+    BoostGeometryWriteTestConfiguration();
+
+    typedef bg::model::point<default_test_type, 2, bg::cs::cartesian> dpoint;
 
     test_all<true, dpoint>();
-    test_all<false, dpoint>();
-
-    typedef bg::model::point<float, 2, bg::cs::cartesian> fpoint;
-    test_deflate_special_cases<true, fpoint>();
     test_deflate_special_cases<true, dpoint>();
 
+
+#if ! defined(BOOST_GEOMETRY_TEST_ONLY_ONE_ORDER)
+    test_all<false, dpoint>();
+    test_deflate_special_cases<false, dpoint>();
+#endif
+
 #if ! defined(BOOST_GEOMETRY_TEST_ONLY_ONE_TYPE)
+    typedef bg::model::point<float, 2, bg::cs::cartesian> fpoint;
+    test_deflate_special_cases<true, fpoint>();
 
     test_mixed<dpoint, dpoint, false, false, true, true>();
     test_mixed<dpoint, dpoint, false, true, true, true>();
@@ -850,11 +863,10 @@ int test_main(int, char* [])
     test_mixed<dpoint, dpoint, false, true, false, true>();
     test_mixed<dpoint, dpoint, true, false, false, true>();
     test_mixed<dpoint, dpoint, true, true, false, true>();
-
-#ifdef HAVE_TTMATH
-    test_all<bg::model::point<tt, 2, bg::cs::cartesian> >();
 #endif
 
+#if defined(BOOST_GEOMETRY_TEST_FAILURES)
+    BoostGeometryWriteExpectedFailures(2, 1, 9, 1);
 #endif
 
     return 0;

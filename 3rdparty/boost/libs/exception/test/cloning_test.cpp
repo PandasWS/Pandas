@@ -3,12 +3,19 @@
 //Distributed under the Boost Software License, Version 1.0. (See accompanying
 //file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <boost/config.hpp>
+
+#if defined( BOOST_NO_EXCEPTIONS )
+#   error This program requires exception handling.
+#endif
+
 #include <boost/exception_ptr.hpp>
 #include <boost/exception/get_error_info.hpp>
 #include <boost/exception/errinfo_nested_exception.hpp>
 #include <boost/detail/lightweight_test.hpp>
 #include <boost/detail/workaround.hpp>
 #include <string>
+#include <ios>
 
 typedef boost::error_info<struct my_tag,int> my_info;
 
@@ -422,7 +429,9 @@ main()
     test_std_exception_what<std::range_error>();
     test_std_exception_what<std::overflow_error>();
     test_std_exception_what<std::underflow_error>();
+#if !defined(_GLIBCXX_USE_CXX11_ABI) || !_GLIBCXX_USE_CXX11_ABI
     test_std_exception_what<std::ios_base::failure>();
+#endif
     test_std_exception_what<std::runtime_error>();
     test_std_exception<std::bad_alloc>();
 #ifndef BOOST_NO_TYPEID

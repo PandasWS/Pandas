@@ -19,7 +19,6 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "battle.hpp"
 #include "battleground.hpp"
@@ -426,13 +425,12 @@ std::shared_ptr<s_refine_level_info> RefineDatabase::findCurrentLevelInfo( const
 bool RefineDatabase::calculate_refine_info( const struct item_data& data, e_refine_type& refine_type, uint16& level ){
 	if( data.type == IT_WEAPON ){
 		refine_type = REFINE_TYPE_WEAPON;
-		level = data.wlv;
+		level = data.weapon_level;
 
 		return true;
 	}else if( data.type == IT_ARMOR ){
 		refine_type = REFINE_TYPE_ARMOR;
-		// TODO: implement when armor level is supported
-		level = 1;
+		level = data.armor_level;
 
 		return true;
 	}else if( data.type == IT_SHADOWGEAR ){
@@ -1048,13 +1046,21 @@ void initChangeTables(void)
 	set_sc( NPC_WIDEHELLDIGNITY	, SC_HELLPOWER		, EFST_HELLPOWER		, SCB_NONE );
 	set_sc( NPC_INVINCIBLE		, SC_INVINCIBLE		, EFST_INVINCIBLE		, SCB_SPEED );
 	set_sc( NPC_INVINCIBLEOFF	, SC_INVINCIBLEOFF	, EFST_BLANK		, SCB_SPEED );
+	add_sc( NPC_MILLENNIUMSHIELD	, SC_MILLENNIUMSHIELD		  );
 	set_sc( NPC_COMET			, SC_BURNING		, EFST_BURNT		, SCB_MDEF );
 	set_sc_with_vfx( NPC_MAXPAIN	,	 SC_MAXPAIN	, EFST_MAXPAIN	, SCB_NONE );
+	add_sc( NPC_STORMGUST2		, SC_FREEZE		);
 	add_sc( NPC_JACKFROST        , SC_FREEZE		  );
 	add_sc( NPC_ELECTRICWALK	, SC_PROPERTYWALK		);
 	add_sc( NPC_FIREWALK		, SC_PROPERTYWALK		);
 	add_sc( NPC_CLOUD_KILL   	, SC_POISON		);
 	set_sc( NPC_HALLUCINATIONWALK	, SC_NPC_HALLUCINATIONWALK	, EFST_NPC_HALLUCINATIONWALK	, SCB_FLEE );
+	set_sc( NPC_WIDEWEB           , SC_WIDEWEB           , EFST_WIDEWEB               , SCB_FLEE );
+	set_sc_with_vfx( NPC_FIRESTORM, SC_BURNT             , EFST_BURNT                 , SCB_NONE );
+	add_sc( NPC_SR_CURSEDCIRCLE	, SC_CURSEDCIRCLE_TARGET		);
+	add_sc( NPC_MAGMA_ERUPTION	, SC_STUN			);
+	// add_sc( NPC_MAGMA_ERUPTION_DOTDAMAGE, SC_BURNING	);	// No data. Hidden status ?
+	set_sc( NPC_MANDRAGORA			, SC_MANDRAGORA		, EFST_MANDRAGORA			, SCB_INT );
 
 	set_sc( CASH_BLESSING		, SC_BLESSING		, EFST_BLESSING		, SCB_STR|SCB_INT|SCB_DEX );
 	set_sc( CASH_INCAGI		, SC_INCREASEAGI	, EFST_INC_AGI, SCB_AGI|SCB_SPEED );
@@ -1672,6 +1678,8 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_DORAM_BUF_02] = EFST_DORAM_BUF_02;
 	StatusIconChangeTable[SC_SOULATTACK] = EFST_SOULATTACK;
 
+	StatusIconChangeTable[SC_CHILL] = EFST_CHILL;
+
 	// Item Reuse Limits
 	StatusIconChangeTable[SC_REUSE_REFRESH] = EFST_REUSE_REFRESH;
 	StatusIconChangeTable[SC_REUSE_LIMIT_A] = EFST_REUSE_LIMIT_A;
@@ -2035,6 +2043,7 @@ void initChangeTables(void)
 #ifndef RENEWAL
 	StatusChangeStateTable[SC_BASILICA]				|= SCS_NOMOVE|SCS_NOMOVECOND;
 #endif
+	StatusChangeStateTable[SC_WIDEWEB]				|= SCS_NOMOVE;
 	StatusChangeStateTable[SC_STOP]					|= SCS_NOMOVE;
 	StatusChangeStateTable[SC_CLOSECONFINE]			|= SCS_NOMOVE;
 	StatusChangeStateTable[SC_CLOSECONFINE2]		|= SCS_NOMOVE;
@@ -2498,6 +2507,28 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 		return (int)(hp+sp);
 	}
 
+#ifdef Pandas_Bonus_bRebirthWithHeal
+	if (target && target->type == BL_PC) {
+		TBL_PC* tsd = BL_CAST(BL_PC, target);
+#ifdef Pandas_MapFlag_NoToken
+		if (tsd && rnd() % 10000 < tsd->bonus.rebirth_rate && tsd->bl.m >= 0 && !map_getmapflag(tsd->bl.m, MF_NOTOKEN)) {
+#else
+		if (tsd && rnd() % 10000 < tsd->bonus.rebirth_rate) {
+#endif // Pandas_MapFlag_NoToken
+
+			if (tsd->special_state.restart_full_recover) {
+				status_revive(target, 100, 100);
+			}
+			else {
+				status_revive(target, tsd->bonus.rebirth_heal_percent_hp, tsd->bonus.rebirth_heal_percent_sp);
+			}
+
+			clif_skill_nodamage(target, target, ALL_RESURRECTION, 1, 1);
+			return (int)(hp + sp);
+		}
+	}
+#endif // Pandas_Bonus_bRebirthWithHeal
+
 	status_change_clear(target,0);
 
 	if(flag&4) // Delete from memory. (also invokes map removal code)
@@ -2920,7 +2951,7 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
 			return false;
 		if(!skill_id && tsc->data[SC_TRICKDEAD])
 			return false;
-		if((skill_id == WZ_STORMGUST || skill_id == WZ_FROSTNOVA || skill_id == NJ_HYOUSYOURAKU)
+		if((skill_id == WZ_STORMGUST || skill_id == WZ_FROSTNOVA || skill_id == NJ_HYOUSYOURAKU || skill_id == NPC_STORMGUST2)
 			&& tsc->data[SC_FREEZE])
 			return false;
 		if(skill_id == PR_LEXAETERNA && (tsc->data[SC_FREEZE] || (tsc->data[SC_STONE] && tsc->opt1 == OPT1_STONE)))
@@ -3043,17 +3074,21 @@ int status_check_visibility(struct block_list *src, struct block_list *target)
  */
 int status_base_amotion_pc(struct map_session_data* sd, struct status_data* status)
 {
+	std::shared_ptr<s_job_info> job = job_db.find(sd->status.class_);
+
+	if (job == nullptr)
+		return 2000;
+
 	int amotion;
-	int classidx = pc_class2idx(sd->status.class_);
 #ifdef RENEWAL_ASPD
 	int16 skill_lv, val = 0;
 	float temp_aspd = 0;
 
-	amotion = job_info[classidx].aspd_base[sd->weapontype1]; // Single weapon
+	amotion = job->aspd_base[sd->weapontype1]; // Single weapon
 	if (sd->status.shield)
-		amotion += job_info[classidx].aspd_base[MAX_WEAPON_TYPE];
+		amotion += job->aspd_base[MAX_WEAPON_TYPE];
 	else if (sd->weapontype2 != W_FIST && sd->equip_index[EQI_HAND_R] != sd->equip_index[EQI_HAND_L])
-		amotion += job_info[classidx].aspd_base[sd->weapontype2] / 4; // Dual-wield
+		amotion += job->aspd_base[sd->weapontype2] / 4; // Dual-wield
 
 	switch(sd->status.weapon) {
 		case W_BOW:
@@ -3091,8 +3126,8 @@ int status_base_amotion_pc(struct map_session_data* sd, struct status_data* stat
 
 	// Base weapon delay
 	amotion = (sd->status.weapon < MAX_WEAPON_TYPE)
-	 ? (job_info[classidx].aspd_base[sd->status.weapon]) // Single weapon
-	 : (job_info[classidx].aspd_base[sd->weapontype1] + job_info[classidx].aspd_base[sd->weapontype2]) * 7 / 10; // Dual-wield
+	 ? (job->aspd_base[sd->status.weapon]) // Single weapon
+	 : (job->aspd_base[sd->weapontype1] + job->aspd_base[sd->weapontype2]) * 7 / 10; // Dual-wield
 
 	// Percentual delay reduction from stats
 	amotion -= amotion * (4 * status->agi + status->dex) / 1000;
@@ -4057,18 +4092,18 @@ static int status_get_spbonus_item(block_list *bl) {
  * @return max The max value of HP or SP
  */
 static unsigned int status_calc_maxhpsp_pc(struct map_session_data* sd, unsigned int stat, bool isHP) {
-	double dmax = 0;
-	uint16 idx, level, job_id;
-
 	nullpo_ret(sd);
 
-	job_id = pc_mapid2jobid(sd->class_,sd->status.sex);
-	idx = pc_class2idx(job_id);
-	level = umax(sd->status.base_level,1);
+	double dmax = 0;
+	uint32 level = umax(sd->status.base_level,1);
+	std::shared_ptr<s_job_info> job = job_db.find(pc_mapid2jobid(sd->class_, sd->status.sex));
+
+	if (job == nullptr)
+		return 1;
 
 	if (isHP) { //Calculates MaxHP
 		double equip_bonus = 0, item_bonus = 0;
-		dmax = job_info[idx].base_hp[level-1] * (1 + (umax(stat,1) * 0.01)) * ((sd->class_&JOBL_UPPER)?1.25:(pc_is_taekwon_ranker(sd))?3:1);
+		dmax = job->base_hp[level-1] * (1 + (umax(stat,1) * 0.01)) * ((sd->class_&JOBL_UPPER)?1.25:(pc_is_taekwon_ranker(sd))?3:1);
 		dmax += status_get_hpbonus(&sd->bl,STATUS_BONUS_FIX);
 		equip_bonus = (dmax * status_get_hpbonus_equip(sd) / 100);
 		item_bonus = (dmax * status_get_hpbonus_item(&sd->bl) / 100);
@@ -4077,7 +4112,7 @@ static unsigned int status_calc_maxhpsp_pc(struct map_session_data* sd, unsigned
 	}
 	else { //Calculates MaxSP
 		double equip_bonus = 0, item_bonus = 0;
-		dmax = job_info[idx].base_sp[level-1] * (1 + (umax(stat,1) * 0.01)) * ((sd->class_&JOBL_UPPER)?1.25:(pc_is_taekwon_ranker(sd))?3:1);
+		dmax = job->base_sp[level-1] * (1 + (umax(stat,1) * 0.01)) * ((sd->class_&JOBL_UPPER)?1.25:(pc_is_taekwon_ranker(sd))?3:1);
 		dmax += status_get_spbonus(&sd->bl,STATUS_BONUS_FIX);
 		equip_bonus = (dmax * status_get_spbonus_equip(sd) / 100);
 		item_bonus = (dmax * status_get_spbonus_item(&sd->bl) / 100);
@@ -4133,11 +4168,11 @@ bool status_calc_weight(struct map_session_data *sd, enum e_status_calc_weight_o
 	b_max_weight = sd->max_weight; // Store max weight for later comparison
 	b_weight = sd->weight; // Store current weight for later comparison
 #ifndef Pandas_Extreme_Computing
-	sd->max_weight = job_info[pc_class2idx(sd->status.class_)].max_weight_base + sd->status.str * 300; // Recalculate max weight
+	sd->max_weight = job_db.get_maxWeight(pc_mapid2jobid(sd->class_, sd->status.sex)) + sd->status.str * 300; // Recalculate max weight
 #else
 	// 客户端能展现最大的负重数值是 0x7FFFFFFF (2147483647)
 	// 由于解除了 str 的上限, 这里可能会爆掉, 因此额外做一些防止溢出的规避措施
-	sd->max_weight = cap_value(job_info[pc_class2idx(sd->status.class_)].max_weight_base + sd->status.str * 300, 0, PEC_MAX_WEIGHT);
+	sd->max_weight = cap_value(job_db.get_maxWeight(pc_mapid2jobid(sd->class_, sd->status.sex)) + sd->status.str * 300, 0, PEC_MAX_WEIGHT);
 #endif // Pandas_Extreme_Computing
 
 	if (flag&CALCWT_ITEM) {
@@ -4285,7 +4320,6 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	sd->hprate = 100;
 	sd->sprate = 100;
 	sd->castrate = 100;
-	sd->delayrate = 100;
 	sd->dsprate = 100;
 	sd->hprecov_rate = 100;
 	sd->sprecov_rate = 100;
@@ -4369,6 +4403,36 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	sd->skilldelay.clear();
 	sd->sp_vanish.clear();
 	sd->hp_vanish.clear();
+	sd->itemsphealrate.clear();
+	sd->itemgroupsphealrate.clear();
+#ifdef Pandas_Bonus_bAddSkillRange
+	// 若 addskillrange 中存在被调整过攻击距离的技能,
+	// 那么在重置之前先将技能编号保存下来
+	std::vector<uint16> skillid_list;
+	if (sd->addskillrange.size()) {
+		for (auto& it : sd->addskillrange) {
+			skillid_list.push_back(it.id);
+		}
+	}
+
+	// 然后进行重置操作
+	sd->addskillrange.clear();
+
+	// 最后刷新客户端关于这些技能的攻击距离信息
+	for (auto& it : skillid_list) {
+		clif_skillinfo(sd, it, 0);
+	}
+#endif // Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus_bStatusAddDamage
+	sd->status_damage_adjust.clear();
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	sd->status_damagerate_adjust.clear();
+#endif // Pandas_Bonus_bStatusAddDamageRate
+
+#ifdef Pandas_Bonus_bSkillNoRequire
+	sd->skillnorequire.clear();
+#endif // Pandas_Bonus_bSkillNoRequire
 
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	sd->pandas.multi_catch_target_class.clear();
@@ -4397,9 +4461,9 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	memset(&sd->bonus, 0, sizeof(sd->bonus));
 
 	// Autobonus
-	pc_delautobonus(sd, sd->autobonus, true);
-	pc_delautobonus(sd, sd->autobonus2, true);
-	pc_delautobonus(sd, sd->autobonus3, true);
+	pc_delautobonus(*sd, sd->autobonus, true);
+	pc_delautobonus(*sd, sd->autobonus2, true);
+	pc_delautobonus(*sd, sd->autobonus3, true);
 
 #ifdef Pandas_NpcExpress_STATCALC
 	running_npc_stat_calc_event = true;
@@ -4442,7 +4506,7 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		std::shared_ptr<s_refine_level_info> info = refine_db.findCurrentLevelInfo( *sd->inventory_data[index], sd->inventory.u.items_inventory[index] );
 
 		if (sd->inventory_data[index]->type == IT_WEAPON) {
-			int wlv = sd->inventory_data[index]->wlv;
+			int wlv = sd->inventory_data[index]->weapon_level;
 			struct weapon_data *wd;
 			struct weapon_atk *wa;
 
@@ -4459,15 +4523,26 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 			wa->atk += sd->inventory_data[index]->atk;
 			if( info != nullptr ){
 				wa->atk2 += info->bonus / 100;
+
+#ifdef RENEWAL
+				// TODO: additional grade bonus
+
+				if( wlv == 5 ){
+					// TODO: P.ATK += sd->inventory.u.items_inventory[index].refine * 2;
+					// TODO: S.MATK += sd->inventory.u.items_inventory[index].refine * 2;
+				}
+#endif
 			}
 #ifdef RENEWAL
 			if (sd->bonus.weapon_atk_rate)
-				wa->atk = wa->atk * sd->bonus.weapon_atk_rate / 100;
+				wa->atk += wa->atk * sd->bonus.weapon_atk_rate / 100;
 			wa->matk += sd->inventory_data[index]->matk;
 			wa->wlv = wlv;
 			// Renewal magic attack refine bonus
 			if( info != nullptr && sd->weapontype1 != W_BOW ){
 				wa->matk += info->bonus / 100;
+
+				// TODO: additional grade bonus
 			}
 #endif
 			// Overrefine bonus.
@@ -4501,6 +4576,13 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		} else if(sd->inventory_data[index]->type == IT_ARMOR) {
 			if( info != nullptr ){
 				refinedef += info->bonus;
+
+#ifdef RENEWAL
+				if( sd->inventory_data[index]->armor_level == 2 ){
+					// TODO: RES += sd->inventory.u.items_inventory[index].refine * 2;
+					// TODO: MRES += sd->inventory.u.items_inventory[index].refine * 2;
+				}
+#endif
 			}
 
 			if(sd->inventory_data[index]->script && (pc_has_permission(sd,PC_PERM_USE_ALL_EQUIPMENT) || !itemdb_isNoEquip(sd->inventory_data[index],sd->bl.m))) {
@@ -4730,18 +4812,23 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 // ----- STATS CALCULATION -----
 
 	// Job bonuses
-	index = pc_class2idx(sd->status.class_);
-	for(i=0;i<(int)sd->status.job_level && i<MAX_LEVEL;i++) {
-		if(!job_info[index].job_bonus[i])
-			continue;
-		switch(job_info[index].job_bonus[i]) {
-			case 1: base_status->str++; break;
-			case 2: base_status->agi++; break;
-			case 3: base_status->vit++; break;
-			case 4: base_status->int_++; break;
-			case 5: base_status->dex++; break;
-			case 6: base_status->luk++; break;
-		}
+	std::shared_ptr<s_job_info> job_info = job_db.find( pc_mapid2jobid( sd->class_, sd->status.sex ) );
+
+	if( job_info != nullptr ){
+		const auto& bonus = job_info->job_bonus[sd->status.job_level-1];
+
+		base_status->str += bonus[PARAM_STR];
+		base_status->agi += bonus[PARAM_AGI];
+		base_status->vit += bonus[PARAM_VIT];
+		base_status->int_ += bonus[PARAM_INT];
+		base_status->dex += bonus[PARAM_DEX];
+		base_status->luk += bonus[PARAM_LUK];
+		base_status->pow += bonus[PARAM_POW];
+		base_status->sta += bonus[PARAM_STA];
+		base_status->wis += bonus[PARAM_WIS];
+		base_status->spl += bonus[PARAM_SPL];
+		base_status->con += bonus[PARAM_CON];
+		base_status->crt += bonus[PARAM_CRT];
 	}
 
 	// If a Super Novice has never died and is at least joblv 70, he gets all stats +10
@@ -5045,8 +5132,6 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 		sd->dsprate = 0;
 	if(sd->castrate < 0)
 		sd->castrate = 0;
-	if(sd->delayrate < 0)
-		sd->delayrate = 0;
 	if(sd->hprecov_rate < 0)
 		sd->hprecov_rate = 0;
 	if(sd->sprecov_rate < 0)
@@ -5216,6 +5301,12 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 			sd->bonus.perfect_hit += 20 + 10 * pc_checkskill(sd, SO_STRIKING);
 	}
 	status_cpy(&sd->battle_status, base_status);
+
+#ifdef Pandas_Bonus_bAddSkillRange
+	for (auto &it : sd->addskillrange) {
+		clif_skillinfo(sd, it.id, 0);
+	}
+#endif // Pandas_Bonus_bAddSkillRang
 
 // ----- CLIENT-SIDE REFRESH -----
 	if(!sd->bl.prev) {
@@ -7170,7 +7261,7 @@ static pec_ushort status_calc_watk(struct block_list *bl, struct status_change *
 			TBL_PC *sd = (TBL_PC*)bl;
 			short index = sd->equip_index[sd->state.lr_flag?EQI_HAND_L:EQI_HAND_R];
 
-			if(index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->wlv == 4)
+			if(index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON && sd->inventory_data[index]->weapon_level == 4)
 				watk += sc->data[SC_NIBELUNGEN]->val2;
 		}
 	}
@@ -7570,7 +7661,7 @@ static pec_short status_calc_flee(struct block_list *bl, struct status_change *s
 	// Rate value
 	if(sc->data[SC_INCFLEERATE])
 		flee += flee * sc->data[SC_INCFLEERATE]->val1/100;
-	if(sc->data[SC_SPIDERWEB])
+	if(sc->data[SC_SPIDERWEB] || sc->data[SC_WIDEWEB])
 		flee -= flee * 50/100;
 	if(sc->data[SC_BERSERK])
 		flee -= flee * 50/100;
@@ -9142,10 +9233,12 @@ void status_set_viewdata(struct block_list *bl, int class_)
 				nd->vd.class_ = class_;
 				nd->vd.hair_style = cap_value(nd->vd.hair_style, MIN_HAIR_STYLE, MAX_HAIR_STYLE);
 			} else {
+				ShowError("status_set_viewdata (NPC): Invalid view data %d\n", class_);
 				if (bl->m >= 0)
 					ShowDebug("Source (NPC): %s at %s (%d,%d)\n", nd->name, map_mapid2mapname(bl->m), bl->x, bl->y);
 				else
 					ShowDebug("Source (NPC): %s (invisible/not on a map)\n", nd->name);
+				ShowDebug( "Source (NPC): %s is located in: %s\n", nd->name, nd->path );
 			}
 			break;
 		}
@@ -9782,7 +9875,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 	struct status_change_entry* sce;
 	struct status_data *status;
 	struct view_data *vd;
-	int opt_flag, calc_flag, undead_flag, val_flag = 0, tick_time = 0;
+	int calc_flag, undead_flag, val_flag = 0, tick_time = 0;
 	bool sc_isnew = true;
 
 	nullpo_ret(bl);
@@ -10097,21 +10190,21 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			val2 = 0; // Brandish Spear/Bowling Bash effet. Do not take weapon off.
 		else if (sd && !(flag&SCSTART_LOADED)) { // Apply sc anyway if loading saved sc_data
 			short i;
-			opt_flag = 0; // Reuse to check success condition.
+			uint8 successFlag = 0;
 			if(sd->bonus.unstripable_equip&EQP_WEAPON)
 				return 0;
 			i = sd->equip_index[EQI_HAND_L];
 			if (i>=0 && sd->inventory_data[i] && sd->inventory_data[i]->type == IT_WEAPON) {
-				opt_flag|=1;
+				successFlag|=1;
 				pc_unequipitem(sd,i,3); // Left-hand weapon
 			}
 
 			i = sd->equip_index[EQI_HAND_R];
 			if (i>=0 && sd->inventory_data[i] && sd->inventory_data[i]->type == IT_WEAPON) {
-				opt_flag|=2;
+				successFlag|=2;
 				pc_unequipitem(sd,i,3);
 			}
-			if (!opt_flag) return 0;
+			if (!successFlag) return 0;
 		}
 		if (tick == 1) return 1; // Minimal duration: Only strip without causing the SC
 	break;
@@ -10282,6 +10375,11 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 	case SC_CHATTERING:
 		if (sc->data[type])
 			return 0;
+
+	case SC_BURNT:
+		if( sc->data[SC_CHILL] )
+			return 0;
+		break;
 
 	case SC_WEDDING:
 	case SC_XMAS:
@@ -10770,6 +10868,9 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 		}
 		if (sd)
 			pc_bonus_script_clear(sd, BSF_REM_ON_MADOGEAR);
+		break;
+	case SC_CHILL:
+		status_change_end(bl,SC_BURNT,INVALID_TIMER);
 		break;
 	}
 
@@ -12245,7 +12346,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 				short index = sd->equip_index[EQI_HAND_R];
 
 				if (index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON)
-					val2 += 15 * sd->status.job_level + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv * status_get_lv(bl) / 100;
+					val2 += 15 * sd->status.job_level + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->weapon_level * status_get_lv(bl) / 100;
 			} else // Monster
 				val2 += 750;
 			break;
@@ -12649,6 +12750,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			val3 = val1 * 25; // -movespeed TODO: Figure out movespeed rate
 			break;
 		case SC_C_MARKER:
+		case SC_BURNT:
 			// val1 = skill_lv
 			// val2 = src_id
 			val3 = 10; // -10 flee
@@ -13102,6 +13204,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 		case SC_ELECTRICSHOCKER:
 		case SC_MAGNETICFIELD:
 		case SC_NETHERWORLD:
+		case SC_WIDEWEB:
 			if (!unit_blown_immune(bl,0x1))
 				unit_stop_walking(bl,1);
 			break;
@@ -13147,7 +13250,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 	}
 
 	// Set option as needed.
-	opt_flag = 1;
+	uint16 opt_flag = OCF_SEND_OPTION;
 	switch(type) {
 		// OPT1
 		case SC_STONE: 
@@ -13177,92 +13280,92 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 		case SC_CONCENTRATION:
 		case SC_MERC_QUICKEN:
 			sc->opt3 |= OPT3_QUICKEN;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_MAXOVERTHRUST:
 		case SC_OVERTHRUST:
 		case SC_SWOO:	// Why does it shares the same opt as Overthrust? Perhaps we'll never know...
 			sc->opt3 |= OPT3_OVERTHRUST;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_ENERGYCOAT:
 		case SC_SKE:
 			sc->opt3 |= OPT3_ENERGYCOAT;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_INCATKRATE:
 			// Simulate Explosion Spirits effect for NPC_POWERUP [Skotlex]
 			if (bl->type != BL_MOB) {
-				opt_flag = 0;
+				opt_flag = OCF_NONE;
 				break;
 			}
 		case SC_EXPLOSIONSPIRITS:
 			sc->opt3 |= OPT3_EXPLOSIONSPIRITS;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_STEELBODY:
 		case SC_SKA:
 			sc->opt3 |= OPT3_STEELBODY;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_BLADESTOP:
 			sc->opt3 |= OPT3_BLADESTOP;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_AURABLADE:
 			sc->opt3 |= OPT3_AURABLADE;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_BERSERK:
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			sc->opt3 |= OPT3_BERSERK;
 			break;
 // 		case ???: // doesn't seem to do anything
 // 			sc->opt3 |= OPT3_LIGHTBLADE;
-// 			opt_flag = 0;
+// 			opt_flag = OCF_NONE;
 // 			break;
 		case SC_DANCING:
 			if ((val1&0xFFFF) == CG_MOONLIT)
 				sc->opt3 |= OPT3_MOONLIT;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_MARIONETTE:
 		case SC_MARIONETTE2:
 			sc->opt3 |= OPT3_MARIONETTE;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_ASSUMPTIO:
 			sc->opt3 |= OPT3_ASSUMPTIO;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_WARM: // SG skills [Komurka]
 			sc->opt3 |= OPT3_WARM;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_KAITE:
 			sc->opt3 |= OPT3_KAITE;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_BUNSINJYUTSU:
 			sc->opt3 |= OPT3_BUNSIN;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_SPIRIT:
 			sc->opt3 |= OPT3_SOULLINK;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		case SC_CHANGEUNDEAD:
 			sc->opt3 |= OPT3_UNDEAD;
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 // 		case ???: // from DA_CONTRACT (looks like biolab mobs aura)
 // 			sc->opt3 |= OPT3_CONTRACT;
-// 			opt_flag = 0;
+// 			opt_flag = OCF_NONE;
 // 			break;
 		// OPTION
 		case SC_HIDING:
 			sc->option |= OPTION_HIDE;
-			opt_flag = 2;
+			opt_flag = OCF_ONTOUCH;
 			break;
 		case SC_CLOAKING:
 		case SC_CLOAKINGEXCEED:
@@ -13272,15 +13375,15 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 		case SC_CAMOUFLAGE:
 		case SC_STEALTHFIELD:
 		case SC__SHADOWFORM:
-			opt_flag = 2;
+			opt_flag = OCF_ONTOUCH;
 			break;
 		case SC_CHASEWALK:
 			sc->option |= OPTION_CHASEWALK|OPTION_CLOAK;
-			opt_flag = 2;
+			opt_flag = OCF_ONTOUCH;
 			break;
 		case SC__FEINTBOMB:
 			sc->option |= OPTION_INVISIBLE;
-			opt_flag |= 2|4;
+			opt_flag |= OCF_ONTOUCH|OCF_UNIT_MOVE;
 			break;
 		case SC_SIGHT:
 			sc->option |= OPTION_SIGHT;
@@ -13290,27 +13393,27 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			break;
 		case SC_WEDDING:
 			sc->option |= OPTION_WEDDING;
-			opt_flag |= 0x4;
+			opt_flag |= OCF_SEND_LOOK;
 			break;
 		case SC_XMAS:
 			sc->option |= OPTION_XMAS;
-			opt_flag |= 0x4;
+			opt_flag |= OCF_SEND_LOOK;
 			break;
 		case SC_SUMMER:
 			sc->option |= OPTION_SUMMER;
-			opt_flag |= 0x4;
+			opt_flag |= OCF_SEND_LOOK;
 			break;
 		case SC_HANBOK:
 			sc->option |= OPTION_HANBOK;
-			opt_flag |= 0x4;
+			opt_flag |= OCF_SEND_LOOK;
 			break;
 		case SC_OKTOBERFEST:
 			sc->option |= OPTION_OKTOBERFEST;
-			opt_flag |= 0x4;
+			opt_flag |= OCF_SEND_LOOK;
 			break;
 		case SC_DRESSUP:
 			sc->option |= OPTION_SUMMER2;
-			opt_flag |= 0x4;
+			opt_flag |= OCF_SEND_LOOK;
 			break;
 		case SC_ORCISH:
 			sc->option |= OPTION_ORCISH;
@@ -13319,7 +13422,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			sc->option |= OPTION_FLYING;
 			break;
 		default:
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 	}
 
 	// On Aegis, when turning on a status change, first goes the option packet, then the sc packet.
@@ -13327,7 +13430,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 #ifndef Pandas_Aura_Mechanism
 		clif_changeoption(bl);
 #endif // Pandas_Aura_Mechanism
-		if(sd && (opt_flag&0x4)) {
+		if(sd && (opt_flag&OCF_SEND_LOOK)) {
 			clif_changelook(bl,LOOK_BASE,vd->class_);
 			clif_changelook(bl,LOOK_WEAPON,0);
 			clif_changelook(bl,LOOK_SHIELD,0);
@@ -13491,7 +13594,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			break;
 	}
 
-	if( opt_flag&2 && sd && !sd->npc_ontouch_.empty() )
+	if( opt_flag&OCF_ONTOUCH && sd && !sd->npc_ontouch_.empty() )
 		npc_touchnext_areanpc(sd,false); // Run OnTouch_ on next char in range
 
 #ifdef Pandas_NpcExpress_SC_START
@@ -13759,7 +13862,6 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 	struct status_change_entry *sce;
 	struct status_data *status;
 	struct view_data *vd;
-	int opt_flag = 0;
 	enum scb_flag calc_flag = SCB_NONE;
 
 	nullpo_ret(bl);
@@ -14357,7 +14459,7 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 			break;
 	}
 
-	opt_flag = 1;
+	uint16 opt_flag = OCF_SEND_OPTION;
 	switch(type) {
 	case SC_STONE:
 	case SC_FREEZE:
@@ -14365,7 +14467,7 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 	case SC_SLEEP:
 	case SC_BURNING:
 	case SC_WHITEIMPRISON:
-		sc->opt1 = 0;
+		sc->opt1 = OCF_NONE;
 		break;
 
 	case SC_POISON:
@@ -14383,7 +14485,7 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 
 	case SC_HIDING:
 		sc->option &= ~OPTION_HIDE;
-		opt_flag |= 2|4; // Check for warp trigger + AoE trigger
+		opt_flag |= OCF_ONTOUCH|OCF_UNIT_MOVE; // Check for warp trigger + AoE trigger
 		break;
 	case SC_CLOAKING:
 	case SC_CLOAKINGEXCEED:
@@ -14393,42 +14495,42 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 	case SC_CAMOUFLAGE:
 	case SC_STEALTHFIELD:
 	case SC__SHADOWFORM:
-		opt_flag |= 2;
+		opt_flag |= OCF_ONTOUCH;
 		break;
 	case SC_CHASEWALK:
 		sc->option &= ~(OPTION_CHASEWALK|OPTION_CLOAK);
-		opt_flag |= 2;
+		opt_flag |= OCF_ONTOUCH;
 		break;
 	case SC__FEINTBOMB:
 		sc->option &= ~OPTION_INVISIBLE;
-		opt_flag |= 2|4;
+		opt_flag |= OCF_ONTOUCH|OCF_UNIT_MOVE;
 		break;
 	case SC_SIGHT:
 		sc->option &= ~OPTION_SIGHT;
 		break;
 	case SC_WEDDING:
 		sc->option &= ~OPTION_WEDDING;
-		opt_flag |= 0x4;
+		opt_flag |= OCF_SEND_LOOK;
 		break;
 	case SC_XMAS:
 		sc->option &= ~OPTION_XMAS;
-		opt_flag |= 0x4;
+		opt_flag |= OCF_SEND_LOOK;
 		break;
 	case SC_SUMMER:
 		sc->option &= ~OPTION_SUMMER;
-		opt_flag |= 0x4;
+		opt_flag |= OCF_SEND_LOOK;
 		break;
 	case SC_HANBOK:
 		sc->option &= ~OPTION_HANBOK;
-		opt_flag |= 0x4;
+		opt_flag |= OCF_SEND_LOOK;
 		break;
 	case SC_OKTOBERFEST:
 		sc->option &= ~OPTION_OKTOBERFEST;
-		opt_flag |= 0x4;
+		opt_flag |= OCF_SEND_LOOK;
 		break;
 	case SC_DRESSUP:
 		sc->option &= ~OPTION_SUMMER2;
-		opt_flag |= 0x4;
+		opt_flag |= OCF_SEND_LOOK;
 		break;
 	case SC_ORCISH:
 		sc->option &= ~OPTION_ORCISH;
@@ -14446,95 +14548,95 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 	case SC_CONCENTRATION:
 	case SC_MERC_QUICKEN:
 		sc->opt3 &= ~OPT3_QUICKEN;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_OVERTHRUST:
 	case SC_MAXOVERTHRUST:
 	case SC_SWOO:
 		sc->opt3 &= ~OPT3_OVERTHRUST;
 		if( type == SC_SWOO )
-			opt_flag = 8;
+			opt_flag = OCF_NON_PLAYER;
 		else
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 		break;
 	case SC_ENERGYCOAT:
 	case SC_SKE:
 		sc->opt3 &= ~OPT3_ENERGYCOAT;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_INCATKRATE: // Simulated Explosion spirits effect.
 		if (bl->type != BL_MOB) {
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 			break;
 		}
 	case SC_EXPLOSIONSPIRITS:
 		sc->opt3 &= ~OPT3_EXPLOSIONSPIRITS;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_STEELBODY:
 	case SC_SKA:
 		sc->opt3 &= ~OPT3_STEELBODY;
 		if (type == SC_SKA)
-			opt_flag = 8;
+			opt_flag = OCF_NON_PLAYER;
 		else
-			opt_flag = 0;
+			opt_flag = OCF_NONE;
 		break;
 	case SC_BLADESTOP:
 		sc->opt3 &= ~OPT3_BLADESTOP;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_AURABLADE:
 		sc->opt3 &= ~OPT3_AURABLADE;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_BERSERK:
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		sc->opt3 &= ~OPT3_BERSERK;
 		break;
 // 	case ???: // doesn't seem to do anything
 // 		sc->opt3 &= ~OPT3_LIGHTBLADE;
-// 		opt_flag = 0;
+// 		opt_flag = OCF_NONE;
 // 		break;
 	case SC_DANCING:
 		if ((sce->val1&0xFFFF) == CG_MOONLIT)
 			sc->opt3 &= ~OPT3_MOONLIT;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_MARIONETTE:
 	case SC_MARIONETTE2:
 		sc->opt3 &= ~OPT3_MARIONETTE;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_ASSUMPTIO:
 		sc->opt3 &= ~OPT3_ASSUMPTIO;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_WARM: // SG skills [Komurka]
 		sc->opt3 &= ~OPT3_WARM;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_KAITE:
 		sc->opt3 &= ~OPT3_KAITE;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_BUNSINJYUTSU:
 		sc->opt3 &= ~OPT3_BUNSIN;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_SPIRIT:
 		sc->opt3 &= ~OPT3_SOULLINK;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 	case SC_CHANGEUNDEAD:
 		sc->opt3 &= ~OPT3_UNDEAD;
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 		break;
 // 	case ???: // from DA_CONTRACT (looks like biolab mobs aura)
 // 		sc->opt3 &= ~OPT3_CONTRACT;
-// 		opt_flag = 0;
+// 		opt_flag = OCF_NONE;
 // 		break;
 	default:
-		opt_flag = 0;
+		opt_flag = OCF_NONE;
 	}
 
 	if (calc_flag&SCB_DYE) { // Restore DYE color
@@ -14560,13 +14662,13 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 
 	clif_status_change(bl,status_icon,0,0,0,0,0);
 
-	if( opt_flag&8 ) // bugreport:681
+	if( opt_flag&OCF_NON_PLAYER ) // bugreport:681
 		clif_changeoption2(bl);
 	else if(opt_flag) {
 #ifndef Pandas_Aura_Mechanism
 		clif_changeoption(bl);
 #endif // Pandas_Aura_Mechanism
-		if (sd && (opt_flag&0x4)) {
+		if (sd && (opt_flag&OCF_SEND_LOOK)) {
 			clif_changelook(bl,LOOK_BASE,sd->vd.class_);
 			clif_get_weapon_view(sd,&sd->vd.weapon,&sd->vd.shield);
 			clif_changelook(bl,LOOK_WEAPON,sd->vd.weapon);
@@ -14591,10 +14693,10 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 			status_calc_bl(bl, calc_flag);
 	}
 
-	if(opt_flag&4) // Out of hiding, invoke on place.
+	if(opt_flag&OCF_UNIT_MOVE) // Out of hiding, invoke on place.
 		skill_unit_move(bl,gettick(),1);
 
-	if(opt_flag&2 && sd && !sd->state.warping && map_getcell(bl->m,bl->x,bl->y,CELL_CHKNPC))
+	if(opt_flag&OCF_ONTOUCH && sd && !sd->state.warping && map_getcell(bl->m,bl->x,bl->y,CELL_CHKNPC))
 		npc_touch_area_allnpc(sd,bl->m,bl->x,bl->y); // Trigger on-touch event.
 
 	ers_free(sc_data_ers, sce);
@@ -15576,6 +15678,21 @@ TIMER_FUNC(status_change_timer){
 		if (--(sce->val4) >= 0) {
 			status_heal(bl, 1000, 350, 2);
 			sc_timer_next(1000 + tick);
+			return 0;
+		}
+		break;
+	case SC_BURNT:
+		if( --(sce->val4) >= 0 ) {
+			int damage = 2000;
+
+			if( damage >= status->hp )
+				damage = status->hp - 1;
+			map_freeblock_lock();
+			status_zap(bl,damage,0);
+			if( sc->data[type] ) {
+				sc_timer_next(1000 + tick);
+			}
+			map_freeblock_unlock();
 			return 0;
 		}
 		break;

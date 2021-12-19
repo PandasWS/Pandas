@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Function deconstruct</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,7 +27,7 @@
 <a name="boost.signals2.deconstruct"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Function deconstruct</span></h2>
-<p>boost::signals2::deconstruct &#8212; Create a <code class="computeroutput">shared_ptr</code> with support for post-constructors and pre-destructors.</p>
+<p>boost::signals2::deconstruct — Create a <code class="computeroutput">shared_ptr</code> with support for post-constructors and pre-destructors.</p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../signals2/reference.html#header.boost.signals2.deconstruct_hpp" title="Header &lt;boost/signals2/deconstruct.hpp&gt;">boost/signals2/deconstruct.hpp</a>&gt;
@@ -49,10 +49,10 @@
             in a manner similar
             to that of <code class="computeroutput">boost::make_shared()</code>.  In addition, <code class="computeroutput">deconstruct</code>
             supports postconstructors and predestructors.  The returned
-            <code class="computeroutput">shared_ptr</code> is wrapped inside a <code class="computeroutput"><a class="link" href="postconstructor_invoker.html" title="Class postconstructor_invoker">postconstructor_invoker</a></code>
+            <code class="computeroutput"><a class="link" href="../shared_ptr.html" title="Class template shared_ptr">shared_ptr</a></code> is wrapped inside a <code class="computeroutput"><a class="link" href="postconstructor_invoker.html" title="Class postconstructor_invoker">postconstructor_invoker</a></code>
             in order to provide the user with an opportunity to pass arguments to a postconstructor,
             while insuring the postconstructor is run before the wrapped
-            <code class="computeroutput">shared_ptr</code> is accessible.
+            <code class="computeroutput"><a class="link" href="../shared_ptr.html" title="Class template shared_ptr">shared_ptr</a></code> is accessible.
           </p>
 <p>
             In order to use <code class="computeroutput">deconstruct</code> you must define a postconstructor for your class.
@@ -67,7 +67,7 @@
 <p>
             Optionally, you may define a predestructor for your class.  This is done by
             defining an <code class="computeroutput">adl_predestruct</code> function which may be found
-            by argument-dependent lookup.  The deleter of the <code class="computeroutput">shared_ptr</code>
+            by argument-dependent lookup.  The deleter of the <code class="computeroutput"><a class="link" href="../shared_ptr.html" title="Class template shared_ptr">shared_ptr</a></code>
             created by <code class="computeroutput">deconstruct</code> will make an unqualified call to
             <code class="computeroutput">adl_predestruct</code> with a single
             argument: a pointer to the object which is about to be deleted.
@@ -127,7 +127,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2004 Douglas Gregor<br>Copyright &#169; 2007-2009 Frank Mori Hess<p>Distributed under the Boost
+<td align="right"><div class="copyright-footer">Copyright © 2001-2004 Douglas Gregor<br>Copyright © 2007-2009 Frank Mori Hess<p>Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>

@@ -34,12 +34,12 @@ inline std::vector<native_handle_type> get_handles(std::error_code & ec)
 
     ::boost::winapi::NTSTATUS_ nt_status = STATUS_INFO_LENGTH_MISMATCH_;
 
-    for (int cnt = 0;
+    for (;
            nt_status == STATUS_INFO_LENGTH_MISMATCH_;
            nt_status = workaround::nt_system_query_information(
                             workaround::SystemHandleInformation_,
-                            info_pointer, buffer.size(),
-                            NULL))
+                            info_pointer, static_cast<::boost::winapi::ULONG_>(buffer.size()),
+                            nullptr))
     {
         buffer.resize(buffer.size() * 2);
         info_pointer = reinterpret_cast<workaround::SYSTEM_HANDLE_INFORMATION_*>(buffer.data());
@@ -136,7 +136,7 @@ struct limit_handles_ : handler_base_ext
                 [&](::boost::winapi::HANDLE_ handle)
                 {
                     auto itr = std::find(all_handles.begin(), all_handles .end(), handle);
-                    DWORD flags = 0u;
+                    ::boost::winapi::DWORD_ flags = 0u;
                     if (itr != all_handles.end())
                         *itr = ::boost::winapi::INVALID_HANDLE_VALUE_;
                     else if ((::boost::winapi::GetHandleInformation(*itr, &flags) != 0)

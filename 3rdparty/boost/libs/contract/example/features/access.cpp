@@ -45,7 +45,7 @@ template<typename T>
 class vector
     #define BASES public pushable<T>
     : BASES
-{
+{ // Private section of the class.
     friend class boost::contract::access; // Friend `access` class so...
 
     typedef BOOST_CONTRACT_BASE_TYPES(BASES) base_types; // ...private bases.
@@ -57,7 +57,7 @@ class vector
     
     BOOST_CONTRACT_OVERRIDE(push_back) // ...private overrides.
     
-public:
+public: // Public section of the class.
     void push_back(T const& value, boost::contract::virtual_* v = 0)
             /* override */ {
         boost::contract::old_ptr<unsigned> old_size =
@@ -82,7 +82,7 @@ public:
     unsigned max_size() const { return vect_.max_size(); }
     unsigned capacity() const { return vect_.capacity(); }
 
-private:
+private: // Another private section.
     std::vector<T> vect_;
 };
 

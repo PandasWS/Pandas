@@ -11,6 +11,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <boost/move/utility_core.hpp>
+#include <boost/core/ignore_unused.hpp>
 #include <boost/move/unique_ptr.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/core/lightweight_test.hpp>
@@ -107,7 +108,7 @@ void test()
       bml::unique_ptr<A> p(new A);
       BOOST_TEST(A::count == 1);
       A* i = p.get();
-      (void)i;
+      ::boost::ignore_unused(i);
       p.reset(nullptr);
       BOOST_TEST(A::count == 0);
       BOOST_TEST(p.get() == 0);
@@ -117,7 +118,7 @@ void test()
       bml::unique_ptr<A> p(new A);
       BOOST_TEST(A::count == 1);
       A* i = p.get();
-      (void)i;
+      ::boost::ignore_unused(i);
       p = nullptr;
       BOOST_TEST(A::count == 0);
       BOOST_TEST(p.get() == 0);
@@ -143,7 +144,7 @@ void test()
       bml::unique_ptr<A[]> p(new A[2]);
       BOOST_TEST(A::count == 2);
       A* i = p.get();
-      (void)i;
+      ::boost::ignore_unused(i);
       p.reset(nullptr);
       BOOST_TEST(A::count == 0);
       BOOST_TEST(p.get() == 0);
@@ -153,7 +154,7 @@ void test()
       bml::unique_ptr<A[]> p(new A[2]);
       BOOST_TEST(A::count == 2);
       A* i = p.get();
-      (void)i;
+      ::boost::ignore_unused(i);
       p = nullptr;
       BOOST_TEST(A::count == 0);
       BOOST_TEST(p.get() == 0);
@@ -178,7 +179,7 @@ void test()
       bml::unique_ptr<A[2]> p(new A[2]);
       BOOST_TEST(A::count == 2);
       A* i = p.get();
-      (void)i;
+      ::boost::ignore_unused(i);
       p.reset(nullptr);
       BOOST_TEST(A::count == 0);
       BOOST_TEST(p.get() == 0);
@@ -188,7 +189,7 @@ void test()
       bml::unique_ptr<A[2]> p(new A[2]);
       BOOST_TEST(A::count == 2);
       A* i = p.get();
-      (void)i;
+      ::boost::ignore_unused(i);
       p = nullptr;
       BOOST_TEST(A::count == 0);
       BOOST_TEST(p.get() == 0);

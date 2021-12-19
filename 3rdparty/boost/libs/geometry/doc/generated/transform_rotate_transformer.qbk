@@ -19,7 +19,7 @@
 Strategy for rotate transformation in Cartesian coordinate system. 
 
 [heading Description]
-Rotate rotates a geometry of specified angle about a fixed point (e.g. origin). 
+Rotate rotates a geometry by a specified angle about a fixed point (e.g. origin). 
 
 [heading Synopsis]
 ``template<typename DegreeOrRadian, typename CalculationType, std::size_t Dimension1, std::size_t Dimension2>

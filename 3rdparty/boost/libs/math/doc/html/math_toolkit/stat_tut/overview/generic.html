@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Generic operations common to all distributions are non-member functions</title>
 <link rel="stylesheet" href="../../../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Math Toolkit 2.10.0">
-<link rel="up" href="../overview.html" title="Overview of Distributions">
+<link rel="home" href="../../../index.html" title="Math Toolkit 3.1.0">
+<link rel="up" href="../overview.html" title="Overview of Statistical Distributions">
 <link rel="prev" href="objects.html" title="Distributions are Objects">
 <link rel="next" href="complements.html" title="Complements are supported too - and when to use them">
 </head>
@@ -112,9 +112,10 @@
           </p>
 <p>
             For example, the binomial distribution probability distribution function
-            (PDF) is written as <span class="emphasis"><em>f(k| n, p)</em></span> = Pr(K = k|n, p)
-            = probability of observing k successes out of n trials. K is the <a href="http://en.wikipedia.org/wiki/Random_variable" target="_top">random variable</a>,
-            k is the <a href="http://en.wikipedia.org/wiki/Random_variate" target="_top">random
+            (PDF) is written as <span class="serif_italic"><span class="emphasis"><em>f(k| n, p)</em></span>
+            = Pr(K = k|n, p) = </span> probability of observing k successes out
+            of n trials. K is the <a href="http://en.wikipedia.org/wiki/Random_variable" target="_top">random
+            variable</a>, k is the <a href="http://en.wikipedia.org/wiki/Random_variate" target="_top">random
             variate</a>, the parameters are n (trials) and p (probability).
           </p>
 </td></tr>
@@ -212,19 +213,19 @@
             The quantile functions for these distributions are hard to specify in
             a manner that will satisfy everyone all of the time. The default behaviour
             is to return an integer result, that has been rounded <span class="emphasis"><em>outwards</em></span>:
-            that is to say, lower quantiles - where the probablity is less than 0.5
-            are rounded down, while upper quantiles - where the probability is greater
-            than 0.5 - are rounded up. This behaviour ensures that if an X% quantile
-            is requested, then <span class="emphasis"><em>at least</em></span> the requested coverage
-            will be present in the central region, and <span class="emphasis"><em>no more than</em></span>
-            the requested coverage will be present in the tails.
+            that is to say, lower quantiles - where the probability is less than
+            0.5 are rounded down, while upper quantiles - where the probability is
+            greater than 0.5 - are rounded up. This behaviour ensures that if an
+            X% quantile is requested, then <span class="emphasis"><em>at least</em></span> the requested
+            coverage will be present in the central region, and <span class="emphasis"><em>no more
+            than</em></span> the requested coverage will be present in the tails.
           </p>
 <p>
             This behaviour can be changed so that the quantile functions are rounded
             differently, or return a real-valued result using <a class="link" href="../../pol_overview.html" title="Policy Overview">Policies</a>.
             It is strongly recommended that you read the tutorial <a class="link" href="../../pol_tutorial/understand_dis_quant.html" title="Understanding Quantiles of Discrete Distributions">Understanding
             Quantiles of Discrete Distributions</a> before using the quantile
-            function on a discrete distribtion. The <a class="link" href="../../pol_ref/discrete_quant_ref.html" title="Discrete Quantile Policies">reference
+            function on a discrete distribution. The <a class="link" href="../../pol_ref/discrete_quant_ref.html" title="Discrete Quantile Policies">reference
             docs</a> describe how to change the rounding policy for these distributions.
           </p>
 <p>
@@ -239,11 +240,11 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

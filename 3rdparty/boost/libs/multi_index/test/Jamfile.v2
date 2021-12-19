@@ -1,6 +1,6 @@
 # Boost.MultiIndex tests Jamfile
 #
-# Copyright 2003-2018 Joaquín M López Muñoz.
+# Copyright 2003-2020 Joaquín M López Muñoz.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -38,6 +38,7 @@ obj boost_multi_index_key_supported : check_bmi_key_supported.cpp  ;
 explicit boost_multi_index_key_supported ;
 
 test-suite "multi_index" :
+    [ run test_alloc_awareness.cpp  test_alloc_awareness_main.cpp  ]
     [ run test_basic.cpp            test_basic_main.cpp            ]
     [ run test_capacity.cpp         test_capacity_main.cpp         ]
     [ run test_comparison.cpp       test_comparison_main.cpp       ]
@@ -55,6 +56,7 @@ test-suite "multi_index" :
     [ run test_list_ops.cpp         test_list_ops_main.cpp         ]
     [ run test_modifiers.cpp        test_modifiers_main.cpp        ]
     [ run test_mpl_ops.cpp          test_mpl_ops_main.cpp          ]
+    [ run test_node_handling.cpp    test_node_handling_main.cpp    ]
     [ run test_observers.cpp        test_observers_main.cpp        ]    
     [ run test_projection.cpp       test_projection_main.cpp       ]
     [ run test_range.cpp            test_range_main.cpp            ]

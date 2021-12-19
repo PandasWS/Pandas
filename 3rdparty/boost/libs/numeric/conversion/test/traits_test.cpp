@@ -22,7 +22,7 @@
 #include <boost/numeric/conversion/udt_builtin_mixture.hpp>
 #include <boost/numeric/conversion/is_subranged.hpp>
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 #pragma hdrstop
 #endif
 
@@ -258,11 +258,7 @@ struct generate_expected_traits
 #define TEST_VALUE_FIELD(Name) \
         typedef typename traits::Name   BOOST_PP_CAT(t,Name) ; \
         typedef typename expected::Name BOOST_PP_CAT(x,Name) ; \
-        BOOST_CHECK_MESSAGE ( ( BOOST_PP_CAT(t,Name)::value == BOOST_PP_CAT(x,Name)::value ) , \
-                              "conversion_traits<" << typeid(T).name() << "," << typeid(S).name() \
-                              << ">::" << #Name << " = " << to_string(BOOST_PP_CAT(t,Name)::value) \
-                              << ". Expected: "  << to_string(BOOST_PP_CAT(x,Name)::value) \
-                            ) ;
+        BOOST_TEST( ( BOOST_PP_CAT(t,Name)::value == BOOST_PP_CAT(x,Name)::value ) ) ;
 
 // This macro generates the code that compares a type field
 // in numeric::conversion_traits<> with its corresponding field
@@ -271,11 +267,7 @@ struct generate_expected_traits
 #define TEST_TYPE_FIELD(Name) \
         typedef typename traits::Name   BOOST_PP_CAT(t,Name) ; \
         typedef typename expected::Name BOOST_PP_CAT(x,Name) ; \
-        BOOST_CHECK_MESSAGE ( ( typeid(BOOST_PP_CAT(t,Name)) == typeid(BOOST_PP_CAT(x,Name)) ) , \
-                              "conversion_traits<" << typeid(T).name() << "," << typeid(S).name() \
-                              << ">::" << #Name << " = " <<  typeid(BOOST_PP_CAT(t,Name)).name() \
-                              << ". Expected: "  << typeid(BOOST_PP_CAT(x,Name)).name() \
-                            ) ;
+        BOOST_TEST ( ( typeid(BOOST_PP_CAT(t,Name)) == typeid(BOOST_PP_CAT(x,Name)) ) ) ;
 
 //
 // Test core.
@@ -329,13 +321,13 @@ void test_traits()
   test_traits_from( SET_FNTPL_ARG(MyFloat)         );
 }
 
-int test_main( int, char * [])
+int main()
 {
   std::cout << std::setprecision( std::numeric_limits<long double>::digits10 ) ;
   
   test_traits();
 
-  return 0;
+  return boost::report_errors();
 }
 //---------------------------------------------------------------------------
 

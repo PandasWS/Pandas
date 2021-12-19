@@ -1,5 +1,5 @@
 ////
-Copyright 2017, 2019 Peter Dimov
+Copyright 2017-2020 Peter Dimov
 
 Distributed under the Boost Software License, Version 1.0.
 
@@ -113,7 +113,7 @@ is to avoid evaluating `F<U...>` when the condition is `true` as it may not be v
 .Using mp_eval_if_c to select the first pack element, or void
 ```
 template<class... T> using first_or_void =
-    mp_eval_if_c<sizeof...(T) == 0, void, mp_apply, mp_first, mp_list<T...>>;
+    mp_eval_if_c<sizeof...(T) == 0, void, mp_first, mp_list<T...>>;
 ```
 
 ## mp_eval_if<C, T, F, U...>
@@ -174,6 +174,12 @@ Like `mp_valid`, but takes a quoted metafunction.
         mp_eval_if_not<mp_valid<F, U...>, T, F, U...>;
 
 `mp_eval_or<T, F, U...>` is an alias for `F<U...>` when this expression is valid, for `T` otherwise.
+
+.Using mp_eval_or to select the first pack element, or void
+```
+template<class... T> using first_or_void =
+    mp_eval_or<void, mp_first, mp_list<T...>>;
+```
 
 ## mp_eval_or_q<T, Q, U...>
 
@@ -251,19 +257,19 @@ using R1 = mp_transform_q<mp_quote_trait<std::add_pointer>, L1>;
 using LQ = mp_list<mp_quote<std::is_const>, mp_quote<std::is_volatile>>;
 
 template<class T> using is_const_and_volatile =
-    mp_all<mp_product<mp_invoke_q, LQ, mp_list<T>>>;
+    mp_apply<mp_all, mp_product<mp_invoke_q, LQ, mp_list<T>>>;
 ```
 
 .Using mp_invoke_q to invoke a list of metafunctions, technique 2
 ```
 template<class T> using is_const_and_volatile =
-    mp_all<mp_transform_q<mp_bind_back<mp_invoke_q, T>, LQ>>;
+    mp_apply<mp_all, mp_transform_q<mp_bind_back<mp_invoke_q, T>, LQ>>;
 ```
 
 .Using mp_invoke_q to invoke a list of metafunctions, technique 3
 ```
 template<class T> using is_const_and_volatile =
-    mp_all<mp_transform<mp_invoke_q, LQ, mp_fill<LQ, T>>>;
+    mp_apply<mp_all, mp_transform<mp_invoke_q, LQ, mp_fill<LQ, T>>>;
 ```
 
 ## mp_not_fn<P>
@@ -282,3 +288,17 @@ That is, it negates the result of `P`.
     template<class Q> using mp_not_fn_q = mp_not_fn<Q::template fn>;
 
 As `mp_not_fn`, but takes a quoted metafunction.
+
+## mp_compose<F...>
+
+    template<template<class...> class... F> struct mp_compose;
+
+`mp_compose<F1, F2, ..., Fn>` is a quoted metafunction that applies
+`F1`, `F2`, ..., `Fn` to its argument, in sequence. That is,
+`mp_compose<F1, F2, ..., Fn>::fn<T...>` is `Fn<...F2<F1<T...>>...>`.
+
+## mp_compose_q<Q...>
+
+    template<class... Q> struct mp_compose_q;
+
+As `mp_compose`, but takes quoted metafunctions.

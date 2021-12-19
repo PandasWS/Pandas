@@ -27,7 +27,7 @@ int main()
 #if defined(__SGI_STL_PORT)                                                             \
     || !BOOST_WORKAROUND(__GNUC__, <= 2)                                                \
     && !(BOOST_WORKAROUND(__GNUC__, == 3) && BOOST_WORKAROUND(__GNUC_MINOR__, <= 1))    \
-    && !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x551))                          \
+    && !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x551))                          \
     && !BOOST_WORKAROUND(__LIBCOMO_VERSION__, BOOST_TESTED_AT(29))                      \
     && !BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB, <= 1)
   {
@@ -41,6 +41,6 @@ int main()
     boost::function_requires< boost_concepts::InteroperableIteratorConcept<rev_iter, c_rev_iter> >();
   }
 #endif
-  
+
   return boost::exit_success;
 }

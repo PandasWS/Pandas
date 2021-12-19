@@ -27,7 +27,7 @@
 #include <boost/math/concepts/real_concept.hpp> // for real_concept
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp> // Boost.Test
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <boost/math/distributions/pareto.hpp>
     using boost::math::pareto_distribution;
@@ -224,16 +224,20 @@ void test_spots(RealType)
     // skewness:
     BOOST_CHECK_CLOSE_FRACTION(
        skewness(pareto15), static_cast<RealType>(4.6475800154489004L), tol5eps);
-    // kertosis:
+    // kurtosis:
     BOOST_CHECK_CLOSE_FRACTION(
        kurtosis(pareto15), static_cast<RealType>(73.8L), tol5eps);
-    // kertosis excess:
+    // kurtosis excess:
     BOOST_CHECK_CLOSE_FRACTION(
        kurtosis_excess(pareto15), static_cast<RealType>(70.8L), tol5eps);
     // Check difference between kurtosis and excess:
     BOOST_CHECK_CLOSE_FRACTION(
       kurtosis_excess(pareto15), kurtosis(pareto15) - static_cast<RealType>(3L), tol5eps);
     // Check kurtosis excess = kurtosis - 3;
+
+    RealType expected_entropy = 1 + RealType(1)/RealType(5) + log(RealType(1)/RealType(5));
+    BOOST_CHECK_CLOSE_FRACTION(
+      entropy(pareto15), expected_entropy, tol5eps);
 
     // Error condition checks:
     check_out_of_range<pareto_distribution<RealType> >(1, 1);
@@ -333,7 +337,7 @@ BOOST_AUTO_TEST_CASE( test_main )
   test_spots(0.0); // Test double. OK at decdigits 7, tol5eps = 1e07 %
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
   test_spots(0.0L); // Test long double.
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x0582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x0582))
   test_spots(boost::math::concepts::real_concept(0.)); // Test real concept.
 #endif
 #else

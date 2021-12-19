@@ -65,7 +65,7 @@
 #endif // Pandas_NpcFilter_UNEQUIP
 
 #ifdef Pandas_NpcFilter_CHANGETITLE
-	export_constant(NPCF_CHANGETITLE);	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发此过滤器
+	export_constant(NPCF_CHANGETITLE);	// changetitle_filter_name	// OnPCChangeTitleFilter		// 当玩家试图变更称号时将触发过滤器
 #endif // Pandas_NpcFilter_CHANGETITLE
 
 #ifdef Pandas_NpcFilter_SC_START
@@ -80,9 +80,29 @@
 	export_constant(NPCF_ONECLICK_IDENTIFY);	// oneclick_identify_filter_name	// OnPCUseOCIdentifyFilter		// 当玩家使用一键鉴定道具时触发过滤器
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	export_constant(NPCF_GUILDCREATE);	// guildcreate_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDCREATE
+
+#ifdef Pandas_NpcFilter_GUILDJOIN
+	export_constant(NPCF_GUILDJOIN);	// guildjoin_filter_name	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_GUILDJOIN
+
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-	export_constant(NPCF_GUILDLEAVE);	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家离开公会(无论是自愿还是被踢), 触发此过滤器 [聽風]
+	export_constant(NPCF_GUILDLEAVE);	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_GUILDLEAVE
+
+#ifdef Pandas_NpcFilter_PARTYCREATE
+	export_constant(NPCF_PARTYCREATE);	// partycreate_filter_name	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYCREATE
+
+#ifdef Pandas_NpcFilter_PARTYJOIN
+	export_constant(NPCF_PARTYJOIN);	// partyjoin_filter_name	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYJOIN
+
+#ifdef Pandas_NpcFilter_PARTYLEAVE
+	export_constant(NPCF_PARTYLEAVE);	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_PARTYLEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	/************************************************************************/
@@ -149,6 +169,18 @@
 #ifdef Pandas_NpcExpress_MOBDROPITEM
 	export_constant(NPCX_MOBDROPITEM);	// mobdropitem_express_name	// OnMobDropItemExpress		// 当魔物即将掉落道具时触发实时事件
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcExpress_PCATTACK
+	export_constant(NPCX_PCATTACK);	// pcattack_express_name	// OnPCAttackExpress		// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
+#endif // Pandas_NpcExpress_PCATTACK
+
+#ifdef Pandas_NpcExpress_MER_CALL
+	export_constant(NPCX_MER_CALL);	// mer_call_express_name	// OnPCMerCallExpress		// 当玩家成功召唤出佣兵时触发实时事件
+#endif // Pandas_NpcExpress_MER_CALL
+
+#ifdef Pandas_NpcExpress_MER_LEAVE
+	export_constant(NPCX_MER_LEAVE);	// mer_leave_express_name	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
+#endif // Pandas_NpcExpress_MER_LEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
 #endif // Pandas_ScriptCommands
 
@@ -175,7 +207,12 @@
 	export_constant(PACKETVER);
 	export_constant(MAX_LEVEL);
 	export_constant(MAX_STORAGE);
-	export_constant(MAX_INVENTORY);
+	// -------------------------------------------------------------------------------------
+	// 被调整改造之后, 需要让 MAX_INVENTORY 脚本常量的值等于 G_MAX_INVENTORY
+	// -------------------------------------------------------------------------------------
+	//export_constant(MAX_INVENTORY);
+	script_set_constant("MAX_INVENTORY", G_MAX_INVENTORY, false, false);
+	// -------------------------------------------------------------------------------------
 	export_constant(MAX_CART);
 	export_constant(MAX_ZENY);
 	export_constant(MAX_PARTY);
@@ -636,6 +673,8 @@
 	export_constant(MF_PRIVATEAIRSHIP_SOURCE);
 	export_constant(MF_PRIVATEAIRSHIP_DESTINATION);
 	export_constant(MF_SKILL_DURATION);
+	export_constant(MF_NOCASHSHOP);
+	export_constant(MF_NORODEX);
 
 #ifdef Pandas_MapFlag_Mobinfo
 	export_constant(MF_MOBINFO);
@@ -709,6 +748,30 @@
 	export_constant(MF_MAXASPD);
 #endif // Pandas_MapFlag_MaxASPD
 
+#ifdef Pandas_MapFlag_NoSlave
+	export_constant(MF_NOSLAVE);
+#endif // Pandas_MapFlag_NoSlave
+
+#ifdef Pandas_MapFlag_NoBank
+	export_constant(MF_NOBANK);
+#endif // Pandas_MapFlag_NoBank
+
+#ifdef Pandas_MapFlag_NoUseItem
+	export_constant(MF_NOUSEITEM);
+#endif // Pandas_MapFlag_NoUseItem
+
+#ifdef Pandas_MapFlag_HideDamage
+	export_constant(MF_HIDEDAMAGE);
+#endif // Pandas_MapFlag_HideDamage
+
+#ifdef Pandas_MapFlag_NoAttack
+	export_constant(MF_NOATTACK);
+#endif // Pandas_MapFlag_NoAttack
+
+#ifdef Pandas_MapFlag_NoAttack2
+	export_constant(MF_NOATTACK2);
+#endif // Pandas_MapFlag_NoAttack2
+
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
 	/* setcell types */
@@ -745,6 +808,7 @@
 	export_parameter("StatusPoint",SP_STATUSPOINT);
 	export_parameter("BaseLevel",SP_BASELEVEL);
 	export_parameter("SkillPoint",SP_SKILLPOINT);
+	export_parameter("TraitPoint",SP_TRAITPOINT);
 	export_parameter("Class",SP_CLASS);
 	export_parameter("Upper",SP_UPPER);
 	export_parameter("Zeny",SP_ZENY);
@@ -762,6 +826,8 @@
 	export_parameter("MaxHp",SP_MAXHP);
 	export_parameter("Sp",SP_SP);
 	export_parameter("MaxSp",SP_MAXSP);
+	export_parameter("Ap",SP_AP);
+	export_parameter("MaxAp",SP_MAXAP);
 	export_parameter("BaseJob",SP_BASEJOB);
 	export_parameter("BaseClass",SP_BASECLASS);
 	export_parameter("killerrid",SP_KILLERRID);
@@ -789,6 +855,12 @@
 	export_constant2("bInt",SP_INT);
 	export_constant2("bDex",SP_DEX);
 	export_constant2("bLuk",SP_LUK);
+	export_constant2("bPow",SP_POW);
+	export_constant2("bSta",SP_STA);
+	export_constant2("bWis",SP_WIS);
+	export_constant2("bSpl",SP_SPL);
+	export_constant2("bCon",SP_CON);
+	export_constant2("bCrt",SP_CRT);
 	export_constant2("bAtk",SP_ATK1);
 	export_constant2("bAtk2",SP_ATK2);
 	export_constant2("bDef",SP_DEF1);
@@ -802,6 +874,13 @@
 	export_constant2("bAspd",SP_ASPD);
 	export_constant2("bFame",SP_FAME);
 	export_constant2("bUnbreakable",SP_UNBREAKABLE);
+
+	export_constant2("bPatk",SP_PATK);
+	export_constant2("bSmatk",SP_SMATK);
+	export_constant2("bHplus",SP_HPLUS);
+	export_constant2("bCrate",SP_CRATE);
+	export_constant2("bRes",SP_RES);
+	export_constant2("bMres",SP_MRES);
 
 	export_constant2("bAtkRange",SP_ATTACKRANGE);
 	export_constant2("bAtkEle",SP_ATKELE);
@@ -995,13 +1074,35 @@
 	export_constant2("bCritDefRate",SP_CRIT_DEF_RATE);
 	export_constant2("bMagicSubDefEle", SP_MAGIC_SUBDEF_ELE);
 	export_constant2("bReduceDamageReturn",SP_REDUCE_DAMAGE_RETURN);
+	export_constant2("bAddItemSPHealRate", SP_ADD_ITEM_SPHEAL_RATE);
+	export_constant2("bAddItemGroupSPHealRate", SP_ADD_ITEMGROUP_SPHEAL_RATE);
 
 #ifdef Pandas_Bonuses
 
 #ifdef Pandas_Bonus_bNoFieldGemStone
-	// 使用该调整器可以让火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
+	// 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	export_constant2("bNoFieldGemStone", SP_PANDAS_NOFIELDGEMSTONE);
 #endif // Pandas_Bonus_bNoFieldGemStone
+#ifdef Pandas_Bonus_bRebirthWithHeal
+	// 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
+	export_constant2("bRebirthWithHeal", SP_PANDAS_REBIRTHWITHHEAL);
+#endif // Pandas_Bonus_bRebirthWithHeal
+#ifdef Pandas_Bonus_bAddSkillRange
+	// 增加 sk 技能 n 格攻击距离
+	export_constant2("bAddSkillRange", SP_PANDAS_ADDSKILLRANGE);
+#endif // Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus_bSkillNoRequire
+	// 解除 sk 技能中由 n 指定的前置施法条件限制
+	export_constant2("bSkillNoRequire", SP_PANDAS_SKILLNOREQUIRE);
+#endif // Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus_bStatusAddDamage
+	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
+	export_constant2("bStatusAddDamage", SP_PANDAS_STATUSADDDAMAGE);
+#endif // Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
+	export_constant2("bStatusAddDamageRate", SP_PANDAS_STATUSADDDAMAGERATE);
+#endif // Pandas_Bonus_bStatusAddDamageRate
 #ifdef Pandas_Bonus_bFinalAddRace
 	// 使用 bf 攻击时, 增加 r 种族 x% 的伤害(在最终伤害上全段修正) [聽風]
 	export_constant2("bFinalAddRace", SP_PANDAS_FINALADDRACE);
@@ -1887,6 +1988,9 @@
 	export_constant(SC_PACKING_ENVELOPE9);
 	export_constant(SC_PACKING_ENVELOPE10);
 	export_constant(SC_SOULATTACK);
+	export_constant(SC_WIDEWEB);
+	export_constant(SC_BURNT);
+	export_constant(SC_CHILL);
 #ifdef RENEWAL
 	export_constant(SC_EXTREMITYFIST2);
 #endif
@@ -3978,6 +4082,16 @@
 	export_constant(EFST_CURSE_R_CUBE);
 	export_constant(EFST_CURSE_B_CUBE);
 	export_constant(EFST_KILLING_AURA);
+	export_constant(EFST_TOXIN_OF_MANDARA);
+	export_constant(EFST_GOLDENE_TONE);
+	export_constant(EFST_TEMPERING);
+	export_constant(EFST_NOODLE_FES_1);
+	export_constant(EFST_NOODLE_FES_2);
+	export_constant(EFST_NOODLE_FES_3);
+	export_constant(EFST_NOODLE_FES_4);
+	export_constant(EFST_NOODLE_FES_5);
+	export_constant(EFST_RUSH_QUAKE1);
+	export_constant(EFST_RUSH_QUAKE2);
 /// @APIHOOK_END
 /// Do not modify code above this, since it will be automatically generated by the API again
 	export_constant(EFST_MAX);
@@ -4092,6 +4206,7 @@
 	export_constant(AI_LEGION);
 	export_constant(AI_FAW);
 	export_constant(AI_GUILD);
+	export_constant(AI_WAVEMODE);
 
 	/* battle flags */
 	export_constant(BF_NONE);
@@ -4380,6 +4495,7 @@
 	export_constant(W_DOUBLE_DA);
 	export_constant(W_DOUBLE_SA);
 	export_constant(MAX_WEAPON_TYPE_ALL);
+	export_constant(W_SHIELD);
 
 	/* ammunition types */
 	/* Send deprecation notice and temporarily replace with new constant value. */
@@ -4571,6 +4687,68 @@
 	export_deprecated_constant3("UNITTYPE_MER", BL_MER, "BL_MER");
 	export_deprecated_constant3("UNITTYPE_ELEM", BL_ELEM, "BL_ELEM");
 
+#ifdef Pandas_ScriptCommand_GetSkillInfo
+	export_constant(CAST_GROUND);
+	export_constant(CAST_DAMAGE);
+	export_constant(CAST_NODAMAGE);
+
+	export_constant(SKILL_COPY_PLAGIARISM);
+	export_constant(SKILL_COPY_REPRODUCE);
+
+	export_constant(SKI_CASTTYPE);
+	export_constant(SKI_NAME);
+	export_constant(SKI_DESCRIPTION);
+	export_constant(SKI_MAXLEVEL_IN_SKILLTREE);
+	export_constant(SKI_SKILLTYPE);
+	export_constant(SKI_HIT);
+	export_constant(SKI_TARGETTYPE);
+	export_constant(SKI_ELEMENT);
+	export_constant(SKI_DAMAGEFLAGS);
+	export_constant(SKI_MAXLEVEL);
+	export_constant(SKI_RANGE);
+	export_constant(SKI_SPLASHAREA);
+	export_constant(SKI_HITCOUNT);
+	export_constant(SKI_CASTTIME);
+	export_constant(SKI_FIXEDCASTTIME);
+	export_constant(SKI_AFTERCASTACTDELAY);
+	export_constant(SKI_AFTERCASTWALKDELAY);
+	export_constant(SKI_DURATION1);
+	export_constant(SKI_DURATION2);
+	export_constant(SKI_CASTTIMEFLAGS);
+	export_constant(SKI_CASTDELAYFLAGS);
+	export_constant(SKI_CASTDEFENSEREDUCTION);
+	export_constant(SKI_FLAGS);
+	export_constant(SKI_CASTCANCEL);
+	export_constant(SKI_ACTIVEINSTANCE);
+	export_constant(SKI_KNOCKBACK);
+	export_constant(SKI_COOLDOWN);
+	export_constant(SKI_NONEARNPC_TYPE);
+	export_constant(SKI_NONEARNPC_ADDITIONALRANGE);
+	export_constant(SKI_COPYFLAGS_SKILL);
+	export_constant(SKI_COPYFLAGS_REMOVEREQUIREMENT);
+	export_constant(SKI_UNIT_ID);
+	export_constant(SKI_UNIT_ALTERNATEID);
+	export_constant(SKI_UNIT_LAYOUT);
+	export_constant(SKI_UNIT_RANGE);
+	export_constant(SKI_UNIT_INTERVAL);
+	export_constant(SKI_UNIT_TARGET);
+	export_constant(SKI_UNIT_FLAG);
+	export_constant(SKI_REQUIRES_HPCOST);
+	export_constant(SKI_REQUIRES_SPCOST);
+	export_constant(SKI_REQUIRES_MAXHPTRIGGER);
+	export_constant(SKI_REQUIRES_HPRATECOST);
+	export_constant(SKI_REQUIRES_SPRATECOST);
+	export_constant(SKI_REQUIRES_ZENYCOST);
+	export_constant(SKI_REQUIRES_WEAPON);
+	export_constant(SKI_REQUIRES_AMMO);
+	export_constant(SKI_REQUIRES_AMMOAMOUNT);
+	export_constant(SKI_REQUIRES_STATE);
+	export_constant(SKI_REQUIRES_STATUS);
+	export_constant(SKI_REQUIRES_SPHERECOST);
+	export_constant(SKI_REQUIRES_ITEMCOST);
+	export_constant(SKI_REQUIRES_EQUIPMENT);
+#endif // Pandas_ScriptCommand_GetSkillInfo
+
 	/* unit control - mob */
 	export_constant(UMOB_SIZE);
 	export_constant(UMOB_LEVEL);
@@ -4625,6 +4803,7 @@
 	export_constant(UMOB_ROBE);
 	export_constant(UMOB_BODY2);
 	export_constant(UMOB_GROUP_ID);
+	export_constant(UMOB_IGNORE_CELL_STACK_LIMIT);
 
 	/* unit control - homunculus */
 	export_constant(UHOM_SIZE);
@@ -5504,6 +5683,8 @@
 	export_constant(IG_XMAS_PACKAGE_14);
 	export_constant(IG_EASTER_EGG);
 	export_constant(IG_PITAPAT_BOX);
+	export_constant(IG_HAPPY_BOX_J);
+	export_constant(IG_CLASS_SHADOW_CUBE);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);
@@ -6630,6 +6811,33 @@
 	export_constant_npc(JT_4_4JOB_PHANTOMBOOK2);
 	export_constant_npc(JT_4_4JOB_PHANTOMBOOK3);
 	export_constant_npc(JT_4_VENDING_MACHINE2);
+	export_constant_npc(JT_4_EP18_MARAM);
+	export_constant_npc(JT_4_EP18_MIRIAM);
+	export_constant_npc(JT_4_EP18_SUAD);
+	export_constant_npc(JT_4_EP18_IMRIL);
+	export_constant_npc(JT_4_EP18_MERCHANT);
+	export_constant_npc(JT_4_EP18_TAMARIN);
+	export_constant_npc(JT_4_EP18_DEW);
+	export_constant_npc(JT_4_EP18_MARK);
+	export_constant_npc(JT_4_EP18_ALF);
+	export_constant_npc(JT_4_EP18_SHULANG);
+	export_constant_npc(JT_4_EP18_BAGOT);
+	export_constant_npc(JT_4_EP18_DEMIFREYA);
+	export_constant_npc(JT_4_EP18_KAMIL);
+	export_constant_npc(JT_4_EP18_HAZAR);
+	export_constant_npc(JT_4_EP18_WAGON);
+	export_constant_npc(JT_4_EP18_PAPERS);
+	export_constant_npc(JT_4_EP18_HALFFLOWER);
+	export_constant_npc(JT_4_EP18_GW_OLD01);
+	export_constant_npc(JT_4_EP18_GW_OLD02);
+	export_constant_npc(JT_4_EP18_GW_MIDDLE01);
+	export_constant_npc(JT_4_EP18_GW_MIDDLE02);
+	export_constant_npc(JT_4_EP18_GW_MAN01);
+	export_constant_npc(JT_4_EP18_GW_MAN02);
+	export_constant_npc(JT_4_EP18_GW_WOMAN01);
+	export_constant_npc(JT_4_EP18_GW_WOMAN02);
+	export_constant_npc(JT_4_EP18_GW_CHILD01);
+	export_constant_npc(JT_4_EP18_GW_CHILD02);
 	export_constant_npc(JT_4_STAR_BOX_SCORE);
 	export_constant_npc(JT_4_STAR_BOX_POW1);
 	export_constant_npc(JT_4_STAR_BOX_POW2);
@@ -6655,6 +6863,20 @@
 	export_constant_npc(JT_4_STAR_BOX_TRAP1);
 	export_constant_npc(JT_4_STAR_BOX_TRAP2);
 	export_constant_npc(JT_4_STAR_BOX_MASTER);
+	export_constant_npc(JT_4_POINT_RED);
+	export_constant_npc(JT_4_POINT_BLUE);
+	export_constant_npc(JT_4_POINT_YELLOW);
+	export_constant_npc(JT_4_POINT_BLACK);
+	export_constant_npc(JT_4_POINT_WHITE);
+	export_constant_npc(JT_1_JOURNEY_STONE_D);
+	export_constant_npc(JT_1_JOURNEY_STONE_F);
+	export_constant_npc(JT_ROZ_MQ_SIGRUN);
+	export_constant_npc(JT_ROZ_MQ_SIGRUN_S);
+	export_constant_npc(JT_ROZ_MQ_HARACE01);
+	export_constant_npc(JT_ROZ_MQ_HARACE02);
+	export_constant_npc(JT_ROZ_MQ_SAHARIO);
+	export_constant_npc(JT_ROZ_MQ_SUPIGEL);
+	export_constant_npc(JT_ROZ_MQ_DEADSOLDIER);
 	export_constant_npc(JT_NEW_NPC_3RD_END);
 	#undef export_constant_npc
 
@@ -8156,6 +8378,11 @@
 	export_constant(SKILL_REQ_ITEMCOST);
 	export_constant(SKILL_REQ_EQUIPMENT);
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+	export_constant(SKILL_REQ_AMMO_COUNT);
+	export_constant(SKILL_REQ_PRODUCTMAT_COUNT);
+#endif // Pandas_Bonus_bSkillNoRequire
+
 	/* skill require state */
 	export_constant(ST_NONE);
 	export_constant(ST_HIDDEN);
@@ -8368,6 +8595,7 @@
 	export_constant(ITEMJ_ALL_UPPER);
 	export_constant(ITEMJ_ALL_BABY);
 	export_constant(ITEMJ_ALL_THIRD);
+	export_constant(ITEMJ_FOURTH);
 
 	/* item drop effects */
 	export_constant(DROPEFFECT_NONE);
@@ -8417,6 +8645,26 @@
 	export_constant(REFINE_TYPE_WEAPON);
 	export_constant(REFINE_TYPE_SHADOW_ARMOR);
 	export_constant(REFINE_TYPE_SHADOW_WEAPON);
+
+	/* autospell flags */
+	export_constant(AUTOSPELL_FORCE_SELF);
+	export_constant(AUTOSPELL_FORCE_TARGET);
+	export_constant(AUTOSPELL_FORCE_RANDOM_LEVEL);
+	export_constant(AUTOSPELL_FORCE_ALL);
+
+	/* stats */
+	export_constant(PARAM_STR);
+	export_constant(PARAM_AGI);
+	export_constant(PARAM_VIT);
+	export_constant(PARAM_INT);
+	export_constant(PARAM_DEX);
+	export_constant(PARAM_LUK);
+	export_constant(PARAM_POW);
+	export_constant(PARAM_STA);
+	export_constant(PARAM_WIS);
+	export_constant(PARAM_SPL);
+	export_constant(PARAM_CON);
+	export_constant(PARAM_CRT);
 
 #ifdef Pandas_BattleRecord
 	export_constant(BRT_DMG_RECEIVE);

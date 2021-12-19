@@ -35,7 +35,7 @@ struct X {
     template <class T> operator T&() const;
 };
 
-    
+
 int main()
 {
     STATIC_ASSERT_SAME(boost::pointee<proxy_ref_ptr<int> >::type, int);
@@ -43,16 +43,16 @@ int main()
 
     STATIC_ASSERT_SAME(boost::pointee<proxy_ref_ptr<int const> >::type, int const);
     STATIC_ASSERT_SAME(boost::pointee<proxy_ref_ptr<X const> >::type, X const);
-    
+
     STATIC_ASSERT_SAME(boost::pointee<proxy_value_ptr<int> >::type, int const);
     STATIC_ASSERT_SAME(boost::pointee<proxy_value_ptr<X> >::type, X const);
-    
+
     STATIC_ASSERT_SAME(boost::pointee<proxy_value_ptr<int const> >::type, int const);
     STATIC_ASSERT_SAME(boost::pointee<proxy_value_ptr<X const> >::type, X const);
 
     STATIC_ASSERT_SAME(boost::pointee<int*>::type, int);
     STATIC_ASSERT_SAME(boost::pointee<int const*>::type, int const);
-    
+
     STATIC_ASSERT_SAME(boost::pointee<X*>::type, X);
     STATIC_ASSERT_SAME(boost::pointee<X const*>::type, X const);
 
@@ -60,7 +60,7 @@ int main()
 
     STATIC_ASSERT_SAME(boost::pointee<std::auto_ptr<int> >::type, int);
     STATIC_ASSERT_SAME(boost::pointee<std::auto_ptr<X> >::type, X);
-    
+
     STATIC_ASSERT_SAME(boost::pointee<std::auto_ptr<int const> >::type, int const);
     STATIC_ASSERT_SAME(boost::pointee<std::auto_ptr<X const> >::type, X const);
 
@@ -68,7 +68,7 @@ int main()
 
     STATIC_ASSERT_SAME(boost::pointee<std::unique_ptr<int> >::type, int);
     STATIC_ASSERT_SAME(boost::pointee<std::unique_ptr<X> >::type, X);
-    
+
     STATIC_ASSERT_SAME(boost::pointee<std::unique_ptr<int const> >::type, int const);
     STATIC_ASSERT_SAME(boost::pointee<std::unique_ptr<X const> >::type, X const);
 
@@ -76,7 +76,7 @@ int main()
 
     STATIC_ASSERT_SAME(boost::pointee<std::list<int>::iterator >::type, int);
     STATIC_ASSERT_SAME(boost::pointee<std::list<X>::iterator >::type, X);
-    
+
     STATIC_ASSERT_SAME(boost::pointee<std::list<int>::const_iterator >::type, int const);
     STATIC_ASSERT_SAME(boost::pointee<std::list<X>::const_iterator >::type, X const);
     return 0;

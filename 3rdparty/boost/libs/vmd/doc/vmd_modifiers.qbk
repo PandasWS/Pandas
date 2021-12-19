@@ -50,7 +50,7 @@ has a name given to it, functionality, and set of identifiers
 associated with that particular type.
 Each particular type of a specific modifier may be used as optional
 parameters in one or more designated macros depending on the specific
-modifier type. 
+modifier type.
 
 When more than one mutually exclusive specific modifier from a particular type of modifier is 
 specified as an optional parameter the last specified takes effect. This

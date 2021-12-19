@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Direct iostream formatting: vectorstream and bufferstream</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../interprocess.html" title="Chapter&#160;18.&#160;Boost.Interprocess">
+<link rel="up" href="../interprocess.html" title="Chapter 18. Boost.Interprocess">
 <link rel="prev" href="memory_algorithms.html" title="Memory allocation algorithms">
 <link rel="next" href="interprocess_smart_ptr.html" title="Ownership smart pointers">
 </head>
@@ -364,18 +364,18 @@
    <span class="comment">//Fill data</span>
    <span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="identifier">data</span><span class="special">;</span>
    <span class="identifier">data</span><span class="special">.</span><span class="identifier">reserve</span><span class="special">(</span><span class="number">100</span><span class="special">);</span>
-   <span class="keyword">for</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">i</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span> <span class="identifier">i</span> <span class="special">&lt;</span> <span class="number">100</span><span class="special">;</span> <span class="special">++</span><span class="identifier">i</span><span class="special">){</span>
-      <span class="identifier">data</span><span class="special">.</span><span class="identifier">push_back</span><span class="special">(</span><span class="identifier">i</span><span class="special">);</span>
+   <span class="keyword">for</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">i</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span> <span class="identifier">i</span> <span class="special">&lt;</span> <span class="number">100</span><span class="special">;</span> <span class="special">++</span><span class="identifier">i</span><span class="special">){</span>
+      <span class="identifier">data</span><span class="special">.</span><span class="identifier">push_back</span><span class="special">((</span><span class="keyword">int</span><span class="special">)</span><span class="identifier">i</span><span class="special">);</span>
    <span class="special">}</span>
    <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">BufferSize</span> <span class="special">=</span> <span class="number">100</span><span class="special">*</span><span class="number">5</span><span class="special">;</span>
 
    <span class="comment">//Allocate a buffer in shared memory to write data</span>
    <span class="keyword">char</span> <span class="special">*</span><span class="identifier">my_cstring</span> <span class="special">=</span>
-      <span class="identifier">segment</span><span class="special">.</span><span class="identifier">construct</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&gt;(</span><span class="string">"MyCString"</span><span class="special">)[</span><span class="identifier">BufferSize</span><span class="special">](</span><span class="number">0</span><span class="special">);</span>
+      <span class="identifier">segment</span><span class="special">.</span><span class="identifier">construct</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&gt;(</span><span class="string">"MyCString"</span><span class="special">)[</span><span class="identifier">BufferSize</span><span class="special">](</span><span class="char">'\0'</span><span class="special">);</span>
    <span class="identifier">bufferstream</span> <span class="identifier">mybufstream</span><span class="special">(</span><span class="identifier">my_cstring</span><span class="special">,</span> <span class="identifier">BufferSize</span><span class="special">);</span>
 
    <span class="comment">//Now write data to the buffer</span>
-   <span class="keyword">for</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">i</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span> <span class="identifier">i</span> <span class="special">&lt;</span> <span class="number">100</span><span class="special">;</span> <span class="special">++</span><span class="identifier">i</span><span class="special">){</span>
+   <span class="keyword">for</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">i</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span> <span class="identifier">i</span> <span class="special">&lt;</span> <span class="number">100</span><span class="special">;</span> <span class="special">++</span><span class="identifier">i</span><span class="special">){</span>
       <span class="identifier">mybufstream</span> <span class="special">&lt;&lt;</span> <span class="identifier">data</span><span class="special">[</span><span class="identifier">i</span><span class="special">]</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
    <span class="special">}</span>
 
@@ -401,8 +401,8 @@
    <span class="identifier">mybufstream</span><span class="special">.</span><span class="identifier">seekp</span><span class="special">(</span><span class="number">0</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">ios</span><span class="special">::</span><span class="identifier">beg</span><span class="special">);</span>
 
    <span class="comment">//Now write again the data trying to do a buffer overflow</span>
-   <span class="keyword">for</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">i</span> <span class="special">=</span> <span class="number">0</span><span class="special">,</span> <span class="identifier">m</span> <span class="special">=</span> <span class="identifier">data</span><span class="special">.</span><span class="identifier">size</span><span class="special">()*</span><span class="number">5</span><span class="special">;</span> <span class="identifier">i</span> <span class="special">&lt;</span> <span class="identifier">m</span><span class="special">;</span> <span class="special">++</span><span class="identifier">i</span><span class="special">){</span>
-      <span class="identifier">mybufstream</span> <span class="special">&lt;&lt;</span> <span class="identifier">data</span><span class="special">[</span><span class="identifier">i</span><span class="special">%</span><span class="number">5</span><span class="special">]</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+   <span class="keyword">for</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">i</span> <span class="special">=</span> <span class="number">0</span><span class="special">,</span> <span class="identifier">m</span> <span class="special">=</span> <span class="identifier">data</span><span class="special">.</span><span class="identifier">size</span><span class="special">()*</span><span class="number">5</span><span class="special">;</span> <span class="identifier">i</span> <span class="special">&lt;</span> <span class="identifier">m</span><span class="special">;</span> <span class="special">++</span><span class="identifier">i</span><span class="special">){</span>
+      <span class="identifier">mybufstream</span> <span class="special">&lt;&lt;</span> <span class="identifier">data</span><span class="special">[</span><span class="identifier">i</span><span class="special">%</span><span class="number">5u</span><span class="special">]</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
    <span class="special">}</span>
 
    <span class="comment">//Now make sure badbit is active</span>
@@ -429,7 +429,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2005-2015 Ion Gaztanaga<p>
+<td align="right"><div class="copyright-footer">Copyright © 2005-2015 Ion Gaztanaga<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

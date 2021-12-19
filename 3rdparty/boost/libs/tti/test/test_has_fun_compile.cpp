@@ -15,6 +15,7 @@ int main()
   TheTIntFunction<AType,void,boost::mpl::vector<long,double> > aVar;
   BOOST_TTI_HAS_FUNCTION_GEN(someFunctionMember)<AnotherType,double,boost::mpl::vector<short,short,long,int> > aVar2;
   Pickedname<AnotherType,AType,boost::mpl::vector<long,long> > aVar3;
+  FunctionReturningInt<AType,int,boost::mpl::vector<>,boost::function_types::volatile_qualified > aVar4;
   
   // Compile time asserts
   

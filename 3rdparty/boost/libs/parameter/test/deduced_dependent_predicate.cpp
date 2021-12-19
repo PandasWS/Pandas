@@ -19,7 +19,7 @@
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/type_traits/is_convertible.hpp>
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
 #include <boost/type_traits/remove_reference.hpp>
 #else
 #include <boost/type_traits/add_lvalue_reference.hpp>
@@ -54,7 +54,7 @@ int main()
 #else   // !defined(BOOST_PARAMETER_CAN_USE_MP11)
               , boost::mpl::if_<
                     boost::is_same<
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
                         boost::mpl::_1
                       , boost::remove_reference<
                             boost::parameter::binding<
@@ -92,7 +92,7 @@ int main()
 #else   // !defined(BOOST_PARAMETER_CAN_USE_MP11)
               , boost::mpl::if_<
                     boost::is_same<
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
                         boost::mpl::_1
                       , boost::remove_reference<
                             boost::parameter::binding<

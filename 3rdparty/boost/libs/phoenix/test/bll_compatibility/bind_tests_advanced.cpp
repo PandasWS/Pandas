@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
 
 /*
 #include "boost/lambda/lambda.hpp"
@@ -75,16 +75,16 @@ void test_nested_binds()
   bool condition;
 
   condition = true;
-  BOOST_CHECK(bind(bind(&sum_or_product, _1), 1, 2)(condition)==3);
-  BOOST_CHECK(bind(bind(&sum_or_product, _1), _2, _3)(condition, j, k)==5);
+  BOOST_TEST_EQ(bind(bind(&sum_or_product, _1), 1, 2)(condition), 3);
+  BOOST_TEST_EQ(bind(bind(&sum_or_product, _1), _2, _3)(condition, j, k), 5);
 
   condition = false;   
-  BOOST_CHECK(bind(bind(&sum_or_product, _1), 1, 2)(condition)==2);
-  BOOST_CHECK(bind(bind(&sum_or_product, _1), _2, _3)(condition, j, k)==6);
+  BOOST_TEST_EQ(bind(bind(&sum_or_product, _1), 1, 2)(condition), 2);
+  BOOST_TEST_EQ(bind(bind(&sum_or_product, _1), _2, _3)(condition, j, k), 6);
 
 
   which_one wo; 
-  BOOST_CHECK(bind(bind(bind(wo), _1), _2, _3)(condition, j, k)==6);   
+  BOOST_TEST_EQ(bind(bind(bind(wo), _1), _2, _3)(condition, j, k), 6);
 
 
   return;
@@ -129,14 +129,14 @@ void test_unlambda() {
 
   int i = 1;
 
-  //BOOST_CHECK(unlambda(_1 + _2)(i, i) == 2);
-  //BOOST_CHECK(unlambda(++var(i))() == 2); 
-  //BOOST_CHECK(call_with_100(_1 + 1) == 101);
+  //BOOST_TEST_EQ(unlambda(_1 + _2)(i, i), 2);
+  //BOOST_TEST_EQ(unlambda(++var(i))(), 2);
+  //BOOST_TEST_EQ(call_with_100(_1 + 1), 101);
 
 
-  //BOOST_CHECK(call_with_101(_1 + 1) == 102);
+  //BOOST_TEST_EQ(call_with_101(_1 + 1), 102);
 
-  //BOOST_CHECK(call_with_100(bl::bind(std_functor(std::bind1st(std::plus<int>(), 1)), _1)) == 101);
+  //BOOST_TEST_EQ(call_with_100(bl::bind(std_functor(std::bind1st(std::plus<int>(), 1)), _1)), 101);
 
   // Was:
   // std_functor insturcts LL that the functor defines a result_type typedef
@@ -247,7 +247,7 @@ void test_protect()
            phoenix::bind(ll::for_each(), _1, _1 + 5, 
                 phoenix::lambda[phoenix::ref(sum) += _1])
                );
-  BOOST_CHECK(sum == (1+15)*15/2);
+  BOOST_TEST_EQ(sum, (1+15)*15/2);
 #endif
 
   sum = 0;
@@ -262,7 +262,7 @@ void test_protect()
            phoenix::bind(ll::for_each(), _1, _1 + 5, 
                 phoenix::ref(sum) += 1 + phoenix::lambda[_1]) // add element count 
                );
-  BOOST_CHECK(sum == (1+15)*15/2 + 15);
+  BOOST_TEST_EQ(sum, (1+15)*15/2 + 15);
 #endif
 
   // Was:
@@ -273,7 +273,7 @@ void test_protect()
   // Was:
   //((k += constant(1)) += protect(constant(2)))();
   ((phoenix::ref(k) += 1) += phoenix::lambda[phoenix::cref(2)])();
-  BOOST_CHECK(k==1);
+  BOOST_TEST_EQ(k, 1);
 
   k = 0; 
   // Was:
@@ -282,7 +282,7 @@ void test_protect()
   //std::cout << ((phoenix::ref(k) += 1) + phoenix::lambda[phoenix::cref(2)])()() << "\n";
   ((phoenix::ref(k) += 1) += 2)();
   std::cout << k << "\n";
-  BOOST_CHECK(k==3);
+  BOOST_TEST_EQ(k, 3);
 
   // note, the following doesn't work:
 
@@ -345,10 +345,10 @@ void test_lambda_functors_as_arguments_to_lambda_functors() {
     // sum_0() + 7, but rather
     // bind(sum_0) + 7, which results in another lambda functor
     // (lambda functor + int) and can be called again
-  BOOST_CHECK((_1 + _2)(bind(&sum_0), cref(7))() == 7); 
+  BOOST_TEST_EQ((_1 + _2)(bind(&sum_0), cref(7))(), 7);
    
   int i = 3, j = 12; 
-  BOOST_CHECK((_1 - _2)(_2, _1)(i, j) == j - i);
+  BOOST_TEST_EQ((_1 - _2)(_2, _1)(i, j), j - i);
 
   // also, note that lambda functor are no special case for bind if received
   // as a parameter. In oder to be bindable, the functor must
@@ -361,10 +361,10 @@ void test_lambda_functors_as_arguments_to_lambda_functors() {
   int a = 5, b = 6;
 
   // Let type deduction find out the return type
-  //BOOST_CHECK(bind(_1, _2, _3)(unlambda(_1 + _2), a, b) == 11);
+  //BOOST_TEST_EQ(bind(_1, _2, _3)(unlambda(_1 + _2), a, b), 11);
 
   //specify it yourself:
-  BOOST_CHECK(bind(_1, _2, _3)(_1 + _2, a, b) == 11);
+  BOOST_TEST_EQ(bind(_1, _2, _3)(_1 + _2, a, b), 11);
 
   bind(_1,1.0)(_1+_1);
   return; 
@@ -395,9 +395,9 @@ struct func {
 void test_sig()
 {
   int i = 1;
-  BOOST_CHECK(bind(func<int>(), 1)() == 1);
-  BOOST_CHECK(bind(func<const int>(), _1)(static_cast<const int&>(i)) == 1);
-  BOOST_CHECK(bind(func<int>(), _1)(i) == 1);
+  BOOST_TEST_EQ(bind(func<int>(), 1)(), 1);
+  BOOST_TEST_EQ(bind(func<const int>(), _1)(static_cast<const int&>(i)), 1);
+  BOOST_TEST_EQ(bind(func<int>(), _1)(i), 1);
 }
 
 class base {
@@ -416,18 +416,18 @@ void test_abstract()
 {
   derived d;
   base& b = d;
-  BOOST_CHECK(bind(&base::foo, var(b))() == 1);
-  BOOST_CHECK(bind(&base::foo, *_1)(&b) == 1);
+  BOOST_TEST_EQ(bind(&base::foo, var(b))(), 1);
+  BOOST_TEST_EQ(bind(&base::foo, *_1)(&b), 1);
 }
 */
 
-int test_main(int, char *[]) {
-
+int main()
+{
   test_nested_binds();
   test_unlambda();
   test_protect();
   test_lambda_functors_as_arguments_to_lambda_functors();
   //test_sig();
   //test_abstract();
-  return 0;
+  return boost::report_errors();
 }

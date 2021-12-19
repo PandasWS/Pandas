@@ -54,7 +54,9 @@
 #include <vector>
 #include <stack>
 #include <utility> // for pair
+#if defined(BOOST_SPIRIT_DEBUG)
 #include <iostream>
+#endif
 #include <fstream>
 #include <boost/assert.hpp>
 #include <boost/limits.hpp>
@@ -117,16 +119,16 @@ public:
     char_node(const char_node& x);
     virtual ~char_node(){}
 
-    virtual node* clone() const;
-    virtual bool nullable() const;
-    virtual node_set firstpos() const;
-    virtual node_set lastpos() const;
-    virtual void compute_followpos(followpos_t& followpos) const;
-    virtual void compute_state_match(state_match_t& state_match ) const;
-    virtual void get_eof_ids(node_set& eof_set) const;
-    virtual void assign_node_ids(node_id_t& node_count);
+    node* clone() const BOOST_OVERRIDE;
+    bool nullable() const BOOST_OVERRIDE;
+    node_set firstpos() const BOOST_OVERRIDE;
+    node_set lastpos() const BOOST_OVERRIDE;
+    void compute_followpos(followpos_t& followpos) const BOOST_OVERRIDE;
+    void compute_state_match(state_match_t& state_match ) const BOOST_OVERRIDE;
+    void get_eof_ids(node_set& eof_set) const BOOST_OVERRIDE;
+    void assign_node_ids(node_id_t& node_count) BOOST_OVERRIDE;
 #if defined(BOOST_SPIRIT_DEBUG) && (BOOST_SPIRIT_DEBUG_FLAGS & BOOST_SPIRIT_DEBUG_FLAGS_SLEX)
-    virtual void dump(std::ostream& out) const;
+    void dump(std::ostream& out) const BOOST_OVERRIDE;
 #endif
 
 private:
@@ -233,16 +235,16 @@ public:
     epsilon_node(const epsilon_node& x);
     virtual ~epsilon_node(){}
 
-    virtual node* clone() const;
-    virtual bool nullable() const;
-    virtual node_set firstpos() const;
-    virtual node_set lastpos() const;
-    virtual void compute_followpos(followpos_t& followpos) const;
-    virtual void compute_state_match(state_match_t& state_match ) const;
-    virtual void get_eof_ids(node_set& eof_set) const;
-    virtual void assign_node_ids(node_id_t& node_count);
+    node* clone() const BOOST_OVERRIDE;
+    bool nullable() const BOOST_OVERRIDE;
+    node_set firstpos() const BOOST_OVERRIDE;
+    node_set lastpos() const BOOST_OVERRIDE;
+    void compute_followpos(followpos_t& followpos) const BOOST_OVERRIDE;
+    void compute_state_match(state_match_t& state_match ) const BOOST_OVERRIDE;
+    void get_eof_ids(node_set& eof_set) const BOOST_OVERRIDE;
+    void assign_node_ids(node_id_t& node_count) BOOST_OVERRIDE;
 #if defined(BOOST_SPIRIT_DEBUG) && (BOOST_SPIRIT_DEBUG_FLAGS & BOOST_SPIRIT_DEBUG_FLAGS_SLEX)
-    virtual void dump(std::ostream& out) const;
+    void dump(std::ostream& out) const BOOST_OVERRIDE;
 #endif
 
 private:
@@ -343,16 +345,16 @@ public:
     or_node(const or_node& x);
     virtual ~or_node(){}
 
-    virtual node* clone() const;
-    virtual bool nullable() const;
-    virtual node_set firstpos() const;
-    virtual node_set lastpos() const;
-    virtual void compute_followpos(followpos_t& followpos) const;
-    virtual void compute_state_match(state_match_t& state_match ) const;
-    virtual void get_eof_ids(node_set& eof_set) const;
-    virtual void assign_node_ids(node_id_t& node_count);
+    node* clone() const BOOST_OVERRIDE;
+    bool nullable() const BOOST_OVERRIDE;
+    node_set firstpos() const BOOST_OVERRIDE;
+    node_set lastpos() const BOOST_OVERRIDE;
+    void compute_followpos(followpos_t& followpos) const BOOST_OVERRIDE;
+    void compute_state_match(state_match_t& state_match ) const BOOST_OVERRIDE;
+    void get_eof_ids(node_set& eof_set) const BOOST_OVERRIDE;
+    void assign_node_ids(node_id_t& node_count) BOOST_OVERRIDE;
 #if defined(BOOST_SPIRIT_DEBUG) && (BOOST_SPIRIT_DEBUG_FLAGS & BOOST_SPIRIT_DEBUG_FLAGS_SLEX)
-    virtual void dump(std::ostream& out) const;
+    void dump(std::ostream& out) const BOOST_OVERRIDE;
 #endif
 
 private:
@@ -476,16 +478,16 @@ public:
     cat_node(const cat_node& x);
     virtual ~cat_node(){}
 
-    virtual node* clone() const;
-    virtual bool nullable() const;
-    virtual node_set firstpos() const;
-    virtual node_set lastpos() const;
-    virtual void compute_followpos(followpos_t& followpos) const;
-    virtual void compute_state_match(state_match_t& state_match ) const;
-    virtual void get_eof_ids(node_set& eof_set) const;
-    virtual void assign_node_ids(node_id_t& node_count);
+    node* clone() const BOOST_OVERRIDE;
+    bool nullable() const BOOST_OVERRIDE;
+    node_set firstpos() const BOOST_OVERRIDE;
+    node_set lastpos() const BOOST_OVERRIDE;
+    void compute_followpos(followpos_t& followpos) const BOOST_OVERRIDE;
+    void compute_state_match(state_match_t& state_match ) const BOOST_OVERRIDE;
+    void get_eof_ids(node_set& eof_set) const BOOST_OVERRIDE;
+    void assign_node_ids(node_id_t& node_count) BOOST_OVERRIDE;
 #if defined(BOOST_SPIRIT_DEBUG) && (BOOST_SPIRIT_DEBUG_FLAGS & BOOST_SPIRIT_DEBUG_FLAGS_SLEX)
-    virtual void dump(std::ostream& out) const;
+    void dump(std::ostream& out) const BOOST_OVERRIDE;
 #endif
 
 private:
@@ -632,16 +634,16 @@ public:
     star_node(const star_node& x);
     virtual ~star_node(){}
 
-    virtual node* clone() const;
-    virtual bool nullable() const;
-    virtual node_set firstpos() const;
-    virtual node_set lastpos() const;
-    virtual void compute_followpos(followpos_t& followpos) const;
-    virtual void compute_state_match(state_match_t& state_match ) const;
-    virtual void get_eof_ids(node_set& eof_set) const;
-    virtual void assign_node_ids(node_id_t& node_count);
+    node* clone() const BOOST_OVERRIDE;
+    bool nullable() const BOOST_OVERRIDE;
+    node_set firstpos() const BOOST_OVERRIDE;
+    node_set lastpos() const BOOST_OVERRIDE;
+    void compute_followpos(followpos_t& followpos) const BOOST_OVERRIDE;
+    void compute_state_match(state_match_t& state_match ) const BOOST_OVERRIDE;
+    void get_eof_ids(node_set& eof_set) const BOOST_OVERRIDE;
+    void assign_node_ids(node_id_t& node_count) BOOST_OVERRIDE;
 #if defined(BOOST_SPIRIT_DEBUG) && (BOOST_SPIRIT_DEBUG_FLAGS & BOOST_SPIRIT_DEBUG_FLAGS_SLEX)
-    virtual void dump(std::ostream& out) const;
+    void dump(std::ostream& out) const BOOST_OVERRIDE;
 #endif
 
 private:
@@ -755,16 +757,16 @@ public:
     eof_node(const eof_node& x);
     virtual ~eof_node(){}
 
-    virtual node* clone() const;
-    virtual bool nullable() const;
-    virtual node_set firstpos() const;
-    virtual node_set lastpos() const;
-    virtual void compute_followpos(followpos_t& followpos) const;
-    virtual void compute_state_match(state_match_t& state_match ) const;
-    virtual void get_eof_ids(node_set& eof_set) const;
-    virtual void assign_node_ids(node_id_t& node_count);
+    node* clone() const BOOST_OVERRIDE;
+    bool nullable() const BOOST_OVERRIDE;
+    node_set firstpos() const BOOST_OVERRIDE;
+    node_set lastpos() const BOOST_OVERRIDE;
+    void compute_followpos(followpos_t& followpos) const BOOST_OVERRIDE;
+    void compute_state_match(state_match_t& state_match ) const BOOST_OVERRIDE;
+    void get_eof_ids(node_set& eof_set) const BOOST_OVERRIDE;
+    void assign_node_ids(node_id_t& node_count) BOOST_OVERRIDE;
 #if defined(BOOST_SPIRIT_DEBUG) && (BOOST_SPIRIT_DEBUG_FLAGS & BOOST_SPIRIT_DEBUG_FLAGS_SLEX)
-    virtual void dump(std::ostream& out) const;
+    void dump(std::ostream& out) const BOOST_OVERRIDE;
 #endif
 
 private:
@@ -869,16 +871,16 @@ public:
     ccl_node(const ccl_node& x);
     virtual ~ccl_node(){}
 
-    virtual node* clone() const;
-    virtual bool nullable() const;
-    virtual node_set firstpos() const;
-    virtual node_set lastpos() const;
-    virtual void compute_followpos(followpos_t& followpos) const;
-    virtual void compute_state_match(state_match_t& state_match ) const;
-    virtual void get_eof_ids(node_set& eof_set) const;
-    virtual void assign_node_ids(node_id_t& node_count);
+    node* clone() const BOOST_OVERRIDE;
+    bool nullable() const BOOST_OVERRIDE;
+    node_set firstpos() const BOOST_OVERRIDE;
+    node_set lastpos() const BOOST_OVERRIDE;
+    void compute_followpos(followpos_t& followpos) const BOOST_OVERRIDE;
+    void compute_state_match(state_match_t& state_match ) const BOOST_OVERRIDE;
+    void get_eof_ids(node_set& eof_set) const BOOST_OVERRIDE;
+    void assign_node_ids(node_id_t& node_count) BOOST_OVERRIDE;
 #if defined(BOOST_SPIRIT_DEBUG) && (BOOST_SPIRIT_DEBUG_FLAGS & BOOST_SPIRIT_DEBUG_FLAGS_SLEX)
-    virtual void dump(std::ostream& out) const;
+    void dump(std::ostream& out) const BOOST_OVERRIDE;
 #endif
 
 private:

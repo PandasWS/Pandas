@@ -55,6 +55,7 @@ set( run_test_list
   test_subtract_native
   test_xor_automatic
   test_xor_native
+  test_custom_exception
   test_z
 )
 
@@ -74,10 +75,23 @@ foreach(test_name ${compile_fail_test_list})
   set_target_properties(${test_name} PROPERTIES FOLDER "safe numeric compile fail tests")
 endforeach(test_name)
 
+# compile success tests
+set(compile_success_test_list
+  test_concept_numeric
+  test_concept_integer
+  test_stream_overload
+)
+
+foreach(test_name ${compile_success_test_list})
+  test_compile_pass(${test_name})
+  set_target_properties(${test_name} PROPERTIES FOLDER "safe numeric compile success tests")
+endforeach(test_name)
+
 ## safe integer constexpr tests
 set(safe_constexpr_test_list
   test_add_automatic_constexpr
   test_add_native_constexpr
+  test_cast_constexpr
   test_divide_automatic_constexpr
   test_divide_native_constexpr
   test_equal_automatic_constexpr

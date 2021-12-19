@@ -1,5 +1,5 @@
 /* Unit testing for outcomes
-(C) 2013-2019 Niall Douglas <http://www.nedproductions.biz/> (3 commits)
+(C) 2013-2021 Niall Douglas <http://www.nedproductions.biz/> (3 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -27,11 +27,11 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/outcome/outcome.hpp>
+#include <boost/outcome.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_monitor.hpp>
 
-BOOST_OUTCOME_AUTO_TEST_CASE(works_outcome_valueorerror, "Tests that outcome constructs from ValueOrError and ValueOrNone concept inputs")
+BOOST_OUTCOME_AUTO_TEST_CASE(works_outcome_valueorerror, "Tests that outcome constructs from value_or_error and value_or_none concept inputs")
 {
   using namespace BOOST_OUTCOME_V2_NAMESPACE;
   {
@@ -43,12 +43,64 @@ BOOST_OUTCOME_AUTO_TEST_CASE(works_outcome_valueorerror, "Tests that outcome con
       int value() const { return 78; }
       void error() const {}
     } a;
-    static_assert(convert::ValueOrNone<value_or_error>, "");
-    static_assert(convert::ValueOrError<value_or_error>, "");
+    static_assert(concepts::value_or_none<value_or_error>, "");
+    static_assert(concepts::value_or_error<value_or_error>, "");
+    static_assert(!concepts::basic_result<value_or_error>, "");
+    static_assert(!concepts::basic_outcome<value_or_error>, "");
     BOOST_CHECK((convert::value_or_error<result<long>, value_or_error>{}(a).value() == 78));
 
     result<long> b(a);
     BOOST_CHECK(b.has_value());
     BOOST_CHECK(b.value() == 78);
+
+    struct local_basic_result1 : result<int>
+    {
+    };
+    static_assert(concepts::value_or_none<local_basic_result1>, "");
+    static_assert(concepts::value_or_error<local_basic_result1>, "");
+    static_assert(concepts::basic_result<result<int>>, "");
+    static_assert(concepts::basic_result<local_basic_result1>, "");
+    static_assert(!concepts::basic_outcome<result<int>>, "");
+    static_assert(!concepts::basic_outcome<local_basic_result1>, "");
+
+    struct local_basic_result2 : protected result<int>
+    {
+      using _base = result<int>;
+      using value_type = _base::value_type;
+      using error_type = _base::error_type;
+      using _base::has_value;
+      using _base::value;
+      using _base::error;
+    };
+    static_assert(concepts::value_or_none<local_basic_result2>, "");
+    static_assert(concepts::value_or_error<local_basic_result2>, "");
+    static_assert(!concepts::basic_result<local_basic_result2>, "");
+    static_assert(!concepts::basic_outcome<local_basic_result2>, "");
+
+    struct local_basic_outcome1 : outcome<int>
+    {
+    };
+    static_assert(!std::is_convertible<outcome<int>, result<int>>::value, "");
+    static_assert(!std::is_convertible<local_basic_outcome1, result<int>>::value, "");
+    static_assert(concepts::value_or_none<local_basic_outcome1>, "");
+    static_assert(concepts::value_or_error<local_basic_outcome1>, "");
+    static_assert(!concepts::basic_result<outcome<int>>, "");
+    static_assert(!concepts::basic_result<local_basic_outcome1>, "");
+    static_assert(concepts::basic_outcome<local_basic_outcome1>, "");
+
+    struct local_basic_outcome2 : protected outcome<int>
+    {
+      using _base = outcome<int>;
+      using value_type = _base::value_type;
+      using error_type = _base::error_type;
+      using exception_type = _base::exception_type;
+      using _base::error;
+      using _base::has_value;
+      using _base::value;
+    };
+    static_assert(concepts::value_or_none<local_basic_outcome2>, "");
+    static_assert(concepts::value_or_error<local_basic_outcome2>, "");
+    static_assert(!concepts::basic_result<local_basic_outcome2>, "");
+    static_assert(!concepts::basic_outcome<local_basic_outcome2>, "");
   }
 }

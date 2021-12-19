@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Context switching with call/cc</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Context">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Context">
+<link rel="home" href="../index.html" title="Chapter 1. Context">
+<link rel="up" href="../index.html" title="Chapter 1. Context">
 <link rel="prev" href="ff/class__fiber_.html" title="Class fiber">
 <link rel="next" href="cc/implementations__fcontext_t__ucontext_t_and_winfiber.html" title="Implementations: fcontext_t, ucontext_t and WinFiber">
 </head>
@@ -230,8 +230,7 @@
 <th align="left">Important</th>
 </tr>
 <tr><td align="left" valign="top"><p>
-        Do not jump from inside a catch block and then re-throw the exception in
-        another continuation.
+        Do not jump from inside a catch block.
       </p></td></tr>
 </table></div>
 <a name="cc_ontop"></a><h4>
@@ -242,7 +241,7 @@
 <p>
       Sometimes it is useful to execute a new function on top of a resumed continuation.
       For this purpose <span class="emphasis"><em>continuation::resume_with()</em></span> has to be
-      used. The function passed as argument must accept a rvalue reference to <a class="link" href="cc.html#cc"><span class="emphasis"><em>continuation</em></span></a> and return <code class="computeroutput"><span class="keyword">void</span></code>.
+      used. The function passed as argument must accept a rvalue reference to <a class="link" href="cc.html#cc"><span class="emphasis"><em>continuation</em></span></a> and return <a class="link" href="cc.html#cc"><span class="emphasis"><em>continuation</em></span></a>.
     </p>
 <pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">ctx</span><span class="special">=</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">context</span><span class="special">;</span>
 <span class="keyword">int</span> <span class="identifier">data</span><span class="special">=</span><span class="number">0</span><span class="special">;</span>
@@ -524,7 +523,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2014 Oliver Kowalke<p>
+<td align="right"><div class="copyright-footer">Copyright © 2014 Oliver Kowalke<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

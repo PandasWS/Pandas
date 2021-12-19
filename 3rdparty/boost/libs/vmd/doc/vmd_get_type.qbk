@@ -8,9 +8,10 @@
 [section:vmd_convert_sequence Getting the type of data]
 
 VMD has the ability to retrieve the type of any data which it can
-parse, which means any VMD sequence. The macro to do this is called
-BOOST_VMD_GET_TYPE and it takes a single required parameter, which 
-is a VMD sequence.
+parse, which means any VMD sequence. The generic macro to do this is called
+BOOST_VMD_GET_TYPE and it takes a single required variadic parameter,
+which is a VMD sequence. Since a VMD sequence is any data which VMD
+can parse the BOOST_VMD_GET_TYPE macro works with any VMD data.
 
 It returns one of the types previously discussed when introducing
 v-types as an identifier subset. As explained previously in that

@@ -28,7 +28,7 @@ namespace detail
 class codecvt_category_t : public std::error_category
 {
 public:
-    codecvt_category_t(){}
+    codecvt_category_t() = default;
     const char* name() const noexcept override {return "codecvt";}
     std::string message(int ev) const override
     {
@@ -76,9 +76,8 @@ inline std::locale default_locale()
     std::locale global_loc = std::locale();
     return std::locale(global_loc, new std::codecvt_utf8<wchar_t>);
 # else  // Other POSIX
-    // ISO C calls std::locale("") "the locale-specific native environment", and this
-    // locale is the default for many POSIX-based operating systems such as Linux.
-    return std::locale("");
+    // Return a default locale object.
+    return std::locale();
 # endif
 }
 

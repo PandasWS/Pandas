@@ -1,5 +1,5 @@
 /* Example use of std::error implicit conversion
-(C) 2018-2019 Niall Douglas <http://www.nedproductions.biz/> (5 commits)
+(C) 2018-2021 Niall Douglas <http://www.nedproductions.biz/> (5 commits)
 File Created: Sept 2018
 
 
@@ -154,7 +154,7 @@ inline constexpr const _file_io_error_domain &_file_io_error_domain::get()
 // which is discovered using ADL. `error` is an alias to the refinement
 // `status_code<erased<intptr_t>>` which is a status code whose value type
 // has been erased into an `intptr_t`. `status_code<erased<intptr_t>>`
-// (i.e. `error`) are move relocating (P1029) i.e. they are move-only
+// (i.e. `error`) are move bitcopying (P1029) i.e. they are move-only
 // types whose move operation is defined to leave the source in the same
 // representation as a default constructed instance, and for whose
 // non-trivial destructor when called upon a default constructed instance

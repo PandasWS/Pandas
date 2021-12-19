@@ -39,17 +39,38 @@ __BASE_FILE__               //R "$F"
 //H 01: <built-in>(1): __cplusplus
 //H 02: 199711L
 //H 03: 199711L
+//H 01: <built-in>(1): __LINE__
+//H 02: 19
+//H 03: 19
+//H 01: <built-in>(1): __FILE__
+//H 02: "$P(t_3_003.cpp)"
+//H 03: "$P(t_3_003.cpp)"
 //H 01: <built-in>(1): __BASE_FILE__
 //H 02: "$F"
 //H 03: "$F"
 //H 01: <built-in>(1): __WAVE_HAS_VARIADICS__
 //H 02: 1
 //H 03: 1
+//H 01: <built-in>(1): __INCLUDE_LEVEL__
+//H 02: 0
+//H 03: 0
 //H 10: t_3_003.cpp(25): #line
 //H 17: 50 "test.cpp" (50, "test.cpp")
+//H 01: <built-in>(1): __LINE__
+//H 02: 50
+//H 03: 50
+//H 01: <built-in>(1): __FILE__
+//H 02: "test.cpp"
+//H 03: "test.cpp"
 //H 01: <built-in>(1): __BASE_FILE__
 //H 02: "$F"
 //H 03: "$F"
+//H 01: <built-in>(1): __LINE__
+//H 02: 56
+//H 03: 56
+//H 01: <built-in>(1): __FILE__
+//H 02: "test.cpp"
+//H 03: "test.cpp"
 //H 01: <built-in>(1): __BASE_FILE__
 //H 02: "$F"
 //H 03: "$F"

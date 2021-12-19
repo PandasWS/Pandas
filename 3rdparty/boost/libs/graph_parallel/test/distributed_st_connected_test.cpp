@@ -21,7 +21,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <boost/random.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #ifdef BOOST_NO_EXCEPTIONS
 void
@@ -77,9 +77,9 @@ test_distributed_st_connected() {
 
 }
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   mpi::environment env(argc, argv);
   test_distributed_st_connected();
-  return 0;
+  return boost::report_errors();
 }

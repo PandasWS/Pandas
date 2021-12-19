@@ -28,6 +28,9 @@ file t_2_017.cpp
 //H 10: t_2_017.cpp(14): #define
 //H 08: t_2_017.cpp(14): FILE_002_017_CPP=
 //H 10: t_2_017.cpp(16): #include 
+//H 01: <built-in>(1): __FILE__
+//H 02: "$P(t_2_017.cpp)"
+//H 03: "$P(t_2_017.cpp)"
 //H 04: "$P(t_2_017.cpp)"
 //H 05: $B(t_2_017.cpp) ($B(t_2_017.cpp))
 //H 10: t_2_017.cpp(13): #if

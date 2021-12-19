@@ -9,9 +9,9 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/histogram/axis/integer.hpp>
-#include "throw_exception.hpp"
 #include <boost/histogram/make_histogram.hpp>
 #include <boost/histogram/storage_adaptor.hpp>
+#include "throw_exception.hpp"
 
 namespace ba = boost::accumulators;
 
@@ -20,7 +20,7 @@ int main() {
 
   // mean
   {
-    using mean = ba::accumulator_set<double, ba::stats<ba::tag::mean>>;
+    using mean = ba::accumulator_set<double, ba::stats<ba::tag::mean> >;
 
     auto h = make_histogram_with(dense_storage<mean>(), axis::integer<>(0, 2));
     h(0, sample(1));

@@ -24,7 +24,6 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "achievement.hpp"
 #include "atcommand.hpp" // get_atcommand_level()
@@ -70,6 +69,8 @@
 
 using namespace rathena;
 
+JobDatabase job_db;
+
 int pc_split_atoui(char* str, unsigned int* val, char sep, int max);
 static inline bool pc_attendance_rewarded_today( struct map_session_data* sd );
 
@@ -91,8 +92,6 @@ int pc_expiration_tid = INVALID_TIMER;
 struct fame_list smith_fame_list[MAX_FAME_LIST];
 struct fame_list chemist_fame_list[MAX_FAME_LIST];
 struct fame_list taekwon_fame_list[MAX_FAME_LIST];
-
-struct s_job_info job_info[CLASS_COUNT];
 
 const std::string AttendanceDatabase::getDefaultLocation(){
 	return std::string(db_path) + "/attendance.yml";
@@ -734,7 +733,7 @@ void pc_addfame(struct map_session_data *sd,int count)
 		case MAPID_ALCHEMIST:	ranktype = RANK_ALCHEMIST; break;
 		case MAPID_TAEKWON:		ranktype = RANK_TAEKWON; break;
 		default:
-			ShowWarning( "pc_addfame: Trying to add fame to class '%s'(%d).\n", job_name(sd->class_), sd->class_ );
+			ShowWarning( "pc_addfame: Trying to add fame to class '%s'(%d).\n", job_name(sd->status.class_), sd->status.class_ );
 			return;
 	}
 
@@ -1452,6 +1451,9 @@ static bool pc_isItemClass (struct map_session_data *sd, struct item_data* item)
 		//third-baby classes
 		if (item->class_upper&ITEMJ_THIRD_BABY && sd->class_&JOBL_THIRD && sd->class_&JOBL_BABY)
 			break;
+		//fourth classes
+		if (item->class_upper&ITEMJ_FOURTH && sd->class_&JOBL_FOURTH)
+			break;
 #endif
 		return false;
 	}
@@ -1554,7 +1556,7 @@ uint8 pc_isequip(struct map_session_data *sd,int n)
 			if (sd->status.base_level > 90 && item->equip & EQP_HELM)
 				return ITEM_EQUIP_ACK_OK; //Can equip all helms
 
-			if (sd->status.base_level > 96 && item->equip & EQP_ARMS && item->type == IT_WEAPON && item->wlv == 4)
+			if (sd->status.base_level > 96 && item->equip & EQP_ARMS && item->type == IT_WEAPON && item->weapon_level == 4)
 				switch(item->subtype) { //In weapons, the look determines type of weapon.
 					case W_DAGGER: //All level 4 - Daggers
 					case W_1HSWORD: //All level 4 - 1H Swords
@@ -1583,7 +1585,6 @@ uint8 pc_isequip(struct map_session_data *sd,int n)
  *------------------------------------------*/
 bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_time, int group_id, struct mmo_charstatus *st, bool changing_mapservers)
 {
-	int i;
 	t_tick tick = gettick();
 	uint32 ip = session[sd->fd]->client_addr;
 
@@ -1601,13 +1602,13 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 	}
 
 	//Set the map-server used job id. [Skotlex]
-	i = pc_jobid2mapid(sd->status.class_);
-	if (i == -1) { //Invalid class?
+	uint64 class_ = pc_jobid2mapid(sd->status.class_);
+	if (class_ == -1) { //Invalid class?
 		ShowError("pc_authok: Invalid class %d for player %s (%d:%d). Class was changed to novice.\n", sd->status.class_, sd->status.name, sd->status.account_id, sd->status.char_id);
 		sd->status.class_ = JOB_NOVICE;
 		sd->class_ = MAPID_NOVICE;
 	} else
-		sd->class_ = i;
+		sd->class_ = class_;
 
 	// Checks and fixes to character status data, that are required
 	// in case of configuration change or stuff, which cannot be
@@ -1650,7 +1651,7 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 	sd->cansendmail_tick = tick;
 	sd->idletime = last_tick;
 
-	for(i = 0; i < MAX_SPIRITBALL; i++)
+	for(int i = 0; i < MAX_SPIRITBALL; i++)
 		sd->spirit_timer[i] = INVALID_TIMER;
 
 	if (battle_config.item_auto_get)
@@ -1691,12 +1692,12 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 	sd->delayed_damage = 0;
 
 	// Event Timers
-	for( i = 0; i < MAX_EVENTTIMER; i++ )
+	for( int i = 0; i < MAX_EVENTTIMER; i++ )
 		sd->eventtimer[i] = INVALID_TIMER;
 	// Rental Timer
 	sd->rental_timer = INVALID_TIMER;
 
-	for( i = 0; i < 3; i++ )
+	for( int i = 0; i < 3; i++ )
 		sd->hate_mob[i] = -1;
 
 	sd->quest_log = NULL;
@@ -1715,8 +1716,9 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 	sd->vars_received = 0x0;
 
 	//warp player
-	if ((i=pc_setpos(sd,sd->status.last_point.map, sd->status.last_point.x, sd->status.last_point.y, CLR_OUTSIGHT)) != SETPOS_OK) {
-		ShowError ("Last_point_map %s - id %d not found (error code %d)\n", mapindex_id2name(sd->status.last_point.map), sd->status.last_point.map, i);
+	enum e_setpos setpos_result = pc_setpos( sd, sd->status.last_point.map, sd->status.last_point.x, sd->status.last_point.y, CLR_OUTSIGHT );
+	if( setpos_result != SETPOS_OK ){
+		ShowError( "Last_point_map %s - id %d not found (error code %d)\n", mapindex_id2name(sd->status.last_point.map), sd->status.last_point.map, setpos_result );
 
 		// try warping to a default map instead (church graveyard)
 		if (pc_setpos(sd, mapindex_name2id(MAP_PRONTERA), 273, 354, CLR_OUTSIGHT) != SETPOS_OK) {
@@ -1757,7 +1759,7 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 			pc_show_version(sd);
 
 		// Message of the Day [Valaris]
-		for(i=0; i < MOTD_LINE_SIZE && motd_text[i][0]; i++) {
+		for(int i=0; i < MOTD_LINE_SIZE && motd_text[i][0]; i++) {
 			if (battle_config.motd_type)
 				clif_messagecolor(&sd->bl, color_table[COLOR_LIGHT_GREEN], motd_text[i], false, SELF);
 			else
@@ -1857,7 +1859,7 @@ bool pc_expandInventory(struct map_session_data* sd, int adjustSize) {
 	nullpo_retr(false, sd);
 	const int invSize = sd->status.inventory_size;
 
-	if (adjustSize > MAX_INVENTORY || invSize + adjustSize <= FIXED_INVENTORY_SIZE || invSize + adjustSize > MAX_INVENTORY) {
+	if (adjustSize > G_MAX_INVENTORY || invSize + adjustSize <= FIXED_INVENTORY_SIZE || invSize + adjustSize > G_MAX_INVENTORY) {
 		clif_inventoryExpandResult(sd, EXPAND_INVENTORY_RESULT_MAX_SIZE);
 		return false;
 	}
@@ -2145,12 +2147,12 @@ void pc_calc_skilltree(struct map_session_data *sd)
 {
 	nullpo_retv(sd);
 
-	int job = pc_calc_skilltree_normalize_job(sd);
+	uint64 job = pc_calc_skilltree_normalize_job(sd);
 	int class_ = pc_mapid2jobid(job, sd->status.sex);
 
 	if( class_ == -1 )
 	{ //Unable to normalize job??
-		ShowError("pc_calc_skilltree: Unable to normalize job %d for character %s (%d:%d)\n", job, sd->status.name, sd->status.account_id, sd->status.char_id);
+		ShowError( "pc_calc_skilltree: Unable to normalize job %s(%d) for character %s (%d:%d)\n", job_name( sd->status.class_ ), sd->status.class_, sd->status.name, sd->status.account_id, sd->status.char_id );
 		return;
 	}
 	class_ = pc_class2idx(class_);
@@ -2332,16 +2334,14 @@ void pc_calc_skilltree(struct map_session_data *sd)
 //Checks if you can learn a new skill after having leveled up a skill.
 static void pc_check_skilltree(struct map_session_data *sd)
 {
-	int i, flag = 0;
-	int c = 0;
+	int flag = 0;
 
 	if (battle_config.skillfree)
 		return; //Function serves no purpose if this is set
 
-	i = pc_calc_skilltree_normalize_job(sd);
-	c = pc_mapid2jobid(i, sd->status.sex);
+	int c = pc_mapid2jobid( pc_calc_skilltree_normalize_job( sd ), sd->status.sex );
 	if (c == -1) { //Unable to normalize job??
-		ShowError("pc_check_skilltree: Unable to normalize job %d for character %s (%d:%d)\n", i, sd->status.name, sd->status.account_id, sd->status.char_id);
+		ShowError("pc_check_skilltree: Unable to normalize job %d for character %s (%d:%d)\n", sd->status.class_, sd->status.name, sd->status.account_id, sd->status.char_id);
 		return;
 	}
 	c = pc_class2idx(c);
@@ -2350,16 +2350,15 @@ static void pc_check_skilltree(struct map_session_data *sd)
 		uint16 skid = 0;
 
 		flag = 0;
-		for (i = 0; i < MAX_SKILL_TREE && (skid = skill_tree[c][i].skill_id) > 0; i++ ) {
+		for (int i = 0; i < MAX_SKILL_TREE && (skid = skill_tree[c][i].skill_id) > 0; i++ ) {
 			uint16 sk_idx = skill_get_index(skid);
 			bool fail = false;
-			uint8 j = 0;
 
 			if (sd->status.skill[sk_idx].id) //Already learned
 				continue;
 
 			// Checking required skills
-			for (j = 0; j < MAX_PC_SKILL_REQUIRE; j++) {
+			for (uint8 j = 0; j < MAX_PC_SKILL_REQUIRE; j++) {
 				uint16 sk_need_id = skill_tree[c][i].need[j].skill_id;
 				uint16 sk_need_idx = 0;
 
@@ -2418,17 +2417,19 @@ void pc_clean_skilltree(struct map_session_data *sd)
 	}
 }
 
-int pc_calc_skilltree_normalize_job(struct map_session_data *sd)
+uint64 pc_calc_skilltree_normalize_job(struct map_session_data *sd)
 {
 	int skill_point, novice_skills;
-	int c = sd->class_;
+	uint64 c = sd->class_;
 
 	if (!battle_config.skillup_limit || pc_has_permission(sd, PC_PERM_ALL_SKILL))
 		return c;
 
 	skill_point = pc_calc_skillpoint(sd);
 
-	novice_skills = job_info[pc_class2idx(JOB_NOVICE)].max_level[1] - 1;
+	std::shared_ptr<s_job_info> novice_job = job_db.find(JOB_NOVICE);
+
+	novice_skills = novice_job->max_job_level - 1;
 
 	// limit 1st class and above to novice job levels
 	if(skill_point < novice_skills && (sd->class_&MAPID_BASEMASK) != MAPID_SUMMONER)
@@ -2444,9 +2445,11 @@ int pc_calc_skilltree_normalize_job(struct map_session_data *sd)
 			if (sd->class_&JOBL_THIRD)
 			{
 				// if neither 2nd nor 3rd jobchange levels are known, we have to assume a default for 2nd
-				if (!sd->change_level_3rd)
-					sd->change_level_2nd = job_info[pc_class2idx(pc_mapid2jobid(sd->class_&MAPID_UPPERMASK, sd->status.sex))].max_level[1];
-				else
+				if (!sd->change_level_3rd) {
+					std::shared_ptr<s_job_info> job = job_db.find(pc_mapid2jobid(sd->class_&MAPID_UPPERMASK, sd->status.sex));
+
+					sd->change_level_2nd = job->max_job_level;
+				} else
 					sd->change_level_2nd = 1 + skill_point + sd->status.skill_point
 						- (sd->status.job_level - 1)
 						- (sd->change_level_3rd - 1)
@@ -2595,10 +2598,14 @@ int pc_disguise(struct map_session_data *sd, int class_)
  * @param id: Skill to cast
  * @param lv: Skill level
  * @param rate: Success chance
- * @param flag: Battle flag
+ * @param battle_flag: Battle flag
  * @param card_id: Used to prevent card stacking
+ * @param flag: Flags used for extra arguments
+ *              &0: forces the skill to be casted on self, rather than on the target
+ *              &1: forces the skill to be casted on target, rather than self
+ *              &2: random skill level in [1..lv] is chosen
  */
-static void pc_bonus_autospell(std::vector<s_autospell> &spell, short id, short lv, short rate, short flag, unsigned short card_id)
+static void pc_bonus_autospell(std::vector<s_autospell> &spell, uint16 id, uint16 lv, short rate, short battle_flag, t_itemid card_id, uint8 flag)
 {
 	if (spell.size() == MAX_PC_BONUS) {
 		ShowWarning("pc_bonus_autospell: Reached max (%d) number of autospells per character!\n", MAX_PC_BONUS);
@@ -2608,19 +2615,19 @@ static void pc_bonus_autospell(std::vector<s_autospell> &spell, short id, short 
 	if (!rate)
 		return;
 
-	if (!(flag&BF_RANGEMASK))
-		flag |= BF_SHORT | BF_LONG; //No range defined? Use both.
-	if (!(flag&BF_WEAPONMASK))
-		flag |= BF_WEAPON; //No attack type defined? Use weapon.
-	if (!(flag&BF_SKILLMASK)) {
-		if (flag&(BF_MAGIC | BF_MISC))
-			flag |= BF_SKILL; //These two would never trigger without BF_SKILL
-		if (flag&BF_WEAPON)
-			flag |= BF_NORMAL; //By default autospells should only trigger on normal weapon attacks.
+	if (!(battle_flag&BF_RANGEMASK))
+		battle_flag |= BF_SHORT | BF_LONG; //No range defined? Use both.
+	if (!(battle_flag&BF_WEAPONMASK))
+		battle_flag |= BF_WEAPON; //No attack type defined? Use weapon.
+	if (!(battle_flag&BF_SKILLMASK)) {
+		if (battle_flag&(BF_MAGIC | BF_MISC))
+			battle_flag |= BF_SKILL; //These two would never trigger without BF_SKILL
+		if (battle_flag&BF_WEAPON)
+			battle_flag |= BF_NORMAL; //By default autospells should only trigger on normal weapon attacks.
 	}
 
 	for (auto &it : spell) {
-		if ((it.card_id == card_id || it.rate < 0 || rate < 0) && it.id == id && it.lv == lv && it.flag == flag) {
+		if ((it.card_id == card_id || it.rate < 0 || rate < 0) && it.id == id && it.lv == lv && it.battle_flag == battle_flag && it.flag == flag) {
 			if (!battle_config.autospell_stacking && it.rate > 0 && rate > 0) // Stacking disabled
 				return;
 			it.rate = cap_value(it.rate + rate, -10000, 10000);
@@ -2636,8 +2643,9 @@ static void pc_bonus_autospell(std::vector<s_autospell> &spell, short id, short 
 	entry.id = id;
 	entry.lv = lv;
 	entry.rate = cap_value(rate, -10000, 10000);
-	entry.flag = flag;
+	entry.battle_flag = battle_flag;
 	entry.card_id = card_id;
+	entry.flag = flag;
 
 	spell.push_back(entry);
 }
@@ -2650,8 +2658,11 @@ static void pc_bonus_autospell(std::vector<s_autospell> &spell, short id, short 
  * @param lv: Skill level
  * @param rate: Success chance
  * @param card_id: Used to prevent card stacking
+ * @param flag: Flags used for extra arguments
+ *              &1: forces the skill to be casted on self, rather than on the target of skill
+ *              &2: random skill level in [1..lv] is chosen
  */
-static void pc_bonus_autospell_onskill(std::vector<s_autospell> &spell, short src_skill, short id, short lv, short rate, unsigned short card_id)
+static void pc_bonus_autospell_onskill(std::vector<s_autospell> &spell, uint16 src_skill, uint16 id, uint16 lv, short rate, t_itemid card_id, uint8 flag)
 {
 	if (spell.size() == MAX_PC_BONUS) {
 		ShowWarning("pc_bonus_autospell_onskill: Reached max (%d) number of autospells per character!\n", MAX_PC_BONUS);
@@ -2666,11 +2677,12 @@ static void pc_bonus_autospell_onskill(std::vector<s_autospell> &spell, short sr
 	if (rate < -10000 || rate > 10000)
 		ShowWarning("pc_bonus_onskill: Item bonus rate %d exceeds -10000~10000 range, capping.\n", rate);
 
-	entry.flag = src_skill;
+	entry.trigger_skill = src_skill;
 	entry.id = id;
 	entry.lv = lv;
 	entry.rate = cap_value(rate, -10000, 10000);
 	entry.card_id = card_id;
+	entry.flag = flag;
 
 	spell.push_back(entry);
 }
@@ -2765,6 +2777,50 @@ static void pc_bonus_addeff_onskill(std::vector<s_addeffectonskill> &effect, enu
 	effect.push_back(entry);
 }
 
+#if defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+static void pc_bonus_status_damage(std::vector<s_sc_damage>& dmgrule, enum sc_type sc, short rate, short battle_flag, int val)
+{
+	if (dmgrule.size() == MAX_PC_BONUS) {
+		ShowWarning("pc_bonus_status_damage: Reached max (%d) number of add status damage rule per character!\n", MAX_PC_BONUS);
+		return;
+	}
+
+	if (!rate)
+		return;
+
+	if (!(battle_flag & BF_RANGEMASK))
+		battle_flag |= BF_SHORT | BF_LONG; //No range defined? Use both.
+	if (!(battle_flag & BF_WEAPONMASK))
+		battle_flag |= BF_WEAPON; //No attack type defined? Use weapon.
+	if (!(battle_flag & BF_SKILLMASK)) {
+		if (battle_flag & (BF_MAGIC | BF_MISC))
+			battle_flag |= BF_SKILL; //These two would never trigger without BF_SKILL
+		if (battle_flag & BF_WEAPON)
+			battle_flag |= BF_NORMAL; //By default autospells should only trigger on normal weapon attacks.
+	}
+
+	for (auto& it : dmgrule) {
+		if (it.type == sc && it.battle_flag == battle_flag) {
+			it.rate = cap_value(it.rate + rate, -10000, 10000);
+			it.val += val;
+			return;
+		}
+	}
+
+	struct s_sc_damage entry = {};
+
+	if (rate < -10000 || rate > 10000)
+		ShowWarning("pc_bonus_status_damage: bonus rate %d exceeds -10000~10000 range, capping.\n", rate);
+
+	entry.type = sc;
+	entry.rate = cap_value(rate, -10000, 10000);
+	entry.battle_flag = battle_flag;
+	entry.val = val;
+
+	dmgrule.push_back(entry);
+}
+#endif // defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+
 /**
  * Adjust/add drop rate modifier for player
  * @param drop: Player's sd->add_drop (struct s_add_drop)
@@ -2831,6 +2887,23 @@ static void pc_bonus_item_drop(std::vector<s_add_drop> &drop, t_itemid nameid, u
 	drop.push_back(entry);
 }
 
+s_autobonus::~s_autobonus(){
+	if( this->active != INVALID_TIMER ){
+		delete_timer( this->active, pc_endautobonus );
+		this->active = INVALID_TIMER;
+	}
+
+	if( this->bonus_script != nullptr ){
+		aFree( this->bonus_script );
+		this->bonus_script = nullptr;
+	}
+
+	if( this->other_script != nullptr ){
+		aFree( this->other_script );
+		this->other_script = nullptr;
+	}
+}
+
 /**
  * Add autobonus to player when attacking/attacked
  * @param bonus: Bonus array
@@ -2843,8 +2916,15 @@ static void pc_bonus_item_drop(std::vector<s_add_drop> &drop, t_itemid nameid, u
  * @param onskill: Skill used to trigger autobonus
  * @return True on success or false otherwise
  */
-bool pc_addautobonus(std::vector<s_autobonus> &bonus, const char *script, short rate, unsigned int dur, uint16 flag, const char *other_script, unsigned int pos, bool onskill)
-{
+bool pc_addautobonus(std::vector<std::shared_ptr<s_autobonus>> &bonus, const char *script, short rate, unsigned int dur, uint16 flag, const char *other_script, unsigned int pos, bool onskill){
+	// Check if the same bonus already exists
+	for( std::shared_ptr<s_autobonus> autobonus : bonus ){
+		// Compare based on position and bonus script
+		if( autobonus->pos == pos && strcmp( script, autobonus->bonus_script ) == 0 ){
+			return false;
+		}
+	}
+
 	if (bonus.size() == MAX_PC_BONUS) {
 		ShowWarning("pc_addautobonus: Reached max (%d) number of autobonus per character!\n", MAX_PC_BONUS);
 		return false;
@@ -2863,18 +2943,18 @@ bool pc_addautobonus(std::vector<s_autobonus> &bonus, const char *script, short 
 		}
 	}
 
-	struct s_autobonus entry = {};
+	std::shared_ptr<s_autobonus> entry = std::make_shared<s_autobonus>();
 
 	if (rate < -10000 || rate > 10000)
 		ShowWarning("pc_addautobonus: Item bonus rate %d exceeds -10000~10000 range, capping.\n", rate);
 
-	entry.rate = cap_value(rate, -10000, 10000);
-	entry.duration = dur;
-	entry.active = INVALID_TIMER;
-	entry.atk_type = flag;
-	entry.pos = pos;
-	entry.bonus_script = aStrdup(script);
-	entry.other_script = (other_script ? aStrdup(other_script) : NULL);
+	entry->rate = cap_value(rate, -10000, 10000);
+	entry->duration = dur;
+	entry->active = INVALID_TIMER;
+	entry->atk_type = flag;
+	entry->pos = pos;
+	entry->bonus_script = aStrdup(script);
+	entry->other_script = (other_script ? aStrdup(other_script) : NULL);
 
 	bonus.push_back(entry);
 
@@ -2887,43 +2967,33 @@ bool pc_addautobonus(std::vector<s_autobonus> &bonus, const char *script, short 
  * @param bonus: Autobonus array
  * @param restore: Run script on clearing or not
  */
-void pc_delautobonus(struct map_session_data* sd, std::vector<s_autobonus> &bonus, bool restore)
-{
-	nullpo_retv(sd);
-
-	std::vector<s_autobonus>::iterator it = bonus.begin();
+void pc_delautobonus(struct map_session_data &sd, std::vector<std::shared_ptr<s_autobonus>> &bonus, bool restore){
+	std::vector<std::shared_ptr<s_autobonus>>::iterator it = bonus.begin();
 
 	while( it != bonus.end() ){
-		s_autobonus b = *it;
+		std::shared_ptr<s_autobonus> b = *it;
 
-		if (b.active != INVALID_TIMER) {
-			if (restore && (sd->state.autobonus&b.pos) == b.pos) {
-				if (b.bonus_script) {
-					unsigned int equip_pos_idx = 0;
+		if( b->active != INVALID_TIMER && restore && b->bonus_script != nullptr ){
+			unsigned int equip_pos_idx = 0;
 
-					// Create a list of all equipped positions to see if all items needed for the autobonus are still present [Playtester]
-					for (uint8 j = 0; j < EQI_MAX; j++) {
-						if (sd->equip_index[j] >= 0)
-							equip_pos_idx |= sd->inventory.u.items_inventory[sd->equip_index[j]].equip;
-					}
+			// Create a list of all equipped positions to see if all items needed for the autobonus are still present [Playtester]
+			for (uint8 j = 0; j < EQI_MAX; j++) {
+				if (sd.equip_index[j] >= 0)
+					equip_pos_idx |= sd.inventory.u.items_inventory[sd.equip_index[j]].equip;
+			}
 
-					if ((equip_pos_idx&b.pos) == b.pos)
-						script_run_autobonus(b.bonus_script, sd, b.pos);
-				}
-
-				it++;
-
-				continue;
-			} else { // Logout / Unequipped an item with an activated bonus
-				delete_timer(b.active, pc_endautobonus);
-				b.active = INVALID_TIMER;
+			if( ( equip_pos_idx&b->pos ) == b->pos ){
+				script_run_autobonus(b->bonus_script, &sd, b->pos);
+			}else{
+				// Not all required items equipped anymore
+				restore = false;
 			}
 		}
 
-		if (b.bonus_script)
-			aFree(b.bonus_script);
-		if (b.other_script)
-			aFree(b.other_script);
+		if( restore ){
+			it++;
+			continue;
+		}
 
 		it = bonus.erase(it);
 	}
@@ -2934,11 +3004,8 @@ void pc_delautobonus(struct map_session_data* sd, std::vector<s_autobonus> &bonu
  * @param sd: Player data
  * @param autobonus: Autobonus to run
  */
-void pc_exeautobonus(struct map_session_data *sd, std::vector<s_autobonus> *bonus, struct s_autobonus *autobonus)
+void pc_exeautobonus(struct map_session_data &sd, std::vector<std::shared_ptr<s_autobonus>> *bonus, std::shared_ptr<s_autobonus> autobonus)
 {
-	nullpo_retv(sd);
-	nullpo_retv(autobonus);
-
 	if (autobonus->active != INVALID_TIMER)
 		delete_timer(autobonus->active, pc_endautobonus);
 
@@ -2948,16 +3015,15 @@ void pc_exeautobonus(struct map_session_data *sd, std::vector<s_autobonus> *bonu
 		unsigned int equip_pos_idx = 0;
 		//Create a list of all equipped positions to see if all items needed for the autobonus are still present [Playtester]
 		for(j = 0; j < EQI_MAX; j++) {
-			if(sd->equip_index[j] >= 0)
-				equip_pos_idx |= sd->inventory.u.items_inventory[sd->equip_index[j]].equip;
+			if(sd.equip_index[j] >= 0)
+				equip_pos_idx |= sd.inventory.u.items_inventory[sd.equip_index[j]].equip;
 		}
 		if((equip_pos_idx&autobonus->pos) == autobonus->pos)
-			script_run_autobonus(autobonus->other_script,sd,autobonus->pos);
+			script_run_autobonus(autobonus->other_script,&sd,autobonus->pos);
 	}
 
-	autobonus->active = add_timer(gettick()+autobonus->duration, pc_endautobonus, sd->bl.id, (intptr_t)bonus);
-	sd->state.autobonus |= autobonus->pos;
-	status_calc_pc(sd,SCO_FORCE);
+	autobonus->active = add_timer(gettick()+autobonus->duration, pc_endautobonus, sd.bl.id, (intptr_t)bonus);
+	status_calc_pc(&sd,SCO_FORCE);
 }
 
 /**
@@ -2965,15 +3031,14 @@ void pc_exeautobonus(struct map_session_data *sd, std::vector<s_autobonus> *bonu
  */
 TIMER_FUNC(pc_endautobonus){
 	struct map_session_data *sd = map_id2sd(id);
-	std::vector<s_autobonus> *bonus = (std::vector<s_autobonus> *)data;
+	std::vector<std::shared_ptr<s_autobonus>> *bonus = (std::vector<std::shared_ptr<s_autobonus>> *)data;
 
 	nullpo_ret(sd);
 	nullpo_ret(bonus);
 
-	for( struct s_autobonus& autobonus : *bonus ){
-		if( autobonus.active == tid ){
-			autobonus.active = INVALID_TIMER;
-			sd->state.autobonus &= ~autobonus.pos;
+	for( std::shared_ptr<s_autobonus> autobonus : *bonus ){
+		if( autobonus->active == tid ){
+			autobonus->active = INVALID_TIMER;
 			break;
 		}
 	}
@@ -3151,6 +3216,39 @@ static void pc_bonus_itembonus(std::vector<s_item_bonus> &bonus, uint16 id, int 
 	bonus.push_back(entry);
 }
 
+#ifdef Pandas_Bonus_bSkillNoRequire
+//************************************
+// Method:      pc_bonus_itembonus_swtich
+// Description: 按位运算开关类型的 s_item_bonus 处理函数
+// Access:      public static 
+// Parameter:   std::vector<s_item_bonus> & bonus
+// Parameter:   uint16 id
+// Parameter:   int val
+// Parameter:   bool switch_on
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/12/05 19:42
+//************************************ 
+static void pc_bonus_itembonus_swtich(std::vector<s_item_bonus>& bonus, uint16 id, int val, bool switch_on)
+{
+	for (auto& it : bonus) {
+		if (it.id != id)
+			continue;
+
+		if (switch_on)
+			it.val |= val;
+		else
+			it.val &= ~val;
+		return;
+	}
+
+	struct s_item_bonus entry = {};
+	entry.id = id;
+	if (switch_on)
+		entry.val |= val;
+	bonus.push_back(entry);
+}
+#endif // Pandas_Bonus_bSkillNoRequire
+
 /**
  * Remove HP/SP to player when attacking
  * @param bonus: Bonus array
@@ -3219,6 +3317,15 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 		case SP_LUK:
 			if(sd->state.lr_flag != 2)
 				sd->indexed_bonus.param_bonus[type-SP_STR]+=val;
+			break;
+		case SP_POW:
+		case SP_STA:
+		case SP_WIS:
+		case SP_SPL:
+		case SP_CON:
+		case SP_CRT:
+			if (sd->state.lr_flag != 2)
+				sd->indexed_bonus.param_bonus[type - SP_POW + PARAM_POW] += val;
 			break;
 		case SP_ATK1:
 			if(!sd->state.lr_flag) {
@@ -3696,7 +3803,7 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 			break;
 		case SP_DELAYRATE:
 			if(sd->state.lr_flag != 2)
-				sd->delayrate+=val;
+				sd->bonus.delayrate -= val;
 			break;
 		case SP_CRIT_ATK_RATE:
 			if(sd->state.lr_flag != 2)
@@ -3842,13 +3949,17 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 			if (sd->state.lr_flag != 2)
 				sd->special_state.no_walk_delay = 1;
 			break;
+		case SP_ADD_ITEM_SPHEAL_RATE:
+			if(sd->state.lr_flag != 2)
+				sd->bonus.itemsphealrate2 += val;
+			break;
 #ifdef Pandas_Bonus_bNoFieldGemStone
 		case SP_PANDAS_NOFIELDGEMSTONE:
 			if (sd->state.lr_flag != 2)
 				sd->special_state.nofieldgemstone = 1;
 			break;
 #endif // Pandas_Bonus_bNoFieldGemStone
-		// PYHELP - BONUS - INSERT POINT - <Section 5>
+		// PYHELP - BONUS - INSERT POINT - <Section 6>
 		default:
 #ifdef Pandas_NpcExpress_STATCALC
 			if (running_npc_stat_calc_event) {
@@ -4191,7 +4302,7 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 	case SP_ADD_ITEM_HEAL_RATE: // bonus2 bAddItemHealRate,iid,n;
 		if(sd->state.lr_flag == 2)
 			break;
-		if (!itemdb_exists(type2)) {
+		if( !item_db.exists( type2 ) ){
 			ShowWarning("pc_bonus2: SP_ADD_ITEM_HEAL_RATE Invalid item with id %d\n", type2);
 			break;
 		}
@@ -4209,7 +4320,7 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 			ShowWarning("pc_bonus2: SP_ADD_ITEMGROUP_HEAL_RATE: Invalid item group with id %d\n", type2);
 			break;
 		}
-		if (sd->itemhealrate.size() == MAX_PC_BONUS) {
+		if (sd->itemgrouphealrate.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_ADD_ITEMGROUP_HEAL_RATE: Reached max (%d) number of item heal bonuses per character!\n", MAX_PC_BONUS);
 			break;
 		}
@@ -4452,6 +4563,69 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 		PC_BONUS_CHK_ELEMENT(type2, SP_MAGIC_SUBDEF_ELE);
 		sd->indexed_bonus.magic_subdefele[type2] += val;
 		break;
+	case SP_ADD_ITEM_SPHEAL_RATE: // bonus2 bAddItemSPHealRate,iid,n;
+		if( sd->state.lr_flag == 2 ){
+			break;
+		}
+
+		if( !item_db.exists( type2 ) ){
+			ShowWarning( "pc_bonus2: SP_ADD_ITEM_SPHEAL_RATE Invalid item with id %d\n", type2 );
+			break;
+		}
+
+		if( sd->itemsphealrate.size() == MAX_PC_BONUS ){
+			ShowWarning( "pc_bonus2: SP_ADD_ITEM_SPHEAL_RATE: Reached max (%d) number of item SP heal bonuses per character!\n", MAX_PC_BONUS );
+			break;
+		}
+
+		pc_bonus_itembonus( sd->itemsphealrate, type2, val, false );
+		break;
+	case SP_ADD_ITEMGROUP_SPHEAL_RATE: // bonus2 bAddItemGroupSPHealRate,ig,n;
+		if( sd->state.lr_flag == 2 ){
+			break;
+		}
+
+		if( !type2 || !itemdb_group.exists( type2 ) ){
+			ShowWarning( "pc_bonus2: SP_ADD_ITEMGROUP_SPHEAL_RATE: Invalid item group with id %d\n", type2 );
+			break;
+		}
+
+		if( sd->itemgroupsphealrate.size() == MAX_PC_BONUS ){
+			ShowWarning( "pc_bonus2: SP_ADD_ITEMGROUP_SPHEAL_RATE: Reached max (%d) number of item SP heal bonuses per character!\n", MAX_PC_BONUS );
+			break;
+		}
+
+		pc_bonus_itembonus( sd->itemgroupsphealrate, type2, val, false );
+		break;
+#ifdef Pandas_Bonus_bAddSkillRange
+	case SP_PANDAS_ADDSKILLRANGE: // bonus2 bAddSkillRange,sk,n;
+		if (sd->state.lr_flag == 2) {
+			break;
+		}
+
+		if (sd->addskillrange.size() == MAX_PC_BONUS) {
+			ShowWarning("pc_bonus2: SP_PANDAS_ADDSKILLRANGE: Reached max (%d) number of skills per character, bonus skill %d (%d) lost.\n", MAX_PC_BONUS, type2, val);
+			break;
+		}
+
+		pc_bonus_itembonus(sd->addskillrange, type2, val, false);
+		break;
+#endif // Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus_bSkillNoRequire
+	case SP_PANDAS_SKILLNOREQUIRE: // bonus2 bSkillNoRequire,sk,n;
+		if (sd->state.lr_flag == 2) {
+			break;
+		}
+
+		if (sd->skillnorequire.size() == MAX_PC_BONUS) {
+			ShowWarning("pc_bonus2: SP_PANDAS_ADDSKILLRANGE: Reached max (%d) number of skills per character, bonus skill %d (+%d%%) lost.\n", MAX_PC_BONUS, type2, val);
+			break;
+		}
+
+		pc_bonus_itembonus_swtich(sd->skillnorequire, type2, val, true);
+		break;
+#endif // Pandas_Bonus_bSkillNoRequire
+		// PYHELP - BONUS - INSERT POINT - <Section 7>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
 		if (running_npc_stat_calc_event) {
@@ -4506,7 +4680,7 @@ void pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 		{
 			int target = skill_get_inf(type2); //Support or Self (non-auto-target) skills should pick self.
 			target = target&INF_SUPPORT_SKILL || (target&INF_SELF_SKILL && !skill_get_inf2(type2, INF2_NOTARGETSELF));
-			pc_bonus_autospell(sd->autospell, target?-type2:type2, type3, val, 0, current_equip_card_id);
+			pc_bonus_autospell(sd->autospell, type2, type3, val, 0, current_equip_card_id, target ? AUTOSPELL_FORCE_SELF : AUTOSPELL_FORCE_TARGET);
 		}
 		break;
 	case SP_AUTOSPELL_WHENHIT: // bonus3 bAutoSpellWhenHit,sk,y,n;
@@ -4514,7 +4688,7 @@ void pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 		{
 			int target = skill_get_inf(type2); //Support or Self (non-auto-target) skills should pick self.
 			target = target&INF_SUPPORT_SKILL || (target&INF_SELF_SKILL && !skill_get_inf2(type2, INF2_NOTARGETSELF));
-			pc_bonus_autospell(sd->autospell2, target?-type2:type2, type3, val, BF_NORMAL|BF_SKILL, current_equip_card_id);
+			pc_bonus_autospell(sd->autospell2, type2, type3, val, BF_NORMAL|BF_SKILL, current_equip_card_id, target ? AUTOSPELL_FORCE_SELF : AUTOSPELL_FORCE_TARGET);
 		}
 		break;
 	case SP_ADD_MONSTER_DROP_ITEMGROUP: // bonus3 bAddMonsterDropItemGroup,ig,r,n;
@@ -4602,6 +4776,21 @@ void pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 		sd->norecover_state_race[type2].rate = type3;
 		sd->norecover_state_race[type2].tick = val;
 		break;
+
+#ifdef Pandas_Bonus_bRebirthWithHeal
+	case SP_PANDAS_REBIRTHWITHHEAL: // bonus3 bRebirthWithHeal,r,h,s;
+		if (sd->state.lr_flag != 2) {
+			sd->bonus.rebirth_rate += type2;
+			sd->bonus.rebirth_heal_percent_hp += type3;
+			sd->bonus.rebirth_heal_percent_sp += val;
+
+			sd->bonus.rebirth_rate = cap_value(sd->bonus.rebirth_rate, 0, 10000);
+			sd->bonus.rebirth_heal_percent_hp = cap_value(sd->bonus.rebirth_heal_percent_hp, 0, 100);
+			sd->bonus.rebirth_heal_percent_sp = cap_value(sd->bonus.rebirth_heal_percent_sp, 0, 100);
+		}
+		break;
+#endif // Pandas_Bonus_bRebirthWithHeal
+
 #ifdef Pandas_Bonus_bFinalAddRace
 	case SP_PANDAS_FINALADDRACE: // bonus3 bFinalAddRace,r,x,bf;
 		PC_BONUS_CHK_RACE(type2, SP_PANDAS_FINALADDRACE);
@@ -4612,6 +4801,7 @@ void pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 		sd->finaladd_race[type2].bf = val;
 		break;
 #endif // Pandas_Bonus_bFinalAddRace
+
 #ifdef Pandas_Bonus_bFinalAddClass
 	case SP_PANDAS_FINALADDCLASS: // bonus3 bFinalAddClass,c,x,bf;
 		PC_BONUS_CHK_CLASS(type2, SP_PANDAS_FINALADDCLASS);
@@ -4622,6 +4812,7 @@ void pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 		sd->finaladd_class[type2].bf += val;
 		break;
 #endif // Pandas_Bonus_bFinalAddClass
+		// PYHELP - BONUS - INSERT POINT - <Section 8>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
 		if (running_npc_stat_calc_event) {
@@ -4662,12 +4853,12 @@ void pc_bonus4(struct map_session_data *sd,int type,int type2,int type3,int type
 	switch(type){
 	case SP_AUTOSPELL: // bonus4 bAutoSpell,sk,y,n,i;
 		if(sd->state.lr_flag != 2)
-			pc_bonus_autospell(sd->autospell, (val&1?type2:-type2), (val&2?-type3:type3), type4, 0, current_equip_card_id);
+			pc_bonus_autospell(sd->autospell, type2, type3, type4, 0, current_equip_card_id, val & AUTOSPELL_FORCE_ALL);
 		break;
 
 	case SP_AUTOSPELL_WHENHIT: // bonus4 bAutoSpellWhenHit,sk,y,n,i;
 		if(sd->state.lr_flag != 2)
-			pc_bonus_autospell(sd->autospell2, (val&1?type2:-type2), (val&2?-type3:type3), type4, BF_NORMAL|BF_SKILL, current_equip_card_id);
+			pc_bonus_autospell(sd->autospell2, type2, type3, type4, BF_NORMAL|BF_SKILL, current_equip_card_id, val & AUTOSPELL_FORCE_ALL);
 		break;
 
 	case SP_AUTOSPELL_ONSKILL: // bonus4 bAutoSpellOnSkill,sk,x,y,n;
@@ -4676,7 +4867,7 @@ void pc_bonus4(struct map_session_data *sd,int type,int type2,int type3,int type
 			int target = skill_get_inf(type3); //Support or Self (non-auto-target) skills should pick self.
 			target = target&INF_SUPPORT_SKILL || (target&INF_SELF_SKILL && !skill_get_inf2(type3, INF2_NOTARGETSELF));
 
-			pc_bonus_autospell_onskill(sd->autospell3, type2, target?-type3:type3, type4, val, current_equip_card_id);
+			pc_bonus_autospell_onskill(sd->autospell3, type2, type3, type4, val, current_equip_card_id, target ? AUTOSPELL_FORCE_TARGET : AUTOSPELL_FORCE_SELF);
 		}
 		break;
 
@@ -4715,6 +4906,20 @@ void pc_bonus4(struct map_session_data *sd,int type,int type2,int type3,int type
 		sd->mdef_set_race[type2].value = val;
 		break;
 
+#ifdef Pandas_Bonus_bStatusAddDamage
+	case SP_PANDAS_STATUSADDDAMAGE: // bonus4 bStatusAddDamage,sc,n,r,bf;
+		if (sd->state.lr_flag != 2)
+			pc_bonus_status_damage(sd->status_damage_adjust, (sc_type)type2, type4, val, type3);
+		break;
+#endif // Pandas_Bonus_bStatusAddDamage
+
+#ifdef Pandas_Bonus_bStatusAddDamageRate
+	case SP_PANDAS_STATUSADDDAMAGERATE: // bonus4 bStatusAddDamageRate,sc,n,r,bf;
+		if (sd->state.lr_flag != 2)
+			pc_bonus_status_damage(sd->status_damagerate_adjust, (sc_type)type2, type4, val, type3);
+		break;
+#endif // Pandas_Bonus_bStatusAddDamageRate
+		// PYHELP - BONUS - INSERT POINT - <Section 9>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
 		if (running_npc_stat_calc_event) {
@@ -4755,17 +4960,17 @@ void pc_bonus5(struct map_session_data *sd,int type,int type2,int type3,int type
 	switch(type){
 	case SP_AUTOSPELL: // bonus5 bAutoSpell,sk,y,n,bf,i;
 		if(sd->state.lr_flag != 2)
-			pc_bonus_autospell(sd->autospell, (val&1?type2:-type2), (val&2?-type3:type3), type4, type5, current_equip_card_id);
+			pc_bonus_autospell(sd->autospell, type2, type3, type4, type5, current_equip_card_id, val & AUTOSPELL_FORCE_ALL);
 		break;
 
 	case SP_AUTOSPELL_WHENHIT: // bonus5 bAutoSpellWhenHit,sk,y,n,bf,i;
 		if(sd->state.lr_flag != 2)
-			pc_bonus_autospell(sd->autospell2, (val&1?type2:-type2), (val&2?-type3:type3), type4, type5, current_equip_card_id);
+			pc_bonus_autospell(sd->autospell2, type2, type3, type4, type5, current_equip_card_id, val & AUTOSPELL_FORCE_ALL);
 		break;
 
 	case SP_AUTOSPELL_ONSKILL: // bonus5 bAutoSpellOnSkill,sk,x,y,n,i;
 		if(sd->state.lr_flag != 2)
-			pc_bonus_autospell_onskill(sd->autospell3, type2, (val&1?-type3:type3), (val&2?-type4:type4), type5, current_equip_card_id);
+			pc_bonus_autospell_onskill(sd->autospell3, type2, type3, type4, type5, current_equip_card_id, val & AUTOSPELL_FORCE_ALL);
 		break;
  
 	case SP_ADDEFF_ONSKILL: // bonus5 bAddEffOnSkill,sk,eff,n,y,t;
@@ -4773,6 +4978,7 @@ void pc_bonus5(struct map_session_data *sd,int type,int type2,int type3,int type
 		if( sd->state.lr_flag != 2 )
 			pc_bonus_addeff_onskill(sd->addeff_onskill, (sc_type)type3, type4, type2, type5, val);
 		break;
+		// PYHELP - BONUS - INSERT POINT - <Section 10>
 
 	default:
  #ifdef Pandas_NpcExpress_STATCALC
@@ -5787,6 +5993,13 @@ int pc_useitem(struct map_session_data *sd,int n)
 	if (sd->state.mail_writing)
 		return 0;
 
+#ifdef Pandas_MapFlag_NoUseItem
+	if (sd && map_getmapflag(sd->bl.m, MF_NOUSEITEM)) {
+		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 11), false, SELF); // This map prohibit use the consumable items!
+		return 0;
+	}
+#endif // Pandas_MapFlag_NoUseItem
+
 #ifdef Pandas_NpcFilter_USE_ITEM
 	if (sd && sd->inventory_data[n]) {
 		item = sd->inventory.u.items_inventory[n];
@@ -6284,7 +6497,7 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 		struct item_data* dd = itemdb_search(itemid);
 		if (ITEM_PROPERTIES_HASFLAG(dd, annouce_mask, ITEM_ANNOUCE_STEAL_TO_INVENTORY)) {
 			char message[128] = { 0 };
-			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname, dd->ename.c_str(), (float)md->db->dropitem[i].rate / 100);
+			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname.c_str(), dd->ename.c_str(), (float)md->db->dropitem[i].rate / 100);
 			intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);
 		}
 	}
@@ -6392,6 +6605,11 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 #endif // Pandas_Support_Transfer_Autotrade_Player
 
 	nullpo_retr(SETPOS_OK,sd);
+
+#ifdef Pandas_Crashfix_PC_Setpos_With_Invaild_Player
+	if (sd->bl.type != BL_PC || sd->bl.id != sd->status.account_id)
+		return SETPOS_OK;
+#endif // Pandas_Crashfix_PC_Setpos_With_Invaild_Player
 
 	if( !mapindex || !mapindex_id2name(mapindex) ) {
 		ShowDebug("pc_setpos: Passed mapindex(%d) is invalid!\n", mapindex);
@@ -6952,7 +7170,7 @@ bool pc_checkequip2(struct map_session_data *sd, t_itemid nameid, int min, int m
  * Convert's from the client's lame Job ID system
  * to the map server's 'makes sense' system. [Skotlex]
  *------------------------------------------*/
-int pc_jobid2mapid(unsigned short b_class)
+uint64 pc_jobid2mapid(unsigned short b_class)
 {
 	switch(b_class)
 	{
@@ -7112,7 +7330,7 @@ int pc_jobid2mapid(unsigned short b_class)
 }
 
 //Reverts the map-style class id to the client-style one.
-int pc_mapid2jobid(unsigned short class_, int sex)
+int pc_mapid2jobid(uint64 class_, int sex)
 {
 	switch(class_) {
 	//Novice And 1-1 Jobs
@@ -7657,7 +7875,7 @@ int pc_checkbaselevelup(struct map_session_data *sd) {
 void pc_baselevelchanged(struct map_session_data *sd) {
 	uint8 i;
 	for( i = 0; i < EQI_MAX; i++ ) {
-		if( sd->equip_index[i] >= 0 ) {
+		if( sd->equip_index[i] >= 0 && sd->inventory_data[sd->equip_index[i]] ) {
 			if( sd->inventory_data[ sd->equip_index[i] ]->elvmax && sd->status.base_level > (unsigned int)sd->inventory_data[ sd->equip_index[i] ]->elvmax )
 				pc_unequipitem(sd, sd->equip_index[i], 3);
 		}
@@ -7906,11 +8124,13 @@ void pc_lostexp(struct map_session_data *sd, t_exp base_exp, t_exp job_exp) {
 
 /**
  * Returns max base level for this character's class.
- * @param class_: Player's class
+ * @param job_id: Player's class
  * @return Max Base Level
  */
-static unsigned int pc_class_maxbaselv(unsigned short class_) {
-	return job_info[pc_class2idx(class_)].max_level[0];
+uint32 JobDatabase::get_maxBaseLv(uint16 job_id) {
+	std::shared_ptr<s_job_info> job = job_db.find(job_id);
+
+	return job ? job->max_base_level : 0;
 }
 
 /**
@@ -7919,16 +8139,18 @@ static unsigned int pc_class_maxbaselv(unsigned short class_) {
  * @return Max Base Level
  **/
 unsigned int pc_maxbaselv(struct map_session_data *sd){
-	return pc_class_maxbaselv(sd->status.class_);
+	return job_db.get_maxBaseLv(sd->status.class_);
 }
 
 /**
  * Returns max job level for this character's class.
- * @param class_: Player's class
+ * @param job_id: Player's class
  * @return Max Job Level
  */
-static unsigned int pc_class_maxjoblv(unsigned short class_) {
-	return job_info[pc_class2idx(class_)].max_level[1];
+uint32 JobDatabase::get_maxJobLv(uint16 job_id) {
+	std::shared_ptr<s_job_info> job = job_db.find(job_id);
+
+	return job ? job->max_job_level : 0;
 }
 
 /**
@@ -7937,7 +8159,7 @@ static unsigned int pc_class_maxjoblv(unsigned short class_) {
  * @return Max Job Level
  **/
 unsigned int pc_maxjoblv(struct map_session_data *sd){
-	return pc_class_maxjoblv(sd->status.class_);
+	return job_db.get_maxJobLv(sd->status.class_);
 }
 
 /**
@@ -7961,6 +8183,18 @@ bool pc_is_maxjoblv(struct map_session_data *sd) {
 }
 
 /**
+ * Returns base experience for this character's class.
+ * @param job_id: Player's class
+ * @param level: Player's level
+ * @return Base EXP
+ */
+t_exp JobDatabase::get_baseExp(uint16 job_id, uint32 level) {
+	std::shared_ptr<s_job_info> job = job_db.find(job_id);
+
+	return job ? job->base_exp[level - 1] : 0;
+}
+
+/**
  * Base exp needed for player to level up.
  * @param sd
  * @return Base EXP needed for next base level
@@ -7971,7 +8205,19 @@ t_exp pc_nextbaseexp(struct map_session_data *sd){
 		return 0;
 	if (pc_is_maxbaselv(sd))
 		return MAX_LEVEL_BASE_EXP; // On max level, player's base EXP limit is 99,999,999
-	return job_info[pc_class2idx(sd->status.class_)].exp_table[0][sd->status.base_level-1];
+	return static_cast<t_exp>(job_db.get_baseExp(sd->status.class_, sd->status.base_level));
+}
+
+/**
+ * Returns job experience for this character's class.
+ * @param job_id: Player's class
+ * @param level: Player's level
+ * @return Job EXP
+ */
+t_exp JobDatabase::get_jobExp(uint16 job_id, uint32 level) {
+	std::shared_ptr<s_job_info> job = job_db.find(job_id);
+
+	return job ? job->job_exp[level - 1] : 0;
 }
 
 /**
@@ -7985,11 +8231,22 @@ t_exp pc_nextjobexp(struct map_session_data *sd){
 		return 0;
 	if (pc_is_maxjoblv(sd))
 		return MAX_LEVEL_JOB_EXP; // On max level, player's job EXP limit is 999,999,999
-	return job_info[pc_class2idx(sd->status.class_)].exp_table[1][sd->status.job_level-1];
+	return static_cast<t_exp>(job_db.get_jobExp(sd->status.class_, sd->status.job_level));
+}
+
+/**
+ * Returns max weight base for this character's class.
+ * @param job_id: Player's class
+ * @return Max weight base
+ */
+int32 JobDatabase::get_maxWeight(uint16 job_id) {
+	std::shared_ptr<s_job_info> job = job_db.find(job_id);
+
+	return job ? job->max_weight_base : 0;
 }
 
 /// Returns the value of the specified stat.
-static int pc_getstat(struct map_session_data* sd, int type)
+int pc_getstat(map_session_data *sd, int type)
 {
 	nullpo_retr(-1, sd);
 
@@ -8000,6 +8257,12 @@ static int pc_getstat(struct map_session_data* sd, int type)
 	case SP_INT: return sd->status.int_;
 	case SP_DEX: return sd->status.dex;
 	case SP_LUK: return sd->status.luk;
+	case SP_POW: return sd->status.pow;
+	case SP_STA: return sd->status.sta;
+	case SP_WIS: return sd->status.wis;
+	case SP_SPL: return sd->status.spl;
+	case SP_CON: return sd->status.con;
+	case SP_CRT: return sd->status.crt;
 	default:
 		return -1;
 	}
@@ -8007,7 +8270,7 @@ static int pc_getstat(struct map_session_data* sd, int type)
 
 /// Sets the specified stat to the specified value.
 /// Returns the new value.
-static int pc_setstat(struct map_session_data* sd, int type, int val)
+int pc_setstat(struct map_session_data* sd, int type, int val)
 {
 	nullpo_retr(-1, sd);
 
@@ -8018,6 +8281,12 @@ static int pc_setstat(struct map_session_data* sd, int type, int val)
 	case SP_INT: sd->status.int_ = val; break;
 	case SP_DEX: sd->status.dex = val; break;
 	case SP_LUK: sd->status.luk = val; break;
+	case SP_POW: sd->status.pow = val; break;
+	case SP_STA: sd->status.sta = val; break;
+	case SP_WIS: sd->status.wis = val; break;
+	case SP_SPL: sd->status.spl = val; break;
+	case SP_CON: sd->status.con = val; break;
+	case SP_CRT: sd->status.crt = val; break;
 	default:
 		return -1;
 	}
@@ -8343,6 +8612,13 @@ int pc_resetlvl(struct map_session_data* sd,int type)
 		sd->status.int_=1;
 		sd->status.dex=1;
 		sd->status.luk=1;
+		sd->status.pow=0;
+		sd->status.sta=0;
+		sd->status.wis=0;
+		sd->status.spl=0;
+		sd->status.con=0;
+		sd->status.crt=0;
+
 		if(sd->status.class_ == JOB_NOVICE_HIGH) {
 			sd->status.status_point=100;	// not 88 [celest]
 			// give platinum skills upon changing
@@ -8606,6 +8882,24 @@ int pc_resethate(struct map_session_data* sd)
 	}
 	return 0;
 }
+
+#ifdef Pandas_Bonus_bAddSkillRange
+int pc_addskillrange_bonus(struct map_session_data* sd, uint16 skill_id) {
+	nullpo_ret(sd);
+
+	skill_id = skill_dummy2skill_id(skill_id);
+
+	int bonus = 0;
+	for (auto& it : sd->addskillrange) {
+		if (it.id == skill_id) {
+			bonus += it.val;
+			break;
+		}
+	}
+
+	return bonus;
+}
+#endif // Pandas_Bonus_bAddSkillRange
 
 int pc_skillatk_bonus(struct map_session_data *sd, uint16 skill_id)
 {
@@ -9094,7 +9388,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src, uint16 skill_id)
 			if(id == 0)
 				continue;
 			if(id == -1){
-				int eq_num=0,eq_n[MAX_INVENTORY];
+				int eq_num=0,eq_n[G_MAX_INVENTORY];
 				memset(eq_n,0,sizeof(eq_n));
 				for(i=0;i<P_MAX_INVENTORY(sd);i++) {
 					if( (type&NMDT_INVENTORY && !sd->inventory.u.items_inventory[i].equip)
@@ -9271,6 +9565,12 @@ int64 pc_readparam(struct map_session_data* sd,int64 type)
 		case SP_INT:             val = sd->status.int_; break;
 		case SP_DEX:             val = sd->status.dex; break;
 		case SP_LUK:             val = sd->status.luk; break;
+		case SP_POW:             val = sd->status.pow; break;
+		case SP_STA:             val = sd->status.sta; break;
+		case SP_WIS:             val = sd->status.wis; break;
+		case SP_SPL:             val = sd->status.spl; break;
+		case SP_CON:             val = sd->status.con; break;
+		case SP_CRT:             val = sd->status.crt; break;
 		case SP_KARMA:           val = sd->status.karma; break;
 		case SP_MANNER:          val = sd->status.manner; break;
 		case SP_FAME:            val = sd->status.fame; break;
@@ -9372,7 +9672,7 @@ int64 pc_readparam(struct map_session_data* sd,int64 type)
 		case SP_BREAK_WEAPON_RATE: val = sd->bonus.break_weapon_rate; break;
 		case SP_BREAK_ARMOR_RATE: val = sd->bonus.break_armor_rate; break;
 		case SP_ADD_STEAL_RATE:  val = sd->bonus.add_steal_rate; break;
-		case SP_DELAYRATE:       val = sd->delayrate; break;
+		case SP_DELAYRATE:       val = sd->bonus.delayrate; break;
 		case SP_CRIT_ATK_RATE:   val = sd->bonus.crit_atk_rate; break;
 		case SP_UNSTRIPABLE_WEAPON: val = (sd->bonus.unstripable_equip&EQP_WEAPON)?1:0; break;
 		case SP_UNSTRIPABLE:
@@ -9402,6 +9702,7 @@ int64 pc_readparam(struct map_session_data* sd,int64 type)
 			val = sd->castrate; break;
 #endif
 		case SP_CRIT_DEF_RATE: val = sd->bonus.crit_def_rate; break;
+		case SP_ADD_ITEM_SPHEAL_RATE: val = sd->bonus.itemsphealrate2; break;
 
 #ifdef Pandas_ScriptParams_ReadParam
 		case SP_STR_ALL:	val = sd->battle_status.str; break;
@@ -9554,6 +9855,24 @@ bool pc_setparam(struct map_session_data *sd,int64 type,int64 val_tmp)
 	case SP_LUK:
 		sd->status.luk = cap_value(val, 1, pc_maxparameter(sd,PARAM_LUK));
 		break;
+	case SP_POW:
+		sd->status.pow = cap_value(val, 0, pc_maxparameter(sd,PARAM_POW));
+		break;
+	case SP_STA:
+		sd->status.sta = cap_value(val, 0, pc_maxparameter(sd,PARAM_STA));
+		break;
+	case SP_WIS:
+		sd->status.wis = cap_value(val, 0, pc_maxparameter(sd,PARAM_WIS));
+		break;
+	case SP_SPL:
+		sd->status.spl = cap_value(val, 0, pc_maxparameter(sd,PARAM_SPL));
+		break;
+	case SP_CON:
+		sd->status.con = cap_value(val, 0, pc_maxparameter(sd,PARAM_CON));
+		break;
+	case SP_CRT:
+		sd->status.crt = cap_value(val, 0, pc_maxparameter(sd,PARAM_CRT));
+		break;
 	case SP_KARMA:
 		sd->status.karma = val;
 		break;
@@ -9693,7 +10012,7 @@ int pc_itemheal(struct map_session_data *sd, t_itemid itemid, int hp, int sp)
 		//All item bonuses.
 		bonus += sd->bonus.itemhealrate2;
 		//Item Group bonuses
-		bonus += bonus * pc_get_itemgroup_bonus(sd, itemid) / 100;
+		bonus += bonus * pc_get_itemgroup_bonus(sd, itemid, sd->itemgrouphealrate) / 100;
 		//Individual item bonuses.
 		for(const auto &it : sd->itemhealrate) {
 			if (it.id == itemid) {
@@ -9721,6 +10040,18 @@ int pc_itemheal(struct map_session_data *sd, t_itemid itemid, int hp, int sp)
 		// A potion produced by an Alchemist in the Fame Top 10 gets +50% effect [DracoRPG]
 		if (potion_flag == 2)
 			bonus += bonus * 50 / 100;
+
+		// All item bonuses.
+		bonus += sd->bonus.itemsphealrate2;
+		// Item Group bonuses
+		bonus += bonus * pc_get_itemgroup_bonus( sd, itemid, sd->itemgroupsphealrate ) / 100;
+		// Individual item bonuses.
+		for( const auto &it : sd->itemsphealrate ){
+			if( it.id == itemid ){
+				bonus += bonus * it.val / 100;
+				break;
+			}
+		}
 
 		tmp = sp * bonus / 100; // Overflow check
 		if (bonus != 100 && tmp > sp)
@@ -9827,7 +10158,6 @@ static int jobchange_killclone(struct block_list *bl, va_list ap)
 bool pc_jobchange(struct map_session_data *sd,int job, char upper)
 {
 	int i, fame_flag = 0;
-	int b_class;
 
 	nullpo_retr(false,sd);
 
@@ -9835,7 +10165,7 @@ bool pc_jobchange(struct map_session_data *sd,int job, char upper)
 		return false;
 
 	//Normalize job.
-	b_class = pc_jobid2mapid(job);
+	uint64 b_class = pc_jobid2mapid(job);
 	if (b_class == -1)
 		return false;
 	switch (upper) {
@@ -11349,6 +11679,21 @@ bool pc_equipitem(struct map_session_data *sd,short n,int req_pos,bool equipswit
 	return true;
 }
 
+static void pc_deleteautobonus( std::vector<std::shared_ptr<s_autobonus>>& bonus, int position ){
+	std::vector<std::shared_ptr<s_autobonus>>::iterator it = bonus.begin();
+
+	while( it != bonus.end() ){
+		std::shared_ptr<s_autobonus> b = *it;
+
+		if( ( b->pos & position ) != b->pos ){
+			it++;
+			continue;
+		}
+
+		it = bonus.erase( it );
+	}
+}
+
 /**
  * Recalculate player status on unequip
  * @param sd: Player data
@@ -11360,8 +11705,9 @@ static void pc_unequipitem_sub(struct map_session_data *sd, int n, int flag) {
 	int i, iflag;
 	bool status_calc = false;
 
-	if (sd->state.autobonus&sd->inventory.u.items_inventory[n].equip)
-		sd->state.autobonus &= ~sd->inventory.u.items_inventory[n].equip; //Check for activated autobonus [Inkfish]
+	pc_deleteautobonus( sd->autobonus, sd->inventory.u.items_inventory[n].equip );
+	pc_deleteautobonus( sd->autobonus2, sd->inventory.u.items_inventory[n].equip );
+	pc_deleteautobonus( sd->autobonus3, sd->inventory.u.items_inventory[n].equip );
 
 	sd->inventory.u.items_inventory[n].equip = 0;
 	if (!(flag & 4))
@@ -11542,6 +11888,9 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
 		skill_enchant_elemental_end(&sd->bl, SC_NONE);
 		status_change_end(&sd->bl, SC_FEARBREEZE, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_EXEEDBREAK, INVALID_TIMER);
+#ifdef RENEWAL
+		status_change_end(&sd->bl, SC_MAXOVERTHRUST, INVALID_TIMER);
+#endif
 	}
 
 	// On armor change
@@ -11944,7 +12293,7 @@ bool pc_divorce(struct map_session_data *sd)
 	sd->status.partner_id = 0;
 	p_sd->status.partner_id = 0;
 #ifndef Pandas_ClientFeature_InventoryExpansion
-	for( i = 0; i < MAX_INVENTORY; i++ )
+	for( i = 0; i < G_MAX_INVENTORY; i++ )
 	{
 		if( sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_M || sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_F )
 			pc_delitem(sd, i, 1, 0, 0, LOG_TYPE_OTHER);
@@ -12475,22 +12824,6 @@ int pc_split_str(char *str,char **val,int num)
 	return i;
 }
 
-int pc_split_atoi(char* str, int* val, char sep, int max)
-{
-	int i,j;
-	for (i=0; i<max; i++) {
-		if (!str) break;
-		val[i] = atoi(str);
-		str = strchr(str,sep);
-		if (str)
-			*str++=0;
-	}
-	//Zero up the remaining.
-	for(j=i; j < max; j++)
-		val[j] = 0;
-	return i;
-}
-
 int pc_split_atoui(char* str, unsigned int* val, char sep, int max)
 {
 	static int warning=0;
@@ -12563,11 +12896,11 @@ static bool pc_readdb_skilltree(char* fields[], int columns, int current)
 		ShowWarning("pc_readdb_skilltree: Skill %hu's level %hu exceeds job %d's max level %hu. Capping skill level.\n", skill_id, skill_lv, class_, skill_lv_max);
 		skill_lv = skill_lv_max;
 	}
-	if (baselv > (baselv_max = pc_class_maxbaselv(class_))) {
+	if (baselv > (baselv_max = job_db.get_maxBaseLv(class_))) {
 		ShowWarning("pc_readdb_skilltree: Skill %hu's base level requirement %d exceeds job %d's max base level %d. Capping skill base level.\n", skill_id, baselv, class_, baselv_max);
 		baselv = baselv_max;
 	}
-	if (joblv > (joblv_max = pc_class_maxjoblv(class_))) {
+	if (joblv > (joblv_max = job_db.get_maxJobLv(class_))) {
 		ShowWarning("pc_readdb_skilltree: Skill %hu's job level requirement %d exceeds job %d's max job level %d. Capping skill job level.\n", skill_id, joblv, class_, joblv_max);
 		joblv = joblv_max;
 	}
@@ -12616,40 +12949,40 @@ static bool pc_readdb_skilltree(char* fields[], int columns, int current)
 	return true;
 }
 
-/** [Cydh]
-* Calculates base hp of player. Reference: http://irowiki.org/wiki/Max_HP
-* @param level Base level of player
-* @param class_ Job ID @see enum e_job
-* @return base_hp
-*/
-static unsigned int pc_calc_basehp(uint16 level, uint16 class_) {
-	double base_hp;
-	uint16 i, idx = pc_class2idx(class_);
+/**
+ * Calculates base hp of player. Reference: http://irowiki.org/wiki/Max_HP
+ * @param level: Base level of player
+ * @param job_id: Job ID @see enum e_job
+ * @return base_hp
+ * @author [Cydh]
+ */
+static unsigned int pc_calc_basehp(uint16 level, uint16 job_id) {
+	std::shared_ptr<s_job_info> job = job_db.find(job_id);
+	double base_hp = 35 + level * (job->hp_multiplicator / 100.);
 
-	base_hp = 35 + level * (job_info[idx].hp_multiplicator/100.);
 #ifndef RENEWAL
-	if(level >= 10 && (class_ == JOB_NINJA || class_ == JOB_GUNSLINGER)) base_hp += 90;
+	if (level >= 10 && (job_id == JOB_NINJA || job_id == JOB_GUNSLINGER))
+		base_hp += 90;
 #endif
-	for (i = 2; i <= level; i++)
-		base_hp += floor(((job_info[idx].hp_factor/100.) * i) + 0.5); //Don't have round()
-	if (class_ == JOB_SUMMONER)
+	for (uint16 i = 2; i <= level; i++)
+		base_hp += floor(((job->hp_factor / 100.) * i) + 0.5); //Don't have round()
+	if (job_id == JOB_SUMMONER)
 		base_hp += floor((base_hp / 2) + 0.5);
 	return (unsigned int)base_hp;
 }
 
-/** [Playtester]
-* Calculates base sp of player.
-* @param level Base level of player
-* @param class_ Job ID @see enum e_job
-* @return base_sp
-*/
-static unsigned int pc_calc_basesp(uint16 level, uint16 class_) {
-	double base_sp;
-	uint16 idx = pc_class2idx(class_);
+/**
+ * Calculates base sp of player.
+ * @param level: Base level of player
+ * @param job_id: Job ID @see enum e_job
+ * @return base_sp
+ * @author [Playtester]
+ */
+static unsigned int pc_calc_basesp(uint16 level, uint16 job_id) {
+	std::shared_ptr<s_job_info> job = job_db.find(job_id);
+	double base_sp = 10 + floor(level * (job->sp_factor / 100.));
 
-	base_sp = 10 + floor(level * (job_info[idx].sp_factor / 100.));
-
-	switch (class_) {
+	switch (job_id) {
 		case JOB_NINJA:
 			if (level >= 10)
 				base_sp -= 22;
@@ -12670,261 +13003,503 @@ static unsigned int pc_calc_basesp(uint16 level, uint16 class_) {
 	return (unsigned int)base_sp;
 }
 
-//Reading job_db1.txt line, (class,weight,HPFactor,HPMultiplicator,SPFactor,aspd/lvl...)
-static bool pc_readdb_job1(char* fields[], int columns, int current){
-	int idx, class_;
-	unsigned int i;
-
-	class_ = atoi(fields[0]);
-
-	if (!pcdb_checkid(class_)) {
-		ShowWarning("status_readdb_job1: Invalid job class %d specified.\n", class_);
-		return false;
-	}
-	idx = pc_class2idx(class_);
-
-	job_info[idx].max_weight_base = atoi(fields[1]);
-	job_info[idx].hp_factor  = atoi(fields[2]);
-	job_info[idx].hp_multiplicator = atoi(fields[3]);
-	job_info[idx].sp_factor  = atoi(fields[4]);
-
-#ifdef RENEWAL_ASPD
-	for(i = 0; i <= MAX_WEAPON_TYPE; i++)
-#else
-	for(i = 0; i < MAX_WEAPON_TYPE; i++)
-#endif
-	{
-		job_info[idx].aspd_base[i] = atoi(fields[i+5]);
-	}
-
-	return true;
-}
-
-//Reading job_db2.txt line (class,JobLv1,JobLv2,JobLv3,...)
-static bool pc_readdb_job2(char* fields[], int columns, int current)
-{
-	int idx, class_, i;
-
-	class_ = atoi(fields[0]);
-
-	if(!pcdb_checkid(class_))
-	{
-		ShowWarning("status_readdb_job2: Invalid job class %d specified.\n", class_);
-		return false;
-	}
-	idx = pc_class2idx(class_);
-
-	for(i = 1; i < columns; i++)
-	{
-		job_info[idx].job_bonus[i-1] = atoi(fields[i]);
-	}
-	return true;
-}
-
-//Reading job_exp.txt line
-//Max Level,Class list,Type (0 - Base Exp; 1 - Job Exp),Exp/lvl...
-static bool pc_readdb_job_exp(char* fields[], int columns, int current)
-{
-	int idx, i, type;
-	int job_id,job_count,jobs[CLASS_COUNT];
-	unsigned int ui, maxlvl;
-
-	maxlvl = atoi(fields[0]);
-	if(maxlvl > MAX_LEVEL || maxlvl<1){
-		ShowError("pc_readdb_job_exp: Invalid maxlevel %d specified.\n", maxlvl);
-		return false;
-	}
-	if((maxlvl+3) > columns){ //nb values = (maxlvl-startlvl)+1-index1stvalue
-		ShowError("pc_readdb_job_exp: Number of columns %d defined is too low for max level %d.\n",columns,maxlvl);
-		return false;
-	}
-	type = atoi(fields[2]);
-	if(type < 0 || type > 1){
-		ShowError("pc_readdb_job_exp: Invalid type %d specified.\n", type);
-		return false;
-	}
-	job_count = pc_split_atoi(fields[1],jobs,':',CLASS_COUNT);
-	if (job_count < 1)
-		return false;
-	job_id = jobs[0];
-	if(!pcdb_checkid(job_id)){
-		ShowError("pc_readdb_job_exp: Invalid job class %d specified.\n", job_id);
-		return false;
-	}
-	idx = pc_class2idx(job_id);
-
-	job_info[idx].max_level[type] = maxlvl;
-	for(i=0; i<maxlvl; i++){
-		t_exp exp = strtoull( fields[3 + i], nullptr, 10 );
-
-		if( exp == 0 ){
-			ShowWarning( "pc_readdb_job_exp: No value defined for level %d in line %d. Defaulting to MAX_EXP...\n", i + 1, current );
-			exp = MAX_EXP;
-		}else if( exp > MAX_EXP ){
-			ShowWarning( "pc_readdb_job_exp: Value %" PRIu64 " is too high, capping to %" PRIu64 "...\n", exp, MAX_EXP );
-			exp = MAX_EXP;
-		}
-
-		job_info[idx].exp_table[type][i] = exp;
-	}
-	//Reverse check in case the array has a bunch of trailing zeros... [Skotlex]
-	//The reasoning behind the -2 is this... if the max level is 5, then the array
-	//should look like this:
-	//0: x, 1: x, 2: x: 3: x 4: 0 <- last valid value is at 3.
-	while ((ui = job_info[idx].max_level[type]) >= 2 && job_info[idx].exp_table[type][ui-2] <= 0)
-		job_info[idx].max_level[type]--;
-	if (job_info[idx].max_level[type] < maxlvl) {
-		ShowWarning("pc_readdb_job_exp: Specified max %u for job %d, but that job's exp table only goes up to level %u.\n", maxlvl, job_id, job_info[idx].max_level[type]);
-		ShowInfo("Filling the missing values with the last exp entry.\n");
-		//Fill the requested values with the last entry.
-		ui = (job_info[idx].max_level[type] <= 2? 0: job_info[idx].max_level[type]-2);
-		for (; ui+2 < maxlvl; ui++)
-			job_info[idx].exp_table[type][ui] = job_info[idx].exp_table[type][ui-1];
-		job_info[idx].max_level[type] = maxlvl;
-	}
-//	ShowInfo("%s - Class %d: %d\n", type?"Job":"Base", job_id, job_info[idx].max_level[type]);
-	for (i = 1; i < job_count; i++) {
-		job_id = jobs[i];
-		if (!pcdb_checkid(job_id)) {
-			ShowError("pc_readdb_job_exp: Invalid job ID %d.\n", job_id);
-			continue;
-		}
-		idx = pc_class2idx(job_id);
-		memcpy(job_info[idx].exp_table[type], job_info[pc_class2idx(jobs[0])].exp_table[type], sizeof(job_info[pc_class2idx(jobs[0])].exp_table[type]));
-		job_info[idx].max_level[type] = maxlvl;
-//		ShowInfo("%s - Class %d: %u\n", type?"Job":"Base", job_id, job_info[idx].max_level[type]);
-	}
-	return true;
+const std::string JobDatabase::getDefaultLocation() {
+	return std::string(db_path) + "/job_stats.yml";
 }
 
 /**
-* #ifdef HP_SP_TABLES, reads 'job_basehpsp_db.txt to replace hp/sp results from formula
-* startlvl,endlvl,class,type,values...
-*/
-#ifdef HP_SP_TABLES
-static bool pc_readdb_job_basehpsp(char* fields[], int columns, int current)
-{
-	int i, startlvl, endlvl;
-	int job_count,jobs[CLASS_COUNT];
-	short type;
+ * Reads and parses an entry from the job_db.
+ * @param node: YAML node containing the entry.
+ * @return count of successfully parsed rows
+ */
+uint64 JobDatabase::parseBodyNode(const YAML::Node &node) {
+	if (this->nodeExists(node, "Jobs")) {
+		const YAML::Node &jobsNode = node["Jobs"];
 
-	startlvl = atoi(fields[0]);
-	if(startlvl<1){
-		ShowError("pc_readdb_job_basehpsp: Invalid start level %d specified.\n", startlvl);
-		return false;
-	}
-	endlvl = atoi(fields[1]);
-	if(endlvl<1 || endlvl<startlvl){
-		ShowError("pc_readdb_job_basehpsp: Invalid end level %d specified.\n", endlvl);
-		return false;
-	}
-	if((endlvl-startlvl+1+4) > columns){ //nb values = (maxlvl-startlvl)+1-index1stvalue
-		ShowError("pc_readdb_job_basehpsp: Number of columns %d (needs %d) defined is too low for start level %d, max level %d.\n",columns,(endlvl-startlvl+1+4),startlvl,endlvl);
-		return false;
-	}
-	type = atoi(fields[3]);
-	if(type < 0 || type > 1){
-		ShowError("pc_readdb_job_basehpsp: Invalid type %d specified.\n", type);
-		return false;
-	}
+		for (const auto &jobit : jobsNode) {
+			std::string job_name = jobit.first.as<std::string>(), job_name_constant = "JOB_" + job_name;
+			int64 job_id;
 
-	job_count = pc_split_atoi(fields[2],jobs,':',CLASS_COUNT);
-	if (job_count < 1)
-		return false;
-
-	for (i = 0; i < job_count; i++) {
-		int idx, job_id = jobs[i], use_endlvl;
-		if (!pcdb_checkid(job_id)) {
-			ShowError("pc_readdb_job_basehpsp: Invalid job class %d specified.\n", job_id);
-			return false;
-		}
-		idx = pc_class2idx(job_id);
-		if (startlvl > job_info[idx].max_level[0]) {
-			ShowError("pc_readdb_job_basehpsp: Invalid start level %d specified.\n", startlvl);
-			return false;
-		}
-		//Just read until available max level for this job, don't use MAX_LEVEL!
-		use_endlvl = endlvl;
-		if (use_endlvl > job_info[idx].max_level[0])
-			use_endlvl = job_info[idx].max_level[0];
-		
-		if(type == 0) {	//hp type
-#ifndef Pandas_LGTM_Optimization
-			uint16 j;
-#else
-			int j;
-#endif // Pandas_LGTM_Optimization
-			for(j = 0; j < use_endlvl; j++) {
-				if (atoi(fields[j+4])) {
-					uint16 lvl_idx = startlvl-1+j;
-					job_info[idx].base_hp[lvl_idx] = atoi(fields[j+4]);
-					//Tells if this HP is lower than previous level (but not for 99->100)
-					if (lvl_idx-1 >= 0 && lvl_idx != 99 && job_info[idx].base_hp[lvl_idx] < job_info[idx].base_hp[lvl_idx-1])
-						ShowInfo("pc_readdb_job_basehpsp: HP value at entry %d col %d is lower than previous level (job=%d,lvl=%d,oldval=%d,val=%d).\n",
-							current,j+4,job_id,lvl_idx+1,job_info[idx].base_hp[lvl_idx-1],job_info[idx].base_hp[lvl_idx]);
-				}
+			if (!script_get_constant(job_name_constant.c_str(), &job_id)) {
+				this->invalidWarning(node["Job"], "Job %s does not exist.\n", job_name.c_str());
+				return 0;
 			}
-		}
-		else { //sp type
-#ifndef Pandas_LGTM_Optimization
-			uint16 j;
-#else
-			int j;
-#endif // Pandas_LGTM_Optimization
-			for(j = 0; j < use_endlvl; j++) {
-				if (atoi(fields[j+4])) {
-					uint16 lvl_idx = startlvl-1+j;
-					job_info[idx].base_sp[lvl_idx] = atoi(fields[j+4]);
-					//Tells if this SP is lower than previous level (but not for 99->100)
-					if (lvl_idx-1 >= 0 && lvl_idx != 99 && job_info[idx].base_sp[lvl_idx] < job_info[idx].base_sp[lvl_idx-1])
-						ShowInfo("pc_readdb_job_basehpsp: SP value at entry %d col %d is lower than previous level (job=%d,lvl=%d,oldval=%d,val=%d).\n",
-							current,j+4,job_id,lvl_idx+1,job_info[idx].base_sp[lvl_idx-1],job_info[idx].base_sp[lvl_idx]);
-				}
+
+			std::shared_ptr<s_job_info> job = job_db.find(static_cast<uint16>(job_id));
+			bool exists = job != nullptr;
+
+			if (!exists) {
+				job = std::make_shared<s_job_info>();
+
+				job->job_bonus.resize(MAX_LEVEL);
+				std::fill(job->job_bonus.begin(), job->job_bonus.end(), std::array<uint16, PARAM_MAX> { 0 });
+
+				job->base_hp.resize(MAX_LEVEL);
+				std::fill(job->base_hp.begin(), job->base_hp.end(), 0);
+
+				job->base_sp.resize(MAX_LEVEL);
+				std::fill(job->base_sp.begin(), job->base_sp.end(), 0);
+
+				job->base_ap.resize(MAX_LEVEL);
+				std::fill(job->base_ap.begin(), job->base_ap.end(), 0);
 			}
-		}
-	}
-	return true;
-}
+
+			if (this->nodeExists(node, "MaxWeight")) {
+				uint32 weight;
+
+				if (!this->asUInt32(node, "MaxWeight", weight))
+					return 0;
+
+				job->max_weight_base = weight;
+			} else {
+				if (!exists)
+					job->max_weight_base = 20000;
+			}
+
+			if (this->nodeExists(node, "HPFactor")) {
+				uint32 hp;
+
+				if (!this->asUInt32(node, "HPFactor", hp))
+					return 0;
+
+				job->hp_factor = hp;
+			} else {
+				if (!exists)
+					job->hp_factor = 20000;
+			}
+
+			if (this->nodeExists(node, "HPMultiplicator")) {
+				uint32 hp;
+
+				if (!this->asUInt32(node, "HPMultiplicator", hp))
+					return 0;
+
+				job->hp_multiplicator = hp;
+			} else {
+				if (!exists)
+					job->hp_multiplicator = 500;
+			}
+
+			if (this->nodeExists(node, "SPFactor")) {
+				uint32 sp;
+
+				if (!this->asUInt32(node, "SPFactor", sp))
+					return 0;
+
+				job->sp_factor = sp;
+			} else {
+				if (!exists)
+					job->sp_factor = 100;
+			}
+
+			if (this->nodeExists(node, "BaseASPD")) {
+				const YAML::Node &aspdNode = node["BaseASPD"];
+				uint8 max = MAX_WEAPON_TYPE;
+
+#ifdef RENEWAL // Renewal adds an extra column for shields
+				max += 1;
 #endif
 
-/** [Cydh]
-* Reads 'job_param_db.txt' to check max. param each job and store them to job_info[].max_param.*
-*/
-static bool pc_readdb_job_param(char* fields[], int columns, int current)
-{
-	int64 class_tmp;
-	int idx, class_;
-	pec_ushort str, agi, vit, int_, dex, luk;
+				if (!exists) {
+					job->aspd_base.resize(max);
+					std::fill(job->aspd_base.begin(), job->aspd_base.end(), 2000);
+				}
 
-	script_get_constant(trim(fields[0]),&class_tmp);
-	class_ = static_cast<int>(class_tmp);
+				for (const auto &aspdit : aspdNode) {
+					std::string weapon = aspdit.first.as<std::string>(), weapon_constant = "W_" + weapon;
+					int64 constant;
 
-	if ((idx = pc_class2idx(class_)) < 0) {
-		ShowError("pc_readdb_job_param: Invalid job '%s'. Skipping!",fields[0]);
-		return false;
+					if (!script_get_constant(weapon_constant.c_str(), &constant)) {
+						this->invalidWarning(aspdNode["BaseASPD"], "Unknown weapon type %s specified for %s, skipping.\n", weapon.c_str(), job_name.c_str());
+						continue;
+					}
+
+					if (constant < W_FIST || constant > max) {
+						this->invalidWarning(aspdNode["BaseASPD"], "Invalid weapon type %s specified for %s, skipping.\n", weapon.c_str(), job_name.c_str());
+						continue;
+					}
+
+					int16 aspd;
+
+					if (!this->asInt16(aspdNode, weapon.c_str(), aspd))
+						return 0;
+
+					job->aspd_base[static_cast<int16>(constant)] = aspd;
+				}
+			}
+
+			if (this->nodeExists(node, "MaxStats")) {
+				const YAML::Node &statNode = node["MaxStats"];
+
+				for (const auto &statit : statNode) {
+					std::string stat = statit.first.as<std::string>(), stat_constant = "PARAM_" + stat;
+					int64 constant;
+
+					if (!script_get_constant(stat_constant.c_str(), &constant)) {
+						this->invalidWarning(statNode["Bonus"], "Unknown max stat %s specified for %s, skipping.\n", stat.c_str(), job_name.c_str());
+						continue;
+					}
+
+					if (constant < PARAM_STR || constant >= PARAM_MAX) {
+						this->invalidWarning(statNode["Bonus"], "Invalid max stat %s specified for %s, skipping.\n", stat.c_str(), job_name.c_str());
+						continue;
+					}
+
+#ifndef Pandas_Extreme_Computing
+					uint16 max;
+
+					if (!this->asUInt16(statNode, stat.c_str(), max))
+						return 0;
+#else
+					pec_ushort max = 0;
+
+					if (!this->asUInt32(statNode, stat.c_str(), max))
+						return 0;
+#endif // Pandas_Extreme_Computing
+
+					job->max_param[constant] = max;
+				}
+			}
+
+			if (this->nodeExists(node, "MaxBaseLevel")) {
+				uint16 level;
+
+				if (!this->asUInt16(node, "MaxBaseLevel", level))
+					return 0;
+
+				if (level == 0 || level > MAX_LEVEL) {
+					this->invalidWarning(node["MaxBaseLevel"], "MaxBaseLevel must be between 1~MAX_LEVEL for %s, capping to MAX_LEVEL.\n", job_name.c_str());
+					level = MAX_LEVEL;
+				}
+
+				job->max_base_level = level;
+			} else {
+				if (!exists)
+					job->max_base_level = MAX_LEVEL;
+			}
+
+			if (this->nodeExists(node, "BaseExp")) {
+				for (const YAML::Node &bexpNode : node["BaseExp"]) {
+					uint16 level;
+
+					if (!this->asUInt16(bexpNode, "Level", level))
+						return 0;
+
+					if (level > job->max_base_level)
+						continue;
+
+					if (level == 0 || level > MAX_LEVEL) {
+						this->invalidWarning(bexpNode["Level"], "Level must be between 1~MAX_LEVEL for %s.\n", job_name.c_str());
+						return 0;
+					}
+
+					if (this->nodeExists(bexpNode, "Exp")) {
+						t_exp exp;
+
+						if (!this->asUInt64(bexpNode, "Exp", exp))
+							return 0;
+
+						job->base_exp[level - 1] = exp;
+					}
+				}
+			}
+
+			if (this->nodeExists(node, "MaxJobLevel")) {
+				uint16 level;
+
+				if (!this->asUInt16(node, "MaxJobLevel", level))
+					return 0;
+
+				if (level == 0 || level > MAX_LEVEL) {
+					this->invalidWarning(node["MaxJobLevel"], "MaxJobLevel must be between 1~MAX_LEVEL for %s, capping to MAX_LEVEL.\n", job_name.c_str());
+					level = MAX_LEVEL;
+				}
+
+				job->max_job_level = level;
+			} else {
+				if (!exists)
+					job->max_job_level = MAX_LEVEL;
+			}
+
+			if (this->nodeExists(node, "JobExp")) {
+				for (const YAML::Node &jexpNode : node["JobExp"]) {
+					uint16 level;
+
+					if (!this->asUInt16(jexpNode, "Level", level))
+						return 0;
+
+					if (level > job->max_job_level)
+						continue;
+
+					if (level == 0 || level > MAX_LEVEL) {
+						this->invalidWarning(jexpNode["Level"], "Level must be between 1~MAX_LEVEL for %s.\n", job_name.c_str());
+						return 0;
+					}
+
+					if (this->nodeExists(jexpNode, "Exp")) {
+						t_exp exp;
+
+						if (!this->asUInt64(jexpNode, "Exp", exp))
+							return 0;
+
+						job->job_exp[level - 1] = exp;
+					}
+				}
+			}
+
+			if (this->nodeExists(node, "BonusStats")) {
+				const YAML::Node &bonusNode = node["BonusStats"];
+
+				for (const YAML::Node &levelNode : bonusNode) {
+					uint16 level;
+
+					if (!this->asUInt16(levelNode, "Level", level))
+						return 0;
+
+					if (level == 0 || level > MAX_LEVEL) {
+						this->invalidWarning(levelNode["Level"], "Level must be between 1~MAX_LEVEL for %s.\n", job_name.c_str());
+						return 0;
+					}
+
+					for (uint8 idx = PARAM_STR; idx < PARAM_MAX; idx++) {
+						if (this->nodeExists(levelNode, parameter_names[idx])) {
+							int16 change;
+
+							if (!this->asInt16(levelNode, parameter_names[idx], change))
+								return 0;
+
+							job->job_bonus[level - 1][idx] = change;
+						}
+					}
+				}
+			}
+
+#ifdef HP_SP_TABLES
+			if (this->nodeExists(node, "BaseHp")) {
+				for (const YAML::Node &bhpNode : node["BaseHp"]) {
+					uint16 level;
+
+					if (!this->asUInt16(bhpNode, "Level", level))
+						return 0;
+
+					if (level > job->max_base_level)
+						continue;
+
+					if (level == 0 || level > MAX_LEVEL) {
+						this->invalidWarning(bhpNode["Level"], "Level must be between 1~MAX_LEVEL for %s.\n", job_name.c_str());
+						return 0;
+					}
+
+					if (this->nodeExists(bhpNode, "Hp")) {
+						uint32 points;
+
+						if (!this->asUInt32(bhpNode, "Hp", points))
+							return 0;
+
+						job->base_hp[level - 1] = points;
+					}
+				}
+			}
+
+			if (this->nodeExists(node, "BaseSp")) {
+				for (const YAML::Node &bspNode : node["BaseSp"]) {
+					uint16 level;
+
+					if (!this->asUInt16(bspNode, "Level", level))
+						return 0;
+
+					if (level > job->max_base_level)
+						continue;
+
+					if (level == 0 || level > MAX_LEVEL) {
+						this->invalidWarning(bspNode["Level"], "Level must be between 1~MAX_LEVEL for %s.\n", job_name.c_str());
+						return 0;
+					}
+
+					if (this->nodeExists(bspNode, "Sp")) {
+						uint32 points;
+
+						if (!this->asUInt32(bspNode, "Sp", points))
+							return 0;
+
+						job->base_sp[level - 1] = points;
+					}
+				}
+			}
+
+			if (this->nodeExists(node, "BaseAp")) {
+				for (const YAML::Node &bapNode : node["BaseAp"]) {
+					uint16 level;
+
+					if (!this->asUInt16(bapNode, "Level", level))
+						return 0;
+
+					if (level > job->max_base_level)
+						continue;
+
+					if (level == 0 || level > MAX_LEVEL) {
+						this->invalidWarning(bapNode["Level"], "Level must be between 1~MAX_LEVEL for %s.\n", job_name.c_str());
+						return 0;
+					}
+
+					if (this->nodeExists(bapNode, "Ap")) {
+						uint32 points;
+
+						if (!this->asUInt32(bapNode, "Ap", points))
+							return 0;
+
+						job->base_ap[level - 1] = points;
+					}
+				}
+			}
+#endif
+
+			if (!exists)
+				this->put(static_cast<uint16>(job_id), job);
+		}
 	}
-	str = cap_value(atoi(fields[1]),10,SHRT_MAX);
-	agi = atoi(fields[2]) ? cap_value(atoi(fields[2]),10,SHRT_MAX) : str;
-	vit = atoi(fields[3]) ? cap_value(atoi(fields[3]),10,SHRT_MAX) : str;
-	int_ = atoi(fields[4]) ? cap_value(atoi(fields[4]),10,SHRT_MAX) : str;
-	dex = atoi(fields[5]) ? cap_value(atoi(fields[5]),10,SHRT_MAX) : str;
-	luk = atoi(fields[6]) ? cap_value(atoi(fields[6]),10,SHRT_MAX) : str;
 
-	job_info[idx].max_param.str = str;
-	job_info[idx].max_param.agi = agi;
-	job_info[idx].max_param.vit = vit;
-	job_info[idx].max_param.int_ = int_;
-	job_info[idx].max_param.dex = dex;
-	job_info[idx].max_param.luk = luk;
-	
-	return true;
+	return 1;
+}
+
+void JobDatabase::loadingFinished() {
+	// Checking if all class have their data
+	for (auto &jobIt : *this) {
+		uint16 job_id = jobIt.first;
+
+		if (!pcdb_checkid(job_id))
+			continue;
+		if (job_id == JOB_WEDDING || job_id == JOB_XMAS || job_id == JOB_SUMMER || job_id == JOB_HANBOK || job_id == JOB_OKTOBERFEST || job_id == JOB_SUMMER2)
+			continue; // Classes that do not need exp tables.
+
+		std::shared_ptr<s_job_info> job = jobIt.second;
+		uint16 maxBaseLv = job->max_base_level, maxJobLv = job->max_job_level;
+
+		if (!maxBaseLv)
+			ShowWarning("Class %s (%d) does not have a base exp table.\n", job_name(job_id), job_id);
+		if (!maxJobLv)
+			ShowWarning("Class %s (%d) does not have a job exp table.\n", job_name(job_id), job_id);
+
+		// Init and checking the empty value of Base HP/SP [Cydh]
+		if (job->base_hp.empty())
+			job->base_hp.resize(maxBaseLv);
+		for (uint16 j = 0; j < maxBaseLv; j++) {
+			if (job->base_hp[j] == 0)
+				job->base_hp[j] = pc_calc_basehp(j + 1, job_id);
+		}
+		if (job->base_sp.empty())
+			job->base_sp.resize(maxBaseLv);
+		for (uint16 j = 0; j < maxBaseLv; j++) {
+			if (job->base_sp[j] == 0)
+				job->base_sp[j] = pc_calc_basesp(j + 1, job_id);
+		}
+
+		// Resize to the maximum base level
+		if (job->base_hp.capacity() > maxBaseLv)
+			job->base_hp.erase(job->base_hp.begin() + maxBaseLv, job->base_hp.end());
+		if (job->base_sp.capacity() > maxBaseLv)
+			job->base_sp.erase(job->base_sp.begin() + maxBaseLv, job->base_sp.end());
+		if (job->base_ap.capacity() > maxBaseLv)
+			job->base_ap.erase(job->base_ap.begin() + maxBaseLv, job->base_ap.end());
+
+		// Resize to the maximum job level
+		if (job->job_bonus.capacity() > maxJobLv)
+			job->job_bonus.erase(job->job_bonus.begin() + maxJobLv, job->job_bonus.end());
+
+		for (uint16 parameter = PARAM_STR; parameter < PARAM_MAX; parameter++) {
+			// Store total
+			int16 current = 0;
+
+			for (uint16 job_level = 0; job_level < maxJobLv; job_level++) {
+				// Add the bonus from this job level
+				current += job->job_bonus[job_level][parameter];
+
+				// Set the new total on this job level
+				job->job_bonus[job_level][parameter] = current;
+			}
+		}
+
+		uint64 class_ = pc_jobid2mapid( job_id );
+
+		// Set normal status limits
+		pec_ushort max = battle_config.max_parameter;
+
+		do{
+			// Always check babies first
+			if( class_ & JOBL_BABY ){
+				if( class_ & JOBL_THIRD ){
+					max = battle_config.max_baby_third_parameter;
+					break;
+				}else{
+					max = battle_config.max_baby_parameter;
+					break;
+				}
+			}
+
+			// Summoner
+			if( ( class_ & MAPID_BASEMASK ) == MAPID_SUMMONER ){
+				max = battle_config.max_summoner_parameter;
+				break;
+			}
+
+			// Extended classes
+			if( ( class_ & MAPID_UPPERMASK ) == MAPID_KAGEROUOBORO || ( class_ & MAPID_UPPERMASK ) == MAPID_REBELLION ){
+				max = battle_config.max_extended_parameter;
+				break;
+			}
+
+			if( class_ & JOBL_FOURTH ){
+				max = battle_config.max_fourth_parameter;
+				break;
+			}
+
+			// 3rd class
+			if( class_ & JOBL_THIRD ){
+				// Transcendent
+				if( class_ & JOBL_UPPER ){
+					max = battle_config.max_third_trans_parameter;
+					break;
+				}else{
+					max = battle_config.max_third_parameter;
+					break;
+				}
+			}
+
+			// Transcendent
+			if( class_ & JOBL_UPPER ){
+				max = battle_config.max_trans_parameter;
+				break;
+			}
+		}while( false );
+
+		for( uint16 parameter = PARAM_STR; parameter < PARAM_POW; parameter++ ){
+			// If it is not explicitly set in the database file
+			if( job->max_param[parameter] == 0 ){
+				job->max_param[parameter] = max;
+			}
+		}
+
+		// Set trait status limit
+		if( class_ & JOBL_FOURTH ){
+			max = battle_config.max_fourth_trait;
+		}else{
+			max = 0;
+		}
+
+		for( uint16 parameter = PARAM_POW; parameter < PARAM_MAX; parameter++ ){
+			// If it is not explicitly set in the database file
+			if( job->max_param[parameter] == 0 ){
+				job->max_param[parameter] = max;
+			}
+		}
+	}
 }
 
 /**
  * Read job_noenter_map.txt
  **/
 static bool pc_readdb_job_noenter_map(char *str[], int columns, int current) {
-	int idx, class_ = -1;
+	int class_ = -1;
 	int64 class_tmp;
 
 	if (ISDIGIT(str[0][0])) {
@@ -12937,13 +13512,20 @@ static bool pc_readdb_job_noenter_map(char *str[], int columns, int current) {
 		class_ = static_cast<int>(class_tmp);
 	}
 
-	if (!pcdb_checkid(class_) || (idx = pc_class2idx(class_)) < 0) {
+	if (!pcdb_checkid(class_)) {
 		ShowError("pc_readdb_job_noenter_map: Invalid job %d specified.\n", class_);
 		return false;
 	}
 
-	job_info[idx].noenter_map.zone = atoi(str[1]);
-	job_info[idx].noenter_map.group_lv = atoi(str[2]);
+	std::shared_ptr<s_job_info> job = job_db.find(class_);
+
+	if (job == nullptr) {
+		ShowError("pc_readdb_job_noenter_map: Job %d data not initialized.\n", class_);
+		return false;
+	}
+
+	job->noenter_map.zone = atoi(str[1]);
+	job->noenter_map.group_lv = atoi(str[2]);
 	return true;
 }
 
@@ -13005,12 +13587,9 @@ void PlayerStatPointDatabase::loadingFinished() {
 
 /*==========================================
  * pc DB reading.
- * job_exp.txt		- required experience values
+ * job_stats.yml	- Job values
  * skill_tree.txt	- skill tree for every class
  * attr_fix.yml		- elemental adjustment table
- * job_db1.txt		- job,weight,hp_factor,hp_multiplicator,sp_factor,aspds/lvl
- * job_db2.txt		- job,stats bonuses/lvl
- * job_maxhpsp_db.txt	- strtlvl,maxlvl,job,type,values/lvl (values=hp|sp)
  *------------------------------------------*/
 void pc_readdb(void) {
 	int i, s = 1;
@@ -13021,13 +13600,14 @@ void pc_readdb(void) {
 	};
 		
 	//reset
-	memset(job_info,0,sizeof(job_info)); // job_info table
+	job_db.clear(); // job_info table
 
 #if defined(RENEWAL_DROP) || defined(RENEWAL_EXP)
 	penalty_db.load();
 #endif
 
 	statpoint_db.clear();
+	job_db.load();
 
 	for(i=0; i<ARRAYLENGTH(dbsubpath); i++){
 		uint8 n1 = (uint8)(strlen(db_path)+strlen(dbsubpath[i])+1);
@@ -13044,20 +13624,6 @@ void pc_readdb(void) {
 			safesnprintf(dbsubpath2,n1,"%s%s",db_path,dbsubpath[i]);
 		}
 
-		if (i == 0)
-#ifdef RENEWAL_ASPD // Paths are hardcoded here to specifically pick the correct database
-			sv_readdb(dbsubpath1, "re/job_db1.txt",',',6+MAX_WEAPON_TYPE,6+MAX_WEAPON_TYPE,CLASS_COUNT,&pc_readdb_job1, false);
-#else
-			sv_readdb(dbsubpath1, "pre-re/job_db1.txt",',',5+MAX_WEAPON_TYPE,5+MAX_WEAPON_TYPE,CLASS_COUNT,&pc_readdb_job1, false);
-#endif
-		else
-			sv_readdb(dbsubpath1, "job_db1.txt",',',5+MAX_WEAPON_TYPE,6+MAX_WEAPON_TYPE,CLASS_COUNT,&pc_readdb_job1, true);
-		sv_readdb(dbsubpath1, "job_db2.txt",',',1,1+MAX_LEVEL,CLASS_COUNT,&pc_readdb_job2, i > 0);
-		sv_readdb(dbsubpath2, "job_exp.txt",',',4,1000+3,CLASS_COUNT*2,&pc_readdb_job_exp, i > 0); //support till 1000lvl
-#ifdef HP_SP_TABLES
-		sv_readdb(dbsubpath2, "job_basehpsp_db.txt", ',', 4, 4+500, CLASS_COUNT*2, &pc_readdb_job_basehpsp, i > 0); //Make it support until lvl 500!
-#endif
-		sv_readdb(dbsubpath2, "job_param_db.txt", ',', 2, PARAM_MAX+1, CLASS_COUNT, &pc_readdb_job_param, i > 0);
 		sv_readdb(dbsubpath2, "job_noenter_map.txt", ',', 3, 3, CLASS_COUNT, &pc_readdb_job_noenter_map, i > 0);
 		aFree(dbsubpath1);
 		aFree(dbsubpath2);
@@ -13069,33 +13635,6 @@ void pc_readdb(void) {
 	sv_readdb(db_path, DBIMPORT"/skill_tree.txt", ',', 3 + MAX_PC_SKILL_REQUIRE * 2, 5 + MAX_PC_SKILL_REQUIRE * 2, -1, &pc_readdb_skilltree, 1);
 
 	statpoint_db.load();
-
-	//Checking if all class have their data
-	for (i = 0; i < JOB_MAX; i++) {
-		int idx;
-#ifndef Pandas_LGTM_Optimization
-		uint16 j;
-#else
-		unsigned int j;
-#endif // Pandas_LGTM_Optimization
-		if (!pcdb_checkid(i))
-			continue;
-		if (i == JOB_WEDDING || i == JOB_XMAS || i == JOB_SUMMER || i == JOB_HANBOK || i == JOB_OKTOBERFEST || i == JOB_SUMMER2)
-			continue; //Classes that do not need exp tables.
-		idx = pc_class2idx(i);
-		if (!job_info[idx].max_level[0])
-			ShowWarning("Class %s (%d) does not have a base exp table.\n", job_name(i), i);
-		if (!job_info[idx].max_level[1])
-			ShowWarning("Class %s (%d) does not have a job exp table.\n", job_name(i), i);
-		
-		//Init and checking the empty value of Base HP/SP [Cydh]
-		for (j = 0; j < (job_info[idx].max_level[0] ? job_info[idx].max_level[0] : MAX_LEVEL); j++) {
-			if (job_info[idx].base_hp[j] == 0)
-				job_info[idx].base_hp[j] = pc_calc_basehp(j+1,i);
-			if (job_info[idx].base_sp[j] == 0)
-				job_info[idx].base_sp[j] = pc_calc_basesp(j+1,i);
-		}
-	}
 }
 
 // Read MOTD on startup. [Valaris]
@@ -13950,63 +14489,20 @@ void pc_cell_basilica(struct map_session_data *sd) {
 
 /** [Cydh]
  * Get maximum specified parameter for specified class
- * @param class_: sd->class
- * @param sex: sd->status.sex
- * @param flag: parameter will be checked
+ * @param sd: Player data
+ * @param param: Max parameter to check
  * @return max_param
  */
-pec_ushort pc_maxparameter(struct map_session_data *sd, enum e_params param) {
-	int idx = -1, class_ = sd->class_;
+pec_ushort pc_maxparameter(struct map_session_data *sd, e_params param) {
+	nullpo_retr(0, sd);
 
-	if ((idx = pc_class2idx(pc_mapid2jobid(class_,sd->status.sex))) >= 0) {
-		short max_param = 0;
-		switch (param) {
-			case PARAM_STR: max_param = job_info[idx].max_param.str; break;
-			case PARAM_AGI: max_param = job_info[idx].max_param.agi; break;
-			case PARAM_VIT: max_param = job_info[idx].max_param.vit; break;
-			case PARAM_INT: max_param = job_info[idx].max_param.int_; break;
-			case PARAM_DEX: max_param = job_info[idx].max_param.dex; break;
-			case PARAM_LUK: max_param = job_info[idx].max_param.luk; break;
-		}
-		if (max_param > 0)
-			return max_param;
+	std::shared_ptr<s_job_info> job = job_db.find(pc_mapid2jobid(sd->class_,sd->status.sex));
+
+	if( job == nullptr || param == PARAM_MAX ){
+		return 0;
 	}
 
-	// Always check babies first
-	if( class_ & JOBL_BABY ){
-		if( class_ & JOBL_THIRD ){
-			return battle_config.max_baby_third_parameter;
-		}else{
-			return battle_config.max_baby_parameter;
-		}
-	}
-
-	// Summoner
-	if( ( class_ & MAPID_BASEMASK ) == MAPID_SUMMONER ){
-		return battle_config.max_summoner_parameter;
-	}
-
-	// Extended classes
-	if( ( class_ & MAPID_UPPERMASK ) == MAPID_KAGEROUOBORO || ( class_ & MAPID_UPPERMASK ) == MAPID_REBELLION ){
-		return battle_config.max_extended_parameter;
-	}
-
-	// 3rd class
-	if( class_ & JOBL_THIRD ){
-		// Transcendent
-		if( class_ & JOBL_UPPER ){
-			return battle_config.max_third_trans_parameter;
-		}else{
-			return battle_config.max_third_parameter;
-		}
-	}
-
-	// Transcendent
-	if( class_ & JOBL_UPPER ){
-		return battle_config.max_trans_parameter;
-	}
-
-	return battle_config.max_parameter;
+	return job->max_param[param];
 }
 
 /**
@@ -14083,13 +14579,13 @@ short pc_maxaspd(struct map_session_data *sd) {
 * @param nameid Item ID
 * @return Heal rate
 **/
-short pc_get_itemgroup_bonus(struct map_session_data* sd, t_itemid nameid) {
-	if (sd->itemgrouphealrate.empty())
+short pc_get_itemgroup_bonus(struct map_session_data* sd, t_itemid nameid, std::vector<s_item_bonus>& bonuses) {
+	if (bonuses.empty())
 		return 0;
 
 	short bonus = 0;
 
-	for (const auto &it : sd->itemgrouphealrate) {
+	for (const auto &it : bonuses) {
 		uint16 group_id = it.id;
 		if (group_id == 0)
 			continue;
@@ -14106,14 +14602,15 @@ short pc_get_itemgroup_bonus(struct map_session_data* sd, t_itemid nameid) {
 * @param group_id Item Group ID
 * @return Heal rate
 **/
-short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id) {
-	if (sd->itemgrouphealrate.empty())
+short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id, std::vector<s_item_bonus>& bonuses) {
+	if (bonuses.empty())
 		return 0;
 
-	for (const auto &it : sd->itemgrouphealrate) {
+	for (const auto &it : bonuses) {
 		if (it.id == group_id)
 			return it.val;
 	}
+
 	return 0;
 }
 
@@ -14126,7 +14623,7 @@ short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id)
 */
 #ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 bool pc_is_same_equip_index(enum equip_index eqi, short* equip_index, short index) {
-	if (index < 0 || index >= MAX_INVENTORY)
+	if (index < 0 || index >= G_MAX_INVENTORY)
 		return true;
 #else
 bool pc_is_same_equip_index(struct map_session_data*sd, enum equip_index eqi, short* equip_index, short index) {
@@ -14279,8 +14776,6 @@ void pc_show_questinfo_reinit(struct map_session_data *sd) {
  * @return 1 if job is allowed, 0 otherwise
  **/
 bool pc_job_can_entermap(enum e_job jobid, int m, int group_lv) {
-	uint16 idx = 0;
-
 	// Map is other map server.
 	// !FIXME: Currently, a map-server doesn't recognized map's attributes on other server, so we assume it's fine to warp.
 	if (m < 0)
@@ -14294,16 +14789,17 @@ bool pc_job_can_entermap(enum e_job jobid, int m, int group_lv) {
 	if (!pcdb_checkid(jobid))
 		return false;
 
-	idx = pc_class2idx(jobid);
-	if (!job_info[idx].noenter_map.zone || group_lv > job_info[idx].noenter_map.group_lv)
+	std::shared_ptr<s_job_info> job = job_db.find(jobid);
+
+	if (!job->noenter_map.zone || group_lv > job->noenter_map.group_lv)
 		return true;
 
-	if ((job_info[idx].noenter_map.zone&1 && !mapdata_flag_vs2(mapdata)) || // Normal
-		(job_info[idx].noenter_map.zone&2 && mapdata->flag[MF_PVP]) || // PVP
-		(job_info[idx].noenter_map.zone&4 && mapdata_flag_gvg2_no_te(mapdata)) || // GVG
-		(job_info[idx].noenter_map.zone&8 && mapdata->flag[MF_BATTLEGROUND]) || // Battleground
-		(job_info[idx].noenter_map.zone&16 && mapdata_flag_gvg2_te(mapdata)) || // WOE:TE
-		(job_info[idx].noenter_map.zone&(mapdata->zone) && mapdata->flag[MF_RESTRICTED]) // Zone restriction
+	if ((job->noenter_map.zone&1 && !mapdata_flag_vs2(mapdata)) || // Normal
+		(job->noenter_map.zone&2 && mapdata->flag[MF_PVP]) || // PVP
+		(job->noenter_map.zone&4 && mapdata_flag_gvg2_no_te(mapdata)) || // GVG
+		(job->noenter_map.zone&8 && mapdata->flag[MF_BATTLEGROUND]) || // Battleground
+		(job->noenter_map.zone&16 && mapdata_flag_gvg2_te(mapdata)) || // WOE:TE
+		(job->noenter_map.zone&(mapdata->zone) && mapdata->flag[MF_RESTRICTED]) // Zone restriction
 		)
 		return false;
 

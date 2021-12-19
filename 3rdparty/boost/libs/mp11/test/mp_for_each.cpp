@@ -1,5 +1,5 @@
 
-//  Copyright 2017 Peter Dimov.
+// Copyright 2017 Peter Dimov.
 //
 // Distributed under the Boost Software License, Version 1.0.
 //
@@ -11,6 +11,8 @@
 #if BOOST_MP11_MSVC
 # pragma warning( disable: 4503 ) // decorated name length exceeded
 # pragma warning( disable: 4307 ) // '*': integral constant overflow
+# pragma warning( disable: 4244 ) // conversion from size_t to uint32_t
+# pragma warning( disable: 4267 ) // conversion from size_t to uint32_t
 #endif
 
 #include <boost/mp11/algorithm.hpp>
@@ -74,7 +76,7 @@ int main()
 
 #endif
 
-#if defined( BOOST_MP11_NO_CONSTEXPR ) || ( !defined( __GLIBCXX__ ) && __cplusplus < 201400L )
+#if defined( BOOST_MP11_NO_CONSTEXPR ) || ( !defined(_MSC_VER) && !defined( __GLIBCXX__ ) && __cplusplus < 201400L )
 #else
 
     static_assert( mp_for_each<mp_list<>>( 11 ) == 11, "mp_for_each<mp_list<>>( 11 ) == 11" );

@@ -38,7 +38,7 @@ public:
    T max BOOST_PREVENT_MACRO_SUBSTITUTION()const{ return (stat.max)(); }
    T total()const{ return stat.total(); }
    T mean()const{ return stat.mean(); }
-   boost::uintmax_t count()const{ return stat.count(); }
+   std::uintmax_t count()const{ return stat.count(); }
    T variance()const{ return stat.variance(); }
    T variance1()const{ return stat.variance1(); }
    T rms()const{ return stat.rms(); }
@@ -67,17 +67,20 @@ T relative_error(T a, T b)
 
 
 template <class T>
-void set_output_precision(T)
+void set_output_precision(T, std::ostream& os)
 {
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4127)
 #endif
    if(std::numeric_limits<T>::digits10)
    {
-      std::cout << std::setprecision(std::numeric_limits<T>::digits10 + 2);
+      os << std::setprecision(std::numeric_limits<T>::digits10 + 2);
    }
-#ifdef BOOST_MSVC
+   else
+      os << std::setprecision(22); // and hope for the best!
+
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 }
@@ -85,14 +88,17 @@ void set_output_precision(T)
 template <class Seq>
 void print_row(const Seq& row, std::ostream& os = std::cout)
 {
-   set_output_precision(row[0]);
-   for(unsigned i = 0; i < row.size(); ++i)
-   {
-      if(i)
-         os << ", ";
-      os << row[i];
+   try {
+      set_output_precision(row[0], os);
+      for (unsigned i = 0; i < row.size(); ++i)
+      {
+         if (i)
+            os << ", ";
+         os << row[i];
+      }
+      os << std::endl;
    }
-   os << std::endl;
+   catch (const std::exception&) {}
 }
 
 //
@@ -205,6 +211,7 @@ test_result<Real> test_hetero(const A& a, F1 test_func, F2 expect_func)
       }
       catch(const std::exception& e)
       {
+         std::cerr << "Unexpected exception at entry: " << i << "\n";
          std::cerr << e.what() << std::endl;
          print_row(row, std::cerr);
          BOOST_ERROR("Unexpected exception.");

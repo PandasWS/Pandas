@@ -7,7 +7,7 @@
 
 #include <boost/mpl/assert.hpp>
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 
 template<typename T>
@@ -37,7 +37,7 @@ template<typename T>
 using user_ref = boost::yap::expression_ref<user_expr, T>;
 
 
-int test_main(int, char * [])
+int main()
 {
     {
         term<double> unity = {{1.0}};
@@ -314,5 +314,16 @@ int test_main(int, char * [])
         }
     }
 
-    return 0;
+#ifndef _MSC_VER // Tsk, tsk.
+    {
+        using term_t = term<int>;
+        constexpr auto expr = term_t{13} + term_t{42};
+        constexpr auto result1 = expr.left().value();
+        constexpr auto result2 = yap::value(left(expr));
+        (void)result1;
+        (void)result2;
+    }
+#endif
+
+    return boost::report_errors();
 }

@@ -3886,6 +3886,47 @@ to be inserted in intrusive containers are allocated using `std::vector` or `std
 
 [section:release_notes Release Notes]
 
+[section:release_notes_boost_1_77_00 Boost 1.77 Release]
+
+* Added `noexcept` support to the library to obtain better performance and diagnostics.
+
+*  Fixed bugs:
+   * [@https://github.com/boostorg/intrusive/pull/57   GitHub #57: ['UB: comparing unrelated pointers]]
+   * [@https://github.com/boostorg/intrusive/issues/59 GitHub #59: ['Add noexcept support to the library]]
+   * [@https://github.com/boostorg/intrusive/issues/60 GitHub #60: ['Licensing question for math.hpp]]
+   * [@https://github.com/boostorg/intrusive/pull/61   GitHub #61: ['Fix bstree_algorithms<>::swap_nodes]]
+   * [@https://github.com/boostorg/intrusive/issues/63 GitHub #63: ['nop splice removes element]]
+
+[endsect]
+
+
+[section:release_notes_boost_1_76_00 Boost 1.76 Release]
+
+*  Reduced compile-time dependencies:
+    *   `linear_slist_algorithms` use a simple node_ptr instead of std::pair on return.
+    *   `list`/`slist` use `operator <`/`operator ==` instead of `std::equal_to`/`std::less`.
+*  Fixed bugs:
+   * [@https://github.com/boostorg/intrusive/issues/54  GitHub #54: ['set.rbegin() looks like O(log(N))]]
+
+[endsect]
+
+[section:release_notes_boost_1_75_00 Boost 1.75 Release]
+
+*  Fixed bugs:
+   *  [@https://github.com/boostorg/intrusive/pull/48    GitHub #48: ['MSVC "assignment within conditional" warning fix]]
+   *  [@https://github.com/boostorg/intrusive/pull/49    GitHub #49: ['Fix empty control statement warnings]]
+   *  [@https://github.com/boostorg/intrusive/issues/52  GitHub #52: ['Invalid casting in BOOST_INTRUSIVE_BSR_INTRINSIC]]
+
+[endsect]
+
+
+[section:release_notes_boost_1_73_00 Boost 1.73 Release]
+
+*  Fixed bugs:
+   *  [@https://github.com/boostorg/intrusive/issues/46  GitHub #46: ['UB due to union based type punning]]
+ 
+[endsect]
+
 [section:release_notes_boost_1_71_00 Boost 1.71 Release]
 
 *  Fixed bugs:

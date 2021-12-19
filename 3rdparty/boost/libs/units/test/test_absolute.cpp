@@ -32,9 +32,9 @@ Output:
 
 #include <iostream>
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
-#define BOOST_UNITS_CHECK_CLOSE(a, b) (BOOST_CHECK((std::abs((a) - (b)) < .0000001)))
+#define BOOST_UNITS_CHECK_CLOSE(a, b) BOOST_TEST(std::abs((a) - (b)) < .0000001)
 
 namespace bu = boost::units;
 using bu::si::kelvin_base_unit;
@@ -47,7 +47,7 @@ typedef bu::unit<bu::temperature_dimension,bu::make_system<celsius_base_unit>::t
 
 typedef bu::unit<bu::temperature_dimension,bu::make_system<fahrenheit_base_unit>::type> fahrenheit_type;
 
-int test_main(int,char *[])
+int main()
 {
     BOOST_CONSTEXPR_OR_CONST bu::quantity<bu::absolute<fahrenheit_type> > q1(212.0 * bu::absolute<fahrenheit_type>());
     BOOST_CONSTEXPR_OR_CONST bu::quantity<bu::absolute<celsius_type> > q2(0.0 * bu::absolute<celsius_type>());
@@ -64,5 +64,5 @@ int test_main(int,char *[])
 
     BOOST_UNITS_CHECK_CLOSE(q6.value(), 212.0);
 
-    return(0);
+    return boost::report_errors();
 }

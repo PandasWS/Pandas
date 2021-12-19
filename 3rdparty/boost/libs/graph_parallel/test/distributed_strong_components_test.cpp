@@ -29,13 +29,13 @@
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include <boost/graph/parallel/distribution.hpp>
 #include <boost/graph/erdos_renyi_generator.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/graph/distributed/graphviz.hpp>
 #include <iostream>
 #include <cstdlib>
 #include <iomanip>
 #include <boost/random.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #ifdef BOOST_NO_EXCEPTIONS
 void
@@ -157,7 +157,7 @@ test_distributed_strong_components(int n, double _p, bool verify, bool emit_dot_
     }
 }
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   mpi::environment env(argc, argv);
 
@@ -171,5 +171,5 @@ int test_main(int argc, char* argv[])
        argv[3]==std::string("true"), argv[4]==std::string("true"),
        argc == 5? 1 : atoi(argv[5]));
 
-  return 0;
+  return boost::report_errors();
 }

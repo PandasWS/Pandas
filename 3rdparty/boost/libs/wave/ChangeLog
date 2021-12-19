@@ -18,16 +18,36 @@ TODO (known issues):
 
 CHANGELOG
 
+Boost V1.75:
+  - Introduced C++20 tokens, including the spaceship operator
+  - Fixed #94: Tricky line number tracking logic for __LINE__ and __FILE__
+
+Boost V1.74:
+  - Fixed TRAC #10733: Hooks not called for expanding specific predefined macros
+  - Fixed #58: C++11 long long literals must use consistent case
+  - Repaired two samples and added a new one for macro naming enforcement
+  - Implemented C++20 changes for variadic macros, including __VA_OPT__()
+  - Added C++17 feature __has_include()
+  - Deprecate C++98 and C++03. Support will end with 1.77.
+
+Boost V1.73:
+  - Fixed TRAC #7822: waveidl sample does not use the IDL lexer
+  - Fixed TRAC #9874: Turning off 'include_next' support breaks include
+  - Fixed a typedef shadowing a class (MSVC warning 4458) - Conrad Poelman
+  - Updated waveidl to match recent changes in the RE2C lexer
+  - Samples now build cleanly
+  - Ensured samples and wave driver are covered by continuous integration
+
 Boost V1.55:
  - Fixed #8848: Wave driver improperly processes 0xFFFFui64 token
  - Fixed #9098: Wave driver option --c++0x invalid
 
 Boost V1.54:
- - Fixed #8478: Make Boost.wave compatible with Clang's -Wimplicit-fallthrough 
+ - Fixed #8478: Make Boost.wave compatible with Clang's -Wimplicit-fallthrough
    diagnostic.
 
 Boost V1.53:
- - Fixed a problem with context<>::add_macro_definition which sometimes 
+ - Fixed a problem with context<>::add_macro_definition which sometimes
    appended a superfluous T_EOF to the macro replacement list.
 
 Boost V1.52.0:
@@ -332,7 +352,7 @@ Boost V1.35.0
 - Switched to Re2C V0.11.2
 - Added const specifiers to some of the context member functions.
 - Fixed a problem in the SLex C++ lexer (cpp_tokens example).
-- Fixed a runtime problem in the Re2C generated lexers when feeded with
+- Fixed a runtime problem in the Re2C generated lexers when fed with
   empty input files (thanks to Leo Davis for reporting and providing a patch).
 - Added the is_eoi() function to token classes, returning true if the token
   has been initialized to be the end of input token (T_EOI) (thanks to Ovanes
@@ -389,7 +409,7 @@ Boost V1.35.0
 - Fixed a bug in the pp hook expanding_function_like_macro(), where the seqend
   parameter was set to the first token after the closing parenthesis instead of
   pointing at it.
-- Added the BOOST_WAVE_SUPPORT_THREADING allowing to explicitely control
+- Added the BOOST_WAVE_SUPPORT_THREADING allowing to explicitly control
   whether the Wave library is built with threading support enabled. If not
   defined the build settings will be picked up from the Boost build environment
   (BOOST_HAS_THREADS).
@@ -643,7 +663,7 @@ Sat Dec 24 13:33:53 CST 2005
 - Added the possibility to configure the command keyword for the wave specific
   #pragma directives. It is now possible to define a string literal via
   BOOST_WAVE_PRAGMA_COMMAND, which will be recognized and all corresponding
-  #pragma's are dispatched to the interpret_pragma() preprocessing hook.
+  #pragmas are dispatched to the interpret_pragma() preprocessing hook.
   The default value for BOOST_WAVE_PRAGMA_COMMAND is "wave", just to ensure
   complete backward compatibility.
 - Added missing #pragma warning(pop) directives.
@@ -1176,7 +1196,7 @@ Tue Aug  5 10:04:00     2003
   on the line.
 - Added the #pragma wave timer() directive to allow rough timings during
   processing. This is done on top of a new callback hook for unrecognized
-  #pragma's, which allows to easily add new pragma commands without changing
+  #pragmas, which allows to easily add new pragma commands without changing
   the Wave library.
 - Fixed a bug in the whitespace insertion engine, which prevented the insertion
   of a whitespace token in between two consecutive identifier tokens or a
@@ -1383,7 +1403,7 @@ Wed May  7 22:44:21     2003
 - Introduced the wave::language_support enum for convenient switching of the
   supported language features throughout the library.
 - Fixed a bug, which prevented the definition of the predefined macro
-  __WAVE_HAS_VARRIADICS__, if --variadics were given on the command line.
+  __WAVE_HAS_VARIADICS__, if --variadics were given on the command line.
 
 Tue May  6 15:49:45     2003
 - Made predefined macros available at every macro scope without qualification.
@@ -1417,7 +1437,7 @@ Sun May  4 10:48:53     2003
 - Remove one specialization of the macro expansion engine. It gets instantiated
   only twice now (for the main input iterator and for list<>'s  of tokens.
 - Simplified the required explicit specialization of the defined_grammar
-  template. It has to be explicitely instantiated by providing the token type
+  template. It has to be explicitly instantiated by providing the token type
   only (just as for the explicit instantiations of the other grammars).
 
 Fri May  2 22:44:27     2003
@@ -1516,7 +1536,7 @@ Sun Mar 30 20:40:17     2003
 
 Sun Mar 30 08:30:12     2003
 - Changed the tracing format to be more readable.
-- Changed the tracing #pragma's to
+- Changed the tracing #pragmas to
     enable tracing:     #pragma wave trace(enable)
     disable tracing:    #pragma wave trace(disable)
   or
@@ -1893,7 +1913,7 @@ complete rewrite of the existing code base. The main differences are:
 - The preprocessing of include files isn't implemented through recursion
   anymore. This follows directly from the first change. As a result of this
   change the internal error handling is simplified.
-- The C preprocessor iterator itself is feeded by a new unified C++ lexer
+- The C preprocessor iterator itself is fed by a new unified C++ lexer
   iterator. BTW, this C++ lexer iterator could be used standalone and is not
   tied to the C preprocessor. There are two different C++ lexers implemented
   now, which are functionally completely identical. These expose a similar

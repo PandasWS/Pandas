@@ -12,7 +12,8 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
+#define BOOST_CHECK BOOST_TEST
 
 #include "boost/lambda/bind.hpp"
 #include "boost/lambda/lambda.hpp"
@@ -381,14 +382,8 @@ void test_binary_operators() {
 }
 
 
-int test_main(int, char *[]) {
+int main() {
   test_unary_operators();
   test_binary_operators();
-  return 0;
+  return boost::report_errors();
 }
-
-
-
-
-
-

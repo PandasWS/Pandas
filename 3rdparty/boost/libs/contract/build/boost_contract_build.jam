@@ -49,7 +49,7 @@
 import boost_contract_no ;
 import feature ;
 import testing ;
-import config : requires ;
+import ../../config/checks/config : requires ;
 
 # Iff "no", link to boost_contract (else, no lib build so don't link to it).
 feature.feature bc_hdr : lib only :
@@ -68,7 +68,6 @@ module boost_contract_build {
 rule project_requirements ( subdir ) {
     return
         <bc_hdr>lib:<library>../build//boost_contract
-        <bc_hdr>only:<library>/boost/system//boost_system
         <include>$(subdir)
     ;
 }

@@ -7,7 +7,7 @@
 #  pragma warning (disable : 4224)
 #endif
 
-#include <boost/math/common_factor_rt.hpp>
+#include <boost/integer/common_factor_rt.hpp>
 #include <boost/math/special_functions/prime.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/integer.hpp>
@@ -103,8 +103,8 @@ T get_prime_products()
 template <class T>
 T get_uniform_random()
 {
-   static boost::random::uniform_int_distribution<T> minmax((std::numeric_limits<T>::min)(), (std::numeric_limits<T>::max)());
-   return minmax(rng);
+   static boost::random::uniform_int_distribution<T> minimax((std::numeric_limits<T>::min)(), (std::numeric_limits<T>::max)());
+   return minimax(rng);
 }
 
 template <class T>
@@ -172,7 +172,7 @@ T binary_textbook(T u, T v)
 template <typename Integer>
 inline BOOST_CXX14_CONSTEXPR Integer gcd_default(Integer a, Integer b) BOOST_GCD_NOEXCEPT(Integer)
 {
-   using boost::math::gcd;
+   using boost::integer::gcd;
    return gcd(a, b);
 }
 
@@ -180,7 +180,7 @@ inline BOOST_CXX14_CONSTEXPR Integer gcd_default(Integer a, Integer b) BOOST_GCD
 template <class T>
 void test_type(const char* name)
 {
-   using namespace boost::math::gcd_detail;
+   using namespace boost::integer::gcd_detail;
    typedef T int_type;
    std::vector<pair<int_type, int_type> > data;
 
@@ -273,8 +273,8 @@ T generate_random(unsigned bits_wanted)
 template <typename N>
 N gcd_stein(N m, N n)
 {
-   BOOST_ASSERT(m >= static_cast<N>(0));
-   BOOST_ASSERT(n >= static_cast<N>(0));
+   BOOST_MATH_ASSERT(m >= static_cast<N>(0));
+   BOOST_MATH_ASSERT(n >= static_cast<N>(0));
    if(m == N(0)) return n;
    if(n == N(0)) return m;
            // m > 0 && n > 0
@@ -373,13 +373,13 @@ inline typename enable_if_c<!is_trivial_cpp_int<cpp_int_backend<MinBits1, MaxBit
       if(vp->size() <= 2)
       {
          if(vp->size() == 1)
-            *up = boost::math::gcd_detail::mixed_binary_gcd(*vp->limbs(), *up->limbs());
+            *up = boost::integer::gcd_detail::mixed_binary_gcd(*vp->limbs(), *up->limbs());
          else
          {
             double_limb_type i, j;
             i = vp->limbs()[0] | (static_cast<double_limb_type>(vp->limbs()[1]) << sizeof(limb_type) * CHAR_BIT);
             j = (up->size() == 1) ? *up->limbs() : up->limbs()[0] | (static_cast<double_limb_type>(up->limbs()[1]) << sizeof(limb_type) * CHAR_BIT);
-            u = boost::math::gcd_detail::mixed_binary_gcd(i, j);
+            u = boost::integer::gcd_detail::mixed_binary_gcd(i, j);
          }
          break;
       }

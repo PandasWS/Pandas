@@ -23,7 +23,6 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
-#include "../common/utf8_defines.hpp"  // PandasWS
 
 #include "achievement.hpp"
 #include "battle.hpp"
@@ -2398,7 +2397,9 @@ ACMD_FUNC(refine)
 			clif_additem(sd, i, 1, 0);
 			pc_equipitem(sd, i, current_position);
 			clif_misceffect(&sd->bl, 3);
-			achievement_update_objective(sd, AG_ENCHANT_SUCCESS, 2, sd->inventory_data[i]->wlv, sd->inventory.u.items_inventory[i].refine);
+			if( sd->inventory_data[i]->type == IT_WEAPON ){
+				achievement_update_objective(sd, AG_ENCHANT_SUCCESS, 2, sd->inventory_data[i]->weapon_level, sd->inventory.u.items_inventory[i].refine);
+			}
 			count++;
 		}
 	}
@@ -2688,12 +2689,11 @@ ACMD_FUNC(zeny)
  *------------------------------------------*/
 ACMD_FUNC(param)
 {
-	uint8 i;
-	int value = 0;
-	const char* param[] = { "str", "agi", "vit", "int", "dex", "luk" };
-	pec_ushort new_value, *status[6], max_status[6];
- 	//we don't use direct initialization because it isn't part of the c standard.
 	nullpo_retr(-1, sd);
+
+	uint8 stat;
+	int value = 0;
+	pec_ushort new_value, status, max_status;
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 
@@ -2702,42 +2702,52 @@ ACMD_FUNC(param)
 		return -1;
 	}
 
-	ARR_FIND( 0, ARRAYLENGTH(param), i, strcmpi(command+1, param[i]) == 0 );
+	ARR_FIND( 0, ARRAYLENGTH(parameter_names), stat, strcmpi(command + 1, parameter_names[stat]) == 0 );
 
-	if( i == ARRAYLENGTH(param) || i > MAX_STATUS_TYPE) { // normally impossible...
+	if( stat == ARRAYLENGTH(parameter_names)) { // normally impossible...
 		clif_displaymessage(fd, msg_txt(sd,1013)); // Please enter a valid value (usage: @str/@agi/@vit/@int/@dex/@luk <+/-adjustment>).
 		return -1;
 	}
 
-	status[0] = &sd->status.str;
-	status[1] = &sd->status.agi;
-	status[2] = &sd->status.vit;
-	status[3] = &sd->status.int_;
-	status[4] = &sd->status.dex;
-	status[5] = &sd->status.luk;
+	if( stat < PARAM_POW ){
+		status = pc_getstat( sd, SP_STR + stat - PARAM_STR );
+	}else{
+		if( !( sd->class_ & JOBL_FOURTH ) ){
+			clif_displaymessage(fd, msg_txt(sd, 797)); // This command is unavailable to non - 4th class.
+			return -1;
+		}
 
-	if( pc_has_permission(sd, PC_PERM_BYPASS_MAX_STAT) )
-		max_status[0] = max_status[1] = max_status[2] = max_status[3] = max_status[4] = max_status[5] = PEC_SHRT_MAX;
-	else {
-		max_status[0] = pc_maxparameter(sd,PARAM_STR);
-		max_status[1] = pc_maxparameter(sd,PARAM_AGI);
-		max_status[2] = pc_maxparameter(sd,PARAM_VIT);
-		max_status[3] = pc_maxparameter(sd,PARAM_INT);
-		max_status[4] = pc_maxparameter(sd,PARAM_DEX);
-		max_status[5] = pc_maxparameter(sd,PARAM_LUK);
+		status = pc_getstat( sd, SP_POW + stat - PARAM_POW );
 	}
 
-	if(value > 0  && *status[i] + value >= max_status[i])
-		new_value = max_status[i];
-	else if(value < 0 && *status[i] <= -value)
-		new_value = 1;
-	else
-		new_value = *status[i] + value;
+	if( pc_has_permission( sd, PC_PERM_BYPASS_MAX_STAT ) ){
+		max_status = PEC_SHRT_MAX;
+	}else{
+		max_status = pc_maxparameter( sd, static_cast<e_params>( stat ) );
+	}
 
-	if (new_value != *status[i]) {
-		*status[i] = new_value;
-		clif_updatestatus(sd, SP_STR + i);
-		clif_updatestatus(sd, SP_USTR + i);
+	if( value > 0  && status + value >= max_status ){
+		new_value = max_status;
+	}else if( value < 0 && abs( value ) >= status ){
+		if( stat < PARAM_POW ){
+			new_value = 1;
+		}else{
+			new_value = 0;
+		}
+	}else{
+		new_value = status + value;
+	}
+
+	if( new_value != status ){
+		if (stat < PARAM_POW) {
+			pc_setstat( sd, SP_STR + stat - PARAM_STR, new_value );
+			clif_updatestatus(sd, SP_STR + stat);
+			clif_updatestatus(sd, SP_USTR + stat);
+		} else {
+			pc_setstat( sd, SP_POW + stat - PARAM_POW, new_value );
+			clif_updatestatus(sd, SP_POW + stat - PARAM_POW);
+			clif_updatestatus(sd, SP_UPOW + stat - PARAM_POW);
+		}
 		status_calc_pc(sd, SCO_FORCE);
 		clif_displaymessage(fd, msg_txt(sd,42)); // Stat changed.
 
@@ -2758,52 +2768,42 @@ ACMD_FUNC(param)
  *------------------------------------------*/
 ACMD_FUNC(stat_all)
 {
-	int value = 0;
-	uint8 count, i;
-	pec_ushort *status[PARAM_MAX], max_status[PARAM_MAX];
- 	//we don't use direct initialization because it isn't part of the c standard.
 	nullpo_retr(-1, sd);
 
-	status[0] = &sd->status.str;
-	status[1] = &sd->status.agi;
-	status[2] = &sd->status.vit;
-	status[3] = &sd->status.int_;
-	status[4] = &sd->status.dex;
-	status[5] = &sd->status.luk;
+	int value = 0;
+	uint8 count, i;
+	pec_ushort status[PARAM_MAX] = {}, max_status[PARAM_MAX] = {};
+
+	for (i = PARAM_STR; i < PARAM_POW; i++)
+		status[i] = pc_getstat(sd, SP_STR + i);
 
 	if (!message || !*message || sscanf(message, "%11d", &value) < 1 || value == 0) {
-		max_status[0] = pc_maxparameter(sd,PARAM_STR);
-		max_status[1] = pc_maxparameter(sd,PARAM_AGI);
-		max_status[2] = pc_maxparameter(sd,PARAM_VIT);
-		max_status[3] = pc_maxparameter(sd,PARAM_INT);
-		max_status[4] = pc_maxparameter(sd,PARAM_DEX);
-		max_status[5] = pc_maxparameter(sd,PARAM_LUK);
+		for (i = PARAM_STR; i < PARAM_POW; i++)
+			max_status[i] = pc_maxparameter(sd, static_cast<e_params>(i));
 		value = PEC_SHRT_MAX;
 	} else {
-		if( pc_has_permission(sd, PC_PERM_BYPASS_MAX_STAT) )
-			max_status[0] = max_status[1] = max_status[2] = max_status[3] = max_status[4] = max_status[5] = PEC_SHRT_MAX;
-		else {
-			max_status[0] = pc_maxparameter(sd,PARAM_STR);
-			max_status[1] = pc_maxparameter(sd,PARAM_AGI);
-			max_status[2] = pc_maxparameter(sd,PARAM_VIT);
-			max_status[3] = pc_maxparameter(sd,PARAM_INT);
-			max_status[4] = pc_maxparameter(sd,PARAM_DEX);
-			max_status[5] = pc_maxparameter(sd,PARAM_LUK);
+		if (pc_has_permission(sd, PC_PERM_BYPASS_MAX_STAT)) {
+			for (i = PARAM_STR; i < PARAM_POW; i++)
+				max_status[i] = PEC_SHRT_MAX;
+		} else {
+			for (i = PARAM_STR; i < PARAM_POW; i++)
+				max_status[i] = pc_maxparameter(sd, static_cast<e_params>(i));
 		}
 	}
 	
 	count = 0;
-	for (i = 0; i < ARRAYLENGTH(status); i++) {
+	for (i = PARAM_STR; i <= PARAM_LUK; i++) {
 		pec_ushort new_value;
-		if (value > 0 && *status[i] + value >= max_status[i])
+
+		if (value > 0 && status[i] + value >= max_status[i])
 			new_value = max_status[i];
-		else if (value < 0 && *status[i] <= -value)
+		else if (value < 0 && abs(value) >= status[i])
 			new_value = 1;
 		else
-			new_value = *status[i] + value;
+			new_value = status[i] + value;
 
-		if (new_value != *status[i]) {
-			*status[i] = new_value;
+		if (new_value != status[i]) {
+			pc_setstat( sd, SP_STR + i, new_value );
 			clif_updatestatus(sd, SP_STR + i);
 			clif_updatestatus(sd, SP_USTR + i);
 			count++;
@@ -2820,6 +2820,80 @@ ACMD_FUNC(stat_all)
 			clif_displaymessage(fd, msg_txt(sd,177)); // You cannot decrease that stat anymore.
 		else
 			clif_displaymessage(fd, msg_txt(sd,178)); // You cannot increase that stat anymore.
+		return -1;
+	}
+
+	return 0;
+}
+
+/*==========================================
+ * Traits
+ *------------------------------------------*/
+ACMD_FUNC(trait_all) {
+	nullpo_retr(-1, sd);
+
+#ifndef RENEWAL
+	sprintf(atcmd_output, msg_txt(sd, 154), command); // %s failed.
+	clif_displaymessage(fd, atcmd_output);
+	return -1;
+#endif
+
+	if( !( sd->class_ & JOBL_FOURTH ) ){
+		clif_displaymessage(fd, msg_txt(sd, 797)); // This command is unavailable to non - 4th class.
+		return -1;
+	}
+
+	int value = 0;
+	uint8 i;
+	pec_ushort status[PARAM_MAX] = {}, max_status[PARAM_MAX] = {};
+
+	for (i = PARAM_POW; i < PARAM_MAX; i++)
+		status[i] = pc_getstat(sd, SP_POW + i - PARAM_POW);
+
+	if (!message || !*message || sscanf(message, "%11d", &value) < 1 || value == 0) {
+		for (i = PARAM_POW; i < PARAM_MAX; i++)
+			max_status[i] = pc_maxparameter(sd, static_cast<e_params>(i));
+		value = PEC_SHRT_MAX;
+	} else {
+		if (pc_has_permission(sd, PC_PERM_BYPASS_MAX_STAT)) {
+			for (i = PARAM_POW; i < PARAM_MAX; i++)
+				max_status[i] = PEC_SHRT_MAX;
+		} else {
+			for (i = PARAM_POW; i < PARAM_MAX; i++)
+				max_status[i] = pc_maxparameter(sd, static_cast<e_params>(i));
+		}
+	}
+
+	uint8 count = 0;
+
+	for (i = PARAM_POW; i < PARAM_MAX; i++) {
+		pec_ushort new_value;
+
+		if (value > 0 && status[i] + value >= max_status[i])
+			new_value = max_status[i];
+		else if (value < 0 && abs(value) >= status[i])
+			new_value = 0;
+		else
+			new_value = status[i] + value;
+
+		if (new_value != status[i]) {
+			pc_setstat( sd, SP_POW + i, new_value );
+			clif_updatestatus(sd, SP_POW + i - PARAM_POW);
+			clif_updatestatus(sd, SP_UPOW + i - PARAM_POW);
+			count++;
+		}
+	}
+
+	if (count > 0) { // if at least 1 stat modified
+		status_calc_pc(sd, SCO_FORCE);
+		clif_displaymessage(fd, msg_txt(sd, 84)); // All stats changed!
+
+		achievement_update_objective(sd, AG_GOAL_STATUS, 0);
+	} else {
+		if (value < 0)
+			clif_displaymessage(fd, msg_txt(sd, 177)); // You cannot decrease that stat anymore.
+		else
+			clif_displaymessage(fd, msg_txt(sd, 178)); // You cannot increase that stat anymore.
 		return -1;
 	}
 
@@ -4444,37 +4518,51 @@ ACMD_FUNC(mapinfo) {
 #endif // Pandas_MapFlag_NoMerc
 #ifdef Pandas_MapFlag_Mobinfo
 	if (map_getmapflag(m_id, MF_MOBINFO)) {
-		sprintf(atcmd_output, "%s Mobinfo: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MOBINFO, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " Mobinfo: %d |", map_getmapflag_param(m_id, MF_MOBINFO, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_Mobinfo
 #ifdef Pandas_MapFlag_MobDroprate
 	if (map_getmapflag(m_id, MF_MOBDROPRATE)) {
-		sprintf(atcmd_output, "%s MobDroprate: %d%% |", atcmd_output, map_getmapflag_param(m_id, MF_MOBDROPRATE, 100));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MobDroprate: %d%% |", map_getmapflag_param(m_id, MF_MOBDROPRATE, 100));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MobDroprate
 #ifdef Pandas_MapFlag_MvpDroprate
 	if (map_getmapflag(m_id, MF_MVPDROPRATE)) {
-		sprintf(atcmd_output, "%s MvpDroprate: %d%% |", atcmd_output, map_getmapflag_param(m_id, MF_MVPDROPRATE, 100));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MvpDroprate: %d%% |", map_getmapflag_param(m_id, MF_MVPDROPRATE, 100));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MvpDroprate
 #ifdef Pandas_MapFlag_MaxHeal
 	if (map_getmapflag(m_id, MF_MAXHEAL)) {
-		sprintf(atcmd_output, "%s MaxHeal: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXHEAL, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxHeal: %d |", map_getmapflag_param(m_id, MF_MAXHEAL, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxHeal
 #ifdef Pandas_MapFlag_MaxDmg_Skill
 	if (map_getmapflag(m_id, MF_MAXDMG_SKILL)) {
-		sprintf(atcmd_output, "%s MaxDmg_Skill: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXDMG_SKILL, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxDmg_Skill: %d |", map_getmapflag_param(m_id, MF_MAXDMG_SKILL, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxDmg_Skill
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 	if (map_getmapflag(m_id, MF_MAXDMG_NORMAL)) {
-		sprintf(atcmd_output, "%s MaxDmg_Normal: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXDMG_NORMAL, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxDmg_Normal: %d |", map_getmapflag_param(m_id, MF_MAXDMG_NORMAL, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxDmg_Normal
 #ifdef Pandas_MapFlag_NoSkill2
 	if (map_getmapflag(m_id, MF_NOSKILL2)) {
-		sprintf(atcmd_output, "%s NoSkill2: %d |", atcmd_output, map_getmapflag_param(m_id, MF_NOSKILL2, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " NoSkill2: %d |", map_getmapflag_param(m_id, MF_NOSKILL2, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_NoSkill2
 #ifdef Pandas_MapFlag_NoAura
@@ -4483,9 +4571,38 @@ ACMD_FUNC(mapinfo) {
 #endif // Pandas_MapFlag_NoAura
 #ifdef Pandas_MapFlag_MaxASPD
 	if (map_getmapflag(m_id, MF_MAXASPD)) {
-		sprintf(atcmd_output, "%s MaxASPD: %d |", atcmd_output, map_getmapflag_param(m_id, MF_MAXASPD, 0));
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " MaxASPD: %d |", map_getmapflag_param(m_id, MF_MAXASPD, 0));
+		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_MaxASPD
+#ifdef Pandas_MapFlag_NoSlave
+	if (map_getmapflag(m_id, MF_NOSLAVE))
+		strcat(atcmd_output, " NoSlave |");
+#endif // Pandas_MapFlag_NoSlave
+#ifdef Pandas_MapFlag_NoBank
+	if (map_getmapflag(m_id, MF_NOBANK))
+		strcat(atcmd_output, " NoBank |");
+#endif // Pandas_MapFlag_NoBank
+#ifdef Pandas_MapFlag_NoUseItem
+	if (map_getmapflag(m_id, MF_NOUSEITEM))
+		strcat(atcmd_output, " NoUseItem |");
+#endif // Pandas_MapFlag_NoUseItem
+#ifdef Pandas_MapFlag_HideDamage
+	if (map_getmapflag(m_id, MF_HIDEDAMAGE))
+		strcat(atcmd_output, " HideDamage |");
+#endif // Pandas_MapFlag_HideDamage
+#ifdef Pandas_MapFlag_NoAttack
+	if (map_getmapflag(m_id, MF_NOATTACK))
+		strcat(atcmd_output, " NoAttack |");
+#endif // Pandas_MapFlag_NoAttack
+#ifdef Pandas_MapFlag_NoAttack2
+	if (map_getmapflag(m_id, MF_NOATTACK2)) {
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " NoAttack2: %d |", map_getmapflag_param(m_id, MF_NOATTACK2, 0));
+		strcat(atcmd_output, mes);
+	}
+#endif // Pandas_MapFlag_NoAttack2
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
@@ -4927,8 +5044,10 @@ ACMD_FUNC(shownpc)
 		return -1;
 	}
 
-	if (npc_name2id(NPCname) != NULL) {
-		npc_enable(NPCname, 1);
+	npc_data* nd = npc_name2id(NPCname);
+
+	if (nd) {
+		npc_enable(*nd, NPCVIEW_ENABLE);
 		clif_displaymessage(fd, msg_txt(sd,110)); // Npc Enabled.
 	} else {
 		clif_displaymessage(fd, msg_txt(sd,111)); // This NPC doesn't exist.
@@ -4953,12 +5072,14 @@ ACMD_FUNC(hidenpc)
 		return -1;
 	}
 
-	if (npc_name2id(NPCname) == NULL) {
+	npc_data* nd = npc_name2id(NPCname);
+
+	if (!nd) {
 		clif_displaymessage(fd, msg_txt(sd,111)); // This NPC doesn't exist.
 		return -1;
 	}
 
-	npc_enable(NPCname, 0);
+	npc_enable(*nd, NPCVIEW_DISABLE);
 	clif_displaymessage(fd, msg_txt(sd,112)); // Npc Disabled.
 	return 0;
 }
@@ -6167,7 +6288,7 @@ ACMD_FUNC(skilltree)
 {
 	struct map_session_data *pl_sd = NULL;
 	uint16 skill_id;
-	int meets, i, j, c=0;
+	int meets, j, c=0;
 	struct skill_tree_entry *ent;
 	nullpo_retr(-1, sd);
 
@@ -6184,8 +6305,7 @@ ACMD_FUNC(skilltree)
 		return -1;
 	}
 
-	i = pc_calc_skilltree_normalize_job(pl_sd);
-	c = pc_mapid2jobid(i, pl_sd->status.sex);
+	c = pc_mapid2jobid( pc_calc_skilltree_normalize_job( pl_sd ), pl_sd->status.sex );
 
 	sprintf(atcmd_output, msg_txt(sd,1168), job_name(c), pc_checkskill(pl_sd, NV_BASIC)); // Player is using %s skill tree (%d basic points).
 	clif_displaymessage(fd, atcmd_output);
@@ -8664,9 +8784,13 @@ ACMD_FUNC(mapflag) {
 			disabled_mf.insert(disabled_mf.begin(), MF_MAXASPD);
 #endif // Pandas_MapFlag_MaxASPD
 
+#ifdef Pandas_MapFlag_NoAttack2
+			disabled_mf.insert(disabled_mf.begin(), MF_NOATTACK2);
+#endif // Pandas_MapFlag_NoAttack2
+
 			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
 
-			if (flag && std::find(disabled_mf.begin(), disabled_mf.end(), mapflag) != disabled_mf.end()) {
+			if (flag > 0 && util::vector_exists(disabled_mf, mapflag)) {
 				sprintf(atcmd_output,"[ @mapflag ] %s flag cannot be enabled as it requires unique values.", flag_name);
 				clif_displaymessage(sd->fd,atcmd_output);
 			} else {
@@ -10431,18 +10555,21 @@ ACMD_FUNC(clonestat) {
 	}
 	else {
 		uint8 i;
-		short max_status[6];
+		pec_ushort max_status[PARAM_MAX] = {};
 
 		pc_resetstate(sd);
-		if (pc_has_permission(sd, PC_PERM_BYPASS_STAT_ONCLONE))
-			max_status[0] = max_status[1] = max_status[2] = max_status[3] = max_status[4] = max_status[5] = SHRT_MAX;
-		else {
-			max_status[0] = pc_maxparameter(sd, PARAM_STR);
-			max_status[1] = pc_maxparameter(sd, PARAM_AGI);
-			max_status[2] = pc_maxparameter(sd, PARAM_VIT);
-			max_status[3] = pc_maxparameter(sd, PARAM_INT);
-			max_status[4] = pc_maxparameter(sd, PARAM_DEX);
-			max_status[5] = pc_maxparameter(sd, PARAM_LUK);
+		if (pc_has_permission(sd, PC_PERM_BYPASS_STAT_ONCLONE)) {
+			for (i = PARAM_STR; i < PARAM_MAX; i++) {
+				if (i >= PARAM_POW && !(sd->class_ & JOBL_FOURTH))
+					continue;
+				max_status[i] = PEC_SHRT_MAX;
+			}
+		} else {
+			for (i = PARAM_STR; i < PARAM_MAX; i++) {
+				if (i >= PARAM_POW && sd->class_ & JOBL_FOURTH)
+					continue;
+				max_status[i] = pc_maxparameter(sd, static_cast<e_params>(i));
+			}
 		}
 
 #define clonestat_check(cmd,stat)\
@@ -10464,10 +10591,26 @@ ACMD_FUNC(clonestat) {
 		clonestat_check(dex, PARAM_DEX);
 		clonestat_check(luk, PARAM_LUK);
 
-		for (i = 0; i < PARAM_MAX; i++) {
+		for (i = PARAM_STR; i < PARAM_POW; i++) {
 			clif_updatestatus(sd, SP_STR + i);
 			clif_updatestatus(sd, SP_USTR + i);
 		}
+
+		if (sd->class_ & JOBL_FOURTH) {
+			clonestat_check(pow, PARAM_POW);
+			clonestat_check(sta, PARAM_STA);
+			clonestat_check(wis, PARAM_WIS);
+			clonestat_check(spl, PARAM_SPL);
+			clonestat_check(con, PARAM_CON);
+			clonestat_check(crt, PARAM_CRT);
+
+			for (i = PARAM_POW; i < PARAM_MAX; i++) {
+				clif_updatestatus(sd, SP_POW + i - PARAM_POW);
+				clif_updatestatus(sd, SP_UPOW + i - PARAM_POW);
+			}
+
+		}
+
 		status_calc_pc(sd, SCO_FORCE);
 	}
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
@@ -10993,6 +11136,12 @@ void atcommand_basecommands(void) {
 		ACMD_DEF2("int", param),
 		ACMD_DEF2("dex", param),
 		ACMD_DEF2("luk", param),
+		ACMD_DEF2("pow", param),
+		ACMD_DEF2("sta", param),
+		ACMD_DEF2("wis", param),
+		ACMD_DEF2("spl", param),
+		ACMD_DEF2("con", param),
+		ACMD_DEF2("crt", param),
 		ACMD_DEF2("glvl", guildlevelup),
 		ACMD_DEF(makeegg),
 		ACMD_DEF(hatch),
@@ -11047,6 +11196,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF2("hairstyle", hair_style),
 		ACMD_DEF2("haircolor", hair_color),
 		ACMD_DEF2("allstats", stat_all),
+		ACMD_DEF2("alltraits", trait_all),
 		ACMD_DEF2("block", char_block),
 		ACMD_DEF2("ban", char_ban),
 		ACMD_DEF2("unblock", char_unblock),

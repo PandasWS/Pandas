@@ -35,7 +35,7 @@ Predefined algorithms with run-time parameters are:
 
 
 [heading IndexableGetter]
-The object of IndexableGetter type translates from Value to Indexable each time r-tree requires it. This means that this operation is done for each Value access. Therefore the IndexableGetter should return the Indexable by a reference type. The Indexable should not be calculated since it could harm the performance. The default IndexableGetter can translate all types adapted to Point, Box or Segment concepts (called Indexables). Furthermore, it can handle [^`std::pair<Indexable, T>`], [^`boost::tuple<Indexable, ...>`] and [^`std::tuple<Indexable, ...>`] when possible. For example, for Value of type [^`std::pair<Box, int>`], the default IndexableGetter translates from [^`std::pair<Box, int> const&`] to [^`Box const&`].
+The object of IndexableGetter type translates from Value to Indexable each time r-tree requires it. This means that this operation is done for each Value access. Therefore the IndexableGetter should return the Indexable by a reference type. The Indexable should not be calculated since it could harm the performance. The default IndexableGetter can translate all types adapted to Point, Box or Segment concepts (called Indexables). Furthermore, it can handle [^`std::pair<Indexable, T>`], [^`std::tuple<Indexable, ...>`] and [^`boost::tuple<Indexable, ...>`]. For example, for Value of type [^`std::pair<Box, int>`], the default IndexableGetter translates from [^`std::pair<Box, int> const&`] to [^`Box const&`].
 
 [heading EqualTo]
 The object of EqualTo type compares Values and returns [^`true`] if they are equal. It's similar to [^`std::equal_to<>`]. The default EqualTo returns the result of [^`boost::geometry::equals()`] for types adapted to some Geometry concept defined in Boost.Geometry and the result of [^`operator==`] for other types. Components of Pairs and Tuples are compared left-to-right.
@@ -93,6 +93,12 @@ The object of EqualTo type compares Values and returns [^`true`] if they are equ
 [[[link classboost_1_1geometry_1_1index_1_1rtree_1a1a6b696d4855cbf1866196fe058c3a87 `rtree(parameters_type const &, indexable_getter const &, value_equal const &, allocator_type const &)`]][The constructor. ]]
 [[[link classboost_1_1geometry_1_1index_1_1rtree_1a037f17d8a1dfa4a818ff471dec61c912 `rtree(Iterator, Iterator)`]][The constructor. ]]
 [[[link classboost_1_1geometry_1_1index_1_1rtree_1a7b96b715c52ddc13d7a81db344825848 `rtree(Range const &)`]][The constructor. ]]
+[[[link classboost_1_1geometry_1_1index_1_1rtree_1aad1b32e82dd734747810f01ee17e464e `rtree(Iterator, Iterator, parameters_type const &, indexable_getter const &, value_equal const &, allocator_type const &, PackAlloc const &)`]][The constructor. ]]
+[[[link classboost_1_1geometry_1_1index_1_1rtree_1aa2615aff643804935c530a668663807f `rtree(Range const &, parameters_type const &, indexable_getter const &, value_equal const &, allocator_type const &, PackAlloc const &)`]][The constructor. ]]
+[[[link classboost_1_1geometry_1_1index_1_1rtree_1a0d5b2e4876782e6950fbbdfa60f7406b `rtree(Iterator, Iterator, allocator_type const &)`]][The constructor. ]]
+[[[link classboost_1_1geometry_1_1index_1_1rtree_1a90857cba52523d5ff0e7b2a87081ccf5 `rtree(Range const &, allocator_type const &)`]][The constructor. ]]
+[[[link classboost_1_1geometry_1_1index_1_1rtree_1aed5c247a23b8236b2e80867acefe55ec `rtree(Iterator, Iterator, allocator_type const &, PackAlloc const &)`]][The constructor. ]]
+[[[link classboost_1_1geometry_1_1index_1_1rtree_1aceb504e98a611ef81f96b2df357d03f3 `rtree(Range const &, allocator_type const &, PackAlloc const &)`]][The constructor. ]]
 [[[link classboost_1_1geometry_1_1index_1_1rtree_1af8db72811d2be53c409240204e63fb5a `~rtree()`]][The destructor. ]]
 [[[link classboost_1_1geometry_1_1index_1_1rtree_1a826fc3236e181ad718d5283e95d7866f `rtree(rtree const &)`]][The copy constructor. ]]
 [[[link classboost_1_1geometry_1_1index_1_1rtree_1a72b6b75e083eea2ed26f54d4a2265375 `rtree(rtree const &, allocator_type const &)`]][The copy constructor. ]]
@@ -155,7 +161,7 @@ If allocator default constructor throws.
 [endsect]
 
 [#classboost_1_1geometry_1_1index_1_1rtree_1a1a6b696d4855cbf1866196fe058c3a87]
-[section rtree(parameters_type const &, indexable_getter const &, value_equal const &, allocator_type const &)]
+[section:rtree_par_cr_ind_cr_val_cr_all_cr rtree(parameters_type const &, indexable_getter const &, value_equal const &, allocator_type const &)]
 '''<indexterm><primary>rtree</primary></indexterm>'''
 The constructor. 
 
@@ -244,6 +250,214 @@ The tree is created using packing algorithm.[heading Synopsis]
 [[[^[link classboost_1_1geometry_1_1index_1_1rtree_1a43a7adb311cafc08e23010ccb4e97fb5 indexable_getter]]` const &`][ `getter` ][The function object extracting Indexable from Value. ]]
 [[[^[link classboost_1_1geometry_1_1index_1_1rtree_1ad8fe544de514014a1bd87ea1b881ff9b value_equal]]` const &`][ `equal` ][The function object comparing Values. ]]
 [[[^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &`][ `allocator` ][The allocator object.]]
+]
+[heading Throws]
+
+
+* If allocator copy constructor throws. 
+* If Value copy constructor or copy assignment throws. 
+* If allocation throws or returns invalid value. 
+
+
+
+[endsect]
+
+[#classboost_1_1geometry_1_1index_1_1rtree_1aad1b32e82dd734747810f01ee17e464e]
+[section:rtree_ite_ite_par_cr_ind_cr_val_cr_all_cr_pac_cr rtree(Iterator, Iterator, parameters_type const &, indexable_getter const &, value_equal const &, allocator_type const &, PackAlloc const &)]
+'''<indexterm><primary>rtree</primary></indexterm>'''
+The constructor. 
+
+[heading Description]
+The tree is created using packing algorithm and a temporary packing allocator.[heading Synopsis]
+[pre
+`template<``typename Iterator``,` `typename PackAlloc``>`
+`rtree``(``Iterator` `first``,`
+      `Iterator` `last``,`
+      [^[link classboost_1_1geometry_1_1index_1_1rtree_1a80db5532eb59f7a809bd44ded265eb17 parameters_type]]` const &` `parameters``,`
+      [^[link classboost_1_1geometry_1_1index_1_1rtree_1a43a7adb311cafc08e23010ccb4e97fb5 indexable_getter]]` const &` `getter``,`
+      [^[link classboost_1_1geometry_1_1index_1_1rtree_1ad8fe544de514014a1bd87ea1b881ff9b value_equal]]` const &` `equal``,`
+      [^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &` `allocator``,`
+      `PackAlloc const &` `temp_allocator``)`
+]
+
+[heading Parameter(s)]
+[table 
+[[Type][Name][Description]]
+[[`Iterator`][ `first` ][The beginning of the range of Values. ]]
+[[`Iterator`][ `last` ][The end of the range of Values. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1a80db5532eb59f7a809bd44ded265eb17 parameters_type]]` const &`][ `parameters` ][The parameters object. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1a43a7adb311cafc08e23010ccb4e97fb5 indexable_getter]]` const &`][ `getter` ][The function object extracting Indexable from Value. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1ad8fe544de514014a1bd87ea1b881ff9b value_equal]]` const &`][ `equal` ][The function object comparing Values. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &`][ `allocator` ][The allocator object for persistent data in the tree. ]]
+[[`PackAlloc const &`][ `temp_allocator` ][The temporary allocator object used when packing.]]
+]
+[heading Throws]
+
+
+* If allocator copy constructor throws. 
+* If Value copy constructor or copy assignment throws. 
+* If allocation throws or returns invalid value. 
+
+
+
+[endsect]
+
+[#classboost_1_1geometry_1_1index_1_1rtree_1aa2615aff643804935c530a668663807f]
+[section:rtree_ran_cr_par_cr_ind_cr_val_cr_all_cr_pac_cr rtree(Range const &, parameters_type const &, indexable_getter const &, value_equal const &, allocator_type const &, PackAlloc const &)]
+'''<indexterm><primary>rtree</primary></indexterm>'''
+The constructor. 
+
+[heading Description]
+The tree is created using packing algorithm and a temporary packing allocator.[heading Synopsis]
+[pre
+`template<``typename Range``,` `typename PackAlloc``>`
+`rtree``(``Range const &` `rng``,`
+      [^[link classboost_1_1geometry_1_1index_1_1rtree_1a80db5532eb59f7a809bd44ded265eb17 parameters_type]]` const &` `parameters``,`
+      [^[link classboost_1_1geometry_1_1index_1_1rtree_1a43a7adb311cafc08e23010ccb4e97fb5 indexable_getter]]` const &` `getter``,`
+      [^[link classboost_1_1geometry_1_1index_1_1rtree_1ad8fe544de514014a1bd87ea1b881ff9b value_equal]]` const &` `equal``,`
+      [^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &` `allocator``,`
+      `PackAlloc const &` `temp_allocator``)`
+]
+
+[heading Modifier(s)]
+``explicit ``[heading Parameter(s)]
+[table 
+[[Type][Name][Description]]
+[[`Range const &`][ `rng` ][The range of Values. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1a80db5532eb59f7a809bd44ded265eb17 parameters_type]]` const &`][ `parameters` ][The parameters object. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1a43a7adb311cafc08e23010ccb4e97fb5 indexable_getter]]` const &`][ `getter` ][The function object extracting Indexable from Value. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1ad8fe544de514014a1bd87ea1b881ff9b value_equal]]` const &`][ `equal` ][The function object comparing Values. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &`][ `allocator` ][The allocator object for persistent data in the tree. ]]
+[[`PackAlloc const &`][ `temp_allocator` ][The temporary allocator object used when packing.]]
+]
+[heading Throws]
+
+
+* If allocator copy constructor throws. 
+* If Value copy constructor or copy assignment throws. 
+* If allocation throws or returns invalid value. 
+
+
+
+[endsect]
+
+[#classboost_1_1geometry_1_1index_1_1rtree_1a0d5b2e4876782e6950fbbdfa60f7406b]
+[section rtree(Iterator, Iterator, allocator_type const &)]
+'''<indexterm><primary>rtree</primary></indexterm>'''
+The constructor. 
+
+[heading Description]
+The tree is created using packing algorithm and a temporary packing allocator.[heading Synopsis]
+[pre
+`template<``typename Iterator``>`
+`rtree``(``Iterator` `first``,`
+      `Iterator` `last``,`
+      [^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &` `allocator``)`
+]
+
+[heading Parameter(s)]
+[table 
+[[Type][Name][Description]]
+[[`Iterator`][ `first` ][The beginning of the range of Values. ]]
+[[`Iterator`][ `last` ][The end of the range of Values. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &`][ `allocator` ][The allocator object for persistent data in the tree.]]
+]
+[heading Throws]
+
+
+* If allocator copy constructor throws. 
+* If Value copy constructor or copy assignment throws. 
+* If allocation throws or returns invalid value. 
+
+
+
+[endsect]
+
+[#classboost_1_1geometry_1_1index_1_1rtree_1a90857cba52523d5ff0e7b2a87081ccf5]
+[section rtree(Range const &, allocator_type const &)]
+'''<indexterm><primary>rtree</primary></indexterm>'''
+The constructor. 
+
+[heading Description]
+The tree is created using packing algorithm and a temporary packing allocator.[heading Synopsis]
+[pre
+`template<``typename Range``>`
+`rtree``(``Range const &` `rng``,` [^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &` `allocator``)`
+]
+
+[heading Modifier(s)]
+``explicit ``[heading Parameter(s)]
+[table 
+[[Type][Name][Description]]
+[[`Range const &`][ `rng` ][The range of Values. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &`][ `allocator` ][The allocator object for persistent data in the tree.]]
+]
+[heading Throws]
+
+
+* If allocator copy constructor throws. 
+* If Value copy constructor or copy assignment throws. 
+* If allocation throws or returns invalid value. 
+
+
+
+[endsect]
+
+[#classboost_1_1geometry_1_1index_1_1rtree_1aed5c247a23b8236b2e80867acefe55ec]
+[section:rtree_ite_ite_all_cr_pac_cr rtree(Iterator, Iterator, allocator_type const &, PackAlloc const &)]
+'''<indexterm><primary>rtree</primary></indexterm>'''
+The constructor. 
+
+[heading Description]
+The tree is created using packing algorithm and a temporary packing allocator.[heading Synopsis]
+[pre
+`template<``typename Iterator``,` `typename PackAlloc``>`
+`rtree``(``Iterator` `first``,`
+      `Iterator` `last``,`
+      [^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &` `allocator``,`
+      `PackAlloc const &` `temp_allocator``)`
+]
+
+[heading Parameter(s)]
+[table 
+[[Type][Name][Description]]
+[[`Iterator`][ `first` ][The beginning of the range of Values. ]]
+[[`Iterator`][ `last` ][The end of the range of Values. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &`][ `allocator` ][The allocator object for persistent data in the tree. ]]
+[[`PackAlloc const &`][ `temp_allocator` ][The temporary allocator object used when packing.]]
+]
+[heading Throws]
+
+
+* If allocator copy constructor throws. 
+* If Value copy constructor or copy assignment throws. 
+* If allocation throws or returns invalid value. 
+
+
+
+[endsect]
+
+[#classboost_1_1geometry_1_1index_1_1rtree_1aceb504e98a611ef81f96b2df357d03f3]
+[section:rtree_ran_cr_all_cr_pac_cr rtree(Range const &, allocator_type const &, PackAlloc const &)]
+'''<indexterm><primary>rtree</primary></indexterm>'''
+The constructor. 
+
+[heading Description]
+The tree is created using packing algorithm and a temporary packing allocator.[heading Synopsis]
+[pre
+`template<``typename Range``,` `typename PackAlloc``>`
+`rtree``(``Range const &` `rng``,`
+      [^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &` `allocator``,`
+      `PackAlloc const &` `temp_allocator``)`
+]
+
+[heading Modifier(s)]
+``explicit ``[heading Parameter(s)]
+[table 
+[[Type][Name][Description]]
+[[`Range const &`][ `rng` ][The range of Values. ]]
+[[[^[link classboost_1_1geometry_1_1index_1_1rtree_1ab6618b5c7e88ed70533233fbac0f5b2e allocator_type]]` const &`][ `allocator` ][The allocator object for persistent data in the tree. ]]
+[[`PackAlloc const &`][ `temp_allocator` ][The temporary allocator object used when packing.]]
 ]
 [heading Throws]
 
@@ -677,7 +891,7 @@ This is a special kind of predicate which allows to pass a user-defined function
 
 If the nearest predicate is passed a k-nearest neighbor search will be performed. This query will result in returning k values to the output iterator. Only one nearest predicate may be passed to the query. It may be generated by: 
 
-* [^[link group__predicates_1ga8772d9d3e5b12b3292f7d94d47310e3e boost::geometry::index::nearest()]].
+* [^[link group__predicates_1ga476c3b5d51e60d5c8e1e743340cb2b2b boost::geometry::index::nearest()]].
 
 [*Connecting predicates]
 
@@ -734,7 +948,7 @@ tree.query(bgi::intersects(box),
 [heading Throws]
 If Value copy constructor or copy assignment throws. If predicates copy throws.
 
-[warning Only one [^[link group__predicates_1ga8772d9d3e5b12b3292f7d94d47310e3e nearest()]] predicate may be passed to the query. Passing more of them results in compile-time error.]
+[warning Only one [^[link group__predicates_1ga476c3b5d51e60d5c8e1e743340cb2b2b nearest()]] predicate may be passed to the query. Passing more of them results in compile-time error.]
 
 [endsect]
 

@@ -16,11 +16,15 @@
 #include <boost/beast/core/bind_handler.hpp>
 #include <boost/beast/test/yield_to.hpp>
 #include <boost/asio/buffer.hpp>
+#include <boost/asio/execution.hpp>
 #include <boost/asio/io_context.hpp>
+#include <boost/asio/any_io_executor.hpp>
 #include <boost/asio/read.hpp>
-#include <boost/asio/spawn.hpp>
 #include <boost/asio/strand.hpp>
 #include <boost/optional.hpp>
+#if BOOST_ASIO_HAS_CO_AWAIT
+#include <boost/asio/use_awaitable.hpp>
+#endif
 
 namespace boost {
 namespace beast {
@@ -39,9 +43,17 @@ public:
             buffered_read_stream<test::stream, multi_buffer> srs(ioc);
             buffered_read_stream<test::stream, multi_buffer> srs2(std::move(srs));
             srs = std::move(srs2);
+#if defined(BOOST_ASIO_USE_TS_EXECUTOR_AS_DEFAULT)
             BEAST_EXPECT(&srs.get_executor().context() == &ioc);
             BEAST_EXPECT(
-                &srs.get_executor().context() == &srs2.get_executor().context());
+                &srs.get_executor().context() ==
+                &srs2.get_executor().context());
+#else
+            BEAST_EXPECT(&net::query(srs.get_executor(), net::execution::context) == &ioc);
+            BEAST_EXPECT(
+                &net::query(srs.get_executor(), net::execution::context) ==
+                &net::query(srs2.get_executor(), net::execution::context));
+#endif
         }
         {
             test::stream ts{ioc};
@@ -211,6 +223,22 @@ public:
         }
     };
 
+#if BOOST_ASIO_HAS_CO_AWAIT
+    void testAwaitableCompiles(
+        buffered_read_stream<test::stream, flat_buffer>& stream,
+        net::mutable_buffer rxbuf,
+        net::const_buffer txbuf)
+    {
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            stream.async_read_some(rxbuf, net::use_awaitable))>);
+
+        static_assert(std::is_same_v<
+            net::awaitable<std::size_t>, decltype(
+            stream.async_write_some(txbuf, net::use_awaitable))>);
+    }
+#endif
+
     void run() override
     {
         testSpecialMembers();
@@ -219,8 +247,11 @@ public:
         {
             testRead(yield);
         });
-
         testAsyncLoop();
+
+#if BOOST_ASIO_HAS_CO_AWAIT
+        boost::ignore_unused(&buffered_read_stream_test::testAwaitableCompiles);
+#endif
     }
 };
 

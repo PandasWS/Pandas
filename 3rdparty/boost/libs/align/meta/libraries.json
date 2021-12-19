@@ -1,7 +1,7 @@
 {
   "key": "align",
   "name": "Align",
-  "description": "Memory alignment functions, allocators, and traits.",
+  "description": "Memory alignment functions, allocators, traits.",
   "authors": [
     "Glen Fernandes"
   ],

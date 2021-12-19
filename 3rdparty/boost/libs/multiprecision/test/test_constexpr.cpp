@@ -8,10 +8,8 @@
 #include <boost/multiprecision/float128.hpp>
 #endif
 
-#ifndef BOOST_NO_CXX11_CONSTEXPR
-
 template <class T>
-void silence_unused(const T&){}
+void silence_unused(const T&) {}
 
 template <class T>
 void test1()
@@ -58,4 +56,3 @@ template void test2<number<cpp_int_backend<2048, 2048, signed_magnitude, uncheck
 template void test1<float128>();
 #endif
 
-#endif

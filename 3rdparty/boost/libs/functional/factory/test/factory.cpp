@@ -1,53 +1,87 @@
-/*=============================================================================
-    Copyright (c) 2007 Tobias Schwinger
+/*
+Copyright 2007 Tobias Schwinger
 
-    Use modification and distribution are subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt).
-==============================================================================*/
+Copyright 2019 Glen Joseph Fernandes
+(glenjofe@gmail.com)
 
+Distributed under the Boost Software License, Version 1.0.
+(http://www.boost.org/LICENSE_1_0.txt)
+*/
 #include <boost/functional/factory.hpp>
 #include <boost/core/lightweight_test.hpp>
+#include <boost/smart_ptr/scoped_ptr.hpp>
 
-#include <memory>
+class sum {
+public:
+    explicit sum(int i0 = 0, int i1 = 0, int i2 = 0, int i3 = 0,
+                 int i4 = 0, int i5 = 0, int i6 = 0, int i7 = 0,
+                 int i8 = 0, int i9 = 0)
+        : value_(i0 + i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9) { }
 
-class sum
-{
-    int val_sum;
-  public:
-    sum(int a, int b) : val_sum(a + b) { }
+    int get() const {
+        return value_;
+    }
 
-    operator int() const { return this->val_sum; }
+private:
+    int value_;
 };
-
-// Suppress warnings about std::auto_ptr.
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#endif
 
 int main()
 {
-    int one = 1, two = 2;
+    boost::factory<sum*> x;
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+    int g = 7;
+    int h = 8;
+    int i = 9;
+    int j = 10;
     {
-      sum* instance( boost::factory< sum* >()(one,two) );
-      BOOST_TEST(*instance == 3);
+        boost::scoped_ptr<sum> s(x());
+        BOOST_TEST(s->get() == 0);
     }
-#if !defined(BOOST_NO_AUTO_PTR)
     {
-      std::auto_ptr<sum> instance( boost::factory< std::auto_ptr<sum> >()(one,two) );
-      BOOST_TEST(*instance == 3);
+        boost::scoped_ptr<sum> s(x(a));
+        BOOST_TEST(s->get() == 1);
     }
-#endif
-#if !defined(BOOST_NO_CXX11_SMART_PTR)
     {
-      std::unique_ptr<sum> instance( boost::factory< std::unique_ptr<sum> >()(one,two) );
-      BOOST_TEST(*instance == 3);
+        boost::scoped_ptr<sum> s(x(a, b));
+        BOOST_TEST(s->get() == 3);
     }
-#endif
+    {
+        boost::scoped_ptr<sum> s(x(a, b, c));
+        BOOST_TEST(s->get() == 6);
+    }
+    {
+        boost::scoped_ptr<sum> s(x(a, b, c, d));
+        BOOST_TEST(s->get() == 10);
+    }
+    {
+        boost::scoped_ptr<sum> s(x(a, b, c, d, e));
+        BOOST_TEST(s->get() == 15);
+    }
+    {
+        boost::scoped_ptr<sum> s(x(a, b, c, d, e, f));
+        BOOST_TEST(s->get() == 21);
+    }
+    {
+        boost::scoped_ptr<sum> s(x(a, b, c, d, e, f, g));
+        BOOST_TEST(s->get() == 28);
+    }
+    {
+        boost::scoped_ptr<sum> s(x(a, b, c, d, e, f, g, h));
+        BOOST_TEST(s->get() == 36);
+    }
+    {
+        boost::scoped_ptr<sum> s(x(a, b, c, d, e, f, g, h, i));
+        BOOST_TEST(s->get() == 45);
+    }
+    {
+        boost::scoped_ptr<sum> s(x(a, b, c, d, e, f, g, h, i, j));
+        BOOST_TEST(s->get() == 55);
+    }
     return boost::report_errors();
 }
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif

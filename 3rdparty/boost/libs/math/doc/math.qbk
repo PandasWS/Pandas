@@ -1,15 +1,15 @@
 [book Math Toolkit
     [quickbook 1.7]
-    [copyright 2006-2019 Nikhar Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan Råde, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle Walker and Xiaogang Zhang]
+    [copyright 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle Walker and Xiaogang Zhang]
     [/purpose ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22]
     [license
         Distributed under the Boost Software License, Version 1.0.
         (See accompanying file LICENSE_1_0.txt or copy at
         [@http://www.boost.org/LICENSE_1_0.txt])
     ]
-    [authors [Agrawal, Nikhar], [Bikineev, Anton], [Bristow, Paul A.], [Holin, Hubert], [Guazzone, Marco], [Kormanyos, Christopher], [Lalande, Bruno], [Maddock, John], [Murphy, Jeremy W.], [Pulver, Matthew], [Råde, Johan], [Sobotta, Benjamin], [Sewani, Gautam], [Thompson, Nicholas], [van den Berg, Thijs], [Walker, Daryle], [Zhang, Xiaogang]]
+    [authors [Agrawal, Nikhar], [Bikineev, Anton], [Borland, Matthew], [Bristow, Paul A.], [Holin, Hubert], [Guazzone, Marco], [Kormanyos, Christopher], [Lalande, Bruno], [Maddock, John], [Miller, Evan], [Murphy, Jeremy W.], [Pulver, Matthew], [Råde, Johan], [Sobotta, Benjamin], [Sewani, Gautam], [Thompson, Nicholas], [van den Berg, Thijs], [Walker, Daryle], [Zhang, Xiaogang]]
     [/last-revision $Date$]
-    [version 2.10.0]
+    [version 3.1.0]
 ]
 
 [template mathpart[id title]
@@ -17,25 +17,45 @@
 [template endmathpart[]
 [block '''</chapter>''']]
 
-[/ \u00E5 = Latin small letter A with ring above doesn't seem to work in authors with Quickbook 1.5]
-
-[template equation[name]  '''<inlinemediaobject>
+[/insert Equation as an image, previous generated with an external tool like Latex.]
+[template equation[name]
+[:
+'''<inlinemediaobject>
 <imageobject role="html">
 <imagedata fileref="../equations/'''[name]'''.svg"></imagedata>
 </imageobject>
 <imageobject role="print">
 <imagedata fileref="../equations/'''[name]'''.svg"></imagedata>
 </imageobject>
-</inlinemediaobject>''']
+</inlinemediaobject>'''
+]
+]
 
-[template graph[name]  '''<inlinemediaobject>
+[/Used thus [equation ellint6] ]
+
+[/insert Graph as an SVG or PNG image, previous generated with an external tool like SVG_plot.]
+
+[template graph[name]
+[:
+'''<inlinemediaobject>
 <imageobject role="html">
 <imagedata align="center" fileref="../graphs/'''[name]'''.svg"></imagedata>
 </imageobject>
 <imageobject role="print">
 <imagedata align="center" fileref="../graphs/'''[name]'''.svg"></imagedata>
 </imageobject>
-</inlinemediaobject>''']
+</inlinemediaobject>'''
+]
+]
+
+[/insert Indented one-line expression italic and serif font probably using Unicode symbols for Greek and symbols.]
+[/Example: [expression [sub 1]F[sub 0](a, z) = (1-z)[super -a]]]
+[template expression[equation]
+[:
+[role serif_italic [equation]]
+]
+[/ Hint you may need to enclose equation in brackets if it contains comma(s) to avoid "error invalid number of arguments"]
+]
 
 [import ../../../tools/auto_index/include/auto_index_helpers.qbk]
 [/ Must be first included file!]
@@ -49,12 +69,15 @@
 [import overview/tr1.qbk] [/tr1 docs also appear in more than one place!]
 [import overview/roadmap.qbk] [/ for history]
 
+[def __build_html]
+
 [def __effects [*Effects: ]]
 [def __formula [*Formula: ]]
 [def __exm1 '''<code>e<superscript>x</superscript> - 1</code>'''] [/e^x -1]
 [def __ex '''<code>e<superscript>x</superscript></code>'''] [/e^x]
 [def __te '''2&#x025B;''']  [/small Latin letter open e]
 
+[/These should be in html4_symbols.qbk]
 [def __ceilR '''&#x2309;''']
 [def __ceilL '''&#2308;''']
 [def __floorR '''&#x230B;''']
@@ -67,8 +90,7 @@
 [def __nearequal '''&#x224A;''']
 [def __spaces '''&#x2000;&#x2000;'''] [/ two spaces - useful for an indent.]
 
-[def __tick [role aligncenter [role green \u2714]]] [/ u2714 is a HEAVY CHECK MARK tick (2713 check
-mark)]
+[def __tick [role aligncenter [role green \u2714]]] [/ u2714 is a HEAVY CHECK MARK tick (2713 check mark)]
 [def __cross [role aligncenter [role red \u2718]]] [/ u2718 is a heavy cross]
 [def __star [role aligncenter [role red \u2736]]] [/ 6-point star]
 
@@ -246,6 +268,20 @@ and use the function's name as the link text.]
 [def __jacobi_sn [link math_toolkit.jacobi.jacobi_sn jacobi_sn]]
 [def __jacobi_sc [link math_toolkit.jacobi.jacobi_sc jacobi_sc]]
 
+[/Jacobi Theta Functions]
+[def __jacobi_theta1 [link math_toolkit.jacobi_theta.jacobi_theta1 jacobi_theta1]]
+[def __jacobi_theta1tau [link math_toolkit.jacobi_theta.jacobi_theta1 jacobi_theta1tau]]
+[def __jacobi_theta2 [link math_toolkit.jacobi_theta.jacobi_theta2 jacobi_theta2]]
+[def __jacobi_theta2tau [link math_toolkit.jacobi_theta.jacobi_theta2 jacobi_theta2tau]]
+[def __jacobi_theta3 [link math_toolkit.jacobi_theta.jacobi_theta3 jacobi_theta3]]
+[def __jacobi_theta3tau [link math_toolkit.jacobi_theta.jacobi_theta3 jacobi_theta3tau]]
+[def __jacobi_theta3m1 [link math_toolkit.jacobi_theta.jacobi_theta3 jacobi_theta3m1]]
+[def __jacobi_theta3m1tau [link math_toolkit.jacobi_theta.jacobi_theta3 jacobi_theta3m1tau]]
+[def __jacobi_theta4 [link math_toolkit.jacobi_theta.jacobi_theta4 jacobi_theta4]]
+[def __jacobi_theta4tau [link math_toolkit.jacobi_theta.jacobi_theta4 jacobi_theta4tau]]
+[def __jacobi_theta4m1 [link math_toolkit.jacobi_theta.jacobi_theta4 jacobi_theta4m1]]
+[def __jacobi_theta4m1tau [link math_toolkit.jacobi_theta.jacobi_theta4 jacobi_theta4m1tau]]
+
 [/sinus cardinals]
 [def __sinc_pi  [link math_toolkit.sinc.sinc_pi sinc_pi]]
 [def __sinhc_pi  [link math_toolkit.sinc.sinhc_pi sinhc_pi]]
@@ -275,6 +311,7 @@ and use the function's name as the link text.]
 [def __log1p [link math_toolkit.powers.log1p log1p]]
 [def __cbrt [link math_toolkit.powers.cbrt cbrt]]
 [def __sqrt1pm1 [link math_toolkit.powers.sqrt1pm1 sqrt1pm1]]
+[def __rsqrt [link math_toolkit.powers.rsqrt rsqrt]]
 [def __powm1 [link math_toolkit.powers.powm1 powm1]]
 [def __hypot [link math_toolkit.powers.hypot hypot]]
 [def __pow [link math_toolkit.powers.ct_pow pow]]
@@ -300,6 +337,7 @@ and use the function's name as the link text.]
 [def __legendre_q [link math_toolkit.sf_poly.legendre legendre_q]]
 [def __legendre_next [link math_toolkit.sf_poly.legendre legendre_next]]
 [def __hermite [link math_toolkit.sf_poly.hermite hermite]]
+[def __cardinal_b_splines [link math_toolkit.sf_poly.cardinal_b_splines cardinal_b_splines]]
 
 [/Misc]
 [def __expint [link math_toolkit.expint.expint_i expint]]
@@ -307,6 +345,7 @@ and use the function's name as the link text.]
 [def __owens_t [link math_toolkit.owens_t Owens T]]
 [def __constants_intro [link math_toolkit.constants_intro  constants]]
 [def __constants[link math_toolkit.constants  constants]]
+[def __math_constants[link math_toolkit.constants  constants]]
 
 [/tools]
 [def __tuple [link math_toolkit.internals.tuples boost::math::tuple]]
@@ -348,6 +387,7 @@ and use the function's name as the link text.]
 [def __inverse_gamma_distrib [link math_toolkit.dist_ref.dists.inverse_gamma_dist Inverse Gamma Distribution]]
 [def __inverse_gaussian_distrib [link math_toolkit.dist_ref.dists.inverse_gaussian_dist Inverse Gaussian Distribution]]
 [def __inverse_chi_squared_distrib [link math_toolkit.dist_ref.dists.inverse_chi_squared_dist Inverse chi squared Distribution]]
+[def __kolmogorov_smirnov_distrib [link math_toolkit.dist_ref.dists.kolmogorov_smirnov Kolmogorov-Smirnov Distribution]]
 [def __laplace_distrib [link math_toolkit.dist_ref.dists.laplace_dist Laplace Distribution]]
 [def __logistic_distrib [link math_toolkit.dist_ref.dists.logistic_dist Logistic Distribution]]
 [def __lognormal_distrib [link math_toolkit.dist_ref.dists.lognormal_dist Log-normal Distribution]]
@@ -382,6 +422,7 @@ and use the function's name as the link text.]
 [def __policy_macros [link math_toolkit.pol_ref.policy_defaults Using Macros to Change the Policy Defaults]]
 
 
+
 [def __usual_accessors __cdf, __pdf, __quantile, __hazard,
    __chf, __mean, __median, __mode, __variance, __sd, __skewness,
    __kurtosis, __kurtosis_excess, __range and __support]
@@ -404,7 +445,7 @@ and use the function's name as the link text.]
 [def __multiprecision [@boost:/libs/multiprecision/doc/html/index.html Boost.Multiprecision]]
 
 [def __gcc_quad_type [@https://gcc.gnu.org/onlinedocs/gcc-9.1.0/libquadmath/index.html GCC 128-bit floating-point type]]
-
+[def __float128_literals [@boost:/libs/multiprecision/doc/html/boost_multiprecision/tut/lits.html Boost.Multiprecision 128-bit Q floating-point literals]]
 [def __cpp_dec_float [@boost:/libs/multiprecision/doc/html/boost_multiprecision/tut/floats/cpp_dec_float.html cpp_dec_float]]
 [def __cpp_bin_float [@boost:/libs/multiprecision/doc/html/boost_multiprecision/tut/floats/cpp_bin_float.html cpp_bin_float]]
 [/ @boost:/libs/test/doc/index.html  doesn't work for Boost.Test non-quickbook, so use instead]
@@ -423,6 +464,7 @@ and use the function's name as the link text.]
 [def __Mathematica [@http://www.wolfram.com/products/mathematica/index.html Wolfram Mathematica]]
 [def __Maple [@https://www.maplesoft.com Maple]]
 [def __WolframAlpha [@http://www.wolframalpha.com/ Wolfram Alpha]]
+[def __Wolfram_functions [@https://functions.wolfram.com functions.wolfram.com]]
 [def __TOMS748 [@http://portal.acm.org/citation.cfm?id=210111 TOMS Algorithm 748: enclosing zeros of continuous functions]]
 [def __TOMS910 [@http://portal.acm.org/citation.cfm?id=1916469 TOMS Algorithm 910: A Portable C++ Multiple-Precision System for Special-Function Calculations]]
 [def __why_complements [link why_complements why complements?]]
@@ -431,7 +473,7 @@ and use the function's name as the link text.]
 [def __building [link math_toolkit.building building libraries]]
 [def __e_float [@http://calgo.acm.org/910.zip e_float (TOMS Algorithm 910)]]
 [def __Abramowitz_Stegun M. Abramowitz and I. A. Stegun, Handbook of Mathematical Functions, NBS  (1964)]
-[def __DMLF [@http://dlmf.nist.gov/ NIST Digital Library of Mathematical Functions]]
+[def __DMLF [@http://dlmf.nist.gov/ NIST Digital Library of Mathematical Functions (DMLF)]]
 [def __floating_point  [@http://en.wikipedia.org/wiki/Floating_point Floating point]]
 [def __epsilon [@http://en.wikipedia.org/wiki/Machine_epsilon machine epsilon]]
 [def __ADL [@http://en.cppreference.com/w/cpp/language/adl Argument Dependent Lookup (ADL)]]
@@ -451,6 +493,11 @@ and use the function's name as the link text.]
 [def __rational_function [@https://en.wikipedia.org/wiki/Rational_function rational function]]
 [def __remez [@http://en.wikipedia.org/wiki/Remez_algorithm Remez algorithm]]
 [def __ULP [@https://en.wikipedia.org/wiki/Unit_in_the_last_place Unit in the Last Place]]
+[def __github [@github.com GitHub]]
+[def __github_boost [@https://github.com/boostorg Boost GitHub]]
+[def __github_math [@https://github.com/boostorg/math Boost.Math GitHub]]
+[def __github_multiprecision [@https://github.com/boostorg/math Boost.Multiprecision GitHub]]
+
 
 [/ Some composite templates]
 [template super[x]'''<superscript>'''[x]'''</superscript>''']
@@ -507,6 +554,7 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [mathpart overview Overview]
 [include overview/overview.qbk]
 [include overview/structure.qbk] [/getting about, directory and file structure.]
+[include overview/standalone.qbk]
 [include overview/result_type_calc.qbk]
 [include overview/error_handling.qbk]
 
@@ -543,6 +591,7 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [include fp_utilities/float_next.qbk]
 [include fp_utilities/float_comparison.qbk]
 [include fp_utilities/condition_numbers.qbk]
+[include fp_utilities/ulps_plots.qbk]
 [endmathpart]
 
 [mathpart cstdfloat..Specified-width floating-point typedefs]
@@ -556,12 +605,22 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [include distributions/dist_reference.qbk] [/includes all individual distribution.qbk files]
 [endmathpart] [/section:dist Statistical Distributions and Functions]
 
-[mathpart vector_functionals Vector Functionals]
-[include vector_functionals/univariate_statistics.qbk]
-[include vector_functionals/bivariate_statistics.qbk]
-[include vector_functionals/signal_statistics.qbk]
+[mathpart statistics Statistics ]
+[include statistics/univariate_statistics.qbk]
+[include statistics/bivariate_statistics.qbk]
+[include statistics/signal_statistics.qbk]
+[include statistics/anderson_darling.qbk]
+[include statistics/t_test.qbk]
+[include statistics/z_test.qbk]
+[include statistics/runs_test.qbk]
+[include statistics/ljung_box.qbk]
+[include statistics/linear_regression.qbk]
+[endmathpart] [/section:statistics Statistics]
+
+[mathpart vector_functionals Vector Functionals -  Norms]
 [include vector_functionals/norms.qbk]
 [endmathpart] [/section:vector_functionals Vector Functionals]
+
 
 [mathpart special Special Functions]
 
@@ -600,6 +659,9 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [include sf/hermite.qbk]
 [include sf/chebyshev.qbk]
 [include sf/spherical_harmonic.qbk]
+[include sf/cardinal_b_splines.qbk]
+[include sf/gegenbauer.qbk]
+[include sf/jacobi.qbk]
 [endsect] [/section:sf_poly Polynomials]
 
 [section:bessel Bessel Functions]
@@ -622,7 +684,11 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [include sf/ellint_legendre.qbk]
 [endsect] [/section:ellint Elliptic Integrals]
 
+[/Jacobi Elliptic Functions]
 [include sf/jacobi_elliptic.qbk]
+
+[/Jacobi Theta Functions]
+[include sf/jacobi_theta.qbk]
 
 [/ Lambert W function]
 [include sf/lambert_w.qbk]
@@ -633,11 +699,16 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 
 [include sf/expint.qbk]
 
+[include sf/hypergeometric.qbk]
+
 [include sf/powers.qbk]
 [include sf/sinc.qbk]
 [include sf/inv_hyper.qbk]
 
 [include sf/owens_t.qbk]
+[include sf/daubechies.qbk]
+
+[include sf/ccmath.qbk]
 
 [endmathpart] [/section:special Special Functions]
 
@@ -653,19 +724,26 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [include roots/roots_overview.qbk]
 [endmathpart] [/mathpart roots Root Finding Algorithms]
 
-
 [mathpart poly Polynomials and Rational Functions]
 [include internals/polynomial.qbk]
 [include internals/rational.qbk]
 [endmathpart]
 
 [mathpart interpolation Interpolation]
-[include interpolators/cubic_b_spline.qbk]
+[include interpolators/cardinal_cubic_b_spline.qbk]
 [include interpolators/cardinal_quadratic_b_spline.qbk]
+[include interpolators/cardinal_quintic_b_spline.qbk]
 [include interpolators/whittaker_shannon.qbk]
 [include interpolators/barycentric_rational_interpolation.qbk]
 [include interpolators/vector_barycentric_rational.qbk]
 [include interpolators/catmull_rom.qbk]
+[include interpolators/bezier_polynomial.qbk]
+[include interpolators/cardinal_trigonometric.qbk]
+[include interpolators/cubic_hermite.qbk]
+[include interpolators/makima.qbk]
+[include interpolators/pchip.qbk]
+[include interpolators/quintic_hermite.qbk]
+[include interpolators/bilinear_uniform.qbk]
 [endmathpart]
 
 [mathpart quadrature Quadrature and Differentiation]
@@ -675,9 +753,14 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [include quadrature/double_exponential.qbk]
 [include quadrature/ooura_fourier_integrals.qbk]
 [include quadrature/naive_monte_carlo.qbk]
+[include quadrature/wavelet_transforms.qbk]
 [include differentiation/numerical_differentiation.qbk]
 [include differentiation/autodiff.qbk]
 [include differentiation/lanczos_smoothing.qbk]
+[endmathpart]
+
+[mathpart filters Filters]
+[include filters/daubechies.qbk]
 [endmathpart]
 
 [include complex/complex-tr1.qbk]
@@ -690,7 +773,14 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [include internals/internals_overview.qbk]
 [section:internals Internal tools]
 [include internals/series.qbk]
+[include internals/agm.qbk]
 [include internals/fraction.qbk]
+[include internals/simple_continued_fraction.qbk]
+[include internals/centered_continued_fraction.qbk]
+[include internals/luroth_expansion.qbk]
+[include internals/engel_expansion.qbk]
+[include internals/recurrence.qbk]
+[include internals/cohen_acceleration.qbk]
 [/include internals/rational.qbk] [/moved to tools]
 [include internals/tuple.qbk]
 [/include internals/polynomial.qbk] [/moved to tools]
@@ -740,6 +830,7 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [section:history2 History and What's New]
 [history]
 [endsect]
+
 [include overview/issues.qbk]
 [include overview/credits.qbk]
 [/include test_HTML4_symbols.qbk]

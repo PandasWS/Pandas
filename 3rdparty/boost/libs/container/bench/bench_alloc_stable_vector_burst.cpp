@@ -26,19 +26,35 @@
 #include <boost/container/adaptive_pool.hpp>
 #include <boost/container/stable_vector.hpp>
 #include <boost/container/vector.hpp>
-#include <boost/timer/timer.hpp>
+#include <boost/move/detail/nsec_clock.hpp>
 
-using boost::timer::cpu_timer;
-using boost::timer::cpu_times;
-using boost::timer::nanosecond_type;
+using boost::move_detail::cpu_timer;
+using boost::move_detail::cpu_times;
+using boost::move_detail::nanosecond_type;
 
 namespace bc = boost::container;
 
-typedef std::allocator<int>   StdAllocator;
-typedef bc::allocator<int, 1> AllocatorPlusV1;
-typedef bc::allocator<int, 2> AllocatorPlusV2;
+class MyInt
+{
+   int int_;
+
+   public:
+   MyInt(int i = 0) : int_(i){}
+   MyInt(const MyInt &other)
+      :  int_(other.int_)
+   {}
+   MyInt & operator=(const MyInt &other)
+   {
+      int_ = other.int_;
+      return *this;
+   }
+};
+
+typedef std::allocator<MyInt>   StdAllocator;
+typedef bc::allocator<MyInt, 1> AllocatorPlusV1;
+typedef bc::allocator<MyInt, 2> AllocatorPlusV2;
 typedef bc::adaptive_pool
-   < int
+   < MyInt
    , bc::ADP_nodes_per_block
    , 0//bc::ADP_max_free_blocks
    , 2
@@ -58,27 +74,10 @@ template<> struct get_allocator_name<AllocatorPlusV2>
 template<> struct get_allocator_name<AdPool2PercentV2>
 {  static const char *get() {  return "AdPool2PercentV2";  } };
 
-class MyInt
-{
-   int int_;
-
-   public:
-   MyInt(int i = 0) : int_(i){}
-   MyInt(const MyInt &other)
-      :  int_(other.int_)
-   {}
-   MyInt & operator=(const MyInt &other)
-   {
-      int_ = other.int_;
-      return *this;
-   }
-};
-
 template<class Allocator>
 struct get_vector
 {
-   typedef bc::vector
-      <MyInt, typename Allocator::template rebind<MyInt>::other> type;
+   typedef bc::vector<MyInt, Allocator> type;
    static const char *vector_name()
    {
       return "vector<MyInt>";
@@ -89,7 +88,7 @@ template<class Allocator>
 struct get_stable_vector
 {
    typedef bc::stable_vector
-      <MyInt, typename Allocator::template rebind<MyInt>::other> type;
+      <MyInt, Allocator> type;
    static const char *vector_name()
    {
       return "stable_vector<MyInt>";
@@ -97,7 +96,7 @@ struct get_stable_vector
 };
 
 template<template<class> class GetContainer, class Allocator>
-void stable_vector_test_template(unsigned int num_iterations, unsigned int num_elements, bool csv_output)
+void stable_vector_test_template(std::size_t num_iterations, std::size_t num_elements, bool csv_output)
 {
    typedef typename GetContainer<Allocator>::type vector_type;
    //std::size_t top_capacity = 0;
@@ -108,8 +107,8 @@ void stable_vector_test_template(unsigned int num_iterations, unsigned int num_e
          cpu_timer timer;
          timer.resume();
 
-         for(unsigned int r = 0; r != num_iterations; ++r){
-            l.insert(l.end(), num_elements, MyInt(r));
+         for(std::size_t r = 0; r != num_iterations; ++r){
+            l.insert(l.end(), num_elements, MyInt((int)r));
          }
 
          timer.stop();
@@ -124,7 +123,7 @@ void stable_vector_test_template(unsigned int num_iterations, unsigned int num_e
                         << ";"
                         << num_elements
                         << ";"
-                        << float(nseconds)/(num_iterations*num_elements)
+                        << float(nseconds)/float(num_iterations*num_elements)
                         << ";";
          }
          else{
@@ -133,13 +132,13 @@ void stable_vector_test_template(unsigned int num_iterations, unsigned int num_e
                         << GetContainer<Allocator>::vector_name()
                         << std::endl
                         << "  allocation ns:   "
-                        << float(nseconds)/(num_iterations*num_elements);
+                        << float(nseconds)/float(num_iterations*num_elements);
          }
 //         top_capacity = l.capacity();
          //Now preprocess ranges to erase
          std::vector<typename vector_type::iterator> ranges_to_erase;
          ranges_to_erase.push_back(l.begin());
-         for(unsigned int r = 0; r != num_iterations; ++r){
+         for(std::size_t r = 0; r != num_iterations; ++r){
             typename vector_type::iterator next_pos(ranges_to_erase[r]);
             std::size_t n = num_elements;
             while(n--){ ++next_pos; }
@@ -150,7 +149,7 @@ void stable_vector_test_template(unsigned int num_iterations, unsigned int num_e
          timer.stop();
          timer.start();
 
-         for(unsigned int r = 0; r != num_iterations; ++r){
+         for(std::size_t r = 0; r != num_iterations; ++r){
             std::size_t init_pos = (num_iterations-1)-r;
             l.erase(ranges_to_erase[init_pos], l.end());
          }
@@ -161,19 +160,19 @@ void stable_vector_test_template(unsigned int num_iterations, unsigned int num_e
    }
 
    if(csv_output){
-      std::cout      << float(nseconds)/(num_iterations*num_elements)
+      std::cout      << float(nseconds)/float(num_iterations*num_elements)
                      << std::endl;
    }
    else{
       std::cout      << '\t'
                      << "  deallocation ns: "
-                     << float(nseconds)/(num_iterations*num_elements)/*
+                     << float(nseconds)/float(num_iterations*num_elements)/*
                      << std::endl
                      << "  max capacity:    "
-                     << static_cast<unsigned int>(top_capacity)
+                     << static_cast<std::size_t>(top_capacity)
                      << std::endl
                      << "  remaining cap.   "
-                     << static_cast<unsigned int>(top_capacity - num_iterations*num_elements)
+                     << static_cast<std::size_t>(top_capacity - num_iterations*num_elements)
                      << " (" << (float(top_capacity)/float(num_iterations*num_elements) - 1)*100 << " %)"*/
                      << std::endl << std::endl;
    }
@@ -225,21 +224,21 @@ int main(int argc, const char *argv[])
    #define SIMPLE_IT
    #ifdef SINGLE_TEST
       #ifdef NDEBUG
-      unsigned int numit [] = { 40 };
+      std::size_t numit [] = { 40 };
       #else
-      unsigned int numit [] = { 4 };
+      std::size_t numit [] = { 4 };
       #endif
-      unsigned int numele [] = { 10000 };
+      std::size_t numele [] = { 10000 };
    #elif defined(SIMPLE_IT)
-      unsigned int numit [] = { 3 };
-      unsigned int numele [] = { 10000 };
+      std::size_t numit [] = { 3 };
+      std::size_t numele [] = { 10000 };
    #else
       #ifdef NDEBUG
-      unsigned int numit [] = { 40, 400, 4000, 40000 };
+      std::size_t numit [] = { 40, 400, 4000, 40000 };
       #else
-      unsigned int numit [] = { 4,   40,   400,   4000 };
+      std::size_t numit [] = { 4,   40,   400,   4000 };
       #endif
-      unsigned int numele [] = { 10000, 1000, 100,   10     };
+      std::size_t numele [] = { 10000, 1000, 100,   10     };
    #endif
 
    //Warning: range erasure is buggy. Vector iterators are not stable, so it is not
@@ -249,33 +248,33 @@ int main(int argc, const char *argv[])
 
    if(csv_output){
       print_header();
-      for(unsigned int i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
+      for(std::size_t i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
          stable_vector_test_template<get_stable_vector, StdAllocator>(numit[i], numele[i], csv_output);
       }
-      for(unsigned int i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
+      for(std::size_t i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
          stable_vector_test_template<get_vector, StdAllocator>(numit[i], numele[i], csv_output);
       }
-      for(unsigned int i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
+      for(std::size_t i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
          stable_vector_test_template<get_stable_vector, AllocatorPlusV1>(numit[i], numele[i], csv_output);
       }
-      for(unsigned int i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
+      for(std::size_t i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
          stable_vector_test_template<get_vector, AllocatorPlusV1>(numit[i], numele[i], csv_output);
       }
-      for(unsigned int i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
+      for(std::size_t i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
          stable_vector_test_template<get_stable_vector, AllocatorPlusV2>(numit[i], numele[i], csv_output);
       }
-      for(unsigned int i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
+      for(std::size_t i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
          stable_vector_test_template<get_vector, AllocatorPlusV2>(numit[i], numele[i], csv_output);
       }
-      for(unsigned int i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
+      for(std::size_t i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
          stable_vector_test_template<get_stable_vector, AdPool2PercentV2>(numit[i], numele[i], csv_output);
       }
-      for(unsigned int i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
+      for(std::size_t i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
          stable_vector_test_template<get_vector, AdPool2PercentV2>(numit[i], numele[i], csv_output);
       }
    }
    else{
-      for(unsigned int i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
+      for(std::size_t i = 0; i < sizeof(numele)/sizeof(numele[0]); ++i){
          std::cout   << "\n    -----------------------------------    \n"
                      <<   "  Iterations/Elements:         " << numit[i] << "/" << numele[i]
                      << "\n    -----------------------------------    \n";

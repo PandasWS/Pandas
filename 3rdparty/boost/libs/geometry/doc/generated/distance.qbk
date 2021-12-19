@@ -100,7 +100,7 @@ The free function distance calculates the distance between two geometries using 
 
 [heading Synopsis]
 ``template<typename Geometry1, typename Geometry2, typename Strategy>
-distance_result<Geometry1, Geometry2, Strategy>::type distance(Geometry1 const & geometry1, Geometry2 const & geometry2, Strategy const & strategy)``
+auto distance(Geometry1 const & geometry1, Geometry2 const & geometry2, Strategy const & strategy)``
 
 [heading Parameters]
 
@@ -145,7 +145,7 @@ The free function distance calculates the distance between two geometries. It us
 
 [heading Synopsis]
 ``template<typename Geometry1, typename Geometry2>
-default_distance_result<Geometry1, Geometry2>::type distance(Geometry1 const & geometry1, Geometry2 const & geometry2)``
+auto distance(Geometry1 const & geometry1, Geometry2 const & geometry2)``
 
 [heading Parameters]
 

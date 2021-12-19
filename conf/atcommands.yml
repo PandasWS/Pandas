@@ -531,6 +531,30 @@ Body:
     Help: |
       参数: <数量>
       增加/减少角色指定数量的 LUK (幸运)
+  - Command: pow
+    Help: |
+      Params: <amount>
+      Raises POW by given amount.
+  - Command: sta
+    Help: |
+      Params: <amount>
+      Raises STA by given amount.
+  - Command: wis
+    Help: |
+      Params: <amount>
+      Raises WIS by given amount.
+  - Command: spl
+    Help: |
+      Params: <amount>
+      Raises SPL by given amount.
+  - Command: con
+    Help: |
+      Params: <amount>
+      Raises CON by given amount.
+  - Command: crt
+    Help: |
+      Params: <amount>
+      Raises CRT by given amount.
   - Command: allstats
     Aliases:
       - allstat
@@ -539,6 +563,14 @@ Body:
     Help: |
       参数: <要提升的值>
       将角色的全部六维能力增加你指定的数值 (若不携带参数, 则提升到最大值)
+  - Command: alltraits
+    Aliases:
+      - alltrait
+      - traitall
+      - traitsall
+    Help: |
+      Params: <value>
+      Adds value in all traits (maximum if no value).
   - Command: addwarp
     Help: |
       参数: <目的地地图名称> <目的地X坐标> <目的地Y坐标> <传送点的 NPC 名称> 

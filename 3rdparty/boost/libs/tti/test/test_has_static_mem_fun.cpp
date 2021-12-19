@@ -17,6 +17,8 @@ int main()
   BOOST_TEST((BOOST_TTI_HAS_STATIC_MEMBER_FUNCTION_GEN(TSFunction)<AnotherType,AType::AStructType,boost::mpl::vector<AType::AnIntType,double> >::value));
   BOOST_TEST((!Pickedname<AnotherType,void>::value));
   
+  BOOST_TEST((BOOST_TTI_HAS_STATIC_MEMBER_FUNCTION_GEN(UnionStaticMemberFunction)<AnotherType::AnotherUnion,void>::value));
+  
   // Passing non-class enclosing type will return false
   
   BOOST_TEST((!TheTIntFunction<AnotherType &,AType,boost::mpl::vector<long,double> >::value));

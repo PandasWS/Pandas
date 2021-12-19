@@ -25,8 +25,6 @@ project boost/units/test :
         <toolset>msvc,<toolset-msvc:version>7.1:<cxxflags>"/wd4800"
 ;
 
-alias test_framework : /boost//unit_test_framework/<warnings-as-errors>off ;
-
 compile test_predicates.cpp ;
 compile test_negative_denominator.cpp ;
 compile test_dimensionless_ice1.cpp ;
@@ -41,7 +39,7 @@ run test_dimensionless_quantity.cpp ;
 run test_implicit_conversion.cpp ;
 run test_quantity.cpp ;
 run test_unit.cpp ;
-run test_conversion.cpp test_framework ;
+run test_conversion.cpp ;
 run test_base_dimension.cpp ;
 run test_absolute.cpp ;
 run test_default_conversion.cpp ;
@@ -51,10 +49,10 @@ run test_custom_unit.cpp ;
 run test_scaled_conversion.cpp ;
 run test_lambda.cpp ;
 run test_sqrt_scaled_unit.cpp ;
-run test_scaled_unit.cpp test_framework ;
-run test_output.cpp test_framework /boost//regex/<warnings-as-errors>off : : : <test-info>always_show_run_output ;
-run test_trig.cpp test_framework ;
-run test_information_units.cpp test_framework ;
+run test_scaled_unit.cpp ;
+run test_output.cpp /boost//regex/<warnings-as-errors>off : : : <test-info>always_show_run_output ;
+run test_trig.cpp ;
+run test_information_units.cpp ;
 
 compile-fail fail_implicit_conversion.cpp ;
 compile-fail fail_quantity_construct.cpp ;

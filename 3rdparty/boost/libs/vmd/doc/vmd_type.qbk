@@ -42,7 +42,7 @@ If this is not the case the behavior is undefined, and most likely
 a preprocessing error will occur.
 
 The macro used to test for a particular type in VMD is called BOOST_VMD_IS_TYPE.
-The macro takes a single parameter, the input to test against.
+The macro takes a single variadic parameter, the input to test against.
 
 The macro returns 1 if the parameter is a v-type, otherwise the macro returns 0.
 

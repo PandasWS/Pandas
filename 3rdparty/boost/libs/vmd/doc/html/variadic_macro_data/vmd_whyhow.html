@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Why and how to use</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;The Variadic Macro Data Library 1.9">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;The Variadic Macro Data Library 1.9">
+<link rel="home" href="../index.html" title="Chapter 1. The Variadic Macro Data Library 1.10">
+<link rel="up" href="../index.html" title="Chapter 1. The Variadic Macro Data Library 1.10">
 <link rel="prev" href="vmd_naming.html" title="Naming conventions">
 <link rel="next" href="vmd_vmacros.html" title="Using variadic macros">
 </head>
@@ -43,7 +43,8 @@
 <p>
       As a simple example:
     </p>
-<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">vmd</span><span class="special">/</span><span class="identifier">is_seq</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">preprocessor</span><span class="special">/</span><span class="identifier">control</span><span class="special">/</span><span class="identifier">iif</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">vmd</span><span class="special">/</span><span class="identifier">is_seq</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">vmd</span><span class="special">/</span><span class="identifier">is_tuple</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 
 <span class="preprocessor">#define</span> <span class="identifier">AMACRO</span><span class="special">(</span><span class="identifier">param</span><span class="special">)</span>                 <span class="special">\</span>
@@ -72,28 +73,26 @@
       to design macros with flexibility.
     </p>
 <p>
-      Another feature of the VMD library is the ability to parse identifiers. A system
-      of registering identifiers which VMD can recognize has been created. Once an
-      identifier is registered VMD can recognize it as part of macro input as an
-      identifier and return the identifier. Furthermore VMD can compare identifiers
-      for equality or inequality once an identifier has been pre-detected using VMD's
+      Another feature of the VMD library is the ability to parse identifiers. VMD
+      can recognize general identifiers as well as recognize specific identifiers,
+      which have been registered. Once an identifier is registered VMD can recognize
+      it as part of VMD sequences. Furthermore VMD can compare identifiers for equality
+      or inequality once a specific identifier has been pre-detected using VMD's
       system for pre-detecting identifiers.
     </p>
 <p>
       As another simple example:
     </p>
-<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">vmd</span><span class="special">/</span><span class="identifier">is_identifier</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">preprocessor</span><span class="special">/</span><span class="identifier">control</span><span class="special">/</span><span class="identifier">iif</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">vmd</span><span class="special">/</span><span class="identifier">is_general_identifier</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 
-<span class="preprocessor">#define</span> <span class="identifier">BOOST_VMD_REGISTER_NAME</span> <span class="special">(</span><span class="identifier">NAME</span><span class="special">)</span>
-<span class="preprocessor">#define</span> <span class="identifier">BOOST_VMD_REGISTER_ADDRESS</span> <span class="special">(</span><span class="identifier">ADDRESS</span><span class="special">)</span>
-
-<span class="preprocessor">#define</span> <span class="identifier">AMACRO1</span><span class="special">(</span><span class="identifier">param</span><span class="special">)</span>              <span class="special">\</span>
-  <span class="identifier">BOOST_PP_IIF</span>                      <span class="special">\</span>
-    <span class="special">(</span>                               <span class="special">\</span>
-    <span class="identifier">BOOST_VMD_IS_IDENTIFIER</span><span class="special">(</span><span class="identifier">param</span><span class="special">),</span> <span class="special">\</span>
-    <span class="identifier">AMACRO1_IDENTIFIER</span><span class="special">,</span>             <span class="special">\</span>
-    <span class="identifier">AMACRO1_NO_IDENTIFIER</span>           <span class="special">\</span>
-    <span class="special">)</span>                               <span class="special">\</span>
+<span class="preprocessor">#define</span> <span class="identifier">AMACRO1</span><span class="special">(</span><span class="identifier">param</span><span class="special">)</span>                      <span class="special">\</span>
+  <span class="identifier">BOOST_PP_IIF</span>                              <span class="special">\</span>
+    <span class="special">(</span>                                       <span class="special">\</span>
+    <span class="identifier">BOOST_VMD_IS_GENERAL_IDENTIFIER</span><span class="special">(</span><span class="identifier">param</span><span class="special">),</span> <span class="special">\</span>
+    <span class="identifier">AMACRO1_IDENTIFIER</span><span class="special">,</span>                     <span class="special">\</span>
+    <span class="identifier">AMACRO1_NO_IDENTIFIER</span>                   <span class="special">\</span>
+    <span class="special">)</span>                                       <span class="special">\</span>
   <span class="special">(</span><span class="identifier">param</span><span class="special">)</span>
 
 <span class="preprocessor">#define</span> <span class="identifier">AMACRO1_IDENTIFIER</span><span class="special">(</span><span class="identifier">param</span><span class="special">)</span> <span class="identifier">AMACRO1_</span> <span class="special">##</span> <span class="identifier">param</span>
@@ -102,18 +101,20 @@
 <span class="preprocessor">#define</span> <span class="identifier">AMACRO1_ADDRESS</span> <span class="identifier">Identifier</span> <span class="identifier">is</span> <span class="identifier">an</span> <span class="identifier">ADDRESS</span>
 </pre>
 <p>
-      Here we use VMD's identifier registration system to determine and handle a
-      particular identifier we may be expecting as a macro parameter. If the input
-      to 'AMACRO1' is 'NAME' the output is 'Identifier is a NAME'. If the input to
-      'AMACRO1' is 'ADDRESS' the output is 'Identifier is an ADDRESS'. Otherwise
+      Here we use VMD's ability to recoghnize general identifiers to determine and
+      handle a particular identifier we may be expecting as a macro parameter. If
+      the input to 'AMACRO1' is 'NAME' the output is 'Identifier is a NAME'. If the
+      input to 'AMACRO1' is 'ADDRESS' the output is 'Identifier is an ADDRESS'. Otherwise
       the output is 'Parameter is not an identifier'.
     </p>
 <p>
-      Identifier pre-detection makes things clearer, allowing us to detect within
-      VMD whether macro input matches a particular identifier. Using the same setup
-      as our previous example, but with identifier pre-detection:
+      Identifier registration and pre-detection makes things clearer, allowing us
+      to detect within VMD whether macro input matches a particular identifier. Using
+      the same setup as our previous example, but with identifier registration and
+      pre-detection:
     </p>
-<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">vmd</span><span class="special">/</span><span class="identifier">is_identifier</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">preprocessor</span><span class="special">/</span><span class="identifier">control</span><span class="special">/</span><span class="identifier">iif</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">vmd</span><span class="special">/</span><span class="identifier">is_identifier</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 
 <span class="preprocessor">#define</span> <span class="identifier">BOOST_VMD_REGISTER_NAME</span> <span class="special">(</span><span class="identifier">NAME</span><span class="special">)</span>
 <span class="preprocessor">#define</span> <span class="identifier">BOOST_VMD_DETECT_NAME_NAME</span>
@@ -147,12 +148,12 @@
 <p>
       The VMD library also has 2 different subtypes of identifiers which can always
       be recognized. The first are numbers, equivalent to the number in Boost PP,
-      numeric values with a range of 0-256. The second are v-types, which are identifiers
-      starting with BOOST_VMD_TYPE_ followed by a name for the type of data. As an
-      example, the v-type of a Boost PP tuple is BOOST_VMD_TYPE_TUPLE and the v-type
-      of a v-type itself is BOOST_VMD_TYPE_TYPE. All data types have their own v-type
-      identifier; types are recognized by the VMD macros and may be passed as input
-      data just like any other of the types of data VMD recognizes.
+      numeric values with a range of 0-BOOST_PP_LIMIT_MAG. The second are v-types,
+      which are identifiers starting with BOOST_VMD_TYPE_ followed by a name for
+      the type of data. As an example, the v-type of a Boost PP tuple is BOOST_VMD_TYPE_TUPLE
+      and the v-type of a v-type itself is BOOST_VMD_TYPE_TYPE. All data types have
+      their own v-type identifier; types are recognized by the VMD macros and may
+      be passed as input data just like any other of the types of data VMD recognizes.
     </p>
 <p>
       The VMD identifier system even has a way, to be explained later, for the end-user
@@ -162,7 +163,7 @@
       Another reason to use VMD is that VMD understands 'sequences' of the VMD data
       types. You can have a sequence of data types and VMD can convert the sequence
       to any of the Boost PP data types, or access any individual data type in a
-      sequence.
+      sequence. Idewntifiers in VMD sequences must be registered to be recognized.
     </p>
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">vmd</span><span class="special">/</span><span class="identifier">elem</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">vmd</span><span class="special">/</span><span class="identifier">to_tuple</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
@@ -174,12 +175,13 @@
 <span class="identifier">BOOST_VMD_ELEM</span><span class="special">(</span><span class="number">2</span><span class="special">,</span><span class="identifier">ASEQUENCE</span><span class="special">)</span>
 </pre>
 <p>
-      Our first expansion returns the tuple:
+      Our first expansion <code class="computeroutput"><span class="identifier">BOOST_VMD_TO_TUPLE</span><span class="special">(</span><span class="identifier">ASEQUENCE</span><span class="special">)</span></code> returns the tuple:
     </p>
 <pre class="programlisting"><span class="special">((</span><span class="number">1</span><span class="special">,</span><span class="number">2</span><span class="special">),</span><span class="identifier">NAME</span><span class="special">,</span><span class="number">147</span><span class="special">,</span><span class="identifier">BOOST_VMD_TYPE_NUMBER</span><span class="special">,(</span><span class="identifier">a</span><span class="special">)(</span><span class="identifier">b</span><span class="special">))</span>
 </pre>
 <p>
-      Our second expansion returns the sequence element:
+      Our second expansion <code class="computeroutput"><span class="identifier">BOOST_VMD_ELEM</span><span class="special">(</span><span class="number">2</span><span class="special">,</span><span class="identifier">ASEQUENCE</span><span class="special">)</span></code>
+      returns the sequence element:
     </p>
 <pre class="programlisting"><span class="number">147</span>
 </pre>
@@ -208,7 +210,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2010-2017 Tropic Software
+<td align="right"><div class="copyright-footer">Copyright © 2010-2017 Tropic Software
       East Inc</div></td>
 </tr></table>
 <hr>

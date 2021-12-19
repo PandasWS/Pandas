@@ -77,7 +77,7 @@ void expected_results()
          "[^|]*",                          // platform
          "real_concept",                     // test type(s)
          "[^|]*small[^|]*",                   // test data group
-         "[^|]*", 70000, 8000);                  // test function
+         "[^|]*", 98000, 12000);                  // test function
    }
    //
    // These high error rates are seen on on some Linux
@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_CASE( test_main )
 #ifdef TEST_LDOUBLE
    test_spots(0.0L, "long double");
 #endif
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
 #ifdef TEST_REAL_CONCEPT
    test_spots(boost::math::concepts::real_concept(0.1), "real_concept");
 #endif
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE( test_main )
    test_gamma(0.1L, "long double");
 #endif
 #ifndef BOOST_MATH_NO_REAL_CONCEPT_TESTS
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
 #ifdef TEST_REAL_CONCEPT
    test_gamma(boost::math::concepts::real_concept(0.1), "real_concept");
 #endif

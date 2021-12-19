@@ -5,13 +5,18 @@
   file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#include <boost/detail/lightweight_test.hpp>
 #include <boost/spirit/home/qi/numeric/numeric_utils.hpp>
+
+#include <boost/core/lightweight_test.hpp>
 #include <boost/static_assert.hpp>
 #include <cmath> // for std::pow
 #include <iosfwd>
 #include <limits>
 #include <sstream>
+
+#ifdef _MSC_VER
+# pragma warning(disable: 4127) // conditional expression is constant
+#endif
 
 template <int Min, int Max>
 struct custom_int

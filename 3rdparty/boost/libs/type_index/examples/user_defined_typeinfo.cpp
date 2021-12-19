@@ -1,4 +1,4 @@
-// Copyright 2013-2019 Antony Polukhin
+// Copyright 2013-2021 Antony Polukhin
 
 // Distributed under the Boost Software License, Version 1.0.
 // (See the accompanying file LICENSE_1_0.txt
@@ -18,6 +18,7 @@
 #include <boost/type_index.hpp>
 //] [/type_index_my_type_index_worldwide_macro]
 
+// boost-no-inspect
 #include <boost/core/lightweight_test.hpp>
 #ifdef assert
 #   undef assert

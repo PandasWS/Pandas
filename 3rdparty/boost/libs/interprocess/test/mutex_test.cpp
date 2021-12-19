@@ -8,7 +8,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include "mutex_test_template.hpp"
@@ -23,8 +22,8 @@ int main ()
    using namespace boost::interprocess;
 
    #if defined(BOOST_INTERPROCESS_WINDOWS)
-      test::test_all_lock<ipcdetail::windows_mutex>();
-      test::test_all_mutex<ipcdetail::windows_mutex>();
+      test::test_all_lock<ipcdetail::winapi_mutex>();
+      test::test_all_mutex<ipcdetail::winapi_mutex>();
       test::test_all_lock<ipcdetail::spin_mutex>();
       test::test_all_mutex<ipcdetail::spin_mutex>();
    #endif
@@ -33,5 +32,3 @@ int main ()
    test::test_all_mutex<interprocess_mutex>();
    return 0;
 }
-
-#include <boost/interprocess/detail/config_end.hpp>

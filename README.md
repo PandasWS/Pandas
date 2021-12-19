@@ -8,30 +8,25 @@
 
 <div align="center">
   <!-- Build Status -->
-  <a href="https://ci.appveyor.com/project/PandasWS/Pandas/branch/master">
-    <img alt="Build Status" src="https://img.shields.io/appveyor/build/PandasWS/Pandas/master?style=flat-square">
+  <a href="https://github.com/PandasWS/Pandas/actions/workflows/build-and-test.yml">
+    <img alt="Build Status" src="https://img.shields.io/github/workflow/status/PandasWS/Pandas/Build%20And%20Test?style=flat-square">
   </a>
-
   <!-- LGTM Alerts -->
   <a href="https://lgtm.com/projects/g/PandasWS/Pandas/alerts/">
     <img alt="LGTM Alerts" src="https://img.shields.io/lgtm/alerts/github/PandasWS/Pandas?style=flat-square">
   </a>
-
   <!-- LGTM Cpp Grade -->
   <a href="https://lgtm.com/projects/g/PandasWS/Pandas/context: cpp">
     <img alt="LGTM Cpp Grade" src="https://img.shields.io/lgtm/grade/cpp/github/PandasWS/Pandas?style=flat-square">
   </a>
-
   <!-- LGTM Python Grade -->
   <a href="https://lgtm.com/projects/g/PandasWS/Pandas/context: python">
     <img alt="LGTM Python Grade" src="https://img.shields.io/lgtm/grade/python/github/PandasWS/Pandas?style=flat-square">
   </a>
-
   <!-- GitHub contributors -->
   <a href="https://github.com/PandasWS/Pandas/graphs/contributors">
     <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/PandasWS/Pandas?style=flat-square">
   </a>
-
   <!-- GitHub license -->
   <a href="https://github.com/PandasWS/Pandas/blob/master/LICENSE">
     <img alt="GitHub license" src="https://img.shields.io/github/license/PandasWS/Pandas?style=flat-square">
@@ -59,7 +54,7 @@
   如果您觉得此项目能够给您带来帮助，请点击项目主页右上角的 ★Star 给它一颗星星
   <br />
   Craft with ❤︎ by
-  <a href="https://twitter.com/yoshuawuyts">CairoLee</a> and
+  <a href="https://github.com/CairoLee">CairoLee</a> and
   <a href="https://github.com/PandasWS/Pandas/graphs/contributors">
     Contributors
   </a>
@@ -310,7 +305,7 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 ### 活跃贡献者
 特别感谢近期活跃的贡献者，排名不分先后 ( 通常后加入的写最前面 )
 
-[Renee]、[NIFL]、[人鱼姬的思念]、[♬喵了个咪]、[文威]
+[聽風]、[Renee]、[NIFL]、[人鱼姬的思念]、[♬喵了个咪]、[文威]
 
 ## 许可协议
 版权所有 © 熊猫模拟器开发团队 - 授权许可协议 [GNU General Public License v3.0](LICENSE)

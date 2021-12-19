@@ -3,8 +3,8 @@
 # Copyright 2017 Steven Watanabe
 #
 # Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or copy at
-# http://www.boost.org/LICENSE_1_0.txt)
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
 
 # validates a toolset using a mock of the compiler
 
@@ -111,10 +111,12 @@ def test_toolset(toolset, version, property_sets):
         t.expect_addition("bin/%s/lib.obj" % (path("obj")))
         if "link=static" not in properties:
             t.expect_addition("bin/%s/l1.dll" % (path("dll")))
+            t.ignore_addition("bin/%s/*l1.*.rsp" % (path("dll")))
         else:
             t.expect_addition("bin/%s/l1.lib" % (path("lib")))
         t.expect_addition("bin/%s/main.obj" % (path("obj2")))
         t.expect_addition("bin/%s/test.exe" % (path("exe")))
+        t.ignore_addition("bin/%s/test.rsp" % (path("exe")))
         t.expect_nothing_more()
         t.rm("bin")
 

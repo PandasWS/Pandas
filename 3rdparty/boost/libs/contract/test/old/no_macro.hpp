@@ -56,7 +56,7 @@ void b::swap(i_type& i, j_type& j, boost::contract::virtual_* v) {
         })
     ;
     assert(false);
-};
+}
 
 struct a
     #define BASES public b

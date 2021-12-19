@@ -1,45 +1,46 @@
-/*=============================================================================
-    Copyright (c) 2007 Tobias Schwinger
-    Copyright (c) 2017 Daniel James
+/*
+Copyright 2007 Tobias Schwinger
+Copyright 2017 Daniel James
 
-    Use modification and distribution are subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt).
-==============================================================================*/
+Copyright 2019 Glen Joseph Fernandes
+(glenjofe@gmail.com)
 
+Distributed under the Boost Software License, Version 1.0.
+(http://www.boost.org/LICENSE_1_0.txt)
+*/
 #include <boost/functional/factory.hpp>
-#include <boost/detail/lightweight_test.hpp>
-
-#include <cstddef>
+#include <boost/core/lightweight_test.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <memory>
-#include <boost/shared_ptr.hpp>
 
-class sum
-{
-    int val_sum;
-  public:
-    sum(int a, int b) : val_sum(a + b) { }
+class sum  {
+public:
+    sum(int a, int b)
+        : value_(a + b) { }
 
-    operator int() const { return this->val_sum; }
+    int get() const {
+        return value_;
+    }
+
+private:
+    int value_;
 };
 
 int main()
 {
-    int one = 1, two = 2;
+    int a = 1;
+    int b = 2;
     {
-      boost::shared_ptr<sum> instance(
-          boost::factory< boost::shared_ptr<sum>, std::allocator<int>,
-              boost::factory_alloc_for_pointee_and_deleter >()(one,two) );
-      BOOST_TEST(*instance == 3);
+        boost::shared_ptr<sum> s(boost::factory<boost::shared_ptr<sum>,
+            std::allocator<char>,
+            boost::factory_alloc_for_pointee_and_deleter>()(a, b));
+        BOOST_TEST(s->get() == 3);
     }
-
     {
-      boost::shared_ptr<sum> instance(
-          boost::factory< boost::shared_ptr<sum>, std::allocator<int>,
-              boost::factory_passes_alloc_to_smart_pointer >()(one,two) );
-      BOOST_TEST(*instance == 3);
+        boost::shared_ptr<sum> s(boost::factory<boost::shared_ptr<sum>,
+            std::allocator<char>,
+            boost::factory_passes_alloc_to_smart_pointer>()(a, b));
+        BOOST_TEST(s->get() == 3);
     }
-
     return boost::report_errors();
 }
-

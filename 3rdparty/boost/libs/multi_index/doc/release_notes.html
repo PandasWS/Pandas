@@ -30,6 +30,10 @@ Acknowledgements
 <h2>Contents</h2>
 
 <ul>
+  <li><a href="#boost_1_78">Boost 1.78 release</a></li>
+  <li><a href="#boost_1_77">Boost 1.77 release</a></li>
+  <li><a href="#boost_1_74">Boost 1.74 release</a></li>
+  <li><a href="#boost_1_73">Boost 1.73 release</a></li>
   <li><a href="#boost_1_71">Boost 1.71 release</a></li>
   <li><a href="#boost_1_70">Boost 1.70 release</a></li>
   <li><a href="#boost_1_69">Boost 1.69 release</a></li>
@@ -60,6 +64,91 @@ Acknowledgements
   <li><a href="#boost_1_33_1">Boost 1.33.1 release</a></li>
   <li><a href="#boost_1_33">Boost 1.33 release</a></li>
 </ul>
+
+<h2><a name="boost_1_78">Boost 1.78 release</a></h2>
+
+<p>
+<ul>
+  <li>Added <code>contains</code> to key-based indices
+    (<a href="https://github.com/boostorg/multi_index/issues/35">issue #35</a>).
+  </li>
+  <li>Added <code>merge</code> operations to key-based indices. The functionality goes beyond
+    the standard specification for (unordered) associative containers in a number of ways,
+    most notably:
+      <ul>
+        <li>The source index can be of any type, including non key-based indices.</li>
+        <li>Partial merge is provided: for instance, <code>x.merge(y,first,last)</code>
+          merges only the elements of <code>y</code> within [<code>first</code>,<code>last</code>).
+        </li>
+      </ul>
+  </li>
+  <li>Previous versions of <code>splice</code> for sequenced and random access indices
+    were destructive, i.e. elements were copy-inserted into the destination and then erased
+    from the source. Now, <code>splice</code> is based on node transfer much as <code>merge</code>
+    in key-based indices, and has been similarly extended to accept source indices of any type:
+    in fact, <code>splice</code> can be regarded as a frontend to the same functionality
+    provided by <code>merge</code> in key-based indices. For reasons of backwards compatibility,
+    the destructive behavior of <code>splice</code> has been retained in the case that the
+    source and destination containers have unequal allocators.
+  </li>
+  <li>The fact has been documented that index iterator types do only depend on <code>node_type</code>
+    and the position of the index in its <code>multi_index_container</code>, 
+    (except for hashed indices, where uniqueness/non-uniqueness is also a dependency). This has
+    implications on the validity of iterators to elements transferred by <code>merge</code> or
+    <code>splice</code>. This property is a variant of what has been called
+    <a href="https://wg21.link/n2980">SCARY iterators</a> in the C++ standard mailing lists.
+    SCARYness is currently (August 2021) not mandated for standard containers.
+  </li>
+  <li>Iterator SCARYness is now also preserved in <a href="tutorial/debug.html#safe_mode">safe mode</a>.
+  </li>
+</ul>
+</p>
+
+<h2><a name="boost_1_77">Boost 1.77 release</a></h2>
+
+<p>
+<ul>
+  <li>Maintenance work.</li>
+</ul>
+</p>
+
+<h2><a name="boost_1_74">Boost 1.74 release</a></h2>
+
+<p>
+<ul>
+  <li>
+    Added <a href="tutorial/indices.html#node_handling">node extraction and insertion</a>
+    following the analogous interface of associative containers as introduced in C++17.
+    This feature has also been extended to non key-based indices, in contrast to C++
+    standard library sequence containers, which do not provide such functionality.
+  </li>
+  <li>Clarified documentation on read/write key extractors
+    (<a href="https://github.com/boostorg/multi_index/issues/32">issue #32</a>).
+  </li>
+  <li>Maintenance work.</li>
+</ul>
+</p>
+
+<h2><a name="boost_1_73">Boost 1.73 release</a></h2>
+
+<p>
+<ul>
+  <li><code>multi_index_container</code> is now
+    <a href="https://en.cppreference.com/w/cpp/named_req/AllocatorAwareContainer"><code>AllocatorAware</code></a>.
+  </li>
+  <li>Swapping of internal <code>KeyFromValue</code>, <code>Compare</code>, <code>Hash</code>
+    and <code>Pred</code> objects now selects the appropriate <code>swap</code>
+    function between <code>std::swap</code> and ADL candidates,
+    in accordance with standard specifications in <b>[swappable.requirements]</b>
+    (<a href="https://github.com/boostorg/multi_index/issues/29">issue #29</a>).
+  </li>
+ <li>Provided some internal copy constructors and assignment operators whose default
+    implicit definition is deprecated in C++11 onwards (<b>[depr.impldec]</b>), which
+    was warned about on some compilers. 
+ </li>
+  <li>Maintenance work.</li>
+</ul>
+</p>
 
 <h2><a name="boost_1_71">Boost 1.71 release</a></h2>
 
@@ -635,9 +724,9 @@ Acknowledgements
 
 <br>
 
-<p>Revised June 9th 2019</p>
+<p>Revised August 30th 2021</p>
 
-<p>&copy; Copyright 2003-2019 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2021 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

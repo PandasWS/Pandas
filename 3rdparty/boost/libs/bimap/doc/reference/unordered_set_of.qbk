@@ -695,7 +695,7 @@ throws `std::out_of_range` if such key does not exist.
 
 The symmetry of bimap imposes some constraints on `operator[]` and the 
 non constant version of at() that are not found in `std::maps`.
-Tey are only provided if the other collection type is mutable
+They are only provided if the other collection type is mutable
 (`list_of`, `vector_of` and `unconstrained_set_of`).
 
 

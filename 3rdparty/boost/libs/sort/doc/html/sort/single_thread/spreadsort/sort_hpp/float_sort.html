@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Float Sort</title>
 <link rel="stylesheet" href="../../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -28,9 +28,9 @@
           Sort</a>
 </h5></div></div></div>
 <p>
-            <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/float_so_idm45140263951264.html" title="Function template float_sort">float_sort</a></code></code>
+            <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/float_sort_idm1775.html" title="Function template float_sort">float_sort</a></code></code>
             is a fast templated in-place hybrid radix/comparison algorithm much like
-            <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/integer__idm45140262757216.html" title="Function template integer_sort">integer_sort</a></code></code>,
+            <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/integer_sort_idm1895.html" title="Function template integer_sort">integer_sort</a></code></code>,
             but sorts IEEE floating-point numbers (positive, zero, NaN, and negative)
             into ascending order by casting them to integers. This works because
             positive IEEE floating-point numbers sort like integers with the same
@@ -55,10 +55,10 @@
             a custom rightshift functor for float_sort, when one is needed. Only
             IEEE floating-point numbers of the same size as the integer type being
             cast to should be used in this specialized method call. Worst-case performance
-            is <span class="emphasis"><em>&#119926;(N * (log2(range)/s + s))</em></span>, so <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/float_so_idm45140263951264.html" title="Function template float_sort">float_sort</a></code></code>
+            is <span class="emphasis"><em>𝑶(N * (log2(range)/s + s))</em></span>, so <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/float_sort_idm1775.html" title="Function template float_sort">float_sort</a></code></code>
             is asymptotically faster than pure comparison-based algorithms. <span class="emphasis"><em>s</em></span>
             is <span class="emphasis"><em>max_splits</em></span>, which defaults to 11, so its worst-case
-            with default settings for 32-bit integers is <span class="emphasis"><em>&#119926;(N * ((32/11)</em></span>
+            with default settings for 32-bit integers is <span class="emphasis"><em>𝑶(N * ((32/11)</em></span>
             slow radix-based iterations + 11 fast comparison-based iterations).
           </p>
 <p>
@@ -121,7 +121,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2014-2017 Steven
+<td align="right"><div class="copyright-footer">Copyright © 2014-2017 Steven
       Ross, Francisco Tapia, Orson Peters<p>
         Distributed under the <a href="http://boost.org/LICENSE_1_0.txt" target="_top">Boost
         Software License, Version 1.0</a>.

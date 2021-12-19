@@ -8,7 +8,6 @@
 
 #define BOOST_SPIRIT_X3_UNICODE
 
-#include <boost/detail/lightweight_test.hpp>
 #include <boost/spirit/home/x3.hpp>
 #include <boost/type_traits/is_same.hpp>
 
@@ -19,12 +18,25 @@ int
 main()
 {
     using spirit_test::test;
+    using spirit_test::test_failure;
     using spirit_test::test_attr;
 
     using boost::spirit::x3::unused_type;
 
     {
         using namespace boost::spirit::x3::ascii;
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(alnum);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(alpha);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(digit);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(xdigit);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(cntrl);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(graph);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(lower);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(print);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(punct);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(space);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(blank);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(upper);
         BOOST_TEST(test("1", alnum));
         BOOST_TEST(!test(" ", alnum));
         BOOST_TEST(!test("1", alpha));
@@ -77,6 +89,18 @@ main()
 
     {
         using namespace boost::spirit::x3::iso8859_1;
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(alnum);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(alpha);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(digit);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(xdigit);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(cntrl);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(graph);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(lower);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(print);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(punct);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(space);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(blank);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(upper);
         BOOST_TEST(test("1", alnum));
         BOOST_TEST(!test(" ", alnum));
         BOOST_TEST(!test("1", alpha));
@@ -108,6 +132,18 @@ main()
 
     {
         using namespace boost::spirit::x3::standard;
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(alnum);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(alpha);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(digit);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(xdigit);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(cntrl);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(graph);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(lower);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(print);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(punct);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(space);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(blank);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(upper);
         BOOST_TEST(test("1", alnum));
         BOOST_TEST(!test(" ", alnum));
         BOOST_TEST(!test("1", alpha));
@@ -130,10 +166,23 @@ main()
         BOOST_TEST(test("0", xdigit));
         BOOST_TEST(test("f", xdigit));
         BOOST_TEST(!test("g", xdigit));
+        BOOST_TEST(!test("\xF1", print));
     }
 
     {
         using namespace boost::spirit::x3::standard_wide;
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(alnum);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(alpha);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(digit);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(xdigit);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(cntrl);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(graph);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(lower);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(print);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(punct);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(space);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(blank);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(upper);
         BOOST_TEST(test(L"1", alnum));
         BOOST_TEST(!test(L" ", alnum));
         BOOST_TEST(!test(L"1", alpha));
@@ -160,6 +209,18 @@ main()
 
     {
         using namespace boost::spirit::x3::unicode;
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(alnum);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(alpha);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(digit);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(xdigit);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(cntrl);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(graph);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(lower);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(print);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(punct);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(space);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(blank);
+        BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(upper);
         BOOST_TEST(test(L"1", alnum));
         BOOST_TEST(!test(L" ", alnum));
         BOOST_TEST(!test(L"1", alpha));
@@ -189,11 +250,21 @@ main()
         BOOST_TEST(!test(L" ", braille));
         BOOST_TEST(test(L" ", ~braille));
         // $$$ TODO $$$ Add more unicode tests
+    }
 
-        // TODO: these tests are suspicious, they do not test unicode
-        BOOST_TEST(test("\xE9", alpha));
-        BOOST_TEST(test("\xE9", lower));
-        BOOST_TEST(!test("\xE9", upper));
+    {   // test invalid unicode literals
+        using namespace boost::spirit::x3::unicode;
+
+        auto const invalid_unicode = char32_t{0x7FFFFFFF};
+        auto const input           = boost::u32string_view(&invalid_unicode, 1);
+
+        BOOST_TEST(test_failure(input, char_));
+
+        // force unicode category lookup
+        // related issue: https://github.com/boostorg/spirit/issues/524
+        BOOST_TEST(test_failure(input, alpha));
+        BOOST_TEST(test_failure(input, upper));
+        BOOST_TEST(test_failure(input, lower));
     }
 
     {   // test attribute extraction

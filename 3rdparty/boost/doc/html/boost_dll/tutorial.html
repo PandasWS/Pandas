@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Tutorial</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../boost_dll.html" title="Chapter&#160;14.&#160;Boost.DLL">
+<link rel="up" href="../boost_dll.html" title="Chapter 14. Boost.DLL">
 <link rel="prev" href="getting_started.html" title="Getting started">
 <link rel="next" href="mangled_import.html" title="Mangled Import">
 </head>
@@ -114,7 +114,7 @@
 <p>
       </p>
 <p>
-        Simple application that loads plugin using the <code class="computeroutput"><a class="link" href="../boost/dll/import.html" title="Function import">boost::dll::import</a></code>
+        Simple application that loads plugin using the <code class="computeroutput">boost::dll::import</code>
         and <code class="computeroutput"><a class="link" href="../boost/dll/load_mode/type.html" title="Type type">append_decorations</a></code>:
       </p>
 <p>
@@ -131,7 +131,7 @@
     <span class="identifier">boost</span><span class="special">::</span><span class="identifier">shared_ptr</span><span class="special">&lt;</span><span class="identifier">my_plugin_api</span><span class="special">&gt;</span> <span class="identifier">plugin</span><span class="special">;</span>            <span class="comment">// variable to hold a pointer to plugin variable</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Loading the plugin"</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
 
-    <span class="identifier">plugin</span> <span class="special">=</span> <span class="identifier">dll</span><span class="special">::</span><span class="identifier">import</span><span class="special">&lt;</span><span class="identifier">my_plugin_api</span><span class="special">&gt;(</span>          <span class="comment">// type of imported symbol is located between `&lt;` and `&gt;`</span>
+    <span class="identifier">plugin</span> <span class="special">=</span> <span class="identifier">dll</span><span class="special">::</span><span class="identifier">import_symbol</span><span class="special">&lt;</span><span class="identifier">my_plugin_api</span><span class="special">&gt;(</span>         <span class="comment">// type of imported symbol is located between `&lt;` and `&gt;`</span>
         <span class="identifier">lib_path</span> <span class="special">/</span> <span class="string">"my_plugin_sum"</span><span class="special">,</span>                     <span class="comment">// path to the library and library name</span>
         <span class="string">"plugin"</span><span class="special">,</span>                                       <span class="comment">// name of the symbol to import</span>
         <span class="identifier">dll</span><span class="special">::</span><span class="identifier">load_mode</span><span class="special">::</span><span class="identifier">append_decorations</span>              <span class="comment">// makes `libmy_plugin_sum.so` or `my_plugin_sum.dll` from `my_plugin_sum`</span>
@@ -890,7 +890,7 @@ Function 'howdy' prints:
       library reference counting</a>
 </h3></div></div></div>
 <p>
-        As noted in documentation to the <code class="computeroutput"><a class="link" href="../boost/dll/import.html" title="Function import">boost::dll::import</a></code>
+        As noted in documentation to the <code class="computeroutput">boost::dll::import</code>
         variables and functions returned from those functions hold a reference to
         the shared library. However nested objects and objects that are returned
         by <code class="computeroutput"><span class="identifier">import</span><span class="special">*</span></code>
@@ -1174,7 +1174,7 @@ location: "/tutorial8_static"</pre>
 <p>
         This a trivial example, but it has one tricky place. When you are importing
         a C function by <span class="bold"><strong>it's name</strong></span> you must use
-        <code class="computeroutput"><a class="link" href="../boost/dll/import.html" title="Function import">boost::dll::import</a></code>,
+        <code class="computeroutput">boost::dll::import</code>,
         not <code class="computeroutput"><a class="link" href="../boost/dll/import_alias.html" title="Function import_alias">boost::dll::import_alias</a></code>:
       </p>
 <p>
@@ -1192,7 +1192,7 @@ location: "/tutorial8_static"</pre>
 
     <span class="comment">// OPTION #0, requires C++11 compatible compiler that understands GetStdHandle_t signature.</span>
 
-    <span class="keyword">auto</span> <span class="identifier">get_std_handle</span> <span class="special">=</span> <span class="identifier">dll</span><span class="special">::</span><span class="identifier">import</span><span class="special">&lt;</span><span class="identifier">GetStdHandle_t</span><span class="special">&gt;(</span>
+    <span class="keyword">auto</span> <span class="identifier">get_std_handle</span> <span class="special">=</span> <span class="identifier">dll</span><span class="special">::</span><span class="identifier">import_symbol</span><span class="special">&lt;</span><span class="identifier">GetStdHandle_t</span><span class="special">&gt;(</span>
         <span class="string">"Kernel32.dll"</span><span class="special">,</span>
         <span class="string">"GetStdHandle"</span><span class="special">,</span>
         <span class="identifier">boost</span><span class="special">::</span><span class="identifier">dll</span><span class="special">::</span><span class="identifier">load_mode</span><span class="special">::</span><span class="identifier">search_system_folders</span>
@@ -1231,7 +1231,7 @@ location: "/tutorial8_static"</pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2014 Renato Tegon Forti, Antony Polukhin<br>Copyright &#169; 2015 Antony Polukhin<br>Copyright &#169; 2016 Antony Polukhin, Klemens Morgenstern<br>Copyright &#169; 2017-2019 Antony Polukhin<p>
+<td align="right"><div class="copyright-footer">Copyright © 2014 Renato Tegon Forti, Antony Polukhin<br>Copyright © 2015 Antony Polukhin<br>Copyright © 2016 Antony Polukhin, Klemens Morgenstern<br>Copyright © 2017-2021 Antony Polukhin<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
       </p>

@@ -11,8 +11,6 @@
 #ifndef BOOST_MOVE_TEST_MOVABLE_HPP
 #define BOOST_MOVE_TEST_MOVABLE_HPP
 
-#include <boost/move/detail/config_begin.hpp>
-
 //[movable_definition 
 //header file "movable.hpp"
 #include <boost/move/core.hpp>
@@ -51,7 +49,5 @@ struct has_nothrow_move<movable>
 
 }  //namespace boost{
 //]
-
-#include <boost/move/detail/config_end.hpp>
 
 #endif //BOOST_MOVE_TEST_MOVABLE_HPP

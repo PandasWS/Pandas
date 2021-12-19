@@ -16,7 +16,7 @@ main()
   using namespace boost::posix_time;
 
 #ifdef BOOST_DATE_TIME_HAS_NANOSECONDS
-
+  {
   std::string s1("12:11:10.123456789");
   time_duration td1= duration_from_string(s1);
   check("parse time duration: " + s1, 
@@ -56,18 +56,9 @@ main()
   time_duration td8b= boost::date_time::parse_delimited_time_duration<time_duration>(s8b);
   check("parse time duration: " + s8b, 
         td8b == time_duration(1,22,33,123456789)); // excess digits should be dropped
-#endif
-
-#if defined(BOOST_DATE_TIME_HAS_MICROSECONDS) && (!defined(BOOST_DATE_TIME_HAS_NANOSECONDS))
+  }
   {
-    std::string s1("12:11:10.123456");
-    time_duration td1= duration_from_string(s1);
-    check("parse time duration: " + s1, 
-          td1 == time_duration(12,11,10,123456));
-    std::string s2("12:11:10,123456");
-    time_duration td2= boost::date_time::parse_delimited_time_duration<time_duration>(s2);
-    check("parse time duration: " + s2, 
-          td2 == time_duration(12,11,10,123456));
+
     std::string s3("12:11:10");
     time_duration td3= boost::date_time::parse_delimited_time_duration<time_duration>(s3);
     check("parse time duration: " + s3, 
@@ -94,15 +85,8 @@ main()
     time_duration td7b= boost::date_time::parse_delimited_time_duration<time_duration>(s7b);
     check("parse time duration: " + s7b, 
           td7b == time_duration(-1,0,0)-microsec(1000)); // we want 1/1000th
-  
-  std::string s8b("1:22:33.123456321"); // too many digits
-  time_duration td8b= boost::date_time::parse_delimited_time_duration<time_duration>(s8b);
-  check("parse time duration: " + s8b, 
-        td8b == time_duration(1,22,33,123456)); // excess digits should be dropped
-  }
-#endif
 
-#ifdef BOOST_DATE_TIME_HAS_NANOSECONDS
+  }
 
   {
     std::string ts2("2002-12-31 00:00:00.999999999");
@@ -117,6 +101,28 @@ main()
           t2 == ptime(date(2002,12,31),time_duration(0,0,0)));
   }
 #endif
+
+  if (time_duration::resolution() != boost::date_time::nano)
+  {
+
+    std::string s1("12:11:10.123456");
+    time_duration td1= duration_from_string(s1);
+    check("parse time duration: " + s1,
+          td1 == time_duration(12,11,10,123456));
+    std::cout << "td1: " << td1 << std::endl;
+
+    std::string s2("12:11:10,123456");
+    time_duration td2= boost::date_time::parse_delimited_time_duration<time_duration>(s2);
+    check("parse time duration: " + s2,
+          td2 == time_duration(12,11,10,123456));
+    std::cout << "td2: " << td2 << std::endl;
+
+    //truncate for non-nanosecond case
+    std::string s8b("1:22:33.123456321"); // too many digits
+    time_duration td8b= boost::date_time::parse_delimited_time_duration<time_duration>(s8b);
+    check("parse time duration: " + s8b,
+          td8b == time_duration(1,22,33,123456)); // excess digits should be dropped
+  }
 
 
   std::string date_1, tod_1;
@@ -214,6 +220,8 @@ main()
     ptime t27 = from_iso_extended_string(ts10);
     check("parse iso extended time w/ frac sec (dec only): " + ts10,
           t27 == ptime(date(1900,12,31),time_duration(23,0,0,0)));
+
+
 #else
     std::string ts3("20020120T235859.123456");
     ptime t20 = from_iso_string(ts3);
@@ -254,6 +262,35 @@ main()
     ptime t27 = from_iso_extended_string(ts10);
     check("parse iso extended time w/ frac sec (dec only): " + ts10,
           t27 == ptime(date(1900,12,31),time_duration(23,0,0,0)));
+
+    //the following test cases are for this issue:
+    //https://github.com/boostorg/date_time/issues/187
+    try {
+      std::string ts11("1900-12-31"); //date only string
+      ptime t28 = from_iso_extended_string(ts11);
+      check("parse iso extended time date only): " + ts11,
+            t28 == ptime(date(1900,12,31),time_duration(0,0,0,0)));
+    }
+    catch( std::exception& e )
+    {
+      std::cout << e.what() << std::endl;
+      check("parse iso extended time date only): 1900-12-32", false);
+    }
+
+    try {
+      //expect a date-time exception here
+      std::string ts12("1900-1"); //completely bogus string
+      ptime t29 = from_iso_extended_string(ts12);
+      check("parse iso extended time bad string: " + ts12, false);
+      (void) t29; //supress unused compiler warning, this is never reached
+    }
+    catch( std::exception& e )
+    {
+      //Day of month value is out of range 1..31
+      // std::cout << e.what() << std::endl;
+      check("parse iso extended time date only): 1900-1", true);
+    }
+
 #endif // BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG
   }
 

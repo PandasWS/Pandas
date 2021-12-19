@@ -59,7 +59,7 @@ class model::d2::point_xy
 [heading Member Function(s)]
 [table
 [[Function] [Description] [Parameters]  [Returns]]
-[[``CoordinateType const  & x()``
+[[``constexpr CoordinateType const  & x()``
 
 ] [Get x-value. ] [
 
@@ -67,7 +67,7 @@ class model::d2::point_xy
 
 ]
 ]
-[[``CoordinateType const  & y()``
+[[``constexpr CoordinateType const  & y()``
 
 ] [Get y-value. ] [
 
@@ -98,6 +98,13 @@ class model::d2::point_xy
 ]
 
 [heading Header]
+Either
+
+`#include <boost/geometry/geometries/geometries.hpp>`
+
+
+Or
+
 `#include <boost/geometry/geometries/point_xy.hpp>`
 
 [include reference/geometries/point_xy.qbk]

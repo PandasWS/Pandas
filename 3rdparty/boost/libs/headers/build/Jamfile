@@ -80,19 +80,20 @@ explicit install-boost-headers ;
 alias install-headers : install-$(modular-headers)-headers install-boost-headers ;
 explicit install-headers ;
 
-# install-cmake-config
+# install
 
 alias boost_headers ;
 
 boost-install.install-cmake-config boost_headers ;
 explicit install-cmake-config ;
 
-# install
-
 alias install : install-headers install-cmake-config ;
 explicit install ;
 
 # stage
 
-alias stage ;
+boost-install.stage-cmake-config boost_headers ;
+explicit stage-cmake-config ;
+
+alias stage : stage-cmake-config ;
 explicit stage ;

@@ -40,6 +40,7 @@ Random access indices
         <ul>
           <li><a href="#complexity_signature">Complexity signature</a></li>
           <li><a href="#instantiation_types">Instantiation types</a></li>
+          <li><a href="#types">Nested types</a></li>
           <li><a href="#constructors">Constructors, copy and assignment</a></li>
           <li><a href="#iterators">Iterators</a></li>
           <li><a href="#capacity">Capacity operations</a></li>
@@ -152,8 +153,12 @@ like <code>std::list</code>. Elements in a sequenced index are by default
 sorted according to their order of insertion: this means that new elements
 inserted through a different index of the <code>multi_index_container</code> are appended
 to the end of the sequenced index. Additionally, the index allows for free
-reordering of elements in the same vein as <code>std::list</code> does. Validity
-of iterators and references to elements is preserved in all operations.
+reordering of elements in the same vein as <code>std::list</code> does.
+Iterators (including to the end of the index) and pointers and references to an element
+remain valid during the lifetime of the associated container (which can change
+upon swapping), or until the referred-to element is erased or extracted;
+pointers and references to an extracted element, but not so for iterators,
+become valid again once the element is re-inserted.
 </p>
 
 <p>
@@ -172,7 +177,7 @@ most important differences are:
     <code>std::list</code>.
   </li>
   <li>Elements in a sequenced index are not mutable, and can only be changed
-    by means of <a href="#replace"><code>replace</code></a> and
+    in place by means of <a href="#replace"><code>replace</code></a> and
 	<a href="#modify"><code>modify</code></a> member functions.
   </li>
 </ul>
@@ -207,6 +212,8 @@ most important differences are:
     std::reverse_iterator&lt;iterator&gt;</b>                  <span class=identifier>reverse_iterator</span><span class=special>;</span>
   <span class=keyword>typedef</span> <b>equivalent to
     std::reverse_iterator&lt;const_iterator&gt;</b>            <span class=identifier>const_reverse_iterator</span><span class=special>;</span>
+  <span class=keyword>typedef</span> <b>same as owning container                   </b><span class=identifier>node_type</span><span class=special>;</span>
+  <span class=keyword>typedef</span> <b>following [container.insert.return] spec   </b><span class=identifier>insert_return_type</span><span class=special>;</span>
 
   <span class=comment>// construct/copy/destroy:</span>
 
@@ -274,6 +281,9 @@ most important differences are:
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>InputIterator</span><span class=special>&gt;</span>
   <span class=keyword>void</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>position</span><span class=special>,</span><span class=identifier>InputIterator</span> <span class=identifier>first</span><span class=special>,</span><span class=identifier>InputIterator</span> <span class=identifier>last</span><span class=special>);</span>
   <span class=keyword>void</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>position</span><span class=special>,</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>initializer_list</span><span class=special>&lt;</span><span class=identifier>value_type</span><span class=special>&gt;</span> <span class=identifier>list</span><span class=special>);</span>
+  <span class=identifier>insert_return_type</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>const_iterator</span> <span class=identifier>position</span><span class=special>,</span><span class=identifier>node_type</span><span class=special>&amp;&amp;</span> <span class=identifier>nh</span><span class=special>);</span>
+
+  <span class=identifier>node_type</span> <span class=identifier>extract</span><span class=special>(</span><span class=identifier>const_iterator</span> <span class=identifier>position</span><span class=special>);</span>
 
   <span class=identifier>iterator</span> <span class=identifier>erase</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>position</span><span class=special>);</span>
   <span class=identifier>iterator</span> <span class=identifier>erase</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>first</span><span class=special>,</span><span class=identifier>iterator</span> <span class=identifier>last</span><span class=special>);</span>
@@ -290,10 +300,16 @@ most important differences are:
 
   <span class=comment>// list operations:</span>
 
-  <span class=keyword>void</span> <span class=identifier>splice</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>position</span><span class=special>,</span><b>index class name</b><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>);</span>
-  <span class=keyword>void</span> <span class=identifier>splice</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>position</span><span class=special>,</span><b>index class name</b><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=identifier>iterator</span> <span class=identifier>i</span><span class=special>);</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span> <span class=keyword>void</span> <span class=identifier>splice</span><span class=special>(</span><span class=identifier>const_iterator</span> <span class=identifier>position</span><span class=special>,</span><span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>);</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span>
+  <span class=identifier>std</span><span class=special>::</span><span class=identifier>pair</span><span class=special>&lt;</span><span class=identifier>iterator</span><span class=special>,</span><span class=keyword>bool</span><span class=special>&gt;</span> <span class=identifier>splice</span><span class=special>(</span>
+    <span class=identifier>const_iterator</span> <span class=identifier>position</span><span class=special>,</span><span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>,</span>
+    <span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>i</span><span class=special>);</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span>
   <span class=keyword>void</span> <span class=identifier>splice</span><span class=special>(</span>
-    <span class=identifier>iterator</span> <span class=identifier>position</span><span class=special>,</span><b>index class name</b><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=identifier>iterator</span> <span class=identifier>first</span><span class=special>,</span><span class=identifier>iterator</span> <span class=identifier>last</span><span class=special>);</span>
+    <span class=identifier>const_iterator</span> <span class=identifier>position</span><span class=special>,</span><span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>,</span>
+    <span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>first</span><span class=special>,</span>
+    <span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>last</span><span class=special>);</span>
 
   <span class=keyword>void</span> <span class=identifier>remove</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>value_type</span><span class=special>&amp;</span> <span class=identifier>value</span><span class=special>);</span>
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Predicate</span><span class=special>&gt;</span> <span class=keyword>void</span> <span class=identifier>remove_if</span><span class=special>(</span><span class=identifier>Predicate</span> <span class=identifier>pred</span><span class=special>);</span>
@@ -410,6 +426,16 @@ index specifier. Instantiations are dependent on the following types:
 <code>TagList</code> must be an instantiation of
 <a href="indices.html#tag"><code>tag</code></a>.
 </p>
+
+<h4><a name="types">Nested types</a></h4>
+
+<code>iterator<br>
+const_iterator</code>
+
+<blockquote>
+These types depend only on <code>node_type</code> and the position of
+the index in the <code>multi_index_container</code>.
+</blockquote>
 
 <h4><a name="constructors">Constructors, copy and assignment</a></h4>
 
@@ -644,6 +670,40 @@ number of elements in [<code>first</code>,<code>last</code>).<br>
 </pre></blockquote>
 </blockquote>
 
+<code>insert_return_type insert(const_iterator position,node_type&amp;&amp; nh);</code>
+
+<blockquote>
+<b>Requires:</b> <code>nh.empty() || get_allocator()==nh.get_allocator()</code>.<br>
+<b>Effects:</b> Does nothing if <code>nh</code> is empty; otherwise,
+inserts the node owned by <code>nh</code> before <code>position</code> if insertion
+is allowed by all other indices of the <code>multi_index_container</code>.<br>
+<b>Postconditions:</b> <code>nh</code> is empty.<br>
+<b>Returns:</b> A value <code>p</code> of type <code>insert_return_type</code>.
+If <code>nh</code> is empty, <code>p.position</code> is <code>end()</code>,
+<code>p.inserted</code> is <code>false</code> and <code>p.node</code> is empty;
+on successful insertion, <code>p.position</code> points to the element inserted,
+<code>p.inserted</code> is <code>true</code> and <code>p.node</code>
+is empty;
+if the insertion failed, <code>p.position</code> points to an element that caused
+the insertion to be banned, <code>p.inserted</code> is <code>false</code> and
+<code>p.node</code> owns the original node.
+Note that more than one element can be causing insertion not to be allowed.<br>
+<b>Complexity:</b> <code>O(I(n))</code>.<br>
+<b>Exception safety:</b> Strong. If an exception
+is thrown, <code>nh</code> is not changed.<br>
+</blockquote>
+
+<code>node_type extract(const_iterator position);</code>
+
+<blockquote>
+<b>Requires:</b> <code>position</code> is a valid dereferenceable iterator
+of the index.<br>
+<b>Effects:</b> Extracts the node of the element pointed to by <code>position</code>.<br>
+<b>Returns:</b> A node handle owning the extracted node.<br>
+<b>Complexity:</b> <code>O(D(n))</code>.<br>
+<b>Exception safety:</b> <code>nothrow</code>.<br>
+</blockquote>
+
 <code>iterator erase(iterator position);</code>
 
 <blockquote>
@@ -759,62 +819,122 @@ is rethrown.
 
 <p>
 Sequenced indices provide the full set of list operations found in
-<code>std::list</code>; the semantics of these member functions, however,
-differ from that of <code>std::list</code> in some cases as insertions
-might not succeed due to banning by other indices. Similarly, the complexity
+<code>std::list</code>, extended in some cases such as <code>splice</code>;
+the semantics of these member functions, however,
+typically differs from that of <code>std::list</code> as insertions
+may not succeed due to banning by other indices. Similarly, the complexity
 of the operations may depend on the other indices belonging to the
 same <code>multi_index_container</code>.
 </p>
 
-<code>void splice(iterator position,<b>index class name</b>&amp; x);</code>
+<a name="splice"><code>template&lt;typename Index&gt; void splice(const_iterator position,Index&amp;&amp; x);</code></a>
 
 <blockquote>
-<b>Requires:</b> <code>position</code> is a valid iterator of the index.
-<code>&amp;x!=this</code>.<br>
-<b>Effects:</b> Inserts the contents of <code>x</code> before <code>position</code>,
-in the same order as they were in <code>x</code>. Those elements successfully
-inserted are erased from <code>x</code>.<br>
-<b>Complexity:</b> <code>O(x.size()*I(n+x.size()) + x.size()*D(x.size()))</code>.<br>
-<b>Exception safety:</b> Basic.<br>
+<b>Requires:</b> <code>x</code> is a non-const reference to an index of a
+<a href="multi_index_container.html#node_type">node-compatible</a>
+<code>multi_index_container</code>.
+<code>position</code> is a valid iterator of the index, and must be exactly <code>end()</code>
+if the source and destination containers are the same.<br>
+<b>Effects:</b> 
+<blockquote><pre>
+<span class=identifier>splice</span><span class=special>(</span><span class=identifier>position</span><span class=special>,</span><span class=identifier>x</span><span class=special>,</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>begin</span><span class=special>(),</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>end</span><span class=special>());</span>
+</pre></blockquote>
 </blockquote>
 
-<code>void splice(iterator position,<b>index class name</b>&amp; x,iterator i);</code>
+<code>
+template&lt;typename Index&gt; std::pair&lt;iterator,bool&gt; splice(<br>
+&nbsp;&nbsp;const_iterator position,Index&amp;&amp; x,<br>
+&nbsp;&nbsp;typename std::remove_reference_t&lt;Index&gt;::const_iterator i);
+</code>
 
 <blockquote>
-<b>Requires:</b> <code>position</code> is a valid iterator of the index.
-<code>i</code> is a valid dereferenceable iterator <code>x</code>.<br>
-<b>Effects:</b> Inserts the element pointed to by <code>i</code> before
-<code>position</code>: if insertion is successful, the element is erased from
-<code>x</code>. In the special case <code>&amp;x==this</code>, no copy or
-deletion is performed, and the operation is always successful. If
-<code>position==i</code>, no operation is performed.<br>
-<b>Postconditions:</b> If <code>&amp;x==this</code>, no iterator or reference
-is invalidated.<br>
-<b>Complexity:</b> If <code>&amp;x==this</code>, constant; otherwise
-<code>O(I(n) + D(n))</code>.<br>
-<b>Exception safety:</b> If <code>&amp;x==this</code>, <code>nothrow</code>;
-otherwise, strong.<br>
+<b>Requires:</b> <code>x</code> is a non-const reference to an index of a
+<a href="multi_index_container.html#node_type">node-compatible</a>
+<code>multi_index_container</code>.
+If <code>get_allocator()!=x.get_allocator()</code>,
+<code>value_type</code> must be <code>CopyInsertable</code> into the destination
+<code>multi_index_container</code>.
+<code>position</code> is a valid iterator of the index.
+<code>i</code> is a valid dereferenceable iterator of <code>x</code>.<br>
+<b>Effects:</b> 
+<ul>
+  <li><b>(Same container)</b> if the source and destination containers are the same, repositions
+    the element pointed to by <code>i</code> before <code>position</code> unless both
+    iterators refer to the same element.</li>
+  <li><b>(Transfer splice)</b> else, if <code>get_allocator()==x.get_allocator()</code>,
+    transfers the node of the element referred to by <code>i</code> into the
+    destination <code>multi_index_container</code> right before <code>position</code>
+    if insertion is allowed by all other indices of the <code>multi_index_container</code>.</li>
+  <li><b>(Destructive splice)</b> else, insertion of <code>*i</code> is tried before
+    <code>position</code>; if the operation is successful, the element is erased from <code>x</code>. 
+  </li>
+</ul>
+<b>Postconditions:</b> If transfer succeeds, for any index in the source container
+having the same <code>iterator</code>/<code>const_iterator</code> types as the corresponding
+index in the destination container, iterators referring to <code>*i</code>
+remain valid and behave as iterators of the destination index.<br>
+<b>Returns:</b> The return value is a pair <code>p</code>. <code>p.second</code>
+is <code>true</code> if and only if insertion (either through transfer or copy insertion)
+took place or the source and destination containers are the same.
+If <code>p.second</code> is <code>true</code>,
+<code>p.first</code> points to the inserted element or to <code>*i</code> if the
+source and destination containers are the same; otherwise, <code>p.first</code>
+points to an element that caused the insertion to be banned. Note that more than
+one element can be causing insertion not to be allowed.<br>
+<b>Complexity:</b> If the source and destination containers are the same,
+constant; otherwise, <code>O(I(n)+D(x.size()))</code>.<br>
+<b>Exception safety:</b> If the source and destination containers are the same,
+<code>nothrow</code>; otherwise strong.<br>
+<b>Implementation note:</b> The destructive variant of this operation is provided
+for reasons of backwards compatibility with previous versions of this library where
+allocator equality was not required. 
 </blockquote>
 
-<code>void splice(iterator position,<b>index class name&amp;</b> x,iterator first,iterator last);</code>
+<code>
+template&lt;typename Index&gt; void splice(<br>
+&nbsp;&nbsp;const_iterator position,Index&amp;&amp; x,<br>
+&nbsp;&nbsp;typename std::remove_reference_t&lt;Index&gt;::const_iterator first,<br>
+&nbsp;&nbsp;typename std::remove_reference_t&lt;Index&gt;::const_iterator last);
+</code>
 
 <blockquote>
-<b>Requires:</b> <code>position</code> is a valid iterator of the index.
-<code>first</code> and <code>last</code> are valid iterators of <code>x</code>.
-<code>last</code> is reachable from <code>first</code>. <code>position</code>
-is not in the range [<code>first</code>,<code>last</code>).<br>
-<b>Effects:</b> For each element in the range [<code>first</code>,<code>last</code>),
-insertion is tried before <code>position</code>; if the operation is successful,
-the element is erased from <code>x</code>. In the special case
-<code>&amp;x==this</code>, no copy or deletion is performed, and insertions are
-always successful.<br>
-<b>Postconditions:</b> If <code>&amp;x==this</code>, no iterator or reference
-is invalidated.<br>
-<b>Complexity:</b> If <code>&amp;x==this</code>, constant; otherwise
-<code>O(m*I(n+m) + m*D(x.size()))</code> where <code>m</code> is the number
-of elements in [<code>first</code>,<code>last</code>).<br>
-<b>Exception safety:</b> If <code>&amp;x==this</code>, <code>nothrow</code>;
-otherwise, basic.<br>
+<b>Requires:</b> <code>x</code> is a non-const reference to an index of a
+<a href="multi_index_container.html#node_type">node-compatible</a>
+<code>multi_index_container</code>.
+If <code>get_allocator()!=x.get_allocator()</code>,
+<code>value_type</code> must be <code>CopyInsertable</code> into the destination
+<code>multi_index_container</code>.
+<code>position</code> is a valid iterator of the index and does not point to any element in
+[<code>first</code>,<code>last</code>).
+[<code>first</code>,<code>last</code>) is a valid range of <code>x</code>.<br>
+<b>Effects:</b> 
+<ul>
+  <li><b>(Same container)</b> if the source and destination containers are the same, repositions all the elements
+    of [<code>first</code>,<code>last</code>), in this order, before <code>position</code>.
+  </li>
+  <li><b>(Transfer splice)</b> else, if <code>get_allocator()==x.get_allocator()</code>, then, for each node in
+    [<code>first</code>,<code>last</code>), in this order, the node is transferred to the
+    <code>multi_index_container</code> right before <code>position</code>
+    if insertion is allowed by all other indices of the
+    <code>multi_index_container</code>.</li>
+  <li><b>(Destructive splice)</b> else, for each element in [<code>first</code>,<code>last</code>), in this order,
+    insertion is tried before <code>position</code>; if the operation is successful, the
+    element is erased from <code>x</code>. 
+  </li>
+</ul>
+<b>Postconditions:</b> For any index in the source container having the same
+<code>iterator</code>/<code>const_iterator</code> types as the corresponding
+index in the destination container, iterators referring to the transferred elements
+remain valid and behave as iterators of the destination index.<br>
+<b>Complexity:</b> If <code>&amp;x==this</code>, constant; else, if
+the source and destination containers are the same, <code>O(m)</code>;
+otherwise, <code>O(m*(I(n+m)+D(x.size())))</code>, where
+<code>m</code> is the number of elements in [<code>first</code>,<code>last</code>).<br>
+<b>Exception safety:</b> If the source and destination containers are the same,
+<code>nothrow</code>; otherwise basic.<br>
+<b>Implementation note:</b> The destructive variant of this operation is provided
+for reasons of backwards compatibility with previous versions of this library where
+allocator equality was not required. 
 </blockquote>
 
 <code>void remove(const value_type&amp; value);</code>
@@ -863,20 +983,22 @@ is the number of elements erased.<br>
 <code>void merge(index class name&amp; x);</code>
 
 <blockquote>
-<b>Requires:</b> <code>std::less&lt;value_type&gt;</code> induces a
+<b>Requires:</b>
+Either <code>get_allocator()==x.get_allocator()</code> or <code>value_type</code>
+is <code>CopyInsertable</code> into the <code>multi_index_container</code>.
+<code>std::less&lt;value_type&gt;</code> induces a
 strict weak ordering over <code>value_type</code>.
 Both the index and <code>x</code> are sorted according to
 <code>std::less&lt;value_type&gt;</code>.<br>
-<b>Effects:</b> Attempts to insert every element of <code>x</code> into the
-corresponding position of the index (according to the order). Elements
-successfully inserted are erased from <code>x</code>. The resulting sequence
+<b>Effects:</b> Attempts to splice every element of <code>x</code> into the
+corresponding position of the index (according to the order). The resulting sequence
 is stable, i.e. equivalent elements of either container preserve their
 relative position. In the special case <code>&amp;x==this</code>, no operation
 is performed.<br>
 <b>Postconditions:</b> Elements in the index and remaining elements in
 <code>x</code> are sorted.
-Validity of iterators to the index and of non-erased elements of <code>x</code>
-references is preserved.<br>
+Validity of iterators and references is preserved, except to elements removed
+from <code>x</code> if <code>get_allocator()!=x.get_allocator()</code>.<br>
 <b>Complexity:</b> If <code>&amp;x==this</code>, constant; otherwise
 <code>O(n + x.size()*I(n+x.size()) + x.size()*D(x.size()))</code>.<br>
 <b>Exception safety:</b> If <code>&amp;x==this</code>, <code>nothrow</code>;
@@ -886,19 +1008,20 @@ otherwise, basic.<br>
 <code>template &lt;typename Compare&gt; void merge(index class name&amp; x,Compare comp);</code>
 
 <blockquote>
-<b>Requires:</b> <code>Compare</code> induces a
-strict weak ordering over <code>value_type</code>.
+<b>Requires:</b>
+Either <code>get_allocator()==x.get_allocator()</code> or <code>value_type</code>
+is <code>CopyInsertable</code> into the <code>multi_index_container</code>.
+<code>Compare</code> induces a strict weak ordering over <code>value_type</code>.
 Both the index and <code>x</code> are sorted according to <code>comp</code>.<br>
-<b>Effects:</b> Attempts to insert every element of <code>x</code> into the
-corresponding position of the index (according to <code>comp</code>).
-Elements successfully inserted are erased from <code>x</code>. The resulting
+<b>Effects:</b> Attempts to splice every element of <code>x</code> into the
+corresponding position of the index (according to <code>comp</code>). The resulting
 sequence is stable, i.e. equivalent elements of either container preserve
 their relative position. In the special case <code>&amp;x==this</code>, no
 operation is performed.<br>
 <b>Postconditions:</b> Elements in the index and remaining elements in
 <code>x</code> are sorted according to <code>comp</code>.
-Validity of iterators to the index and of non-erased elements of <code>x</code>
-references is preserved.<br>
+Validity of iterators and references is preserved, except to elements removed
+from <code>x</code> if <code>get_allocator()!=x.get_allocator()</code>.<br>
 <b>Complexity:</b> If <code>&amp;x==this</code>, constant; otherwise
 <code>O(n + x.size()*I(n+x.size()) + x.size()*D(x.size()))</code>.<br>
 <b>Exception safety:</b> If <code>&amp;x==this</code>, <code>nothrow</code>;
@@ -1052,9 +1175,9 @@ Random access indices
 
 <br>
 
-<p>Revised December 29th 2018</p>
+<p>Revised August 30th 2021</p>
 
-<p>&copy; Copyright 2003-2018 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2021 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

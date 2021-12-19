@@ -12,6 +12,7 @@
 #include <boost/detail/lightweight_test.hpp>
 #include <functional> // std::bind for generic lambdas.
 #include <sstream>
+#include <ios>
 
 boost::contract::test::detail::oteststream out;
 
@@ -19,6 +20,8 @@ struct x {}; // Does not have operator==.
 
 int main() {
     std::ostringstream ok;
+    ok << std::boolalpha;
+    out << std::boolalpha;
     x x1, x2;
     
     out.str("");

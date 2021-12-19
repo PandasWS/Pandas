@@ -4,20 +4,20 @@
 
 using quickbook ;
 
-xml iterator 
-  : 
-    quickbook/iterator.qbk 
+xml iterator
+  :
+    quickbook/iterator.qbk
   ;
 
 boostbook standalone 
   : 
     iterator 
   :
-    <xsl:param>boost.root=../../../..
+    <xsl:param>"boost.root=../../../.."
     <xsl:param>toc.max.depth=3
     <xsl:param>toc.section.depth=3
     <xsl:param>chunk.section.depth=2
-    <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/libs/iterator/doc
+    <format>pdf:<xsl:param>"boost.url.prefix=http://www.boost.org/doc/libs/release/libs/iterator/doc/html"
   ;
 
 ###############################################################################

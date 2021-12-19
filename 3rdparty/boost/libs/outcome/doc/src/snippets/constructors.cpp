@@ -1,5 +1,5 @@
 /* Example of Outcome used with constructors
-(C) 2017-2019 Niall Douglas <http://www.nedproductions.biz/> (5 commits)
+(C) 2017-2021 Niall Douglas <http://www.nedproductions.biz/> (5 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -43,10 +43,16 @@ DEALINGS IN THE SOFTWARE.
 #include <sys/types.h>
 
 #include "../../../include/boost/outcome.hpp"
+
+#if __has_include(<filesystem>) && (__cplusplus >= 201700 || _HAS_CXX17)
+#include <filesystem>
+namespace filesystem = std::filesystem;
+#else
 #include <experimental/filesystem>
+namespace filesystem = std::experimental::filesystem;
+#endif
 
 namespace outcome = BOOST_OUTCOME_V2_NAMESPACE;
-namespace filesystem = std::experimental::filesystem;
 
 //! [file_handle]
 class file_handle

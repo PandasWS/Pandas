@@ -1,24 +1,20 @@
-
-# (C) Copyright Tobias Schwinger
+# Copyright 2007,2008 Tobias Schwinger
 #
-# Use modification and distribution are subject to the boost Software License,
-# Version 1.0. (See http:/\/www.boost.org/LICENSE_1_0.txt).
+# Copyright 2019 Glen Joseph Fernandes
+# (glenjofe@gmail.com)
+#
+# Distributed under the Boost Software License, Version 1.0.
+# (http://www.boost.org/LICENSE_1_0.txt)
 
 import testing ;
 
-project factory-tests
-    ;
-
-test-suite functional/factory
-    :
-      [ run value_factory.cpp ]
-      [ run factory.cpp ]
-      [ run factory_with_allocator.cpp ]
-      [ run factory_with_std_allocator.cpp ]
-      [ compile-fail factory_with_none_t.cpp ]
-      [ run factory.cpp : : : <define>BOOST_FUNCTIONAL_FACTORY_SUPPORT_NONE_T : none_t_factory ]
-      [ run factory_with_allocator.cpp : : : <define>BOOST_FUNCTIONAL_FACTORY_SUPPORT_NONE_T : none_t_factory_with_allocator ]
-      [ run factory_with_std_allocator.cpp : : : <define>BOOST_FUNCTIONAL_FACTORY_SUPPORT_NONE_T : none_t_factory_with_std_allocator ]
-      [ run factory_with_none_t.cpp : : : <define>BOOST_FUNCTIONAL_FACTORY_SUPPORT_NONE_T : none_t_factory_with_none_t ]
-    ;
-
+run value_factory.cpp ;
+run value_factory_args.cpp ;
+run value_factory_move.cpp ;
+run factory.cpp ;
+run factory_args.cpp ;
+run factory_move.cpp ;
+run factory_with_allocator.cpp ;
+run factory_with_std_allocator.cpp ;
+run factory_allocator_throws.cpp ;
+run factory_default_allocator.cpp : : : <exception-handling>off ;

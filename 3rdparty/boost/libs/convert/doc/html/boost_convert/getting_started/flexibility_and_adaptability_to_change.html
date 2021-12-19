@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Flexibility and Adaptability to Change</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Convert 2.0">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Convert 2.0">
 <link rel="up" href="../getting_started.html" title="Getting Started">
 <link rel="prev" href="../getting_started.html" title="Getting Started">
 <link rel="next" href="basic_conversion_failure_detection.html" title="Basic Conversion-Failure Detection">
@@ -68,9 +68,9 @@
       </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">lexical_cast</span> <span class="identifier">cnv1</span><span class="special">;</span>
-<span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">strtol</span>       <span class="identifier">cnv2</span><span class="special">;</span>
-<span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">spirit</span>       <span class="identifier">cnv3</span><span class="special">;</span>
+<pre class="programlisting"><span class="keyword">auto</span> <span class="identifier">cnv1</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">lexical_cast</span><span class="special">();</span>
+<span class="keyword">auto</span> <span class="identifier">cnv2</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">strtol</span><span class="special">();</span>
+<span class="keyword">auto</span> <span class="identifier">cnv3</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">spirit</span><span class="special">();</span>
 
 <span class="keyword">int</span> <span class="identifier">i1</span> <span class="special">=</span> <span class="identifier">convert</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="string">"123"</span><span class="special">,</span> <span class="identifier">cnv1</span><span class="special">).</span><span class="identifier">value</span><span class="special">();</span>
 <span class="keyword">int</span> <span class="identifier">i2</span> <span class="special">=</span> <span class="identifier">convert</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="string">"123"</span><span class="special">,</span> <span class="identifier">cnv2</span><span class="special">).</span><span class="identifier">value</span><span class="special">();</span> <span class="comment">// Two times faster than lexical_cast.</span>
@@ -91,15 +91,14 @@
       </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">cstream</span> <span class="identifier">cnv</span><span class="special">;</span>
-
-<span class="keyword">try</span>
+<pre class="programlisting"><span class="keyword">try</span>
 <span class="special">{</span>
     <span class="keyword">int</span> <span class="identifier">i1</span> <span class="special">=</span> <span class="identifier">lexical_cast</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="string">"   123"</span><span class="special">);</span> <span class="comment">// Does not work.</span>
     <span class="identifier">BOOST_TEST</span><span class="special">(!</span><span class="string">"Never reached"</span><span class="special">);</span>
 <span class="special">}</span>
 <span class="keyword">catch</span> <span class="special">(...)</span> <span class="special">{}</span>
 
+<span class="keyword">auto</span>        <span class="identifier">cnv</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">cstream</span><span class="special">();</span>
 <span class="keyword">int</span>          <span class="identifier">i2</span> <span class="special">=</span> <span class="identifier">convert</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="string">"   123"</span><span class="special">,</span> <span class="identifier">cnv</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">skipws</span><span class="special">)).</span><span class="identifier">value</span><span class="special">();</span> <span class="comment">// Success</span>
 <span class="identifier">string</span>       <span class="identifier">s1</span> <span class="special">=</span> <span class="identifier">lexical_cast</span><span class="special">&lt;</span><span class="identifier">string</span><span class="special">&gt;(</span><span class="number">12.34567</span><span class="special">);</span>
 <span class="identifier">string</span>       <span class="identifier">s2</span> <span class="special">=</span> <span class="identifier">convert</span><span class="special">&lt;</span><span class="identifier">string</span><span class="special">&gt;(</span><span class="number">12.34567</span><span class="special">,</span> <span class="identifier">cnv</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">fixed</span><span class="special">)(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">setprecision</span><span class="special">(</span><span class="number">3</span><span class="special">))).</span><span class="identifier">value</span><span class="special">();</span>
@@ -116,7 +115,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2016 Vladimir Batov<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2020 Vladimir Batov<p>
         Distributed under the Boost Software License, Version 1.0. See copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>.
       </p>
 </div></td>

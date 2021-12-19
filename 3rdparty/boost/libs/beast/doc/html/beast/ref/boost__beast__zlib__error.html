@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>zlib::error</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Beast">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Beast">
 <link rel="up" href="../ref.html" title="This Page Intentionally Left Blank 2/2">
-<link rel="prev" href="boost__beast__zlib__deflate_upper_bound.html" title="zlib::deflate_upper_bound">
-<link rel="next" href="boost__beast__zlib__inflate_stream.html" title="zlib::inflate_stream">
+<link rel="prev" href="boost__beast__zlib__Strategy.html" title="zlib::Strategy">
+<link rel="next" href="boost__beast__zlib__Byte.html" title="zlib::Byte">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,15 +20,17 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__zlib__deflate_upper_bound.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__zlib__inflate_stream.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__zlib__Strategy.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__zlib__Byte.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="beast.ref.boost__beast__zlib__error"></a><a class="link" href="boost__beast__zlib__error.html" title="zlib::error">zlib::error</a>
 </h4></div></div></div>
 <p>
-        <a class="indexterm" name="idm45720507609328"></a>
-Error codes returned by the deflate codecs.
+        <a class="indexterm" name="idm91055"></a>
+      </p>
+<p>
+        Error codes returned by the deflate codecs.
       </p>
 <h5>
 <a name="beast.ref.boost__beast__zlib__error.h0"></a>
@@ -39,24 +41,6 @@ Error codes returned by the deflate codecs.
       </p>
 <pre class="programlisting"><span class="keyword">enum</span> <span class="identifier">error</span>
 </pre>
-<p>
-        <a class="indexterm" name="idm45720507601424"></a>
- <a class="indexterm" name="idm45720507600320"></a>
- <a class="indexterm" name="idm45720507599216"></a>
- <a class="indexterm" name="idm45720507598112"></a>
- <a class="indexterm" name="idm45720507597008"></a>
- <a class="indexterm" name="idm45720507595904"></a>
- <a class="indexterm" name="idm45720507594800"></a>
- <a class="indexterm" name="idm45720507593696"></a>
- <a class="indexterm" name="idm45720507592576"></a>
- <a class="indexterm" name="idm45720507591472"></a>
- <a class="indexterm" name="idm45720507590368"></a>
- <a class="indexterm" name="idm45720507589264"></a>
- <a class="indexterm" name="idm45720507588160"></a>
- <a class="indexterm" name="idm45720507587056"></a>
- <a class="indexterm" name="idm45720507585952"></a>
-
-      </p>
 <h5>
 <a name="beast.ref.boost__beast__zlib__error.h1"></a>
         <span class="phrase"><a name="beast.ref.boost__beast__zlib__error.values"></a></span><a class="link" href="boost__beast__zlib__error.html#beast.ref.boost__beast__zlib__error.values">Values</a>
@@ -82,7 +66,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">need_buffers</code>
+                  <code class="computeroutput"><span class="identifier">need_buffers</span></code>
                 </p>
               </td>
 <td>
@@ -105,7 +89,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">end_of_stream</code>
+                  <code class="computeroutput"><span class="identifier">end_of_stream</span></code>
                 </p>
               </td>
 <td>
@@ -121,7 +105,30 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">stream_error</code>
+                  <code class="computeroutput"><span class="identifier">need_dict</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Preset dictionary required.
+                </p>
+                <p>
+                  This error indicates that a preset dictionary was not provided
+                  and is now needed at this point.
+                </p>
+                <p>
+                  This does not always indicate a failure condition.
+                </p>
+                <p>
+                  @note This is the same as <code class="computeroutput"><span class="identifier">Z_NEED_DICT</span></code>
+                  returned by ZLib.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">stream_error</span></code>
                 </p>
               </td>
 <td>
@@ -143,7 +150,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">invalid_block_type</code>
+                  <code class="computeroutput"><span class="identifier">invalid_block_type</span></code>
                 </p>
               </td>
 <td>
@@ -155,7 +162,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">invalid_stored_length</code>
+                  <code class="computeroutput"><span class="identifier">invalid_stored_length</span></code>
                 </p>
               </td>
 <td>
@@ -167,7 +174,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">too_many_symbols</code>
+                  <code class="computeroutput"><span class="identifier">too_many_symbols</span></code>
                 </p>
               </td>
 <td>
@@ -179,7 +186,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">invalid_code_lenths</code>
+                  <code class="computeroutput"><span class="identifier">invalid_code_lengths</span></code>
                 </p>
               </td>
 <td>
@@ -191,7 +198,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">invalid_bit_length_repeat</code>
+                  <code class="computeroutput"><span class="identifier">invalid_bit_length_repeat</span></code>
                 </p>
               </td>
 <td>
@@ -203,7 +210,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">missing_eob</code>
+                  <code class="computeroutput"><span class="identifier">missing_eob</span></code>
                 </p>
               </td>
 <td>
@@ -215,7 +222,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">invalid_literal_length</code>
+                  <code class="computeroutput"><span class="identifier">invalid_literal_length</span></code>
                 </p>
               </td>
 <td>
@@ -227,7 +234,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">invalid_distance_code</code>
+                  <code class="computeroutput"><span class="identifier">invalid_distance_code</span></code>
                 </p>
               </td>
 <td>
@@ -239,7 +246,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">invalid_distance</code>
+                  <code class="computeroutput"><span class="identifier">invalid_distance</span></code>
                 </p>
               </td>
 <td>
@@ -251,7 +258,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">over_subscribed_length</code>
+                  <code class="computeroutput"><span class="identifier">over_subscribed_length</span></code>
                 </p>
               </td>
 <td>
@@ -263,7 +270,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">incomplete_length_set</code>
+                  <code class="computeroutput"><span class="identifier">incomplete_length_set</span></code>
                 </p>
               </td>
 <td>
@@ -275,7 +282,7 @@ Error codes returned by the deflate codecs.
 <tr>
 <td>
                 <p>
-                  <code class="literal">general</code>
+                  <code class="computeroutput"><span class="identifier">general</span></code>
                 </p>
               </td>
 <td>
@@ -286,17 +293,10 @@ Error codes returned by the deflate codecs.
 </tr>
 </tbody>
 </table></div>
-<h5>
-<a name="beast.ref.boost__beast__zlib__error.h2"></a>
-        <span class="phrase"><a name="beast.ref.boost__beast__zlib__error.description"></a></span><a class="link" href="boost__beast__zlib__error.html#beast.ref.boost__beast__zlib__error.description">Description</a>
-      </h5>
-<p>
-        Convenience header <code class="literal">&lt;<a href="../../../../../../boost/beast/zlib.hpp" target="_top">boost/beast/zlib.hpp</a>&gt;</code>
-      </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2016-2019 Vinnie
+<td align="right"><div class="copyright-footer">Copyright © 2016-2019 Vinnie
       Falco<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
@@ -305,7 +305,7 @@ Error codes returned by the deflate codecs.
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__zlib__deflate_upper_bound.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__zlib__inflate_stream.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__zlib__Strategy.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__zlib__Byte.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

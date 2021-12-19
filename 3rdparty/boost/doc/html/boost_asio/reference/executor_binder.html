@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>executor_binder</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -26,6 +26,9 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.executor_binder"></a><a class="link" href="executor_binder.html" title="executor_binder">executor_binder</a>
 </h3></div></div></div>
+<p>
+        <a class="indexterm" name="boost_asio.indexterm.executor_binder"></a>
+      </p>
 <p>
         A call wrapper type to bind an executor of type <code class="computeroutput">Executor</code> to
         an object of type <code class="computeroutput">T</code>.
@@ -156,19 +159,19 @@ class executor_binder
 <tr>
 <td>
                 <p>
-                  <a class="link" href="executor_binder/executor_binder.html" title="executor_binder::executor_binder"><span class="bold"><strong>executor_binder</strong></span></a>
+                  <a class="link" href="executor_binder/executor_binder.html" title="executor_binder::executor_binder"><span class="bold"><strong>executor_binder</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
                   Construct an executor wrapper for the specified object. <br>
-                  <span class="silver"> &#8212;</span><br> Copy constructor. <br> <span class="silver"> &#8212;</span><br> Construct a copy, but specify
-                  a different executor. <br> <span class="silver"> &#8212;</span><br> Construct a copy of a different
-                  executor wrapper type. <br> <span class="silver"> &#8212;</span><br> Construct a copy of a different
+                  <span class="silver"> —</span><br> Copy constructor. <br> <span class="silver"> —</span><br> Construct a copy, but specify
+                  a different executor. <br> <span class="silver"> —</span><br> Construct a copy of a different
+                  executor wrapper type. <br> <span class="silver"> —</span><br> Construct a copy of a different
                   executor wrapper type, but specify a different executor. <br>
-                  <span class="silver"> &#8212;</span><br> Move constructor. <br> <span class="silver"> &#8212;</span><br> Move construct the target
-                  object, but specify a different executor. <br> <span class="silver"> &#8212;</span><br> Move construct
-                  from a different executor wrapper type. <br> <span class="silver"> &#8212;</span><br> Move construct
+                  <span class="silver"> —</span><br> Move constructor. <br> <span class="silver"> —</span><br> Move construct the target
+                  object, but specify a different executor. <br> <span class="silver"> —</span><br> Move construct
+                  from a different executor wrapper type. <br> <span class="silver"> —</span><br> Move construct
                   from a different executor wrapper type, but specify a different
                   executor.
                 </p>
@@ -210,7 +213,7 @@ class executor_binder
 <tr>
 <td>
                 <p>
-                  <a class="link" href="executor_binder/_executor_binder.html" title="executor_binder::~executor_binder"><span class="bold"><strong>~executor_binder</strong></span></a>
+                  <a class="link" href="executor_binder/_executor_binder.html" title="executor_binder::~executor_binder"><span class="bold"><strong>~executor_binder</strong></span></a> <span class="silver">[destructor]</span>
                 </p>
               </td>
 <td>
@@ -234,7 +237,8 @@ class executor_binder
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

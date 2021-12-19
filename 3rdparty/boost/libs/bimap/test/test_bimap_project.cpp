@@ -8,7 +8,7 @@
 
 //  VC++ 8.0 warns on usage of certain Standard Library and API functions that
 //  can be cause buffer overruns or other possible security issues if misused.
-//  See http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
+//  See https://web.archive.org/web/20071014014301/http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
 //  But the wording of the warning is misleading and unsettling, there are no
 //  portable alternative functions, and VC++ 8.0's own libraries use the
 //  functions in question. So turn off the warnings.
@@ -17,8 +17,7 @@
 
 #include <boost/config.hpp>
 
-// Boost.Test
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include <string>
 
@@ -57,21 +56,21 @@ void test_bimap_project()
 
     // non const projection
 
-    BOOST_CHECK( bm.project_up   (bm.end()) == bm.end()       );
-    BOOST_CHECK( bm.project_left (bm.end()) == bm.left.end()  );
-    BOOST_CHECK( bm.project_right(bm.end()) == bm.right.end() );
+    BOOST_TEST( bm.project_up   (bm.end()) == bm.end()       );
+    BOOST_TEST( bm.project_left (bm.end()) == bm.left.end()  );
+    BOOST_TEST( bm.project_right(bm.end()) == bm.right.end() );
 
-    BOOST_CHECK( bm.project_up   (iter) == iter       );
-    BOOST_CHECK( bm.project_left (iter) == left_iter  );
-    BOOST_CHECK( bm.project_right(iter) == right_iter );
+    BOOST_TEST( bm.project_up   (iter) == iter       );
+    BOOST_TEST( bm.project_left (iter) == left_iter  );
+    BOOST_TEST( bm.project_right(iter) == right_iter );
 
-    BOOST_CHECK( bm.project_up   (left_iter) == iter       );
-    BOOST_CHECK( bm.project_left (left_iter) == left_iter  );
-    BOOST_CHECK( bm.project_right(left_iter) == right_iter );
+    BOOST_TEST( bm.project_up   (left_iter) == iter       );
+    BOOST_TEST( bm.project_left (left_iter) == left_iter  );
+    BOOST_TEST( bm.project_right(left_iter) == right_iter );
 
-    BOOST_CHECK( bm.project_up   (right_iter) == iter       );
-    BOOST_CHECK( bm.project_left (right_iter) == left_iter  );
-    BOOST_CHECK( bm.project_right(right_iter) == right_iter );
+    BOOST_TEST( bm.project_up   (right_iter) == iter       );
+    BOOST_TEST( bm.project_left (right_iter) == left_iter  );
+    BOOST_TEST( bm.project_right(right_iter) == right_iter );
 
     bm.project_up   ( left_iter)->right  = "u";
     bm.project_left (right_iter)->second = "l";
@@ -79,31 +78,31 @@ void test_bimap_project()
 
     // const projection
 
-    BOOST_CHECK( cbm.project_up   (cbm.end()) == cbm.end()       );
-    BOOST_CHECK( cbm.project_left (cbm.end()) == cbm.left.end()  );
-    BOOST_CHECK( cbm.project_right(cbm.end()) == cbm.right.end() );
+    BOOST_TEST( cbm.project_up   (cbm.end()) == cbm.end()       );
+    BOOST_TEST( cbm.project_left (cbm.end()) == cbm.left.end()  );
+    BOOST_TEST( cbm.project_right(cbm.end()) == cbm.right.end() );
 
-    BOOST_CHECK( cbm.project_up   (citer) == citer       );
-    BOOST_CHECK( cbm.project_left (citer) == left_citer  );
-    BOOST_CHECK( cbm.project_right(citer) == right_citer );
+    BOOST_TEST( cbm.project_up   (citer) == citer       );
+    BOOST_TEST( cbm.project_left (citer) == left_citer  );
+    BOOST_TEST( cbm.project_right(citer) == right_citer );
 
-    BOOST_CHECK( cbm.project_up   (left_citer) == citer       );
-    BOOST_CHECK( cbm.project_left (left_citer) == left_citer  );
-    BOOST_CHECK( cbm.project_right(left_citer) == right_citer );
+    BOOST_TEST( cbm.project_up   (left_citer) == citer       );
+    BOOST_TEST( cbm.project_left (left_citer) == left_citer  );
+    BOOST_TEST( cbm.project_right(left_citer) == right_citer );
 
-    BOOST_CHECK( cbm.project_up   (right_citer) == citer       );
-    BOOST_CHECK( cbm.project_left (right_citer) == left_citer  );
-    BOOST_CHECK( cbm.project_right(right_citer) == right_citer );
+    BOOST_TEST( cbm.project_up   (right_citer) == citer       );
+    BOOST_TEST( cbm.project_left (right_citer) == left_citer  );
+    BOOST_TEST( cbm.project_right(right_citer) == right_citer );
 
     // mixed projection
 
-    BOOST_CHECK( bm.project_up   (left_citer) == iter       );
-    BOOST_CHECK( bm.project_left (left_citer) == left_iter  );
-    BOOST_CHECK( bm.project_right(left_citer) == right_iter );
+    BOOST_TEST( bm.project_up   (left_citer) == iter       );
+    BOOST_TEST( bm.project_left (left_citer) == left_iter  );
+    BOOST_TEST( bm.project_right(left_citer) == right_iter );
 
-    BOOST_CHECK( cbm.project_up   (right_iter) == citer       );
-    BOOST_CHECK( cbm.project_left (right_iter) == left_citer  );
-    BOOST_CHECK( cbm.project_right(right_iter) == right_citer );
+    BOOST_TEST( cbm.project_up   (right_iter) == citer       );
+    BOOST_TEST( cbm.project_left (right_iter) == left_citer  );
+    BOOST_TEST( cbm.project_right(right_iter) == right_citer );
 
     bm.project_up   ( left_citer)->right  = "u";
     bm.project_left (right_citer)->second = "l";
@@ -111,23 +110,23 @@ void test_bimap_project()
 
     // Support for tags
 
-    BOOST_CHECK( bm.project< left_tag>(iter) == left_iter  );
-    BOOST_CHECK( bm.project<right_tag>(iter) == right_iter );
+    BOOST_TEST( bm.project< left_tag>(iter) == left_iter  );
+    BOOST_TEST( bm.project<right_tag>(iter) == right_iter );
 
-    BOOST_CHECK( bm.project< left_tag>(left_iter) == left_iter  );
-    BOOST_CHECK( bm.project<right_tag>(left_iter) == right_iter );
+    BOOST_TEST( bm.project< left_tag>(left_iter) == left_iter  );
+    BOOST_TEST( bm.project<right_tag>(left_iter) == right_iter );
 
-    BOOST_CHECK( bm.project< left_tag>(right_iter) == left_iter  );
-    BOOST_CHECK( bm.project<right_tag>(right_iter) == right_iter );
+    BOOST_TEST( bm.project< left_tag>(right_iter) == left_iter  );
+    BOOST_TEST( bm.project<right_tag>(right_iter) == right_iter );
 
-    BOOST_CHECK( cbm.project< left_tag>(citer) == left_citer  );
-    BOOST_CHECK( cbm.project<right_tag>(citer) == right_citer );
+    BOOST_TEST( cbm.project< left_tag>(citer) == left_citer  );
+    BOOST_TEST( cbm.project<right_tag>(citer) == right_citer );
 
-    BOOST_CHECK( cbm.project< left_tag>(left_citer) == left_citer  );
-    BOOST_CHECK( cbm.project<right_tag>(left_citer) == right_citer );
+    BOOST_TEST( cbm.project< left_tag>(left_citer) == left_citer  );
+    BOOST_TEST( cbm.project<right_tag>(left_citer) == right_citer );
 
-    BOOST_CHECK( cbm.project< left_tag>(right_citer) == left_citer  );
-    BOOST_CHECK( cbm.project<right_tag>(right_citer) == right_citer );
+    BOOST_TEST( cbm.project< left_tag>(right_citer) == left_citer  );
+    BOOST_TEST( cbm.project<right_tag>(right_citer) == right_citer );
 
     bm.project< left_tag>(right_citer)->second = "l";
     bm.project<right_tag>( left_citer)->first  = "r";
@@ -135,9 +134,9 @@ void test_bimap_project()
 }
 
 
-int test_main( int, char* [] )
+int main()
 {
     test_bimap_project();
-    return 0;
+    return boost::report_errors();
 }
 

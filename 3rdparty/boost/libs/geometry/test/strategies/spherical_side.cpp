@@ -27,7 +27,7 @@
 #include <boost/geometry/strategies/spherical/side_by_cross_track.hpp>
 //#include <boost/geometry/strategies/spherical/side_via_plane.hpp>
 #include <boost/geometry/strategies/spherical/ssf.hpp>
-#include <boost/geometry/strategies/cartesian/side_by_triangle.hpp>
+#include <boost/geometry/strategy/cartesian/side_robust.hpp>
 
 #include <boost/geometry/strategies/geographic/mapping_ssf.hpp>
 #include <boost/geometry/strategies/geographic/side_andoyer.hpp>
@@ -163,11 +163,6 @@ int test_main(int, char* [])
 {
     test_all<bg::model::point<int, 2, bg::cs::spherical<bg::degree> > >();
     test_all<bg::model::point<double, 2, bg::cs::spherical_equatorial<bg::degree> > >();
-
-#if defined(HAVE_TTMATH)
-    typedef ttmath::Big<1,4> tt;
-    test_all<bg::model::point<tt, 2, bg::cs::spherical_equatorial<bg::degree> > >();
-#endif
 
     return 0;
 }

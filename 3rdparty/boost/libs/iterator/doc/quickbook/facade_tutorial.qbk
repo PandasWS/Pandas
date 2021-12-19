@@ -1,12 +1,11 @@
-
 [section:facade_tutorial Tutorial]
 
 In this section we'll walk through the implementation of a few
 iterators using `iterator_facade`, based around the simple
 example of a linked list of polymorphic objects.  This example was
-inspired by a 
+inspired by a
 [@http://thread.gmane.org/gmane.comp.lib.boost.user/5100 `posting`]
-by Keith Macdonald on the 
+by Keith Macdonald on the
 [@http://www.boost.org/more/mailing_lists.htm#users `Boost-Users`]
 mailing list.
 
@@ -30,16 +29,16 @@ Say we've written a polymorphic linked list node base class:
 
       // print to the stream
       virtual void print(std::ostream& s) const = 0;
-      
+
       // double the value
       virtual void double_me() = 0;
 
       void append(node_base* p)
       {
-          if (m_next) 
-              m_next->append(p); 
+          if (m_next)
+              m_next->append(p);
           else
-              m_next = p; 
+              m_next = p;
       }
 
    private:
@@ -210,7 +209,7 @@ the concepts we want our iterator to model.  Referring to the
 table__, we can see that the first three rows are applicable
 because `node_iterator` needs to satisfy the requirements for
 `readable iterator`_, `single pass iterator`_, and `incrementable
-iterator`_.  
+iterator`_.
 
 __ `core operations`_
 
@@ -254,10 +253,10 @@ make them private and grant friendship to
   };
 
 Voila; a complete and conforming readable, forward-traversal
-iterator!  For a working example of its use, see 
-[@../example/node_iterator1.cpp `this program`].
+iterator!  For a working example of its use, see
+[example_link node_iterator1.cpp..this program].
 
-__ ../example/node_iterator1.cpp
+__ ../../example/node_iterator1.cpp
 
 [h2 A constant `node_iterator`]
 
@@ -265,7 +264,7 @@ __ ../example/node_iterator1.cpp
 The term **mutable iterator** means an iterator through which
 the object it references (its "referent") can be modified.  A
 **constant iterator** is one which doesn't allow modification of
-its referent.[br][br]  
+its referent.[br][br]
 The words *constant* and *mutable* don't refer to the ability to
 modify the iterator itself.  For example, an `int const*` is a
 non-\ `const` *constant iterator*, which can be incremented
@@ -402,7 +401,7 @@ adding a templatized converting constructor [#broken]_ [#random]_:
 
       template <class OtherValue>
       bool equal(node_iter<OtherValue> const& other) const
-      { 
+      {
           return this->m_node == other.m_node;
       }
 
@@ -428,11 +427,11 @@ adding a templatized converting constructor [#broken]_ [#random]_:
    `distance_to` function as well.
 
 
-__ ../example/node_iterator2.hpp
+__ ../../example/node_iterator2.hpp
 
 You can see an example program which exercises our interoperable
-iterators 
-[@../example/node_iterator2.cpp `here`].
+iterators
+[example_link node_iterator2.cpp..here].
 
 
 [h2 Telling the Truth]
@@ -467,7 +466,7 @@ appropriate:
 
     ...
 
-  private: 
+  private:
     struct enabler {};
 
   public:

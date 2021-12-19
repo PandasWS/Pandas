@@ -2,7 +2,7 @@
 
 # Copyright 2003, 2004, 2005, 2006 Vladimir Prus
 # Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+# (See accompanying file LICENSE.txt or https://www.bfgroup.xyz/b2/LICENSE.txt)
 
 # Test that a chain of libraries works ok, no matter if we use static or shared
 # linking.
@@ -98,7 +98,7 @@ else:
     t.fail_test(1)
 
 # Test main -> libb -> liba chain in the case where liba is a file and not a
-# Boost.Build target.
+# B2 target.
 t.rm(".")
 
 t.write("jamroot.jam", "")

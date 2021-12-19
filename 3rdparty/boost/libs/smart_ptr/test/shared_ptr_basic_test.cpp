@@ -14,6 +14,10 @@
 
 #endif
 
+#if defined(__GNUC__) && __GNUC__ > 4
+# pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
+#endif
+
 //
 //  shared_ptr_basic_test.cpp
 //
@@ -24,7 +28,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>

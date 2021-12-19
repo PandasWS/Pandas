@@ -5,8 +5,8 @@
 // Copyright (c) 2008-2012 Bruno Lalande, Paris, France.
 // Copyright (c) 2009-2012 Mateusz Loskot, London, UK.
 
-// This file was modified by Oracle on 2015, 2016, 2017.
-// Modifications copyright (c) 2015-2017, Oracle and/or its affiliates.
+// This file was modified by Oracle on 2015-2021.
+// Modifications copyright (c) 2015-2021, Oracle and/or its affiliates.
 
 // Contributed and/or modified by Vissarion Fysikopoulos, on behalf of Oracle
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
@@ -21,17 +21,22 @@
 
 #include <algorithms/area/test_area.hpp>
 
+#include <boost/geometry/geometries/box.hpp>
+#include <boost/geometry/geometries/geometry_collection.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/point.hpp>
-#include <boost/geometry/geometries/box.hpp>
-#include <boost/geometry/geometries/ring.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
+#include <boost/geometry/geometries/ring.hpp>
+#include <boost/geometry/geometries/adapted/boost_variant.hpp>
+#include <boost/geometry/geometries/adapted/boost_variant2.hpp>
+
+#include <boost/geometry/strategy/cartesian/precise_area.hpp>
 
 #include <test_geometries/all_custom_ring.hpp>
 #include <test_geometries/all_custom_polygon.hpp>
 //#define BOOST_GEOMETRY_TEST_DEBUG
 
-#include <boost/variant/variant.hpp>
+#include <boost/multiprecision/cpp_dec_float.hpp>
 
 template <typename Polygon>
 void test_polygon()
@@ -68,13 +73,13 @@ void test_all()
         ("POLYGON((1 0,0 1,-1 0,0 -1,1 0))", 2);
 
     typedef typename bg::coordinate_type<P>::type coord_type;
-    if (BOOST_GEOMETRY_CONDITION((boost::is_same<coord_type, double>::value)))
+    if (BOOST_GEOMETRY_CONDITION((std::is_same<coord_type, double>::value)))
     {
         test_geometry<bg::model::polygon<P, false, false> >
             ("POLYGON((100000001 100000000, 100000000 100000001, \
                        99999999 100000000, 100000000  99999999))", 2);
     }
-    else if (BOOST_GEOMETRY_CONDITION((boost::is_same<coord_type, float>::value)))
+    else if (BOOST_GEOMETRY_CONDITION((std::is_same<coord_type, float>::value)))
     {
         test_geometry<bg::model::polygon<P, false, false> >
             ("POLYGON((100001 100000, 100000 100001, \
@@ -175,7 +180,71 @@ void test_large_integers()
     BOOST_CHECK_CLOSE(int_area, double_area, 0.0001);
 }
 
-void test_variant()
+struct precise_cartesian : bg::strategies::detail::cartesian_base
+{
+    template <typename Geometry>
+    static auto area(Geometry const&)
+    {
+        return bg::strategy::area::precise_cartesian<>();
+    }
+};
+
+void test_accurate_sum_strategy()
+{
+    typedef bg::model::point<double, 2, bg::cs::cartesian> point_type;
+    typedef bg::model::point
+        <
+            boost::multiprecision::cpp_dec_float_50,
+            2,
+            bg::cs::cartesian
+        > mp_point_type;
+
+    auto const poly0_string = "POLYGON((0 0,0 1,1 0,0 0))";
+
+    bg::model::polygon<point_type> poly0;
+    bg::read_wkt(poly0_string, poly0);
+
+    BOOST_CHECK_CLOSE(bg::area(poly0), 0.5, 0.0001);
+    BOOST_CHECK_CLOSE(bg::area(poly0, precise_cartesian()), 0.5, 0.0001);
+
+    bg::model::polygon<mp_point_type> mp_poly0;
+    bg::read_wkt(poly0_string, mp_poly0);
+
+    BOOST_CHECK_CLOSE(bg::area(mp_poly0), 0.5, 0.0001);
+
+    auto const poly1_string = "POLYGON((0.10000000000000001 0.10000000000000001,\
+            0.20000000000000001 0.20000000000000004,\
+            0.79999999999999993 0.80000000000000004,\
+            1.267650600228229e30 1.2676506002282291e30,\
+            0.10000000000000001 0.10000000000000001))";
+
+    bg::model::polygon<point_type> poly1;
+    bg::read_wkt(poly1_string, poly1);
+
+    BOOST_CHECK_CLOSE(bg::area(poly1), 0, 0.0001);
+    BOOST_CHECK_CLOSE(bg::area(poly1, precise_cartesian()), -0.315, 0.0001);
+
+    bg::model::polygon<mp_point_type> mp_poly1;
+    bg::read_wkt(poly1_string, mp_poly1);
+
+    BOOST_CHECK_CLOSE(bg::area(mp_poly1), 34720783012552.6, 0.0001);
+
+    auto const poly2_string = "POLYGON((1.267650600228229e30 1.2676506002282291e30,\
+            0.8 0.8,0.2 0.2,0.1 0.1,1.267650600228229e30 1.2676506002282291e30))";
+
+    bg::model::polygon<point_type> poly2;
+    bg::read_wkt(poly2_string, poly2);
+
+    BOOST_CHECK_CLOSE(bg::area(poly2), 0, 0.0001);
+    BOOST_CHECK_CLOSE(bg::area(poly2, precise_cartesian()), 0.315, 0.0001);
+
+    bg::model::polygon<mp_point_type> mp_poly2;
+    bg::read_wkt(poly2_string, mp_poly2);
+
+    BOOST_CHECK_CLOSE(bg::area(mp_poly2), 35000000000000, 0.0001);
+}
+
+void test_dynamic()
 {
     typedef bg::model::point<double, 2, bg::cs::cartesian> double_point_type;
     typedef bg::model::polygon<double_point_type> polygon_type;
@@ -189,12 +258,25 @@ void test_variant()
     std::string const box_li = "BOX(0 0,2 2)";
     bg::read_wkt(box_li, box);
 
-    boost::variant<polygon_type, box_type> v;
+    auto apoly = bg::area(poly);
+    auto abox = bg::area(box);
 
+    boost::variant<polygon_type, box_type> v;
     v = poly;
-    BOOST_CHECK_CLOSE(bg::area(v), bg::area(poly), 0.0001);
+    BOOST_CHECK_CLOSE(bg::area(v), apoly, 0.0001);
     v = box;
-    BOOST_CHECK_CLOSE(bg::area(v), bg::area(box), 0.0001);
+    BOOST_CHECK_CLOSE(bg::area(v), abox, 0.0001);
+
+    boost::variant2::variant<polygon_type, box_type> v2;
+    v2 = poly;
+    BOOST_CHECK_CLOSE(bg::area(v2), apoly, 0.0001);
+    v2 = box;
+    BOOST_CHECK_CLOSE(bg::area(v2), abox, 0.0001);
+
+    bg::model::geometry_collection<boost::variant<polygon_type, box_type> > gc;
+    gc.push_back(poly);
+    gc.push_back(box);
+    BOOST_CHECK_CLOSE(bg::area(gc), apoly + abox, 0.0001);
 }
 
 int test_main(int, char* [])
@@ -217,24 +299,21 @@ int test_main(int, char* [])
 
     test_open<pt_crt>(2.0);
     test_open<pt_sph>(24726179921.523518 / r2);
-    test_open<pt_geo >(24615492936.977146);
+    test_open<pt_geo >(24615770547.825359);
 
     test_open_ccw<pt_crt>(2.0);
     test_open_ccw<pt_sph>(24726179921.523518 / r2);
-    test_open_ccw<pt_geo >(24615492936.977146);
+    test_open_ccw<pt_geo >(24615770547.825359);
 
     test_poles_ccw<pt_crt>();
     test_poles_ccw<pt_sph>();
-    test_poles_ccw<pt_geo >();
-
-#ifdef HAVE_TTMATH
-    test_all<bg::model::d2::point_xy<ttmath_big> >();
-    test_spherical_geo<ttmath_big>();
-#endif
+    test_poles_ccw<pt_geo>();
 
     test_large_integers();
 
-    test_variant();
+    test_dynamic();
+
+    test_accurate_sum_strategy();
 
     // test_empty_input<bg::model::d2::point_xy<int> >();
 

@@ -2,7 +2,7 @@
 # Distributed under the Boost Software License, Version 1.0.
 # See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5...3.16)
 
 project(cmake_subdir_test LANGUAGES CXX)
 
@@ -20,13 +20,13 @@ endfunction()
 
 boost_add_subdir(config)
 boost_add_subdir(core)
-boost_add_subdir(predef)
 boost_add_subdir(static_assert)
 boost_add_subdir(type_traits)
 
 # secondary dependencies
 
 boost_add_subdir(assert)
+boost_add_subdir(throw_exception)
 
 # --target check
 

@@ -5,11 +5,11 @@
 // or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <algorithm>
-#include <boost/config.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/core/typeinfo.hpp>
 #include <boost/histogram/detail/type_name.hpp>
 #include <boost/throw_exception.hpp>
+#include <initializer_list>
 #include <iostream>
 #include <unordered_map>
 #include <utility>
@@ -32,7 +32,8 @@ struct tracing_allocator_db : std::pair<int, int> {
   template <class... Ts>
   void log(Ts&&... ts) {
     if (!tracing) return;
-    log_impl(std::forward<Ts>(ts)...);
+    // fold trick
+    (void)std::initializer_list<int>{(std::cerr << ts, 0)...};
     std::cerr << std::endl;
   }
 
@@ -41,14 +42,6 @@ struct tracing_allocator_db : std::pair<int, int> {
 private:
   using map_t = std::unordered_map<const boost::core::typeinfo*, std::pair<int, int>>;
   map_t map_;
-
-  BOOST_ATTRIBUTE_UNUSED inline void log_impl() {}
-
-  template <class T, class... Ts>
-  inline void log_impl(T&& t, Ts&&... ts) {
-    std::cerr << t;
-    log_impl(std::forward<Ts>(ts)...);
-  }
 };
 
 template <class T>
@@ -81,18 +74,18 @@ struct tracing_allocator {
       } else
         db->log("allocator +", n, " ", boost::histogram::detail::type_name<T>());
       auto& p = db->at<T>();
-      p.first += n;
-      p.second += n;
-      db->first += n * sizeof(T);
-      db->second += n * sizeof(T);
+      p.first += static_cast<int>(n);
+      p.second += static_cast<int>(n);
+      db->first += static_cast<int>(n * sizeof(T));
+      db->second += static_cast<int>(n * sizeof(T));
     }
     return static_cast<T*>(::operator new(n * sizeof(T)));
   }
 
   void deallocate(T* p, std::size_t n) {
     if (db) {
-      db->at<T>().first -= n;
-      db->first -= n * sizeof(T);
+      db->at<T>().first -= static_cast<int>(n);
+      db->first -= static_cast<int>(n * sizeof(T));
       db->log("allocator -", n, " ", boost::histogram::detail::type_name<T>());
     }
     ::operator delete((void*)p);

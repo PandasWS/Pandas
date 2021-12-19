@@ -9,7 +9,7 @@
 //  √ -- this is a test.
 
 #include "ascii_check.hpp"
-#include <functional>
+#include <algorithm>
 
 namespace boost
 {
@@ -21,7 +21,7 @@ namespace boost
    // Legal characters for a source file are defined in section 2.2 of the standard
    // I have added '@', '^', and '`' to the "legal" chars because they are commonly
    //    used in comments, and they are strictly ASCII.
-   struct non_ascii : public std::unary_function<char, bool> {
+   struct non_ascii {
    public:
       non_ascii () {}
       ~non_ascii () {}
@@ -37,7 +37,7 @@ namespace boost
       }
    };
 
-   struct is_CRLF : public std::unary_function<char, bool> {
+   struct is_CRLF {
    public:
       is_CRLF () {}
       ~is_CRLF () {}

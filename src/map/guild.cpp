@@ -513,7 +513,13 @@ int guild_create(struct map_session_data *sd, const char *name) {
 		clif_guild_created(sd,3);
 		return 0;
 	}
-
+#ifdef Pandas_NpcFilter_GUILDCREATE
+	if (sd) {
+		pc_setregstr(sd, add_str("@create_guild_name$"), name);
+		if (npc_script_filter(sd, NPCF_GUILDCREATE))
+			return 0;
+	}
+#endif // Pandas_NpcFilter_GUILDCREATE
 	guild_makemember(&m,sd);
 	m.position=0;
 	intif_guild_create(name,&m);
@@ -745,7 +751,11 @@ int guild_invite(struct map_session_data *sd, struct map_session_data *tsd) {
 		return 0; //Invite permission.
 
 	if(!battle_config.invite_request_check) {
+#ifndef Pandas_PacketFunction_PartyJoinRequest
 	if (tsd->party_invite > 0 || tsd->trade_partner || tsd->adopt_invite) { //checking if there no other invitation pending
+#else
+	if (tsd->party_invite > 0 || tsd->trade_partner || tsd->adopt_invite || tsd->party_applicant) {
+#endif // Pandas_PacketFunction_PartyJoinRequest
 			clif_guild_inviteack(sd,0);
 			return 0;
 		}
@@ -820,7 +830,18 @@ int guild_reply_invite(struct map_session_data* sd, int guild_id, int flag) {
 			if( tsd ) clif_guild_inviteack(tsd,3);
 			return 0;
 		}
-
+#ifdef Pandas_NpcFilter_GUILDJOIN
+		if (sd && tsd) {
+			pc_setreg(sd, add_str("@join_guild_id"), guild_id);
+			pc_setreg(sd, add_str("@join_guild_aid"), tsd->status.account_id);
+			if (npc_script_filter(sd, NPCF_GUILDJOIN)) {
+				sd->guild_invite = 0;
+				sd->guild_invite_account = 0;
+				if ( tsd ) clif_guild_inviteack(tsd, 1);
+				return 0;
+			}
+		}
+#endif // Pandas_NpcFilter_GUILDJOIN
 		guild_makemember(&m,sd);
 		intif_guild_addmember(guild_id, &m);
 		//TODO: send a minimap update to this player
@@ -1093,7 +1114,7 @@ int guild_member_withdraw(int guild_id, uint32 account_id, uint32 char_id, int f
 void guild_retrieveitembound(uint32 char_id, uint32 account_id, int guild_id) {
 	TBL_PC *sd = map_charid2sd(char_id);
 	if (sd) { //Character is online
-		int idxlist[MAX_INVENTORY];
+		int idxlist[G_MAX_INVENTORY];
 		int j;
 		j = pc_bound_chk(sd,BOUND_GUILD,idxlist);
 		if (j) {
@@ -2068,7 +2089,7 @@ int guild_break(struct map_session_data *sd,char *name) {
 	int i;
 #ifdef BOUND_ITEMS
 	int j;
-	int idxlist[MAX_INVENTORY];
+	int idxlist[G_MAX_INVENTORY];
 #endif
 
 	nullpo_ret(sd);

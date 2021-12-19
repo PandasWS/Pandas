@@ -30,9 +30,9 @@ Output:
 #include <boost/units/base_dimension.hpp>
 #include <boost/units/derived_dimension.hpp>
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
-#define BOOST_UNITS_CHECK_CLOSE(a, b) (BOOST_CHECK((std::abs((a) - (b)) < .0000001)))
+#define BOOST_UNITS_CHECK_CLOSE(a, b) BOOST_TEST(std::abs((a) - (b)) < .0000001)
 
 namespace bu = boost::units;
 
@@ -54,7 +54,7 @@ typedef bu::scaled_base_unit<base_unit4, bu::scale<10, bu::static_rational<3> > 
 BOOST_UNITS_DEFINE_CONVERSION_FACTOR(base_unit1, scaled_base_unit2, double, 5);
 BOOST_UNITS_DEFINE_CONVERSION_FACTOR(scaled_base_unit2, base_unit3, double, 3);
 
-int test_main(int,char *[])
+int main()
 {
     BOOST_UNITS_CHECK_CLOSE(bu::conversion_factor(base_unit1::unit_type(), base_unit2::unit_type()), 5000);
     BOOST_UNITS_CHECK_CLOSE(bu::conversion_factor(base_unit2::unit_type(), base_unit3::unit_type()), 0.003);
@@ -62,5 +62,5 @@ int test_main(int,char *[])
 
     BOOST_UNITS_CHECK_CLOSE(bu::conversion_factor(base_unit4::unit_type()/base_unit5::unit_type(), scaled_base_unit4::unit_type()/base_unit5::unit_type()), 1e-3);
 
-    return(0);
+    return boost::report_errors();
 }

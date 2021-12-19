@@ -8,28 +8,36 @@
 #define BOOST_HISTOGRAM_ACCUMULATORS_THREAD_SAFE_HPP
 
 #include <atomic>
-#include <boost/mp11/utility.hpp>
+#include <boost/core/nvp.hpp>
+#include <boost/histogram/fwd.hpp>
 #include <type_traits>
 
 namespace boost {
 namespace histogram {
 namespace accumulators {
 
-/** Thread-safe adaptor for builtin integral and floating point numbers.
+// cannot use new mechanism with accumulators::thread_safe
+template <class T>
+struct is_thread_safe<thread_safe<T>> : std::true_type {};
 
-  This adaptor uses std::atomic to make concurrent increments and additions safe for the
-  stored value.
+/** Thread-safe adaptor for builtin integral numbers.
+
+  This adaptor uses atomic operations to make concurrent increments and additions safe for
+  the stored value.
 
   On common computing platforms, the adapted integer has the same size and
   alignment as underlying type. The atomicity is implemented with a special CPU
   instruction. On exotic platforms the size of the adapted number may be larger and/or the
   type may have different alignment, which means it cannot be tightly packed into arrays.
 
-  @tparam T type to adapt, must be supported by std::atomic.
+  @tparam T type to adapt, must be an integral type.
  */
 template <class T>
-class thread_safe : public std::atomic<T> {
+class [[deprecated("use count<T, true> instead; "
+                   "thread_safe<T> will be removed in boost-1.79")]] thread_safe
+    : public std::atomic<T> {
 public:
+  using value_type = T;
   using super_t = std::atomic<T>;
 
   thread_safe() noexcept : super_t(static_cast<T>(0)) {}
@@ -40,14 +48,31 @@ public:
     return *this;
   }
 
-  thread_safe(T arg) : super_t(arg) {}
-  thread_safe& operator=(T arg) {
+  thread_safe(value_type arg) : super_t(arg) {}
+  thread_safe& operator=(value_type arg) {
     super_t::store(arg);
     return *this;
   }
 
-  void operator+=(T arg) { super_t::fetch_add(arg, std::memory_order_relaxed); }
-  void operator++() { operator+=(static_cast<T>(1)); }
+  thread_safe& operator+=(const thread_safe& arg) {
+    operator+=(arg.load());
+    return *this;
+  }
+  thread_safe& operator+=(value_type arg) {
+    super_t::fetch_add(arg, std::memory_order_relaxed);
+    return *this;
+  }
+  thread_safe& operator++() {
+    operator+=(static_cast<value_type>(1));
+    return *this;
+  }
+
+  template <class Archive>
+  void serialize(Archive & ar, unsigned /* version */) {
+    auto value = super_t::load();
+    ar& make_nvp("value", value);
+    super_t::store(value);
+  }
 };
 
 } // namespace accumulators

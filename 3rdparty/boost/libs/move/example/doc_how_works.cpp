@@ -20,8 +20,6 @@ int main()
 
 #else
 
-#include <boost/move/detail/config_begin.hpp>
-
 //[how_works_example
 #include <boost/move/core.hpp>
 #include <iostream>
@@ -57,7 +55,5 @@ int main()
    return 0;
 }
 //]
-
-#include <boost/move/detail/config_end.hpp>
 
 #endif

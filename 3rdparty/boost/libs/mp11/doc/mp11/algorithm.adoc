@@ -33,7 +33,7 @@ using R1 = mp_transform<add_pointer_t, L1>; // std::tuple<void*, int*, float*>
 using L1 = std::tuple<void, int, float>;
 using L2 = mp_list<void, int, float>;
 
-using R1 = mp_all<mp_transform<std::is_same, L1, L2>>; // mp_true
+using R1 = mp_apply<mp_all, mp_transform<std::is_same, L1, L2>>; // mp_true
 ```
 
 .Using mp_transform to compare the contents of two lists of integral constants
@@ -43,7 +43,7 @@ template<class T1, class T2> using eq = mp_bool<T1::value == T2::value>;
 using L1 = std::tuple<mp_int<1>, mp_int<2>, mp_int<3>>;
 using L2 = mp_list<mp_size_t<1>, mp_size_t<2>, mp_size_t<3>>;
 
-using R1 = mp_all<mp_transform<eq, L1, L2>>; // mp_true
+using R1 = mp_apply<mp_all, mp_transform<eq, L1, L2>>; // mp_true
 ```
 
 .mp_transform on one list
@@ -262,7 +262,8 @@ Same as `mp_repeat_c` but with a type argument `N`. The number of copies is `N::
 
 `mp_product<F, L1<T1...>, L2<T2...>, ..., Ln<Tn...>>` evaluates `F<U1, U2, ..., Un>` for values `Ui` taken from
 the Cartesian product of the lists, as if the elements `Ui` are formed by `n` nested loops, each traversing `Li`.
-It returns a list of the form `L1<V...>` containing the results of the application of `F`.
+It returns a list of the form `L1<V...>` containing the results of the application of `F`. The degenerate case
+of zero lists, `mp_product<F>`, returns `mp_list<F<>>`.
 
 .mp_product on two lists
 [cols="<.^4m,4*^.^1m",width=85%]
@@ -283,6 +284,20 @@ It returns a list of the form `L1<V...>` containing the results of the applicati
     template<class Q, class... L> using mp_product_q = mp_product<Q::template fn, L...>;
 
 As `mp_product`, but takes a quoted metafunction.
+
+## mp_power_set<L>
+
+    template<class L> using mp_power_set = /*...*/;
+
+`mp_power_set<L>` returns a list (of the same form as `L`) of all possible 2^n^ subsets of `L` (where `n` is the length of `L`.)
+
+`mp_power_set<L<>>` returns `L<L<>>`.
+
+`mp_power_set<L<T1>>` returns `L<L<>, L<T1>>`.
+
+`mp_power_set<L<T1, T2>>` returns `L<L<>, L<T2>, L<T1>, L<T1, T2>>`.
+
+`mp_power_set<L<T1, T...>>` returns the concatenation of `mp_power_set<L<T...>>` and that same list with `T1` prepended to each element.
 
 ## mp_drop_c<L, N>
 
@@ -472,6 +487,32 @@ Replaces the element of `L` at zero-based index `I` with `W` and returns the res
 
 Same as `mp_replace_at_c`, but with a type argument `I`. `I::value` must be a nonnegative number.
 
+## mp_rotate_left_c<L, N>
+
+    template<class L, std::size_t N> using mp_rotate_left_c = /*...*/;
+
+Moves the `N % M` initial elements of the list `L` to the back, where `M` is the size of `L`. Empty
+lists are unchanged.
+
+## mp_rotate_left<L, N>
+
+    template<class L, class N> using mp_rotate_left = /*...*/;
+
+Same as `mp_rotate_left_c`, but with a type argument `N`. `N::value` must be a nonnegative number.
+
+## mp_rotate_right_c<L, N>
+
+    template<class L, std::size_t N> using mp_rotate_right_c = /*...*/;
+
+Moves the `N % M` trailing elements of the list `L` to the front, where `M` is the size of `L`. Empty
+lists are unchanged.
+
+## mp_rotate_right<L, N>
+
+    template<class L, class N> using mp_rotate_right = /*...*/;
+
+Same as `mp_rotate_right_c`, but with a type argument `N`. `N::value` must be a nonnegative number.
+
 ## mp_copy_if<L, P>
 
     template<class L, template<class...> class P> using mp_copy_if = /*...*/;
@@ -501,6 +542,61 @@ Removes all elements `T` of `L` for which `mp_to_bool<P<T>>` is `mp_true` and re
     template<class L, class Q> using mp_remove_if_q = mp_remove_if<L, Q::template fn>;
 
 As `mp_remove_if`, but takes a quoted metafunction.
+
+## mp_flatten<L>
+
+    template<class L, class L2 = mp_clear<L>> using mp_flatten = /*...*/;
+
+Replaces all elements `T` of `L` that are lists of the same form as `L2` (that is, those for which
+`mp_similar<T, L2>` is `mp_true`) with their elements and returns the result.
+
+.Using mp_flatten
+```
+using L1 = tuple<int, tuple<>, void, tuple<float, double>>;
+using R1 = mp_flatten<L1>; // tuple<int, void, float, double>
+
+using L2 = mp_list<int, mp_list<float>, tuple<void>>;
+using R2a = mp_flatten<L2>; // mp_list<int, float, tuple<void>>
+using R2b = mp_flatten<L2, tuple<>>; // mp_list<int, mp_list<float>, void>
+
+using L3 = mp_list<mp_list<float>, mp_list<mp_list<void>>>;
+using R3 = mp_flatten<L3>; // mp_list<float, mp_list<void>>
+```
+
+## mp_intersperse<L, S>
+
+    template<class L, class S> using mp_intersperse = /*...*/;
+
+Inserts the separator `S` between the elements of the list `L`.
+
+`mp_intersperse<L<>, S>` is `L<>`. `mp_intersperse<L<T1>, S>` is `L<T1>`.
+`mp_intersperse<L<T1, T2, T3, ..., Tn-1, Tn>, S>` is `L<T1, S, T2, S, T3, S, ..., Tn-1, S, Tn>`.
+
+## mp_split<L, S>
+
+    template<class L, class S> using mp_split = /*...*/;
+
+Splits the list `L` into segments at each separator `S` and returns a list of
+the segments.
+
+`mp_split<L<>, S>` is `L<L<>>`. `mp_split<L<T...>, S>`, where `S` does not occur in `T...`,
+is `L<L<T...>>`. `mp_split<L<T1..., S, T2..., S, T3...>, S>` is `L<L<T1...>, L<T2...>, L<T3...>>`.
+
+The segments may be empty; `mp_split<L<S, X, Y, S, S>, S>` is `L<L<>, L<X, Y>, L<>, L<>>`.
+
+## mp_join<L, S>
+
+    template<class L, class S> using mp_join = /*...*/;
+
+`mp_join` is the reverse operation of `mp_split`; it takes a list of segments `L` and joins
+them into a single list, inserting the separator `S` between them.
+
+`mp_join<mp_split<L, S>, S>` yields back the original list `L`.
+
+For example, `mp_split<L<X1, X2, S, X3>, S>` gives `L<L<X1, X2>, L<X3>>`, and
+`mp_join<L<L<X1, X2>, L<X3>>, S>` results in `L<X1, X2, S, X3>`.
+
+`mp_join<L, S>` is equivalent to (and is implemented as) `mp_apply<mp_append, mp_intersperse<L, mp_list<S>>>`.
 
 ## mp_partition<L, P>
 
@@ -653,11 +749,135 @@ As `mp_fold`, but takes a quoted metafunction.
 
 As `mp_reverse_fold`, but takes a quoted metafunction.
 
+## mp_partial_sum<L, V, F>
+
+    template<class L, class V, template<class...> class F> using mp_partial_sum = /*...*/;
+
+`mp_partial_sum<L, V, F>` is similar to `mp_fold<L, V, F>`, but instead of its final result, it returns
+a list (of the same form as `L`) holding the intermediate results of the fold. The last element of the
+result of `mp_partial_sum` is the same as the result of `mp_fold`.
+
+For example, `mp_fold<mp_list<X1, X2, X3>, V, F>` is `F<F<F<V, X1>, X2>, X3>`, but
+`mp_partial_sum<mp_list<X1, X2, X3>, V, F>` is `mp_list<F<V, X1>, F<F<V, X1>, X2>, F<F<F<V, X1>, X2>, X3>>`.
+
+It's common for `F` to be `mp_plus`, in which case the result contains the partial sums of `L`.
+
+.Using mp_partial_sum
+----
+using L1 = mp_list_c<int, 1, 2, 3, 4>;
+using R1 = mp_partial_sum<L1, mp_int<0>, mp_plus>; // mp_list_c<int, 1, 3, 6, 10>
+----
+
+## mp_partial_sum_q<L, V, Q>
+
+    template<class L, class V, class Q> using mp_partial_sum_q =
+        mp_partial_sum<L, V, Q::template fn>;
+
+As `mp_partial_sum`, but takes a quoted metafunction.
+
+## mp_pairwise_fold<L, F>
+
+    template<class L, template<class...> class F> using mp_pairwise_fold = /*...*/;
+
+`mp_pairwise_fold<L, F>` returns a list of the same form as `L` whose elements are
+the result of the application of the binary metafunction `F` to each pair of adjacent
+elements of `L`. That is, `mp_pairwise_fold<L<T1, T2, T3>, F>` is
+`L<F<T1, T2>, F<T2, T3>>`.
+
+The result has one fewer element than the original. If `L` has only one element, the
+result is an empty list. If `L` is an empty list, the result is also an empty list.
+
+.Using mp_pairwise_fold
+----
+template<class L> using is_increasing = mp_all_of<
+    mp_pairwise_fold<L, mp_less>, mp_to_bool>;
+----
+
+## mp_pairwise_fold_q<L, Q>
+
+    template<class L, class Q> using mp_pairwise_fold_q =
+        mp_pairwise_fold<L, Q::template fn>;
+
+As `mp_pairwise_fold`, but takes a quoted metafunction.
+
+.Using mp_pairwise_fold_q
+----
+template<class L, template<class...> class P> using is_sorted =
+    mp_none_of<mp_pairwise_fold_q<L, mp_bind<P, _2, _1>>, mp_to_bool>;
+----
+
+## mp_iterate<V, F, R>
+
+    template<class V, template<class...> class F, template<class...> class R>
+        using mp_iterate = /*...*/;
+
+`mp_iterate<V, F, R>` applies `R` to `V` successively until that's no longer possible,
+yielding the sequence `V`, `R<V>`, `R<R<V>>`, `R<R<R<V>>>`...
+
+It then returns an `mp_list` whose elements are formed by applying `F` to the above
+sequence of values. That is, it returns `mp_list<F<V>, F<R<V>>, F<R<R<V>>>, ...>`.
+
+`mp_iterate` is in a way the reverse operation of `mp_reverse_fold`. Given
+
+    template<class T, class U> struct cons {};
+    struct nil {};
+
+`mp_reverse_fold<mp_list<X1, X2, X3>, nil, cons>` produces `cons<X1, cons<X2, cons<X3, nil>>>`,
+which when passed as `V` to `mp_iterate<V, mp_first, mp_second>` recovers the original
+`mp_list<X1, X2, X3>`.
+
+.Using mp_iterate
+----
+struct X1 {};
+struct X2 {};
+struct X3 {};
+
+using L1 = mp_list<X1, X2, X3>;
+using R1 = mp_iterate<L1, mp_first, mp_rest>; // L1
+
+template<class T, class U> struct cons {};
+struct nil {};
+
+using V2 = mp_reverse_fold<L1, nil, cons>; // cons<X1, cons<X2, cons<X3, nil>>>
+using R2 = mp_iterate<V2, mp_first, mp_second>; // L1
+
+struct Y1 {};
+struct Y2 { using value_type = double; using next_type = Y1; };
+struct Y3 { using value_type = float; using next_type = Y2; };
+struct Y4 { using value_type = int; using next_type = Y3; };
+
+template<class T> using value_type = typename T::value_type;
+template<class T> using next_type = typename T::next_type;
+
+using R3 = mp_iterate<Y4, mp_identity_t, next_type>; // mp_list<Y4, Y3, Y2, Y1>
+using R4 = mp_iterate<Y4, value_type, next_type>; // mp_list<int, float, double>
+----
+
+## mp_iterate_q<V, Qf, Qr>
+
+    template<class V, class Qf, class Qr> using mp_iterate_q =
+        mp_iterate<V, Qf::template fn, Qr::template fn>;
+
+As `mp_iterate`, but takes quoted metafunctions.
+
 ## mp_unique<L>
 
     template<class L> using mp_unique = /*...*/;
 
 `mp_unique<L>` returns a list of the same form as `L` with the duplicate elements removed.
+
+## mp_unique_if<L, P>
+
+    template<class L, template<class...> class P> using mp_unique_if = /*...*/;
+
+As `mp_unique`, but two elements `T` and `U` are considered duplicates when `mp_to_bool<P<T, U>>` is `mp_true`.
+
+## mp_unique_if_q<L, Q>
+
+    template<class L, class Q> using mp_unique_if_q =
+        mp_unique_if<L, Q::template fn>;
+
+As `mp_unique_if`, but takes a quoted metafunction.
 
 ## mp_all_of<L, P>
 
@@ -721,6 +941,10 @@ template<class... T> void print( std::tuple<T...> const & tp )
     });
 }
 ```
+
+In case the elements of the list `L` are not default-constructible, you can use
+`mp_for_each<mp_transform<mp_identity, L>>`, which would call `f` with `mp_identity<T>()`
+instead of `T()`.
 
 ## mp_with_index<N>(i, f)
 

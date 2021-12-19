@@ -13,22 +13,18 @@ Beman Dawes
 :idprefix:
 :listing-caption: Code Example
 :docinfo: private-footer
+:source-highlighter: rouge
+:source-language: c++
 
 :leveloffset: +1
 
 include::endian/overview.adoc[]
-
 include::endian/changelog.adoc[]
-
-include::endian/conversion.adoc[]
-
-include::endian/buffers.adoc[]
-
-include::endian/arithmetic.adoc[]
-
 include::endian/choosing_approach.adoc[]
-
-include::endian/mini_review_topics.adoc[]
+include::endian/conversion.adoc[]
+include::endian/buffers.adoc[]
+include::endian/arithmetic.adoc[]
+include::endian/history.adoc[]
 
 :leveloffset: -1
 

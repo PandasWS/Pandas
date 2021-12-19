@@ -11,7 +11,7 @@
     <a accesskey="u" href="../../../reference/types/basic_outcome.html"><img src="../../../images/up.png" alt="Up"></a>
     <a accesskey="h" href="../../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="../../../reference/types/basic_outcome/implicit_error_exception_converting_constructor.html"><img src="../../../images/next.png" alt="Next"></a></div><div id="content">
   <div class="titlepage"><div><div><h1 style="clear: both"><code>basic_outcome(P &amp;&amp;)</code></h1></div></div></div>
-  <p>Implicit <code>exception_type</code> constructor. Calls <a href="../../../reference/functions/hooks/hook_outcome_construction.html" class="api-reference"><code>void hook_outcome_construction(T *, U &amp;&amp;) noexcept</code></a>
+  <p>Implicit <code>exception_type</code> constructor. Calls <a href="../../../reference/policies/base/on_outcome_construction.html" class="api-reference"><code>void on_outcome_construction(T *, U &amp;&amp;) noexcept</code></a>
  with <code>this</code> and <code>P</code>.</p>
 
 <p><em>Requires</em>: <code>predicate::enable_exception_converting_constructor&lt;P&gt;</code> is true.</p>
@@ -19,7 +19,7 @@
 <p><em>Complexity</em>: Same as for <code>exception_type</code>&rsquo;s copy or move constructor. Constexpr, triviality and noexcept of underlying operations is propagated.</p>
 
 
-        </div><p><small>Last revised: January 31, 2019 at 01:07:35 UTC</small></p>
+        </div><p><small>Last revised: December 17, 2020 at 11:27:06 UTC</small></p>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="../../../reference/types/basic_outcome/implicit_error_condition_converting_constructor.html"><img src="../../../images/prev.png" alt="Prev"></a>

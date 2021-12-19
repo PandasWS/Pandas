@@ -11,15 +11,15 @@
 #endif
 
 #include <boost/math/tools/config.hpp>
-#include <boost/assert.hpp>
-#ifdef BOOST_MSVC
+#include <boost/math/tools/assert.hpp>
+#ifdef _MSC_VER
 #  pragma warning(push)
 #  pragma warning(disable: 4127 4701 4512)
 #  pragma warning(disable: 4130) // '==' : logical operation on address of string constant.
 #endif
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 #include <boost/type_traits/is_floating_point.hpp>
@@ -39,10 +39,10 @@ namespace random_ns = boost::random;
 #include <vector>
 #include <iostream>
 
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #  pragma warning(push)
 #  pragma warning(disable: 4130) // '==' : logical operation on address of string constant.
-// Used as a warning with BOOST_ASSERT
+// Used as a warning with BOOST_MATH_ASSERT
 #endif
 
 namespace boost{ namespace math{ namespace tools{
@@ -52,6 +52,8 @@ enum parameter_type
    random_in_range = 0,
    periodic_in_range = 1,
    power_series = 2,
+   single_value = 3,
+   plus_minus_value = 4,
    dummy_param = 0x80
 };
 
@@ -74,6 +76,10 @@ parameter_type& operator |= (parameter_type& a, parameter_type b)
 //
 // If type == power_series then
 // n1 and n2 are the endpoints of the exponents (closed range) and z1 is the basis.
+//
+// If type == single_value then z1 contains the single value to add.
+//
+// If type == plus_minus_value then test at +-z1
 //
 // If type & dummy_param then this data is ignored and not stored in the output, it
 // is passed to the generator function however which can do with it as it sees fit.
@@ -107,46 +113,60 @@ inline parameter_info<T> make_power_param(T basis, int start_exponent, int end_e
    return result;
 }
 
+template <class T>
+inline parameter_info<T> make_single_param(T val)
+{
+   parameter_info<T> result = { single_value, val };
+   return result;
+}
+
+template <class T>
+inline parameter_info<T> make_plus_minus_param(T val)
+{
+   parameter_info<T> result = { plus_minus_value, val };
+   return result;
+}
+
 namespace detail{
 
 template <class Seq, class Item, int N>
-inline void unpack_and_append_tuple(Seq& s,
-                                    const Item& data,
-                                    const boost::integral_constant<int, N>&,
-                                    const boost::false_type&)
+inline void unpack_and_append_tuple(Seq&,
+                                    const Item&,
+                                    const std::integral_constant<int, N>&,
+                                    const std::false_type&)
 {
-   // termimation condition nothing to do here
+   // termination condition nothing to do here
 }
 
 template <class Seq, class Item, int N>
 inline void unpack_and_append_tuple(Seq& s,
                                     const Item& data,
-                                    const boost::integral_constant<int, N>&,
-                                    const boost::true_type&)
+                                    const std::integral_constant<int, N>&,
+                                    const std::true_type&)
 {
    // extract the N'th element, append, and recurse:
    typedef typename Seq::value_type value_type;
    value_type val = boost::math::get<N>(data);
    s.push_back(val);
 
-   typedef boost::integral_constant<int, N+1> next_value;
-   typedef boost::integral_constant<bool, (boost::math::tuple_size<Item>::value > N+1)> terminate;
+   typedef std::integral_constant<int, N+1> next_value;
+   typedef std::integral_constant<bool, (boost::math::tuple_size<Item>::value > N+1)> terminate;
 
    unpack_and_append_tuple(s, data, next_value(), terminate());
 }
 
 template <class Seq, class Item>
-inline void unpack_and_append(Seq& s, const Item& data, const boost::true_type&)
+inline void unpack_and_append(Seq& s, const Item& data, const std::true_type&)
 {
    s.push_back(data);
 }
 
 template <class Seq, class Item>
-inline void unpack_and_append(Seq& s, const Item& data, const boost::false_type&)
+inline void unpack_and_append(Seq& s, const Item& data, const std::false_type&)
 {
    // Item had better be a tuple-like type or we've had it!!!!
-   typedef boost::integral_constant<int, 0> next_value;
-   typedef boost::integral_constant<bool, (boost::math::tuple_size<Item>::value > 0)> terminate;
+   typedef std::integral_constant<int, 0> next_value;
+   typedef std::integral_constant<bool, (boost::math::tuple_size<Item>::value > 0)> terminate;
 
    unpack_and_append_tuple(s, data, next_value(), terminate());
 }
@@ -155,7 +175,7 @@ template <class Seq, class Item>
 inline void unpack_and_append(Seq& s, const Item& data)
 {
    typedef typename Seq::value_type value_type;
-   unpack_and_append(s, data, ::boost::is_convertible<Item, value_type>());
+   unpack_and_append(s, data, ::std::is_convertible<Item, value_type>());
 }
 
 } // detail
@@ -311,6 +331,135 @@ public:
       return *this;
    }
 
+   template <class F>
+   test_data& insert(F func, const parameter_info<T>& arg1, const parameter_info<T>& arg2, const parameter_info<T>& arg3, const parameter_info<T>& arg4)
+   {
+      // generate data for 4-argument functor F
+
+      typedef typename std::set<T>::const_iterator it_type;
+
+      std::set<T> points1, points2, points3, points4;
+      create_test_points(points1, arg1);
+      create_test_points(points2, arg2);
+      create_test_points(points3, arg3);
+      create_test_points(points4, arg4);
+      it_type a = points1.begin();
+      it_type b = points1.end();
+      row_type row;
+      while(a != b)
+      {
+         it_type c = points2.begin();
+         it_type d = points2.end();
+         while(c != d)
+         {
+            it_type e = points3.begin();
+            it_type f = points3.end();
+            while(e != f)
+            {
+               it_type g = points4.begin();
+               it_type h = points4.end();
+               while (g != h)
+               {
+                  if ((arg1.type & dummy_param) == 0)
+                     row.push_back(*a);
+                  if ((arg2.type & dummy_param) == 0)
+                     row.push_back(*c);
+                  if ((arg3.type & dummy_param) == 0)
+                     row.push_back(*e);
+                  if ((arg4.type & dummy_param) == 0)
+                     row.push_back(*g);
+#ifndef BOOST_NO_EXCEPTIONS
+                  try {
+#endif
+                     // domain_error exceptions from func are swallowed
+                     // and this data point is ignored:
+                     detail::unpack_and_append(row, func(*a, *c, *e, *g));
+                     m_data.insert(row);
+#ifndef BOOST_NO_EXCEPTIONS
+                  }
+                  catch (const std::domain_error&) {}
+#endif
+                  row.clear();
+                  ++g;
+               }
+               ++e;
+            }
+            ++c;
+         }
+         ++a;
+      }
+      return *this;
+   }
+
+   template <class F>
+   test_data& insert(F func, const parameter_info<T>& arg1, const parameter_info<T>& arg2, const parameter_info<T>& arg3, const parameter_info<T>& arg4, const parameter_info<T>& arg5)
+   {
+      // generate data for 5-argument functor F
+
+      typedef typename std::set<T>::const_iterator it_type;
+
+      std::set<T> points1, points2, points3, points4, points5;
+      create_test_points(points1, arg1);
+      create_test_points(points2, arg2);
+      create_test_points(points3, arg3);
+      create_test_points(points4, arg4);
+      create_test_points(points5, arg5);
+      it_type a = points1.begin();
+      it_type b = points1.end();
+      row_type row;
+      while(a != b)
+      {
+         it_type c = points2.begin();
+         it_type d = points2.end();
+         while(c != d)
+         {
+            it_type e = points3.begin();
+            it_type f = points3.end();
+            while(e != f)
+            {
+               it_type g = points4.begin();
+               it_type h = points4.end();
+               while (g != h)
+               {
+                  it_type i = points5.begin();
+                  it_type j = points5.end();
+                  while (i != j)
+                  {
+                     if ((arg1.type & dummy_param) == 0)
+                        row.push_back(*a);
+                     if ((arg2.type & dummy_param) == 0)
+                        row.push_back(*c);
+                     if ((arg3.type & dummy_param) == 0)
+                        row.push_back(*e);
+                     if ((arg4.type & dummy_param) == 0)
+                        row.push_back(*g);
+                     if ((arg5.type & dummy_param) == 0)
+                        row.push_back(*i);
+#ifndef BOOST_NO_EXCEPTIONS
+                     try {
+#endif
+                        // domain_error exceptions from func are swallowed
+                        // and this data point is ignored:
+                        detail::unpack_and_append(row, func(*a, *c, *e, *g, *i));
+                        m_data.insert(row);
+#ifndef BOOST_NO_EXCEPTIONS
+                     }
+                     catch (const std::domain_error&) {}
+#endif
+                     row.clear();
+                     ++i;
+                  }
+                  ++g;
+               }
+               ++e;
+            }
+            ++c;
+         }
+         ++a;
+      }
+      return *this;
+   }
+
    void clear(){ m_data.clear(); }
 
    // access:
@@ -373,8 +522,8 @@ void test_data<T>::create_test_points(std::set<T>& points, const parameter_info<
    {
    case random_in_range:
       {
-         BOOST_ASSERT(arg1.z1 < arg1.z2);
-         BOOST_ASSERT(arg1.n1 > 0);
+         BOOST_MATH_ASSERT(arg1.z1 < arg1.z2);
+         BOOST_MATH_ASSERT(arg1.n1 > 0);
          typedef float random_type;
 
          random_ns::mt19937 rnd;
@@ -389,8 +538,8 @@ void test_data<T>::create_test_points(std::set<T>& points, const parameter_info<
       break;
    case periodic_in_range:
       {
-         BOOST_ASSERT(arg1.z1 < arg1.z2);
-         BOOST_ASSERT(arg1.n1 > 0);
+         BOOST_MATH_ASSERT(arg1.z1 < arg1.z2);
+         BOOST_MATH_ASSERT(arg1.n1 > 0);
          float interval = real_cast<float>((arg1.z2 - arg1.z1) / arg1.n1);
          T val = arg1.z1;
          while(val < arg1.z2)
@@ -402,7 +551,7 @@ void test_data<T>::create_test_points(std::set<T>& points, const parameter_info<
       break;
    case power_series:
       {
-         BOOST_ASSERT(arg1.n1 < arg1.n2);
+         BOOST_MATH_ASSERT(arg1.n1 < arg1.n2);
 
          typedef float random_type;
          typedef typename boost::mpl::if_<
@@ -420,8 +569,19 @@ void test_data<T>::create_test_points(std::set<T>& points, const parameter_info<
          }
       }
       break;
+   case single_value:
+   {
+      points.insert(truncate_to_float(real_cast<float>(arg1.z1)));
+      break;
+   }
+   case plus_minus_value:
+   {
+      points.insert(truncate_to_float(real_cast<float>(arg1.z1)));
+      points.insert(truncate_to_float(-real_cast<float>(arg1.z1)));
+      break;
+   }
    default:
-      BOOST_ASSERT(0 == "Invalid parameter_info object");
+      BOOST_MATH_ASSERT(0 == "Invalid parameter_info object");
       // Assert will fail if get here.
       // Triggers warning 4130) // '==' : logical operation on address of string constant.
    }
@@ -433,7 +593,7 @@ void test_data<T>::create_test_points(std::set<T>& points, const parameter_info<
 template <class T>
 bool get_user_parameter_info(parameter_info<T>& info, const char* param_name)
 {
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #  pragma warning(push)
 #  pragma warning(disable: 4127)
 #endif
@@ -701,11 +861,11 @@ bool get_user_parameter_info(parameter_info<T>& info, const char* param_name)
 
       break;
    default:
-      BOOST_ASSERT(0); // should never get here!!
+      BOOST_MATH_ASSERT(0); // should never get here!!
    }
 
    return true;
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #  pragma warning(pop)
 #endif
 }
@@ -758,7 +918,7 @@ std::ostream& write_code(std::ostream& os,
    typedef typename test_data<T>::value_type value_type;
    typedef typename value_type::const_iterator value_type_iterator;
 
-   BOOST_ASSERT(os.good());
+   BOOST_MATH_ASSERT(os.good());
 
    it_type a, b;
    a = data.begin();
@@ -797,7 +957,7 @@ std::ostream& write_code(std::ostream& os,
 } // namespace math
 } // namespace boost
 
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 

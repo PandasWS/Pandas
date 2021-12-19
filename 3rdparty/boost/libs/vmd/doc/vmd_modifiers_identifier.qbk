@@ -12,7 +12,7 @@ specify a set of identifiers to search in order to look
 for a particular identifier match rather than just any
 identifier.
 
-[heading Usage with BOOST_VMD_IS_IDENTIFIER]
+[heading:imid Usage with BOOST_VMD_IS_IDENTIFIER]
 
 Once we have both registered and pre-detected an identifier we can test whether 
 an identifier is a particular identifier using BOOST_VMD_IS_IDENTIFER and

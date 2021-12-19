@@ -48,14 +48,16 @@ class model::point
 ] [Default constructor, no initialization. ] [
 
 ]]
-[[``point(CoordinateType const & v0)``
+[[``template<typename C, std::enable_if_t< geometry::detail::is_coordinates_number_leq< C, 1, DimensionCount >::value, int >>
+point(CoordinateType const & v0)``
 
 ] [Constructor to set one value. ] [[* CoordinateType const &]: ['v0]:  
 
 
 
 ]]
-[[``point(CoordinateType const & v0, CoordinateType const & v1)``
+[[``template<typename C, std::enable_if_t< geometry::detail::is_coordinates_number_leq< C, 2, DimensionCount >::value, int >>
+point(CoordinateType const & v0, CoordinateType const & v1)``
 
 ] [Constructor to set two values. ] [[* CoordinateType const &]: ['v0]:  
 
@@ -64,7 +66,8 @@ class model::point
 
 
 ]]
-[[``point(CoordinateType const & v0, CoordinateType const & v1, CoordinateType const & v2)``
+[[``template<typename C, std::enable_if_t< geometry::detail::is_coordinates_number_leq< C, 3, DimensionCount >::value, int >>
+point(CoordinateType const & v0, CoordinateType const & v1, CoordinateType const & v2)``
 
 ] [Constructor to set three values. ] [[* CoordinateType const &]: ['v0]:  
 
@@ -81,7 +84,7 @@ class model::point
 [table
 [[Function] [Description] [Parameters]  [Returns]]
 [[``template<std::size_t K>
-CoordinateType const  & get()``
+constexpr CoordinateType const  & get()``
 
 ] [Get a coordinate. ] [
 

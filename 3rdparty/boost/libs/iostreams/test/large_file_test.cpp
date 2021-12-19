@@ -254,7 +254,7 @@ bool create_large_file()
         return false;
     }
 
-# if !defined(__BORLANDC__) || __BORLANDC__ < 0x582 || __BORLANDC__ >= 0x592
+# if !defined(BOOST_BORLANDC) || BOOST_BORLANDC < 0x582 || BOOST_BORLANDC >= 0x592
 
     // Close handle; all further access is via mapped_file
     CloseHandle(hnd);

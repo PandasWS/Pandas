@@ -20,17 +20,29 @@ void test_all()
     bg::strategy::buffer::join_miter join_miter;
     bg::strategy::buffer::end_flat end_flat;
 
+    // The expectation is smaller than pi, because it doesn't use an unlimited number of points.
     double const pi = boost::geometry::math::pi<double>();
+    double const expectation = pi *  0.99915;
 
-    test_one<P, polygon>("simplex1", simplex, join_miter, end_flat, pi, 1.0);
-    test_one<P, polygon>("simplex2", simplex, join_miter, end_flat, pi * 4.0, 2.0, ut_settings(0.1));
-    test_one<P, polygon>("simplex3", simplex, join_miter, end_flat, pi * 9.0, 3.0, ut_settings(0.1));
+    test_one<P, polygon>("simplex1", simplex, join_miter, end_flat, expectation, 1.0);
+    test_one<P, polygon>("simplex2", simplex, join_miter, end_flat, expectation * 4.0, 2.0);
+    test_one<P, polygon>("simplex3", simplex, join_miter, end_flat, expectation * 9.0, 3.0);
 }
 
 
 int test_main(int, char* [])
 {
-    test_all<true, bg::model::point<double, 2, bg::cs::cartesian> >();
-    test_all<false, bg::model::point<double, 2, bg::cs::cartesian> >();
+    BoostGeometryWriteTestConfiguration();
+
+    test_all<true, bg::model::point<default_test_type, 2, bg::cs::cartesian> >();
+
+#if ! defined(BOOST_GEOMETRY_TEST_ONLY_ONE_ORDER)
+    test_all<false, bg::model::point<default_test_type, 2, bg::cs::cartesian> >();
+#endif
+
+#if defined(BOOST_GEOMETRY_TEST_FAILURES)
+    BoostGeometryWriteExpectedFailures(BG_NO_FAILURES);
+#endif
+
     return 0;
 }

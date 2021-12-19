@@ -8,7 +8,7 @@ Revision history:
 25 August 2005 : Initial version.
 */
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 // define a user-defined collection type and teach BOOST_FOREACH how to enumerate it
@@ -41,7 +41,7 @@ namespace boost
 ///////////////////////////////////////////////////////////////////////////////
 // test_main
 //   
-int test_main( int, char*[] )
+int main()
 {
     // loop over a user-defined type (just make sure this compiles)
     mine::dummy d;
@@ -50,5 +50,5 @@ int test_main( int, char*[] )
         ((void)c); // no-op
     }
 
-    return 0;
+    return boost::report_errors();
 }
