@@ -3590,25 +3590,6 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 	//combo handling
 	skill_combo(src,dsrc,bl,skill_id,skill_lv,tick);
 
-#ifdef Pandas_Bonus_bStatusAddDamage
-	if (sd && src && src->type == BL_PC && tsc) {
-		for (auto& it : sd->status_damage_adjust) {
-			if (!tsc->data[it.type])
-				continue;
-
-			if (!(((it.battle_flag) & dmg.flag) & BF_WEAPONMASK &&
-				((it.battle_flag) & dmg.flag) & BF_RANGEMASK &&
-				((it.battle_flag) & dmg.flag) & BF_SKILLMASK))
-				continue;
-
-			if (rnd() % 10000 < it.rate) {
-				dmg.damage += it.val;
-			}
-		}
-		damage = dmg.damage + dmg.damage2;
-	}
-#endif // Pandas_Bonus_bStatusAddDamage
-
 #ifdef Pandas_Bonus_bStatusAddDamageRate
 	if (sd && src && src->type == BL_PC && tsc) {
 		int total_rate = 100;
@@ -3622,7 +3603,7 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 				continue;
 
 			if (rnd() % 10000 < it.rate) {
-				total_rate += it.val;
+				total_rate = rathena::util::safe_addition_cap(total_rate, it.val, INT_MAX);
 			}
 		}
 
@@ -3634,6 +3615,25 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 		damage = dmg.damage + dmg.damage2;
 	}
 #endif // Pandas_Bonus_bStatusAddDamageRate
+
+#ifdef Pandas_Bonus_bStatusAddDamage
+	if (sd && src && src->type == BL_PC && tsc) {
+		for (auto& it : sd->status_damage_adjust) {
+			if (!tsc->data[it.type])
+				continue;
+
+			if (!(((it.battle_flag) & dmg.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & dmg.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & dmg.flag) & BF_SKILLMASK))
+				continue;
+
+			if (rnd() % 10000 < it.rate) {
+				dmg.damage = rathena::util::safe_addition_cap(dmg.damage, (int64)it.val, INT64_MAX);
+			}
+		}
+		damage = dmg.damage + dmg.damage2;
+	}
+#endif // Pandas_Bonus_bStatusAddDamage
 
 #ifdef Pandas_Bonus_bFinalAddRace
 	if (sd && tstatus) {

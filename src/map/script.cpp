@@ -363,6 +363,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_PARTYLEAVE
 	"OnPCPartyLeaveFilter",	// NPCF_PARTYLEAVE		// partyleave_filter_name	// 当玩家准备离开队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYLEAVE
+
+#ifdef Pandas_NpcFilter_DROPITEM
+	"OnPCDropItemFilter",	// NPCF_DROPITEM		// dropitem_filter_name	// 当玩家准备丢弃或掉落道具时触发过滤器
+#endif // Pandas_NpcFilter_DROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
@@ -11407,6 +11411,10 @@ BUILDIN_FUNC(monster)
 	int16 m;
 	int i;
 
+#ifdef Pandas_ScriptCommand_BossMonster
+	const char* command = script_getfuncname(st);
+#endif // Pandas_ScriptCommand_BossMonster
+
 	if (script_hasdata(st, 8)) {
 		event = script_getstr(st, 8);
 		check_event(st, event);
@@ -11415,7 +11423,11 @@ BUILDIN_FUNC(monster)
 	if (script_hasdata(st, 9)) {
 		size = script_getnum(st, 9);
 		if (size > SZ_BIG) {
+#ifndef Pandas_ScriptCommand_BossMonster
 			ShowWarning("buildin_monster: Attempted to spawn non-existing size %d for monster class %d\n", size, class_);
+#else
+			ShowWarning("buildin_%s: Attempted to spawn non-existing size %d for monster class %d\n", command, size, class_);
+#endif // Pandas_ScriptCommand_BossMonster
 			return SCRIPT_CMD_FAILURE;
 		}
 	}
@@ -11423,13 +11435,21 @@ BUILDIN_FUNC(monster)
 	if (script_hasdata(st, 10)) {
 		ai = static_cast<enum mob_ai>(script_getnum(st, 10));
 		if (ai >= AI_MAX) {
+#ifndef Pandas_ScriptCommand_BossMonster
 			ShowWarning("buildin_monster: Attempted to spawn non-existing ai %d for monster class %d\n", ai, class_);
+#else
+			ShowWarning("buildin_%s: Attempted to spawn non-existing ai %d for monster class %d\n", command, ai, class_);
+#endif // Pandas_ScriptCommand_BossMonster
 			return SCRIPT_CMD_FAILURE;
 		}
 	}
 
 	if (class_ >= 0 && !mobdb_checkid(class_)) {
+#ifndef Pandas_ScriptCommand_BossMonster
 		ShowWarning("buildin_monster: Attempted to spawn non-existing monster class %d\n", class_);
+#else
+		ShowWarning("buildin_%s: Attempted to spawn non-existing monster class %d\n", command, class_);
+#endif // Pandas_ScriptCommand_BossMonster
 		return SCRIPT_CMD_FAILURE;
 	}
 
@@ -11441,7 +11461,11 @@ BUILDIN_FUNC(monster)
 		m = map_mapname2mapid(mapn);
 
 	for(i = 0; i < amount; i++) { //not optimised
+#ifndef Pandas_ScriptCommand_BossMonster
 		int mobid = mob_once_spawn(sd, m, x, y, str, class_, 1, event, size, ai);
+#else
+		int mobid = mob_once_spawn(sd, m, x, y, str, class_, 1, event, size, ai, (!strcmp(command, "boss_monster")) ? 1 : 0);
+#endif // Pandas_ScriptCommand_BossMonster
 
 		if (mobid)
 			mapreg_setreg(reference_uid(add_str("$@mobid"), i), mobid);
@@ -31268,6 +31292,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetSkillInfo
 	BUILDIN_DEF(getskillinfo, "iv??"),					// 获取指定技能在技能数据库中所配置的各项信息 [聽風]
 #endif // Pandas_ScriptCommand_GetSkillInfo
+#ifdef Pandas_ScriptCommand_BossMonster
+	BUILDIN_DEF2(monster,"boss_monster", "siisii???"),	// 召唤魔物并使之能被 BOSS 雷达探测 (哪怕被召唤魔物本身不是 BOSS) [人鱼姬的思念]
+#endif // Pandas_ScriptCommand_BossMonster
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"

@@ -8021,25 +8021,6 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 	}
 
-#ifdef Pandas_Bonus_bStatusAddDamage
-	if (sd && src && src->type == BL_PC && tsc) {
-		for (auto& it : sd->status_damage_adjust) {
-			if (!tsc->data[it.type])
-				continue;
-
-			if (!(((it.battle_flag) & wd.flag) & BF_WEAPONMASK &&
-				((it.battle_flag) & wd.flag) & BF_RANGEMASK &&
-				((it.battle_flag) & wd.flag) & BF_SKILLMASK))
-				continue;
-
-			if (rnd() % 10000 < it.rate) {
-				wd.damage += it.val;
-			}
-		}
-		damage = wd.damage + wd.damage2;
-	}
-#endif // Pandas_Bonus_bStatusAddDamage
-
 #ifdef Pandas_Bonus_bStatusAddDamageRate
 	if (sd && src && src->type == BL_PC && tsc) {
 		int total_rate = 100;
@@ -8065,6 +8046,25 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		damage = wd.damage + wd.damage2;
 	}
 #endif // Pandas_Bonus_bStatusAddDamageRate
+
+#ifdef Pandas_Bonus_bStatusAddDamage
+	if (sd && src && src->type == BL_PC && tsc) {
+		for (auto& it : sd->status_damage_adjust) {
+			if (!tsc->data[it.type])
+				continue;
+
+			if (!(((it.battle_flag) & wd.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & wd.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & wd.flag) & BF_SKILLMASK))
+				continue;
+
+			if (rnd() % 10000 < it.rate) {
+				wd.damage += it.val;
+			}
+		}
+		damage = wd.damage + wd.damage2;
+	}
+#endif // Pandas_Bonus_bStatusAddDamage
 
 #ifdef Pandas_Bonus_bFinalAddRace
 	if (sd && tstatus) {

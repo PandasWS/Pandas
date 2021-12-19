@@ -4488,28 +4488,22 @@ void clif_changeoption_target( struct block_list* bl, struct block_list* target 
 	struct s_unit_common_data* ucd = status_get_ucd(bl);
 
 	if (ucd) {
-		if (aura_need_hiding(bl)) {
-			// 通知 bl 视野范围内的其他单位: bl 已经离开了视野范围
-			// 迫使他们的客户端清除关于 bl 的缓存
-			clif_clearunit_area(bl, CLR_OUTSIGHT);
+		// 通知 bl 视野范围内的其他单位: bl 已经离开了视野范围
+		// 迫使他们的客户端清除关于 bl 的缓存
+		clif_clearunit_area(bl, CLR_TRICKDEAD);
 
-			// 通知 bl 视野范围内的其他 BL_PC 单位, bl 已经重新进入了他们的视野范围
-			// 使他们的客户端能够重新绘制 bl 单位到窗口中
-			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
-		}
-		else {
-			// 将 bl 的光环信息发送给周围其他玩家的客户端
-			clif_send_auras(bl, AREA_WOS, false, AURA_SPECIAL_NOTHING);
+		// 通知 bl 视野范围内的其他 BL_PC 单位, bl 已经重新进入了他们的视野范围
+		// 使他们的客户端能够重新绘制 bl 单位到窗口中
+		map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
 
-			// 若是玩家单位, 那么将身上的特殊效果发送给自己 (猥琐的解决客户端缺陷)
-			// 当自己隐匿或伪装后重新显示时, 像 202 / 362 这种特殊的光环效果会自动消失
-			// 这是因为客户端内部逻辑中, 202 / 362 绑定在角色纸娃娃身上
-			// 而其他的特效是绑定在 unit 对象上的, 隐藏的时候单位并没消失, 但纸娃娃被销毁
-			// 当恢复隐藏的时候实际上是重新建立了一个纸娃娃外观,
-			// 新的纸娃娃并没有 202 / 362 特效, 因此这里需要补发一个封包重新绘制一下
-			if (bl->type == BL_PC) {
-				clif_send_auras(bl, SELF, false, AURA_SPECIAL_HIDE_DISAPPEAR);
-			}
+		// 若是玩家单位, 那么将身上的特殊效果发送给自己 (猥琐的解决客户端缺陷)
+		// 当自己隐匿或伪装后重新显示时, 像 202 / 362 这种特殊的光环效果会自动消失
+		// 这是因为客户端内部逻辑中, 202 / 362 绑定在角色纸娃娃身上
+		// 而其他的特效是绑定在 unit 对象上的, 隐藏的时候单位并没消失, 但纸娃娃被销毁
+		// 当恢复隐藏的时候实际上是重新建立了一个纸娃娃外观,
+		// 新的纸娃娃并没有 202 / 362 特效, 因此这里需要补发一个封包重新绘制一下
+		if (bl->type == BL_PC) {
+			clif_send_auras(bl, SELF, false, AURA_SPECIAL_HIDE_DISAPPEAR);
 		}
 	}
 #endif // Pandas_Aura_Mechanism
@@ -18224,7 +18218,8 @@ void clif_parse_Adopt_reply(int fd, struct map_session_data *sd){
 void clif_bossmapinfo(struct map_session_data *sd, struct mob_data *md, enum e_bossmap_info flag)
 {
 #ifdef Pandas_Crashfix_BossMapinfo
-	if (!sd || !md) return;
+	if (!sd) return;
+	if (flag != BOSS_INFO_NOT && !md) return;
 #endif // Pandas_Crashfix_BossMapinfo
 
 	int fd = sd->fd;
@@ -18274,6 +18269,31 @@ void clif_bossmapinfo(struct map_session_data *sd, struct mob_data *md, enum e_b
 
 	WFIFOSET(fd,70);
 }
+
+#ifdef Pandas_ScriptCommand_BossMonster
+//************************************
+// Method:      clif_bossmapinfo_clear
+// Description: 没有任何提示的情况下清除指定玩家的小地图 BOSS 标识
+// Access:      public 
+// Parameter:   struct map_session_data * sd
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/12/18 23:46
+//************************************ 
+void clif_bossmapinfo_clear(struct map_session_data* sd)
+{
+	if (!sd) return;
+
+	int fd = sd->fd;
+
+	WFIFOHEAD(fd, 70);
+	memset(WFIFOP(fd, 0), 0, 70);
+	WFIFOW(fd, 0) = 0x293;
+	WFIFOB(fd, 2) = BOSS_INFO_ALIVE;
+	WFIFOL(fd, 3) = -1;
+	WFIFOL(fd, 7) = -1;
+	WFIFOSET(fd, 70);
+}
+#endif // Pandas_ScriptCommand_BossMonster
 
 
 /// Requesting equip of a player (CZ_EQUIPWIN_MICROSCOPE).

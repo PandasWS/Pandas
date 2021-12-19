@@ -2802,7 +2802,7 @@ static void pc_bonus_status_damage(std::vector<s_sc_damage>& dmgrule, enum sc_ty
 	for (auto& it : dmgrule) {
 		if (it.type == sc && it.battle_flag == battle_flag) {
 			it.rate = cap_value(it.rate + rate, -10000, 10000);
-			it.val += val;
+			it.val = rathena::util::safe_addition_cap(it.val, val, INT_MAX);
 			return;
 		}
 	}
@@ -5738,6 +5738,14 @@ bool pc_dropitem(struct map_session_data *sd,int n,int amount)
 
 	if( sd->inventory.u.items_inventory[n].equipSwitch )
 		return false;
+
+#ifdef Pandas_NpcFilter_DROPITEM
+	pc_setreg(sd, add_str("@drop_idx"), n);
+	pc_setreg(sd, add_str("@drop_itemid"), sd->inventory.u.items_inventory[n].nameid);
+	pc_setreg(sd, add_str("@drop_amount"), amount);
+	if (npc_script_filter(sd, NPCF_DROPITEM))
+		return false;
+#endif // Pandas_NpcFilter_DROPITEM
 
 	if( map_getmapflag(sd->bl.m, MF_NODROP) )
 	{

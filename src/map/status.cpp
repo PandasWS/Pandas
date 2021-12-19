@@ -15004,7 +15004,46 @@ TIMER_FUNC(status_change_timer){
 					sce->val2 = 1;
 					clif_bossmapinfo(sd, boss_md, BOSS_INFO_DEAD);
 				}
+#ifdef Pandas_ScriptCommand_BossMonster
+				// 若之前跟踪的 BOSS 已经死亡并等待重生, 那么跟踪下一个存活的 BOSS
+				if (boss_md->spawn_timer != INVALID_TIMER && sce->val2) {
+					// 获取玩家所在地图的下一只存活的 BOSS
+					struct mob_data* next_boss_md = map_getmob_boss(sd->bl.m, true);
+
+					// 只要不重复且确实活着, 则切换下一次循环时跟踪的 BOSS 单位
+					if (next_boss_md && boss_md != next_boss_md) {
+						boss_md = next_boss_md;
+
+						sce->val1 = boss_md->bl.id;
+
+						// 若新跟踪的 BOSS 处于存活状态, 那么重新告诉玩家我们探测到了新的 BOSS
+						if (boss_md->spawn_timer == INVALID_TIMER)
+							clif_bossmapinfo(sd, boss_md, BOSS_INFO_ALIVE_WITHMSG);
+					}
+				}
+#endif // Pandas_ScriptCommand_BossMonster
 			}
+#ifdef Pandas_ScriptCommand_BossMonster
+			else {
+				// 若跟踪的 BOSS 游戏单位编号已经不存在, 那么跟踪下一个存活的 BOSS
+				// 备注: 临时召唤的 BOSS 才会出现这样的情况, 脚本里写死的自然重生 BOSS 就算死亡, 游戏单位编号也还在
+				struct mob_data* next_boss_md = map_getmob_boss(sd->bl.m, true);
+
+				// 只要不重复且确实活着, 则切换下一次循环时跟踪的 BOSS 单位
+				if (next_boss_md) {
+					sce->val1 = next_boss_md->bl.id;
+
+					// 若新跟踪的 BOSS 处于存活状态, 那么重新告诉玩家我们探测到了新的 BOSS
+					if (next_boss_md->spawn_timer == INVALID_TIMER)
+						clif_bossmapinfo(sd, next_boss_md, BOSS_INFO_ALIVE_WITHMSG);
+				}
+				else if (!sce->val2) {
+					// 没有找到合适的下一个可跟踪 BOSS, 那么清理掉客户端小地图的 BOSS 标记
+					sce->val2 = 1;
+					clif_bossmapinfo_clear(sd);
+				}
+			}
+#endif // Pandas_ScriptCommand_BossMonster
 			sc_timer_next(1000 + tick);
 			return 0;
 		}
