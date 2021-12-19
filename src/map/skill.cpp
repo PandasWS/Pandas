@@ -3589,41 +3589,6 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 
 	//combo handling
 	skill_combo(src,dsrc,bl,skill_id,skill_lv,tick);
-#ifdef Pandas_Bonus_bFinalAddRace
-	int64 rcdamage = dmg.damage;
-#endif // Pandas_Bonus_bFinalAddRace
-#ifdef Pandas_Bonus_bFinalAddClass
-	int64 cldamage = dmg.damage;
-#endif // Pandas_Bonus_bFinalAddClass
-#ifdef Pandas_Bonus_bFinalAddRace
-	if (sd->finaladd_race[tstatus->race].rc) {
-		if (dmg.flag&sd->finaladd_race[tstatus->race].bf) {
-			dmg.damage += rcdamage / 100 * sd->finaladd_race[tstatus->race].rate;
-		}
-	}
-	if (sd->finaladd_race[RC_ALL].rc) {
-		if (dmg.flag&sd->finaladd_race[RC_ALL].bf) {
-			dmg.damage += rcdamage / 100 * sd->finaladd_race[RC_ALL].rate;
-		}
-	}
-#endif // Pandas_Bonus_bFinalAddRace
-#ifdef Pandas_Bonus_bFinalAddClass
-	if (sd->finaladd_class[tstatus->class_].cl) {
-		if (dmg.flag&sd->finaladd_class[tstatus->class_].bf) {
-			dmg.damage += cldamage / 100 * sd->finaladd_class[tstatus->class_].rate;
-		}
-	}
-	if (sd->finaladd_class[CLASS_ALL].cl) {
-		if (dmg.flag&sd->finaladd_class[CLASS_ALL].bf) {
-			dmg.damage += cldamage / 100 * sd->finaladd_class[CLASS_ALL].rate;
-		}
-	}
-#endif // Pandas_Bonus_bFinalAddClass
-#if defined(Pandas_Bonus_bFinalAddRace) || defined(Pandas_Bonus_bFinalAddClass)
-	damage = dmg.damage + dmg.damage2;
-#endif // Pandas_Bonus_bFinalAddRace || Pandas_Bonus_bFinalAddClass
-//聽風注：
-//    OnPCAttackExpress事件处理放在本行后面
 
 #ifdef Pandas_Bonus_bStatusAddDamage
 	if (sd && src && src->type == BL_PC && tsc) {
@@ -3669,6 +3634,80 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 		damage = dmg.damage + dmg.damage2;
 	}
 #endif // Pandas_Bonus_bStatusAddDamageRate
+
+#ifdef Pandas_Bonus_bFinalAddRace
+	if (sd && tstatus) {
+		int total_rate = 100;
+
+		for (auto& it : sd->finaladd_race[tstatus->race]) {
+			if (!it.damage_rate)
+				continue;
+
+			if (!(((it.battle_flag) & dmg.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & dmg.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & dmg.flag) & BF_SKILLMASK))
+				continue;
+
+			total_rate = rathena::util::safe_addition_cap(total_rate, it.damage_rate, INT_MAX);
+		}
+
+		for (auto& it : sd->finaladd_race[RC_ALL]) {
+			if (!it.damage_rate)
+				continue;
+
+			if (!(((it.battle_flag) & dmg.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & dmg.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & dmg.flag) & BF_SKILLMASK))
+				continue;
+
+			total_rate = rathena::util::safe_addition_cap(total_rate, it.damage_rate, INT_MAX);
+		}
+
+		if (total_rate != 100) {
+			total_rate = cap_value(total_rate, -100, INT_MAX);
+			dmg.damage += (int64)(dmg.damage / 100.0 * total_rate);
+		}
+
+		damage = dmg.damage + dmg.damage2;
+	}
+#endif // Pandas_Bonus_bFinalAddRace
+
+#ifdef Pandas_Bonus_bFinalAddClass
+	if (sd && tstatus) {
+		int total_rate = 100;
+
+		for (auto& it : sd->finaladd_class[tstatus->class_]) {
+			if (!it.damage_rate)
+				continue;
+
+			if (!(((it.battle_flag) & dmg.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & dmg.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & dmg.flag) & BF_SKILLMASK))
+				continue;
+
+			total_rate = rathena::util::safe_addition_cap(total_rate, it.damage_rate, INT_MAX);
+		}
+
+		for (auto& it : sd->finaladd_class[CLASS_ALL]) {
+			if (!it.damage_rate)
+				continue;
+
+			if (!(((it.battle_flag) & dmg.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & dmg.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & dmg.flag) & BF_SKILLMASK))
+				continue;
+
+			total_rate = rathena::util::safe_addition_cap(total_rate, it.damage_rate, INT_MAX);
+		}
+
+		if (total_rate != 100) {
+			total_rate = cap_value(total_rate, -100, INT_MAX);
+			dmg.damage += (int64)(dmg.damage / 100.0 * total_rate);
+		}
+
+		damage = dmg.damage + dmg.damage2;
+	}
+#endif // Pandas_Bonus_bFinalAddClass
 
 #ifdef Pandas_NpcExpress_PCATTACK
 	if (src && bl && damage > 0) {
