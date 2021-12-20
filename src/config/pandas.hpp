@@ -1968,6 +1968,10 @@
 	#ifdef Pandas_FuncDefine_Mob_Once_Spawn
 		#define Pandas_ScriptCommand_BossMonster
 	#endif // Pandas_FuncDefine_Mob_Once_Spawn
+
+	// 是否启用 sleep3 脚本指令 [人鱼姬的思念]
+	// 该指令用于休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错
+	#define Pandas_ScriptCommand_Sleep3
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

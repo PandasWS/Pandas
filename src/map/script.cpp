@@ -30390,6 +30390,41 @@ BUILDIN_FUNC(getskillinfo) {
 }
 #endif // Pandas_ScriptCommand_GetSkillInfo
 
+#ifdef Pandas_ScriptCommand_Sleep3
+/* ===========================================================
+ * 指令: sleep3
+ * 描述: 休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错
+ * 用法: sleep3 <休眠毫秒数>;
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: 人鱼姬的思念
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(sleep3) {
+	// First call(by function call)
+	if (st->sleep.tick == 0) {
+		int ticks;
+
+		ticks = script_getnum(st, 2);
+
+		if (ticks <= 0) {
+			ShowError("buildin_sleep3: negative or zero amount('%d') of milli seconds is not supported\n", ticks);
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		// sleep for the target amount of time
+		st->state = RERUNLINE;
+		st->sleep.tick = ticks;
+		// Second call(by timer after sleeping time is over)
+	}
+	else {
+		// The unit is still attached - continue the script
+		st->state = RUN;
+		st->sleep.tick = 0;
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Sleep3
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -31295,6 +31330,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_BossMonster
 	BUILDIN_DEF2(monster,"boss_monster", "siisii???"),	// 召唤魔物并使之能被 BOSS 雷达探测 (哪怕被召唤魔物本身不是 BOSS) [人鱼姬的思念]
 #endif // Pandas_ScriptCommand_BossMonster
+#ifdef Pandas_ScriptCommand_Sleep3
+	BUILDIN_DEF(sleep3,"i"),							// 休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错 [人鱼姬的思念]
+#endif // Pandas_ScriptCommand_Sleep3
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
