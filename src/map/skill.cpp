@@ -3609,7 +3609,7 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 
 		if (total_rate != 100) {
 			total_rate = cap_value(total_rate, -100, INT_MAX);
-			dmg.damage += (int64)(dmg.damage / 100.0 * total_rate);
+			dmg.damage = (int64)(dmg.damage / 100.0 * total_rate);
 		}
 
 		damage = dmg.damage + dmg.damage2;
@@ -3665,7 +3665,7 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 
 		if (total_rate != 100) {
 			total_rate = cap_value(total_rate, -100, INT_MAX);
-			dmg.damage += (int64)(dmg.damage / 100.0 * total_rate);
+			dmg.damage = (int64)(dmg.damage / 100.0 * total_rate);
 		}
 
 		damage = dmg.damage + dmg.damage2;
@@ -3702,7 +3702,7 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 
 		if (total_rate != 100) {
 			total_rate = cap_value(total_rate, -100, INT_MAX);
-			dmg.damage += (int64)(dmg.damage / 100.0 * total_rate);
+			dmg.damage = (int64)(dmg.damage / 100.0 * total_rate);
 		}
 
 		damage = dmg.damage + dmg.damage2;

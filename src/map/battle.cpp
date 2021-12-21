@@ -8040,7 +8040,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		if (total_rate != 100) {
 			total_rate = cap_value(total_rate, -100, INT_MAX);
-			wd.damage += (int64)(wd.damage / 100.0 * total_rate);
+			wd.damage = (int64)(wd.damage / 100.0 * total_rate);
 		}
 
 		damage = wd.damage + wd.damage2;
@@ -8096,7 +8096,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		if (total_rate != 100) {
 			total_rate = cap_value(total_rate, -100, INT_MAX);
-			wd.damage += (int64)(wd.damage / 100.0 * total_rate);
+			wd.damage = (int64)(wd.damage / 100.0 * total_rate);
 		}
 
 		damage = wd.damage + wd.damage2;
@@ -8133,7 +8133,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		if (total_rate != 100) {
 			total_rate = cap_value(total_rate, -100, INT_MAX);
-			wd.damage += (int64)(wd.damage / 100.0 * total_rate);
+			wd.damage = (int64)(wd.damage / 100.0 * total_rate);
 		}
 
 		damage = wd.damage + wd.damage2;
