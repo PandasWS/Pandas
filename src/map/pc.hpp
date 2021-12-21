@@ -201,6 +201,14 @@ struct s_sc_damage {
 };
 #endif // defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
 
+#if defined(Pandas_Bonus_bFinalAddRace) || defined(Pandas_Bonus_bFinalAddClass)
+struct s_final_damage {
+	int8 type;
+	short battle_flag;
+	int damage_rate;
+};
+#endif // defined(Pandas_Bonus_bFinalAddRace) || defined(Pandas_Bonus_bFinalAddClass)
+
 /// Miscellaneous item bonus struct
 struct s_item_bonus {
 	uint16 id;
@@ -606,6 +614,12 @@ struct map_session_data {
 #ifdef Pandas_Bonus_bStatusAddDamageRate
 	std::vector<s_sc_damage> status_damagerate_adjust;
 #endif // Pandas_Bonus_bStatusAddDamageRate
+#ifdef Pandas_Bonus_bFinalAddRace
+	std::vector<s_final_damage> finaladd_race[RC_MAX];
+#endif // Pandas_Bonus_bFinalAddRace
+#ifdef Pandas_Bonus_bFinalAddClass
+	std::vector<s_final_damage> finaladd_class[CLASS_MAX];
+#endif // Pandas_Bonus_bFinalAddClass
 
 	// zeroed structures start here
 	struct s_regen {

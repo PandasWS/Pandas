@@ -240,3 +240,76 @@ bonus4 bStatusAddDamageRate,sc,n,r,bf;
 
 --------------------------------------------------------------
 
+*bonus3 bFinalAddRace,r,x,bf;
+
+使用 bf 攻击 r 种族的目标时增加 x% 的伤害 (在最终伤害上全段修正) [聽風]
+
+参数说明:
+	r			目标种族类型
+				此项定义与 doc/item_bonus.txt 的 Race (r) 一致
+
+	x%			增加的伤害百分比
+				最终生效的百分比最小值为 -100, 最大值为 2 的 31 次方
+				可被叠加, 支持负数, 若传递负数则表示扣减.
+
+	bf			能触发加成的攻击类型
+				此项定义与 doc/item_bonus.txt 的 Trigger criteria (bf) 一致
+
+规则合并:
+
+	若多条规则中 r + bf 完全一致, 则不会消耗规则数量, 例如:
+
+		// 使用普通攻击打"鱼贝类"种族的目标增加 200% 的伤害
+		bonus3 bFinalAddRace,RC_Fish,200,BF_NORMAL;
+
+		// 使用普通攻击打"鱼贝类"种族的目标增加 150% 的伤害
+		bonus3 bFinalAddRace,RC_Fish,150,BF_NORMAL;
+	
+	这两条规则的 r 都是 RC_Fish, bf 都是 BF_NORMAL, 因此会被合并.
+	最终效果与下面这一条等价:
+
+		// 使用普通攻击打"鱼贝类"种族的目标增加 350% 的伤害
+		bonus3 bFinalAddRace,RC_Fish,350,BF_NORMAL;
+
+注意事项:
+	全段修正就是在所有计算完毕后, 再单独计算本指令增加的伤害.
+	此效果调整器每个 Race 最多只能定义 50 条 (源码中可通过 MAX_PC_BONUS 修改).
+
+--------------------------------------------------------------
+
+*bonus3 bFinalAddClass,c,x,bf;
+
+使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正) [聽風]
+
+参数说明:
+	c			目标类型
+				此项定义与 doc/item_bonus.txt 的 Class (c) 一致
+
+	x%			增加的伤害百分比
+				最终生效的百分比最小值为 -100, 最大值为 2 的 31 次方
+				可被叠加, 支持负数, 若传递负数则表示扣减.
+
+	bf			能触发加成的攻击类型
+				此项定义与 doc/item_bonus.txt 的 Trigger criteria (bf) 一致
+
+规则合并:
+
+	若多条规则中 c + bf 完全一致, 则不会消耗规则数量, 例如:
+
+		// 使用普通攻击打 BOSS 类型的魔物增加 200% 的伤害
+		bonus3 bFinalAddClass,Class_Boss,200,BF_NORMAL;
+
+		// 使用普通攻击打 BOSS 类型的魔物增加 150% 的伤害
+		bonus3 bFinalAddClass,Class_Boss,150,BF_NORMAL;
+	
+	这两条规则的 c 都是 Class_Boss, bf 都是 BF_NORMAL, 因此会被合并.
+	最终效果与下面这一条等价:
+
+		// 使用普通攻击打 BOSS 类型的魔物增加 350% 的伤害
+		bonus3 bFinalAddClass,Class_Boss,350,BF_NORMAL;
+
+注意事项:
+	全段修正就是在所有计算完毕后, 再单独计算本指令增加的伤害.
+	此效果调整器每个 Class 最多只能定义 50 条 (源码中可通过 MAX_PC_BONUS 修改).
+	
+--------------------------------------------------------------

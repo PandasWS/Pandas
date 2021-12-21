@@ -1107,6 +1107,14 @@
 	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
 	export_constant2("bStatusAddDamageRate", SP_PANDAS_STATUSADDDAMAGERATE);
 #endif // Pandas_Bonus_bStatusAddDamageRate
+#ifdef Pandas_Bonus_bFinalAddRace
+	// 使用 bf 攻击 r 种族的目标时增加 x% 的伤害 (在最终伤害上全段修正)
+	export_constant2("bFinalAddRace", SP_PANDAS_FINALADDRACE);
+#endif // Pandas_Bonus_bFinalAddRace
+#ifdef Pandas_Bonus_bFinalAddClass
+	// 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
+	export_constant2("bFinalAddClass", SP_PANDAS_FINALADDCLASS);
+#endif // Pandas_Bonus_bFinalAddClass
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses

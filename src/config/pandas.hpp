@@ -1616,6 +1616,20 @@
 	// 变量位置: map_session_data / 变量名称: status_damagerate_adjust
 	// 使用原型: bonus4 bStatusAddDamageRate,sc,n,r,bf;
 	#define Pandas_Bonus_bStatusAddDamageRate
+
+	// 是否启用 bFinalAddRace 效果调整器 [聽風]
+	// 使用 bf 攻击 r 种族的目标时增加 x% 的伤害 (在最终伤害上全段修正)
+	// 常量名称: SP_PANDAS_FINALADDRACE / 调整器名称: bFinalAddRace
+	// 变量位置: map_session_data / 变量名称: finaladd_race
+	// 使用原型: bonus3 bFinalAddRace,r,x,bf;
+	#define Pandas_Bonus_bFinalAddRace
+
+	// 是否启用 bFinalAddClass 效果调整器 [聽風]
+	// 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
+	// 常量名称: SP_PANDAS_FINALADDCLASS / 调整器名称: bFinalAddClass
+	// 变量位置: map_session_data / 变量名称: finaladd_class
+	// 使用原型: bonus3 bFinalAddClass,c,x,bf;
+	#define Pandas_Bonus_bFinalAddClass
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 

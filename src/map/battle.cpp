@@ -8040,7 +8040,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		if (total_rate != 100) {
 			total_rate = cap_value(total_rate, -100, INT_MAX);
-			wd.damage += (int64)(wd.damage / 100.0 * total_rate);
+			wd.damage = (int64)(wd.damage / 100.0 * total_rate);
 		}
 
 		damage = wd.damage + wd.damage2;
@@ -8065,6 +8065,80 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		damage = wd.damage + wd.damage2;
 	}
 #endif // Pandas_Bonus_bStatusAddDamage
+
+#ifdef Pandas_Bonus_bFinalAddRace
+	if (sd && tstatus) {
+		int total_rate = 100;
+
+		for (auto& it : sd->finaladd_race[tstatus->race]) {
+			if (!it.damage_rate)
+				continue;
+
+			if (!(((it.battle_flag) & wd.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & wd.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & wd.flag) & BF_SKILLMASK))
+				continue;
+
+			total_rate = rathena::util::safe_addition_cap(total_rate, it.damage_rate, INT_MAX);
+		}
+
+		for (auto& it : sd->finaladd_race[RC_ALL]) {
+			if (!it.damage_rate)
+				continue;
+
+			if (!(((it.battle_flag) & wd.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & wd.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & wd.flag) & BF_SKILLMASK))
+				continue;
+
+			total_rate = rathena::util::safe_addition_cap(total_rate, it.damage_rate, INT_MAX);
+		}
+
+		if (total_rate != 100) {
+			total_rate = cap_value(total_rate, -100, INT_MAX);
+			wd.damage = (int64)(wd.damage / 100.0 * total_rate);
+		}
+
+		damage = wd.damage + wd.damage2;
+	}
+#endif // Pandas_Bonus_bFinalAddRace
+
+#ifdef Pandas_Bonus_bFinalAddClass
+	if (sd && tstatus) {
+		int total_rate = 100;
+
+		for (auto& it : sd->finaladd_class[tstatus->class_]) {
+			if (!it.damage_rate)
+				continue;
+
+			if (!(((it.battle_flag) & wd.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & wd.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & wd.flag) & BF_SKILLMASK))
+				continue;
+
+			total_rate = rathena::util::safe_addition_cap(total_rate, it.damage_rate, INT_MAX);
+		}
+
+		for (auto& it : sd->finaladd_class[CLASS_ALL]) {
+			if (!it.damage_rate)
+				continue;
+
+			if (!(((it.battle_flag) & wd.flag) & BF_WEAPONMASK &&
+				((it.battle_flag) & wd.flag) & BF_RANGEMASK &&
+				((it.battle_flag) & wd.flag) & BF_SKILLMASK))
+				continue;
+
+			total_rate = rathena::util::safe_addition_cap(total_rate, it.damage_rate, INT_MAX);
+		}
+
+		if (total_rate != 100) {
+			total_rate = cap_value(total_rate, -100, INT_MAX);
+			wd.damage = (int64)(wd.damage / 100.0 * total_rate);
+		}
+
+		damage = wd.damage + wd.damage2;
+	}
+#endif // Pandas_Bonus_bFinalAddClass
 
 #ifdef Pandas_NpcExpress_PCATTACK
 	if (src && target && damage > 0) {

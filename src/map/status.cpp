@@ -4429,6 +4429,16 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 #ifdef Pandas_Bonus_bStatusAddDamageRate
 	sd->status_damagerate_adjust.clear();
 #endif // Pandas_Bonus_bStatusAddDamageRate
+#ifdef Pandas_Bonus_bFinalAddRace
+	for (auto &it : sd->finaladd_race) {
+		it.clear();
+	}
+#endif // Pandas_Bonus_bFinalAddRace
+#ifdef Pandas_Bonus_bFinalAddClass
+	for (auto& it : sd->finaladd_class) {
+		it.clear();
+	}
+#endif // Pandas_Bonus_bFinalAddClass
 
 #ifdef Pandas_Bonus_bSkillNoRequire
 	sd->skillnorequire.clear();
