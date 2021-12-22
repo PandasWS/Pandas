@@ -766,6 +766,7 @@ enum e_random_item_group {
 	IG_PITAPAT_BOX,
 	IG_HAPPY_BOX_J,
 	IG_CLASS_SHADOW_CUBE,
+	IG_SEALED_SCROLL,
 
 	IG_MAX,
 };
