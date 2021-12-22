@@ -228,10 +228,6 @@ const t_itemid WEDDING_RING_F = 2635;
 //Elemental System
 #define MAX_ELEMENTALSKILL 42
 #define EL_SKILLBASE 8401
-#define MAX_ELESKILLTREE 3
-#define MAX_ELEMENTAL_CLASS 12
-#define EL_CLASS_BASE 2114
-#define EL_CLASS_MAX (EL_CLASS_BASE+MAX_ELEMENTAL_CLASS-1)
 
 //Achievement System
 #define MAX_ACHIEVEMENT_OBJECTIVES 10 /// Maximum different objectives in achievement_db.yml
@@ -597,7 +593,7 @@ struct s_elemental {
 	int elemental_id;
 	uint32 char_id;
 	short class_;
-	enum e_mode mode;
+	int mode;
 	int hp, sp, max_hp, max_sp, matk, atk, atk2;
 	pec_short hit, flee, amotion, def, mdef;
 	t_tick life_time;
@@ -1111,6 +1107,33 @@ enum e_job {
 	JOB_BABY_SOUL_REAPER,
 	JOB_STAR_EMPEROR2,
 	JOB_BABY_STAR_EMPEROR2,
+
+	JOB_DRAGON_KNIGHT = 4252,
+	JOB_MEISTER,
+	JOB_SHADOW_CROSS,
+	JOB_ARCH_MAGE,
+	JOB_CARDINAL,
+	JOB_WINDHAWK,
+	JOB_IMPERIAL_GUARD,
+	JOB_BIOLO,
+	JOB_ABYSS_CHASER,
+	JOB_ELEMENTAL_MASTER,
+	JOB_INQUISITOR,
+	JOB_TROUBADOUR,
+	JOB_TROUVERE,
+
+	JOB_WINDHAWK2 = 4278,
+	JOB_MEISTER2,
+	JOB_DRAGON_KNIGHT2,
+	JOB_IMPERIAL_GUARD2,
+
+	JOB_SKY_EMPEROR = 4302,
+	JOB_SOUL_ASCETIC,
+	JOB_SHINKIRO,
+	JOB_SHIRANUI,
+	JOB_NIGHT_WATCH,
+	JOB_HYPER_NOVICE,
+	JOB_SPIRIT_HANDLER,
 
 	JOB_MAX,
 };
