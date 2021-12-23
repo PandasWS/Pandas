@@ -1199,7 +1199,7 @@
 	// 但是整个服务端只有 login-server 会尝试去读取这个配置, 所以非常鸡肋.
 	// 以至于目前 rAthena 在官方的 conf/inter_athena.conf 中都把相关配置删了.
 	//
-	// 所以熊猫表示, 我们也干脆删了吧!! Oh yeah!
+	// 所以我们也干脆删了吧!! Oh yeah!
 	#define Pandas_Cleanup_Useless_SQL_Global_Configure
 
 	// 清理掉一些没啥作用看着还心烦的终端提示信息 [Sola丶小克]

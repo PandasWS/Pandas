@@ -4601,6 +4601,12 @@ void script_detach_state(struct script_state* st, bool dequeue_event)
 	struct map_session_data* sd;
 
 	if (st->rid && (sd = map_id2sd(st->rid)) != NULL) {
+
+		if (sd->state.using_fake_npc) {
+			clif_clearunit_single(sd->npc_id, CLR_OUTSIGHT, sd->fd);
+			sd->state.using_fake_npc = 0;
+		}
+
 		sd->st = nullptr;
 		sd->npc_id = 0;
 		sd->state.disable_atcommand_on_npc = 0;
