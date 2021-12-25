@@ -35,8 +35,12 @@
 
 <div align="center">
   <h3>
-    <a href="https://pandas.ws">
-      访问官网
+    <a href="https://pandas.ws" target="_blank">
+      官网
+    </a>
+    <span> | </span>
+    <a href="https://docs.pandas.ws" target="_blank">
+      使用手册
     </a>
     <span> | </span>
     <a href="https://github.com/PandasWS/Pandas/releases">
@@ -47,7 +51,7 @@
       贡献者
     </a>
     <span> | </span>
-    <a href="https://discord.gg/9bEfrPPruj">
+    <a href="https://discord.gg/9bEfrPPruj" target="_blank">
       Discord
     </a>
   </h3>
