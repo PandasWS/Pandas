@@ -46,6 +46,10 @@
     <a href="https://github.com/PandasWS/Pandas/graphs/contributors">
       贡献者
     </a>
+    <span> | </span>
+    <a href="https://discord.gg/9bEfrPPruj">
+      Discord
+    </a>
   </h3>
 </div>
 
@@ -64,7 +68,6 @@
 ## 神奇的小目录
 -   [背景](#背景)
 -   [模拟器特色功能](#模拟器特色功能)
--   [配置要求](#配置要求)
 -   [编译说明](#编译说明)
 -   [常见问题](#常见问题)
 -   [加入爱好者社区](#加入爱好者社区)
@@ -86,10 +89,6 @@
 
 因此我们将站在 rAthena 的巨人肩膀上二次开发了 Pandas 模拟器 ( 熊猫模拟器 ) ，我们的定位
 也非常朴素和简单：对中文用户友好的仙境传说模拟器。
-
-> 熊猫模拟器的前身是 rAthenaCN 模拟器，rAthenaCN 模拟器闭源且仅支持 Windows 环境，当前
-已经不再进行维护。而熊猫模拟器的所有基础功能和代码都将毫无保留直接开源。欢迎对源代码感兴趣
-的朋友一起来进行学习探讨，或许几年之后社区需要靠你们来延续。
 
 ## 模拟器特色功能
 主要是与 rAthena 模拟器相比的差异化功能，这些功能可能其他闭源模拟器已经实现，但在熊猫里面
@@ -120,28 +119,15 @@
 -   [地图标记 ( Mapflags )](doc/pandas_mapflags.txt)
 -   [效果调整器 ( Bonus )](doc/pandas_bonus.txt)
 
-> 若您有拓展需求或者想法，劳驾请您 [建立新的反馈] 给我们，或者
+> 若您有拓展需求或者想法，劳驾请您 [反馈] 给我们，或者
  [加入爱好者社区](#加入爱好者社区) 给管理员进行反馈，我们将挑选优质且有远见的需求优先进行实现。
-
-## 配置要求
-使用此模拟器会有两套不同的使用场景：__开发者场景__ 和 __使用者场景__，其中开发者场景下
-的配置要求会更高一些，以下为不同场景下要求的软硬件配置信息，请根据使用场景对号入座。
-
-| Item / Scenes | 开发者 - Win | 使用者 - Win | 开发者 - Unix | 使用者 - Unix |
-| :------------ | :----------: | :----------: | :-----------: | :-----------: |
-| CPU           | ≥4 Threads   | ≥2 Threads   | ≥4 Threads    | ≥2 Threads    |
-| Memory        | ≥8 GB        | ≥4 GB        | ≥4 GB         | ≥4 GB         |
-| Disk Space    | ≥6 GB        | ≥2 GB        | ≥6 GB         | ≥2 GB         |
-
-> 上表是各个场景下的最低配置，如果条件允许的话，可以在上表中的数值基础上直接乘以 2 得到
-推荐的配置信息。有条件的同学一定要换成 SSD 固态硬盘！
 
 ## 编译说明
 熊猫模拟器是一个开源项目，因此当您获取源码后需要手动进行编译才能获得可以运行的二进制文件；
 亦或者您可以前往 [下载页面] 直接下载预编译好的版本，直接使用 ( 新手推荐 ) 。
 
 > 注意：此处的编译说明仅提供最精简的指引信息，完成编译之后还需要搭建 MySQL 服务器并进行
-配置才能使模拟器成功运行起来。关于从编译到完成配置的全环节详细信息请见 [完整说明文档] 。
+配置才能使模拟器成功运行起来。关于从编译到完成配置的全环节详细信息请见 [熊猫使用手册] 。
 
 ### Windows 环境下编译
 
@@ -273,14 +259,15 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 被提权或者被黑。
 
 ## 加入爱好者社区
-我们的主要受众是中文用户，因此我们使用 [腾讯 QQ] 进行即时通讯。
 
-熊猫模拟器交流群的群号码是：`928171346` 若您已安装 QQ 客户端那么请直接：
+我们的 QQ 交流群的群号码是：`928171346` 若您已安装 [腾讯 QQ] 客户端那么请直接：
 <a target="_blank"
   href="https://qm.qq.com/cgi-bin/qm/qr?k=IgPtPLCkZh0RbFA_MzK2ny76iX_phO2P&jump_from=webapi">
   <img border="0" src="https://pub.idqqimg.com/wpa/images/group.png"
     alt="PandasWS" title="PandasWS">
 </a>
+
+我们建立了 [Discord] 服务器,  有条件加入的同学欢迎您 [加入 PandasWS 服务器](https://discord.gg/9bEfrPPruj)。
 
 ## 模拟器相关项目推荐
 
@@ -312,10 +299,11 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 
 [下载页面]: https://github.com/PandasWS/Pandas/releases
 [功能配置文件]: src/config/pandas.hpp
-[建立新的反馈]: https://github.com/PandasWS/Pandas/issues/new/choose
-[完整说明文档]: https://www.craft.do/s/kR2d5bkV7pYBhE
+[反馈]: https://github.com/PandasWS/Pandas/issues/new/choose
+[熊猫使用手册]: https://docs.pandas.ws/
 [LeeClient]: https://github.com/PandasWS/LeeClient
 [腾讯 QQ]: https://im.qq.com
+[Discord]: https://discord.com/
 [贡献说明]: .github/CONTRIBUTING.md
 
 [rAthena]: https://github.com/rathena/rathena
@@ -335,3 +323,4 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 [小纪]: mailto:a659347@gmail.com
 [西瓜]: mailto:3463273181@qq.com
 [NIFL]: mailto:1640905483@qq.com
+[聽風]: mailto:michaelwooo@qq.com
