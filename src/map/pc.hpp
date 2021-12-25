@@ -1612,7 +1612,9 @@ struct s_skill_tree {
 class SkillTreeDatabase : public TypesafeYamlDatabase<uint16, s_skill_tree> {
 public:
 	SkillTreeDatabase() : TypesafeYamlDatabase("SKILL_TREE_DB", 1) {
-
+#ifdef Pandas_YamlBlastCache_SkillTreeDatabase
+		this->supportSerialize = true;
+#endif // Pandas_YamlBlastCache_SkillTreeDatabase
 	}
 
 	const std::string getDefaultLocation();
@@ -1621,6 +1623,11 @@ public:
 
 	// Additional
 	std::shared_ptr<s_skill_tree_entry> get_skill_data(int class_, uint16 skill_id);
+
+#ifdef Pandas_YamlBlastCache_SkillTreeDatabase
+	bool doSerialize(const std::string& type, void* archive);
+	void afterSerialize();
+#endif // Pandas_YamlBlastCache_SkillTreeDatabase
 };
 
 extern SkillTreeDatabase skill_tree_db;
@@ -1781,5 +1788,36 @@ namespace boost {
 	} // namespace serialization
 } // namespace boost
 #endif // Pandas_YamlBlastCache_JobDatabase
+
+
+#ifdef Pandas_YamlBlastCache_SkillTreeDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_skill_tree_entry
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_skill_tree_entry& t, const unsigned int version)
+		{
+			ar& t.skill_id;
+			ar& t.max_lv;
+			ar& t.baselv;
+			ar& t.joblv;
+			ar& t.need;
+			ar& t.exclude_inherit;
+		}
+
+		// ======================================================================
+		// struct s_skill_tree
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_skill_tree& t, const unsigned int version)
+		{
+			ar& t.inherit_job;
+			ar& t.skills;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_SkillTreeDatabase
 
 #endif /* PC_HPP */
