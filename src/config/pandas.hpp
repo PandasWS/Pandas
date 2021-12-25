@@ -1183,6 +1183,9 @@
 
 		// 是否启用对 RandomOptionGroupDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_RandomOptionGroupDatabase
+
+		// 是否启用对 JobDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_JobDatabase
 	#endif // Pandas_YamlBlastCache_Serialize
 #endif // Pandas_YamlBlastCache
 
