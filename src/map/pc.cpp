@@ -13292,6 +13292,44 @@ void SkillTreeDatabase::loadingFinished() {
 	}
 }
 
+#ifdef Pandas_YamlBlastCache_SkillTreeDatabase
+//************************************
+// Method:      SkillTreeDatabase
+// Description: 对 JobDatabase 进行序列化和反序列化操作
+// Access:      public 
+// Parameter:   const std::string & type
+// Parameter:   void * archive
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/12/25 15:55
+//************************************ 
+bool SkillTreeDatabase::doSerialize(const std::string& type, void* archive) {
+	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
+		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, SkillTreeDatabase);
+		*ar&* this;
+		return true;
+	}
+	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
+		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, SkillTreeDatabase);
+		*ar&* this;
+		return true;
+	}
+	return false;
+}
+
+//************************************
+// Method:      afterSerialize
+// Description: 反序列化完成之后对 SkillTreeDatabase 中的对象进行加工处理
+// Access:      public 
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/12/25 15:55
+//************************************ 
+void SkillTreeDatabase::afterSerialize() {
+
+}
+#endif // Pandas_YamlBlastCache_SkillTreeDatabase
+
 /**
  * Calculates base hp of player. Reference: http://irowiki.org/wiki/Max_HP
  * @param level: Base level of player
@@ -13837,6 +13875,51 @@ void JobDatabase::loadingFinished() {
 		}
 	}
 }
+
+#ifdef Pandas_YamlBlastCache_JobDatabase
+//************************************
+// Method:      doSerialize
+// Description: 对 JobDatabase 进行序列化和反序列化操作
+// Access:      public 
+// Parameter:   const std::string & type
+// Parameter:   void * archive
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2021/12/25 15:06
+//************************************ 
+bool JobDatabase::doSerialize(const std::string& type, void* archive) {
+	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
+		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, JobDatabase);
+		*ar&* this;
+		return true;
+	}
+	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
+		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
+		ARCHIVEPTR_REGISTER_TYPE(ar, JobDatabase);
+		*ar&* this;
+		return true;
+	}
+	return false;
+}
+
+//************************************
+// Method:      afterSerialize
+// Description: 反序列化完成之后对 JobDatabase 中的对象进行加工处理
+// Access:      public 
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2021/12/25 15:06
+//************************************ 
+void JobDatabase::afterSerialize() {
+	for (const auto& it : *this) {
+		auto job = it.second;
+
+		// ==================================================================
+		// 反序列化后将未参与序列化的字段进行初始化, 避免内存中的脏数据对工作造成错误的影响
+		// ==================================================================
+		SERIALIZE_SET_MEMORY_ZERO(job->noenter_map);
+	}
+}
+#endif // Pandas_YamlBlastCache_JobDatabase
 
 /**
  * Read job_noenter_map.txt

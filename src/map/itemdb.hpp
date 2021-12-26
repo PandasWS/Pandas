@@ -1054,15 +1054,6 @@ struct s_random_opt_group {
 };
 
 class RandomOptionDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_data> {
-#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint16, s_random_opt_data>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 public:
 	RandomOptionDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_DB", 1) {
 #ifdef Pandas_YamlBlastCache_RandomOptionDatabase
@@ -1087,15 +1078,6 @@ public:
 extern RandomOptionDatabase random_option_db;
 
 class RandomOptionGroupDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_group> {
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint16, s_random_opt_group>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 public:
 	RandomOptionGroupDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_GROUP", 1) {
 #ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
@@ -1170,15 +1152,6 @@ public:
 extern ItemDatabase item_db;
 
 class ItemGroupDatabase : public TypesafeCachedYamlDatabase<uint16, s_item_group_db> {
-#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<uint16, s_item_group_db>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 public:
 	ItemGroupDatabase() : TypesafeCachedYamlDatabase("ITEM_GROUP_DB", 1) {
 #ifdef Pandas_YamlBlastCache_ItemGroupDatabase
@@ -1469,6 +1442,5 @@ namespace boost {
 	} // namespace serialization
 } // namespace boost
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
-
 
 #endif /* ITEMDB_HPP */

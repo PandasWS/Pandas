@@ -311,15 +311,6 @@ struct s_skill_db {
 };
 
 class SkillDatabase : public TypesafeCachedYamlDatabase <uint16, s_skill_db> {
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<uint16, s_skill_db>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_SkillDatabase
 public:
 	SkillDatabase() : TypesafeCachedYamlDatabase("SKILL_DB", 2, 1) {
 #ifdef Pandas_YamlBlastCache_SkillDatabase
