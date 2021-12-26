@@ -144,6 +144,8 @@ def get_vcvarsall_path():
     '''
     for vs in vs_configure:
         path = get_reg_value(vs)
+        if not path:
+            continue
         vcvarsall_path = None
         if Common.is_dir_exists(path):
             vcvarsall_path = os.path.join(path, vs['vcvarsall'])
