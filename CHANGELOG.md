@@ -2,14 +2,68 @@
 
 此仙境传说模拟器中值得注意的改动都将被记录到本文档.
 
-虽然 Pandas 是基于 rAthena 构建的, 但我们不会刻意在此文档中强调 rAthena 官方的改动, 除非开发者认为 rAthena 的改动值得在此重点提出 (例如遇到兼容性问题时).
+本文档遵循 [维护更新日志](https://keepachangelog.com/zh-CN/1.0.0/) 提及的格式标准, 
+但并不遵循 [语义化版本](https://semver.org/lang/zh-CN/) 版本号制定标准.
 
-本文档遵循 [维护更新日志](https://keepachangelog.com/zh-CN/1.0.0/) 提及的格式标准, 但并不遵循 [语义化版本](https://semver.org/lang/zh-CN/) 版本号制定标准.
+更新日志中不包含 rAthena 的官方改动, 除非开发者认为 rAthena 的改动值得在此重点提出 (例如: 遇到兼容性问题时).
 
-## 注意事项
+> 若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 
+> 请下载安装 [Microsoft Visual C++ 2015 Redistributable] 的 x86 版本后重试.
 
-若您运行本程序时遇到提示丢失 `VCRUNTIME140.dll` 等文件导致无法启动时, 
-请下载安装 [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/zh-CN/download/details.aspx?id=52685) 的 x86 版本后重试.
+-------------------------------------------------------------------------------
+
+## [v1.1.8] - `2021-12-26`
+
+### 特别感谢
+
+在此版本的开发过程中以下朋友提供了各种形式的支持, 特此鸣谢 (排名不分先后).
+
+- 聽風、HongShin、Renee、小纪、人鱼姬的思念、ghost
+
+### 加入 Discord 社区
+
+我们在 Discord 开设了 PandasWS 官方社区，欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+
+### 升级提示
+
+- 升级到 `1.1.8` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.8_main.sql`
+- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.8_main_use_sql_db.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
+### 新增功能
+
+- 实现 `bFinalAddRace` 调整器, 用于控制在使用 bf 攻击 r 种族的目标时增加 x% 的伤害 [聽風] (#422)
+- 实现 `bFinalAddClass` 调整器, 用于控制在使用 bf 攻击时 c 类型目标时增加 x% 的伤害 [聽風] (#422)
+- 实现 `bStatusAddDamage` 调整器, 使用 bf 攻击拥有 sc 状态的目标时有 r/100% 的概率使伤害增加 n [聽風] (#423)
+- 实现 `bStatusAddDamageRate` 调整器, 使用 bf 攻击拥有 sc 状态的目标时有 r/100% 的概率使伤害增加 n% [聽風] (#423)
+- 实现 `bSkillNoRequire` 调整器, 用于解除 sk 技能中由 n 指定的前置施法条件限制 [聽風] (#412)
+- 实现 `sleep3` 脚本指令, 用于休眠一段时间再执行后续脚本 (与 sleep2 类似但忽略报错) [人鱼姬的思念] (#452)
+- 实现 `boss_monster` 脚本指令, 召唤魔物并使之能被 BOSS 雷达探测 [人鱼姬的思念] (#463)
+- 实现 `OnPCDropItemFilter` 过滤器, 当玩家准备丢弃或掉落道具时触发 [人鱼姬的思念] (#460)
+- 实现 `OnPCMerCallExpress` 实时事件, 当玩家成功召唤出佣兵时触发 [HongShin] (#435)
+- 实现 `OnPCMerLeaveExpress` 实时事件, 当佣兵离开玩家时触发 [HongShin] (#434)
+- 实现 `noattack` 地图标记, 用于禁止此地图上的任何单位进行普通攻击 [HongShin] (#438)
+- 实现 `noattack2` 地图标记, 用于禁止此地图上指定类型的单位进行普通攻击 [HongShin] (#438)
+- 实现 `remove_manhole_with_status` 选项, 用于控制"人孔"被移除时被捕获玩家是否立即脱困 (#457)
+- 使疾风缓存能支持 `SkillTreeDatabase` 技能树数据库 (DEBUG 提速约 1200 毫秒) (#466)
+- 使疾风缓存能支持 `JobDatabase` 职业数据库 (DEBUG 提速约 7800 毫秒) (#466)
+
+### 功能调整
+
+- 更新 `Boost C++ Libraries 到 1.78.0` 以便兼容 `Visual Studio 2022` (#464)
+
+### 缺陷修正
+
+- 修正 `detachrid` 之后可能导致其他 NPC 消失的问题 (#428)
+- 修正公会踢掉离线玩家后, 地图服务器需要重连角色服务器的问题 (感谢 "小纪" 反馈)
+- 修正视野内携带光环的玩家死亡后复活光环会被重复绘制的问题
+- 修正事件名称大小写导致实时事件触发异常 (感谢 "HongShin" 指出)
+- 修正光环机制导致 `cloakonnpc` 无效的问题 (感谢 "ghost" 反馈) (#461)
+- 修正六维属性过高会导致面板中的部分数值显示异常的问题
+- 修正 `pc_setpos` 在特殊操作情况下可能会导致崩溃的问题 (感谢 "HongShin" 反馈) (#456)
+- 修正无法对宠物应用光环的问题 (感谢 "HongShin" 反馈) (#455)
 
 -------------------------------------------------------------------------------
 
@@ -553,7 +607,9 @@
 - 修正部分情况下 `getd` 脚本指令会导致地图服务器崩溃的问题 (#175)
 - 修正在部分情况下角色公会图标刷新不及时的问题 (663b9d4)
 
+-------------------------------------------------------------------------------
 
+[v1.1.8]: https://github.com/PandasWS/Pandas/compare/v1.1.7...v1.1.8
 [v1.1.7]: https://github.com/PandasWS/Pandas/compare/v1.1.6...v1.1.7
 [v1.1.6]: https://github.com/PandasWS/Pandas/compare/v1.1.5...v1.1.6
 [v1.1.5]: https://github.com/PandasWS/Pandas/compare/v1.1.4...v1.1.5
@@ -572,3 +628,5 @@
 [v1.0.2]: https://github.com/PandasWS/Pandas/compare/v1.0.1...v1.0.2
 [v1.0.1]: https://github.com/PandasWS/Pandas/compare/v1.0.0...v1.0.1
 [v1.0.0]: https://github.com/PandasWS/Pandas/releases/tag/v1.0.0
+
+[Microsoft Visual C++ 2015 Redistributable]: https://www.microsoft.com/zh-CN/download/details.aspx?id=52685
