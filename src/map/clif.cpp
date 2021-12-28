@@ -4487,14 +4487,16 @@ void clif_changeoption_target( struct block_list* bl, struct block_list* target 
 #ifdef Pandas_Aura_Mechanism
 	struct s_unit_common_data* ucd = status_get_ucd(bl);
 
-	if (ucd) {
-		// 通知 bl 视野范围内的其他单位: bl 已经离开了视野范围
-		// 迫使他们的客户端清除关于 bl 的缓存
-		clif_clearunit_area(bl, CLR_TRICKDEAD);
+	if (ucd && target == nullptr) {
+		if (aura_need_hiding(bl)) {
+			// 通知 bl 视野范围内的其他单位: bl 已经离开了视野范围
+			// 迫使他们的客户端清除关于 bl 的缓存
+			clif_clearunit_area(bl, CLR_TRICKDEAD);
 
-		// 通知 bl 视野范围内的其他 BL_PC 单位, bl 已经重新进入了他们的视野范围
-		// 使他们的客户端能够重新绘制 bl 单位到窗口中
-		map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
+			// 通知 bl 视野范围内的其他 BL_PC 单位, bl 已经重新进入了他们的视野范围
+			// 使他们的客户端能够重新绘制 bl 单位到窗口中
+			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
+		}
 
 		// 若是玩家单位, 那么将身上的特殊效果发送给自己 (猥琐的解决客户端缺陷)
 		// 当自己隐匿或伪装后重新显示时, 像 202 / 362 这种特殊的光环效果会自动消失
@@ -5165,14 +5167,6 @@ void clif_getareachar_unit( struct map_session_data* sd,struct block_list *bl ){
 	// Hide NPC from Maya Purple card
 	if (clif_npc_mayapurple(bl))
 		return;
-
-#ifdef Pandas_Aura_Mechanism
-	if (sd && bl->type == BL_NPC) {
-		if (std::find(sd->cloaked_npc.begin(), sd->cloaked_npc.end(), bl->id) != sd->cloaked_npc.end()) {
-			return;
-		}
-	}
-#endif // Pandas_Aura_Mechanism
 
 	ud = unit_bl2ud(bl);
 
