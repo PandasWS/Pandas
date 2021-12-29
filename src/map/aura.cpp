@@ -178,8 +178,14 @@ TIMER_FUNC(aura_effects_timer) {
 // Description: 判断用于光环是否需要隐藏 (或者说不展现)
 // Access:      public 
 // Parameter:   struct block_list * bl
+//				该参数用于指定需要判断哪个 bl 单位的光环是否需要被隐藏
+// Parameter:   struct block_list * observer_bl
+//				观察者的 bl 指针 (默认为 nullptr 表示没有观察者, 无需考虑 cloak 影响)
+//				通常情况下一个如果被检测的 bl 单位是一个 npc,
+//				那么可能会因为这个 npc 已经在某个 observer_bl 的视野中被隐藏/显示 (cloakonnpc/cloakoffnpc)
+//				因此想判断一个目标 bl 单位是否可以显示光环的时候, 把 observer_bl 带上判断就会代入观察者视野
 // Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/04/24 14:46
+// Author:      Sola丶小克(CairoLee)  2021/12/29 22:46
 //************************************ 
 bool aura_need_hiding(struct block_list* bl, struct block_list* observer_bl) {
 	if (!bl) return true;
