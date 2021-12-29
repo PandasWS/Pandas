@@ -116,6 +116,35 @@ enum e_aura_special aura_special(uint16 effect_id) {
 }
 
 //************************************
+// Method:      aura_effects_timer_sub
+// Description: 用来遍历附近玩家并对他们发送指定光环特效的处理函数
+// Access:      public 
+// Parameter:   struct block_list * bl 遍历到附近的玩家单位
+// Parameter:   va_list ap
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2021/12/29 21:27
+//************************************ 
+int aura_effects_timer_sub(struct block_list* bl, va_list ap) {
+	struct map_session_data* sd = nullptr;
+	struct block_list* effect_unit_bl = va_arg(ap, struct block_list*);
+	uint16 effect_id = va_arg(ap, uint16);
+
+	if (!bl || !effect_unit_bl || bl->type != BL_PC) {
+		return 0;
+	}
+
+	sd = BL_CAST(BL_PC, bl);
+
+	// 主要是将观察者带入到是否隐藏光环的判断中
+	if (aura_need_hiding(effect_unit_bl, bl)) {
+		return 0;
+	}
+
+	clif_specialeffect_single(effect_unit_bl, effect_id, sd->fd);
+	return 1;
+}
+
+//************************************
 // Method:      aura_effects_timer
 // Description: 给非持久型特效进行定时播放的定时器处理函数
 // Access:      public 
@@ -130,10 +159,6 @@ TIMER_FUNC(aura_effects_timer) {
 		return 1;
 	}
 
-	if (aura_need_hiding(bl)) {
-		return 0;
-	}
-
 	struct s_unit_common_data* ucd = status_get_ucd(bl);
 	if (!ucd) {
 		delete_timer(tid, aura_effects_timer);
@@ -142,7 +167,7 @@ TIMER_FUNC(aura_effects_timer) {
 
 	for (auto it : ucd->aura.effects) {
 		if (it->replay_tid != tid) continue;
-		clif_specialeffect(bl, it->effect_id, AREA);
+		map_foreachinallrange(aura_effects_timer_sub, bl, AREA_SIZE, BL_PC, bl, it->effect_id);
 	}
 
 	return 0;
