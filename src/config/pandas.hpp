@@ -224,6 +224,9 @@
 
 	// 使 s_random_opt_data 能保存脚本的明文 [Sola丶小克]
 	#define Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+
+	// 使 status_change 能保存 cloak 是否正在进行中的状态 [Sola丶小克]
+	#define Pandas_Struct_Status_Change_Cloak_Reverting
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -925,6 +928,12 @@
 	#ifdef Pandas_Struct_S_Mail_With_Details
 		#define Pandas_Fix_Mail_ItemAttachment_Check
 	#endif // Pandas_Struct_S_Mail_With_Details
+
+	// 修正 cloak 的状态处理过于令人费解的问题
+	// 此选项开关需要依赖 Pandas_Struct_Status_Change_Cloak_Reverting 的拓展 [Sola丶小克]
+	#ifdef Pandas_Struct_Status_Change_Cloak_Reverting
+		#define Pandas_Fix_Cloak_Status_Baffling
+	#endif // Pandas_Struct_Status_Change_Cloak_Reverting
 #endif // Pandas_Bugfix
 
 // ============================================================================

@@ -156,7 +156,7 @@ TIMER_FUNC(aura_effects_timer) {
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2021/04/24 14:46
 //************************************ 
-bool aura_need_hiding(struct block_list* bl) {
+bool aura_need_hiding(struct block_list* bl, struct block_list* observer_bl) {
 	if (!bl) return true;
 
 	// 宠物没有 status_change, 当前也没有什么技能或者状态可以隐藏宠物,
@@ -165,7 +165,8 @@ bool aura_need_hiding(struct block_list* bl) {
 
 	struct status_change* sc = status_get_sc(bl);
 	if (!sc) return true;
-	return status_ishiding(bl) || status_isinvisible(bl) || sc->data[SC_CAMOUFLAGE];
+
+	return status_ishiding(bl, observer_bl) || status_isinvisible(bl) || sc->data[SC_CAMOUFLAGE];
 }
 
 //************************************

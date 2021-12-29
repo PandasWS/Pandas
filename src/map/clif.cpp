@@ -1151,7 +1151,7 @@ void clif_send_auras_single(struct block_list* bl, struct map_session_data* tsd)
 
 	struct s_unit_common_data* ucd = status_get_ucd(bl);
 	if (!ucd) return;
-	if (aura_need_hiding(bl)) return;
+	if (aura_need_hiding(bl, &tsd->bl)) return;
 
 #ifdef Pandas_MapFlag_NoAura
 	if (map_getmapflag(bl->m, MF_NOAURA)) return;
@@ -1276,7 +1276,15 @@ static void clif_set_unit_idle( struct block_list* bl, bool walking, send_target
 		struct npc_data* nd = (struct npc_data*)bl;
 		int option = (sc) ? sc->option : 0;
 
+#ifndef Pandas_Fix_Cloak_Status_Baffling
 		if( !nd->vd.dead_sit ){
+#else
+		// 确认玩家当前是否正在进行 cloak 的翻转过程中 (翻转还没结束)
+		// 只有当前翻转结束的时候 (sc->cloak_reverting == 0), 才需要根据玩家的 sd->cloaked_npc
+		// 来对 OPTION_CLOAK 标记进行翻转操作, 否则不用~
+		unsigned short cloak_reverting = (sc) ? sc->cloak_reverting : 0;
+		if( !nd->vd.dead_sit && !cloak_reverting){
+#endif // Pandas_Fix_Cloak_Status_Baffling
 			if( std::find( sd->cloaked_npc.begin(), sd->cloaked_npc.end(), nd->bl.id ) != sd->cloaked_npc.end() ){
 				option ^= OPTION_CLOAK;
 			}
@@ -4428,6 +4436,9 @@ void clif_misceffect(struct block_list* bl,int type)
 	clif_send(buf,packet_len(0x19b),bl,AREA);
 }
 
+#ifdef Pandas_Aura_Mechanism
+void clif_getareachar_unit(struct map_session_data* sd, struct block_list* bl);
+#endif // Pandas_Aura_Mechanism
 
 /// Notifies clients in the area of a state change.
 /// 0119 <id>.L <body state>.W <health state>.W <effect state>.W <pk mode>.B (ZC_STATE_CHANGE)
@@ -4486,16 +4497,30 @@ void clif_changeoption_target( struct block_list* bl, struct block_list* target 
 
 #ifdef Pandas_Aura_Mechanism
 	struct s_unit_common_data* ucd = status_get_ucd(bl);
+ 
+ 	if (ucd) {
+		if (target && target->type == BL_PC) {
+			// 指定了明确的 target 发送目标, 那么相关封包只发送给指定目标
+			struct map_session_data* tsd = BL_CAST(BL_PC, target);
 
-	if (ucd && target == nullptr) {
-		if (aura_need_hiding(bl)) {
-			// 通知 bl 视野范围内的其他单位: bl 已经离开了视野范围
-			// 迫使他们的客户端清除关于 bl 的缓存
-			clif_clearunit_area(bl, CLR_TRICKDEAD);
-
-			// 通知 bl 视野范围内的其他 BL_PC 单位, bl 已经重新进入了他们的视野范围
-			// 使他们的客户端能够重新绘制 bl 单位到窗口中
-			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
+			if (aura_need_hiding(bl, target)) {
+				clif_clearunit_single(bl->id, CLR_TRICKDEAD, tsd->fd);
+			}
+			else {
+				clif_clearunit_single(bl->id, CLR_TRICKDEAD, tsd->fd);
+				clif_getareachar_unit(tsd, bl);
+			}
+		}
+		else {
+			// 否则再用范围发送方式对 bl 附近的单位进行广播
+			if (aura_need_hiding(bl)) {
+				clif_clearunit_area(bl, CLR_TRICKDEAD);
+			}
+			else {
+				clif_clearunit_area(bl, CLR_TRICKDEAD);
+				map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
+				//clif_send_auras(bl, AREA_WOS, TRUE, AURA_SPECIAL_NOTHING);
+			}
 		}
 
 		// 若是玩家单位, 那么将身上的特殊效果发送给自己 (猥琐的解决客户端缺陷)

@@ -9322,11 +9322,24 @@ struct s_unit_common_data *status_get_ucd(struct block_list* bl)
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2020/10/11 14:38
 //************************************
-bool status_ishiding(struct block_list* bl) {
+bool status_ishiding(struct block_list* bl, struct block_list* observer_bl) {
 	if (!bl) return false;
 	struct status_change* sc = status_get_sc(bl);
 	if (!sc) return false;
-	return (sc->option & (OPTION_HIDE | OPTION_CLOAK | OPTION_CHASEWALK)) != 0;
+
+	int option = sc->option;
+
+#ifdef Pandas_Fix_Cloak_Status_Baffling
+	if (observer_bl && observer_bl->type == BL_PC && bl->type == BL_NPC && !sc->cloak_reverting) {
+		struct map_session_data* sd = BL_CAST(BL_PC, observer_bl);
+
+		if (std::find(sd->cloaked_npc.begin(), sd->cloaked_npc.end(), bl->id) != sd->cloaked_npc.end()) {
+			option ^= OPTION_CLOAK;
+		}
+	}
+#endif // Pandas_Fix_Cloak_Status_Baffling
+
+	return (option & (OPTION_HIDE | OPTION_CLOAK | OPTION_CHASEWALK)) != 0;
 }
 
 //************************************
