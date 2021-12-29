@@ -2775,6 +2775,9 @@ struct status_change {
 	unsigned int opt3;// skill state (bitfield)
 	unsigned short opt1;// body state
 	unsigned short opt2;// health state (bitfield)
+#ifdef Pandas_Struct_Status_Change_Cloak_Reverting
+	unsigned short cloak_reverting;
+#endif // Pandas_Struct_Status_Change_Cloak_Reverting
 	unsigned char count;
 	//! TODO: See if it is possible to implement the following SC's without requiring extra parameters while the SC is inactive.
 	struct {
@@ -2909,7 +2912,7 @@ struct s_unit_common_data *status_get_ucd(struct block_list* bl);
 #endif // Pandas_Struct_Unit_CommonData
 
 #ifdef Pandas_Helper_Common_Function
-bool status_ishiding(struct block_list* bl);
+bool status_ishiding(struct block_list* bl, struct block_list* observer_bl = nullptr);
 bool status_isinvisible(struct block_list* bl);
 #endif // Pandas_Helper_Common_Function
 

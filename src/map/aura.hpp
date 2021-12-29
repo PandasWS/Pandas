@@ -38,7 +38,7 @@ void do_init_aura(void);
 std::shared_ptr<s_aura> aura_search(uint32 aura_id);
 enum e_aura_special aura_special(uint16 effect_id);
 TIMER_FUNC(aura_effects_timer);
-bool aura_need_hiding(struct block_list* bl);
+bool aura_need_hiding(struct block_list* bl, struct block_list* observer_bl = nullptr);
 void aura_effects_clear(struct block_list* bl);
 void aura_effects_refill(struct block_list* bl);
 void aura_refresh_client(struct block_list* bl);
