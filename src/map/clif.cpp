@@ -17613,7 +17613,7 @@ void clif_parse_Mail_return(int fd, struct map_session_data *sd){
 	int mail_id = p->msgId;
 
 	// not supported for now
-	return;
+	// return;
 #else
 	int mail_id = RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 #endif
