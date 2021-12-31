@@ -352,6 +352,10 @@ Body:
     Help: |
       参数: [<要恢复的HP量> <要恢复的SP量>]
       恢复定量的HP和SP. 如果没有指定参数, 则恢复全量的 HP 和 SP
+  - Command: healap
+    Help: |
+      Params: [<AP>]
+      Heals the desired amount of AP. No value specified will do a full AP heal.
   - Command: dye
     Aliases:
       - ccolor
@@ -498,6 +502,9 @@ Body:
     Help: |
       参数: <要增减的能力点数>
       获得指定数量的能力点数, 用于分配角色的六维属性 (若使用负数, 则表示扣减能力点数)
+  - Command: trpoint
+    Help: |
+      Params: <number of points> - Gives you the desired number of trait stat points.
   - Command: skpoint
     Help: |
       参数: <要增减的技能点数>
