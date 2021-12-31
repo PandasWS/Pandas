@@ -10287,6 +10287,50 @@ BUILDIN_FUNC(statusup2)
 	return SCRIPT_CMD_SUCCESS;
 }
 
+/**
+* traitstatusup <stat>{,<char_id>};
+**/
+BUILDIN_FUNC(traitstatusup)
+{
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(3, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	int type = script_getnum( st, 2 );
+
+	if( type < SP_POW || type > SP_CRT ){
+		ShowError( "buildin_traitstatusup: Unknown trait type %d\n", type );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	pc_traitstatusup( sd, type, 1 );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/**
+* traitstatusup2 <stat>,<amount>{,<char_id>};
+**/
+BUILDIN_FUNC(traitstatusup2)
+{
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(4, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	int type = script_getnum( st, 2 );
+
+	if( type < SP_POW || type > SP_CRT ){
+		ShowError( "buildin_traitstatusup2: Unknown trait type %d\n", type );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	pc_traitstatusup2( sd, type, script_getnum( st, 3 ) );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 /// See 'doc/item_bonus.txt'
 ///
 /// bonus <bonus type>,<val1>;
@@ -18765,6 +18809,8 @@ BUILDIN_FUNC(getmonsterinfo)
 		case MOB_ATK2:		script_pushint(st,mob->status.rhw.atk2); break;
 		case MOB_DEF:		script_pushint(st,mob->status.def); break;
 		case MOB_MDEF:		script_pushint(st,mob->status.mdef); break;
+		case MOB_RES:		script_pushint(st, mob->status.res); break;
+		case MOB_MRES:		script_pushint(st, mob->status.mres); break;
 		case MOB_STR:		script_pushint(st,mob->status.str); break;
 		case MOB_AGI:		script_pushint(st,mob->status.agi); break;
 		case MOB_VIT:		script_pushint(st,mob->status.vit); break;
@@ -19221,6 +19267,8 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UMOB_BODY2, md->vd->body_style);
 			getunitdata_sub(UMOB_GROUP_ID, md->ud.group_id);
 			getunitdata_sub(UMOB_IGNORE_CELL_STACK_LIMIT, md->ud.state.ignore_cell_stack_limit);
+			getunitdata_sub(UMOB_RES, md->status.res);
+			getunitdata_sub(UMOB_MRES, md->status.mres);
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			getunitdata_sub(UMOB_AURA, md->ucd.aura.id);
 #endif // Pandas_Struct_Unit_CommonData_Aura
@@ -19648,6 +19696,8 @@ BUILDIN_FUNC(setunitdata)
 			case UMOB_BODY2: clif_changelook(bl, LOOK_BODY2, (unsigned short)value); break;
 			case UMOB_GROUP_ID: md->ud.group_id = value; unit_refresh(bl); break;
 			case UMOB_IGNORE_CELL_STACK_LIMIT: md->ud.state.ignore_cell_stack_limit = value > 0; break;
+			case UMOB_RES: md->base_status->res = (short)value; calc_status = true; break;
+			case UMOB_MRES: md->base_status->mres = (short)value; calc_status = true; break;
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			case UMOB_AURA: aura_make_effective(bl, value); break;
 #endif // Pandas_Struct_Unit_CommonData_Aura
@@ -24900,6 +24950,28 @@ BUILDIN_FUNC(needed_status_point) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
+/// Returns the number of trait stat points needed to change the specified trait stat by val.
+/// If val is negative, returns the number of trait stat points that would be needed to
+/// raise the specified trait stat from (current value - val) to current value.
+/// *needed_trait_point(<type>,<val>{,<char id>});
+BUILDIN_FUNC(needed_trait_point) {
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(4, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	int type = script_getnum( st, 2 );
+
+	if( type < SP_POW || type > SP_CRT ){
+		ShowError( "buildin_needed_trait_point: Unknown trait type %d\n", type );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	script_pushint( st, pc_need_trait_point( sd, type, script_getnum( st, 3 ) ) );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 /**
  * jobcanentermap("<mapname>"{,<JobID>});
  * Check if (player with) JobID can enter the map.
@@ -26557,15 +26629,32 @@ BUILDIN_FUNC(refineui){
 BUILDIN_FUNC(getenchantgrade){
 	struct map_session_data *sd;
 
-	if( !script_rid2sd( sd ) ){
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st,-1);
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	if( current_equip_item_index == -1 ){
+	int index, position;
+
+	if (script_hasdata(st, 2))
+		position = script_getnum(st, 2);
+	else
+		position = EQI_COMPOUND_ON;
+
+	if (position == EQI_COMPOUND_ON)
+		index = current_equip_item_index;
+	else if (equip_index_check(position))
+		index = pc_checkequip(sd, equip_bitmask[position]);
+	else {
+		ShowError( "buildin_getenchantgrade: Unknown equip index '%d'\n", position );
+		script_pushint(st,-1);
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	script_pushint( st, sd->inventory.u.items_inventory[current_equip_item_index].enchantgrade );
+	if (index < 0 || index >= P_MAX_INVENTORY(sd) || sd->inventory.u.items_inventory[index].nameid == 0)
+		script_pushint(st, -1);
+	else
+		script_pushint(st, sd->inventory.u.items_inventory[index].enchantgrade);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -30597,6 +30686,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(downrefitem,"i??"),
 	BUILDIN_DEF(statusup,"i?"),
 	BUILDIN_DEF(statusup2,"ii?"),
+	BUILDIN_DEF(traitstatusup,"i?"),
+	BUILDIN_DEF(traitstatusup2,"ii?"),
 	BUILDIN_DEF(bonus,"i?"),
 	BUILDIN_DEF2(bonus,"bonus2","ivi"),
 	BUILDIN_DEF2(bonus,"bonus3","ivii"),
@@ -31087,6 +31178,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getequiprandomoption, "iii?"),
 	BUILDIN_DEF(setrandomoption,"iiiii?"),
 	BUILDIN_DEF(needed_status_point,"ii?"),
+	BUILDIN_DEF(needed_trait_point, "ii?"),
 	BUILDIN_DEF(jobcanentermap,"s?"),
 	BUILDIN_DEF(openstorage2,"ii?"),
 	BUILDIN_DEF(unloadnpc, "s"),
@@ -31152,7 +31244,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(rentalcountitem, "rentalcountitem2", "viiiiiii?"),
 	BUILDIN_DEF2(rentalcountitem, "rentalcountitem3", "viiiiiiirrr?"),
 
-	BUILDIN_DEF(getenchantgrade, ""),
+	BUILDIN_DEF(getenchantgrade, "??"),
 
 	BUILDIN_DEF(mob_setidleevent, "is"),
 

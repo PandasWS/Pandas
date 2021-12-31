@@ -2437,6 +2437,10 @@
 	parseable_packet( HEADER_CZ_SE_CASHSHOP_OPEN2, sizeof( struct PACKET_CZ_SE_CASHSHOP_OPEN2 ), clif_parse_cashshop_open_request, 0 );
 #endif
 
+#if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724
+	parseable_packet( HEADER_CZ_UNCONFIRMED_TSTATUS_UP, sizeof( PACKET_CZ_UNCONFIRMED_TSTATUS_UP ), clif_parse_traitstatus_up, 0 );
+#endif
+
 #ifdef Pandas_PacketFunction_PartyJoinRequest
 #if PACKETVER >= 20200300
 	parseable_packet(HEADER_CZ_PARTY_REQUEST_TO_JOIN, sizeof(struct PACKET_CZ_PARTY_REQUEST_TO_JOIN), clif_parse_party_request_to_join, 0);
