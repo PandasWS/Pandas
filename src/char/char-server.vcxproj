@@ -199,6 +199,7 @@
     <ClInclude Include="int_quest.hpp" />
     <ClInclude Include="int_storage.hpp" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="packets.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="char.cpp" />
