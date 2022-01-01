@@ -127,7 +127,7 @@ enum e_aura_special aura_special(uint16 effect_id) {
 int aura_effects_timer_sub(struct block_list* bl, va_list ap) {
 	struct map_session_data* sd = nullptr;
 	struct block_list* effect_unit_bl = va_arg(ap, struct block_list*);
-	uint16 effect_id = va_arg(ap, uint16);
+	unsigned int effect_id = va_arg(ap, unsigned int);
 
 	if (!bl || !effect_unit_bl || bl->type != BL_PC) {
 		return 0;
