@@ -4591,7 +4591,7 @@ Body:
 - Original: "npc_parsesrcfile: Unknown map '%s' in file '%s', line '%d'. Skipping line...\n"
   Translation: "npc_parsesrcfile: 使用了未知地圖 '%s', 位於 '%s' 中第 '%d' 行. 已跳過...\n"
 - Original: "npc_parsesrcfile: Unknown syntax in file '%s', line '%d'. Stopping...\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n"
-  Translation: ""
+  Translation: "npc_parsesrcfile: 無法識別的語法, 位於 '%s' 中第 '%d' 行. 正在停止...\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n"
 - Original: "npc_parsesrcfile: w1 truncated, too much data (%d) in file '%s', line '%d'.\n"
   Translation: ""
 - Original: "npc_parsesrcfile: w2 truncated, too much data (%d) in file '%s', line '%d'.\n"
