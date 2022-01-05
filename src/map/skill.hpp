@@ -2693,6 +2693,7 @@ namespace boost {
 			ar& t.delaynodex;
 
 			//ar& t.nocast;					// SkillDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.giveap;
 
 			ar& t.unit_id;
 			ar& t.unit_id2;
@@ -2746,8 +2747,10 @@ namespace boost {
 			ar& t.hp;
 			ar& t.mhp;
 			ar& t.sp;
+			ar& t.ap;
 			ar& t.hp_rate;
 			ar& t.sp_rate;
+			ar& t.ap_rate;
 			ar& t.zeny;
 			ar& t.weapon;
 			ar& t.ammo;
