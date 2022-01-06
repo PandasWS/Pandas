@@ -208,6 +208,7 @@ def clean_environment():
     Common.glob_delete(slndir('logserv.bat'))
     Common.glob_delete(slndir('charserv.bat'))
     Common.glob_delete(slndir('mapserv.bat'))
+    Common.glob_delete(slndir('webserv.bat'))
     Common.glob_delete(slndir('serv.bat'))
     Common.glob_delete(slndir('runserver.bat'))
 
