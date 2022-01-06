@@ -26453,7 +26453,11 @@ BUILDIN_FUNC(getinstancevar)
 
 	std::shared_ptr<s_instance_data> im = util::umap_find(instances, instance_id);
 
+#ifndef Pandas_Crashfix_GetInstanceVar_Invaild_InstanceID
 	if (im->state != INSTANCE_BUSY) {
+#else
+	if (!im || im->state != INSTANCE_BUSY) {
+#endif // Pandas_Crashfix_GetInstanceVar_Invaild_InstanceID
 		ShowError("buildin_getinstancevar: Unknown instance ID %d.\n", instance_id);
 		script_pushnil(st);
 		st->state = END;
@@ -26504,7 +26508,11 @@ BUILDIN_FUNC(setinstancevar)
 
 	std::shared_ptr<s_instance_data> im = util::umap_find(instances, instance_id);
 
+#ifndef Pandas_Crashfix_SetInstanceVar_Invaild_InstanceID
 	if (im->state != INSTANCE_BUSY) {
+#else
+	if (!im || im->state != INSTANCE_BUSY) {
+#endif // Pandas_Crashfix_SetInstanceVar_Invaild_InstanceID
 		ShowError("buildin_%s: Unknown instance ID %d.\n", command, instance_id);
 		script_pushnil(st);
 		st->state = END;
