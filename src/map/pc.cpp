@@ -1652,7 +1652,7 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 
 	//Set the map-server used job id. [Skotlex]
 	uint64 class_ = pc_jobid2mapid(sd->status.class_);
-	if (class_ == -1) { //Invalid class?
+	if (class_ == -1 || !job_db.exists(sd->status.class_)) { //Invalid class?
 		ShowError("pc_authok: Invalid class %d for player %s (%d:%d). Class was changed to novice.\n", sd->status.class_, sd->status.name, sd->status.account_id, sd->status.char_id);
 		sd->status.class_ = JOB_NOVICE;
 		sd->class_ = MAPID_NOVICE;
@@ -7201,7 +7201,16 @@ uint8 pc_checkskill(struct map_session_data *sd, uint16 skill_id)
 	uint16 idx = 0;
 	if (sd == NULL)
 		return 0;
+
+#ifdef RENEWAL
 	if ((idx = skill_get_index(skill_id)) == 0) {
+#else
+	if( ( idx = skill_get_index_( skill_id, skill_id >= RK_ENCHANTBLADE, __FUNCTION__, __FILE__, __LINE__ ) ) == 0 ){
+		if( skill_id >= RK_ENCHANTBLADE ){
+			// Silently fail for now -> future update planned
+			return 0;
+		}
+#endif
 		ShowError("pc_checkskill: Invalid skill id %d (char_id=%d).\n", skill_id, sd->status.char_id);
 		return 0;
 	}
@@ -10770,6 +10779,11 @@ bool pc_jobchange(struct map_session_data *sd,int job, char upper)
 
 	if ((unsigned short)b_class == sd->class_)
 		return false; //Nothing to change.
+
+	// If the job does not exist in the job db, dont allow changing to it
+	if( !job_db.exists( job ) ){
+		return false;
+	}
 
 	// changing from 1st to 2nd job
 	if ((b_class&JOBL_2) && !(sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE) {
