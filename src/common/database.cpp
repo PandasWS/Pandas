@@ -227,6 +227,8 @@ std::string YamlDatabase::getBlashCacheHash(const std::string& path) {
 // Method:      isEnableSerialize
 // Description: 获取当前疾风缓存是否处于开启状态
 // Access:      private 
+// Parameter:   bool bNoWarning
+//              是否不展现任何警告信息
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2022/01/08 19:12
 //************************************ 
@@ -241,11 +243,9 @@ bool YamlDatabase::isEnableSerialize(bool bNoWarning) {
 		}
 	}
 
-#ifdef _DEBUG
 	if (!bNoWarning) {
 		ShowWarning("Blast Cache: Struct size of database '%s' does not meet expectations, current size is: %d\n", this->type.c_str(), this->datatypeSize);
 	}
-#endif // _DEBUG
 
 	return false;
 }
