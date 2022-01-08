@@ -62,6 +62,7 @@ public:
 	QuestDatabase() : TypesafeYamlDatabase("QUEST_DB", 2, 1) {
 #ifdef Pandas_YamlBlastCache_QuestDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(72);
 #endif // Pandas_YamlBlastCache_QuestDatabase
 	}
 
