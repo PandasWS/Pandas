@@ -323,8 +323,10 @@ public:
 	SkillDatabase() : TypesafeCachedYamlDatabase("SKILL_DB", 3, 1) {
 #ifdef Pandas_YamlBlastCache_SkillDatabase
 		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(1600);	// PRE
-		this->validDatatypeSize.push_back(1648);	// RENEWAL
+		this->validDatatypeSize.push_back(1600);	// Win32 + PRE
+		this->validDatatypeSize.push_back(1648);	// Win32 + RENEWAL
+		this->validDatatypeSize.push_back(1632);	// x64 + PRE
+		this->validDatatypeSize.push_back(1688);	// x64 + RENEWAL
 #endif // Pandas_YamlBlastCache_SkillDatabase
 	}
 

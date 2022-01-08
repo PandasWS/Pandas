@@ -1144,8 +1144,10 @@ public:
 	JobDatabase() : TypesafeCachedYamlDatabase("JOB_STATS", 1) {
 #ifdef Pandas_YamlBlastCache_JobDatabase
 		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(4144);	// PEC
-		this->validDatatypeSize.push_back(4120);	// NO-PEC
+		this->validDatatypeSize.push_back(4144);	// Win32 + PEC
+		this->validDatatypeSize.push_back(4120);	// Win32 + NOPEC
+		this->validDatatypeSize.push_back(4200);	// x64 + PEC
+		this->validDatatypeSize.push_back(4176);	// x64 + NOPEC
 #endif // Pandas_YamlBlastCache_JobDatabase
 	}
 
@@ -1635,7 +1637,8 @@ public:
 	SkillTreeDatabase() : TypesafeYamlDatabase("SKILL_TREE_DB", 1) {
 #ifdef Pandas_YamlBlastCache_SkillTreeDatabase
 		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(44);
+		this->validDatatypeSize.push_back(44);	// Win32
+		this->validDatatypeSize.push_back(88);	// x64
 #endif // Pandas_YamlBlastCache_SkillTreeDatabase
 	}
 

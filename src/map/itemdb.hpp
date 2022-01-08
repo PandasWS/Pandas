@@ -1058,7 +1058,8 @@ public:
 	RandomOptionDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_DB", 1) {
 #ifdef Pandas_YamlBlastCache_RandomOptionDatabase
 		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(56);
+		this->validDatatypeSize.push_back(56);	// Win32
+		this->validDatatypeSize.push_back(80);	// x64
 #endif // Pandas_YamlBlastCache_RandomOptionDatabase
 	}
 
@@ -1083,7 +1084,8 @@ public:
 	RandomOptionGroupDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_GROUP", 1) {
 #ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
 		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(52);
+		this->validDatatypeSize.push_back(52);	// Win32
+		this->validDatatypeSize.push_back(88);	// x64
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 	}
 
@@ -1128,7 +1130,9 @@ public:
 	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 2, 1) {
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(368);
+		this->validDatatypeSize.push_back(368);	// Win32 + BOTH
+		this->validDatatypeSize.push_back(448);	// x64 + PRE
+		this->validDatatypeSize.push_back(456);	// x64 + RENEWAL
 #endif // Pandas_YamlBlastCache_ItemDatabase
 	}
 
@@ -1159,7 +1163,8 @@ public:
 	ItemGroupDatabase() : TypesafeCachedYamlDatabase("ITEM_GROUP_DB", 1) {
 #ifdef Pandas_YamlBlastCache_ItemGroupDatabase
 		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(36);
+		this->validDatatypeSize.push_back(36);	// Win32
+		this->validDatatypeSize.push_back(72);	// x64
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
 	}
 
