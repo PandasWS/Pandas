@@ -1639,6 +1639,8 @@ public:
 		this->supportSerialize = true;
 		this->validDatatypeSize.push_back(44);	// Win32
 		this->validDatatypeSize.push_back(88);	// x64
+
+		this->validDatatypeSize.push_back(80);	// Linux
 #endif // Pandas_YamlBlastCache_SkillTreeDatabase
 	}
 

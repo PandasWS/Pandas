@@ -327,6 +327,8 @@ public:
 		this->validDatatypeSize.push_back(1648);	// Win32 + RENEWAL
 		this->validDatatypeSize.push_back(1632);	// x64 + PRE
 		this->validDatatypeSize.push_back(1688);	// x64 + RENEWAL
+
+		this->validDatatypeSize.push_back(1640);	// Linux
 #endif // Pandas_YamlBlastCache_SkillDatabase
 	}
 
