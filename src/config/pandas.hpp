@@ -934,6 +934,15 @@
 	#ifdef Pandas_Struct_Status_Change_Cloak_Reverting
 		#define Pandas_Fix_Cloak_Status_Baffling
 	#endif // Pandas_Struct_Status_Change_Cloak_Reverting
+
+	// 修正获取道具分组的随机算法权重不符合预期的问题 [Sola丶小克]
+	// 所有最终使用 item_group_db.yml 数据的指令函数 (比如 getrandgroupitem 等)
+	// 最后都会经过 itemdb.cpp 中的 get_random_itemsubgroup 来获取随机物品
+	// 该函数的实现并不严谨, 随机出来的物品概率与 doc/item_group.txt 的描述不符合
+	// 这可能导致很多卡片或者道具过多流入到市场, 打破游戏平衡
+	//
+	// 感谢 "红狐狸" 提醒此问题
+	#define Pandas_Fix_GetRandom_ItemSubGroup_Algorithm
 #endif // Pandas_Bugfix
 
 // ============================================================================
