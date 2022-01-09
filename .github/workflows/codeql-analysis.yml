@@ -1,6 +1,12 @@
 name: "CodeQL"
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master, develop]
+  schedule:
+    - cron: '30 1 * * 0'
 
 env:
   CACHE_VERSION: "2021-12-18"

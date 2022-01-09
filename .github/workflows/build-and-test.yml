@@ -2,6 +2,7 @@ name: Build And Test
 
 on:
   push:
+    branches: [master, develop]
     paths-ignore:
       - '**/*.md'
       - '**/*.gitignore'
@@ -9,6 +10,7 @@ on:
       - 'doc/**'
       - 'tools/python/**'
   pull_request:
+    branches: [master, develop]
     paths-ignore:
       - '**/*.md'
       - '**/*.gitignore'
