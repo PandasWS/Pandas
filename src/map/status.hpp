@@ -3214,14 +3214,26 @@ namespace boost {
 		{
 			ar& t.hp;
 			ar& t.sp;
+			ar& t.ap;
+
 			ar& t.max_hp;
 			ar& t.max_sp;
+			ar& t.max_ap;
+
 			ar& t.str;
 			ar& t.agi;
 			ar& t.vit;
 			ar& t.int_;
 			ar& t.dex;
 			ar& t.luk;
+
+			ar& t.pow;
+			ar& t.sta;
+			ar& t.wis;
+			ar& t.spl;
+			ar& t.con;
+			ar& t.crt;
+
 			ar& t.eatk;
 			ar& t.batk;
 #ifdef RENEWAL
@@ -3234,7 +3246,9 @@ namespace boost {
 			ar& t.amotion;
 			ar& t.adelay;
 			ar& t.dmotion;
+
 			ar& t.mode;
+
 			ar& t.hit;
 			ar& t.flee;
 			ar& t.cri;
@@ -3245,6 +3259,13 @@ namespace boost {
 			ar& t.aspd_rate2;
 #endif
 			ar& t.aspd_rate;
+			ar& t.patk;
+			ar& t.smatk;
+			ar& t.res;
+			ar& t.mres;
+			ar& t.hplus;
+			ar& t.crate;
+
 			ar& t.def;
 			ar& t.mdef;
 

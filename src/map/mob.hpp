@@ -281,6 +281,14 @@ public:
 	MobDatabase() : TypesafeCachedYamlDatabase("MOB_DB", 3, 1) {
 #ifdef Pandas_YamlBlastCache_MobDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(624);	// Win32 + PEC + PRE
+		this->validDatatypeSize.push_back(656);	// Win32 + PEC + RENEWAL
+		this->validDatatypeSize.push_back(544);	// Win32 + NOPEC + PRE
+		this->validDatatypeSize.push_back(560);	// Win32 + NOPEC + RENEWAL
+
+		this->validDatatypeSize.push_back(680);	// x64 + PEC + PRE
+		this->validDatatypeSize.push_back(712);	// x64 + PEC + RENEWAL
+		this->validDatatypeSize.push_back(616);	// x64 + NOPEC + BOTH
 #endif // Pandas_YamlBlastCache_MobDatabase
 	}
 
