@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `merchant_configs` (
   `world_name` varchar(32) NOT NULL,
   `store_type` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
   `data` longtext NOT NULL,
-  PRIMARY KEY (`account_id`, `char_id`, `world_name`)
+  PRIMARY KEY (`account_id`, `char_id`, `world_name`, `store_type`)
 ) ENGINE=MyISAM;
 
 --
