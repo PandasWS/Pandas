@@ -1514,6 +1514,7 @@ int itemdb_searchname_array(struct item_data** data, int size, const char *str)
 }
 
 std::shared_ptr<s_item_group_entry> get_random_itemsubgroup(std::shared_ptr<s_item_group_random> random) {
+#ifndef Pandas_Fix_GetRandom_ItemSubGroup_Algorithm
 	if (random == nullptr)
 		return nullptr;
 
@@ -1525,6 +1526,29 @@ std::shared_ptr<s_item_group_entry> get_random_itemsubgroup(std::shared_ptr<s_it
 	}
 
 	return util::umap_random(random->data);
+#else
+	if (random == nullptr || random->data.size() == 0)
+		return nullptr;
+
+	uint32 randNum = rnd() % random->total_rate;
+
+	uint32 start = 0;
+	uint32 end = 0;
+
+	for (const auto& entry : random->data) {
+		if (entry.second->rate == 0) {
+			continue;
+		}
+
+		end = start + entry.second->rate;
+		if (start <= randNum && randNum < end) {
+			return entry.second;
+		}
+		start = end;
+	}
+
+	return nullptr;
+#endif // Pandas_Fix_GetRandom_ItemSubGroup_Algorithm
 }
 
 /**
