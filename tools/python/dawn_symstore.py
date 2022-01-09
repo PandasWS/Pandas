@@ -200,11 +200,11 @@ def main():
         Message.ShowStatus('很好, 符号仓库的工作区是干净的.')
     
     # 尝试更新本地的符号仓库到最新
-    if not update_store():
-        Message.ShowWarning('为了防止出现意外, 请确保符号仓库同步到最新. 程序终止.')
-        Common.exit_with_pause(-1)
-    else:
-        Message.ShowStatus('符号仓库已经同步到最新, 开始归档新的符号文件...')
+    #if not update_store():
+    #    Message.ShowWarning('为了防止出现意外, 请确保符号仓库同步到最新. 程序终止.')
+    #    Common.exit_with_pause(-1)
+    #else:
+    #    Message.ShowStatus('符号仓库已经同步到最新, 开始归档新的符号文件...')
 
     # 搜索工程目录全部 pdb 文件和 exe 文件, 进行归档
     deploy_symbols(project_slndir)

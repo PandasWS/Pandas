@@ -185,6 +185,7 @@ __pycache__
 .vscode
 .idea
 /*.diagsession
+/*.map
 
 # Other
 /src/*/*.aps
