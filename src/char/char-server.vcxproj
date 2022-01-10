@@ -256,8 +256,13 @@
     <Delete Files="$(SolutionDir)runserver.bat" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)char-server.lib" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)char-server.exp" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)char-server.pdb" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)char-server.map" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)char-server-pre.lib" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)char-server-pre.exp" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)char-server-pre.exe" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)char-server-pre.pdb" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)char-server-pre.map" ContinueOnError="true" />
   </Target>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.dll" DestinationFolder="$(SolutionDir)" ContinueOnError="true" Condition="!Exists('$(SolutionDir)libmysql.dll')" />
