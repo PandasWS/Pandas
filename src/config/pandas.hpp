@@ -943,6 +943,11 @@
 	//
 	// 感谢 "红狐狸" 提醒此问题
 	#define Pandas_Fix_GetRandom_ItemSubGroup_Algorithm
+
+	// 修正 rAthena 合并四转职业之后技能数超过 MAX_SKILL 导致的数据越界异常 [Sola丶小克]
+	// 由于四转职业需要, 程序引入更多的技能之后技能总数超过了 MAX_SKILL 定义的 1450
+	// 这会导致在以 skill_db.size() 为基准遍历处理 mmo_charstatus 结构体 skill 对象时造成溢出
+	#define	Pandas_Fix_MAX_SKILL_Too_Small
 #endif // Pandas_Bugfix
 
 // ============================================================================
