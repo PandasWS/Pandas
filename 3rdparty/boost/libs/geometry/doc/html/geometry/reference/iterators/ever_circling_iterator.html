@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>ever_circling_iterator</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../iterators.html" title="Iterators">
 <link rel="prev" href="closing_iterator.html" title="closing_iterator">
 <link rel="next" href="../models.html" title="Models">
@@ -27,7 +27,7 @@
 <a name="geometry.reference.iterators.ever_circling_iterator"></a><a class="link" href="ever_circling_iterator.html" title="ever_circling_iterator">ever_circling_iterator</a>
 </h4></div></div></div>
 <p>
-          <a class="indexterm" name="idm45133038451232"></a>
+          <a class="indexterm" name="idm74877"></a>
 Iterator which ever circles through a range.
         </p>
 <h6>
@@ -112,6 +112,19 @@ Iterator which ever circles through a range.
 <td>
                   <p>
 </p>
+<pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">ever_circling_iterator</span><span class="special">()</span></pre>
+<p>
+                  </p>
+                </td>
+<td>
+                </td>
+<td>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+</p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">ever_circling_iterator</span><span class="special">(</span><span class="identifier">Iterator</span> <span class="identifier">begin</span><span class="special">,</span> <span class="identifier">Iterator</span> <span class="identifier">end</span><span class="special">,</span> <span class="keyword">bool</span> <span class="identifier">skip_first</span> <span class="special">=</span> <span class="keyword">false</span><span class="special">)</span></pre>
 <p>
                   </p>
@@ -153,6 +166,24 @@ Iterator which ever circles through a range.
                   </p>
                   <p>
                     <span class="bold"><strong>bool</strong></span>: <span class="emphasis"><em>skip_first</em></span>:
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+</p>
+<pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">OtherIterator</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">enable_if_t</span><span class="special">&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">is_convertible</span><span class="special">&lt;</span> <span class="identifier">OtherIterator</span><span class="special">,</span> <span class="identifier">Iterator</span> <span class="special">&gt;::</span><span class="identifier">value</span><span class="special">,</span> <span class="keyword">int</span> <span class="special">&gt;&gt;</span>
+<span class="identifier">ever_circling_iterator</span><span class="special">(</span><span class="identifier">ever_circling_iterator</span><span class="special">&lt;</span> <span class="identifier">OtherIterator</span> <span class="special">&gt;</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">other</span><span class="special">)</span></pre>
+<p>
+                  </p>
+                </td>
+<td>
+                </td>
+<td>
+                  <p>
+                    <span class="bold"><strong>ever_circling_iterator&lt; OtherIterator
+                    &gt; const &amp;</strong></span>: <span class="emphasis"><em>other</em></span>:
                   </p>
                 </td>
 </tr>
@@ -221,8 +252,8 @@ Iterator which ever circles through a range.
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

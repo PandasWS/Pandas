@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>User's Guide</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../chrono.html" title="Chapter&#160;7.&#160;Boost.Chrono 2.0.8">
-<link rel="prev" href="../chrono.html" title="Chapter&#160;7.&#160;Boost.Chrono 2.0.8">
+<link rel="up" href="../chrono.html" title="Chapter 7. Boost.Chrono 2.0.8">
+<link rel="prev" href="../chrono.html" title="Chapter 7. Boost.Chrono 2.0.8">
 <link rel="next" href="reference.html" title="Reference">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -474,7 +474,7 @@
           its representation. This can be any integral type, or even a floating-point
           type. Or it can be a user-defined type which emulates an arithmetic type.
           The six predefined units all use signed integral types as their representation.
-          And they all have a minimum range of &#177; 292 years. <a class="link" href="reference.html#chrono.reference.cpp0x.duration_hpp.duration_typedefs" title="duration typedefs"><code class="computeroutput"><span class="identifier">nanoseconds</span></code></a> needs 64 bits to cover
+          And they all have a minimum range of ± 292 years. <a class="link" href="reference.html#chrono.reference.cpp0x.duration_hpp.duration_typedefs" title="duration typedefs"><code class="computeroutput"><span class="identifier">nanoseconds</span></code></a> needs 64 bits to cover
           that range. <a class="link" href="reference.html#chrono.reference.cpp0x.duration_hpp.duration_typedefs" title="duration typedefs"><code class="computeroutput"><span class="identifier">hours</span></code></a> needs only 23 bits to cover
           that range.
         </p>
@@ -1298,7 +1298,7 @@
 <span class="identifier">ClockTick</span><span class="special">(</span><span class="number">3</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">nanoseconds</span><span class="special">(</span><span class="number">10</span><span class="special">)</span> <span class="special">=</span> <span class="number">56</span> <span class="special">[</span><span class="number">1</span><span class="special">/</span><span class="number">5000000000</span><span class="special">]</span><span class="identifier">seconds</span>
 
 <span class="identifier">Set</span> <span class="identifier">cout</span> <span class="identifier">to</span> <span class="identifier">use</span> <span class="keyword">short</span> <span class="identifier">names</span><span class="special">:</span>
-<span class="identifier">milliseconds</span><span class="special">(</span><span class="number">3</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">microseconds</span><span class="special">(</span><span class="number">10</span><span class="special">)</span> <span class="special">=</span> <span class="number">3010</span> &#956;s
+<span class="identifier">milliseconds</span><span class="special">(</span><span class="number">3</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">microseconds</span><span class="special">(</span><span class="number">10</span><span class="special">)</span> <span class="special">=</span> <span class="number">3010</span> μs
 <span class="identifier">hours</span><span class="special">(</span><span class="number">3</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">minutes</span><span class="special">(</span><span class="number">10</span><span class="special">)</span> <span class="special">=</span> <span class="number">190</span> <span class="identifier">m</span>
 <span class="identifier">ClockTick</span><span class="special">(</span><span class="number">3</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">nanoseconds</span><span class="special">(</span><span class="number">10</span><span class="special">)</span> <span class="special">=</span> <span class="number">56</span> <span class="special">[</span><span class="number">1</span><span class="special">/</span><span class="number">5000000000</span><span class="special">]</span><span class="identifier">s</span>
 
@@ -1340,7 +1340,7 @@
             The output could be
           </p>
 <pre class="programlisting"><span class="identifier">Set</span> <span class="identifier">cout</span> <span class="identifier">to</span> <span class="identifier">use</span> <span class="keyword">short</span> <span class="identifier">names</span><span class="special">:</span>
-<span class="identifier">milliseconds</span><span class="special">(</span><span class="number">3</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">microseconds</span><span class="special">(</span><span class="number">10</span><span class="special">)</span> <span class="special">=</span> <span class="number">3010</span> &#956;s
+<span class="identifier">milliseconds</span><span class="special">(</span><span class="number">3</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">microseconds</span><span class="special">(</span><span class="number">10</span><span class="special">)</span> <span class="special">=</span> <span class="number">3010</span> μs
 <span class="identifier">hours</span><span class="special">(</span><span class="number">3</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">minutes</span><span class="special">(</span><span class="number">10</span><span class="special">)</span> <span class="special">=</span> <span class="number">190</span> <span class="identifier">m</span>
 <span class="identifier">ClockTick</span><span class="special">(</span><span class="number">3</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">nanoseconds</span><span class="special">(</span><span class="number">10</span><span class="special">)</span> <span class="special">=</span> <span class="number">56</span> <span class="special">[</span><span class="number">1</span><span class="special">/</span><span class="number">5000000000</span><span class="special">]</span><span class="identifier">s</span>
 
@@ -1351,7 +1351,7 @@
 <span class="identifier">high_resolution_clock</span><span class="special">::</span><span class="identifier">now</span><span class="special">()</span> <span class="special">=</span> <span class="number">37297387655134</span> <span class="identifier">nanoseconds</span> <span class="identifier">since</span> <span class="identifier">boot</span>
 </pre>
 <p>
-            The &#956; for microsecond is specified to be U+00B5, encoded as UTF-8, UTF-16
+            The μ for microsecond is specified to be U+00B5, encoded as UTF-8, UTF-16
             or UTF-32 as appropriate for the stream's character size.
           </p>
 <p>
@@ -2580,7 +2580,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2008 Howard Hinnant<br>Copyright &#169; 2006, 2008 Beman Dawes<br>Copyright &#169; 2009-2013 Vicente J. Botet Escriba<p>
+<td align="right"><div class="copyright-footer">Copyright © 2008 Howard Hinnant<br>Copyright © 2006, 2008 Beman Dawes<br>Copyright © 2009-2013 Vicente J. Botet Escriba<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

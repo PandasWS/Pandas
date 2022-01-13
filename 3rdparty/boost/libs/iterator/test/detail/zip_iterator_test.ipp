@@ -6,7 +6,7 @@
 //
 //  See http://www.boost.org for most recent version including documentation.
 
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include <boost/assign/list_of.hpp>
 #include <boost/fusion/include/at.hpp>

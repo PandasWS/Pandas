@@ -6,7 +6,8 @@
 
 # Test all_reduce() collective.
 
-import boost.parallel.mpi as mpi
+from __future__ import print_function
+import mpi
 from generators import *
 
 def all_reduce_test(comm, generator, kind, op, op_kind):
@@ -20,7 +21,7 @@ def all_reduce_test(comm, generator, kind, op, op_kind):
         
     assert result == expected_result
     if comm.rank == 0:
-        print "OK."
+        print ("OK.")
     return
 
 all_reduce_test(mpi.world, int_generator, "integers", lambda x,y:x + y, "sum")

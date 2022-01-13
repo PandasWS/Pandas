@@ -15,7 +15,6 @@
 // is_noexcept_move_constructible
 
 #include <string>
-#include <iterator>
 
 #include <boost/variant.hpp>
 #include <boost/array.hpp>

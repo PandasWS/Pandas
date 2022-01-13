@@ -1294,8 +1294,16 @@ enum e_job_types
 	JT_4_POINT_YELLOW,
 	JT_4_POINT_BLACK,
 	JT_4_POINT_WHITE,
-
-	JT_1_JOURNEY_STONE_D = 10442,
+	JT_4_EXJOB_GERHOLD,
+	JT_4_EXJOB_NINJA,
+	JT_4_EXJOB_MASTER_J,
+	JT_4_EXJOB_MR_SEO,
+	JT_4_EXJOB_HAPPY_CLOUD,
+	JT_4_EXJOB_STAR,
+	JT_4_EXJOB_CHUL_HO,
+	JT_4_EXJOB_KI_SUL,
+	JT_4_EXJOB_HYUN_ROK,
+	JT_1_JOURNEY_STONE_D,
 	JT_1_JOURNEY_STONE_F,
 	JT_ROZ_MQ_SIGRUN,
 	JT_ROZ_MQ_SIGRUN_S,
@@ -1304,6 +1312,46 @@ enum e_job_types
 	JT_ROZ_MQ_SAHARIO,
 	JT_ROZ_MQ_SUPIGEL,
 	JT_ROZ_MQ_DEADSOLDIER,
+
+	JT_1_RAGFES_01 = 10476,
+	JT_1_RAGFES_01_M,
+	JT_4_RAGFES_02,
+	JT_4_RAGFES_02_M,
+	JT_4_RAGFES_03,
+	JT_4_RAGFES_03_M,
+	JT_4_RAGFES_04,
+	JT_4_RAGFES_04_M,
+	JT_4_RAGFES_05,
+	JT_4_RAGFES_05_M,
+	JT_4_RAGFES_06,
+	JT_4_RAGFES_06_M,
+	JT_4_RAGFES_07,
+	JT_4_RAGFES_07_M,
+	JT_4_RAGFES_08,
+	JT_4_RAGFES_08_M,
+	JT_4_RAGFES_09,
+	JT_4_RAGFES_09_M,
+	JT_4_RAGFES_10,
+	JT_4_RAGFES_10_M,
+	JT_4_RAGFES_11,
+	JT_4_RAGFES_11_M,
+	JT_4_RAGFES_12,
+	JT_4_RAGFES_12_M,
+	JT_4_RAGFES_13,
+	JT_4_RAGFES_13_M,
+	JT_4_RAGFES_14,
+	JT_4_RAGFES_14_M,
+	JT_4_RAGFES_15,
+	JT_4_RAGFES_15_M,
+	JT_4_RAGFES_16,
+	JT_4_RAGFES_16_M,
+	JT_4_EXJOB_NINJA2,
+
+	JT_ROZ_MQ_LUCIAN = 10510,
+	JT_ROZ_MQ_BRITIA,
+	JT_ROZ_MQ_ASSASIN01,
+	JT_STRANGE_B_SMITH1,
+	JT_STRONGER_B_SMTIH,
 
 	JT_NEW_NPC_3RD_END = 19999,
 	NPC_RANGE3_END, // Official: JT_NEW_NPC_3RD_END=19999
@@ -1417,6 +1465,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_PARTYLEAVE
 	NPCF_PARTYLEAVE,	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYLEAVE
+
+#ifdef Pandas_NpcFilter_DROPITEM
+	NPCF_DROPITEM,	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
+#endif // Pandas_NpcFilter_DROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
@@ -1487,6 +1539,14 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcExpress_PCATTACK
 	NPCX_PCATTACK,	// pcattack_express_name	// OnPCAttackExpress		// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
 #endif // Pandas_NpcExpress_PCATTACK
+
+#ifdef Pandas_NpcExpress_MER_CALL
+	NPCX_MER_CALL,	// mer_call_express_name	// OnPCMerCallExpress		// 当玩家成功召唤出佣兵时触发实时事件
+#endif // Pandas_NpcExpress_MER_CALL
+
+#ifdef Pandas_NpcExpress_MER_LEAVE
+	NPCX_MER_LEAVE,	// mer_leave_express_name	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
+#endif // Pandas_NpcExpress_MER_LEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX

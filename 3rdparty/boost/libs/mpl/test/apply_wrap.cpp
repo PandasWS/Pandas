@@ -24,14 +24,14 @@
 #include <boost/preprocessor/cat.hpp>
 
 #if !defined(BOOST_MPL_CFG_NO_DEFAULT_PARAMETERS_IN_NESTED_TEMPLATES)
-#   define APPLY_0_FUNC_DEF(i) \
+#   define APPLY_0_FUNC_DEF(z_ignored,i) \
     struct f0 \
     { \
         template< typename T = int > struct apply { typedef char type; }; \
     }; \
 /**/
 #else
-#   define APPLY_0_FUNC_DEF(i) \
+#   define APPLY_0_FUNC_DEF(z_ignored,i) \
     struct f0 \
     { \
         template< typename T > struct apply { typedef char type; }; \
@@ -39,16 +39,16 @@
 /**/
 #endif
 
-#define APPLY_N_FUNC_DEF(i) \
+#define APPLY_N_FUNC_DEF(z,i) \
     struct first##i \
     { \
-        template< BOOST_MPL_PP_PARAMS(i, typename U) > \
+        template< BOOST_MPL_PP_PARAMS_Z(z, i, typename U) > \
         struct apply { typedef U1 type; }; \
     }; \
     \
     struct last##i \
     { \
-        template< BOOST_MPL_PP_PARAMS(i, typename U) > \
+        template< BOOST_MPL_PP_PARAMS_Z(z, i, typename U) > \
         struct apply { typedef BOOST_PP_CAT(U,i) type; }; \
     }; \
 /**/
@@ -58,7 +58,7 @@
           i \
         , APPLY_N_FUNC_DEF \
         , APPLY_0_FUNC_DEF \
-        )(i) \
+        )(z,i) \
 /**/
 
 namespace { namespace test {
@@ -73,22 +73,22 @@ struct g0 { struct apply { typedef char type; }; };
 
 }}
 
-#define APPLY_0_TEST(i, apply_) \
+#define APPLY_0_TEST(z_ignored, i, apply_) \
     typedef apply_<test::f##i>::type t; \
     { MPL_ASSERT(( boost::is_same<t, char> )); } \
 /**/
 
-#define APPLY_N_TEST(i, apply_) \
+#define APPLY_N_TEST(z, i, apply_) \
     typedef apply_< \
           test::first##i \
         , char \
         BOOST_PP_COMMA_IF(BOOST_PP_DEC(i)) \
-        BOOST_MPL_PP_ENUM(BOOST_PP_DEC(i), int) \
+        BOOST_MPL_PP_ENUM_Z(z, BOOST_PP_DEC(i), int) \
         >::type t1##i; \
     \
     typedef apply_< \
           test::last##i \
-        , BOOST_MPL_PP_ENUM(BOOST_PP_DEC(i), int) \
+        , BOOST_MPL_PP_ENUM_Z(z, BOOST_PP_DEC(i), int) \
         BOOST_PP_COMMA_IF(BOOST_PP_DEC(i)) char \
         >::type t2##i; \
     { MPL_ASSERT(( boost::is_same<t1##i, char> )); } \
@@ -100,7 +100,7 @@ struct g0 { struct apply { typedef char type; }; };
           i \
         , APPLY_N_TEST \
         , APPLY_0_TEST \
-        )(i, BOOST_PP_CAT(apply_wrap,i)) \
+        )(z, i, BOOST_PP_CAT(apply_wrap,i)) \
 /**/
 
 

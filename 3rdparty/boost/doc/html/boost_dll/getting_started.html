@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Getting started</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../boost_dll.html" title="Chapter&#160;14.&#160;Boost.DLL">
-<link rel="prev" href="../boost_dll.html" title="Chapter&#160;14.&#160;Boost.DLL">
+<link rel="up" href="../boost_dll.html" title="Chapter 14. Boost.DLL">
+<link rel="prev" href="../boost_dll.html" title="Chapter 14. Boost.DLL">
 <link rel="next" href="tutorial.html" title="Tutorial">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -100,7 +100,7 @@
               <p>
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="comment">// Importing function.</span>
-<span class="keyword">auto</span> <span class="identifier">cpp11_func</span> <span class="special">=</span> <span class="identifier">dll</span><span class="special">::</span><span class="identifier">import</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&amp;&amp;)&gt;(</span>
+<span class="keyword">auto</span> <span class="identifier">cpp11_func</span> <span class="special">=</span> <span class="identifier">dll</span><span class="special">::</span><span class="identifier">import_symbol</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&amp;&amp;)&gt;(</span>
         <span class="identifier">path_to_shared_library</span><span class="special">,</span> <span class="string">"i_am_a_cpp11_function"</span>
     <span class="special">);</span>
 </pre>
@@ -112,7 +112,7 @@
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">namespace</span> <span class="identifier">some_namespace</span> <span class="special">{</span>
     <span class="identifier">API</span> <span class="keyword">int</span> <span class="identifier">i_am_a_cpp11_function</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&amp;&amp;</span> <span class="identifier">param</span><span class="special">)</span> <span class="keyword">noexcept</span><span class="special">;</span>
-<span class="comment">//          ^--------------------  function name to use in dll::import&lt;&gt;</span>
+<span class="comment">//          ^--------------------  function name to use in dll::import_symbol&lt;&gt;</span>
 <span class="special">}</span>
 </pre>
 <p>
@@ -120,7 +120,7 @@
             </td>
 <td>
               <p>
-                <code class="computeroutput"><a class="link" href="../boost/dll/import.html" title="Function import">import&lt;T&gt;(...)</a></code>
+                <code class="computeroutput">import&lt;T&gt;(...)</code>
               </p>
             </td>
 </tr>
@@ -129,7 +129,7 @@
               <p>
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="comment">// Importing  variable.</span>
-<span class="identifier">shared_ptr</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;</span> <span class="identifier">cpp_var</span> <span class="special">=</span> <span class="identifier">dll</span><span class="special">::</span><span class="identifier">import</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;(</span>
+<span class="identifier">shared_ptr</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;</span> <span class="identifier">cpp_var</span> <span class="special">=</span> <span class="identifier">dll</span><span class="special">::</span><span class="identifier">import_symbol</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;(</span>
         <span class="identifier">path_to_shared_library</span><span class="special">,</span> <span class="string">"cpp_variable_name"</span>
     <span class="special">);</span>
 </pre>
@@ -148,7 +148,7 @@
             </td>
 <td>
               <p>
-                <code class="computeroutput"><a class="link" href="../boost/dll/import.html" title="Function import">import&lt;T&gt;(...)</a></code>
+                <code class="computeroutput">import&lt;T&gt;(...)</code>
               </p>
             </td>
 </tr>
@@ -191,7 +191,7 @@
 </div>
 <p>
       It is safe to use imported variable or function because the variables returned
-      from <code class="computeroutput"><a class="link" href="../boost/dll/import.html" title="Function import">import&lt;T&gt;(...)</a></code>
+      from <code class="computeroutput">import&lt;T&gt;(...)</code>
       and <code class="computeroutput"><a class="link" href="../boost/dll/import_alias.html" title="Function import_alias">import_alias&lt;T&gt;(...)</a></code>
       functions internally hold a reference to the shared library.
     </p>
@@ -213,7 +213,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2014 Renato Tegon Forti, Antony Polukhin<br>Copyright &#169; 2015 Antony Polukhin<br>Copyright &#169; 2016 Antony Polukhin, Klemens Morgenstern<br>Copyright &#169; 2017-2019 Antony Polukhin<p>
+<td align="right"><div class="copyright-footer">Copyright © 2014 Renato Tegon Forti, Antony Polukhin<br>Copyright © 2015 Antony Polukhin<br>Copyright © 2016 Antony Polukhin, Klemens Morgenstern<br>Copyright © 2017-2021 Antony Polukhin<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
       </p>

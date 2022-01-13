@@ -60,14 +60,6 @@ class strategy::line_interpolate::spherical
 [heading Member Function(s)]
 [table
 [[Function] [Description] [Parameters]  [Returns]]
-[[``distance_pp_strategy::type get_distance_pp_strategy()``
-
-] [] [
-
-][
-
-]
-]
 [[``template<typename Point, typename Fraction, typename Distance>
 void apply(Point const & p0, Point const & p1, Fraction const & fraction,
            Point & p, Distance const & )``
@@ -83,6 +75,14 @@ void apply(Point const & p0, Point const & p1, Fraction const & fraction,
 [* Distance const &]: [']:  
 
 
+
+][
+
+]
+]
+[[``radius_type radius()``
+
+] [] [
 
 ][
 

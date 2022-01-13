@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for composite_key.
  *
- * Copyright 2003-2018 Joaquin M Lopez Munoz.
+ * Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -326,7 +326,7 @@ private:
 
 struct xystr
 {
-  xystr(int x_=0,int y_=0,std::string str_=0):x(x_),y(y_),str(str_){}
+  xystr(int x_=0,int y_=0,std::string str_=""):x(x_),y(y_),str(str_){}
 
   int         x;
   int         y;

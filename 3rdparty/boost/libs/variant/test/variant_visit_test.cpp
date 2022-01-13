@@ -79,7 +79,7 @@ struct rvalue_ref_decltype_visitor
 #endif
 
 template <typename Checker, typename Variant>
-inline void unary_test(Variant& var, Checker* = 0)
+inline void unary_test(Variant& var, Checker* = BOOST_VARIANT_NULL)
 {
     Checker checker;
     const Checker& const_checker = checker;
@@ -97,7 +97,7 @@ inline void unary_test(Variant& var, Checker* = 0)
 }
 
 template <typename Checker, typename Variant1, typename Variant2>
-inline void binary_test(Variant1& var1, Variant2& var2, Checker* = 0)
+inline void binary_test(Variant1& var1, Variant2& var2, Checker* = BOOST_VARIANT_NULL)
 {
     Checker checker;
     const Checker& const_checker = checker;

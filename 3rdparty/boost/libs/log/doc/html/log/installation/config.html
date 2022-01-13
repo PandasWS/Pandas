@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Configuring and building the library</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Log v2">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Log v2">
 <link rel="up" href="../installation.html" title="Installation and compatibility">
 <link rel="prev" href="../installation.html" title="Installation and compatibility">
 <link rel="next" href="../defs.html" title="Definitions">
@@ -33,9 +33,10 @@
         The library supports a number of configuration macros:
       </p>
 <div class="table">
-<a name="log.installation.config.configuration_macros"></a><p class="title"><b>Table&#160;1.1.&#160;Configuration macros</b></p>
+<a name="log.installation.config.configuration_macros"></a><p class="title"><b>Table 1.1. Configuration macros</b></p>
 <div class="table-contents"><table class="table" summary="Configuration macros">
 <colgroup>
+<col>
 <col>
 <col>
 </colgroup>
@@ -48,6 +49,11 @@
 <th>
                 <p>
                   Effect
+                </p>
+              </th>
+<th>
+                <p>
+                  CMake notes
                 </p>
               </th>
 </tr></thead>
@@ -68,6 +74,12 @@
                   with auto-linking on platforms that support it.
                 </p>
               </td>
+<td>
+                <p>
+                  Defined automatically depending on <code class="computeroutput"><span class="identifier">BUILD_SHARED_LIBS</span></code>
+                  CMake option.
+                </p>
+              </td>
 </tr>
 <tr>
 <td>
@@ -80,6 +92,8 @@
                   Same as <code class="computeroutput"><span class="identifier">BOOST_LOG_DYN_LINK</span></code>
                   but also affects other Boost libraries the same way.
                 </p>
+              </td>
+<td>
               </td>
 </tr>
 <tr>
@@ -98,6 +112,8 @@
                   The macro is expected to have an integer value equivalent to <a href="https://msdn.microsoft.com/en-us/library/6sehtctf.aspx" target="_top"><code class="computeroutput"><span class="identifier">_WIN32_WINNT</span></code></a>.
                 </p>
               </td>
+<td>
+              </td>
 </tr>
 <tr>
 <td>
@@ -112,6 +128,8 @@
                   defined if no threading support is detected.
                 </p>
               </td>
+<td>
+              </td>
 </tr>
 <tr>
 <td>
@@ -125,6 +143,8 @@
                   the compilation of both the library and users' code.
                 </p>
               </td>
+<td>
+              </td>
 </tr>
 <tr>
 <td>
@@ -137,6 +157,8 @@
                   If defined, disables support for wide character logging. Affects
                   the compilation of both the library and users' code.
                 </p>
+              </td>
+<td>
               </td>
 </tr>
 <tr>
@@ -159,6 +181,8 @@
                   this API from functioning properly (see <a href="http://support.microsoft.com/kb/274323" target="_top">here</a>).
                 </p>
               </td>
+<td>
+              </td>
 </tr>
 <tr>
 <td>
@@ -172,6 +196,8 @@
                   for the native SysLog API is not detected automatically, define
                   this macro to forcibly enable it.
                 </p>
+              </td>
+<td>
               </td>
 </tr>
 <tr>
@@ -189,6 +215,8 @@
                   This can substantially reduce the binary size.
                 </p>
               </td>
+<td>
+              </td>
 </tr>
 <tr>
 <td>
@@ -201,6 +229,12 @@
                   Affects only compilation of the library. If defined, none of the
                   facilities related to the parsers for settings will be built. This
                   can substantially reduce the binary size.
+                </p>
+              </td>
+<td>
+                <p>
+                  Disables compilation of the <code class="computeroutput"><span class="identifier">boost_log_setup</span></code>
+                  library.
                 </p>
               </td>
 </tr>
@@ -216,6 +250,8 @@
                   for debugger output on Windows will not be built.
                 </p>
               </td>
+<td>
+              </td>
 </tr>
 <tr>
 <td>
@@ -230,6 +266,8 @@
                   makes Message Compiler toolset unnecessary.
                 </p>
               </td>
+<td>
+              </td>
 </tr>
 <tr>
 <td>
@@ -242,6 +280,8 @@
                   Affects only compilation of the library. If defined, the support
                   for syslog backend will not be built.
                 </p>
+              </td>
+<td>
               </td>
 </tr>
 <tr>
@@ -256,6 +296,8 @@
                   for interprocess queues will not be built.
                 </p>
               </td>
+<td>
+              </td>
 </tr>
 <tr>
 <td>
@@ -267,6 +309,11 @@
                 <p>
                   Affects only compilation of users' code. If defined, some deprecated
                   shorthand macro names will not be available.
+                </p>
+              </td>
+<td>
+                <p>
+                  Not a CMake configuration option.
                 </p>
               </td>
 </tr>
@@ -283,6 +330,8 @@
                   improve performance of Boost.Log if certain usage limitations are
                   acceptable. See below for more comments.
                 </p>
+              </td>
+<td>
               </td>
 </tr>
 <tr>
@@ -311,6 +360,14 @@
                   expressions</a> created by users.
                 </p>
               </td>
+<td>
+                <p>
+                  Instead of definitng one of these macros, use <code class="computeroutput"><span class="identifier">BOOST_LOG_USE_REGEX_BACKEND</span></code>
+                  string option with one of the following values: "std::regex",
+                  "Boost.Regex" or "Boost.Xpressive". The macros
+                  will be defined accordingly by CMake.
+                </p>
+              </td>
 </tr>
 </tbody>
 </table></div>
@@ -320,6 +377,12 @@
         command line, like this:
       </p>
 <pre class="programlisting">bjam --with-log variant=release define=BOOST_LOG_WITHOUT_EVENT_LOG define=BOOST_USE_WINAPI_VERSION=0x0600 stage
+</pre>
+<p>
+        With CMake, the configuration macros can be specified as CMake options in
+        the command line like this:
+      </p>
+<pre class="programlisting">cmake .. -DCMAKE_BUILD_TYPE=Release -DBOOST_LOG_WITHOUT_EVENT_LOG=On
 </pre>
 <p>
         However, it may be more convenient to define configuration macros in the
@@ -440,10 +503,32 @@
         Because of that using the emulation mode is discouraged and should be avoided.
         In future releases of the library its support may be removed completely.
       </p>
+<h5>
+<a name="log.installation.config.h2"></a>
+        <span class="phrase"><a name="log.installation.config.notes_for_cmake_users_on_windows"></a></span><a class="link" href="config.html#log.installation.config.notes_for_cmake_users_on_windows">Notes
+        for CMake users on Windows</a>
+      </h5>
+<p>
+        In order to compile Boost.Log with event log support on Windows using CMake,
+        the initial CMake configuration should be performed with resource (<code class="computeroutput"><span class="identifier">rc</span><span class="special">.</span><span class="identifier">exe</span></code>
+        or <code class="computeroutput"><span class="identifier">windres</span><span class="special">.</span><span class="identifier">exe</span></code>) and message compiler tools (<code class="computeroutput"><span class="identifier">mc</span><span class="special">.</span><span class="identifier">exe</span></code>
+        or <code class="computeroutput"><span class="identifier">windmc</span><span class="special">.</span><span class="identifier">exe</span></code>) available in <code class="computeroutput"><span class="identifier">PATH</span></code>
+        environment variable. With MSVC, it is recommended to run CMake in the Visual
+        Studio command line or otherwise ensure that Windows SDK environment variables
+        are set.
+      </p>
+<p>
+        Alternatively, users may set <code class="computeroutput"><span class="identifier">RC</span></code>
+        and <code class="computeroutput"><span class="identifier">MC</span></code> environment variables
+        to paths of the resource and message compiler executables, respectively,
+        or set <code class="computeroutput"><span class="identifier">CMAKE_RC_COMPILER</span></code>
+        and <code class="computeroutput"><span class="identifier">CMAKE_MC_COMPILER</span></code> CMake
+        options to the corresponding paths in the command line.
+      </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2007-2016 Andrey Semashev<p>
+<td align="right"><div class="copyright-footer">Copyright © 2007-2021 Andrey Semashev<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>).
       </p>

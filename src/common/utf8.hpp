@@ -46,9 +46,9 @@ enum e_pandas_language getSystemLanguage();
 enum e_pandas_encoding getSystemEncoding(bool bIgnoreUtf8 = false);
 enum e_pandas_encoding getEncodingByLanguage(e_pandas_language lang = systemLanguage);
 
-std::string utf8ToAnsi(const std::string& strUtf8);
-std::string utf8ToAnsi(const std::string& strUtf8, e_pandas_encoding toCharset);
-std::string utf8ToAnsi(const std::string& strUtf8, const std::string& strToEncoding);
+std::string utf8ToAnsi(const std::string& strUtf8, int flag = 0);
+std::string utf8ToAnsi(const std::string& strUtf8, e_pandas_encoding toCharset, int flag = 0);
+std::string utf8ToAnsi(const std::string& strUtf8, const std::string& strToEncoding, int flag = 0);
 
 std::string ansiToUtf8(const std::string& strAnsi);
 std::string ansiToUtf8(const std::string& strAnsi, e_pandas_encoding fromEncoding);
@@ -59,7 +59,6 @@ std::string splashForUtf8(const std::string& strUtf8);
 #ifdef _WIN32
 	bool setupConsoleOutputCP();
 #else
-	std::string iconvConvert(const std::string& val, e_pandas_encoding in_enc, e_pandas_encoding out_enc);
 	std::string consoleConvert(const std::string& mes);
 	int vfprintf(FILE* file, const char* fmt, va_list args);
 #endif // _WIN32

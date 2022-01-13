@@ -9,6 +9,79 @@
 [section What's New]
 
 [/////////////////////////////////////////////////////////////////////////////]
+[section:spirit_2_5_9_boost_1_78 Spirit V2.5.9 (Boost V1.78.0)]
+
+* Improved headers self-sufficiency. [gh 695]
+* Removed unneeded `boost/foreach.hpp` include.
+* Fortified against `min` and `max` macros. [gh_pr 697]
+* Deprecated Phoenix V2 transition headers (`boost/spirit/include/phoenix*.hpp`). [gh_pr 699]
+* Fixed potential UB in `hold_any` (`-Wundefined-reinterpret-cast` warnings).
+* Fixed swapped parameters to `is_substitute`. [gh_pr 702] [gh 701] [gh 679]
+
+[endsect]
+
+[/////////////////////////////////////////////////////////////////////////////]
+[section:spirit_2_5_8_boost_1_77 Spirit V2.5.8 (Boost V1.77.0)]
+
+* Fixed keyword list parser with Fusion adapt ADT attribute. [gh 666]
+* Lex: Changed token id storage type to `std::size_t` (lexer engine is hardcoded
+  to `std::size_t`) to always be able to hold `boost::lexer::npos` value.
+* Ceased dependence on Foreach. [gh_pr 691]
+
+[endsect]
+
+[/////////////////////////////////////////////////////////////////////////////]
+[section:spirit_2_5_8_boost_1_76 Spirit V2.5.8 (Boost V1.76.0)]
+
+* Fixed assertion in standard parser with an input containing characters from
+  extended charset (on values above 0x7F) [gh_pr 620]
+* Karma real numbers generator produces 10.0e-04 instead of 1.0e-03 [gh 628] [gh_pr 629]
+* Improved `what()` info for `distinct` directive [gh_pr 631]
+* Enhanced debug output to print unicode code points as hex [gh_pr 634]
+* Missing inline keyword in `function_impl_invert::eval<bool>` specialization [gh 638]
+* Replaced Boost.Math with Boost.Core alternatives [gh_pr 648]
+* Removed hardcap on Karma's `RealPolicy::precision()` value [trac 7785] [trac 11056] [gh 585] [gh_pr 586]
+
+[endsect]
+
+[/////////////////////////////////////////////////////////////////////////////]
+[section:spirit_2_5_8_boost_1_74 Spirit V2.5.8 (Boost V1.74.0)]
+
+* Ceased dependence on Boost.Iostreams [gh_pr 599]
+
+[endsect]
+
+[/////////////////////////////////////////////////////////////////////////////]
+[section:spirit_2_5_8_boost_1_73 Spirit V2.5.8 (Boost V1.73.0)]
+
+* Boost.Endian is now used instead of its bundled prerelease version [gh_pr 550]
+* Narrowed Proto and Phoenix inclusion for a 5-10% inclusion speed-up [gh_pr 558]
+* Ceased dependence on Boost.Algorithm and Boost.LexicalCast [gh_pr 560]
+* Added static assertion for meaningless rule attribute qualifiers [gh_pr 561]
+* String literal was matching everything when `<boost/spirit/include/qi_auto.hpp>`
+  header is included [gh_pr 579]
+
+[endsect]
+
+[/////////////////////////////////////////////////////////////////////////////]
+[section:spirit_2_5_8_boost_1_72 Spirit V2.5.8 (Boost V1.72.0)]
+
+* `<cctype>` functions were called with negative values. [gh_pr 543]
+
+[endsect]
+
+[/////////////////////////////////////////////////////////////////////////////]
+[section:spirit_2_5_8_boost_1_71 Spirit V2.5.8 (Boost V1.71.0)]
+
+* Explicitly delete all non implemented assignment operators. [gh_pr 489] Romain Geissler
+* Port `hold_any` to Boost.Core typeinfo. [gh_pr 510] Andrey Semashev
+* Lex: Removed variadic `tokenize_and_phrase_parse`. [gh_pr 491]
+* Qi: Floating point parser fixes. [trac 11608] [gh 421] [gh 495] [gh 498] [gh 503]
+* utree: Missing `<cstring>` include in `utree_detail2.hpp`. [gh 502]
+
+[endsect]
+
+[/////////////////////////////////////////////////////////////////////////////]
 [section:spirit_2_5_8 Spirit V2.5.8]
 
 [heading What's changed from V2.5.7 (Boost V1.69.0) to V2.5.8 (Boost V1.70.0)]
@@ -320,7 +393,7 @@ any of Spirit's include files):
   separate version allowing to distinguish 'lit(foo)' from 'foo'. This should
   not change any semantics nor should it break exiting code.
 * Added the __qi__ directive __qi_as__ (and its string specializations
-  __qi_as_string__ and __qi_as_wstring__) enabling asignment of container
+  __qi_as_string__ and __qi_as_wstring__) enabling assignment of container
   attribute types as a whole.
 * Added the __karma__ directive __karma_as__ (and its string specializations
   __karma_as_string__ and __karma_as_wstring__) enabling handling of container
@@ -519,7 +592,7 @@ any of Spirit's include files):
   the description of the __customize_transform_attribute__ for more details.
 * Added support for attribute sequences created with `BOOST_FUSION_ADAPT_CLASS`
   and `BOOST_FUSION_ADAPT_CLASS_NAMED`. This support requires to include the
-  new header file: `#include <boost/spirit/inlcude/support_adapt_class_attributes.hpp>`.
+  new header file: `#include <boost/spirit/include/support_adapt_class_attributes.hpp>`.
 * Added `karma::ostream_iterator` as a counterpart to `qi::istream_iterator`
   (see new header file: `#include <boost/spirit/home/support/iterators/ostream_iterator.hpp>`).
 * Added `qi::hold` allowing to make sure the embedded parser does not touch

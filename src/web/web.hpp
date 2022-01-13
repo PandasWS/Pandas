@@ -18,7 +18,7 @@
 
 #ifdef Pandas_WebServer_Database_EncodingAdaptive
 	// Utf8 to Ansi with Web Encoding
-	#define U2AWE(x) PandasUtf8::utf8ToAnsi(x, !stricmp(web_connection_encoding, "latin1") ? character_codepage : web_connection_encoding)
+	#define U2AWE(x) PandasUtf8::utf8ToAnsi(x, !stricmp(web_connection_encoding, "latin1") ? character_codepage : web_connection_encoding, 0x1)
 	// Ansi to Utf8 with Web Encoding
 	#define A2UWE(x) PandasUtf8::ansiToUtf8(x, !stricmp(web_connection_encoding, "latin1") ? character_codepage : web_connection_encoding)
 #else
@@ -30,7 +30,7 @@
 
 #ifdef Pandas_WebServer_Console_EncodingAdaptive
 	// Utf8 to Ansi with Console Encoding
-	#define U2ACE(x) PandasUtf8::utf8ToAnsi(x)
+	#define U2ACE(x) PandasUtf8::utf8ToAnsi(x, 0x1)
 	// Ansi to Utf8 with Console Encoding
 	#define A2UCE(x) PandasUtf8::ansiToUtf8(x)
 #else

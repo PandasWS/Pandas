@@ -10,11 +10,10 @@
 //
 // Testing the I/O facilities of tuples
 
-#define BOOST_INCLUDE_MAIN  // for testing, include rather than link
-#include "boost/test/test_tools.hpp"    // see "Header Implementation Option"
-
 #include "boost/tuple/tuple_io.hpp"
 #include "boost/tuple/tuple_comparison.hpp"
+
+#include "boost/core/lightweight_test.hpp"
 
 #include <fstream>
 #include <iterator>
@@ -28,6 +27,8 @@
 #include <sstream>
 #endif
 
+#define BOOST_CHECK BOOST_TEST
+
 using namespace boost;
 
 #if defined BOOST_NO_STRINGSTREAM
@@ -38,9 +39,7 @@ typedef std::ostringstream useThisOStringStream;
 typedef std::istringstream useThisIStringStream;
 #endif
 
-int test_main(int argc, char * argv[] ) {
-   (void)argc;
-   (void)argv;
+int main() {
    using boost::tuples::set_close;
    using boost::tuples::set_open;
    using boost::tuples::set_delimiter;
@@ -138,6 +137,5 @@ int test_main(int argc, char * argv[] ) {
   // general. If this is wanted, some kind of a parseable string class
   // should be used.
   
-  return 0;
+  return boost::report_errors();
 }
-

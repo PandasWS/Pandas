@@ -159,6 +159,12 @@ struct PACKET_ZC_ACK_GUILDSTORAGE_LOG{
 	struct PACKET_ZC_ACK_GUILDSTORAGE_LOG_sub items[];
 } __attribute__((packed));
 
+struct PACKET_CZ_UNCONFIRMED_TSTATUS_UP{
+	int16 packetType;
+	int16 type;
+	int16 amount;
+} __attribute__((packed));
+
 struct PACKET_CZ_GUILD_EMBLEM_CHANGE2 {
 	int16 packetType;
 	uint32 guild_id;
@@ -209,6 +215,11 @@ struct PACKET_ZC_UNCONFIRMED_SPIRITS3{
 
 struct PACKET_ZC_ENTRY_QUEUE_INIT {
 	int16 packetType;
+} __attribute__((packed));
+
+struct PACKET_CZ_UNCONFIRMED_RODEX_RETURN{
+	int16 packetType;
+	uint32 msgId;
 } __attribute__((packed));
 
 // NetBSD 5 and Solaris don't like pragma pack but accept the packed attribute
@@ -265,8 +276,10 @@ DEFINE_PACKET_HEADER(ZC_ACK_GUILDSTORAGE_LOG, 0x9da)
 DEFINE_PACKET_HEADER(CZ_NPC_MARKET_PURCHASE, 0x9d6)
 DEFINE_PACKET_HEADER(CZ_REQ_APPLY_BARGAIN_SALE_ITEM2, 0xa3d)
 DEFINE_PACKET_HEADER(ZC_REMOVE_EFFECT, 0x0b0d)
+DEFINE_PACKET_HEADER(CZ_UNCONFIRMED_TSTATUS_UP, 0x0b24)
 DEFINE_PACKET_HEADER(CZ_GUILD_EMBLEM_CHANGE2, 0x0b46)
 DEFINE_PACKET_HEADER(ZC_UNCONFIRMED_SPIRITS3, 0xb73)
+DEFINE_PACKET_HEADER(CZ_UNCONFIRMED_RODEX_RETURN, 0xb98)
 
 const int16 MAX_INVENTORY_ITEM_PACKET_NORMAL = ( ( INT16_MAX - ( sizeof( struct packet_itemlist_normal ) - ( sizeof( struct NORMALITEM_INFO ) * MAX_ITEMLIST) ) ) / sizeof( struct NORMALITEM_INFO ) );
 const int16 MAX_INVENTORY_ITEM_PACKET_EQUIP = ( ( INT16_MAX - ( sizeof( struct packet_itemlist_equip ) - ( sizeof( struct EQUIPITEM_INFO ) * MAX_ITEMLIST ) ) ) / sizeof( struct EQUIPITEM_INFO ) );

@@ -82,6 +82,10 @@ bool test_smart_ref_type()
 class recursive_vector
 {
    public:
+   recursive_vector (const recursive_vector &x)
+      : vector_(x.vector_)
+   {}
+
    recursive_vector & operator=(const recursive_vector &x)
    {  this->vector_ = x.vector_;   return *this; }
 
@@ -190,7 +194,25 @@ bool test_merge_empty_free()
    vector< int, check_dealloc_allocator<int> > empty;
    empty.merge(source.begin(), source.end());
 
-   return empty.get_stored_allocator().deallocate_called_without_allocate_;
+   return !empty.get_stored_allocator().deallocate_called_without_allocate_;
+}
+
+#ifdef __cpp_lib_span
+#include <span>
+#endif
+
+bool test_span_conversion()
+{
+   #ifdef __cpp_lib_span
+   {
+      boost::container::vector myVec{1, 2, 3, 4, 5};
+      std::span mySpan1{myVec};                                        // (1)
+      std::span mySpan2{myVec.data(), myVec.size()};                   // (2)
+      return mySpan1.size() == myVec.size() && mySpan1.size() == mySpan2.size();
+   }
+   #else
+   return true;
+   #endif
 }
 
 int main()
@@ -327,8 +349,13 @@ int main()
    }
 #endif
 
-   if (test_merge_empty_free()) {
+   if (!test_merge_empty_free()) {
       std::cerr << "Merge into empty vector test failed" << std::endl;
+      return 1;
+   }
+
+   if (!test_span_conversion()) {
+      std::cerr << "Span conversion failed" << std::endl;
       return 1;
    }
 
@@ -340,24 +367,24 @@ int main()
       typedef boost::container::vector<int> cont;
       typedef cont::allocator_type allocator_type;
       typedef boost::container::allocator_traits<allocator_type>::pointer pointer;
-      if (boost::has_trivial_destructor_after_move<cont>::value !=
-          boost::has_trivial_destructor_after_move<allocator_type>::value &&
-          boost::has_trivial_destructor_after_move<pointer>::value) {
-         std::cerr << "has_trivial_destructor_after_move(default allocator) test failed" << std::endl;
-         return 1;
-      }
+      BOOST_STATIC_ASSERT_MSG
+         ( !boost::has_trivial_destructor_after_move<pointer>::value ||
+           (boost::has_trivial_destructor_after_move<cont>::value ==
+            boost::has_trivial_destructor_after_move<allocator_type>::value)
+         , "has_trivial_destructor_after_move(default allocator) test failed"
+         );
    }
    // std::allocator
    {
       typedef boost::container::vector<int, std::allocator<int> > cont;
       typedef cont::allocator_type allocator_type;
       typedef boost::container::allocator_traits<allocator_type>::pointer pointer;
-      if (boost::has_trivial_destructor_after_move<cont>::value !=
-          boost::has_trivial_destructor_after_move<allocator_type>::value &&
-          boost::has_trivial_destructor_after_move<pointer>::value) {
-         std::cerr << "has_trivial_destructor_after_move(std::allocator) test failed" << std::endl;
-         return 1;
-      }
+      BOOST_STATIC_ASSERT_MSG
+         ( !boost::has_trivial_destructor_after_move<pointer>::value ||
+           (boost::has_trivial_destructor_after_move<cont>::value ==
+            boost::has_trivial_destructor_after_move<allocator_type>::value)
+         , "has_trivial_destructor_after_move(std::allocator) test failed"
+         );
    }
 
    return 0;

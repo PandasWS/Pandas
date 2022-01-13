@@ -8,15 +8,15 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(CPP_HPP_920D0370_741F_44AF_BF86_F6104BDACF75_INCLUDED)
-#define CPP_HPP_920D0370_741F_44AF_BF86_F6104BDACF75_INCLUDED
+#if !defined(BOOST_CPP_HPP_920D0370_741F_44AF_BF86_F6104BDACF75_INCLUDED)
+#define BOOST_CPP_HPP_920D0370_741F_44AF_BF86_F6104BDACF75_INCLUDED
 
 ///////////////////////////////////////////////////////////////////////////////
 //  This file may be used as a precompiled header (if applicable)
 
 ///////////////////////////////////////////////////////////////////////////////
 //  include often used files from the stdlib
-#include <iostream>
+#include <iosfwd>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -39,4 +39,4 @@
 #include <boost/assert.hpp>
 #include <boost/pool/pool_alloc.hpp>
 
-#endif // !defined(CPP_HPP_920D0370_741F_44AF_BF86_F6104BDACF75_INCLUDED)
+#endif // !defined(BOOST_CPP_HPP_920D0370_741F_44AF_BF86_F6104BDACF75_INCLUDED)

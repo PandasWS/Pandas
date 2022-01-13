@@ -8,7 +8,7 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include <boost/units/base_dimension.hpp>
 #include <boost/units/base_unit.hpp>
@@ -53,26 +53,26 @@ BOOST_UNITS_DEFAULT_CONVERSION(unit5_tag, unit34_type);
 BOOST_UNITS_DEFAULT_CONVERSION(unit6_tag, make_unit<unit3_tag>::type);
 BOOST_UNITS_DEFAULT_CONVERSION(unit7_tag, make_unit<unit1_tag>::type);
 
-int test_main(int, char*[]) {
+int main() {
     BOOST_CONSTEXPR_OR_CONST double value1 = boost::units::conversion_factor(unit3_tag::unit_type(), unit1_tag::unit_type());
-    BOOST_CHECK(std::abs(value1 - 1.0/6.0) < .0000000001);
+    BOOST_TEST(std::abs(value1 - 1.0/6.0) < .0000000001);
     BOOST_CONSTEXPR_OR_CONST double value2 = boost::units::conversion_factor(unit5_tag::unit_type() / unit4_tag::unit_type(), unit1_tag::unit_type());
-    BOOST_CHECK(std::abs(value2 - 5.0/6.0) < .0000000001);
+    BOOST_TEST(std::abs(value2 - 5.0/6.0) < .0000000001);
     typedef boost::units::scaled_base_unit<unit5_tag, boost::units::scale<2, boost::units::static_rational<1> > > scaled_unit5_tag;
     BOOST_CONSTEXPR_OR_CONST double value3 = boost::units::conversion_factor(scaled_unit5_tag::unit_type() / unit4_tag::unit_type(), unit1_tag::unit_type());
-    BOOST_CHECK(std::abs(value3 - 10.0/6.0) < .0000000001);
+    BOOST_TEST(std::abs(value3 - 10.0/6.0) < .0000000001);
 
     // check homogeneous unit conversions
     BOOST_CONSTEXPR_OR_CONST double value4 = boost::units::conversion_factor(make_unit<unit3_tag>::type(), make_unit<unit1_tag>::type());
-    BOOST_CHECK(std::abs(value4 - 1.0/6.0) < .0000000001);
+    BOOST_TEST(std::abs(value4 - 1.0/6.0) < .0000000001);
     BOOST_CONSTEXPR_OR_CONST double value5 = boost::units::conversion_factor(unit3_tag::unit_type(), make_unit<unit1_tag>::type());
-    BOOST_CHECK(std::abs(value5 - 1.0/6.0) < .0000000001);
+    BOOST_TEST(std::abs(value5 - 1.0/6.0) < .0000000001);
     BOOST_CONSTEXPR_OR_CONST double value6 = boost::units::conversion_factor(make_unit<unit3_tag>::type(), unit1_tag::unit_type());
-    BOOST_CHECK(std::abs(value6 - 1.0/6.0) < .0000000001);
+    BOOST_TEST(std::abs(value6 - 1.0/6.0) < .0000000001);
 
     // check chained homogeneous conversions
     BOOST_CONSTEXPR_OR_CONST double value7 = boost::units::conversion_factor(unit6_tag::unit_type(), unit7_tag::unit_type());
-    BOOST_CHECK(std::abs(value7 - 5.0/42.0) < .0000000001);
+    BOOST_TEST(std::abs(value7 - 5.0/42.0) < .0000000001);
 
-    return(0);
+    return boost::report_errors();
 }

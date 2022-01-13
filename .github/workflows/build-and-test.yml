@@ -2,6 +2,7 @@ name: Build And Test
 
 on:
   push:
+    branches: [master, develop]
     paths-ignore:
       - '**/*.md'
       - '**/*.gitignore'
@@ -9,6 +10,7 @@ on:
       - 'doc/**'
       - 'tools/python/**'
   pull_request:
+    branches: [master, develop]
     paths-ignore:
       - '**/*.md'
       - '**/*.gitignore'
@@ -22,6 +24,7 @@ env:
   DB_NAME: ragnarok
   DB_USER: ragnarok
   DB_PASS: ragnarok
+  CACHE_VERSION: "2021-12-18"
 
 jobs:
   ubuntu-gcc:
@@ -64,6 +67,18 @@ jobs:
         with:
           version: ${{ matrix.compiler_version }}
 
+      - name: Generate cache hash information
+        run: |
+          echo "$(cat /proc/version)" >> .CACHE_HASHFILE
+          echo "gcc${{ matrix.compiler_version }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.build_type }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.configure_flags }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.packetver }}" >> .CACHE_HASHFILE
+          echo "${{ hashFiles('3rdparty/boost/bootstrap.sh') }}" >> .CACHE_HASHFILE
+          echo "${{ hashFiles('3rdparty/boost/Jamroot') }}" >> .CACHE_HASHFILE
+          echo "${{ env.CACHE_VERSION }}" >> .CACHE_HASHFILE
+          cat .CACHE_HASHFILE
+
       - name: Cache boost c++ libraries
         uses: actions/cache@v2
         id: cache-boost
@@ -74,7 +89,7 @@ jobs:
             3rdparty/boost/bin.v2/
             3rdparty/boost/stage/
             3rdparty/boost/b2
-          key: ${{ runner.os }}-${{ env.cache-name }}-gcc${{ matrix.compiler_version }}-${{ matrix.build_type }}-${{ hashFiles('3rdparty/boost/bootstrap.sh') }}
+          key: ${{ env.cache-name }}-${{ hashFiles('.CACHE_HASHFILE') }}
 
       - name: Build boost c++ libraries
         if: steps.cache-boost.outputs.cache-hit != 'true'
@@ -82,19 +97,10 @@ jobs:
           cd 3rdparty/boost/
           ./bootstrap.sh && ./b2
 
-      - name: Generate ccache hash info
-        run: |
-          echo "${{ runner.os }}" >> .CCACHE_HASHFILE
-          echo "clang${{ matrix.compiler_version }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.build_type }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.configure_flags }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.packetver }}" >> .CCACHE_HASHFILE
-          cat .CCACHE_HASHFILE
-
       - name: Setup ccache to speedup compilation
         uses: hendrikmuhs/ccache-action@v1.0.5
         with:
-          key: ${{ hashFiles('.CCACHE_HASHFILE') }}
+          key: ${{ hashFiles('.CACHE_HASHFILE') }}
 
       - name: Build Pandas
         run: |
@@ -153,6 +159,18 @@ jobs:
         with:
           version: ${{ matrix.compiler_version }}
 
+      - name: Generate cache hash information
+        run: |
+          echo "$(cat /proc/version)" >> .CACHE_HASHFILE
+          echo "clang${{ matrix.compiler_version }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.build_type }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.configure_flags }}" >> .CACHE_HASHFILE
+          echo "${{ matrix.packetver }}" >> .CACHE_HASHFILE
+          echo "${{ hashFiles('3rdparty/boost/bootstrap.sh') }}" >> .CACHE_HASHFILE
+          echo "${{ hashFiles('3rdparty/boost/Jamroot') }}" >> .CACHE_HASHFILE
+          echo "${{ env.CACHE_VERSION }}" >> .CACHE_HASHFILE
+          cat .CACHE_HASHFILE
+
       - name: Cache boost c++ libraries
         uses: actions/cache@v2
         id: cache-boost
@@ -163,7 +181,7 @@ jobs:
             3rdparty/boost/bin.v2/
             3rdparty/boost/stage/
             3rdparty/boost/b2
-          key: ${{ runner.os }}-${{ env.cache-name }}-clang${{ matrix.compiler_version }}-${{ matrix.build_type }}-${{ hashFiles('3rdparty/boost/bootstrap.sh') }}
+          key: ${{ env.cache-name }}-${{ hashFiles('.CACHE_HASHFILE') }}
 
       - name: Build boost c++ libraries
         if: steps.cache-boost.outputs.cache-hit != 'true'
@@ -171,19 +189,10 @@ jobs:
           cd 3rdparty/boost/
           ./bootstrap.sh && ./b2
 
-      - name: Generate ccache hash info
-        run: |
-          echo "${{ runner.os }}" >> .CCACHE_HASHFILE
-          echo "clang${{ matrix.compiler_version }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.build_type }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.configure_flags }}" >> .CCACHE_HASHFILE
-          echo "${{ matrix.packetver }}" >> .CCACHE_HASHFILE
-          cat .CCACHE_HASHFILE
-
       - name: Setup ccache to speedup compilation
         uses: hendrikmuhs/ccache-action@v1.0.5
         with:
-          key: ${{ hashFiles('.CCACHE_HASHFILE') }}
+          key: ${{ hashFiles('.CACHE_HASHFILE') }}
 
       - name: Build Pandas
         run: |
@@ -202,61 +211,73 @@ jobs:
           ./char-server --run-once
           ./map-server --run-once
 
-  windows:
-    name: VS2019
-    runs-on: windows-2019
-
-    strategy:
-      matrix:
-        define_constants: ['BUILDBOT', 'BUILDBOT;PRERE']
-        configuration: ['Debug'] # 'Release'
-        platform: ['Win32', 'x64']
-        packetver: ['PACKETVER=20180620', 'PACKETVER=20210107;PACKETVER_RE']
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-
-      - name: Preparing dependencies
-        run: |
-          choco install mysql --version=8.0.26
-
-      - name: Setup msbuild compiler
-        uses: microsoft/setup-msbuild@v1.1
-
-      - name: Cache boost c++ libraries
-        uses: actions/cache@v2
-        id: cache-boost
-        env:
-          cache-name: cache-boost
-        with:
-          path: |
-            3rdparty/boost/bin.v2/
-            3rdparty/boost/stage/
-            3rdparty/boost/b2.exe
-          key: ${{ runner.os }}-${{ env.cache-name }}-msbuild-${{ hashFiles('3rdparty/boost/bootstrap.bat') }}
-
-      - name: Build boost c++ libraries
-        if: steps.cache-boost.outputs.cache-hit != 'true'
-        run: |
-          cd 3rdparty/boost/
-          ./bootstrap.bat
-
-      - name: Build Pandas
-        run: |
-          msbuild rAthena.sln /p:DefineConstants="${{ matrix.define_constants }};${{ matrix.packetver }}" /p:Configuration="${{ matrix.configuration }}" /p:Platform="${{ matrix.platform }}" -verbosity:minimal -maxCpuCount
-        shell: cmd
-
-      - name: Preparing the runtime environment
-        run: |
-          ./tools/integration/setup_sql_8.0.bat
-          ./tools/integration/enable_npc.bat
-        shell: cmd
-
-      - name: Launch Pandas
-        run: |
-          ./login-server --run-once
-          ./char-server --run-once
-          ./map-server --run-once
+#  windows:
+#    name: VS2019
+#    runs-on: windows-2019
+#
+#    strategy:
+#      matrix:
+#        define_constants: ['BUILDBOT', 'BUILDBOT;PRERE']
+#        configuration: ['Debug'] # 'Release'
+#        platform: ['Win32', 'x64']
+#        packetver: ['PACKETVER=20180620', 'PACKETVER=20210107;PACKETVER_RE']
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v2
+#        with:
+#          fetch-depth: 1
+#
+#      - name: Preparing dependencies
+#        run: |
+#          choco install mysql --version=8.0.26
+#
+#      - name: Setup msbuild compiler
+#        uses: microsoft/setup-msbuild@v1.1
+#
+#      - name: Generate cache hash information
+#        run: |
+#          echo "${{ runner.os }}" >> .CACHE_HASHFILE
+#          msbuild --version --nologo >> .CACHE_HASHFILE
+#          echo "${{ matrix.configuration }}" >> .CACHE_HASHFILE
+#          echo "${{ matrix.define_constants }}" >> .CACHE_HASHFILE
+#          echo "${{ matrix.packetver }}" >> .CACHE_HASHFILE
+#          echo "${{ hashFiles('3rdparty/boost/bootstrap.sh') }}" >> .CACHE_HASHFILE
+#          echo "${{ hashFiles('3rdparty/boost/Jamroot') }}" >> .CACHE_HASHFILE
+#          echo "${{ env.CACHE_VERSION }}" >> .CACHE_HASHFILE
+#          cat .CACHE_HASHFILE
+#
+#      - name: Cache boost c++ libraries
+#        uses: actions/cache@v2
+#        id: cache-boost
+#        env:
+#          cache-name: cache-boost
+#        with:
+#          path: |
+#            3rdparty/boost/bin.v2/
+#            3rdparty/boost/stage/
+#            3rdparty/boost/b2.exe
+#          key: ${{ env.cache-name }}-${{ hashFiles('.CACHE_HASHFILE') }}
+#
+#      - name: Build boost c++ libraries
+#        if: steps.cache-boost.outputs.cache-hit != 'true'
+#        run: |
+#          cd 3rdparty/boost/
+#          ./bootstrap.bat
+#
+#      - name: Build Pandas
+#        run: |
+#          msbuild rAthena.sln /p:DefineConstants="${{ matrix.define_constants }};${{ matrix.packetver }}" /p:Configuration="${{ matrix.configuration }}" /p:Platform="${{ matrix.platform }}" -verbosity:minimal -maxCpuCount
+#        shell: cmd
+#
+#      - name: Preparing the runtime environment
+#        run: |
+#          ./tools/integration/setup_sql_8.0.bat
+#          ./tools/integration/enable_npc.bat
+#        shell: cmd
+#
+#      - name: Launch Pandas
+#        run: |
+#          ./login-server --run-once
+#          ./char-server --run-once
+#          ./map-server --run-once

@@ -11,5 +11,6 @@
     ],
     "maintainers": [
         "Jeremy Siek <jeremy.siek -at- gmail.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

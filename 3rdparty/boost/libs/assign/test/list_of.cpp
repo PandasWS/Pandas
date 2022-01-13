@@ -11,7 +11,7 @@
 
 #include <boost/detail/workaround.hpp>
 
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
 #  pragma warn -8091 // suppress warning in Boost.Test
 #  pragma warn -8057 // unused argument argc/argv in Boost.Test
 #endif
@@ -97,7 +97,7 @@ void test_sequence_list_of_int()
     C c3 = ba::list_of(1).repeat( 1, 2 )(3);
     BOOST_CHECK_EQUAL( c3.size(), 3u );
         
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
     // BCB fails to use operator=() directly, 
     // it must be worked around using e.g. auxiliary variable
     C aux = ba::list_of(1).repeat_fun( 10, &rand )(2)(3);

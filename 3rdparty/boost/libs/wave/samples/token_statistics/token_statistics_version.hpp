@@ -10,11 +10,11 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(TOKEN_STATISTICS_VERSION_HPP)
-#define TOKEN_STATISTICS_VERSION_HPP
+#if !defined(BOOST_TOKEN_STATISTICS_VERSION_HPP)
+#define BOOST_TOKEN_STATISTICS_VERSION_HPP
 
 #define TOKEN_STATISTICS_VERSION_MAJOR           0
 #define TOKEN_STATISTICS_VERSION_MINOR           1
 #define TOKEN_STATISTICS_VERSION_SUBMINOR        0
 
-#endif // !defined(TOKEN_STATISTICS_VERSION_HPP)
+#endif // !defined(BOOST_TOKEN_STATISTICS_VERSION_HPP)

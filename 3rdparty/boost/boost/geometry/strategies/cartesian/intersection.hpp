@@ -3,8 +3,8 @@
 // Copyright (c) 2007-2014 Barend Gehrels, Amsterdam, the Netherlands.
 // Copyright (c) 2013-2017 Adam Wulkiewicz, Lodz, Poland.
 
-// This file was modified by Oracle on 2014, 2016, 2017, 2018, 2019.
-// Modifications copyright (c) 2014-2019, Oracle and/or its affiliates.
+// This file was modified by Oracle on 2014-2021.
+// Modifications copyright (c) 2014-2021, Oracle and/or its affiliates.
 
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
@@ -22,6 +22,7 @@
 
 #include <boost/geometry/geometries/concepts/point_concept.hpp>
 #include <boost/geometry/geometries/concepts/segment_concept.hpp>
+#include <boost/geometry/geometries/segment.hpp>
 
 #include <boost/geometry/arithmetic/determinant.hpp>
 #include <boost/geometry/algorithms/detail/assign_values.hpp>
@@ -33,16 +34,16 @@
 #include <boost/geometry/util/promote_integral.hpp>
 #include <boost/geometry/util/select_calculation_type.hpp>
 
-#include <boost/geometry/strategies/cartesian/area.hpp>
+#include <boost/geometry/strategy/cartesian/area.hpp>
+#include <boost/geometry/strategy/cartesian/envelope.hpp>
+#include <boost/geometry/strategy/cartesian/expand_box.hpp>
+#include <boost/geometry/strategy/cartesian/expand_segment.hpp>
+
 #include <boost/geometry/strategies/cartesian/disjoint_box_box.hpp>
 #include <boost/geometry/strategies/cartesian/disjoint_segment_box.hpp>
 #include <boost/geometry/strategies/cartesian/distance_pythagoras.hpp>
-#include <boost/geometry/strategies/cartesian/envelope.hpp>
-#include <boost/geometry/strategies/cartesian/expand_box.hpp>
-#include <boost/geometry/strategies/cartesian/expand_segment.hpp>
 #include <boost/geometry/strategies/cartesian/point_in_point.hpp>
 #include <boost/geometry/strategies/cartesian/point_in_poly_winding.hpp>
-#include <boost/geometry/strategies/cartesian/side_by_triangle.hpp>
 #include <boost/geometry/strategies/covered_by.hpp>
 #include <boost/geometry/strategies/intersection.hpp>
 #include <boost/geometry/strategies/intersection_result.hpp>
@@ -50,8 +51,8 @@
 #include <boost/geometry/strategies/side_info.hpp>
 #include <boost/geometry/strategies/within.hpp>
 
+#include <boost/geometry/policies/robustness/rescale_policy_tags.hpp>
 #include <boost/geometry/policies/robustness/robust_point_type.hpp>
-#include <boost/geometry/policies/robustness/segment_ratio_type.hpp>
 
 
 #if defined(BOOST_GEOMETRY_DEBUG_ROBUSTNESS)
@@ -66,6 +67,61 @@ namespace boost { namespace geometry
 namespace strategy { namespace intersection
 {
 
+namespace detail_usage
+{
+
+// When calculating the intersection, the information of "a" or "b" can be used.
+// Theoretically this gives equal results, but due to floating point precision
+// there might be tiny differences. These are edge cases.
+// This structure is to determine if "a" or "b" should be used.
+// Prefer the segment closer to the endpoint.
+// If both are about equally close, then prefer the longer segment
+// To avoid hard thresholds, behavior is made fluent.
+// Calculate comparable length indications,
+// the longer the segment (relatively), the lower the value
+// such that the shorter lengths are evaluated higher and will
+// be preferred.
+template <bool IsArithmetic>
+struct use_a
+{
+  template <typename Ct, typename Ev>
+  static bool apply(Ct const& cla, Ct const& clb, Ev const& eva, Ev const& evb)
+  {
+      auto const clm = (std::max)(cla, clb);
+      if (clm <= 0)
+      {
+          return true;
+      }
+
+      // Relative comparible length
+      auto const rcla = Ct(1.0) - cla / clm;
+      auto const rclb = Ct(1.0) - clb / clm;
+
+      // Multipliers for edgevalue (ev) and relative comparible length (rcl)
+      // They determine the balance between edge value (should be larger)
+      // and segment length. In 99.9xx% of the cases there is no difference
+      // at all (if either a or b is used). Therefore the values of the
+      // constants are not sensitive for the majority of the situations.
+      // One known case is #mysql_23023665_6 (difference) which needs mev >= 2
+      Ev const mev = 5;
+      Ev const mrcl = 1;
+
+      return mev * eva + mrcl * rcla > mev * evb + mrcl * rclb;
+  }
+};
+
+// Specialization for non arithmetic types. They will always use "a"
+template <>
+struct use_a<false>
+{
+    template <typename Ct, typename Ev>
+    static bool apply(Ct const& , Ct const& , Ev const& , Ev const& )
+    {
+        return true;
+    }
+};
+
+}
 
 /*!
     \see http://mathworld.wolfram.com/Line-LineIntersection.html
@@ -77,115 +133,6 @@ template
 struct cartesian_segments
 {
     typedef cartesian_tag cs_tag;
-
-    typedef side::side_by_triangle<CalculationType> side_strategy_type;
-
-    static inline side_strategy_type get_side_strategy()
-    {
-        return side_strategy_type();
-    }
-
-    template <typename Geometry1, typename Geometry2>
-    struct point_in_geometry_strategy
-    {
-        typedef strategy::within::cartesian_winding
-            <
-                typename point_type<Geometry1>::type,
-                typename point_type<Geometry2>::type,
-                CalculationType
-            > type;
-    };
-
-    template <typename Geometry1, typename Geometry2>
-    static inline typename point_in_geometry_strategy<Geometry1, Geometry2>::type
-        get_point_in_geometry_strategy()
-    {
-        typedef typename point_in_geometry_strategy
-            <
-                Geometry1, Geometry2
-            >::type strategy_type;
-        return strategy_type();
-    }
-
-    template <typename Geometry>
-    struct area_strategy
-    {
-        typedef area::cartesian
-            <
-                CalculationType
-            > type;
-    };
-
-    template <typename Geometry>
-    static inline typename area_strategy<Geometry>::type get_area_strategy()
-    {
-        typedef typename area_strategy<Geometry>::type strategy_type;
-        return strategy_type();
-    }
-
-    template <typename Geometry>
-    struct distance_strategy
-    {
-        typedef distance::pythagoras
-            <
-                CalculationType
-            > type;
-    };
-
-    template <typename Geometry>
-    static inline typename distance_strategy<Geometry>::type get_distance_strategy()
-    {
-        typedef typename distance_strategy<Geometry>::type strategy_type;
-        return strategy_type();
-    }
-
-    typedef envelope::cartesian<CalculationType> envelope_strategy_type;
-
-    static inline envelope_strategy_type get_envelope_strategy()
-    {
-        return envelope_strategy_type();
-    }
-
-    typedef expand::cartesian_segment expand_strategy_type;
-
-    static inline expand_strategy_type get_expand_strategy()
-    {
-        return expand_strategy_type();
-    }
-
-    typedef within::cartesian_point_point point_in_point_strategy_type;
-
-    static inline point_in_point_strategy_type get_point_in_point_strategy()
-    {
-        return point_in_point_strategy_type();
-    }
-
-    typedef within::cartesian_point_point equals_point_point_strategy_type;
-
-    static inline equals_point_point_strategy_type get_equals_point_point_strategy()
-    {
-        return equals_point_point_strategy_type();
-    }
-
-    typedef disjoint::cartesian_box_box disjoint_box_box_strategy_type;
-
-    static inline disjoint_box_box_strategy_type get_disjoint_box_box_strategy()
-    {
-        return disjoint_box_box_strategy_type();
-    }
-
-    typedef disjoint::segment_box disjoint_segment_box_strategy_type;
-
-    static inline disjoint_segment_box_strategy_type get_disjoint_segment_box_strategy()
-    {
-        return disjoint_segment_box_strategy_type();
-    }
-
-    typedef covered_by::cartesian_point_box disjoint_point_box_strategy_type;
-    typedef covered_by::cartesian_point_box covered_by_point_box_strategy_type;
-    typedef within::cartesian_point_box within_point_box_strategy_type;
-    typedef envelope::cartesian_box envelope_box_strategy_type;
-    typedef expand::cartesian_box expand_box_strategy_type;
 
     template <typename CoordinateType, typename SegmentRatio>
     struct segment_intersection_info
@@ -218,13 +165,15 @@ struct cartesian_segments
         }
 
         template <typename Point, typename Segment>
-        void assign(Point& point, Segment const& segment, CoordinateType const& dx, CoordinateType const& dy, SegmentRatio const& ratio) const
+        void assign(Point& point, Segment const& segment,
+                    CoordinateType const& dx, CoordinateType const& dy,
+                    SegmentRatio const& ratio) const
         {
             // Calculate the intersection point based on segment_ratio
             // Up to now, division was postponed. Here we divide using numerator/
             // denominator. In case of integer this results in an integer
             // division.
-            BOOST_GEOMETRY_ASSERT(ratio.denominator() != 0);
+            BOOST_GEOMETRY_ASSERT(ratio.denominator() != typename SegmentRatio::int_type(0));
 
             typedef typename promote_integral<CoordinateType>::type calc_type;
 
@@ -243,34 +192,54 @@ struct cartesian_segments
                                                          / denominator));
         }
 
+        template <int Index, int Dim, typename Point, typename Segment>
+        static bool exceeds_side_in_dimension(Point& p, Segment const& s)
+        {
+            // Situation a (positive)
+            //     0>-------------->1     segment
+            // *                          point left of segment<I> in D x or y
+            // Situation b (negative)
+            //     1<--------------<0     segment
+            // *                          point right of segment<I>
+            // Situation c (degenerate), return false (check other dimension)
+            auto const& c = get<Dim>(p);
+            auto const& c0 = get<Index, Dim>(s);
+            auto const& c1 = get<1 - Index, Dim>(s);
+            return c0 < c1 ? math::smaller(c, c0)
+                 : c0 > c1 ? math::larger(c, c0)
+                 : false;
+        }
+
+        template <int Index, typename Point, typename Segment>
+        static bool exceeds_side_of_segment(Point& p, Segment const& s)
+        {
+            return exceeds_side_in_dimension<Index, 0>(p, s)
+                || exceeds_side_in_dimension<Index, 1>(p, s);
+        }
+
+        template <typename Point, typename Segment>
+        static void assign_if_exceeds(Point& point, Segment const& s)
+        {
+            if (exceeds_side_of_segment<0>(point, s))
+            {
+                detail::assign_point_from_index<0>(s, point);
+            }
+            else if (exceeds_side_of_segment<1>(point, s))
+            {
+                detail::assign_point_from_index<1>(s, point);
+            }
+        }
+
     public :
         template <typename Point, typename Segment1, typename Segment2>
         void calculate(Point& point, Segment1 const& a, Segment2 const& b) const
         {
-            bool use_a = true;
-
-            // Prefer one segment if one is on or near an endpoint
-            bool const a_near_end = robust_ra.near_end();
-            bool const b_near_end = robust_rb.near_end();
-            if (a_near_end && ! b_near_end)
-            {
-                use_a = true;
-            }
-            else if (b_near_end && ! a_near_end)
-            {
-                use_a = false;
-            }
-            else
-            {
-                // Prefer shorter segment
-                promoted_type const len_a = comparable_length_a();
-                promoted_type const len_b = comparable_length_b();
-                if (len_b < len_a)
-                {
-                    use_a = false;
-                }
-                // else use_a is true but was already assigned like that
-            }
+            bool const use_a
+                = detail_usage::use_a
+                     <
+                         std::is_arithmetic<CoordinateType>::value
+                     >::apply(comparable_length_a(), comparable_length_b(),
+                         robust_ra.edge_value(), robust_rb.edge_value());
 
             if (use_a)
             {
@@ -279,6 +248,25 @@ struct cartesian_segments
             else
             {
                 assign_b(point, a, b);
+            }
+
+#if defined(BOOST_GEOMETRY_USE_RESCALING)
+            return;
+#endif
+
+            // Verify nearly collinear cases (the threshold is arbitrary
+            // but influences performance). If the intersection is located
+            // outside the segments, then it should be moved.
+            if (robust_ra.possibly_collinear(1.0e-3)
+                && robust_rb.possibly_collinear(1.0e-3))
+            {
+                // The segments are nearly collinear and because of the calculation
+                // method with very small denominator, the IP appears outside the
+                // segment(s). Correct it to the end point.
+                // Because they are nearly collinear, it doesn't really matter to
+                // to which endpoint (or it is corrected twice).
+                assign_if_exceeds(point, a);
+                assign_if_exceeds(point, b);
             }
         }
 
@@ -292,87 +280,170 @@ struct cartesian_segments
     static inline void cramers_rule(D const& dx_a, D const& dy_a,
         D const& dx_b, D const& dy_b, W const& wx, W const& wy,
         // out:
-        ResultType& d, ResultType& da)
+        ResultType& nominator, ResultType& denominator)
     {
         // Cramers rule
-        d = geometry::detail::determinant<ResultType>(dx_a, dy_a, dx_b, dy_b);
-        da = geometry::detail::determinant<ResultType>(dx_b, dy_b, wx, wy);
-        // Ratio is da/d , collinear if d == 0, intersecting if 0 <= r <= 1
+        nominator = geometry::detail::determinant<ResultType>(dx_b, dy_b, wx, wy);
+        denominator = geometry::detail::determinant<ResultType>(dx_a, dy_a, dx_b, dy_b);
+        // Ratio r = nominator/denominator
+        // Collinear if denominator == 0, intersecting if 0 <= r <= 1
         // IntersectionPoint = (x1 + r * dx_a, y1 + r * dy_a)
     }
 
-
-    // Relate segments a and b
+    // Version for non-rescaled policies
     template
     <
-        typename Segment1,
-        typename Segment2,
-        typename Policy,
-        typename RobustPolicy
+        typename UniqueSubRange1,
+        typename UniqueSubRange2,
+        typename Policy
     >
     static inline typename Policy::return_type
-        apply(Segment1 const& a, Segment2 const& b,
-              Policy const& policy, RobustPolicy const& robust_policy)
+        apply(UniqueSubRange1 const& range_p,
+              UniqueSubRange2 const& range_q,
+              Policy const& policy)
     {
-        // type them all as in Segment1 - TODO reconsider this, most precise?
-        typedef typename geometry::point_type<Segment1>::type point_type;
-
-        typedef typename geometry::robust_point_type
-            <
-                point_type, RobustPolicy
-            >::type robust_point_type;
-
-        point_type a0, a1, b0, b1;
-        robust_point_type a0_rob, a1_rob, b0_rob, b1_rob;
-
-        detail::assign_point_from_index<0>(a, a0);
-        detail::assign_point_from_index<1>(a, a1);
-        detail::assign_point_from_index<0>(b, b0);
-        detail::assign_point_from_index<1>(b, b1);
-
-        geometry::recalculate(a0_rob, a0, robust_policy);
-        geometry::recalculate(a1_rob, a1, robust_policy);
-        geometry::recalculate(b0_rob, b0, robust_policy);
-        geometry::recalculate(b1_rob, b1, robust_policy);
-
-        return apply(a, b, policy, robust_policy, a0_rob, a1_rob, b0_rob, b1_rob);
+        // Pass the same ranges both as normal ranges and as modelled ranges
+        return apply(range_p, range_q, policy, range_p, range_q);
     }
 
-    // The main entry-routine, calculating intersections of segments a / b
-    // NOTE: Robust* types may be the same as Segments' point types
+    // Version for non rescaled versions.
+    // The "modelled" parameter might be rescaled (will be removed later)
     template
     <
+        typename UniqueSubRange1,
+        typename UniqueSubRange2,
+        typename Policy,
+        typename ModelledUniqueSubRange1,
+        typename ModelledUniqueSubRange2
+    >
+    static inline typename Policy::return_type
+        apply(UniqueSubRange1 const& range_p,
+              UniqueSubRange2 const& range_q,
+              Policy const& policy,
+              ModelledUniqueSubRange1 const& modelled_range_p,
+              ModelledUniqueSubRange2 const& modelled_range_q)
+    {
+        typedef typename UniqueSubRange1::point_type point1_type;
+        typedef typename UniqueSubRange2::point_type point2_type;
+
+        BOOST_CONCEPT_ASSERT( (concepts::ConstPoint<point1_type>) );
+        BOOST_CONCEPT_ASSERT( (concepts::ConstPoint<point2_type>) );
+
+        point1_type const& p1 = range_p.at(0);
+        point1_type const& p2 = range_p.at(1);
+        point2_type const& q1 = range_q.at(0);
+        point2_type const& q2 = range_q.at(1);
+
+        // Declare segments, currently necessary for the policies
+        // (segment_crosses, segment_colinear, degenerate, one_degenerate, etc)
+        model::referring_segment<point1_type const> const p(p1, p2);
+        model::referring_segment<point2_type const> const q(q1, q2);
+
+        typedef typename select_most_precise
+            <
+                typename geometry::coordinate_type<typename ModelledUniqueSubRange1::point_type>::type,
+                typename geometry::coordinate_type<typename ModelledUniqueSubRange1::point_type>::type
+            >::type modelled_coordinate_type;
+
+        typedef segment_ratio<modelled_coordinate_type> ratio_type;
+        segment_intersection_info
+            <
+                typename select_calculation_type<point1_type, point2_type, CalculationType>::type,
+                ratio_type
+            > sinfo;
+
+        sinfo.dx_a = get<0>(p2) - get<0>(p1); // distance in x-dir
+        sinfo.dx_b = get<0>(q2) - get<0>(q1);
+        sinfo.dy_a = get<1>(p2) - get<1>(p1); // distance in y-dir
+        sinfo.dy_b = get<1>(q2) - get<1>(q1);
+
+        return unified<ratio_type>(sinfo, p, q, policy, modelled_range_p, modelled_range_q);
+    }
+
+    //! Returns true if two segments do not overlap.
+    //! If not, then no further calculations need to be done.
+    template
+    <
+        std::size_t Dimension,
+        typename PointP,
+        typename PointQ
+    >
+    static inline bool disjoint_by_range(PointP const& p1, PointP const& p2,
+                                         PointQ const& q1, PointQ const& q2)
+    {
+        auto minp = get<Dimension>(p1);
+        auto maxp = get<Dimension>(p2);
+        auto minq = get<Dimension>(q1);
+        auto maxq = get<Dimension>(q2);
+        if (minp > maxp)
+        {
+            std::swap(minp, maxp);
+        }
+        if (minq > maxq)
+        {
+            std::swap(minq, maxq);
+        }
+
+        // In this case, max(p) < min(q)
+        //     P         Q
+        // <-------> <------->
+        // (and the space in between is not extremely small)
+        return math::smaller(maxp, minq) || math::smaller(maxq, minp);
+    }
+
+    // Implementation for either rescaled or non rescaled versions.
+    template
+    <
+        typename RatioType,
+        typename SegmentInfo,
         typename Segment1,
         typename Segment2,
         typename Policy,
-        typename RobustPolicy,
-        typename RobustPoint1,
-        typename RobustPoint2
+        typename UniqueSubRange1,
+        typename UniqueSubRange2
     >
     static inline typename Policy::return_type
-        apply(Segment1 const& a, Segment2 const& b,
-              Policy const&, RobustPolicy const& /*robust_policy*/,
-              RobustPoint1 const& robust_a1, RobustPoint1 const& robust_a2,
-              RobustPoint2 const& robust_b1, RobustPoint2 const& robust_b2)
+        unified(SegmentInfo& sinfo,
+                Segment1 const& p, Segment2 const& q, Policy const&,
+                UniqueSubRange1 const& range_p,
+                UniqueSubRange2 const& range_q)
     {
-        BOOST_CONCEPT_ASSERT( (concepts::ConstSegment<Segment1>) );
-        BOOST_CONCEPT_ASSERT( (concepts::ConstSegment<Segment2>) );
+        typedef typename UniqueSubRange1::point_type point1_type;
+        typedef typename UniqueSubRange2::point_type point2_type;
+        typedef typename select_most_precise
+            <
+                typename geometry::coordinate_type<point1_type>::type,
+                typename geometry::coordinate_type<point2_type>::type
+            >::type coordinate_type;
 
-        using geometry::detail::equals::equals_point_point;
-        bool const a_is_point = equals_point_point(robust_a1, robust_a2, point_in_point_strategy_type());
-        bool const b_is_point = equals_point_point(robust_b1, robust_b2, point_in_point_strategy_type());
+        point1_type const& p1 = range_p.at(0);
+        point1_type const& p2 = range_p.at(1);
+        point2_type const& q1 = range_q.at(0);
+        point2_type const& q2 = range_q.at(1);
 
-        if(a_is_point && b_is_point)
+        bool const p_is_point = equals_point_point(p1, p2);
+        bool const q_is_point = equals_point_point(q1, q2);
+
+        if (p_is_point && q_is_point)
         {
-            return equals_point_point(robust_a1, robust_b2, point_in_point_strategy_type())
-                ? Policy::degenerate(a, true)
+            return equals_point_point(p1, q2)
+                ? Policy::degenerate(p, true)
                 : Policy::disjoint()
                 ;
         }
 
+        if (disjoint_by_range<0>(p1, p2, q1, q2)
+         || disjoint_by_range<1>(p1, p2, q1, q2))
+        {
+            return Policy::disjoint();
+        }
+
+        using side_strategy_type
+            = typename side::services::default_strategy
+                <cartesian_tag, CalculationType>::type;
         side_info sides;
-        sides.set<0>(side_strategy_type::apply(robust_b1, robust_b2, robust_a1),
-                     side_strategy_type::apply(robust_b1, robust_b2, robust_a2));
+        sides.set<0>(side_strategy_type::apply(q1, q2, p1),
+                     side_strategy_type::apply(q1, q2, p2));
 
         if (sides.same<0>())
         {
@@ -380,8 +451,8 @@ struct cartesian_segments
             return Policy::disjoint();
         }
 
-        sides.set<1>(side_strategy_type::apply(robust_a1, robust_a2, robust_b1),
-                     side_strategy_type::apply(robust_a1, robust_a2, robust_b2));
+        sides.set<1>(side_strategy_type::apply(p1, p2, q1),
+                     side_strategy_type::apply(p1, p2, q2));
         
         if (sides.same<1>())
         {
@@ -391,78 +462,58 @@ struct cartesian_segments
 
         bool collinear = sides.collinear();
 
-        typedef typename select_most_precise
-            <
-                typename geometry::coordinate_type<RobustPoint1>::type,
-                typename geometry::coordinate_type<RobustPoint2>::type
-            >::type robust_coordinate_type;
-
-        typedef typename segment_ratio_type
-            <
-                typename geometry::point_type<Segment1>::type, // TODO: most precise point?
-                RobustPolicy
-            >::type ratio_type;
-
-        segment_intersection_info
-            <
-                typename select_calculation_type<Segment1, Segment2, CalculationType>::type,
-                ratio_type
-            > sinfo;
-
-        sinfo.dx_a = get<1, 0>(a) - get<0, 0>(a); // distance in x-dir
-        sinfo.dx_b = get<1, 0>(b) - get<0, 0>(b);
-        sinfo.dy_a = get<1, 1>(a) - get<0, 1>(a); // distance in y-dir
-        sinfo.dy_b = get<1, 1>(b) - get<0, 1>(b);
-
-        robust_coordinate_type const robust_dx_a = get<0>(robust_a2) - get<0>(robust_a1);
-        robust_coordinate_type const robust_dx_b = get<0>(robust_b2) - get<0>(robust_b1);
-        robust_coordinate_type const robust_dy_a = get<1>(robust_a2) - get<1>(robust_a1);
-        robust_coordinate_type const robust_dy_b = get<1>(robust_b2) - get<1>(robust_b1);
+        // Calculate the differences again
+        // (for rescaled version, this is different from dx_p etc)
+        coordinate_type const dx_p = get<0>(p2) - get<0>(p1);
+        coordinate_type const dx_q = get<0>(q2) - get<0>(q1);
+        coordinate_type const dy_p = get<1>(p2) - get<1>(p1);
+        coordinate_type const dy_q = get<1>(q2) - get<1>(q1);
 
         // r: ratio 0-1 where intersection divides A/B
         // (only calculated for non-collinear segments)
         if (! collinear)
         {
-            robust_coordinate_type robust_da0, robust_da;
-            robust_coordinate_type robust_db0, robust_db;
+            coordinate_type denominator_a, nominator_a;
+            coordinate_type denominator_b, nominator_b;
 
-            cramers_rule(robust_dx_a, robust_dy_a, robust_dx_b, robust_dy_b,
-                get<0>(robust_a1) - get<0>(robust_b1),
-                get<1>(robust_a1) - get<1>(robust_b1),
-                robust_da0, robust_da);
+            cramers_rule(dx_p, dy_p, dx_q, dy_q,
+                get<0>(p1) - get<0>(q1),
+                get<1>(p1) - get<1>(q1),
+                nominator_a, denominator_a);
 
-            cramers_rule(robust_dx_b, robust_dy_b, robust_dx_a, robust_dy_a,
-                get<0>(robust_b1) - get<0>(robust_a1),
-                get<1>(robust_b1) - get<1>(robust_a1),
-                robust_db0, robust_db);
+            cramers_rule(dx_q, dy_q, dx_p, dy_p,
+                get<0>(q1) - get<0>(p1),
+                get<1>(q1) - get<1>(p1),
+                nominator_b, denominator_b);
 
-            math::detail::equals_factor_policy<robust_coordinate_type>
-                policy(robust_dx_a, robust_dy_a, robust_dx_b, robust_dy_b);
-            robust_coordinate_type const zero = 0;
-            if (math::detail::equals_by_policy(robust_da0, zero, policy)
-             || math::detail::equals_by_policy(robust_db0, zero, policy))
+            math::detail::equals_factor_policy<coordinate_type>
+                policy(dx_p, dy_p, dx_q, dy_q);
+
+            coordinate_type const zero = 0;
+            if (math::detail::equals_by_policy(denominator_a, zero, policy)
+             || math::detail::equals_by_policy(denominator_b, zero, policy))
             {
                 // If this is the case, no rescaling is done for FP precision.
                 // We set it to collinear, but it indicates a robustness issue.
-                sides.set<0>(0,0);
-                sides.set<1>(0,0);
+                sides.set<0>(0, 0);
+                sides.set<1>(0, 0);
                 collinear = true;
             }
             else
             {
-                sinfo.robust_ra.assign(robust_da, robust_da0);
-                sinfo.robust_rb.assign(robust_db, robust_db0);
+                sinfo.robust_ra.assign(nominator_a, denominator_a);
+                sinfo.robust_rb.assign(nominator_b, denominator_b);
             }
         }
 
         if (collinear)
         {
             std::pair<bool, bool> const collinear_use_first
-                    = is_x_more_significant(geometry::math::abs(robust_dx_a),
-                                            geometry::math::abs(robust_dy_a),
-                                            geometry::math::abs(robust_dx_b),
-                                            geometry::math::abs(robust_dy_b),
-                                            a_is_point, b_is_point);
+                    = is_x_more_significant(geometry::math::abs(dx_p),
+                                            geometry::math::abs(dy_p),
+                                            geometry::math::abs(dx_q),
+                                            geometry::math::abs(dy_q),
+                                            p_is_point, q_is_point);
 
             if (collinear_use_first.second)
             {
@@ -471,32 +522,32 @@ struct cartesian_segments
 
                 if (collinear_use_first.first)
                 {
-                    return relate_collinear<0, Policy, ratio_type>(a, b,
-                            robust_a1, robust_a2, robust_b1, robust_b2,
-                            a_is_point, b_is_point);
+                    return relate_collinear<0, Policy, RatioType>(p, q,
+                            p1, p2, q1, q2,
+                            p_is_point, q_is_point);
                 }
                 else
                 {
                     // Y direction contains larger segments (maybe dx is zero)
-                    return relate_collinear<1, Policy, ratio_type>(a, b,
-                            robust_a1, robust_a2, robust_b1, robust_b2,
-                            a_is_point, b_is_point);
+                    return relate_collinear<1, Policy, RatioType>(p, q,
+                            p1, p2, q1, q2,
+                            p_is_point, q_is_point);
                 }
             }
         }
 
-        return Policy::segments_crosses(sides, sinfo, a, b);
+        return Policy::segments_crosses(sides, sinfo, p, q);
     }
 
 private:
     // first is true if x is more significant
     // second is true if the more significant difference is not 0
-    template <typename RobustCoordinateType>
+    template <typename CoordinateType>
     static inline std::pair<bool, bool>
-        is_x_more_significant(RobustCoordinateType const& abs_robust_dx_a,
-                              RobustCoordinateType const& abs_robust_dy_a,
-                              RobustCoordinateType const& abs_robust_dx_b,
-                              RobustCoordinateType const& abs_robust_dy_b,
+        is_x_more_significant(CoordinateType const& abs_dx_a,
+                              CoordinateType const& abs_dy_a,
+                              CoordinateType const& abs_dx_b,
+                              CoordinateType const& abs_dy_b,
                               bool const a_is_point,
                               bool const b_is_point)
     {
@@ -507,18 +558,18 @@ private:
 
         if (a_is_point)
         {
-            return std::make_pair(abs_robust_dx_b >= abs_robust_dy_b, true);
+            return std::make_pair(abs_dx_b >= abs_dy_b, true);
         }
         else if (b_is_point)
         {
-            return std::make_pair(abs_robust_dx_a >= abs_robust_dy_a, true);
+            return std::make_pair(abs_dx_a >= abs_dy_a, true);
         }
         else
         {
-            RobustCoordinateType const min_dx = (std::min)(abs_robust_dx_a, abs_robust_dx_b);
-            RobustCoordinateType const min_dy = (std::min)(abs_robust_dy_a, abs_robust_dy_b);
+            CoordinateType const min_dx = (std::min)(abs_dx_a, abs_dx_b);
+            CoordinateType const min_dy = (std::min)(abs_dy_a, abs_dy_b);
             return min_dx == min_dy ?
-                    std::make_pair(true, min_dx > RobustCoordinateType(0)) :
+                    std::make_pair(true, min_dx > CoordinateType(0)) :
                     std::make_pair(min_dx > min_dy, true);
         }
     }
@@ -568,13 +619,13 @@ private:
         typename RatioType,
         typename Segment1,
         typename Segment2,
-        typename RobustType1,
-        typename RobustType2
+        typename Type1,
+        typename Type2
     >
     static inline typename Policy::return_type
         relate_collinear(Segment1 const& a, Segment2 const& b,
-                         RobustType1 oa_1, RobustType1 oa_2,
-                         RobustType2 ob_1, RobustType2 ob_2)
+                         Type1 oa_1, Type1 oa_2,
+                         Type2 ob_1, Type2 ob_2)
     {
         // Calculate the ratios where a starts in b, b starts in a
         //         a1--------->a2         (2..7)
@@ -606,8 +657,8 @@ private:
         // b2 is located w.r.t. a at ratio: (5-2)/5=3/5 (on a)
         // a1 is located w.r.t. b at ratio: (2-8)/-3=6/3 (after b ends)
         // a2 is located w.r.t. b at ratio: (7-8)/-3=1/3 (on b)
-        RobustType1 const length_a = oa_2 - oa_1; // no abs, see above
-        RobustType2 const length_b = ob_2 - ob_1;
+        Type1 const length_a = oa_2 - oa_1; // no abs, see above
+        Type2 const length_b = ob_2 - ob_1;
 
         RatioType ra_from(oa_1 - ob_1, length_b);
         RatioType ra_to(oa_2 - ob_1, length_b);
@@ -669,12 +720,12 @@ private:
         typename Policy,
         typename RatioType,
         typename DegenerateSegment,
-        typename RobustType1,
-        typename RobustType2
+        typename Type1,
+        typename Type2
     >
     static inline typename Policy::return_type
         relate_one_degenerate(DegenerateSegment const& degenerate_segment,
-                              RobustType1 d, RobustType2 s1, RobustType2 s2,
+                              Type1 d, Type2 s1, Type2 s2,
                               bool a_degenerate)
     {
         // Calculate the ratios where ds starts in s
@@ -707,6 +758,12 @@ private:
               : ( ca1 > cb1 ? 0
                 : ca1 < cb2 ? 4
                 : 2 );
+    }
+
+    template <typename Point1, typename Point2>
+    static inline bool equals_point_point(Point1 const& point1, Point2 const& point2)
+    {
+        return strategy::within::cartesian_point_point::apply(point1, point2);
     }
 };
 

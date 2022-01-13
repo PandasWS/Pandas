@@ -28,7 +28,7 @@
 #include <boost/detail/workaround.hpp>
 #include "./utf8_codecvt_facet.hpp"
 
-#if BOOST_WORKAROUND(__BORLANDC__, <= 0x600)
+#if BOOST_WORKAROUND(BOOST_BORLANDC, <= 0x600)
 # pragma warn -sig // Conversion may lose significant digits
 # pragma warn -rng // Constant is out of range in comparison
 #endif

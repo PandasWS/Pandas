@@ -1,3 +1,10 @@
+[/
+            Copyright Hans Dembinski 2018 - 2019.
+   Distributed under the Boost Software License, Version 1.0.
+      (See accompanying file LICENSE_1_0.txt or copy at
+            https://www.boost.org/LICENSE_1_0.txt)
+]
+
 [section:Axis Axis]
 
 An [*Axis] maps input values to indices. It holds state specific to that axis, like the number of bins and any metadata. Must be [@https://en.cppreference.com/w/cpp/named_req/CopyConstructible CopyConstructible], [@https://en.cppreference.com/w/cpp/named_req/CopyAssignable CopyAssignable], and *nothrow* [@https://en.cppreference.com/w/cpp/named_req/MoveAssignable MoveAssignable].
@@ -43,7 +50,9 @@ An [*Axis] maps input values to indices. It holds state specific to that axis, l
 * `A` is a type meeting the requirements of [*Axis]
 * `a` and `b` are values of type `A`
 * `i` and `j` are indices of type [headerref boost/histogram/fwd.hpp `boost::histogram::axis::index_type`]
+* `n` is a value of type `unsigned`
 * `M` is a metadata type that is [@https://en.cppreference.com/w/cpp/named_req/CopyConstructible CopyConstructible] and [@https://en.cppreference.com/w/cpp/named_req/CopyAssignable CopyAssignable] and *nothrow* [@https://en.cppreference.com/w/cpp/named_req/MoveAssignable MoveAssignable].
+* `ar` is a value of an archive with Boost.Serialization semantics
 
 [table Valid expressions
 [[Expression] [Returns] [Semantics, Pre/Post-conditions]]
@@ -69,24 +78,24 @@ An [*Axis] maps input values to indices. It holds state specific to that axis, l
   ]
 ]
 [
-  [`a.metadata()`]
-  [`const M&`]
+  [`a.inclusive()`]
+  [`bool`]
   [
-    Const member function which returns a const reference to the metadata associated with the axis (usually a string).
+    Static constexpr member function which returns true, if the axis has a bin for every possible input value, and false otherwise. Faster code can be generated if all axes types in a histogram are inclusive. An axis with underflow and overflow bins is always inclusive. An axis may be inclusive even if underflow or overflow bins are missing. For example, a category axis is inclusive if either it has an overflow bin or if it is growing.
   ]
 ]
 [
   [`a.metadata()`]
   [`M&`]
   [
-    Likewise, but non-const member function which returns a reference to the metadata. If this member function exists, also the previous one must exist.
+    Const and non-const member functions must exist, which both returns a mutable reference to the metadata associated with the axis (usually a string).
   ]
 ]
 [
   [`a == b`]
   [`bool`]
   [
-     Returns `true` if all state variables compare equal, including any metadata. Otherwise returns `false`. If `a == b` is implemented, also `a != b` must be implemented. If this binary operator is not implemented, the library considers the arguments equal, if and only if their types are the same.
+     Returns `true` if all state variables compare equal, including any metadata. Otherwise returns `false`. If `a == b` is implemented, also `a != b` must be implemented. If this binary operator is not implemented, the library considers the axes equal if their types are the same.
   ]
 ]
 [
@@ -104,16 +113,17 @@ An [*Axis] maps input values to indices. It holds state specific to that axis, l
   ]
 ]
 [
-  [`ar & a`]
+  [`a.serialize(ar, n)`]
   []
   [
-    `ar` is a value of an archive with Boost.Serialization semantics. Serializes `a` to the archive or loads serialized state from the archive.
+    Saves to the archive or loads serialised state from the archive. The version number `n` is the stored version when the object is loaded or the current version when the object is saved.
   ]
 ]
 ]
 
 [heading Models]
 
+* [classref boost::histogram::axis::boolean]
 * [classref boost::histogram::axis::category]
 * [classref boost::histogram::axis::integer]
 * [classref boost::histogram::axis::regular]

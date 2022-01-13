@@ -3,7 +3,7 @@
 # Copyright 2008 Jurko Gospodnetic
 # Copyright 2017 Steven Watanabe
 # Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+# (See accompanying file LICENSE.txt or https://www.bfgroup.xyz/b2/LICENSE.txt)
 
 # Tests different aspects of Boost Builds automated testing support.
 
@@ -38,6 +38,10 @@ run fail-run.cpp ;
     t.expect_addition("bin/fail-run.test/$toolset/debug*/fail-run.exe")
     t.expect_addition("bin/fail-run.test/$toolset/debug*/fail-run.output")
 
+    t.ignore_addition("bin/pass.test/*/pass.rsp")
+    t.ignore_addition("bin/fail-link.test/*/fail-link.rsp")
+    t.ignore_addition("bin/fail-run.test/*/fail-run.rsp")
+
     t.expect_nothing_more()
 
     t.cleanup()
@@ -69,6 +73,10 @@ run-fail fail-run.cpp ;
     t.expect_addition("bin/fail-run.test/$toolset/debug*/fail-run.output")
     t.expect_addition("bin/fail-run.test/$toolset/debug*/fail-run.run")
     t.expect_addition("bin/fail-run.test/$toolset/debug*/fail-run.test")
+
+    t.ignore_addition("bin/pass.test/*/pass.rsp")
+    t.ignore_addition("bin/fail-link.test/*/fail-link.rsp")
+    t.ignore_addition("bin/fail-run.test/*/fail-run.rsp")
 
     t.expect_nothing_more()
 
@@ -118,7 +126,7 @@ def test_run_path():
     hardcode-dll-paths.  Important: The library is in neither the
     current working directory, nor any system path, nor the same
     directory as the executable, so it should never be found without
-    help from Boost.Build."""
+    help from B2."""
     t = BoostBuild.Tester(["hardcode-dll-paths=false"], use_test_config=False)
 
     t.write("l.cpp", """
@@ -219,6 +227,10 @@ link fail-run.cpp ;
     t.expect_addition("bin/fail-run.test/$toolset/debug*/fail-run.exe")
     t.expect_addition("bin/fail-run.test/$toolset/debug*/fail-run.test")
 
+    t.ignore_addition("bin/pass.test/*/pass.rsp")
+    t.ignore_addition("bin/fail-link.test/*/fail-link.rsp")
+    t.ignore_addition("bin/fail-run.test/*/fail-run.rsp")
+
     t.expect_nothing_more()
 
     t.cleanup()
@@ -246,6 +258,10 @@ link-fail fail-run.cpp ;
     t.expect_addition("bin/fail-link.test/$toolset/debug*/fail-link.test")
 
     t.expect_addition("bin/fail-run.test/$toolset/debug*/fail-run.obj")
+
+    t.ignore_addition("bin/pass.test/*/pass.rsp")
+    t.ignore_addition("bin/fail-link.test/*/fail-link.rsp")
+    t.ignore_addition("bin/fail-run.test/*/fail-run.rsp")
 
     t.expect_nothing_more()
 
@@ -402,10 +418,15 @@ run-fail fail-run.cpp ;
     t.expect_addition("bin/fail-compile.test/$toolset/debug*/fail-compile.test")
 
     t.expect_addition("bin/fail-link.test/$toolset/debug*/fail-link.test")
-    
+
     t.expect_addition("bin/fail-run.test/$toolset/debug*/fail-run.output")
     t.expect_addition("bin/fail-run.test/$toolset/debug*/fail-run.run")
     t.expect_addition("bin/fail-run.test/$toolset/debug*/fail-run.test")
+
+    t.ignore_addition("bin/pass-link.test/*/pass-link.rsp")
+    t.ignore_addition("bin/pass-run.test/*/pass-run.rsp")
+    t.ignore_addition("bin/fail-link.test/*/fail-link.rsp")
+    t.ignore_addition("bin/fail-run.test/*/fail-run.rsp")
 
     t.expect_nothing_more()
 

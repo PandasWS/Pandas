@@ -1,6 +1,6 @@
 /* Used in Boost.MultiIndex tests.
  *
- * Copyright 2003-2018 Joaquin M Lopez Munoz.
+ * Copyright 2003-2020 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -110,9 +110,12 @@ public:
   typedef T                        value_type;
   template<class U>struct rebind{typedef non_std_allocator<U> other;};
 
-  non_std_allocator(){}
-  non_std_allocator(const non_std_allocator<T>&){}
-  template<class U>non_std_allocator(const non_std_allocator<U>&,int=0){}
+  non_std_allocator(int id_=0):id(id_){}
+  non_std_allocator(const non_std_allocator<T>& x):id(x.id){}
+  template<class U>non_std_allocator(const non_std_allocator<U>& x,int=0):
+    id(x.id){}
+  non_std_allocator& operator=(const non_std_allocator<T>& x)
+    {id=x.id; return *this;}
 
   pointer allocate(size_type n)
   {
@@ -126,15 +129,17 @@ public:
 
   size_type max_size() const{return (size_type )(-1);}
 
-  friend bool operator==(const non_std_allocator&,const non_std_allocator&)
+  friend bool operator==(const non_std_allocator& x,const non_std_allocator& y)
   {
-    return true;
+    return x.id==y.id;
   }
 
-  friend bool operator!=(const non_std_allocator&,const non_std_allocator&)
+  friend bool operator!=(const non_std_allocator& x,const non_std_allocator& y)
   {
-    return false;
+    return !(x==y);
   }
+
+  int id;
 };
 
 #endif

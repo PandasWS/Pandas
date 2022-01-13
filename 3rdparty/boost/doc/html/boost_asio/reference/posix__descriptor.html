@@ -1,12 +1,12 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>posix::descriptor</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../../boost_asio.html" title="Boost.Asio">
 <link rel="up" href="../reference.html" title="Reference">
-<link rel="prev" href="posix__basic_stream_descriptor/write_some/overload2.html" title="posix::basic_stream_descriptor::write_some (2 of 2 overloads)">
+<link rel="prev" href="posix__basic_stream_descriptor__rebind_executor/other.html" title="posix::basic_stream_descriptor::rebind_executor::other">
 <link rel="next" href="posix__descriptor_base.html" title="posix::descriptor_base">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -20,7 +20,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="posix__basic_stream_descriptor/write_some/overload2.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="posix__descriptor_base.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="posix__basic_stream_descriptor__rebind_executor/other.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="posix__descriptor_base.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
@@ -55,6 +55,18 @@ Typedef for the typical
               </th>
 </tr></thead>
 <tbody>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="posix__basic_descriptor__rebind_executor.html" title="posix::basic_descriptor::rebind_executor"><span class="bold"><strong>rebind_executor</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Rebinds the descriptor type to another executor.
+                </p>
+              </td>
+</tr>
 <tr>
 <td>
                 <p>
@@ -169,13 +181,13 @@ Typedef for the typical
 <tr>
 <td>
                 <p>
-                  <a class="link" href="posix__basic_descriptor/basic_descriptor.html" title="posix::basic_descriptor::basic_descriptor"><span class="bold"><strong>basic_descriptor</strong></span></a>
+                  <a class="link" href="posix__basic_descriptor/basic_descriptor.html" title="posix::basic_descriptor::basic_descriptor"><span class="bold"><strong>basic_descriptor</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
-                  Construct a descriptor without opening it. <br> <span class="silver"> &#8212;</span><br> Construct
-                  a descriptor on an existing native descriptor. <br> <span class="silver"> &#8212;</span><br> Move-construct
+                  Construct a descriptor without opening it. <br> <span class="silver"> —</span><br> Construct
+                  a descriptor on an existing native descriptor. <br> <span class="silver"> —</span><br> Move-construct
                   a descriptor from another.
                 </p>
               </td>
@@ -248,7 +260,7 @@ Typedef for the typical
               </td>
 <td>
                 <p>
-                  Get a reference to the lowest layer. <br> <span class="silver"> &#8212;</span><br> Get a const
+                  Get a reference to the lowest layer. <br> <span class="silver"> —</span><br> Get a const
                   reference to the lowest layer.
                 </p>
               </td>
@@ -274,7 +286,7 @@ Typedef for the typical
 <td>
                 <p>
                   Gets the non-blocking mode of the native descriptor implementation.
-                  <br> <span class="silver"> &#8212;</span><br> Sets the non-blocking mode of the native descriptor
+                  <br> <span class="silver"> —</span><br> Sets the non-blocking mode of the native descriptor
                   implementation.
                 </p>
               </td>
@@ -287,7 +299,7 @@ Typedef for the typical
               </td>
 <td>
                 <p>
-                  Gets the non-blocking mode of the descriptor. <br> <span class="silver"> &#8212;</span><br> Sets
+                  Gets the non-blocking mode of the descriptor. <br> <span class="silver"> —</span><br> Sets
                   the non-blocking mode of the descriptor.
                 </p>
               </td>
@@ -356,7 +368,7 @@ Typedef for the typical
 <tbody><tr>
 <td>
                 <p>
-                  <a class="link" href="posix__basic_descriptor/_basic_descriptor.html" title="posix::basic_descriptor::~basic_descriptor"><span class="bold"><strong>~basic_descriptor</strong></span></a>
+                  <a class="link" href="posix__basic_descriptor/_basic_descriptor.html" title="posix::basic_descriptor::~basic_descriptor"><span class="bold"><strong>~basic_descriptor</strong></span></a> <span class="silver">[destructor]</span>
                 </p>
               </td>
 <td>
@@ -366,44 +378,12 @@ Typedef for the typical
               </td>
 </tr></tbody>
 </table></div>
-<h5>
-<a name="boost_asio.reference.posix__descriptor.h3"></a>
-        <span class="phrase"><a name="boost_asio.reference.posix__descriptor.protected_data_members"></a></span><a class="link" href="posix__descriptor.html#boost_asio.reference.posix__descriptor.protected_data_members">Protected
-        Data Members</a>
-      </h5>
-<div class="informaltable"><table class="table">
-<colgroup>
-<col>
-<col>
-</colgroup>
-<thead><tr>
-<th>
-                <p>
-                  Name
-                </p>
-              </th>
-<th>
-                <p>
-                  Description
-                </p>
-              </th>
-</tr></thead>
-<tbody><tr>
-<td>
-                <p>
-                  <a class="link" href="posix__basic_descriptor/impl_.html" title="posix::basic_descriptor::impl_"><span class="bold"><strong>impl_</strong></span></a>
-                </p>
-              </td>
-<td>
-              </td>
-</tr></tbody>
-</table></div>
 <p>
         The <a class="link" href="posix__basic_descriptor.html" title="posix::basic_descriptor"><code class="computeroutput">posix::basic_descriptor</code></a>
         class template provides the ability to wrap a POSIX descriptor.
       </p>
 <h5>
-<a name="boost_asio.reference.posix__descriptor.h4"></a>
+<a name="boost_asio.reference.posix__descriptor.h3"></a>
         <span class="phrase"><a name="boost_asio.reference.posix__descriptor.thread_safety"></a></span><a class="link" href="posix__descriptor.html#boost_asio.reference.posix__descriptor.thread_safety">Thread Safety</a>
       </h5>
 <p>
@@ -413,7 +393,7 @@ Typedef for the typical
         <span class="emphasis"><em>Shared</em></span> <span class="emphasis"><em>objects:</em></span> Unsafe.
       </p>
 <h5>
-<a name="boost_asio.reference.posix__descriptor.h5"></a>
+<a name="boost_asio.reference.posix__descriptor.h4"></a>
         <span class="phrase"><a name="boost_asio.reference.posix__descriptor.requirements"></a></span><a class="link" href="posix__descriptor.html#boost_asio.reference.posix__descriptor.requirements">Requirements</a>
       </h5>
 <p>
@@ -425,7 +405,8 @@ Typedef for the typical
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>
@@ -433,7 +414,7 @@ Typedef for the typical
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="posix__basic_stream_descriptor/write_some/overload2.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="posix__descriptor_base.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="posix__basic_stream_descriptor__rebind_executor/other.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="posix__descriptor_base.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

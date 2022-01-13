@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Boost Macro Reference</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,6 +27,8 @@
 <a name="boost_config.boost_macro_reference"></a><a class="link" href="boost_macro_reference.html" title="Boost Macro Reference">Boost Macro Reference</a>
 </h2></div></div></div>
 <div class="toc"><dl class="toc">
+<dt><span class="section"><a href="boost_macro_reference.html#boost_config.boost_macro_reference.broad_c___standard_level_checks">Broad
+      C++ Standard Level Checks</a></span></dt>
 <dt><span class="section"><a href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__03_defects">Macros
       that describe C++03 defects</a></span></dt>
 <dt><span class="section"><a href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_optional_features">Macros
@@ -43,6 +45,10 @@
       that allow use of C++14 features with C++11 or earlier compilers</a></span></dt>
 <dt><span class="section"><a href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__17_features_not_supported">Macros
       that describe C++17 features not supported</a></span></dt>
+<dt><span class="section"><a href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_allow_use_of_c__17_features_with_c__14_or_earlier_compilers">Macros
+      that allow use of C++17 features with C++14 or earlier compilers</a></span></dt>
+<dt><span class="section"><a href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__20_features_not_supported">Macros
+      that describe C++20 features not supported</a></span></dt>
 <dt><span class="section"><a href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_features_that_have_been_removed_from_the_standard_">Macros
       that describe features that have been removed from the standard.</a></span></dt>
 <dt><span class="section"><a href="boost_macro_reference.html#boost_config.boost_macro_reference.boost_helper_macros">Boost
@@ -56,7 +62,177 @@
 </dl></div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="boost_config.boost_macro_reference.macros_that_describe_c__03_defects"></a><a name="config_defects"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__03_defects" title="Macros that describe C++03 defects">Macros
+<a name="boost_config.boost_macro_reference.broad_c___standard_level_checks"></a><a name="config_defects"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.broad_c___standard_level_checks" title="Broad C++ Standard Level Checks">Broad
+      C++ Standard Level Checks</a>
+</h3></div></div></div>
+<p>
+        These are for the times when you just want to check "does this compiler
+        conform to C++11" or some such.
+      </p>
+<h5>
+<a name="boost_config.boost_macro_reference.broad_c___standard_level_checks.h0"></a>
+        <span class="phrase"><a name="boost_config.boost_macro_reference.broad_c___standard_level_checks.c___standard_level"></a></span><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.broad_c___standard_level_checks.c___standard_level">C++
+        Standard Level</a>
+      </h5>
+<p>
+        The macro <code class="computeroutput"><span class="identifier">BOOST_CXX_VERSION</span></code>
+        is set to the C++ standard version - it has the same value as <code class="computeroutput"><span class="identifier">__cplusplus</span></code> if <code class="computeroutput"><span class="identifier">__cplusplus</span></code>
+        is set to a sensible value, otherwise the current C++ standard level in effect
+        (for example for MSVC this is set to the value of <code class="computeroutput"><span class="identifier">_MSVC_LANG</span></code>).
+      </p>
+<p>
+        Available standard values are:
+      </p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  standard
+                </p>
+              </th>
+<th>
+                <p>
+                  value
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  2003
+                </p>
+              </td>
+<td>
+                <p>
+                  199711L
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  2011
+                </p>
+              </td>
+<td>
+                <p>
+                  201103L
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  2014
+                </p>
+              </td>
+<td>
+                <p>
+                  201402L
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  2017
+                </p>
+              </td>
+<td>
+                <p>
+                  201703L
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  2020
+                </p>
+              </td>
+<td>
+                <p>
+                  202002L
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+<p>
+        You should use this macro as a basic sanity check that the compiler is minimally
+        at the required standard level - there may still be bugs, unimplemented features,
+        and/or missing headers. The individual feature checks should be used for
+        those.
+      </p>
+<h5>
+<a name="boost_config.boost_macro_reference.broad_c___standard_level_checks.h1"></a>
+        <span class="phrase"><a name="boost_config.boost_macro_reference.broad_c___standard_level_checks.strict_standard_level_checks"></a></span><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.broad_c___standard_level_checks.strict_standard_level_checks">Strict
+        Standard Level Checks</a>
+      </h5>
+<p>
+        The following macros:
+      </p>
+<pre class="programlisting"><span class="identifier">BOOST_NO_CXX03</span>
+<span class="identifier">BOOST_NO_CXX11</span>
+<span class="identifier">BOOST_NO_CXX14</span>
+<span class="identifier">BOOST_NO_CXX17</span>
+</pre>
+<p>
+        Are set if <span class="bold"><strong>any</strong></span> of our defect macros are
+        set for that standard level, .
+      </p>
+<p>
+        Note that these are therefore very strict checks and as a result, other than
+        very recent gcc/clang releases, many compilers will end up defining <span class="emphasis"><em>all</em></span>
+        of these macros: even when <code class="computeroutput"><span class="identifier">BOOST_CXX_VERSION</span></code>
+        indicates a much more recent standard is in effect.
+      </p>
+<h5>
+<a name="boost_config.boost_macro_reference.broad_c___standard_level_checks.h2"></a>
+        <span class="phrase"><a name="boost_config.boost_macro_reference.broad_c___standard_level_checks.strict_standard_check_headers"></a></span><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.broad_c___standard_level_checks.strict_standard_check_headers">Strict
+        Standard Check Headers</a>
+      </h5>
+<p>
+        The following headers:
+      </p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">config</span><span class="special">/</span><span class="identifier">assert_cxx03</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">config</span><span class="special">/</span><span class="identifier">assert_cxx11</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">config</span><span class="special">/</span><span class="identifier">assert_cxx14</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">config</span><span class="special">/</span><span class="identifier">assert_cxx17</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+</pre>
+<p>
+        Can be used to assert that none of our defect macros are set for that standard
+        (or any older standards).
+      </p>
+<p>
+        The headers will provide a slightly more useful error message than just checking
+        on <code class="computeroutput"><span class="identifier">BOOST_NO_CXX03</span></code> for example,
+        as they will indicate which defect macro produced the error.
+      </p>
+<p>
+        As noted abovem these are very strict checks, and therefore other than recent
+        gcc/clang releases, many compilers will genrate a <code class="computeroutput"><span class="preprocessor">#error</span></code>
+        on including <span class="emphasis"><em>any</em></span> of these headers.
+      </p>
+<h5>
+<a name="boost_config.boost_macro_reference.broad_c___standard_level_checks.h3"></a>
+        <span class="phrase"><a name="boost_config.boost_macro_reference.broad_c___standard_level_checks.sd6_feature_test_macros"></a></span><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.broad_c___standard_level_checks.sd6_feature_test_macros">SD6
+        Feature Test Macros</a>
+      </h5>
+<p>
+        Note that none of the above checks take into account any standard library
+        SD6 feature test macros, as doing so would require <code class="computeroutput"><span class="preprocessor">#include</span></code>ing
+        almost the whole standard library.
+      </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_config.boost_macro_reference.macros_that_describe_c__03_defects"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__03_defects" title="Macros that describe C++03 defects">Macros
       that describe C++03 defects</a>
 </h3></div></div></div>
 <p>
@@ -1537,7 +1713,7 @@
                 <p>
                   The C++ implementation provides the (SGI) hash_set and hash_map
                   classes. When defined, <code class="computeroutput"><span class="identifier">BOOST_HASH_SET_HEADER</span></code>
-                  and <code class="computeroutput"><span class="identifier">BOOST_HASH_LIST_HEADER</span></code>
+                  and <code class="computeroutput"><span class="identifier">BOOST_HASH_MAP_HEADER</span></code>
                   will contain the names of the header needed to access hash_set
                   and hash_map; <code class="computeroutput"><span class="identifier">BOOST_STD_EXTENSION_NAMESPACE</span></code>
                   will provide the namespace in which the two class templates reside.
@@ -2739,7 +2915,9 @@
               </td>
 <td>
                 <p>
-                  The standard library does not provide header &lt;codecvt&gt;.
+                  The standard library does not provide header &lt;codecvt&gt;. Note
+                  that this header is deprecated post C++17, and therefore the macro
+                  may be set as a result of the feature being deliberately removed.
                 </p>
               </td>
 </tr>
@@ -2752,6 +2930,19 @@
 <td>
                 <p>
                   The standard library does not provide header &lt;condition_variable&gt;.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_EXCEPTION</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The standard library does not provide a C++11 compatible version
+                  of &lt;exception&gt;.
                 </p>
               </td>
 </tr>
@@ -3033,6 +3224,18 @@
 <tr>
 <td>
                 <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_OVERRIDE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support <code class="computeroutput"><span class="identifier">override</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_POINTER_TRAITS</span></code>
                 </p>
               </td>
@@ -3237,6 +3440,20 @@
 <tr>
 <td>
                 <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_UNRESTRICTED_UNION</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support an unrestricted union. This is a
+                  union that may contain static data as well as user-defined member
+                  data with non-trivial special member functions.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_USER_DEFINED_LITERALS</span></code>
                 </p>
               </td>
@@ -3393,6 +3610,20 @@
 <tr>
 <td>
                 <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_OVERRIDE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  If <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_OVERRIDE</span></code>
+                  is not defined (i.e. C++11 compliant compilers), expands to <code class="computeroutput"><span class="identifier">override</span></code> keyword, otherwise expands
+                  to nothing.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   <code class="computeroutput"><span class="identifier">BOOST_STATIC_CONSTEXPR</span></code>
                 </p>
               </td>
@@ -3541,6 +3772,20 @@
 <p>
                   </p>
 </blockquote></div>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_FINAL</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  If <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_FINAL</span></code>
+                  is not defined (i.e. C++11 compliant compilers), expands to <code class="computeroutput"><span class="identifier">final</span></code> keyword, otherwise expands
+                  to nothing.
+                </p>
               </td>
 </tr>
 <tr>
@@ -3785,8 +4030,10 @@
               </td>
 <td>
                 <p>
-                  This macro works similar to BOOST_CONSTEXPR, but expands to <code class="computeroutput"><span class="keyword">constexpr</span></code> only if the C++14 "relaxed"
-                  <code class="computeroutput"><span class="keyword">constexpr</span></code> is available.
+                  This macro works similar to <code class="computeroutput"><span class="identifier">BOOST_CONSTEXPR</span></code>,
+                  but expands to <code class="computeroutput"><span class="keyword">constexpr</span></code>
+                  only if the C++14 "relaxed" <code class="computeroutput"><span class="keyword">constexpr</span></code>
+                  is available.
                 </p>
               </td>
 </tr></tbody>
@@ -3822,6 +4069,66 @@
 <tr>
 <td>
                 <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX17_HDR_ANY</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">any</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX17_HDR_CHARCONV</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">charconv</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX17_HDR_EXECUTION</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">execution</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX17_HDR_FILESYSTEM</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">filesystem</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX17_HDR_MEMORY_RESOURCE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">memory_resource</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   <code class="computeroutput"><span class="identifier">BOOST_NO_CXX17_HDR_OPTIONAL</span></code>
                 </p>
               </td>
@@ -3834,24 +4141,24 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX17_HDR_VARIANT</span></code>
-                </p>
-              </td>
-<td>
-                <p>
-                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">variant</span><span class="special">&gt;</span></code>.
-                </p>
-              </td>
-</tr>
-<tr>
-<td>
-                <p>
                   <code class="computeroutput"><span class="identifier">BOOST_NO_CXX17_HDR_STRING_VIEW</span></code>
                 </p>
               </td>
 <td>
                 <p>
                   The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">string_view</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX17_HDR_VARIANT</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">variant</span><span class="special">&gt;</span></code>.
                 </p>
               </td>
 </tr>
@@ -3901,6 +4208,289 @@
                 <p>
                   The compiler does not support <code class="computeroutput"><span class="keyword">if</span>
                   <span class="keyword">constexpr</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX17_INLINE_VARIABLES</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support <code class="computeroutput"><span class="keyword">inline</span></code>
+                  variables.
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_config.boost_macro_reference.macros_that_allow_use_of_c__17_features_with_c__14_or_earlier_compilers"></a><a name="config_17_for_14"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_allow_use_of_c__17_features_with_c__14_or_earlier_compilers" title="Macros that allow use of C++17 features with C++14 or earlier compilers">Macros
+      that allow use of C++17 features with C++14 or earlier compilers</a>
+</h3></div></div></div>
+<p>
+        The following macros allow use of C++17 features even with compilers that
+        do not yet provide compliant C++17 support.
+      </p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Macro
+                </p>
+              </th>
+<th>
+                <p>
+                  Description
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_INLINE_VARIABLE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  This macro expands to <code class="computeroutput"><span class="keyword">inline</span></code>
+                  on compilers that support C++17 inline variables and to nothing
+                  otherwise. Users may need to check for <code class="computeroutput"><span class="identifier">BOOST_NO_CXX17_INLINE_VARIABLES</span></code>
+                  for further adjustments to the code.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_IF_CONSTEXPR</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Expands to <code class="computeroutput"><span class="keyword">if</span> <span class="keyword">constexpr</span></code>
+                  when supported, or <code class="computeroutput"><span class="keyword">if</span></code>
+                  otherwise.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_INLINE_CONSTEXPR</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  This is a shortcut for <code class="computeroutput"><span class="identifier">BOOST_INLINE_VARIABLE</span>
+                  <span class="identifier">BOOST_CONSTEXPR_OR_CONST</span></code>.
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_config.boost_macro_reference.macros_that_describe_c__20_features_not_supported"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__20_features_not_supported" title="Macros that describe C++20 features not supported">Macros
+      that describe C++20 features not supported</a>
+</h3></div></div></div>
+<p>
+        The following macros describe features in the 2020 ISO C++ standard, formerly
+        known as C++2a, that are not yet supported by a particular compiler or library.
+      </p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Macro
+                </p>
+              </th>
+<th>
+                <p>
+                  Description
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_BARRIER</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">barrier</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_FORMAT</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">format</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_SOURCE_LOCATION</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">format</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_BIT</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">bit</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_LATCH</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">latch</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_SPAN</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">span</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_COMPARE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">compare</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_NUMBERS</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">numbers</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_STOP_TOKEN</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">stop_token</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_CONCEPTS</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">concepts</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_RANGES</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">range</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_SYNCSTREAM</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">syncstream</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_COROUTINE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">coroutine</span><span class="special">&gt;</span></code>.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX20_HDR_SEMAPHORE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not support the header <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">semaphore</span><span class="special">&gt;</span></code>.
                 </p>
               </td>
 </tr>
@@ -3986,6 +4576,32 @@
                   <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">bind2nd</span></code>, <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">ptr_fun</span></code>
                   and <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">mem_fun</span></code>. They were deprecated
                   in C++11 and is removed from C++14.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_ATOMIC_SMART_PTR</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The standard library no longer supports atomic overloads for <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">shared_ptr</span></code>: use <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">atomic</span><span class="special">&lt;</span><span class="identifier">shared_ptr</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;&gt;</span></code>
+                  instead.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_CODECVT</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The standard library no longer supports <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">codecvt</span><span class="special">&gt;</span></code>,
+                  there is as yet no replacement.
                 </p>
               </td>
 </tr>
@@ -4877,6 +5493,83 @@
 <tr>
 <td>
                 <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_CLANG_VERSION</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Defined to the version of the Clang compiler, usually <code class="computeroutput"><span class="identifier">__clang_major__</span> <span class="special">*</span>
+                  <span class="number">10000</span> <span class="special">+</span>
+                  <span class="identifier">__clang_minor__</span> <span class="special">*</span>
+                  <span class="number">100</span> <span class="special">+</span>
+                  <span class="identifier">__clang_patchlevel__</span></code>.
+                  On Apple Clang, has a best-effort value reflecting the upstream
+                  version, rather than the Apple version.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_BORLANDC</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Defined to the value of __BORLANDC__ if the compiler is the Embarcadero
+                  non-clang based compiler.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_CODEGEARC</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Defined to the value of __CODEGEARC__ if the compiler is the Embarcadero
+                  non-clang based compiler.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_EMBTC</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Defined to the value of __CODEGEARC__ if the compiler is the Embarcadero
+                  clang based compiler.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   <code class="computeroutput"><span class="identifier">BOOST_WINDOWS</span></code>
                 </p>
               </td>
@@ -4979,6 +5672,25 @@
                 <p>
                   Defined as a string describing the name of the platform. Mainly
                   for debugging the configuration.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_LIBSTDCXX_VERSION</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Defined if the libstdc++ standard library is in use. Has the value
+                  of normalised 5 digit integer of the form VVMMM where VV is the
+                  major version number, MM is the minor version number.
                 </p>
               </td>
 </tr>
@@ -6389,7 +7101,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2007 Beman Dawes, Vesa Karvonen, John
+<td align="right"><div class="copyright-footer">Copyright © 2001-2007 Beman Dawes, Vesa Karvonen, John
       Maddock<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

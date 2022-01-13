@@ -66,7 +66,7 @@ int main()
 
    //Create several MyClass objects, each one with a different value
    std::vector<MyClass> values;
-   for(int i = 0; i < 100; ++i)  values.push_back(MyClass(i, (i % 10)));
+   for(std::size_t i = 0; i < 100u; ++i)  values.push_back(MyClass((int)i, unsigned(i % 10)));
 
    BaseSet baseset;
    MemberMultiset membermultiset;

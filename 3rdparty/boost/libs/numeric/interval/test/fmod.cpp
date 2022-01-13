@@ -14,7 +14,7 @@
 #include <boost/numeric/interval/utility.hpp>
 #include <boost/numeric/interval/checking.hpp>
 #include <boost/numeric/interval/rounding.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include "bugs.hpp"
 
 struct my_rounded_arith {
@@ -35,19 +35,19 @@ using namespace interval_lib;
 
 typedef change_rounding<interval<int>, save_state_nothing<my_rounded_arith> >::type I;
 
-int test_main(int, char *[]) {
+int main() {
 
-  BOOST_CHECK(equal(fmod(I(6,9), 7), I(6,9)));
-  BOOST_CHECK(equal(fmod(6, I(7,8)), I(6,6)));
-  BOOST_CHECK(equal(fmod(I(6,9), I(7,8)), I(6,9)));
+  BOOST_TEST(equal(fmod(I(6,9), 7), I(6,9)));
+  BOOST_TEST(equal(fmod(6, I(7,8)), I(6,6)));
+  BOOST_TEST(equal(fmod(I(6,9), I(7,8)), I(6,9)));
 
-  BOOST_CHECK(equal(fmod(I(13,17), 7), I(6,10)));
-  BOOST_CHECK(equal(fmod(13, I(7,8)), I(5,6)));
-  BOOST_CHECK(equal(fmod(I(13,17), I(7,8)), I(5,10)));
+  BOOST_TEST(equal(fmod(I(13,17), 7), I(6,10)));
+  BOOST_TEST(equal(fmod(13, I(7,8)), I(5,6)));
+  BOOST_TEST(equal(fmod(I(13,17), I(7,8)), I(5,10)));
 
-  BOOST_CHECK(equal(fmod(I(-17,-13), 7), I(4,8)));
-  BOOST_CHECK(equal(fmod(-17, I(7,8)), I(4,7)));
-  BOOST_CHECK(equal(fmod(I(-17,-13), I(7,8)), I(4,11)));
+  BOOST_TEST(equal(fmod(I(-17,-13), 7), I(4,8)));
+  BOOST_TEST(equal(fmod(-17, I(7,8)), I(4,7)));
+  BOOST_TEST(equal(fmod(I(-17,-13), I(7,8)), I(4,11)));
 
-  return 0;
+  return boost::report_errors();
 }

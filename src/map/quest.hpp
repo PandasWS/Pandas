@@ -58,19 +58,12 @@ enum e_quest_check_type : uint8 {
 };
 
 class QuestDatabase : public TypesafeYamlDatabase<uint32, s_quest_db> {
-#ifdef Pandas_YamlBlastCache_QuestDatabase
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint32, s_quest_db>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_QuestDatabase
 public:
 	QuestDatabase() : TypesafeYamlDatabase("QUEST_DB", 2, 1) {
 #ifdef Pandas_YamlBlastCache_QuestDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(72);	// Win32
+		this->validDatatypeSize.push_back(104);	// x64
 #endif // Pandas_YamlBlastCache_QuestDatabase
 	}
 

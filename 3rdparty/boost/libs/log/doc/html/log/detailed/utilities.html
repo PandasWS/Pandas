@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Utilities</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Log v2">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Log v2">
 <link rel="up" href="../detailed.html" title="Detailed features description">
 <link rel="prev" href="attributes.html" title="Attributes">
 <link rel="next" href="../extension.html" title="Extending the library">
@@ -267,7 +267,7 @@
           such sets.
         </p>
 <div class="table">
-<a name="log.detailed.utilities.predef_types.standard_types__standard_types_hpp_"></a><p class="title"><b>Table&#160;1.6.&#160;Standard types (standard_types.hpp)</b></p>
+<a name="log.detailed.utilities.predef_types.standard_types__standard_types_hpp_"></a><p class="title"><b>Table 1.6. Standard types (standard_types.hpp)</b></p>
 <div class="table-contents"><table class="table" summary="Standard types (standard_types.hpp)">
 <colgroup>
 <col>
@@ -345,7 +345,7 @@
           There are also a number of time-related type sequences available:
         </p>
 <div class="table">
-<a name="log.detailed.utilities.predef_types.time_related_types__date_time_types_hpp_"></a><p class="title"><b>Table&#160;1.7.&#160;Time-related types (date_time_types.hpp)</b></p>
+<a name="log.detailed.utilities.predef_types.time_related_types__date_time_types_hpp_"></a><p class="title"><b>Table 1.7. Time-related types (date_time_types.hpp)</b></p>
 <div class="table-contents"><table class="table" summary="Time-related types (date_time_types.hpp)">
 <colgroup>
 <col>
@@ -765,7 +765,7 @@
           equivalent is used.
         </p>
 <p>
-          You can also use the <code class="computeroutput"><a class="link" href="../../boost/log/make_att_idm45349307546848.html" title="Function template make_attr_ordering">make_attr_ordering</a></code> generator
+          You can also use the <code class="computeroutput"><a class="link" href="../../boost/log/make_attr_orderin_idm38130.html" title="Function template make_attr_ordering">make_attr_ordering</a></code> generator
           function to automatically generate the <code class="computeroutput"><a class="link" href="../../boost/log/attribute_value_ordering.html" title="Class template attribute_value_ordering">attribute_value_ordering</a></code>
           instance based on the attribute value name and the ordering function. This
           might be useful if the ordering function has a non-trivial type, like the
@@ -793,7 +793,7 @@
           by the library, therefore in order to reacquire the exception object it
           has to rethrow it. The header defines an <code class="computeroutput"><a class="link" href="../../boost/log/exception_handler.html" title="Class template exception_handler">exception_handler</a></code>
           template functor that does just that and then forwards the exception object
-          to a unary user-defined functional object. The <code class="computeroutput"><a class="link" href="../../boost/log/make_exc_idm45349313910400.html" title="Function template make_exception_handler">make_exception_handler</a></code>
+          to a unary user-defined functional object. The <code class="computeroutput"><a class="link" href="../../boost/log/make_exception_ha_idm34559.html" title="Function template make_exception_handler">make_exception_handler</a></code>
           function can be used to simplify the handler construction. All expected
           exception types should be specified explicitly in the call, in the order
           they would appear in the <code class="computeroutput"><span class="keyword">catch</span></code>
@@ -902,6 +902,12 @@
           dump manipulator</a></span></dt>
 <dt><span class="section"><a href="utilities.html#log.detailed.utilities.manipulators.auto_newline">Automatic
           newline insertion</a></span></dt>
+<dt><span class="section"><a href="utilities.html#log.detailed.utilities.manipulators.range">Range
+          manipulator</a></span></dt>
+<dt><span class="section"><a href="utilities.html#log.detailed.utilities.manipulators.tuple">Tuple
+          manipulator</a></span></dt>
+<dt><span class="section"><a href="utilities.html#log.detailed.utilities.manipulators.optional">Optional
+          manipulator</a></span></dt>
 </dl></div>
 <p>
           The library provides a number of stream manipulators that may be useful
@@ -915,7 +921,7 @@
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><code class="computeroutput"><a class="link" href="../../utilities.html#header.boost.log.utility.manipulators.to_log_hpp" title="Header &lt;boost/log/utility/manipulators/to_log.hpp&gt;">boost/log/utility/manipulators/to_log.hpp</a></code><span class="special">&gt;</span>
 </pre>
 <p>
-            The <code class="computeroutput"><a class="link" href="../../boost/log/to_log_idm45349307662992.html" title="Function template to_log">to_log</a></code>
+            The <code class="computeroutput"><a class="link" href="../../boost/log/to_log_idm37645.html" title="Function template to_log">to_log</a></code>
             function creates a stream manipulator that simply outputs the adopted
             value to the stream. By default its behavior is equivalent to simply
             putting the value to the stream. However, the user is able to overload
@@ -956,7 +962,7 @@
             value contexts as well. The library uses this feature to allow different
             formatting ruled for different attribute values, even if the stored value
             type is the same. To do so one has to specify an explicit template argument
-            for <code class="computeroutput"><a class="link" href="../../boost/log/to_log_idm45349307662992.html" title="Function template to_log">to_log</a></code>,
+            for <code class="computeroutput"><a class="link" href="../../boost/log/to_log_idm37645.html" title="Function template to_log">to_log</a></code>,
             a tag type, which will be embedded into the manipulator type and thus
             will allow to define different insertion operators:
           </p>
@@ -1044,7 +1050,7 @@
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><code class="computeroutput"><a class="link" href="../../utilities.html#header.boost.log.utility.manipulators.dump_hpp" title="Header &lt;boost/log/utility/manipulators/dump.hpp&gt;">boost/log/utility/manipulators/dump.hpp</a></code><span class="special">&gt;</span>
 </pre>
 <p>
-            The <code class="computeroutput"><a class="link" href="../../boost/log/dump_idm45349307706112.html" title="Function template dump">dump</a></code>
+            The <code class="computeroutput"><a class="link" href="../../boost/log/dump_idm37126.html" title="Function template dump">dump</a></code>
             function creates a manipulator that outputs binary contents of a contiguous
             memory region. This can be useful for logging some low level binary data,
             such as encoded network packets or entries of a binary file. The use
@@ -1068,12 +1074,12 @@
 <span class="special">}</span>
 </pre>
 <p>
-            There is another manipulator called <code class="computeroutput"><a class="link" href="../../boost/log/dump_ele_idm45349307700640.html" title="Function template dump_elements">dump_elements</a></code> for printing
+            There is another manipulator called <code class="computeroutput"><a class="link" href="../../boost/log/dump_elements_idm37144.html" title="Function template dump_elements">dump_elements</a></code> for printing
             binary representation of non-byte array elements. The special manipulator
             for this case is necessary because the units of the size argument of
-            <code class="computeroutput"><a class="link" href="../../boost/log/dump_idm45349307706112.html" title="Function template dump">dump</a></code>
-            can be confusing (is it in bytes or in elements?). Therefore <code class="computeroutput"><a class="link" href="../../boost/log/dump_idm45349307706112.html" title="Function template dump">dump</a></code>
-            will not compile when used for non-byte input data. <code class="computeroutput"><a class="link" href="../../boost/log/dump_ele_idm45349307700640.html" title="Function template dump_elements">dump_elements</a></code> accepts
+            <code class="computeroutput"><a class="link" href="../../boost/log/dump_idm37126.html" title="Function template dump">dump</a></code>
+            can be confusing (is it in bytes or in elements?). Therefore <code class="computeroutput"><a class="link" href="../../boost/log/dump_idm37126.html" title="Function template dump">dump</a></code>
+            will not compile when used for non-byte input data. <code class="computeroutput"><a class="link" href="../../boost/log/dump_elements_idm37144.html" title="Function template dump_elements">dump_elements</a></code> accepts
             the same arguments, and its size-related arguments always designate the
             number of elements to process.
           </p>
@@ -1123,6 +1129,172 @@
               can only be used with Boost.Log streams based on <code class="computeroutput"><a class="link" href="../../boost/log/basic_formatting_ostream.html" title="Class template basic_formatting_ostream">basic_formatting_ostream</a></code>.
             </p></td></tr>
 </table></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="log.detailed.utilities.manipulators.range"></a><a class="link" href="utilities.html#log.detailed.utilities.manipulators.range" title="Range manipulator">Range
+          manipulator</a>
+</h5></div></div></div>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><code class="computeroutput"><a class="link" href="../../utilities.html#header.boost.log.utility.manipulators.range_hpp" title="Header &lt;boost/log/utility/manipulators/range.hpp&gt;">boost/log/utility/manipulators/range.hpp</a></code><span class="special">&gt;</span>
+</pre>
+<p>
+            It can be useful to be able to output elements of a container (or, more
+            generally, a range), preferably separated with a delimiter. The <code class="computeroutput"><span class="identifier">range_manip</span></code> manipulator allows to do
+            this:
+          </p>
+<pre class="programlisting"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span> <span class="keyword">int</span> <span class="special">&gt;</span> <span class="identifier">ints</span><span class="special">{</span> <span class="number">1</span><span class="special">,</span> <span class="number">2</span><span class="special">,</span> <span class="number">3</span> <span class="special">};</span>
+
+<span class="identifier">BOOST_LOG</span><span class="special">(</span><span class="identifier">lg</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Integers: { "</span> <span class="special">&lt;&lt;</span> <span class="identifier">logging</span><span class="special">::</span><span class="identifier">range_manip</span><span class="special">(</span><span class="identifier">ints</span><span class="special">,</span> <span class="string">", "</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">" }"</span><span class="special">;</span> <span class="comment">// Outputs: "Integers: { 1, 2, 3 }"</span>
+</pre>
+<div class="tip"><table border="0" summary="Tip">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../../../../../../doc/src/images/tip.png"></td>
+<th align="left">Tip</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+              This manipulator can also be used with regular output streams, not
+              necessarily loggers.
+            </p></td></tr>
+</table></div>
+<p>
+            Here, <code class="computeroutput"><span class="identifier">range_manip</span></code> accepts
+            two arguments - the range of elements, and, optionally, a delimiter.
+            The range can be any type supported by <a href="http://www.boost.org/doc/libs/release/libs/range/index.html" target="_top">Boost.Range</a>
+            <code class="computeroutput"><span class="identifier">begin</span><span class="special">()</span></code>
+            and <code class="computeroutput"><span class="identifier">end</span><span class="special">()</span></code>
+            free functions, which includes any standard containers and arrays. Elements
+            of the range must support stream insertion operator. The delimiter argument,
+            if specified, is inserted into stream between elements. The delimiter
+            can be any type that supports stream insertion. If delimiter is not specified,
+            the elements are output into the stream without separation.
+          </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="log.detailed.utilities.manipulators.tuple"></a><a class="link" href="utilities.html#log.detailed.utilities.manipulators.tuple" title="Tuple manipulator">Tuple
+          manipulator</a>
+</h5></div></div></div>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><code class="computeroutput"><a class="link" href="../../utilities.html#header.boost.log.utility.manipulators.tuple_hpp" title="Header &lt;boost/log/utility/manipulators/tuple.hpp&gt;">boost/log/utility/manipulators/tuple.hpp</a></code><span class="special">&gt;</span>
+</pre>
+<p>
+            Tuple manipulator allows to output elements of a heterogeneous sequence
+            (put simply, a tuple) to a stream, possibly separated with a delimiter.
+            For example:
+          </p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">fusion</span><span class="special">/</span><span class="identifier">include</span><span class="special">/</span><span class="identifier">std_tuple</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="identifier">std</span><span class="special">::</span><span class="identifier">tuple</span><span class="special">&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="keyword">int</span><span class="special">,</span> <span class="keyword">char</span> <span class="special">&gt;</span> <span class="identifier">address</span><span class="special">{</span> <span class="string">"Baker Street"</span><span class="special">,</span> <span class="number">221</span><span class="special">,</span> <span class="char">'b'</span> <span class="special">};</span>
+
+<span class="identifier">BOOST_LOG</span><span class="special">(</span><span class="identifier">lg</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Address: "</span> <span class="special">&lt;&lt;</span> <span class="identifier">logging</span><span class="special">::</span><span class="identifier">tuple_manip</span><span class="special">(</span><span class="identifier">address</span><span class="special">,</span> <span class="string">", "</span><span class="special">);</span> <span class="comment">// Outputs: "Address: Baker Street, 221, b"</span>
+</pre>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../../../../doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+              In order to support different types of sequences, users may need to
+              <code class="computeroutput"><span class="preprocessor">#include</span></code> additional
+              support headers from <a href="http://www.boost.org/doc/libs/release/libs/fusion/index.html" target="_top">Boost.Fusion</a>,
+              like <code class="computeroutput"><span class="identifier">boost</span><span class="special">/</span><span class="identifier">fusion</span><span class="special">/</span><span class="identifier">include</span><span class="special">/</span><span class="identifier">std_tuple</span><span class="special">.</span><span class="identifier">hpp</span></code> in this example. See <a href="http://www.boost.org/doc/libs/release/libs/fusion/index.html" target="_top">Boost.Fusion</a>
+              documentation.
+            </p></td></tr>
+</table></div>
+<div class="tip"><table border="0" summary="Tip">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../../../../../../doc/src/images/tip.png"></td>
+<th align="left">Tip</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+              This manipulator can also be used with regular output streams, not
+              necessarily loggers.
+            </p></td></tr>
+</table></div>
+<p>
+            Here, <code class="computeroutput"><span class="identifier">tuple_manip</span></code> accepts
+            two arguments - the sequence of elements, and, optionally, a delimiter.
+            The heterogeneous sequence can be any sequence supported by <a href="http://www.boost.org/doc/libs/release/libs/fusion/index.html" target="_top">Boost.Fusion</a>,
+            for example <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span></code>, <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">tuple</span></code>,
+            <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">tuple</span></code>, <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">fusion</span><span class="special">::</span><span class="identifier">vector</span></code>
+            or any structure that has been adapted using one of the <code class="computeroutput"><span class="identifier">BOOST_FUSION_ADAPT</span><span class="special">*</span></code>
+            macros. Elements of the sequence must support stream insertion operator.
+            The delimiter argument, if specified, is inserted into stream between
+            elements. The delimiter can be any type that supports stream insertion.
+            If delimiter is not specified, the elements are output into the stream
+            without separation.
+          </p>
+<div class="tip"><table border="0" summary="Tip">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../../../../../../doc/src/images/tip.png"></td>
+<th align="left">Tip</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+              You can also use tuples generated by <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">tie</span></code>
+              or <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">tie</span></code> with this manipulator, which
+              allows unified formatting of disjoint variables without having to copy
+              them into a structure.
+            </p></td></tr>
+</table></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="log.detailed.utilities.manipulators.optional"></a><a class="link" href="utilities.html#log.detailed.utilities.manipulators.optional" title="Optional manipulator">Optional
+          manipulator</a>
+</h5></div></div></div>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><code class="computeroutput"><a class="link" href="../../utilities.html#header.boost.log.utility.manipulators.optional_hpp" title="Header &lt;boost/log/utility/manipulators/optional.hpp&gt;">boost/log/utility/manipulators/optional.hpp</a></code><span class="special">&gt;</span>
+</pre>
+<p>
+            Optional manipulator allows to output an optional value to the output
+            stream. If the value is not present, the manipulator allows to specify
+            a "none" marker to output instead. For example:
+          </p>
+<pre class="programlisting"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">optional</span><span class="special">&lt;</span> <span class="keyword">int</span> <span class="special">&gt;</span> <span class="identifier">param1</span><span class="special">;</span>
+<span class="identifier">boost</span><span class="special">::</span><span class="identifier">optional</span><span class="special">&lt;</span> <span class="keyword">int</span> <span class="special">&gt;</span> <span class="identifier">param2</span> <span class="special">=</span> <span class="number">10</span><span class="special">;</span>
+
+<span class="identifier">BOOST_LOG</span><span class="special">(</span><span class="identifier">lg</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"param1: "</span> <span class="special">&lt;&lt;</span> <span class="identifier">logging</span><span class="special">::</span><span class="identifier">optional_manip</span><span class="special">(</span><span class="identifier">param1</span><span class="special">,</span> <span class="string">"[none]"</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">", param2: "</span> <span class="special">&lt;&lt;</span> <span class="identifier">logging</span><span class="special">::</span><span class="identifier">optional_manip</span><span class="special">(</span><span class="identifier">param2</span><span class="special">,</span> <span class="string">"[none]"</span><span class="special">);</span> <span class="comment">// Outputs: "param1: [none], param2: 10"</span>
+</pre>
+<div class="tip"><table border="0" summary="Tip">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../../../../../../doc/src/images/tip.png"></td>
+<th align="left">Tip</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+              This manipulator can also be used with regular output streams, not
+              necessarily loggers.
+            </p></td></tr>
+</table></div>
+<p>
+            Here, <code class="computeroutput"><span class="identifier">optional_manip</span></code>
+            accepts two arguments - the optional value, and, optionally, a "none"
+            marker. The optional value can be any type that supports the following:
+          </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+                Contextually convertible to <code class="computeroutput"><span class="keyword">bool</span></code>,
+                where <code class="computeroutput"><span class="keyword">true</span></code> indicates
+                that the value is present.
+              </li>
+<li class="listitem">
+                Can be dereferenced using <code class="computeroutput"><span class="keyword">operator</span><span class="special">*()</span></code>, and the result of this operator
+                is the value.
+              </li>
+<li class="listitem">
+                The result of dereferencing must support stream insertion operator.
+              </li>
+</ul></div>
+<p>
+            Examples of types that fit these requirements are <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">optional</span></code>
+            (see <a href="http://www.boost.org/doc/libs/release/libs/optional/index.html" target="_top">Boost.Optional</a>),
+            <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">optional</span></code> and pointers to objects.
+          </p>
+<p>
+            The "none" marker argument, if specified, is inserted into
+            stream in case if the optional value is not present (i.e. the contextual
+            conversion to <code class="computeroutput"><span class="keyword">bool</span></code> yields
+            <code class="computeroutput"><span class="keyword">false</span></code>). The marker can be
+            any type that supports stream insertion. If the marker is not specified,
+            no output is produced if the value is not present.
+          </p>
 </div>
 </div>
 <div class="section">
@@ -1492,7 +1664,7 @@ a b c d e f g h i j k l m n o p q r s t u v w x y z
 <p>
             Pretty easy, isn't it? There is also the <code class="computeroutput"><span class="identifier">wadd_console_log</span></code>
             function for wide-character console. If you want to put logs to some
-            other standard stream, you can pass the stream to the <code class="computeroutput"><a class="link" href="../../boost/log/add_cons_idm45349307522992.html" title="Function template add_console_log">add_console_log</a></code> function
+            other standard stream, you can pass the stream to the <code class="computeroutput"><a class="link" href="../../boost/log/add_console_log_idm38188.html" title="Function template add_console_log">add_console_log</a></code> function
             as an argument. E.g. enabling logging to <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span></code>
             instead of <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">clog</span></code> would look like this:
           </p>
@@ -1538,7 +1710,7 @@ a b c d e f g h i j k l m n o p q r s t u v w x y z
 <span class="special">}</span>
 </pre>
 <p>
-            The <code class="computeroutput"><a class="link" href="../../boost/log/add_cons_idm45349307522992.html" title="Function template add_console_log">add_console_log</a></code>
+            The <code class="computeroutput"><a class="link" href="../../boost/log/add_console_log_idm38188.html" title="Function template add_console_log">add_console_log</a></code>
             and <code class="computeroutput"><a class="link" href="../../boost/log/add_file_log.html" title="Function template add_file_log">add_file_log</a></code>
             functions do not conflict and may be combined freely, so it is possible
             to set up logging to the console and a couple of files, including filtering
@@ -1644,7 +1816,7 @@ relation:
             Below are some examples of filters:
           </p>
 <div class="table">
-<a name="log.detailed.utilities.setup.filter_formatter.examples_of_filters"></a><p class="title"><b>Table&#160;1.8.&#160;Examples of filters</b></p>
+<a name="log.detailed.utilities.setup.filter_formatter.examples_of_filters"></a><p class="title"><b>Table 1.8. Examples of filters</b></p>
 <div class="table-contents"><table class="table" summary="Examples of filters">
 <colgroup>
 <col>
@@ -1844,7 +2016,7 @@ relation:
             </p></td></tr>
 </table></div>
 <div class="table">
-<a name="log.detailed.utilities.setup.settings.section__core___logging_core_settings_"></a><p class="title"><b>Table&#160;1.9.&#160;Section "Core". Logging core settings.</b></p>
+<a name="log.detailed.utilities.setup.settings.section__core___logging_core_settings_"></a><p class="title"><b>Table 1.9. Section "Core". Logging core settings.</b></p>
 <div class="table-contents"><table class="table" summary='Section "Core". Logging core settings.'>
 <colgroup>
 <col>
@@ -1930,7 +2102,7 @@ relation:
             </p></td></tr>
 </table></div>
 <div class="table">
-<a name="log.detailed.utilities.setup.settings.sections_under_the__sinks__section__common_sink_settings_"></a><p class="title"><b>Table&#160;1.10.&#160;Sections under the "Sinks" section. Common sink settings.</b></p>
+<a name="log.detailed.utilities.setup.settings.sections_under_the__sinks__section__common_sink_settings_"></a><p class="title"><b>Table 1.10. Sections under the "Sinks" section. Common sink settings.</b></p>
 <div class="table-contents"><table class="table" summary='Sections under the "Sinks" section. Common sink settings.'>
 <colgroup>
 <col>
@@ -1976,7 +2148,7 @@ relation:
                       <a class="link" href="sink_backends.html#log.detailed.sink_backends.event_log" title="Windows event log backends">SimpleEventLog</a>,
                       <a class="link" href="sink_backends.html#log.detailed.sink_backends.debugger" title="Windows debugger output backend">Debugger</a>.
                       Also, user-defined sink names may also be supported if registered
-                      by calling <code class="computeroutput"><a class="link" href="../../boost/log/register_idm45349307254848.html" title="Function template register_sink_factory">register_sink_factory</a></code>.
+                      by calling <code class="computeroutput"><a class="link" href="../../boost/log/register_sink_fac_idm38918.html" title="Function template register_sink_factory">register_sink_factory</a></code>.
                       See <a class="link" href="../extension/settings.html#log.extension.settings.sinks" title="Adding support for user-defined sinks">this</a>
                       section on how to add support for new sinks.
                     </p>
@@ -2030,7 +2202,7 @@ relation:
             be specified in the same section.
           </p>
 <div class="table">
-<a name="log.detailed.utilities.setup.settings._console__sink_settings"></a><p class="title"><b>Table&#160;1.11.&#160;"Console" sink settings</b></p>
+<a name="log.detailed.utilities.setup.settings._console__sink_settings"></a><p class="title"><b>Table 1.11. "Console" sink settings</b></p>
 <div class="table-contents"><table class="table" summary='"Console" sink settings'>
 <colgroup>
 <col>
@@ -2115,7 +2287,7 @@ relation:
 </table></div>
 </div>
 <br class="table-break"><div class="table">
-<a name="log.detailed.utilities.setup.settings._textfile__sink_settings"></a><p class="title"><b>Table&#160;1.12.&#160;"TextFile" sink settings</b></p>
+<a name="log.detailed.utilities.setup.settings._textfile__sink_settings"></a><p class="title"><b>Table 1.12. "TextFile" sink settings</b></p>
 <div class="table-contents"><table class="table" summary='"TextFile" sink settings'>
 <colgroup>
 <col>
@@ -2467,7 +2639,7 @@ relation:
               </li>
 </ul></div>
 <div class="table">
-<a name="log.detailed.utilities.setup.settings._syslog__sink_settings"></a><p class="title"><b>Table&#160;1.13.&#160;"Syslog" sink settings</b></p>
+<a name="log.detailed.utilities.setup.settings._syslog__sink_settings"></a><p class="title"><b>Table 1.13. "Syslog" sink settings</b></p>
 <div class="table-contents"><table class="table" summary='"Syslog" sink settings'>
 <colgroup>
 <col>
@@ -2550,7 +2722,7 @@ relation:
 </table></div>
 </div>
 <br class="table-break"><div class="table">
-<a name="log.detailed.utilities.setup.settings._simpleeventlog__sink_settings"></a><p class="title"><b>Table&#160;1.14.&#160;"SimpleEventLog" sink settings</b></p>
+<a name="log.detailed.utilities.setup.settings._simpleeventlog__sink_settings"></a><p class="title"><b>Table 1.14. "SimpleEventLog" sink settings</b></p>
 <div class="table-contents"><table class="table" summary='"SimpleEventLog" sink settings'>
 <colgroup>
 <col>
@@ -2772,7 +2944,7 @@ AutoFlush=true
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2007-2016 Andrey Semashev<p>
+<td align="right"><div class="copyright-footer">Copyright © 2007-2021 Andrey Semashev<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>).
       </p>

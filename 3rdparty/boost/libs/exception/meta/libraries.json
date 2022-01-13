@@ -11,5 +11,6 @@
     ],
     "maintainers": [
         "Emil Dotchevski <emil -at- revergestudios.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

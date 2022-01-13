@@ -32,7 +32,7 @@
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp> // for test_main
-#include <boost/test/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE_FRACTION, BOOST_CHECK_EQUAL...
+#include <boost/test/tools/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE_FRACTION, BOOST_CHECK_EQUAL...
 
 #include <iostream>
 #include <iomanip>
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE( test_main )
   test_spots(0.0); // Test double.
   #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
     test_spots(0.0L); // Test long double.
-  #if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x0582))
+  #if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x0582))
     test_spots(boost::math::concepts::real_concept(0.)); // Test real concept.
   #endif
   #else

@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-<title>Chapter&#160;1.&#160;Boost.Functional/Factory 1.0</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chapter 1. Boost.Functional/Factory 1.0</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="index.html" title="Chapter&#160;1.&#160;Boost.Functional/Factory 1.0">
+<link rel="home" href="index.html" title="Chapter 1. Boost.Functional/Factory 1.0">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,15 +20,18 @@
 <div class="chapter">
 <div class="titlepage"><div>
 <div><h2 class="title">
-<a name="boost_functional_factory"></a>Chapter&#160;1.&#160;Boost.Functional/Factory 1.0</h2></div>
+<a name="boost_functional_factory"></a>Chapter 1. Boost.Functional/Factory 1.0</h2></div>
 <div><div class="author"><h3 class="author">
 <span class="firstname">Tobias</span> <span class="surname">Schwinger</span>
 </h3></div></div>
-<div><p class="copyright">Copyright &#169; 2007, 2008 Tobias Schwinger</p></div>
+<div><div class="author"><h3 class="author">
+<span class="firstname">Glen</span> <span class="surname">Fernandes</span>
+</h3></div></div>
+<div><p class="copyright">Copyright © 2007, 2008 Tobias Schwinger</p></div>
+<div><p class="copyright">Copyright © 2019 Glen Joseph Fernandes</p></div>
 <div><div class="legalnotice">
 <a name="boost_functional_factory.legal"></a><p>
-        Distributed under the Boost Software License, Version 1.0. (See accompanying
-        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+        Distributed under the Boost Software License, Version 1.0.
       </p>
 </div></div>
 </div></div>
@@ -51,6 +54,8 @@
       The template <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">factory</span></code> lets you encapsulate a <code class="computeroutput"><span class="keyword">new</span></code> expression as a function object, <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">value_factory</span></code>
       encapsulates a constructor invocation without <code class="computeroutput"><span class="keyword">new</span></code>.
     </p>
+<p>
+</p>
 <pre class="programlisting"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">factory</span></code><span class="special">&lt;</span><span class="identifier">T</span><span class="special">*&gt;()(</span><span class="identifier">arg1</span><span class="special">,</span><span class="identifier">arg2</span><span class="special">,</span><span class="identifier">arg3</span><span class="special">)</span>
 <span class="comment">// same as new T(arg1,arg2,arg3)</span>
 
@@ -58,9 +63,12 @@
 <span class="comment">// same as T(arg1,arg2,arg3)</span>
 </pre>
 <p>
-      For technical reasons the arguments to the function objects have to be LValues.
-      A factory that also accepts RValues can be composed using the <a href="http://www.boost.org/libs/functional/forward/doc/index.html" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">forward_adapter</span></code></a>
+    </p>
+<p>
+      Before C++11 the arguments to the function objects have to be LValues. A factory
+      that also accepts RValues can be composed using the <a href="http://www.boost.org/libs/functional/forward/doc/index.html" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">forward_adapter</span></code></a>
       or <a href="http://www.boost.org/libs/bind/bind.html" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">bind</span></code></a>.
+      In C++11 or higher the arguments can be LValues or RValues.
     </p>
 </div>
 <div class="section">
@@ -72,30 +80,26 @@
       an interface of one or more methods that construct objects conforming to known
       interfaces.
     </p>
+<p>
+</p>
 <pre class="programlisting"><span class="comment">// assuming a_concrete_class and another_concrete_class are derived</span>
 <span class="comment">// from an_abstract_class</span>
 
-<span class="keyword">class</span> <span class="identifier">a_factory</span>
-<span class="special">{</span>
-  <span class="keyword">public</span><span class="special">:</span>
+<span class="keyword">struct</span> <span class="identifier">a_factory</span> <span class="special">{</span>
     <span class="keyword">virtual</span> <span class="identifier">an_abstract_class</span><span class="special">*</span> <span class="identifier">create</span><span class="special">()</span> <span class="keyword">const</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span>
     <span class="keyword">virtual</span> <span class="special">~</span><span class="identifier">a_factory</span><span class="special">()</span> <span class="special">{</span> <span class="special">}</span>
 <span class="special">};</span>
 
-<span class="keyword">class</span> <span class="identifier">a_concrete_factory</span> <span class="special">:</span> <span class="keyword">public</span> <span class="identifier">a_factory</span>
-<span class="special">{</span>
-  <span class="keyword">public</span><span class="special">:</span>
-    <span class="keyword">virtual</span> <span class="identifier">an_abstract_class</span><span class="special">*</span> <span class="identifier">create</span><span class="special">()</span> <span class="keyword">const</span>
-    <span class="special">{</span>
+<span class="keyword">struct</span> <span class="identifier">a_concrete_factory</span>
+    <span class="special">:</span> <span class="identifier">a_factory</span> <span class="special">{</span>
+    <span class="identifier">an_abstract_class</span><span class="special">*</span> <span class="identifier">create</span><span class="special">()</span> <span class="keyword">const</span> <span class="special">{</span>
         <span class="keyword">return</span> <span class="keyword">new</span> <span class="identifier">a_concrete_class</span><span class="special">();</span>
     <span class="special">}</span>
 <span class="special">};</span>
 
-<span class="keyword">class</span> <span class="identifier">another_concrete_factory</span> <span class="special">:</span> <span class="keyword">public</span> <span class="identifier">a_factory</span>
-<span class="special">{</span>
-  <span class="keyword">public</span><span class="special">:</span>
-    <span class="keyword">virtual</span> <span class="identifier">an_abstract_class</span><span class="special">*</span> <span class="identifier">create</span><span class="special">()</span> <span class="keyword">const</span>
-    <span class="special">{</span>
+<span class="keyword">struct</span> <span class="identifier">another_concrete_factory</span>
+    <span class="special">:</span> <span class="identifier">a_factory</span> <span class="special">{</span>
+    <span class="identifier">an_abstract_class</span><span class="special">*</span> <span class="identifier">create</span><span class="special">()</span> <span class="keyword">const</span> <span class="special">{</span>
         <span class="keyword">return</span> <span class="keyword">new</span> <span class="identifier">another_concrete_class</span><span class="special">();</span>
     <span class="special">}</span>
 <span class="special">};</span>
@@ -104,22 +108,24 @@
 
 <span class="keyword">int</span> <span class="identifier">main</span><span class="special">()</span>
 <span class="special">{</span>
-    <a href="http://www.boost.org/libs/ptr_container/doc/ptr_map.html" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">ptr_map</span></code></a><span class="special">&lt;</span><a href="http://www.sgi.com/tech/stl/string.html" target="_top"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span></code></a><span class="special">,</span><span class="identifier">a_factory</span><span class="special">&gt;</span> <span class="identifier">factories</span><span class="special">;</span>
+    <span class="identifier">boost</span><span class="special">::</span><span class="identifier">ptr_map</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="identifier">a_factory</span><span class="special">&gt;</span> <span class="identifier">factories</span><span class="special">;</span>
 
     <span class="comment">// [...]</span>
 
-    <span class="identifier">factories</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="string">"a_name"</span><span class="special">,</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">auto_ptr</span><span class="special">&lt;</span><span class="identifier">a_factory</span><span class="special">&gt;(</span>
-        <span class="keyword">new</span> <span class="identifier">a_concrete_factory</span><span class="special">));</span>
-    <span class="identifier">factories</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="string">"another_name"</span><span class="special">,</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">auto_ptr</span><span class="special">&lt;</span><span class="identifier">a_factory</span><span class="special">&gt;(</span>
-        <span class="keyword">new</span> <span class="identifier">another_concrete_factory</span><span class="special">));</span>
+    <span class="identifier">factories</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="string">"a_name"</span><span class="special">,</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">unique_ptr</span><span class="special">&lt;</span><span class="identifier">a_factory</span><span class="special">&gt;(</span><span class="keyword">new</span> <span class="identifier">a_concrete_factory</span><span class="special">));</span>
+    <span class="identifier">factories</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="string">"another_name"</span><span class="special">,</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">unique_ptr</span><span class="special">&lt;</span><span class="identifier">a_factory</span><span class="special">&gt;(</span><span class="keyword">new</span> <span class="identifier">another_concrete_factory</span><span class="special">));</span>
 
     <span class="comment">// [...]</span>
 
-    <span class="identifier">std</span><span class="special">::</span><span class="identifier">auto_ptr</span><span class="special">&lt;</span><span class="identifier">an_abstract_class</span><span class="special">&gt;</span> <span class="identifier">x</span><span class="special">(</span><span class="identifier">factories</span><span class="special">.</span><span class="identifier">at</span><span class="special">(</span><span class="identifier">some_name</span><span class="special">).</span><span class="identifier">create</span><span class="special">());</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">unique_ptr</span><span class="special">&lt;</span><span class="identifier">an_abstract_class</span><span class="special">&gt;</span> <span class="identifier">x</span><span class="special">(</span><span class="identifier">factories</span><span class="special">.</span><span class="identifier">at</span><span class="special">(</span><span class="identifier">some_name</span><span class="special">).</span><span class="identifier">create</span><span class="special">());</span>
 
     <span class="comment">// [...]</span>
 <span class="special">}</span>
 </pre>
+<p>
+    </p>
 <p>
       This approach has several drawbacks. The most obvious one is that there is
       lots of boilerplate code. In other words there is too much code to express
@@ -166,16 +172,18 @@
 <p>
       We let the function objects forward their arguments to the construction expressions
       they encapsulate. Over this <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">factory</span></code>
-      optionally allows the use of smart pointers and <a href="http://www.sgi.com/tech/stl/concepts/allocator.html" target="_top">Allocators</a>.
+      optionally allows the use of smart pointers and <a href="https://www.boost.org/sgi/stl/Allocators.html" target="_top">Allocators</a>.
     </p>
 <p>
       Compile-time polymorphism can be used where appropriate,
     </p>
-<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">class</span> <span class="identifier">T</span> <span class="special">&gt;</span>
+<p>
+</p>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="keyword">void</span> <span class="identifier">do_something</span><span class="special">()</span>
 <span class="special">{</span>
     <span class="comment">// [...]</span>
-    <span class="identifier">T</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">T</span><span class="special">(</span><span class="identifier">a</span><span class="special">,</span><span class="identifier">b</span><span class="special">);</span>
+    <span class="identifier">T</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">T</span><span class="special">(</span><span class="identifier">a</span><span class="special">,</span> <span class="identifier">b</span><span class="special">);</span>
 
     <span class="comment">// for conceptually similar objects x we neither need virtual</span>
     <span class="comment">// functions nor a common base class in this context.</span>
@@ -183,15 +191,19 @@
 <span class="special">}</span>
 </pre>
 <p>
+    </p>
+<p>
       Now, to allow inhomogeneous signatures for the constructors of the types passed
       in for <code class="computeroutput"><span class="identifier">T</span></code> we can use <code class="computeroutput"><span class="identifier">value_factory</span></code> and <a href="http://www.boost.org/libs/bind/bind.html" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">bind</span></code></a>
       to normalize between them.
     </p>
-<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">class</span> <span class="identifier">ValueFactory</span> <span class="special">&gt;</span>
+<p>
+</p>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">ValueFactory</span><span class="special">&gt;</span>
 <span class="keyword">void</span> <span class="identifier">do_something</span><span class="special">(</span><span class="identifier">ValueFactory</span> <span class="identifier">make_obj</span> <span class="special">=</span> <span class="identifier">ValueFactory</span><span class="special">())</span>
 <span class="special">{</span>
     <span class="comment">// [...]</span>
-    <span class="keyword">typename</span> <span class="identifier">ValueFactory</span><span class="special">::</span><span class="identifier">result_type</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">make_obj</span><span class="special">(</span><span class="identifier">a</span><span class="special">,</span><span class="identifier">b</span><span class="special">);</span>
+    <span class="keyword">typename</span> <span class="identifier">ValueFactory</span><span class="special">::</span><span class="identifier">result_type</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">make_obj</span><span class="special">(</span><span class="identifier">a</span><span class="special">,</span> <span class="identifier">b</span><span class="special">);</span>
 
     <span class="comment">// for conceptually similar objects x we neither need virtual</span>
     <span class="comment">// functions nor a common base class in this context.</span>
@@ -202,38 +214,44 @@
 <span class="special">{</span>
     <span class="comment">// [...]</span>
 
-    <span class="identifier">do_something</span><span class="special">(</span><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">value_factory</span></code><span class="special">&lt;</span><span class="identifier">X</span><span class="special">&gt;());</span>
-    <span class="identifier">do_something</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">bind</span><span class="special">(</span><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">value_factory</span></code><span class="special">&lt;</span><span class="identifier">Y</span><span class="special">&gt;(),</span><span class="identifier">_1</span><span class="special">,</span><span class="number">5</span><span class="special">,</span><span class="identifier">_2</span><span class="special">));</span>
-    <span class="comment">// construct X(a,b) and Y(a,5,b), respectively.</span>
+    <span class="identifier">do_something</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">value_factory</span><span class="special">&lt;</span><span class="identifier">X</span><span class="special">&gt;());</span>
+    <span class="identifier">do_something</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">bind</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">value_factory</span><span class="special">&lt;</span><span class="identifier">Y</span><span class="special">&gt;(),</span> <span class="identifier">_1</span><span class="special">,</span> <span class="number">5</span><span class="special">,</span> <span class="identifier">_2</span><span class="special">));</span>
+    <span class="comment">// construct X(a, b) and Y(a, 5, b), respectively.</span>
 
     <span class="comment">// [...]</span>
 <span class="special">}</span>
 </pre>
 <p>
+    </p>
+<p>
       Maybe we want our objects to outlive the function's scope, in this case we
       have to use dynamic allocation;
     </p>
-<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">class</span> <span class="identifier">Factory</span> <span class="special">&gt;</span>
+<p>
+</p>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">Factory</span><span class="special">&gt;</span>
 <span class="identifier">whatever</span> <span class="identifier">do_something</span><span class="special">(</span><span class="identifier">Factory</span> <span class="identifier">new_obj</span> <span class="special">=</span> <span class="identifier">Factory</span><span class="special">())</span>
 <span class="special">{</span>
-    <span class="keyword">typename</span> <span class="identifier">Factory</span><span class="special">::</span><span class="identifier">result_type</span> <span class="identifier">ptr</span> <span class="special">=</span> <span class="identifier">new_obj</span><span class="special">(</span><span class="identifier">a</span><span class="special">,</span><span class="identifier">b</span><span class="special">);</span>
+    <span class="keyword">typename</span> <span class="identifier">Factory</span><span class="special">::</span><span class="identifier">result_type</span> <span class="identifier">ptr</span> <span class="special">=</span> <span class="identifier">new_obj</span><span class="special">(</span><span class="identifier">a</span><span class="special">,</span> <span class="identifier">b</span><span class="special">);</span>
 
     <span class="comment">// again, no common base class or virtual functions needed,</span>
     <span class="comment">// we could enforce a polymorphic base by writing e.g.</span>
-    <span class="comment">//    boost::shared_ptr&lt;base&gt;</span>
+    <span class="comment">//     boost::shared_ptr&lt;base&gt;</span>
     <span class="comment">// instead of</span>
-    <span class="comment">//    typename Factory::result_type</span>
+    <span class="comment">//     typename Factory::result_type</span>
     <span class="comment">// above.</span>
-    <span class="comment">// Note that we are also free to have the type erasure happen </span>
+    <span class="comment">// Note that we are also free to have the type erasure happen</span>
     <span class="comment">// somewhere else (e.g. in the constructor of this function's</span>
     <span class="comment">// result type).</span>
 
     <span class="comment">// [...]</span>
 <span class="special">}</span>
 
-<span class="comment">// [... call do_something like above but with __factory__ instead</span>
-<span class="comment">// of __value_factory__]</span>
+<span class="comment">// [... call do_something like above but with boost::factory instead</span>
+<span class="comment">// of boost::value_factory]</span>
 </pre>
+<p>
+    </p>
 <p>
       Although we might have created polymorphic objects in the previous example,
       we have used compile time polymorphism for the factory. If we want to erase
@@ -241,23 +259,26 @@
       <a href="http://www.boost.org/doc/html/function.html" target="_top">Boost.Function</a>
       to do so. The first example can be rewritten as follows.
     </p>
-<pre class="programlisting"><span class="keyword">typedef</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span> <span class="identifier">an_abstract_class</span><span class="special">*()</span> <span class="special">&gt;</span> <span class="identifier">a_factory</span><span class="special">;</span>
+<p>
+</p>
+<pre class="programlisting"><span class="keyword">typedef</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span><span class="identifier">an_abstract_class</span><span class="special">*()&gt;</span> <span class="identifier">a_factory</span><span class="special">;</span>
 
 <span class="comment">// [...]</span>
 
 <span class="keyword">int</span> <span class="identifier">main</span><span class="special">()</span>
 <span class="special">{</span>
-    <a href="http://www.sgi.com/tech/stl/map.html" target="_top"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">map</span></code></a><span class="special">&lt;</span><a href="http://www.sgi.com/tech/stl/string.html" target="_top"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span></code></a><span class="special">,</span><span class="identifier">a_factory</span><span class="special">&gt;</span> <span class="identifier">factories</span><span class="special">;</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">map</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="identifier">a_factory</span><span class="special">&gt;</span> <span class="identifier">factories</span><span class="special">;</span>
 
     <span class="comment">// [...]</span>
 
-    <span class="identifier">factories</span><span class="special">[</span><span class="string">"a_name"</span><span class="special">]</span> <span class="special">=</span> <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">factory</span></code><span class="special">&lt;</span><span class="identifier">a_concrete_class</span><span class="special">*&gt;();</span>
-    <span class="identifier">factories</span><span class="special">[</span><span class="string">"another_name"</span><span class="special">]</span> <span class="special">=</span>
-        <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">factory</span></code><span class="special">&lt;</span><span class="identifier">another_concrete_class</span><span class="special">*&gt;();</span>
+    <span class="identifier">factories</span><span class="special">[</span><span class="string">"a_name"</span><span class="special">]</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">factory</span><span class="special">&lt;</span><span class="identifier">a_concrete_class</span><span class="special">*&gt;();</span>
+    <span class="identifier">factories</span><span class="special">[</span><span class="string">"another_name"</span><span class="special">]</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">factory</span><span class="special">&lt;</span><span class="identifier">another_concrete_class</span><span class="special">*&gt;();</span>
 
     <span class="comment">// [...]</span>
 <span class="special">}</span>
 </pre>
+<p>
+    </p>
 <p>
       Of course we can just as easy create factories that take arguments and/or return
       <a href="http://www.boost.org/libs/smart_ptr/index.html" target="_top">Smart Pointers</a>.
@@ -286,18 +307,27 @@
 <a name="boost_functional_factory.reference.value_factory.h1"></a>
         <span class="phrase"><a name="boost_functional_factory.reference.value_factory.header"></a></span><a class="link" href="index.html#boost_functional_factory.reference.value_factory.header">Header</a>
       </h5>
+<p>
+</p>
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">functional</span><span class="special">/</span><span class="identifier">value_factory</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 </pre>
+<p>
+      </p>
 <h5>
 <a name="boost_functional_factory.reference.value_factory.h2"></a>
         <span class="phrase"><a name="boost_functional_factory.reference.value_factory.synopsis"></a></span><a class="link" href="index.html#boost_functional_factory.reference.value_factory.synopsis">Synopsis</a>
       </h5>
-<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span>
-<span class="special">{</span>
-    <span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">typename</span> <span class="identifier">T</span> <span class="special">&gt;</span>
-    <span class="keyword">class</span> <span class="identifier">value_factory</span><span class="special">;</span>
-<span class="special">}</span>
+<p>
+</p>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span> <span class="special">{</span>
+
+<span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
+<span class="keyword">class</span> <span class="identifier">value_factory</span><span class="special">;</span>
+
+<span class="special">}</span> <span class="comment">// boost</span>
 </pre>
+<p>
+      </p>
 <div class="variablelist">
 <p class="title"><b>Notation</b></p>
 <dl class="variablelist">
@@ -307,7 +337,7 @@
             </p></dd>
 <dt><span class="term"><code class="computeroutput"><span class="identifier">a0</span></code>...<code class="computeroutput"><span class="identifier">aN</span></code></span></dt>
 <dd><p>
-              argument LValues to a constructor of <code class="computeroutput"><span class="identifier">T</span></code>
+              argument values to a constructor of <code class="computeroutput"><span class="identifier">T</span></code>
             </p></dd>
 <dt><span class="term"><code class="computeroutput"><span class="identifier">F</span></code></span></dt>
 <dd><p>
@@ -397,8 +427,8 @@
         <span class="phrase"><a name="boost_functional_factory.reference.value_factory.limits"></a></span><a class="link" href="index.html#boost_functional_factory.reference.value_factory.limits">Limits</a>
       </h5>
 <p>
-        The macro BOOST_FUNCTIONAL_VALUE_FACTORY_MAX_ARITY can be defined to set
-        the maximum arity. It defaults to 10.
+        Before C++11, the maximum number of arguments supported is 10. Since C++11
+        an arbitrary number of arguments is supported.
       </p>
 </div>
 <div class="section">
@@ -412,11 +442,11 @@
 <p>
         Function object template that dynamically constructs a pointee object for
         the type of pointer given as template argument. Smart pointers may be used
-        for the template argument, given that <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">pointee</span><span class="special">&lt;</span><span class="identifier">Pointer</span><span class="special">&gt;::</span><span class="identifier">type</span></code>
+        for the template argument, given that <code class="computeroutput"><span class="identifier">pointer_traits</span><span class="special">&lt;</span><span class="identifier">Pointer</span><span class="special">&gt;::</span><span class="identifier">element_type</span></code>
         yields the pointee type.
       </p>
 <p>
-        If an <a href="http://www.sgi.com/tech/stl/concepts/allocator.html" target="_top">Allocator</a>
+        If an <a href="https://www.boost.org/sgi/stl/Allocators.html" target="_top">Allocator</a>
         is given, it is used for memory allocation and the placement form of the
         <code class="computeroutput"><span class="keyword">new</span></code> operator is used to construct
         the object. A function object that calls the destructor and deallocates the
@@ -427,34 +457,41 @@
       </p>
 <p>
         If a third template argument is <code class="computeroutput"><span class="identifier">factory_passes_alloc_to_smart_pointer</span></code>,
-        the allocator itself is used for the third constructor argument of <code class="computeroutput"><span class="identifier">Pointer</span></code> (<a href="http://www.boost.org/libs/smart_ptr/shared_ptr.htm" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">shared_ptr</span></code></a> then uses the allocator
+        the allocator itself is used for the third constructor argument of <code class="computeroutput"><span class="identifier">Pointer</span></code> ( <a href="http://www.boost.org/libs/smart_ptr/shared_ptr.htm" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">shared_ptr</span></code></a> then uses the allocator
         to manage the memory of its separately allocated reference counter).
       </p>
 <h5>
 <a name="boost_functional_factory.reference.factory.h1"></a>
         <span class="phrase"><a name="boost_functional_factory.reference.factory.header"></a></span><a class="link" href="index.html#boost_functional_factory.reference.factory.header">Header</a>
       </h5>
+<p>
+</p>
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">functional</span><span class="special">/</span><span class="identifier">factory</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 </pre>
+<p>
+      </p>
 <h5>
 <a name="boost_functional_factory.reference.factory.h2"></a>
         <span class="phrase"><a name="boost_functional_factory.reference.factory.synopsis"></a></span><a class="link" href="index.html#boost_functional_factory.reference.factory.synopsis">Synopsis</a>
       </h5>
-<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span>
-<span class="special">{</span>
-    <span class="keyword">enum</span> <span class="identifier">factory_alloc_propagation</span>
-    <span class="special">{</span>
-        <span class="identifier">factory_alloc_for_pointee_and_deleter</span><span class="special">,</span>
-        <span class="identifier">factory_passes_alloc_to_smart_pointer</span>
-    <span class="special">};</span>
+<p>
+</p>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span> <span class="special">{</span>
 
-    <span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">typename</span> <span class="identifier">Pointer</span><span class="special">,</span>
-        <span class="keyword">class</span> <span class="identifier">Allocator</span> <span class="special">=</span> <span class="keyword">void</span><span class="special">,</span>
-        <span class="identifier">factory_alloc_propagation</span> <span class="identifier">AllocProp</span> <span class="special">=</span>
-            <span class="identifier">factory_alloc_for_pointee_and_deleter</span> <span class="special">&gt;</span>
-    <span class="keyword">class</span> <span class="identifier">factory</span><span class="special">;</span>
-<span class="special">}</span>
+<span class="keyword">enum</span> <span class="identifier">factory_alloc_propagation</span> <span class="special">{</span>
+    <span class="identifier">factory_alloc_for_pointee_and_deleter</span><span class="special">,</span>
+    <span class="identifier">factory_passes_alloc_to_smart_pointer</span>
+<span class="special">};</span>
+
+<span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">Pointer</span><span class="special">,</span>
+    <span class="keyword">class</span> <span class="identifier">Allocator</span> <span class="special">=</span> <span class="keyword">void</span><span class="special">,</span>
+    <span class="identifier">factory_alloc_propagation</span> <span class="identifier">Policy</span> <span class="special">=</span> <span class="identifier">factory_alloc_for_pointee_and_deleter</span><span class="special">&gt;</span>
+<span class="keyword">class</span> <span class="identifier">factory</span><span class="special">;</span>
+
+<span class="special">}</span> <span class="comment">// boost</span>
 </pre>
+<p>
+      </p>
 <div class="variablelist">
 <p class="title"><b>Notation</b></p>
 <dl class="variablelist">
@@ -468,7 +505,7 @@
             </p></dd>
 <dt><span class="term"><code class="computeroutput"><span class="identifier">a0</span></code>...<code class="computeroutput"><span class="identifier">aN</span></code></span></dt>
 <dd><p>
-              argument LValues to a constructor of <code class="computeroutput"><span class="identifier">T</span></code>
+              argument values to a constructor of <code class="computeroutput"><span class="identifier">T</span></code>
             </p></dd>
 <dt><span class="term"><code class="computeroutput"><span class="identifier">F</span></code></span></dt>
 <dd><p>
@@ -561,8 +598,8 @@
         <span class="phrase"><a name="boost_functional_factory.reference.factory.limits"></a></span><a class="link" href="index.html#boost_functional_factory.reference.factory.limits">Limits</a>
       </h5>
 <p>
-        The macro BOOST_FUNCTIONAL_FACTORY_MAX_ARITY can be defined to set the maximum
-        arity. It defaults to 10.
+        Before C++11, the maximum number of arguments supported is 10. Since C++11
+        an arbitrary number of arguments is supported.
       </p>
 </div>
 </div>
@@ -572,6 +609,48 @@
 </h2></div></div></div>
 <h4>
 <a name="boost_functional_factory.changes.h0"></a>
+      <span class="phrase"><a name="boost_functional_factory.changes.boost_1_72_0"></a></span><a class="link" href="index.html#boost_functional_factory.changes.boost_1_72_0">Boost
+      1.72.0</a>
+    </h4>
+<p>
+      Glen Fernandes rewrote the implementations of <code class="computeroutput"><span class="identifier">factory</span></code>
+      and <code class="computeroutput"><span class="identifier">value_factory</span></code> to provide
+      the following features:
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Support r-value arguments when available
+        </li>
+<li class="listitem">
+          Support arbitrary number of arguments via variadic templates when available
+        </li>
+<li class="listitem">
+          Support allocators that are final
+        </li>
+<li class="listitem">
+          Support allocators that use fancy pointers
+        </li>
+<li class="listitem">
+          Support for disabled exceptions (<code class="computeroutput"><span class="identifier">BOOST_NO_EXCEPTIONS</span></code>)
+        </li>
+<li class="listitem">
+          Improved compilation times
+        </li>
+</ul></div>
+<p>
+      The following features have been removed:
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Increasing limits for C++03 compilers through <code class="computeroutput"><span class="identifier">BOOST_FUNCTIONAL_VALUE_FACTORY_MAX_ARITY</span></code>
+        </li>
+<li class="listitem">
+          Using <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">none_t</span></code> in place of <code class="computeroutput"><span class="keyword">void</span></code>
+          through <code class="computeroutput"><span class="identifier">BOOST_FUNCTIONAL_FACTORY_SUPPORT_NONE_T</span></code>
+        </li>
+</ul></div>
+<h4>
+<a name="boost_functional_factory.changes.h1"></a>
       <span class="phrase"><a name="boost_functional_factory.changes.boost_1_58_0"></a></span><a class="link" href="index.html#boost_functional_factory.changes.boost_1_58_0">Boost
       1.58.0</a>
     </h4>
@@ -590,6 +669,9 @@
 <a name="boost_functional_factory.acknowledgements"></a><a class="link" href="index.html#boost_functional_factory.acknowledgements" title="Acknowledgements">Acknowledgements</a>
 </h2></div></div></div>
 <p>
+      Tobias Schwinger for creating this library.
+    </p>
+<p>
       Eric Niebler requested a function to invoke a type's constructor (with the
       arguments supplied as a Tuple) as a Fusion feature. These Factory utilities
       are a factored-out generalization of this idea.
@@ -602,8 +684,7 @@
       Joel de Guzman's documentation style was copied from Fusion.
     </p>
 <p>
-      Further, I want to thank Peter Dimov for sharing his insights on language details
-      and their evolution.
+      Peter Dimov for sharing his insights on language details and their evolution.
     </p>
 </div>
 <div class="section">
@@ -616,7 +697,7 @@
           Gamma et al. - Addison Wesley Publishing, 1995
         </li>
 <li class="listitem">
-          <a href="http://www.sgi.com/tech/stl/" target="_top">Standard Template Library Programmer's
+          <a href="https://boost.org/sgi/stl/" target="_top">Standard Template Library Programmer's
           Guide</a>, Hewlett-Packard Company, 1994
         </li>
 <li class="listitem">
@@ -631,7 +712,7 @@
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><p><small>Last revised: November 01, 2008 at 21:44:52 GMT</small></p></td>
+<td align="left"><p><small>Last revised: December 02, 2021 at 06:54:08 GMT</small></p></td>
 <td align="right"><div class="copyright-footer"></div></td>
 </tr></table>
 <hr>

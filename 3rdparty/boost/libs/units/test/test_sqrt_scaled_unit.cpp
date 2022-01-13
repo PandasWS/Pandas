@@ -37,12 +37,12 @@ typedef bu::make_scaled_unit<bu::length,
 typedef bu::make_scaled_unit<bu::area,
                              bu::scale<10, bu::static_rational<-6> > >::type micro_meter2_unit;
 
-int test_main(int,char *[])
+int main()
 {
     const bu::quantity<micro_meter2_unit> E1 = E_*micro_meter2_unit();
     const bu::quantity<milli_meter_unit>  E2 = sqrt(E1);
 
-    BOOST_CHECK(E1.value() == E_);
-    BOOST_CHECK(E2.value() == sqrt(E_));
-    return 0;
+    BOOST_TEST(E1.value() == E_);
+    BOOST_TEST(E2.value() == sqrt(E_));
+    return boost::report_errors();
 }

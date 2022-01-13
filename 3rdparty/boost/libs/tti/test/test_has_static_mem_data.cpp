@@ -15,6 +15,13 @@ int main()
   BOOST_TEST((StatName<AnotherType,AType::AStructType>::value));
   BOOST_TEST((BOOST_TTI_HAS_STATIC_MEMBER_DATA_GEN(CIntValue)<AnotherType,const int>::value));
   
+#if !defined(BOOST_NO_CXX11_UNRESTRICTED_UNION)
+
+  BOOST_TEST((UnionStatic<AType::AnUnion,float>::value));
+  BOOST_TEST((BOOST_TTI_HAS_STATIC_MEMBER_DATA_GEN(ASCData)<AnotherType::AnotherUnion,char>::value));
+  
+#endif
+
   // Passing non-class enclosing type will return false
   
   BOOST_TEST((!BOOST_TTI_HAS_STATIC_MEMBER_DATA_GEN(DSMember)<unsigned short,short>::value));

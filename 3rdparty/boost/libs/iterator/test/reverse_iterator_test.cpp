@@ -20,7 +20,7 @@ using boost::dummyT;
 // Test reverse iterator
 int main()
 {
-  dummyT array[] = { dummyT(0), dummyT(1), dummyT(2), 
+  dummyT array[] = { dummyT(0), dummyT(1), dummyT(2),
                      dummyT(3), dummyT(4), dummyT(5) };
   const int N = sizeof(array)/sizeof(dummyT);
 
@@ -104,29 +104,29 @@ int main()
     boost::function_requires< boost_concepts::BidirectionalTraversalConcept<Iter> >();
   }
 #endif
-  
+
   // Test reverse_iterator
   {
     dummyT reversed[N];
     std::copy(array, array + N, reversed);
     std::reverse(reversed, reversed + N);
-    
+
     typedef boost::reverse_iterator<dummyT*> reverse_iterator;
-    
+
     reverse_iterator i(reversed + N);
     boost::random_access_iterator_test(i, N, array);
 
     boost::random_access_iterator_test(boost::make_reverse_iterator(reversed + N), N, array);
 
     typedef boost::reverse_iterator<const dummyT*> const_reverse_iterator;
-    
+
     const_reverse_iterator j(reversed + N);
     boost::random_access_iterator_test(j, N, array);
 
     const dummyT* const_reversed = reversed;
-    
+
     boost::random_access_iterator_test(boost::make_reverse_iterator(const_reversed + N), N, array);
-    
+
     boost::const_nonconst_iterator_test(i, ++j);
   }
 
@@ -146,7 +146,7 @@ int main()
     // (e.g. "reversed + N") is used in the constructor below.
     const std::deque<dummyT>::iterator finish = reversed_container.end();
     reverse_iterator i(finish);
-    
+
     boost::random_access_iterator_test(i, N, array);
     boost::random_access_iterator_test(boost::make_reverse_iterator(reversed + N), N, array);
 
@@ -155,18 +155,18 @@ int main()
 
     const std::deque<dummyT>::const_iterator const_reversed = reversed;
     boost::random_access_iterator_test(boost::make_reverse_iterator(const_reversed + N), N, array);
-    
+
     // Many compilers' builtin deque iterators don't interoperate well, though
     // STLport fixes that problem.
 #if defined(__SGI_STL_PORT)                                                             \
     || !BOOST_WORKAROUND(__GNUC__, <= 2)                                                \
     && !(BOOST_WORKAROUND(__GNUC__, == 3) && BOOST_WORKAROUND(__GNUC_MINOR__, <= 1))    \
-    && !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x551))                          \
+    && !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x551))                          \
     && !BOOST_WORKAROUND(__LIBCOMO_VERSION__, BOOST_TESTED_AT(29))                      \
     && !BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB, <= 1)
-    
+
     boost::const_nonconst_iterator_test(i, ++j);
-    
+
 #endif
   }
 

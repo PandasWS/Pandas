@@ -241,6 +241,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_PARTYLEAVE
 	const char* partyleave_filter_name;	// NPCF_PARTYLEAVE	// OnPCPartyLeaveFilter	// 当玩家准备离开队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYLEAVE
+
+#ifdef Pandas_NpcFilter_DROPITEM
+	const char* dropitem_filter_name;	// NPCF_DROPITEM	// OnPCDropItemFilter	// 当玩家准备丢弃或掉落道具时触发过滤器
+#endif // Pandas_NpcFilter_DROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/
@@ -311,6 +315,14 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_PCATTACK
 	const char* pcattack_express_name;	// NPCX_PCATTACK	// OnPCAttackExpress	// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
 #endif // Pandas_NpcExpress_PCATTACK
+
+#ifdef Pandas_NpcExpress_MER_CALL
+	const char* mer_call_express_name;	// NPCX_MER_CALL	// OnPCMerCallExpress	// 当玩家成功召唤出佣兵时触发实时事件
+#endif // Pandas_NpcExpress_MER_CALL
+
+#ifdef Pandas_NpcExpress_MER_LEAVE
+	const char* mer_leave_express_name;	// NPCX_MER_LEAVE	// OnPCMerLeaveExpress	// 当佣兵离开玩家时触发实时事件
+#endif // Pandas_NpcExpress_MER_LEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related
@@ -519,6 +531,8 @@ enum monsterinfo_types {
 	MOB_ATK2,
 	MOB_DEF,
 	MOB_MDEF,
+	MOB_RES,
+	MOB_MRES,
 	MOB_STR,
 	MOB_AGI,
 	MOB_VIT,
@@ -701,6 +715,8 @@ enum unitdata_mobtypes {
 	UMOB_BODY2,
 	UMOB_GROUP_ID,
 	UMOB_IGNORE_CELL_STACK_LIMIT,
+	UMOB_RES,
+	UMOB_MRES,
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 	UMOB_AURA,
 #endif // Pandas_Struct_Unit_CommonData_Aura
@@ -2301,6 +2317,7 @@ enum e_iteminfo : uint8 {
 	ITEMINFO_ID,
 	ITEMINFO_AEGISNAME,	// 18
 	ITEMINFO_ARMORLEVEL,
+	ITEMINFO_SUBTYPE,
 };
 
 class ConstantDatabase : public YamlDatabase {

@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2016 Vladimir Batov.
+// Copyright (c) 2009-2020 Vladimir Batov.
 // Use, modification and distribution are subject to the Boost Software License,
 // Version 1.0. See http://www.boost.org/LICENSE_1_0.txt.
 
@@ -18,8 +18,8 @@ namespace { namespace local
 #endif
 }}
 
-#include <boost/bind.hpp>
 #include <boost/detail/lightweight_test.hpp>
+#include <functional>
 
 static
 void
@@ -50,8 +50,7 @@ getting_started_example1()
     //[getting_started_example1
     try
     {
-        boost::cnv::lexical_cast cnv; // boost::lexical_cast-based converter
-
+        auto  cnv = boost::cnv::lexical_cast();        // boost::lexical_cast-based converter
         int    i1 = lexical_cast<int>("123");          // boost::lexical_cast standard deployment
         int    i2 = convert<int>("123").value();       // boost::convert with the default converter
         int    i3 = convert<int>("123", cnv).value();  // boost::convert with an explicit converter
@@ -98,9 +97,9 @@ void
 getting_started_example3()
 {
     //[getting_started_example3
-    boost::cnv::lexical_cast cnv1;
-    boost::cnv::strtol       cnv2;
-    boost::cnv::spirit       cnv3;
+    auto cnv1 = boost::cnv::lexical_cast();
+    auto cnv2 = boost::cnv::strtol();
+    auto cnv3 = boost::cnv::spirit();
 
     int i1 = convert<int>("123", cnv1).value();
     int i2 = convert<int>("123", cnv2).value(); // Two times faster than lexical_cast.
@@ -117,8 +116,6 @@ void
 getting_started_example4()
 {
     //[getting_started_example4
-    boost::cnv::cstream cnv;
-
     try
     {
         int i1 = lexical_cast<int>("   123"); // Does not work.
@@ -126,6 +123,7 @@ getting_started_example4()
     }
     catch (...) {}
 
+    auto        cnv = boost::cnv::cstream();
     int          i2 = convert<int>("   123", cnv(std::skipws)).value(); // Success
     string       s1 = lexical_cast<string>(12.34567);
     string       s2 = convert<string>(12.34567, cnv(std::fixed)(std::setprecision(3))).value();
@@ -160,11 +158,11 @@ static
 void
 getting_started_example6()
 {
-    std::string const    s1 = "123";
-    std::string const    s2 = "456";
-    int const    default_i1 = 11;
-    int const    default_i2 = 12;
-    boost::cnv::cstream cnv;
+    std::string s1 = "123";
+    std::string s2 = "456";
+    int default_i1 = 11;
+    int default_i2 = 12;
+    auto       cnv = boost::cnv::cstream();
 
     //[getting_started_example6
 
@@ -184,11 +182,11 @@ static
 void
 getting_started_example7()
 {
-    std::string const    s1 = "123";
-    std::string const    s2 = "456";
-    int const    default_i1 = 11;
-    int const    default_i2 = 12;
-    boost::cnv::cstream cnv;
+    std::string s1 = "123";
+    std::string s2 = "456";
+    int default_i1 = 11;
+    int default_i2 = 12;
+    auto       cnv = boost::cnv::cstream();
 
     //[getting_started_example7
 
@@ -222,8 +220,8 @@ getting_started_example9()
     int const default_i2 = 12;
 
     //[getting_started_example9
-    int i1 = convert<int>(s1).value_or_eval(boost::bind(fallback_fun, "bad i1", default_i1));
-    int i2 = convert<int>(s2).value_or_eval(boost::bind(fallback_fun, "bad i2", default_i2));
+    int i1 = convert<int>(s1).value_or_eval(std::bind(fallback_fun, "bad i1", default_i1));
+    int i2 = convert<int>(s2).value_or_eval(std::bind(fallback_fun, "bad i2", default_i2));
     // ... proceed
     //]
     BOOST_TEST(i1 == 123);

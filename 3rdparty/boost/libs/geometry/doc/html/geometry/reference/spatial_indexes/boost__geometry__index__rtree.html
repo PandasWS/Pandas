@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>boost::geometry::index::rtree</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../spatial_indexes.html" title="Spatial Indexes">
 <link rel="prev" href="../spatial_indexes.html" title="Spatial Indexes">
 <link rel="next" href="boost__geometry__index__rtree/rtree__.html" title="rtree()">
@@ -28,13 +28,27 @@
 </h4></div></div></div>
 <div class="toc"><dl class="toc">
 <dt><span class="section"><a href="boost__geometry__index__rtree/rtree__.html">rtree()</a></span></dt>
-<dt><span class="section"><a href="boost__geometry__index__rtree/rtree_parameters_type_const____indexable_getter_const____value_equal_const____allocator_type_const___.html">rtree(parameters_type
+<dt><span class="section"><a href="boost__geometry__index__rtree/rtree_par_cr_ind_cr_val_cr_all_cr.html">rtree(parameters_type
           const &amp;, indexable_getter const &amp;, value_equal const &amp;, allocator_type
           const &amp;)</a></span></dt>
 <dt><span class="section"><a href="boost__geometry__index__rtree/rtree_iterator__iterator_.html">rtree(Iterator,
           Iterator)</a></span></dt>
 <dt><span class="section"><a href="boost__geometry__index__rtree/rtree_range_const___.html">rtree(Range
           const &amp;)</a></span></dt>
+<dt><span class="section"><a href="boost__geometry__index__rtree/rtree_ite_ite_par_cr_ind_cr_val_cr_all_cr_pac_cr.html">rtree(Iterator,
+          Iterator, parameters_type const &amp;, indexable_getter const &amp;, value_equal
+          const &amp;, allocator_type const &amp;, PackAlloc const &amp;)</a></span></dt>
+<dt><span class="section"><a href="boost__geometry__index__rtree/rtree_ran_cr_par_cr_ind_cr_val_cr_all_cr_pac_cr.html">rtree(Range
+          const &amp;, parameters_type const &amp;, indexable_getter const &amp;,
+          value_equal const &amp;, allocator_type const &amp;, PackAlloc const &amp;)</a></span></dt>
+<dt><span class="section"><a href="boost__geometry__index__rtree/rtree_iterator__iterator__allocator_type_const___.html">rtree(Iterator,
+          Iterator, allocator_type const &amp;)</a></span></dt>
+<dt><span class="section"><a href="boost__geometry__index__rtree/rtree_range_const____allocator_type_const___.html">rtree(Range
+          const &amp;, allocator_type const &amp;)</a></span></dt>
+<dt><span class="section"><a href="boost__geometry__index__rtree/rtree_ite_ite_all_cr_pac_cr.html">rtree(Iterator,
+          Iterator, allocator_type const &amp;, PackAlloc const &amp;)</a></span></dt>
+<dt><span class="section"><a href="boost__geometry__index__rtree/rtree_ran_cr_all_cr_pac_cr.html">rtree(Range
+          const &amp;, allocator_type const &amp;, PackAlloc const &amp;)</a></span></dt>
 <dt><span class="section"><a href="boost__geometry__index__rtree/_rtree__.html">~rtree()</a></span></dt>
 <dt><span class="section"><a href="boost__geometry__index__rtree/rtree_rtree_const___.html">rtree(rtree
           const &amp;)</a></span></dt>
@@ -81,7 +95,7 @@
 <dt><span class="section"><a href="boost__geometry__index__rtree/get_allocator__.html">get_allocator()</a></span></dt>
 </dl></div>
 <p>
-          <a class="indexterm" name="idm45133035611120"></a><a class="indexterm" name="idm45133035610432"></a><a class="indexterm" name="idm45133035609744"></a><a class="indexterm" name="idm45133035609056"></a>
+          <a class="indexterm" name="idm80352"></a><a class="indexterm" name="idm80354"></a><a class="indexterm" name="idm80356"></a><a class="indexterm" name="idm80358"></a>
 The R-tree spatial index.
         </p>
 <h6>
@@ -141,10 +155,10 @@ The R-tree spatial index.
           harm the performance. The default IndexableGetter can translate all types
           adapted to Point, Box or Segment concepts (called Indexables). Furthermore,
           it can handle <code class="literal"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">Indexable</span><span class="special">,</span> <span class="identifier">T</span><span class="special">&gt;</span></code></code>,
-          <code class="literal"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">tuple</span><span class="special">&lt;</span><span class="identifier">Indexable</span><span class="special">,</span>
-          <span class="special">...&gt;</span></code></code> and <code class="literal"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">tuple</span><span class="special">&lt;</span><span class="identifier">Indexable</span><span class="special">,</span>
-          <span class="special">...&gt;</span></code></code> when possible.
-          For example, for Value of type <code class="literal"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">Box</span><span class="special">,</span> <span class="keyword">int</span><span class="special">&gt;</span></code></code>,
+          <code class="literal"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">tuple</span><span class="special">&lt;</span><span class="identifier">Indexable</span><span class="special">,</span>
+          <span class="special">...&gt;</span></code></code> and <code class="literal"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">tuple</span><span class="special">&lt;</span><span class="identifier">Indexable</span><span class="special">,</span>
+          <span class="special">...&gt;</span></code></code>. For example,
+          for Value of type <code class="literal"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">Box</span><span class="special">,</span> <span class="keyword">int</span><span class="special">&gt;</span></code></code>,
           the default IndexableGetter translates from <code class="literal"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="identifier">Box</span><span class="special">,</span> <span class="keyword">int</span><span class="special">&gt;</span>
           <span class="keyword">const</span><span class="special">&amp;</span></code></code>
           to <code class="literal"><code class="computeroutput"><span class="identifier">Box</span> <span class="keyword">const</span><span class="special">&amp;</span></code></code>.
@@ -509,7 +523,7 @@ The R-tree spatial index.
 <tr>
 <td>
                   <p>
-                    <a class="link" href="boost__geometry__index__rtree/rtree_parameters_type_const____indexable_getter_const____value_equal_const____allocator_type_const___.html#classboost_1_1geometry_1_1index_1_1rtree_1a1a6b696d4855cbf1866196fe058c3a87"><code class="computeroutput"><span class="identifier">rtree</span><span class="special">(</span><span class="identifier">parameters_type</span> <span class="keyword">const</span>
+                    <a class="link" href="boost__geometry__index__rtree/rtree_par_cr_ind_cr_val_cr_all_cr.html#classboost_1_1geometry_1_1index_1_1rtree_1a1a6b696d4855cbf1866196fe058c3a87"><code class="computeroutput"><span class="identifier">rtree</span><span class="special">(</span><span class="identifier">parameters_type</span> <span class="keyword">const</span>
                     <span class="special">&amp;,</span> <span class="identifier">indexable_getter</span>
                     <span class="keyword">const</span> <span class="special">&amp;,</span>
                     <span class="identifier">value_equal</span> <span class="keyword">const</span>
@@ -540,6 +554,108 @@ The R-tree spatial index.
 <td>
                   <p>
                     <a class="link" href="boost__geometry__index__rtree/rtree_range_const___.html#classboost_1_1geometry_1_1index_1_1rtree_1a7b96b715c52ddc13d7a81db344825848"><code class="computeroutput"><span class="identifier">rtree</span><span class="special">(</span><span class="identifier">Range</span> <span class="keyword">const</span>
+                    <span class="special">&amp;)</span></code></a>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    The constructor.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="boost__geometry__index__rtree/rtree_ite_ite_par_cr_ind_cr_val_cr_all_cr_pac_cr.html#classboost_1_1geometry_1_1index_1_1rtree_1aad1b32e82dd734747810f01ee17e464e"><code class="computeroutput"><span class="identifier">rtree</span><span class="special">(</span><span class="identifier">Iterator</span><span class="special">,</span>
+                    <span class="identifier">Iterator</span><span class="special">,</span>
+                    <span class="identifier">parameters_type</span> <span class="keyword">const</span>
+                    <span class="special">&amp;,</span> <span class="identifier">indexable_getter</span>
+                    <span class="keyword">const</span> <span class="special">&amp;,</span>
+                    <span class="identifier">value_equal</span> <span class="keyword">const</span>
+                    <span class="special">&amp;,</span> <span class="identifier">allocator_type</span>
+                    <span class="keyword">const</span> <span class="special">&amp;,</span>
+                    <span class="identifier">PackAlloc</span> <span class="keyword">const</span>
+                    <span class="special">&amp;)</span></code></a>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    The constructor.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="boost__geometry__index__rtree/rtree_ran_cr_par_cr_ind_cr_val_cr_all_cr_pac_cr.html#classboost_1_1geometry_1_1index_1_1rtree_1aa2615aff643804935c530a668663807f"><code class="computeroutput"><span class="identifier">rtree</span><span class="special">(</span><span class="identifier">Range</span> <span class="keyword">const</span>
+                    <span class="special">&amp;,</span> <span class="identifier">parameters_type</span>
+                    <span class="keyword">const</span> <span class="special">&amp;,</span>
+                    <span class="identifier">indexable_getter</span> <span class="keyword">const</span>
+                    <span class="special">&amp;,</span> <span class="identifier">value_equal</span>
+                    <span class="keyword">const</span> <span class="special">&amp;,</span>
+                    <span class="identifier">allocator_type</span> <span class="keyword">const</span>
+                    <span class="special">&amp;,</span> <span class="identifier">PackAlloc</span>
+                    <span class="keyword">const</span> <span class="special">&amp;)</span></code></a>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    The constructor.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="boost__geometry__index__rtree/rtree_iterator__iterator__allocator_type_const___.html#classboost_1_1geometry_1_1index_1_1rtree_1a0d5b2e4876782e6950fbbdfa60f7406b"><code class="computeroutput"><span class="identifier">rtree</span><span class="special">(</span><span class="identifier">Iterator</span><span class="special">,</span>
+                    <span class="identifier">Iterator</span><span class="special">,</span>
+                    <span class="identifier">allocator_type</span> <span class="keyword">const</span>
+                    <span class="special">&amp;)</span></code></a>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    The constructor.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="boost__geometry__index__rtree/rtree_range_const____allocator_type_const___.html#classboost_1_1geometry_1_1index_1_1rtree_1a90857cba52523d5ff0e7b2a87081ccf5"><code class="computeroutput"><span class="identifier">rtree</span><span class="special">(</span><span class="identifier">Range</span> <span class="keyword">const</span>
+                    <span class="special">&amp;,</span> <span class="identifier">allocator_type</span>
+                    <span class="keyword">const</span> <span class="special">&amp;)</span></code></a>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    The constructor.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="boost__geometry__index__rtree/rtree_ite_ite_all_cr_pac_cr.html#classboost_1_1geometry_1_1index_1_1rtree_1aed5c247a23b8236b2e80867acefe55ec"><code class="computeroutput"><span class="identifier">rtree</span><span class="special">(</span><span class="identifier">Iterator</span><span class="special">,</span>
+                    <span class="identifier">Iterator</span><span class="special">,</span>
+                    <span class="identifier">allocator_type</span> <span class="keyword">const</span>
+                    <span class="special">&amp;,</span> <span class="identifier">PackAlloc</span>
+                    <span class="keyword">const</span> <span class="special">&amp;)</span></code></a>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    The constructor.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="boost__geometry__index__rtree/rtree_ran_cr_all_cr_pac_cr.html#classboost_1_1geometry_1_1index_1_1rtree_1aceb504e98a611ef81f96b2df357d03f3"><code class="computeroutput"><span class="identifier">rtree</span><span class="special">(</span><span class="identifier">Range</span> <span class="keyword">const</span>
+                    <span class="special">&amp;,</span> <span class="identifier">allocator_type</span>
+                    <span class="keyword">const</span> <span class="special">&amp;,</span>
+                    <span class="identifier">PackAlloc</span> <span class="keyword">const</span>
                     <span class="special">&amp;)</span></code></a>
                   </p>
                 </td>
@@ -1025,8 +1141,8 @@ The R-tree spatial index.
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

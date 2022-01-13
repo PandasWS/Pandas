@@ -31,13 +31,13 @@
 
 #endif
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 # pragma warn -8092 // template argument passed to 'find' is not an iterator
 #endif
 
 #include <boost/smart_ptr.hpp>
 
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include <iostream>
 #include <set>

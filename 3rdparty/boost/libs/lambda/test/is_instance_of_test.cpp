@@ -12,7 +12,8 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
+#define BOOST_CHECK BOOST_TEST
  
 
 #include "boost/lambda/detail/is_instance_of.hpp"
@@ -45,7 +46,7 @@ template <bool b> class X {};
 X<boost::lambda::is_instance_of_2<int, A2>::value> x;
 
 
-int test_main(int, char *[]) {
+int main() {
 
 using boost::lambda::is_instance_of_1;
 using boost::lambda::is_instance_of_2;
@@ -73,7 +74,6 @@ BOOST_CHECK((is_instance_of_4<A4<int, float, char, double>, A4>::value == true))
 BOOST_CHECK((is_instance_of_4<int, A4>::value == false));
 BOOST_CHECK((is_instance_of_4<C4, A4>::value == false));
 
-return 0;
+return boost::report_errors();
 
 }
-

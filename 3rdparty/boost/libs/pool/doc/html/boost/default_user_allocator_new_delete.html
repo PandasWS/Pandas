@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Struct default_user_allocator_new_delete</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -26,7 +26,7 @@
 <a name="boost.default_user_allocator_new_delete"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Struct default_user_allocator_new_delete</span></h2>
-<p>boost::default_user_allocator_new_delete &#8212; Allocator used as the default template parameter for a <a href="../boost_pool/pool/pooling.html#boost_pool.pool.pooling.user_allocator" target="_top">UserAllocator</a> template parameter. Uses new and delete. </p>
+<p>boost::default_user_allocator_new_delete — Allocator used as the default template parameter for a <a href="../boost_pool/pool/pooling.html#boost_pool.pool.pooling.user_allocator" target="_top">UserAllocator</a> template parameter. Uses new and delete. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../header/boost/pool/pool_hpp.html" title="Header &lt;boost/pool/pool.hpp&gt;">boost/pool/pool.hpp</a>&gt;
@@ -37,22 +37,22 @@
   <span class="keyword">typedef</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span>    <a name="boost.default_user_allocator_new_delete.size_type"></a><span class="identifier">size_type</span><span class="special">;</span>        <span class="comment">// An unsigned integral type that can represent the size of the largest object to be allocated. </span>
   <span class="keyword">typedef</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">ptrdiff_t</span> <a name="boost.default_user_allocator_new_delete.difference_type"></a><span class="identifier">difference_type</span><span class="special">;</span>  <span class="comment">// A signed integral type that can represent the difference of any two pointers. </span>
 
-  <span class="comment">// <a class="link" href="default_user_allocator_new_delete.html#idm45452587786304-bb">public static functions</a></span>
-  <span class="keyword">static</span> <span class="keyword">char</span> <span class="special">*</span> <a class="link" href="default_user_allocator_new_delete.html#idm45452587785744-bb"><span class="identifier">malloc</span></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">static</span> <span class="keyword">void</span> <a class="link" href="default_user_allocator_new_delete.html#idm45452587783552-bb"><span class="identifier">free</span></a><span class="special">(</span><span class="keyword">char</span> <span class="special">*</span><span class="keyword">const</span><span class="special">)</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="default_user_allocator_new_delete.html#idm2162-bb">public static functions</a></span>
+  <span class="keyword">static</span> <span class="keyword">char</span> <span class="special">*</span> <a class="link" href="default_user_allocator_new_delete.html#idm2163-bb"><span class="identifier">malloc</span></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">static</span> <span class="keyword">void</span> <a class="link" href="default_user_allocator_new_delete.html#idm2169-bb"><span class="identifier">free</span></a><span class="special">(</span><span class="keyword">char</span> <span class="special">*</span><span class="keyword">const</span><span class="special">)</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="idm45974877553504"></a><h2>Description</h2>
+<a name="idm2302"></a><h2>Description</h2>
 <div class="refsect2">
-<a name="idm45974877553120"></a><h3>
-<a name="idm45452587786304-bb"></a><code class="computeroutput">default_user_allocator_new_delete</code> public static functions</h3>
+<a name="idm2304"></a><h3>
+<a name="idm2162-bb"></a><code class="computeroutput">default_user_allocator_new_delete</code> public static functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">static</span> <span class="keyword">char</span> <span class="special">*</span> <a name="idm45452587785744-bb"></a><span class="identifier">malloc</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span> bytes<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">static</span> <span class="keyword">char</span> <span class="special">*</span> <a name="idm2163-bb"></a><span class="identifier">malloc</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span> bytes<span class="special">)</span><span class="special">;</span></pre>
 <p>Attempts to allocate n bytes from the system. Returns 0 if out-of-memory </p>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">static</span> <span class="keyword">void</span> <a name="idm45452587783552-bb"></a><span class="identifier">free</span><span class="special">(</span><span class="keyword">char</span> <span class="special">*</span><span class="keyword">const</span> block<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">static</span> <span class="keyword">void</span> <a name="idm2169-bb"></a><span class="identifier">free</span><span class="special">(</span><span class="keyword">char</span> <span class="special">*</span><span class="keyword">const</span> block<span class="special">)</span><span class="special">;</span></pre>
 <p>Attempts to de-allocate block. 
 </p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -72,7 +72,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2000-2006 Stephen Cleary<br>Copyright &#169; 2011 Paul A. Bristow<p>
+<td align="right"><div class="copyright-footer">Copyright © 2000-2006 Stephen Cleary<br>Copyright © 2011 Paul A. Bristow<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

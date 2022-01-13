@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Compilers</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;The Variadic Macro Data Library 1.9">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;The Variadic Macro Data Library 1.9">
+<link rel="home" href="../index.html" title="Chapter 1. The Variadic Macro Data Library 1.10">
+<link rel="up" href="../index.html" title="Chapter 1. The Variadic Macro Data Library 1.10">
 <link rel="prev" href="vmd_design.html" title="Design">
 <link rel="next" href="vmd_history.html" title="History">
 </head>
@@ -27,16 +27,19 @@
 <a name="variadic_macro_data.vmd_compilers"></a><a class="link" href="vmd_compilers.html" title="Compilers">Compilers</a>
 </h2></div></div></div>
 <p>
-      On Windows I have tested this library using gcc/MingW, VC++, and clang targeting
-      gcc. The compilers tested are gcc 4.3.0, 4.4.0, 4.5.0-1, 4.5.2-1, 4.6.0, 4.6.1,
-      4.6.2, 4.7.0, 4.7.2, 4.8.1, 4.8.2, 4.8.3, 4.8.4, 4.8.5, 4.9.0, 4.9.1, 4.9.2,
-      4.9.3, 5.1.0, 5.2.0, VC++ 8.0, 9.0, 10.0, 11.0, 12.0, 14.0. and clang 3.4,
-      3.5, 3.6, 3.7, and the latest clang build from source.
+      Tested compilers are:
     </p>
 <p>
-      On Linux I have tested this library using gcc 4.4.7, 4.6.4, 4.7.3, 4.8.2, 4.8.3,
-      4.9.1, clang 3.3, 3.4, 3.5, and the latest clang build from source, and Intel
-      C++ 12.1. 13.0, 14.0, 15.0, 16.0.
+      On Windows: gcc versions 4.8 through 10.2. VC++ versions 8.0 through 14.2.
+      clang targeting gcc versions 3.7 through 10.0 clang targeting VC++ versions
+      3.9 through 10.0
+    </p>
+<p>
+      In Linux: gcc versions 4.4 through 10.2 clang versions 3.3 through 10.0 Intel
+      C++ 12.1 throguh 19.1
+    </p>
+<p>
+      Not all versions compile all tests successfully.
     </p>
 <p>
       For VC++ 8.0 the BOOST_VMD_IS_EMPTY and BOOST_VMD_ASSERT_IS_EMPTY macros take
@@ -44,13 +47,14 @@
       not accept variadic data which may be empty.
     </p>
 <p>
-      The compilers supported are those which are deemed to offer C99/C++11 variadic
-      macro support for Boost PP as represented by the BOOST_PP_VARIADICS macro.
+      The compilers supported are those which are compiled in C99/C++11 mode on up
+      or those compilers which, when compiled in C++98/C++03 mode, support both variadic
+      macros and passing empty preprocessor data.
     </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2010-2017 Tropic Software
+<td align="right"><div class="copyright-footer">Copyright © 2010-2017 Tropic Software
       East Inc</div></td>
 </tr></table>
 <hr>

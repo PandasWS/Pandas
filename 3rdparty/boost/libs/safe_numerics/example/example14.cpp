@@ -1,3 +1,9 @@
+//  Copyright (c) 2018 Robert Ramey
+//
+// Distributed under the Boost Software License, Version 1.0. (See
+// accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
 #include <stdexcept>
 #include <iostream>
 
@@ -5,7 +11,7 @@
 
 int main(int, const char *[]){
     // problem: cannot recover from arithmetic errors
-    std::cout << "example 8: ";
+    std::cout << "example 14: ";
     std::cout << "cannot detect compile time arithmetic errors" << std::endl;
     std::cout << "Not using safe numerics" << std::endl;
 

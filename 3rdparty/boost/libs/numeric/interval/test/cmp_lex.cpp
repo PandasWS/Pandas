@@ -17,20 +17,20 @@ using namespace boost::numeric::interval_lib::compare::lexicographic;
 static void test_12_34() {
   const I a(1,2), b(3,4);
 
-  BOOST_CHECK(a < b);
-  BOOST_CHECK(a <= b);
-  BOOST_CHECK(!(a > b));
-  BOOST_CHECK(!(a >= b));
+  BOOST_TEST(a < b);
+  BOOST_TEST(a <= b);
+  BOOST_TEST(!(a > b));
+  BOOST_TEST(!(a >= b));
 
-  BOOST_CHECK(b > a);
-  BOOST_CHECK(b >= a);
-  BOOST_CHECK(!(b < a));
-  BOOST_CHECK(!(b <= a));
+  BOOST_TEST(b > a);
+  BOOST_TEST(b >= a);
+  BOOST_TEST(!(b < a));
+  BOOST_TEST(!(b <= a));
 
-  BOOST_CHECK(!(a == b));
-  BOOST_CHECK(a != b);
+  BOOST_TEST(!(a == b));
+  BOOST_TEST(a != b);
 
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_unused_variable_warning(a);
   ::detail::ignore_unused_variable_warning(b);
 # endif
@@ -41,20 +41,20 @@ static void test_12_34() {
 static void test_13_24() {
   const I a(1,3), b(2,4);
 
-  BOOST_CHECK(a < b);
-  BOOST_CHECK(a <= b);
-  BOOST_CHECK(!(a > b));
-  BOOST_CHECK(!(a >= b));
+  BOOST_TEST(a < b);
+  BOOST_TEST(a <= b);
+  BOOST_TEST(!(a > b));
+  BOOST_TEST(!(a >= b));
 
-  BOOST_CHECK(!(b < a));
-  BOOST_CHECK(!(b <= a));
-  BOOST_CHECK(b > a);
-  BOOST_CHECK(b >= a);
+  BOOST_TEST(!(b < a));
+  BOOST_TEST(!(b <= a));
+  BOOST_TEST(b > a);
+  BOOST_TEST(b >= a);
 
-  BOOST_CHECK(!(a == b));
-  BOOST_CHECK(a != b);
+  BOOST_TEST(!(a == b));
+  BOOST_TEST(a != b);
 
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_unused_variable_warning(a);
   ::detail::ignore_unused_variable_warning(b);
 # endif
@@ -65,20 +65,20 @@ static void test_13_24() {
 static void test_12_23() {
   const I a(1,2), b(2,3);
 
-  BOOST_CHECK(a < b);
-  BOOST_CHECK(a <= b);
-  BOOST_CHECK(!(a > b));
-  BOOST_CHECK(!(a >= b));
+  BOOST_TEST(a < b);
+  BOOST_TEST(a <= b);
+  BOOST_TEST(!(a > b));
+  BOOST_TEST(!(a >= b));
 
-  BOOST_CHECK(!(b < a));
-  BOOST_CHECK(!(b <= a));
-  BOOST_CHECK(b > a);
-  BOOST_CHECK(b >= a);
+  BOOST_TEST(!(b < a));
+  BOOST_TEST(!(b <= a));
+  BOOST_TEST(b > a);
+  BOOST_TEST(b >= a);
 
-  BOOST_CHECK(!(a == b));
-  BOOST_CHECK(a != b);
+  BOOST_TEST(!(a == b));
+  BOOST_TEST(a != b);
 
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_unused_variable_warning(a);
   ::detail::ignore_unused_variable_warning(b);
 # endif
@@ -90,15 +90,15 @@ static void test_12_0() {
   const I a(1,2);
   const int b = 0;
 
-  BOOST_CHECK(!(a < b));
-  BOOST_CHECK(!(a <= b));
-  BOOST_CHECK(a > b);
-  BOOST_CHECK(a >= b);
+  BOOST_TEST(!(a < b));
+  BOOST_TEST(!(a <= b));
+  BOOST_TEST(a > b);
+  BOOST_TEST(a >= b);
 
-  BOOST_CHECK(!(a == b));
-  BOOST_CHECK(a != b);
+  BOOST_TEST(!(a == b));
+  BOOST_TEST(a != b);
 
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_unused_variable_warning(a);
   ::detail::ignore_unused_variable_warning(b);
 # endif
@@ -110,15 +110,15 @@ static void test_12_1() {
   const I a(1,2);
   const int b = 1;
 
-  BOOST_CHECK(!(a < b));
-  BOOST_CHECK(!(a <= b));
-  BOOST_CHECK(a > b);
-  BOOST_CHECK(a >= b);
+  BOOST_TEST(!(a < b));
+  BOOST_TEST(!(a <= b));
+  BOOST_TEST(a > b);
+  BOOST_TEST(a >= b);
 
-  BOOST_CHECK(!(a == b));
-  BOOST_CHECK(a != b);
+  BOOST_TEST(!(a == b));
+  BOOST_TEST(a != b);
 
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_unused_variable_warning(a);
   ::detail::ignore_unused_variable_warning(b);
 # endif
@@ -130,15 +130,15 @@ static void test_12_2() {
   const I a(1,2);
   const int b = 2;
 
-  BOOST_CHECK(a < b);
-  BOOST_CHECK(a <= b);
-  BOOST_CHECK(!(a > b));
-  BOOST_CHECK(!(a >= b));
+  BOOST_TEST(a < b);
+  BOOST_TEST(a <= b);
+  BOOST_TEST(!(a > b));
+  BOOST_TEST(!(a >= b));
 
-  BOOST_CHECK(!(a == b));
-  BOOST_CHECK(a != b);
+  BOOST_TEST(!(a == b));
+  BOOST_TEST(a != b);
 
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_unused_variable_warning(a);
   ::detail::ignore_unused_variable_warning(b);
 # endif
@@ -150,15 +150,15 @@ static void test_12_3() {
   const I a(1,2);
   const int b = 3;
 
-  BOOST_CHECK(a < b);
-  BOOST_CHECK(a <= b);
-  BOOST_CHECK(!(a > b));
-  BOOST_CHECK(!(a >= b));
+  BOOST_TEST(a < b);
+  BOOST_TEST(a <= b);
+  BOOST_TEST(!(a > b));
+  BOOST_TEST(!(a >= b));
 
-  BOOST_CHECK(!(a == b));
-  BOOST_CHECK(a != b);
+  BOOST_TEST(!(a == b));
+  BOOST_TEST(a != b);
 
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_unused_variable_warning(a);
   ::detail::ignore_unused_variable_warning(b);
 # endif
@@ -167,10 +167,10 @@ static void test_12_3() {
 static void test_12_12() {
   const I a(1,2), b(1,2);
 
-  BOOST_CHECK(a == b);
-  BOOST_CHECK(!(a != b));
+  BOOST_TEST(a == b);
+  BOOST_TEST(!(a != b));
 
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_unused_variable_warning(a);
   ::detail::ignore_unused_variable_warning(b);
 # endif
@@ -179,10 +179,10 @@ static void test_12_12() {
 static void test_11_11() {
   const I a(1,1), b(1,1);
 
-  BOOST_CHECK(a == b);
-  BOOST_CHECK(!(a != b));
+  BOOST_TEST(a == b);
+  BOOST_TEST(!(a != b));
 
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_unused_variable_warning(a);
   ::detail::ignore_unused_variable_warning(b);
 # endif
@@ -192,16 +192,16 @@ static void test_11_1() {
   const I a(1,1);
   const int b = 1;
 
-  BOOST_CHECK(a == b);
-  BOOST_CHECK(!(a != b));
+  BOOST_TEST(a == b);
+  BOOST_TEST(!(a != b));
 
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_unused_variable_warning(a);
   ::detail::ignore_unused_variable_warning(b);
 # endif
 }
 
-int test_main(int, char *[]) {
+int main() {
   test_12_34();
   test_13_24();
   test_12_23();
@@ -213,5 +213,5 @@ int test_main(int, char *[]) {
   test_11_11();
   test_11_1();
 
-  return 0;
+  return boost::report_errors();
 }

@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Getting Started</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../stacktrace.html" title="Chapter&#160;37.&#160;Boost.Stacktrace 1.0">
-<link rel="prev" href="../stacktrace.html" title="Chapter&#160;37.&#160;Boost.Stacktrace 1.0">
+<link rel="up" href="../stacktrace.html" title="Chapter 37. Boost.Stacktrace 1.0">
+<link rel="prev" href="../stacktrace.html" title="Chapter 37. Boost.Stacktrace 1.0">
 <link rel="next" href="configuration_and_build.html" title="Configuration and Build">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -30,9 +30,9 @@
 <div class="toc"><dl class="toc">
 <dt><span class="section"><a href="getting_started.html#stacktrace.getting_started.how_to_print_current_call_stack">How
       to print current call stack</a></span></dt>
-<dt><span class="section"><a href="getting_started.html#stacktrace.getting_started.handle_terminates_aborts_and_seg">Handle
-      terminates, aborts and Segmentation Faults</a></span></dt>
 <dt><span class="section"><a href="getting_started.html#stacktrace.getting_started.better_asserts">Better asserts</a></span></dt>
+<dt><span class="section"><a href="getting_started.html#stacktrace.getting_started.handle_terminates">Handle
+      terminates</a></span></dt>
 <dt><span class="section"><a href="getting_started.html#stacktrace.getting_started.exceptions_with_stacktrace">Exceptions
       with stacktrace</a></span></dt>
 <dt><span class="section"><a href="getting_started.html#stacktrace.getting_started.enabling_and_disabling_stacktrac">Enabling
@@ -100,110 +100,6 @@
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="stacktrace.getting_started.handle_terminates_aborts_and_seg"></a><a class="link" href="getting_started.html#stacktrace.getting_started.handle_terminates_aborts_and_seg" title="Handle terminates, aborts and Segmentation Faults">Handle
-      terminates, aborts and Segmentation Faults</a>
-</h3></div></div></div>
-<p>
-        Segmentation Faults and <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">terminate</span></code>
-        calls sometimes happen in programs. Programmers usually wish to get as much
-        information as possible on such incidents, so having a stacktrace will significantly
-        improve debugging and fixing.
-      </p>
-<p>
-        <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">terminate</span></code> calls <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">abort</span></code>,
-        so we need to capture stack traces on Segmentation Faults and Abort signals.
-      </p>
-<div class="warning"><table border="0" summary="Warning">
-<tr>
-<td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="../../../doc/src/images/warning.png"></td>
-<th align="left">Warning</th>
-</tr>
-<tr><td align="left" valign="top"><p>
-          Writing a signal handler requires high attention! Only a few system calls
-          allowed in signal handlers, so there's no cross platform way to print a
-          stacktrace without a risk of deadlocking. The only way to deal with the
-          problem - <span class="bold"><strong>dump raw stacktrace into file/socket and
-          parse it on program restart</strong></span>.
-        </p></td></tr>
-</table></div>
-<div class="warning"><table border="0" summary="Warning">
-<tr>
-<td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="../../../doc/src/images/warning.png"></td>
-<th align="left">Warning</th>
-</tr>
-<tr><td align="left" valign="top"><p>
-          Not all the platforms provide means for even getting stacktrace in async
-          signal safe way. No stack trace will be saved on such platforms.
-        </p></td></tr>
-</table></div>
-<p>
-        Let's write a handler to safely dump stacktrace:
-      </p>
-<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">signal</span><span class="special">.</span><span class="identifier">h</span><span class="special">&gt;</span>     <span class="comment">// ::signal, ::raise</span>
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">stacktrace</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
-
-<span class="keyword">void</span> <span class="identifier">my_signal_handler</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">signum</span><span class="special">)</span> <span class="special">{</span>
-    <span class="special">::</span><span class="identifier">signal</span><span class="special">(</span><span class="identifier">signum</span><span class="special">,</span> <span class="identifier">SIG_DFL</span><span class="special">);</span>
-    <span class="identifier">boost</span><span class="special">::</span><span class="identifier">stacktrace</span><span class="special">::</span><span class="identifier">safe_dump_to</span><span class="special">(</span><span class="string">"./backtrace.dump"</span><span class="special">);</span>
-    <span class="special">::</span><span class="identifier">raise</span><span class="special">(</span><span class="identifier">SIGABRT</span><span class="special">);</span>
-<span class="special">}</span>
-</pre>
-<p>
-        Registering our handler:
-      </p>
-<pre class="programlisting"><span class="special">::</span><span class="identifier">signal</span><span class="special">(</span><span class="identifier">SIGSEGV</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">my_signal_handler</span><span class="special">);</span>
-<span class="special">::</span><span class="identifier">signal</span><span class="special">(</span><span class="identifier">SIGABRT</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">my_signal_handler</span><span class="special">);</span>
-</pre>
-<p>
-        At program start we check for a file with stacktrace and if it exist - we're
-        writing it in human readable format:
-      </p>
-<pre class="programlisting"><span class="keyword">if</span> <span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">filesystem</span><span class="special">::</span><span class="identifier">exists</span><span class="special">(</span><span class="string">"./backtrace.dump"</span><span class="special">))</span> <span class="special">{</span>
-    <span class="comment">// there is a backtrace</span>
-    <span class="identifier">std</span><span class="special">::</span><span class="identifier">ifstream</span> <span class="identifier">ifs</span><span class="special">(</span><span class="string">"./backtrace.dump"</span><span class="special">);</span>
-
-    <span class="identifier">boost</span><span class="special">::</span><span class="identifier">stacktrace</span><span class="special">::</span><span class="identifier">stacktrace</span> <span class="identifier">st</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">stacktrace</span><span class="special">::</span><span class="identifier">stacktrace</span><span class="special">::</span><span class="identifier">from_dump</span><span class="special">(</span><span class="identifier">ifs</span><span class="special">);</span>
-    <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Previous run crashed:\n"</span> <span class="special">&lt;&lt;</span> <span class="identifier">st</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
-
-    <span class="comment">// cleaning up</span>
-    <span class="identifier">ifs</span><span class="special">.</span><span class="identifier">close</span><span class="special">();</span>
-    <span class="identifier">boost</span><span class="special">::</span><span class="identifier">filesystem</span><span class="special">::</span><span class="identifier">remove</span><span class="special">(</span><span class="string">"./backtrace.dump"</span><span class="special">);</span>
-<span class="special">}</span>
-</pre>
-<p>
-        Now we'll get the following output on <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">terminate</span></code>
-        call after the program restarts:
-      </p>
-<pre class="programlisting"><span class="identifier">Previous</span> <span class="identifier">run</span> <span class="identifier">crashed</span><span class="special">:</span>
- <span class="number">0</span><span class="special">#</span> <span class="number">0</span><span class="identifier">x00007F2EC0A6A8EF</span>
- <span class="number">1</span><span class="special">#</span> <span class="identifier">my_signal_handler</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">37</span>
- <span class="number">2</span><span class="special">#</span> <span class="number">0</span><span class="identifier">x00007F2EBFD84CB0</span>
- <span class="number">3</span><span class="special">#</span> <span class="number">0</span><span class="identifier">x00007F2EBFD84C37</span>
- <span class="number">4</span><span class="special">#</span> <span class="number">0</span><span class="identifier">x00007F2EBFD88028</span>
- <span class="number">5</span><span class="special">#</span> <span class="number">0</span><span class="identifier">x00007F2EC0395BBD</span>
- <span class="number">6</span><span class="special">#</span> <span class="number">0</span><span class="identifier">x00007F2EC0393B96</span>
- <span class="number">7</span><span class="special">#</span> <span class="number">0</span><span class="identifier">x00007F2EC0393BE1</span>
- <span class="number">8</span><span class="special">#</span> <span class="identifier">bar</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">18</span>
- <span class="number">9</span><span class="special">#</span> <span class="identifier">foo</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">22</span>
-<span class="number">10</span><span class="special">#</span> <span class="identifier">bar</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">14</span>
-<span class="number">11</span><span class="special">#</span> <span class="identifier">foo</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">22</span>
-<span class="number">12</span><span class="special">#</span> <span class="identifier">main</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">84</span>
-<span class="number">13</span><span class="special">#</span> <span class="number">0</span><span class="identifier">x00007F2EBFD6FF45</span>
-<span class="number">14</span><span class="special">#</span> <span class="number">0x0000000000402209</span>
-</pre>
-<div class="note"><table border="0" summary="Note">
-<tr>
-<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../doc/src/images/note.png"></td>
-<th align="left">Note</th>
-</tr>
-<tr><td align="left" valign="top"><p>
-          Function names from shared libraries may not be decoded due to address
-          space layout randomization. Still better than nothing.
-        </p></td></tr>
-</table></div>
-</div>
-<div class="section">
-<div class="titlepage"><div><div><h3 class="title">
 <a name="stacktrace.getting_started.better_asserts"></a><a class="link" href="getting_started.html#stacktrace.getting_started.better_asserts" title="Better asserts">Better asserts</a>
 </h3></div></div></div>
 <p>
@@ -227,6 +123,7 @@
     <span class="keyword">inline</span> <span class="keyword">void</span> <span class="identifier">assertion_failed_msg</span><span class="special">(</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="identifier">expr</span><span class="special">,</span> <span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="identifier">msg</span><span class="special">,</span> <span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="identifier">function</span><span class="special">,</span> <span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="comment">/*file*/</span><span class="special">,</span> <span class="keyword">long</span> <span class="comment">/*line*/</span><span class="special">)</span> <span class="special">{</span>
         <span class="identifier">std</span><span class="special">::</span><span class="identifier">cerr</span> <span class="special">&lt;&lt;</span> <span class="string">"Expression '"</span> <span class="special">&lt;&lt;</span> <span class="identifier">expr</span> <span class="special">&lt;&lt;</span> <span class="string">"' is false in function '"</span> <span class="special">&lt;&lt;</span> <span class="identifier">function</span> <span class="special">&lt;&lt;</span> <span class="string">"': "</span> <span class="special">&lt;&lt;</span> <span class="special">(</span><span class="identifier">msg</span> <span class="special">?</span> <span class="identifier">msg</span> <span class="special">:</span> <span class="string">"&lt;...&gt;"</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">".\n"</span>
             <span class="special">&lt;&lt;</span> <span class="string">"Backtrace:\n"</span> <span class="special">&lt;&lt;</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">stacktrace</span><span class="special">::</span><span class="identifier">stacktrace</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="char">'\n'</span><span class="special">;</span>
+
         <span class="identifier">std</span><span class="special">::</span><span class="identifier">abort</span><span class="special">();</span>
     <span class="special">}</span>
 
@@ -263,12 +160,84 @@
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
+<a name="stacktrace.getting_started.handle_terminates"></a><a class="link" href="getting_started.html#stacktrace.getting_started.handle_terminates" title="Handle terminates">Handle
+      terminates</a>
+</h3></div></div></div>
+<p>
+        <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">terminate</span></code> calls sometimes happen in programs.
+        Programmers usually wish to get as much information as possible on such incidents,
+        so having a stacktrace significantly improves debugging and fixing.
+      </p>
+<p>
+        Here's how to write a terminate handler that dumps stacktrace:
+      </p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">cstdlib</span><span class="special">&gt;</span>       <span class="comment">// std::abort</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">exception</span><span class="special">&gt;</span>     <span class="comment">// std::set_terminate</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">iostream</span><span class="special">&gt;</span>      <span class="comment">// std::cerr</span>
+
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">stacktrace</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="keyword">void</span> <span class="identifier">my_terminate_handler</span><span class="special">()</span> <span class="special">{</span>
+    <span class="keyword">try</span> <span class="special">{</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cerr</span> <span class="special">&lt;&lt;</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">stacktrace</span><span class="special">::</span><span class="identifier">stacktrace</span><span class="special">();</span>
+    <span class="special">}</span> <span class="keyword">catch</span> <span class="special">(...)</span> <span class="special">{}</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">abort</span><span class="special">();</span>
+<span class="special">}</span>
+</pre>
+<p>
+        Here's how to register it:
+      </p>
+<pre class="programlisting"><span class="identifier">std</span><span class="special">::</span><span class="identifier">set_terminate</span><span class="special">(&amp;</span><span class="identifier">my_terminate_handler</span><span class="special">);</span>
+</pre>
+<p>
+        Now we'll get the following output on <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">terminate</span></code>
+        call:
+      </p>
+<pre class="programlisting"><span class="identifier">Previous</span> <span class="identifier">run</span> <span class="identifier">crashed</span><span class="special">:</span>
+ <span class="number">0</span><span class="special">#</span> <span class="identifier">my_terminate_handler</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">37</span>
+ <span class="number">1</span><span class="special">#</span> <span class="identifier">__cxxabiv1</span><span class="special">::</span><span class="identifier">__terminate</span><span class="special">(</span><span class="keyword">void</span> <span class="special">(*)())</span> <span class="identifier">at</span> <span class="special">../../../../</span><span class="identifier">src</span><span class="special">/</span><span class="identifier">libstdc</span><span class="special">++-</span><span class="identifier">v3</span><span class="special">/</span><span class="identifier">libsupc</span><span class="special">++/</span><span class="identifier">eh_terminate</span><span class="special">.</span><span class="identifier">cc</span><span class="special">:</span><span class="number">48</span>
+ <span class="number">2</span><span class="special">#</span> <span class="number">0</span><span class="identifier">x00007F3CE65E5901</span> <span class="identifier">in</span> <span class="special">/</span><span class="identifier">usr</span><span class="special">/</span><span class="identifier">lib</span><span class="special">/</span><span class="identifier">x86_64</span><span class="special">-</span><span class="identifier">linux</span><span class="special">-</span><span class="identifier">gnu</span><span class="special">/</span><span class="identifier">libstdc</span><span class="special">++.</span><span class="identifier">so</span><span class="special">.</span><span class="number">6</span>
+ <span class="number">3</span><span class="special">#</span> <span class="identifier">bar</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">18</span>
+ <span class="number">4</span><span class="special">#</span> <span class="identifier">foo</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">22</span>
+ <span class="number">5</span><span class="special">#</span> <span class="identifier">bar</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">14</span>
+ <span class="number">6</span><span class="special">#</span> <span class="identifier">foo</span><span class="special">(</span><span class="keyword">int</span><span class="special">)</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">22</span>
+ <span class="number">7</span><span class="special">#</span> <span class="identifier">main</span> <span class="identifier">at</span> <span class="special">../</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">terminate_handler</span><span class="special">.</span><span class="identifier">cpp</span><span class="special">:</span><span class="number">84</span>
+ <span class="number">8</span><span class="special">#</span> <span class="identifier">__libc_start_main</span> <span class="identifier">in</span> <span class="special">/</span><span class="identifier">lib</span><span class="special">/</span><span class="identifier">x86_64</span><span class="special">-</span><span class="identifier">linux</span><span class="special">-</span><span class="identifier">gnu</span><span class="special">/</span><span class="identifier">libc</span><span class="special">.</span><span class="identifier">so</span><span class="special">.</span><span class="number">6</span>
+ <span class="number">9</span><span class="special">#</span> <span class="number">0x0000000000402209</span>
+</pre>
+<div class="warning"><table border="0" summary="Warning">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="../../../doc/src/images/warning.png"></td>
+<th align="left">Warning</th>
+</tr>
+<tr><td align="left" valign="top">
+<p>
+          There's a temptation to write a signal handler that prints the stacktrace
+          on <code class="computeroutput"><span class="identifier">SIGSEGV</span></code> or abort. Unfortunately,
+          there's no cross platform way to do that without a risk of deadlocking.
+          Not all the platforms provide means for even getting stacktrace in async
+          signal safe way.
+        </p>
+<p>
+          Signal handler is often invoked on a separate stack and trash is returned
+          on attempt to get a trace!
+        </p>
+<p>
+          Generic recommendation is to <span class="bold"><strong>avoid signal handlers!
+          Use</strong></span> platform specific ways to store and decode <span class="bold"><strong>core
+          files</strong></span>.
+        </p>
+</td></tr>
+</table></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
 <a name="stacktrace.getting_started.exceptions_with_stacktrace"></a><a class="link" href="getting_started.html#stacktrace.getting_started.exceptions_with_stacktrace" title="Exceptions with stacktrace">Exceptions
       with stacktrace</a>
 </h3></div></div></div>
 <p>
         You can provide more information along with exception by embedding stacktraces
-        into the exception. There are many ways to do that, here's how to doe that
+        into the exception. There are many ways to do that, here's how to do that
         using Boost.Exception:
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
@@ -480,8 +449,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2016-2019 Antony
-      Polukhin<p>
+<td align="right"><div class="copyright-footer">Copyright © 2016-2021 Antony Polukhin<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

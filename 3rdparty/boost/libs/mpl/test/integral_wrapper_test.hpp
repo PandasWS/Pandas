@@ -17,7 +17,7 @@
 
 #include <cassert>
 
-#if !BOOST_WORKAROUND(__BORLANDC__, < 0x600)
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, < 0x600)
 #   define INTEGRAL_WRAPPER_RUNTIME_TEST(i, T) \
     BOOST_TEST(( WRAPPER(T,i)() == i )); \
     BOOST_TEST(( WRAPPER(T,i)::value == i )); \
@@ -34,7 +34,7 @@
 #define CONSTEXPR_INTEGRAL_TEST(T, i) { static_assert(T() == i, "Constexpr for integral constant failed"); }
 #endif
 
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
 // agurt 20/nov/06: see http://article.gmane.org/gmane.comp.lib.boost.devel/151065
 #define INTEGRAL_WRAPPER_TEST(unused1, i, T) \
     { \

@@ -1,6 +1,6 @@
 {
     "key": "parameter_python",
-    "name": "Parameter Python bindings",
+    "name": "Parameter Python Bindings",
     "authors": [
         "David Abrahams",
         "Daniel Wallin"
@@ -13,5 +13,6 @@
     "maintainers": [
         "David Abrahams <dave -at- boost-consulting.com>",
         "Daniel Wallin <daniel -at- boostpro.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

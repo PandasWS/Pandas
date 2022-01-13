@@ -3,7 +3,7 @@
 # Copyright 2003 Dave Abrahams
 # Copyright 2003 Vladimir Prus
 # Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+# (See accompanying file LICENSE.txt or https://www.bfgroup.xyz/b2/LICENSE.txt)
 
 import BoostBuild
 
@@ -39,19 +39,28 @@ exe hello : hello.cpp src ;
     # Check that targets to which "bin1" refers are updated, and only those.
     t.run_build_system(["bin1"])
     t.expect_addition(BoostBuild.List("bin/$toolset/debug*/") * "a.exe a.obj")
+    t.ignore_addition('bin/*/a.rsp')
+    t.ignore_addition('bin/*/a.*.rsp')
     t.expect_nothing_more()
 
     # Try again with "bin2"
     t.run_build_system(["bin2"])
     t.expect_addition(BoostBuild.List("bin/$toolset/debug*/") * "b.exe b.obj")
+    t.ignore_addition('bin/*/b.rsp')
+    t.ignore_addition('bin/*/b.*.rsp')
     t.expect_nothing_more()
 
     # Try building everything, making sure 'hello' target is created.
     t.run_build_system()
     t.expect_addition(BoostBuild.List("bin/$toolset/debug*/") * \
         "hello.exe hello.obj")
+    t.ignore_addition('bin/*/hello.rsp')
+    t.ignore_addition('bin/*/hello.*.rsp')
     t.expect_addition("bin/$toolset/debug*/s.obj")
+    t.ignore_addition('bin/*/s.*.rsp')
     t.expect_addition(BoostBuild.List("bin/$toolset/debug*/") * "c.exe c.obj")
+    t.ignore_addition('bin/*/c.rsp')
+    t.ignore_addition('bin/*/c.*.rsp')
     t.expect_nothing_more()
 
 

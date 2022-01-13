@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for standard list operations.
  *
- * Copyright 2003-2013 Joaquin M Lopez Munoz.
+ * Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -76,6 +76,7 @@ template<typename Sequence>
 static void test_list_ops_unique_seq()
 {
   typedef typename nth_index<Sequence,1>::type sequenced_index;
+  typedef typename sequenced_index::iterator   sequenced_index_iterator;
 
   Sequence         ss,ss2;
   sequenced_index &si=get<1>(ss),&si2=get<1>(ss2);
@@ -99,20 +100,32 @@ static void test_list_ops_unique_seq()
 
   CHECK_EQUAL(si,(3)(5)(1));
 
-  si.splice(si.end(),si2);
+  si.splice(si.end(),si2,project<1>(ss2,ss2.find(2)),si2.end());
+  CHECK_EQUAL(si,(3)(5)(1)(2)(6));
+  CHECK_EQUAL(si2,(3)(4)(0)(8)(5)(1));
+
+  si.splice(project<1>(ss,ss.find(2)),si2);
   CHECK_EQUAL(si,(3)(5)(1)(4)(0)(8)(2)(6));
   CHECK_EQUAL(si2,(3)(5)(1));
 
   si.splice(project<1>(ss,ss.find(4)),si,project<1>(ss,ss.find(8)));
   CHECK_EQUAL(si,(3)(5)(1)(8)(4)(0)(2)(6));
-  si2.clear();
-  si2.splice(si2.begin(),si,si.begin());
 
-  si.splice(si.end(),si2,si2.begin());
+  si2.clear();
+  std::pair<sequenced_index_iterator,bool> p=
+    si2.splice(si2.begin(),si,si.begin());
+  BOOST_TEST(*(p.first)==3&&p.second);
+
+  p=si.splice(si.end(),si2,si2.begin());
+  BOOST_TEST(*(p.first)==3&&p.second);
   CHECK_EQUAL(si,(5)(1)(8)(4)(0)(2)(6)(3));
   BOOST_TEST(si2.empty());
 
-  si2.splice(si2.end(),si,project<1>(ss,ss.find(0)),project<1>(ss,ss.find(6)));
+  si2.splice(si2.end(),si,project<1>(ss,ss.find(2)),project<1>(ss,ss.find(6)));
+  CHECK_EQUAL(si,(5)(1)(8)(4)(0)(6)(3));
+  CHECK_EQUAL(si2,(2));
+
+  si2.splice(si2.begin(),si,project<1>(ss,ss.find(0)),project<1>(ss,ss.find(6)));
   CHECK_EQUAL(si,(5)(1)(8)(4)(6)(3));
   CHECK_EQUAL(si2,(0)(2));
 

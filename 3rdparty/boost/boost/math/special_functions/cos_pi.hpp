@@ -10,8 +10,8 @@
 #pragma once
 #endif
 
+#include <cmath>
 #include <boost/math/special_functions/math_fwd.hpp>
-#include <boost/config/no_tr1/cmath.hpp>
 #include <boost/math/tools/config.hpp>
 #include <boost/math/special_functions/trunc.hpp>
 #include <boost/math/tools/promotion.hpp>
@@ -67,7 +67,7 @@ inline typename tools::promote_args<T>::type cos_pi(T x, const Policy&)
       policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<>,
-      // We want to igore overflows since the result is in [-1,1] and the 
+      // We want to ignore overflows since the result is in [-1,1] and the 
       // check slows the code down considerably.
       policies::overflow_error<policies::ignore_error> >::type forwarding_policy;
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(boost::math::detail::cos_pi_imp<value_type>(x, forwarding_policy()), "cos_pi");

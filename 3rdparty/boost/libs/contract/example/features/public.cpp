@@ -24,7 +24,8 @@ public:
     // Contract for a constructor.
     unique_identifiers(int from, int to) :
         boost::contract::constructor_precondition<unique_identifiers>([&] {
-            BOOST_CONTRACT_ASSERT(from <= to);
+            BOOST_CONTRACT_ASSERT(from >= 0);
+            BOOST_CONTRACT_ASSERT(to >= from);
         })
     {
         boost::contract::check c = boost::contract::constructor(this)
@@ -61,6 +62,9 @@ public:
     bool find(int id) const {
         bool result;
         boost::contract::check c = boost::contract::public_function(this)
+            .precondition([&] {
+                BOOST_CONTRACT_ASSERT(id >= 0);
+            })
             .postcondition([&] {
                 if(size() == 0) BOOST_CONTRACT_ASSERT(!result);
             })
@@ -84,6 +88,7 @@ public:
         boost::contract::check c = boost::contract::public_function(
                 v, result, this) // Pass `v` and `result`.
             .precondition([&] {
+                BOOST_CONTRACT_ASSERT(id >= 0);
                 BOOST_CONTRACT_ASSERT(!find(id)); // ID cannot be already present.
             })
             .postcondition([&] (int const result) {
@@ -132,9 +137,10 @@ public:
         boost::contract::old_ptr<int> old_size =
                 BOOST_CONTRACT_OLDOF(v, size());
         boost::contract::check c = boost::contract::public_function<
-            override_push_back // Pass override plus below function pointer...
+            override_push_back // Pass override type plus below function pointer...
         >(v, result, &identifiers::push_back, this, id) // ...and arguments.
             .precondition([&] { // Check in OR with bases.
+                BOOST_CONTRACT_ASSERT(id >= 0);
                 BOOST_CONTRACT_ASSERT(find(id)); // ID can be already present.
             })
             .postcondition([&] (int const result) { // Check in AND with bases.

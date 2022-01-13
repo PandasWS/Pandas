@@ -57,7 +57,7 @@ namespace example
       typedef typename F::template result<Desc>::type type;
     };
 
-#if !BOOST_WORKAROUND(__BORLANDC__,BOOST_TESTED_AT(0x564))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC,BOOST_TESTED_AT(0x564))
     template<typename F> 
     struct result_member_template< F, F(void) > 
     { 

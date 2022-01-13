@@ -54,6 +54,11 @@ main()
 {
     using spirit_test::test;
     using spirit_test::test_attr;
+
+    BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(boost::spirit::x3::float_);
+    BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(boost::spirit::x3::double_);
+    BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(boost::spirit::x3::long_double);
+
     ///////////////////////////////////////////////////////////////////////////
     //  signed real number tests
     ///////////////////////////////////////////////////////////////////////////
@@ -81,35 +86,32 @@ main()
         BOOST_TEST(d == 2.0332938517515416e307); // exact!
 #endif
 
-        using boost::math::fpclassify;
-        using boost::spirit::x3::signbit;   // Boost version is broken
-
         BOOST_TEST(test("-inf", double_));
         BOOST_TEST(test("-infinity", double_));
         BOOST_TEST(test_attr("-inf", double_, d) &&
-            FP_INFINITE == fpclassify(d) && signbit(d));
+            std::isinf(d) && std::signbit(d));
         BOOST_TEST(test_attr("-infinity", double_, d) &&
-            FP_INFINITE == fpclassify(d) && signbit(d));
+            std::isinf(d) && std::signbit(d));
         BOOST_TEST(test("-INF", double_));
         BOOST_TEST(test("-INFINITY", double_));
         BOOST_TEST(test_attr("-INF", double_, d) &&
-            FP_INFINITE == fpclassify(d) && signbit(d));
+            std::isinf(d) && std::signbit(d));
         BOOST_TEST(test_attr("-INFINITY", double_, d) &&
-            FP_INFINITE == fpclassify(d) && signbit(d));
+            std::isinf(d) && std::signbit(d));
 
         BOOST_TEST(test("-nan", double_));
         BOOST_TEST(test_attr("-nan", double_, d) &&
-            FP_NAN == fpclassify(d) && signbit(d));
+            std::isnan(d) && std::signbit(d));
         BOOST_TEST(test("-NAN", double_));
         BOOST_TEST(test_attr("-NAN", double_, d) &&
-            FP_NAN == fpclassify(d) && signbit(d));
+            std::isnan(d) && std::signbit(d));
 
         BOOST_TEST(test("-nan(...)", double_));
         BOOST_TEST(test_attr("-nan(...)", double_, d) &&
-            FP_NAN == fpclassify(d) && signbit(d));
+            std::isnan(d) && std::signbit(d));
         BOOST_TEST(test("-NAN(...)", double_));
         BOOST_TEST(test_attr("-NAN(...)", double_, d) &&
-            FP_NAN == fpclassify(d) && signbit(d));
+            std::isnan(d) && std::signbit(d));
 
         BOOST_TEST(!test("1e999", double_));
         BOOST_TEST(!test("1e-999", double_));
@@ -119,13 +121,13 @@ main()
 
         // https://svn.boost.org/trac10/ticket/11608
         BOOST_TEST(test_attr("1267650600228229401496703205376", double_, d) &&
-            compare(d, 1.2676506002282291E+30));    // Note Qi has better precision
+            compare(d, 1267650600228229401496703205376.));    // Note Qi has better precision
 
         BOOST_TEST(test_attr("12676506.00228229401496703205376", double_, d) &&
-            compare(d, 1.2676506002282292E7));      // Note Qi has better precision
+            compare(d, 12676506.00228229401496703205376));    // Note Qi has better precision
 
         BOOST_TEST(test_attr("12676506.00228229401496703205376E6", double_, d) &&
-            compare(d, 1.2676506002282291016E13));  // Note Qi has better precision
+            compare(d, 12676506.00228229401496703205376E6));  // Note Qi has better precision
     }
 
     return boost::report_errors();

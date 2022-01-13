@@ -14,7 +14,7 @@
 
 #include <boost/math/concepts/real_concept.hpp>
 #include <boost/test/included/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>
 #include <boost/math/special_functions/sinc.hpp>
 #include <boost/multiprecision/cpp_bin_float.hpp>
@@ -264,6 +264,13 @@ void test_linear()
     Real Q = gauss_kronrod<Real, Points>::integrate(f, (Real) 0, (Real) 1, 0, 0, &error, &L1);
     BOOST_CHECK_CLOSE_FRACTION(Q, 9.5, tol);
     BOOST_CHECK_CLOSE_FRACTION(L1, 9.5, tol);
+
+    Q = gauss_kronrod<Real, Points>::integrate(f, (Real) 1, (Real) 0, 0, 0, &error, &L1);
+    BOOST_CHECK_CLOSE_FRACTION(Q, -9.5, tol);
+    BOOST_CHECK_CLOSE_FRACTION(L1, 9.5, tol);
+
+    Q = gauss_kronrod<Real, Points>::integrate(f, (Real) 0, (Real) 0, 0, 0, &error, &L1);
+    BOOST_CHECK_CLOSE(Q, Real(0), tol);
 }
 
 template<class Real, unsigned Points>

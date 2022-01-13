@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Iterator Adaptor</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Iterator">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Iterator">
 <link rel="up" href="../generic.html" title="Generic Iterators">
 <link rel="prev" href="../generic.html" title="Generic Iterators">
 <link rel="next" href="../specialized.html" title="Specialized Adaptors">
@@ -98,11 +98,11 @@
     <span class="keyword">typedef</span> <span class="identifier">iterator_adaptor</span> <span class="identifier">iterator_adaptor</span><span class="special">\</span><span class="identifier">_</span><span class="special">;</span>
     <span class="identifier">Base</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">base_reference</span><span class="special">()</span> <span class="keyword">const</span><span class="special">;</span>
     <span class="identifier">Base</span><span class="special">&amp;</span> <span class="identifier">base_reference</span><span class="special">();</span>
- <span class="keyword">private</span><span class="special">:</span> <span class="comment">// Core iterator interface for iterator_facade.  </span>
+ <span class="keyword">private</span><span class="special">:</span> <span class="comment">// Core iterator interface for iterator_facade.</span>
     <span class="keyword">typename</span> <span class="identifier">iterator_adaptor</span><span class="special">::</span><span class="identifier">reference</span> <span class="identifier">dereference</span><span class="special">()</span> <span class="keyword">const</span><span class="special">;</span>
 
     <span class="keyword">template</span> <span class="special">&lt;</span>
-    <span class="keyword">class</span> <span class="identifier">OtherDerived</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">OtherIterator</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">V</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">C</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">R</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">D</span>
+        <span class="keyword">class</span> <span class="identifier">OtherDerived</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">OtherIterator</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">V</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">C</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">R</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">D</span>
     <span class="special">&gt;</span>
     <span class="keyword">bool</span> <span class="identifier">equal</span><span class="special">(</span><span class="identifier">iterator_adaptor</span><span class="special">&lt;</span><span class="identifier">OtherDerived</span><span class="special">,</span> <span class="identifier">OtherIterator</span><span class="special">,</span> <span class="identifier">V</span><span class="special">,</span> <span class="identifier">C</span><span class="special">,</span> <span class="identifier">R</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">x</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 
@@ -368,7 +368,7 @@
         </p>
 <p>
           You can see an example program that exercises this version of the node
-          iterators <a href="../../../example/node_iterator3.cpp" target="_top"><code class="computeroutput"><span class="identifier">here</span></code></a>.
+          iterators <a href="../../../../example/node_iterator3.cpp" target="_top">here</a>.
         </p>
 <p>
           In the case of <code class="computeroutput"><span class="identifier">node_iter</span></code>,
@@ -420,7 +420,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003, 2005 David Abrahams Jeremy Siek Thomas
+<td align="right"><div class="copyright-footer">Copyright © 2003, 2005 David Abrahams Jeremy Siek Thomas
       Witt<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at &lt;ulink url="http://www.boost.org/LICENSE_1_0.txt"&gt;

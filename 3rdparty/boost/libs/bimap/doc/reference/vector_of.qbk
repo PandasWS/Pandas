@@ -574,7 +574,7 @@ for ['Set View] where e is the element pointed to by `position` and
 rearranges `*position` into all the views of the `bimap`.
 Rearrangement on `vector_of` views does not change the position of the
 element with respect to the view; rearrangement on other views may or
-might not suceed. If the rearrangement fails, the element is erased.
+might not succeed. If the rearrangement fails, the element is erased.
 * [*Postconditions:] Validity of `position` is preserved if the operation succeeds.
 * [*Returns: ] `true` if the operation succeeded, `false` otherwise.
 * [link vector_of_complexity_signature [*Complexity:]] O(M(n)).

@@ -9,10 +9,13 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying 
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#if !defined(HANNIBAL_TRANSLATION_UNIT_GRAMMAR_H_INCLUDED)
-#define HANNIBAL_TRANSLATION_UNIT_GRAMMAR_H_INCLUDED
+#if !defined(BOOST_HANNIBAL_TRANSLATION_UNIT_GRAMMAR_H_INCLUDED)
+#define BOOST_HANNIBAL_TRANSLATION_UNIT_GRAMMAR_H_INCLUDED
 
 #include <map>
+#if defined(HANNIBAL_TRACE_DECLARATIONS)
+#include <iostream>
+#endif
 
 #include <boost/assert.hpp>
 #include <boost/spirit/include/classic_core.hpp>
@@ -1342,4 +1345,4 @@ private:
 #undef HANNIBAL_REGISTER_RULE
 #undef HANNIBAL_TRACE_TRANSLATION_UNIT_GRAMMAR
 
-#endif // HANNIBAL_TRANSLATION_UNIT_GRAMMAR_H_INCLUDED
+#endif // BOOST_HANNIBAL_TRANSLATION_UNIT_GRAMMAR_H_INCLUDED

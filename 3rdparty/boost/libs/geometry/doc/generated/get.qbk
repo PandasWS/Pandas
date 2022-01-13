@@ -23,7 +23,7 @@ The free functions [*get] and [*set] are two of the most important functions of 
 
 [heading Synopsis]
 ``template<std::size_t Dimension, typename Geometry>
-coordinate_type<Geometry>::type get(Geometry const & geometry)``
+constexpr coordinate_type<Geometry>::type get(Geometry const & geometry)``
 
 [heading Parameters]
 
@@ -62,7 +62,7 @@ The free functions [*get] and [*set] are two of the most important functions of 
 
 [heading Synopsis]
 ``template<std::size_t Index, std::size_t Dimension, typename Geometry>
-coordinate_type<Geometry>::type get(Geometry const & geometry)``
+constexpr coordinate_type<Geometry>::type get(Geometry const & geometry)``
 
 [heading Parameters]
 

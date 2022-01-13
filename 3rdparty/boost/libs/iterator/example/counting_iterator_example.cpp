@@ -41,12 +41,12 @@ int main(int, char*[])
 
   // Use indirect iterator to print out numbers by accessing
   // them through the array of pointers.
-  std::cout << "indirectly printing out the numbers from 0 to " 
+  std::cout << "indirectly printing out the numbers from 0 to "
             << N << std::endl;
   std::copy(boost::make_indirect_iterator(pointers.begin()),
             boost::make_indirect_iterator(pointers.end()),
             std::ostream_iterator<int>(std::cout, " "));
   std::cout << std::endl;
-  
+
   return boost::exit_success;
 }

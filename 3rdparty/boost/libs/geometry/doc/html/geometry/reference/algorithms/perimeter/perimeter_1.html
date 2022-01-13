@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>perimeter</title>
 <link rel="stylesheet" href="../../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../perimeter.html" title="perimeter">
 <link rel="prev" href="../perimeter.html" title="perimeter">
 <link rel="next" href="perimeter_2_with_strategy.html" title="perimeter (with strategy)">
@@ -27,7 +27,7 @@
 <a name="geometry.reference.algorithms.perimeter.perimeter_1"></a><a class="link" href="perimeter_1.html" title="perimeter">perimeter</a>
 </h5></div></div></div>
 <p>
-            <a class="indexterm" name="idm45133047174272"></a>
+            <a class="indexterm" name="idm56879"></a>
 Calculates the perimeter of a geometry.
           </p>
 <h6>
@@ -212,11 +212,52 @@ Calculates the perimeter of a geometry.
 <p>
             Linear
           </p>
+<h6>
+<a name="geometry.reference.algorithms.perimeter.perimeter_1.h8"></a>
+            <span class="phrase"><a name="geometry.reference.algorithms.perimeter.perimeter_1.example"></a></span><a class="link" href="perimeter_1.html#geometry.reference.algorithms.perimeter.perimeter_1.example">Example</a>
+          </h6>
+<p>
+            Calculate the perimeter of a polygon
+          </p>
+<p>
+</p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">iostream</span><span class="special">&gt;</span>
+
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">geometries</span><span class="special">/</span><span class="identifier">point_xy</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">geometries</span><span class="special">/</span><span class="identifier">polygon</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="keyword">namespace</span> <span class="identifier">bg</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">;</span> <a class="co" name="geometry.reference.algorithms.perimeter.perimeter_1.c0" href="perimeter_1.html#geometry.reference.algorithms.perimeter.perimeter_1.c1"><img src="../../../../../../../../doc/src/images/callouts/1.png" alt="1" border="0"></a>
+
+<span class="keyword">int</span> <span class="identifier">main</span><span class="special">()</span>
+<span class="special">{</span>
+    <span class="comment">// Calculate the perimeter of a cartesian polygon</span>
+    <span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">polygon</span><span class="special">&lt;</span><span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">d2</span><span class="special">::</span><span class="identifier">point_xy</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="special">&gt;</span> <span class="identifier">poly</span><span class="special">;</span>
+    <span class="identifier">bg</span><span class="special">::</span><span class="identifier">read_wkt</span><span class="special">(</span><span class="string">"POLYGON((0 0,3 4,5 -5,-2 -4, 0 0))"</span><span class="special">,</span> <span class="identifier">poly</span><span class="special">);</span>
+    <span class="keyword">double</span> <span class="identifier">perimeter</span> <span class="special">=</span> <span class="identifier">bg</span><span class="special">::</span><span class="identifier">perimeter</span><span class="special">(</span><span class="identifier">poly</span><span class="special">);</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Perimeter: "</span> <span class="special">&lt;&lt;</span> <span class="identifier">perimeter</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+
+    <span class="keyword">return</span> <span class="number">0</span><span class="special">;</span>
+<span class="special">}</span>
+</pre>
+<p>
+          </p>
+<div class="calloutlist"><table border="0" summary="Callout list"><tr>
+<td width="5%" valign="top" align="left"><p><a name="geometry.reference.algorithms.perimeter.perimeter_1.c1"></a><a href="#geometry.reference.algorithms.perimeter.perimeter_1.c0"><img src="../../../../../../../../doc/src/images/callouts/1.png" alt="1" border="0"></a> </p></td>
+<td valign="top" align="left"><p>
+                Convenient namespace alias
+              </p></td>
+</tr></table></div>
+<p>
+            Output:
+          </p>
+<pre class="programlisting">Perimeter: 25.7627
+</pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

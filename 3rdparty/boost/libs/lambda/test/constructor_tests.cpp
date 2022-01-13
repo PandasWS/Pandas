@@ -12,7 +12,8 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
+#define BOOST_CHECK BOOST_TEST
 
 
 #include "boost/lambda/lambda.hpp"
@@ -252,7 +253,7 @@ void delayed_construction()
             bl::bind(constructor<std::pair<int, int> >(), _1, _2) );
 }
 
-int test_main(int, char *[]) {
+int main() {
 
   constructor_all_lengths();
   new_ptr_all_lengths();
@@ -261,5 +262,5 @@ int test_main(int, char *[]) {
   test_news_and_deletes();  
   test_array_new_and_delete();
   
-  return 0;
+  return boost::report_errors();
 }

@@ -234,7 +234,7 @@ enum e_item_job : uint16
 	ITEMJ_FOURTH      = 0x40,
 	ITEMJ_MAX         = 0xFF,
 
-	ITEMJ_ALL_UPPER = ITEMJ_UPPER | ITEMJ_THIRD_UPPER,
+	ITEMJ_ALL_UPPER = ITEMJ_UPPER | ITEMJ_THIRD_UPPER | ITEMJ_FOURTH,
 	ITEMJ_ALL_BABY = ITEMJ_BABY | ITEMJ_THIRD_BABY,
 	ITEMJ_ALL_THIRD = ITEMJ_THIRD | ITEMJ_THIRD_UPPER | ITEMJ_THIRD_BABY,
 
@@ -766,6 +766,7 @@ enum e_random_item_group {
 	IG_PITAPAT_BOX,
 	IG_HAPPY_BOX_J,
 	IG_CLASS_SHADOW_CUBE,
+	IG_SEALED_SCROLL,
 
 	IG_MAX,
 };
@@ -1053,19 +1054,12 @@ struct s_random_opt_group {
 };
 
 class RandomOptionDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_data> {
-#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint16, s_random_opt_data>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 public:
 	RandomOptionDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_DB", 1) {
 #ifdef Pandas_YamlBlastCache_RandomOptionDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(56);	// Win32
+		this->validDatatypeSize.push_back(80);	// x64
 #endif // Pandas_YamlBlastCache_RandomOptionDatabase
 	}
 
@@ -1086,19 +1080,14 @@ public:
 extern RandomOptionDatabase random_option_db;
 
 class RandomOptionGroupDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_group> {
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint16, s_random_opt_group>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 public:
 	RandomOptionGroupDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_GROUP", 1) {
 #ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(52);	// Win32
+		this->validDatatypeSize.push_back(88);	// x64
+
+		this->validDatatypeSize.push_back(120);	// Linux
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 	}
 
@@ -1143,6 +1132,9 @@ public:
 	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 2, 1) {
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(368);	// Win32 + BOTH
+		this->validDatatypeSize.push_back(448);	// x64 + PRE
+		this->validDatatypeSize.push_back(456);	// x64 + RENEWAL
 #endif // Pandas_YamlBlastCache_ItemDatabase
 	}
 
@@ -1169,19 +1161,14 @@ public:
 extern ItemDatabase item_db;
 
 class ItemGroupDatabase : public TypesafeCachedYamlDatabase<uint16, s_item_group_db> {
-#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<uint16, s_item_group_db>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 public:
 	ItemGroupDatabase() : TypesafeCachedYamlDatabase("ITEM_GROUP_DB", 1) {
 #ifdef Pandas_YamlBlastCache_ItemGroupDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(36);	// Win32
+		this->validDatatypeSize.push_back(72);	// x64
+
+		this->validDatatypeSize.push_back(64);	// Linux
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
 	}
 
@@ -1468,6 +1455,5 @@ namespace boost {
 	} // namespace serialization
 } // namespace boost
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
-
 
 #endif /* ITEMDB_HPP */

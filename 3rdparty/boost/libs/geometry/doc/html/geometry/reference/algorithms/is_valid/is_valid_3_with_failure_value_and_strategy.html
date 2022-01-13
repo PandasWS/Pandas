@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>is_valid (with failure value and strategy)</title>
 <link rel="stylesheet" href="../../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../is_valid.html" title="is_valid">
 <link rel="prev" href="is_valid_1.html" title="is_valid">
 <link rel="next" href="is_valid_2_with_failure_value.html" title="is_valid (with failure value)">
@@ -28,7 +28,7 @@
           (with failure value and strategy)</a>
 </h5></div></div></div>
 <p>
-            <a class="indexterm" name="idm45133050802272"></a>
+            <a class="indexterm" name="idm49803"></a>
 Checks if a geometry is valid (in the OGC sense)
           </p>
 <h6>
@@ -366,7 +366,7 @@ Checks if a geometry is valid (in the OGC sense)
 
     <span class="comment">// if the invalidity is only due to lack of closing points and/or wrongly oriented rings, then bg::correct can fix it</span>
     <span class="keyword">bool</span> <span class="identifier">could_be_fixed</span> <span class="special">=</span> <span class="special">(</span><span class="identifier">failure</span> <span class="special">==</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">failure_not_closed</span>
-                           <span class="special">||</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">failure_wrong_orientation</span><span class="special">);</span>
+                           <span class="special">||</span> <span class="identifier">failure</span> <span class="special">==</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">failure_wrong_orientation</span><span class="special">);</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"is valid? "</span> <span class="special">&lt;&lt;</span> <span class="special">(</span><span class="identifier">valid</span> <span class="special">?</span> <span class="string">"yes"</span> <span class="special">:</span> <span class="string">"no"</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
     <span class="keyword">if</span> <span class="special">(!</span> <span class="identifier">valid</span><span class="special">)</span>
     <span class="special">{</span>
@@ -412,8 +412,8 @@ corrected geometry: (((0, 0), (0, 10), (10, 10), (10, 0), (0, 0)), ((0, 0), (9, 
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

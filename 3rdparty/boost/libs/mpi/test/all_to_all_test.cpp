@@ -101,7 +101,7 @@ struct string_list_generator
   }
 };
 
-BOOST_AUTO_TEST_CASE(all_to_all)
+BOOST_AUTO_TEST_CASE(all_to_all_check)
 {
   boost::mpi::environment env;
   communicator comm;

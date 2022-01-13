@@ -10,15 +10,15 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(XPRESSIVE_LEXER_HPP)
-#define XPRESSIVE_LEXER_HPP
+#if !defined(BOOST_XPRESSIVE_LEXER_HPP)
+#define BOOST_XPRESSIVE_LEXER_HPP
 
 #include <string>
 #include <vector>
 #include <utility>
+#include <iterator>
 #include <algorithm>
 
-#include <boost/detail/iterator.hpp>
 #include <boost/xpressive/xpressive.hpp>
 
 namespace boost {
@@ -36,7 +36,7 @@ template <
 class xpressive_lexer
 {
 private:
-    typedef typename boost::detail::iterator_traits<Iterator>::value_type
+    typedef typename std::iterator_traits<Iterator>::value_type
         char_type;
     typedef std::basic_string<char_type> string_type;
     
@@ -130,6 +130,6 @@ xpressive_lexer<Iterator, Token, Callback>::next_token(
 ///////////////////////////////////////////////////////////////////////////////
 }}}} // boost::wave::cpplexer::xlex
 
-#endif // !defined(XPRESSIVE_LEXER_HPP)
+#endif // !defined(BOOST_XPRESSIVE_LEXER_HPP)
 
 

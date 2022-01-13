@@ -22,57 +22,7 @@ import regex ;
 #
 
 
-# Validate the version string and extract the major/minor part we care about.
-#
-local rule split-version ( version )
-{
-    local major-minor = [ MATCH "^([0-9]+)\.([0-9]+)(.*)$" : $(version) : 1 2 3 ] ;
-    if ! $(major-minor[2]) || $(major-minor[3])
-    {
-        ECHO "Warning: \"using python\" expects a two part (major, minor) version number; got" $(version) instead ;
-
-        # Add a zero to account for the missing digit if necessary.
-        major-minor += 0 ;
-    }
-
-    return $(major-minor[1]) $(major-minor[2]) ;
-}
-
-# Define a version suffix for libraries depending on Python.
-# For example, Boost.Python built for Python 2.7 uses the suffix "27"
-rule version-suffix ( version )
-{
-    local major-minor = [ split-version $(version) ] ;
-    local suffix = $(major-minor:J="") ;
-    return $(suffix) ;
-}
-
-
-# Python build id (for Python libraries only).
-python-id = [ option.get "python-buildid" ] ;
-if $(python-id)
-{
-    PYTHON_ID = [ regex.replace $(python-id) "[*\\/:.\"\']" _ ] ;
-}
-
-rule python-tag ( name : type ? : property-set )
-{
-    local result = $(name) ;
-    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
-    {
-        local version = [ $(property-set).get <python> ] ;
-        local lib-suffix = [ version-suffix $(version) ] ;
-        result = $(result)$(lib-suffix) ;
-    }
-    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB && $(PYTHON_ID)
-    {
-        result = $(result)-$(PYTHON_ID) ;
-    }
-
-    # forward to the boost tagging rule
-    return  [ tag $(result) : $(type) : $(property-set) ] ;
-}
-
+mpi_python_libs = ;
 
 if [ mpi.configured ]
 {
@@ -96,15 +46,16 @@ lib boost_mpi
     intercommunicator.cpp
     mpi_datatype_cache.cpp
     mpi_datatype_oarchive.cpp
+    offsets.cpp
     packed_iarchive.cpp
     packed_oarchive.cpp
     packed_skeleton_iarchive.cpp
     packed_skeleton_oarchive.cpp
     point_to_point.cpp
     request.cpp
+    status.cpp
     text_skeleton_oarchive.cpp
     timer.cpp
-    offsets.cpp
   : # Requirements
     <library>../../serialization/build//boost_serialization
     <library>/mpi//mpi [ mpi.extra-requirements ]
@@ -133,7 +84,7 @@ lib boost_mpi
                 <define>BOOST_MPI_PYTHON_SOURCE=1
                 <python-debugging>on:<define>BOOST_DEBUG_PYTHON
                 -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
-                <tag>@$(__name__).python-tag
+                <tag>@python-tag
                 <conditional>@python.require-py
                 <local-visibility>global
 
@@ -168,6 +119,8 @@ lib boost_mpi
                 <link>shared <runtime-link>shared
                 <python-debugging>on:<define>BOOST_DEBUG_PYTHON
               ;
+
+            mpi_python_libs = boost_mpi_python mpi ;
   }
 }
 else if ! ( --without-mpi in  [ modules.peek : ARGV ] )
@@ -184,4 +137,4 @@ else
   alias boost_mpi ;
 }
 
-boost-install boost_mpi ;
+boost-install boost_mpi $(mpi_python_libs) ;

@@ -17,7 +17,7 @@
 #  include <boost/graph/distributed/adjacency_list.hpp>
 #endif
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include <boost/graph/distributed/queue.hpp>
 
@@ -1144,7 +1144,7 @@ void usage()
             << "\t--no-distributed-graph\t\tOmit distributed graph tests\n";
 }
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   mpi::environment env(argc, argv);
 
@@ -1259,5 +1259,5 @@ int test_main(int argc, char* argv[])
                                 full_bc, verify);
   }
 
-  return 0;
+  return boost::report_errors();
 }

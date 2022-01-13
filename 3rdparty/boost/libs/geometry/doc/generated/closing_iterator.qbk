@@ -36,16 +36,16 @@ struct closing_iterator
 [heading Constructor(s)]
 [table
 [[Function] [Description] [Parameters] ]
-[[``closing_iterator(Range & range)``
+[[``closing_iterator(Range const & range)``
 
-] [Constructor including the range it is based on. ] [[* Range &]: ['range]:  
+] [Constructor including the range it is based on. ] [[* Range const &]: ['range]:  
 
 
 
 ]]
-[[``closing_iterator(Range & range, bool )``
+[[``closing_iterator(Range const & range, bool )``
 
-] [Constructor to indicate the end of a range. ] [[* Range &]: ['range]:  
+] [Constructor to indicate the end of a range. ] [[* Range const &]: ['range]:  
 
 [* bool]: [']:  
 
@@ -55,6 +55,14 @@ struct closing_iterator
 [[``closing_iterator()``
 
 ] [Default constructor. ] [
+
+]]
+[[``template<typename OtherRange, std::enable_if_t< std::is_convertible< typename boost::range_iterator< OtherRange const >::type, typename boost::range_iterator< Range const >::type >::value, int >>
+closing_iterator(closing_iterator< OtherRange > const & other)``
+
+] [] [[* closing_iterator< OtherRange > const &]: ['other]:  
+
+
 
 ]]
 ]

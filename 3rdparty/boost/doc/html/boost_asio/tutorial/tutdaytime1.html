@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Daytime.1 - A synchronous TCP daytime client</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -55,7 +55,8 @@ int main(int argc, char* argv[])
     }
 </pre>
 <p>
-        All programs that use asio need to have at least one <a class="link" href="../reference/io_context.html" title="io_context">io_context</a>
+        All programs that use asio need to have at least one I/O execution context,
+        such as an <a class="link" href="../reference/io_context.html" title="io_context">io_context</a>
         object.
       </p>
 <pre class="programlisting">    boost::asio::io_context io_context;
@@ -68,15 +69,18 @@ int main(int argc, char* argv[])
 <pre class="programlisting">    tcp::resolver resolver(io_context);
 </pre>
 <p>
-        A resolver takes a query object and turns it into a list of endpoints. We
-        construct a query using the name of the server, specified in <code class="computeroutput">argv[1]</code>,
-        and the name of the service, in this case <code class="computeroutput">"daytime"</code>.
+        A resolver takes a host name and service name and turns them into a list
+        of endpoints. We perform a resolve call using the name of the server, specified
+        in <code class="computeroutput">argv[1]</code>, and the name of the service, in this case <code class="computeroutput">"daytime"</code>.
       </p>
 <p>
-        The list of endpoints is returned using an iterator of type <a class="link" href="../reference/ip__basic_resolver/iterator.html" title="ip::basic_resolver::iterator">ip::tcp::resolver::iterator</a>.
-        (Note that a default constructed <a class="link" href="../reference/ip__basic_resolver/iterator.html" title="ip::basic_resolver::iterator">ip::tcp::resolver::iterator</a>
-        object can be used as an end iterator.)
+        The list of endpoints is returned using an object of type <a class="link" href="../reference/ip__basic_resolver/results_type.html" title="ip::basic_resolver::results_type">ip::tcp::resolver::results_type</a>.
+        This object is a range, with begin() and end() member functions that may
+        be used for iterating over the results.
       </p>
+<pre class="programlisting">    tcp::resolver::results_type endpoints =
+      resolver.resolve(argv[1], "daytime");
+</pre>
 <p>
         Now we create and connect the socket. The list of endpoints obtained above
         may contain both IPv4 and IPv6 endpoints, so we need to try each of them
@@ -84,6 +88,9 @@ int main(int argc, char* argv[])
         a specific IP version. The boost::asio::connect() function does this for
         us automatically.
       </p>
+<pre class="programlisting">    tcp::socket socket(io_context);
+    boost::asio::connect(socket, endpoints);
+</pre>
 <p>
         The connection is open. All we need to do now is read the response from the
         daytime service.
@@ -94,14 +101,35 @@ int main(int argc, char* argv[])
         overruns. Instead of a <code class="computeroutput">boost::array</code>, we could have used a <code class="computeroutput">char
         []</code> or <code class="computeroutput">std::vector</code>.
       </p>
+<pre class="programlisting">    for (;;)
+    {
+      boost::array&lt;char, 128&gt; buf;
+      boost::system::error_code error;
+
+      size_t len = socket.read_some(boost::asio::buffer(buf), error);
+</pre>
 <p>
         When the server closes the connection, the <a class="link" href="../reference/basic_stream_socket/read_some.html" title="basic_stream_socket::read_some">ip::tcp::socket::read_some()</a>
         function will exit with the boost::asio::error::eof error, which is how we
         know to exit the loop.
       </p>
+<pre class="programlisting">      if (error == boost::asio::error::eof)
+        break; // Connection closed cleanly by peer.
+      else if (error)
+        throw boost::system::system_error(error); // Some other error.
+
+      std::cout.write(buf.data(), len);
+    }
+</pre>
 <p>
         Finally, handle any exceptions that may have been thrown.
       </p>
+<pre class="programlisting">  }
+  catch (std::exception&amp; e)
+  {
+    std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
+  }
+</pre>
 <p>
         See the <a class="link" href="tutdaytime1/src.html" title="Source listing for Daytime.1">full source listing</a>
       </p>
@@ -115,7 +143,8 @@ int main(int argc, char* argv[])
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

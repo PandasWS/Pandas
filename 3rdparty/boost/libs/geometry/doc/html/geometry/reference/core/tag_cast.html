@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>tag_cast</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../core.html" title="Core Metafunctions">
 <link rel="prev" href="tag.html" title="tag">
 <link rel="next" href="../de9im.html" title="DE-9IM">
@@ -27,7 +27,7 @@
 <a name="geometry.reference.core.tag_cast"></a><a class="link" href="tag_cast.html" title="tag_cast">tag_cast</a>
 </h4></div></div></div>
 <p>
-          <a class="indexterm" name="idm45133040349568"></a>
+          <a class="indexterm" name="idm70456"></a>
 Metafunction defining a type being either the specified tag, or one of
           the specified basetags if the type inherits from them.
         </p>
@@ -47,8 +47,7 @@ Metafunction defining a type being either the specified tag, or one of
         </h6>
 <p>
 </p>
-<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">Tag</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">BaseTag</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">BaseTag2</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">BaseTag3</span><span class="special">,</span>
-         <span class="keyword">typename</span> <span class="identifier">BaseTag4</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">BaseTag5</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">BaseTag6</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">BaseTag7</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">Tag</span><span class="special">,</span> <span class="keyword">typename</span> <span class="special">...</span> <span class="identifier">BaseTags</span><span class="special">&gt;</span>
 <span class="keyword">struct</span> <span class="identifier">tag_cast</span>
 <span class="special">{</span>
   <span class="comment">// ...</span>
@@ -65,17 +64,11 @@ Metafunction defining a type being either the specified tag, or one of
 <colgroup>
 <col>
 <col>
-<col>
 </colgroup>
 <thead><tr>
 <th>
                   <p>
                     Parameter
-                  </p>
-                </th>
-<th>
-                  <p>
-                    Default
                   </p>
                 </th>
 <th>
@@ -92,8 +85,6 @@ Metafunction defining a type being either the specified tag, or one of
                   </p>
                 </td>
 <td>
-                </td>
-<td>
                   <p>
                     The tag to be casted to one of the base tags
                   </p>
@@ -102,116 +93,12 @@ Metafunction defining a type being either the specified tag, or one of
 <tr>
 <td>
                   <p>
-                    typename BaseTag
-                  </p>
-                </td>
-<td>
-                </td>
-<td>
-                  <p>
-                    First base tag
-                  </p>
-                </td>
-</tr>
-<tr>
-<td>
-                  <p>
-                    typename BaseTag2
+                    typename ... BaseTags
                   </p>
                 </td>
 <td>
                   <p>
-                    void
-                  </p>
-                </td>
-<td>
-                  <p>
-                    Optional second base tag
-                  </p>
-                </td>
-</tr>
-<tr>
-<td>
-                  <p>
-                    typename BaseTag3
-                  </p>
-                </td>
-<td>
-                  <p>
-                    void
-                  </p>
-                </td>
-<td>
-                  <p>
-                    Optional third base tag
-                  </p>
-                </td>
-</tr>
-<tr>
-<td>
-                  <p>
-                    typename BaseTag4
-                  </p>
-                </td>
-<td>
-                  <p>
-                    void
-                  </p>
-                </td>
-<td>
-                  <p>
-                    Optional fourth base tag
-                  </p>
-                </td>
-</tr>
-<tr>
-<td>
-                  <p>
-                    typename BaseTag5
-                  </p>
-                </td>
-<td>
-                  <p>
-                    void
-                  </p>
-                </td>
-<td>
-                  <p>
-                    Optional fifth base tag
-                  </p>
-                </td>
-</tr>
-<tr>
-<td>
-                  <p>
-                    typename BaseTag6
-                  </p>
-                </td>
-<td>
-                  <p>
-                    void
-                  </p>
-                </td>
-<td>
-                  <p>
-                    Optional sixth base tag
-                  </p>
-                </td>
-</tr>
-<tr>
-<td>
-                  <p>
-                    typename BaseTag7
-                  </p>
-                </td>
-<td>
-                  <p>
-                    void
-                  </p>
-                </td>
-<td>
-                  <p>
-                    Optional seventh base tag
+                    Base tags
                   </p>
                 </td>
 </tr>
@@ -304,8 +191,8 @@ base tag: struct boost::geometry::areal_tag
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

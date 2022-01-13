@@ -27,11 +27,9 @@ Output:
 
 #include <iostream>
 
-#define BOOST_TEST_MAIN
+#include "test_close.hpp"
 
-#include <boost/test/unit_test.hpp>
-
-#define BOOST_UNITS_CHECK_CLOSE(a, b) BOOST_CHECK_CLOSE_FRACTION(a, b, .0000001)
+#define BOOST_UNITS_CHECK_CLOSE(a, b) BOOST_UNITS_TEST_CLOSE((a), (b), .0000001)
 
 namespace bu = boost::units;
 
@@ -52,8 +50,8 @@ typedef bu::divide_typeof_helper<bu::multiply_typeof_helper<si_mass,cgs_area>::t
 typedef bu::divide_typeof_helper<bu::multiply_typeof_helper<cgs_mass,mixed_length>::type, 
                                  bu::multiply_typeof_helper<cgs_time,cgs_time>::type >::type            mixed_energy_2;
 
-BOOST_AUTO_TEST_CASE(test_conversion) {
-    BOOST_CHECK_EQUAL(1, 1);
+void test_conversion() {
+    BOOST_TEST_EQ(1, 1);
     BOOST_CONSTEXPR_OR_CONST bu::quantity<mixed_length> a1(2.0 * mixed_length());
     BOOST_CONSTEXPR_OR_CONST bu::quantity<si_area> a2(a1);
 
@@ -83,19 +81,19 @@ BOOST_AUTO_TEST_CASE(test_conversion) {
     BOOST_UNITS_CHECK_CLOSE(F5.value(), 2.0e-4);
 
     // same type
-    BOOST_CHECK_EQUAL(boost::units::conversion_factor(si_length(), si_length()), 1.0);
+    BOOST_TEST_EQ(boost::units::conversion_factor(si_length(), si_length()), 1.0);
 }
 
-BOOST_AUTO_TEST_CASE(test_dimensionless_conversions) {
+void test_dimensionless_conversions() {
     typedef bu::divide_typeof_helper<bu::cgs::force, bu::si::force>::type mixed_dimensionless;
 
     BOOST_CONSTEXPR_OR_CONST bu::quantity<bu::si::dimensionless> dimensionless_test1(1.0*bu::cgs::dyne/bu::si::newton);
-    BOOST_CHECK(dimensionless_test1 == 1e-5);
+    BOOST_TEST(dimensionless_test1 == 1e-5);
 
     typedef bu::multiply_typeof_helper<bu::si::length, bu::cgs::length>::type m_cm;
     typedef bu::divide_typeof_helper<m_cm, m_cm>::type heterogeneous_dimensionless;
     BOOST_CONSTEXPR_OR_CONST bu::quantity<heterogeneous_dimensionless> dimensionless_test2(1.0*bu::cgs::dyne/bu::si::newton);
-    BOOST_CHECK(dimensionless_test2.value() == 1e-5);
+    BOOST_TEST(dimensionless_test2.value() == 1e-5);
     BOOST_CONSTEXPR_OR_CONST bu::quantity<bu::divide_typeof_helper<bu::cgs::force, bu::si::force>::type> dimensionless_test3(dimensionless_test2);
     BOOST_UNITS_CHECK_CLOSE(dimensionless_test3.value(), 1.0);
 
@@ -107,4 +105,11 @@ BOOST_AUTO_TEST_CASE(test_dimensionless_conversions) {
     BOOST_CONSTEXPR_OR_CONST bu::quantity<bu::divide_typeof_helper<bu::si::length, bu::cgs::length>::type> dimensionless_test4(2.0 * bu::si::meters / bu::cgs::centimeters);
     BOOST_CONSTEXPR_OR_CONST bu::quantity<bu::divide_typeof_helper<bu::cgs::mass, bu::si::mass>::type> dimensionless_test5(dimensionless_test4);
     BOOST_UNITS_CHECK_CLOSE(dimensionless_test5.value(), 2e5);
+}
+
+int main()
+{
+    test_conversion();
+    test_dimensionless_conversions();
+    return boost::report_errors();
 }

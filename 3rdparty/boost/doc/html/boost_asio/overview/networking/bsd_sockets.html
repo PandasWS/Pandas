@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>The BSD Socket API and Boost.Asio</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -37,10 +37,10 @@
           data copying, minimise the use of resources like threads, and so on.
         </p>
 <p>
-          Unsafe and error prone aspects of the BSD socket API not included. For
-          example, the use of <code class="computeroutput">int</code> to represent all sockets lacks type
-          safety. The socket representation in Boost.Asio uses a distinct type for
-          each protocol, e.g. for TCP one would use <code class="computeroutput">ip::tcp::socket</code>,
+          Unsafe and error prone aspects of the BSD socket API are not included.
+          For example, the use of <code class="computeroutput">int</code> to represent all sockets lacks
+          type safety. The socket representation in Boost.Asio uses a distinct type
+          for each protocol, e.g. for TCP one would use <code class="computeroutput">ip::tcp::socket</code>,
           and for UDP one uses <code class="computeroutput">ip::udp::socket</code>.
         </p>
 <p>
@@ -538,7 +538,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

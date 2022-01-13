@@ -15,7 +15,7 @@ install it. To do this:
    the directory where you want Boost.Build to be installed
 4. Add *PREFIX*\ |/|\ ``bin`` to your PATH environment variable.
 
-.. _Boost.Build: ../../tools/build/index.html
+.. _Boost.Build: ../../tools/build/doc/html/index.html
 .. _Boost.Build documentation: Boost.Build_
 
 .. _toolset:
@@ -28,13 +28,13 @@ First, find the toolset corresponding to your compiler in the
 following table (an up-to-date list is always available `in the
 Boost.Build documentation`__).
 
-__ https://boostorg.github.io/build/manual/develop/index.html#bbv2.reference.tools
+__ ../../tools/build/doc/html/index.html#bbv2.reference.tools
 
 .. Note:: If you previously chose a toolset for the purposes of
   `building b2`_, you should assume it won't work and instead
   choose newly from the table below.
 
-.. _building b2: ../../doc/html/bbv2/installation.html
+.. _building b2: ../../tools/build/doc/html/index.html#bbv2.installation
 
 +-----------+--------------------+------------------------------------------------------------+
 |Toolset    |Vendor              |Notes                                                       |
@@ -109,5 +109,5 @@ invoke ``b2`` as follows:
 For a complete description of these and other invocation options,
 please see the `Boost.Build documentation`__.
 
-__ http://www.boost.org/build/doc/html/bbv2/overview/invocation.html
+__ ../../tools/build/doc/html/index.html#bbv2.overview.invocation
 

@@ -31,6 +31,14 @@ int main()
   BOOST_MPL_ASSERT((DAOther<AnotherType,AType>));
   BOOST_MPL_ASSERT((BOOST_TTI_HAS_DATA_GEN(ONestStr)<AnotherType,AType::AStructType>));
   
+#if !defined(BOOST_NO_CXX11_UNRESTRICTED_UNION)
+
+  BOOST_MPL_ASSERT((BOOST_TTI_HAS_DATA_GEN(USMember)<AType::AnUnion,float>));
+  BOOST_MPL_ASSERT((SomeUStaticD<AnotherType::AnotherUnion,char>));
+  
+#endif
+  
+  
   return 0;
   
   }

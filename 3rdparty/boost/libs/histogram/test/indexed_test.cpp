@@ -26,9 +26,9 @@ using namespace boost::histogram;
 using namespace boost::histogram::literals;
 using namespace boost::mp11;
 
-template <class IsDynamic, class Coverage>
-void run_1d_tests(mp_list<IsDynamic, Coverage>) {
-  auto h = make(IsDynamic(), axis::integer<>(0, 3));
+template <class Tag, class Coverage>
+void run_1d_tests(mp_list<Tag, Coverage>) {
+  auto h = make(Tag(), axis::integer<>(0, 3));
   h(-1, weight(1));
   h(0, weight(2));
   h(1, weight(3));
@@ -73,9 +73,9 @@ void run_1d_tests(mp_list<IsDynamic, Coverage>) {
     BOOST_TEST_EQ(*x, 0);
 }
 
-template <class IsDynamic, class Coverage>
-void run_3d_tests(mp_list<IsDynamic, Coverage>) {
-  auto h = make_s(IsDynamic(), std::vector<int>(), axis::integer<>(0, 2),
+template <class Tag, class Coverage>
+void run_3d_tests(mp_list<Tag, Coverage>) {
+  auto h = make_s(Tag(), std::vector<int>(), axis::integer<>(0, 2),
                   axis::integer<int, axis::null_type, axis::option::none_t>(0, 3),
                   axis::integer<int, axis::null_type, axis::option::overflow_t>(0, 4));
 
@@ -105,12 +105,12 @@ void run_3d_tests(mp_list<IsDynamic, Coverage>) {
   BOOST_TEST(it == ind.end());
 }
 
-template <class IsDynamic, class Coverage>
-void run_density_tests(mp_list<IsDynamic, Coverage>) {
+template <class Tag, class Coverage>
+void run_density_tests(mp_list<Tag, Coverage>) {
   auto ax = axis::variable<>({0.0, 0.1, 0.3, 0.6});
   auto ay = axis::integer<int>(0, 2);
   auto az = ax;
-  auto h = make_s(IsDynamic(), std::vector<int>(), ax, ay, az);
+  auto h = make_s(Tag(), std::vector<int>(), ax, ay, az);
 
   // fill uniformly
   for (auto&& x : h) x = 1;
@@ -120,11 +120,11 @@ void run_density_tests(mp_list<IsDynamic, Coverage>) {
   }
 }
 
-template <class IsDynamic, class Coverage>
-void run_stdlib_tests(mp_list<IsDynamic, Coverage>) {
+template <class Tag, class Coverage>
+void run_stdlib_tests(mp_list<Tag, Coverage>) {
   auto ax = axis::regular<>(3, 0, 1);
   auto ay = axis::integer<>(0, 2);
-  auto h = make_s(IsDynamic(), std::vector<int>(), ax, ay);
+  auto h = make_s(Tag(), std::array<int, 20>(), ax, ay);
 
   struct generator {
     int i = 0;
@@ -156,8 +156,42 @@ void run_stdlib_tests(mp_list<IsDynamic, Coverage>) {
   }
 }
 
+template <class Tag>
+void run_indexed_with_range_tests(Tag) {
+  {
+    auto ax = axis::integer<>(0, 4);
+    auto ay = axis::integer<>(0, 3);
+
+    auto h = make(Tag(), ax, ay);
+    for (auto&& x : indexed(h, coverage::all)) x = x.index(0) + x.index(1);
+    BOOST_TEST_EQ(h.at(0, 0), 0);
+    BOOST_TEST_EQ(h.at(0, 1), 1);
+    BOOST_TEST_EQ(h.at(0, 2), 2);
+    BOOST_TEST_EQ(h.at(1, 0), 1);
+    BOOST_TEST_EQ(h.at(1, 1), 2);
+    BOOST_TEST_EQ(h.at(1, 2), 3);
+    BOOST_TEST_EQ(h.at(2, 0), 2);
+    BOOST_TEST_EQ(h.at(2, 1), 3);
+    BOOST_TEST_EQ(h.at(2, 2), 4);
+    BOOST_TEST_EQ(h.at(3, 0), 3);
+    BOOST_TEST_EQ(h.at(3, 1), 4);
+    BOOST_TEST_EQ(h.at(3, 2), 5);
+
+    /* x->
+    y  0 1 2 3
+    |  1 2 3 4
+    v  2 3 4 5
+    */
+
+    int range[2][2] = {{1, 3}, {0, 2}};
+    auto ir = indexed(h, range);
+    auto sum = std::accumulate(ir.begin(), ir.end(), 0.0);
+    BOOST_TEST_EQ(sum, 1 + 2 + 2 + 3);
+  }
+}
+
 int main() {
-  mp_for_each<mp_product<mp_list, mp_list<mp_false, mp_true>,
+  mp_for_each<mp_product<mp_list, mp_list<static_tag, dynamic_tag>,
                          mp_list<std::integral_constant<coverage, coverage::inner>,
                                  std::integral_constant<coverage, coverage::all>>>>(
       [](auto&& x) {
@@ -166,5 +200,8 @@ int main() {
         run_density_tests(x);
         run_stdlib_tests(x);
       });
+
+  run_indexed_with_range_tests(static_tag{});
+  run_indexed_with_range_tests(dynamic_tag{});
   return boost::report_errors();
 }

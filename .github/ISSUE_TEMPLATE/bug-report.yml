@@ -1,0 +1,145 @@
+name: 提交缺陷报告 (Bug Report)
+description: 向研发团队报告您在使用熊猫模拟器过程中发现的程序缺陷.
+labels: ["分类:程序缺陷", "优先级:P2普通"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 感谢您的贡献
+        感谢您选择熊猫模拟器, 并愿意花时间告知我们您发现的程序缺陷.
+
+        请根据提示填写程序缺陷的全部相关信息, 这些信息对我们解决问题非常有帮助!
+
+        若您无法确定自己发现的现象是不是程序缺陷, 建议您加入我们的 [Discord 服务器](https://discord.gg/9bEfrPPruj) 进行讨论.
+
+        # 报告填写说明
+        请尽可能准确的描述您遇到的情况, 我们将通过您描述的内容尝试对问题进行重现.
+        
+        在必要时候可以在文本框中粘贴截图, 或将文件拖拽至文本框进行上传 (注意: 文件请不要包含机密信息).
+
+        # 以下是报告正文
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 缺陷描述
+      description: 请描述您遇到程序缺陷的具体情况?
+      placeholder: |
+        例如: 与某个 NPC 对话的时候，选择某个选项结果游戏就掉线了 (同时地图服务器跳出来一个错误提示).
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce-steps
+    attributes:
+      label: 重现步骤
+      description: 请告诉我们应该如何一步一步进行操作来触发缺陷?
+      placeholder: |
+        1. 在某个环境...
+        2. 在 '...' 配置文件中如果将某个选项 ...
+        3. 运行 '...'
+        4. 进入游戏然后 ...
+        5. 使用 ... 指令将角色移动到 ...
+        6. 与 ... 对话, 选择 ...
+        7. 然后就掉线了
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-result
+    attributes:
+      label: 预期结果
+      description: 正常情况下, 您预期得到什么样的结果?
+      placeholder: |
+        例如: 角色可以正常完成对话, 不应该掉线
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        # 发生缺陷时的环境信息
+        有时候系统环境或者工作模式也会影响缺陷的重现结果. 例如: 问题在复兴前出现, 但是在复兴后却正常.
+        
+        为了让我们能更好模拟您遇到问题的环境, 请尽可能精确的提供以下环境信息.
+
+  - type: dropdown
+    id: os-platform
+    attributes:
+      label: 操作系统
+      description: 当程序出现您所描述的缺陷时, 您在什么系统平台上运行我们的程序?
+      options:
+        - Windows
+        - Linux 发行版
+    validations:
+      required: true
+
+  - type: dropdown
+    id: work-mode
+    attributes:
+      label: 工作模式
+      description: 当程序出现您所描述的缺陷时, 被编译成什么工作模式?
+      options:
+        - 复兴后 (Renewal)
+        - 复兴前 (Pre-Renewal)
+        - 全部 (Both)
+    validations:
+      required: true
+
+  - type: input
+    id: product-version
+    attributes:
+      label: 熊猫模拟器版本号
+      description: 请填写出现问题的熊猫模拟器版本号, 以便我们缩小定位缺陷的工作量.
+      placeholder: |
+        例如: v1.1.8 (可在游戏内用 `@version` 指令查询)
+    validations:
+      required: true
+
+  - type: input
+    id: client-packetver
+    attributes:
+      label: 适配的客户端版本
+      description: 出现问题的程序被编译成适配哪个客户端版本 (PACKETVER) ?
+      placeholder: |
+        例如: 20210107 (可在游戏内用 `@version` 指令查询)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: pure-bug
+    attributes:
+      label: 是否为原生缺陷
+      description: 使用最新官方纯净版的熊猫模拟器 (官方代码 + 官方数据) 是否也存在此问题?
+      options:
+        - 是的, 问题依旧
+        - 不是, 纯净版中没有问题
+        - 我没有尝试过
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        # 其他补充资料
+        以下资料不是必须提供的, 如果能提供将有助于我们在定位问题的时候更加快速.
+
+  - type: input
+    id: code-commit-hash
+    attributes:
+      label: 代码提交散列
+      description: 出现问题的程序是基于哪个提交构建的, 请填写提交的散列编号.
+      placeholder: |
+        例如: 0094fed (可在游戏内用 `@version` 指令查询)
+    validations:
+      required: false
+
+  - type: textarea
+    id: remarks-information
+    attributes:
+      label: 备注
+      description: 您可以在这里补充有关此缺陷的备注信息 (截图、链接、其他线索等).
+      placeholder: |
+        例如: 我看到某论坛也有人讨论此问题, 链接: https://something.else
+    validations:
+      required: false

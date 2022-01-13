@@ -11,7 +11,7 @@
 #include <boost/throw_exception.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/graph/distributed/queue.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include <boost/pending/queue.hpp>
 #include <boost/property_map/property_map.hpp>
@@ -97,8 +97,8 @@ void test_distributed_queue()
     int level_begin = 1;
     for (std::size_t i = 0; i < v.value; ++i) level_begin *= 2;
     int level_end = level_begin * 2;
-    BOOST_CHECK(level_begin <= (id + 1));
-    BOOST_CHECK((id + 1) <= level_end);
+    BOOST_TEST(level_begin <= (id + 1));
+    BOOST_TEST((id + 1) <= level_end);
 
     ++v.value;
     v.processor = v.processor * 2 + 1;
@@ -108,9 +108,9 @@ void test_distributed_queue()
   }
 }
 
-int test_main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   boost::mpi::environment env(argc, argv);
   test_distributed_queue();
-  return 0;
+  return boost::report_errors();
 }

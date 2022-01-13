@@ -65,13 +65,13 @@ test-suite wave
                 /boost/filesystem//boost_filesystem    
                 /boost/system//boost_system    
                 /boost/thread//boost_thread
-                /boost/date_time//boost_date_time
             :
             # arguments
                 $(TESTWAVE_ARGUMENTS) 
-                --config-file $(TESTWAVE_DIR)/$(TESTWAVE_FILES)
+                --config-file
             :
             # input files
+            $(TESTWAVE_DIR)/$(TESTWAVE_FILES)
             :
             # requirements
                 <threading>multi
@@ -94,7 +94,6 @@ test-suite wave
                 /boost/filesystem//boost_filesystem/<link>static
                 /boost/system//boost_system/<link>static
                 /boost/thread//boost_thread/<link>static
-                /boost/date_time//boost_date_time/<link>static
             :
             # arguments
                 $(TESTWAVE_ARGUMENTS) 
@@ -124,7 +123,6 @@ test-suite wave
                 /boost/filesystem//boost_filesystem
                 /boost/thread//boost_thread
                 /boost/system//boost_system
-                /boost/date_time//boost_date_time
             :
             # arguments
             :
@@ -149,7 +147,6 @@ test-suite wave
                 /boost/filesystem//boost_filesystem
                 /boost/thread//boost_thread
                 /boost/system//boost_system
-                /boost/date_time//boost_date_time
             :
             # arguments
             :
@@ -163,6 +160,60 @@ test-suite wave
             :
             # name
                 test_re2c_lexer
+        ]
+
+        # test the lexertl wave lexing component
+        [
+            run
+            # sources
+                ../testlexers/test_lexertl_lexer.cpp
+                /boost/wave//boost_wave
+                /boost/program_options//boost_program_options
+                /boost/filesystem//boost_filesystem
+                /boost/thread//boost_thread
+                /boost/system//boost_system
+            :
+            # arguments
+            :
+            # input files
+            :
+            # requirements
+                <threading>multi
+                <variant>debug
+                <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+                <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+                # to generate wave_lexertl_tables_next_token.hpp:
+#                <define>BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE=1
+                # to use the resulting static tables:
+#                <define>BOOST_WAVE_LEXERTL_USE_STATIC_TABLES=1
+            :
+            # name
+                test_lexertl_lexer
+        ]
+
+        # test the xlex wave lexing component
+        [
+            run
+            # sources
+                ../testlexers/test_xlex_lexer.cpp
+                /boost/wave//boost_wave
+                /boost/program_options//boost_program_options
+                /boost/filesystem//boost_filesystem
+                /boost/thread//boost_thread
+                /boost/system//boost_system
+            :
+            # arguments
+            :
+            # input files
+            :
+            # requirements
+                <threading>multi
+                <variant>debug
+                <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+                <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+            :
+            # name
+                test_xlex_lexer
         ]
 
         [

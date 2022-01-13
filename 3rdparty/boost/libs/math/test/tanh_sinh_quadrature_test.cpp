@@ -13,7 +13,7 @@
 
 #include <boost/math/concepts/real_concept.hpp>
 #include <boost/test/included/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/math/quadrature/tanh_sinh.hpp>
 #include <boost/math/special_functions/sinc.hpp>
 #include <boost/multiprecision/cpp_bin_float.hpp>
@@ -33,7 +33,7 @@
 #endif
 
 #if !defined(TEST1) && !defined(TEST2) && !defined(TEST3) && !defined(TEST4) && !defined(TEST5) && !defined(TEST6) && !defined(TEST7) && !defined(TEST8)\
-    && !defined(TEST1A) && !defined(TEST2A) && !defined(TEST3A) && !defined(TEST6A) && !defined(TEST9)
+    && !defined(TEST1A) && !defined(TEST1B) && !defined(TEST2A) && !defined(TEST3A) && !defined(TEST6A) && !defined(TEST9)
 #  define TEST1
 #  define TEST2
 #  define TEST3
@@ -43,6 +43,7 @@
 #  define TEST7
 #  define TEST8
 #  define TEST1A
+#  define TEST1B
 #  define TEST2A
 #  define TEST3A
 #  define TEST6A
@@ -217,6 +218,11 @@ void test_linear()
     Real Q = integrator.integrate(f, (Real) 0, (Real) 1, get_convergence_tolerance<Real>(), &error, &L1);
     BOOST_CHECK_CLOSE_FRACTION(Q, 9.5, tol);
     BOOST_CHECK_CLOSE_FRACTION(L1, 9.5, tol);
+    Q = integrator.integrate(f, (Real) 1, (Real) 0, get_convergence_tolerance<Real>(), &error, &L1);
+    BOOST_CHECK_CLOSE_FRACTION(Q, -9.5, tol);
+    BOOST_CHECK_CLOSE_FRACTION(L1, 9.5, tol);
+    Q = integrator.integrate(f, (Real) 1, (Real) 1, get_convergence_tolerance<Real>(), &error, &L1);
+    BOOST_CHECK_EQUAL(Q, Real(0));
 }
 
 
@@ -577,7 +583,7 @@ void test_crc()
     }
     // There is an alternative way to evaluate the above integral: by noticing that all the area of the integral
     // is near zero for p < 0 and near 1 for p > 0 we can substitute exp(-x) for x and remap the integral to the
-    // domain (0, INF).  Internally we need to expand out the terms and evaluate using logs to avoid spurous overflow, 
+    // domain (0, INF).  Internally we need to expand out the terms and evaluate using logs to avoid spurious overflow, 
     // this gives us
     // for p > 0:
     for (Real p = Real(0.99); p > 0; p -= Real(0.1)) {
@@ -646,7 +652,7 @@ void test_crc()
     // in the exp terms.  Note that for small x: tan(x) ~= x, so making this
     // substitution and evaluating by logs we have:
     //
-    // exp(-x)/tan(exp(-x))^h ~= exp((h - 1) * x)  for x > -log(epsion);
+    // exp(-x)/tan(exp(-x))^h ~= exp((h - 1) * x)  for x > -log(epsilon);
     //
     // Here's how that looks in code:
     //
@@ -695,7 +701,7 @@ void test_sf()
       // Check some really extreme versions:
       a = 1000;
       b = 500;
-      BOOST_CHECK_CLOSE_FRACTION(integrator.integrate(f, 0, 1), Real(1), tol * 10);
+      BOOST_CHECK_CLOSE_FRACTION(integrator.integrate(f, 0, 1), Real(1), tol * 15);
       //
       // This is as extreme as we can get in this domain: otherwise the function has all it's 
       // area so close to zero we never get in there no matter how many levels we go down:
@@ -748,7 +754,7 @@ void test_2_arg()
    {
       return tc < 0 ? 1 / boost::math::cbrt(t * (1-t)) : 1 / boost::math::cbrt(t * tc);
    }, 0, 1);
-   BOOST_CHECK_CLOSE_FRACTION(Q, boost::math::pow<2>(boost::math::tgamma(Real(2) / 3)) / boost::math::tgamma(Real(4) / 3), tol * 3);
+   BOOST_CHECK_CLOSE_FRACTION(Q, boost::math::pow<2>(boost::math::tgamma(Real(2) / 3)) / boost::math::tgamma(Real(4) / 3), tol * 4);
    //
    // We can do the same thing with ((1+x)(1-x))^-N ; N < 1
    //
@@ -859,9 +865,10 @@ BOOST_AUTO_TEST_CASE(tanh_sinh_quadrature_test)
 #endif
 #ifdef TEST1A
     test_early_termination<float>();
-    test_crc<float>();
     test_2_arg<float>();
-
+#endif
+#ifdef TEST1B
+    test_crc<float>();
 #endif
 #ifdef TEST2
     test_right_limit_infinite<double>();
@@ -906,7 +913,6 @@ BOOST_AUTO_TEST_CASE(tanh_sinh_quadrature_test)
 #endif
 
 #ifdef TEST4
-
     test_right_limit_infinite<cpp_bin_float_quad>();
     test_left_limit_infinite<cpp_bin_float_quad>();
     test_linear<cpp_bin_float_quad>();

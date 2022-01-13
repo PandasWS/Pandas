@@ -19,3 +19,4 @@ build-project token_statistics/build ;
 build-project preprocess_pragma_output/build ;
 build-project custom_directives/build ;
 build-project emit_custom_line_directives/build ;
+build-project check_macro_naming/build ;

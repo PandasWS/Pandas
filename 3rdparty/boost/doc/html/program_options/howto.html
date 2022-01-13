@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>How To</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../program_options.html" title="Chapter&#160;31.&#160;Boost.Program_options">
+<link rel="up" href="../program_options.html" title="Chapter 31. Boost.Program_options">
 <link rel="prev" href="overview.html" title="Library Overview">
 <link rel="next" href="design.html" title="Design Discussion">
 </head>
@@ -407,7 +407,7 @@ $ export LC_CTYPE=ru_RU.KOI8-R
 <a name="id-1.3.32.6.9"></a>Allowing Unknown Options</h3></div></div></div>
 <p>Usually, the library throws an exception on unknown option names. This
       behaviour can be changed. For example, only some part of your application uses
-      <a class="link" href="../program_options.html" title="Chapter&#160;31.&#160;Boost.Program_options">Program_options</a>, and you wish to pass unrecognized options to another part of
+      <a class="link" href="../program_options.html" title="Chapter 31. Boost.Program_options">Program_options</a>, and you wish to pass unrecognized options to another part of
       the program, or even to another application.</p>
 <p>To allow unregistered options on the command line, you need to use
       the <code class="computeroutput"><a class="link" href="../boost/program_options/basic_command_line_parser.html" title="Class template basic_command_line_parser">basic_command_line_parser</a></code> class for parsing (not <code class="computeroutput"><a class="link" href="../boost/program_options/parse_command_line.html" title="Function template parse_command_line">parse_command_line</a></code>)
@@ -467,7 +467,7 @@ if (vm.count("compression")) {
 <p>
       </p>
 <p>Instead, you can use a variable of type <code class="computeroutput">boost::optional</code>;
-      <a class="link" href="../program_options.html" title="Chapter&#160;31.&#160;Boost.Program_options">Program_options</a> provides special support for Boost.Optional
+      <a class="link" href="../program_options.html" title="Chapter 31. Boost.Program_options">Program_options</a> provides special support for Boost.Optional
       such that if the user specifies the option the <code class="computeroutput">boost::optional</code>
       variable will be initialized to the appropriate value:
         </p>
@@ -495,7 +495,7 @@ if (compression) {
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2004 Vladimir Prus<p>Distributed under the Boost Software License, Version 1.0.
+<td align="right"><div class="copyright-footer">Copyright © 2002-2004 Vladimir Prus<p>Distributed under the Boost Software License, Version 1.0.
       (See accompanying file <code class="filename">LICENSE_1_0.txt</code> or copy at 
       <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

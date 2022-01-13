@@ -837,6 +837,43 @@ values for the same property the value of the rightmost argument is used.
 
 [endsect]
 
+[section:has_property_tag has_property_tag]
+
+  template<class Tag, class PropertyTag> 
+  struct has_property_tag;
+
+[*Header]
+
+  #include <boost/function_types/property_tags.hpp>
+
+[variablelist
+  [[[^Tag]][Possibly compound property tag]]
+  [[[^PropertyTag]][Single property tag]]
+  [[[^has_property_tag<Tag,PropertyTag>]][Test (possibly) compound property tag for single property tag]]
+]
+
+A metafunction for testing that a compound property tag has a particular single
+property tag in its composition. Returns a boolean value of true if the particular single
+property tag is part of the compound property tag, otherwise false.
+
+For convenience there are also individual metafunctions for the built-in property tags of the form
+
+  template<class Tag> 
+  struct has_'name'_property_tag;
+
+which works exactly the same as `has_property_tag`, where name can be
+[^variadic],[^default_cc],[^const],[^volatile],[^cv],or [^null].
+In these individual metafunctions [^const] is short for [^const_qualified],
+[^volatile] is short for [^volatile_qualified],
+[^cv] is short for [^cv_qualified], and [^null] is short for [^null_tag].
+
+[note Testing for the [^null_tag], with either `has_property_tag<Tag,null_tag>`
+or `has_null_property_tag<Tag>`, always tests whether the [^Tag] is the single
+[^null_tag] property_tag.
+]
+
+[endsect]
+
 [endsect] [/ Tag Types]
 
 [/ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ]

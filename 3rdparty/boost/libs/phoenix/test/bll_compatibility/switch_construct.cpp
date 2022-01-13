@@ -12,7 +12,7 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
 
 
 #include "boost/lambda/lambda.hpp"
@@ -63,7 +63,7 @@ void do_switch_no_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 0));
+  BOOST_TEST(check(w, 0));
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -75,7 +75,7 @@ void do_switch_no_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 1));
+  BOOST_TEST(check(w, 1));
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -88,7 +88,7 @@ void do_switch_no_defaults_tests() {
      )
   );
   
-  BOOST_CHECK(check(w, 2));
+  BOOST_TEST(check(w, 2));
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -102,7 +102,7 @@ void do_switch_no_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 3));
+  BOOST_TEST(check(w, 3));
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -117,7 +117,7 @@ void do_switch_no_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 4));
+  BOOST_TEST(check(w, 4));
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -133,7 +133,7 @@ void do_switch_no_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 5));
+  BOOST_TEST(check(w, 5));
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -150,7 +150,7 @@ void do_switch_no_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 6));
+  BOOST_TEST(check(w, 6));
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -168,7 +168,7 @@ void do_switch_no_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 7));
+  BOOST_TEST(check(w, 7));
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -187,7 +187,7 @@ void do_switch_no_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 8));
+  BOOST_TEST(check(w, 8));
   std::fill_n(w.begin(), 10, 0);
 
 }
@@ -216,8 +216,8 @@ void do_switch_yes_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, -1));
-  BOOST_CHECK(default_count == 10);
+  BOOST_TEST(check(w, -1));
+  BOOST_TEST_EQ(default_count, 10);
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -230,8 +230,8 @@ void do_switch_yes_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 0));
-  BOOST_CHECK(default_count == 9);
+  BOOST_TEST(check(w, 0));
+  BOOST_TEST_EQ(default_count, 9);
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -245,8 +245,8 @@ void do_switch_yes_defaults_tests() {
      )
   );
   
-  BOOST_CHECK(check(w, 1));
-  BOOST_CHECK(default_count == 8);
+  BOOST_TEST(check(w, 1));
+  BOOST_TEST_EQ(default_count, 8);
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -261,8 +261,8 @@ void do_switch_yes_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 2));
-  BOOST_CHECK(default_count == 7);
+  BOOST_TEST(check(w, 2));
+  BOOST_TEST_EQ(default_count, 7);
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -278,8 +278,8 @@ void do_switch_yes_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 3));
-  BOOST_CHECK(default_count == 6);
+  BOOST_TEST(check(w, 3));
+  BOOST_TEST_EQ(default_count, 6);
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -296,8 +296,8 @@ void do_switch_yes_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 4));
-  BOOST_CHECK(default_count == 5);
+  BOOST_TEST(check(w, 4));
+  BOOST_TEST_EQ(default_count, 5);
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -315,8 +315,8 @@ void do_switch_yes_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 5));
-  BOOST_CHECK(default_count == 4);
+  BOOST_TEST(check(w, 5));
+  BOOST_TEST_EQ(default_count, 4);
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -335,8 +335,8 @@ void do_switch_yes_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 6));
-  BOOST_CHECK(default_count == 3);
+  BOOST_TEST(check(w, 6));
+  BOOST_TEST_EQ(default_count, 3);
   std::fill_n(w.begin(), 10, 0);
 
   // ---
@@ -356,8 +356,8 @@ void do_switch_yes_defaults_tests() {
     )
   );
   
-  BOOST_CHECK(check(w, 7));
-  BOOST_CHECK(default_count == 2);
+  BOOST_TEST(check(w, 7));
+  BOOST_TEST_EQ(default_count, 2);
   std::fill_n(w.begin(), 10, 0);
 
 }
@@ -379,14 +379,12 @@ void test_empty_cases() {
 
 }
 
-int test_main(int, char* []) {
-
+int main()
+{
   do_switch_no_defaults_tests();
   do_switch_yes_defaults_tests();
 
   test_empty_cases();
 
-  return EXIT_SUCCESS;
-
+  return boost::report_errors();
 }
-

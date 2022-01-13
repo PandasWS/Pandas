@@ -24,5 +24,5 @@ int main() {
     a aa;
     aa.f();
     return 0;
-};
+}
 

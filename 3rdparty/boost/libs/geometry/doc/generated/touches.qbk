@@ -45,6 +45,9 @@ Or
 
 [def __one_parameter__]
 [include reference/algorithms/touches.qbk]
+[heading Examples]
+[touches_one_geometry]
+[touches_one_geometry_output]
 
 
 [endsect]
@@ -81,6 +84,9 @@ Or
 `#include <boost/geometry/algorithms/touches.hpp>`
 
 [include reference/algorithms/touches.qbk]
+[heading Examples]
+[touches_two_geometries]
+[touches_two_geometries_output]
 
 
 [endsect]

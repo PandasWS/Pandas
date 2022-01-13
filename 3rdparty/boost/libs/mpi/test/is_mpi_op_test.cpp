@@ -16,20 +16,11 @@ using namespace boost::mpi;
 using namespace std;
 using boost::is_base_and_derived;
 
-template<class Op, typename R>
-void
-test_op(int c_value)
-{
-  typedef is_mpi_op<Op, R> mpi_op;
-  BOOST_TEST(mpi_op::op() == c_value);
-}
-
 BOOST_AUTO_TEST_CASE(mpi_basic_op)
 {
   boost::mpi::environment env;
 
   // Check each predefined MPI_Op type that we support directly.
-  test_op<minimum<float>, float>(MPI_MIN);
   BOOST_TEST((is_mpi_op<minimum<float>, float>::op() == MPI_MIN));
   BOOST_TEST((is_mpi_op<plus<double>, double>::op() == MPI_SUM));
   BOOST_TEST((is_mpi_op<multiplies<long>, long>::op() == MPI_PROD));

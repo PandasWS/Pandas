@@ -11,8 +11,7 @@
 #include <algorithm>
 #include <boost/functional/hash.hpp>
 
-#define BOOST_TEST_MAIN
-#include <boost/test/unit_test.hpp>
+#include <boost/core/lightweight_test_trait.hpp>
 
 namespace {
 
@@ -29,15 +28,17 @@ namespace {
     
         std::size_t bhash = boost::hash<barr> () ( test_barr );
         std::size_t ahash = boost::hash<arr>  () ( test_arr );
-        BOOST_CHECK ( ahash == bhash );
+        BOOST_TEST ( ahash == bhash );
     }
 
 }
 
-BOOST_AUTO_TEST_CASE( test_main )
+int main()
 {
     RunTests< int >();
     RunTests< long >();
     RunTests< long double >();
+
+    return boost::report_errors();
 }
 

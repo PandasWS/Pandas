@@ -14,7 +14,7 @@
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include <boost/graph/distributed/adjacency_list.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <iostream>
 
 #ifdef BOOST_NO_EXCEPTIONS
@@ -159,9 +159,9 @@ test_distributed_dfs()
 }
 
 int
-test_main(int argc, char* argv[])
+main(int argc, char* argv[])
 {
   mpi::environment env(argc, argv);
   test_distributed_dfs();
-  return 0;
+  return boost::report_errors();
 }

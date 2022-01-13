@@ -3,13 +3,19 @@
 //Distributed under the Boost Software License, Version 1.0. (See accompanying
 //file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <boost/config.hpp>
+
+#if defined( BOOST_NO_EXCEPTIONS )
+#   error This program requires exception handling.
+#endif
+
 #include <boost/exception_ptr.hpp>
 #include <boost/exception/get_error_info.hpp>
 #include <boost/exception/info.hpp>
 #include <boost/detail/lightweight_test.hpp>
 #include <boost/detail/workaround.hpp>
 
-#if BOOST_WORKAROUND(__CODEGEARC__, BOOST_TESTED_AT(0x610))
+#if BOOST_WORKAROUND(BOOST_CODEGEARC, BOOST_TESTED_AT(0x610))
 struct tag_test {};
 #endif
 
@@ -36,6 +42,25 @@ throw_unknown_exception()
         {
         };
     throw test_exception();
+    }
+
+struct
+user_defined_exception
+    {
+        user_defined_exception(int d):data(d){}
+        int data;
+    };
+
+void
+throw_user_defined_exception()
+    {
+    throw user_defined_exception(42);
+    }
+
+void
+throw_builtin_exception()
+    {
+    throw 42;
     }
 
 int
@@ -132,6 +157,116 @@ main()
             {
             //Yay! Non-intrusive cloning supported!
             }
+        catch(
+        ... )
+            {
+            BOOST_TEST(false);
+            }
+        }
+    try
+        {
+        throw_user_defined_exception();
+        }
+    catch(
+    ... )
+        {
+        boost::exception_ptr ep=boost::current_exception();
+        try
+            {
+            rethrow_exception(ep);
+            }
+#ifndef BOOST_NO_CXX11_HDR_EXCEPTION
+        catch(
+        user_defined_exception & x)
+            {
+            //Yay! std::current_exception to the rescue!
+            BOOST_TEST( 42==x.data );
+            }
+#else
+        catch(
+        boost::unknown_exception & )
+            {
+            //Boo! user defined exception was transported as a boost::unknown_exception
+            }
+#endif
+        catch(
+        ... )
+            {
+            BOOST_TEST(false);
+            }
+        try
+            {
+            rethrow_exception(ep);
+            }
+#ifndef BOOST_NO_CXX11_HDR_EXCEPTION
+        catch(
+        user_defined_exception & x)
+            {
+            //Yay! std::current_exception to the rescue!
+            BOOST_TEST( 42==x.data );
+            }
+#else
+        catch(
+        boost::unknown_exception & )
+            {
+            //Boo! user defined exception was transported as a boost::unknown_exception
+            }
+#endif
+        catch(
+        ... )
+            {
+            BOOST_TEST(false);
+            }
+        }
+    try
+        {
+        throw_builtin_exception();
+        }
+    catch(
+    ... )
+        {
+        boost::exception_ptr ep=boost::current_exception();
+        try
+            {
+            rethrow_exception(ep);
+            }
+#ifndef BOOST_NO_CXX11_HDR_EXCEPTION
+        catch(
+        int & x)
+            {
+            //Yay! std::current_exception to the rescue!
+            BOOST_TEST( 42==x );
+            }
+#else
+        catch(
+        boost::unknown_exception & )
+            {
+            //Boo! builtin exception was transported as a boost::unknown_exception
+            }
+#endif
+        catch(
+        ... )
+            {
+            BOOST_TEST(false);
+            }
+        try
+            {
+            rethrow_exception(ep);
+            }
+#ifndef BOOST_NO_CXX11_HDR_EXCEPTION
+        catch(
+        int & x)
+            {
+            //Yay! std::current_exception to the rescue!
+            BOOST_TEST( 42==x );
+            }
+#else
+        catch(
+        boost::unknown_exception & )
+            {
+            //Boo! builtin exception was transported as a boost::unknown_exception
+            }
+#endif
         catch(
         ... )
             {

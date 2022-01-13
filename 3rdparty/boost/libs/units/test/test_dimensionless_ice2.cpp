@@ -16,10 +16,3 @@ void foo()
 {
     BOOST_CONSTEXPR_OR_CONST boost::units::quantity<boost::units::si::dimensionless> d(1.0 * boost::units::si::meters / boost::units::cgs::centimeters);
 }
-
-#include <boost/test/test_tools.hpp>
-
-int main()
-{
-  BOOST_CHECK( 1 == 2 );
-}

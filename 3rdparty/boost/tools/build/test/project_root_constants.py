@@ -2,8 +2,8 @@
 
 # Copyright 2003, 2004, 2005 Vladimir Prus
 # Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or copy at
-# http://www.boost.org/LICENSE_1_0.txt)
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
 
 import BoostBuild
 
@@ -20,7 +20,7 @@ t.run_build_system()
 t.expect_output_lines("foobar gee")
 
 # Regression test: when absolute paths were passed to path-constant rule,
-# Boost.Build failed to recognize path as absolute and prepended the current
+# B2 failed to recognize path as absolute and prepended the current
 # dir.
 t.write("jamroot.jam", """\
 import path ;

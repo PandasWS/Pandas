@@ -1,4 +1,4 @@
-
+[/macro definitions specific to octonions]
 [def __R ['[*R]]]
 [def __C ['[*C]]]
 [def __H ['[*H]]]
@@ -33,8 +33,7 @@ A way of remembering things is by using the following multiplication table:
 [$../octonion/graphics/octonion_blurb17.jpeg]
 
 Octonions (and their kin) are described in far more details in this other
-[@../quaternion/TQE.pdf document]
-(with [@../quaternion/TQE_EA.pdf errata and addenda]).
+[@../quaternion/TQE.pdf document] (with [@../quaternion/TQE_EA.pdf errata and addenda]).
 
 Some traditional constructs, such as the exponential, carry over without too
 much change into the realms of octonions, but other, such as taking a square root,
@@ -42,7 +41,7 @@ do not (the fact that the exponential has a closed form is a result of the
 author, but the fact that the exponential exists at all for octonions is known
 since quite a long time ago).
 
-[endsect]
+[endsect] [/section:oct_overview Overview]
 
 [section:oct_header Header File]
 
@@ -148,7 +147,7 @@ The interface and implementation are both supplied by the header file
 
    }  } // namespaces
 
-[endsect]
+[endsect] [/section:oct_header Header File]
 
 [section:octonion Template Class octonion]
 
@@ -220,7 +219,7 @@ The interface and implementation are both supplied by the header file
 
    } } // namespaces
 
-[endsect]
+[endsect] [/section:octonion Template Class octonion]
 
 [section:oct_specialization Octonion Specializations]
 
@@ -424,7 +423,7 @@ The interface and implementation are both supplied by the header file
 
    } } // namespaces
 
-[endsect]
+[endsect] [/section:oct_specialization Octonion Specializations]
 
 [section:oct_typedefs Octonion Member Typedefs]
 
@@ -446,9 +445,9 @@ Long double specialization version:
 
    typedef long double value_type;
 
-These provide easy acces to the type the template is built upon.
+These provide easy access to the type the template is built upon.
 
-[endsect]
+[endsect] [/section:oct_typedefs Octonion Member Typedefs]
 
 [section:oct_mem_fun Octonion Member Functions]
 
@@ -622,7 +621,7 @@ insure exception safety. For the unspecialized form, the base
 type's assignment operators must not throw. As for the multiplication,
 remember to group any two factors using parenthesis.
 
-[endsect]
+[endsect] [/section:oct_mem_fun Octonion Member Functions]
 
 [section:oct_non_mem Octonion Non-Member Operators]
 
@@ -755,7 +754,7 @@ Inserts the octonion `o` onto the stream `os` as if it were implemented as follo
       return os << s.str();
    }
 
-[endsect]
+[endsect] [/section:oct_non_mem Octonion Non-Member Operators]
 
 [section:oct_value_ops Octonion Value Operations]
 
@@ -790,19 +789,19 @@ of the octonion.
 
    template<typename T> T   abs(octonion<T> const & o);
 
-This return the magnitude (Euclidian norm) of the octonion.
+This return the magnitude (Euclidean norm) of the octonion.
 
 [h4 norm]
 
    template<typename T> T  norm(octonion<T>const  & o);
 
 This return the (Cayley) norm of the octonion. The term "norm" might
-be confusing, as most people associate it with the Euclidian norm
+be confusing, as most people associate it with the Euclidean norm
 (and quadratic functionals). For this version of (the mathematical
-objects known as) octonions, the Euclidian norm (also known as
+objects known as) octonions, the Euclidean norm (also known as
 magnitude) is the square root of the Cayley norm.
 
-[endsect]
+[endsect] [/section:oct_value_ops Octonion Value Operations]
 
 [section:oct_create Octonion Creation Functions]
 
@@ -838,7 +837,7 @@ In this version of our implementation of octonions, there is no
 analogue of the complex value operation arg as the situation is
 somewhat more complicated.
 
-[endsect]
+[endsect] [/section:oct_create Octonion Creation Functions]
 
 [section:oct_trans Octonions Transcendentals]
 
@@ -932,14 +931,14 @@ test program tests octonions specialisations for float, double and long double
 
 If you define the symbol BOOST_OCTONION_TEST_VERBOSE, you will get additional
 output ([@../octonion/output_more.txt verbose output]); this will
-only be helpfull if you enable message output at the same time, of course
+only be helpful if you enable message output at the same time, of course
 (by uncommenting the relevant line in the test or by adding --log_level=messages
 to your command line,...). In that case, and if you are running interactively,
 you may in addition define the symbol BOOST_INTERACTIVE_TEST_INPUT_ITERATOR to
 interactively test the input operator with input of your choice from the
 standard input (instead of hard-coding it in the test).
 
-[endsect]
+[endsect] [/section:oct_trans Octonions Transcendentals]
 
 [section:acknowledgements Acknowledgements]
 
@@ -949,13 +948,13 @@ Jens Maurer has helped with portability and standard adherence, and was the
 Review Manager for this library. More acknowledgements in the
 History section. Thank you to all who contributed to the discussion about this library.
 
-[endsect]
+[endsect] [/section:acknowledgements Acknowledgements]
 
 [section:oct_history History]
 
 * 1.5.9 - 13/5/2013:  Incorporated into Boost.Math.
 * 1.5.8 - 17/12/2005: Converted documentation to Quickbook Format.
-* 1.5.7 - 25/02/2003: transitionned to the unit test framework; <boost/config.hpp> now included by the library header (rather than the test files), via <boost/math/quaternion.hpp>.
+* 1.5.7 - 25/02/2003: transitioned to the unit test framework; <boost/config.hpp> now included by the library header (rather than the test files), via <boost/math/quaternion.hpp>.
 * 1.5.6 - 15/10/2002: Gcc2.95.x and stlport on linux compatibility by Alkis Evlogimenos (alkis@routescience.com).
 * 1.5.5 - 27/09/2002: Microsoft VCPP 7 compatibility, by Michael Stevens (michael@acfr.usyd.edu.au); requires the /Za compiler option.
 * 1.5.4 - 19/09/2002: fixed problem with multiple inclusion (in different translation units); attempt at an improved compatibility with Microsoft compilers, by Michael Stevens (michael@acfr.usyd.edu.au) and Fredrik Blomqvist; other compatibility fixes.
@@ -970,15 +969,15 @@ History section. Thank you to all who contributed to the discussion about this l
 * 1.1.0 - 23/05/2000: changed sinc into sinc_pi; added sin, cos, sinh, cosh.
 * 1.0.0 - 10/08/1999: first public version.
 
-[endsect]
+[endsect] [/section:oct_history History]
 
 [section:oct_todo To Do]
 
 * Improve testing.
-* Rewrite input operatore using Spirit (creates a dependency).
+* Rewrite input operators using Spirit (creates a dependency).
 * Put in place an Expression Template mechanism (perhaps borrowing from uBlas).
 
-[endsect]
+[endsect] [/section:oct_todo To Do]
 
 [endmathpart]
 

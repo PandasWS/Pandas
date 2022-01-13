@@ -12,7 +12,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <boost/assign.hpp>
-#include <boost/bind.hpp>
 #include <algorithm>
 #include <functional>
 #include <list>

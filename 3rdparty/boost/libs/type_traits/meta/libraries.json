@@ -14,5 +14,6 @@
     ],
     "maintainers": [
         "John Maddock <john -at- johnmaddock.co.uk>"
-    ]
+    ],
+    "cxxstd": "03"
 }

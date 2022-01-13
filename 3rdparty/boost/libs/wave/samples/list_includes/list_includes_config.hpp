@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(LIST_INCLUDES_CONFIG_HPP_0DE80E47_8D50_4DFA_9C1C_0EECAA8A934A_INCLUDED)
-#define LIST_INCLUDES_CONFIG_HPP_0DE80E47_8D50_4DFA_9C1C_0EECAA8A934A_INCLUDED
+#if !defined(BOOST_LIST_INCLUDES_CONFIG_HPP_0DE80E47_8D50_4DFA_9C1C_0EECAA8A934A_INCLUDED)
+#define BOOST_LIST_INCLUDES_CONFIG_HPP_0DE80E47_8D50_4DFA_9C1C_0EECAA8A934A_INCLUDED
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Uncomment the following, if you need debug output, the 
@@ -61,4 +61,4 @@
 #pragma inline_recursion(on)
 #endif // defined(BOOST_MSVC)
 
-#endif // !defined(LIST_INCLUDES_CONFIG_HPP_0DE80E47_8D50_4DFA_9C1C_0EECAA8A934A_INCLUDED)
+#endif // !defined(BOOST_LIST_INCLUDES_CONFIG_HPP_0DE80E47_8D50_4DFA_9C1C_0EECAA8A934A_INCLUDED)

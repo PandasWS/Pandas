@@ -23,7 +23,7 @@ Output:
 
 #include <boost/units/quantity.hpp>
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 namespace bu = boost::units;
 
@@ -62,7 +62,7 @@ operator/(const simple_unit<Mass1, Length1, Time1>&,
     return simple_unit<Mass1 - Mass2, Length1 - Length2, Time1 - Time2>();
 }
 
-int test_main(int,char *[])
+int main()
 {
     bu::quantity<simple_unit<1, 0, 0> > mass = bu::quantity<simple_unit<1, 0, 0> >::from_value(2);
     bu::quantity<simple_unit<0, 1, 0> > length = bu::quantity<simple_unit<0, 1, 0> >::from_value(4);
@@ -70,15 +70,15 @@ int test_main(int,char *[])
     bu::quantity<simple_unit<1, 1, 0> > ml = mass * length;
     bu::quantity<simple_unit<1, -1, 0> > m_per_l = mass/length;
 
-    BOOST_CHECK(ml.value() == 8);
-    BOOST_CHECK(m_per_l.value() == 0.5);
+    BOOST_TEST(ml.value() == 8);
+    BOOST_TEST(m_per_l.value() == 0.5);
 
     mass += mass;
 
-    BOOST_CHECK(mass.value() == 4);
+    BOOST_TEST(mass.value() == 4);
 
     length -= length;
-    BOOST_CHECK(length.value() == 0);
+    BOOST_TEST(length.value() == 0);
 
-    return 0;
+    return boost::report_errors();
 }

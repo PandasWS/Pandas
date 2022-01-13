@@ -148,6 +148,25 @@ This header contains tools for exception handlers support in different parts of 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 <macro name="BOOST_LOG_MAX_EXCEPTION_TYPES"><purpose>Maximum number of exception types that can be specified for exception handlers. </purpose></macro>
@@ -209,6 +228,25 @@ The header contains implementation of a string stream used for log record format
           <template-type-parameter name="StreamT"/>
           <template-type-parameter name="T"/>
         </template><parameter name="strm"><paramtype>StreamT &amp;&amp;</paramtype></parameter><parameter name="value"><paramtype>T &amp;</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -504,6 +542,25 @@ Although <computeroutput><classname alt="boost::log::basic_formatting_ostream">b
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -626,6 +683,25 @@ This header contains function object adapter for compatibility with Boost.Spirit
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -644,6 +720,25 @@ This header contains a predicate for checking if the provided string begins with
         </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter></method>
 </method-group>
 </struct>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -939,6 +1034,25 @@ This header contains function object adapters. This is a lightweight alternative
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -1052,6 +1166,25 @@ This header contains a function object that assigns the received value to the bo
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -1142,6 +1275,25 @@ This header contains a function object that puts the received value to the bound
 <function name="bind_output"><type><classname>binder1st</classname>&lt; <classname>output_fun</classname>, StreamT &amp; &gt;</type><template>
           <template-type-parameter name="StreamT"/>
         </template><parameter name="strm"><paramtype>StreamT &amp;</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1291,6 +1443,25 @@ This header contains a function object that puts the received value to the bound
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -1402,6 +1573,25 @@ This header contains a predicate for checking if the provided string contains a 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -1420,6 +1610,25 @@ This header contains a predicate for checking if the provided string ends with a
         </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter></method>
 </method-group>
 </struct>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1629,6 +1838,25 @@ This header contains function object reference adapter. The adapter stores a ref
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -1650,13 +1878,32 @@ This header contains a predicate for checking if the provided value is within a 
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="value"><paramtype>T const &amp;</paramtype></parameter><parameter name="rng"><paramtype>std::pair&lt; U, U &gt; const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::false_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="value"><paramtype>T const &amp;</paramtype></parameter><parameter name="rng"><paramtype>std::pair&lt; U, U &gt; const &amp;</paramtype></parameter><parameter name=""><paramtype>false_type</paramtype></parameter></method>
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="value"><paramtype>T const &amp;</paramtype></parameter><parameter name="rng"><paramtype>std::pair&lt; U, U &gt; const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::true_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="value"><paramtype>T const &amp;</paramtype></parameter><parameter name="rng"><paramtype>std::pair&lt; U, U &gt; const &amp;</paramtype></parameter><parameter name=""><paramtype>true_type</paramtype></parameter></method>
 </method-group>
 </struct>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1773,11 +2020,11 @@ This header contains logical predicates for value comparison, analogous to <comp
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::false_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>false_type</paramtype></parameter></method>
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::true_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>true_type</paramtype></parameter></method>
 </method-group>
 </struct><struct name="greater"><purpose>Greater predicate. </purpose><typedef name="result_type"><type>bool</type></typedef>
 <method-group name="public member functions">
@@ -1790,11 +2037,11 @@ This header contains logical predicates for value comparison, analogous to <comp
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::false_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>false_type</paramtype></parameter></method>
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::true_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>true_type</paramtype></parameter></method>
 </method-group>
 </struct><struct name="greater_equal"><purpose>Greater or equal predicate. </purpose><typedef name="result_type"><type>bool</type></typedef>
 <method-group name="public member functions">
@@ -1807,11 +2054,11 @@ This header contains logical predicates for value comparison, analogous to <comp
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::false_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>false_type</paramtype></parameter></method>
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::true_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>true_type</paramtype></parameter></method>
 </method-group>
 </struct><struct name="less"><purpose>Less predicate. </purpose><typedef name="result_type"><type>bool</type></typedef>
 <method-group name="public member functions">
@@ -1824,11 +2071,11 @@ This header contains logical predicates for value comparison, analogous to <comp
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::false_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>false_type</paramtype></parameter></method>
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::true_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>true_type</paramtype></parameter></method>
 </method-group>
 </struct><struct name="less_equal"><purpose>Less or equal predicate. </purpose><typedef name="result_type"><type>bool</type></typedef>
 <method-group name="public member functions">
@@ -1841,11 +2088,11 @@ This header contains logical predicates for value comparison, analogous to <comp
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::false_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>false_type</paramtype></parameter></method>
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::true_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>true_type</paramtype></parameter></method>
 </method-group>
 </struct><struct name="not_equal_to"><purpose>Inequality predicate. </purpose><typedef name="result_type"><type>bool</type></typedef>
 <method-group name="public member functions">
@@ -1858,13 +2105,32 @@ This header contains logical predicates for value comparison, analogous to <comp
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::false_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>false_type</paramtype></parameter></method>
 <method name="op" specifiers="static"><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-type-parameter name="U"/>
-        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>mpl::true_ const &amp;</paramtype></parameter></method>
+        </template><parameter name="left"><paramtype>T const &amp;</paramtype></parameter><parameter name="right"><paramtype>U const &amp;</paramtype></parameter><parameter name=""><paramtype>true_type</paramtype></parameter></method>
 </method-group>
 </struct>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2074,6 +2340,25 @@ This header contains a predicate for checking if the provided string matches a r
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -2092,6 +2377,25 @@ This header contains a function object that does nothing. </para><namespace name
         </template><parameter name="..."><paramtype>ArgsT const &amp;</paramtype></parameter></method>
 </method-group>
 </struct>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2302,6 +2606,25 @@ This header contains function object adapter that saves the result of the adopte
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -2368,6 +2691,25 @@ The scopes are not overlapping. For instance, if an object is created in the glo
         </template><parameter name="strm"><paramtype>std::basic_ostream&lt; CharT, TraitsT &gt; &amp;</paramtype></parameter><parameter name="name"><paramtype><classname>object_name</classname> const &amp;</paramtype></parameter><description><para>Stream ouput operator </para></description></method>
 </method-group>
 </class></namespace>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2721,6 +3063,25 @@ The header contains declaration of a reliable interprocess message queue. </para
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -2747,6 +3108,25 @@ This header contains the <computeroutput>add_value</computeroutput> manipulator.
 </method-group>
 <constructor><parameter name="name"><paramtype>attribute_name const &amp;</paramtype></parameter><parameter name="value"><paramtype>reference_type</paramtype></parameter><purpose>Initializing constructor. </purpose></constructor>
 </class>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2953,6 +3333,25 @@ The header contains implementation of a stream manipulator for inserting a newli
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <function name="operator&lt;&lt;"><type><classname>basic_formatting_ostream</classname>&lt; CharT, TraitsT, AllocatorT &gt; &amp;</type><template>
           <template-type-parameter name="CharT"/>
           <template-type-parameter name="TraitsT"/>
@@ -2985,6 +3384,25 @@ This header contains the <computeroutput>dump</computeroutput> output manipulato
 <constructor cv="noexcept"><parameter name="data"><paramtype>const void *</paramtype></parameter><parameter name="size"><paramtype>std::size_t</paramtype></parameter></constructor>
 <constructor cv="noexcept"><parameter name="that"><paramtype><classname>dump_manip</classname> const &amp;</paramtype></parameter></constructor>
 </class>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3107,6 +3525,390 @@ This header contains the <computeroutput>dump</computeroutput> output manipulato
 </namespace>
 </namespace>
 </header>
+<header name="boost/log/utility/manipulators/optional.hpp">
+<para><para>Andrey Semashev </para>
+
+<para>12.05.2020</para>
+
+The header contains implementation of a stream manipulator for inserting an optional value. </para><namespace name="boost">
+<namespace name="log">
+<class name="optional_manipulator"><template>
+      <template-type-parameter name="OptionalT"/>
+      <template-type-parameter name="NoneT"/>
+    </template><description><para>Stream manipulator for inserting an optional value. </para></description><method-group name="public member functions">
+<method name="output" cv="const"><type>void</type><template>
+          <template-type-parameter name="StreamT"/>
+        </template><parameter name="stream"><paramtype>StreamT &amp;</paramtype></parameter><purpose>The method outputs the value, if it is present, otherwise outputs the "none" marker. </purpose></method>
+</method-group>
+<constructor cv="noexcept"><parameter name="opt"><paramtype>stored_optional_type</paramtype></parameter><parameter name="none"><paramtype>stored_none_type</paramtype></parameter><purpose>Initializing constructor. </purpose></constructor>
+</class><class-specialization name="optional_manipulator"><template>
+      <template-type-parameter name="OptionalT"/>
+    </template><specialization><template-arg>OptionalT</template-arg><template-arg>void</template-arg></specialization><description><para>Stream manipulator for inserting an optional value. Specialization for no "none" marker. </para></description><method-group name="public member functions">
+<method name="output" cv="const"><type>void</type><template>
+          <template-type-parameter name="StreamT"/>
+        </template><parameter name="stream"><paramtype>StreamT &amp;</paramtype></parameter><purpose>The method outputs the value, if it is present. </purpose></method>
+</method-group>
+<constructor cv="noexcept"><parameter name="opt"><paramtype>stored_optional_type</paramtype></parameter><purpose>Initializing constructor. </purpose></constructor>
+</class-specialization>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="operator&lt;&lt;"><type><emphasis>unspecified</emphasis></type><template>
+          <template-type-parameter name="StreamT"/>
+          <template-type-parameter name="OptionalT"/>
+          <template-type-parameter name="NoneT"/>
+        </template><parameter name="strm"><paramtype>StreamT &amp;</paramtype></parameter><parameter name="manip"><paramtype><classname>optional_manipulator</classname>&lt; OptionalT, NoneT &gt; const &amp;</paramtype></parameter><description><para>Stream output operator for <computeroutput><classname alt="boost::log::optional_manipulator">optional_manipulator</classname></computeroutput>. Outputs the optional value or the "none" marker, if one was specified on manipulator construction. </para></description></function>
+<function name="optional_manip"><type>boost::enable_if_c&lt; is_scalar&lt; OptionalT &gt;::value &amp;&amp;is_scalar&lt; NoneT &gt;::value, <classname>optional_manipulator</classname>&lt; OptionalT, NoneT &gt;&gt;::type</type><template>
+          <template-type-parameter name="OptionalT"/>
+          <template-type-parameter name="NoneT"/>
+        </template><parameter name="opt"><paramtype>OptionalT</paramtype><description><para>Optional value to output. The optional value must support contextual conversion to <computeroutput>bool</computeroutput> and dereferencing, and its dereferencing result must support stream output. </para></description></parameter><parameter name="none"><paramtype>NoneT</paramtype><description><para>Marker used to indicate when the value is not present. Optional. If not specified, nothing is output if the value is not present. </para></description></parameter><description><para>Optional manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>opt</emphasis> and <emphasis>none</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="optional_manip"><type>boost::enable_if_c&lt; is_scalar&lt; OptionalT &gt;::value &amp;&amp;!is_scalar&lt; NoneT &gt;::value, <classname>optional_manipulator</classname>&lt; OptionalT, NoneT &gt;&gt;::type</type><template>
+          <template-type-parameter name="OptionalT"/>
+          <template-type-parameter name="NoneT"/>
+        </template><parameter name="opt"><paramtype>OptionalT</paramtype><description><para>Optional value to output. The optional value must support contextual conversion to <computeroutput>bool</computeroutput> and dereferencing, and its dereferencing result must support stream output. </para></description></parameter><parameter name="none"><paramtype>NoneT const &amp;</paramtype><description><para>Marker used to indicate when the value is not present. Optional. If not specified, nothing is output if the value is not present. </para></description></parameter><description><para>Optional manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>opt</emphasis> and <emphasis>none</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="optional_manip"><type>boost::enable_if_c&lt; is_scalar&lt; OptionalT &gt;::value, <classname>optional_manipulator</classname>&lt; OptionalT, NoneElementT * &gt;&gt;::type</type><template>
+          <template-type-parameter name="OptionalT"/>
+          <template-type-parameter name="NoneElementT"/>
+          <template-nontype-parameter name="N"><type>std::size_t</type></template-nontype-parameter>
+        </template><parameter name="opt"><paramtype>OptionalT</paramtype><description><para>Optional value to output. The optional value must support contextual conversion to <computeroutput>bool</computeroutput> and dereferencing, and its dereferencing result must support stream output. </para></description></parameter><parameter name="none"><paramtype>NoneElementT(&amp;)</paramtype><description><para>Marker used to indicate when the value is not present. Optional. If not specified, nothing is output if the value is not present. </para></description></parameter><description><para>Optional manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>opt</emphasis> and <emphasis>none</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="optional_manip"><type>boost::enable_if_c&lt; !is_scalar&lt; OptionalT &gt;::value &amp;&amp;!is_array&lt; OptionalT &gt;::value &amp;&amp;is_scalar&lt; NoneT &gt;::value, <classname>optional_manipulator</classname>&lt; OptionalT, NoneT &gt;&gt;::type</type><template>
+          <template-type-parameter name="OptionalT"/>
+          <template-type-parameter name="NoneT"/>
+        </template><parameter name="opt"><paramtype>OptionalT const &amp;</paramtype><description><para>Optional value to output. The optional value must support contextual conversion to <computeroutput>bool</computeroutput> and dereferencing, and its dereferencing result must support stream output. </para></description></parameter><parameter name="none"><paramtype>NoneT</paramtype><description><para>Marker used to indicate when the value is not present. Optional. If not specified, nothing is output if the value is not present. </para></description></parameter><description><para>Optional manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>opt</emphasis> and <emphasis>none</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="optional_manip"><type>boost::enable_if_c&lt; !is_scalar&lt; OptionalT &gt;::value &amp;&amp;!is_array&lt; OptionalT &gt;::value &amp;&amp;!is_scalar&lt; NoneT &gt;::value, <classname>optional_manipulator</classname>&lt; OptionalT, NoneT &gt;&gt;::type</type><template>
+          <template-type-parameter name="OptionalT"/>
+          <template-type-parameter name="NoneT"/>
+        </template><parameter name="opt"><paramtype>OptionalT const &amp;</paramtype><description><para>Optional value to output. The optional value must support contextual conversion to <computeroutput>bool</computeroutput> and dereferencing, and its dereferencing result must support stream output. </para></description></parameter><parameter name="none"><paramtype>NoneT const &amp;</paramtype><description><para>Marker used to indicate when the value is not present. Optional. If not specified, nothing is output if the value is not present. </para></description></parameter><description><para>Optional manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>opt</emphasis> and <emphasis>none</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="optional_manip"><type>boost::enable_if_c&lt; !is_scalar&lt; OptionalT &gt;::value &amp;&amp;!is_array&lt; OptionalT &gt;::value, <classname>optional_manipulator</classname>&lt; OptionalT, NoneElementT * &gt;&gt;::type</type><template>
+          <template-type-parameter name="OptionalT"/>
+          <template-type-parameter name="NoneElementT"/>
+          <template-nontype-parameter name="N"><type>std::size_t</type></template-nontype-parameter>
+        </template><parameter name="opt"><paramtype>OptionalT const &amp;</paramtype><description><para>Optional value to output. The optional value must support contextual conversion to <computeroutput>bool</computeroutput> and dereferencing, and its dereferencing result must support stream output. </para></description></parameter><parameter name="none"><paramtype>NoneElementT(&amp;)</paramtype><description><para>Marker used to indicate when the value is not present. Optional. If not specified, nothing is output if the value is not present. </para></description></parameter><description><para>Optional manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>opt</emphasis> and <emphasis>none</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="optional_manip"><type>boost::enable_if_c&lt; is_scalar&lt; OptionalT &gt;::value, <classname>optional_manipulator</classname>&lt; OptionalT, void &gt;&gt;::type</type><template>
+          <template-type-parameter name="OptionalT"/>
+        </template><parameter name="opt"><paramtype>OptionalT</paramtype><description><para>Optional value to output. The optional value must support contextual conversion to <computeroutput>bool</computeroutput> and dereferencing, and its dereferencing result must support stream output. </para></description></parameter><description><para>Optional manipulator generator function.</para><para>
+
+<note><para><emphasis>opt</emphasis> object must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="optional_manip"><type>boost::enable_if_c&lt; !is_scalar&lt; OptionalT &gt;::value &amp;&amp;!is_array&lt; OptionalT &gt;::value, <classname>optional_manipulator</classname>&lt; OptionalT, void &gt;&gt;::type</type><template>
+          <template-type-parameter name="OptionalT"/>
+        </template><parameter name="opt"><paramtype>OptionalT const &amp;</paramtype><description><para>Optional value to output. The optional value must support contextual conversion to <computeroutput>bool</computeroutput> and dereferencing, and its dereferencing result must support stream output. </para></description></parameter><description><para>Optional manipulator generator function.</para><para>
+
+<note><para><emphasis>opt</emphasis> object must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</namespace>
+</header>
+<header name="boost/log/utility/manipulators/range.hpp">
+<para><para>Andrey Semashev </para>
+
+<para>11.05.2020</para>
+
+The header contains implementation of a stream manipulator for inserting a range of elements, optionally separated with a delimiter. </para><namespace name="boost">
+<namespace name="log">
+<class name="range_manipulator"><template>
+      <template-type-parameter name="RangeT"/>
+      <template-type-parameter name="DelimiterT"/>
+    </template><description><para>Stream manipulator for inserting a range of elements, optionally separated with a delimiter. </para></description><method-group name="public member functions">
+<method name="output" cv="const"><type>void</type><template>
+          <template-type-parameter name="StreamT"/>
+        </template><parameter name="stream"><paramtype>StreamT &amp;</paramtype></parameter><purpose>The method outputs elements of the range separated with delimiter. </purpose></method>
+</method-group>
+<constructor cv="noexcept"><parameter name="range"><paramtype>RangeT const &amp;</paramtype></parameter><parameter name="delimiter"><paramtype>stored_delimiter_type</paramtype></parameter><purpose>Initializing constructor. </purpose></constructor>
+</class><class-specialization name="range_manipulator"><template>
+      <template-type-parameter name="RangeT"/>
+    </template><specialization><template-arg>RangeT</template-arg><template-arg>void</template-arg></specialization><description><para>Stream manipulator for inserting a range of elements. Specialization for when there is no delimiter. </para></description><method-group name="public member functions">
+<method name="output" cv="const"><type>void</type><template>
+          <template-type-parameter name="StreamT"/>
+        </template><parameter name="stream"><paramtype>StreamT &amp;</paramtype></parameter><purpose>The method outputs elements of the range. </purpose></method>
+</method-group>
+<constructor specifiers="explicit" cv="noexcept"><parameter name="range"><paramtype>RangeT const &amp;</paramtype></parameter><purpose>Initializing constructor. </purpose></constructor>
+</class-specialization>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="operator&lt;&lt;"><type><emphasis>unspecified</emphasis></type><template>
+          <template-type-parameter name="StreamT"/>
+          <template-type-parameter name="RangeT"/>
+          <template-type-parameter name="DelimiterT"/>
+        </template><parameter name="strm"><paramtype>StreamT &amp;</paramtype></parameter><parameter name="manip"><paramtype><classname>range_manipulator</classname>&lt; RangeT, DelimiterT &gt; const &amp;</paramtype></parameter><description><para>Stream output operator for <computeroutput><classname alt="boost::log::range_manipulator">range_manipulator</classname></computeroutput>. Outputs every element of the range, separated with a delimiter, if one was specified on manipulator construction. </para></description></function>
+<function name="range_manip"><type>boost::enable_if_c&lt; is_scalar&lt; DelimiterT &gt;::value, <classname>range_manipulator</classname>&lt; RangeT, DelimiterT &gt;&gt;::type</type><template>
+          <template-type-parameter name="RangeT"/>
+          <template-type-parameter name="DelimiterT"/>
+        </template><parameter name="range"><paramtype>RangeT const &amp;</paramtype><description><para>Range of elements to output. The range must support begin and end iterators, and its elements must support stream output. </para></description></parameter><parameter name="delimiter"><paramtype>DelimiterT</paramtype><description><para>Delimiter to separate elements in the output. Optional. If not specified, elements are output without separation. </para></description></parameter><description><para>Range manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>range</emphasis> and <emphasis>delimiter</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="range_manip"><type>boost::disable_if_c&lt; is_scalar&lt; DelimiterT &gt;::value, <classname>range_manipulator</classname>&lt; RangeT, DelimiterT &gt;&gt;::type</type><template>
+          <template-type-parameter name="RangeT"/>
+          <template-type-parameter name="DelimiterT"/>
+        </template><parameter name="range"><paramtype>RangeT const &amp;</paramtype><description><para>Range of elements to output. The range must support begin and end iterators, and its elements must support stream output. </para></description></parameter><parameter name="delimiter"><paramtype>DelimiterT const &amp;</paramtype><description><para>Delimiter to separate elements in the output. Optional. If not specified, elements are output without separation. </para></description></parameter><description><para>Range manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>range</emphasis> and <emphasis>delimiter</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="range_manip"><type><classname>range_manipulator</classname>&lt; RangeT, DelimiterElementT * &gt;</type><template>
+          <template-type-parameter name="RangeT"/>
+          <template-type-parameter name="DelimiterElementT"/>
+          <template-nontype-parameter name="N"><type>std::size_t</type></template-nontype-parameter>
+        </template><parameter name="range"><paramtype>RangeT const &amp;</paramtype><description><para>Range of elements to output. The range must support begin and end iterators, and its elements must support stream output. </para></description></parameter><parameter name="delimiter"><paramtype>DelimiterElementT(&amp;)</paramtype><description><para>Delimiter to separate elements in the output. Optional. If not specified, elements are output without separation. </para></description></parameter><description><para>Range manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>range</emphasis> and <emphasis>delimiter</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="range_manip"><type><classname>range_manipulator</classname>&lt; RangeT, void &gt;</type><template>
+          <template-type-parameter name="RangeT"/>
+        </template><parameter name="range"><paramtype>RangeT const &amp;</paramtype><description><para>Range of elements to output. The range must support begin and end iterators, and its elements must support stream output. </para></description></parameter><description><para>Range manipulator generator function.</para><para>
+
+<note><para><emphasis>delimiter</emphasis> object must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</namespace>
+</header>
 <header name="boost/log/utility/manipulators/to_log.hpp">
 <para><para>Andrey Semashev </para>
 
@@ -3125,6 +3927,11 @@ This header contains the <computeroutput>to_log</computeroutput> output manipula
 <constructor specifiers="explicit" cv="noexcept"><parameter name="value"><paramtype>value_type const &amp;</paramtype></parameter></constructor>
 <constructor cv="noexcept"><parameter name="that"><paramtype><classname>to_log_manip</classname> const &amp;</paramtype></parameter></constructor>
 </class>
+
+
+
+
+
 
 
 
@@ -3227,6 +4034,217 @@ This header contains the <computeroutput>to_log</computeroutput> output manipula
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</namespace>
+</header>
+<header name="boost/log/utility/manipulators/tuple.hpp">
+<para><para>Andrey Semashev </para>
+
+<para>11.05.2020</para>
+
+The header contains implementation of a stream manipulator for inserting a tuple or any heterogeneous sequence of elements, optionally separated with a delimiter. </para><namespace name="boost">
+<namespace name="log">
+<class name="tuple_manipulator"><template>
+      <template-type-parameter name="TupleT"/>
+      <template-type-parameter name="DelimiterT"/>
+    </template><description><para>Stream manipulator for inserting a heterogeneous sequence of elements, optionally separated with a delimiter. </para></description><struct name="output_visitor"><template>
+      <template-type-parameter name="StreamT"/>
+    </template><typedef name="result_type"><type>boost::true_type</type></typedef>
+<method-group name="public member functions">
+<method name="operator()" cv="const"><type>result_type</type><template>
+          <template-type-parameter name="T"/>
+        </template><parameter name=""><paramtype>boost::true_type</paramtype></parameter><parameter name="elem"><paramtype>T const &amp;</paramtype></parameter></method>
+<method name="operator()" cv="const"><type>result_type</type><template>
+          <template-type-parameter name="T"/>
+        </template><parameter name=""><paramtype>boost::false_type</paramtype></parameter><parameter name="elem"><paramtype>T const &amp;</paramtype></parameter></method>
+</method-group>
+<constructor cv="noexcept"><parameter name="stream"><paramtype>StreamT &amp;</paramtype></parameter><parameter name="delimiter"><paramtype>stored_delimiter_type</paramtype></parameter></constructor>
+</struct><method-group name="public member functions">
+<method name="output" cv="const"><type>void</type><template>
+          <template-type-parameter name="StreamT"/>
+        </template><parameter name="stream"><paramtype>StreamT &amp;</paramtype></parameter><purpose>The method outputs elements of the sequence separated with delimiter. </purpose></method>
+</method-group>
+<constructor cv="noexcept"><parameter name="tuple"><paramtype>TupleT const &amp;</paramtype></parameter><parameter name="delimiter"><paramtype>stored_delimiter_type</paramtype></parameter><purpose>Initializing constructor. </purpose></constructor>
+</class><class-specialization name="tuple_manipulator"><template>
+      <template-type-parameter name="TupleT"/>
+    </template><specialization><template-arg>TupleT</template-arg><template-arg>void</template-arg></specialization><description><para>Stream manipulator for inserting a heterogeneous sequence of elements. Specialization for when there is no delimiter. </para></description><struct name="output_visitor"><template>
+      <template-type-parameter name="StreamT"/>
+    </template><typedef name="result_type"><type>void</type></typedef>
+<method-group name="public member functions">
+<method name="operator()" cv="const"><type>result_type</type><template>
+          <template-type-parameter name="T"/>
+        </template><parameter name="elem"><paramtype>T const &amp;</paramtype></parameter></method>
+</method-group>
+<constructor specifiers="explicit" cv="noexcept"><parameter name="stream"><paramtype>StreamT &amp;</paramtype></parameter></constructor>
+</struct><method-group name="public member functions">
+<method name="output" cv="const"><type>void</type><template>
+          <template-type-parameter name="StreamT"/>
+        </template><parameter name="stream"><paramtype>StreamT &amp;</paramtype></parameter><purpose>The method outputs elements of the sequence. </purpose></method>
+</method-group>
+<constructor specifiers="explicit" cv="noexcept"><parameter name="tuple"><paramtype>TupleT const &amp;</paramtype></parameter><purpose>Initializing constructor. </purpose></constructor>
+</class-specialization>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="operator&lt;&lt;"><type><emphasis>unspecified</emphasis></type><template>
+          <template-type-parameter name="StreamT"/>
+          <template-type-parameter name="TupleT"/>
+          <template-type-parameter name="DelimiterT"/>
+        </template><parameter name="strm"><paramtype>StreamT &amp;</paramtype></parameter><parameter name="manip"><paramtype><classname>tuple_manipulator</classname>&lt; TupleT, DelimiterT &gt; const &amp;</paramtype></parameter><description><para>Stream output operator for <computeroutput><classname alt="boost::log::tuple_manipulator">tuple_manipulator</classname></computeroutput>. Outputs every element of the sequence, separated with a delimiter, if one was specified on manipulator construction. </para></description></function>
+<function name="tuple_manip"><type>boost::enable_if_c&lt; is_scalar&lt; DelimiterT &gt;::value, <classname>tuple_manipulator</classname>&lt; TupleT, DelimiterT &gt;&gt;::type</type><template>
+          <template-type-parameter name="TupleT"/>
+          <template-type-parameter name="DelimiterT"/>
+        </template><parameter name="tuple"><paramtype>TupleT const &amp;</paramtype><description><para>Heterogeneous sequence of elements to output. The sequence must be supported by Boost.Fusion, and its elements must support stream output. </para></description></parameter><parameter name="delimiter"><paramtype>DelimiterT</paramtype><description><para>Delimiter to separate elements in the output. Optional. If not specified, elements are output without separation. </para></description></parameter><description><para>Tuple manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>tuple</emphasis> and <emphasis>delimiter</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="tuple_manip"><type>boost::disable_if_c&lt; is_scalar&lt; DelimiterT &gt;::value, <classname>tuple_manipulator</classname>&lt; TupleT, DelimiterT &gt;&gt;::type</type><template>
+          <template-type-parameter name="TupleT"/>
+          <template-type-parameter name="DelimiterT"/>
+        </template><parameter name="tuple"><paramtype>TupleT const &amp;</paramtype><description><para>Heterogeneous sequence of elements to output. The sequence must be supported by Boost.Fusion, and its elements must support stream output. </para></description></parameter><parameter name="delimiter"><paramtype>DelimiterT const &amp;</paramtype><description><para>Delimiter to separate elements in the output. Optional. If not specified, elements are output without separation. </para></description></parameter><description><para>Tuple manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>tuple</emphasis> and <emphasis>delimiter</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="tuple_manip"><type><classname>tuple_manipulator</classname>&lt; TupleT, DelimiterElementT * &gt;</type><template>
+          <template-type-parameter name="TupleT"/>
+          <template-type-parameter name="DelimiterElementT"/>
+          <template-nontype-parameter name="N"><type>std::size_t</type></template-nontype-parameter>
+        </template><parameter name="tuple"><paramtype>TupleT const &amp;</paramtype><description><para>Heterogeneous sequence of elements to output. The sequence must be supported by Boost.Fusion, and its elements must support stream output. </para></description></parameter><parameter name="delimiter"><paramtype>DelimiterElementT(&amp;)</paramtype><description><para>Delimiter to separate elements in the output. Optional. If not specified, elements are output without separation. </para></description></parameter><description><para>Tuple manipulator generator function.</para><para>
+
+<note><para>Both <emphasis>tuple</emphasis> and <emphasis>delimiter</emphasis> objects must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+<function name="tuple_manip"><type><classname>tuple_manipulator</classname>&lt; TupleT, void &gt;</type><template>
+          <template-type-parameter name="TupleT"/>
+        </template><parameter name="tuple"><paramtype>TupleT const &amp;</paramtype><description><para>Heterogeneous sequence of elements to output. The sequence must be supported by Boost.Fusion, and its elements must support stream output. </para></description></parameter><description><para>Tuple manipulator generator function.</para><para>
+
+<note><para><emphasis>tuple</emphasis> object must outlive the created manipulator object. </para>
+</note>
+</para></description><returns><para>Manipulator to be inserted into the stream.</para>
+</returns></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -3238,6 +4256,25 @@ This header contains the <computeroutput>to_log</computeroutput> output manipula
 </para><namespace name="boost">
 <namespace name="log">
 <struct name="once_block_flag"><purpose>A flag to detect if a code block has already been executed. </purpose><description><para>This structure should be used in conjunction with the <computeroutput>BOOST_LOG_ONCE_BLOCK_FLAG</computeroutput> macro. Usage example:</para><para><computeroutput> <classname alt="boost::log::once_block_flag">once_block_flag</classname> flag = BOOST_LOG_ONCE_BLOCK_INIT;</computeroutput></para><para><computeroutput>void foo() { BOOST_LOG_ONCE_BLOCK_FLAG(flag) { puts("Hello, world once!"); } } </computeroutput> </para></description></struct>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3443,6 +4480,25 @@ The header defines resource opening modes. </para><namespace name="boost">
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -3477,6 +4533,25 @@ The header contains an abstraction wrapper for security permissions. </para><nam
 <method name="swap" cv="noexcept"><type>friend void</type><parameter name="a"><paramtype><classname>permissions</classname> &amp;</paramtype></parameter><parameter name="b"><paramtype><classname>permissions</classname> &amp;</paramtype></parameter><purpose>Swaps the two <computeroutput>permissions</computeroutput> objects. </purpose></method>
 </method-group>
 </class>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3713,6 +4788,25 @@ This header contains ordering predicates for logging records. </para><namespace 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -3804,6 +4898,25 @@ The header contains implementation of convenience functions for registering comm
 </listitem>
 </itemizedlist>
 </para></description></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3960,6 +5073,25 @@ The header contains implementation of convenience functions for enabling logging
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -4046,7 +5178,7 @@ The header contains implementation of convenience functions for enabling logging
 </listitem>
 <listitem><para><computeroutput>auto_newline_mode</computeroutput> - Specifies automatic trailing newline insertion mode. Must be a value of the <computeroutput>auto_newline_mode</computeroutput> enum. By default, is <computeroutput>auto_newline_mode::insert_if_missing</computeroutput>. </para>
 </listitem>
-<listitem><para><computeroutput>target</computeroutput> The target directory to store rotated files in. See <computeroutput>sinks::file::make_collector</computeroutput>. </para>
+<listitem><para><computeroutput>target</computeroutput> The target directory to store rotated files in. Enables file collector and, if specified, limits associated with the target directory. See <computeroutput>sinks::file::make_collector</computeroutput>. </para>
 </listitem>
 <listitem><para><computeroutput>max_size</computeroutput> The maximum total size of rotated files in the target directory. See <computeroutput>sinks::file::make_collector</computeroutput>. </para>
 </listitem>
@@ -4058,13 +5190,34 @@ The header contains implementation of convenience functions for enabling logging
 </listitem>
 <listitem><para><computeroutput>filter</computeroutput> Specifies a filter to install into the sink. May be a string that represents a filter, or a filter lambda expression. </para>
 </listitem>
-<listitem><para><computeroutput>format</computeroutput> Specifies a formatter to install into the sink. May be a string that represents a formatter, or a formatter lambda expression (either streaming or Boost.Format-like notation). </para>
+<listitem><para><computeroutput>format</computeroutput> Specifies a formatter to install into the sink. May be a string that represents a formatter, or a formatter lambda expression (either streaming or Boost.Format-like notation).</para>
 </listitem>
 </itemizedlist>
 </para></description></parameter><description><para>The function initializes the logging library to write logs to a file stream.</para><para>
 
-</para></description><returns><para>Pointer to the constructed sink. </para>
+<note><para>The <computeroutput>target</computeroutput> named argument is required to enable the file collector and the limits associated with the target directory. If the parameter is not specified, the file collector will not be created and the limits will not be maintained. </para>
+</note>
+</para></description><returns><para>Pointer to the constructed sink.</para>
 </returns></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4285,6 +5438,25 @@ The header contains definition of a filter parser function. </para><namespace na
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -4406,6 +5578,25 @@ The header contains definition of a formatter parser function, along with facili
 <emphasis role="bold">Throws:</emphasis> An <computeroutput>std::exception</computeroutput>-based exception, if a formatter cannot be recognized in the character sequence. </para></description><requires><para><computeroutput>str != NULL</computeroutput>, <computeroutput>str</computeroutput> points to a zero-terminated string </para>
 </requires><returns><para>The parsed formatter.</para>
 </returns></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4580,6 +5771,25 @@ The header contains definition of facilities that allows to initialize the libra
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -4687,6 +5897,25 @@ The header contains definition of facilities that allows to initialize the libra
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -4710,11 +5939,11 @@ settings["Section2"]["Param2"] = 10; // sets the parameter "Param2" in section "
 </method-group>
 <constructor><description><para>Default constructor. Creates an empty settings container. </para></description></constructor>
 <constructor><parameter name="that"><paramtype><classname>basic_settings</classname> const &amp;</paramtype></parameter><description><para>Copy constructor. </para></description></constructor>
-<constructor><parameter name="that"><paramtype><classname>this_type</classname> &amp;&amp;</paramtype></parameter><description><para>Move constructor. </para></description></constructor>
+<constructor cv="noexcept"><parameter name="that"><paramtype><classname>this_type</classname> &amp;&amp;</paramtype></parameter><description><para>Move constructor. </para></description></constructor>
 <constructor specifiers="explicit"><parameter name="tree"><paramtype>property_tree_type const &amp;</paramtype></parameter><description><para>Initializing constructor. Creates a settings container with the copy of the specified property tree. </para></description></constructor>
 <destructor><description><para>Destructor </para></description></destructor>
 <copy-assignment><type><classname>basic_settings</classname> &amp;</type><parameter name="that"><paramtype><classname>basic_settings</classname> const &amp;</paramtype></parameter><description><para>Copy assignment operator. </para></description></copy-assignment>
-<copy-assignment><type><classname>basic_settings</classname> &amp;</type><parameter name="that"><paramtype><classname>basic_settings</classname> &amp;&amp;</paramtype></parameter><description><para>Move assignment operator. </para></description></copy-assignment>
+<copy-assignment cv="noexcept"><type><classname>basic_settings</classname> &amp;</type><parameter name="that"><paramtype><classname>basic_settings</classname> &amp;&amp;</paramtype></parameter><description><para>Move assignment operator. </para></description></copy-assignment>
 </class><class name="basic_settings_section"><template>
       <template-type-parameter name="CharT"/>
     </template><purpose>The class represents a reference to the settings container section. </purpose><description><para>The section refers to a sub-tree of the library settings container. It does not own the referred sub-tree but allows for convenient access to parameters within the subsection. </para></description><typedef name="char_type"><purpose>Character type. </purpose><type>CharT</type></typedef>
@@ -4759,13 +5988,13 @@ settings["Section2"]["Param2"] = 10; // sets the parameter "Param2" in section "
 </para></description></method>
 <method name="has_parameter" cv="const"><type>bool</type><parameter name="section_name"><paramtype>string_type const &amp;</paramtype><description><para>The name of the section in which the parameter resides </para></description></parameter><parameter name="param_name"><paramtype>string_type const &amp;</paramtype><description><para>The name of the parameter </para></description></parameter><description><para>Checks if the specified parameter is present in the container.</para><para>
 </para></description></method>
-<method name="swap"><type>void</type><parameter name="that"><paramtype><classname>basic_settings_section</classname> &amp;</paramtype></parameter><description><para>Swaps two references to settings sections. </para></description></method>
+<method name="swap" cv="noexcept"><type>void</type><parameter name="that"><paramtype><classname>basic_settings_section</classname> &amp;</paramtype></parameter><description><para>Swaps two references to settings sections. </para></description></method>
 </method-group>
-<constructor><description><para>Default constructor. Creates an empty settings container. </para></description></constructor>
-<constructor><parameter name="that"><paramtype><classname>basic_settings_section</classname> const &amp;</paramtype></parameter><description><para>Copy constructor. </para></description></constructor>
+<constructor cv="noexcept"><description><para>Default constructor. Creates an empty settings container. </para></description></constructor>
+<constructor cv="noexcept"><parameter name="that"><paramtype><classname>basic_settings_section</classname> const &amp;</paramtype></parameter><description><para>Copy constructor. </para></description></constructor>
 <method-group name="protected member functions">
 </method-group>
-<constructor specifiers="explicit"><parameter name="tree"><paramtype>property_tree_type *</paramtype></parameter></constructor>
+<constructor specifiers="explicit" cv="noexcept"><parameter name="tree"><paramtype>property_tree_type *</paramtype></parameter></constructor>
 </class><typedef name="settings"><purpose>Convenience typedef for narrow-character logging. </purpose><type><classname>basic_settings</classname>&lt; char &gt;</type></typedef>
 <typedef name="settings_section"><purpose>Convenience typedef for narrow-character logging. </purpose><type><classname>basic_settings_section</classname>&lt; char &gt;</type></typedef>
 <typedef name="wsettings"><purpose>Convenience typedef for wide-character logging. </purpose><type><classname>basic_settings</classname>&lt; wchar_t &gt;</type></typedef>
@@ -4811,6 +6040,25 @@ settings["Section2"]["Param2"] = 10; // sets the parameter "Param2" in section "
 <function name="swap"><type>void</type><template>
           <template-type-parameter name="CharT"/>
         </template><parameter name="left"><paramtype><classname>basic_settings_section</classname>&lt; CharT &gt; &amp;</paramtype></parameter><parameter name="right"><paramtype><classname>basic_settings_section</classname>&lt; CharT &gt; &amp;</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4973,6 +6221,25 @@ The header contains definition of a settings parser function. </para><namespace 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -4991,6 +6258,9 @@ The header contains definition of the <computeroutput>strictest_lock</computerou
     </template><purpose>The trait allows to select an access mode by the lock type. </purpose></struct><struct-specialization name="thread_access_mode_of"><template>
       <template-type-parameter name="MutexT"/>
     </template><specialization><template-arg>boost::log::aux::exclusive_lock_guard&lt; MutexT &gt;</template-arg></specialization><inherit access="public">mpl::integral_c&lt; lock_access_mode, exclusive_access &gt;</inherit></struct-specialization><struct-specialization name="thread_access_mode_of"><template>
+      <template-type-parameter name="MutexT1"/>
+      <template-type-parameter name="MutexT2"/>
+    </template><specialization><template-arg>boost::log::aux::multiple_unique_lock2&lt; MutexT1</template-arg><template-arg>MutexT2 &gt;</template-arg></specialization><inherit access="public">mpl::integral_c&lt; lock_access_mode, exclusive_access &gt;</inherit></struct-specialization><struct-specialization name="thread_access_mode_of"><template>
       <template-type-parameter name="MutexT"/>
     </template><specialization><template-arg>boost::log::aux::shared_lock_guard&lt; MutexT &gt;</template-arg></specialization><inherit access="public">mpl::integral_c&lt; lock_access_mode, shared_access &gt;</inherit></struct-specialization><struct-specialization name="thread_access_mode_of"><template>
       <template-type-parameter name="MutexT"/>
@@ -5005,6 +6275,25 @@ The header contains definition of the <computeroutput>strictest_lock</computerou
     </template><specialization><template-arg>unique_lock&lt; MutexT &gt;</template-arg></specialization><inherit access="public">mpl::integral_c&lt; lock_access_mode, exclusive_access &gt;</inherit></struct-specialization><struct-specialization name="thread_access_mode_of"><template>
       <template-type-parameter name="MutexT"/>
     </template><specialization><template-arg>upgrade_lock&lt; MutexT &gt;</template-arg></specialization><inherit access="public">mpl::integral_c&lt; lock_access_mode, shared_access &gt;</inherit></struct-specialization><enum name="lock_access_mode"><enumvalue name="unlocked_access"><purpose>A thread that owns this kind of lock doesn't restrict other threads in any way. </purpose></enumvalue><enumvalue name="shared_access"><purpose>A thread that owns this kind of lock requires that no other thread modify the locked data. </purpose></enumvalue><enumvalue name="exclusive_access"><purpose>A thread that owns this kind of lock requires that no other thread has access to the locked data. </purpose></enumvalue><purpose>Access modes for different types of locks. </purpose></enum>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -5143,6 +6432,25 @@ The header contains implementation of a constant string literal wrapper. </para>
           <template-type-parameter name="T"/>
           <template-nontype-parameter name="LenV"><type>std::size_t</type></template-nontype-parameter>
         </template><parameter name="p"><paramtype>T(&amp;)</paramtype></parameter><purpose>Creates a string literal wrapper from a constant string literal. </purpose></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -5512,6 +6820,25 @@ The header contains forward declaration of a constant string literal wrapper. </
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -5536,6 +6863,25 @@ The header contains definition of date and time-related types supported by the l
 <typedef name="time_duration_types"><description><para>An MPL-sequence with the complete list of the supported time duration types </para></description><type>mpl::vector&lt;&gt;</type></typedef>
 <typedef name="boost_time_period_types"><description><para>An MPL-sequence of Boost time duration types of attributes </para></description><type>mpl::vector&lt;&gt;</type></typedef>
 <typedef name="time_period_types"><description><para>An MPL-sequence with the complete list of the supported time period types </para></description><type>boost_time_period_types</type></typedef>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -5756,6 +7102,25 @@ The header contains implementation of the run-time type dispatcher. </para><name
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -5866,6 +7231,25 @@ The header contains definition of standard types supported by the library by def
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 <macro name="BOOST_LOG_AUX_STANDARD_TYPE_WCHAR_T" kind="functionlike"><macro-parameter name=""/></macro>
@@ -5899,6 +7283,25 @@ The header contains implementation of a compile-time type dispatcher. </para><na
 <constructor cv="= delete"><parameter name=""><paramtype><classname>static_type_dispatcher</classname> const &amp;</paramtype></parameter></constructor>
 <copy-assignment cv="= delete"><type><classname>static_type_dispatcher</classname> &amp;</type><parameter name=""><paramtype><classname>static_type_dispatcher</classname> const &amp;</paramtype></parameter></copy-assignment>
 </class>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -6110,6 +7513,25 @@ The header contains definition of generic type dispatcher interfaces. </para><na
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -6221,9 +7643,151 @@ The header contains definition of a macro to suppress compiler warnings about un
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 <macro name="BOOST_LOG_UNUSED_VARIABLE" kind="functionlike"><macro-parameter name="type"/><macro-parameter name="var"/><macro-parameter name="initializer"/><purpose>The macro suppresses compiler warnings for <computeroutput>var</computeroutput> being unused. </purpose></macro>
+</header>
+<header name="boost/log/utility/use_std_allocator.hpp">
+<para><para>Andrey Semashev </para>
+
+<para>04.03.2021</para>
+
+The header defines <computeroutput>use_std_allocator</computeroutput> tag type. </para><namespace name="boost">
+<namespace name="log">
+<struct name="use_std_allocator"><purpose>Tag type that indicates that a specialization of <computeroutput>std::allocator</computeroutput> should be used for allocating memory. </purpose><description><para>This tag type can be used in template parameters in various components of Boost.Log. The type itself is not an allocator type. </para></description></struct>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</namespace>
 </header>
 <header name="boost/log/utility/value_ref.hpp">
 <para><para>Andrey Semashev </para>
@@ -6418,6 +7982,25 @@ The header contains implementation of a value reference wrapper. </para><namespa
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>
@@ -6441,6 +8024,25 @@ The header contains forward declaration of a value reference wrapper. </para><na
 <method name="swap" cv="noexcept"><type>void</type><parameter name="that"><paramtype><classname>value_ref</classname> &amp;</paramtype></parameter><description><para>Swaps two reference wrappers </para></description></method>
 </method-group>
 </class>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

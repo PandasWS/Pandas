@@ -26,7 +26,7 @@ namespace detail{
 //
 // The error function: the difference between F(x) and
 // the current approximation.  This is the function
-// for which we must find the extema.
+// for which we must find the extrema.
 //
 template <class T>
 struct remez_error_function
@@ -52,7 +52,7 @@ public:
          else if(0 == abs)
          {
             // we must be at a root, or it's not recoverable:
-            BOOST_ASSERT(0 == abs);
+            BOOST_MATH_ASSERT(0 == abs);
             err = 0;
          }
          else
@@ -80,7 +80,7 @@ private:
 };
 //
 // This function adapts the error function so that it's minima
-// are the extema of the error function.  We can find the minima
+// are the extrema of the error function.  We can find the minima
 // with standard techniques.
 //
 template <class T>
@@ -116,8 +116,8 @@ public:
 
    void set_brake(int b)
    {
-      BOOST_ASSERT(b < 100);
-      BOOST_ASSERT(b >= 0);
+      BOOST_MATH_ASSERT(b < 100);
+      BOOST_MATH_ASSERT(b >= 0);
       m_brake = b;
    }
 
@@ -568,7 +568,7 @@ T remez_minimax<T>::iterate()
    for(unsigned i = 1; i < control_points.size(); ++i)
    {
       eps_tolerance<T> tol(m_precision);
-      boost::uintmax_t max_iter = 1000;
+      std::uintmax_t max_iter = 1000;
       std::pair<T, T> p = toms748_solve(
          Err, 
          control_points[i-1], 

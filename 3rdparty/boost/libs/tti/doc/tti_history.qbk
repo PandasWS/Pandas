@@ -1,11 +1,16 @@
 [/ 
-  (C) Copyright Edward Diener 2011,2013
+  (C) Copyright Edward Diener 2011,2013,2020
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt).
 ]
 
 [section:tti_history History]
+
+[heading Boost 1.73]
+* The enclosing type to be introspected can now also be a union
+* You can introspect for the specific nested types of class/struct, enumeration, or union
+* You can introspect for the nested type of function templates using function template instantiation
 
 [heading Post Boost 1.55 development]
 * Passing a valid non-class as the enclosing type of the query macro metafunctions

@@ -25,7 +25,7 @@ for a macro programmer using variadic macros with VMD and Boost PP.
 A general explanation of each of these categories will follow in the
 appropriate place in the documentation.
 
-Furthermore VMD macros for working with the above data types which VMD
+VMD macros for working with the above data types which VMD
 understands can be divided into 'specific' and 'generic' macros.
 
 The specific macros ask whether some input data is a particular

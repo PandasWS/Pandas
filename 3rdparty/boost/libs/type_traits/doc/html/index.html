@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-<title>Chapter&#160;1.&#160;Boost.TypeTraits</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chapter 1. Boost.TypeTraits</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="index.html" title="Chapter&#160;1.&#160;Boost.TypeTraits">
+<link rel="home" href="index.html" title="Chapter 1. Boost.TypeTraits">
 <link rel="next" href="boost_typetraits/intro.html" title="Introduction">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -21,15 +21,15 @@
 <div class="chapter">
 <div class="titlepage"><div>
 <div><h2 class="title">
-<a name="boost_typetraits"></a>Chapter&#160;1.&#160;Boost.TypeTraits</h2></div>
+<a name="boost_typetraits"></a>Chapter 1. Boost.TypeTraits</h2></div>
 <div><div class="author"><h3 class="author">
 <span class="firstname">various</span> <span class="surname">authors</span>
 </h3></div></div>
-<div><p class="copyright">Copyright &#169; 2000, 2011 Adobe Systems Inc, David Abrahams,
-      Frederic Bron, Steve Cleary, Beman Dawes, Aleksey Gurtovoy, Howard Hinnant,
-      Jesse Jones, Mat Marcus, Itay Maman, John Maddock, Alexander Nasonov, Thorsten
-      Ottosen, Roman Perepelitsa, Robert Ramey, Jeremy Siek, Robert Stewart and Steven
-      Watanabe</p></div>
+<div><p class="copyright">Copyright © 2000, 2011 Adobe Systems Inc, David Abrahams,
+      Frederic Bron, Steve Cleary, Beman Dawes, Glen Fernandes, Aleksey Gurtovoy,
+      Howard Hinnant, Jesse Jones, Mat Marcus, Itay Maman, John Maddock, Alexander
+      Nasonov, Thorsten Ottosen, Roman Perepelitsa, Robert Ramey, Jeremy Siek, Robert
+      Stewart and Steven Watanabe</p></div>
 <div><div class="legalnotice">
 <a name="boost_typetraits.legal"></a><p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -93,6 +93,7 @@
 <dt><span class="section"><a href="boost_typetraits/reference/aligned_storage.html">aligned_storage</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/alignment_of.html">alignment_of</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/conditional.html">conditional</a></span></dt>
+<dt><span class="section"><a href="boost_typetraits/reference/conjunction.html">conjunction</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/common_type.html">common_type</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/copy_cv.html">copy_cv</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/copy_cv_ref.html">copy_cv_ref</a></span></dt>
@@ -101,6 +102,7 @@
 <dt><span class="section"><a href="boost_typetraits/reference/declval.html">declval</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/detected.html">detected</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/detected_or.html">detected_or</a></span></dt>
+<dt><span class="section"><a href="boost_typetraits/reference/disjunction.html">disjunction</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/enable_if.html">enable_if_</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/extent.html">extent</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/floating_point_promotion.html">floating_point_promotion</a></span></dt>
@@ -204,10 +206,13 @@
 <dt><span class="section"><a href="boost_typetraits/reference/is_rvalue_reference.html">is_rvalue_reference</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/is_same.html">is_same</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/is_scalar.html">is_scalar</a></span></dt>
+<dt><span class="section"><a href="boost_typetraits/reference/is_scoped_enum.html">is_scoped_enum</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/is_signed.html">is_signed</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/is_stateless.html">is_stateless</a></span></dt>
+<dt><span class="section"><a href="boost_typetraits/reference/is_trivially_copyable.html">is_trivially_copyable</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/is_unbounded_array.html">is_unbounded_array</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/is_union.html">is_union</a></span></dt>
+<dt><span class="section"><a href="boost_typetraits/reference/is_unscoped_enum.html">is_unscoped_enum</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/is_unsigned.html">is_unsigned</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/is_virtual_base_of.html">is_virtual_base_of</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/is_void.html">is_void</a></span></dt>
@@ -215,6 +220,7 @@
 <dt><span class="section"><a href="boost_typetraits/reference/make_signed.html">make_signed</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/make_unsigned.html">make_unsigned</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/make_void.html">make_void</a></span></dt>
+<dt><span class="section"><a href="boost_typetraits/reference/negation.html">negation</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/nonesuch.html">nonesuch</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/promote.html">promote</a></span></dt>
 <dt><span class="section"><a href="boost_typetraits/reference/rank.html">rank</a></span></dt>

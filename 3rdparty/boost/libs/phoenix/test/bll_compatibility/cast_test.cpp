@@ -12,7 +12,7 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
 
 
 #include "boost/lambda/lambda.hpp"
@@ -27,16 +27,16 @@ using namespace std;
 class base {
   int x;
 public:
-  virtual std::string class_name() const { return "const base"; }
-  virtual std::string class_name() { return "base"; }
+  virtual const char* class_name() const { return "const base"; }
+  virtual const char* class_name() { return "base"; }
   virtual ~base() {}
 };
 
 class derived : public base {
   int y[100];
 public:
-  virtual std::string class_name() const { return "const derived"; }
-  virtual std::string class_name() { return "derived"; }
+  virtual const char* class_name() const { return "const derived"; }
+  virtual const char* class_name() { return "derived"; }
 };
 
 
@@ -47,52 +47,52 @@ void do_test() {
   derived *p_derived = new derived;
   base *p_base = new base;
 
-  base *b = 0;
-  derived *d = 0;
+  base *b = NULL;
+  derived *d = NULL;
 
   (var(b) = ll_static_cast<base *>(p_derived))();
   (var(d) = ll_static_cast<derived *>(b))();
   
-  BOOST_CHECK(b->class_name() == "derived");
-  BOOST_CHECK(d->class_name() == "derived");
+  BOOST_TEST_CSTR_EQ(b->class_name(), "derived");
+  BOOST_TEST_CSTR_EQ(d->class_name(), "derived");
 
   (var(b) = ll_dynamic_cast<derived *>(b))();
-  BOOST_CHECK(b != 0);
-  BOOST_CHECK(b->class_name() == "derived");
+  BOOST_TEST_NE(b, static_cast<base *>(NULL));
+  BOOST_TEST_CSTR_EQ(b->class_name(), "derived");
 
   (var(d) = ll_dynamic_cast<derived *>(p_base))();
-  BOOST_CHECK(d == 0);
+  BOOST_TEST_EQ(d, static_cast<derived *>(NULL));
 
   
 
   const derived* p_const_derived = p_derived;
 
-  BOOST_CHECK(p_const_derived->class_name() == "const derived");
+  BOOST_TEST_CSTR_EQ(p_const_derived->class_name(), "const derived");
   (var(d) = ll_const_cast<derived *>(p_const_derived))();
-  BOOST_CHECK(d->class_name() == "derived");
+  BOOST_TEST_CSTR_EQ(d->class_name(), "derived");
 
   int i = 10;
   char* cp = reinterpret_cast<char*>(&i);
 
   int* ip;
   (var(ip) = ll_reinterpret_cast<int *>(cp))();
-  BOOST_CHECK(*ip == 10);
+  BOOST_TEST_EQ(*ip, 10);
 
 
   // typeid 
 
-  BOOST_CHECK(string(ll_typeid(d)().name()) == string(typeid(d).name()));
+  BOOST_TEST_CSTR_EQ(ll_typeid(d)().name(), typeid(d).name());
 
  
   // sizeof
 
-  BOOST_CHECK(ll_sizeof(_1)(p_derived) == sizeof(p_derived));
-  BOOST_CHECK(ll_sizeof(_1)(*p_derived) == sizeof(*p_derived));
-  BOOST_CHECK(ll_sizeof(_1)(p_base) == sizeof(p_base));
-  BOOST_CHECK(ll_sizeof(_1)(*p_base) == sizeof(*p_base));
+  BOOST_TEST_EQ(ll_sizeof(_1)(p_derived), sizeof(p_derived));
+  BOOST_TEST_EQ(ll_sizeof(_1)(*p_derived), sizeof(*p_derived));
+  BOOST_TEST_EQ(ll_sizeof(_1)(p_base), sizeof(p_base));
+  BOOST_TEST_EQ(ll_sizeof(_1)(*p_base), sizeof(*p_base));
 
   int an_array[100];
-  BOOST_CHECK(ll_sizeof(_1)(an_array) == 100 * sizeof(int));
+  BOOST_TEST_EQ(ll_sizeof(_1)(an_array), 100 * sizeof(int));
 
   delete p_derived;
   delete p_base;
@@ -100,8 +100,8 @@ void do_test() {
 
 }
 
-int test_main(int, char *[]) {
-
+int main()
+{
   do_test();
-  return 0;
+  return boost::report_errors();
 }

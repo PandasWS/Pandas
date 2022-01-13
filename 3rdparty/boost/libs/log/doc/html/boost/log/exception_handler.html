@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class template exception_handler</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Log v2">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Log v2">
 <link rel="up" href="../../utilities.html#header.boost.log.utility.exception_handler_hpp" title="Header &lt;boost/log/utility/exception_handler.hpp&gt;">
 <link rel="prev" href="../../utilities.html" title="Utilities">
 <link rel="next" href="nothrow_exception_handler.html" title="Class template nothrow_exception_handler">
@@ -32,29 +32,29 @@
   <span class="keyword">typedef</span> <span class="keyword">void</span>     <a name="boost.log.exception_handler.result_type"></a><span class="identifier">result_type</span><span class="special">;</span>   <span class="comment">// The handler result type. </span>
 
   <span class="comment">// <a class="link" href="exception_handler.html#boost.log.exception_handlerconstruct-copy-destruct">construct/copy/destruct</a></span>
-  <span class="keyword">explicit</span> <a class="link" href="exception_handler.html#idm45349314324928-bb"><span class="identifier">exception_handler</span></a><span class="special">(</span><span class="identifier">handler_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">explicit</span> <a class="link" href="exception_handler.html#idm34520-bb"><span class="identifier">exception_handler</span></a><span class="special">(</span><span class="identifier">handler_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="exception_handler.html#idm45349314312064-bb">public member functions</a></span>
-  <span class="keyword">void</span> <a class="link" href="exception_handler.html#idm45349314311504-bb"><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="exception_handler.html#idm34511-bb">public member functions</a></span>
+  <span class="keyword">void</span> <a class="link" href="exception_handler.html#idm34512-bb"><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="idm46415098863952"></a><h2>Description</h2>
+<a name="idm72873"></a><h2>Description</h2>
 <p>An exception handler functional object. The handler aggregates a user-defined functional object that will be called when one of the specified exception types is caught. </p>
 <div class="refsect2">
-<a name="idm46415098863088"></a><h3>
+<a name="idm72876"></a><h3>
 <a name="boost.log.exception_handlerconstruct-copy-destruct"></a><code class="computeroutput">exception_handler</code> 
         public
        construct/copy/destruct</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
-<pre class="literallayout"><span class="keyword">explicit</span> <a name="idm45349314324928-bb"></a><span class="identifier">exception_handler</span><span class="special">(</span><span class="identifier">handler_type</span> <span class="keyword">const</span> <span class="special">&amp;</span> handler<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">explicit</span> <a name="idm34520-bb"></a><span class="identifier">exception_handler</span><span class="special">(</span><span class="identifier">handler_type</span> <span class="keyword">const</span> <span class="special">&amp;</span> handler<span class="special">)</span><span class="special">;</span></pre>
 <p>Initializing constructor. Creates an exception handler with the specified function object that will receive the exception. </p>
 </li></ol></div>
 </div>
 <div class="refsect2">
-<a name="idm46415098854032"></a><h3>
-<a name="idm45349314312064-bb"></a><code class="computeroutput">exception_handler</code> public member functions</h3>
+<a name="idm72894"></a><h3>
+<a name="idm34511-bb"></a><code class="computeroutput">exception_handler</code> public member functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="idm45349314311504-bb"></a><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="idm34512-bb"></a><span class="keyword">operator</span><span class="special">(</span><span class="special">)</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <p>Exception launcher. Rethrows the current exception in order to detect its type and pass it to the aggregated function object.</p>
 <div class="note"><table border="0" summary="Note">
 <tr>
@@ -71,7 +71,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2007-2016 Andrey Semashev<p>
+<td align="right"><div class="copyright-footer">Copyright © 2007-2021 Andrey Semashev<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>).
       </p>

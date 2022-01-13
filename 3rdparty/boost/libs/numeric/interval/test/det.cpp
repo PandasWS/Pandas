@@ -9,7 +9,7 @@
  */
 
 #include <boost/numeric/interval.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include "bugs.hpp"
 
 #define size 8
@@ -92,12 +92,12 @@ bool test() {
   return true;
 }
 
-int test_main(int, char *[]) {
-  BOOST_CHECK(test<float>());
-  BOOST_CHECK(test<double>());
-  BOOST_CHECK(test<long double>());
-# ifdef __BORLANDC__
+int main() {
+  BOOST_TEST(test<float>());
+  BOOST_TEST(test<double>());
+  BOOST_TEST(test<long double>());
+# ifdef BOOST_BORLANDC
   ::detail::ignore_warnings();
 # endif
-  return 0;
+  return boost::report_errors();
 }

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>ssl::stream</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -26,6 +26,9 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.ssl__stream"></a><a class="link" href="ssl__stream.html" title="ssl::stream">ssl::stream</a>
 </h3></div></div></div>
+<p>
+        <a class="indexterm" name="boost_asio.indexterm.ssl__stream"></a>
+      </p>
 <p>
         Provides stream-oriented functionality using SSL.
       </p>
@@ -265,6 +268,18 @@ class stream :
 <tr>
 <td>
                 <p>
+                  <a class="link" href="ssl__stream/operator_eq_.html" title="ssl::stream::operator="><span class="bold"><strong>operator=</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Move-assign a stream from another.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   <a class="link" href="ssl__stream/read_some.html" title="ssl::stream::read_some"><span class="bold"><strong>read_some</strong></span></a>
                 </p>
               </td>
@@ -325,12 +340,13 @@ class stream :
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__stream/stream.html" title="ssl::stream::stream"><span class="bold"><strong>stream</strong></span></a>
+                  <a class="link" href="ssl__stream/stream.html" title="ssl::stream::stream"><span class="bold"><strong>stream</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
-                  Construct a stream.
+                  Construct a stream. <br> <span class="silver"> —</span><br> Move-construct a stream from
+                  another.
                 </p>
               </td>
 </tr>
@@ -349,7 +365,7 @@ class stream :
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ssl__stream/_stream.html" title="ssl::stream::~stream"><span class="bold"><strong>~stream</strong></span></a>
+                  <a class="link" href="ssl__stream/_stream.html" title="ssl::stream::~stream"><span class="bold"><strong>~stream</strong></span></a> <span class="silver">[destructor]</span>
                 </p>
               </td>
 <td>
@@ -402,7 +418,8 @@ boost::asio::ssl::stream&lt;asio:ip::tcp::socket&gt; sock(my_context, ctx);
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

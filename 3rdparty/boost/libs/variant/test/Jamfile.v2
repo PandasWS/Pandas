@@ -1,7 +1,7 @@
 #  Boost.Variant Library test Jamfile
 #
 #  Copyright (C) 2003, Eric Friedman, Itay Maman.
-#  Copyright (C) 2013-2019 Antony Polukhin.
+#  Copyright (C) 2013-2021 Antony Polukhin.
 #
 # Use, modification and distribution is subject to the Boost Software License,
 # Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
@@ -10,7 +10,9 @@
 
 import testing ;
 
-local below-c++14 = 98 03 0x 11 ;
+local below_cpp11 = 98 03 ;
+local below_cpp14 = 98 03 0x 11 ;
+local since_cpp20 = 2a 20 latest ;
 
 project
     : requirements
@@ -31,11 +33,12 @@ test-suite variant
     [ run recursive_variant_test.cpp ]
     [ run variant_reference_test.cpp ]
     [ run variant_comparison_test.cpp ]
-    [ run variant_visit_internal_linkage.cpp : : : "<cxxstd>$(below-c++14)":<build>no ]
+    [ run variant_visit_internal_linkage.cpp : : : "<cxxstd>$(below_cpp14)"\:<build>no ]
     [ run variant_visit_test.cpp ]
     [ run variant_get_test.cpp ]
     [ compile-fail variant_rvalue_get_with_ampersand_test.cpp ]
     [ compile-fail no_rvalue_to_nonconst_visitation.cpp ]
+    [ compile fusion_interop.cpp : "<cxxstd>$(below_cpp11)"\:<build>no ]
     [ run variant_polymorphic_get_test.cpp ]
     [ run variant_multivisit_test.cpp ]
     [ run hash_variant_test.cpp ]
@@ -56,8 +59,8 @@ test-suite variant
     [ run variant_swap_test.cpp ]
     [ run auto_visitors.cpp ]
     [ run issue42.cpp ]
-    #[ run issue53.cpp ]
-    [ run overload_selection.cpp ]
+    [ run issue53.cpp ]
+    [ run overload_selection.cpp : : : "<cxxstd>$(since_cpp20)"\:<build>no ]
     [ run recursive_wrapper_move_test.cpp ]
     [ run variant_over_joint_view_test.cpp ]
     [ run const_ref_apply_visitor.cpp ]

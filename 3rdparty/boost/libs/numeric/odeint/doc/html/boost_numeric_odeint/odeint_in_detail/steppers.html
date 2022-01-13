@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Steppers</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Numeric.Odeint">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Numeric.Odeint">
 <link rel="up" href="../odeint_in_detail.html" title="odeint in detail">
 <link rel="prev" href="../odeint_in_detail.html" title="odeint in detail">
 <link rel="next" href="generation_functions.html" title="Generation functions">
@@ -411,8 +411,8 @@
           like <span class="emphasis"><em>x(t+dt) = x(t) + dt * f(x(t+1))</em></span>. This particular
           scheme is the implicit Euler method. Implicit methods usually solve the
           system of equations by a root finding algorithm like the Newton method
-          and therefore need to know the Jacobian of the system <span class="emphasis"><em>J<sub>&#8203;ij</sub> = df<sub>&#8203;i</sub> /
-          dx<sub>&#8203;j</sub></em></span>.
+          and therefore need to know the Jacobian of the system <span class="emphasis"><em>J<sub>​ij</sub> = df<sub>​i</sub> /
+          dx<sub>​j</sub></em></span>.
         </p>
 <p>
           For implicit solvers the system is again a pair, where the first component
@@ -544,13 +544,13 @@
           calculate
         </p>
 <p>
-          <span class="emphasis"><em>val = || | err<sub>&#8203;i</sub> | / ( &#949;<sub>&#8203;abs</sub> + &#949;<sub>&#8203;rel</sub> * ( a<sub>&#8203;x</sub> | x<sub>&#8203;i</sub> | + a<sub>&#8203;dxdt</sub> | | dxdt<sub>&#8203;i</sub> | )||
+          <span class="emphasis"><em>val = || | err<sub>​i</sub> | / ( ε<sub>​abs</sub> + ε<sub>​rel</sub> * ( a<sub>​x</sub> | x<sub>​i</sub> | + a<sub>​dxdt</sub> | | dxdt<sub>​i</sub> | )||
           </em></span>
         </p>
 <p>
-          <span class="emphasis"><em>&#949;<sub>&#8203;abs</sub></em></span> and <span class="emphasis"><em>&#949;<sub>&#8203;rel</sub></em></span> are the absolute
+          <span class="emphasis"><em>ε<sub>​abs</sub></em></span> and <span class="emphasis"><em>ε<sub>​rel</sub></em></span> are the absolute
           and the relative error tolerances, and <span class="emphasis"><em>|| x ||</em></span> is
-          a norm, typically <span class="emphasis"><em>||x||=(&#931;<sub>&#8203;i</sub> x<sub>&#8203;i</sub><sup>2</sup>)<sup>1/2</sup></em></span> or the maximum norm.
+          a norm, typically <span class="emphasis"><em>||x||=(Σ<sub>​i</sub> x<sub>​i</sub><sup>2</sup>)<sup>1/2</sup></em></span> or the maximum norm.
           The step is rejected if <span class="emphasis"><em>val</em></span> is greater then 1, otherwise
           it is accepted. For details of the used norms and error tolerance see the
           table below.
@@ -560,25 +560,25 @@
           stepper the new step size is then calculated via
         </p>
 <p>
-          <span class="emphasis"><em>val &gt; 1 : dt<sub>&#8203;new</sub> = dt<sub>&#8203;current</sub> max( 0.9 pow( val , -1 / ( O<sub>&#8203;E</sub> - 1
+          <span class="emphasis"><em>val &gt; 1 : dt<sub>​new</sub> = dt<sub>​current</sub> max( 0.9 pow( val , -1 / ( O<sub>​E</sub> - 1
           ) ) , 0.2 )</em></span>
         </p>
 <p>
-          <span class="emphasis"><em>val &lt; 0.5 : dt<sub>&#8203;new</sub> = dt<sub>&#8203;current</sub> min( 0.9 pow( val , -1 / O<sub>&#8203;S</sub> ) ,
+          <span class="emphasis"><em>val &lt; 0.5 : dt<sub>​new</sub> = dt<sub>​current</sub> min( 0.9 pow( val , -1 / O<sub>​S</sub> ) ,
           5 )</em></span>
         </p>
 <p>
-          <span class="emphasis"><em>else : dt<sub>&#8203;new</sub> = dt<sub>&#8203;current</sub></em></span>
+          <span class="emphasis"><em>else : dt<sub>​new</sub> = dt<sub>​current</sub></em></span>
         </p>
 <p>
-          Here, <span class="emphasis"><em>O<sub>&#8203;S</sub></em></span> and <span class="emphasis"><em>O<sub>&#8203;E</sub></em></span> are the order
+          Here, <span class="emphasis"><em>O<sub>​S</sub></em></span> and <span class="emphasis"><em>O<sub>​E</sub></em></span> are the order
           of the stepper and the error stepper. These formulas also contain some
           safety factors, avoiding that the step size is reduced or increased to
           much. For details of the implementations of the controlled steppers in
           odeint see the table below.
         </p>
 <div class="table">
-<a name="boost_numeric_odeint.odeint_in_detail.steppers.controlled_steppers.adaptive_step_size_algorithms"></a><p class="title"><b>Table&#160;1.5.&#160;Adaptive step size algorithms</b></p>
+<a name="boost_numeric_odeint.odeint_in_detail.steppers.controlled_steppers.adaptive_step_size_algorithms"></a><p class="title"><b>Table 1.5. Adaptive step size algorithms</b></p>
 <div class="table-contents"><table class="table" summary="Adaptive step size algorithms">
 <colgroup>
 <col>
@@ -617,26 +617,26 @@
                 </td>
 <td>
                   <p>
-                    <span class="emphasis"><em>val = || | err<sub>&#8203;i</sub> | / ( &#949;<sub>&#8203;abs</sub> + &#949;<sub>&#8203;rel</sub> * ( a<sub>&#8203;x</sub> | x<sub>&#8203;i</sub> | + a<sub>&#8203;dxdt</sub> | |
-                    dxdt<sub>&#8203;i</sub> | )|| </em></span>
+                    <span class="emphasis"><em>val = || | err<sub>​i</sub> | / ( ε<sub>​abs</sub> + ε<sub>​rel</sub> * ( a<sub>​x</sub> | x<sub>​i</sub> | + a<sub>​dxdt</sub> | |
+                    dxdt<sub>​i</sub> | )|| </em></span>
                   </p>
                 </td>
 <td>
                   <p>
-                    <span class="emphasis"><em>||x|| = max( x<sub>&#8203;i</sub> )</em></span>
+                    <span class="emphasis"><em>||x|| = max( x<sub>​i</sub> )</em></span>
                   </p>
                 </td>
 <td>
                   <p>
-                    <span class="emphasis"><em>val &gt; 1 : dt<sub>&#8203;new</sub> = dt<sub>&#8203;current</sub> max( 0.9 pow( val , -1
-                    / ( O<sub>&#8203;E</sub> - 1 ) ) , 0.2 )</em></span>
+                    <span class="emphasis"><em>val &gt; 1 : dt<sub>​new</sub> = dt<sub>​current</sub> max( 0.9 pow( val , -1
+                    / ( O<sub>​E</sub> - 1 ) ) , 0.2 )</em></span>
                   </p>
                   <p>
-                    <span class="emphasis"><em>val &lt; 0.5 : dt<sub>&#8203;new</sub> = dt<sub>&#8203;current</sub> min( 0.9 pow( val ,
-                    -1 / O<sub>&#8203;S</sub> ) , 5 )</em></span>
+                    <span class="emphasis"><em>val &lt; 0.5 : dt<sub>​new</sub> = dt<sub>​current</sub> min( 0.9 pow( val ,
+                    -1 / O<sub>​S</sub> ) , 5 )</em></span>
                   </p>
                   <p>
-                    <span class="emphasis"><em>else : dt<sub>&#8203;new</sub> = dt<sub>&#8203;current</sub></em></span>
+                    <span class="emphasis"><em>else : dt<sub>​new</sub> = dt<sub>​current</sub></em></span>
                   </p>
                 </td>
 </tr>
@@ -648,13 +648,13 @@
                 </td>
 <td>
                   <p>
-                    <span class="emphasis"><em>val = || err<sub>&#8203;i</sub> / ( &#949;<sub>&#8203;abs</sub> + &#949;<sub>&#8203;rel</sub> max( | x<sub>&#8203;i</sub> | , | xold<sub>&#8203;i</sub> | ) )
+                    <span class="emphasis"><em>val = || err<sub>​i</sub> / ( ε<sub>​abs</sub> + ε<sub>​rel</sub> max( | x<sub>​i</sub> | , | xold<sub>​i</sub> | ) )
                     || </em></span>
                   </p>
                 </td>
 <td>
                   <p>
-                    <span class="emphasis"><em>||x||=(&#931;<sub>&#8203;i</sub> x<sub>&#8203;i</sub><sup>2</sup>)<sup>1/2</sup></em></span>
+                    <span class="emphasis"><em>||x||=(Σ<sub>​i</sub> x<sub>​i</sub><sup>2</sup>)<sup>1/2</sup></em></span>
                   </p>
                 </td>
 <td>
@@ -663,14 +663,14 @@
                     ) </em></span>
                   </p>
                   <p>
-                    <span class="emphasis"><em>fac2 = max( 1 / 6 , min( 5 , dt<sub>&#8203;old</sub> / dt<sub>&#8203;current</sub> pow( val<sup>2</sup> /
-                    val<sub>&#8203;old</sub> , 1 / 4 ) / 0.9 ) </em></span>
+                    <span class="emphasis"><em>fac2 = max( 1 / 6 , min( 5 , dt<sub>​old</sub> / dt<sub>​current</sub> pow( val<sup>2</sup> /
+                    val<sub>​old</sub> , 1 / 4 ) / 0.9 ) </em></span>
                   </p>
                   <p>
-                    <span class="emphasis"><em>val &gt; 1 : dt<sub>&#8203;new</sub> = dt<sub>&#8203;current</sub> / fac </em></span>
+                    <span class="emphasis"><em>val &gt; 1 : dt<sub>​new</sub> = dt<sub>​current</sub> / fac </em></span>
                   </p>
                   <p>
-                    <span class="emphasis"><em>val &lt; 1 : dt<sub>&#8203;new</sub> = dt<sub>&#8203;current</sub> / max( fac , fac2 ) </em></span>
+                    <span class="emphasis"><em>val &lt; 1 : dt<sub>​new</sub> = dt<sub>​current</sub> / max( fac , fac2 ) </em></span>
                   </p>
                 </td>
 </tr>
@@ -692,7 +692,7 @@
                 </td>
 <td>
                   <p>
-                    <span class="emphasis"><em>dt<sub>&#8203;new</sub> = dt<sub>&#8203;old</sub><sup>1/a</sup></em></span>
+                    <span class="emphasis"><em>dt<sub>​new</sub> = dt<sub>​old</sub><sup>1/a</sup></em></span>
                   </p>
                 </td>
 </tr>
@@ -965,7 +965,7 @@
         overview</a>
 </h4></div></div></div>
 <div class="table">
-<a name="boost_numeric_odeint.odeint_in_detail.steppers.stepper_overview.stepper_algorithms"></a><p class="title"><b>Table&#160;1.6.&#160;Stepper Algorithms</b></p>
+<a name="boost_numeric_odeint.odeint_in_detail.steppers.stepper_overview.stepper_algorithms"></a><p class="title"><b>Table 1.6. Stepper Algorithms</b></p>
 <div class="table-contents"><table class="table" summary="Stepper Algorithms">
 <colgroup>
 <col>
@@ -2027,12 +2027,12 @@
           equations (SDEs). A SDE has the form
         </p>
 <p>
-          <span class="emphasis"><em>dx/dt = f(x) + g(x) &#958;(t)</em></span>
+          <span class="emphasis"><em>dx/dt = f(x) + g(x) ξ(t)</em></span>
         </p>
 <p>
-          where <span class="emphasis"><em>&#958;</em></span> is Gaussian white noise with zero mean and
-          a standard deviation <span class="emphasis"><em>&#963;(t)</em></span>. <span class="emphasis"><em>f(x)</em></span>
-          is said to be the deterministic part while <span class="emphasis"><em>g(x) &#958;</em></span> is
+          where <span class="emphasis"><em>ξ</em></span> is Gaussian white noise with zero mean and
+          a standard deviation <span class="emphasis"><em>σ(t)</em></span>. <span class="emphasis"><em>f(x)</em></span>
+          is said to be the deterministic part while <span class="emphasis"><em>g(x) ξ</em></span> is
           the noisy part. In case <span class="emphasis"><em>g(x)</em></span> is independent of <span class="emphasis"><em>x</em></span>
           the SDE is said to have additive noise. It is not possible to solve SDE
           with the classical solvers for ODEs since the noisy part of the SDE has
@@ -2041,10 +2041,10 @@
           method is the stochastic Euler solver. It works by iterating
         </p>
 <p>
-          <span class="emphasis"><em>x(t+&#916; t) = x(t) + &#916; t f(x(t)) + &#916; t<sup>1/2</sup> g(x) &#958;(t)</em></span>
+          <span class="emphasis"><em>x(t+Δ t) = x(t) + Δ t f(x(t)) + Δ t<sup>1/2</sup> g(x) ξ(t)</em></span>
         </p>
 <p>
-          where &#958;(t) is an independent normal distributed random variable.
+          where ξ(t) is an independent normal distributed random variable.
         </p>
 <p>
           Now we will implement this method. We will call the stepper <code class="computeroutput"><span class="identifier">stochastic_euler</span></code>. It models the <a class="link" href="../concepts/stepper.html" title="Stepper">Stepper</a> concept.
@@ -2131,10 +2131,10 @@
           process. Its SDE reads
         </p>
 <p>
-          <span class="emphasis"><em>dx/dt = - x + &#958;</em></span>
+          <span class="emphasis"><em>dx/dt = - x + ξ</em></span>
         </p>
 <p>
-          where &#958; is Gaussian white noise with standard deviation <span class="emphasis"><em>&#963;</em></span>.
+          where ξ is Gaussian white noise with standard deviation <span class="emphasis"><em>σ</em></span>.
           Implementing the Ornstein-Uhlenbeck process is quite simple. We need two
           functions or functors - one for the deterministic and one for the stochastic
           part:
@@ -2170,7 +2170,7 @@
 <p>
           In the stochastic part we have used the Mersenne twister for the random
           number generation and a Gaussian white noise generator <code class="computeroutput"><span class="identifier">normal_distribution</span></code>
-          with standard deviation <span class="emphasis"><em>&#963;</em></span>. Now, we can use the stochastic
+          with standard deviation <span class="emphasis"><em>σ</em></span>. Now, we can use the stochastic
           Euler stepper with the integrate functions:
         </p>
 <p>
@@ -2353,7 +2353,7 @@ c3 = 2/3, a31 =  0 , a32 = 2/3
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2015 Karsten Ahnert and Mario Mulansky<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2015 Karsten Ahnert and Mario Mulansky<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

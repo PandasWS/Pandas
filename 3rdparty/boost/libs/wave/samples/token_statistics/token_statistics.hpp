@@ -10,12 +10,12 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(TOKEN_STATISTICS_HPP)
-#define TOKEN_STATISTICS_HPP
+#if !defined(BOOST_TOKEN_STATISTICS_HPP)
+#define BOOST_TOKEN_STATISTICS_HPP
 
 ///////////////////////////////////////////////////////////////////////////////
 //  include often used files from the stdlib
-#include <iostream>
+#include <iosfwd>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -46,4 +46,4 @@
 //  include required boost libraries
 #include <boost/pool/pool_alloc.hpp>
 
-#endif // !defined(TOKEN_STATISTICS_HPP)
+#endif // !defined(BOOST_TOKEN_STATISTICS_HPP)

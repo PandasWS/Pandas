@@ -10,5 +10,6 @@
     ],
     "maintainers": [
         "Aleksey Gurtovoy <agurtovoy -at- meta-comm.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

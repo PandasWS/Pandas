@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Global on_exit</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -41,15 +41,15 @@
 <span class="identifier">on_exit</span><span class="special">(</span><span class="identifier">function</span><span class="special">)</span><span class="special">;</span>
 </pre>
 <p>with <code class="computeroutput">function</code> being a callable object with the signature <code class="computeroutput">(int, const std::error_code&amp;)</code> or an <code class="computeroutput">std::future&lt;int&gt;</code>.</p>
-<p><b>Example.&#160;</b></p>
+<p><b>Example. </b></p>
 <p>
 </p>
 <pre class="programlisting"><span class="identifier">io_context</span> <span class="identifier">ios</span><span class="special">;</span>
 
-<span class="identifier">child</span> <span class="identifier">c</span><span class="special">(</span><span class="string">"ls"</span><span class="special">,</span> <span class="identifier">on_exit</span><span class="special">=</span><span class="special">[</span><span class="special">]</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">exit</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span><span class="special">&amp;</span> <span class="identifier">ec_in</span><span class="special">)</span><span class="special">{</span><span class="special">}</span><span class="special">)</span><span class="special">;</span>
+<span class="identifier">child</span> <span class="identifier">c</span><span class="special">(</span><span class="string">"ls"</span><span class="special">,</span> <span class="identifier">ios</span><span class="special">,</span> <span class="identifier">on_exit</span><span class="special">=</span><span class="special">[</span><span class="special">]</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">exit</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span><span class="special">&amp;</span> <span class="identifier">ec_in</span><span class="special">)</span><span class="special">{</span><span class="special">}</span><span class="special">)</span><span class="special">;</span>
 
 <span class="identifier">std</span><span class="special">::</span><span class="identifier">future</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="identifier">exit_code</span><span class="special">;</span>
-<span class="identifier">chlid</span> <span class="identifier">c2</span><span class="special">(</span><span class="string">"ls"</span><span class="special">,</span> <span class="identifier">on_exit</span><span class="special">=</span><span class="identifier">exit_code</span><span class="special">)</span><span class="special">;</span>
+<span class="identifier">chlid</span> <span class="identifier">c2</span><span class="special">(</span><span class="string">"ls"</span><span class="special">,</span> <span class="identifier">ios</span><span class="special">,</span> <span class="identifier">on_exit</span><span class="special">=</span><span class="identifier">exit_code</span><span class="special">)</span><span class="special">;</span>
 </pre>
 <div class="note"><table border="0" summary="Note">
 <tr>
@@ -82,8 +82,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
-      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright &#169; 2016 Klemens D. Morgenstern<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
+      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright © 2016 Klemens D. Morgenstern<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
       </p>

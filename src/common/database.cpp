@@ -224,6 +224,33 @@ std::string YamlDatabase::getBlashCacheHash(const std::string& path) {
 }
 
 //************************************
+// Method:      isEnableSerialize
+// Description: 获取当前疾风缓存是否处于开启状态
+// Access:      private 
+// Parameter:   bool bNoWarning
+//              是否不展现任何警告信息
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/01/08 19:12
+//************************************ 
+bool YamlDatabase::isEnableSerialize(bool bNoWarning) {
+	if (!this->supportSerialize) {
+		return false;
+	}
+
+	for (auto &size : this->validDatatypeSize) {
+		if (size == this->datatypeSize) {
+			return true;
+		}
+	}
+
+	if (!bNoWarning) {
+		ShowWarning("Blast Cache: Struct size of database '%s' does not meet expectations, current size is: %d\n", this->type.c_str(), this->datatypeSize);
+	}
+
+	return false;
+}
+
+//************************************
 // Method:      loadFromSerialize
 // Description: 从序列化缓存文件中恢复当前对象
 // Access:      private 
@@ -231,7 +258,7 @@ std::string YamlDatabase::getBlashCacheHash(const std::string& path) {
 // Author:      Sola丶小克(CairoLee)  2021/01/14 00:21
 //************************************ 
 bool YamlDatabase::loadFromSerialize() {
-	if (!this->supportSerialize) {
+	if (!this->isEnableSerialize()) {
 		return false;
 	}
 
@@ -273,7 +300,7 @@ bool YamlDatabase::loadFromSerialize() {
 // Author:      Sola丶小克(CairoLee)  2021/01/14 00:21
 //************************************ 
 bool YamlDatabase::saveToSerialize() {
-	if (!this->supportSerialize) {
+	if (!this->isEnableSerialize(true)) {
 		return false;
 	}
 

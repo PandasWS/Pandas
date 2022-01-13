@@ -20,7 +20,7 @@
 #include <boost/filesystem.hpp>
 
 #include <iostream>
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/detail/lightweight_main.hpp>
 
 using std::cout;
@@ -31,9 +31,9 @@ namespace fs = boost::filesystem;
 
 int cpp_main(int argc, char* argv[])
 {
-  cout << "Hello, filesystem world" << endl;
+    cout << "Hello, filesystem world" << endl;
 
-  BOOST_TEST(fs::exists("."));
+    BOOST_TEST(fs::exists("."));
 
-  return ::boost::report_errors();
+    return ::boost::report_errors();
 } // cpp_main

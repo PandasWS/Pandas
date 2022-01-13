@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Keyword List Operator</title>
 <link rel="stylesheet" href="../../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -34,9 +34,9 @@
 <p>
           The keyword list operator, <code class="computeroutput"><span class="identifier">kwd</span><span class="special">(</span><span class="string">"k1"</span><span class="special">)[</span><span class="identifier">a</span><span class="special">]</span>
           <span class="special">/</span> <span class="identifier">kwd</span><span class="special">(</span><span class="string">"k2"</span><span class="special">)[</span><span class="identifier">b</span><span class="special">]</span></code>,
-          works tightly with the kwd, ikwd, dkwd and idkwd directives to effeciently
+          works tightly with the kwd, ikwd, dkwd and idkwd directives to efficiently
           match keyword lists. As long as one of the keywords specified through the
-          kwd, ikwd, dkwd or idkwd directive matches, the keyword will be immediatly
+          kwd, ikwd, dkwd or idkwd directive matches, the keyword will be immediately
           followed by the keyword's associated subject parser. The parser will continue
           parsing input as long as the one of the keywords and it's associated parser
           succeed. Writing : (kwd("k1")[a] / kwd("k2")[b] / ...
@@ -268,7 +268,7 @@
 <span class="identifier">test_phrase_parser_attr</span><span class="special">(</span>
                 <span class="string">"name = \"John\" \n age = 10 \n size = 1.69m "</span>
                 <span class="special">,</span><span class="identifier">no_constraint_person_rule</span>
-                <span class="special">,</span><span class="identifier">John</span><span class="special">);</span>  <span class="comment">// full in orginal order</span>
+                <span class="special">,</span><span class="identifier">John</span><span class="special">);</span>  <span class="comment">// full in original order</span>
 <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="identifier">John</span><span class="special">;</span>
 
 <span class="identifier">test_phrase_parser_attr</span><span class="special">(</span>
@@ -343,7 +343,7 @@ green
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2011 Joel de Guzman, Hartmut Kaiser<p>
+<td align="right"><div class="copyright-footer">Copyright © 2001-2011 Joel de Guzman, Hartmut Kaiser<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

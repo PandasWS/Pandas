@@ -132,10 +132,10 @@ and <code>ca</code> of type <code>const Type&amp;</code>.
 Additionally, <code>KeyFromValue</code> is a <i>read/write</i> key extractor
 if the following extra conditions are met:
 <ol>
+  <li><code>remove_reference_t&lt;KeyFromValue::result_type&gt;</code> is not <code>const</code>-qualified.</li>
   <li><code>k1(a)</code> is defined and returns a value convertible
     to <code>KeyFromValue::result_type&amp;</code>,</li>
-  <li><code>const_cast&lt;const KeyFromValue::result_type&amp;>(k1(a))</code>
-    is the same  value as
+  <li><code>k1(a)</code> is bound to the same object as
     <code>k1(const_cast&lt;const Type&amp;>(a))</code>,</li>
 </ol>
 for every <code>k1</code> of type <code>const KeyFromValue</code> and
@@ -352,18 +352,18 @@ The <code>PtrToMember</code> template argument specifies the particular
 <code>Type Class::*</code> pointer to the member to be extracted.
 <code>member&lt;Class,Type,PtrToMember></code> is a model of:
 <ul>
-  <li>read/write <a href="#key_extractors"><code>Key Extractor</code></a>
-    from <code>Class</code>,</li>
+  <li><a href="#key_extractors"><code>Key Extractor</code></a>
+    from <code>Class</code>, read/write if <code>Type</code> is not <code>const</code>-qualified,</li>
   <li><a href="#key_extractors"><code>Key Extractor</code></a>
     from <code>reference_wrapper&lt;const Class></code>,</li>
-  <li>read/write <a href="#key_extractors"><code>Key Extractor</code></a>
-    from <code>reference_wrapper&lt;Class></code>,</li>
+  <li><a href="#key_extractors"><code>Key Extractor</code></a>
+    from <code>reference_wrapper&lt;Class></code>, read/write if <code>Type</code> is not <code>const</code>-qualified,</li>
   <li><a href="#key_extractors"><code>Key Extractor</code></a>
     from any <a href="#chained_pointers">chained pointer</a>
     to <code>const Class</code>,</li>
-  <li>read/write <a href="#key_extractors"><code>Key Extractor</code></a>
+  <li><a href="#key_extractors"><code>Key Extractor</code></a>
     from any <a href="#chained_pointers">chained pointer</a>
-    to <code>Class</code>.</li>
+    to <code>Class</code>, read/write if <code>Type</code> is not <code>const</code>-qualified.</li>
 </ul>
 </p>
 
@@ -524,8 +524,10 @@ member function used in the extraction.
     to <code>const Class</code>,</li>
   <li><a href="#key_extractors"><code>Key Extractor</code></a>
     from any <a href="#chained_pointers">chained pointer</a>
-    to <code>Class</code>.</li>
+    to <code>Class</code>,</li>
 </ul>
+and is also read/write in all these cases if <code>Type</code> is an
+lvalue reference to a non <code>const</code>-qualified type.
 </p>
 
 <h4><code>const_mem_fun</code> members</h4>
@@ -602,8 +604,10 @@ function used in the extraction.
     from <code>reference_wrapper&lt;Class></code>,</li>
   <li><a href="#key_extractors"><code>Key Extractor</code></a>
     from any <a href="#chained_pointers">chained pointer</a>
-    to <code>Class</code>.</li>
+    to <code>Class</code>,</li>
 </ul>
+and is also read/write in all these cases if <code>Type</code> is an
+lvalue reference to a non <code>const</code>-qualified type.
 </p>
 
 <h4><code>mem_fun</code> members</h4>
@@ -760,6 +764,9 @@ When <code>Value</code> is <code>BaseType</code> or
     from any <a href="#chained_pointers">chained pointer</a>
     to <code>const BaseType</code>.</li>
 </ul>
+In all the five cases above, <code>global_fun&lt;Type,Value,PtrToFunction&gt;</code>
+is also read/write if <code>Type</code> is an
+lvalue reference to a non <code>const</code>-qualified type.
 </p>
 
 <h4><code>global_fun</code> members</h4>
@@ -1455,7 +1462,7 @@ are instantiations of <code>std::equal_to</code>.
 <code>CompositeKeyResult</code> must be an instantiation of
 <code>composite_key_result</code> for some type
 <code>composite_key&lt;KeyFromValue0,...,KeyFromValuen></code>.
-<code>std::equal:to&lt;CompositeKeyResult>::operator()</code> is
+<code>std::equal_to&lt;CompositeKeyResult>::operator()</code> is
 then equivalent to
 <code>composite_key_equal_to&lt;Pred0,...,Predn>::operator()</code>, taking
 <blockquote>
@@ -1758,7 +1765,7 @@ then equivalent to
 In addition to the requirements on <code>Comparei</code> imposed by
 <code>composite_key_compare</code>, each of these types must be
 <code>DefaultConstructible</code>. <code>std::less&lt;CompositeKeyResult></code>
-is <code>CopyConstructible</code>, <code>CopyConstructible</code>
+is <code>DefaultConstructible</code>, <code>CopyConstructible</code>
 and <code>CopyAssignable</code>.
 </p>
 
@@ -1841,7 +1848,7 @@ then equivalent to
 In addition to the requirements on <code>Comparei</code> imposed by
 <code>composite_key_compare</code>, each of these types must be
 <code>DefaultConstructible</code>. <code>std::greater&lt;CompositeKeyResult></code>
-is <code>CopyConstructible</code>, <code>CopyConstructible</code>
+is <code>DefaultConstructible</code>, <code>CopyConstructible</code>
 and <code>CopyAssignable</code>.
 </p>
 
@@ -2166,39 +2173,39 @@ resolves to:
   </li>
   <li><a href="#const_mem_fun"><code>const_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()const</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#cv_mem_fun"><code>cv_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()const volatile</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#cv_mem_fun"><code>cref_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()const&amp;</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#cv_mem_fun"><code>cvref_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()const volatile&amp;</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#mem_fun"><code>mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#volatile_mem_fun"><code>volatile_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()volatile</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#volatile_mem_fun"><code>ref_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()&amp;</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#volatile_mem_fun"><code>vref_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()volatile&amp;</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#global_fun"><code>global_fun&lt;Value,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (*)(Value)</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
 </ul>
 and engenders undefined behavior otherwise. When passed two or more arguments,
@@ -2236,9 +2243,9 @@ Compiler specifics
 
 <br>
 
-<p>Revised June 9th 2019</p>
+<p>Revised April 19th 2020</p>
 
-<p>&copy; Copyright 2003-2019 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

@@ -15,7 +15,7 @@
 
 struct my_node
 {
-   my_node(int i = 0, unsigned int priority = 0)
+   my_node(int i = 0, int priority = 0)
       :  prio_(priority), int_(i)
    {}
    my_node *parent_, *left_, *right_;

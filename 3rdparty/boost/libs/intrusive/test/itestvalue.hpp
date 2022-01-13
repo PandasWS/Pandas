@@ -15,7 +15,7 @@
 
 #include <iostream>
 #include <boost/intrusive/options.hpp>
-#include <boost/functional/hash.hpp>
+#include <boost/container_hash/hash.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
 #include "nonhook_node.hpp"
 #include "int_holder.hpp"

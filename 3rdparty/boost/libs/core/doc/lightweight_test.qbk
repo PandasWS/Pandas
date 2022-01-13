@@ -43,9 +43,11 @@ When using `lightweight_test.hpp`, *do not forget* to
 #define BOOST_TEST_GE(expr1, expr2) /*unspecified*/
 #define BOOST_TEST_CSTR_EQ(expr1, expr2) /*unspecified*/
 #define BOOST_TEST_CSTR_NE(expr1, expr2) /*unspecified*/
+#define BOOST_TEST_WITH(expr1, expr2, pred) /*unspecified*/
 #define BOOST_TEST_ALL_EQ(begin1, end1, begin2, end2) /* unspecified */
 #define BOOST_TEST_ALL_WITH(begin1, end1, begin2, end2, predicate) /* unspecified */
 #define BOOST_TEST_THROWS(expr, excep) /*unspecified*/
+#define BOOST_TEST_NO_THROW(expr) /*unspecified*/
 
 namespace boost
 {
@@ -174,6 +176,17 @@ Specialization of `BOOST_TEST_NE` which interprets `expr1` and `expr2` as pointe
 
 [endsect]
 
+[section BOOST_TEST_WITH]
+
+``
+BOOST_TEST_WITH(expr1, expr2, pred)
+``
+
+If `pred(expr1, expr2)` is not true increases the error count and outputs a
+message containing both expressions.
+
+[endsect]
+
 [section BOOST_TEST_ALL_EQ]
 
 ``
@@ -206,6 +219,20 @@ and outputs a message containing the expression.
 
 If `BOOST_NO_EXCEPTIONS` is defined, this macro expands to
 nothing and `expr` is not evaluated.
+
+[endsect]
+
+[section BOOST_TEST_NO_THROW]
+
+``
+BOOST_TEST_NO_THROW(expr)
+``
+
+If `BOOST_NO_EXCEPTIONS` is *not* defined and if `expr` throws an exception,
+increases the error count and outputs a message containing the expression
+and (if possible) the exception message.
+
+If `BOOST_NO_EXCEPTIONS` is defined, `expr` is evaluated.
 
 [endsect]
 

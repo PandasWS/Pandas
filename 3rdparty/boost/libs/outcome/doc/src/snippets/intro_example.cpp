@@ -1,5 +1,5 @@
 /* Example of Outcome
-(C) 2017-2019 Niall Douglas <http://www.nedproductions.biz/> (4 commits), Andrzej Krzemienski <akrzemi1@gmail.com> (3 commits), akrzemi1 <akrzemi1@gmail.com> (1 commit) and Andrzej Krzemieński <akrzemi1@gmail.com> (1 commit)
+(C) 2017-2021 Niall Douglas <http://www.nedproductions.biz/> (4 commits), Andrzej Krzemienski <akrzemi1@gmail.com> (3 commits), akrzemi1 <akrzemi1@gmail.com> (1 commit) and Andrzej Krzemieński <akrzemi1@gmail.com> (1 commit)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -63,7 +63,7 @@ outcome::result<int> process(const string& content) noexcept;
 
 outcome::result<int> int_from_file(string_view path) noexcept
 {
-  BOOST_OUTCOME_TRY(str, data_from_file(path));
+  BOOST_OUTCOME_TRY(auto str, data_from_file(path));
   // if control gets here data_from_file() has succeeded
   return process(str);  // decltype(str) == string
 }

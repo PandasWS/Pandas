@@ -8,14 +8,15 @@
         "Andrey Semashev"
     ],
     "maintainers": [
-        "Peter Dimov <pdimov -at- pdimov.com>",
+        "Peter Dimov <pdimov -at- gmail.com>",
         "Glen Fernandes <glenjofe -at- gmail.com>",
         "Andrey Semashev <andrey.semashev -at- gmail.com>"
     ],
     "description": "A collection of simple core utilities with minimal dependencies.",
     "category": [
         "Miscellaneous"
-    ]
+    ],
+    "cxxstd": "03"
     },
     {
         "key": "utility/enable_if",
@@ -33,7 +34,8 @@
         "maintainers": [
             "Jaakko Jarvi <jarvi -at- cs.tamu.edu>",
             "Jeremiah Willcock <jewillco -at- osl.iu.edu>"
-        ]
+        ],
+        "cxxstd": "03"
     },
     {
         "key": "utility/swap",
@@ -49,7 +51,8 @@
         ],
         "maintainers": [
             "Joseph Gauterin <joseph.gauterin -at- googlemail.com>"
-        ]
+        ],
+        "cxxstd": "03"
     },
     {
         "key": "bind/ref",
@@ -67,6 +70,7 @@
         ],
         "category": [
             "Function-objects"
-        ]
+        ],
+        "cxxstd": "03"
     }
 ]

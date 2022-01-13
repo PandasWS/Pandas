@@ -1,5 +1,5 @@
 [/
-  Copyright (c) Vladimir Batov 2009-2016
+  Copyright (c) Vladimir Batov 2009-2020
   Distributed under the Boost Software License, Version 1.0.
   See copy at http://www.boost.org/LICENSE_1_0.txt.
 ]
@@ -24,7 +24,7 @@ The `boost::cnv::apply<TypeOut, TypeIn>` with forced (rather than deduced) ['Typ
    
 [algorithm_example7]
 
-[note For demonstration purposes the example above is made as simple as possible and, consequently, the described "issue" could probably be addressed by other means. Still, do not let my inability to come up with a better (complex but short and succulent) example get in the way of appreciating the described functionality. I do not expect it to be used often but it is here when you need it.]
+[note For demonstration purposes the example above is made as simple as possible and, consequently, the described "issue" could probably be addressed by other means. Still, do not let my inability to come up with a better (complex but short and representative) example get in the way of appreciating the described functionality. I do not expect it to be used often but it is here when you need it.]
 
 [endsect] [/section:algorithms Boost.Convert with Standard Algorithms]
 

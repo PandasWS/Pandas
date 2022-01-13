@@ -15,13 +15,13 @@ int main(int, char*[])
   const int N = sizeof(letters_)/sizeof(char) - 1;
   typedef char* base_iterator;
   base_iterator letters(letters_);
-  
+
   std::cout << "original sequence of letters:\t\t\t"
             << letters_ << std::endl;
 
   // Use reverse_iterator to print a sequence of letters in reverse
   // order.
-  
+
   boost::reverse_iterator<base_iterator>
     reverse_letters_first(letters + N),
     reverse_letters_last(letters);

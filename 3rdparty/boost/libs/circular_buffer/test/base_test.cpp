@@ -17,6 +17,7 @@ void iterator_constructor_and_assign_test() {
 
     circular_buffer<MyInteger> cb(4, 3);
     circular_buffer<MyInteger>::iterator it = cb.begin();
+    circular_buffer<MyInteger>::const_iterator cit2 = cb.cbegin();
     circular_buffer<MyInteger>::iterator itCopy;
     itCopy = it;
     it = it;
@@ -24,12 +25,15 @@ void iterator_constructor_and_assign_test() {
     cit = it;
     circular_buffer<MyInteger>::const_iterator end1 = cb.end();
     circular_buffer<MyInteger>::const_iterator end2 = end1;
+    circular_buffer<MyInteger>::const_iterator end3 = cb.cend();
 
     BOOST_TEST(itCopy == it);
     BOOST_TEST(cit == it);
     BOOST_TEST(end1 == end2);
     BOOST_TEST(it != end1);
     BOOST_TEST(cit != end2);
+    BOOST_TEST(cit2 == it);
+    BOOST_TEST(end3 == end1);
 }
 
 void iterator_reference_test() {

@@ -1,6 +1,6 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 
-// Copyright (c) 2014-2017, Oracle and/or its affiliates.
+// Copyright (c) 2014-2021, Oracle and/or its affiliates.
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
@@ -13,7 +13,7 @@
 
 #include <limits>
 
-#include <boost/type_traits/is_same.hpp>
+#include <boost/range/value_type.hpp>
 
 #include <boost/geometry/geometry.hpp>
 #include "../test_set_ops_linear_linear.hpp"
@@ -39,11 +39,11 @@ inline void check_result(Geometry1 const& geometry1,
     BOOST_CHECK_MESSAGE( equals::apply(mls_int1, mls_output, tolerance)
                          || equals::apply(mls_int2, mls_output, tolerance),
                          "case id: " << case_id
-                         << ", intersection L/L: " << bg::wkt(geometry1)
-                         << " " << bg::wkt(geometry2)
-                         << " -> Expected: " << bg::wkt(mls_int1)
-                         << " or: " << bg::wkt(mls_int2)
-                         << " computed: " << bg::wkt(mls_output) );
+                         << " Expected: len=" << bg::length(mls_int1) << " count=" << bg::num_points(mls_int1)
+                         << " or: len=" << bg::length(mls_int2) << " count=" << bg::num_points(mls_int2)
+                         << " Detected: len=" << bg::length(mls_output) << " count=" << bg::num_points(mls_output)
+                         << " wkt=" << bg::wkt(mls_output)
+                         );
 }
 
 template
@@ -76,13 +76,18 @@ private:
         // Check normal behaviour
         bg::intersection(geometry1, geometry2, mls_output);
 
+#ifdef TEST_WITH_SVG
+        to_svg(geometry1, geometry2, mls_output, case_id);
+#endif
+
         check_result(geometry1, geometry2, mls_output, mls_int1, mls_int2, case_id, tolerance);
 
         // Check strategy passed explicitly
-        typedef typename bg::strategy::relate::services::default_strategy
+        using strategy_type
+            = typename bg::strategy::relate::services::default_strategy
             <
                 Geometry1, Geometry2
-            >::type strategy_type;
+            >::type ;
         bg::clear(mls_output);
         bg::intersection(geometry1, geometry2, mls_output, strategy_type());
 
@@ -198,11 +203,6 @@ public:
     {
 #ifdef BOOST_GEOMETRY_TEST_DEBUG
         std::cout << "test case: " << case_id << std::endl;
-        std::stringstream sstr;
-        sstr << "svgs/" << case_id << ".svg";
-#ifdef TEST_WITH_SVG
-        to_svg(geometry1, geometry2, sstr.str());
-#endif
 #endif
 
         Geometry1 rg1(geometry1);
@@ -211,19 +211,8 @@ public:
         Geometry2 rg2(geometry2);
         bg::reverse<Geometry2>(rg2);
 
-        typedef typename bg::tag_cast
-            <
-                Geometry1, bg::linear_tag
-            >::type tag1_type;
-
-        typedef typename bg::tag_cast
-            <
-                Geometry2, bg::linear_tag
-            >::type tag2_type;
-
-        bool const are_linear
-            = boost::is_same<tag1_type, bg::linear_tag>::value
-            && boost::is_same<tag2_type, bg::linear_tag>::value;
+        static const bool are_linear = bg::util::is_linear<Geometry1>::value
+                                    && bg::util::is_linear<Geometry2>::value;
 
         test_get_turns_ll_invariance<are_linear>::apply(geometry1, geometry2);
 #ifdef BOOST_GEOMETRY_TEST_DEBUG

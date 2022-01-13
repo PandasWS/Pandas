@@ -7,11 +7,11 @@
 
 <link rel="icon" href="../../images/favicon.ico" type="image/ico"/>
 <body><div class="spirit-nav">
-<a accesskey="p" href="../../reference/types/in_place_type_t.html"><img src="../../images/prev.png" alt="Prev"></a>
+<a accesskey="p" href="../../reference/types/awaitables/lazy.html"><img src="../../images/prev.png" alt="Prev"></a>
     <a accesskey="u" href="../../reference/types.html"><img src="../../images/up.png" alt="Up"></a>
     <a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../../reference/aliases.html"><img src="../../images/next.png" alt="Next"></a></div><div id="content">
   <div class="titlepage"><div><div><h1 style="clear: both"><code>success_type&lt;T&gt;</code></h1></div></div></div>
-  <p>Type sugar for constructing a successful result or outcome. Generally not constructed directly, but via the free function <a href="../../reference/functions/success.html" class="api-reference"><code>success(T &amp;&amp;)</code></a>
+  <p>Type sugar for constructing a successful result or outcome. Generally not constructed directly, but via the free function <a href="../../reference/functions/success.html" class="api-reference"><code>success(T &amp;&amp;, ...)</code></a>
 . Detectable using <a href="../../reference/traits/is_success_type.html" class="api-reference"><code>is_success_type&lt;T&gt;</code></a>
 .</p>
 
@@ -19,11 +19,13 @@
 
 <p>A member type alias <code>value_type</code> indicates <code>T</code>.</p>
 
-<p>There is an explicit initialising constructor taking any type <code>U</code> which is not a <code>success_type&lt;T&gt;</code>, and which will forward construct the contained <code>T</code> from that <code>U</code>.</p>
+<p>There is an explicit initialising constructor taking any type <code>U</code> which is not a <code>success_type&lt;T&gt;</code>, and which will forward construct the contained <code>T</code> from that <code>U</code>. It also has an optional parameter <code>spare_storage</code>, if you wish to specify a spare storage value.</p>
 
 <p>There is a <code>.value()</code> reference observer with the usual constexpr lvalue, const lvalue, rvalue and const rvalue overloads.</p>
 
 <p>There is a specialisation <code>success_type&lt;void&gt;</code> which stores nothing and provides no <code>.value()</code> observers.</p>
+
+<p>There is a <code>.spare_storage()</code> observer which returns the spare storage value with which the success type sugar was constructed.</p>
 
 <p><em>Requires</em>: Nothing.</p>
 
@@ -32,10 +34,10 @@
 <p><em>Header</em>: <code>&lt;boost/outcome/success_failure.hpp&gt;</code></p>
 
 
-        </div><p><small>Last revised: January 21, 2019 at 18:00:41 UTC</small></p>
+        </div><p><small>Last revised: February 23, 2021 at 17:37:27 UTC</small></p>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="../../reference/types/in_place_type_t.html"><img src="../../images/prev.png" alt="Prev"></a>
+<a accesskey="p" href="../../reference/types/awaitables/lazy.html"><img src="../../images/prev.png" alt="Prev"></a>
     <a accesskey="u" href="../../reference/types.html"><img src="../../images/up.png" alt="Up"></a>
     <a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../../reference/aliases.html"><img src="../../images/next.png" alt="Next"></a></div></body>
 </html>

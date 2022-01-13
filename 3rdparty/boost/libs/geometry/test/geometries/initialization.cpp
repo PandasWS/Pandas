@@ -3,6 +3,10 @@
 
 // Copyright (c) 2014-2015 Adam Wulkiewicz, Lodz, Poland.
 
+// This file was modified by Oracle on 2020-2021.
+// Modifications copyright (c) 2020-2021 Oracle and/or its affiliates.
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
+
 // Use, modification and distribution is subject to the Boost Software License,
 // Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -10,7 +14,7 @@
 #include <geometry_test_common.hpp>
 
 #include <boost/assign.hpp>
-#include <boost/range.hpp>
+#include <boost/range/size.hpp>
 
 #include <boost/geometry/geometries/geometries.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
@@ -233,7 +237,7 @@ void test_sanity_check()
 
         V v = boost::assign::list_of(P(1, 1))(P(2, 2))(P(3, 3));
         //v = boost::assign::list_of(P(1, 1))(P(2, 2))(P(3, 3));
-        v.empty();
+        //v.empty();
     }
 }
 

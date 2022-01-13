@@ -82,7 +82,6 @@
 [import ../test/factorial.cpp]
 [import ../test/overload.cpp]
 [import ../test/add_except.cpp]
-[import ../test/add_classifiers.cpp]
 [import ../test/operator_error.cpp]
 [import ../test/goto.cpp]
 [import ../test/goto_error.cpp]

@@ -481,7 +481,13 @@ bool npc_enable_target(npc_data& nd, uint32 char_id, e_npcv_status flag)
 			sd->cloaked_npc.push_back(nd.bl.id);
 		else if (it != sd->cloaked_npc.end() && option == nd.sc.option)
 			sd->cloaked_npc.erase(it);
-	
+
+#ifdef Pandas_Fix_Cloak_Status_Baffling
+		// 打上此标记意味着当前 npc 正在进行 cloak 的翻转操作
+		// 进行中的 sc.option 是可信任的, 因此其他流程将无需对它进行翻转
+		nd.sc.cloak_reverting = 1;
+#endif // Pandas_Fix_Cloak_Status_Baffling
+
 		if (nd.class_ != JT_WARPNPC && nd.class_ != JT_GUILD_FLAG)
 			clif_changeoption_target(&nd.bl, &sd->bl);
 		else {
@@ -491,6 +497,13 @@ bool npc_enable_target(npc_data& nd, uint32 char_id, e_npcv_status flag)
 				clif_spawn(&nd.bl);
 		}
 		nd.sc.option = option;
+
+#ifdef Pandas_Fix_Cloak_Status_Baffling
+		// 移除此标记意味着当前 npc 的 cloak 操作已经完成
+		// 此时 sc.option 关于 OPTION_CLOAK 标记如果存在于玩家的 sd->cloaked_npc 列表中
+		// 那么需要进行翻转 (有 OPTION_CLOAK 认为没有, 没有 OPTION_CLOAK 认为有), 才是玩家眼中的可见状态
+		nd.sc.cloak_reverting = 0;
+#endif // Pandas_Fix_Cloak_Status_Baffling
 	}
 	else {
 		if (flag & NPCVIEW_ENABLE) {
@@ -5150,6 +5163,14 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_PCATTACK
 		NPCX_PCATTACK,	// pcattack_express_name	// OnPCAttackExpress		// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
 #endif // Pandas_NpcExpress_PCATTACK
+
+#ifdef Pandas_NpcExpress_MER_CALL
+		NPCX_MER_CALL,	// mer_call_express_name	// OnPCMerCallExpress		// 当玩家成功召唤出佣兵时触发实时事件
+#endif // Pandas_NpcExpress_MER_CALL
+
+#ifdef Pandas_NpcExpress_MER_LEAVE
+		NPCX_MER_LEAVE,	// mer_leave_express_name	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
+#endif // Pandas_NpcExpress_MER_LEAVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -5243,6 +5264,10 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_PARTYLEAVE
 		NPCF_PARTYLEAVE,	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYLEAVE
+
+#ifdef Pandas_NpcFilter_DROPITEM
+		NPCF_DROPITEM,	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
+#endif // Pandas_NpcFilter_DROPITEM
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -5448,6 +5473,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_PARTYLEAVE:
 		return script_config.partyleave_filter_name;	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYLEAVE
+
+#ifdef Pandas_NpcFilter_DROPITEM
+	case NPCF_DROPITEM:
+		return script_config.dropitem_filter_name;	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
+#endif // Pandas_NpcFilter_DROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -5533,6 +5563,16 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_PCATTACK:
 		return script_config.pcattack_express_name;	// OnPCAttackExpress		// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
 #endif // Pandas_NpcExpress_PCATTACK
+
+#ifdef Pandas_NpcExpress_MER_CALL
+	case NPCX_MER_CALL:
+		return script_config.mer_call_express_name;	// OnPCMerCallExpress		// 当玩家成功召唤出佣兵时触发实时事件
+#endif // Pandas_NpcExpress_MER_CALL
+
+#ifdef Pandas_NpcExpress_MER_LEAVE
+	case NPCX_MER_LEAVE:
+		return script_config.mer_leave_express_name;	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
+#endif // Pandas_NpcExpress_MER_LEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:
@@ -6055,7 +6095,7 @@ enum npce_event npc_get_script_event_type(const char* eventname) {
 		lable = ename.substr(ename.rfind(':') + 1);
 
 		int32 search_i = 0;
-		ARR_FIND(0, NPCE_MAX, search_i, lable == npc_get_script_event_name(search_i));
+		ARR_FIND(0, NPCE_MAX, search_i, !stricmp(lable.c_str(), npc_get_script_event_name(search_i)));
 		if (search_i != NPCE_MAX)
 			return (enum npce_event)search_i;
 	}

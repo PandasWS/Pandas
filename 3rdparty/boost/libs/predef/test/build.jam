@@ -4,11 +4,13 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 import ../tools/check/predef : require check : predef-require predef-check ;
+import common ;
 import path ;
+import regex ;
 
 # This deals with the unfortunate aspect of a Boost monolithic release
 # not having the modular include dirs. This is a kludge that just removes
-# the direct depdndency to the header if it can't find it.
+# the direct dependency to the header if it can't find it.
 local PREDEF_H = $(BOOST_PREDEF_INCLUDE)/boost/predef.h ;
 if ! [ path.exists $(PREDEF_H) ]
 {
@@ -25,11 +27,22 @@ project
 
 using testing ;
 
-test-suite predef :
+test-suite predef-info :
     [ run info_as_cpp.cpp : : : <test-info>always_show_run_output ]
     [ run info_as_c.c : : : <test-info>always_show_run_output ]
-    [ run info_as_objcpp.mm : : : <test-info>always_show_run_output ]
-    [ run info_as_objc.m : : : <test-info>always_show_run_output ]
+    [ run info_as_objcpp.mm : : : <test-info>always_show_run_output <conditional>@objc ]
+    [ run info_as_objc.m : : : <test-info>always_show_run_output <conditional>@objc ]
+    ;
+
+rule objc ( props * )
+{
+    if ! ( <target-os>darwin in $(props) )
+    {
+        return <build>no ;
+    }
+}
+
+test-suite predef :
     [ run version.cpp ]
     [ run make.cpp ]
     [ compile macos_endian.c : [ predef-require "BOOST_OS_MACOS" : cpp ] ]
@@ -43,15 +56,62 @@ test-suite predef :
 	[ compile platform_windows.cpp ]
     ;
 
+local HEADERS = [ path.glob
+    $(BOOST_PREDEF_INCLUDE)/predef
+    $(BOOST_PREDEF_INCLUDE)/predef/architecture
+    $(BOOST_PREDEF_INCLUDE)/predef/architecture/x86
+    $(BOOST_PREDEF_INCLUDE)/predef/compiler
+    $(BOOST_PREDEF_INCLUDE)/predef/hardware
+    $(BOOST_PREDEF_INCLUDE)/predef/hardware/simd
+    $(BOOST_PREDEF_INCLUDE)/predef/hardware/simd/arm
+    $(BOOST_PREDEF_INCLUDE)/predef/hardware/simd/ppc
+    $(BOOST_PREDEF_INCLUDE)/predef/hardware/simd/x86
+    $(BOOST_PREDEF_INCLUDE)/predef/hardware/simd/x86_amd
+    $(BOOST_PREDEF_INCLUDE)/predef/language
+    $(BOOST_PREDEF_INCLUDE)/predef/library
+    $(BOOST_PREDEF_INCLUDE)/predef/library/c
+    $(BOOST_PREDEF_INCLUDE)/predef/library/std
+    $(BOOST_PREDEF_INCLUDE)/predef/os
+    $(BOOST_PREDEF_INCLUDE)/predef/os/bsd
+    $(BOOST_PREDEF_INCLUDE)/predef/other
+    $(BOOST_PREDEF_INCLUDE)/predef/platform
+    : *.h
+    ] ;
+local single_header_cpp ;
+for local h in $(HEADERS)
+{
+    local header_include = [ path.relative $(h) [ path.make $(BOOST_PREDEF_INCLUDE) ] ] ;
+    local header_cpp = [ regex.replace $(header_include:S=.cpp) "/" "_" ] ;
+    .HEADER($(header_cpp:B:S=)) = $(header_include) ;
+    make $(header_cpp) : : @gen_single_header_cpp ;
+    explicit $(header_cpp) ;
+    compile $(header_cpp) : <warnings-as-errors>on <warnings>all : $(header_cpp:B:S=) ;
+    explicit $(header_cpp:B:S=) ;
+    single_header_cpp += $(header_cpp:B:S=) ;
+}
+
+test-suite predef-headers : $(single_header_cpp) ;
+
+.file_touch_cmd = [ common.file-touch-command ] ;
+
+rule gen_single_header_cpp ( target * : source * : properties * )
+{
+    HEADER on $(target) = $(.HEADER($(target[1]:B))) ;
+}
+actions gen_single_header_cpp
+{
+    $(.file_touch_cmd) @($(<):<=":>=":O=F:E=#include <$(HEADER)>)
+}
+
 # Minimal testing done for predef for CI. Since
 # we don't have many we can just do all of them.
-alias minimal : predef ;
+alias minimal : predef predef-info ;
 
 # Full testing target for regular regression tests.
-alias full : predef ;
+alias full : predef predef-info ;
 
-# Extra's target. Nothing for Predef.
-alias extra ;
+# Extra's target.
+alias extra : predef-headers ;
 
 explicit minimal ;
 explicit extra ;

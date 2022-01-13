@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>String Sort</title>
 <link rel="stylesheet" href="../../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -28,7 +28,7 @@
           Sort</a>
 </h5></div></div></div>
 <p>
-            <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/string_s_idm45140262524848.html" title="Function template string_sort">string_sort</a></code></code>
+            <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/string_sort_idm2523.html" title="Function template string_sort">string_sort</a></code></code>
             is a hybrid radix-based/comparison-based algorithm that sorts strings
             of characters (or arrays of binary data) in ascending order.
           </p>
@@ -51,13 +51,13 @@
             will be called instead if the character type is of size &gt; 2.
           </p>
 <p>
-            <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/string_s_idm45140262524848.html" title="Function template string_sort">string_sort</a></code></code>
+            <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/string_sort_idm2523.html" title="Function template string_sort">string_sort</a></code></code>
             has a special optimization for identical substrings. This adds some overhead
             on random data, but identical substrings are common in real strings.
           </p>
 <p>
             reverse_string_sort sorts strings in reverse (decending) order, but is
-            otherwise identical. <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/string_s_idm45140262524848.html" title="Function template string_sort">string_sort</a></code></code>
+            otherwise identical. <code class="literal"><code class="computeroutput"><a class="link" href="../../../../boost/sort/spreadsort/string_sort_idm2523.html" title="Function template string_sort">string_sort</a></code></code>
             is sufficiently flexible that it should sort any data type that <a href="http://en.cppreference.com/w/cpp/algorithm/sort" target="_top">std::sort</a>
             can, assuming the user provides appropriate functors that index into
             a key.
@@ -225,7 +225,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2014-2017 Steven
+<td align="right"><div class="copyright-footer">Copyright © 2014-2017 Steven
       Ross, Francisco Tapia, Orson Peters<p>
         Distributed under the <a href="http://boost.org/LICENSE_1_0.txt" target="_top">Boost
         Software License, Version 1.0</a>.

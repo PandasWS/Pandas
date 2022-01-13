@@ -86,8 +86,6 @@ BOOST_DLL_ALIAS(foo::bar, foo_bar_another_alias_name)
 </method-group>
 <constructor specifiers="explicit"><parameter name="library_path"><paramtype>const boost::dll::fs::path &amp;</paramtype><description><para>Path to the binary file from which the info must be extracted. </para></description></parameter><parameter name="throw_if_not_native_format"><paramtype>bool</paramtype><default>true</default><description><para>Throw an exception if this file format is not supported by OS. </para></description></parameter><description><para>Opens file with specified path and prepares for information extraction. 
 </para></description></constructor>
-<destructor><description><para>
-</para></description><throws><simpara><classname>Nothing.</classname> </simpara></throws></destructor>
 </class>
 
 
@@ -352,7 +350,7 @@ boost::dll::shared_library lib("./my_plugins/plugin1", load_mode::append_decorat
 </namespace>
 </header>
 <header name="boost/dll/smart_library.hpp">
-<para>Contains the <classname alt="boost::dll::experimental::smart_library">boost::dll::experimental::smart_library</classname> class for loading mangled symbols. </para><para><warning><para>Extremely experimental! Requires C++14! Will change in next version of Boost! boost/dll/smart_library.hpp is not included in boost/dll.hpp </para>
+<para>Contains the <classname alt="boost::dll::experimental::smart_library">boost::dll::experimental::smart_library</classname> class for loading mangled symbols. </para><para><warning><para>Extremely experimental! Requires C++11! Will change in next version of Boost! boost/dll/smart_library.hpp is not included in boost/dll.hpp </para>
 </warning>
 </para><namespace name="boost">
 <namespace name="dll">
@@ -531,12 +529,22 @@ get&lt;void(int)&gt;(sm, "space::func"); //import a function
 get&lt;some_class, void(int)&gt;(sm, "space::class_::mem_fn"); //import a member function
 </programlisting></para><para>
 </para></description></function>
-<function name="get"><type>T &amp;</type><template>
+<function name="get"><type>boost::enable_if&lt; boost::is_object&lt; T &gt;, T &amp; &gt;::type</type><template>
           <template-type-parameter name="T"/>
-        </template><parameter name="sm"><paramtype>const <classname>smart_library</classname> &amp;</paramtype></parameter><parameter name="name"><paramtype>const std::string &amp;</paramtype></parameter><parameter name=""><paramtype>typename boost::enable_if&lt; boost::is_object&lt; T &gt;, T &gt;::type *</paramtype><default>nullptr</default></parameter></function>
-<function name="get"><type>auto</type><template>
+        </template><parameter name="sm"><paramtype>const <classname>smart_library</classname> &amp;</paramtype><description><para>A reference to the <classname alt="boost::dll::experimental::smart_library">smart_library</classname> </para></description></parameter><parameter name="name"><paramtype>const std::string &amp;</paramtype><description><para>The name of the entity to import </para></description></parameter><description><para>Helper functions for overloads.</para><para>Gets either a variable, function or member-function, depending on the signature.</para><para><programlisting language="c++">smart_library sm("lib.so");
+get&lt;int&gt;(sm, "space::value"); //import a variable
+get&lt;void(int)&gt;(sm, "space::func"); //import a function
+get&lt;some_class, void(int)&gt;(sm, "space::class_::mem_fn"); //import a member function
+</programlisting></para><para>
+</para></description></function>
+<function name="get"><type>boost::enable_if&lt; boost::is_function&lt; T &gt;, T &amp; &gt;::type</type><template>
           <template-type-parameter name="T"/>
-        </template><parameter name="sm"><paramtype>const <classname>smart_library</classname> &amp;</paramtype></parameter><parameter name="name"><paramtype>const std::string &amp;</paramtype></parameter><parameter name=""><paramtype>typename boost::enable_if&lt; boost::is_function&lt; T &gt;&gt;::type *</paramtype><default>nullptr</default></parameter></function>
+        </template><parameter name="sm"><paramtype>const <classname>smart_library</classname> &amp;</paramtype><description><para>A reference to the <classname alt="boost::dll::experimental::smart_library">smart_library</classname> </para></description></parameter><parameter name="name"><paramtype>const std::string &amp;</paramtype><description><para>The name of the entity to import </para></description></parameter><description><para>Helper functions for overloads.</para><para>Gets either a variable, function or member-function, depending on the signature.</para><para><programlisting language="c++">smart_library sm("lib.so");
+get&lt;int&gt;(sm, "space::value"); //import a variable
+get&lt;void(int)&gt;(sm, "space::func"); //import a function
+get&lt;some_class, void(int)&gt;(sm, "space::class_::mem_fn"); //import a member function
+</programlisting></para><para>
+</para></description></function>
 <function name="get"><type>auto</type><template>
           <template-type-parameter name="Class"/>
           <template-type-parameter name="Signature"/>

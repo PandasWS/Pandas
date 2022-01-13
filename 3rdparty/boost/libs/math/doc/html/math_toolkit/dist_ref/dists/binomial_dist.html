@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Binomial Distribution</title>
 <link rel="stylesheet" href="../../../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Math Toolkit 2.10.0">
+<link rel="home" href="../../../index.html" title="Math Toolkit 3.1.0">
 <link rel="up" href="../dists.html" title="Distributions">
 <link rel="prev" href="beta_dist.html" title="Beta Distribution">
 <link rel="next" href="cauchy_dist.html" title="Cauchy-Lorentz Distribution">
@@ -31,12 +31,12 @@
 <pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span> <span class="special">=</span> <span class="keyword">double</span><span class="special">,</span>
-          <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter&#160;19.&#160;Policies: Controlling Precision, Error Handling etc">Policy</a>   <span class="special">=</span> <a class="link" href="../../pol_ref/pol_ref_ref.html" title="Policy Class Reference">policies::policy&lt;&gt;</a> <span class="special">&gt;</span>
+          <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter 21. Policies: Controlling Precision, Error Handling etc">Policy</a>   <span class="special">=</span> <a class="link" href="../../pol_ref/pol_ref_ref.html" title="Policy Class Reference">policies::policy&lt;&gt;</a> <span class="special">&gt;</span>
 <span class="keyword">class</span> <span class="identifier">binomial_distribution</span><span class="special">;</span>
 
 <span class="keyword">typedef</span> <span class="identifier">binomial_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">binomial</span><span class="special">;</span>
 
-<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span><span class="special">,</span> <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter&#160;19.&#160;Policies: Controlling Precision, Error Handling etc">Policy</a><span class="special">&gt;</span>
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span><span class="special">,</span> <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter 21. Policies: Controlling Precision, Error Handling etc">Policy</a><span class="special">&gt;</span>
 <span class="keyword">class</span> <span class="identifier">binomial_distribution</span>
 <span class="special">{</span>
 <span class="keyword">public</span><span class="special">:</span>
@@ -104,24 +104,27 @@
 <p>
           The PDF for the binomial distribution is given by:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../equations/binomial_ref2.svg"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../equations/binomial_ref2.svg"></span>
+
+          </p></blockquote></div>
 <p>
           The following two graphs illustrate how the PDF changes depending upon
           the distributions parameters, first we'll keep the success fraction <span class="emphasis"><em>p</em></span>
           fixed at 0.5, and vary the sample size:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/binomial_pdf_1.svg" align="middle"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../graphs/binomial_pdf_1.svg" align="middle"></span>
+
+          </p></blockquote></div>
 <p>
           Alternatively, we can keep the sample size fixed at N=20 and vary the success
           fraction <span class="emphasis"><em>p</em></span>:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/binomial_pdf_2.svg" align="middle"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../graphs/binomial_pdf_2.svg" align="middle"></span>
+
+          </p></blockquote></div>
 <div class="caution"><table border="0" summary="Caution">
 <tr>
 <td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="../../../../../../../doc/src/images/caution.png"></td>
@@ -237,8 +240,7 @@
           but if you want to be 95% sure that the true value is <span class="bold"><strong>greater
           than</strong></span> some value, <span class="emphasis"><em>p<sub>min</sub></em></span>, then:
         </p>
-<pre class="programlisting"><span class="identifier">p</span><sub>min</sub> <span class="special">=</span> <span class="identifier">binomial_distribution</span><span class="special">&lt;</span><span class="identifier">RealType</span><span class="special">&gt;::</span><span class="identifier">find_lower_bound_on_p</span><span class="special">(</span>
-                    <span class="identifier">n</span><span class="special">,</span> <span class="identifier">k</span><span class="special">,</span> <span class="number">0.05</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">p</span><sub>min</sub> <span class="special">=</span> <span class="identifier">binomial_distribution</span><span class="special">&lt;</span><span class="identifier">RealType</span><span class="special">&gt;::</span><span class="identifier">find_lower_bound_on_p</span><span class="special">(</span><span class="identifier">n</span><span class="special">,</span> <span class="identifier">k</span><span class="special">,</span> <span class="number">0.05</span><span class="special">);</span>
 </pre>
 <p>
           <a class="link" href="../../stat_tut/weg/binom_eg/binom_conf.html" title="Calculating Confidence Limits on the Frequency of Occurrence for a Binomial Distribution">See worked
@@ -343,8 +345,7 @@
           but if you want to be 95% sure that the true value is <span class="bold"><strong>less
           than</strong></span> some value, <span class="emphasis"><em>p<sub>max</sub></em></span>, then:
         </p>
-<pre class="programlisting"><span class="identifier">p</span><sub>max</sub> <span class="special">=</span> <span class="identifier">binomial_distribution</span><span class="special">&lt;</span><span class="identifier">RealType</span><span class="special">&gt;::</span><span class="identifier">find_upper_bound_on_p</span><span class="special">(</span>
-                    <span class="identifier">n</span><span class="special">,</span> <span class="identifier">k</span><span class="special">,</span> <span class="number">0.05</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">p</span><sub>max</sub> <span class="special">=</span> <span class="identifier">binomial_distribution</span><span class="special">&lt;</span><span class="identifier">RealType</span><span class="special">&gt;::</span><span class="identifier">find_upper_bound_on_p</span><span class="special">(</span><span class="identifier">n</span><span class="special">,</span> <span class="identifier">k</span><span class="special">,</span> <span class="number">0.05</span><span class="special">);</span>
 </pre>
 <p>
           <a class="link" href="../../stat_tut/weg/binom_eg/binom_conf.html" title="Calculating Confidence Limits on the Frequency of Occurrence for a Binomial Distribution">See worked
@@ -364,11 +365,11 @@
           </p>
 <p>
             If the desired risk level that the true success fraction lies outside
-            the bounds is &#945;, then you pass &#945;/2 to these functions.
+            the bounds is α, then you pass α/2 to these functions.
           </p>
 <p>
             So for example a two sided 95% confidence interval would be obtained
-            by passing &#945; = 0.025 to each of the functions.
+            by passing α = 0.025 to each of the functions.
           </p>
 <p>
             <a class="link" href="../../stat_tut/weg/binom_eg/binom_conf.html" title="Calculating Confidence Limits on the Frequency of Occurrence for a Binomial Distribution">See worked
@@ -492,7 +493,7 @@
           in the context of this distribution:
         </p>
 <div class="table">
-<a name="math_toolkit.dist_ref.dists.binomial_dist.meaning_of_the_non_member_access"></a><p class="title"><b>Table&#160;5.1.&#160;Meaning of the non-member accessors</b></p>
+<a name="math_toolkit.dist_ref.dists.binomial_dist.meaning_of_the_non_member_access"></a><p class="title"><b>Table 5.1. Meaning of the non-member accessors</b></p>
 <div class="table-contents"><table class="table" summary="Meaning of the non-member accessors">
 <colgroup>
 <col>
@@ -666,9 +667,10 @@
                     Implementation is in terms of <a class="link" href="../../sf_beta/beta_derivative.html" title="Derivative of the Incomplete Beta Function">ibeta_derivative</a>:
                     if <sub>n</sub>C<sub>k </sub> is the binomial coefficient of a and b, then we have:
                   </p>
-                  <p>
-                    <span class="inlinemediaobject"><img src="../../../../equations/binomial_ref1.svg"></span>
-                  </p>
+                  <div class="blockquote"><blockquote class="blockquote"><p>
+                      <span class="inlinemediaobject"><img src="../../../../equations/binomial_ref1.svg"></span>
+
+                    </p></blockquote></div>
                   <p>
                     Which can be evaluated as <code class="computeroutput"><span class="identifier">ibeta_derivative</span><span class="special">(</span><span class="identifier">k</span><span class="special">+</span><span class="number">1</span><span class="special">,</span> <span class="identifier">n</span><span class="special">-</span><span class="identifier">k</span><span class="special">+</span><span class="number">1</span><span class="special">,</span> <span class="identifier">p</span><span class="special">)</span> <span class="special">/</span>
                     <span class="special">(</span><span class="identifier">n</span><span class="special">+</span><span class="number">1</span><span class="special">)</span></code>
@@ -879,17 +881,17 @@
             </li>
 <li class="listitem">
               <a href="http://www.itl.nist.gov/div898/handbook/eda/section3/eda366i.htm" target="_top">NIST
-              Explorary Data Analysis</a>.
+              Exploratory Data Analysis</a>.
             </li>
 </ul></div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

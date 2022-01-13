@@ -3,7 +3,7 @@
 # Copyright 2002 Dave Abrahams
 # Copyright 2003, 2004 Vladimir Prus
 # Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+# (See accompanying file LICENSE.txt or https://www.bfgroup.xyz/b2/LICENSE.txt)
 
 import BoostBuild
 import os.path
@@ -54,34 +54,36 @@ t = BoostBuild.Tester(match=match_re, boost_build_path="", pass_toolset=0)
 t.set_tree("startup")
 check_for_existing_boost_build_jam(t)
 
-t.run_build_system(status=1, stdout=
-r"""Unable to load Boost\.Build: could not find "boost-build\.jam"
-.*Attempted search from .* up to the root""")
+t.run_build_system(status=1, stderr=
+r"""Unable to load B2: could not find 'boost-build\.jam'
+.*Attempted search from .* up to the root at '.*'""")
 
 t.run_build_system(status=1, subdir="no-bootstrap1",
-    stdout=r"Unable to load Boost\.Build: could not find build system\."
-    r".*attempted to load the build system by invoking"
-    r".*'boost-build ;'"
-    r'.*but we were unable to find "bootstrap\.jam"')
+    stderr=
+r"""Unable to load B2: could not find build system\.
+-----------------------------------------------
+.*attempted to load the build system by invoking
+.*'boost-build  ;'
+.*but we were unable to find 'bootstrap\.jam' in the specified directory or in BOOST_BUILD_PATH:""")
 
 # Descend to a subdirectory which /does not/ contain a boost-build.jam file,
 # and try again to test the crawl-up behavior.
 t.run_build_system(status=1, subdir=os.path.join("no-bootstrap1", "subdir"),
-    stdout=r"Unable to load Boost\.Build: could not find build system\."
+    stderr=r"Unable to load B2: could not find build system\."
     r".*attempted to load the build system by invoking"
-    r".*'boost-build ;'"
-    r'.*but we were unable to find "bootstrap\.jam"')
+    r".*'boost-build  ;'"
+    r".*but we were unable to find 'bootstrap\.jam' in the specified directory or in BOOST_BUILD_PATH:")
 
 t.run_build_system(status=1, subdir="no-bootstrap2",
-    stdout=r"Unable to load Boost\.Build: could not find build system\."
+    stderr=r"Unable to load B2: could not find build system\."
     r".*attempted to load the build system by invoking"
     r".*'boost-build \. ;'"
-    r'.*but we were unable to find "bootstrap\.jam"')
+    r".*but we were unable to find 'bootstrap\.jam' in the specified directory or in BOOST_BUILD_PATH:")
 
-t.run_build_system(status=1, subdir='no-bootstrap3', stdout=
-r"""Unable to load Boost.Build
-.*boost-build\.jam" was found.*
-However, it failed to call the "boost-build" rule""")
+t.run_build_system(status=1, subdir='no-bootstrap3', stderr=
+r"""Unable to load B2
+.*boost-build\.jam' was found.*
+However, it failed to call the 'boost-build' rule to indicate the location of the build system.""")
 
 # Test bootstrapping based on BOOST_BUILD_PATH.
 t.run_build_system(["-sBOOST_BUILD_PATH=../boost-root/build"],

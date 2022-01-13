@@ -1,5 +1,5 @@
 // Copyright 2014 Renato Tegon Forti, Antony Polukhin.
-// Copyright 2015-2019 Antony Polukhin.
+// Copyright 2015-2021 Antony Polukhin.
 //
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt
@@ -21,7 +21,7 @@
 //[getting_started_exports_cpp11_function
 namespace some_namespace {
     API int i_am_a_cpp11_function(std::string&& param) noexcept;
-//          ^--------------------  function name to use in dll::import<>
+//          ^--------------------  function name to use in dll::import_symbol<>
 }
 //]
 #endif

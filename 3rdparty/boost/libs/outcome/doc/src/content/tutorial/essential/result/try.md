@@ -8,7 +8,7 @@ tags = ["try"]
 In the implementation of function `print_half` we have seen the usage of the macro {{< api "BOOST_OUTCOME_TRYV(expr)/BOOST_OUTCOME_TRY(expr)" >}}:
 
 ```c++
-BOOST_OUTCOME_TRY (i, BigInt::fromString(text));
+BOOST_OUTCOME_TRY (auto i, BigInt::fromString(text));
 ```
 
 The `BOOST_OUTCOME_TRY` macro uses C macro overloading to select between two implementations based on the number of
@@ -16,7 +16,7 @@ input parameters. If there is exactly one input parameter i.e. without the `i`, 
 roughly equivalent to:
 
 ```c++
-auto&& __result = BigInt::fromString(text);
+auto __result = BigInt::fromString(text);
 if (!__result)
   return __result.as_failure();
 ```
@@ -27,10 +27,10 @@ Where `__result` is a compile time generated unique name. This single argument f
 If there are between two and eight parameters, this control statement is roughly equivalent to:
 
 ```c++
-auto&& __result = BigInt::fromString(text);
+auto __result = BigInt::fromString(text);
 if (!__result)
   return __result.as_failure();
-auto&& i = __result.value();
+auto i = __result.value();
 ```
 
 So here `i` as the first C macro parameter is set to the value of any successful result. 
@@ -39,6 +39,9 @@ C macro overloads are provided for up to eight arguments. To prevent the
 confounding of the C preprocessor by commas in template specifications causing more than
 eight arguments appearing to the C preprocessor, you should consider wrapping the
 second argument in brackets.
+
+If you are within a C++ Coroutine, you ought to use {{< api "BOOST_OUTCOME_CO_TRYV(expr)/BOOST_OUTCOME_CO_TRY(expr)" >}}
+instead.
 
 <hr>
 
@@ -70,3 +73,5 @@ or in as a subexpression of a bigger full expression:
 ```c++
 int ans = BOOST_OUTCOME_TRYX(BigInt::fromString("1")) + BOOST_OUTCOME_TRYX(BigInt::fromString("2"));
 ```
+
+There is also an {{< api "BOOST_OUTCOME_CO_TRYX(expr)" >}} if you are inside a C++ Coroutine.

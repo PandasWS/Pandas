@@ -1,5 +1,5 @@
 [/
-              Copyright Andrey Semashev 2007 - 2017.
+              Copyright Andrey Semashev 2007 - 2020.
      Distributed under the Boost Software License, Version 1.0.
         (See accompanying file LICENSE_1_0.txt or copy at
               http://www.boost.org/LICENSE_1_0.txt)
@@ -13,9 +13,11 @@
 
 [template class_sinks_asynchronous_sink[][classref boost::log::sinks::asynchronous_sink asynchronous_sink]]
 
-[template class_sinks_asynchronous_sink_scoped_flag[][classref boost::log::sinks::asynchronous_sink::scoped_flag scoped_flag]]
+[template class_sinks_asynchronous_sink_run_func[][classref boost::log::sinks::asynchronous_sink::run_func run_func]]
 
-[template class_sinks_asynchronous_sink_scoped_thread_id[][classref boost::log::sinks::asynchronous_sink::scoped_thread_id scoped_thread_id]]
+[template class_sinks_asynchronous_sink_scoped_feeding_opereation[][classref boost::log::sinks::asynchronous_sink::scoped_feeding_opereation scoped_feeding_opereation]]
+
+[template class_sinks_asynchronous_sink_scoped_flag[][classref boost::log::sinks::asynchronous_sink::scoped_flag scoped_flag]]
 
 [template boost_log_sinks_attribute_mapping_hpp[][headerref boost/log/sinks/attribute_mapping.hpp]]
 

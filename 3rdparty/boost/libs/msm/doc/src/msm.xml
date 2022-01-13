@@ -593,7 +593,7 @@ a_row&lt; Paused  , open_close ,  Open     , &amp;player_::stop_and_open        
                     <para>Action methods return nothing and take the argument as const reference. Of
                         course nothing forbids you from using the same action for several
                         events:</para>
-                    <programlisting>template &lt;class Event> void stop_playback(Eventconst&amp;)</programlisting>
+                    <programlisting>template &lt;class Event> void stop_playback(Event const&amp;)</programlisting>
                     <para>Guards have as only difference the return value, which is a
                         boolean:</para>
                     <programlisting>bool good_disk_format(cd_detected const&amp; evt)</programlisting>
@@ -802,12 +802,12 @@ typedef msm::back::state_machine&lt;Playing_> Playing;</programlisting>
                         <programlisting> 
 struct transition_table : mpl::vector&lt;
 //    Start    Event    Target    Action                      Guard 
-//   +--------+---------+--------+---------------------------+------+ 
-a_row&lt; Song1  , NextSong, Song2  , &amp;Playing_::start_next_song        >,
-a_row&lt; Song2  , NextSong, Song1  , &amp;Playing_::start_prev_song        >,
-a_row&lt; Song2  , NextSong, Song3  , &amp;Playing_::start_next_song        >,
-a_row&lt; Song3  , NextSong, Song2  , &amp;Playing_::start_prev_song        >
-//   +--------+---------+--------+---------------------------+------+ 
+//   +--------+-------------+--------+---------------------------+------+ 
+a_row&lt; Song1  , NextSong    , Song2  , &amp;Playing_::start_next_song        >,
+a_row&lt; Song2  , PreviousSong, Song1  , &amp;Playing_::start_prev_song        >,
+a_row&lt; Song2  , NextSong    , Song3  , &amp;Playing_::start_next_song        >,
+a_row&lt; Song3  , PreviousSong, Song2  , &amp;Playing_::start_prev_song        >
+//   +--------+-------------+--------+---------------------------+------+ 
 > {};
                         </programlisting>
                     </para>
@@ -4036,6 +4036,19 @@ typename ::boost::enable_if&lt;
         </chapter>
         <chapter>
             <title>Version history</title>
+            <sect1>
+                <title>From V2.28 to V2.29 (Boost 1.72)</title>
+                <para>
+                    <itemizedlist>
+                        <listitem>
+                            <para>Merged from develop new implementation of deferred events</para>
+                        </listitem>
+                        <listitem>
+                            <para>Div. bugfixes</para>
+                        </listitem>
+                    </itemizedlist>
+                </para>
+            </sect1>
             <sect1>
                 <title>From V2.27 to V2.28 (Boost 1.57)</title>
                 <para>

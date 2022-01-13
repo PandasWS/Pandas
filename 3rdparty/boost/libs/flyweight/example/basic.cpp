@@ -1,6 +1,6 @@
 /* Boost.Flyweight basic example.
  *
- * Copyright 2006-2008 Joaquin M Lopez Munoz.
+ * Copyright 2006-2020 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -8,7 +8,7 @@
  * See http://www.boost.org/libs/flyweight for library home page.
  */
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/flyweight.hpp>
 #include <algorithm>
 #include <iostream>
@@ -18,6 +18,7 @@
 #include <vector>
 
 using namespace boost::flyweights;
+using namespace boost::placeholders;
 
 /* Information associated to a given user of some massive system.
  * first_name and last_name are turned into flyweights to leverage the

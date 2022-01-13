@@ -3,6 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include "mp_t.hpp"
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/special_functions/beta.hpp>
 #include <boost/math/constants/constants.hpp>
@@ -11,7 +12,6 @@
 #include <map>
 #include <boost/math/tools/test_data.hpp>
 #include <boost/random.hpp>
-#include "mp_t.hpp"
 
 using namespace boost::math::tools;
 using namespace boost::math;
@@ -148,7 +148,7 @@ std::pair<T,T> ibeta_fraction1_regular(T a, T b, T x)
 }
 
 //
-// we absolutely must trunctate the input values to float
+// we absolutely must truncate the input values to float
 // precision: we have to be certain that the input values
 // can be represented exactly in whatever width floating
 // point type we are testing, otherwise the output will 

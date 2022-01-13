@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Extended functionality: Configurable containers</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../container.html" title="Chapter&#160;9.&#160;Boost.Container">
+<link rel="up" href="../container.html" title="Chapter 9. Boost.Container">
 <link rel="prev" href="extended_functionality.html" title="Extended functionality: Basic extensions">
 <link rel="next" href="extended_allocators.html" title="Extended functionality: Extended allocators">
 </head>
@@ -143,13 +143,13 @@
    <span class="comment">//</span>
 
    <span class="comment">//AVLTree based set container</span>
-   <span class="keyword">typedef</span> <span class="identifier">set</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">AVLTree</span><span class="special">&gt;</span> <span class="identifier">AvlSet</span><span class="special">;</span>
+   <span class="keyword">typedef</span> <span class="identifier">set</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">new_allocator</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">AVLTree</span><span class="special">&gt;</span> <span class="identifier">AvlSet</span><span class="special">;</span>
 
    <span class="comment">//AVLTree based set container without size optimization</span>
-   <span class="keyword">typedef</span> <span class="identifier">set</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">AVLTreeNoSizeOpt</span><span class="special">&gt;</span> <span class="identifier">AvlSetNoSizeOpt</span><span class="special">;</span>
+   <span class="keyword">typedef</span> <span class="identifier">set</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">new_allocator</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">AVLTreeNoSizeOpt</span><span class="special">&gt;</span> <span class="identifier">AvlSetNoSizeOpt</span><span class="special">;</span>
 
    <span class="comment">//Splay tree based multiset container</span>
-   <span class="keyword">typedef</span> <span class="identifier">multiset</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">SplayTree</span><span class="special">&gt;</span> <span class="identifier">SplayMultiset</span><span class="special">;</span>
+   <span class="keyword">typedef</span> <span class="identifier">multiset</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">new_allocator</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">SplayTree</span><span class="special">&gt;</span> <span class="identifier">SplayMultiset</span><span class="special">;</span>
 
    <span class="comment">//Use them</span>
    <span class="comment">//</span>
@@ -216,6 +216,7 @@
 </p>
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">container</span><span class="special">/</span><span class="identifier">vector</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="keyword">static_assert</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">core</span><span class="special">/</span><span class="identifier">no_exceptions_support</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 
 <span class="comment">//Make sure assertions are active</span>
 <span class="preprocessor">#ifdef</span> <span class="identifier">NDEBUG</span>
@@ -238,8 +239,10 @@
    <span class="comment">//Requesting capacity for more elements than representable by "unsigned char"</span>
    <span class="comment">//is an error in the size optimized vector.</span>
    <span class="keyword">bool</span> <span class="identifier">exception_thrown</span> <span class="special">=</span> <span class="keyword">false</span><span class="special">;</span>
+
    <span class="keyword">try</span>       <span class="special">{</span> <span class="identifier">size_optimized_vector_t</span> <span class="identifier">v</span><span class="special">(</span><span class="number">256</span><span class="special">);</span> <span class="special">}</span>
    <span class="keyword">catch</span><span class="special">(...){</span> <span class="identifier">exception_thrown</span> <span class="special">=</span> <span class="keyword">true</span><span class="special">;</span>        <span class="special">}</span>
+
    <span class="identifier">assert</span><span class="special">(</span><span class="identifier">exception_thrown</span> <span class="special">==</span> <span class="keyword">true</span><span class="special">);</span>
 
    <span class="comment">//This option specifies that a vector will increase its capacity 50%</span>
@@ -481,7 +484,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2018 Ion Gaztanaga<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2018 Ion Gaztanaga<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

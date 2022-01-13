@@ -53,4 +53,3 @@ template struct BOOST_SYMBOL_VISIBLE boost::wave::grammars::cpp_grammar_gen<lexe
 #endif
 
 #endif // #if BOOST_WAVE_SEPARATE_GRAMMAR_INSTANTIATION != 0
-

@@ -1,4 +1,4 @@
-/* Copyright 2016-2019 Joaquin M Lopez Munoz.
+/* Copyright 2016-2020 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -88,19 +88,20 @@ void test_allocator_aware_construction()
     auto                   d3=get_layout_data<Types...>(p3);
 
     BOOST_TEST(p3==p);
-
-#if BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<40900)
-    /* Limitations from libstdc++-v3 force move construction with allocator
-     * to decay to copy construction with allocator.
-     */
-
-    (void)(d2==d3); /* Wunused-variable */
-#else
     if(AlwaysEqual)BOOST_TEST(d2==d3);
-#endif
 
     BOOST_TEST(p2.empty());
     do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
+
+#if !defined(BOOST_MSVC)&&\
+    BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB,BOOST_TESTED_AT(804))
+    /* Very odd behavior probably due to std::unordered_map allocator move
+     * ctor being implemented with move assignment, as reported in
+     * https://github.com/boostorg/poly_collection/issues/16
+     */
+
+    if(!(Propagate&&!AlwaysEqual))
+#endif
     BOOST_TEST(p3.get_allocator().comes_from(root2));
   }
   {
@@ -119,6 +120,14 @@ void test_allocator_aware_construction()
      */
 
     if(!((Propagate&&AlwaysEqual)||(!Propagate&&!AlwaysEqual)))
+#endif
+#if !defined(BOOST_MSVC)&&\
+    BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB,BOOST_TESTED_AT(804))
+    /* std::unordered_map copy assignment does not propagate allocators, as
+     * reported in https://github.com/boostorg/poly_collection/issues/16
+     */
+
+    if(!Propagate)
 #endif
     BOOST_TEST(p2.get_allocator().comes_from(Propagate?root1:root2));
   }
@@ -146,6 +155,14 @@ void test_allocator_aware_construction()
      */
 
     if(!((Propagate&&AlwaysEqual)||(!Propagate&&!AlwaysEqual)))
+#endif
+#if !defined(BOOST_MSVC)&&\
+    BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB,BOOST_TESTED_AT(804))
+    /* std::unordered_map move assignment does not propagate equal allocators,
+     * as reported in https://github.com/boostorg/poly_collection/issues/16
+     */
+
+    if(!(Propagate&&AlwaysEqual))
 #endif
     BOOST_TEST(p3.get_allocator().comes_from(Propagate?root1:root2));
   }
@@ -181,6 +198,14 @@ void test_allocator_aware_construction()
        /* std::unordered_map::swap always and only swaps unequal allocators */
 
        &&!((Propagate&&AlwaysEqual)||(!Propagate&&!AlwaysEqual))
+#endif
+#if !defined(BOOST_MSVC)&&\
+    BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB,BOOST_TESTED_AT(804))
+      /* std::unordered_map::swap does not swap equal allocators, as reported
+       * in https://github.com/boostorg/poly_collection/issues/16
+       */
+
+      &&!(Propagate&&AlwaysEqual)
 #endif
     ){
       BOOST_TEST(p2.get_allocator().comes_from(Propagate?root2:root1));

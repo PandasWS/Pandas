@@ -12,5 +12,6 @@
     "maintainers": [
         "Fernando Cacciola <fernando_cacciola -at- ciudad.com.ar>",
         "Brandon Kohn <blkohn -at- hotmail.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

@@ -1,8 +1,7 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 // Unit Test
 
-// Copyright (c) 2014-2017, Oracle and/or its affiliates.
-
+// Copyright (c) 2014-2021, Oracle and/or its affiliates.
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
@@ -16,27 +15,15 @@
 #include <string>
 
 #include <boost/math/special_functions/fpclassify.hpp>
-#include <boost/mpl/assert.hpp>
-#include <boost/type_traits/is_integral.hpp>
-#include <boost/type_traits/is_same.hpp>
 
-#include <boost/geometry/geometries/point.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/geometry/geometries/segment.hpp>
-#include <boost/geometry/geometries/linestring.hpp>
-#include <boost/geometry/geometries/polygon.hpp>
-#include <boost/geometry/geometries/ring.hpp>
-#include <boost/geometry/geometries/box.hpp>
-#include <boost/geometry/geometries/multi_point.hpp>
-#include <boost/geometry/geometries/multi_linestring.hpp>
-#include <boost/geometry/geometries/multi_polygon.hpp>
+#include <boost/geometry/algorithms/distance.hpp>
+#include <boost/geometry/algorithms/comparable_distance.hpp>
+#include <boost/geometry/algorithms/num_interior_rings.hpp>
+
+#include <boost/geometry/geometries/geometries.hpp>
 
 #include <boost/geometry/io/wkt/write.hpp>
 #include <boost/geometry/io/dsv/write.hpp>
-
-#include <boost/geometry/algorithms/num_interior_rings.hpp>
-#include <boost/geometry/algorithms/distance.hpp>
-#include <boost/geometry/algorithms/comparable_distance.hpp>
 
 #include <boost/geometry/strategies/strategies.hpp>
 
@@ -207,11 +194,11 @@ private:
                 Strategy, G1, G2
             >::type distance_result_from_strategy;
 
-        static const bool same_regular = boost::is_same
+        static const bool same_regular = std::is_same
             <
                 default_distance_result,
                 distance_result_from_strategy
-            >::type::value;
+            >::value;
 
         BOOST_CHECK( same_regular );
     
@@ -231,11 +218,11 @@ private:
                 G2
             >::type comparable_distance_result_from_strategy;
 
-        static const bool same_comparable = boost::is_same
+        static const bool same_comparable = std::is_same
             <
                 default_comparable_distance_result,
                 comparable_distance_result_from_strategy
-            >::type::value;
+            >::value;
         
         BOOST_CHECK( same_comparable );
 
@@ -535,24 +522,46 @@ struct test_distance_of_geometries
         base::apply(segment, box, expected_distance,
                     expected_comparable_distance, strategy, is_finite);
 
-        comparable_strategy cstrategy =
-            bg::strategy::distance::services::get_comparable
-                <
-                    Strategy
-                >::apply(strategy);
+        auto strategies = bg::strategies::distance::services::strategy_converter<Strategy>::get(strategy);
+        auto cstrategies = bg::strategies::distance::detail::make_comparable(strategies);
+
+        // TODO: these algorithms are used only here. Remove them?
 
         distance_result_type distance_generic =
             bg::detail::distance::segment_to_box_2D_generic
                 <
-                    Segment, Box, Strategy
-                >::apply(segment, box, strategy);
+                    Segment, Box, decltype(strategies), false
+                >::apply(segment, box, strategies);
 
         comparable_distance_result_type comparable_distance_generic =
             bg::detail::distance::segment_to_box_2D_generic
                 <
-                    Segment, Box, comparable_strategy
-                >::apply(segment, box, cstrategy);
+                    Segment, Box, decltype(cstrategies), false
+                >::apply(segment, box, cstrategies);
 
+        check_equal
+            <
+                distance_result_type
+            >::apply(distance_generic, expected_distance, is_finite);
+
+        check_equal
+            <
+                comparable_distance_result_type
+            >::apply(comparable_distance_generic,
+                     expected_comparable_distance,
+                     is_finite);
+
+        distance_generic =
+            bg::detail::distance::segment_to_box_2D_generic
+                <
+                    Segment, Box, decltype(strategies), true
+                >::apply(segment, box, strategies);
+
+        comparable_distance_generic =
+            bg::detail::distance::segment_to_box_2D_generic
+                <
+                    Segment, Box, decltype(cstrategies), true
+                >::apply(segment, box, cstrategies);
 
         check_equal
             <

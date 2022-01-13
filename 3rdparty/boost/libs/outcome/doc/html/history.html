@@ -7,7 +7,7 @@
 
 <link rel="icon" href="./images/favicon.ico" type="image/ico"/>
 <body><div class="spirit-nav">
-<a accesskey="p" href="./changelog.html"><img src="./images/prev.png" alt="Prev"></a>
+<a accesskey="p" href="./changelog/v22.html"><img src="./images/prev.png" alt="Prev"></a>
     <a accesskey="u" href="./index.html"><img src="./images/up.png" alt="Up"></a>
     <a accesskey="h" href="./index.html"><img src="./images/home.png" alt="Home"></a><a accesskey="n" href="./requirements.html"><img src="./images/next.png" alt="Next"></a></div><div id="content">
 
@@ -18,6 +18,7 @@
 <dt><a href="#the-genesis-of-outcome-v1">The genesis of Outcome v1</a></dt>
 <dt><a href="#outcome-v2">Outcome v2</a></dt>
 <dt><a href="#outcome-v2-1">Outcome v2.1</a></dt>
+<dt><a href="#outcome-v2-2">Outcome v2.2</a></dt>
 </dl></dd></dt>
 </dl>
   </div>
@@ -143,7 +144,7 @@ Outcome, and especially its divergences from WG21 Expected into a more complete 
 for C++ exception handling, as a sign that the C++
 exception handling mechanism was no longer fit for purpose. <a href="http://wg21.link/P0709">It was thus proposed
 to remedy the standard exception handling mechanism into something much more
-efficient, thus rendering Outcome obsolete in future C++ standards (P0709 <em>Zero overhead exceptions</em> aka &ldquo;Herbceptions&rdquo;)</a>.</p>
+efficient, thus rendering Outcome obsolete in future C++ standards (P0709 <em>Zero overhead exceptions</em>)</a>.</p>
 
 <p>Concurrently to that, just before the review of Outcome 2.0, I had mooted a number of semantic and compile time performance
 improvements to <code>&lt;system_error&gt;</code> with the proposal that we mildly break Boost.System with
@@ -152,34 +153,48 @@ accepted at that time (though they have been since incorporated into Boost.Syste
 defect remedies for <code>&lt;system_error&gt;</code> for C++ 23). I therefore wrote <a href="https://ned14.github.io/status-code/">an improved <code>&lt;system_error2&gt;</code></a> which fixed all the problems
 listed at <a href="https://wg21.link/P0824">P0824 (Summary of SG14 discussion on <code>&lt;system_error&gt;</code>)</a>
 and fixed up Outcome so one could use it without any system error implementation,
-or with the STL one or with the proposed improved one.</p>
+or with the STL one or with the proposed improved one. This improved <code>&lt;system_error2&gt;</code>
+was then proposed as <a href="http://wg21.link/P1028">the standard library support for Zero overhead exceptions as proposed
+<code>std::error</code></a>.</p>
 
-<p>This proposed improved <code>&lt;system_error2&gt;</code> was proposed by me as the library support for
-P0709 <em>Zero overhead exceptions</em> in <a href="https://wg21.link/P1095">P1095 <em>Zero overhead deterministic failure</em></a>,
-specifically as the implementation of P0709&rsquo;s proposed <code>std::error</code> value type. As
-proposed improved <code>&lt;system_error2&gt;</code> is bundled with Outcome in
-<a href="./experimental.html">experimental</a>, that means that Outcome and Boost
-users can gain the non-language benefits of one possible implementation of P0709
-today in any conforming C++ 14 compiler.</p>
+<p>A flurry of papers and discussion then resulted, running up to the Prague 2020 WG21
+meeting where WG21 liked the library part of deterministic exceptions i.e. <code>std::error</code>,
+and wanted to see a working implementation of a compiler implementing the language
+part before moving further. The covid pandemic then ceased face to face meetings which
+deeply impacted WG21 productivity, so everything large which was not yet approved for
+entry into C++ 23 went on pause.</p>
 
-<p>At the time of writing, just before Outcome enters Boost (January 2019), Herbceptions have
-been voted upon only by SG14 Low Latency and LEWG, both giving unanimous acclamation. They have yet to be voted upon by the
-rest of the committee. The P1095 proposed implementation of P0709 has been voted upon by
-WG14 <em>C Programming Language</em>, where the C-relevant parts were approved in principle by a large majority. So
-the future currently looks hopeful that C, and C++, will gain language support for
-specifying deterministic failure sometime in the 2020s.</p>
+<h2 id="outcome-v2-2">Outcome v2.2</h2>
 
-<p>In the meantime, Outcome is a peer reviewed, battle tested, library-only implementation
-of <em>Zero overhead exceptions</em> with proposed <code>std::error</code> available under Experimental.
-Please strongly consider helping us test the proposed <code>&lt;system_error2&gt;</code> based <code>std::error</code>
-design! The committee would greatly welcome empirical experience.</p>
+<p>Outcome was sufficiently popular, and widely known as the closest simulacrum of deterministic
+exceptions currently available in C++, that it was regularly benchmarked as such on an &lsquo;as if&rsquo;
+basis by a number of people in the wider C++ ecosystem, including comparing their &lsquo;better Outcome
+alternatives&rsquo; to Outcome, where invariably Outcome appeared to lose badly in various
+synthetic tests. Whilst any empirical measurements in the real world code never showed
+a statistically significant difference, it was certainly true that v2.1&rsquo;s codegen in
+assembler was not ideal.</p>
+
+<p>On the behalf of WG21, Ben Craig did some benchmarking work on Outcome v2.1 in <a href="https://wg21.link/P1886">P1886 <em>Error speed benchmarking</em></a>,
+where it did not perform as well as expected compared to alternatives such as returning
+a simple integer from a function. This led to a
+<a href="https://github.com/ned14/outcome/tree/better_optimisation"><code>better_optimisation</code></a> branch.
+The changes were felt worth merging into Outcome as v2.2.0, the first major version release
+since Outcome entered Boost in early 2019. To give enough time to sign post to users that these
+source incompatible changes were coming, all of 2020 was given over to announcement of the
+upcoming merge of the breaking v2.2 branch into master branch in early 2021.</p>
+
+<p>In terms of codegen benefits for proposed <code>std::error</code> based code (i.e. code using
+<a href="./experimental.html">Outcome experimental</a>), v2.2 implements a library-based
+emulation of <a href="https://wg21.link/P1029">P1029 <em>move = bitcopies</em></a>, a proposed compiler
+enhancement which can treat some move-only types as bags of bits. This very significantly
+improves the appearance in assembler of experimental Outcome based code.</p>
 
 
 
-        </div><p><small>Last revised: February 11, 2019 at 17:43:30 UTC</small></p>
+        </div><p><small>Last revised: September 16, 2020 at 11:58:04 &#43;0100</small></p>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="./changelog.html"><img src="./images/prev.png" alt="Prev"></a>
+<a accesskey="p" href="./changelog/v22.html"><img src="./images/prev.png" alt="Prev"></a>
     <a accesskey="u" href="./index.html"><img src="./images/up.png" alt="Up"></a>
     <a accesskey="h" href="./index.html"><img src="./images/home.png" alt="Home"></a><a accesskey="n" href="./requirements.html"><img src="./images/next.png" alt="Next"></a></div></body>
 </html>

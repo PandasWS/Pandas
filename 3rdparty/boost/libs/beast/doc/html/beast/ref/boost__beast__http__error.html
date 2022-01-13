@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>http::error</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Beast">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Beast">
 <link rel="up" href="../ref.html" title="This Page Intentionally Left Blank 2/2">
-<link rel="prev" href="boost__beast__http__empty_body__value_type.html" title="http::empty_body::value_type">
-<link rel="next" href="boost__beast__http__ext_list.html" title="http::ext_list">
+<link rel="prev" href="boost__beast__http__field.html" title="http::field">
+<link rel="next" href="boost__beast__http__is_body.html" title="http::is_body">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,15 +20,17 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__http__empty_body__value_type.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__ext_list.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__http__field.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__is_body.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="beast.ref.boost__beast__http__error"></a><a class="link" href="boost__beast__http__error.html" title="http::error">http::error</a>
 </h4></div></div></div>
 <p>
-        <a class="indexterm" name="idm45720539411104"></a>
-Error codes returned from HTTP algorithms and operations.
+        <a class="indexterm" name="idm77029"></a>
+      </p>
+<p>
+        Error codes returned from HTTP algorithms and operations.
       </p>
 <h5>
 <a name="beast.ref.boost__beast__http__error.h0"></a>
@@ -39,33 +41,6 @@ Error codes returned from HTTP algorithms and operations.
       </p>
 <pre class="programlisting"><span class="keyword">enum</span> <span class="identifier">error</span>
 </pre>
-<p>
-        <a class="indexterm" name="idm45720539403184"></a>
- <a class="indexterm" name="idm45720539402080"></a>
- <a class="indexterm" name="idm45720539400976"></a>
- <a class="indexterm" name="idm45720539399872"></a>
- <a class="indexterm" name="idm45720539398768"></a>
- <a class="indexterm" name="idm45720539397664"></a>
- <a class="indexterm" name="idm45720539396560"></a>
- <a class="indexterm" name="idm45720539395456"></a>
- <a class="indexterm" name="idm45720539394352"></a>
- <a class="indexterm" name="idm45720539393248"></a>
- <a class="indexterm" name="idm45720539392144"></a>
- <a class="indexterm" name="idm45720539391040"></a>
- <a class="indexterm" name="idm45720539389936"></a>
- <a class="indexterm" name="idm45720539388832"></a>
- <a class="indexterm" name="idm45720539387728"></a>
- <a class="indexterm" name="idm45720539386624"></a>
- <a class="indexterm" name="idm45720539385520"></a>
- <a class="indexterm" name="idm45720539384416"></a>
- <a class="indexterm" name="idm45720539383312"></a>
- <a class="indexterm" name="idm45720539382208"></a>
- <a class="indexterm" name="idm45720539381104"></a>
- <a class="indexterm" name="idm45720539380000"></a>
- <a class="indexterm" name="idm45720539378896"></a>
- <a class="indexterm" name="idm45720539377792"></a>
-
-      </p>
 <h5>
 <a name="beast.ref.boost__beast__http__error.h1"></a>
         <span class="phrase"><a name="beast.ref.boost__beast__http__error.values"></a></span><a class="link" href="boost__beast__http__error.html#beast.ref.boost__beast__http__error.values">Values</a>
@@ -91,7 +66,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">end_of_stream</code>
+                  <code class="computeroutput"><span class="identifier">end_of_stream</span></code>
                 </p>
               </td>
 <td>
@@ -109,7 +84,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">partial_message</code>
+                  <code class="computeroutput"><span class="identifier">partial_message</span></code>
                 </p>
               </td>
 <td>
@@ -125,7 +100,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">need_more</code>
+                  <code class="computeroutput"><span class="identifier">need_more</span></code>
                 </p>
               </td>
 <td>
@@ -142,7 +117,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">unexpected_body</code>
+                  <code class="computeroutput"><span class="identifier">unexpected_body</span></code>
                 </p>
               </td>
 <td>
@@ -161,7 +136,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">need_buffer</code>
+                  <code class="computeroutput"><span class="identifier">need_buffer</span></code>
                 </p>
               </td>
 <td>
@@ -186,7 +161,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">end_of_chunk</code>
+                  <code class="computeroutput"><span class="identifier">end_of_chunk</span></code>
                 </p>
               </td>
 <td>
@@ -198,7 +173,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">buffer_overflow</code>
+                  <code class="computeroutput"><span class="identifier">buffer_overflow</span></code>
                 </p>
               </td>
 <td>
@@ -215,7 +190,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">header_limit</code>
+                  <code class="computeroutput"><span class="identifier">header_limit</span></code>
                 </p>
               </td>
 <td>
@@ -231,7 +206,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">body_limit</code>
+                  <code class="computeroutput"><span class="identifier">body_limit</span></code>
                 </p>
               </td>
 <td>
@@ -247,7 +222,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_alloc</code>
+                  <code class="computeroutput"><span class="identifier">bad_alloc</span></code>
                 </p>
               </td>
 <td>
@@ -263,7 +238,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_line_ending</code>
+                  <code class="computeroutput"><span class="identifier">bad_line_ending</span></code>
                 </p>
               </td>
 <td>
@@ -275,7 +250,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_method</code>
+                  <code class="computeroutput"><span class="identifier">bad_method</span></code>
                 </p>
               </td>
 <td>
@@ -287,7 +262,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_target</code>
+                  <code class="computeroutput"><span class="identifier">bad_target</span></code>
                 </p>
               </td>
 <td>
@@ -299,7 +274,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_version</code>
+                  <code class="computeroutput"><span class="identifier">bad_version</span></code>
                 </p>
               </td>
 <td>
@@ -311,7 +286,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_status</code>
+                  <code class="computeroutput"><span class="identifier">bad_status</span></code>
                 </p>
               </td>
 <td>
@@ -323,7 +298,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_reason</code>
+                  <code class="computeroutput"><span class="identifier">bad_reason</span></code>
                 </p>
               </td>
 <td>
@@ -335,7 +310,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_field</code>
+                  <code class="computeroutput"><span class="identifier">bad_field</span></code>
                 </p>
               </td>
 <td>
@@ -347,7 +322,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_value</code>
+                  <code class="computeroutput"><span class="identifier">bad_value</span></code>
                 </p>
               </td>
 <td>
@@ -359,7 +334,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_content_length</code>
+                  <code class="computeroutput"><span class="identifier">bad_content_length</span></code>
                 </p>
               </td>
 <td>
@@ -371,7 +346,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_transfer_encoding</code>
+                  <code class="computeroutput"><span class="identifier">bad_transfer_encoding</span></code>
                 </p>
               </td>
 <td>
@@ -383,7 +358,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_chunk</code>
+                  <code class="computeroutput"><span class="identifier">bad_chunk</span></code>
                 </p>
               </td>
 <td>
@@ -395,7 +370,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_chunk_extension</code>
+                  <code class="computeroutput"><span class="identifier">bad_chunk_extension</span></code>
                 </p>
               </td>
 <td>
@@ -407,7 +382,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">bad_obs_fold</code>
+                  <code class="computeroutput"><span class="identifier">bad_obs_fold</span></code>
                 </p>
               </td>
 <td>
@@ -419,7 +394,7 @@ Error codes returned from HTTP algorithms and operations.
 <tr>
 <td>
                 <p>
-                  <code class="literal">stale_parser</code>
+                  <code class="computeroutput"><span class="identifier">stale_parser</span></code>
                 </p>
               </td>
 <td>
@@ -434,19 +409,29 @@ Error codes returned from HTTP algorithms and operations.
                 </p>
               </td>
 </tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">short_read</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The message body is shorter than expected.
+                </p>
+                <p>
+                  This error is returned by @ref file_body when an unexpected unexpected
+                  end-of-file condition is encountered while trying to read from
+                  the file.
+                </p>
+              </td>
+</tr>
 </tbody>
 </table></div>
-<h5>
-<a name="beast.ref.boost__beast__http__error.h2"></a>
-        <span class="phrase"><a name="beast.ref.boost__beast__http__error.description"></a></span><a class="link" href="boost__beast__http__error.html#beast.ref.boost__beast__http__error.description">Description</a>
-      </h5>
-<p>
-        Convenience header <code class="literal">&lt;<a href="../../../../../../boost/beast/http.hpp" target="_top">boost/beast/http.hpp</a>&gt;</code>
-      </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2016-2019 Vinnie
+<td align="right"><div class="copyright-footer">Copyright © 2016-2019 Vinnie
       Falco<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
@@ -455,7 +440,7 @@ Error codes returned from HTTP algorithms and operations.
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__http__empty_body__value_type.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__ext_list.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__http__field.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__is_body.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

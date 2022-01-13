@@ -79,10 +79,18 @@ result_type< Geometry >::type result(state< Geometry > const & st)``
 
 ]
 ]
+[[``Spheroid model()``
+
+] [] [
+
+][
+
+]
+]
 ]
 
 [heading Header]
-`#include <boost/geometry/strategies/geographic/area.hpp>`
+`#include <boost/geometry/strategy/geographic/area.hpp>`
 
 [heading See also]
 * [link geometry.reference.algorithms.area.area_2_with_strategy area (with strategy)]

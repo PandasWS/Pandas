@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Manual</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../yap.html" title="Chapter&#160;47.&#160;Boost.YAP">
-<link rel="prev" href="../yap.html" title="Chapter&#160;47.&#160;Boost.YAP">
+<link rel="up" href="../yap.html" title="Chapter 48. Boost.YAP">
+<link rel="prev" href="../yap.html" title="Chapter 48. Boost.YAP">
 <link rel="next" href="concepts.html" title="Concepts">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -437,7 +437,7 @@
 <p>
         For instance, here is the <code class="computeroutput"><span class="identifier">get_arity</span></code>
         transform object used in the <a class="link" href="manual.html#boost_yap.manual.examples.calc3" title="Calc3">Calc3</a>
-        example (don't worry too much about the implementation &#8212; we'll return
+        example (don't worry too much about the implementation — we'll return
         to this later in the docs in much greater detail):
       </p>
 <p>
@@ -550,7 +550,7 @@
         Instantiated with the proper template parameters, it produces <a class="link" href="concepts.html#boost_yap.concepts.expression">Expressions</a>.
       </p>
 <p>
-        Ok, so it's not that interesting by itself &#8212; <code class="computeroutput"><span class="identifier">minimal_expr</span></code>
+        Ok, so it's not that interesting by itself — <code class="computeroutput"><span class="identifier">minimal_expr</span></code>
         has no operations defined for it. But we can still use it with the Boost.YAP
         functions that take an <a class="link" href="concepts.html#boost_yap.concepts.expression">Expression</a>.
         Let's make a Boost.YAP plus-expression manually:
@@ -722,7 +722,7 @@
 <p>
         Those macros are used to define operator overloads that return <a class="link" href="concepts.html#boost_yap.concepts.expression">Expressions</a>.
         As shown here, that sort of operator can be mixed with normal, non-lazy ones
-        &#8212; the <code class="computeroutput"><span class="keyword">operator</span><span class="special">[]</span></code>
+        — the <code class="computeroutput"><span class="keyword">operator</span><span class="special">[]</span></code>
         is a normal eager function.
       </p>
 <p>
@@ -810,7 +810,7 @@
         with a few matching nodes transformed. But this does not have to be the result
         of calling <code class="computeroutput"><a class="link" href="../boost/yap/transform.html" title="Function template transform">transform()</a></code>, because a Boost.YAP transformation
         is free-form; it must return a value, but may do just about anything else.
-        It can transform an expression into anything &#8212; a new expression of
+        It can transform an expression into anything — a new expression of
         any kind, or even a non-expression value (effectively evaluating the expression).
         As before, here is the <code class="computeroutput"><span class="identifier">get_arity</span></code>
         transform from the <a class="link" href="manual.html#boost_yap.manual.examples.calc3" title="Calc3">Calc3</a>
@@ -879,7 +879,7 @@
 </tr>
 <tr><td align="left" valign="top"><p>
           Often when you create an expression, you will want to evaluate it in different
-          contexts, changing its evaluation &#8212; or even entire meaning &#8212;
+          contexts, changing its evaluation — or even entire meaning —
           in each context. <code class="computeroutput"><a class="link" href="../boost/yap/evaluate.html" title="Function template evaluate">evaluate()</a></code>
           is wrong for this task, since it only takes values for substitution into
           placeholders. In these situations, you should instead use multiple transforms
@@ -913,7 +913,7 @@
           requires an <a class="link" href="concepts.html#boost_yap.concepts.expression">Expression</a>
           as its first parameter. In situations when you want to make sure that the
           first parameter you pass to <code class="computeroutput"><a class="link" href="../boost/yap/transform.html" title="Function template transform">transform()</a></code>
-          is always a Boost.YAP expression, use the <code class="computeroutput"><a class="link" href="../boost/yap/as_exp_1_3_48_8_2_2_1_1_15.html" title="Function template as_expr">as_expr()</a></code>
+          is always a Boost.YAP expression, use the <code class="computeroutput"><a class="link" href="../boost/yap/as_exp_1_3_49_8_2_2_1_1_15.html" title="Function template as_expr">as_expr()</a></code>
           function. This is commonly needed when writing a transform in which you
           manually recurse by calling <code class="computeroutput"><a class="link" href="../boost/yap/transform.html" title="Function template transform">transform()</a></code>
           inside one of your transform overloads.
@@ -986,8 +986,8 @@
 <p>
         <a class="link" href="concepts.html#boost_yap.concepts.tagtransform">TagTransforms</a> are
         most useful when the transform needs to match an expression without regard
-        to whether its operands are <a class="link" href="../boost/yap/expr_kind.html#boost.yap.expr_kind.expr_ref"><code class="computeroutput"><span class="identifier">expr_kind</span><span class="special">::</span><span class="identifier">expr_ref</span></code></a> expressions, or &#8212;
-        if they are terminals &#8212; whether they contain or refer to their values.
+        to whether its operands are <a class="link" href="../boost/yap/expr_kind.html#boost.yap.expr_kind.expr_ref"><code class="computeroutput"><span class="identifier">expr_kind</span><span class="special">::</span><span class="identifier">expr_ref</span></code></a> expressions, or —
+        if they are terminals — whether they contain or refer to their values.
         <a class="link" href="concepts.html#boost_yap.concepts.tagtransform">TagTransforms</a> tend
         to be far more concise.
       </p>
@@ -1094,7 +1094,9 @@
         from <code class="computeroutput"><span class="identifier">a</span></code>, then any <a class="link" href="concepts.html#boost_yap.concepts.tagtransform">TagTransform</a>
         from <code class="computeroutput"><span class="identifier">b</span></code>, and finally any
         <a class="link" href="concepts.html#boost_yap.concepts.expressiontransform">ExpressionTransform</a>
-        from <code class="computeroutput"><span class="identifier">b</span></code>.
+        from <code class="computeroutput"><span class="identifier">b</span></code>. Only the first matching
+        overload in this sequence is used; all overloads later in the sequence or
+        in later transforms, whether they match or not, are simply ignored.
       </p>
 <h5>
 <a name="boost_yap.manual.transforming_expressions.h5"></a>
@@ -1159,7 +1161,7 @@
 <p>
         What this transformation does is transform the left and right expressions,
         and then use the built-in <code class="computeroutput"><span class="keyword">operator</span><span class="special">,()</span></code> on the result. The evaluation transformations
-        for the other operators do the same thing &#8212; evaluate the operands,
+        for the other operators do the same thing — evaluate the operands,
         then return the result of applying the built-in operator to the operands.
       </p>
 <p>
@@ -1189,7 +1191,7 @@
         section, go read that first. Here are the operator macros and their uses:
       </p>
 <div class="table">
-<a name="boost_yap.manual.operator_macros.unary_and_binary_operator_defining_macros"></a><p class="title"><b>Table&#160;47.1.&#160;Unary and Binary Operator-Defining Macros</b></p>
+<a name="boost_yap.manual.operator_macros.unary_and_binary_operator_defining_macros"></a><p class="title"><b>Table 48.1. Unary and Binary Operator-Defining Macros</b></p>
 <div class="table-contents"><table class="table" summary="Unary and Binary Operator-Defining Macros">
 <colgroup>
 <col>
@@ -1229,7 +1231,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_48_8_2_7_1.html" title="Macro BOOST_YAP_USER_UNARY_OPERATOR">BOOST_YAP_USER_UNARY_OPERATOR</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_49_8_2_7_1.html" title="Macro BOOST_YAP_USER_UNARY_OPERATOR">BOOST_YAP_USER_UNARY_OPERATOR</a></code>
                 </p>
               </td>
 <td>
@@ -1255,7 +1257,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_48_8_2_7_2.html" title="Macro BOOST_YAP_USER_BINARY_OPERATOR">BOOST_YAP_USER_BINARY_OPERATOR</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_49_8_2_7_2.html" title="Macro BOOST_YAP_USER_BINARY_OPERATOR">BOOST_YAP_USER_BINARY_OPERATOR</a></code>
                 </p>
               </td>
 <td>
@@ -1284,7 +1286,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_48_8_2_7_9.html" title="Macro BOOST_YAP_USER_UDT_UNARY_OPERATOR">BOOST_YAP_USER_UDT_UNARY_OPERATOR</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_49_8_2_7_9.html" title="Macro BOOST_YAP_USER_UDT_UNARY_OPERATOR">BOOST_YAP_USER_UDT_UNARY_OPERATOR</a></code>
                 </p>
               </td>
 <td>
@@ -1310,7 +1312,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><a class="link" href="../BOOST_YAP__1_3_48_8_2_7_10.html" title="Macro BOOST_YAP_USER_UDT_UDT_BINARY_OPERATOR">BOOST_YAP_USER_UDT_UDT_BINARY_OPERATOR</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_YAP__1_3_49_8_2_7_10.html" title="Macro BOOST_YAP_USER_UDT_UDT_BINARY_OPERATOR">BOOST_YAP_USER_UDT_UDT_BINARY_OPERATOR</a></code>
                 </p>
               </td>
 <td>
@@ -1339,7 +1341,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><a class="link" href="../BOOST_YAP__1_3_48_8_2_7_11.html" title="Macro BOOST_YAP_USER_UDT_ANY_BINARY_OPERATOR">BOOST_YAP_USER_UDT_ANY_BINARY_OPERATOR</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_YAP__1_3_49_8_2_7_11.html" title="Macro BOOST_YAP_USER_UDT_ANY_BINARY_OPERATOR">BOOST_YAP_USER_UDT_ANY_BINARY_OPERATOR</a></code>
                 </p>
               </td>
 <td>
@@ -1373,7 +1375,7 @@
         by general-purpose the unary and binary operator macros above:
       </p>
 <div class="table">
-<a name="boost_yap.manual.operator_macros.the_member_only_operator_macros"></a><p class="title"><b>Table&#160;47.2.&#160;The Member-Only Operator Macros</b></p>
+<a name="boost_yap.manual.operator_macros.the_member_only_operator_macros"></a><p class="title"><b>Table 48.2. The Member-Only Operator Macros</b></p>
 <div class="table-contents"><table class="table" summary="The Member-Only Operator Macros">
 <colgroup>
 <col>
@@ -1407,7 +1409,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_48_8_2_7_3.html" title="Macro BOOST_YAP_USER_ASSIGN_OPERATOR">BOOST_YAP_USER_ASSIGN_OPERATOR</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_49_8_2_7_3.html" title="Macro BOOST_YAP_USER_ASSIGN_OPERATOR">BOOST_YAP_USER_ASSIGN_OPERATOR</a></code>
                 </p>
               </td>
 <td>
@@ -1429,7 +1431,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_48_8_2_7_4.html" title="Macro BOOST_YAP_USER_SUBSCRIPT_OPERATOR">BOOST_YAP_USER_SUBSCRIPT_OPERATOR</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_49_8_2_7_4.html" title="Macro BOOST_YAP_USER_SUBSCRIPT_OPERATOR">BOOST_YAP_USER_SUBSCRIPT_OPERATOR</a></code>
                 </p>
               </td>
 <td>
@@ -1448,7 +1450,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_48_8_2_7_5.html" title="Macro BOOST_YAP_USER_CALL_OPERATOR">BOOST_YAP_USER_CALL_OPERATOR</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_49_8_2_7_5.html" title="Macro BOOST_YAP_USER_CALL_OPERATOR">BOOST_YAP_USER_CALL_OPERATOR</a></code>
                 </p>
               </td>
 <td>
@@ -1467,7 +1469,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_48_8_2_7_6.html" title="Macro BOOST_YAP_USER_CALL_OPERATOR_N">BOOST_YAP_USER_CALL_OPERATOR_N</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_49_8_2_7_6.html" title="Macro BOOST_YAP_USER_CALL_OPERATOR_N">BOOST_YAP_USER_CALL_OPERATOR_N</a></code>
                 </p>
               </td>
 <td>
@@ -1487,7 +1489,7 @@
 </table></div>
 </div>
 <br class="table-break"><div class="table">
-<a name="boost_yap.manual.operator_macros.if_else_psuedo_operator_macros"></a><p class="title"><b>Table&#160;47.3.&#160;if_else Psuedo-Operator Macros</b></p>
+<a name="boost_yap.manual.operator_macros.if_else_psuedo_operator_macros"></a><p class="title"><b>Table 48.3. if_else Psuedo-Operator Macros</b></p>
 <div class="table-contents"><table class="table" summary="if_else Psuedo-Operator Macros">
 <colgroup>
 <col>
@@ -1521,7 +1523,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_48_8_2_7_7.html" title="Macro BOOST_YAP_USER_EXPR_IF_ELSE">BOOST_YAP_USER_EXPR_IF_ELSE</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_49_8_2_7_7.html" title="Macro BOOST_YAP_USER_EXPR_IF_ELSE">BOOST_YAP_USER_EXPR_IF_ELSE</a></code>
                 </p>
               </td>
 <td>
@@ -1544,7 +1546,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_48_8_2_7_8.html" title="Macro BOOST_YAP_USER_UDT_ANY_IF_ELSE">BOOST_YAP_USER_UDT_ANY_IF_ELSE</a></code>
+                  <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_49_8_2_7_8.html" title="Macro BOOST_YAP_USER_UDT_ANY_IF_ELSE">BOOST_YAP_USER_UDT_ANY_IF_ELSE</a></code>
                 </p>
               </td>
 <td>
@@ -1613,7 +1615,7 @@
         to be an rvalue, whether wrapped in a terminal or not.
       </p>
 <p>
-        Let's take a quick look at <code class="computeroutput"><a class="link" href="../boost/yap/make_t_1_3_48_8_2_2_1_1_14.html" title="Function template make_terminal">make_terminal()</a></code>.
+        Let's take a quick look at <code class="computeroutput"><a class="link" href="../boost/yap/make_t_1_3_49_8_2_2_1_1_14.html" title="Function template make_terminal">make_terminal()</a></code>.
         If you call it with a <code class="computeroutput"><span class="identifier">T</span></code> rvalue,
         the terminal's value type is a <code class="computeroutput"><span class="identifier">T</span></code>,
         and the rvalue gets moved into it. If you call it with a <code class="computeroutput"><span class="identifier">T</span>
@@ -1622,7 +1624,7 @@
         "possibly <code class="computeroutput"><span class="keyword">const</span></code>-qualified").
         This is important because you might write through the terminal later in an
         assignment operation. You don't want to lose the ability to do this, or be
-        forced to write some Baroque pile of code to do so &#8212; it should be
+        forced to write some Baroque pile of code to do so — it should be
         natural and easy.
       </p>
 <p>
@@ -1653,7 +1655,7 @@
 <p>
         Ok, so since you can build these lazy Boost.YAP expressions up from subexpressions,
         how do we treat the subexpressions? We treat them in exactly the same way
-        as <code class="computeroutput"><a class="link" href="../boost/yap/make_t_1_3_48_8_2_2_1_1_14.html" title="Function template make_terminal">make_terminal()</a></code> treats its parameter. Rvalues
+        as <code class="computeroutput"><a class="link" href="../boost/yap/make_t_1_3_49_8_2_2_1_1_14.html" title="Function template make_terminal">make_terminal()</a></code> treats its parameter. Rvalues
         are moved in, and lvalues are captured by (possibly <code class="computeroutput"><span class="keyword">const</span></code>)
         reference.
       </p>
@@ -1665,7 +1667,7 @@
 <tr><td align="left" valign="top"><p>
           If you want to subvert the capture-by-reference semantics of using subexpressions,
           just <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">move</span><span class="special">()</span></code>
-          them. That will force a move &#8212; or copy of values for which move
+          them. That will force a move — or copy of values for which move
           is not defined.
         </p></td></tr>
 </table></div>
@@ -1691,7 +1693,7 @@
         indicates such a partial decay of <code class="computeroutput"><span class="identifier">T</span></code>.
       </p>
 <div class="table">
-<a name="boost_yap.manual.how_expression_operands_are_treated.operand_handling"></a><p class="title"><b>Table&#160;47.4.&#160;Operand Handling</b></p>
+<a name="boost_yap.manual.how_expression_operands_are_treated.operand_handling"></a><p class="title"><b>Table 48.4. Operand Handling</b></p>
 <div class="table-contents"><table class="table" summary="Operand Handling">
 <colgroup>
 <col>
@@ -2146,7 +2148,7 @@
           This is the first of several calculator-building examples derived from
           Proto. This first one just builds lazy expressions with placeholders, and
           evaluates them. Here we can first see how much C++14-and-later language
-          features help the end user &#8212; the Proto version is much, much longer.
+          features help the end user — the Proto version is much, much longer.
         </p>
 <p>
 </p>
@@ -3804,7 +3806,7 @@
         </p>
 <p>
           First, we start with a custom expression template, <code class="computeroutput"><span class="identifier">autodiff_expr</span></code>.
-          It supports simple arithmetic, but notice it has no call operator &#8212;
+          It supports simple arithmetic, but notice it has no call operator —
           we don't want <code class="computeroutput"><span class="special">(</span><span class="identifier">a</span>
           <span class="special">+</span> <span class="identifier">b</span><span class="special">)()</span></code> to be a valid expression.
         </p>
@@ -3832,7 +3834,7 @@
           and it sure would be nice if they were <code class="computeroutput"><span class="identifier">autodiff_expr</span></code>s
           and not <code class="computeroutput"><a class="link" href="../boost/yap/expression.html" title="Struct template expression">expression&lt;&gt;s</a></code>, so that only our
           desired operators are in play. To do this, we define an operator that produces
-          placeholder literals, using the <code class="computeroutput"><a class="link" href="../BOOST_YAP__1_3_48_8_2_7_12.html" title="Macro BOOST_YAP_USER_LITERAL_PLACEHOLDER_OPERATOR">BOOST_YAP_USER_LITERAL_PLACEHOLDER_OPERATOR</a></code>
+          placeholder literals, using the <code class="computeroutput"><a class="link" href="../BOOST_YAP__1_3_49_8_2_7_12.html" title="Macro BOOST_YAP_USER_LITERAL_PLACEHOLDER_OPERATOR">BOOST_YAP_USER_LITERAL_PLACEHOLDER_OPERATOR</a></code>
           macro:
         </p>
 <p>
@@ -3887,7 +3889,7 @@
 <th align="left">Note</th>
 </tr>
 <tr><td align="left" valign="top"><p>
-            Using <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_48_8_2_7_5.html" title="Macro BOOST_YAP_USER_CALL_OPERATOR">BOOST_YAP_USER_CALL_OPERATOR</a></code>
+            Using <code class="computeroutput"><a class="link" href="../BOOST_YAP_U_1_3_49_8_2_7_5.html" title="Macro BOOST_YAP_USER_CALL_OPERATOR">BOOST_YAP_USER_CALL_OPERATOR</a></code>
             is a bit loose here, because it defines a variadic template. We could
             have written unary call operators to ensure that the user can't write
             call expressions with the wrong number of arguments.
@@ -4680,7 +4682,7 @@
         these four functions with Google Benchmark yields these results:
       </p>
 <div class="table">
-<a name="boost_yap.manual.object_code.runtimes_of_different_map_constructions"></a><p class="title"><b>Table&#160;47.5.&#160;Runtimes of Different Map Constructions</b></p>
+<a name="boost_yap.manual.object_code.runtimes_of_different_map_constructions"></a><p class="title"><b>Table 48.5. Runtimes of Different Map Constructions</b></p>
 <div class="table-contents"><table class="table" summary="Runtimes of Different Map Constructions">
 <colgroup>
 <col>
@@ -4762,7 +4764,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2018 T. Zachary Laine<p>
+<td align="right"><div class="copyright-footer">Copyright © 2018 T. Zachary Laine<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

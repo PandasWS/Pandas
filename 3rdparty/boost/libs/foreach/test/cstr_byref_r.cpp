@@ -8,7 +8,7 @@
    25 August 2005 : Initial version.
 */
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/foreach.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,19 +31,19 @@ char const *my_const_ntcs  = my_ntcs;
 ///////////////////////////////////////////////////////////////////////////////
 // test_main
 //   
-int test_main( int, char*[] )
+int main()
 {
     // non-const containers by reference
-    BOOST_CHECK(sequence_equal_byref_n_r(my_ntcs, "\5\4\3\2\1"));
+    BOOST_TEST(sequence_equal_byref_n_r(my_ntcs, "\5\4\3\2\1"));
 
     // const containers by reference
-    BOOST_CHECK(sequence_equal_byref_c_r(my_const_ntcs, "\5\4\3\2\1"));
+    BOOST_TEST(sequence_equal_byref_c_r(my_const_ntcs, "\5\4\3\2\1"));
 
     // mutate the mutable collections
     mutate_foreach_byref_r(my_ntcs);
 
     // compare the mutated collections to the actual results
-    BOOST_CHECK(sequence_equal_byref_n_r(my_ntcs, "\6\5\4\3\2"));
+    BOOST_TEST(sequence_equal_byref_n_r(my_ntcs, "\6\5\4\3\2"));
 
-    return 0;
+    return boost::report_errors();
 }

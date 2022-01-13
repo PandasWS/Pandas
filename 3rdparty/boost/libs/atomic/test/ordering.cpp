@@ -29,11 +29,13 @@
 
 #include <boost/atomic.hpp>
 
-#include <boost/bind.hpp>
+#include <cstddef>
+#include <boost/bind/bind.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/thread_time.hpp>
-#include <boost/thread/locks.hpp>
+#include <boost/thread/lock_guard.hpp>
+#include <boost/thread/lock_types.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/thread/barrier.hpp>
@@ -50,17 +52,20 @@
 //
 // This "problem" is reproducible on all platforms, even x86.
 template<boost::memory_order store_order, boost::memory_order load_order>
-class total_store_order_test {
+class total_store_order_test
+{
 public:
     total_store_order_test(void);
 
     void run(boost::posix_time::time_duration & timeout);
     bool detected_conflict(void) const { return detected_conflict_; }
+
 private:
     void thread1fn(void);
     void thread2fn(void);
     void check_conflict(void);
 
+private:
     boost::atomic<int> a_;
     /* insert a bit of padding to push the two variables into
     different cache lines and increase the likelihood of detecting
@@ -82,8 +87,8 @@ private:
 };
 
 template<boost::memory_order store_order, boost::memory_order load_order>
-total_store_order_test<store_order, load_order>::total_store_order_test(void)
-    : a_(0), b_(0), barrier_(2),
+total_store_order_test<store_order, load_order>::total_store_order_test(void) :
+    a_(0), b_(0), barrier_(2),
     vrfyb1_(0), vrfya2_(0),
     terminate_threads_(false), termination_consensus_(0),
     detected_conflict_(false)
@@ -91,8 +96,7 @@ total_store_order_test<store_order, load_order>::total_store_order_test(void)
 }
 
 template<boost::memory_order store_order, boost::memory_order load_order>
-void
-total_store_order_test<store_order, load_order>::run(boost::posix_time::time_duration & timeout)
+void total_store_order_test<store_order, load_order>::run(boost::posix_time::time_duration & timeout)
 {
     boost::system_time start = boost::get_system_time();
     boost::system_time end = start + timeout;
@@ -101,7 +105,7 @@ total_store_order_test<store_order, load_order>::run(boost::posix_time::time_dur
     boost::thread t2(boost::bind(&total_store_order_test::thread2fn, this));
 
     {
-        boost::mutex::scoped_lock guard(m_);
+        boost::unique_lock< boost::mutex > guard(m_);
         while (boost::get_system_time() < end && !detected_conflict_)
             c_.timed_wait(guard, end);
     }
@@ -119,10 +123,10 @@ total_store_order_test<store_order, load_order>::run(boost::posix_time::time_dur
 volatile int backoff_dummy;
 
 template<boost::memory_order store_order, boost::memory_order load_order>
-void
-total_store_order_test<store_order, load_order>::thread1fn(void)
+void total_store_order_test<store_order, load_order>::thread1fn(void)
 {
-    for (;;) {
+    while (true)
+    {
         a_.store(1, store_order);
         int b = b_.load(load_order);
 
@@ -137,13 +141,17 @@ total_store_order_test<store_order, load_order>::thread1fn(void)
         /* both threads synchronize via barriers, so either
         both threads must exit here, or they must both do
         another round, otherwise one of them will wait forever */
-        if (terminate_threads_.load(boost::memory_order_relaxed)) for (;;) {
-            int tmp = termination_consensus_.fetch_or(1, boost::memory_order_relaxed);
+        if (terminate_threads_.load(boost::memory_order_relaxed))
+        {
+            while (true)
+            {
+                int tmp = termination_consensus_.fetch_or(1, boost::memory_order_relaxed);
 
-            if (tmp == 3)
-                return;
-            if (tmp & 4)
-                break;
+                if (tmp == 3)
+                    return;
+                if (tmp & 4)
+                    break;
+            }
         }
 
         termination_consensus_.fetch_xor(4, boost::memory_order_relaxed);
@@ -153,15 +161,16 @@ total_store_order_test<store_order, load_order>::thread1fn(void)
 
         barrier_.wait();
 
-        while(delay--) { backoff_dummy = delay; }
+        while (delay--)
+            backoff_dummy = delay;
     }
 }
 
 template<boost::memory_order store_order, boost::memory_order load_order>
-void
-total_store_order_test<store_order, load_order>::thread2fn(void)
+void total_store_order_test<store_order, load_order>::thread2fn(void)
 {
-    for (;;) {
+    while (true)
+    {
         b_.store(1, store_order);
         int a = a_.load(load_order);
 
@@ -176,51 +185,56 @@ total_store_order_test<store_order, load_order>::thread2fn(void)
         /* both threads synchronize via barriers, so either
         both threads must exit here, or they must both do
         another round, otherwise one of them will wait forever */
-        if (terminate_threads_.load(boost::memory_order_relaxed)) for (;;) {
-            int tmp = termination_consensus_.fetch_or(2, boost::memory_order_relaxed);
+        if (terminate_threads_.load(boost::memory_order_relaxed))
+        {
+            while (true)
+            {
+                int tmp = termination_consensus_.fetch_or(2, boost::memory_order_relaxed);
 
-            if (tmp == 3)
-                return;
-            if (tmp & 4)
-                break;
+                if (tmp == 3)
+                    return;
+                if (tmp & 4)
+                    break;
+            }
         }
 
         termination_consensus_.fetch_xor(4, boost::memory_order_relaxed);
-
 
         unsigned int delay = rand() % 10000;
         b_.store(0, boost::memory_order_relaxed);
 
         barrier_.wait();
 
-        while(delay--) { backoff_dummy = delay; }
+        while (delay--)
+            backoff_dummy = delay;
     }
 }
 
 template<boost::memory_order store_order, boost::memory_order load_order>
-void
-total_store_order_test<store_order, load_order>::check_conflict(void)
+void total_store_order_test<store_order, load_order>::check_conflict(void)
 {
-    if (vrfyb1_ == 0 && vrfya2_ == 0) {
-        boost::mutex::scoped_lock guard(m_);
+    if (vrfyb1_ == 0 && vrfya2_ == 0)
+    {
+        boost::lock_guard< boost::mutex > guard(m_);
         detected_conflict_ = true;
         terminate_threads_.store(true, boost::memory_order_relaxed);
         c_.notify_all();
     }
 }
 
-void
-test_seq_cst(void)
+void test_seq_cst(void)
 {
     double sum = 0.0;
 
     /* take 10 samples */
-    for (size_t n = 0; n < 10; n++) {
+    for (std::size_t n = 0; n < 10; n++)
+    {
         boost::posix_time::time_duration timeout(0, 0, 10);
 
         total_store_order_test<boost::memory_order_relaxed, boost::memory_order_relaxed> test;
         test.run(timeout);
-        if (!test.detected_conflict()) {
+        if (!test.detected_conflict())
+        {
             std::cout << "Failed to detect order=seq_cst violation while ith order=relaxed -- intrinsic ordering too strong for this test\n";
             return;
         }

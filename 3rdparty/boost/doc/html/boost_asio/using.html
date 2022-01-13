@@ -1,7 +1,7 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-<title>Using Boost.Asio</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Using, Building, and Configuring Boost.Asio</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../boost_asio.html" title="Boost.Asio">
@@ -24,7 +24,7 @@
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="boost_asio.using"></a><a class="link" href="using.html" title="Using Boost.Asio">Using Boost.Asio</a>
+<a name="boost_asio.using"></a><a class="link" href="using.html" title="Using, Building, and Configuring Boost.Asio">Using, Building, and Configuring Boost.Asio</a>
 </h2></div></div></div>
 <h4>
 <a name="boost_asio.using.h0"></a>
@@ -36,25 +36,22 @@
     </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-          Linux using g++ 4.1 or later
+          Linux using g++ 4.6 or later
         </li>
 <li class="listitem">
-          Linux using clang 3.2 or later
+          Linux using clang 3.4 or later
         </li>
 <li class="listitem">
-          FreeBSD using g++ 4.1 or later
+          FreeBSD using g++ 9 or later
         </li>
 <li class="listitem">
-          macOS using Xcode 8 or later
+          macOS using Xcode 10 or later
         </li>
 <li class="listitem">
-          Win32 using Visual C++ 9.0 or later
+          Win32 using Visual C++ 11.0 (Visual Studio 2012) or later
         </li>
 <li class="listitem">
-          Win32 using g++ 4.1 or later (MinGW)
-        </li>
-<li class="listitem">
-          Win64 using Visual C++ 9.0 or later
+          Win64 using Visual C++ 11.0 (Visual Studio 2012) or later
         </li>
 </ul></div>
 <p>
@@ -87,6 +84,9 @@
         </li>
 <li class="listitem">
           Tru64
+        </li>
+<li class="listitem">
+          Win32 using MinGW.
         </li>
 <li class="listitem">
           Win32 using Cygwin. (<code class="computeroutput">__USE_W32_SOCKETS</code> must be defined.)
@@ -174,8 +174,8 @@
       <span class="phrase"><a name="boost_asio.using.macros"></a></span><a class="link" href="using.html#boost_asio.using.macros">Macros</a>
     </h4>
 <p>
-      The macros listed in the table below may be used to control the behaviour of
-      Boost.Asio.
+      The macros listed in the table below may be used to control the interface,
+      functionality, and behaviour of Boost.Asio.
     </p>
 <div class="informaltable"><table class="table">
 <colgroup>
@@ -195,6 +195,103 @@
             </th>
 </tr></thead>
 <tbody>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_NO_DEPRECATED</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Disables Boost.Asio's deprecated interfaces and functionality.
+              </p>
+              <p>
+                See <a class="link" href="net_ts.html" title="Networking TS compatibility">Networking TS Compatibility</a>
+                for a list of older interfaces that have been deprecated, and their
+                replacements.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_NO_TS_EXECUTORS</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Disables Boost.Asio's support for the Networking TS executor model.
+              </p>
+              <p>
+                By default, Boost.Asio simultaneously supports both Networking TS-style
+                executors, and executors that adhere to the proposed standard executor
+                model. This macro may be used to limit support to the proposed standard
+                executors only. See <a class="link" href="std_executors.html" title="Proposed Standard Executors">Proposed
+                Standard Executors</a> for more information.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_USE_TS_EXECUTOR_AS_DEFAULT</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Specifies that <a class="link" href="reference/any_io_executor.html" title="any_io_executor"><code class="computeroutput">any_io_executor</code></a>
+                refer to the Networking TS-style polymorphic wrapper.
+              </p>
+              <p>
+                The <code class="computeroutput">any_io_executor</code> type alias is the default runtime-polymorphic
+                executor for all I/O objects. This type alias points to the <a class="link" href="reference/execution__any_executor.html" title="execution::any_executor"><code class="computeroutput">execution::any_executor&lt;&gt;</code></a>
+                template with a set of supportable properties specified for use with
+                I/O.
+              </p>
+              <p>
+                This new name may break existing code that directly uses the old
+                Networking TS-style polymorphic wrapper, <a class="link" href="reference/executor.html" title="executor"><code class="computeroutput">executor</code></a>.
+                If required for backward compatibility, <code class="computeroutput">BOOST_ASIO_USE_TS_EXECUTOR_AS_DEFAULT</code>
+                changes the <code class="computeroutput">any_io_executor</code> type alias to instead point
+                to the <code class="computeroutput">executor</code> polymorphic wrapper.
+              </p>
+              <p>
+                See <a class="link" href="std_executors.html" title="Proposed Standard Executors">Proposed Standard Executors</a>
+                for more information.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_NO_DYNAMIC_BUFFER_V1</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Disables support for the <a class="link" href="reference/DynamicBuffer_v1.html" title="Dynamic buffer requirements (version 1)"><code class="computeroutput">DynamicBuffer_v1</code></a>
+                type requirements.
+              </p>
+              <p>
+                By default, dynamic buffer operations such as <a class="link" href="reference/read.html" title="read"><code class="computeroutput">read</code></a>,
+                <a class="link" href="reference/async_read.html" title="async_read"><code class="computeroutput">async_read</code></a>,
+                <a class="link" href="reference/read_until.html" title="read_until"><code class="computeroutput">read_until</code></a>,
+                <a class="link" href="reference/async_read_until.html" title="async_read_until"><code class="computeroutput">async_read_until</code></a>,
+                <a class="link" href="reference/write.html" title="write"><code class="computeroutput">write</code></a>,
+                and <a class="link" href="reference/async_write.html" title="async_write"><code class="computeroutput">async_write</code></a>
+                support both the <code class="computeroutput">DynamicBuffer_v1</code> and the <a class="link" href="reference/DynamicBuffer_v2.html" title="Dynamic buffer requirements (version 2)"><code class="computeroutput">DynamicBuffer_v2</code></a>
+                type requirements for dynamic buffers.
+              </p>
+              <p>
+                When <code class="computeroutput">BOOST_ASIO_NO_DYNAMIC_BUFFER_V1</code> is defined, all
+                support for <code class="computeroutput">DynamicBuffer_v1</code> types and functions is
+                #ifdef-ed out. Support for using <a class="link" href="reference/basic_streambuf.html" title="basic_streambuf"><code class="computeroutput">basic_streambuf</code></a>
+                with the <code class="computeroutput">read</code>, <code class="computeroutput">async_read</code>, <code class="computeroutput">read_until</code>,
+                <code class="computeroutput">async_read_until</code>, <code class="computeroutput">write</code>, and <code class="computeroutput">async_write</code>
+                functions is also disabled as a consequence.
+              </p>
+            </td>
+</tr>
 <tr>
 <td>
               <p>
@@ -230,6 +327,19 @@
 <td>
               <p>
                 Explictly disables Boost.Asio's buffer debugging support.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_ENABLE_HANDLER_TRACKING</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Enables Boost.Asio's <a class="link" href="overview/core/handler_tracking.html" title="Handler Tracking">Handler
+                Tracking</a> debugging facility.
               </p>
             </td>
 </tr>
@@ -442,10 +552,1534 @@
               </p>
             </td>
 </tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Changes <a class="link" href="reference/basic_socket_streambuf.html" title="basic_socket_streambuf"><code class="computeroutput">basic_socket_streambuf</code></a>
+                and <a class="link" href="reference/basic_socket_iostream.html" title="basic_socket_iostream"><code class="computeroutput">basic_socket_iostream</code></a>
+                to use the old Boost.Date_Time interface, rather than chrono.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_SEPARATE_COMPILATION</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Uses separately compiled source code for Boost.Asio's implementation.
+              </p>
+              <p>
+                See <a class="link" href="using.html#boost_asio.using.optional_separate_compilation">above</a>
+                for further information.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DYN_LINK</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Uses separately compiled source code for Boost.Asio's implementation,
+                with symbols exported for inclusion as part of a shared library.
+              </p>
+              <p>
+                See <a class="link" href="using.html#boost_asio.using.optional_separate_compilation">above</a>
+                for further information.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_VISIBILITY</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Disables all symbol visibility pragmas.
+              </p>
+              <p>
+                Note: If symbols are hidden, extra care must be taken to ensure that
+                Boost.Asio types are not passed across shared library API boundaries.
+              </p>
+            </td>
+</tr>
 </tbody>
 </table></div>
 <h4>
 <a name="boost_asio.using.h5"></a>
+      <span class="phrase"><a name="boost_asio.using.compiler_platform_feature_detection_macros"></a></span><a class="link" href="using.html#boost_asio.using.compiler_platform_feature_detection_macros">Compiler/platform
+      feature detection macros</a>
+    </h4>
+<p>
+      Asio automatically defines preprocessor macros corresponding to the detected
+      available features on a particular compiler and target platform. These macros
+      are named with the prefix <code class="computeroutput">BOOST_ASIO_HAS_</code>, and are listed in the
+      table below.
+    </p>
+<p>
+      Many of these macros also have a corresponding <code class="computeroutput">BOOST_ASIO_DISABLE_</code>
+      macro that may be used to explicitly disable the feature.
+    </p>
+<p>
+      In general, <code class="computeroutput">BOOST_ASIO_HAS_</code> macros should not be explicitly defined
+      by the user, except when absolutely required as a workaround for the latest
+      version of a compiler or platform. For older compiler/platform combinations
+      where a specific <code class="computeroutput">BOOST_ASIO_HAS_</code> macro is not automatically defined,
+      testing may have shown that a claimed feature isn't sufficiently conformant
+      to be compatible with Boost.Asio's needs.
+    </p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+              <p>
+                Macro
+              </p>
+            </th>
+<th>
+              <p>
+                Description
+              </p>
+            </th>
+<th>
+              <p>
+                Macro to disable feature
+              </p>
+            </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_ALIAS_TEMPLATES</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support alias templates on compilers known to allow it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_ALIAS_TEMPLATES</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_ALIGNED_NEW</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support for operator new with alignment argument.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_ALIGNED_NEW</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_ALIGNOF</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support for the alignof operator.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_ALIGNOF</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_BOOST_ALIGN</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Boost align library.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_BOOST_ALIGN</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_BOOST_ARRAY</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Boost array library.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_BOOST_ARRAY</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_BOOST_ASSERT</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Boost assert macro.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_BOOST_ASSERT</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_BOOST_BIND</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Boost bind function.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_BOOST_BIND</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_BOOST_CHRONO</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Boost support for chrono.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_BOOST_CHRONO</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_BOOST_CONFIG</code>
+              </p>
+            </td>
+<td>
+            </td>
+<td>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_BOOST_DATE_TIME</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Boost support for the DateTime library.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_BOOST_DATE_TIME</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_BOOST_LIMITS</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Boost limits header.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_BOOST_LIMITS</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_BOOST_REGEX</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Boost regex library.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_BOOST_REGEX</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_BOOST_THROW_EXCEPTION</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Boost throw_exception function.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_BOOST_THROW_EXCEPTION</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_BOOST_WORKAROUND</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Boost's BOOST_WORKAROUND macro.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_BOOST_WORKAROUND</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_CHRONO</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Some form of chrono library is available.
+              </p>
+            </td>
+<td>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_CLANG_LIBCXX</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Clang / libc++ detection.
+              </p>
+            </td>
+<td>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_CONCEPTS</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support concepts on compilers known to allow them.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_CONCEPTS</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_CONSTANT_EXPRESSION_SFINAE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support SFINAE use of constant expressions on compilers known to
+                allow it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_CONSTANT_EXPRESSION_SFINAE</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_CONSTEXPR</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support constexpr on compilers known to allow it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_CONSTEXPR</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_CO_AWAIT</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support the co_await keyword on compilers known to allow it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_CO_AWAIT</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_CSTDINT</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for the cstdint header.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_CSTDINT</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_CXX11_ALLOCATORS</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for the C++11 allocator additions.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_CXX11_ALLOCATORS</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_DECLTYPE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support automatic type deduction on compilers known to support it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_DECLTYPE</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_DEFAULT_FUNCTION_TEMPLATE_ARGUMENTS</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support default function template arguments on compilers known to
+                allow it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_DEFAULT_FUNCTION_TEMPLATE_ARGUMENTS</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_DEV_POLL</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Solaris: /dev/poll.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_DEV_POLL</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_EPOLL</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Linux: epoll, eventfd and timerfd.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_EPOLL</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_EVENTFD</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Linux: epoll, eventfd and timerfd.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_EVENTFD</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_GETADDRINFO</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Can use getaddrinfo() and getnameinfo().
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_GETADDRINFO</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_HANDLER_HOOKS</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Handler hooking. Disabled for ancient Borland C++ and gcc compilers.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_HANDLER_HOOKS</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_IOCP</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Windows: IO Completion Ports.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_IOCP</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_KQUEUE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Mac OS X, FreeBSD, NetBSD, OpenBSD: kqueue.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_KQUEUE</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_LOCAL_SOCKETS</code>
+              </p>
+            </td>
+<td>
+              <p>
+                UNIX domain sockets.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_LOCAL_SOCKETS</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_MOVE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support move construction and assignment on compilers known to allow
+                it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_MOVE</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_MSG_NOSIGNAL</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Kernel support for MSG_NOSIGNAL.
+              </p>
+            </td>
+<td>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_NOEXCEPT</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support noexcept on compilers known to allow it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_NOEXCEPT</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_NULLPTR</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for the nullptr_t type.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_NULLPTR</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_POSIX_STREAM_DESCRIPTOR</code>
+              </p>
+            </td>
+<td>
+              <p>
+                POSIX: stream-oriented file descriptors.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_POSIX_STREAM_DESCRIPTOR</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_PTHREADS</code>
+              </p>
+            </td>
+<td>
+              <p>
+                POSIX threads.
+              </p>
+            </td>
+<td>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_REF_QUALIFIED_FUNCTIONS</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support ref-qualified functions on compilers known to allow it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_REF_QUALIFIED_FUNCTIONS</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_RETURN_TYPE_DEDUCTION</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support return type deduction on compilers known to allow it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_RETURN_TYPE_DEDUCTION</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_SECURE_RTL</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Microsoft Visual C++'s secure C runtime library.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_SECURE_RTL</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_SERIAL_PORT</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Serial ports.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_SERIAL_PORT</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_SFINAE_VARIABLE_TEMPLATES</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support SFINAEd template variables on compilers known to allow it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_SFINAE_VARIABLE_TEMPLATES</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_SIGACTION</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Can use sigaction() instead of signal().
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_SIGACTION</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_SIGNAL</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Can use signal().
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_SIGNAL</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_SOURCE_LOCATION</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library has a source_location that we can use.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_SOURCE_LOCATION</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_SSIZE_T</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support for POSIX ssize_t typedef.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_SSIZE_T</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_ADDRESSOF</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for addressof.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_ADDRESSOF</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_ALLOCATOR_ARG</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for allocator_arg_t.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_ALLOCATOR_ARG</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_ANY</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for std::any.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_ANY</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_ARRAY</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for arrays.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_ARRAY</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_ATOMIC</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for atomic operations.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_ATOMIC</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_CALL_ONCE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for the call_once function.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_CALL_ONCE</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_CHRONO</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for chrono. Some standard libraries (such
+                as the libstdc++ shipped with gcc 4.6) provide monotonic_clock as
+                per early C++0x drafts, rather than the eventually standardised name
+                of steady_clock.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_CHRONO</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_CHRONO_MONOTONIC_CLOCK</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for chrono. Some standard libraries (such
+                as the libstdc++ shipped with gcc 4.6) provide monotonic_clock as
+                per early C++0x drafts, rather than the eventually standardised name
+                of steady_clock.
+              </p>
+            </td>
+<td>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_COROUTINE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for coroutines.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_COROUTINE</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_EXCEPTION_PTR</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for std::exception_ptr and std::current_exception.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_EXCEPTION_PTR</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_EXPERIMENTAL_SOURCE_LOCATION</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for std::experimental::source_location.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_EXPERIMENTAL_SOURCE_LOCATION</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_EXPERIMENTAL_STRING_VIEW</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for std::experimental::string_view.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_EXPERIMENTAL_STRING_VIEW</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_FUNCTION</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for the function class.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_FUNCTION</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_FUTURE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for futures.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_FUTURE</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_HASH</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for std::hash.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_HASH</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_INVOKE_RESULT</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library has invoke_result (which supersedes result_of).
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_INVOKE_RESULT</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_IOSTREAM_MOVE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for iostream move construction and assignment.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_IOSTREAM_MOVE</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_MUTEX_AND_CONDVAR</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for the mutex and condition variable classes.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_MUTEX_AND_CONDVAR</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_NESTED_EXCEPTION</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for std::nested_exception.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_NESTED_EXCEPTION</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_REFERENCE_WRAPPER</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for the reference_wrapper class.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_REFERENCE_WRAPPER</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_SHARED_PTR</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for shared_ptr and weak_ptr.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_SHARED_PTR</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_STRING_VIEW</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for std::string_view.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_STRING_VIEW</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_SYSTEM_ERROR</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for system errors.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_SYSTEM_ERROR</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_THREAD</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for the thread class.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_THREAD</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STD_TYPE_TRAITS</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library support for type traits.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STD_TYPE_TRAITS</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_STRING_VIEW</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Standard library has a string_view that we can use.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_STRING_VIEW</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_THREADS</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Threads.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_THREADS</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_THREAD_KEYWORD_EXTENSION</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support for the __thread keyword extension.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_THREAD_KEYWORD_EXTENSION</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_TIMERFD</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Linux: epoll, eventfd and timerfd.
+              </p>
+            </td>
+<td>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_UNISTD_H</code>
+              </p>
+            </td>
+<td>
+              <p>
+                On POSIX (and POSIX-like) platforms we need to include unistd.h in
+                order to get access to the various platform feature macros, e.g.
+                to be able to test for threads support.
+              </p>
+            </td>
+<td>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_VARIABLE_TEMPLATES</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support template variables on compilers known to allow it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_VARIABLE_TEMPLATES</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_VARIADIC_TEMPLATES</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Support variadic templates on compilers known to allow it.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_VARIADIC_TEMPLATES</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_WINDOWS_OBJECT_HANDLE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Windows: object handles.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_WINDOWS_OBJECT_HANDLE</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_WINDOWS_OVERLAPPED_PTR</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Windows: OVERLAPPED wrapper.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_WINDOWS_OVERLAPPED_PTR</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_WINDOWS_RANDOM_ACCESS_HANDLE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Windows: random access handles.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_WINDOWS_RANDOM_ACCESS_HANDLE</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_WINDOWS_STREAM_HANDLE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Windows: stream handles.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_WINDOWS_STREAM_HANDLE</code>
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_HAS_WORKING_EXPRESSION_SFINAE</code>
+              </p>
+            </td>
+<td>
+              <p>
+                Enable workarounds for lack of working expression SFINAE.
+              </p>
+            </td>
+<td>
+              <p>
+                <code class="computeroutput">BOOST_ASIO_DISABLE_WORKING_EXPRESSION_SFINAE</code>
+              </p>
+            </td>
+</tr>
+</tbody>
+</table></div>
+<h4>
+<a name="boost_asio.using.h6"></a>
       <span class="phrase"><a name="boost_asio.using.mailing_list"></a></span><a class="link" href="using.html#boost_asio.using.mailing_list">Mailing
       List</a>
     </h4>
@@ -454,7 +2088,7 @@
       Newsgroup access is provided via <a href="http://dir.gmane.org/gmane.comp.lib.boost.asio.user" target="_top">Gmane</a>.
     </p>
 <h4>
-<a name="boost_asio.using.h6"></a>
+<a name="boost_asio.using.h7"></a>
       <span class="phrase"><a name="boost_asio.using.wiki"></a></span><a class="link" href="using.html#boost_asio.using.wiki">Wiki</a>
     </h4>
 <p>
@@ -464,7 +2098,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

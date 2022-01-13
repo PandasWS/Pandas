@@ -305,9 +305,9 @@ with appropriate ordering constraints.
 
 [endsect]
 
-[section:mp_queue Wait-free multi-producer queue]
+[section:mp_queue Lock-free multi-producer queue]
 
-The purpose of the ['wait-free multi-producer queue] is to allow
+The purpose of the ['lock-free multi-producer queue] is to allow
 an arbitrary number of producers to enqueue objects which are
 retrieved and processed in FIFO order by a single consumer.
 
@@ -316,7 +316,7 @@ retrieved and processed in FIFO order by a single consumer.
 [c++]
 
   template<typename T>
-  class waitfree_queue {
+  class lockfree_queue {
   public:
     struct node {
       T data;
@@ -344,7 +344,7 @@ retrieved and processed in FIFO order by a single consumer.
       return first;
     }
 
-    waitfree_queue() : head_(0) {}
+    lockfree_queue() : head_(0) {}
 
     // alternative interface if ordering is of no importance
     node * pop_all_reverse(void)
@@ -361,14 +361,14 @@ retrieved and processed in FIFO order by a single consumer.
 
 [c++]
 
-  waitfree_queue<int> q;
+  lockfree_queue<int> q;
 
   // insert elements
   q.push(42);
   q.push(2);
 
   // pop elements
-  waitfree_queue<int>::node * x = q.pop_all()
+  lockfree_queue<int>::node * x = q.pop_all()
   while(x) {
     X * tmp = x;
     x = x->next;
@@ -383,7 +383,8 @@ retrieved and processed in FIFO order by a single consumer.
 The implementation guarantees that all objects enqueued are
 processed in the order they were enqueued by building a singly-linked
 list of object in reverse processing order. The queue is atomically
-emptied by the consumer and brought into correct order.
+emptied by the consumer (in an operation that is not only lock-free but
+wait-free) and brought into correct order.
 
 It must be guaranteed that any access to an object to be enqueued
 by the producer "happens before" any access by the consumer. This
@@ -391,7 +392,7 @@ is assured by inserting objects into the list with ['release] and
 dequeuing them with ['consume] memory order. It is not
 necessary to use ['acquire] memory order in [^waitfree_queue::pop_all]
 because all operations involved depend on the value of
-the atomic pointer through dereference
+the atomic pointer through dereference.
 
 [endsect]
 

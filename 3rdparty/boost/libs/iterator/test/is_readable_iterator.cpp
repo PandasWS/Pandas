@@ -38,7 +38,7 @@ struct noncopyable_iterator
     typedef std::ptrdiff_t difference_type;
     typedef boost::noncopyable* pointer;
     typedef boost::noncopyable& reference;
-	
+
     boost::noncopyable const& operator*() const;
 };
 
@@ -49,13 +49,13 @@ struct proxy_iterator
     typedef std::ptrdiff_t difference_type;
     typedef v* pointer;
     typedef v& reference;
-    
+
     struct proxy
     {
         operator v&();
         proxy& operator=(v) const;
     };
-        
+
     proxy operator*() const;
 };
 
@@ -66,12 +66,12 @@ struct proxy_iterator2
     typedef std::ptrdiff_t difference_type;
     typedef v* pointer;
     typedef v& reference;
-    
+
     struct proxy
     {
         proxy& operator=(v) const;
     };
-        
+
     proxy operator*() const;
 };
 
@@ -87,10 +87,10 @@ int main()
     BOOST_STATIC_ASSERT(boost::is_readable_iterator<proxy_iterator>::value);
     BOOST_STATIC_ASSERT(!boost::is_readable_iterator<proxy_iterator2>::value);
     BOOST_STATIC_ASSERT(boost::is_readable_iterator<value_iterator>::value);
-    
+
     // Make sure inaccessible copy constructor doesn't prevent
     // readability
     BOOST_STATIC_ASSERT(boost::is_readable_iterator<noncopyable_iterator>::value);
-    
+
     return 0;
 }

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Requirements on synchronous socket operations</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -44,23 +44,23 @@
         If:
       </p>
 <p>
-        &#8212; <code class="computeroutput">s.non_blocking() == true</code>,
+        — <code class="computeroutput">s.non_blocking() == true</code>,
       </p>
 <p>
-        &#8212; the synchronous socket operation is specified in terms of a <span class="emphasis"><em>POSIX</em></span>
-        function other than <code class="computeroutput"><a href="http://www.opengroup.org/onlinepubs/000095399/functions/poll.html" target="_top"><code class="computeroutput"><span class="identifier">poll</span><span class="special">()</span></code></a></code>,
+        — the synchronous socket operation is specified in terms of a <span class="emphasis"><em>POSIX</em></span>
+        function other than <code class="computeroutput"><a href="http://www.opengroup.org/onlinepubs/9699919799/functions/poll.html" target="_top"><code class="computeroutput"><span class="identifier">poll</span><span class="special">()</span></code></a></code>,
       </p>
 <p>
-        &#8212; that <span class="emphasis"><em>POSIX</em></span> function lists <code class="computeroutput">EWOULDBLOCK</code> or
+        — that <span class="emphasis"><em>POSIX</em></span> function lists <code class="computeroutput">EWOULDBLOCK</code> or
         <code class="computeroutput">EAGAIN</code> in its failure conditions, and
       </p>
 <p>
-        &#8212; the effects of the operation cannot be established immediately
+        — the effects of the operation cannot be established immediately
       </p>
 <p>
         then the synchronous socket operation shall not block the calling thread.
         [<span class="emphasis"><em>Note:</em></span> And the effects of the operation are not established.
-        &#8212;<span class="emphasis"><em>end note</em></span>]
+        —<span class="emphasis"><em>end note</em></span>]
       </p>
 <p>
         Otherwise, the synchronous socket operation shall block the calling thread
@@ -69,7 +69,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

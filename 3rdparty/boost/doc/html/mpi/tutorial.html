@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Tutorial</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../mpi.html" title="Chapter&#160;26.&#160;Boost.MPI">
+<link rel="up" href="../mpi.html" title="Chapter 26. Boost.MPI">
 <link rel="prev" href="getting_started.html" title="Getting started">
 <link rel="next" href="c_mapping.html" title="Mapping from C MPI to Boost.MPI">
 </head>
@@ -51,9 +51,19 @@
       be declared in <code class="computeroutput"><span class="identifier">main</span></code> at the
       very beginning of the program.
     </p>
+<div class="warning"><table border="0" summary="Warning">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="../../../doc/src/images/warning.png"></td>
+<th align="left">Warning</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+        Declaring an <code class="computeroutput"><a class="link" href="../boost/mpi/environment.html" title="Class environment">mpi::environment</a></code>
+        at global scope is undefined behavior. <a href="#ftn.mpi.tutorial.f0" class="footnote" name="mpi.tutorial.f0"><sup class="footnote">[11]</sup></a>
+      </p></td></tr>
+</table></div>
 <p>
       Communication with MPI always occurs over a <span class="bold"><strong>communicator</strong></span>,
-      which can be created be simply default-constructing an object of type <code class="computeroutput"><a class="link" href="../boost/mpi/communicator.html" title="Class communicator">mpi::communicator</a></code>. This communicator
+      which can be created by simply default-constructing an object of type <code class="computeroutput"><a class="link" href="../boost/mpi/communicator.html" title="Class communicator">mpi::communicator</a></code>. This communicator
       can then be queried to determine how many processes are running (the "size"
       of the communicator) and to give a unique number to each process, from zero
       to the size of the communicator (i.e., the "rank" of the process):
@@ -266,7 +276,7 @@ I am process 3 of 7.
             Regarding communication completion/progress: The MPI standard requires
             users to keep the request handle for a non-blocking communication, and
             to call the "wait" operation (or successfully test for completion)
-            to complete the send or receive. nlike most C MPI implementations, which
+            to complete the send or receive. Unlike most C MPI implementations, which
             allow the user to discard the request for a non-blocking send, Boost.MPI
             requires the user to call "wait" or "test", since
             the request object might contain temporary buffers that have to be kept
@@ -1164,10 +1174,17 @@ Rank 6 got 2117359639
         </p>
 </div>
 </div>
+<div class="footnotes">
+<br><hr style="width:100; text-align:left;margin-left: 0">
+<div id="ftn.mpi.tutorial.f0" class="footnote"><p><a href="#mpi.tutorial.f0" class="para"><sup class="para">[11] </sup></a>
+          According to the MPI standard, initialization must take place at user's
+          initiative after once the main function has been called.
+        </p></div>
+</div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2005-2007 Douglas Gregor,
+<td align="right"><div class="copyright-footer">Copyright © 2005-2007 Douglas Gregor,
       Matthias Troyer, Trustees of Indiana University<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at &lt;ulink url="http://www.boost.org/LICENSE_1_0.txt"&gt;

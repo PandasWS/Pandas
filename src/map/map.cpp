@@ -2261,6 +2261,8 @@ int map_quit(struct map_session_data *sd) {
 		status_change_end(&sd->bl, SC_EQC, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_SPRITEMABLE, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_SV_ROOTTWIST, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_GUARD_STANCE, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_ATTACK_STANCE, INVALID_TIMER);
 		// Remove visuals effect from headgear
 		status_change_end(&sd->bl, SC_MOONSTAR, INVALID_TIMER); 
 		status_change_end(&sd->bl, SC_SUPER_STAR, INVALID_TIMER); 
@@ -2284,6 +2286,7 @@ int map_quit(struct map_session_data *sd) {
 			status_change_end(&sd->bl, SC_H_MINE, INVALID_TIMER);
 			status_change_end(&sd->bl, SC_ANTI_M_BLAST, INVALID_TIMER);
 			status_change_end(&sd->bl, SC_B_TRAP, INVALID_TIMER);
+			status_change_end(&sd->bl, SC_SHADOW_STRIP, INVALID_TIMER);
 		}
 		if (battle_config.debuff_on_logout&2) { //Remove positive buffs
 			status_change_end(&sd->bl, SC_MAXIMIZEPOWER, INVALID_TIMER);
@@ -2388,7 +2391,7 @@ struct homun_data* map_id2hd(int id){
 	return BL_CAST(BL_HOM, bl);
 }
 
-struct mercenary_data* map_id2mc(int id){
+struct s_mercenary_data* map_id2mc(int id){
 	struct block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_MER, bl);
 }
@@ -2398,7 +2401,7 @@ struct pet_data* map_id2pd(int id){
 	return BL_CAST(BL_PET, bl);
 }
 
-struct elemental_data* map_id2ed(int id) {
+struct s_elemental_data* map_id2ed(int id) {
 	struct block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_ELEM, bl);
 }
@@ -2501,15 +2504,33 @@ bool map_blid_exists( int id ) {
 /*==========================================
  * Convex Mirror
  *------------------------------------------*/
+#ifndef Pandas_FuncDefine_Mob_Getmob_Boss
 struct mob_data * map_getmob_boss(int16 m)
+#else
+struct mob_data * map_getmob_boss(int16 m, bool alive_first)
+#endif // Pandas_FuncDefine_Mob_Getmob_Boss
 {
 	DBIterator* iter;
 	struct mob_data *md = NULL;
 	bool found = false;
+#ifdef Pandas_FuncDefine_Mob_Getmob_Boss
+	// 用于保存一个兜底默认用的魔物单位
+	struct mob_data* default_md = NULL;
+#endif // Pandas_FuncDefine_Mob_Getmob_Boss
 
 	iter = db_iterator(bossid_db);
 	for( md = (struct mob_data*)dbi_first(iter); dbi_exists(iter); md = (struct mob_data*)dbi_next(iter) )
 	{
+#ifdef Pandas_FuncDefine_Mob_Getmob_Boss
+		if (alive_first) {
+			// 若还没有保存过任何一个兜底魔物单位, 且当前魔物的地图符合条件, 则将它视为兜底魔物
+			if (!default_md && md->bl.m == m)
+				default_md = md;
+			// 剩下的所有重生定时器非空 (也就是说它死了) 的魔物都跳过
+			if (md->spawn_timer != INVALID_TIMER)
+				continue;
+		}
+#endif // Pandas_FuncDefine_Mob_Getmob_Boss
 		if( md->bl.m == m )
 		{
 			found = true;
@@ -2517,6 +2538,12 @@ struct mob_data * map_getmob_boss(int16 m)
 		}
 	}
 	dbi_destroy(iter);
+
+#ifdef Pandas_FuncDefine_Mob_Getmob_Boss
+	// 若存活优先, 没找到合适的存活魔物, 且保存了兜底魔物; 那么就使用兜底魔物进行返回
+	if (alive_first && !found && default_md)
+		return default_md;
+#endif // Pandas_FuncDefine_Mob_Getmob_Boss
 
 	return (found)? md : NULL;
 }

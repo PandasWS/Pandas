@@ -14,5 +14,6 @@
         "Helge Bahmann <hcb -at- chaoticmind.net>",
         "Tim Blechmann <tim -at- klingt.org>",
         "Andrey Semashev <andrey.semashev -at- gmail.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

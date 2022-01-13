@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Building and Installing the Library</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Boost.Regex 5.1.3">
-<link rel="up" href="../index.html" title="Boost.Regex 5.1.3">
+<link rel="home" href="../index.html" title="Boost.Regex 7.0.0">
+<link rel="up" href="../index.html" title="Boost.Regex 7.0.0">
 <link rel="prev" href="configuration/tuning.html" title="Algorithm Tuning">
 <link rel="next" href="intro.html" title="Introduction and Overview">
 </head>
@@ -43,23 +43,83 @@
       The library will encase all code inside namespace boost.
     </p>
 <p>
-      Unlike some other template libraries, this library consists of a mixture of
-      template code (in the headers) and static code and data (in cpp files). Consequently
-      it is necessary to build the library's support code into a library or archive
-      file before you can use it, instructions for specific platforms are as follows:
+      This is a header only library provided your compiler supports C++11 or later.
+      Support for C++03 compilers is still present, but is now deprecated and may
+      be removed without further notice!
+    </p>
+<p>
+      The only people that still need to build the external libboost_regex library
+      are those that are either:
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Using the library in C++03 mode, or,
+        </li>
+<li class="listitem">
+          Using the deprecated POSIX C API's
+        </li>
+</ul></div>
+<p>
+      Further, this library may now be used in "standalone" mode without
+      the rest of the Boost C++ libraries, in order to do this you must either:
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Have a C++17 compiler that supports <code class="computeroutput"><span class="identifier">__has_include</span></code>,
+          in this case if <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code> is not present then the library will
+          automoatically enter standalone mode. Or:
+        </li>
+<li class="listitem">
+          Define BOOST_REGEX_STANDALONE when building.
+        </li>
+</ul></div>
+<p>
+      If you are using this library with ICU, note that since it is now header only,
+      it will be up to you to link to the ICU libraries if you use <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">regex</span><span class="special">/</span><span class="identifier">icu</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code> unless you are using the supplied CMake
+      script.
     </p>
 <h5>
 <a name="boost_regex.install.h0"></a>
-      <span class="phrase"><a name="boost_regex.install.building_with_bjam"></a></span><a class="link" href="install.html#boost_regex.install.building_with_bjam">Building
-      with bjam</a>
+      <span class="phrase"><a name="boost_regex.install.usage_with_cmake"></a></span><a class="link" href="install.html#boost_regex.install.usage_with_cmake">Usage
+      with CMake</a>
     </h5>
 <p>
-      This is now the preferred method for building and installing this library,
-      please refer to the <a href="../../../../../more/getting_started.html" target="_top">getting
+      The library comes with a very basic CMakeLists.txt that allows this library
+      to be used from other CMake scripts.
+    </p>
+<p>
+      CMakeLists.txt defines two targets:
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          <code class="computeroutput"><span class="identifier">Boost</span><span class="special">::</span><span class="identifier">regex</span></code> This is the target to use for normal
+          header only builds.
+        </li>
+<li class="listitem">
+          <code class="computeroutput"><span class="identifier">Boost</span><span class="special">::</span><span class="identifier">regex_icu</span></code> This is the target to use if
+          you are using <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">regex</span><span class="special">/</span><span class="identifier">icu</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code> in your code, and wish to have the
+          ICU dependencies taken care of for you.
+        </li>
+</ul></div>
+<p>
+      There is also one configuration option:
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          BOOST_REGEX_STANDALONE when set then no other Boost libraries are targeted
+          as dependencies, and Boost.Regex is placed in standalone mode. Invoke CMake
+          with -DBOOST_REGEX_STANDALONE=on to enable standalone mode.
+        </li></ul></div>
+<h5>
+<a name="boost_regex.install.h1"></a>
+      <span class="phrase"><a name="boost_regex.install.c_03_users_only_deprecated_build"></a></span><a class="link" href="install.html#boost_regex.install.c_03_users_only_deprecated_build"><span class="bold"><strong>C++03 users only (DEPRECATED)</strong></span> Building with bjam</a>
+    </h5>
+<p>
+      This is now the preferred method for building and installing legacy versions
+      this library, please refer to the <a href="../../../../../more/getting_started.html" target="_top">getting
       started guide</a> for more information.
     </p>
 <h5>
-<a name="boost_regex.install.h1"></a>
+<a name="boost_regex.install.h2"></a>
       <span class="phrase"><a name="boost_regex.install.building_with_unicode_and_icu_su"></a></span><a class="link" href="install.html#boost_regex.install.building_with_unicode_and_icu_su">Building
       With Unicode and ICU Support</a>
     </h5>
@@ -99,22 +159,143 @@
       at the contents of the file <span class="emphasis"><em>boost-root/bin.v2/config.log</em></span>
       for the actual error messages obtained when the build carried out the configuration
       check. You will then need to fix these errors by ensuring your compiler gets
-      invoked with the correct options, for example:
+      invoked with the correct options. The main options that you're likely to pass
+      to <code class="computeroutput"><span class="identifier">b2</span></code> are:
     </p>
-<pre class="programlisting">bjam include=some-include-path --toolset=toolset-name install</pre>
-<p>
-      will add "some-include-path" to your compilers header include path,
-      or if ICU has been built with non-standard names for it's binaries, then:
-    </p>
-<pre class="programlisting">bjam -sICU_LINK="linker-options-for-icu" --toolset=toolset-name install</pre>
-<p>
-      Will use <span class="emphasis"><em>"linker-options-for-icu"</em></span> when linking
-      the library rather than the default ICU binary names.
-    </p>
-<p>
-      You might also need to use the options "cxxflags=-option" and "linkflags=-option"
-      to set compiler and linker specific options.
-    </p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+              <p>
+                Option
+              </p>
+            </th>
+<th>
+              <p>
+                Description
+              </p>
+            </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+              <p>
+                include=/some/path
+              </p>
+            </td>
+<td>
+              <p>
+                Adds "/some/path" to the list of paths seached for include
+                files, normally equivalent to <code class="computeroutput"><span class="special">-</span><span class="identifier">I</span><span class="special">/</span><span class="identifier">some</span><span class="special">/</span><span class="identifier">path</span></code> on most compilers.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                library-path=/some/path
+              </p>
+            </td>
+<td>
+              <p>
+                Adds "/some/path" to the list of paths searched for external
+                libraries, set this to the location of the ICU binaries if they're
+                in a non-standard location.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                -sICU_ICUUC_NAME=NAME
+              </p>
+            </td>
+<td>
+              <p>
+                If <code class="computeroutput"><span class="identifier">libicuuc</span></code> has a
+                non-standard name then this sets the name of the library linked against,
+                defaults to either <code class="computeroutput"><span class="identifier">icuuc</span></code>,
+                <code class="computeroutput"><span class="identifier">icuucd</span></code>, <code class="computeroutput"><span class="identifier">sicuuc</span></code> or <code class="computeroutput"><span class="identifier">sicuucd</span></code>
+                depending on build options.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                -sICU_ICUDT_NAME=NAME
+              </p>
+            </td>
+<td>
+              <p>
+                If <code class="computeroutput"><span class="identifier">libicudata</span></code> has
+                a non-standard name then this sets the name of the library linked
+                against, defaults to either <code class="computeroutput"><span class="identifier">icudt</span></code>,
+                <code class="computeroutput"><span class="identifier">icudata</span></code>, <code class="computeroutput"><span class="identifier">sicudt</span></code> or <code class="computeroutput"><span class="identifier">sicudata</span></code>
+                depending on build options and platform.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                -sICU_ICUIN_NAME=NAME
+              </p>
+            </td>
+<td>
+              <p>
+                If <code class="computeroutput"><span class="identifier">libicui18n</span></code> has
+                a non-standatd name then this sets the name of the library linked
+                against, defaults to either <code class="computeroutput"><span class="identifier">icui18n</span></code>,
+                <code class="computeroutput"><span class="identifier">icuin</span></code>, <code class="computeroutput"><span class="identifier">icuind</span></code>, sicuin<code class="computeroutput"> <span class="keyword">or</span>
+                </code>sicuins` depending on build options and platform.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                cxxstd=XX
+              </p>
+            </td>
+<td>
+              <p>
+                Sets the C++ standard supported: XX should be either 03, 11, 14,
+                17 or 2a.
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                cxxflags="FLAGS"
+              </p>
+            </td>
+<td>
+              <p>
+                Passes "FLAGS" directly to the compiler, an option of last
+                resort!
+              </p>
+            </td>
+</tr>
+<tr>
+<td>
+              <p>
+                linflags="FLAGS"
+              </p>
+            </td>
+<td>
+              <p>
+                Passes "FLAGS" directly to the compiler on the link step,
+                an option of last resort!
+              </p>
+            </td>
+</tr>
+</tbody>
+</table></div>
 <div class="important"><table border="0" summary="Important">
 <tr>
 <td rowspan="2" align="center" valign="top" width="25"><img alt="[Important]" src="../../../../../doc/src/images/important.png"></td>
@@ -126,16 +307,6 @@
         targets to be rebuilt.
       </p></td></tr>
 </table></div>
-<p>
-      If ICU is not already in your compiler's path, but instead headers, libraries
-      and binaries are located at <span class="emphasis"><em>path-to-icu/include</em></span>, <span class="emphasis"><em>path-to-icu/lib</em></span>
-      and <span class="emphasis"><em>path-to-icu/bin</em></span> respectively then you need to set
-      the environment variable <code class="computeroutput"><span class="identifier">ICU_PATH</span></code>
-      to point to the root directory of your ICU installation: this typically happens
-      if you're building with MSVC. For example if ICU was installed to <code class="computeroutput"><span class="identifier">c</span><span class="special">:\</span><span class="identifier">download</span><span class="special">\</span><span class="identifier">icu</span></code> you
-      might use:
-    </p>
-<pre class="programlisting">bjam -sICU_PATH=c:\download\icu --toolset=toolset-name install</pre>
 <div class="important"><table border="0" summary="Important">
 <tr>
 <td rowspan="2" align="center" valign="top" width="25"><img alt="[Important]" src="../../../../../doc/src/images/important.png"></td>
@@ -158,7 +329,7 @@
       header-include and linker-search paths).
     </p>
 <h5>
-<a name="boost_regex.install.h2"></a>
+<a name="boost_regex.install.h3"></a>
       <span class="phrase"><a name="boost_regex.install.building_from_source"></a></span><a class="link" href="install.html#boost_regex.install.building_from_source">Building
       from Source</a>
     </h5>
@@ -185,7 +356,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 1998-2013 John Maddock<p>
+<td align="right"><div class="copyright-footer">Copyright © 1998-2013 John Maddock<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

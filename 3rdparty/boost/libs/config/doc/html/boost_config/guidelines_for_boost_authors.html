@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Guidelines for Boost Authors</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -297,9 +297,9 @@
         and name the test file "<code class="computeroutput"><span class="identifier">boost_has_foo</span><span class="special">.</span><span class="identifier">ipp</span></code>".
         Try not to add feature test macros unnecessarily, if there is a platform
         specific macro that can already be used (for example <code class="computeroutput"><span class="identifier">_WIN32</span></code>,
-        <code class="computeroutput"><span class="identifier">__BEOS__</span></code>, or <code class="computeroutput"><span class="identifier">__linux</span></code>) to identify the feature then use
-        that. Try to keep the macro to a feature group, or header name, rather than
-        one specific API (for example <code class="computeroutput"><span class="identifier">BOOST_HAS_NL_TYPES_H</span></code>
+        <code class="computeroutput"><span class="identifier">__BEOS__</span></code>, or <code class="computeroutput"><span class="identifier">__linux__</span></code>) to identify the feature then
+        use that. Try to keep the macro to a feature group, or header name, rather
+        than one specific API (for example <code class="computeroutput"><span class="identifier">BOOST_HAS_NL_TYPES_H</span></code>
         rather than <code class="computeroutput"><span class="identifier">BOOST_HAS_CATOPEN</span></code>).
         If the macro describes a POSIX feature group, then add boilerplate code to
         <a href="../../../../../boost/config/detail/suffix.hpp" target="_top">&lt;boost/config/detail/suffix.hpp&gt;</a>
@@ -362,7 +362,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2007 Beman Dawes, Vesa Karvonen, John
+<td align="right"><div class="copyright-footer">Copyright © 2001-2007 Beman Dawes, Vesa Karvonen, John
       Maddock<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

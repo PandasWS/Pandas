@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>http::message</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Beast">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Beast">
 <link rel="up" href="../ref.html" title="This Page Intentionally Left Blank 2/2">
-<link rel="prev" href="boost__beast__http__make_chunk_last/overload2.html" title="http::make_chunk_last (2 of 2 overloads)">
-<link rel="next" href="boost__beast__http__message/base.html" title="http::message::base">
+<link rel="prev" href="boost__beast__is_file.html" title="is_file">
+<link rel="next" href="boost__beast__http__message/header_type.html" title="http::message::header_type">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,7 +20,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__http__make_chunk_last/overload2.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__message/base.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__is_file.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__message/header_type.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
@@ -34,12 +34,12 @@
         <span class="phrase"><a name="beast.ref.boost__beast__http__message.synopsis"></a></span><a class="link" href="boost__beast__http__message.html#beast.ref.boost__beast__http__message.synopsis">Synopsis</a>
       </h5>
 <p>
-        Defined in header <code class="literal">&lt;<a href="../../../../../../boost/beast/http/message.hpp" target="_top">boost/beast/http/message.hpp</a>&gt;</code>
+        Defined in header <code class="literal">&lt;<a href="../../../../../../boost/beast/http/type_traits.hpp" target="_top">boost/beast/http/type_traits.hpp</a>&gt;</code>
       </p>
 <pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span>
     <span class="keyword">bool</span> <span class="identifier">isRequest</span><span class="special">,</span>
     <span class="keyword">class</span> <a class="link" href="../concepts/Body.html" title="Body"><span class="emphasis"><em>Body</em></span></a><span class="special">,</span>
-    <span class="keyword">class</span> <a class="link" href="../concepts/Fields.html" title="Fields"><span class="emphasis"><em>Fields</em></span></a> <span class="special">=</span> <span class="identifier">fields</span><span class="special">&gt;</span>
+    <span class="keyword">class</span> <a class="link" href="../concepts/Fields.html" title="Fields"><span class="emphasis"><em>Fields</em></span></a> <span class="special">=</span> <a class="link" href="boost__beast__http__fields.html" title="http::fields">fields</a><span class="special">&gt;</span>
 <span class="keyword">class</span> <span class="identifier">message</span> <span class="special">:</span>
     <span class="keyword">public</span> <span class="identifier">http</span><span class="special">::</span><span class="identifier">header</span><span class="special">&lt;</span> <span class="identifier">isRequest</span><span class="special">,</span> <span class="identifier">Fields</span> <span class="special">&gt;</span>
 </pre>
@@ -68,7 +68,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/body_type.html" title="http::message::body_type"><span class="bold"><strong>body_type</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/body_type.html" title="http::message::body_type">body_type</a></strong></span>
                 </p>
               </td>
 <td>
@@ -80,7 +80,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/fields_type.html" title="http::message::fields_type"><span class="bold"><strong>fields_type</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/fields_type.html" title="http::message::fields_type">fields_type</a></strong></span>
                 </p>
               </td>
 <td>
@@ -92,7 +92,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/header_type.html" title="http::message::header_type"><span class="bold"><strong>header_type</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/header_type.html" title="http::message::header_type">header_type</a></strong></span>
                 </p>
               </td>
 <td>
@@ -104,7 +104,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/is_request.html" title="http::message::is_request"><span class="bold"><strong>is_request</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/is_request.html" title="http::message::is_request">is_request</a></strong></span>
                 </p>
               </td>
 <td>
@@ -140,7 +140,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/base.html" title="http::message::base"><span class="bold"><strong>base</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/base.html" title="http::message::base">base</a></strong></span>
                 </p>
               </td>
 <td>
@@ -152,7 +152,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/body.html" title="http::message::body"><span class="bold"><strong>body</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/body.html" title="http::message::body">body</a></strong></span>
                 </p>
               </td>
 <td>
@@ -164,14 +164,13 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/chunked.html" title="http::message::chunked"><span class="bold"><strong>chunked</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/chunked.html" title="http::message::chunked">chunked</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Returns true if the chunked Transfer-Encoding is specified.
-                </p>
-                <p>
+                  Returns <code class="computeroutput"><span class="keyword">true</span></code> if the
+                  chunked Transfer-Encoding is specified. <br> <span class="silver">—</span><br>
                   Set or clear the chunked Transfer-Encoding.
                 </p>
               </td>
@@ -179,7 +178,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/content_length.html" title="http::message::content_length"><span class="bold"><strong>content_length</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/content_length.html" title="http::message::content_length">content_length</a></strong></span>
                 </p>
               </td>
 <td>
@@ -191,26 +190,26 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/has_content_length.html" title="http::message::has_content_length"><span class="bold"><strong>has_content_length</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/has_content_length.html" title="http::message::has_content_length">has_content_length</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Returns true if the Content-Length field is present.
+                  Returns <code class="computeroutput"><span class="keyword">true</span></code> if the
+                  Content-Length field is present.
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/keep_alive.html" title="http::message::keep_alive"><span class="bold"><strong>keep_alive</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/keep_alive.html" title="http::message::keep_alive">keep_alive</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Returns true if the message semantics indicate keep-alive.
-                </p>
-                <p>
+                  Returns <code class="computeroutput"><span class="keyword">true</span></code> if the
+                  message semantics indicate keep-alive. <br> <span class="silver">—</span><br>
                   Set the keep-alive message semantic option.
                 </p>
               </td>
@@ -218,29 +217,25 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/message.html" title="http::message::message"><span class="bold"><strong>message</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/message.html" title="http::message::message">message</a> <span class="silver">[constructor]</span></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Constructor.
-                </p>
-                <p>
-                  Construct a message.
+                  Constructor. <br> <span class="silver">—</span><br> Construct
+                  a message.
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/method.html" title="http::message::method"><span class="bold"><strong>method</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/method.html" title="http::message::method">method</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Return the request-method verb.
-                </p>
-                <p>
+                  Return the request-method verb. <br> <span class="silver">—</span><br>
                   Set the request-method.
                 </p>
               </td>
@@ -248,31 +243,33 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/method_string.html" title="http::message::method_string"><span class="bold"><strong>method_string</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/method_string.html" title="http::message::method_string">method_string</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Return the request-method as a string.
-                </p>
-              </td>
-</tr>
-<tr>
-<td>
-                <p>
-                  <a class="link" href="boost__beast__http__message/need_eof.html" title="http::message::need_eof"><span class="bold"><strong>need_eof</strong></span></a>
-                </p>
-              </td>
-<td>
-                <p>
-                  Returns true if the message semantics require an end of file.
+                  Return the request-method as a string. <br> <span class="silver">—</span><br>
+                  Set the request-method.
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/operator_eq_.html" title="http::message::operator="><span class="bold"><strong>operator=</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/need_eof.html" title="http::message::need_eof">need_eof</a></strong></span>
+                </p>
+              </td>
+<td>
+                <p>
+                  Returns <code class="computeroutput"><span class="keyword">true</span></code> if the
+                  message semantics require an end of file.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/operator_eq_.html" title="http::message::operator=">operator=</a></strong></span>
                 </p>
               </td>
 <td>
@@ -284,7 +281,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/payload_size.html" title="http::message::payload_size"><span class="bold"><strong>payload_size</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/payload_size.html" title="http::message::payload_size">payload_size</a></strong></span>
                 </p>
               </td>
 <td>
@@ -296,7 +293,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/prepare_payload.html" title="http::message::prepare_payload"><span class="bold"><strong>prepare_payload</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/prepare_payload.html" title="http::message::prepare_payload">prepare_payload</a></strong></span>
                 </p>
               </td>
 <td>
@@ -308,14 +305,12 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/reason.html" title="http::message::reason"><span class="bold"><strong>reason</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/reason.html" title="http::message::reason">reason</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Return the response reason-phrase.
-                </p>
-                <p>
+                  Return the response reason-phrase. <br> <span class="silver">—</span><br>
                   Set the response reason-phrase (deprecated)
                 </p>
               </td>
@@ -323,17 +318,13 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/result.html" title="http::message::result"><span class="bold"><strong>result</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/result.html" title="http::message::result">result</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  The response status-code result.
-                </p>
-                <p>
-                  Set the response status-code.
-                </p>
-                <p>
+                  The response status-code result. <br> <span class="silver">—</span><br>
+                  Set the response status-code. <br> <span class="silver">—</span><br>
                   Set the response status-code as an integer.
                 </p>
               </td>
@@ -341,7 +332,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/result_int.html" title="http::message::result_int"><span class="bold"><strong>result_int</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/result_int.html" title="http::message::result_int">result_int</a></strong></span>
                 </p>
               </td>
 <td>
@@ -353,14 +344,12 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/target.html" title="http::message::target"><span class="bold"><strong>target</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/target.html" title="http::message::target">target</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Returns the request-target string.
-                </p>
-                <p>
+                  Returns the request-target string. <br> <span class="silver">—</span><br>
                   Set the request-target string.
                 </p>
               </td>
@@ -368,14 +357,12 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="boost__beast__http__message/version.html" title="http::message::version"><span class="bold"><strong>version</strong></span></a>
+                  <span class="bold"><strong><a class="link" href="boost__beast__http__message/version.html" title="http::message::version">version</a></strong></span>
                 </p>
               </td>
 <td>
                 <p>
-                  Return the HTTP-version.
-                </p>
-                <p>
+                  Return the HTTP-version. <br> <span class="silver">—</span><br>
                   Set the HTTP-version.
                 </p>
               </td>
@@ -391,14 +378,14 @@
         template type. To understand all of the members of this class it is necessary
         to view the declaration for the <code class="computeroutput"><span class="identifier">Fields</span></code>
         type. When using the default fields container, those declarations are in
-        <a class="link" href="boost__beast__http__fields.html" title="http::fields"><code class="computeroutput"><span class="identifier">http</span><span class="special">::</span><span class="identifier">fields</span></code></a>.
+        <a class="link" href="boost__beast__http__fields.html" title="http::fields"><code class="computeroutput"><span class="identifier">fields</span></code></a>.
         A message can be a request or response, depending on the <code class="computeroutput"><span class="identifier">isRequest</span></code>
         template argument value. Requests and responses have different types; functions
         may be overloaded based on the type if desired. The <code class="computeroutput"><span class="identifier">Body</span></code>
         template argument type determines the model used to read or write the content
         body of the message. Newly constructed messages objects have version set
         to HTTP/1.1. Newly constructed response objects also have result code set
-        to <a class="link" href="boost__beast__http__status.html" title="http::status"><code class="computeroutput"><span class="identifier">http</span><span class="special">::</span><span class="identifier">ok</span></code></a>.
+        to <a class="link" href="boost__beast__http__status.html" title="http::status"><code class="computeroutput"><span class="identifier">status</span><span class="special">::</span><span class="identifier">ok</span></code></a>.
       </p>
 <h5>
 <a name="beast.ref.boost__beast__http__message.h4"></a>
@@ -464,13 +451,10 @@
 </tr>
 </tbody>
 </table></div>
-<p>
-        Convenience header <code class="literal">&lt;<a href="../../../../../../boost/beast/http.hpp" target="_top">boost/beast/http.hpp</a>&gt;</code>
-      </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2016-2019 Vinnie
+<td align="right"><div class="copyright-footer">Copyright © 2016-2019 Vinnie
       Falco<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
@@ -479,7 +463,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="boost__beast__http__make_chunk_last/overload2.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__message/base.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="boost__beast__is_file.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../ref.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="boost__beast__http__message/header_type.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

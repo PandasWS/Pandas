@@ -5,6 +5,11 @@ of the standard C MPI to their Boost.MPI equivalents. It will be most
 useful for users that are already familiar with the C or Fortran
 interfaces to MPI, or for porting existing parallel programs to Boost.MPI.
 
+Note that this is not a perfect one to one mapping, the Boost.MPI will sometime
+use function from the C API in a way that is transparent for the end user.
+For example, [@http://www.mpi-forum.org/docs/mpi-1.1/mpi-11-html/node50.html#Node50
+`MPI_Probe and friends`] can be used to implement asynchronous send/recv.
+
 [table Point-to-point communication
   [[C Function/Constant] [Boost.MPI Equivalent]]
 
@@ -85,7 +90,8 @@ interfaces to MPI, or for porting existing parallel programs to Boost.MPI.
 `communicator::send`]]]
 
   [[[@http://www.mpi-forum.org/docs/mpi-1.1/mpi-11-html/node52.html#Node52
-`MPI_Sendrecv`]] [unsupported]]
+`MPI_Sendrecv`]] [[memberref boost::mpi::communicator::sendrecv
+`communicator::sendrecv`]]]
 
   [[[@http://www.mpi-forum.org/docs/mpi-1.1/mpi-11-html/node52.html#Node52
 `MPI_Sendrecv_replace`]] [unsupported]]
@@ -516,7 +522,7 @@ algorithms.
   `MPI_Graph_neighbors`]] [[funcref boost::mpi::out_edges
   `out_edges`], [funcref boost::mpi::adjacent_vertices `adjacent_vertices`]]]
   [[[@http://www.mpi-forum.org/docs/mpi-1.1/mpi-11-html/node137.html#Node137
-  `MPI_Cart_shift`]] [unsupported]]
+  `MPI_Cart_shift`]] [[memberref boost::mpi::cartesian_communicator::shifted_ranks `cartesian_communicator::shifted_ranks` ]]]
   [[[@http://www.mpi-forum.org/docs/mpi-1.1/mpi-11-html/node138.html#Node138
   `MPI_Cart_sub`]]  [[classref boost::mpi::cartesian_communicator `cartesian_communicator`]
   constructor]]

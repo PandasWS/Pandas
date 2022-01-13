@@ -30,7 +30,7 @@ int gcd(int const a, int const b) {
 //[check
 int main() {
     // Implementation checks (via nullary functor).
-    boost::contract::check c = [&] {
+    boost::contract::check c = [] {
         BOOST_CONTRACT_ASSERT(gcd(12, 28) == 4);
         BOOST_CONTRACT_ASSERT(gcd(4, 14) == 2);
     };

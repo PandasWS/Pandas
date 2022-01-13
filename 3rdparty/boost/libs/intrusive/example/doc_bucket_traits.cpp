@@ -11,7 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //[doc_bucket_traits
 #include <boost/intrusive/unordered_set.hpp>
-#include <boost/functional/hash.hpp>
+#include <boost/container_hash/hash.hpp>
 #include <vector>
 
 using namespace boost::intrusive;

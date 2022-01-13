@@ -40,8 +40,7 @@ Tests for output from various units, name, symbol and raw formats, and automatic
 #include <boost/config.hpp>
 #include <limits>
 
-#define BOOST_TEST_MAIN
-#include <boost/test/unit_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 struct meter_base_unit : boost::units::base_unit<meter_base_unit, boost::units::length_dimension, 1> {
     static BOOST_CONSTEXPR const char* name() { return("meter"); }
@@ -110,12 +109,12 @@ typedef boost::units::make_scaled_unit<custom2, boost::units::scale<10, boost::u
 {                                                           \
     std::ostringstream ss;                                  \
     ss FORMATTERS << v;                                     \
-    BOOST_CHECK_EQUAL(ss.str(), expected);                  \
+    BOOST_TEST_EQ(ss.str(), expected);                  \
 }                                                           \
 {                                                           \
     std::wostringstream ss;                                 \
     ss FORMATTERS << v;                                     \
-    BOOST_CHECK(ss.str() == BOOST_PP_CAT(L, expected));     \
+    BOOST_TEST(ss.str() == BOOST_PP_CAT(L, expected));     \
 }
 
 #define BOOST_UNITS_TEST_OUTPUT_REGEX(v, expected)          \
@@ -123,14 +122,13 @@ typedef boost::units::make_scaled_unit<custom2, boost::units::scale<10, boost::u
     std::ostringstream ss;                                  \
     ss FORMATTERS << v;                                     \
     boost::regex r(expected);                               \
-    BOOST_CHECK_MESSAGE(boost::regex_match(ss.str(), r),    \
-        ss.str() + " does not match " + expected);          \
+    BOOST_TEST(boost::regex_match(ss.str(), r));          \
 }                                                           \
 {                                                           \
     std::wostringstream ss;                                 \
     ss FORMATTERS << v;                                     \
     boost::wregex r(BOOST_PP_CAT(L, expected));             \
-    BOOST_CHECK(boost::regex_match(ss.str(), r));           \
+    BOOST_TEST(boost::regex_match(ss.str(), r));           \
 }
 
 #define BOOST_UNITS_TEST_OUTPUT_DISPLAY(v)                  \
@@ -151,7 +149,7 @@ typedef boost::units::make_scaled_unit<custom2, boost::units::scale<10, boost::u
 {                                                           \
     std::ostringstream ss;                                  \
     ss FORMATTERS << v;                                     \
-    BOOST_CHECK_EQUAL(ss.str(), expected);                  \
+    BOOST_TEST_EQ(ss.str(), expected);                  \
 }
 
 #define BOOST_UNITS_TEST_OUTPUT_REGEX(v, expected)          \
@@ -159,8 +157,7 @@ typedef boost::units::make_scaled_unit<custom2, boost::units::scale<10, boost::u
     std::ostringstream ss;                                  \
     ss FORMATTERS << v;                                     \
     boost::regex r(expected);                               \
-    BOOST_CHECK_MESSAGE(boost::regex_match(ss.str(), r),    \
-        ss.str() + " does not match " + expected);          \
+    BOOST_TEST(boost::regex_match(ss.str(), r));          \
 }
 
 #define BOOST_UNITS_TEST_OUTPUT_DISPLAY(v)                  \
@@ -172,7 +169,7 @@ typedef boost::units::make_scaled_unit<custom2, boost::units::scale<10, boost::u
 
 #endif
 
-BOOST_AUTO_TEST_CASE(test_output_unit_symbol)
+void test_output_unit_symbol()
 {  // base units using default symbol_format (no format specified) and no auto prefixing.
 #define FORMATTERS
     BOOST_UNITS_TEST_OUTPUT(meter_base_unit::unit_type(), "m");
@@ -194,7 +191,7 @@ BOOST_AUTO_TEST_CASE(test_output_unit_symbol)
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_unit_raw)
+void test_output_unit_raw()
 {  // raw format specified
 #define FORMATTERS << boost::units::raw_format
     BOOST_UNITS_TEST_OUTPUT(meter_base_unit::unit_type(), "m");
@@ -217,7 +214,7 @@ BOOST_AUTO_TEST_CASE(test_output_unit_raw)
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_unit_name)
+void test_output_unit_name()
 {  // name format specified.
 #define FORMATTERS << boost::units::name_format
     BOOST_UNITS_TEST_OUTPUT(meter_base_unit::unit_type(), "meter");
@@ -240,7 +237,7 @@ BOOST_AUTO_TEST_CASE(test_output_unit_name)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_output_quantity_symbol)
+void test_output_quantity_symbol()
 { // quantity symbols using default format.
 #define FORMATTERS
     BOOST_UNITS_TEST_OUTPUT(1.5*meter_base_unit::unit_type(), "1.5 m");
@@ -264,7 +261,7 @@ BOOST_AUTO_TEST_CASE(test_output_quantity_symbol)
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_quantity_raw)
+void test_output_quantity_raw()
 { // quantity symbols using raw format.
 #define FORMATTERS << boost::units::raw_format
     BOOST_UNITS_TEST_OUTPUT(1.5*meter_base_unit::unit_type(), "1.5 m");
@@ -287,7 +284,7 @@ BOOST_AUTO_TEST_CASE(test_output_quantity_raw)
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_quantity_name)
+void test_output_quantity_name()
 { // // quantity symbols using name format.
 #define FORMATTERS << boost::units::name_format
     BOOST_UNITS_TEST_OUTPUT(1.5*meter_base_unit::unit_type(), "1.5 meter");
@@ -309,7 +306,7 @@ BOOST_AUTO_TEST_CASE(test_output_quantity_name)
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_autoprefixed_quantity_name)
+void test_output_autoprefixed_quantity_name()
 { // Engineering autoprefix, with name format.
 #define FORMATTERS << boost::units::name_format << boost::units::engineering_prefix
   // Single base unit like meter.
@@ -364,7 +361,7 @@ BOOST_AUTO_TEST_CASE(test_output_autoprefixed_quantity_name)
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_autoprefixed_quantity_symbol)
+void test_output_autoprefixed_quantity_symbol()
 { // Engineering autoprefix, with symbol format.
 #define FORMATTERS << boost::units::symbol_format << boost::units::engineering_prefix
   // Single base unit like m.
@@ -406,7 +403,7 @@ BOOST_AUTO_TEST_CASE(test_output_autoprefixed_quantity_symbol)
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_auto_binary_prefixed_quantity_symbol)
+void test_output_auto_binary_prefixed_quantity_symbol()
 { // Binary prefix with symbol format.
 #define FORMATTERS << boost::units::symbol_format << boost::units::binary_prefix
     BOOST_UNITS_TEST_OUTPUT(1024 * byte_base_unit::unit_type(), "1 Kib");
@@ -424,7 +421,7 @@ BOOST_AUTO_TEST_CASE(test_output_auto_binary_prefixed_quantity_symbol)
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_auto_binary_prefixed_quantity_name)
+void test_output_auto_binary_prefixed_quantity_name()
 { // Binary prefix with name format.
   // http://physics.nist.gov/cuu/Units/binary.html
   // 1998 the International Electrotechnical Commission (IEC) approved
@@ -447,35 +444,35 @@ BOOST_AUTO_TEST_CASE(test_output_auto_binary_prefixed_quantity_name)
 
 // Tests on using more than one format or prefix - only the last specified should be used.
 // (This may indicate a programming mistake, but it is ignored).
-BOOST_AUTO_TEST_CASE(test_output_quantity_name_duplicate)
+void test_output_quantity_name_duplicate()
 { // Ensure that if more than one format specified, only the last is used.
 #define FORMATTERS << boost::units::symbol_format << boost::units::name_format
     BOOST_UNITS_TEST_OUTPUT(1.5*meter_base_unit::unit_type(), "1.5 meter");
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_quantity_symbol_duplicate)
+void test_output_quantity_symbol_duplicate()
 { // Ensure that if more than one format specified, only the last is used.
 #define FORMATTERS << boost::units::name_format << boost::units::symbol_format
     BOOST_UNITS_TEST_OUTPUT(1.5*meter_base_unit::unit_type(), "1.5 m");
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_auto_binary_prefixed_quantity_name_duplicate)
+void test_output_auto_binary_prefixed_quantity_name_duplicate()
 { // Ensure that if more than one auto prefix specified, only the last is used.
 #define FORMATTERS << boost::units::name_format << boost::units::binary_prefix << boost::units::engineering_prefix
     BOOST_UNITS_TEST_OUTPUT(2048 * byte_base_unit::unit_type(), "2.048 kilobyte");
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_auto_binary_prefixed_quantity_symbol_duplicate)
+void test_output_auto_binary_prefixed_quantity_symbol_duplicate()
 { // Ensure that if more than one auto prefix specified, only the last is used.
 #define FORMATTERS << boost::units::symbol_format << boost::units::engineering_prefix << boost::units::binary_prefix
     BOOST_UNITS_TEST_OUTPUT(2048 * byte_base_unit::unit_type(), "2 Kib");
 #undef FORMATTERS
 }
 
-BOOST_AUTO_TEST_CASE(test_output_typename_format)
+void test_output_typename_format()
 {  // Displays typename formatting result. The test doesn't check the formatting result
    // and thus doesn't fail because the formatting result is platform-dependent.
 #define FORMATTERS << boost::units::typename_format
@@ -496,4 +493,24 @@ BOOST_AUTO_TEST_CASE(test_output_typename_format)
     BOOST_UNITS_TEST_OUTPUT_DISPLAY(scaled_custom2());
     BOOST_UNITS_TEST_OUTPUT_DISPLAY(boost::units::absolute<meter_base_unit::unit_type>());
 #undef FORMATTERS
+}
+
+int main()
+{
+    test_output_unit_symbol();
+    test_output_unit_raw();
+    test_output_unit_name();
+    test_output_quantity_symbol();
+    test_output_quantity_raw();
+    test_output_quantity_name();
+    test_output_autoprefixed_quantity_name();
+    test_output_autoprefixed_quantity_symbol();
+    test_output_auto_binary_prefixed_quantity_symbol();
+    test_output_auto_binary_prefixed_quantity_name();
+    test_output_quantity_name_duplicate();
+    test_output_quantity_symbol_duplicate();
+    test_output_auto_binary_prefixed_quantity_name_duplicate();
+    test_output_auto_binary_prefixed_quantity_symbol_duplicate();
+    test_output_typename_format();
+    return boost::report_errors();
 }

@@ -11,11 +11,8 @@
 
 #include <boost/config/warning_disable.hpp>
 
-#include <boost/detail/lightweight_test.hpp>
 #include <boost/system/error_code.hpp>
-#include <boost/system/cygwin_error.hpp>
-#include <boost/system/linux_error.hpp>
-#include <boost/system/windows_error.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -111,6 +108,7 @@ int main( int, char ** )
 
   std::cout << "Conversion use cases...\n";
   error_condition x1( errc::file_exists );
+  (void)x1;
   //error_code x2( errc::file_exists ); // should fail to compile
   make_error_code(errc::file_exists);
   make_error_condition(errc::file_exists);
@@ -294,29 +292,7 @@ int main( int, char ** )
   BOOST_TEST( ec.default_error_condition().value() == errc::permission_denied );
   BOOST_TEST( ec.default_error_condition().category() == generic_category() );
 
-# ifdef __CYGWIN__
-
-  std::cout << "Cygwin tests...\n";
-  ec = cygwin_error::no_package;
-  BOOST_TEST( ec == cygwin_error::no_package );
-  BOOST_TEST( ec == error_code( ENOPKG, system_category() ) );
-  BOOST_TEST( ec == error_code( cygwin_error::no_package, system_category() ) );
-  BOOST_TEST( ec.default_error_condition().category() == system_category() );
-
-# elif defined(linux) || defined(__linux) || defined(__linux__)
-
-  std::cout << "Linux tests...\n";
-  ec = linux_error::dot_dot_error;
-  BOOST_TEST( ec == linux_error::dot_dot_error );
-  BOOST_TEST( ec == error_code( EDOTDOT, system_category() ) );
-  BOOST_TEST( ec == error_code( linux_error::dot_dot_error, system_category() ) );
-  BOOST_TEST( ec.default_error_condition().category() == system_category() );
-
-# endif
-
 #endif
   
   return ::boost::report_errors();
 }
-
-

@@ -78,6 +78,14 @@ enum MOBID {
 	MOBID_S_GIANT_HORNET,
 	MOBID_S_LUCIOLA_VESPA,
 	MOBID_GUILD_SKILL_FLAG	= 20269,
+	MOBID_ABR_BATTLE_WARIOR = 20834,
+	MOBID_ABR_DUAL_CANNON,
+	MOBID_ABR_MOTHER_NET,
+	MOBID_ABR_INFINITY,
+	MOBID_BIONIC_WOODENWARRIOR = 20848,
+	MOBID_BIONIC_WOODEN_FAIRY,
+	MOBID_BIONIC_CREEPER,
+	MOBID_BIONIC_HELLTREE,
 };
 
 ///Mob skill states.
@@ -266,21 +274,21 @@ struct s_mob_db {
 
 class MobDatabase : public TypesafeCachedYamlDatabase <uint32, s_mob_db> {
 private:
-#ifdef Pandas_YamlBlastCache_MobDatabase
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<uint32, s_mob_db>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_MobDatabase
 
 	bool parseDropNode(std::string nodeName, YAML::Node node, uint8 max, s_mob_drop *drops);
 
 public:
-	MobDatabase() : TypesafeCachedYamlDatabase("MOB_DB", 2, 1) {
+	MobDatabase() : TypesafeCachedYamlDatabase("MOB_DB", 3, 1) {
 #ifdef Pandas_YamlBlastCache_MobDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(624);	// Win32 + PEC + PRE
+		this->validDatatypeSize.push_back(656);	// Win32 + PEC + RENEWAL
+		this->validDatatypeSize.push_back(544);	// Win32 + NOPEC + PRE
+		this->validDatatypeSize.push_back(560);	// Win32 + NOPEC + RENEWAL
+
+		this->validDatatypeSize.push_back(680);	// x64 + PEC + PRE
+		this->validDatatypeSize.push_back(712);	// x64 + PEC + RENEWAL
+		this->validDatatypeSize.push_back(616);	// x64 + NOPEC + BOTH
 #endif // Pandas_YamlBlastCache_MobDatabase
 	}
 
@@ -475,10 +483,19 @@ struct view_data* mob_get_viewdata(int mob_id);
 void mob_set_dynamic_viewdata( struct mob_data* md );
 void mob_free_dynamic_viewdata( struct mob_data* md );
 
+#ifndef Pandas_FuncDefine_Mob_Once_Spawn_Sub
 struct mob_data *mob_once_spawn_sub(struct block_list *bl, int16 m, int16 x, int16 y, const char *mobname, int mob_id, const char *event, unsigned int size, enum mob_ai ai);
+#else
+struct mob_data* mob_once_spawn_sub(struct block_list* bl, int16 m, int16 x, int16 y, const char* mobname, int mob_id, const char* event, unsigned int size, enum mob_ai ai, uint16 spawn_flag = 0);
+#endif // Pandas_FuncDefine_Mob_Once_Spawn_Sub
 
+#ifndef Pandas_FuncDefine_Mob_Once_Spawn
 int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y,
 	const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai);
+#else
+int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y,
+	const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai, uint16 spawn_flag = 0);
+#endif // Pandas_FuncDefine_Mob_Once_Spawn
 
 int mob_once_spawn_area(struct map_session_data* sd, int16 m,
 	int16 x0, int16 y0, int16 x1, int16 y1, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai);

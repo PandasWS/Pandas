@@ -20,6 +20,12 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 
   set(BOOST_DETECTED_TOOLSET "clang-darwin")
 
+  # Match clang-darwin.jam
+
+  if(_BOOST_COMPILER_VERSION_MAJOR GREATER 3)
+    set(_BOOST_COMPILER_VERSION_MINOR)
+  endif()
+
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 
   if(MSVC)

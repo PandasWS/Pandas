@@ -72,6 +72,14 @@ void apply(Point const & p0, Point const & p1, AssignPolicy & policy,
 
 ]
 ]
+[[``Spheroid const  & model()``
+
+] [] [
+
+][
+
+]
+]
 ]
 
 [heading Header]

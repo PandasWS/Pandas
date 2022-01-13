@@ -70,7 +70,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.8.1"
+	#define Pandas_Version "1.1.10.1"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -84,7 +84,7 @@
 	// 是否启用一些杂乱的自定义辅助函数
 	#define Pandas_Helper_Common_Function
 
-	// 是否启用 LGTM 建议的处理措施, 避免潜在风险
+	// 是否启用 LGTM 或 CodeQL 建议的处理措施, 避免潜在风险
 	#define Pandas_LGTM_Optimization
 #endif // Pandas_Basic
 
@@ -224,6 +224,9 @@
 
 	// 使 s_random_opt_data 能保存脚本的明文 [Sola丶小克]
 	#define Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+
+	// 使 status_change 能保存 cloak 是否正在进行中的状态 [Sola丶小克]
+	#define Pandas_Struct_Status_Change_Cloak_Reverting
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -436,6 +439,21 @@
 	// 调整 mob.cpp 的 mob_getdroprate 函数增加 md 参数 [Sola丶小克]
 	// 新增的 md 参数用于在 mob_getdroprate 进行掉率计算时能根据魔物实例进行必要调整
 	#define Pandas_FuncParams_Mob_GetDroprate
+
+	// 在 mob.cpp 中的 mob_once_spawn_sub 增加 spawn_flag 参数 [Sola丶小克]
+	// 新增的 spawn_flag 参数可以用来控制召唤出来的魔物是不是 BOSS (可以被 BOSS 雷达探测)
+	#define Pandas_FuncDefine_Mob_Once_Spawn_Sub
+
+	// 在 mob.cpp 中的 mob_once_spawn 增加 spawn_flag 参数 [Sola丶小克]
+	// 新增的 spawn_flag 参数可以用来控制召唤出来的魔物是不是 BOSS (可以被 BOSS 雷达探测)
+	// 此选项依赖 Pandas_FuncDefine_Mob_Once_Spawn_Sub 的拓展
+	#ifdef Pandas_FuncDefine_Mob_Once_Spawn_Sub
+		#define Pandas_FuncDefine_Mob_Once_Spawn
+	#endif // Pandas_FuncDefine_Mob_Once_Spawn_Sub
+
+	// 在 map.cpp 中的 map_getmob_boss 增加 alive_first 参数 [Sola丶小克]
+	// 新增的 alive_first 参数可以指定优先返回存活着的 BOSS 魔物
+	#define Pandas_FuncDefine_Mob_Getmob_Boss
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -910,6 +928,26 @@
 	#ifdef Pandas_Struct_S_Mail_With_Details
 		#define Pandas_Fix_Mail_ItemAttachment_Check
 	#endif // Pandas_Struct_S_Mail_With_Details
+
+	// 修正 cloak 的状态处理过于令人费解的问题
+	// 此选项开关需要依赖 Pandas_Struct_Status_Change_Cloak_Reverting 的拓展 [Sola丶小克]
+	#ifdef Pandas_Struct_Status_Change_Cloak_Reverting
+		#define Pandas_Fix_Cloak_Status_Baffling
+	#endif // Pandas_Struct_Status_Change_Cloak_Reverting
+
+	// 修正获取道具分组的随机算法权重不符合预期的问题 [Sola丶小克]
+	// 所有最终使用 item_group_db.yml 数据的指令函数 (比如 getrandgroupitem 等)
+	// 最后都会经过 itemdb.cpp 中的 get_random_itemsubgroup 来获取随机物品
+	// 该函数的实现并不严谨, 随机出来的物品概率与 doc/item_group.txt 的描述不符合
+	// 这可能导致很多卡片或者道具过多流入到市场, 打破游戏平衡
+	//
+	// 感谢 "红狐狸" 提醒此问题
+	#define Pandas_Fix_GetRandom_ItemSubGroup_Algorithm
+
+	// 修正 rAthena 合并四转职业之后技能数超过 MAX_SKILL 导致的数据越界异常 [Sola丶小克]
+	// 由于四转职业需要, 程序引入更多的技能之后技能总数超过了 MAX_SKILL 定义的 1450
+	// 这会导致在以 skill_db.size() 为基准遍历处理 mmo_charstatus 结构体 skill 对象时造成溢出
+	#define	Pandas_Fix_MAX_SKILL_Too_Small
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -1014,6 +1052,12 @@
 	// 因为触发 atcommand 的时候角色已经下线, 因此 atcommand_sub 会生成一个 dummy_sd 来替代,
 	// 而 dummy_sd 并非真实存在的 sd 对象, 最后会导致地图服务器崩溃
 	#define Pandas_Crashfix_PC_Setpos_With_Invaild_Player
+
+	// 修正 getinstancevar 传递无效的副本编号会导致地图服务器崩溃的问题 [Sola丶小克]
+	#define Pandas_Crashfix_GetInstanceVar_Invaild_InstanceID
+
+	// 修正 setinstancevar 传递无效的副本编号会导致地图服务器崩溃的问题 [Sola丶小克]
+	#define Pandas_Crashfix_SetInstanceVar_Invaild_InstanceID
 #endif // Pandas_Crashfix
 
 // ============================================================================
@@ -1168,6 +1212,12 @@
 
 		// 是否启用对 RandomOptionGroupDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_RandomOptionGroupDatabase
+
+		// 是否启用对 JobDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_JobDatabase
+
+		// 是否启用对 SkillTreeDatabase 的序列化支持 [Sola丶小克]
+		#define Pandas_YamlBlastCache_SkillTreeDatabase
 	#endif // Pandas_YamlBlastCache_Serialize
 #endif // Pandas_YamlBlastCache
 
@@ -1184,7 +1234,7 @@
 	// 但是整个服务端只有 login-server 会尝试去读取这个配置, 所以非常鸡肋.
 	// 以至于目前 rAthena 在官方的 conf/inter_athena.conf 中都把相关配置删了.
 	//
-	// 所以熊猫表示, 我们也干脆删了吧!! Oh yeah!
+	// 所以我们也干脆删了吧!! Oh yeah!
 	#define Pandas_Cleanup_Useless_SQL_Global_Configure
 
 	// 清理掉一些没啥作用看着还心烦的终端提示信息 [Sola丶小克]
@@ -1297,6 +1347,11 @@
 		// 事件类型: Filter / 事件名称: OnPCPartyLeaveFilter
 		// 常量名称: NPCF_PARTYLEAVE / 变量名称: partyleave_filter_name
 		#define Pandas_NpcFilter_PARTYLEAVE
+
+		// 当玩家准备丢弃或掉落道具时触发过滤器 [人鱼姬的思念]
+		// 事件类型: Filter / 事件名称: OnPCDropItemFilter
+		// 常量名称: NPCF_DROPITEM / 变量名称: dropitem_filter_name
+		#define Pandas_NpcFilter_DROPITEM
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -1387,6 +1442,16 @@
 		// 事件类型: Express / 事件名称: OnPCAttackExpress
 		// 常量名称: NPCX_PCATTACK / 变量名称: pcattack_express_name
 		#define Pandas_NpcExpress_PCATTACK
+
+		// 当玩家成功召唤出佣兵时触发实时事件 [HongShin]
+		// 事件类型: Express / 事件名称: OnPCMerCallExpress
+		// 常量名称: NPCX_MER_CALL / 变量名称: mer_call_express_name
+		#define Pandas_NpcExpress_MER_CALL
+
+		// 当佣兵离开玩家时触发实时事件 [HongShin]
+		// 事件类型: Express / 事件名称: OnPCMerLeaveExpress
+		// 常量名称: NPCX_MER_LEAVE / 变量名称: mer_leave_express_name
+		#define Pandas_NpcExpress_MER_LEAVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	
@@ -1565,6 +1630,41 @@
 	// 变量位置: map_session_data / 变量名称: addskillrange
 	// 使用原型: bonus2 bAddSkillRange,sk,n;
 	#define Pandas_Bonus_bAddSkillRange
+
+	// 是否启用 Pandas_Bonus_bSkillNoRequire 效果调整器 [聽風]
+	// 解除 sk 技能中由 n 指定的前置施法条件限制
+	// 常量名称: SP_PANDAS_SKILLNOREQUIRE / 调整器名称: bSkillNoRequire
+	// 变量位置: map_session_data / 变量名称: skillnorequire
+	// 使用原型: bonus2 bSkillNoRequire,sk,n;
+	#define Pandas_Bonus_bSkillNoRequire
+
+	// 是否启用 bStatusAddDamage 效果调整器 [聽風]
+	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
+	// 常量名称: SP_PANDAS_STATUSADDDAMAGE / 调整器名称: bStatusAddDamage
+	// 变量位置: map_session_data / 变量名称: status_damage_adjust
+	// 使用原型: bonus4 bStatusAddDamage,sc,n,r,bf;
+	#define Pandas_Bonus_bStatusAddDamage
+
+	// 是否启用 bStatusAddDamageRate 效果调整器 [聽風]
+	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
+	// 常量名称: SP_PANDAS_STATUSADDDAMAGERATE / 调整器名称: bStatusAddDamageRate
+	// 变量位置: map_session_data / 变量名称: status_damagerate_adjust
+	// 使用原型: bonus4 bStatusAddDamageRate,sc,n,r,bf;
+	#define Pandas_Bonus_bStatusAddDamageRate
+
+	// 是否启用 bFinalAddRace 效果调整器 [聽風]
+	// 使用 bf 攻击 r 种族的目标时增加 x% 的伤害 (在最终伤害上全段修正)
+	// 常量名称: SP_PANDAS_FINALADDRACE / 调整器名称: bFinalAddRace
+	// 变量位置: map_session_data / 变量名称: finaladd_race
+	// 使用原型: bonus3 bFinalAddRace,r,x,bf;
+	#define Pandas_Bonus_bFinalAddRace
+
+	// 是否启用 bFinalAddClass 效果调整器 [聽風]
+	// 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
+	// 常量名称: SP_PANDAS_FINALADDCLASS / 调整器名称: bFinalAddClass
+	// 变量位置: map_session_data / 变量名称: finaladd_class
+	// 使用原型: bonus3 bFinalAddClass,c,x,bf;
+	#define Pandas_Bonus_bFinalAddClass
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 
@@ -1910,6 +2010,17 @@
 	// 是否启用 getskillinfo 脚本指令 [聽風]
 	// 该指令用于获取指定技能在技能数据库中所配置的各项信息
 	#define Pandas_ScriptCommand_GetSkillInfo
+
+	// 是否启用 boss_monster 脚本指令 [人鱼姬的思念]
+	// 该指令用于召唤魔物并使之能被 BOSS 雷达探测 (哪怕被召唤魔物本身不是 BOSS)
+	// 此选项依赖 Pandas_FuncDefine_Mob_Once_Spawn 的拓展
+	#ifdef Pandas_FuncDefine_Mob_Once_Spawn
+		#define Pandas_ScriptCommand_BossMonster
+	#endif // Pandas_FuncDefine_Mob_Once_Spawn
+
+	// 是否启用 sleep3 脚本指令 [人鱼姬的思念]
+	// 该指令用于休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错
+	#define Pandas_ScriptCommand_Sleep3
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

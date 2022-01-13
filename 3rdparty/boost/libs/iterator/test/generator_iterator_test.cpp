@@ -7,7 +7,7 @@
 //
 
 #include <boost/generator_iterator.hpp>
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <algorithm>
 
 class X

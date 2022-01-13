@@ -363,6 +363,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_PARTYLEAVE
 	"OnPCPartyLeaveFilter",	// NPCF_PARTYLEAVE		// partyleave_filter_name	// 当玩家准备离开队伍时触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_PARTYLEAVE
+
+#ifdef Pandas_NpcFilter_DROPITEM
+	"OnPCDropItemFilter",	// NPCF_DROPITEM		// dropitem_filter_name	// 当玩家准备丢弃或掉落道具时触发过滤器
+#endif // Pandas_NpcFilter_DROPITEM
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
@@ -433,6 +437,14 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcExpress_PCATTACK
 	"OnPCAttackExpress",	// NPCX_PCATTACK		// pcattack_express_name	// 当玩家发起攻击并即将进行结算时触发实时事件 [聽風]
 #endif // Pandas_NpcExpress_PCATTACK
+
+#ifdef Pandas_NpcExpress_MER_CALL
+	"OnPCMerCallExpress",	// NPCX_MER_CALL		// mer_call_express_name	// 当玩家成功召唤出佣兵时触发实时事件
+#endif // Pandas_NpcExpress_MER_CALL
+
+#ifdef Pandas_NpcExpress_MER_LEAVE
+	"OnPCMerLeaveExpress",	// NPCX_MER_LEAVE		// mer_leave_express_name	// 当佣兵离开玩家时触发实时事件
+#endif // Pandas_NpcExpress_MER_LEAVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 
 	// NPC related
@@ -4589,6 +4601,12 @@ void script_detach_state(struct script_state* st, bool dequeue_event)
 	struct map_session_data* sd;
 
 	if (st->rid && (sd = map_id2sd(st->rid)) != NULL) {
+
+		if (sd->state.using_fake_npc) {
+			clif_clearunit_single(sd->npc_id, CLR_OUTSIGHT, sd->fd);
+			sd->state.using_fake_npc = 0;
+		}
+
 		sd->st = nullptr;
 		sd->npc_id = 0;
 		sd->state.disable_atcommand_on_npc = 0;
@@ -10269,6 +10287,50 @@ BUILDIN_FUNC(statusup2)
 	return SCRIPT_CMD_SUCCESS;
 }
 
+/**
+* traitstatusup <stat>{,<char_id>};
+**/
+BUILDIN_FUNC(traitstatusup)
+{
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(3, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	int type = script_getnum( st, 2 );
+
+	if( type < SP_POW || type > SP_CRT ){
+		ShowError( "buildin_traitstatusup: Unknown trait type %d\n", type );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	pc_traitstatusup( sd, type, 1 );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/**
+* traitstatusup2 <stat>,<amount>{,<char_id>};
+**/
+BUILDIN_FUNC(traitstatusup2)
+{
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(4, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	int type = script_getnum( st, 2 );
+
+	if( type < SP_POW || type > SP_CRT ){
+		ShowError( "buildin_traitstatusup2: Unknown trait type %d\n", type );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	pc_traitstatusup2( sd, type, script_getnum( st, 3 ) );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 /// See 'doc/item_bonus.txt'
 ///
 /// bonus <bonus type>,<val1>;
@@ -10312,6 +10374,9 @@ BUILDIN_FUNC(bonus)
 #ifdef Pandas_Bonus_bAddSkillRange
 		case SP_PANDAS_ADDSKILLRANGE:
 #endif // Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus_bSkillNoRequire
+		case SP_PANDAS_SKILLNOREQUIRE:
+#endif // Pandas_Bonus_bSkillNoRequire
 			// these bonuses support skill names
 			if (script_isstring(st, 3)) {
 				const char *name = script_getstr(st, 3);
@@ -11396,6 +11461,10 @@ BUILDIN_FUNC(monster)
 	int16 m;
 	int i;
 
+#ifdef Pandas_ScriptCommand_BossMonster
+	const char* command = script_getfuncname(st);
+#endif // Pandas_ScriptCommand_BossMonster
+
 	if (script_hasdata(st, 8)) {
 		event = script_getstr(st, 8);
 		check_event(st, event);
@@ -11404,7 +11473,11 @@ BUILDIN_FUNC(monster)
 	if (script_hasdata(st, 9)) {
 		size = script_getnum(st, 9);
 		if (size > SZ_BIG) {
+#ifndef Pandas_ScriptCommand_BossMonster
 			ShowWarning("buildin_monster: Attempted to spawn non-existing size %d for monster class %d\n", size, class_);
+#else
+			ShowWarning("buildin_%s: Attempted to spawn non-existing size %d for monster class %d\n", command, size, class_);
+#endif // Pandas_ScriptCommand_BossMonster
 			return SCRIPT_CMD_FAILURE;
 		}
 	}
@@ -11412,13 +11485,21 @@ BUILDIN_FUNC(monster)
 	if (script_hasdata(st, 10)) {
 		ai = static_cast<enum mob_ai>(script_getnum(st, 10));
 		if (ai >= AI_MAX) {
+#ifndef Pandas_ScriptCommand_BossMonster
 			ShowWarning("buildin_monster: Attempted to spawn non-existing ai %d for monster class %d\n", ai, class_);
+#else
+			ShowWarning("buildin_%s: Attempted to spawn non-existing ai %d for monster class %d\n", command, ai, class_);
+#endif // Pandas_ScriptCommand_BossMonster
 			return SCRIPT_CMD_FAILURE;
 		}
 	}
 
 	if (class_ >= 0 && !mobdb_checkid(class_)) {
+#ifndef Pandas_ScriptCommand_BossMonster
 		ShowWarning("buildin_monster: Attempted to spawn non-existing monster class %d\n", class_);
+#else
+		ShowWarning("buildin_%s: Attempted to spawn non-existing monster class %d\n", command, class_);
+#endif // Pandas_ScriptCommand_BossMonster
 		return SCRIPT_CMD_FAILURE;
 	}
 
@@ -11430,7 +11511,11 @@ BUILDIN_FUNC(monster)
 		m = map_mapname2mapid(mapn);
 
 	for(i = 0; i < amount; i++) { //not optimised
+#ifndef Pandas_ScriptCommand_BossMonster
 		int mobid = mob_once_spawn(sd, m, x, y, str, class_, 1, event, size, ai);
+#else
+		int mobid = mob_once_spawn(sd, m, x, y, str, class_, 1, event, size, ai, (!strcmp(command, "boss_monster")) ? 1 : 0);
+#endif // Pandas_ScriptCommand_BossMonster
 
 		if (mobid)
 			mapreg_setreg(reference_uid(add_str("$@mobid"), i), mobid);
@@ -12676,11 +12761,16 @@ BUILDIN_FUNC(sc_end_class)
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	for (int i = 0; i < MAX_SKILL_TREE && (skill_id = skill_tree[pc_class2idx(class_)][i].skill_id) > 0; i++) {
-		enum sc_type sc = status_skill2sc(skill_id);
+	std::shared_ptr<s_skill_tree> tree = skill_tree_db.find(class_);
 
-		if (sc > SC_COMMON_MAX && sd->sc.data[sc])
-			status_change_end(&sd->bl, sc, INVALID_TIMER);
+	if( tree != nullptr ){
+		for (const auto &it : tree->skills) {
+			skill_id = it.first;
+			enum sc_type sc = status_skill2sc(skill_id);
+
+			if (sc > SC_COMMON_MAX && sd->sc.data[sc])
+				status_change_end(&sd->bl, sc, INVALID_TIMER);
+		}
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -14897,6 +14987,7 @@ BUILDIN_FUNC(getiteminfo)
 		}
 		case ITEMINFO_ID: script_pushint(st, i_data->nameid); break;
 		case ITEMINFO_AEGISNAME: script_pushstrcopy(st, i_data->name.c_str()); break;
+		case ITEMINFO_SUBTYPE: script_pushint(st, i_data->subtype); break;
 		
 #ifdef Pandas_ScriptParams_GetItemInfo
 		case -1: script_pushint(st, i_data->flag.no_refine ? 0 : 1); break;
@@ -15089,6 +15180,7 @@ BUILDIN_FUNC(setiteminfo)
 #endif
 			break;
 		}
+		case ITEMINFO_SUBTYPE: i_data->subtype = static_cast<uint8>(value); break;
 		default:
 			script_pushint(st, -1);
 			break;
@@ -16211,7 +16303,7 @@ BUILDIN_FUNC(getmercinfo)
 {
 	int type;
 	struct map_session_data* sd;
-	struct mercenary_data* md;
+	s_mercenary_data* md;
 
 	if( !script_charid2sd(3,sd) ){
 		script_pushnil(st);
@@ -16233,7 +16325,7 @@ BUILDIN_FUNC(getmercinfo)
 	{
 		case 0: script_pushint(st,md->mercenary.mercenary_id); break;
 		case 1: script_pushint(st,md->mercenary.class_); break;
-		case 2: script_pushstrcopy(st,md->db->name); break;
+		case 2: script_pushstrcopy(st,md->db->name.c_str()); break;
 		case 3: script_pushint(st,mercenary_get_faith(md)); break;
 		case 4: script_pushint(st,mercenary_get_calls(md)); break;
 		case 5: script_pushint(st,md->mercenary.kill_count); break;
@@ -18717,6 +18809,8 @@ BUILDIN_FUNC(getmonsterinfo)
 		case MOB_ATK2:		script_pushint(st,mob->status.rhw.atk2); break;
 		case MOB_DEF:		script_pushint(st,mob->status.def); break;
 		case MOB_MDEF:		script_pushint(st,mob->status.mdef); break;
+		case MOB_RES:		script_pushint(st, mob->status.res); break;
+		case MOB_MRES:		script_pushint(st, mob->status.mres); break;
 		case MOB_STR:		script_pushint(st,mob->status.str); break;
 		case MOB_AGI:		script_pushint(st,mob->status.agi); break;
 		case MOB_VIT:		script_pushint(st,mob->status.vit); break;
@@ -18887,7 +18981,7 @@ BUILDIN_FUNC(rid2name)
 			case BL_NPC: script_pushstrcopy(st,((TBL_NPC*)bl)->exname); break;
 			case BL_PET: script_pushstrcopy(st,((TBL_PET*)bl)->pet.name); break;
 			case BL_HOM: script_pushstrcopy(st,((TBL_HOM*)bl)->homunculus.name); break;
-			case BL_MER: script_pushstrcopy(st,((TBL_MER*)bl)->db->name); break;
+			case BL_MER: script_pushstrcopy(st,((TBL_MER*)bl)->db->name.c_str()); break;
 			default:
 				ShowError("buildin_rid2name: BL type unknown.\n");
 				script_pushconststr(st,"");
@@ -19173,6 +19267,8 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UMOB_BODY2, md->vd->body_style);
 			getunitdata_sub(UMOB_GROUP_ID, md->ud.group_id);
 			getunitdata_sub(UMOB_IGNORE_CELL_STACK_LIMIT, md->ud.state.ignore_cell_stack_limit);
+			getunitdata_sub(UMOB_RES, md->status.res);
+			getunitdata_sub(UMOB_MRES, md->status.mres);
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			getunitdata_sub(UMOB_AURA, md->ucd.aura.id);
 #endif // Pandas_Struct_Unit_CommonData_Aura
@@ -19600,6 +19696,8 @@ BUILDIN_FUNC(setunitdata)
 			case UMOB_BODY2: clif_changelook(bl, LOOK_BODY2, (unsigned short)value); break;
 			case UMOB_GROUP_ID: md->ud.group_id = value; unit_refresh(bl); break;
 			case UMOB_IGNORE_CELL_STACK_LIMIT: md->ud.state.ignore_cell_stack_limit = value > 0; break;
+			case UMOB_RES: md->base_status->res = (short)value; calc_status = true; break;
+			case UMOB_MRES: md->base_status->mres = (short)value; calc_status = true; break;
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			case UMOB_AURA: aura_make_effective(bl, value); break;
 #endif // Pandas_Struct_Unit_CommonData_Aura
@@ -19858,7 +19956,7 @@ BUILDIN_FUNC(setunitdata)
 					ShowWarning("buildin_setunitdata: Error in finding target for BL_ELEM!\n");
 					return SCRIPT_CMD_FAILURE;
 				}
-				elemental_change_mode(ed, static_cast<e_mode>(EL_MODE_AGGRESSIVE));
+				elemental_change_mode(ed, EL_MODE_AGGRESSIVE);
 				unit_attack(&ed->bl, target->id, 1);
 				break;
 			}
@@ -20833,7 +20931,7 @@ BUILDIN_FUNC(mercenary_create)
 
 	class_ = script_getnum(st,2);
 
-	if( !mercenary_db(class_) )
+	if( !mercenary_db.exists(class_) )
 		return SCRIPT_CMD_SUCCESS;
 
 	contract_time = script_getnum(st,3);
@@ -24852,6 +24950,28 @@ BUILDIN_FUNC(needed_status_point) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
+/// Returns the number of trait stat points needed to change the specified trait stat by val.
+/// If val is negative, returns the number of trait stat points that would be needed to
+/// raise the specified trait stat from (current value - val) to current value.
+/// *needed_trait_point(<type>,<val>{,<char id>});
+BUILDIN_FUNC(needed_trait_point) {
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(4, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	int type = script_getnum( st, 2 );
+
+	if( type < SP_POW || type > SP_CRT ){
+		ShowError( "buildin_needed_trait_point: Unknown trait type %d\n", type );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	script_pushint( st, pc_need_trait_point( sd, type, script_getnum( st, 3 ) ) );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 /**
  * jobcanentermap("<mapname>"{,<JobID>});
  * Check if (player with) JobID can enter the map.
@@ -26299,13 +26419,13 @@ BUILDIN_FUNC(achievement_condition){
 /// Returns a reference to a variable of the specific instance ID.
 /// Returns 0 if an error occurs.
 ///
-/// getvariableofinstance(<variable>, <instance ID>) -> <reference>
-BUILDIN_FUNC(getvariableofinstance)
+/// getinstancevar(<variable>, <instance ID>) -> <reference>
+BUILDIN_FUNC(getinstancevar)
 {
 	struct script_data* data = script_getdata(st, 2);
 
 	if (!data_isreference(data)) {
-		ShowError("buildin_getvariableofinstance: %s is not a variable.\n", script_getstr(st, 2));
+		ShowError("buildin_getinstancevar: %s is not a variable.\n", script_getstr(st, 2));
 		script_reportdata(data);
 		script_pushnil(st);
 		st->state = END;
@@ -26315,7 +26435,7 @@ BUILDIN_FUNC(getvariableofinstance)
 	const char* name = reference_getname(data);
 
 	if (*name != '\'') {
-		ShowError("buildin_getvariableofinstance: Invalid scope. %s is not an instance variable.\n", name);
+		ShowError("buildin_getinstancevar: Invalid scope. %s is not an instance variable.\n", name);
 		script_reportdata(data);
 		script_pushnil(st);
 		st->state = END;
@@ -26325,7 +26445,7 @@ BUILDIN_FUNC(getvariableofinstance)
 	int instance_id = script_getnum(st, 3);
 
 	if (instance_id <= 0) {
-		ShowError("buildin_getvariableofinstance: Invalid instance ID %d.\n", instance_id);
+		ShowError("buildin_getinstancevar: Invalid instance ID %d.\n", instance_id);
 		script_pushnil(st);
 		st->state = END;
 		return SCRIPT_CMD_FAILURE;
@@ -26333,8 +26453,12 @@ BUILDIN_FUNC(getvariableofinstance)
 
 	std::shared_ptr<s_instance_data> im = util::umap_find(instances, instance_id);
 
+#ifndef Pandas_Crashfix_GetInstanceVar_Invaild_InstanceID
 	if (im->state != INSTANCE_BUSY) {
-		ShowError("buildin_getvariableofinstance: Unknown instance ID %d.\n", instance_id);
+#else
+	if (!im || im->state != INSTANCE_BUSY) {
+#endif // Pandas_Crashfix_GetInstanceVar_Invaild_InstanceID
+		ShowError("buildin_getinstancevar: Unknown instance ID %d.\n", instance_id);
 		script_pushnil(st);
 		st->state = END;
 		return SCRIPT_CMD_FAILURE;
@@ -26344,6 +26468,66 @@ BUILDIN_FUNC(getvariableofinstance)
 		im->regs.vars = i64db_alloc(DB_OPT_RELEASE_DATA);
 
 	push_val2(st->stack, C_NAME, reference_getuid(data), &im->regs);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// Sets the value of an instance variable.
+///
+/// setinstancevar(<variable>,<value>,<instance ID>)
+BUILDIN_FUNC(setinstancevar)
+{
+	const char *command = script_getfuncname(st);
+	struct script_data* data = script_getdata(st, 2);
+
+	if (!data_isreference(data)) {
+		ShowError("buildin_%s: %s is not a variable.\n", command, script_getstr(st, 2));
+		script_reportdata(data);
+		script_pushnil(st);
+		st->state = END;
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	const char* name = reference_getname(data);
+
+	if (*name != '\'') {
+		ShowError("buildin_%s: Invalid scope. %s is not an instance variable.\n", command, name);
+		script_reportdata(data);
+		script_pushnil(st);
+		st->state = END;
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int instance_id = script_getnum(st, 4);
+
+	if (instance_id <= 0) {
+		ShowError("buildin_%s: Invalid instance ID %d.\n", command, instance_id);
+		script_pushnil(st);
+		st->state = END;
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	std::shared_ptr<s_instance_data> im = util::umap_find(instances, instance_id);
+
+#ifndef Pandas_Crashfix_SetInstanceVar_Invaild_InstanceID
+	if (im->state != INSTANCE_BUSY) {
+#else
+	if (!im || im->state != INSTANCE_BUSY) {
+#endif // Pandas_Crashfix_SetInstanceVar_Invaild_InstanceID
+		ShowError("buildin_%s: Unknown instance ID %d.\n", command, instance_id);
+		script_pushnil(st);
+		st->state = END;
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	script_pushcopy(st, 2);
+
+	struct map_session_data* sd = nullptr;
+
+	if( is_string_variable(name) )
+		set_reg_str( st, sd, reference_getuid(data), name, script_getstr( st, 3 ), &im->regs );
+	else
+		set_reg_num( st, sd, reference_getuid(data), name, script_getnum64( st, 3 ), &im->regs );
+
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -26453,15 +26637,32 @@ BUILDIN_FUNC(refineui){
 BUILDIN_FUNC(getenchantgrade){
 	struct map_session_data *sd;
 
-	if( !script_rid2sd( sd ) ){
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st,-1);
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	if( current_equip_item_index == -1 ){
+	int index, position;
+
+	if (script_hasdata(st, 2))
+		position = script_getnum(st, 2);
+	else
+		position = EQI_COMPOUND_ON;
+
+	if (position == EQI_COMPOUND_ON)
+		index = current_equip_item_index;
+	else if (equip_index_check(position))
+		index = pc_checkequip(sd, equip_bitmask[position]);
+	else {
+		ShowError( "buildin_getenchantgrade: Unknown equip index '%d'\n", position );
+		script_pushint(st,-1);
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	script_pushint( st, sd->inventory.u.items_inventory[current_equip_item_index].enchantgrade );
+	if (index < 0 || index >= P_MAX_INVENTORY(sd) || sd->inventory.u.items_inventory[index].nameid == 0)
+		script_pushint(st, -1);
+	else
+		script_pushint(st, sd->inventory.u.items_inventory[index].enchantgrade);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -30355,6 +30556,41 @@ BUILDIN_FUNC(getskillinfo) {
 }
 #endif // Pandas_ScriptCommand_GetSkillInfo
 
+#ifdef Pandas_ScriptCommand_Sleep3
+/* ===========================================================
+ * 指令: sleep3
+ * 描述: 休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错
+ * 用法: sleep3 <休眠毫秒数>;
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: 人鱼姬的思念
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(sleep3) {
+	// First call(by function call)
+	if (st->sleep.tick == 0) {
+		int ticks;
+
+		ticks = script_getnum(st, 2);
+
+		if (ticks <= 0) {
+			ShowError("buildin_sleep3: negative or zero amount('%d') of milli seconds is not supported\n", ticks);
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		// sleep for the target amount of time
+		st->state = RERUNLINE;
+		st->sleep.tick = ticks;
+		// Second call(by timer after sleeping time is over)
+	}
+	else {
+		// The unit is still attached - continue the script
+		st->state = RUN;
+		st->sleep.tick = 0;
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Sleep3
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -30458,6 +30694,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(downrefitem,"i??"),
 	BUILDIN_DEF(statusup,"i?"),
 	BUILDIN_DEF(statusup2,"ii?"),
+	BUILDIN_DEF(traitstatusup,"i?"),
+	BUILDIN_DEF(traitstatusup2,"ii?"),
 	BUILDIN_DEF(bonus,"i?"),
 	BUILDIN_DEF2(bonus,"bonus2","ivi"),
 	BUILDIN_DEF2(bonus,"bonus3","ivii"),
@@ -30948,6 +31186,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getequiprandomoption, "iii?"),
 	BUILDIN_DEF(setrandomoption,"iiiii?"),
 	BUILDIN_DEF(needed_status_point,"ii?"),
+	BUILDIN_DEF(needed_trait_point, "ii?"),
 	BUILDIN_DEF(jobcanentermap,"s?"),
 	BUILDIN_DEF(openstorage2,"ii?"),
 	BUILDIN_DEF(unloadnpc, "s"),
@@ -31004,7 +31243,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(camerainfo,"iii?"),
 
 	BUILDIN_DEF(achievement_condition,"i"),
-	BUILDIN_DEF(getvariableofinstance,"ri"),
+	BUILDIN_DEF(getinstancevar,"ri"),
+	BUILDIN_DEF2_DEPRECATED(getinstancevar, "getvariableofinstance","ri", "2021-12-13"),
 	BUILDIN_DEF(convertpcinfo,"vi"),
 	BUILDIN_DEF(isnpccloaked, "??"),
 
@@ -31012,9 +31252,11 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(rentalcountitem, "rentalcountitem2", "viiiiiii?"),
 	BUILDIN_DEF2(rentalcountitem, "rentalcountitem3", "viiiiiiirrr?"),
 
-	BUILDIN_DEF(getenchantgrade, ""),
+	BUILDIN_DEF(getenchantgrade, "??"),
 
 	BUILDIN_DEF(mob_setidleevent, "is"),
+
+	BUILDIN_DEF(setinstancevar,"rvi"),
 
 	// -----------------------------------------------------------------
 	// 熊猫模拟器拓展脚本指令 - 开始
@@ -31257,6 +31499,12 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetSkillInfo
 	BUILDIN_DEF(getskillinfo, "iv??"),					// 获取指定技能在技能数据库中所配置的各项信息 [聽風]
 #endif // Pandas_ScriptCommand_GetSkillInfo
+#ifdef Pandas_ScriptCommand_BossMonster
+	BUILDIN_DEF2(monster,"boss_monster", "siisii???"),	// 召唤魔物并使之能被 BOSS 雷达探测 (哪怕被召唤魔物本身不是 BOSS) [人鱼姬的思念]
+#endif // Pandas_ScriptCommand_BossMonster
+#ifdef Pandas_ScriptCommand_Sleep3
+	BUILDIN_DEF(sleep3,"i"),							// 休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错 [人鱼姬的思念]
+#endif // Pandas_ScriptCommand_Sleep3
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"

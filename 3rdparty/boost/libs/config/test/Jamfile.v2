@@ -32,6 +32,8 @@ exe has_pthread_lib : config_info.cpp pthread ;
 explicit has_pthread_lib ;
 exe has_rt_lib : config_info.cpp rt ;
 explicit has_rt_lib ;
+obj check_memory : check_memory.cpp ;
+explicit check_memory ;
 
 test-suite config
   :
@@ -61,9 +63,11 @@ test-suite config
           : #requirements
           <rtti>off
           <toolset>gcc-4.4.7,<cxxstd>0x:<build>no # <memory> does not compile with -fno-rtti
+          <toolset>embarcadero:<build>no          # <memory> does not compile with -fno-rtti
           [ check-target-builds has_atomic_lib : <source>atomic ]
           [ check-target-builds has_pthread_lib : <source>pthread ]
           [ check-target-builds has_rt_lib : <source>rt ]
+          [ check-target-builds check_memory : : <build>no ]
           : config_test_no_rtti
     ]
     [ run config_test.cpp
@@ -77,9 +81,9 @@ test-suite config
           [ check-target-builds has_rt_lib : <source>rt ]
           : config_test_no_except
     ]
-     [ run config_info.cpp : : : <test-info>always_show_run_output <threading>single <toolset>msvc:<runtime-link>static <toolset>msvc:<link>static ]
-     [ run config_info.cpp : : : <test-info>always_show_run_output <threading>multi : config_info_threaded ]
-     [ run config_info.cpp : : : <test-info>always_show_run_output <rtti>off : config_info_no_rtti ]
+     [ run config_info.cpp : : : <test-info>always_show_run_output <threading>single <toolset>msvc:<runtime-link>static <toolset>msvc:<link>static <toolset>msvc:<warnings-as-errors>on <toolset>gcc:<warnings-as-errors>on <toolset>clang:<warnings-as-errors>on ]
+     [ run config_info.cpp : : : <test-info>always_show_run_output <threading>multi <toolset>msvc:<warnings-as-errors>on <toolset>gcc:<warnings-as-errors>on <toolset>clang:<warnings-as-errors>on : config_info_threaded ]
+     [ run config_info.cpp : : : <test-info>always_show_run_output <rtti>off <toolset>msvc:<warnings-as-errors>on <toolset>gcc:<warnings-as-errors>on <toolset>clang:<warnings-as-errors>on : config_info_no_rtti ]
      [ run config_info.cpp : : : <test-info>always_show_run_output <exception-handling>off 
      		<target-os>vxworks:<build>no      
      		: config_info_no_except ]
@@ -91,6 +95,7 @@ test-suite config
           : #input-files
           : #requirements
           <runtime-link>shared
+          <threading>single
           <define>BOOST_DYN_LINK=1
           <define>BOOST_CONFIG_NO_LIB=1
           <target-os>vxworks:<link>shared  
@@ -108,6 +113,7 @@ test-suite config
     [ run helper_macros_test.cpp ]
     [ compile pragma_message_test.cpp ]
     [ compile header_deprecated_test.cpp ]
+    [ compile boost_override_test.cpp ]
   ;
 
 obj has_clang_implicit_fallthrough : cmd_line_check.cpp :
@@ -117,6 +123,8 @@ explicit has_clang_implicit_fallthrough ;
 
 exe config_info_printer : config_info.cpp ;
 explicit config_info_printer ;
+exe math_info_printer : math_info.cpp ;
+explicit math_info_printer ;
 
 actions print-run
 {
@@ -132,6 +140,8 @@ rule print-run ( target : sources * : properties * )
 
 notfile print_config_info : @print-run : config_info_printer ;
 explicit print_config_info ;
+notfile print_math_info : @print-run : math_info_printer ;
+explicit print_math_info ;
 
 # Backwards compatibility:
 exe config_info_travis : config_info.cpp ;

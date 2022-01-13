@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Permutation Iterator</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Iterator">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Iterator">
 <link rel="up" href="../specialized.html" title="Specialized Adaptors">
 <link rel="prev" href="indirect.html" title="Indirect Iterator">
 <link rel="next" href="reverse.html" title="Reverse Iterator">
@@ -106,15 +106,15 @@
 <p>
         The output is:
       </p>
-<pre class="programlisting"><span class="identifier">The</span> <span class="identifier">original</span> <span class="identifier">range</span> <span class="identifier">is</span> <span class="special">:</span> <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span>
-<span class="identifier">The</span> <span class="identifier">reindexing</span> <span class="identifier">scheme</span> <span class="identifier">is</span> <span class="special">:</span> <span class="number">9</span> <span class="number">8</span> <span class="number">7</span> <span class="number">6</span>
-<span class="identifier">The</span> <span class="identifier">permutated</span> <span class="identifier">range</span> <span class="identifier">is</span> <span class="special">:</span> <span class="number">9</span> <span class="number">8</span> <span class="number">7</span> <span class="number">6</span>
-<span class="identifier">Elements</span> <span class="identifier">at</span> <span class="identifier">even</span> <span class="identifier">indices</span> <span class="identifier">in</span> <span class="identifier">the</span> <span class="identifier">permutation</span> <span class="special">:</span> <span class="number">9</span> <span class="number">7</span>
-<span class="identifier">Permutation</span> <span class="identifier">backwards</span> <span class="special">:</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span>
-<span class="identifier">Iterate</span> <span class="identifier">backward</span> <span class="identifier">with</span> <span class="identifier">stride</span> <span class="number">2</span> <span class="special">:</span> <span class="number">6</span> <span class="number">8</span>
+<pre class="programlisting">The original range is : 0 1 2 3 4 5 6 7 8 9
+The reindexing scheme is : 9 8 7 6
+The permutated range is : 9 8 7 6
+Elements at even indices in the permutation : 9 7
+Permutation backwards : 6 7 8 9
+Iterate backward with stride 2 : 6 8
 </pre>
 <p>
-        The source code for this example can be found <a href="../../../example/permutation_iter_example.cpp" target="_top">here</a>.
+        The source code for this example can be found <a href="../../../../example/permutation_iter_example.cpp" target="_top">here</a>.
       </p>
 <h3>
 <a name="iterator.specialized.permutation.h1"></a>
@@ -125,11 +125,11 @@
         <span class="phrase"><a name="iterator.specialized.permutation.synopsis"></a></span><a class="link" href="permutation.html#iterator.specialized.permutation.synopsis">Synopsis</a>
       </h4>
 <pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">class</span> <span class="identifier">ElementIterator</span>
-    <span class="special">,</span> <span class="keyword">class</span> <span class="identifier">IndexIterator</span>
-    <span class="special">,</span> <span class="keyword">class</span> <span class="identifier">ValueT</span>        <span class="special">=</span> <span class="identifier">use_default</span>
-    <span class="special">,</span> <span class="keyword">class</span> <span class="identifier">CategoryT</span>     <span class="special">=</span> <span class="identifier">use_default</span>
-    <span class="special">,</span> <span class="keyword">class</span> <span class="identifier">ReferenceT</span>    <span class="special">=</span> <span class="identifier">use_default</span>
-    <span class="special">,</span> <span class="keyword">class</span> <span class="identifier">DifferenceT</span>   <span class="special">=</span> <span class="identifier">use_default</span> <span class="special">&gt;</span>
+  <span class="special">,</span> <span class="keyword">class</span> <span class="identifier">IndexIterator</span>
+  <span class="special">,</span> <span class="keyword">class</span> <span class="identifier">ValueT</span>        <span class="special">=</span> <span class="identifier">use_default</span>
+  <span class="special">,</span> <span class="keyword">class</span> <span class="identifier">CategoryT</span>     <span class="special">=</span> <span class="identifier">use_default</span>
+  <span class="special">,</span> <span class="keyword">class</span> <span class="identifier">ReferenceT</span>    <span class="special">=</span> <span class="identifier">use_default</span>
+  <span class="special">,</span> <span class="keyword">class</span> <span class="identifier">DifferenceT</span>   <span class="special">=</span> <span class="identifier">use_default</span> <span class="special">&gt;</span>
 <span class="keyword">class</span> <span class="identifier">permutation_iterator</span>
 <span class="special">{</span>
 <span class="keyword">public</span><span class="special">:</span>
@@ -138,9 +138,9 @@
 
   <span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">class</span> <span class="identifier">OEIter</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">OIIter</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">V</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">C</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">R</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">D</span> <span class="special">&gt;</span>
   <span class="identifier">permutation_iterator</span><span class="special">(</span>
-  <span class="identifier">permutation_iterator</span><span class="special">&lt;</span><span class="identifier">OEIter</span><span class="special">,</span> <span class="identifier">OIIter</span><span class="special">,</span> <span class="identifier">V</span><span class="special">,</span> <span class="identifier">C</span><span class="special">,</span> <span class="identifier">R</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">r</span>
-  <span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">enable_if_convertible</span><span class="special">&lt;</span><span class="identifier">OEIter</span><span class="special">,</span> <span class="identifier">ElementIterator</span><span class="special">&gt;::</span><span class="identifier">type</span><span class="special">*</span> <span class="special">=</span> <span class="number">0</span>
-  <span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">enable_if_convertible</span><span class="special">&lt;</span><span class="identifier">OIIter</span><span class="special">,</span> <span class="identifier">IndexIterator</span><span class="special">&gt;::</span><span class="identifier">type</span><span class="special">*</span> <span class="special">=</span> <span class="number">0</span>
+    <span class="identifier">permutation_iterator</span><span class="special">&lt;</span><span class="identifier">OEIter</span><span class="special">,</span> <span class="identifier">OIIter</span><span class="special">,</span> <span class="identifier">V</span><span class="special">,</span> <span class="identifier">C</span><span class="special">,</span> <span class="identifier">R</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">r</span>
+    <span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">enable_if_convertible</span><span class="special">&lt;</span><span class="identifier">OEIter</span><span class="special">,</span> <span class="identifier">ElementIterator</span><span class="special">&gt;::</span><span class="identifier">type</span><span class="special">*</span> <span class="special">=</span> <span class="number">0</span>
+    <span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">enable_if_convertible</span><span class="special">&lt;</span><span class="identifier">OIIter</span><span class="special">,</span> <span class="identifier">IndexIterator</span><span class="special">&gt;::</span><span class="identifier">type</span><span class="special">*</span> <span class="special">=</span> <span class="number">0</span>
   <span class="special">);</span>
   <span class="identifier">reference</span> <span class="keyword">operator</span><span class="special">*()</span> <span class="keyword">const</span><span class="special">;</span>
   <span class="identifier">permutation_iterator</span><span class="special">&amp;</span> <span class="keyword">operator</span><span class="special">++();</span>
@@ -225,9 +225,9 @@
       </p>
 <pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">class</span> <span class="identifier">OEIter</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">OIIter</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">V</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">C</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">R</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">D</span> <span class="special">&gt;</span>
 <span class="identifier">permutation_iterator</span><span class="special">(</span>
-<span class="identifier">permutation_iterator</span><span class="special">&lt;</span><span class="identifier">OEIter</span><span class="special">,</span> <span class="identifier">OIIter</span><span class="special">,</span> <span class="identifier">V</span><span class="special">,</span> <span class="identifier">C</span><span class="special">,</span> <span class="identifier">R</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">r</span>
-<span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">enable_if_convertible</span><span class="special">&lt;</span><span class="identifier">OEIter</span><span class="special">,</span> <span class="identifier">ElementIterator</span><span class="special">&gt;::</span><span class="identifier">type</span><span class="special">*</span> <span class="special">=</span> <span class="number">0</span>
-<span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">enable_if_convertible</span><span class="special">&lt;</span><span class="identifier">OIIter</span><span class="special">,</span> <span class="identifier">IndexIterator</span><span class="special">&gt;::</span><span class="identifier">type</span><span class="special">*</span> <span class="special">=</span> <span class="number">0</span>
+  <span class="identifier">permutation_iterator</span><span class="special">&lt;</span><span class="identifier">OEIter</span><span class="special">,</span> <span class="identifier">OIIter</span><span class="special">,</span> <span class="identifier">V</span><span class="special">,</span> <span class="identifier">C</span><span class="special">,</span> <span class="identifier">R</span><span class="special">,</span> <span class="identifier">D</span><span class="special">&gt;</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">r</span>
+  <span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">enable_if_convertible</span><span class="special">&lt;</span><span class="identifier">OEIter</span><span class="special">,</span> <span class="identifier">ElementIterator</span><span class="special">&gt;::</span><span class="identifier">type</span><span class="special">*</span> <span class="special">=</span> <span class="number">0</span>
+  <span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">enable_if_convertible</span><span class="special">&lt;</span><span class="identifier">OIIter</span><span class="special">,</span> <span class="identifier">IndexIterator</span><span class="special">&gt;::</span><span class="identifier">type</span><span class="special">*</span> <span class="special">=</span> <span class="number">0</span>
 <span class="special">);</span>
 </pre>
 <p>
@@ -261,7 +261,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003, 2005 David Abrahams Jeremy Siek Thomas
+<td align="right"><div class="copyright-footer">Copyright © 2003, 2005 David Abrahams Jeremy Siek Thomas
       Witt<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at &lt;ulink url="http://www.boost.org/LICENSE_1_0.txt"&gt;

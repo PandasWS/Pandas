@@ -21,28 +21,7 @@
 <!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 <div class="RenoIncludeDIV"><div class="RenoAutoDIV"><h3>throw_exception</h3>
 </div>
-<div class="RenoIncludeDIV"><p><span class="RenoEscape">&#35;<!--<wiki>`&#35;</wiki>--></span>include &lt;<span class="RenoLink"><a href="boost_throw_exception_hpp.html">boost/throw_exception.hpp</a></span>&gt;</p>
-<pre>namespace
-boost
-    {
-<span class="RenoIncludeSPAN">#ifdef BOOST_NO_EXCEPTIONS
-    void <span class="RenoLink">throw_exception</span>( std::exception const &amp; e ); // user defined
-#else
-    template &lt;class E&gt;
-    void <span class="RenoLink">throw_exception</span>( E const &amp; e );
-#endif</span>
-    }</pre>
-</div><h4>Effects:</h4>
-<div><ul><li> If BOOST_NO_EXCEPTIONS is not defined, boost::<span class="RenoLink">throw_exception</span>(e) throws an exception of unspecified type that derives publicly from E and from boost::<span class="RenoLink"><a href="exception.html">exception</a></span>.</li>
-<li> If BOOST_NO_EXCEPTIONS is defined, the function is left undefined, and the user is expected to supply an appropriate definition. Callers of <span class="RenoLink">throw_exception</span> are allowed to assume that the function never returns; therefore, if the user-defined <span class="RenoLink">throw_exception</span> returns, the behavior is undefined.</li>
-</ul></div>
-<h4>Requirements:</h4>
-<p>E must derive publicly from std::exception. E may or may not derive from boost::<span class="RenoLink"><a href="exception.html">exception</a></span>.</p>
-<h4>Notes:</h4>
-<div><ul><li> The emitted exception can be intercepted as E &amp;, std::exception &amp;, or boost::exception &amp;.</li>
-<li> The emitted exception supports boost::<span class="RenoLink"><a href="exception_ptr.html">exception_ptr</a></span>.</li>
-<li> If BOOST_EXCEPTION_DISABLE is defined and BOOST_NO_EXCEPTIONS is not defined, boost::<span class="RenoLink">throw_exception</span>(e) equivalent to throw e.</li>
-</ul></div>
+<p>Please see <a href="https://www.boost.org/doc/libs/release/libs/throw_exception/doc/html/throw_exception.html">Boost.ThrowException</a>.</p>
 </div><div class="RenoAutoDIV"><div class="RenoHR"><hr/></div>
 See also: <span class="RenoPageList"><a href="BOOST_THROW_EXCEPTION.html">BOOST_THROW_EXCEPTION</a>&nbsp;| <a href="boost-exception.html">Boost Exception</a>&nbsp;| <a href="boost_throw_exception_hpp.html">boost/throw_exception.hpp</a>&nbsp;| <a href="configuration_macros.html">Configuration Macros</a>&nbsp;| <a href="enable_current_exception.html">enable_current_exception</a>&nbsp;| <a href="frequently_asked_questions.html">Frequently Asked Questions</a>&nbsp;| <a href="tutorial_exception_ptr.html">Transporting of Exceptions Between Threads</a></span>
 </div>

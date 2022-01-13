@@ -113,7 +113,7 @@ namespace test {
           , A1
           , A2
           , A3
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
           , boost::parameter::void_
 #endif
         >::type args;

@@ -139,7 +139,7 @@ namespace test {
             >::value
           , "remove_cref<index_type>::type == int"
         );
-#elif !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564)) && \
+#elif !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564)) && \
     !BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
         BOOST_MPL_ASSERT((
             typename boost::mpl::if_<
@@ -181,7 +181,7 @@ namespace test {
             >::value
           , "remove_cref<index_type>::type == int"
         );
-#elif !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564)) && \
+#elif !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564)) && \
     !BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
         BOOST_MPL_ASSERT((
             typename boost::mpl::if_<
@@ -663,7 +663,7 @@ int main()
     BOOST_TEST(!p_const(test::_index = 3, test::_value = 4));
 
 #if !defined(BOOST_NO_SFINAE) && \
-    !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x592))
+    !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x592))
     // GCC 3- tries to bind string literals
     // to non-const references to char const*.
     // BOOST_TEST(test::sfinae("foo") == 1);

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>posix::stream_descriptor</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -55,6 +55,18 @@ Typedef
               </th>
 </tr></thead>
 <tbody>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="posix__basic_stream_descriptor__rebind_executor.html" title="posix::basic_stream_descriptor::rebind_executor"><span class="bold"><strong>rebind_executor</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Rebinds the descriptor type to another executor.
+                </p>
+              </td>
+</tr>
 <tr>
 <td>
                 <p>
@@ -193,14 +205,14 @@ Typedef
 <tr>
 <td>
                 <p>
-                  <a class="link" href="posix__basic_stream_descriptor/basic_stream_descriptor.html" title="posix::basic_stream_descriptor::basic_stream_descriptor"><span class="bold"><strong>basic_stream_descriptor</strong></span></a>
+                  <a class="link" href="posix__basic_stream_descriptor/basic_stream_descriptor.html" title="posix::basic_stream_descriptor::basic_stream_descriptor"><span class="bold"><strong>basic_stream_descriptor</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
-                  Construct a stream descriptor without opening it. <br> <span class="silver"> &#8212;</span><br>
+                  Construct a stream descriptor without opening it. <br> <span class="silver"> —</span><br>
                   Construct a stream descriptor on an existing native descriptor.
-                  <br> <span class="silver"> &#8212;</span><br> Move-construct a stream descriptor from another.
+                  <br> <span class="silver"> —</span><br> Move-construct a stream descriptor from another.
                 </p>
               </td>
 </tr>
@@ -272,7 +284,7 @@ Typedef
               </td>
 <td>
                 <p>
-                  Get a reference to the lowest layer. <br> <span class="silver"> &#8212;</span><br> Get a const
+                  Get a reference to the lowest layer. <br> <span class="silver"> —</span><br> Get a const
                   reference to the lowest layer.
                 </p>
               </td>
@@ -298,7 +310,7 @@ Typedef
 <td>
                 <p>
                   Gets the non-blocking mode of the native descriptor implementation.
-                  <br> <span class="silver"> &#8212;</span><br> Sets the non-blocking mode of the native descriptor
+                  <br> <span class="silver"> —</span><br> Sets the non-blocking mode of the native descriptor
                   implementation.
                 </p>
               </td>
@@ -311,7 +323,7 @@ Typedef
               </td>
 <td>
                 <p>
-                  Gets the non-blocking mode of the descriptor. <br> <span class="silver"> &#8212;</span><br> Sets
+                  Gets the non-blocking mode of the descriptor. <br> <span class="silver"> —</span><br> Sets
                   the non-blocking mode of the descriptor.
                 </p>
               </td>
@@ -379,45 +391,13 @@ Typedef
 </tr>
 </tbody>
 </table></div>
-<h5>
-<a name="boost_asio.reference.posix__stream_descriptor.h2"></a>
-        <span class="phrase"><a name="boost_asio.reference.posix__stream_descriptor.protected_data_members"></a></span><a class="link" href="posix__stream_descriptor.html#boost_asio.reference.posix__stream_descriptor.protected_data_members">Protected
-        Data Members</a>
-      </h5>
-<div class="informaltable"><table class="table">
-<colgroup>
-<col>
-<col>
-</colgroup>
-<thead><tr>
-<th>
-                <p>
-                  Name
-                </p>
-              </th>
-<th>
-                <p>
-                  Description
-                </p>
-              </th>
-</tr></thead>
-<tbody><tr>
-<td>
-                <p>
-                  <a class="link" href="posix__basic_stream_descriptor/impl_.html" title="posix::basic_stream_descriptor::impl_"><span class="bold"><strong>impl_</strong></span></a>
-                </p>
-              </td>
-<td>
-              </td>
-</tr></tbody>
-</table></div>
 <p>
         The <a class="link" href="posix__basic_stream_descriptor.html" title="posix::basic_stream_descriptor"><code class="computeroutput">posix::basic_stream_descriptor</code></a>
         class template provides asynchronous and blocking stream-oriented descriptor
         functionality.
       </p>
 <h5>
-<a name="boost_asio.reference.posix__stream_descriptor.h3"></a>
+<a name="boost_asio.reference.posix__stream_descriptor.h2"></a>
         <span class="phrase"><a name="boost_asio.reference.posix__stream_descriptor.thread_safety"></a></span><a class="link" href="posix__stream_descriptor.html#boost_asio.reference.posix__stream_descriptor.thread_safety">Thread
         Safety</a>
       </h5>
@@ -427,8 +407,15 @@ Typedef
 <p>
         <span class="emphasis"><em>Shared</em></span> <span class="emphasis"><em>objects:</em></span> Unsafe.
       </p>
+<p>
+        Synchronous <code class="computeroutput">read_some</code> and <code class="computeroutput">write_some</code> operations
+        are thread safe with respect to each other, if the underlying operating system
+        calls are also thread safe. This means that it is permitted to perform concurrent
+        calls to these synchronous operations on a single descriptor object. Other
+        synchronous operations, such as <code class="computeroutput">close</code>, are not thread safe.
+      </p>
 <h5>
-<a name="boost_asio.reference.posix__stream_descriptor.h4"></a>
+<a name="boost_asio.reference.posix__stream_descriptor.h3"></a>
         <span class="phrase"><a name="boost_asio.reference.posix__stream_descriptor.requirements"></a></span><a class="link" href="posix__stream_descriptor.html#boost_asio.reference.posix__stream_descriptor.requirements">Requirements</a>
       </h5>
 <p>
@@ -440,7 +427,8 @@ Typedef
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

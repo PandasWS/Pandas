@@ -10,7 +10,7 @@
 // all our distributions and special functions on this type.
 //
 #define BOOST_MATH_ASSERT_UNDEFINED_POLICY false
-#define TEST_GROUP_9
+#define TEST_GROUP_5
 
 #ifdef _MSC_VER
 #  pragma warning(disable:4800)
@@ -21,7 +21,6 @@
 #endif
 
 #include <boost/multiprecision/cpp_dec_float.hpp>
-#include <boost/math/concepts/real_type_concept.hpp>
 #include "compile_test/instantiate.hpp"
 
 using namespace boost::multiprecision;
@@ -29,7 +28,7 @@ using namespace boost::multiprecision;
 typedef number<cpp_dec_float<50>, et_on> test_type;
 
 // We get sporadic internal compiler errors from gcc-7.x when CI testing
-// that don't appear to be reproducable locally.  gcc-6.x and gcc-8.x are fine
+// that don't appear to be reproducible locally.  gcc-6.x and gcc-8.x are fine
 // so for now it's a <shrug> and move on...
 #if ! (defined(BOOST_GCC) && (__GNUC__ == 7))
 

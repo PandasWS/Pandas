@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-<title>Chapter&#160;37.&#160;Boost.Stacktrace 1.0</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chapter 37. Boost.Stacktrace 1.0</title>
 <link rel="stylesheet" href="../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="libraries.html" title="Part&#160;I.&#160;The Boost C++ Libraries (BoostBook Subset)">
+<link rel="up" href="libraries.html" title="Part I. The Boost C++ Libraries (BoostBook Subset)">
 <link rel="prev" href="signals2/tests.html" title="Testsuite">
 <link rel="next" href="stacktrace/getting_started.html" title="Getting Started">
 </head>
@@ -26,9 +26,8 @@
 <div class="chapter">
 <div class="titlepage"><div>
 <div><h2 class="title">
-<a name="stacktrace"></a>Chapter&#160;37.&#160;Boost.Stacktrace 1.0</h2></div>
-<div><p class="copyright">Copyright &#169; 2016-2019 Antony
-      Polukhin</p></div>
+<a name="stacktrace"></a>Chapter 37. Boost.Stacktrace 1.0</h2></div>
+<div><p class="copyright">Copyright © 2016-2021 Antony Polukhin</p></div>
 <div><div class="legalnotice">
 <a name="stacktrace.legal"></a><p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -44,9 +43,9 @@
 <dd><dl>
 <dt><span class="section"><a href="stacktrace/getting_started.html#stacktrace.getting_started.how_to_print_current_call_stack">How
       to print current call stack</a></span></dt>
-<dt><span class="section"><a href="stacktrace/getting_started.html#stacktrace.getting_started.handle_terminates_aborts_and_seg">Handle
-      terminates, aborts and Segmentation Faults</a></span></dt>
 <dt><span class="section"><a href="stacktrace/getting_started.html#stacktrace.getting_started.better_asserts">Better asserts</a></span></dt>
+<dt><span class="section"><a href="stacktrace/getting_started.html#stacktrace.getting_started.handle_terminates">Handle
+      terminates</a></span></dt>
 <dt><span class="section"><a href="stacktrace/getting_started.html#stacktrace.getting_started.exceptions_with_stacktrace">Exceptions
       with stacktrace</a></span></dt>
 <dt><span class="section"><a href="stacktrace/getting_started.html#stacktrace.getting_started.enabling_and_disabling_stacktrac">Enabling
@@ -59,8 +58,12 @@
       control over stacktrace output format</a></span></dt>
 </dl></dd>
 <dt><span class="section"><a href="stacktrace/configuration_and_build.html">Configuration and Build</a></span></dt>
-<dd><dl><dt><span class="section"><a href="stacktrace/configuration_and_build.html#stacktrace.configuration_and_build.mingw_and_mingw_w64_specific_not">MinGW
-      and MinGW-w64 specific notes</a></span></dt></dl></dd>
+<dd><dl>
+<dt><span class="section"><a href="stacktrace/configuration_and_build.html#stacktrace.configuration_and_build.mingw_and_mingw_w64_specific_not">MinGW
+      and MinGW-w64 specific notes</a></span></dt>
+<dt><span class="section"><a href="stacktrace/configuration_and_build.html#stacktrace.configuration_and_build.windows_deployment_and_symbol_fi">Windows
+      deployment and symbol files</a></span></dt>
+</dl></dd>
 <dt><span class="section"><a href="stacktrace/acknowledgements.html">Acknowledgements</a></span></dt>
 <dt><span class="section"><a href="stacktrace/reference.html">Reference</a></span></dt>
 <dd><dl>
@@ -87,7 +90,7 @@
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><p><small>Last revised: August 14, 2019 at 12:09:47 GMT</small></p></td>
+<td align="left"><p><small>Last revised: December 02, 2021 at 06:56:56 GMT</small></p></td>
 <td align="right"><div class="copyright-footer"></div></td>
 </tr></table>
 <hr>

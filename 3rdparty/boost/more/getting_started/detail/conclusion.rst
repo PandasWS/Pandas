@@ -16,7 +16,6 @@ mailing list`_.
 
 * `Boost.Build reference manual`_
 * `Boost Users' mailing list`_
-* `Boost.Build mailing list`_
 * `Index of all Boost library documentation`_
 
 .. _Index of all Boost library documentation: ../../libs/index.html
@@ -29,7 +28,6 @@ mailing list`_.
 
      -- the Boost Developers
 
-.. _Boost.Build reference manual: ../../tools/build/index.html
+.. _Boost.Build reference manual: ../../tools/build/doc/html/index.html
 .. _Boost Users' mailing list: http://www.boost.org/more/mailing_lists.htm#users
-.. _Boost.Build mailing list: http://www.boost.org/more/mailing_lists.htm#jamboost
 

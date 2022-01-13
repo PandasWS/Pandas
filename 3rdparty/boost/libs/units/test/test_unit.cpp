@@ -27,7 +27,7 @@ Output:
 
 namespace bu = boost::units;
 
-int test_main(int,char *[])
+int main()
 {
     BOOST_CONSTEXPR_OR_CONST bu::dimensionless D;
     
@@ -35,33 +35,33 @@ int test_main(int,char *[])
     BOOST_CONSTEXPR_OR_CONST bu::mass          M;
     BOOST_CONSTEXPR_OR_CONST bu::time          T;
     
-    BOOST_CHECK(+L == L);
-    BOOST_CHECK(-L == L);
-    BOOST_CHECK(L+L == L);
-    BOOST_CHECK(L-L == L);
+    BOOST_TEST(+L == L);
+    BOOST_TEST(-L == L);
+    BOOST_TEST(L+L == L);
+    BOOST_TEST(L-L == L);
 
-    BOOST_CHECK(+M == M);
-    BOOST_CHECK(-M == M);
-    BOOST_CHECK(M+M == M);
-    BOOST_CHECK(M-M == M);
+    BOOST_TEST(+M == M);
+    BOOST_TEST(-M == M);
+    BOOST_TEST(M+M == M);
+    BOOST_TEST(M-M == M);
     
     BOOST_CONSTEXPR_OR_CONST bu::area          A;
     BOOST_CONSTEXPR_OR_CONST bu::energy        E;
     BOOST_CONSTEXPR_OR_CONST bu::velocity      V;
     
-    BOOST_CHECK(L*L == A);
-    BOOST_CHECK(A == L*L);
+    BOOST_TEST(L*L == A);
+    BOOST_TEST(A == L*L);
     
-    BOOST_CHECK(L/L == D);
-    BOOST_CHECK(D == L/L);
+    BOOST_TEST(L/L == D);
+    BOOST_TEST(D == L/L);
     
-    BOOST_CHECK(L/T == V);
-    BOOST_CHECK(V == L/T);
+    BOOST_TEST(L/T == V);
+    BOOST_TEST(V == L/T);
     
-    BOOST_CHECK(M*L*L/T/T == E);
-    BOOST_CHECK(M*(L/T)*(L/T) == E);
-    BOOST_CHECK(M*bu::pow<2>(L/T) == E);
-    BOOST_CHECK(bu::root<2>(E/M) == V);
+    BOOST_TEST(M*L*L/T/T == E);
+    BOOST_TEST(M*(L/T)*(L/T) == E);
+    BOOST_TEST(M*bu::pow<2>(L/T) == E);
+    BOOST_TEST(bu::root<2>(E/M) == V);
     
-    return 0;
+    return boost::report_errors();
 }

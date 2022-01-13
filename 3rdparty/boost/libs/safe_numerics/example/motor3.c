@@ -63,14 +63,14 @@ bool busy(){
 }
 
 // set outputs to energize motor coils
-void update(ccpr_t ccpr, phase_ix_t phase_ix){
+void update(ccpr_t ccpr_arg, phase_ix_t phase_ix_arg){
     // energize correct windings
-    const phase_t phase = ccpPhase[phase_ix];
+    const phase_t phase = ccpPhase[phase_ix_arg];
     CCP1CON = phase & literal(0xff); // set CCP action on next match
     CCP2CON = phase >> literal(8);
     // timer value at next CCP match
-    CCPR1H = literal(0xff) & (ccpr >> literal(8));
-    CCPR1L = literal(0xff) & ccpr;
+    CCPR1H = literal(0xff) & (ccpr_arg >> literal(8));
+    CCPR1L = literal(0xff) & ccpr_arg;
 }
 
 // compiler-specific ISR declaration
@@ -124,9 +124,11 @@ void __interrupt isr_motor_step(void) { // CCP1 match -> step pulse + IRQ
                 // *** possible positive overflow on update of c
                 // note: re-arrange expression to avoid negative result
                 // from difference of two unsigned values
-                c += literal(2) * c / (literal(4) * (m - i) - literal(1));
-                if(c > C0){
-                    c = C0;
+                {
+                    // testing discovered that this can overflow.  It's not easy to
+                    // avoid so we'll use a temporary unsigned variable 32 bits wide
+                    const temp_t x = c + literal(2) * c / (literal(4) * (m - i) - literal(1));
+                    c = x > C0 ? C0 : x;
                 }
                 break;
             default:

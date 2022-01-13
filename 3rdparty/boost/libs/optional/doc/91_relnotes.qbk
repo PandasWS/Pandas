@@ -11,11 +11,28 @@
 
 [section:relnotes Release Notes]
 
+[heading Boost Release 1.76]
+
+* Fixed MSVC warning C4702.
+
+[heading Boost Release 1.75]
+
+* `boost::none` is `constexpr`-declared.
+
+* Fixed [@https://github.com/boostorg/optional/issues/78 issue #78].
+
+[heading Boost Release 1.73]
+
+* Fixed [@https://github.com/boostorg/optional/issues/78 issue #78].
+* `boost::none` is now declared as an inline variable (on compilers that support it): there is only one instance of `boost::none` across all translation units.
+* Fixed a number of compilation errors in GCC 4.4.7 in `optional<T>` for trivial `T`s. Thanks to Robert Leahy for the fix. For details see [@https://github.com/boostorg/optional/pull/80 pr #78].
+* Now surpressing warning `-Wweak-vtables`.
+
 [heading Boost Release 1.69]
 
 * Remove deprecation mark from `reset()` method (without arguments).
 * Fixed [@https://github.com/boostorg/optional/issues/59 issue #59].
-* Fixed bug with initialization of certain wrapper types in clang with -std=c++03. See [@https://github.com/boostorg/optional/pull/64 pr #64]. 
+* Fixed bug with initialization of certain wrapper types in clang with -std=c++03. See [@https://github.com/boostorg/optional/pull/64 pr #64].
 
 [heading Boost Release 1.68]
 

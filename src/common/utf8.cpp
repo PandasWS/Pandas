@@ -477,30 +477,6 @@ std::string splashForUtf8(const std::string& strUtf8) {
 
 #ifndef _WIN32
 //************************************
-// Method:      iconvConvert
-// Description: 在 Linux 平台上使用 iconv 库进行字符编码转换
-// Access:      public 
-// Parameter:   const std::string & val
-// Parameter:   e_pandas_encoding in_enc
-// Parameter:   e_pandas_encoding out_enc
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2021/10/29 09:26
-//************************************ 
-std::string iconvConvert(const std::string& val, e_pandas_encoding in_enc, e_pandas_encoding out_enc) {
-	if (in_enc == out_enc) return val;
-
-	std::wstring strUnicode = UnicodeEncode(val, in_enc);
-	if (out_enc == PANDAS_ENCODING_BIG5) {
-		return splashUnicodeToBIG5(strUnicode);
-	}
-	else if (out_enc == PANDAS_ENCODING_UTF8 && in_enc == PANDAS_ENCODING_BIG5) {
-		return unsplashUnicodeToUtf8(strUnicode);
-	}
-
-	return UnicodeDecode(strUnicode, out_enc);
-}
-
-//************************************
 // Method:      consoleConvert
 // Description: 在 Linux 环境下对输出到控制台的文本进行编码转换
 // Parameter:   const std::string & mes
@@ -525,7 +501,7 @@ std::string consoleConvert(const std::string& mes) {
 		return mes;
 	}
 
-	return iconvConvert(mes, fromEncoding, PANDAS_ENCODING_UTF8);
+	return ansiToUtf8(mes, fromEncoding);
 }
 
 //************************************
@@ -571,26 +547,18 @@ int vfprintf(FILE* file, const char* fmt, va_list args) {
 // Method:      utf8ToAnsi
 // Description: 将 UTF8 字符串转换为 ANSI 字符串 (ANSI 字符将自适应当前系统语言对应的编码)
 // Parameter:   const std::string & strUtf8 须为 UTF-8 编码的字符串
+// Parameter:   int flag
+//				0x1	若携带此标记则表示需要先移除掉 Utf8 编码下为 0x5C 追加的反斜杠
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2020/01/24 00:26
 //************************************
-std::string utf8ToAnsi(const std::string& strUtf8) {
+std::string utf8ToAnsi(const std::string& strUtf8, int flag) {
 #ifdef _WIN32
-	e_pandas_encoding eEncoding = getSystemEncoding(true);
-	uint32 nCodepage = convertEncodingToCodepage(eEncoding);
-	std::wstring strUnicode = UnicodeEncode(strUtf8, PANDAS_ENCODING_UTF8);
-
-	if (eEncoding == PANDAS_ENCODING_BIG5) {
-		// 若当前系统的目标 Codepage 是繁体中文 (BIG5),
-		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
-		return splashUnicodeToBIG5(strUnicode);
-	}
-
-	// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 ANSI 字符即可
-	return UnicodeDecode(strUnicode, eEncoding);
+	e_pandas_encoding toEncoding = getSystemEncoding(true);
+	return utf8ToAnsi(strUtf8, toEncoding, flag);
 #else
 	e_pandas_encoding toEncoding = getEncodingByLanguage();
-	return iconvConvert(strUtf8, PANDAS_ENCODING_UTF8, toEncoding);
+	return utf8ToAnsi(strUtf8, toEncoding, flag);
 #endif // _WIN32
 }
 
@@ -600,18 +568,25 @@ std::string utf8ToAnsi(const std::string& strUtf8) {
 // Access:      public 
 // Parameter:   const std::string & strUtf8
 // Parameter:   const std::string & toEncoding
+// Parameter:   int flag
+//				0x1	若携带此标记则表示需要先移除掉 Utf8 编码下为 0x5C 追加的反斜杠
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2021/09/30 20:57
 //************************************ 
-std::string utf8ToAnsi(const std::string& strUtf8, e_pandas_encoding toEncoding) {
-#ifdef _WIN32
+std::string utf8ToAnsi(const std::string& strUtf8, e_pandas_encoding toEncoding, int flag) {
 	if (toEncoding == PANDAS_ENCODING_UNKNOW)
-		return utf8ToAnsi(strUtf8);
+		return utf8ToAnsi(strUtf8, flag);
 
-	uint32 nCodepage = convertEncodingToCodepage(toEncoding);
 	std::wstring strUnicode = UnicodeEncode(strUtf8, PANDAS_ENCODING_UTF8);
 
 	if (toEncoding == PANDAS_ENCODING_BIG5) {
+		if (flag & 0x1) {
+			// 由于传入的 Utf8 字符可能已经针对 BIG5 的情况在 0x5C 后面追加了反斜杠
+			// 在开始我们自己追加反斜杠的操作之前, 首先需要先移除掉 Utf8 编码下为 0x5C 追加的反斜杠
+			std::string strUnsplashUtf8 = unsplashUnicodeToUtf8(strUnicode);
+			strUnicode = UnicodeEncode(strUnsplashUtf8, PANDAS_ENCODING_UTF8);
+		}
+
 		// 若指定的目标 Codepage 是繁体中文 (BIG5),
 		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
 		return splashUnicodeToBIG5(strUnicode);
@@ -619,11 +594,6 @@ std::string utf8ToAnsi(const std::string& strUtf8, e_pandas_encoding toEncoding)
 
 	// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 ANSI 字符即可
 	return UnicodeDecode(strUnicode, toEncoding);
-#else
-	if (toEncoding == PANDAS_ENCODING_UNKNOW)
-		return utf8ToAnsi(strUtf8);
-	return iconvConvert(strUtf8, PANDAS_ENCODING_UTF8, toEncoding);
-#endif // _WIN32
 }
 
 //************************************
@@ -632,15 +602,17 @@ std::string utf8ToAnsi(const std::string& strUtf8, e_pandas_encoding toEncoding)
 // Access:      public 
 // Parameter:   const std::string & strUtf8
 // Parameter:   const std::string & strToEncoding
+// Parameter:   int flag
+//				0x1	若携带此标记则表示需要先移除掉 Utf8 编码下为 0x5C 追加的反斜杠
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2021/10/28 18:54
-//************************************ 
-std::string utf8ToAnsi(const std::string& strUtf8, const std::string& strToEncoding) {
+//************************************
+std::string utf8ToAnsi(const std::string& strUtf8, const std::string& strToEncoding, int flag) {
 	e_pandas_encoding toEncoding = getEncodingByString(strToEncoding);
 	if (toEncoding == PANDAS_ENCODING_UNKNOW) {
 		return strUtf8;
 	}
-	return utf8ToAnsi(strUtf8, toEncoding);
+	return utf8ToAnsi(strUtf8, toEncoding, flag);
 }
 
 //************************************
@@ -652,21 +624,11 @@ std::string utf8ToAnsi(const std::string& strUtf8, const std::string& strToEncod
 //************************************
 std::string ansiToUtf8(const std::string& strAnsi) {
 #ifdef _WIN32
-	e_pandas_encoding eEncoding = getSystemEncoding(true);
-	uint32 nCodepage = convertEncodingToCodepage(eEncoding);
-	std::wstring strUnicode = UnicodeEncode(strAnsi, eEncoding);
-
-	if (eEncoding == PANDAS_ENCODING_BIG5) {
-		// 若当前系统的目标 Codepage 是繁体中文 (BIG5),
-		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动移除紧接着的反斜杠
-		return unsplashUnicodeToUtf8(strUnicode);
-	}
-
-	// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 Utf8 字符即可
-	return UnicodeDecode(strUnicode, PANDAS_ENCODING_UTF8);
+	e_pandas_encoding fromEncoding = getSystemEncoding(true);
+	return ansiToUtf8(strAnsi, fromEncoding);
 #else
 	e_pandas_encoding fromEncoding = getEncodingByLanguage();
-	return iconvConvert(strAnsi, fromEncoding, PANDAS_ENCODING_UTF8);
+	return ansiToUtf8(strAnsi, fromEncoding);
 #endif // _WIN32
 }
 
@@ -680,7 +642,6 @@ std::string ansiToUtf8(const std::string& strAnsi) {
 // Author:      Sola丶小克(CairoLee)  2021/09/30 20:57
 //************************************ 
 std::string ansiToUtf8(const std::string& strAnsi, e_pandas_encoding fromEncoding) {
-#ifdef _WIN32
 	if (fromEncoding == PANDAS_ENCODING_UNKNOW)
 		return ansiToUtf8(strAnsi);
 
@@ -694,11 +655,6 @@ std::string ansiToUtf8(const std::string& strAnsi, e_pandas_encoding fromEncodin
 
 	// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 Utf8 字符即可
 	return UnicodeDecode(strUnicode, PANDAS_ENCODING_UTF8);
-#else
-	if (fromEncoding == PANDAS_ENCODING_UNKNOW)
-		return ansiToUtf8(strAnsi);
-	return iconvConvert(strAnsi, fromEncoding, PANDAS_ENCODING_UTF8);
-#endif // _WIN32
 }
 
 //************************************

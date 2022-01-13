@@ -11,14 +11,14 @@
     <a accesskey="h" href="./index.html"><img src="./images/home.png" alt="Home"></a><a accesskey="n" href="./requirements.html"><img src="./images/next.png" alt="Next"></a></div><div id="content">
     
 
-<h1 id="outcome-2-1-library">Outcome 2.1 library</h1>
+<h1 id="outcome-2-2-library">Outcome 2.2 library</h1>
 
 <div>
   <div class="author">
     <h3 class="author"><span class="firstname">Niall</span> <span class="surname">Douglas</span></h3>
   </div>
 </div>
-<div><p class="copyright">Copyright &#169; 2014-2019 Niall Douglas <a href="./credits.html">and others</a></p></div>
+<div><p class="copyright">Copyright &#169; 2014-2021 Niall Douglas <a href="./credits.html">and others</a></p></div>
 <div><div class="legalnotice">
 <a name="outcome.legal"></a><p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -36,8 +36,8 @@
   <dt><span class="section"><a href="./motivation/errno.html">errno</a></span></dt>
   <dt><span class="section"><a href="./motivation/error_codes.html">Error codes</a></span></dt>
   <dt><span class="section"><a href="./motivation/std_error_code.html">std::error_code</a></span></dt>
-  <dt><span class="section"><a href="./motivation/plug_error_code.html">Plugging a library into std::error_code`</a></span></dt>
-  <dt><span class="section"><a href="./motivation/plug_error_code2.html">Plugging a library into boost::system::error_code</a></span></dt>
+  <dt><span class="section"><a href="./motivation/plug_error_code.html">Plugging a library into <code>std::error_code</code></a></span></dt>
+  <dt><span class="section"><a href="./motivation/plug_error_code2.html">Plugging a library into <code>boost::system::error_code</code></a></span></dt>
   <dt><span class="section"><a href="./motivation/narrow_contract.html">Narrow contracts</a></span></dt>
         </dl></dd>
   <dt><span class="section"><a href="./tutorial.html">Tutorial</a></span></dt>
@@ -75,12 +75,25 @@
   <dt><span class="section"><a href="./faq.html">Frequently asked questions</a></span></dt>
   <dt><span class="section"><a href="./videos.html">Videos</a></span></dt>
   <dt><span class="section"><a href="./changelog.html">Changelog</a></span></dt>
+        <dd><dl>
+  <dt><span class="section"><a href="./changelog/upgrade_v21_v22.html">Upgrade guide v2.1 =&gt; v2.2</a></span></dt>
+  <dt><span class="section"><a href="./changelog/v22.html">v2.2 major changes</a></span></dt>
+        </dl></dd>
   <dt><span class="section"><a href="./history.html">History</a></span></dt>
 
 
 </dl>
 </div>
 <h2 class="title">Introduction</h2>
+
+<div class="notices note" style="background: url('images/note.png') top left no-repeat padding-box padding-box;">
+<div class="notices heading">note</div>
+<div class="notices message"><p>At the end of December 2020, Outcome v2.2 replaced v2.1 in develop branch. This is a breaking
+change and all Outcome v2.1 code will need to be upgraded using <a href="./changelog/upgrade_v21_v22.html">the v2.1 =&gt; v2.2 upgrade guide</a>. See also
+<a href="./changelog/v22.html">the list of v2.2 major changes</a>.</p>
+</div>
+</div>
+
 
 <p>Outcome is a set of tools for reporting and handling function failures in contexts where <em>directly</em> using C++ exception handling is unsuitable. Such contexts include:</p>
 
@@ -112,6 +125,12 @@ to not use exceptions to propagate failure reports across threads, tasks, fibers
 thus making it suitable for use in the global headers of really large codebases. Storage layout is
 guaranteed and is C-compatible for <code>result&lt;T, E&gt;</code><sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup>, thus making Outcome based code long term ABI-stable.</p>
 
+<p>Fully deterministic all-<code>noexcept</code> C++ Coroutine support in Outcome is particularly strong, and we
+supply Outcome-optimising <a href="./reference/types/awaitables/eager.html" class="api-reference"><code>eager&lt;T&gt;/atomic_eager&lt;T&gt;</code></a>
+ and <a href="./reference/types/awaitables/lazy.html" class="api-reference"><code>lazy&lt;T&gt;/atomic_lazy&lt;T&gt;</code></a>
+
+awaitables which work for any user type.</p>
+
 <h2 id="sample-usage">Sample usage</h2>
 
 <p>The main workhorse in the Outcome library is <code>result&lt;T&gt;</code>: it represents either a successfully computed value of type <code>T</code>, or a <code>std::error_code</code>/<code>boost::system::error_code</code><sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup> representing the reason for failure. You use it in the function&rsquo;s return type:</p>
@@ -135,7 +154,7 @@ guaranteed and is C-compatible for <code>result&lt;T, E&gt;</code><sup class="fo
 
 <span class="n">outcome</span><span class="o">::</span><span class="n">result</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">int_from_file</span><span class="p">(</span><span class="n">string_view</span> <span class="n">path</span><span class="p">)</span> <span class="k">noexcept</span>
 <span class="p">{</span>
-  <span class="n">BOOST_OUTCOME_TRY</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">data_from_file</span><span class="p">(</span><span class="n">path</span><span class="p">));</span>
+  <span class="n">BOOST_OUTCOME_TRY</span><span class="p">(</span><span class="k">auto</span> <span class="n">str</span><span class="p">,</span> <span class="n">data_from_file</span><span class="p">(</span><span class="n">path</span><span class="p">));</span>
   <span class="c1">// if control gets here data_from_file() has succeeded
 </span><span class="c1"></span>  <span class="k">return</span> <span class="nf">process</span><span class="p">(</span><span class="n">str</span><span class="p">);</span>  <span class="c1">// decltype(str) == string
 </span><span class="c1"></span><span class="p">}</span>
@@ -164,7 +183,7 @@ is available in scope.</p>
 </div>
 
 
-        </div><p><small>Last revised: March 19, 2019 at 22:57:48 &#43;0100</small></p>
+        </div><p><small>Last revised: February 12, 2021 at 20:25:43 UTC</small></p>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="./history.html"><img src="./images/prev.png" alt="Prev"></a>

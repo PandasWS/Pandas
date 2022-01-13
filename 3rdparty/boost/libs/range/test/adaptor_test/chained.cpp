@@ -19,7 +19,7 @@
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/algorithm/copy.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 #include <boost/test/test_tools.hpp>
 #include <boost/test/unit_test.hpp>
@@ -87,6 +87,8 @@ void chained_adaptors_test()
     sep.push_back("aghj");
 
     std::set<foo> foos;
+
+    using namespace boost::placeholders;
 
     boost::copy(sep
         | boost::adaptors::transformed(boost::bind(&foo::from_string, _1))
