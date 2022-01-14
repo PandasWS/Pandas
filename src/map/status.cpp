@@ -3448,6 +3448,11 @@ int status_base_amotion_pc(struct map_session_data* sd, struct status_data* stat
 	if (job == nullptr)
 		return 2000;
 
+#ifdef Pandas_Crashfix_ASPD_Base_Empty
+	if (job->aspd_base.empty())
+		return 2000;
+#endif // Pandas_Crashfix_ASPD_Base_Empty
+
 	int amotion;
 #ifdef RENEWAL_ASPD
 	int16 skill_lv, val = 0;
