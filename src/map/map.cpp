@@ -5119,6 +5119,48 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			}
 			mapdata->flag[mapflag] = status;
 			break;
+		case MF_NOWARPPK:
+			mapdata->flag[mapflag] = status; // Must come first to properly set map property
+			if (!status) {
+				clif_map_property_mapall(m, MAPPROPERTY_NOTHING);
+				map_foreachinmap(map_mapflag_pvp_stop_sub, m, BL_PC);
+				map_foreachinmap(unit_stopattack, m, BL_CHAR, 0);
+			}
+			else {
+				if (!battle_config.pk_mode) {
+					clif_map_property_mapall(m, MAPPROPERTY_FREEPVPZONE);
+					map_foreachinmap(map_mapflag_pvp_start_sub, m, BL_PC);
+				}
+				if (mapdata->flag[MF_PVP]) {
+					mapdata->flag[MF_PVP] = false;
+					ShowWarning("map_setmapflag: Unable to set GvG and PvP flags for the same map! Removing PVP flag from %s.\n", mapdata->name);
+				}
+				if (mapdata->flag[MF_GVG]) {
+					mapdata->flag[MF_GVG] = false;
+					ShowWarning("map_setmapflag: Unable to set GvG and PvP flags for the same map! Removing GvG flag from %s.\n", mapdata->name);
+				}
+				if (mapdata->flag[MF_GVG_TE]) {
+					mapdata->flag[MF_GVG_TE] = false;
+					ShowWarning("map_setmapflag: Unable to set GvG TE and PvP flags for the same map! Removing GvG TE flag from %s.\n", mapdata->name);
+				}
+				if (mapdata->flag[MF_GVG_DUNGEON]) {
+					mapdata->flag[MF_GVG_DUNGEON] = false;
+					ShowWarning("map_setmapflag: Unable to set GvG Dungeon and PvP flags for the same map! Removing GvG Dungeon flag from %s.\n", mapdata->name);
+				}
+				if (mapdata->flag[MF_GVG_CASTLE]) {
+					mapdata->flag[MF_GVG_CASTLE] = false;
+					ShowWarning("map_setmapflag: Unable to set GvG Castle and PvP flags for the same map! Removing GvG Castle flag from %s.\n", mapdata->name);
+				}
+				if (mapdata->flag[MF_GVG_TE_CASTLE]) {
+					mapdata->flag[MF_GVG_TE_CASTLE] = false;
+					ShowWarning("map_setmapflag: Unable to set GvG TE Castle and PvP flags for the same map! Removing GvG TE Castle flag from %s.\n", mapdata->name);
+				}
+				if (mapdata->flag[MF_BATTLEGROUND]) {
+					mapdata->flag[MF_BATTLEGROUND] = false;
+					ShowWarning("map_setmapflag: Unable to set Battleground and PvP flags for the same map! Removing Battleground flag from %s.\n", mapdata->name);
+				}
+			}
+			break;
 		case MF_PVP:
 			mapdata->flag[mapflag] = status; // Must come first to properly set map property
 			if (!status) {

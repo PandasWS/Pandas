@@ -1490,6 +1490,10 @@
 	// 该标记用于禁止玩家在地图上使用消耗型物品道具
 	#define Pandas_MapFlag_NoUseItem
 
+	// 是否启用 nowarppk 地图标记 [人鱼姬的思念]
+	// 该标记用于可供玩家PK地图标记 死亡后不会传送回出储存点
+	#define Pandas_MapFlag_NoWarpPK
+
 	// 是否启用 hidedamage 地图标记 [HongShin]
 	// 该标记用于隐藏此地图上任何攻击的实际伤害数值 (无论什么单位, 无论是否 MISS)
 	#define Pandas_MapFlag_HideDamage

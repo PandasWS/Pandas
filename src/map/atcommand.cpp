@@ -4588,6 +4588,10 @@ ACMD_FUNC(mapinfo) {
 	if (map_getmapflag(m_id, MF_NOUSEITEM))
 		strcat(atcmd_output, " NoUseItem |");
 #endif // Pandas_MapFlag_NoUseItem
+#ifdef Pandas_MapFlag_NoWarpPK
+	if (map_getmapflag(m_id, MF_NOWARPPK))
+		strcat(atcmd_output, " NoWarpPK |");
+#endif // Pandas_MapFlag_NoWarpPK
 #ifdef Pandas_MapFlag_HideDamage
 	if (map_getmapflag(m_id, MF_HIDEDAMAGE))
 		strcat(atcmd_output, " HideDamage |");

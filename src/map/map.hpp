@@ -731,6 +731,9 @@ enum e_mapflag : int16 {
 #ifdef Pandas_MapFlag_NoUseItem
 	MF_NOUSEITEM,
 #endif // Pandas_MapFlag_NoUseItem
+#ifdef Pandas_MapFlag_NoWarpPK
+	MF_NOWARPPK,
+#endif // Pandas_MapFlag_NoWarpPK
 #ifdef Pandas_MapFlag_HideDamage
 	MF_HIDEDAMAGE,
 #endif // Pandas_MapFlag_HideDamage
@@ -960,7 +963,7 @@ inline bool mapdata_flag_vs(struct map_data *mapdata) {
 	if (mapdata == nullptr)
 		return false;
 
-	if (mapdata->flag[MF_PVP] || mapdata->flag[MF_GVG_DUNGEON] || mapdata->flag[MF_GVG] || ((agit_flag || agit2_flag) && mapdata->flag[MF_GVG_CASTLE]) || mapdata->flag[MF_GVG_TE] || (agit3_flag && mapdata->flag[MF_GVG_TE_CASTLE]) || mapdata->flag[MF_BATTLEGROUND])
+	if (mapdata->flag[MF_NOWARPPK] || mapdata->flag[MF_PVP] || mapdata->flag[MF_GVG_DUNGEON] || mapdata->flag[MF_GVG] || ((agit_flag || agit2_flag) && mapdata->flag[MF_GVG_CASTLE]) || mapdata->flag[MF_GVG_TE] || (agit3_flag && mapdata->flag[MF_GVG_TE_CASTLE]) || mapdata->flag[MF_BATTLEGROUND])
 		return true;
 
 	return false;

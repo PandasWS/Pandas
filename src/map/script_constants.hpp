@@ -752,6 +752,10 @@
 	export_constant(MF_NOUSEITEM);
 #endif // Pandas_MapFlag_NoUseItem
 
+#ifdef Pandas_MapFlag_NoWarpPK
+	export_constant(MF_NOWARPPK);
+#endif // Pandas_MapFlag_NoWarpPK
+
 #ifdef Pandas_MapFlag_HideDamage
 	export_constant(MF_HIDEDAMAGE);
 #endif // Pandas_MapFlag_HideDamage
