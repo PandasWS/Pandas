@@ -180,7 +180,7 @@ void trade_tradeack(struct map_session_data *sd, int type)
  */
 int impossible_trade_check(struct map_session_data *sd)
 {
-	struct item inventory[G_MAX_INVENTORY];
+	struct item inventory[MAX_INVENTORY];
 	char message_to_gm[200];
 	int i, index;
 
@@ -192,12 +192,12 @@ int impossible_trade_check(struct map_session_data *sd)
 	}
 
 	// get inventory of player
-	memcpy(&inventory, &sd->inventory.u.items_inventory, sizeof(struct item) * P_MAX_INVENTORY(sd));
+	memcpy(&inventory, &sd->inventory.u.items_inventory, sizeof(struct item) * MAX_INVENTORY);
 
 	// remove this part: arrows can be trade and equipped
 	// re-added! [celest]
 	// remove equipped items (they can not be trade)
-	for (i = 0; i < P_MAX_INVENTORY(sd); i++)
+	for (i = 0; i < MAX_INVENTORY; i++)
 		if (inventory[i].nameid > 0 && inventory[i].equip && !(inventory[i].equip & EQP_AMMO))
 			memset(&inventory[i], 0, sizeof(struct item));
 
@@ -246,8 +246,8 @@ int impossible_trade_check(struct map_session_data *sd)
  */
 int trade_check(struct map_session_data *sd, struct map_session_data *tsd)
 {
-	struct item inventory[G_MAX_INVENTORY];
-	struct item inventory2[G_MAX_INVENTORY];
+	struct item inventory[MAX_INVENTORY];
+	struct item inventory2[MAX_INVENTORY];
 	struct item_data *data;
 	int trade_i, i, n;
 
@@ -258,8 +258,8 @@ int trade_check(struct map_session_data *sd, struct map_session_data *tsd)
 		return 0;
 
 	// get inventory of player
-	memcpy(&inventory, &sd->inventory.u.items_inventory, sizeof(struct item) * P_MAX_INVENTORY(sd));
-	memcpy(&inventory2, &tsd->inventory.u.items_inventory, sizeof(struct item) * P_MAX_INVENTORY(tsd));
+	memcpy(&inventory, &sd->inventory.u.items_inventory, sizeof(struct item) * MAX_INVENTORY);
+	memcpy(&inventory2, &tsd->inventory.u.items_inventory, sizeof(struct item) * MAX_INVENTORY);
 
 	// check free slot in both inventory
 	for(trade_i = 0; trade_i < 10; trade_i++) {
@@ -274,9 +274,9 @@ int trade_check(struct map_session_data *sd, struct map_session_data *tsd)
 				return 0; // Quantity Exploit?
 
 			data = itemdb_search(inventory[n].nameid);
-			i = P_MAX_INVENTORY(tsd);
+			i = MAX_INVENTORY;
 			if (itemdb_isstackable2(data)) { // Stackable item.
-				for(i = 0; i < P_MAX_INVENTORY(tsd); i++)
+				for(i = 0; i < MAX_INVENTORY; i++)
 					if (inventory2[i].nameid == inventory[n].nameid &&
 						inventory2[i].card[0] == inventory[n].card[0] && inventory2[i].card[1] == inventory[n].card[1] &&
 						inventory2[i].card[2] == inventory[n].card[2] && inventory2[i].card[3] == inventory[n].card[3]) {
@@ -289,9 +289,9 @@ int trade_check(struct map_session_data *sd, struct map_session_data *tsd)
 					}
 			}
 
-			if (i == P_MAX_INVENTORY(tsd)) { // look for an empty slot.
-				for(i = 0; i < P_MAX_INVENTORY(tsd) && inventory2[i].nameid; i++);
-				if (i == P_MAX_INVENTORY(tsd))
+			if (i == MAX_INVENTORY) { // look for an empty slot.
+				for(i = 0; i < MAX_INVENTORY && inventory2[i].nameid; i++);
+				if (i == MAX_INVENTORY)
 					return 0;
 
 				memcpy(&inventory2[i], &inventory[n], sizeof(struct item));
@@ -312,10 +312,10 @@ int trade_check(struct map_session_data *sd, struct map_session_data *tsd)
 
 		// search if it's possible to add item (for full inventory)
 		data = itemdb_search(inventory2[n].nameid);
-		i = P_MAX_INVENTORY(sd);
+		i = MAX_INVENTORY;
 
 		if (itemdb_isstackable2(data)) {
-			for(i = 0; i < P_MAX_INVENTORY(sd); i++)
+			for(i = 0; i < MAX_INVENTORY; i++)
 				if (inventory[i].nameid == inventory2[n].nameid &&
 					inventory[i].card[0] == inventory2[n].card[0] && inventory[i].card[1] == inventory2[n].card[1] &&
 					inventory[i].card[2] == inventory2[n].card[2] && inventory[i].card[3] == inventory2[n].card[3]) {
@@ -328,9 +328,9 @@ int trade_check(struct map_session_data *sd, struct map_session_data *tsd)
 				}
 		}
 
-		if (i == P_MAX_INVENTORY(sd)) {
-			for(i = 0; i < P_MAX_INVENTORY(sd) && inventory[i].nameid; i++);
-			if (i == P_MAX_INVENTORY(sd))
+		if (i == MAX_INVENTORY) {
+			for(i = 0; i < MAX_INVENTORY && inventory[i].nameid; i++);
+			if (i == MAX_INVENTORY)
 				return 0;
 
 			memcpy(&inventory[i], &inventory2[n], sizeof(struct item));
@@ -373,7 +373,7 @@ void trade_tradeadditem(struct map_session_data *sd, short index, short amount)
 	index -= 2; // 0 is for zeny, 1 is unknown. Gravity, go figure...
 
 	// Item checks...
-	if( index < 0 || index >= P_MAX_INVENTORY(sd))
+	if( index < 0 || index >= MAX_INVENTORY)
 		return;
 	if( amount < 0 || amount > sd->inventory.u.items_inventory[index].amount )
 		return;

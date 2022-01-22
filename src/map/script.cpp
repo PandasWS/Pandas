@@ -7777,7 +7777,7 @@ BUILDIN_FUNC(countitem)
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	int count = script_countitem_sub(sd->inventory.u.items_inventory, id, P_MAX_INVENTORY(sd), (aid > 3) ? true : false, random_option, st, sd);
+	int count = script_countitem_sub(sd->inventory.u.items_inventory, id, MAX_INVENTORY, (aid > 3) ? true : false, random_option, st, sd);
 	if (count < 0) {
 		st->state = END;
 		return SCRIPT_CMD_FAILURE;
@@ -7966,7 +7966,7 @@ BUILDIN_FUNC(rentalcountitem)
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	int count = script_countitem_sub(sd->inventory.u.items_inventory, id, P_MAX_INVENTORY(sd), (aid > 3) ? true : false, random_option, st, sd, true);
+	int count = script_countitem_sub(sd->inventory.u.items_inventory, id, MAX_INVENTORY, (aid > 3) ? true : false, random_option, st, sd, true);
 	if (count < 0) {
 		st->state = END;
 		return SCRIPT_CMD_FAILURE;
@@ -8906,7 +8906,7 @@ static bool buildin_delitem_search(struct map_session_data* sd, struct item* it,
 		}
 			break;
 		default: // TABLE_INVENTORY
-			size = P_MAX_INVENTORY(sd);
+			size = MAX_INVENTORY;
 			items = sd->inventory.u.items_inventory;
 			break;
 	}
@@ -9227,8 +9227,8 @@ BUILDIN_FUNC(delitemidx) {
 	}
 
 	int idx = script_getnum(st, 2);
-	if (idx < 0 || idx >= P_MAX_INVENTORY(sd)) {
-		ShowWarning("buildin_delitemidx: Index %d is out of the range 0-%d.\n", idx, P_MAX_INVENTORY(sd) - 1);
+	if (idx < 0 || idx >= MAX_INVENTORY) {
+		ShowWarning("buildin_delitemidx: Index %d is out of the range 0-%d.\n", idx, MAX_INVENTORY - 1);
 		script_pushint(st, false);
 		return SCRIPT_CMD_FAILURE;
 	}
@@ -9696,7 +9696,7 @@ BUILDIN_FUNC(getequipid)
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	if (i >= 0 && i < P_MAX_INVENTORY(sd) && sd->inventory_data[i])
+	if (i >= 0 && i < MAX_INVENTORY && sd->inventory_data[i])
 		script_pushint(st, sd->inventory_data[i]->nameid);
 	else
 		script_pushint(st, -1);
@@ -9801,7 +9801,7 @@ BUILDIN_FUNC(getbrokenid)
 	}
 
 	num = script_getnum(st,2);
-	for(i = 0; i < P_MAX_INVENTORY(sd); i++) {
+	for(i = 0; i < MAX_INVENTORY; i++) {
 		if( sd->inventory.u.items_inventory[i].attribute == 1 && !itemdb_ishatched_egg( &sd->inventory.u.items_inventory[i] ) ){
 				brokencounter++;
 				if(num == brokencounter){
@@ -9830,7 +9830,7 @@ BUILDIN_FUNC(repair)
 		return SCRIPT_CMD_FAILURE;
 
 	num = script_getnum(st,2);
-	for(i = 0; i < P_MAX_INVENTORY(sd); i++) {
+	for(i = 0; i < MAX_INVENTORY; i++) {
 		if( sd->inventory.u.items_inventory[i].attribute == 1 && !itemdb_ishatched_egg( &sd->inventory.u.items_inventory[i] ) ){
 				repaircounter++;
 				if(num == repaircounter) {
@@ -9857,7 +9857,7 @@ BUILDIN_FUNC(repairall)
 	if (!script_charid2sd(2,sd))
 		return SCRIPT_CMD_FAILURE;
 
-	for(i = 0; i < P_MAX_INVENTORY(sd); i++)
+	for(i = 0; i < MAX_INVENTORY; i++)
 	{
 		if( sd->inventory.u.items_inventory[i].nameid && sd->inventory.u.items_inventory[i].attribute == 1 && !itemdb_ishatched_egg( &sd->inventory.u.items_inventory[i] ) ){
 			sd->inventory.u.items_inventory[i].attribute = 0;
@@ -15365,7 +15365,7 @@ BUILDIN_FUNC(getinventorylist)
 
 	if (!script_charid2sd(2,sd))
 		return SCRIPT_CMD_FAILURE;
-	for(i=0;i<P_MAX_INVENTORY(sd);i++){
+	for(i=0;i<MAX_INVENTORY;i++){
 		if(sd->inventory.u.items_inventory[i].nameid > 0 && sd->inventory.u.items_inventory[i].amount > 0){
 			pc_setreg(sd,reference_uid(add_str("@inventorylist_id"), j),sd->inventory.u.items_inventory[i].nameid);
 			pc_setreg(sd,reference_uid(add_str("@inventorylist_idx"), j),i);
@@ -15439,7 +15439,7 @@ BUILDIN_FUNC(clearitem)
 	if (!script_charid2sd(2,sd))
 		return SCRIPT_CMD_FAILURE;
 
-	for (i=0; i<P_MAX_INVENTORY(sd); i++) {
+	for (i=0; i<MAX_INVENTORY; i++) {
 		if (sd->inventory.u.items_inventory[i].amount) {
 			pc_delitem(sd, i, sd->inventory.u.items_inventory[i].amount, 0, 0, LOG_TYPE_SCRIPT);
 		}
@@ -16413,7 +16413,7 @@ BUILDIN_FUNC(checkequipedcard)
 		int n,i,c=0;
 		c=script_getnum(st,2);
 
-		for(i=0;i<P_MAX_INVENTORY(sd);i++){
+		for(i=0;i<MAX_INVENTORY;i++){
 			if(sd->inventory.u.items_inventory[i].nameid > 0 && sd->inventory.u.items_inventory[i].amount && sd->inventory_data[i]){
 				if (itemdb_isspecial(sd->inventory.u.items_inventory[i].card[0]))
 					continue;
@@ -16964,13 +16964,8 @@ BUILDIN_FUNC(isequippedcnt)
 			short index = sd->equip_index[j];
 			if (index < 0)
 				continue;
-#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 			if (pc_is_same_equip_index((enum equip_index)j, sd->equip_index, index))
 				continue;
-#else
-			if (pc_is_same_equip_index(sd, (enum equip_index)j, sd->equip_index, index))
-				continue;
-#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 
 			if (!sd->inventory_data[index])
 				continue;
@@ -17024,13 +17019,8 @@ BUILDIN_FUNC(isequipped)
 			short index = sd->equip_index[j];
 			if(index < 0)
 				continue;
-#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 			if (pc_is_same_equip_index((enum equip_index)i, sd->equip_index, index))
 				continue;
-#else
-			if (pc_is_same_equip_index(sd, (enum equip_index)i, sd->equip_index, index))
-				continue;
-#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 
 			if(!sd->inventory_data[index])
 				continue;
@@ -17199,8 +17189,8 @@ BUILDIN_FUNC(equip) {
 	if ((item_data = itemdb_exists(nameid))) {
 		int i;
 
-		ARR_FIND( 0, P_MAX_INVENTORY(sd), i, sd->inventory.u.items_inventory[i].nameid == nameid );
-		if (i < P_MAX_INVENTORY(sd)) {
+		ARR_FIND( 0, MAX_INVENTORY, i, sd->inventory.u.items_inventory[i].nameid == nameid );
+		if (i < MAX_INVENTORY) {
 			pc_equipitem(sd,i,item_data->equip);
 			script_pushint(st,1);
 			return SCRIPT_CMD_SUCCESS;
@@ -23543,7 +23533,7 @@ BUILDIN_FUNC(countbound)
 	int i, k = 0;
 	int type = script_getnum(st,2);
 
-	for( i = 0; i < P_MAX_INVENTORY(sd); i ++ ) {
+	for( i = 0; i < MAX_INVENTORY; i ++ ) {
 		if( sd->inventory.u.items_inventory[i].nameid > 0 && (
 			(!type && sd->inventory.u.items_inventory[i].bound) || (type && sd->inventory.u.items_inventory[i].bound == type)
 			))
@@ -24251,7 +24241,7 @@ BUILDIN_FUNC(mergeitem2) {
 		}
 	}
 
-	for (i = 0; i < P_MAX_INVENTORY(sd); i++) {
+	for (i = 0; i < MAX_INVENTORY; i++) {
 		struct item *it = &sd->inventory.u.items_inventory[i];
 
 		if (!it || !it->unique_id || it->expire_time || !itemdb_isstackable(it->nameid))
@@ -26718,7 +26708,7 @@ BUILDIN_FUNC(getenchantgrade){
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	if (index < 0 || index >= P_MAX_INVENTORY(sd) || sd->inventory.u.items_inventory[index].nameid == 0)
+	if (index < 0 || index >= MAX_INVENTORY || sd->inventory.u.items_inventory[index].nameid == 0)
 		script_pushint(st, -1);
 	else
 		script_pushint(st, sd->inventory.u.items_inventory[index].enchantgrade);
@@ -27455,7 +27445,7 @@ BUILDIN_FUNC(renttime) {
 	}
 	else {
 		int i = 0, c = 0;
-		for (i = 0; i < P_MAX_INVENTORY(sd); i++) {
+		for (i = 0; i < MAX_INVENTORY; i++) {
 			if (sd->inventory.u.items_inventory[i].nameid == 0)
 				continue;
 			if (sd->inventory.u.items_inventory[i].expire_time == 0)
@@ -27683,7 +27673,7 @@ void inventory_rental_update(struct map_session_data* sd) {
 		return;
 	}
 
-	for (i = 0; i < P_MAX_INVENTORY(sd); i++) {
+	for (i = 0; i < MAX_INVENTORY; i++) {
 		if (sd->inventory.u.items_inventory[i].nameid == 0)
 			continue;
 		if (sd->inventory.u.items_inventory[i].expire_time == 0)
@@ -29143,7 +29133,7 @@ BUILDIN_FUNC(setinventoryinfo) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (idx < 0 || idx >= P_MAX_INVENTORY(sd) || !sd->inventory_data[idx]) {
+	if (idx < 0 || idx >= MAX_INVENTORY || !sd->inventory_data[idx]) {
 		ShowError("buildin_setinventoryinfo: Nonexistant item index.\n");
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
@@ -30224,7 +30214,7 @@ BUILDIN_FUNC(getinventorysize) {
 #ifdef Pandas_ClientFeature_InventoryExpansion
 	script_pushint(st, sd->status.inventory_size);
 #else
-	script_pushint(st, G_MAX_INVENTORY);
+	script_pushint(st, MAX_INVENTORY);
 #endif // Pandas_ClientFeature_InventoryExpansion
 	return SCRIPT_CMD_SUCCESS;
 }

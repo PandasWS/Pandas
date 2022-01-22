@@ -924,7 +924,7 @@ int party_member_withdraw(int party_id, uint32 account_id, uint32 char_id, char 
 
 	if( sd && sd->status.party_id == party_id ) {
 #ifdef BOUND_ITEMS
-		int idxlist[G_MAX_INVENTORY]; //or malloc to reduce consumtion
+		int idxlist[MAX_INVENTORY]; //or malloc to reduce consumtion
 		int j,i;
 
 		party_trade_bound_cancel(sd);

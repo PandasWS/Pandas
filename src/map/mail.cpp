@@ -47,7 +47,7 @@ int mail_removeitem(struct map_session_data *sd, short flag, int idx, int amount
 
 	idx -= 2;
 
-	if( idx < 0 || idx >= P_MAX_INVENTORY(sd))
+	if( idx < 0 || idx >= MAX_INVENTORY)
 			return false;
 	if( amount <= 0 || amount > sd->inventory.u.items_inventory[idx].amount )
 			return false;
@@ -170,7 +170,7 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 
 		idx -= 2;
 
-		if( idx < 0 || idx >= P_MAX_INVENTORY(sd) || sd->inventory_data[idx] == nullptr )
+		if( idx < 0 || idx >= MAX_INVENTORY || sd->inventory_data[idx] == nullptr )
 			return MAIL_ATTACH_ERROR;
 
 		if (itemdb_ishatched_egg(&sd->inventory.u.items_inventory[idx]))
@@ -518,7 +518,7 @@ void mail_send(struct map_session_data *sd, const char *dest_name, const char *t
 		if (sd->mail.item[i].nameid == 0)
 			continue;
 
-		if (idx < 0 || idx > P_MAX_INVENTORY(sd)) {
+		if (idx < 0 || idx > MAX_INVENTORY) {
 			found_invalid_item = true;
 		}
 		else if ((sd->mail.item[i].amount <= 0 || sd->mail.item[i].amount > sd->inventory.u.items_inventory[idx].amount) ||
