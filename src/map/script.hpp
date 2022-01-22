@@ -274,6 +274,10 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_UNEQUIP
 	const char* unequip_event_name;	// NPCE_UNEQUIP	// OnPCUnequipEvent	// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_MvpTomb
+	const char* mvp_tomb_event;	// NPCE_MVPTOMB	// OnMvpTombEvent	// 当玩家点击魔物墓碑后触发事件 [人鱼姬的思念]
+#endif // Pandas_NpcEvent_MvpTomb
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 
 	/************************************************************************/

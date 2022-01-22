@@ -1450,6 +1450,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcEvent_UNEQUIP
 	NPCE_UNEQUIP,	// unequip_event_name	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_MvpTomb
+	NPCE_MVPTOMB,	// mvp_tomb_event	// OnMvpTombEvent		// 当玩家点击魔物墓碑后触发事件 [人鱼姬的思念]
+#endif // Pandas_NpcEvent_MvpTomb
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
 
 	/************************************************************************/

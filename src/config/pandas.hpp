@@ -1338,6 +1338,11 @@
 	// 事件类型: Event / 事件名称: OnPCUnequipEvent
 	// 常量名称: NPCE_UNEQUIP / 变量名称: unequip_event_name
 	#define Pandas_NpcEvent_UNEQUIP
+
+	// 当玩家点击魔物墓碑后触发事件 [人鱼姬的思念]
+	// 事件类型: Event / 事件名称: OnMvpTombEvent
+	// 常量名称: NPCE_MVPTOMB / 变量名称: mvp_tomb_event
+	#define Pandas_NpcEvent_MvpTomb
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/
