@@ -950,6 +950,9 @@ bool pc_can_sell_item(struct map_session_data *sd, struct item *item, enum npc_s
 	if (sd == NULL || item == NULL)
 		return false;
 
+	if (!pc_can_give_items(sd))
+		return false;
+
 	if (item->equip > 0 || item->amount < 0)
 		return false;
 
@@ -7191,7 +7194,7 @@ uint8 pc_checkskill(struct map_session_data *sd, uint16 skill_id)
 #ifdef RENEWAL
 	if ((idx = skill_get_index(skill_id)) == 0) {
 #else
-	if( ( idx = skill_get_index_( skill_id, skill_id >= RK_ENCHANTBLADE, __FUNCTION__, __FILE__, __LINE__ ) ) == 0 ){
+	if( ( idx = skill_db.get_index( skill_id, skill_id >= RK_ENCHANTBLADE, __FUNCTION__, __FILE__, __LINE__ ) ) == 0 ){
 		if( skill_id >= RK_ENCHANTBLADE ){
 			// Silently fail for now -> future update planned
 			return 0;

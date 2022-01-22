@@ -2980,7 +2980,7 @@ void clif_additem( struct map_session_data *sd, int n, int amount, unsigned char
 		return;
 	}
 
-	struct packet_additem p;
+	struct PACKET_ZC_ITEM_PICKUP_ACK p;
 
 	if( fail ){
 		p = {};
@@ -3017,7 +3017,7 @@ void clif_additem( struct map_session_data *sd, int n, int amount, unsigned char
 #endif
 	}
 
-	p.PacketType = additemType;
+	p.PacketType = HEADER_ZC_ITEM_PICKUP_ACK;
 	p.Index = client_index( n );
 	p.count = amount;
 	p.result = fail;
@@ -5012,7 +5012,7 @@ void clif_tradeadditem( struct map_session_data* sd, struct map_session_data* ts
 		clif_add_random_options( p.option_data, &sd->inventory.u.items_inventory[index] );
 #if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724
 		p.location = pc_equippoint_sub( sd, sd->inventory_data[index] );
-		p.viewSprite = sd->inventory_data[index]->look;
+		p.look = sd->inventory_data[index]->look;
 		p.enchantgrade = sd->inventory.u.items_inventory[index].enchantgrade;
 #endif
 #endif
@@ -5020,7 +5020,7 @@ void clif_tradeadditem( struct map_session_data* sd, struct map_session_data* ts
 		p = {};
 	}
 
-	p.packetType = tradeaddType;
+	p.packetType = HEADER_ZC_ADD_EXCHANGE_ITEM;
 	p.amount = amount;
 
 	clif_send( &p, sizeof( p ), &tsd->bl, SELF );
@@ -5144,7 +5144,7 @@ void clif_storageitemadded( struct map_session_data* sd, struct item* i, int ind
 
 	struct PACKET_ZC_ADD_ITEM_TO_STORE p;
 
-	p.packetType = storageaddType; // Storage item added
+	p.packetType = HEADER_ZC_ADD_ITEM_TO_STORE; // Storage item added
 	p.index = client_storage_index( index ); // index
 	p.amount = amount; // amount
 	p.itemId = client_nameid( i->nameid ); // id
@@ -7525,7 +7525,7 @@ void clif_item_repair_list( struct map_session_data *sd,struct map_session_data 
 		return;
 	}
 
-	int len = MAX_INVENTORY * sizeof( struct PACKET_ZC_REPAIRITEMLIST_sub ) + sizeof( struct PACKET_ZC_REPAIRITEMLIST );
+	int len = MAX_INVENTORY * sizeof( struct REPAIRITEM_INFO ) + sizeof( struct PACKET_ZC_REPAIRITEMLIST );
 
 	// Preallocate the maximum size
 	WFIFOHEAD( fd, len );
@@ -7545,10 +7545,10 @@ void clif_item_repair_list( struct map_session_data *sd,struct map_session_data 
 	}
 
 	if( c > 0 ){
-		p->packetType = 0x1fc;
+		p->packetType = HEADER_ZC_REPAIRITEMLIST;
 
 		// Recalculate real length
-		len = c * sizeof( struct PACKET_ZC_REPAIRITEMLIST_sub ) + sizeof( struct PACKET_ZC_REPAIRITEMLIST );
+		len = c * sizeof( struct REPAIRITEM_INFO ) + sizeof( struct PACKET_ZC_REPAIRITEMLIST );
 		p->packetLength = len;
 
 		WFIFOSET( fd, len );
@@ -7685,7 +7685,7 @@ void clif_cart_additem( struct map_session_data *sd, int n, int amount ){
 
 	struct PACKET_ZC_ADD_ITEM_TO_CART p;
 
-	p.packetType = cartaddType;
+	p.packetType = HEADER_ZC_ADD_ITEM_TO_CART;
 	p.index = client_index( n );
 	p.amount = amount;
 	p.itemId = client_nameid( sd->cart.u.items_cart[n].nameid );
@@ -11040,7 +11040,7 @@ void clif_viewequip_ack( struct map_session_data* sd, struct map_session_data* t
 	}
 #endif // Pandas_NpcFilter_VIEW_EQUIP
 
-	struct packet_viewequip_ack packet;
+	struct PACKET_ZC_EQUIPWIN_MICROSCOPE* p = (struct PACKET_ZC_EQUIPWIN_MICROSCOPE*)packet_buffer;
 	int equip = 0;
 
 	for( int i = 0; i < EQI_MAX; i++ ){
@@ -11060,34 +11060,34 @@ void clif_viewequip_ack( struct map_session_data* sd, struct map_session_data* t
 			}
 
 #ifndef Pandas_FuncParams_Clif_Item_Equip
-			clif_item_equip( client_index( k ), &packet.list[equip++], &tsd->inventory.u.items_inventory[k], tsd->inventory_data[k], pc_equippoint( tsd, k ) );
+			clif_item_equip( client_index( k ), &p->list[equip++], &tsd->inventory.u.items_inventory[k], tsd->inventory_data[k], pc_equippoint( tsd, k ) );
 #else
-			clif_item_equip( client_index( k ), &packet.list[equip++], &tsd->inventory.u.items_inventory[k], tsd->inventory_data[k], pc_equippoint( tsd, k ), 4 );
+			clif_item_equip( client_index( k ), &p->list[equip++], &tsd->inventory.u.items_inventory[k], tsd->inventory_data[k], pc_equippoint( tsd, k ), 4 );
 #endif // Pandas_FuncParams_Clif_Item_Equip
 		}
 	}
 
-	packet.PacketType = viewequipackType;
-	packet.PacketLength = ( sizeof( packet ) - sizeof( packet.list ) ) + ( sizeof( struct EQUIPITEM_INFO ) * equip );
+	p->PacketType = HEADER_ZC_EQUIPWIN_MICROSCOPE;
+	p->PacketLength = sizeof( *p ) + sizeof( struct EQUIPITEM_INFO ) * equip;
 
-	safestrncpy( packet.characterName, tsd->status.name, NAME_LENGTH );
+	safestrncpy( p->characterName, tsd->status.name, NAME_LENGTH );
 
-	packet.job = tsd->status.class_;
-	packet.head = tsd->vd.hair_style;
-	packet.accessory = tsd->vd.head_bottom;
-	packet.accessory2 = tsd->vd.head_mid;
-	packet.accessory3 = tsd->vd.head_top;
+	p->job = tsd->status.class_;
+	p->head = tsd->vd.hair_style;
+	p->accessory = tsd->vd.head_bottom;
+	p->accessory2 = tsd->vd.head_mid;
+	p->accessory3 = tsd->vd.head_top;
 #if PACKETVER >= 20110111
-	packet.robe = tsd->vd.robe;
+	p->robe = tsd->vd.robe;
 #endif
-	packet.headpalette = tsd->vd.hair_color;
-	packet.bodypalette = tsd->vd.cloth_color;
+	p->headpalette = tsd->vd.hair_color;
+	p->bodypalette = tsd->vd.cloth_color;
 #if PACKETVER_MAIN_NUM >= 20180801 || PACKETVER_RE_NUM >= 20180801 || PACKETVER_ZERO_NUM >= 20180808
-	packet.body2 = tsd->vd.body_style;
+	p->body2 = tsd->vd.body_style;
 #endif
-	packet.sex = tsd->vd.sex;
+	p->sex = tsd->vd.sex;
 
-	clif_send( &packet, packet.PacketLength, &sd->bl, SELF );
+	clif_send( p, p->PacketLength, &sd->bl, SELF );
 }
 
 
@@ -14016,7 +14016,12 @@ void clif_parse_Cooking(int fd,struct map_session_data *sd) {
 /// 01fd <index> W (CZ_REQ_ITEMREPAIR)
 /// 01fd <index>.W <name id>.W <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W ???
 void clif_parse_RepairItem( int fd, struct map_session_data *sd ){
-	const struct PACKET_CZ_REQ_ITEMREPAIR *p = (struct PACKET_CZ_REQ_ITEMREPAIR *)RFIFOP( fd, 0 );
+// Hercules has wrong date -> use correct one here
+#if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724
+	const struct PACKET_CZ_REQ_ITEMREPAIR2 *p = (struct PACKET_CZ_REQ_ITEMREPAIR2 *)RFIFOP( fd, 0 );
+#else
+	const struct PACKET_CZ_REQ_ITEMREPAIR1 *p = (struct PACKET_CZ_REQ_ITEMREPAIR1 *)RFIFOP( fd, 0 );
+#endif
 
 	if (sd->menuskill_id != BS_REPAIRWEAPON)
 		return;
@@ -14026,7 +14031,7 @@ void clif_parse_RepairItem( int fd, struct map_session_data *sd ){
 		clif_menuskill_clear(sd);
 		return;
 	}
-	skill_repairweapon( sd, p->index );
+	skill_repairweapon( sd, p->item.index );
 	clif_menuskill_clear(sd);
 }
 
@@ -16612,7 +16617,7 @@ void clif_Mail_setattachment( struct map_session_data* sd, int index, int amount
 	WFIFOB(fd,4) = flag;
 	WFIFOSET(fd,packet_len(0x255));
 #else
-	struct PACKET_ZC_ADD_ITEM_TO_MAIL p;
+	struct PACKET_ZC_ACK_ADD_ITEM_RODEX p;
 
 	if( flag ){
 		memset( &p, 0, sizeof( p ) );
@@ -16649,7 +16654,7 @@ void clif_Mail_setattachment( struct map_session_data* sd, int index, int amount
 #endif
 	}
 
-	p.PacketType = rodexadditem;
+	p.PacketType = HEADER_ZC_ACK_ADD_ITEM_RODEX;
 	p.result = flag;
 
 	clif_send( &p, sizeof( p ), &sd->bl, SELF );
@@ -17153,29 +17158,24 @@ void clif_Mail_read( struct map_session_data *sd, int mail_id ){
 #else
 		msg_len += 1; // Zero Termination
 
-		int length = sizeof( struct PACKET_ZC_READ_MAIL ) + MAIL_BODY_LENGTH + sizeof( struct mail_item ) * MAIL_MAX_ITEM;
-		WFIFOHEAD( fd, length );
-		struct PACKET_ZC_READ_MAIL *p = (struct PACKET_ZC_READ_MAIL *)WFIFOP( fd, 0 );
+		struct PACKET_ZC_ACK_READ_RODEX *p = (struct PACKET_ZC_ACK_READ_RODEX *)packet_buffer;
 
-		p->PacketType = rodexread;
-		p->PacketLength = length;
+		p->PacketType = HEADER_ZC_ACK_READ_RODEX;
+		p->PacketLength = sizeof( struct PACKET_ZC_ACK_READ_RODEX );
 		p->opentype = msg->type;
 		p->MailID = msg->id;
 		p->TextcontentsLength = msg_len;
 		p->zeny = msg->zeny;
 
-		int offset = sizeof( struct PACKET_ZC_READ_MAIL );
+		safestrncpy( WBUFCP( p, p->PacketLength ), msg->body, msg_len );
+		p->PacketLength += p->TextcontentsLength;
 
-		safestrncpy( WFIFOCP( fd, offset ), msg->body, msg_len );
-
-		offset += msg_len;
-
-		int count = 0;
+		p->ItemCnt = 0;
 		for( int j = 0; j < MAIL_MAX_ITEM; j++ ){
 			item = &msg->item[j];
 
 			if( item->nameid > 0 && item->amount > 0 && ( data = itemdb_exists( item->nameid ) ) != NULL ){
-				struct mail_item* mailitem = (struct mail_item *)WFIFOP( fd, offset );
+				struct PACKET_ZC_ACK_READ_RODEX_SUB* mailitem = (struct PACKET_ZC_ACK_READ_RODEX_SUB*)WBUFP( p, p->PacketLength );
 
 				mailitem->ITID = client_nameid( item->nameid );
 				mailitem->count = item->amount;
@@ -17187,20 +17187,17 @@ void clif_Mail_read( struct map_session_data *sd, int mail_id ){
 				mailitem->viewSprite = data->look;
 				mailitem->bindOnEquip = item->bound ? 2 : data->flag.bindOnEquip ? 1 : 0;
 				clif_addcards( &mailitem->slot, item );
-				clif_add_random_options( mailitem->optionData, item );
+				clif_add_random_options( mailitem->option_data, item );
 #if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724
 				mailitem->enchantgrade = item->enchantgrade;
 #endif
 
-				offset += sizeof( struct mail_item );
-				count++;
+				p->PacketLength += sizeof( *mailitem );
+				p->ItemCnt++;
 			}
 		}
 
-		p->ItemCnt = count;
-		p->PacketLength = sizeof( struct PACKET_ZC_READ_MAIL ) + p->TextcontentsLength + sizeof( struct mail_item ) * p->ItemCnt;
-
-		WFIFOSET( fd, p->PacketLength );
+		clif_send( p, p->PacketLength, &sd->bl, SELF );
 #endif
 
 		if (msg->status == MAIL_UNREAD) {
@@ -17296,7 +17293,7 @@ void clif_Mail_Receiver_Ack( struct map_session_data* sd, uint32 char_id, short 
 #endif // Pandas_Crashfix_FunctionParams_Verify
 	PACKET_ZC_CHECKNAME p = { 0 };
 
-	p.PacketType = rodexcheckplayer;
+	p.PacketType = HEADER_ZC_CHECKNAME;
 	p.CharId = char_id;
 	p.Class = class_;
 	p.BaseLevel = level;
