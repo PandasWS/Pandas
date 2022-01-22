@@ -27445,7 +27445,7 @@ BUILDIN_FUNC(renttime) {
 	}
 	else {
 		int i = 0, c = 0;
-		for (i = 0; i < MAX_INVENTORY; i++) {
+		for (i = 0; i < sd->status.inventory_slots; i++) {
 			if (sd->inventory.u.items_inventory[i].nameid == 0)
 				continue;
 			if (sd->inventory.u.items_inventory[i].expire_time == 0)
@@ -27673,7 +27673,7 @@ void inventory_rental_update(struct map_session_data* sd) {
 		return;
 	}
 
-	for (i = 0; i < MAX_INVENTORY; i++) {
+	for (i = 0; i < sd->status.inventory_slots; i++) {
 		if (sd->inventory.u.items_inventory[i].nameid == 0)
 			continue;
 		if (sd->inventory.u.items_inventory[i].expire_time == 0)
@@ -29133,7 +29133,7 @@ BUILDIN_FUNC(setinventoryinfo) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (idx < 0 || idx >= MAX_INVENTORY || !sd->inventory_data[idx]) {
+	if (idx < 0 || idx >= sd->status.inventory_slots || !sd->inventory_data[idx]) {
 		ShowError("buildin_setinventoryinfo: Nonexistant item index.\n");
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
@@ -30119,8 +30119,19 @@ BUILDIN_FUNC(expandinventory_adjust) {
 	if (!script_rid2sd(sd)) {
 		return SCRIPT_CMD_FAILURE;
 	}
-	ShowError("buildin_expandinventory_adjust: This command requires PACKETVER 2018-12-19 or newer.\n");
-	script_pushint(st, 0);
+
+	int expand_count = script_getnum(st, 2);
+
+	if (sd->status.inventory_slots + expand_count <= MAX_INVENTORY) {
+		sd->status.inventory_slots += expand_count;
+		clif_inventory_expansion_info(sd);
+		chrif_save(sd, CSAVE_NORMAL);
+		script_pushint(st, 1);
+	}
+	else {
+		script_pushint(st, 0);
+	}
+
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_ExpandInventoryAdjust
@@ -30139,7 +30150,7 @@ BUILDIN_FUNC(getinventorysize) {
 		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
-	script_pushint(st, MAX_INVENTORY);
+	script_pushint(st, sd->status.inventory_slots);
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_GetInventorySize

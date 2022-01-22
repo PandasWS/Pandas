@@ -1188,6 +1188,8 @@ void clif_pet_evolution_result( struct map_session_data* sd, e_pet_evolution_res
 
 void clif_parse_skill_toid( struct map_session_data* sd, uint16 skill_id, uint16 skill_lv, int target_id );
 
+void clif_inventory_expansion_info( struct map_session_data* sd );
+
 #ifdef Pandas_Character_Title_Controller
 // 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用
 void clif_change_title_ack(struct map_session_data* sd, unsigned char result, unsigned long title_id);
