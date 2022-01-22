@@ -2409,15 +2409,9 @@
 #endif
 
 #if PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
-#ifndef Pandas_ClientFeature_InventoryExpansion
 	parseable_packet( 0x0B14, sizeof( struct PACKET_CZ_INVENTORY_EXPAND ), clif_parse_dull, 0 );
 	parseable_packet( 0x0B16, sizeof( struct PACKET_CZ_INVENTORY_EXPAND_CONFIRMED ), clif_parse_dull, 0 );
 	parseable_packet( 0x0B19, sizeof( struct PACKET_CZ_INVENTORY_EXPAND_REJECTED ), clif_parse_dull, 0 );
-#else
-	parseable_packet(0x0B14, sizeof(struct PACKET_CZ_INVENTORY_EXPAND), clif_parse_inventoryExpansion, 0);
-	parseable_packet(0x0B16, sizeof(struct PACKET_CZ_INVENTORY_EXPAND_CONFIRMED), clif_parse_inventoryExpansionConfirmed, 0);
-	parseable_packet(0x0B19, sizeof(struct PACKET_CZ_INVENTORY_EXPAND_REJECTED), clif_parse_inventoryExpansionRejected, 0);
-#endif // Pandas_ClientFeature_InventoryExpansion
 #endif
 
 #if PACKETVER_MAIN_NUM >= 20190227 || PACKETVER_RE_NUM >= 20190220 || PACKETVER_ZERO_NUM >= 20190220

@@ -1942,14 +1942,6 @@
 	// 该指令用于查询指定效果脚本的相关信息
 	#define Pandas_ScriptCommand_BonusScriptInfo
 
-	// 是否启用 expandinventory_ack 脚本指令 [Sola丶小克]
-	// 该指令用于响应客户端的背包扩容请求, 并告知客户端下一步的动作
-	#define Pandas_ScriptCommand_ExpandInventoryACK
-
-	// 是否启用 expandinventory_result 脚本指令 [Sola丶小克]
-	// 该指令用于发送给客户端最终的背包扩容结果
-	#define Pandas_ScriptCommand_ExpandInventoryResult
-
 	// 是否启用 expandinventory_adjust 脚本指令 [Sola丶小克]
 	// 该指令用于增加角色的背包容量上限
 	#define Pandas_ScriptCommand_ExpandInventoryAdjust

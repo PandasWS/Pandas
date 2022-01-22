@@ -1772,9 +1772,6 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 		}
 	}
 
-#ifdef Pandas_ClientFeature_InventoryExpansion
-	clif_inventoryExpansionInfo(sd);
-#endif // Pandas_ClientFeature_InventoryExpansion
 	clif_authok(sd);
 
 	//Prevent S. Novices from getting the no-death bonus just yet. [Skotlex]
@@ -1897,25 +1894,6 @@ bool pc_set_hate_mob(struct map_session_data *sd, int pos, struct block_list *bl
 	clif_hate_info(sd, pos, class_, 1);
 	return true;
 }
-
-#ifdef Pandas_ClientFeature_InventoryExpansion
-bool pc_expandInventory(struct map_session_data* sd, int adjustSize) {
-	nullpo_retr(false, sd);
-	const int invSize = sd->status.inventory_size;
-
-	if (adjustSize > MAX_INVENTORY || invSize + adjustSize <= FIXED_INVENTORY_SIZE || invSize + adjustSize > MAX_INVENTORY) {
-		clif_inventoryExpandResult(sd, EXPAND_INVENTORY_RESULT_MAX_SIZE);
-		return false;
-	}
-	if (pc_isdead(sd) || sd->state.vending || sd->state.prevend || sd->state.buyingstore || sd->chatID != 0 || sd->state.trading || sd->state.storage_flag || sd->state.prevend) {
-		clif_inventoryExpandResult(sd, EXPAND_INVENTORY_RESULT_OTHER_WORK);
-		return false;
-	}
-	sd->status.inventory_size += adjustSize;
-	clif_inventoryExpansionInfo(sd);
-	return true;
-}
-#endif // Pandas_ClientFeature_InventoryExpansion
 
 /*==========================================
  * Invoked once after the char/account/account2 registry variables are received. [Skotlex]
@@ -12917,7 +12895,6 @@ bool pc_divorce(struct map_session_data *sd)
 	// Both players online, lets do the divorce manually
 	sd->status.partner_id = 0;
 	p_sd->status.partner_id = 0;
-#ifndef Pandas_ClientFeature_InventoryExpansion
 	for( i = 0; i < MAX_INVENTORY; i++ )
 	{
 		if( sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_M || sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_F )
@@ -12925,17 +12902,6 @@ bool pc_divorce(struct map_session_data *sd)
 		if( p_sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_M || p_sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_F )
 			pc_delitem(p_sd, i, 1, 0, 0, LOG_TYPE_OTHER);
 	}
-#else
-	for (i = 0; i < MAX_INVENTORY; i++) {
-		if (sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_M || sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_F)
-			pc_delitem(sd, i, 1, 0, 0, LOG_TYPE_OTHER);
-	}
-
-	for (i = 0; i < P_MAX_INVENTORY(p_sd); i++) {
-		if (p_sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_M || p_sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_F)
-			pc_delitem(p_sd, i, 1, 0, 0, LOG_TYPE_OTHER);
-	}
-#endif // Pandas_ClientFeature_InventoryExpansion
 
 	clif_divorced(sd, p_sd->status.name);
 	clif_divorced(p_sd, sd->status.name);
