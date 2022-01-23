@@ -1,15 +1,18 @@
 {
     "key": "io",
-    "name": "IO State Savers",
+    "name": "IO",
     "authors": [
-        "Daryle Walker"
+        "Daryle Walker",
+        "Beman Dawes",
+        "Glen Fernandes"
     ],
-    "description": "The I/O sub-library of Boost helps segregate the large number of Boost headers. This sub-library should contain various items to use with/for the standard I/O library.",
-    "documentation": "doc/ios_state.html",
+    "description": "Utilities for the standard I/O library.",
+    "documentation": "doc/html/io.html",
     "category": [
         "IO"
     ],
     "maintainers": [
-        "Daryle Walker <darylew -at- hotmail.com>"
-    ]
+        "Glen Fernandes <glenjofe -at- gmail.com>"
+    ],
+    "cxxstd": "03"
 }

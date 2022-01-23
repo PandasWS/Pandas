@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>vector_of Reference</title>
 <link rel="stylesheet" href="../../boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Bimap">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Bimap">
 <link rel="up" href="../reference.html" title="Reference">
 <link rel="prev" href="list_of_reference.html" title="list_of Reference">
 <link rel="next" href="unconstrained_set_of_reference.html" title="unconstrained_set_of Reference">
@@ -109,7 +109,7 @@
         </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-              vector_of views are not <a href="http://www.sgi.com/tech/stl/Assignable.html" target="_top">Assignable</a>
+              vector_of views are not <a href="https://www.boost.org/sgi/stl/Assignable.html" target="_top">Assignable</a>
               (like any other view.)
             </li>
 <li class="listitem">
@@ -124,9 +124,9 @@
 </ul></div>
 <p>
           Having these restrictions into account, vector of views are models of
-          <a href="http://www.sgi.com/tech/stl/RandomAccessContainer.html" target="_top">Random
-          Access Container</a> and <a href="http://www.sgi.com/tech/stl/BackInsertionSequence.html" target="_top">Back
-          Insertion Sequence</a>. Although these views do not model <a href="http://www.sgi.com/tech/stl/FrontInsertionSequence.html" target="_top">Front
+          <a href="https://www.boost.org/sgi/stl/RandomAccessContainer.html" target="_top">Random
+          Access Container</a> and <a href="https://www.boost.org/sgi/stl/BackInsertionSequence.html" target="_top">Back
+          Insertion Sequence</a>. Although these views do not model <a href="https://www.boost.org/sgi/stl/FrontInsertionSequence.html" target="_top">Front
           Insertion Sequence</a>, because front insertion and deletion take linear
           time, front operations are nonetheless provided to match the interface
           of list_of views. We only describe those types and operations that are
@@ -424,7 +424,7 @@
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
                 <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">InputIterator</span></code>
-                is a model of <a href="http://www.sgi.com/tech/stl/InputIterator.html" target="_top">Input
+                is a model of <a href="https://www.boost.org/sgi/stl/InputIterator.html" target="_top">Input
                 Iterator</a> over elements of type <code class="computeroutput"><span class="identifier">value_type</span></code>
                 or a type convertible to <code class="computeroutput"><span class="identifier">value_type</span></code>.
                 <code class="computeroutput"><span class="identifier">first</span></code> and <code class="computeroutput"><span class="identifier">last</span></code> are not iterators into any
@@ -610,7 +610,7 @@
 <li class="listitem">
                 <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">position</span></code>
                 is a valid iterator of the view. <code class="computeroutput"><span class="identifier">InputIterator</span></code>
-                is a model of <a href="http://www.sgi.com/tech/stl/InputIterator.html" target="_top">Input
+                is a model of <a href="https://www.boost.org/sgi/stl/InputIterator.html" target="_top">Input
                 Iterator</a> over elements of type <code class="computeroutput"><span class="identifier">value_type</span></code>
                 or a type convertible to <code class="computeroutput"><span class="identifier">value_type</span></code>.
                 <code class="computeroutput"><span class="identifier">first</span></code> and <code class="computeroutput"><span class="identifier">last</span></code> are not iterators into any
@@ -786,7 +786,7 @@
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
                 <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">KeyModifier</span></code>
-                is a model of <a href="http://www.sgi.com/tech/stl/UnaryFunction.html" target="_top">Unary
+                is a model of <a href="https://www.boost.org/sgi/stl/UnaryFunction.html" target="_top">Unary
                 Function</a> accepting arguments of type: <code class="computeroutput"><span class="identifier">key_type</span><span class="special">&amp;</span></code>; <code class="computeroutput"><span class="identifier">position</span></code>
                 is a valid dereferenceable iterator of the view.
               </li>
@@ -825,7 +825,7 @@
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
                 <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">DataModifier</span></code>
-                is a model of <a href="http://www.sgi.com/tech/stl/UnaryFunction.html" target="_top">Unary
+                is a model of <a href="https://www.boost.org/sgi/stl/UnaryFunction.html" target="_top">Unary
                 Function</a> accepting arguments of type: <code class="computeroutput"><span class="identifier">mapped_type</span><span class="special">&amp;</span></code>; <code class="computeroutput"><span class="identifier">position</span></code>
                 is a valid dereferenceable iterator of the view.
               </li>
@@ -1027,7 +1027,7 @@
 </pre>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-                <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span></code> is a <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html" target="_top">Strict
+                <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span></code> is a <a href="https://www.boost.org/sgi/stl/StrictWeakOrdering.html" target="_top">Strict
                 Weak Ordering</a> over <code class="computeroutput"><span class="identifier">value_type</span></code>.
                 Both the view and <code class="computeroutput"><span class="identifier">x</span></code>
                 are sorted according to <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span></code>.
@@ -1062,7 +1062,7 @@
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
                 <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">Compare</span></code>
-                is a <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html" target="_top">Strict
+                is a <a href="https://www.boost.org/sgi/stl/StrictWeakOrdering.html" target="_top">Strict
                 Weak Ordering</a> over <code class="computeroutput"><span class="identifier">value_type</span></code>.
                 Both the view and <code class="computeroutput"><span class="identifier">x</span></code>
                 are sorted according to comp.
@@ -1098,7 +1098,7 @@
 </pre>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-                <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span></code> is a <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html" target="_top">Strict
+                <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">less</span><span class="special">&lt;</span><span class="identifier">value_type</span><span class="special">&gt;</span></code> is a <a href="https://www.boost.org/sgi/stl/StrictWeakOrdering.html" target="_top">Strict
                 Weak Ordering</a> over <code class="computeroutput"><span class="identifier">value_type</span></code>.
               </li>
 <li class="listitem">
@@ -1123,7 +1123,7 @@
 </pre>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-                <span class="bold"><strong>Requires:</strong></span> Compare is a <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html" target="_top">Strict
+                <span class="bold"><strong>Requires:</strong></span> Compare is a <a href="https://www.boost.org/sgi/stl/StrictWeakOrdering.html" target="_top">Strict
                 Weak Ordering</a> over <code class="computeroutput"><span class="identifier">value_type</span></code>.
               </li>
 <li class="listitem">
@@ -1306,7 +1306,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2012 Matias Capeletto<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2012 Matias Capeletto<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

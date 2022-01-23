@@ -209,6 +209,27 @@ enum e_bossmap_info {
 	BOSS_INFO_DEAD,
 };
 
+enum class e_purchase_result : uint8{
+	PURCHASE_SUCCEED = 0x0,
+	PURCHASE_FAIL_MONEY,
+	PURCHASE_FAIL_WEIGHT,
+	PURCHASE_FAIL_COUNT,
+	PURCHASE_FAIL_STOCK,
+	PURCHASE_FAIL_ITEM_EXCHANGING,
+	PURCHASE_FAIL_INVALID_MCSTORE,
+	PURCHASE_FAIL_OPEN_MCSTORE_ITEMLIST,
+	PURCHASE_FAIL_GIVE_MONEY,
+	PURCHASE_FAIL_EACHITEM_COUNT,
+	// Unknown names
+	PURCHASE_FAIL_RODEX,
+	PURCHASE_FAIL_EXCHANGE_FAILED,
+	PURCHASE_FAIL_EXCHANGE_DONE,
+	PURCHASE_FAIL_STOCK_EMPTY,
+	PURCHASE_FAIL_GOODS,
+	// End unknown names
+	PURCHASE_FAIL_ADD = 0xff,
+};
+
 #define packet_len(cmd) packet_db[cmd].len
 extern struct s_packet_db packet_db[MAX_PACKET_DB+1];
 extern int packet_db_ack[MAX_ACK_FUNC + 1];
@@ -504,7 +525,8 @@ enum useskill_fail_cause : uint8_t
 	USESKILL_FAIL_THERE_ARE_NPC_AROUND = 83,
 	USESKILL_FAIL_NEED_MORE_BULLET = 84,
 	USESKILL_FAIL_COINS = 85,
-
+	// 86-99 unknown
+	USESKILL_FAIL_AP_INSUFFICIENT = 100,
 	USESKILL_FAIL_MAX
 };
 
@@ -603,28 +625,6 @@ enum e_config_type : uint32 {
 enum e_memorial_dungeon_command : uint16 {
 	COMMAND_MEMORIALDUNGEON_DESTROY_FORCE = 0x3,
 };
-
-#ifdef Pandas_ClientFeature_InventoryExpansion
-enum e_expand_inventory : uint8 {
-	EXPAND_INVENTORY_ASK_CONFIRMATION = 0,
-	EXPAND_INVENTORY_FAILED = 1,
-	EXPAND_INVENTORY_OTHER_WORK = 2,
-	EXPAND_INVENTORY_MISSING_ITEM = 3,
-	EXPAND_INVENTORY_MAX_SIZE = 4
-};
-
-enum e_expand_inventory_result : uint8 {
-	EXPAND_INVENTORY_RESULT_SUCCESS = 0,
-	EXPAND_INVENTORY_RESULT_FAILED = 1,
-	EXPAND_INVENTORY_RESULT_OTHER_WORK = 2,
-	EXPAND_INVENTORY_RESULT_MISSING_ITEM = 3,
-	EXPAND_INVENTORY_RESULT_MAX_SIZE = 4
-};
-
-void clif_inventoryExpansionInfo(struct map_session_data* sd);
-void clif_inventoryExpandAck(struct map_session_data* sd, enum e_expand_inventory result, int itemId);
-void clif_inventoryExpandResult(struct map_session_data* sd, enum e_expand_inventory_result result);
-#endif // Pandas_ClientFeature_InventoryExpansion
 
 int clif_setip(const char* ip);
 void clif_setbindip(const char* ip);
@@ -767,10 +767,14 @@ void clif_getareachar_skillunit(struct block_list *bl, struct skill_unit *unit, 
 void clif_skill_delunit(struct skill_unit *unit);
 void clif_skillunit_update(struct block_list* bl);
 
+void clif_skill_unit_test(struct block_list *bl, short x, short y, int unit_id, short range, short skill_lv);
+
 void clif_autospell(struct map_session_data *sd,uint16 skill_lv);
 void clif_devotion(struct block_list *src, struct map_session_data *tsd);
 void clif_spiritball( struct block_list *bl, struct block_list* target = nullptr, enum send_target send_target = AREA );
 void clif_soulball( struct map_session_data *sd, struct block_list* target = nullptr, enum send_target send_target = AREA );
+void clif_servantball( struct map_session_data& sd, struct block_list* target = nullptr, enum send_target send_target = AREA );
+void clif_abyssball( struct map_session_data& sd, struct block_list* target = nullptr, enum send_target send_target = AREA );
 void clif_combo_delay(struct block_list *bl,t_tick wait);
 void clif_bladestop(struct block_list *src, int dst_id, int active);
 void clif_changemapcell(int fd, int16 m, int x, int y, int type, enum send_target target);
@@ -1016,6 +1020,9 @@ void clif_Auction_close(int fd, unsigned char flag);
 void clif_parse_Auction_cancelreg(int fd, struct map_session_data *sd);
 
 void clif_bossmapinfo(struct map_session_data *sd, struct mob_data *md, enum e_bossmap_info flag);
+#ifdef Pandas_ScriptCommand_BossMonster
+void clif_bossmapinfo_clear(struct map_session_data* sd);
+#endif // Pandas_ScriptCommand_BossMonster
 void clif_cashshop_show(struct map_session_data *sd, struct npc_data *nd);
 
 // ADOPTION
@@ -1178,6 +1185,7 @@ enum in_ui_type : int8 {
 };
 
 enum out_ui_type : int8 {
+	OUT_UI_STYLIST = 1,
 	OUT_UI_ATTENDANCE = 7
 };
 
@@ -1200,6 +1208,12 @@ void clif_equipswitch_reply( struct map_session_data* sd, bool failed );
 void clif_pet_evolution_result( struct map_session_data* sd, e_pet_evolution_result result );
 
 void clif_parse_skill_toid( struct map_session_data* sd, uint16 skill_id, uint16 skill_lv, int target_id );
+
+void clif_inventory_expansion_info( struct map_session_data* sd );
+
+// Barter System
+void clif_barter_open( struct map_session_data& sd, struct npc_data& nd );
+void clif_barter_extended_open( struct map_session_data& sd, struct npc_data& nd );
 
 #ifdef Pandas_Character_Title_Controller
 // 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用

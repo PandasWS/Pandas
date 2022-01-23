@@ -9,7 +9,7 @@
 // See http://www.boost.org/libs/move for documentation.
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <boost/move/detail/config_begin.hpp>
+
 #include <boost/move/utility.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include "../example/movable.hpp"
@@ -226,5 +226,3 @@ int main()
 
    return boost::report_errors();
 }
-
-#include <boost/move/detail/config_end.hpp>

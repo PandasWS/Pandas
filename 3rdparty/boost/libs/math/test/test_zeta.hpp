@@ -8,7 +8,7 @@
 #include <boost/math/special_functions/math_fwd.hpp>
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/math/tools/stats.hpp>
 #include <boost/math/tools/test.hpp>
 #include <boost/math/constants/constants.hpp>
@@ -129,7 +129,7 @@ void test_spots(T, const char* t)
    BOOST_CHECK_CLOSE(::boost::math::zeta(ldexp(static_cast<T>(1), -27)), static_cast<T>(-0.500000006846625660947956426350389518286874288247134329498289L), tolerance);
    BOOST_CHECK_CLOSE(::boost::math::zeta(ldexp(static_cast<T>(1), -28)), static_cast<T>(-0.500000003423312816552083476988056486473169377162409806781384L), tolerance);
    BOOST_CHECK_CLOSE(::boost::math::zeta(ldexp(static_cast<T>(1), -29)), static_cast<T>(-0.500000001711656404795568073849512135664960180586820144333542L), tolerance);
-   BOOST_CHECK_CLOSE(::boost::math::zeta(ldexp(static_cast<T>(1), -30)), static_cast<T>(-0.500000000855828201527665623188910582717329375986726355164261L), tolerance);
+   BOOST_CHECK_CLOSE(::boost::math::zeta(ldexp(static_cast<T>(1), -30)), static_cast<T>(-0.500000000855828201527665623188910582717329375986726355164261L), tolerance * 2);
    BOOST_CHECK_CLOSE(::boost::math::zeta(ldexp(static_cast<T>(1), -31)), static_cast<T>(-0.500000000427914100546303208463654361814800355929815322493143L), tolerance);
    BOOST_CHECK_CLOSE(::boost::math::zeta(ldexp(static_cast<T>(1), -32)), static_cast<T>(-0.500000000213957050218769203487022003676593508474107873788445L), tolerance);
    BOOST_CHECK_CLOSE(::boost::math::zeta(ldexp(static_cast<T>(1), -33)), static_cast<T>(-0.500000000106978525095789001562046589421133388262409441738089L), tolerance);
@@ -150,7 +150,7 @@ void test_spots(T, const char* t)
    BOOST_CHECK_CLOSE(::boost::math::zeta(-ldexp(static_cast<T>(1), -32)), static_cast<T>(-0.499999999786042949889995597926798240562852438685508646794693L), tolerance);
    BOOST_CHECK_CLOSE(::boost::math::zeta(-ldexp(static_cast<T>(1), -33)), static_cast<T>(-0.499999999893021474931402198791408471637626205588681812641711L), tolerance);
    BOOST_CHECK_CLOSE(::boost::math::zeta(-ldexp(static_cast<T>(1), -34)), static_cast<T>(-0.499999999946510737462302199352114463422268928922372277519378L), tolerance);
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4127 4756)
 #endif
@@ -170,7 +170,7 @@ void test_spots(T, const char* t)
       BOOST_CHECK_EQUAL(::boost::math::zeta(static_cast<T>(-10007)), std::numeric_limits<T>::infinity());
       BOOST_CHECK_EQUAL(::boost::math::zeta(static_cast<T>(-10009)), -std::numeric_limits<T>::infinity());
    }
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 }

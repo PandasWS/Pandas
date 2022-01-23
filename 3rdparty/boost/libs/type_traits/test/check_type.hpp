@@ -18,7 +18,7 @@ type_expression:  an expression that evaluates to a typename.
 expected_value:   the type we expect to find.
 */
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 #pragma option -w-8008 -w-8066 -w-8019
 #endif
 

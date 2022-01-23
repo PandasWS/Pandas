@@ -75,7 +75,7 @@ struct context_initializer {
             // main fiber context of this thread
             context * main_ctx = new main_context{};
             // scheduler of this thread
-            scheduler * sched = new scheduler{};
+            auto sched = new scheduler{};
             // attach main context to scheduler
             sched->attach_main_context( main_ctx);
             // create and attach dispatcher context to scheduler
@@ -118,18 +118,8 @@ context::~context() {
     BOOST_ASSERT( ! ready_is_linked() );
     BOOST_ASSERT( ! remote_ready_is_linked() );
     BOOST_ASSERT( ! sleep_is_linked() );
-    BOOST_ASSERT( ! wait_is_linked() );
     if ( is_context( type::dispatcher_context) ) {
-        // dispatcher-context is resumed by main-context
-        // while the scheduler is deconstructed
-#ifdef BOOST_DISABLE_ASSERTS
-        wait_queue_.pop_front();
-#else
-        context * ctx = & wait_queue_.front();
-        wait_queue_.pop_front();
-        BOOST_ASSERT( ctx->is_context( type::main_context) );
         BOOST_ASSERT( nullptr == active() );
-#endif
     }
     BOOST_ASSERT( wait_queue_.empty() );
     delete properties_;
@@ -202,9 +192,7 @@ context::join() {
         // push active context to wait-queue, member
         // of the context which has to be joined by
         // the active context
-        active_ctx->wait_link( wait_queue_);
-        // suspend active context
-        active_ctx->get_scheduler()->suspend( lk);
+        wait_queue_.suspend_and_wait( lk, active_ctx);
         // active context resumed
         BOOST_ASSERT( context::active() == active_ctx);
     }
@@ -236,13 +224,7 @@ context::terminate() noexcept {
     // mark as terminated
     terminated_ = true;
     // notify all waiting fibers
-    while ( ! wait_queue_.empty() ) {
-        context * ctx = & wait_queue_.front();
-        // remove fiber from wait-queue
-        wait_queue_.pop_front();
-        // notify scheduler
-        schedule( ctx);
-    }
+    wait_queue_.notify_all();
     BOOST_ASSERT( wait_queue_.empty() );
     // release fiber-specific-data
     for ( fss_data_t::value_type & data : fss_data_) {
@@ -262,11 +244,33 @@ context::wait_until( std::chrono::steady_clock::time_point const& tp) noexcept {
 
 bool
 context::wait_until( std::chrono::steady_clock::time_point const& tp,
-                     detail::spinlock_lock & lk) noexcept {
+                     detail::spinlock_lock & lk,
+                     waker && w) noexcept {
     BOOST_ASSERT( nullptr != get_scheduler() );
     BOOST_ASSERT( this == active() );
-    return get_scheduler()->wait_until( this, tp, lk);
+    return get_scheduler()->wait_until( this, tp, lk, std::move(w));
 }
+
+
+bool context::wake(const size_t epoch) noexcept
+{
+    size_t expected = epoch;
+    bool is_last_waker = waker_epoch_.compare_exchange_strong(expected, epoch + 1, std::memory_order_acq_rel);
+    if ( ! is_last_waker) {
+        // waker_epoch_ has been incremented before, so consider this wake
+        // operation as outdated and do nothing
+        return false;
+    }
+
+    BOOST_ASSERT( context::active() != this);
+    if ( context::active()->get_scheduler() == get_scheduler()) {
+        get_scheduler()->schedule( this);
+    } else {
+        get_scheduler()->schedule_from_remote( this);
+    }
+    return true;
+}
+
 
 void
 context::schedule( context * ctx) noexcept {
@@ -293,8 +297,8 @@ context::schedule( context * ctx) noexcept {
 
 void *
 context::get_fss_data( void const * vp) const {
-    uintptr_t key = reinterpret_cast< uintptr_t >( vp);
-    fss_data_t::const_iterator i = fss_data_.find( key);
+    auto key = reinterpret_cast< uintptr_t >( vp);
+    auto i = fss_data_.find( key);
     return fss_data_.end() != i ? i->second.vp : nullptr;
 }
 
@@ -304,8 +308,8 @@ context::set_fss_data( void const * vp,
                        void * data,
                        bool cleanup_existing) {
     BOOST_ASSERT( cleanup_fn);
-    uintptr_t key = reinterpret_cast< uintptr_t >( vp);
-    fss_data_t::iterator i = fss_data_.find( key);
+    auto key = reinterpret_cast< uintptr_t >( vp);
+    auto i = fss_data_.find( key);
     if ( fss_data_.end() != i) {
         if( cleanup_existing) {
             i->second.do_cleanup();
@@ -354,11 +358,6 @@ context::terminated_is_linked() const noexcept {
     return terminated_hook_.is_linked();
 }
 
-bool
-context::wait_is_linked() const noexcept {
-    return wait_hook_.is_linked();
-}
-
 void
 context::worker_unlink() noexcept {
     BOOST_ASSERT( worker_is_linked() );
@@ -375,12 +374,6 @@ void
 context::sleep_unlink() noexcept {
     BOOST_ASSERT( sleep_is_linked() );
     sleep_hook_.unlink();
-}
-
-void
-context::wait_unlink() noexcept {
-    BOOST_ASSERT( wait_is_linked() );
-    wait_hook_.unlink();
 }
 
 void

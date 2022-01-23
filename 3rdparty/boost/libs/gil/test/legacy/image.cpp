@@ -8,13 +8,15 @@
 #ifdef _MSC_VER
 #pragma warning(disable : 4244)     // conversion from 'gil::image<V,Alloc>::coord_t' to 'int', possible loss of data (visual studio compiler doesn't realize that the two types are the same)
 #pragma warning(disable : 4503)     // decorated name length exceeded, name was truncated
+#pragma warning(disable : 4701)     // potentially uninitialized local variable 'result' used in boost/crc.hpp
 #endif
 
+#include <boost/gil.hpp>
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 
 #include <boost/core/ignore_unused.hpp>
 #include <boost/crc.hpp>
-#include <boost/mpl/vector.hpp>
+#include <boost/mp11.hpp>
 
 #include <ios>
 #include <iostream>
@@ -36,7 +38,6 @@ void error_if(bool condition);
 #pragma warning(push)
 #pragma warning(disable:4127) //conditional expression is constant
 #endif
-
 
 // When BOOST_GIL_GENERATE_REFERENCE_DATA is defined, the reference data is generated and saved.
 // When it is undefined, regression tests are checked against it
@@ -114,7 +115,7 @@ struct mandelbrot_fn
         t=pow(t,0.2);
 
         value_type ret;
-        for (int k=0; k<num_channels<P>::value; ++k)
+        for (std::size_t k=0; k<num_channels<P>::value; ++k)
             ret[k]=(typename channel_type<value_type>::type)(_in_color[k]*t + _out_color[k]*(1-t));
         return ret;
     }
@@ -145,10 +146,10 @@ void x_gradient(const T& src, const gray8s_view_t& dst) {
 // A quick test whether a view is homogeneous
 
 template <typename Pixel>
-struct pixel_is_homogeneous : public mpl::true_ {};
+struct pixel_is_homogeneous : public std::true_type {};
 
 template <typename P, typename C, typename L>
-struct pixel_is_homogeneous<packed_pixel<P,C,L> > : public mpl::false_ {};
+struct pixel_is_homogeneous<packed_pixel<P,C,L> > : public std::false_type {};
 
 template <typename View>
 struct view_is_homogeneous : public pixel_is_homogeneous<typename View::value_type> {};
@@ -176,8 +177,8 @@ protected:
 private:
     template <typename Img> void basic_test(const string& prefix);
     template <typename View> void view_transformations_test(const View& img_view, const string& prefix);
-    template <typename View> void homogeneous_view_transformations_test(const View& img_view, const string& prefix, mpl::true_);
-    template <typename View> void homogeneous_view_transformations_test(const View& img_view, const string& prefix, mpl::false_)
+    template <typename View> void homogeneous_view_transformations_test(const View& img_view, const string& prefix, std::true_type);
+    template <typename View> void homogeneous_view_transformations_test(const View& img_view, const string& prefix, std::false_type)
     {
         boost::ignore_unused(img_view);
         boost::ignore_unused(prefix);
@@ -276,7 +277,7 @@ void image_test::view_transformations_test(const View& img_view, const string& p
 }
 
 template <typename View>
-void image_test::homogeneous_view_transformations_test(const View& img_view, const string& prefix, mpl::true_) {
+void image_test::homogeneous_view_transformations_test(const View& img_view, const string& prefix, std::true_type) {
     check_view(nth_channel_view(img_view,0),prefix+"0th_n_channel");
 }
 
@@ -325,14 +326,11 @@ void image_test::dynamic_image_test()
 {
     using any_image_t = any_image
         <
-            mpl::vector
-            <
-                gray8_image_t,
-                bgr8_image_t,
-                argb8_image_t,
-                rgb8_image_t,
-                rgb8_planar_image_t
-            >
+            gray8_image_t,
+            bgr8_image_t,
+            argb8_image_t,
+            rgb8_image_t,
+            rgb8_planar_image_t
         >;
     rgb8_planar_image_t img(sample_view.dimensions());
     copy_pixels(sample_view, view(img));
@@ -369,15 +367,20 @@ void image_test::run() {
     image_all_test<rgb8_planar_image_t>("planarrgb8_");
     image_all_test<gray8_image_t>("gray8_");
 
+// FIXME: https://github.com/boostorg/gil/issues/447
+// Disable bgc121_image_t drawing as work around for a mysterious bug
+// revealing itself when using MSVC 64-bit optimized build.
+#if !(defined(NDEBUG) && defined (_MSC_VER) && defined(_WIN64))
     using bgr121_ref_t = bit_aligned_pixel_reference
         <
             boost::uint8_t,
-            mpl::vector3_c<int, 1, 2, 1>,
+            mp11::mp_list_c<int, 1, 2, 1>,
             bgr_layout_t,
             true
         > const;
     using bgr121_image_t = image<bgr121_ref_t, false>;
     image_all_test<bgr121_image_t>("bgr121_");
+#endif
 
     // TODO: Remove?
     view_transformations_test(subsampled_view(sample_view, point_t(1,2)), "subsampled_");
@@ -540,7 +543,7 @@ void static_checks() {
         <
             derived_view_type
             <
-                cmyk8c_planar_step_view_t, use_default, rgb_layout_t, mpl::false_, use_default, mpl::false_
+                cmyk8c_planar_step_view_t, use_default, rgb_layout_t, std::false_type, use_default, std::false_type
             >::type,
             rgb8c_step_view_t
         >::value, "");

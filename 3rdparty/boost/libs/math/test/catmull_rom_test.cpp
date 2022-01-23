@@ -11,7 +11,7 @@
 #include <boost/cstdfloat.hpp>
 #include <boost/type_index.hpp>
 #include <boost/test/included/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/interpolators/catmull_rom.hpp>
 #include <boost/multiprecision/cpp_bin_float.hpp>
@@ -335,7 +335,7 @@ private:
 
 // Must define the free function "size()":
 template<class Real>
-BOOST_CONSTEXPR std::size_t size(const mypoint3d<Real>& c)
+constexpr std::size_t size(const mypoint3d<Real>& c)
 {
     return 3;
 }
@@ -406,7 +406,9 @@ BOOST_AUTO_TEST_CASE(catmull_rom_test)
     test_alpha_distance<double>();
 
     test_linear<double>();
+#ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
     test_linear<long double>();
+#endif
 
     test_circle<float>();
     test_circle<double>();

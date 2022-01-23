@@ -60,7 +60,7 @@ int main()
 #  define BOOST_TT_AUX_WCHAR_MAX USHORT_MAX // force test_cv< wchar_t, int >
 #elif defined(WCHAR_MAX) && !defined(__APPLE__)
 #  define BOOST_TT_AUX_WCHAR_MAX WCHAR_MAX
-#elif defined(__BORLANDC__) || defined(__CYGWIN__) || defined(__MINGW32__) || (defined(__BEOS__) && defined(__GNUC__))
+#elif defined(BOOST_BORLANDC) || defined(__CYGWIN__) || defined(__MINGW32__) || (defined(__BEOS__) && defined(__GNUC__))
     // No WCHAR_MIN and WCHAR_MAX, whar_t is short and unsigned:
 #  define BOOST_TT_AUX_WCHAR_MAX USHORT_MAX // force test_cv< wchar_t, int >
 #elif (defined(__sgi) && (!defined(__SGI_STL_PORT) || __SGI_STL_PORT < 0x400))\

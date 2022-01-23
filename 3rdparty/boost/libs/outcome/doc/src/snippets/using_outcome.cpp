@@ -1,5 +1,5 @@
 /* Example of Outcome
-(C) 2017-2019 Niall Douglas <http://www.nedproductions.biz/> (3 commits), Krzemienski <sg0897542@global.ad.sabre.com> (3 commits) and Andrzej Krzemienski <akrzemi1@gmail.com> (3 commits)
+(C) 2017-2021 Niall Douglas <http://www.nedproductions.biz/> (3 commits), Krzemienski <sg0897542@global.ad.sabre.com> (3 commits) and Andrzej Krzemienski <akrzemi1@gmail.com> (3 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -55,7 +55,7 @@ namespace old
 //! [def_h]
 auto old::h() noexcept -> outcome::outcome<int>
 {
-  BOOST_OUTCOME_TRY(i, (g()));             // #1
+  BOOST_OUTCOME_TRY(auto i, (g()));             // #1
     
   try {
     return i + f();

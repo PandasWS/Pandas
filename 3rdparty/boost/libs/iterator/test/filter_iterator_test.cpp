@@ -1,4 +1,4 @@
-// Copyright David Abrahams 2003, Jeremy Siek 2004. 
+// Copyright David Abrahams 2003, Jeremy Siek 2004.
 
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -18,7 +18,7 @@
 #include <iostream>
 
 using boost::dummyT;
-    
+
 struct one_or_four
 {
     bool operator()(dummyT x) const
@@ -116,7 +116,7 @@ int main()
       boost::function_requires< boost_concepts::WritableIteratorConcept<Iter> >();
       boost::function_requires< boost_concepts::SinglePassIteratorConcept<Iter> >();
     }
-#endif 
+#endif
     {
       typedef boost::iterator_archetype<
           const dummyT
@@ -128,7 +128,7 @@ int main()
       boost::function_requires< boost_concepts::ReadableIteratorConcept<Iter> >();
       boost::function_requires< boost_concepts::ForwardTraversalConcept<Iter> >();
     }
-    
+
 #if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)  // Causes Internal Error in linker.
     {
       typedef boost::iterator_archetype<
@@ -165,7 +165,7 @@ int main()
       boost::function_requires< boost_concepts::LvalueIteratorConcept<Iter> >();
       boost::function_requires< boost_concepts::ForwardTraversalConcept<Iter> >();
     }
-#endif 
+#endif
 
     {
       typedef boost::iterator_archetype<
@@ -178,7 +178,7 @@ int main()
       boost::function_requires< boost_concepts::ReadableIteratorConcept<Iter> >();
       boost::function_requires< boost_concepts::BidirectionalTraversalConcept<Iter> >();
     }
-    
+
 #if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)  // Causes Internal Error in linker.
     {
       typedef boost::iterator_archetype<
@@ -215,11 +215,11 @@ int main()
       boost::function_requires< boost_concepts::LvalueIteratorConcept<Iter> >();
       boost::function_requires< boost_concepts::BidirectionalTraversalConcept<Iter> >();
     }
-#endif 
+#endif
 
     // Run-time tests
 
-    dummyT array[] = { dummyT(0), dummyT(1), dummyT(2), 
+    dummyT array[] = { dummyT(0), dummyT(1), dummyT(2),
                        dummyT(3), dummyT(4), dummyT(5) };
     const int N = sizeof(array)/sizeof(dummyT);
 
@@ -235,9 +235,9 @@ int main()
            , boost::random_access_traversal_tag
          >::value
         ));
-    
+
     //# endif
-    
+
     // On compilers not supporting partial specialization, we can do more type
     // deduction with deque iterators than with pointers... unless the library
     // is broken ;-(
@@ -258,7 +258,7 @@ int main()
             , boost::make_reverse_iterator(array2.begin())
             ),
         dummyT(4), dummyT(1));
-    
+
     boost::bidirectional_readable_iterator_test(
         filter_iter(array+0, array+N),
         dummyT(1), dummyT(4));

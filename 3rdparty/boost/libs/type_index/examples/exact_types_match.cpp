@@ -1,4 +1,4 @@
-// Copyright 2013-2019 Antony Polukhin
+// Copyright 2013-2021 Antony Polukhin
 
 // Distributed under the Boost Software License, Version 1.0.
 // (See the accompanying file LICENSE_1_0.txt
@@ -23,6 +23,8 @@
 // Making `#include <cassert>` visible in docs, while actually using hand-made check
 // instead of `assert`. This is required to verify correct behavior even if NDEBUG
 // is defined and to avoid `unused local variable` warnings with defined NDEBUG.
+//
+// boost-no-inspect
 #ifdef assert
 #   undef assert
 #endif

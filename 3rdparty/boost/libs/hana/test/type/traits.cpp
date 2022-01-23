@@ -53,8 +53,12 @@ int main() {
     hana::traits::is_trivial(s);
     hana::traits::is_trivially_copyable(s);
     hana::traits::is_standard_layout(s);
+#if __cplusplus < 202002L
     hana::traits::is_pod(s);
+#endif
+#if __cplusplus < 201703L
     hana::traits::is_literal_type(s);
+#endif
     hana::traits::is_empty(s);
     hana::traits::is_polymorphic(s);
     hana::traits::is_abstract(s);
@@ -144,8 +148,6 @@ int main() {
 
     hana::traits::common_type(s, s);
     hana::traits::underlying_type(e);
-    using FunctionPointer = void(*)();
-    hana::traits::result_of(hana::type_c<FunctionPointer(void)>);
 
     ///////////////////////
     // Utilities

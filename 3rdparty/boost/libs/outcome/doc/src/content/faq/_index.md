@@ -10,16 +10,27 @@ weight = 30
 Outcome is specifically designed for use in the public interfaces of multi-million
 line codebases. `result`'s layout is hard coded to:
 
-```c
-struct
-{
-  T value;
+```c++
+struct trivially_copyable_result_layout {
+  union {
+    value_type value;
+    error_type error;
+  };
   unsigned int flags;
-  EC error;
 };
 ```
 
-This is C-compatible if `T` and `EC` are C-compatible. {{% api "std::error_code" %}}
+... if both `value_type` and `error_type` are `TriviallyCopyable`, otherwise:
+
+```c++
+struct non_trivially_copyable_result_layout {
+  value_type value;
+  unsigned int flags;
+  error_type error;
+};
+```
+
+This is C-compatible if `value_type` and `error_type` are C-compatible. {{% api "std::error_code" %}}
 is *probably* C-compatible, but its layout is not standardised (though there is a
 normative note in the standard about its layout). Hence Outcome cannot provide a
 C macro API for standard Outcome, but we can for [Experimental Outcome]({{< relref "/experimental/c-api" >}}).
@@ -27,15 +38,9 @@ C macro API for standard Outcome, but we can for [Experimental Outcome]({{< relr
 
 ## Does Outcome implement over-alignment?
 
-Variant-based alternatives to Outcome such as {{% api "std::expected<T, E>" %}}
-would use `std::aligned_union` to ensure appropriate over-alignment for the storage of
-either a `T` or an `E`. This discovers the over-alignment for a type using
-`std::alignment_of`, which is defaulted to `alignof()`.
-
-Outcome uses `struct`-based storage, as described above. Any over-alignment of
-`result` or `outcome` will follow the ordinary alignment and padding rules for
-`struct` on your compiler. Traits such as `std::alignment_of`, or other standard
-library facilities, are not used.
+Outcome propagates any over-alignment of the types you supply to it as according
+to the layout specified above. Therefore the ordinary alignment and padding rules
+for your compiler are used.
 
 
 ## Does Outcome implement the no-fail, strong or basic exception guarantee?
@@ -80,12 +85,15 @@ and standard swap is used instead.
 
 ## Does Outcome have a stable ABI and API?
 
-Right now, no. Though the data layout shown above is not expected to change.
+The layout changed for all trivially copyable types between Outcome v2.1 and v2.2,
+as union based storage was introduced. From v2.2 onwards, the layout is not
+expected to change again.
 
-Outcome's ABI and API will be formally fixed as **the** v2 interface approximately
-one year after its first Boost release. Thereafter the
-[ABI compliance checker](https://lvc.github.io/abi-compliance-checker/)
-will be run per-commit to ensure Outcome's ABI and API remains stable.
+If v2.2 proves to be unchanging for 24 months, Outcome's ABI and API will be
+formally fixed as **the** v2 interface and written into stone forever. Thereafter
+the [ABI compliance checker](https://lvc.github.io/abi-compliance-checker/)
+will be run per-commit to ensure Outcome's ABI and API remains stable. This is
+currently expected to occur in 2022.
 
 Note that the stable ABI and API guarantee will only apply to standalone
 Outcome, not to Boost.Outcome. Boost.Outcome has dependencies on other
@@ -97,7 +105,7 @@ to be ABI stable if `result` or `outcome` is to be ABI stable.
 
 ## Can I use `result<T, EC>` across DLL/shared object boundaries?
 
-A known problem with using DLLs (and to smaller extent shared libraries) is that global
+A known problem with using Windows DLLs (and to smaller extent POSIX shared libraries) is that global
 objects may get duplicated: one instance in the executable and one in the DLL. This
 behaviour is not incorrect according to the C++ Standard, as the Standard does not
 recognize the existence of DLLs or shared libraries. Therefore, program designs that
@@ -108,7 +116,7 @@ Nothing in Outcome depends on the addresses of globals, plus the guaranteed fixe
 layout (see answer above) means that different versions of Outcome can be used in
 different DLLs, and it probably will work okay (it is still not advised that you do that
 as that is an ODR violation).
-However, one of the most likely candidate for `EC` -- `std::error_code` -- does depend
+However, one of the most likely candidate for `EC` -- `std::error_code` -- **does** depend
 on the addresses of globals for correct functioning.
 
 The standard library is required to implement globally unique addresses for the standard library
@@ -204,6 +212,10 @@ caller, so for example ten stack allocated objects might be destructed, or ten l
 of stack depth might be unwound. This is not a particularly realistic test, but it
 should at least give one an idea of the performance impact of returning Outcome's
 `result` or `outcome` over say returning a plain integer, or throwing an exception.
+
+The following figures are for Outcome v2.1.0 with GCC 7.4, clang 8.0 and Visual
+Studio 2017.9. Figures for newer Outcomes with newer compilers can be found at
+https://github.com/ned14/outcome/tree/develop/benchmark.
 
 ### High end CPU: Intel Skylake x64
 
@@ -376,7 +388,9 @@ Expected permits `T` and `E` to be the same.
    `.assume_value()` and `.assume_error()` for narrow (UB causing) observers].
 8. `checked<T, E>` uses `success<T>` and `failure<E>` type sugars for disambiguation.
 Expected uses `unexpected<E>` only.
-9. `checked<T, E>` requires `E` to be default constructible.
+9. `checked<T, E>` does not implement (prone to unintended misoperation) comparison
+operators which permit implicit conversion e.g. `checked<T> == T` will fail to compile.
+Instead write unambiguous code e.g. `checked<T> == success(T)` or `checked<T> == failure(T)`.
 10. `checked<T, E>` defaults `E` to `std::error_code` or `boost::system::error_code`.
 Expected does not default `E`.
 
@@ -414,39 +428,29 @@ not do any of this, but subsequent WG21 papers do propose various interoperation
 mechanisms, [one of which](https://wg21.link/P0786) Outcome implements so code using Expected will seamlessly
 interoperate with code using Outcome.
 
+6. Outcome was designed with the benefit of hindsight after Optional and Expected,
+where how those do implicit conversions have been found to be prone to writing
+unintentionally buggy code. Outcome simultaneously permits more implicit conversions
+for ease of use and convenience, where those are unambigiously safe, and prevents
+other implicit conversions which the Boost peer review reported as dangerous.
+
 
 ## Is Outcome riddled with undefined behaviour for const, const-containing and reference-containing types?
 
-The short answer is yes, but it probably won't matter to you in practice.
+The short answer is not any more in C++ 20 and after, thanks to changes made to
+C++ 20 at the Belfast WG21 meeting in November 2019.
 
-The longer answer is that the same problem affects lots of C++ out there,
-so lots of production code will break if Outcome ever breaks on this. The
-potentially sometime-in-the-future affected code sequence would be:
+The longer answer is that before C++ 20, use of placement
+new on types containing `const` member types where the resulting pointer was
+thrown away is undefined behaviour. As of the resolution of a national body
+comment, this is no longer the case, and now Outcome is free of this particular
+UB for C++ 20 onwards.
 
-```c++
-struct const_containing_type
-{
-  const int no;                        // only concerns const and reference types
-  const_containing_type(int n) : no(n) {}
-};
+This still affects C++ before 20, though no major compiler is affected. Still,
+if you wish to avoid UB, don't use `const` types within Outcome types (or any
+`optional<T>`, or `vector<T>` or any STL container type for that matter).
 
-extern void external_function(int, const result<const_containing_type> &);
-
-int example_const_propagation2()
-{
-  result<const_containing_type> a{5};
-  const int &x = a.value().no;
-  external_function(x, a);             // might call an outcome function which calls placement new!
-  return x;                            // does this reload x, or assume it hasn't changed?
-}
-```
-
-GCCs up to v10, clangs up to v9 and MSVCs up to VS2019.1 <u><b>do</b></u> reload `x` after
-the call of an unknown function, even though it has constant type. This may change
-in future compilers due to changes in the C++ standard to encourage such
-optimisations.
-
-### Brief history of C++ standard changes
+### More detail
 
 Before the C++ 14 standard, placement new into storage which used to contain
 a const type was straight out always undefined behaviour, period. Thus all use of
@@ -491,30 +495,10 @@ undesirable given all the care and attention paid to keeping it small. The alter
 is to use {{% api "std::launder" %}}, which was added in C++ 17, to 'launder'
 the storage into which we placement new before each and every use of that
 storage. This forces the compiler to reload the object stored by placement
-new on every occasion, and not assume it is can be constant propagated, which
+new on every occasion, and not assume it can be constant propagated, which
 impacts codegen quality.
 
-As neither situation is obviously desirable, after much thought I have
-decided to simply do nothing apart from add this FAQ entry. I would say that
-because Outcome is 100% header-only, the compiler can always see the
-calls of placement new, and thus the compiler always knows that the
-preceding const or reference object is dead, and there is now a new const
-or reference object in its place. I appreciate that this is a hand waving
-response, and code using Outcome will still contain undefined behaviour if
-you use it with a const type, or a type containing const or reference types.
-
-However the reality on the ground is that a ton of production C++ code does
-placement new of types potentially containing const or reference types, and
-it is highly unlikely that C++ compilers will, in practice, break all that
-production code, especially as the template type supplied to library code is often
-outside one's control. If, however, compilers do end up moving ahead on
-optimising this aggressively, Outcome will need to add laundering for any
-type containing const or reference types, for which one needs Reflection
-into the language in any case. We shall thus wait until later to see what
-happens.
-
-### Summary
-
-If you wish to be kept abreast of changes on this topic, please add yourself
-to https://github.com/ned14/outcome/issues/185 which is the issue tracking
-this bug.
+As mentioned above, this issue (in so far as it applies to types containing
+user supplied `T` which might be `const`) has been resolved as of C++ 20 onwards,
+and it is extremely unlikely that any C++ compiler will act on any UB here in
+C++ 17 or 14 given how much of STL containers would break.

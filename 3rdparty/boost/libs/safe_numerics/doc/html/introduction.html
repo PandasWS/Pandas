@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Introduction</title>
 <link rel="stylesheet" href="boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -114,7 +114,7 @@
     invoke an error. Using this library, the above example would be rendered
     as:</p>
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">safe_numerics</span><span class="special">/</span><span class="identifier">safe_integer</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
-<span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">numeric</span><span class="special">;</span>
+<span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">safe_numerics</span><span class="special">;</span>
 <span class="identifier">safe</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">safe</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="identifier">x</span><span class="special">,</span> <span class="identifier">safe</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="identifier">y</span><span class="special">)</span><span class="special">{</span>
   <span class="keyword">return</span> <span class="identifier">x</span> <span class="special">+</span> <span class="identifier">y</span><span class="special">;</span> <span class="comment">// throw exception if correct result cannot be returned</span>
 <span class="special">}</span>
@@ -125,7 +125,7 @@
 <th align="left">Note</th>
 </tr>
 <tr><td align="left" valign="top"><p>Library code in this document resides in the namespace
-        <code class="computeroutput">boost::numeric</code>. This namespace has generally been
+        <code class="computeroutput">boost::safe_numerics</code>. This namespace has generally been
         eliminated from text, code and examples in order to improve
         readability of the text.</p></td></tr>
 </table></div>
@@ -232,6 +232,7 @@
 <li class="listitem"><p>config</p></li>
 <li class="listitem"><p>tribool</p></li>
 <li class="listitem"><p>enable_if</p></li>
+<li class="listitem"><p>type_traits</p></li>
 </ul></div>
 <p>The Safe Numerics library is delivered with an exhaustive
     suite of test programs.</p>
@@ -250,7 +251,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2012-2018 Robert Ramey<p><a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">Subject to Boost
+<td align="right"><div class="copyright-footer">Copyright © 2012-2018 Robert Ramey<p><a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">Subject to Boost
       Software License</a></p>
 </div></td>
 </tr></table>

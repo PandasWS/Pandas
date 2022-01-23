@@ -69,6 +69,10 @@ import testing ;
     [ compile custom_ccs/member_ccs.cpp : <address-model>64:<build>no ]
     [ compile custom_ccs/member_ccs_exact.cpp : <address-model>64:<build>no ]
 
+    # Property tag
+    
+    [ compile custom_ccs/property_tag.cpp ]
+    
     # Code from the examples
 
     [ compile ../example/interpreter_example.cpp ]

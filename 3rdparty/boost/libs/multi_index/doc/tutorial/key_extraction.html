@@ -98,10 +98,10 @@ of the element and do not depend on external data.
 A key extractor is called <i>read/write</i> if it returns a non-constant reference
 to the key when passed a non-constant element, and it is called <i>read-only</i>
 otherwise. Boost.MultiIndex requires that the key extractor be read/write
-when using the <code>modify_key</code> member function of ordered and hashed
+when using the <code>modify_key</code> member function of key-based
 indices. In all other situations, read-only extractors suffice.
 The section on <a href="#advanced_key_extractors">advanced features
-of Boost.MultiIndex key extractors</a> details which of the predefined
+of Boost.MultiIndex key extractors</a> shows typical situations on which the predefined
 key extractors are read/write.
 </p>
 
@@ -1126,9 +1126,9 @@ Container creation
 
 <br>
 
-<p>Revised June 11th 2019</p>
+<p>Revised April 19th 2020</p>
 
-<p>&copy; Copyright 2003-2019 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

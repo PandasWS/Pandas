@@ -7,7 +7,7 @@ else
     export BOOST_ROOT=$HOME/dev/boost
 fi
 
-$BOOST_ROOT/bjam --toolset=gcc --enable-index
+$BOOST_ROOT/b2 --toolset=gcc --enable-index
 
 rm -rf convert_reference.xml
 rm -rf bin

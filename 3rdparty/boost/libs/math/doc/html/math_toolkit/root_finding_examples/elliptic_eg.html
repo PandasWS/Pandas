@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>A More complex example - Inverting the Elliptic Integrals</title>
 <link rel="stylesheet" href="../../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Math Toolkit 2.10.0">
+<link rel="home" href="../../index.html" title="Math Toolkit 3.1.0">
 <link rel="up" href="../root_finding_examples.html" title="Examples of Root-Finding (with and without derivatives)">
 <link rel="prev" href="nth_root.html" title="Generalizing to Compute the nth root">
 <link rel="next" href="../bad_guess.html" title="The Effect of a Poor Initial Guess">
@@ -35,7 +35,7 @@
 <p>
         with:
       </p>
-<pre class="programlisting">k = &#8730;(1 - b<sup>2</sup>/a<sup>2</sup>)</pre>
+<pre class="programlisting">k = √(1 - b<sup>2</sup>/a<sup>2</sup>)</pre>
 <p>
         where <span class="emphasis"><em>E(k)</em></span> is the complete elliptic integral of the
         second kind - see <a class="link" href="../ellint/ellint_2.html" title="Elliptic Integrals of the Second Kind - Legendre Form">ellint_2</a>.
@@ -76,7 +76,7 @@
 <p>
         We'll also need a decent estimate to start searching from, the approximation:
       </p>
-<pre class="programlisting">L(a, b) &#8776; 4&#8730;(a<sup>2</sup> + b<sup>2</sup>)</pre>
+<pre class="programlisting">L(a, b) ≈ 4√(a<sup>2</sup> + b<sup>2</sup>)</pre>
 <p>
         Is easily inverted to give us what we need, which using derivative-free root
         finding leads to the algorithm:
@@ -90,8 +90,8 @@
    <span class="identifier">T</span> <span class="identifier">guess</span> <span class="special">=</span> <span class="identifier">sqrt</span><span class="special">(</span><span class="identifier">arc</span> <span class="special">*</span> <span class="identifier">arc</span> <span class="special">/</span> <span class="number">16</span> <span class="special">-</span> <span class="identifier">radius</span> <span class="special">*</span> <span class="identifier">radius</span><span class="special">);</span>
    <span class="identifier">T</span> <span class="identifier">factor</span> <span class="special">=</span> <span class="number">1.2</span><span class="special">;</span>                     <span class="comment">// How big steps to take when searching.</span>
 
-   <span class="keyword">const</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">maxit</span> <span class="special">=</span> <span class="number">50</span><span class="special">;</span>  <span class="comment">// Limit to maximum iterations.</span>
-   <span class="identifier">boost</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">it</span> <span class="special">=</span> <span class="identifier">maxit</span><span class="special">;</span>        <span class="comment">// Initally our chosen max iterations, but updated with actual.</span>
+   <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">maxit</span> <span class="special">=</span> <span class="number">50</span><span class="special">;</span>  <span class="comment">// Limit to maximum iterations.</span>
+   <span class="identifier">std</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">it</span> <span class="special">=</span> <span class="identifier">maxit</span><span class="special">;</span>        <span class="comment">// Initially our chosen max iterations, but updated with actual.</span>
    <span class="keyword">bool</span> <span class="identifier">is_rising</span> <span class="special">=</span> <span class="keyword">true</span><span class="special">;</span>              <span class="comment">// arc-length increases if one radii increases, so function is rising</span>
    <span class="comment">// Define a termination condition, stop when nearly all digits are correct, but allow for</span>
    <span class="comment">// the fact that we are returning a range, and must have some inaccuracy in the elliptic integral:</span>
@@ -104,10 +104,10 @@
 </pre>
 <p>
         This function generally finds the root within 8-10 iterations, so given that
-        the runtime is completely dominated by the cost of calling the ellliptic
-        integral it would be nice to reduce that count somewhat. We'll try to do
-        that by using a derivative-based method; the derivatives of this function
-        are rather hard to work out by hand, but fortunately <a href="http://www.wolframalpha.com/input/?i=d%2Fda+%5b4+*+a+*+EllipticE%281+-+b%5e2%2Fa%5e2%29%5d" target="_top">Wolfram
+        the runtime is completely dominated by the cost of calling the elliptic integral
+        it would be nice to reduce that count somewhat. We'll try to do that by using
+        a derivative-based method; the derivatives of this function are rather hard
+        to work out by hand, but fortunately <a href="http://www.wolframalpha.com/input/?i=d%2Fda+%5b4+*+a+*+EllipticE%281+-+b%5e2%2Fa%5e2%29%5d" target="_top">Wolfram
         Alpha</a> can do the grunt work for us to give:
       </p>
 <pre class="programlisting">d/da L(a, b) = 4(a<sup>2</sup>E(k) - b<sup>2</sup>K(k)) / (a<sup>2</sup> - b<sup>2</sup>)</pre>
@@ -122,8 +122,8 @@
       </p>
 <pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span> <span class="special">=</span> <span class="keyword">double</span><span class="special">&gt;</span>
 <span class="keyword">struct</span> <span class="identifier">elliptic_root_functor_1deriv</span>
-<span class="special">{</span> <span class="comment">// Functor also returning 1st derviative.</span>
-   <span class="identifier">BOOST_STATIC_ASSERT_MSG</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">is_integral</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">value</span> <span class="special">==</span> <span class="keyword">false</span><span class="special">,</span> <span class="string">"Only floating-point type types can be used!"</span><span class="special">);</span>
+<span class="special">{</span> <span class="comment">// Functor also returning 1st derivative.</span>
+   <span class="keyword">static_assert</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">is_integral</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">value</span> <span class="special">==</span> <span class="keyword">false</span><span class="special">,</span> <span class="string">"Only floating-point type types can be used!"</span><span class="special">);</span>
 
    <span class="identifier">elliptic_root_functor_1deriv</span><span class="special">(</span><span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">arc</span><span class="special">,</span> <span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">radius</span><span class="special">)</span> <span class="special">:</span> <span class="identifier">m_arc</span><span class="special">(</span><span class="identifier">arc</span><span class="special">),</span> <span class="identifier">m_radius</span><span class="special">(</span><span class="identifier">radius</span><span class="special">)</span>
    <span class="special">{</span> <span class="comment">// Constructor just stores value a to find root of.</span>
@@ -162,7 +162,7 @@
    <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">std</span><span class="special">;</span>  <span class="comment">// Help ADL of std functions.</span>
    <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">tools</span><span class="special">;</span> <span class="comment">// For newton_raphson_iterate.</span>
 
-   <span class="identifier">BOOST_STATIC_ASSERT_MSG</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">is_integral</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">value</span> <span class="special">==</span> <span class="keyword">false</span><span class="special">,</span> <span class="string">"Only floating-point type types can be used!"</span><span class="special">);</span>
+   <span class="keyword">static_assert</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">is_integral</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">value</span> <span class="special">==</span> <span class="keyword">false</span><span class="special">,</span> <span class="string">"Only floating-point type types can be used!"</span><span class="special">);</span>
 
    <span class="identifier">T</span> <span class="identifier">guess</span> <span class="special">=</span> <span class="identifier">sqrt</span><span class="special">(</span><span class="identifier">arc</span> <span class="special">*</span> <span class="identifier">arc</span> <span class="special">/</span> <span class="number">16</span> <span class="special">-</span> <span class="identifier">radius</span> <span class="special">*</span> <span class="identifier">radius</span><span class="special">);</span>
    <span class="identifier">T</span> <span class="identifier">min</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span>   <span class="comment">// Minimum possible value is zero.</span>
@@ -171,8 +171,8 @@
    <span class="comment">// Accuracy doubles at each step, so stop when just over half of the digits are</span>
    <span class="comment">// correct, and rely on that step to polish off the remainder:</span>
    <span class="keyword">int</span> <span class="identifier">get_digits</span> <span class="special">=</span> <span class="keyword">static_cast</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">digits</span> <span class="special">*</span> <span class="number">0.6</span><span class="special">);</span>
-   <span class="keyword">const</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">maxit</span> <span class="special">=</span> <span class="number">20</span><span class="special">;</span>
-   <span class="identifier">boost</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">it</span> <span class="special">=</span> <span class="identifier">maxit</span><span class="special">;</span>
+   <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">maxit</span> <span class="special">=</span> <span class="number">20</span><span class="special">;</span>
+   <span class="identifier">std</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">it</span> <span class="special">=</span> <span class="identifier">maxit</span><span class="special">;</span>
    <span class="identifier">T</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">newton_raphson_iterate</span><span class="special">(</span><span class="identifier">elliptic_root_functor_1deriv</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;(</span><span class="identifier">arc</span><span class="special">,</span> <span class="identifier">radius</span><span class="special">),</span> <span class="identifier">guess</span><span class="special">,</span> <span class="identifier">min</span><span class="special">,</span> <span class="identifier">max</span><span class="special">,</span> <span class="identifier">get_digits</span><span class="special">,</span> <span class="identifier">it</span><span class="special">);</span>
    <span class="keyword">return</span> <span class="identifier">result</span><span class="special">;</span>
 <span class="special">}</span> <span class="comment">// T elliptic_root_1_deriv  Newton-Raphson</span>
@@ -192,7 +192,7 @@
 <pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span> <span class="special">=</span> <span class="keyword">double</span><span class="special">&gt;</span>
 <span class="keyword">struct</span> <span class="identifier">elliptic_root_functor_2deriv</span>
 <span class="special">{</span> <span class="comment">// Functor returning both 1st and 2nd derivatives.</span>
-   <span class="identifier">BOOST_STATIC_ASSERT_MSG</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">is_integral</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">value</span> <span class="special">==</span> <span class="keyword">false</span><span class="special">,</span> <span class="string">"Only floating-point type types can be used!"</span><span class="special">);</span>
+   <span class="keyword">static_assert</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">is_integral</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">value</span> <span class="special">==</span> <span class="keyword">false</span><span class="special">,</span> <span class="string">"Only floating-point type types can be used!"</span><span class="special">);</span>
 
    <span class="identifier">elliptic_root_functor_2deriv</span><span class="special">(</span><span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">arc</span><span class="special">,</span> <span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">radius</span><span class="special">)</span> <span class="special">:</span> <span class="identifier">m_arc</span><span class="special">(</span><span class="identifier">arc</span><span class="special">),</span> <span class="identifier">m_radius</span><span class="special">(</span><span class="identifier">radius</span><span class="special">)</span> <span class="special">{}</span>
    <span class="identifier">std</span><span class="special">::</span><span class="identifier">tuple</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="identifier">T</span><span class="special">,</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">x</span><span class="special">)</span>
@@ -229,7 +229,7 @@
    <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">std</span><span class="special">;</span>                <span class="comment">// Help ADL of std functions.</span>
    <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">tools</span><span class="special">;</span> <span class="comment">// For halley_iterate.</span>
 
-   <span class="identifier">BOOST_STATIC_ASSERT_MSG</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">is_integral</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">value</span> <span class="special">==</span> <span class="keyword">false</span><span class="special">,</span> <span class="string">"Only floating-point type types can be used!"</span><span class="special">);</span>
+   <span class="keyword">static_assert</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">is_integral</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">value</span> <span class="special">==</span> <span class="keyword">false</span><span class="special">,</span> <span class="string">"Only floating-point type types can be used!"</span><span class="special">);</span>
 
    <span class="identifier">T</span> <span class="identifier">guess</span> <span class="special">=</span> <span class="identifier">sqrt</span><span class="special">(</span><span class="identifier">arc</span> <span class="special">*</span> <span class="identifier">arc</span> <span class="special">/</span> <span class="number">16</span> <span class="special">-</span> <span class="identifier">radius</span> <span class="special">*</span> <span class="identifier">radius</span><span class="special">);</span>
    <span class="identifier">T</span> <span class="identifier">min</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span>                                   <span class="comment">// Minimum possible value is zero.</span>
@@ -238,8 +238,8 @@
    <span class="comment">// Accuracy triples at each step, so stop when just over one-third of the digits</span>
    <span class="comment">// are correct, and the last iteration will polish off the remaining digits:</span>
    <span class="keyword">int</span> <span class="identifier">get_digits</span> <span class="special">=</span> <span class="keyword">static_cast</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">digits</span> <span class="special">*</span> <span class="number">0.4</span><span class="special">);</span>
-   <span class="keyword">const</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">maxit</span> <span class="special">=</span> <span class="number">20</span><span class="special">;</span>
-   <span class="identifier">boost</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">it</span> <span class="special">=</span> <span class="identifier">maxit</span><span class="special">;</span>
+   <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">maxit</span> <span class="special">=</span> <span class="number">20</span><span class="special">;</span>
+   <span class="identifier">std</span><span class="special">::</span><span class="identifier">uintmax_t</span> <span class="identifier">it</span> <span class="special">=</span> <span class="identifier">maxit</span><span class="special">;</span>
    <span class="identifier">T</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">halley_iterate</span><span class="special">(</span><span class="identifier">elliptic_root_functor_2deriv</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;(</span><span class="identifier">arc</span><span class="special">,</span> <span class="identifier">radius</span><span class="special">),</span> <span class="identifier">guess</span><span class="special">,</span> <span class="identifier">min</span><span class="special">,</span> <span class="identifier">max</span><span class="special">,</span> <span class="identifier">get_digits</span><span class="special">,</span> <span class="identifier">it</span><span class="special">);</span>
    <span class="keyword">return</span> <span class="identifier">result</span><span class="special">;</span>
 <span class="special">}</span> <span class="comment">// nth_2deriv Halley</span>
@@ -255,11 +255,11 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

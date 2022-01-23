@@ -18,7 +18,7 @@
 
 #if !defined(BOOST_NO_CXX11_NOEXCEPT)
 
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/utility/explicit_operator_bool.hpp>
 
 namespace {
@@ -75,6 +75,11 @@ int main(int, char*[])
 
     BOOST_TEST(noexcept(static_cast< bool >(noexcept_val1)));
     BOOST_TEST(noexcept(static_cast< bool >(noexcept_val2)));
+
+    (void)val1;
+    (void)val2;
+    (void)noexcept_val1;
+    (void)noexcept_val2;
 
     return boost::report_errors();
 }

@@ -20,15 +20,41 @@ process is the same as for all of boost; see the
 
 The library will encase all code inside namespace boost.
 
-Unlike some other template libraries, this library consists of a mixture of 
-template code (in the headers) and static code and data (in cpp files). 
-Consequently it is necessary to build the library's support code into a 
-library or archive file before you can use it, instructions for specific 
-platforms are as follows:
+This is a header only library provided your compiler supports C++11 or later.  Support for
+C++03 compilers is still present, but is now deprecated and may be removed without further notice!
 
-[h4 Building with bjam]
+The only people that still need to build the external libboost_regex library are those that are either:
 
-This is now the preferred method for building and installing this library, 
+* Using the library in C++03 mode, or,
+* Using the deprecated POSIX C API's
+
+Further, this library may now be used in "standalone" mode without the rest of the Boost C++ libraries,
+in order to do this you must either:
+
+* Have a C++17 compiler that supports `__has_include`, in this case if `<boost/config.hpp>` is not present
+then the library will automoatically enter standalone mode.  Or:
+* Define BOOST_REGEX_STANDALONE when building.
+
+If you are using this library with ICU, note that since it is now header only, it will be up to you
+to link to the ICU libraries if you use `<boost/regex/icu.hpp>` unless you are using the supplied CMake script.
+
+[h4 Usage with CMake]
+
+The library comes with a very basic CMakeLists.txt that allows this library to be used from other CMake scripts.
+
+CMakeLists.txt defines two targets:
+
+* `Boost::regex`  This is the target to use for normal header only builds.
+* `Boost::regex_icu`  This is the target to use if you are using `<boost/regex/icu.hpp>` in your code, and wish to have the ICU dependencies taken care of for you.
+
+There is also one configuration option:
+
+* BOOST_REGEX_STANDALONE when set then no other Boost libraries are targeted as dependencies, and Boost.Regex is placed in standalone mode.  Invoke CMake
+with -DBOOST_REGEX_STANDALONE=on to enable standalone mode.
+
+[h4 [*C++03 users only (DEPRECATED)] Building with bjam]
+
+This is now the preferred method for building and installing legacy versions this library, 
 please refer to the 
 [@../../../../more/getting_started.html getting started guide] for more information.
 
@@ -60,32 +86,22 @@ If you think that it should have been found, then you will need to take a look
 at the contents of the file ['boost-root/bin.v2/config.log] for the actual error
 messages obtained when the build carried out the configuration check.  You will
 then need to fix these errors by ensuring your compiler gets invoked with the correct
-options, for example:
+options.  The main options that you're likely to pass to `b2` are:
 
-[pre bjam include=some-include-path --toolset=toolset-name install]
-
-will add "some-include-path" to your compilers header include path, or if ICU
-has been built with non-standard names for it's binaries, then:
-
-[pre bjam -sICU_LINK="linker-options-for-icu" --toolset=toolset-name install]
-
-Will use ['"linker-options-for-icu"] when linking the library rather than the default
-ICU binary names.
-
-You might also need to use the options "cxxflags=-option" and "linkflags=-option" to set compiler and linker
-specific options.
+[table
+[[Option][Description]]
+[[include=/some/path][Adds "/some/path" to the list of paths seached for include files, normally equivalent to `-I/some/path` on most compilers.]]
+[[library-path=/some/path][Adds "/some/path" to the list of paths searched for external libraries, set this to the location of the ICU binaries if they're in a non-standard location.]]
+[[-sICU_ICUUC_NAME=NAME][If `libicuuc` has a non-standard name then this sets the name of the library linked against, defaults to either `icuuc`, `icuucd`, `sicuuc` or `sicuucd` depending on build options.]]
+[[-sICU_ICUDT_NAME=NAME][If `libicudata` has a non-standard name then this sets the name of the library linked against, defaults to either `icudt`, `icudata`, `sicudt` or `sicudata` depending on build options and platform.]]
+[[-sICU_ICUIN_NAME=NAME][If `libicui18n` has a non-standatd name then this sets the name of the library linked against, defaults to either `icui18n`, `icuin`, `icuind`, sicuin` or `sicuins` depending on build options and platform.]]
+[[cxxstd=XX][Sets the C++ standard supported: XX should be either 03, 11, 14, 17 or 2a.]]
+[[cxxflags="FLAGS"][Passes "FLAGS" directly to the compiler, an option of last resort!]]
+[[linflags="FLAGS"][Passes "FLAGS" directly to the compiler on the link step, an option of last resort!]]
+]
 
 [important Configuration results are cached - if you try rebuilding with different compiler
 options then add an "-a" to the bjam command line to force all targets to be rebuilt.]
-
-If ICU is not already in your compiler's path, but instead headers, libraries and binaries
-are located at ['path-to-icu/include], ['path-to-icu/lib] and ['path-to-icu/bin] respectively
-then you need to set the environment variable `ICU_PATH` to point to the root directory of your 
-ICU installation: this typically happens if you're building with MSVC. 
-For example if ICU was installed to `c:\download\icu` you 
-might use:
-
-[pre bjam -sICU_PATH=c:\download\icu --toolset=toolset-name install]
 
 [important ICU is a C++ library just like Boost is, as such your copy of 
 ICU must have been built with the same C++ compiler (and compiler version) 

@@ -37,9 +37,9 @@
 #include <boost/spirit/home/support/detail/lexer/state_machine.hpp>
 #include <boost/spirit/home/support/detail/lexer/consts.hpp>
 //#include "lexertl/examples/serialise.hpp>
-// #if BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE != 0
-// #include "lexertl/examples/cpp_code.hpp"
-// #endif
+#if BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE != 0
+#include <boost/spirit/home/support/detail/lexer/generate_cpp.hpp>
+#endif
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,9 @@ namespace boost { namespace wave { namespace cpplexer { namespace lexertl
 #endif
 #define INIT_DATA_CPP_SIZE          15
 #define INIT_DATA_PP_NUMBER_SIZE    2
-#define INIT_MACRO_DATA_SIZE        27
+#define INIT_DATA_CPP0X_SIZE        15
+#define INIT_DATA_CPP2A_SIZE        10
+#define INIT_MACRO_DATA_SIZE        28
 #endif // #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
 
 //  this is just a hack to have a unique token id not otherwise used by Wave
@@ -74,7 +76,7 @@ class lexertl
 {
 private:
     typedef BOOST_WAVE_STRINGTYPE string_type;
-    typedef typename boost::detail::iterator_traits<Iterator>::value_type
+    typedef typename boost::iterators::iterator_value<Iterator>::type
         char_type;
 
 public:
@@ -117,6 +119,8 @@ private:
     static lexer_data const init_data[INIT_DATA_SIZE];              // common patterns
     static lexer_data const init_data_cpp[INIT_DATA_CPP_SIZE];      // C++ only patterns
     static lexer_data const init_data_pp_number[INIT_DATA_PP_NUMBER_SIZE];  // pp-number only patterns
+    static lexer_data const init_data_cpp0x[INIT_DATA_CPP0X_SIZE];  // C++0X only patterns
+    static lexer_data const init_data_cpp2a[INIT_DATA_CPP2A_SIZE];  // C++2A only patterns
 
 // helper for calculation of the time of last compilation
     static boost::wave::util::time_conversion_helper compilation_time;
@@ -161,12 +165,13 @@ lexertl<Iterator, Position>::init_macro_data[INIT_MACRO_DATA_SIZE] =
     MACRO_DATA("INTEGER", "(" "(0x|0X){HEXDIGIT}+" OR "0{OCTALDIGIT}*" OR "[1-9]{DIGIT}*" ")"),
     MACRO_DATA("INTEGER_SUFFIX", "(" "[uU][lL]?" OR "[lL][uU]?" ")"),
 #if BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
-    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU]([lL][lL])|([lL][lL])[uU]?|i64)"),
+    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU](ll|LL)|(ll|LL)[uU]?|i64)"),
 #else
-    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU]([lL][lL])|([lL][lL])[uU]?)"),
+    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU](ll|LL)|(ll|LL)[uU]?)"),
 #endif
     MACRO_DATA("FLOAT_SUFFIX", "(" "[fF][lL]?" OR "[lL][fF]?" ")"),
     MACRO_DATA("CHAR_SPEC", "L?"),
+    MACRO_DATA("EXTCHAR_SPEC", "(" "[uU]" OR "u8" ")"),
     MACRO_DATA("BACKSLASH", "(" Q("\\") OR TRI(Q("/")) ")"),
     MACRO_DATA("ESCAPESEQ", "{BACKSLASH}([abfnrtv?'\"]|{BACKSLASH}|x{HEXDIGIT}+|{OCTALDIGIT}{1,3})"),
     MACRO_DATA("HEXQUAD", "{HEXDIGIT}{4}"),
@@ -413,6 +418,55 @@ lexertl<Iterator, Position>::init_data_pp_number[INIT_DATA_PP_NUMBER_SIZE] =
     { token_id(0) }       // this should be the last entry
 };
 
+// C++11 specific token definitions
+
+#define T_EXTCHARLIT      token_id(T_CHARLIT|AltTokenType)
+#define T_EXTSTRINGLIT    token_id(T_STRINGLIT|AltTokenType)
+#define T_EXTRAWSTRINGLIT token_id(T_RAWSTRINGLIT|AltTokenType)
+
+template <typename Iterator, typename Position>
+typename lexertl<Iterator, Position>::lexer_data const
+lexertl<Iterator, Position>::init_data_cpp0x[INIT_DATA_CPP0X_SIZE] =
+{
+    TOKEN_DATA(T_EXTCHARLIT, "{EXTCHAR_SPEC}" "'"
+                "(" "{ESCAPESEQ}" OR "{UNIVERSALCHAR}" OR "[^\\n\\r\\\\']" ")+" "'"),
+    TOKEN_DATA(T_EXTSTRINGLIT, "{EXTCHAR_SPEC}" Q("\"")
+                "(" "{ESCAPESEQ}" OR "{UNIVERSALCHAR}" OR "[^\\n\\r\\\\\"]" ")*" Q("\"")),
+    TOKEN_DATA(T_RAWSTRINGLIT, "{CHAR_SPEC}" "R" Q("\"")
+                "(" "{ESCAPESEQ}" OR "{UNIVERSALCHAR}" OR "[^\\\\\"]" ")*" Q("\"")),
+    TOKEN_DATA(T_EXTRAWSTRINGLIT, "{EXTCHAR_SPEC}" "R" Q("\"")
+                "(" "{ESCAPESEQ}" OR "{UNIVERSALCHAR}" OR "[^\\\\\"]" ")*" Q("\"")),
+    TOKEN_DATA(T_ALIGNAS, "alignas"),
+    TOKEN_DATA(T_ALIGNOF, "alignof"),
+    TOKEN_DATA(T_CHAR16_T, "char16_t"),
+    TOKEN_DATA(T_CHAR32_T, "char32_t"),
+    TOKEN_DATA(T_CONSTEXPR, "constexpr"),
+    TOKEN_DATA(T_DECLTYPE, "decltype"),
+    TOKEN_DATA(T_NOEXCEPT, "noexcept"),
+    TOKEN_DATA(T_NULLPTR, "nullptr"),
+    TOKEN_DATA(T_STATICASSERT, "static_assert"),
+    TOKEN_DATA(T_THREADLOCAL, "thread_local"),
+    { token_id(0) }       // this should be the last entry
+};
+
+// C++20 specific token definitions
+
+template <typename Iterator, typename Position>
+typename lexertl<Iterator, Position>::lexer_data const
+lexertl<Iterator, Position>::init_data_cpp2a[INIT_DATA_CPP2A_SIZE] =
+{
+    TOKEN_DATA(T_CHAR8_T, "char8_t"),
+    TOKEN_DATA(T_CONCEPT, "concept"),
+    TOKEN_DATA(T_CONSTEVAL, "consteval"),
+    TOKEN_DATA(T_CONSTINIT, "constinit"),
+    TOKEN_DATA(T_CO_AWAIT, "co_await"),
+    TOKEN_DATA(T_CO_RETURN, "co_return"),
+    TOKEN_DATA(T_CO_YIELD, "co_yield"),
+    TOKEN_DATA(T_REQUIRES, "requires"),
+    TOKEN_DATA(T_SPACESHIP, "<=>"),
+    { token_id(0) }       // this should be the last entry
+};
+
 #undef MACRO_DATA
 #undef TOKEN_DATA
 #undef OR
@@ -459,6 +513,27 @@ std::ifstream dfa_in("wave_lexertl_lexer.dfa", std::ios::in|std::ios::binary);
             }
         }
 
+    // if in C++0x mode, add appropriate keywords
+#if BOOST_WAVE_SUPPORT_CPP0X != 0
+        if (wave::need_cpp0x(lang) || wave::need_cpp2a(lang)) {
+            for (int j = 0; 0 != init_data_cpp0x[j].tokenid; ++j) {
+                rules.add(init_data_cpp0x[j].tokenregex,
+                          init_data_cpp0x[j].tokenid);
+        }
+    }
+#endif
+
+    // if in C++2a mode, add those keywords
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+        if (wave::need_cpp2a(lang)) {
+            for (int j = 0; 0 != init_data_cpp2a[j].tokenid; ++j) {
+                rules.add(init_data_cpp2a[j].tokenregex,
+                          init_data_cpp2a[j].tokenid);
+        }
+    }
+#endif
+
+
         for (int i = 0; 0 != init_data[i].tokenid; ++i) {
             rules.add(init_data[i].tokenregex, init_data[i].tokenid);
         }
@@ -499,12 +574,14 @@ lexertl<Iterator, Position>::next_token(Iterator &first, Iterator const &last,
 #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
     size_t const* const lookup = &state_machine_.data()._lookup[0]->front ();
     size_t const dfa_alphabet = state_machine_.data()._dfa_alphabet[0];
-
     size_t const* dfa = &state_machine_.data()._dfa[0]->front();
-    size_t const* ptr = dfa + dfa_alphabet + boost::lexer::dfa_offset;
 #else
-    const std::size_t *ptr = dfa + dfa_offset;
+    // set up pointers from static data
+    size_t const* lookup = lookup_;
+    size_t const dfa_alphabet = dfa_alphabet_;
+    size_t const* dfa = dfa_;
 #endif // BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
+    size_t const* ptr = dfa + dfa_alphabet;
 
     Iterator curr = first;
     Iterator end_token = first;
@@ -517,11 +594,7 @@ lexertl<Iterator, Position>::next_token(Iterator &first, Iterator const &last,
             break;
         ++curr;
 
-#if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
-        ptr = &dfa[state * (dfa_alphabet + boost::lexer::dfa_offset)];
-#else
-        ptr = &dfa[state * dfa_offset];
-#endif // BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
+        ptr = &dfa[state * dfa_alphabet];
 
         if (0 != *ptr) {
             end_state = true;
@@ -568,12 +641,12 @@ template <typename Iterator, typename Position>
 inline bool
 lexertl<Iterator, Position>::save (std::ostream& outstrm)
 {
-// #if defined(BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE)
-//     cpp_code::generate(state_machine_, outstrm);
-// #else
+#if defined(BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE)
+    boost::lexer::generate_cpp(state_machine_, outstrm);
+#else
 //     boost::lexer::serialise::save_as_binary(state_machine_, outstrm,
 //         (std::size_t)get_compilation_time());
-// #endif
+#endif
     return outstrm.good();
 }
 #endif // #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
@@ -588,7 +661,7 @@ class lexertl_functor
 {
 public:
     typedef wave::util::position_iterator<Iterator, Position> iterator_type;
-    typedef typename boost::detail::iterator_traits<Iterator>::value_type
+    typedef typename boost::iterators::iterator_value<Iterator>::type
         char_type;
     typedef BOOST_WAVE_STRINGTYPE string_type;
     typedef wave::cpplexer::lex_token<Position> token_type;
@@ -598,11 +671,19 @@ public:
     :   first(first_, last_, pos_), language(language), at_eof(false)
     {
         lexer_.init_dfa(language, pos_);
+
+#if BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE != 0
+        std::ofstream os("wave_lexertl_tables_next_token.hpp");
+        // generates a next_token function with an incompatible interface
+        // to lexertl::next_token(), but you can extract the necessary tables
+        // and replace them manually:
+        lexer_.save(os);
+#endif
     }
     ~lexertl_functor() {}
 
 // get the next token from the input stream
-    token_type& get(token_type& result)
+    token_type& get(token_type& result) BOOST_OVERRIDE
     {
         if (lexer_.is_initialized() && !at_eof) {
             do {
@@ -651,11 +732,11 @@ public:
                         }
                         break;
 
-#if BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
                     case T_PP_HHEADER:
                     case T_PP_QHEADER:
                     case T_PP_INCLUDE:
                     // convert to the corresponding ..._next token, if appropriate
+#if BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
                         {
                         // Skip '#' and whitespace and see whether we find an
                         // 'include_next' here.
@@ -663,8 +744,8 @@ public:
                             if (0 == token_val.compare(start, 12, "include_next", 12))
                                 id = token_id(id | AltTokenType);
                         }
-                        break;
 #endif // BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
+                        break;
 
                     case T_EOF:
                     // T_EOF is returned as a valid token, the next call will
@@ -722,7 +803,7 @@ public:
         return result = token_type();           // return T_EOI
     }
 
-    void set_position(Position const &pos)
+    void set_position(Position const &pos) BOOST_OVERRIDE
     {
         // set position has to change the file name and line number only
         first.get_position().set_file(pos.get_file());
@@ -730,7 +811,7 @@ public:
     }
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
-    bool has_include_guards(std::string& guard_name) const
+    bool has_include_guards(std::string& guard_name) const BOOST_OVERRIDE
         { return guards.detected(guard_name); }
 #endif
 
@@ -757,6 +838,10 @@ lexer::lexertl<
 #undef INIT_DATA_PP_NUMBER_SIZE
 #undef INIT_MACRO_DATA_SIZE
 #undef T_ANYCTRL
+
+#undef T_EXTCHARLIT
+#undef T_EXTSTRINGLIT
+#undef T_EXTRAWSTRINGLIT
 
 ///////////////////////////////////////////////////////////////////////////////
 //

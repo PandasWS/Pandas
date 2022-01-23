@@ -1,5 +1,5 @@
 #
-#          Copyright Andrey Semashev 2007 - 2016.
+#          Copyright Andrey Semashev 2007 - 2020.
 # Distributed under the Boost Software License, Version 1.0.
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
@@ -12,7 +12,7 @@ import path ;
 import project ;
 import feature ;
 import configure ;
-import log-architecture ;
+import log-arch-config ;
 import log-platform-config ;
 using mc ;
 
@@ -32,12 +32,14 @@ lib advapi32 ;
 lib secur32 ;
 lib ws2_32 ;
 lib mswsock ;
+explicit psapi advapi32 secur32 ws2_32 mswsock ;
 
 # UNIX libs
 lib rt ;
 lib socket ;
 lib nsl ;
 lib ipv6 ;
+explicit rt socket nsl ipv6 ;
 
 rule has-config-flag ( flag : properties * )
 {
@@ -54,7 +56,7 @@ rule has-config-flag ( flag : properties * )
 rule check-instruction-set ( properties * )
 {
     local result ;
-    local instruction_set = [ feature.get-values "log-instruction-set" : [ log-architecture.deduce-instruction-set $(properties) ] ] ;
+    local instruction_set = [ log-arch-config.deduce-instruction-set $(properties) ] ;
 
     if $(instruction_set) = i386 || $(instruction_set) = i486
     {
@@ -71,7 +73,7 @@ rule check-instruction-set ( properties * )
 
 rule select-regex-backend ( properties * )
 {
-    local result = ;
+    local result ;
 
     # Use Boost.Regex backend by default. It produces smaller executables and also has the best performance for small string matching.
     if ! (
@@ -88,9 +90,9 @@ rule select-regex-backend ( properties * )
 
 rule check-pthread-mutex-robust ( properties * )
 {
-    local result = ;
+    local result ;
 
-    local has_pthread_mutex_robust = [ configure.builds /boost/log/pthread-mutex-robust//pthread_mutex_robust : $(properties) : pthread-supports-robust-mutexes ] ;
+    local has_pthread_mutex_robust = [ configure.builds /boost/log/pthread-mutex-robust//pthread_mutex_robust : $(properties) : "pthread supports robust mutexes" ] ;
     if $(has_pthread_mutex_robust)
     {
         result = <define>BOOST_LOG_HAS_PTHREAD_MUTEX_ROBUST ;
@@ -101,9 +103,9 @@ rule check-pthread-mutex-robust ( properties * )
 
 rule check-atomic-int32 ( properties * )
 {
-    local result = ;
+    local result ;
 
-    local has_atomic_int32 = [ configure.builds /boost/log/atomic-int32//atomic_int32 : $(properties) : native-atomic-int32-supported ] ;
+    local has_atomic_int32 = [ configure.builds /boost/log/atomic-int32//atomic_int32 : $(properties) : "native atomic int32 supported" ] ;
     if ! $(has_atomic_int32)
     {
         result = <define>BOOST_LOG_WITHOUT_IPC ;
@@ -114,11 +116,11 @@ rule check-atomic-int32 ( properties * )
 
 rule check-native-syslog ( properties * )
 {
-    local result = ;
+    local result ;
 
     if ! [ has-config-flag BOOST_LOG_WITHOUT_SYSLOG : $(properties) ]
     {
-        local has_native_syslog = [ configure.builds /boost/log/native-syslog//native_syslog : $(properties) : native-syslog-supported ] ;
+        local has_native_syslog = [ configure.builds /boost/log/native-syslog//native_syslog : $(properties) : "native syslog supported" ] ;
         if $(has_native_syslog)
         {
             result = <define>BOOST_LOG_USE_NATIVE_SYSLOG ;
@@ -136,7 +138,7 @@ rule check-message-compiler ( properties * )
     {
         if ! [ has-config-flag BOOST_LOG_WITHOUT_EVENT_LOG : $(properties) ]
         {
-            local has_mc = [ configure.builds /boost/log/message-compiler//test-availability : $(properties) : message-compiler ] ;
+            local has_mc = [ configure.builds /boost/log/message-compiler//test-availability : $(properties) : "has message compiler" ] ;
             if ! $(has_mc)
             {
                 result = <define>BOOST_LOG_WITHOUT_EVENT_LOG ;
@@ -173,15 +175,7 @@ project boost/log
         <define>BOOST_SPIRIT_USE_PHOENIX_V3=1
         <define>BOOST_THREAD_DONT_USE_CHRONO=1 # Don't introduce false dependency on Boost.Chrono
 
-        # Disable warnings about using 'insecure' standard C functions
-        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-        <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
-        <toolset>msvc:<define>_CRT_SECURE_NO_WARNINGS
-        <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
-        <toolset>intel-win:<define>_SCL_SECURE_NO_WARNINGS
-        <toolset>intel-win:<define>_SCL_SECURE_NO_DEPRECATE
-        <toolset>intel-win:<define>_CRT_SECURE_NO_WARNINGS
-        <toolset>intel-win:<define>_CRT_SECURE_NO_DEPRECATE
+        <c++-template-depth>1024
 
         <toolset>msvc:<cxxflags>/bigobj
         <toolset>msvc:<cxxflags>/wd4503 # decorated name length exceeded, name was truncated
@@ -205,29 +199,26 @@ project boost/log
         <toolset>intel-linux:<cxxflags>"-wd177,780,2196,1782,193,304,981,1418,411,734,279"
         <toolset>intel-darwin:<cxxflags>"-wd177,780,2196,1782,193,304,981,1418,411,734,279"
 
-        <toolset>darwin:<cxxflags>-ftemplate-depth-1024
-        <toolset>clang:<cxxflags>-ftemplate-depth-1024
-        <toolset>gcc:<cxxflags>-ftemplate-depth-1024
-
         <toolset>gcc:<cxxflags>-fno-strict-aliasing  # avoids strict aliasing violations in other Boost components
         <toolset>gcc,<target-os>windows:<linkflags>-Wl,--enable-auto-import
         <toolset>gcc,<target-os>cygwin:<linkflags>-Wl,--enable-auto-import
 
-        <library>/boost/date_time//boost_date_time
         <library>/boost/filesystem//boost_filesystem
         <threading>single:<define>BOOST_LOG_NO_THREADS
         <threading>multi:<library>/boost/atomic//boost_atomic
         <threading>multi:<library>/boost/thread//boost_thread
 
+        <target-os>windows:<define>BOOST_USE_WINDOWS_H
         <target-os>windows:<library>ws2_32
         <target-os>windows:<library>mswsock
         <target-os>windows:<library>advapi32
 
+        <target-os>cygwin:<define>BOOST_USE_WINDOWS_H
+        # Boost.Interprocess does not compile on Cygwin: https://github.com/boostorg/interprocess/issues/76
+        <target-os>cygwin:<define>BOOST_LOG_WITHOUT_IPC
         <target-os>cygwin:<library>ws2_32
         <target-os>cygwin:<library>mswsock
         <target-os>cygwin:<library>advapi32
-        # Boost.Interprocess does not compile on Cygwin: https://github.com/boostorg/interprocess/issues/76
-        <target-os>cygwin:<define>BOOST_LOG_WITHOUT_IPC
 
         <target-os>linux:<library>rt
 
@@ -286,59 +277,13 @@ BOOST_LOG_COMMON_AVX2_SRC =
     dump_avx2
     ;
 
-rule ssse3-targets-cond ( properties * )
-{
-    local result = <build>no ;
-
-    if <log-architecture>x86 in [ log-architecture.deduce-architecture $(properties) ]
-    {
-        local has_ssse3 = [ configure.builds /boost/log/x86-extensions//ssse3 : $(properties) : compiler-supports-ssse3 ] ;
-        if $(has_ssse3)
-        {
-            result = ;
-            if <toolset>gcc in $(properties) || <toolset>clang in $(properties)
-            {
-                result = <cxxflags>"-msse -msse2 -msse3 -mssse3" ;
-            }
-            else if <toolset>intel in $(properties)
-            {
-                if <toolset-intel:platform>win in $(properties)
-                {
-                    result = <cxxflags>"/QxSSSE3" ;
-                }
-                else
-                {
-                    result = <cxxflags>"-xSSSE3" ;
-                }
-            }
-            else if <toolset>msvc in $(properties)
-            {
-                # MSVC doesn't really care about these switches, all SSE intrinsics are always available, but still...
-                # Also 64 bit MSVC doesn't have the /arch:SSE2 switch as it is the default.
-                if <log-address-model>32 in [ log-architecture.deduce-address-model $(properties) ]
-                {
-                    result = <cxxflags>"/arch:SSE2" ;
-                }
-            }
-        }
-    }
-
-#    if ! <build>no in $(result)
-#    {
-#        ECHO Boost.Log: Using SSSE3 optimized implementation ;
-#    }
-#    ECHO $(result) ;
-
-    return $(result) ;
-}
-
 for local src in $(BOOST_LOG_COMMON_SSSE3_SRC)
 {
     obj $(src)
         : ## sources ##
             $(src).cpp
         : ## requirements ##
-            <conditional>@ssse3-targets-cond
+            <conditional>@log-arch-config.ssse3-flags
             <link>shared:<define>BOOST_LOG_DLL
             <define>BOOST_LOG_BUILDING_THE_LIB=1
         : ## default-build ##
@@ -349,58 +294,13 @@ for local src in $(BOOST_LOG_COMMON_SSSE3_SRC)
     explicit $(src) ;
 }
 
-rule avx2-targets-cond ( properties * )
-{
-    local result = <build>no ;
-
-    if <log-architecture>x86 in [ log-architecture.deduce-architecture $(properties) ]
-    {
-        local has_avx2 = [ configure.builds /boost/log/x86-extensions//avx2 : $(properties) : compiler-supports-avx2 ] ;
-        if $(has_avx2)
-        {
-            result = ;
-            if <toolset>gcc in $(properties)
-            {
-                result = <cxxflags>"-mavx -mavx2 -fabi-version=0" ;
-            }
-            else if <toolset>clang in $(properties)
-            {
-                result = <cxxflags>"-mavx -mavx2" ;
-            }
-            else if <toolset>intel in $(properties)
-            {
-                if <toolset-intel:platform>win in $(properties)
-                {
-                    result = <cxxflags>"/arch:CORE-AVX2" ;
-                }
-                else
-                {
-                    result = <cxxflags>"-xCORE-AVX2 -fabi-version=0" ;
-                }
-            }
-            else if <toolset>msvc in $(properties)
-            {
-                result = <cxxflags>"/arch:AVX" ;
-            }
-        }
-    }
-
-#    if ! <build>no in $(result)
-#    {
-#        ECHO Boost.Log: Using AVX2 optimized implementation ;
-#    }
-#    ECHO $(result) ;
-
-    return $(result) ;
-}
-
 for local src in $(BOOST_LOG_COMMON_AVX2_SRC)
 {
     obj $(src)
         : ## sources ##
             $(src).cpp
         : ## requirements ##
-            <conditional>@avx2-targets-cond
+            <conditional>@log-arch-config.avx2-flags
             <link>shared:<define>BOOST_LOG_DLL
             <define>BOOST_LOG_BUILDING_THE_LIB=1
         : ## default-build ##
@@ -415,16 +315,16 @@ rule select-arch-specific-sources ( properties * )
 {
     local result ;
 
-    if <log-architecture>x86 in [ log-architecture.deduce-architecture $(properties) ]
+    if x86 in [ log-arch-config.deduce-architecture $(properties) ]
     {
-        local has_ssse3 = [ configure.builds /boost/log/x86-extensions//ssse3 : $(properties) : compiler-supports-ssse3 ] ;
+        local has_ssse3 = [ configure.builds /boost/log/x86-extensions//ssse3 : $(properties) : "compiler supports SSSE3" ] ;
         if $(has_ssse3)
         {
             result += <define>BOOST_LOG_USE_SSSE3 ;
             result += <source>$(BOOST_LOG_COMMON_SSSE3_SRC) ;
         }
 
-        local has_avx2 = [ configure.builds /boost/log/x86-extensions//avx2 : $(properties) : compiler-supports-avx2 ] ;
+        local has_avx2 = [ configure.builds /boost/log/x86-extensions//avx2 : $(properties) : "compiler supports AVX2" ] ;
         if $(has_avx2)
         {
             result += <define>BOOST_LOG_USE_AVX2 ;
@@ -444,6 +344,7 @@ rule select-platform-specific-sources ( properties * )
     if <target-os>windows in $(properties)
     {
         result += <source>windows/light_rw_mutex.cpp ;
+        result += <source>windows/is_debugger_present.cpp ;
 
         if ! [ has-config-flag BOOST_LOG_WITHOUT_IPC : $(properties) ]
         {

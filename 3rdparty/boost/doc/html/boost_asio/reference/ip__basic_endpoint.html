@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>ip::basic_endpoint</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -26,6 +26,9 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.ip__basic_endpoint"></a><a class="link" href="ip__basic_endpoint.html" title="ip::basic_endpoint">ip::basic_endpoint</a>
 </h3></div></div></div>
+<p>
+        <a class="indexterm" name="boost_asio.indexterm.ip__basic_endpoint"></a>
+      </p>
 <p>
         Describes an endpoint for a version-independent IP socket.
       </p>
@@ -113,7 +116,7 @@ class basic_endpoint
               </td>
 <td>
                 <p>
-                  Get the IP address associated with the endpoint. <br> <span class="silver"> &#8212;</span><br>
+                  Get the IP address associated with the endpoint. <br> <span class="silver"> —</span><br>
                   Set the IP address associated with the endpoint.
                 </p>
               </td>
@@ -121,19 +124,19 @@ class basic_endpoint
 <tr>
 <td>
                 <p>
-                  <a class="link" href="ip__basic_endpoint/basic_endpoint.html" title="ip::basic_endpoint::basic_endpoint"><span class="bold"><strong>basic_endpoint</strong></span></a>
+                  <a class="link" href="ip__basic_endpoint/basic_endpoint.html" title="ip::basic_endpoint::basic_endpoint"><span class="bold"><strong>basic_endpoint</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
-                  Default constructor. <br> <span class="silver"> &#8212;</span><br> Construct an endpoint using
+                  Default constructor. <br> <span class="silver"> —</span><br> Construct an endpoint using
                   a port number, specified in the host's byte order. The IP address
                   will be the any address (i.e. INADDR_ANY or in6addr_any). This
                   constructor would typically be used for accepting new connections.
-                  <br> <span class="silver"> &#8212;</span><br> Construct an endpoint using a port number and an
+                  <br> <span class="silver"> —</span><br> Construct an endpoint using a port number and an
                   IP address. This constructor may be used for accepting connections
                   on a specific interface or for making a connection to a remote
-                  endpoint. <br> <span class="silver"> &#8212;</span><br> Copy constructor. <br> <span class="silver"> &#8212;</span><br> Move constructor.
+                  endpoint. <br> <span class="silver"> —</span><br> Copy constructor. <br> <span class="silver"> —</span><br> Move constructor.
                 </p>
               </td>
 </tr>
@@ -169,7 +172,7 @@ class basic_endpoint
               </td>
 <td>
                 <p>
-                  Assign from another endpoint. <br> <span class="silver"> &#8212;</span><br> Move-assign from another
+                  Assign from another endpoint. <br> <span class="silver"> —</span><br> Move-assign from another
                   endpoint.
                 </p>
               </td>
@@ -183,7 +186,7 @@ class basic_endpoint
 <td>
                 <p>
                   Get the port associated with the endpoint. The port number is always
-                  in the host's byte order. <br> <span class="silver"> &#8212;</span><br> Set the port associated
+                  in the host's byte order. <br> <span class="silver"> —</span><br> Set the port associated
                   with the endpoint. The port number is always in the host's byte
                   order.
                 </p>
@@ -386,7 +389,8 @@ class basic_endpoint
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

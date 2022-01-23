@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>assign_values (2 coordinate values)</title>
 <link rel="stylesheet" href="../../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../assign.html" title="assign">
 <link rel="prev" href="assign_points.html" title="assign_points">
 <link rel="next" href="assign_values_4_3_coordinate_values.html" title="assign_values (3 coordinate values)">
@@ -28,7 +28,7 @@
           (2 coordinate values)</a>
 </h5></div></div></div>
 <p>
-            <a class="indexterm" name="idm45133063315136"></a>
+            <a class="indexterm" name="idm23197"></a>
 Assign two coordinates to a geometry (usually a 2D point)
           </p>
 <h6>
@@ -164,8 +164,7 @@ Assign two coordinates to a geometry (usually a 2D point)
             <span class="phrase"><a name="geometry.reference.algorithms.assign.assign_values_3_2_coordinate_values.example"></a></span><a class="link" href="assign_values_3_2_coordinate_values.html#geometry.reference.algorithms.assign.assign_values_3_2_coordinate_values.example">Example</a>
           </h6>
 <p>
-            Shows the usage of assign to set point coordinates, and, besides that,
-            shows how you can initialize ttmath points with high precision
+            Shows the usage of assign to set point coordinates
           </p>
 <p>
 </p>
@@ -175,11 +174,6 @@ Assign two coordinates to a geometry (usually a 2D point)
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">geometries</span><span class="special">/</span><span class="identifier">point_xy</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 
-<span class="preprocessor">#if</span> <span class="identifier">defined</span><span class="special">(</span><span class="identifier">HAVE_TTMATH</span><span class="special">)</span>
-<span class="preprocessor">#  include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">extensions</span><span class="special">/</span><span class="identifier">contrib</span><span class="special">/</span><span class="identifier">ttmath_stub</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
-<span class="preprocessor">#endif</span>
-
-
 <span class="keyword">int</span> <span class="identifier">main</span><span class="special">()</span>
 <span class="special">{</span>
     <span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">assign_values</span><span class="special">;</span>
@@ -188,33 +182,15 @@ Assign two coordinates to a geometry (usually a 2D point)
     <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">d2</span><span class="special">::</span><span class="identifier">point_xy</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="identifier">p1</span><span class="special">;</span>
     <span class="identifier">assign_values</span><span class="special">(</span><span class="identifier">p1</span><span class="special">,</span> <span class="number">1.2345</span><span class="special">,</span> <span class="number">2.3456</span><span class="special">);</span>
 
-<span class="preprocessor">#if</span> <span class="identifier">defined</span><span class="special">(</span><span class="identifier">HAVE_TTMATH</span><span class="special">)</span>
-    <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">d2</span><span class="special">::</span><span class="identifier">point_xy</span><span class="special">&lt;</span><span class="identifier">ttmath</span><span class="special">::</span><span class="identifier">Big</span><span class="special">&lt;</span><span class="number">1</span><span class="special">,</span><span class="number">4</span><span class="special">&gt;</span> <span class="special">&gt;</span> <span class="identifier">p2</span><span class="special">;</span>
-    <span class="identifier">assign_values</span><span class="special">(</span><span class="identifier">p2</span><span class="special">,</span> <span class="string">"1.2345"</span><span class="special">,</span> <span class="string">"2.3456"</span><span class="special">);</span> <a class="co" name="geometry.reference.algorithms.assign.assign_values_3_2_coordinate_values.c0" href="assign_values_3_2_coordinate_values.html#geometry.reference.algorithms.assign.assign_values_3_2_coordinate_values.c1"><img src="../../../../../../../../doc/src/images/callouts/1.png" alt="1" border="0"></a>
-<span class="preprocessor">#endif</span>
-
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span>
         <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">setprecision</span><span class="special">(</span><span class="number">20</span><span class="special">)</span>
-        <span class="special">&lt;&lt;</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">dsv</span><span class="special">(</span><span class="identifier">p1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span>
-<span class="preprocessor">#if</span> <span class="identifier">defined</span><span class="special">(</span><span class="identifier">HAVE_TTMATH</span><span class="special">)</span>
-        <span class="special">&lt;&lt;</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">dsv</span><span class="special">(</span><span class="identifier">p2</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span>
-<span class="preprocessor">#endif</span>
-        <span class="special">;</span>
+        <span class="special">&lt;&lt;</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">::</span><span class="identifier">dsv</span><span class="special">(</span><span class="identifier">p1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
 
     <span class="keyword">return</span> <span class="number">0</span><span class="special">;</span>
 <span class="special">}</span>
 </pre>
 <p>
           </p>
-<div class="calloutlist"><table border="0" summary="Callout list"><tr>
-<td width="5%" valign="top" align="left"><p><a name="geometry.reference.algorithms.assign.assign_values_3_2_coordinate_values.c1"></a><a href="#geometry.reference.algorithms.assign.assign_values_3_2_coordinate_values.c0"><img src="../../../../../../../../doc/src/images/callouts/1.png" alt="1" border="0"></a> </p></td>
-<td valign="top" align="left"><p>
-                It is possible to assign coordinates with other types than the coordinate
-                type. For ttmath, you can e.g. conveniently use strings. The advantage
-                is that it then has higher precision, because if doubles are used
-                for assignments the double-precision is used.
-              </p></td>
-</tr></table></div>
 <p>
             Output:
           </p>
@@ -232,8 +208,8 @@ Assign two coordinates to a geometry (usually a 2D point)
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

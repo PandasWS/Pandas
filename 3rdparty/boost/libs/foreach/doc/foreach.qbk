@@ -443,19 +443,19 @@ loop variable is a template. Consider trying to iterate over a `std::map`:
     std::map<int,int> m;
 
     // ERROR! Too many arguments to BOOST_FOREACH macro.
-    BOOST_FOREACH(std::pair<int,int> p, m) // ...
+    BOOST_FOREACH(std::pair<const int,int> p, m) // ...
 
 One way to fix this is with a typedef.
 
     std::map<int,int> m;
-    typedef std::pair<int,int> pair_t;
+    typedef std::pair<const int,int> pair_t;
 
     BOOST_FOREACH(pair_t p, m) // ...
 
 Another way to fix it is to predeclare the loop variable:
 
     std::map<int,int> m;
-    std::pair<int,int> p;
+    std::pair<const int,int> p;
 
     BOOST_FOREACH(p, m) // ...
 

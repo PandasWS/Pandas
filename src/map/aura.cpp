@@ -116,6 +116,35 @@ enum e_aura_special aura_special(uint16 effect_id) {
 }
 
 //************************************
+// Method:      aura_effects_timer_sub
+// Description: 用来遍历附近玩家并对他们发送指定光环特效的处理函数
+// Access:      public 
+// Parameter:   struct block_list * bl 遍历到附近的玩家单位
+// Parameter:   va_list ap
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2021/12/29 21:27
+//************************************ 
+int aura_effects_timer_sub(struct block_list* bl, va_list ap) {
+	struct map_session_data* sd = nullptr;
+	struct block_list* effect_unit_bl = va_arg(ap, struct block_list*);
+	unsigned int effect_id = va_arg(ap, unsigned int);
+
+	if (!bl || !effect_unit_bl || bl->type != BL_PC) {
+		return 0;
+	}
+
+	sd = BL_CAST(BL_PC, bl);
+
+	// 主要是将观察者带入到是否隐藏光环的判断中
+	if (aura_need_hiding(effect_unit_bl, bl)) {
+		return 0;
+	}
+
+	clif_specialeffect_single(effect_unit_bl, effect_id, sd->fd);
+	return 1;
+}
+
+//************************************
 // Method:      aura_effects_timer
 // Description: 给非持久型特效进行定时播放的定时器处理函数
 // Access:      public 
@@ -130,10 +159,6 @@ TIMER_FUNC(aura_effects_timer) {
 		return 1;
 	}
 
-	if (aura_need_hiding(bl)) {
-		return 0;
-	}
-
 	struct s_unit_common_data* ucd = status_get_ucd(bl);
 	if (!ucd) {
 		delete_timer(tid, aura_effects_timer);
@@ -142,7 +167,7 @@ TIMER_FUNC(aura_effects_timer) {
 
 	for (auto it : ucd->aura.effects) {
 		if (it->replay_tid != tid) continue;
-		clif_specialeffect(bl, it->effect_id, AREA);
+		map_foreachinallrange(aura_effects_timer_sub, bl, AREA_SIZE, BL_PC, bl, it->effect_id);
 	}
 
 	return 0;
@@ -153,10 +178,16 @@ TIMER_FUNC(aura_effects_timer) {
 // Description: 判断用于光环是否需要隐藏 (或者说不展现)
 // Access:      public 
 // Parameter:   struct block_list * bl
+//				该参数用于指定需要判断哪个 bl 单位的光环是否需要被隐藏
+// Parameter:   struct block_list * observer_bl
+//				观察者的 bl 指针 (默认为 nullptr 表示没有观察者, 无需考虑 cloak 影响)
+//				通常情况下一个如果被检测的 bl 单位是一个 npc,
+//				那么可能会因为这个 npc 已经在某个 observer_bl 的视野中被隐藏/显示 (cloakonnpc/cloakoffnpc)
+//				因此想判断一个目标 bl 单位是否可以显示光环的时候, 把 observer_bl 带上判断就会代入观察者视野
 // Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/04/24 14:46
+// Author:      Sola丶小克(CairoLee)  2021/12/29 22:46
 //************************************ 
-bool aura_need_hiding(struct block_list* bl) {
+bool aura_need_hiding(struct block_list* bl, struct block_list* observer_bl) {
 	if (!bl) return true;
 
 	// 宠物没有 status_change, 当前也没有什么技能或者状态可以隐藏宠物,
@@ -165,7 +196,8 @@ bool aura_need_hiding(struct block_list* bl) {
 
 	struct status_change* sc = status_get_sc(bl);
 	if (!sc) return true;
-	return status_ishiding(bl) || status_isinvisible(bl) || sc->data[SC_CAMOUFLAGE];
+
+	return status_ishiding(bl, observer_bl) || status_isinvisible(bl) || sc->data[SC_CAMOUFLAGE];
 }
 
 //************************************

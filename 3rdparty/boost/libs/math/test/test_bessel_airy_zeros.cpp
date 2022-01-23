@@ -24,7 +24,7 @@
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp> // Boost.Test
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <typeinfo>
 #include <iostream>
@@ -65,7 +65,7 @@ treated differently than the remaining ones.
 
 The test cover various regions of order,
 each one tested with several zeros:
-  * Order 219/100: This checks a region just below a critical cutof.
+  * Order 219/100: This checks a region just below a critical cutoff.
   * Order 221/100: This checks a region just above a critical cutoff.
   * Order 0: Something always tends to go wrong at zero.
   * Order 1/1000: A small order.
@@ -152,7 +152,7 @@ void test_bessel_zeros(RealType)
   // Checks on some spot values.
 
   // http://mathworld.wolfram.com/BesselFunctionZeros.html provides some spot values,
-  // evaluation at 50 deciaml digits using WoldramAlpha.
+  // evaluation at 50 decimal digits using WoldramAlpha.
 
   /* Table[N[BesselJZero[0, n], 50], {n, 1, 5, 1}]
   n |
@@ -840,7 +840,7 @@ Calculated using cpp_dec_float_50
   }
 
   BOOST_MATH_CHECK_THROW(airy_ai_zero<RealType>(-1), std::domain_error);
-  BOOST_CHECK_CLOSE_FRACTION(airy_ai_zero<RealType>((std::numeric_limits<boost::int32_t>::max)()), -static_cast<RealType>(4678579.33301973093739L), tolerance);
+  BOOST_CHECK_CLOSE_FRACTION(airy_ai_zero<RealType>((std::numeric_limits<std::int32_t>::max)()), -static_cast<RealType>(4678579.33301973093739L), tolerance);
 
   // Can't abuse with infinity because won't compile - no conversion.
   //if (std::numeric_limits<RealType>::has_infinity)
@@ -908,7 +908,7 @@ Calculated using cpp_dec_float_50
   }
 
   BOOST_MATH_CHECK_THROW(airy_bi_zero<RealType>(-1), std::domain_error);
-  BOOST_CHECK_CLOSE_FRACTION(airy_bi_zero<RealType>((std::numeric_limits<boost::int32_t>::max)()), -static_cast<RealType>(4678579.33229351984573L), tolerance * 300);
+  BOOST_CHECK_CLOSE_FRACTION(airy_bi_zero<RealType>((std::numeric_limits<std::int32_t>::max)()), -static_cast<RealType>(4678579.33229351984573L), tolerance * 300);
 
   // Can't abuse with infinity because won't compile - no conversion.
   //if (std::numeric_limits<RealType>::has_infinity)

@@ -17,10 +17,14 @@ using tcp     = net::ip::tcp;
 
 error_code ec;
 net::io_context ioc;
-auto work = net::make_work_guard(ioc);
+net::any_io_executor work =
+    net::require(
+        ioc.get_executor(),
+        net::execution::outstanding_work.tracked);
 std::thread t{[&](){ ioc.run(); }};
 
 tcp::socket sock(ioc);
 
 ssl::context ctx(ssl::context::tlsv12);
 
+boost::ignore_unused(ec);

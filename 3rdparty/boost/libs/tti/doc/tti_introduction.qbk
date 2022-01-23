@@ -46,11 +46,13 @@ The functionality of the library may be summed up as:
   subsequently invoked to determine whether or not the 
   element exists within the type. These generated metafunctions 
   will be called "macro metafunctions" in the documentation.
+  The type to be introspected can be a class, struct, or union.
    
 * Provide the means to create a typedef for a type which may
-  not exist. This typedef type can be used as a type in the 
-  metafunctions of the library without producing compile-time 
-  errors.
+  not exist. If the type does not exist an empty marker type
+  is returned as the typedef type. This typedef type can be
+  used as a type in the metafunctions of the library without
+  producing compile-time errors.
    
 The library is dependent on Boost PP, Boost MPL, 
 Boost Type Traits, and Boost Function Types. 
@@ -67,7 +69,7 @@ the TTI library.
 
 [section:tti_headers Header Files]
 
-There are is a single header file, `boost/tti/tti.hpp`, 
+There is a single header file, `boost/tti/tti.hpp`, 
 which includes all the header files in the library.
 
 There are also separate specific header files for each of the elements 
@@ -84,6 +86,18 @@ of the nested elements to be introspected. These header files are:
     [[headerref boost/tti/has_type.hpp `has_type.hpp`]]
   ]
   [
+    [Class/Struct]
+    [[headerref boost/tti/has_class.hpp `has_class.hpp`]]
+  ]
+  [
+    [Enumeration]
+    [[headerref boost/tti/has_enum.hpp `has_enum.hpp`]]
+  ]
+  [
+    [Union]
+    [[headerref boost/tti/has_union.hpp `has_union.hpp`]]
+  ]
+  [
     [Class Template]
     [[headerref boost/tti/has_template.hpp `has_template.hpp`]]
   ]
@@ -96,6 +110,10 @@ of the nested elements to be introspected. These header files are:
     [[headerref boost/tti/has_member_function.hpp `has_member_function.hpp`]]
   ]
   [
+    [Member function template]
+    [[headerref boost/tti/has_member_function_template.hpp `has_member_function_template.hpp`]]
+  ]
+  [
     [Static member data]
     [[headerref boost/tti/has_static_member_data.hpp `has_static_member_data.hpp`]]
   ]
@@ -104,12 +122,20 @@ of the nested elements to be introspected. These header files are:
     [[headerref boost/tti/has_static_member_function.hpp `has_static_member_function.hpp`]]
   ]
   [
+    [Static member function template]
+    [[headerref boost/tti/has_static_member_function_template.hpp `has_static_member_function_template.hpp`]]
+  ]
+  [
     [Data]
     [[headerref boost/tti/has_data.hpp `has_data.hpp`]]
   ]
   [
     [Function]
     [[headerref boost/tti/has_function.hpp `has_function.hpp`]]
+  ]
+  [
+    [Function template]
+    [[headerref boost/tti/has_function_template.hpp `has_function_template.hpp`]]
   ]
   [
     [Member Type Creation]

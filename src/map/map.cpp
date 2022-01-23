@@ -75,6 +75,7 @@ Sql* mmysql_handle;
 Sql* qsmysql_handle; /// For query_sql
 
 int db_use_sqldbs = 0;
+char barter_table[32] = "barter";
 char buyingstores_table[32] = "buyingstores";
 char buyingstore_items_table[32] = "buyingstore_items";
 char item_cash_table[32] = "item_cash_db";
@@ -2261,6 +2262,8 @@ int map_quit(struct map_session_data *sd) {
 		status_change_end(&sd->bl, SC_EQC, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_SPRITEMABLE, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_SV_ROOTTWIST, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_GUARD_STANCE, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_ATTACK_STANCE, INVALID_TIMER);
 		// Remove visuals effect from headgear
 		status_change_end(&sd->bl, SC_MOONSTAR, INVALID_TIMER); 
 		status_change_end(&sd->bl, SC_SUPER_STAR, INVALID_TIMER); 
@@ -2284,6 +2287,7 @@ int map_quit(struct map_session_data *sd) {
 			status_change_end(&sd->bl, SC_H_MINE, INVALID_TIMER);
 			status_change_end(&sd->bl, SC_ANTI_M_BLAST, INVALID_TIMER);
 			status_change_end(&sd->bl, SC_B_TRAP, INVALID_TIMER);
+			status_change_end(&sd->bl, SC_SHADOW_STRIP, INVALID_TIMER);
 		}
 		if (battle_config.debuff_on_logout&2) { //Remove positive buffs
 			status_change_end(&sd->bl, SC_MAXIMIZEPOWER, INVALID_TIMER);
@@ -2388,7 +2392,7 @@ struct homun_data* map_id2hd(int id){
 	return BL_CAST(BL_HOM, bl);
 }
 
-struct mercenary_data* map_id2mc(int id){
+struct s_mercenary_data* map_id2mc(int id){
 	struct block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_MER, bl);
 }
@@ -2398,7 +2402,7 @@ struct pet_data* map_id2pd(int id){
 	return BL_CAST(BL_PET, bl);
 }
 
-struct elemental_data* map_id2ed(int id) {
+struct s_elemental_data* map_id2ed(int id) {
 	struct block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_ELEM, bl);
 }
@@ -2501,15 +2505,33 @@ bool map_blid_exists( int id ) {
 /*==========================================
  * Convex Mirror
  *------------------------------------------*/
+#ifndef Pandas_FuncDefine_Mob_Getmob_Boss
 struct mob_data * map_getmob_boss(int16 m)
+#else
+struct mob_data * map_getmob_boss(int16 m, bool alive_first)
+#endif // Pandas_FuncDefine_Mob_Getmob_Boss
 {
 	DBIterator* iter;
 	struct mob_data *md = NULL;
 	bool found = false;
+#ifdef Pandas_FuncDefine_Mob_Getmob_Boss
+	// 用于保存一个兜底默认用的魔物单位
+	struct mob_data* default_md = NULL;
+#endif // Pandas_FuncDefine_Mob_Getmob_Boss
 
 	iter = db_iterator(bossid_db);
 	for( md = (struct mob_data*)dbi_first(iter); dbi_exists(iter); md = (struct mob_data*)dbi_next(iter) )
 	{
+#ifdef Pandas_FuncDefine_Mob_Getmob_Boss
+		if (alive_first) {
+			// 若还没有保存过任何一个兜底魔物单位, 且当前魔物的地图符合条件, 则将它视为兜底魔物
+			if (!default_md && md->bl.m == m)
+				default_md = md;
+			// 剩下的所有重生定时器非空 (也就是说它死了) 的魔物都跳过
+			if (md->spawn_timer != INVALID_TIMER)
+				continue;
+		}
+#endif // Pandas_FuncDefine_Mob_Getmob_Boss
 		if( md->bl.m == m )
 		{
 			found = true;
@@ -2517,6 +2539,12 @@ struct mob_data * map_getmob_boss(int16 m)
 		}
 	}
 	dbi_destroy(iter);
+
+#ifdef Pandas_FuncDefine_Mob_Getmob_Boss
+	// 若存活优先, 没找到合适的存活魔物, 且保存了兜底魔物; 那么就使用兜底魔物进行返回
+	if (alive_first && !found && default_md)
+		return default_md;
+#endif // Pandas_FuncDefine_Mob_Getmob_Boss
 
 	return (found)? md : NULL;
 }
@@ -4414,7 +4442,9 @@ int inter_config_read(const char *cfgName)
 		}
 #undef RENEWALPREFIX
 
-		if( strcmpi( w1, "buyingstore_db" ) == 0 )
+		if( strcmpi( w1, "barter_table" ) == 0 )
+			safestrncpy( barter_table, w2, sizeof(barter_table) );
+		else if( strcmpi( w1, "buyingstore_db" ) == 0 )
 			safestrncpy( buyingstores_table, w2, sizeof(buyingstores_table) );
 		else if( strcmpi( w1, "buyingstore_items_table" ) == 0 )
 			safestrncpy( buyingstore_items_table, w2, sizeof(buyingstore_items_table) );
@@ -5794,7 +5824,11 @@ void do_abort(void)
 	run = 1;
 	if (!chrif_isconnected())
 	{
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 		if (pc_db->size(pc_db))
+#else
+		if (pc_db && pc_db->size(pc_db))
+#endif // Pandas_Crashfix_Prevent_NullPointer
 			ShowFatalError("Server has crashed without a connection to the char-server, %u characters can't be saved!\n", pc_db->size(pc_db));
 		return;
 	}
@@ -5941,6 +5975,9 @@ void do_shutdown(void)
 	{
 		runflag = MAPSERVER_ST_SHUTDOWN;
 		ShowStatus("Shutting down...\n");
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+		if (pc_db)
+#endif // Pandas_Crashfix_Prevent_NullPointer
 		{
 			struct map_session_data* sd;
 			struct s_mapiterator* iter = mapit_getallusers();

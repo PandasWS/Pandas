@@ -22,15 +22,18 @@ std::string ok(bool b) {
 
 BOOST_AUTO_TEST_CASE(non_blocking_any)
 {
-mpi::environment env;
+  mpi::environment env;
   mpi::communicator world;
   int rank = world.rank();
-  if (rank == 0) {
 #if BOOST_MPI_VERSION < 3
+  if (rank == 0) {
     std::cout << "\nExpected failure with MPI standard < 3 ("
-	      << BOOST_MPI_VERSION << "." << BOOST_MPI_SUBVERSION
-	      << " detected)\n\n";
+              << BOOST_MPI_VERSION << "." << BOOST_MPI_SUBVERSION
+              << " detected)\n\n";
+  }
+  return;
 #endif
+  if (rank == 0) {
     std::vector<boost::mpi::request> req;
     std::vector<std::vector<int> > data(world.size() - 1);
     for (int i = 1; i < world.size(); ++i) {

@@ -34,7 +34,7 @@ template <typename Block>
 inline bool nth_bit(Block num, std::size_t n)
 {
 #ifndef NDEBUG
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
   // Borland deduces Block as a const qualified type,
   // and thus finds numeric_limits<Block> to be zero :(
   //  (though not directly relevant here, see also

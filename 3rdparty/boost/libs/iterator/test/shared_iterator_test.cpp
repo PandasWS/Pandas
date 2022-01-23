@@ -1,13 +1,13 @@
 // Copyright 2003 The Trustees of Indiana University.
 
-// Use, modification and distribution is subject to the Boost Software 
+// Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-//  Shared container iterator adaptor 
+//  Shared container iterator adaptor
 //  Author: Ronald Garcia
-//  See http://boost.org/libs/utility/shared_container_iterator.html 
-//  for documentation. 
+//  See http://boost.org/libs/utility/shared_container_iterator.html
+//  for documentation.
 
 //
 // shared_iterator_test.cpp - Regression tests for shared_container_iterator.
@@ -38,7 +38,7 @@ void set_range(iterator& i, iterator& end)  {
 
   for (int j = 0; j != 6; ++j)
     objs->push_back(resource());
-  
+
   i = iterator(objs->begin(),objs);
   end = iterator(objs->end(),objs);
   BOOST_TEST_EQ(resource::count, 6);
@@ -48,7 +48,7 @@ void set_range(iterator& i, iterator& end)  {
 int main() {
 
   BOOST_TEST_EQ(resource::count, 0);
-  
+
   {
     iterator i;
     {
@@ -59,6 +59,6 @@ int main() {
     BOOST_TEST_EQ(resource::count, 6);
   }
   BOOST_TEST_EQ(resource::count, 0);
-  
+
   return boost::report_errors();
 }

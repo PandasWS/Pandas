@@ -8,9 +8,9 @@
 #include <boost/core/lightweight_test.hpp>
 #include <boost/histogram/accumulators/weighted_mean.hpp>
 #include <boost/histogram/accumulators/weighted_sum.hpp>
-#include "throw_exception.hpp"
 #include <boost/histogram/storage_adaptor.hpp>
 #include <boost/histogram/unlimited_storage.hpp>
+#include <boost/histogram/weight.hpp>
 #include <cmath>
 #include <deque>
 #include <limits>
@@ -18,6 +18,7 @@
 #include <sstream>
 #include <vector>
 #include "is_close.hpp"
+#include "throw_exception.hpp"
 #include "utility_allocator.hpp"
 
 using namespace boost::histogram;
@@ -217,7 +218,7 @@ int main() {
     ++a[0];
     a[0] += 1;
     a[0] += 2;
-    a[0] += accumulators::weighted_sum<double>(1, 0);
+    a[0] += accumulators::weighted_sum<double>(1, 2);
     BOOST_TEST_EQ(a[0].value(), 5);
     BOOST_TEST_EQ(a[0].variance(), 6);
     a[0] *= 2;
@@ -230,11 +231,20 @@ int main() {
     auto a = storage_adaptor<std::vector<accumulators::weighted_mean<double>>>();
     a.reset(1);
     a[0](/* sample */ 1);
-    a[0](/* weight */ 2, /* sample */ 2);
-    a[0] += accumulators::weighted_mean<>(1, 0, 0, 0);
-    BOOST_TEST_EQ(a[0].sum_of_weights(), 4);
-    BOOST_TEST_IS_CLOSE(a[0].value(), 1.25, 1e-3);
-    BOOST_TEST_IS_CLOSE(a[0].variance(), 0.242, 1e-3);
+    a[0](weight(2), /* sample */ 2);
+
+    accumulators::weighted_mean<double> b;
+    b(weight(3), 3);
+    a[0] += b;
+
+    accumulators::weighted_mean<double> c;
+    c(weight(1), 1);
+    c(weight(2), 2);
+    c(weight(3), 3);
+
+    BOOST_TEST_EQ(a[0].sum_of_weights(), c.sum_of_weights());
+    BOOST_TEST_IS_CLOSE(a[0].value(), c.value(), 1e-3);
+    BOOST_TEST_IS_CLOSE(a[0].variance(), c.variance(), 1e-3);
   }
 
   // exceeding array capacity

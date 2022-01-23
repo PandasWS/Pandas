@@ -26,12 +26,14 @@ struct size_tag {};
 template< typename T, typename U >
 struct is_constructible
 {
-    template< typename T1, typename U1 >
-    static yes_type check_helper(size_tag< sizeof(static_cast< T1 >(U1())) >*);
-    template< typename T1, typename U1 >
+    static U& get();
+
+    template< typename T1 >
+    static yes_type check_helper(size_tag< sizeof(static_cast< T1 >(get())) >*);
+    template< typename T1 >
     static no_type check_helper(...);
 
-    static const bool value = sizeof(check_helper< T, U >(0)) == sizeof(yes_type);
+    static const bool value = sizeof(check_helper< T >(0)) == sizeof(yes_type);
 };
 
 template< typename T >

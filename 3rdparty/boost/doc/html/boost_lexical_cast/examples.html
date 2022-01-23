@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Examples</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../boost_lexical_cast.html" title="Chapter&#160;21.&#160;Boost.Lexical_Cast 1.0">
-<link rel="prev" href="../boost_lexical_cast.html" title="Chapter&#160;21.&#160;Boost.Lexical_Cast 1.0">
+<link rel="up" href="../boost_lexical_cast.html" title="Chapter 21. Boost.Lexical_Cast 1.0">
+<link rel="prev" href="../boost_lexical_cast.html" title="Chapter 21. Boost.Lexical_Cast 1.0">
 <link rel="next" href="synopsis.html" title="Synopsis">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -110,7 +110,7 @@
       </p>
 <p>
 </p>
-<pre class="programlisting"><span class="keyword">void</span> <span class="identifier">number_to_file</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">number</span><span class="special">,</span> <span class="identifier">FILE</span><span class="special">*</span> <span class="identifier">file</span><span class="special">)</span>
+<pre class="programlisting"><span class="keyword">void</span> <span class="identifier">number_to_file</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">number</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">FILE</span><span class="special">*</span> <span class="identifier">file</span><span class="special">)</span>
 <span class="special">{</span>
     <span class="keyword">typedef</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">array</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">,</span> <span class="number">50</span><span class="special">&gt;</span> <span class="identifier">buf_t</span><span class="special">;</span> <span class="comment">// You can use std::array if your compiler supports it</span>
     <span class="identifier">buf_t</span> <span class="identifier">buffer</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">lexical_cast</span><span class="special">&lt;</span><span class="identifier">buf_t</span><span class="special">&gt;(</span><span class="identifier">number</span><span class="special">);</span> <span class="comment">// No dynamic memory allocation</span>
@@ -151,6 +151,8 @@
 <p>
         Example is based on the example from the <a href="http://www.packtpub.com/boost-cplusplus-application-development-cookbook/book" target="_top">Boost
         C++ Application Development Cookbook</a> by Antony Polukhin, ISBN 9781849514880.
+        Russian translation: <a href="https://dmkpress.com/catalog/computer/programming/c/978-5-97060-868-5/" target="_top">ISBN:
+        9785970608685</a>.
       </p>
 <p>
         Step 1: Making a functor that converts any type to a string and remembers
@@ -199,16 +201,21 @@
       </p>
 <p>
 </p>
-<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">cassert</span><span class="special">&gt;</span>
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">fusion</span><span class="special">/</span><span class="identifier">adapted</span><span class="special">/</span><span class="identifier">boost_tuple</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">fusion</span><span class="special">/</span><span class="identifier">adapted</span><span class="special">/</span><span class="identifier">boost_tuple</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">fusion</span><span class="special">/</span><span class="identifier">adapted</span><span class="special">/</span><span class="identifier">std_pair</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 
 <span class="keyword">int</span> <span class="identifier">main</span><span class="special">()</span> <span class="special">{</span>
     <span class="identifier">boost</span><span class="special">::</span><span class="identifier">tuple</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">,</span> <span class="keyword">int</span><span class="special">,</span> <span class="keyword">char</span><span class="special">,</span> <span class="keyword">int</span><span class="special">&gt;</span> <span class="identifier">decim</span><span class="special">(</span><span class="char">'-'</span><span class="special">,</span> <span class="number">10</span><span class="special">,</span> <span class="char">'e'</span><span class="special">,</span> <span class="number">5</span><span class="special">);</span>
-    <span class="identifier">assert</span><span class="special">(</span><span class="identifier">stringize</span><span class="special">(</span><span class="identifier">decim</span><span class="special">)</span> <span class="special">==</span> <span class="string">"-10e5"</span><span class="special">);</span>
+    <span class="keyword">if</span> <span class="special">(</span><span class="identifier">stringize</span><span class="special">(</span><span class="identifier">decim</span><span class="special">)</span> <span class="special">!=</span> <span class="string">"-10e5"</span><span class="special">)</span> <span class="special">{</span>
+        <span class="keyword">return</span> <span class="number">1</span><span class="special">;</span>
+    <span class="special">}</span>
 
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">pair</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;</span> <span class="identifier">value_and_type</span><span class="special">(</span><span class="number">270</span><span class="special">,</span> <span class="string">"Kelvin"</span><span class="special">);</span>
-    <span class="identifier">assert</span><span class="special">(</span><span class="identifier">stringize</span><span class="special">(</span><span class="identifier">value_and_type</span><span class="special">)</span> <span class="special">==</span> <span class="string">"270Kelvin"</span><span class="special">);</span>
+    <span class="keyword">if</span> <span class="special">(</span><span class="identifier">stringize</span><span class="special">(</span><span class="identifier">value_and_type</span><span class="special">)</span> <span class="special">!=</span> <span class="string">"270Kelvin"</span><span class="special">)</span> <span class="special">{</span>
+        <span class="keyword">return</span> <span class="number">2</span><span class="special">;</span>
+    <span class="special">}</span>
+
+    <span class="keyword">return</span> <span class="number">0</span><span class="special">;</span>
 <span class="special">}</span>
 </pre>
 <p>
@@ -228,13 +235,12 @@
 </p>
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">lexical_cast</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">variant</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">cassert</span><span class="special">&gt;</span>
 
 <span class="keyword">struct</span> <span class="identifier">to_long_double_functor</span><span class="special">:</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">static_visitor</span><span class="special">&lt;</span><span class="keyword">long</span> <span class="keyword">double</span><span class="special">&gt;</span> <span class="special">{</span>
     <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
     <span class="keyword">long</span> <span class="keyword">double</span> <span class="keyword">operator</span><span class="special">()(</span><span class="keyword">const</span> <span class="identifier">T</span><span class="special">&amp;</span> <span class="identifier">v</span><span class="special">)</span> <span class="keyword">const</span> <span class="special">{</span>
-        <span class="comment">// Lexical cast has many optimizations including optimizations for situations that usually </span>
-        <span class="comment">// occur in generic programming, like std::string to std::string or arithmetic type to arithmetic type conversion. </span>
+        <span class="comment">// Lexical cast has many optimizations including optimizations for situations that usually</span>
+        <span class="comment">// occur in generic programming, like std::string to std::string or arithmetic type to arithmetic type conversion.</span>
         <span class="keyword">return</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">lexical_cast</span><span class="special">&lt;</span><span class="keyword">long</span> <span class="keyword">double</span><span class="special">&gt;(</span><span class="identifier">v</span><span class="special">);</span>
     <span class="special">}</span>
 <span class="special">};</span>
@@ -249,9 +255,11 @@
     <span class="identifier">boost</span><span class="special">::</span><span class="identifier">variant</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">,</span> <span class="keyword">int</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;</span> <span class="identifier">v1</span><span class="special">(</span><span class="char">'0'</span><span class="special">),</span> <span class="identifier">v2</span><span class="special">(</span><span class="string">"10.0001"</span><span class="special">),</span> <span class="identifier">v3</span><span class="special">(</span><span class="number">1</span><span class="special">);</span>
 
     <span class="keyword">const</span> <span class="keyword">long</span> <span class="keyword">double</span> <span class="identifier">sum</span> <span class="special">=</span> <span class="identifier">to_long_double</span><span class="special">(</span><span class="identifier">v1</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">to_long_double</span><span class="special">(</span><span class="identifier">v2</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">to_long_double</span><span class="special">(</span><span class="identifier">v3</span><span class="special">);</span>
-    <span class="keyword">const</span> <span class="keyword">int</span> <span class="identifier">ret</span> <span class="special">=</span> <span class="special">(</span><span class="identifier">sum</span> <span class="special">&gt;</span> <span class="number">11</span> <span class="special">&amp;&amp;</span> <span class="identifier">sum</span> <span class="special">&lt;</span> <span class="number">11.1</span> <span class="special">?</span> <span class="number">0</span> <span class="special">:</span> <span class="number">1</span><span class="special">);</span>
-    <span class="identifier">assert</span><span class="special">(</span><span class="identifier">ret</span> <span class="special">==</span> <span class="number">0</span><span class="special">);</span>
-    <span class="keyword">return</span> <span class="identifier">ret</span><span class="special">;</span>
+    <span class="keyword">if</span> <span class="special">(</span><span class="number">11</span> <span class="special">&lt;</span> <span class="identifier">sum</span>  <span class="special">&amp;&amp;</span> <span class="identifier">sum</span> <span class="special">&lt;</span> <span class="number">11.1</span><span class="special">)</span> <span class="special">{</span>
+        <span class="keyword">return</span> <span class="number">0</span><span class="special">;</span>  <span class="comment">// OK, as expected</span>
+    <span class="special">};</span>
+
+    <span class="keyword">return</span> <span class="number">1</span><span class="special">;</span>      <span class="comment">// FAIL</span>
 <span class="special">}</span>
 </pre>
 <p>
@@ -260,8 +268,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2000-2005 Kevlin Henney<br>Copyright &#169; 2006-2010 Alexander Nasonov<br>Copyright &#169; 2011-2019 Antony
-      Polukhin<p>
+<td align="right"><div class="copyright-footer">Copyright © 2000-2005 Kevlin Henney<br>Copyright © 2006-2010 Alexander Nasonov<br>Copyright © 2011-2021 Antony Polukhin<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

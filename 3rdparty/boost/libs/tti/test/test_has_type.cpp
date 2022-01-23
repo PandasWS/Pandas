@@ -20,6 +20,30 @@ int main()
   BOOST_TEST(SomethingElse<AnotherType>::value);
   BOOST_TEST(!BOOST_TTI_HAS_TYPE_GEN(NoOtherType)<AnotherType>::value);
   
+  BOOST_TEST(EInB<AType::BType>::value);
+  BOOST_TEST(BOOST_TTI_HAS_TYPE_GEN(AnEnumTtype)<AType>::value);
+  BOOST_TEST(AnotherE<AnotherType>::value);
+  
+#if !defined(BOOST_NO_CXX11_SCOPED_ENUMS)
+
+  BOOST_TEST(EClass<AType>::value);
+  BOOST_TEST(BOOST_TTI_HAS_TYPE_GEN(AnotherEnumClassType)<AnotherType>::value);
+  
+#else
+
+  BOOST_TEST(!EClass<AType>::value);
+  BOOST_TEST(!BOOST_TTI_HAS_TYPE_GEN(AnotherEnumClassType)<AnotherType>::value);
+  
+#endif
+  
+  BOOST_TEST(BOOST_TTI_HAS_TYPE_GEN(CTypeUnion)<AType::BType::CType>::value);
+  BOOST_TEST(SimpleUT<AType>::value);
+  BOOST_TEST(BOOST_TTI_HAS_TYPE_GEN(AnotherUnion)<AnotherType>::value);
+  
+  BOOST_TEST(UnionType<AType::AnUnion>::value);
+  BOOST_TEST(BOOST_TTI_HAS_TYPE_GEN(UEnumV)<AType::AnUnion>::value);
+  BOOST_TEST(BOOST_TTI_HAS_TYPE_GEN(InnerUnion)<AnotherType::AnotherUnion>::value);
+  
   // Passing non-class enclosing type will return false
   
   BOOST_TEST(!BOOST_TTI_HAS_TYPE_GEN(AnIntTypeReference)<signed long>::value);

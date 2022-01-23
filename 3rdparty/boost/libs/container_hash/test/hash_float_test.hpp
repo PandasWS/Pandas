@@ -30,7 +30,7 @@
 #endif
 #endif
 
-#if defined(__GNUC__) && !defined(BOOST_INTEL_CXX_VERSION)
+#if ( defined(__GNUC__) || defined(__clang__) ) && !defined(BOOST_INTEL_CXX_VERSION)
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 #endif
 
@@ -91,7 +91,7 @@ void float_tests(char const* name, T* = 0)
     using namespace std;
 
 // Doing anything with infinity causes borland to crash.
-#if defined(__BORLANDC__)
+#if defined(BOOST_BORLANDC)
     std::cerr
         <<  "Not running infinity checks on Borland, as it causes it to crash."
             "\n";
@@ -292,7 +292,7 @@ void float_tests(char const* name, T* = 0)
     }
 
 // NaN also causes borland to crash.
-#if !defined(__BORLANDC__) && defined(BOOST_HASH_TEST_EXTENSIONS)
+#if !defined(BOOST_BORLANDC) && defined(BOOST_HASH_TEST_EXTENSIONS)
     if(boost::hash_detail::limits<T>::has_quiet_NaN) {
         if(x1(boost::hash_detail::limits<T>::quiet_NaN()) == x1(1.0)) {
             std::cerr<<"x1(quiet_NaN) == x1(1.0) == "<<x1(1.0)<<"\n";

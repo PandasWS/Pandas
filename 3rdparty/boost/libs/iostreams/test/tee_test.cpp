@@ -156,7 +156,7 @@ void close_test()
             boost::iostreams::tee(
                 closable_device<output>(seq.new_operation(1)),
                 closable_device<
-                    #if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+                    #if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
                         borland_output
                     #else
                         output

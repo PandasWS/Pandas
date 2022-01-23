@@ -9,7 +9,7 @@
 #include <boost/math/tools/test.hpp>
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/math/special_functions/next.hpp>
 #include <boost/math/special_functions/ulp.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
@@ -17,7 +17,7 @@
 #include <iostream>
 #include <iomanip>
 
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #pragma warning(disable:4127)
 #endif
 
@@ -27,7 +27,7 @@ bool is_normalized_value(const T& val)
    //
    // Returns false if value has guard digits that are non-zero
    //
-   boost::intmax_t shift = std::numeric_limits<T>::digits - ilogb(val) - 1;
+   std::intmax_t shift = std::numeric_limits<T>::digits - ilogb(val) - 1;
    T shifted = scalbn(val, shift);
    return floor(shifted) == shifted;
 }
@@ -200,7 +200,7 @@ BOOST_AUTO_TEST_CASE( test_main )
    // Very slow, but debuggable:
    //test_values(boost::multiprecision::number<boost::multiprecision::debug_adaptor<boost::multiprecision::cpp_dec_float_50::backend_type> >(0), "cpp_dec_float_50");
    
-   // Faster, but no good for diagnising the cause of any issues:
+   // Faster, but no good for diagnosing the cause of any issues:
    test_values(boost::multiprecision::cpp_dec_float_50(0), "cpp_dec_float_50");
 }
 

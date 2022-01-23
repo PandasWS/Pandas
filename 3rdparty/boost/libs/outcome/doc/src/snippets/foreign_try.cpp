@@ -1,5 +1,5 @@
 /* Example of Outcome try used with foreign object
-(C) 2019 Niall Douglas <http://www.nedproductions.biz/> (1 commit)
+(C) 2019-2021 Niall Douglas <http://www.nedproductions.biz/> (1 commit)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -94,7 +94,7 @@ ForeignExpected<int> old_code(int a)  // old code
 
 outcome::result<int> new_code(int a)  // new code
 {
-  BOOST_OUTCOME_TRY(x, old_code(a));
+  BOOST_OUTCOME_TRY(auto x, old_code(a));
   return x;
 }
 //! [functions]

@@ -23,6 +23,9 @@ doxygen autodoc
    <doxygen:param>ENABLE_PREPROCESSING=YES
    <doxygen:param>MACRO_EXPANSION=YES
    <doxygen:param>"PREDEFINED=\"BOOST_MOVE_DOXYGEN_INVOKED\" \\
+                              \"BOOST_NOEXCEPT_OR_NOTHROW=noexcept\" \\
+                              \"BOOST_NOEXCEPT_IF(T)=noexcept(T)\" \\
+                              \"BOOST_NOEXCEPT=noexcept\" \\
                               \"BOOST_MOVE_SEEDOC(T)=see_documentation\" \\
                               \"BOOST_RV_REF(T)=T&&\" \\
                               \"BOOST_RV_REF_BEG=\" \\

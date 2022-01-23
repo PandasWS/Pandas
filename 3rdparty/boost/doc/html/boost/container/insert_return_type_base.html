@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Struct template insert_return_type_base</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -35,11 +35,11 @@
 </span><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Iterator<span class="special">,</span> <span class="keyword">typename</span> NodeType<span class="special">&gt;</span> 
 <span class="keyword">struct</span> <a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">{</span>
   <span class="comment">// <a class="link" href="insert_return_type_base.html#boost.container.insert_return_type_baseconstruct-copy-destruct">construct/copy/destruct</a></span>
-  <a class="link" href="insert_return_type_base.html#idm45376481495920-bb"><span class="identifier">insert_return_type_base</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <a class="link" href="insert_return_type_base.html#idm45376481495632-bb"><span class="identifier">insert_return_type_base</span></a><span class="special">(</span><a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="insert_return_type_base.html#idm17691-bb"><span class="identifier">insert_return_type_base</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="insert_return_type_base.html#idm17692-bb"><span class="identifier">insert_return_type_base</span></a><span class="special">(</span><a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> RelatedIt<span class="special">,</span> <span class="keyword">typename</span> RelatedNode<span class="special">&gt;</span> 
-    <a class="link" href="insert_return_type_base.html#idm45376481494368-bb"><span class="identifier">insert_return_type_base</span></a><span class="special">(</span><span class="keyword">bool</span><span class="special">,</span> <span class="identifier">RelatedIt</span><span class="special">,</span> <span class="identifier">RelatedNode</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
-  <a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;</span> <a class="link" href="insert_return_type_base.html#idm45376481490608-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+    <a class="link" href="insert_return_type_base.html#idm17696-bb"><span class="identifier">insert_return_type_base</span></a><span class="special">(</span><span class="keyword">bool</span><span class="special">,</span> <span class="identifier">RelatedIt</span><span class="special">,</span> <span class="identifier">RelatedNode</span> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;</span> <a class="link" href="insert_return_type_base.html#idm17706-bb"><span class="keyword">operator</span><span class="special">=</span></a><span class="special">(</span><a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;&amp;</span><span class="special">)</span><span class="special">;</span>
 
   <span class="comment">// public data members</span>
   <span class="keyword">bool</span> <span class="identifier">inserted</span><span class="special">;</span>
@@ -47,7 +47,7 @@
   <span class="identifier">NodeType</span> <span class="identifier">node</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="id-1.3.10.14.18.3.4"></a><h2>Description</h2>
+<a name="id-1.3.10.14.20.3.4"></a><h2>Description</h2>
 <p>A class template used to describe the results of inserting a Container::node_type in a Container with unique keys. Includes at least the following non-static public data members:</p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem"><p>bool inserted; </p></li>
@@ -58,23 +58,23 @@
 </p>
 <p>This type is MoveConstructible, MoveAssignable, DefaultConstructible, Destructible, and lvalues of that type are swappable </p>
 <div class="refsect2">
-<a name="id-1.3.10.14.18.3.4.5"></a><h3>
+<a name="id-1.3.10.14.20.3.4.5"></a><h3>
 <a name="boost.container.insert_return_type_baseconstruct-copy-destruct"></a><code class="computeroutput">insert_return_type_base</code> 
         public
        construct/copy/destruct</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
-<li class="listitem"><pre class="literallayout"><a name="idm45376481495920-bb"></a><span class="identifier">insert_return_type_base</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"><a name="idm45376481495632-bb"></a><span class="identifier">insert_return_type_base</span><span class="special">(</span><a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;&amp;</span> other<span class="special">)</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><a name="idm17691-bb"></a><span class="identifier">insert_return_type_base</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><a name="idm17692-bb"></a><span class="identifier">insert_return_type_base</span><span class="special">(</span><a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;&amp;</span> other<span class="special">)</span><span class="special">;</span></pre></li>
 <li class="listitem"><pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> RelatedIt<span class="special">,</span> <span class="keyword">typename</span> RelatedNode<span class="special">&gt;</span> 
-  <a name="idm45376481494368-bb"></a><span class="identifier">insert_return_type_base</span><span class="special">(</span><span class="keyword">bool</span> insert<span class="special">,</span> <span class="identifier">RelatedIt</span> it<span class="special">,</span> <span class="identifier">RelatedNode</span> <span class="special">&amp;&amp;</span> node<span class="special">)</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"><a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;</span> <a name="idm45376481490608-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;&amp;</span> other<span class="special">)</span><span class="special">;</span></pre></li>
+  <a name="idm17696-bb"></a><span class="identifier">insert_return_type_base</span><span class="special">(</span><span class="keyword">bool</span> insert<span class="special">,</span> <span class="identifier">RelatedIt</span> it<span class="special">,</span> <span class="identifier">RelatedNode</span> <span class="special">&amp;&amp;</span> node<span class="special">)</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;</span> <a name="idm17706-bb"></a><span class="keyword">operator</span><span class="special">=</span><span class="special">(</span><a class="link" href="insert_return_type_base.html" title="Struct template insert_return_type_base">insert_return_type_base</a> <span class="special">&amp;&amp;</span> other<span class="special">)</span><span class="special">;</span></pre></li>
 </ol></div>
 </div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2018 Ion Gaztanaga<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2018 Ion Gaztanaga<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

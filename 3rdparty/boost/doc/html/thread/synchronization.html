@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Synchronization</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../thread.html" title="Chapter&#160;39.&#160;Thread 4.8.0">
+<link rel="up" href="../thread.html" title="Chapter 40. Thread 4.8.0">
 <link rel="prev" href="ScopedThreads.html" title="Scoped Threads">
 <link rel="next" href="thread_local_storage.html" title="Thread Local Storage">
 </head>
@@ -9150,11 +9150,11 @@
           work that are executed asynchronously. This often involves passing work
           units to some component that manages execution. We already have boost::async,
           which potentially executes a function asynchronously and eventually returns
-          its result in a future. (&#8220;As if&#8221; by launching a new thread.)
+          its result in a future. (“As if” by launching a new thread.)
         </p>
 <p>
           If there is a regular stream of small work items then we almost certainly
-          don&#8217;t want to launch a new thread for each, and it&#8217;s likely that we
+          don’t want to launch a new thread for each, and it’s likely that we
           want at least some control over which thread(s) execute which items. It
           is often convenient to represent that control as multiple executor objects.
           This allows programs to start executors when necessary, switch from one
@@ -9236,10 +9236,10 @@
 <li class="listitem">
               Inline executors, which execute inline to the thread which calls submit().
               This has no queuing and behaves like a normal executor, but always
-              uses the caller&#8217;s thread to execute. This allows parallel execution
+              uses the caller’s thread to execute. This allows parallel execution
               of works, though. This type of executor is often useful when there
               is an executor required by an interface, but when for performance reasons
-              it&#8217;s better not to queue work or switch threads. This is often very
+              it’s better not to queue work or switch threads. This is often very
               useful as an optimization for work continuations which should execute
               immediately or quickly and can also be useful for optimizations when
               an interface requires an executor but the work tasks are too small
@@ -9385,7 +9385,7 @@
 <li class="listitem">
               Conceptually, an executor puts closures on a queue and at some point
               executes them. The queue is always unbounded, so adding a closure to
-              an executor never blocks. (Defining &#8220;never blocks&#8221; formally is
+              an executor never blocks. (Defining “never blocks” formally is
               challenging, but informally we just mean that submit() is an ordinary
               function that executes something and returns, rather than waiting for
               the completion of some potentially long running operation in another
@@ -9415,7 +9415,7 @@
           give is that "a template parameter would complicate the interface
           without adding any real generality. In the end an executor class is going
           to need some kind of type erasure to handle all the different kinds of
-          function objects with <code class="computeroutput"><span class="keyword">void</span><span class="special">()</span></code> signature, and that&#8217;s exactly what
+          function objects with <code class="computeroutput"><span class="keyword">void</span><span class="special">()</span></code> signature, and that’s exactly what
           std::function already does". We think that it is up to the executor
           to manage with this implementation details, not to the user.
         </p>
@@ -9427,8 +9427,8 @@
         </p>
 <p>
           The third one is related to performance. They assert that "any mechanism
-          for storing closures on an executor&#8217;s queue will have to use some form
-          of type erasure. There&#8217;s no reason to believe that a custom closure mechanism,
+          for storing closures on an executor’s queue will have to use some form
+          of type erasure. There’s no reason to believe that a custom closure mechanism,
           written just for std::executor and used nowhere else within the standard
           library, would be better in that respect than <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span><span class="keyword">void</span><span class="special">()&gt;</span></code>". We believe that the implementation
           can do better that storing the closure on a <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span><span class="keyword">void</span><span class="special">()&gt;</span></code>. e.g. the implementation can use
@@ -16008,7 +16008,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2007 -11 Anthony Williams<br>Copyright &#169; 2011 -17 Vicente J. Botet Escriba<p>
+<td align="right"><div class="copyright-footer">Copyright © 2007 -11 Anthony Williams<br>Copyright © 2011 -17 Vicente J. Botet Escriba<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

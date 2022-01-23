@@ -3,6 +3,10 @@
 
 // Copyright (c) 2012-2019 Barend Gehrels, Amsterdam, the Netherlands.
 
+// This file was modified by Oracle on 2020.
+// Modifications copyright (c) 2020 Oracle and/or its affiliates.
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
+
 // Use, modification and distribution is subject to the Boost Software License,
 // Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -40,20 +44,20 @@ void test_all()
     > distance_strategy;
     bg::strategy::buffer::side_straight side_strategy;
 
-    double const pi = boost::geometry::math::pi<double>();
+    double const expectation = boost::geometry::math::pi<double>() *  0.99915;
 
-    test_one<multi_point_type, polygon>("simplex1", simplex, join, end_flat, 2.0 * pi, 1.0);
-    test_one<multi_point_type, polygon>("simplex2", simplex, join, end_flat, 22.8372, 2.0);
-    test_one<multi_point_type, polygon>("simplex3", simplex, join, end_flat, 44.5692, 3.0);
+    test_one<multi_point_type, polygon>("simplex1", simplex, join, end_flat, 2.0 * expectation, 1.0);
+    test_one<multi_point_type, polygon>("simplex2", simplex, join, end_flat, 22.8335, 2.0);
+    test_one<multi_point_type, polygon>("simplex3", simplex, join, end_flat, 44.5619, 3.0);
 
-    test_one<multi_point_type, polygon>("three1", three, join, end_flat, 3.0 * pi, 1.0);
+    test_one<multi_point_type, polygon>("three1", three, join, end_flat, 3.0 * expectation, 1.0);
 #if defined(BOOST_GEOMETRY_USE_RESCALING) || defined(BOOST_GEOMETRY_TEST_FAILURES)
     // For no-rescaling, fails in CCW mode
-    test_one<multi_point_type, polygon>("three2", three, join, end_flat, 36.7592, 2.0);
+    test_one<multi_point_type, polygon>("three2", three, join, end_flat, 36.7528, 2.0);
 #endif
-    test_one<multi_point_type, polygon>("three19", three, join, end_flat, 33.6914, 1.9);
-    test_one<multi_point_type, polygon>("three21", three, join, end_flat, 39.6394, 2.1);
-    test_one<multi_point_type, polygon>("three3", three, join, end_flat, 65.533, 3.0);
+    test_one<multi_point_type, polygon>("three19", three, join, end_flat, 33.6857, 1.9);
+    test_one<multi_point_type, polygon>("three21", three, join, end_flat, 39.6337, 2.1);
+    test_one<multi_point_type, polygon>("three3", three, join, end_flat, 65.5243, 3.0);
 
     test_one<multi_point_type, polygon>("multipoint_a", multipoint_a, join, end_flat, 2049.98, 14.0);
     test_one<multi_point_type, polygon>("multipoint_b", multipoint_b, join, end_flat, 7109.88, 15.0);
@@ -80,10 +84,10 @@ void test_all()
             115057490003226.125, ut_settings(1.0));
 
     {
-        typename bg::strategy::area::services::default_strategy
+        typename bg::strategies::relate::services::default_strategy
             <
-                typename bg::cs_tag<P>::type
-            >::type area_strategy;
+                multi_point_type, multi_point_type
+            >::type strategy;
 
         multi_point_type g;
         bg::read_wkt(mysql_report_3, g);
@@ -94,7 +98,7 @@ void test_all()
             distance_strategy(1),
             side_strategy,
             bg::strategy::buffer::point_circle(36),
-            area_strategy,
+            strategy,
             1, 0, 3.12566719800474635, ut_settings(1.0));
     }
 }
@@ -206,13 +210,22 @@ void test_many_points_per_circle()
 
 int test_main(int, char* [])
 {
-    test_all<true, bg::model::point<double, 2, bg::cs::cartesian> >();
-    test_all<false, bg::model::point<double, 2, bg::cs::cartesian> >();
+    BoostGeometryWriteTestConfiguration();
+
+    test_all<true, bg::model::point<default_test_type, 2, bg::cs::cartesian> >();
+
+#if ! defined(BOOST_GEOMETRY_TEST_ONLY_ONE_ORDER)
+    test_all<false, bg::model::point<default_test_type, 2, bg::cs::cartesian> >();
+#endif
 
 #if defined(BOOST_GEOMETRY_COMPILER_MODE_RELEASE) && ! defined(BOOST_GEOMETRY_COMPILER_MODE_DEBUG)
     test_many_points_per_circle<bg::model::point<double, 2, bg::cs::cartesian> >();
 #else
     std::cout << "Skipping some tests in debug or unknown mode" << std::endl;
+#endif
+
+#if defined(BOOST_GEOMETRY_TEST_FAILURES)
+    BoostGeometryWriteExpectedFailures(BG_NO_FAILURES);
 #endif
 
     return 0;

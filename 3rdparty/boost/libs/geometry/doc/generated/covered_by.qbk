@@ -48,6 +48,9 @@ Or
 `#include <boost/geometry/algorithms/covered_by.hpp>`
 
 [include reference/algorithms/covered_by.qbk]
+[heading Examples]
+[covered_by]
+[covered_by_output]
 
 
 [endsect]

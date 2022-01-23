@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for special set operations.
  *
- * Copyright 2003-2015 Joaquin M Lopez Munoz.
+ * Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -82,6 +82,9 @@ void test_special_set_ops()
       "5601",hash_string_as_int(),eq_string_int())==1);
 
   BOOST_TEST(
+    get<ssn>(es).contains("5601",hash_string_as_int(),eq_string_int()));
+
+  BOOST_TEST(
     get<ssn>(es).find(
       "1123",hash_string_as_int(),eq_string_int())->name=="Joe");
 
@@ -92,4 +95,7 @@ void test_special_set_ops()
 
   BOOST_TEST(es.count(2,employee::comp_id())==1);
   BOOST_TEST(es.count(5,employee::comp_id())==0);
+
+  BOOST_TEST(es.contains(2,employee::comp_id()));
+  BOOST_TEST(!es.contains(5,employee::comp_id()));
 }

@@ -1,5 +1,5 @@
 // Copyright 2014 Renato Tegon Forti, Antony Polukhin.
-// Copyright 2015-2019 Antony Polukhin.
+// Copyright 2015-2021 Antony Polukhin.
 //
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt
@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
     
     //[getting_started_imports_c_function
     // Importing pure C function
-    function<int(int)> c_func = dll::import<int(int)>(
+    function<int(int)> c_func = dll::import_symbol<int(int)>(
             path_to_shared_library, "c_func_name"
         );
     //]
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 
     //[getting_started_imports_c_variable
     // Importing pure C variable
-    shared_ptr<int> c_var = dll::import<int>(
+    shared_ptr<int> c_var = dll::import_symbol<int>(
             path_to_shared_library, "c_variable_name"
         );
     //]
@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 #if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !defined(BOOST_NO_CXX11_AUTO_DECLARATIONS)
     //[getting_started_imports_cpp11_function
     // Importing function.
-    auto cpp11_func = dll::import<int(std::string&&)>(
+    auto cpp11_func = dll::import_symbol<int(std::string&&)>(
             path_to_shared_library, "i_am_a_cpp11_function"
         );
     //]
@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
 
     //[getting_started_imports_cpp_variable
     // Importing  variable.
-    shared_ptr<std::string> cpp_var = dll::import<std::string>(
+    shared_ptr<std::string> cpp_var = dll::import_symbol<std::string>(
             path_to_shared_library, "cpp_variable_name"
         );
     //]

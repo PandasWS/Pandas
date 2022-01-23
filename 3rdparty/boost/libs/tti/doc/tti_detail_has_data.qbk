@@ -5,7 +5,7 @@
   http://www.boost.org/LICENSE_1_0.txt).
 ]
 
-[section:tti_detail_has_data Introspecting inner data]
+[section:tti_detail_has_data Introspecting data]
 
 The TTI macro [macroref BOOST_TTI_HAS_DATA] introspects the data of a class.
 The data can be member data or static member data.

@@ -40,7 +40,7 @@
 #include <boost/random/linear_congruential.hpp>
 #include <boost/graph/graphviz.hpp>
 #include <boost/property_map/vector_property_map.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #ifdef BOOST_NO_EXCEPTIONS
 void
@@ -211,7 +211,7 @@ struct VertexProperties {
   }
 };
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   mpi::environment env(argc, argv);
 
@@ -365,5 +365,5 @@ int test_main(int argc, char* argv[])
   std::ofstream out("dcsr.dot");
   write_graphviz(out, g);
 
-  return 0;
+  return boost::report_errors();
 }

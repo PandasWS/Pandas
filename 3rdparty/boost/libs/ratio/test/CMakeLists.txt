@@ -6,6 +6,11 @@
 #       and this file runs only a subset of the unit tests
 #       (in particular none of the fail tests)
 
+# Attach all our tests to the `tests` target, to enable
+# `cmake --build . --target tests`
+if(NOT TARGET tests)
+  add_custom_target(tests)
+endif()
 
 ## unit tests
 
@@ -15,16 +20,18 @@ file( GLOB_RECURSE test_files *_pass.cpp )
 foreach( file IN LISTS test_files )
 
     get_filename_component( core_name ${file} NAME_WE )
-    set( test_name test_boost_ratio_${core_name} )
+    set( test_name boost_ratio-test-${core_name} )
 
     if( ${core_name} IN_LIST exec_test_files )
-        add_executable( ${test_name} ${file} )
+        add_executable( ${test_name} EXCLUDE_FROM_ALL ${file} )
         add_test( NAME ${test_name} COMMAND ${test_name} )
     else()
         # most tests are compile only, so we just need to create an object file
         # in order to see, if it compiles
-        add_library( ${test_name} STATIC ${file})
+        add_library( ${test_name} STATIC EXCLUDE_FROM_ALL ${file})
     endif()
+
+    add_dependencies(tests ${test_name})
 
     target_link_libraries( ${test_name} PUBLIC
         Boost::ratio
@@ -37,13 +44,16 @@ file( GLOB_RECURSE test_files ../example/*.cpp )
 foreach( file IN LISTS test_files )
 
     get_filename_component( core_name ${file} NAME_WE )
-    set( test_name test_boost_ratio_${core_name} )
+    set( test_name boost_ratio-example-${core_name} )
 
-    add_executable( ${test_name} ${file} )
+    add_executable( ${test_name} EXCLUDE_FROM_ALL ${file} )
+
     target_link_libraries( ${test_name} PUBLIC
-        Boost::ratio
+        Boost::ratio Boost::chrono
     )
+
+    add_dependencies(tests ${test_name})
+
     add_test( NAME ${test_name} COMMAND ${test_name} )
 
 endforeach()
-

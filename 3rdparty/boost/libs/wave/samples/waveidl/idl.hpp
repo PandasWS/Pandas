@@ -10,15 +10,15 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(IDL_HPP_FC7EE131_5CE9_43F2_A713_8D9BBC3C8477_INCLUDED)
-#define IDL_HPP_FC7EE131_5CE9_43F2_A713_8D9BBC3C8477_INCLUDED
+#if !defined(BOOST_IDL_HPP_FC7EE131_5CE9_43F2_A713_8D9BBC3C8477_INCLUDED)
+#define BOOST_IDL_HPP_FC7EE131_5CE9_43F2_A713_8D9BBC3C8477_INCLUDED
 
 ///////////////////////////////////////////////////////////////////////////////
 //  This file may be used as a precompiled header (if applicable)
 
 ///////////////////////////////////////////////////////////////////////////////
 //  include often used files from the stdlib
-#include <iostream>
+#include <iosfwd>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -42,4 +42,4 @@
 #include <boost/assert.hpp>
 #include <boost/pool/pool_alloc.hpp>
 
-#endif // !defined(IDL_HPP_FC7EE131_5CE9_43F2_A713_8D9BBC3C8477_INCLUDED)
+#endif // !defined(BOOST_IDL_HPP_FC7EE131_5CE9_43F2_A713_8D9BBC3C8477_INCLUDED)

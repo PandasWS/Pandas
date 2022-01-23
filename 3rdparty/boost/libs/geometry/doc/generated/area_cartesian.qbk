@@ -54,7 +54,7 @@ void apply(PointOfSegment const & p1, PointOfSegment const & p2, state< Geometry
 ]
 ]
 [[``template<typename Geometry>
-result_type< Geometry >::type result(state< Geometry > & st)``
+auto result(state< Geometry > & st)``
 
 ] [] [[* state< Geometry > &]: ['st]:  
 
@@ -67,7 +67,7 @@ result_type< Geometry >::type result(state< Geometry > & st)``
 ]
 
 [heading Header]
-`#include <boost/geometry/strategies/cartesian/area.hpp>`
+`#include <boost/geometry/strategy/cartesian/area.hpp>`
 
 [heading See also]
 [link geometry.reference.algorithms.area.area_2_with_strategy area (with strategy)]

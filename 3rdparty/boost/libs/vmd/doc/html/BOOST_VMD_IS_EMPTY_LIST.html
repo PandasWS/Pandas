@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Macro BOOST_VMD_IS_EMPTY_LIST</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="index.html" title="Chapter&#160;1.&#160;The Variadic Macro Data Library 1.9">
+<link rel="home" href="index.html" title="Chapter 1. The Variadic Macro Data Library 1.10">
 <link rel="up" href="header/boost/vmd/is_empty_list_hpp.html" title="Header &lt;boost/vmd/is_empty_list.hpp&gt;">
 <link rel="prev" href="header/boost/vmd/is_empty_list_hpp.html" title="Header &lt;boost/vmd/is_empty_list.hpp&gt;">
 <link rel="next" href="BOOST_VMD_IS_EMPTY_LIST_D.html" title="Macro BOOST_VMD_IS_EMPTY_LIST_D">
@@ -26,23 +26,23 @@
 <a name="BOOST_VMD_IS_EMPTY_LIST"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Macro BOOST_VMD_IS_EMPTY_LIST</span></h2>
-<p>BOOST_VMD_IS_EMPTY_LIST &#8212; Tests whether a sequence is an empty Boost PP list. </p>
+<p>BOOST_VMD_IS_EMPTY_LIST — Tests whether a sequence is an empty Boost PP list. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="header/boost/vmd/is_empty_list_hpp.html" title="Header &lt;boost/vmd/is_empty_list.hpp&gt;">boost/vmd/is_empty_list.hpp</a>&gt;
 
 </span>BOOST_VMD_IS_EMPTY_LIST(sequence)</pre></div>
 <div class="refsect1">
-<a name="idm45028681826256"></a><h2>Description</h2>
+<a name="idm14269"></a><h2>Description</h2>
 <p>An empty Boost PP list consists of the single identifier 'BOOST_PP_NIL'. This identifier also serves as a list terminator for a non-empty list.</p>
 <p>sequence = a preprocessor parameter</p>
-<p>returns = 1 if the sequence is an empty Boost PP list 0 if it is not.</p>
+<p>returns = 1 if the sequence is an empty Boost PP list, 0 if it is not.</p>
 <p>The macro will generate a preprocessing error if the input as an empty list marker, instead of being an identifier, is a preprocessor token which VMD cannot parse, as in the example '&amp;BOOST_PP_NIL'. </p>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2010-2017 Tropic Software
+<td align="right"><div class="copyright-footer">Copyright © 2010-2017 Tropic Software
       East Inc</div></td>
 </tr></table>
 <hr>

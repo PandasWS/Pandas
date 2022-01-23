@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Composition with Other Libraries</title>
 <link rel="stylesheet" href="boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -41,7 +41,13 @@
   overflows, catch divide by zero, etc. But the code itself doesn't seem to
   consistently implement this idea. So we make a small demo program:
   </p>
-<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">iostream</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="comment">//  Copyright (c) 2018 Robert Ramey</span>
+<span class="comment">//</span>
+<span class="comment">// Distributed under the Boost Software License, Version 1.0. (See</span>
+<span class="comment">// accompanying file LICENSE_1_0.txt or copy at</span>
+<span class="comment">// http://www.boost.org/LICENSE_1_0.txt)</span>
+
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">iostream</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">limits</span><span class="special">&gt;</span>
 
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">rational</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
@@ -70,14 +76,15 @@
     <span class="special">&gt;</span><span class="special">;</span>
 
     <span class="comment">// use rationals created with safe_t</span>
-    <span class="keyword">const</span> <span class="identifier">safe_rational</span> <span class="identifier">sc</span> <span class="special">{</span><span class="number">1</span><span class="special">,</span> <span class="identifier">INT_MAX</span><span class="special">}</span><span class="special">;</span>
+    <span class="keyword">const</span> <span class="identifier">safe_rational</span> <span class="identifier">sc</span> <span class="special">{</span><span class="number">1</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span><span class="special">::</span><span class="identifier">max</span><span class="special">(</span><span class="special">)</span><span class="special">}</span><span class="special">;</span>
+
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"c = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">sc</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
     <span class="keyword">const</span> <span class="identifier">safe_rational</span> <span class="identifier">sd</span> <span class="special">{</span><span class="number">1</span><span class="special">,</span> <span class="number">2</span><span class="special">}</span><span class="special">;</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"d = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">sd</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"c * d = "</span><span class="special">;</span>
     <span class="keyword">try</span> <span class="special">{</span>
         <span class="comment">// multiply them. This will overflow</span>
-        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">sc</span> <span class="special">*</span> <span class="identifier">sd</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="special">(</span><span class="identifier">sc</span> <span class="special">*</span> <span class="identifier">sd</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
     <span class="special">}</span>
     <span class="keyword">catch</span> <span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">exception</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">e</span><span class="special">)</span> <span class="special">{</span>
         <span class="comment">// catch exception due to multiplication overflow</span>
@@ -101,7 +108,7 @@ c * d = multiplication overflow: positive overflow error
 </pre>
 <p>The <a href="http://www.boost.org/doc/libs/1_64_0/libs/rational/" target="_top">rational library
   documentation</a> is quite specific as to the <a href="http://www.boost.org/doc/libs/1_64_0/libs/rational/rational.html#Integer%20Type%20Requirements" target="_top">type
-  requirements</a> placed on the underlying type. Turns out the our <a class="link" href="integer.html" title="Integer&lt;T&gt;">own definition of an integer type</a>
+  requirements</a> placed on the underlying type. Turns out the our <a class="link" href="">own definition of an integer type</a>
   fulfills (actually surpasses) these requirements. So we have reason to hope
   that we can use <code class="computeroutput">safe&lt;int&gt;</code> as the underlying type to
   create what we might call a "<code class="computeroutput">safe_rational</code>". This we have done
@@ -122,7 +129,7 @@ c * d = multiplication overflow: positive overflow error
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2012-2018 Robert Ramey<p><a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">Subject to Boost
+<td align="right"><div class="copyright-footer">Copyright © 2012-2018 Robert Ramey<p><a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">Subject to Boost
       Software License</a></p>
 </div></td>
 </tr></table>

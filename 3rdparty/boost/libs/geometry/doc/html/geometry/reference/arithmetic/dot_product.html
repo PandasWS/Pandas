@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>dot_product</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../arithmetic.html" title="Arithmetic">
 <link rel="prev" href="divide_value.html" title="divide_value">
 <link rel="next" href="multiply_point.html" title="multiply_point">
@@ -27,7 +27,7 @@
 <a name="geometry.reference.arithmetic.dot_product"></a><a class="link" href="dot_product.html" title="dot_product">dot_product</a>
 </h4></div></div></div>
 <p>
-          <a class="indexterm" name="idm45133042976816"></a>
+          <a class="indexterm" name="idm65568"></a>
 Computes the dot product (or scalar product) of 2 vectors (points).
         </p>
 <h6>
@@ -37,7 +37,7 @@ Computes the dot product (or scalar product) of 2 vectors (points).
 <p>
 </p>
 <pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">Point1</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">Point2</span><span class="special">&gt;</span>
-<span class="identifier">select_coordinate_type</span><span class="special">&lt;</span><span class="identifier">Point1</span><span class="special">,</span> <span class="identifier">Point2</span><span class="special">&gt;::</span><span class="identifier">type</span> <span class="identifier">dot_product</span><span class="special">(</span><span class="identifier">Point1</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">p1</span><span class="special">,</span> <span class="identifier">Point2</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">p2</span><span class="special">)</span></pre>
+<span class="keyword">constexpr</span> <span class="identifier">select_coordinate_type</span><span class="special">&lt;</span><span class="identifier">Point1</span><span class="special">,</span> <span class="identifier">Point2</span><span class="special">&gt;::</span><span class="identifier">type</span> <span class="identifier">dot_product</span><span class="special">(</span><span class="identifier">Point1</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">p1</span><span class="special">,</span> <span class="identifier">Point2</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">p2</span><span class="special">)</span></pre>
 <p>
         </p>
 <h6>
@@ -143,11 +143,77 @@ Computes the dot product (or scalar product) of 2 vectors (points).
 <p>
           <code class="computeroutput"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">arithmetic</span><span class="special">/</span><span class="identifier">dot_product</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></code>
         </p>
+<h6>
+<a name="geometry.reference.arithmetic.dot_product.h4"></a>
+          <span class="phrase"><a name="geometry.reference.arithmetic.dot_product.examples"></a></span><a class="link" href="dot_product.html#geometry.reference.arithmetic.dot_product.examples">Examples</a>
+        </h6>
+<p>
+          Calculate the dot product of two points
+        </p>
+<p>
+</p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">iostream</span><span class="special">&gt;</span>
+
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">arithmetic</span><span class="special">/</span><span class="identifier">dot_product</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">geometries</span><span class="special">/</span><span class="identifier">adapted</span><span class="special">/</span><span class="identifier">boost_array</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="keyword">namespace</span> <span class="identifier">bg</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">;</span> <a class="co" name="geometry.reference.arithmetic.dot_product.c0" href="dot_product.html#geometry.reference.arithmetic.dot_product.c1"><img src="../../../../../../../doc/src/images/callouts/1.png" alt="1" border="0"></a>
+
+<span class="identifier">BOOST_GEOMETRY_REGISTER_BOOST_ARRAY_CS</span><span class="special">(</span><span class="identifier">cs</span><span class="special">::</span><span class="identifier">cartesian</span><span class="special">)</span>
+
+
+<span class="keyword">int</span> <span class="identifier">main</span><span class="special">()</span>
+<span class="special">{</span>
+     <span class="keyword">double</span> <span class="identifier">dp1</span><span class="special">,</span><span class="identifier">dp2</span><span class="special">,</span><span class="identifier">dp3</span><span class="special">,</span><span class="identifier">dp4</span><span class="special">;</span>
+     <span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">point</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">,</span> <span class="number">3</span><span class="special">,</span> <span class="identifier">bg</span><span class="special">::</span><span class="identifier">cs</span><span class="special">::</span><span class="identifier">cartesian</span><span class="special">&gt;</span> <span class="identifier">point1</span><span class="special">(</span><span class="number">1.0</span><span class="special">,</span> <span class="number">2.0</span><span class="special">,</span> <span class="number">3.0</span><span class="special">);</span>
+     <span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">point</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">,</span> <span class="number">3</span><span class="special">,</span> <span class="identifier">bg</span><span class="special">::</span><span class="identifier">cs</span><span class="special">::</span><span class="identifier">cartesian</span><span class="special">&gt;</span> <span class="identifier">point2</span><span class="special">(</span><span class="number">4.0</span><span class="special">,</span> <span class="number">5.0</span><span class="special">,</span> <span class="number">6.0</span><span class="special">);</span>
+
+     <span class="comment">//Example 1</span>
+     <span class="identifier">dp1</span> <span class="special">=</span> <span class="identifier">bg</span><span class="special">::</span><span class="identifier">dot_product</span><span class="special">(</span><span class="identifier">point1</span><span class="special">,</span> <span class="identifier">point2</span><span class="special">);</span>
+
+     <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Dot Product 1: "</span><span class="special">&lt;&lt;</span> <span class="identifier">dp1</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+
+     <span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">point</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">,</span> <span class="number">2</span><span class="special">,</span> <span class="identifier">bg</span><span class="special">::</span><span class="identifier">cs</span><span class="special">::</span><span class="identifier">cartesian</span><span class="special">&gt;</span> <span class="identifier">point3</span><span class="special">(</span><span class="number">3.0</span><span class="special">,</span> <span class="number">2.0</span><span class="special">);</span>
+     <span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">point</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">,</span> <span class="number">2</span><span class="special">,</span> <span class="identifier">bg</span><span class="special">::</span><span class="identifier">cs</span><span class="special">::</span><span class="identifier">cartesian</span><span class="special">&gt;</span> <span class="identifier">point4</span><span class="special">(</span><span class="number">4.0</span><span class="special">,</span> <span class="number">7.0</span><span class="special">);</span>
+
+     <span class="comment">//Example 2	</span>
+     <span class="identifier">dp2</span> <span class="special">=</span> <span class="identifier">bg</span><span class="special">::</span><span class="identifier">dot_product</span><span class="special">(</span><span class="identifier">point3</span><span class="special">,</span> <span class="identifier">point4</span><span class="special">);</span>
+
+     <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Dot Product 2: "</span><span class="special">&lt;&lt;</span> <span class="identifier">dp2</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+
+     <span class="identifier">boost</span><span class="special">::</span><span class="identifier">array</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">,</span> <span class="number">2</span><span class="special">&gt;</span> <span class="identifier">a</span> <span class="special">=</span>  <span class="special">{</span><span class="number">1</span><span class="special">,</span> <span class="number">2</span><span class="special">};</span>
+     <span class="identifier">boost</span><span class="special">::</span><span class="identifier">array</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">,</span> <span class="number">2</span><span class="special">&gt;</span> <span class="identifier">b</span> <span class="special">=</span>  <span class="special">{</span><span class="number">2</span><span class="special">,</span> <span class="number">3</span><span class="special">};</span>
+
+     <span class="comment">//Example 3</span>
+     <span class="identifier">dp3</span> <span class="special">=</span> <span class="identifier">bg</span><span class="special">::</span><span class="identifier">dot_product</span><span class="special">(</span><span class="identifier">a</span><span class="special">,</span> <span class="identifier">b</span><span class="special">);</span>
+
+     <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Dot Product 3: "</span><span class="special">&lt;&lt;</span> <span class="identifier">dp3</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+
+     <span class="keyword">return</span> <span class="number">0</span><span class="special">;</span>
+
+<span class="special">}</span>
+</pre>
+<p>
+        </p>
+<div class="calloutlist"><table border="0" summary="Callout list"><tr>
+<td width="5%" valign="top" align="left"><p><a name="geometry.reference.arithmetic.dot_product.c1"></a><a href="#geometry.reference.arithmetic.dot_product.c0"><img src="../../../../../../../doc/src/images/callouts/1.png" alt="1" border="0"></a> </p></td>
+<td valign="top" align="left"><p>
+              Convenient namespace alias
+            </p></td>
+</tr></table></div>
+<p>
+          Output:
+        </p>
+<pre class="programlisting">Dot Product 1: 32
+Dot Product 2: 26
+Dot Product 3: 8
+</pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

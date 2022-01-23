@@ -8,12 +8,13 @@
 
 #include <algorithm>
 #include <iterator>
-#include <boost/type_traits/is_complex.hpp>
-#include <boost/assert.hpp>
-#include <boost/multiprecision/detail/number_base.hpp>
+#include <boost/math/tools/assert.hpp>
+#include <boost/math/tools/complex.hpp>
 #include <boost/math/tools/roots.hpp>
-#include <boost/math/tools/univariate_statistics.hpp>
+#include <boost/math/tools/header_deprecated.hpp>
+#include <boost/math/statistics/univariate_statistics.hpp>
 
+BOOST_MATH_HEADER_DEPRECATED("<boost/math/statistics/signal_statistics.hpp>");
 
 namespace boost::math::tools {
 
@@ -22,7 +23,7 @@ auto absolute_gini_coefficient(ForwardIterator first, ForwardIterator last)
 {
     using std::abs;
     using RealOrComplex = typename std::iterator_traits<ForwardIterator>::value_type;
-    BOOST_ASSERT_MSG(first != last && std::next(first) != last, "Computation of the Gini coefficient requires at least two samples.");
+    BOOST_MATH_ASSERT_MSG(first != last && std::next(first) != last, "Computation of the Gini coefficient requires at least two samples.");
 
     std::sort(first, last,  [](RealOrComplex a, RealOrComplex b) { return abs(b) > abs(a); });
 
@@ -75,7 +76,7 @@ auto hoyer_sparsity(const ForwardIterator first, const ForwardIterator last)
     using T = typename std::iterator_traits<ForwardIterator>::value_type;
     using std::abs;
     using std::sqrt;
-    BOOST_ASSERT_MSG(first != last && std::next(first) != last, "Computation of the Hoyer sparsity requires at least two samples.");
+    BOOST_MATH_ASSERT_MSG(first != last && std::next(first) != last, "Computation of the Hoyer sparsity requires at least two samples.");
 
     if constexpr (std::is_unsigned<T>::value)
     {
@@ -129,7 +130,7 @@ template<class Container>
 auto oracle_snr(Container const & signal, Container const & noisy_signal)
 {
     using Real = typename Container::value_type;
-    BOOST_ASSERT_MSG(signal.size() == noisy_signal.size(),
+    BOOST_MATH_ASSERT_MSG(signal.size() == noisy_signal.size(),
                      "Signal and noisy_signal must be have the same number of elements.");
     if constexpr (std::is_integral<Real>::value)
     {
@@ -150,8 +151,7 @@ auto oracle_snr(Container const & signal, Container const & noisy_signal)
         }
         return numerator/denominator;
     }
-    else if constexpr (boost::is_complex<Real>::value ||
-                       boost::multiprecision::number_category<Real>::value == boost::multiprecision::number_kind_complex)
+    else if constexpr (boost::math::tools::is_complex_type<Real>::value)
 
     {
         using std::norm;
@@ -199,7 +199,7 @@ template<class Container>
 auto mean_invariant_oracle_snr(Container const & signal, Container const & noisy_signal)
 {
     using Real = typename Container::value_type;
-    BOOST_ASSERT_MSG(signal.size() == noisy_signal.size(), "Signal and noisy signal must be have the same number of elements.");
+    BOOST_MATH_ASSERT_MSG(signal.size() == noisy_signal.size(), "Signal and noisy signal must be have the same number of elements.");
 
     Real mu = boost::math::tools::mean(signal);
     Real numerator = 0;
@@ -246,12 +246,11 @@ auto oracle_snr_db(Container const & signal, Container const & noisy_signal)
 template<class ForwardIterator>
 auto m2m4_snr_estimator(ForwardIterator first, ForwardIterator last, decltype(*first) estimated_signal_kurtosis=1, decltype(*first) estimated_noise_kurtosis=3)
 {
-    BOOST_ASSERT_MSG(estimated_signal_kurtosis > 0, "The estimated signal kurtosis must be positive");
-    BOOST_ASSERT_MSG(estimated_noise_kurtosis > 0, "The estimated noise kurtosis must be positive.");
+    BOOST_MATH_ASSERT_MSG(estimated_signal_kurtosis > 0, "The estimated signal kurtosis must be positive");
+    BOOST_MATH_ASSERT_MSG(estimated_noise_kurtosis > 0, "The estimated noise kurtosis must be positive.");
     using Real = typename std::iterator_traits<ForwardIterator>::value_type;
     using std::sqrt;
-    if constexpr (std::is_floating_point<Real>::value ||
-       boost::multiprecision::number_category<Real>::value == boost::multiprecision::number_kind_floating_point)
+    if constexpr (std::is_floating_point<Real>::value || std::numeric_limits<Real>::max_exponent)
     {
         // If we first eliminate N, we obtain the quadratic equation:
         // (ka+kw-6)S^2 + 2M2(3-kw)S + kw*M2^2 - M4 = 0 =: a*S^2 + bs*N + cs = 0
@@ -316,7 +315,7 @@ auto m2m4_snr_estimator(ForwardIterator first, ForwardIterator last, decltype(*f
     }
     else
     {
-        BOOST_ASSERT_MSG(false, "The M2M4 estimator has not been implemented for this type.");
+        BOOST_MATH_ASSERT_MSG(false, "The M2M4 estimator has not been implemented for this type.");
         return std::numeric_limits<Real>::quiet_NaN();
     }
 }

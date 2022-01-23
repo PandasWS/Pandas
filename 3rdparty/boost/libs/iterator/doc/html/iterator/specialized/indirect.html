@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Indirect Iterator</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Iterator">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Iterator">
 <link rel="up" href="../specialized.html" title="Specialized Adaptors">
 <link rel="prev" href="function_output.html" title="Function Output Iterator">
 <link rel="next" href="permutation.html" title="Permutation Iterator">
@@ -79,29 +79,29 @@
   <span class="identifier">const_indirect_last</span><span class="special">(</span><span class="identifier">pointers_to_chars</span> <span class="special">+</span> <span class="identifier">N</span><span class="special">);</span>
 
 <span class="identifier">std</span><span class="special">::</span><span class="identifier">transform</span><span class="special">(</span><span class="identifier">const_indirect_first</span><span class="special">,</span> <span class="identifier">const_indirect_last</span><span class="special">,</span>
-       <span class="identifier">mutable_indirect_first</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">bind1st</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">plus</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&gt;(),</span> <span class="number">1</span><span class="special">));</span>
+  <span class="identifier">mutable_indirect_first</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">bind</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">plus</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&gt;(),</span> <span class="number">1</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">placeholders</span><span class="special">::</span><span class="identifier">_1</span><span class="special">));</span>
 
 <span class="identifier">std</span><span class="special">::</span><span class="identifier">copy</span><span class="special">(</span><span class="identifier">mutable_indirect_first</span><span class="special">,</span> <span class="identifier">mutable_indirect_last</span><span class="special">,</span>
-      <span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream_iterator</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&gt;(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">,</span> <span class="string">","</span><span class="special">));</span>
+  <span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream_iterator</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&gt;(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">,</span> <span class="string">","</span><span class="special">));</span>
 <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
 
 
 <span class="comment">// Example of using make_indirect_iterator()</span>
 
 <span class="identifier">std</span><span class="special">::</span><span class="identifier">copy</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">make_indirect_iterator</span><span class="special">(</span><span class="identifier">pointers_to_chars</span><span class="special">),</span>
-      <span class="identifier">boost</span><span class="special">::</span><span class="identifier">make_indirect_iterator</span><span class="special">(</span><span class="identifier">pointers_to_chars</span> <span class="special">+</span> <span class="identifier">N</span><span class="special">),</span>
-      <span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream_iterator</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&gt;(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">,</span> <span class="string">","</span><span class="special">));</span>
+          <span class="identifier">boost</span><span class="special">::</span><span class="identifier">make_indirect_iterator</span><span class="special">(</span><span class="identifier">pointers_to_chars</span> <span class="special">+</span> <span class="identifier">N</span><span class="special">),</span>
+          <span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream_iterator</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&gt;(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">,</span> <span class="string">","</span><span class="special">));</span>
 <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
 </pre>
 <p>
         The output is:
       </p>
-<pre class="programlisting"><span class="identifier">a</span><span class="special">,</span><span class="identifier">b</span><span class="special">,</span><span class="identifier">c</span><span class="special">,</span><span class="identifier">d</span><span class="special">,</span><span class="identifier">e</span><span class="special">,</span><span class="identifier">f</span><span class="special">,</span><span class="identifier">g</span><span class="special">,</span>
-<span class="identifier">b</span><span class="special">,</span><span class="identifier">c</span><span class="special">,</span><span class="identifier">d</span><span class="special">,</span><span class="identifier">e</span><span class="special">,</span><span class="identifier">f</span><span class="special">,</span><span class="identifier">g</span><span class="special">,</span><span class="identifier">h</span><span class="special">,</span>
-<span class="identifier">a</span><span class="special">,</span><span class="identifier">b</span><span class="special">,</span><span class="identifier">c</span><span class="special">,</span><span class="identifier">d</span><span class="special">,</span><span class="identifier">e</span><span class="special">,</span><span class="identifier">f</span><span class="special">,</span><span class="identifier">g</span><span class="special">,</span>
+<pre class="programlisting">a,b,c,d,e,f,g,
+b,c,d,e,f,g,h,
+a,b,c,d,e,f,g,
 </pre>
 <p>
-        The source code for this example can be found <a href="../../../example/indirect_iterator_example.cpp" target="_top">here</a>.
+        The source code for this example can be found <a href="../../../../example/indirect_iterator_example.cpp" target="_top">here</a>.
       </p>
 <h3>
 <a name="iterator.specialized.indirect.h1"></a>
@@ -307,7 +307,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003, 2005 David Abrahams Jeremy Siek Thomas
+<td align="right"><div class="copyright-footer">Copyright © 2003, 2005 David Abrahams Jeremy Siek Thomas
       Witt<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at &lt;ulink url="http://www.boost.org/LICENSE_1_0.txt"&gt;

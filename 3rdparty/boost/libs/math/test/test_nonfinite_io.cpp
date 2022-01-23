@@ -13,7 +13,7 @@
 
 #define BOOST_TEST_MAIN
 
-#include <boost/test/auto_unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 #include <libs/math/test/almost_equal.ipp> // Similar to BOOST_CLOSE_FRACTION.
 #include <libs/math/test/s_.ipp> // To create test strings like std::basic_string<CharType> s = S_("0 -0"); 
 #include <boost/math/special_functions/nonfinite_num_facets.hpp>
@@ -36,7 +36,7 @@ using (boost::math::isnan)(;
 // Test nonfinite_num_put and nonfinite_num_get facets by checking
 // loopback (output and re-input) of a few values,
 // but using all the built-in char and floating-point types.
-// Only the default output is used but various ostream options are tested seperately below.
+// Only the default output is used but various ostream options are tested separately below.
 // Finite, infinite and NaN values (positive and negative) are used for the test.
 
 void trap_test_finite();

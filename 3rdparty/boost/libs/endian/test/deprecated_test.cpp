@@ -13,7 +13,6 @@
 
 #define BOOST_ENDIAN_DEPRECATED_NAMES
 #include <boost/endian/endian.hpp>
-#include <boost/detail/lightweight_main.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/cstdint.hpp>
 #include <iostream>
@@ -179,6 +178,19 @@ int cpp_main(int, char *[])
   cout << "  done" << endl;
 
   return ::boost::report_errors();
+}
+
+int main( int argc, char* argv[] )
+{
+    try
+    {
+        return cpp_main( argc, argv );
+    }
+    catch( std::exception const & x )
+    {
+        BOOST_ERROR( x.what() );
+        return boost::report_errors();
+    }
 }
 
 #include <boost/endian/detail/disable_warnings_pop.hpp>

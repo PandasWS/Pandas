@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Theoretical CRC Computer</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../crc.html" title="Chapter&#160;12.&#160;Boost.CRC 1.5">
+<link rel="up" href="../crc.html" title="Chapter 12. Boost.CRC 1.5">
 <link rel="prev" href="introduction.html" title="Introduction">
 <link rel="next" href="crc_optimal.html" title="Optimized CRC Computer">
 </head>
@@ -38,19 +38,19 @@
 <p>
       The <span class="bold"><strong><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">crc_basic</span></code></strong></span>
       class template acts as an unaugmented-CRC processor that can accept input at
-      the bit-level. It only takes one Rocksoft&#8482; Model CRC Algorithm parameter
+      the bit-level. It only takes one Rocksoft™ Model CRC Algorithm parameter
       as a template parameter, the <span class="emphasis"><em>WIDTH</em></span>, which determines the
-      built-in unsigned integer type used for division registers. The other Rocksoft&#8482;
+      built-in unsigned integer type used for division registers. The other Rocksoft™
       Model CRC Algorithm parameters can be passed on through the constructor. (Most
       of the parameters have defaults.)
     </p>
 <p>
       The integer type used for registers is published as <code class="computeroutput"><span class="identifier">value_type</span></code>,
-      while the Rocksoft&#8482; Model CRC Algorithm attributes can be discovered
+      while the Rocksoft™ Model CRC Algorithm attributes can be discovered
       as:
     </p>
 <div class="table">
-<a name="crc.crc_basic.crc_basic_rmca"></a><p class="title"><b>Table&#160;12.1.&#160;RMCA Parameters in boost::crc_basic</b></p>
+<a name="crc.crc_basic.crc_basic_rmca"></a><p class="title"><b>Table 12.1. RMCA Parameters in boost::crc_basic</b></p>
 <div class="table-contents"><table class="table" summary="RMCA Parameters in boost::crc_basic">
 <colgroup>
 <col>
@@ -245,7 +245,7 @@
 <p>
     </p>
 <p>
-      For now, most Rocksoft&#8482; Model CRC Algorithm parameters can only be changed
+      For now, most Rocksoft™ Model CRC Algorithm parameters can only be changed
       through assignment to the entire object.
     </p>
 <div class="calloutlist"><table border="0" summary="Callout list">
@@ -269,7 +269,7 @@
       and/or XOR-masking. There are several options to submit input data for processing:
     </p>
 <div class="table">
-<a name="crc.crc_basic.crc_basic_input"></a><p class="title"><b>Table&#160;12.2.&#160;Member Functions for Input in boost::crc_basic</b></p>
+<a name="crc.crc_basic.crc_basic_input"></a><p class="title"><b>Table 12.2. Member Functions for Input in boost::crc_basic</b></p>
 <div class="table-contents"><table class="table" summary="Member Functions for Input in boost::crc_basic">
 <colgroup>
 <col>
@@ -421,7 +421,7 @@
     </p>
 <p>
       The two functions can be used together to save the state to a persistent medium
-      and restore it later. Note that the Rocksoft&#8482; Model CRC Algorithm parameters
+      and restore it later. Note that the Rocksoft™ Model CRC Algorithm parameters
       have to saved/restored via other means, if they're not fixed within a program.
     </p>
 <p>
@@ -433,7 +433,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001, 2003, 2012 Daryle Walker<p>
+<td align="right"><div class="copyright-footer">Copyright © 2001, 2003, 2012 Daryle Walker<p>
         Distributed under the Boost Software License, Version 1.0. (See the accompanying
         file LICENSE_1_0.txt or a copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

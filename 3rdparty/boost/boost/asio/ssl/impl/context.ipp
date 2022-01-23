@@ -3,7 +3,7 @@
 // ~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2005 Voipster / Indrek dot Juhani at voipster dot com
-// Copyright (c) 2005-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2005-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -367,6 +367,16 @@ context::context(context::method m)
   set_options(no_compression);
 }
 
+context::context(context::native_handle_type native_handle)
+  : handle_(native_handle)
+{
+  if (!handle_)
+  {
+    boost::asio::detail::throw_error(
+        boost::asio::error::invalid_argument, "context");
+  }
+}
+
 #if defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 context::context(context&& other)
 {
@@ -388,7 +398,8 @@ context::~context()
   if (handle_)
   {
 #if ((OPENSSL_VERSION_NUMBER >= 0x10100000L) \
-      && !defined(LIBRESSL_VERSION_NUMBER)) \
+      && (!defined(LIBRESSL_VERSION_NUMBER) \
+        || LIBRESSL_VERSION_NUMBER >= 0x2070000fL)) \
     || defined(BOOST_ASIO_USE_WOLFSSL)
     void* cb_userdata = ::SSL_CTX_get_default_passwd_cb_userdata(handle_);
 #else // (OPENSSL_VERSION_NUMBER >= 0x10100000L)
@@ -401,7 +412,8 @@ context::~context()
             cb_userdata);
       delete callback;
 #if ((OPENSSL_VERSION_NUMBER >= 0x10100000L) \
-      && !defined(LIBRESSL_VERSION_NUMBER)) \
+      && (!defined(LIBRESSL_VERSION_NUMBER) \
+        || LIBRESSL_VERSION_NUMBER >= 0x2070000fL)) \
     || defined(BOOST_ASIO_USE_WOLFSSL)
       ::SSL_CTX_set_default_passwd_cb_userdata(handle_, 0);
 #else // (OPENSSL_VERSION_NUMBER >= 0x10100000L)
@@ -561,11 +573,21 @@ BOOST_ASIO_SYNC_OP_VOID context::add_certificate_authority(
   {
     if (X509_STORE* store = ::SSL_CTX_get_cert_store(handle_))
     {
-      for (;;)
+      for (bool added = false;; added = true)
       {
         x509_cleanup cert = { ::PEM_read_bio_X509(bio.p, 0, 0, 0) };
         if (!cert.p)
-          break;
+        {
+          unsigned long err = ::ERR_get_error();
+          if (added && ERR_GET_LIB(err) == ERR_LIB_PEM
+              && ERR_GET_REASON(err) == PEM_R_NO_START_LINE)
+            break;
+
+          ec = boost::system::error_code(
+              static_cast<int>(err),
+              boost::asio::error::get_ssl_category());
+          BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
+        }
 
         if (::X509_STORE_add_cert(store, cert.p) != 1)
         {
@@ -740,7 +762,8 @@ BOOST_ASIO_SYNC_OP_VOID context::use_certificate_chain(
   if (bio.p)
   {
 #if ((OPENSSL_VERSION_NUMBER >= 0x10100000L) \
-      && !defined(LIBRESSL_VERSION_NUMBER)) \
+      && (!defined(LIBRESSL_VERSION_NUMBER) \
+        || LIBRESSL_VERSION_NUMBER >= 0x2070000fL)) \
     || defined(BOOST_ASIO_USE_WOLFSSL)
     pem_password_cb* callback = ::SSL_CTX_get_default_passwd_cb(handle_);
     void* cb_userdata = ::SSL_CTX_get_default_passwd_cb_userdata(handle_);
@@ -769,7 +792,8 @@ BOOST_ASIO_SYNC_OP_VOID context::use_certificate_chain(
     }
 
 #if ((OPENSSL_VERSION_NUMBER >= 0x10002000L) \
-      && !defined(LIBRESSL_VERSION_NUMBER)) \
+      && (!defined(LIBRESSL_VERSION_NUMBER) \
+        || LIBRESSL_VERSION_NUMBER >= 0x2090100fL)) \
     || defined(BOOST_ASIO_USE_WOLFSSL)
     ::SSL_CTX_clear_chain_certs(handle_);
 #else
@@ -848,7 +872,8 @@ BOOST_ASIO_SYNC_OP_VOID context::use_private_key(
   ::ERR_clear_error();
 
 #if ((OPENSSL_VERSION_NUMBER >= 0x10100000L) \
-      && !defined(LIBRESSL_VERSION_NUMBER)) \
+      && (!defined(LIBRESSL_VERSION_NUMBER) \
+        || LIBRESSL_VERSION_NUMBER >= 0x2070000fL)) \
     || defined(BOOST_ASIO_USE_WOLFSSL)
     pem_password_cb* callback = ::SSL_CTX_get_default_passwd_cb(handle_);
     void* cb_userdata = ::SSL_CTX_get_default_passwd_cb_userdata(handle_);
@@ -917,7 +942,8 @@ BOOST_ASIO_SYNC_OP_VOID context::use_rsa_private_key(
   ::ERR_clear_error();
 
 #if ((OPENSSL_VERSION_NUMBER >= 0x10100000L) \
-      && !defined(LIBRESSL_VERSION_NUMBER)) \
+      && (!defined(LIBRESSL_VERSION_NUMBER) \
+        || LIBRESSL_VERSION_NUMBER >= 0x2070000fL)) \
     || defined(BOOST_ASIO_USE_WOLFSSL)
     pem_password_cb* callback = ::SSL_CTX_get_default_passwd_cb(handle_);
     void* cb_userdata = ::SSL_CTX_get_default_passwd_cb_userdata(handle_);
@@ -1158,7 +1184,8 @@ BOOST_ASIO_SYNC_OP_VOID context::do_set_password_callback(
     detail::password_callback_base* callback, boost::system::error_code& ec)
 {
 #if ((OPENSSL_VERSION_NUMBER >= 0x10100000L) \
-      && !defined(LIBRESSL_VERSION_NUMBER)) \
+      && (!defined(LIBRESSL_VERSION_NUMBER) \
+        || LIBRESSL_VERSION_NUMBER >= 0x2070000fL)) \
     || defined(BOOST_ASIO_USE_WOLFSSL)
   void* old_callback = ::SSL_CTX_get_default_passwd_cb_userdata(handle_);
   ::SSL_CTX_set_default_passwd_cb_userdata(handle_, callback);

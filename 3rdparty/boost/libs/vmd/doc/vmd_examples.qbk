@@ -60,7 +60,7 @@ Here is our code:
 [example_switch]
 
 The code is fairly involved but it is commented so that it can be
-understood. There are a few workarounds for a VC++ preprocessor
+understood. There are a few workarounds for a VC++ default preprocessor
 problem, which I discovered, having to do with passing the name of a function-like
 macro in a tuple.
 

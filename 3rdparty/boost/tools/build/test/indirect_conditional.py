@@ -2,8 +2,8 @@
 
 # Copyright (C) 2006. Vladimir Prus
 # Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or copy at
-# http://www.boost.org/LICENSE_1_0.txt)
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
 
 import BoostBuild
 
@@ -99,8 +99,10 @@ exe main : srcs ;
     t.run_build_system()
     t.expect_addition("bin/$toolset/debug*/d1.obj")
     t.expect_addition("bin/$toolset/debug*/d1.exe")
+    t.ignore_addition("bin/*/d1.rsp")
     t.expect_addition("subdir/bin/$toolset/debug*/main.obj")
     t.expect_addition("subdir/bin/$toolset/debug*/main.exe")
+    t.ignore_addition("subdir/bin/*/main.rsp")
     t.expect_nothing_more()
     t.cleanup()
 

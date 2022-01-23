@@ -35,17 +35,18 @@
 #include <stdexcept>
 #include <algorithm>
 #include <boost/type.hpp>
-#include <boost/bind.hpp>
 #include <boost/limits.hpp>
 #include <boost/cstdint.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/smart_ptr/make_shared_object.hpp>
 #include <boost/core/null_deleter.hpp>
 #include <boost/optional/optional.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/date_time/date_defs.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <boost/mpl/if.hpp>
+#include <boost/type_traits/conditional.hpp>
 #include <boost/type_traits/is_unsigned.hpp>
+#include <boost/type_traits/integral_constant.hpp>
 #include <boost/spirit/home/qi/numeric/numeric_utils.hpp>
 #include <boost/log/detail/code_conversion.hpp>
 #include <boost/log/detail/singleton.hpp>
@@ -95,8 +96,8 @@ template< typename IntT, typename CharT >
 inline IntT param_cast_to_int(const char* param_name, std::basic_string< CharT > const& value)
 {
     IntT res = 0;
-    typedef typename mpl::if_<
-        is_unsigned< IntT >,
+    typedef typename conditional<
+        is_unsigned< IntT >::value,
         qi::extract_uint< IntT, 10, 1, -1 >,
         qi::extract_int< IntT, 10, 1, -1 >
     >::type extract;
@@ -156,7 +157,6 @@ inline sinks::auto_newline_mode param_cast_to_auto_newline_mode(const char* para
 {
     typedef CharT char_type;
     typedef boost::log::aux::char_constants< char_type > constants;
-    typedef boost::log::basic_string_literal< char_type > literal_type;
 
     if (value == constants::auto_newline_mode_disabled())
         return sinks::disabled_auto_newline;
@@ -369,7 +369,7 @@ protected:
 private:
     //! The function initializes formatter for the sinks that support formatting
     template< typename SinkT >
-    static shared_ptr< SinkT > init_formatter(shared_ptr< SinkT > const& sink, settings_section const& params, mpl::true_)
+    static shared_ptr< SinkT > init_formatter(shared_ptr< SinkT > const& sink, settings_section const& params, true_type)
     {
         // Formatter
         if (optional< string_type > format_param = params["Format"])
@@ -382,7 +382,7 @@ private:
         return sink;
     }
     template< typename SinkT >
-    static shared_ptr< SinkT > init_formatter(shared_ptr< SinkT > const& sink, settings_section const& params, mpl::false_)
+    static shared_ptr< SinkT > init_formatter(shared_ptr< SinkT > const& sink, settings_section const& params, false_type)
     {
         return sink;
     }
@@ -434,7 +434,7 @@ private:
 
 public:
     //! The function constructs a sink that writes log records to the console
-    shared_ptr< sinks::sink > create_sink(settings_section const& params)
+    shared_ptr< sinks::sink > create_sink(settings_section const& params) BOOST_OVERRIDE
     {
         return base_type::select_backend_character_type(params, impl());
     }
@@ -454,7 +454,7 @@ public:
 
 public:
     //! The function constructs a sink that writes log records to a text file
-    shared_ptr< sinks::sink > create_sink(settings_section const& params)
+    shared_ptr< sinks::sink > create_sink(settings_section const& params) BOOST_OVERRIDE
     {
         typedef sinks::text_file_backend backend_t;
         shared_ptr< backend_t > backend = boost::make_shared< backend_t >();
@@ -579,7 +579,7 @@ public:
 
 public:
     //! The function constructs a sink that writes log records to syslog
-    shared_ptr< sinks::sink > create_sink(settings_section const& params)
+    shared_ptr< sinks::sink > create_sink(settings_section const& params) BOOST_OVERRIDE
     {
         // Construct the backend
         typedef sinks::syslog_backend backend_t;
@@ -854,7 +854,7 @@ BOOST_LOG_SETUP_API void init_from_settings(basic_settings_section< CharT > cons
             }
         }
 
-        std::for_each(new_sinks.begin(), new_sinks.end(), boost::bind(&core::add_sink, core::get(), _1));
+        std::for_each(new_sinks.begin(), new_sinks.end(), boost::bind(&core::add_sink, core::get(), boost::placeholders::_1));
     }
 }
 

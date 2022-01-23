@@ -11,7 +11,7 @@
 
 // test using BLL and boost::function
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
 
 /*
 #include "boost/lambda/lambda.hpp"
@@ -65,20 +65,14 @@ void test_foreach() {
                 phoenix::for_each( _1,
                      lambda[(ref(sum) += _1)]));
 
-  BOOST_CHECK(sum == (199 + 1)/ 2 * 199);
+  BOOST_TEST_EQ(sum, (199 + 1)/ 2 * 199);
 }
 
 // More tests needed (for all algorithms)
 
-int test_main(int, char *[]) {
-
+int main()
+{
   test_foreach();
 
-  return 0;
+  return boost::report_errors();
 }
-
-
-
-
-
-

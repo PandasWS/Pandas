@@ -1,7 +1,7 @@
 [library Boost.PolyCollection
   [quickbook 1.6]
   [authors [López Muñoz, Joaquín M]]
-  [copyright 2016-2019 Joaquín M López Muñoz]
+  [copyright 2016-2021 Joaquín M López Muñoz]
   [category containers]
   [id poly_collection]
   [dirname poly_collection]
@@ -1121,6 +1121,39 @@ to allow for the definition of container-level `operator<` and related operators
 [endsect]
 
 [section Release notes]
+
+[section Boost 1.76]
+
+* Worked around [@https://gcc.gnu.org/bugzilla/show_bug.cgi?id=95888 GCC bug] affecting
+GCC versions 9.3-10.2 (issue [github poly_collection 20]).
+
+[endsect]
+
+[section Boost 1.74]
+
+* Fixed internal ambiguity problem between `boost::type_erasure::any` and
+`boost::any` (issue [github poly_collection 17]).
+* Maintenance work.
+
+[endsect]
+
+[section Boost 1.73]
+
+* Suppressed a potential redundant move warning in `boost::poly_collection::for_each`.
+* Fixed a bug by which elements were copied rather than moved in
+allocator-extended move construction and move assigment between collections
+with non-propagating, unequal allocators.
+* Allocator-extended move construction no longer decays to allocator-extended copy
+construction for the legacy version of libstdc++-v3 shipped with GCC 4.8
+(which can also be used by Clang).
+
+[endsect]
+
+[section Boost 1.72]
+
+* Maintenance work.
+
+[endsect]
 
 [section Boost 1.71]
 

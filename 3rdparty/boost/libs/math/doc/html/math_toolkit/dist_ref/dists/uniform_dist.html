@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Uniform Distribution</title>
 <link rel="stylesheet" href="../../../math.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../index.html" title="Math Toolkit 2.10.0">
+<link rel="home" href="../../../index.html" title="Math Toolkit 3.1.0">
 <link rel="up" href="../dists.html" title="Distributions">
 <link rel="prev" href="triangular_dist.html" title="Triangular Distribution">
 <link rel="next" href="weibull_dist.html" title="Weibull Distribution">
@@ -29,12 +29,12 @@
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">/</span><span class="identifier">uniform</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
 <pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
  <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span> <span class="special">=</span> <span class="keyword">double</span><span class="special">,</span>
-           <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter&#160;19.&#160;Policies: Controlling Precision, Error Handling etc">Policy</a>   <span class="special">=</span> <a class="link" href="../../pol_ref/pol_ref_ref.html" title="Policy Class Reference">policies::policy&lt;&gt;</a> <span class="special">&gt;</span>
+           <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter 21. Policies: Controlling Precision, Error Handling etc">Policy</a>   <span class="special">=</span> <a class="link" href="../../pol_ref/pol_ref_ref.html" title="Policy Class Reference">policies::policy&lt;&gt;</a> <span class="special">&gt;</span>
  <span class="keyword">class</span> <span class="identifier">uniform_distribution</span><span class="special">;</span>
 
  <span class="keyword">typedef</span> <span class="identifier">uniform_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">uniform</span><span class="special">;</span>
 
- <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span><span class="special">,</span> <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter&#160;19.&#160;Policies: Controlling Precision, Error Handling etc">Policy</a><span class="special">&gt;</span>
+ <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span><span class="special">,</span> <span class="keyword">class</span> <a class="link" href="../../../policy.html" title="Chapter 21. Policies: Controlling Precision, Error Handling etc">Policy</a><span class="special">&gt;</span>
  <span class="keyword">class</span> <span class="identifier">uniform_distribution</span>
  <span class="special">{</span>
  <span class="keyword">public</span><span class="special">:</span>
@@ -58,27 +58,24 @@
           uniform distribution</a> is a distribution with the <a href="http://en.wikipedia.org/wiki/Probability_density_function" target="_top">probability
           density function</a>:
         </p>
-<p>
-          f(x) =
-        </p>
-<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
-<li class="listitem">
-              1 / (upper - lower) for lower &lt; x &lt; upper
-            </li>
-<li class="listitem">
-              zero for x &lt; lower or x &gt; upper
-            </li>
-</ul></div>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="serif_italic">f(x) =1 / (upper - lower)   for lower &lt;
+            x &lt; upper</span>
+          </p></blockquote></div>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="serif_italic">f(x) =zero   for x &lt; lower or x &gt; upper</span>
+          </p></blockquote></div>
 <p>
           and in this implementation:
         </p>
-<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
-              1 / (upper - lower) for x = lower or x = upper
-            </li></ul></div>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="serif_italic">1 / (upper - lower)   for x = lower or x =
+            upper</span>
+          </p></blockquote></div>
 <p>
-          The choice of x = lower or x = upper is made because statistical use of
-          this distribution judged is most likely: the method of maximum likelihood
-          uses this definition.
+          The choice of <span class="emphasis"><em>x = lower</em></span> or <span class="emphasis"><em>x = upper</em></span>
+          is made because statistical use of this distribution judged is most likely:
+          the method of maximum likelihood uses this definition.
         </p>
 <p>
           There is also a <a href="http://en.wikipedia.org/wiki/Discrete_uniform_distribution" target="_top"><span class="bold"><strong>discrete</strong></span> uniform distribution</a>.
@@ -88,7 +85,8 @@
         </p>
 <p>
           The <a href="http://en.wikipedia.org/wiki/Random_variate" target="_top">random variate</a>
-          x must also be finite, and is supported lower &lt;= x &lt;= upper.
+          <span class="emphasis"><em>x</em></span> must also be finite, and is supported <span class="emphasis"><em>lower
+          &lt;= x &lt;= upper</em></span>.
         </p>
 <p>
           The lower parameter is also called the <a href="http://www.itl.nist.gov/div898/handbook/eda/section3/eda364.htm" target="_top">location
@@ -101,15 +99,17 @@
           The following graph illustrates how the <a href="http://en.wikipedia.org/wiki/Probability_density_function" target="_top">probability
           density function PDF</a> varies with the shape parameter:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/uniform_pdf.svg" align="middle"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../graphs/uniform_pdf.svg" align="middle"></span>
+
+          </p></blockquote></div>
 <p>
           Likewise for the CDF:
         </p>
-<p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/uniform_cdf.svg" align="middle"></span>
-        </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+            <span class="inlinemediaobject"><img src="../../../../graphs/uniform_cdf.svg" align="middle"></span>
+
+          </p></blockquote></div>
 <h5>
 <a name="math_toolkit.dist_ref.dists.uniform_dist.h0"></a>
           <span class="phrase"><a name="math_toolkit.dist_ref.dists.uniform_dist.member_functions"></a></span><a class="link" href="uniform_dist.html#math_toolkit.dist_ref.dists.uniform_dist.member_functions">Member
@@ -335,7 +335,7 @@
         </h5>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-              <a href="http://en.wikipedia.org/wiki/Uniform_distribution_%28continuous%29" target="_top">Wikpedia
+              <a href="http://en.wikipedia.org/wiki/Uniform_distribution_%28continuous%29" target="_top">Wikipedia
               continuous uniform distribution</a>
             </li>
 <li class="listitem">
@@ -350,11 +350,11 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2019 Nikhar
-      Agrawal, Anton Bikineev, Paul A. Bristow, Marco Guazzone, Christopher Kormanyos,
-      Hubert Holin, Bruno Lalande, John Maddock, Jeremy Murphy, Matthew Pulver, Johan
-      R&#229;de, Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg,
-      Daryle Walker and Xiaogang Zhang<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2021 Nikhar Agrawal, Anton Bikineev, Matthew Borland,
+      Paul A. Bristow, Marco Guazzone, Christopher Kormanyos, Hubert Holin, Bruno
+      Lalande, John Maddock, Evan Miller, Jeremy Murphy, Matthew Pulver, Johan Råde,
+      Gautam Sewani, Benjamin Sobotta, Nicholas Thompson, Thijs van den Berg, Daryle
+      Walker and Xiaogang Zhang<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

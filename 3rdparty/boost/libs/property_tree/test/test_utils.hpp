@@ -18,7 +18,7 @@
 #   define _CRT_SECURE_NO_DEPRECATE
 #endif
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/property_tree/detail/ptree_utils.hpp>
 #include <fstream>
 #include <cstring>
@@ -65,7 +65,7 @@ public:
             std::ofstream stream(name.c_str());
             using namespace std;
             stream.write(test_data, strlen(test_data));
-            BOOST_CHECK(stream.good());
+            BOOST_TEST(stream.good());
         }
     }
     ~test_file()
@@ -116,7 +116,7 @@ void generic_parser_test(Ptree &pt,
     rf(filename_out, pt2);     // Read file again
 
     // Compare original with read
-    BOOST_CHECK(pt == pt2);
+    BOOST_TEST(pt == pt2);
 
 }
 
@@ -160,9 +160,9 @@ void generic_parser_test_ok(ReadFunc rf,
             std::cerr << "Sizes: " << (unsigned)::total_size(pt) << ", " << (unsigned)::total_data_size(pt) << ", " << (unsigned)::total_keys_size(pt) << "\n";
 
         // Check total sizes
-        BOOST_CHECK(actual_total_size == total_size);
-        BOOST_CHECK(actual_data_size == total_data_size);
-        BOOST_CHECK(actual_keys_size == total_keys_size);
+        BOOST_TEST(actual_total_size == total_size);
+        BOOST_TEST(actual_data_size == total_data_size);
+        BOOST_TEST(actual_keys_size == total_keys_size);
 
     }
     catch (std::runtime_error &e)
@@ -205,8 +205,8 @@ void generic_parser_test_error(ReadFunc rf,
         }
         catch (Error &e)
         {
-            BOOST_CHECK(e.line() == expected_error_line);           // Test line number
-            BOOST_CHECK(pt == get_test_ptree<Ptree>());             // Test if error damaged contents
+            BOOST_TEST(e.line() == expected_error_line);           // Test line number
+            BOOST_TEST(pt == get_test_ptree<Ptree>());             // Test if error damaged contents
         }
         catch (...)
         {
@@ -246,7 +246,7 @@ void check_exact_roundtrip(ReadFunc rf, WriteFunc wf, const char *test_data) {
     std::cerr << "(progress) Roundtripped data:\n";
     errstream<Ch>() << out_stream.str();
     std::cerr << "\n-----\n";
-    BOOST_CHECK(native_test_data == out_stream.str());
+    BOOST_TEST(native_test_data == out_stream.str());
 }
 
 #endif

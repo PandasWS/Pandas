@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>More Examples</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../circular_buffer.html" title="Chapter&#160;8.&#160;Boost.Circular Buffer">
+<link rel="up" href="../circular_buffer.html" title="Chapter 8. Boost.Circular Buffer">
 <link rel="prev" href="implementation.html" title="Implementation">
 <link rel="next" href="headers.html" title="Header Files">
 </head>
@@ -178,7 +178,7 @@
       <a href="../../../libs/utility/call_traits.htm" target="_top">Boost.call_traits utility</a>.
     </p>
 <p>
-      The <code class="computeroutput"><a class="link" href="../boost/circular_buffer.html#idm46215411774832-bb">push_front()</a></code>
+      The <code class="computeroutput"><a class="link" href="../boost/circular_buffer.html#idm3315-bb">push_front()</a></code>
       method is called by the producer thread in order to insert a new item into
       the buffer. The method locks the mutex and waits until there is a space for
       the new item. (The mutex is unlocked during the waiting stage and has to be
@@ -191,7 +191,7 @@
       consumer threads waiting for a new item to be inserted into the buffer.
     </p>
 <p>
-      The <code class="computeroutput"><a class="link" href="../boost/circular_buffer.html#idm46215411730064-bb">pop_back()</a></code>
+      The <code class="computeroutput"><a class="link" href="../boost/circular_buffer.html#idm3438-bb">pop_back()</a></code>
       method is called by the consumer thread in order to read the next item from
       the buffer. The method locks the mutex and waits until there is an unread item
       in the buffer. If there is at least one unread item, the method decrements
@@ -204,7 +204,7 @@
       the item</strong></span> but the item is left in the circular_buffer which then
       <span class="bold"><strong>replaces it with a new one</strong></span> (inserted by a
       producer) when the circular_buffer is full. This technique is more effective
-      than removing the item explicitly by calling the <code class="computeroutput"><a class="link" href="../boost/circular_buffer.html#idm46215411730064-bb">circular_buffer::pop_back()</a></code>
+      than removing the item explicitly by calling the <code class="computeroutput"><a class="link" href="../boost/circular_buffer.html#idm3438-bb">circular_buffer::pop_back()</a></code>
       method of the <code class="computeroutput"><a class="link" href="../boost/circular_buffer.html" title="Class template circular_buffer">circular_buffer</a></code>.
     </p>
 <p>
@@ -247,7 +247,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2013 Jan Gaspar<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2013 Jan Gaspar<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

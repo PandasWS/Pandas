@@ -1,4 +1,3 @@
-
 [section:function_output Function Output Iterator]
 
 The function output iterator adaptor makes it easier to create custom
@@ -34,7 +33,7 @@ proxy object.
       x.push_back("!");
 
       std::string s = "";
-      std::copy(x.begin(), x.end(), 
+      std::copy(x.begin(), x.end(),
           boost::make_function_output_iterator(string_appender(s)));
 
       std::cout << s << std::endl;
@@ -68,7 +67,7 @@ proxy object.
 
 [h3 Requirements]
 
-`UnaryFunction` must be Assignable and Copy Constructible.  
+`UnaryFunction` must be Assignable and Copy Constructible.
 
 [h3 Concepts]
 
@@ -79,14 +78,14 @@ Incrementable Iterator concepts.
 
   explicit function_output_iterator(const UnaryFunction& f = UnaryFunction());
 
-[*Effects: ] Constructs an instance of `function_output_iterator` 
+[*Effects: ] Constructs an instance of `function_output_iterator`
   with `m_f` constructed from `f`.
 
   unspecified_type operator*();
 
 [*Returns: ] An object `r` of unspecified type such that `r = t`
   is equivalent to `m_f(t)` for all `t`.
-  
+
 
   function_output_iterator& operator++();
 

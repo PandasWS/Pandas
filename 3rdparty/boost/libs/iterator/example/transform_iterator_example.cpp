@@ -1,4 +1,4 @@
-// (C) Copyright Jeremy Siek 2000-2004. 
+// (C) Copyright Jeremy Siek 2000-2004.
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -15,7 +15,7 @@
 
 namespace boost {
 
-  template <class Operation> 
+  template <class Operation>
   class binder1st {
   public:
     typedef typename Operation::result_type result_type;
@@ -70,6 +70,6 @@ main(int, char*[])
             boost::make_transform_iterator(x + N, boost::bind1st(std::plus<int>(), 4)),
             std::ostream_iterator<int>(std::cout, " "));
   std::cout << std::endl;
-  
+
   return 0;
 }

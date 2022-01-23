@@ -15,38 +15,48 @@
 
 int main() {
   using namespace boost::histogram;
-  namespace tr = axis::transform;
-
-  auto h =
-      make_histogram(axis::regular<>(2, -1.0, 1.0),
-                     axis::regular<double, tr::log>(2, 1.0, 10.0, "axis 1"),
-                     axis::regular<double, tr::pow, use_default, axis::option::growth_t>(
-                         tr::pow{1.5}, 2, 1.0, 10.0, "axis 2"),
-                     // axis without metadata
-                     axis::circular<double, axis::null_type>(4, 0.0, 360.0),
-                     // axis without under-/overflow bins
-                     axis::variable<double, use_default, axis::option::none_t>(
-                         {-1.0, 0.0, 1.0}, "axis 4"),
-                     axis::category<>({2, 1, 3}, "axis 5"),
-                     axis::category<std::string>({"red", "blue"}, "axis 6"),
-                     axis::integer<>(-1, 1, "axis 7"));
 
   std::ostringstream os;
-  os << h;
+
+  // width of histogram can be set like this; if it is not set, the library attempts to
+  // determine the terminal width and choses the histogram width accordingly
+  os.width(78);
+
+  auto h1 = make_histogram(axis::regular<>(5, -1.0, 1.0, "axis 1"));
+  h1.at(0) = 2;
+  h1.at(1) = 4;
+  h1.at(2) = 3;
+  h1.at(4) = 1;
+
+  // 1D histograms are rendered as an ASCII drawing
+  os << h1;
+
+  auto h2 = make_histogram(axis::regular<>(2, -1.0, 1.0, "axis 1"),
+                           axis::category<std::string>({"red", "blue"}, "axis 2"));
+
+  // higher dimensional histograms just have their cell counts listed
+  os << h2;
 
   std::cout << os.str() << std::endl;
 
-  assert(os.str() ==
-         "histogram(\n"
-         "  regular(2, -1, 1, options=underflow | overflow),\n"
-         "  regular_log(2, 1, 10, metadata=\"axis 1\", options=underflow | overflow),\n"
-         "  regular_pow(2, 1, 10, metadata=\"axis 2\", options=growth, power=1.5),\n"
-         "  regular(4, 0, 360, options=overflow | circular),\n"
-         "  variable(-1, 0, 1, metadata=\"axis 4\", options=none),\n"
-         "  category(2, 1, 3, metadata=\"axis 5\", options=overflow),\n"
-         "  category(\"red\", \"blue\", metadata=\"axis 6\", options=overflow),\n"
-         "  integer(-1, 1, metadata=\"axis 7\", options=underflow | overflow)\n"
-         ")");
+  assert(
+      os.str() ==
+      "histogram(regular(5, -1, 1, metadata=\"axis 1\", options=underflow | overflow))\n"
+      "               ┌─────────────────────────────────────────────────────────────┐\n"
+      "[-inf,   -1) 0 │                                                             │\n"
+      "[  -1, -0.6) 2 │██████████████████████████████                               │\n"
+      "[-0.6, -0.2) 4 │████████████████████████████████████████████████████████████ │\n"
+      "[-0.2,  0.2) 3 │█████████████████████████████████████████████                │\n"
+      "[ 0.2,  0.6) 0 │                                                             │\n"
+      "[ 0.6,    1) 1 │███████████████                                              │\n"
+      "[   1,  inf) 0 │                                                             │\n"
+      "               └─────────────────────────────────────────────────────────────┘\n"
+      "histogram(\n"
+      "  regular(2, -1, 1, metadata=\"axis 1\", options=underflow | overflow)\n"
+      "  category(\"red\", \"blue\", metadata=\"axis 2\", options=overflow)\n"
+      "  (-1 0): 0 ( 0 0): 0 ( 1 0): 0 ( 2 0): 0 (-1 1): 0 ( 0 1): 0\n"
+      "  ( 1 1): 0 ( 2 1): 0 (-1 2): 0 ( 0 2): 0 ( 1 2): 0 ( 2 2): 0\n"
+      ")");
 }
 
 //]

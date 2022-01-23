@@ -65,7 +65,7 @@ Performs adaptive Gauss-Kronrod quadrature on function /f/ over the range (a,b).
 algorithm descends the tree depth first, so only "difficult" areas of the integral result in interval splitting.
 
 ['tol]  Sets the maximum relative error in the result, this should not be set too close to machine epsilon or the function
-will simply thrash and probably not return accurate results.  On the other hand the default may be overly-pressimistic.
+will simply thrash and probably not return accurate results.  On the other hand the default may be overly-pessimistic.
 
 ['error]  When non-null, `*error` is set to the difference between the (N-1)/2 point Gauss approximation and the N-point Gauss-Kronrod approximation.
 
@@ -101,7 +101,6 @@ In this case, the template argument is the real type, and the complex type is de
 
 [gauss_kronrod_example]
 
-
 [heading Caveats]
 
 For essentially all analytic integrands bounded on the domain, the error estimates provided by the routine are woefully pessimistic.
@@ -120,4 +119,5 @@ use one of the [link math_toolkit.double_exponential double-exponential integrat
 * Dirk P. Laurie, ['Calculation of Gauss-Kronrod Quadrature Rules], Mathematics of Computation, Volume 66, Number 219, 1997
 * Gonnet, Pedro, ['A Review of Error Estimation in Adaptive Quadrature], https://arxiv.org/pdf/1003.4629.pdf
 
-[endsect]
+[endsect] [/section:gauss_kronrod Gauss-Kronrod Quadrature]
+

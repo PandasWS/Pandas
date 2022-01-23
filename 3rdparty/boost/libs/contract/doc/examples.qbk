@@ -10,17 +10,17 @@ This section lists some examples taken from different sources discussing contrac
 
 [note
 Some of these examples might be from old code, containing obsolete coding practices, not optimized for execution speed, not complete, and they might be more relevant in the context of programming languages different from C++.
-Nevertheless, programmers are encouraged to review these examples to see a few diverse usages of this library that might be relevant to their needs.
+Nevertheless, programmers are encouraged to review these examples to see a few diverse uses of this library that might be relevant to their needs.
 ]
 
-Sources of the listed examples:
+The examples in this sections are taken from the following sources:
 
-* __N1962__: Examples from the proposal to add contract programming to C++11 (unfortunately, this proposal was never accepted into the standard).
-* __Meyer97__: Examples from the Eiffel programming language and reprogrammed using this library for C++.
-* __Mitchell02__: Additional examples from the Eiffel programming language and reprogrammed using this library for C++.
+* __N1962__: Examples from a detailed and complete proposal to add contract programming to C++11 (unfortunately, this proposal was never accepted into the standard).
+* __Meyer97__: Examples from the Eiffel programming language (reprogrammed here in C++ using this library).
+* __Mitchell02__: Additional examples from the Eiffel programming language (reprogrammed here in C++ using this library).
 * __Cline90__: Examples from a very early proposal called Annotated C++ (A++) to add contract programming to C++ (A++ was never implemented or proposed for addition to the standard).
 
-A few notable examples:
+The following are some examples of particular interest:
 
 * [link N1962_vector_anchor \[N1962\] Vector]: Complete set of contracts for `std::vector`, plus a comparison with __N1962__ syntax.
 * [link N1962_square_root_anchor \[N1962\] Square Root]: Comparison with D syntax.
@@ -28,10 +28,13 @@ A few notable examples:
 * [link Meyer97_stack4_anchor \[Meyer97\] Stack4]: Comparison with Eiffel syntax.
 * [link Cline90_vector_anchor \[Cline90\] Vector]: Comparison with A++ syntax.
 
+Most of the examples listed here use old values and class invariants which are instead not supported by __P0380__.
+Therefore, there is not meaningful example here that can be directly implemented and compared using __P0380__ syntax.
+
 [#N1962_vector_anchor]
 [section \[N1962\] Vector: Contracts for STL vector and comparison with __N1962__ proposed syntax]
 
-On compilers that support C++17 `if constexpr`, the following example using this library can be simplified removing [funcref boost::contract::condition_if] and related functor templates such as `all_of_equal_to`, etc. (making it more similar to the pseudo-code on the right-hand side).
+On compilers that support C++17 `if constexpr`, the following example using this library can be simplified removing [funcref boost::contract::condition_if] and related functor templates such as `all_of_equal_to`, etc., making it more similar to the pseudo-code on the right-hand side (see __Assertion_Requirements__).
 
 [import ../example/n1962/vector.cpp]
 [import ../example/n1962/vector_n1962.hpp]

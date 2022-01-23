@@ -16,6 +16,7 @@
 #include <boost/aligned_storage.hpp>
 #include <boost/assert.hpp>
 #include <boost/static_assert.hpp>
+#include <boost/core/allocator_access.hpp>
 #include <boost/utility.hpp>
 #include <boost/next_prior.hpp>
 #include <boost/utility/enable_if.hpp>
@@ -24,7 +25,6 @@
 #include <boost/type_traits/has_trivial_destructor.hpp>
 #include <boost/type_traits/is_convertible.hpp>
 
-#include <boost/lockfree/detail/allocator_rebind_helper.hpp>
 #include <boost/lockfree/detail/atomic.hpp>
 #include <boost/lockfree/detail/copy_payload.hpp>
 #include <boost/lockfree/detail/parameter.hpp>
@@ -352,9 +352,8 @@ public:
         if ( !boost::has_trivial_destructor<T>::value ) {
             // make sure to call all destructors!
 
-            T dummy_element;
-            while (pop(dummy_element))
-            {}
+            detail::consume_noop consume_functor;
+            (void)consume_all( consume_functor );
         } else {
             write_index_.store(0, memory_order_relaxed);
             read_index_.store(0, memory_order_release);
@@ -446,6 +445,13 @@ protected:
     size_type max_number_of_elements() const
     {
         return max_size;
+    }
+
+    ~compile_time_sized_ringbuffer(void)
+    {
+        // destroy all remaining items
+        detail::consume_noop consume_functor;
+        (void)consume_all(consume_functor);
     }
 
 public:
@@ -551,7 +557,7 @@ public:
     }
 
     template <typename U>
-    runtime_sized_ringbuffer(typename detail::allocator_rebind_helper<Alloc, U>::type const & alloc, size_type max_elements):
+    runtime_sized_ringbuffer(typename boost::allocator_rebind<Alloc, U>::type const & alloc, size_type max_elements):
         Alloc(alloc), max_elements_(max_elements + 1)
     {
 #ifdef BOOST_NO_CXX11_ALLOCATOR
@@ -576,8 +582,8 @@ public:
     ~runtime_sized_ringbuffer(void)
     {
         // destroy all remaining items
-        T out;
-        while (pop(&out, 1)) {}
+        detail::consume_noop consume_functor;
+        (void)consume_all(consume_functor);
 
 #ifdef BOOST_NO_CXX11_ALLOCATOR
         Alloc::deallocate(array_, max_elements_);
@@ -749,51 +755,72 @@ public:
      *
      *  \pre spsc_queue must be configured to be sized at compile-time
      */
-    // @{
     spsc_queue(void)
     {
+        // Don't use BOOST_STATIC_ASSERT() here since it will be evaluated when compiling
+        // this function and this function may be compiled even when it isn't being used.
         BOOST_ASSERT(!runtime_sized);
     }
 
+    /** Constructs a spsc_queue with a custom allocator
+     *
+     *  \pre spsc_queue must be configured to be sized at compile-time
+     *
+     *  \note This is just for API compatibility: an allocator isn't actually needed
+     */
     template <typename U>
-    explicit spsc_queue(typename detail::allocator_rebind_helper<allocator, U>::type const &)
+    explicit spsc_queue(typename boost::allocator_rebind<allocator, U>::type const &)
     {
-        // just for API compatibility: we don't actually need an allocator
         BOOST_STATIC_ASSERT(!runtime_sized);
     }
 
+    /** Constructs a spsc_queue with a custom allocator
+     *
+     *  \pre spsc_queue must be configured to be sized at compile-time
+     *
+     *  \note This is just for API compatibility: an allocator isn't actually needed
+     */
     explicit spsc_queue(allocator const &)
     {
-        // just for API compatibility: we don't actually need an allocator
+        // Don't use BOOST_STATIC_ASSERT() here since it will be evaluated when compiling
+        // this function and this function may be compiled even when it isn't being used.
         BOOST_ASSERT(!runtime_sized);
     }
-    // @}
-
 
     /** Constructs a spsc_queue for element_count elements
      *
      *  \pre spsc_queue must be configured to be sized at run-time
      */
-    // @{
     explicit spsc_queue(size_type element_count):
         base_type(element_count)
     {
+        // Don't use BOOST_STATIC_ASSERT() here since it will be evaluated when compiling
+        // this function and this function may be compiled even when it isn't being used.
         BOOST_ASSERT(runtime_sized);
     }
 
+    /** Constructs a spsc_queue for element_count elements with a custom allocator
+     *
+     *  \pre spsc_queue must be configured to be sized at run-time
+     */
     template <typename U>
-    spsc_queue(size_type element_count, typename detail::allocator_rebind_helper<allocator, U>::type const & alloc):
+    spsc_queue(size_type element_count, typename boost::allocator_rebind<allocator, U>::type const & alloc):
         base_type(alloc, element_count)
     {
         BOOST_STATIC_ASSERT(runtime_sized);
     }
 
+    /** Constructs a spsc_queue for element_count elements with a custom allocator
+     *
+     *  \pre spsc_queue must be configured to be sized at run-time
+     */
     spsc_queue(size_type element_count, allocator_arg const & alloc):
         base_type(alloc, element_count)
     {
+        // Don't use BOOST_STATIC_ASSERT() here since it will be evaluated when compiling
+        // this function and this function may be compiled even when it isn't being used.
         BOOST_ASSERT(runtime_sized);
     }
-    // @}
 
     /** Pushes object t to the ringbuffer.
      *
@@ -1011,9 +1038,8 @@ public:
         if ( !boost::has_trivial_destructor<T>::value ) {
             // make sure to call all destructors!
 
-            T dummy_element;
-            while (pop(dummy_element))
-            {}
+            detail::consume_noop consume_functor;
+            (void)consume_all(consume_functor);
         } else {
             base_type::write_index_.store(0, memory_order_relaxed);
             base_type::read_index_.store(0, memory_order_release);

@@ -22,7 +22,8 @@ Centroid calculation using algorithm Bashein / Detmer.
 Calculates centroid using triangulation method published by Bashein / Detmer 
 
 [heading Synopsis]
-``template<typename Point, typename PointOfSegment, typename CalculationType>
+``template<typename Ignored1, typename Ignored2, typename CalculationType, ,
+         >
 class strategy::centroid::bashein_detmer
 {
   // ...
@@ -32,21 +33,24 @@ class strategy::centroid::bashein_detmer
 [heading Template parameter(s)]
 [table
 [[Parameter] [Default] [Description]]
-[[typename Point] [] [point type of centroid to calculate ]]
-[[typename PointOfSegment] [Point] [point type of segments, defaults to Point ]]
+[[typename Ignored1] [void] []]
+[[typename Ignored2] [void] []]
 [[typename CalculationType] [void] [numeric type for calculation (e.g. high precision); if [*void] then it is extracted automatically from the coordinate type and (if necessary) promoted to floating point]]
+[[] [] [point type of centroid to calculate ]]
+[[] [] [point type of segments, defaults to Point ]]
 ]
 
 [heading Member Function(s)]
 [table
 [[Function] [Description] [Parameters]  [Returns]]
-[[``void apply(PointOfSegment const & p1, PointOfSegment const & p2, sums & state)``
+[[``template<typename GeometryPoint, typename ResultPoint>
+void apply(GeometryPoint const & p1, GeometryPoint const & p2, sums< GeometryPoint, ResultPoint > & state)``
 
-] [] [[* PointOfSegment const &]: ['p1]:  
+] [] [[* GeometryPoint const &]: ['p1]:  
 
-[* PointOfSegment const &]: ['p2]:  
+[* GeometryPoint const &]: ['p2]:  
 
-[* sums &]: ['state]:  
+[* sums< GeometryPoint, ResultPoint > &]: ['state]:  
 
 
 
@@ -54,11 +58,12 @@ class strategy::centroid::bashein_detmer
 
 ]
 ]
-[[``bool result(sums const & state, Point & centroid)``
+[[``template<typename GeometryPoint, typename ResultPoint>
+bool result(sums< GeometryPoint, ResultPoint > const & state, ResultPoint & centroid)``
 
-] [] [[* sums const &]: ['state]:  
+] [] [[* sums< GeometryPoint, ResultPoint > const &]: ['state]:  
 
-[* Point &]: ['centroid]:  
+[* ResultPoint &]: ['centroid]:  
 
 
 

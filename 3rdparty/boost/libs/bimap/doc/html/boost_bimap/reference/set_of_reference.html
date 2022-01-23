@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>set_of Reference</title>
 <link rel="stylesheet" href="../../boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Bimap">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Bimap">
 <link rel="up" href="../reference.html" title="Reference">
 <link rel="prev" href="bimap_reference.html" title="Bimap Reference">
 <link rel="next" href="unordered_set_of_reference.html" title="unordered_set_of Reference">
@@ -433,7 +433,7 @@
               </li>
 </ul></div>
 <p>
-            <code class="computeroutput"><span class="identifier">Compare</span></code> is a <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html" target="_top">Strict
+            <code class="computeroutput"><span class="identifier">Compare</span></code> is a <a href="https://www.boost.org/sgi/stl/StrictWeakOrdering.html" target="_top">Strict
             Weak Ordering</a> on elements of <code class="computeroutput"><span class="identifier">Value</span></code>.
           </p>
 </div>
@@ -539,7 +539,7 @@
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
                 <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">InputIterator</span></code>
-                is a model of <a href="http://www.sgi.com/tech/stl/InputIterator.html" target="_top">Input
+                is a model of <a href="https://www.boost.org/sgi/stl/InputIterator.html" target="_top">Input
                 Iterator</a> over elements of type <code class="computeroutput"><span class="identifier">value_type</span></code>
                 or a type convertible to value_type. <code class="computeroutput"><span class="identifier">first</span></code>
                 and <code class="computeroutput"><span class="identifier">last</span></code> are not
@@ -772,7 +772,7 @@
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
                 <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">KeyModifier</span></code>
-                is a model of <a href="http://www.sgi.com/tech/stl/UnaryFunction.html" target="_top">Unary
+                is a model of <a href="https://www.boost.org/sgi/stl/UnaryFunction.html" target="_top">Unary
                 Function</a> accepting arguments of type: <code class="computeroutput"><span class="identifier">key_type</span><span class="special">&amp;</span></code>; <code class="computeroutput"><span class="identifier">position</span></code>
                 is a valid dereferenceable iterator of the view.
               </li>
@@ -820,7 +820,7 @@
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
                 <span class="bold"><strong>Requires: </strong></span> <code class="computeroutput"><span class="identifier">DataModifier</span></code>
-                is a model of <a href="http://www.sgi.com/tech/stl/UnaryFunction.html" target="_top">Unary
+                is a model of <a href="https://www.boost.org/sgi/stl/UnaryFunction.html" target="_top">Unary
                 Function</a> accepting arguments of type: <code class="computeroutput"><span class="identifier">mapped_type</span><span class="special">&amp;</span></code>; <code class="computeroutput"><span class="identifier">position</span></code>
                 is a valid dereferenceable iterator of the view.
               </li>
@@ -870,8 +870,8 @@
 </h5></div></div></div>
 <p>
             <code class="computeroutput"><span class="special">[</span><span class="identifier">multi</span><span class="special">]</span><span class="identifier">set_of</span></code>
-            views provide the full lookup functionality required by <a href="http://www.sgi.com/tech/stl/SortedAssociativeContainer.html" target="_top">Sorted
-            Associative Container</a> and <a href="http://www.sgi.com/tech/stl/UniqueAssociativeContainer.html" target="_top">Unique
+            views provide the full lookup functionality required by <a href="https://www.boost.org/sgi/stl/SortedAssociativeContainer.html" target="_top">Sorted
+            Associative Container</a> and <a href="https://www.boost.org/sgi/stl/UniqueAssociativeContainer.html" target="_top">Unique
             Associative Container</a>, namely <code class="computeroutput"><span class="identifier">find</span></code>,
             <code class="computeroutput"><span class="identifier">count</span></code>, <code class="computeroutput"><span class="identifier">lower_bound</span></code>, <code class="computeroutput"><span class="identifier">upper_bound</span></code>
             and <code class="computeroutput"><span class="identifier">equal_range</span></code>. Additionally,
@@ -1000,7 +1000,7 @@
             after the following concepts.
           </p>
 <p>
-            Consider a <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html" target="_top">Strict
+            Consider a <a href="https://www.boost.org/sgi/stl/StrictWeakOrdering.html" target="_top">Strict
             Weak Ordering</a> <code class="computeroutput"><span class="identifier">Compare</span></code>
             over values of type Key. A type <code class="computeroutput"><span class="identifier">LowerBounder</span></code>
             is said to be a lower bounder of <code class="computeroutput"><span class="identifier">Compare</span></code>
@@ -1100,7 +1100,7 @@
 <p>
             The symmetry of bimap imposes some constraints on <code class="computeroutput"><span class="keyword">operator</span><span class="special">[]</span></code> and the non constant version of at()
             that are not found in <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">maps</span></code>.
-            Tey are only provided if the other collection type is mutable (<code class="computeroutput"><span class="identifier">list_of</span></code>, <code class="computeroutput"><span class="identifier">vector_of</span></code>
+            They are only provided if the other collection type is mutable (<code class="computeroutput"><span class="identifier">list_of</span></code>, <code class="computeroutput"><span class="identifier">vector_of</span></code>
             and <code class="computeroutput"><span class="identifier">unconstrained_set_of</span></code>).
           </p>
 <a name="reference_set_of_operator_bracket_key"></a><pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span> <span class="keyword">class</span> <span class="identifier">CompatibleKey</span> <span class="special">&gt;</span>
@@ -1255,7 +1255,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2012 Matias Capeletto<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2012 Matias Capeletto<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

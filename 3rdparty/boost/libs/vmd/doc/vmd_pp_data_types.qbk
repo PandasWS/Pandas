@@ -15,7 +15,7 @@ is a given Boost PP data type. The VMD macros to do this are:
 * BOOST_VMD_IS_SEQ for a seq
 * BOOST_VMD_IS_TUPLE for a tuple
 
-Each of these macros take a single parameter as input and 
+Each of these macros take a single variadic parameter as input and 
 return 1 if the parameter is the appropriate data type and 
 0 if it is not.
 
@@ -68,6 +68,17 @@ then
  BOOST_VMD_IS_TUPLE(ASE_TUPLE) returns 1
  BOOST_VMD_IS_SEQ(ASE_TUPLE) returns 1
  
+However if our data consists of more than one consecutive tuple of a single
+element the data is always a seq:
+
+ #include <boost/vmd/is_seq.hpp>
+ #include <boost/vmd/is_tuple.hpp>
+ 
+ #define ST_DATA (somedata)(some_other_data)
+ 
+ BOOST_VMD_IS_SEQ(ST_DATA) will return 1
+ BOOST_VMD_IS_TUPLE(ST_DATA) will return 0
+
 [heading Problem when testing an array]
 
 The form of an array is a two element tuple, where the first
@@ -92,7 +103,7 @@ When VMD attempts to parse for an array, as it does when the BOOST_VMD_IS_ARRAY
 is used, if first looks to see if the syntax represents a tuple with two elements.
 Next it looks to see if the second element itself is a tuple. Finally if it is 
 satisfied that the previous checks are valid it tests whether the first element 
-is a number or not. It is in this final test, that the first element is a valid 
+is a number or not. It is in this final test, that the first element is not a valid 
 number, where the UB could occur as explained in the topic 'Numbers'.
 
 [heading Problem when testing a list]
@@ -132,48 +143,6 @@ In both these paths it must always eventually check for the end-of-list notation
 BOOST_PP_NIL, which is an identifier in VMD. It is in this final test, that the
 end-of-list notation exists as a VMD identifier, where the UB
 could occur as explained in the topic 'Identifiers'.
-
-[heading Distinguishing a seq and a tuple]
-
-As has previously been mentioned a single element tuple
-is also a one element seq.
-
-However, as will be discussed later in the documentation, when VMD has to
-determine the type of such data, it always returns it as a tuple ( BOOST_VMD_TYPE_TUPLE ).
-
-If our data consists of more than one consecutive tuple of a single
-element the data is a seq:
-
- #include <boost/vmd/is_seq.hpp>
- #include <boost/vmd/is_tuple.hpp>
- 
- #define ST_DATA (somedata)(some_other_data)
- 
- BOOST_VMD_IS_SEQ(ST_DATA) will return 1
- BOOST_VMD_IS_TUPLE(ST_DATA) will return 0
- 
-However if the data consists of a mixture we need to distinguish
-how VMD parses the data. The rule is that VMD always parses a single 
-element tuple as a tuple unless it is followed by one or more single
-element tuples, in which case it is a seq.
-
- #define ST_DATA (somedata)(element1,element2)
- 
-VMD parses the above data as 2 consecutive tuples.
-The first tuple is the single element tuple '(somedata)' and the second tuple
-is the multi element tuple '(element1,element2)'.
-
- #define ST_DATA (element1,element2)(somedata)
- 
-VMD parses the above data as 2 consecutive tuples.
-The first tuple is the multi element tuple '(element1,element2)' and the second tuple
-is the single element tuple '(somedata)'.
-
- #define ST_DATA (somedata)(some_other_data)(element1,element2)
- 
-VMD parses the above data as a seq followed by a tuple.
-The seq is '(somedata)(some_other_data)' and the tuple is
-'(element1,element2)'.
 
 [heading Empty Boost PP data types]
 

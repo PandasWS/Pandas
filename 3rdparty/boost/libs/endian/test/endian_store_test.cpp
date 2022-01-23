@@ -45,7 +45,7 @@ public:
         if( s.n_ == 0 ) return os;
 
         os << std::hex << std::setfill( '0' ) << std::uppercase;
-            
+
         os << std::setw( 2 ) << +s.p_[ 0 ];
 
         for( std::size_t i = 1; i < s.n_; ++i )

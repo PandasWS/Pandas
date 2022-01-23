@@ -33,6 +33,7 @@ test-suite msm-unit-tests
     [ run History.cpp ]
     [ run OrthogonalDeferred.cpp ]
     [ run OrthogonalDeferred2.cpp ]
+    [ run OrthogonalDeferred3.cpp ]
     [ run OrthogonalDeferredEuml.cpp ]
     [ run SimpleEuml.cpp ]
     [ run SimpleEuml2.cpp ]

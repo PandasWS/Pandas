@@ -38,6 +38,7 @@
 #include "../map/channel.hpp"
 #include "../map/chat.hpp"
 #include "../map/date.hpp"
+#include "../map/elemental.hpp"
 #include "../map/instance.hpp"
 #include "../map/mercenary.hpp"
 #include "../map/mob.hpp"
@@ -786,6 +787,12 @@ static bool mob_db_yaml2sql(const std::string &file, const std::string &table) {
 			column.append("`defense`,");
 		if (appendEntry(input["MagicDefense"], value))
 			column.append("`magic_defense`,");
+#ifdef RENEWAL
+		if (appendEntry(input["Resistance"], value))
+			column.append("`resistance`,");
+		if (appendEntry(input["MagicResistance"], value))
+			column.append("`magic_resistance`,");
+#endif
 		if (appendEntry(input["Str"], value))
 			column.append("`str`,");
 		if (appendEntry(input["Agi"], value))

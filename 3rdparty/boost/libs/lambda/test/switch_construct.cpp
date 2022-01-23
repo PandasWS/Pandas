@@ -12,7 +12,8 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
+#define BOOST_CHECK BOOST_TEST
 
 
 #include "boost/lambda/lambda.hpp"
@@ -379,14 +380,13 @@ void test_empty_cases() {
 
 }
 
-int test_main(int, char* []) {
+int main() {
 
   do_switch_no_defaults_tests();
   do_switch_yes_defaults_tests();
 
   test_empty_cases();
 
-  return EXIT_SUCCESS;
+  return boost::report_errors();
 
 }
-

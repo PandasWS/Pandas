@@ -37,6 +37,7 @@ private:
 		return this->doSerialize(typeid(ar).name(), static_cast<void*>(&ar));
 	}
 
+	bool isEnableSerialize(bool bNoWarning = false);
 	bool saveToSerialize();
 	bool loadFromSerialize();
 	bool isCacheEffective();
@@ -102,6 +103,10 @@ protected:
 	// 用于记录被缓存的数据类型的大小
 	// 以便在通过宏定义修改数据体积后能够在 struct 长度变更时让缓存过期
 	uint32 datatypeSize = 0;
+
+	// 用来记录有效的 datatype 大小
+	// 启用疾风缓存的情况下若 datatypeSize 不在此列表范围中, 则自动关闭疾风缓存
+	std::vector <uint32> validDatatypeSize;
 #endif // Pandas_YamlBlastCache_Serialize
 
 public:
@@ -188,7 +193,7 @@ public:
 #endif // Pandas_YamlBlastCache_Serialize
 	}
 
-	void clear(){
+	void clear() override{
 		this->data.clear();
 	}
 

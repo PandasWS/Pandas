@@ -12,7 +12,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <boost/assign.hpp>
-#include <boost/bind.hpp>
 #include "../test_driver/range_return_test_driver.hpp"
 #include <algorithm>
 #include <functional>

@@ -15,6 +15,7 @@ coroutine2/stack/segmented.html
 coroutine2/stack/stack_traits.html
 coroutine2/stack/stack_context.html
 coroutine2/stack/valgrind.html
+coroutine2/stack/sanitizers.html
 coroutine2/performance.html
 coroutine2/architectures.html
 coroutine2/acknowledgements.html

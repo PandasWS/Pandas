@@ -1,6 +1,6 @@
 // Copyright 2011-2012 Renato Tegon Forti
 // Copyright 2014 Renato Tegon Forti, Antony Polukhin.
-// Copyright 2015-2019 Antony Polukhin.
+// Copyright 2015-2021 Antony Polukhin.
 //
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt
@@ -25,6 +25,10 @@
 extern "C" void LIBRARY_API say_hello(void);
 extern "C" float LIBRARY_API lib_version(void);
 extern "C" int LIBRARY_API increment(int);
+
+#if defined(__GNUC__) && __GNUC__ >= 4 && defined(__ELF__)
+extern "C" int __attribute__((visibility ("protected"))) protected_function(int);
+#endif
 
 extern "C" int LIBRARY_API integer_g;
 extern "C" const int LIBRARY_API const_integer_g = 777;
@@ -94,6 +98,13 @@ int increment(int n)
    return ++n;
 }
 
+#if defined(__GNUC__) && __GNUC__ >= 4 && defined(__ELF__)
+int protected_function(int) {
+    return 42;
+}
+#endif
+
+
 #include <boost/dll/runtime_symbol_info.hpp>
 
 boost::dll::fs::path this_module_location_from_itself() {
@@ -108,7 +119,7 @@ int internal_integer_i = 0xFF0000;
 extern "C" LIBRARY_API int& reference_to_internal_integer;
 int& reference_to_internal_integer = internal_integer_i;
 
-#ifndef BOOST_NO_RVALUE_REFERENCES
+#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
 extern "C" LIBRARY_API int&& rvalue_reference_to_internal_integer;
 int&& rvalue_reference_to_internal_integer = static_cast<int&&>(internal_integer_i);
 #endif

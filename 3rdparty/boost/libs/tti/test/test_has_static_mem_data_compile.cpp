@@ -19,6 +19,13 @@ int main()
   BOOST_MPL_ASSERT((BOOST_TTI_HAS_STATIC_MEMBER_DATA_GEN(DSMember)<AType,short>));
   BOOST_MPL_ASSERT((StatName<AnotherType,AType::AStructType>));
   
+#if !defined(BOOST_NO_CXX11_UNRESTRICTED_UNION)
+
+  BOOST_MPL_ASSERT((UnionStatic<AType::AnUnion,float>));
+  BOOST_MPL_ASSERT((BOOST_TTI_HAS_STATIC_MEMBER_DATA_GEN(ASCData)<AnotherType::AnotherUnion,char>));
+  
+#endif
+
   return 0;
 
   }

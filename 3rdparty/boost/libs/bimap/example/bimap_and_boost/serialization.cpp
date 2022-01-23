@@ -8,7 +8,7 @@
 
 //  VC++ 8.0 warns on usage of certain Standard Library and API functions that
 //  can be cause buffer overruns or other possible security issues if misused.
-//  See http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
+//  See https://web.archive.org/web/20071014014301/http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
 //  But the wording of the warning is misleading and unsettling, there are no
 //  portable alternative functions, and VC++ 8.0's own libraries use the
 //  functions in question. So turn off the warnings.
@@ -52,7 +52,7 @@ int main()
             rationale behind this decision >*/
 
         /*<< We can only serialize iterators if the bimap was serialized first.
-             Note that the const cast is not requiered here because we create
+             Note that the const cast is not required here because we create
              our iterators as const. >>*/
         const bm_type::left_iterator left_iter = bm.left.find("two");
         oa << left_iter;

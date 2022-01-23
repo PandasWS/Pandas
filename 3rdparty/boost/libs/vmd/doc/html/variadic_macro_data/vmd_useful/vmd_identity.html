@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Generating emptiness and identity</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;The Variadic Macro Data Library 1.9">
+<link rel="home" href="../../index.html" title="Chapter 1. The Variadic Macro Data Library 1.10">
 <link rel="up" href="../vmd_useful.html" title="Useful variadic macros not in Boost PP">
 <link rel="prev" href="../vmd_useful.html" title="Useful variadic macros not in Boost PP">
 <link rel="next" href="vmd_empty_ppdata.html" title='Functionality for "empty" seqs and tuples'>
@@ -231,20 +231,21 @@
         BOOST_VMD_EMPTY and BOOST_VMD_IDENTITY with VC++</a>
       </h5>
 <p>
-        Unfortunately the Visual C++ preprocessor has a problem when a macro expands
-        to something followed by a variadic macro which expands to nothing. This
-        is the case when using BOOST_VMD_EMPTY following some non-empty expansion,
+        Unfortunately the Visual C++ default preprocessor has a problem when a macro
+        expands to something followed by a variadic macro which expands to nothing.
+        This is the case when using BOOST_VMD_EMPTY following some non-empty expansion,
         or the equivalent use of BOOST_VMD_IDENTITY. As strange as it sounds this
-        VC++ preprocessor problem is normally solved by concatenating the result
-        using BOOST_PP_CAT with an empty value. But then again the many non-standard
-        behaviors of VC++ are difficult to understand or even track.
+        VC++ default preprocessor problem is normally solved by concatenating the
+        result using BOOST_PP_CAT with an empty value. But then again the many non-standard
+        behaviors of VC++ with its default preprocessor are difficult to understand
+        or even track.
       </p>
 <p>
         In order to make this technique transparent when used with a C++ standard
-        conforming preprocessor or VC++ non-standard preprocessor you can use the
-        BOOST_VMD_IDENTITY_RESULT macro passing to it a single parameter which is
-        a result returned from a macro which uses BOOST_VMD_IDENTITY ( or its equivalent
-        'value BOOST_VMD_EMPTY' usage ).
+        conforming preprocessor or the VC++ non-standard default preprocessor you
+        can use the BOOST_VMD_IDENTITY_RESULT macro passing to it a single parameter
+        which is a result returned from a macro which uses BOOST_VMD_IDENTITY ( or
+        its equivalent 'value BOOST_VMD_EMPTY' usage ).
       </p>
 <p>
         Given our MACRO_CHOICE example above, if you have another macro invoking
@@ -279,8 +280,8 @@
 </pre>
 <p>
         Using BOOST_VMD_EMPTY and BOOST_VMD_IDENTITY in this way will ensure they
-        can be used without preprocessing problems with either VC++ or any C++ standard
-        conforming preprocessor.
+        can be used without preprocessing problems with either VC++ with its default
+        preprocessor or any C++ standard conforming preprocessor.
       </p>
 <h5>
 <a name="variadic_macro_data.vmd_useful.vmd_identity.h4"></a>
@@ -302,7 +303,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2010-2017 Tropic Software
+<td align="right"><div class="copyright-footer">Copyright © 2010-2017 Tropic Software
       East Inc</div></td>
 </tr></table>
 <hr>

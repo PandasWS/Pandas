@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Tag Types</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.FunctionTypes 2.5">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.FunctionTypes 2.5">
 <link rel="up" href="../reference.html" title="Reference">
 <link rel="prev" href="synthesis.html" title="Class templates for type synthesis">
 <link rel="next" href="macros.html" title="Macros">
@@ -40,6 +40,7 @@
 <dt><span class="section"><a href="tag_types.html#boost_functiontypes.reference.tag_types.cv_qualfied">cv_qualfied</a></span></dt>
 <dt><span class="section"><a href="tag_types.html#boost_functiontypes.reference.tag_types.null_tag">null_tag</a></span></dt>
 <dt><span class="section"><a href="tag_types.html#boost_functiontypes.reference.tag_types.tag">tag</a></span></dt>
+<dt><span class="section"><a href="tag_types.html#boost_functiontypes.reference.tag_types.has_property_tag">has_property_tag</a></span></dt>
 </dl></div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
@@ -261,10 +262,73 @@
           values for the same property the value of the rightmost argument is used.
         </p>
 </div>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="boost_functiontypes.reference.tag_types.has_property_tag"></a><a class="link" href="tag_types.html#boost_functiontypes.reference.tag_types.has_property_tag" title="has_property_tag">has_property_tag</a>
+</h4></div></div></div>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">Tag</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">PropertyTag</span><span class="special">&gt;</span>
+<span class="keyword">struct</span> <span class="identifier">has_property_tag</span><span class="special">;</span>
+</pre>
+<p>
+          <span class="bold"><strong>Header</strong></span>
+        </p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">function_types</span><span class="special">/</span><span class="identifier">property_tags</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term"><code class="literal">Tag</code></span></dt>
+<dd><p>
+                Possibly compound property tag
+              </p></dd>
+<dt><span class="term"><code class="literal">PropertyTag</code></span></dt>
+<dd><p>
+                Single property tag
+              </p></dd>
+<dt><span class="term"><code class="literal">has_property_tag&lt;Tag,PropertyTag&gt;</code></span></dt>
+<dd><p>
+                Test (possibly) compound property tag for single property tag
+              </p></dd>
+</dl>
+</div>
+<p>
+          A metafunction for testing that a compound property tag has a particular
+          single property tag in its composition. Returns a boolean value of true
+          if the particular single property tag is part of the compound property
+          tag, otherwise false.
+        </p>
+<p>
+          For convenience there are also individual metafunctions for the built-in
+          property tags of the form
+        </p>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">Tag</span><span class="special">&gt;</span>
+<span class="keyword">struct</span> <span class="identifier">has_</span><span class="char">'name'</span><span class="identifier">_property_tag</span><span class="special">;</span>
+</pre>
+<p>
+          which works exactly the same as <code class="computeroutput"><span class="identifier">has_property_tag</span></code>,
+          where name can be <code class="literal">variadic</code>,<code class="literal">default_cc</code>,<code class="literal">const</code>,<code class="literal">volatile</code>,<code class="literal">cv</code>,or
+          <code class="literal">null</code>. In these individual metafunctions <code class="literal">const</code>
+          is short for <code class="literal">const_qualified</code>, <code class="literal">volatile</code>
+          is short for <code class="literal">volatile_qualified</code>, <code class="literal">cv</code>
+          is short for <code class="literal">cv_qualified</code>, and <code class="literal">null</code>
+          is short for <code class="literal">null_tag</code>.
+        </p>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../../../../doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+            Testing for the <code class="literal">null_tag</code>, with either <code class="computeroutput"><span class="identifier">has_property_tag</span><span class="special">&lt;</span><span class="identifier">Tag</span><span class="special">,</span><span class="identifier">null_tag</span><span class="special">&gt;</span></code>
+            or <code class="computeroutput"><span class="identifier">has_null_property_tag</span><span class="special">&lt;</span><span class="identifier">Tag</span><span class="special">&gt;</span></code>, always tests whether the <code class="literal">Tag</code>
+            is the single <code class="literal">null_tag</code> property_tag.
+          </p></td></tr>
+</table></div>
+</div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2004-2007 Tobias
+<td align="right"><div class="copyright-footer">Copyright © 2004-2007 Tobias
       Schwinger<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

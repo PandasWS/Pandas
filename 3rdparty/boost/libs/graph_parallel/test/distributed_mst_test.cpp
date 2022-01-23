@@ -15,7 +15,7 @@
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include <boost/graph/distributed/vertex_list_adaptor.hpp>
 #include <boost/graph/parallel/distribution.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/graph/distributed/adjacency_list.hpp>
 #include <iostream>
 #include <cstdlib>
@@ -90,8 +90,8 @@ test_distributed_dense_boruvka()
                                         weight_map, 
                                         std::back_inserter(mst_edges));
     int w = total_weight(g, weight_map, mst_edges.begin(), mst_edges.end());
-    BOOST_CHECK(w == 4);
-    BOOST_CHECK(mst_edges.size() == 4);
+    BOOST_TEST(w == 4);
+    BOOST_TEST(mst_edges.size() == 4);
   }
 
   {
@@ -105,8 +105,8 @@ test_distributed_dense_boruvka()
                                        std::back_inserter(mst_edges));
     if (process_id(g.process_group()) == 0) {
       int w = total_weight(g, weight_map, mst_edges.begin(), mst_edges.end());
-      BOOST_CHECK(w == 4);
-      BOOST_CHECK(mst_edges.size() == 4);
+      BOOST_TEST(w == 4);
+      BOOST_TEST(mst_edges.size() == 4);
     }
   }
 
@@ -121,8 +121,8 @@ test_distributed_dense_boruvka()
                         std::back_inserter(mst_edges));
     if (process_id(g.process_group()) == 0) {
       int w = total_weight(g, weight_map, mst_edges.begin(), mst_edges.end());
-      BOOST_CHECK(w == 4);
-      BOOST_CHECK(mst_edges.size() == 4);
+      BOOST_TEST(w == 4);
+      BOOST_TEST(mst_edges.size() == 4);
     }
   }
 
@@ -137,15 +137,15 @@ test_distributed_dense_boruvka()
                         std::back_inserter(mst_edges));
     if (process_id(g.process_group()) == 0) {
       int w = total_weight(g, weight_map, mst_edges.begin(), mst_edges.end());
-      BOOST_CHECK(w == 4);
-      BOOST_CHECK(mst_edges.size() == 4);
+      BOOST_TEST(w == 4);
+      BOOST_TEST(mst_edges.size() == 4);
     }
   }
 }
 
-int test_main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   boost::mpi::environment env(argc, argv);
   test_distributed_dense_boruvka();
-  return 0;
+  return boost::report_errors();
 }

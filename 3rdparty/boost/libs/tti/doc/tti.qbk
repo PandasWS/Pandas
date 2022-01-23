@@ -1,5 +1,5 @@
 [/ 
-  (C) Copyright Edward Diener 2011-2013
+  (C) Copyright Edward Diener 2011-2013,2019,2020
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt).
@@ -29,17 +29,20 @@
 [include tti_detail.qbk]
 [include tti_detail_has_type.qbk]
 [include tti_detail_has_template.qbk]
+[include tti_function_templates.qbk]
 [include tti_detail_has_member_data.qbk]
 [include tti_detail_has_member_function.qbk]
+[include tti_detail_has_member_function_template.qbk]
 [include tti_detail_has_static_member_data.qbk]
 [include tti_detail_has_static_member_function.qbk]
+[include tti_detail_has_static_member_function_template.qbk]
 [include tti_detail_has_data.qbk]
 [include tti_detail_has_function.qbk]
+[include tti_detail_has_function_template.qbk]
 [include tti_nested_type.qbk]
 [include tti_nested_type_and_signatures.qbk]
 [include tti_enclosing_type.qbk]
 [include tti_using_mm.qbk]
-[include tti_func_templates.qbk]
 [include tti_reference.qbk]
 [include tti_tests.qbk]
 [include tti_history.qbk]

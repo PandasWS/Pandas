@@ -10,6 +10,7 @@
 [include binomial.qbk]
 [include cauchy.qbk]
 [include chi_squared.qbk]
+[include empirical_cdf.qbk]
 [include exponential.qbk]
 [include extreme_value.qbk]
 [include fisher.qbk]
@@ -20,6 +21,7 @@
 [include inverse_chi_squared.qbk]
 [include inverse_gamma.qbk]
 [include inverse_gaussian.qbk]
+[include kolmogorov_smirnov.qbk]
 [include laplace.qbk]
 [include logistic.qbk]
 [include lognormal.qbk]
@@ -37,7 +39,6 @@
 [include triangular.qbk]
 [include uniform.qbk]
 [include weibull.qbk]
-
 [endsect] [/section:dists Distributions]
 
 [include dist_algorithms.qbk]
@@ -138,10 +139,3 @@ opportunity to integrate the statistical tests with this framework at some later
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt).
 ]
-
-
-
-
-
-
-

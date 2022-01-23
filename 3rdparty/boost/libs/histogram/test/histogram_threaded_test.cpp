@@ -5,7 +5,7 @@
 // or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <boost/core/lightweight_test.hpp>
-#include <boost/histogram/accumulators/thread_safe.hpp>
+#include <boost/histogram/accumulators/count.hpp>
 #include <boost/histogram/algorithm/sum.hpp>
 #include <boost/histogram/axis/integer.hpp>
 #include <boost/histogram/axis/ostream.hpp>
@@ -19,13 +19,16 @@
 
 using namespace boost::histogram;
 
-constexpr auto n_fill = 400000;
+constexpr auto n_fill = 80000;
+static_assert(n_fill % 4 == 0, "must be multiple of 4");
 
 template <class Tag, class A1, class A2, class X, class Y>
 void fill_test(const A1& a1, const A2& a2, const X& x, const Y& y) {
   auto h1 = make_s(Tag{}, dense_storage<int>(), a1, a2);
-  for (unsigned i = 0; i != n_fill; ++i) h1(x[i], y[i]);
-  auto h2 = make_s(Tag{}, dense_storage<accumulators::thread_safe<int>>(), a1, a2);
+  auto xy = {x, y};
+  h1.fill(xy);
+
+  auto h2 = make_s(Tag{}, dense_storage<accumulators::count<int, true>>(), a1, a2);
   auto run = [&h2, &x, &y](int k) {
     constexpr auto shift = n_fill / 4;
     auto xit = x.cbegin() + k * shift;

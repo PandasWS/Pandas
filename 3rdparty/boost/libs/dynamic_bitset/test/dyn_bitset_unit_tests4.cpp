@@ -191,7 +191,7 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
                   //       (in Tests::stream_extractor instantiation)
 
 
-#if !(defined __BORLANDC__     \
+#if !(defined BOOST_BORLANDC     \
       && BOOST_WORKAROUND(BOOST_RWSTD_VER, BOOST_TESTED_AT(0x20101)))
                                         // Borland 5.5.1 with RW library crashes
             // empty string

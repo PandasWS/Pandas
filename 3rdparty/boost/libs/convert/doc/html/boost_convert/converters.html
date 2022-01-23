@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Converters</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Boost.Convert 2.0">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Boost.Convert 2.0">
+<link rel="home" href="../index.html" title="Chapter 1. Boost.Convert 2.0">
+<link rel="up" href="../index.html" title="Chapter 1. Boost.Convert 2.0">
 <link rel="prev" href="alternative_interface.html" title="Alternative Interface">
 <link rel="next" href="integration_of_user_types.html" title="Integration of User-Defined Types">
 </head>
@@ -83,8 +83,8 @@
 <p>
 </p>
 <pre class="programlisting"><span class="keyword">int</span> <span class="identifier">v03</span> <span class="special">=</span> <span class="identifier">convert</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">str</span><span class="special">,</span>
-              <span class="identifier">boost</span><span class="special">::</span><span class="identifier">bind</span><span class="special">(</span><span class="identifier">assign</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">_2</span><span class="special">,</span>
-                  <span class="identifier">boost</span><span class="special">::</span><span class="identifier">bind</span><span class="special">(</span><span class="identifier">lexical_cast</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">string</span><span class="special">&gt;,</span> <span class="identifier">_1</span><span class="special">))).</span><span class="identifier">value_or</span><span class="special">(-</span><span class="number">1</span><span class="special">);</span>
+              <span class="identifier">std</span><span class="special">::</span><span class="identifier">bind</span><span class="special">(</span><span class="identifier">assign</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">placeholders</span><span class="special">::</span><span class="identifier">_2</span><span class="special">,</span>
+                  <span class="identifier">std</span><span class="special">::</span><span class="identifier">bind</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">lexical_cast</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">string</span><span class="special">&gt;,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">placeholders</span><span class="special">::</span><span class="identifier">_1</span><span class="special">))).</span><span class="identifier">value_or</span><span class="special">(-</span><span class="number">1</span><span class="special">);</span>
 </pre>
 <p>
     </p>
@@ -177,7 +177,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2016 Vladimir Batov<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2020 Vladimir Batov<p>
         Distributed under the Boost Software License, Version 1.0. See copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>.
       </p>
 </div></td>

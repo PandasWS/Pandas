@@ -5,10 +5,12 @@
         "Peter Dimov"
     ],
     "maintainers": [
-        "Peter Dimov <pdimov -at- pdimov.com>"
+        "Peter Dimov <pdimov -at- gmail.com>"
     ],
     "description": "Customizable assert macros.",
     "category": [
-        "Correctness"
-    ]
+        "Correctness",
+        "Error-handling"
+    ],
+    "cxxstd": "03"
 }

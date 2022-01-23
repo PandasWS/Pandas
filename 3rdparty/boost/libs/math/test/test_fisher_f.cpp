@@ -17,7 +17,7 @@ using boost::math::fisher_f_distribution;
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp> // for test_main
-#include <boost/test/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE
+#include <boost/test/tools/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE
 #include "test_out_of_range.hpp"
 
 #include <iostream>
@@ -190,7 +190,7 @@ template <class RealType> // Any floating-point type RealType.
 void test_spots(RealType)
 {
   // Basic sanity checks, test data is to three decimal places only
-  // so set tolerance to 0.002 expressed as a persentage.  Note that
+  // so set tolerance to 0.002 expressed as a percentage.  Note that
   // we can't even get full 3 digit accuracy since the data we're
   // using as input has *already been rounded*, leading to even
   // greater differences in output.  As an accuracy test this is
@@ -519,7 +519,7 @@ BOOST_AUTO_TEST_CASE( test_main )
   test_spots(0.0); // Test double.
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
   test_spots(0.0L); // Test long double.
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
   test_spots(boost::math::concepts::real_concept(0.)); // Test real concept.
 #endif
 #endif

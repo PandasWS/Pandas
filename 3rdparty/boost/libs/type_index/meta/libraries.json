@@ -10,5 +10,6 @@
   "description": "Runtime/Compile time copyable type info.",
   "category": [
     "Emulation"
-  ]
+  ],
+  "cxxstd": "03"
 }

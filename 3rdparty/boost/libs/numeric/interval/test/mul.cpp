@@ -9,7 +9,7 @@
  */
 
 #include <boost/numeric/interval.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include "bugs.hpp"
 
 typedef boost::numeric::interval<double> I;
@@ -72,53 +72,53 @@ static bool test_sqrt(double al, double au) {
   return subset(abs(a), b);
 }
 
-int test_main(int, char*[]) {
-  BOOST_CHECK(test_mul(2, 3, 5, 7));
-  BOOST_CHECK(test_mul(2, 3, -5, 7));
-  BOOST_CHECK(test_mul(2, 3, -7, -5));
-  BOOST_CHECK(test_mul(-2, 3, 5, 7));
-  BOOST_CHECK(test_mul(-2, 3, -5, 7));
-  BOOST_CHECK(test_mul(-2, 3, -7, -5));
-  BOOST_CHECK(test_mul(-3, -2, 5, 7));
-  BOOST_CHECK(test_mul(-3, -2, -5, 7));
-  BOOST_CHECK(test_mul(-3, -2, -7, -5));
+int main() {
+  BOOST_TEST(test_mul(2, 3, 5, 7));
+  BOOST_TEST(test_mul(2, 3, -5, 7));
+  BOOST_TEST(test_mul(2, 3, -7, -5));
+  BOOST_TEST(test_mul(-2, 3, 5, 7));
+  BOOST_TEST(test_mul(-2, 3, -5, 7));
+  BOOST_TEST(test_mul(-2, 3, -7, -5));
+  BOOST_TEST(test_mul(-3, -2, 5, 7));
+  BOOST_TEST(test_mul(-3, -2, -5, 7));
+  BOOST_TEST(test_mul(-3, -2, -7, -5));
 
-  BOOST_CHECK(test_mul1(3, 5, 7));
-  BOOST_CHECK(test_mul1(3, -5, 7));
-  BOOST_CHECK(test_mul1(3, -7, -5));
-  BOOST_CHECK(test_mul1(-3, 5, 7));
-  BOOST_CHECK(test_mul1(-3, -5, 7));
-  BOOST_CHECK(test_mul1(-3, -7, -5));
+  BOOST_TEST(test_mul1(3, 5, 7));
+  BOOST_TEST(test_mul1(3, -5, 7));
+  BOOST_TEST(test_mul1(3, -7, -5));
+  BOOST_TEST(test_mul1(-3, 5, 7));
+  BOOST_TEST(test_mul1(-3, -5, 7));
+  BOOST_TEST(test_mul1(-3, -7, -5));
 
-  BOOST_CHECK(test_div(30, 42, 2, 3));
-  BOOST_CHECK(test_div(30, 42, -3, -2));
-  BOOST_CHECK(test_div(-30, 42, 2, 3));
-  BOOST_CHECK(test_div(-30, 42, -3, -2));
-  BOOST_CHECK(test_div(-42, -30, 2, 3));
-  BOOST_CHECK(test_div(-42, -30, -3, -2));
+  BOOST_TEST(test_div(30, 42, 2, 3));
+  BOOST_TEST(test_div(30, 42, -3, -2));
+  BOOST_TEST(test_div(-30, 42, 2, 3));
+  BOOST_TEST(test_div(-30, 42, -3, -2));
+  BOOST_TEST(test_div(-42, -30, 2, 3));
+  BOOST_TEST(test_div(-42, -30, -3, -2));
 
-  BOOST_CHECK(test_div1(30, 42, 3));
-  BOOST_CHECK(test_div1(30, 42, -3));
-  BOOST_CHECK(test_div1(-30, 42, 3));
-  BOOST_CHECK(test_div1(-30, 42, -3));
-  BOOST_CHECK(test_div1(-42, -30, 3));
-  BOOST_CHECK(test_div1(-42, -30, -3));
+  BOOST_TEST(test_div1(30, 42, 3));
+  BOOST_TEST(test_div1(30, 42, -3));
+  BOOST_TEST(test_div1(-30, 42, 3));
+  BOOST_TEST(test_div1(-30, 42, -3));
+  BOOST_TEST(test_div1(-42, -30, 3));
+  BOOST_TEST(test_div1(-42, -30, -3));
 
-  BOOST_CHECK(test_div2(30, 2, 3));
-  BOOST_CHECK(test_div2(30, -3, -2));
-  BOOST_CHECK(test_div2(-30, 2, 3));
-  BOOST_CHECK(test_div2(-30, -3, -2));
+  BOOST_TEST(test_div2(30, 2, 3));
+  BOOST_TEST(test_div2(30, -3, -2));
+  BOOST_TEST(test_div2(-30, 2, 3));
+  BOOST_TEST(test_div2(-30, -3, -2));
 
-  BOOST_CHECK(test_square(2, 3));
-  BOOST_CHECK(test_square(-2, 3));
-  BOOST_CHECK(test_square(-3, 2));
+  BOOST_TEST(test_square(2, 3));
+  BOOST_TEST(test_square(-2, 3));
+  BOOST_TEST(test_square(-3, 2));
 
-  BOOST_CHECK(test_sqrt(2, 3));
-  BOOST_CHECK(test_sqrt(5, 7));
-  BOOST_CHECK(test_sqrt(-1, 2));
+  BOOST_TEST(test_sqrt(2, 3));
+  BOOST_TEST(test_sqrt(5, 7));
+  BOOST_TEST(test_sqrt(-1, 2));
 
-# ifdef __BORLANDC__
+# ifdef BOOST_BORLANDC
   ::detail::ignore_warnings();
 # endif
-  return 0;
+  return boost::report_errors();
 }

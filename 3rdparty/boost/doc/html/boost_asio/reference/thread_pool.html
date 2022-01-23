@@ -1,12 +1,12 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>thread_pool</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../../boost_asio.html" title="Boost.Asio">
 <link rel="up" href="../reference.html" title="Reference">
-<link rel="prev" href="this_coro__executor_t/executor_t.html" title="this_coro::executor_t::executor_t">
+<link rel="prev" href="this_coro__throw_if_cancelled/overload2.html" title="this_coro::throw_if_cancelled (2 of 2 overloads)">
 <link rel="next" href="thread_pool/add_service.html" title="thread_pool::add_service">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -20,12 +20,15 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="this_coro__executor_t/executor_t.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="thread_pool/add_service.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="this_coro__throw_if_cancelled/overload2.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="thread_pool/add_service.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.thread_pool"></a><a class="link" href="thread_pool.html" title="thread_pool">thread_pool</a>
 </h3></div></div></div>
+<p>
+        <a class="indexterm" name="boost_asio.indexterm.thread_pool"></a>
+      </p>
 <p>
         A simple fixed-size thread pool.
       </p>
@@ -57,7 +60,20 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="thread_pool__executor_type.html" title="thread_pool::executor_type"><span class="bold"><strong>executor_type</strong></span></a>
+                  <a class="link" href="thread_pool__basic_executor_type.html" title="thread_pool::basic_executor_type"><span class="bold"><strong>basic_executor_type</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Executor implementation type used to submit functions to a thread
+                  pool.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="thread_pool/executor_type.html" title="thread_pool::executor_type"><span class="bold"><strong>executor_type</strong></span></a>
                 </p>
               </td>
 <td>
@@ -75,6 +91,18 @@
 <td>
                 <p>
                   Fork-related event notifications.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="thread_pool/scheduler_type.html" title="thread_pool::scheduler_type"><span class="bold"><strong>scheduler_type</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Scheduler used to schedule receivers on a thread pool.
                 </p>
               </td>
 </tr>
@@ -103,6 +131,30 @@
               </th>
 </tr></thead>
 <tbody>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="thread_pool/attach.html" title="thread_pool::attach"><span class="bold"><strong>attach</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Attaches the current thread to the pool.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="thread_pool/executor.html" title="thread_pool::executor"><span class="bold"><strong>executor</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Obtains the executor associated with the pool.
+                </p>
+              </td>
+</tr>
 <tr>
 <td>
                 <p>
@@ -142,6 +194,18 @@
 <tr>
 <td>
                 <p>
+                  <a class="link" href="thread_pool/scheduler.html" title="thread_pool::scheduler"><span class="bold"><strong>scheduler</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Obtains the scheduler associated with the pool.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   <a class="link" href="thread_pool/stop.html" title="thread_pool::stop"><span class="bold"><strong>stop</strong></span></a>
                 </p>
               </td>
@@ -154,20 +218,32 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="thread_pool/thread_pool.html" title="thread_pool::thread_pool"><span class="bold"><strong>thread_pool</strong></span></a>
+                  <a class="link" href="thread_pool/thread_pool.html" title="thread_pool::thread_pool"><span class="bold"><strong>thread_pool</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
                   Constructs a pool with an automatically determined number of threads.
-                  <br> <span class="silver"> &#8212;</span><br> Constructs a pool with a specified number of threads.
+                  <br> <span class="silver"> —</span><br> Constructs a pool with a specified number of threads.
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  <a class="link" href="thread_pool/_thread_pool.html" title="thread_pool::~thread_pool"><span class="bold"><strong>~thread_pool</strong></span></a>
+                  <a class="link" href="thread_pool/wait.html" title="thread_pool::wait"><span class="bold"><strong>wait</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Waits for threads to complete.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="thread_pool/_thread_pool.html" title="thread_pool::~thread_pool"><span class="bold"><strong>~thread_pool</strong></span></a> <span class="silver">[destructor]</span>
                 </p>
               </td>
 <td>
@@ -310,8 +386,7 @@
         tasks to the pool</a>
       </h5>
 <p>
-        To submit functions to the <a class="link" href="thread_pool.html" title="thread_pool"><code class="computeroutput">thread_pool</code></a>,
-        use the <a class="link" href="dispatch.html" title="dispatch"><code class="computeroutput">dispatch</code></a>
+        To submit functions to the thread pool, use the <a class="link" href="dispatch.html" title="dispatch"><code class="computeroutput">dispatch</code></a>
         , <a class="link" href="post.html" title="post"><code class="computeroutput">post</code></a> or
         <a class="link" href="defer.html" title="defer"><code class="computeroutput">defer</code></a> free
         functions.
@@ -355,7 +430,8 @@ pool.join();
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>
@@ -363,7 +439,7 @@ pool.join();
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="this_coro__executor_t/executor_t.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="thread_pool/add_service.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="this_coro__throw_if_cancelled/overload2.html"><img src="../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../boost_asio.html"><img src="../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="thread_pool/add_service.html"><img src="../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

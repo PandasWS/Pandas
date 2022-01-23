@@ -9,15 +9,14 @@
 #include <iostream>
 #include <boost/array.hpp>
 
-#define BOOST_TEST_MAIN
-#include <boost/test/unit_test.hpp>
+#include <boost/core/lightweight_test_trait.hpp>
 
 namespace {
 
 template< class T >
 void    BadValue( const T &  )
 {
-    BOOST_CHECK ( false );
+    BOOST_TEST ( false );
 }
 
 template< class T >
@@ -33,19 +32,19 @@ void    RunTests()
 
     //  front/back and operator[] must compile, but calling them is undefined
     //  Likewise, all tests below should evaluate to false, avoiding undefined behaviour
-    BOOST_CHECK (       test_case.empty());
-    BOOST_CHECK ( const_test_case.empty());
+    BOOST_TEST (       test_case.empty());
+    BOOST_TEST ( const_test_case.empty());
 
-    BOOST_CHECK (       test_case.size() == 0 );
-    BOOST_CHECK ( const_test_case.size() == 0 );
+    BOOST_TEST (       test_case.size() == 0 );
+    BOOST_TEST ( const_test_case.size() == 0 );
 
     //  Assert requirements of TR1 6.2.2.4
-    BOOST_CHECK ( test_case.begin()  == test_case.end());
-    BOOST_CHECK ( test_case.cbegin() == test_case.cend());
-    BOOST_CHECK ( const_test_case.begin() == const_test_case.end());
-    BOOST_CHECK ( const_test_case.cbegin() == const_test_case.cend());
+    BOOST_TEST ( test_case.begin()  == test_case.end());
+    BOOST_TEST ( test_case.cbegin() == test_case.cend());
+    BOOST_TEST ( const_test_case.begin() == const_test_case.end());
+    BOOST_TEST ( const_test_case.cbegin() == const_test_case.cend());
 
-    BOOST_CHECK ( test_case.begin() != const_test_case.begin() );
+    BOOST_TEST ( test_case.begin() != const_test_case.begin() );
     if( test_case.data() == const_test_case.data() ) {
     //  Value of data is unspecified in TR1, so no requirement this test pass or fail
     //  However, it must compile!
@@ -79,11 +78,12 @@ void    RunTests()
 
 }
 
-BOOST_AUTO_TEST_CASE( test_main )
+int main()
 {
     RunTests< bool >();
     RunTests< void * >();
     RunTests< long double >();
     RunTests< std::string >();
-}
 
+    return boost::report_errors();
+}

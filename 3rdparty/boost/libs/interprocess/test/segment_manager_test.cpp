@@ -1,3 +1,13 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// (C) Copyright Ion Gaztanaga 2004-2019. Distributed under the Boost
+// Software License, Version 1.0. (See accompanying file
+// LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/interprocess for documentation.
+//
+//////////////////////////////////////////////////////////////////////////////
+
 #include <boost/interprocess/indexes/flat_map_index.hpp>
 #include <boost/interprocess/indexes/map_index.hpp>
 #include <boost/interprocess/indexes/null_index.hpp>
@@ -83,7 +93,7 @@ bool test_segment_manager()
          return false;
       if(seg_mgr->get_free_memory() != free_mem_before)
          return false;
-      try{  seg_mgr->allocate(ShmSizeSize*2);  }catch(interprocess_exception&){}
+      BOOST_TRY{  seg_mgr->allocate(ShmSizeSize*2);  }BOOST_CATCH(interprocess_exception&){} BOOST_CATCH_END
       if(seg_mgr->get_free_memory() != free_mem_before)
          return false;
       if(seg_mgr->allocate(ShmSizeSize*2, std::nothrow))
@@ -111,7 +121,7 @@ bool test_segment_manager()
          return false;
       if(seg_mgr->get_free_memory() != free_mem_before)
          return false;
-      try{  seg_mgr->allocate_aligned(ShmSizeSize*2, Alignment);  }catch(interprocess_exception&){}
+      BOOST_TRY{  seg_mgr->allocate_aligned(ShmSizeSize*2, Alignment);  }BOOST_CATCH(interprocess_exception&){} BOOST_CATCH_END
       if(seg_mgr->get_free_memory() != free_mem_before)
          return false;
       if(seg_mgr->allocate_aligned(ShmSizeSize*2, Alignment, std::nothrow))
@@ -200,9 +210,9 @@ bool test_segment_manager()
       if(seg_mgr->get_instance_name(int_array))
          return false;
       seg_mgr->destroy_ptr(int_array);
-      try{  seg_mgr->template construct<int>(anonymous_instance)[ShmSizeSize]();  }catch(interprocess_exception&){}
+      BOOST_TRY{  seg_mgr->template construct<int>(anonymous_instance)[ShmSizeSize]();  }BOOST_CATCH(interprocess_exception&){} BOOST_CATCH_END
       if(seg_mgr->template construct<int>(anonymous_instance, std::nothrow)[ShmSizeSize]())
-      try{  seg_mgr->template construct_it<int>(anonymous_instance)[ShmSizeSize](&int_array_values[0]);  }catch(interprocess_exception&){}
+      BOOST_TRY{  seg_mgr->template construct_it<long int>(anonymous_instance)[ShmSizeSize](&int_array_values[0]);  }BOOST_CATCH(interprocess_exception&){} BOOST_CATCH_END
       if(seg_mgr->template construct_it<int>(anonymous_instance, std::nothrow)[ShmSizeSize](&int_array_values[0]))
          return false;
       if(seg_mgr->get_free_memory() != free_mem_before)
@@ -279,15 +289,15 @@ bool test_segment_manager()
             return false;
          typename SegmentManager::const_named_iterator nb(seg_mgr->named_begin());
          typename SegmentManager::const_named_iterator ne(seg_mgr->named_end());
-         for(std::size_t i = 0, imax = seg_mgr->get_num_named_objects(); i != imax; ++i){ ++nb; }
+         for(std::size_t j = 0, imax = seg_mgr->get_num_named_objects(); j != imax; ++j){ ++nb; }
          if(nb != ne)
             return false;
          seg_mgr->destroy_ptr(uint_object);
          seg_mgr->template destroy<int>(object2_name);
       }
-      try{  seg_mgr->template construct<unsigned int>(object1_name)[ShmSizeSize]();  }catch(interprocess_exception&){}
+      BOOST_TRY{  seg_mgr->template construct<unsigned int>(object1_name)[ShmSizeSize]();  }BOOST_CATCH(interprocess_exception&){} BOOST_CATCH_END
       if(seg_mgr->template construct<int>(object2_name, std::nothrow)[ShmSizeSize]())
-      try{  seg_mgr->template construct_it<unsigned int>(object1_name)[ShmSizeSize](&int_array_values[0]);  }catch(interprocess_exception&){}
+      BOOST_TRY{  seg_mgr->template construct_it<int>(object1_name)[ShmSizeSize](&int_array_values[0]);  }BOOST_CATCH(interprocess_exception&){} BOOST_CATCH_END
       if(seg_mgr->template construct_it<int>(object2_name, std::nothrow)[ShmSizeSize](&int_array_values[0]))
          return false;
       seg_mgr->shrink_to_fit_indexes();
@@ -369,15 +379,15 @@ bool test_segment_manager()
             return false;
          typename SegmentManager::const_unique_iterator nb(seg_mgr->unique_begin());
          typename SegmentManager::const_unique_iterator ne(seg_mgr->unique_end());
-         for(std::size_t i = 0, imax = seg_mgr->get_num_unique_objects(); i != imax; ++i){ ++nb; }
+         for(std::size_t j = 0, imax = seg_mgr->get_num_unique_objects(); j != imax; ++j){ ++nb; }
          if(nb != ne)
             return false;
          seg_mgr->destroy_ptr(uint_object);
          seg_mgr->template destroy<int>(unique_instance);
       }
-      try{  seg_mgr->template construct<unsigned int>(unique_instance)[ShmSizeSize]();  }catch(interprocess_exception&){}
+      BOOST_TRY{  seg_mgr->template construct<unsigned int>(unique_instance)[ShmSizeSize]();  }BOOST_CATCH(interprocess_exception&){} BOOST_CATCH_END
       if(seg_mgr->template construct<int>(unique_instance, std::nothrow)[ShmSizeSize]())
-      try{  seg_mgr->template construct_it<unsigned int>(unique_instance)[ShmSizeSize](&int_array_values[0]);  }catch(interprocess_exception&){}
+      BOOST_TRY{  seg_mgr->template construct_it<long int>(unique_instance)[ShmSizeSize](&int_array_values[0]);  }BOOST_CATCH(interprocess_exception&){} BOOST_CATCH_END
       if(seg_mgr->template construct_it<int>(unique_instance, std::nothrow)[ShmSizeSize](&int_array_values[0]))
          return false;
       seg_mgr->shrink_to_fit_indexes();
@@ -425,6 +435,18 @@ bool test_segment_manager()
       seg_mgr->shrink_to_fit_indexes();
       if(!seg_mgr->all_memory_deallocated())
          return false;
+   }
+   {//test get_memory_algorithm
+      {
+         typename SegmentManager::memory_algorithm & mem_algo =
+            seg_mgr->get_memory_algorithm();
+         boost::ignore_unused(mem_algo);
+      }
+      {
+         const typename SegmentManager::memory_algorithm & mem_algo =
+            const_cast<const SegmentManager*>(seg_mgr)->get_memory_algorithm();
+         boost::ignore_unused(mem_algo);
+      }
    }
    return true;
 }

@@ -18,7 +18,6 @@ rule vaseq ( command target )
 }
 
 vaseq run add ;
-vaseq run add_classifiers ;
 vaseq run add_default ;
 vaseq run add_except ;
 vaseq run add_inline ;

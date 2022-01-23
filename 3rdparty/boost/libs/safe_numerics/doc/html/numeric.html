@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Numeric&lt;T&gt;</title>
 <link rel="stylesheet" href="boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -22,12 +22,12 @@
 <a name="safe_numerics.numeric"></a>Numeric&lt;T&gt;</h3></div></div></div>
 <div class="toc"><dl class="toc">
 <dt><span class="section"><a href="numeric.html#safe_numerics.numeric.description">Description</a></span></dt>
-<dt><span class="section"><a href="numeric.html#idm130204085440">Notation</a></span></dt>
-<dt><span class="section"><a href="numeric.html#idm130204078192">Associated Types</a></span></dt>
-<dt><span class="section"><a href="numeric.html#idm130204072896">Valid Expressions</a></span></dt>
-<dt><span class="section"><a href="numeric.html#idm130203973088">Models</a></span></dt>
-<dt><span class="section"><a href="numeric.html#idm130203971280">Header</a></span></dt>
-<dt><span class="section"><a href="numeric.html#idm130203969088">Note on Usage of <code class="computeroutput">std::numeric_limits</code></a></span></dt>
+<dt><span class="section"><a href="numeric.html#idm56709143600">Notation</a></span></dt>
+<dt><span class="section"><a href="numeric.html#idm56709133680">Associated Types</a></span></dt>
+<dt><span class="section"><a href="numeric.html#idm56709128608">Valid Expressions</a></span></dt>
+<dt><span class="section"><a href="numeric.html#idm56709032512">Models</a></span></dt>
+<dt><span class="section"><a href="numeric.html#idm56709030832">Header</a></span></dt>
+<dt><span class="section"><a href="numeric.html#idm56709028832">Note on Usage of <code class="computeroutput">std::numeric_limits</code></a></span></dt>
 </dl></div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
@@ -46,7 +46,7 @@
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="idm130204085440"></a>Notation</h4></div></div></div>
+<a name="idm56709143600"></a>Notation</h4></div></div></div>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col align="left">
@@ -55,18 +55,26 @@
 <tbody>
 <tr>
 <td align="left"><code class="computeroutput">T, U, V</code></td>
-<td align="left">A type that is a model of Numeric</td>
+<td align="left">A type that is a model of a Numeric type</td>
 </tr>
 <tr>
 <td align="left"><code class="computeroutput">t, u</code></td>
-<td align="left">An object of a type modeling Numeric</td>
+<td align="left">An object of a type modeling a Numeric type</td>
+</tr>
+<tr>
+<td align="left"><code class="computeroutput">OS, IS</code></td>
+<td align="left">A type that is a model of an output or input stream</td>
+</tr>
+<tr>
+<td align="left"><code class="computeroutput">os, is</code></td>
+<td align="left">An object of a type modeling output or input stream</td>
 </tr>
 </tbody>
 </table></div>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="idm130204078192"></a>Associated Types</h4></div></div></div>
+<a name="idm56709133680"></a>Associated Types</h4></div></div></div>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col align="left">
@@ -83,13 +91,19 @@
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="idm130204072896"></a>Valid Expressions</h4></div></div></div>
+<a name="idm56709128608"></a>Valid Expressions</h4></div></div></div>
 <p>In addition to the expressions defined in <a href="http://www.sgi.com/tech/stl/Assignable.html" target="_top">Assignable</a> the
-    following expressions must be valid. Any operations which result in
-    integers which cannot be represented as some Numeric type will throw an
-    exception.</p>
+    following expressions must be valid. In the safe_numerics library, a type
+    is considered Numeric if and only if it it has an entry in the
+    std::numeric_limits table with the following members. Note that this is
+    different from the the definition of std::is_arithmetic in that the later
+    is required to support all valid expressions which Numeric does not
+    require support for all these expressions but only requires that they be
+    correctly implemented if they are defined. Also is_arithmetic is only
+    defined for built in numeric types while Numeric applies to any user types
+    which "look like" a number.</p>
 <div class="table">
-<a name="idm130204071072"></a><p class="title"><b>Table&#160;1.&#160;General</b></p>
+<a name="idm56709127104"></a><p class="title"><b>Table 1. General</b></p>
 <div class="table-contents"><table class="table" summary="General">
 <colgroup>
 <col align="left">
@@ -103,12 +117,23 @@
 </tr></thead>
 <tbody>
 <tr>
-<td align="left"><code class="computeroutput">std::numeric_limits&lt;T&gt;::is_bounded
-              </code></td>
+<td align="left"><code class="computeroutput">Numeric&lt;T&gt;</code></td>
+<td align="left"><code class="computeroutput">true_type</code></td>
+<td align="left">
+<code class="computeroutput">true</code> or <code class="computeroutput">false</code>
+</td>
+</tr>
+<tr>
+<td align="left"><code class="computeroutput">Numeric&lt;T&gt;()</code></td>
 <td align="left"><code class="computeroutput">bool</code></td>
 <td align="left">
 <code class="computeroutput">true</code> or <code class="computeroutput">false</code>
 </td>
+</tr>
+<tr>
+<td align="left"><code class="computeroutput">std::numeric_limits&lt;T&gt;::is_specialized</code></td>
+<td align="left"><code class="computeroutput">bool</code></td>
+<td align="left"><code class="computeroutput">true</code></td>
 </tr>
 <tr>
 <td align="left"><code class="computeroutput">std::numeric_limits&lt;T&gt;::is_integer</code></td>
@@ -124,18 +149,14 @@
 <code class="computeroutput">true</code> or <code class="computeroutput">false</code>
 </td>
 </tr>
-<tr>
-<td align="left"><code class="computeroutput">std::numeric_limits&lt;T&gt;::is_specialized
-              </code></td>
-<td align="left"><code class="computeroutput">bool</code></td>
-<td align="left"><code class="computeroutput">true</code></td>
-</tr>
 </tbody>
 </table></div>
 </div>
 <p><br class="table-break"></p>
+<p>Any or all of the following unary operators MAY be defined. Any such
+    defined operators shall implement the semantics as described below</p>
 <div class="table">
-<a name="idm130204050048"></a><p class="title"><b>Table&#160;2.&#160;Unary Operators</b></p>
+<a name="idm56709104816"></a><p class="title"><b>Table 2. Unary Operators</b></p>
 <div class="table-contents"><table class="table" summary="Unary Operators">
 <colgroup>
 <col align="left">
@@ -181,8 +202,10 @@
 </tbody>
 </table></div>
 </div>
-<br class="table-break"><div class="table">
-<a name="idm130204029296"></a><p class="title"><b>Table&#160;3.&#160;Binary Operators</b></p>
+<br class="table-break"><p>Any or all of the following binary operators MAY be defined. Any
+    defined operators shall implement the semantics as described bellow</p>
+<div class="table">
+<a name="idm56709085280"></a><p class="title"><b>Table 3. Binary Operators</b></p>
 <div class="table-contents"><table class="table" summary="Binary Operators">
 <colgroup>
 <col align="left">
@@ -214,11 +237,6 @@
 <td align="left"><code class="computeroutput">t / u</code></td>
 <td align="left"><code class="computeroutput">T</code></td>
 <td align="left">divide t by u</td>
-</tr>
-<tr>
-<td align="left"><code class="computeroutput">t % u</code></td>
-<td align="left"><code class="computeroutput">T</code></td>
-<td align="left">t modulus u</td>
 </tr>
 <tr>
 <td align="left"><code class="computeroutput">t &lt; u</code></td>
@@ -287,6 +305,16 @@
 <td align="left"><code class="computeroutput"><code class="computeroutput">T</code></code></td>
 <td align="left">divide t by u and assign to t</td>
 </tr>
+<tr>
+<td align="left"><code class="computeroutput">os &lt;&lt; t</code></td>
+<td align="left"><code class="computeroutput"><code class="computeroutput">OS &amp;</code></code></td>
+<td align="left">write contents of t to output stream</td>
+</tr>
+<tr>
+<td align="left"><code class="computeroutput">is &gt;&gt; t</code></td>
+<td align="left"><code class="computeroutput"><code class="computeroutput">IS &amp;</code></code></td>
+<td align="left">read contents of an input stream into t</td>
+</tr>
 </tbody>
 </table></div>
 </div>
@@ -294,49 +322,21 @@
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="idm130203973088"></a>Models</h4></div></div></div>
+<a name="idm56709032512"></a>Models</h4></div></div></div>
 <p><code class="computeroutput">int, float, safe_signed_integer&lt;int&gt;,
     safe_signed_range&lt;int&gt;, checked_result&lt;int&gt;,
     etc.</code></p>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="idm130203971280"></a>Header</h4></div></div></div>
-<p><a href="../../include/concept/numeric.hpp" target="_top"><code class="computeroutput">#include
-    &lt;boost/numeric/safe_numerics/concepts/numeric.hpp&gt;
-    </code></a></p>
+<a name="idm56709030832"></a>Header</h4></div></div></div>
+<p><a href="../../include/boost/safe_numerics/concept/numeric.hpp" target="_top"><code class="computeroutput">#include
+    &lt;boost/safe_numerics/concepts/numeric.hpp&gt; </code></a></p>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="idm130203969088"></a>Note on Usage of <code class="computeroutput">std::numeric_limits</code>
+<a name="idm56709028832"></a>Note on Usage of <code class="computeroutput">std::numeric_limits</code>
 </h4></div></div></div>
-<p>We define the word "Numeric" in terms of the operations which are
-    supported by "Numeric" types. This is in line with the current and
-    historical usage of the word "concept" in the context of C++. It is also
-    common to define compile time predicates such as
-    "<code class="computeroutput">is_numeric&lt;T&gt;</code>" to permit one to include expressions in
-    his code which will generated a compile time error if the specified type
-    (T) does not support the operations required. But this is not always true.
-    In the C++ standard library there is a predicate
-    <code class="computeroutput">is_arithmetic&lt;T&gt;</code> whose name might suggest that it
-    should return <code class="computeroutput">true</code> for any type which supports the operations
-    above. But this is not the case. The standard defines
-    <code class="computeroutput">is_arithmetic&lt;T&gt;</code> as <code class="computeroutput">true</code> for any of the
-    builtin types <code class="computeroutput">int</code>, <code class="computeroutput">long</code>, <code class="computeroutput">float</code>,
-    <code class="computeroutput">double</code>, etc and <code class="computeroutput">false</code> for any other types. So
-    even if a user defined type U were to support the operations above,
-    <code class="computeroutput">is_arithmetic&lt;U&gt;</code> would still return <code class="computeroutput">false</code>.
-    This is quite unintuitive and not a good match for our purposes. Hence we
-    define our own term "Numeric" to designate any type T which:</p>
-<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
-<li class="listitem"><p>Supports the operations above</p></li>
-<li class="listitem"><p>Specializes the standard type numeric_limits</p></li>
-</ul></div>
-<p>while following the C++ standard in using
-    <code class="computeroutput">is_arithmetic&lt;T&gt;</code>, <code class="computeroutput">is_integral&lt;T&gt;</code> to
-    detect specific types only. The standard types are useful in various
-    aspects of the implementation - which of course is done in terms of the
-    standard types.</p>
 <p>This in turn raises another question: Is it "legal" to specialize
     <code class="computeroutput">std::numeric_limits</code> for one's own types such as
     <code class="computeroutput">safe&lt;int&gt;</code>. In my view the standard is ambiguous on
@@ -360,7 +360,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2012-2018 Robert Ramey<p><a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">Subject to Boost
+<td align="right"><div class="copyright-footer">Copyright © 2012-2018 Robert Ramey<p><a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">Subject to Boost
       Software License</a></p>
 </div></td>
 </tr></table>

@@ -1,5 +1,5 @@
 /* Unit testing for outcomes
-(C) 2013-2019 Niall Douglas <http://www.nedproductions.biz/> (6 commits)
+(C) 2013-2021 Niall Douglas <http://www.nedproductions.biz/> (6 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -48,11 +48,11 @@ namespace issue0095
   out::result<int, F> f() { return F{}; }
   out::result<int, E> e()
   {
-    BOOST_OUTCOME_TRY(i, (f()));
+    BOOST_OUTCOME_TRY(auto &&i, (f()));
     return i;
   }
 }  // namespace issue0095
-BOOST_OUTCOME_AUTO_TEST_CASE(issues_95_outcome, "operator conversions on E type cause TRY to fail")
+BOOST_OUTCOME_AUTO_TEST_CASE(issues_0095_outcome, "operator conversions on E type cause TRY to fail")
 {
   BOOST_CHECK(issue0095::e().has_error());
 }

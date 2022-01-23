@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class stream_holder</title>
 <link rel="stylesheet" href="../../../boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -38,44 +38,44 @@
 
   <span class="keyword">struct</span> <a class="link" href="stream_holder/callback_cleaner.html" title="Struct callback_cleaner">callback_cleaner</a> <span class="special">{</span>
     <span class="comment">// <a class="link" href="stream_holder/callback_cleaner.html#boost.unit_test.runtime_config.stream_holder.callback_cleanerconstruct-copy-destruct">construct/copy/destruct</a></span>
-    <a class="link" href="stream_holder/callback_cleaner.html#idm46197989955296-bb"><span class="identifier">callback_cleaner</span></a><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span> <span class="keyword">void</span><span class="special">(</span><span class="special">)</span><span class="special">&gt;</span><span class="special">)</span><span class="special">;</span>
-    <a class="link" href="stream_holder/callback_cleaner.html#idm46197989954304-bb"><span class="special">~</span><span class="identifier">callback_cleaner</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+    <a class="link" href="stream_holder/callback_cleaner.html#idm47850-bb"><span class="identifier">callback_cleaner</span></a><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span> <span class="keyword">void</span><span class="special">(</span><span class="special">)</span><span class="special">&gt;</span><span class="special">)</span><span class="special">;</span>
+    <a class="link" href="stream_holder/callback_cleaner.html#idm47853-bb"><span class="special">~</span><span class="identifier">callback_cleaner</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
 
     <span class="comment">// public data members</span>
     <span class="identifier">boost</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span> <span class="keyword">void</span><span class="special">(</span><span class="special">)</span><span class="special">&gt;</span> <span class="identifier">m_cleaner_callback</span><span class="special">;</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">ofstream</span> <span class="identifier">m_file</span><span class="special">;</span>
   <span class="special">}</span><span class="special">;</span>
   <span class="comment">// <a class="link" href="stream_holder.html#boost.unit_test.runtime_config.stream_holderconstruct-copy-destruct">construct/copy/destruct</a></span>
-  <span class="keyword">explicit</span> <a class="link" href="stream_holder.html#idm46197989949632-bb"><span class="identifier">stream_holder</span></a><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">explicit</span> <a class="link" href="stream_holder.html#idm47864-bb"><span class="identifier">stream_holder</span></a><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">)</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="stream_holder.html#idm46197989954016-bb">public member functions</a></span>
-  <span class="keyword">void</span> <a class="link" href="stream_holder.html#idm46197989953456-bb"><span class="identifier">setup</span></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">const_string</span> <span class="special">&amp;</span><span class="special">,</span> 
+  <span class="comment">// <a class="link" href="stream_holder.html#idm47854-bb">public member functions</a></span>
+  <span class="keyword">void</span> <a class="link" href="stream_holder.html#idm47855-bb"><span class="identifier">setup</span></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">const_string</span> <span class="special">&amp;</span><span class="special">,</span> 
              <span class="identifier">boost</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span> <span class="keyword">void</span><span class="special">(</span><span class="special">)</span><span class="special">&gt;</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span> <span class="keyword">void</span><span class="special">(</span><span class="special">)</span><span class="special">&gt;</span><span class="special">(</span><span class="special">)</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> <a class="link" href="stream_holder.html#idm46197989950912-bb"><span class="identifier">ref</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> <a class="link" href="stream_holder.html#idm47862-bb"><span class="identifier">ref</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="idm46032247332016"></a><h2>Description</h2>
+<a name="idm63590"></a><h2>Description</h2>
 <div class="refsect2">
-<a name="idm46032247331600"></a><h3>
+<a name="idm63592"></a><h3>
 <a name="boost.unit_test.runtime_config.stream_holderconstruct-copy-destruct"></a><code class="computeroutput">stream_holder</code> 
         public
        construct/copy/destruct</h3>
-<div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><pre class="literallayout"><span class="keyword">explicit</span> <a name="idm46197989949632-bb"></a><span class="identifier">stream_holder</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> default_stream <span class="special">=</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">)</span><span class="special">;</span></pre></li></ol></div>
+<div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><pre class="literallayout"><span class="keyword">explicit</span> <a name="idm47864-bb"></a><span class="identifier">stream_holder</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> default_stream <span class="special">=</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">)</span><span class="special">;</span></pre></li></ol></div>
 </div>
 <div class="refsect2">
-<a name="idm46032247320128"></a><h3>
-<a name="idm46197989954016-bb"></a><code class="computeroutput">stream_holder</code> public member functions</h3>
+<a name="idm63614"></a><h3>
+<a name="idm47854-bb"></a><code class="computeroutput">stream_holder</code> public member functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
-<li class="listitem"><pre class="literallayout"><span class="keyword">void</span> <a name="idm46197989953456-bb"></a><span class="identifier">setup</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">const_string</span> <span class="special">&amp;</span> stream_name<span class="special">,</span> 
+<li class="listitem"><pre class="literallayout"><span class="keyword">void</span> <a name="idm47855-bb"></a><span class="identifier">setup</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">const_string</span> <span class="special">&amp;</span> stream_name<span class="special">,</span> 
            <span class="identifier">boost</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span> <span class="keyword">void</span><span class="special">(</span><span class="special">)</span><span class="special">&gt;</span> <span class="keyword">const</span> <span class="special">&amp;</span> cleaner_callback <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">function</span><span class="special">&lt;</span> <span class="keyword">void</span><span class="special">(</span><span class="special">)</span><span class="special">&gt;</span><span class="special">(</span><span class="special">)</span><span class="special">)</span><span class="special">;</span></pre></li>
-<li class="listitem"><pre class="literallayout"><span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> <a name="idm46197989950912-bb"></a><span class="identifier">ref</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span> <span class="special">&amp;</span> <a name="idm47862-bb"></a><span class="identifier">ref</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
 </ol></div>
 </div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2018 Boost.Test contributors<p>
+<td align="right"><div class="copyright-footer">Copyright © 2001-2020 Boost.Test contributors<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

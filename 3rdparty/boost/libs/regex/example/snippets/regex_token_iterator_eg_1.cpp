@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 12003
+ * Copyright (c) 2003
  * John Maddock
  *
  * Use, modification and distribution are subject to the 
@@ -23,7 +23,7 @@
 using namespace std;
 
 
-#if defined(BOOST_MSVC) || (defined(__BORLANDC__) && (__BORLANDC__ == 0x550))
+#if defined(BOOST_MSVC) || (defined(BOOST_BORLANDC) && (BOOST_BORLANDC == 0x550))
 //
 // problem with std::getline under MSVC6sp3
 istream& getline(istream& is, std::string& s)

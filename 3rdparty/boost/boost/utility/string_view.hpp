@@ -20,10 +20,9 @@
 
 #include <boost/config.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/utility/ostream_string.hpp>
+#include <boost/io/ostream_put.hpp>
 #include <boost/utility/string_view_fwd.hpp>
 #include <boost/throw_exception.hpp>
-#include <boost/container_hash/hash_fwd.hpp>
 
 #include <cstddef>
 #include <stdexcept>
@@ -578,7 +577,7 @@ namespace boost {
     inline std::basic_ostream<charT, traits>&
     operator<<(std::basic_ostream<charT, traits>& os,
       const basic_string_view<charT,traits>& str) {
-        return boost::ostream_string(os, str.data(), str.size());
+        return boost::io::ostream_put(os, str.data(), str.size());
         }
 
 #if 0
@@ -651,6 +650,9 @@ namespace boost {
         return std::stold ( std::wstring(str), idx );
         }
 #endif
+
+    // Forward declaration of Boost.ContainerHash function
+    template <class It> std::size_t hash_range(It, It);
 
     template <class charT, class traits>
     std::size_t hash_value(basic_string_view<charT, traits> s) {

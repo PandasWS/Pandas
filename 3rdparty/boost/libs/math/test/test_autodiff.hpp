@@ -33,6 +33,7 @@
 
 namespace mp11 = boost::mp11;
 namespace bmp = boost::multiprecision;
+namespace diff = boost::math::differentiation::autodiff_v1::detail;
 
 #if defined(BOOST_USE_VALGRIND) || defined(BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS)
 using bin_float_types = mp11::mp_list<float>;
@@ -72,10 +73,10 @@ using if_t = if_c<IfType::value, ThenType, ElseType>;
  */
 template <typename T, std::size_t OrderValue>
 struct test_constants_t {
-  static constexpr auto n_samples = if_t<mp11::mp_or<bmp::is_number<T>, bmp::is_number_expression<T>>, mp11::mp_int<10>, mp11::mp_int<25>>::value;      
+  static constexpr auto n_samples = if_t<mp11::mp_or<bmp::is_number<T>, bmp::is_number_expression<T>>, mp11::mp_int<10>, mp11::mp_int<25>>::value;
   static constexpr auto order = OrderValue;
-  static constexpr T pct_epsilon() BOOST_NOEXCEPT {
-	return (is_multiprecision_t<T>::value ? 2 : 1) * std::numeric_limits<T>::epsilon() * 100;
+  static constexpr T pct_epsilon() noexcept {
+    return (is_multiprecision_t<T>::value ? 2 : 1) * std::numeric_limits<T>::epsilon() * 100;
   }
 };
 
@@ -103,8 +104,8 @@ struct RandomSample {
                 "both be not integral");
 
   using dist_t = if_t<is_integer_t,
-	std::uniform_int_distribution<distribution_param_t>,
-	std::uniform_real_distribution<distribution_param_t>>;
+  std::uniform_int_distribution<distribution_param_t>,
+  std::uniform_real_distribution<distribution_param_t>>;
 
   struct get_integral_endpoint {
     template <typename V>
@@ -153,7 +154,7 @@ static_assert(std::is_same<RandomSample<bmp::cpp_bin_float_50>::dist_t,
 }  // namespace test_detail
 
 template<typename T>
-auto isNearZero(const T& t) noexcept -> typename std::enable_if<!detail::is_fvar<T>::value, bool>::type
+auto isNearZero(const T& t) noexcept -> typename std::enable_if<!diff::is_fvar<T>::value, bool>::type
 {
   using std::sqrt;
   using bmp::sqrt;
@@ -167,7 +168,7 @@ auto isNearZero(const T& t) noexcept -> typename std::enable_if<!detail::is_fvar
 }
 
 template<typename T>
-auto isNearZero(const T& t) noexcept -> typename std::enable_if<detail::is_fvar<T>::value, bool>::type
+auto isNearZero(const T& t) noexcept -> typename std::enable_if<diff::is_fvar<T>::value, bool>::type
 {
   using root_type = typename T::root_type;
   return isNearZero(static_cast<root_type>(t));

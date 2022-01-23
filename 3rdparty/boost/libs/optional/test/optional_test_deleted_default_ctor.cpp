@@ -1,5 +1,5 @@
 // Copyright 2017 Peter Dimov
-// Copyright 2017 Vinnie NotDefaultConstructible
+// Copyright 2017 Vinnie Falco
 // Copyright 2018 Andrzej Krzemienski
 //
 // Distributed under the Boost Software License, Version 1.0.

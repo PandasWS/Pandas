@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-<title>Chapter&#160;1.&#160;Boost.Contract 1.0.0</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chapter 1. Boost.Contract 1.0.0</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="index.html" title="Chapter&#160;1.&#160;Boost.Contract 1.0.0">
+<link rel="home" href="index.html" title="Chapter 1. Boost.Contract 1.0.0">
 <link rel="next" href="boost_contract/full_table_of_contents.html" title="Full Table of Contents">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -21,11 +21,11 @@
 <div class="chapter">
 <div class="titlepage"><div>
 <div><h2 class="title">
-<a name="boost_contract"></a>Chapter&#160;1.&#160;Boost.Contract 1.0.0</h2></div>
+<a name="boost_contract"></a>Chapter 1. Boost.Contract 1.0.0</h2></div>
 <div><div class="author"><h3 class="author">
 <span class="firstname">Lorenzo</span> <span class="surname">Caminiti <code class="email">&lt;<a class="email" href="mailto:lorcaminiti@gmail.com">lorcaminiti@gmail.com</a>&gt;</code></span>
 </h3></div></div>
-<div><p class="copyright">Copyright &#169; 2008-2018 Lorenzo Caminiti</p></div>
+<div><p class="copyright">Copyright © 2008-2019 Lorenzo Caminiti</p></div>
 <div><div class="legalnotice">
 <a name="boost_contract.legal"></a><p>
         Distributed under the Boost Software License, Version 1.0 (see accompanying
@@ -52,8 +52,8 @@
 </dl>
 </div>
 <div class="blockquote"><blockquote class="blockquote"><p>
-      <span class="emphasis"><em><span class="quote">&#8220;<span class="quote">Our field needs more formality, but the profession has not
-      realized it yet.</span>&#8221;</span></em></span>
+      <span class="emphasis"><em><span class="quote">“<span class="quote">Our field needs more formality, but the profession has not
+      realized it yet.</span>”</span></em></span>
     </p></blockquote></div>
 <div class="blockquote"><blockquote class="blockquote"><p>
       <span class="emphasis"><em>-- Bertrand Meyer (see <a class="link" href="boost_contract/bibliography.html#Meyer97_anchor">[Meyer97]</a>
@@ -108,7 +108,7 @@
       that <code class="computeroutput"><span class="identifier">x</span></code> had before executing
       the function (indicated here by <code class="literal"><span class="emphasis"><em>oldof</em></span></code><code class="computeroutput"><span class="special">(</span><span class="identifier">x</span><span class="special">)</span></code>).
       Note that postconditions shall be checked only when the execution of the function
-      body did not throw an exception.
+      body does not throw an exception.
     </p>
 <p>
       Now let's program this function and its contract using this library (see <a href="../../example/features/introduction.cpp" target="_top"><code class="literal">introduction.cpp</code></a>
@@ -191,8 +191,8 @@
 </tr>
 <tr><td align="left" valign="top"><p>
         C++11 lambda functions are necessary to use this library without manually
-        writing a significant amount of boiler-plate code to program the functors
-        that assert the contracts (see <a class="link" href="boost_contract/extras.html#boost_contract.extras.no_lambda_functions__no_c__11_" title="No Lambda Functions (No C++11)">No
+        writing a significant amount of boiler-plate code to program functors that
+        assert the contracts (see <a class="link" href="boost_contract/extras.html#boost_contract.extras.no_lambda_functions__no_c__11_" title="No Lambda Functions (No C++11)">No
         Lambda Functions</a>). That said, this library implementation does not
         use C++11 features and should work on most modern C++ compilers (see <a class="link" href="boost_contract/getting_started.html" title="Getting Started">Getting Started</a>).
       </p></td></tr>
@@ -265,15 +265,15 @@
       etc.).
     </p>
 <p>
-      Unfortunately, detailed and complete proposals to add contracts to the C++
-      standard such as <a class="link" href="boost_contract/bibliography.html#N1962_anchor">[N1962]</a> were rejected
-      by the C++ standard committee and it is not clear if the current proposal for
-      adding contracts to C++ <a class="link" href="boost_contract/bibliography.html#P0380_anchor">[P0380]</a> will actually
-      be accepted by the standard. <a href="#ftn.boost_contract.introduction.f3" class="footnote" name="boost_contract.introduction.f3"><sup class="footnote">[5]</sup></a> In any case, at least for now <a class="link" href="boost_contract/bibliography.html#P0380_anchor">[P0380]</a>
-      only supports pre- and postconditions while missing basic features such as
-      class invariants and old values in postconditions, not to mention the lack
-      of more advanced features like subcontracting. All these features are instead
-      supported by this library (see <a class="link" href="boost_contract/contract_programming_overview.html#boost_contract.contract_programming_overview.feature_summary" title="Feature Summary">Feature
+      The <a class="link" href="boost_contract/bibliography.html#P0380_anchor">[P0380]</a> proposal supports basic contract
+      programming, it was accepted and it will be included in C++20. This is undoubtedly
+      a step in the right direction, but unfortunately <a class="link" href="boost_contract/bibliography.html#P0380_anchor">[P0380]</a>
+      only supports pre- and postconditions while missing important features such
+      as class invariants and old values in postconditions, not to mention the lack
+      of more advanced features like subcontracting (more complete proposals like
+      <a class="link" href="boost_contract/bibliography.html#N1962_anchor">[N1962]</a> were rejected by the C++ standard
+      committee). All contracting programming features are instead supported by this
+      library (see <a class="link" href="boost_contract/contract_programming_overview.html#boost_contract.contract_programming_overview.feature_summary" title="Feature Summary">Feature
       Summary</a> for a detailed comparison between the features supported by
       this library and the ones listed in different contract programming proposals,
       see <a class="link" href="boost_contract/bibliography.html" title="Bibliography">Bibliography</a> for a list
@@ -294,8 +294,8 @@
         so it easy to check by visual inspection that it does not contain any bug
         and it will always increment <code class="computeroutput"><span class="identifier">x</span></code>
         by <code class="computeroutput"><span class="number">1</span></code> thus the function postcondition
-        will never fail. In real code, function bodies are rarely this simple and
-        can hide bugs which makes checking postconditions useful.
+        will never fail. In real production code, function bodies are rarely this
+        simple and can hide bugs which make checking postconditions useful.
       </p></div>
 <div id="ftn.boost_contract.introduction.f1" class="footnote"><p><a href="#boost_contract.introduction.f1" class="para"><sup class="para">[3] </sup></a>
         <span class="bold"><strong>Rationale:</strong></span> The assertion failure message
@@ -306,16 +306,12 @@
 <div id="ftn.boost_contract.introduction.f2" class="footnote"><p><a href="#boost_contract.introduction.f2" class="para"><sup class="para">[4] </sup></a>
         The <code class="computeroutput"><span class="identifier">pushable</span></code> base class is
         used in this example just to show subcontracting, it is somewhat arbitrary
-        and it will likely not appear in real code.
-      </p></div>
-<div id="ftn.boost_contract.introduction.f3" class="footnote"><p><a href="#boost_contract.introduction.f3" class="para"><sup class="para">[5] </sup></a>
-        The authors find attractive the syntax that uses C++11 attributes <code class="computeroutput"><span class="special">[[...]]</span></code> to specify contracts as indicated
-        in <a class="link" href="boost_contract/bibliography.html#P0380_anchor">[P0380]</a>.
+        and it will likely not appear in real production code.
       </p></div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><p><small>Last revised: August 14, 2019 at 12:07:37 GMT</small></p></td>
+<td align="left"><p><small>Last revised: December 02, 2021 at 06:54:36 GMT</small></p></td>
 <td align="right"><div class="copyright-footer"></div></td>
 </tr></table>
 <hr>

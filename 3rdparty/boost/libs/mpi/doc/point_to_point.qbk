@@ -141,7 +141,7 @@ The MPI standard requires users to keep the request
 handle for a non-blocking communication, and to call the "wait"
 operation (or successfully test for completion) to complete the send
 or receive.
-nlike most C MPI implementations, which allow the user to
+Unlike most C MPI implementations, which allow the user to
 discard the request for a non-blocking send, Boost.MPI requires the
 user to call "wait" or "test", since the request object might contain
 temporary buffers that have to be kept until the send is

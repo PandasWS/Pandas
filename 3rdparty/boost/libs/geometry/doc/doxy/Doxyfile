@@ -183,6 +183,7 @@ INPUT                  = . .. ../../../../boost/geometry/core \
                          ../../../../boost/geometry/algorithms/detail \
                          ../../../../boost/geometry/algorithms/detail/buffer \
                          ../../../../boost/geometry/algorithms/detail/comparable_distance \
+                         ../../../../boost/geometry/algorithms/detail/convex_hull \
                          ../../../../boost/geometry/algorithms/detail/covered_by \
                          ../../../../boost/geometry/algorithms/detail/disjoint \
                          ../../../../boost/geometry/algorithms/detail/distance \
@@ -220,6 +221,9 @@ INPUT                  = . .. ../../../../boost/geometry/core \
                          ../../../../boost/geometry/strategies/spherical \
                          ../../../../boost/geometry/strategies/geographic \
                          ../../../../boost/geometry/strategies/transform \
+                         ../../../../boost/geometry/strategy/cartesian \
+                         ../../../../boost/geometry/strategy/geographic \
+                         ../../../../boost/geometry/strategy/spherical \
                          ../../../../boost/geometry/util \
                          ../../../../boost/geometry/views \
                          ./doxygen_input/pages \
@@ -314,9 +318,9 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = 
-PREDEFINED             = BOOST_CONCEPT_REQUIRES(x)= \
-                         BOOST_CONCEPT_ASSERT(x) = \
-                         BOOST_STATIC_ASSERT(x) = \
+PREDEFINED             = BOOST_CONCEPT_REQUIRES(x) \
+                         BOOST_CONCEPT_ASSERT(x) \
+                         BOOST_STATIC_ASSERT(x) \
                          DOXYGEN_SHOULD_SKIP_THIS \
                          DOXYGEN_NO_DISPATCH \
                          DOXYGEN_NO_IMPL \

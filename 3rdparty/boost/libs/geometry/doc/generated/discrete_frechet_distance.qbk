@@ -20,7 +20,7 @@ Calculate discrete Frechet distance between two geometries (currently works for 
 
 [heading Synopsis]
 ``template<typename Geometry1, typename Geometry2, typename Strategy>
-distance_result< typename point_type<Geometry1>::type, typename point_type<Geometry2>::type, Strategy >::type discrete_frechet_distance(Geometry1 const & geometry1, Geometry2 const & geometry2, Strategy const & strategy)``
+auto discrete_frechet_distance(Geometry1 const & geometry1, Geometry2 const & geometry2, Strategy const & strategy)``
 
 [heading Parameters]
 
@@ -62,7 +62,7 @@ Calculate discrete Frechet distance between two geometries (currently work for L
 
 [heading Synopsis]
 ``template<typename Geometry1, typename Geometry2>
-distance_result< typename point_type<Geometry1>::type, typename point_type<Geometry2>::type >::type discrete_frechet_distance(Geometry1 const & geometry1, Geometry2 const & geometry2)``
+auto discrete_frechet_distance(Geometry1 const & geometry1, Geometry2 const & geometry2)``
 
 [heading Parameters]
 

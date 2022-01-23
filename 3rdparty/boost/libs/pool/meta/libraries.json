@@ -10,5 +10,6 @@
     ],
     "maintainers": [
         "Stephen Cleary <scleary -at- jerviswebb.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

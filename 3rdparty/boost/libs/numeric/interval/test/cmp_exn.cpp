@@ -13,7 +13,7 @@
 #include <boost/numeric/interval/compare.hpp>
 #include <boost/numeric/interval/policies.hpp>
 #include <boost/numeric/interval/compare/tribool.hpp>
-#include <boost/test/test_tools.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 struct my_checking
 {
@@ -32,7 +32,7 @@ typedef boost::numeric::interval_lib::policies< empty_class, my_checking >
 typedef boost::numeric::interval<int, my_policies> I;
 
 #define BOOST_C_EXN(e) \
-  BOOST_CHECK_THROW(e, boost::numeric::interval_lib::comparison_error)
+  BOOST_TEST_THROWS(e, boost::numeric::interval_lib::comparison_error)
 
 static void test_cer()
 {
@@ -218,7 +218,7 @@ static void test_tri()
   BOOST_C_EXN(b != d);
 }
 
-int test_main(int, char *[]) {
+int main() {
   test_cer();
   test_def();
   test_lex();
@@ -226,5 +226,5 @@ int test_main(int, char *[]) {
   test_set();
   test_tri();
 
-  return 0;
+  return boost::report_errors();
 }

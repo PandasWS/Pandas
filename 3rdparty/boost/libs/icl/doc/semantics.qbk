@@ -39,14 +39,14 @@ in notions like e.g. /orderings/ or /algebras/.
 
 On all set and map containers of the icl, there is an `operator <`
 that implements a
-[@http://www.sgi.com/tech/stl/StrictWeakOrdering.html strict weak ordering].
+[@https://boost.org/sgi/stl/StrictWeakOrdering.html strict weak ordering].
 [/ (see also [@http://en.wikipedia.org/wiki/Strict_weak_ordering here]).]
 The semantics of `operator <` is the same as for an stl's
-[@http://www.sgi.com/tech/stl/SortedAssociativeContainer.html SortedAssociativeContainer], 
+[@https://boost.org/sgi/stl/SortedAssociativeContainer.html SortedAssociativeContainer], 
 specifically
-[@http://www.sgi.com/tech/stl/set.html stl::set] 
+[@https://boost.org/sgi/stl/set.html stl::set] 
 and 
-[@http://www.sgi.com/tech/stl/map.html stl::map]:
+[@https://boost.org/sgi/stl/Map.html stl::map]:
 ``
 Irreflexivity<T,< > : T a;     !(a<a)
 Asymmetry<T,< >     : T a,b;   a<b implies !(b<a)

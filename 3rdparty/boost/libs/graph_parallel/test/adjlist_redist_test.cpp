@@ -24,7 +24,7 @@
 #include <sstream>
 #include <string>
 #include <boost/graph/iteration_macros.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #ifdef BOOST_NO_EXCEPTIONS
 void
@@ -177,7 +177,7 @@ void test_redistribution(int n, double p, int iterations, bool debug_output)
   }
 }
 
-int test_main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   int n = 1000;
   double p = 3e-3;
@@ -212,5 +212,5 @@ int test_main(int argc, char** argv)
   test_redistribution<UnstableUDGraph>(n, p, iterations, debug_output);
   test_redistribution<StableUDGraph>(n, p, iterations, debug_output);
 
-  return 0;
+  return boost::report_errors();
 }

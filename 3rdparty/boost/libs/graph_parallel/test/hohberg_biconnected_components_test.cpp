@@ -14,7 +14,7 @@
 #include <boost/graph/distributed/hohberg_biconnected_components.hpp>
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include <boost/graph/distributed/adjacency_list.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #ifdef BOOST_NO_EXCEPTIONS
 void
@@ -35,10 +35,10 @@ void check_components(const Graph& g, std::size_t num_comps)
   std::size_t not_mapped = (std::numeric_limits<std::size_t>::max)();
   std::vector<std::size_t> color_to_name(num_comps, not_mapped);
   BGL_FORALL_EDGES_T(e, g, Graph) {
-    BOOST_CHECK(get(edge_color, g, e) < num_comps);
+    BOOST_TEST(get(edge_color, g, e) < num_comps);
     if (color_to_name[get(edge_color, g, e)] == not_mapped)
       color_to_name[get(edge_color, g, e)] = get(edge_name, g, e);
-    BOOST_CHECK(color_to_name[get(edge_color,g,e)] == get(edge_name,g,e));
+    BOOST_TEST(color_to_name[get(edge_color,g,e)] == get(edge_name,g,e));
 
     if (color_to_name[get(edge_color,g,e)] != get(edge_name,g,e)) {
       for (std::size_t i = 0; i < color_to_name.size(); ++i)
@@ -76,7 +76,7 @@ test_small_hohberg_biconnected_components(Graph& g, int n, int comps_expected,
         hohberg_biconnected_components(g, get(edge_color, g), &leader, 
                                        &leader + 1);
       
-      BOOST_CHECK(num_comps == comps_expected);
+      BOOST_TEST(num_comps == comps_expected);
       check_components(g, num_comps);
     }
   } 
@@ -95,11 +95,11 @@ test_small_hohberg_biconnected_components(Graph& g, int n, int comps_expected,
 
   int num_comps = hohberg_biconnected_components(g, get(edge_color, g));
 
-  BOOST_CHECK(num_comps == comps_expected);
+  BOOST_TEST(num_comps == comps_expected);
   check_components(g, num_comps);
 }
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   mpi::environment env(argc, argv);
 
@@ -171,5 +171,5 @@ int test_main(int argc, char* argv[])
                                               false);
   }
 
-  return 0;
+  return boost::report_errors();
 }

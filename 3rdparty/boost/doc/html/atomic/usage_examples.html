@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Usage examples</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../atomic.html" title="Chapter&#160;6.&#160;Boost.Atomic">
+<link rel="up" href="../atomic.html" title="Chapter 6. Boost.Atomic">
 <link rel="prev" href="interface.html" title="Programming interfaces">
 <link rel="next" href="limitations.html" title="Limitations">
 </head>
@@ -35,7 +35,7 @@
       double-checked locking pattern</a></span></dt>
 <dt><span class="section"><a href="usage_examples.html#boost_atomic.usage_examples.example_ringbuffer">Wait-free
       ring buffer</a></span></dt>
-<dt><span class="section"><a href="usage_examples.html#boost_atomic.usage_examples.mp_queue">Wait-free multi-producer
+<dt><span class="section"><a href="usage_examples.html#boost_atomic.usage_examples.mp_queue">Lock-free multi-producer
       queue</a></span></dt>
 </dl></div>
 <div class="section">
@@ -371,7 +371,7 @@
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="boost_atomic.usage_examples.mp_queue"></a><a class="link" href="usage_examples.html#boost_atomic.usage_examples.mp_queue" title="Wait-free multi-producer queue">Wait-free multi-producer
+<a name="boost_atomic.usage_examples.mp_queue"></a><a class="link" href="usage_examples.html#boost_atomic.usage_examples.mp_queue" title="Lock-free multi-producer queue">Lock-free multi-producer
       queue</a>
 </h3></div></div></div>
 <div class="toc"><dl class="toc">
@@ -380,7 +380,7 @@
 <dt><span class="section"><a href="usage_examples.html#boost_atomic.usage_examples.mp_queue.discussion">Discussion</a></span></dt>
 </dl></div>
 <p>
-        The purpose of the <span class="emphasis"><em>wait-free multi-producer queue</em></span> is
+        The purpose of the <span class="emphasis"><em>lock-free multi-producer queue</em></span> is
         to allow an arbitrary number of producers to enqueue objects which are retrieved
         and processed in FIFO order by a single consumer.
       </p>
@@ -389,7 +389,7 @@
 <a name="boost_atomic.usage_examples.mp_queue.implementation"></a><a class="link" href="usage_examples.html#boost_atomic.usage_examples.mp_queue.implementation" title="Implementation">Implementation</a>
 </h4></div></div></div>
 <pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span>
-<span class="keyword">class</span> <span class="identifier">waitfree_queue</span> <span class="special">{</span>
+<span class="keyword">class</span> <span class="identifier">lockfree_queue</span> <span class="special">{</span>
 <span class="keyword">public</span><span class="special">:</span>
   <span class="keyword">struct</span> <span class="identifier">node</span> <span class="special">{</span>
     <span class="identifier">T</span> <span class="identifier">data</span><span class="special">;</span>
@@ -417,7 +417,7 @@
     <span class="keyword">return</span> <span class="identifier">first</span><span class="special">;</span>
   <span class="special">}</span>
 
-  <span class="identifier">waitfree_queue</span><span class="special">()</span> <span class="special">:</span> <span class="identifier">head_</span><span class="special">(</span><span class="number">0</span><span class="special">)</span> <span class="special">{}</span>
+  <span class="identifier">lockfree_queue</span><span class="special">()</span> <span class="special">:</span> <span class="identifier">head_</span><span class="special">(</span><span class="number">0</span><span class="special">)</span> <span class="special">{}</span>
 
   <span class="comment">// alternative interface if ordering is of no importance</span>
   <span class="identifier">node</span> <span class="special">*</span> <span class="identifier">pop_all_reverse</span><span class="special">(</span><span class="keyword">void</span><span class="special">)</span>
@@ -433,14 +433,14 @@
 <div class="titlepage"><div><div><h4 class="title">
 <a name="boost_atomic.usage_examples.mp_queue.usage"></a><a class="link" href="usage_examples.html#boost_atomic.usage_examples.mp_queue.usage" title="Usage">Usage</a>
 </h4></div></div></div>
-<pre class="programlisting"><span class="identifier">waitfree_queue</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="identifier">q</span><span class="special">;</span>
+<pre class="programlisting"><span class="identifier">lockfree_queue</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="identifier">q</span><span class="special">;</span>
 
 <span class="comment">// insert elements</span>
 <span class="identifier">q</span><span class="special">.</span><span class="identifier">push</span><span class="special">(</span><span class="number">42</span><span class="special">);</span>
 <span class="identifier">q</span><span class="special">.</span><span class="identifier">push</span><span class="special">(</span><span class="number">2</span><span class="special">);</span>
 
 <span class="comment">// pop elements</span>
-<span class="identifier">waitfree_queue</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;::</span><span class="identifier">node</span> <span class="special">*</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">q</span><span class="special">.</span><span class="identifier">pop_all</span><span class="special">()</span>
+<span class="identifier">lockfree_queue</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;::</span><span class="identifier">node</span> <span class="special">*</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">q</span><span class="special">.</span><span class="identifier">pop_all</span><span class="special">()</span>
 <span class="keyword">while</span><span class="special">(</span><span class="identifier">x</span><span class="special">)</span> <span class="special">{</span>
   <span class="identifier">X</span> <span class="special">*</span> <span class="identifier">tmp</span> <span class="special">=</span> <span class="identifier">x</span><span class="special">;</span>
   <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">x</span><span class="special">-&gt;</span><span class="identifier">next</span><span class="special">;</span>
@@ -457,7 +457,8 @@
           The implementation guarantees that all objects enqueued are processed in
           the order they were enqueued by building a singly-linked list of object
           in reverse processing order. The queue is atomically emptied by the consumer
-          and brought into correct order.
+          (in an operation that is not only lock-free but wait-free) and brought
+          into correct order.
         </p>
 <p>
           It must be guaranteed that any access to an object to be enqueued by the
@@ -466,14 +467,14 @@
           and dequeuing them with <span class="emphasis"><em>consume</em></span> memory order. It is
           not necessary to use <span class="emphasis"><em>acquire</em></span> memory order in <code class="literal">waitfree_queue::pop_all</code>
           because all operations involved depend on the value of the atomic pointer
-          through dereference
+          through dereference.
         </p>
 </div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2011 Helge Bahmann<br>Copyright &#169; 2012 Tim Blechmann<br>Copyright &#169; 2013, 2017, 2018 Andrey Semashev<p>
+<td align="right"><div class="copyright-footer">Copyright © 2011 Helge Bahmann<br>Copyright © 2012 Tim Blechmann<br>Copyright © 2013, 2017, 2018, 2020, 2021 Andrey Semashev<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

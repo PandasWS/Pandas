@@ -13,6 +13,10 @@ Default overloads for these customisation points are provided. See [the recipe f
 
 The difference between the `BOOST_OUTCOME_TRYV(expr)` and `BOOST_OUTCOME_TRY(expr)` editions is that the latter will set a variable if two or more macro arguments are present (see {{% api "BOOST_OUTCOME_TRY(var, expr)" %}}). The former requires the `T` to be `void`.
 
+Hints are given to the compiler that the expression will be successful. If you expect failure, you should use {{% api "BOOST_OUTCOME_TRYV_FAILURE_LIKELY(expr)" %}} instead.
+
+An internal temporary to hold the value of the expression is created, which generally invokes a copy/move. [If you wish to never copy/move, you can tell this macro to create the internal temporary as a reference instead.]({{% relref "/tutorial/essential/result/try_ref" %}})
+
 *Overridable*: Not overridable.
 
 *Definition*: Firstly the expression's temporary is bound to a uniquely named, stack allocated, `auto &&`. If that reference's bound object's `try_operation_has_value()` is false, immediately execute `return try_operation_return_as(propagated unique reference);`, propagating the rvalue/lvalue/etc-ness of the original expression.

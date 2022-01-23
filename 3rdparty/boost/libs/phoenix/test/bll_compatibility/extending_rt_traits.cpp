@@ -12,7 +12,7 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
 
 #include "boost/lambda/bind.hpp"
 #include "boost/lambda/lambda.hpp"
@@ -99,7 +99,7 @@ void test_unary_operators()
   ok((&_1)(a));
   ok((*_1)(a));
 
-  BOOST_CHECK((*_1)(make_const(&i)) == 1);
+  BOOST_TEST_EQ((*_1)(make_const(&i)), 1);
 }
 
 class X {};
@@ -381,14 +381,9 @@ void test_binary_operators() {
 }
 
 
-int test_main(int, char *[]) {
+int main()
+{
   test_unary_operators();
   test_binary_operators();
-  return 0;
+  return boost::report_errors();
 }
-
-
-
-
-
-

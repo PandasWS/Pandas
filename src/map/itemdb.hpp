@@ -27,8 +27,6 @@ const t_itemid UNKNOWN_ITEM_ID = 512;
 #define MAX_ITEMDELAYS	10
 ///Designed for search functions, species max number of matches to display.
 #define MAX_SEARCH	5
-///Maximum amount of items a combo may require
-#define MAX_ITEMS_PER_COMBO 6
 
 #define MAX_ROULETTE_LEVEL 7 /** client-defined value **/
 #define MAX_ROULETTE_COLUMNS 9 /** client-defined value **/
@@ -126,6 +124,9 @@ enum item_itemid : t_itemid
 	ITEMID_WOB_RACHEL					= 14584,
 	ITEMID_WOB_LOCAL					= 14585,
 	ITEMID_SIEGE_TELEPORT_SCROLL		= 14591,
+	ITEMID_INVENTORY_EX_EVT				= 25791,
+	ITEMID_INVENTORY_EX_DIS				= 25792,
+	ITEMID_INVENTORY_EX					= 25793,
 	ITEMID_WL_MB_SG						= 100065,
 	ITEMID_HOMUNCULUS_SUPPLEMENT		= 100371,
 };
@@ -234,7 +235,7 @@ enum e_item_job : uint16
 	ITEMJ_FOURTH      = 0x40,
 	ITEMJ_MAX         = 0xFF,
 
-	ITEMJ_ALL_UPPER = ITEMJ_UPPER | ITEMJ_THIRD_UPPER,
+	ITEMJ_ALL_UPPER = ITEMJ_UPPER | ITEMJ_THIRD_UPPER | ITEMJ_FOURTH,
 	ITEMJ_ALL_BABY = ITEMJ_BABY | ITEMJ_THIRD_BABY,
 	ITEMJ_ALL_THIRD = ITEMJ_THIRD | ITEMJ_THIRD_UPPER | ITEMJ_THIRD_BABY,
 
@@ -766,6 +767,9 @@ enum e_random_item_group {
 	IG_PITAPAT_BOX,
 	IG_HAPPY_BOX_J,
 	IG_CLASS_SHADOW_CUBE,
+	IG_SEALED_SCROLL,
+	IG_SQUAD_PRIZE1,
+	IG_SQUAD_PRIZE2,
 
 	IG_MAX,
 };
@@ -821,7 +825,7 @@ enum e_delay_consume : uint8 {
 struct s_item_combo {
 	std::vector<t_itemid> nameid;
 	script_code *script;
-	uint32 id;
+	uint16 id;
 
 	~s_item_combo() {
 		if (this->script) {
@@ -832,6 +836,27 @@ struct s_item_combo {
 		this->nameid.clear();
 	}
 };
+
+class ComboDatabase : public TypesafeYamlDatabase<uint16, s_item_combo> {
+private:
+	uint16 combo_num;
+	uint16 find_combo_id( const std::vector<t_itemid>& items );
+
+public:
+	ComboDatabase() : TypesafeYamlDatabase("COMBO_DB", 1) {
+
+	}
+
+	void clear() override{
+		TypesafeYamlDatabase::clear();
+		this->combo_num = 0;
+	}
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
+	void loadingFinished() override;
+};
+
+extern ComboDatabase itemdb_combo;
 
 /// Struct of item group entry
 struct s_item_group_entry
@@ -1053,25 +1078,18 @@ struct s_random_opt_group {
 };
 
 class RandomOptionDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_data> {
-#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint16, s_random_opt_data>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 public:
 	RandomOptionDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_DB", 1) {
 #ifdef Pandas_YamlBlastCache_RandomOptionDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(56);	// Win32
+		this->validDatatypeSize.push_back(80);	// x64
 #endif // Pandas_YamlBlastCache_RandomOptionDatabase
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node &node);
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node &node) override;
+	void loadingFinished() override;
 
 	// Additional
 	bool option_exists(std::string name);
@@ -1086,24 +1104,19 @@ public:
 extern RandomOptionDatabase random_option_db;
 
 class RandomOptionGroupDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_group> {
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeYamlDatabase<uint16, s_random_opt_group>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 public:
 	RandomOptionGroupDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_GROUP", 1) {
 #ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(52);	// Win32
+		this->validDatatypeSize.push_back(88);	// x64
+
+		this->validDatatypeSize.push_back(120);	// Linux
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node &node);
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node &node) override;
 
 	// Additional
 	bool add_option(const YAML::Node &node, std::shared_ptr<s_random_opt_group_entry> &entry);
@@ -1143,12 +1156,15 @@ public:
 	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 2, 1) {
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(368);	// Win32 + BOTH
+		this->validDatatypeSize.push_back(448);	// x64 + PRE
+		this->validDatatypeSize.push_back(456);	// x64 + RENEWAL
 #endif // Pandas_YamlBlastCache_ItemDatabase
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
+	void loadingFinished() override;
 	void clear() override{
 		TypesafeCachedYamlDatabase::clear();
 
@@ -1169,25 +1185,20 @@ public:
 extern ItemDatabase item_db;
 
 class ItemGroupDatabase : public TypesafeCachedYamlDatabase<uint16, s_item_group_db> {
-#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<uint16, s_item_group_db>>(*this);
-	}
-#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 public:
 	ItemGroupDatabase() : TypesafeCachedYamlDatabase("ITEM_GROUP_DB", 1) {
 #ifdef Pandas_YamlBlastCache_ItemGroupDatabase
 		this->supportSerialize = true;
+		this->validDatatypeSize.push_back(36);	// Win32
+		this->validDatatypeSize.push_back(72);	// x64
+
+		this->validDatatypeSize.push_back(64);	// Linux
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
+	void loadingFinished() override;
 
 	// Additional
 	bool item_exists(uint16 group_id, t_itemid nameid);
@@ -1260,8 +1271,6 @@ char itemdb_isidentified(t_itemid nameid);
 bool itemdb_isstackable2(struct item_data *id);
 #define itemdb_isstackable(nameid) itemdb_isstackable2(itemdb_search(nameid))
 bool itemdb_isNoEquip(struct item_data *id, uint16 m);
-
-s_item_combo *itemdb_combo_exists(uint32 combo_id);
 
 bool itemdb_parse_roulette_db(void);
 
@@ -1468,6 +1477,5 @@ namespace boost {
 	} // namespace serialization
 } // namespace boost
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
-
 
 #endif /* ITEMDB_HPP */

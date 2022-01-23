@@ -14,7 +14,7 @@
 #include <boost/numeric/interval/rounded_arith.hpp>
 #include <boost/numeric/interval/utility.hpp>
 #include <boost/numeric/interval/policies.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include "bugs.hpp"
 
 typedef enum { EXPR_VAR, EXPR_NEG, EXPR_UP, EXPR_DOWN, EXPR_ADD, EXPR_SUB } e_type;
@@ -214,30 +214,30 @@ public:
   typedef boost::numeric::interval<pexpr, my_policies> type;
 };
 
-int test_main(int, char *[]) {
+int main() {
   typedef my_interval<boost::numeric::interval_lib::rounded_arith_std<pexpr> >::type I1;
   typedef my_interval<boost::numeric::interval_lib::rounded_arith_opp<pexpr> >::type I2;
-  BOOST_CHECK((test_neg<I1>()));
-  BOOST_CHECK((test_neg<I2>()));
-  BOOST_CHECK((test_add<I1>()));
-  BOOST_CHECK((test_add<I2>()));
-  BOOST_CHECK((test_add1<I1>()));
-  BOOST_CHECK((test_add1<I2>()));
-  BOOST_CHECK((test_add2<I1>()));
-  BOOST_CHECK((test_add2<I2>()));
-  BOOST_CHECK((test_sub<I1>()));
-  BOOST_CHECK((test_sub<I2>()));
-  BOOST_CHECK((test_sub1<I1>()));
-  BOOST_CHECK((test_sub1<I2>()));
-  BOOST_CHECK((test_sub2<I1>()));
-  BOOST_CHECK((test_sub2<I2>()));
-  BOOST_CHECK((test_addeq<I1>()));
-  BOOST_CHECK((test_addeq<I2>()));
-  BOOST_CHECK((test_addeq1<I1>()));
-  BOOST_CHECK((test_addeq1<I2>()));
-  BOOST_CHECK((test_subeq<I1>()));
-  BOOST_CHECK((test_subeq<I2>()));
-  BOOST_CHECK((test_subeq1<I1>()));
-  BOOST_CHECK((test_subeq1<I2>()));
-  return 0;
+  BOOST_TEST((test_neg<I1>()));
+  BOOST_TEST((test_neg<I2>()));
+  BOOST_TEST((test_add<I1>()));
+  BOOST_TEST((test_add<I2>()));
+  BOOST_TEST((test_add1<I1>()));
+  BOOST_TEST((test_add1<I2>()));
+  BOOST_TEST((test_add2<I1>()));
+  BOOST_TEST((test_add2<I2>()));
+  BOOST_TEST((test_sub<I1>()));
+  BOOST_TEST((test_sub<I2>()));
+  BOOST_TEST((test_sub1<I1>()));
+  BOOST_TEST((test_sub1<I2>()));
+  BOOST_TEST((test_sub2<I1>()));
+  BOOST_TEST((test_sub2<I2>()));
+  BOOST_TEST((test_addeq<I1>()));
+  BOOST_TEST((test_addeq<I2>()));
+  BOOST_TEST((test_addeq1<I1>()));
+  BOOST_TEST((test_addeq1<I2>()));
+  BOOST_TEST((test_subeq<I1>()));
+  BOOST_TEST((test_subeq<I2>()));
+  BOOST_TEST((test_subeq1<I1>()));
+  BOOST_TEST((test_subeq1<I2>()));
+  return boost::report_errors();
 }

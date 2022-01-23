@@ -34,5 +34,9 @@ int main()
     (void)f;
     (void)z;
 
+
+    BOOST_CONSTEXPR long value = boost::implicit_cast<long>(42);
+    BOOST_TEST(value == 42L);
+
     return boost::report_errors();
 }

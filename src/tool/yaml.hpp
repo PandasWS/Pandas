@@ -42,6 +42,7 @@
 #include "../map/chat.hpp"
 #include "../map/date.hpp"
 #include "../map/instance.hpp"
+#include "../map/elemental.hpp"
 #include "../map/mercenary.hpp"
 #include "../map/mob.hpp"
 #include "../map/npc.hpp"
@@ -612,10 +613,6 @@ static bool parse_skill_constants_txt(char *split[], int columns, int current) {
 }
 
 #ifdef Pandas_YamlBlastCache_SkillDatabase
-void SkillDatabase::loadingFinished() {
-	// 在这里什么都不用做
-}
-
 bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
 	return TypesafeCachedYamlDatabase<uint16, s_skill_db>::doSerialize(type, archive);
 }
@@ -649,6 +646,9 @@ uint64 SkillDatabase::parseBodyNode(const YAML::Node &node) {
 
 void SkillDatabase::clear() {
 	TypesafeCachedYamlDatabase::clear();
+}
+
+void SkillDatabase::loadingFinished(){
 }
 
 SkillDatabase skill_db;

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class template object_pool</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -26,7 +26,7 @@
 <a name="boost.object_pool"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Class template object_pool</span></h2>
-<p>boost::object_pool &#8212; A template class that can be used for fast and efficient memory allocation of objects. It also provides automatic destruction of non-deallocated objects. </p>
+<p>boost::object_pool — A template class that can be used for fast and efficient memory allocation of objects. It also provides automatic destruction of non-deallocated objects. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../header/boost/pool/poolfwd_hpp.html" title="Header &lt;boost/pool/poolfwd.hpp&gt;">boost/pool/poolfwd.hpp</a>&gt;
@@ -35,42 +35,42 @@
 <span class="keyword">class</span> <a class="link" href="object_pool.html" title="Class template object_pool">object_pool</a> <span class="special">:</span> <span class="keyword">protected</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">pool</span><span class="special">&lt;</span> <span class="identifier">UserAllocator</span> <span class="special">&gt;</span> <span class="special">{</span>
 <span class="keyword">public</span><span class="special">:</span>
   <span class="comment">// <a class="link" href="object_pool.html#boost.object_poolconstruct-copy-destruct">construct/copy/destruct</a></span>
-  <span class="keyword">explicit</span> <a class="link" href="object_pool.html#idm45452580323232-bb"><span class="identifier">object_pool</span></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span> <span class="special">=</span> <span class="number">32</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">size_type</span> <span class="special">=</span> <span class="number">0</span><span class="special">)</span><span class="special">;</span>
-  <a class="link" href="object_pool.html#idm45452580320080-bb"><span class="special">~</span><span class="identifier">object_pool</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">explicit</span> <a class="link" href="object_pool.html#idm2556-bb"><span class="identifier">object_pool</span></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span> <span class="special">=</span> <span class="number">32</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">size_type</span> <span class="special">=</span> <span class="number">0</span><span class="special">)</span><span class="special">;</span>
+  <a class="link" href="object_pool.html#idm2567-bb"><span class="special">~</span><span class="identifier">object_pool</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="object_pool.html#idm45452580359200-bb">protected member functions</a></span>
-  <a class="link" href="pool.html" title="Class template pool">pool</a><span class="special">&lt;</span> <span class="identifier">UserAllocator</span> <span class="special">&gt;</span> <span class="special">&amp;</span> <a class="link" href="object_pool.html#idm45452580358704-bb"><span class="identifier">store</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">const</span> <a class="link" href="pool.html" title="Class template pool">pool</a><span class="special">&lt;</span> <span class="identifier">UserAllocator</span> <span class="special">&gt;</span> <span class="special">&amp;</span> <a class="link" href="object_pool.html#idm45452580356176-bb"><span class="identifier">store</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="object_pool.html#idm2448-bb">protected member functions</a></span>
+  <a class="link" href="pool.html" title="Class template pool">pool</a><span class="special">&lt;</span> <span class="identifier">UserAllocator</span> <span class="special">&gt;</span> <span class="special">&amp;</span> <a class="link" href="object_pool.html#idm2449-bb"><span class="identifier">store</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">const</span> <a class="link" href="pool.html" title="Class template pool">pool</a><span class="special">&lt;</span> <span class="identifier">UserAllocator</span> <span class="special">&gt;</span> <span class="special">&amp;</span> <a class="link" href="object_pool.html#idm2457-bb"><span class="identifier">store</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="object_pool.html#idm45452580353152-bb">protected static functions</a></span>
-  <span class="keyword">static</span> <span class="keyword">void</span> <span class="special">*</span><span class="special">&amp;</span> <a class="link" href="object_pool.html#idm45452580352656-bb"><span class="identifier">nextof</span></a><span class="special">(</span><span class="keyword">void</span> <span class="special">*</span><span class="keyword">const</span><span class="special">)</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="object_pool.html#idm2465-bb">protected static functions</a></span>
+  <span class="keyword">static</span> <span class="keyword">void</span> <span class="special">*</span><span class="special">&amp;</span> <a class="link" href="object_pool.html#idm2466-bb"><span class="identifier">nextof</span></a><span class="special">(</span><span class="keyword">void</span> <span class="special">*</span><span class="keyword">const</span><span class="special">)</span><span class="special">;</span>
 
-  <span class="comment">// <a class="link" href="object_pool.html#idm45452580349936-bb">public member functions</a></span>
-  <span class="identifier">element_type</span> <span class="special">*</span> <a class="link" href="object_pool.html#idm45452580349440-bb"><span class="identifier">malloc</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="object_pool.html#idm45452580347712-bb"><span class="identifier">free</span></a><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">bool</span> <a class="link" href="object_pool.html#idm45452580345360-bb"><span class="identifier">is_from</span></a><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="identifier">element_type</span> <span class="special">*</span> <a class="link" href="object_pool.html#idm45452580341456-bb"><span class="identifier">construct</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="object_pool.html#idm2474-bb">public member functions</a></span>
+  <span class="identifier">element_type</span> <span class="special">*</span> <a class="link" href="object_pool.html#idm2475-bb"><span class="identifier">malloc</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="object_pool.html#idm2481-bb"><span class="identifier">free</span></a><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">bool</span> <a class="link" href="object_pool.html#idm2489-bb"><span class="identifier">is_from</span></a><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">element_type</span> <span class="special">*</span> <a class="link" href="object_pool.html#idm2501-bb"><span class="identifier">construct</span></a><span class="special">(</span><span class="special">)</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Arg1<span class="special">,</span> <span class="special">...</span> <span class="keyword">class</span> ArgN<span class="special">&gt;</span> 
-    <span class="identifier">element_type</span> <span class="special">*</span> <a class="link" href="object_pool.html#idm45452580339536-bb"><span class="identifier">construct</span></a><span class="special">(</span><span class="identifier">Arg1</span> <span class="special">&amp;</span><span class="special">,</span> <span class="special">...</span> <span class="identifier">ArgN</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="object_pool.html#idm45452580330720-bb"><span class="identifier">destroy</span></a><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span><span class="special">)</span><span class="special">;</span>
-  <span class="identifier">size_type</span> <a class="link" href="object_pool.html#idm45452580327584-bb"><span class="identifier">get_next_size</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="keyword">void</span> <a class="link" href="object_pool.html#idm45452580325600-bb"><span class="identifier">set_next_size</span></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
+    <span class="identifier">element_type</span> <span class="special">*</span> <a class="link" href="object_pool.html#idm2507-bb"><span class="identifier">construct</span></a><span class="special">(</span><span class="identifier">Arg1</span> <span class="special">&amp;</span><span class="special">,</span> <span class="special">...</span> <span class="identifier">ArgN</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="object_pool.html#idm2531-bb"><span class="identifier">destroy</span></a><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span><span class="special">)</span><span class="special">;</span>
+  <span class="identifier">size_type</span> <a class="link" href="object_pool.html#idm2542-bb"><span class="identifier">get_next_size</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="keyword">void</span> <a class="link" href="object_pool.html#idm2548-bb"><span class="identifier">set_next_size</span></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span><span class="special">)</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="idm45974876964016"></a><h2>Description</h2>
+<a name="idm3420"></a><h2>Description</h2>
 <p><span class="bold"><strong>T</strong></span> The type of object to allocate/deallocate. T must have a non-throwing destructor.</p>
 <p><span class="bold"><strong>UserAllocator</strong></span> Defines the allocator that the underlying Pool will use to allocate memory from the system. See <a href="../boost_pool/pool/pooling.html#boost_pool.pool.pooling.user_allocator" target="_top">User Allocators</a> for details.</p>
 <p>Class <a class="link" href="object_pool.html" title="Class template object_pool">object_pool</a> is a template class that can be used for fast and efficient memory allocation of objects. It also provides automatic destruction of non-deallocated objects.</p>
 <p>When the object pool is destroyed, then the destructor for type T is called for each allocated T that has not yet been deallocated. O(N).</p>
 <p>Whenever an object of type ObjectPool needs memory from the system, it will request it from its UserAllocator template parameter. The amount requested is determined using a doubling algorithm; that is, each time more system memory is allocated, the amount of system memory requested is doubled. Users may control the doubling algorithm by the parameters passed to the <a class="link" href="object_pool.html" title="Class template object_pool">object_pool</a>'s constructor. </p>
 <div class="refsect2">
-<a name="idm45974876957872"></a><h3>
+<a name="idm3432"></a><h3>
 <a name="boost.object_poolconstruct-copy-destruct"></a><code class="computeroutput">object_pool</code> 
         public
        construct/copy/destruct</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">explicit</span> <a name="idm45452580323232-bb"></a><span class="identifier">object_pool</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span> arg_next_size <span class="special">=</span> <span class="number">32</span><span class="special">,</span> 
+<pre class="literallayout"><span class="keyword">explicit</span> <a name="idm2556-bb"></a><span class="identifier">object_pool</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span> arg_next_size <span class="special">=</span> <span class="number">32</span><span class="special">,</span> 
                      <span class="keyword">const</span> <span class="identifier">size_type</span> arg_max_size <span class="special">=</span> <span class="number">0</span><span class="special">)</span><span class="special">;</span></pre>
 <p>Constructs a new (empty by default) ObjectPool. 
 
@@ -87,15 +87,15 @@
 </tr></tbody>
 </table></div>
 </li>
-<li class="listitem"><pre class="literallayout"><a name="idm45452580320080-bb"></a><span class="special">~</span><span class="identifier">object_pool</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><a name="idm2567-bb"></a><span class="special">~</span><span class="identifier">object_pool</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre></li>
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="idm45974876939664"></a><h3>
-<a name="idm45452580359200-bb"></a><code class="computeroutput">object_pool</code> protected member functions</h3>
+<a name="idm3470"></a><h3>
+<a name="idm2448-bb"></a><code class="computeroutput">object_pool</code> protected member functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><a class="link" href="pool.html" title="Class template pool">pool</a><span class="special">&lt;</span> <span class="identifier">UserAllocator</span> <span class="special">&gt;</span> <span class="special">&amp;</span> <a name="idm45452580358704-bb"></a><span class="identifier">store</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><a class="link" href="pool.html" title="Class template pool">pool</a><span class="special">&lt;</span> <span class="identifier">UserAllocator</span> <span class="special">&gt;</span> <span class="special">&amp;</span> <a name="idm2449-bb"></a><span class="identifier">store</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
 <p>
 </p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -110,7 +110,7 @@
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">const</span> <a class="link" href="pool.html" title="Class template pool">pool</a><span class="special">&lt;</span> <span class="identifier">UserAllocator</span> <span class="special">&gt;</span> <span class="special">&amp;</span> <a name="idm45452580356176-bb"></a><span class="identifier">store</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">const</span> <a class="link" href="pool.html" title="Class template pool">pool</a><span class="special">&lt;</span> <span class="identifier">UserAllocator</span> <span class="special">&gt;</span> <span class="special">&amp;</span> <a name="idm2457-bb"></a><span class="identifier">store</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <p>
 </p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -127,10 +127,10 @@
 </ol></div>
 </div>
 <div class="refsect2">
-<a name="idm45974876916992"></a><h3>
-<a name="idm45452580353152-bb"></a><code class="computeroutput">object_pool</code> protected static functions</h3>
+<a name="idm3517"></a><h3>
+<a name="idm2465-bb"></a><code class="computeroutput">object_pool</code> protected static functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
-<pre class="literallayout"><span class="keyword">static</span> <span class="keyword">void</span> <span class="special">*</span><span class="special">&amp;</span> <a name="idm45452580352656-bb"></a><span class="identifier">nextof</span><span class="special">(</span><span class="keyword">void</span> <span class="special">*</span><span class="keyword">const</span> ptr<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">static</span> <span class="keyword">void</span> <span class="special">*</span><span class="special">&amp;</span> <a name="idm2466-bb"></a><span class="identifier">nextof</span><span class="special">(</span><span class="keyword">void</span> <span class="special">*</span><span class="keyword">const</span> ptr<span class="special">)</span><span class="special">;</span></pre>
 <p>
 </p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -146,23 +146,23 @@
 </li></ol></div>
 </div>
 <div class="refsect2">
-<a name="idm45974876904912"></a><h3>
-<a name="idm45452580349936-bb"></a><code class="computeroutput">object_pool</code> public member functions</h3>
+<a name="idm3543"></a><h3>
+<a name="idm2474-bb"></a><code class="computeroutput">object_pool</code> public member functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">element_type</span> <span class="special">*</span> <a name="idm45452580349440-bb"></a><span class="identifier">malloc</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">element_type</span> <span class="special">*</span> <a name="idm2475-bb"></a><span class="identifier">malloc</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
 <p>Allocates memory that can hold one object of type ElementType.</p>
 <p>If out of memory, returns 0.</p>
 <p>Amortized O(1). </p>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="idm45452580347712-bb"></a><span class="identifier">free</span><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span> chunk<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="idm2481-bb"></a><span class="identifier">free</span><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span> chunk<span class="special">)</span><span class="special">;</span></pre>
 <p>De-Allocates memory that holds a chunk of type ElementType.</p>
 <p>Note that p may not be 0.<br>
  Note that the destructor for p is not called. O(N). </p>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">bool</span> <a name="idm45452580345360-bb"></a><span class="identifier">is_from</span><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span> chunk<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">bool</span> <a name="idm2489-bb"></a><span class="identifier">is_from</span><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span> chunk<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <p>
 Returns false if chunk was allocated from some other pool or may be returned as the result of a future allocation from some other pool.</p>
 <p>Otherwise, the return value is meaningless.</p>
@@ -187,7 +187,7 @@ Returns false if chunk was allocated from some other pool or may be returned as 
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">element_type</span> <span class="special">*</span> <a name="idm45452580341456-bb"></a><span class="identifier">construct</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">element_type</span> <span class="special">*</span> <a name="idm2501-bb"></a><span class="identifier">construct</span><span class="special">(</span><span class="special">)</span><span class="special">;</span></pre>
 <p>
 </p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -203,7 +203,7 @@ Returns false if chunk was allocated from some other pool or may be returned as 
 </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Arg1<span class="special">,</span> <span class="special">...</span> <span class="keyword">class</span> ArgN<span class="special">&gt;</span> 
-  <span class="identifier">element_type</span> <span class="special">*</span> <a name="idm45452580339536-bb"></a><span class="identifier">construct</span><span class="special">(</span><span class="identifier">Arg1</span> <span class="special">&amp;</span><span class="special">,</span> <span class="special">...</span> <span class="identifier">ArgN</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span></pre>
+  <span class="identifier">element_type</span> <span class="special">*</span> <a name="idm2507-bb"></a><span class="identifier">construct</span><span class="special">(</span><span class="identifier">Arg1</span> <span class="special">&amp;</span><span class="special">,</span> <span class="special">...</span> <span class="identifier">ArgN</span> <span class="special">&amp;</span><span class="special">)</span><span class="special">;</span></pre>
 <p>
 </p>
 <div class="note"><table border="0" summary="Note">
@@ -235,7 +235,7 @@ detail/pool_construct.bat and detail/pool_construct.sh are also provided to call
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="idm45452580330720-bb"></a><span class="identifier">destroy</span><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span> chunk<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="idm2531-bb"></a><span class="identifier">destroy</span><span class="special">(</span><span class="identifier">element_type</span> <span class="special">*</span><span class="keyword">const</span> chunk<span class="special">)</span><span class="special">;</span></pre>
 <p>Destroys an object allocated with construct.</p>
 <p>Equivalent to:</p>
 <p>p-&gt;~ElementType(); this-&gt;free(p);</p>
@@ -253,7 +253,7 @@ detail/pool_construct.bat and detail/pool_construct.sh are also provided to call
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="identifier">size_type</span> <a name="idm45452580327584-bb"></a><span class="identifier">get_next_size</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="identifier">size_type</span> <a name="idm2542-bb"></a><span class="identifier">get_next_size</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <p>
 </p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -268,7 +268,7 @@ detail/pool_construct.bat and detail/pool_construct.sh are also provided to call
 </table></div>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">void</span> <a name="idm45452580325600-bb"></a><span class="identifier">set_next_size</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span> x<span class="special">)</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">void</span> <a name="idm2548-bb"></a><span class="identifier">set_next_size</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">size_type</span> x<span class="special">)</span><span class="special">;</span></pre>
 <p>Set a new number of chunks to allocate the next time we run out of memory. 
 </p>
 <div class="variablelist"><table border="0" class="variablelist compact">
@@ -297,7 +297,7 @@ detail/pool_construct.bat and detail/pool_construct.sh are also provided to call
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2000-2006 Stephen Cleary<br>Copyright &#169; 2011 Paul A. Bristow<p>
+<td align="right"><div class="copyright-footer">Copyright © 2000-2006 Stephen Cleary<br>Copyright © 2011 Paul A. Bristow<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

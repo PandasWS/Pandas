@@ -22,6 +22,8 @@ int main()
   BOOST_TEST(HaveAnotherMT<AType>::value);
   BOOST_TEST(ATemplateWithParms<AnotherType>::value);
   
+  BOOST_TEST(BOOST_TTI_HAS_TEMPLATE_GEN(NestedMemberTemplate)<AType::AnUnion>::value);
+  
   // Passing non-class enclosing type will return false
   
   BOOST_TEST(!BOOST_TTI_HAS_TEMPLATE_GEN(AMemberTemplate)<AType *>::value);

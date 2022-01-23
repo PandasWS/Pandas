@@ -191,7 +191,7 @@ When the function has known values which are not exact (from a floating point pe
 
 If the function is implemented by some other known good source (for example Mathematica or it's online versions
 [@http://functions.wolfram.com functions.wolfram.com] or [@http://www.wolframalpha.com www.wolframalpha.com]
-then it's a good idea to sanity check our implementation by having at least one independendly generated value
+then it's a good idea to sanity check our implementation by having at least one independently generated value
 for each code branch our implementation may take.  To slot these in nicely with our testing framework it's best to
 tabulate these like this:
 
@@ -251,11 +251,11 @@ definition for the SC_ macro:
 
    // A couple of Boost.Test headers in case we need any BOOST_CHECK_* macros:
    #include <boost/test/unit_test.hpp>
-   #include <boost/test/floating_point_comparison.hpp>
+   #include <boost/test/tools/floating_point_comparison.hpp>
    // Our function to test:
    #include <boost/math/special_functions/my_special.hpp>
    // We need boost::array for our test data, plus a few headers from
-   // libs/math/test that contain our testing machinary:
+   // libs/math/test that contain our testing machinery:
    #include <boost/array.hpp>
    #include "functor.hpp"
    #include "handle_test_result.hpp"
@@ -367,9 +367,7 @@ Now we just need to write the test driver program, at it's most basic it looks s
    #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
       test(0.1L, "long double");
    #ifndef BOOST_MATH_NO_REAL_CONCEPT_TESTS
-   #if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-      test(boost::math::concepts::real_concept(0.1), "real_concept");
-   #endif
+      test(boost::math::concepts::real_concept(0.1), "real_concept);
    #endif
    #else
       std::cout << "<note>The long double tests have been disabled on this platform "
@@ -441,7 +439,7 @@ the particular tests plus the platform and compiler:
 [h4 Testing Multiprecision Types]
 
 Testing of multiprecision types is handled by the test drivers in libs/multiprecision/test/math,
-please refer to these for examples.  Note that these tests are run only occationally as they take
+please refer to these for examples.  Note that these tests are run only occasionally as they take
 a lot of CPU cycles to build and run.
 
 [h4 Improving Compile Times]

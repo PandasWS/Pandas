@@ -9,13 +9,15 @@
 #ifndef BOOST_LOCKFREE_DETAIL_PARAMETER_HPP
 #define BOOST_LOCKFREE_DETAIL_PARAMETER_HPP
 
+#include <boost/align/aligned_allocator.hpp>
+#include <boost/core/allocator_access.hpp>
+#include <boost/lockfree/detail/prefix.hpp>
 #include <boost/lockfree/policies.hpp>
-#include <boost/parameter/parameters.hpp>
 #include <boost/parameter/binding.hpp>
+#include <boost/parameter/parameters.hpp>
 
 #include <boost/mpl/void.hpp>
 
-#include <boost/lockfree/detail/allocator_rebind_helper.hpp>
 
 
 namespace boost {
@@ -53,10 +55,10 @@ struct extract_allocator
 
     typedef typename mpl::if_c<has_allocator,
                                typename has_arg<bound_args, tag::allocator>::type,
-                               std::allocator<T>
+                               boost::alignment::aligned_allocator<T, BOOST_LOCKFREE_CACHELINE_BYTES>
                               >::type allocator_arg;
 
-    typedef typename detail::allocator_rebind_helper<allocator_arg, T>::type type;
+    typedef typename boost::allocator_rebind<allocator_arg, T>::type type;
 };
 
 template <typename bound_args, bool default_ = false>

@@ -3,8 +3,8 @@
 
 // Copyright (c) 2015 Barend Gehrels, Amsterdam, the Netherlands.
 
-// This file was modified by Oracle on 2017.
-// Modifications copyright (c) 2017, Oracle and/or its affiliates.
+// This file was modified by Oracle on 2017-2021.
+// Modifications copyright (c) 2017-2021, Oracle and/or its affiliates.
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Use, modification and distribution is subject to the Boost Software License,
@@ -18,17 +18,16 @@
 #include <sstream>
 #include <string>
 
-#include <boost/type_traits/is_same.hpp>
-
 #if defined(TEST_WITH_SVG)
 #  include <boost/geometry/io/svg/svg_mapper.hpp>
 #endif
 
 #include <geometry_test_common.hpp>
+#include <algorithms/check_validity.hpp>
 
-
-#include <boost/geometry.hpp>
+#include <boost/geometry/algorithms/correct.hpp>
 #include <boost/geometry/algorithms/detail/overlay/debug_turn_info.hpp>
+#include <boost/geometry/algorithms/detail/overlay/overlay.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
 
 //#include <boost/geometry/extensions/algorithms/inverse.hpp>
@@ -36,6 +35,8 @@
 #if defined(TEST_WITH_SVG)
 #  include <boost/geometry/io/svg/svg_mapper.hpp>
 #endif
+
+#include <boost/geometry/io/wkt/read.hpp>
 
 #include "multi_overlay_cases.hpp"
 
@@ -72,7 +73,7 @@ struct map_visitor
     {
         typedef typename boost::range_value<Turns>::type turn_type;
         int index = 0;
-        BOOST_FOREACH(turn_type const& turn, turns)
+        for (turn_type const& turn : turns)
         {
             switch (phase)
             {
@@ -129,7 +130,7 @@ struct map_visitor
     {
         typedef typename boost::range_value<Turns>::type turn_type;
         int index = 0;
-        BOOST_FOREACH(turn_type const& turn, turns)
+        for (turn_type const& turn : turns)
         {
             if (turn.cluster_id >= 0)
             {
@@ -407,9 +408,9 @@ void test_overlay(std::string const& caseid,
             OverlayType
         > overlay;
 
-    typedef typename bg::strategy::intersection::services::default_strategy
+    typedef typename bg::strategies::relate::services::default_strategy
         <
-            typename bg::cs_tag<Geometry>::type
+            Geometry, Geometry
         >::type strategy_type;
 
     strategy_type strategy;
@@ -432,6 +433,12 @@ void test_overlay(std::string const& caseid,
     Geometry result;
     overlay::apply(g1, g2, robust_policy, std::back_inserter(result),
                    strategy, visitor);
+
+    std::string message;
+    bool const valid = check_validity<Geometry>::apply(result, caseid, g1, g2, message);
+    BOOST_CHECK_MESSAGE(valid,
+        "overlay: " << caseid << " not valid: " << message
+        << " type: " << (type_for_assert_message<Geometry, Geometry>()));
 
     BOOST_CHECK_CLOSE(bg::area(result), expected_area, 0.001);
     BOOST_CHECK_MESSAGE((bg::num_interior_rings(result) == expected_hole_count),

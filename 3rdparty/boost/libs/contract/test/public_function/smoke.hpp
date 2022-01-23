@@ -17,6 +17,7 @@
 #include <boost/contract/old.hpp>
 #include <boost/contract/check.hpp>
 #include <boost/contract/override.hpp>
+#include <boost/config.hpp>
 #include <string>
 
 boost::contract::test::detail::oteststream out;
@@ -200,6 +201,14 @@ struct a
 
     a() { x.value = "a"; }
 
+    #if defined(BOOST_GCC)
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Woverloaded-virtual" // For a::f.
+    #elif defined(BOOST_CLANG)
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Woverloaded-virtual" // For a::f.
+    #endif
+
     // Must use virtual_ even if no longer decl virtual for correct overloading.
     // NOTE: This intentionally hides but does not override `b::f` (it overrides
     // `c::f` instead). This generates warnings on some compilers (Clang, etc.).
@@ -257,6 +266,12 @@ struct a
         return result;
     }
     BOOST_CONTRACT_OVERRIDE(f)
+
+    #if defined(BOOST_GCC)
+        #pragma GCC diagnostic pop
+    #elif defined(BOOST_CLANG)
+        #pragma clang diagnostic pop
+    #endif
 };
     
 #endif // #include guard

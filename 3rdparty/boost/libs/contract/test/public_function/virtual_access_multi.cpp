@@ -88,7 +88,7 @@ struct b { // Test all access levels (public, protected, and private).
     // to match signature of overriding functions).
 
 protected:
-    virtual void g(boost::contract::virtual_* v = 0) {
+    virtual void g(boost::contract::virtual_* /* v */ = 0) {
         boost::contract::check c = boost::contract::function()
             .precondition([] { out << "b::g::pre" << std::endl; })
             .old([] { out << "b::g::old" << std::endl; })
@@ -98,7 +98,7 @@ protected:
     }
 
 private:
-    virtual void h(boost::contract::virtual_* v = 0) {
+    virtual void h(boost::contract::virtual_* /* v */ = 0) {
         boost::contract::check c = boost::contract::function()
             .precondition([] { out << "b::h::pre" << std::endl; })
             .old([] { out << "b::h::old" << std::endl; })
@@ -148,7 +148,7 @@ struct a // Test overrides with mixed access levels from different bases.
         out << "a::h::body" << std::endl;
     }
     
-    BOOST_CONTRACT_OVERRIDES(f, g, h);
+    BOOST_CONTRACT_OVERRIDES(f, g, h)
 };
 
 int main() {

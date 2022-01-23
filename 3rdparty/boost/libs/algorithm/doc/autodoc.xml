@@ -149,6 +149,24 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -235,6 +253,24 @@
           <template-type-parameter name="Range1"/>
           <template-type-parameter name="Range2"/>
         </template><parameter name="item_range"><paramtype>Range1 &amp;</paramtype></parameter><parameter name="ind_range"><paramtype>Range2 &amp;</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -418,6 +454,24 @@ Suggested by olafvdspek in <ulink url="https://svn.boost.org/trac/boost/ticket/3
 
 </para></description><returns><para>clamp the sequence of values [first, last) into [ lo, hi ] using the comparison predicate p.</para>
 </returns></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -694,6 +748,24 @@ Suggested by olafvdspek in <ulink url="https://svn.boost.org/trac/boost/ticket/3
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -872,6 +944,24 @@ Suggested by olafvdspek in <ulink url="https://svn.boost.org/trac/boost/ticket/3
 
 </para></description><returns><para>true if any of the elements in the range are equal to 'val' </para>
 </returns></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1082,6 +1172,24 @@ Suggested by olafvdspek in <ulink url="https://svn.boost.org/trac/boost/ticket/3
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -1227,6 +1335,24 @@ Suggested by olafvdspek in <ulink url="https://svn.boost.org/trac/boost/ticket/3
 </note>
 </para></description><returns><para>The updated output iterator</para>
 </returns></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1396,6 +1522,24 @@ Suggested by olafvdspek in <ulink url="https://svn.boost.org/trac/boost/ticket/3
 
 </para></description><returns><para>The iterator pointing to the desired element.</para>
 </returns></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1587,6 +1731,24 @@ Suggested by olafvdspek in <ulink url="https://svn.boost.org/trac/boost/ticket/3
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -1727,6 +1889,24 @@ Suggested by olafvdspek in <ulink url="https://svn.boost.org/trac/boost/ticket/3
           <template-type-parameter name="UnaryPredicate"/>
         </template><parameter name="r"><paramtype>const Range &amp;</paramtype><description><para>The input range </para></description></parameter><parameter name="p"><paramtype>UnaryPredicate</paramtype><description><para>The predicate to test the values with </para></description></parameter><purpose>Tests to see if a sequence is partitioned according to a predicate. In other words, all the items in the sequence that satisfy the predicate are at the beginning of the sequence. </purpose><description><para>
 </para></description></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1929,6 +2109,24 @@ Suggested by olafvdspek in <ulink url="https://svn.boost.org/trac/boost/ticket/3
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -2094,6 +2292,24 @@ Suggested by olafvdspek in <ulink url="https://svn.boost.org/trac/boost/ticket/3
 <note><para>This function is part of the C++2014 standard library. </para>
 </note>
 </para></description></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 </namespace>
@@ -2350,6 +2566,24 @@ equal to the previous one.</para><para>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -2490,6 +2724,24 @@ equal to the previous one.</para><para>
 
 </para></description><returns><para>true if none of the elements in the range are equal to 'val' </para>
 </returns></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2718,6 +2970,24 @@ equal to the previous one.</para><para>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -2888,6 +3158,24 @@ equal to the previous one.</para><para>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -2996,6 +3284,24 @@ equal to the previous one.</para><para>
           <template-type-parameter name="Predicate"/>
         </template><parameter name="r"><paramtype>Range &amp;</paramtype><description><para>The input range </para></description></parameter><parameter name="p"><paramtype>Predicate</paramtype><description><para>The predicate to test the values with </para></description></parameter><purpose>Given a partitioned range, returns the partition point. </purpose><description><para>
 </para></description></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3223,6 +3529,24 @@ equal to the previous one.</para><para>
 
 </para></description><returns><para>true if all elements in the two ranges are equal</para>
 </returns></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -3392,6 +3716,1318 @@ equal to the previous one.</para><para>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</header>
+<header name="boost/algorithm/cxx17/exclusive_scan.hpp">
+<para>??? </para><para><para>Marshall Clow </para>
+
+</para><namespace name="boost">
+<namespace name="algorithm">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="exclusive_scan"><type>OutputIterator</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="OutputIterator"/>
+          <template-type-parameter name="T"/>
+          <template-type-parameter name="BinaryOperation"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter><parameter name="result"><paramtype>OutputIterator</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter><parameter name="bOp"><paramtype>BinaryOperation</paramtype></parameter></function>
+<function name="exclusive_scan"><type>OutputIterator</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="OutputIterator"/>
+          <template-type-parameter name="T"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter><parameter name="result"><paramtype>OutputIterator</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter></function>
+</namespace>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</header>
+<header name="boost/algorithm/cxx17/for_each_n.hpp">
+<para>Apply a functor to the elements of a sequence. </para><para><para>Marshall Clow </para>
+
+</para><namespace name="boost">
+<namespace name="algorithm">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="for_each_n"><type>InputIterator</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="Size"/>
+          <template-type-parameter name="Function"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype><description><para>The start of the first range. </para></description></parameter><parameter name="n"><paramtype>Size</paramtype><description><para>One past the end of the first range. </para></description></parameter><parameter name="f"><paramtype>Function</paramtype><description><para>A functor to apply to the elements of the sequence </para></description></parameter><description><para>
+
+<note><para>If f returns a result, the result is ignored. </para>
+</note>
+</para></description><returns><para>first + n</para>
+</returns></function>
+
+
+</namespace>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</header>
+<header name="boost/algorithm/cxx17/inclusive_scan.hpp">
+<namespace name="boost">
+<namespace name="algorithm">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="inclusive_scan"><type>OutputIterator</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="OutputIterator"/>
+          <template-type-parameter name="T"/>
+          <template-type-parameter name="BinaryOperation"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter><parameter name="result"><paramtype>OutputIterator</paramtype></parameter><parameter name="bOp"><paramtype>BinaryOperation</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter></function>
+<function name="inclusive_scan"><type>OutputIterator</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="OutputIterator"/>
+          <template-type-parameter name="BinaryOperation"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter><parameter name="result"><paramtype>OutputIterator</paramtype></parameter><parameter name="bOp"><paramtype>BinaryOperation</paramtype></parameter></function>
+<function name="inclusive_scan"><type>OutputIterator</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="OutputIterator"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter><parameter name="result"><paramtype>OutputIterator</paramtype></parameter></function>
+
+
+
+</namespace>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</header>
+<header name="boost/algorithm/cxx17/reduce.hpp">
+<para>Combine the elements of a sequence into a single value. </para><para><para>Marshall Clow </para>
+
+</para><namespace name="boost">
+<namespace name="algorithm">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="reduce"><type>T</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="T"/>
+          <template-type-parameter name="BinaryOperation"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter><parameter name="bOp"><paramtype>BinaryOperation</paramtype></parameter></function>
+<function name="reduce"><type>T</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="T"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter></function>
+<function name="reduce"><type>std::iterator_traits&lt; InputIterator &gt;::value_type</type><template>
+          <template-type-parameter name="InputIterator"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter></function>
+<function name="reduce"><type>boost::range_value&lt; Range &gt;::type</type><template>
+          <template-type-parameter name="Range"/>
+        </template><parameter name="r"><paramtype>const Range &amp;</paramtype></parameter></function>
+<function name="reduce"><type>T</type><template>
+          <template-type-parameter name="Range"/>
+          <template-type-parameter name="T"/>
+        </template><parameter name="r"><paramtype>const Range &amp;</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter></function>
+<function name="reduce"><type>T</type><template>
+          <template-type-parameter name="Range"/>
+          <template-type-parameter name="T"/>
+          <template-type-parameter name="BinaryOperation"/>
+        </template><parameter name="r"><paramtype>const Range &amp;</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter><parameter name="bOp"><paramtype>BinaryOperation</paramtype></parameter></function>
+
+
+
+
+
+
+</namespace>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</header>
+<header name="boost/algorithm/cxx17/transform_exclusive_scan.hpp">
+<para>???? </para><para><para>Marshall Clow </para>
+
+</para><namespace name="boost">
+<namespace name="algorithm">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="transform_exclusive_scan"><type>OutputIterator</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="OutputIterator"/>
+          <template-type-parameter name="T"/>
+          <template-type-parameter name="BinaryOperation"/>
+          <template-type-parameter name="UnaryOperation"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter><parameter name="result"><paramtype>OutputIterator</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter><parameter name="bOp"><paramtype>BinaryOperation</paramtype></parameter><parameter name="uOp"><paramtype>UnaryOperation</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</header>
+<header name="boost/algorithm/cxx17/transform_inclusive_scan.hpp">
+<namespace name="boost">
+<namespace name="algorithm">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="transform_inclusive_scan"><type>OutputIterator</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="OutputIterator"/>
+          <template-type-parameter name="BinaryOperation"/>
+          <template-type-parameter name="UnaryOperation"/>
+          <template-type-parameter name="T"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter><parameter name="result"><paramtype>OutputIterator</paramtype></parameter><parameter name="bOp"><paramtype>BinaryOperation</paramtype></parameter><parameter name="uOp"><paramtype>UnaryOperation</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter></function>
+<function name="transform_inclusive_scan"><type>OutputIterator</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="OutputIterator"/>
+          <template-type-parameter name="BinaryOperation"/>
+          <template-type-parameter name="UnaryOperation"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter><parameter name="result"><paramtype>OutputIterator</paramtype></parameter><parameter name="bOp"><paramtype>BinaryOperation</paramtype></parameter><parameter name="uOp"><paramtype>UnaryOperation</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</namespace>
+</header>
+<header name="boost/algorithm/cxx17/transform_reduce.hpp">
+<para>Combine the (transformed) elements of a sequence (or two) into a single value. </para><para><para>Marshall Clow </para>
+
+</para><namespace name="boost">
+<namespace name="algorithm">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="transform_reduce"><type>T</type><template>
+          <template-type-parameter name="InputIterator1"/>
+          <template-type-parameter name="InputIterator2"/>
+          <template-type-parameter name="T"/>
+          <template-type-parameter name="BinaryOperation1"/>
+          <template-type-parameter name="BinaryOperation2"/>
+        </template><parameter name="first1"><paramtype>InputIterator1</paramtype></parameter><parameter name="last1"><paramtype>InputIterator1</paramtype></parameter><parameter name="first2"><paramtype>InputIterator2</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter><parameter name="bOp1"><paramtype>BinaryOperation1</paramtype></parameter><parameter name="bOp2"><paramtype>BinaryOperation2</paramtype></parameter></function>
+<function name="transform_reduce"><type>T</type><template>
+          <template-type-parameter name="InputIterator"/>
+          <template-type-parameter name="T"/>
+          <template-type-parameter name="BinaryOperation"/>
+          <template-type-parameter name="UnaryOperation"/>
+        </template><parameter name="first"><paramtype>InputIterator</paramtype></parameter><parameter name="last"><paramtype>InputIterator</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter><parameter name="bOp"><paramtype>BinaryOperation</paramtype></parameter><parameter name="uOp"><paramtype>UnaryOperation</paramtype></parameter></function>
+<function name="transform_reduce"><type>T</type><template>
+          <template-type-parameter name="InputIterator1"/>
+          <template-type-parameter name="InputIterator2"/>
+          <template-type-parameter name="T"/>
+        </template><parameter name="first1"><paramtype>InputIterator1</paramtype></parameter><parameter name="last1"><paramtype>InputIterator1</paramtype></parameter><parameter name="first2"><paramtype>InputIterator2</paramtype></parameter><parameter name="init"><paramtype>T</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -3478,6 +5114,24 @@ equal to the previous one.</para><para>
           <template-type-parameter name="Range"/>
           <template-type-parameter name="Pred"/>
         </template><parameter name="range"><paramtype>Range &amp;</paramtype></parameter><parameter name="p"><paramtype>Pred</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3731,6 +5385,24 @@ equal to the previous one.</para><para>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -3789,6 +5461,24 @@ equal to the previous one.</para><para>
           <template-type-parameter name="BidirectionalRange"/>
           <template-type-parameter name="Pred"/>
         </template><parameter name="range"><paramtype>const BidirectionalRange &amp;</paramtype></parameter><parameter name="pivot"><paramtype>typename boost::range_iterator&lt; const BidirectionalRange &gt;::type</paramtype></parameter><parameter name="pred"><paramtype>Pred</paramtype></parameter><purpose>range-based gather implementation </purpose></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4135,6 +5825,24 @@ equal to the previous one.</para><para>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -4333,6 +6041,24 @@ equal to the previous one.</para><para>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -4379,6 +6105,24 @@ equal to the previous one.</para><para>
 <note><para>Returns the first iterator 'it' in the sequence [first, last) for which is_partitioned(first, it, p) is false. Returns last if the entire sequence is partitioned. Complexity: O(N). </para>
 </note>
 </para></description></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4783,6 +6527,24 @@ equal to the previous one.</para><para>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -4901,6 +6663,24 @@ equal to the previous one.</para><para>
 <function name="make_boyer_moore_horspool"><type><classname>boost::algorithm::boyer_moore_horspool</classname>&lt; typename boost::range_iterator&lt; Range &gt;::type &gt;</type><template>
           <template-type-parameter name="Range"/>
         </template><parameter name="r"><paramtype>Range &amp;</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -5150,6 +6930,24 @@ equal to the previous one.</para><para>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 
 
@@ -5192,6 +6990,24 @@ Suggested by Sean Parent in his CppCon 2015 keynote </para><namespace name="boos
 <function name="partition_subrange"><type>void</type><template>
           <template-type-parameter name="Iterator"/>
         </template><parameter name="first"><paramtype>Iterator</paramtype></parameter><parameter name="last"><paramtype>Iterator</paramtype></parameter><parameter name="sub_first"><paramtype>Iterator</paramtype></parameter><parameter name="sub_last"><paramtype>Iterator</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

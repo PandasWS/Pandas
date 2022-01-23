@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Tutorial</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../process.html" title="Chapter&#160;30.&#160;Boost.Process">
+<link rel="up" href="../process.html" title="Chapter 30. Boost.Process">
 <link rel="prev" href="concepts.html" title="Concepts">
 <link rel="next" href="design.html" title="Design Rationale">
 </head>
@@ -71,7 +71,7 @@
 <p>
       </p>
 <p>
-        If a single string (or the explicit form <code class="computeroutput">bp::cmd</code>),
+        If a single string is given (or the explicit form <code class="computeroutput">bp::cmd</code>),
         it will be interpreted as a command line. That will cause the execution function
         to search the <code class="computeroutput"><span class="identifier">PATH</span></code> variable
         to find the executable. The alternative is the <code class="computeroutput"><span class="identifier">exe</span><span class="special">-</span><span class="identifier">args</span></code> style,
@@ -84,7 +84,7 @@
 <th align="left">Note</th>
 </tr>
 <tr><td align="left" valign="top"><p>
-          For more details on the <code class="computeroutput"><span class="identifier">cmd</span></code>/<code class="computeroutput"><span class="identifier">exe</span><span class="special">-</span><span class="identifier">args</span></code> style look <a class="link" href="design.html#boost_process.design.arg_cmd_style" title="Arguments/Command Style">here</a>
+          For more details on the <code class="computeroutput"><span class="identifier">cmd</span></code>/<code class="computeroutput"><span class="identifier">exe</span><span class="special">-</span><span class="identifier">args</span></code> style look <a class="link" href="design.html#boost_process.design.arg_cmd_style" title="Arguments/Command Style">here</a>.
         </p></td></tr>
 </table></div>
 <p>
@@ -170,18 +170,18 @@
 </p>
 <pre class="programlisting"><code class="computeroutput"><a class="link" href="../boost/process/child.html" title="Class child">bp::child</a></code> <span class="identifier">c</span><span class="special">(</span><code class="computeroutput"><a class="link" href="../boost/process/search_path.html" title="Function search_path">bp::search_path</a></code><span class="special">(</span><span class="string">"g++"</span><span class="special">),</span> <span class="string">"main.cpp"</span><span class="special">);</span>
 
-<span class="keyword">while</span> <span class="special">(</span><span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161896784-bb">running</a></code><span class="special">())</span>
+<span class="keyword">while</span> <span class="special">(</span><span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm2420-bb">running</a></code><span class="special">())</span>
     <span class="identifier">do_some_stuff</span><span class="special">();</span>
 
-<span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161893488-bb">wait</a></code><span class="special">();</span> <span class="comment">//wait for the process to exit   </span>
-<span class="keyword">int</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161901200-bb">exit_code</a></code><span class="special">();</span>
+<span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/pfr/greater_equal.html#idm2430-bb">wait</a></code><span class="special">();</span> <span class="comment">//wait for the process to exit   </span>
+<span class="keyword">int</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/pfr/greater.html#idm2408-bb">exit_code</a></code><span class="special">();</span>
 </pre>
 <p>
       </p>
 <p>
         So we launch the process, by calling the child constructor. Then we check
         and do other things while the process is running and afterwards get the exit
-        code. The call to <code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161893488-bb">wait</a></code>
+        code. The call to <code class="computeroutput"><a class="link" href="../boost/pfr/greater_equal.html#idm2430-bb">wait</a></code>
         is necessary, to obtain it and tell the operating system, that no one is
         waiting for the process anymore.
       </p>
@@ -191,7 +191,7 @@
 <th align="left">Note</th>
 </tr>
 <tr><td align="left" valign="top"><p>
-          You can also wait for a time span or a until a time point with <code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161890192-bb">wait_for</a></code> and <code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161883808-bb">wait_until</a></code>
+          You can also wait for a time span or until a time point with <code class="computeroutput"><a class="link" href="../boost/circular_buffer.html#idm2440-bb">wait_for</a></code> and <code class="computeroutput"><a class="link" href="../boost/process/child.html#idm2459-bb">wait_until</a></code>.
         </p></td></tr>
 </table></div>
 <div class="warning"><table border="0" summary="Warning">
@@ -201,7 +201,7 @@
 </tr>
 <tr><td align="left" valign="top"><p>
           If you don't call wait on a child object, it will be terminated on destruction.
-          This can be avoided by calling <code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161906176-bb">detach</a></code>
+          This can be avoided by calling <code class="computeroutput"><a class="link" href="../boost/process/child.html#idm2392-bb">detach</a></code>
           beforehand
         </p></td></tr>
 </table></div>
@@ -285,10 +285,10 @@
     <a href="http://en.cppreference.com/w/cpp/container/vector" target="_top">std::vector</a><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;</span> <span class="identifier">data</span><span class="special">;</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">line</span><span class="special">;</span>
 
-    <span class="keyword">while</span> <span class="special">(</span><span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161896784-bb">running</a></code><span class="special">()</span> <span class="special">&amp;&amp;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">getline</span><span class="special">(</span><span class="identifier">is</span><span class="special">,</span> <span class="identifier">line</span><span class="special">)</span> <span class="special">&amp;&amp;</span> <span class="special">!</span><span class="identifier">line</span><span class="special">.</span><span class="identifier">empty</span><span class="special">())</span>
+    <span class="keyword">while</span> <span class="special">(</span><span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm2420-bb">running</a></code><span class="special">()</span> <span class="special">&amp;&amp;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">getline</span><span class="special">(</span><span class="identifier">is</span><span class="special">,</span> <span class="identifier">line</span><span class="special">)</span> <span class="special">&amp;&amp;</span> <span class="special">!</span><span class="identifier">line</span><span class="special">.</span><span class="identifier">empty</span><span class="special">())</span>
         <span class="identifier">data</span><span class="special">.</span><span class="identifier">push_back</span><span class="special">(</span><span class="identifier">line</span><span class="special">);</span>
 
-    <span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161893488-bb">wait</a></code><span class="special">();</span>
+    <span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/pfr/greater_equal.html#idm2430-bb">wait</a></code><span class="special">();</span>
 
     <span class="keyword">return</span> <span class="identifier">data</span><span class="special">;</span>
 <span class="special">}</span>
@@ -305,7 +305,7 @@
 <th align="left">Note</th>
 </tr>
 <tr><td align="left" valign="top"><p>
-          You can do the same thing with <code class="computeroutput"><a class="link" href="../boost/process/std_err.html" title="Global std_err">std_err</a></code>
+          You can do the same thing with <code class="computeroutput"><a class="link" href="../boost/process/std_err.html" title="Global std_err">std_err</a></code>.
         </p></td></tr>
 </table></div>
 <p>
@@ -325,7 +325,7 @@
 <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">value</span><span class="special">;</span>
 <span class="identifier">out</span> <span class="special">&gt;&gt;</span> <span class="identifier">value</span><span class="special">;</span>
 
-<span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161870048-bb">terminate</a></code><span class="special">();</span>
+<span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm2498-bb">terminate</a></code><span class="special">();</span>
 </pre>
 <p>
       </p>
@@ -342,7 +342,7 @@
 
     <a href="http://en.cppreference.com/w/cpp/container/vector" target="_top">std::vector</a><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;</span> <span class="identifier">outline</span><span class="special">;</span>
 
-    <span class="comment">//we just use the same pipe, so the </span>
+    <span class="comment">//we just use the same pipe, so the output of nm is directly passed as input to c++filt</span>
     <code class="computeroutput"><a class="link" href="../boost/process/child.html" title="Class child">bp::child</a></code> <span class="identifier">nm</span><span class="special">(</span><code class="computeroutput"><a class="link" href="../boost/process/search_path.html" title="Function search_path">bp::search_path</a></code><span class="special">(</span><span class="string">"nm"</span><span class="special">),</span> <span class="identifier">file</span><span class="special">,</span>  <code class="computeroutput"><a class="link" href="../boost/process/std_out.html" title="Global std_out">bp::std_out</a></code> <span class="special">&gt;</span> <span class="identifier">p</span><span class="special">);</span>
     <code class="computeroutput"><a class="link" href="../boost/process/child.html" title="Class child">bp::child</a></code> <span class="identifier">filt</span><span class="special">(</span><code class="computeroutput"><a class="link" href="../boost/process/search_path.html" title="Function search_path">bp::search_path</a></code><span class="special">(</span><span class="string">"c++filt"</span><span class="special">),</span> <code class="computeroutput"><a class="link" href="../boost/process/std_in.html" title="Global std_in">bp::std_in</a></code> <span class="special">&lt;</span> <span class="identifier">p</span><span class="special">,</span> <code class="computeroutput"><a class="link" href="../boost/process/std_out.html" title="Global std_out">bp::std_out</a></code> <span class="special">&gt;</span> <span class="identifier">is</span><span class="special">);</span>
 
@@ -350,7 +350,7 @@
     <span class="keyword">while</span> <span class="special">(</span><span class="identifier">filt</span><span class="special">.</span><span class="identifier">running</span><span class="special">()</span> <span class="special">&amp;&amp;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">getline</span><span class="special">(</span><span class="identifier">is</span><span class="special">,</span> <span class="identifier">line</span><span class="special">))</span> <span class="comment">//when nm finished the pipe closes and c++filt exits</span>
         <span class="identifier">outline</span><span class="special">.</span><span class="identifier">push_back</span><span class="special">(</span><span class="identifier">line</span><span class="special">);</span>
 
-    <span class="identifier">nm</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161893488-bb">wait</a></code><span class="special">();</span>
+    <span class="identifier">nm</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/pfr/greater_equal.html#idm2430-bb">wait</a></code><span class="special">();</span>
     <span class="identifier">filt</span><span class="special">.</span><span class="identifier">wait</span><span class="special">();</span>
 <span class="special">}</span>
 </pre>
@@ -374,9 +374,9 @@
         as shown above.
       </p>
 <p>
-        Now we get back to our compiling example. <code class="computeroutput"><span class="identifier">nm</span></code>
-        we might analyze it line by line, but the compiler output will just be put
-        into one large buffer.
+        Now we get back to our compiling example. For <code class="computeroutput"><span class="identifier">nm</span></code>
+        we might analyze the output line by line, but the compiler output will just
+        be put into one large buffer.
       </p>
 <p>
         With <a href="http://www.boost.org/doc/libs/release/libs/asio/" target="_top">boost.asio</a>
@@ -400,7 +400,7 @@
 <p>
       </p>
 <p>
-        To make it easier, boost.process provides simpler interface for that, so
+        To make it easier, boost.process provides a simpler interface for that, so
         that the buffer can be passed directly, provided we also pass a reference
         to an <a href="http://www.boost.org/doc/libs/release/doc/html/boost_asio/reference/io_service.html" target="_top">boost::asio::io_service</a>.
       </p>
@@ -424,8 +424,8 @@
 <tr><td align="left" valign="top"><p>
           Passing an instance of <a href="http://www.boost.org/doc/libs/release/doc/html/boost_asio/reference/io_service.html" target="_top">boost::asio::io_service</a>
           to the launching function automatically cause it to wait asynchronously
-          for the exit, so no call of <code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161893488-bb">wait</a></code>
-          is needed
+          for the exit, so no call of <code class="computeroutput"><a class="link" href="../boost/pfr/greater_equal.html#idm2430-bb">wait</a></code>
+          is needed.
         </p></td></tr>
 </table></div>
 <p>
@@ -463,9 +463,9 @@
 <a name="boost_process.tutorial.group"></a><a class="link" href="tutorial.html#boost_process.tutorial.group" title="Groups">Groups</a>
 </h3></div></div></div>
 <p>
-        When launching several processes, processes can be grouped together. This
-        will also apply for a child process, that launches other processes, if they
-        do not modify the group membership. E.g. if you call <code class="computeroutput"><span class="identifier">make</span></code>
+        When launching several processes, they can be grouped together. This will
+        also apply for a child process, that launches other processes, if they do
+        not modify the group membership. E.g. if you call <code class="computeroutput"><span class="identifier">make</span></code>
         which launches other processes and call terminate on it, it will not terminate
         all the child processes of the child unless you use a group.
       </p>
@@ -482,8 +482,8 @@
           </li>
 </ol></div>
 <p>
-        If we have program like <code class="computeroutput"><span class="identifier">make</span></code>,
-        which does launch its own child processes, a call of <code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161870048-bb">terminate</a></code>
+        If we have a program like <code class="computeroutput"><span class="identifier">make</span></code>,
+        which does launch its own child processes, a call of <code class="computeroutput"><a class="link" href="../boost/process/child.html#idm2498-bb">terminate</a></code>
         might not suffice. I.e. if we have a makefile launching <code class="computeroutput"><span class="identifier">gcc</span></code>
         and use the following code, the <code class="computeroutput"><span class="identifier">gcc</span></code>
         process will still run afterwards:
@@ -491,8 +491,8 @@
 <p>
 </p>
 <pre class="programlisting"><code class="computeroutput"><a class="link" href="../boost/process/child.html" title="Class child">bp::child</a></code> <span class="identifier">c</span><span class="special">(</span><span class="string">"make"</span><span class="special">);</span>
-<span class="keyword">if</span> <span class="special">(!</span><span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161890192-bb">wait_for</a></code><span class="special">(</span><a href="http://en.cppreference.com/w/cpp/chrono/duration" target="_top">std::chrono::seconds</a><span class="special">(</span><span class="number">10</span><span class="special">))</span> <span class="comment">//give it 10 seconds</span>
-    <span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161870048-bb">terminate</a></code><span class="special">();</span> <span class="comment">//then terminate</span>
+<span class="keyword">if</span> <span class="special">(!</span><span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/circular_buffer.html#idm2440-bb">wait_for</a></code><span class="special">(</span><a href="http://en.cppreference.com/w/cpp/chrono/duration" target="_top">std::chrono::seconds</a><span class="special">(</span><span class="number">10</span><span class="special">))</span> <span class="comment">//give it 10 seconds</span>
+    <span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm2498-bb">terminate</a></code><span class="special">();</span> <span class="comment">//then terminate</span>
 </pre>
 <p>
       </p>
@@ -504,15 +504,15 @@
 </p>
 <pre class="programlisting"><code class="computeroutput"><a class="link" href="../boost/process/group.html" title="Class group">bp::group</a></code> <span class="identifier">g</span><span class="special">;</span>
 <code class="computeroutput"><a class="link" href="../boost/process/child.html" title="Class child">bp::child</a></code> <span class="identifier">c</span><span class="special">(</span><span class="string">"make"</span><span class="special">,</span> <span class="identifier">g</span><span class="special">);</span>
-<span class="keyword">if</span> <span class="special">(!</span><span class="identifier">g</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/group.html#idm45917161359360-bb">wait_for</a></code><span class="special">(</span><a href="http://en.cppreference.com/w/cpp/chrono/duration" target="_top">std::chrono::seconds</a><span class="special">(</span><span class="number">10</span><span class="special">))</span>
-    <span class="identifier">g</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/group.html#idm45917161339184-bb">terminate</a></code><span class="special">();</span>
+<span class="keyword">if</span> <span class="special">(!</span><span class="identifier">g</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/group.html#idm3801-bb">wait_for</a></code><span class="special">(</span><a href="http://en.cppreference.com/w/cpp/chrono/duration" target="_top">std::chrono::seconds</a><span class="special">(</span><span class="number">10</span><span class="special">))</span>
+    <span class="identifier">g</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/group.html#idm3851-bb">terminate</a></code><span class="special">();</span>
 
-<span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161893488-bb">wait</a></code><span class="special">();</span> <span class="comment">//to avoid a zombie process &amp; get the exit code</span>
+<span class="identifier">c</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/pfr/greater_equal.html#idm2430-bb">wait</a></code><span class="special">();</span> <span class="comment">//to avoid a zombie process &amp; get the exit code</span>
 </pre>
 <p>
       </p>
 <p>
-        Now given the example, we still call <code class="computeroutput"><a class="link" href="../boost/process/child.html#idm45917161893488-bb">wait</a></code>
+        Now given the example, we still call <code class="computeroutput"><a class="link" href="../boost/pfr/greater_equal.html#idm2430-bb">wait</a></code>
         to avoid a zombie process. An easier solution for that might be to use <code class="computeroutput"><a class="link" href="../boost/process/spawn.html" title="Function template spawn">spawn</a></code>.
       </p>
 <p>
@@ -530,7 +530,7 @@
 
     <span class="identifier">do_something</span><span class="special">();</span>
 
-    <span class="identifier">g</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/group.html#idm45917161362864-bb">wait</a></code><span class="special">();</span>
+    <span class="identifier">g</span><span class="special">.</span><code class="computeroutput"><a class="link" href="../boost/process/group.html#idm3792-bb">wait</a></code><span class="special">();</span>
 <span class="special">};</span>
 </pre>
 <p>
@@ -556,7 +556,7 @@
 <p>
 </p>
 <pre class="programlisting"><span class="comment">//get a handle to the current environment</span>
-<span class="keyword">auto</span> <span class="identifier">env</span> <span class="special">=</span> <code class="computeroutput"><a class="link" href="../process/reference.html#boost.this_process.environment">boost::this_process:deadlock :environment</a></code><span class="special">();</span>
+<span class="keyword">auto</span> <span class="identifier">env</span> <span class="special">=</span> <code class="computeroutput"><a class="link" href="../process/reference.html#boost.this_process.environment">boost::this_process::environment</a></code><span class="special">();</span>
 <span class="comment">//add a variable to the current environment</span>
 <span class="identifier">env</span><span class="special">[</span><span class="string">"VALUE_1"</span><span class="special">]</span> <span class="special">=</span> <span class="string">"foo"</span><span class="special">;</span>
 
@@ -571,8 +571,8 @@
 <p>
       </p>
 <p>
-        A more convenient way to modify the environment for the child is the <code class="computeroutput"><a class="link" href="../boost/process/env.html" title="Global env">env</a></code> property, which the example as
-        following:
+        A more convenient way to modify the environment for the child is the <code class="computeroutput"><a class="link" href="../boost/process/env.html" title="Global env">env</a></code> property, which can be used in
+        the example as following:
       </p>
 <p>
 </p>
@@ -581,15 +581,15 @@
 <p>
       </p>
 <p>
-        Please see to the <code class="computeroutput"><a class="link" href="../process/reference.html#header.boost.process.environment_hpp" title="Header &lt;boost/process/environment.hpp&gt;">reference</a></code>
+        Please see the <code class="computeroutput"><a class="link" href="../process/reference.html#header.boost.process.environment_hpp" title="Header &lt;boost/process/environment.hpp&gt;">reference</a></code>
         for more information.
       </p>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
-      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright &#169; 2016 Klemens D. Morgenstern<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
+      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright © 2016 Klemens D. Morgenstern<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
       </p>

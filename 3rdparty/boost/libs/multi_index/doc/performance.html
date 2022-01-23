@@ -111,7 +111,7 @@ Consider the following instantiation of <code>multi_index_container</code>:
   <span class=keyword>int</span><span class=special>,</span>
   <span class=identifier>indexed_by</span><span class=special>&lt;</span>
     <span class=identifier>ordered_unique</span><span class=special>&lt;</span><span class=identifier>identity</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;</span> <span class=special>&gt;,</span>
-    <span class=identifier>ordered_non_unique</span><span class=special>&lt;</span><span class=identifier>identity</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;,</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>greater</span> <span class=special>&gt;,</span>
+    <span class=identifier>ordered_non_unique</span><span class=special>&lt;</span><span class=identifier>identity</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;,</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>greater</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;</span> <span class=special>&gt;,</span>
   <span class=special>&gt;</span>
 <span class=special>&gt;</span> <span class=identifier>indexed_t</span><span class=special>;</span>
 </pre></blockquote>
@@ -230,7 +230,7 @@ each index. Thus the node size is
 </p>
 
 <blockquote>
-<i>S<sub>I</sub></i> = <i>e</i> + <i>h</i><sub>0</sub> + ··· + 
+<i>S<sub>I</sub></i> = <i>e</i> + <i>h</i><sub>0</sub> + &middot;&middot;&middot; + 
 <i>h</i><sub><i>N</i>-1</sub>, where<br>
 <i>e</i> = size of the element,<br>
 <i>h</i><sub><i>i</i></sub> = size of the <i>i</i>-th header.
@@ -247,7 +247,7 @@ the space allocated per element in a manual simulation is
 
 <blockquote>
 <i>S<sub>M</sub></i> = (<i>e</i> + <i>h</i><sub>0</sub>) +
-(<i>p</i> + <i>h</i><sub>1</sub>) + ··· +
+(<i>p</i> + <i>h</i><sub>1</sub>) + &middot;&middot;&middot; +
 (<i>p</i> + <i>h</i><sub><i>N</i>-1</sub>) = 
 <i>S<sub>I</sub></i> + (<i>N</i>-1)<i>p</i>, where<br>
 <i>p</i> = size of a pointer.<br>
@@ -749,9 +749,9 @@ Examples
 
 <br>
 
-<p>Revised November 24th 2015</p>
+<p>Revised April 18th 2020</p>
 
-<p>&copy; Copyright 2003-2015 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

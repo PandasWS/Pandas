@@ -1,5 +1,5 @@
 ////
-Copyright 2019 Peter Dimov
+Copyright 2019-2020 Peter Dimov
 
 Distributed under the Boost Software License, Version 1.0.
 
@@ -9,6 +9,30 @@ http://www.boost.org/LICENSE_1_0.txt
 
 [#changelog]
 # Revision History
+
+## Changes in 1.77.0
+
+* Added `mp_intersperse`, `mp_split`, `mp_join`
+
+## Changes in 1.75.0
+
+* Added `mp_pairwise_fold` (suggested by Barry Revzin)
+* Removed `mp_invoke` (use `mp_invoke_q`)
+
+## Changes in 1.74.0
+
+* Improved compilation performance of `mp_with_index<N>` for large `N`
+* Added `tuple_transform` (contributed by Hans Dembinski)
+
+## Changes in 1.73.0
+
+* Added `mp_unique_if` (contributed by Kris Jusiak)
+* Added `mp_flatten`
+* Added `mp_rotate_left`, `mp_rotate_right` (contributed by Duncan Barber)
+* Added `mp_compose`
+* Added `mp_power_set`
+* Added `mp_partial_sum`
+* Added `mp_iterate`
 
 ## Changes in 1.70.0
 

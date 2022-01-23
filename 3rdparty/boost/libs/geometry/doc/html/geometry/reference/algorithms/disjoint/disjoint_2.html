@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>disjoint</title>
 <link rel="stylesheet" href="../../../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../../../index.html" title="Chapter&#160;1.&#160;Geometry">
+<link rel="home" href="../../../../index.html" title="Chapter 1. Geometry">
 <link rel="up" href="../disjoint.html" title="disjoint">
 <link rel="prev" href="disjoint_3_with_strategy.html" title="disjoint (with strategy)">
 <link rel="next" href="../distance.html" title="distance">
@@ -27,7 +27,7 @@
 <a name="geometry.reference.algorithms.disjoint.disjoint_2"></a><a class="link" href="disjoint_2.html" title="disjoint">disjoint</a>
 </h5></div></div></div>
 <p>
-            <a class="indexterm" name="idm45133056613088"></a>
+            <a class="indexterm" name="idm38039"></a>
 Checks if two geometries are disjoint.
           </p>
 <h6>
@@ -797,11 +797,71 @@ Checks if two geometries are disjoint.
 </tr>
 </tbody>
 </table></div>
+<h6>
+<a name="geometry.reference.algorithms.disjoint.disjoint_2.h6"></a>
+            <span class="phrase"><a name="geometry.reference.algorithms.disjoint.disjoint_2.examples"></a></span><a class="link" href="disjoint_2.html#geometry.reference.algorithms.disjoint.disjoint_2.examples">Examples</a>
+          </h6>
+<p>
+            Checks if two geometries are disjoint
+          </p>
+<p>
+</p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">iostream</span><span class="special">&gt;</span>
+
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">geometries</span><span class="special">/</span><span class="identifier">point_xy</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">geometry</span><span class="special">/</span><span class="identifier">geometries</span><span class="special">/</span><span class="identifier">polygon</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="keyword">namespace</span> <span class="identifier">bg</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">geometry</span><span class="special">;</span> <a class="co" name="geometry.reference.algorithms.disjoint.disjoint_2.c0" href="disjoint_2.html#geometry.reference.algorithms.disjoint.disjoint_2.c1"><img src="../../../../../../../../doc/src/images/callouts/1.png" alt="1" border="0"></a>
+
+<span class="keyword">int</span> <span class="identifier">main</span><span class="special">()</span>
+<span class="special">{</span>
+    <span class="comment">// Checks if two geometries are disjoint, which means that two geometries have zero intersection.</span>
+    <span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">polygon</span><span class="special">&lt;</span><span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">d2</span><span class="special">::</span><span class="identifier">point_xy</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="special">&gt;</span> <span class="identifier">poly1</span><span class="special">;</span>
+    <span class="identifier">bg</span><span class="special">::</span><span class="identifier">read_wkt</span><span class="special">(</span><span class="string">"POLYGON((0 2,-2 0,-4 2,-2 4,0 2))"</span><span class="special">,</span> <span class="identifier">poly1</span><span class="special">);</span>
+    <span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">polygon</span><span class="special">&lt;</span><span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">d2</span><span class="special">::</span><span class="identifier">point_xy</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="special">&gt;</span> <span class="identifier">poly2</span><span class="special">;</span>
+    <span class="identifier">bg</span><span class="special">::</span><span class="identifier">read_wkt</span><span class="special">(</span><span class="string">"POLYGON((2 2,4 4,6 2,4 0,2 2))"</span><span class="special">,</span> <span class="identifier">poly2</span><span class="special">);</span>
+    <span class="keyword">bool</span> <span class="identifier">check_disjoint</span> <span class="special">=</span> <span class="identifier">bg</span><span class="special">::</span><span class="identifier">disjoint</span><span class="special">(</span><span class="identifier">poly1</span><span class="special">,</span> <span class="identifier">poly2</span><span class="special">);</span>
+    <span class="keyword">if</span> <span class="special">(</span><span class="identifier">check_disjoint</span><span class="special">)</span> <span class="special">{</span>
+         <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Disjoint: Yes"</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+    <span class="special">}</span> <span class="keyword">else</span> <span class="special">{</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Disjoint: No"</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+    <span class="special">}</span>
+
+    <span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">polygon</span><span class="special">&lt;</span><span class="identifier">bg</span><span class="special">::</span><span class="identifier">model</span><span class="special">::</span><span class="identifier">d2</span><span class="special">::</span><span class="identifier">point_xy</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="special">&gt;</span> <span class="identifier">poly3</span><span class="special">;</span>
+    <span class="identifier">bg</span><span class="special">::</span><span class="identifier">read_wkt</span><span class="special">(</span><span class="string">"POLYGON((0 2,2 4,4 2,2 0,0 2))"</span><span class="special">,</span> <span class="identifier">poly3</span><span class="special">);</span>
+    <span class="identifier">check_disjoint</span> <span class="special">=</span> <span class="identifier">bg</span><span class="special">::</span><span class="identifier">disjoint</span><span class="special">(</span><span class="identifier">poly1</span><span class="special">,</span> <span class="identifier">poly3</span><span class="special">);</span>
+    <span class="keyword">if</span> <span class="special">(</span><span class="identifier">check_disjoint</span><span class="special">)</span> <span class="special">{</span>
+         <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Disjoint: Yes"</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+    <span class="special">}</span> <span class="keyword">else</span> <span class="special">{</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Disjoint: No"</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+    <span class="special">}</span>
+
+    <span class="keyword">return</span> <span class="number">0</span><span class="special">;</span>
+<span class="special">}</span>
+</pre>
+<p>
+          </p>
+<div class="calloutlist"><table border="0" summary="Callout list"><tr>
+<td width="5%" valign="top" align="left"><p><a name="geometry.reference.algorithms.disjoint.disjoint_2.c1"></a><a href="#geometry.reference.algorithms.disjoint.disjoint_2.c0"><img src="../../../../../../../../doc/src/images/callouts/1.png" alt="1" border="0"></a> </p></td>
+<td valign="top" align="left"><p>
+                Convenient namespace alias
+              </p></td>
+</tr></table></div>
+<p>
+            Output:
+          </p>
+<pre class="programlisting">Disjoint: Yes
+Disjoint: No
+
+<img src="../../../../img/algorithms/disjoint.png" alt="disjoint">
+
+</pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2019 Barend Gehrels, Bruno Lalande, Mateusz Loskot, Adam
-      Wulkiewicz, Oracle and/or its affiliates<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2021 Barend Gehrels,
+      Bruno Lalande, Mateusz Loskot, Adam Wulkiewicz, Oracle and/or its affiliates<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

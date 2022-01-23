@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>io_context::strand</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -26,6 +26,9 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.io_context__strand"></a><a class="link" href="io_context__strand.html" title="io_context::strand">io_context::strand</a>
 </h3></div></div></div>
+<p>
+        <a class="indexterm" name="boost_asio.indexterm.io_context__strand"></a>
+      </p>
 <p>
         Provides serialised handler execution.
       </p>
@@ -87,7 +90,7 @@
 <td>
                 <p>
                   Request the strand to invoke the given function object. <br>
-                  <span class="silver"> &#8212;</span><br> (Deprecated: Use boost::asio::dispatch().) Request the strand
+                  <span class="silver"> —</span><br> (Deprecated: Use boost::asio::dispatch().) Request the strand
                   to invoke the given handler.
                 </p>
               </td>
@@ -125,7 +128,7 @@
 <td>
                 <p>
                   Request the strand to invoke the given function object. <br>
-                  <span class="silver"> &#8212;</span><br> (Deprecated: Use boost::asio::post().) Request the strand
+                  <span class="silver"> —</span><br> (Deprecated: Use boost::asio::post().) Request the strand
                   to invoke the given handler and return immediately.
                 </p>
               </td>
@@ -145,7 +148,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="io_context__strand/strand.html" title="io_context::strand::strand"><span class="bold"><strong>strand</strong></span></a>
+                  <a class="link" href="io_context__strand/strand.html" title="io_context::strand::strand"><span class="bold"><strong>strand</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
@@ -170,7 +173,7 @@
 <tr>
 <td>
                 <p>
-                  <a class="link" href="io_context__strand/_strand.html" title="io_context::strand::~strand"><span class="bold"><strong>~strand</strong></span></a>
+                  <a class="link" href="io_context__strand/_strand.html" title="io_context::strand::~strand"><span class="bold"><strong>~strand</strong></span></a> <span class="silver">[destructor]</span>
                 </p>
               </td>
 <td>
@@ -329,7 +332,8 @@ async_op_2(..., s.wrap(b));
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

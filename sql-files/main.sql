@@ -91,6 +91,17 @@ CREATE TABLE IF NOT EXISTS `auction` (
 ) ENGINE=MyISAM;
 
 --
+-- Table `barter` for barter shop persistency
+--
+
+CREATE TABLE IF NOT EXISTS `barter` (
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `index` SMALLINT(5) UNSIGNED NOT NULL,
+  `amount` SMALLINT(5) UNSIGNED NOT NULL,
+  PRIMARY KEY  (`name`,`index`)
+) ENGINE=MyISAM;
+
+--
 -- Table structure for `db_roulette`
 --
 
@@ -214,12 +225,21 @@ CREATE TABLE IF NOT EXISTS `char` (
   `int` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
   `dex` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
   `luk` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `pow` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `sta` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `wis` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `spl` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `con` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
+  `crt` int(11) unsigned NOT NULL default '0',	-- Pandas modify for unlimit status : origin type is smallint(4)
   `max_hp` int(11) unsigned NOT NULL default '0',
   `hp` int(11) unsigned NOT NULL default '0',
   `max_sp` int(11) unsigned NOT NULL default '0',
   `sp` int(11) unsigned NOT NULL default '0',
+  `max_ap` int(11) unsigned NOT NULL default '0',
+  `ap` int(11) unsigned NOT NULL default '0',
   `status_point` int(11) unsigned NOT NULL default '0',
   `skill_point` int(11) unsigned NOT NULL default '0',
+  `trait_point` int(11) unsigned NOT NULL default '0',
   `option` int(11) NOT NULL default '0',
   `karma` tinyint(3) NOT NULL default '0',
   `manner` smallint(6) NOT NULL default '0',
@@ -263,7 +283,7 @@ CREATE TABLE IF NOT EXISTS `char` (
   `last_login` datetime DEFAULT NULL,
   `title_id` INT(11) unsigned NOT NULL default '0',
   `show_equip` tinyint(3) unsigned NOT NULL default '0',
-  `inventory_size` smallint(6) unsigned NOT NULL default '100',	-- Pandas Add for Inventory Expansion Feature
+  `inventory_slots` smallint(6) NOT NULL default '100',
   PRIMARY KEY  (`char_id`),
   UNIQUE KEY `name_key` (`name`),
   KEY `account_id` (`account_id`),

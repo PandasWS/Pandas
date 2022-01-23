@@ -12,6 +12,6 @@ exe emit_custom_line_directives
     :   ../emit_custom_line_directives.cpp 
         /boost/wave//boost_wave
         /boost/thread//boost_thread
-        /boost/date_time//boost_date_time
+        /boost/filesystem//boost_filesystem
     ;  
 

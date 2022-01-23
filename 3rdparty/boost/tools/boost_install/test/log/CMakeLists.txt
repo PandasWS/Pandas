@@ -4,17 +4,31 @@
 
 cmake_minimum_required(VERSION 3.5)
 
+if(POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)
+endif()
+
 project(CmakeConfigLogTest LANGUAGES CXX)
 
 include(${CMAKE_CURRENT_LIST_DIR}/../BoostVersion.cmake)
 
-if(USE_BOOST_PACKAGE)
+set(BOOST_HINTS)
 
-  find_package(Boost ${BOOST_VERSION} EXACT REQUIRED COMPONENTS log)
+if(USE_STAGED_BOOST)
+  set(BOOST_HINTS HINTS ../../../../stage)
+endif()
+
+if(USE_ALL_COMPONENTS)
+
+  find_package(Boost ${BOOST_VERSION} EXACT REQUIRED ALL ${BOOST_HINTS})
+
+elseif(USE_BOOST_PACKAGE)
+
+  find_package(Boost ${BOOST_VERSION} EXACT REQUIRED COMPONENTS log ${BOOST_HINTS})
 
 else()
 
-  find_package(boost_log ${BOOST_VERSION} EXACT CONFIG REQUIRED)
+  find_package(boost_log ${BOOST_VERSION} EXACT CONFIG REQUIRED ${BOOST_HINTS})
 
 endif()
 

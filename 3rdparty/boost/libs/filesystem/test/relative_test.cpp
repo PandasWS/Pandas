@@ -22,10 +22,10 @@ using boost::filesystem::path;
 using std::cout;
 using std::endl;
 
-namespace
+namespace {
+
+void lexically_relative_test()
 {
-  void lexically_relative_test()
-  {
     cout << "lexically_relative_test..." << endl;
 
     BOOST_TEST(path("").lexically_relative("") == "");
@@ -48,6 +48,13 @@ namespace
     BOOST_TEST(path("a/b/c").lexically_relative("a/x/y") == "../../b/c");
     BOOST_TEST(path("a/b/c").lexically_relative("a/b/x/y") == "../../c");
     BOOST_TEST(path("a/b/c").lexically_relative("a/b/c/x/y/z") == "../../..");
+    BOOST_TEST(path("a/b/c").lexically_relative("a/") == "b/c");
+    BOOST_TEST(path("a/b/c").lexically_relative("a/.") == "b/c");
+    BOOST_TEST(path("a/b/c").lexically_relative("a/./") == "b/c");
+    BOOST_TEST(path("a/b/c").lexically_relative("a/b/..") == "");
+    BOOST_TEST(path("a/b/c").lexically_relative("a/b/../") == "");
+    BOOST_TEST(path("a/b/c").lexically_relative("a/b/d/..") == "c");
+    BOOST_TEST(path("a/b/c").lexically_relative("a/b/d/../") == "c");
 
     // paths unrelated except first element, and first element is root directory
     BOOST_TEST(path("/a/b/c").lexically_relative("/x") == "../a/b/c");
@@ -69,24 +76,25 @@ namespace
     //  Some tests from Jamie Allsop's paper
     BOOST_TEST(path("/a/d").lexically_relative("/a/b/c") == "../../d");
     BOOST_TEST(path("/a/b/c").lexically_relative("/a/d") == "../b/c");
-  #ifdef BOOST_WINDOWS_API
+#ifdef BOOST_WINDOWS_API
     BOOST_TEST(path("c:\\y").lexically_relative("c:\\x") == "../y");
-  #else
+#else
     BOOST_TEST(path("c:\\y").lexically_relative("c:\\x") == "");
-  #endif
+#endif
     BOOST_TEST(path("d:\\y").lexically_relative("c:\\x") == "");
 
     //  From issue #1976
     BOOST_TEST(path("/foo/new").lexically_relative("/foo/bar") == "../new");
-  }
+}
 
-  void lexically_proximate_test()
-  {
+void lexically_proximate_test()
+{
     cout << "lexically_proximate_test..." << endl;
     // paths unrelated
     BOOST_TEST(path("a/b/c").lexically_proximate("x") == "a/b/c");
-  }
-}  // unnamed namespace
+}
+
+} // unnamed namespace
 
 //--------------------------------------------------------------------------------------//
 //                                                                                      //
@@ -98,14 +106,14 @@ int test_main(int, char*[])
 {
 // document state of critical macros
 #ifdef BOOST_POSIX_API
-  cout << "BOOST_POSIX_API" << endl;
+    cout << "BOOST_POSIX_API" << endl;
 #endif
 #ifdef BOOST_WINDOWS_API
-  cout << "BOOST_WINDOWS_API" << endl;
+    cout << "BOOST_WINDOWS_API" << endl;
 #endif
 
-  lexically_relative_test();
-  lexically_proximate_test();
+    lexically_relative_test();
+    lexically_proximate_test();
 
-  return ::boost::report_errors();
+    return ::boost::report_errors();
 }

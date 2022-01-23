@@ -12,7 +12,7 @@
 // -----------------------------------------------------------------------
 
 
-#include <boost/test/minimal.hpp>    // see "Header Implementation Option"
+#include <boost/core/lightweight_test.hpp>
 
 #include "boost/lambda/bind.hpp"
 
@@ -63,79 +63,80 @@ void test_member_functions()
 
 
 
-    BOOST_CHECK(bind(&A::add, ref(a), _1)(i) == 11);
-    BOOST_CHECK(bind(&A::add, &a, _1)(i) == 11);
-    BOOST_CHECK(bind(&A::add, _1, 1)(a) == 11);
-    BOOST_CHECK(bind(&A::add, _1, 1)(make_const(&a)) == 11);
+    BOOST_TEST_EQ(bind(&A::add, ref(a), _1)(i), 11);
+    BOOST_TEST_EQ(bind(&A::add, &a, _1)(i), 11);
+    BOOST_TEST_EQ(bind(&A::add, _1, 1)(a), 11);
+    BOOST_TEST_EQ(bind(&A::add, _1, 1)(make_const(&a)), 11);
 
-    BOOST_CHECK(bind(&A::add2, _1, 1, 1)(a) == 12);
-    BOOST_CHECK(bind(&A::add3, _1, 1, 1, 1)(a) == 13);
-    BOOST_CHECK(bind(&A::add4, _1, 1, 1, 1, 1)(a) == 14);
-    BOOST_CHECK(bind(&A::add5, _1, 1, 1, 1, 1, 1)(a) == 15);
-    BOOST_CHECK(bind(&A::add6, _1, 1, 1, 1, 1, 1, 1)(a) == 16);
-    BOOST_CHECK(bind(&A::add7, _1, 1, 1, 1, 1, 1, 1, 1)(a) == 17);
-    BOOST_CHECK(bind(&A::add8, _1, 1, 1, 1, 1, 1, 1, 1, 1)(a) == 18);
+    BOOST_TEST_EQ(bind(&A::add2, _1, 1, 1)(a), 12);
+    BOOST_TEST_EQ(bind(&A::add3, _1, 1, 1, 1)(a), 13);
+    BOOST_TEST_EQ(bind(&A::add4, _1, 1, 1, 1, 1)(a), 14);
+    BOOST_TEST_EQ(bind(&A::add5, _1, 1, 1, 1, 1, 1)(a), 15);
+    BOOST_TEST_EQ(bind(&A::add6, _1, 1, 1, 1, 1, 1, 1)(a), 16);
+    BOOST_TEST_EQ(bind(&A::add7, _1, 1, 1, 1, 1, 1, 1, 1)(a), 17);
+    BOOST_TEST_EQ(bind(&A::add8, _1, 1, 1, 1, 1, 1, 1, 1, 1)(a), 18);
 
   // This should fail, as lambda functors store arguments as const
   // bind(&A::add, a, _1); 
 }
 
-int test_main(int, char *[]) {
+int main()
+{
 
   int i = 1; int j = 2; int k = 3;
   int result;
    
   // bind all parameters
-  BOOST_CHECK(bind(&sum_of_args_0)()==0);
-  BOOST_CHECK(bind(&sum_of_args_1, 1)()==1);
-  BOOST_CHECK(bind(&sum_of_args_2, 1, 2)()==3);
-  BOOST_CHECK(bind(&sum_of_args_3, 1, 2, 3)()==6);
-  BOOST_CHECK(bind(&sum_of_args_4, 1, 2, 3, 4)()==10);
-  BOOST_CHECK(bind(&sum_of_args_5, 1, 2, 3, 4, 5)()==15);
-  BOOST_CHECK(bind(&sum_of_args_6, 1, 2, 3, 4, 5, 6)()==21);   
-  BOOST_CHECK(bind(&sum_of_args_7, 1, 2, 3, 4, 5, 6, 7)()==28);   
-  BOOST_CHECK(bind(&sum_of_args_8, 1, 2, 3, 4, 5, 6, 7, 8)()==36);   
-  BOOST_CHECK(bind(&sum_of_args_9, 1, 2, 3, 4, 5, 6, 7, 8, 9)()==45);      
+  BOOST_TEST_EQ(bind(&sum_of_args_0)(), 0);
+  BOOST_TEST_EQ(bind(&sum_of_args_1, 1)(), 1);
+  BOOST_TEST_EQ(bind(&sum_of_args_2, 1, 2)(), 3);
+  BOOST_TEST_EQ(bind(&sum_of_args_3, 1, 2, 3)(), 6);
+  BOOST_TEST_EQ(bind(&sum_of_args_4, 1, 2, 3, 4)(), 10);
+  BOOST_TEST_EQ(bind(&sum_of_args_5, 1, 2, 3, 4, 5)(), 15);
+  BOOST_TEST_EQ(bind(&sum_of_args_6, 1, 2, 3, 4, 5, 6)(), 21);
+  BOOST_TEST_EQ(bind(&sum_of_args_7, 1, 2, 3, 4, 5, 6, 7)(), 28);
+  BOOST_TEST_EQ(bind(&sum_of_args_8, 1, 2, 3, 4, 5, 6, 7, 8)(), 36);
+  BOOST_TEST_EQ(bind(&sum_of_args_9, 1, 2, 3, 4, 5, 6, 7, 8, 9)(), 45);
 
   // first parameter open
-  BOOST_CHECK(bind(&sum_of_args_0)()==0);
-  BOOST_CHECK(bind(&sum_of_args_1, _1)(i)==1);
-  BOOST_CHECK(bind(&sum_of_args_2, _1, 2)(i)==3);
-  BOOST_CHECK(bind(&sum_of_args_3, _1, 2, 3)(i)==6);
-  BOOST_CHECK(bind(&sum_of_args_4, _1, 2, 3, 4)(i)==10);
-  BOOST_CHECK(bind(&sum_of_args_5, _1, 2, 3, 4, 5)(i)==15);
-  BOOST_CHECK(bind(&sum_of_args_6, _1, 2, 3, 4, 5, 6)(i)==21);   
-  BOOST_CHECK(bind(&sum_of_args_7, _1, 2, 3, 4, 5, 6, 7)(i)==28);   
-  BOOST_CHECK(bind(&sum_of_args_8, _1, 2, 3, 4, 5, 6, 7, 8)(i)==36);   
-  BOOST_CHECK(bind(&sum_of_args_9, _1, 2, 3, 4, 5, 6, 7, 8, 9)(i)==45);      
+  BOOST_TEST_EQ(bind(&sum_of_args_0)(), 0);
+  BOOST_TEST_EQ(bind(&sum_of_args_1, _1)(i), 1);
+  BOOST_TEST_EQ(bind(&sum_of_args_2, _1, 2)(i), 3);
+  BOOST_TEST_EQ(bind(&sum_of_args_3, _1, 2, 3)(i), 6);
+  BOOST_TEST_EQ(bind(&sum_of_args_4, _1, 2, 3, 4)(i), 10);
+  BOOST_TEST_EQ(bind(&sum_of_args_5, _1, 2, 3, 4, 5)(i), 15);
+  BOOST_TEST_EQ(bind(&sum_of_args_6, _1, 2, 3, 4, 5, 6)(i), 21);
+  BOOST_TEST_EQ(bind(&sum_of_args_7, _1, 2, 3, 4, 5, 6, 7)(i), 28);
+  BOOST_TEST_EQ(bind(&sum_of_args_8, _1, 2, 3, 4, 5, 6, 7, 8)(i), 36);
+  BOOST_TEST_EQ(bind(&sum_of_args_9, _1, 2, 3, 4, 5, 6, 7, 8, 9)(i), 45);
 
   // two open arguments 
-  BOOST_CHECK(bind(&sum_of_args_0)()==0);
-  BOOST_CHECK(bind(&sum_of_args_1, _1)(i)==1);
-  BOOST_CHECK(bind(&sum_of_args_2, _1, _2)(i, j)==3);
-  BOOST_CHECK(bind(&sum_of_args_3, _1, _2, 3)(i, j)==6);
-  BOOST_CHECK(bind(&sum_of_args_4, _1, _2, 3, 4)(i, j)==10);
-  BOOST_CHECK(bind(&sum_of_args_5, _1, _2, 3, 4, 5)(i, j)==15);
-  BOOST_CHECK(bind(&sum_of_args_6, _1, _2, 3, 4, 5, 6)(i, j)==21);   
-  BOOST_CHECK(bind(&sum_of_args_7, _1, _2, 3, 4, 5, 6, 7)(i, j)==28);   
-  BOOST_CHECK(bind(&sum_of_args_8, _1, _2, 3, 4, 5, 6, 7, 8)(i, j)==36);   
-  BOOST_CHECK(bind(&sum_of_args_9, _1, _2, 3, 4, 5, 6, 7, 8, 9)(i, j)==45);      
+  BOOST_TEST_EQ(bind(&sum_of_args_0)(), 0);
+  BOOST_TEST_EQ(bind(&sum_of_args_1, _1)(i), 1);
+  BOOST_TEST_EQ(bind(&sum_of_args_2, _1, _2)(i, j), 3);
+  BOOST_TEST_EQ(bind(&sum_of_args_3, _1, _2, 3)(i, j), 6);
+  BOOST_TEST_EQ(bind(&sum_of_args_4, _1, _2, 3, 4)(i, j), 10);
+  BOOST_TEST_EQ(bind(&sum_of_args_5, _1, _2, 3, 4, 5)(i, j), 15);
+  BOOST_TEST_EQ(bind(&sum_of_args_6, _1, _2, 3, 4, 5, 6)(i, j), 21);
+  BOOST_TEST_EQ(bind(&sum_of_args_7, _1, _2, 3, 4, 5, 6, 7)(i, j), 28);
+  BOOST_TEST_EQ(bind(&sum_of_args_8, _1, _2, 3, 4, 5, 6, 7, 8)(i, j), 36);
+  BOOST_TEST_EQ(bind(&sum_of_args_9, _1, _2, 3, 4, 5, 6, 7, 8, 9)(i, j), 45);
 
   // three open arguments 
-  BOOST_CHECK(bind(&sum_of_args_0)()==0);
-  BOOST_CHECK(bind(&sum_of_args_1, _1)(i)==1);
-  BOOST_CHECK(bind(&sum_of_args_2, _1, _2)(i, j)==3);
-  BOOST_CHECK(bind(&sum_of_args_3, _1, _2, _3)(i, j, k)==6);
-  BOOST_CHECK(bind(&sum_of_args_4, _1, _2, _3, 4)(i, j, k)==10);
-  BOOST_CHECK(bind(&sum_of_args_5, _1, _2, _3, 4, 5)(i, j, k)==15);
-  BOOST_CHECK(bind(&sum_of_args_6, _1, _2, _3, 4, 5, 6)(i, j, k)==21);   
-  BOOST_CHECK(bind(&sum_of_args_7, _1, _2, _3, 4, 5, 6, 7)(i, j, k)==28);   
-  BOOST_CHECK(bind(&sum_of_args_8, _1, _2, _3, 4, 5, 6, 7, 8)(i, j, k)==36);   
-  BOOST_CHECK(bind(&sum_of_args_9, _1, _2, _3, 4, 5, 6, 7, 8, 9)(i, j, k)==45);
+  BOOST_TEST_EQ(bind(&sum_of_args_0)(), 0);
+  BOOST_TEST_EQ(bind(&sum_of_args_1, _1)(i), 1);
+  BOOST_TEST_EQ(bind(&sum_of_args_2, _1, _2)(i, j), 3);
+  BOOST_TEST_EQ(bind(&sum_of_args_3, _1, _2, _3)(i, j, k), 6);
+  BOOST_TEST_EQ(bind(&sum_of_args_4, _1, _2, _3, 4)(i, j, k), 10);
+  BOOST_TEST_EQ(bind(&sum_of_args_5, _1, _2, _3, 4, 5)(i, j, k), 15);
+  BOOST_TEST_EQ(bind(&sum_of_args_6, _1, _2, _3, 4, 5, 6)(i, j, k), 21);
+  BOOST_TEST_EQ(bind(&sum_of_args_7, _1, _2, _3, 4, 5, 6, 7)(i, j, k), 28);
+  BOOST_TEST_EQ(bind(&sum_of_args_8, _1, _2, _3, 4, 5, 6, 7, 8)(i, j, k), 36);
+  BOOST_TEST_EQ(bind(&sum_of_args_9, _1, _2, _3, 4, 5, 6, 7, 8, 9)(i, j, k), 45);
    
   // function compositions with bind
-  BOOST_CHECK(bind(&sum_of_args_3, bind(&sum_of_args_2, _1, 2), 2, 3)(i)==8); 
-  BOOST_CHECK(
+  BOOST_TEST_EQ(bind(&sum_of_args_3, bind(&sum_of_args_2, _1, 2), 2, 3)(i), 8);
+  BOOST_TEST_EQ(
     bind(&sum_of_args_9,
        bind(&sum_of_args_0),                             // 0
        bind(&sum_of_args_1, _1),                         // 1
@@ -146,7 +147,7 @@ int test_main(int, char *[]) {
        bind(&sum_of_args_6, _1, _2, _3, 4, 5, 6),        // 21
        bind(&sum_of_args_7, _1, _2, _3, 4, 5, 6, 7),     // 28
        bind(&sum_of_args_8, _1, _2, _3, 4, 5, 6, 7, 8)   // 36
-    )(i, j, k) == 120);
+    )(i, j, k), 120);
 
   // deeper nesting
   result = 
@@ -161,10 +162,9 @@ int test_main(int, char *[]) {
             _3,
             4)
      )(i, j, k);
-   BOOST_CHECK(result == 12);
+   BOOST_TEST_EQ(result, 12);
 
   test_member_functions();
 
-
-  return 0;
+  return boost::report_errors();
 }

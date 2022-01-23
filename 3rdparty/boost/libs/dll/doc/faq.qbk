@@ -1,6 +1,6 @@
 [/
     Copyright 2014 Renato Tegon Forti, Antony Polukhin
-    Copyright 2015-2019 Antony Polukhin
+    Copyright 2015-2021 Antony Polukhin
     Distributed under the Boost Software License, Version 1.0.
     (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 /]
@@ -92,6 +92,14 @@ dll:shared_library load_from_memory(unsigned char* data, std::size_t size, const
 ```
 
 But there's no guarantee that `filesystem::temp_directory_path()` will actually write to RAM, that's very platform dependent.
+
+[pre
+]
+
+* [*Question:] Can I use function pointer type (like `void(*)()`) instead of function type (like `void()`) to import function?
+  * [*Answer:] No you can't because the meaning of importing a function pointer is different:
+    * `lib.get<void()>("func")` imports a function `void func()`
+    * `lib.get<void(*)()>("func_var")` imports a variable that stores a pointer to the function `auto func_var = &func`
 
 [pre
 ]

@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Semantics</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Boost.Icl">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Boost.Icl">
+<link rel="home" href="../index.html" title="Chapter 1. Boost.Icl">
+<link rel="up" href="../index.html" title="Chapter 1. Boost.Icl">
 <link rel="prev" href="concepts/map_traits.html" title="Map Traits">
 <link rel="next" href="semantics/sets.html" title="Sets">
 </head>
@@ -38,7 +38,7 @@
 <dt><span class="section"><a href="semantics/concept_induction.html">Concept Induction</a></span></dt>
 </dl></div>
 <p>
-      <span class="quote">&#8220;<span class="quote">Beauty is the ultimate defense against complexity</span>&#8221;</span> -- <a href="http://en.wikipedia.org/wiki/David_Gelernter" target="_top">David Gelernter</a>
+      <span class="quote">“<span class="quote">Beauty is the ultimate defense against complexity</span>”</span> -- <a href="http://en.wikipedia.org/wiki/David_Gelernter" target="_top">David Gelernter</a>
     </p>
 <p>
       In the <span class="bold"><strong>icl</strong></span> we follow the notion, that the
@@ -78,12 +78,12 @@
       </h5>
 <p>
         On all set and map containers of the icl, there is an <code class="computeroutput"><span class="keyword">operator</span>
-        <span class="special">&lt;</span></code> that implements a <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html" target="_top">strict
+        <span class="special">&lt;</span></code> that implements a <a href="https://boost.org/sgi/stl/StrictWeakOrdering.html" target="_top">strict
         weak ordering</a>. The semantics of <code class="computeroutput"><span class="keyword">operator</span>
         <span class="special">&lt;</span></code> is the same as for an stl's
-        <a href="http://www.sgi.com/tech/stl/SortedAssociativeContainer.html" target="_top">SortedAssociativeContainer</a>,
-        specifically <a href="http://www.sgi.com/tech/stl/set.html" target="_top">stl::set</a>
-        and <a href="http://www.sgi.com/tech/stl/map.html" target="_top">stl::map</a>:
+        <a href="https://boost.org/sgi/stl/SortedAssociativeContainer.html" target="_top">SortedAssociativeContainer</a>,
+        specifically <a href="https://boost.org/sgi/stl/set.html" target="_top">stl::set</a>
+        and <a href="https://boost.org/sgi/stl/Map.html" target="_top">stl::map</a>:
 </p>
 <pre class="programlisting"><span class="identifier">Irreflexivity</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,&lt;</span> <span class="special">&gt;</span> <span class="special">:</span> <span class="identifier">T</span> <span class="identifier">a</span><span class="special">;</span>     <span class="special">!(</span><span class="identifier">a</span><span class="special">&lt;</span><span class="identifier">a</span><span class="special">)</span>
 <span class="identifier">Asymmetry</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,&lt;</span> <span class="special">&gt;</span>     <span class="special">:</span> <span class="identifier">T</span> <span class="identifier">a</span><span class="special">,</span><span class="identifier">b</span><span class="special">;</span>   <span class="identifier">a</span><span class="special">&lt;</span><span class="identifier">b</span> <span class="identifier">implies</span> <span class="special">!(</span><span class="identifier">b</span><span class="special">&lt;</span><span class="identifier">a</span><span class="special">)</span>
@@ -174,8 +174,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2007-2010 Joachim
-      Faulhaber<br>Copyright &#169; 1999-2006 Cortex Software
+<td align="right"><div class="copyright-footer">Copyright © 2007-2010 Joachim
+      Faulhaber<br>Copyright © 1999-2006 Cortex Software
       GmbH<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

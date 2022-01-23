@@ -31,7 +31,7 @@ all the appropriate corner cases.  They do not necessarily represent
 "typical" usage: whatever that may be!
 ]
 
-[endsect]
+[endsect] [/section:interp Interpreting these Results]
 
 [section:getting_best Getting the Best Performance from this Library: Compiler and Compiler Options]
 
@@ -91,7 +91,7 @@ However, an easier option might be:
    //
    // Define a Policy for fast evaluation:
    //
-   using namespace boost::math::polcies;
+   using namespace boost::math::policies[
    typedef policy<promote_double<false> > fast_policy;
    //
    // Invoke BOOST_MATH_DECLARE_SPECIAL_FUNCTIONS:
@@ -119,7 +119,7 @@ Had we wished to change the target precision (to 9 decimal places) as well as th
    //
    // Define a Policy for fast evaluation:
    //
-   using namespace boost::math::polcies;
+   using namespace boost::math::policies;
    typedef policy<promote_double<false>, digits10<9> > fast_policy;
    //
    // Invoke BOOST_MATH_DECLARE_SPECIAL_FUNCTIONS:
@@ -137,7 +137,7 @@ One can do a similar thing with the distribution classes:
    //
    // Define a policy for fastest possible evaluation:
    //
-   using namespace boost::math::polcies;
+   using namespace boost::math::policies;
    typedef policy<promote_float<false> > fast_float_policy;
    //
    // Invoke BOOST_MATH_DECLARE_DISTRIBUTIONS
@@ -153,7 +153,7 @@ One can do a similar thing with the distribution classes:
 
 Here's how these options change the relative performance of the distributions on Linux:
 
-[table_Distribution_performance_comparison_for_different_performance_options_with_GNU_C_version_5_1_0_on_linux]
+[table_Distribution_performance_comparison_for_different_performance_options_with_GNU_C_version_9_2_1_20191008_on_linux]
 
 [endsect] [/section:tradoffs Trading Accuracy for Performance]
 
@@ -259,13 +259,21 @@ the following tables show the results for MSVC-14.0 and GCC-5.1.0 (Linux).  Ther
 the various methods, but generally loop-unrolled methods perform better.  Interestingly, ordering the code
 to try and "second guess" possible optimizations seems not to be such a good idea (method 3 below).
 
-[table_Polynomial_Method_Comparison_with_Microsoft_Visual_C_version_14_0_on_Windows_x64]
+[table_Polynomial_Method_Comparison_with_Microsoft_Visual_C_version_14_2_on_Windows_x64]
 
-[table_Rational_Method_Comparison_with_Microsoft_Visual_C_version_14_0_on_Windows_x64]
+[table_Rational_Method_Comparison_with_Microsoft_Visual_C_version_14_2_on_Windows_x64]
 
-[table_Polynomial_Method_Comparison_with_GNU_C_version_5_1_0_on_linux]
+[table_Polynomial_Method_Comparison_with_GNU_C_version_9_2_1_20191008_on_linux]
 
-[table_Rational_Method_Comparison_with_GNU_C_version_5_1_0_on_linux]
+[table_Rational_Method_Comparison_with_GNU_C_version_9_2_1_20191008_on_linux]
+
+[table_Polynomial_Method_Comparison_with_Clang_version_9_0_0_tags_RELEASE_900_final_on_linux]
+
+[table_Rational_Method_Comparison_with_Clang_version_9_0_0_tags_RELEASE_900_final_on_linux]
+
+[table_Polynomial_Method_Comparison_with_Intel_C_C_0x_mode_version_1910_on_linux]
+
+[table_Rational_Method_Comparison_with_Intel_C_C_0x_mode_version_1910_on_linux]
 
 [endsect] [/section:tuning Performance Tuning Macros]
 
@@ -293,8 +301,8 @@ or unexpected non-finite values.
 
 [caution
 You should exercise extreme caution when interpreting
-these results, relative performance may vary by platform, the tests use
-data that gives good code coverage of /our/ code, but which may skew the
+these results, relative performance may vary by platform, by compiler options settings,
+the tests use data that gives good code coverage of /our/ code, but which may skew the
 results towards the corner cases.  Finally, remember that different
 libraries make different choices with regard to performance verses
 numerical stability.
@@ -302,15 +310,15 @@ numerical stability.
 
 The first results compare standard library functions to Boost equivalents with MSVC-14.0:
 
-[table_Library_Comparison_with_Microsoft_Visual_C_version_14_0_on_Windows_x64]
+[table_Library_Comparison_with_Microsoft_Visual_C_version_14_2_on_Windows_x64]
 
 On Linux with GCC, we can also compare to the TR1 functions, and to GSL and RMath:
 
-[table_Library_Comparison_with_GNU_C_version_5_1_0_on_linux]
+[table_Library_Comparison_with_GNU_C_version_9_2_1_20191008_on_linux]
 
 And finally we can compare the statistical distributions to GSL, RMath and DCDFLIB:
 
-[table_Distribution_performance_comparison_with_GNU_C_version_5_1_0_on_linux]
+[table_Distribution_performance_comparison_with_GNU_C_version_9_2_1_20191008_on_linux]
 
 [endsect] [/section:comparisons Comparisons to Other Open Source Libraries]
 
@@ -364,7 +372,7 @@ compiler.
 
 [endsect] [/section:perf_test_app The Performance Test Applications]
 
-[endmathpart]
+[endmathpart] [/mathpart perf Performance]
 
 [/
   Copyright 2006 John Maddock and Paul A. Bristow.

@@ -1,72 +1,66 @@
-# Copyright 2018 Peter Dimov
+# Copyright 2018, 2019 Peter Dimov
 # Distributed under the Boost Software License, Version 1.0.
 # See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5...3.16)
 
-project(BoostMp11 VERSION 1.71.0 LANGUAGES CXX)
+project(boost_mp11 VERSION 1.78.0 LANGUAGES CXX)
 
 add_library(boost_mp11 INTERFACE)
-set_property(TARGET boost_mp11 PROPERTY EXPORT_NAME mp11)
-
 add_library(Boost::mp11 ALIAS boost_mp11)
 
-target_include_directories(boost_mp11 INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+target_include_directories(boost_mp11 INTERFACE include)
 target_compile_features(boost_mp11 INTERFACE cxx_alias_templates cxx_variadic_templates cxx_decltype)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 
-    # --target check
+  # Fetch support files
 
-    # `function` confuses FetchContent, sees empty CMAKE_CURRENT_LIST_DIR
-    macro(fetch_and_include name)
+  message(STATUS "Fetching BoostFetch.cmake")
 
-        message(STATUS "Fetching ${name}")
+  file(DOWNLOAD
+    "https://raw.githubusercontent.com/boostorg/cmake/develop/include/BoostFetch.cmake"
+    "${CMAKE_BINARY_DIR}/fetch_and_include/BoostFetch.cmake"
+  )
 
-        file(DOWNLOAD
-            "https://raw.githubusercontent.com/boostorg/mincmake/master/${name}"
-            "${CMAKE_BINARY_DIR}/fetch_and_include/${name}"
-        )
+  include("${CMAKE_BINARY_DIR}/fetch_and_include/BoostFetch.cmake")
 
-        include("${CMAKE_BINARY_DIR}/fetch_and_include/${name}")
+  boost_fetch(boostorg/cmake TAG develop NO_ADD_SUBDIR)
 
-    endmacro()
+  FetchContent_GetProperties(boostorg_cmake)
 
-    fetch_and_include(cmake/boost_fetch.cmake)
-    fetch_and_include(cmake/boost_test.cmake)
+  list(APPEND CMAKE_MODULE_PATH ${boostorg_cmake_SOURCE_DIR}/include)
 
-    boost_fetch(boostorg/assert TAG develop)
-    boost_fetch(boostorg/config TAG develop)
-    boost_fetch(boostorg/core TAG develop)
+  # Testing (off by default)
 
-    enable_testing()
-    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure -C $<CONFIG>)
+  option(BUILD_TESTING "Build the tests." OFF)
+  include(CTest)
 
-    # --target install
+  if(BUILD_TESTING)
 
-    set(CONFIG_INSTALL_DIR lib/cmake/${PROJECT_NAME}-${PROJECT_VERSION})
+    set(BUILD_TESTING OFF) # hide cache variable
 
-    install(TARGETS boost_mp11 EXPORT ${PROJECT_NAME}Targets)
-    install(EXPORT ${PROJECT_NAME}Targets DESTINATION ${CONFIG_INSTALL_DIR} NAMESPACE Boost:: FILE ${PROJECT_NAME}Config.cmake)
+    boost_fetch(boostorg/assert TAG develop EXCLUDE_FROM_ALL)
+    boost_fetch(boostorg/config TAG develop EXCLUDE_FROM_ALL)
+    boost_fetch(boostorg/core TAG develop EXCLUDE_FROM_ALL)
+    boost_fetch(boostorg/static_assert TAG develop EXCLUDE_FROM_ALL)
+    boost_fetch(boostorg/throw_exception TAG develop EXCLUDE_FROM_ALL)
 
-    install(DIRECTORY include/ DESTINATION include)
+    unset(BUILD_TESTING)
 
-    include(CMakePackageConfigHelpers)
+  endif()
 
-    # Mp11 is independent of 32/64, so this hack makes BoostMp11ConfigVersion.cmake skip the check
-    set(OLD_CMAKE_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
-    unset(CMAKE_SIZEOF_VOID_P)
-    write_basic_package_version_file("${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" COMPATIBILITY AnyNewerVersion)
-    set(CMAKE_SIZEOF_VOID_P ${OLD_CMAKE_SIZEOF_VOID_P})
+  # Do not use the default BoostInstall versioned layout on Windows when standalone
+  set(BOOST_INSTALL_LAYOUT "system" CACHE STRING "Installation layout (versioned, tagged, or system)")
 
-    install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" DESTINATION ${CONFIG_INSTALL_DIR})
+  include(BoostInstall)
 
-    #export(EXPORT ${PROJECT_NAME}Targets NAMESPACE Boost:: FILE ${PROJECT_NAME}Config.cmake)
+  boost_install(TARGETS boost_mp11 HEADER_DIRECTORY include/)
 
 endif()
 
-if(COMMAND boost_test)
+if(BUILD_TESTING)
 
-    add_subdirectory(test)
+  add_subdirectory(test)
 
 endif()

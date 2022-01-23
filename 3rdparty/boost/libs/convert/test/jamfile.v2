@@ -12,7 +12,7 @@ project convert_test
         <toolset>icpc:<cxxflags>"-std=c++11"
         <toolset>clang:<cxxflags>"-std=c++11"
         <toolset>gcc:<warnings>all
-        <toolset>gcc:<cxxflags>"-O3 -std=c++0x -Wno-unused-variable -Wno-unused-local-typedefs -Wno-long-long"
+        <toolset>gcc:<cxxflags>"-O3 -std=c++0x -Wno-unused-variable -Wno-unused-local-typedefs -Wno-long-long -Wnonnull"
         <toolset>msvc:<warnings>all
         <toolset>msvc:<cxxflags>"/wd4996 /wd4512 /wd4610 /wd4510 /wd4127 /wd4701 /wd4127 /wd4305 /wd4244 /wd4714 /wd4189"
         <toolset>msvc:<asynch-exceptions>on
@@ -23,7 +23,7 @@ project convert_test
         <include>../include
     ;  
 
-exe convert_test_performance : performance.cpp /boost/timer//boost_timer ;
+exe convert_test_performance : performance.cpp /boost/timer//boost_timer /boost/chrono//boost_chrono ;
 exe convert_test_performance_spirit : performance_spirit.cpp ;
 
 run callable.cpp         :  :  :  : convert_test_callable ;

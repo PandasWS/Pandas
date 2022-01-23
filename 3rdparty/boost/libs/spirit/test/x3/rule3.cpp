@@ -5,16 +5,24 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#include <boost/detail/lightweight_test.hpp>
 #include <boost/spirit/home/x3.hpp>
+#include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/std_pair.hpp>
 
+#include <boost/variant.hpp>
 #include <string>
+#include <vector>
 #include <cstring>
 #include <iostream>
 #include "test.hpp"
 
+#ifdef _MSC_VER
+// bogus https://developercommunity.visualstudio.com/t/buggy-warning-c4709/471956
+# pragma warning(disable: 4709) // comma operator within array index expression
+#endif
+
 using boost::spirit::x3::_val;
+namespace x3 = boost::spirit::x3;
 
 struct f
 {
@@ -44,6 +52,49 @@ auto const a_def = '{' >> boost::spirit::x3::int_ >> '}';
 auto const b_def = a;
 
 BOOST_SPIRIT_DEFINE(a, b)
+
+}
+
+namespace check_recursive {
+
+using node_t = boost::make_recursive_variant<
+                   int,
+                   std::vector<boost::recursive_variant_>
+               >::type;
+
+boost::spirit::x3::rule<class grammar_r, node_t> const grammar;
+
+auto const grammar_def = '[' >> grammar % ',' >> ']' | boost::spirit::x3::int_;
+
+BOOST_SPIRIT_DEFINE(grammar)
+
+}
+
+namespace check_recursive_scoped {
+
+using check_recursive::node_t;
+
+x3::rule<class intvec_r, node_t> const intvec;
+auto const grammar = intvec = '[' >> intvec % ',' >> ']' | x3::int_;
+
+}
+
+struct recursive_tuple
+{
+    int value;
+    std::vector<recursive_tuple> children;
+};
+BOOST_FUSION_ADAPT_STRUCT(recursive_tuple,
+    value, children)
+
+// regression test for #461
+namespace check_recursive_tuple {
+
+x3::rule<class grammar_r, recursive_tuple> const grammar;
+auto const grammar_def = x3::int_ >> ('{' >> grammar % ',' >> '}' | x3::eps);
+BOOST_SPIRIT_DEFINE(grammar)
+
+BOOST_SPIRIT_INSTANTIATE(decltype(grammar), char const*, x3::unused_type)
 
 }
 
@@ -91,7 +142,7 @@ int main()
     }
 
     {
-        auto r = rule<class r, int>{} = eps[([] (auto& ctx) {
+        auto r = rule<class r_id, int>{} = eps[([] (auto& ctx) {
             using boost::spirit::x3::_val;
             static_assert(std::is_same<std::decay_t<decltype(_val(ctx))>, unused_type>::value,
                 "Attribute must not be synthesized");
@@ -99,10 +150,23 @@ int main()
         BOOST_TEST(test("", r));
     }
 
-    { // ensure no unneded synthesization, copying and moving occured
+    { // ensure no unneeded synthesization, copying and moving occurred
         stationary st { 0 };
         BOOST_TEST(test_attr("{42}", check_stationary::b, st));
         BOOST_TEST_EQ(st.val, 42);
+    }
+
+    {
+        using namespace check_recursive;
+        node_t v;
+        BOOST_TEST(test_attr("[4,2]", grammar, v));
+        BOOST_TEST((node_t{std::vector<node_t>{{4}, {2}}} == v));
+    }
+    {
+        using namespace check_recursive_scoped;
+        node_t v;
+        BOOST_TEST(test_attr("[4,2]", grammar, v));
+        BOOST_TEST((node_t{std::vector<node_t>{{4}, {2}}} == v));
     }
 
     return boost::report_errors();

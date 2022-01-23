@@ -202,7 +202,7 @@ struct is_commutative<std::plus<wrapped_int>, wrapped_int>
 
 } } // end namespace boost::mpi
 
-BOOST_AUTO_TEST_CASE(reduce)
+BOOST_AUTO_TEST_CASE(reduce_check)
 {
   using namespace boost::mpi;
   environment env;

@@ -48,10 +48,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 template struct boost::wave::cpplexer::new_lexer_gen<
-    BOOST_WAVE_STRINGTYPE::iterator, boost::wave::util::file_position_type,
+    std::string::iterator, boost::wave::util::file_position_type,
     lex_token<boost::wave::util::file_position_type> >;
 template struct boost::wave::cpplexer::new_lexer_gen<
-    BOOST_WAVE_STRINGTYPE::const_iterator, boost::wave::util::file_position_type,
+    std::string::const_iterator, boost::wave::util::file_position_type,
     lex_token<boost::wave::util::file_position_type> >;
 
 // the suffix header occurs after all of the code

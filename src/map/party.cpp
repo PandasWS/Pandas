@@ -251,18 +251,21 @@ static void party_check_state(struct party_data *p)
 			case JOB_SURA:
 			case JOB_SURA_T:
 			case JOB_BABY_SURA:
+			case JOB_INQUISITOR:
 				p->state.monk = 1;
 			break;
 			case JOB_STAR_GLADIATOR:
 			case JOB_BABY_STAR_GLADIATOR:
 			case JOB_STAR_EMPEROR:
 			case JOB_BABY_STAR_EMPEROR:
+			case JOB_SKY_EMPEROR:
 				p->state.sg = 1;
 			break;
 			case JOB_SUPER_NOVICE:
 			case JOB_SUPER_BABY:
 			case JOB_SUPER_NOVICE_E:
 			case JOB_SUPER_BABY_E:
+			case JOB_HYPER_NOVICE:
 				p->state.snovice = 1;
 			break;
 			case JOB_TAEKWON:
@@ -921,7 +924,7 @@ int party_member_withdraw(int party_id, uint32 account_id, uint32 char_id, char 
 
 	if( sd && sd->status.party_id == party_id ) {
 #ifdef BOUND_ITEMS
-		int idxlist[G_MAX_INVENTORY]; //or malloc to reduce consumtion
+		int idxlist[MAX_INVENTORY]; //or malloc to reduce consumtion
 		int j,i;
 
 		party_trade_bound_cancel(sd);

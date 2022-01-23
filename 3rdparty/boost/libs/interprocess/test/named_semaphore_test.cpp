@@ -8,38 +8,45 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/sync/named_semaphore.hpp>
 #include <boost/interprocess/detail/interprocess_tester.hpp>
 #include <boost/interprocess/exceptions.hpp>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
 #include "named_creation_template.hpp"
 #include "mutex_test_template.hpp"
-#include <string>
 #include "get_process_id_name.hpp"
+#include <exception>
+
+#if defined(BOOST_INTERPROCESS_WINDOWS)
+#include <boost/interprocess/sync/windows/named_semaphore.hpp>
+#endif
+
+#include <boost/interprocess/detail/timed_utils.hpp>
 
 using namespace boost::interprocess;
 
 static const std::size_t RecSemCount   = 100;
-static const char *      SemName = test::get_process_id_name();
 
 //This wrapper is necessary to plug this class
 //in lock tests
+template<class NamedSemaphore>
 class lock_test_wrapper
-   : public named_semaphore
+   : public NamedSemaphore
 {
    public:
 
-   lock_test_wrapper(create_only_t, const char *name, unsigned int count = 1)
-      :  named_semaphore(create_only, name, count)
+   template <class CharT>
+   lock_test_wrapper(create_only_t, const CharT *name, unsigned int count = 1)
+      :  NamedSemaphore(create_only, name, count)
    {}
 
-   lock_test_wrapper(open_only_t, const char *name)
-      :  named_semaphore(open_only, name)
+   template <class CharT>
+   lock_test_wrapper(open_only_t, const CharT *name)
+      :  NamedSemaphore(open_only, name)
    {}
 
-   lock_test_wrapper(open_or_create_t, const char *name, unsigned int count = 1)
-      :  named_semaphore(open_or_create, name, count)
+   template <class CharT>
+   lock_test_wrapper(open_or_create_t, const CharT *name, unsigned int count = 1)
+      :  NamedSemaphore(open_or_create, name, count)
    {}
 
    ~lock_test_wrapper()
@@ -51,8 +58,15 @@ class lock_test_wrapper
    bool try_lock()
    {  return this->try_wait();  }
 
-   bool timed_lock(const boost::posix_time::ptime &pt)
+   template<class TimePoint>
+   bool timed_lock(const TimePoint &pt)
    {  return this->timed_wait(pt);  }
+
+   template<class TimePoint> bool try_lock_until(const TimePoint &abs_time)
+   {  return this->timed_lock(abs_time);  }
+
+   template<class Duration>  bool try_lock_for(const Duration &dur)
+   {  return this->timed_lock(boost::interprocess::ipcdetail::duration_to_ustime(dur)); }
 
    void unlock()
    {  this->post();  }
@@ -60,31 +74,34 @@ class lock_test_wrapper
 
 //This wrapper is necessary to plug this class
 //in recursive tests
+template<class NamedSemaphore>
 class recursive_test_wrapper
-   :  public lock_test_wrapper
+   :  public lock_test_wrapper<NamedSemaphore>
 {
    public:
    recursive_test_wrapper(create_only_t, const char *name)
-      :  lock_test_wrapper(create_only, name, RecSemCount)
+      :  lock_test_wrapper<NamedSemaphore>(create_only, name, RecSemCount)
    {}
 
    recursive_test_wrapper(open_only_t, const char *name)
-      :  lock_test_wrapper(open_only, name)
+      :  lock_test_wrapper<NamedSemaphore>(open_only, name)
    {}
 
    recursive_test_wrapper(open_or_create_t, const char *name)
-      :  lock_test_wrapper(open_or_create, name, RecSemCount)
+      :  lock_test_wrapper<NamedSemaphore>(open_or_create, name, RecSemCount)
    {}
 };
 
+template<class NamedSemaphore>
 bool test_named_semaphore_specific()
 {
+   NamedSemaphore::remove(test::get_process_id_name());
    //Test persistance
    {
-      named_semaphore sem(create_only, SemName, 3);
+      NamedSemaphore sem(create_only, test::get_process_id_name(), 3);
    }
    {
-      named_semaphore sem(open_only, SemName);
+      NamedSemaphore sem(open_only, test::get_process_id_name());
       BOOST_INTERPROCESS_CHECK(sem.try_wait() == true);
       BOOST_INTERPROCESS_CHECK(sem.try_wait() == true);
       BOOST_INTERPROCESS_CHECK(sem.try_wait() == true);
@@ -92,32 +109,47 @@ bool test_named_semaphore_specific()
       sem.post();
    }
    {
-      named_semaphore sem(open_only, SemName);
+      NamedSemaphore sem(open_only, test::get_process_id_name());
       BOOST_INTERPROCESS_CHECK(sem.try_wait() == true);
       BOOST_INTERPROCESS_CHECK(sem.try_wait() == false);
    }
 
-   named_semaphore::remove(SemName);
+   NamedSemaphore::remove(test::get_process_id_name());
    return true;
 }
 
-int main ()
+template<class NamedSemaphore>
+int test_named_semaphore()
 {
-   try{
-      named_semaphore::remove(SemName);
-      test::test_named_creation< test::named_sync_creation_test_wrapper<lock_test_wrapper> >();
-      test::test_all_lock< test::named_sync_wrapper<lock_test_wrapper> >();
-      test::test_all_mutex<test::named_sync_wrapper<lock_test_wrapper> >();
-      test::test_all_recursive_lock<test::named_sync_wrapper<recursive_test_wrapper> >();
-      test_named_semaphore_specific();
+   int ret = 0;
+   BOOST_TRY{
+      test::test_named_creation< test::named_sync_creation_test_wrapper<lock_test_wrapper<NamedSemaphore> > >();
+      #if defined(BOOST_INTERPROCESS_WCHAR_NAMED_RESOURCES)
+      test::test_named_creation< test::named_sync_creation_test_wrapper_w<lock_test_wrapper<NamedSemaphore> > >();
+      #endif //defined(BOOST_INTERPROCESS_WCHAR_NAMED_RESOURCES)
+
+      test::test_all_lock< test::named_sync_wrapper<lock_test_wrapper<NamedSemaphore> > >();
+      test::test_all_mutex<test::named_sync_wrapper<lock_test_wrapper<NamedSemaphore> > >();
+      test::test_all_recursive_lock<test::named_sync_wrapper<recursive_test_wrapper<NamedSemaphore> > >();
+      test_named_semaphore_specific<NamedSemaphore>();
    }
-   catch(std::exception &ex){
-      named_semaphore::remove(SemName);
+   BOOST_CATCH(std::exception &ex){
       std::cout << ex.what() << std::endl;
-      return 1;
-   }
-   named_semaphore::remove(SemName);
-   return 0;
+      ret = 1;
+   } BOOST_CATCH_END
+   NamedSemaphore::remove(test::get_process_id_name());
+   return ret;
 }
 
-#include <boost/interprocess/detail/config_end.hpp>
+int main()
+{
+   int ret;
+   #if defined(BOOST_INTERPROCESS_WINDOWS)
+   ret = test_named_semaphore<ipcdetail::winapi_named_semaphore>();
+   if (ret)
+      return ret;
+   #endif
+   ret = test_named_semaphore<named_semaphore>();
+   
+   return ret;
+}

@@ -50,6 +50,7 @@ import testing ;
     [ run optional_test_member_T.cpp ]
     [ run optional_test_tc_base.cpp ]
     [ compile optional_test_sfinae_friendly_ctor.cpp ]
+    [ compile optional_test_path_assignment.cpp ]
     [ compile-fail optional_test_fail_const_swap.cpp ]
     [ compile-fail optional_test_ref_convert_assign_const_int_prevented.cpp ]
     [ compile-fail optional_test_fail1.cpp ]

@@ -6,7 +6,6 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#include <boost/detail/lightweight_test.hpp>
 #include <boost/spirit/home/x3.hpp>
 
 #include <iostream>
@@ -18,6 +17,8 @@ main()
     using spirit_test::test;
     using spirit_test::test_attr;
     using boost::spirit::x3::no_case;
+
+    BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(no_case['x']);
 
     {
         using namespace boost::spirit::x3::ascii;
@@ -135,6 +136,13 @@ main()
         BOOST_TEST(test("Bochi Bochi", no_case[lit(s)]));
         BOOST_TEST(test("Bochi Bochi", no_case[s.c_str()]));
         BOOST_TEST(test("Bochi Bochi", no_case[s]));
+    }
+
+    {
+        {
+            using namespace boost::spirit::x3::standard;
+            BOOST_TEST(!test("ą", no_case['a']));
+        }
     }
 
     return boost::report_errors();

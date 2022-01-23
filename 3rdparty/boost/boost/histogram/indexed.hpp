@@ -8,17 +8,29 @@
 #define BOOST_HISTOGRAM_INDEXED_HPP
 
 #include <array>
+#include <boost/config.hpp> // BOOST_ATTRIBUTE_NODISCARD
 #include <boost/histogram/axis/traits.hpp>
-#include <boost/histogram/detail/attribute.hpp>
 #include <boost/histogram/detail/axes.hpp>
+#include <boost/histogram/detail/detect.hpp>
 #include <boost/histogram/detail/iterator_adaptor.hpp>
 #include <boost/histogram/detail/operators.hpp>
 #include <boost/histogram/fwd.hpp>
+#include <boost/histogram/unsafe_access.hpp>
+#include <iterator>
 #include <type_traits>
-#include <utility>
+#include <utility> // std::get
 
 namespace boost {
 namespace histogram {
+
+namespace detail {
+using std::get;
+
+template <std::size_t I, class T>
+auto get(T&& t) -> decltype(t[0]) {
+  return t[I];
+}
+} // namespace detail
 
 /** Coverage mode of the indexed range generator.
 
@@ -31,36 +43,42 @@ enum class coverage {
 
 /** Input iterator range over histogram bins with multi-dimensional index.
 
-  The iterator returned by begin() can only be incremented. begin() may only be called
-  once, calling it a second time returns the end() iterator. If several copies of the
+  The iterator returned by begin() can only be incremented. If several copies of the
   input iterators exist, the other copies become invalid if one of them is incremented.
 */
 template <class Histogram>
-class BOOST_HISTOGRAM_NODISCARD indexed_range {
+class BOOST_ATTRIBUTE_NODISCARD indexed_range {
 private:
   using histogram_type = Histogram;
-  static constexpr std::size_t buffer_size =
-      detail::buffer_size<typename std::remove_const_t<histogram_type>::axes_type>::value;
+  static constexpr unsigned buffer_size =
+      detail::buffer_size<typename std::decay_t<histogram_type>::axes_type>::value;
 
 public:
-  using value_iterator = decltype(std::declval<histogram_type>().begin());
-  using value_reference = typename value_iterator::reference;
-  using value_type = typename value_iterator::value_type;
+  /// implementation detail
+  using value_iterator = std::conditional_t<std::is_const<histogram_type>::value,
+                                            typename histogram_type::const_iterator,
+                                            typename histogram_type::iterator>;
+  /// implementation detail
+  using value_reference = typename std::iterator_traits<value_iterator>::reference;
+  /// implementation detail
+  using value_type = typename std::iterator_traits<value_iterator>::value_type;
 
   class iterator;
-  using range_iterator = iterator; ///< deprecated
+  using range_iterator [[deprecated("use iterator instead; "
+                                    "range_iterator will be removed in boost-1.80")]] =
+      iterator; ///< deprecated
 
-  /** Pointer-like class to access value and index of current cell.
+  /** Lightweight view to access value and index of current cell.
 
-    Its methods provide access to the current indices and bins and it acts like a pointer
-    to the cell value. To interoperate with the algorithms of the standard library, the
-    accessor is implicitly convertible to a cell value. Assignments and comparisons
-    are passed through to the cell. The accessor is coupled to its parent
-    iterator. Moving the parent iterator forward also updates the linked
-    accessor. Accessors are not copyable. They cannot be stored in containers, but
-    range_iterators can be stored.
+    The methods provide access to the current cell indices and bins. It acts like a
+    pointer to the cell value, and in a limited way also like a reference. To interoperate
+    with the algorithms of the standard library, the accessor is implicitly convertible to
+    a cell value. Assignments and comparisons are passed through to the cell. An accessor
+    is coupled to its parent indexed_range::iterator. Moving the parent iterator
+    forward also updates the linked accessor. Accessors are not copyable. They cannot be
+    stored in containers, but indexed_range::iterator can be stored.
   */
-  class accessor : detail::mirrored<accessor, void> {
+  class BOOST_ATTRIBUTE_NODISCARD accessor : detail::mirrored<accessor, void> {
   public:
     /// Array-like view into the current multi-dimensional index.
     class index_view {
@@ -68,7 +86,9 @@ public:
 
     public:
       using const_reference = const axis::index_type&;
-      using reference = const_reference; ///< deprecated
+      using reference [[deprecated("use const_reference instead; "
+                                   "reference will be removed in boost-1.80")]] =
+          const_reference; ///< deprecated
 
       /// implementation detail
       class const_iterator
@@ -128,16 +148,15 @@ public:
 
     /// Access indices as an iterable range.
     index_view indices() const noexcept {
-      BOOST_ASSERT(iter_.indices_.hist_);
-      return {iter_.indices_.data(),
-              iter_.indices_.data() + iter_.indices_.hist_->rank()};
+      assert(iter_.indices_.hist_);
+      return {iter_.indices_.begin(), iter_.indices_.end()};
     }
 
     /// Access current bin.
     /// @tparam N axis dimension.
     template <unsigned N = 0>
     decltype(auto) bin(std::integral_constant<unsigned, N> = {}) const {
-      BOOST_ASSERT(iter_.indices_.hist_);
+      assert(iter_.indices_.hist_);
       return iter_.indices_.hist_->axis(std::integral_constant<unsigned, N>())
           .bin(index(N));
     }
@@ -145,7 +164,7 @@ public:
     /// Access current bin.
     /// @param d axis dimension.
     decltype(auto) bin(unsigned d) const {
-      BOOST_ASSERT(iter_.indices_.hist_);
+      assert(iter_.indices_.hist_);
       return iter_.indices_.hist_->axis(d).bin(index(d));
     }
 
@@ -155,12 +174,12 @@ public:
       without bin widths, like axis::category, are treated as having unit bin with.
     */
     double density() const {
-      BOOST_ASSERT(iter_.indices_.hist_);
+      assert(iter_.indices_.hist_);
       double x = 1;
       unsigned d = 0;
       iter_.indices_.hist_->for_each_axis([&](const auto& a) {
         const auto w = axis::traits::width_as<double>(a, this->index(d++));
-        x *= w ? w : 1;
+        x *= w != 0 ? w : 1;
       });
       return get() / x;
     }
@@ -236,18 +255,20 @@ public:
     pointer operator->() noexcept { return pointer_proxy{operator*()}; }
 
     iterator& operator++() {
-      BOOST_ASSERT(indices_.hist_);
-      std::size_t stride = 1;
-      auto c = indices_.begin();
-      ++c->idx;
+      assert(iter_ < indices_.hist_->end());
+      const auto cbeg = indices_.begin();
+      auto c = cbeg;
       ++iter_;
-      while (c->idx == c->end && (c != (indices_.end() - 1))) {
-        c->idx = c->begin;
-        iter_ -= (c->end - c->begin) * stride;
-        stride *= c->extent;
-        ++c;
+      ++c->idx;
+      if (c->idx < c->end) return *this;
+      while (c->idx == c->end) {
+        iter_ += c->end_skip;
+        if (++c == indices_.end()) return *this;
         ++c->idx;
-        iter_ += stride;
+      }
+      while (c-- != cbeg) {
+        c->idx = c->begin;
+        iter_ += c->begin_skip;
       }
       return *this;
     }
@@ -261,58 +282,97 @@ public:
     bool operator==(const iterator& x) const noexcept { return iter_ == x.iter_; }
     bool operator!=(const iterator& x) const noexcept { return !operator==(x); }
 
+    // make iterator ready for C++17 sentinels
+    bool operator==(const value_iterator& x) const noexcept { return iter_ == x; }
+    bool operator!=(const value_iterator& x) const noexcept { return !operator==(x); }
+
+    // useful for iterator debugging
+    std::size_t offset() const noexcept { return iter_ - indices_.hist_->begin(); }
+
   private:
-    iterator(histogram_type* h) : iter_(h->begin()), indices_(h) {}
+    iterator(value_iterator i, histogram_type& h) : iter_(i), indices_(&h) {}
 
     value_iterator iter_;
 
     struct index_data {
-      axis::index_type idx, begin, end, extent;
+      axis::index_type idx, begin, end;
+      std::size_t begin_skip, end_skip;
     };
 
-    struct indices_t : std::array<index_data, buffer_size> {
+    struct indices_t : private std::array<index_data, buffer_size> {
       using base_type = std::array<index_data, buffer_size>;
+      using pointer = index_data*;
+      using const_pointer = const index_data*;
 
       indices_t(histogram_type* h) noexcept : hist_{h} {}
 
-      constexpr auto end() noexcept { return base_type::begin() + hist_->rank(); }
-      constexpr auto end() const noexcept { return base_type::begin() + hist_->rank(); }
+      using base_type::operator[];
+      unsigned size() const noexcept { return hist_->rank(); }
+      pointer begin() noexcept { return base_type::data(); }
+      const_pointer begin() const noexcept { return base_type::data(); }
+      pointer end() noexcept { return begin() + size(); }
+      const_pointer end() const noexcept { return begin() + size(); }
+
       histogram_type* hist_;
     } indices_;
 
     friend class indexed_range;
   };
 
-  indexed_range(histogram_type& hist, coverage cov) : begin_(&hist), end_(&hist) {
-    std::size_t stride = 1;
-    auto ca = begin_.indices_.begin();
-    const auto clast = ca + begin_.indices_.hist_->rank() - 1;
-    begin_.indices_.hist_->for_each_axis(
-        [ca, clast, cov, &stride, this](const auto& a) mutable {
-          using opt = axis::traits::static_options<decltype(a)>;
-          constexpr int under = opt::test(axis::option::underflow);
-          constexpr int over = opt::test(axis::option::overflow);
-          const auto size = a.size();
+  indexed_range(histogram_type& hist, coverage cov)
+      : indexed_range(hist, make_range(hist, cov)) {}
 
-          ca->extent = size + under + over;
-          // -1 if underflow and cover all, else 0
-          ca->begin = cov == coverage::all ? -under : 0;
-          // size + 1 if overflow and cover all, else size
-          ca->end = cov == coverage::all ? size + over : size;
-          ca->idx = ca->begin;
+  template <class Iterable, class = detail::requires_iterable<Iterable>>
+  indexed_range(histogram_type& hist, Iterable&& range)
+      : begin_(hist.begin(), hist), end_(hist.end(), hist) {
+    auto r_begin = std::begin(range);
+    assert(std::distance(r_begin, std::end(range)) == static_cast<int>(hist.rank()));
 
-          begin_.iter_ += (ca->begin + under) * stride;
-          end_.iter_ += ((ca < clast ? ca->begin : ca->end) + under) * stride;
+    begin_.indices_.hist_->for_each_axis([ca = begin_.indices_.begin(), r_begin,
+                                          stride = std::size_t{1},
+                                          this](const auto& a) mutable {
+      const auto size = a.size();
 
-          stride *= ca->extent;
-          ++ca;
-        });
+      using opt = axis::traits::get_options<std::decay_t<decltype(a)>>;
+      constexpr axis::index_type start = opt::test(axis::option::underflow) ? -1 : 0;
+      const auto stop = size + (opt::test(axis::option::overflow) ? 1 : 0);
+
+      ca->begin = std::max(start, detail::get<0>(*r_begin));
+      ca->end = std::min(stop, detail::get<1>(*r_begin));
+      assert(ca->begin <= ca->end);
+      ca->idx = ca->begin;
+
+      ca->begin_skip = static_cast<std::size_t>(ca->begin - start) * stride;
+      ca->end_skip = static_cast<std::size_t>(stop - ca->end) * stride;
+      begin_.iter_ += ca->begin_skip;
+
+      stride *= stop - start;
+
+      ++ca;
+      ++r_begin;
+    });
   }
 
   iterator begin() noexcept { return begin_; }
   iterator end() noexcept { return end_; }
 
 private:
+  auto make_range(histogram_type& hist, coverage cov) {
+    using range_item = std::array<axis::index_type, 2>;
+    auto b = detail::make_stack_buffer<range_item>(unsafe_access::axes(hist));
+    hist.for_each_axis([cov, it = std::begin(b)](const auto& a) mutable {
+      (*it)[0] = 0;
+      (*it)[1] = a.size();
+      if (cov == coverage::all) {
+        (*it)[0] -= 1;
+        (*it)[1] += 1;
+      } else
+        assert(cov == coverage::inner);
+      ++it;
+    });
+    return b;
+  }
+
   iterator begin_, end_;
 };
 
@@ -341,6 +401,34 @@ template <class Histogram>
 auto indexed(Histogram&& hist, coverage cov = coverage::inner) {
   return indexed_range<std::remove_reference_t<Histogram>>{std::forward<Histogram>(hist),
                                                            cov};
+}
+
+/** Generates and indexed range <a
+  href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">forward iterators</a>
+  over a rectangular region of histogram cells.
+
+  Use this in a range-based for loop. Example:
+  ```
+  auto hist = make_histogram(axis::integer<>(0, 4), axis::integer<>(2, 6));
+  axis::index_type range[2] = {{1, 3}, {0, 2}};
+  for (auto&& x : indexed(hist, range)) { ... }
+  ```
+  This skips the first and last index of the first axis, and the last two indices of the
+  second.
+
+  @returns indexed_range
+
+  @param hist  Reference to the histogram.
+  @param range Iterable over items with two axis::index_type values, which mark the
+               begin and end index of each axis. The length of the iterable must be
+               equal to the rank of the histogram. The begin index must be smaller than
+               the end index. Index ranges wider than the actual range are reduced to
+               the actual range including underflow and overflow indices.
+*/
+template <class Histogram, class Iterable, class = detail::requires_iterable<Iterable>>
+auto indexed(Histogram&& hist, Iterable&& range) {
+  return indexed_range<std::remove_reference_t<Histogram>>{std::forward<Histogram>(hist),
+                                                           std::forward<Iterable>(range)};
 }
 
 } // namespace histogram

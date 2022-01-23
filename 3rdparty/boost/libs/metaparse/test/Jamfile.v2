@@ -101,6 +101,7 @@ test-suite metaparse-unit-tests :
   [ run string.cpp ]
   [ compile string_iterator_tag.cpp ]
   [ compile string_tag.cpp ]
+  [ compile string_value.cpp ]
   [ compile swap.cpp ]
   [ compile token.cpp ]
   [ compile-fail too_long_string.cpp ]

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>basic_socket_streambuf</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -26,6 +26,9 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.basic_socket_streambuf"></a><a class="link" href="basic_socket_streambuf.html" title="basic_socket_streambuf">basic_socket_streambuf</a>
 </h3></div></div></div>
+<p>
+        <a class="indexterm" name="boost_asio.indexterm.basic_socket_streambuf"></a>
+      </p>
 <p>
         Iostream streambuf for a socket.
       </p>
@@ -170,14 +173,14 @@ class basic_socket_streambuf :
 <tr>
 <td>
                 <p>
-                  <a class="link" href="basic_socket_streambuf/basic_socket_streambuf.html" title="basic_socket_streambuf::basic_socket_streambuf"><span class="bold"><strong>basic_socket_streambuf</strong></span></a>
+                  <a class="link" href="basic_socket_streambuf/basic_socket_streambuf.html" title="basic_socket_streambuf::basic_socket_streambuf"><span class="bold"><strong>basic_socket_streambuf</strong></span></a> <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
                   Construct a basic_socket_streambuf without establishing a connection.
-                  <br> <span class="silver"> &#8212;</span><br> Construct a basic_socket_streambuf from the supplied
-                  socket. <br> <span class="silver"> &#8212;</span><br> Move-construct a basic_socket_streambuf from
+                  <br> <span class="silver"> —</span><br> Construct a basic_socket_streambuf from the supplied
+                  socket. <br> <span class="silver"> —</span><br> Move-construct a basic_socket_streambuf from
                   another.
                 </p>
               </td>
@@ -239,7 +242,7 @@ class basic_socket_streambuf :
 <td>
                 <p>
                   (Deprecated: Use expiry().) Get the stream buffer's expiry time
-                  as an absolute time. <br> <span class="silver"> &#8212;</span><br> Set the stream buffer's expiry
+                  as an absolute time. <br> <span class="silver"> —</span><br> Set the stream buffer's expiry
                   time as an absolute time.
                 </p>
               </td>
@@ -253,7 +256,7 @@ class basic_socket_streambuf :
 <td>
                 <p>
                   (Deprecated: Use expiry().) Get the stream buffer's expiry time
-                  relative to now. <br> <span class="silver"> &#8212;</span><br> (Deprecated: Use expires_after().)
+                  relative to now. <br> <span class="silver"> —</span><br> (Deprecated: Use expires_after().)
                   Set the stream buffer's expiry time relative to now.
                 </p>
               </td>
@@ -310,7 +313,7 @@ class basic_socket_streambuf :
 <tr>
 <td>
                 <p>
-                  <a class="link" href="basic_socket_streambuf/_basic_socket_streambuf.html" title="basic_socket_streambuf::~basic_socket_streambuf"><span class="bold"><strong>~basic_socket_streambuf</strong></span></a>
+                  <a class="link" href="basic_socket_streambuf/_basic_socket_streambuf.html" title="basic_socket_streambuf::~basic_socket_streambuf"><span class="bold"><strong>~basic_socket_streambuf</strong></span></a> <span class="silver">[destructor]</span>
                 </p>
               </td>
 <td>
@@ -395,7 +398,8 @@ class basic_socket_streambuf :
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

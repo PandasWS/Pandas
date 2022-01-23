@@ -62,9 +62,6 @@ detail:
   boost/blank.hpp
   boost/blank_fwd.hpp
   boost/cstdlib.hpp
-disjoint_sets:
-  boost/pending/detail/disjoint_sets.hpp
-  boost/pending/disjoint_sets.hpp
 dynamic_bitset:
   boost/dynamic_bitset_fwd.hpp
 exception:
@@ -77,7 +74,9 @@ graph:
   boost/detail/algorithm.hpp
   boost/pending/bucket_sorter.hpp
   boost/pending/container_traits.hpp
+  boost/pending/detail/disjoint_sets.hpp
   boost/pending/detail/property.hpp
+  boost/pending/disjoint_sets.hpp
   boost/pending/fenced_priority_queue.hpp
   boost/pending/fibonacci_heap.hpp
   boost/pending/indirect_cmp.hpp
@@ -181,8 +180,22 @@ parameter_python:
   boost/parameter/aux_/python/invoker_iterate.hpp
   boost/parameter/python.hpp
 predef:
-  boost/detail/endian.hpp
   boost/predef.h
+property_map_parallel:
+  boost/property_map/parallel/basic_reduce.hpp
+  boost/property_map/parallel/caching_property_map.hpp
+  boost/property_map/parallel/detail/untracked_pair.hpp
+  boost/property_map/parallel/distributed_property_map.hpp
+  boost/property_map/parallel/global_index_map.hpp
+  boost/property_map/parallel/impl/distributed_property_map.ipp
+  boost/property_map/parallel/local_property_map.hpp
+  boost/property_map/parallel/parallel_property_maps.hpp
+  boost/property_map/parallel/process_group.hpp
+  boost/property_map/parallel/simple_trigger.hpp
+  boost/property_map/parallel/unsafe_serialize.hpp
+  boost/property_map/parallel/vector_property_map.hpp
+qvm:
+  boost/qvm_lite.hpp
 random:
   boost/nondet_random.hpp
 regex:

@@ -1,16 +1,41 @@
-# Copyright 2018 Mike Dev
+# Copyright 2018, 2019 Peter Dimov
 # Distributed under the Boost Software License, Version 1.0.
 # See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt
-#
-# NOTE: This does NOT run the unit tests for Boost.Preprocessor (yet).
-#       It only tests, if the CMakeLists.txt file works as expected
 
-cmake_minimum_required( VERSION 3.5 )
+include(BoostTest OPTIONAL RESULT_VARIABLE HAVE_BOOST_TEST)
 
-project( BoostPreprocessorCMakeSelfTest )
+if(NOT HAVE_BOOST_TEST)
+  return()
+endif()
 
-add_subdirectory( .. ${CMAKE_CURRENT_BINARY_DIR}/boost_preprocessor )
+enable_language(C)
 
-add_executable( boost_preprocessor_cmake_self_test config_info.cpp )
-target_link_libraries( boost_preprocessor_cmake_self_test Boost::preprocessor )
+set(tests_common arithmetic array comparison control debug facilities list logical punctuation selection seq slot stringize tuple variadic isempty)
+set(tests_common_fail isempty_variadic_standard_failure isempty_variadic_standard_failure2)
+set(tests_c ${tests_common})
+set(tests_cpp ${tests_common} iteration repetition checkempty vaopt quick)
 
+set(BOOST_TEST_LINK_LIBRARIES Boost::preprocessor)
+
+include_directories(../../..) # for `include <libs/preprocessor/...>` to work
+
+foreach(test IN LISTS tests_c)
+
+  boost_test(TYPE compile SOURCES ${test}.c)
+
+endforeach()
+
+foreach(test IN LISTS tests_cpp)
+
+  boost_test(TYPE compile SOURCES ${test}.cpp)
+
+endforeach()
+
+foreach(test IN LISTS tests_common_fail)
+
+  boost_test(TYPE compile-fail SOURCES ${test}.c)
+  boost_test(TYPE compile-fail SOURCES ${test}.cpp)
+
+endforeach()
+
+boost_test(TYPE run SOURCES config_info.cpp)

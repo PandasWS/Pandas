@@ -125,7 +125,7 @@ namespace test {
 } // namespace test
 
 #if !defined(BOOST_NO_SFINAE) && \
-    !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x592))
+    !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x592))
 #include <boost/core/enable_if.hpp>
 
 #if !defined(BOOST_PARAMETER_CAN_USE_MP11)
@@ -166,7 +166,7 @@ int main()
     test::f("foo", 3.f);
     test::f(test::value = 3.f, test::name = "foo");
 #if !defined(BOOST_NO_SFINAE) && \
-    !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x592))
+    !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x592))
     BOOST_TEST_EQ(0, test::f(3, 4));
 #endif
     return boost::report_errors();

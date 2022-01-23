@@ -19,6 +19,7 @@
 !scan boost/vmd/is_empty.hpp
 !scan boost/vmd/is_empty_array.hpp
 !scan boost/vmd/is_empty_list.hpp
+!scan boost/vmd/is_general_identifier.hpp
 !scan boost/vmd/is_identifier.hpp
 !scan boost/vmd/is_list.hpp
 !scan boost/vmd/is_multi.hpp

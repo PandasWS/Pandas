@@ -9,8 +9,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(CPP_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED)
-#define CPP_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED
+#if !defined(BOOST_CPP_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED)
+#define BOOST_CPP_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Uncomment the following, if you need debug output, the 
@@ -60,4 +60,4 @@
 #pragma inline_recursion(on)
 #endif // defined(BOOST_MSVC)
 
-#endif // !defined(CPP_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED)
+#endif // !defined(BOOST_CPP_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED)

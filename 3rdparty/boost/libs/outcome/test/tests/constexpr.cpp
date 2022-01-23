@@ -1,5 +1,5 @@
 /* Unit testing for outcomes
-(C) 2013-2019 Niall Douglas <http://www.nedproductions.biz/> (9 commits)
+(C) 2013-2021 Niall Douglas <http://www.nedproductions.biz/> (9 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -27,16 +27,34 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/outcome/outcome.hpp>
+#include <boost/outcome.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_monitor.hpp>
+
+#if __cplusplus >= 201700 || _HAS_CXX17
+// Match LiteralType, even on C++ 17 and later
+template <class T> struct is_literal_type
+{
+  static constexpr bool value =   //
+  std::is_void<T>::value          //
+  || std::is_scalar<T>::value     //
+  || std::is_reference<T>::value  //
+  // leave out is_array for simplicity
+  || (std::is_class<T>::value && std::is_trivially_destructible<T>::value
+      // how does one detect if a type has at least one constexpr constructor without Reflection???
+      )  // leave out union for simplicity
+  ;
+};
+#else
+template <class T> using is_literal_type = std::is_literal_type<T>;
+#endif
 
 BOOST_OUTCOME_AUTO_TEST_CASE(works_outcome_constexpr, "Tests that outcome works as intended in a constexpr evaluation context")
 {
   using namespace BOOST_OUTCOME_V2_NAMESPACE;
 
-  static_assert(std::is_literal_type<result<int, void, void>>::value, "result<int, void, void> is not a literal type!");
-  static_assert(std::is_literal_type<outcome<int, void, void>>::value, "outcome<int, void, void> is not a literal type!");
+  static_assert(is_literal_type<result<int, void, void>>::value, "result<int, void, void> is not a literal type!");
+  static_assert(is_literal_type<outcome<int, void, void>>::value, "outcome<int, void, void> is not a literal type!");
 
   // Unfortunately result<T> can never be a literal type as error_code can never be literal
   //
@@ -46,7 +64,8 @@ BOOST_OUTCOME_AUTO_TEST_CASE(works_outcome_constexpr, "Tests that outcome works 
   static_assert(std::is_trivially_destructible<result<void>>::value, "result<void> is not trivially destructible!");
 
   // outcome<T> default has no trivial operations, but if configured it can become so
-  static_assert(std::is_trivially_destructible<outcome<int, boost::system::error_code, void>>::value, "outcome<int, boost::system::error_code, void> is not trivially destructible!");
+  static_assert(std::is_trivially_destructible<outcome<int, boost::system::error_code, void>>::value,
+                "outcome<int, boost::system::error_code, void> is not trivially destructible!");
 
   {
     // Test compatible results can be constructed from one another

@@ -6,7 +6,8 @@
 
 # Test scan() collective.
 
-import boost.parallel.mpi as mpi
+from __future__ import print_function
+import mpi
 from generators import *
 
 def scan_test(comm, generator, kind, op, op_kind):
@@ -20,7 +21,7 @@ def scan_test(comm, generator, kind, op, op_kind):
         
     assert result == expected_result
     if comm.rank == 0:
-        print "OK."
+        print ("OK.")
     return
 
 scan_test(mpi.world, int_generator, "integers", lambda x,y:x + y, "sum")

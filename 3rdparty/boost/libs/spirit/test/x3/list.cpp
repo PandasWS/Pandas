@@ -9,7 +9,6 @@
 #include <set>
 #include <map>
 
-#include <boost/detail/lightweight_test.hpp>
 #include <boost/spirit/home/x3.hpp>
 
 #include <string>
@@ -23,6 +22,8 @@ int
 main()
 {
     using namespace boost::spirit::x3::ascii;
+
+    BOOST_SPIRIT_ASSERT_CONSTEXPR_CTORS(char_ % ',');
 
     {
         BOOST_TEST(test("a,b,c,d,e,f,g,h", char_ % ','));
@@ -53,6 +54,15 @@ main()
         s.clear();
         BOOST_TEST(test_attr("ab,cd,efg", (char_ >> char_) % ',' >> char_, s));
         BOOST_TEST(s == "abcdefg");
+    }
+
+    { // regression test for has_attribute
+        using boost::spirit::x3::int_;
+        using boost::spirit::x3::omit;
+
+        int i;
+        BOOST_TEST(test_attr("1:2,3", int_ >> ':' >> omit[int_] % ',', i))
+          && BOOST_TEST_EQ(i, 1);
     }
 
     {

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>system_context::executor_type</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -31,7 +31,7 @@
 The
           executor type associated with the context.
         </p>
-<pre class="programlisting">typedef system_executor executor_type;
+<pre class="programlisting">typedef basic_system_executor&lt; execution::blocking_t::possibly_t, execution::relationship_t::fork_t, std::allocator&lt; void &gt; &gt; executor_type;
 </pre>
 <h6>
 <a name="boost_asio.reference.system_context.executor_type.h0"></a>
@@ -59,7 +59,19 @@ The
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../system_executor/context.html" title="system_executor::context"><span class="bold"><strong>context</strong></span></a>
+                    <a class="link" href="../basic_system_executor/basic_system_executor.html" title="basic_system_executor::basic_system_executor"><span class="bold"><strong>basic_system_executor</strong></span></a> <span class="silver">[constructor]</span>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Default constructor.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="../basic_system_executor/context.html" title="basic_system_executor::context"><span class="bold"><strong>context</strong></span></a>
                   </p>
                 </td>
 <td>
@@ -71,7 +83,7 @@ The
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../system_executor/defer.html" title="system_executor::defer"><span class="bold"><strong>defer</strong></span></a>
+                    <a class="link" href="../basic_system_executor/defer.html" title="basic_system_executor::defer"><span class="bold"><strong>defer</strong></span></a>
                   </p>
                 </td>
 <td>
@@ -83,7 +95,7 @@ The
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../system_executor/dispatch.html" title="system_executor::dispatch"><span class="bold"><strong>dispatch</strong></span></a>
+                    <a class="link" href="../basic_system_executor/dispatch.html" title="basic_system_executor::dispatch"><span class="bold"><strong>dispatch</strong></span></a>
                   </p>
                 </td>
 <td>
@@ -95,7 +107,19 @@ The
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../system_executor/on_work_finished.html" title="system_executor::on_work_finished"><span class="bold"><strong>on_work_finished</strong></span></a>
+                    <a class="link" href="../basic_system_executor/execute.html" title="basic_system_executor::execute"><span class="bold"><strong>execute</strong></span></a>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Execution function.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="../basic_system_executor/on_work_finished.html" title="basic_system_executor::on_work_finished"><span class="bold"><strong>on_work_finished</strong></span></a>
                   </p>
                 </td>
 <td>
@@ -107,7 +131,7 @@ The
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../system_executor/on_work_started.html" title="system_executor::on_work_started"><span class="bold"><strong>on_work_started</strong></span></a>
+                    <a class="link" href="../basic_system_executor/on_work_started.html" title="basic_system_executor::on_work_started"><span class="bold"><strong>on_work_started</strong></span></a>
                   </p>
                 </td>
 <td>
@@ -119,12 +143,60 @@ The
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../system_executor/post.html" title="system_executor::post"><span class="bold"><strong>post</strong></span></a>
+                    <a class="link" href="../basic_system_executor/post.html" title="basic_system_executor::post"><span class="bold"><strong>post</strong></span></a>
                   </p>
                 </td>
 <td>
                   <p>
                     Request the system executor to invoke the given function object.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="../basic_system_executor/query.html" title="basic_system_executor::query"><span class="bold"><strong>query</strong></span></a>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Query the current value of the allocator property. <br> <span class="silver"> —</span><br>
+                    Query the occupancy (recommended number of work items) for the
+                    system context.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="../basic_system_executor/query__static.html" title="basic_system_executor::query"><span class="bold"><strong>query</strong></span></a> <span class="silver">[static]</span>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Query the current value of the mapping property. <br> <span class="silver"> —</span><br>
+                    Query the current value of the context property. <br> <span class="silver"> —</span><br>
+                    Query the current value of the blocking property. <br> <span class="silver"> —</span><br>
+                    Query the current value of the relationship property.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <a class="link" href="../basic_system_executor/require.html" title="basic_system_executor::require"><span class="bold"><strong>require</strong></span></a>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Obtain an executor with the blocking.possibly property. <br>
+                    <span class="silver"> —</span><br> Obtain an executor with the blocking.always property.
+                    <br> <span class="silver"> —</span><br> Obtain an executor with the blocking.never property.
+                    <br> <span class="silver"> —</span><br> Obtain an executor with the relationship.continuation
+                    property. <br> <span class="silver"> —</span><br> Obtain an executor with the relationship.fork
+                    property. <br> <span class="silver"> —</span><br> Obtain an executor with the specified
+                    allocator property. <br> <span class="silver"> —</span><br> Obtain an executor with the
+                    default allocator property.
                   </p>
                 </td>
 </tr>
@@ -155,7 +227,7 @@ The
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../system_executor/operator_not__eq_.html" title="system_executor::operator!="><span class="bold"><strong>operator!=</strong></span></a>
+                    <a class="link" href="../basic_system_executor/operator_not__eq_.html" title="basic_system_executor::operator!="><span class="bold"><strong>operator!=</strong></span></a>
                   </p>
                 </td>
 <td>
@@ -167,7 +239,7 @@ The
 <tr>
 <td>
                   <p>
-                    <a class="link" href="../system_executor/operator_eq__eq_.html" title="system_executor::operator=="><span class="bold"><strong>operator==</strong></span></a>
+                    <a class="link" href="../basic_system_executor/operator_eq__eq_.html" title="basic_system_executor::operator=="><span class="bold"><strong>operator==</strong></span></a>
                   </p>
                 </td>
 <td>
@@ -180,9 +252,10 @@ The
 </table></div>
 <p>
           The system executor represents an execution context where functions are
-          permitted to run on arbitrary threads. The <code class="computeroutput">post()</code> and <code class="computeroutput">defer()</code>
-          functions schedule the function to run on an unspecified system thread
-          pool, and <code class="computeroutput">dispatch()</code> invokes the function immediately.
+          permitted to run on arbitrary threads. When the blocking.never property
+          is established, the system executor will schedule the function to run on
+          an unspecified system thread pool. When either blocking.possibly or blocking.always
+          is established, the executor invokes the function immediately.
         </p>
 <h6>
 <a name="boost_asio.reference.system_context.executor_type.h2"></a>
@@ -197,7 +270,8 @@ The
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

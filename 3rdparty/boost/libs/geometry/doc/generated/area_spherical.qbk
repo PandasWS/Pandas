@@ -83,10 +83,18 @@ result_type< Geometry >::type result(state< Geometry > const & st)``
 
 ]
 ]
+[[``srs::sphere< radius_type > model()``
+
+] [] [
+
+][
+
+]
+]
 ]
 
 [heading Header]
-`#include <boost/geometry/strategies/spherical/area.hpp>`
+`#include <boost/geometry/strategy/spherical/area.hpp>`
 
 [heading See also]
 [link geometry.reference.algorithms.area.area_2_with_strategy area (with strategy)]

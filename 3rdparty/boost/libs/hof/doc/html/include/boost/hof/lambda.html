@@ -89,9 +89,12 @@ compile-time in a <code class="docutils literal"><span class="pre">constexpr</sp
 <p>The <code class="docutils literal"><span class="pre">BOOST_HOF_STATIC_LAMBDA_FUNCTION</span></code> macro allows initializing a global
 function object that contains non-capturing lambdas. It also ensures that
 the global function object has a unique address across translation units.
-This helps prevent possible ODR-violations.</p>
-<p>By default, all functions defined with <code class="docutils literal"><span class="pre">BOOST_HOF_STATIC_LAMBDA_FUNCTION</span></code> use
+This helps prevent possible ODR-violations.
+By default, all functions defined with <code class="docutils literal"><span class="pre">BOOST_HOF_STATIC_LAMBDA_FUNCTION</span></code> use
 the <code class="docutils literal"><span class="pre">boost::hof::reveal</span></code> adaptor to improve error messages.</p>
+<p>Note: due to compiler limitations, a global function declared with
+<code class="docutils literal"><span class="pre">BOOST_HOF_STATIC_LAMBDA_FUNCTION</span></code> is not guaranteed to have a unique
+address across translation units when compiled with pre-C++17 MSVC.</p>
 </div>
 <div class="section" id="id3">
 <h2>Example<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>

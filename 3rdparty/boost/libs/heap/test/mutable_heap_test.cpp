@@ -17,12 +17,13 @@
 
 using namespace boost::heap;
 
-
+#if BOOST_WORKAROUND(BOOST_MSVC, != 1800)
 typedef fibonacci_heap<struct fwd_declared_struct_1>::handle_type handle_type_1;
 typedef d_ary_heap<struct fwd_declared_struct_2, arity<4>, mutable_<true> >::handle_type handle_type_2;
 typedef pairing_heap<struct fwd_declared_struct_3>::handle_type handle_type_3;
 typedef binomial_heap<struct fwd_declared_struct_4>::handle_type handle_type_4;
 typedef skew_heap<struct fwd_declared_struct_5, mutable_<true> >::handle_type handle_type_5;
+#endif
 
 template <typename HeapType>
 void run_handle_as_member_test(void)

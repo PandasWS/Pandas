@@ -309,7 +309,7 @@ For example:
   
 at the head of the file - see __policy_macros. 
  
-[endsect][/section:assert_undefined Mathematically Undefined Function Policies]
+[endsect] [/section:assert_undefined Mathematically Undefined Function Policies]
 
 [section:discrete_quant_ref Discrete Quantile Policies]
 
@@ -422,7 +422,7 @@ For example:
 
 Results in `x = 27` (rounded from 27.3898) and `y = 68` (rounded from 68.1584).
 
-[endsect][/section:discrete_quant_ref Discrete Quantile Policies]
+[endsect] [/section:discrete_quant_ref Discrete Quantile Policies]
 
 [section:precision_pol Precision Policies]
 
@@ -468,7 +468,7 @@ And for a quantile of a distribution to approximately 25-bit precision:
 
 [policy_ref_snip11]
 
-[endsect][/section:precision_pol Precision Policies]
+[endsect] [/section:precision_pol Precision Policies]
 
 [section:iteration_pol Iteration Limits Policies]
 
@@ -638,7 +638,7 @@ or we could place these definitions *before*
 
 in a source .cpp file.
 
-[endsect][/section:policy_defaults Changing the Policy Defaults]
+[endsect] [/section:policy_defaults Changing the Policy Defaults]
 
 [section:namespace_pol Setting Polices at Namespace Scope]
 
@@ -691,7 +691,7 @@ declare a typedef for each distribution like this:
 and so on.  The name given to each typedef is the name of the distribution
 with the "_distribution" suffix removed.
 
-[endsect][/section Changing the Policy Defaults]
+[endsect] [/section Changing the Policy Defaults]
 
 [section:pol_ref_ref Policy Class Reference]
 
@@ -815,19 +815,19 @@ values.
 Specifies the internal precision to use in binary digits (uses zero
 to represent whatever the default precision is).  Will be an instance
 of `boost::math::policies::digits2<N>` which in turn inherits from 
-`boost::mpl::int_<N>`.
+`boost::std::integral_constant<int, N>`.
 
    policy<...>::promote_float_type
    
 Specifies whether or not to promote `float` arguments to `double` precision
 internally.  Will be an instance of `boost::math::policies::promote_float<B>`
-which in turn inherits from `boost::mpl::bool_<B>`.
+which in turn inherits from `std::integral_constant<bool, B>`.
 
    policy<...>::promote_double_type
    
 Specifies whether or not to promote `double` arguments to `long double` precision
 internally.  Will be an instance of `boost::math::policies::promote_float<B>`
-which in turn inherits from `boost::mpl::bool_<B>`.
+which in turn inherits from `std::integral_constant<bool, B>`.
 
    policy<...>::discrete_quantile_type
    
@@ -840,7 +840,7 @@ the `discrete_quantile_policy_type` enumerated type.
 Specifies whether mathematically-undefined properties are
 asserted as compile-time errors, or treated as runtime errors
 instead.  Will be an instance of `boost::math::policies::assert_undefined<B>`
-which in turn inherits from `boost::math::mpl::bool_<B>`.
+which in turn inherits from `std::integral_constant<bool, B>`.
 
 
    template <...argument list...>
@@ -882,12 +882,12 @@ implementation.  In this way code bloat is reduced, since the
 actual implementation depends only on the policy types that they
 actually use.
 
-[endsect][/section:pol_ref_ref Policy Class Reference]
+[endsect] [/section:pol_ref_ref Policy Class Reference]
 
-[endsect][/section:pol_ref Policy Reference]
-[endmathpart][/section:policy Policies]
+[endsect] [/section:pol_ref Policy Reference]
+[endmathpart] [/section:policy Policies]
 
-[/ qbk
+[/ policy.qbk
   Copyright 2007, 2010 John Maddock and Paul A. Bristow.
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at

@@ -14,11 +14,10 @@ project
 
     [ requires cxx11_variadic_templates cxx11_template_aliases cxx11_decltype cxx11_hdr_tuple ]
 
-    <toolset>msvc:<warnings>all # /W4
+    <warnings>extra
+
     <toolset>msvc:<warnings-as-errors>on
-
     <toolset>gcc:<warnings-as-errors>on
-
     <toolset>clang:<warnings-as-errors>on
   ;
 
@@ -69,7 +68,7 @@ run mp_product.cpp ;
 run mp_drop.cpp ;
 run mp_iota.cpp ;
 run mp_at.cpp ;
-run mp_at_sf.cpp ;
+run mp_at_sf.cpp : : : <toolset>gcc-4.7:<warnings>all ;
 run mp_take.cpp ;
 run mp_replace.cpp ;
 run mp_replace_if.cpp ;
@@ -92,6 +91,8 @@ run mp_fold_q.cpp ;
 run mp_reverse_fold.cpp ;
 run mp_reverse_fold_q.cpp ;
 run mp_unique.cpp ;
+run mp_unique_if.cpp ;
+run mp_unique_if_q.cpp ;
 run mp_all_of.cpp ;
 run mp_all_of_q.cpp ;
 run mp_any_of.cpp ;
@@ -114,6 +115,17 @@ run mp_nth_element.cpp ;
 run mp_nth_element_q.cpp ;
 run mp_back.cpp ;
 run mp_pop_back.cpp ;
+run mp_flatten.cpp ;
+run mp_rotate_left.cpp ;
+run mp_rotate_right.cpp ;
+run mp_power_set.cpp ;
+run mp_partial_sum.cpp ;
+run mp_iterate.cpp ;
+run mp_pairwise_fold.cpp ;
+run mp_pairwise_fold_q.cpp ;
+run mp_intersperse.cpp ;
+run mp_split.cpp ;
+run mp_join.cpp ;
 
 # integral
 run integral.cpp ;
@@ -136,6 +148,7 @@ run mp_cond_sf.cpp ;
 run mp_not_fn.cpp ;
 run mp_eval_if_not.cpp ;
 run mp_eval_or.cpp ;
+run mp_compose.cpp ;
 
 # integer_sequence
 run integer_sequence.cpp ;
@@ -147,6 +160,9 @@ run tuple_apply.cpp ;
 compile tuple_apply_cx.cpp ;
 run construct_from_tuple.cpp ;
 compile construct_from_tuple_cx.cpp ;
+run tuple_transform.cpp ;
+run tuple_transform_2.cpp ;
+compile tuple_transform_cx.cpp ;
 
 # set
 run mp_set_contains.cpp ;
@@ -162,8 +178,10 @@ run mp_set_intersection_sf.cpp ;
 
 # function
 run mp_all.cpp ;
+run mp_all_2.cpp ;
 run mp_and.cpp ;
 run mp_any.cpp ;
+run mp_any_2.cpp ;
 run mp_or.cpp ;
 run mp_same.cpp ;
 run mp_plus.cpp ;
@@ -174,6 +192,8 @@ run mp_similar.cpp ;
 
 # map
 run mp_map_find.cpp ;
+run mp_map_find_2.cpp ;
+run mp_map_find_3.cpp ;
 run mp_map_contains.cpp ;
 run mp_map_insert.cpp ;
 run mp_map_replace.cpp ;
@@ -191,6 +211,8 @@ run mp_bind_back.cpp ;
 
 # mpl
 run mpl.cpp : ;
+run mpl_list.cpp : ;
+run mpl_tuple.cpp : ;
 
 # version
 run version.cpp ;

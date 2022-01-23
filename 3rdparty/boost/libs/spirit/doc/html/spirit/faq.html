@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Spirit FAQ</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Spirit 2.5.8">
-<link rel="up" href="../index.html" title="Spirit 2.5.8">
+<link rel="home" href="../index.html" title="Spirit 2.59">
+<link rel="up" href="../index.html" title="Spirit 2.59">
 <link rel="prev" href="support/utree.html" title="The utree data structure">
 <link rel="next" href="notes.html" title="Notes">
 </head>
@@ -159,17 +159,6 @@
       Again, don't use any of the header files underneath the boost/spirit/home directory
       directly, always include files from the boost/spirit/include directory.
     </p>
-<p>
-      The last bit missing is <a href="../../../../../libs/phoenix/doc/html/index.html" target="_top">Boost.Phoenix</a>
-      (which currently still lives under the Spirit umbrella, but already has been
-      accepted as a Boost library, so it will move away). <a href="../../../../../libs/phoenix/doc/html/index.html" target="_top">Boost.Phoenix</a>
-      is a library allowing to write functional style C++, which is interesting in
-      itself, but as it initially has been developed for Spirit, it is nicely integrated
-      and very useful when it comes to writing semantic actions. I think using the
-      boost/spirit/include/phoenix_... headers will be safe in the future as well,
-      as we will probably redirect to the Boost.Phoenix headers as soon as these
-      are available.
-    </p>
 <h4>
 <a name="spirit.faq.h2"></a>
       <span class="phrase"><a name="spirit.faq.why_doesn_t_my_symbol_table_work_in_a__code__phrase_role__identifier__no_case__phrase___code__directive_"></a></span><a class="link" href="faq.html#spirit.faq.why_doesn_t_my_symbol_table_work_in_a__code__phrase_role__identifier__no_case__phrase___code__directive_">Why
@@ -229,7 +218,7 @@ note: candidates are: ... boost::function4&lt;R,T1,T2,T3,T4&gt;::operator()(T0,T
 <tr><td align="left" valign="top"><p>
         The same applies to <span class="emphasis"><em>Spirit.Karma</em></span>, replacing 'skip parser'
         and <code class="computeroutput"><span class="identifier">lexeme</span></code> by 'delimit generator'
-        and <code class="computeroutput"><span class="identifier">verbatim</span></code>. Similarily,
+        and <code class="computeroutput"><span class="identifier">verbatim</span></code>. Similarly,
         corresponding error messages in <span class="emphasis"><em>Spirit.Karma</em></span> reference
         <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">function3</span></code> and the 3rd parameter (instead
         of the 4th).
@@ -238,7 +227,7 @@ note: candidates are: ... boost::function4&lt;R,T1,T2,T3,T4&gt;::operator()(T0,T
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2011 Joel de Guzman, Hartmut Kaiser<p>
+<td align="right"><div class="copyright-footer">Copyright © 2001-2011 Joel de Guzman, Hartmut Kaiser<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -1,5 +1,5 @@
 /* Unit testing for outcomes
-(C) 2013-2019 Niall Douglas <http://www.nedproductions.biz/> (18 commits)
+(C) 2013-2021 Niall Douglas <http://www.nedproductions.biz/> (18 commits)
 
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -27,7 +27,7 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/outcome/outcome.hpp>
+#include <boost/outcome.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_monitor.hpp>
 
@@ -42,19 +42,32 @@ BOOST_OUTCOME_AUTO_TEST_CASE(works_outcome, "Tests that the outcome works as int
   using namespace BOOST_OUTCOME_V2_NAMESPACE;
 
   static_assert(std::is_constructible<outcome<long>, int>::value, "Sanity check that monad can be constructed from a value_type");
-  static_assert(!std::is_constructible<outcome<outcome<long>>, int>::value, "Sanity check that outer monad can be constructed from an inner monad's value_type");
-  static_assert(!std::is_constructible<outcome<outcome<outcome<long>>>, int>::value, "Sanity check that outer monad can be constructed from an inner inner monad's value_type");
-  static_assert(!std::is_constructible<outcome<outcome<outcome<outcome<long>>>>, int>::value, "Sanity check that outer monad can be constructed from an inner inner monad's value_type");
+  static_assert(!std::is_constructible<outcome<outcome<long>>, int>::value,
+                "Sanity check that outer monad can be constructed from an inner monad's value_type");
+#if defined(__clang__) || !defined(__GNUC__) || __GNUC__ >= 9  // GCCs before 9 barf on this
+  static_assert(!std::is_constructible<outcome<outcome<outcome<long>>>, int>::value,
+                "Sanity check that outer monad can be constructed from an inner inner monad's value_type");
+  static_assert(!std::is_constructible<outcome<outcome<outcome<outcome<long>>>>, int>::value,
+                "Sanity check that outer monad can be constructed from an inner inner monad's value_type");
+#endif
 
   static_assert(std::is_constructible<outcome<int>, outcome<long>>::value, "Sanity check that compatible monads can be constructed from one another");
   static_assert(std::is_constructible<outcome<outcome<int>>, outcome<long>>::value, "Sanity check that outer monad can be constructed from a compatible monad");
-  static_assert(!std::is_constructible<outcome<outcome<outcome<int>>>, outcome<long>>::value, "Sanity check that outer monad can be constructed from a compatible monad up to two nestings deep");
-  static_assert(!std::is_constructible<outcome<outcome<outcome<outcome<int>>>>, outcome<long>>::value, "Sanity check that outer monad can be constructed from a compatible monad three or more nestings deep");
-  static_assert(!std::is_constructible<outcome<std::string>, outcome<int>>::value, "Sanity check that incompatible monads cannot be constructed from one another");
+#if defined(__clang__) || !defined(__GNUC__) || __GNUC__ >= 9  // GCCs before 9 barf on this
+  static_assert(!std::is_constructible<outcome<outcome<outcome<int>>>, outcome<long>>::value,
+                "Sanity check that outer monad can be constructed from a compatible monad up to two nestings deep");
+  static_assert(!std::is_constructible<outcome<outcome<outcome<outcome<int>>>>, outcome<long>>::value,
+                "Sanity check that outer monad can be constructed from a compatible monad three or more nestings deep");
+#endif
+  static_assert(!std::is_constructible<outcome<std::string>, outcome<int>>::value,
+                "Sanity check that incompatible monads cannot be constructed from one another");
 
   static_assert(std::is_constructible<outcome<int>, outcome<void>>::value, "Sanity check that all monads can be constructed from a void monad");
   static_assert(std::is_constructible<outcome<outcome<int>>, outcome<void>>::value, "Sanity check that outer monad can be constructed from a compatible monad");
-  static_assert(std::is_constructible<outcome<outcome<outcome<int>>>, outcome<void>>::value, "Sanity check that outer monad can be constructed from a compatible monad up to two nestings deep");
+#if defined(__clang__) || !defined(__GNUC__) || __GNUC__ >= 9 // GCCs before 9 barf on this
+  static_assert(std::is_constructible<outcome<outcome<outcome<int>>>, outcome<void>>::value,
+                "Sanity check that outer monad can be constructed from a compatible monad up to two nestings deep");
+#endif
   static_assert(!std::is_constructible<outcome<void>, outcome<int>>::value, "Sanity check that incompatible monads cannot be constructed from one another");
 
   static_assert(std::is_void<result<void>::value_type>::value, "Sanity check that result<void> has a void value_type");

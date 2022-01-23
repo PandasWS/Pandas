@@ -1,0 +1,57 @@
+name: 提出功能建议 (Feature Request)
+description: 想提出一个功能建议或者构想, 希望熊猫模拟器社区能实现它.
+labels: ["分类:功能需求", "优先级:P2普通"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 感谢您的贡献
+        感谢您选择熊猫模拟器, 并愿意与社区分享您绝妙的建议和想法.
+
+        在提出建议和构想时请尽可能的将你的设想阐述清晰, 让其他人能理解您想法的价值.
+
+        请不要将多个想法都放在一个 Issue 中, 有助于社区对想法进行管理.
+
+        若您希望与他人更加即时的交流构想, 建议您加入我们的 [Discord 服务器](https://discord.gg/9bEfrPPruj) 进行讨论.
+
+        # 请不要害羞
+        我们深知不是所有人都能提出可行性与合理性极佳的建议.
+        
+        但请不要因此羞于提出自己的建议或想法, 因为厉害的人也曾经是菜鸟, 甚至现在依然在学习.
+
+        请放心大胆的提出你的想法, 哪怕想法不够成熟或者天马行空, 也有可能使他人产生灵感并产生价值.
+
+        # 现在, 让我们转入正题
+
+  - type: textarea
+    id: best-ideas
+    attributes:
+      label: 功能建议或构想
+      description: 请描述您的功能建议或者构想, 包括但不限于实现指令、事件、或是某种全新的机制.
+      placeholder: |
+        例如: 希望玩家在副本掉线后重新上线, 只要副本没有结束就将玩家直接传送回副本中.
+    validations:
+      required: true
+
+  - type: textarea
+    id: implement-reason
+    attributes:
+      label: 想实现它的原因
+      description: 有时间的话, 请说明您想实现这个建议或者构想的原因. 优先级会被提高.
+      placeholder: |
+        例如: 实现了这个机制之后, 可以让网络环境不稳定的玩家获得更好的游戏体验.
+    validations:
+      required: false
+
+  - type: textarea
+    id: reference-information
+    attributes:
+      label: 参考信息
+      description: 若有什么与您构想相关的参考材料, 可以附加在此 (例如其他模拟器的实现方案).
+      placeholder: |
+        - 某模拟器已经实现了这个功能: http://somgthing.else
+        - 在某个论坛中很多人希望能解决这个问题: http://somgthing.else
+
+        提示: 不一定非得是外部链接, 如果有其他文本信息依然可以粘贴到文本框中来.
+    validations:
+      required: false

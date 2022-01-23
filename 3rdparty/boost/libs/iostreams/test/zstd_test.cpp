@@ -31,12 +31,28 @@ using namespace boost::iostreams::test;
 namespace io = boost::iostreams;
 using boost::unit_test::test_suite;
 
-struct zstd_alloc : std::allocator<char> {
-    zstd_alloc() { }
-    zstd_alloc(const zstd_alloc& other) { }
-    template<typename T>
-    zstd_alloc(const std::allocator<T>& other) { }
+template<class T> struct basic_test_alloc: std::allocator<T>
+{
+    basic_test_alloc()
+    {
+    }
+
+    basic_test_alloc( basic_test_alloc const& /*other*/ )
+    {
+    }
+
+    template<class U>
+    basic_test_alloc( basic_test_alloc<U> const & /*other*/ )
+    {
+    }
+
+    template<class U> struct rebind
+    {
+        typedef basic_test_alloc<U> other;
+    };
 };
+
+typedef basic_test_alloc<char> zstd_alloc;
 
 void compression_test()
 {

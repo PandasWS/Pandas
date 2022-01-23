@@ -8,7 +8,7 @@
 
 //  VC++ 8.0 warns on usage of certain Standard Library and API functions that
 //  can be cause buffer overruns or other possible security issues if misused.
-//  See http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
+//  See https://web.archive.org/web/20071014014301/http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
 //  But the wording of the warning is misleading and unsettling, there are no
 //  portable alternative functions, and VC++ 8.0's own libraries use the
 //  functions in question. So turn off the warnings.
@@ -24,8 +24,7 @@
 #include <cassert>
 #include <algorithm>
 
-// Boost.Test
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 // Boost.Bimap
 
@@ -48,8 +47,8 @@ void test_readable_property_map(
     // TODO Add STATIC_ASSERT(
     //              boost::property_traits<Map>::category is readable )
 
-    BOOST_CHECK( get(m,key) == value );
-    //BOOST_CHECK( m[key]     == value );
+    BOOST_TEST( get(m,key) == value );
+    //BOOST_TEST( m[key]     == value );
 }
 
 
@@ -68,9 +67,9 @@ void test_bimap_property_map()
     test_readable_property_map(b.right,0.1,  1);
 }
 
-int test_main( int, char* [] )
+int main()
 {
     test_bimap_property_map();
-    return 0;
+    return boost::report_errors();
 }
 

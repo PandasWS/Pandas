@@ -3,9 +3,9 @@
 //  (C) Copyright Daryle Walker 2001, 2006.
 //  Distributed under the Boost Software License, Version 1.0. (See
 //  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  https://www.boost.org/LICENSE_1_0.txt)
 
-//  See http://www.boost.org for most recent version including documentation.
+//  See https://www.boost.org for most recent version including documentation.
 
 //  Revision History
 //  01 Dec 2006  Various fixes for old compilers (Joaquin M Lopez Munoz)
@@ -23,7 +23,8 @@
 #include <boost/mpl/list.hpp>            // for boost::mpl::list
 #include <boost/operators.hpp>
 #include <boost/core/lightweight_test.hpp>
-#include <boost/random.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int.hpp>
 #include <boost/rational.hpp>
 
 #include <istream>  // for std::basic_istream
@@ -254,7 +255,7 @@ public:
 
 #if BOOST_WORKAROUND(BOOST_MSVC,<1300)
 // MSVC 6.0 lacks operator<< for __int64, see
-// http://support.microsoft.com/default.aspx?scid=kb;en-us;168440
+// https://support.microsoft.com/kb/168440/
 
 inline ostream& operator<<(ostream& os, __int64 i)
 {

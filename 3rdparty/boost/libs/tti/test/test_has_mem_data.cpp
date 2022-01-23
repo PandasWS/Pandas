@@ -21,6 +21,9 @@ int main()
   BOOST_TEST((AOther<AnotherType,AType>::value));
   BOOST_TEST((BOOST_TTI_HAS_MEMBER_DATA_GEN(ONestStr)<AnotherType,AType::AStructType>::value));
   
+  BOOST_TEST((CUb<AType::BType::CType::CTypeUnion,bool>::value));
+
+  
   // Test enclosing class as non-class type
   
   BOOST_TEST((!CMember<bool,bool>::value));

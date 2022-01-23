@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Design Rationale</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../process.html" title="Chapter&#160;30.&#160;Boost.Process">
+<link rel="up" href="../process.html" title="Chapter 30. Boost.Process">
 <link rel="prev" href="tutorial.html" title="Tutorial">
 <link rel="next" href="extend.html" title="Extensions">
 </head>
@@ -39,16 +39,16 @@
 <a name="boost_process.design.scope"></a><a class="link" href="design.html#boost_process.design.scope" title="Scope">Scope</a>
 </h3></div></div></div>
 <p>
-        This library is meant to give an wrapper around the different OS-specific
+        This library is meant to give a wrapper around the different OS-specific
         methods to launch processes. Its aim is to provide all functionality that
         is available on those systems and allow the user to do all related things,
         which require using the OS APIs.
       </p>
 <p>
         <span class="bold"><strong>This library does not try to provide a full library
-        for everything process related</strong></span> In many discussions the proposal
-        was made to build boost.process into a DSEL <a href="#ftn.boost_process.design.scope.f0" class="footnote" name="boost_process.design.scope.f0"><sup class="footnote">[27]</sup></a> of some sort. This is not the goal, it rather provides the facilities
-        to build such a DSEL-Library on top of it. Therefore the library also does
+        for everything process related.</strong></span> In many discussions the proposal
+        was made to build boost.process into a DSEL <a href="#ftn.boost_process.design.scope.f0" class="footnote" name="boost_process.design.scope.f0"><sup class="footnote">[29]</sup></a> of some sort. This is not the goal, it rather provides the facilities
+        to build such a DSEL-library on top of it. Therefore the library also does
         <span class="bold"><strong>not</strong></span> force any particular use (such as only
         asynchronous communication) on its user. It rather could be integrated with
         such a library.
@@ -90,7 +90,7 @@
 <p>
       </p>
 <p>
-        In the following section the avaible styles will be described. Note that
+        In the following section the available styles will be described. Note that
         the overload style is implemented via type traits, so the types will be listed.
       </p>
 <div class="caution"><table border="0" summary="Caution">
@@ -120,7 +120,7 @@
         as an argument.
       </p>
 <div class="table">
-<a name="boost_process.design.arg_cmd_style.id"></a><p class="title"><b>Table&#160;30.1.&#160;Cmd vs Exe/Args</b></p>
+<a name="boost_process.design.arg_cmd_style.id"></a><p class="title"><b>Table 30.1. Cmd vs Exe/Args</b></p>
 <div class="table-contents"><table class="table" summary="Cmd vs Exe/Args">
 <colgroup>
 <col>
@@ -166,7 +166,7 @@
 <br class="table-break"><p>
         When using the overloading variant, a single string will result in a cmd
         interpretation, several strings will yield a exe-args interpretation. Both
-        version can be set explicitly:
+        versions can be set explicitly:
       </p>
 <p>
 </p>
@@ -185,7 +185,7 @@
 </tr>
 <tr><td align="left" valign="top"><p>
           If a '"' sign is used in the argument style, it will be passed as
-          part of the argument. If the same effect it wanted with the cmd syntax,
+          part of the argument. If the same effect is wanted with the cmd syntax,
           it ought to be escaped, i.e. '\"'.
         </p></td></tr>
 </table></div>
@@ -244,15 +244,15 @@
 </div>
 <div class="footnotes">
 <br><hr style="width:100; text-align:left;margin-left: 0">
-<div id="ftn.boost_process.design.scope.f0" class="footnote"><p><a href="#boost_process.design.scope.f0" class="para"><sup class="para">[27] </sup></a>
+<div id="ftn.boost_process.design.scope.f0" class="footnote"><p><a href="#boost_process.design.scope.f0" class="para"><sup class="para">[29] </sup></a>
           Domain Specific Embedded Language
         </p></div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
-      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright &#169; 2016 Klemens D. Morgenstern<p>
+<td align="right"><div class="copyright-footer">Copyright © 2006-2012 Julio M. Merino Vidal, Ilya Sokolov,
+      Felipe Tanus, Jeff Flinn, Boris Schaeling<br>Copyright © 2016 Klemens D. Morgenstern<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
       </p>

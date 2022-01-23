@@ -236,6 +236,9 @@ public:
    void destroy(value_type* ptr)
    {  ptr->~value_type();  }
 
+   size_type max_size() const {
+      return ~static_cast<size_type>(0) / sizeof(size_type);
+   }
 };
 
 void allocator_test() {
@@ -243,9 +246,9 @@ void allocator_test() {
     CB_CONTAINER<MyInteger> cb1(10, 0);
     const CB_CONTAINER<MyInteger> cb2(10, 0);
     CB_CONTAINER<MyInteger>::allocator_type& alloc_ref = cb1.get_allocator();
+    (void)alloc_ref;
     CB_CONTAINER<MyInteger>::allocator_type alloc = cb2.get_allocator();
-    alloc_ref.max_size();
-    alloc.max_size();
+    (void)alloc;
 
     generic_test(cb1);
 
@@ -254,7 +257,7 @@ void allocator_test() {
     generic_test(cb_a);
 }
 
-#if !defined(BOOST_CB_NO_CXX11_ALLOCATOR)
+#if !defined(BOOST_NO_CXX11_ALLOCATOR)
 template<class T>
 class cxx11_allocator {
 public:
@@ -2487,7 +2490,7 @@ void run_common_tests()
     move_container_on_cpp11();
     move_container_values_noexcept();
     check_containers_exception_specifications();
-#if !defined(BOOST_CB_NO_CXX11_ALLOCATOR)
+#if !defined(BOOST_NO_CXX11_ALLOCATOR)
     cxx11_allocator_test();
 #endif
 }

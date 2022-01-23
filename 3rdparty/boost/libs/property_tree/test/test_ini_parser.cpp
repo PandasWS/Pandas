@@ -204,12 +204,12 @@ void test_other_trees()
         s.seekg(0, std::ios_base::beg);
         ptree result;
         read_ini(s, result);
-        BOOST_CHECK(result.get("section.innerkey", "bad") == "v1");
-        BOOST_CHECK(result.get("nosection", "bad") == "v2");
+        BOOST_TEST(result.get("section.innerkey", "bad") == "v1");
+        BOOST_TEST(result.get("nosection", "bad") == "v2");
     }
 }
 
-int test_main(int argc, char *argv[])
+int main()
 {
     test_ini_parser<ptree>();
     test_ini_parser<iptree>();
@@ -221,6 +221,6 @@ int test_main(int argc, char *argv[])
     test_unmappable_trees();
     test_other_trees();
  
-    return 0;
+    return boost::report_errors();
 
 }

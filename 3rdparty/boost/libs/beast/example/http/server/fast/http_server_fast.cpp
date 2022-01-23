@@ -292,12 +292,11 @@ private:
         if (request_deadline_.expiry() <= std::chrono::steady_clock::now())
         {
             // Close socket to cancel any outstanding operation.
-            beast::error_code ec;
             socket_.close();
 
             // Sleep indefinitely until we're given a new deadline.
             request_deadline_.expires_at(
-                std::chrono::steady_clock::time_point::max());
+                (std::chrono::steady_clock::time_point::max)());
         }
 
         request_deadline_.async_wait(

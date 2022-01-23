@@ -1,9 +1,9 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 // Unit Test
 
-// Copyright (c) 2014, Oracle and/or its affiliates.
-
+// Copyright (c) 2014-2021, Oracle and/or its affiliates.
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Licensed under the Boost Software License version 1.0.
 // http://www.boost.org/users/license.html
@@ -17,10 +17,6 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include <boost/mpl/assert.hpp>
-#include <boost/mpl/if.hpp>
-#include <boost/type_traits/is_same.hpp>
-
 #include <boost/geometry/util/calculation_type.hpp>
 
 #include <boost/geometry/geometries/point.hpp>
@@ -31,25 +27,16 @@
 #include <boost/geometry/strategies/default_distance_result.hpp>
 #include <boost/geometry/strategies/default_comparable_distance_result.hpp>
 
-#if defined(HAVE_TTMATH)
-#include <boost/geometry/extensions/contrib/ttmath_stub.hpp>
-#endif
-
 namespace bg = ::boost::geometry;
 
 
 template <typename DefaultResult, typename ExpectedResult>
-struct assert_equal_types
+inline void assert_equal_types()
 {
-    assert_equal_types()
-    {
-        static const bool are_same =
-            boost::is_same<DefaultResult, ExpectedResult>::type::value;
-
-        BOOST_MPL_ASSERT_MSG((are_same),
-                             WRONG_DEFAULT_DISTANCE_RESULT,
-                             (types<DefaultResult, ExpectedResult>));
-    }
+    BOOST_GEOMETRY_STATIC_ASSERT(
+        (std::is_same<DefaultResult, ExpectedResult>::value),
+        "Wrong default distance result",
+        DefaultResult, ExpectedResult);
 };
 
 //=========================================================================
@@ -183,39 +170,26 @@ struct test_distance_result_box
 template <std::size_t D, typename CoordinateSystem>
 inline void test_segment_all()
 {
-#if defined(HAVE_TTMATH)
-    typedef ttmath_big tt;
-    typedef bg::util::detail::default_integral::type default_integral;
-#endif
-    typedef typename boost::mpl::if_
+    using fp_return_type = std::conditional_t
         <
-            typename boost::is_same<CoordinateSystem, bg::cs::cartesian>::type,
+            std::is_same<CoordinateSystem, bg::cs::cartesian>::value,
             double,
             float
-        >::type float_return_type;
+        >;
 
     test_distance_result_segment<short, short, D, CoordinateSystem, double>();
     test_distance_result_segment<int, int, D, CoordinateSystem, double>();
     test_distance_result_segment<int, long, D, CoordinateSystem, double>();
     test_distance_result_segment<long, long, D, CoordinateSystem, double>();
 
-    test_distance_result_segment<int, float, D, CoordinateSystem, float_return_type>();
-    test_distance_result_segment<float, float, D, CoordinateSystem, float_return_type>();
+    test_distance_result_segment<int, float, D, CoordinateSystem, fp_return_type>();
+    test_distance_result_segment<float, float, D, CoordinateSystem, fp_return_type>();
 
     test_distance_result_segment<int, double, D, CoordinateSystem, double>();
     test_distance_result_segment<double, int, D, CoordinateSystem, double>();
     test_distance_result_segment<float, double, D, CoordinateSystem, double>();
     test_distance_result_segment<double, float, D, CoordinateSystem, double>();
     test_distance_result_segment<double, double, D, CoordinateSystem, double>();
-
-#if defined(HAVE_TTMATH)
-    test_distance_result_segment<tt, int, D, CoordinateSystem, tt>();
-    test_distance_result_segment<tt, default_integral, D, CoordinateSystem, tt>();
-
-    test_distance_result_segment<tt, float, D, CoordinateSystem, tt>();
-    test_distance_result_segment<tt, double, D, CoordinateSystem, tt>();
-    test_distance_result_segment<tt, tt, D, CoordinateSystem, tt>();
-#endif
 }
 
 //=========================================================================
@@ -223,9 +197,6 @@ inline void test_segment_all()
 template <std::size_t D>
 inline void test_box_all()
 {
-#if defined(HAVE_TTMATH)
-    typedef ttmath_big tt;
-#endif
     typedef bg::util::detail::default_integral::type default_integral;
 
     test_distance_result_box<short, short, D, double, default_integral>();
@@ -241,15 +212,6 @@ inline void test_box_all()
     test_distance_result_box<float, double, D, double>();
     test_distance_result_box<double, float, D, double>();
     test_distance_result_box<double, double, D, double>();
-
-#if defined(HAVE_TTMATH)
-    test_distance_result_box<tt, int, D, tt>();
-    test_distance_result_box<tt, default_integral, D, tt>();
-
-    test_distance_result_box<tt, float, D, tt>();
-    test_distance_result_box<tt, double, D, tt>();
-    test_distance_result_box<tt, tt, D, tt>();
-#endif
 }
 
 //=========================================================================

@@ -30,16 +30,16 @@ struct my_ptr {
 
 // Borland 5.6.4 and earlier drop const all over the place, so this
 // test will fail in the lines marked with (**)
-    
+
 int main()
 {
   {
     typedef boost::indirect_iterator<int**> Iter;
     STATIC_ASSERT_SAME(Iter::value_type, int);
-    STATIC_ASSERT_SAME(Iter::reference, int&);  
-    STATIC_ASSERT_SAME(Iter::pointer, int*);  
+    STATIC_ASSERT_SAME(Iter::reference, int&);
+    STATIC_ASSERT_SAME(Iter::pointer, int*);
     STATIC_ASSERT_SAME(Iter::difference_type, std::ptrdiff_t);
-    
+
     BOOST_STATIC_ASSERT((boost::is_convertible<Iter::iterator_category,
              std::random_access_iterator_tag>::value));
     BOOST_STATIC_ASSERT((boost::is_convertible<boost::iterator_traversal<Iter>::type,
@@ -54,13 +54,13 @@ int main()
   {
     typedef boost::indirect_iterator<int**, int> Iter;
     STATIC_ASSERT_SAME(Iter::value_type, int);
-    STATIC_ASSERT_SAME(Iter::reference, int&);  
-    STATIC_ASSERT_SAME(Iter::pointer, int*);  
+    STATIC_ASSERT_SAME(Iter::reference, int&);
+    STATIC_ASSERT_SAME(Iter::pointer, int*);
   }
   {
     typedef boost::indirect_iterator<int**, const int> Iter;
     STATIC_ASSERT_SAME(Iter::value_type, int);
-    STATIC_ASSERT_SAME(Iter::reference, const int&);  
+    STATIC_ASSERT_SAME(Iter::reference, const int&);
     STATIC_ASSERT_SAME(Iter::pointer, const int*);    // (**)
   }
   {
@@ -68,9 +68,9 @@ int main()
     STATIC_ASSERT_SAME(Iter::value_type, zow);
     STATIC_ASSERT_SAME(Iter::reference, const zow&);  // (**)
     STATIC_ASSERT_SAME(Iter::pointer, const zow*);    // (**)
-    
+
     STATIC_ASSERT_SAME(Iter::difference_type, std::ptrdiff_t);
-    
+
     BOOST_STATIC_ASSERT((boost::is_convertible<Iter::iterator_category,
              std::random_access_iterator_tag>::value));
     BOOST_STATIC_ASSERT((boost::is_convertible<boost::iterator_traversal<Iter>::type,
@@ -79,9 +79,9 @@ int main()
   {
     typedef boost::indirect_iterator<char**, int, std::random_access_iterator_tag, long&, short> Iter;
     STATIC_ASSERT_SAME(Iter::value_type, int);
-    STATIC_ASSERT_SAME(Iter::reference, long&);  
-    STATIC_ASSERT_SAME(Iter::pointer, int*);  
-    STATIC_ASSERT_SAME(Iter::difference_type, short);  
+    STATIC_ASSERT_SAME(Iter::reference, long&);
+    STATIC_ASSERT_SAME(Iter::pointer, int*);
+    STATIC_ASSERT_SAME(Iter::difference_type, short);
   }
   return 0;
 }

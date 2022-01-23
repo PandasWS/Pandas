@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Floating-Point Real World Tests</title>
-<link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
+<link rel="stylesheet" href="../../multiprecision.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Multiprecision">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Multiprecision">
 <link rel="up" href="../perf.html" title="Performance Comparison">
 <link rel="prev" href="overhead.html" title="The Overhead in the Number Class Wrapper">
 <link rel="next" href="int_real_world.html" title="Integer Real World Tests">
@@ -30,15 +30,13 @@
 <p>
         These tests test the total time taken to execute all of Boost.Math's test
         cases for these functions. In each case the best performing library gets
-        a relative score of 1, with the total execution time given in brackets. The
-        first three libraries listed are the various floating-point types provided
-        by this library, while for comparison, two popular C++ front-ends to <a href="http://www.mpfr.org" target="_top">MPFR</a> ( <a href="http://math.berkeley.edu/~wilken/code/gmpfrxx/" target="_top">mpfr_class</a>
-        and <a href="http://www.holoborodko.com/pavel/mpfr/" target="_top">mpreal</a>) are
-        also shown.
+        a relative score of 1, with the total execution time given in brackets. Times
+        are shown for both single threaded runs and concurrent execution - the latter
+        increases contension inside new/delete.
       </p>
 <div class="table">
-<a name="boost_multiprecision.perf.realworld.bessel_function_performance"></a><p class="title"><b>Table&#160;1.12.&#160;Bessel Function Performance</b></p>
-<div class="table-contents"><table class="table" summary="Bessel Function Performance">
+<a name="boost_multiprecision.perf.realworld.bessel_functions_50_digit_precis"></a><p class="title"><b>Table 1.14. Bessel Functions (50 digit precision)</b></p>
+<div class="table-contents"><table class="table" summary="Bessel Functions (50 digit precision)">
 <colgroup>
 <col>
 <col>
@@ -47,120 +45,290 @@
 <thead><tr>
 <th>
                 <p>
-                  Library
+                  Type
                 </p>
               </th>
 <th>
                 <p>
-                  50 Decimal Digits
+                  Time
                 </p>
               </th>
 <th>
-                <p>
-                  100 Decimal Digits
-                </p>
+                <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+                      Allocations
+                    </li></ol></div>
               </th>
 </tr></thead>
 <tbody>
 <tr>
 <td>
                 <p>
-                  mpfr_float
+                  cpp_bin_float_50
                 </p>
               </td>
 <td>
                 <p>
-                  1.2 (5.78s)
+                  2.24409 (0.207745s)
                 </p>
               </td>
 <td>
                 <p>
-                  1.2 (9.56s)
-                </p>
-              </td>
-</tr>
-<tr>
-<td>
-                <p>
-                  static_mpfr_float
-                </p>
-              </td>
-<td>
-                <p>
-                  1.1 (5.47s)
-                </p>
-              </td>
-<td>
-                <p>
-                  1.1 (9.09s)
+                  399
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  mpf_float
+                  cpp_bin_float_50 (3 concurrent threads)
                 </p>
               </td>
 <td>
                 <p>
-                  <span class="bold"><strong>1.0</strong></span> (4.82s)
+                  2.87977 (0.266594s)
                 </p>
               </td>
 <td>
                 <p>
-                  <span class="bold"><strong>1.0</strong></span>(8.07s)
-                </p>
-              </td>
-</tr>
-<tr>
-<td>
-                <p>
-                  cpp_dec_float
-                </p>
-              </td>
-<td>
-                <p>
-                  1.8 (8.54s)
-                </p>
-              </td>
-<td>
-                <p>
-                  2.6 (20.66s)
+                  463
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  <a href="http://math.berkeley.edu/~wilken/code/gmpfrxx/" target="_top">mpfr_class</a>
+                  cpp_dec_float_50
                 </p>
               </td>
 <td>
                 <p>
-                  1.3 (6.28s)
+                  4.56157 (0.422285s)
                 </p>
               </td>
 <td>
                 <p>
-                  1.2(10.06s)
+                  381
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  <a href="http://www.holoborodko.com/pavel/mpfr/" target="_top">mpreal</a>
+                  cpp_dec_float_50 (3 concurrent threads)
                 </p>
               </td>
 <td>
                 <p>
-                  2.0 (9.54s)
+                  5.66114 (0.524077s)
                 </p>
               </td>
 <td>
                 <p>
-                  1.7 (14.08s)
+                  424
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpf_float_50
+                </p>
+              </td>
+<td>
+                <p>
+                  1.03648 (0.0959515s)
+                </p>
+              </td>
+<td>
+                <p>
+                  640961
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpf_float_50 (3 concurrent threads)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.50439 (0.139268s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2563517
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpf_float_50 (no expression templates
+                </p>
+              </td>
+<td>
+                <p>
+                  1 (0.0925745s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1019039
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpf_float_50 (no expression templates (3 concurrent threads)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.52451 (0.141131s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4075842
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float_50
+                </p>
+              </td>
+<td>
+                <p>
+                  1.2513 (0.115838s)
+                </p>
+              </td>
+<td>
+                <p>
+                  583054
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float_50 (3 concurrent threads)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.61301 (0.149324s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2330876
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float_50 (no expression templates
+                </p>
+              </td>
+<td>
+                <p>
+                  1.42667 (0.132073s)
+                </p>
+              </td>
+<td>
+                <p>
+                  999594
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float_50 (no expression templates (3 concurrent threads)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.00203 (0.185337s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4000039
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  static_mpfr_float_50
+                </p>
+              </td>
+<td>
+                <p>
+                  1.18358 (0.10957s)
+                </p>
+              </td>
+<td>
+                <p>
+                  22930
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  static_mpfr_float_50 (3 concurrent threads)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.38802 (0.128496s)
+                </p>
+              </td>
+<td>
+                <p>
+                  93140
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  static_mpfr_float_50 (no expression templates)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.14598 (0.106089s)
+                </p>
+              </td>
+<td>
+                <p>
+                  46861
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  static_mpfr_float_50 (no expression templates) (3 concurrent threads)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.24535 (0.115288s)
+                </p>
+              </td>
+<td>
+                <p>
+                  189227
                 </p>
               </td>
 </tr>
@@ -168,21 +336,183 @@
 </table></div>
 </div>
 <br class="table-break"><div class="table">
-<a name="boost_multiprecision.perf.realworld.non_central_t_distribution_perfo"></a><p class="title"><b>Table&#160;1.13.&#160;Non-Central T Distribution Performance</b></p>
-<div class="table-contents"><table class="table" summary="Non-Central T Distribution Performance">
+<a name="boost_multiprecision.perf.realworld.non_central_t_distribution_50_di"></a><p class="title"><b>Table 1.15. Non-central T Distribution (50 digit precision)</b></p>
+<div class="table-contents"><table class="table" summary="Non-central T Distribution (50 digit precision)">
 <colgroup>
+<col>
 <col>
 <col>
 </colgroup>
 <thead><tr>
 <th>
                 <p>
-                  Library
+                  Type
                 </p>
               </th>
 <th>
                 <p>
-                  50 Decimal Digits
+                  Time
+                </p>
+              </th>
+<th>
+                <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+                      Allocations
+                    </li></ol></div>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float_50
+                </p>
+              </td>
+<td>
+                <p>
+                  2.38959 (38.5842s)
+                </p>
+              </td>
+<td>
+                <p>
+                  0
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float_50 (3 concurrent threads)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.50535 (56.6s)
+                </p>
+              </td>
+<td>
+                <p>
+                  28
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float_50
+                </p>
+              </td>
+<td>
+                <p>
+                  4.82763 (77.9505s)
+                </p>
+              </td>
+<td>
+                <p>
+                  0
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpf_float_50
+                </p>
+              </td>
+<td>
+                <p>
+                  1.06817 (17.2475s)
+                </p>
+              </td>
+<td>
+                <p>
+                  123749688
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpf_float_50 (no expression templates
+                </p>
+              </td>
+<td>
+                <p>
+                  1 (16.1468s)
+                </p>
+              </td>
+<td>
+                <p>
+                  152610085
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float_50
+                </p>
+              </td>
+<td>
+                <p>
+                  1.18754 (19.1749s)
+                </p>
+              </td>
+<td>
+                <p>
+                  118401290
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float_50 (no expression templates
+                </p>
+              </td>
+<td>
+                <p>
+                  1.36782 (22.0858s)
+                </p>
+              </td>
+<td>
+                <p>
+                  152816346
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  static_mpfr_float_50
+                </p>
+              </td>
+<td>
+                <p>
+                  1.04471 (16.8686s)
+                </p>
+              </td>
+<td>
+                <p>
+                  113395
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.realworld.platform"></a><p class="title"><b>Table 1.16. Platform Details</b></p>
+<div class="table-contents"><table class="table" summary="Platform Details">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+              </th>
+<th>
+                <p>
+                  Version
                 </p>
               </th>
 </tr></thead>
@@ -190,88 +520,72 @@
 <tr>
 <td>
                 <p>
-                  mpfr_float
+                  Compiler
                 </p>
               </td>
 <td>
                 <p>
-                  1.3 (263.27s)
-                </p>
-              </td>
-</tr>
-<tr>
-<td>
-                <p>
-                  static_mpfr_float
-                </p>
-              </td>
-<td>
-                <p>
-                  1.2 (232.88s)
+                  GNU C++ version 10.3.0
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  mpf_float
+                  GMP
                 </p>
               </td>
 <td>
                 <p>
-                  <span class="bold"><strong>1.0</strong></span> (195.73s)
-                </p>
-              </td>
-</tr>
-<tr>
-<td>
-                <p>
-                  cpp_dec_float
-                </p>
-              </td>
-<td>
-                <p>
-                  1.9 (366.38s)
+                  6.2.0
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  <a href="http://math.berkeley.edu/~wilken/code/gmpfrxx/" target="_top">mpfr_class</a>
+                  MPFR
                 </p>
               </td>
 <td>
                 <p>
-                  1.5 (286.94s)
+                  262146
                 </p>
               </td>
 </tr>
 <tr>
 <td>
                 <p>
-                  <a href="http://www.holoborodko.com/pavel/mpfr/" target="_top">mpreal</a>
+                  Boost
                 </p>
               </td>
 <td>
                 <p>
-                  2.0 (388.70s)
+                  107800
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Run date
+                </p>
+              </td>
+<td>
+                <p>
+                  Sep 30 2021
                 </p>
               </td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<br class="table-break"><p>
-        Test code was compiled with Microsoft Visual Studio 2010 with all optimisations
-        turned on (/Ox), and used MPIR-2.3.0 and <a href="http://www.mpfr.org" target="_top">MPFR</a>-3.0.0.
-        The tests were run on 32-bit Windows Vista machine.
-      </p>
+<br class="table-break">
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2019 John Maddock
-      and Christopher Kormanyos<p>
+<td align="right"><div class="copyright-footer">Copyright © 2002-2020 John
+      Maddock and Christopher Kormanyos<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Class template local_date_time_base</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -27,7 +27,7 @@
 <a name="boost.local_time.local_date_time_base"></a><div class="titlepage"></div>
 <div class="refnamediv">
 <h2><span class="refentrytitle">Class template local_date_time_base</span></h2>
-<p>boost::local_time::local_date_time_base &#8212; Representation of "wall-clock" time in a particular time zone. </p>
+<p>boost::local_time::local_date_time_base — Representation of "wall-clock" time in a particular time zone. </p>
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../date_time/doxy.html#header.boost.date_time.local_time.local_date_time_hpp" title="Header &lt;boost/date_time/local_time/local_date_time.hpp&gt;">boost/date_time/local_time/local_date_time.hpp</a>&gt;
@@ -136,7 +136,7 @@
 <li class="listitem">
 <pre class="literallayout"><a name="id-1_3_14_15_6_6_1_1_3_13-bb"></a><span class="identifier">local_date_time_base</span><span class="special">(</span><span class="identifier">date_type</span> d<span class="special">,</span> <span class="identifier">time_duration_type</span> td<span class="special">,</span> 
                      <span class="identifier">boost</span><span class="special">::</span><span class="identifier">shared_ptr</span><span class="special">&lt;</span> <span class="identifier">tz_type</span> <span class="special">&gt;</span> tz<span class="special">,</span> <span class="keyword">bool</span> dst_flag<span class="special">)</span><span class="special">;</span></pre>
-<p>This constructs a local time &#8211; the passed time information understood to be in the passed tz. The DST flag must be passed to indicate whether the time is in daylight savings or not. 
+<p>This constructs a local time – the passed time information understood to be in the passed tz. The DST flag must be passed to indicate whether the time is in daylight savings or not. 
 </p>
 <div class="variablelist"><table border="0" class="variablelist compact">
 <colgroup>
@@ -153,7 +153,7 @@
 <pre class="literallayout"><a name="id-1_3_14_15_6_6_1_1_3_14-bb"></a><span class="identifier">local_date_time_base</span><span class="special">(</span><span class="identifier">date_type</span> d<span class="special">,</span> <span class="identifier">time_duration_type</span> td<span class="special">,</span> 
                      <span class="identifier">boost</span><span class="special">::</span><span class="identifier">shared_ptr</span><span class="special">&lt;</span> <span class="identifier">tz_type</span> <span class="special">&gt;</span> tz<span class="special">,</span> 
                      <span class="identifier">DST_CALC_OPTIONS</span> calc_option<span class="special">)</span><span class="special">;</span></pre>
-<p>This constructs a local time &#8211; the passed time information understood to be in the passed tz. The DST flag is calculated according to the specified rule. </p>
+<p>This constructs a local time – the passed time information understood to be in the passed tz. The DST flag is calculated according to the specified rule. </p>
 </li>
 <li class="listitem">
 <pre class="literallayout"><a name="id-1_3_14_15_6_6_1_1_3_16-bb"></a><span class="identifier">local_date_time_base</span><span class="special">(</span><span class="keyword">const</span> <a class="link" href="local_date_time_base.html" title="Class template local_date_time_base">local_date_time_base</a> <span class="special">&amp;</span> rhs<span class="special">)</span><span class="special">;</span></pre>Copy constructor. </li>
@@ -247,7 +247,7 @@
 <li class="listitem">
 <pre class="literallayout"><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <a name="id-1_3_14_15_6_6_1_1_3_19_2-bb"></a><span class="identifier">zone_as_offset</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">time_duration_type</span> <span class="special">&amp;</span> td<span class="special">,</span> 
                            <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="special">&amp;</span> separator<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
-<p>Simple formatting code &#8211; todo remove this? </p>
+<p>Simple formatting code – todo remove this? </p>
 </li>
 </ol></div>
 </div>
@@ -255,7 +255,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2001-2005 CrystalClear Software, Inc<p>Subject to the Boost Software License, Version 1.0. (See accompanying file
+<td align="right"><div class="copyright-footer">Copyright © 2001-2005 CrystalClear Software, Inc<p>Subject to the Boost Software License, Version 1.0. (See accompanying file
     <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
 </div></td>
 </tr></table>

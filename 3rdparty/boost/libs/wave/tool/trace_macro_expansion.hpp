@@ -7,8 +7,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)
-#define TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED
+#if !defined(BOOST_TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)
+#define BOOST_TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED
 
 #include <cstdio>
 #include <cstdlib>
@@ -85,15 +85,15 @@ public:
     }
     ~bad_pragma_exception() throw() {}
 
-    virtual char const *what() const throw()
+    char const *what() const throw() BOOST_OVERRIDE
     {
         return "boost::wave::bad_pragma_exception";
     }
-    virtual bool is_recoverable() const throw()
+    virtual bool is_recoverable() const throw() BOOST_OVERRIDE
     {
         return true;
     }
-    virtual int get_severity() const throw()
+    virtual int get_severity() const throw() BOOST_OVERRIDE
     {
         return boost::wave::util::severity_remark;
     }
@@ -229,20 +229,6 @@ public:
     //        without any further processing.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
-    template <typename ContainerT>
-    void expanding_function_like_macro(
-        TokenT const &macrodef, std::vector<TokenT> const &formal_args,
-        ContainerT const &definition,
-        TokenT const &macrocall, std::vector<ContainerT> const &arguments)
-    {
-        if (enabled_macro_counting())
-            count_invocation(macrodef.get_value().c_str());
-
-        if (!enabled_macro_tracing())
-            return;
-#else
     // new signature
     template <typename ContextT, typename ContainerT, typename IteratorT>
     bool
@@ -264,16 +250,15 @@ public:
 
         if (!enabled_macro_tracing())
             return false;
-#endif
         if (0 == get_level()) {
-        // output header line
-        BOOST_WAVE_OSSTREAM stream;
+            // output header line
+            BOOST_WAVE_OSSTREAM stream;
 
             stream
                 << macrocall.get_position() << ": "
                 << macrocall.get_value() << "(";
 
-        // argument list
+            // argument list
             for (typename ContainerT::size_type i = 0; i < arguments.size(); ++i) {
                 stream << boost::wave::util::impl::as_string(arguments[i]);
                 if (i < arguments.size()-1)
@@ -284,15 +269,15 @@ public:
             increment_level();
         }
 
-    // output definition reference
+        // output definition reference
         {
-        BOOST_WAVE_OSSTREAM stream;
+            BOOST_WAVE_OSSTREAM stream;
 
             stream
                 << macrodef.get_position() << ": see macro definition: "
                 << macrodef.get_value() << "(";
 
-        // formal argument list
+            // formal argument list
             for (typename std::vector<TokenT>::size_type i = 0;
                 i < formal_args.size(); ++i)
             {
@@ -305,7 +290,7 @@ public:
         }
 
         if (formal_args.size() > 0) {
-        // map formal and real arguments
+            // map formal and real arguments
             open_trace_body("invoked with\n");
             for (typename std::vector<TokenT>::size_type j = 0;
                 j < formal_args.size(); ++j)
@@ -316,7 +301,7 @@ public:
                 stream << formal_args[j].get_value() << " = ";
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
                 if (T_ELLIPSIS == token_id(formal_args[j])) {
-                // ellipsis
+                    // ellipsis
                     for (typename ContainerT::size_type k = j;
                         k < arguments.size(); ++k)
                     {
@@ -337,9 +322,7 @@ public:
         }
         open_trace_body();
 
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS == 0
         return false;
-#endif
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -359,18 +342,6 @@ public:
     //  The parameter 'macrocall' marks the position, where this macro invoked.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
-    template <typename ContainerT>
-    void expanding_object_like_macro(TokenT const &macrodef,
-        ContainerT const &definition, TokenT const &macrocall)
-    {
-        if (enabled_macro_counting())
-            count_invocation(macrodef.get_value().c_str());
-
-        if (!enabled_macro_tracing())
-            return;
-#else
     // new signature
     template <typename ContextT, typename ContainerT>
     bool
@@ -390,7 +361,6 @@ public:
 
         if (!enabled_macro_tracing())
             return false;
-#endif
         if (0 == get_level()) {
         // output header line
         BOOST_WAVE_OSSTREAM stream;
@@ -402,9 +372,9 @@ public:
             increment_level();
         }
 
-    // output definition reference
+        // output definition reference
         {
-        BOOST_WAVE_OSSTREAM stream;
+            BOOST_WAVE_OSSTREAM stream;
 
             stream
                 << macrodef.get_position() << ": see macro definition: "
@@ -413,9 +383,7 @@ public:
         }
         open_trace_body();
 
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS == 0
         return false;
-#endif
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -430,15 +398,9 @@ public:
     //  result of the macro expansion.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
-    template <typename ContainerT>
-    void expanded_macro(ContainerT const &result)
-#else
     // new signature
     template <typename ContextT, typename ContainerT>
     void expanded_macro(ContextT const& ctx,ContainerT const &result)
-#endif
     {
         if (!enabled_macro_tracing()) return;
 
@@ -461,15 +423,9 @@ public:
     //  result of the rescanning.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
-    template <typename ContainerT>
-    void rescanned_macro(ContainerT const &result)
-#else
     // new signature
     template <typename ContextT, typename ContainerT>
     void rescanned_macro(ContextT const& ctx,ContainerT const &result)
-#endif
     {
         if (!enabled_macro_tracing() || get_level() == 0)
             return;
@@ -524,9 +480,9 @@ public:
         boost::wave::util::impl::trim_sequence(values);    // trim whitespace
 
         if (option.get_value() == "timer") {
-        // #pragma wave timer(value)
+            // #pragma wave timer(value)
             if (0 == values.size()) {
-            // no value means '1'
+                // no value means '1'
                 using namespace boost::wave;
                 timer(token_type(T_INTLIT, "1", act_token.get_position()));
             }
@@ -536,13 +492,13 @@ public:
             return true;
         }
         if (option.get_value() == "trace") {
-        // enable/disable tracing option
+            // enable/disable tracing option
             return interpret_pragma_trace(ctx, values, act_token);
         }
         if (option.get_value() == "system") {
             if (!enable_system_command) {
-            // if the #pragma wave system() directive is not enabled, throw
-            // a corresponding error (actually its a remark),
+                // if the #pragma wave system() directive is not enabled, throw
+                // a corresponding error (actually its a remark),
                 typename ContextT::string_type msg(
                     boost::wave::util::impl::as_string(values));
                 BOOST_WAVE_THROW_CTX(ctx, bad_pragma_exception,
@@ -551,12 +507,12 @@ public:
                 return false;
             }
 
-        // try to spawn the given argument as a system command and return the
-        // std::cout of this process as the replacement of this _Pragma
+            // try to spawn the given argument as a system command and return the
+            // std::cout of this process as the replacement of this _Pragma
             return interpret_pragma_system(ctx, pending, values, act_token);
         }
         if (option.get_value() == "stop") {
-        // stop the execution and output the argument
+            // stop the execution and output the argument
             typename ContextT::string_type msg(
                 boost::wave::util::impl::as_string(values));
             BOOST_WAVE_THROW_CTX(ctx, boost::wave::preprocess_exception,
@@ -564,7 +520,7 @@ public:
             return false;
         }
         if (option.get_value() == "option") {
-        // handle different options
+            // handle different options
             return interpret_pragma_option(ctx, values, act_token);
         }
         return false;
@@ -603,9 +559,9 @@ public:
             return false;
         }
 
-    // emit a #line directive showing the relative filename instead
-    typename ContextT::position_type pos = act_token.get_position();
-    unsigned int column = 6;
+        // emit a #line directive showing the relative filename instead
+        typename ContextT::position_type pos = act_token.get_position();
+        unsigned int column = 6;
 
         typedef typename ContextT::token_type result_type;
         using namespace boost::wave;
@@ -616,9 +572,9 @@ public:
         pos.set_column(column);      // account for '#line'
         pending.push_back(result_type(T_SPACE, " ", pos));
 
-    // 21 is the max required size for a 64 bit integer represented as a
-    // string
-    char buffer[22];
+        // 21 is the max required size for a 64 bit integer represented as a
+        // string
+        char buffer[22];
 
         using namespace std;    // for some systems sprintf is in namespace std
         sprintf (buffer, "%zd", pos.get_line());
@@ -629,9 +585,9 @@ public:
         pending.push_back(result_type(T_SPACE, " ", pos));
         pos.set_column(++column);                 // account for ' '
 
-    std::string file("\"");
-    boost::filesystem::path filename(
-        boost::wave::util::create_path(ctx.get_current_relative_filename().c_str()));
+        std::string file("\"");
+        boost::filesystem::path filename(
+            boost::wave::util::create_path(ctx.get_current_relative_filename().c_str()));
 
         using boost::wave::util::impl::escape_lit;
         file += escape_lit(boost::wave::util::native_file_string(filename)) + "\"";
@@ -662,13 +618,6 @@ public:
     //  found as a result of a #include <...> directive.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
-    void
-    opened_include_file(std::string const &relname, std::string const &absname,
-        std::size_t include_depth, bool is_system_include)
-    {
-#else
     // new signature
     template <typename ContextT>
     void
@@ -676,7 +625,6 @@ public:
         std::string const &absname, bool is_system_include)
     {
         std::size_t include_depth = ctx.get_iteration_depth();
-#endif
         if (enabled_include_tracing()) {
             // print indented filename
             for (std::size_t i = 0; i < include_depth; ++i)
@@ -735,7 +683,7 @@ public:
     void
     detected_include_guard(ContextT const& ctx, std::string const& filename,
         std::string const& include_guard)
-   {
+    {
         if (enabled_guard_tracing()) {
             guardstrm << include_guard << ":" << std::endl
                       << "  " << filename << std::endl;
@@ -832,16 +780,16 @@ protected:
         typedef typename ContextT::token_type token_type;
         typedef typename token_type::string_type string_type;
 
-    bool valid_option = false;
+        bool valid_option = false;
 
         if (1 == values.size()) {
-        token_type const &value = values.front();
+            token_type const& value = values.front();
 
             if (value.get_value() == "enable" ||
                 value.get_value() == "on" ||
                 value.get_value() == "1")
             {
-            // #pragma wave trace(enable)
+                // #pragma wave trace(enable)
                 enable_tracing(static_cast<trace_flags>(
                     tracing_enabled() | trace_macros));
                 valid_option = true;
@@ -850,15 +798,15 @@ protected:
                 value.get_value() == "off" ||
                 value.get_value() == "0")
             {
-            // #pragma wave trace(disable)
+                // #pragma wave trace(disable)
                 enable_tracing(static_cast<trace_flags>(
                     tracing_enabled() & ~trace_macros));
                 valid_option = true;
             }
         }
         if (!valid_option) {
-        // unknown option value
-        string_type option_str ("trace");
+            // unknown option value
+            string_type option_str("trace");
 
             if (values.size() > 0) {
                 option_str += "(";
@@ -918,7 +866,7 @@ protected:
             break;
 
         default:
-              return false;
+            return false;
         }
         return true;
     }
@@ -937,7 +885,7 @@ protected:
         // implement push/pop
         if (T_IDENTIFIER == id) {
             if ((*it).get_value() == "push") {
-            // push current preserve option onto the internal option stack
+                // push current preserve option onto the internal option stack
                 if (need_preserve_comments(ctx.get_language())) {
                     if (preserve_whitespace)
                         preserve_options.push(3);
@@ -953,14 +901,14 @@ protected:
                 return true;
             }
             else if ((*it).get_value() == "pop") {
-            // test for mismatched push/pop #pragmas
+                // test for mismatched push/pop #pragmas
                 if (preserve_options.empty()) {
                     BOOST_WAVE_THROW_CTX(ctx, bad_pragma_exception,
                         pragma_mismatched_push_pop, "preserve",
                         act_token.get_position());
                 }
 
-            // pop output preserve from the internal option stack
+                // pop output preserve from the internal option stack
                 bool result = interpret_pragma_option_preserve_set(
                     preserve_options.top(), preserve_whitespace,
                     preserve_bol_whitespace, ctx);
@@ -994,7 +942,7 @@ protected:
         // implement push/pop
         if (T_IDENTIFIER == id) {
             if ((*it).get_value() == "push") {
-            // push current line option onto the internal option stack
+                // push current line option onto the internal option stack
                 int mode = 0;
                 if (need_emit_line_directives(ctx.get_language())) {
                     mode = 1;
@@ -1005,14 +953,14 @@ protected:
                 return true;
             }
             else if ((*it).get_value() == "pop") {
-            // test for mismatched push/pop #pragmas
+                // test for mismatched push/pop #pragmas
                 if (line_options.empty()) {
                     BOOST_WAVE_THROW_CTX(ctx, bad_pragma_exception,
                         pragma_mismatched_push_pop, "line",
                         act_token.get_position());
                 }
 
-            // pop output line from the internal option stack
+                // pop output line from the internal option stack
                 ctx.set_language(
                     enable_emit_line_directives(ctx.get_language(), 0 != line_options.top()),
                     false);
@@ -1117,11 +1065,11 @@ protected:
         }
         else if (T_IDENTIFIER == id) {
             if ((*it).get_value() == "null") {
-            // suppress all output from this point on
+                // suppress all output from this point on
                 result = interpret_pragma_option_output_close(false);
             }
             else if ((*it).get_value() == "push") {
-            // initialize the current_outfile, if appropriate
+                // initialize the current_outfile, if appropriate
                 if (output_options.empty() && current_outfile.empty() &&
                     !default_outfile.empty() && default_outfile != "-")
                 {
@@ -1129,13 +1077,13 @@ protected:
                         default_outfile, ctx.get_current_directory());
                 }
 
-            // push current output option onto the internal option stack
+                // push current output option onto the internal option stack
                 output_options.push(
                     output_option_type(generate_output, current_outfile));
                 result = true;
             }
             else if ((*it).get_value() == "pop") {
-            // test for mismatched push/pop #pragmas
+                // test for mismatched push/pop #pragmas
                 if (output_options.empty()) {
                     BOOST_WAVE_THROW_CTX(ctx, bad_pragma_exception,
                         pragma_mismatched_push_pop, "output",
@@ -1143,38 +1091,38 @@ protected:
                     return false;
                 }
 
-            // pop output option from the internal option stack
+                // pop output option from the internal option stack
                 output_option_type const& opts = output_options.top();
                 generate_output = opts.first;
                 current_outfile = opts.second;
                 if (!current_outfile.empty()) {
-                // re-open the last file
+                    // re-open the last file
                     result = interpret_pragma_option_output_open(current_outfile,
                         ctx, act_token);
                 }
                 else {
-                // either no output or generate to std::cout
+                    // either no output or generate to std::cout
                     result = interpret_pragma_option_output_close(generate_output);
                 }
                 output_options.pop();
             }
         }
         else if (T_DEFAULT == id) {
-        // re-open the default output given on command line
+            // re-open the default output given on command line
             if (!default_outfile.empty()) {
                 if (default_outfile == "-") {
-                // the output was suppressed on the command line
+                    // the output was suppressed on the command line
                     result = interpret_pragma_option_output_close(false);
                 }
                 else {
-                // there was a file name on the command line
+                    // there was a file name on the command line
                     fs::path fpath(boost::wave::util::create_path(default_outfile));
                     result = interpret_pragma_option_output_open(fpath, ctx,
                         act_token);
                 }
             }
             else {
-            // generate the output to std::cout
+                // generate the output to std::cout
                 result = interpret_pragma_option_output_close(true);
             }
         }
@@ -1207,9 +1155,7 @@ protected:
         using namespace boost::wave;
 
         typedef typename ContextT::token_type token_type;
-        typedef typename token_type::string_type string_type;
         typedef typename ContainerT::const_iterator const_iterator;
-        typedef typename ContainerT::iterator iterator;
 
         token_type* current = 0;
 
@@ -1260,28 +1206,28 @@ protected:
 
         const_iterator end = values.end();
         for (const_iterator it = values.begin(); it != end; /**/) {
-        bool valid_option = false;
+            bool valid_option = false;
 
             token_type const &value = *it;
             if (value.get_value() == "preserve") {
-            // #pragma wave option(preserve: [0|1|2|3|push|pop])
+                // #pragma wave option(preserve: [0|1|2|3|push|pop])
                 valid_option = interpret_pragma_option_preserve(ctx, it, end,
                     act_token);
             }
             else if (value.get_value() == "line") {
-            // #pragma wave option(line: [0|1|2|push|pop])
+                // #pragma wave option(line: [0|1|2|push|pop])
                 valid_option = interpret_pragma_option_line(ctx, it, end,
                     act_token);
             }
             else if (value.get_value() == "output") {
-            // #pragma wave option(output: ["filename"|null|default|push|pop])
+                // #pragma wave option(output: ["filename"|null|default|push|pop])
                 valid_option = interpret_pragma_option_output(ctx, it, end,
                     act_token);
             }
 
             if (!valid_option) {
-            // unknown option value
-            string_type option_str ("option");
+                // unknown option value
+                string_type option_str("option");
 
                 if (values.size() > 0) {
                     option_str += "(";
@@ -1314,15 +1260,15 @@ protected:
 
         if (0 == values.size()) return false;   // ill_formed_pragma_option
 
-    string_type stdout_file(std::tmpnam(0));
-    string_type stderr_file(std::tmpnam(0));
-    string_type system_str(boost::wave::util::impl::as_string(values));
-    string_type native_cmd(system_str);
+        string_type stdout_file(std::tmpnam(0));
+        string_type stderr_file(std::tmpnam(0));
+        string_type system_str(boost::wave::util::impl::as_string(values));
+        string_type native_cmd(system_str);
 
         system_str += " >" + stdout_file + " 2>" + stderr_file;
         if (0 != std::system(system_str.c_str())) {
-        // unable to spawn the command
-        string_type error_str("unable to spawn command: ");
+            // unable to spawn the command
+            string_type error_str("unable to spawn command: ");
 
             error_str += native_cmd;
             BOOST_WAVE_THROW_CTX(ctx, boost::wave::preprocess_exception,
@@ -1331,8 +1277,8 @@ protected:
             return false;
         }
 
-    // rescan the content of the stdout_file and insert it as the
-    // _Pragma replacement
+        // rescan the content of the stdout_file and insert it as the
+        // _Pragma replacement
         typedef typename ContextT::lexer_type lexer_type;
         typedef typename ContextT::input_policy_type input_policy_type;
         typedef boost::wave::iteration_context<
@@ -1346,10 +1292,10 @@ protected:
         for (/**/; iter_ctx.first != iter_ctx.last; ++iter_ctx.first)
             pragma.push_back(*iter_ctx.first);
 
-    // prepend the newly generated token sequence to the 'pending' container
+        // prepend the newly generated token sequence to the 'pending' container
         pending.splice(pending.begin(), pragma);
 
-    // erase the created tempfiles
+        // erase the created tempfiles
         std::remove(stdout_file.c_str());
         std::remove(stderr_file.c_str());
         return true;
@@ -1437,22 +1383,22 @@ protected:
     void timer(TokenT const &value)
     {
         if (value.get_value() == "0" || value.get_value() == "restart") {
-        // restart the timer
-            elapsed_time.restart();
+            // restart the timer
+            elapsed_time.start();
         }
         else if (value.get_value() == "1") {
-        // print out the current elapsed time
+            // print out the current elapsed time
             std::cerr
                 << value.get_position() << ": "
                 << elapsed_time.format_elapsed_time()
                 << std::endl;
         }
         else if (value.get_value() == "suspend") {
-        // suspend the timer
-            elapsed_time.suspend();
+            // suspend the timer
+            elapsed_time.stop();
         }
         else if (value.get_value() == "resume") {
-        // resume the timer
+            // resume the timer
             elapsed_time.resume();
         }
     }
@@ -1491,4 +1437,4 @@ private:
 #undef BOOST_WAVE_GETSTRING
 #undef BOOST_WAVE_OSSTREAM
 
-#endif // !defined(TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)
+#endif // !defined(BOOST_TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)

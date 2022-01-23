@@ -1,4 +1,3 @@
-
 [section:concepts Iterator Concepts]
 
 [section:access Access]
@@ -326,13 +325,13 @@ constant object of type `Distance`.
     [pre: there exists a value `n` of `Distance` such that `a + n == b`. `b == a + (b - a)`.]
   ]
   [
-    [`a\[n\]`]
+    [`a[n]`]
     [convertible to T]
     [`*(a + n)`]
     [pre: a is a *Readable Iterator*]
   ]
   [
-    [`a\[n\] = v`]
+    [`a[n] = v`]
     [convertible to T]
     [`*(a + n) = v`]
     [pre: a is a *Writable iterator*]

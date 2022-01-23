@@ -27,7 +27,7 @@
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp> // Boost.Test
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <iostream>
    using std::cout;
@@ -656,6 +656,11 @@ void test_spots(RealType T)
    BOOST_CHECK_EQUAL(
        median(dist),
        static_cast<RealType>(0));
+   RealType expected_entropy = log(2*boost::math::constants::two_pi<RealType>());
+   BOOST_CHECK_CLOSE(
+       entropy(dist),
+       expected_entropy, tolerance);
+
    //
    // Things that now don't compile (BOOST-STATIC_ASSERT_FAILURE) by default.
    // #define BOOST_MATH_ASSERT_UNDEFINED_POLICY false 
@@ -716,7 +721,7 @@ BOOST_AUTO_TEST_CASE( test_main )
   test_spots(0.0); // Test double. OK at decdigits 7, tolerance = 1e07 %
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
   test_spots(0.0L); // Test long double.
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x582))
   test_spots(boost::math::concepts::real_concept(0.)); // Test real concept.
 #endif
 #else

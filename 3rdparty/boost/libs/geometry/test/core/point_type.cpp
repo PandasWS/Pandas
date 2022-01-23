@@ -3,9 +3,8 @@
 
 // Copyright (c) 2007-2012 Barend Gehrels, Amsterdam, the Netherlands.
 
-// This file was modified by Oracle on 2014.
-// Modifications copyright (c) 2014 Oracle and/or its affiliates.
-
+// This file was modified by Oracle on 2014-2021.
+// Modifications copyright (c) 2014-2021 Oracle and/or its affiliates.
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Use, modification and distribution is subject to the Boost Software License,
@@ -15,12 +14,10 @@
 
 #include <geometry_test_common.hpp>
 
-#include <boost/type_traits/is_same.hpp>
-
 #include <boost/geometry/core/tag.hpp>
 
 #include <boost/geometry/geometries/geometries.hpp>
-#include <boost/geometry/geometries/variant.hpp>
+#include <boost/geometry/geometries/adapted/boost_variant.hpp>
 
 #include <boost/geometry/geometries/adapted/c_array.hpp>
 #include <boost/geometry/geometries/adapted/boost_tuple.hpp>
@@ -45,7 +42,7 @@ void test_geometry()
     BOOST_CHECK_EQUAL(typeid(typename bg::point_type<G>::type).name(),
         typeid(Expected).name());
 
-    static const bool is_same = boost::is_same<typename bg::point_type<G>::type, Expected>::value;
+    static const bool is_same = std::is_same<typename bg::point_type<G>::type, Expected>::value;
     BOOST_CHECK(is_same);
 }
 

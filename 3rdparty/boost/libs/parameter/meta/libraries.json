@@ -13,5 +13,6 @@
     "maintainers": [
         "David Abrahams <dave -at- boost-consulting.com>",
         "Daniel Wallin <daniel -at- boostpro.com>"
-    ]
+    ],
+    "cxxstd": "03"
 }

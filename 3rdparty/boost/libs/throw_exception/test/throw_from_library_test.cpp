@@ -5,6 +5,18 @@
 // See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt
 
+#if defined(_MSC_VER)
+# pragma warning(disable: 4702) // unreachable code
+#endif
+
+#if defined(__clang__)
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wunknown-warning-option"
+# pragma clang diagnostic ignored "-Wpotentially-evaluated-expression"
+# pragma clang diagnostic ignored "-Wdelete-non-abstract-non-virtual-dtor"
+# pragma clang diagnostic ignored "-Wunused-parameter"
+#endif
+
 #include "lib1_throw.hpp"
 #include "lib2_throw.hpp"
 #include "lib3_throw.hpp"

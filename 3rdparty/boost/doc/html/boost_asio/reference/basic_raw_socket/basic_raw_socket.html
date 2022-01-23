@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>basic_raw_socket::basic_raw_socket</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -34,14 +34,14 @@ Construct
         </p>
 <pre class="programlisting">explicit <a class="link" href="basic_raw_socket/overload1.html" title="basic_raw_socket::basic_raw_socket (1 of 10 overloads)">basic_raw_socket</a>(
     const executor_type &amp; ex);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_raw_socket/overload1.html" title="basic_raw_socket::basic_raw_socket (1 of 10 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="basic_raw_socket/overload1.html" title="basic_raw_socket::basic_raw_socket (1 of 10 overloads)">more...</a></em></span>
 
 template&lt;
     typename ExecutionContext&gt;
 explicit <a class="link" href="basic_raw_socket/overload2.html" title="basic_raw_socket::basic_raw_socket (2 of 10 overloads)">basic_raw_socket</a>(
     ExecutionContext &amp; context,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_raw_socket/overload2.html" title="basic_raw_socket::basic_raw_socket (2 of 10 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="basic_raw_socket/overload2.html" title="basic_raw_socket::basic_raw_socket (2 of 10 overloads)">more...</a></em></span>
 </pre>
 <p>
           Construct and open a <a class="link" href="../basic_raw_socket.html" title="basic_raw_socket"><code class="computeroutput">basic_raw_socket</code></a>.
@@ -49,15 +49,15 @@ explicit <a class="link" href="basic_raw_socket/overload2.html" title="basic_raw
 <pre class="programlisting"><a class="link" href="basic_raw_socket/overload3.html" title="basic_raw_socket::basic_raw_socket (3 of 10 overloads)">basic_raw_socket</a>(
     const executor_type &amp; ex,
     const protocol_type &amp; protocol);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_raw_socket/overload3.html" title="basic_raw_socket::basic_raw_socket (3 of 10 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="basic_raw_socket/overload3.html" title="basic_raw_socket::basic_raw_socket (3 of 10 overloads)">more...</a></em></span>
 
 template&lt;
     typename ExecutionContext&gt;
 <a class="link" href="basic_raw_socket/overload4.html" title="basic_raw_socket::basic_raw_socket (4 of 10 overloads)">basic_raw_socket</a>(
     ExecutionContext &amp; context,
     const protocol_type &amp; protocol,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_raw_socket/overload4.html" title="basic_raw_socket::basic_raw_socket (4 of 10 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value, defaulted_constraint &gt;::type  = defaulted_constraint());
+  <span class="emphasis"><em>» <a class="link" href="basic_raw_socket/overload4.html" title="basic_raw_socket::basic_raw_socket (4 of 10 overloads)">more...</a></em></span>
 </pre>
 <p>
           Construct a <a class="link" href="../basic_raw_socket.html" title="basic_raw_socket"><code class="computeroutput">basic_raw_socket</code></a>,
@@ -66,15 +66,15 @@ template&lt;
 <pre class="programlisting"><a class="link" href="basic_raw_socket/overload5.html" title="basic_raw_socket::basic_raw_socket (5 of 10 overloads)">basic_raw_socket</a>(
     const executor_type &amp; ex,
     const endpoint_type &amp; endpoint);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_raw_socket/overload5.html" title="basic_raw_socket::basic_raw_socket (5 of 10 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="basic_raw_socket/overload5.html" title="basic_raw_socket::basic_raw_socket (5 of 10 overloads)">more...</a></em></span>
 
 template&lt;
     typename ExecutionContext&gt;
 <a class="link" href="basic_raw_socket/overload6.html" title="basic_raw_socket::basic_raw_socket (6 of 10 overloads)">basic_raw_socket</a>(
     ExecutionContext &amp; context,
     const endpoint_type &amp; endpoint,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_raw_socket/overload6.html" title="basic_raw_socket::basic_raw_socket (6 of 10 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="basic_raw_socket/overload6.html" title="basic_raw_socket::basic_raw_socket (6 of 10 overloads)">more...</a></em></span>
 </pre>
 <p>
           Construct a <a class="link" href="../basic_raw_socket.html" title="basic_raw_socket"><code class="computeroutput">basic_raw_socket</code></a>
@@ -84,7 +84,7 @@ template&lt;
     const executor_type &amp; ex,
     const protocol_type &amp; protocol,
     const native_handle_type &amp; native_socket);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_raw_socket/overload7.html" title="basic_raw_socket::basic_raw_socket (7 of 10 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="basic_raw_socket/overload7.html" title="basic_raw_socket::basic_raw_socket (7 of 10 overloads)">more...</a></em></span>
 
 template&lt;
     typename ExecutionContext&gt;
@@ -92,8 +92,8 @@ template&lt;
     ExecutionContext &amp; context,
     const protocol_type &amp; protocol,
     const native_handle_type &amp; native_socket,
-    typename enable_if&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_raw_socket/overload8.html" title="basic_raw_socket::basic_raw_socket (8 of 10 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; ExecutionContext &amp;, execution_context &amp; &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="basic_raw_socket/overload8.html" title="basic_raw_socket::basic_raw_socket (8 of 10 overloads)">more...</a></em></span>
 </pre>
 <p>
           Move-construct a <a class="link" href="../basic_raw_socket.html" title="basic_raw_socket"><code class="computeroutput">basic_raw_socket</code></a>
@@ -101,7 +101,7 @@ template&lt;
         </p>
 <pre class="programlisting"><a class="link" href="basic_raw_socket/overload9.html" title="basic_raw_socket::basic_raw_socket (9 of 10 overloads)">basic_raw_socket</a>(
     basic_raw_socket &amp;&amp; other);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_raw_socket/overload9.html" title="basic_raw_socket::basic_raw_socket (9 of 10 overloads)">more...</a></em></span>
+  <span class="emphasis"><em>» <a class="link" href="basic_raw_socket/overload9.html" title="basic_raw_socket::basic_raw_socket (9 of 10 overloads)">more...</a></em></span>
 </pre>
 <p>
           Move-construct a <a class="link" href="../basic_raw_socket.html" title="basic_raw_socket"><code class="computeroutput">basic_raw_socket</code></a>
@@ -112,13 +112,14 @@ template&lt;
     typename <a class="link" href="../Executor1.html" title="Executor requirements">Executor1</a>&gt;
 <a class="link" href="basic_raw_socket/overload10.html" title="basic_raw_socket::basic_raw_socket (10 of 10 overloads)">basic_raw_socket</a>(
     basic_raw_socket&lt; Protocol1, Executor1 &gt; &amp;&amp; other,
-    typename enable_if&lt; is_convertible&lt; Protocol1, Protocol &gt;::value &amp;&amp;is_convertible&lt; Executor1, Executor &gt;::value &gt;::type *  = 0);
-  <span class="emphasis"><em>&#187; <a class="link" href="basic_raw_socket/overload10.html" title="basic_raw_socket::basic_raw_socket (10 of 10 overloads)">more...</a></em></span>
+    typename constraint&lt; is_convertible&lt; Protocol1, Protocol &gt;::value &amp;&amp;is_convertible&lt; Executor1, Executor &gt;::value &gt;::type  = 0);
+  <span class="emphasis"><em>» <a class="link" href="basic_raw_socket/overload10.html" title="basic_raw_socket::basic_raw_socket (10 of 10 overloads)">more...</a></em></span>
 </pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

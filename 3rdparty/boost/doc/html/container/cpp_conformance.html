@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>C++11/C++14/C++17 Conformance</title>
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../container.html" title="Chapter&#160;9.&#160;Boost.Container">
+<link rel="up" href="../container.html" title="Chapter 9. Boost.Container">
 <link rel="prev" href="extended_allocators.html" title="Extended functionality: Extended allocators">
 <link rel="next" href="known_issues.html" title="Known Issues">
 </head>
@@ -141,8 +141,8 @@
         class and <span class="bold"><strong>backports this feature also to C++03 compilers</strong></span>.
         Due to C++03 limitations, in those compilers the allocator propagation implemented
         by <code class="computeroutput"><span class="identifier">scoped_allocator_adaptor</span><span class="special">::</span><span class="identifier">construct</span></code>
-        functions will be based on traits (<code class="computeroutput"><a class="link" href="../boost/container/construc_idm45376476678288.html" title="Struct template constructible_with_allocator_suffix">constructible_with_allocator_suffix</a></code>
-        and <code class="computeroutput"><a class="link" href="../boost/container/construc_idm45376476688656.html" title="Struct template constructible_with_allocator_prefix">constructible_with_allocator_prefix</a></code>)
+        functions will be based on traits (<code class="computeroutput"><a class="link" href="../boost/container/constructible_wit_idm29963.html" title="Struct template constructible_with_allocator_suffix">constructible_with_allocator_suffix</a></code>
+        and <code class="computeroutput"><a class="link" href="../boost/container/constructible_wit_idm29937.html" title="Struct template constructible_with_allocator_prefix">constructible_with_allocator_prefix</a></code>)
         proposed in <a href="http://www.open-std.org/jtc1/sc22/WG21/docs/papers/2008/n2554.pdf" target="_top">N2554:
         The Scoped Allocator Model (Rev 2) proposal</a>. In conforming C++11
         compilers or compilers supporting SFINAE expressions (when <code class="computeroutput"><span class="identifier">BOOST_NO_SFINAE_EXPR</span></code> is NOT defined), traits
@@ -226,20 +226,20 @@
         Polymorphic Memory Resources (r2)</a>):
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>A significant impediment to effective memory management
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>A significant impediment to effective memory management
         in C++ has been the inability to use allocators in non-generic contexts.
         In large software systems, most of the application program consists of non-generic
         procedural or object-oriented code that is compiled once and linked many
-        times.</em></span></span>&#8221;</span>
+        times.</em></span></span>”</span>
       </p>
 <p>
-        <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>Allocators in C++, however, have historically relied solely
+        <span class="quote">“<span class="quote"><span class="emphasis"><em>Allocators in C++, however, have historically relied solely
         on compile-time polymorphism, and therefore have not been suitable for use
         in vocabulary types, which are passed through interfaces between separately-compiled
         modules, because the allocator type necessarily affects the type of the object
         that uses it. This proposal builds upon the improvements made to allocators
         in C++11 and describes a set of facilities for runtime polymorphic memory
-        resources that interoperate with the existing compile-time polymorphic allocators.</em></span></span>&#8221;</span>
+        resources that interoperate with the existing compile-time polymorphic allocators.</em></span></span>”</span>
       </p>
 <p>
         Most utilities from the Fundamentals TS were merged into C++17, but <span class="bold"><strong>Boost.Container</strong></span> offers them for C++03, C++11 and C++14
@@ -272,7 +272,7 @@
                   <code class="computeroutput"><a class="link" href="../boost/container/pmr/monotonic_buffer_resource.html" title="Class monotonic_buffer_resource">monotonic_buffer_resource</a></code>.
                 </li>
 <li class="listitem">
-                  <code class="computeroutput"><a class="link" href="../boost/container/pmr/unsynchr_idm45376480914912.html" title="Class unsynchronized_pool_resource">unsynchronized_pool_resource</a></code>.
+                  <code class="computeroutput"><a class="link" href="../boost/container/pmr/unsynchronized_po_idm19114.html" title="Class unsynchronized_pool_resource">unsynchronized_pool_resource</a></code>.
                 </li>
 <li class="listitem">
                   <code class="computeroutput"><a class="link" href="../boost/container/pmr/synchronized_pool_resource.html" title="Class synchronized_pool_resource">synchronized_pool_resource</a></code>.
@@ -339,8 +339,8 @@
 <p>
         <span class="bold"><strong>Note:</strong></span> <span class="emphasis"><em>In C++03 compilers, it is
         required that the programmer specializes as <code class="computeroutput"><span class="keyword">true</span></code>
-        <code class="computeroutput"><a class="link" href="../boost/container/construc_idm45376476678288.html" title="Struct template constructible_with_allocator_suffix">constructible_with_allocator_suffix</a></code>
-        or <code class="computeroutput"><a class="link" href="../boost/container/construc_idm45376476688656.html" title="Struct template constructible_with_allocator_prefix">constructible_with_allocator_prefix</a></code>
+        <code class="computeroutput"><a class="link" href="../boost/container/constructible_wit_idm29963.html" title="Struct template constructible_with_allocator_suffix">constructible_with_allocator_suffix</a></code>
+        or <code class="computeroutput"><a class="link" href="../boost/container/constructible_wit_idm29937.html" title="Struct template constructible_with_allocator_prefix">constructible_with_allocator_prefix</a></code>
         as in C++03 there is no way to automatically detect the chosen option at
         compile time. If no specialization is done, <span class="bold"><strong>Boost.Container</strong></span>
         assumes the suffix option</em></span>.
@@ -589,30 +589,30 @@
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-            <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>But it is a shame that the C++ committee gave this excellent
+            <span class="quote">“<span class="quote"><span class="emphasis"><em>But it is a shame that the C++ committee gave this excellent
             data structure the name vector&lt;bool&gt; and that it gives no guidance
             nor encouragement on the critical generic algorithms that need to be
             optimized for this data structure. Consequently, few std::lib implementations
-            go to this trouble.</em></span></span>&#8221;</span>
+            go to this trouble.</em></span></span>”</span>
           </li>
 <li class="listitem">
-            <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em>In 1998, admitting that the committee made a mistake
+            <span class="quote">“<span class="quote"><span class="emphasis"><em>In 1998, admitting that the committee made a mistake
             was controversial. Since then Java has had to deprecate such significant
             portions of their libraries that the idea C++ would be ridiculed for
-            deprecating a single minor template specialization seems quaint.</em></span></span>&#8221;</span>
+            deprecating a single minor template specialization seems quaint.</em></span></span>”</span>
           </li>
 <li class="listitem">
-            <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em><code class="computeroutput"><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">bool</span><span class="special">&gt;</span></code> is not a container and <code class="computeroutput"><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">bool</span><span class="special">&gt;::</span><span class="identifier">iterator</span></code> is not a random-access iterator
+            <span class="quote">“<span class="quote"><span class="emphasis"><em><code class="computeroutput"><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">bool</span><span class="special">&gt;</span></code> is not a container and <code class="computeroutput"><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">bool</span><span class="special">&gt;::</span><span class="identifier">iterator</span></code> is not a random-access iterator
             (or even a forward or bidirectional iterator either, for that matter).
-            This has already broken user code in the field in mysterious ways.</em></span></span>&#8221;</span>
+            This has already broken user code in the field in mysterious ways.</em></span></span>”</span>
           </li>
 <li class="listitem">
-            <span class="quote">&#8220;<span class="quote"><span class="emphasis"><em><code class="computeroutput"><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">bool</span><span class="special">&gt;</span></code> forces a specific (and potentially
+            <span class="quote">“<span class="quote"><span class="emphasis"><em><code class="computeroutput"><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">bool</span><span class="special">&gt;</span></code> forces a specific (and potentially
             bad) optimization choice on all users by enshrining it in the standard.
             The optimization is premature; different users have different requirements.
             This too has already hurt users who have been forced to implement workarounds
             to disable the 'optimization' (e.g., by using a vector&lt;char&gt; and
-            manually casting to/from bool).</em></span></span>&#8221;</span>
+            manually casting to/from bool).</em></span></span>”</span>
           </li>
 </ul></div>
 <p>
@@ -666,7 +666,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2009-2018 Ion Gaztanaga<p>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2018 Ion Gaztanaga<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

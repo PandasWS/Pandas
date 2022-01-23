@@ -14,11 +14,10 @@ project boost/contract
         <link>shared:<define>BOOST_CONTRACT_DYN_LINK
         <link>static:<define>BOOST_CONTRACT_STATIC_LINK
         <threading>single:<define>BOOST_CONTRACT_DISABLE_THREADS
-        <library>/boost//system # For this lib as header-only.
 ;
 
 # If lib as header-only, none of following will be used.
-lib boost_contract : contract.cpp : <link>shared <library>/boost//system ;
-lib boost_contract : contract.cpp : <link>static <library>/boost//system ;
+lib boost_contract : contract.cpp : <link>shared ;
+lib boost_contract : contract.cpp : <link>static ;
 
 boost-install boost_contract ;

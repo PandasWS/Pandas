@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Custom Body Types</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Beast">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Beast">
 <link rel="up" href="../using_http.html" title="HTTP">
 <link rel="prev" href="chunked_encoding.html" title="Chunked Encoding">
 <link rel="next" href="custom_parsers.html" title="Custom Parsers">
@@ -54,7 +54,7 @@
         The meaning of the nested types is as follows
       </p>
 <div class="table">
-<a name="beast.using_http.custom_body_types.body_type_members"></a><p class="title"><b>Table&#160;1.27.&#160;Body Type Members</b></p>
+<a name="beast.using_http.custom_body_types.body_type_members"></a><p class="title"><b>Table 1.28. Body Type Members</b></p>
 <div class="table-contents"><table class="table" summary="Body Type Members">
 <colgroup>
 <col>
@@ -151,8 +151,8 @@
       </p>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="beast.using_http.custom_body_types.file_body"></a><a class="link" href="custom_body_types.html#beast.using_http.custom_body_types.file_body" title="File Body &#128161;">File
-        Body &#128161;</a>
+<a name="beast.using_http.custom_body_types.file_body"></a><a class="link" href="custom_body_types.html#beast.using_http.custom_body_types.file_body" title="File Body 💡">File
+        Body 💡</a>
 </h4></div></div></div>
 <p>
           Use of the flexible <a class="link" href="../concepts/Body.html" title="Body"><span class="emphasis"><em>Body</em></span></a>
@@ -256,6 +256,12 @@
 
     <span class="comment">/// Move assignment</span>
     <span class="identifier">value_type</span><span class="special">&amp;</span> <span class="keyword">operator</span><span class="special">=(</span><span class="identifier">value_type</span><span class="special">&amp;&amp;</span> <span class="identifier">other</span><span class="special">)</span> <span class="special">=</span> <span class="keyword">default</span><span class="special">;</span>
+
+    <span class="comment">/// Return the file</span>
+    <span class="identifier">File</span><span class="special">&amp;</span> <span class="identifier">file</span><span class="special">()</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">file_</span><span class="special">;</span>
+    <span class="special">}</span>
 
     <span class="comment">/// Returns `true` if the file is open</span>
     <span class="keyword">bool</span>
@@ -504,6 +510,12 @@
     <span class="keyword">if</span><span class="special">(</span><span class="identifier">ec</span><span class="special">)</span>
         <span class="keyword">return</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">none</span><span class="special">;</span>
 
+    <span class="keyword">if</span> <span class="special">(</span><span class="identifier">nread</span> <span class="special">==</span> <span class="number">0</span><span class="special">)</span>
+    <span class="special">{</span>
+        <span class="identifier">ec</span> <span class="special">=</span> <span class="identifier">error</span><span class="special">::</span><span class="identifier">short_read</span><span class="special">;</span>
+        <span class="keyword">return</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">none</span><span class="special">;</span>
+    <span class="special">}</span>
+
     <span class="comment">// Make sure there is forward progress</span>
     <span class="identifier">BOOST_ASSERT</span><span class="special">(</span><span class="identifier">nread</span> <span class="special">!=</span> <span class="number">0</span><span class="special">);</span>
     <span class="identifier">BOOST_ASSERT</span><span class="special">(</span><span class="identifier">nread</span> <span class="special">&lt;=</span> <span class="identifier">remain_</span><span class="special">);</span>
@@ -682,7 +694,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2016-2019 Vinnie
+<td align="right"><div class="copyright-footer">Copyright © 2016-2019 Vinnie
       Falco<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)

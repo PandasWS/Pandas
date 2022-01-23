@@ -27,7 +27,7 @@ using boost::math::chi_squared;
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp> // for test_main
-#include <boost/test/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE
+#include <boost/test/tools/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE
 
 #include "test_out_of_range.hpp"
 
@@ -314,7 +314,7 @@ template <class RealType> // Any floating-point type RealType.
 void test_spots(RealType T)
 {
   // Basic sanity checks, test data is to three decimal places only
-  // so set tolerance to 0.001 expressed as a persentage.
+  // so set tolerance to 0.001 expressed as a percentage.
 
   RealType tolerance = 0.001f * 100;
 

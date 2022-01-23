@@ -3,8 +3,8 @@
 //Distributed under the Boost Software License, Version 1.0. (See accompanying
 //file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef UUID_BC765EB4CA2A11DCBDC5828355D89593
-#define UUID_BC765EB4CA2A11DCBDC5828355D89593
+#ifndef BOOST_EXCEPTION_BC765EB4CA2A11DCBDC5828355D89593
+#define BOOST_EXCEPTION_BC765EB4CA2A11DCBDC5828355D89593
 
 #include <boost/exception/exception.hpp>
 #include <exception>

@@ -1,5 +1,5 @@
 // Boost.Convert test and usage example
-// Copyright (c) 2009-2016 Vladimir Batov.
+// Copyright (c) 2009-2020 Vladimir Batov.
 // Use, modification and distribution are subject to the Boost Software License,
 // Version 1.0. See http://www.boost.org/LICENSE_1_0.txt.
 
@@ -11,9 +11,9 @@ int main(int, char const* []) { return 0; }
 
 #include <boost/convert.hpp>
 #include <boost/convert/stream.hpp>
-#include <boost/detail/lightweight_test.hpp>
-#include <boost/array.hpp>
+#include <array>
 #include <vector>
+#include <algorithm>
 
 using std::string;
 using std::wstring;
@@ -54,18 +54,19 @@ void
 test_algorithms()
 {
 //[algorithm_example6
-    boost::array<change, 3>             chgs1 = {{ change::no, change::up, change::dn }};
-    boost::array<change::value_type, 3> chgs2 = {{ change::no, change::up, change::dn }};
-    std::vector<std::string>            strs1;
-    std::vector<std::string>            strs2;
-    std::vector<std::string>            strs3;
-    boost::cnv::cstream                   cnv;
+    std::array<change, 3>             chgs1 = {{ change::no, change::up, change::dn }};
+    std::array<change::value_type, 3> chgs2 = {{ change::no, change::up, change::dn }};
+
+    auto strs1 = std::vector<std::string>();
+    auto strs2 = std::vector<std::string>();
+    auto strs3 = std::vector<std::string>();
+    auto   cnv = boost::cnv::cstream();
 
     std::transform(chgs1.begin(), chgs1.end(), std::back_inserter(strs1),
-        boost::cnv::apply<string>(boost::cref(cnv))); // Deduced TypeIn is 'change'
+        boost::cnv::apply<string>(std::cref(cnv))); // Deduced TypeIn is 'change'
 
     std::transform(chgs2.begin(), chgs2.end(), std::back_inserter(strs2),
-        boost::cnv::apply<string>(boost::cref(cnv))); // Deduced TypeIn is 'change::value_type'
+        boost::cnv::apply<string>(std::cref(cnv))); // Deduced TypeIn is 'change::value_type'
 
     BOOST_TEST(strs1.size() == 3);
     BOOST_TEST(strs1[0] == "no");
@@ -80,7 +81,7 @@ test_algorithms()
 //[algorithm_example7
 
     std::transform(chgs2.begin(), chgs2.end(), std::back_inserter(strs3),
-        boost::cnv::apply<string, change>(boost::cref(cnv)));
+        boost::cnv::apply<string, change>(std::cref(cnv)));
 
     BOOST_TEST(strs3.size() == 3);
     BOOST_TEST(strs3[0] == "no");

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>async_write (2 of 8 overloads)</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -41,7 +41,7 @@
     const ConstBufferSequence &amp; buffers,
     CompletionCondition completion_condition,
     WriteHandler &amp;&amp; handler,
-    typename enable_if&lt; is_const_buffer_sequence&lt; ConstBufferSequence &gt;::value &gt;::type *  = 0);
+    typename constraint&lt; is_const_buffer_sequence&lt; ConstBufferSequence &gt;::value &gt;::type  = 0);
 </pre>
 <p>
           This function is used to asynchronously write a certain number of bytes
@@ -147,10 +147,32 @@
           documentation for information on writing multiple buffers in one go, and
           how to use it with arrays, boost::array or std::vector.
         </p>
+<h6>
+<a name="boost_asio.reference.async_write.overload2.h2"></a>
+          <span class="phrase"><a name="boost_asio.reference.async_write.overload2.per_operation_cancellation"></a></span><a class="link" href="overload2.html#boost_asio.reference.async_write.overload2.per_operation_cancellation">Per-Operation
+          Cancellation</a>
+        </h6>
+<p>
+          This asynchronous operation supports cancellation for the following <a class="link" href="../cancellation_type.html" title="cancellation_type"><code class="computeroutput">cancellation_type</code></a>
+          values:
+        </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+              <code class="computeroutput">cancellation_type::terminal</code>
+            </li>
+<li class="listitem">
+              <code class="computeroutput">cancellation_type::partial</code>
+            </li>
+</ul></div>
+<p>
+          if they are also supported by the <code class="computeroutput">AsyncWriteStream</code> type's
+          <code class="computeroutput">async_write_some</code> operation.
+        </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

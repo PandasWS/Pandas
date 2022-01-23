@@ -14,7 +14,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <boost/assign.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <algorithm>
 #include <functional>
 #include <list>
@@ -29,6 +29,8 @@ namespace boost
         template< class Container, class UnaryPredicate >
         void test_replace_if_impl(Container& cont, UnaryPredicate pred)
         {
+            using namespace boost::placeholders;
+
             const int what = 2;
             const int with_what = 5;
 

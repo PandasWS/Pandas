@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>strand</title>
 <link rel="stylesheet" href="../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
@@ -26,6 +26,9 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_asio.reference.strand"></a><a class="link" href="strand.html" title="strand">strand</a>
 </h3></div></div></div>
+<p>
+        <a class="indexterm" name="boost_asio.indexterm.strand"></a>
+      </p>
 <p>
         Provides serialised function invocation for any executor type.
       </p>
@@ -129,6 +132,18 @@ class strand
 <tr>
 <td>
                 <p>
+                  <a class="link" href="strand/execute.html" title="strand::execute"><span class="bold"><strong>execute</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Request the strand to invoke the given function object.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   <a class="link" href="strand/get_inner_executor.html" title="strand::get_inner_executor"><span class="bold"><strong>get_inner_executor</strong></span></a>
                 </p>
               </td>
@@ -170,8 +185,8 @@ class strand
               </td>
 <td>
                 <p>
-                  Assignment operator. <br> <span class="silver"> &#8212;</span><br> Converting assignment operator.
-                  <br> <span class="silver"> &#8212;</span><br> Move assignment operator. <br> <span class="silver"> &#8212;</span><br> Converting
+                  Assignment operator. <br> <span class="silver"> —</span><br> Converting assignment operator.
+                  <br> <span class="silver"> —</span><br> Move assignment operator. <br> <span class="silver"> —</span><br> Converting
                   move assignment operator.
                 </p>
               </td>
@@ -191,6 +206,42 @@ class strand
 <tr>
 <td>
                 <p>
+                  <a class="link" href="strand/prefer.html" title="strand::prefer"><span class="bold"><strong>prefer</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Forward a preference to the underlying executor.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="strand/query.html" title="strand::query"><span class="bold"><strong>query</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Forward a query to the underlying executor.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="strand/require.html" title="strand::require"><span class="bold"><strong>require</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Forward a requirement to the underlying executor.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   <a class="link" href="strand/running_in_this_thread.html" title="strand::running_in_this_thread"><span class="bold"><strong>running_in_this_thread</strong></span></a>
                 </p>
               </td>
@@ -204,13 +255,14 @@ class strand
 <td>
                 <p>
                   <a class="link" href="strand/strand.html" title="strand::strand"><span class="bold"><strong>strand</strong></span></a>
+                  <span class="silver">[constructor]</span>
                 </p>
               </td>
 <td>
                 <p>
-                  Default constructor. <br> <span class="silver"> &#8212;</span><br> Construct a strand for the specified
-                  executor. <br> <span class="silver"> &#8212;</span><br> Copy constructor. <br> <span class="silver"> &#8212;</span><br> Converting
-                  constructor. <br> <span class="silver"> &#8212;</span><br> Move constructor. <br> <span class="silver"> &#8212;</span><br> Converting
+                  Default constructor. <br> <span class="silver"> —</span><br> Construct a strand for the specified
+                  executor. <br> <span class="silver"> —</span><br> Copy constructor. <br> <span class="silver"> —</span><br> Converting
+                  constructor. <br> <span class="silver"> —</span><br> Move constructor. <br> <span class="silver"> —</span><br> Converting
                   move constructor.
                 </p>
               </td>
@@ -219,6 +271,7 @@ class strand
 <td>
                 <p>
                   <a class="link" href="strand/_strand.html" title="strand::~strand"><span class="bold"><strong>~strand</strong></span></a>
+                  <span class="silver">[destructor]</span>
                 </p>
               </td>
 <td>
@@ -290,7 +343,8 @@ class strand
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2019 Christopher M. Kohlhoff<p>
+<td align="right"><div class="copyright-footer">Copyright © 2003-2021 Christopher
+      M. Kohlhoff<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

@@ -45,3 +45,5 @@ test-suite graph_parallel
   ;
 }
 
+build-project ../example ;
+

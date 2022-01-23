@@ -8,7 +8,8 @@
 //
 // For more information, see www.boost.org
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
+#define BOOST_CHECK BOOST_TEST
 
 #include <boost/lambda/lambda.hpp>
 
@@ -44,10 +45,10 @@ add_result operator+(addable, addable) {
     return add_result(7);
 }
 
-int test_main(int, char*[]) {
+int main() {
     addable test;
     test_ret(add_result(7), boost::lambda::ret<add_result>(boost::lambda::_1 + test), test);
     test_ret(8.0, boost::lambda::ret<double>(boost::lambda::constant(7) + 1));
 
-    return 0;
+    return boost::report_errors();
 }

@@ -40,7 +40,7 @@ int main()
 
 #else
 
-BOOST_ERROR("No variadic macro support");
+  BOOST_VMD_ASSERT(0)
   
 #endif /* BOOST_PP_VARIADICS */
 

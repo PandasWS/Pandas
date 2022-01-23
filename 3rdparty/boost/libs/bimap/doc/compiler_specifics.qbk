@@ -52,7 +52,7 @@ can be cause buffer overruns or other possible security issues if misused.
 See http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
 But the wording of the warning is misleading and unsettling, there are no
 portable alternative functions, and VC++ 8.0's own libraries use the
-functions in question. In order to turn off the warnings add the followings
+functions in question. In order to turn off the warnings add the following
 defines at the begging of your .cpp files:
 
     #define _CRT_SECURE_NO_DEPRECATE

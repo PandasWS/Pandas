@@ -2,7 +2,7 @@
 // connect.hpp
 // ~~~~~~~~~~~
 //
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -91,8 +91,8 @@ struct is_endpoint_sequence
 template <typename Protocol, typename Executor, typename EndpointSequence>
 typename Protocol::endpoint connect(basic_socket<Protocol, Executor>& s,
     const EndpointSequence& endpoints,
-    typename enable_if<is_endpoint_sequence<
-        EndpointSequence>::value>::type* = 0);
+    typename constraint<is_endpoint_sequence<
+        EndpointSequence>::value>::type = 0);
 
 /// Establishes a socket connection by trying each endpoint in a sequence.
 /**
@@ -127,8 +127,8 @@ typename Protocol::endpoint connect(basic_socket<Protocol, Executor>& s,
 template <typename Protocol, typename Executor, typename EndpointSequence>
 typename Protocol::endpoint connect(basic_socket<Protocol, Executor>& s,
     const EndpointSequence& endpoints, boost::system::error_code& ec,
-    typename enable_if<is_endpoint_sequence<
-        EndpointSequence>::value>::type* = 0);
+    typename constraint<is_endpoint_sequence<
+        EndpointSequence>::value>::type = 0);
 
 #if !defined(BOOST_ASIO_NO_DEPRECATED)
 /// (Deprecated: Use range overload.) Establishes a socket connection by trying
@@ -157,7 +157,7 @@ typename Protocol::endpoint connect(basic_socket<Protocol, Executor>& s,
  */
 template <typename Protocol, typename Executor, typename Iterator>
 Iterator connect(basic_socket<Protocol, Executor>& s, Iterator begin,
-    typename enable_if<!is_endpoint_sequence<Iterator>::value>::type* = 0);
+    typename constraint<!is_endpoint_sequence<Iterator>::value>::type = 0);
 
 /// (Deprecated: Use range overload.) Establishes a socket connection by trying
 /// each endpoint in a sequence.
@@ -186,7 +186,7 @@ Iterator connect(basic_socket<Protocol, Executor>& s, Iterator begin,
 template <typename Protocol, typename Executor, typename Iterator>
 Iterator connect(basic_socket<Protocol, Executor>& s,
     Iterator begin, boost::system::error_code& ec,
-    typename enable_if<!is_endpoint_sequence<Iterator>::value>::type* = 0);
+    typename constraint<!is_endpoint_sequence<Iterator>::value>::type = 0);
 #endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 /// Establishes a socket connection by trying each endpoint in a sequence.
@@ -312,8 +312,8 @@ template <typename Protocol, typename Executor,
     typename EndpointSequence, typename ConnectCondition>
 typename Protocol::endpoint connect(basic_socket<Protocol, Executor>& s,
     const EndpointSequence& endpoints, ConnectCondition connect_condition,
-    typename enable_if<is_endpoint_sequence<
-        EndpointSequence>::value>::type* = 0);
+    typename constraint<is_endpoint_sequence<
+        EndpointSequence>::value>::type = 0);
 
 /// Establishes a socket connection by trying each endpoint in a sequence.
 /**
@@ -380,8 +380,8 @@ template <typename Protocol, typename Executor,
 typename Protocol::endpoint connect(basic_socket<Protocol, Executor>& s,
     const EndpointSequence& endpoints, ConnectCondition connect_condition,
     boost::system::error_code& ec,
-    typename enable_if<is_endpoint_sequence<
-        EndpointSequence>::value>::type* = 0);
+    typename constraint<is_endpoint_sequence<
+        EndpointSequence>::value>::type = 0);
 
 #if !defined(BOOST_ASIO_NO_DEPRECATED)
 /// (Deprecated: Use range overload.) Establishes a socket connection by trying
@@ -423,7 +423,7 @@ template <typename Protocol, typename Executor,
     typename Iterator, typename ConnectCondition>
 Iterator connect(basic_socket<Protocol, Executor>& s,
     Iterator begin, ConnectCondition connect_condition,
-    typename enable_if<!is_endpoint_sequence<Iterator>::value>::type* = 0);
+    typename constraint<!is_endpoint_sequence<Iterator>::value>::type = 0);
 
 /// (Deprecated: Use range overload.) Establishes a socket connection by trying
 /// each endpoint in a sequence.
@@ -464,7 +464,7 @@ template <typename Protocol, typename Executor,
     typename Iterator, typename ConnectCondition>
 Iterator connect(basic_socket<Protocol, Executor>& s, Iterator begin,
     ConnectCondition connect_condition, boost::system::error_code& ec,
-    typename enable_if<!is_endpoint_sequence<Iterator>::value>::type* = 0);
+    typename constraint<!is_endpoint_sequence<Iterator>::value>::type = 0);
 #endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 /// Establishes a socket connection by trying each endpoint in a sequence.
@@ -665,16 +665,29 @@ Iterator connect(basic_socket<Protocol, Executor>& s,
  * {
  *   // ...
  * } @endcode
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * boost::asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the socket's @c async_connect operation.
  */
-template <typename Protocol, typename Executor,
-    typename EndpointSequence, typename RangeConnectHandler>
-BOOST_ASIO_INITFN_RESULT_TYPE(RangeConnectHandler,
+template <typename Protocol, typename Executor, typename EndpointSequence,
+    BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
+      typename Protocol::endpoint)) RangeConnectHandler
+        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(Executor)>
+BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(RangeConnectHandler,
     void (boost::system::error_code, typename Protocol::endpoint))
 async_connect(basic_socket<Protocol, Executor>& s,
     const EndpointSequence& endpoints,
-    BOOST_ASIO_MOVE_ARG(RangeConnectHandler) handler,
-    typename enable_if<is_endpoint_sequence<
-        EndpointSequence>::value>::type* = 0);
+    BOOST_ASIO_MOVE_ARG(RangeConnectHandler) handler
+      BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(Executor),
+    typename constraint<is_endpoint_sequence<
+        EndpointSequence>::value>::type = 0);
 
 #if !defined(BOOST_ASIO_NO_DEPRECATED)
 /// (Deprecated: Use range overload.) Asynchronously establishes a socket
@@ -711,14 +724,27 @@ async_connect(basic_socket<Protocol, Executor>& s,
  * @note This overload assumes that a default constructed object of type @c
  * Iterator represents the end of the sequence. This is a valid assumption for
  * iterator types such as @c boost::asio::ip::tcp::resolver::iterator.
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * boost::asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the socket's @c async_connect operation.
  */
-template <typename Protocol, typename Executor,
-    typename Iterator, typename IteratorConnectHandler>
-BOOST_ASIO_INITFN_RESULT_TYPE(IteratorConnectHandler,
+template <typename Protocol, typename Executor, typename Iterator,
+    BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
+      Iterator)) IteratorConnectHandler
+        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(Executor)>
+BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectHandler,
     void (boost::system::error_code, Iterator))
 async_connect(basic_socket<Protocol, Executor>& s, Iterator begin,
-    BOOST_ASIO_MOVE_ARG(IteratorConnectHandler) handler,
-    typename enable_if<!is_endpoint_sequence<Iterator>::value>::type* = 0);
+    BOOST_ASIO_MOVE_ARG(IteratorConnectHandler) handler
+      BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(Executor),
+    typename constraint<!is_endpoint_sequence<Iterator>::value>::type = 0);
 #endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 /// Asynchronously establishes a socket connection by trying each endpoint in a
@@ -769,13 +795,26 @@ async_connect(basic_socket<Protocol, Executor>& s, Iterator begin,
  * {
  *   // ...
  * } @endcode
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * boost::asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the socket's @c async_connect operation.
  */
-template <typename Protocol, typename Executor,
-    typename Iterator, typename IteratorConnectHandler>
-BOOST_ASIO_INITFN_RESULT_TYPE(IteratorConnectHandler,
+template <typename Protocol, typename Executor, typename Iterator,
+    BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
+      Iterator)) IteratorConnectHandler
+        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(Executor)>
+BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectHandler,
     void (boost::system::error_code, Iterator))
 async_connect(basic_socket<Protocol, Executor>& s, Iterator begin, Iterator end,
-    BOOST_ASIO_MOVE_ARG(IteratorConnectHandler) handler);
+    BOOST_ASIO_MOVE_ARG(IteratorConnectHandler) handler
+      BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(Executor));
 
 /// Asynchronously establishes a socket connection by trying each endpoint in a
 /// sequence.
@@ -871,16 +910,30 @@ async_connect(basic_socket<Protocol, Executor>& s, Iterator begin, Iterator end,
  *     std::cout << "Connected to: " << endpoint << std::endl;
  *   }
  * } @endcode
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * boost::asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the socket's @c async_connect operation.
  */
-template <typename Protocol, typename Executor, typename EndpointSequence,
-    typename ConnectCondition, typename RangeConnectHandler>
-BOOST_ASIO_INITFN_RESULT_TYPE(RangeConnectHandler,
+template <typename Protocol, typename Executor,
+    typename EndpointSequence, typename ConnectCondition,
+    BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
+      typename Protocol::endpoint)) RangeConnectHandler
+        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(Executor)>
+BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(RangeConnectHandler,
     void (boost::system::error_code, typename Protocol::endpoint))
 async_connect(basic_socket<Protocol, Executor>& s,
     const EndpointSequence& endpoints, ConnectCondition connect_condition,
-    BOOST_ASIO_MOVE_ARG(RangeConnectHandler) handler,
-    typename enable_if<is_endpoint_sequence<
-        EndpointSequence>::value>::type* = 0);
+    BOOST_ASIO_MOVE_ARG(RangeConnectHandler) handler
+      BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(Executor),
+    typename constraint<is_endpoint_sequence<
+        EndpointSequence>::value>::type = 0);
 
 #if !defined(BOOST_ASIO_NO_DEPRECATED)
 /// (Deprecated: Use range overload.) Asynchronously establishes a socket
@@ -928,15 +981,29 @@ async_connect(basic_socket<Protocol, Executor>& s,
  * @note This overload assumes that a default constructed object of type @c
  * Iterator represents the end of the sequence. This is a valid assumption for
  * iterator types such as @c boost::asio::ip::tcp::resolver::iterator.
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * boost::asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the socket's @c async_connect operation.
  */
-template <typename Protocol, typename Executor, typename Iterator,
-    typename ConnectCondition, typename IteratorConnectHandler>
-BOOST_ASIO_INITFN_RESULT_TYPE(IteratorConnectHandler,
+template <typename Protocol, typename Executor,
+    typename Iterator, typename ConnectCondition,
+    BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
+      Iterator)) IteratorConnectHandler
+        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(Executor)>
+BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectHandler,
     void (boost::system::error_code, Iterator))
 async_connect(basic_socket<Protocol, Executor>& s, Iterator begin,
     ConnectCondition connect_condition,
-    BOOST_ASIO_MOVE_ARG(IteratorConnectHandler) handler,
-    typename enable_if<!is_endpoint_sequence<Iterator>::value>::type* = 0);
+    BOOST_ASIO_MOVE_ARG(IteratorConnectHandler) handler
+      BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(Executor),
+    typename constraint<!is_endpoint_sequence<Iterator>::value>::type = 0);
 #endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 /// Asynchronously establishes a socket connection by trying each endpoint in a
@@ -1036,14 +1103,28 @@ async_connect(basic_socket<Protocol, Executor>& s, Iterator begin,
  *     std::cout << "Connected to: " << i->endpoint() << std::endl;
  *   }
  * } @endcode
+ *
+ * @par Per-Operation Cancellation
+ * This asynchronous operation supports cancellation for the following
+ * boost::asio::cancellation_type values:
+ *
+ * @li @c cancellation_type::terminal
+ *
+ * @li @c cancellation_type::partial
+ *
+ * if they are also supported by the socket's @c async_connect operation.
  */
-template <typename Protocol, typename Executor, typename Iterator,
-    typename ConnectCondition, typename IteratorConnectHandler>
-BOOST_ASIO_INITFN_RESULT_TYPE(IteratorConnectHandler,
+template <typename Protocol, typename Executor,
+    typename Iterator, typename ConnectCondition,
+    BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
+      Iterator)) IteratorConnectHandler
+        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(Executor)>
+BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectHandler,
     void (boost::system::error_code, Iterator))
 async_connect(basic_socket<Protocol, Executor>& s, Iterator begin,
     Iterator end, ConnectCondition connect_condition,
-    BOOST_ASIO_MOVE_ARG(IteratorConnectHandler) handler);
+    BOOST_ASIO_MOVE_ARG(IteratorConnectHandler) handler
+      BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(Executor));
 
 /*@}*/
 

@@ -69,7 +69,7 @@ build of the libraries.]
 these libraries installed, and can generally just link against
 -lboost_math_tr1 etc.]
 
-[h4 Usage Recomendations]
+[h4 Usage Recommendations]
 
 This library now presents the user with a choice:
 
@@ -384,7 +384,6 @@ return type determined by the __arg_promotion_rules.
    float hypergf(float a, float b, float c, float x);
    long double hypergl(long double a, long double b, long double c,
    long double x);
-
 
 ]
 

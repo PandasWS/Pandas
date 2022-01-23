@@ -35,8 +35,20 @@ _http://en.wikipedia.org/wiki/Gulliver's_Travels[Gulliver's Travels]_, where
 rival kingdoms opened their soft-boiled eggs at different ends. Wikipedia has an
 extensive description of https://en.wikipedia.org/wiki/Endianness[Endianness].
 
-The standard integral types ({cpp}std 3.9.1) except `bool` are collectively
-called the *endian types*.
+The standard integral types ({cpp}std [basic.fundamental]) except `bool` and
+the scoped enumeration types ({cpp}std [dcl.enum]) are collectively called the
+*endian types*. In the absence of padding bits, which is true on the platforms
+supported by the Boost.Endian library, endian types have the property that all
+of their bit patterns are valid values, which means that when an object of an
+endian type has its constituent bytes reversed, the result is another valid value.
+This allows `endian_reverse` to take and return by value.
+
+Other built-in types, such as `bool`, `float`, or unscoped enumerations, do not
+have the same property, which means that reversing their constituent bytes may
+produce an invalid value, leading to undefined behavior. These types are therefore
+disallowed in `endian_reverse`, but are still allowed in `endian_reverse_inplace`.
+Even if an object becomes invalid as a result of reversing its bytes, as long as
+its value is never read, there would be no undefined behavior.
 
 ### Header `<boost/endian/conversion.hpp>` Synopsis
 
@@ -56,6 +68,8 @@ namespace endian
     little = `see below`,
   };
 
+  // Byte reversal functions
+
   template <class Endian>
     Endian endian_reverse(Endian x) noexcept;
 
@@ -74,8 +88,13 @@ namespace endian
     EndianReversible conditional_reverse(EndianReversible x,
       order order1, order order2) noexcept;
 
+  // In-place byte reversal functions
+
   template <class EndianReversible>
     void endian_reverse_inplace(EndianReversible& x) noexcept;
+
+  template<class EndianReversibleInplace, std::size_t N>
+    void endian_reverse_inplace(EndianReversibleInplace (&x)[N]) noexcept;
 
   template <class EndianReversibleInplace>
     void big_to_native_inplace(EndianReversibleInplace& x) noexcept;
@@ -92,11 +111,87 @@ namespace endian
    void conditional_reverse_inplace(EndianReversibleInplace& x,
      order order1, order order2) noexcept;
 
+  // Generic load and store functions
+
   template<class T, std::size_t N, order Order>
     T endian_load( unsigned char const * p ) noexcept;
 
   template<class T, std::size_t N, order Order>
     void endian_store( unsigned char * p, T const & v ) noexcept;
+
+  // Convenience load functions
+
+  boost::int16_t load_little_s16( unsigned char const * p ) noexcept;
+  boost::uint16_t load_little_u16( unsigned char const * p ) noexcept;
+  boost::int16_t load_big_s16( unsigned char const * p ) noexcept;
+  boost::uint16_t load_big_u16( unsigned char const * p ) noexcept;
+
+  boost::int32_t load_little_s24( unsigned char const * p ) noexcept;
+  boost::uint32_t load_little_u24( unsigned char const * p ) noexcept;
+  boost::int32_t load_big_s24( unsigned char const * p ) noexcept;
+  boost::uint32_t load_big_u24( unsigned char const * p ) noexcept;
+
+  boost::int32_t load_little_s32( unsigned char const * p ) noexcept;
+  boost::uint32_t load_little_u32( unsigned char const * p ) noexcept;
+  boost::int32_t load_big_s32( unsigned char const * p ) noexcept;
+  boost::uint32_t load_big_u32( unsigned char const * p ) noexcept;
+
+  boost::int64_t load_little_s40( unsigned char const * p ) noexcept;
+  boost::uint64_t load_little_u40( unsigned char const * p ) noexcept;
+  boost::int64_t load_big_s40( unsigned char const * p ) noexcept;
+  boost::uint64_t load_big_u40( unsigned char const * p ) noexcept;
+
+  boost::int64_t load_little_s48( unsigned char const * p ) noexcept;
+  boost::uint64_t load_little_u48( unsigned char const * p ) noexcept;
+  boost::int64_t load_big_s48( unsigned char const * p ) noexcept;
+  boost::uint64_t load_big_u48( unsigned char const * p ) noexcept;
+
+  boost::int64_t load_little_s56( unsigned char const * p ) noexcept;
+  boost::uint64_t load_little_u56( unsigned char const * p ) noexcept;
+  boost::int64_t load_big_s56( unsigned char const * p ) noexcept;
+  boost::uint64_t load_big_u56( unsigned char const * p ) noexcept;
+
+  boost::int64_t load_little_s64( unsigned char const * p ) noexcept;
+  boost::uint64_t load_little_u64( unsigned char const * p ) noexcept;
+  boost::int64_t load_big_s64( unsigned char const * p ) noexcept;
+  boost::uint64_t load_big_u64( unsigned char const * p ) noexcept;
+
+  // Convenience store functions
+
+  void store_little_s16( unsigned char * p, boost::int16_t v ) noexcept;
+  void store_little_u16( unsigned char * p, boost::uint16_t v ) noexcept;
+  void store_big_s16( unsigned char * p, boost::int16_t v ) noexcept;
+  void store_big_u16( unsigned char * p, boost::uint16_t v ) noexcept;
+
+  void store_little_s24( unsigned char * p, boost::int32_t v ) noexcept;
+  void store_little_u24( unsigned char * p, boost::uint32_t v ) noexcept;
+  void store_big_s24( unsigned char * p, boost::int32_t v ) noexcept;
+  void store_big_u24( unsigned char * p, boost::uint32_t v ) noexcept;
+
+  void store_little_s32( unsigned char * p, boost::int32_t v ) noexcept;
+  void store_little_u32( unsigned char * p, boost::uint32_t v ) noexcept;
+  void store_big_s32( unsigned char * p, boost::int32_t v ) noexcept;
+  void store_big_u32( unsigned char * p, boost::uint32_t v ) noexcept;
+
+  void store_little_s40( unsigned char * p, boost::int64_t v ) noexcept;
+  void store_little_u40( unsigned char * p, boost::uint64_t v ) noexcept;
+  void store_big_s40( unsigned char * p, boost::int64_t v ) noexcept;
+  void store_big_u40( unsigned char * p, boost::uint64_t v ) noexcept;
+
+  void store_little_s48( unsigned char * p, boost::int64_t v ) noexcept;
+  void store_little_u48( unsigned char * p, boost::uint64_t v ) noexcept;
+  void store_big_s48( unsigned char * p, boost::int64_t v ) noexcept;
+  void store_big_u48( unsigned char * p, boost::uint64_t v ) noexcept;
+
+  void store_little_s56( unsigned char * p, boost::int64_t v ) noexcept;
+  void store_little_u56( unsigned char * p, boost::uint64_t v ) noexcept;
+  void store_big_s56( unsigned char * p, boost::int64_t v ) noexcept;
+  void store_big_u56( unsigned char * p, boost::uint64_t v ) noexcept;
+
+  void store_little_s64( unsigned char * p, boost::int64_t v ) noexcept;
+  void store_little_u64( unsigned char * p, boost::uint64_t v ) noexcept;
+  void store_big_s64( unsigned char * p, boost::int64_t v ) noexcept;
+  void store_big_u64( unsigned char * p, boost::uint64_t v ) noexcept;
 
 } // namespace endian
 } // namespace boost
@@ -136,37 +231,40 @@ reversed.
 
 If `T` is a class type, the function:
 
-* Returns the value of `x` with the order of bytes reversed for all data members
-of types or arrays of types that meet the `EndianReversible` requirements, and;
-* Is a non-member function in the same namespace as `T` that can be found by
-argument dependent lookup (ADL).
+* Is expected to be implemented by the user, as a non-member function in the same
+  namespace as `T` that can be found by argument dependent lookup (ADL);
+* Should return the value of `x` with the order of bytes reversed for all data members
+  of types or arrays of types that meet the `EndianReversible` requirements.
 |===
 
 [#conversion_endianreversibleinplace]
-##### EndianReversibleInplace requirements (in addition to `CopyConstructible`)
+##### EndianReversibleInplace requirements
 
 [%header,cols=2*]
 |===
 |Expression |Requirements
 |`endian_reverse_inplace(mlx)`
-a|`T` is an endian type or a class type.
+a|`T` is an integral type, an enumeration type, `float`, `double`, a class type,
+or an array type.
 
-If `T` is an endian type, reverses the order of bytes in `mlx`.
+If `T` is not a class type or an array type, reverses the order of bytes in `mlx`.
 
 If `T` is a class type, the function:
 
-* Reverses the order of bytes of all data members of `mlx` that have types or
-arrays of types that meet the `EndianReversible` or `EndianReversibleInplace`
-requirements, and;
-* Is a non-member function in the same namespace as `T` that can be found by
-argument dependent lookup (ADL).
+* Is expected to be implemented by the user, as a non-member function in the same
+  namespace as `T` that can be found by argument dependent lookup (ADL);
+* Should reverse the order of bytes of all data members of `mlx` that have types or
+  arrays of types that meet the `EndianReversible` or `EndianReversibleInplace`
+  requirements.
+
+If `T` is an array type, calls `endian_reverse_inplace` on each element.
 |===
 
 NOTE: Because there is a function template for `endian_reverse_inplace` that
-calls `endian_reverse`, only `endian_reverse` is required for a user-defined
-type to meet the `EndianReversibleInplace` requirements. Although User-defined
-types are not required to supply an `endian_reverse_inplace` function, doing so
-may improve efficiency.
+calls `endian_reverse` for class types, only `endian_reverse` is required for a
+user-defined type to meet the `EndianReversibleInplace` requirements. Although
+user-defined types are not required to supply an `endian_reverse_inplace` function,
+doing so may improve efficiency.
 
 #### Customization points for user-defined types (UDTs)
 
@@ -184,7 +282,7 @@ perform reversal of endianness if needed by making an unqualified call to
 
 See `example/udt_conversion_example.cpp` for an example user-defined type.
 
-### Functions
+### Byte Reversal Functions
 
 ```
 template <class Endian>
@@ -193,7 +291,8 @@ Endian endian_reverse(Endian x) noexcept;
 [none]
 * {blank}
 +
-Requires:: `Endian` must be a standard integral type that is not `bool`.
+Requires:: `Endian` must be a standard integral type that is not `bool`,
+  or a scoped enumeration type.
 Returns:: `x`, with the order of its constituent bytes reversed.
 
 ```
@@ -251,7 +350,10 @@ EndianReversible conditional_reverse(EndianReversible x,
 [none]
 * {blank}
 +
-Returns:: `order1 == order2? x: endian_reverse(x)`.
+Returns::
+  `order1 == order2? x: endian_reverse(x)`.
+
+### In-place Byte Reversal Functions
 
 ```
 template <class EndianReversible>
@@ -260,7 +362,20 @@ void endian_reverse_inplace(EndianReversible& x) noexcept;
 [none]
 * {blank}
 +
-Effects:: `x = endian_reverse(x)`.
+Effects:: When `EndianReversible` is a class type,
+  `x = endian_reverse(x);`. When `EndianReversible` is an integral
+  type, an enumeration type, `float`, or `double`, reverses the
+  order of the constituent bytes of `x`. Otherwise, the program is
+  ill-formed.
+
+```
+template<class EndianReversibleInplace, std::size_t N>
+void endian_reverse_inplace(EndianReversibleInplace (&x)[N]) noexcept;
+```
+[none]
+* {blank}
++
+Effects:: Calls `endian_reverse_inplace(x[i])` for `i` from `0` to `N-1`.
 
 ```
 template <class EndianReversibleInplace>
@@ -316,7 +431,10 @@ void conditional_reverse_inplace(EndianReversibleInplace& x,
 [none]
 * {blank}
 +
-Effects:: If `order1 == order2` then `endian_reverse_inplace(x)`.
+Effects::
+  If `order1 == order2` then `endian_reverse_inplace(x)`.
+
+### Generic Load and Store Functions
 
 ```
 template<class T, std::size_t N, order Order>
@@ -350,21 +468,105 @@ Effects:: Writes to `p` the `N` least significant bytes from the object
   representation of `v`, in forward or reverse order depending on whether
   `Order` matches the native endianness or not.
 
+### Convenience Load Functions
+
+```
+inline boost::intM_t load_little_sN( unsigned char const * p ) noexcept;
+```
+[none]
+* {blank}
++
+Reads an N-bit signed little-endian integer from `p`.
++
+Returns:: `endian_load<boost::intM_t, N/8, order::little>( p )`.
+
+```
+inline boost::uintM_t load_little_uN( unsigned char const * p ) noexcept;
+```
+[none]
+* {blank}
++
+Reads an N-bit unsigned little-endian integer from `p`.
++
+Returns:: `endian_load<boost::uintM_t, N/8, order::little>( p )`.
+
+```
+inline boost::intM_t load_big_sN( unsigned char const * p ) noexcept;
+```
+[none]
+* {blank}
++
+Reads an N-bit signed big-endian integer from `p`.
++
+Returns:: `endian_load<boost::intM_t, N/8, order::big>( p )`.
+
+```
+inline boost::uintM_t load_big_uN( unsigned char const * p ) noexcept;
+```
+[none]
+* {blank}
++
+Reads an N-bit unsigned big-endian integer from `p`.
++
+Returns::
+  `endian_load<boost::uintM_t, N/8, order::big>( p )`.
+
+### Convenience Store Functions
+
+```
+inline void store_little_sN( unsigned char * p, boost::intM_t v ) noexcept;
+```
+[none]
+* {blank}
++
+Writes an N-bit signed little-endian integer to `p`.
++
+Effects:: `endian_store<boost::intM_t, N/8, order::little>( p, v )`.
+
+```
+inline void store_little_uN( unsigned char * p, boost::uintM_t v ) noexcept;
+```
+[none]
+* {blank}
++
+Writes an N-bit unsigned little-endian integer to `p`.
++
+Effects:: `endian_store<boost::uintM_t, N/8, order::little>( p, v )`.
+
+```
+inline void store_big_sN( unsigned char * p, boost::intM_t v ) noexcept;
+```
+[none]
+* {blank}
++
+Writes an N-bit signed big-endian integer to `p`.
++
+Effects:: `endian_store<boost::intM_t, N/8, order::big>( p, v )`.
+
+```
+inline void store_big_uN( unsigned char * p, boost::uintM_t v ) noexcept;
+```
+[none]
+* {blank}
++
+Writes an N-bit unsigned big-endian integer to `p`.
++
+Effects::
+  `endian_store<boost::uintM_t, N/8, order::big>( p, v )`.
+
 ## FAQ
 
 See the <<overview_faq,Overview FAQ>> for a library-wide FAQ.
 
-*Why are both value returning and modify-in-place functions provided?*
-
-* Returning the result by value is the standard C and {cpp} idiom for functions
+Why are both value returning and modify-in-place functions provided?::
+Returning the result by value is the standard C and {cpp} idiom for functions
 that compute a value from an argument. Modify-in-place functions allow cleaner
 code in many real-world endian use cases and are more efficient for user-defined
 types that have members such as string data that do not need to be reversed.
 Thus both forms are provided.
 
-*Why not use the Linux names (htobe16, htole16, be16toh, le16toh, etc.) ?*
-
-* Those names are non-standard and vary even between POSIX-like operating
+Why not use the Linux names (htobe16, htole16, be16toh, le16toh, etc.) ?::
+Those names are non-standard and vary even between POSIX-like operating
 systems. A {cpp} library TS was going to use those names, but found they were
 sometimes implemented as macros. Since macros do not respect scoping and
 namespace rules, to use them would be very error prone.

@@ -57,7 +57,7 @@ main(int argc, char *argv[])
     int error_count = 0;
     int config_file_error_count = 0;
     try {
-    // analyze the command line options and arguments
+        // analyze the command line options and arguments
         po::options_description desc_cmdline ("Options allowed on the command line");
         desc_cmdline.add_options()
             ("help,h", "print out program usage (this message)")
@@ -70,23 +70,23 @@ main(int argc, char *argv[])
             ("debug,d", po::value<int>(), "set the debug level (0...9)")
         ;
 
-    // Hidden options, will be used in in config file analysis to allow to
-    // recognize positional arguments, will not be shown to the user.
+        // Hidden options, will be used in in config file analysis to allow to
+        // recognize positional arguments, will not be shown to the user.
         po::options_description desc_hidden("Hidden options");
         desc_hidden.add_options()
             ("input", po::value<std::vector<std::string> >()->composing(),
                 "inputfile")
         ;
 
-    // this is the test application object
+        // this is the test application object
         po::variables_map vm;
         testwave_app app(vm);
 
-    // all command line and config file options
+        // all command line and config file options
         po::options_description cmdline_options;
         cmdline_options.add(desc_cmdline).add(app.common_options());
 
-    // parse command line
+        // parse command line
         // (the (int) cast is to make the True64 compiler happy)
         using namespace boost::program_options::command_line_style;
         po::parsed_options opts(po::parse_command_line(argc, argv,
@@ -95,7 +95,7 @@ main(int argc, char *argv[])
         po::store(opts, vm);
         po::notify(vm);
 
-    // ... act as required
+        // ... act as required
         if (vm.count("help")) {
             po::options_description desc_help (
                 "Usage: testwave [options] [@config-file(s)] file(s)");
@@ -104,7 +104,7 @@ main(int argc, char *argv[])
             return 0;
         }
 
-    // debug flag
+        // debug flag
         if (vm.count("debug")) {
             int debug_level = vm["debug"].as<int>();
             if (debug_level < 0 || debug_level > 9) {
@@ -126,10 +126,10 @@ main(int argc, char *argv[])
             return app.print_copyright();
         }
 
-    // If there is specified at least one config file, parse it and add the
-    // options to the main variables_map
-    // Each of the config files is parsed into a separate variables_map to
-    // allow correct paths handling.
+        // If there is specified at least one config file, parse it and add the
+        // options to the main variables_map
+        // Each of the config files is parsed into a separate variables_map to
+        // allow correct paths handling.
         int input_count = 0;
         if (vm.count("config-file")) {
             std::vector<std::string> const &cfg_files =
@@ -148,8 +148,8 @@ main(int argc, char *argv[])
                     std::cerr << "reading config_file: " << *cit << std::endl;
                 }
 
-            // parse a single config file and store the results, config files
-            // may only contain --input and positional arguments
+                // parse a single config file and store the results, config files
+                // may only contain --input and positional arguments
                 po::variables_map cvm;
                 if (!cmd_line_utils::read_config_file(app.get_debuglevel(),
                     *cit, desc_hidden, cvm))
@@ -166,7 +166,7 @@ main(int argc, char *argv[])
                               << std::endl;
                 }
 
-            // correct the paths parsed into this variables_map
+                // correct the paths parsed into this variables_map
                 if (cvm.count("input")) {
                     std::vector<std::string> const &infiles =
                         cvm["input"].as<std::vector<std::string> >();
@@ -180,7 +180,7 @@ main(int argc, char *argv[])
                     for (std::vector<std::string>::const_iterator iit = infiles.begin();
                          iit != iend; ++iit)
                     {
-                    // correct the file name (pre-pend the config file path)
+                        // correct the file name (pre-pend the config file path)
                         fs::path cfgpath = boost::wave::util::complete_path(
                             boost::wave::util::create_path(*cit),
                             boost::wave::util::current_path());
@@ -195,7 +195,7 @@ main(int argc, char *argv[])
                                       << std::endl;
                         }
 
-                    // execute this unit test case
+                        // execute this unit test case
                         if (!app.test_a_file(
                               boost::wave::util::native_file_string(filepath)))
                         {
@@ -224,7 +224,7 @@ main(int argc, char *argv[])
             }
         }
 
-    // extract the arguments from the parsed command line
+        // extract the arguments from the parsed command line
         std::vector<po::option> arguments;
         std::remove_copy_if(opts.options.begin(), opts.options.end(),
             std::back_inserter(arguments), cmd_line_utils::is_argument());
@@ -234,7 +234,7 @@ main(int argc, char *argv[])
                       << " arguments" << std::endl;
         }
 
-    // iterate over remaining arguments
+        // iterate over remaining arguments
         std::vector<po::option>::const_iterator arg_end = arguments.end();
         for (std::vector<po::option>::const_iterator arg = arguments.begin();
              arg != arg_end; ++arg)
@@ -269,7 +269,7 @@ main(int argc, char *argv[])
             ++input_count;
         }
 
-    // print a message if no input is given
+        // print a message if no input is given
         if (0 == input_count) {
             std::cerr
                 << "testwave: no input file specified, "

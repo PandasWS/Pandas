@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Stack allocation</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
-<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Fiber">
-<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Fiber">
+<link rel="home" href="../index.html" title="Chapter 1. Fiber">
+<link rel="up" href="../index.html" title="Chapter 1. Fiber">
 <link rel="prev" href="scheduling.html" title="Scheduling">
 <link rel="next" href="stack/valgrind.html" title="Support for valgrind">
 </head>
@@ -26,7 +26,10 @@
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="fiber.stack"></a><a name="stack"></a><a class="link" href="stack.html" title="Stack allocation">Stack allocation</a>
 </h2></div></div></div>
-<div class="toc"><dl class="toc"><dt><span class="section"><a href="stack/valgrind.html">Support for valgrind</a></span></dt></dl></div>
+<div class="toc"><dl class="toc">
+<dt><span class="section"><a href="stack/valgrind.html">Support for valgrind</a></span></dt>
+<dt><span class="section"><a href="stack/sanitizers.html">Support for sanitizers</a></span></dt>
+</dl></div>
 <p>
       A <a class="link" href="fiber_mgmt/fiber.html#class_fiber"><code class="computeroutput">fiber</code></a> uses internally an __econtext__ which manages a set of registers
       and a stack. The memory used by the stack is allocated/deallocated via a <span class="emphasis"><em>stack_allocator</em></span>
@@ -337,7 +340,7 @@
             determines the number of stacks to request from the system the first
             time that <code class="computeroutput"><span class="special">*</span><span class="keyword">this</span></code>
             needs to allocate system memory. The third argument <code class="computeroutput"><span class="identifier">max_size</span></code>
-            controls how much memory might be allocated for stacks &#8212; a value of zero
+            controls how much memory might be allocated for stacks — a value of zero
             means no upper limit.
           </p></dd>
 </dl>
@@ -626,7 +629,7 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2013 Oliver Kowalke<p>
+<td align="right"><div class="copyright-footer">Copyright © 2013 Oliver Kowalke<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

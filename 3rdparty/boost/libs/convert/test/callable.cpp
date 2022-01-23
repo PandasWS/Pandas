@@ -1,5 +1,5 @@
 // Boost.Convert test and usage example
-// Copyright (c) 2009-2016 Vladimir Batov.
+// Copyright (c) 2009-2020 Vladimir Batov.
 // Use, modification and distribution are subject to the Boost Software License,
 // Version 1.0. See http://www.boost.org/LICENSE_1_0.txt.
 
@@ -11,9 +11,7 @@ int main(int, char const* []) { return 0; }
 
 #include <boost/convert.hpp>
 #include <boost/convert/lexical_cast.hpp>
-#include <boost/detail/lightweight_test.hpp>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
+#include <functional>
 
 using std::string;
 using boost::convert;
@@ -73,7 +71,7 @@ template<> void double_only::operator()<double>(double, boost::optional<string>&
 int
 main(int, char const* [])
 {
-    typedef boost::function<void (string const& value_in, boost::optional<int>&)> boost_func;
+    typedef std::function<void (string const& value_in, boost::optional<int>&)> boost_func;
 
     char const* const str = "-12";
 
@@ -81,13 +79,13 @@ main(int, char const* [])
     //[callable_example2
     int v01 = convert<int>(str, plain_old_func).value_or(-1);
     //]
-    // Testing boost::function-based converter.
+    // Testing std::function-based converter.
     int v02 = convert<int>(str, boost_func(plain_old_func)).value_or(-1);
-    // Testing crazy boost::bind-based converter.
+    // Testing crazy std::bind-based converter.
     //[callable_example3
     int v03 = convert<int>(str,
-                  boost::bind(assign<int>, _2,
-                      boost::bind(lexical_cast<int, string>, _1))).value_or(-1);
+                  std::bind(assign<int>, std::placeholders::_2,
+                      std::bind(boost::lexical_cast<int, string>, std::placeholders::_1))).value_or(-1);
     //]
     BOOST_TEST(v01 == -12);
     BOOST_TEST(v02 == -12);

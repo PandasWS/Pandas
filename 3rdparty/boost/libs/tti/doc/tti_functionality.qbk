@@ -12,8 +12,12 @@ out at compile time are:
 
 * Does it have a nested type with a particular name ?
 * Does it have a nested type with a particular name which fulfills some other possibility for that nested type.
+* Does it have a particular user-defined nested type (struct/class, union, or enumaeration) with a particular name ?
+* Does it have a particular user-defined nested type with a particular name which fulfills some other possibility for that nested type.
 * Does it have a nested class template with a particular name ?
 * Does it have a nested class template with a particular name and a particular signature ?
+* Does it have a nested member function template with a particular name and a particular instantiated signature ?
+* Does it have a nested static function template with a particular name and a particular instantiated signature ?
 * Does it have a member function with a particular name and a particular signature ?
 * Does it have member data with a particular name and of a particular type ?
 * Does it have a static member function with a particular name and a particular signature ?
@@ -117,7 +121,7 @@ When the end-user uses the TTI macros to generate a metafunction for introspecti
 element of a particular type, that metafunction can be re-used with any combination of valid 
 template parameters which involve the same type of inner element of a particular name. 
 
-As one example of this let's consider two different types called 
+As one example of this let's consider two different user-defined types called 
 'AType' and 'BType', for each of which we want to determine whether an inner type called 
 'InnerType' exists. For both these types we need only generate a single macro metafunction in 
 the current scope by using:
@@ -135,10 +139,11 @@ type which is nested within 'AType'.
 # 'has_type_InnerType<BType>::value' is a compile time constant telling us whether 'InnerType' is a 
 type which is nested within 'BType'.
 
-As another example of metafunction reuse let's consider a single type, called 'CType', for which we want to 
-determine if it has either of two overloaded member functions with the same name of 'AMemberFunction' 
-but with the different function signatures of 'int (int)' and 'double (long)'. For both these 
-member functions we need only generate a single macro metafunction in the current scope by using:
+As another example of metafunction reuse let's consider a single user-defined type, called 'CType',
+for which we want to determine if it has either of two overloaded member functions with the same name
+of 'AMemberFunction' but with the different function signatures of 'int (int)' and 'double (long)'.
+For both these member functions we need only generate a single macro metafunction in the current scope
+by using:
 
  BOOST_TTI_HAS_MEMBER_FUNCTION(AMemberFunction)
 
@@ -173,7 +178,7 @@ more than one translation unit, which is the case for namespaces and the global 
 
 Because of ODR, and the way that the simple macro form metafunction name is directly dependent 
 on the inner element and name of the element being introspected, it is the responsibility of the 
-programmer using the TTI macros to generate metafunctions to avoid ODR within a module 
+programmer, using the TTI macros to generate metafunctions, to avoid ODR within a module 
 ( application or library ). There are a few general methods for doing this:
 
 # Create unique namespace names in which to generate the macro metafunctions and/or generate 
@@ -199,4 +204,3 @@ out of bounds for the programmer using TTI.
 [endsect]
 
 [endsect]
- 

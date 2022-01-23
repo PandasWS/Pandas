@@ -13,11 +13,11 @@
 #include <boost/config.hpp>
 
 // For Borland, act like BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS is defined
-#if defined (__BORLANDC__) && (__BORLANDC__ <= 0x570) && !defined(BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS)
+#if defined (BOOST_BORLANDC) && (BOOST_BORLANDC <= 0x570) && !defined(BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS)
 #  define BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
 #endif
 
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/property_map/dynamic_property_map.hpp>
 #include <boost/property_map/property_map.hpp>
@@ -30,7 +30,7 @@
 // WARNING: This code leaks memory.  For testing purposes only!
 // WARNING: This code uses library internals. For testing purposes only!
 boost::shared_ptr<boost::dynamic_property_map>
-string2string_gen(const std::string& name,
+string2string_gen(const std::string&,
                   const boost::any&,
                   const boost::any&) {
   typedef std::map<std::string,std::string> map_t;
@@ -51,7 +51,7 @@ string2string_gen(const std::string& name,
 }
 
 
-int test_main(int,char**) {
+int main() {
 
   // build property maps using associative_property_map
 
@@ -81,30 +81,30 @@ int test_main(int,char**) {
   using boost::type;
   // Get tests
   {
-    BOOST_CHECK(get("int",properties,std::string("one")) == "1");
+    BOOST_TEST(get("int",properties,std::string("one")) == "1");
 #ifndef BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
-    BOOST_CHECK(boost::get<int>("int",properties,std::string("one")) == 1);
+    BOOST_TEST(boost::get<int>("int",properties,std::string("one")) == 1);
 #endif
-    BOOST_CHECK(get("int",properties,std::string("one"), type<int>()) == 1);
-    BOOST_CHECK(get("double",properties,5.3) == "five point three");
+    BOOST_TEST(get("int",properties,std::string("one"), type<int>()) == 1);
+    BOOST_TEST(get("double",properties,5.3) == "five point three");
   }
 
   // Put tests
   {
     put("int",properties,std::string("five"),6);
-    BOOST_CHECK(get("int",properties,std::string("five")) == "6");
+    BOOST_TEST(get("int",properties,std::string("five")) == "6");
     put("int",properties,std::string("five"),std::string("5"));
 #ifndef BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
-    BOOST_CHECK(get<int>("int",properties,std::string("five")) == 5);
+    BOOST_TEST(get<int>("int",properties,std::string("five")) == 5);
 #endif
-    BOOST_CHECK(get("int",properties,std::string("five"),type<int>()) == 5);
+    BOOST_TEST(get("int",properties,std::string("five"),type<int>()) == 5);
     put("double",properties,3.14,std::string("3.14159"));
-    BOOST_CHECK(get("double",properties,3.14) == "3.14159");
+    BOOST_TEST(get("double",properties,3.14) == "3.14159");
     put("double",properties,3.14,std::string("pi"));
 #ifndef BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
-    BOOST_CHECK(get<std::string>("double",properties,3.14) == "pi");
+    BOOST_TEST(get<std::string>("double",properties,3.14) == "pi");
 #endif
-    BOOST_CHECK(get("double",properties,3.14,type<std::string>()) == "pi");
+    BOOST_TEST(get("double",properties,3.14,type<std::string>()) == "pi");
   }
 
   // Nonexistent property
@@ -124,15 +124,15 @@ int test_main(int,char**) {
   {
     boost::dynamic_properties props(&string2string_gen);
     put("nada",props,std::string("3.14"),std::string("pi"));
-    BOOST_CHECK(get("nada",props,std::string("3.14"))  == "pi");
+    BOOST_TEST(get("nada",props,std::string("3.14"))  == "pi");
   }
 
   // Use the ignore_other_properties generator
   {
     boost::dynamic_properties props(&boost::ignore_other_properties);
     bool value = put("nada",props,std::string("3.14"),std::string("pi"));
-    BOOST_CHECK(value == false);
+    BOOST_TEST(value == false);
   }
  
-  return boost::exit_success;
+  return boost::report_errors();
 }

@@ -75,13 +75,11 @@ test-suite phoenix_function :
     [ run function/lazy_templated_struct_tests.cpp ]
 #    [ run function/lazy_thunk_tests.cpp ]
     [ run function/lazy_operator_tests.cpp ]
-#    [ run function/function_tests_phx2.cpp ]
     ;
 
 test-suite phoenix_bind :
     [ run bind/bind_function_tests.cpp ]
     [ run bind/bind_function_object_tests.cpp ]
-#    [ run bind/bind_function_object_tests_phx2.cpp ]
     [ run bind/bind_member_function_tests.cpp ]
     [ run bind/bind_member_variable_tests.cpp ]
     [ run bind/bug5782.cpp ]
@@ -146,7 +144,6 @@ test-suite phoenix_scope :
     [ run scope/lambda_tests21.cpp ]
     [ run scope/lambda_tests22.cpp ]
     [ run scope/lambda_tests23.cpp ]
-#    [ run scope/lambda_tests_phx2.cpp ]
     [ run scope/let_tests.cpp ]
     [ run scope/let_tests_113.cpp ]
 #    [ run scope/let_tests_113a.cpp ]
@@ -214,6 +211,28 @@ test-suite phoenix_boost_bind_compatibility :
 #    [ run boost_bind_compatibility/bind_void_dm_test.cpp ]
     ;
 
+test-suite phoenix_bll_compatibility :
+    [ run bll_compatibility/algorithm_test.cpp ]
+    [ run bll_compatibility/bind_tests_advanced.cpp ]
+#    [ run bll_compatibility/bind_tests_simple.cpp ]
+#    [ run bll_compatibility/bind_tests_simple_f_refs.cpp ]
+#    [ run bll_compatibility/bll_and_function.cpp ]
+#    [ run bll_compatibility/cast_test.cpp ]
+#    [ run bll_compatibility/constructor_tests.cpp ]
+#    [ run bll_compatibility/control_structures.cpp ]
+#    [ run bll_compatibility/exception_test.cpp ]
+#    [ run bll_compatibility/extending_rt_traits.cpp ]
+#    [ run bll_compatibility/is_instance_of_test.cpp ]
+#    [ run bll_compatibility/istreambuf_test.cpp ]
+#    [ run bll_compatibility/member_pointer_test.cpp ]
+#    [ run bll_compatibility/operator_tests_simple.cpp ]
+#    [ run bll_compatibility/phoenix_control_structures.cpp ]
+#    [ run bll_compatibility/result_of_tests.cpp ]
+#    [ run bll_compatibility/ret_test.cpp ]
+#    [ run bll_compatibility/rvalue_test.cpp ]
+#    [ run bll_compatibility/switch_construct.cpp ]
+    ;
+
 test-suite phoenix_regression :
     [ run regression/bug4853.cpp ]
     [ run regression/bug5626.cpp ]
@@ -261,7 +280,6 @@ test-suite phoenix_include :
     [ run include/core/terminal.cpp ]
  #   [ run include/core/bug7730.cpp ]
     [ run include/core/value.cpp ]
-    [ run include/core/visit_each.cpp ]
     [ run include/function/function.cpp : : : : function_function ]
     [ run include/function/lazy_headers.cpp ]
     [ run include/fusion/at.cpp ]

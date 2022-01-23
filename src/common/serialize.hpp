@@ -17,6 +17,7 @@
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/array.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/bitset.hpp>
@@ -29,7 +30,7 @@
 // 此处的疾风缓存版本会被纳入缓存散列的计算过程中
 // 注意: 变缓存版本会导致所有缓存过期
 //************************************
-#define BLASTCACHE_VERSION 20210727
+#define BLASTCACHE_VERSION 20220122
 
 //************************************
 // 若想启用二进制格式的缓存, 则启用此段代码(并禁用其他)

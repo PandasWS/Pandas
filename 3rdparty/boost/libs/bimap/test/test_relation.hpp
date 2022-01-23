@@ -15,8 +15,7 @@
 
 #include <boost/config.hpp>
 
-// Boost.Test
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 // Boost.MPL
 #include <boost/mpl/assert.hpp>
@@ -49,28 +48,28 @@ void test_relation_with_default_tags(Relation & rel,
 
     // It must work with normal tags
 
-    BOOST_CHECK( pair_by<member_at::left >(rel).first  == lv );
-    BOOST_CHECK( pair_by<member_at::left >(rel).second == rv );
+    BOOST_TEST( pair_by<member_at::left >(rel).first  == lv );
+    BOOST_TEST( pair_by<member_at::left >(rel).second == rv );
 
-    BOOST_CHECK( pair_by<member_at::right>(rel).first  == rv );
-    BOOST_CHECK( pair_by<member_at::right>(rel).second == lv );
+    BOOST_TEST( pair_by<member_at::right>(rel).first  == rv );
+    BOOST_TEST( pair_by<member_at::right>(rel).second == lv );
 
-    BOOST_CHECK( get<member_at::left >(rel) == rel.left  );
-    BOOST_CHECK( get<member_at::right>(rel) == rel.right );
+    BOOST_TEST( get<member_at::left >(rel) == rel.left  );
+    BOOST_TEST( get<member_at::right>(rel) == rel.right );
 
-    BOOST_CHECK(
+    BOOST_TEST(
         get<member_at::left >(pair_by<member_at::left >(rel)) == rel.left
     );
 
-    BOOST_CHECK(
+    BOOST_TEST(
         get<member_at::right>(pair_by<member_at::left >(rel)) == rel.right
     );
 
-    BOOST_CHECK(
+    BOOST_TEST(
         get<member_at::left >(pair_by<member_at::right>(rel)) == rel.left
     );
 
-    BOOST_CHECK(
+    BOOST_TEST(
         get<member_at::right>(pair_by<member_at::right>(rel)) == rel.right
     );
 
@@ -88,31 +87,31 @@ void test_relation_with_user_tags(Relation & rel,
 
     // And with users ones
 
-    BOOST_CHECK( pair_by<LeftTag >(rel).first   == lv );
-    BOOST_CHECK( pair_by<LeftTag >(rel).second  == rv );
+    BOOST_TEST( pair_by<LeftTag >(rel).first   == lv );
+    BOOST_TEST( pair_by<LeftTag >(rel).second  == rv );
 
-    BOOST_CHECK( pair_by<RightTag>(rel).first   == rv );
-    BOOST_CHECK( pair_by<RightTag>(rel).second  == lv );
+    BOOST_TEST( pair_by<RightTag>(rel).first   == rv );
+    BOOST_TEST( pair_by<RightTag>(rel).second  == lv );
 
-    BOOST_CHECK( get<LeftTag >(rel) == rel.left  );
-    BOOST_CHECK( get<RightTag>(rel) == rel.right );
+    BOOST_TEST( get<LeftTag >(rel) == rel.left  );
+    BOOST_TEST( get<RightTag>(rel) == rel.right );
 
-    BOOST_CHECK( get<LeftTag >(pair_by<LeftTag >(rel)) == rel.left  );
-    BOOST_CHECK( get<RightTag>(pair_by<LeftTag >(rel)) == rel.right );
+    BOOST_TEST( get<LeftTag >(pair_by<LeftTag >(rel)) == rel.left  );
+    BOOST_TEST( get<RightTag>(pair_by<LeftTag >(rel)) == rel.right );
 
-    BOOST_CHECK( get<LeftTag >(pair_by<RightTag>(rel)) == rel.left  );
-    BOOST_CHECK( get<RightTag>(pair_by<RightTag>(rel)) == rel.right );
+    BOOST_TEST( get<LeftTag >(pair_by<RightTag>(rel)) == rel.left  );
+    BOOST_TEST( get<RightTag>(pair_by<RightTag>(rel)) == rel.right );
 
     //----------------------------------------------------------------
 
-    BOOST_CHECK( rel.template get<LeftTag >() == rel.left  );
-    BOOST_CHECK( rel.template get<RightTag>() == rel.right );
+    BOOST_TEST( rel.template get<LeftTag >() == rel.left  );
+    BOOST_TEST( rel.template get<RightTag>() == rel.right );
 
-    BOOST_CHECK( pair_by<LeftTag >(rel).template get<LeftTag >()== rel.left );
-    BOOST_CHECK( pair_by<LeftTag >(rel).template get<RightTag>()== rel.right);
+    BOOST_TEST( pair_by<LeftTag >(rel).template get<LeftTag >()== rel.left );
+    BOOST_TEST( pair_by<LeftTag >(rel).template get<RightTag>()== rel.right);
 
-    BOOST_CHECK( pair_by<RightTag>(rel).template get<LeftTag >()== rel.left );
-    BOOST_CHECK( pair_by<RightTag>(rel).template get<RightTag>()== rel.right);
+    BOOST_TEST( pair_by<RightTag>(rel).template get<LeftTag >()== rel.left );
+    BOOST_TEST( pair_by<RightTag>(rel).template get<RightTag>()== rel.right);
 }
 
 struct  left_user_tag {};
@@ -175,14 +174,14 @@ void test_relation(const LeftData & lv, const RightData & rv)
         rel_type rel_from_left (  left_pair(lv,rv) );
         rel_type rel_from_right( right_pair(rv,lv) );
 
-        BOOST_CHECK( rel_from_left == rel_from_right  );
-        BOOST_CHECK( rel_from_left == rel_type(lv,rv) );
+        BOOST_TEST( rel_from_left == rel_from_right  );
+        BOOST_TEST( rel_from_left == rel_type(lv,rv) );
 
         rel_type rel;
 
         rel = rel_from_left;
 
-        BOOST_CHECK( rel == rel_from_left );
+        BOOST_TEST( rel == rel_from_left );
 */
     }
 

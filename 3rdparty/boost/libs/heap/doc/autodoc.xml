@@ -17,7 +17,6 @@
 <typedef name="difference_type"><type>implementation_defined::difference_type</type></typedef>
 <typedef name="value_compare"><type>implementation_defined::value_compare</type></typedef>
 <typedef name="allocator_type"><type>implementation_defined::allocator_type</type></typedef>
-<typedef name="allocator_traits"><type>implementation_defined::allocator_traits</type></typedef>
 <typedef name="reference"><type>implementation_defined::reference</type></typedef>
 <typedef name="const_reference"><type>implementation_defined::const_reference</type></typedef>
 <typedef name="pointer"><type>implementation_defined::pointer</type></typedef>
@@ -198,7 +197,6 @@
 <typedef name="difference_type"><type>implementation_defined::difference_type</type></typedef>
 <typedef name="value_compare"><type>implementation_defined::value_compare</type></typedef>
 <typedef name="allocator_type"><type>implementation_defined::allocator_type</type></typedef>
-<typedef name="allocator_traits"><type>implementation_defined::allocator_traits</type></typedef>
 <typedef name="reference"><type>implementation_defined::reference</type></typedef>
 <typedef name="const_reference"><type>implementation_defined::const_reference</type></typedef>
 <typedef name="pointer"><type>implementation_defined::pointer</type></typedef>
@@ -346,7 +344,6 @@
 <typedef name="difference_type"><type>implementation_defined::difference_type</type></typedef>
 <typedef name="value_compare"><type>implementation_defined::value_compare</type></typedef>
 <typedef name="allocator_type"><type>implementation_defined::allocator_type</type></typedef>
-<typedef name="allocator_traits"><type>implementation_defined::allocator_traits</type></typedef>
 <typedef name="reference"><type>implementation_defined::reference</type></typedef>
 <typedef name="const_reference"><type>implementation_defined::const_reference</type></typedef>
 <typedef name="pointer"><type>implementation_defined::pointer</type></typedef>
@@ -459,7 +456,6 @@
 <typedef name="difference_type"><type>implementation_defined::difference_type</type></typedef>
 <typedef name="value_compare"><type>implementation_defined::value_compare</type></typedef>
 <typedef name="allocator_type"><type>implementation_defined::allocator_type</type></typedef>
-<typedef name="allocator_traits"><type>implementation_defined::allocator_traits</type></typedef>
 <typedef name="reference"><type>implementation_defined::reference</type></typedef>
 <typedef name="const_reference"><type>implementation_defined::const_reference</type></typedef>
 <typedef name="pointer"><type>implementation_defined::pointer</type></typedef>
@@ -544,11 +540,8 @@
 <typedef name="value_compare"><type>base_maker::compare_argument</type></typedef>
 <typedef name="allocator_type"><type>base_maker::allocator_type</type></typedef>
 <typedef name="node"><type>base_maker::node_type</type></typedef>
-<typedef name="node_pointer"><type>allocator_type::pointer</type></typedef>
-<typedef name="const_node_pointer"><type>allocator_type::const_pointer</type></typedef>
-<typedef name="allocator_traits"><type>std::allocator_traits&lt; allocator_type &gt;</type></typedef>
-<typedef name="node_pointer"><type>allocator_traits::pointer</type></typedef>
-<typedef name="const_node_pointer"><type>allocator_traits::const_pointer</type></typedef>
+<typedef name="node_pointer"><type>boost::allocator_pointer&lt; allocator_type &gt;::type</type></typedef>
+<typedef name="const_node_pointer"><type>boost::allocator_const_pointer&lt; allocator_type &gt;::type</type></typedef>
 <typedef name="value_extractor"><type><emphasis>unspecified</emphasis></type></typedef>
 <typedef name="child_list_type"><type>boost::array&lt; node_pointer, 2 &gt;</type></typedef>
 <typedef name="child_list_iterator"><type>child_list_type::iterator</type></typedef>
@@ -592,7 +585,6 @@
 <typedef name="difference_type"><type>implementation_defined::difference_type</type></typedef>
 <typedef name="value_compare"><type>implementation_defined::value_compare</type></typedef>
 <typedef name="allocator_type"><type>implementation_defined::allocator_type</type></typedef>
-<typedef name="allocator_traits"><type>implementation_defined::allocator_traits</type></typedef>
 <typedef name="reference"><type>implementation_defined::reference</type></typedef>
 <typedef name="const_reference"><type>implementation_defined::const_reference</type></typedef>
 <typedef name="pointer"><type>implementation_defined::pointer</type></typedef>

@@ -12,7 +12,7 @@
 #define BOOST_OPTIONAL_CONFIG_USE_OLD_IMPLEMENTATION_OF_OPTIONAL // does old implementation still work for basic usage?
 #include "boost/optional/optional.hpp"
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 #pragma hdrstop
 #endif
 
