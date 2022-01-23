@@ -30136,7 +30136,9 @@ BUILDIN_FUNC(expandinventory_adjust) {
 
 	int expand_count = script_getnum(st, 2);
 
-	if (sd->status.inventory_slots + expand_count <= MAX_INVENTORY) {
+	if (sd->status.inventory_slots + expand_count <= MAX_INVENTORY &&
+		sd->status.inventory_slots + expand_count >= sd->inventory.amount &&
+		sd->status.inventory_slots + expand_count >= INVENTORY_BASE_SIZE) {
 		sd->status.inventory_slots += expand_count;
 		clif_inventory_expansion_info(sd);
 		chrif_save(sd, CSAVE_NORMAL);

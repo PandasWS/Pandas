@@ -24698,7 +24698,7 @@ void SkillDatabase::loadingFinished(){
 	}
 
 #ifdef Pandas_YamlBlastCache_SkillDatabase
-	for (const auto& it : skill_db) {
+	for (const auto& it : *this) {
 		auto skill = it.second;
 
 		// 从 parseBodyNode 把代码挪下来, 在此进行具体的战斗配置选项应用
@@ -24768,12 +24768,8 @@ bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
 // Author:      Sola丶小克(CairoLee)  2021/04/18 22:36
 //************************************ 
 void SkillDatabase::afterSerialize() {
-	memset(skilldb_id2idx, 0, sizeof(skilldb_id2idx));
-	skill_num = 1;
 	for (const auto& it : *this) {
 		auto skill = it.second;
-		skilldb_id2idx[skill->nameid] = skill_num;
-		skill_num++;
 
 		// ==================================================================
 		// 反序列化后将未参与序列化的字段进行初始化, 避免内存中的脏数据对工作造成错误的影响

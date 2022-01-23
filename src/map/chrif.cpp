@@ -137,7 +137,11 @@ void chrif_reset(void) {
 void chrif_check_shutdown(void) {
 	if( runflag != MAPSERVER_ST_SHUTDOWN )
 		return;
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 	if( auth_db->size(auth_db) > 0 )
+#else
+	if (auth_db && auth_db->size(auth_db) > 0)
+#endif // Pandas_Crashfix_Prevent_NullPointer
 		return;
 	runflag = CORE_ST_STOP;
 }
