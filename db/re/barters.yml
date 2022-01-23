@@ -1,4 +1,4 @@
-# This file is a part of rAthena.
+﻿# This file is a part of rAthena.
 #   Copyright(C) 2022 rAthena Development Team
 #   https://rathena.org - https://github.com/rathena
 #
@@ -44,3 +44,23 @@
 Header:
   Type: BARTER_DB
   Version: 1
+
+# Body:
+#   - Name: Pharmacist Merchant 
+#     Map: geffen
+#     X: 117
+#     Y: 72
+#     Direction: North
+#     Sprite: 2_F_MAGICMASTER
+#     Items:
+#       - Index: 0
+#         Item: White_Potion
+#         Stock: 0
+#         Zeny: 100
+#         RequiredItems:
+#           - Index: 0
+#             Item: Red_Potion
+#             Amount: 2
+#           - Index: 1
+#             Item: Jellopy
+#             Amount: 1

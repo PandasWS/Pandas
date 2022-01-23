@@ -6674,11 +6674,6 @@ int npc_reload(void) {
 	db_clear(npcname_db);
 	db_clear(ev_db);
 
-#ifdef Pandas_UserExperience_Move_StylistAndBarters_Load_Position
-	stylist_db.reload();
-	barter_db.reload();
-#endif // Pandas_UserExperience_Move_StylistAndBarters_Load_Position
-
 	//Remove all npcs/mobs. [Skotlex]
 
 #if PACKETVER >= 20131223
@@ -6767,10 +6762,8 @@ int npc_reload(void) {
 	);
 #endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
-#ifndef Pandas_UserExperience_Move_StylistAndBarters_Load_Position
 	stylist_db.reload();
 	barter_db.reload();
-#endif // Pandas_UserExperience_Move_StylistAndBarters_Load_Position
 
 	//Re-read the NPC Script Events cache.
 	npc_read_event_script();
@@ -6936,11 +6929,6 @@ void do_init_npc(void){
 	npcname_db = strdb_alloc(DB_OPT_BASE, NPC_NAME_LENGTH+1);
 	npc_path_db = strdb_alloc((DBOptions)(DB_OPT_BASE|DB_OPT_DUP_KEY|DB_OPT_RELEASE_DATA),80);
 
-#ifdef Pandas_UserExperience_Move_StylistAndBarters_Load_Position
-	stylist_db.load();
-	barter_db.load();
-#endif // Pandas_UserExperience_Move_StylistAndBarters_Load_Position
-
 #if PACKETVER >= 20131223
 	NPCMarketDB = strdb_alloc(DB_OPT_BASE, NPC_NAME_LENGTH+1);
 	npc_market_fromsql();
@@ -6985,10 +6973,8 @@ void do_init_npc(void){
 	);
 #endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
-#ifndef Pandas_UserExperience_Move_StylistAndBarters_Load_Position
 	stylist_db.load();
 	barter_db.load();
-#endif // Pandas_UserExperience_Move_StylistAndBarters_Load_Position
 
 	// set up the events cache
 	npc_read_event_script();

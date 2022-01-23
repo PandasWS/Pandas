@@ -1135,9 +1135,6 @@
 
 	// 将 barters.yml 数据库从 npc 目录移动回 db 目录 [Sola丶小克]
 	#define Pandas_UserExperience_Move_BartersYml_To_DB
-
-	// 将 stylist.yml 和 barters.yml 的加载顺序放在 NPC 之前 [Sola丶小克]
-	#define Pandas_UserExperience_Move_StylistAndBarters_Load_Position
 #endif // Pandas_UserExperience
 
 // ============================================================================
