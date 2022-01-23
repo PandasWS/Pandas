@@ -29,3 +29,14 @@ ALTER TABLE `char`
 ALTER TABLE `char`
 	CHANGE `inventory_size` `inventory_slots` smallint(6) NOT NULL default '100'
 ;
+
+-- -----------------------------------------------
+-- upgrade_20220121.sql
+-- -----------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `barter` (
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `index` SMALLINT(5) UNSIGNED NOT NULL,
+  `amount` SMALLINT(5) UNSIGNED NOT NULL,
+  PRIMARY KEY  (`name`,`index`)
+) ENGINE=MyISAM;
