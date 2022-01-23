@@ -1656,6 +1656,12 @@ void run_tomb(struct map_session_data* sd, struct npc_data* nd)
 
 #ifdef Pandas_NpcEvent_MvpTomb
 	pc_setreg(sd, add_str("@MvpID"), nd->u.tomb.md->mob_id);
+	pc_setreg(sd, add_str("@Mvp_tomb_x"), nd->u.tomb.md->bl.x);
+	pc_setreg(sd, add_str("@Mvp_tomb_y"), nd->u.tomb.md->bl.y);
+	pc_setreg(sd, add_str("@Mvp_tomb_uid"), nd->u.tomb.md->bl.id);
+	pc_setregstr(sd, add_str("@Mvp_killername$"), nd->u.tomb.killer_name);
+	pc_setreg(sd, add_str("@Mvp_killtime"), nd->u.tomb.kill_time);
+	pc_setregstr(sd, add_str("@Mvp_tomb_map$"), map_mapid2mapname(nd->u.tomb.md->bl.m));
 	npc_script_event(sd, NPCE_MVPTOMB);
 #endif // Pandas_NpcEvent_MvpTomb
 

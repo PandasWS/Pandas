@@ -927,3 +927,30 @@
 	因此请不要在事件中进行耗时操作.
 
 --------------------------------------------------------------
+
+
+*OnMvpTombEvent:
+
+当玩家点击魔物墓碑后触发事件 [人鱼姬的思念]
+
+事件关联:
+	关联到点击行为的玩家
+
+携带参数:
+	pc_setreg(sd, add_str("@MvpID"), nd->u.tomb.md->mob_id);
+	pc_setreg(sd, add_str("@Mvp_tomb_x"), nd->u.tomb.md->bl.x);
+	pc_setreg(sd, add_str("@Mvp_tomb_y"), nd->u.tomb.md->bl.y);
+	pc_setreg(sd, add_str("@Mvp_tomb_uid"), nd->u.tomb.md->bl.id);
+	pc_setregstr(sd, add_str("@Mvp_killername$"), nd->u.tomb.killer_name);
+	pc_setreg(sd, add_str("@Mvp_killtime"), nd->u.tomb.kill_time);
+	pc_setregstr(sd, add_str("@Mvp_tomb_map$"), map_mapid2mapname(nd->u.tomb.md->bl.m));
+	npc_script_event(sd, NPCE_MVPTOMB);
+	
+	@MvpID			墓碑的MVP的ID
+	@Mvp_tomb_x		墓碑的x坐标
+	@Mvp_tomb_x		墓碑的y坐标
+	@Mvp_tomb_map$		墓碑的所有地图名
+	@Mvp_tomb_uid	墓碑的uid
+	@Mvp_killername$			杀这个墓碑的MVP的玩家名字
+	@Mvp_killtime			杀死这个MVP的时间戳
+
