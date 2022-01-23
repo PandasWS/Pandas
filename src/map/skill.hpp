@@ -325,6 +325,8 @@ private:
 	/// Skill count, also as last index
 	uint16 skill_num;
 
+	template<typename T, size_t S> bool parseNode(std::string nodeName, std::string subNodeName, YAML::Node node, T(&arr)[S]);
+
 #ifdef Pandas_YamlBlastCache_SkillDatabase
 	friend class boost::serialization::access;
 
@@ -352,11 +354,10 @@ public:
 #endif // Pandas_YamlBlastCache_SkillDatabase
 	}
 
-	const std::string getDefaultLocation();
-	template<typename T, size_t S> bool parseNode(std::string nodeName, std::string subNodeName, YAML::Node node, T (&arr)[S]);
-	uint64 parseBodyNode(const YAML::Node &node);
-	void clear();
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node &node) override;
+	void clear() override;
+	void loadingFinished() override;
 
 	// Additional
 	uint16 get_index( uint16 skill_id, bool silent, const char* func, const char* file, int line );
@@ -500,8 +501,8 @@ public:
 
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
 };
 
 extern SkillArrowDatabase skill_arrow_db;
@@ -518,8 +519,8 @@ public:
 
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
 };
 
 struct s_skill_improvise_db {
@@ -532,8 +533,8 @@ public:
 
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
 };
 
 void do_init_skill(void);
@@ -2607,8 +2608,10 @@ public:
 
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
+
+	// Additional
 	std::shared_ptr<s_skill_spellbook_db> findBook(t_itemid nameid);
 };
 
@@ -2628,8 +2631,8 @@ public:
 
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node &node);
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node &node) override;
 };
 
 extern MagicMushroomDatabase magic_mushroom_db;

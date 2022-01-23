@@ -193,7 +193,7 @@ public:
 #endif // Pandas_YamlBlastCache_Serialize
 	}
 
-	void clear(){
+	void clear() override{
 		this->data.clear();
 	}
 

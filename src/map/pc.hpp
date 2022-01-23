@@ -443,6 +443,8 @@ struct map_session_data {
 		bool cashshop_open;
 		bool sale_open;
 		bool stylist_open;
+		bool barter_open;
+		bool barter_extended_open;
 		unsigned int block_action : 10;
 		bool refineui_open;
 		t_itemid inventory_expansion_confirmation;
@@ -1123,9 +1125,9 @@ public:
 
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
+	void loadingFinished() override;
 };
 
 struct s_job_info {
@@ -1154,11 +1156,11 @@ public:
 #endif // Pandas_YamlBlastCache_JobDatabase
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node &node);
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node &node) override;
+	void loadingFinished() override;
 
-	// Extras
+	// Additional
 	uint32 get_maxBaseLv(uint16 job_id);
 	uint32 get_maxJobLv(uint16 job_id);
 	t_exp get_baseExp(uint16 job_id, uint32 level);
@@ -1202,7 +1204,8 @@ extern JobDatabase job_db;
 static bool pc_cant_act2( struct map_session_data* sd ){
 	return sd->state.vending || sd->state.buyingstore || (sd->sc.opt1 && sd->sc.opt1 != OPT1_BURNING)
 		|| sd->state.trading || sd->state.storage_flag || sd->state.prevend || sd->state.refineui_open
-		|| sd->state.stylist_open || sd->state.inventory_expansion_confirmation || sd->npc_shopid;
+		|| sd->state.stylist_open || sd->state.inventory_expansion_confirmation || sd->npc_shopid
+		|| sd->state.barter_open || sd->state.barter_extended_open;
 }
 // equals pc_cant_act2 and additionally checks for chat rooms and npcs
 static bool pc_cant_act( struct map_session_data* sd ){
@@ -1330,8 +1333,8 @@ public:
 
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node &node);
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node &node) override;
 };
 
 extern AttendanceDatabase attendance_db;
@@ -1348,10 +1351,11 @@ public:
 
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
+	void loadingFinished() override;
 
+	// Additional
 	uint32 pc_gets_status_point(uint16 level);
 	uint32 get_table_point(uint16 level);
 	uint32 pc_gets_trait_point(uint16 level);
@@ -1650,9 +1654,9 @@ public:
 #endif // Pandas_YamlBlastCache_SkillTreeDatabase
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
+	void loadingFinished() override;
 
 	// Additional
 	std::shared_ptr<s_skill_tree_entry> get_skill_data(int class_, uint16 skill_id);
