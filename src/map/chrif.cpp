@@ -137,7 +137,11 @@ void chrif_reset(void) {
 void chrif_check_shutdown(void) {
 	if( runflag != MAPSERVER_ST_SHUTDOWN )
 		return;
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 	if( auth_db->size(auth_db) > 0 )
+#else
+	if (auth_db && auth_db->size(auth_db) > 0)
+#endif // Pandas_Crashfix_Prevent_NullPointer
 		return;
 	runflag = CORE_ST_STOP;
 }
@@ -1130,14 +1134,14 @@ int chrif_divorceack(uint32 char_id, int partner_id) {
 
 	if( ( sd = map_charid2sd(char_id) ) != NULL && sd->status.partner_id == partner_id ) {
 		sd->status.partner_id = 0;
-		for(i = 0; i < P_MAX_INVENTORY(sd); i++)
+		for(i = 0; i < MAX_INVENTORY; i++)
 			if (sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_M || sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_F)
 				pc_delitem(sd, i, 1, 0, 0, LOG_TYPE_OTHER);
 	}
 
 	if( ( sd = map_charid2sd(partner_id) ) != NULL && sd->status.partner_id == char_id ) {
 		sd->status.partner_id = 0;
-		for(i = 0; i < P_MAX_INVENTORY(sd); i++)
+		for(i = 0; i < MAX_INVENTORY; i++)
 			if (sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_M || sd->inventory.u.items_inventory[i].nameid == WEDDING_RING_F)
 				pc_delitem(sd, i, 1, 0, 0, LOG_TYPE_OTHER);
 	}

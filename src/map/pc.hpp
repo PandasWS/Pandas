@@ -445,6 +445,8 @@ struct map_session_data {
 		bool stylist_open;
 		unsigned int block_action : 10;
 		bool refineui_open;
+		t_itemid inventory_expansion_confirmation;
+		uint16 inventory_expansion_amount;
 	} state;
 	struct {
 		unsigned char no_weapon_damage, no_magic_damage, no_misc_damage;
@@ -478,7 +480,7 @@ struct map_session_data {
 	struct s_storage inventory;
 	struct s_storage cart;
 
-	struct item_data* inventory_data[G_MAX_INVENTORY]; // direct pointers to itemdb entries (faster than doing item_id lookups)
+	struct item_data* inventory_data[MAX_INVENTORY]; // direct pointers to itemdb entries (faster than doing item_id lookups)
 	short equip_index[EQI_MAX];
 	short equip_switch_index[EQI_MAX];
 	unsigned int weight,max_weight,add_max_weight;
@@ -1200,7 +1202,7 @@ extern JobDatabase job_db;
 static bool pc_cant_act2( struct map_session_data* sd ){
 	return sd->state.vending || sd->state.buyingstore || (sd->sc.opt1 && sd->sc.opt1 != OPT1_BURNING)
 		|| sd->state.trading || sd->state.storage_flag || sd->state.prevend || sd->state.refineui_open
-		|| sd->state.stylist_open;
+		|| sd->state.stylist_open || sd->state.inventory_expansion_confirmation || sd->npc_shopid;
 }
 // equals pc_cant_act2 and additionally checks for chat rooms and npcs
 static bool pc_cant_act( struct map_session_data* sd ){
@@ -1384,9 +1386,6 @@ void pc_respawn(struct map_session_data* sd, clr_type clrtype);
 void pc_setnewpc(struct map_session_data *sd, uint32 account_id, uint32 char_id, int login_id1, t_tick client_tick, int sex, int fd);
 bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_time, int group_id, struct mmo_charstatus *st, bool changing_mapservers);
 void pc_authfail(struct map_session_data *sd);
-#ifdef Pandas_ClientFeature_InventoryExpansion
-bool pc_expandInventory(struct map_session_data* sd, int adjustSize);
-#endif // Pandas_ClientFeature_InventoryExpansion
 void pc_reg_received(struct map_session_data *sd);
 void pc_close_npc(struct map_session_data *sd,int flag);
 TIMER_FUNC(pc_close_npc_timer);
@@ -1767,11 +1766,7 @@ void pc_cell_basilica(struct map_session_data *sd);
 short pc_get_itemgroup_bonus(struct map_session_data* sd, t_itemid nameid, std::vector<s_item_bonus>& bonuses);
 short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id, std::vector<s_item_bonus>& bonuses);
 
-#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 bool pc_is_same_equip_index(enum equip_index eqi, short *equip_index, short index);
-#else
-bool pc_is_same_equip_index(struct map_session_data* sd, enum equip_index eqi, short* equip_index, short index);
-#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 /// Check if player is Taekwon Ranker and the level is >= 90 (battle_config.taekwon_ranker_min_lv)
 #define pc_is_taekwon_ranker(sd) (((sd)->class_&MAPID_UPPERMASK) == MAPID_TAEKWON && (sd)->status.base_level >= battle_config.taekwon_ranker_min_lv && pc_famerank((sd)->status.char_id,MAPID_TAEKWON))
 

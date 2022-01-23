@@ -5779,7 +5779,11 @@ void do_abort(void)
 	run = 1;
 	if (!chrif_isconnected())
 	{
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 		if (pc_db->size(pc_db))
+#else
+		if (pc_db && pc_db->size(pc_db))
+#endif // Pandas_Crashfix_Prevent_NullPointer
 			ShowFatalError("Server has crashed without a connection to the char-server, %u characters can't be saved!\n", pc_db->size(pc_db));
 		return;
 	}
@@ -5926,6 +5930,9 @@ void do_shutdown(void)
 	{
 		runflag = MAPSERVER_ST_SHUTDOWN;
 		ShowStatus("Shutting down...\n");
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+		if (pc_db)
+#endif // Pandas_Crashfix_Prevent_NullPointer
 		{
 			struct map_session_data* sd;
 			struct s_mapiterator* iter = mapit_getallusers();

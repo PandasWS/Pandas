@@ -605,28 +605,6 @@ enum e_memorial_dungeon_command : uint16 {
 	COMMAND_MEMORIALDUNGEON_DESTROY_FORCE = 0x3,
 };
 
-#ifdef Pandas_ClientFeature_InventoryExpansion
-enum e_expand_inventory : uint8 {
-	EXPAND_INVENTORY_ASK_CONFIRMATION = 0,
-	EXPAND_INVENTORY_FAILED = 1,
-	EXPAND_INVENTORY_OTHER_WORK = 2,
-	EXPAND_INVENTORY_MISSING_ITEM = 3,
-	EXPAND_INVENTORY_MAX_SIZE = 4
-};
-
-enum e_expand_inventory_result : uint8 {
-	EXPAND_INVENTORY_RESULT_SUCCESS = 0,
-	EXPAND_INVENTORY_RESULT_FAILED = 1,
-	EXPAND_INVENTORY_RESULT_OTHER_WORK = 2,
-	EXPAND_INVENTORY_RESULT_MISSING_ITEM = 3,
-	EXPAND_INVENTORY_RESULT_MAX_SIZE = 4
-};
-
-void clif_inventoryExpansionInfo(struct map_session_data* sd);
-void clif_inventoryExpandAck(struct map_session_data* sd, enum e_expand_inventory result, int itemId);
-void clif_inventoryExpandResult(struct map_session_data* sd, enum e_expand_inventory_result result);
-#endif // Pandas_ClientFeature_InventoryExpansion
-
 int clif_setip(const char* ip);
 void clif_setbindip(const char* ip);
 void clif_setport(uint16 port);
@@ -1209,6 +1187,8 @@ void clif_equipswitch_reply( struct map_session_data* sd, bool failed );
 void clif_pet_evolution_result( struct map_session_data* sd, e_pet_evolution_result result );
 
 void clif_parse_skill_toid( struct map_session_data* sd, uint16 skill_id, uint16 skill_lv, int target_id );
+
+void clif_inventory_expansion_info( struct map_session_data* sd );
 
 #ifdef Pandas_Character_Title_Controller
 // 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用

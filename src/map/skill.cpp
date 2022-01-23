@@ -55,24 +55,6 @@ using namespace rathena;
 #define SKILLUNITTIMER_INTERVAL	100
 #define TIMERSKILL_INTERVAL	150
 
-// ranges reserved for mapping skill ids to skilldb offsets
-#define HM_SKILLRANGEMIN 700
-#define HM_SKILLRANGEMAX HM_SKILLRANGEMIN + MAX_HOMUNSKILL
-#define MC_SKILLRANGEMIN HM_SKILLRANGEMAX + 1
-#define MC_SKILLRANGEMAX MC_SKILLRANGEMIN + MAX_MERCSKILL
-#define EL_SKILLRANGEMIN MC_SKILLRANGEMAX + 1
-#define EL_SKILLRANGEMAX EL_SKILLRANGEMIN + MAX_ELEMENTALSKILL
-#define ABR_SKILLRANGEMIN EL_SKILLRANGEMAX + 1
-#define ABR_SKILLRANGEMAX ABR_SKILLRANGEMIN + MAX_ABRSKILL
-#define GD_SKILLRANGEMIN ABR_SKILLRANGEMAX + 1
-#define GD_SKILLRANGEMAX GD_SKILLRANGEMIN + MAX_GUILDSKILL
-#if GD_SKILLRANGEMAX > 999
-	#error GD_SKILLRANGEMAX is greater than 999
-#endif
-
-static uint16 skilldb_id2idx[(UINT16_MAX + 1)];	/// Skill ID to Index lookup: skill_index = skill_get_index(skill_id) - [FWI] 20160423 the whole index thing should be removed.
-static uint16 skill_num = 1;			 		/// Skill count, also as last index
-
 static struct eri *skill_timer_ers = NULL; //For handling skill_timerskills [Skotlex]
 static DBMap* bowling_db = NULL; // int mob_id -> struct mob_data*
 
@@ -132,10 +114,6 @@ static inline int splash_target(struct block_list* bl) {
 	return ( bl->type == BL_MOB ) ? BL_SKILL|BL_CHAR : BL_CHAR;
 }
 
-uint16 SKILL_MAX_DB(void) {
-	return skill_num;
-}
-
 /**
  * Get skill id from name
  * @param name
@@ -151,20 +129,6 @@ uint16 skill_name2id(const char* name) {
 	}
 
 	return 0;
-}
-
-/**
- * Get skill index from skill_db array. The index is also being used for skill lookup in mmo_charstatus::skill[]
- * @param skill_id
- * @param silent If Skill is undefined, show error message!
- * @return Skill Index or 0 if not found/unset
- **/
-uint16 skill_get_index_(uint16 skill_id, bool silent, const char *func, const char *file, int line) {
-	uint16 idx = skilldb_id2idx[skill_id];
-
-	if (!idx && skill_id != 0 && !silent)
-		ShowError("Skill '%d' is undefined! %s:%d::%s\n", skill_id, file, line, func);
-	return idx;
 }
 
 /**
@@ -17633,7 +17597,7 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
 		case AB_ANCILLA: {
 				int count = 0;
 
-				for( i = 0; i < P_MAX_INVENTORY(sd); i++ )
+				for( i = 0; i < MAX_INVENTORY; i++ )
 					if( sd->inventory.u.items_inventory[i].nameid == ITEMID_ANCILLA )
 						count += sd->inventory.u.items_inventory[i].amount;
 				if( count >= 3 ) {
@@ -19411,7 +19375,7 @@ void skill_repairweapon(struct map_session_data *sd, int idx) {
 
 	if( idx == 0xFFFF ) // No item selected ('Cancel' clicked)
 		return;
-	if( idx < 0 || idx >= P_MAX_INVENTORY(sd))
+	if( idx < 0 || idx >= MAX_INVENTORY)
 		return; //Invalid index??
 
 	item = &target_sd->inventory.u.items_inventory[idx];
@@ -19470,7 +19434,7 @@ void skill_identify(struct map_session_data *sd, int idx)
 		return;
 #endif // Pandas_NpcFilter_IDENTIFY
 
-	if(idx >= 0 && idx < P_MAX_INVENTORY(sd)) {
+	if(idx >= 0 && idx < MAX_INVENTORY) {
 		if(sd->inventory.u.items_inventory[idx].nameid > 0 && sd->inventory.u.items_inventory[idx].identify == 0 ){
 			flag=0;
 			sd->inventory.u.items_inventory[idx].identify = 1;
@@ -19501,7 +19465,7 @@ void skill_weaponrefine(struct map_session_data *sd, int idx)
 
 	nullpo_retv(sd);
 
-	if (idx >= 0 && idx < P_MAX_INVENTORY(sd))
+	if (idx >= 0 && idx < MAX_INVENTORY)
 	{
 		struct item *item;
 		struct item_data *ditem = sd->inventory_data[idx];
@@ -19608,7 +19572,7 @@ int skill_autospell(struct map_session_data *sd, uint16 skill_id)
 {
 	nullpo_ret(sd);
 
-	if (skill_id == 0 || skill_get_index_(skill_id, true, __FUNCTION__, __FILE__, __LINE__) == 0 || SKILL_CHK_GUILD(skill_id))
+	if (skill_id == 0 || skill_db.get_index(skill_id, true, __FUNCTION__, __FILE__, __LINE__) == 0 || SKILL_CHK_GUILD(skill_id))
 		return 0;
 
 	uint16 lv = pc_checkskill(sd, skill_id), skill_lv = sd->menuskill_val;
@@ -21757,7 +21721,7 @@ short skill_can_produce_mix(struct map_session_data *sd, t_itemid nameid, int tr
 		} else {
 			unsigned short idx, amt;
 
-			for (idx = 0, amt = 0; idx < P_MAX_INVENTORY(sd); idx++)
+			for (idx = 0, amt = 0; idx < MAX_INVENTORY; idx++)
 				if (sd->inventory.u.items_inventory[idx].nameid == nameid_produce)
 					amt += sd->inventory.u.items_inventory[idx].amount;
 #ifndef Pandas_Bonus_bSkillNoRequire
@@ -22746,7 +22710,7 @@ int skill_elementalanalysis(struct map_session_data* sd, int n, uint16 skill_lv,
 
 		idx = item_list[i*2+0]-2;
 
-		if( idx < 0 || idx >= P_MAX_INVENTORY(sd)){
+		if( idx < 0 || idx >= MAX_INVENTORY){
 			return 1;
 		}
 
@@ -22824,7 +22788,7 @@ int skill_changematerial(struct map_session_data *sd, int n, unsigned short *ite
 						for( k = 0; k < n; k++ ) {
 							int idx = item_list[k*2+0]-2;
 
-							if( idx < 0 || idx >= P_MAX_INVENTORY(sd)){
+							if( idx < 0 || idx >= MAX_INVENTORY){
 								return 0;
 							}
 
@@ -24715,8 +24679,8 @@ uint64 SkillDatabase::parseBodyNode(const YAML::Node &node) {
 
 	if (!exists) {
 		this->put(skill_id, skill);
-		skilldb_id2idx[skill_id] = skill_num;
-		skill_num++;
+		this->skilldb_id2idx[skill_id] = this->skill_num;
+		this->skill_num++;
 	}
 
 	return 1;
@@ -24724,14 +24688,17 @@ uint64 SkillDatabase::parseBodyNode(const YAML::Node &node) {
 
 void SkillDatabase::clear() {
 	TypesafeCachedYamlDatabase::clear();
-	memset(skilldb_id2idx, 0, sizeof(skilldb_id2idx));
-	skill_num = 1;
+	memset( this->skilldb_id2idx, 0, sizeof( this->skilldb_id2idx ) );
+	this->skill_num = 1;
 }
 
-#ifdef Pandas_YamlBlastCache_SkillDatabase
+void SkillDatabase::loadingFinished(){
+	if( this->skill_num > MAX_SKILL ){
+		ShowError( "There are more skills defined in the skill database (%d) than the MAX_SKILL (%d) define. Please increase it and recompile.\n", this->skill_num, MAX_SKILL );
+	}
 
-void SkillDatabase::loadingFinished() {
-	for (const auto& it : skill_db) {
+#ifdef Pandas_YamlBlastCache_SkillDatabase
+	for (const auto& it : *this) {
 		auto skill = it.second;
 
 		// 从 parseBodyNode 把代码挪下来, 在此进行具体的战斗配置选项应用
@@ -24748,8 +24715,26 @@ void SkillDatabase::loadingFinished() {
 		if (skill->unit_flag[UF_SKILL])
 			skill->unit_target |= BL_SKILL;
 	}
+#endif // Pandas_YamlBlastCache_SkillDatabase
 }
 
+/**
+ * Get skill index from skill_db array. The index is also being used for skill lookup in mmo_charstatus::skill[]
+ * @param skill_id
+ * @param silent If Skill is undefined, show error message!
+ * @return Skill Index or 0 if not found/unset
+ **/
+uint16 SkillDatabase::get_index( uint16 skill_id, bool silent, const char *func, const char *file, int line ){
+	uint16 idx = this->skilldb_id2idx[skill_id];
+
+	if( idx == 0 && skill_id != 0 && !silent ){
+		ShowError( "Skill '%d' is undefined! %s:%d::%s\n", skill_id, file, line, func );
+	}
+
+	return idx;
+}
+
+#ifdef Pandas_YamlBlastCache_SkillDatabase
 //************************************
 // Method:      doSerialize
 // Description: 对 SkillDatabase 进行序列化和反序列化操作
@@ -24783,12 +24768,8 @@ bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
 // Author:      Sola丶小克(CairoLee)  2021/04/18 22:36
 //************************************ 
 void SkillDatabase::afterSerialize() {
-	memset(skilldb_id2idx, 0, sizeof(skilldb_id2idx));
-	skill_num = 1;
 	for (const auto& it : *this) {
 		auto skill = it.second;
-		skilldb_id2idx[skill->nameid] = skill_num;
-		skill_num++;
 
 		// ==================================================================
 		// 反序列化后将未参与序列化的字段进行初始化, 避免内存中的脏数据对工作造成错误的影响

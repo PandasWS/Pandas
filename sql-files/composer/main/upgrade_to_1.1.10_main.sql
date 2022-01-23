@@ -21,3 +21,11 @@ ALTER TABLE `char`
 	ADD COLUMN `ap` INT(11) UNSIGNED NOT NULL DEFAULT '0' AFTER `max_ap`,
 	ADD COLUMN `trait_point` INT(11) UNSIGNED NOT NULL DEFAULT '0' AFTER `skill_point`
 ;
+
+-- -----------------------------------------------
+-- 修改背包拓展字段的字段名
+-- -----------------------------------------------
+
+ALTER TABLE `char`
+	CHANGE `inventory_size` `inventory_slots` smallint(6) NOT NULL default '100'
+;
