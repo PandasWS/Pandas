@@ -21,3 +21,22 @@ ALTER TABLE `char`
 	ADD COLUMN `ap` INT(11) UNSIGNED NOT NULL DEFAULT '0' AFTER `max_ap`,
 	ADD COLUMN `trait_point` INT(11) UNSIGNED NOT NULL DEFAULT '0' AFTER `skill_point`
 ;
+
+-- -----------------------------------------------
+-- 修改背包拓展字段的字段名
+-- -----------------------------------------------
+
+ALTER TABLE `char`
+	CHANGE `inventory_size` `inventory_slots` smallint(6) NOT NULL default '100'
+;
+
+-- -----------------------------------------------
+-- upgrade_20220121.sql
+-- -----------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `barter` (
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `index` SMALLINT(5) UNSIGNED NOT NULL,
+  `amount` SMALLINT(5) UNSIGNED NOT NULL,
+  PRIMARY KEY  (`name`,`index`)
+) ENGINE=MyISAM;

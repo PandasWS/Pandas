@@ -75,6 +75,7 @@ Sql* mmysql_handle;
 Sql* qsmysql_handle; /// For query_sql
 
 int db_use_sqldbs = 0;
+char barter_table[32] = "barter";
 char buyingstores_table[32] = "buyingstores";
 char buyingstore_items_table[32] = "buyingstore_items";
 char item_cash_table[32] = "item_cash_db";
@@ -4441,7 +4442,9 @@ int inter_config_read(const char *cfgName)
 		}
 #undef RENEWALPREFIX
 
-		if( strcmpi( w1, "buyingstore_db" ) == 0 )
+		if( strcmpi( w1, "barter_table" ) == 0 )
+			safestrncpy( barter_table, w2, sizeof(barter_table) );
+		else if( strcmpi( w1, "buyingstore_db" ) == 0 )
 			safestrncpy( buyingstores_table, w2, sizeof(buyingstores_table) );
 		else if( strcmpi( w1, "buyingstore_items_table" ) == 0 )
 			safestrncpy( buyingstore_items_table, w2, sizeof(buyingstore_items_table) );
@@ -5779,7 +5782,11 @@ void do_abort(void)
 	run = 1;
 	if (!chrif_isconnected())
 	{
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 		if (pc_db->size(pc_db))
+#else
+		if (pc_db && pc_db->size(pc_db))
+#endif // Pandas_Crashfix_Prevent_NullPointer
 			ShowFatalError("Server has crashed without a connection to the char-server, %u characters can't be saved!\n", pc_db->size(pc_db));
 		return;
 	}
@@ -5926,6 +5933,9 @@ void do_shutdown(void)
 	{
 		runflag = MAPSERVER_ST_SHUTDOWN;
 		ShowStatus("Shutting down...\n");
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+		if (pc_db)
+#endif // Pandas_Crashfix_Prevent_NullPointer
 		{
 			struct map_session_data* sd;
 			struct s_mapiterator* iter = mapit_getallusers();

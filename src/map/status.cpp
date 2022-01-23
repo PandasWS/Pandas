@@ -3448,6 +3448,11 @@ int status_base_amotion_pc(struct map_session_data* sd, struct status_data* stat
 	if (job == nullptr)
 		return 2000;
 
+#ifdef Pandas_Crashfix_ASPD_Base_Empty
+	if (job->aspd_base.empty())
+		return 2000;
+#endif // Pandas_Crashfix_ASPD_Base_Empty
+
 	int amotion;
 #ifdef RENEWAL_ASPD
 	int16 skill_lv, val = 0;
@@ -4756,7 +4761,7 @@ bool status_calc_weight(struct map_session_data *sd, enum e_status_calc_weight_o
 	if (flag&CALCWT_ITEM) {
 		sd->weight = 0; // Reset current weight
 
-		for(i = 0; i < P_MAX_INVENTORY(sd); i++) {
+		for(i = 0; i < MAX_INVENTORY; i++) {
 			if (!sd->inventory.u.items_inventory[i].nameid || sd->inventory_data[i] == NULL)
 				continue;
 			sd->weight += sd->inventory_data[i]->weight * sd->inventory.u.items_inventory[i].amount;
@@ -5067,13 +5072,8 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 			continue;
 		if (i == EQI_AMMO)
 			continue;
-#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 		if (pc_is_same_equip_index((enum equip_index)i, sd->equip_index, index))
 			continue;
-#else
-		if (pc_is_same_equip_index(sd, (enum equip_index)i, sd->equip_index, index))
-			continue;
-#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 		if (!sd->inventory_data[index])
 			continue;
 
@@ -5207,12 +5207,12 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	// Process and check item combos
 	if (!sd->combos.empty()) {
 		for (const auto &combo : sd->combos) {
-			s_item_combo *item_combo;
+			std::shared_ptr<s_item_combo> item_combo;
 
 			current_equip_item_index = -1;
 			current_equip_combo_pos = combo->pos;
 
-			if (combo->bonus == nullptr || !(item_combo = itemdb_combo_exists(combo->id)))
+			if (combo->bonus == nullptr || !(item_combo = itemdb_combo.find(combo->id)))
 				continue;
 
 			bool no_run = false;
@@ -5255,13 +5255,8 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 			continue;
 		if (i == EQI_AMMO)
 			continue;
-#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 		if (pc_is_same_equip_index((enum equip_index)i, sd->equip_index, index))
 			continue;
-#else
-		if (pc_is_same_equip_index(sd, (enum equip_index)i, sd->equip_index, index))
-			continue;
-#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 
 		if (sd->inventory_data[index]) {
 			int j;
@@ -5310,13 +5305,8 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 			continue;
 		if (i == EQI_AMMO)
 			continue;
-#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 		if (pc_is_same_equip_index((enum equip_index)i, sd->equip_index, index))
 			continue;
-#else
-		if (pc_is_same_equip_index(sd, (enum equip_index)i, sd->equip_index, index))
-			continue;
-#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 		
 		if (sd->inventory_data[index]) {
 			for (uint8 j = 0; j < MAX_ITEM_RDM_OPT; j++) {

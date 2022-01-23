@@ -115,9 +115,11 @@ public:
 
 	}
 
-	void clear();
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode( const YAML::Node& node );
+	void clear() override;
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode( const YAML::Node& node ) override;
+
+	// Additional
 	const char* checkAlias( const char* alias );
 };
 
@@ -1592,7 +1594,7 @@ ACMD_FUNC(itemreset)
 	int i;
 	nullpo_retr(-1, sd);
 
-	for (i = 0; i < P_MAX_INVENTORY(sd); i++) {
+	for (i = 0; i < MAX_INVENTORY; i++) {
 		if (sd->inventory.u.items_inventory[i].amount && sd->inventory.u.items_inventory[i].equip == 0 && !itemdb_ishatched_egg(&sd->inventory.u.items_inventory[i])) {
 			pc_delitem(sd, i, sd->inventory.u.items_inventory[i].amount, 0, 0, LOG_TYPE_COMMAND);
 		}
@@ -2420,13 +2422,8 @@ ACMD_FUNC(refine)
 			continue;
 		if(j == EQI_AMMO)
 			continue;
-#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 		if (pc_is_same_equip_index((enum equip_index)j, sd->equip_index, i))
 			continue;
-#else
-		if (pc_is_same_equip_index(sd, (enum equip_index)j, sd->equip_index, i))
-			continue;
-#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 
 		if(position && !(sd->inventory.u.items_inventory[i].equip & position))
 			continue;
@@ -5038,7 +5035,7 @@ ACMD_FUNC(repairall)
 	nullpo_retr(-1, sd);
 
 	count = 0;
-	for (i = 0; i < P_MAX_INVENTORY(sd); i++) {
+	for (i = 0; i < MAX_INVENTORY; i++) {
 		if (sd->inventory.u.items_inventory[i].nameid && sd->inventory.u.items_inventory[i].attribute == 1 && !itemdb_ishatched_egg(&sd->inventory.u.items_inventory[i])) {
 			sd->inventory.u.items_inventory[i].attribute = 0;
 			clif_produceeffect(sd, 0, sd->inventory.u.items_inventory[i].nameid);
@@ -6085,7 +6082,7 @@ ACMD_FUNC(dropall)
 		}
 	}
 
-	for( i = 0; i < P_MAX_INVENTORY(sd); i++ ) {
+	for( i = 0; i < MAX_INVENTORY; i++ ) {
 		if( sd->inventory.u.items_inventory[i].amount ) {
 			if( (item_data = itemdb_exists(sd->inventory.u.items_inventory[i].nameid)) == NULL ) {
 				ShowDebug("Non-existant item %d on dropall list (account_id: %d, char_id: %d)\n", sd->inventory.u.items_inventory[i].nameid, sd->status.account_id, sd->status.char_id);
@@ -6132,7 +6129,7 @@ ACMD_FUNC(storeall)
 		}
 	}
 
-	for (i = 0; i < P_MAX_INVENTORY(sd); i++) {
+	for (i = 0; i < MAX_INVENTORY; i++) {
 		if (sd->inventory.u.items_inventory[i].amount) {
 			if(sd->inventory.u.items_inventory[i].equip != 0)
 				pc_unequipitem(sd, i, 3);
@@ -7770,7 +7767,7 @@ ACMD_FUNC(identify)
 
 	nullpo_retr(-1, sd);
 
-	for(i=num=0;i<P_MAX_INVENTORY(sd);i++){
+	for(i=num=0;i<MAX_INVENTORY;i++){
 		if(sd->inventory.u.items_inventory[i].nameid > 0 && sd->inventory.u.items_inventory[i].identify != 1) {
 			num++;
 		}
@@ -9495,7 +9492,7 @@ ACMD_FUNC(itemlist)
 	} else if( strcmp(parent_cmd, "itemlist") == 0 ) {
 		location = "inventory";
 		items = sd->inventory.u.items_inventory;
-		size = P_MAX_INVENTORY(sd);
+		size = MAX_INVENTORY;
 	} else
 		return 1;
 
@@ -10653,13 +10650,8 @@ ACMD_FUNC(cloneequip) {
 				continue;
 			if (i == EQI_AMMO)
 				continue;
-#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 			if (pc_is_same_equip_index((enum equip_index) i, pl_sd->equip_index, idx))
 				continue;
-#else
-			if (pc_is_same_equip_index(pl_sd, (enum equip_index)i, pl_sd->equip_index, idx))
-				continue;
-#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 
 			tmp_item = pl_sd->inventory.u.items_inventory[idx];
 			if (itemdb_isspecial(tmp_item.card[0]))
@@ -10960,6 +10952,24 @@ ACMD_FUNC(refineui)
 	}
 
 	clif_refineui_open(sd);
+	return 0;
+#endif
+}
+
+ACMD_FUNC( stylist ){
+	nullpo_retr(-1, sd);
+
+#if PACKETVER < 20151104
+	clif_displaymessage( fd, msg_txt( sd, 798 ) ); // This command requires packet version 2015-11-04 or newer.
+	return -1;
+#else
+
+	if( sd->state.stylist_open ){
+		clif_displaymessage( fd, msg_txt( sd, 799 ) ); // You have already opened the stylist UI.
+		return -1;
+	}
+
+	clif_ui_open( sd, OUT_UI_STYLIST, 0 );
 	return 0;
 #endif
 }
@@ -11550,6 +11560,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF2("completequest", quest),
 		ACMD_DEF2("checkquest", quest),
 		ACMD_DEF(refineui),
+		ACMD_DEFR(stylist, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 	};
 	AtCommandInfo* atcommand;
 	int i;

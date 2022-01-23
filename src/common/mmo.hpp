@@ -45,44 +45,25 @@
 
 #define MAX_MAP_PER_SERVER 1500 /// Maximum amount of maps available on a server
 
-#ifndef Pandas_ClientFeature_InventoryExpansion
-	// -------------------------------------------------------------------------------------
-	// 将 MAX_INVENTORY 重命名为 _ORIGIN_MAX_INVENTORY
-	// 此举是个防呆设计, 可以避免在合并外部代码后直接编译通过, 从而遗漏需要进行背包拓展改造的点
-	// -------------------------------------------------------------------------------------
-	// 
-	// 调整说明: 若您自己合并的第三方代码有使用到 MAX_INVENTORY 宏, 请按照以下列举的标准进行改写:
-	// 
-	// - 用于变量数组初始化的, 直接简单的改写成 G_MAX_INVENTORY 即可
-	// - 若用于进行边界保护判断, 且边界与某一个具体玩家无关, 则用 G_MAX_INVENTORY (G 是 Global 的简称, 即: 全局背包最大上限)
-	// - 若用于进行边界保护判断, 且边界与某一个具体玩家相关, 则用 P_MAX_INVENTORY (P 是 Personal 的简称, 即: 玩家背包最大上限)
-	//
-	//#define MAX_INVENTORY 100 ///Maximum items in player inventory
-	#define _ORIGIN_MAX_INVENTORY 100 ///Maximum items in player inventory
+#ifndef INVENTORY_BASE_SIZE
+	#define INVENTORY_BASE_SIZE 100 // Amount of inventory slots each player has
+#endif
 
-	// 未开启背包拓展的时候 P_MAX_INVENTORY 与 G_MAX_INVENTORY 等同于 MAX_INVENTORY
-	#define P_MAX_INVENTORY(x) _ORIGIN_MAX_INVENTORY
-	#define G_MAX_INVENTORY _ORIGIN_MAX_INVENTORY
-#else
-	#if PACKETVER_MAIN_NUM >= 20181219 || PACKETVER_RE_NUM >= 20181219 || PACKETVER_ZERO_NUM >= 20181212
-		#define _ORIGIN_MAX_INVENTORY 200
+#ifndef INVENTORY_EXPANSION_SIZE
+	#if PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+		#define INVENTORY_EXPANSION_SIZE 100 // Amount of additional inventory slots a player can have
 	#else
-		#define _ORIGIN_MAX_INVENTORY 100
-	#endif  // PACKETVER_MAIN_NUM >= 20181219 || PACKETVER_RE_NUM >= 20181219 || PACKETVER_ZERO_NUM >= 20181212
-
-	#ifndef FIXED_INVENTORY_SIZE
-		#define FIXED_INVENTORY_SIZE 100
+		#define INVENTORY_EXPANSION_SIZE 0
 	#endif
+#endif
 
-	#if FIXED_INVENTORY_SIZE > _ORIGIN_MAX_INVENTORY
-		#error FIXED_INVENTORY_SIZE must be same or smaller than MAX_INVENTORY
+#ifndef MAX_INVENTORY
+	#define MAX_INVENTORY ( INVENTORY_BASE_SIZE + INVENTORY_EXPANSION_SIZE ) // Maximum items in player inventory (in total)
+#else
+	#if MAX_INVENTORY < ( INVENTORY_BASE_SIZE + INVENTORY_EXPANSION_SIZE )
+		#error Your custom MAX_INVENTORY define is too low
 	#endif
-
-	// 开启背包拓展后, 变成获取玩家的背包容量上限
-	#define __PMI_CONCAT_GCC(x, y) x ## y
-	#define P_MAX_INVENTORY(v) __PMI_CONCAT_GCC(,v)->status.inventory_size
-	#define G_MAX_INVENTORY _ORIGIN_MAX_INVENTORY
-#endif // Pandas_ClientFeature_InventoryExpansion
+#endif
 
 /** Max number of characters per account. Note that changing this setting alone is not enough if the client is not hexed to support more characters as well.
 * Max value tested was 265 */
@@ -106,11 +87,7 @@ typedef uint32 t_itemid;
 #define MAX_BANK_ZENY SINT32_MAX ///Max zeny in Bank
 #define MAX_FAME 1000000000 ///Max fame points
 #define MAX_CART 100 ///Maximum item in cart
-#ifndef Pandas_Fix_MAX_SKILL_Too_Small
-#define MAX_SKILL 1450 ///Maximum skill can be hold by Player, Homunculus, & Mercenary (skill list) AND skill_db limit
-#else
-#define MAX_SKILL 1460
-#endif // Pandas_Fix_MAX_SKILL_Too_Small
+#define MAX_SKILL 1454 ///Maximum skill can be hold by Player, Homunculus, & Mercenary (skill list) AND skill_db limit
 #define DEFAULT_WALK_SPEED 150 ///Default walk speed
 #define MIN_WALK_SPEED 20 ///Min walk speed
 #define MAX_WALK_SPEED 1000 ///Max walk speed
@@ -147,6 +124,9 @@ typedef uint32 t_itemid;
 #define DB_NAME_LEN 256 //max len of dbs
 #define MAX_CLAN 500
 #define MAX_CLANALLIANCE 6
+#ifndef MAX_BARTER_REQUIREMENTS
+	#define MAX_BARTER_REQUIREMENTS 5
+#endif
 
 #ifdef RENEWAL
 	#define MAX_WEAPON_LEVEL 5
@@ -525,7 +505,7 @@ struct s_storage {
 		unsigned put : 1;
 	} state;
 	union { // Max for inventory, storage, cart, and guild storage are 818 each without changing this struct and struct item [2016/08/14]
-		struct item items_inventory[G_MAX_INVENTORY];
+		struct item items_inventory[MAX_INVENTORY];
 		struct item items_storage[MAX_STORAGE];
 		struct item items_cart[MAX_CART];
 		struct item items_guild[MAX_GUILD_STORAGE];
@@ -674,10 +654,6 @@ struct mmo_charstatus {
 	time_t delete_date;
 	time_t unban_time;
 
-#ifdef Pandas_Struct_MMO_CharStatus_InventorySize
-	uint16 inventory_size;
-#endif // Pandas_Struct_MMO_CharStatus_InventorySize
-
 	// Char server addon system
 	unsigned int character_moves;
 
@@ -690,6 +666,7 @@ struct mmo_charstatus {
 	unsigned char hotkey_rowshift;
 	unsigned char hotkey_rowshift2;
 	unsigned long title_id;
+	uint16 inventory_slots;
 };
 
 typedef enum mail_status {

@@ -211,12 +211,7 @@
 	export_constant(PACKETVER);
 	export_constant(MAX_LEVEL);
 	export_constant(MAX_STORAGE);
-	// -------------------------------------------------------------------------------------
-	// 被调整改造之后, 需要让 MAX_INVENTORY 脚本常量的值等于 G_MAX_INVENTORY
-	// -------------------------------------------------------------------------------------
-	//export_constant(MAX_INVENTORY);
-	script_set_constant("MAX_INVENTORY", G_MAX_INVENTORY, false, false);
-	// -------------------------------------------------------------------------------------
+	export_constant(MAX_INVENTORY);
 	export_constant(MAX_CART);
 	export_constant(MAX_ZENY);
 	export_constant(MAX_PARTY);
@@ -730,6 +725,8 @@
 	export_constant(MF_SKILL_DURATION);
 	export_constant(MF_NOCASHSHOP);
 	export_constant(MF_NORODEX);
+	export_constant(MF_NORENEWALDROPPENALTY);
+	export_constant(MF_NORENEWALEXPPENALTY);
 
 #ifdef Pandas_MapFlag_Mobinfo
 	export_constant(MF_MOBINFO);
@@ -1290,6 +1287,7 @@
 	export_constant2("Eff_Fear",SC_FEAR);
 	export_constant2("Eff_Burning",SC_BURNING);
 	export_constant2("Eff_Crystalize",SC_CRYSTALIZE);
+	export_constant2("Eff_Freezing",SC_FREEZING);
 
 	export_constant2("SC_ALL",SC_NONE);
 
@@ -5925,6 +5923,8 @@
 	export_constant(IG_HAPPY_BOX_J);
 	export_constant(IG_CLASS_SHADOW_CUBE);
 	export_constant(IG_SEALED_SCROLL);
+	export_constant(IG_SQUAD_PRIZE1);
+	export_constant(IG_SQUAD_PRIZE2);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);
@@ -9010,32 +9010,6 @@
 	export_constant(SUSPEND_MODE_AFK);
 	export_constant(SUSPEND_MODE_NORMAL);
 #endif // Pandas_Player_Suspend_System
-
-#ifdef Pandas_ClientFeature_InventoryExpansion
-	export_constant(EXPAND_INVENTORY_ASK_CONFIRMATION);
-	export_constant(EXPAND_INVENTORY_FAILED);
-	export_constant(EXPAND_INVENTORY_OTHER_WORK);
-	export_constant(EXPAND_INVENTORY_MISSING_ITEM);
-	export_constant(EXPAND_INVENTORY_MAX_SIZE);
-
-	export_constant2("EXPAND_INV_ASK_CONFIRMATION", EXPAND_INVENTORY_ASK_CONFIRMATION);
-	export_constant2("EXPAND_INV_FAILED", EXPAND_INVENTORY_FAILED);
-	export_constant2("EXPAND_INV_OTHER_WORK", EXPAND_INVENTORY_OTHER_WORK);
-	export_constant2("EXPAND_INV_MISSING_ITEM", EXPAND_INVENTORY_MISSING_ITEM);
-	export_constant2("EXPAND_INV_MAX_SIZE", EXPAND_INVENTORY_MAX_SIZE);
-
-	export_constant(EXPAND_INVENTORY_RESULT_SUCCESS);
-	export_constant(EXPAND_INVENTORY_RESULT_FAILED);
-	export_constant(EXPAND_INVENTORY_RESULT_OTHER_WORK);
-	export_constant(EXPAND_INVENTORY_RESULT_MISSING_ITEM);
-	export_constant(EXPAND_INVENTORY_RESULT_MAX_SIZE);
-
-	export_constant2("EXPAND_INV_RESULT_SUCCESS", EXPAND_INVENTORY_RESULT_SUCCESS);
-	export_constant2("EXPAND_INV_RESULT_FAILED", EXPAND_INVENTORY_RESULT_FAILED);
-	export_constant2("EXPAND_INV_RESULT_OTHER_WORK", EXPAND_INVENTORY_RESULT_OTHER_WORK);
-	export_constant2("EXPAND_INV_RESULT_MISSING_ITEM", EXPAND_INVENTORY_RESULT_MISSING_ITEM);
-	export_constant2("EXPAND_INV_RESULT_MAX_SIZE", EXPAND_INVENTORY_RESULT_MAX_SIZE);
-#endif // Pandas_ClientFeature_InventoryExpansion
 
 	#undef export_constant
 	#undef export_constant2

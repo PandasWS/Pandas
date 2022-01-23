@@ -442,8 +442,13 @@ struct map_session_data {
 		bool mail_writing; // Whether the player is currently writing a mail in RODEX or not
 		bool cashshop_open;
 		bool sale_open;
+		bool stylist_open;
+		bool barter_open;
+		bool barter_extended_open;
 		unsigned int block_action : 10;
 		bool refineui_open;
+		t_itemid inventory_expansion_confirmation;
+		uint16 inventory_expansion_amount;
 	} state;
 	struct {
 		unsigned char no_weapon_damage, no_magic_damage, no_misc_damage;
@@ -477,7 +482,7 @@ struct map_session_data {
 	struct s_storage inventory;
 	struct s_storage cart;
 
-	struct item_data* inventory_data[G_MAX_INVENTORY]; // direct pointers to itemdb entries (faster than doing item_id lookups)
+	struct item_data* inventory_data[MAX_INVENTORY]; // direct pointers to itemdb entries (faster than doing item_id lookups)
 	short equip_index[EQI_MAX];
 	short equip_switch_index[EQI_MAX];
 	unsigned int weight,max_weight,add_max_weight;
@@ -1120,9 +1125,9 @@ public:
 
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
+	void loadingFinished() override;
 };
 
 struct s_job_info {
@@ -1151,11 +1156,11 @@ public:
 #endif // Pandas_YamlBlastCache_JobDatabase
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node &node);
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node &node) override;
+	void loadingFinished() override;
 
-	// Extras
+	// Additional
 	uint32 get_maxBaseLv(uint16 job_id);
 	uint32 get_maxJobLv(uint16 job_id);
 	t_exp get_baseExp(uint16 job_id, uint32 level);
@@ -1196,9 +1201,16 @@ extern JobDatabase job_db;
 #define pc_isidle_hom(sd)     ( (sd)->hd && ( (sd)->chatID || (sd)->state.vending || (sd)->state.buyingstore || DIFF_TICK(last_tick, (sd)->idletime_hom) >= battle_config.hom_idle_no_share ) )
 #define pc_isidle_mer(sd)     ( (sd)->md && ( (sd)->chatID || (sd)->state.vending || (sd)->state.buyingstore || DIFF_TICK(last_tick, (sd)->idletime_mer) >= battle_config.mer_idle_no_share ) )
 #define pc_istrading(sd)      ( (sd)->npc_id || (sd)->state.vending || (sd)->state.buyingstore || (sd)->state.trading )
+static bool pc_cant_act2( struct map_session_data* sd ){
+	return sd->state.vending || sd->state.buyingstore || (sd->sc.opt1 && sd->sc.opt1 != OPT1_BURNING)
+		|| sd->state.trading || sd->state.storage_flag || sd->state.prevend || sd->state.refineui_open
+		|| sd->state.stylist_open || sd->state.inventory_expansion_confirmation || sd->npc_shopid
+		|| sd->state.barter_open || sd->state.barter_extended_open;
+}
 // equals pc_cant_act2 and additionally checks for chat rooms and npcs
-#define pc_cant_act(sd)       ( (sd)->npc_id || (sd)->chatID || pc_cant_act2( (sd) ) )
-#define pc_cant_act2(sd)      ( (sd)->state.vending || (sd)->state.buyingstore || ((sd)->sc.opt1 && (sd)->sc.opt1 != OPT1_BURNING) || (sd)->state.trading || (sd)->state.storage_flag || (sd)->state.prevend || (sd)->state.refineui_open )
+static bool pc_cant_act( struct map_session_data* sd ){
+	return sd->npc_id || sd->chatID || pc_cant_act2( sd );
+}
 
 #define pc_setdir(sd,b,h)     ( (sd)->ud.dir = (b) ,(sd)->head_dir = (h) )
 #define pc_setchatid(sd,n)    ( (sd)->chatID = n )
@@ -1321,8 +1333,8 @@ public:
 
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node &node);
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node &node) override;
 };
 
 extern AttendanceDatabase attendance_db;
@@ -1339,10 +1351,11 @@ public:
 
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
+	void loadingFinished() override;
 
+	// Additional
 	uint32 pc_gets_status_point(uint16 level);
 	uint32 get_table_point(uint16 level);
 	uint32 pc_gets_trait_point(uint16 level);
@@ -1377,9 +1390,6 @@ void pc_respawn(struct map_session_data* sd, clr_type clrtype);
 void pc_setnewpc(struct map_session_data *sd, uint32 account_id, uint32 char_id, int login_id1, t_tick client_tick, int sex, int fd);
 bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_time, int group_id, struct mmo_charstatus *st, bool changing_mapservers);
 void pc_authfail(struct map_session_data *sd);
-#ifdef Pandas_ClientFeature_InventoryExpansion
-bool pc_expandInventory(struct map_session_data* sd, int adjustSize);
-#endif // Pandas_ClientFeature_InventoryExpansion
 void pc_reg_received(struct map_session_data *sd);
 void pc_close_npc(struct map_session_data *sd,int flag);
 TIMER_FUNC(pc_close_npc_timer);
@@ -1644,9 +1654,9 @@ public:
 #endif // Pandas_YamlBlastCache_SkillTreeDatabase
 	}
 
-	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
-	void loadingFinished();
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode(const YAML::Node& node) override;
+	void loadingFinished() override;
 
 	// Additional
 	std::shared_ptr<s_skill_tree_entry> get_skill_data(int class_, uint16 skill_id);
@@ -1760,11 +1770,7 @@ void pc_cell_basilica(struct map_session_data *sd);
 short pc_get_itemgroup_bonus(struct map_session_data* sd, t_itemid nameid, std::vector<s_item_bonus>& bonuses);
 short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id, std::vector<s_item_bonus>& bonuses);
 
-#ifndef Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 bool pc_is_same_equip_index(enum equip_index eqi, short *equip_index, short index);
-#else
-bool pc_is_same_equip_index(struct map_session_data* sd, enum equip_index eqi, short* equip_index, short index);
-#endif // Pandas_FuncParams_PC_IS_SAME_EQUIP_INDEX
 /// Check if player is Taekwon Ranker and the level is >= 90 (battle_config.taekwon_ranker_min_lv)
 #define pc_is_taekwon_ranker(sd) (((sd)->class_&MAPID_UPPERMASK) == MAPID_TAEKWON && (sd)->status.base_level >= battle_config.taekwon_ranker_min_lv && pc_famerank((sd)->status.char_id,MAPID_TAEKWON))
 
