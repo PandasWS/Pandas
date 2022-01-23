@@ -1132,6 +1132,12 @@
 	// 调整 yaml2sql 辅助工具的询问确认流程 [Sola丶小克]
 	// 先询问是否能覆盖目标文件, 再尝试去加载来源数据文件, 以便优化体验
 	#define Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
+
+	// 将 barters.yml 数据库从 npc 目录移动回 db 目录 [Sola丶小克]
+	#define Pandas_UserExperience_Move_BartersYml_To_DB
+
+	// 将 stylist.yml 和 barters.yml 的加载顺序放在 NPC 之前 [Sola丶小克]
+	#define Pandas_UserExperience_Move_StylistAndBarters_Load_Position
 #endif // Pandas_UserExperience
 
 // ============================================================================
