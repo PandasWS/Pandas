@@ -708,6 +708,9 @@ struct Battle_Config
 	int keep_ap_on_logout;
 	int attack_machine_level_difference;
 
+	int feature_barter;
+	int feature_barter_extended;
+
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
 	int force_loadevent;					// 强制触发 OnPCLoadMapEvent 事件 [Sola丶小克]

@@ -10319,6 +10319,9 @@ static const struct _battle_data {
 	{ "keep_ap_on_logout",                  &battle_config.keep_ap_on_logout,               1,      0,      1,              },
 	{ "attack_machine_level_difference",    &battle_config.attack_machine_level_difference, 15,     0,      INT_MAX,        },
 
+	{ "feature.barter",                     &battle_config.feature_barter,                  1,      0,      1,              },
+	{ "feature.barter_extended",            &battle_config.feature_barter_extended,         1,      0,      1,              },
+
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
 	{ "force_loadevent",                    &battle_config.force_loadevent,                 0,      0,      1,              },
@@ -10510,110 +10513,160 @@ void battle_adjust_conf()
 
 #if PACKETVER < 20100427
 	if (battle_config.feature_buying_store) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf:buying_store is enabled but it requires PACKETVER 2010-04-27 or newer, disabling...\n");
+#endif
 		battle_config.feature_buying_store = 0;
 	}
 #endif
 
 #if PACKETVER < 20100803
 	if (battle_config.feature_search_stores) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf:search_stores is enabled but it requires PACKETVER 2010-08-03 or newer, disabling...\n");
+#endif
 		battle_config.feature_search_stores = 0;
 	}
 #endif
 
 #if PACKETVER < 20120101
 	if (battle_config.feature_bgqueue) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf:bgqueue is enabled but it requires PACKETVER 2012-01-01 or newer, disabling...\n");
+#endif
 		battle_config.feature_bgqueue = 0;
 	}
 #endif
 
 #if PACKETVER > 20120000 && PACKETVER < 20130515 /* Exact date (when it started) not known */
 	if (battle_config.feature_auction) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf:feature.auction is enabled but it is not stable on PACKETVER " EXPAND_AND_QUOTE(PACKETVER) ", disabling...\n");
 		ShowWarning("conf/battle/feature.conf:feature.auction change value to '2' to silence this warning and maintain it enabled\n");
+#endif
 		battle_config.feature_auction = 0;
 	}
 #elif PACKETVER >= 20141112
 	if (battle_config.feature_auction) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf:feature.auction is enabled but it is not available for clients from 2014-11-12 on, disabling...\n");
 		ShowWarning("conf/battle/feature.conf:feature.auction change value to '2' to silence this warning and maintain it enabled\n");
+#endif
 		battle_config.feature_auction = 0;
 	}
 #endif
 
 #if PACKETVER < 20130724
 	if (battle_config.feature_banking) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf banking is enabled but it requires PACKETVER 2013-07-24 or newer, disabling...\n");
+#endif
 		battle_config.feature_banking = 0;
 	}
 #endif
 
 #if PACKETVER < 20131223
 	if (battle_config.mvp_exp_reward_message) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/client.conf MVP EXP reward message is enabled but it requires PACKETVER 2013-12-23 or newer, disabling...\n");
+#endif
 		battle_config.mvp_exp_reward_message = 0;
 	}
 #endif
 
 #if PACKETVER < 20141022
 	if (battle_config.feature_roulette) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf roulette is enabled but it requires PACKETVER 2014-10-22 or newer, disabling...\n");
+#endif
 		battle_config.feature_roulette = 0;
 	}
 #endif
 
 #if PACKETVER < 20150513
 	if (battle_config.feature_achievement) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf achievement is enabled but it requires PACKETVER 2015-05-13 or newer, disabling...\n");
+#endif
 		battle_config.feature_achievement = 0;
 	}
 #endif
 
 #if PACKETVER < 20141008
 	if (battle_config.feature_petevolution) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf petevolution is enabled but it requires PACKETVER 2014-10-08 or newer, disabling...\n");
+#endif
 		battle_config.feature_petevolution = 0;
 	}
 	if (battle_config.feature_pet_autofeed) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf pet auto feed is enabled but it requires PACKETVER 2014-10-08 or newer, disabling...\n");
+#endif
 		battle_config.feature_pet_autofeed = 0;
 	}
 #endif
 
 #if PACKETVER < 20161012
 	if (battle_config.feature_refineui) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf refine UI is enabled but it requires PACKETVER 2016-10-12 or newer, disabling...\n");
+#endif
 		battle_config.feature_refineui = 0;
 	}
 #endif
 
 #if PACKETVER < 20170208
 	if (battle_config.feature_equipswitch) {
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf equip switch is enabled but it requires PACKETVER 2017-02-08 or newer, disabling...\n");
+#endif
 		battle_config.feature_equipswitch = 0;
 	}
 #endif
 
 #if PACKETVER < 20170920
 	if( battle_config.feature_homunculus_autofeed ){
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf homunculus autofeeding is enabled but it requires PACKETVER 2017-09-20 or newer, disabling...\n");
+#endif
 		battle_config.feature_homunculus_autofeed = 0;
 	}
 #endif
 
 #if PACKETVER < 20180307
 	if( battle_config.feature_attendance ){
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf attendance system is enabled but it requires PACKETVER 2018-03-07 or newer, disabling...\n");
+#endif
 		battle_config.feature_attendance = 0;
 	}
 #endif
 
 #if PACKETVER < 20180321
 	if( battle_config.feature_privateairship ){
+#ifndef BUILDBOT
 		ShowWarning("conf/battle/feature.conf private airship system is enabled but it requires PACKETVER 2018-03-21 or newer, disabling...\n");
+#endif
 		battle_config.feature_privateairship = 0;
+	}
+#endif
+
+#if !( PACKETVER_MAIN_NUM >= 20181121 || PACKETVER_RE_NUM >= 20180704 || PACKETVER_ZERO_NUM >= 20181114 )
+	if( battle_config.feature_barter ){
+#ifndef BUILDBOT
+		ShowWarning("conf/battle/feature.conf barter shop system is enabled but it requires PACKETVER 2018-07-04 or newer, disabling...\n");
+#endif
+		battle_config.feature_barter = 0;
+	}
+#endif
+
+#if !( PACKETVER_MAIN_NUM >= 20191120 || PACKETVER_RE_NUM >= 20191106 || PACKETVER_ZERO_NUM >= 20191127 )
+	if( battle_config.feature_barter_extended ){
+#ifndef BUILDBOT
+		ShowWarning("conf/battle/feature.conf extended barter shop system is enabled but it requires PACKETVER 2019-11-06 or newer, disabling...\n");
+#endif
+		battle_config.feature_barter_extended = 0;
 	}
 #endif
 
