@@ -1981,6 +1981,10 @@
 	// 是否启用 sleep3 脚本指令 [人鱼姬的思念]
 	// 该指令用于休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错
 	#define Pandas_ScriptCommand_Sleep3
+
+	// 是否启用 unitspecialeffect 脚本指令 [人鱼姬的思念]
+	// 该指令用于使指定实体<GID>显示一个特效效果
+	#define Pandas_ScriptCommand_unitspecialeffect
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
