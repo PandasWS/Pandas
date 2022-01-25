@@ -1978,17 +1978,20 @@
 	// 该指令用于休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错
 	#define Pandas_ScriptCommand_Sleep3
 
-	// 是否启用 callshop 脚本指令 [Renee]
-	// 该指令用拓展 callshop 可配置選項
-	#define Pandas_ScriptCommand_Callshop
+	// 以下选项开关需要依赖 Pandas_Struct_Npc_Itemlist_Saved 的拓展
+	#ifdef Pandas_Struct_Npc_Itemlist_Saved
+		// 是否启用 callshop 脚本指令 [Renee]
+		// 该指令用拓展 callshop 可配置選項
+		#define Pandas_ScriptCommand_Callshop
 
-	// 是否启用 selllist_clear 脚本指令 [Renee]
-	// 该指令用于清空過濾商店設置
-	#define Pandas_ScriptCommand_Selllist_clear
+		// 是否启用 selllist_clear 脚本指令 [Renee]
+		// 该指令用于清空過濾商店設置
+		#define Pandas_ScriptCommand_Selllist_clear
 
-	// 是否启用 selllist_filter 脚本指令 [Renee]
-	// 该指令用于設置過濾商店條件
-	#define Pandas_ScriptCommand_Selllist_filter
+		// 是否启用 selllist_filter 脚本指令 [Renee]
+		// 该指令用于設置過濾商店條件
+		#define Pandas_ScriptCommand_Selllist_filter
+	#endif // Pandas_Struct_Npc_Itemlist_Saved
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
