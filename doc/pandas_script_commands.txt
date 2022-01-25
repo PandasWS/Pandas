@@ -1,4 +1,4 @@
-﻿//===== Pandas Documentation =================================
+//===== Pandas Documentation =================================
 //= 脚本指令说明文档
 //===== By: ==================================================
 //= 熊猫模拟器开发团队
@@ -2800,3 +2800,44 @@ NPC名称:
 	关联玩家情况下若执行该指令后玩家下线, 那么休眠结束后脚本将立刻结束 (不会继续往下执行).
 
 --------------------------------------------------------------
+
+*callshop "商店名稱",<選項>;
+
+在原始 callshop 指令上添加選項選擇，當選項填入 3 時需要搭配 'selllist_clear' 與 'selllist_filter' 達到過濾道具的效果。 
+
+選項:
+	3 = 過濾販售介面
+
+--------------------------------------------------------------
+
+*selllist_clear "商店名稱";
+
+清空過濾清單。
+
+返回值:
+	若清空失敗, 则返回 -1, 成功则返回 0
+
+--------------------------------------------------------------
+
+*selllist_filter "商店名稱",<選項>,<傳入值|傳入陣列>;
+
+為商店添加過濾清單，可以達到過濾物品類型、精煉、裝備位子、附魔等級等設置。
+
+選項:
+	FILTER_TYPE			過濾類型道具
+	FILTER_ITEMLIST		過濾陣列道具
+	FILTER_IDENTIFY		過濾道具鑑定
+	FILTER_REFINE		過濾道具精煉值
+	FILTER_ENCHANTGRADE	過濾道具附魔等級
+	
+返回值:
+	若添加失敗, 则返回 -1, 成功则返回 0
+	
+示例代码:
+	-	shop	ExampleShop	-1,501:-1
+	selllist_clear "ExampleShop";							// 清理過濾列表
+	setarray .@item, 501, 502, 503, 504;					// 陣列內填入道具編號
+	selllist_filter "ExampleShop",FILTER_TYPE,IT_HEALING;	// 只顯示 Healing 類物品
+	selllist_filter "ExampleShop",FILTER_ITEMLIST,.@item;	// 只顯示在 .@item 陣列內道具編號的物品
+	callshop "ExampleShop",3;								// 開啟過濾販售商店
+	end;

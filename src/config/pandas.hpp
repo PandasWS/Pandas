@@ -215,6 +215,9 @@
 
 	// 使 status_change 能保存 cloak 是否正在进行中的状态 [Sola丶小克]
 	#define Pandas_Struct_Status_Change_Cloak_Reverting
+
+	// 使 npc_item_list 能保存過濾道具的狀態 [Renee]
+	#define Pandas_Struct_Npc_Itemlist_Saved
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -1974,6 +1977,18 @@
 	// 是否启用 sleep3 脚本指令 [人鱼姬的思念]
 	// 该指令用于休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错
 	#define Pandas_ScriptCommand_Sleep3
+
+	// 是否启用 callshop 脚本指令 [Renee]
+	// 该指令用拓展 callshop 可配置選項
+	#define Pandas_ScriptCommand_Callshop
+
+	// 是否启用 selllist_clear 脚本指令 [Renee]
+	// 该指令用于清空過濾商店設置
+	#define Pandas_ScriptCommand_Selllist_clear
+
+	// 是否启用 selllist_filter 脚本指令 [Renee]
+	// 该指令用于設置過濾商店條件
+	#define Pandas_ScriptCommand_Selllist_filter
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

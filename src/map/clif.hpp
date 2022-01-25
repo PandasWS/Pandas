@@ -1229,4 +1229,8 @@ void clif_party_join_reply(struct map_session_data* sd, const char* player_name,
 void clif_party_join_ask_approval(struct map_session_data* sd, struct map_session_data* applicant_sd);
 #endif // Pandas_PacketFunction_PartyJoinRequest
 
+#if defined(Pandas_ScriptCommand_Selllist_filter) && defined(Pandas_Struct_Npc_Itemlist_Saved)
+void clif_selllist_filter(struct map_session_data* sd, int shopid);
+#endif // defined(Pandas_ScriptCommand_Selllist_filter) && defined(Pandas_Struct_Npc_Itemlist_Saved)
+
 #endif /* CLIF_HPP */
