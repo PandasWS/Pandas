@@ -9046,7 +9046,7 @@
 	export_constant(FILTER_ENCHANTGRADE);
 	export_constant(FILTER_ITEMLIST);
 	export_constant(FILTER_MAX);
-#endif 
+#endif  // Pandas_Struct_Npc_Itemlist_Saved
 
 	#undef export_constant
 	#undef export_constant2

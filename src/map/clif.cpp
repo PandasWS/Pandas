@@ -2451,7 +2451,7 @@ void clif_selllist(struct map_session_data *sd)
 	WFIFOSET(fd,WFIFOW(fd,2));
 }
 
-#if defined(Pandas_ScriptCommand_Selllist_filter) && defined(Pandas_Struct_Npc_Itemlist_Saved)
+#if defined(Pandas_ScriptCommand_Callshop) && defined(Pandas_Struct_Npc_Itemlist_Saved)
 void clif_selllist_filter(struct map_session_data* sd, int shopid)
 {
 	int fd, i, c = 0, val;
@@ -2516,7 +2516,7 @@ void clif_selllist_filter(struct map_session_data* sd, int shopid)
 	WFIFOW(fd,2)=c*10+4;
 	WFIFOSET(fd,WFIFOW(fd,2));
 }
-#endif // defined(Pandas_ScriptCommand_Selllist_filter) && defined(Pandas_Struct_Npc_Itemlist_Saved)
+#endif // defined(Pandas_ScriptCommand_Callshop) && defined(Pandas_Struct_Npc_Itemlist_Saved)
 
 /// Closes shop (CZ_NPC_TRADE_QUIT).
 /// 09d4
