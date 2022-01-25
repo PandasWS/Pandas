@@ -1634,6 +1634,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcExpress_MER_LEAVE
 	NPCX_MER_LEAVE,	// mer_leave_express_name	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
 #endif // Pandas_NpcExpress_MER_LEAVE
+
+#ifdef Pandas_NpcExpress_PC_TALK
+	NPCX_PC_TALK,	// pc_talk_express_name	// OnPCTalkExpress		// 当玩家聊天触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PC_TALK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
 	NPCE_MAX

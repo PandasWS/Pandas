@@ -11164,7 +11164,6 @@ static bool clif_process_message(struct map_session_data* sd, bool whisperFormat
 	size_t nameLength, messageLength;
 
 	fd = sd->fd;
-
 	info = &packet_db[RFIFOW(fd,0)];
 
 	packetLength = RFIFOW(fd,info->pos[0]);
@@ -11289,7 +11288,15 @@ static bool clif_process_message(struct map_session_data* sd, bool whisperFormat
 		sd->idletime_mer = last_tick;
 
 	//achievement_update_objective(sd, AG_CHATTING, 1, 1); // !TODO: Confirm how this achievement is triggered
-
+	//struct block_list bl;
+#ifdef Pandas_NpcExpress_PC_TALK
+	pc_setreg(sd, add_str("@talk_x"), sd->bl.x);
+	pc_setreg(sd, add_str("@talk_y"), sd->bl.y);
+	pc_setreg(sd, add_str("@talk_map"), sd->bl.m);
+	pc_setregstr(sd, add_str("@talk_name$"), out_name);
+	pc_setregstr(sd, add_str("@talk_mes$"), out_message);
+	npc_script_event(sd, NPCX_PC_TALK);
+#endif // Pandas_NpcExpress_PC_TALK	
 	return true;
 }
 
