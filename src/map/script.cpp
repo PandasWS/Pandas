@@ -30625,7 +30625,7 @@ BUILDIN_FUNC(sleep3) {
  * 指令: selllist_clear
  * 描述: 清空過濾商店
  * 用法: selllist_clear "商店名稱";
- * 返回: 成功则返回1, 失败则返回 0
+ * 返回: 成功则返回0, 失败则返回 -1
  * 作者: Renee
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(selllist_clear)
@@ -30657,7 +30657,7 @@ BUILDIN_FUNC(selllist_clear)
  * 指令: selllist_filter
  * 描述: 設置過濾商店細節
  * 用法: selllist_filter "商店名稱",<選項>,<傳入值|傳入陣列>;
- * 返回: 成功则返回1, 失败则返回 0
+ * 返回: 成功则返回0, 失败则返回 -1
  * 作者: Renee
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(selllist_filter)
@@ -30673,13 +30673,13 @@ BUILDIN_FUNC(selllist_filter)
 	nd = npc_name2id(shopname);
 
 	if (!script_rid2sd(sd)){
-		script_pushint(st, 0);
+		script_pushint(st, -1);
 		return SCRIPT_CMD_FAILURE;
 	}
 
 	if (!nd) {
 		ShowError("buildin_selllist_filter: Shop [%s] not found (or NPC is not shop type)\n", shopname);
-		script_pushint(st, 0);
+		script_pushint(st, -1);
 		return SCRIPT_CMD_FAILURE;
 	}
 
@@ -30687,7 +30687,7 @@ BUILDIN_FUNC(selllist_filter)
 
 	if(filter >= FILTER_MAX || filter <= FILTER_NONE){
 		ShowWarning("buildin_selllist_filter: unsupported filter type.\n");
-		script_pushint(st, 0);
+		script_pushint(st, -1);
 		return SCRIPT_CMD_FAILURE;
 	}
 
@@ -30743,11 +30743,11 @@ BUILDIN_FUNC(selllist_filter)
 			break;
 		default:
 			ShowWarning("buildin_selllist_filter: unsupported filter type.\n");
-			script_pushint(st, 0);
+			script_pushint(st, -1);
 			return SCRIPT_CMD_FAILURE;
 	}
 	nd->u.shop.shop_item->itemfilter.flag = true;
-	script_pushint(st, 1);
+	script_pushint(st, 0);
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_Selllist_filter
