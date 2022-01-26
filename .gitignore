@@ -191,3 +191,4 @@ __pycache__
 /src/*/*.aps
 /db/cache
 /npc/re/scripts_main.conf
+/npc/study
