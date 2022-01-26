@@ -30631,14 +30631,16 @@ BUILDIN_FUNC(sleep3) {
 BUILDIN_FUNC(selllist_clear)
 {
 	struct npc_data* nd = nullptr;
-	const char* shopname;
-	shopname = script_getstr(st, 2);
+	const char* shopname = script_getstr(st, 2);
+
 	nd = npc_name2id(shopname);
+
 	if (!nd) {
 		ShowError("buildin_selllist_clear: Shop [%s] not found (or NPC is not shop type)\n", shopname);
 		script_pushint(st, -1);
 		return SCRIPT_CMD_FAILURE;
 	}
+
 	nd->u.shop.shop_item->itemfilter.flag = false;
 	nd->u.shop.shop_item->itemfilter.type = IT_UNKNOWN;
 	nd->u.shop.shop_item->itemfilter.identify = -1;
@@ -30647,6 +30649,7 @@ BUILDIN_FUNC(selllist_clear)
 	for (int i = 0; i < nd->u.shop.shop_item->itemfilter.itemsize; i++)
 		nd->u.shop.shop_item->itemfilter.itemlist[i] = 0;
 	nd->u.shop.shop_item->itemfilter.itemsize = 0;
+
 	script_pushint(st, 0);
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -30666,10 +30669,9 @@ BUILDIN_FUNC(selllist_filter)
 	struct npc_data* nd = nullptr;
 	struct reg_db *src_reg_db = nullptr;
 	struct script_data *retdata = nullptr;
-	int retid, itemsize, filter, var = 0;
-	const char* shopname;
+	int retid, itemsize, filter, value = 0;
+	const char* shopname = script_getstr(st, 2);
 
-	shopname = script_getstr(st, 2);
 	nd = npc_name2id(shopname);
 
 	if (!script_rid2sd(sd)){
@@ -30719,27 +30721,55 @@ BUILDIN_FUNC(selllist_filter)
 
 		itemsize = script_array_highest_key(st, sd, retname, src_reg_db);
 	} else {
-		var = script_getnum(st, 4);
+		value = script_getnum(st, 4);
 	}
 
 	switch (filter)
 	{
 		case FILTER_TYPE:
-			nd->u.shop.shop_item->itemfilter.type = (enum item_types)var;
+			if (value >= IT_MAX || value < IT_HEALING) {
+				ShowError("buildin_selllist_filter: Unknown Item Type.\n");
+				script_pushint(st, -1);
+				return SCRIPT_CMD_FAILURE;
+			}
+			nd->u.shop.shop_item->itemfilter.type = static_cast<item_types>(value);
 			break;
 		case FILTER_IDENTIFY:
-			nd->u.shop.shop_item->itemfilter.identify = var ? 1 : 0;
+			if (value > 1 || value < 0) {
+				ShowWarning("buildin_selllist_filter: Invalid identify value %d, capping...\n", value);
+			}
+			nd->u.shop.shop_item->itemfilter.identify = cap_value(value, 0, 1);
 			break;
 		case FILTER_REFINE:
-			nd->u.shop.shop_item->itemfilter.refine = var;
+			if (value > MAX_REFINE || value < 0) {
+				ShowWarning("buildin_selllist_filter: Invalid refine value %d, capping...\n", value);
+			}
+			nd->u.shop.shop_item->itemfilter.refine = cap_value(value, 0, MAX_REFINE);
 			break;
 		case FILTER_ENCHANTGRADE:
-			nd->u.shop.shop_item->itemfilter.enchantgrade = var;
+			nd->u.shop.shop_item->itemfilter.enchantgrade = static_cast<uint8>(value);
 			break;
-		case FILTER_ITEMLIST:
-			for (int i = 0; i < itemsize; ++i)
-				nd->u.shop.shop_item->itemfilter.itemlist[i] = static_cast<int>(get_val2_num(st, reference_uid(retid, i), src_reg_db));
-			nd->u.shop.shop_item->itemfilter.itemsize = itemsize;
+		case FILTER_ITEMLIST: {
+			int count = 0;
+			t_itemid nameid;
+			std::shared_ptr<item_data> item;
+			for (int i = 0; i < itemsize; ++i) {
+				nameid = static_cast<t_itemid>(get_val2_num(st, reference_uid(retid, i), src_reg_db));
+				item = item_db.find(nameid);
+				if (item == nullptr) {
+					ShowError("buildin_selllist_filter: Unknown item id %u\n", nameid);
+					continue;
+				}
+				nd->u.shop.shop_item->itemfilter.itemlist[i] = nameid;
+				count++;
+			}
+			if (!count) {
+				ShowError("buildin_selllist_filter: FILTER_ITEMLIST Set Failed, Count was be '0'.\n");
+				script_pushint(st, -1);
+				return SCRIPT_CMD_FAILURE;
+			}
+			nd->u.shop.shop_item->itemfilter.itemsize = count;
+		}
 			break;
 		default:
 			ShowWarning("buildin_selllist_filter: unsupported filter type.\n");
