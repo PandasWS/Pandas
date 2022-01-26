@@ -11292,7 +11292,7 @@ static bool clif_process_message(struct map_session_data* sd, bool whisperFormat
 #ifdef Pandas_NpcExpress_PC_TALK
 	pc_setreg(sd, add_str("@talk_x"), sd->bl.x);
 	pc_setreg(sd, add_str("@talk_y"), sd->bl.y);
-	pc_setreg(sd, add_str("@talk_map"), sd->bl.m);
+	pc_setregstr(sd, add_str("@talk_map$"), map_mapid2mapname(sd->bl.m));
 	pc_setregstr(sd, add_str("@talk_name$"), out_name);
 	pc_setregstr(sd, add_str("@talk_mes$"), out_message);
 	npc_script_event(sd, NPCX_PC_TALK);

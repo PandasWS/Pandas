@@ -190,3 +190,4 @@ __pycache__
 # Other
 /src/*/*.aps
 /db/cache
+/npc/re/scripts_main.conf
