@@ -192,3 +192,5 @@ __pycache__
 /db/cache
 /npc/re/scripts_main.conf
 /npc/study
+/npc/study.conf
+/npc/re/scripts_main.conf
